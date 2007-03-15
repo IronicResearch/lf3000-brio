@@ -1,0 +1,21 @@
+Revision 1 from svn://localhost/TRUNK/:
+org.tmatesoft.svn.core.SVNException: svn: E160013: File not found: revision 1, path '/TRUNK'
+Revision 2 from svn://localhost/TRUNK/:
+org.tmatesoft.svn.core.SVNException: svn: E160013: File not found: revision 2, path '/TRUNK'
+Revision 3 from svn://localhost/TRUNK/:
+org.tmatesoft.svn.core.SVNException: svn: E160013: File not found: revision 3, path '/TRUNK'
+Revision 4 from svn://localhost/TRUNK/:
+org.tmatesoft.svn.core.SVNException: svn: E160013: File not found: revision 4, path '/TRUNK'
+Revision 5 from svn://localhost/TRUNK/:
+org.tmatesoft.svn.core.SVNException: svn: E160013: File not found: revision 5, path '/TRUNK'
+Revision 6 from svn://localhost/TRUNK/:
+org.tmatesoft.svn.core.SVNException: svn: E160013: File not found: revision 6, path '/TRUNK'
+Revision 7 from svn://localhost/TRUNK/:
+
+Script didn't create TRUNK
+
+By DGibbs (DGibbs@leapfrog.com) on 3/15/07 4:40 PM
+0 changed, 1 added, 0 deleted.
+750 ms. (Cumulative: 1,125 ms)
+
+----------------
