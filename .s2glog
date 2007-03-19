@@ -205,3 +205,12 @@ By TParker (TParker@leapfrog.com) on 3/16/07 4:55 PM
 23,161 ms. (Cumulative: 28,240 ms)
 
 ----------------
+Revision 38 from svn://localhost/TRUNK/:
+
+Initial SCons build system checkin
+
+By TParker (TParker@leapfrog.com) on 3/19/07 3:42 PM
+0 changed, 4 added, 0 deleted.
+1,312 ms. (Cumulative: 30,099 ms)
+
+----------------

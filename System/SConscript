@@ -1,0 +1,27 @@
+#-----------------------------------------------------------------------------
+# Brio/System Repository
+#-----------------------------------------------------------------------------
+import os.path
+Import('*')
+
+#-----------------------------------------------------------------------------
+# Create the folder name for a module's intermediate files
+#-----------------------------------------------------------------------------
+def MakeTempDirName(module):
+	return os.path.join(local_vars['intermediate_build_dir'], module)
+ 
+
+#-----------------------------------------------------------------------------
+# Invoke individual module builders
+#-----------------------------------------------------------------------------
+#audio = SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
+rsrcmgr = SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0)
+
+
+#-----------------------------------------------------------------------------
+# Populate the "Publish" folder for a public release
+#-----------------------------------------------------------------------------
+if local_vars['is_publish']:
+	env.Install('Publish', Dir('Include'))
+#	env.Install('Publish', audio)
+	
