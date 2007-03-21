@@ -1,33 +1,33 @@
 #ifndef LF_BRIO_SYSTEMTYPES_H
 #define LF_BRIO_SYSTEMTYPES_H
-//==============================================================================
+//============================================================================
 // $Source: $
 //
 // Copyright (c) LeapFrog Enterprises, Inc.
-//==============================================================================
+//============================================================================
 // File:
 //		SystemTypes.h
 //
 // Description:
 //		Defines the types which are specific to the system. 
-//==============================================================================
+//============================================================================
 
 #include <CoreTypes.h>
 
-//==============================================================================
+//============================================================================
 // Basic Types
-//==============================================================================
+//============================================================================
 
 typedef U32			tOptionFlags;	// std call options bitmask type
 
-#define kNoOptionFlags	((tOptionFlags)0)
+const tOptionFlags	kNoOptionFlags	= (tOptionFlags)(0);
 
 typedef tOpaqueType	tHndl;			// generic handle
 
-#define kUndefinedHndl	((tHndl)0)
+const tHndl			kUndefinedHndl	= (tHndl)(0);
 
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		Standard enumerated number spaces
 //
@@ -41,7 +41,7 @@ typedef tOpaqueType	tHndl;			// generic handle
 //
 //		Enumerated number spaces are typically subdivided into sub-spaces by
 //		a "group" value, and into sub-sub-spaces by a "tag" value.
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 enum {
 	kUndefinedNumSpaceDomain	= 0,
@@ -53,12 +53,12 @@ enum {
 	// (all other values are reserved for System use)
 };
 
-#define kFirstNumSpaceGroup		1
-#define kFirstNumSpaceTag		1
+const U32 kFirstNumSpaceGroup	= 1;
+const U32 kFirstNumSpaceTag		= 1;
 
 
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		Standard U32 number space format
 //
@@ -67,18 +67,19 @@ enum {
 //		following format:
 //
 //		MSBit: [4 bit domain][8 bits reserved][10 bit group][10 bit tag] :LSBit
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef U32 tU32NumSpace;
 
 #define kU32NumSpaceDomainBShift	(28)
-#define kU32NumSpaceGroupBShift	(10)
+#define kU32NumSpaceGroupBShift		(10)
 #define kU32NumSpaceTagBShift		(0)
 
-#define kU32NumSpaceDomainBMask	(0xF)
+#define kU32NumSpaceDomainBMask		(0xF)
 #define kU32NumSpaceGroupBMask		(0x3FF)
 #define kU32NumSpaceTagBMask		(0x3FF)
 #define kU32LastNumSpaceTag			kU32NumSpaceTagBMask
+#define kWildcardNumSpaceTag		kU32NumSpaceTagBMask
 
 #define MakeU32NumSpace(domain, group, tag) ((tU32NumSpace)(			\
 				((domain & kU32NumSpaceDomainBMask) << kU32NumSpaceDomainBShift) |	\
@@ -86,7 +87,7 @@ typedef U32 tU32NumSpace;
 				((tag & kU32NumSpaceTagBMask) << kU32NumSpaceTagBShift)				\
 				))
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		Standard U16 number space format
 //
@@ -95,7 +96,7 @@ typedef U32 tU32NumSpace;
 //		following format:
 //
 //		MSBit: [4 bit domain][2 bits reserved][5 bit group][5 bit tag] :LSBit
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef U16 tU16NumSpace;
 
@@ -113,17 +114,17 @@ typedef U16 tU16NumSpace;
 				((tag & kU16NumSpaceTagBMask) << kU16NumSpaceTagBShift)				\
 				))
 
-//==============================================================================
+//============================================================================
 // Versioning
-//============================================================================== 
+//============================================================================
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tSimpleVersion
 //
 // Description:
 //		Version as simple counting index: stored as U16 index
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef U16	tSimpleVersion;
 
@@ -132,14 +133,14 @@ typedef U16	tSimpleVersion;
 #define kUndefinedSimpleVersion		MakeSimpleVersion(0)
 #define kMaxSimpleVersion				MakeSimpleVersion(kU16Max)
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tVersion
 //
 // Description:
 //		Standard major.minor version:  
 //			stored as [MSB][U8 major][U8 minor][LSB]
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef U16	tVersion;
 
@@ -157,14 +158,14 @@ typedef U16	tVersion;
 #define NextMajorVersion(version)		((tVersion)((version & 0xFF00) + MakeVersion(1, 0)))
 #define NextMinorVersion(version)		((tVersion)(version + MakeVersion(0, 1)))
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tBuildVersion
 //
 // Description:
 //		Standard major.minor.build version:  
 //			stored as [MSB][U8 major][U8 minor][U16 build][LSB]
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef U32	tBuildVersion;
 
@@ -177,14 +178,14 @@ typedef U32	tBuildVersion;
 #define GetBuildMinorVersion(buildVersion) GetLowU8(GetHighU16(buildVersion))
 #define GetBuildBuildVersion(buildVersion) GetLowU16(buildVersion)
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tDataFmtVersion
 //
 // Description:
 //		Defines a data structure format version:
 //			stored as [MSB][6-bits simple version][10-bits struct size][LSB]
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef U16	tDataFmtVersion;
 
@@ -207,7 +208,7 @@ enum {
 #define GetDataFmtSize(dataFmtVersion)    ((U16)((dataFmtVersion >> kDataFmtSizeBShift) & \
 													kDataFmtSizeBMask))
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tObjTypeID
 //
@@ -225,7 +226,7 @@ enum {
 //		can only define new application types -- not product or System
 //		types.  Similarly, product code may use any System-defined types,
 //		but can only define new product types -- not application or System types.
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 /*
 typedef tU32NumSpace 	tObjTypeID;
 
@@ -234,7 +235,7 @@ typedef tU32NumSpace 	tObjTypeID;
 #define kUndefinedObjType		((tObjTypeID)0)
 */
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tRsrcType
 //
@@ -252,7 +253,7 @@ typedef tU32NumSpace 	tObjTypeID;
 //		can only define new application types -- not product or System
 //		types.  Similarly, product code may use any System-defined types,
 //		but can only define new product types -- not application or System types.
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef tU32NumSpace 	tRsrcType;
 
@@ -260,7 +261,7 @@ typedef tU32NumSpace 	tRsrcType;
 
 #define kUndefinedRsrcType		((tRsrcType)0)
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tEventType
 //
@@ -278,7 +279,7 @@ typedef tU32NumSpace 	tRsrcType;
 //		can only define new application types -- not product or System
 //		types.  Similarly, product code may use any System-defined types,
 //		but can only define new product types -- not application or System types.
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef tU32NumSpace 	tEventType;
 
@@ -286,7 +287,7 @@ typedef tU32NumSpace 	tEventType;
 
 #define kUndefinedEventType	((tEventType)0)
 
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 // Type:
 //		tErrType
 //
@@ -304,13 +305,35 @@ typedef tU32NumSpace 	tEventType;
 //		can only define new application types -- not product or System
 //		types.  Similarly, product code may use any System-defined types,
 //		but can only define new product types -- not application or System types.
-//------------------------------------------------------------------------------
+//----------------------------------------------------------------------------
 
 typedef tU32NumSpace	tErrType;
 
 #define MakeErrType(domain, group, tag) ((tErrType)MakeU32NumSpace(domain, group, tag))
 
 #define kNoErr			((tErrType)0)
+
+
+//----------------------------------------------------------------------------
+// Type:
+//		CString & CURI forward declarations
+//
+//	Description:
+//		Use a forward declaration of Glib::ustring to avoid need to compile/
+//		link ustring in simple test apps.
+//
+//----------------------------------------------------------------------------
+namespace Glib
+{
+	class ustring;
+}
+typedef Glib::ustring	CString;
+typedef Glib::ustring	CPath;
+typedef Glib::ustring	CURI;
+
+typedef const CString*	ConstPtrCString;
+typedef const CURI*		ConstPtrCURI;
+
 
 #endif // LF_BRIO_SYSTEMTYPES_H
 

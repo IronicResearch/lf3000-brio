@@ -1,10 +1,10 @@
 #ifndef LF_BRIO_CORETYPES_H
 #define LF_BRIO_CORETYPES_H
-//==============================================================================
+//============================================================================
 // $Source: $
 //
 // Copyright (c) LeapFrog Enterprises, Inc.
-//==============================================================================
+//============================================================================
 //
 // File:
 //		CoreTypes.h
@@ -12,7 +12,7 @@
 // Description:
 //		Defines the core types of the Brio system. 
 //
-//==============================================================================
+//============================================================================
 
 
 #undef NULL
@@ -78,8 +78,10 @@ typedef unsigned char		Boolean;
 #define GetLowU8(aWord)				((U8)(aWord))
 #define GetHighU8(aWord)			((U8)((U16)(aWord) >> 8))
 
-#define ToU16(highByte, lowByte)	(((U16)(highByte) << 8) | (U16)(lowByte & 0xFF))
-#define ToU32(highWord, lowWord)	(((U32)(highWord) << 16) | (U32)(lowWord & 0xFFFF))
+#define ToU16(highByte, lowByte)	(((U16)(highByte) << 8)		\
+									| (U16)(lowByte & 0xFF))
+#define ToU32(highWord, lowWord)	(((U32)(highWord) << 16)	\
+									| (U32)(lowWord & 0xFFFF))
 
 // common casts
 #define ToPtr(a) 		(reinterpret_cast<tPtr>(a))
@@ -95,10 +97,12 @@ typedef unsigned char		Boolean;
 
 #define TableCount(tableType, elementsType) 	\
 			(sizeof(tableType) / sizeof(elementsType))
-#define PtrTableCount(tableType)			\
+#define PtrTableCount(tableType)				\
 			TableCount(tableType, void*)
-#define FcnTableCount(tableType)			\
+#define FcnTableCount(tableType)				\
 			PtrTableCount(tableType)
+#define ArrayCount(array) 						\
+			(sizeof(array) / sizeof(array[0]))
 
 
 #endif // LF_BRIO_CORETYPES_H

@@ -223,3 +223,13 @@ By DGibbs (DGibbs@leapfrog.com) on 3/19/07 4:42 PM
 1,125 ms. (Cumulative: 31,271 ms)
 
 ----------------
+Revision 40 from svn://localhost/TRUNK/:
+Revision 41 from svn://localhost/TRUNK/:
+
+Initial EventMgr & ResourceMgr checkins
+
+By TParker (TParker@leapfrog.com) on 3/21/07 4:24 PM
+7 changed, 28 added, 0 deleted.
+1,844 ms. (Cumulative: 33,162 ms)
+
+----------------

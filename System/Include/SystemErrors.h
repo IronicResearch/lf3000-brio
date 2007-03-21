@@ -9,55 +9,93 @@
 //		SystemErrors.h
 //
 // Description:
-//		System-defined errors.
+//		Enumerate all of the system-defined errors.
+//		Uses the boost preprocessor library (structured preprocessor 
+//		programming) to take a preprocessor sequence of the form:
+//		#define SEQ (a)(b)(c)
+//		and create individual defintions of the form:
+//		const tErrType a = <enumerated value>; 
+//		const tErrType b = <enumerated value>; 
+//		const tErrType c = <enumerated value>; 
 //==============================================================================
 
- #include <SystemTypes.h>
+#include <boost/preprocessor/seq/for_each_i.hpp>
+#include <GroupEnumeration.h>
+
 
 //==============================================================================	   
-// System error groups
+// Preprocessor macro to generate type values
 //==============================================================================
+#define GEN_ERR_VALUE(r, initval, count, name)		\
+	const tErrType name = initval + count;
 
-enum {   
-	kSystemErrTypeGroupGeneral = kFirstNumSpaceGroup,	   // FIXME/dg: general group (temporary?) for bringup
-	kSystemErrTypeGroupHardware,
-	kSystemErrTypeGroupKernel,
-	kSystemErrTypeGroupAudioMgr,
-	kSystemErrTypeGroupRsrcMgr,	      	
-	kSystemErrTypeGroupDisplayMgr,	 
-	kSystemErrTypeGroupEventMgr,	 
-};
+#define FirstErr(group)  	\
+	MakeErrType(kSystemNumSpaceDomain, group, kFirstNumSpaceTag)
 
-#define MakeFirstSystemGroupErrType(group)  MakeErrType(kSystemNumSpaceDomain, group, kFirstNumSpaceTag)
 
 //==============================================================================	   
-// System errors
+// Audio errors
 //==============================================================================
+#define AUDIO_ERRORS			\
+	(kAudioCreateTaskErr)		\
+	(kAudioCreateEventErr)		\
+	(kAudioCreateQueueErr)		\
+	(kAudioNullContextErr)		\
+	(kAudioNoDataAvailErr)		\
+	(kAudioNoMoreDataErr)		\
+	(kAudioInvalid)				\
+	(kAudioMidiErr)
 
-enum {
-	//------------------------------------------------------------------------------
-	// General errors
-	//------------------------------------------------------------------------------
-	kUnspecifiedErr = MakeFirstSystemGroupErrType(kSystemErrTypeGroupGeneral),   // FIXME/dg: temp(?) for bringup
-	kInvalidParamErr,
-	kNoImplErr,
-	kAllocMPIErr,
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupAudio), AUDIO_ERRORS)
 
-	//------------------------------------------------------------------------------
-	// Hardware errors
-	//------------------------------------------------------------------------------
-	// <firstGroupErr> = MakeFirstSystemGroupErrType(kSystemErrTypeGroupHardware),  
 
-	//------------------------------------------------------------------------------
-	// Kernel errors
-	//------------------------------------------------------------------------------
-	kMemoryAllocErr = MakeFirstSystemGroupErrType(kSystemErrTypeGroupKernel),  
+//==============================================================================	   
+// Common errors
+//==============================================================================
+#define COMMON_ERRORS			\
+	(kUnspecifiedErr)			\
+	(kInvalidParamErr)			\
+	(kNoImplErr)				\
+	(kAllocMPIErr)				\
+	(kMpiNotConnectedErr)
 
-	//------------------------------------------------------------------------------
-	// AudioMgr errors
-	//------------------------------------------------------------------------------
-	// <firstGroupErr> = MakeFirstSystemGroupErrType(kSystemErrTypeGroupAudioMgr),  
-};
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupCommon), COMMON_ERRORS)
+
+
+//==============================================================================	   
+// Event Manager errors (FIXME/tp: Move to common?)
+//==============================================================================
+#define EVENT_ERRORS			\
+	(kEventNotFoundErr)			\
+	(kEventListenerNotRegisteredErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupEvent), EVENT_ERRORS)
+
+
+//==============================================================================	   
+// Kernel errors
+//==============================================================================
+#define KERNEL_ERRORS			\
+	(kMemoryAllocErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupKernel), KERNEL_ERRORS)
+
+
+//==============================================================================	   
+// Resource Manager errors
+//==============================================================================	   
+#define RESOURCE_ERRORS			\
+	(kResourceInvalidErr)		\
+	(kResourceNotFoundErr)		\
+	(kResourceNotLoadedErr)		\
+	(kResourceNotOpenErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupResource), RESOURCE_ERRORS)
+
+
+//==============================================================================	   
+#undef GEN_ERR_VALUE
+#undef FirstErr
 
 #endif // LF_BRIO_SYSTEMERRORS_H
 

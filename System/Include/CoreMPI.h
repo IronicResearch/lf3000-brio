@@ -16,7 +16,7 @@
 //
 //==============================================================================
 
-#include <StringTypes.h>
+#include <SystemTypes.h>
 
 class ICoreMPI {
 public:
