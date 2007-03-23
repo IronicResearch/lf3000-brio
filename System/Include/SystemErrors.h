@@ -65,8 +65,9 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupCommon), COMMON_ERRORS)
 //==============================================================================	   
 // Event Manager errors (FIXME/tp: Move to common?)
 //==============================================================================
-#define EVENT_ERRORS			\
-	(kEventNotFoundErr)			\
+#define EVENT_ERRORS					\
+	(kEventNotFoundErr)					\
+	(kEventTypeNotFoundErr)				\
 	(kEventListenerNotRegisteredErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupEvent), EVENT_ERRORS)
@@ -79,6 +80,17 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupEvent), EVENT_ERRORS)
 	(kMemoryAllocErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupKernel), KERNEL_ERRORS)
+
+
+//==============================================================================	   
+// Module errors
+//==============================================================================
+#define MODULE_ERRORS			\
+	(kModuleNotFound)			\
+	(kModuleOpenFail)			\
+	(kModuleLoadFail)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupModule), MODULE_ERRORS)
 
 
 //==============================================================================	   

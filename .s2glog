@@ -251,3 +251,12 @@ By TParker (TParker@leapfrog.com) on 3/21/07 5:15 PM
 1,063 ms. (Cumulative: 35,303 ms)
 
 ----------------
+Revision 44 from svn://localhost/TRUNK/:
+
+Initial ModuleMgr checkin.  EventMgr dispatching working.
+
+By TParker (TParker@leapfrog.com) on 3/22/07 7:47 PM
+13 changed, 3 added, 0 deleted.
+1,375 ms. (Cumulative: 36,725 ms)
+
+----------------

@@ -1,0 +1,315 @@
+//==============================================================================
+// $Source: $
+//
+// Copyright (c) LeapFrog Enterprises, Inc.
+//==============================================================================
+//
+// File:
+//		ModuleMgr.cpp
+//
+// Description:
+//		See the IncludePriv/ModuleMgr.h file
+//
+//==============================================================================
+
+#include <iostream>
+#include <dirent.h>
+#include <dlfcn.h>
+#include <unistd.h>
+
+#include <ModuleMgr.h>
+#include <SystemErrors.h>
+
+
+//==============================================================================	   
+// CModuleMgrImpl
+//==============================================================================	   
+namespace
+{
+	const int kMaxModuleName	= 30;
+	const int kMaxPath			= 256;	// FIXME: common handling 
+	
+	class CModuleMgrImpl
+	{
+	private:
+		//----------------------------------------------------------------------
+		struct FoundModule {
+			char			name[kMaxModuleName];
+			char			sopath[kMaxPath];
+			tVersion		version;
+		};
+		//----------------------------------------------------------------------
+		struct ConnectedModule {
+			char			name[kMaxModuleName];
+			char			sopath[kMaxPath];
+			U32				connect_count;
+			void*			handle;
+			ICoreModule*	ptr;
+			// FIXME/tp: initializing ctor
+		};
+		//----------------------------------------------------------------------
+		FoundModule		*mpFoundModulesList;
+		ConnectedModule	*mpConnectedModulesList;
+		U16				mNumFound;
+		U16				mNumConnected;
+			
+		//----------------------------------------------------------------------
+		Boolean AddedValidModule( FoundModule* pModule, const CPath& dir, 
+									const CPath& name )
+		{
+			// TODO: Either parse version from file name or load and
+			// querry the library (probably the former)
+			//
+			size_t len = name.size();
+			if( len <= 6 || name.at(0) == '.' )
+				return false;
+			CString temp = name.substr(3, len-6);
+			pModule->version = MakeVersion(0,1);
+			strncpy(pModule->name, temp.c_str(), kMaxModuleName);
+			temp = dir + '/' + name;
+			strncpy(pModule->sopath, temp.c_str(), kMaxPath);
+			return true;
+		}
+
+		//----------------------------------------------------------------------
+		FoundModule* FindBestModuleMatch( const CString& name, tVersion version )
+		{
+			FoundModule* pModule = mpFoundModulesList;
+			for( U16 ii = mNumFound; ii > 0; --ii, ++pModule )
+			{
+				if( pModule->name == name )
+				{
+					// TODO: Implement more sophisticated version matching scheme:
+					//	(use highest version with same major version number)
+					//	(if no major version match, match if module version > mpi version)
+					if( GetMajorVersion(version) 
+						== GetMajorVersion(pModule->version) )
+						return pModule;
+				}
+			}
+			return NULL;
+		}
+
+		//----------------------------------------------------------------------
+		ConnectedModule* FindCachedModule( const CString& name, tVersion version )
+		{
+			ConnectedModule* pModule = mpConnectedModulesList;
+			for( U16 ii = mNumConnected; ii > 0; --ii, ++pModule )
+			{
+				if( pModule->name == name )
+				{
+					// TODO: Make sure we have a version match
+					return pModule;
+				}
+			}
+			return NULL;
+		}
+		
+	public:
+		//----------------------------------------------------------------------
+		CModuleMgrImpl()
+			: mpFoundModulesList(NULL), mpConnectedModulesList(NULL),
+			mNumFound(0), mNumConnected(0)
+		{
+		}
+		
+		//----------------------------------------------------------------------
+		~CModuleMgrImpl()
+		{
+			// FIXME: Use Kernel::Free()
+			free(mpFoundModulesList);
+			free(mpConnectedModulesList);
+		}
+	
+		//----------------------------------------------------------------------
+		tErrType FindModules()
+		{
+			// FIXME/tp: Implement actual search paths rather than cur working dir
+			// FIXME/tp: Hide search paths in function which can have separate 
+			//				emulation/embedded implementations.
+			static char* paths[] = { "." };
+			
+			// FIXME/tp: count first to allocate only enough memory needed
+			// FIXME/tp: KernelMPI for malloc
+			const int kMaxModuleCount = 20;
+			mpFoundModulesList = reinterpret_cast<FoundModule*>(malloc(kMaxModuleCount * sizeof(FoundModule)));
+			mpConnectedModulesList = reinterpret_cast<ConnectedModule*>(malloc(kMaxModuleCount * sizeof(ConnectedModule)));
+			
+			mNumFound = 0; 
+			for( size_t ii = 0; ii < ArrayCount(paths); ++ii )
+			{
+				DIR *dirp;
+				struct dirent *dp = (struct dirent *)1;
+				if( (dirp = opendir(paths[ii])) == NULL )
+					continue;
+				while( dp != NULL )
+				{
+					if( (dp = readdir(dirp)) != NULL 
+						&& AddedValidModule((mpFoundModulesList + mNumFound),
+											paths[ii], dp->d_name) )
+						++mNumFound;
+				}
+				closedir(dirp);
+			}
+//FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
+//							"Module configuration error, no modules found!");
+		}
+
+		
+		//----------------------------------------------------------------------
+		// Connect() either uses existing instance,
+		// or loads the shared object path, gets its "Instance()" function pointer
+		// and creates a new instance.
+		//
+		// It is an error if a request for moduleV2 comes when moduleV1 is loaded
+		// and has a non-zero connect_count.  If moduleV1 it has a zero connect
+		// count, the existing modulev1 object is destroyed and a new modulev2 is
+		// created in its place.
+		//
+		// The "version" parameter passed by the ICoreMPI-derived object
+		// is the version of the module against which that object was built.
+		// The three cases are
+		//		ICoreMPI-provided verson == module version: great, succeed
+		//		ICoreMPI-provided verson <  module version: if module maintains backwards compatability, succeed else fail
+		//		ICoreMPI-provided verson >  bad, fail.  Interface object may try to invoke non-existant functionality.
+		
+		tErrType Connect(ICoreModule*& ptr, const CString& name, 
+						tVersion version)
+		{
+			// FIXME: Lots of versioning TODOs in here
+			// 1) Check if module is already loaded and return module ptr
+			// 2) Otherwise find a module that will work
+			// 3) Load the library
+			// 4) Resolve the library's CreateInstance() symbol
+			// 5) Invoke the library's CreateInstance() function
+			// 6) Fill in a new ConnectedModule slot with its info
+			//
+			ConnectedModule* pModule = FindCachedModule(name, version);		//*1
+			if( pModule != NULL )
+			{
+				++pModule->connect_count;
+				ptr = pModule->ptr;
+				return kNoErr;
+			}
+			
+			FoundModule* pFound = FindBestModuleMatch(name, version);		//*2
+			if( pFound == NULL )
+			{
+				//TODO: DebugMPI message
+				return kModuleNotFound;
+			}
+				
+			void* pLib = dlopen(pFound->sopath, RTLD_LAZY);			//*3
+			if( !pLib )
+			{
+				//TODO: DebugMPI message
+				return kModuleOpenFail;
+			}
+			
+		    dlerror();														//*4
+			pFnCreateInstance funptr = reinterpret_cast<pFnCreateInstance>
+						(dlsym(pLib, kCreateInstanceFnName));
+		    const char *dlsym_error = dlerror();
+		    if( dlsym_error )
+		    {
+				//TODO: DebugMPI message
+		    	return kModuleLoadFail;
+		    }
+		    
+			ptr = (*funptr)(version);										//*5
+			if( !ptr )
+			{
+				//TODO: DebugMPI message
+		    	return kModuleLoadFail;
+			}
+
+			pModule = mpConnectedModulesList + mNumConnected;				//*6
+			++mNumConnected;
+			strcpy(pModule->name, pFound->name);
+			strcpy(pModule->sopath, pFound->sopath);
+			pModule->connect_count = 1;
+			pModule->handle = pLib;
+			pModule->ptr = ptr;
+
+			return kNoErr;
+		}
+
+		//----------------------------------------------------------------------
+		tErrType Disconnect(const CString& name)
+		{
+			ConnectedModule* pModule = FindCachedModule(name, kUndefinedVersion);
+			if( pModule )
+			{
+				--pModule->connect_count;
+				if( pModule->connect_count == 0 )
+				{
+//					DestroyModuleInstance(pModule);
+//					--mNumConnected;
+					// FIXME/tp: remove module from list by copying higher entries downd
+				}
+			}
+			return kNoErr;
+		}
+		
+		//----------------------------------------------------------------------
+		void DestroyModuleInstance(ConnectedModule* pModule)
+		{
+		    dlerror();
+			pFnDestroyInstance funptr = reinterpret_cast<pFnDestroyInstance>
+						(dlsym(pModule->handle, kDestroyInstanceFnName));
+		    const char *dlsym_error = dlerror();
+		    if( !dlsym_error )
+		    	(*funptr)(pModule->ptr);
+		    else
+		    {
+				//TODO: DebugMPI message
+		    }
+			dlclose(pModule->handle);
+		}
+		
+		// unresolved issues:
+		//   what to do if two modules with same name and version are found
+	};
+
+	CModuleMgrImpl	g_impl;
+}
+
+ 
+//============================================================================
+// ModuleMgr
+//============================================================================
+//----------------------------------------------------------------------------
+CModuleMgr* CModuleMgr::mpinst = NULL;
+//----------------------------------------------------------------------------
+CModuleMgr* CModuleMgr::Instance()
+{
+	if( mpinst == NULL )
+	{
+		mpinst = new CModuleMgr;
+		g_impl.FindModules();	//FIXME/tp: temp, move somewhere else in boot process
+	}
+	return mpinst;
+}
+//----------------------------------------------------------------------------
+CModuleMgr::CModuleMgr()	{}
+//----------------------------------------------------------------------------
+CModuleMgr::~CModuleMgr()	{}
+//----------------------------------------------------------------------------
+tErrType CModuleMgr::FindModules()
+{
+	return g_impl.FindModules();
+}
+//----------------------------------------------------------------------------
+tErrType CModuleMgr::Connect(ICoreModule*& ptr, const CString& name, 
+							tVersion version)
+{
+	return g_impl.Connect(ptr, name, version);
+}
+//----------------------------------------------------------------------------
+tErrType CModuleMgr::Disconnect(const CString& name)
+{
+	return g_impl.Disconnect(name);
+}
+
+
+// eof

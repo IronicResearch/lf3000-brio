@@ -16,8 +16,6 @@
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
-#include <EventListener.h>
-#include <EventMessage.h>
 #include <EventMgrMPI.h>
 #include <EventMgrModulePriv.h>
 #include <ModuleMgr.h>

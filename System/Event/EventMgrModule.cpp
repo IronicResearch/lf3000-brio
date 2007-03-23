@@ -15,7 +15,7 @@
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
-#include <KernelMPI.h>
+//#include <KernelMPI.h>
 #include <EventListener.h>
 #include <EventListenerPriv.h>
 #include <EventMessage.h>
@@ -25,19 +25,6 @@
 
 const CURI	kModuleURI	= "EventMgr FIXME";
 
-
-//============================================================================
-// Ctor & dtor
-//============================================================================
-//----------------------------------------------------------------------------
-CEventMgrModule::CEventMgrModule()
-{
-}
-
-//----------------------------------------------------------------------------
-CEventMgrModule::~CEventMgrModule()
-{
-}
 
 //============================================================================
 // Informational functions
@@ -127,7 +114,7 @@ public:
 			async_.erase(it);
 			return kNoErr;
 		}
-		return kEventNotFoundErr;
+		return kEventListenerNotRegisteredErr;
 	}
 	//------------------------------------------------------------------------
 	void PostEventToChain( IEventListener *pListener, 
@@ -187,24 +174,23 @@ namespace
 
 
 //============================================================================
-// Initialization and teardown
+// Ctor & dtor
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::Init()
+CEventMgrModule::CEventMgrModule()
 {
 	if (pinst == NULL)
 		pinst = new CEventManagerImpl;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::Deinit()
+CEventMgrModule::~CEventMgrModule()
 {
 	delete pinst;
-	pinst = NULL;
 }
 
 //----------------------------------------------------------------------------
-Boolean	CEventMgrModule::IsInitialized() const
+Boolean	CEventMgrModule::IsValid() const
 {
 	return (pinst != NULL) ? true : false;
 }

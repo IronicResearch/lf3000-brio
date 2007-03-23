@@ -20,16 +20,14 @@
 
 
 // Constants
-const CString	kEventMgrModuleName		= "EventMgr";
+const CString	kEventMgrModuleName		= "Event";
 const tVersion	kEventMgrModuleVersion	= MakeVersion(0,1);
 
 //==============================================================================
 class CEventMgrModule : public ICoreModule {
 public:	
 	// core functionality
-	virtual tErrType	Init();
-	virtual tErrType	Deinit();
-	virtual Boolean		IsInitialized() const;
+	virtual Boolean		IsValid() const;
 	virtual tErrType	GetModuleVersion(tVersion &version) const;
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;

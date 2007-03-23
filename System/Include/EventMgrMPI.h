@@ -16,14 +16,13 @@
 
 #include <SystemTypes.h>
 #include <CoreMPI.h>
+#include <EventListener.h>
+#include <EventMessage.h>
 
 // @FIXME/tp: Remove event context stuff?
 typedef U32	tEventContext;
 const tEventContext	kEventContextUndefined = 0;
 
-// Forward declarations
-class IEventListener;
-class IEventMessage;
 
 // Types
 typedef U32		tListenerId;

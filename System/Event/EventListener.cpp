@@ -12,8 +12,10 @@
 //
 //============================================================================
 
+#include <boost/scoped_ptr.hpp>
 #include <EventListener.h>
 #include <EventListenerPriv.h>
+#include <EventMgrMPI.h>
 #include <SystemErrors.h>
 //#include <KernelMPI.h>
 #include <stdlib.h>
@@ -83,7 +85,7 @@ tErrType CEventListenerImpl::DisableNotifyForEventType(tEventType type)
 		}
 	}
 	
-	return kEventNotFoundErr;											//*3
+	return kEventTypeNotFoundErr;											//*3
 }
 
 //----------------------------------------------------------------------------
@@ -104,7 +106,7 @@ tErrType CEventListenerImpl::ReenableNotifyForEventType(tEventType type)
 			return kNoErr;
 		}
 	}
-	return kEventNotFoundErr;
+	return kEventTypeNotFoundErr;
 }
 
 //----------------------------------------------------------------------------
@@ -114,9 +116,13 @@ Boolean CEventListenerImpl::HandlesEvent(tEventType type) const
 		if( *(mpDisabledEventList + ii - 1) == type )
 			return false;
 	
+	tEventType allInGroup = (type | kWildcardNumSpaceTag);
 	for( int ii = mNumEvents; ii > 0; --ii )
-		if( *(mpEventList + ii - 1) == type )
+	{
+		tEventType next = *(mpEventList + ii - 1);
+		if( next == type || next == allInGroup )
 			return true;
+	}
 	return false;
 }
 /*
@@ -165,6 +171,8 @@ IEventListener::IEventListener(const tEventType* pTypes, U32 count)
 //----------------------------------------------------------------------------
 IEventListener::~IEventListener()
 {
+	boost::scoped_ptr<CEventMgrMPI> eventmgr(new CEventMgrMPI());
+	eventmgr->UnregisterEventListener(this);
 	delete mpimpl;
 }
 

@@ -14,8 +14,11 @@ def MakeTempDirName(module):
 #-----------------------------------------------------------------------------
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
-#audio = SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
-rsrcmgr = SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0)
+audio	= SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
+debug	= SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0)
+event	= SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0)
+module	= SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0)
+resource	= SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0)
 
 
 #-----------------------------------------------------------------------------

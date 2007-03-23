@@ -18,11 +18,13 @@
 enum eGroupEnum { 
 	// Brio v1.0	 
 	kGroupAudio = kFirstNumSpaceGroup,
+	kGroupBoot,
 	kGroupCommon,
 	kGroupDisplay,
 	kGroupEvent,
 	kGroupKernel,
 	kGroupHardware,
+	kGroupModule,
 	kGroupResource,
 	kGroupUnitTests,
 	

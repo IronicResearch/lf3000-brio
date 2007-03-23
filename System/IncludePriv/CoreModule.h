@@ -47,9 +47,7 @@ public:
 	ICoreModule() 	{};
 	virtual ~ICoreModule()	{};
 
-	virtual tErrType	Init() = 0;
-	virtual tErrType	Deinit() = 0;
-	virtual Boolean		IsInitialized() const = 0;
+	virtual Boolean		IsValid() const = 0;
 
 	virtual tErrType	GetModuleVersion(tVersion &version) const = 0;
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const = 0;	
@@ -61,6 +59,15 @@ public:
 //==============================================================================
 extern "C" ICoreModule* CreateInstance(tVersion version);
 extern "C" void			DestroyInstance(ICoreModule*);
+
+extern "C"
+{
+	typedef ICoreModule* (*pFnCreateInstance)(tVersion);
+	typedef void	(*pFnDestroyInstance)(ICoreModule*);
+}
+
+#define kCreateInstanceFnName	"CreateInstance"
+#define kDestroyInstanceFnName	"DestroyInstance"
 
 
 #endif // LF_BRIO_COREMODULE_H

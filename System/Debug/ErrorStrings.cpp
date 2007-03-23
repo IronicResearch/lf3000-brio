@@ -18,6 +18,7 @@
 //
 //==============================================================================
 
+#include <boost/static_assert.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <StringTypes.h>
@@ -38,13 +39,23 @@ struct ValueToString
 //------------------------------------------------------------------------------
 CString ErrorToString( tErrType error )
 {
-	// TODO: Validate that list is ordered
 	// TODO: Debug binary search
+
+	// TODO: Keeping the following BOOST_STATIC_ASSERT in sync with the
+	//		BOOST_PP_SEQ_FOR_EACH lines will validate that the g_errorLookup 
+	//		list is ordered.
+	BOOST_STATIC_ASSERT(kGroupAudio		< kGroupCommon
+					&&	kGroupCommon	< kGroupEvent
+					&&	kGroupEvent		< kGroupKernel
+					&&	kGroupKernel	< kGroupModule
+					&&	kGroupModule 	< kGroupResource
+					);
 	static ValueToString g_errorLookup[] = {
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , AUDIO_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , COMMON_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , EVENT_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , KERNEL_ERRORS)
+		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , MODULE_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , RESOURCE_ERRORS)
 	};
 	static U32 size = ArrayCount(g_errorLookup);

@@ -37,7 +37,7 @@ private:
 	const IEventListener*	mpNextListener;
 	tEventType*				mpEventList;
 	tEventType*				mpDisabledEventList;
-	U16						mNumEvents;
+	const U16				mNumEvents;
 	U16						mNumDisabledEvents;
 };
 
