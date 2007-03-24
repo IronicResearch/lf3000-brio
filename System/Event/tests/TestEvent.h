@@ -2,7 +2,7 @@
 
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_array.hpp>
-#include <EventMgrMPI.h>
+#include <EventMPI.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <StringTypes.h>
@@ -201,6 +201,7 @@ public:
 			pListener = &listener;
 			TS_ASSERT_EQUALS( kNoErr, eventmgr_->RegisterEventListener(pListener) );
 			TS_ASSERT_EQUALS( kNoErr, eventmgr_->UnregisterEventListener(pListener) );
+			TS_ASSERT_EQUALS( kEventListenerNotRegisteredErr, eventmgr_->UnregisterEventListener(pListener) );
 			TS_ASSERT_EQUALS( kNoErr, eventmgr_->RegisterEventListener(pListener) );
 		}
 		TS_ASSERT_EQUALS( kEventListenerNotRegisteredErr, eventmgr_->UnregisterEventListener(pListener) );
@@ -303,8 +304,7 @@ public:
 
 		// Disable notification for event3 & fire, make sure no notification
 		listener.Reset();
-		listener.DisableNotifyForEventType(kUnitTestEvent3);
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->UnregisterEventListener(&listener) );
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 
@@ -317,14 +317,13 @@ public:
 
 		// Reenable and event3 and verify triggers again
 		listener.Reset();
-		listener.ReenableNotifyForEventType(kUnitTestEvent3);
+		TS_ASSERT_EQUALS( kNoErr, listener.ReenableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( !listener.IsReset() );
 
 		// Disable notification for event5 & fire, make sure no notification
 		listener.Reset();
-		listener.DisableNotifyForEventType(kUnitTestEvent5);
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->UnregisterEventListener(&listener) );
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent5) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg5, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 
@@ -337,15 +336,15 @@ public:
 
 		// Reenable and event5 and verify triggers again
 		listener.Reset();
-		listener.ReenableNotifyForEventType(kUnitTestEvent5);
+		TS_ASSERT_EQUALS( kNoErr, listener.ReenableNotifyForEventType(kUnitTestEvent5) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg5, kPriorityCritical) );
 		TS_ASSERT( !listener.IsReset() );
 
 		// Disable notification for all 3 events & fire, make sure no notifications
 		listener.Reset();
-		listener.DisableNotifyForEventType(kUnitTestEvent5);
-		listener.DisableNotifyForEventType(kUnitTestEvent4);
-		listener.DisableNotifyForEventType(kUnitTestEvent3);
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent5) );
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent4) );
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg4, kPriorityCritical) );
@@ -355,7 +354,7 @@ public:
 		
 		// Reenable 5, make sure only 5 notifies
 		listener.Reset();
-		listener.ReenableNotifyForEventType(kUnitTestEvent5);
+		TS_ASSERT_EQUALS( kNoErr, listener.ReenableNotifyForEventType(kUnitTestEvent5) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg4, kPriorityCritical) );
@@ -365,7 +364,7 @@ public:
 		
 		// Reenable 3, make sure only 3 & 5 notify
 		listener.Reset();
-		listener.ReenableNotifyForEventType(kUnitTestEvent3);
+		TS_ASSERT_EQUALS( kNoErr, listener.ReenableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( !listener.IsReset() );
 		listener.Reset();
@@ -374,7 +373,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg5, kPriorityCritical) );
 		TS_ASSERT( !listener.IsReset() );
 	}
-	
+		
 	//------------------------------------------------------------------------
 	void testAsyncSingleListenerAllEvents( )
 	{
@@ -401,7 +400,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT_EQUALS( m.GetEventType(), kUnitTestEvent3 );
 		TS_ASSERT_EQUALS( m.GetEventSource(), kUnitTestRsrcHndl3 );
-		TS_ASSERT_EQUALS( m.payload_, kPayload5 );
+		TS_ASSERT_EQUALS( m.payload_, kPayload3 );
 
 		// Post event5 and verify correct notification
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg5, kPriorityCritical) );
@@ -436,7 +435,7 @@ public:
 		
 		// Disable notification for 3 & fire, make sure no notification for 3
 		listener.Reset();
-		listener.DisableNotifyForEventType(kUnitTestEvent3);
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
@@ -447,7 +446,7 @@ public:
 
 		// Reenable 3, make sure all notify
 		listener.Reset();
-		listener.ReenableNotifyForEventType(kUnitTestEvent3);
+		TS_ASSERT_EQUALS( kNoErr, listener.ReenableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
 		TS_ASSERT( !listener.IsReset() );
 		listener.Reset();
@@ -459,9 +458,9 @@ public:
 
 		// Disable notification for multiple, make sure no notification for them
 		listener.Reset();
-		listener.DisableNotifyForEventType(kUnitTestEvent1);
-		listener.DisableNotifyForEventType(kUnitTestEvent3);
-		listener.DisableNotifyForEventType(kUnitTestEvent9);
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent1) );
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent3) );
+		TS_ASSERT_EQUALS( kNoErr, listener.DisableNotifyForEventType(kUnitTestEvent9) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
@@ -471,7 +470,7 @@ public:
 
 		// Reenable 3, make sure all it gets notification
 		listener.Reset();
-		listener.ReenableNotifyForEventType(kUnitTestEvent3);
+		TS_ASSERT_EQUALS( kNoErr, listener.ReenableNotifyForEventType(kUnitTestEvent3) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg9, kPriorityCritical) );
 		TS_ASSERT( listener.IsReset() );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
@@ -481,13 +480,61 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testResponseListener( )
+	void testMultipleListeners( )
 	{
+		// Setup 3 listeners for event1
+		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
+		MyUnitTestListener listener1(kHandledTypes, ArrayCount(kHandledTypes));
+		MyUnitTestListener listener2(kHandledTypes, ArrayCount(kHandledTypes));
+		MyUnitTestListener listener3(kHandledTypes, ArrayCount(kHandledTypes));
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->RegisterEventListener(&listener1) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->RegisterEventListener(&listener2) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->RegisterEventListener(&listener3) );
+		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
+		
+		// Post event1 and verify all 3 listeners got notified
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
+		TS_ASSERT( !listener1.IsReset() );
+		TS_ASSERT( !listener2.IsReset() );
+		TS_ASSERT( !listener3.IsReset() );
+		listener1.Reset();
+		listener2.Reset();
+		listener3.Reset();
+			
+		// Unregister listener1 and verify other two still get notified
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->UnregisterEventListener(&listener1) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
+		TS_ASSERT( listener1.IsReset() );
+		TS_ASSERT( !listener2.IsReset() );
+		TS_ASSERT( !listener3.IsReset() );
+		listener1.Reset();
+		listener2.Reset();
+		listener3.Reset();
+			
+		// Unregister listener3 and verify other two still get notified
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->UnregisterEventListener(&listener3) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
+		TS_ASSERT( listener1.IsReset() );
+		TS_ASSERT( !listener2.IsReset() );
+		TS_ASSERT( listener3.IsReset() );
 	}
 	
 	//------------------------------------------------------------------------
 	void testOverrideListener( )
 	{
+		// Setup override listener for event1
+		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
+		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
+		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
+		
+		// Fire the event with no override
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
+		TS_ASSERT( listener.IsReset() );
+		listener.Reset();
+		
+		// Fire the event to the override listener
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical, &listener) );
+		TS_ASSERT( !listener.IsReset() );
 	}
 	
 	//------------------------------------------------------------------------

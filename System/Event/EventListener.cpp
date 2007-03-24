@@ -15,7 +15,7 @@
 #include <boost/scoped_ptr.hpp>
 #include <EventListener.h>
 #include <EventListenerPriv.h>
-#include <EventMgrMPI.h>
+#include <EventMPI.h>
 #include <SystemErrors.h>
 //#include <KernelMPI.h>
 #include <stdlib.h>
@@ -75,9 +75,11 @@ tErrType CEventListenerImpl::DisableNotifyForEventType(tEventType type)
 			return kNoErr;
 	}
 	
+	tEventType allInGroup = (type | kWildcardNumSpaceTag);
 	for( int ii = mNumEvents; ii > 0; --ii )							//*2
 	{
-		if( *(mpEventList + ii - 1) == type )
+		tEventType next = *(mpEventList + ii - 1);
+		if( next == allInGroup || next == type )
 		{
 			*(mpDisabledEventList + mNumDisabledEvents) = type;
 			++mNumDisabledEvents;
@@ -100,7 +102,7 @@ tErrType CEventListenerImpl::ReenableNotifyForEventType(tEventType type)
 	{
 		if( *ptr == type )
 		{
-			for( int jj = ii; jj < mNumDisabledEvents; ++jj )
+			for( int jj = ii; jj < mNumDisabledEvents; ++jj, ++ptr )
 				*ptr = *(ptr + 1);
 			--mNumDisabledEvents;
 			return kNoErr;
@@ -120,7 +122,7 @@ Boolean CEventListenerImpl::HandlesEvent(tEventType type) const
 	for( int ii = mNumEvents; ii > 0; --ii )
 	{
 		tEventType next = *(mpEventList + ii - 1);
-		if( next == type || next == allInGroup )
+		if( next == allInGroup || next == type )
 			return true;
 	}
 	return false;

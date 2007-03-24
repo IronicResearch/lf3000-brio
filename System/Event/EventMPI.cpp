@@ -16,8 +16,8 @@
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
-#include <EventMgrMPI.h>
-#include <EventMgrModulePriv.h>
+#include <EventMPI.h>
+#include <EventPriv.h>
 #include <ModuleMgr.h>
 
 
@@ -97,16 +97,6 @@ tErrType CEventMgrMPI::RegisterEventListener(const IEventListener *pListener,
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::RegisterResponseEventListener(tListenerId &id, 
-											const IEventListener *pListener,
-											tEventRegistrationFlags flags)
-{
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->RegisterResponseEventListener(id, pListener, flags);
-}
-
-//----------------------------------------------------------------------------
 tErrType CEventMgrMPI::UnregisterEventListener(const IEventListener *pListener)
 {
 	if(!mpModule)
@@ -120,12 +110,11 @@ tErrType CEventMgrMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tErrType CEventMgrMPI::PostEvent(const IEventMessage &msg, 
 								tEventPriority priority, 
-								const IEventListener *pListener,
-								tListenerId id) const
+								const IEventListener *pListener) const
 {
 	if(!mpModule)
 		return kMpiNotConnectedErr;
-	return mpModule->PostEvent(msg, priority, pListener, id);
+	return mpModule->PostEvent(msg, priority, pListener);
 }
 
 // EOF

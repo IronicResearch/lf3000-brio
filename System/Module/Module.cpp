@@ -43,7 +43,6 @@ namespace
 			char			name[kMaxModuleName];
 			char			sopath[kMaxPath];
 			U32				connect_count;
-			void*			handle;
 			ICoreModule*	ptr;
 			// FIXME/tp: initializing ctor
 		};
@@ -217,6 +216,7 @@ namespace
 		    }
 		    
 			ptr = (*funptr)(version);										//*5
+			dlclose(pLib);
 			if( !ptr )
 			{
 				//TODO: DebugMPI message
@@ -228,7 +228,6 @@ namespace
 			strcpy(pModule->name, pFound->name);
 			strcpy(pModule->sopath, pFound->sopath);
 			pModule->connect_count = 1;
-			pModule->handle = pLib;
 			pModule->ptr = ptr;
 
 			return kNoErr;
@@ -254,9 +253,15 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
+			void* pLib = dlopen(pModule->sopath, RTLD_LAZY);
+			if( !pLib )
+			{
+				//TODO: DebugMPI message
+				return;
+			}
 		    dlerror();
 			pFnDestroyInstance funptr = reinterpret_cast<pFnDestroyInstance>
-						(dlsym(pModule->handle, kDestroyInstanceFnName));
+						(dlsym(pLib, kDestroyInstanceFnName));
 		    const char *dlsym_error = dlerror();
 		    if( !dlsym_error )
 		    	(*funptr)(pModule->ptr);
@@ -264,7 +269,7 @@ namespace
 		    {
 				//TODO: DebugMPI message
 		    }
-			dlclose(pModule->handle);
+			dlclose(pLib);
 		}
 		
 		// unresolved issues:

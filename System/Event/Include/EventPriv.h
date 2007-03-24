@@ -15,7 +15,6 @@
 //==============================================================================
 
 #include <CoreModule.h>
-#include <EventMgrMPI.h>
 #include <StringTypes.h>
 
 
@@ -39,16 +38,12 @@ public:
 	// Register & unregister listener chains
 	tErrType	RegisterEventListener(const IEventListener *pListener,
 										tEventRegistrationFlags flags );
-	tErrType	RegisterResponseEventListener(tListenerId &id, 
-										const IEventListener *pListener,
-										tEventRegistrationFlags flags);
 	tErrType	UnregisterEventListener(const IEventListener *pListener);
 	
 	// Generate an event
 	tErrType	PostEvent(const IEventMessage &msg, 
 							tEventPriority priority, 
-							const IEventListener *pListener,
-							tListenerId id) const;
+							const IEventListener *pListener) const;
 };
 
 

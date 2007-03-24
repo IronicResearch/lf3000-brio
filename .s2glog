@@ -260,3 +260,13 @@ By TParker (TParker@leapfrog.com) on 3/22/07 7:47 PM
 1,375 ms. (Cumulative: 36,725 ms)
 
 ----------------
+Revision 45 from svn://localhost/TRUNK/:
+Revision 46 from svn://localhost/TRUNK/:
+
+Further debugging of Event & Module mgrs
+
+By TParker (TParker@leapfrog.com) on 3/23/07 5:26 PM
+3 changed, 5 added, 5 deleted.
+1,110 ms. (Cumulative: 37,897 ms)
+
+----------------

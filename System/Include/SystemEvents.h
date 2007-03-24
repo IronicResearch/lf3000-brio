@@ -106,7 +106,7 @@ const tEventType kAllResourceEvents = AllEvents(kGroupResource);
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupUnitTests), UNIT_TEST_EVENTS)
 
-const tEventType kAllUnitTestEvents = AllEvents(kGroupResource);
+const tEventType kAllUnitTestEvents = AllEvents(kGroupUnitTests);
 #endif //UNIT_TESTING
 
 //==============================================================================	   

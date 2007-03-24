@@ -50,16 +50,12 @@ public:
 	// Register & unregister listener chains
 	tErrType	RegisterEventListener(const IEventListener *pListener,
 										tEventRegistrationFlags flags = 0);
-	tErrType	RegisterResponseEventListener(tListenerId &id, 
-										const IEventListener *pListener,
-										tEventRegistrationFlags flags = 0);
 	tErrType	UnregisterEventListener(const IEventListener *pListener);
 	
 	// Generate an event
 	tErrType	PostEvent(const IEventMessage &msg, 
-							tEventPriority priority,
-							const IEventListener *pListener = NULL,
-							tListenerId id = kNoListener) const;
+						tEventPriority priority,
+						const IEventListener *pResponseListener = NULL) const;
 private:
 	class CEventMgrModule*	mpModule;
 };
