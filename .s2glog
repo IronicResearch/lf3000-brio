@@ -309,3 +309,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/26/07 3:35 PM
 1,047 ms. (Cumulative: 42,100 ms)
 
 ----------------
+Revision 53 from svn://localhost/TRUNK/:
+
+Moving files from Core to Kernel
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 3/26/07 3:40 PM
+0 changed, 5 added, 0 deleted.
+969 ms. (Cumulative: 43,116 ms)
+
+----------------
