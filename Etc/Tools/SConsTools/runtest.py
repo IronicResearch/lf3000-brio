@@ -4,6 +4,7 @@
 # Runs the unit test exe and updates a <test>_passed file on success.
 #-----------------------------------------------------------------------------
 import SCons.Builder
+import os
 
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object

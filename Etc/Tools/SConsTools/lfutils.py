@@ -84,6 +84,12 @@ def SourceDirFromBuildDir(target, base):
         # Increment i so that in all cases it points to the first differing path elements.
         i+=1
 
-    rel_list = [os.sep] + base_list + target_list[i:i+1] + target_list[i+3:]
+	# Make sure we only begin with the OS separator if we are non-Windows
+	if os.sep == '\\':
+		rel_list = [base_list[0]] + [os.sep]
+		base_list = base_list[1:]
+	else:
+ 		rel_list = [os.sep]
+    rel_list += base_list + target_list[i:i+1] + target_list[i+3:]
     return os.path.join(*rel_list)
 
