@@ -5,7 +5,7 @@
 //============================================================================
 //
 // File:
-//		EventMgrModule.cpp
+//		Event.cpp
 //
 // Description:
 //		Implements the underlying Event Manager module.
