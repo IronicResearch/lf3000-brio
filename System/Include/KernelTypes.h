@@ -15,6 +15,7 @@
 //
 //==============================================================================
 #include <mqueue.h>
+#include <sched.h>
 #include <ErrorBrio.h>
 
 typedef tHndl	tTaskHndl;
