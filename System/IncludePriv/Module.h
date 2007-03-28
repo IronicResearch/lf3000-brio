@@ -1,5 +1,5 @@
-#ifndef LF_BRIO_MODULEMGR_H
-#define LF_BRIO_MODULEMGR_H
+#ifndef LF_BRIO_MODULE_H
+#define LF_BRIO_MODULE_H
 //==============================================================================
 // $Source: $
 //
@@ -7,10 +7,10 @@
 //==============================================================================
 //
 // File:
-//		ModuleMgr.h
+//		Module.h
 //
 // Description:
-//		The boot system's ModuleMgr class is responsible for the following:
+//		The boot system's Module subsystem is responsible for the following:
 //
 //		* Finding all system modules on devices
 //		* Maintaining a table of found modules and their versions
@@ -29,25 +29,20 @@
 //		make sense to update that interface for an existing application.
 //
 //==============================================================================
-// NOTE: There are many subtle issues with module versioning that are not yet worked out.
 
-#include <CoreModule.h>
 #include <StringTypes.h>
 
-class CModuleMgr {
-public:
-	static CModuleMgr* Instance();
+class ICoreModule;	// forward declaration
+
+//==============================================================================
+namespace Module
+{
 	tErrType	FindModules();
 	tErrType	Connect(ICoreModule*& ptr, const CString& name, 
 						tVersion version);
 	tErrType	Disconnect(const CString& name);
+}
 
-private:
-	static CModuleMgr*	mpinst;
-	CModuleMgr();
-	~CModuleMgr();
-};
-
-#endif // LF_BRIO_MODULEMGR_H
+#endif // LF_BRIO_MODULE_H
 
 // eof

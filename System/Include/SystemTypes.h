@@ -314,27 +314,6 @@ typedef tU32NumSpace	tErrType;
 #define kNoErr			((tErrType)0)
 
 
-//----------------------------------------------------------------------------
-// Type:
-//		CString & CURI forward declarations
-//
-//	Description:
-//		Use a forward declaration of Glib::ustring to avoid need to compile/
-//		link ustring in simple test apps.
-//
-//----------------------------------------------------------------------------
-namespace Glib
-{
-	class ustring;
-}
-typedef Glib::ustring	CString;
-typedef Glib::ustring	CPath;
-typedef Glib::ustring	CURI;
-
-typedef const CString*	ConstPtrCString;
-typedef const CURI*		ConstPtrCURI;
-
-
 #endif // LF_BRIO_SYSTEMTYPES_H
 
 // EOF

@@ -37,6 +37,7 @@
 // NOTE: There are many subtle issues with module versioning that are not yet worked out.
 
 #include <SystemTypes.h>
+#include <StringTypes.h>
 
 
 //==============================================================================

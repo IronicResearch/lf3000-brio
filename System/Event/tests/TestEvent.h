@@ -101,6 +101,36 @@ private:
 
 
 //============================================================================
+// SlowUnitTestListener
+//============================================================================
+const tEventType kSlowHandledTypes[] = { kAllUnitTestEvents };
+const int		kSlowDelay = 1000;
+const int		kExpectedElapsedTimeDelta = 15;
+typedef U32 tTaskHndl;	//FIXME
+
+class MySlowTestListener : public IEventListener
+{
+public:
+	//------------------------------------------------------------------------
+	MySlowTestListener( )
+		: IEventListener(kSlowHandledTypes, ArrayCount(kSlowHandledTypes)),
+		id_(0)
+	{
+	}
+	//------------------------------------------------------------------------
+	virtual tEventStatus Notify( const IEventMessage &msg )
+	{
+//		id_ = CKernelMPI::GetCurrentTask();
+//		sleep(kSlowDelay);
+		return kEventStatusOKConsumed;
+	}
+	
+	//------------------------------------------------------------------------
+	tTaskHndl	id_;
+};
+
+
+//============================================================================
 // Constants
 //============================================================================
 const tRsrcHndl	kUnitTestRsrcHndl1 = 0x1234;
@@ -134,12 +164,12 @@ const tEventPriority	kPriorityLow		= 200;
 class TestEventMgr : public CxxTest::TestSuite 
 {
 private:
-	CEventMgrMPI*		eventmgr_;
+	CEventMPI*		eventmgr_;
 public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
-		eventmgr_ = new CEventMgrMPI();
+		eventmgr_ = new CEventMPI();
 	}
 
 	//------------------------------------------------------------------------
@@ -166,7 +196,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetMPIVersion(version) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetMPIName(pName) );
 		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-		TS_ASSERT_EQUALS( *pName, "EventMgrMPI" );
+		TS_ASSERT_EQUALS( *pName, "EventMPI" );
 
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetModuleVersion(version) );
 		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
@@ -208,7 +238,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testAsyncSingleListenerSingleEventWrongMsg( )
+	void testSingleListenerSingleEventWrongMsg( )
 	{
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
@@ -223,7 +253,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testAsyncSingleListenerSingleEvent( )
+	void testSingleListenerSingleEvent( )
 	{
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
@@ -271,7 +301,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testAsyncSingleListenerMultiEventEnableDisable( )
+	void testSingleListenerMultiEventEnableDisable( )
 	{
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent3, kUnitTestEvent4, kUnitTestEvent5 };
@@ -375,7 +405,7 @@ public:
 	}
 		
 	//------------------------------------------------------------------------
-	void testAsyncSingleListenerAllEvents( )
+	void testSingleListenerAllEvents( )
 	{
 		// Setup to listen for all events and verify all trigger notifications
 		const tEventType kHandledTypes[] = { kAllUnitTestEvents };
@@ -422,7 +452,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testAsyncSingleListenerAllEventsDisableSome( )
+	void testSingleListenerAllEventsDisableSome( )
 	{
 		// Setup to listen for all events and verify all trigger notifications
 		const tEventType kHandledTypes[] = { kAllUnitTestEvents };
@@ -538,25 +568,109 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testListenerChains( )
+	void testListenerChainErrors( )
 	{
 		// Chain 3 listners and verify correct one fires.
 		// Then add "All" listener to head and verify it grabs all events.
+		// Setup override listener for event1
+		const tEventType kHandledTypes1[] = { kUnitTestEvent1 };
+		const tEventType kHandledTypes2[] = { kUnitTestEvent2 };
+		MyUnitTestListener listener1(kHandledTypes1, ArrayCount(kHandledTypes1));
+		MyUnitTestListener listener2(kHandledTypes2, ArrayCount(kHandledTypes2));
+		TS_ASSERT_EQUALS( kEventListenerCycleErr, listener1.SetNextListener(&listener1) );
+		TS_ASSERT_EQUALS( kNoErr, listener1.SetNextListener(&listener2) );
+		TS_ASSERT_EQUALS( kEventListenerCycleErr, listener2.SetNextListener(&listener1) );
 	}
 	
 	//------------------------------------------------------------------------
-	void testCriticalPostBlocks( )
+	void testListenerChains( )
 	{
+		// Chain 3 listners and verify correct one fires.
+		const tEventType kHandledTypes1[] = { kUnitTestEvent1 };
+		const tEventType kHandledTypes2[] = { kUnitTestEvent2 };
+		const tEventType kHandledTypes3[] = { kUnitTestEvent3 };
+		const tEventType kHandledTypes4[] = { kUnitTestEvent4 };
+		MyUnitTestListener listener1(kHandledTypes1, ArrayCount(kHandledTypes1));
+		MyUnitTestListener listener2(kHandledTypes2, ArrayCount(kHandledTypes2));
+		MyUnitTestListener listener3(kHandledTypes3, ArrayCount(kHandledTypes3));
+		MyUnitTestListener listener4(kHandledTypes4, ArrayCount(kHandledTypes4));
+		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
+		MyUnitTestMsg	msg2(kUnitTestEvent2, kUnitTestRsrcHndl2, kPayload2);
+		MyUnitTestMsg	msg3(kUnitTestEvent3, kUnitTestRsrcHndl3, kPayload3);
+		MyUnitTestMsg	msg4(kUnitTestEvent4, kUnitTestRsrcHndl4, kPayload4);
+		TS_ASSERT_EQUALS( kNoErr, listener1.SetNextListener(&listener2) );
+		TS_ASSERT_EQUALS( kNoErr, listener2.SetNextListener(&listener3) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->RegisterEventListener(&listener1) );
+		
+		// Fire event1 and make sure only listener 1 is notified
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
+		TS_ASSERT( !listener1.IsReset() );
+		TS_ASSERT( listener2.IsReset() );
+		TS_ASSERT( listener3.IsReset() );
+		listener1.Reset();
+		listener2.Reset();
+		listener3.Reset();
+		
+		// Fire event2 and make sure only listener 2 is notified
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg2, kPriorityCritical) );
+		TS_ASSERT( listener1.IsReset() );
+		TS_ASSERT( !listener2.IsReset() );
+		TS_ASSERT( listener3.IsReset() );
+		listener1.Reset();
+		listener2.Reset();
+		listener3.Reset();
+		
+		// Fire event1 and make sure only listener 3 is notified
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
+		TS_ASSERT( listener1.IsReset() );
+		TS_ASSERT( listener2.IsReset() );
+		TS_ASSERT( !listener3.IsReset() );
+		listener1.Reset();
+		listener2.Reset();
+		listener3.Reset();
+
+		// Then reset listener 1 to All and verify 2 & 3 are no longer in chain
+		TS_ASSERT_EQUALS( kNoErr, listener1.SetNextListener(&listener4) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg2, kPriorityCritical) );
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg3, kPriorityCritical) );
+		TS_ASSERT( listener1.IsReset() );
+		TS_ASSERT( listener2.IsReset() );
+		TS_ASSERT( listener3.IsReset() );
+		TS_ASSERT( listener4.IsReset() );
+
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg4, kPriorityCritical) );
+		TS_ASSERT( listener1.IsReset() );
+		TS_ASSERT( !listener4.IsReset() ); 
+	}
+	
+	//------------------------------------------------------------------------
+	void testCriticalDispatchBlocksInSameThread( )
+	{
+		// Setup listener that delays and records the thread id
+		MySlowTestListener listener;
+		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
+		
+		// Fire an event and verify we stay in same thread and block
+//		U32 start = KernelMPI::GetElapsedTime();
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
+//		U32 end = KernelMPI::GetElapsedTime();
+//		TS_ASSERT_EQUALS( listener._id, CKernelMPI::GetCurrentTask() );
+//		TS_ASSERT_EQUALS_DELTA( start + kSlowDelay, end, kExpectedElapsedTimeDelta );
 	}
 	
 	//------------------------------------------------------------------------
 	void testNonPriorityDispatchesSwitchThreads( )
 	{
-	}
-	
-	//------------------------------------------------------------------------
-	void testNonCriticalPostDoesntBlock( )
-	{
+		// Setup listener that delays and records the thread id
+		MySlowTestListener listener;
+		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
+		
+		// Fire an event and verify we stay in same thread and block
+//		U32 start = KernelMPI::GetElapsedTime();
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityMedium) );
+//		U32 end = KernelMPI::GetElapsedTime();
+//		TS_ASSERT_NOT_EQUALS( listener._id, CKernelMPI::GetCurrentTask() );
+//		TS_ASSERT_EQUALS_DELTA( start, end, kExpectedElapsedTimeDelta );
 	}
 	
 	//------------------------------------------------------------------------

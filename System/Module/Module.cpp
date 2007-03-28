@@ -17,7 +17,8 @@
 #include <dlfcn.h>
 #include <unistd.h>
 
-#include <ModuleMgr.h>
+#include <Module.h>
+#include <CoreModule.h>
 #include <SystemErrors.h>
 
 
@@ -42,6 +43,7 @@ namespace
 		struct ConnectedModule {
 			char			name[kMaxModuleName];
 			char			sopath[kMaxPath];
+			void*			handle;
 			U32				connect_count;
 			ICoreModule*	ptr;
 			// FIXME/tp: initializing ctor
@@ -126,7 +128,7 @@ namespace
 			// FIXME/tp: Implement actual search paths rather than cur working dir
 			// FIXME/tp: Hide search paths in function which can have separate 
 			//				emulation/embedded implementations.
-			static char* paths[] = { "." };
+			static char* paths[] = { "Build/Output_emulation/LightningGCC/Module" };
 			
 			// FIXME/tp: count first to allocate only enough memory needed
 			// FIXME/tp: KernelMPI for malloc
@@ -198,7 +200,7 @@ namespace
 				return kModuleNotFound;
 			}
 				
-			void* pLib = dlopen(pFound->sopath, RTLD_LAZY);			//*3
+			void* pLib = dlopen(pFound->sopath, RTLD_LAZY);					//*3
 			if( !pLib )
 			{
 				//TODO: DebugMPI message
@@ -216,7 +218,6 @@ namespace
 		    }
 		    
 			ptr = (*funptr)(version);										//*5
-			dlclose(pLib);
 			if( !ptr )
 			{
 				//TODO: DebugMPI message
@@ -225,6 +226,7 @@ namespace
 
 			pModule = mpConnectedModulesList + mNumConnected;				//*6
 			++mNumConnected;
+			pModule->handle = pLib;
 			strcpy(pModule->name, pFound->name);
 			strcpy(pModule->sopath, pFound->sopath);
 			pModule->connect_count = 1;
@@ -253,15 +255,9 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
-			void* pLib = dlopen(pModule->sopath, RTLD_LAZY);
-			if( !pLib )
-			{
-				//TODO: DebugMPI message
-				return;
-			}
 		    dlerror();
 			pFnDestroyInstance funptr = reinterpret_cast<pFnDestroyInstance>
-						(dlsym(pLib, kDestroyInstanceFnName));
+						(dlsym(pModule->handle, kDestroyInstanceFnName));
 		    const char *dlsym_error = dlerror();
 		    if( !dlsym_error )
 		    	(*funptr)(pModule->ptr);
@@ -269,7 +265,7 @@ namespace
 		    {
 				//TODO: DebugMPI message
 		    }
-			dlclose(pLib);
+			dlclose(pModule->handle);
 		}
 		
 		// unresolved issues:
@@ -281,39 +277,26 @@ namespace
 
  
 //============================================================================
-// ModuleMgr
+// Module
 //============================================================================
-//----------------------------------------------------------------------------
-CModuleMgr* CModuleMgr::mpinst = NULL;
-//----------------------------------------------------------------------------
-CModuleMgr* CModuleMgr::Instance()
+namespace Module
 {
-	if( mpinst == NULL )
+	//------------------------------------------------------------------------
+	tErrType FindModules()
 	{
-		mpinst = new CModuleMgr;
-		g_impl.FindModules();	//FIXME/tp: temp, move somewhere else in boot process
+		return g_impl.FindModules();
 	}
-	return mpinst;
-}
-//----------------------------------------------------------------------------
-CModuleMgr::CModuleMgr()	{}
-//----------------------------------------------------------------------------
-CModuleMgr::~CModuleMgr()	{}
-//----------------------------------------------------------------------------
-tErrType CModuleMgr::FindModules()
-{
-	return g_impl.FindModules();
-}
-//----------------------------------------------------------------------------
-tErrType CModuleMgr::Connect(ICoreModule*& ptr, const CString& name, 
-							tVersion version)
-{
-	return g_impl.Connect(ptr, name, version);
-}
-//----------------------------------------------------------------------------
-tErrType CModuleMgr::Disconnect(const CString& name)
-{
-	return g_impl.Disconnect(name);
+	//------------------------------------------------------------------------
+	tErrType Connect(ICoreModule*& ptr, const CString& name, tVersion version)
+	{
+		static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
+		return g_impl.Connect(ptr, name, version);
+	}
+	//------------------------------------------------------------------------
+	tErrType Disconnect(const CString& name)
+	{
+		return g_impl.Disconnect(name);
+	}
 }
 
 

@@ -36,12 +36,13 @@ public:
 	virtual ~IEventListener();
 	virtual tEventStatus	Notify(const IEventMessage& pMsg) = 0;
 	const IEventListener*	GetNextListener() const;
-	void					SetNextListener(const IEventListener* pListener);
+	tErrType				SetNextListener(const IEventListener* pListener);
 	tErrType				DisableNotifyForEventType(tEventType type);
 	tErrType				ReenableNotifyForEventType(tEventType type);
 
 private:
 	class CEventListenerImpl *mpimpl;
+	friend class CEventListenerImpl;
 	friend class CEventManagerImpl;
 };
 

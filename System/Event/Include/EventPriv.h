@@ -15,7 +15,7 @@
 //==============================================================================
 
 #include <CoreModule.h>
-#include <StringTypes.h>
+#include "EventMPI.h"	// for tEventRegistrationFlags
 
 
 // Constants
@@ -23,7 +23,7 @@ const CString	kEventMgrModuleName		= "Event";
 const tVersion	kEventMgrModuleVersion	= MakeVersion(0,1);
 
 //==============================================================================
-class CEventMgrModule : public ICoreModule {
+class CEventModule : public ICoreModule {
 public:	
 	// core functionality
 	virtual Boolean		IsValid() const;
@@ -32,18 +32,22 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	CEventMgrModule();
-	virtual ~CEventMgrModule();
+	CEventModule();
+	virtual ~CEventModule();
 
 	// Register & unregister listener chains
-	tErrType	RegisterEventListener(const IEventListener *pListener,
+	virtual tErrType	RegisterEventListener(const IEventListener *pListener,
 										tEventRegistrationFlags flags );
-	tErrType	UnregisterEventListener(const IEventListener *pListener);
+	virtual tErrType	UnregisterEventListener(const IEventListener *pListener);
 	
 	// Generate an event
-	tErrType	PostEvent(const IEventMessage &msg, 
+	virtual tErrType	PostEvent(const IEventMessage &msg, 
 							tEventPriority priority, 
 							const IEventListener *pListener) const;
+							
+	// Hook in EventListener replacibility here
+	virtual CEventListenerImpl* GenerateEventListenerImpl(const tEventType* pTypes, 
+													U32 count) const;
 };
 
 

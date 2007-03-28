@@ -91,7 +91,7 @@ env = Environment(	options  = opts,
 					tools = ['default', platform_toolset, 
 							'checkheader', 'cxxtest', 'runtest'], 
 					toolpath = [toolpath],
-					LIBPATH = [dynamic_deploy_dir]
+					LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')]
 				 )
 
 
@@ -133,22 +133,40 @@ def FindModuleSources(pdir):
 
 
 #-----------------------------------------------------------------------------
+# Dynamically find sources for an MPI interface module
+#
+# See notes on "map(lambda ...)" stuff above.
+#-----------------------------------------------------------------------------
+def FindMPISources(pdir):
+	mpidir = os.path.join(pdir.abspath, 'PublicMPI')
+	source_dir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(mpidir, root_dir)
+	cpp_pattern = os.path.normpath(os.path.join(source_dir, '*.cpp'))
+	sources =  map(lambda x: os.path.join(mpidir, os.path.split(x)[1]), 
+					glob.glob(cpp_pattern))
+	return sources
+
+
+#-----------------------------------------------------------------------------
 # Build a Module (either embedded or emulation target)
 #
 # Prepend any platform-specific libraries to the library list
 # Install the library to the correct installation folder
+# 'ptype' is 0 for modules and '1' for mpi libraries
 #-----------------------------------------------------------------------------
-def MakeMyModule(penv, ptarget, psources, plibs):
+def MakeMyModule(penv, ptarget, psources, plibs, ptype):
 	if len(psources) != 0:
 		bldenv = penv.Copy()
 		source_dir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(os.path.dirname(psources[0]), root_dir)
 		linklibs = plibs
 		# TODO/tp: put all map files in a single folder, or keep hierarchy?
 		mapfile = File(os.path.join(intermediate_build_dir, adjust_to_source_dir, ptarget + '.map')).abspath
-		bldenv.Append(CPPPATH  = [os.path.join(source_dir, 'Include')])
+		priv_incs = (ptype == 0 and 'Include' or os.path.join('..', 'Include'))
+		bldenv.Append(CPPPATH  = [os.path.join(source_dir, priv_incs)])
 		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
-		mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)	
-		bldenv.Install(dynamic_deploy_dir, mylib)
+		mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)
+		subdir = (ptype == 0 and 'Module' or 'MPI')
+		deploy_dir = os.path.join(dynamic_deploy_dir, subdir)
+		bldenv.Install(deploy_dir, mylib)
 		return mylib
 
 
@@ -164,18 +182,21 @@ def MakeMyModule(penv, ptarget, psources, plibs):
 platformlibs = ['glibmm-2.4', 'glib-2.0']
 def RunMyTests(ptarget, psources, plibs, penv):
 	if not is_checkheaders:
+		deploy_dir = os.path.join(dynamic_deploy_dir, 'MPI')
 		testenv = penv.Copy()
 		testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
 		testenv.Append(CPPDEFINES = 'UNIT_TESTING')
-		testenv.Append(LINKFLAGS = ' -Wl,-rpath=' + Dir(dynamic_deploy_dir).abspath)
+		testenv.Append(RPATH = Dir(deploy_dir).abspath)
 		srcdir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
 		tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
 		unit = 'test_' + ptarget + '.cpp'
 		mytest = testenv.CxxTest(unit, tests)
+		# FIXME/tp: following conditional is getting evaluated too early,
+		# FIXME/tp: need to find alternate/delayed way
 		if os.path.exists(unit):
 			temp = testenv.Program([mytest] + psources, 
-						LIBS = plibs + [ptarget] + platformlibs)
-			mytestexe = testenv.Install(dynamic_deploy_dir, temp)
+						LIBS = plibs + [ptarget + 'MPI'] + platformlibs)
+			mytestexe = testenv.Install(deploy_dir, temp)
 			if is_runtests == 1:
 				testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
 
@@ -183,7 +204,7 @@ def RunMyTests(ptarget, psources, plibs, penv):
 #-----------------------------------------------------------------------------
 # Export environment variables to the SConscript files
 #-----------------------------------------------------------------------------
-Export('env local_vars FindModuleSources MakeMyModule RunMyTests')
+Export('env local_vars FindModuleSources FindMPISources MakeMyModule RunMyTests')
 
 
 #-----------------------------------------------------------------------------

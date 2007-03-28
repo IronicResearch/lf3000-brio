@@ -18,51 +18,51 @@
 
 #include <EventMPI.h>
 #include <EventPriv.h>
-#include <ModuleMgr.h>
+#include <Module.h>
 
 
 const tVersion	kMPIVersion = MakeVersion(0,1);
-const CString	kMpiName = "EventMgrMPI";
+const CString	kMPIName = "EventMPI";
 
 
 //============================================================================
 //----------------------------------------------------------------------------
-CEventMgrMPI::CEventMgrMPI() : mpModule(NULL)
+CEventMPI::CEventMPI() : mpModule(NULL)
 {
 	ICoreModule*	pModule;
-	CModuleMgr::Instance()->Connect(pModule, kEventMgrModuleName, 
+	Module::Connect(pModule, kEventMgrModuleName, 
 									kEventMgrModuleVersion);
-	mpModule = reinterpret_cast<CEventMgrModule*>(pModule);
+	mpModule = reinterpret_cast<CEventModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
-CEventMgrMPI::~CEventMgrMPI()
+CEventMPI::~CEventMPI()
 {
-	CModuleMgr::Instance()->Disconnect(kEventMgrModuleName);
+	Module::Disconnect(kEventMgrModuleName);
 }
 
 //----------------------------------------------------------------------------
-Boolean	CEventMgrMPI::IsValid() const
+Boolean	CEventMPI::IsValid() const
 {
 	return (mpModule != NULL) ? true : false;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::GetMPIVersion(tVersion &version) const
+tErrType CEventMPI::GetMPIVersion(tVersion &version) const
 {
 	version = kMPIVersion;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::GetMPIName(ConstPtrCString &pName) const
+tErrType CEventMPI::GetMPIName(ConstPtrCString &pName) const
 {
-	pName = &kMpiName;
+	pName = &kMPIName;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::GetModuleVersion(tVersion &version) const
+tErrType CEventMPI::GetModuleVersion(tVersion &version) const
 {
 	if(!mpModule)
 		return kMpiNotConnectedErr;
@@ -70,7 +70,7 @@ tErrType CEventMgrMPI::GetModuleVersion(tVersion &version) const
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::GetModuleName(ConstPtrCString &pName) const
+tErrType CEventMPI::GetModuleName(ConstPtrCString &pName) const
 {
 	if(!mpModule)
 		return kMpiNotConnectedErr;
@@ -78,7 +78,7 @@ tErrType CEventMgrMPI::GetModuleName(ConstPtrCString &pName) const
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
+tErrType CEventMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
 	if(!mpModule)
 		return kMpiNotConnectedErr;
@@ -88,7 +88,7 @@ tErrType CEventMgrMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::RegisterEventListener(const IEventListener *pListener,
+tErrType CEventMPI::RegisterEventListener(const IEventListener *pListener,
 											tEventRegistrationFlags flags)
 {
 	if(!mpModule)
@@ -97,7 +97,7 @@ tErrType CEventMgrMPI::RegisterEventListener(const IEventListener *pListener,
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::UnregisterEventListener(const IEventListener *pListener)
+tErrType CEventMPI::UnregisterEventListener(const IEventListener *pListener)
 {
 	if(!mpModule)
 		return kMpiNotConnectedErr;
@@ -108,7 +108,7 @@ tErrType CEventMgrMPI::UnregisterEventListener(const IEventListener *pListener)
 
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventMgrMPI::PostEvent(const IEventMessage &msg, 
+tErrType CEventMPI::PostEvent(const IEventMessage &msg, 
 								tEventPriority priority, 
 								const IEventListener *pListener) const
 {

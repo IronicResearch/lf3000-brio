@@ -28,11 +28,11 @@ class CEventListenerImpl
 public:
 	CEventListenerImpl(const tEventType* pTypes, U32 numEvents);
 	virtual ~CEventListenerImpl();
-	const IEventListener* GetNextListener() const;
-	void				SetNextListener(const IEventListener* pListener);
-	tErrType			DisableNotifyForEventType(tEventType type);
-	tErrType			ReenableNotifyForEventType(tEventType type);
-	Boolean				HandlesEvent(tEventType type) const;
+	virtual const IEventListener* GetNextListener() const;
+	virtual tErrType	SetNextListener(const IEventListener* pListener);
+	virtual tErrType	DisableNotifyForEventType(tEventType type);
+	virtual tErrType	ReenableNotifyForEventType(tEventType type);
+	virtual Boolean		HandlesEvent(tEventType type) const;
 private:
 	const IEventListener*	mpNextListener;
 	tEventType*				mpEventList;

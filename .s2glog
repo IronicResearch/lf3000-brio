@@ -354,3 +354,12 @@ By TParker (TParker@leapfrog.com) on 3/26/07 11:28 PM
 969 ms. (Cumulative: 47,007 ms)
 
 ----------------
+Revision 58 from svn://localhost/TRUNK/:
+
+Event Manager fully debugged; build system now generates separate MPI & module libs
+
+By TParker (TParker@leapfrog.com) on 3/27/07 5:59 PM
+15 changed, 4 added, 3 deleted.
+1,266 ms. (Cumulative: 48,320 ms)
+
+----------------

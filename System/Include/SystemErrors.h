@@ -68,7 +68,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupCommon), COMMON_ERRORS)
 #define EVENT_ERRORS					\
 	(kEventNotFoundErr)					\
 	(kEventTypeNotFoundErr)				\
-	(kEventListenerNotRegisteredErr)
+	(kEventListenerNotRegisteredErr)	\
+	(kEventListenerCycleErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupEvent), EVENT_ERRORS)
 

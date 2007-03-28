@@ -33,7 +33,7 @@ const tListenerId kNoListener = (tListenerId)(0);
 
 
 //==============================================================================
-class CEventMgrMPI : public ICoreMPI {
+class CEventMPI : public ICoreMPI {
 public:	
 	// core functionality
 	virtual	Boolean		IsValid() const;
@@ -44,8 +44,8 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	CEventMgrMPI();
-	virtual ~CEventMgrMPI();
+	CEventMPI();
+	virtual ~CEventMPI();
 
 	// Register & unregister listener chains
 	tErrType	RegisterEventListener(const IEventListener *pListener,
@@ -57,7 +57,7 @@ public:
 						tEventPriority priority,
 						const IEventListener *pResponseListener = NULL) const;
 private:
-	class CEventMgrModule*	mpModule;
+	class CEventModule*	mpModule;
 };
 
 

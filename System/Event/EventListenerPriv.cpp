@@ -5,21 +5,21 @@
 //============================================================================
 //
 // File:
-//		EventListener.cpp
+//		EventListenerPriv.cpp
 //
 // Description:
 //		Implements the underlying Event Manager module.
 //
 //============================================================================
 
-#include <boost/scoped_ptr.hpp>
 #include <EventListener.h>
 #include <EventListenerPriv.h>
 #include <EventMPI.h>
+#include <EventPriv.h>
 #include <SystemErrors.h>
 //#include <KernelMPI.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdlib.h>// FIXME: remove when include KernelMPI
+#include <string.h>// FIXME: remove when include KernelMPI
 
 
 namespace Kernel
@@ -47,7 +47,6 @@ CEventListenerImpl::CEventListenerImpl(const tEventType *eventList, U32 count)
 //----------------------------------------------------------------------------
 CEventListenerImpl::~CEventListenerImpl()
 {
-	
 }
 
 //----------------------------------------------------------------------------
@@ -57,9 +56,19 @@ const IEventListener* CEventListenerImpl::GetNextListener() const
 }
 
 //----------------------------------------------------------------------------
-void CEventListenerImpl::SetNextListener(const IEventListener* pListener) 
-{ 
+tErrType CEventListenerImpl::SetNextListener(const IEventListener* pListener) 
+{
+	// Validate self not already in chain
+	if( this == pListener->mpimpl )
+		return kEventListenerCycleErr;
+	for( const IEventListener* pNext = pListener->mpimpl->GetNextListener(); 
+			pNext; pNext = pNext->mpimpl->GetNextListener() )
+	{
+		if( pNext->mpimpl == this )
+			return kEventListenerCycleErr;
+	}
 	mpNextListener = pListener;
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
@@ -126,80 +135,6 @@ Boolean CEventListenerImpl::HandlesEvent(tEventType type) const
 			return true;
 	}
 	return false;
-}
-/*
-void CEventListenerImpl::CatEventList()
-{
-	// get new total number of events
-	U32 newNumEvents = mNumEvents + mpNextListener->mpListenerImpl->mNumEventsAll
-	
-	//delete old list and allocate memory for a new one
-	delete [] mpEventListAll;
-	mpEventListAll = new tEventType[newNumEvents];
-	
-	//copy our local list to the front
-	memcpy( mpEventListAll, mpEventList, sizeof(tEventType*numEvents));
-	
-	//and conditionally copy the rest, ignoring duplicates
-	U32 i, j, copyCount = 0;  //copyCount - makes sure we have no gaps, in the event of duplicates 
-	for(i=0; i<mpNextListener->mpListenerImpl->mNumEventsAll; i++)
-	{
-		for(j=0; j<mNumEvents; j++)
-		{
-			if(mpNextListener->mpListenerImpl->mpEventListAll[i] == mpNumEvents[j])
-			{
-				break;				
-			} 	
-		}
-		if(j>=mNumEvents)   //j<mNumEvents indicates duplicate 
-		{
-			mpEventListAll[mNumEvents+copyCount];
-			copyCount++	;
-		}	
-	}		
-}
-*/
-
-
-//============================================================================
-// IEventListener
-//============================================================================
-//----------------------------------------------------------------------------
-IEventListener::IEventListener(const tEventType* pTypes, U32 count)
-{
-	mpimpl = new CEventListenerImpl(pTypes, count);
-}
-
-//----------------------------------------------------------------------------
-IEventListener::~IEventListener()
-{
-	boost::scoped_ptr<CEventMgrMPI> eventmgr(new CEventMgrMPI());
-	eventmgr->UnregisterEventListener(this);
-	delete mpimpl;
-}
-
-//----------------------------------------------------------------------------
-const IEventListener* IEventListener::GetNextListener() const
-{
-	return mpimpl->GetNextListener();
-}
-
-//----------------------------------------------------------------------------
-void IEventListener::SetNextListener(const IEventListener* pListener)
-{
-	mpimpl->SetNextListener(pListener);
-}
-
-//----------------------------------------------------------------------------
-tErrType IEventListener::DisableNotifyForEventType(tEventType type)
-{
-	mpimpl->DisableNotifyForEventType(type);
-}
-
-//----------------------------------------------------------------------------
-tErrType IEventListener::ReenableNotifyForEventType(tEventType type)
-{
-	mpimpl->ReenableNotifyForEventType(type);
 }
 
 // EOF

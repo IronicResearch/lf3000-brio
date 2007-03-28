@@ -22,6 +22,7 @@
 #include <EventMPI.h>
 #include <EventPriv.h>
 
+#include <stdlib.h>	// FIXME: remove when include KernelMPI
 
 const CURI	kModuleURI	= "EventMgr FIXME";
 
@@ -30,21 +31,21 @@ const CURI	kModuleURI	= "EventMgr FIXME";
 // Informational functions
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::GetModuleVersion(tVersion &version) const
+tErrType CEventModule::GetModuleVersion(tVersion &version) const
 {
 	version = kEventMgrModuleVersion;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::GetModuleName(ConstPtrCString &pName) const
+tErrType CEventModule::GetModuleName(ConstPtrCString &pName) const
 {
 	pName = &kEventMgrModuleName;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::GetModuleOrigin(ConstPtrCURI &pURI) const
+tErrType CEventModule::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
 	pURI = &kModuleURI;
 	return kNoErr;
@@ -54,37 +55,61 @@ tErrType CEventMgrModule::GetModuleOrigin(ConstPtrCURI &pURI) const
 //============================================================================
 // Module internal state
 //============================================================================
-#include <vector>
-#include <map>
-#include <set>
 //----------------------------------------------------------------------------
 class CEventManagerImpl
 {
 	// Assumptions: The number of listeners in the system at any one time
 	// is not huge (< 20), so little is done in the way of optimization.
-	// TODO: Once debugged in unit tests, replace STL collection classes
 private:
 	//------------------------------------------------------------------------
-	typedef const IEventListener*	ConstListenerPtr;
-	typedef std::set<ConstListenerPtr>		Listeners;
-	Listeners		listeners_;
+	const IEventListener**	ppListeners_;
+	U32						numListeners_;
+	U32						listSize_;
+	enum { kGrowBySize = 2 };
 	
 public:
 	//------------------------------------------------------------------------
-	CEventManagerImpl() {}
+	CEventManagerImpl() 
+		: ppListeners_(NULL), numListeners_(0), listSize_(0)
+	{
+	}
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener)
 	{
-		listeners_.insert(pListener);
+		if( numListeners_ >= listSize_ )
+		{
+			listSize_ += kGrowBySize;
+			U32 size = listSize_ * sizeof(const IEventListener*);
+			const IEventListener** temp = reinterpret_cast<const IEventListener**>(malloc(size));
+			if( numListeners_ )
+			{
+				memcpy(temp, ppListeners_, numListeners_ * sizeof(const IEventListener*));
+				free(ppListeners_);
+			}
+			ppListeners_ = temp;
+
+		}
+		const IEventListener** next = ppListeners_ + numListeners_;
+		*next = pListener;
+		++numListeners_;
 	}
 	//------------------------------------------------------------------------
 	tErrType RemoveListener(const IEventListener* pListener)
 	{
-		Listeners::const_iterator it = listeners_.find(pListener);
-		if( it != listeners_.end() )
+		// TODO: Will the number of listeners ever vary enough to be worth
+		// reclaiming memory?
+		// If we find the listener in the list, shift other listeners down
+		// down to keep the list contiguous and decrement the listeners count.
+		const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);		
+		for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
 		{
-			listeners_.erase(it);
-			return kNoErr;
+			if( *ptr == pListener )
+			{
+				for( int jj = ii; jj < numListeners_; ++jj, ++ptr )
+					*ptr = *(ptr + 1);
+				--numListeners_;
+				return kNoErr;
+			}
 		}
 		return kEventListenerNotRegisteredErr;
 	}
@@ -98,7 +123,7 @@ public:
 					&& pListener->Notify(msg) == kEventStatusOKConsumed )
 				break;
 			pListener = const_cast<IEventListener*>
-								(pListener->GetNextListener());
+								(pListener->mpimpl->GetNextListener());
 		}
 	}
 	//------------------------------------------------------------------------
@@ -114,10 +139,10 @@ public:
 		//
 		PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
 		
-		Listeners::iterator it = listeners_.begin();					//*2
-		Listeners::iterator itEnd = listeners_.end();
-		for( ; it != itEnd; ++it )
-			PostEventToChain(const_cast<IEventListener*>(*it), msg);
+		const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);//*2
+		for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
+			PostEventToChain(const_cast<IEventListener*>(*ptr), msg);
+		return kNoErr;
 	}
 };
 	
@@ -131,20 +156,20 @@ namespace
 // Ctor & dtor
 //============================================================================
 //----------------------------------------------------------------------------
-CEventMgrModule::CEventMgrModule()
+CEventModule::CEventModule()
 {
 	if (pinst == NULL)
 		pinst = new CEventManagerImpl;
 }
 
 //----------------------------------------------------------------------------
-CEventMgrModule::~CEventMgrModule()
+CEventModule::~CEventModule()
 {
 	delete pinst;
 }
 
 //----------------------------------------------------------------------------
-Boolean	CEventMgrModule::IsValid() const
+Boolean	CEventModule::IsValid() const
 {
 	return (pinst != NULL) ? true : false;
 }
@@ -154,7 +179,7 @@ Boolean	CEventMgrModule::IsValid() const
 // Event registration
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::RegisterEventListener(const IEventListener *pListener,
+tErrType CEventModule::RegisterEventListener(const IEventListener *pListener,
 											tEventRegistrationFlags flags)
 {
 	pinst->AddListener(pListener);
@@ -162,7 +187,7 @@ tErrType CEventMgrModule::RegisterEventListener(const IEventListener *pListener,
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::UnregisterEventListener(const IEventListener *pListener)
+tErrType CEventModule::UnregisterEventListener(const IEventListener *pListener)
 {
 	return pinst->RemoveListener(pListener);
 }
@@ -173,7 +198,7 @@ tErrType CEventMgrModule::UnregisterEventListener(const IEventListener *pListene
 // Event generation
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventMgrModule::PostEvent(const IEventMessage &msg, 
+tErrType CEventModule::PostEvent(const IEventMessage &msg, 
 									tEventPriority priority, 
 									const IEventListener *pResponse) const
 {
@@ -181,35 +206,44 @@ tErrType CEventMgrModule::PostEvent(const IEventMessage &msg,
 }
 
 
+//============================================================================
+// Event generation
+//============================================================================
+//----------------------------------------------------------------------------
+CEventListenerImpl* CEventModule::GenerateEventListenerImpl(
+						const tEventType* pTypes, U32 count) const
+{
+	return new CEventListenerImpl(pTypes, count);
+}
+
 
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
-extern "C"
+
+static CEventModule*	sinst = NULL;
+//------------------------------------------------------------------------
+extern "C" tVersion ReportVersion()
 {
-	static CEventMgrModule*	sinst = NULL;
-	//------------------------------------------------------------------------
-	tVersion ReportVersion()
-	{
-		// TBD: ask modules for this or incorporate verion into so file name
-		return kEventMgrModuleVersion;
-	}
-	
-	//------------------------------------------------------------------------
-	ICoreModule* CreateInstance(tVersion version)
-	{
-		if( sinst == NULL )
-			sinst = new CEventMgrModule;
-		return sinst;
-	}
-	
-	//------------------------------------------------------------------------
-	void DestroyInstance(ICoreModule* ptr)
-	{
-//		assert(ptr == sinst);
-		delete sinst;
-		sinst = NULL;
-	}
+	// TBD: ask modules for this or incorporate verion into so file name
+	return kEventMgrModuleVersion;
 }
+	
+//------------------------------------------------------------------------
+extern "C" ICoreModule* CreateInstance(tVersion version)
+{
+	if( sinst == NULL )
+		sinst = new CEventModule;
+	return sinst;
+}
+	
+//------------------------------------------------------------------------
+extern "C" void DestroyInstance(ICoreModule* ptr)
+{
+//		assert(ptr == sinst);
+	delete sinst;
+	sinst = NULL;
+}
+
 
 // EOF
