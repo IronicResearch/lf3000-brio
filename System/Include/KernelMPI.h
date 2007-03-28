@@ -35,17 +35,21 @@ public:
 	//==============================================================================
 	// core functionality
 	//==============================================================================
-	virtual tErrType	Init();			   
+	
+    virtual tErrType	Init();			   
 	virtual tErrType	DeInit(); 			
+
 	virtual Boolean		IsInited();
+    
+    virtual Boolean		IsValid() const;	
 
-	virtual tErrType	GetMPIVersion(tVersion *pVersion);		   
-	virtual tErrType	GetMPIName(const CString **ppName);		
+    virtual tErrType	GetMPIVersion(tVersion &version) const;		   
+    virtual tErrType	GetMPIName(ConstPtrCString &pName) const;		
 
-	virtual tErrType	GetModuleVersion(tVersion *pVersion);
-	virtual tErrType	GetModuleName(const CString **ppName);	
-	virtual tErrType	GetModuleOrigin(const CURI **ppURI);
-
+    virtual tErrType	GetModuleVersion(tVersion &version) const;
+    virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
+    virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
+    
 	// class-specific functionality
 	CKernelMPI();
 	virtual ~CKernelMPI();

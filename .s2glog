@@ -363,3 +363,12 @@ By TParker (TParker@leapfrog.com) on 3/27/07 5:59 PM
 1,266 ms. (Cumulative: 48,320 ms)
 
 ----------------
+Revision 59 from svn://localhost/TRUNK/:
+
+Updated the definition of the virtual functions according to the CoreMPI.h file
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 3/28/07 11:42 AM
+1 changed, 0 added, 0 deleted.
+907 ms. (Cumulative: 49,273 ms)
+
+----------------
