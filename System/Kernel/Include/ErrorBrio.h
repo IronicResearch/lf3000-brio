@@ -16,9 +16,9 @@
 //
 //==============================================================================
 
-#include </mnt/hgfs/win_c/sw/Brio/System/include/CoreTypes.h>
-#include </mnt/hgfs/win_c/sw/Brio/System/include/SystemTypes.h>
-#include </mnt/hgfs/win_c/sw/Brio/System/include/KernelTypes.h>
+#include <CoreTypes.h>
+#include <SystemTypes.h>
+#include <KernelTypes.h>
 
 // Temporary error definition
 
