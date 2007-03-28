@@ -1,3 +1,4 @@
+
 //==============================================================================
 // $Source: $
 //
@@ -228,7 +229,13 @@ tErrType CKernelMPI::DeInit()
 }
 
 
-Boolean	CKernelMPI::IsInited()
+Boolean CKernelMPI::IsValid() const
+{
+    return TRUE;
+}
+
+
+Boolean	CKernelMPI::IsInited() 
 {
 	if ( mpImpl != kNull )
 	{
@@ -238,38 +245,38 @@ Boolean	CKernelMPI::IsInited()
 	return false;
 }
 
-
-tErrType CKernelMPI::GetMPIVersion(tVersion *pVersion)
+tErrType CKernelMPI::GetMPIVersion(tVersion &pVersion) const
 {
-	*pVersion = kKernelMPIVersion;
+	pVersion = kKernelMPIVersion;
 	return kNoErr;
 }
-
-		   
-tErrType CKernelMPI::GetMPIName(const CString **ppName)
+tErrType	CKernelMPI::GetMPIName(ConstPtrCString &pName) const
 {
 	return kNoImplErr;
 }
 
-
-tErrType CKernelMPI::GetModuleVersion(tVersion *pVersion)
+tErrType CKernelMPI::GetModuleVersion(tVersion &Version) const
 {
 	if ( mpImpl == kNull )
 	{
 		return kNoImplErr;
 	}
 
-	return (mpImpl->mpMPIFcnTable->pGetModuleVersion)(pVersion);
+//	return (mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version); // BSK old
+// FIXME/BSK
+//		(mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version);
+		return kNoImplErr;
 }
 
-
-tErrType CKernelMPI::GetModuleName(const CString **ppName)
+// FIXME/BSK
+tErrType	CKernelMPI::GetModuleName(ConstPtrCString &pName) const
 {
 	return kNoImplErr;
 }
 
 
-tErrType CKernelMPI::GetModuleOrigin(const CURI **ppURI)
+// tErrType CKernelMPI::GetModuleOrigin(const CURI **ppURI) // BSK old
+tErrType CKernelMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
 	return kNoImplErr;
 }
@@ -618,7 +625,7 @@ tErrType CKernelMPI::Malloc(U32 size, tPtr pPtr)
 {
 
 	pPtr = (tPtr )malloc( size );
-    ASSERT_ERROR(pPtr != NULL, kCouldNotAllocateMemory);
+    ASSERT_ERROR(pPtr != 0, kCouldNotAllocateMemory);
 
 	return kNoErr;
 }
