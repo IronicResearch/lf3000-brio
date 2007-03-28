@@ -5,10 +5,10 @@
 //==============================================================================
 //
 // File:
-//		ModuleMgr.cpp
+//		ModuleImpl.cpp
 //
 // Description:
-//		See the IncludePriv/ModuleMgr.h file
+//		See the IncludePriv/Module.h file
 //
 //==============================================================================
 
@@ -246,7 +246,7 @@ namespace
 				{
 //					DestroyModuleInstance(pModule);
 //					--mNumConnected;
-					// FIXME/tp: remove module from list by copying higher entries downd
+					// FIXME/tp: remove module from list by copying higher entries down
 				}
 			}
 			return kNoErr;
@@ -279,24 +279,25 @@ namespace
 //============================================================================
 // Module
 //============================================================================
-namespace Module
+//------------------------------------------------------------------------
+extern "C" tErrType FindModules()
 {
-	//------------------------------------------------------------------------
-	tErrType FindModules()
-	{
-		return g_impl.FindModules();
-	}
-	//------------------------------------------------------------------------
-	tErrType Connect(ICoreModule*& ptr, const CString& name, tVersion version)
-	{
-		static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
-		return g_impl.Connect(ptr, name, version);
-	}
-	//------------------------------------------------------------------------
-	tErrType Disconnect(const CString& name)
-	{
-		return g_impl.Disconnect(name);
-	}
+	return g_impl.FindModules();
+}
+//------------------------------------------------------------------------
+extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
+{
+	static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
+	ICoreModule* ptr = NULL;
+	tErrType status =  g_impl.Connect(ptr, name, version);
+	if( status == kNoErr )
+		*pModule = ptr;
+	return status;
+}
+//------------------------------------------------------------------------
+extern "C" tErrType Disconnect(const char* name)
+{
+	return g_impl.Disconnect(name);
 }
 
 

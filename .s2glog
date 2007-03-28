@@ -426,3 +426,12 @@ By TParker (TParker@leapfrog.com) on 3/28/07 4:47 PM
 922 ms. (Cumulative: 55,166 ms)
 
 ----------------
+Revision 66 from svn://localhost/TRUNK/:
+
+Split Module Manager into non-replacable pass through MPI lib and replacable Module lib
+
+By TParker (TParker@leapfrog.com) on 3/28/07 4:50 PM
+3 changed, 2 added, 1 deleted.
+1,047 ms. (Cumulative: 56,260 ms)
+
+----------------
