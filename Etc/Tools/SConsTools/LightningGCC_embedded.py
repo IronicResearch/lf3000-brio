@@ -19,7 +19,7 @@ def PlatformMods(env):
 	common.SetPlatformIncludePaths(env)
 	common.SetPlatformLibraryPaths(env)
 	env.Append(CCFLAGS = '-O4')
-	
+	env.Append(LIBPATH = '')	
 
 
 #-----------------------------------------------------------------------------
