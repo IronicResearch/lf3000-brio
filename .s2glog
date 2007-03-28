@@ -399,3 +399,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/28/07 12:29 PM
 954 ms. (Cumulative: 52,180 ms)
 
 ----------------
+Revision 63 from svn://localhost/TRUNK/:
+
+Integrate Kernel module into scons
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 3/28/07 3:50 PM
+1 changed, 2 added, 1 deleted.
+954 ms. (Cumulative: 53,181 ms)
+
+----------------

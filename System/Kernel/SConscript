@@ -1,0 +1,30 @@
+#-----------------------------------------------------------------------------
+# Brio/System/Kernel
+#-----------------------------------------------------------------------------
+Import('*')
+
+module_name	= 'Kernel'
+mpi_name	= module_name + 'MPI'
+
+#-----------------------------------------------------------------------------
+# Setup module source files and libraries
+#-----------------------------------------------------------------------------
+modsrcs		= FindModuleSources(Dir('.'))
+mpisrcs		= FindMPISources(Dir('.'))
+modlibs		= ['']
+mpilibs		= ['Module']
+						
+#-----------------------------------------------------------------------------
+# Modify the build environment and build the module
+#-----------------------------------------------------------------------------
+myenv		= env.Copy()
+mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
+mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, 1)
+Depends(mympi, mymodule)
+
+#-----------------------------------------------------------------------------
+# Modify the build environment and build and run the unit tests
+#-----------------------------------------------------------------------------
+RunMyTests(module_name, [], mpilibs, myenv)
+
+#Return([[mymodule], [mympi]])
