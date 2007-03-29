@@ -15,6 +15,7 @@ def MakeTempDirName(module):
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
 audio	= SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
+button	= SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0)
 debug	= SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0)
 event	= SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0)
 kernel	= SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0)

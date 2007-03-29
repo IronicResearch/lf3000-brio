@@ -453,3 +453,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/28/07 6:14 PM
 1,078 ms. (Cumulative: 58,338 ms)
 
 ----------------
+Revision 69 from svn://localhost/TRUNK/:
+Revision 70 from svn://localhost/TRUNK/:
+
+Added Button manager infrastructure.
+
+By TParker (TParker@leapfrog.com) on 3/29/07 1:41 PM
+3 changed, 6 added, 0 deleted.
+1,094 ms. (Cumulative: 59,494 ms)
+
+----------------

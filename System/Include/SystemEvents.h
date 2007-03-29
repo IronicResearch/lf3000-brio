@@ -46,6 +46,17 @@ const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
 
 
 //==============================================================================	   
+// Button events
+//==============================================================================
+#define BUTTON_EVENTS					\
+	(kButtonStateChanged)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupButton), BUTTON_EVENTS)
+
+const tEventType kAllButtonEvents = AllEvents(kGroupButton);
+
+
+//==============================================================================	   
 // Common events
 //==============================================================================
 #define COMMON_EVENTS					\

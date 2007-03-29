@@ -19,6 +19,7 @@ enum eGroupEnum {
 	// Brio v1.0	 
 	kGroupAudio = kFirstNumSpaceGroup,
 	kGroupBoot,
+	kGroupButton,
 	kGroupCommon,
 	kGroupDisplay,
 	kGroupEvent,
