@@ -80,14 +80,14 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetMPIVersion(version) );
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetMPIName(pName) );
 		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-		TS_ASSERT_EQUALS( *pName, "ButtonMgrMPI" );
+		TS_ASSERT_EQUALS( *pName, "ButtonMPI" );
 
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleVersion(version) );
 		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleName(pName) );
-		TS_ASSERT_EQUALS( *pName, "ButtonMgr Module" );
+		TS_ASSERT_EQUALS( *pName, "Button" );
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleOrigin(pURI) );
-		TS_ASSERT_EQUALS( *pURI, "ButtonMgr URI" );
+		TS_ASSERT_EQUALS( *pURI, "Button FIXME" );
 	}
 	
 	//------------------------------------------------------------------------
