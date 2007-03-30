@@ -72,7 +72,7 @@ namespace Module
 	{
 		typedef tErrType (*tfnFindMod)();
 		typedef tErrType (*tfnConnect)(void**, const char*, tVersion);
-		typedef tErrType (*tfnDisconnect)(const char*);
+		typedef tErrType (*tfnDisconnect)(const ICoreModule*);
 	}
 	
 	//------------------------------------------------------------------------
@@ -109,7 +109,7 @@ namespace Module
 	}
 	
 	//------------------------------------------------------------------------
-	tErrType Disconnect(const CString& name)
+	tErrType Disconnect(const ICoreModule* ptr)
 	{
 		tErrType status = LoadModuleManagerLib();
 		if( status == kNoErr )
@@ -118,7 +118,7 @@ namespace Module
 			tfnDisconnect funptr = reinterpret_cast<tfnDisconnect>
 										(dlsym(gg_pModuleHandle, "Disconnect"));
 			if( kNoErr == (status = CheckError()) )
-		  		status = (*funptr)(name.c_str());
+		  		status = (*funptr)(ptr);
 		}
 		return status;
 	}

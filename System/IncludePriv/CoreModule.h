@@ -53,6 +53,11 @@ public:
 	virtual tErrType	GetModuleVersion(tVersion &version) const = 0;
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const = 0;	
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const = 0;
+
+private:
+	// Disable copy semantics
+	ICoreModule(const ICoreModule&);
+	ICoreModule& operator=(const ICoreModule&);
 };
 
 //==============================================================================

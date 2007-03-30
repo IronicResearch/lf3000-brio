@@ -25,18 +25,21 @@ const tVersion	kButtonModuleVersion	= MakeVersion(0,1);
 //==============================================================================
 class CButtonModule : public ICoreModule {
 public:	
-	// core functionality
+	// ICoreModule functionality
 	virtual Boolean		IsValid() const;
 	virtual tErrType	GetModuleVersion(tVersion &version) const;
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
+	virtual	tErrType	GetButtonState(tButtonData& data);
+
+private:
+	// Limit object creation to the Module Manager interface functions
 	CButtonModule();
 	virtual ~CButtonModule();
-
-	// Get button state
-	virtual	tErrType	GetButtonState(tButtonData& data);
+	friend ICoreModule*	CreateInstance(tVersion version);
+	friend void			DestroyInstance(ICoreModule*);
 };
 
 

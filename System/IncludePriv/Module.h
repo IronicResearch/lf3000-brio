@@ -40,7 +40,7 @@ namespace Module
 	tErrType	FindModules();
 	tErrType	Connect(ICoreModule*& ptr, const CString& name, 
 						tVersion version);
-	tErrType	Disconnect(const CString& name);
+	tErrType	Disconnect(const ICoreModule* ptr);
 }
 
 #endif // LF_BRIO_MODULE_H

@@ -32,6 +32,11 @@ public:
 	virtual tErrType	GetModuleVersion(tVersion &version) const = 0;
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const = 0;	
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const = 0;
+
+private:
+	// Disable copy semantics
+	ICoreMPI(const ICoreMPI&);
+	ICoreMPI& operator=(const ICoreMPI&);
 };
 
 #endif // LF_BRIO_COREMPI_H

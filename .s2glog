@@ -481,3 +481,12 @@ By TParker (TParker@leapfrog.com) on 3/30/07 11:22 AM
 969 ms. (Cumulative: 61,496 ms)
 
 ----------------
+Revision 73 from svn://localhost/TRUNK/:
+
+Limit copying /assignement of modules & interface objects; disconnect to modules via ptr, not name
+
+By TParker (TParker@leapfrog.com) on 3/30/07 11:37 AM
+9 changed, 0 added, 0 deleted.
+1,110 ms. (Cumulative: 62,669 ms)
+
+----------------

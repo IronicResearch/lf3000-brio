@@ -29,7 +29,7 @@ IEventListener::IEventListener(const tEventType* pTypes, U32 count)
 									kEventMgrModuleVersion);
 	CEventModule* pEvent = reinterpret_cast<CEventModule*>(pModule);
 	mpimpl = pEvent->GenerateEventListenerImpl(pTypes, count);
-	Module::Disconnect(kEventMgrModuleName);
+	Module::Disconnect(pModule);
 }
 
 //----------------------------------------------------------------------------
@@ -40,7 +40,7 @@ IEventListener::~IEventListener()
 									kEventMgrModuleVersion);
 	CEventModule* eventmgr = reinterpret_cast<CEventModule*>(pModule);
 	eventmgr->UnregisterEventListener(this);
-	Module::Disconnect(kEventMgrModuleName);
+	Module::Disconnect(pModule);
 	delete mpimpl;
 }
 

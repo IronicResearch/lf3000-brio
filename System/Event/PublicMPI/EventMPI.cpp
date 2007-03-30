@@ -38,7 +38,7 @@ CEventMPI::CEventMPI() : mpModule(NULL)
 //----------------------------------------------------------------------------
 CEventMPI::~CEventMPI()
 {
-	Module::Disconnect(kEventMgrModuleName);
+	Module::Disconnect(mpModule);
 }
 
 //----------------------------------------------------------------------------

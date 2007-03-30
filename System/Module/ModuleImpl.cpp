@@ -105,6 +105,21 @@ namespace
 			}
 			return NULL;
 		}
+
+		//----------------------------------------------------------------------
+		ConnectedModule* FindCachedModule( const ICoreModule* ptr )
+		{
+			ConnectedModule* pModule = mpConnectedModulesList;
+			for( U16 ii = mNumConnected; ii > 0; --ii, ++pModule )
+			{
+				if( pModule->ptr == ptr )
+				{
+					// TODO: Make sure we have a version match
+					return pModule;
+				}
+			}
+			return NULL;
+		}
 		
 	public:
 		//----------------------------------------------------------------------
@@ -236,9 +251,9 @@ namespace
 		}
 
 		//----------------------------------------------------------------------
-		tErrType Disconnect(const CString& name)
+		tErrType Disconnect(const ICoreModule* ptr)
 		{
-			ConnectedModule* pModule = FindCachedModule(name, kUndefinedVersion);
+			ConnectedModule* pModule = FindCachedModule(ptr);
 			if( pModule )
 			{
 				--pModule->connect_count;
@@ -295,9 +310,9 @@ extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
 	return status;
 }
 //------------------------------------------------------------------------
-extern "C" tErrType Disconnect(const char* name)
+extern "C" tErrType Disconnect(const ICoreModule* ptr)
 {
-	return g_impl.Disconnect(name);
+	return g_impl.Disconnect(ptr);
 }
 
 

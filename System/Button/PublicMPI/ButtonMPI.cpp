@@ -60,7 +60,7 @@ CButtonMPI::CButtonMPI() : mpModule(NULL)
 //----------------------------------------------------------------------------
 CButtonMPI::~CButtonMPI()
 {
-	Module::Disconnect(kButtonModuleName);
+	Module::Disconnect(mpModule);
 }
 
 //----------------------------------------------------------------------------
