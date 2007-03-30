@@ -490,3 +490,12 @@ By TParker (TParker@leapfrog.com) on 3/30/07 11:37 AM
 1,110 ms. (Cumulative: 62,669 ms)
 
 ----------------
+Revision 74 from svn://localhost/TRUNK/:
+
+Much cleanup of DebugMPI.  Properly moduleized.  Fixed bugs. Added unit tests.  Still need to make Debug use Kernel for printf() and friends.
+
+By DGibbs (DGibbs@leapfrog.com) on 3/30/07 11:51 AM
+2 changed, 4 added, 0 deleted.
+1,000 ms. (Cumulative: 63,732 ms)
+
+----------------

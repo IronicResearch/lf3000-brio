@@ -1,5 +1,5 @@
-#ifndef DEBUGMPI_H
-#define DEBUGMPI_H
+#ifndef LF_BRIO_DEBUGMPI_H
+#define LF_BRIO_DEBUGMPI_H
 
 //==============================================================================
 //
@@ -18,7 +18,7 @@
 //==============================================================================
 
 // std includes
-#include <stdarg.h>		// for vprinfs
+#include <stdarg.h>		// for varargs
 
 // System includes
 #include <CoreTypes.h>
@@ -152,20 +152,7 @@ typedef enum
 	kMaxDebugLevel = kDbgLvlVerbose
 } tDebugLevel;
 
-//------------------------------------------------------------------------------
-// tDebugOutFormats
-//
-//		Bit mask used internally by the MPI to indicate any special formatting
-//		to use for the debug output.  Some are mutually exclusive, but others
-//		might be used in combination.
-//------------------------------------------------------------------------------
-typedef enum {
-	kDebugOutFormatNormal	= 0x0000,
-	kDebugOutFormatLiteral 	= 0x0001,
-	kDebugOutFormatWarn		= 0x0002
-} tDebugOutFormats;
-
-//------------------------------------------------------------------------------
+///------------------------------------------------------------------------------
 // tLogPlayerLoadTypeOffset
 //
 //		Player load type offset used to identify the type of logging record.
@@ -180,39 +167,6 @@ typedef enum {
 	kLogFlashPlayerPlayMovie
 } tLogPlayerLoadTypeOffset;
 
-//------------------------------------------------------------------------------
-// tLogEventMask
-//
-//		Bit mask used to enable/disable the types of events that can be logged.
-//		The bits will be set by a parameter in the logging configuration resource. 
-//------------------------------------------------------------------------------
-typedef U8 tLogEventMask;
-
-#define kLogNoneMask			0x00
-#define kLogPowerOnMask			0x01
-#define kLogPowerOffMask		0x02
-#define kLogArrayMask			0x04
-#define kLogStringMask			0x08
-#define kLogLaunchAppMask		0x10
-#define kLogPlayMovieMask		0x20
-#define kLogDebugOutMask		0x40
-#define kLogAllMask				0xFF
-
-//------------------------------------------------------------------------------
-// tDebugCallbackRoutine
-//
-// 	The callback routine type for command registration
-//------------------------------------------------------------------------------
-//typedef  void (*tDebugCallbackRoutine)(char *pStr);
-
-// this flag is originally defined to 0 inside mpi.h
-// it is redefined to 1 here to support InitDependents()
-//#ifdef DebugMpiInitDepend
-//#undef DebugMpiInitDepend
-//#endif
-//#define DebugMpiInitDepend() ((CCoreMPI::ModuleIsInstalled(kDebugMpiID)) ? ((CCoreMPI::ModuleIsInited(kDebugMpiID)) ? (true) : (CCoreMPI::InitModule(kDebugMpiID))) : (true))
-
-
 //==============================================================================
 // Class:
 //		CDebugMPI
@@ -224,17 +178,17 @@ typedef U8 tLogEventMask;
 class CDebugMPI : public ICoreMPI {
 public:
 	// MPI core functions
-	Boolean		IsValid() const;	
+	virtual Boolean		IsValid() const;	
 	
-	tErrType	GetMPIVersion(tVersion &version) const;		   
-	tErrType	GetMPIName(ConstPtrCString &pName) const;		
+	virtual tErrType	GetMPIVersion(tVersion &version) const;		   
+	virtual tErrType	GetMPIName(ConstPtrCString &pName) const;		
 
-	tErrType	GetModuleVersion(tVersion &version) const;
-	tErrType	GetModuleName(ConstPtrCString &pName) const;	
-	tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
+	virtual tErrType	GetModuleVersion(tVersion &version) const;
+	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
+	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 	
 	CDebugMPI();  
-	~CDebugMPI();
+	virtual ~CDebugMPI();
 	
 	// printf-like serial output (suppressible based on tDebugSignature). The signature
 	// value is prepended in the output to allow easy debug identification.  These are
@@ -256,38 +210,36 @@ public:
 	// (suppressible based on tDebugSignature)
 	void	Warn(tDebugSignature sig, const char * formatString, ...);
 
-	// system execution cannot continue beyond a failed assert
+	// Assert
 	void 	Assert(int testResult, const char * formatString, ...);
 								
 	// turning on & off debug-out on a debug-signature basis
-	static void 	DisableDebugOut(tDebugSignature sig);
-	static void 	EnableDebugOut(tDebugSignature sig);
-
-	//------------------------------------------------------------------------------
-	// Function:	 	EnableDebugOutTimestamp
-	//					DisableDebugOutTimestamp
-	// Availability:	MPI v1.1+
-	// Description:		if enabled, adds a timestamp to all debug output.  Time
-	//					shown is elapsed time since system boot.
-	//------------------------------------------------------------------------------
-	static void 	EnableDebugOutTimestamp();
-	static void 	DisableDebugOutTimestamp();
-
+	void 	DisableDebugOut(tDebugSignature sig);
+ 	void 	EnableDebugOut(tDebugSignature sig);
+ 
 	// checks if debug out is enabled for a specific signature & level.  Helpful for
 	// checking in advance if anything will go out the serial port before issuing a
 	// series of DebugOuts.  'atLeastLevel' indicates output enabled for levels
 	// >= that specified--default checks if any output enabled for the 'sig'.
-	static Boolean		DebugOutIsEnabled(tDebugSignature sig, tDebugLevel atLeastLevel=kDbgLvlCritical);
+	Boolean		DebugOutIsEnabled(tDebugSignature sig, tDebugLevel atLeastLevel=kDbgLvlCritical);
 
 	// accessing the master DebugOut level
-	static void 		SetDebugLevel(tDebugLevel newLevel);
-	static tDebugLevel	GetDebugLevel();
+	void		SetDebugLevel(tDebugLevel newLevel);
+	tDebugLevel	GetDebugLevel();
 
+	//------------------------------------------------------------------------------
+	// Function:	 	EnableDebugOutTimestamp
+	//					DisableDebugOutTimestamp
+	// Description:		if enabled, adds a timestamp to all debug output.  Time
+	//					shown is elapsed time since system boot.
+	//------------------------------------------------------------------------------
+	void 	EnableDebugOutTimestamp();
+	void 	DisableDebugOutTimestamp();
 
 private:
-
+	class CDebugModule* mpModule;
 };
 		   
-#endif // DEBUGMPI_H
+#endif // LF_BRIO_DEBUGMPI_H
 
 // EOF
