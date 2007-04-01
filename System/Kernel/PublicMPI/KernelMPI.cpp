@@ -52,7 +52,7 @@ static U8 systemHeap[kSystemHeapSize]; 		// FIXME/dg: dummy system heap
 #if 0 // BSK
 static tErrType ToErrType(tNUStatus nuStatus)
 {
-#if 0 // BSK
+#if 0 // FIXME / BSK
 	switch (nuStatus)
 	{
 		case NU_INVALID_TASK:
@@ -77,7 +77,7 @@ static tErrType ToErrType(tNUStatus nuStatus)
 
 inline U32 ToKernelTime(U32 ticks)
 {
-#if 0 // BSK
+#if 0 // FIXME / BSK
 	return (ticks * kRTOSTickMs);
 #endif	
 }
@@ -85,7 +85,7 @@ inline U32 ToKernelTime(U32 ticks)
 
 inline U32 ToRTOSTime(U32 mS)
 {
-#if 0 // BSK
+#if 0 // FIXME / BSK
 	U32 roundUp = (((mS % kRTOSTickMs) != 0) ? 1 : 0);
 	 
 	// FIXME/dg: verify
@@ -95,14 +95,14 @@ inline U32 ToRTOSTime(U32 mS)
 
 inline U32 ToRTOSMessageSize(U32 bytes)
 {
-#if 0 // BSK	
+#if 0 // FIXME / BSK	
 	return (bytes / sizeof(U32));
 #endif	
 }
 
 inline U32 ToKernelMessageSize(U32 rtosMessageSize)
 {
-#if 0 // BSK	
+#if 0 // FIXME / BSK	
 	return (rtosMessageSize * sizeof(U32));
 #endif	
 }
@@ -110,7 +110,7 @@ inline U32 ToKernelMessageSize(U32 rtosMessageSize)
 
 static U32 ToRTOSTimeout(U32 timeout) 
 {
-#if 0 // BSK	
+#if 0 // FIXME / BSK	
 	if (timeout == 0)
 		return NU_NO_SUSPEND;
 	else if (timeout == kMaxTimeoutMs)
@@ -123,21 +123,21 @@ static U32 ToRTOSTimeout(U32 timeout)
 
 CKernelMPI::CKernelMPI()
 {
-#if 0 // BSK
+#if 0 // FIXME / BSK
 	NU_printf("CKernelMPI::CKernelMPI()\n\n");
 #endif	
 }
 
 CKernelMPI::~CKernelMPI()
 {
-#if 0 // BSK	
+#if 0 // FIXME / BSK	
 	NU_printf("CKernelMPI::~CKernelMPI()\n\n");
 #endif	
 }
 
 tErrType CKernelMPI::Init()
 {
-#if 0 // BSK
+#if 0 // FIXME / BSK
 	CModuleRsrc 		* pRsrc;
 	CRsrcMgrMPI 		* pRsrcMgrMPI;
 	tRsrcHndl			  hRsrc;
@@ -195,7 +195,7 @@ ReturnErr:
 
 tErrType CKernelMPI::DeInit()
 {
-#if 0 // FIXME/BSK
+#if 0 // FIXME/FIXME / BSK
 	CRsrcMgrMPI 		* pRsrcMgrMPI;
 	tRsrcHndl			  hRsrc;
 	tErrType 			  err;
@@ -224,7 +224,7 @@ tErrType CKernelMPI::DeInit()
 		delete mpImpl;
 	}
 */
-#endif // FIXME BSK
+#endif // FIXME FIXME / BSK
 	return kNoErr;
 }
 
@@ -262,20 +262,20 @@ tErrType CKernelMPI::GetModuleVersion(tVersion &Version) const
 		return kNoImplErr;
 	}
 
-//	return (mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version); // BSK old
-// FIXME/BSK
+//	return (mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version); // FIXME / BSK old
+// FIXME/FIXME / BSK
 //		(mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version);
 		return kNoImplErr;
 }
 
-// FIXME/BSK
+// FIXME/FIXME / BSK
 tErrType	CKernelMPI::GetModuleName(ConstPtrCString &pName) const
 {
 	return kNoImplErr;
 }
 
 
-// tErrType CKernelMPI::GetModuleOrigin(const CURI **ppURI) // BSK old
+// tErrType CKernelMPI::GetModuleOrigin(const CURI **ppURI) // FIXME / BSK old
 tErrType CKernelMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
 	return kNoImplErr;
@@ -395,7 +395,7 @@ tErrType	CKernelMPI::CreateTask(const CURI* pTaskURI,
     return kNoErr;
 }
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 
 tErrType	CKernelMPI::DestroyTask(tTaskHndl hndl)
 {
@@ -429,7 +429,7 @@ tErrType CKernelMPI::CancelTask(tTaskHndl hndl)
 	return pthread_cancel(hndl);;
 }
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 tErrType	CKernelMPI::ResetTask(tTaskHndl hndl, const tTaskProperties* pProperties)
 {
 	// FIXME/dg
@@ -630,7 +630,7 @@ tErrType CKernelMPI::Malloc(U32 size, tPtr pPtr)
 	return kNoErr;
 }
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 
 tErrType	CKernelMPI::MallocOrWait(U32 size, tPtr* pPtr, U32 timeoutMs)
 {
@@ -656,7 +656,7 @@ void CKernelMPI::Free(tPtr ptr)
 //------------------------------------------------------------------------------
 // create/destroy memory pool
 //------------------------------------------------------------------------------
-#if 0 // BSK
+#if 0 // FIXME / BSK
 
 tErrType 	CKernelMPI::CreateMemoryPool(const CURI* pPoolURI, 
 			 			const tMemoryPoolProperties* pProperties,
@@ -703,7 +703,7 @@ ReturnErr:
 }
 #endif
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 tErrType 	CKernelMPI::DestroyMemoryPool(tMemoryPoolHndl hndl)
 {
 	CKernelMemoryPool* pKernelType	= CKernelMemoryPool::ToKernelType(hndl);
@@ -784,7 +784,7 @@ tErrType	CKernelMPI::MallocAlignedFromFixedPoolOrWait(tMemoryPoolHndl hndl, U32 
 	//------------------------------------------------------------------------------
 	// create/destroy/clear message queues
 	//------------------------------------------------------------------------------
-#if 0 // BSK
+#if 0 // FIXME / BSK
 tErrType	CKernelMPI::CreateMessageQueue(const CURI* pQueueURI, 
 						const tMessageQueueProperties* pProperties,
 						tMessageQueueHndl* pHndl)
@@ -857,13 +857,13 @@ tErrType	CKernelMPI::CreateMessageQueue(const CURI* pQueueURI,
     queuAttr.mq_msgsize = pProperties->mq_msgsize;
     queuAttr.mq_curmsgs = pProperties->mq_curmsgs;
     
-#if 1 // BSK Debug Printing
+#if 1 // FIXME / BSK Debug Printing
     printf("THe Input MUEUE parameters are :\n"); 
     printf("name=%s oflag=%d mode=%d mq_flags=%d mq_maxmsg=%d mq_msgsize=%d mq_curmsgs=%d\n",
     	pProperties->nameQueue, pProperties->oflag,pProperties->mode,
     	queuAttr.mq_flags, pProperties->mq_maxmsg, pProperties->mq_msgsize, pProperties->mq_curmsgs);   
     fflush(stdout);
-#endif // BSK
+#endif // FIXME / BSK
     
     errno = 0;
     
@@ -875,7 +875,7 @@ tErrType	CKernelMPI::CreateMessageQueue(const CURI* pQueueURI,
 	ASSERT_POSIX_CALL(err);
     *pHndl = retMq_open;
     
-#if 1 // BSK Debug Printing
+#if 1 // FIXME / BSK Debug Printing
     printf("Return value of mq_open function is %d ERRNO=%d\n", retMq_open, errno);
     fflush(stdout);;
     
@@ -998,7 +998,7 @@ tErrType  	CKernelMPI::ClearMessageQueue(tMessageQueueHndl hndl)
 									U32 messageSize)
 {
     
-#if 0 // BSK
+#if 0 // FIXME / BSK
     printf("pMessage->GetMessageSize() = %d\n", pMessage->GetMessageSize());
     printf("pMessage.GetMessageEventType() =%d\n",
             ((CEventMessage *)pMessage)->GetMessageEventType()); 
@@ -1013,7 +1013,7 @@ tErrType  	CKernelMPI::ClearMessageQueue(tMessageQueueHndl hndl)
     
     ASSERT_POSIX_CALL(errno);
     
-#if 1 // BSK Debugging printing 
+#if 1 // FIXME / BSK Debugging printing 
     struct mq_attr attr = {0};
     mq_getattr(hndl, &attr);
     printf("\n-----After sending message QUEQUE attributes are: ----\n");
@@ -1040,7 +1040,7 @@ tErrType  	CKernelMPI::SendMessageOrWait(tMessageQueueHndl hndl, CMessage* pMess
     tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
     tp.tv_nsec = tp.tv_nsec + timeoutMs * 1000000; // convert from ms to nanosecond
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
     printf("pMessage->GetMessageSize() = %d\n", pMessage->GetMessageSize());
     printf("pMessage.GetMessageEventType() =%d\n",
             ((CEventMessage *)pMessage)->GetMessageEventType()); 
@@ -1068,7 +1068,7 @@ tErrType  	CKernelMPI::SendMessageOrWait(tMessageQueueHndl hndl, CMessage* pMess
     return kNoErr;
 }
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 tErrType	CKernelMPI::SendPriorityMessage(tMessageQueueHndl hndl, CMessage* pMessage, 
 									tMessagePriority priority, U32 messageSize)
 {
@@ -1080,7 +1080,7 @@ tErrType	CKernelMPI::SendPriorityMessage(tMessageQueueHndl hndl, CMessage* pMess
 }
 #endif
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 tErrType  	CKernelMPI::SendPriorityMessageOrWait(tMessageQueueHndl hndl, CMessage* pMessage, 
 									tMessagePriority priority,
 									U32 messageSize, U32 timeoutMs)
@@ -1093,7 +1093,7 @@ tErrType  	CKernelMPI::SendPriorityMessageOrWait(tMessageQueueHndl hndl, CMessag
 }
 #endif
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 
 tErrType	CKernelMPI::SendUrgentMessage(tMessageQueueHndl hndl, CMessage* pMessage, 
 									U32 messageSize)
@@ -1106,7 +1106,7 @@ tErrType	CKernelMPI::SendUrgentMessage(tMessageQueueHndl hndl, CMessage* pMessag
 }
 #endif
 
-#if 0 // BSK
+#if 0 // FIXME / BSK
 tErrType  	CKernelMPI::SendUrgentMessageOrWait(tMessageQueueHndl hndl, CMessage* pMessage, 
 									U32 messageSize, U32 timeoutMs)
 {
@@ -1147,7 +1147,7 @@ tErrType  	CKernelMPI::ReceiveMessage(tMessageQueueHndl hndl, U32 maxMessageSize
 // Retrieve attributes of the messges queque
    struct mq_attr attr = {0};
    
-#if 1 // BSK Debug printing
+#if 1 // FIXME / BSK Debug printing
    U8 tmp = msg_ptr->GetMessagePriority();
    mq_getattr(hndl, &attr);
    printf("\n-----CKernelMPI::ReceiveMessage ----\n");
@@ -1164,7 +1164,7 @@ tErrType  	CKernelMPI::ReceiveMessage(tMessageQueueHndl hndl, U32 maxMessageSize
      {
          return ErrorBrio::lookupBrioErrType(errno);
      }
-#if 1 // BSK Debug printing
+#if 1 // FIXME / BSK Debug printing
     printf("CKernelMPI::ReceiveMessage. Received=%d bytes\n", ret_receive);
     fflush(stdout);
 #endif // BK
@@ -1186,12 +1186,12 @@ tErrType  	CKernelMPI::ReceiveMessageOrWait(tMessageQueueHndl hndl, U32 maxMessa
 // Retrieve attributes of the messges queque
    struct mq_attr attr = {0};
    
-#if 1 // BSK Debug printing
+#if 1 // FIXME / BSK Debug printing
    mq_getattr(hndl, &attr);
    printf("\n-----CKernelMPI::ReceiveMessage ----\n");
    printf("mq_flags=%d  mq_maxmsg=%d mq_msgsize=%d mq_curmsq=%d\n",
           attr.mq_flags,attr.mq_maxmsg,attr.mq_msgsize,attr.mq_curmsgs);
-#endif // BSK
+#endif // FIXME / BSK
    struct timespec tp;
 
    ASSERT_ERROR(timeoutMs<999,kInvalidFunctionArgument);  
@@ -1212,13 +1212,13 @@ tErrType  	CKernelMPI::ReceiveMessageOrWait(tMessageQueueHndl hndl, U32 maxMessa
                                   (const struct timespec *)&tp);
    ASSERT_POSIX_CALL(errno);
 
-#if 1 // BSK Debug printing
+#if 1 // FIXME / BSK Debug printing
     printf("CKernelMPI::ReceiveMessage. Received=%d bytes\n", ret_receive);
     fflush(stdout);
-#endif // BSK
+#endif // FIXME / BSK
      return kNoErr;
 
-#if 0 // BSK always. It is Nucleus
+#if 0 // FIXME / BSK always. It is Nucleus
     U32 dummyParam;
 
 	// FIXME/dg: doesn't support where messageSize not specified
@@ -1227,7 +1227,7 @@ tErrType  	CKernelMPI::ReceiveMessageOrWait(tMessageQueueHndl hndl, U32 maxMessa
 	return ToErrType(status);
 #endif
 
-#if 0 // BSK always. It is Nucleus
+#if 0 // FIXME / BSK always. It is Nucleus
 	U32 dummyParam;
 
 	// FIXME/dg: doesn't support where messageSize not specified
@@ -1258,7 +1258,7 @@ tErrType  	CKernelMPI::PeekAtMessageOrWait(tMessageQueueHndl hndl, U32 maxMessag
 //------------------------------------------------------------------------------
 // system clock status
 //------------------------------------------------------------------------------
-#if 0 // BSK
+#if 0 // FIXME / BSK
 U32   		CKernelMPI::GetElapsedTime(U32* pUs)
 {
 	// FIXME/dg: don't support microseconds currently
@@ -1367,7 +1367,7 @@ tErrType CKernelMPI::GetTimerElapsedTime(tTimerHndl hndl, U32* pUs) // elapsed t
     *pUs = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
            (value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000000;
 
-#if 1 // BSK  Debug printing 
+#if 1 // FIXME / BSK  Debug printing 
     printf("CKernelMPI::GetTimerElapsedTime:\n value.it_interval.tv_sec=%ld\n value.it_value.tv_sec=%ld\n \
             value.it_interval.tv_nsec=%ld\n value.it_value.tv_nsec=%ld\n",
       value.it_interval.tv_sec, value.it_value.tv_sec, value.it_interval.tv_nsec,value.it_value.tv_nsec);       
