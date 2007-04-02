@@ -22,10 +22,12 @@
 #include <unistd.h>
 #include <sys/types.h>
 
+#include <StringTypes.h>
 #include <SystemErrors.h>
 
 #include <CoreMPI.h>
 #include <KernelMPI.h>
+#include <Module.h>
 
 #if 0 // FIXME/BSK
 #include <RsrcMgrMPI.h>
@@ -33,8 +35,11 @@
 #endif
 
 #include <ErrorBrio.h>
-
 #include <KernelPrivate.h>
+
+const tVersion	kMPIVersion = MakeVersion(0,1);
+const CString	kMPIName = "EventMPI";
+
 
 
 // FIXME/dg: hack to get printf
@@ -247,7 +252,7 @@ Boolean	CKernelMPI::IsInited()
 
 tErrType CKernelMPI::GetMPIVersion(tVersion &pVersion) const
 {
-	pVersion = kKernelMPIVersion;
+    pVersion = kMPIVersion;
 	return kNoErr;
 }
 tErrType	CKernelMPI::GetMPIName(ConstPtrCString &pName) const
