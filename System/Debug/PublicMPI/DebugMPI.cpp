@@ -49,7 +49,7 @@ CDebugMPI::CDebugMPI(): mpModule(NULL)
 //----------------------------------------------------------------------------
 CDebugMPI::~CDebugMPI( void )
 {
-	Module::Disconnect( kDebugModuleName );
+	Module::Disconnect( mpModule );
 }
 
 //==============================================================================
