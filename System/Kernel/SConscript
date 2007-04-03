@@ -12,7 +12,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
 modlibs		= ['']
-mpilibs		= ['Module']
+mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
@@ -27,4 +27,4 @@ Depends(mympi, mymodule)
 #-----------------------------------------------------------------------------
 RunMyTests(module_name, [], mpilibs, myenv)
 
-#Return([[mymodule], [mympi]])
+Return('mymodule', 'mympi')
