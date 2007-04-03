@@ -58,12 +58,14 @@ if is_checkheaders:
 # Setup intermediate build and deployment target folder names
 #-----------------------------------------------------------------------------
 root_dir				= Dir('#').abspath
-intermediate_build_dir	= os.path.join('Temp', platform)
-if is_emulation:
-	intermediate_build_dir += '_emulation' + (is_publish and '_publish' or '')
+publish_root			= Dir('#Publish').abspath
+target_subdir			= platform + (is_emulation and '_emulation' or '')
+intermediate_build_dir	= os.path.join('Temp', target_subdir)
+#if is_emulation and is_publish:	#TP: reenable when deliver Release mode emu libs
+#	intermediate_build_dir += '_publish'
 adjust_to_source_dir	= '../../../'
-debug_deploy_dir		= os.path.join('#Build', 'Output' + (is_emulation and '_emulation' or ''), platform)
-release_deploy_dir		= os.path.join('#Build', 'Output' + (is_emulation and '_emulation_publish' or ''), platform)
+debug_deploy_dir		= os.path.join('#Build', target_subdir)
+release_deploy_dir		= os.path.join('#Build', target_subdir + (is_emulation and '_publish' or ''))
 checkheaders_deploy_dir	= os.path.join(intermediate_build_dir, 'checkheaders')
 dynamic_deploy_dir		= is_publish and release_deploy_dir or debug_deploy_dir
 
@@ -77,8 +79,13 @@ dynamic_deploy_dir		= is_publish and release_deploy_dir or debug_deploy_dir
 #-----------------------------------------------------------------------------
 local_vars		 = { 'adjust_to_source_dir'		: adjust_to_source_dir,
 					 'intermediate_build_dir'	: intermediate_build_dir,
+					 'is_emulation'				: is_emulation,
 					 'is_publish'				: is_publish,
 					 'platform'					: platform,
+					 'publish_root'				: publish_root,
+					 'publish_inc_dir'			: os.path.join(publish_root, 'Include'),
+					 'publish_lib_dir'			: os.path.join(publish_root, 'Libs', target_subdir),
+					 'target_subdir'			: target_subdir,
 				   }
 
 
@@ -193,7 +200,7 @@ def RunMyTests(ptarget, psources, plibs, penv):
 		mytest = testenv.CxxTest(unit, tests)
 		# FIXME/tp: following conditional is getting evaluated too early,
 		# FIXME/tp: need to find alternate/delayed way
-		if os.path.exists(unit):
+		if os.path.exists(mytest[0].abspath):
 			temp = testenv.Program([mytest] + psources, 
 						LIBS = plibs + [ptarget + 'MPI'] + platformlibs)
 			mytestexe = testenv.Install(deploy_dir, temp)
@@ -216,7 +223,9 @@ Export('env local_vars FindModuleSources FindMPISources MakeMyModule RunMyTests'
 # overwritten on the next build.
 #-----------------------------------------------------------------------------
 SConscript(os.path.join(root_dir, 'System', 'SConscript'), duplicate=0)
-#SConscript(os.path.join(root_dir, platform, 'SConscript'), duplicate=0)
+SConscript(os.path.join(root_dir, 'ThirdParty', 'SConscript'), duplicate=0)
+SConscript(os.path.join(root_dir, 'Etc', 'SConscript'), duplicate=0)
+SConscript(os.path.join(root_dir, platform[:-3], 'SConscript'), duplicate=0)
 
 
 #-----------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 # Brio/System Repository
 #-----------------------------------------------------------------------------
 import os.path
+import glob
 Import('*')
 
 #-----------------------------------------------------------------------------
@@ -14,19 +15,24 @@ def MakeTempDirName(module):
 #-----------------------------------------------------------------------------
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
-audio	= SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
-button	= SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0)
-debug	= SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0)
-event	= SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0)
-kernel	= SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0)
-module	= SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0)
-resource	= SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0)
+modules = []
+#modules.append(Conscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
+modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
+modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
+modules.append(SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0))
+#modules.append(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
+modules.append(SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0))
+#modules.append(SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0))
 
 
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
 if local_vars['is_publish']:
-	env.Install('Publish', Dir('Include'))
-#	env.Install('Publish', audio)
-	
+	mod_dir = os.path.join(local_vars['publish_lib_dir'], 'Module')
+	mpi_dir = os.path.join(local_vars['publish_lib_dir'], 'MPI')
+	headers = glob.glob(os.path.join('Include', '*.h'))
+	env.Install(local_vars['publish_inc_dir'], headers)
+	for m in modules:
+		env.Install(mod_dir, m[0])
+		env.Install(mpi_dir, m[1])
