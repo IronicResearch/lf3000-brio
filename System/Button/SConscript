@@ -11,7 +11,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
-modlibs		= ['']
+modlibs		= ['EventMPI']
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
@@ -27,4 +27,4 @@ Depends(mympi, mymodule)
 #-----------------------------------------------------------------------------
 RunMyTests(module_name, [], mpilibs + ['EventMPI'], myenv)
 
-#Return([[mymodule], [mympi]])
+Return('mymodule', 'mympi')

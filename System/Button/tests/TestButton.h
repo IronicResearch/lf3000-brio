@@ -105,7 +105,7 @@ public:
 	void testSetupCallback( )
 	{
 		// Doesn't really test much, just that making the calls to
-		// setup the handler succeed.  So long as the EventMgrMPI gets
+		// setup the handler succeed.  So long as the EventMPI gets
 		// unit tested, we shouldn't need to do much more here.
 		//
 		tListenerId	id;

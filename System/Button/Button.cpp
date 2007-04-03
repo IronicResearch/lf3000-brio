@@ -15,6 +15,7 @@
 //#include <KernelMPI.h>
 #include <ButtonMPI.h>
 #include <ButtonPriv.h>
+#include <EventMPI.h>
 
 #include <stdlib.h>	// FIXME: remove when include KernelMPI
 
@@ -78,6 +79,14 @@ tErrType CButtonModule::GetButtonState(tButtonData& data)
 	return kNoErr;
 }
 
+/*
+ * 	// FIXME/tp:
+	CEventMPI	em;
+	CButtonMessage	msg(data);
+	if( em.IsValid() )
+		em.PostEvent(msg, 0);
+	
+ */
 
 //============================================================================
 // Instance management interface for the Module Manager
