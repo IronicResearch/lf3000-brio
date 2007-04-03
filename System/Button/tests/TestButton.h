@@ -7,6 +7,7 @@
 #include <EventListener.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <UnitTestUtils.h>
 
 
 const U32 kBadButtonState = 0xBAADF00D;
@@ -42,7 +43,7 @@ public:
 //============================================================================
 // TestBtnMgr functions
 //============================================================================
-class TestBtnMgr : public CxxTest::TestSuite 
+class TestBtnMgr : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CButtonMPI*				btnmgr_;

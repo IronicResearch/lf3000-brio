@@ -6,13 +6,14 @@
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <DebugMPI.h>
+#include <UnitTestUtils.h>
 
 using namespace std;
 
 //============================================================================
 // TestDebugMPI functions
 //============================================================================
-class TestDebug : public CxxTest::TestSuite 
+class TestDebug : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 public:

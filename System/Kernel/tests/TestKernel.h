@@ -6,13 +6,14 @@
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <KernelMPI.h>
+#include <UnitTestUtils.h>
 
 using namespace std;
 
 //============================================================================
 // TestAudioMgr functions
 //============================================================================
-class TestKernelMPI : public CxxTest::TestSuite 
+class TestKernelMPI : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 public:

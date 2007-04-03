@@ -33,7 +33,9 @@ namespace
 	{
 		if( gg_pModuleHandle != NULL )
 			return kNoErr;
-		CPath path = GetModuleLibraryLocation() + CPath("/libModule.so");
+		CPath path = GetModuleLibraryLocation();
+		// FIXME: Debug message here
+		path = path + CPath("/libModule.so");
 		const char* str = path.c_str();
 		gg_pModuleHandle = dlopen(str, RTLD_LAZY);
 		if( !gg_pModuleHandle )
