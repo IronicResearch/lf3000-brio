@@ -1,0 +1,25 @@
+#-----------------------------------------------------------------------------
+# Brio/ThirdParty Repository
+#-----------------------------------------------------------------------------
+import os.path
+import glob
+Import('*')
+
+#-----------------------------------------------------------------------------
+# Populate the "Publish" folder for a public release
+#-----------------------------------------------------------------------------
+if local_vars['is_publish']:
+	inc_dir = os.path.join(local_vars['publish_inc_dir'], 'boost')
+	Command(inc_dir, 'boost/boost', Copy("$TARGET", "$SOURCE"))
+	inc_dir = os.path.join(local_vars['publish_inc_dir'], 'OpenGL', local_vars['target_subdir'])
+	lib_dir = os.path.join(local_vars['publish_lib_dir'], 'OpenGL')
+	headers = os.path.join('PowerVR', 'Include')
+	Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
+#	libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so'))
+	core_name = 'libgles_cl.so'
+	lib = os.path.join('PowerVR', 'Libs', core_name + '.0')
+	print os.path.join(lib_dir, core_name + '.0 ')
+	env.Install(lib_dir, lib)
+	env.Execute('ln -s -f -T ' + os.path.join(lib_dir, core_name + '.0 ') 
+				+ os.path.join(lib_dir, core_name))
+	
