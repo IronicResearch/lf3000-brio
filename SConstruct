@@ -201,8 +201,8 @@ def RunMyTests(ptarget, psources, plibs, penv):
 		# FIXME/tp: following conditional is getting evaluated too early,
 		# FIXME/tp: need to find alternate/delayed way
 		if os.path.exists(mytest[0].abspath):
-			temp = testenv.Program([mytest] + psources, 
-						LIBS = plibs + [ptarget + 'MPI'] + platformlibs)
+			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs + (is_emulation and ['Emulation'] or [])
+			temp = testenv.Program([mytest] + psources, LIBS = fulllibs)
 			mytestexe = testenv.Install(deploy_dir, temp)
 			if is_runtests == 1:
 				testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)

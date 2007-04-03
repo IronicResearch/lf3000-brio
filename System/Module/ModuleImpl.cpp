@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 #include <Module.h>
+#include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
 
@@ -61,17 +62,16 @@ namespace
 			// TODO: Either parse version from file name or load and
 			// querry the library (probably the former)
 			//
-#if 0 // FIXME/BSK
 			size_t len = name.size();
-			if( len <= 6 || name.at(0) == '.' )
+			if( len <= 6 || name[0] == '.' )
 				return false;
 			CString temp = name.substr(3, len-6);
 			pModule->version = MakeVersion(0,1);
 			strncpy(pModule->name, temp.c_str(), kMaxModuleName);
-			temp = dir + '/' + name;
+			CPath sep("/");
+			temp = dir + sep + name;
 			strncpy(pModule->sopath, temp.c_str(), kMaxPath);
 			return true;
-#endif
 		}
 
 		//----------------------------------------------------------------------
@@ -142,11 +142,12 @@ namespace
 		//----------------------------------------------------------------------
 		tErrType FindModules()
 		{
-#if 0 // FIXME/BSK
 			// FIXME/tp: Implement actual search paths rather than cur working dir
 			// FIXME/tp: Hide search paths in function which can have separate 
 			//				emulation/embedded implementations.
-			static char* paths[] = { "Build/Output_emulation/LightningGCC/Module" };
+			static const char* paths[1];
+			CPath path = GetModuleLibraryLocation();
+			paths[0] = path.c_str();
 			
 			// FIXME/tp: count first to allocate only enough memory needed
 			// FIXME/tp: KernelMPI for malloc
@@ -172,7 +173,6 @@ namespace
 			}
 //FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
 //							"Module configuration error, no modules found!");
-#endif // FIXME/BSK
 		}
 
 		
@@ -293,6 +293,7 @@ namespace
 
 	CModuleMgrImpl	g_impl;
 }
+
  
 //============================================================================
 // Module

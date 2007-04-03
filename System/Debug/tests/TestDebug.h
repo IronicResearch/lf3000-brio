@@ -41,8 +41,9 @@ public:
 	{
 		tVersion		version;
 		CString			empty;
+		CURI			emptyu;
 		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &empty;
+		ConstPtrCURI	pURI = &emptyu;
 		
 		TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetMPIVersion(version) );
 		TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetMPIName(pName) );
@@ -71,7 +72,7 @@ public:
 		std::cout << "MPI IsValid = " << fValid << endl;
 		
 		err = DebugMPI->GetMPIName( pName );
-		std::cout << "MPI name is: " << *pName << endl;
+		std::cout << "MPI name is: " << pName->c_str() << endl;
 	
 		err = DebugMPI->GetMPIVersion(version);
 		std::cout << "MPI Version is: " << version << endl;
@@ -80,10 +81,10 @@ public:
 		std::cout << "Module version is: " << version << endl;
 		
 		err = DebugMPI->GetModuleName( pName );
-		std::cout << "Module name is: " << *pName << endl;
+		std::cout << "Module name is: " << pName->c_str() << endl;
 		
 		err = DebugMPI->GetModuleOrigin( pURI );
-		std::cout << "Module Origin name is: " << *pURI << endl;
+		std::cout << "Module Origin name is: " << pName->c_str() << endl;
 		
 	}
 	

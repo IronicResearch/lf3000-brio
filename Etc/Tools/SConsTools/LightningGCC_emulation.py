@@ -22,7 +22,7 @@ def PlatformMods(env):
 	
 	boost_path			= '#ThirdParty/boost'
 	gcc_defs 			= env.Split('')
-	emulation_defs		= env.Split('CPU_WINDOWS')
+	emulation_defs		= env.Split('EMULATION')
 	env.Append(CPPDEFINES = gcc_defs + emulation_defs)
 	env.Append(CCFLAGS = '-g')
 	env.Append(LINKFLAGS = '-g')

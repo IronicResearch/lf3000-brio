@@ -74,8 +74,9 @@ public:
 	{
 		tVersion		version;
 		CString			empty;
+		CURI			emptyu;
 		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &empty;
+		ConstPtrCURI	pURI = &emptyu;
 		
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetMPIVersion(version) );
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetMPIName(pName) );

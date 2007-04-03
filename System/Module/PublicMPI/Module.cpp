@@ -15,6 +15,7 @@
 #include <dlfcn.h>
 
 #include <Module.h>
+#include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
 
@@ -27,13 +28,14 @@ namespace
 	//------------------------------------------------------------------------
 	void* gg_pModuleHandle = NULL;
 	
-	const char* fixme_startup = "Build/Output_emulation/LightningGCC/Module/libModule.so";
 	//------------------------------------------------------------------------
 	tErrType LoadModuleManagerLib()
 	{
 		if( gg_pModuleHandle != NULL )
 			return kNoErr;
-		gg_pModuleHandle = dlopen(fixme_startup, RTLD_LAZY);
+		CPath path = GetModuleLibraryLocation() + CPath("/libModule.so");
+		const char* str = path.c_str();
+		gg_pModuleHandle = dlopen(str, RTLD_LAZY);
 		if( !gg_pModuleHandle )
 		{
 			//TODO: DebugMPI message (using dlerror?)

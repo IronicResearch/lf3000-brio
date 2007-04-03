@@ -23,6 +23,7 @@
 #include <EventPriv.h>
 
 #include <stdlib.h>	// FIXME: remove when include KernelMPI
+#include <cstring>
 
 const CURI	kModuleURI	= "Event FIXME";
 

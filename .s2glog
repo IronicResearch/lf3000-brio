@@ -670,3 +670,12 @@ By DGibbs (DGibbs@leapfrog.com) on 4/3/07 3:18 PM
 985 ms. (Cumulative: 82,816 ms)
 
 ----------------
+Revision 94 from svn://localhost/TRUNK/:
+
+Added Emulation lib; make module lookup path configurable; temp fix CString class
+
+By TParker (TParker@leapfrog.com) on 4/3/07 3:31 PM
+12 changed, 4 added, 0 deleted.
+1,234 ms. (Cumulative: 84,097 ms)
+
+----------------

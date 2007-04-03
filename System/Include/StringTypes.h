@@ -18,7 +18,6 @@
 //
 //============================================================================== 
 
-#include <glibmm/ustring.h>
 #include <SystemTypes.h>
 
 //============================================================================== 
@@ -192,17 +191,25 @@ typedef tUTF16Char	tUniChar;
 //		CString
 //
 //	Definition:
-//		FIXME/dg: fill in
+//		
+// TODO/tp: Write wrapper class that hides underlying implementation
 //==============================================================================
 
-typedef Glib::ustring	CString;
-typedef Glib::ustring	CPath;
-typedef Glib::ustring	CURI;
+#ifdef EMULATION
 
-typedef const CString*	ConstPtrCString;
-typedef const CURI*		ConstPtrCURI;
+	#include <glibmm/ustring.h>
+	typedef Glib::ustring	CString;
+	typedef Glib::ustring	CPath;
+	typedef Glib::ustring	CURI;
+	
+	typedef const CString*	ConstPtrCString;
+	typedef const CURI*		ConstPtrCURI;
 
-/*
+#else	// EMULATION
+
+#include <string.h>
+#include <stdlib.h>
+
 class CString {		
 public:
 
@@ -210,9 +217,22 @@ public:
 
 	CString() { s = NULL; }
 //	CString(U32 size);
-	CString(const CString& cstr) { s = cstr.s;	}
-	CString(const char* str) { s = str; }
-//	CString(char c);					   
+	CString(const CString& cstr) { s = strdup(cstr.s);	}
+	CString(const char* str) { s = strdup(str); }
+//	CString(char c);	
+	
+	const char* c_str() const			{ return s; }
+	char operator[](U32 idx) const	{ return *(s+idx); }			   
+	U32 size() const					{ return strlen(s); }
+	
+	CString substr(U32 offset, U32 count) const	// FIXME/non-member
+	{
+		static char tmp[256];	// FIXME: broken hack
+		strncpy(tmp, s+offset, count);
+		tmp[count] = '\0';
+		return CString(tmp);
+	}
+	
 
 	virtual ~CString() { ; }
 
@@ -228,7 +248,7 @@ public:
 //	CString& 	operator+=(const char* str);
 //	CString& 	operator+=(char c);					   
 
-//	friend CString 	::operator+(const CString& str1, const CString& str2);
+	friend CString 	operator+(const CString& str1, const CString& str2);
 //	friend CString 	::operator+(const CString& str1, const char* str2);
 //	friend CString 	::operator+(const char* str1, const CString& str2);
 //	friend CString 	::operator+(char c, const CString& str);		  // FIXME/dg: need to use wide-char
@@ -259,6 +279,33 @@ protected:
 //	class CStringImpl* mpImpl;	
 };
 
+
+inline CString operator+(const CString& str1, const CString& str2)
+{
+	U32 len = strlen(str1.s) + strlen(str2.s);
+	char* n = (char*)malloc(len + 1);
+	strcpy(n, str1.s);
+	strcat(n, str2.s);
+	*(n+len) = '\0';
+	return n;
+}		   
+
+inline Boolean	operator==(const CString& str1, const CString& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const char* str1, const CString& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const CString& str1, const char* str2)
+{
+    return true;
+}
+
+
 //==============================================================================
 // Type:
 //		CUniString
@@ -268,6 +315,9 @@ protected:
 //==============================================================================
 
 class CUniString : public CString {
+public:
+	CUniString() {}
+	CUniString(const char* str) : CString(str) {}
 };
 
 //==============================================================================
@@ -280,6 +330,8 @@ class CUniString : public CString {
 
 class CPath : public CUniString {
 public:
+	CPath() {}
+	CPath(const char* str) : CUniString(str) {}
 	// FIXME/dg: flesh out
 };
 
@@ -306,10 +358,32 @@ public:
 	// FIXME/dg: flesh out
 	// tURIScheme		GetURIScheme() { return kUndefinedURIScheme };
 	CURI() { ; }
-	CURI(const char* str) { s = str; }
+	CURI(const char* str) : CPath(str) {}
 //	CURI& 	operator=(const char* str) { s = str; return *this; }		// FIXME/dg: dummy impl
 };
-*/
+
+
+inline Boolean	operator==(const CURI& str1, const CURI& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const char* str1, const CURI& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const CURI& str1, const char* str2)
+{
+    return true;
+}
+
+#endif  // EMULATION
+
+
+typedef const CString*	ConstPtrCString;
+typedef const CURI*		ConstPtrCURI;
+
 
 #endif	// LF_BRIO_STRINGTYPES_H
 

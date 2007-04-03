@@ -19,8 +19,9 @@ modules = []
 #modules.append(Conscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
 modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
 modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
+modules.append(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))
 modules.append(SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0))
-#modules.append(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
+modules.append(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
 modules.append(SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0))
 #modules.append(SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0))
 

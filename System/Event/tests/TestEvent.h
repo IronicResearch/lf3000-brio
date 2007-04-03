@@ -6,6 +6,7 @@
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <StringTypes.h>
+#include <UnitTestUtils.h>
 
 					
 // TODO/tp: Move to common header?
@@ -161,7 +162,7 @@ const tEventPriority	kPriorityLow		= 200;
 //============================================================================
 // TestEvent functions
 //============================================================================
-class TestEvent : public CxxTest::TestSuite 
+class TestEvent : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CEventMPI*		eventmgr_;
@@ -190,8 +191,9 @@ public:
 	{
 		tVersion		version;
 		CString			empty;
+		CURI			emptyu;
 		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &empty;
+		ConstPtrCURI	pURI = &emptyu;
 		
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetMPIVersion(version) );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetMPIName(pName) );

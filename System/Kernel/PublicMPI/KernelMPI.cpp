@@ -20,6 +20,7 @@
 #include <KernelMPI.h>
 
 #include <KernelPriv.h>
+#include <StringTypes.h>
 
 //==============================================================================
 // Defines
