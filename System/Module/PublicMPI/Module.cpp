@@ -102,8 +102,7 @@ namespace Module
 										(dlsym(gg_pModuleHandle, "Connect"));
 			if( kNoErr == (status = CheckError()) )
 		  		status = (*funptr)(&pModule, name.c_str(), version);
-		  	if( kNoErr == status )
-		  		ptr = reinterpret_cast<ICoreModule*>(pModule);
+		  	ptr = reinterpret_cast<ICoreModule*>(pModule);
 		}
 		return status;
 	}
