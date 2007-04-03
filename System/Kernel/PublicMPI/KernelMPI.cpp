@@ -28,6 +28,7 @@
 #include <CoreMPI.h>
 #include <KernelMPI.h>
 #include <Module.h>
+#include <KernelPrivate.h>
 
 #if 0 // FIXME/BSK
 #include <RsrcMgrMPI.h>
@@ -125,24 +126,22 @@ static U32 ToRTOSTimeout(U32 timeout)
 #endif		
 }
 
-
-CKernelMPI::CKernelMPI()
+CKernelMPI::CKernelMPI() : mpModule(NULL)
 {
-#if 0 // FIXME / BSK
-	NU_printf("CKernelMPI::CKernelMPI()\n\n");
-#endif	
+	ICoreModule*	pModule;
+	Module::Connect(pModule, kKernelModuleName, 
+									kKernelModuleVersion);
+	mpModule = reinterpret_cast<CKernelModule*>(pModule);
 }
 
 CKernelMPI::~CKernelMPI()
 {
-#if 0 // FIXME / BSK	
-	NU_printf("CKernelMPI::~CKernelMPI()\n\n");
-#endif	
+	Module::Disconnect(mpModule);
 }
 
+#if 0 // FIXME / BSK
 tErrType CKernelMPI::Init()
 {
-#if 0 // FIXME / BSK
 	CModuleRsrc 		* pRsrc;
 	CRsrcMgrMPI 		* pRsrcMgrMPI;
 	tRsrcHndl			  hRsrc;
@@ -194,13 +193,14 @@ ReturnErr:
 	}
 */
  	return err;
-#endif
 
 }
+#endif // FIXME/BSK
 
+
+#if 0 // FIXME/BSK
 tErrType CKernelMPI::DeInit()
 {
-#if 0 // FIXME/FIXME / BSK
 	CRsrcMgrMPI 		* pRsrcMgrMPI;
 	tRsrcHndl			  hRsrc;
 	tErrType 			  err;
@@ -229,9 +229,9 @@ tErrType CKernelMPI::DeInit()
 		delete mpImpl;
 	}
 */
-#endif // FIXME FIXME / BSK
 	return kNoErr;
 }
+#endif // FIXME FIXME / BSK
 
 
 Boolean CKernelMPI::IsValid() const
@@ -239,7 +239,7 @@ Boolean CKernelMPI::IsValid() const
     return TRUE;
 }
 
-
+#if 0 // FIXME/BSK
 Boolean	CKernelMPI::IsInited() 
 {
 	if ( mpImpl != kNull )
@@ -249,6 +249,7 @@ Boolean	CKernelMPI::IsInited()
 
 	return false;
 }
+#endif //
 
 tErrType CKernelMPI::GetMPIVersion(tVersion &pVersion) const
 {
@@ -262,15 +263,8 @@ tErrType	CKernelMPI::GetMPIName(ConstPtrCString &pName) const
 
 tErrType CKernelMPI::GetModuleVersion(tVersion &Version) const
 {
-	if ( mpImpl == kNull )
-	{
-		return kNoImplErr;
-	}
-
-//	return (mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version); // FIXME / BSK old
-// FIXME/FIXME / BSK
-//		(mpImpl->mpMPIFcnTable->pGetModuleVersion)(Version);
-		return kNoImplErr;
+	Version = kKernelModuleVersion;
+	return kNoErr;
 }
 
 // FIXME/FIXME / BSK
