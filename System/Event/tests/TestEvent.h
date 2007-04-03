@@ -1,4 +1,4 @@
-// TestEventMgr.h
+// TestEvent.h
 
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_array.hpp>
@@ -159,9 +159,9 @@ const tEventPriority	kPriorityMedium		= 50;
 const tEventPriority	kPriorityLow		= 200;
 
 //============================================================================
-// TestEventMgr functions
+// TestEvent functions
 //============================================================================
-class TestEventMgr : public CxxTest::TestSuite 
+class TestEvent : public CxxTest::TestSuite 
 {
 private:
 	CEventMPI*		eventmgr_;
@@ -203,7 +203,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetModuleName(pName) );
 		TS_ASSERT_EQUALS( *pName, "Event" );
 		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetModuleOrigin(pURI) );
-		TS_ASSERT_EQUALS( *pURI, "EventMgr FIXME" );
+		TS_ASSERT_EQUALS( *pURI, "Event FIXME" );
 	}
 	
 	//------------------------------------------------------------------------

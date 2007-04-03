@@ -7,10 +7,10 @@
 //==============================================================================
 //
 // File:
-//		EventMgrMPI.h
+//		EventMPI.h
 //
 // Description:
-//		Defines the Module Public Interface (MPI) for the EventMgr module. 
+//		Defines the Module Public Interface (MPI) for the Event module. 
 //
 //==============================================================================
 

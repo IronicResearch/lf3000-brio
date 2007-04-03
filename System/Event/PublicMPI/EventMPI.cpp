@@ -30,8 +30,7 @@ const CString	kMPIName = "EventMPI";
 CEventMPI::CEventMPI() : mpModule(NULL)
 {
 	ICoreModule*	pModule;
-	Module::Connect(pModule, kEventMgrModuleName, 
-									kEventMgrModuleVersion);
+	Module::Connect(pModule, kEventModuleName, kEventModuleVersion);
 	mpModule = reinterpret_cast<CEventModule*>(pModule);
 }
 

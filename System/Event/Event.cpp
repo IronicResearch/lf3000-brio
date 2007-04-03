@@ -24,7 +24,7 @@
 
 #include <stdlib.h>	// FIXME: remove when include KernelMPI
 
-const CURI	kModuleURI	= "EventMgr FIXME";
+const CURI	kModuleURI	= "Event FIXME";
 
 
 //============================================================================
@@ -33,14 +33,14 @@ const CURI	kModuleURI	= "EventMgr FIXME";
 //----------------------------------------------------------------------------
 tErrType CEventModule::GetModuleVersion(tVersion &version) const
 {
-	version = kEventMgrModuleVersion;
+	version = kEventModuleVersion;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CEventModule::GetModuleName(ConstPtrCString &pName) const
 {
-	pName = &kEventMgrModuleName;
+	pName = &kEventModuleName;
 	return kNoErr;
 }
 
@@ -226,7 +226,7 @@ static CEventModule*	sinst = NULL;
 extern "C" tVersion ReportVersion()
 {
 	// TBD: ask modules for this or incorporate verion into so file name
-	return kEventMgrModuleVersion;
+	return kEventModuleVersion;
 }
 	
 //------------------------------------------------------------------------

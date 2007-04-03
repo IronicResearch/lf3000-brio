@@ -7,10 +7,10 @@
 //==============================================================================
 //
 // File:
-//		EventMgrModulePriv.h
+//		EventPriv.h
 //
 // Description:
-//		Defines the interface for the private underlyingEventMgr module. 
+//		Defines the interface for the private underlying Event module. 
 //
 //==============================================================================
 
@@ -19,8 +19,8 @@
 
 
 // Constants
-const CString	kEventMgrModuleName		= "Event";
-const tVersion	kEventMgrModuleVersion	= MakeVersion(0,1);
+const CString	kEventModuleName	= "Event";
+const tVersion	kEventModuleVersion	= MakeVersion(0,1);
 
 //==============================================================================
 class CEventModule : public ICoreModule {

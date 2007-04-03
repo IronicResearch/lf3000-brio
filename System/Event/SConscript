@@ -27,4 +27,4 @@ Depends(mympi, mymodule)
 #-----------------------------------------------------------------------------
 RunMyTests(module_name, [], mpilibs, myenv)
 
-#Return([[mymodule], [mympi]])
+Return('mymodule', 'mympi')

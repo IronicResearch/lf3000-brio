@@ -589,3 +589,12 @@ By TParker (TParker@leapfrog.com) on 4/3/07 1:22 AM
 906 ms. (Cumulative: 73,627 ms)
 
 ----------------
+Revision 85 from svn://localhost/TRUNK/:
+
+Fully working framework for OpenGL/emulation; bug fixes
+
+By TParker (TParker@leapfrog.com) on 4/3/07 1:23 AM
+7 changed, 0 added, 0 deleted.
+1,063 ms. (Cumulative: 74,737 ms)
+
+----------------
