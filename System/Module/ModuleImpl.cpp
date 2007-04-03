@@ -61,6 +61,7 @@ namespace
 			// TODO: Either parse version from file name or load and
 			// querry the library (probably the former)
 			//
+#if 0 // FIXME/BSK
 			size_t len = name.size();
 			if( len <= 6 || name.at(0) == '.' )
 				return false;
@@ -70,6 +71,7 @@ namespace
 			temp = dir + '/' + name;
 			strncpy(pModule->sopath, temp.c_str(), kMaxPath);
 			return true;
+#endif
 		}
 
 		//----------------------------------------------------------------------
@@ -140,6 +142,7 @@ namespace
 		//----------------------------------------------------------------------
 		tErrType FindModules()
 		{
+#if 0 // FIXME/BSK
 			// FIXME/tp: Implement actual search paths rather than cur working dir
 			// FIXME/tp: Hide search paths in function which can have separate 
 			//				emulation/embedded implementations.
@@ -169,6 +172,7 @@ namespace
 			}
 //FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
 //							"Module configuration error, no modules found!");
+#endif // FIXME/BSK
 		}
 
 		
@@ -289,7 +293,6 @@ namespace
 
 	CModuleMgrImpl	g_impl;
 }
-
  
 //============================================================================
 // Module

@@ -1,5 +1,5 @@
-#ifndef KERNELTYPES_H
-#define KERNELTYPES_H
+#ifndef LF_BRIO_KERNELTYPES_H
+#define LF_BRIO_KERNELTYPES_H
 //==============================================================================
 // $Source: $
 //
@@ -15,8 +15,6 @@
 //
 //==============================================================================
 #include <mqueue.h>
-#include <sched.h>
-#include <ErrorBrio.h>
 
 typedef tHndl	tTaskHndl;
 typedef tHndl	tMemoryPoolHndl;
@@ -43,13 +41,13 @@ typedef void 	*(*tTaskMainFcn_posix)(tPtr pArgValues);
 
 enum {
 	kTaskSchedPolicyUndefined 	= 0,
-	kTaskSchedPolicyFIFO = SCHED_FIFO,			
-	kTaskSchedPolicyRR = SCHED_RR,			
-	kTaskSchedPolicyOTHER = SCHED_OTHER,			
+//	kTaskSchedPolicyFIFO = SCHED_FIFO,			
+//	kTaskSchedPolicyRR = SCHED_RR,			
+//	kTaskSchedPolicyOTHER = SCHED_OTHER,			
 //    kTaskSchedPolicyTimeSlice,
 //	kTaskSchedPolicyNoPreemption,
 	// default
-	kTaskSchedPolicyDefault	= kTaskSchedPolicyFIFO,
+//	kTaskSchedPolicyDefault	= kTaskSchedPolicyFIFO,
 };
 
 typedef U16	tTaskSchedPolicy;
@@ -373,27 +371,7 @@ typedef pthread_cond_t      tCond;
 typedef pthread_condattr_t  tCondAttr;
 typedef struct timespec     tTimeSpec;
 
-
-#define ASSERT_POSIX_CALL(err) \
-if(err) \
-{ \
-    int ret = ErrorBrio::lookupBrioErrType(err); \
-        printf("***** POSIX function fails with error (%d). File (%s), Line (%d)\n", \
-        err, __FILE__, __LINE__); \
-        fflush(stdout); \
-        return(ret); \
-}
-                                                                               
-#define ASSERT_ERROR(expression,value) \
-if(!expression) \
-{ \
-    int ret = ErrorBrio::lookupBrioErrType(value); \
-    printf("***** Error (%d). File (%s), Line (%d)\n", \
-        ret, __FILE__, __LINE__); \
-        fflush(stdout); \
-        return(ret); \
-}
-
-#endif // KERNELTYPES_H
+#endif // LF_BRIO_KERNELTYPES_H
 
 // EOF
+

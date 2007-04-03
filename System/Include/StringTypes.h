@@ -195,14 +195,10 @@ typedef tUTF16Char	tUniChar;
 //		FIXME/dg: fill in
 //==============================================================================
 
-typedef Glib::ustring	CString;
-typedef Glib::ustring	CPath;
-typedef Glib::ustring	CURI;
+//typedef Glib::ustring	CString;
+//typedef Glib::ustring	CPath;
+//typedef Glib::ustring	CURI;
 
-typedef const CString*	ConstPtrCString;
-typedef const CURI*		ConstPtrCURI;
-
-/*
 class CString {		
 public:
 
@@ -259,6 +255,22 @@ protected:
 //	class CStringImpl* mpImpl;	
 };
 
+inline Boolean	operator==(const CString& str1, const CString& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const char* str1, const CString& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const CString& str1, const char* str2)
+{
+    return true;
+}
+
+
 //==============================================================================
 // Type:
 //		CUniString
@@ -309,7 +321,27 @@ public:
 	CURI(const char* str) { s = str; }
 //	CURI& 	operator=(const char* str) { s = str; return *this; }		// FIXME/dg: dummy impl
 };
-*/
+
+
+inline Boolean	operator==(const CURI& str1, const CURI& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const char* str1, const CURI& str2)
+{
+    return true;
+}
+
+inline Boolean	operator==(const CURI& str1, const char* str2)
+{
+    return true;
+}
+
+
+typedef const CString*	ConstPtrCString;
+typedef const CURI*		ConstPtrCURI;
+
 
 #endif	// LF_BRIO_STRINGTYPES_H
 
