@@ -1,0 +1,24 @@
+#-----------------------------------------------------------------------------
+# Brio/Etc Repository
+#-----------------------------------------------------------------------------
+import os.path
+import glob
+Import('*')
+
+#-----------------------------------------------------------------------------
+# Populate the "Publish" folder for a public release
+#-----------------------------------------------------------------------------
+if local_vars['is_publish']:
+	platform = local_vars['platform']
+	tools = [platform + '_common.py', 
+			 platform + '_embedded.py',
+			 platform + '_emulation.py',
+			 '__init__.py',
+			 'arm-g++.py',
+			 'cxxtest.py',
+			 'runtest.py'
+			]
+	dest_dir = os.path.join(local_vars['publish_root'], 'Tools')
+	sources =  map(lambda x: os.path.join('Tools', 'SConsTools', x), tools)
+	env.Install(dest_dir, sources)
+	
