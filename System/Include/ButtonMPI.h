@@ -7,7 +7,7 @@
 //==============================================================================
 //
 // File:
-//		EventMgrMPI.h
+//		ButtonMPI.h
 //
 // Description:
 //		Defines the Module Public Interface (MPI) for the Button Manager module. 
@@ -15,26 +15,7 @@
 //==============================================================================
 
 #include <CoreMPI.h>
-#include <EventMessage.h>
-
-//==============================================================================	   
-// Button types
-//==============================================================================
-//------------------------------------------------------------------------------
-struct tButtonData {
-	U32	buttonState;
-	U32	buttonTransition;
-};
-
-//------------------------------------------------------------------------------
-class CButtonMessage : public IEventMessage {
-public:
-	CButtonMessage( const tButtonData& data );
-	virtual U16	GetSizeInBytes() const;
-	tButtonData GetButtonState() const;
-private:
-	tButtonData	mData;
-};
+#include <ButtonTypes.h>
 
 
 //==============================================================================
