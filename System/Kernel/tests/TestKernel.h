@@ -10,6 +10,12 @@
 
 using namespace std;
 
+    void *myTask(void* numbers)
+    {
+		std::cout << "I am myTask!\n";
+		cout << flush;
+    }
+
 //============================================================================
 // TestAudioMgr functions
 //============================================================================
@@ -30,7 +36,7 @@ public:
 		delete KernelMPI; 
 	}
 	
-
+    	
 
 	//------------------------------------------------------------------------
 	void testWasCreated( )
@@ -89,4 +95,20 @@ public:
 		std::cout << "Module Origin name is: " << *pURI << endl;
 		
 	}
+
+//  CKernelMPI::CreateTask(const CURI* pTaskURI, 
+//	const tTaskProperties* pProperties, tTaskHndl *pHndl)
+
+	void testCreateTask()
+	{
+		const CURI *pTaskURI = NULL;
+		tTaskProperties pProperties = {0};
+		tTaskHndl *pHndl;
+
+		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CreateTask( NULL, &pProperties, pHndl) );
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoiningThreads( *pHndl, NULL ) );		
+	}		
+
+
 };
