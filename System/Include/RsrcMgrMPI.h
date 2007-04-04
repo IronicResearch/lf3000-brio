@@ -16,7 +16,7 @@
 
 #include <CoreTypes.h>
 #include <SystemTypes.h>
-#include <SystemRsrcTypes.h>
+//#include <SystemRsrcTypes.h>
 #include <ResourceTypes.h>
 #include <StringTypes.h>
 #include <CoreMPI.h>

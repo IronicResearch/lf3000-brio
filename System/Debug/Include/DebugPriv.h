@@ -21,6 +21,7 @@
 // System includes
 #include <stdarg.h>	
 #include <SystemTypes.h>
+#include <StringTypes.h>
 #include <CoreModule.h>
 
 //==============================================================================

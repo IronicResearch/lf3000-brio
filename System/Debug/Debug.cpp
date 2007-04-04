@@ -23,7 +23,6 @@
 
 // system includes
 #include <SystemTypes.h>
-#include <StringTypes.h>
 #include <DebugMPI.h>
 
 // Module includes

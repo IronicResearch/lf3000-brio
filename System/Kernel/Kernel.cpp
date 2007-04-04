@@ -222,6 +222,18 @@ tErrType CKernelModule::GetTaskSchedulingPolicy( tTaskHndl hndl, int* policy )
 	return kNoErr;
 }	
 
+tErrType CKernelModule::TaskSleep( U32 msec )
+{
+    while( msec > 999 )     /* For OpenBSD and IRIX, argument */
+        {                   /* to usleep must be < 1000000.   */
+        usleep( 999000 );
+        msec -= 999;
+        }
+    usleep( msec * 1000 );
+
+	return kNoErr;
+}
+
 //============================================================================
 // Allocating memory from the System heap
 //============================================================================

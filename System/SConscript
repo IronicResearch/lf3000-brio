@@ -16,7 +16,7 @@ def MakeTempDirName(module):
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
 modules = []
-#modules.append(Conscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
+modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
 modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
 modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
 modules.append(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))

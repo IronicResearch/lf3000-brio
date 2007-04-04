@@ -117,6 +117,7 @@ tErrType	CKernelMPI::CreateTask(const CURI* pTaskURI,
 		
 	return mpModule->CreateTask( pTaskURI, pProperties, pHndl );
 }
+
 //----------------------------------------------------------------------------
 tErrType	CKernelMPI::JoiningThreads( tTaskHndl pHndl, void **value_ptr ) 
 {
@@ -160,6 +161,15 @@ tErrType CKernelMPI::GetTaskSchedulingPolicy(tTaskHndl hndl, int* policy)
 		return kMpiNotConnectedErr;
 		
 	return mpModule->GetTaskSchedulingPolicy( hndl, policy );
+}	
+
+//----------------------------------------------------------------------------
+tErrType CKernelMPI::TaskSleep( U32 msec )
+{
+	if(!mpModule)
+		return kMpiNotConnectedErr;
+		
+	return mpModule->TaskSleep( msec );
 }	
 
 //============================================================================

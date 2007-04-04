@@ -73,6 +73,8 @@ public:
 	virtual tErrType GetTaskPriority( tTaskHndl hndl, int * priority );
 	virtual tErrType GetTaskSchedulingPolicy( tTaskHndl hndl, int* policy );
 	
+	virtual tErrType TaskSleep( U32 msec );
+
 	// Memory Allocation
 	virtual tErrType Malloc( U32 size, tPtr ptr );
 	virtual tErrType Free( tPtr ptr );

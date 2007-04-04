@@ -20,7 +20,7 @@
 #include <CoreMPI.h>
 #include <KernelMPI.h>
 #include <RsrcMgrMPI.h>
-#include <ModuleRsrc.h>
+//#include <ModuleRsrc.h>
 #include <EventListener.h>
 
 #include <string.h> // for strcmp

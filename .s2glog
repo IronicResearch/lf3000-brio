@@ -716,3 +716,12 @@ By DGibbs (DGibbs@leapfrog.com) on 4/4/07 11:26 AM
 875 ms. (Cumulative: 88,222 ms)
 
 ----------------
+Revision 100 from svn://localhost/TRUNK/:
+
+First checkin of semi-working AudioMPI.  Plays test tone when AudioMPI-StartAudio() is called.  Added TaskSleep() to the KernelMPI().  Added temporary debug output to the module mgr to report when a module load failed.
+
+By DGibbs (DGibbs@leapfrog.com) on 4/4/07 11:28 AM
+12 changed, 9 added, 0 deleted.
+1,361 ms. (Cumulative: 89,630 ms)
+
+----------------

@@ -53,6 +53,8 @@ public:
 	tErrType GetTaskPriority( tTaskHndl hndl, int *priority );
 	tErrType GetTaskSchedulingPolicy( tTaskHndl hndl, int *policy );
 
+	tErrType TaskSleep( U32 msec );
+	
 	//==============================================================================
 	// Memory Allocation
 	//==============================================================================

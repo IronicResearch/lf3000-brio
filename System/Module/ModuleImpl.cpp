@@ -222,6 +222,8 @@ namespace
 			void* pLib = dlopen(pFound->sopath, RTLD_LAZY);					//*3
 			if( !pLib )
 			{
+				printf("\n Failed to load found module at sopath: %s\n", pFound->sopath);
+				printf("\n dlerror() says: %s\n", dlerror());
 				//TODO: DebugMPI message
 				return kModuleOpenFail;
 			}
