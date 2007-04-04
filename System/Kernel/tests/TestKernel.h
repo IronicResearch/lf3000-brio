@@ -10,12 +10,36 @@
 
 using namespace std;
 
-    void *myTask(void* numbers)
-    {
-		std::cout << "I am myTask!\n";
-		cout << flush;
-    }
+typedef struct{
+	int numTest;
+	char *testDescription;
+}thread_arg_t;
 
+    void *myTask(void* threadArg)
+    {
+		printf("myTask was created and started\n");
+	
+		int my_policy;
+		struct sched_param my_param;
+        thread_arg_t *sentData;
+
+		sentData = (thread_arg_t *)threadArg;
+		printf("----Test=#%d %s \n", sentData->numTest, sentData->testDescription);   
+		
+		pthread_getschedparam(pthread_self(),
+						  &my_policy,
+						  &my_param);
+		
+		printf("\nThread routine running at %s Priority is %d\n",
+		(my_policy == SCHED_FIFO ? "FIFO"
+		:(my_policy == SCHED_RR ? "RR"
+		:(my_policy == SCHED_OTHER ? "OTHER"
+		:"unknown"))),
+		my_param.sched_priority);						   	
+		fflush( stdout );
+		
+		sleep(2);	// In order to test Cancel function
+    }
 //============================================================================
 // TestAudioMgr functions
 //============================================================================
@@ -35,8 +59,6 @@ public:
 	{
 		delete KernelMPI; 
 	}
-	
-    	
 
 	//------------------------------------------------------------------------
 	void testWasCreated( )
@@ -96,19 +118,68 @@ public:
 		
 	}
 
-//  CKernelMPI::CreateTask(const CURI* pTaskURI, 
-//	const tTaskProperties* pProperties, tTaskHndl *pHndl)
-
 	void testCreateTask()
 	{
+//--------------------------------------------------------------		
+// 	For reference:
+//		struct tTaskProperties 
+//		{
+//			U32 				priority;	            // 1
+//			tAddr				stackAddr;				// 2
+//			U32 				stackSize;				// 3	
+//			tTaskMainFcn_posix	TaskMainFcn;            // 4
+//			U32					taskMainArgCount;       // 5
+//			tPtr				pTaskMainArgValues;		// 6						
+//			tTaskStartupMode	startupMode;	        // 7
+//			tTaskSchedPolicy	schedulingPolicy;		// 8
+//			U32					schedulingInterval;     // 9
+//   		int                 inheritSched;           // 10
+//		};
+//----------------------------------------------------------------
+
 		const CURI *pTaskURI = NULL;
 		tTaskProperties pProperties = {0};
 		tTaskHndl *pHndl;
+        thread_arg_t threadArg;
+        int testNumber = 1;
+ 
+ //-----------------	Test 1	----------------------------        
+        threadArg.numTest = testNumber++;
+        char *message1 = "Default Properties";
+        threadArg.testDescription = message1;
 
 		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
+		pProperties.pTaskMainArgValues = &threadArg;
+		
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CreateTask( NULL, &pProperties, pHndl) );
-		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoiningThreads( *pHndl, NULL ) );		
-	}		
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoiningThreads( *pHndl, NULL ) );
 
+//-----------------	Test 2	----------------------------        
+        threadArg.numTest = testNumber++;
+        char *message3 = "Set Priority and Policcy";
+        threadArg.testDescription = message3;
+
+		pProperties.priority = 50;
+    	pProperties.schedulingPolicy = SCHED_FIFO;
+
+        pProperties.TaskMainFcn = (void* (*)(void*))myTask;
+		pProperties.pTaskMainArgValues = &threadArg;
+		
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CreateTask( NULL, &pProperties, pHndl) );
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoiningThreads( *pHndl, NULL ) );
+//-----------------	Test 3	----------------------------        
+        threadArg.numTest = testNumber++;
+        char *message2 = "Cancel Thread";
+        threadArg.testDescription = message2;
+
+		pProperties.priority = 50;
+    	pProperties.schedulingPolicy = SCHED_FIFO;
+
+        pProperties.TaskMainFcn = (void* (*)(void*))myTask;
+		pProperties.pTaskMainArgValues = &threadArg;
+		
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CreateTask( NULL, &pProperties, pHndl) );
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( *pHndl ) );
+	}		
 
 };
