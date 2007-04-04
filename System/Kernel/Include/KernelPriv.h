@@ -66,6 +66,7 @@ public:
 	// Tasks
 	virtual	tErrType	CreateTask( const CURI* pTaskURI, 
 							const tTaskProperties* pProperties, tTaskHndl *pHndl );
+    virtual tErrType JoiningThreads( tTaskHndl pHndl, void **value_ptr );							
 	virtual tErrType CancelTask( tTaskHndl hndl );
 	virtual tTaskHndl GetCurrentTask();
 	

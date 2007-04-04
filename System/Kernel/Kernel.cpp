@@ -175,6 +175,10 @@ tErrType	CKernelModule::CreateTask( const CURI* pTaskURI,
     return kNoErr;
 }
 
+tErrType CKernelModule::JoiningThreads( tTaskHndl pHndl, void **value_ptr )
+{
+	return pthread_join( pHndl, value_ptr );  
+}
 //------------------------------------------------------------------------------
 tErrType CKernelModule::CancelTask( tTaskHndl hndl )
 {
@@ -184,6 +188,7 @@ tErrType CKernelModule::CancelTask( tTaskHndl hndl )
 //         whose signal handler is executing cannot be terminated.
 	return pthread_cancel( hndl );
 }
+
 
 
 // This service returns the currently active task pointer.

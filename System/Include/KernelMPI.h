@@ -43,7 +43,11 @@ public:
 	//==============================================================================
 	tErrType	CreateTask( const CURI* pTaskURI, 
 					const tTaskProperties* pTaskProperties, tTaskHndl *pHndl );
+    
+    tErrType	JoiningThreads( tTaskHndl pHndl, void **value_ptr );					
+	
 	tErrType	CancelTask( tTaskHndl hndl );
+	
 	tTaskHndl	GetCurrentTask();
 
 	tErrType GetTaskPriority( tTaskHndl hndl, int *priority );

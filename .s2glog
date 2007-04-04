@@ -688,3 +688,12 @@ By TParker (TParker@leapfrog.com) on 4/3/07 3:44 PM
 1,047 ms. (Cumulative: 85,222 ms)
 
 ----------------
+Revision 96 from svn://localhost/TRUNK/:
+
+Added JoiningThreads function
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 4/3/07 7:11 PM
+4 changed, 0 added, 0 deleted.
+984 ms. (Cumulative: 86,269 ms)
+
+----------------

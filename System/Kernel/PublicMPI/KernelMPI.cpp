@@ -117,7 +117,14 @@ tErrType	CKernelMPI::CreateTask(const CURI* pTaskURI,
 		
 	return mpModule->CreateTask( pTaskURI, pProperties, pHndl );
 }
-
+//----------------------------------------------------------------------------
+tErrType	CKernelMPI::JoiningThreads( tTaskHndl pHndl, void **value_ptr ) 
+{
+	if(!mpModule)
+		return kMpiNotConnectedErr;
+		
+	return mpModule->JoiningThreads( pHndl, value_ptr );
+}
 //----------------------------------------------------------------------------
 tErrType CKernelMPI::CancelTask(tTaskHndl hndl)
 {
