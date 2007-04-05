@@ -800,3 +800,12 @@ By TParker (TParker@leapfrog.com) on 4/5/07 2:28 PM
 937 ms. (Cumulative: 99,177 ms)
 
 ----------------
+Revision 110 from svn://localhost/TRUNK/:
+
+Wrap the very verbose DebugMPI unit tests so they are conditionally compileable and turned off by default.
+
+By DGibbs (DGibbs@leapfrog.com) on 4/5/07 4:53 PM
+1 changed, 0 added, 0 deleted.
+938 ms. (Cumulative: 100,162 ms)
+
+----------------
