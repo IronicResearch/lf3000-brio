@@ -734,3 +734,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 4/4/07 11:45 AM
 984 ms. (Cumulative: 90,692 ms)
 
 ----------------
+Revision 102 from svn://localhost/TRUNK/:
+
+Add enum types for various search types (used by FindRsrc). These defines are passed down to a general search function ans stored to allow FindNextRsrc() to continue with same search. 
+
+By Gbreniman (Gbreniman@leapfrog.com) on 4/5/07 10:50 AM
+1 changed, 0 added, 0 deleted.
+985 ms. (Cumulative: 91,724 ms)
+
+----------------

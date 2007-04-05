@@ -34,6 +34,16 @@ enum {
 typedef U16	tRsrcPackageType;
 
 enum {
+	kRsrcSearchTypeUndefined = 0,
+	kRsrcSearchTypeByURI,
+	kRsrcSearchTypeByID,
+	kRsrcSearchTypeByHandle,
+	kRsrcSearchTypeByType,
+};
+
+typedef U16 tRsrcSearchType;
+
+enum {
 	kLoadRsrcOptionUndefined = 0,
 	kLoadRsrcOptionAsync
 };
