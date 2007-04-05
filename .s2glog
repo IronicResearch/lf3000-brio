@@ -782,3 +782,12 @@ By TParker (TParker@leapfrog.com) on 4/5/07 11:11 AM
 937 ms. (Cumulative: 97,052 ms)
 
 ----------------
+Revision 108 from svn://localhost/TRUNK/:
+
+Checkin of Portaudio libs to support audio output for x86 Linux desktop.
+
+By DGibbs (DGibbs@leapfrog.com) on 4/5/07 1:52 PM
+0 changed, 2 added, 0 deleted.
+1,110 ms. (Cumulative: 98,193 ms)
+
+----------------
