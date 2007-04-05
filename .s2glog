@@ -791,3 +791,12 @@ By DGibbs (DGibbs@leapfrog.com) on 4/5/07 1:52 PM
 1,110 ms. (Cumulative: 98,193 ms)
 
 ----------------
+Revision 109 from svn://localhost/TRUNK/:
+
+Get RPATH right for unit tests
+
+By TParker (TParker@leapfrog.com) on 4/5/07 2:28 PM
+1 changed, 0 added, 0 deleted.
+937 ms. (Cumulative: 99,177 ms)
+
+----------------

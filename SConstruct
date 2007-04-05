@@ -204,8 +204,8 @@ def RunMyTests(ptarget, psources, plibs, penv):
 			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs
 			if is_emulation:
 				fulllibs += ['Emulation']
-				testenv.Append(LIBPATH = ['ThirdParty/PowerVR/Libs'])
-				testenv.Append(RPATH = ['ThirdParty/PowerVR/Libs'])
+				testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
+				testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
 			temp = testenv.Program([mytest] + psources, LIBS = fulllibs)
 			mytestexe = testenv.Install(deploy_dir, temp)
 			if is_runtests == 1:
