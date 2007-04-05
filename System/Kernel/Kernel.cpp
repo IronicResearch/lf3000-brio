@@ -548,7 +548,8 @@ U32   		CKernelModule::GetElapsedTime( U32* pUs )
     timeval time;
 
 	gettimeofday( &time, NULL );
-	*pUs = time.tv_usec;
+	if( pUs )
+		*pUs = time.tv_usec;
 	return (time.tv_sec * 1000 );
 }
 

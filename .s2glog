@@ -743,3 +743,12 @@ By Gbreniman (Gbreniman@leapfrog.com) on 4/5/07 10:50 AM
 985 ms. (Cumulative: 91,724 ms)
 
 ----------------
+Revision 103 from svn://localhost/TRUNK/:
+
+Test for NULL parameter in GetElapsedTime()
+
+By TParker (TParker@leapfrog.com) on 4/5/07 10:59 AM
+1 changed, 0 added, 0 deleted.
+969 ms. (Cumulative: 92,724 ms)
+
+----------------
