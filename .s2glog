@@ -752,3 +752,12 @@ By TParker (TParker@leapfrog.com) on 4/5/07 10:59 AM
 969 ms. (Cumulative: 92,724 ms)
 
 ----------------
+Revision 104 from svn://localhost/TRUNK/:
+
+Added BrioOpenGLConfig object for common OpenGL initialization & teardown
+
+By TParker (TParker@leapfrog.com) on 4/5/07 11:03 AM
+10 changed, 2 added, 0 deleted.
+1,281 ms. (Cumulative: 94,036 ms)
+
+----------------

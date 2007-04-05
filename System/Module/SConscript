@@ -11,8 +11,8 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
-modlibs		= ['']
-mpilibs		= ['']
+modlibs		= ['Emulation']
+mpilibs		= ['Emulation']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module

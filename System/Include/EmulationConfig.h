@@ -37,8 +37,9 @@ namespace LeapFrog
 			//--------------------------------------------------------------
 			// Emulation project setup
 			//--------------------------------------------------------------
-			void		SetModuleSearchPath( const CPath& );
-			CPath		GetModuleSearchPath( ) const;
+			bool		Initialize( const char* );
+			void		SetModuleSearchPath( const char* );
+			const char*	GetModuleSearchPath( ) const;
 
 			//--------------------------------------------------------------
 			// Frame buffer characteristics
@@ -74,7 +75,7 @@ namespace LeapFrog
 			// Implementation member vars
 			//--------------------------------------------------------------
 		};
-
+		
 	}	// end of Brio namespace
 }		// end of LeapFrog namespace
 

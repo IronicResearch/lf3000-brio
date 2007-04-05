@@ -26,6 +26,13 @@ struct tButtonData {
 	U32	buttonTransition;
 };
 
+const U32 kButtonUpKey		= (1 << 0);
+const U32 kButtonDownKey	= (1 << 1);
+const U32 kButtonRightKey	= (1 << 2);
+const U32 kButtonLeftKey	= (1 << 3);
+const U32 kButtonAKey		= (1 << 4);
+const U32 kButtonBKey		= (1 << 5);
+
 //------------------------------------------------------------------------------
 class CButtonMessage : public IEventMessage {
 public:

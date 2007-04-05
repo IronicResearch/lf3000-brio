@@ -201,7 +201,11 @@ def RunMyTests(ptarget, psources, plibs, penv):
 		# FIXME/tp: following conditional is getting evaluated too early,
 		# FIXME/tp: need to find alternate/delayed way
 		if os.path.exists(mytest[0].abspath):
-			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs + (is_emulation and ['Emulation'] or [])
+			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs
+			if is_emulation:
+				fulllibs += ['Emulation']
+				testenv.Append(LIBPATH = ['ThirdParty/PowerVR/Libs'])
+				testenv.Append(RPATH = ['ThirdParty/PowerVR/Libs'])
 			temp = testenv.Program([mytest] + psources, LIBS = fulllibs)
 			mytestexe = testenv.Install(deploy_dir, temp)
 			if is_runtests == 1:

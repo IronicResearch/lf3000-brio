@@ -71,6 +71,7 @@ namespace
 			CPath sep("/");
 			temp = dir + sep + name;
 			strncpy(pModule->sopath, temp.c_str(), kMaxPath);
+//printf("Module: %s  %s\n", pModule->name, pModule->sopath);
 			return true;
 		}
 
@@ -222,8 +223,8 @@ namespace
 			void* pLib = dlopen(pFound->sopath, RTLD_LAZY);					//*3
 			if( !pLib )
 			{
-				printf("\n Failed to load found module at sopath: %s\n", pFound->sopath);
-				printf("\n dlerror() says: %s\n", dlerror());
+				printf("\n Failed to load found module at sopath: %s\n", pFound->sopath);	//FIXME
+				printf("\n dlerror() says: %s\n", dlerror());	//FIXME
 				//TODO: DebugMPI message
 				return kModuleOpenFail;
 			}

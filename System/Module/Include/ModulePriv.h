@@ -16,7 +16,7 @@
 
 #ifndef EMULATION
 
-	inline const char* GetModuleLibraryLocation()
+	inline CPath GetModuleLibraryLocation()
 	{
 		return "/System/Modules";
 	}
@@ -25,9 +25,9 @@
 
 	#include <EmulationConfig.h>
 
-	inline const char* GetModuleLibraryLocation()
+	inline CPath GetModuleLibraryLocation()
 	{
-		return LeapFrog::Brio::EmulationConfig::Instance().GetModuleSearchPath().c_str();
+		return LeapFrog::Brio::EmulationConfig::Instance().GetModuleSearchPath();
 	}
 	
 #endif // !EMULATION

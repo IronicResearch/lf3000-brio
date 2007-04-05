@@ -34,12 +34,13 @@ namespace
 		if( gg_pModuleHandle != NULL )
 			return kNoErr;
 		CPath path = GetModuleLibraryLocation();
-		// FIXME: Debug message here
 		path = path + CPath("/libModule.so");
 		const char* str = path.c_str();
+printf("GetModuleLibraryLocation: %s\n", str);//FIXME
 		gg_pModuleHandle = dlopen(str, RTLD_LAZY);
 		if( !gg_pModuleHandle )
 		{
+printf("LoadModuleManagerLib() failed:%s\n", dlerror());//FIXME
 			//TODO: DebugMPI message (using dlerror?)
 	    	return kModuleLoadFail;
 		}		
@@ -98,6 +99,7 @@ namespace Module
 	{
 		static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
 
+		ptr = NULL;
 		tErrType status = LoadModuleManagerLib();
 		if( status == kNoErr )
 		{
