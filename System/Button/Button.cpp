@@ -56,7 +56,7 @@ tErrType CButtonModule::GetModuleOrigin(ConstPtrCURI &pURI) const
 void* ButtonTask(void*)
 {
 	const tEventPriority kPriorityTBD = 0;
-	WINDOW* win = (WINDOW*)LeapFrog::Brio::EmulationConfig::Instance().GetLcdDisplayWindow();
+//	WINDOW* win = (WINDOW*)LeapFrog::Brio::EmulationConfig::Instance().GetLcdDisplayWindow();
 //	CDebugMPI	debug;
 //	debug.
 printf("Started ButtonTask()\n");
