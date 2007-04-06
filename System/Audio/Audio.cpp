@@ -12,10 +12,13 @@
 //==============================================================================
 #include <SystemTypes.h>
 #include <SystemErrors.h>
+#include <EventMPI.h>
 #include <AudioTypes.h>
 #include <AudioPriv.h>
 
 #include <AudioOutput.h>
+#include <EventListener.h>
+
 /*
 #include <AudioMsg.h>
 #include <AudioPlayer.h>
@@ -43,7 +46,8 @@ static CAudioModule*	sinst = NULL;
 
 //==============================================================================
 //==============================================================================
-CAudioModule::CAudioModule(void)
+CAudioModule::CAudioModule( )
+	: mpDefaultListener(NULL)
 {
 
 	tErrType	err = kNoErr;
@@ -164,6 +168,14 @@ CAudioModule::~CAudioModule(void)
 */
 }
 
+//==============================================================================
+//==============================================================================
+tErrType CAudioModule::SetDefaultListener( const IEventListener* pListener )
+{
+	mpDefaultListener = pListener;
+	return kNoErr;
+}
+
 
 //============================================================================
 // Informational functions
@@ -222,6 +234,16 @@ tErrType CAudioModule::StopAudio( void )
 		audioOutputOn = false;
 		err = StopAudioOutput();
 	}
+	
+	const tEventPriority	kPriorityTBD = 0;
+	tAudioMsgDataCompleted	data;
+	data.audioID = 99;	// dummy
+	data.payload = 101;	// dummy
+	data.count = 1;
+
+	CEventMPI	event;
+	CAudioEventMessage	msg(data);
+	event.PostEvent(msg, kPriorityTBD, mpDefaultListener);
 	
 	return err;
 	

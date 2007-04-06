@@ -16,8 +16,9 @@
 #include <SystemTypes.h>
 #include <ResourceTypes.h>
 #include <SystemErrors.h>
+#include <SystemEvents.h>
 #include <Module.h>
-//#include <AudioTypes.h>
+#include <AudioTypes.h>
 //#include <RsrcMgrMPI.h>
 #include <AudioMPI.h>
 
@@ -42,11 +43,29 @@ static const CString kMPIName = "AudioMPI";
 // Global variables
 //==============================================================================
 
+//============================================================================
+// CAudioEventMessage
+//============================================================================
+//------------------------------------------------------------------------------
+CAudioEventMessage::CAudioEventMessage( const tAudioMsgDataCompleted& data ) 
+	: IEventMessage(kAudioCompletedEvent, 0)
+{
+	audioMsgData.audioCompleted = data;
+}
+
+//------------------------------------------------------------------------------
+U16	CAudioEventMessage::GetSizeInBytes() const
+{
+	return sizeof(CAudioEventMessage);
+}
+
+
+
 //==============================================================================
 // CAudioMPI implementation
 //==============================================================================
 
-CAudioMPI::CAudioMPI() : mpModule(NULL)
+CAudioMPI::CAudioMPI( const IEventListener* pListener ) : mpModule(NULL)
 {
 	tErrType err;
 	
@@ -55,7 +74,10 @@ CAudioMPI::CAudioMPI() : mpModule(NULL)
 									kAudioModuleVersion);
 									
 	if (kNoErr == err)
+	{
 		mpModule = reinterpret_cast<CAudioModule*>(pModule);
+		mpModule->SetDefaultListener(pListener);
+	}
 }
 
 //----------------------------------------------------------------------------

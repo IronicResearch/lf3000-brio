@@ -206,7 +206,7 @@ int StopAudioOutput( void )
 
 	if (gpAudioOutBuffer)
 		memset(gpAudioOutBuffer, 0, kAudioOutBufSizeInBytes);
-		
+	
 	return err;
 }
 

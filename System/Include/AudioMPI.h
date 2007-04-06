@@ -22,6 +22,8 @@
 #include <CoreMPI.h>
 //#include <EventListener.h>
 
+class IEventListener;
+
 
 //==============================================================================
 // Class:
@@ -44,7 +46,7 @@ public:
 
 
 	// class-specific functionality
-	CAudioMPI();
+	CAudioMPI( const IEventListener* pDefaultListener = NULL );
 	virtual ~CAudioMPI();
 
 	//********************************

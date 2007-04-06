@@ -27,6 +27,8 @@
 //#include <AudioMixer.h>
 //#include <EventHandler.h>
 
+class IEventListener;
+
 typedef U32 tRsrcHndl;
 
 // Constants
@@ -121,6 +123,8 @@ public:
 	// class-specific functionality
 	CAudioModule();
 	virtual ~CAudioModule();
+	virtual tErrType	SetDefaultListener( const IEventListener* pListener );
+	
 
 	// Overall Audio Control
 	virtual tErrType	StartAudio( void );
@@ -146,6 +150,7 @@ private:
 	U8					masterVolume;		// Master volume
 	U8					numMixerChannels;
 	U32					sampleRate;
+	const IEventListener*	mpDefaultListener;
 	
 //	NU_EVENT_GROUP		audioEvents;		// Audio event group
 //	NU_QUEUE			audioCmdQueue;		// Audio command message queue

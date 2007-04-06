@@ -19,6 +19,7 @@
 //#include <RsrcTypes.h>
 //#include <RsrcMgrMPI.h>
 //#include <EventListener.h>
+#include <EventMessage.h>
 
 //==============================================================================
 // Basic audio types
@@ -108,7 +109,6 @@ struct tAudioMsgDataCuePoint {
 	tAudioCuePoint		cuePoint;
 };
 
-/*
 
 union tAudioMsgData {
 	tAudioMsgDataCompleted		audioCompleted;
@@ -124,16 +124,15 @@ union tAudioMsgData {
 //		Class that describes the format of all Audio Event Messages. 
 //==============================================================================
 
-//class CAudioEventMessage : public IEventMessage 
-//{
-//public:
-//	void	Init(tEventType eventType, tRsrcHndl eventSource, U16 sizeInBytes) 
-//			{ mEventType = eventType;  mEventSource = eventSource;  mSizeInBytes = sizeInBytes; }
-//
-//	tAudioMsgData	audioMsgData;
-//};
+class CAudioEventMessage : public IEventMessage 
+{
+public:
+	CAudioEventMessage( const tAudioMsgDataCompleted& data );
+	virtual U16	GetSizeInBytes() const;
 
-#define kAudioEventMessageSize (sizeof(CAudioEventMessage))
+	tAudioMsgData	audioMsgData;
+};
+/*
 
 //==============================================================================
 // Class:
