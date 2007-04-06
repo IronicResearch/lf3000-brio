@@ -13,7 +13,6 @@
 //
 //============================================================================
 #include <stdio.h>
-#include <curses.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #define XK_MISCELLANY
