@@ -17,9 +17,8 @@ if local_vars['is_publish']:
 	Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 #	libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so'))
 	core_name = 'libgles_cl.so'
-	lib = os.path.join('PowerVR', 'Libs', core_name + '.0')
-	print os.path.join(lib_dir, core_name + '.0 ')
+	lib = os.path.join('PowerVR', 'Libs', core_name)
 	env.Install(lib_dir, lib)
-	env.Execute('ln -s -f -T ' + os.path.join(lib_dir, core_name + '.0 ') 
-				+ os.path.join(lib_dir, core_name))
+	lib += '.0'
+	env.Install(lib_dir, lib)
 	
