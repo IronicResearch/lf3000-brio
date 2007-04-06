@@ -9,9 +9,16 @@
 //
 // Description:
 //		Implements the underlying Button Manager module.
+//		NOTE: Debug code at http://www.acm.vt.edu/~jmaxwell/programs/xspy/xspy.html
 //
 //============================================================================
 #include <stdio.h>
+#include <curses.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#define XK_MISCELLANY
+#define XK_LATIN1
+#include <X11/keysymdef.h>
 
 #include <ButtonMPI.h>
 #include <ButtonPriv.h>
@@ -22,6 +29,39 @@
 #include <SystemErrors.h>
 
 const CURI	kModuleURI	= "Button FIXME";
+
+#define BIT(c, x)   ( c[x/8]&(1<<(x%8)) )
+
+
+//============================================================================
+// Local state and utility functions
+//============================================================================
+namespace
+{
+	//------------------------------------------------------------------------
+	const char* kDefaultDisplay = ":0";
+	U32			gLastState;
+
+	//------------------------------------------------------------------------
+	U32 KeySymToButton( KeySym keysym )
+	{
+		switch( keysym )
+		{
+			case XK_Left:		return kButtonLeftKey;
+			case XK_Right:		return kButtonRightKey;
+			case XK_Up:			return kButtonUpKey;
+			case XK_Down:		return kButtonDownKey;
+			case XK_a:			return kButtonAKey;
+			case XK_KP_Insert:	return kButtonAKey;
+			case XK_KP_0:		return kButtonAKey;
+			case XK_b:			return kButtonBKey;
+			case XK_KP_Delete:	return kButtonBKey;
+			case XK_KP_Decimal:	return kButtonBKey;
+		}
+		return 0;
+	}
+}
+
 
 
 //============================================================================
@@ -55,56 +95,38 @@ tErrType CButtonModule::GetModuleOrigin(ConstPtrCURI &pURI) const
 // FIXME/tp: Move to emulation-only section/file
 void* ButtonTask(void*)
 {
-	const tEventPriority kPriorityTBD = 0;
-//	WINDOW* win = (WINDOW*)LeapFrog::Brio::EmulationConfig::Instance().GetLcdDisplayWindow();
-//	CDebugMPI	debug;
-//	debug.
-printf("Started ButtonTask()\n");
-/*
-	sleep(3);
-	cbreak();				// Line buffering disabled, pass everything to me
-	keypad(win, TRUE);	// I need that nifty F1
+	Display  *disp = XOpenDisplay(kDefaultDisplay);
+	Window focus;
+	int revert;
 
-	CEventMPI		event;
-	tButtonData		d;
-	int				ch;
-    while((ch = wgetch(win)) != KEY_F(1))
-    {
-    	printf(".");
-    	switch( ch )
-    	{
-			case KEY_LEFT:
-				d.buttonState = d.buttonTransition = kButtonLeftKey;
-				break;
-			case KEY_RIGHT:
-				d.buttonState = d.buttonTransition = kButtonRightKey;
-				break;
-			case KEY_UP:
-				d.buttonState = d.buttonTransition = kButtonUpKey;
-				break;
-			case KEY_DOWN:
-				d.buttonState = d.buttonTransition = kButtonDownKey;
-				break;
-			case 'a':
-			case KEY_IL:
-				d.buttonState = d.buttonTransition = kButtonAKey;
-				break;
-			case 'b':
-			case KEY_DL:
-				d.buttonState = d.buttonTransition = kButtonBKey;
-				break;
-			default:
- 			   	d.buttonState = d.buttonTransition = 0;
-				break;
+	const tEventPriority kPriorityTBD = 0;
+
+printf("Started ButtonTask()\n");
+
+	CEventMPI		eventmgr;
+	tButtonData		data;
+ 	data.buttonState = data.buttonTransition = 0;
+
+	Window win = (Window)LeapFrog::Brio::EmulationConfig::Instance().GetLcdDisplayWindow();
+	XSelectInput(disp, win, KeyPress | KeyRelease);
+	for( bool bDone = false; !bDone; )	// FIXME/tp: when break out???
+	{
+		XEvent	event;
+		XNextEvent(disp, &event);
+		KeySym keysym = XLookupKeysym((XKeyEvent *) &event, 0);
+		U32 mask = KeySymToButton(keysym);
+		data.buttonTransition = mask;
+		if( mask != 0 )
+		{
+			if( event.type == KeyPress )
+				data.buttonState |= mask;
+			else
+				data.buttonState &= ~mask;
+			gLastState = data.buttonState;
+			CButtonMessage	msg(data);
+			eventmgr.PostEvent(msg, kPriorityTBD);
 		}
-    	if( d.buttonState != 0 )
-    	{
-    		printf("Posting button event!\n");
-			CButtonMessage	msg(d);
-			event.PostEvent(msg, kPriorityTBD);
-    	}
-    }
-    	*/
+	}
 }
 
 
@@ -113,17 +135,13 @@ printf("Started ButtonTask()\n");
 //============================================================================
 CButtonModule::CButtonModule()
 {
-	/*
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
 
-//FIXME/tp: typedef for casting
-	typedef void* (*tTaskMainFcnPtr)(void*);
 	if( kernel.IsValid() )
 	{
 		const CURI		*pTaskURI = NULL;
 		tTaskProperties	pProperties = {0};
-		thread_arg_t	threadArg;
 		pProperties.pTaskMainArgValues = NULL;
 		tTaskHndl		*pHndl;
 		pProperties.TaskMainFcn = ButtonTask;
@@ -131,9 +149,8 @@ CButtonModule::CButtonModule()
 	}
 	if( status != kNoErr )
 		;// FIXME error message
-	*/
 }
-//static_cast<tTaskMainFcnPtr>
+
 //----------------------------------------------------------------------------
 CButtonModule::~CButtonModule()
 {
@@ -152,8 +169,25 @@ Boolean	CButtonModule::IsValid() const
 //----------------------------------------------------------------------------
 tErrType CButtonModule::GetButtonState(tButtonData& data)
 {
-	data.buttonState = 0;
-	data.buttonTransition = 0;
+	data.buttonState = data.buttonTransition = 0;
+
+	char keys[32];
+	Display  *disp = XOpenDisplay(kDefaultDisplay);	
+	XQueryKeymap(disp, keys);
+	
+	for (int i=0; i<32*8; i++)
+	{
+    	if (BIT(keys, i))
+		{
+	     	KeySym keysym = XKeycodeToKeysym(disp, i, 0);
+	     	if( keysym )
+	    	 	data.buttonState |= KeySymToButton(keysym);
+		}
+	}
+	data.buttonTransition = data.buttonState ^ gLastState;
+	gLastState = data.buttonState;
+	
+	
 	return kNoErr;
 }
 
