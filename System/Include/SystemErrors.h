@@ -101,7 +101,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupModule), MODULE_ERRORS)
 	(kResourceInvalidErr)		\
 	(kResourceNotFoundErr)		\
 	(kResourceNotLoadedErr)		\
-	(kResourceNotOpenErr)
+	(kResourceNotOpenErr)		\
+	(kResourceInvalidMPIIdErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupResource), RESOURCE_ERRORS)
 

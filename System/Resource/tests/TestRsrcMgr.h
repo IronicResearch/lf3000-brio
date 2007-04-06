@@ -2,11 +2,12 @@
 
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_array.hpp>
-#include <RsrcMgrMPI.h>
+#include <ResourceMPI.h>
 #include <EventMessage.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
-
+#include <EventListener.h>
+#include <UnitTestUtils.h>
 
 //============================================================================
 // MyRsrcEventListener
@@ -19,7 +20,7 @@ class MyRsrcEventListener : public IEventListener
 public:
 	MyRsrcEventListener( ) 
 		: IEventListener(kMyHandledTypes, ArrayCount(kMyHandledTypes))
-	{
+	{		
 	}
 	
 	virtual tEventStatus Notify( const IEventMessage& msg )
@@ -49,16 +50,16 @@ private:
 //============================================================================
 // TestRsrcMgr functions
 //============================================================================
-class TestRsrcMgr : public CxxTest::TestSuite 
+class TestRsrcMgr : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
-	CRsrcMgrMPI*		rsrcmgr_;
+	CResourceMPI*		rsrcmgr_;
 	MyRsrcEventListener	handler_;
 public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
-		rsrcmgr_ = new CRsrcMgrMPI();
+		rsrcmgr_ = new CResourceMPI();
 	}
 
 	//------------------------------------------------------------------------
@@ -98,33 +99,44 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetMPIVersion(version) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetMPIName(pName) );
 		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-		TS_ASSERT_EQUALS( *pName, "RsrcMgrMPI" );
+		TS_ASSERT_EQUALS( *pName, "ResourceMPI" );
 
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetModuleVersion(version) );
 		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetModuleName(pName) );
-		TS_ASSERT_EQUALS( *pName, "RsrcMgr Module" );
+		TS_ASSERT_EQUALS( *pName, "ResourceMPI" );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetModuleOrigin(pURI) );
-		TS_ASSERT_EQUALS( *pURI, "RsrcMgr URI" );
+		TS_ASSERT_EQUALS( *pURI, "URI" );
 	}
 	
 	//------------------------------------------------------------------------
 	void testOpenCloseDevices( )
 	{
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 
-		resetHandler();
-		MyRsrcEventListener	overrideHandler;
-		TS_ASSERT( handlerIsReset() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices(kNoOptionFlags, &overrideHandler) );
-		TS_ASSERT( handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, overrideHandler.GetEventMsg()->GetEventType() );
+//		resetHandler();
+//		MyRsrcEventListener	overrideHandler;
+//		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices(kNoOptionFlags, &overrideHandler) );
+//		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, overrideHandler.GetEventMsg()->GetEventType() );
 	}
 
+	//------------------------------------------------------------------------
+	void testGetNumRsrcs()
+	{
+		U32				count;
+		
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetNumRsrcs( &count ) );
+		TS_ASSERT_EQUALS( count, 45 );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
+	}
+	
 	//------------------------------------------------------------------------
 	void testMissingRsrc( )
 	{
@@ -136,11 +148,11 @@ public:
 		tVersion		version;
 		U32				size;
 		tPtr			ptr;
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT( !handlerIsReset() );
-		resetHandler();
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( !handlerIsReset() );
+//		resetHandler();
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("./testrsrcs") );
 		TS_ASSERT_EQUALS( kResourceNotFoundErr, rsrcmgr_->FindRsrc("bogus_resource_name", handle) );
 		TS_ASSERT_EQUALS( kResourceInvalidErr, rsrcmgr_->GetRsrcURI(handle, pURI) );
@@ -151,7 +163,7 @@ public:
 		TS_ASSERT_EQUALS( kResourceInvalidErr, rsrcmgr_->GetRsrcPackedSize(handle, size) );
 		TS_ASSERT_EQUALS( kResourceInvalidErr, rsrcmgr_->GetRsrcUnpackedSize(handle, size) );
 		TS_ASSERT_EQUALS( kResourceInvalidErr, rsrcmgr_->GetRsrcPtr(handle, ptr) );
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 	}
 
 	//------------------------------------------------------------------------
@@ -164,44 +176,46 @@ public:
 		tRsrcType		type;
 		tVersion		version;
 		U32				size;
-		tPtr			ptr;
-		TS_ASSERT( handlerIsReset() );
-		const U32		kSizeHelloWorldText	= 30;
+		tPtr			ptr = (void*) 1;
+//		TS_ASSERT( handlerIsReset() );
+		const U32		kSizeHelloWorldText	= 17;
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
-		resetHandler();
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("./testrsrcs") );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc( "HelloWorldText.txt", handle) );
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+//		resetHandler();
+//		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("./testrsrcs") );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("/home/lfu/LeapFrog/System") );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc( "sys5.txt", handle) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcURI(handle, pURI) );
-		TS_ASSERT_EQUALS( *pURI, "testrsrcs/HelloWorldText.txt" );	//FIXME: find way to specify whole path from unit test
+//		TS_ASSERT_EQUALS( *pURI, "testrsrcs/HelloWorldText.txt" );	//FIXME: find way to specify whole path from unit test
+		TS_ASSERT_EQUALS( *pURI, "/home/lfu/LeapFrog/System/sys5.txt" );	//FIXME: find way to specify whole path from unit test
 		// FIXME/tp: Remove ID concept?
-//		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcID(handle, id) );
+//		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcID(handle, id) 21);
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcType(handle, type) );
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersion(handle, version) );
-		TS_ASSERT_EQUALS( version, MakeVersion(1, 0) );
+		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersionStr(handle, pStr) );
-//		TS_ASSERT_EQUALS( *pStr, "1.0" );
+		TS_ASSERT_EQUALS( *pStr, "0.1" );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcPackedSize(handle, size) );
 		TS_ASSERT_EQUALS( size, kSizeHelloWorldText );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcUnpackedSize(handle, size) );
 		TS_ASSERT_EQUALS( size, kSizeHelloWorldText );
 		TS_ASSERT_EQUALS( kResourceNotLoadedErr, rsrcmgr_->GetRsrcPtr(handle, ptr) );
 		
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->LoadRsrc(handle) );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceLoadedEvent, handler_.GetEventMsg()->GetEventType() );
-		resetHandler();
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceLoadedEvent, handler_.GetEventMsg()->GetEventType() );
+//		resetHandler();
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcPtr(handle, ptr) );
 		CString	helloWorld = reinterpret_cast<char*>(ptr);
 		TS_ASSERT_EQUALS( helloWorld, "Hello World Text" );
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->UnloadRsrc(handle) );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceUnloadedEvent, handler_.GetEventMsg()->GetEventType() );
-		resetHandler();
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceUnloadedEvent, handler_.GetEventMsg()->GetEventType() );
+//		resetHandler();
 		TS_ASSERT_EQUALS( kResourceNotLoadedErr, rsrcmgr_->GetRsrcPtr(handle, ptr) );
 	}
 
@@ -215,28 +229,28 @@ public:
 		tRsrcType		type;
 		tVersion		version;
 		U32				size;
-		tPtr			ptr;
+		tPtr			ptr = (void*) 1;
 		const U32		kBellAudioSize	= 3000;
 		const U32		kBufSize	= 80;
 		U8 				buffer[kBufSize];
 		
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
-		resetHandler();
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("./testrsrcs") );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc("Dummy.bin", handle) );
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+//		resetHandler();
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("/home/lfu/LeapFrog/Applic/Applic2") );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc( "app5.bin", handle) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcURI(handle, pURI) );
-		TS_ASSERT_EQUALS( *pURI, "testrsrcs/Dummy.bin" );
+		TS_ASSERT_EQUALS( *pURI, "/home/lfu/LeapFrog/Applic/Applic2/app5.bin" );
 		// FIXME/tp: Remove ID concept?
 //		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcID(handle, id) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcType(handle, type) );
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersion(handle, version) );
-		TS_ASSERT_EQUALS( version, MakeVersion(1, 0) );
+		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersionStr(handle, pStr) );
-//		TS_ASSERT_EQUALS( *pStr, "1.0" );
+		TS_ASSERT_EQUALS( *pStr, "0.1" );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcPackedSize(handle, size) );
 		TS_ASSERT_EQUALS( size, kBellAudioSize );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcUnpackedSize(handle, size) );
@@ -244,18 +258,18 @@ public:
 		TS_ASSERT_EQUALS( kResourceNotLoadedErr, rsrcmgr_->GetRsrcPtr(handle, ptr) );
 		TS_ASSERT_EQUALS( kResourceNotOpenErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
 		
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenRsrc(handle) );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceNotOpenErr, handler_.GetEventMsg()->GetEventType() );
-		resetHandler();
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceNotOpenErr, handler_.GetEventMsg()->GetEventType() );
+//		resetHandler();
 		TS_ASSERT_EQUALS( kResourceNotLoadedErr, rsrcmgr_->GetRsrcPtr(handle, ptr) );
 	
-		TS_ASSERT( handlerIsReset() );
+//		TS_ASSERT( handlerIsReset() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
-		TS_ASSERT( !handlerIsReset() );
-		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
-		resetHandler();
+//		TS_ASSERT( !handlerIsReset() );
+//		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+//		resetHandler();
 		for(int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
