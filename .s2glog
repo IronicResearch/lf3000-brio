@@ -887,3 +887,12 @@ By Gbreniman (Gbreniman@leapfrog.com) on 4/6/07 10:21 AM
 1,000 ms. (Cumulative: 109,991 ms)
 
 ----------------
+Revision 120 from svn://localhost/TRUNK/:
+
+Recompiled the Portaudio library to use direct ALSA (not oss emulation) and change SConscript so that the audio MPI links against libasound instead of alsatoss.
+
+By DGibbs (DGibbs@leapfrog.com) on 4/6/07 10:23 AM
+2 changed, 0 added, 0 deleted.
+1,015 ms. (Cumulative: 111,053 ms)
+
+----------------
