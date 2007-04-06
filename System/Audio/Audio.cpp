@@ -1,10 +1,9 @@
 //==============================================================================
-// Copyright (c) 2002-2007 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
-//		AudioMgr.cpp
+//		Audio.cpp
 //
 // Description:
 //		Underlying implementation code for the Audio Manager module.
@@ -256,6 +255,7 @@ tErrType CAudioModule::StopAudio( void )
 //----------------------------------------------------------------------------
 tErrType CAudioModule::PauseAudio( void )
 {
+	return kNoErr;
 //	tAudioCmdMsgHeader*	pMsg;
 //	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypePauseAllAudio);
 //	SendCmdMessage(pMsg); 
@@ -264,6 +264,7 @@ tErrType CAudioModule::PauseAudio( void )
 //----------------------------------------------------------------------------
 tErrType CAudioModule::ResumeAudio( void )
 {
+	return kNoErr;
 //	tAudioCmdMsgHeader*	pMsg;
 //	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypeResumeAllAudio);
 //	SendCmdMessage(pMsg); 
