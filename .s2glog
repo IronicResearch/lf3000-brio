@@ -842,3 +842,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 4/6/07 8:43 AM
 1,656 ms. (Cumulative: 104,912 ms)
 
 ----------------
+Revision 115 from svn://localhost/TRUNK/:
+
+Fix bug in Stop where the memset()ing of gpAudioOutBuffer was overrunning the end of the buffer.
+
+By DGibbs (DGibbs@leapfrog.com) on 4/6/07 9:56 AM
+1 changed, 0 added, 0 deleted.
+938 ms. (Cumulative: 105,881 ms)
+
+----------------
