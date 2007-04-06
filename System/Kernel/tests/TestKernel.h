@@ -142,7 +142,7 @@ public:
 		tTaskHndl *pHndl;
         thread_arg_t threadArg;
         int testNumber = 1;
- 
+ #if 0
  //-----------------	Test 1	----------------------------        
         threadArg.numTest = testNumber++;
         char *message1 = "Default Properties";
@@ -168,6 +168,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CreateTask( NULL, &pProperties, pHndl) );
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoiningThreads( *pHndl, NULL ) );
 //-----------------	Test 3	----------------------------        
+
         threadArg.numTest = testNumber++;
         char *message2 = "Cancel Thread";
         threadArg.testDescription = message2;
@@ -180,6 +181,12 @@ public:
 		
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CreateTask( NULL, &pProperties, pHndl) );
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( *pHndl ) );
+#endif
+//-----------------	Test 4	----------------------------        
+        U32 size = 0x5000;
+        tPtr pPtr = NULL;
+        
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Malloc( size, pPtr ) );
+		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Free( pPtr ) );
 	}		
-
 };
