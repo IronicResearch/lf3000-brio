@@ -833,3 +833,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 4/6/07 8:31 AM
 969 ms. (Cumulative: 103,209 ms)
 
 ----------------
+Revision 114 from svn://localhost/TRUNK/:
+
+Added memory allocation tests
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 4/6/07 8:43 AM
+1 changed, 0 added, 0 deleted.
+1,656 ms. (Cumulative: 104,912 ms)
+
+----------------
