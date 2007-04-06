@@ -1,5 +1,5 @@
-#ifndef RSRCMGRMPI_H
-#define RSRCMGRMPI_H
+#ifndef LF_BRIO_RESOURCEMPI_H
+#define LF_BRIO_RESOURCEMPI_H
 //==============================================================================
 // $Source: $
 //
@@ -7,12 +7,15 @@
 //==============================================================================
 //
 // File:
-//		RsrcMgrMPI.h
+//		ResourceMPI.h
 //
 // Description:
 //		Defines the Module Public Interface (MPI) for the System Kernel module. 
 //
 //==============================================================================
+
+#define MAX_RSRC_URI_SIZE		128
+#define MAX_RSRC_NAME_SIZE		80
 
 #include <CoreTypes.h>
 #include <SystemTypes.h>
@@ -22,28 +25,53 @@
 #include <CoreMPI.h>
 #include <EventListener.h>
 
-// @FIXME/dg: temp "backstore" for rsrcs during bringup
-struct tRsrcDescriptor {
-	char* 			uri;
-	char*			name;
-	U32				id;
+struct tRsrcFileDescriptor {
+	char 			uri[MAX_RSRC_URI_SIZE];
+	char			name[MAX_RSRC_NAME_SIZE];
 	tRsrcType		type;
 	tVersion		version;
 	U32				packedSize;
 	U32				unpackedSize;
-	tPtr 			pRsrc;
+//	U32				id;					// not currently in use
 };
+
+struct tRsrcDescriptor {
+	char 			uri[MAX_RSRC_URI_SIZE];
+	char			name[MAX_RSRC_NAME_SIZE];
+	tRsrcType		type;
+	tVersion		version;
+	U32				packedSize;
+	U32				unpackedSize;
+	U32				id;
+	tPtr 			pRsrc;
+	FILE			*pFile;
+	//	need some sort of file pointer (read/seek/write)
+	U32				useCount;			// load/unload
+};
+
+struct tRsrcDeviceDescriptor {
+	char			uriBase[MAX_RSRC_URI_SIZE];
+};
+
+union tRsrcSearchPattern {
+	char 			uri[MAX_RSRC_URI_SIZE];
+	U32				id;
+	tRsrcType		type;
+	tRsrcHndl 		hndl;
+};
+
+struct tRsrcLoadLogEntry {
+	tRsrcHndl		hndl;
+	U32				taskID;
+};	
 
 // @FIXME/tp: Remove event context stuff?
 typedef U32	tEventContext;
 const tEventContext	kEventContextUndefined = 0;
 
  
-class CRsrcMgrMPI : public ICoreMPI {
+class CResourceMPI : public ICoreMPI {
 public:	
-	// @FIXME/dg: temp bringup functionality to create "backstore"
-	void	InstallArrayOfDescriptorPtrs(tRsrcDescriptor** pPtrArray, U32 numDescriptors);
-	void	UninstallArrayOfDescriptorPtrs();
 
 	// core functionality
 	virtual	Boolean		IsValid() const;
@@ -54,14 +82,12 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	CRsrcMgrMPI();
-	virtual ~CRsrcMgrMPI();
+	CResourceMPI(const IEventListener *pEventHandler = NULL);
+	virtual ~CResourceMPI();
 
 	// Setting default search path & handlers
 	//@FIXME/tp: Original was to SetDefaultURIPath via string pointer???
 	tErrType		SetDefaultURIPath(const CURI &pURIPath);
-	tErrType		SetDefaultEventHandler(const IEventListener *pEventHandler=kNull,
-						tEventContext callerContext=kEventContextUndefined);
 
 	// Searching for devices
 	tErrType		GetNumDevices(U16 *pCount);
@@ -191,10 +217,11 @@ public:
 	tErrType		DeleteRsrc(tRsrcHndl hndl);
 
 private:
-	class CRsrcMgrMPIImpl *mpImpl;
+	class CResourceModule *mpModule;
+	U32				mId;
 };
 
 
-#endif // RSRCMGRMPI_H
+#endif // LF_BRIO_RESOURCEMPI_H
 
 // eof

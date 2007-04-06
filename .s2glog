@@ -860,3 +860,12 @@ By Gbreniman (Gbreniman@leapfrog.com) on 4/6/07 9:56 AM
 1,016 ms. (Cumulative: 106,928 ms)
 
 ----------------
+Revision 117 from svn://localhost/TRUNK/:
+
+Split Resource Manager into Module and MPI.
+
+By Gbreniman (Gbreniman@leapfrog.com) on 4/6/07 10:00 AM
+0 changed, 3 added, 4 deleted.
+984 ms. (Cumulative: 107,959 ms)
+
+----------------
