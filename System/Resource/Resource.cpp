@@ -72,6 +72,11 @@ MPIMap gMPIMap;
 
 namespace
 {
+
+
+//==============================================================================
+// Setup search paths
+//==============================================================================
 	//----------------------------------------------------------------------------
 	CResourceImpl* RetrieveImpl(U32 id)
 	{
@@ -290,6 +295,44 @@ namespace
 			printf("ERROR - unable to open directory - %s\n", path);
 		}
 	}
+	
+#ifndef EMULATION
+	// FIXME/tp: separeate into emulation-specific subfolder files
+	CURI InitializeBaseResourceURIs()
+	{
+		tRsrcDeviceDescriptor tempDevice;
+		CString URIpath;
+		
+		CURI defaultURI = "/home/lfu/LeapFrog/";
+		
+		URIpath = defaultURI + "System/";
+		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
+		AddDeviceEntry(&tempDevice);
+		URIpath = defaultURI + "Applic/";
+		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
+		AddDeviceEntry(&tempDevice);
+		return defaultURI;
+	}
+	
+#else // !EMULATION
+
+	#include <unistd.h>
+
+	inline CURI InitializeBaseResourceURIs()
+	{
+		tRsrcDeviceDescriptor tempDevice;
+		char buf[MAX_RSRC_URI_SIZE];
+		if( getcwd(buf, MAX_RSRC_URI_SIZE) == NULL )
+			;//FIXME: bail
+		CURI defaultURI = buf;
+		defaultURI += "/apprsrc/";
+printf("InitializeBaseResourceURIs: %s\n", defaultURI.c_str());
+		strncpy(tempDevice.uriBase, defaultURI.c_str(), MAX_RSRC_URI_SIZE);
+		AddDeviceEntry(&tempDevice);
+		return defaultURI;
+	}
+	
+#endif // !EMULATION
 }
 
 
@@ -299,17 +342,7 @@ CResourceModule::CResourceModule()
 {
 	if (devOpenCount == 0)		// if initial construction
 	{
-		struct tRsrcDeviceDescriptor tempDevice;
-		CString URIpath;
-		
-		DefaultURI = "/home/lfu/LeapFrog/";
-		
-		URIpath = DefaultURI + "System/";
-		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
-		AddDeviceEntry(&tempDevice);
-		URIpath = DefaultURI + "Applic/";
-		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
-		AddDeviceEntry(&tempDevice);
+		DefaultURI = InitializeBaseResourceURIs();
 	}
 	devOpenCount++;
 }
@@ -372,6 +405,8 @@ tErrType CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 		return kResourceInvalidMPIIdErr;
 		
 	pimpl->mDefaultURI = pURIPath;
+	if( pURIPath.at(pURIPath.length()-1) != '/' )
+		pimpl->mDefaultURI += "/";
 	return kNoErr;
 }
 
@@ -462,7 +497,7 @@ tErrType	CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI, tRsrcHndl &hndl,
 	}
 	else
 	{
-		searchPath = pimpl->mDefaultURI + "/" + rsrcURI;
+		searchPath = pimpl->mDefaultURI + rsrcURI;
 	}
 	
 	// setup/save the search parameters for the FindNextRsrc function
@@ -668,9 +703,6 @@ tErrType  	CResourceModule::GetRsrcPtr(tRsrcHndl hndl, tPtr &pRsrcPtr)
 
 	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
 		return kResourceInvalidErr;		
-
-	if (pRsrcPtr == NULL)
-		return kInvalidParamErr;			// invalid pointer supplied
 
 	if (pRsrc->pRsrc == NULL)
 		return kResourceNotLoadedErr;

@@ -32,6 +32,8 @@ const U32 kButtonRightKey	= (1 << 2);
 const U32 kButtonLeftKey	= (1 << 3);
 const U32 kButtonAKey		= (1 << 4);
 const U32 kButtonBKey		= (1 << 5);
+const U32 kButtonVolumeUp	= (1 << 6);
+const U32 kButtonVolumeDown	= (1 << 7);
 
 //------------------------------------------------------------------------------
 class CButtonMessage : public IEventMessage {

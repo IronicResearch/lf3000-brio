@@ -19,10 +19,6 @@
 #include <EventListener.h>
 #include <EventMessage.h>
 
-// @FIXME/tp: Remove event context stuff?
-typedef U32	tEventContext;
-const tEventContext	kEventContextUndefined = 0;
-
 
 // Types
 typedef U32		tListenerId;

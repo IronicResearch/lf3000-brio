@@ -46,16 +46,22 @@ namespace
 	{
 		switch( keysym )
 		{
-			case XK_Left:		return kButtonLeftKey;
-			case XK_Right:		return kButtonRightKey;
-			case XK_Up:			return kButtonUpKey;
-			case XK_Down:		return kButtonDownKey;
-			case XK_a:			return kButtonAKey;
-			case XK_KP_Insert:	return kButtonAKey;
-			case XK_KP_0:		return kButtonAKey;
-			case XK_b:			return kButtonBKey;
-			case XK_KP_Delete:	return kButtonBKey;
-			case XK_KP_Decimal:	return kButtonBKey;
+			case XK_Left:			return kButtonLeftKey;
+			case XK_KP_Left:		return kButtonLeftKey;
+			case XK_Right:			return kButtonRightKey;
+			case XK_KP_Right:		return kButtonRightKey;
+			case XK_Up:				return kButtonUpKey;
+			case XK_KP_Up:			return kButtonUpKey;
+			case XK_Down:			return kButtonDownKey;
+			case XK_KP_Down:		return kButtonDownKey;
+			case XK_a:				return kButtonAKey;
+			case XK_KP_Insert:		return kButtonAKey;
+			case XK_KP_0:			return kButtonAKey;
+			case XK_b:				return kButtonBKey;
+			case XK_KP_Delete:		return kButtonBKey;
+			case XK_KP_Decimal:		return kButtonBKey;
+			case XK_KP_Add:			return kButtonVolumeUp;
+			case XK_KP_Subtract:	return kButtonVolumeDown;
 		}
 		return 0;
 	}
