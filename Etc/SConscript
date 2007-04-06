@@ -20,5 +20,6 @@ if local_vars['is_publish']:
 			]
 	dest_dir = os.path.join(local_vars['publish_root'], 'Tools')
 	sources =  map(lambda x: os.path.join('Tools', 'SConsTools', x), tools)
+	sources += ['Tools/BuildRsrc']
 	env.Install(dest_dir, sources)
 	
