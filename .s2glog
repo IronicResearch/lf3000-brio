@@ -914,3 +914,12 @@ By TParker (TParker@leapfrog.com) on 4/6/07 11:19 AM
 937 ms. (Cumulative: 113,069 ms)
 
 ----------------
+Revision 123 from svn://localhost/TRUNK/:
+
+Clean up test, make less verbose, test turning audio on and off three times.
+
+By DGibbs (DGibbs@leapfrog.com) on 4/6/07 11:51 AM
+1 changed, 0 added, 0 deleted.
+1,000 ms. (Cumulative: 114,132 ms)
+
+----------------

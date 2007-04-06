@@ -1,4 +1,4 @@
-// TestAudioMgr.h 
+// TestAudio.h 
 
 #include <string>
 #include <iostream>
@@ -8,6 +8,9 @@
 #include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <UnitTestUtils.h> 
+
+// For lots of text output, enable this:
+//#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
 using namespace std;
 
@@ -73,12 +76,11 @@ public:
 		tVersion version;
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
-		
-	    std::cout << "\nHello, world dump Audio MPI!\n";
-		
+				
 		fValid = AudioMPI->IsValid();
 		std::cout << "MPI IsValid = " << fValid << endl;
 		
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		if (AudioMPI->IsValid()) {
 			err = AudioMPI->GetMPIName( pName );
 			std::cout << "MPI name is: " << *pName << endl;
@@ -95,19 +97,47 @@ public:
 			err = AudioMPI->GetModuleOrigin( pURI );
 			std::cout << "Module Origin name is: " << *pURI << endl;
 		}		
+#endif
 	}
 
 	//------------------------------------------------------------------------
-	void testAudioasdfadfOutput( )
+	void testAudioOutput( )
 	{
 		tErrType err;
 		
+		// Start up sine output.
 		err = AudioMPI->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		err = KernelMPI->TaskSleep( 5000 );
+		// sleep3 seconds
+		err = KernelMPI->TaskSleep( 3 * 1000 );
 		TS_ASSERT_EQUALS( kNoErr, err );
 
+		// stop the engine.
+		err = AudioMPI->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// Start up sine output.
+		err = AudioMPI->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep 3 seconds
+		err = KernelMPI->TaskSleep( 3 * 1000 );
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// stop the engine.
+		err = AudioMPI->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// Start up sine output.
+		err = AudioMPI->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep 3 seconds
+		err = KernelMPI->TaskSleep( 3 * 1000 );
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// stop the engine.
 		err = AudioMPI->StopAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 	}
