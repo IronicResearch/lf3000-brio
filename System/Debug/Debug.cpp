@@ -16,30 +16,13 @@
 
 // std includes
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>		// for vprintfs()
-#include <sys/time.h>	// for gettimeofday()
-
 // system includes
 #include <SystemTypes.h>
-#include <DebugMPI.h>
+//#include <DebugTypes.h>
 
 // Module includes
 #include <DebugPriv.h>
-
-//------------------------------------------------------------------------------
-// tDebugOutFormats
-//
-//		Bit mask used internally by the MPI to indicate any special formatting
-//		to use for the debug output.  Some are mutually exclusive, but others
-//		might be used in combination.
-//------------------------------------------------------------------------------
-typedef enum {
-	kDebugOutFormatNormal	= 0x0000,
-	kDebugOutFormatLiteral 	= 0x0001,
-	kDebugOutFormatWarn		= 0x0002
-} tDebugOutFormats;
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================
@@ -50,44 +33,12 @@ typedef enum {
 // info on implementation of this module
 const CURI	kModuleOriginURI = "Debug Module Origin URI";
 
-//==============================================================================
-// Defines
-//==============================================================================
-
-const char kAssertTagStr[] 				= "\n!ASSERT: ";
-const char kWarnTagStr[] 				= "!WARNING: ";
-const char kSavedAssertTagStr[] 		= "\n!SAVED ASSERT: ";
-const char kDebugOutSignatureFmt[] 		= "[%d] ";
-const char kDebugOutTimestampFmt[]		= "<@%d.%03dms> ";
-
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
 
 static CDebugModule*	sinst = NULL;
 
-//------------------------------------------------------------------------------
-// Helper functions
-//------------------------------------------------------------------------------
-Boolean CDebugModule::pCheckDebugOutIsEnabled(tDebugSignature sig, tDebugLevel lvl)
-{
-	// want to exit this as soon as possible for performance reasons so
-	// n't take hit when debug switch off on shipping product, so we
-	//  the checks in a very specific orderva_list arguments
-
-	// If we're silencedva_list arguments
-	// 		va_list argumentsor level is > master level
-	// 		va_list argumentsor signature out of range
-	// 		va_list argumentsor output disabled for signature
-	// 		then debug not enabled.
-	// Else debug enabled for this signature.
-	return ((lvl == kDbgLvlSilent) || 
-			(lvl > masterDebugLevel) ||
-			 sig > kMaxDebugSig ||
-			 !(sigDbgBitVecArray[(sig >> 3)] & (1 << (sig & 0x7)))) ? false : true;
-}
-	
-	
 			  
 //==============================================================================
 // Function:
@@ -101,17 +52,13 @@ Boolean CDebugModule::pCheckDebugOutIsEnabled(tDebugSignature sig, tDebugLevel l
 // Description:
 
 //==============================================================================
-CDebugModule::CDebugModule(void)
+CDebugModule::CDebugModule(void) : masterDebugLevel_(kDbgLvlValuable),
+		timestampDebugOut_(false)
 {
-	U32 i;
-
-	masterDebugLevel = kDbgLvlValuable;
-	timestampDebugOut = false;
-
-	// initialize the sigDbgBitVecArray so that DebugOut for all modules is 
+	// initialize the sigDbgBitVecArray_ so that DebugOut for all modules is 
 	// turned on by default.
-	for(i = 0 ; i < kSigBitVecArraySize ; i++)
-		sigDbgBitVecArray[i] = 0xff;
+	for(U32 i = 0 ; i < kSigBitVecArraySize ; i++)
+		sigDbgBitVecArray_[i] = 0xff;
 
 }
 
@@ -187,141 +134,6 @@ tErrType	CDebugModule::GetModuleOrigin(ConstPtrCURI &pURI) const
 }	
 
 
-//==============================================================================
-// Function:
-//		pVDebugOut
-//
-// Parameters:
-//		tDebugSignature sig - the ID of the module requesting the Printf();
-//		tDbgLvl	- the debug level for a Printf call (0 - kMaxDebugLevel)
-//		char * 	- format string
-//		va_list	- the argument list that completes the format string
-//		U16		- debugOut format
-//
-// Returns:
-//		void
-//
-// Description:
-//		Provides Run-time control of debug output. sig and lvl are compared
-//		against the current control values to determine if the Printf should
-//		be allowed or ignored. Implementation of standard "C" printf.  
-//		Calls the Kernel module's printf.  
-//==============================================================================
-void CDebugModule::pVDebugOut( tDebugSignature sig, tDebugLevel lvl, const char * formatString, 
-						 va_list arguments, U16	debugOutFormat )
-{
-	// NOTE: get out as fast as possible if not going to print out.  Using
-	//		 the helper fcn for this.
-	if (pCheckDebugOutIsEnabled(sig, lvl))
-	{
-		// Ready to outputva_list arguments
-
-		// va_list argumentsif timestamping all output, add timestamp first
-		if (timestampDebugOut)
-		{
-			U32 mSec, uSec;
-            timeval time;
-
-//			mSec = CKernelMPI::GetElapsedPrecisionTime(&uSec);
-			gettimeofday( &time, NULL );
-			printf( kDebugOutTimestampFmt, (time.tv_sec / 1000), time.tv_usec );
-		}
-
-		// va_list argumentsif not asking for literal output, show the module signature
-		if (!(debugOutFormat & kDebugOutFormatLiteral))
-			printf(kDebugOutSignatureFmt, sig);
-
-		// va_list argumentsif this is a warning, output warning string
-		if (debugOutFormat & kDebugOutFormatWarn)
-			printf(kWarnTagStr);
-
-		// va_list argumentsnow output the requested data.
-		vprintf(formatString, arguments);
-	}
-}
-
-
-//==============================================================================
-// Function:
-//		passert
-//
-// Parameters:
-//		char * 	- format string
-//		va_list	- the argument list that completes the format string
-//
-// Returns:
-//		void
-//
-// Description:
-//		Handler for assertions based on tested assumptions in the code.  **We
-//		only get here if the assertion tested was false**. Outputs information 
-//		to identify the source of error.
-//==============================================================================
-void CDebugModule::pAssert(const char *formatString, va_list arguments)
-{
-	printf( kAssertTagStr );
-    vprintf( formatString, arguments ); 
-}
-
-
-//==============================================================================
-// Function:
-//		Warn
-//
-// Parameters:
-//		tDebugSignature sig - the ID of the module requesting the Printf();
-//		char * 	- format string
-//		va_list	- the argument list that completes the format string
-//
-// Returns:
-//		void
-//
-// Description:
-//		Equivalent to DebugOut @ kDbgLvlCritical, with standard warning text prepended.
-//		This is implemented as a separate function rather than just a macro for
-//		VDebugOut, since will probably be adding additional warning feedback
-//		(on screen, or audio) accompanying serial out message.  
-//==============================================================================
-void CDebugModule::pWarn( tDebugSignature sig, const char * formatString, va_list arguments )
-{
-	pVDebugOut( sig, kDbgLvlCritical, formatString, arguments, kDebugOutFormatWarn );
-}
-
-void 	CDebugModule::DebugOut( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, va_list arguments )
-{
-	pVDebugOut( sig, lvl, formatString, arguments, kDebugOutFormatNormal );
-}
-
-void 	CDebugModule::VDebugOut( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, va_list arguments )
-{
-	pVDebugOut( sig, lvl, formatString, arguments, kDebugOutFormatNormal );
-}
-
-void 	CDebugModule::DebugOutLiteral( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, va_list arguments )
-{
-	pVDebugOut( sig, lvl, formatString, arguments, kDebugOutFormatLiteral );
-}
-
-void 	CDebugModule::VDebugOutLiteral( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, va_list arguments )
-{
-	pVDebugOut( sig, lvl, formatString, arguments, kDebugOutFormatLiteral );
-}
-
-
-void 	CDebugModule::Warn( tDebugSignature sig, const char * formatString, va_list arguments )
-{
-	pWarn( sig, formatString, arguments );
-}
-						
-void 	CDebugModule::Assert( const char * formatString, va_list arguments )
-{
-	pAssert( formatString, arguments );
-}
-
 			
 //==============================================================================
 // Function:
@@ -342,7 +154,7 @@ void 	CDebugModule::Assert( const char * formatString, va_list arguments )
 void CDebugModule::DisableDebugOut( tDebugSignature sig )
 {
 	if (sig <= kMaxDebugSig)
-		sigDbgBitVecArray[(sig>>3)] &= ~(1<<(sig&0x7));
+		sigDbgBitVecArray_[(sig>>3)] &= ~(1<<(sig&0x7));
 }
 
 //==============================================================================
@@ -364,7 +176,7 @@ void CDebugModule::DisableDebugOut( tDebugSignature sig )
 void CDebugModule::EnableDebugOut( tDebugSignature sig )
 {
 	if (sig <= kMaxDebugSig)
-		sigDbgBitVecArray[(sig>>3)] |= (1<<(sig&0x7));
+		sigDbgBitVecArray_[(sig>>3)] |= (1<<(sig&0x7));
 }
 
 //==============================================================================
@@ -382,9 +194,22 @@ void CDebugModule::EnableDebugOut( tDebugSignature sig )
 //		Checks if a DebugOut command with this level or higher is issued,
 //		whether it will go out the serial port.   
 //==============================================================================
-Boolean CDebugModule::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level )
+Boolean CDebugModule::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel lvl ) const
 {
-	return pCheckDebugOutIsEnabled(sig, level);
+	// want to exit this as soon as possible for performance reasons so
+	// n't take hit when debug switch off on shipping product, so we
+	//  the checks in a very specific orderva_list arguments
+
+	// If we're silencedva_list arguments
+	// 		va_list argumentsor level is > master level
+	// 		va_list argumentsor signature out of range
+	// 		va_list argumentsor output disabled for signature
+	// 		then debug not enabled.
+	// Else debug enabled for this signature.
+	return ((lvl == kDbgLvlSilent) || 
+			(lvl > masterDebugLevel_) ||
+			 sig > kMaxDebugSig ||
+			 !(sigDbgBitVecArray_[(sig >> 3)] & (1 << (sig & 0x7)))) ? false : true;
 }
 
 //==============================================================================
@@ -404,12 +229,12 @@ Boolean CDebugModule::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level 
 
 void CDebugModule::SetDebugLevel( tDebugLevel newLevel )
 {
-	masterDebugLevel = newLevel;
+	masterDebugLevel_ = newLevel;
 }
 
-tDebugLevel CDebugModule::GetDebugLevel()
+tDebugLevel CDebugModule::GetDebugLevel() const
 {
-	return masterDebugLevel;
+	return masterDebugLevel_;
 }
 
 //==============================================================================
@@ -429,17 +254,33 @@ tDebugLevel CDebugModule::GetDebugLevel()
 
 void CDebugModule::EnableDebugOutTimestamp()
 {
-	timestampDebugOut = true;
+	timestampDebugOut_ = true;
 }
 
 void CDebugModule::DisableDebugOutTimestamp()
 {
-	timestampDebugOut = false;
+	timestampDebugOut_ = false;
 }
+
+Boolean CDebugModule::TimestampIsEnabled() const
+{
+	return timestampDebugOut_;
+}
+
+//==============================================================================
+const char* const CDebugModule::ErrorToString(tErrType err) const
+{
+	return ErrToStr(err);
+}
+
+LF_END_BRIO_NAMESPACE()
+
 
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
+
+LF_USING_BRIO_NAMESPACE()
 //------------------------------------------------------------------------
 extern "C" tVersion ReportVersion()
 {

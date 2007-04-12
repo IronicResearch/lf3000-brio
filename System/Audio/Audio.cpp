@@ -61,12 +61,12 @@ CAudioModule::CAudioModule( )
 //		printf("AudioModule -- Couldn't create KernelMPI!\n");
 
 	// Get Debug MPI
-	DebugMPI =  new CDebugMPI();
+	DebugMPI =  new CDebugMPI(kGroupAudio);
 	ret = DebugMPI->IsValid();
 //	if (ret != true)
 //		printf("AudioModule -- Couldn't create DebugMPI!\n");
 	
-	DebugMPI->DebugOut((tDebugSignature)1, kDbgLvlValuable, 
+	DebugMPI->DebugOut(kDbgLvlValuable, 
 		(const char *)"\nKernel and Debug modules created by AudioMPI\n");	
 	
 	// Hard code the configuration resource

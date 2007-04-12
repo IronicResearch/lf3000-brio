@@ -9,6 +9,7 @@
 #include <SystemEvents.h>
 #include <UnitTestUtils.h>
 
+LF_USING_BRIO_NAMESPACE()
 
 const U32 kBadButtonState = 0xBAADF00D;
 
@@ -89,7 +90,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleName(pName) );
 		TS_ASSERT_EQUALS( *pName, "Button" );
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleOrigin(pURI) );
-		TS_ASSERT_EQUALS( *pURI, "Button FIXME" );
+		TS_ASSERT_EQUALS( *pURI, "Button URI" );
 	}
 	
 	//------------------------------------------------------------------------

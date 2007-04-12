@@ -13,6 +13,8 @@
 //#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
 using namespace std;
+LF_USING_BRIO_NAMESPACE()
+
 
 //============================================================================
 // TestAudioMgr functions

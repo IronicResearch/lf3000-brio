@@ -13,6 +13,7 @@
 //==============================================================================
 
 #include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventListener;	// forward declaration
 
@@ -34,13 +35,13 @@ public:
 	virtual tErrType	ReenableNotifyForEventType(tEventType type);
 	virtual Boolean		HandlesEvent(tEventType type) const;
 private:
-	const IEventListener*	mpNextListener;
-	tEventType*				mpEventList;
-	tEventType*				mpDisabledEventList;
-	const U16				mNumEvents;
-	U16						mNumDisabledEvents;
+	const IEventListener*	pNextListener_;
+	tEventType*				pEventList_;
+	tEventType*				pDisabledEventList_;
+	const U16				numEvents_;
+	U16						numDisabledEvents_;
 };
 
 
-
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_EVENTLISTENERPRIV_H

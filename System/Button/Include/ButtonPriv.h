@@ -14,8 +14,10 @@
 //
 //==============================================================================
 
+#include <SystemTypes.h>
 #include <CoreModule.h>
 #include "ButtonMPI.h"	// for tButtonData
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 // Constants
@@ -32,17 +34,18 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	virtual	tErrType	GetButtonState(tButtonData& data);
+	VTABLE_EXPORT tErrType	GetButtonState(tButtonData& data) const;
 
 private:
 	// Limit object creation to the Module Manager interface functions
 	CButtonModule();
 	virtual ~CButtonModule();
-	friend ICoreModule*	CreateInstance(tVersion version);
-	friend void			DestroyInstance(ICoreModule*);
+	friend ICoreModule*	::CreateInstance(tVersion version);
+	friend void			::DestroyInstance(ICoreModule*);
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_BUTTONPRIV_H
 
 // eof

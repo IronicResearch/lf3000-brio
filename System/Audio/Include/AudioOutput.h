@@ -1,6 +1,5 @@
 #ifndef LF_BRIO_AUDIOOUTPUT_H
 #define LF_BRIO_AUDIOOUTPUT_H
-
 //==============================================================================
 // Copyright (c) LeapFrog Enterprises, Inc.
 
@@ -13,6 +12,9 @@
 //		Defines the audio output.
 //
 //==============================================================================
+#include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -27,4 +29,5 @@ int StopAudioOutput( void );
 }
 #endif /* __cplusplus */
 
+LF_END_BRIO_NAMESPACE()	
 #endif /*LF_BRIO_AUDIOOUTPUT_H*/

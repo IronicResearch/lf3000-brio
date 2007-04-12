@@ -24,6 +24,15 @@
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
+#include <AudioTypes.h>
+#include <ButtonTypes.h>
+#include <DisplayTypes.h>
+#include <EventTypes.h>
+#include <KernelTypes.h>
+#include <CoreModule.h>
+#include <ResourceTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 //------------------------------------------------------------------------------
 #define GEN_VALUE_TO_STRING(r, d, item)		\
@@ -33,26 +42,27 @@
 struct ValueToString
 {
 	tErrType	value;
-	CString		string;
+	char* 		string;
 };
 
 //------------------------------------------------------------------------------
-CString ErrorToString( tErrType error )
+const char* const ErrToStr( tErrType error )
 {
-	// TODO: Debug binary search
-
 	// TODO: Keeping the following BOOST_STATIC_ASSERT in sync with the
 	//		BOOST_PP_SEQ_FOR_EACH lines will validate that the g_errorLookup 
 	//		list is ordered.
 	BOOST_STATIC_ASSERT(kGroupAudio		< kGroupCommon
-					&&	kGroupCommon	< kGroupEvent
+					&&	kGroupCommon	< kGroupDisplay
+					&&	kGroupDisplay	< kGroupEvent
 					&&	kGroupEvent		< kGroupKernel
 					&&	kGroupKernel	< kGroupModule
 					&&	kGroupModule 	< kGroupResource
 					);
 	static ValueToString g_errorLookup[] = {
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , AUDIO_ERRORS)
+//		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , BUTTON_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , COMMON_ERRORS)
+		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , DISPLAY_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , EVENT_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , KERNEL_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , MODULE_ERRORS)
@@ -77,4 +87,5 @@ CString ErrorToString( tErrType error )
 }
 
 
+LF_END_BRIO_NAMESPACE()
 // EOF

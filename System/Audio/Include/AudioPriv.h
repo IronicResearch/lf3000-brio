@@ -1,9 +1,7 @@
 #ifndef LF_BRIO_AUDIOPRIVATE_H
 #define LF_BRIO_AUDIOPRIVATE_H
-
 //==============================================================================
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -26,6 +24,8 @@
 //#include <AudioRsrcs.h>
 //#include <AudioMixer.h>
 //#include <EventHandler.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 class IEventListener;
 
@@ -121,16 +121,14 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	CAudioModule();
-	virtual ~CAudioModule();
-	virtual tErrType	SetDefaultListener( const IEventListener* pListener );
+	VTABLE_EXPORT tErrType	SetDefaultListener( const IEventListener* pListener );
 	
 
 	// Overall Audio Control
-	virtual tErrType	StartAudio( void );
-	virtual tErrType	StopAudio( void );
-	virtual tErrType	PauseAudio( void );
-	virtual tErrType	ResumeAudio( void );
+	VTABLE_EXPORT tErrType	StartAudio( void );
+	VTABLE_EXPORT tErrType	StopAudio( void );
+	VTABLE_EXPORT tErrType	PauseAudio( void );
+	VTABLE_EXPORT tErrType	ResumeAudio( void );
 
 private:
 	CKernelMPI			*KernelMPI;		// For kernel related functions
@@ -156,8 +154,15 @@ private:
 //	NU_QUEUE			audioCmdQueue;		// Audio command message queue
 //	NU_TASK             audioMgrTask;		// Audio Mgr task
 //	NU_TASK             audioCodecTask;		// Audio Codec Task
+
+	// Limit object creation to the Module Manager interface functions
+	CAudioModule();
+	virtual ~CAudioModule();
+	friend ICoreModule*	::CreateInstance(tVersion version);
+	friend void			::DestroyInstance(ICoreModule*);
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif		// LF_BRIO_AUDIOPRIVATE_H
 
 // EOF	

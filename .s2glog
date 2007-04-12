@@ -1029,3 +1029,12 @@ By TParker (TParker@leapfrog.com) on 4/11/07 12:22 PM
 953 ms. (Cumulative: 127,789 ms)
 
 ----------------
+Revision 138 from svn://localhost/TRUNK/:
+
+Rework of DebugMPI; distributed error & event codes to module-specific files; added Brio namespace framework; code cleanups
+
+By TParker (TParker@leapfrog.com) on 4/11/07 5:56 PM
+22 changed, 0 added, 1 deleted.
+1,609 ms. (Cumulative: 129,445 ms)
+
+----------------

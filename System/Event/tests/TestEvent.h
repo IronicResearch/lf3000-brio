@@ -8,7 +8,8 @@
 #include <StringTypes.h>
 #include <UnitTestUtils.h>
 
-					
+LF_USING_BRIO_NAMESPACE()
+				
 // TODO/tp: Move to common header?
 //============================================================================
 // MyEventListener

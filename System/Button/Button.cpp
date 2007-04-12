@@ -26,8 +26,10 @@
 #include <KernelMPI.h>
 #include <KernelTypes.h>
 #include <SystemErrors.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
-const CURI	kModuleURI	= "Button FIXME";
+
+const CURI	kModuleURI	= "Button URI";
 
 #define BIT(c, x)   ( c[x/8]&(1<<(x%8)) )
 
@@ -112,7 +114,7 @@ printf("Started ButtonTask()\n");
 	tButtonData		data;
  	data.buttonState = data.buttonTransition = 0;
 
-	Window win = (Window)LeapFrog::Brio::EmulationConfig::Instance().GetLcdDisplayWindow();
+	Window win = (Window)EmulationConfig::Instance().GetLcdDisplayWindow();
 	XSelectInput(disp, win, KeyPress | KeyRelease);
 	for( bool bDone = false; !bDone; )	// FIXME/tp: when break out???
 	{
@@ -146,7 +148,7 @@ CButtonModule::CButtonModule()
 	if( kernel.IsValid() )
 	{
 		const CURI		*pTaskURI = NULL;
-		tTaskProperties	pProperties = {0};
+		tTaskProperties	pProperties;
 		pProperties.pTaskMainArgValues = NULL;
 		tTaskHndl		*pHndl;
 		pProperties.TaskMainFcn = ButtonTask;
@@ -172,7 +174,7 @@ Boolean	CButtonModule::IsValid() const
 // Button state
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CButtonModule::GetButtonState(tButtonData& data)
+tErrType CButtonModule::GetButtonState(tButtonData& data) const
 {
 	data.buttonState = data.buttonTransition = 0;
 
@@ -196,10 +198,14 @@ tErrType CButtonModule::GetButtonState(tButtonData& data)
 	return kNoErr;
 }
 
+LF_END_BRIO_NAMESPACE()
+
 
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
+
+LF_USING_BRIO_NAMESPACE()
 
 static CButtonModule*	sinst = NULL;
 //------------------------------------------------------------------------

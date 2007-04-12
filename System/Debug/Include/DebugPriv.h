@@ -1,11 +1,7 @@
 #ifndef LF_BRIO_DEBUGPRIVATE_H
 #define LF_BRIO_DEBUGPRIVATE_H
-
 //==============================================================================
-//
-// LeapFrog Confidential & Proprietary
-// Copyright (c) 2004-2007 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -22,7 +18,10 @@
 #include <stdarg.h>	
 #include <SystemTypes.h>
 #include <StringTypes.h>
+#include <DebugTypes.h>
 #include <CoreModule.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 //==============================================================================
 // Defines
@@ -39,50 +38,47 @@
 const CString	kDebugModuleName	= "Debug";
 const tVersion	kDebugModuleVersion	= MakeVersion(0,1);
 
+//==============================================================================
+const char* const ErrToStr( tErrType error );
+
+
+//==============================================================================
 class CDebugModule : public ICoreModule {
 public:
 		// core functionality
-	virtual Boolean		IsValid() const;
+	virtual Boolean		IsValid( ) const;
 	virtual tErrType	GetModuleVersion( tVersion &version ) const;
 	virtual tErrType	GetModuleName( ConstPtrCString &pName ) const;	
 	virtual tErrType	GetModuleOrigin( ConstPtrCURI &pURI ) const;
 
 	// class-specific functionality
-	CDebugModule();
-	virtual ~CDebugModule();
+	VTABLE_EXPORT void DisableDebugOut( tDebugSignature sig );
+	VTABLE_EXPORT void EnableDebugOut( tDebugSignature sig );
+	VTABLE_EXPORT Boolean DebugOutIsEnabled( tDebugSignature sig, 
+											tDebugLevel level ) const;
 
-	virtual void DebugOut( tDebugSignature sig, tDebugLevel lvl, const char * formatString, va_list arguments );
-	virtual void VDebugOut( tDebugSignature sig, tDebugLevel lvl, const char * formatString, va_list arguments );
-
-	virtual void DebugOutLiteral( tDebugSignature sig, tDebugLevel lvl, const char * formatString, va_list arguments );
-	virtual void VDebugOutLiteral( tDebugSignature sig, tDebugLevel lvl, const char * formatString, va_list arguments );
-
-	virtual void Warn( tDebugSignature sig, const char * formatString, va_list arguments);
-
-	virtual void Assert( const char * formatString, va_list arguments);
+	VTABLE_EXPORT void SetDebugLevel( tDebugLevel newLevel );
+	VTABLE_EXPORT tDebugLevel GetDebugLevel( ) const;
 	
-	virtual void DisableDebugOut( tDebugSignature sig );
-	virtual void EnableDebugOut( tDebugSignature sig );
-	virtual Boolean DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level );
-
-	virtual void SetDebugLevel( tDebugLevel newLevel );
-	virtual tDebugLevel GetDebugLevel();
+	VTABLE_EXPORT void EnableDebugOutTimestamp( );
+	VTABLE_EXPORT void DisableDebugOutTimestamp( );
+	VTABLE_EXPORT Boolean TimestampIsEnabled( ) const;
 	
-	virtual void EnableDebugOutTimestamp();
-	virtual void DisableDebugOutTimestamp();
+	VTABLE_EXPORT const char* const ErrorToString( tErrType error ) const;
 	
 private:
-	tDebugLevel		masterDebugLevel;
-	Boolean			timestampDebugOut;
-	U8				sigDbgBitVecArray[kSigBitVecArraySize];
-	
-	Boolean pCheckDebugOutIsEnabled(tDebugSignature sig, tDebugLevel lvl);	
-	void pWarn( tDebugSignature sig, const char * formatString, va_list arguments );
-	void pAssert( const char *formatString, va_list arguments );
-	void pVDebugOut( tDebugSignature sig, tDebugLevel lvl, const char * formatString, 
-						 va_list arguments, U16	debugOutFormat );
+	tDebugLevel		masterDebugLevel_;
+	Boolean			timestampDebugOut_;
+	U8				sigDbgBitVecArray_[kSigBitVecArraySize];
+
+	// Limit object creation to the Module Manager interface functions
+	CDebugModule( );
+	virtual ~CDebugModule( );
+	friend ICoreModule*	::CreateInstance(tVersion version);
+	friend void			::DestroyInstance(ICoreModule*);
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif		// LF_BRIO_DEBUGPRIVATE_H
 
 // EOF

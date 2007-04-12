@@ -1,7 +1,6 @@
 //==============================================================================
 //
-// Copyright (c) 2002-2007 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -13,163 +12,280 @@
 //
 //==============================================================================
 
-//==============================================================================
-
 // std includes
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>		// for vprintfs
+#include <assert.h>
+#include <stdarg.h>		// for vprintfs()
+#include <sys/time.h>	// for gettimeofday()
 
 // system includes
 #include <SystemTypes.h>
-#include <SystemErrors.h>
 #include <StringTypes.h>
-
 #include <Module.h>
 
-#include <DebugMPI.h>
-
 // Module includes
+#include <DebugMPI.h>
 #include <DebugPriv.h>
-
-const CString kMPIName = "DebugMPI";
-const tVersion  kMPIVersion = MakeVersion(0,1);
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================
+// Types and constants
+//==============================================================================
+//------------------------------------------------------------------------------
+const CString kMPIName = "DebugMPI";
+const tVersion  kMPIVersion = MakeVersion(0,1);
+
+//------------------------------------------------------------------------------
+const char kAssertTagStr[] 				= "\n!ASSERT: ";
+const char kWarnTagStr[] 				= "!WARNING: ";
+const char kSavedAssertTagStr[] 		= "\n!SAVED ASSERT: ";
+const char kDebugOutSignatureFmt[] 		= "[%d] ";
+const char kDebugOutTimestampFmt[]		= "<@%d.%03dms> ";
+
+//------------------------------------------------------------------------------
+// tDebugOutFormats
+//
+//		Bit mask used internally by the MPI to indicate any special formatting
+//		to use for the debug output.  Some are mutually exclusive, but others
+//		might be used in combination.
+//------------------------------------------------------------------------------
+enum  {
+	kDebugOutFormatNormal	= 0x0000,
+	kDebugOutFormatLiteral 	= 0x0001,
+	kDebugOutFormatWarn		= 0x0002
+};
+
+
+//==============================================================================
+// ICoreMPI interface
+//==============================================================================
 //----------------------------------------------------------------------------
-CDebugMPI::CDebugMPI(): mpModule(NULL)
+CDebugMPI::CDebugMPI( tDebugSignature sig ): pModule_(NULL), sig_(sig)
 {
 	ICoreModule*	pModule;
 	Module::Connect( pModule, kDebugModuleName, kDebugModuleVersion );
-	mpModule = reinterpret_cast<CDebugModule*>(pModule);
+	pModule_ = reinterpret_cast<CDebugModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CDebugMPI::~CDebugMPI( void )
 {
-	Module::Disconnect( mpModule );
+	Module::Disconnect( pModule_ );
 }
 
-//==============================================================================
 //----------------------------------------------------------------------------
 Boolean CDebugMPI::IsValid() const
 {
-	return (mpModule != NULL) ? true : false; 
+	return (pModule_ != NULL) ? true : false; 
 }
 
 //----------------------------------------------------------------------------
-tErrType	CDebugMPI::GetMPIVersion( tVersion &version )  const
+tErrType CDebugMPI::GetMPIVersion( tVersion &version )  const
 {
 	version = kMPIVersion;
 	return kNoErr; 
 }
 
 //----------------------------------------------------------------------------
-tErrType	CDebugMPI::GetMPIName( ConstPtrCString &pName ) const
+tErrType CDebugMPI::GetMPIName( ConstPtrCString &pName ) const
 {
 	pName = &kMPIName;
 	return kNoErr; 
 }	
 
 //----------------------------------------------------------------------------
-tErrType	CDebugMPI::GetModuleVersion( tVersion &version ) const
+tErrType CDebugMPI::GetModuleVersion( tVersion &version ) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
+	if(!pModule_)
+		return kMPINotConnectedErr;
 
-	return mpModule->GetModuleVersion( version );
+	return pModule_->GetModuleVersion( version );
 }
 	
 //----------------------------------------------------------------------------
-tErrType	CDebugMPI::GetModuleName( ConstPtrCString &pName ) const
+tErrType CDebugMPI::GetModuleName( ConstPtrCString &pName ) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
+	if(!pModule_)
+		return kMPINotConnectedErr;
 
-	return mpModule->GetModuleName( pName );
+	return pModule_->GetModuleName( pName );
 }
  
 //----------------------------------------------------------------------------
-tErrType	CDebugMPI::GetModuleOrigin( ConstPtrCURI &pURI ) const
+tErrType CDebugMPI::GetModuleOrigin( ConstPtrCURI &pURI ) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleOrigin( pURI );
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleOrigin( pURI );
 }	
 
+
+//==============================================================================
+// Local utility functions
+//==============================================================================
+namespace
+{
+	//==========================================================================
+	// Function:
+	//		DebugOutPriv
+	//
+	// Parameters:
+	//		tDebugSignature sig - the ID of the module requesting the Printf();
+	//		tDbgLvl	- the debug level for a Printf call (0 - kMaxDebugLevel)
+	//		char * 	- format string
+	//		va_list	- the argument list that completes the format string
+	//		U16		- debugOut format
+	//
+	// Returns:
+	//		void
+	//
+	// Description:
+	//		Provides Run-time control of debug output. sig and lvl are compared
+	//		against the current control values to determine if the Printf should
+	//		be allowed or ignored. Implementation of standard "C" printf.  
+	//		Calls the Kernel module's printf.  
+	//==========================================================================
+	void DebugOutPriv( const CDebugModule* pModule, tDebugSignature sig, 
+						tDebugLevel lvl, const char * formatString, 
+						va_list arguments, U16 debugOutFormat )
+	{
+		// NOTE: get out as fast as possible if not going to print out.  Using
+		//		the helper fcn for this.
+		// NOTE: If for some reason we are so broken that we were unable
+		//		to connect to the underlying module, then print out everything.
+		if (!pModule || pModule->DebugOutIsEnabled(sig, lvl))
+		{
+			// Ready to outputva_list arguments
+	
+			// va_list argumentsif timestamping all output, add timestamp first
+			if (!(debugOutFormat & kDebugOutFormatLiteral) && pModule && pModule->TimestampIsEnabled())
+			{
+				U32 mSec, uSec;
+	            timeval time;
+	
+	//			mSec = CKernelMPI::GetElapsedPrecisionTime(&uSec);
+				gettimeofday( &time, NULL );
+				printf( kDebugOutTimestampFmt, (time.tv_sec / 1000), time.tv_usec );
+			}
+	
+			// va_list argumentsif not asking for literal output, show the module signature
+			if (!(debugOutFormat & kDebugOutFormatLiteral))
+				printf(kDebugOutSignatureFmt, sig);
+	
+			// va_list argumentsif this is a warning, output warning string
+			if (debugOutFormat & kDebugOutFormatWarn)
+				printf(kWarnTagStr);
+	
+			// va_list argumentsnow output the requested data.
+			vprintf(formatString, arguments);
+		}
+	}
+}
+
+
+//==============================================================================
+// DebugOut functions
 //==============================================================================
 //----------------------------------------------------------------------------
-void 	CDebugMPI::DebugOut( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, ... )
+void CDebugMPI::DebugOut( tDebugLevel lvl, const char * formatString, ... ) const
 {
 	va_list arguments;
-
-	if (mpModule)
-	{
-		va_start( arguments, formatString );
-		mpModule->VDebugOut( sig, lvl, formatString, arguments );
-		va_end( arguments );
-	}
+	va_start( arguments, formatString );
+	DebugOutPriv( pModule_, sig_, lvl, formatString, arguments, kDebugOutFormatNormal );
+	va_end( arguments );
 }
 
 //----------------------------------------------------------------------------
-void 	CDebugMPI::VDebugOut( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, va_list arguments )
+void CDebugMPI::VDebugOut( tDebugLevel lvl, const char * formatString, 
+							va_list arguments ) const
 {
-	if (mpModule)
-	{
-		mpModule->VDebugOut( sig, lvl, formatString, arguments );
-	}
+	DebugOutPriv( pModule_, sig_, lvl, formatString, arguments, kDebugOutFormatNormal );
 }
 
 //----------------------------------------------------------------------------
-void 	CDebugMPI::DebugOutLiteral( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, ... )
+void CDebugMPI::DebugOutErr( tDebugLevel lvl, tErrType err, 
+							const char * formatString, ... ) const
+{
+	const char* errstr = NULL;
+	char buf[16];
+	if( pModule_ )
+		errstr = pModule_->ErrorToString(err);
+	else
+	{
+		sprintf(buf, "0x%x", err);
+		errstr = buf;
+	}
+		
+	va_list arguments;
+	va_start( arguments, formatString );
+	DebugOutPriv( pModule_, sig_, lvl, errstr, arguments, kDebugOutFormatNormal );
+	DebugOutPriv( pModule_, sig_, lvl, ": ", arguments, kDebugOutFormatLiteral );
+	DebugOutPriv( pModule_, sig_, lvl, formatString, arguments, kDebugOutFormatLiteral );
+	va_end( arguments );
+}
+//----------------------------------------------------------------------------
+void CDebugMPI::DebugOutLiteral( tDebugLevel lvl, const char * formatString, 
+								... ) const
 {
 	va_list arguments;
-
-	if (mpModule)
-	{
-		va_start( arguments, formatString );
-		mpModule->VDebugOut( sig, lvl, formatString, arguments );
-		va_end( arguments );
-	}
+	va_start( arguments, formatString );
+	DebugOutPriv( pModule_, sig_, lvl, formatString, arguments, kDebugOutFormatLiteral );
+	va_end( arguments );
 }
 
 //----------------------------------------------------------------------------
-void 	CDebugMPI::VDebugOutLiteral( tDebugSignature sig, tDebugLevel lvl, 
-						const char * formatString, va_list arguments )
+void CDebugMPI::VDebugOutLiteral( tDebugLevel lvl, const char * formatString, 
+									va_list arguments ) const
 {
-	if (mpModule)
-	{
-		mpModule->VDebugOut( sig, lvl, formatString, arguments );
-	}
+	DebugOutPriv( pModule_, sig_, lvl, formatString, arguments, kDebugOutFormatLiteral );
 }
 
+
+//==============================================================================
+// Warn() & Assert()
+//==============================================================================
 //----------------------------------------------------------------------------
-void 	CDebugMPI::Warn( tDebugSignature sig, const char * formatString, ... )
+// Function:
+//		Warn
+//
+// Parameters:
+//		tDebugSignature sig - the ID of the module requesting the Printf();
+//		char * 	- format string
+//		va_list	- the argument list that completes the format string
+//
+// Returns:
+//		void
+//
+// Description:
+//		Equivalent to DebugOut @ kDbgLvlCritical, with standard warning text prepended.
+//		This is implemented as a separate function rather than just a macro for
+//		VDebugOut, since will probably be adding additional warning feedback
+//		(on screen, or audio) accompanying serial out message.  
+//----------------------------------------------------------------------------
+void CDebugMPI::Warn( const char * formatString, ... ) const
 {
 	va_list arguments;
-
-	if (mpModule)
-	{
-		va_start( arguments, formatString );
-		mpModule->Warn( sig, formatString, arguments );
-		va_end( arguments );
-	}
+	va_start( arguments, formatString );
+	DebugOutPriv( pModule_, sig_, kDbgLvlCritical, formatString, arguments, kDebugOutFormatWarn );
+	va_end( arguments );
 }
 						
 //----------------------------------------------------------------------------
-void 	CDebugMPI::Assert( int testResult, const char * formatString, ... )
+void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 {
-	if (!testResult && mpModule)
+	if (!testResult)
 	{
 		va_list arguments;
 		va_start( arguments, formatString );
-		mpModule->Assert( formatString, arguments );
+		printf( kAssertTagStr );
+		printf( kDebugOutSignatureFmt, sig_ );
+	    vprintf( formatString, arguments ); 
 		va_end( arguments );
+		assert(false);
 	}
 }
 			
@@ -191,13 +307,13 @@ void 	CDebugMPI::Assert( int testResult, const char * formatString, ... )
 //==============================================================================
 void CDebugMPI::DisableDebugOut( tDebugSignature sig )
 {
-	if (mpModule)
-		mpModule->DisableDebugOut( sig );
+	if (pModule_)
+		pModule_->DisableDebugOut( sig );
 }
 
 //==============================================================================
 // Function:
-//		DisableDebugOut
+//		EnableDebugOut
 //
 // Parameters:
 //		tDebugSignature sig -- The target signature for which debug output
@@ -213,8 +329,8 @@ void CDebugMPI::DisableDebugOut( tDebugSignature sig )
 //==============================================================================
 void CDebugMPI::EnableDebugOut( tDebugSignature sig )
 {
-	if (mpModule)
-		mpModule->EnableDebugOut( sig );
+	if (pModule_)
+		pModule_->EnableDebugOut( sig );
 }
 
 //==============================================================================
@@ -232,10 +348,10 @@ void CDebugMPI::EnableDebugOut( tDebugSignature sig )
 //		Checks if a DebugOut command with this level or higher is issued,
 //		whether it will go out the serial port.   
 //==============================================================================
-Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level )
+Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level ) const
 {
-	if (mpModule)
-		return mpModule->DebugOutIsEnabled( sig, level );
+	if (pModule_)
+		return pModule_->DebugOutIsEnabled( sig, level );
 }
 
 //==============================================================================
@@ -255,14 +371,14 @@ Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level )
 
 void CDebugMPI::SetDebugLevel( tDebugLevel newLevel )
 {
-	if (mpModule)
-		mpModule->SetDebugLevel( newLevel );
+	if (pModule_)
+		pModule_->SetDebugLevel( newLevel );
 }
 
-tDebugLevel CDebugMPI::GetDebugLevel()
+tDebugLevel CDebugMPI::GetDebugLevel() const
 {
-	if (mpModule)
-		return mpModule->GetDebugLevel();
+	if (pModule_)
+		return pModule_->GetDebugLevel();
 }
 
 //==============================================================================
@@ -282,14 +398,15 @@ tDebugLevel CDebugMPI::GetDebugLevel()
 
 void CDebugMPI::EnableDebugOutTimestamp()
 {
-	if (mpModule)
-		mpModule->EnableDebugOutTimestamp();
+	if (pModule_)
+		pModule_->EnableDebugOutTimestamp();
 }
 
 void CDebugMPI::DisableDebugOutTimestamp()
 {
-	if (mpModule)
-		mpModule->DisableDebugOutTimestamp();
+	if (pModule_)
+		pModule_->DisableDebugOutTimestamp();
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF

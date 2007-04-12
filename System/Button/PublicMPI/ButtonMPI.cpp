@@ -18,6 +18,7 @@
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 const tVersion	kMPIVersion = MakeVersion(0,1);
@@ -50,23 +51,23 @@ tButtonData CButtonMessage::GetButtonState() const
 // CButtonMPI
 //============================================================================
 //----------------------------------------------------------------------------
-CButtonMPI::CButtonMPI() : mpModule(NULL)
+CButtonMPI::CButtonMPI() : pModule_(NULL)
 {
 	ICoreModule*	pModule;
 	Module::Connect(pModule, kButtonModuleName, kButtonModuleVersion);
-	mpModule = reinterpret_cast<CButtonModule*>(pModule);
+	pModule_ = reinterpret_cast<CButtonModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CButtonMPI::~CButtonMPI()
 {
-	Module::Disconnect(mpModule);
+	Module::Disconnect(pModule_);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CButtonMPI::IsValid() const
 {
-	return (mpModule != NULL) ? true : false;
+	return (pModule_ != NULL) ? true : false;
 }
 
 //----------------------------------------------------------------------------
@@ -86,35 +87,37 @@ tErrType CButtonMPI::GetMPIName(ConstPtrCString &pName) const
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::GetModuleVersion(tVersion &version) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleVersion(version);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleVersion(version);
 }
 
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::GetModuleName(ConstPtrCString &pName) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleName(pName);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleName(pName);
 }
 
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleOrigin(pURI);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleOrigin(pURI);
 }
 
 
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CButtonMPI::GetButtonState(tButtonData& data)
+tErrType CButtonMPI::GetButtonState(tButtonData& data) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetButtonState(data);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetButtonState(data);
 }
 
+
+LF_END_BRIO_NAMESPACE()
 // EOF

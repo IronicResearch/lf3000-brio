@@ -12,6 +12,7 @@
 //
 //============================================================================
 
+#include <SystemTypes.h>
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
@@ -24,6 +25,7 @@
 
 #include <stdlib.h>	// FIXME: remove when include KernelMPI
 #include <cstring>
+LF_BEGIN_BRIO_NAMESPACE() 
 
 const CURI	kModuleURI	= "Event FIXME";
 
@@ -120,11 +122,11 @@ public:
 	{
 		while( pListener )
 		{
-			if( pListener->mpimpl->HandlesEvent(msg.GetEventType())
+			if( pListener->pimpl_->HandlesEvent(msg.GetEventType())
 					&& pListener->Notify(msg) == kEventStatusOKConsumed )
 				break;
 			pListener = const_cast<IEventListener*>
-								(pListener->mpimpl->GetNextListener());
+								(pListener->pimpl_->GetNextListener());
 		}
 	}
 	//------------------------------------------------------------------------
@@ -217,10 +219,14 @@ CEventListenerImpl* CEventModule::GenerateEventListenerImpl(
 	return new CEventListenerImpl(pTypes, count);
 }
 
+LF_END_BRIO_NAMESPACE()
+
 
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
+
+LF_USING_BRIO_NAMESPACE()
 
 static CEventModule*	sinst = NULL;
 //------------------------------------------------------------------------
@@ -245,6 +251,5 @@ extern "C" void DestroyInstance(ICoreModule* ptr)
 	delete sinst;
 	sinst = NULL;
 }
-
 
 // EOF

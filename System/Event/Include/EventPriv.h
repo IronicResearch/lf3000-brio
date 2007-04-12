@@ -14,8 +14,10 @@
 //
 //==============================================================================
 
+#include <SystemTypes.h>
 #include <CoreModule.h>
 #include "EventMPI.h"	// for tEventRegistrationFlags
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 // Constants
@@ -31,26 +33,31 @@ public:
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
-	// class-specific functionality
-	CEventModule();
-	virtual ~CEventModule();
-
 	// Register & unregister listener chains
-	virtual tErrType	RegisterEventListener(const IEventListener *pListener,
-										tEventRegistrationFlags flags );
-	virtual tErrType	UnregisterEventListener(const IEventListener *pListener);
+	VTABLE_EXPORT tErrType	RegisterEventListener(const IEventListener *pListener,
+												tEventRegistrationFlags flags );
+	VTABLE_EXPORT tErrType	UnregisterEventListener(const IEventListener *pListener);
 	
 	// Generate an event
-	virtual tErrType	PostEvent(const IEventMessage &msg, 
-							tEventPriority priority, 
-							const IEventListener *pListener) const;
+	VTABLE_EXPORT tErrType	PostEvent(const IEventMessage &msg, 
+									tEventPriority priority, 
+									const IEventListener *pListener) const;
 							
 	// Hook in EventListener replacibility here
-	virtual CEventListenerImpl* GenerateEventListenerImpl(const tEventType* pTypes, 
+	VTABLE_EXPORT CEventListenerImpl* GenerateEventListenerImpl(
+													const tEventType* pTypes, 
 													U32 count) const;
+													
+private:
+	// Limit object creation to the Module Manager interface functions
+	CEventModule();
+	virtual ~CEventModule();
+	friend ICoreModule*	::CreateInstance(tVersion version);
+	friend void			::DestroyInstance(ICoreModule*);
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_EVENTMGRMODULEPRIV_H
 
 // eof

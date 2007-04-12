@@ -1,17 +1,18 @@
 // TestDebugMPI.h
 
-#include <string>
-#include <iostream>
 #include <cxxtest/TestSuite.h>
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <DebugMPI.h>
 #include <UnitTestUtils.h>
+#include <AudioTypes.h>
+#include <ResourceTypes.h>
 
 // For lots of text output, enable this:
 //#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
-using namespace std;
+LF_USING_BRIO_NAMESPACE()
+
 
 //============================================================================
 // TestDebugMPI functions
@@ -24,7 +25,7 @@ public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
-		DebugMPI = new CDebugMPI();
+		DebugMPI = new CDebugMPI(kGroupUnitTests);
 	}
 
 	//------------------------------------------------------------------------
@@ -75,21 +76,33 @@ public:
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		if ( DebugMPI->IsValid() ) {
 			err = DebugMPI->GetMPIName( pName );
-			std::cout << "MPI name is: " << pName->c_str() << endl;
+			printf("MPI name is: %s\n", pName->c_str());
 		
 			err = DebugMPI->GetMPIVersion(version);
-			std::cout << "MPI Version is: " << version << endl;
+			printf("MPI Version is: %d\n", version);
 			
 			err = DebugMPI->GetModuleVersion( version );
-			std::cout << "Module version is: " << version << endl;
+			printf("Module version is: %d\n", version);
 			
 			err = DebugMPI->GetModuleName( pName );
-			std::cout << "Module name is: " << pName->c_str() << endl;
+			printf("Module name is: %s\n", pName->c_str());
 			
 			err = DebugMPI->GetModuleOrigin( pURI );
-			std::cout << "Module Origin name is: " << pName->c_str() << endl;
+			printf("Module Origin name is: %s\n", pName->c_str());
 		}		
 #endif
+	}
+	
+	//------------------------------------------------------------------------
+	void testDebugOut2( )
+	{
+		TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
+		DebugMPI->SetDebugLevel( kDbgLvlCritical );
+		TS_ASSERT_EQUALS( kDbgLvlCritical, DebugMPI->GetDebugLevel() );
+		DebugMPI->SetDebugLevel( kDbgLvlNoteable );
+		TS_ASSERT_EQUALS( kDbgLvlNoteable, DebugMPI->GetDebugLevel() );
+		DebugMPI->SetDebugLevel( kDbgLvlValuable );
+		TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
 	}
 	
 	//------------------------------------------------------------------------
@@ -99,54 +112,97 @@ public:
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		if ( DebugMPI->IsValid() ) {
-		    std::cout << endl << "Hello, world Debug Out Tests!\n";
+		    printf("\nHello, world Debug Out Tests!\n");
 		
-			cout << "Debug levels are: " << endl;
-			cout << "	kDbgLvlSilent = " << kDbgLvlSilent  << endl;
-			cout << "	kDbgLvlCritical = " << kDbgLvlCritical << endl;
-			cout << "	kDbgLvlImportant = " << kDbgLvlImportant << endl;
-			cout << "	kDbgLvlValuable = " << kDbgLvlValuable << endl;
-			cout << "	kDbgLvlNoteable = " << kDbgLvlNoteable << endl;
-			cout << "	kDbgLvlVerbose = " << kDbgLvlVerbose << endl;
+			printf("Debug levels are: \n");
+			printf("	kDbgLvlSilent = %d\n", kDbgLvlSilent);
+			printf("	kDbgLvlCritical = %d\n", kDbgLvlCritical);
+			printf("	kDbgLvlImportant = %d\n", kDbgLvlImportant);
+			printf("	kDbgLvlValuable = %d\n", kDbgLvlValuable);
+			printf("	kDbgLvlNoteable = %d\n", kDbgLvlNoteable);
+			printf("	kDbgLvlVerbose = %d\n", kDbgLvlVerbose);
 			
-			cout << "Default debug level: " << DebugMPI->GetDebugLevel() << endl;
-			cout << "Should be: " << kDbgLvlValuable << endl;
-	
+			printf("Default debug level: %d\n", DebugMPI->GetDebugLevel());
+			printf("Should be: %d\n", kDbgLvlValuable);
+
 			TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
 			
 			DebugMPI->SetDebugLevel( kDbgLvlCritical );
 			TS_ASSERT_EQUALS( kDbgLvlCritical, DebugMPI->GetDebugLevel() );
-			cout << "New debug level: " << DebugMPI->GetDebugLevel() << endl;
+			printf("New debug level: ", DebugMPI->GetDebugLevel());
 			
-			cout << "You shouldn't see anything here: ";
-			DebugMPI->DebugOut((tDebugSignature)kTestMPISig, kDbgLvlNoteable, (const char *)"This is a msg from DebugOut() at level %d\n", kDbgLvlNoteable);
+			printf("You shouldn't see anything here: ");
+			DebugMPI->DebugOut(kDbgLvlNoteable, "This is a msg from DebugOut() at level %d\n", kDbgLvlNoteable);
 		
-			cout << endl;
+			printf("\n");
 			
 			DebugMPI->SetDebugLevel( kDbgLvlNoteable );
 			TS_ASSERT_EQUALS( kDbgLvlNoteable, DebugMPI->GetDebugLevel() );
-			cout << "New debug level: " << DebugMPI->GetDebugLevel() << endl;
+			printf("New debug level: %d\n", DebugMPI->GetDebugLevel());
 		
-			cout << "But you should see something here: ";
-			DebugMPI->DebugOut((tDebugSignature)kTestMPISig, kDbgLvlValuable, (const char *)"This is a msg from DebugOut() at level %d\n", kDbgLvlValuable);
+			printf("But you should see something here: ");
+			DebugMPI->DebugOut(kDbgLvlValuable, "This is a msg from DebugOut() at level %d\n", kDbgLvlValuable);
 		
-			cout << endl;
+			printf("\n");
 	
 			DebugMPI->SetDebugLevel( kDbgLvlSilent );
 			TS_ASSERT_EQUALS( kDbgLvlSilent, DebugMPI->GetDebugLevel() );
-			cout << "New debug level: " << DebugMPI->GetDebugLevel() << endl;
+			printf("New debug level: %d\n", DebugMPI->GetDebugLevel());
 	
-			cout << "and not here: ";
-			DebugMPI->DebugOut((tDebugSignature)kTestMPISig, kDbgLvlCritical, (const char *)"This is a msg from DebugOut() at level %d\n", kDbgLvlCritical);
+			printf("and not here: ");
+			DebugMPI->DebugOut(kDbgLvlCritical, "This is a msg from DebugOut() at level %d\n", kDbgLvlCritical);
 	
-			cout << endl;
+			printf("\n");
 	
 			DebugMPI->SetDebugLevel( kDbgLvlNoteable );
 			TS_ASSERT_EQUALS( kDbgLvlNoteable, DebugMPI->GetDebugLevel() );
-			cout << "New debug level: " << DebugMPI->GetDebugLevel() << endl;
+			printf("New debug level: %d\n", DebugMPI->GetDebugLevel());
 	
 			
-			cout << "Exiting Debug Out Test " << endl;
+			printf("Exiting Debug Out Test \n");
+		}
+#endif
+	}
+	
+		//------------------------------------------------------------------------
+	void testTimestamps( )
+	{
+		tDebugLevel level;
+		
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		if ( DebugMPI->IsValid() ) {
+		    printf("\nHello, world Timestamp Tests!\n");
+		
+			DebugMPI->EnableDebugOutTimestamp();
+			
+			DebugMPI->DebugOut(kDbgLvlCritical, "This is a timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
+	
+			DebugMPI->DisableDebugOutTimestamp();
+			
+			DebugMPI->DebugOut(kDbgLvlCritical, "This is a non-timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
+	
+			DebugMPI->EnableDebugOutTimestamp();
+			
+			DebugMPI->DebugOut(kDbgLvlCritical, "This is a another timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
+			DebugMPI->DebugOutLiteral(kDbgLvlCritical, "No timestamp for DebugOutLiteral()\n");
+	
+			DebugMPI->DisableDebugOutTimestamp();
+
+			printf("Exiting Timestamp Tests \n");
+		}
+#endif
+	}	
+
+	//------------------------------------------------------------------------
+	void testErrors( )
+	{
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		if ( DebugMPI->IsValid() ) {
+			DebugMPI->DebugOutErr(kDbgLvlCritical, kAudioCreateTaskErr, 
+					"in CreateTask()\n");
+			DebugMPI->DebugOutErr(kDbgLvlCritical, kResourceInvalidMPIIdErr, 
+					"in LoadResource\n");
+					
 		}
 #endif
 	}
@@ -158,53 +214,20 @@ public:
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		if ( DebugMPI->IsValid() ) {
-		    std::cout << endl << "Hello, world Assert Tests!\n";
+		    printf("\nHello, world Assert Tests!\n");
 		
-			cout << "Testing assertions, you shouldn't see this: ";
+			printf("Testing assertions, you shouldn't see this: ");
 			DebugMPI->Assert(true, "I'm not supposed to print!\n");
 	
-			cout << endl;
+			printf("\n");
 	
 			DebugMPI->Assert(true, "I'm not supposed to print!\n");
 	
-			cout << "But you should see this: ";
-			DebugMPI->Assert(false, "I'm supposed to print!\n");
+			printf("You should see:  1 green, 2 electric, 3 spoon: ");
+			DebugMPI->Assert(false, "Here they are: %d %s, %d %s, %d %s.\n", 
+							1, "green", 2, "electric", 3, "spoon");
 	
-			cout << endl;
-	
-			cout << "This should containt the numbers 1, 2, 3: ";
-			DebugMPI->Assert(false, "Here they are: %d, %d, %d.\n", 1, 2, 3);
-	
-			cout << "This should containt the words:  green, electric, spoon: ";
-			DebugMPI->Assert(false, "Here they are: %s, %s, %s.\n", "green", "electric", "spoon");
-	
-			cout << "Exiting Assert Tests " << endl;
-		}
-#endif
-	}
-
-		//------------------------------------------------------------------------
-	void testTimestamps( )
-	{
-		tDebugLevel level;
-		
-#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
-		if ( DebugMPI->IsValid() ) {
-		    std::cout << endl << "Hello, world Timestamp Tests!\n";
-		
-			DebugMPI->EnableDebugOutTimestamp();
-			
-			DebugMPI->DebugOut((tDebugSignature)kTestMPISig, kDbgLvlCritical, (const char *)"This is a timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
-	
-			DebugMPI->DisableDebugOutTimestamp();
-			
-			DebugMPI->DebugOut((tDebugSignature)kTestMPISig, kDbgLvlCritical, (const char *)"This is a non-timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
-	
-			DebugMPI->EnableDebugOutTimestamp();
-			
-			DebugMPI->DebugOut((tDebugSignature)kTestMPISig, kDbgLvlCritical, (const char *)"This is a another timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
-	
-			cout << "Exiting Timestamp Tests " << endl;
+			printf("Exiting Assert Tests \n");
 		}
 #endif
 	}	

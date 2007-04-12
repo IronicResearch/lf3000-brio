@@ -12,7 +12,7 @@
 //==============================================================================
 
 // System includes
-#include <CoreTypes.h>
+#include <SystemTypes.h>
 #include <SystemTypes.h>
 #include <ResourceTypes.h>
 #include <SystemErrors.h>
@@ -112,7 +112,7 @@ tErrType CAudioMPI::GetMPIName( ConstPtrCString &pName ) const
 tErrType CAudioMPI::GetModuleVersion( tVersion &version ) const
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 
 	return mpModule->GetModuleVersion( version );
 }
@@ -121,7 +121,7 @@ tErrType CAudioMPI::GetModuleVersion( tVersion &version ) const
 tErrType CAudioMPI::GetModuleName( ConstPtrCString &pName ) const
 {
 	if (!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 
 	return mpModule->GetModuleName( pName );
 }
@@ -130,7 +130,7 @@ tErrType CAudioMPI::GetModuleName( ConstPtrCString &pName ) const
 tErrType CAudioMPI::GetModuleOrigin( ConstPtrCURI &pURI ) const
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetModuleOrigin( pURI );
 }

@@ -12,6 +12,7 @@
 //
 //============================================================================
 
+#include <SystemTypes.h>
 #include <EventListener.h>
 #include <EventListenerPriv.h>
 #include <EventMPI.h>
@@ -20,6 +21,7 @@
 //#include <KernelMPI.h>
 #include <stdlib.h>// FIXME: remove when include KernelMPI
 #include <string.h>// FIXME: remove when include KernelMPI
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 namespace Kernel
@@ -32,14 +34,14 @@ namespace Kernel
 //============================================================================
 //----------------------------------------------------------------------------
 CEventListenerImpl::CEventListenerImpl(const tEventType *eventList, U32 count)
-	: mpNextListener(NULL), 
-	mpEventList(NULL), mNumEvents(count),
-	mpDisabledEventList(NULL), mNumDisabledEvents(0)
+	: pNextListener_(NULL), 
+	pEventList_(NULL), numEvents_(count),
+	pDisabledEventList_(NULL), numDisabledEvents_(0)
 {
 	U32 size = sizeof(tEventType) * count;
-	mpEventList = reinterpret_cast<tEventType *>(Kernel::Malloc(size));
-	mpDisabledEventList = reinterpret_cast<tEventType *>(Kernel::Malloc(size));
-	memcpy(mpEventList, eventList, size);
+	pEventList_ = reinterpret_cast<tEventType *>(Kernel::Malloc(size));
+	pDisabledEventList_ = reinterpret_cast<tEventType *>(Kernel::Malloc(size));
+	memcpy(pEventList_, eventList, size);
 	// TBD: sort the list so HandlesEvent() can do binary search?
 	// TBD: remove duplicates?
 }
@@ -52,22 +54,22 @@ CEventListenerImpl::~CEventListenerImpl()
 //----------------------------------------------------------------------------
 const IEventListener* CEventListenerImpl::GetNextListener() const
 { 
-	return mpNextListener; 
+	return pNextListener_; 
 }
 
 //----------------------------------------------------------------------------
 tErrType CEventListenerImpl::SetNextListener(const IEventListener* pListener) 
 {
 	// Validate self not already in chain
-	if( this == pListener->mpimpl )
+	if( this == pListener->pimpl_ )
 		return kEventListenerCycleErr;
-	for( const IEventListener* pNext = pListener->mpimpl->GetNextListener(); 
-			pNext; pNext = pNext->mpimpl->GetNextListener() )
+	for( const IEventListener* pNext = pListener->pimpl_->GetNextListener(); 
+			pNext; pNext = pNext->pimpl_->GetNextListener() )
 	{
-		if( pNext->mpimpl == this )
+		if( pNext->pimpl_ == this )
 			return kEventListenerCycleErr;
 	}
-	mpNextListener = pListener;
+	pNextListener_ = pListener;
 	return kNoErr;
 }
 
@@ -78,20 +80,20 @@ tErrType CEventListenerImpl::DisableNotifyForEventType(tEventType type)
 	// 2) If find event in event list, append it to the disabled list
 	// 3) Return error if event not in original list
 	//
-	for( int ii = mNumDisabledEvents; ii > 0; --ii )					//*1
+	for( int ii = numDisabledEvents_; ii > 0; --ii )					//*1
 	{
-		if( *(mpDisabledEventList + ii - 1) == type )
+		if( *(pDisabledEventList_ + ii - 1) == type )
 			return kNoErr;
 	}
 	
 	tEventType allInGroup = (type | kWildcardNumSpaceTag);
-	for( int ii = mNumEvents; ii > 0; --ii )							//*2
+	for( int ii = numEvents_; ii > 0; --ii )							//*2
 	{
-		tEventType next = *(mpEventList + ii - 1);
+		tEventType next = *(pEventList_ + ii - 1);
 		if( next == allInGroup || next == type )
 		{
-			*(mpDisabledEventList + mNumDisabledEvents) = type;
-			++mNumDisabledEvents;
+			*(pDisabledEventList_ + numDisabledEvents_) = type;
+			++numDisabledEvents_;
 			return kNoErr;
 		}
 	}
@@ -106,14 +108,14 @@ tErrType CEventListenerImpl::ReenableNotifyForEventType(tEventType type)
 	// disabled events down to keep the list contiguous and decrement the
 	// disabled events count.
 	//
-	tEventType *ptr = mpDisabledEventList + mNumDisabledEvents - 1;
-	for( int ii = mNumDisabledEvents; ii > 0; --ii, --ptr )
+	tEventType *ptr = pDisabledEventList_ + numDisabledEvents_ - 1;
+	for( int ii = numDisabledEvents_; ii > 0; --ii, --ptr )
 	{
 		if( *ptr == type )
 		{
-			for( int jj = ii; jj < mNumDisabledEvents; ++jj, ++ptr )
+			for( int jj = ii; jj < numDisabledEvents_; ++jj, ++ptr )
 				*ptr = *(ptr + 1);
-			--mNumDisabledEvents;
+			--numDisabledEvents_;
 			return kNoErr;
 		}
 	}
@@ -123,18 +125,19 @@ tErrType CEventListenerImpl::ReenableNotifyForEventType(tEventType type)
 //----------------------------------------------------------------------------
 Boolean CEventListenerImpl::HandlesEvent(tEventType type) const
 {
-	for( int ii = mNumDisabledEvents; ii > 0; --ii )
-		if( *(mpDisabledEventList + ii - 1) == type )
+	for( int ii = numDisabledEvents_; ii > 0; --ii )
+		if( *(pDisabledEventList_ + ii - 1) == type )
 			return false;
 	
 	tEventType allInGroup = (type | kWildcardNumSpaceTag);
-	for( int ii = mNumEvents; ii > 0; --ii )
+	for( int ii = numEvents_; ii > 0; --ii )
 	{
-		tEventType next = *(mpEventList + ii - 1);
+		tEventType next = *(pEventList_ + ii - 1);
 		if( next == allInGroup || next == type )
 			return true;
 	}
 	return false;
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF

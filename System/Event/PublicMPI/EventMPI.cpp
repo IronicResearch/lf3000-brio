@@ -13,12 +13,14 @@
 //
 //============================================================================
 
+#include <SystemTypes.h>
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
 #include <EventMPI.h>
 #include <EventPriv.h>
 #include <Module.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 const tVersion	kMPIVersion = MakeVersion(0,1);
@@ -27,23 +29,23 @@ const CString	kMPIName = "EventMPI";
 
 //============================================================================
 //----------------------------------------------------------------------------
-CEventMPI::CEventMPI() : mpModule(NULL)
+CEventMPI::CEventMPI() : pModule_(NULL)
 {
 	ICoreModule*	pModule;
 	Module::Connect(pModule, kEventModuleName, kEventModuleVersion);
-	mpModule = reinterpret_cast<CEventModule*>(pModule);
+	pModule_ = reinterpret_cast<CEventModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CEventMPI::~CEventMPI()
 {
-	Module::Disconnect(mpModule);
+	Module::Disconnect(pModule_);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CEventMPI::IsValid() const
 {
-	return (mpModule != NULL) ? true : false;
+	return (pModule_ != NULL) ? true : false;
 }
 
 //----------------------------------------------------------------------------
@@ -63,25 +65,25 @@ tErrType CEventMPI::GetMPIName(ConstPtrCString &pName) const
 //----------------------------------------------------------------------------
 tErrType CEventMPI::GetModuleVersion(tVersion &version) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleVersion(version);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleVersion(version);
 }
 
 //----------------------------------------------------------------------------
 tErrType CEventMPI::GetModuleName(ConstPtrCString &pName) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleName(pName);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleName(pName);
 }
 
 //----------------------------------------------------------------------------
 tErrType CEventMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->GetModuleOrigin(pURI);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetModuleOrigin(pURI);
 }
 
 
@@ -90,17 +92,17 @@ tErrType CEventMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 tErrType CEventMPI::RegisterEventListener(const IEventListener *pListener,
 											tEventRegistrationFlags flags)
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->RegisterEventListener(pListener, flags);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->RegisterEventListener(pListener, flags);
 }
 
 //----------------------------------------------------------------------------
 tErrType CEventMPI::UnregisterEventListener(const IEventListener *pListener)
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->UnregisterEventListener(pListener);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->UnregisterEventListener(pListener);
 }
 
 
@@ -111,10 +113,11 @@ tErrType CEventMPI::PostEvent(const IEventMessage &msg,
 								tEventPriority priority, 
 								const IEventListener *pListener) const
 {
-	if(!mpModule)
-		return kMpiNotConnectedErr;
-	return mpModule->PostEvent(msg, priority, pListener);
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->PostEvent(msg, priority, pListener);
 }
 
 
+LF_END_BRIO_NAMESPACE()
 // EOF
