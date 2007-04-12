@@ -1,10 +1,8 @@
 #ifndef LF_BRIO_KERNELPRIVATE_H
 #define LF_BRIO_KERNELPRIVATE_H
-						    
 //==============================================================================
 //
-// Copyright (c) 2002,2007 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -15,10 +13,12 @@
 //
 //==============================================================================
 
-#include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <KernelTypes.h>
 #include <CoreModule.h>
+#include <StringTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 // Defines
 #define ASSERT_POSIX_CALL(err) \
@@ -59,67 +59,69 @@ public:
 	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
-	// class-specific functionality
-	CKernelModule();
-	virtual ~CKernelModule();
-
 	// Tasks
-	virtual	tErrType	CreateTask( const CURI* pTaskURI, 
+	VTABLE_EXPORT tErrType	CreateTask( const CURI* pTaskURI, 
 							const tTaskProperties* pProperties, tTaskHndl *pHndl );
-    virtual tErrType JoiningThreads( tTaskHndl pHndl, void **value_ptr );							
-	virtual tErrType CancelTask( tTaskHndl hndl );
-	virtual tTaskHndl GetCurrentTask();
+    VTABLE_EXPORT tErrType JoiningThreads( tTaskHndl pHndl, void **value_ptr );							
+	VTABLE_EXPORT tErrType CancelTask( tTaskHndl hndl );
+	VTABLE_EXPORT tTaskHndl GetCurrentTask();
 	
-	virtual tErrType GetTaskPriority( tTaskHndl hndl, int * priority );
-	virtual tErrType GetTaskSchedulingPolicy( tTaskHndl hndl, int* policy );
+	VTABLE_EXPORT tErrType GetTaskPriority( tTaskHndl hndl, int * priority );
+	VTABLE_EXPORT tErrType GetTaskSchedulingPolicy( tTaskHndl hndl, int* policy );
 	
-	virtual tErrType TaskSleep( U32 msec );
+	VTABLE_EXPORT tErrType TaskSleep( U32 msec );
 
 	// Memory Allocation
-	virtual tErrType Malloc( U32 size, tPtr ptr );
-	virtual tErrType Free( tPtr ptr );
-	virtual tErrType	CreateMessageQueue( const CURI* pQueueURI, 
+	VTABLE_EXPORT tErrType Malloc( U32 size, tPtr ptr );
+	VTABLE_EXPORT tErrType Free( tPtr ptr );
+	VTABLE_EXPORT tErrType	CreateMessageQueue( const CURI* pQueueURI, 
 						const tMessageQueuePropertiesPosix* pQueueProperties,
 						tMessageQueueHndl* pHndl );
-	virtual tErrType	DestroyMessageQueue( tMessageQueueHndl hndl );
+	VTABLE_EXPORT tErrType	DestroyMessageQueue( tMessageQueueHndl hndl );
 	
-	virtual tErrType	UnlinkMessageQueue( const char *name );
+	VTABLE_EXPORT tErrType	UnlinkMessageQueue( const char *name );
 
-	virtual tErrType  	ClearMessageQueue( tMessageQueueHndl hndl );
+	VTABLE_EXPORT tErrType  ClearMessageQueue( tMessageQueueHndl hndl );
 
-	virtual tErrType 	GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *numMsgQueue );
+	VTABLE_EXPORT tErrType 	GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *numMsgQueue );
     
-	virtual tErrType	SendMessage( tMessageQueueHndl hndl, CMessage* pMessage, 
+	VTABLE_EXPORT tErrType	SendMessage( tMessageQueueHndl hndl, CMessage* pMessage, 
 									U32 messageSize = kUndefinedMessageSize );
-	virtual tErrType  	SendMessageOrWait( tMessageQueueHndl hndl, CMessage* pMessage, 
+	VTABLE_EXPORT tErrType  SendMessageOrWait( tMessageQueueHndl hndl, CMessage* pMessage, 
 									U32 messageSize = kUndefinedMessageSize,
 									U32 timeoutMs = kMaxTimeoutMs );
 
-	virtual tErrType  	ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessageSize, 
+	VTABLE_EXPORT tErrType  	ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessageSize, 
 									CMessage* pMessage, unsigned *msg_prio );
-	virtual tErrType  	ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMessageSize, 
+	VTABLE_EXPORT tErrType  	ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMessageSize, 
 									CMessage* pMessage, U32 timeoutMs = kMaxTimeoutMs );
 				
 	// Time & Timers
-	virtual U32			GetElapsedTime( U32* pUs=NULL );	// elapsed time since System startup 
+	VTABLE_EXPORT U32		GetElapsedTime( U32* pUs=NULL );	// elapsed time since System startup 
 															// in milliseconds (& microseconds)	
-    virtual tErrType 	CreateTimer( const CURI* pTimerURI,
+    VTABLE_EXPORT tErrType 	CreateTimer( const CURI* pTimerURI,
                           	struct sigevent *se,
                            	tTimerHndl* pHndl );
     
-    virtual tErrType 	DestroyTimer( tTimerHndl hndl );
+    VTABLE_EXPORT tErrType 	DestroyTimer( tTimerHndl hndl );
 
-	virtual tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties* pTimerProperties );
+	VTABLE_EXPORT tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties* pTimerProperties );
 
-	virtual tErrType	StartTimer( tTimerHndl hndl, const struct itimerspec* pValue );
-	virtual tErrType	StopTimer( tTimerHndl hndl);
+	VTABLE_EXPORT tErrType	StartTimer( tTimerHndl hndl, const struct itimerspec* pValue );
+	VTABLE_EXPORT tErrType	StopTimer( tTimerHndl hndl);
 
-	virtual tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs = NULL );		// elapsed time in milliseconds (& microseconds)
-	virtual tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs = NULL ); 	// time remaining in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs = NULL );		// elapsed time in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs = NULL ); 	// time remaining in milliseconds (& microseconds)
+
 private:
-
+	// Limit object creation to the Module Manager interface functions
+	CKernelModule();
+	virtual ~CKernelModule();
+	friend ICoreModule*	::CreateInstance(tVersion version);
+	friend void			::DestroyInstance(ICoreModule*);
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif		// LF_BRIO_KERNELPRIVATE_H
 
 // EOF
