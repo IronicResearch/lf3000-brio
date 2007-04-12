@@ -17,13 +17,14 @@
 #define MAX_RSRC_URI_SIZE		128
 #define MAX_RSRC_NAME_SIZE		80
 
-#include <CoreTypes.h>
 #include <SystemTypes.h>
 //#include <SystemRsrcTypes.h>
 #include <ResourceTypes.h>
 #include <StringTypes.h>
 #include <CoreMPI.h>
 #include <EventListener.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 struct tRsrcFileDescriptor {
 	char 			uri[MAX_RSRC_URI_SIZE];
@@ -222,6 +223,7 @@ private:
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_RESOURCEMPI_H
 
 // eof

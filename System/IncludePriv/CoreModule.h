@@ -38,6 +38,31 @@
 
 #include <SystemTypes.h>
 #include <StringTypes.h>
+#include <SystemErrors.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
+
+//==============================================================================	   
+// Constants
+//==============================================================================
+// VTABLE_EXPORT is used to indicate that the member function is not intended
+// for derivation, rather, the keyword "virtual" is being applied because
+// clients using the dlopen()/dlsym() class creation mechanism can only  
+// resolve member function addresses if they are in the vtable.
+
+#define VTABLE_EXPORT	virtual
+
+
+//==============================================================================	   
+// Module errors
+//==============================================================================
+#define MODULE_ERRORS			\
+	(kModuleNotFound)			\
+	(kModuleOpenFail)			\
+	(kModuleLoadFail)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupModule), MODULE_ERRORS)
+
 
 
 //==============================================================================
@@ -60,9 +85,13 @@ private:
 	ICoreModule& operator=(const ICoreModule&);
 };
 
+LF_END_BRIO_NAMESPACE()
+
+
 //==============================================================================
 // Instance management interface for the Module Manager
 //==============================================================================
+LF_USING_BRIO_NAMESPACE()
 extern "C" ICoreModule* CreateInstance(tVersion version);
 extern "C" void			DestroyInstance(ICoreModule*);
 

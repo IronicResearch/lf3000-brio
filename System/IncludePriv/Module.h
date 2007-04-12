@@ -30,7 +30,10 @@
 //
 //==============================================================================
 
+#include <SystemTypes.h>
 #include <StringTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 class ICoreModule;	// forward declaration
 
@@ -43,6 +46,7 @@ namespace Module
 	tErrType	Disconnect(const ICoreModule* ptr);
 }
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_MODULE_H
 
 // eof

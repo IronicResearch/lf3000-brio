@@ -9,6 +9,8 @@
 #include <EventListener.h>
 #include <UnitTestUtils.h>
 
+LF_USING_BRIO_NAMESPACE()
+
 //============================================================================
 // MyRsrcEventListener
 //============================================================================

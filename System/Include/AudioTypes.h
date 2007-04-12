@@ -1,9 +1,7 @@
 #ifndef LF_BRIO_AUDIOTYPES_H
 #define LF_BRIO_AUDIOTYPES_H
-
 //==============================================================================
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) 2LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -15,11 +13,43 @@
 //==============================================================================
 
 // System includes
-#include <CoreTypes.h>
+#include <SystemTypes.h>
 //#include <RsrcTypes.h>
 //#include <RsrcMgrMPI.h>
 //#include <EventListener.h>
 #include <EventMessage.h>
+#include <SystemErrors.h>
+#include <SystemEvents.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
+
+//==============================================================================	   
+// Audio events
+//==============================================================================
+#define AUDIO_EVENTS					\
+	(kAudioCompletedEvent)				\
+	(kAudioCuePointEvent)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupAudio), AUDIO_EVENTS)
+
+const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
+
+
+//==============================================================================	   
+// Audio errors
+//==============================================================================
+#define AUDIO_ERRORS			\
+	(kAudioCreateTaskErr)		\
+	(kAudioCreateEventErr)		\
+	(kAudioCreateQueueErr)		\
+	(kAudioNullContextErr)		\
+	(kAudioNoDataAvailErr)		\
+	(kAudioNoMoreDataErr)		\
+	(kAudioInvalid)				\
+	(kAudioMidiErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupAudio), AUDIO_ERRORS)
+
 
 //==============================================================================
 // Basic audio types
@@ -133,6 +163,7 @@ public:
 	tAudioMsgData	audioMsgData;
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif		// LF_BRIO_AUDIOTYPES_H
 
 // EOF	

@@ -1,11 +1,9 @@
 #ifndef LF_BRIO_BRIOOPENGLCONFIG_H
 #define LF_BRIO_BRIOOPENGLCONFIG_H
-
 //==============================================================================
 // $Source: $
 //
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -22,37 +20,36 @@
 #include <GLES/egl.h>
 #include <GLES/gl.h>
 
-namespace LeapFrog
+#include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
+
+//==============================================================================
+// BrioOpenGLConfig
+//==============================================================================
+class BrioOpenGLConfig
 {
-	namespace Brio
-	{
-		//==============================================================================
-		// BrioOpenGLConfig
-		//==============================================================================
-		class BrioOpenGLConfig
-		{
-		public:
-			BrioOpenGLConfig();
-			~BrioOpenGLConfig();
+public:
+	BrioOpenGLConfig();
+	~BrioOpenGLConfig();
 
-			//TODO/tp: Figure out minimal subset of variables to expose
-			
-			// X11 variables
-			Window				x11Window;
-			Display*			x11Display;
-			long				x11Screen;
-			XVisualInfo*		x11Visual;
-			Colormap			x11Colormap;
-		
-			// EGL variables
-			EGLDisplay			eglDisplay;
-			EGLConfig			eglConfig;
-			EGLSurface			eglSurface;
-			EGLContext			eglContext;
-		};
-	}	// end of Brio namespace
-}		// end of LeapFrog namespace
+	//TODO/tp: Figure out minimal subset of variables to expose
+	
+	// X11 variables
+	Window				x11Window;
+	Display*			x11Display;
+	long				x11Screen;
+	XVisualInfo*		x11Visual;
+	Colormap			x11Colormap;
 
+	// EGL variables
+	EGLDisplay			eglDisplay;
+	EGLConfig			eglConfig;
+	EGLSurface			eglSurface;
+	EGLContext			eglContext;
+};
+
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_BRIOOPENGLCONFIG_H
 
 // EOF

@@ -14,6 +14,18 @@
 //
 //============================================================================
 
+//#ifdef LF_DISABLE_NAMESPACES
+#if 1
+	#define LF_BEGIN_BRIO_NAMESPACE() 
+	#define LF_END_BRIO_NAMESPACE()
+	#define LF_USING_BRIO_NAMESPACE()
+#else
+	#define LF_BEGIN_BRIO_NAMESPACE()	namespace LeapFrog { namespace Brio {
+	#define LF_END_BRIO_NAMESPACE()		} }
+	#define LF_USING_BRIO_NAMESPACE()	using namespace LeapFrog::Brio;
+#endif
+
+LF_BEGIN_BRIO_NAMESPACE()
 
 #undef NULL
 #define NULL	0
@@ -105,6 +117,7 @@ typedef unsigned char		Boolean;
 			(sizeof(array) / sizeof(array[0]))
 
 
+LF_END_BRIO_NAMESPACE()
 #endif // LF_BRIO_CORETYPES_H
 
 // eof

@@ -34,7 +34,7 @@
 #include <map>		// FIXME: replace with non-STL implementation
 
 const tVersion	kMPIVersion = 	MakeVersion(0,1);
-const CString	kMpiName = 		"ResourceMPI";
+const CString	kMPIName = 		"ResourceMPI";
 const CURI		kModuleURI =	"URI";
 const U32		kRsrcDescBlockInc = 256;
 const U32		kRscrDeviceBlockInc = 16;
@@ -377,7 +377,7 @@ tErrType CResourceModule::GetModuleVersion(tVersion &version) const
 //----------------------------------------------------------------------------
 tErrType CResourceModule::GetModuleName(ConstPtrCString &pName) const
 {
-	pName = &kMpiName;
+	pName = &kMPIName;
 	return kNoErr;
 }
 

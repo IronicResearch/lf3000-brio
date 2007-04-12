@@ -14,10 +14,13 @@
 
 #include <dlfcn.h>
 
+#include <SystemTypes.h>
 #include <Module.h>
 #include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 //============================================================================
 // Local Utility Functions
@@ -130,4 +133,5 @@ namespace Module
 }
 
 
+LF_END_BRIO_NAMESPACE()
 // eof

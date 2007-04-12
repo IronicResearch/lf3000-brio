@@ -1,9 +1,7 @@
 #ifndef LF_BRIO_AUDIOMPI_H
 #define LF_BRIO_AUDIOMPI_H
-
 //==============================================================================
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -15,12 +13,12 @@
 //==============================================================================
 
 // System includes
-#include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <ResourceTypes.h>
 //#include <AudioTypes.h>
 #include <CoreMPI.h>
 //#include <EventListener.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventListener;
 
@@ -61,6 +59,7 @@ private:
 	class CAudioModule*	mpModule;
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif /* LF_BRIO_AUDIOMPI_H */
 
 // EOF

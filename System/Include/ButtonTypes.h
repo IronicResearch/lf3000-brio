@@ -15,6 +15,22 @@
 //==============================================================================
 
 #include <EventMessage.h>
+#include <SystemErrors.h>
+#include <SystemEvents.h>
+#include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
+
+//==============================================================================	   
+// Button events
+//==============================================================================
+#define BUTTON_EVENTS					\
+	(kButtonStateChanged)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupButton), BUTTON_EVENTS)
+
+const tEventType kAllButtonEvents = AllEvents(kGroupButton);
+
 
 
 //==============================================================================	   
@@ -46,6 +62,7 @@ private:
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_BUTTONTYPES_H
 
 // eof

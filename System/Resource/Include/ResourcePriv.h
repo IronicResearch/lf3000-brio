@@ -14,15 +14,15 @@
 //
 //==============================================================================
 
+#include <SystemTypes.h>
 #include <CoreModule.h>
 //#include "ResourceMPI.h"	// for tResourceRegistrationFlags
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 // Constants
 const CString	kResourceModuleName	= "Resource";
 const tVersion	kResourceModuleVersion	= MakeVersion(0,1);
-
-#define VTABLE_EXPORT	virtual
 
 //==============================================================================
 class CResourceModule : public ICoreModule {
@@ -34,9 +34,6 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	CResourceModule();
-	virtual ~CResourceModule();
-
 	VTABLE_EXPORT	tErrType		SetDefaultURIPath(U32 id, const CURI &pURIPath);
 	VTABLE_EXPORT	tErrType		SetDefaultEventHandler(U32 id, const IEventListener *pEventHandler=kNull,
 									tEventContext callerContext=kEventContextUndefined);
@@ -169,9 +166,17 @@ public:
 	VTABLE_EXPORT	tErrType		DeleteRsrc(tRsrcHndl hndl);
 	
 	VTABLE_EXPORT	U32				Register( );
+	
+private:
+	// Limit object creation to the Module Manager interface functions
+	CResourceModule();
+	virtual ~CResourceModule();
+	friend ICoreModule*	::CreateInstance(tVersion version);
+	friend void			::DestroyInstance(ICoreModule*);
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_EVENTMGRMODULEPRIV_H
 
 // eof

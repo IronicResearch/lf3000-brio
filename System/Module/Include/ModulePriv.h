@@ -13,6 +13,11 @@
 //		Private definitions for the module manager. 
 //
 //==============================================================================
+#include <SystemTypes.h>
+#include <EmulationConfig.h>	//FIXME/tp: Remove
+
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 #ifndef EMULATION
 
@@ -27,9 +32,10 @@
 
 	inline CPath GetModuleLibraryLocation()
 	{
-		return LeapFrog::Brio::EmulationConfig::Instance().GetModuleSearchPath();
+		return EmulationConfig::Instance().GetModuleSearchPath();
 	}
 	
 #endif // !EMULATION
 
+LF_END_BRIO_NAMESPACE()	
 #endif //LF_BRIO_MODULEPRIV_H_

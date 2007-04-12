@@ -20,7 +20,9 @@
 //==============================================================================
 
 #include <boost/preprocessor/seq/for_each_i.hpp>
+#include <SystemTypes.h>
 #include <GroupEnumeration.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================	   
@@ -29,31 +31,15 @@
 #define GEN_TYPE_VALUE(r, initval, count, name)		\
 	const tEventType name = initval + count;
 	
-#define FirstEvent(group) MakeEventType(kSystemNumSpaceDomain, group, kFirstNumSpaceTag)
-#define AllEvents(group)  MakeEventType(kSystemNumSpaceDomain, group, kWildcardNumSpaceTag)
+inline tEventType FirstEvent( eGroupEnum group )
+{
+	return MakeEventType(kSystemNumSpaceDomain, group, kFirstNumSpaceTag);
+}
 
-
-//==============================================================================	   
-// Audio events
-//==============================================================================
-#define AUDIO_EVENTS					\
-	(kAudioCompletedEvent)				\
-	(kAudioCuePointEvent)
-
-BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupAudio), AUDIO_EVENTS)
-
-const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
-
-
-//==============================================================================	   
-// Button events
-//==============================================================================
-#define BUTTON_EVENTS					\
-	(kButtonStateChanged)
-
-BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupButton), BUTTON_EVENTS)
-
-const tEventType kAllButtonEvents = AllEvents(kGroupButton);
+inline tEventType AllEvents( eGroupEnum group )
+{
+	return MakeEventType(kSystemNumSpaceDomain, group, kWildcardNumSpaceTag);
+}
 
 
 //==============================================================================	   
@@ -67,37 +53,6 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupCommon), COMMON_EVENTS)
 
 const tEventType kAllCommonEvents = AllEvents(kGroupCommon);
 
-
-//==============================================================================	   
-// Display events
-//==============================================================================
-#define DISPLAY_EVENTS					\
-	(kDisplayEvent1)					\
-	(kDisplayEvent2)
-
-BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupDisplay), DISPLAY_EVENTS)
-
-const tEventType kAllDisplayEvents = AllEvents(kGroupDisplay);
-
-
-//==============================================================================	   
-// Resource Manager events
-//==============================================================================	   
-#define RESOURCE_EVENTS					\
-	(kResourceDeviceOpenedEvent)		\
-	(kResourceAllDevicesOpenedEvent)	\
-	(kResourcePackageOpenedEvent)		\
-	(kResourcePackageLoadedEvent)		\
-	(kResourcePackageUnloadedEvent)		\
-	(kResourceOpenedEvent)				\
-	(kResourceReadDoneEvent)			\
-	(kResourceWriteDoneEvent)			\
-	(kResourceLoadedEvent)				\
-	(kResourceUnloadedEvent)
-
-BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupResource), RESOURCE_EVENTS)
-
-const tEventType kAllResourceEvents = AllEvents(kGroupResource);
 
 
 #ifdef UNIT_TESTING
@@ -120,11 +75,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupUnitTests), UNIT_TEST_E
 const tEventType kAllUnitTestEvents = AllEvents(kGroupUnitTests);
 #endif //UNIT_TESTING
 
-//==============================================================================	   
-#undef GENERATE_TYPE_VALUE
-#undef FirstEvent
-#undef AllEvents
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_SYSTEMEVENTS_H
 
 // EOF

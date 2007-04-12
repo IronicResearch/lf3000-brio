@@ -17,10 +17,12 @@
 #include <dlfcn.h>
 #include <unistd.h>
 
+#include <SystemTypes.h>
 #include <Module.h>
 #include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================	   
@@ -85,7 +87,7 @@ namespace
 				{
 					// TODO: Implement more sophisticated version matching scheme:
 					//	(use highest version with same major version number)
-					//	(if no major version match, match if module version > mpi version)
+					//	(if no major version match, match if module version > MPI version)
 					if( GetMajorVersion(version) 
 						== GetMajorVersion(pModule->version) )
 						return pModule;
@@ -297,7 +299,9 @@ namespace
 	CModuleMgrImpl	g_impl;
 }
 
- 
+LF_END_BRIO_NAMESPACE()
+
+
 //============================================================================
 // Module
 //============================================================================

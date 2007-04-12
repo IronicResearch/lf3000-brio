@@ -1,5 +1,5 @@
-#ifndef LF_BRIO_EVENTMGRMPI_H
-#define LF_BRIO_EVENTMGRMPI_H
+#ifndef LF_BRIO_EVENTMPI_H
+#define LF_BRIO_EVENTMPI_H
 //==============================================================================
 // $Source: $
 //
@@ -18,14 +18,8 @@
 #include <CoreMPI.h>
 #include <EventListener.h>
 #include <EventMessage.h>
-
-
-// Types
-typedef U32		tListenerId;
-typedef U32		tEventRegistrationFlags;
-typedef U8		tEventPriority;
-
-const tListenerId kNoListener = (tListenerId)(0);
+#include <EventTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================
@@ -53,10 +47,11 @@ public:
 						tEventPriority priority,
 						const IEventListener *pResponseListener = NULL) const;
 private:
-	class CEventModule*	mpModule;
+	class CEventModule*	pModule_;
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_EVENTMGRMPI_H
 
 // eof

@@ -16,6 +16,8 @@
 
 #include <CoreMPI.h>
 #include <ButtonTypes.h>
+#include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================
@@ -34,13 +36,14 @@ public:
 	virtual ~CButtonMPI();
 
 	// Get button state
-	tErrType	GetButtonState(tButtonData& data);
+	tErrType	GetButtonState(tButtonData& data) const;
 
 private:
-	class CButtonModule*	mpModule;
+	class CButtonModule*	pModule_;
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_BUTTONMPI_H
 
 // eof

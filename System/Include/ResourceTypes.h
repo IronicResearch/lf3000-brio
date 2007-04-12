@@ -13,8 +13,47 @@
 //==============================================================================
 
 #include <SystemTypes.h>
+#include <SystemErrors.h>
+#include <SystemEvents.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
+//==============================================================================	   
+// Resource Manager events
+//==============================================================================	   
+#define RESOURCE_EVENTS					\
+	(kResourceDeviceOpenedEvent)		\
+	(kResourceAllDevicesOpenedEvent)	\
+	(kResourcePackageOpenedEvent)		\
+	(kResourcePackageLoadedEvent)		\
+	(kResourcePackageUnloadedEvent)		\
+	(kResourceOpenedEvent)				\
+	(kResourceReadDoneEvent)			\
+	(kResourceWriteDoneEvent)			\
+	(kResourceLoadedEvent)				\
+	(kResourceUnloadedEvent)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupResource), RESOURCE_EVENTS)
+
+const tEventType kAllResourceEvents = AllEvents(kGroupResource);
+
+
+//==============================================================================	   
+// Resource Manager errors
+//==============================================================================	   
+#define RESOURCE_ERRORS			\
+	(kResourceInvalidErr)		\
+	(kResourceNotFoundErr)		\
+	(kResourceNotLoadedErr)		\
+	(kResourceNotOpenErr)		\
+	(kResourceInvalidMPIIdErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupResource), RESOURCE_ERRORS)
+
+
+//==============================================================================	   
+// Resource Manager types
+//==============================================================================	   
 enum {
 	kRsrcDeviceTypeUndefined = 0,
 	kRsrcDeviceTypeCDROM,
@@ -60,6 +99,7 @@ typedef U32		tRsrcType;
 typedef tHndl 	tRsrcHndl;
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_RSRCMGRTYPES_H
 
 // EOF

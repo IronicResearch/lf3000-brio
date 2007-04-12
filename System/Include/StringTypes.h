@@ -18,7 +18,13 @@
 //
 //============================================================================== 
 
+#ifdef EMULATION
+	#include <glibmm/ustring.h>
+#endif
+	
 #include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 //============================================================================== 
 // Character encodings
@@ -197,7 +203,6 @@ typedef tUTF16Char	tUniChar;
 
 #ifdef EMULATION
 
-	#include <glibmm/ustring.h>
 	typedef Glib::ustring	CString;
 	typedef Glib::ustring	CPath;
 	typedef Glib::ustring	CURI;
@@ -385,6 +390,7 @@ typedef const CString*	ConstPtrCString;
 typedef const CURI*		ConstPtrCURI;
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif	// LF_BRIO_STRINGTYPES_H
 
 // EOF

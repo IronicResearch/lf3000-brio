@@ -18,6 +18,8 @@
 
 #include <SystemTypes.h>
 #include <StringTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 class ICoreMPI {
 public:
@@ -39,6 +41,7 @@ private:
 	ICoreMPI& operator=(const ICoreMPI&);
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_COREMPI_H
 
 // eof

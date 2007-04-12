@@ -13,6 +13,7 @@
 //============================================================================
 
 #include <SystemTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //----------------------------------------------------------------------------
 enum eGroupEnum { 
@@ -35,6 +36,7 @@ enum eGroupEnum {
 	// WARNING: Inserting values will break backwards compatability!!!
 };
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_GROUPENUMERATION_H
 
 // EOF

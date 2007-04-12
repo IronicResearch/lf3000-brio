@@ -13,6 +13,7 @@
 //============================================================================
 
 #include <CoreTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //============================================================================
 // Basic Types
@@ -314,6 +315,7 @@ typedef tU32NumSpace	tErrType;
 #define kNoErr			((tErrType)0)
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_SYSTEMTYPES_H
 
 // EOF

@@ -12,7 +12,9 @@
 //
 //==============================================================================
 
+#include <SystemTypes.h>
 #include <SystemEvents.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventMessage;		// forward declaration
 
@@ -41,7 +43,7 @@ public:
 	tErrType				ReenableNotifyForEventType(tEventType type);
 
 private:
-	class CEventListenerImpl *mpimpl;
+	class CEventListenerImpl *pimpl_;
 	friend class CEventListenerImpl;
 	friend class CEventManagerImpl;
 };
@@ -63,6 +65,7 @@ protected:
 };
 */
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_EVENTLISTENER_H
 
 // EOF
