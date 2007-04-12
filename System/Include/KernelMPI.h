@@ -1,10 +1,7 @@
 #ifndef LF_BRIO_KERNELMPI_H
 #define LF_BRIO_KERNELMPI_H
-
-//==============================================================================
-//
-// Copyright (c) 2002-2007 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+//==============================================================================//
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -15,11 +12,12 @@
 //
 //==============================================================================
 
-#include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <CoreMPI.h>
 #include <KernelTypes.h>
 #include <StringTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 class CKernelMPI : public ICoreMPI
 {
@@ -169,6 +167,7 @@ private:
 };
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_KERNELMPI_H
 
 // EOF
