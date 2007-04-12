@@ -9,6 +9,7 @@
 #include <UnitTestUtils.h>
 
 using namespace std;
+LF_USING_BRIO_NAMESPACE()
 
 typedef struct{
 	int numTest;
@@ -138,7 +139,7 @@ public:
 //----------------------------------------------------------------
 
 		const CURI *pTaskURI = NULL;
-		tTaskProperties pProperties = {0};
+		tTaskProperties pProperties;
 		tTaskHndl *pHndl;
         thread_arg_t threadArg;
         int testNumber = 1;

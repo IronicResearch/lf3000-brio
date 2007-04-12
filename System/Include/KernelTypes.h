@@ -3,8 +3,7 @@
 //==============================================================================
 // $Source: $
 //
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
-// All Rights Reserved
+// Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
 // File:
@@ -15,7 +14,24 @@
 //
 //==============================================================================
 #include <mqueue.h>
+#include <SystemTypes.h>
+#include <SystemErrors.h>
+#include <SystemEvents.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
+
+//==============================================================================	   
+// Kernel errors
+//==============================================================================
+#define KERNEL_ERRORS			\
+	(kMemoryAllocErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupKernel), KERNEL_ERRORS)
+
+
+//==============================================================================	   
+// Kernel types
+//==============================================================================
 typedef tHndl	tTaskHndl;
 typedef tHndl	tMemoryPoolHndl;
 typedef tHndl	tMessageQueueHndl;
@@ -209,6 +225,12 @@ struct tTaskProperties {
 	tTaskSchedPolicy	schedulingPolicy;		// 8
 	U32					schedulingInterval;     // 9
     int                 inheritSched;           // 10
+    // Default ctor that initializes all values to defaults
+    tTaskProperties() : priority(0), stackAddr(0), stackSize(0),
+    				TaskMainFcn(NULL), taskMainArgCount(0), 
+    				pTaskMainArgValues(NULL), startupMode(0),
+    				schedulingPolicy(0), schedulingInterval(0),
+    				inheritSched(0) {}
 };
 
 // FIXME: update to work w/ PID
@@ -371,6 +393,7 @@ typedef pthread_cond_t      tCond;
 typedef pthread_condattr_t  tCondAttr;
 typedef struct timespec     tTimeSpec;
 
+LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_KERNELTYPES_H
 
 // EOF

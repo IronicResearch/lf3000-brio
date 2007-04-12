@@ -83,7 +83,7 @@ tErrType	CKernelMPI::GetMPIName(ConstPtrCString &pName) const
 tErrType CKernelMPI::GetModuleVersion(tVersion &version) const
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 
 	return mpModule->GetModuleVersion( version );
 }
@@ -92,7 +92,7 @@ tErrType CKernelMPI::GetModuleVersion(tVersion &version) const
 tErrType	CKernelMPI::GetModuleName(ConstPtrCString &pName) const
 {
 	if (!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 
 	return mpModule->GetModuleName( pName );
 }
@@ -101,7 +101,7 @@ tErrType	CKernelMPI::GetModuleName(ConstPtrCString &pName) const
 tErrType CKernelMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetModuleOrigin( pURI );
 }
@@ -113,7 +113,7 @@ tErrType	CKernelMPI::CreateTask(const CURI* pTaskURI,
 					const tTaskProperties* pProperties, tTaskHndl *pHndl)
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->CreateTask( pTaskURI, pProperties, pHndl );
 }
@@ -122,7 +122,7 @@ tErrType	CKernelMPI::CreateTask(const CURI* pTaskURI,
 tErrType	CKernelMPI::JoiningThreads( tTaskHndl pHndl, void **value_ptr ) 
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->JoiningThreads( pHndl, value_ptr );
 }
@@ -130,7 +130,7 @@ tErrType	CKernelMPI::JoiningThreads( tTaskHndl pHndl, void **value_ptr )
 tErrType CKernelMPI::CancelTask(tTaskHndl hndl)
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->CancelTask( hndl );
 }
@@ -140,7 +140,7 @@ tErrType CKernelMPI::CancelTask(tTaskHndl hndl)
 tTaskHndl	CKernelMPI::GetCurrentTask()
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetCurrentTask();
 }
@@ -149,7 +149,7 @@ tTaskHndl	CKernelMPI::GetCurrentTask()
 tErrType CKernelMPI::GetTaskPriority( tTaskHndl hndl, int* priority )
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetTaskPriority( hndl, priority );
 }	
@@ -158,7 +158,7 @@ tErrType CKernelMPI::GetTaskPriority( tTaskHndl hndl, int* priority )
 tErrType CKernelMPI::GetTaskSchedulingPolicy(tTaskHndl hndl, int* policy)
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetTaskSchedulingPolicy( hndl, policy );
 }	
@@ -167,7 +167,7 @@ tErrType CKernelMPI::GetTaskSchedulingPolicy(tTaskHndl hndl, int* policy)
 tErrType CKernelMPI::TaskSleep( U32 msec )
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->TaskSleep( msec );
 }	
@@ -178,7 +178,7 @@ tErrType CKernelMPI::TaskSleep( U32 msec )
 tErrType CKernelMPI::Malloc( U32 size, tPtr pPtr )
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->Malloc( size, pPtr );
 	
@@ -188,7 +188,7 @@ tErrType CKernelMPI::Malloc( U32 size, tPtr pPtr )
 tErrType CKernelMPI::Free( tPtr ptr )
 {
 	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->Free( ptr );
 }
@@ -201,7 +201,7 @@ tErrType	CKernelMPI::CreateMessageQueue( const CURI* pQueueURI,
 						tMessageQueueHndl* pHndl )
 {
  	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->CreateMessageQueue( pQueueURI, pProperties, pHndl );  
 }
@@ -210,7 +210,7 @@ tErrType	CKernelMPI::CreateMessageQueue( const CURI* pQueueURI,
 tErrType	CKernelMPI::DestroyMessageQueue( tMessageQueueHndl hndl )
 {
  	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->DestroyMessageQueue( hndl );  
 }
@@ -219,7 +219,7 @@ tErrType	CKernelMPI::DestroyMessageQueue( tMessageQueueHndl hndl )
 tErrType CKernelMPI::UnlinkMessageQueue( const char *hndl )
 {
  	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->UnlinkMessageQueue( hndl );  
 }
@@ -228,7 +228,7 @@ tErrType CKernelMPI::UnlinkMessageQueue( const char *hndl )
 tErrType  	CKernelMPI::ClearMessageQueue( tMessageQueueHndl hndl )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->ClearMessageQueue( hndl );  
 }
@@ -237,7 +237,7 @@ tErrType  	CKernelMPI::ClearMessageQueue( tMessageQueueHndl hndl )
 tErrType CKernelMPI::GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *numMsgQueue )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetMessageQueueNumMessages( hndl, numMsgQueue );  
 }
@@ -247,7 +247,7 @@ tErrType CKernelMPI::GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *nu
 									U32 messageSize )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->SendMessage( hndl, pMessage, messageSize );  
 }
@@ -257,7 +257,7 @@ tErrType  	CKernelMPI::SendMessageOrWait( tMessageQueueHndl hndl, CMessage* pMes
 									U32 messageSize, U32 timeoutMs )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->SendMessageOrWait( hndl, pMessage, messageSize, timeoutMs );  
 }
@@ -267,7 +267,7 @@ tErrType  	CKernelMPI::ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessageSiz
 									   CMessage* msg_ptr, unsigned *msg_prio )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->ReceiveMessage( hndl, maxMessageSize, msg_ptr, msg_prio );  
 }
@@ -276,7 +276,7 @@ tErrType  	CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMess
 									CMessage* msg_ptr, U32 timeoutMs )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->ReceiveMessageOrWait( hndl, maxMessageSize, msg_ptr, timeoutMs );  
 }
@@ -288,7 +288,7 @@ tErrType  	CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMess
 U32   		CKernelMPI::GetElapsedTime( U32* pUs )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetElapsedTime( pUs );  
 }
@@ -298,7 +298,7 @@ tErrType 	CKernelMPI::CreateTimer(const CURI* pTimerURI,
                                     struct sigevent* se, tTimerHndl* pHndl)
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->CreateTimer( pTimerURI, se, pHndl );  
 }
@@ -307,7 +307,7 @@ tErrType 	CKernelMPI::CreateTimer(const CURI* pTimerURI,
 tErrType 	CKernelMPI::DestroyTimer( tTimerHndl hndl )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->DestroyTimer( hndl );  
 }
@@ -316,7 +316,7 @@ tErrType 	CKernelMPI::DestroyTimer( tTimerHndl hndl )
 tErrType 	CKernelMPI::ResetTimer( tTimerHndl hndl, const tTimerProperties* pTimerProperties )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->ResetTimer( hndl, pTimerProperties );  
 }
@@ -325,7 +325,7 @@ tErrType 	CKernelMPI::ResetTimer( tTimerHndl hndl, const tTimerProperties* pTime
 tErrType	CKernelMPI::StartTimer( tTimerHndl hndl, const struct itimerspec* value )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->StartTimer( hndl, value );  
 }
@@ -334,7 +334,7 @@ tErrType	CKernelMPI::StartTimer( tTimerHndl hndl, const struct itimerspec* value
 tErrType	CKernelMPI::StopTimer( tTimerHndl hndl )
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->StopTimer( hndl );  
 }
@@ -345,7 +345,7 @@ tErrType CKernelMPI::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs )
                                                                     
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetTimerElapsedTime( hndl, pUs );  
 }
@@ -355,7 +355,7 @@ tErrType CKernelMPI::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs )
 tErrType CKernelMPI::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) 
 {
   	if(!mpModule)
-		return kMpiNotConnectedErr;
+		return kMPINotConnectedErr;
 		
 	return mpModule->GetTimerRemainingTime( hndl, pUs );  
 }
