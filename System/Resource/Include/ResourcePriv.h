@@ -35,29 +35,26 @@ public:
 
 	// class-specific functionality
 	VTABLE_EXPORT	tErrType		SetDefaultURIPath(U32 id, const CURI &pURIPath);
-	VTABLE_EXPORT	tErrType		SetDefaultEventHandler(U32 id, const IEventListener *pEventHandler=kNull,
-									tEventContext callerContext=kEventContextUndefined);
+	VTABLE_EXPORT	tErrType		SetDefaultListener(U32 id, const IEventListener *pListener=kNull);
 
 	// Searching for devices
 	VTABLE_EXPORT	tErrType		GetNumDevices(U16 *pCount);
-	VTABLE_EXPORT	tErrType		GetNumDevices(tDeviceType type, U16 *pCount);
+	VTABLE_EXPORT	tErrType		GetNumDevices(U16 *pCount, tDeviceType type);
 
 	VTABLE_EXPORT	tErrType		FindDevice(tDeviceHndl *pHndl);
-	VTABLE_EXPORT	tErrType		FindDevice(tDeviceType type, tDeviceHndl *pHndl);
+	VTABLE_EXPORT	tErrType		FindDevice(tDeviceHndl *pHndl, tDeviceType type);
 	VTABLE_EXPORT	tErrType		FindNextDevice(tDeviceHndl *pHndl);
 
-	VTABLE_EXPORT	tErrType		GetDeviceName(tDeviceHndl hndl, const CString **ppName);
-	VTABLE_EXPORT	tErrType		GetDeviceType(tDeviceHndl hndl, tDeviceType *pType);
+	VTABLE_EXPORT	tErrType		GetDeviceName(const CString **ppName, tDeviceHndl hndl);
+	VTABLE_EXPORT	tErrType		GetDeviceType(tDeviceType *pType, tDeviceHndl hndl);
 
 	VTABLE_EXPORT	tErrType		OpenDevice(tDeviceHndl hndl, 
 									tOptionFlags openOptions=kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
 	VTABLE_EXPORT	tErrType		CloseDevice(tDeviceHndl hndl);
 
-	VTABLE_EXPORT	tErrType		OpenAllDevices(tOptionFlags openOptions=kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+	VTABLE_EXPORT	tErrType		OpenAllDevices(U32 id, tOptionFlags openOptions=kNoOptionFlags,
+									const IEventListener *pListener=kNull);  
 	VTABLE_EXPORT	tErrType		CloseAllDevices();
 
 	// Searching for packages
@@ -65,94 +62,86 @@ public:
 									tRsrcPackageType type=kRsrcPackageTypeUndefined, 
 									const CURI *pURIPath=kNull);
 
-	VTABLE_EXPORT	tErrType		FindRsrcPackage(const CURI *pPackageURI, tRsrcPackageHndl *pHndl,
+	VTABLE_EXPORT	tErrType		FindRsrcPackage(tRsrcPackageHndl *pHndl, const CURI *pPackageURI,
 									const CURI *pURIPath=kNull);
-	VTABLE_EXPORT	tErrType		FindRsrcPackages(tRsrcPackageType type, tRsrcPackageHndl *pHndl, 
+	VTABLE_EXPORT	tErrType		FindRsrcPackage(tRsrcPackageHndl *pHndl, tRsrcPackageType type,
 									const CURI *pURIPath=kNull);	
 	VTABLE_EXPORT	tErrType		FindNextRsrcPackage(tRsrcPackageHndl *pHndl);
 
 	// Getting package info
-	VTABLE_EXPORT	tErrType		GetRsrcPackageURI(tRsrcPackageHndl hndl, const CURI **ppURI);
-	VTABLE_EXPORT	tErrType		GetRsrcPackageName(tRsrcPackageHndl hndl, const CString **ppName);
-	VTABLE_EXPORT	tErrType		GetRsrcPackageType(tRsrcPackageHndl hndl, tRsrcPackageType *pType);
-	VTABLE_EXPORT	tErrType		GetRsrcPackageVersion(tRsrcPackageHndl hndl, tVersion *pVersion);
-	VTABLE_EXPORT	tErrType		GetRsrcPackageVersionStr(tRsrcPackageHndl hndl, 
-									const CString **ppVersionStr);
-	VTABLE_EXPORT	tErrType		GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl, U32 *pSize);
-	VTABLE_EXPORT	tErrType		GetRsrcPackageSizePacked(tRsrcPackageHndl hndl, U32 *pSize);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageURI(const CURI **ppURI, tRsrcPackageHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageName(const CString **ppName, tRsrcPackageHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageType(tRsrcPackageType *pType, tRsrcPackageHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageVersion(tVersion *pVersion, tRsrcPackageHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageVersionStr(const CString **ppVersionStr,
+										tRsrcPackageHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageSizeUnpacked(U32 *pSize, tRsrcPackageHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPackageSizePacked(U32 *pSize, tRsrcPackageHndl hndl);
 
 	// Opening & closing packages to find resources within them
 	VTABLE_EXPORT	tErrType		OpenRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags openOptions=kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
   	VTABLE_EXPORT	tErrType		CloseRsrcPackage(tRsrcPackageHndl hndl);
 
 	// Loading & unloading packages
 	VTABLE_EXPORT	tErrType		LoadRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags loadOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
 	VTABLE_EXPORT	tErrType		UnloadRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags unloadOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
 
 	// Searching for resources among opened & loaded packages & devices
 	VTABLE_EXPORT	tErrType		GetNumRsrcs(U32 id, U32 *pCount, 
 									const CURI *pURIPath=kNull); 	
-	VTABLE_EXPORT	tErrType		GetNumRsrcs(U32 id, tRsrcType type, U32 *pCount, 
+	VTABLE_EXPORT	tErrType		GetNumRsrcs(U32 id, U32 *pCount, tRsrcType type,
 									const CURI *pURIPath=kNull);
 
-	VTABLE_EXPORT	tErrType		FindRsrc(U32 id, const CURI &pRsrcURI, tRsrcHndl &hndl, 
+	VTABLE_EXPORT	tErrType		FindRsrc(U32 id, tRsrcHndl &hndl, const CURI &pRsrcURI, 
 									const CURI *pURIPath=kNull);
-	VTABLE_EXPORT	tErrType		FindRsrc(U32 id, tRsrcID rsrcID, tRsrcHndl &hndl,
+	VTABLE_EXPORT	tErrType		FindRsrc(U32 id, tRsrcHndl &hndl, tRsrcID rsrcID,
 									const CURI *pURIPath=kNull);
 	VTABLE_EXPORT	tErrType		FindRsrcs(U32 id, tRsrcHndl &hndl, 
 									const CURI *pURIPath=kNull);
-	VTABLE_EXPORT	tErrType		FindRsrcs(U32 id, tRsrcType type, tRsrcHndl &hndl, 
+	VTABLE_EXPORT	tErrType		FindRsrcs(U32 id, tRsrcHndl &hndl, tRsrcType type, 
 									const CURI *pURIPath=kNull);
 	VTABLE_EXPORT	tErrType		FindNextRsrc(U32 id, tRsrcHndl &hndl);
 
 	// Getting rsrc info
-	VTABLE_EXPORT	tErrType		GetRsrcURI(U32 id, tRsrcHndl hndl, ConstPtrCURI &pURI);
-	VTABLE_EXPORT	tErrType		GetRsrcName(U32 id, tRsrcHndl hndl, ConstPtrCString &pName);
-	VTABLE_EXPORT	tErrType		GetRsrcID(tRsrcHndl hndl, tRsrcID &id);
-	VTABLE_EXPORT	tErrType		GetRsrcType(tRsrcHndl hndl, tRsrcType &rsrcType);
-	VTABLE_EXPORT	tErrType 		GetRsrcVersion(tRsrcHndl hndl, tVersion &version);
-	VTABLE_EXPORT	tErrType 		GetRsrcVersionStr(tRsrcHndl hndl, ConstPtrCString &pVersionStr);	
-	VTABLE_EXPORT	tErrType 		GetRsrcPackedSize(tRsrcHndl hndl, U32& pSize);
-	VTABLE_EXPORT	tErrType 		GetRsrcUnpackedSize(tRsrcHndl hndl, U32& pSize);
-	VTABLE_EXPORT	tErrType		GetRsrcPtr(tRsrcHndl hndl, tPtr &pRsrc);
+	VTABLE_EXPORT	tErrType		GetRsrcURI(U32 id, ConstPtrCURI &pURI, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcName(U32 id, ConstPtrCString &pName, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcID(tRsrcID &id, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcType(tRsrcType &rsrcType, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType 		GetRsrcVersion(tVersion &version, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType 		GetRsrcVersionStr(ConstPtrCString &pVersionStr, tRsrcHndl hndl);	
+	VTABLE_EXPORT	tErrType 		GetRsrcPackedSize(U32& pSize, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType 		GetRsrcUnpackedSize(U32& pSize, tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRsrcPtr(tPtr &pRsrc, tRsrcHndl hndl);
 
 	// Opening & closing resources without loading them
-	VTABLE_EXPORT	tErrType		OpenRsrc(tRsrcHndl hndl, 
+	VTABLE_EXPORT	tErrType		OpenRsrc(U32 id, tRsrcHndl hndl, 
 									tOptionFlags openOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
 	VTABLE_EXPORT	tErrType		CloseRsrc(tRsrcHndl hndl);
 
-	VTABLE_EXPORT	tErrType		ReadRsrc(tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
+	VTABLE_EXPORT	tErrType		ReadRsrc(U32 id, tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
 									U32 *pNumBytesActual = kNull,
 									tOptionFlags readOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
 	VTABLE_EXPORT	tErrType		SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
 									tOptionFlags seekOptions = kNoOptionFlags);
 	VTABLE_EXPORT	tErrType		WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags writeOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
+									const IEventListener *pListener=kNull);  
 
 	// Loading & unloading resources
-	VTABLE_EXPORT	tErrType		LoadRsrc(tRsrcHndl hndl, tOptionFlags loadOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);  
-	VTABLE_EXPORT	tErrType		UnloadRsrc(tRsrcHndl hndl, 
+	VTABLE_EXPORT	tErrType		LoadRsrc(U32 id, tRsrcHndl hndl, tOptionFlags loadOptions = kNoOptionFlags,
+									const IEventListener *pListener=kNull);  
+	VTABLE_EXPORT	tErrType		UnloadRsrc(U32 id, tRsrcHndl hndl, 
 									tOptionFlags unloadOptions = kNoOptionFlags,
-									const IEventListener *pEventHandler=kNull,
-									tEventContext eventContext=kEventContextUndefined);
+									const IEventListener *pListener=kNull);
 
 	VTABLE_EXPORT	Boolean			RsrcIsLoaded(tRsrcHndl hndl);
 

@@ -21,8 +21,8 @@
 //#include <KernelMPI.h>
 #include <ResourceMPI.h>
 #include <ResourcePriv.h>
-//#include <ModuleRsrc.h>
 #include <EventListener.h>
+#include <EventMPI.h>
 
 #include <stdio.h>
 #include <string.h> // for strcmp
@@ -34,7 +34,7 @@
 #include <map>		// FIXME: replace with non-STL implementation
 
 const tVersion	kMPIVersion = 	MakeVersion(0,1);
-const CString	kMPIName = 		"ResourceMPI";
+const CString	kMpiName = 		"ResourceMPI";
 const CURI		kModuleURI =	"URI";
 const U32		kRsrcDescBlockInc = 256;
 const U32		kRscrDeviceBlockInc = 16;
@@ -56,7 +56,7 @@ CURI DefaultURI;
 class CResourceImpl {
 public:
 	CResourceImpl() : lastSearchHndl(0), lastSearchType(kRsrcSearchTypeUndefined),
-					mDefaultURI(DefaultURI), mpEventListener(NULL)	{}
+						mDefaultURI(DefaultURI), mpEventListener(NULL)	{}
 	tRsrcHndl			lastSearchHndl;
 	tRsrcSearchType		lastSearchType;
 	tRsrcSearchPattern	lastSearchPattern;
@@ -326,7 +326,7 @@ namespace
 			;//FIXME: bail
 		CURI defaultURI = buf;
 		defaultURI += "/apprsrc/";
-printf("InitializeBaseResourceURIs: %s\n", defaultURI.c_str());
+// printf("InitializeBaseResourceURIs: %s\n", defaultURI.c_str());
 		strncpy(tempDevice.uriBase, defaultURI.c_str(), MAX_RSRC_URI_SIZE);
 		AddDeviceEntry(&tempDevice);
 		return defaultURI;
@@ -377,7 +377,7 @@ tErrType CResourceModule::GetModuleVersion(tVersion &version) const
 //----------------------------------------------------------------------------
 tErrType CResourceModule::GetModuleName(ConstPtrCString &pName) const
 {
-	pName = &kMPIName;
+	pName = &kMpiName;
 	return kNoErr;
 }
 
@@ -411,15 +411,13 @@ tErrType CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::SetDefaultEventHandler(U32 id, 
-									const IEventListener *pEventListener,
-									tEventContext callerContext)
+tErrType CResourceModule::SetDefaultListener(U32 id, const IEventListener *pListener)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
 	if (pimpl == NULL)
 		return kResourceInvalidMPIIdErr;
 		
-	pimpl->mpEventListener = pEventListener;
+	pimpl->mpEventListener = pListener;
 	return kNoErr;
 }
 
@@ -448,15 +446,12 @@ tErrType	CResourceModule::GetNumRsrcs(U32 id, U32 *pCount, const CURI *pURIPath)
 	if (pimpl == NULL)
 		return kResourceInvalidMPIIdErr;
 
-	if (pCount == NULL)
-		return kInvalidParamErr;
-
 	*pCount = rsrcDescPtrArraySize; 
 	return kNoErr;
 }
  	
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetNumRsrcs(U32 id, tRsrcType type, U32 *pCount, 
+tErrType	CResourceModule::GetNumRsrcs(U32 id, U32 *pCount, tRsrcType type, 
 						const CURI *pURIPath)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
@@ -465,9 +460,6 @@ tErrType	CResourceModule::GetNumRsrcs(U32 id, tRsrcType type, U32 *pCount,
 
 	U32 index=0, count=0;
 	tRsrcDescriptor *pRsrcDesc;
-
-	if (pCount == NULL)
-		return kInvalidParamErr;
 
 	while (index < rsrcDescPtrArraySize)
 	{
@@ -481,7 +473,7 @@ tErrType	CResourceModule::GetNumRsrcs(U32 id, tRsrcType type, U32 *pCount,
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI, tRsrcHndl &hndl,
+tErrType	CResourceModule::FindRsrc(U32 id, tRsrcHndl &hndl, const CURI &rsrcURI,
 						const CURI *pURIPath)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
@@ -511,7 +503,7 @@ tErrType	CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI, tRsrcHndl &hndl,
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrc(U32 id, tRsrcID rsrcID, tRsrcHndl &hndl,
+tErrType	CResourceModule::FindRsrc(U32 id, tRsrcHndl &hndl, tRsrcID rsrcID,
 						const CURI *pURIPath)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
@@ -557,7 +549,7 @@ tErrType	CResourceModule::FindRsrcs(U32 id, tRsrcHndl &hndl, const CURI *pURIPat
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrcs(U32 id, tRsrcType type, tRsrcHndl &hndl, 
+tErrType	CResourceModule::FindRsrcs(U32 id, tRsrcHndl &hndl, tRsrcType type, 
 						const CURI *pURIPath)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
@@ -587,7 +579,7 @@ tErrType	CResourceModule::FindNextRsrc(U32 id, tRsrcHndl &hndl)
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetRsrcURI(U32 id, tRsrcHndl hndl, ConstPtrCURI& pURI)
+tErrType	CResourceModule::GetRsrcURI(U32 id, ConstPtrCURI& pURI, tRsrcHndl hndl)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
 	if (pimpl == NULL)
@@ -605,7 +597,7 @@ tErrType	CResourceModule::GetRsrcURI(U32 id, tRsrcHndl hndl, ConstPtrCURI& pURI)
 }
 
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetRsrcName(U32 id, tRsrcHndl hndl, ConstPtrCString& pName)
+tErrType	CResourceModule::GetRsrcName(U32 id, ConstPtrCString& pName, tRsrcHndl hndl)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
 	if (pimpl == NULL)
@@ -623,7 +615,7 @@ tErrType	CResourceModule::GetRsrcName(U32 id, tRsrcHndl hndl, ConstPtrCString& p
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcID(tRsrcHndl hndl, tRsrcID &id)
+tErrType 	CResourceModule::GetRsrcID(tRsrcID &id, tRsrcHndl hndl)
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -635,7 +627,7 @@ tErrType 	CResourceModule::GetRsrcID(tRsrcHndl hndl, tRsrcID &id)
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcType(tRsrcHndl hndl, tRsrcType &rsrcType)
+tErrType 	CResourceModule::GetRsrcType(tRsrcType &rsrcType, tRsrcHndl hndl)
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -647,7 +639,7 @@ tErrType 	CResourceModule::GetRsrcType(tRsrcHndl hndl, tRsrcType &rsrcType)
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcVersion(tRsrcHndl hndl, tVersion &version)
+tErrType 	CResourceModule::GetRsrcVersion(tVersion &version, tRsrcHndl hndl)
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -659,7 +651,7 @@ tErrType 	CResourceModule::GetRsrcVersion(tRsrcHndl hndl, tVersion &version)
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcVersionStr(tRsrcHndl hndl, ConstPtrCString &pVersionStr)	
+tErrType 	CResourceModule::GetRsrcVersionStr(ConstPtrCString &pVersionStr, tRsrcHndl hndl)	
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -673,7 +665,7 @@ tErrType 	CResourceModule::GetRsrcVersionStr(tRsrcHndl hndl, ConstPtrCString &pV
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcPackedSize(tRsrcHndl hndl, U32 &size)
+tErrType 	CResourceModule::GetRsrcPackedSize(U32 &size, tRsrcHndl hndl)
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -685,7 +677,7 @@ tErrType 	CResourceModule::GetRsrcPackedSize(tRsrcHndl hndl, U32 &size)
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcUnpackedSize(tRsrcHndl hndl, U32 &size)
+tErrType 	CResourceModule::GetRsrcUnpackedSize(U32 &size, tRsrcHndl hndl)
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -697,7 +689,7 @@ tErrType 	CResourceModule::GetRsrcUnpackedSize(tRsrcHndl hndl, U32 &size)
 }
 
 //----------------------------------------------------------------------------
-tErrType  	CResourceModule::GetRsrcPtr(tRsrcHndl hndl, tPtr &pRsrcPtr)
+tErrType  	CResourceModule::GetRsrcPtr(tPtr &pRsrcPtr, tRsrcHndl hndl)
 {
 	tRsrcDescriptor* pRsrc;
 
@@ -712,10 +704,20 @@ tErrType  	CResourceModule::GetRsrcPtr(tRsrcHndl hndl, tPtr &pRsrcPtr)
 }
 
 //----------------------------------------------------------------------------
-tErrType  	CResourceModule::OpenAllDevices(tOptionFlags openOptions,
-						const IEventListener *pEventHandler,
-						tEventContext eventContext)
+tErrType  	CResourceModule::OpenAllDevices(U32 id, tOptionFlags openOptions,
+						const IEventListener *pListener)
 {
+	const tEventPriority	kPriorityTBD = 0;
+	IEventListener *pActiveListener;
+	
+	CResourceImpl* pimpl = RetrieveImpl(id);
+	if (pimpl == NULL)
+		return kResourceInvalidMPIIdErr;
+		
+	pActiveListener = (IEventListener *) pimpl->mpEventListener;
+	if( pListener != kNull )
+		pActiveListener = (IEventListener *) pListener;
+		
 	if (rscrOpenCount == 0)		// if initial construction
 	{
 		// foreach identified device
@@ -724,6 +726,13 @@ tErrType  	CResourceModule::OpenAllDevices(tOptionFlags openOptions,
 			ScanDirForRscr(rsrcDeviceArray[i].uriBase);
 		}
 	}
+	tResourceMsgDat	data;
+	data = 0;
+
+	CEventMPI	event;
+	CResourceEventMessage	msg(kResourceAllDevicesOpenedEvent, data);
+	event.PostEvent(msg, kPriorityTBD, pActiveListener);
+	
 	rscrOpenCount++;
 	return kNoErr;
 }
@@ -747,12 +756,21 @@ tErrType  	CResourceModule::CloseAllDevices()
 }
 
 //----------------------------------------------------------------------------
-tErrType  	CResourceModule::OpenRsrc(tRsrcHndl hndl, 
+tErrType  	CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl, 
 						tOptionFlags openOptions,
-						const IEventListener *pEventHandler,
-						tEventContext eventContext)
+						const IEventListener *pListener)
 {
 	tRsrcDescriptor* pRsrc;
+	const tEventPriority	kPriorityTBD = 0;
+	IEventListener *pActiveListener;
+	
+	CResourceImpl* pimpl = RetrieveImpl(id);
+	if (pimpl == NULL)
+		return kResourceInvalidMPIIdErr;
+		
+	pActiveListener = (IEventListener *) pimpl->mpEventListener;
+	if( pListener != kNull )
+		pActiveListener = (IEventListener *) pListener;
 	
 	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
 		return kResourceInvalidErr;
@@ -764,13 +782,20 @@ tErrType  	CResourceModule::OpenRsrc(tRsrcHndl hndl,
 		
 		// register open for later cleanup 
 	}
-	if (pRsrc->pFile != NULL)
+	if (pRsrc->pFile == NULL)
 	{
-		pRsrc->useCount++;		
-		return kNoErr;
+		return kResourceInvalidErr;
 	}
+	pRsrc->useCount++;		
 	
-	return kResourceInvalidErr;
+	tResourceMsgDat	data;
+	data = 0;
+
+	CEventMPI	event;
+	CResourceEventMessage	msg(kResourceOpenedEvent, data);
+	event.PostEvent(msg, kPriorityTBD, pActiveListener);
+	
+	return kNoErr;
 }  
 
 //----------------------------------------------------------------------------
@@ -802,13 +827,22 @@ tErrType  	CResourceModule::CloseRsrc(tRsrcHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-tErrType  	CResourceModule::ReadRsrc(tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
+tErrType  	CResourceModule::ReadRsrc(U32 id, tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
 						U32 *pNumBytesActual,
 						tOptionFlags readOptions,
-						const IEventListener *pEventHandler,
-						tEventContext eventContext)
+						const IEventListener *pListener)
 {
 	tRsrcDescriptor* pRsrc;
+	const tEventPriority	kPriorityTBD = 0;
+	IEventListener *pActiveListener;
+	
+	CResourceImpl* pimpl = RetrieveImpl(id);
+	if (pimpl == NULL)
+		return kResourceInvalidMPIIdErr;
+		
+	pActiveListener = (IEventListener *) pimpl->mpEventListener;
+	if( pListener != kNull )
+		pActiveListener = (IEventListener *) pListener;
 	
 	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
 		return kResourceInvalidErr;
@@ -816,23 +850,39 @@ tErrType  	CResourceModule::ReadRsrc(tRsrcHndl hndl, void* pBuffer, U32 numBytes
 	if (pBuffer == NULL || numBytesRequested == 0)
 		return kInvalidParamErr;			// invalid pointer supplied
 		
-	if (pRsrc->pFile != NULL)
+	if (pRsrc->pFile == NULL)
 	{
-		fread(pBuffer, sizeof(char), numBytesRequested, pRsrc->pFile);
-		return kNoErr;
+		return kResourceNotOpenErr;	
 	}
-	return kResourceNotOpenErr;	
+	fread(pBuffer, sizeof(char), numBytesRequested, pRsrc->pFile);
+	
+	tResourceMsgDat	data;
+	data = 0;
+
+	CEventMPI	event;
+	CResourceEventMessage	msg(kResourceReadDoneEvent, data);
+	event.PostEvent(msg, kPriorityTBD, pActiveListener);
+	return kNoErr;
 }  
 
 //----------------------------------------------------------------------------
-tErrType  	CResourceModule::LoadRsrc(tRsrcHndl hndl, tOptionFlags loadOptions,
-							const IEventListener *pEventHandler,
-						tEventContext eventContext)
+tErrType  	CResourceModule::LoadRsrc(U32 id, tRsrcHndl hndl, tOptionFlags loadOptions,
+							const IEventListener *pListener)
 {
 	tRsrcDescriptor* pRsrc;
 	FILE *rFile;
 	unsigned char *cptr;
-
+	const tEventPriority	kPriorityTBD = 0;
+	IEventListener *pActiveListener;
+	
+	CResourceImpl* pimpl = RetrieveImpl(id);
+	if (pimpl == NULL)
+		return kResourceInvalidMPIIdErr;
+		
+	pActiveListener = (IEventListener *) pimpl->mpEventListener;
+	if( pListener != kNull )
+		pActiveListener = (IEventListener *) pListener;
+		
 	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
 		return kResourceInvalidErr;
 		
@@ -859,24 +909,44 @@ tErrType  	CResourceModule::LoadRsrc(tRsrcHndl hndl, tOptionFlags loadOptions,
 			// register load for later cleanup 
 		}
 	}
-	if (pRsrc->pRsrc != NULL)
+	if (pRsrc->pRsrc == NULL)
 	{
-		pRsrc->useCount++;		
-		return kNoErr;
+		return kResourceInvalidErr;
 	}
+	pRsrc->useCount++;		
 
-	return kResourceInvalidErr;
+	tResourceMsgDat	data;
+	data = 0;
+
+	CEventMPI	event;
+	CResourceEventMessage	msg(kResourceLoadedEvent, data);
+	event.PostEvent(msg, kPriorityTBD, pActiveListener);
+	
+	return kNoErr;
+	
 }  
 
 //----------------------------------------------------------------------------
-tErrType  	CResourceModule::UnloadRsrc(tRsrcHndl hndl, 
+tErrType  	CResourceModule::UnloadRsrc(U32 id, tRsrcHndl hndl, 
 						tOptionFlags unloadOptions,
-						const IEventListener *pEventHandler,
-						tEventContext eventContext)
+						const IEventListener *pListener)
 {
 	tRsrcDescriptor* pRsrc;
+	const tEventPriority	kPriorityTBD = 0;
+	IEventListener *pActiveListener;
 	
+	CResourceImpl* pimpl = RetrieveImpl(id);
+	if (pimpl == NULL)
+		return kResourceInvalidMPIIdErr;
+		
+	pActiveListener = (IEventListener *) pimpl->mpEventListener;
+	if( pListener != kNull )
+		pActiveListener = (IEventListener *) pListener;
+
 	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
+		return kResourceInvalidErr;
+		
+	if (pRsrc->useCount == 0)
 		return kResourceInvalidErr;
 		
 	if (pRsrc->useCount == 1)
@@ -889,15 +959,20 @@ tErrType  	CResourceModule::UnloadRsrc(tRsrcHndl hndl,
 			// unregister load for later cleanup 
 		}
 		pRsrc->useCount = 0;
-		return kNoErr;
 	}
 	else if (pRsrc->useCount > 1)
 	{
 		pRsrc->useCount--;		
-		return kNoErr;
 	}
+	
+	tResourceMsgDat	data;
+	data = 0;
 
-	return kResourceInvalidErr;
+	CEventMPI	event;
+	CResourceEventMessage	msg(kResourceUnloadedEvent, data);
+	event.PostEvent(msg, kPriorityTBD, pActiveListener);
+
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
@@ -907,7 +982,7 @@ tErrType CResourceModule::GetNumDevices(U16 *pCount)
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetNumDevices(tDeviceType type, U16 *pCount)
+tErrType CResourceModule::GetNumDevices(U16 *pCount, tDeviceType type)
 {
 	*pCount = 2; 
 	return kNoErr;
@@ -918,7 +993,7 @@ tErrType CResourceModule::FindDevice(tDeviceHndl *pHndl)
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::FindDevice(tDeviceType type, tDeviceHndl *pHndl)
+tErrType CResourceModule::FindDevice(tDeviceHndl *pHndl, tDeviceType type)
 {
 	return kNoErr;
 }
@@ -929,12 +1004,12 @@ tErrType CResourceModule::FindNextDevice(tDeviceHndl *pHndl)
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetDeviceName(tDeviceHndl hndl, const CString **ppName)
+tErrType CResourceModule::GetDeviceName(const CString **ppName, tDeviceHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetDeviceType(tDeviceHndl hndl, tDeviceType *pType)
+tErrType CResourceModule::GetDeviceType(tDeviceType *pType, tDeviceHndl hndl)
 {
 	return kNoErr;
 }
@@ -942,8 +1017,7 @@ tErrType CResourceModule::GetDeviceType(tDeviceHndl hndl, tDeviceType *pType)
 //----------------------------------------------------------------------------
 tErrType CResourceModule::OpenDevice(tDeviceHndl hndl, 
 									tOptionFlags openOptions,
-									const IEventListener *pEventHandler,
-									tEventContext eventContext)  
+									const IEventListener *pListener)  
 {
 	return kNoErr;
 }
@@ -962,15 +1036,15 @@ tErrType CResourceModule::GetNumRsrcPackages(U32 *pCount,
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::FindRsrcPackage(const CURI *pPackageURI,
-									tRsrcPackageHndl *pHndl,
+tErrType CResourceModule::FindRsrcPackage(tRsrcPackageHndl *pHndl,
+									const CURI *pPackageURI,
 									const CURI *pURIPath)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::FindRsrcPackages(tRsrcPackageType type,
-									tRsrcPackageHndl *pHndl, 
+tErrType CResourceModule::FindRsrcPackage(tRsrcPackageHndl *pHndl, 
+									tRsrcPackageType type,
 									const CURI *pURIPath)	
 {
 	return kNoErr;
@@ -983,38 +1057,38 @@ tErrType CResourceModule::FindNextRsrcPackage(tRsrcPackageHndl *pHndl)
 
 	// Getting package info
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageURI(tRsrcPackageHndl hndl, const CURI **ppURI)
+tErrType CResourceModule::GetRsrcPackageURI(const CURI **ppURI, tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageName(tRsrcPackageHndl hndl, const CString **ppName)
+tErrType CResourceModule::GetRsrcPackageName(const CString **ppName, tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageType(tRsrcPackageHndl hndl, tRsrcPackageType *pType)
+tErrType CResourceModule::GetRsrcPackageType(tRsrcPackageType *pType, tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageVersion(tRsrcPackageHndl hndl, tVersion *pVersion)
+tErrType CResourceModule::GetRsrcPackageVersion(tVersion *pVersion, tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageVersionStr(tRsrcPackageHndl hndl, 
-									const CString **ppVersionStr)
+tErrType CResourceModule::GetRsrcPackageVersionStr(const CString **ppVersionStr,
+								tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl, U32 *pSize)
+tErrType CResourceModule::GetRsrcPackageSizeUnpacked(U32 *pSize, tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageSizePacked(tRsrcPackageHndl hndl, U32 *pSize)
+tErrType CResourceModule::GetRsrcPackageSizePacked(U32 *pSize, tRsrcPackageHndl hndl)
 {
 	return kNoErr;
 }
@@ -1023,8 +1097,7 @@ tErrType CResourceModule::GetRsrcPackageSizePacked(tRsrcPackageHndl hndl, U32 *p
 //----------------------------------------------------------------------------
 tErrType CResourceModule::OpenRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags openOptions,
-									const IEventListener *pEventHandler,
-									tEventContext eventContext)  
+									const IEventListener *pListener)  
 {
 	return kNoErr;
 }
@@ -1038,8 +1111,7 @@ tErrType CResourceModule::CloseRsrcPackage(tRsrcPackageHndl hndl)
 //----------------------------------------------------------------------------
 tErrType CResourceModule::LoadRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags loadOptions,
-									const IEventListener *pEventHandler,
-									tEventContext eventContext)  
+									const IEventListener *pListener)  
 {
 	return kNoErr;
 }
@@ -1047,8 +1119,7 @@ tErrType CResourceModule::LoadRsrcPackage(tRsrcPackageHndl hndl,
 //----------------------------------------------------------------------------
 tErrType CResourceModule::UnloadRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags unloadOptions,
-									const IEventListener *pEventHandler,
-									tEventContext eventContext)  
+									const IEventListener *pListener)  
 {
 	return kNoErr;
 }
@@ -1064,8 +1135,7 @@ tErrType CResourceModule::SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes,
 tErrType CResourceModule::WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags writeOptions,
-									const IEventListener *pEventHandler,
-									tEventContext eventContext)  
+									const IEventListener *pListener)  
 {
 	return kNoErr;
 }
