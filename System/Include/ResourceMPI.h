@@ -23,6 +23,7 @@
 #include <StringTypes.h>
 #include <CoreMPI.h>
 #include <EventListener.h>
+#include <EventMessage.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -64,13 +65,26 @@ union tRsrcSearchPattern {
 struct tRsrcLoadLogEntry {
 	tRsrcHndl		hndl;
 	U32				taskID;
-};	
+};
+	
+//==============================================================================
+// Class:
+//		CResourceEventMessage
+//
+// Description:
+//		Class that describes the format of all Resource Event Messages. 
+//==============================================================================
 
-// @FIXME/tp: Remove event context stuff?
-typedef U32	tEventContext;
-const tEventContext	kEventContextUndefined = 0;
+class CResourceEventMessage : public IEventMessage 
+{
+public:
+	CResourceEventMessage( tEventType type, const tResourceMsgDat& data );
+	virtual U16	GetSizeInBytes() const;
 
- 
+	tResourceMsgDat	resourceMsgData;
+};
+
+
 class CResourceMPI : public ICoreMPI {
 public:	
 
@@ -83,7 +97,7 @@ public:
 	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
 
 	// class-specific functionality
-	CResourceMPI(const IEventListener *pEventHandler = NULL);
+	CResourceMPI(const IEventListener *pListener = NULL);
 	virtual ~CResourceMPI();
 
 	// Setting default search path & handlers
@@ -92,24 +106,22 @@ public:
 
 	// Searching for devices
 	tErrType		GetNumDevices(U16 *pCount);
-	tErrType		GetNumDevices(tDeviceType type, U16 *pCount);
+	tErrType		GetNumDevices(U16 *pCount, tDeviceType type);
 
 	tErrType		FindDevice(tDeviceHndl *pHndl);
-	tErrType		FindDevice(tDeviceType type, tDeviceHndl *pHndl);
+	tErrType		FindDevice(tDeviceHndl *pHndl, tDeviceType type);
 	tErrType		FindNextDevice(tDeviceHndl *pHndl);
 
-	tErrType		GetDeviceName(tDeviceHndl hndl, const CString **ppName);
-	tErrType		GetDeviceType(tDeviceHndl hndl, tDeviceType *pType);
+	tErrType		GetDeviceName(const CString **ppName, tDeviceHndl hndl);
+	tErrType		GetDeviceType(tDeviceType *pType, tDeviceHndl hndl);
 
 	tErrType		OpenDevice(tDeviceHndl hndl, 
 						tOptionFlags openOptions=kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 	tErrType		CloseDevice(tDeviceHndl hndl);
 
 	tErrType		OpenAllDevices(tOptionFlags openOptions=kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 	tErrType		CloseAllDevices();
 
 	// Searching for packages
@@ -117,94 +129,86 @@ public:
 						tRsrcPackageType type=kRsrcPackageTypeUndefined, 
 						const CURI *pURIPath=kNull);
 
-	tErrType		FindRsrcPackage(const CURI *pPackageURI, tRsrcPackageHndl *pHndl,
+	tErrType		FindRsrcPackage(tRsrcPackageHndl *pHndl, const CURI *pPackageURI,
 							const CURI *pURIPath=kNull);
-	tErrType		FindRsrcPackages(tRsrcPackageType type, tRsrcPackageHndl *pHndl, 
+	tErrType		FindRsrcPackage(tRsrcPackageHndl *pHndl, tRsrcPackageType type, 
 							const CURI *pURIPath=kNull);	
 	tErrType		FindNextRsrcPackage(tRsrcPackageHndl *pHndl);
 
 	// Getting package info
-	tErrType		GetRsrcPackageURI(tRsrcPackageHndl hndl, const CURI **ppURI);
-	tErrType		GetRsrcPackageName(tRsrcPackageHndl hndl, const CString **ppName);
-	tErrType		GetRsrcPackageType(tRsrcPackageHndl hndl, tRsrcPackageType *pType);
-	tErrType		GetRsrcPackageVersion(tRsrcPackageHndl hndl, tVersion *pVersion);
-	tErrType		GetRsrcPackageVersionStr(tRsrcPackageHndl hndl, 
-						const CString **ppVersionStr);
-	tErrType		GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl, U32 *pSize);
-	tErrType		GetRsrcPackageSizePacked(tRsrcPackageHndl hndl, U32 *pSize);
+	tErrType		GetRsrcPackageURI(const CURI **ppURI, tRsrcPackageHndl hndl);
+	tErrType		GetRsrcPackageName(const CString **ppName, tRsrcPackageHndl hndl);
+	tErrType		GetRsrcPackageType(tRsrcPackageType *pType, tRsrcPackageHndl hndl);
+	tErrType		GetRsrcPackageVersion(tVersion *pVersion, tRsrcPackageHndl hndl);
+	tErrType		GetRsrcPackageVersionStr(const CString **ppVersionStr, 
+						tRsrcPackageHndl hndl);
+	tErrType		GetRsrcPackageSizeUnpacked(U32 *pSize, tRsrcPackageHndl hndl);
+	tErrType		GetRsrcPackageSizePacked(U32 *pSize, tRsrcPackageHndl hndl);
 
 	// Opening & closing packages to find resources within them
 	tErrType		OpenRsrcPackage(tRsrcPackageHndl hndl, 
 						tOptionFlags openOptions=kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
   	tErrType		CloseRsrcPackage(tRsrcPackageHndl hndl);
 
 	// Loading & unloading packages
 	tErrType		LoadRsrcPackage(tRsrcPackageHndl hndl, 
 						tOptionFlags loadOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 	tErrType		UnloadRsrcPackage(tRsrcPackageHndl hndl, 
 						tOptionFlags unloadOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 
 	// Searching for resources among opened & loaded packages & devices
 	tErrType		GetNumRsrcs(U32 *pCount, 
 						const CURI *pURIPath=kNull); 	
-	tErrType		GetNumRsrcs(tRsrcType type, U32 *pCount, 
+	tErrType		GetNumRsrcs(U32 *pCount, tRsrcType type,
 						const CURI *pURIPath=kNull);
 
-	tErrType		FindRsrc(const CURI &pRsrcURI, tRsrcHndl &hndl, 
+	tErrType		FindRsrc(tRsrcHndl &hndl, const CURI &pRsrcURI, 
 						const CURI *pURIPath=kNull);
-	tErrType		FindRsrc(tRsrcID rsrcID, tRsrcHndl &hndl,
+	tErrType		FindRsrc(tRsrcHndl &hndl, tRsrcID rsrcID,
 						const CURI *pURIPath=kNull);
 	tErrType		FindRsrcs(tRsrcHndl &hndl, 
 						const CURI *pURIPath=kNull);
-	tErrType		FindRsrcs(tRsrcType type, tRsrcHndl &hndl, 
+	tErrType		FindRsrcs(tRsrcHndl &hndl, tRsrcType type,
 						const CURI *pURIPath=kNull);
 	tErrType		FindNextRsrc(tRsrcHndl &hndl);
 
 	// Getting rsrc info
-	tErrType		GetRsrcURI(tRsrcHndl hndl, ConstPtrCURI &pURI);
-	tErrType		GetRsrcName(tRsrcHndl hndl, ConstPtrCString &pName);
-	tErrType		GetRsrcID(tRsrcHndl hndl, tRsrcID &id);
-	tErrType		GetRsrcType(tRsrcHndl hndl, tRsrcType &rsrcType);
-	tErrType 		GetRsrcVersion(tRsrcHndl hndl, tVersion &version);
-	tErrType 		GetRsrcVersionStr(tRsrcHndl hndl, ConstPtrCString &pVersionStr);	
-	tErrType 		GetRsrcPackedSize(tRsrcHndl hndl, U32& pSize);
-	tErrType 		GetRsrcUnpackedSize(tRsrcHndl hndl, U32& pSize);
-	tErrType		GetRsrcPtr(tRsrcHndl hndl, tPtr &pRsrc);
+	tErrType		GetRsrcURI(ConstPtrCURI &pURI, tRsrcHndl hndl);
+	tErrType		GetRsrcName(ConstPtrCString &pName, tRsrcHndl hndl);
+	tErrType		GetRsrcID(tRsrcID &id, tRsrcHndl hndl);
+	tErrType		GetRsrcType(tRsrcType &rsrcType, tRsrcHndl hndl);
+	tErrType 		GetRsrcVersion(tVersion &version, tRsrcHndl hndl);
+	tErrType 		GetRsrcVersionStr(ConstPtrCString &pVersionStr, tRsrcHndl hndl);	
+	tErrType 		GetRsrcPackedSize(U32& pSize, tRsrcHndl hndl);
+	tErrType 		GetRsrcUnpackedSize(U32& pSize, tRsrcHndl hndl);
+	tErrType		GetRsrcPtr(tPtr &pRsrc, tRsrcHndl hndl);
 
 	// Opening & closing resources without loading them
 	tErrType		OpenRsrc(tRsrcHndl hndl, 
 						tOptionFlags openOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 	tErrType		CloseRsrc(tRsrcHndl hndl);
 
 	tErrType		ReadRsrc(tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
 						U32 *pNumBytesActual = kNull,
 						tOptionFlags readOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 	tErrType		SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
 						tOptionFlags seekOptions = kNoOptionFlags);
 	tErrType		WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 						U32 numBytesRequested, U32 *pNumBytesActual,
 						tOptionFlags writeOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 
 	// Loading & unloading resources
 	tErrType		LoadRsrc(tRsrcHndl hndl, tOptionFlags loadOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);  
+						const IEventListener *pListener=kNull);  
 	tErrType		UnloadRsrc(tRsrcHndl hndl, 
 						tOptionFlags unloadOptions = kNoOptionFlags,
-						const IEventListener *pEventHandler=kNull,
-						tEventContext eventContext=kEventContextUndefined);
+						const IEventListener *pListener=kNull);
 
 	Boolean			RsrcIsLoaded(tRsrcHndl hndl);
 
@@ -223,7 +227,6 @@ private:
 };
 
 
-LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_RESOURCEMPI_H
 
 // eof

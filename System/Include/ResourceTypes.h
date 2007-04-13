@@ -6,12 +6,13 @@
 // Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 // File:
-//		RsrcMgrTypes.h
+//		ResourceTypes.h
 //
 // Description:
-//		Defines RsrcMgr module's basic types. 
+//		Defines Resource Manager module's basic types. 
 //==============================================================================
 
+#include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
@@ -98,6 +99,7 @@ typedef tHndl 	tRsrcPackageHndl;
 typedef U32		tRsrcType;
 typedef tHndl 	tRsrcHndl;
 
+typedef	U32		tResourceMsgDat;
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_RSRCMGRTYPES_H

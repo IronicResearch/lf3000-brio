@@ -1084,3 +1084,19 @@ By TParker (TParker@leapfrog.com) on 4/12/07 9:49 PM
 969 ms. (Cumulative: 135,337 ms)
 
 ----------------
+Revision 144 from svn://localhost/TRUNK/:
+
+No changes to commit.
+954 ms. (Cumulative: 136,337 ms)
+
+----------------
+Revision 145 from svn://localhost/TRUNK/:
+
+Modified argument ordering (return values first)
+Implemented Events on completion.
+
+By Gbreniman (Gbreniman@leapfrog.com) on 4/13/07 11:35 AM
+2 changed, 0 added, 0 deleted.
+1,032 ms. (Cumulative: 137,384 ms)
+
+----------------
