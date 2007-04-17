@@ -32,6 +32,14 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupButton), BUTTON_EVENTS)
 const tEventType kAllButtonEvents = AllEvents(kGroupButton);
 
 
+//==============================================================================	   
+// Button errors
+//==============================================================================
+#define BUTTON_ERRORS				\
+	(kButtonEmulationConfigErr)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupButton), BUTTON_ERRORS)
+
 
 //==============================================================================	   
 // Button types
