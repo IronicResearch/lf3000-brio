@@ -13,16 +13,21 @@
 //		Defines the interface for the private underlying Button manager module. 
 //
 //==============================================================================
-
 #include <SystemTypes.h>
 #include <CoreModule.h>
-#include "ButtonMPI.h"	// for tButtonData
+#include <EventTypes.h>
+#include <ButtonTypes.h>
+#include <DebugMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
+//==============================================================================
 // Constants
-const CString	kButtonModuleName		= "Button";
-const tVersion	kButtonModuleVersion	= MakeVersion(0,1);
+//==============================================================================
+const CString			kButtonModuleName		= "Button";
+const tVersion			kButtonModuleVersion	= MakeVersion(0,1);
+const tEventPriority	kButtonEventPriority	= 0;	//TBD/tp: make replacable?
+
 
 //==============================================================================
 class CButtonModule : public ICoreModule {
@@ -37,6 +42,9 @@ public:
 	VTABLE_EXPORT tErrType	GetButtonState(tButtonData& data) const;
 
 private:
+	void				InitModule( );
+	CDebugMPI			dbg_;
+
 	// Limit object creation to the Module Manager interface functions
 	CButtonModule();
 	virtual ~CButtonModule();

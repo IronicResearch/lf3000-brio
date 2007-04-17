@@ -136,6 +136,10 @@ def FindModuleSources(pdir):
 					glob.glob(c_pattern))
 	sources += map(lambda x: os.path.join(pdir.abspath, os.path.split(x)[1]), 
 					glob.glob(cpp_pattern))
+	temp = (is_emulation and 'Emulation' or 'Lightning') 
+	platform_pattern = os.path.normpath(os.path.join(source_dir, temp, '*.cpp'))
+	sources += map(lambda x: os.path.join(pdir.abspath, temp, os.path.split(x)[1]), 
+					glob.glob(platform_pattern))
 	return sources
 
 
