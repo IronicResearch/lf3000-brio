@@ -21,6 +21,7 @@
 #include <sys/time.h>	// for gettimeofday()
 #include <unistd.h>
 #include <sys/types.h>
+#include <assert.h>
 
 
 #include <SystemTypes.h>
@@ -38,12 +39,26 @@
 // Global variables
 //==============================================================================
 
-const CURI	kModuleURI	= "/Somewhere/KernelModule";
+const CURI	kModuleURI	= "/LF/System/Kernel";
 
 // single instance of module object.
 static CKernelModule*	sinst = NULL;
 
+
 //==============================================================================
+// Internal untility functions
+//==============================================================================
+inline tTimerHndl AsBrioTimerHandle(timer_t hndlIn)
+{
+	return reinterpret_cast<tTimerHndl>(hndlIn) + 1;
+}
+
+inline timer_t AsPosixTimerHandle(tTimerHndl hndlIn)
+{
+	return reinterpret_cast<timer_t>(hndlIn - 1);
+}
+
+
 //==============================================================================
 CKernelModule::CKernelModule()
 {
@@ -62,36 +77,38 @@ Boolean CKernelModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CKernelModule::GetModuleVersion(tVersion &version) const
+tVersion CKernelModule::GetModuleVersion() const
 {
-	version = kKernelModuleVersion;
-	return kNoErr;
+	return kKernelModuleVersion;
 }
 
 //----------------------------------------------------------------------------
-tErrType	CKernelModule::GetModuleName(ConstPtrCString &pName) const
+const CString* CKernelModule::GetModuleName() const
 {
-	pName = &kKernelModuleName;
-	return kNoErr;
+	return &kKernelModuleName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CKernelModule::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CKernelModule::GetModuleOrigin() const
 {
-	pURI = &kModuleURI;
-	return kNoErr;
+	return &kModuleURI;
 }
 
 //==============================================================================
 // Tasks
 //==============================================================================
 //------------------------------------------------------------------------------
-tErrType	CKernelModule::CreateTask( const CURI* pTaskURI, 
-					const tTaskProperties* pProperties, tTaskHndl *pHndl )
+tErrType CKernelModule::CreateTask(tTaskHndl& hndl, 
+									const tTaskProperties& props, 
+									const char* /*pDebugName*/)
 {
+	// NOTE: pTaskURI is used in task creation of some RTOSs and is propgated
+	// in debug information, but not in POSIX pthreads.
+	//
 	pthread_attr_t tattr;
 	sched_param param;
 	tErrType err = kNoErr;
+	hndl = kInvalidTaskHndl;
 
  /*  Application program can define property using the tTaskProperties structure
   struct tTaskProperties {
@@ -117,19 +134,19 @@ tErrType	CKernelModule::CreateTask( const CURI* pTaskURI,
 	ASSERT_POSIX_CALL(err);
 	
 	/* 2. set scheduling policy */
-	err = pthread_attr_setschedpolicy(&tattr, pProperties->schedulingPolicy);
+	err = pthread_attr_setschedpolicy(&tattr, props.schedulingPolicy);
 	ASSERT_POSIX_CALL(err);
 
 	/* 3. set the priority */
-    param.sched_priority = pProperties->priority;
-	int sched_priority_min = sched_get_priority_min(pProperties->schedulingPolicy);
-	int sched_priority_max = sched_get_priority_max(pProperties->schedulingPolicy);
-	if( pProperties->priority < sched_priority_min )
+    param.sched_priority = props.priority;
+	int sched_priority_min = sched_get_priority_min(props.schedulingPolicy);
+	int sched_priority_max = sched_get_priority_max(props.schedulingPolicy);
+	if( props.priority < sched_priority_min )
 	{	
 		param.sched_priority = sched_priority_min;
 	}	 
 		 
-	if( pProperties->priority > sched_priority_max )
+	if( props.priority > sched_priority_max )
 	{	
 		param.sched_priority = sched_priority_max;
 	}	 
@@ -140,26 +157,30 @@ tErrType	CKernelModule::CreateTask( const CURI* pTaskURI,
     //------------------------------------------------
     /* Address and size stack specified */
     //------------------------------------------------
-	if(pProperties->stackSize)
+	if(props.stackSize)
 	{
-		err = pthread_attr_setstacksize(&tattr, pProperties->stackSize);
+		err = pthread_attr_setstacksize(&tattr, props.stackSize);
         ASSERT_POSIX_CALL(err);
 	}	
 
-	if( pProperties->stackAddr )
+	if( props.stackAddr )
 	{
-		err = pthread_attr_setstack(&tattr, (void *)pProperties->stackAddr, pProperties->stackSize);
+		err = pthread_attr_setstack(&tattr, (void *)props.stackAddr, props.stackSize);
         ASSERT_POSIX_CALL(err);
 	}
     
 	pthread_attr_setinheritsched(&tattr, PTHREAD_EXPLICIT_SCHED);
 	ASSERT_POSIX_CALL(err);
 	
-    err = pthread_create((pthread_t *)pHndl,
+	pthread_t	pthread;
+    err = pthread_create(&pthread,
                      &tattr,
-                     (void*(*)(void*))pProperties->TaskMainFcn,
-                     (void *)pProperties->pTaskMainArgValues);
+                     (void*(*)(void*))props.TaskMainFcn,
+                     (void *)props.pTaskMainArgValues);
     ASSERT_POSIX_CALL(err);
+    hndl = static_cast<tTaskHndl>(pthread);
+    // FIXME/tp: Determine if 0 is a valid value for pthread, and hav the "hndl" always
+    // represent the pthread+1 if so.
 
 	err = pthread_attr_destroy(&tattr);
 	ASSERT_POSIX_CALL(err);
@@ -175,10 +196,12 @@ tErrType	CKernelModule::CreateTask( const CURI* pTaskURI,
     return kNoErr;
 }
 
-tErrType CKernelModule::JoiningThreads( tTaskHndl pHndl, void **value_ptr )
+//------------------------------------------------------------------------------
+tErrType CKernelModule::JoinTask( tTaskHndl pHndl, tPtr& threadReturnValue )
 {
-	return pthread_join( pHndl, value_ptr );  
+	return AsBrioErr(pthread_join(pHndl, &threadReturnValue));  
 }
+
 //------------------------------------------------------------------------------
 tErrType CKernelModule::CancelTask( tTaskHndl hndl )
 {
@@ -186,116 +209,132 @@ tErrType CKernelModule::CancelTask( tTaskHndl hndl )
 // NOTE 1: A terminated task cannot execute again until it is reset.
 // NOTE 2: When calling this function from a signal handler, the task
 //         whose signal handler is executing cannot be terminated.
-	return pthread_cancel( hndl );
+	return AsBrioErr(pthread_cancel(hndl));
 }
 
 
 
+//------------------------------------------------------------------------------
 // This service returns the currently active task pointer.
-tTaskHndl	CKernelModule::GetCurrentTask()
+tTaskHndl CKernelModule::GetCurrentTask() const
 {
     return pthread_self();
 }
 
-tErrType CKernelModule::GetTaskPriority( tTaskHndl hndl, int* priority )
+//------------------------------------------------------------------------------
+int CKernelModule::GetTaskPriority(tTaskHndl hndl) const
 {
 	int err;
 	struct sched_param param;
-	int policy;	
+	int priority = 0;
+	int policy;
 	
-    err = pthread_getschedparam(hndl, &policy, &param);
-	ASSERT_POSIX_CALL(err);
-
-	*priority = param.sched_priority; 			
-	
-    return kNoErr;
+    if ((err = pthread_getschedparam(hndl, &policy, &param)) != 0)
+    	Printf("FIXME");
+	else
+		priority = param.sched_priority;
+	return priority;			
 }	
 
-tErrType CKernelModule::GetTaskSchedulingPolicy( tTaskHndl hndl, int* policy )
+//------------------------------------------------------------------------------
+int CKernelModule::GetTaskSchedulingPolicy(tTaskHndl hndl) const 
 {
 	int err;
 	struct sched_param param;
+	int policy = kTaskSchedPolicyUndefined;
     
-    err = pthread_getschedparam(hndl, policy, &param);
-	ASSERT_POSIX_CALL(err);
-    
-	return kNoErr;
+    if ((err = pthread_getschedparam(hndl, &policy, &param)) != 0)
+    	Printf("FIXME");
+	return policy;
 }	
 
-tErrType CKernelModule::TaskSleep( U32 msec )
+//------------------------------------------------------------------------------
+void CKernelModule::TaskSleep(U32 msec) const
 {
     while( msec > 999 )     /* For OpenBSD and IRIX, argument */
-        {                   /* to usleep must be < 1000000.   */
+    {                       /* to usleep must be < 1000000.   */
         usleep( 999000 );
         msec -= 999;
-        }
+	}
     usleep( msec * 1000 );
-
-	return kNoErr;
 }
+
 
 //============================================================================
 // Allocating memory from the System heap
 //============================================================================
-tErrType CKernelModule::Malloc( U32 size, tPtr pPtr )
+tPtr CKernelModule::Malloc(U32 size)
 {
-	pPtr = (tPtr)malloc( size );
+	// FIXME/tp: True assertion here if fail to allocate memory, or just warning?
+	tPtr ptr = malloc( size );
     ASSERT_ERROR(pPtr != 0, kCouldNotAllocateMemory);
-
-	return kNoErr;
+	return ptr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelModule::Free( tPtr ptr )
+tErrType CKernelModule::Free(tPtr ptr)
 {
 	free(ptr);
-	
 	return kNoErr;
 }
+
+
+//============================================================================
+// Terminal/debug IO
+//============================================================================
+//------------------------------------------------------------------------------
+void CKernelModule::Printf( const char* format, ... ) const
+{
+	va_list arguments;
+	va_start(arguments, format);
+	vprintf(format, arguments);
+	va_end(arguments);
+}
+
+//------------------------------------------------------------------------------
+void CKernelModule::Printf( const char* format, va_list arguments ) const
+{
+	vprintf(format, arguments);
+}
+
 
 //==============================================================================
 // Message Queues
 //==============================================================================
-tErrType	CKernelModule::CreateMessageQueue(const CURI* pQueueURI, 
-						const tMessageQueuePropertiesPosix* pProperties,
-						tMessageQueueHndl* pHndl)
+tErrType CKernelModule::CreateMessageQueue(tMessageQueueHndl& hndl,
+									const tMessageQueuePropertiesPosix& props,
+									const char* /*pDebugName*/)
 {
     mqd_t retMq_open = -1;
     tErrType err = 0;   
 
     mq_attr queuAttr = {0};
    
-    if (pProperties->mq_flags == 0 || pProperties->mq_flags == O_NONBLOCK)
-    {
-        queuAttr.mq_flags = pProperties->mq_flags;
-    }
-    else{
-//            return ErrorBrio::lookupBrioErrType(wrongQueuFlagParameter); 
- 			return -1; // rdg fixme!
-        }
-          
-    queuAttr.mq_flags  = 0;
-    queuAttr.mq_maxmsg =  pProperties->mq_maxmsg;
-    queuAttr.mq_msgsize = pProperties->mq_msgsize;
-    queuAttr.mq_curmsgs = pProperties->mq_curmsgs;
+    if (props.mq_flags != 0 && props.mq_flags != O_NONBLOCK)
+		return kInvalidParamErr;
+	queuAttr.mq_flags	= props.mq_flags;
+    queuAttr.mq_flags	= 0;
+    queuAttr.mq_maxmsg	= props.mq_maxmsg;
+    queuAttr.mq_msgsize	= props.mq_msgsize;
+    queuAttr.mq_curmsgs	= props.mq_curmsgs;
     
 #if 1 // BSK Debug Printing
     printf("THe Input MUEUE parameters are :\n"); 
     printf("name=%s oflag=%d mode=%d mq_flags=%d mq_maxmsg=%d mq_msgsize=%d mq_curmsgs=%d\n",
-    	pProperties->nameQueue, pProperties->oflag,pProperties->mode,
-    	queuAttr.mq_flags, pProperties->mq_maxmsg, pProperties->mq_msgsize, pProperties->mq_curmsgs);   
+    	props.nameQueue, props.oflag,props.mode,
+    	queuAttr.mq_flags, props.mq_maxmsg, props.mq_msgsize, props.mq_curmsgs);   
     fflush(stdout);
 #endif // BSK
     
     errno = 0;
     
-    retMq_open = mq_open (pProperties->nameQueue,
-                          pProperties->oflag,
-                          pProperties->mode,
+    retMq_open = mq_open (props.nameQueue,
+                          props.oflag,
+                          props.mode,
                           &queuAttr);
     
 	ASSERT_POSIX_CALL(err);
-    *pHndl = retMq_open;
+    hndl = retMq_open;
     
 #if 1 // BSK Debug Printing
     printf("Return value of mq_open function is %d ERRNO=%d\n", retMq_open, errno);
@@ -318,29 +357,28 @@ tErrType	CKernelModule::CreateMessageQueue(const CURI* pQueueURI,
 }
 
 //------------------------------------------------------------------------------
-tErrType	CKernelModule::DestroyMessageQueue(tMessageQueueHndl hndl)
+tErrType CKernelModule::DestroyMessageQueue(tMessageQueueHndl hndl)
 {
+	// FIXME/tp: This just closes it, not destroy.
+	// FIXME/tp: Need ot fold UnlinkMessageQueue() into this function to truly
+	// destroy the queue.  This will require tracking its name through its handle.
     errno = 0;
-
     mq_close(hndl);
     ASSERT_POSIX_CALL( errno );
-    
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelModule::UnlinkMessageQueue( const char *hndl )
+tErrType CKernelModule::UnlinkMessageQueue(const char *name)
 {
     errno = 0;
-    
-    mq_unlink(hndl);
+    mq_unlink(name);
     ASSERT_POSIX_CALL( errno );
-    
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelModule::ClearMessageQueue( tMessageQueueHndl hndl )
+tErrType CKernelModule::ClearMessageQueue(tMessageQueueHndl hndl)
 {
     int ret;
     struct mq_attr attr;
@@ -370,24 +408,22 @@ tErrType  	CKernelModule::ClearMessageQueue( tMessageQueueHndl hndl )
 }
 	
 //------------------------------------------------------------------------------
-tErrType CKernelModule::GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *numMsgQueue )
+int CKernelModule::GetMessageQueueNumMessages(tMessageQueueHndl hndl) const
 {
     struct mq_attr attr = {0};
     mqd_t ret = -1;
     
     errno = 0;
     ret = mq_getattr(hndl, &attr);
-    ASSERT_POSIX_CALL( errno );
+    if (errno != 0)
+    	Printf("FIXME");
     
-    *numMsgQueue = attr.mq_curmsgs;
-    return kNoErr;
+    return attr.mq_curmsgs;
 }
  
 //------------------------------------------------------------------------------
- tErrType	CKernelModule::SendMessage(tMessageQueueHndl hndl, CMessage* pMessage, 
-									U32 messageSize)
+tErrType CKernelModule::SendMessage(tMessageQueueHndl hndl, const CMessage& msg) 
 {
-    
 #if 0 // BSK
     printf("pMessage->GetMessageSize() = %d\n", pMessage->GetMessageSize());
     printf("pMessage.GetMessageEventType() =%d\n",
@@ -396,10 +432,10 @@ tErrType CKernelModule::GetMessageQueueNumMessages( tMessageQueueHndl hndl, int 
 
 #endif
     errno = 0;
-    int err = mq_send( hndl,
-                   (const char *)pMessage,
-                   (size_t )pMessage->GetMessageSize(),
-                   (unsigned )pMessage->GetMessagePriority() );
+    int err = mq_send(hndl,
+                   reinterpret_cast<const char *>(&msg),
+                   msg.GetMessageSize(),
+                   msg.GetMessagePriority());
     
     ASSERT_POSIX_CALL( errno );
     
@@ -416,8 +452,8 @@ tErrType CKernelModule::GetMessageQueueNumMessages( tMessageQueueHndl hndl, int 
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelModule::SendMessageOrWait( tMessageQueueHndl hndl, CMessage* pMessage, 
-									U32 messageSize, U32 timeoutMs )
+tErrType CKernelModule::SendMessageOrWait(tMessageQueueHndl hndl, 
+											const CMessage& msg, U32 timeoutMs)
 {
     struct timespec tp;
 
@@ -439,11 +475,10 @@ tErrType  	CKernelModule::SendMessageOrWait( tMessageQueueHndl hndl, CMessage* p
 
 #endif
     errno = 0;
-    int err = mq_timedsend( hndl, 
-                   (const char *)pMessage,
-                   (size_t )pMessage->GetMessageSize(),
-                   (unsigned )pMessage->GetMessagePriority(),
-                   (const struct timespec *)&tp);
+    int err = mq_timedsend(hndl, 
+                   reinterpret_cast<const char *>(&msg),
+                   msg.GetMessageSize(),
+                   msg.GetMessagePriority(), &tp);
     
    	ASSERT_POSIX_CALL( errno );
     
@@ -460,8 +495,8 @@ tErrType  	CKernelModule::SendMessageOrWait( tMessageQueueHndl hndl, CMessage* p
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelModule::ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessageSize, 
-									   CMessage* msg_ptr, unsigned *msg_prio )
+tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl, 
+									   CMessage* msg_ptr, U32 maxMessageSize )
 {
 /*-----------------------------------------------------------
     U16		GetMessageSize() { return messageSize; }
@@ -473,6 +508,7 @@ tErrType  	CKernelModule::ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessage
     
 // Retrieve attributes of the messges queque
    struct mq_attr attr = {0};
+   unsigned int  msg_prio;
    
 #if 1 // BSK Debug printing
    U8 tmp = msg_ptr->GetMessagePriority();
@@ -484,14 +520,12 @@ tErrType  	CKernelModule::ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessage
 
     errno = 0;
     int ret_receive = mq_receive( hndl,
-                                  (char *)msg_ptr,
-                                  (size_t )sizeof(CEventMessage),
-                                  msg_prio);
+                                  reinterpret_cast<char *>(msg_ptr),
+                                  maxMessageSize, 
+                                  &msg_prio);
      if (ret_receive == -1)
-     {
-         //return ErrorBrio::lookupBrioErrType(errno);
-		return -1;  // rdg fixme
-     }
+     	return AsBrioErr(errno);
+     assert(msg_prio == msg_ptr->GetMessagePriority());
 #if 1 // BSK Debug printing
     printf("CKernelModule::ReceiveMessage. Received=%d bytes\n", ret_receive);
     fflush(stdout);
@@ -500,8 +534,9 @@ tErrType  	CKernelModule::ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessage
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMessageSize, 
-									CMessage* msg_ptr, U32 timeoutMs )
+tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl, 
+									CMessage* msg_ptr, U32 maxMessageSize, 
+									U32 timeoutMs )
 {
 // Retrieve attributes of the messges queque
    struct mq_attr attr = {0};
@@ -523,14 +558,15 @@ tErrType  	CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxM
    tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
    tp.tv_nsec = tp.tv_nsec + timeoutMs * 1000000; // convert from ms to nanosecond
 
-   unsigned msg_prio = msg_ptr->GetMessagePriority();	
+   unsigned int  msg_prio;
    errno = 0;
    int ret_receive = mq_timedreceive(hndl,
                                   (char *)msg_ptr,
                                   (size_t )sizeof(CEventMessage),
                                   &msg_prio,
                                   (const struct timespec *)&tp);
-   ASSERT_POSIX_CALL( errno );
+	ASSERT_POSIX_CALL( errno );
+     assert(msg_prio == msg_ptr->GetMessagePriority());
 
 #if 1 // BSK Debug printing
     printf("CKernelModule::ReceiveMessage. Received=%d bytes\n", ret_receive);
@@ -554,27 +590,33 @@ U32   		CKernelModule::GetElapsedTime( U32* pUs )
 }
 
 //------------------------------------------------------------------------------
-tErrType 	CKernelModule::CreateTimer( const CURI* pTimerURI,
-                                    struct sigevent *se, tTimerHndl* pHndl )
+tTimerHndl CKernelModule::CreateTimer(tCond& condition, 
+									const tTimerProperties& props,
+									const char* /*pDebugName*/ )
 {
 //	tErrType err = timer_create(CLOCK_REALTIME, NULL, (timer_t *)pHndl);
 //	tErrType err = timer_create(CLOCK_MONOTONIC, NULL, (timer_t *)pHndl);
 //	tErrType err = timer_create(CLOCK_THREAD_CPUTIME_ID, NULL, (timer_t *)pHndl);
 	
+	struct sigevent se;
+	timer_t	posixHndl;
     errno = 0;
-    timer_create( CLOCK_REALTIME, se, (timer_t *)pHndl );
+    timer_create(CLOCK_REALTIME, &se, &posixHndl);
     
 	ASSERT_POSIX_CALL( errno );
+	
+	tTimerHndl hndl = AsBrioTimerHandle(posixHndl);
+	ResetTimer(hndl, props);
     
-    return kNoErr; 
+    return hndl; 
 }
 
 //------------------------------------------------------------------------------
-tErrType 	CKernelModule::DestroyTimer( tTimerHndl hndl )
+tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 {
 	
     errno = 0;
-    timer_delete( (timer_t)hndl );
+    timer_delete(AsPosixTimerHandle(hndl));
     
 	ASSERT_POSIX_CALL( errno );
     
@@ -582,36 +624,39 @@ tErrType 	CKernelModule::DestroyTimer( tTimerHndl hndl )
 }
 	
 //------------------------------------------------------------------------------
-tErrType 	CKernelModule::ResetTimer( tTimerHndl hndl, const tTimerProperties* pTimerProperties)
+tErrType CKernelModule::ResetTimer(tTimerHndl hndl, const tTimerProperties& props)
 { 
 	struct itimerspec value;
 	
     value.it_interval.tv_sec = 0;
-	value.it_interval.tv_nsec = (long )pTimerProperties->dummy;
+	value.it_interval.tv_nsec = (long )props.dummy;
 	value.it_value.tv_sec = 0;
 	value.it_value.tv_nsec = 0;
 	
     errno = 0;
-    timer_settime( (timer_t )hndl, 0, &value, NULL );
+    timer_settime(AsPosixTimerHandle(hndl), 0, &value, NULL );
     
 	ASSERT_POSIX_CALL( errno );
+	// FIXME/tp: Need to internally track the sigevent and clock the condition
     
     return kNoErr; 
 }
 	
 //------------------------------------------------------------------------------
-tErrType	CKernelModule::StartTimer( tTimerHndl hndl, const struct itimerspec* value )
+tErrType CKernelModule::StartTimer( tTimerHndl hndl )
 {
+	struct itimerspec value;
+	// FIXME/tp: Lookup timer properties stored in ResetTimer and initialize "value"
 
     errno = 0;
-    timer_settime( (timer_t )hndl, 0, value, NULL );
+    timer_settime(AsPosixTimerHandle(hndl), 0, &value, NULL );
     
 	ASSERT_POSIX_CALL( errno );
     return kNoErr; 
 }
 	
 //------------------------------------------------------------------------------
-tErrType	CKernelModule::StopTimer( tTimerHndl hndl )
+tErrType CKernelModule::StopTimer( tTimerHndl hndl )
 {
 	struct itimerspec value;
 	
@@ -621,7 +666,7 @@ tErrType	CKernelModule::StopTimer( tTimerHndl hndl )
 	value.it_value.tv_nsec = 0;
 	
     errno = 0;
-    timer_settime( (timer_t)hndl, 0, &value, NULL );	
+    timer_settime(AsPosixTimerHandle(hndl), 0, &value, NULL );	
 	
     ASSERT_POSIX_CALL( errno );
 
@@ -631,19 +676,19 @@ tErrType	CKernelModule::StopTimer( tTimerHndl hndl )
 
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds // (& microseconds)	
-tErrType CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) 
+U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl ) const
 {
 	struct itimerspec value;
  //	printf("hndl=%d    12hndl=%d\n", hndl, (timer_t )hndl);
 //	fflush(stdout);
 	
     errno = 0;
-    int err = timer_gettime( (timer_t )hndl, &value );
+    int err = timer_gettime( AsPosixTimerHandle(hndl), &value );
 	
 	ASSERT_POSIX_CALL( errno );
 	
-    *pUs = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
-           (value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000000;
+    U32 milliSeconds = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
+          			 (value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000000;
 
 #if 1 // BSK  Debug printing 
     printf("CKernelModule::GetTimerElapsedTime:\n value.it_interval.tv_sec=%ld\n value.it_value.tv_sec=%ld\n \
@@ -651,23 +696,24 @@ tErrType CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs )
       value.it_interval.tv_sec, value.it_value.tv_sec, value.it_interval.tv_nsec,value.it_value.tv_nsec);       
 #endif	
 
-    return kNoErr;
+    return milliSeconds;
 }
 	
 //------------------------------------------------------------------------------
 // time remaining in milliseconds (& microseconds)
-tErrType CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) 
+U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl ) const
 {
 	struct itimerspec value;
 	
     errno = 0;
-    timer_gettime( (timer_t )hndl, &value );
+    timer_gettime( AsPosixTimerHandle(hndl), &value );
 	
     ASSERT_POSIX_CALL( errno );
 	
-    *pUs = value.it_value.tv_sec * 1000 + value.it_value.tv_nsec / 1000000;
+    U32 milliSeconds = value.it_value.tv_sec * 1000 
+    				+ value.it_value.tv_nsec / 1000000;
 	
-    return kNoErr;	
+    return milliSeconds;	
 }
 
 //============================================================================

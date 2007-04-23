@@ -52,6 +52,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 #define VTABLE_EXPORT	virtual
 
+#ifdef UNIT_TESTING
+	const bool kInUnitTest = true;
+#else
+	const bool kInUnitTest = false;
+#endif
+
 
 //==============================================================================	   
 // Module errors
@@ -73,11 +79,10 @@ public:
 	ICoreModule() 	{};
 	virtual ~ICoreModule()	{};
 
-	virtual Boolean		IsValid() const = 0;
-
-	virtual tErrType	GetModuleVersion(tVersion &version) const = 0;
-	virtual tErrType	GetModuleName(ConstPtrCString &pName) const = 0;	
-	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const = 0;
+	virtual Boolean			IsValid() const = 0;
+	virtual tVersion		GetModuleVersion() const = 0;
+	virtual const CString*	GetModuleName() const = 0;	
+	virtual const CURI*		GetModuleOrigin() const = 0;
 
 private:
 	// Disable copy semantics

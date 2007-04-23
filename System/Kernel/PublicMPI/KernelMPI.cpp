@@ -34,7 +34,6 @@
 //				resolve which version of the MPI is installed & available 
 //				at runtime.
 //==============================================================================
-static const tVersion kMPIVersion = MakeVersion(0, 1);
 static const CString kMPIName = "KernelMPI";
 
 //==============================================================================
@@ -44,18 +43,18 @@ static const CString kMPIName = "KernelMPI";
 //==============================================================================
 // CKernelMPI implementation
 //==============================================================================
-CKernelMPI::CKernelMPI() : mpModule(NULL)
+CKernelMPI::CKernelMPI() : pModule_(NULL)
 {
 	ICoreModule*	pModule;
 	Module::Connect(pModule, kKernelModuleName, 
 									kKernelModuleVersion);
-	mpModule = reinterpret_cast<CKernelModule*>(pModule);
+	pModule_ = reinterpret_cast<CKernelModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CKernelMPI::~CKernelMPI()
 {
-	Module::Disconnect(mpModule);
+	Module::Disconnect(pModule_);
 }
 
 //============================================================================
@@ -63,376 +62,341 @@ CKernelMPI::~CKernelMPI()
 //============================================================================
 Boolean CKernelMPI::IsValid() const
 {
-	return (mpModule != NULL) ? true : false;
+	return (pModule_ != NULL) ? true : false;
 }
 
 //----------------------------------------------------------------------------
-tErrType CKernelMPI::GetMPIVersion(tVersion &pVersion) const
+const CString* CKernelMPI::GetMPIName() const
 {
-	pVersion = kMPIVersion;
-	return kNoErr;
-}
-//----------------------------------------------------------------------------
-tErrType	CKernelMPI::GetMPIName(ConstPtrCString &pName) const
-{
-	pName = &kMPIName;
-	return kNoErr;
+	return &kMPIName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CKernelMPI::GetModuleVersion(tVersion &version) const
+tVersion CKernelMPI::GetModuleVersion() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-
-	return mpModule->GetModuleVersion( version );
+	if (!pModule_)
+		return kUndefinedVersion;
+	return pModule_->GetModuleVersion();
 }
 
 //----------------------------------------------------------------------------
-tErrType	CKernelMPI::GetModuleName(ConstPtrCString &pName) const
+const CString* CKernelMPI::GetModuleName() const
 {
-	if (!mpModule)
-		return kMPINotConnectedErr;
-
-	return mpModule->GetModuleName( pName );
+	if (!pModule_)
+		return &kNullString;
+	return pModule_->GetModuleName();
 }
 
 //----------------------------------------------------------------------------
-tErrType CKernelMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CKernelMPI::GetModuleOrigin() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->GetModuleOrigin( pURI );
+	if (!pModule_)
+		return &kNullURI;
+	return pModule_->GetModuleOrigin();
 }
 
 //==============================================================================
 // Tasks
 //==============================================================================
-tErrType	CKernelMPI::CreateTask(const CURI* pTaskURI, 
-					const tTaskProperties* pProperties, tTaskHndl *pHndl)
+tErrType CKernelMPI::CreateTask(tTaskHndl& hndl, const tTaskProperties& props,
+								const char* pDebugName)
 {
-	if(!mpModule)
+	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->CreateTask( pTaskURI, pProperties, pHndl );
+	return pModule_->CreateTask(hndl, props, pDebugName);
 }
 
 //----------------------------------------------------------------------------
-tErrType	CKernelMPI::JoiningThreads( tTaskHndl pHndl, void **value_ptr ) 
+tErrType CKernelMPI::JoinTask(tTaskHndl pHndl, tPtr& threadReturnValue) 
 {
-	if(!mpModule)
+	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->JoiningThreads( pHndl, value_ptr );
+	return pModule_->JoinTask(pHndl, threadReturnValue);
 }
 //----------------------------------------------------------------------------
 tErrType CKernelMPI::CancelTask(tTaskHndl hndl)
 {
-	if(!mpModule)
+	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->CancelTask( hndl );
+	return pModule_->CancelTask(hndl);
 }
 
 //----------------------------------------------------------------------------
 // This service returns the currently active task pointer.
-tTaskHndl	CKernelMPI::GetCurrentTask()
+tTaskHndl CKernelMPI::GetCurrentTask() const
 {
-	if(!mpModule)
+	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->GetCurrentTask();
+	return pModule_->GetCurrentTask();
 }
 
 //----------------------------------------------------------------------------
-tErrType CKernelMPI::GetTaskPriority( tTaskHndl hndl, int* priority )
+int CKernelMPI::GetTaskPriority(tTaskHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->GetTaskPriority( hndl, priority );
+	if (!pModule_)
+		return 0;
+	return pModule_->GetTaskPriority(hndl);
 }	
 
 //----------------------------------------------------------------------------
-tErrType CKernelMPI::GetTaskSchedulingPolicy(tTaskHndl hndl, int* policy)
+int CKernelMPI::GetTaskSchedulingPolicy(tTaskHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->GetTaskSchedulingPolicy( hndl, policy );
+	if (!pModule_)
+		return 0;	
+	return pModule_->GetTaskSchedulingPolicy(hndl);
 }	
 
 //----------------------------------------------------------------------------
-tErrType CKernelMPI::TaskSleep( U32 msec )
+void CKernelMPI::TaskSleep(U32 msec) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->TaskSleep( msec );
+	if (pModule_)
+		pModule_->TaskSleep(msec);
 }	
 
 //============================================================================
 // allocating memory from the System heap
 //============================================================================
-tErrType CKernelMPI::Malloc( U32 size, tPtr pPtr )
+tPtr CKernelMPI::Malloc(U32 size)
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->Malloc( size, pPtr );
-	
+	if (!pModule_)
+		return kNull;		
+	return pModule_->Malloc(size);
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::Free( tPtr ptr )
+tErrType CKernelMPI::Free(tPtr ptr)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->Free( ptr );
+	return pModule_->Free(ptr);
 }
 
 //============================================================================
 // Message Queues
 //============================================================================
-tErrType	CKernelMPI::CreateMessageQueue( const CURI* pQueueURI, 
-						const tMessageQueuePropertiesPosix* pProperties,
-						tMessageQueueHndl* pHndl )
+tErrType CKernelMPI::CreateMessageQueue(tMessageQueueHndl& hndl,
+								const tMessageQueuePropertiesPosix& properties,
+								const char* pDebugName)
 {
- 	if(!mpModule)
+ 	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->CreateMessageQueue( pQueueURI, pProperties, pHndl );  
+	return pModule_->CreateMessageQueue(hndl, properties, pDebugName);
 }
 
 //------------------------------------------------------------------------------
-tErrType	CKernelMPI::DestroyMessageQueue( tMessageQueueHndl hndl )
+tErrType CKernelMPI::DestroyMessageQueue(tMessageQueueHndl hndl)
 {
- 	if(!mpModule)
+ 	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->DestroyMessageQueue( hndl );  
+	return pModule_->DestroyMessageQueue(hndl);  
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::UnlinkMessageQueue( const char *hndl )
+tErrType CKernelMPI::UnlinkMessageQueue(const char *hndl)
 {
- 	if(!mpModule)
+ 	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->UnlinkMessageQueue( hndl );  
+	return pModule_->UnlinkMessageQueue(hndl);  
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelMPI::ClearMessageQueue( tMessageQueueHndl hndl )
+tErrType CKernelMPI::ClearMessageQueue(tMessageQueueHndl hndl)
 {
-  	if(!mpModule)
+  	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->ClearMessageQueue( hndl );  
+	return pModule_->ClearMessageQueue(hndl);  
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *numMsgQueue )
+int CKernelMPI::GetMessageQueueNumMessages(tMessageQueueHndl hndl) const
 {
-  	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->GetMessageQueueNumMessages( hndl, numMsgQueue );  
+  	if(!pModule_)
+		return 0;
+	return pModule_->GetMessageQueueNumMessages(hndl);  
 }
     
 //------------------------------------------------------------------------------
- tErrType	CKernelMPI::SendMessage( tMessageQueueHndl hndl, CMessage* pMessage, 
-									U32 messageSize )
+ tErrType CKernelMPI::SendMessage(tMessageQueueHndl hndl, const CMessage& msg) 
 {
-  	if(!mpModule)
+  	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->SendMessage( hndl, pMessage, messageSize );  
+	return pModule_->SendMessage(hndl, msg);  
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelMPI::SendMessageOrWait( tMessageQueueHndl hndl, CMessage* pMessage, 
-									U32 messageSize, U32 timeoutMs )
+tErrType CKernelMPI::SendMessageOrWait(tMessageQueueHndl hndl, 
+										const CMessage& msg, U32 timeoutMs )
 {
-  	if(!mpModule)
+  	if(!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->SendMessageOrWait( hndl, pMessage, messageSize, timeoutMs );  
+	return pModule_->SendMessageOrWait(hndl, msg, timeoutMs);  
 }
 
 //------------------------------------------------------------------------------
-tErrType  	CKernelMPI::ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessageSize, 
-									   CMessage* msg_ptr, unsigned *msg_prio )
+tErrType CKernelMPI::ReceiveMessage( tMessageQueueHndl hndl, CMessage* msg_ptr, 
+									U32 maxMessageSize )
 {
-  	if(!mpModule)
+  	if(!pModule_)
 		return kMPINotConnectedErr;
 		
-	return mpModule->ReceiveMessage( hndl, maxMessageSize, msg_ptr, msg_prio );  
+	return pModule_->ReceiveMessage( hndl, msg_ptr, maxMessageSize );  
 }
 
-tErrType  	CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMessageSize, 
-									CMessage* msg_ptr, U32 timeoutMs )
+tErrType CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg_ptr, 
+									 U32 maxMessageSize, U32 timeoutMs )
 {
-  	if(!mpModule)
+  	if(!pModule_)
 		return kMPINotConnectedErr;
 		
-	return mpModule->ReceiveMessageOrWait( hndl, maxMessageSize, msg_ptr, timeoutMs );  
+	return pModule_->ReceiveMessageOrWait( hndl, msg_ptr, maxMessageSize, timeoutMs );  
 }
 				
 //==============================================================================
 // Time & Timers
 //==============================================================================
 
-U32   		CKernelMPI::GetElapsedTime( U32* pUs )
+U32 CKernelMPI::GetElapsedTime( U32* pUs ) const
 {
-  	if(!mpModule)
+  	if(!pModule_)
 		return kMPINotConnectedErr;
 		
-	return mpModule->GetElapsedTime( pUs );  
+	return pModule_->GetElapsedTime(pUs);  
 }
 
 //------------------------------------------------------------------------------
-tErrType 	CKernelMPI::CreateTimer(const CURI* pTimerURI,
-                                    struct sigevent* se, tTimerHndl* pHndl)
+tTimerHndl CKernelMPI::CreateTimer(tCond& condition, const tTimerProperties& props,
+								const char* pDebugName)
 {
-  	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->CreateTimer( pTimerURI, se, pHndl );  
+  	if(!pModule_)
+		return kInvalidTimerHndl;
+	return pModule_->CreateTimer(condition, props, pDebugName);  
 }
 
 //------------------------------------------------------------------------------
-tErrType 	CKernelMPI::DestroyTimer( tTimerHndl hndl )
+tErrType CKernelMPI::DestroyTimer( tTimerHndl hndl )
 {
-  	if(!mpModule)
+  	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->DestroyTimer( hndl );  
+	return pModule_->DestroyTimer(hndl);  
 }
 	
 //------------------------------------------------------------------------------
-tErrType 	CKernelMPI::ResetTimer( tTimerHndl hndl, const tTimerProperties* pTimerProperties )
+tErrType CKernelMPI::ResetTimer( tTimerHndl hndl, const tTimerProperties& props )
 {
-  	if(!mpModule)
+  	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->ResetTimer( hndl, pTimerProperties );  
+	return pModule_->ResetTimer(hndl, props);
 }
 	
 //------------------------------------------------------------------------------
-tErrType	CKernelMPI::StartTimer( tTimerHndl hndl, const struct itimerspec* value )
+tErrType CKernelMPI::StartTimer(tTimerHndl hndl)
 {
-  	if(!mpModule)
+  	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->StartTimer( hndl, value );  
+	return pModule_->StartTimer(hndl);
 }
 	
 //------------------------------------------------------------------------------
-tErrType	CKernelMPI::StopTimer( tTimerHndl hndl )
+tErrType CKernelMPI::StopTimer(tTimerHndl hndl)
 {
-  	if(!mpModule)
+  	if (!pModule_)
 		return kMPINotConnectedErr;
-		
-	return mpModule->StopTimer( hndl );  
+	return pModule_->StopTimer(hndl);  
 }
 	
 //------------------------------------------------------------------------------
-// elapsed time in milliseconds, (& microseconds)
-tErrType CKernelMPI::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) 
+// elapsed time in milliseconds
+U32 CKernelMPI::GetTimerElapsedTimeInMilliSec(tTimerHndl hndl) const
                                                                     
 {
-  	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->GetTimerElapsedTime( hndl, pUs );  
+  	if (!pModule_)
+		return 0;
+	return pModule_->GetTimerElapsedTime(hndl);  
 }
 	
 //------------------------------------------------------------------------------
-// time remaining in milliseconds (& microseconds)
-tErrType CKernelMPI::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) 
+// time remaining in milliseconds
+U32 CKernelMPI::GetTimerRemainingTimeInMilliSec(tTimerHndl hndl) const
 {
-  	if(!mpModule)
-		return kMPINotConnectedErr;
-		
-	return mpModule->GetTimerRemainingTime( hndl, pUs );  
+  	if (!pModule_)
+		return 0;
+	return pModule_->GetTimerRemainingTime(hndl);  
 }
 
 // fixme rdg: move the rest of these into the kernel module at some point
 //------------------------------------------------------------------------------
 // Mutexes
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::InitMutex( tMutex* pMutex, tMutexAttr* pAttributes )
+tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr& attributes )
 {
     errno = 0;
-    pthread_mutex_init( pMutex, pAttributes );
+    pthread_mutex_init(&mutex, &attributes);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::DeInitMutex( tMutex* pMutex )
+tErrType CKernelMPI::DeInitMutex( tMutex& mutex )
 {
     errno = 0;
-    pthread_mutex_destroy( pMutex );
+    pthread_mutex_destroy(&mutex);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::GetMutexPriorityCeiling( tMutex* pMutex, S32* pPrioCeiling )
+S32 CKernelMPI::GetMutexPriorityCeiling(const tMutex& mutex) const
 {
    errno = 0;
+   int prioCeiling = 0;
    
-   pthread_mutex_getprioceiling( pMutex, (int*)pPrioCeiling );
+   pthread_mutex_getprioceiling(&mutex, &prioCeiling);
    ASSERT_POSIX_CALL( errno );
    
+   return prioCeiling;
+}
+
+//------------------------------------------------------------------------------
+tErrType CKernelMPI::SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority )
+{
+   errno = 0;
+
+   pthread_mutex_setprioceiling(&mutex, (int)prioCeiling, (int*)pOldPriority);
+   ASSERT_POSIX_CALL( errno );
+    
    return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::SetMutexPriorityCeiling( tMutex* pMutex, S32 prioCeiling, S32* pOldPriority )
-{
-   errno = 0;
-
-   pthread_mutex_setprioceiling( pMutex, (int)prioCeiling, (int*)pOldPriority);
-   ASSERT_POSIX_CALL( errno );
-    
-   return kNoErr;
-}
-
-//------------------------------------------------------------------------------
-tErrType CKernelMPI::LockMutex( tMutex* pMutex )
+tErrType CKernelMPI::LockMutex( tMutex& mutex )
 {
     errno = 0;
     
-    pthread_mutex_lock( pMutex );
+    pthread_mutex_lock(&mutex);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::TryLockMutex( tMutex* pMutex )
+tErrType CKernelMPI::TryLockMutex( tMutex& mutex )
 {
     errno = 0;
     
-    pthread_mutex_trylock( pMutex );
+    pthread_mutex_trylock(&mutex);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::UnlockMutex( tMutex* pMutex )
+tErrType CKernelMPI::UnlockMutex( tMutex& mutex )
 {
     errno = 0;
     
-    pthread_mutex_unlock( pMutex );
+    pthread_mutex_unlock(&mutex);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
@@ -442,99 +406,99 @@ tErrType CKernelMPI::UnlockMutex( tMutex* pMutex )
 // Conditions 
 //------------------------------------------------------------------------------
 
-tErrType CKernelMPI::CondBroadcast( tCond* pCond )
+tErrType CKernelMPI::BroadcastCond( tCond& cond )
 {
     errno = 0;
 
-    pthread_cond_broadcast( pCond );
+    pthread_cond_broadcast(&cond);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondDestroy( tCond* pCond )
+tErrType CKernelMPI::DestroyCond( tCond& cond )
 {
     errno = 0;
 
-    pthread_cond_destroy( pCond );
+    pthread_cond_destroy(&cond);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondInit( tCond* pCond, const tCondAttr* pAttr )
+tErrType CKernelMPI::InitCond( tCond& cond, const tCondAttr& attr )
 {
     errno = 0;
 
-    pthread_cond_init( pCond, pAttr );
+    pthread_cond_init(&cond, &attr);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondSignal( tCond* pCond )
+tErrType CKernelMPI::SignalCond( tCond& cond )
 {
     errno = 0;
 
-    pthread_cond_signal( pCond );
+    pthread_cond_signal(&cond);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondTimedWait( tCond* pCond, pthread_mutex_t* pMutex,const tTimeSpec* pAbstime )
+tErrType CKernelMPI::TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime )
 {
     errno = 0;
 
-    pthread_cond_timedwait( pCond, pMutex, pAbstime );
+    pthread_cond_timedwait(&cond, &mutex, pAbstime );
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondWait( tCond* pCond, pthread_mutex_t* pMutex)
+tErrType CKernelMPI::WaitOnCond( tCond& cond, tMutex& mutex )
 {
     errno = 0;
 
-    pthread_cond_wait( pCond, pMutex );
+    pthread_cond_wait(&cond, &mutex);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondAttrDestroy( tCondAttr* pAttr )
+tErrType CKernelMPI::DestroyCondAttr( tCondAttr& attr )
 {
     errno = 0;
 
-    pthread_condattr_destroy( pAttr );
+    pthread_condattr_destroy( &attr );
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::GetCondAttrPShared( const tCondAttr* pAttr, int* pShared )
+tErrType CKernelMPI::GetCondAttrPShared( const tCondAttr& attr, int* pShared )
 {
     errno = 0;
 
-    pthread_condattr_getpshared( pAttr, pShared );
+    pthread_condattr_getpshared( &attr, pShared );
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CondAttrInit( tCondAttr* pAttr )
+tErrType CKernelMPI::InitCondAttr( tCondAttr& attr )
 {
     errno = 0;
 
-    pthread_condattr_init( pAttr );
+    pthread_condattr_init(&attr);
     ASSERT_POSIX_CALL( errno );
     
     return kNoErr;

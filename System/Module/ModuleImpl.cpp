@@ -68,7 +68,7 @@ namespace
 			if( len <= 6 || name[0] == '.' )
 				return false;
 			CString temp = name.substr(3, len-6);
-			pModule->version = MakeVersion(0,1);
+			pModule->version = 2;
 			strncpy(pModule->name, temp.c_str(), kMaxModuleName);
 			CPath sep("/");
 			temp = dir + sep + name;
@@ -88,8 +88,7 @@ namespace
 					// TODO: Implement more sophisticated version matching scheme:
 					//	(use highest version with same major version number)
 					//	(if no major version match, match if module version > MPI version)
-					if( GetMajorVersion(version) 
-						== GetMajorVersion(pModule->version) )
+					if( version == pModule->version )
 						return pModule;
 				}
 			}

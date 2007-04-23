@@ -95,21 +95,17 @@ public:
 	void testCoreMPI( )
 	{
 		tVersion		version;
-		CString			empty;
-		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &empty;
+		const CString*	pName;
+		const CURI*		pURI;
 		
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetMPIVersion(version) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetMPIName(pName) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+		pName = rsrcmgr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "ResourceMPI" );
-
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetModuleVersion(version) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetModuleName(pName) );
-		TS_ASSERT_EQUALS( *pName, "ResourceMPI" );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetModuleOrigin(pURI) );
-		TS_ASSERT_EQUALS( *pURI, "URI" );
+		version = rsrcmgr_->GetModuleVersion();
+		TS_ASSERT_EQUALS( version, 2 );
+		pName = rsrcmgr_->GetModuleName();
+		TS_ASSERT_EQUALS( *pName, "Resource" );
+		pURI = rsrcmgr_->GetModuleOrigin();
+		TS_ASSERT_EQUALS( *pURI, "/LF/System/Resource" );
 	}
 	
 	//------------------------------------------------------------------------
@@ -140,7 +136,7 @@ public:
 		U32				count;
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetNumRsrcs( &count ) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetNumRsrcs( count ) );
 		TS_ASSERT_EQUALS( count, 36 );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 	}
@@ -163,7 +159,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		resetHandler(handler_);
 		TS_ASSERT( handlerIsReset(handler_) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("./testrsrcs") );
+		rsrcmgr_->SetDefaultURIPath("./testrsrcs");
 		TS_ASSERT_EQUALS( kResourceNotFoundErr, rsrcmgr_->FindRsrc(handle, "bogus_resource_name") );
 		TS_ASSERT_EQUALS( kResourceInvalidErr, rsrcmgr_->GetRsrcURI(pURI, handle) );
 //		TS_ASSERT_EQUALS( kResourceInvalidErr, rsrcmgr_->GetRsrcID(id, handle) );
@@ -193,9 +189,9 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-//		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("./testrsrcs") );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("/home/lfu/workspace/Brio2/apprsrc") );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc( handle, "app4.txt") );
+//		srcmgr_->SetDefaultURIPath("./testrsrcs");
+		rsrcmgr_->SetDefaultURIPath("../../../Lightning/Samples/BrioCubs/apprsrc");
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc( handle, "app1.txt") );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcURI(pURI, handle) );
 //		TS_ASSERT_EQUALS( *pURI, "testrsrcs/HelloWorldText.txt" );	//FIXME: find way to specify whole path from unit test
 		TS_ASSERT_EQUALS( *pURI, "/home/lfu/workspace/Brio2/apprsrc/app4.txt" );	//FIXME: find way to specify whole path from unit test
@@ -204,7 +200,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcType(type, handle) );
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersion(version, handle) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+		TS_ASSERT_EQUALS( version, 2 );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersionStr(pStr, handle) );
 		TS_ASSERT_EQUALS( *pStr, "0.1" );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcPackedSize(size, handle) );
@@ -249,7 +245,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SetDefaultURIPath("/home/lfu/workspace/Brio2/apprsrc/Applic2") );
+		rsrcmgr_->SetDefaultURIPath("/home/lfu/workspace/Brio2/apprsrc/Applic2");
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->FindRsrc( handle, "app5.bin") );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcURI(pURI, handle) );
 		TS_ASSERT_EQUALS( *pURI, "/home/lfu/workspace/Brio2/apprsrc/Applic2/app5.bin" );
@@ -258,7 +254,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcType(type, handle) );
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersion(version, handle) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+		TS_ASSERT_EQUALS( version, 2 );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcVersionStr(pStr, handle) );
 		TS_ASSERT_EQUALS( *pStr, "0.1" );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->GetRsrcPackedSize(size, handle) );

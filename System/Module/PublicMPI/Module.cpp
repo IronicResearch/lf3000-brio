@@ -19,7 +19,11 @@
 #include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
+#include <DebugMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
+
+const CString	kNullString;
+const CURI		kNullURI;
 
 
 //============================================================================
@@ -34,19 +38,15 @@ namespace
 	//------------------------------------------------------------------------
 	tErrType LoadModuleManagerLib()
 	{
+//		CDebugMPI	dbg(kGroupModule);
 		if( gg_pModuleHandle != NULL )
 			return kNoErr;
 		CPath path = GetModuleLibraryLocation();
 		path = path + CPath("/libModule.so");
 		const char* str = path.c_str();
-printf("GetModuleLibraryLocation: %s\n", str);//FIXME
+//		dbg.DebugOut(kDbgLvlVerbose, "GetModuleLibraryLocation: %s\n", str);
 		gg_pModuleHandle = dlopen(str, RTLD_LAZY);
-		if( !gg_pModuleHandle )
-		{
-printf("LoadModuleManagerLib() failed:%s\n", dlerror());//FIXME
-			//TODO: DebugMPI message (using dlerror?)
-	    	return kModuleLoadFail;
-		}		
+//		dbg.Assert(gg_pModuleHandle != NULL, "LoadModuleManagerLib() failed:%s\n", dlerror());
 	    dlerror();
 	    return kNoErr;
 	}
@@ -58,15 +58,11 @@ printf("LoadModuleManagerLib() failed:%s\n", dlerror());//FIXME
 	}
 	
 	//------------------------------------------------------------------------
-	tErrType CheckError()
+	inline void AbortOnError(const char* msg)
 	{
 		const char *dlsym_error = dlerror();
-	    if( dlsym_error != NULL )
-	    {
-			//TODO: DebugMPI message
-	    	return kModuleLoadFail;
-	    }
-	    return kNoErr;
+//		CDebugMPI	dbg(kGroupModule);
+//		dbg.Assert(dlsym_error == NULL, msg);
 	}
 }
 
@@ -91,8 +87,8 @@ namespace Module
 		{
 			tfnFindMod funptr = reinterpret_cast<tfnFindMod>
 										(dlsym(gg_pModuleHandle, "FindModules"));
-			if( kNoErr == (status = CheckError()) )
-		  		status = (*funptr)();
+			AbortOnError("FindModules lookup failure");
+		  	status = (*funptr)();
 		}
 		return status;
 	}
@@ -109,8 +105,8 @@ namespace Module
 			void* pModule = NULL;
 			tfnConnect funptr = reinterpret_cast<tfnConnect>
 										(dlsym(gg_pModuleHandle, "Connect"));
-			if( kNoErr == (status = CheckError()) )
-		  		status = (*funptr)(&pModule, name.c_str(), version);
+			AbortOnError("Connect lookup failure");
+		  	status = (*funptr)(&pModule, name.c_str(), version);
 		  	ptr = reinterpret_cast<ICoreModule*>(pModule);
 		}
 		return status;
@@ -125,8 +121,8 @@ namespace Module
 			void* pModule;
 			tfnDisconnect funptr = reinterpret_cast<tfnDisconnect>
 										(dlsym(gg_pModuleHandle, "Disconnect"));
-			if( kNoErr == (status = CheckError()) )
-		  		status = (*funptr)(ptr);
+			AbortOnError("Disconnect lookup failure");
+		  	status = (*funptr)(ptr);
 		}
 		return status;
 	}

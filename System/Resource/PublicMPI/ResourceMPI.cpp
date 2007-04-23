@@ -21,7 +21,6 @@
 #include <Module.h>
 
 
-const tVersion	kMPIVersion = MakeVersion(0,1);
 const CString	kMPIName = "ResourceMPI";
 
 //============================================================================
@@ -44,7 +43,7 @@ U16	CResourceEventMessage::GetSizeInBytes() const
 
 //============================================================================
 //----------------------------------------------------------------------------
-CResourceMPI::CResourceMPI(const IEventListener *pListener) : mpModule(NULL)
+CResourceMPI::CResourceMPI(const IEventListener *pListener) : pModule_(NULL)
 {
 	tErrType		err;
 	
@@ -52,123 +51,114 @@ CResourceMPI::CResourceMPI(const IEventListener *pListener) : mpModule(NULL)
 	err = Module::Connect(pModule, kResourceModuleName, kResourceModuleVersion);
 	if (kNoErr == err)
 	{
-		mpModule = reinterpret_cast<CResourceModule*>(pModule);
-		mId = mpModule->Register();
-		mpModule->SetDefaultListener(mId, pListener);
+		pModule_ = reinterpret_cast<CResourceModule*>(pModule);
+		id_ = pModule_->Register();
+		pModule_->SetDefaultListener(id_, pListener);
 	}
 }
 
 //----------------------------------------------------------------------------
 CResourceMPI::~CResourceMPI()
 {
-	Module::Disconnect(mpModule);
+	Module::Disconnect(pModule_);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CResourceMPI::IsValid() const
 {
-	return (mpModule != NULL) ? true : false;
+	return (pModule_ != NULL) ? true : false;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetMPIVersion(tVersion &version) const
+const CString* CResourceMPI::GetMPIName() const
 {
-	version = kMPIVersion;
-	return kNoErr;
+	return &kMPIName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetMPIName(ConstPtrCString &pName) const
+tVersion CResourceMPI::GetModuleVersion() const
 {
-	pName = &kMPIName;
-	return kNoErr;
+	if(!pModule_)
+		return kUndefinedVersion;
+	return pModule_->GetModuleVersion();
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetModuleVersion(tVersion &version) const
+const CString* CResourceMPI::GetModuleName() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetModuleVersion(version);
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetModuleName();
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetModuleName(ConstPtrCString &pName) const
+const CURI* CResourceMPI::GetModuleOrigin() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetModuleName(pName);
-}
-
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
-{
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetModuleOrigin(pURI);
+	if(!pModule_)
+		return &kNullURI;
+	return pModule_->GetModuleOrigin();
 }
 
 
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::SetDefaultURIPath(const CURI &pURIPath)
+void CResourceMPI::SetDefaultURIPath(const CURI &pURIPath)
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->SetDefaultURIPath(mId, pURIPath);
+	if(pModule_)
+		pModule_->SetDefaultURIPath(id_, pURIPath);
 }
 
 	// Searching for devices
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetNumDevices(U16 *pCount)
+U16 CResourceMPI::GetNumDevices() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetNumDevices(pCount);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetNumDevices();
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetNumDevices(U16 *pCount, tDeviceType type)
+U16 CResourceMPI::GetNumDevices(tDeviceType type) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetNumDevices(pCount, type);
-}
-
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::FindDevice(tDeviceHndl *pHndl)
-{
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindDevice(pHndl);
-}
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::FindDevice(tDeviceHndl *pHndl, tDeviceType type)
-{
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindDevice(pHndl, type);
-}
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::FindNextDevice(tDeviceHndl *pHndl)
-{
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindNextDevice(pHndl);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetNumDevices(type);
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetDeviceName(const CString **ppName, tDeviceHndl hndl)
+tDeviceHndl CResourceMPI::FindFirstDevice() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetDeviceName(ppName, hndl);
+	if(!pModule_)
+		return kInvalidDeviceHndl;
+	return pModule_->FindFirstDevice();
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetDeviceType(tDeviceType *pType, tDeviceHndl hndl)
+tDeviceHndl CResourceMPI::FindFirstDevice(tDeviceType type) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetDeviceType(pType, hndl);
+	if(!pModule_)
+		return kInvalidDeviceHndl;
+	return pModule_->FindFirstDevice(type);
+}
+//----------------------------------------------------------------------------
+tDeviceHndl CResourceMPI::FindNextDevice() const
+{
+	if(!pModule_)
+		return kInvalidDeviceHndl;
+	return pModule_->FindNextDevice();
+}
+
+//----------------------------------------------------------------------------
+const CString* CResourceMPI::GetDeviceName(tDeviceHndl hndl) const
+{
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetDeviceName(hndl);
+}
+//----------------------------------------------------------------------------
+tDeviceType CResourceMPI::GetDeviceType(tDeviceHndl hndl) const
+{
+	if(!pModule_)
+		return kRsrcDeviceTypeUndefined;
+	return pModule_->GetDeviceType(hndl);
 }
 
 //----------------------------------------------------------------------------
@@ -176,121 +166,117 @@ tErrType CResourceMPI::OpenDevice(tDeviceHndl hndl,
 									tOptionFlags openOptions,
 									const IEventListener *pListener)  
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->OpenDevice(hndl, openOptions, pListener);
+	return pModule_->OpenDevice(hndl, openOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::CloseDevice(tDeviceHndl hndl)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->CloseDevice(hndl);
+	return pModule_->CloseDevice(hndl);
 }
 
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::OpenAllDevices(tOptionFlags openOptions,
 										const IEventListener *pListener)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->OpenAllDevices(mId, openOptions, pListener);
+	return pModule_->OpenAllDevices(id_, openOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::CloseAllDevices()
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->CloseAllDevices();
+	return pModule_->CloseAllDevices();
 }
 
 	// Searching for packages
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetNumRsrcPackages(U32 *pCount, 
-									tRsrcPackageType type, 
-									const CURI *pURIPath)
+U32 CResourceMPI::GetNumRsrcPackages(tRsrcPackageType type, 
+									const CURI *pURIPath) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetNumRsrcPackages(pCount, type, pURIPath);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetNumRsrcPackages(type, pURIPath);
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindRsrcPackage(tRsrcPackageHndl *pHndl,
-									const CURI *pPackageURI,
-									const CURI *pURIPath)
+tRsrcPackageHndl CResourceMPI::FindRsrcPackage(const CURI& packageURI,
+												const CURI *pURIPath) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindRsrcPackage(pHndl, pPackageURI, pURIPath);
+	if(!pModule_)
+		return kInvalidRsrcPackageHndl;
+	return pModule_->FindRsrcPackage(packageURI, pURIPath);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindRsrcPackage(tRsrcPackageHndl *pHndl, 
-									tRsrcPackageType type,
-									const CURI *pURIPath)	
+tRsrcPackageHndl CResourceMPI::FindFirstRsrcPackage(tRsrcPackageType type,
+												const CURI *pURIPath) const	
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindRsrcPackage(pHndl, type, pURIPath);
+	if(!pModule_)
+		return kInvalidRsrcPackageHndl;
+	return pModule_->FindFirstRsrcPackage(type, pURIPath);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindNextRsrcPackage(tRsrcPackageHndl *pHndl)
+tRsrcPackageHndl CResourceMPI::FindNextRsrcPackage() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindNextRsrcPackage(pHndl);
+	if(!pModule_)
+		return kInvalidRsrcPackageHndl;
+	return pModule_->FindNextRsrcPackage();
 }
 
 	// Getting package info
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageURI(const CURI **ppURI, tRsrcPackageHndl hndl)
+const CURI* CResourceMPI::GetRsrcPackageURI(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageURI(ppURI, hndl);
+	if(!pModule_)
+		return &kNullURI;
+	return pModule_->GetRsrcPackageURI(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageName(const CString **ppName, tRsrcPackageHndl hndl)
+const CString* CResourceMPI::GetRsrcPackageName(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageName(ppName, hndl);
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetRsrcPackageName(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageType(tRsrcPackageType *pType, tRsrcPackageHndl hndl)
+tRsrcPackageType CResourceMPI::GetRsrcPackageType(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageType(pType, hndl);
+	if(!pModule_)
+		return kRsrcPackageTypeUndefined;
+	return pModule_->GetRsrcPackageType(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageVersion(tVersion *pVersion, tRsrcPackageHndl hndl)
+tVersion CResourceMPI::GetRsrcPackageVersion(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageVersion(pVersion, hndl);
+	if(!pModule_)
+		return kUndefinedVersion;
+	return pModule_->GetRsrcPackageVersion(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageVersionStr(const CString **ppVersionStr,
-						tRsrcPackageHndl hndl)
+const CString* CResourceMPI::GetRsrcPackageVersionStr(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageVersionStr(ppVersionStr, hndl);
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetRsrcPackageVersionStr(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageSizeUnpacked(U32 *pSize, tRsrcPackageHndl hndl)
+U32 CResourceMPI::GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageSizeUnpacked(pSize, hndl);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetRsrcPackageSizeUnpacked(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackageSizePacked(U32 *pSize, tRsrcPackageHndl hndl)
+U32 CResourceMPI::GetRsrcPackageSizePacked(tRsrcPackageHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackageSizePacked(pSize, hndl);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetRsrcPackageSizePacked(hndl);
 }
 
 	// Opening & closing packages to find resources within them
@@ -299,16 +285,16 @@ tErrType CResourceMPI::OpenRsrcPackage(tRsrcPackageHndl hndl,
 									tOptionFlags openOptions,
 									const IEventListener *pListener)  
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->OpenRsrcPackage(hndl, openOptions, pListener);
+	return pModule_->OpenRsrcPackage(hndl, openOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::CloseRsrcPackage(tRsrcPackageHndl hndl)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->CloseRsrcPackage(hndl);
+	return pModule_->CloseRsrcPackage(hndl);
 }
 
 	// Loading & unloading packages
@@ -317,141 +303,134 @@ tErrType CResourceMPI::LoadRsrcPackage(tRsrcPackageHndl hndl,
 									tOptionFlags loadOptions,
 									const IEventListener *pListener)  
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->LoadRsrcPackage(hndl, loadOptions, pListener);
+	return pModule_->LoadRsrcPackage(hndl, loadOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::UnloadRsrcPackage(tRsrcPackageHndl hndl, 
 									tOptionFlags unloadOptions,
 									const IEventListener *pListener)  
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->UnloadRsrcPackage(hndl,unloadOptions, pListener);
+	return pModule_->UnloadRsrcPackage(hndl,unloadOptions, pListener);
 }
 
 	// Searching for resources among opened & loaded packages & devices
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetNumRsrcs(U32 *pCount, 
-									const CURI *pURIPath) 	
+void CResourceMPI::SetSearchScope(eSearchScope scope)
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetNumRsrcs(mId, pCount, pURIPath);
+	if(pModule_)
+		return pModule_->SetSearchScope(id_, scope);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetNumRsrcs(U32 *pCount, tRsrcType type,
-									const CURI *pURIPath)
+eSearchScope CResourceMPI::GetSearchScope() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetNumRsrcs(mId, pCount, type, pURIPath);
+	if(!pModule_)
+		return kUndefinedSearchScope;
+	return pModule_->GetSearchScope(id_);
+}
+//----------------------------------------------------------------------------
+U32 CResourceMPI::GetNumRsrcs(const CURI *pURIPath) const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetNumRsrcs(id_, pURIPath);
+}
+//----------------------------------------------------------------------------
+U32 CResourceMPI::GetNumRsrcs(tRsrcType type, const CURI *pURIPath) const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetNumRsrcs(id_, type, pURIPath);
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindRsrc(tRsrcHndl &hndl, const CURI &pRsrcURI,
-									const CURI *pURIPath)
+tRsrcHndl CResourceMPI::FindRsrc(const CURI &pRsrcURI, const CURI *pURIPath) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindRsrc(mId, hndl, pRsrcURI, pURIPath);
+	if(!pModule_)
+		return kInvalidRsrcHndl;
+	return pModule_->FindRsrc(id_, pRsrcURI, pURIPath);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindRsrc(tRsrcHndl &hndl, tRsrcID rsrcID,
-									const CURI *pURIPath)
+tRsrcHndl CResourceMPI::FindFirstRsrc(const CURI *pURIPath) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindRsrc(mId, hndl, rsrcID, pURIPath);
+	if(!pModule_)
+		return kInvalidRsrcHndl;
+	return pModule_->FindFirstRsrc(id_, pURIPath);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindRsrcs(tRsrcHndl &hndl, 
-									const CURI *pURIPath)
+tRsrcHndl CResourceMPI::FindFirstRsrc(tRsrcType type, const CURI *pURIPath) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindRsrcs(mId, hndl, pURIPath);
+	if(!pModule_)
+		return kInvalidRsrcHndl;
+	return pModule_->FindFirstRsrc(id_, type, pURIPath);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::FindRsrcs(tRsrcHndl &hndl, tRsrcType type, 
-									const CURI *pURIPath)
+tRsrcHndl CResourceMPI::FindNextRsrc() const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindRsrcs(mId, hndl, type, pURIPath);
-}
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::FindNextRsrc(tRsrcHndl &hndl)
-{
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->FindNextRsrc(mId, hndl);
+	if(!pModule_)
+		return kInvalidRsrcHndl;
+	return pModule_->FindNextRsrc(id_);
 }
 
 	// Getting rsrc info
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcURI(ConstPtrCURI &pURI, tRsrcHndl hndl)
+const CURI* CResourceMPI::GetRsrcURI(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcURI(mId, pURI, hndl);
+	if(!pModule_)
+		return &kNullURI;
+	return pModule_->GetRsrcURI(id_, hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcName(ConstPtrCString &pName, tRsrcHndl hndl)
+const CString* CResourceMPI::GetRsrcName(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcName(mId, pName, hndl);
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetRsrcName(id_, hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcID(tRsrcID &id, tRsrcHndl hndl)
+tRsrcType CResourceMPI::GetRsrcType(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcID(id, hndl);
+	if(!pModule_)
+		return kInvalidRsrcType;
+	return pModule_->GetRsrcType(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcType(tRsrcType &rsrcType, tRsrcHndl hndl)
+tVersion CResourceMPI::GetRsrcVersion(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcType(rsrcType, hndl);
+	if(!pModule_)
+		return kUndefinedVersion;
+	return pModule_->GetRsrcVersion(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcVersion(tVersion &version, tRsrcHndl hndl)
+const CString* CResourceMPI::GetRsrcVersionStr(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcVersion(version, hndl);
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetRsrcVersionStr(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcVersionStr(ConstPtrCString &pVersionStr, tRsrcHndl hndl)	
+U32 CResourceMPI::GetRsrcPackedSize(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcVersionStr(pVersionStr, hndl);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetRsrcPackedSize(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPackedSize(U32& pSize, tRsrcHndl hndl)
+U32 CResourceMPI::GetRsrcUnpackedSize(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPackedSize(pSize, hndl);
+	if(!pModule_)
+		return 0;
+	return pModule_->GetRsrcUnpackedSize(hndl);
 }
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcUnpackedSize(U32& pSize, tRsrcHndl hndl)
+tPtr CResourceMPI::GetRsrcPtr(tRsrcHndl hndl) const
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcUnpackedSize(pSize, hndl);
-}
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRsrcPtr(tPtr &pRsrc, tRsrcHndl hndl)
-{
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->GetRsrcPtr(pRsrc, hndl);
+	if(!pModule_)
+		return kNull;
+	return pModule_->GetRsrcPtr(hndl);
 }
 
 	// Opening & closing resources without loading them
@@ -460,46 +439,46 @@ tErrType CResourceMPI::OpenRsrc(tRsrcHndl hndl,
 									tOptionFlags openOptions,
 									const IEventListener *pListener)  
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->OpenRsrc(mId, hndl, openOptions, pListener);
+	return pModule_->OpenRsrc(id_, hndl, openOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::CloseRsrc(tRsrcHndl hndl)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->CloseRsrc(hndl);
+	return pModule_->CloseRsrc(hndl);
 }
 
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::ReadRsrc(tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
 									U32 *pNumBytesActual,
 									tOptionFlags readOptions,
-									const IEventListener *pListener)  
+									const IEventListener *pListener) const
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->ReadRsrc(mId, hndl, pBuffer, numBytesRequested, pNumBytesActual,
+	return pModule_->ReadRsrc(id_, hndl, pBuffer, numBytesRequested, pNumBytesActual,
 									readOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
-									tOptionFlags seekOptions)
+									tOptionFlags seekOptions) const
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->SeekRsrc(hndl, numSeekBytes, seekOptions);
+	return pModule_->SeekRsrc(hndl, numSeekBytes, seekOptions);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags writeOptions,
-									const IEventListener *pListener)  
+									const IEventListener *pListener) const
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->WriteRsrc(hndl, pBuffer, numBytesRequested,pNumBytesActual,
+	return pModule_->WriteRsrc(hndl, pBuffer, numBytesRequested,pNumBytesActual,
 									writeOptions, pListener);
 }
 
@@ -508,65 +487,65 @@ tErrType CResourceMPI::WriteRsrc(tRsrcHndl hndl, const void *pBuffer,
 tErrType CResourceMPI::LoadRsrc(tRsrcHndl hndl, tOptionFlags loadOptions,
 									const IEventListener *pListener)  
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->LoadRsrc(mId, hndl, loadOptions, pListener);
+	return pModule_->LoadRsrc(id_, hndl, loadOptions, pListener);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::UnloadRsrc(tRsrcHndl hndl, 
 									tOptionFlags unloadOptions,
 									const IEventListener *pListener)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->UnloadRsrc(mId, hndl, unloadOptions, pListener);
+	return pModule_->UnloadRsrc(id_, hndl, unloadOptions, pListener);
 }
 
 //----------------------------------------------------------------------------
-Boolean CResourceMPI::RsrcIsLoaded(tRsrcHndl hndl)
+Boolean CResourceMPI::RsrcIsLoaded(tRsrcHndl hndl) const
 {
-	if(!mpModule)
+	if(!pModule_)
 		return false;
-	return mpModule->RsrcIsLoaded(hndl);
+	return pModule_->RsrcIsLoaded(hndl);
 }
 
 	// Rsrc referencing FIXME: move to smartptr hndl class
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::AddRsrcRef(tRsrcHndl hndl)	
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->AddRsrcRef(hndl);
+	return pModule_->AddRsrcRef(hndl);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::DeleteRsrcRef(tRsrcHndl hndl)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->DeleteRsrcRef(hndl);
+	return pModule_->DeleteRsrcRef(hndl);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::GetRsrcRefCount(tRsrcHndl hndl)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->GetRsrcRefCount(hndl);
+	return pModule_->GetRsrcRefCount(hndl);
 }
 
 	// New rsrc creation/deletion
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::NewRsrc(tRsrcType rsrcType, void* pRsrc, tRsrcHndl *pHndl)
+tRsrcHndl CResourceMPI::NewRsrc(tRsrcType rsrcType, void* pData)
 {
-	if(!mpModule)
-		return kMPINotConnectedErr;
-	return mpModule->NewRsrc(rsrcType, pRsrc, pHndl);
+	if(!pModule_)
+		return kInvalidRsrcHndl;
+	return pModule_->NewRsrc(rsrcType, pData);
 }
 //----------------------------------------------------------------------------
 tErrType CResourceMPI::DeleteRsrc(tRsrcHndl hndl)
 {
-	if(!mpModule)
+	if(!pModule_)
 		return kMPINotConnectedErr;
-	return mpModule->DeleteRsrc(hndl);
+	return pModule_->DeleteRsrc(hndl);
 }
 	
 

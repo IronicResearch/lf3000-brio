@@ -18,6 +18,7 @@
 #include <SystemErrors.h>
 
 #include <CoreMPI.h>
+#include <DebugMPI.h>
 //#include <KernelMPI.h>
 #include <ResourceMPI.h>
 #include <ResourcePriv.h>
@@ -33,9 +34,9 @@
 
 #include <map>		// FIXME: replace with non-STL implementation
 
-const tVersion	kMPIVersion = 	MakeVersion(0,1);
-const CString	kMpiName = 		"ResourceMPI";
-const CURI		kModuleURI =	"URI";
+const tVersion	kModuleVersion = 	2;
+const CString	kModuleName = 		"Resource";
+const CURI		kModuleURI =		"/LF/System/Resource";
 const U32		kRsrcDescBlockInc = 256;
 const U32		kRscrDeviceBlockInc = 16;
 
@@ -80,21 +81,21 @@ namespace
 	//----------------------------------------------------------------------------
 	CResourceImpl* RetrieveImpl(U32 id)
 	{
+		// FIXME/tp: multithreading issues
 		MPIMap::iterator it = gMPIMap.find(id);
 		if (it != gMPIMap.end())
 			return &(it->second);
-//FIXME		assert();
-		return NULL;
+		CDebugMPI	dbg(kGroupResource);
+		dbg.Assert(false, "Resource configuration failure, unregistered MPI id!");
 	}
 
 	//----------------------------------------------------------------------------
 	tRsrcDescriptor* GetRsrcDescriptor(tRsrcHndl hndl)
 	{
-		U32 rsrcNum = (U32)hndl;
+		U32 rsrcNum = static_cast<U32>(hndl-1);
 	
 		if (rsrcNum > rsrcDescPtrArraySize)
 			return NULL;
-		
 		return &rsrcDescPtrArray[rsrcNum];
 	}
 	
@@ -106,25 +107,26 @@ namespace
 		CString cstrTemp;
 		tRsrcHndl hndl;
 		
-		hndl = (tRsrcHndl) -1;
-		if (count < rsrcDescPtrArraySize)
+		hndl = kInvalidRsrcHndl;
+		if (count <= rsrcDescPtrArraySize)
 		{
 			if (pimpl->lastSearchType == kRsrcSearchTypeByURI)
 				cstrTemp = pimpl->lastSearchPattern.uri;
 				
-			for (; count < rsrcDescPtrArraySize && !bFound; ++count)
+			for (; count <= rsrcDescPtrArraySize && !bFound; ++count)
 			{
 				switch (pimpl->lastSearchType)
 				{
 					case kRsrcSearchTypeUndefined:
 						break;
 					case kRsrcSearchTypeByURI:
-						if (rsrcDescPtrArray[count].uri == cstrTemp)
+						if (rsrcDescPtrArray[count-1].uri == cstrTemp)
 						{
 							bFound = true;
 							hndl = (tRsrcHndl) count;
 						}
 						break;
+						/* FIXME/tp: resolve ByID issues
 					case kRsrcSearchTypeByID:
 						if (rsrcDescPtrArray[count].id == pimpl->lastSearchPattern.id)
 						{
@@ -132,6 +134,7 @@ namespace
 							hndl = (tRsrcHndl) count;
 						}
 						break;
+						*/
 					case kRsrcSearchTypeByHandle:
 						break;
 					case kRsrcSearchTypeByType:
@@ -338,7 +341,7 @@ namespace
 
 
 //----------------------------------------------------------------------------
-CResourceModule::CResourceModule()
+CResourceModule::CResourceModule() : dbg_(kGroupResource)
 {
 	if (devOpenCount == 0)		// if initial construction
 	{
@@ -368,29 +371,27 @@ Boolean	CResourceModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetModuleVersion(tVersion &version) const
+tVersion CResourceModule::GetModuleVersion() const
 {
-	version = kMPIVersion;
-	return kNoErr;
+	return kModuleVersion;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetModuleName(ConstPtrCString &pName) const
+const CString* CResourceModule::GetModuleName() const
 {
-	pName = &kMpiName;
-	return kNoErr;
+	return &kModuleName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CResourceModule::GetModuleOrigin() const
 {
-	pURI = &kModuleURI;
-	return kNoErr;
+	return &kModuleURI;
 }
 
 //----------------------------------------------------------------------------
 U32 CResourceModule::Register( )
 {
+	// FIXME/tp: Handle threading issues through lock
 	static U32 sNextIndex = 0;
 	CResourceImpl	temp;
 	gMPIMap.insert(MPIMap::value_type(++sNextIndex, temp));
@@ -398,25 +399,18 @@ U32 CResourceModule::Register( )
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
+void CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pimpl->mDefaultURI = pURIPath;
 	if( pURIPath.at(pURIPath.length()-1) != '/' )
 		pimpl->mDefaultURI += "/";
-	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::SetDefaultListener(U32 id, const IEventListener *pListener)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pimpl->mpEventListener = pListener;
 	return kNoErr;
 }
@@ -434,31 +428,37 @@ tErrType	CResourceModule::DeleteRsrcRef(tRsrcHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CResourceModule::RsrcIsLoaded(tRsrcHndl hndl)
+Boolean	CResourceModule::RsrcIsLoaded(tRsrcHndl hndl) const
 {
 	return (GetRsrcDescriptor(hndl) != NULL) ? true : false;
 }
 
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetNumRsrcs(U32 id, U32 *pCount, const CURI *pURIPath)
+void CResourceModule::SetSearchScope(U32 id, eSearchScope scope)
+{
+	if (scope != kOpenPackagesAndDevices)
+		dbg_.DebugOut(kDbgLvlCritical, 
+			"Currently only support kOpenPackagesAndDevices search scope\n");
+}
+//----------------------------------------------------------------------------
+eSearchScope CResourceModule::GetSearchScope(U32 id) const
+{
+	return kOpenPackagesAndDevices;
+}
+//----------------------------------------------------------------------------
+U32 CResourceModule::GetNumRsrcs(U32 id, const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-
-	*pCount = rsrcDescPtrArraySize; 
-	return kNoErr;
+	return rsrcDescPtrArraySize; 
 }
  	
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetNumRsrcs(U32 id, U32 *pCount, tRsrcType type, 
-						const CURI *pURIPath)
+U32 CResourceModule::GetNumRsrcs(U32 id, tRsrcType type, 
+								const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-
-	U32 index=0, count=0;
+	U32 count = 0;
+	U32 index=0;
 	tRsrcDescriptor *pRsrcDesc;
 
 	while (index < rsrcDescPtrArraySize)
@@ -468,47 +468,34 @@ tErrType	CResourceModule::GetNumRsrcs(U32 id, U32 *pCount, tRsrcType type,
 		index++;
 	}
 
-	*pCount = count; 
-	return kNoErr;
+	return count;
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrc(U32 id, tRsrcHndl &hndl, const CURI &rsrcURI,
-						const CURI *pURIPath)
+tRsrcHndl CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI,
+									const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
-	CURI searchPath;
-	 
-	if (pURIPath != NULL)
-	{
-//		searchPath = *pURIPath + "/" + rsrcURI;
-		return kInvalidParamErr;
-	}
-	else
-	{
-		searchPath = pimpl->mDefaultURI + rsrcURI;
-	}
-	
+	CURI searchPath = pURIPath ? *pURIPath : pimpl->mDefaultURI;
+	searchPath += rsrcURI;
+	 	
 	// setup/save the search parameters for the FindNextRsrc function
+	// FIXME/tp: URIs are unique, so what would "NextRsrc" mean for this function?
+	/*
 	pimpl->lastSearchHndl = (tRsrcHndl) 0;
 	pimpl->lastSearchType = kRsrcSearchTypeByURI;
 	strncpy(pimpl->lastSearchPattern.uri, searchPath.c_str(), MAX_RSRC_URI_SIZE);
+	*/
 	
-	hndl = FindRsrcRecord(pimpl);
-	
-	return (GetRsrcDescriptor(hndl) != NULL) ? kNoErr : kResourceNotFoundErr;
+	return FindRsrcRecord(pimpl);
 }
- 
+
+/* FIXME/tp: Reslove problems with ID scheme
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrc(U32 id, tRsrcHndl &hndl, tRsrcID rsrcID,
-						const CURI *pURIPath)
+tRsrcHndl CResourceModule::FindFirstRsrc(U32 id, tRsrcHndl &hndl, tRsrcID rsrcID,
+									const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
 		
 	// setup/save the search parameters for the FindNextRsrc function
 	pimpl->lastSearchHndl = (tRsrcHndl) 0;
@@ -519,188 +506,152 @@ tErrType	CResourceModule::FindRsrc(U32 id, tRsrcHndl &hndl, tRsrcID rsrcID,
 	
 	return (GetRsrcDescriptor(hndl) != NULL) ? kNoErr : kResourceNotFoundErr;
 }
+*/
 
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrcs(U32 id, tRsrcHndl &hndl, const CURI *pURIPath)
+tRsrcHndl CResourceModule::FindFirstRsrc(U32 id, const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
-	Boolean bFound = false;
-	U32 count = (U32)hndl;
-	
 	// save the search parameters for the FindNextRsrc function
-	pimpl->lastSearchHndl = hndl;
+	pimpl->lastSearchHndl = kInvalidRsrcHndl;
 	pimpl->lastSearchType = kRsrcSearchTypeByHandle;
-	
-	if (count < rsrcDescPtrArraySize)
-	{
-		bFound = true;	
-	}
-
-	if (!bFound) 
-	{
-		pimpl->lastSearchHndl = (tRsrcHndl)(-1);
-		return kResourceNotFoundErr;
-	}
-
-	return kNoErr;
+	return FindRsrcRecord(pimpl);
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindRsrcs(U32 id, tRsrcHndl &hndl, tRsrcType type, 
-						const CURI *pURIPath)
+tRsrcHndl CResourceModule::FindFirstRsrc(U32 id, tRsrcType type, 
+										const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
 		
 	// setup/save the search parameters for the FindNextRsrc function
-	pimpl->lastSearchHndl = (tRsrcHndl) 0;
+	pimpl->lastSearchHndl = kInvalidRsrcHndl;
 	pimpl->lastSearchType = kRsrcSearchTypeByType;
 	pimpl->lastSearchPattern.type = type;
 	
-	hndl = FindRsrcRecord(pimpl);
-	
-	return (GetRsrcDescriptor(hndl) != NULL) ? kNoErr : kResourceNotFoundErr;
+	return FindRsrcRecord(pimpl);
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::FindNextRsrc(U32 id, tRsrcHndl &hndl)
+tRsrcHndl CResourceModule::FindNextRsrc(U32 id) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
-	hndl = FindRsrcRecord(pimpl);
-	
-	return (GetRsrcDescriptor(hndl) != NULL) ? kNoErr : kResourceNotFoundErr;
+	return FindRsrcRecord(pimpl);
 }
  
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetRsrcURI(U32 id, ConstPtrCURI& pURI, tRsrcHndl hndl)
+const CURI* CResourceModule::GetRsrcURI(U32 id, tRsrcHndl hndl) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
-	tRsrcDescriptor* pRsrc;
-
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcURI() called with invalid resource handle\n");
+		return &kNullURI;
+	}
 
 	pimpl->cstrReturnVal = pRsrc->uri;
-	pURI = &pimpl->cstrReturnVal;
-
-	return kNoErr;
+	return &pimpl->cstrReturnVal;
 }
 
 //----------------------------------------------------------------------------
-tErrType	CResourceModule::GetRsrcName(U32 id, ConstPtrCString& pName, tRsrcHndl hndl)
+const CString* CResourceModule::GetRsrcName(U32 id, tRsrcHndl hndl) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
-	tRsrcDescriptor* pRsrc;
-
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcName() called with invalid resource handle\n");
+		return &kNullString;
+	}
 
 	pimpl->cstrReturnVal = pRsrc->name;
-	pName = &pimpl->cstrReturnVal;
-
-	return kNoErr;
+	return &pimpl->cstrReturnVal;
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcID(tRsrcID &id, tRsrcHndl hndl)
+tRsrcType CResourceModule::GetRsrcType(tRsrcHndl hndl) const
 {
-	tRsrcDescriptor* pRsrc;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcType() called with invalid resource handle\n");
+		return kInvalidRsrcType;
+	}
 
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
-
-	id = pRsrc->id;
-	return kNoErr;
+	return pRsrc->type;
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcType(tRsrcType &rsrcType, tRsrcHndl hndl)
+tVersion CResourceModule::GetRsrcVersion(tRsrcHndl hndl) const
 {
-	tRsrcDescriptor* pRsrc;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcVersion() called with invalid resource handle\n");
+		return kUndefinedVersion;
+	}
 
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
-
-	rsrcType = pRsrc->type;
-	return kNoErr;
+	return pRsrc->version;
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcVersion(tVersion &version, tRsrcHndl hndl)
+const CString* CResourceModule::GetRsrcVersionStr(tRsrcHndl hndl) const
 {
-	tRsrcDescriptor* pRsrc;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcVersionStr() called with invalid resource handle\n");
+		return &kNullString;
+	}
 
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
-
-	version = pRsrc->version;
-	return kNoErr;
+	static CString sTemp = "2";
+	return &sTemp;
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcVersionStr(ConstPtrCString &pVersionStr, tRsrcHndl hndl)	
+U32 CResourceModule::GetRsrcPackedSize(tRsrcHndl hndl) const
 {
-	tRsrcDescriptor* pRsrc;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackedSize() called with invalid resource handle\n");
+		return 0;
+	}
 
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
+	return pRsrc->packedSize;
 
-	static CString sTemp = "0.1";
-	pVersionStr = &sTemp;
-
-	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcPackedSize(U32 &size, tRsrcHndl hndl)
+U32 CResourceModule::GetRsrcUnpackedSize(tRsrcHndl hndl) const
 {
-	tRsrcDescriptor* pRsrc;
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcUnpackedSize() called with invalid resource handle\n");
+		return 0;
+	}
 
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
-
-	size = pRsrc->packedSize;
-	return kNoErr;
+	return pRsrc->unpackedSize;
 }
 
 //----------------------------------------------------------------------------
-tErrType 	CResourceModule::GetRsrcUnpackedSize(U32 &size, tRsrcHndl hndl)
+tPtr CResourceModule::GetRsrcPtr(tRsrcHndl hndl) const
 {
-	tRsrcDescriptor* pRsrc;
-
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;
-
-	size = pRsrc->unpackedSize;
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType  	CResourceModule::GetRsrcPtr(tPtr &pRsrcPtr, tRsrcHndl hndl)
-{
-	tRsrcDescriptor* pRsrc;
-
-	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
-		return kResourceInvalidErr;		
-
+	tRsrcDescriptor* pRsrc = GetRsrcDescriptor(hndl);
+	if (pRsrc == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPtr() called with invalid resource handle\n");
+		return 0;
+	}
+	
 	if (pRsrc->pRsrc == NULL)
-		return kResourceNotLoadedErr;
+		dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPtr() called when resource not yet loaded!\n");
 
-	pRsrcPtr = pRsrc->pRsrc;
-	return kNoErr;
+	return pRsrc->pRsrc;
 }
 
 //----------------------------------------------------------------------------
@@ -711,9 +662,6 @@ tErrType  	CResourceModule::OpenAllDevices(U32 id, tOptionFlags openOptions,
 	IEventListener *pActiveListener;
 	
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pActiveListener = (IEventListener *) pimpl->mpEventListener;
 	if( pListener != kNull )
 		pActiveListener = (IEventListener *) pListener;
@@ -765,9 +713,6 @@ tErrType  	CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 	IEventListener *pActiveListener;
 	
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pActiveListener = (IEventListener *) pimpl->mpEventListener;
 	if( pListener != kNull )
 		pActiveListener = (IEventListener *) pListener;
@@ -830,16 +775,13 @@ tErrType  	CResourceModule::CloseRsrc(tRsrcHndl hndl)
 tErrType  	CResourceModule::ReadRsrc(U32 id, tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
 						U32 *pNumBytesActual,
 						tOptionFlags readOptions,
-						const IEventListener *pListener)
+						const IEventListener *pListener) const
 {
 	tRsrcDescriptor* pRsrc;
 	const tEventPriority	kPriorityTBD = 0;
 	IEventListener *pActiveListener;
 	
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pActiveListener = (IEventListener *) pimpl->mpEventListener;
 	if( pListener != kNull )
 		pActiveListener = (IEventListener *) pListener;
@@ -876,9 +818,6 @@ tErrType  	CResourceModule::LoadRsrc(U32 id, tRsrcHndl hndl, tOptionFlags loadOp
 	IEventListener *pActiveListener;
 	
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pActiveListener = (IEventListener *) pimpl->mpEventListener;
 	if( pListener != kNull )
 		pActiveListener = (IEventListener *) pListener;
@@ -936,9 +875,6 @@ tErrType  	CResourceModule::UnloadRsrc(U32 id, tRsrcHndl hndl,
 	IEventListener *pActiveListener;
 	
 	CResourceImpl* pimpl = RetrieveImpl(id);
-	if (pimpl == NULL)
-		return kResourceInvalidMPIIdErr;
-		
 	pActiveListener = (IEventListener *) pimpl->mpEventListener;
 	if( pListener != kNull )
 		pActiveListener = (IEventListener *) pListener;
@@ -976,42 +912,46 @@ tErrType  	CResourceModule::UnloadRsrc(U32 id, tRsrcHndl hndl,
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetNumDevices(U16 *pCount)
+U16 CResourceModule::GetNumDevices() const
 {
-	*pCount = 2; 
-	return kNoErr;
+	return 2; 
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetNumDevices(U16 *pCount, tDeviceType type)
+U16 CResourceModule::GetNumDevices(tDeviceType type) const
 {
-	*pCount = 2; 
-	return kNoErr;
-}
-//----------------------------------------------------------------------------
-tErrType CResourceModule::FindDevice(tDeviceHndl *pHndl)
-{
-	return kNoErr;
-}
-//----------------------------------------------------------------------------
-tErrType CResourceModule::FindDevice(tDeviceHndl *pHndl, tDeviceType type)
-{
-	return kNoErr;
-}
-//----------------------------------------------------------------------------
-tErrType CResourceModule::FindNextDevice(tDeviceHndl *pHndl)
-{
-	return kNoErr;
+	return 2; 
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetDeviceName(const CString **ppName, tDeviceHndl hndl)
+tDeviceHndl CResourceModule::FindFirstDevice(tDeviceType type) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "FindFirstDevice not implemented\n");
+	return kInvalidDeviceHndl;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetDeviceType(tDeviceType *pType, tDeviceHndl hndl)
+tDeviceHndl CResourceModule::FindFirstDevice() const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "FindFirstDevice not implemented\n");
+	return kInvalidDeviceHndl;
+}
+//----------------------------------------------------------------------------
+tDeviceHndl CResourceModule::FindNextDevice() const
+{
+	dbg_.DebugOut(kDbgLvlCritical, "FindNextDevice not implemented\n");
+	return kInvalidDeviceHndl;
+}
+
+//----------------------------------------------------------------------------
+const CString* CResourceModule::GetDeviceName(tDeviceHndl hndl) const
+{
+	dbg_.DebugOut(kDbgLvlCritical, "GetDeviceName not implemented\n");
+	return &kNullString;
+}
+//----------------------------------------------------------------------------
+tDeviceType CResourceModule::GetDeviceType(tDeviceHndl hndl) const
+{
+	dbg_.DebugOut(kDbgLvlCritical, "GetDeviceType not implemented\n");
+	return kRsrcDeviceTypeUndefined;
 }
 
 //----------------------------------------------------------------------------
@@ -1019,78 +959,87 @@ tErrType CResourceModule::OpenDevice(tDeviceHndl hndl,
 									tOptionFlags openOptions,
 									const IEventListener *pListener)  
 {
+	dbg_.DebugOut(kDbgLvlCritical, "OpenDevice not implemented\n");
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
 tErrType CResourceModule::CloseDevice(tDeviceHndl hndl)
 {
+	dbg_.DebugOut(kDbgLvlCritical, "CloseDevice not implemented\n");
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetNumRsrcPackages(U32 *pCount, 
-									tRsrcPackageType type, 
-									const CURI *pURIPath)
+U32 CResourceModule::GetNumRsrcPackages(tRsrcPackageType type, 
+										const CURI *pURIPath) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetNumRsrcPackages not implemented\n");
+	return 0;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::FindRsrcPackage(tRsrcPackageHndl *pHndl,
-									const CURI *pPackageURI,
-									const CURI *pURIPath)
+tRsrcPackageHndl CResourceModule::FindRsrcPackage(const CURI& packageURI,
+												const CURI *pURIPath) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "FindRsrcPackage not implemented\n");
+	return kInvalidRsrcPackageHndl;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::FindRsrcPackage(tRsrcPackageHndl *pHndl, 
-									tRsrcPackageType type,
-									const CURI *pURIPath)	
+tRsrcPackageHndl CResourceModule::FindFirstRsrcPackage(tRsrcPackageType type,
+												const CURI *pURIPath) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "FindFirstRsrcPackage not implemented\n");
+	return kInvalidRsrcPackageHndl;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::FindNextRsrcPackage(tRsrcPackageHndl *pHndl)
+tRsrcPackageHndl CResourceModule::FindNextRsrcPackage() const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "FindNextRsrcPackage not implemented\n");
+	return kInvalidRsrcPackageHndl;
 }
 
 	// Getting package info
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageURI(const CURI **ppURI, tRsrcPackageHndl hndl)
+const CURI* CResourceModule::GetRsrcPackageURI(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageURI not implemented\n");
+	return &kNullURI;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageName(const CString **ppName, tRsrcPackageHndl hndl)
+const CString* CResourceModule::GetRsrcPackageName(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageName not implemented\n");
+	return &kNullString;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageType(tRsrcPackageType *pType, tRsrcPackageHndl hndl)
+tRsrcPackageType CResourceModule::GetRsrcPackageType(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageType not implemented\n");
+	return kRsrcPackageTypeUndefined;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageVersion(tVersion *pVersion, tRsrcPackageHndl hndl)
+tVersion CResourceModule::GetRsrcPackageVersion(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageVersion not implemented\n");
+	return kUndefinedVersion;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageVersionStr(const CString **ppVersionStr,
-								tRsrcPackageHndl hndl)
+const CString* CResourceModule::GetRsrcPackageVersionStr(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageVersionStr not implemented\n");
+	return &kNullString;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageSizeUnpacked(U32 *pSize, tRsrcPackageHndl hndl)
+U32 CResourceModule::GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageSizeUnpacked not implemented\n");
+	return 0;
 }
 //----------------------------------------------------------------------------
-tErrType CResourceModule::GetRsrcPackageSizePacked(U32 *pSize, tRsrcPackageHndl hndl)
+U32 CResourceModule::GetRsrcPackageSizePacked(tRsrcPackageHndl hndl) const
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcPackageSizePacked not implemented\n");
+	return 0;
 }
 
 	// Opening & closing packages to find resources within them
@@ -1099,11 +1048,13 @@ tErrType CResourceModule::OpenRsrcPackage(tRsrcPackageHndl hndl,
 									tOptionFlags openOptions,
 									const IEventListener *pListener)  
 {
+	dbg_.DebugOut(kDbgLvlCritical, "OpenRsrcPackage not implemented\n");
 	return kNoErr;
 }
 //----------------------------------------------------------------------------
 tErrType CResourceModule::CloseRsrcPackage(tRsrcPackageHndl hndl)
 {
+	dbg_.DebugOut(kDbgLvlCritical, "CloseRsrcPackage not implemented\n");
 	return kNoErr;
 }
 
@@ -1113,6 +1064,7 @@ tErrType CResourceModule::LoadRsrcPackage(tRsrcPackageHndl hndl,
 									tOptionFlags loadOptions,
 									const IEventListener *pListener)  
 {
+	dbg_.DebugOut(kDbgLvlCritical, "LoadRsrcPackage not implemented\n");
 	return kNoErr;
 }
 
@@ -1121,13 +1073,15 @@ tErrType CResourceModule::UnloadRsrcPackage(tRsrcPackageHndl hndl,
 									tOptionFlags unloadOptions,
 									const IEventListener *pListener)  
 {
+	dbg_.DebugOut(kDbgLvlCritical, "UnloadRsrcPackage not implemented\n");
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
-									tOptionFlags seekOptions)
+									tOptionFlags seekOptions) const
 {
+	dbg_.DebugOut(kDbgLvlCritical, "SeekRsrc not implemented\n");
 	return kNoErr;
 }
 
@@ -1135,26 +1089,30 @@ tErrType CResourceModule::SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes,
 tErrType CResourceModule::WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags writeOptions,
-									const IEventListener *pListener)  
+									const IEventListener *pListener) const
 {
+	dbg_.DebugOut(kDbgLvlCritical, "WriteRsrc not implemented\n");
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::GetRsrcRefCount(tRsrcHndl hndl)
 {
+	dbg_.DebugOut(kDbgLvlCritical, "GetRsrcRefCount not implemented\n");
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::NewRsrc(tRsrcType rsrcType, void* pRsrc, tRsrcHndl *pHndl)
+tRsrcHndl CResourceModule::NewRsrc(tRsrcType rsrcType, void* pData)
 {
-	return kNoErr;
+	dbg_.DebugOut(kDbgLvlCritical, "NewRsrc not implemented\n");
+	return kInvalidRsrcHndl;
 }
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::DeleteRsrc(tRsrcHndl hndl)
 {
+	dbg_.DebugOut(kDbgLvlCritical, "DeleteRsrc not implemented\n");
 	return kNoErr;
 }
 

@@ -1146,3 +1146,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 4/20/07 6:17 PM
 1,017 ms. (Cumulative: 147,234 ms)
 
 ----------------
+Revision 151 from svn://localhost/TRUNK/:
+Revision 152 from svn://localhost/TRUNK/:
+
+Refactored MPI interfaces for consistency
+
+By TParker (TParker@leapfrog.com) on 4/23/07 12:53 PM
+11 changed, 0 added, 0 deleted.
+1,220 ms. (Cumulative: 148,501 ms)
+
+----------------
