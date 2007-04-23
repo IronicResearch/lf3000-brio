@@ -23,7 +23,6 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 
-const tVersion	kMPIVersion = MakeVersion(0,1);
 const CString	kMPIName = "EventMPI";
 
 
@@ -49,41 +48,34 @@ Boolean	CEventMPI::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMPI::GetMPIVersion(tVersion &version) const
+const CString* CEventMPI::GetMPIName() const
 {
-	version = kMPIVersion;
-	return kNoErr;
+	return &kMPIName;
+
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMPI::GetMPIName(ConstPtrCString &pName) const
-{
-	pName = &kMPIName;
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CEventMPI::GetModuleVersion(tVersion &version) const
+tVersion CEventMPI::GetModuleVersion() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleVersion(version);
+		return kUndefinedVersion;
+	return pModule_->GetModuleVersion();
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMPI::GetModuleName(ConstPtrCString &pName) const
+const CString* CEventMPI::GetModuleName() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleName(pName);
+		return &kNullString;
+	return pModule_->GetModuleName();
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CEventMPI::GetModuleOrigin() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleOrigin(pURI);
+		return &kNullURI;
+	return pModule_->GetModuleOrigin();
 }
 
 

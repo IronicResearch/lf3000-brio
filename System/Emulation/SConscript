@@ -9,18 +9,12 @@ mpi_name = 'Emulation'
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
 mpisrcs		= FindModuleSources(Dir('.'))
-mpilibs		= ['gles_cl', 'X11']
+mpilibs		= []
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
-myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
-						'#ThirdParty/PowerVR/Include/LinuxPC',
-						'/usr/X11R6/include'])
-myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
-myenv.Append(RPATH = ['#ThirdParty/PowerVR/Libs'])
-						
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, 1)
 
 #-----------------------------------------------------------------------------

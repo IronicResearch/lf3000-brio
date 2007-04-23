@@ -1,7 +1,5 @@
 // TestAudio.h 
 
-#include <string>
-#include <iostream>
 #include <cxxtest/TestSuite.h>
 #include <SystemErrors.h>
 #include <StringTypes.h>
@@ -12,7 +10,6 @@
 // For lots of text output, enable this:
 //#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
-using namespace std;
 LF_USING_BRIO_NAMESPACE()
 
 
@@ -52,21 +49,17 @@ public:
 	void testCoreMPI( )
 	{
 		tVersion		version;
-		CString			empty;
-		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &empty;
+		const CString*	pName;
+		const CURI*		pURI;
 		
 		if (AudioMPI->IsValid()) {
-			TS_ASSERT_EQUALS( kNoErr, AudioMPI->GetMPIVersion(version) );
-			TS_ASSERT_EQUALS( kNoErr, AudioMPI->GetMPIName(pName) );
-			TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+			pName = AudioMPI->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "AudioMPI" );
-	
-			TS_ASSERT_EQUALS( kNoErr, AudioMPI->GetModuleVersion(version) );
-			TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-			TS_ASSERT_EQUALS( kNoErr, AudioMPI->GetModuleName(pName) );
+			version = AudioMPI->GetModuleVersion();
+			TS_ASSERT_EQUALS( version, 2 );
+			pName = AudioMPI->GetModuleName();
 			TS_ASSERT_EQUALS( *pName, "Audio" );
-			TS_ASSERT_EQUALS( kNoErr, AudioMPI->GetModuleOrigin(pURI) );
+			pURI = AudioMPI->GetModuleOrigin();
 			TS_ASSERT_EQUALS( *pURI, "/Somewhere/AudioModule" );
 		}
 	}
@@ -79,25 +72,22 @@ public:
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
 				
-		fValid = AudioMPI->IsValid();
-		std::cout << "MPI IsValid = " << fValid << endl;
-		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		fValid = AudioMPI->IsValid();
+		printf("MPI IsValid = %d\n");
+		
 		if (AudioMPI->IsValid()) {
 			err = AudioMPI->GetMPIName( pName );
-			std::cout << "MPI name is: " << *pName << endl;
+			printf("MPI name is: %s\n", *pName);
 		
-			err = AudioMPI->GetMPIVersion(version);
-			std::cout << "MPI Version is: " << version << endl;
-			
 			err = AudioMPI->GetModuleVersion( version );
-			std::cout << "Module version is: " << version << endl;
+			printf("Module version is: %d\n", version);
 			
 			err = AudioMPI->GetModuleName( pName );
-			std::cout << "Module name is: " << *pName << endl;
+			printf("Module name is: %s\n", *pName);
 			
 			err = AudioMPI->GetModuleOrigin( pURI );
-			std::cout << "Module Origin name is: " << *pURI << endl;
+			printf("Module Origin name is: %s\n", *pURI);
 		}		
 #endif
 	}
@@ -106,13 +96,14 @@ public:
 	void testAudioOutput( )
 	{
 		tErrType err;
+		const int kDuration = 1 * 1000;
 		
 		// Start up sine output.
 		err = AudioMPI->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep3 seconds
-		err = KernelMPI->TaskSleep( 3 * 1000 );
+		err = KernelMPI->TaskSleep( kDuration );
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// stop the engine.
@@ -124,7 +115,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		err = KernelMPI->TaskSleep( 3 * 1000 );
+		err = KernelMPI->TaskSleep( kDuration );
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// stop the engine.
@@ -136,7 +127,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		err = KernelMPI->TaskSleep( 3 * 1000 );
+		err = KernelMPI->TaskSleep( kDuration );
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// stop the engine.

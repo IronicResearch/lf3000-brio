@@ -1,5 +1,5 @@
-#ifndef LF_BRIO_BUTTONPRIV_H
-#define LF_BRIO_BUTTONPRIV_H
+#ifndef LF_BRIO_DISPLAYPRIV_H
+#define LF_BRIO_DISPLAYPRIV_H
 //==============================================================================
 // $Source: $
 //
@@ -7,16 +7,16 @@
 //==============================================================================
 //
 // File:
-//		ButtonPriv.h
+//		DisplayPriv.h
 //
 // Description:
-//		Defines the interface for the private underlying Button manager module. 
+//		Defines the interface for the private underlying Display manager module. 
 //
 //==============================================================================
 #include <SystemTypes.h>
 #include <CoreModule.h>
 #include <EventTypes.h>
-#include <ButtonTypes.h>
+#include <DisplayTypes.h>
 #include <DebugMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -24,13 +24,13 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Constants
 //==============================================================================
-const CString			kButtonModuleName		= "Button";
-const tVersion			kButtonModuleVersion	= 2;
-const tEventPriority	kButtonEventPriority	= 0;	//TBD/tp: make replacable?
+const CString			kDisplayModuleName		= "Display";
+const tVersion			kDisplayModuleVersion	= 2;
+const tEventPriority	kDisplayEventPriority	= 0;
 
 
 //==============================================================================
-class CButtonModule : public ICoreModule {
+class CDisplayModule : public ICoreModule {
 public:	
 	// ICoreModule functionality
 	virtual Boolean			IsValid() const;
@@ -39,21 +39,21 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-	VTABLE_EXPORT tButtonData	GetButtonState() const;
+	VTABLE_EXPORT tErrType	GetDisplayDimensions(U16& width, U16& height) const;
 
 private:
 	void				InitModule( );
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions
-	CButtonModule();
-	virtual ~CButtonModule();
+	CDisplayModule();
+	virtual ~CDisplayModule();
 	friend ICoreModule*	::CreateInstance(tVersion version);
 	friend void			::DestroyInstance(ICoreModule*);
 };
 
 
 LF_END_BRIO_NAMESPACE()	
-#endif // LF_BRIO_BUTTONPRIV_H
+#endif // LF_BRIO_DISPLAYPRIV_H
 
 // eof

@@ -75,22 +75,17 @@ public:
 	void testCoreMPI( )
 	{
 		tVersion		version;
-		CString			empty;
-		CURI			emptyu;
-		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &emptyu;
+		const CString*	pName;
+		const CURI*		pURI;
 		
-		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetMPIVersion(version) );
-		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetMPIName(pName) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+		pName = btnmgr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "ButtonMPI" );
-
-		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleVersion(version) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleName(pName) );
+		version = btnmgr_->GetModuleVersion();
+		TS_ASSERT_EQUALS( version, 2 );
+		pName = btnmgr_->GetModuleName();
 		TS_ASSERT_EQUALS( *pName, "Button" );
-		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetModuleOrigin(pURI) );
-		TS_ASSERT_EQUALS( *pURI, "Button URI" );
+		pURI = btnmgr_->GetModuleOrigin();
+		TS_ASSERT_EQUALS( *pURI, "/LF/System/Button" );
 	}
 	
 	//------------------------------------------------------------------------
@@ -99,7 +94,7 @@ public:
 		tButtonData	data;
 		data.buttonState		= kBadButtonState;
 		data.buttonTransition	= kBadButtonState;
-		TS_ASSERT_EQUALS( kNoErr, btnmgr_->GetButtonState(data) );
+		data = btnmgr_->GetButtonState();
 		TS_ASSERT_DIFFERS( data.buttonState, kBadButtonState );
 		TS_ASSERT_DIFFERS( data.buttonTransition, kBadButtonState );
 	}

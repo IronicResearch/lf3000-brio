@@ -34,24 +34,21 @@ const CURI	kModuleURI	= "Event FIXME";
 // Informational functions
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CEventModule::GetModuleVersion(tVersion &version) const
+tVersion CEventModule::GetModuleVersion() const
 {
-	version = kEventModuleVersion;
-	return kNoErr;
+	return kEventModuleVersion;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventModule::GetModuleName(ConstPtrCString &pName) const
+const CString* CEventModule::GetModuleName() const
 {
-	pName = &kEventModuleName;
-	return kNoErr;
+	return &kEventModuleName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CEventModule::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CEventModule::GetModuleOrigin() const
 {
-	pURI = &kModuleURI;
-	return kNoErr;
+	return &kModuleURI;
 }
 
 

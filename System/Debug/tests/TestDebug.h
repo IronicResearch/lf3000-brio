@@ -45,22 +45,17 @@ public:
 	void testCoreMPI( )
 	{
 		tVersion		version;
-		CString			empty;
-		CURI			emptyu;
-		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &emptyu;
+		const CString*	pName;
+		const CURI*		pURI;
 		
 		if ( DebugMPI->IsValid() ) {
-			TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetMPIVersion(version) );
-			TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetMPIName(pName) );
-			TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+			pName = DebugMPI->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "DebugMPI" );
-	
-			TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetModuleVersion(version) );
-			TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-			TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetModuleName(pName) );
+			version = DebugMPI->GetModuleVersion();
+			TS_ASSERT_EQUALS( version, 2 );
+			pName = DebugMPI->GetModuleName();
 			TS_ASSERT_EQUALS( *pName, "Debug" );
-			TS_ASSERT_EQUALS( kNoErr, DebugMPI->GetModuleOrigin(pURI) );
+			pURI = DebugMPI->GetModuleOrigin();
 			TS_ASSERT_EQUALS( *pURI, "Debug Module Origin URI" );
 		}
 	}
@@ -78,9 +73,6 @@ public:
 			err = DebugMPI->GetMPIName( pName );
 			printf("MPI name is: %s\n", pName->c_str());
 		
-			err = DebugMPI->GetMPIVersion(version);
-			printf("MPI Version is: %d\n", version);
-			
 			err = DebugMPI->GetModuleVersion( version );
 			printf("Module version is: %d\n", version);
 			

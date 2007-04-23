@@ -191,21 +191,16 @@ public:
 	void testCoreMPI( )
 	{
 		tVersion		version;
-		CString			empty;
-		CURI			emptyu;
-		ConstPtrCString	pName = &empty;
-		ConstPtrCURI	pURI = &emptyu;
+		const CString*	pName;
+		const CURI*		pURI;
 		
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetMPIVersion(version) );
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetMPIName(pName) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
+		pName = eventmgr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "EventMPI" );
-
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetModuleVersion(version) );
-		TS_ASSERT_EQUALS( version, MakeVersion(0, 1) );
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetModuleName(pName) );
+		version = eventmgr_->GetModuleVersion();
+		TS_ASSERT_EQUALS( version, 2 );
+		pName = eventmgr_->GetModuleName();
 		TS_ASSERT_EQUALS( *pName, "Event" );
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->GetModuleOrigin(pURI) );
+		pURI = eventmgr_->GetModuleOrigin();
 		TS_ASSERT_EQUALS( *pURI, "Event FIXME" );
 	}
 	

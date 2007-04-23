@@ -36,7 +36,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 // Constants
 const CString	kDebugModuleName	= "Debug";
-const tVersion	kDebugModuleVersion	= MakeVersion(0,1);
+const tVersion	kDebugModuleVersion	= 2;
 
 //==============================================================================
 const char* const ErrToStr( tErrType error );
@@ -46,10 +46,10 @@ const char* const ErrToStr( tErrType error );
 class CDebugModule : public ICoreModule {
 public:
 		// core functionality
-	virtual Boolean		IsValid( ) const;
-	virtual tErrType	GetModuleVersion( tVersion &version ) const;
-	virtual tErrType	GetModuleName( ConstPtrCString &pName ) const;	
-	virtual tErrType	GetModuleOrigin( ConstPtrCURI &pURI ) const;
+	virtual Boolean			IsValid() const;
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;	
+	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
 	VTABLE_EXPORT void DisableDebugOut( tDebugSignature sig );

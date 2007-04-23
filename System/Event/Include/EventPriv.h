@@ -22,16 +22,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 // Constants
 const CString	kEventModuleName	= "Event";
-const tVersion	kEventModuleVersion	= MakeVersion(0,1);
+const tVersion	kEventModuleVersion	= 2;
 
 //==============================================================================
 class CEventModule : public ICoreModule {
 public:	
 	// core functionality
-	virtual Boolean		IsValid() const;
-	virtual tErrType	GetModuleVersion(tVersion &version) const;
-	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
-	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
+	virtual Boolean			IsValid() const;
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;	
+	virtual const CURI*		GetModuleOrigin() const;
 
 	// Register & unregister listener chains
 	VTABLE_EXPORT tErrType	RegisterEventListener(const IEventListener *pListener,

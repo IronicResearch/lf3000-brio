@@ -33,7 +33,7 @@ typedef U32 tRsrcHndl;
 
 // Constants
 const CString	kAudioModuleName	= "Audio";
-const tVersion	kAudioModuleVersion	= MakeVersion(0,1);
+const tVersion	kAudioModuleVersion	= 2;
 
 //	Enum to indicate mono or stereo data
 enum {
@@ -115,10 +115,10 @@ struct tAudioPlayerNode {
 class CAudioModule : public ICoreModule {
 public:	
 	// core functionality
-	virtual Boolean		IsValid() const;
-	virtual tErrType	GetModuleVersion(tVersion &version) const;
-	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
-	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
+	virtual Boolean			IsValid() const;
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;	
+	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
 	VTABLE_EXPORT tErrType	SetDefaultListener( const IEventListener* pListener );

@@ -38,6 +38,7 @@ namespace
 	//------------------------------------------------------------------------
 	const char* kDefaultDisplay = ":0";
 	U32			gLastState;
+	Display *gXDisplay = NULL;
 
 	//------------------------------------------------------------------------
 	U32 KeySymToButton( KeySym keysym )
@@ -73,16 +74,12 @@ namespace
 //----------------------------------------------------------------------------
 void* EmulationButtonTask(void*)
 {
+	if( gXDisplay == NULL )
+		return NULL;
+
 	CDebugMPI	dbg(kGroupButton);
 	dbg.DebugOut(kDbgLvlVerbose, "EmulationButtonTask: Started\n");
 
-	Display  *disp = XOpenDisplay(kDefaultDisplay);
-	if( disp == NULL )
-	{
-		dbg.DebugOut(kDbgLvlCritical, 
-			"EmulationButtonTask: XOpenDisplay() failed, can't track buttons\n");
-		return NULL;
-	}
 	Window focus;
 	int revert;
 
@@ -91,11 +88,11 @@ void* EmulationButtonTask(void*)
  	data.buttonState = data.buttonTransition = 0;
 
 	Window win = (Window)EmulationConfig::Instance().GetLcdDisplayWindow();
-	XSelectInput(disp, win, KeyPress | KeyRelease);
+	XSelectInput(gXDisplay, win, KeyPress | KeyRelease);
 	for( bool bDone = false; !bDone; )	// FIXME/tp: when break out???
 	{
 		XEvent	event;
-		XNextEvent(disp, &event);
+		XNextEvent(gXDisplay, &event);
 		KeySym keysym = XLookupKeysym(reinterpret_cast<XKeyEvent *>(&event), 0);
 		U32 mask = KeySymToButton(keysym);
 		data.buttonTransition = mask;
@@ -116,19 +113,25 @@ void* EmulationButtonTask(void*)
 //----------------------------------------------------------------------------
 void CButtonModule::InitModule()
 {
-	tErrType	status = kModuleLoadFail;
-	CKernelMPI	kernel;
-
-	if( kernel.IsValid() )
+	if( !kInUnitTest ) 
 	{
-		tTaskHndl		handle;
-		tTaskProperties	properties;
-		properties.pTaskMainArgValues = NULL;
-		properties.TaskMainFcn = EmulationButtonTask;
-		status = kernel.CreateTask( NULL, &properties, &handle );
+		gXDisplay = XOpenDisplay(kDefaultDisplay);
+		if (gXDisplay == NULL)
+			dbg_.DebugOut(kDbgLvlCritical, "Emulation XOpenDisplay() failed, buttons disabled!\n");
+		tErrType	status = kModuleLoadFail;
+		CKernelMPI	kernel;
+	
+		if( kernel.IsValid() )
+		{
+			tTaskHndl		handle;
+			tTaskProperties	properties;
+			properties.pTaskMainArgValues = NULL;
+			properties.TaskMainFcn = EmulationButtonTask;
+			status = kernel.CreateTask(handle, properties);
+		}
+		dbg_.Assert( status == kNoErr, 
+					"Button Emulation InitModule: background task creation failed" );
 	}
-	dbg_.Assert( status == kNoErr, 
-				"Button Emulation InitModule: background task creation failed" );
 }
 
 
@@ -136,31 +139,28 @@ void CButtonModule::InitModule()
 // Button state
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CButtonModule::GetButtonState(tButtonData& data) const
+tButtonData CButtonModule::GetButtonState() const
 {
-	data.buttonState = data.buttonTransition = 0;
+	tButtonData	data = { 0, 0 };
 
-	char keys[32];
-	static Display *disp = XOpenDisplay(kDefaultDisplay);
-	if( disp == NULL )
+	if( gXDisplay != NULL )
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "Emulation GetButtonState: XOpenDisplay() failed\n");
-		return kButtonEmulationConfigErr;
-	}
-	XQueryKeymap(disp, keys);
-	
-	for (int i=0; i<32*8; i++)
-	{
-    	if (BIT(keys, i))
+		char keys[32];
+		XQueryKeymap(gXDisplay, keys);
+		
+		for (int i=0; i<32*8; i++)
 		{
-	     	KeySym keysym = XKeycodeToKeysym(disp, i, 0);
-	     	if( keysym )
-	    	 	data.buttonState |= KeySymToButton(keysym);
+	    	if (BIT(keys, i))
+			{
+		     	KeySym keysym = XKeycodeToKeysym(gXDisplay, i, 0);
+		     	if( keysym )
+		    	 	data.buttonState |= KeySymToButton(keysym);
+			}
 		}
+		data.buttonTransition = data.buttonState ^ gLastState;
+		gLastState = data.buttonState;
 	}
-	data.buttonTransition = data.buttonState ^ gLastState;
-	gLastState = data.buttonState;
-	return kNoErr;
+	return data;
 }
 
 LF_END_BRIO_NAMESPACE()

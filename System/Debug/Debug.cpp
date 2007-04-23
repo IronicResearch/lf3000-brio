@@ -99,7 +99,6 @@ Boolean CDebugModule::IsValid() const
 
 //==============================================================================
 // Function:
-//		GetMPIVersion()
 //		GetMPICoreVersion()
 //		GetModuleVersion()
 //		GetModuleName()
@@ -115,22 +114,19 @@ Boolean CDebugModule::IsValid() const
 //		Returns MPI & Module name & version info.
 //==============================================================================
 
-tErrType	CDebugModule::GetModuleVersion(tVersion &version) const
+tVersion CDebugModule::GetModuleVersion() const
 {
-	version = kDebugModuleVersion;
-	return kNoErr; 
+	return kDebugModuleVersion;
 }
 	
-tErrType	CDebugModule::GetModuleName(ConstPtrCString &pName) const
+const CString* CDebugModule::GetModuleName() const
 {
-	pName = &kDebugModuleName;
-	return kNoErr; 
+	return &kDebugModuleName;
 }
  
-tErrType	CDebugModule::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CDebugModule::GetModuleOrigin() const
 {
-	pURI = &kModuleOriginURI;
-	return kNoErr; 
+	return &kModuleOriginURI;
 }	
 
 

@@ -1,45 +1,45 @@
-//============================================================================
+//==============================================================================
 // $Source: $
 //
 // Copyright (c) LeapFrog Enterprises, Inc.
-//============================================================================
+//==============================================================================
 //
 // File:
-//		Button.cpp
+//		Display.cpp
 //
 // Description:
-//		Implements the underlying Button Manager module.
+//		Configure emulation for the environment
 //
-//============================================================================
+//==============================================================================
+
 #include <SystemTypes.h>
-#include <ButtonPriv.h>
-#include <GroupEnumeration.h>
+#include <SystemErrors.h>
+#include <DisplayPriv.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
-
-
 //============================================================================
 // Constants
 //============================================================================
-const CURI	kModuleURI	= "/LF/System/Button";
+const CURI	kModuleURI	= "/LF/System/Display";
 
 
 //============================================================================
-// CButtonModule: Informational functions
+// CDisplayModule: Informational functions
 //============================================================================
 //----------------------------------------------------------------------------
-tVersion CButtonModule::GetModuleVersion() const
+tVersion CDisplayModule::GetModuleVersion() const
 {
-	return kButtonModuleVersion;
+	return kDisplayModuleVersion;
 }
 
 //----------------------------------------------------------------------------
-const CString* CButtonModule::GetModuleName() const
+const CString* CDisplayModule::GetModuleName() const
 {
-	return &kButtonModuleName;
+	return &kDisplayModuleName;
 }
 
 //----------------------------------------------------------------------------
-const CURI* CButtonModule::GetModuleOrigin() const
+const CURI* CDisplayModule::GetModuleOrigin() const
 {
 	return &kModuleURI;
 }
@@ -48,20 +48,29 @@ const CURI* CButtonModule::GetModuleOrigin() const
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CButtonModule::CButtonModule() : dbg_(kGroupButton)
+CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
 	InitModule();	// delegate to platform or emulation initializer
 }
 
 //----------------------------------------------------------------------------
-CButtonModule::~CButtonModule()
+CDisplayModule::~CDisplayModule()
 {
 }
 
 //----------------------------------------------------------------------------
-Boolean	CButtonModule::IsValid() const
+Boolean	CDisplayModule::IsValid() const
 {
 	return true;
+}
+
+
+//============================================================================
+tErrType CDisplayModule::GetDisplayDimensions(U16& width, U16& height) const
+{
+	width  = 320;
+	height = 240;
+	return kNoErr;
 }
 
 
@@ -74,12 +83,12 @@ LF_END_BRIO_NAMESPACE()
 
 LF_USING_BRIO_NAMESPACE()
 
-static CButtonModule*	sinst = NULL;
+static CDisplayModule*	sinst = NULL;
 //------------------------------------------------------------------------
 extern "C" ICoreModule* CreateInstance(tVersion version)
 {
 	if( sinst == NULL )
-		sinst = new CButtonModule;
+		sinst = new CDisplayModule;
 	return sinst;
 }
 	
@@ -92,4 +101,4 @@ extern "C" void DestroyInstance(ICoreModule* ptr)
 }
 
 
-// eof
+// EOF

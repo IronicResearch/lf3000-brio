@@ -66,8 +66,8 @@ CAudioModule::CAudioModule( )
 //	if (ret != true)
 //		printf("AudioModule -- Couldn't create DebugMPI!\n");
 	
-	DebugMPI->DebugOut(kDbgLvlValuable, 
-		(const char *)"\nKernel and Debug modules created by AudioMPI\n");	
+	DebugMPI->DebugOut(kDbgLvlVerbose, 
+		(const char *)"\nKernel and Debug modules created by AudioModule\n");	
 	
 	// Hard code the configuration resource
 	numMixerChannels = 	kAudioNumMixerChannels;
@@ -185,24 +185,21 @@ Boolean CAudioModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioModule::GetModuleVersion(tVersion &version) const
+tVersion CAudioModule::GetModuleVersion() const
 {
-	version = kAudioModuleVersion;
-	return kNoErr;
+	return kAudioModuleVersion;
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioModule::GetModuleName(ConstPtrCString &pName) const
+const CString* CAudioModule::GetModuleName() const
 {
-	pName = &kAudioModuleName;
-	return kNoErr;
+	return &kAudioModuleName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioModule::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CAudioModule::GetModuleOrigin() const
 {
-	pURI = &kModuleURI;
-	return kNoErr;
+	return &kModuleURI;
 }
 
 //==============================================================================

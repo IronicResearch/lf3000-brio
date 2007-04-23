@@ -21,7 +21,6 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 
-const tVersion	kMPIVersion = MakeVersion(0,1);
 const CString	kMPIName = "ButtonMPI";
 
 
@@ -71,51 +70,46 @@ Boolean	CButtonMPI::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CButtonMPI::GetMPIVersion(tVersion &version) const
+const CString* CButtonMPI::GetMPIName() const
 {
-	version = kMPIVersion;
-	return kNoErr;
+	return &kMPIName;
 }
 
 //----------------------------------------------------------------------------
-tErrType CButtonMPI::GetMPIName(ConstPtrCString &pName) const
-{
-	pName = &kMPIName;
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CButtonMPI::GetModuleVersion(tVersion &version) const
+tVersion CButtonMPI::GetModuleVersion() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleVersion(version);
+		return kUndefinedVersion;
+	return pModule_->GetModuleVersion();
 }
 
 //----------------------------------------------------------------------------
-tErrType CButtonMPI::GetModuleName(ConstPtrCString &pName) const
+const CString* CButtonMPI::GetModuleName() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleName(pName);
+		return &kNullString;
+	return pModule_->GetModuleName();
 }
 
 //----------------------------------------------------------------------------
-tErrType CButtonMPI::GetModuleOrigin(ConstPtrCURI &pURI) const
+const CURI* CButtonMPI::GetModuleOrigin() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleOrigin(pURI);
+		return &kNullURI;
+	return pModule_->GetModuleOrigin();
 }
 
 
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CButtonMPI::GetButtonState(tButtonData& data) const
+tButtonData CButtonMPI::GetButtonState() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetButtonState(data);
+	{
+		tButtonData	data = { 0, 0 };
+		return data;
+	}
+	return pModule_->GetButtonState();
 }
 
 

@@ -37,7 +37,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 //------------------------------------------------------------------------------
 const CString kMPIName = "DebugMPI";
-const tVersion  kMPIVersion = MakeVersion(0,1);
 
 //------------------------------------------------------------------------------
 const char kAssertTagStr[] 				= "\n!ASSERT: ";
@@ -84,43 +83,33 @@ Boolean CDebugMPI::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CDebugMPI::GetMPIVersion( tVersion &version )  const
+const CString* CDebugMPI::GetMPIName() const
 {
-	version = kMPIVersion;
-	return kNoErr; 
-}
-
-//----------------------------------------------------------------------------
-tErrType CDebugMPI::GetMPIName( ConstPtrCString &pName ) const
-{
-	pName = &kMPIName;
-	return kNoErr; 
+	return &kMPIName;
 }	
 
 //----------------------------------------------------------------------------
-tErrType CDebugMPI::GetModuleVersion( tVersion &version ) const
+tVersion CDebugMPI::GetModuleVersion() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-
-	return pModule_->GetModuleVersion( version );
+		return kUndefinedVersion;
+	return pModule_->GetModuleVersion();
 }
 	
 //----------------------------------------------------------------------------
-tErrType CDebugMPI::GetModuleName( ConstPtrCString &pName ) const
+const CString* CDebugMPI::GetModuleName() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-
-	return pModule_->GetModuleName( pName );
+		return &kNullString;
+	return pModule_->GetModuleName();
 }
  
 //----------------------------------------------------------------------------
-tErrType CDebugMPI::GetModuleOrigin( ConstPtrCURI &pURI ) const
+const CURI* CDebugMPI::GetModuleOrigin() const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetModuleOrigin( pURI );
+		return &kNullURI;
+	return pModule_->GetModuleOrigin();
 }	
 
 

@@ -53,7 +53,7 @@
 
 #if RT_TRACE_REALTIME_EVENTS
 
-static char *traceTextArray[RT_MAX_TRACE_RECORDS];
+static const char *traceTextArray[RT_MAX_TRACE_RECORDS];
 static int traceIntArray[RT_MAX_TRACE_RECORDS];
 static unsigned long traceTimeArray[RT_MAX_TRACE_RECORDS];
 static int traceIndex = 0;
