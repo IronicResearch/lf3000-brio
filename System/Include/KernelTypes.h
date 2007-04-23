@@ -44,7 +44,13 @@ typedef void 	(*tTaskMainFcn)(U32 argCount, tPtr pArgValues); // Old
 
 typedef void 	*(*tTaskMainFcn_posix)(tPtr pArgValues);
 
-#define kMaxTimeoutMs	((U32)kU32Max)
+const U32				kMaxTimeoutMs			 = kU32Max;
+const tTaskHndl			kInvalidTaskHndl		 = static_cast<tTaskHndl>(0);
+const tMemoryPoolHndl	kInvalidMemoryPoolHndl	 = static_cast<tMemoryPoolHndl>(0);
+const tMessageQueueHndl	kInvalidMessageQueueHndl = static_cast<tMessageQueueHndl>(0);
+const tTimerHndl		kInvalidTimerHndl		 = static_cast<tTimerHndl>(0);
+const tTaskPriority		kInvalidTaskPriorityl	 = static_cast<tTaskPriority>(0);
+const tMessagePriority	kInvalidMessagePriority	 = static_cast<tMessagePriority>(0);
 
 #define kUndefinedMessageSize		((U16)0)
 #define kUndefinedMemoryPoolHndl 	((tMemoryPoolHndl)kUndefinedHndl)
@@ -307,7 +313,7 @@ struct tMessageQueuePropertiesPosix{
 };
 
 enum{
-    wrongQueuFlagParameter = 1001,
+    wrongQueueFlagParameter = 1001,
 };
 
 
@@ -331,8 +337,8 @@ public:
 class CMessage 
 {
 public:
-	U16		GetMessageSize() { return messageSize; }
-	U8		GetMessagePriority() { return messagePriority; }
+	U16		GetMessageSize() const { return messageSize; }
+	U8		GetMessagePriority() const { return messagePriority; }
 //	virtual ~CMessage(){};
 #if 1 // BK
     U8      GetMessageReserved(){ return messageReserved;}    

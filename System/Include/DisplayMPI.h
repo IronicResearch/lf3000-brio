@@ -1,5 +1,5 @@
-#ifndef LF_BRIO_EVENTMPI_H
-#define LF_BRIO_EVENTMPI_H
+#ifndef LF_BRIO_DISPLAYPRIV_H
+#define LF_BRIO_DISPLAYMPI_H
 //==============================================================================
 // $Source: $
 //
@@ -7,23 +7,20 @@
 //==============================================================================
 //
 // File:
-//		EventMPI.h
+//		DisplayMPI.h
 //
 // Description:
-//		Defines the Module Public Interface (MPI) for the Event module. 
+//		Defines the interface for the private underlying Display manager module. 
 //
 //==============================================================================
-
-#include <SystemTypes.h>
 #include <CoreMPI.h>
-#include <EventListener.h>
-#include <EventMessage.h>
-#include <EventTypes.h>
+#include <DisplayTypes.h>
+#include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================
-class CEventMPI : public ICoreMPI {
+class CDisplayMPI : public ICoreMPI {
 public:	
 	// ICoreMPI functionality
 	virtual	Boolean			IsValid() const;
@@ -33,24 +30,17 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-	CEventMPI();
-	virtual ~CEventMPI();
+	CDisplayMPI();
+	virtual ~CDisplayMPI();
 
-	// Register & unregister listener chains
-	tErrType	RegisterEventListener(const IEventListener *pListener,
-										tEventRegistrationFlags flags = 0);
-	tErrType	UnregisterEventListener(const IEventListener *pListener);
-	
-	// Generate an event
-	tErrType	PostEvent(const IEventMessage &msg, 
-						tEventPriority priority,
-						const IEventListener *pResponseListener = NULL) const;
+	// Get button state
+	tErrType	GetDisplayDimensions(U16& width, U16& height) const;
+
 private:
-	class CEventModule*	pModule_;
+	class CDisplayModule*	pModule_;
 };
 
-
 LF_END_BRIO_NAMESPACE()	
-#endif // LF_BRIO_EVENTMGRMPI_H
+#endif // LF_BRIO_DISPLAYMPI_H
 
 // eof

@@ -121,63 +121,18 @@ typedef U16 tU16NumSpace;
 
 //----------------------------------------------------------------------------
 // Type:
-//		tSimpleVersion
+//		tVersion
 //
 // Description:
 //		Version as simple counting index: stored as U16 index
 //----------------------------------------------------------------------------
 
-typedef U16	tSimpleVersion;
-
-#define MakeSimpleVersion(version) 	((tSimpleVersion)version)
-
-#define kUndefinedSimpleVersion		MakeSimpleVersion(0)
-#define kMaxSimpleVersion				MakeSimpleVersion(kU16Max)
-
-//----------------------------------------------------------------------------
-// Type:
-//		tVersion
-//
-// Description:
-//		Standard major.minor version:  
-//			stored as [MSB][U8 major][U8 minor][LSB]
-//----------------------------------------------------------------------------
-
 typedef U16	tVersion;
 
-#define MakeVersion(major, minor) 		((tVersion)ToU16(major, minor))
 
-#define kUndefinedVersion				MakeVersion(0, 0)
-#define kVersion1						MakeVersion(1, 0)
-#define kVersion2						MakeVersion(2, 0)
-#define kVersion3						MakeVersion(3, 0)
-#define kMaxVersion					MakeVersion(kU8Max, kU8Max)
+const tVersion kUndefinedVersion	= 0;
+const tVersion kMaxSimpleVersion	= kU16Max;
 
-#define GetMajorVersion(version)  		GetHighU8(version)
-#define GetMinorVersion(version) 		GetLowU8(version)
-
-#define NextMajorVersion(version)		((tVersion)((version & 0xFF00) + MakeVersion(1, 0)))
-#define NextMinorVersion(version)		((tVersion)(version + MakeVersion(0, 1)))
-
-//----------------------------------------------------------------------------
-// Type:
-//		tBuildVersion
-//
-// Description:
-//		Standard major.minor.build version:  
-//			stored as [MSB][U8 major][U8 minor][U16 build][LSB]
-//----------------------------------------------------------------------------
-
-typedef U32	tBuildVersion;
-
-#define MakeBuildVersion(major, minor, build) 	((tBuildVersion)ToU32(ToU16(major, minor), build))
-
-#define kUndefinedBuildVersion			MakeBuildVersion(0, 0, 0)
-#define kMaxBuildVersion				MakeBuildVersion(kU8Max, kU8Max, kU16Max)
-
-#define GetBuildMajorVersion(buildVersion) GetHighU8(GetHighU16(buildVersion))
-#define GetBuildMinorVersion(buildVersion) GetLowU8(GetHighU16(buildVersion))
-#define GetBuildBuildVersion(buildVersion) GetLowU16(buildVersion)
 
 //----------------------------------------------------------------------------
 // Type:

@@ -389,6 +389,8 @@ inline Boolean	operator==(const CURI& str1, const char* str2)
 typedef const CString*	ConstPtrCString;
 typedef const CURI*		ConstPtrCURI;
 
+extern const CString	kNullString;
+extern const CURI		kNullURI;
 
 LF_END_BRIO_NAMESPACE()	
 #endif	// LF_BRIO_STRINGTYPES_H

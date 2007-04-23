@@ -101,6 +101,18 @@ typedef tHndl 	tRsrcHndl;
 
 typedef	U32		tResourceMsgDat;
 
+enum eSearchScope {
+	kUndefinedSearchScope = 0,
+	kOpenPackages,
+	kOpenPackagesAndDevices
+};
+
+const tDeviceHndl		kInvalidDeviceHndl = static_cast<tDeviceHndl>(0);
+const tRsrcPackageHndl	kInvalidRsrcPackageHndl = static_cast<tRsrcPackageHndl>(0);
+const tRsrcHndl			kInvalidRsrcHndl = static_cast<tRsrcHndl>(0);
+const tRsrcType			kInvalidRsrcType = static_cast<tRsrcType>(0);
+
+
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_RSRCMGRTYPES_H
 

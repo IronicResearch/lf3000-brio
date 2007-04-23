@@ -26,14 +26,11 @@ public:
 	ICoreMPI() 	{};
 	virtual ~ICoreMPI()	{};
 
-	virtual Boolean		IsValid() const = 0;	
-	
-	virtual tErrType	GetMPIVersion(tVersion &version) const = 0;		   
-	virtual tErrType	GetMPIName(ConstPtrCString &pName) const = 0;		
-
-	virtual tErrType	GetModuleVersion(tVersion &version) const = 0;
-	virtual tErrType	GetModuleName(ConstPtrCString &pName) const = 0;	
-	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const = 0;
+	virtual Boolean			IsValid() const = 0;	
+	virtual const CString*	GetMPIName() const = 0;		
+	virtual tVersion		GetModuleVersion() const = 0;
+	virtual const CString*	GetModuleName() const = 0;	
+	virtual const CURI*		GetModuleOrigin() const = 0;
 
 private:
 	// Disable copy semantics

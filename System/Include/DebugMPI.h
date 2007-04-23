@@ -33,15 +33,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 class CDebugMPI : public ICoreMPI {
 public:
-	// MPI core functions
-	virtual Boolean		IsValid() const;	
-	
-	virtual tErrType	GetMPIVersion(tVersion &version) const;		   
-	virtual tErrType	GetMPIName(ConstPtrCString &pName) const;		
-
-	virtual tErrType	GetModuleVersion(tVersion &version) const;
-	virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
-	virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
+	// ICoreMPI functionality
+	virtual	Boolean			IsValid() const;
+	virtual const CString*	GetMPIName() const;		
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;	
+	virtual const CURI*		GetModuleOrigin() const;
 	
 	explicit CDebugMPI(tDebugSignature sig);  
 	virtual ~CDebugMPI();

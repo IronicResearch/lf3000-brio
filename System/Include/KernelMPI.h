@@ -22,148 +22,146 @@ LF_BEGIN_BRIO_NAMESPACE()
 class CKernelMPI : public ICoreMPI
 {
 public:
-	// MPI core functions
-    virtual Boolean		IsValid() const;	
-
-    virtual tErrType	GetMPIVersion(tVersion &version) const;		   
-    virtual tErrType	GetMPIName(ConstPtrCString &pName) const;		
-
-    virtual tErrType	GetModuleVersion(tVersion &version) const;
-    virtual tErrType	GetModuleName(ConstPtrCString &pName) const;	
-    virtual tErrType	GetModuleOrigin(ConstPtrCURI &pURI) const;
+	// ICoreMPI functionality
+	virtual	Boolean			IsValid() const;
+	virtual const CString*	GetMPIName() const;
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;
+	virtual const CURI*		GetModuleOrigin() const;
     
 	// class-specific functionality
 	CKernelMPI();
 	virtual ~CKernelMPI();
 
+// FIXME: Change all pXXXURI to const char* pDebugName = NULL (last param)
 	//==============================================================================
 	// Tasks
 	//==============================================================================
-	tErrType	CreateTask( const CURI* pTaskURI, 
-					const tTaskProperties* pTaskProperties, tTaskHndl *pHndl );
-    
-    tErrType	JoiningThreads( tTaskHndl pHndl, void **value_ptr );					
-	
+	tErrType	CreateTask( tTaskHndl& hndl, 		// FIXME/tp: return handle?
+							const tTaskProperties& properties,
+							const char* pDebugName = NULL );
+    tErrType	JoinTask( tTaskHndl pHndl, tPtr& threadReturnValue );
 	tErrType	CancelTask( tTaskHndl hndl );
 	
-	tTaskHndl	GetCurrentTask();
+	tTaskHndl	GetCurrentTask() const;
+	int			GetTaskPriority( tTaskHndl hndl ) const;
+	int			GetTaskSchedulingPolicy( tTaskHndl hndl ) const;
 
-	tErrType GetTaskPriority( tTaskHndl hndl, int *priority );
-	tErrType GetTaskSchedulingPolicy( tTaskHndl hndl, int *policy );
-
-	tErrType TaskSleep( U32 msec );
+	void	 	TaskSleep( U32 msec ) const;
 	
 	//==============================================================================
 	// Memory Allocation
 	//==============================================================================
-	tErrType Malloc( U32 size, tPtr ppAllocatedMemory );
-	tErrType Free( tPtr pAllocatedMemory );
+	tPtr		Malloc( U32 size );
+	tErrType	Free( tPtr pAllocatedMemory );
 
 	//==============================================================================
 	// Message Queues
 	//==============================================================================
-	tErrType	CreateMessageQueue( const CURI* pQueueURI, 
-						const tMessageQueuePropertiesPosix* pQueueProperties,
-						tMessageQueueHndl* pHndl );
+	// FIXME/tp: Non-posix-specific props
+	tErrType	CreateMessageQueue( tMessageQueueHndl& hndl,
+									const tMessageQueuePropertiesPosix& props,
+									const char* pDebugName = NULL ); 
 	tErrType	DestroyMessageQueue( tMessageQueueHndl hndl );
 	
+	// FIXME/tp: Need to fold unlink into destroy
 	tErrType	UnlinkMessageQueue( const char *name );
 
 	tErrType  	ClearMessageQueue( tMessageQueueHndl hndl );
 
-	tErrType 	GetMessageQueueNumMessages( tMessageQueueHndl hndl, int *numMsgQueue );
+	int		 	GetMessageQueueNumMessages( tMessageQueueHndl hndl ) const;
     
-	tErrType	SendMessage( tMessageQueueHndl hndl, CMessage* pMessage, 
-									U32 messageSize = kUndefinedMessageSize );
-	tErrType  	SendMessageOrWait( tMessageQueueHndl hndl, CMessage* pMessage, 
-									U32 messageSize = kUndefinedMessageSize,
+	tErrType	SendMessage( tMessageQueueHndl hndl, const CMessage& msg );
+	tErrType  	SendMessageOrWait( tMessageQueueHndl hndl, const CMessage& msg, 
 									U32 timeoutMs = kMaxTimeoutMs );
 
-	tErrType  	ReceiveMessage( tMessageQueueHndl hndl, U32 maxMessageSize, 
-									CMessage* pMessage, unsigned *msg_prio );
-	tErrType  	ReceiveMessageOrWait( tMessageQueueHndl hndl, U32 maxMessageSize, 
-									CMessage* pMessage, U32 timeoutMs = kMaxTimeoutMs );
+	// FIXME/tp: Work these and incorporate with IEventMessage
+	// FIXME/tp: Think through order of parameters
+	tErrType  	ReceiveMessage( tMessageQueueHndl hndl, CMessage* msg, 
+									U32 maxMessageSize );
+	tErrType  	ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg,  
+									U32 maxMessageSize, U32 timeoutMs = kMaxTimeoutMs );
 				
 	//==============================================================================
 	// Time & Timers
 	//==============================================================================
-	U32			GetElapsedTime( U32* pUs=NULL );		// elapsed time since System startup 
+	U32			GetElapsedTime( U32* pUs=NULL ) const;	// elapsed time since System startup 
 														// in milliseconds (& microseconds)	
-    tErrType 	CreateTimer( const CURI* pTimerURI,
-                          	struct sigevent *se,
-                           	tTimerHndl* pHndl );
+	tTimerHndl 	CreateTimer( tCond& condition, const tTimerProperties& props,
+								const char* pDebugName = NULL );
     
     tErrType 	DestroyTimer( tTimerHndl hndl );
 
-	tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties* pTimerProperties );
+	tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
 
-	tErrType	StartTimer( tTimerHndl hndl, const struct itimerspec* pValue );
-	tErrType	StopTimer( tTimerHndl hndl);
+	tErrType	StartTimer( tTimerHndl hndl );
+	tErrType	StopTimer( tTimerHndl hndl );
 
-	tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs = NULL );		// elapsed time in milliseconds (& microseconds)
-	tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs = NULL ); 	// time remaining in milliseconds (& microseconds)
+	U32			GetTimerElapsedTimeInMilliSec( tTimerHndl hndl ) const;
+	U32			GetTimerRemainingTimeInMilliSec( tTimerHndl hndl ) const;
 
 	//==============================================================================
 	// Mutexes
 	//==============================================================================
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
-    tErrType InitMutex( tMutex* pMutex, tMutexAttr* pAttributes );
+    tErrType InitMutex( tMutex& mutex, const tMutexAttr& attributes );
 	
     // Destroys a mutex
-    tErrType DeInitMutex( tMutex* pMutex );
+    tErrType DeInitMutex( tMutex& mutex );
 	
     // Obtains the priority ceiling of a mutex attribute object
-    tErrType GetMutexPriorityCeiling( tMutex* pMutex, S32* pPrioCeiling );
+    S32		 GetMutexPriorityCeiling( const tMutex& mutex ) const;
 	
     // Sets the priority ceiling attribute of a mutex attribute object
-    tErrType SetMutexPriorityCeiling( tMutex* pMutex, S32 prioCeiling, S32* pOldPriority );
+    tErrType SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
 	
      // Locks an unlocked mutex
-    tErrType LockMutex( tMutex* pMutex );
+    tErrType LockMutex( tMutex& mutex );
 	
     // Tries to lock a not tested
-    tErrType TryLockMutex( tMutex* pMutex );
+    tErrType TryLockMutex( tMutex& mutex );
 	
     // Unlocks a mutex
-    tErrType UnlockMutex( tMutex* pMutex );
+    tErrType UnlockMutex( tMutex& mutex );
     
 	//==============================================================================
 	// Conditions
 	//==============================================================================
     // Unblocks all threads that are waiting on a condition variable
-    tErrType CondBroadcast( tCond* pCond );
+    tErrType BroadcastCond( tCond& cond );
     
     // Destroys a condition variable attribute object
-    tErrType CondDestroy( tCond* pCond );
+    tErrType DestroyCond( tCond& cond );
     
     // Initializes a condition variable with the attributes specified in the
     // specified condition variable attribute object
-    tErrType CondInit( tCond* pCond, const tCondAttr* pAttr );
+    tErrType InitCond( tCond& cond, const tCondAttr& attr );
     
     // Unblocks at least one thread waiting on a condition variable
-    tErrType CondSignal( tCond* pCond );
+    tErrType SignalCond( tCond& cond );
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-    tErrType CondTimedWait( tCond* pCond, pthread_mutex_t* pMutex,const tTimeSpec* pAbstime );
+    // FIXME: pAbstime var
+    tErrType TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime );
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-    tErrType CondWait( tCond* pCond, pthread_mutex_t* pMutex );
+    tErrType WaitOnCond( tCond& cond, tMutex& mutex );
     
     // Destroys a condition variable
-    tErrType CondAttrDestroy( tCondAttr* pAttr );
+    tErrType DestroyCondAttr( tCondAttr& attr );
     
     // Obtains the process-shared setting of a condition variable attribute object
-    tErrType GetCondAttrPShared( const tCondAttr* pAttr, int* pShared );
+    tErrType GetCondAttrPShared( const tCondAttr& attr, int* pShared );
     
     // Initializes a condition variable attribute object    
-    tErrType CondAttrInit( tCondAttr* pAttr );
+    tErrType InitCondAttr( tCondAttr& attr );
     
     // Sets the process-shared attribute in a condition variable attribute object
     // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
     tErrType SetCondAttrPShared( tCondAttr* pAttr, int shared );
 
 private:
-	class CKernelModule *mpModule;
+	class CKernelModule *pModule_;
 };
 
 
