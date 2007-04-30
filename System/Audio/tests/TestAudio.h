@@ -103,8 +103,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep3 seconds
-		err = KernelMPI->TaskSleep( kDuration );
-		TS_ASSERT_EQUALS( kNoErr, err );
+		KernelMPI->TaskSleep( kDuration );
 
 		// stop the engine.
 		err = AudioMPI->StopAudio();
@@ -115,8 +114,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		err = KernelMPI->TaskSleep( kDuration );
-		TS_ASSERT_EQUALS( kNoErr, err );
+		KernelMPI->TaskSleep( kDuration );
 
 		// stop the engine.
 		err = AudioMPI->StopAudio();
@@ -127,8 +125,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		err = KernelMPI->TaskSleep( kDuration );
-		TS_ASSERT_EQUALS( kNoErr, err );
+		KernelMPI->TaskSleep( kDuration );
 
 		// stop the engine.
 		err = AudioMPI->StopAudio();
