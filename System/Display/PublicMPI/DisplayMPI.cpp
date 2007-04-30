@@ -80,11 +80,112 @@ const CURI* CDisplayMPI::GetModuleOrigin() const
 
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CDisplayMPI::GetDisplayDimensions(U16& width, U16& height) const
+U16 CDisplayMPI::GetNumberOfScreens() const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetNumberOfScreens();
+}
+
+//----------------------------------------------------------------------------
+const tDisplayScreenStats* CDisplayMPI::GetScreenStats(tDisplayScreen screen) const
+{
+	if(!pModule_)
+		return NULL;
+	return pModule_->GetScreenStats(screen);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
-	return pModule_->GetDisplayDimensions(width, height);
+	return pModule_->Invalidate(screen, pDirtyRect);
+}
+
+//============================================================================
+//----------------------------------------------------------------------------
+tDisplayHandle CDisplayMPI::CreateHandle(U16 height, U16 width, 
+										tPixelFormat colorDepth, U8 *pBuffer)
+{
+	if(!pModule_)
+		return kInvalidDisplayHandle;
+	return pModule_->CreateHandle(height, width, colorDepth, pBuffer);
+}
+
+//----------------------------------------------------------------------------
+U8* CDisplayMPI::GetBuffer(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return NULL;
+	return pModule_->GetBuffer(hndl);
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayMPI::GetHeight(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetHeight(hndl);
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayMPI::GetWidth(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetWidth(hndl);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::Register(tDisplayHandle hndl, S16 xPos, S16 yPos, 
+								tDisplayHandle insertAfter, tDisplayScreen screen)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->Register(hndl, xPos, yPos, insertAfter, screen);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::Register(tDisplayHandle hndl, S16 xPos, S16 yPos, 
+							 tDisplayZOrder initialZOrder, 
+                             tDisplayScreen screen)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->Register(hndl, xPos, yPos, initialZOrder, screen);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->UnRegister(hndl, screen);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->DestroyHandle(hndl, destroyBuffer);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::LockBuffer(tDisplayHandle hndl)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->LockBuffer(hndl);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->UnlockBuffer(hndl, pDirtyRect);
 }
 
 

@@ -38,8 +38,32 @@ public:
 	virtual const CString*	GetModuleName() const;	
 	virtual const CURI*		GetModuleOrigin() const;
 
-	// class-specific functionality
-	VTABLE_EXPORT tErrType	GetDisplayDimensions(U16& width, U16& height) const;
+	// Screen functionality
+	VTABLE_EXPORT U16							GetNumberOfScreens() const;
+	VTABLE_EXPORT const tDisplayScreenStats*	GetScreenStats(tDisplayScreen screen) const;
+	VTABLE_EXPORT tErrType						Invalidate(tDisplayScreen screen, 
+															tRect *pDirtyRect);
+
+	// Graphics contexts (through tDisplayHandle)
+	VTABLE_EXPORT tDisplayHandle	CreateHandle(U16 height, U16 width, 
+												tPixelFormat colorDepth, U8 *pBuffer);
+	VTABLE_EXPORT U8*				GetBuffer(tDisplayHandle hndl) const;
+//	VTABLE_EXPORT U16				GetPitch(tDisplayHandle hndl) const;
+	VTABLE_EXPORT U16				GetHeight(tDisplayHandle hndl) const;
+	VTABLE_EXPORT U16 				GetWidth(tDisplayHandle hndl) const;
+	
+	VTABLE_EXPORT tErrType			Register(tDisplayHandle hndl, S16 xPos, S16 yPos, 
+											tDisplayHandle insertAfter, 
+											tDisplayScreen screen);
+	VTABLE_EXPORT tErrType			Register(tDisplayHandle hndl, S16 xPos, S16 yPos, 
+											tDisplayZOrder initialZOrder, 
+											tDisplayScreen screen);
+	VTABLE_EXPORT tErrType			UnRegister(tDisplayHandle hndl, tDisplayScreen screen);
+	
+	VTABLE_EXPORT tErrType			DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer);
+	
+	VTABLE_EXPORT tErrType			LockBuffer(tDisplayHandle hndl);
+	VTABLE_EXPORT tErrType			UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect);
 
 private:
 	void				InitModule( );

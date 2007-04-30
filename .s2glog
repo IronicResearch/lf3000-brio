@@ -1213,3 +1213,12 @@ By TParker (TParker@leapfrog.com) on 4/30/07 2:07 PM
 1,016 ms. (Cumulative: 156,818 ms)
 
 ----------------
+Revision 163 from svn://localhost/TRUNK/:
+
+Mostly stubbed out initial Display Manager implementation
+
+By TParker (TParker@leapfrog.com) on 4/30/07 3:03 PM
+5 changed, 0 added, 0 deleted.
+1,125 ms. (Cumulative: 157,974 ms)
+
+----------------

@@ -56,30 +56,30 @@ struct tRect {
 	S16 bottom;
 };
 
-enum {
-	tPixelFormatError = -1,
-	tPixelFormatRGB4444 = 0,
-	tPixelFormatRGB565,
-	tPixelFormatARGB8888,
+enum tPixelFormat {
+	kPixelFormatError = 0,
+	kPixelFormatRGB4444,
+	kPixelFormatRGB565,
+	kPixelFormatARGB8888,
 };
-typedef	S16	tPixelFormat;
 
-enum {
-	tDisplayOnTop,
-	tDisplayOnBottom,
+enum tDisplayZOrder {
+	kInvalidZOrder = 0,
+	kDisplayOnTop,
+	kDisplayOnBottom,
 };
-typedef	U16	tDisplayZOrder;
 
 struct tDisplayScreenStats {
 	U16 height;
 	U16 width;
 	U16 tPixelFormat;
 	U16 pitch;
-	CString *description; // i.e. "Tv", "LCD" based on platform
+	const char *description; // i.e. "Tv", "LCD" based on platform
 };
 
 // tDisplayHandle is what is returned from a DisplayMgr->CreateContext
 typedef	void*	tDisplayHandle;
+const tDisplayHandle kInvalidDisplayHandle = static_cast<tDisplayHandle>(0);
 
 // tDisplayScreen is a bitmask of the available screens.
 typedef	U32	tDisplayScreen; 
