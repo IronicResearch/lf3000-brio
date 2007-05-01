@@ -1,0 +1,52 @@
+====================================================
+Release Proceedure for Lightning C++ Development Kit
+====================================================
+
+Note: Much of this will be automatable when we update to the newest Ubuntu
+distribution, which should include a SVN 1.4 client.
+
+
+============
+Building
+============
+1) Open Eclipse
+2) Right click on the Brio2 root node and select the "Team | Synchronize with Repository" menu item
+3) In the Eclipse Syncronize Perspective, update to the latest source
+4) Right click on the Brio2 root and select "Properties".  Click on the "C/C++ Make Properties" tab
+5) Make sure the make command line is "scons -k emulation=t publish=t
+6) Clean the Brio2 project
+7) Build the Brio2 project
+8) Build it again to build and run the unit tests
+9) Verify that all unit tests pass and work with team to fix any failures
+10) The end result if a fully populated "Brio2/Publish" folder
+11) Verify the build by creating a new C/C++ Standard Make project
+    a) Change its C/C++ Make Properties to "scons -k emulation=t"
+    b) Copy the contents of the /Brio2/Lightning/Samples/BrioCube folder into your new project folder
+    c) Build the new project
+    d) Run the new project.  Try pressing the arrow keys, the keypad + and -, Ins and Del keys and
+       verify that audio, resource loading, and button events are working
+12) Repeat step 11 using the contents of the /Brio2/Lightning/Samples/Simple project
+
+
+===============
+Smoke testing
+===============
+For step 3 of "Distributing" below, team members will extract the RC files from the zip and
+repeat steps 11 & 12 above, changing line 34 of the SConstruct files from:
+   '/home/lfu/workspace/Brio2/Publish'
+to
+   '/home/LightningSDK_<build#>'
+
+===============
+Distributing
+===============
+TBD
+For now, do this:
+1) Rename the "Publish" folder to be "LightningSDK_<build#>, where build # is the current
+   SVN repository #.
+2) Zip up the renamed folder
+3) Email it to the other team members for a quick smoke test
+4) After smoke testing, email it to the following people: 
+	Lovica Callisti; Chris Fernandes; Dennis O'Brien; Celso Aguiar; Emil Gilliam
+    
+

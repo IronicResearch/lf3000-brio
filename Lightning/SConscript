@@ -15,4 +15,5 @@ if local_vars['is_publish']:
 		Command( os.path.join(dest_dir, s), os.path.join('Samples', s), 
 				Copy("$TARGET", "$SOURCE"))
 	env.Install(local_vars['publish_root'], 'readme.txt')
+	env.Install(local_vars['publish_root'], 'ReleaseNotes.txt')
 	

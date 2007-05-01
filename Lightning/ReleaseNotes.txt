@@ -1,0 +1,64 @@
+===========================================
+Lightning C++ Development Kit Release Notes
+===========================================
+
+===========================================
+v0.1.2  (Build 154, released May 1, 2007) 
+===========================================
+Emulation only release
+
+Enhancements:
+-------------
+* Massive improvements to the MPI interfaces, including:
+   * Consistent error status scheme (accessors return values, not error codes,
+     e.g., tErrType GetVersion(tVersion) -> tVersion GetVersion())
+   * Consistent ordering of input/output parameters in function parameter lists
+   * Consistent iteration scheme (FindFirstX()/FindNextX())
+   * Const correct interfaces
+   * Pass by reference whenever a parameter is not optional (e.g., 
+     FindRsrc(CURI*) -> FindRsrc(const CURI&))
+   * Framework for using C++ namespaces as documented in Brio spec is in place
+   * Consistent variable naming scheme
+   * Errors and event definitions are now decentralized
+   * Consistently use zero values as invalid state
+   * Reduction of repetitive parameters (e.g., DebugMPI ctor now takes 
+     the signature parameter, which has been removed as the first
+     parameter from all of the DebugOutXXX() functions)
+   * Removed the repetitive GetMPIVersion() functions
+   * Changed the tVersion type from major/minor scheme to a straight U16 value
+   * Function names of form VerbNoun() (e.g., InitMutex() rather than MutexInit())
+   * Simplified timer function interfaces to work with milliseconds only 
+     rather than milliseconds and microseconds
+* Display Manager initial implementation (mainly stubbed out)
+* Font Manager initial implementation
+* Resource Manager "M" functions (seek & write resource functions)
+* Updated sample programs to use the improved MPI interfaces
+* Updated the Simple sample to demonstrate use of the Font Manager interface
+* Extended internal error reporting through the Debug module
+
+Bug Fixes:
+----------
+* Default emulation window size is now 320x240 rather than 240x320
+
+Known Issues:
+-------------
+* Repeated emulation button events are generated when a button is held down
+
+
+===========================================
+v0.1.1  (Build 1, released April 6, 2007)
+===========================================
+Initial release
+Emulation only release
+
+Implementations of the following Modules:
+-----------------------------------------
+* Kernel ("H" functions including Task creation, message queue, 
+  memory allocation)
+* Debug
+* Audio (low level driver in place, StartAudio/StopAudio calls with 
+  audio done events)
+* Event Manager (all events handled at high priority)
+* Button Manager
+* Resource Manager ("H" functions for opening and loading resources)
+
