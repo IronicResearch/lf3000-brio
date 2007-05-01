@@ -1249,3 +1249,12 @@ By TParker (TParker@leapfrog.com) on 5/1/07 2:06 PM
 1,047 ms. (Cumulative: 161,350 ms)
 
 ----------------
+Revision 167 from svn://localhost/TRUNK/:
+
+Added 'DebugMPI' to the lib list on RunMyTests() to solve link error (on some systems).
+
+By Gbreniman (Gbreniman@leapfrog.com) on 5/1/07 3:11 PM
+1 changed, 0 added, 0 deleted.
+1,031 ms. (Cumulative: 162,428 ms)
+
+----------------
