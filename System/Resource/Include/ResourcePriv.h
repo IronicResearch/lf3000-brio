@@ -172,7 +172,7 @@ public:
 											const IEventListener *pListener) const;  
 	VTABLE_EXPORT	tErrType		SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
 											tOptionFlags seekOptions) const;
-	VTABLE_EXPORT	tErrType		WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
+	VTABLE_EXPORT	tErrType		WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer, 
 											U32 numBytesRequested, U32 *pNumBytesActual,
 											tOptionFlags writeOptions,
 											const IEventListener *pListener) const;  

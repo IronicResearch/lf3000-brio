@@ -481,11 +481,9 @@ tRsrcHndl CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI,
 	 	
 	// setup/save the search parameters for the FindNextRsrc function
 	// FIXME/tp: URIs are unique, so what would "NextRsrc" mean for this function?
-	/*
-	pimpl->lastSearchHndl = (tRsrcHndl) 0;
+	pimpl->lastSearchHndl = (tRsrcHndl) 1;
 	pimpl->lastSearchType = kRsrcSearchTypeByURI;
 	strncpy(pimpl->lastSearchPattern.uri, searchPath.c_str(), MAX_RSRC_URI_SIZE);
-	*/
 	
 	return FindRsrcRecord(pimpl);
 }
@@ -513,7 +511,7 @@ tRsrcHndl CResourceModule::FindFirstRsrc(U32 id, const CURI *pURIPath) const
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
 	// save the search parameters for the FindNextRsrc function
-	pimpl->lastSearchHndl = kInvalidRsrcHndl;
+	pimpl->lastSearchHndl = 1;
 	pimpl->lastSearchType = kRsrcSearchTypeByHandle;
 	return FindRsrcRecord(pimpl);
 }
@@ -525,7 +523,7 @@ tRsrcHndl CResourceModule::FindFirstRsrc(U32 id, tRsrcType type,
 	CResourceImpl* pimpl = RetrieveImpl(id);
 		
 	// setup/save the search parameters for the FindNextRsrc function
-	pimpl->lastSearchHndl = kInvalidRsrcHndl;
+	pimpl->lastSearchHndl = 1;
 	pimpl->lastSearchType = kRsrcSearchTypeByType;
 	pimpl->lastSearchPattern.type = type;
 	
@@ -607,7 +605,11 @@ const CString* CResourceModule::GetRsrcVersionStr(tRsrcHndl hndl) const
 		return &kNullString;
 	}
 
-	static CString sTemp = "2";
+	static CString sTemp;
+	char buf[16];
+	sprintf(buf, "%d", pRsrc->version);
+	sTemp = buf;
+//	static CString sTemp = "2";
 	return &sTemp;
 }
 
@@ -722,8 +724,26 @@ tErrType  	CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 		
 	if (pRsrc->useCount == 0)
 	{
-		// resource is not opened, open it now
-		pRsrc->pFile = fopen(pRsrc->uri, "rb");
+		// resource is not opened, open it now (open according to type)
+		CString fileOptions;
+		
+		if(! (openOptions & kOpenRsrcOptionWrite) )
+		{
+			fileOptions = "rb";		// no write, open for read only
+		}
+		else
+		{
+			if( openOptions & kOpenRsrcOptionRead )
+			{
+				fileOptions = "rb+";	// open for reading & writing
+			}
+			else
+			{
+				fileOptions = "wb";		// open for write only (truncate existing)
+			}
+		}
+		
+		pRsrc->pFile = fopen(pRsrc->uri, fileOptions.c_str());
 		
 		// register open for later cleanup 
 	}
@@ -1081,17 +1101,56 @@ tErrType CResourceModule::UnloadRsrcPackage(tRsrcPackageHndl hndl,
 tErrType CResourceModule::SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
 									tOptionFlags seekOptions) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "SeekRsrc not implemented\n");
+	tRsrcDescriptor* pRsrc;
+	
+	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
+		return kResourceInvalidErr;
+		
+	if (pRsrc->pFile == NULL)
+	{
+		return kResourceNotOpenErr;	
+	}
+	fseek ( pRsrc->pFile, numSeekBytes, seekOptions );
+
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
+tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags writeOptions,
 									const IEventListener *pListener) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "WriteRsrc not implemented\n");
+	tRsrcDescriptor* pRsrc;
+	const tEventPriority	kPriorityTBD = 0;
+	IEventListener *pActiveListener;
+	
+	CResourceImpl* pimpl = RetrieveImpl(id);
+	if (pimpl == NULL)
+		return kResourceInvalidMPIIdErr;
+		
+	pActiveListener = (IEventListener *) pimpl->mpEventListener;
+	if( pListener != kNull )
+		pActiveListener = (IEventListener *) pListener;
+	
+	if ((pRsrc = GetRsrcDescriptor(hndl)) == NULL)
+		return kResourceInvalidErr;
+		
+	if (pBuffer == NULL || numBytesRequested == 0 || pNumBytesActual == NULL )
+		return kInvalidParamErr;			// invalid pointer supplied
+		
+	if (pRsrc->pFile == NULL)
+	{
+		return kResourceNotOpenErr;	
+	}
+	*pNumBytesActual = fwrite(pBuffer, sizeof(char), numBytesRequested, pRsrc->pFile);
+	
+	tResourceMsgDat	data;
+	data = 0;
+
+	CEventMPI	event;
+	CResourceEventMessage	msg(kResourceWriteDoneEvent, data);
+	event.PostEvent(msg, kPriorityTBD, pActiveListener);
 	return kNoErr;
 }
 

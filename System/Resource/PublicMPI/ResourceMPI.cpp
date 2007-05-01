@@ -478,7 +478,7 @@ tErrType CResourceMPI::WriteRsrc(tRsrcHndl hndl, const void *pBuffer,
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
-	return pModule_->WriteRsrc(hndl, pBuffer, numBytesRequested,pNumBytesActual,
+	return pModule_->WriteRsrc(id_, hndl, pBuffer, numBytesRequested,pNumBytesActual,
 									writeOptions, pListener);
 }
 

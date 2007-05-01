@@ -1222,3 +1222,12 @@ By TParker (TParker@leapfrog.com) on 4/30/07 3:03 PM
 1,125 ms. (Cumulative: 157,974 ms)
 
 ----------------
+Revision 164 from svn://localhost/TRUNK/:
+
+These changes add the 'M' priority functions to the Resource Manager.
+
+By Gbreniman (Gbreniman@leapfrog.com) on 5/1/07 11:02 AM
+6 changed, 0 added, 0 deleted.
+1,187 ms. (Cumulative: 159,224 ms)
+
+----------------

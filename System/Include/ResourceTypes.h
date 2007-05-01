@@ -83,6 +83,17 @@ enum {
 
 typedef U16 tRsrcSearchType;
 
+enum {				// bitmask options for OpenRsrc(), unspecified handled as read-only
+	kOpenRsrcOptionRead		= 0x00000001,
+	kOpenRsrcOptionWrite	= 0x00000002
+};
+
+enum {
+	kSeekRsrcOptionSet		= 0,
+	kSeekRsrcOptionCur		= 1,
+	kSeekRsrcOptionEnd		= 2
+};
+
 enum {
 	kLoadRsrcOptionUndefined = 0,
 	kLoadRsrcOptionAsync
