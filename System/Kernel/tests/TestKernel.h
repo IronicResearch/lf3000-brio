@@ -1,10 +1,13 @@
 // TestKernel.h
-
 #include <cxxtest/TestSuite.h>
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <KernelMPI.h>
 #include <UnitTestUtils.h>
+
+#include <signal.h>   	// for timer_create
+#include <time.h> 		// for timer create
+#include <sys/time.h>
 
 using namespace std;
 LF_USING_BRIO_NAMESPACE()
@@ -151,7 +154,29 @@ public:
         U32 size = 0x5000;
         tPtr pPtr = NULL;
         
-		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Malloc( size, pPtr ) );
-		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Free( pPtr ) );
+        pPtr = KernelMPI->Malloc(size);
+//		TS_ASSERT_DIFFERS( pPtr, static_cast<tPtr>(kNull) );
+//		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Free( pPtr ) );
+        
+  		TS_ASSERT_DIFFERS( (void*)NULL, pPtr );
+  		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Free( pPtr ) );
+
+
+
+//-----------------	Test 5	----------------------------        
+// Testing timer functions	
+// Prototype
+// 	tErrType CreateTimer(tTimerGenHndl& hndl, pfnTimerCallback callback,
+// 						tTimerProperties& props, const char* pDebugName = NULL );
+//
+//
+/*
+        int signum = SIGRTMAX;
+		tTimerProperties props = {SIGEV_SIGNAL,SIGRTMAX, CLOCK_REALTIME};
+		
+		tTimerHndl hndl = KernelMPI->CreateTimer( NULL, & props, NULL );
+		TS_ASSERT_DIFFERS( hndl, static_cast<hndl>(kNull) );
+*/
+		
 	}		
 };

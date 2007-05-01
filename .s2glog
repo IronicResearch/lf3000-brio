@@ -1231,3 +1231,12 @@ By Gbreniman (Gbreniman@leapfrog.com) on 5/1/07 11:02 AM
 1,187 ms. (Cumulative: 159,224 ms)
 
 ----------------
+Revision 165 from svn://localhost/TRUNK/:
+
+Updating testing KernelMPI->Malloc function
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/1/07 1:21 PM
+1 changed, 0 added, 0 deleted.
+985 ms. (Cumulative: 160,256 ms)
+
+----------------
