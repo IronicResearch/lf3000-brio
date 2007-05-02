@@ -1267,3 +1267,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/1/07 8:08 PM
 1,062 ms. (Cumulative: 163,537 ms)
 
 ----------------
+Revision 169 from svn://localhost/TRUNK/:
+
+FreeType library headers and x86 binary checkin.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/1/07 8:10 PM
+0 changed, 85 added, 0 deleted.
+3,392 ms. (Cumulative: 166,976 ms)
+
+----------------
