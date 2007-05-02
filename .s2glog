@@ -1303,3 +1303,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/2/07 2:08 PM
 1,047 ms. (Cumulative: 170,289 ms)
 
 ----------------
+Revision 176 from svn://localhost/TRUNK/:
+
+Added Font module to Brio build script.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/2/07 2:09 PM
+1 changed, 0 added, 0 deleted.
+1,031 ms. (Cumulative: 171,367 ms)
+
+----------------
