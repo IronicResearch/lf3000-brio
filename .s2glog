@@ -1294,3 +1294,12 @@ By Gbreniman (Gbreniman@leapfrog.com) on 5/2/07 1:57 PM
 1,031 ms. (Cumulative: 169,195 ms)
 
 ----------------
+Revision 175 from svn://localhost/TRUNK/:
+
+Correct font bitmap packing order for RGB surface.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/2/07 2:08 PM
+1 changed, 0 added, 0 deleted.
+1,047 ms. (Cumulative: 170,289 ms)
+
+----------------

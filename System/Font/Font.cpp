@@ -362,8 +362,8 @@ Boolean CFontModule::DrawGlyph(char ch, int X, int Y, void* pCtx)
 	// Pack RGB color into buffer according to mono bitmap mask
 	w = (source->width+7) / 8;
 	h = source->rows;
-	s = t = (U8*)source->buffer;
-	d = u = (U32*)surf->buffer + Y * surf->pitch + X * 4;
+	s = t = (U8*)source->buffer + (h-1) * source->pitch;  // upside down
+	d = u = (U32*)((U8*)surf->buffer + Y * surf->pitch + X * 4);
 	for (y = 0; y < h; y++) {
 		s = t;
 		d = u;
@@ -377,8 +377,8 @@ Boolean CFontModule::DrawGlyph(char ch, int X, int Y, void* pCtx)
 			}
 			s++;
 		}
-		t += source->pitch;
-		u += surf->pitch;
+		t -= source->pitch;	// U8* upside down
+		u += surf->pitch/4;	// U32*
 	}				  
 #endif
 
