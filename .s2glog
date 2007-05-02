@@ -1258,3 +1258,12 @@ By Gbreniman (Gbreniman@leapfrog.com) on 5/1/07 3:11 PM
 1,031 ms. (Cumulative: 162,428 ms)
 
 ----------------
+Revision 168 from svn://localhost/TRUNK/:
+
+Initial Font MPI checkin based on FreeType with cache manager.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/1/07 8:08 PM
+0 changed, 6 added, 0 deleted.
+1,062 ms. (Cumulative: 163,537 ms)
+
+----------------
