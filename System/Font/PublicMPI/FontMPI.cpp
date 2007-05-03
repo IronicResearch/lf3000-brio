@@ -57,7 +57,7 @@ const CString* CFontMPI::GetMPIName() const
 //----------------------------------------------------------------------------
 tVersion CFontMPI::GetModuleVersion() const
 {
-	if(!pModule_)
+	if (!pModule_)
 		return kUndefinedVersion;
 	return pModule_->GetModuleVersion();
 }
@@ -65,7 +65,7 @@ tVersion CFontMPI::GetModuleVersion() const
 //----------------------------------------------------------------------------
 const CString* CFontMPI::GetModuleName() const
 {
-	if(!pModule_)
+	if (!pModule_)
 		return &kNullString;
 	return pModule_->GetModuleName();
 }
@@ -73,7 +73,7 @@ const CString* CFontMPI::GetModuleName() const
 //----------------------------------------------------------------------------
 const CURI* CFontMPI::GetModuleOrigin() const
 {
-	if(!pModule_)
+	if (!pModule_)
 		return &kNullURI;
 	return pModule_->GetModuleOrigin();
 }
@@ -82,12 +82,11 @@ const CURI* CFontMPI::GetModuleOrigin() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-Boolean CFontMPI::LoadFont(const CString* pName, tFontProp Prop)
+Boolean CFontMPI::LoadFont(const CString* pName, tFontProp prop)
 {
 	if (!pModule_)
 		return false;
-	prop_ = Prop;	
-	return pModule_->LoadFont(pName, Prop);
+	return pModule_->LoadFont(pName, prop);
 }
 
 //----------------------------------------------------------------------------
@@ -99,11 +98,11 @@ Boolean CFontMPI::UnloadFont()
 }
 
 //----------------------------------------------------------------------------
-Boolean	CFontMPI::SetFontAttr(tFontAttr Attr)
+Boolean	CFontMPI::SetFontAttr(tFontAttr attr)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->SetFontAttr(attr_ = Attr);
+	return pModule_->SetFontAttr(attr);
 }
 
 //----------------------------------------------------------------------------
@@ -111,16 +110,15 @@ Boolean	CFontMPI::GetFontAttr(tFontAttr* pAttr)
 {
 	if (!pModule_)
 		return false;
-	*pAttr = attr_;
 	return pModule_->GetFontAttr(pAttr);
 }
 
 //----------------------------------------------------------------------------
-Boolean	CFontMPI::DrawString(CString* pStr, int X, int Y, void* pCtx)
+Boolean	CFontMPI::DrawString(CString* pStr, int x, int y, void* pCtx)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->DrawString(pStr, X, Y, pCtx);
+	return pModule_->DrawString(pStr, x, y, pCtx);
 }
 
 // EOF

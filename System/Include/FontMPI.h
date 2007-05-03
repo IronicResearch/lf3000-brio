@@ -35,18 +35,15 @@ public:
 	virtual ~CFontMPI();
 
 	// font-specific functionality
-    Boolean     LoadFont(const CString* pName, tFontProp Prop);
+    Boolean     LoadFont(const CString* pName, tFontProp prop);
     Boolean     UnloadFont();
-    Boolean		SetFontAttr(tFontAttr Attr);
+    Boolean		SetFontAttr(tFontAttr attr);
     Boolean		GetFontAttr(tFontAttr* pAttr);
-    Boolean     DrawString(CString* pStr, int X, int Y, void* pCtx);
+    Boolean     DrawString(CString* pStr, int x, int y, void* pCtx);
 
 private:
 	class CFontModule*	pModule_;
 	U32					id_;
-	tFontProp			prop_;
-	tFontAttr			attr_;
-//	tFontInt			handle_;
 };
 
 LF_END_BRIO_NAMESPACE()	

@@ -19,6 +19,7 @@
 #include <FontTypes.h>
 #include <DebugMPI.h>
 
+// TODO: The FreeType headers may need to be neutralized for target OS
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
 #define  USE_FONT_CACHE_MGR		1   
@@ -27,6 +28,13 @@
 #include FT_CACHE_MANAGER_H
 #include FT_GLYPH_H
 #include FT_BITMAP_H
+#endif
+
+#define DBG						0
+#if		DBG
+#define	PRINTF					printf
+#else
+#define	PRINTF					(void)
 #endif
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -46,11 +54,11 @@ const tEventPriority	kFontEventPriority	= 0;
 typedef struct  TFont_
 {
     const char*  	filepathname;	// cached font file name
-    int          	face_index;
-    int          	cmap_index;
-    int          	num_indices;
-    void*        	file_address;	// for preloaded files 
-    size_t       	file_size;
+    int          	faceIndex;
+    int          	cmapIndex;
+    int          	numIndices;
+    void*        	fileAddress;	// for preloaded files 
+    size_t       	fileSize;
 	FT_Face			face;
 } TFont, *PFont;
 
@@ -59,17 +67,17 @@ struct tFontInt {
 	FT_Library		library;		// FreeType library instance
 	FT_Face			face;			// font face instance
     PFont*          fonts;          // list of installed fonts
-    int             num_fonts;		// number of fonts so far
-    int             max_fonts;		// alloc'ed space for font list
-    int				cur_font;		// current font index
+    int             numFonts;		// number of fonts so far
+    int             maxFonts;		// alloc'ed space for font list
+    int				curFont;		// current font index
     
 #if USE_FONT_CACHE_MGR
-	FTC_Manager     	cache_manager;     // the cache manager               
-    FTC_ImageCache  	image_cache;       // the glyph image cache           
-    FTC_SBitCache   	sbits_cache;       // the glyph small bitmaps cache   
-    FTC_CMapCache   	cmap_cache;        // the charmap cache..             
-    PFont           	current_font;      // selected font
-    FTC_ImageTypeRec	image_type;
+	FTC_Manager     	cacheManager;      // the cache manager               
+    FTC_ImageCache  	imageCache;        // the glyph image cache           
+    FTC_SBitCache   	sbitsCache;        // the glyph small bitmaps cache   
+    FTC_CMapCache   	cmapCache;         // the charmap cache..             
+    PFont           	currentFont;       // selected font
+    FTC_ImageTypeRec	imageType;         // cached image record
 #endif
    
 };
@@ -84,11 +92,11 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-    VTABLE_EXPORT Boolean		LoadFont(const CString* pName, tFontProp Prop);
+    VTABLE_EXPORT Boolean		LoadFont(const CString* pName, tFontProp prop);
     VTABLE_EXPORT Boolean     	UnloadFont();
-    VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr Attr);
+    VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
     VTABLE_EXPORT Boolean		GetFontAttr(tFontAttr* pAttr);
-    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, int X, int Y, void* pCtx);
+    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, int x, int y, void* pCtx);
  
 private:
 	//void				InitModule( );
@@ -105,7 +113,8 @@ private:
 	tFontAttr			attr_;
 	int					curX_;
 	int					curY_;
-    Boolean     		DrawGlyph(char ch, int X, int Y, void* pCtx);
+    Boolean     		DrawGlyph(char ch, int x, int y, void* pCtx);
+    void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, void* pCtx);
 };
 
 

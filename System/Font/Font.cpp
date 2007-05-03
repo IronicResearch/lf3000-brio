@@ -58,54 +58,49 @@ const CURI* CFontModule::GetModuleOrigin() const
 // Callback for font cache manager
 //----------------------------------------------------------------------------
 static FT_Error
-my_face_requester( FTC_FaceID  face_id,
-					FT_Library  lib,
-					FT_Pointer  request_data,
-					FT_Face*    aface )
+OnFaceRequest( FTC_FaceID  faceId, 
+	FT_Library  lib, 
+	FT_Pointer  request_data, 
+	FT_Face*    aface )
 {
     int error;
     
-    PFont  font = (PFont)face_id;
+    PFont  font = (PFont)faceId;
 
     FT_UNUSED( request_data );
 
-    if ( font->file_address != NULL )
-	  error = FT_New_Memory_Face( lib, (const FT_Byte*)font->file_address, font->file_size,
-	                              font->face_index, aface );
+    if ( font->fileAddress != NULL )
+		error = FT_New_Memory_Face( lib, (const FT_Byte*)font->fileAddress, font->fileSize, font->faceIndex, aface );
     else
-      error = FT_New_Face( lib,
-                           font->filepathname,
-                           font->face_index,
-                           aface );
+    	error = FT_New_Face( lib, font->filepathname, font->faceIndex, aface );
     if ( !error )
     {
-      char*  suffix;
-      char   orig[4];
+		char*  suffix;
+		char   orig[4];
+		
+		
+		suffix = strrchr( font->filepathname, '.' );
+		if ( suffix && ( strcasecmp( suffix, ".pfa" ) == 0 || strcasecmp( suffix, ".pfb" ) == 0 ) )
+	    {
+	        suffix++;
+	
+	        memcpy( orig, suffix, 4 );
+	        memcpy( suffix, "afm", 4 );
+	        FT_Attach_File( *aface, font->filepathname );
+	
+	        memcpy( suffix, "pfm", 4 );
+	        FT_Attach_File( *aface, font->filepathname );
+	        memcpy( suffix, orig, 4 );
+	    }
 
-
-      suffix = strrchr( font->filepathname, '.' );
-      if ( suffix && ( strcasecmp( suffix, ".pfa" ) == 0 ||
-                       strcasecmp( suffix, ".pfb" ) == 0 ) )
-      {
-        suffix++;
-
-        memcpy( orig, suffix, 4 );
-        memcpy( suffix, "afm", 4 );
-        FT_Attach_File( *aface, font->filepathname );
-
-        memcpy( suffix, "pfm", 4 );
-        FT_Attach_File( *aface, font->filepathname );
-        memcpy( suffix, orig, 4 );
-      }
-
-      if ( (*aface)->charmaps )
-        (*aface)->charmap = (*aface)->charmaps[font->cmap_index];
+    if ( (*aface)->charmaps )
+    	(*aface)->charmap = (*aface)->charmaps[font->cmapIndex];
     }
 
     return error;
 }
 #endif
-  
+
 //============================================================================
 // Ctor & dtor
 //============================================================================
@@ -116,33 +111,37 @@ CFontModule::CFontModule() : dbg_(0) // FIXME
 			
 	// Load FreeType library
 	int error = FT_Init_FreeType(&handle_.library);
-	printf("CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
+	PRINTF("CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
 	if (error)
 		return;	
 	
 #if USE_FONT_CACHE_MGR
 	// FT samples setup FT cache manager too
-	error = FTC_Manager_New( handle_.library, 0, 0, 0, my_face_requester, 0, &handle_.cache_manager );
-    if ( error ) {
-    	printf("CFontModule: could not initialize cache manager\n");
+	error = FTC_Manager_New( handle_.library, 0, 0, 0, OnFaceRequest, 0, &handle_.cacheManager );
+    if ( error ) 
+    {
+    	PRINTF("CFontModule: could not initialize cache manager\n");
     	return;
     }
 
-    error = FTC_SBitCache_New( handle_.cache_manager, &handle_.sbits_cache );
-    if ( error ) {
-    	printf("CFontModule: could not initialize small bitmaps cache\n" );
+    error = FTC_SBitCache_New( handle_.cacheManager, &handle_.sbitsCache );
+    if ( error ) 
+    {
+    	PRINTF("CFontModule: could not initialize small bitmaps cache\n" );
     	return;
     }
 
-    error = FTC_ImageCache_New( handle_.cache_manager, &handle_.image_cache );
-    if ( error ) {
-    	printf("CFontModule: could not initialize glyph image cache\n" );
+    error = FTC_ImageCache_New( handle_.cacheManager, &handle_.imageCache );
+    if ( error ) 
+    {
+    	PRINTF("CFontModule: could not initialize glyph image cache\n" );
     	return;
     }
 
-    error = FTC_CMapCache_New( handle_.cache_manager, &handle_.cmap_cache );
-    if ( error ) {
-    	printf("CFontModule: could not initialize charmap cache\n" );
+    error = FTC_CMapCache_New( handle_.cacheManager, &handle_.cmapCache );
+    if ( error ) 
+    {
+    	PRINTF("CFontModule: could not initialize charmap cache\n" );
     	return;
     }
 #endif	
@@ -155,7 +154,8 @@ CFontModule::~CFontModule()
 		return;
 
 	// Release memory used by fonts and font list
-	for (int i = 0; i < handle_.num_fonts; i++) {
+	for (int i = 0; i < handle_.numFonts; i++) 
+	{
 		if (handle_.fonts[i])
 			free(handle_.fonts[i]);
 	}
@@ -163,7 +163,7 @@ CFontModule::~CFontModule()
 
 #if USE_FONT_CACHE_MGR
 	// Unload FreeType font cache manager
-	FTC_Manager_Done( handle_.cache_manager );
+	FTC_Manager_Done( handle_.cacheManager );
 #endif 
 		
 	// Unload FreeType library
@@ -177,25 +177,26 @@ Boolean	CFontModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontModule::LoadFont(const CString* pName, tFontProp Prop)
+Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
 {
-	FT_Face		face;
-	PFont		font;
-	int			error;
-	const char*	filename = pName->c_str();
-	int			pixel_size;
-	FTC_ScalerRec  scaler;
-    FT_Size        size;
+	FT_Face			face;
+	PFont			font;
+	int				error;
+	const char*		filename = pName->c_str();
+	int				pixelSize;
+	FTC_ScalerRec	scaler;
+    FT_Size      	size;
 	
 	// Bogus font file name?
-	if (filename == NULL) {
-		printf("CFontModule::LoadFont: invalid filename passed\n");
+	if (filename == NULL) 
+	{
+		PRINTF("CFontModule::LoadFont: invalid filename passed\n");
 		return false;
 	}
 	
 	// Load font file
 	error = FT_New_Face(handle_.library, filename, 0, &face );
-	printf("CFontModule::LoadFont: FT_New_Face (%s) returned = %d\n", filename, error);
+	PRINTF("CFontModule::LoadFont: FT_New_Face (%s) returned = %d\n", filename, error);
 	if (error)
 		return false;
 		
@@ -205,12 +206,12 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp Prop)
 	font->filepathname = (char*)malloc( strlen( filename ) + 1 );
 	strcpy( (char*)font->filepathname, filename );
 	
-	font->face_index = 0; // i;
-	font->cmap_index = face->charmap ? FT_Get_Charmap_Index( face->charmap ) : 0;
+	font->faceIndex = 0; // i;
+	font->cmapIndex = face->charmap ? FT_Get_Charmap_Index( face->charmap ) : 0;
 	
 	// TODO: Handle character encoding cases
 	// This is default encoding case
-    font->num_indices = face->num_glyphs;
+    font->numIndices = face->num_glyphs;
 
 #if USE_FONT_CACHE_MGR
 	// Don't need any more font face info after this point
@@ -222,32 +223,34 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp Prop)
 #endif
 
 	// Allocate space to load this font in our font list to date
-    if ( handle_.max_fonts == 0 ) {
-		handle_.max_fonts = 16;
-		handle_.fonts     = (PFont*)calloc( handle_.max_fonts, sizeof ( PFont ) );
+    if ( handle_.maxFonts == 0 ) 
+    {
+		handle_.maxFonts = 16;
+		handle_.fonts     = (PFont*)calloc( handle_.maxFonts, sizeof ( PFont ) );
     }
-    else if ( handle_.num_fonts >= handle_.max_fonts ) {
-		handle_.max_fonts *= 2;
-		handle_.fonts      = (PFont*)realloc( handle_.fonts, handle_.max_fonts * sizeof ( PFont ) );
+    else if ( handle_.numFonts >= handle_.maxFonts ) 
+    {
+		handle_.maxFonts *= 2;
+		handle_.fonts      = (PFont*)realloc( handle_.fonts, handle_.maxFonts * sizeof ( PFont ) );
 		
-		memset( &handle_.fonts[handle_.num_fonts], 0, ( handle_.max_fonts - handle_.num_fonts ) * sizeof ( PFont ) );
+		memset( &handle_.fonts[handle_.numFonts], 0, ( handle_.maxFonts - handle_.numFonts ) * sizeof ( PFont ) );
     }
 
 	// Add this font to our list of fonts
-    handle_.fonts[handle_.num_fonts++] = font;
+    handle_.fonts[handle_.numFonts++] = font;
     
 #if USE_FONT_CACHE_MGR
  	// Set current font for cache manager   
-    handle_.current_font = font;
-    scaler.face_id = handle_.image_type.face_id = (FTC_FaceID)font;
+    handle_.currentFont = font;
+    scaler.face_id = handle_.imageType.face_id = (FTC_FaceID)font;
     
     // Set selected font size
-    pixel_size = (Prop.size * 72 + 36) / 72; 
-    scaler.width   = handle_.image_type.width  = (FT_UShort)pixel_size;
-    scaler.height  = handle_.image_type.height = (FT_UShort)pixel_size;
+    pixelSize = (prop.size * 72 + 36) / 72; 
+    scaler.width   = handle_.imageType.width  = (FT_UShort)pixelSize;
+    scaler.height  = handle_.imageType.height = (FT_UShort)pixelSize;
     scaler.pixel   = 1;
     
-    error = FTC_Manager_LookupSize( handle_.cache_manager, &scaler, &size );
+    error = FTC_Manager_LookupSize( handle_.cacheManager, &scaler, &size );
 #else
 	// FIXME: Select font size from available sizes
 #endif	
@@ -259,7 +262,8 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp Prop)
 Boolean CFontModule::UnloadFont()
 {
 	// TODO
-	if (handle_.face) {
+	if (handle_.face) 
+	{
 		FT_Done_Face(handle_.face);
 		handle_.face = NULL;
 	}
@@ -267,10 +271,10 @@ Boolean CFontModule::UnloadFont()
 }
 
 //----------------------------------------------------------------------------
-Boolean	CFontModule::SetFontAttr(tFontAttr Attr)
+Boolean	CFontModule::SetFontAttr(tFontAttr attr)
 {
 	// TODO
-	attr_ = Attr;
+	attr_ = attr;
 	return true;
 }
 
@@ -283,93 +287,30 @@ Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 }
 
 //----------------------------------------------------------------------------
-
-Boolean CFontModule::DrawGlyph(char ch, int X, int Y, void* pCtx)
+// Convert mono bitmap to RGB color buffer
+//----------------------------------------------------------------------------
+void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, void* pCtx)
 {
-	// FIXME: Until integration with Display manager is figured out,
-	//        a device context argument will need to passed as argument.
-	//        For now, this is actually a pointer to surface memory. 
-
-	FT_Glyph		glyph;
-	FT_BitmapGlyph  bitmap;
-	FT_Bitmap*      source;
-	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
-	int				error = FT_Err_Ok;
-	int				index;
-	
-#if USE_FONT_CACHE_MGR
-  	// For selected font, find the glyph matching the char
-    index = FTC_CMapCache_Lookup( handle_.cmap_cache, handle_.image_type.face_id, handle_.current_font->cmap_index, ch );
-	if (index == 0) {
-		printf( "CFontModule::DrawString: unable to support char = %c\n", ch );
-		return false;
-	}
-
-	error = FTC_ImageCache_Lookup( handle_.image_cache, &handle_.image_type, index, &glyph, NULL );
-	if (error) {
-		printf( "CFontModule::DrawString: unable to locate glyph for char = %c\n", ch );
-		return false;
-	}
-#else
-  	// For selected font, find the glyph matching the char
-	index = FT_Get_Char_Index(handle_.face, ch);
-	if (index == 0) {
-		printf( "CFontModule::DrawString: unable to support char = %c\n", ch );
-		return false;
-	}
-
-	// FIXME: Error 36 = invalid size selection
-	error = FT_Load_Char(handle_.face, index, FT_LOAD_DEFAULT);
-	if (error) {
-		printf( "CFontModule::DrawString: unable to support char index = %c\n", ch );
-		return false;
-	}
-
-	error = FT_Get_Glyph(handle_.face->glyph , &glyph);
-	if (error) {
-		printf( "CFontModule::DrawString: unable to locate glyph for char = %c\n", ch );
-		return false;
-	}
-#endif		
-
-	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) {
-		// Adjust font render mode as necessary
-			
-		// Render the glyph to a bitmap, don't destroy original 
-		error = FT_Glyph_To_Bitmap( &glyph, render_mode, NULL, false );
-		if ( error )
-			return false;
-	}
-	
-	if ( glyph->format != FT_GLYPH_FORMAT_BITMAP ) {
-		printf( "CFontModule::DrawString: invalid glyph format returned!\n" );
-		return false;
-	}
-	
-	// The glyph is now a bitmap
-	bitmap = (FT_BitmapGlyph)glyph;
-	source = &bitmap->bitmap;
-
-#if 0	// FIXME: Need valid surface memory location	
-	// Put bitmap into device context via copy or blit
-	memcpy(pCtx, source->buffer, source->pitch * source->rows);
-#elif 1	// Font surf passed as context
 	int 		x,y,w,h,i,mask;
 	U8	 		*s,*t;
 	U32 		*d,*u;
 	U32	 		color = attr_.color;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
+
 	// Pack RGB color into buffer according to mono bitmap mask
 	w = (source->width+7) / 8;
 	h = source->rows;
 	s = t = (U8*)source->buffer + (h-1) * source->pitch;  // upside down
-	d = u = (U32*)((U8*)surf->buffer + Y * surf->pitch + X * 4);
-	for (y = 0; y < h; y++) {
+	d = u = (U32*)((U8*)surf->buffer + y0 * surf->pitch + x0 * 4);
+	for (y = 0; y < h; y++) 
+	{
 		s = t;
 		d = u;
-		for (x = 0; x < w; x++) {
+		for (x = 0; x < w; x++) 
+		{
 			mask = 0x80;
-			for (i = 0; i < 8; i++) {
+			for (i = 0; i < 8; i++) 
+			{
 				if (mask & *s)
 					*d = color;
 				mask >>= 1;
@@ -380,7 +321,89 @@ Boolean CFontModule::DrawGlyph(char ch, int X, int Y, void* pCtx)
 		t -= source->pitch;	// U8* upside down
 		u += surf->pitch/4;	// U32*
 	}				  
-#endif
+}
+  
+//----------------------------------------------------------------------------
+// Draw single glyph at XY location in rendering context buffer
+//----------------------------------------------------------------------------
+Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
+{
+	// FIXME: Until integration with Display manager is figured out,
+	//        a device context argument will need to passed as argument.
+	//        For now, this is a pointer to tFontSurf surface descriptor. 
+
+	FT_Glyph		glyph;
+	FT_BitmapGlyph  bitmap;
+	FT_Bitmap*      source;
+	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
+	int				error = FT_Err_Ok;
+	int				index;
+	
+#if USE_FONT_CACHE_MGR
+  	// For selected font, find the glyph matching the char
+    index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
+	if (index == 0) 
+	{
+		PRINTF( "CFontModule::DrawString: unable to support char = %c\n", ch );
+		return false;
+	}
+
+	error = FTC_ImageCache_Lookup( handle_.imageCache, &handle_.imageType, index, &glyph, NULL );
+	if (error) 
+	{
+		PRINTF( "CFontModule::DrawString: unable to locate glyph for char = %c\n", ch );
+		return false;
+	}
+#else
+  	// For selected font, find the glyph matching the char
+	index = FT_Get_Char_Index(handle_.face, ch);
+	if (index == 0) 
+	{
+		PRINTF( "CFontModule::DrawString: unable to support char = %c\n", ch );
+		return false;
+	}
+
+	// FIXME: Error 36 = invalid size selection
+	error = FT_Load_Char(handle_.face, index, FT_LOAD_DEFAULT);
+	if (error) 
+	{
+		PRINTF( "CFontModule::DrawString: unable to support char index = %c\n", ch );
+		return false;
+	}
+
+	error = FT_Get_Glyph(handle_.face->glyph , &glyph);
+	if (error) 
+	{
+		PRINTF( "CFontModule::DrawString: unable to locate glyph for char = %c\n", ch );
+		return false;
+	}
+#endif		
+
+	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
+	{
+		// Adjust font render mode as necessary
+			
+		// Render the glyph to a bitmap, don't destroy original 
+		error = FT_Glyph_To_Bitmap( &glyph, render_mode, NULL, false );
+		if ( error )
+			return false;
+	}
+	
+	if ( glyph->format != FT_GLYPH_FORMAT_BITMAP ) 
+	{
+		PRINTF( "CFontModule::DrawString: invalid glyph format returned!\n" );
+		return false;
+	}
+	
+	// The glyph is now a bitmap
+	bitmap = (FT_BitmapGlyph)glyph;
+	source = &bitmap->bitmap;
+
+	// TODO: Handle other source bitmap cases besides 1bpp mono
+	// TODO: Handle other destination buffer cases besides 32bpp RGB
+
+	// Draw mono bitmap into RGB context buffer with current color
+	ConvertBitmapToRGB32(source, x, y, pCtx);
 
 	// Update the current XY glyph cursor position
 	// Internal glyph cursor is in 16:16 fixed-point
@@ -391,7 +414,7 @@ Boolean CFontModule::DrawGlyph(char ch, int X, int Y, void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawString(CString* pStr, int X, int Y, void* pCtx)
+Boolean CFontModule::DrawString(CString* pStr, int x, int y, void* pCtx)
 {
 	const char*		ch = pStr->c_str();
 	int				len = pStr->size();
@@ -399,11 +422,12 @@ Boolean CFontModule::DrawString(CString* pStr, int X, int Y, void* pCtx)
 	Boolean			rc;
 	
 	// Set current XY glyph cursor position
-	curX_ = X;
-	curY_ = Y;
+	curX_ = x;
+	curY_ = y;
 	
 	// Draw each char glyph in the string
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++) 
+	{
 		rc = DrawGlyph(ch[i], curX_, curY_, pCtx);
 		if (!rc)
 			return false;
