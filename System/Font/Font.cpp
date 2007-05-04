@@ -104,44 +104,47 @@ OnFaceRequest( FTC_FaceID  faceId,
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CFontModule::CFontModule() : dbg_(0) // FIXME
+CFontModule::CFontModule() : dbg_(kGroupDisplay) // FIXME: new enum?
 {
 	// TODO: What does this do? (Holdover from CDisplayModule...)
 	//InitModule();	// delegate to platform or emulation initializer
-			
+
 	// Load FreeType library
 	int error = FT_Init_FreeType(&handle_.library);
-	PRINTF("CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
-	if (error)
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
+	if (error) 
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule: FT_Init_FreeType failed, error = %d\n", error);
 		return;	
+	}
 	
 #if USE_FONT_CACHE_MGR
 	// FT samples setup FT cache manager too
 	error = FTC_Manager_New( handle_.library, 0, 0, 0, OnFaceRequest, 0, &handle_.cacheManager );
     if ( error ) 
     {
-    	PRINTF("CFontModule: could not initialize cache manager\n");
+    	dbg_.DebugOut(kDbgLvlCritical, "CFontModule: could not initialize cache manager\n");
     	return;
     }
 
     error = FTC_SBitCache_New( handle_.cacheManager, &handle_.sbitsCache );
     if ( error ) 
     {
-    	PRINTF("CFontModule: could not initialize small bitmaps cache\n" );
+    	dbg_.DebugOut(kDbgLvlCritical, "CFontModule: could not initialize small bitmaps cache\n" );
     	return;
     }
 
     error = FTC_ImageCache_New( handle_.cacheManager, &handle_.imageCache );
     if ( error ) 
     {
-    	PRINTF("CFontModule: could not initialize glyph image cache\n" );
+    	dbg_.DebugOut(kDbgLvlCritical, "CFontModule: could not initialize glyph image cache\n" );
     	return;
     }
 
     error = FTC_CMapCache_New( handle_.cacheManager, &handle_.cmapCache );
     if ( error ) 
     {
-    	PRINTF("CFontModule: could not initialize charmap cache\n" );
+    	dbg_.DebugOut(kDbgLvlCritical, "CFontModule: could not initialize charmap cache\n" );
     	return;
     }
 #endif	
@@ -168,6 +171,8 @@ CFontModule::~CFontModule()
 		
 	// Unload FreeType library
 	FT_Done_FreeType(handle_.library);
+
+	dbg_.DebugOut(kDbgLvlVerbose, "~CFontModule: FT_Done_FreeType unloaded\n");
 }
 
 //----------------------------------------------------------------------------
@@ -190,15 +195,18 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
 	// Bogus font file name?
 	if (filename == NULL) 
 	{
-		PRINTF("CFontModule::LoadFont: invalid filename passed\n");
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: invalid filename passed\n");
 		return false;
 	}
 	
 	// Load font file
 	error = FT_New_Face(handle_.library, filename, 0, &face );
-	PRINTF("CFontModule::LoadFont: FT_New_Face (%s) returned = %d\n", filename, error);
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: FT_New_Face (%s) returned = %d\n", filename, error);
 	if (error)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FT_New_Face (%s) failed, error = %d\n", filename, error);
 		return false;
+	}
 		
 	// Allocate mem for font face
 	font = (PFont)malloc( sizeof ( *font ) );
@@ -251,6 +259,10 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
     scaler.pixel   = 1;
     
     error = FTC_Manager_LookupSize( handle_.cacheManager, &scaler, &size );
+    if ( error ) 
+    {
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FTC_Manager_LookupSize failed for font size = %d, pixels = %d, error = %d\n", prop.size, pixelSize, error);
+    }
 #else
 	// FIXME: Select font size from available sizes
 #endif	
@@ -344,14 +356,14 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
     index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
 	if (index == 0) 
 	{
-		PRINTF( "CFontModule::DrawString: unable to support char = %c\n", ch );
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to support char = %c, index = %d\n", ch, index );
 		return false;
 	}
 
 	error = FTC_ImageCache_Lookup( handle_.imageCache, &handle_.imageType, index, &glyph, NULL );
 	if (error) 
 	{
-		PRINTF( "CFontModule::DrawString: unable to locate glyph for char = %c\n", ch );
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to locate glyph for char = %c, index = %d, error = %d\n", ch, index, error );
 		return false;
 	}
 #else
@@ -359,7 +371,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 	index = FT_Get_Char_Index(handle_.face, ch);
 	if (index == 0) 
 	{
-		PRINTF( "CFontModule::DrawString: unable to support char = %c\n", ch );
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to support char = %c, index = %d\n", ch, index );
 		return false;
 	}
 
@@ -367,17 +379,26 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 	error = FT_Load_Char(handle_.face, index, FT_LOAD_DEFAULT);
 	if (error) 
 	{
-		PRINTF( "CFontModule::DrawString: unable to support char index = %c\n", ch );
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to support char = %c, index = %d, error = %d\n", ch, index, error );
 		return false;
 	}
 
 	error = FT_Get_Glyph(handle_.face->glyph , &glyph);
 	if (error) 
 	{
-		PRINTF( "CFontModule::DrawString: unable to locate glyph for char = %c\n", ch );
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to locate glyph for char = %c, error = %d\n", ch, error );
 		return false;
 	}
 #endif		
+
+	// Special handling for spaces: (and other non-visible glyphs?)
+	// No bitmaps are created, though XY cursor still needs to advance.
+	if ( ch == ' ' ) 
+	{
+		curX_ += ( glyph->advance.x + 0x8000 ) >> 16;
+	    curY_ += ( glyph->advance.y + 0x8000 ) >> 16;
+		return true;		
+	}
 
 	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
 	{
@@ -391,7 +412,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 	
 	if ( glyph->format != FT_GLYPH_FORMAT_BITMAP ) 
 	{
-		PRINTF( "CFontModule::DrawString: invalid glyph format returned!\n" );
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid glyph format returned, error = %d\n", error );
 		return false;
 	}
 	
@@ -421,6 +442,8 @@ Boolean CFontModule::DrawString(CString* pStr, int x, int y, void* pCtx)
 	int				i;
 	Boolean			rc;
 	
+	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::DrawString: %s, XY = %d,%d, length = %d\n", ch, x, y, len);
+
 	// Set current XY glyph cursor position
 	curX_ = x;
 	curY_ = y;
