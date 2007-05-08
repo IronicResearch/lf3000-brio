@@ -21,7 +21,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 
-const CString	kMPIName = "DisplaynMPI";
+const CString	kMPIName = "DisplayMPI";
 
 
 //============================================================================

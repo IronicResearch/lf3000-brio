@@ -1,4 +1,4 @@
-#ifndef LF_BRIO_DISPLAYPRIV_H
+#ifndef LF_BRIO_DISPLAYMPI_H
 #define LF_BRIO_DISPLAYMPI_H
 //==============================================================================
 // $Source: $
