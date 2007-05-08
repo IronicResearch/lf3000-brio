@@ -18,18 +18,6 @@
 #include <AudioOutput.h>
 #include <EventListener.h>
 
-/*
-#include <AudioMsg.h>
-#include <AudioPlayer.h>
-
-extern void AudioMgrTask(UNSIGNED argc, VOID *argv);
-extern void AudioCodecTask(UNSIGNED argc, VOID *argv);
-
-static void * GetMessageBlock(tAudioCmdMsgType cmdMsgType); 
-static void SendCmdMessage(void* pMsg);
-static tAudioID WaitForAudioID(CAudioMgrMPIImpl *pImpl); 
-
-*/
 //==============================================================================
 // Defines
 //==============================================================================
