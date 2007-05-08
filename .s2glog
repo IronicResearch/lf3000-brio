@@ -1339,3 +1339,28 @@ By Dmilici (Dmilici@leapfrog.com) on 5/3/07 5:08 PM
 1,047 ms. (Cumulative: 174,711 ms)
 
 ----------------
+Revision 183 from svn://localhost/TRUNK/:
+Revision 184 from svn://localhost/TRUNK/:
+Revision 185 from svn://localhost/TRUNK/:
+Revision 186 from svn://localhost/TRUNK/:
+Revision 187 from svn://localhost/TRUNK/:
+Revision 188 from svn://localhost/TRUNK/:
+Revision 189 from svn://localhost/TRUNK/:
+Revision 190 from svn://localhost/TRUNK/:
+Revision 191 from svn://localhost/TRUNK/:
+Revision 192 from svn://localhost/TRUNK/:
+Revision 193 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,156 ms. (Cumulative: 175,961 ms)
+
+----------------
+Revision 194 from svn://localhost/TRUNK/:
+
+Added FreeType lib ARM binary for non-emulation builds.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/8/07 9:53 AM
+1 changed, 1 added, 0 deleted.
+1,422 ms. (Cumulative: 177,383 ms)
+
+----------------

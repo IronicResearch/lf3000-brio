@@ -21,8 +21,12 @@ myenv		= env.Copy()
 myenv.Append(CPPPATH = ['#ThirdParty/FreeType/Include',
 						'#ThirdParty/FreeType/Include/freetype',
 						'Include'])
-# TODO: Distinguish x86 vs arm .so binaries
-myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/x86'])
+# Distinguish x86 vs arm library binaries
+is_emulation	= ARGUMENTS.get('emulation', 0)
+if is_emulation:
+	myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/x86'])
+else:
+	myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/arm'])
 myenv.Append(RPATH = ['#ThirdParty/FreeType/Libs'])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
