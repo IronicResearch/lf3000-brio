@@ -1382,3 +1382,15 @@ By DGibbs (DGibbs@leapfrog.com) on 5/8/07 10:46 AM
 1,031 ms. (Cumulative: 179,602 ms)
 
 ----------------
+Revision 197 from svn://localhost/TRUNK/:
+Revision 198 from svn://localhost/TRUNK/:
+Revision 199 from svn://localhost/TRUNK/:
+Revision 200 from svn://localhost/TRUNK/:
+
+Modified build scripts & rules for ARM cross-compilation.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/9/07 11:41 AM
+4 changed, 0 added, 0 deleted.
+1,062 ms. (Cumulative: 180,727 ms)
+
+----------------

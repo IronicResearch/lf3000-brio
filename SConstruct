@@ -190,7 +190,10 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype):
 #		(normally empty--needed a way to test CmdLineUtils.cpp)
 #		"plibs" are the libraries the tested library was linked against
 #-----------------------------------------------------------------------------
-platformlibs = ['glibmm-2.4', 'glib-2.0']
+if is_emulation:
+	platformlibs = ['glibmm-2.4', 'glib-2.0']
+else:
+	platformlibs = ['dl', 'pthread']
 def RunMyTests(ptarget, psources, plibs, penv):
 	if not is_checkheaders:
 		deploy_dir = os.path.join(dynamic_deploy_dir, 'MPI')
@@ -198,6 +201,8 @@ def RunMyTests(ptarget, psources, plibs, penv):
 		testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
 		testenv.Append(CPPDEFINES = 'UNIT_TESTING')
 		testenv.Append(RPATH = Dir(deploy_dir).abspath)
+		if not is_emulation:
+			testenv.Append(LINKFLAGS = ' -Wl,-rpath-link=' + Dir(deploy_dir).abspath)
 		srcdir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
 		tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
 		unit = 'test_' + ptarget + '.cpp'

@@ -29,7 +29,8 @@ def SetPlatformFlags(env):
 
 def SetPlatformIncludePaths(env):
 	env.Append(CPPPATH = ['#System/Include', 
-						'#System/IncludePriv'])
+						'#System/IncludePriv',
+                        '#ThirdParty/boost'])
 
 def SetPlatformLibraryPaths(env):
 	env.Append(LIBPATH = '')
