@@ -1421,3 +1421,13 @@ By TParker (TParker@leapfrog.com) on 5/10/07 10:47 AM
 1,094 ms. (Cumulative: 183,009 ms)
 
 ----------------
+Revision 212 from svn://localhost/TRUNK/:
+Revision 213 from svn://localhost/TRUNK/:
+
+Changed the internal KernelMPI posix assert macro to print the error string as well as error number.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/10/07 12:21 PM
+1 changed, 0 added, 0 deleted.
+1,031 ms. (Cumulative: 184,102 ms)
+
+----------------

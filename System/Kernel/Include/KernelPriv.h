@@ -37,8 +37,9 @@ inline tErrType AsBrioErr(int err)
 #define ASSERT_POSIX_CALL(err) \
 if(err) \
 { \
-	printf("***** POSIX function fails with error (%d). File (%s), Line (%d)\n", \
+	printf("***** POSIX function fails with error # (%d). File (%s), Line (%d)\n", \
 	err, __FILE__, __LINE__); \
+	printf("Error string: %s\n", strerror(err)); \
 	fflush(stdout); \
 	return(AsBrioErr(err)); \
 }
