@@ -9,9 +9,10 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
+emulibs		= local_vars['is_emulation'] and ['X11'] or []
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
-modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI', 'X11']
+modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI'] + emulibs
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------

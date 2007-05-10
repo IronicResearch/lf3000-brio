@@ -1412,3 +1412,12 @@ By TParker (TParker@leapfrog.com) on 5/10/07 10:03 AM
 1,047 ms. (Cumulative: 181,868 ms)
 
 ----------------
+Revision 211 from svn://localhost/TRUNK/:
+
+Removed X11 dependency for embedded builds.
+
+By TParker (TParker@leapfrog.com) on 5/10/07 10:47 AM
+1 changed, 0 added, 0 deleted.
+1,094 ms. (Cumulative: 183,009 ms)
+
+----------------
