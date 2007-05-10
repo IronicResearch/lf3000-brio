@@ -1394,3 +1394,21 @@ By Dmilici (Dmilici@leapfrog.com) on 5/9/07 11:41 AM
 1,062 ms. (Cumulative: 180,727 ms)
 
 ----------------
+Revision 201 from svn://localhost/TRUNK/:
+Revision 202 from svn://localhost/TRUNK/:
+Revision 203 from svn://localhost/TRUNK/:
+Revision 204 from svn://localhost/TRUNK/:
+Revision 205 from svn://localhost/TRUNK/:
+Revision 206 from svn://localhost/TRUNK/:
+Revision 207 from svn://localhost/TRUNK/:
+Revision 208 from svn://localhost/TRUNK/:
+Revision 209 from svn://localhost/TRUNK/:
+Revision 210 from svn://localhost/TRUNK/:
+
+Remove emulation library link from embedded builds
+
+By TParker (TParker@leapfrog.com) on 5/10/07 10:03 AM
+2 changed, 0 added, 0 deleted.
+1,047 ms. (Cumulative: 181,868 ms)
+
+----------------
