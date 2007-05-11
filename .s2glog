@@ -1473,3 +1473,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:48 PM
 1,172 ms. (Cumulative: 187,884 ms)
 
 ----------------
+Revision 232 from svn://localhost/TRUNK/:
+
+Fix for embedded builds of tests without Emulation lib dependency.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:52 PM
+1 changed, 0 added, 0 deleted.
+1,094 ms. (Cumulative: 189,025 ms)
+
+----------------
