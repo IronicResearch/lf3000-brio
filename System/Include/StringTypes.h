@@ -249,12 +249,12 @@ public:
 	CString& 	operator=(const char* str) { s = str; return *this; }		// FIXME/dg: dummy impl
 //	CString& 	operator=(char c);
 	
-//	CString& 	operator+=(const CString& str);
+	CString& 	operator+=(const CString& str) { s = strcat((char*)s, str.c_str()); return *this; } // FIXME/dm: hack
 //	CString& 	operator+=(const char* str);
 //	CString& 	operator+=(char c);					   
 
 	friend CString 	operator+(const CString& str1, const CString& str2);
-//	friend CString 	::operator+(const CString& str1, const char* str2);
+	friend CString 	operator+(const CString& str1, const char* str2);
 //	friend CString 	::operator+(const char* str1, const CString& str2);
 //	friend CString 	::operator+(char c, const CString& str);		  // FIXME/dg: need to use wide-char
 //	friend CString 	::operator+(const CString& str, char c);		  // FIXME/dg: need to use wide-char
@@ -291,6 +291,16 @@ inline CString operator+(const CString& str1, const CString& str2)
 	char* n = (char*)malloc(len + 1);
 	strcpy(n, str1.s);
 	strcat(n, str2.s);
+	*(n+len) = '\0';
+	return n;
+}		   
+
+inline CString operator+(const CString& str1, const char* str2)
+{
+	U32 len = strlen(str1.s) + strlen(str2);
+	char* n = (char*)malloc(len + 1);
+	strcpy(n, str1.s);
+	strcat(n, str2);
 	*(n+len) = '\0';
 	return n;
 }		   
@@ -333,12 +343,16 @@ public:
 //		FIXME/dg: fill in
 //==============================================================================
 
+#if 0	// FIXME/dm: CPath treated as CString until implementation completed
 class CPath : public CUniString {
 public:
 	CPath() {}
 	CPath(const char* str) : CUniString(str) {}
 	// FIXME/dg: flesh out
 };
+#else
+	typedef CString		CPath;
+#endif
 
 //==============================================================================
 // Type:
@@ -358,6 +372,7 @@ enum {
 
 typedef U16 tURIScheme;
 
+#if 0	// FIXME/dm: CURI treated as CString until implementation completed
 class CURI : public CPath {
 public:
 	// FIXME/dg: flesh out
@@ -366,7 +381,6 @@ public:
 	CURI(const char* str) : CPath(str) {}
 //	CURI& 	operator=(const char* str) { s = str; return *this; }		// FIXME/dg: dummy impl
 };
-
 
 inline Boolean	operator==(const CURI& str1, const CURI& str2)
 {
@@ -382,6 +396,9 @@ inline Boolean	operator==(const CURI& str1, const char* str2)
 {
     return true;
 }
+#else
+	typedef CString		CURI;
+#endif	// FIXME/dm
 
 #endif  // EMULATION
 

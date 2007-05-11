@@ -1482,3 +1482,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:52 PM
 1,094 ms. (Cumulative: 189,025 ms)
 
 ----------------
+Revision 233 from svn://localhost/TRUNK/:
+
+Work-arounds for CString, CPath, CURI classes for embedded builds.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:54 PM
+1 changed, 0 added, 0 deleted.
+1,047 ms. (Cumulative: 190,119 ms)
+
+----------------
