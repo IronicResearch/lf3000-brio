@@ -18,6 +18,8 @@
 #include <EventTypes.h>
 #include <DisplayTypes.h>
 #include <DebugMPI.h>
+//#include "DisplayPriv.h"
+//using namespace CDisplayModule;
 LF_BEGIN_BRIO_NAMESPACE()
 
 

@@ -14,8 +14,10 @@
 //
 //==============================================================================
 
+#ifdef EMULATION	
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#endif
 
 #include <GLES/egl.h>
 #include <GLES/gl.h>
@@ -35,12 +37,14 @@ public:
 
 	//TODO/tp: Figure out minimal subset of variables to expose
 	
+#ifdef EMULATION	
 	// X11 variables
 	Window				x11Window;
 	Display*			x11Display;
 	long				x11Screen;
 	XVisualInfo*		x11Visual;
 	Colormap			x11Colormap;
+#endif
 
 	// EGL variables
 	EGLDisplay			eglDisplay;

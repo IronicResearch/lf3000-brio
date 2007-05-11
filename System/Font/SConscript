@@ -11,7 +11,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
-modlibs		= ['freetype', 'DebugMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI']
+modlibs		= ['freetype', 'DebugMPI']
 mpilibs		= []
 						
 #-----------------------------------------------------------------------------
@@ -19,15 +19,14 @@ mpilibs		= []
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
 myenv.Append(CPPPATH = ['#ThirdParty/FreeType/Include',
-						'#ThirdParty/FreeType/Include/freetype',
-						'Include'])
-# Distinguish x86 vs arm library binaries
-is_emulation	= ARGUMENTS.get('emulation', 0)
-if is_emulation:
+						'#ThirdParty/FreeType/Include/freetype'])
+# Distinguish x86 vs ARM library binaries
+if local_vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/x86'])
+	myenv.Append(RPATH   = ['#ThirdParty/FreeType/Libs/x86'])
 else:
 	myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/arm'])
-myenv.Append(RPATH = ['#ThirdParty/FreeType/Libs'])
+	myenv.Append(RPATH   = ['#ThirdParty/FreeType/Libs/arm'])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, 1)

@@ -1431,3 +1431,24 @@ By DGibbs (DGibbs@leapfrog.com) on 5/10/07 12:21 PM
 1,031 ms. (Cumulative: 184,102 ms)
 
 ----------------
+Revision 214 from svn://localhost/TRUNK/:
+Revision 215 from svn://localhost/TRUNK/:
+Revision 216 from svn://localhost/TRUNK/:
+Revision 217 from svn://localhost/TRUNK/:
+Revision 218 from svn://localhost/TRUNK/:
+Revision 219 from svn://localhost/TRUNK/:
+Revision 220 from svn://localhost/TRUNK/:
+Revision 221 from svn://localhost/TRUNK/:
+Revision 222 from svn://localhost/TRUNK/:
+Revision 223 from svn://localhost/TRUNK/:
+Revision 224 from svn://localhost/TRUNK/:
+Revision 225 from svn://localhost/TRUNK/:
+Revision 226 from svn://localhost/TRUNK/:
+
+Separate emulation vs hardware implementation for display modules.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/10/07 5:37 PM
+5 changed, 3 added, 0 deleted.
+1,281 ms. (Cumulative: 185,493 ms)
+
+----------------

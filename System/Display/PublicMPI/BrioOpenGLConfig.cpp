@@ -45,9 +45,13 @@ namespace
 //==============================================================================
 //----------------------------------------------------------------------
 BrioOpenGLConfig::BrioOpenGLConfig()
-	: x11Window(0), x11Display(0), x11Screen(0), x11Visual(0), x11Colormap(0),
+	: 
+#ifdef EMULATION
+	x11Window(0), x11Display(0), x11Screen(0), x11Visual(0), x11Colormap(0),
+#endif
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
+#ifdef EMULATION
 	const int WINDOW_WIDTH = 320;
 	const int WINDOW_HEIGHT= 240;
 
@@ -165,11 +169,13 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
 	EmulationConfig::Instance().SetLcdDisplayWindow(x11Window);
+#endif	// EMULATION
 }
 
 //----------------------------------------------------------------------
 BrioOpenGLConfig::~BrioOpenGLConfig()
 {
+#ifdef EMULATION
 	/*
 		Step 9 - Terminate OpenGL ES and destroy the window (if present).
 		eglTerminate takes care of destroying any context or surface created
@@ -188,6 +194,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	if (x11Window) XDestroyWindow(x11Display, x11Window);
     if (x11Colormap) XFreeColormap( x11Display, x11Colormap );
 	if (x11Display) XCloseDisplay(x11Display);
+#endif	// EMULATION
 }
 
 LF_END_BRIO_NAMESPACE()
