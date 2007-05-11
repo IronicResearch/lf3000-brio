@@ -1464,3 +1464,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:46 PM
 1,109 ms. (Cumulative: 186,665 ms)
 
 ----------------
+Revision 231 from svn://localhost/TRUNK/:
+
+Fixes for embedded builds of Button lib and test.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:48 PM
+1 changed, 1 added, 1 deleted.
+1,172 ms. (Cumulative: 187,884 ms)
+
+----------------

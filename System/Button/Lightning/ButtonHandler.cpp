@@ -64,10 +64,12 @@ void CButtonModule::InitModule()
 // Button state
 //============================================================================
 //----------------------------------------------------------------------------
-tErrType CButtonModule::GetButtonState(tButtonData& data) const
+tButtonData CButtonModule::GetButtonState() const
+//tErrType CButtonModule::GetButtonState(tButtonData& data) const
 {
+	tButtonData	data = { 0, 0 };
 	data.buttonState = data.buttonTransition = 0;
-	return kNoErr;
+	return data; //kNoErr;
 }
 
 LF_END_BRIO_NAMESPACE()
