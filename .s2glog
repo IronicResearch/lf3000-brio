@@ -1452,3 +1452,15 @@ By Dmilici (Dmilici@leapfrog.com) on 5/10/07 5:37 PM
 1,281 ms. (Cumulative: 185,493 ms)
 
 ----------------
+Revision 227 from svn://localhost/TRUNK/:
+Revision 228 from svn://localhost/TRUNK/:
+Revision 229 from svn://localhost/TRUNK/:
+Revision 230 from svn://localhost/TRUNK/:
+
+Fix to separate -D defines for embedded builds, as seen in test_Event.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:46 PM
+1 changed, 0 added, 0 deleted.
+1,109 ms. (Cumulative: 186,665 ms)
+
+----------------

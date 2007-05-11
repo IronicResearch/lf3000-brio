@@ -18,6 +18,8 @@ def PlatformMods(env):
 	common.SetPlatformFlags(env)
 	common.SetPlatformIncludePaths(env)
 	common.SetPlatformLibraryPaths(env)
+	gcc_defs 			= env.Split('')
+	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CCFLAGS = '-O4')
 	env.Append(LIBPATH = '#Build/LightningGCC/MPI')	
 
