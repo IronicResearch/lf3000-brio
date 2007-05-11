@@ -12,7 +12,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
 modlibs		= ['freetype', 'DebugMPI']
-mpilibs		= []
+mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module

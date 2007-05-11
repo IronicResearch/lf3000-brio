@@ -1491,3 +1491,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:54 PM
 1,047 ms. (Cumulative: 190,119 ms)
 
 ----------------
+Revision 234 from svn://localhost/TRUNK/:
+
+Correct lib dependencies for embedded builds of display modules.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/11/07 1:59 PM
+3 changed, 0 added, 0 deleted.
+1,157 ms. (Cumulative: 191,322 ms)
+
+----------------

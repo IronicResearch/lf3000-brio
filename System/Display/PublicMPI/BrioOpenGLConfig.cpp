@@ -32,12 +32,14 @@ namespace
 			not the status of the last called function. The user has to
 			check after every single egl call or at least once every frame.
 		*/
+#ifdef EMULATION
 		EGLint iErr = eglGetError();
 		if (iErr != EGL_SUCCESS)
 		{
 			CDebugMPI	dbg(kGroupDisplay);
 			dbg.Assert(false, "%s failed (%d).\n", pszLocation, iErr);
 		}
+#endif
 	}
 }
 
