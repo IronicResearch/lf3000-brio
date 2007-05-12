@@ -19,7 +19,6 @@
 #include <SystemEvents.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
-
 //==============================================================================	   
 // Kernel errors
 //==============================================================================
@@ -35,7 +34,14 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupKernel), KERNEL_ERRORS)
 typedef tHndl	tTaskHndl;
 typedef tHndl	tMemoryPoolHndl;
 typedef tHndl	tMessageQueueHndl;
+// FIXME // BSK changed declaration
 typedef tHndl	tTimerHndl;
+
+// FIXME/BSK
+//typedef struct{
+//	tTimerHndl tHndl_timer;
+//	tTaskHndl  tHndl_task;
+//}tTimerGenHndl; 	
 
 typedef U8		tTaskPriority;
 typedef U8		tMessagePriority;
@@ -316,9 +322,22 @@ enum{
     wrongQueueFlagParameter = 1001,
 };
 
+// 
+enum{
+	TIMER_ABSTIME_SET=TIMER_ABSTIME,
+    TIMER_RELATIVE_SET=TIMER_ABSTIME_SET
+};    
 
 struct tTimerProperties {
-	U32 dummy;
+	
+	int type; 			// Absolute or Relative Timer:
+						// If the TIMER_ABSTIME_SET flag is set, the timer is set with a specified 
+						// starting time (the timer is absolute timer.
+						// If the the TIMER_ABSTIME_SET flag is not set, the timer is set relative 
+						// to the current time (the timer is a relative timer)
+	
+
+	struct itimerspec timeout;  // Timer interval       					
 };
 
 
@@ -398,6 +417,8 @@ typedef pthread_mutexattr_t tMutexAttr;
 typedef pthread_cond_t      tCond;
 typedef pthread_condattr_t  tCondAttr;
 typedef struct timespec     tTimeSpec;
+
+typedef void (*pfnTimerCallback)();
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_KERNELTYPES_H
