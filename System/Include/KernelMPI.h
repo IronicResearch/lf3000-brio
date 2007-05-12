@@ -1,3 +1,4 @@
+
 #ifndef LF_BRIO_KERNELMPI_H
 #define LF_BRIO_KERNELMPI_H
 //==============================================================================//
@@ -33,14 +34,13 @@ public:
 	CKernelMPI();
 	virtual ~CKernelMPI();
 
-// FIXME: Change all pXXXURI to const char* pDebugName = NULL (last param)
 	//==============================================================================
 	// Tasks
 	//==============================================================================
 	tErrType	CreateTask( tTaskHndl& hndl, 		// FIXME/tp: return handle?
 							const tTaskProperties& properties,
 							const char* pDebugName = NULL );
-    tErrType	JoinTask( tTaskHndl pHndl, tPtr& threadReturnValue );
+    tErrType	JoinTask( tTaskHndl hndl, tPtr& threadReturnValue );
 	tErrType	CancelTask( tTaskHndl hndl );
 	
 	tTaskHndl	GetCurrentTask() const;
@@ -83,19 +83,26 @@ public:
 									U32 maxMessageSize, U32 timeoutMs = kMaxTimeoutMs );
 				
 	//==============================================================================
-	// Time & Timers
+	// Time & TimerstTimerGenHndl
 	//==============================================================================
-	U32			GetElapsedTime( U32* pUs=NULL ) const;	// elapsed time since System startup 
-														// in milliseconds (& microseconds)	
-	tTimerHndl 	CreateTimer( tCond& condition, const tTimerProperties& props,
-								const char* pDebugName = NULL );
+/**/U32 	GetElapsedTime( U32* pUs=NULL ) const;	// elapsed time since System startup 
+//	U32			GetElapsedTimeInMilliSec( ) const;	// elapsed time since System startup 
+// fixme/BSK
+//	tTimerHndl 	CreateTimer( pfnTimerCallback callback, tTimerProperties& props,
+//								const char* pDebugName = NULL );
+
+	tErrType CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
+ 						tTimerProperties& props, const char* pDebugName = NULL );
     
     tErrType 	DestroyTimer( tTimerHndl hndl );
 
-	tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
+/**/tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
 
 	tErrType	StartTimer( tTimerHndl hndl );
-	tErrType	StopTimer( tTimerHndl hndl );
+/**/tErrType	StopTimer( tTimerHndl hndl );
+
+	tErrType	PauseTimer( tTimerHndl hndl );
+	tErrType	ResumeTimer( tTimerHndl hndl );
 
 	U32			GetTimerElapsedTimeInMilliSec( tTimerHndl hndl ) const;
 	U32			GetTimerRemainingTimeInMilliSec( tTimerHndl hndl ) const;
