@@ -22,44 +22,51 @@ typedef struct{
 	char testDescription[128];
 }thread_arg_t;
 
-static char *message[3] = { "Properties are default",
+namespace
+{
+	char *message[3] = 
+	{ "Properties are default",
 					 "Properties are set - Test 2",
 					 "Properties are set - Test 3"
-};						 
+	};						 
 
-static void *myTask(void* arg)
-{
-	thread_arg_t *ptr = (thread_arg_t *)arg; 
-	TS_ASSERT( !strcmp(message[ ptr->numTest ], ptr->testDescription ) );
-	sleep(1); 
-}	
+	static void *myTask(void* arg)
+	{
+		thread_arg_t *ptr = (thread_arg_t *)arg; 
+		TS_ASSERT( !strcmp(message[ ptr->numTest ], ptr->testDescription ) );
+		sleep(1); 
+	}	
 //---------------------------------------------------------
 // Timer testing fuctions
 //----------------------------------------------------------
-static tTimerHndl hndlTimer_1;
-static tTimerHndl hndlTimer_2;
-static tTimerHndl hndlTimer_3;
+	tTimerHndl hndlTimer_1;
+	tTimerHndl hndlTimer_2;
+	tTimerHndl hndlTimer_3;
 
-	static void myTask_Timer_1()
+	void myTask_Timer_1()
 	{
-		// FIXME /BSK
-//		printf("myTask_Timer_1 - The timer called me\n");
-//		fflush(stdout);
+#if 0 // FIXME /BSK
+		printf("myTask_Timer_1 - The timer called me\n");
+		fflush(stdout);
+#endif
 	}	
 
-	static void myTask_Timer_2()
+	void myTask_Timer_2()
 	{
-		// FIXME /BSK
-//		printf("myTask_Timer_2 - The timer called me\n");
-//		fflush(stdout);
+#if 0		// FIXME /BSK
+		printf("myTask_Timer_2 - The timer called me\n");
+		fflush(stdout);
+#endif
 	}	
 
-	static void myTask_Timer_3()
+	void myTask_Timer_3()
 	{
-		// FIXME /BSK
-//		printf("myTask_Timer_3 - The timer called me\n");
-//		fflush(stdout);
+#if 0	// FIXME /BSK
+		printf("myTask_Timer_3 - The timer called me\n");
+		fflush(stdout);
+#endif
 	}	
+}
 //----------------------------------------------------------
 //============================================================================
 // TestAudioMgr functions
@@ -259,16 +266,16 @@ public:
 		};
 
 //        TS_WARN("TODO: Test Create/Destroy Message Queue_1!");
-		err = KernelMPI->CreateMessageQueue(hndl,
+		err = KernelMPI->OpenMessageQueue(hndl,
 							msgProperties,
 							(const char* )NULL );
 		TS_ASSERT_EQUALS( kNoErr, err );							
 		if( !err )
 		{
-			err = KernelMPI->DestroyMessageQueue( hndl );
+			err = KernelMPI->CloseMessageQueue( hndl, msgProperties );
 			TS_ASSERT_EQUALS( kNoErr, err );
-			err = KernelMPI->UnlinkMessageQueue( msgProperties.nameQueue );
-			TS_ASSERT_EQUALS( kNoErr, err );
+//			err = KernelMPI->UnlinkMessageQueue( msgProperties.nameQueue );
+//			TS_ASSERT_EQUALS( kNoErr, err );
 		}
 	}
 			
@@ -291,16 +298,16 @@ public:
 		};
 
 //        TS_WARN("TODO: Test Create/Destroy Message Queue_2!");
-		err = KernelMPI->CreateMessageQueue(hndl,
+		err = KernelMPI->OpenMessageQueue(hndl,
 							msgProperties,
 							(const char* )NULL );
 		TS_ASSERT_EQUALS( kNoErr, err );							
 		if( !err )
 		{
-			err = KernelMPI->DestroyMessageQueue( hndl );
+			err = KernelMPI->CloseMessageQueue( hndl, msgProperties );
 			TS_ASSERT_EQUALS( kNoErr, err );
-			err = KernelMPI->UnlinkMessageQueue( msgProperties.nameQueue );
-			TS_ASSERT_EQUALS( kNoErr, err );
+//			err = KernelMPI->UnlinkMessageQueue( msgProperties.nameQueue );
+//			TS_ASSERT_EQUALS( kNoErr, err );
 		}								
 	}
 
@@ -352,6 +359,34 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		sleep(10);
 	}
+
+	void testPauseResumeTimer()
+	{
+		tErrType err;
+
+		saveTimerSettings save_1 = {0};
+		saveTimerSettings save_2 = {0};
+		saveTimerSettings save_3 = {0};
+
+		err = KernelMPI->PauseTimer( hndlTimer_1, save_1 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->PauseTimer( hndlTimer_2, save_2 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->PauseTimer( hndlTimer_3, save_3 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		
+		err = KernelMPI->ResumeTimer( hndlTimer_1, save_1 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->ResumeTimer( hndlTimer_2, save_2 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->ResumeTimer( hndlTimer_3, save_3 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+	}
+		
 
     void testDestroyTimer()
     {
