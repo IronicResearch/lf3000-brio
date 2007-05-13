@@ -1,4 +1,3 @@
-
 //==============================================================================
 //
 // Copyright (c) 2002-2007 LeapFrog Enterprises, Inc.
@@ -22,6 +21,7 @@
 #include <KernelPriv.h>
 #include <StringTypes.h>
 
+//#include <pthread.h>
 //==============================================================================
 // Defines
 //==============================================================================
@@ -174,31 +174,33 @@ tErrType CKernelMPI::Free(tPtr ptr)
 //============================================================================
 // Message Queues
 //============================================================================
-tErrType CKernelMPI::CreateMessageQueue(tMessageQueueHndl& hndl,
+tErrType CKernelMPI::OpenMessageQueue(tMessageQueueHndl& hndl,
 								const tMessageQueuePropertiesPosix& properties,
 								const char* pDebugName)
 {
  	if(!pModule_)
 		return kMPINotConnectedErr;
-	return pModule_->CreateMessageQueue(hndl, properties, pDebugName);
+	return pModule_->OpenMessageQueue(hndl, properties, pDebugName);
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::DestroyMessageQueue(tMessageQueueHndl hndl)
+tErrType CKernelMPI::CloseMessageQueue(tMessageQueueHndl hndl,
+								const tMessageQueuePropertiesPosix& properties)
 {
  	if(!pModule_)
 		return kMPINotConnectedErr;
-	return pModule_->DestroyMessageQueue(hndl);  
+	return pModule_->CloseMessageQueue(hndl, properties);  
 }
 
 //------------------------------------------------------------------------------
+#if 0 // FIXME//BSK 
 tErrType CKernelMPI::UnlinkMessageQueue(const char *hndl)
 {
  	if(!pModule_)
 		return kMPINotConnectedErr;
 	return pModule_->UnlinkMessageQueue(hndl);  
 }
-
+#endif 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::ClearMessageQueue(tMessageQueueHndl hndl)
 {
@@ -264,12 +266,12 @@ U32 CKernelMPI::GetElapsedTime( U32* pUs ) const
 }
 
 //------------------------------------------------------------------------------
-tTimerHndl CKernelMPI::CreateTimer(tCond& condition, const tTimerProperties& props,
-								const char* pDebugName)
+tErrType CKernelMPI::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
+ 						tTimerProperties& props, const char* pDebugName )
 {
   	if(!pModule_)
 		return kInvalidTimerHndl;
-	return pModule_->CreateTimer(condition, props, pDebugName);  
+	return pModule_->CreateTimer(hndl, callback, props, pDebugName);  
 }
 
 //------------------------------------------------------------------------------
@@ -303,6 +305,21 @@ tErrType CKernelMPI::StopTimer(tTimerHndl hndl)
 		return kMPINotConnectedErr;
 	return pModule_->StopTimer(hndl);  
 }
+//------------------------------------------------------------------------------
+tErrType CKernelMPI::PauseTimer(tTimerHndl hndl, saveTimerSettings& saveValue)
+{
+  	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->PauseTimer(hndl, saveValue );
+}
+	
+//------------------------------------------------------------------------------
+tErrType CKernelMPI::ResumeTimer(tTimerHndl hndl, saveTimerSettings& saveValue)
+{
+  	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->ResumeTimer(hndl, saveValue);  
+}
 	
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds
@@ -335,7 +352,6 @@ tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr& attributes )
     
     return kNoErr;
 }
-
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::DeInitMutex( tMutex& mutex )
 {
@@ -351,8 +367,8 @@ S32 CKernelMPI::GetMutexPriorityCeiling(const tMutex& mutex) const
 {
    errno = 0;
    int prioCeiling = 0;
-   
-   pthread_mutex_getprioceiling(&mutex, &prioCeiling);
+// FIXME /BSK NOT DEFINED YET    
+//   pthread_mutex_getprioceiling(&mutex, &prioCeiling);
    ASSERT_POSIX_CALL( errno );
    
    return prioCeiling;
@@ -363,7 +379,8 @@ tErrType CKernelMPI::SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S3
 {
    errno = 0;
 
-   pthread_mutex_setprioceiling(&mutex, (int)prioCeiling, (int*)pOldPriority);
+// FIXME /BSK NOT DEFINED YET    
+//   pthread_mutex_setprioceiling(&mutex, (int)prioCeiling, (int*)pOldPriority);
    ASSERT_POSIX_CALL( errno );
     
    return kNoErr;
@@ -486,9 +503,9 @@ tErrType CKernelMPI::DestroyCondAttr( tCondAttr& attr )
 tErrType CKernelMPI::GetCondAttrPShared( const tCondAttr& attr, int* pShared )
 {
     errno = 0;
-
-    pthread_condattr_getpshared( &attr, pShared );
-    ASSERT_POSIX_CALL( errno );
+// FIXME/BSK To get the new library
+//    pthread_condattr_getpshared( &attr, pShared );
+//    ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
@@ -509,9 +526,9 @@ tErrType CKernelMPI::SetCondAttrPShared( tCondAttr* pAttr, int shared )
 
 {
     errno = 0;
-
-    pthread_condattr_setpshared( pAttr, shared );
-    ASSERT_POSIX_CALL( errno );
+// FIXME/BSK To get the new library
+//    pthread_condattr_setpshared( pAttr, shared );
+//    ASSERT_POSIX_CALL( errno );
     
     return kNoErr;
 }
