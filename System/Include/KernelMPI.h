@@ -59,13 +59,15 @@ public:
 	// Message Queues
 	//==============================================================================
 	// FIXME/tp: Non-posix-specific props
-	tErrType	CreateMessageQueue( tMessageQueueHndl& hndl,
+	tErrType	OpenMessageQueue( tMessageQueueHndl& hndl,
 									const tMessageQueuePropertiesPosix& props,
 									const char* pDebugName = NULL ); 
-	tErrType	DestroyMessageQueue( tMessageQueueHndl hndl );
+	tErrType	CloseMessageQueue( tMessageQueueHndl hndl,
+	 								const tMessageQueuePropertiesPosix& props );
 	
 	// FIXME/tp: Need to fold unlink into destroy
-	tErrType	UnlinkMessageQueue( const char *name );
+	// FIXME/BSK Delete
+	// tErrType	UnlinkMessageQueue( const char *name );
 
 	tErrType  	ClearMessageQueue( tMessageQueueHndl hndl );
 
@@ -101,8 +103,8 @@ public:
 	tErrType	StartTimer( tTimerHndl hndl );
 /**/tErrType	StopTimer( tTimerHndl hndl );
 
-	tErrType	PauseTimer( tTimerHndl hndl );
-	tErrType	ResumeTimer( tTimerHndl hndl );
+	tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
+	tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 
 	U32			GetTimerElapsedTimeInMilliSec( tTimerHndl hndl ) const;
 	U32			GetTimerRemainingTimeInMilliSec( tTimerHndl hndl ) const;
