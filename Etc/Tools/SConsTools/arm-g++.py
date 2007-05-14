@@ -6,7 +6,6 @@
 # "<Platform>_toolset.py" file.
 #-----------------------------------------------------------------------------
 import os.path
-from os import environ
 import re
 
 import SCons.Defaults
@@ -18,8 +17,7 @@ import SCons.Util
 #-----------------------------------------------------------------------------
 parent = __import__('SCons.Tool.g++', globals(), locals(), [''])
 
-compiler = '/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/arm-linux-g++'
-#compiler = 'arm-linux-g++'
+compiler = 'arm-linux-g++'
 
 
 #-----------------------------------------------------------------------------
@@ -32,8 +30,7 @@ def generate(env):
 	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
 	parent.generate(env)
 	env['CXX']	= compiler
-	env['PATH'] = environ['PATH']
-
+	
 	# Platform specific settings
 	env['CCFLAGS']		= SCons.Util.CLVar('$CCFLAGS') + '-Wall -fmessage-length=0'
 	env['SHCXXFLAGS']	= SCons.Util.CLVar('$CXXFLAGS')	
