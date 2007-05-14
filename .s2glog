@@ -1602,3 +1602,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/14/07 9:12 AM
 1,047 ms. (Cumulative: 203,557 ms)
 
 ----------------
+Revision 249 from svn://localhost/TRUNK/:
+
+Added pthread and rt libs to link command line.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/14/07 11:34 AM
+1 changed, 0 added, 0 deleted.
+1,031 ms. (Cumulative: 204,635 ms)
+
+----------------
