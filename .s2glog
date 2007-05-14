@@ -1681,3 +1681,12 @@ By TParker (TParker@leapfrog.com) on 5/14/07 1:38 PM
 1,046 ms. (Cumulative: 212,448 ms)
 
 ----------------
+Revision 259 from svn://localhost/TRUNK/:
+
+Initial HW implementation for loading display device drivers.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/14/07 1:44 PM
+1 changed, 0 added, 0 deleted.
+1,062 ms. (Cumulative: 213,542 ms)
+
+----------------
