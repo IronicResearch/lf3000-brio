@@ -311,7 +311,7 @@ public:
 		}								
 	}
 
-	void testCreateTimer()
+	void xtestCreateTimer()
 	{
 //TS_WARN("TODO: Test Create/Destroy Timer!");
         int signum = SIGRTMAX;
@@ -337,7 +337,7 @@ public:
 //		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void testResetTimerRelative()
+	void xtestResetTimerRelative()
 	{
 //        TS_WARN("TODO: Test Reset Timer Relative!");
 		tTimerProperties props = {0};
@@ -360,7 +360,7 @@ public:
 		sleep(10);
 	}
 
-	void testPauseResumeTimer()
+	void xtestPauseResumeTimer()
 	{
 		tErrType err;
 
@@ -388,7 +388,7 @@ public:
 	}
 		
 
-    void testDestroyTimer()
+    void xtestDestroyTimer()
     {
 //        TS_WARN("TODO: Test Destroy Timer!");
 		sleep( 2 );
