@@ -17,6 +17,9 @@
 #include <KernelTypes.h>
 #include <CoreModule.h>
 #include <StringTypes.h>
+#include <stdio.h>
+#include <stdarg.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -95,13 +98,15 @@ public:
 	VTABLE_EXPORT void		Printf( const char* format, va_list arguments ) const;
 	
 	// Message queues
-	VTABLE_EXPORT tErrType	CreateMessageQueue( tMessageQueueHndl& hndl,
+	VTABLE_EXPORT tErrType	OpenMessageQueue( tMessageQueueHndl& hndl,
 										const tMessageQueuePropertiesPosix& properties,
 										const char* pDebugName );
-	VTABLE_EXPORT tErrType	DestroyMessageQueue( tMessageQueueHndl hndl );
+	VTABLE_EXPORT tErrType	CloseMessageQueue( tMessageQueueHndl hndl,
+										const tMessageQueuePropertiesPosix& properties );
 	
+#if 0 // FIXME/BSK	
 	VTABLE_EXPORT tErrType	UnlinkMessageQueue( const char *name );
-
+#endif
 	VTABLE_EXPORT tErrType  ClearMessageQueue( tMessageQueueHndl hndl );
 
 	VTABLE_EXPORT int	 	GetMessageQueueNumMessages( tMessageQueueHndl hndl ) const;
@@ -118,11 +123,15 @@ public:
 										U32 timeoutMs = kMaxTimeoutMs );
 				
 	// Time & Timers
-	VTABLE_EXPORT U32		GetElapsedTime( U32* pUs );		// elapsed time since System startup 
+	VTABLE_EXPORT U32	GetElapsedTime( U32* pUs );		// elapsed time since System startup 
 															// in milliseconds (& microseconds)	
-	VTABLE_EXPORT tTimerHndl CreateTimer( tCond& condition, 
-										const tTimerProperties& props,
-										const char* pDebugName );
+// FIXME/BSK  	
+//  	VTABLE_EXPORT tTimerHndl CreateTimer( pfnTimerCallback callback,
+//	  						   	tTimerProperties& props,
+//							   	const char* pDebugName = NULL );
+
+	VTABLE_EXPORT tErrType CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
+ 						tTimerProperties& props, const char* pDebugName = NULL );
     
     VTABLE_EXPORT tErrType 	DestroyTimer( tTimerHndl hndl );
 
@@ -130,6 +139,9 @@ public:
 
 	VTABLE_EXPORT tErrType	StartTimer( tTimerHndl hndl );
 	VTABLE_EXPORT tErrType	StopTimer( tTimerHndl hndl);
+
+	VTABLE_EXPORT tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
+	VTABLE_EXPORT tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue);
 
 	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl ) const;		// elapsed time in milliseconds (& microseconds)
 	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl ) const; 	// time remaining in milliseconds (& microseconds)
