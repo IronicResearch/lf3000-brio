@@ -1671,3 +1671,13 @@ By Andrey (Andrey@leapfrog.com) on 5/14/07 1:13 PM
 1,063 ms. (Cumulative: 211,355 ms)
 
 ----------------
+Revision 257 from svn://localhost/TRUNK/:
+Revision 258 from svn://localhost/TRUNK/:
+
+Added comment to remove global propagation on the PATH environment variable, since that addition makes the scripts less resilient to configuration differences.
+
+By TParker (TParker@leapfrog.com) on 5/14/07 1:38 PM
+1 changed, 0 added, 0 deleted.
+1,046 ms. (Cumulative: 212,448 ms)
+
+----------------

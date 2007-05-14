@@ -101,6 +101,13 @@ env = Environment(	options  = opts,
 					LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')],
 					ENV = {'PATH' : os.environ['PATH']}
 				 )
+# FIXME/tp: Back out this propogation of the PATH env variable and add only the
+# specific change required.  One of the good features of SCons is that it
+# DOES NOT propogate environment variables.  This means that everything used
+# must be explicitly stated, which cuts down the chances of the build scripts
+# failing on a developer's machine because their system is configured
+# slighly differently.
+
 
 #-----------------------------------------------------------------------------
 # Allow per-user overrides of global settings
