@@ -1,3 +1,5 @@
+import os
+
 #-----------------------------------------------------------------------------
 # Brio/System/Display
 #-----------------------------------------------------------------------------
@@ -28,7 +30,8 @@ if local_vars['is_emulation']:
 else:
 	# FIXME/dm: Use MagicEyes OpenGL ES include path
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
-							'#ThirdParty/PowerVR/Include/LinuxPC'])
+							'#ThirdParty/PowerVR/Include/LinuxPC',
+							os.environ['EXTRA_LINUX_HEADER_DIR']])
 	myenv.Append(LIBPATH = [])
 	myenv.Append(RPATH   = [])
 						

@@ -1737,3 +1737,18 @@ By Dmilici (Dmilici@leapfrog.com) on 5/14/07 2:53 PM
 1,109 ms. (Cumulative: 219,558 ms)
 
 ----------------
+Revision 267 from svn://localhost/TRUNK/:
+
+Over in the Brio2/LinuxDist directory we use the environment variable
+EXTRA_LINUX_HEADER_DIR to refer to <include/linux/*> files that are outside of
+the actual kernel source such as gpio_ioctl.h.  I had the display manager do
+the same thing.  For it to work, your EXTRA_LINUX_HEADER_DIR must be set
+correctly.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/14/07 3:10 PM
+1 changed, 0 added, 0 deleted.
+1,172 ms. (Cumulative: 220,777 ms)
+
+----------------
