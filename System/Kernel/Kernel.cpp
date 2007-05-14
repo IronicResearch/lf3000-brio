@@ -572,7 +572,7 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
                                   &msg_prio);
  
     if (ret_receive == -1) {
-     	printf("mq_receive returned an error!  errno = %d, errstr = %s\n", errno, errstr(errno));
+     	printf("mq_receive returned an error!  errno = %d, errstr = %s\n", errno, strerror(errno));
      	return AsBrioErr(errno);
     }	
     assert(msg_prio == msg_ptr->GetMessagePriority());
