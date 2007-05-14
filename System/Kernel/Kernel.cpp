@@ -56,9 +56,13 @@ static CKernelModule*	sinst = NULL;
 //==============================================================================
 #define NUMBERMESSAGES 10
 #define POLLINGTIME 10000000   
-static pthread_t pthreadTimer = 0; 
-static unsigned bufferTimer[NUMBERMESSAGES];
-static int counterCreatedTimers = 0;
+namespace
+{
+	pthread_t pthreadTimer = 0; 
+	unsigned bufferTimer[NUMBERMESSAGES];
+	int counterCreatedTimers = 0;
+}
+	
 //==============================================================================
 // Internal untility functions
 //==============================================================================
@@ -330,7 +334,7 @@ void CKernelModule::Printf( const char* format, va_list arguments ) const
 //==============================================================================
 // Message Queues
 //==============================================================================
-tErrType CKernelModule::CreateMessageQueue(tMessageQueueHndl& hndl,
+tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
 									const tMessageQueuePropertiesPosix& props,
 									const char* /*pDebugName*/)
 {
@@ -392,7 +396,8 @@ tErrType CKernelModule::CreateMessageQueue(tMessageQueueHndl& hndl,
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelModule::DestroyMessageQueue(tMessageQueueHndl hndl)
+tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
+							const tMessageQueuePropertiesPosix& props)
 {
 	// FIXME/tp: This just closes it, not destroy.
 	// FIXME/tp: Need ot fold UnlinkMessageQueue() into this function to truly
@@ -402,11 +407,16 @@ tErrType CKernelModule::DestroyMessageQueue(tMessageQueueHndl hndl)
     {
     	mq_close(hndl);
     	ASSERT_POSIX_CALL( errno );
+    	
+    	errno = 0;
+    	mq_unlink(props.nameQueue);
+    	ASSERT_POSIX_CALL( errno );
     }
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
+#if 0 // FIXME/BSK
 tErrType CKernelModule::UnlinkMessageQueue(const char *name)
 {
     errno = 0;
@@ -414,7 +424,7 @@ tErrType CKernelModule::UnlinkMessageQueue(const char *name)
     ASSERT_POSIX_CALL( errno );
     return kNoErr;
 }
-
+#endif
 //------------------------------------------------------------------------------
 tErrType CKernelModule::ClearMessageQueue(tMessageQueueHndl hndl)
 {
@@ -675,26 +685,20 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
 	}	
 
     int signum = SIGRTMAX;     
-
-    /* Set up signal handler */
+    /* Setup signal to repond to handler */
     struct sigaction act;
-    sigfillset( &act.sa_mask );
+    sigemptyset( &act.sa_mask );
     act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
     act.sa_sigaction = sig_handler;
-//    act.sa_handler = sig_handler; 
     sigaction( signum, &act, NULL ); 
-    pthread_sigmask( SIG_BLOCK, &signal_set, NULL );
-
+ 
 	// Set up timer
     struct sigevent se;
     memset(&se, 0, sizeof(se)); 
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
-//	se.sigev_value.sival_int = 334455;
 	se.sigev_value.sival_ptr = (void *)callback;
 
-//	se.sigev_value.sival_int = 0;
-//	se.sigev_notify_attributes = (void *)callback;
 	timer_t	posixHndl;
 
     errno = 0;
@@ -703,8 +707,7 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
 	counterCreatedTimers++;
 	hndl = AsBrioTimerHandle(posixHndl);
 	
-//	ResetTimer(hndl, props);
-
+	ResetTimer(hndl, props);
     return kNoErr;
 }
 
@@ -752,6 +755,18 @@ tErrType CKernelModule::StartTimer( tTimerHndl hndl )
 	// FIXME/tp: Lookup timer properties stored in ResetTimer and initialize "value"
 
     errno = 0;
+
+#if 0 // FIXME/BSK
+	struct itimerspec value;
+	
+	
+    value.it_interval.tv_sec = props.timeout.it_interval.tv_sec;
+	value.it_interval.tv_nsec = props.timeout.it_interval.tv_nsec;
+	value.it_value.tv_sec = props.timeout.it_value.tv_sec;
+	value.it_value.tv_nsec = props.timeout.it_value.tv_nsec;
+
+#endif
+
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );
     
 	ASSERT_POSIX_CALL( errno );
@@ -762,7 +777,7 @@ tErrType CKernelModule::StartTimer( tTimerHndl hndl )
 tErrType CKernelModule::StopTimer( tTimerHndl hndl )
 {
 	struct itimerspec value;
-	
+
     value.it_interval.tv_sec = 0;
 	value.it_interval.tv_nsec = 0;
 	value.it_value.tv_sec = 0;
@@ -776,9 +791,68 @@ tErrType CKernelModule::StopTimer( tTimerHndl hndl )
     ASSERT_POSIX_CALL( errno );
 
     return kNoErr;
+}
+//------------------------------------------------------------------------------
+// FIXME/BSK
+tErrType CKernelModule::PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue )
+{
+	struct itimerspec value;
+
+	errno=0;
+
+	timer_gettime( AsPosixTimerHandle( hndl ), &value ); 
+    ASSERT_POSIX_CALL( errno );
+
+	saveValue = value;     
+#if 0 // FIXME/BSK    
+    printf(" Pause values:\n %d %d | %d %d || %d %d | %d %d \n",  
+    	saveValue.it_value.tv_sec, value.it_value.tv_sec,
+		saveValue.it_value.tv_nsec, value.it_value.tv_nsec,
+		saveValue.it_interval.tv_sec,  value.it_interval.tv_sec,
+		saveValue.it_interval.tv_nsec, value.it_interval.tv_nsec);
+		fflush(stdout);
+#endif
+
+    value.it_interval.tv_sec = 0;
+	value.it_interval.tv_nsec = 0;
+	value.it_value.tv_sec = 0;
+	value.it_value.tv_nsec = 0;
+
+	U32 remaining = GetTimerRemainingTime(hndl);
+	
+    errno = 0;
+    timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );	
+	
+    ASSERT_POSIX_CALL( errno );
+
+    return kNoErr;
 
 }
+// FIXME/BSK
+//------------------------------------------------------------------------------
+tErrType CKernelModule::ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue )
+{
+	struct itimerspec value;
+	// FIXME/tp: Lookup timer properties stored in ResetTimer and initialize "value"
+//	value = saveTimer;
+     value = saveValue;
 
+#if 0 // FIXME/BSK    
+    printf("Resume values:\n %d %d | %d %d || %d %d | %d %d \n",  
+    	saveValue.it_value.tv_sec, value.it_value.tv_sec,
+		saveValue.it_value.tv_nsec, value.it_value.tv_nsec,
+		saveValue.it_interval.tv_sec,  value.it_interval.tv_sec,
+		saveValue.it_interval.tv_nsec, value.it_interval.tv_nsec);
+		fflush(stdout);
+
+#endif
+
+    timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );
+    
+	ASSERT_POSIX_CALL( errno );
+    return kNoErr; 
+}
+	
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds // (& microseconds)	
 U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl ) const
@@ -879,7 +953,10 @@ void *sig_handler_timer_task(void *parm)
 				pfnTimerCallback callback =
 				        reinterpret_cast<pfnTimerCallback>(bufferTimer[ i ]);
 				bufferTimer[ i ] = 0; 	
-				(*callback)();
+				if( callback != NULL )
+				{ 
+					(*callback)();
+				}	
 #if 0 // FIXME/BSK
 				printf("callback 0x%x\n", callback);
 #endif				
@@ -889,40 +966,6 @@ void *sig_handler_timer_task(void *parm)
 	}
 }	
 
-#if 0  // FIXME/BSK
-		sigset_t signal_set;
-		int sig;
-	
-		printf("Hello Boris\n");
-		fflush(stdout);	
-        
-        while (1)
-        { 
-			sigfillset(&signal_set);
-			sigwait( &signal_set, &sig );
-			switch( sig )
-            {
-                /* whatever you need to do on SIGQUIT */
-			// FIXME/BSK
-               	case SIGALRM:  
-						printf("Hello Boris\n");
-						fflush( stdout );
-                  break;
-                /* whatever you need to do on SIGQUIT */
-                	case SIGQUIT:  
-                  break;
-
-                /* whatever you need to do on SIGINT */
-                 	case SIGINT: 
-                  break;
-
-                /* whatever you need to do for other signals */
-                	default:   
-                  break;
-                }
-        }        
-	}
-#endif
 } // extern "C"
 
 // EOF
