@@ -1629,3 +1629,15 @@ By DGibbs (DGibbs@leapfrog.com) on 5/14/07 11:39 AM
 1,078 ms. (Cumulative: 206,901 ms)
 
 ----------------
+Revision 252 from svn://localhost/TRUNK/:
+Revision 253 from svn://localhost/TRUNK/:
+
+fixed arm-linux-g++ path, refer to section 4.3 of the "scons FAQ" at 
+scons.org/faq.php for an explanation.
+
+
+By Andrey (Andrey@leapfrog.com) on 5/14/07 12:12 PM
+1 changed, 0 added, 0 deleted.
+1,078 ms. (Cumulative: 208,026 ms)
+
+----------------
