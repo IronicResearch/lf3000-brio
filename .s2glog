@@ -1660,3 +1660,14 @@ By Andrey (Andrey@leapfrog.com) on 5/14/07 12:17 PM
 1,062 ms. (Cumulative: 210,245 ms)
 
 ----------------
+Revision 256 from svn://localhost/TRUNK/:
+
+correct fix for arm-linux-g++ path problem, you can now revert any hacks you
+had to do arm-linux-g++.py
+
+
+By Andrey (Andrey@leapfrog.com) on 5/14/07 1:13 PM
+1 changed, 0 added, 0 deleted.
+1,063 ms. (Cumulative: 211,355 ms)
+
+----------------

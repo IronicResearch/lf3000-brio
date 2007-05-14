@@ -98,9 +98,9 @@ env = Environment(	options  = opts,
 					tools = ['default', platform_toolset, 
 							'checkheader', 'cxxtest', 'runtest'], 
 					toolpath = [toolpath],
-					LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')]
+					LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')],
+					ENV = {'PATH' : os.environ['PATH']}
 				 )
-
 
 #-----------------------------------------------------------------------------
 # Allow per-user overrides of global settings
