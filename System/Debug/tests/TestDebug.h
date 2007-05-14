@@ -62,25 +62,23 @@ public:
 	
 	void testDumpCoreInfo( )
 	{
-		tErrType err;
-		Boolean fValid;
 		tVersion version;
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
 
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		if ( DebugMPI->IsValid() ) {
-			err = DebugMPI->GetMPIName( pName );
+			pName = DebugMPI->GetMPIName();
 			printf("MPI name is: %s\n", pName->c_str());
 		
-			err = DebugMPI->GetModuleVersion( version );
+			version = DebugMPI->GetModuleVersion();
 			printf("Module version is: %d\n", version);
 			
-			err = DebugMPI->GetModuleName( pName );
+			pName = DebugMPI->GetModuleName();
 			printf("Module name is: %s\n", pName->c_str());
 			
-			err = DebugMPI->GetModuleOrigin( pURI );
-			printf("Module Origin name is: %s\n", pName->c_str());
+			pURI = DebugMPI->GetModuleOrigin();
+			printf("Module Origin name is: %s\n", pURI->c_str());
 		}		
 #endif
 	}
@@ -121,7 +119,7 @@ public:
 			
 			DebugMPI->SetDebugLevel( kDbgLvlCritical );
 			TS_ASSERT_EQUALS( kDbgLvlCritical, DebugMPI->GetDebugLevel() );
-			printf("New debug level: ", DebugMPI->GetDebugLevel());
+			printf("New debug level: %d\n", DebugMPI->GetDebugLevel());
 			
 			printf("You shouldn't see anything here: ");
 			DebugMPI->DebugOut(kDbgLvlNoteable, "This is a msg from DebugOut() at level %d\n", kDbgLvlNoteable);

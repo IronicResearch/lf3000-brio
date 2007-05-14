@@ -1728,3 +1728,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/14/07 2:44 PM
 1,109 ms. (Cumulative: 218,402 ms)
 
 ----------------
+Revision 266 from svn://localhost/TRUNK/:
+
+Fixes to correct Debug MPI test calls for verbose output.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/14/07 2:53 PM
+1 changed, 0 added, 0 deleted.
+1,109 ms. (Cumulative: 219,558 ms)
+
+----------------
