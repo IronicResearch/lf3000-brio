@@ -1611,3 +1611,12 @@ By DGibbs (DGibbs@leapfrog.com) on 5/14/07 11:34 AM
 1,031 ms. (Cumulative: 204,635 ms)
 
 ----------------
+Revision 250 from svn://localhost/TRUNK/:
+
+Add debug output to ReceiveMessage to report error.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/14/07 11:38 AM
+1 changed, 0 added, 0 deleted.
+1,109 ms. (Cumulative: 205,776 ms)
+
+----------------

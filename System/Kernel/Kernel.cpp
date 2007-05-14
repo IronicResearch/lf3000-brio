@@ -570,9 +570,12 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
                                   reinterpret_cast<char *>(msg_ptr),
                                   maxMessageSize, 
                                   &msg_prio);
-     if (ret_receive == -1)
+ 
+    if (ret_receive == -1) {
+     	printf("mq_receive returned an error!  errno = %d, errstr = %s\n", errno, errstr(errno));
      	return AsBrioErr(errno);
-     assert(msg_prio == msg_ptr->GetMessagePriority());
+    }	
+    assert(msg_prio == msg_ptr->GetMessagePriority());
 #if 1 // BSK Debug printing
     printf("CKernelModule::ReceiveMessage. Received=%d bytes\n", ret_receive);
     fflush(stdout);
