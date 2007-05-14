@@ -1641,3 +1641,12 @@ By Andrey (Andrey@leapfrog.com) on 5/14/07 12:12 PM
 1,078 ms. (Cumulative: 208,026 ms)
 
 ----------------
+Revision 254 from svn://localhost/TRUNK/:
+
+Fixed incomplete implementation of CString == operator.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/14/07 12:14 PM
+1 changed, 0 added, 0 deleted.
+1,063 ms. (Cumulative: 209,136 ms)
+
+----------------

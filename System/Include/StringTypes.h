@@ -260,7 +260,9 @@ public:
 //	friend CString 	::operator+(const CString& str, char c);		  // FIXME/dg: need to use wide-char
 
 	// comparison operators
-//	friend Boolean	::operator==(const CString& str1, const CString& str2) const;
+	friend Boolean	operator==(const CString& str1, const CString& str2);
+	friend Boolean	operator==(const char* str1, const CString& str2);
+	friend Boolean	operator==(const CString& str1, const char* str2);
 //	friend Boolean	::operator!=(const CString& str1, const CString& str2) const;
 //	friend Boolean	::operator==(const CString& str1, const CString& str2) const;
 //	friend Boolean	::operator>=(const CString& str1, const CString& str2) const;
@@ -307,17 +309,17 @@ inline CString operator+(const CString& str1, const char* str2)
 
 inline Boolean	operator==(const CString& str1, const CString& str2)
 {
-    return true;
+    return (strcmp(str1.s, str2.s) == 0) ? true : false;
 }
 
 inline Boolean	operator==(const char* str1, const CString& str2)
 {
-    return true;
+    return (strcmp(str1, str2.s) == 0) ? true : false;
 }
 
 inline Boolean	operator==(const CString& str1, const char* str2)
 {
-    return true;
+    return (strcmp(str1.s, str2) == 0) ? true : false;
 }
 
 
