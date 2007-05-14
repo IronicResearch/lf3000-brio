@@ -75,8 +75,9 @@ CAudioMPI::CAudioMPI( const IEventListener* pListener ) : pModule_(NULL)
 	if (kNoErr == err)
 	{
 		pModule_ = reinterpret_cast<CAudioModule*>(pModule);
-		pModule_->SetDefaultListener(pListener);
+//		pModule_->SetDefaultListener(pListener);
 	}
+
 }
 
 //----------------------------------------------------------------------------
@@ -225,7 +226,7 @@ U8 CAudioMPI::GetMasterVolume()
 	}
 	return pModule_->pGetMasterVolume();
 }
-
+*/
 //==============================================================================
 //==============================================================================
 tAudioID CAudioMPI::PlayAudio(tRsrcHndl			hRsrc, 
@@ -240,9 +241,9 @@ tAudioID CAudioMPI::PlayAudio(tRsrcHndl			hRsrc,
 	{
 		return kNoAudioID;
 	}
-	return pModule_->pPlayAudio(pModule_, hRsrc, volume, priority, pan, pHandler, payload, flags);
+	return pModule_->PlayAudio( hRsrc, volume, priority, pan, pHandler, payload, flags );
 }
-
+/*
 //==============================================================================
 //==============================================================================
 tAudioID CAudioMPI::PlayAudio(tRsrcHndl			hRsrc, 

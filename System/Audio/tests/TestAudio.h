@@ -6,7 +6,10 @@
 #include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <UnitTestUtils.h> 
-
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
+ 
 // For lots of text output, enable this:
 //#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
@@ -25,6 +28,8 @@ public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
+		int err;
+
 		AudioMPI = new CAudioMPI();
 		KernelMPI = new CKernelMPI();
 	}
@@ -43,10 +48,42 @@ public:
 	{
 		TS_ASSERT( AudioMPI != NULL );
 		TS_ASSERT( AudioMPI->IsValid() == true );
+				
+		
+		tErrType err;
+		const int kDuration = 1 * 3000;
+
+		// Start up sine output.
+		err = AudioMPI->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep3 seconds
+		KernelMPI->TaskSleep( kDuration );
+
+		// stop the engine.
+		err = AudioMPI->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep3 seconds
+		KernelMPI->TaskSleep( kDuration );
+
+		// Start up sine output.
+		err = AudioMPI->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep 3 seconds
+		KernelMPI->TaskSleep( kDuration );
+
+		// stop the engine.
+		err = AudioMPI->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep3 seconds
+		KernelMPI->TaskSleep( kDuration );
 	}
 	
 	//------------------------------------------------------------------------
-	void testCoreMPI( )
+	void xxxtestCoreMPI( )
 	{
 		tVersion		version;
 		const CString*	pName;
@@ -64,7 +101,7 @@ public:
 		}
 	}
 	
-	void testDumpCoreInfo( )
+	void xxxtestDumpCoreInfo( )
 	{
 		tErrType err;
 		Boolean fValid;
@@ -73,27 +110,29 @@ public:
 		ConstPtrCURI pURI;
 				
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		printf("Extra Debug Output from test enabled...\n");
+
 		fValid = AudioMPI->IsValid();
 		printf("MPI IsValid = %d\n");
 		
 		if (AudioMPI->IsValid()) {
-			err = AudioMPI->GetMPIName( pName );
-			printf("MPI name is: %s\n", *pName);
+			pName = AudioMPI->GetMPIName(); 
+			printf("MPI name is: %s\n", pName->c_str());
 		
-			err = AudioMPI->GetModuleVersion( version );
+			version = AudioMPI->GetModuleVersion();
 			printf("Module version is: %d\n", version);
 			
-			err = AudioMPI->GetModuleName( pName );
-			printf("Module name is: %s\n", *pName);
+			pName = AudioMPI->GetModuleName();
+			printf("Module name is: %s\n", pName->c_str());
 			
-			err = AudioMPI->GetModuleOrigin( pURI );
-			printf("Module Origin name is: %s\n", *pURI);
+			pURI = AudioMPI->GetModuleOrigin();
+			printf("Module Origin name is: %s\n", pURI->c_str());
 		}		
 #endif
 	}
 
 	//------------------------------------------------------------------------
-	void testAudioOutput( )
+	void xxxtestAudioOutput( )
 	{
 		tErrType err;
 		const int kDuration = 1 * 1000;

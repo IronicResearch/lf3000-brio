@@ -18,7 +18,7 @@
 
 #include <CoreTypes.h>
 
-#include <AudioPriv.h>
+#include <AudioConfig.h>
 #include <AudioOutput.h>
 
 
@@ -47,7 +47,7 @@ static PaStream *gPaStream;			// PortAudio stream context
 // Debug output
 static U32 gCallbackCount;			
 static paTestData gTestData;
-static S16 gpAudioOutBuffer[kAudioOutBufSizeInWords];
+//static S16 gpAudioOutBuffer[kAudioOutBufSizeInWords];
 
 //==============================================================================
 // PortAudio callback (which is faking a DMA-triggered ISR)
@@ -204,8 +204,8 @@ int StopAudioOutput( void )
 	    fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );		
 	}
 
-	if (gpAudioOutBuffer)
-		memset(gpAudioOutBuffer, 0, kAudioOutBufSizeInBytes);
+//	if (gpAudioOutBuffer)
+//		memset(gpAudioOutBuffer, 0, kAudioOutBufSizeInBytes);
 	
 	return err;
 }

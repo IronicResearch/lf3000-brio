@@ -15,7 +15,7 @@
 // System includes
 #include <SystemTypes.h>
 #include <ResourceTypes.h>
-//#include <AudioTypes.h>
+#include <AudioTypes.h>
 #include <CoreMPI.h>
 //#include <EventListener.h>
 LF_BEGIN_BRIO_NAMESPACE()
@@ -51,6 +51,14 @@ public:
 	tErrType	PauseAudio( void );
 	tErrType	ResumeAudio( void );
 	
+	tAudioID PlayAudio( tRsrcHndl			hRsrc, 
+						U8					volume, 
+						tAudioPriority		priority,
+						S8					pan, 
+						IEventListener		*pHandler,
+						tAudioPayload		payload,
+						tAudioOptionsFlags	flags );
+
 private:
 	class CAudioModule*	pModule_;
 };

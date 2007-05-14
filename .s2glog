@@ -1699,3 +1699,12 @@ By DGibbs (DGibbs@leapfrog.com) on 5/14/07 1:59 PM
 1,063 ms. (Cumulative: 214,652 ms)
 
 ----------------
+Revision 261 from svn://localhost/TRUNK/:
+
+Update Audio System to have audio module spawn a separate thread for processing commands from the MPI.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/14/07 2:30 PM
+8 changed, 4 added, 0 deleted.
+1,406 ms. (Cumulative: 216,105 ms)
+
+----------------

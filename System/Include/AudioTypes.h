@@ -32,7 +32,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupAudio), AUDIO_EVENTS)
 
-const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
+//const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
 
 
 //==============================================================================	   

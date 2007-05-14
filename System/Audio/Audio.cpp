@@ -9,14 +9,13 @@
 //		Underlying implementation code for the Audio Manager module.
 //
 //==============================================================================
+#include <errno.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <EventMPI.h>
 #include <AudioTypes.h>
 #include <AudioPriv.h>
-
-#include <AudioOutput.h>
-#include <EventListener.h>
+#include <AudioTask.h>
 
 //==============================================================================
 // Defines
@@ -31,16 +30,97 @@ const CURI	kModuleURI	= "/Somewhere/AudioModule";
 // single instance of module object.
 static CAudioModule*	sinst = NULL;
 
+// Globals that must be accessable to other modules for operation.
+tMutex		gAudioConditionMutex;
+tMutexAttr 	gAudioConditionMutexAttributes;
+tCond		gAudioCondition;
+tCondAttr 	gAudioConditionAttributes;
+bool		gAudioTaskRunning = false;
+
+//============================================================================
+// CAudioCmdMessages
+//============================================================================
+//------------------------------------------------------------------------------
+CAudioMsgSetMasterVolume::CAudioMsgSetMasterVolume( const tAudioMasterVolume& data ) {
+	mType_ = kAudioCmdMsgTypeSetMasterVolume;
+	messageSize = sizeof(CAudioMsgSetMasterVolume);
+	messagePriority = kAudioMsgDefaultPriority;
+	mData_ = data;
+}
+
+///------------------------------------------------------------------------------
+CAudioMsgStartAudio::CAudioMsgStartAudio( void ) {
+	mType_ = kAudioCmdMsgTypeStartAllAudio;
+	messageSize = sizeof(CAudioMsgStartAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
+//------------------------------------------------------------------------------
+CAudioMsgStopAudio::CAudioMsgStopAudio( void ) {
+	mType_ = kAudioCmdMsgTypeStopAllAudio;
+	messageSize = sizeof(CAudioMsgStopAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
+CAudioMsgStopAudio::CAudioMsgStopAudio( const tAudioStopAudioData& data ) {
+	mType_ = kAudioCmdMsgTypeStopAudio;
+	messageSize = sizeof(CAudioMsgStopAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+	mData_ = data;
+}
+
+//------------------------------------------------------------------------------
+CAudioMsgPauseAudio::CAudioMsgPauseAudio( void ) {
+	mType_ = kAudioCmdMsgTypePauseAllAudio;
+	messageSize = sizeof(CAudioMsgPauseAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
+CAudioMsgPauseAudio::CAudioMsgPauseAudio(  const tAudioPauseAudioData& data ) {
+	mType_ = kAudioCmdMsgTypePauseAllAudio;
+	messageSize = sizeof(CAudioMsgPauseAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+	mData_ = data;
+}
+
+//------------------------------------------------------------------------------
+CAudioMsgResumeAudio::CAudioMsgResumeAudio( void ) {
+	mType_ = kAudioCmdMsgTypeResumeAllAudio;
+	messageSize = sizeof(CAudioMsgResumeAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
+CAudioMsgResumeAudio::CAudioMsgResumeAudio( const tAudioResumeAudioData& data ) {
+	mType_ = kAudioCmdMsgTypeResumeAudio;
+	messageSize = sizeof(CAudioMsgResumeAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+	mData_ = data;
+}
+
+//------------------------------------------------------------------------------
+CAudioMsgPlayAudio::CAudioMsgPlayAudio( const tAudioPlayAudioData& data ) {
+	mType_ = kAudioCmdMsgTypeSetMasterVolume;
+	messageSize = sizeof(CAudioMsgPlayAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+	mData_ = data;
+}
+
+//------------------------------------------------------------------------------
+CAudioReturnMessage::CAudioReturnMessage( tErrType err, tAudioID audioID ) {
+	messageSize = sizeof(CAudioMsgPlayAudio);
+	messagePriority = kAudioMsgDefaultPriority;
+	mErr_ = err;
+	mAudioID_ = audioID;
+}
+
 //==============================================================================
 //==============================================================================
 CAudioModule::CAudioModule( )
-	: mpDefaultListener(NULL)
 {
 
 	tErrType	err = kNoErr;
 	Boolean		ret = false;
 	U32			msgSize;
-	void		*mgrTaskMemory, *codecTaskMemory, *queMemory;
 
 	// Get Kernel MPI
 	KernelMPI =  new CKernelMPI();
@@ -49,120 +129,92 @@ CAudioModule::CAudioModule( )
 //		printf("AudioModule -- Couldn't create KernelMPI!\n");
 
 	// Get Debug MPI
-	DebugMPI =  new CDebugMPI(kGroupAudio);
+	DebugMPI =  new CDebugMPI( kGroupAudio );
 	ret = DebugMPI->IsValid();
 //	if (ret != true)
 //		printf("AudioModule -- Couldn't create DebugMPI!\n");
+
+	// I want to see everything...
+	DebugMPI->SetDebugLevel( kDbgLvlVerbose );
 	
 	DebugMPI->DebugOut(kDbgLvlVerbose, 
 		(const char *)"\nKernel and Debug modules created by AudioModule\n");	
 	
-	// Hard code the configuration resource
-	numMixerChannels = 	kAudioNumMixerChannels;
-	sampleRate =			kAudioSampleRate;
+/*	
+	err = KernelMPI->InitCondAttr( gAudioConditionAttributes );
 
-	// Set the output buffer sizes
-	outSizeInWords = kAudioOutBufSizeInWords;
-	outSizeInBytes = kAudioOutBufSizeInBytes;
+	err = KernelMPI->InitMutex( gAudioConditionMutex, gAudioConditionMutexAttributes );
+	DebugMPI.Assert((kNoErr == err), "Couldn't init audio condition variable mutex.\n");
 
-	// Allocate the global audio mixer
-//	if ((pAudioMixer = new CAudioMixer()) == kNull)
-//	{
-//		err = kAllocMPIErr;
-//		goto ReturnErr;
-//	}
+	err = KernelMPI->InitCond( gAudioCondition, gAudioConditionAttributes );
+	DebugMPI.Assert((kNoErr == err), "Couldn't init audio condition variable.\n");
+*/
 
-	// Initialize the audio out driver
-	audioOutIndex = 0;
-	audioOutputOn = false;
-	InitAudioOutput();
-
-/*
-
-	// Set the global audio effects processor to kNull
-	//pAudioEffects = kNull;
-
-	// Initialize the linked list of audio players
-	pNode = kNull;
-
-	// Initialize the next audioID
-	nextAudioID = 0;
-
-	// Create the audio event group
-	if (NU_Create_Event_Group(&audioEvents, "AudioEv") != NU_SUCCESS)
-	{
-		err = kAudioCreateEventErr;
-		goto ReturnErr;
-	}
-
-	// Create the main audio manager task
-	audioMgrTaskReady = 0;
-	NU_Allocate_Memory(&System_Memory, &mgrTaskMemory, kAudioMgrTaskSize, NU_NO_SUSPEND);
-	if (NU_Create_Task(&audioMgrTask, "AudMgr", AudioMgrTask, 0, NU_NULL,
-		mgrTaskMemory, kAudioMgrTaskSize, kAudioMgrTaskPriority, 10, NU_PREEMPT, NU_START) != NU_SUCCESS)
-	{
-		err = kAudioCreateTaskErr;
-		goto ReturnErr;
-	}
-
-	// Create the audio codec task
-	NU_Allocate_Memory(&System_Memory, &codecTaskMemory, kAudioCodecTaskSize, NU_NO_SUSPEND);
-	if (NU_Create_Task(&audioCodecTask, "AudCod", AudioCodecTask, 0, NU_NULL,
-		codecTaskMemory, kAudioCodecTaskSize, kAudioCodecTaskPriority, 10, NU_PREEMPT, NU_START) != NU_SUCCESS)
-	{
-		err = kAudioCreateTaskErr;
-		goto ReturnErr;
-	}
+	// Create the Audio Task...
+	err = InitAudioTask();
+	DebugMPI->Assert((kNoErr == err), "Audio task create failed.\n");
 
 	// Wait for the AudioMgr task to be ready
-	while (!audioMgrTaskReady)
+	while (!gAudioTaskRunning)
 	{
-		NU_Sleep(5);
+		KernelMPI->TaskSleep(5);
 	}
 
-	// Create the return Queue (for sending the audioID)
-	msgSize = sizeof(tAudioRtnMsg)/sizeof(UNSIGNED);
-	NU_Allocate_Memory(&System_Memory, &queMemory, sizeof(tAudioRtnMsg), NU_NO_SUSPEND);
-	if (NU_Create_Queue(&pImpl->returnQueue, "AudRQue", queMemory, msgSize,
-		NU_FIXED_SIZE, msgSize, NU_FIFO) != NU_SUCCESS)
+	DebugMPI->DebugOut(kDbgLvlVerbose, 
+		(const char *)"AudioModule thinks the audio task is running now...\n");	
+	
+	// First, create a msg queue that allows the Audio Task to RECEIVE msgs from us.
+	tMessageQueuePropertiesPosix msgQueueProperties = 
 	{
-		err = kAudioCreateQueueErr;
-		goto ReturnErr;
-	}
-*/	
+	    0,                          // msgProperties.blockingPolicy;  
+	    "/audioTaskIncomingQ",      // msgProperties.nameQueue
+	    S_IRWXU,                    // msgProperties.mode 
+	    O_RDWR|O_CREAT|O_TRUNC,     // msgProperties.oflag  
+	    0,                          // msgProperties.priority
+	    0,                          // msgProperties.mq_flags
+	    8,                          // msgProperties.mq_maxmsg
+	    kMAX_AUDIO_MSG_SIZE,  		// msgProperties.mq_msgsize
+	    0                           // msgProperties.mq_curmsgs
+	};
+	
+	DebugMPI->DebugOut( kDbgLvlVerbose, 
+		(const char *)"\nAudio Module creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
+	
+	err = KernelMPI->OpenMessageQueue( hSendMsgQueue_, msgQueueProperties, NULL );
+
+    DebugMPI->Assert((kNoErr == err), "Trying to create incoming audio task msg queue. err = %d \n", err );
+
+	// Now create a msg queue that allows the Audio Task to send messages back to us.
+	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
+	msgQueueProperties.mq_msgsize = sizeof(CAudioReturnMessage);
+
+	DebugMPI->DebugOut( kDbgLvlVerbose, 
+		(const char *)"\nAudio Module creating task outgoing Q. size = %d\n", msgQueueProperties.mq_msgsize );	
+
+	err = KernelMPI->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
+
+    DebugMPI->Assert((kNoErr == err), "Trying to create outgoing audio task msg queue. Err = %d \n", err );
 }
 
 //==============================================================================
 //==============================================================================
 CAudioModule::~CAudioModule(void)
 {
-	// Exit nicely
-	if ( audioOutputOn )
-		StopAudio();
-		
-	DeInitAudioOutput();
-/*
-	// Return error if global context isn't set
-	if (gAudioContext == kNull)
+	DebugMPI->DebugOut( kDbgLvlVerbose, 
+		(const char *)"\nAudio Module dtor called\n" );	
+
+	DeInitAudioTask();
+	
+	// Wait for the AudioMgr task to die
+	while (gAudioTaskRunning)
 	{
-		return kAudioNullContextErr;
+		KernelMPI->TaskSleep(5);
 	}
-	// Don't bother with deleting global variables
-
-	// Delete the return Queue
-	NU_Delete_Queue(&pImpl->returnQueue);
-	return kNoErr;
-*/
+	
+//	KernelMPI->DestroyMessageQueue( hRecvMsgQueue_ )
+//	KernelMPI->DestroyMessageQueue( hSendMsgQueue_ )
+	
 }
-
-//==============================================================================
-//==============================================================================
-tErrType CAudioModule::SetDefaultListener( const IEventListener* pListener )
-{
-	mpDefaultListener = pListener;
-	return kNoErr;
-}
-
 
 //============================================================================
 // Informational functions
@@ -190,71 +242,15 @@ const CURI* CAudioModule::GetModuleOrigin() const
 	return &kModuleURI;
 }
 
+/*
 //==============================================================================
-// 		Overall Audio System Control
 //==============================================================================
-tErrType CAudioModule::StartAudio( void )
+tErrType CAudioModule::SetDefaultListener( const IEventListener* pListener )
 {
-	tErrType err = kNoErr;
-	
-	if (!audioOutputOn) {
-		audioOutputOn = true;
-		err = StartAudioOutput();
-	}
-	
-	return err;
-	
-//	tAudioCmdMsgHeader*	pMsg;
-//	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypeStopAllAudio);
-//	SendCmdMessage(pMsg); 
-}
-
-//----------------------------------------------------------------------------
-tErrType CAudioModule::StopAudio( void )
-{
-	tErrType err = kNoErr;
-	
-	if (audioOutputOn) {
-		audioOutputOn = false;
-		err = StopAudioOutput();
-	}
-	
-	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgDataCompleted	data;
-	data.audioID = 99;	// dummy
-	data.payload = 101;	// dummy
-	data.count = 1;
-
-	CEventMPI	event;
-	CAudioEventMessage	msg(data);
-	event.PostEvent(msg, kPriorityTBD, mpDefaultListener);
-	
-	return err;
-	
-	
-//	tAudioCmdMsgHeader*	pMsg;
-//	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypeStopAllAudio);
-//	SendCmdMessage(pMsg); 
-}
-
-//----------------------------------------------------------------------------
-tErrType CAudioModule::PauseAudio( void )
-{
+	mpDefaultListener = pListener;
 	return kNoErr;
-//	tAudioCmdMsgHeader*	pMsg;
-//	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypePauseAllAudio);
-//	SendCmdMessage(pMsg); 
 }
-
-//----------------------------------------------------------------------------
-tErrType CAudioModule::ResumeAudio( void )
-{
-	return kNoErr;
-//	tAudioCmdMsgHeader*	pMsg;
-//	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypeResumeAllAudio);
-//	SendCmdMessage(pMsg); 
-}
-
+*/
 
 //============================================================================
 // Instance management interface for the Module Manager
@@ -286,38 +282,88 @@ extern "C"
 }
 
 
+//==============================================================================
+// 		Overall Audio System Control
+//==============================================================================
+tErrType CAudioModule::StartAudio( void )
+{
+	tErrType err = kNoErr;
+ 
+    CAudioMsgStartAudio msg;
+
+   	SendCmdMessage( msg ); 
+
+	return err;
+}
+
+//----------------------------------------------------------------------------
+tErrType CAudioModule::StopAudio( void )
+{
+	tErrType err = kNoErr;
+
+    CAudioMsgStopAudio msg;
+
+  	SendCmdMessage( msg ); 
+	
+	return err;
+}
+
+//----------------------------------------------------------------------------
+tErrType CAudioModule::PauseAudio( void )
+{
+	tErrType err = kNoErr;
+
+    CAudioMsgPauseAudio msg;
+
+	SendCmdMessage( msg ); 
+	
+	return err;
+}
+
+//----------------------------------------------------------------------------
+tErrType CAudioModule::ResumeAudio( void )
+{
+	tErrType err = kNoErr;
+
+    CAudioMsgResumeAudio msg;
+
+ 	SendCmdMessage( msg ); 
+	
+	return err;
+}
+
 /*
 //==============================================================================
 //==============================================================================
-static tErrType RegisterGetStereoAudioStreamFcn(tRsrcType type, tGetStereoAudioStreamFcn pFcn)
+static tErrType CAudioModule::RegisterGetStereoAudioStreamFcn(tRsrcType type, tGetStereoAudioStreamFcn pFcn)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType RegisterAudioEffectsProcessor(tRsrcType type, CAudioEffectsProcessor *pChain)
+static tErrType CAudioModule::RegisterAudioEffectsProcessor(tRsrcType type, CAudioEffectsProcessor *pChain)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType RegisterGlobalAudioEffectsProcessor(CAudioEffectsProcessor *pChain)
+static tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor(CAudioEffectsProcessor *pChain)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType ChangeAudioEffectsProcessor(tAudioID audioID, CAudioEffectsProcessor *pChain)
+static tErrType CAudioModule::ChangeAudioEffectsProcessor(tAudioID audioID, CAudioEffectsProcessor *pChain)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetMasterVolume(U8 volume)
+static void CAudioModule::SetMasterVolume(U8 volume)
 {
 	// Set the master volume
 	masterVolume = volume;
@@ -331,37 +377,41 @@ static void SetMasterVolume(U8 volume)
 
 //==============================================================================
 //==============================================================================
-static U8 GetMasterVolume()
+static U8 CAudioModule::GetMasterVolume()
 {
 	return masterVolume;
 };
 
+*/
 //==============================================================================
 //==============================================================================
-static tAudioID PlayAudio(CAudioMgrMPIImpl *pImpl, tRsrcHndl hRsrc, U8 volume,  
-	tAudioPriority priority, S8 pan, IEventHandler *pHandler, tAudioPayload payload, 
+tAudioID CAudioModule::PlayAudio( tRsrcHndl hRsrc, U8 volume,  
+	tAudioPriority priority, S8 pan, IEventListener *pListener, tAudioPayload payload, 
 	tAudioOptionsFlags flags)
 {
 	// Generate the command message to send to the audio Mgr task
 	printf("AudioMgr:PlayAudio\n");
-	tAudioCmdMsgPlayAudio*	pMsg;
-	pMsg = (tAudioCmdMsgPlayAudio*)GetMessageBlock(kAudioCmdMsgTypePlayAudio);
-	pMsg->hRsrc = hRsrc;
-	pMsg->volume = volume;
-	pMsg->priority = priority;
-	pMsg->pan = pan;
-	pMsg->pHandler = pHandler;
-	pMsg->payload = payload;
-	pMsg->flags = flags;
-	pMsg->pReturnQueue = &pImpl->returnQueue;
-	// Send the message and wait to get the audioID back from the audio Mgr task
-	SendCmdMessage(pMsg); 
-	return WaitForAudioID(pImpl);
-};
+	tAudioPlayAudioData msgData;
 
+	msgData.hRsrc = hRsrc;
+	msgData.volume = volume;
+	msgData.priority = priority;
+	msgData.pan = pan;
+	msgData.pListener = pListener;
+	msgData.payload = payload;
+	msgData.flags = flags;
+
+	CAudioMsgPlayAudio	msg( msgData );
+	
+	// Send the message and wait to get the audioID back from the audio Mgr task
+ 	SendCmdMessage( msg ); 
+	
+	return WaitForAudioID();
+};
+/*
 //==============================================================================
 //==============================================================================
-static tAudioID PlayAudioDefault(CAudioMgrMPIImpl *pImpl, tRsrcHndl hRsrc, 
+static tAudioID CAudioModule::PlayAudioDefault(CAudioMgrMPIImpl *pImpl, tRsrcHndl hRsrc, 
 	tAudioPayload payload, tAudioOptionsFlags flags)
 {
 	return 0;
@@ -369,7 +419,7 @@ static tAudioID PlayAudioDefault(CAudioMgrMPIImpl *pImpl, tRsrcHndl hRsrc,
 
 //==============================================================================
 //==============================================================================
-static void StopAudio(tAudioID audioID, Boolean surpressDoneMessage)
+static void CAudioModule::StopAudio(tAudioID audioID, Boolean surpressDoneMessage)
 {
 	tAudioCmdMsgStopAudio*	pMsg;
 	pMsg = (tAudioCmdMsgStopAudio*)GetMessageBlock(kAudioCmdMsgTypeStopAudio);
@@ -380,7 +430,7 @@ static void StopAudio(tAudioID audioID, Boolean surpressDoneMessage)
 
 //==============================================================================
 //==============================================================================
-static void PauseAudio(tAudioID audioID)
+static void CAudioModule::PauseAudio(tAudioID audioID)
 {
 	tAudioCmdMsgPauseAudio*	pMsg;
 	pMsg = (tAudioCmdMsgPauseAudio*)GetMessageBlock(kAudioCmdMsgTypePauseAudio);
@@ -390,7 +440,7 @@ static void PauseAudio(tAudioID audioID)
 
 //==============================================================================
 //==============================================================================
-static void ResumeAudio(tAudioID audioID)
+static void CAudioModule::ResumeAudio(tAudioID audioID)
 {
 	tAudioCmdMsgResumeAudio*	pMsg;
 	pMsg = (tAudioCmdMsgResumeAudio*)GetMessageBlock(kAudioCmdMsgTypeResumeAudio);
@@ -400,263 +450,251 @@ static void ResumeAudio(tAudioID audioID)
 
 //==============================================================================
 //==============================================================================
-static U8 GetAudioVolume(tAudioID audioID) 
+static U8 CAudioModule::GetAudioVolume(tAudioID audioID) 
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetAudioVolume(tAudioID audioID, U8 volume) 
+static void CAudioModule::SetAudioVolume(tAudioID audioID, U8 volume) 
 {
 };
 
 //==============================================================================
 //==============================================================================
-static tAudioPriority GetAudioPriority(tAudioID audioID) 
-{
-	return 0;
-};
-
-//==============================================================================
-//==============================================================================
-static void SetAudioPriority(tAudioID audioID, tAudioPriority priority) 
-{
-};
-
-//==============================================================================
-//==============================================================================
-static S8 GetAudioPan(tAudioID audioID) 
+static tAudioPriority CAudioModule::GetAudioPriority(tAudioID audioID) 
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetAudioPan(tAudioID audioID, S8 pan) 
+static void CAudioModule::SetAudioPriority(tAudioID audioID, tAudioPriority priority) 
 {
 };
 
 //==============================================================================
 //==============================================================================
-static IEventHandler* GetAudioEventHandler(tAudioID audioID) 
+static S8 CAudioModule::GetAudioPan(tAudioID audioID) 
+{
+	return 0;
+};
+
+//==============================================================================
+//==============================================================================
+static void CAudioModule::SetAudioPan(tAudioID audioID, S8 pan) 
+{
+};
+
+//==============================================================================
+//==============================================================================
+static IEventHandler* CAudioModule::GetAudioEventHandler(tAudioID audioID) 
 {
 	return NULL;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetAudioEventHandler(tAudioID audioID, IEventHandler *pHandler) 
+static void CAudioModule::SetAudioEventHandler(tAudioID audioID, IEventHandler *pHandler) 
 {
 };
 
 //==============================================================================
 //==============================================================================
-static U8 GetDefaultAudioVolume() 
-{
-	return 0;
-};
-
-//==============================================================================
-//==============================================================================
-static void SetDefaultAudioVolume(U8 volume) 
-{
-};
-
-//==============================================================================
-//==============================================================================
-static tAudioPriority GetDefaultAudioPriority() 
+static U8 CAudioModule::GetDefaultAudioVolume() 
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetDefaultAudioPriority(tAudioPriority priority) 
+static void CAudioModule::SetDefaultAudioVolume(U8 volume) 
 {
 };
 
 //==============================================================================
 //==============================================================================
-static S8 GetDefaultAudioPan() 
+static tAudioPriority CAudioModule::GetDefaultAudioPriority() 
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetDefaultAudioPan(S8 pan) 
+static void CAudioModule::SetDefaultAudioPriority(tAudioPriority priority) 
 {
 };
 
 //==============================================================================
 //==============================================================================
-static IEventHandler* GetDefaultAudioEventHandler() 
+static S8 CAudioModule::GetDefaultAudioPan() 
+{
+	return 0;
+};
+
+//==============================================================================
+//==============================================================================
+static void CAudioModule::SetDefaultAudioPan(S8 pan) 
+{
+};
+
+//==============================================================================
+//==============================================================================
+static IEventHandler* CAudioModule::GetDefaultAudioEventHandler() 
 {
 	return NULL;
 };
 
 //==============================================================================
 //==============================================================================
-static void SetDefaultAudioEventHandler(IEventHandler *pHandler) 
+static void CAudioModule::SetDefaultAudioEventHandler(IEventHandler *pHandler) 
 {
 };
 
 //==============================================================================
 //==============================================================================
-static Boolean IsAudioBusy(tAudioID audioID)
-{
-	return false;
-};
-
-//==============================================================================
-//==============================================================================
-static Boolean IsAnyAudioBusy()
+static Boolean CAudioModule::IsAudioBusy(tAudioID audioID)
 {
 	return false;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType AcquireMidiPlayer(tAudioPriority priority, IEventHandler *pHandler, tMidiID *midiID)
+static Boolean CAudioModule::IsAnyAudioBusy()
+{
+	return false;
+};
+
+//==============================================================================
+//==============================================================================
+static tErrType CAudioModule::AcquireMidiPlayer(tAudioPriority priority, IEventHandler *pHandler, tMidiID *midiID)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType ReleaseMidiPlayer(tMidiID midiID)
+static tErrType CAudioModule::ReleaseMidiPlayer(tMidiID midiID)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tMidiID GetMidiIDForAudioID(tAudioID audioID)
+static tMidiID CAudioModule::GetMidiIDForAudioID(tAudioID audioID)
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static tAudioID GetAudioIDForMidiID(tMidiID midiID)
+static tAudioID CAudioModule::GetAudioIDForMidiID(tMidiID midiID)
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static void StopMidiPlayer(tMidiID midiID, Boolean surpressDoneMessage)
+static void CAudioModule::StopMidiPlayer(tMidiID midiID, Boolean surpressDoneMessage)
 {
 };
 
 //==============================================================================
 //==============================================================================
-static void PauseMidiPlayer(tMidiID midiID)
+static void CAudioModule::PauseMidiPlayer(tMidiID midiID)
 {
 };
 
 //==============================================================================
 //==============================================================================
-static void ResumeMidiPlayer(tMidiID midiID)
+static void CAudioModule::ResumeMidiPlayer(tMidiID midiID)
 {
 };
 
 //==============================================================================
 //==============================================================================
-static tMidiTrackBitMask GetEnabledMidiTracks(tMidiID midiID )
+static tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks(tMidiID midiID )
 {
 	return 0;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType EnableMidiTracks(tMidiID midiID, tMidiTrackBitMask trackBitMask)
+static tErrType CAudioModule::EnableMidiTracks(tMidiID midiID, tMidiTrackBitMask trackBitMask)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType TransposeMidiTracks(tMidiID midiID, tMidiTrackBitMask tracktBitMask, S8 transposeAmount)
+static tErrType CAudioModule::TransposeMidiTracks(tMidiID midiID, tMidiTrackBitMask tracktBitMask, S8 transposeAmount)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType ChangeMidiInstrument(tMidiID midiID, tMidiTrackBitMask trackBitMask, tMidiInstr instr)
+static tErrType CAudioModule::ChangeMidiInstrument(tMidiID midiID, tMidiTrackBitMask trackBitMask, tMidiInstr instr)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType ChangeMidiTempo(tMidiID midiID, S8 tempo) 
+static tErrType CAudioModule::ChangeMidiTempo(tMidiID midiID, S8 tempo) 
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType SendMidiCommand(tMidiID midiID, U8 cmd, U8 data1, U8 data2)
+static tErrType CAudioModule::SendMidiCommand(tMidiID midiID, U8 cmd, U8 data1, U8 data2)
 {
 	return kNoErr;
 };
 
 //==============================================================================
 //==============================================================================
-static tErrType PlayMidiNote(tMidiID	midiID, U8 track, U8 pitch, U8 velocity, 
+static tErrType CAudioModule::PlayMidiNote(tMidiID	midiID, U8 track, U8 pitch, U8 velocity, 
 	U16 noteCount, tAudioOptionsFlags flags)
 {
 	return kNoErr;
 };
 
-//==============================================================================
-//==============================================================================
-static void* GetMessageBlock(tAudioCmdMsgType cmdMsgType) 
-{
-	// Eventually we'll allocate the message from a special message pool
-	// For now, we'll just use the non-cached memory pool
-	void* 	pMsg;
-
-	NU_Allocate_Memory(&System_Memory, &pMsg, sizeof(tAudioCmdMsg), NU_NO_SUSPEND);
-
-	// Set the message type
-	((tAudioCmdMsgHeader *)pMsg)->audioCmdMsgType = cmdMsgType;
-	return pMsg;
-};
-
-//==============================================================================
-//==============================================================================
-static void SendCmdMessage(void* pMsg) 
-{
-	STATUS	status;
-
-	printf("SendCmdMessage:%d, %d\n", sizeof(tAudioCmdMsg), sizeof(tAudioCmdMsg)/sizeof(UNSIGNED));
-	status = NU_Send_To_Queue(&audioCmdQueue, pMsg, 
-		sizeof(tAudioCmdMsg)/sizeof(UNSIGNED), NU_NO_SUSPEND);
-
-	// Need to deallocate the message
-	NU_Deallocate_Memory(pMsg);
-};
-
-//==============================================================================
-//==============================================================================
-static tAudioID WaitForAudioID(CAudioMgrMPIImpl *pImpl) 
-{
-	tAudioRtnMsg	msg;
-	U32				msgSize;
-
-	// Wait for the audio manager task to send back the audioID
-	NU_printf("Wait for AudioID\n");
-	NU_Receive_From_Queue(&pImpl->returnQueue, &msg, 
-		sizeof(tAudioRtnMsg)/sizeof(UNSIGNED), &msgSize, NU_SUSPEND); 
-	NU_printf("AudioID:%d\n",msg.audioID);
-	return msg.audioID; 
-};
-
 */
+
+//==============================================================================
+//==============================================================================
+void CAudioModule::SendCmdMessage( CAudioMsg& msg ) 
+{
+	tErrType err;
+	
+	DebugMPI->DebugOut( kDbgLvlVerbose, 
+		(const char *)"\nSending message to audio task. size = %d; type = %d\n", 
+							msg.GetMessageSize(), msg.GetMessageCmdType());	
+	
+    err = KernelMPI->SendMessage( hSendMsgQueue_, msg );
+    DebugMPI->Assert((kNoErr == err), "After call SendMessage err = %d \n", err );
+}
+
+//==============================================================================
+//==============================================================================
+tAudioID CAudioModule::WaitForAudioID( void ) 
+{
+	tErrType err;
+	
+	CAudioReturnMessage* message;
+
+	err = KernelMPI->ReceiveMessage( hRecvMsgQueue_,  message, sizeof(CAudioReturnMessage) );
+								   
+	DebugMPI->Assert((kNoErr == err), "ReceiveMessage errReceive= % d EventType = %d \n",
+	    	  err, message->GetMessageAudioID() );  
+	    	  
+	return message->GetMessageAudioID();
+}
+
+
 
 
 
