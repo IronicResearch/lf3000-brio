@@ -335,10 +335,10 @@ struct tTimerProperties {
 						// starting time (the timer is absolute timer.
 						// If the the TIMER_ABSTIME_SET flag is not set, the timer is set relative 
 						// to the current time (the timer is a relative timer)
-	
 
-	struct itimerspec timeout;  // Timer interval       					
+	struct itimerspec timeout;  // Timer interval
 };
+typedef struct itimerspec saveTimerSettings; 
 
 
 class CObject {
