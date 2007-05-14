@@ -23,6 +23,7 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <stdarg.h>
+#include <signal.h>
 
 #include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -936,6 +937,7 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 		if( 0 == bufferTimer[ i ] )
 		{
 			bufferTimer[ i ] = (unsigned )psigInfo->si_value.sival_ptr;
+			pthread_kill( pthreadTimer, SIGUSR1);
 #if 0 // FIXME/BSK
 			printf("psigInfo->si_errno sival_ptr=0X%x\n",
 		 	psigInfo->si_value.sival_ptr);
@@ -956,27 +958,33 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 
 void *sig_handler_timer_task(void *parm)
 {
-	struct timespec sleeptime = {0, POLLINGTIME};        
-
+	sigset_t signal_set;
+	int sig;
+	
 	while( 1 )
 	{
-		for(int i = 0; i < NUMBERMESSAGES; i++)
+		sigfillset( &signal_set );
+		sigwait( &signal_set, &sig ); 
+		switch( sig )
+		case SIGUSR1:
 		{
-			if( 0 != bufferTimer[ i ] )
+			for(int i = 0; i < NUMBERMESSAGES; i++)
 			{
-				pfnTimerCallback callback =
+				if( 0 != bufferTimer[ i ] )
+				{
+					pfnTimerCallback callback =
 				        reinterpret_cast<pfnTimerCallback>(bufferTimer[ i ]);
-				bufferTimer[ i ] = 0; 	
-				if( callback != NULL )
-				{ 
-					(*callback)();
-				}	
+					bufferTimer[ i ] = 0; 	
+					if( callback != NULL )
+					{ 
+						(*callback)();
+					}	
 #if 0 // FIXME/BSK
 				printf("callback 0x%x\n", callback);
 #endif				
+				}
 			}
 		}
-		nanosleep( &sleeptime, NULL );
 	}
 }	
 
