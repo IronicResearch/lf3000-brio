@@ -1690,3 +1690,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/14/07 1:44 PM
 1,062 ms. (Cumulative: 213,542 ms)
 
 ----------------
+Revision 260 from svn://localhost/TRUNK/:
+
+Fix typo in error checking of pthread_attr_destroy in CreateThread() 
+
+By DGibbs (DGibbs@leapfrog.com) on 5/14/07 1:59 PM
+1 changed, 0 added, 0 deleted.
+1,063 ms. (Cumulative: 214,652 ms)
+
+----------------

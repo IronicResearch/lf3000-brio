@@ -145,7 +145,7 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
 	/* initialized 'tattr' object with with default attributes */
 	err = pthread_attr_init(&tattr);
 	ASSERT_POSIX_CALL(err);
-
+	
 	/* Setting the thread scheduling attributes */
   
 	/* 1. set the thread's set scope		*/
@@ -202,8 +202,8 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
     // FIXME/tp: Determine if 0 is a valid value for pthread, and hav the "hndl" always
     // represent the pthread+1 if so.
 
-	err = pthread_attr_destroy(&tattr);
-	ASSERT_POSIX_CALL(errno);
+	err = pthread_attr_destroy(&tattr);	
+	ASSERT_POSIX_CALL(err);
 	
 	// good to go
 //	*pHndl = pTask->ToOpaqueType();
