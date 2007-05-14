@@ -61,6 +61,7 @@ namespace
 	pthread_t pthreadTimer = 0; 
 	unsigned bufferTimer[NUMBERMESSAGES];
 	int counterCreatedTimers = 0;
+	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
 }
 	
 //==============================================================================
@@ -330,7 +331,6 @@ void CKernelModule::Printf( const char* format, va_list arguments ) const
 	vprintf(format, arguments);
 }
 
-
 //==============================================================================
 // Message Queues
 //==============================================================================
@@ -360,7 +360,6 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
 #endif // BSK
     
     errno = 0;
-    
     retMq_open = mq_open (props.nameQueue, // /test_q
                           props.oflag,     // 578
                           props.mode,      // 448
@@ -704,7 +703,10 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
     errno = 0;
     timer_create(clockid, &se, &posixHndl); // BSK
 	ASSERT_POSIX_CALL( errno );
+	pthread_mutex_lock( &mutexValue);
 	counterCreatedTimers++;
+	pthread_mutex_unlock( &mutexValue);
+	
 	hndl = AsBrioTimerHandle(posixHndl);
 	
 	ResetTimer(hndl, props);
@@ -717,10 +719,13 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	
     errno = 0;
     timer_delete(AsPosixTimerHandle( hndl ));
-    
 	ASSERT_POSIX_CALL( errno );
 
-	if( --counterCreatedTimers <= 0 )
+	pthread_mutex_lock( &mutexValue);
+	counterCreatedTimers--;
+	pthread_mutex_unlock( &mutexValue);
+
+	if( counterCreatedTimers <= 0 )
 	{
 		pthread_cancel( pthreadTimer );
 		ASSERT_POSIX_CALL( errno );
@@ -758,13 +763,10 @@ tErrType CKernelModule::StartTimer( tTimerHndl hndl )
 
 #if 0 // FIXME/BSK
 	struct itimerspec value;
-	
-	
     value.it_interval.tv_sec = props.timeout.it_interval.tv_sec;
 	value.it_interval.tv_nsec = props.timeout.it_interval.tv_nsec;
 	value.it_value.tv_sec = props.timeout.it_value.tv_sec;
 	value.it_value.tv_nsec = props.timeout.it_value.tv_nsec;
-
 #endif
 
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );
@@ -925,7 +927,8 @@ extern "C"
 
 void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 {
-	for(int i = 0; i < NUMBERMESSAGES; i++)
+	int i;
+	for(i = 0; i < NUMBERMESSAGES; i++)
 	{
 		if( 0 == bufferTimer[ i ] )
 		{
@@ -938,6 +941,14 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 			break; 	
 		}
 	}	
+// FIXME//BSK insert assertion
+	if(i == NUMBERMESSAGES )
+	{
+#if 1 // FIXME/BSK
+		printf("Lost data from sig_handler\n");
+		fflush(stdout); 
+#endif
+	}		
 }
 
 void *sig_handler_timer_task(void *parm)
