@@ -857,9 +857,8 @@ tErrType CKernelModule::ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveVal
 		fflush(stdout);
 
 #endif
-
+	errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );
-    
 	ASSERT_POSIX_CALL( errno );
     return kNoErr; 
 }
@@ -874,7 +873,6 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl ) const
 	
     errno = 0;
     int err = timer_gettime( AsPosixTimerHandle( hndl ), &value );
-	
 	ASSERT_POSIX_CALL( errno );
 	
     U32 milliSeconds = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
@@ -897,7 +895,6 @@ U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl ) const
 	
     errno = 0;
     timer_gettime( AsPosixTimerHandle( hndl ), &value );
-	
     ASSERT_POSIX_CALL( errno );
 	
     U32 milliSeconds = value.it_value.tv_sec * 1000 
@@ -937,12 +934,14 @@ extern "C"
 void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 {
 	int i;
+	int ret;
 	for(i = 0; i < NUMBERMESSAGES; i++)
 	{
 		if( 0 == bufferTimer[ i ] )
 		{
 			bufferTimer[ i ] = (unsigned )psigInfo->si_value.sival_ptr;
-			pthread_kill( pthreadTimer, SIGUSR1);
+			ret = pthread_kill( pthreadTimer, SIGUSR1);
+// FIXME/BSK Insert checking error on return			
 #if 0 // FIXME/BSK
 			printf("psigInfo->si_errno sival_ptr=0X%x\n",
 		 	psigInfo->si_value.sival_ptr);
