@@ -43,29 +43,35 @@ namespace
 	tTimerHndl hndlTimer_2;
 	tTimerHndl hndlTimer_3;
 
+	int counterTimer_1 = 0;
+	int counterTimer_2 = 0;
+	int counterTimer_3 = 0;
+
 	void myTask_Timer_1()
 	{
-		static int i = 1;
+		counterTimer_1++;
+
 #if 0 // FIXME /BSK
-		printf("myTask_Timer_1 - The timer called me %d\n", i++);
+		printf("myTask_Timer_1 - The timer called me %d\n", counterTimer_1 );
 		fflush(stdout);
 #endif
+
 	}	
 
 	void myTask_Timer_2()
 	{
-		static int i = 1;
+		counterTimer_2++;
 #if 0		// FIXME /BSK
-		printf("myTask_Timer_2 - The timer called me %d\n", i++);
+		printf("myTask_Timer_2 - The timer called me %d\n", counterTimer_2 );
 		fflush(stdout);
 #endif
 	}	
 
 	void myTask_Timer_3()
 	{
-		static int i = 1;
+		counterTimer_3++;
 #if 0	// FIXME /BSK
-		printf("myTask_Timer_3 - The timer called me %d\n", i++);
+		printf("myTask_Timer_3 - The timer called me %d\n", counterTimer_3 );
 		fflush(stdout);
 #endif
 	}	
@@ -424,8 +430,15 @@ public:
     void testDestroyTimer()
     {
 //        TS_WARN("TODO: Test Destroy Timer!");
-		sleep( 10 );
 		tErrType err;
+		struct timespec sleeptime = { 1, 0 };
+		const int limit = 5; 
+	
+		while (( counterTimer_1 < limit && counterTimer_2 < limit && counterTimer_3 < limit ))
+		{
+			nanosleep( &sleeptime, NULL );  
+		}
+			
 		if( hndlTimer_1 != 0 )
 		{	
 			err = KernelMPI->DestroyTimer( hndlTimer_1 );
