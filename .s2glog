@@ -1762,3 +1762,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/14/07 6:02 PM
 1,156 ms. (Cumulative: 221,980 ms)
 
 ----------------
+Revision 270 from svn://localhost/TRUNK/:
+
+Added more Timer Tests
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/14/07 6:03 PM
+1 changed, 0 added, 0 deleted.
+1,109 ms. (Cumulative: 223,121 ms)
+
+----------------

@@ -45,24 +45,27 @@ namespace
 
 	void myTask_Timer_1()
 	{
+		static int i = 1;
 #if 0 // FIXME /BSK
-		printf("myTask_Timer_1 - The timer called me\n");
+		printf("myTask_Timer_1 - The timer called me %d\n", i++);
 		fflush(stdout);
 #endif
 	}	
 
 	void myTask_Timer_2()
 	{
+		static int i = 1;
 #if 0		// FIXME /BSK
-		printf("myTask_Timer_2 - The timer called me\n");
+		printf("myTask_Timer_2 - The timer called me %d\n", i++);
 		fflush(stdout);
 #endif
 	}	
 
 	void myTask_Timer_3()
 	{
+		static int i = 1;
 #if 0	// FIXME /BSK
-		printf("myTask_Timer_3 - The timer called me\n");
+		printf("myTask_Timer_3 - The timer called me %d\n", i++);
 		fflush(stdout);
 #endif
 	}	
@@ -311,7 +314,7 @@ public:
 		}								
 	}
 
-	void xtestCreateTimer()
+	void testCreateTimer()
 	{
 //TS_WARN("TODO: Test Create/Destroy Timer!");
         int signum = SIGRTMAX;
@@ -337,14 +340,44 @@ public:
 //		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestResetTimerRelative()
+	void testStartStopTimer()
+	{
+		tTimerProperties props = {0};
+		tErrType err;
+		props.type = TIMER_RELATIVE_SET; 	
+		// Timer period
+    	props.timeout.it_interval.tv_sec = 0;
+		props.timeout.it_interval.tv_nsec = 500000000L;
+		// Timer expirated
+		props.timeout.it_value.tv_sec = 1;
+		props.timeout.it_value.tv_nsec = 0;
+		err = KernelMPI->StartTimer( hndlTimer_1, props );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->StartTimer( hndlTimer_2, props );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->StartTimer( hndlTimer_3, props );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->StopTimer( hndlTimer_1 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->StopTimer( hndlTimer_2 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->StopTimer( hndlTimer_3 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+	}		
+	void testResetTimerRelative()
 	{
 //        TS_WARN("TODO: Test Reset Timer Relative!");
 		tTimerProperties props = {0};
 		tErrType err;
 		props.type = TIMER_RELATIVE_SET; 	
 		// Timer period
-    	props.timeout.it_interval.tv_sec = 1;
+    	props.timeout.it_interval.tv_sec = 0;
 		props.timeout.it_interval.tv_nsec = 500000000L;
 		// Timer expirated
 		props.timeout.it_value.tv_sec = 1;
@@ -357,10 +390,9 @@ public:
 
 		err = KernelMPI->ResetTimer( hndlTimer_3, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		sleep(10);
 	}
 
-	void xtestPauseResumeTimer()
+	void testPauseResumeTimer()
 	{
 		tErrType err;
 
@@ -385,13 +417,14 @@ public:
 
 		err = KernelMPI->ResumeTimer( hndlTimer_3, save_3 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+			
 	}
 		
 
-    void xtestDestroyTimer()
+    void testDestroyTimer()
     {
 //        TS_WARN("TODO: Test Destroy Timer!");
-		sleep( 2 );
+		sleep( 10 );
 		tErrType err;
 		if( hndlTimer_1 != 0 )
 		{	
