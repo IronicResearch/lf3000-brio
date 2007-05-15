@@ -63,7 +63,10 @@ From your Eclipse Workspace:
    a) Right click on the top level project and select the "Properties" menu
    b) Select the "C/C++ Make Project" item
    c) On the "Make Builder" tab, uncheck "Use default"
-   d) In "Build command", enter "scons -k emulation=t"
+   d) In "Build command", enter "scons -k emulation=t" if you are running the
+      emulation target.  If you are running on the actual hardware, enter
+	  "scons runtests=f deploy_dir=</path/to/your/nfsroot/>".  Your nfsroot is
+	  wherever you chose to untar the nfsroot, probably /home/lfu/nfsroot/.
    e) Clear out the "Build" field
    f) Put '-c' in the "Clean" field
    g) Click "OK" to dismiss the dialog
@@ -71,11 +74,13 @@ From your Eclipse Workspace:
    (you may need to use the File Browser to do this)
 4) In Eclipse, right click on the top level project and select the "Refresh" menu
 5) In Eclipse, open the "SConstruct" file.  On line 34, change "cdevkit_dir = '<install_dir>'"
-   to the root location where you installed this distribution.
+   to the root location where you installed this distribution.  Alternatively,
+   you can set the environment variable BRIO_DEVKIT_DIR to point to the root location.
 6) From the Eclipse "Project" menu, select "Build Project"
-7) Open the newly created "Build/LightingGCC_emulation" folder.  You should see "test2" there.
-8) Right click on "test2", and select "Run As | Run Local C/C++ Application".  
-   Click through any dialogs you need to.  That's it!
-
-
+7) If you are running the emulation target, open the newly created
+   "Build/LightingGCC_emulation" folder.  You should see "BrioCube" there.
+   Right click on "BrioCube", and select "Run As | Run Local C/C++
+   Application".  Click through any dialogs you need to.  That's it!
+8) If you are running on the actual hardware, you should just be able to run
+   the command "BrioCube" in the serial console.
 

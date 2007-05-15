@@ -11,14 +11,23 @@ Import('*')
 if local_vars['is_publish']:
 	inc_dir = os.path.join(local_vars['publish_inc_dir'], 'boost')
 	Command(inc_dir, 'boost/boost', Copy("$TARGET", "$SOURCE"))
-	inc_dir = os.path.join(local_vars['publish_inc_dir'], 'OpenGL', local_vars['target_subdir'])
-	lib_dir = os.path.join(local_vars['publish_lib_dir'], 'OpenGL')
-	headers = os.path.join('PowerVR', 'Include')
-	Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
-#	libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so'))
-	core_name = 'libgles_cl.so'
-	lib = os.path.join('PowerVR', 'Libs', core_name)
-	env.Install(lib_dir, lib)
-	lib += '.0'
-	env.Install(lib_dir, lib)
-	
+
+	if local_vars['is_emulation']:
+		inc_dir = os.path.join(local_vars['publish_inc_dir'], 'OpenGL', local_vars['target_subdir'])
+		lib_dir = os.path.join(local_vars['publish_lib_dir'], 'OpenGL')
+		headers = os.path.join('PowerVR', 'Include')
+		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
+		#	libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so'))
+		core_name = 'libgles_cl.so'
+		lib = os.path.join('PowerVR', 'Libs', core_name)
+		env.Install(lib_dir, lib)
+		lib += '.0'
+		env.Install(lib_dir, lib)
+	else:
+		inc_dir = os.path.join(local_vars['publish_inc_dir'], 'OpenGL', local_vars['target_subdir'])
+		lib_dir = os.path.join(local_vars['publish_lib_dir'], 'OpenGL')
+		headers = os.path.join('MagicEyes', 'Include')
+		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
+		core_name = 'libogl.a'
+		lib = os.path.join('MagicEyes', 'Libs', 'arm', core_name)
+		env.Install(lib_dir, lib)

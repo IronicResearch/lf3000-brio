@@ -1898,3 +1898,18 @@ By Andrey (Andrey@leapfrog.com) on 5/15/07 2:52 PM
 1,109 ms. (Cumulative: 238,756 ms)
 
 ----------------
+Revision 287 from svn://localhost/TRUNK/:
+
+Fixed libs and platformlibs references in BrioCube demo
+Added deploy_dir argument to BrioCube scons for easy deploy to target
+Added $PATH hack (and a comment about it!) to fix arm-linux-* PATH problem.
+Updated readme.txt for Samples to include info about running on target h/w
+Fixed ThirdParty SConscript to properly deploy MagicEyes libs and headers
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/15/07 4:08 PM
+2 changed, 0 added, 0 deleted.
+1,173 ms. (Cumulative: 239,992 ms)
+
+----------------
