@@ -137,7 +137,7 @@ public:
 
 	VTABLE_EXPORT tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
 
-	VTABLE_EXPORT tErrType	StartTimer( tTimerHndl hndl );
+	VTABLE_EXPORT tErrType	StartTimer( tTimerHndl hndl, const tTimerProperties& props );
 	VTABLE_EXPORT tErrType	StopTimer( tTimerHndl hndl);
 
 	VTABLE_EXPORT tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
