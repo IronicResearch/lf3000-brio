@@ -1816,3 +1816,13 @@ By Dmilici (Dmilici@leapfrog.com) on 5/14/07 7:07 PM
 1,360 ms. (Cumulative: 229,036 ms)
 
 ----------------
+Revision 276 from svn://localhost/TRUNK/:
+Revision 277 from svn://localhost/TRUNK/:
+
+Added BRIO_STATIC_ASSERT definition
+
+By TParker (TParker@leapfrog.com) on 5/15/07 12:23 PM
+2 changed, 0 added, 0 deleted.
+1,063 ms. (Cumulative: 230,161 ms)
+
+----------------

@@ -13,6 +13,7 @@
 //		Defines the core types of the Brio system. 
 //
 //============================================================================
+#include <boost/static_assert.hpp>
 
 //#ifdef LF_DISABLE_NAMESPACES
 #if 1
@@ -30,6 +31,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 #undef NULL
 #define NULL	0
 #define kNull 	0
+
+#define BRIO_STATIC_ASSERT	BOOST_STATIC_ASSERT
 
 //---------------------------------------------------------------------
 // Basic storage types

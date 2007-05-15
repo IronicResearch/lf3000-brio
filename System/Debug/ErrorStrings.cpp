@@ -18,7 +18,6 @@
 //
 //==============================================================================
 
-#include <boost/static_assert.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <StringTypes.h>
@@ -48,10 +47,10 @@ struct ValueToString
 //------------------------------------------------------------------------------
 const char* const ErrToStr( tErrType error )
 {
-	// TODO: Keeping the following BOOST_STATIC_ASSERT in sync with the
+	// TODO: Keeping the following BRIO_STATIC_ASSERT in sync with the
 	//		BOOST_PP_SEQ_FOR_EACH lines will validate that the g_errorLookup 
 	//		list is ordered.
-	BOOST_STATIC_ASSERT(kGroupAudio		< kGroupCommon
+	BRIO_STATIC_ASSERT(kGroupAudio		< kGroupCommon
 					&&	kGroupCommon	< kGroupDisplay
 					&&	kGroupDisplay	< kGroupEvent
 					&&	kGroupEvent		< kGroupKernel
