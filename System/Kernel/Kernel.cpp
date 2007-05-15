@@ -63,6 +63,7 @@ namespace
 	unsigned bufferTimer[NUMBERMESSAGES];
 	int counterCreatedTimers = 0;
 	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
+	sigset_t signal_mask;
 }
 	
 //==============================================================================
@@ -646,7 +647,7 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
 {
 	tErrType err = kNoErr;
     sigset_t signal_set;
-
+    int ret; 
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
 						// There are the following possible values:
 						//	CLOCK_MONOTONIC
@@ -682,9 +683,19 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
     // Create new task to process timer budder 
 	if( 0 == pthreadTimer )
 	{
-		   pthread_create(&pthreadTimer, NULL,
+		ret = sigemptyset(&signal_mask);
+// FIXME/ BSK insert handling macro		
+		ret = sigaddset(&signal_mask, SIGUSR1 ); 	
+// FIXME/ BSK insert handling macro		
+
+		errno = 0;
+		pthread_sigmask( SIG_BLOCK, &signal_mask, NULL );
+    	ASSERT_POSIX_CALL(errno);
+
+		errno = 0;
+		pthread_create(&pthreadTimer, NULL,
     						sig_handler_timer_task, NULL);
-    	   ASSERT_POSIX_CALL(errno);
+    	ASSERT_POSIX_CALL(errno);
 	}	
 
     int signum = SIGRTMAX;     
@@ -712,8 +723,8 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
 	pthread_mutex_unlock( &mutexValue);
 	
 	hndl = AsBrioTimerHandle(posixHndl);
-	
-	ResetTimer(hndl, props);
+// FIXME/BSK This function only creates timer.	
+//	ResetTimer(hndl, props);
     return kNoErr;
 }
 
@@ -757,25 +768,20 @@ tErrType CKernelModule::ResetTimer(tTimerHndl hndl, const tTimerProperties& prop
 }
 	
 //------------------------------------------------------------------------------
-tErrType CKernelModule::StartTimer( tTimerHndl hndl )
+tErrType CKernelModule::StartTimer( tTimerHndl hndl, const tTimerProperties& props )
 {
-
 	struct itimerspec value;
 	// FIXME/tp: Lookup timer properties stored in ResetTimer and initialize "value"
 
-    errno = 0;
-
-#if 0 // FIXME/BSK
-	struct itimerspec value;
     value.it_interval.tv_sec = props.timeout.it_interval.tv_sec;
 	value.it_interval.tv_nsec = props.timeout.it_interval.tv_nsec;
 	value.it_value.tv_sec = props.timeout.it_value.tv_sec;
 	value.it_value.tv_nsec = props.timeout.it_value.tv_nsec;
-#endif
 
+    errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );
-    
 	ASSERT_POSIX_CALL( errno );
+
     return kNoErr; 
 }
 	
@@ -793,7 +799,6 @@ tErrType CKernelModule::StopTimer( tTimerHndl hndl )
 	
     errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );	
-	
     ASSERT_POSIX_CALL( errno );
 
     return kNoErr;
@@ -958,14 +963,14 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 
 void *sig_handler_timer_task(void *parm)
 {
-	sigset_t signal_set;
-	int sig;
-	
+	int sig_caught;	// signal caught
+	int ret;
+
 	while( 1 )
 	{
-		sigfillset( &signal_set );
-		sigwait( &signal_set, &sig ); 
-		switch( sig )
+		ret = sigwait( &signal_mask, &sig_caught );		 
+// FIXME/BSK Insert the handling error
+		switch( sig_caught )
 		case SIGUSR1:
 		{
 			for(int i = 0; i < NUMBERMESSAGES; i++)
@@ -979,9 +984,6 @@ void *sig_handler_timer_task(void *parm)
 					{ 
 						(*callback)();
 					}	
-#if 0 // FIXME/BSK
-				printf("callback 0x%x\n", callback);
-#endif				
 				}
 			}
 		}
