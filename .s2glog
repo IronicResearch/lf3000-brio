@@ -1807,3 +1807,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/14/07 6:24 PM
 1,110 ms. (Cumulative: 227,630 ms)
 
 ----------------
+Revision 275 from svn://localhost/TRUNK/:
+
+Added MagicEyes OpenGL ES library & headers to embedded build target.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/14/07 7:07 PM
+2 changed, 5 added, 0 deleted.
+1,360 ms. (Cumulative: 229,036 ms)
+
+----------------

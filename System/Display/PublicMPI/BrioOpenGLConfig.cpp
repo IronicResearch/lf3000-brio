@@ -32,15 +32,31 @@ namespace
 			not the status of the last called function. The user has to
 			check after every single egl call or at least once every frame.
 		*/
-#ifdef EMULATION
 		EGLint iErr = eglGetError();
 		if (iErr != EGL_SUCCESS)
 		{
 			CDebugMPI	dbg(kGroupDisplay);
 			dbg.Assert(false, "%s failed (%d).\n", pszLocation, iErr);
 		}
-#endif
 	}
+
+#ifndef EMULATION
+	// TODO/dm: Pass back essential callback info to MagicEyes GLES lib
+	//--------------------------------------------------------------------------
+	extern "C" int  GLESOAL_Initalize( /* ___OAL_MEMORY_INFORMATION__* */ void* pMemoryInfomation ) { return 1; }
+
+	//--------------------------------------------------------------------------
+	extern "C" void GLESOAL_Finalize( void ) { }
+
+	//--------------------------------------------------------------------------
+	extern "C" void GLESOAL_SwapBufferCallback( void ) { }
+
+	//--------------------------------------------------------------------------
+	extern "C" void GLESOAL_SetWindow( void* pNativeWindow  ) { }
+	
+	//--------------------------------------------------------------------------
+	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight ) { }
+#endif // !EMULATION
 }
 
 
@@ -53,6 +69,9 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 #endif
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
+	CDebugMPI				dbg(kGroupDisplay);
+	NativeWindowType		genWindow = 0;
+
 #ifdef EMULATION
 	const int WINDOW_WIDTH = 320;
 	const int WINDOW_HEIGHT= 240;
@@ -64,7 +83,6 @@ BrioOpenGLConfig::BrioOpenGLConfig()
     XSetWindowAttributes	sWA;
 	unsigned int			ui32Mask;
 	int						i32Depth;
-	CDebugMPI				dbg(kGroupDisplay);
 
 	// Initializes the display and screen
 	x11Display = XOpenDisplay( 0 );
@@ -99,6 +117,11 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		Querying other displays is platform specific.
 	*/
 	eglDisplay = eglGetDisplay((NativeDisplayType)x11Display);
+	genWindow = (NativeWindowType)x11Window;
+#else	// !EMULATION
+	// Lightning hardware just has one display
+	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+#endif	// EMULATION
 
 	/*
 		Step 2 - Initialize EGL.
@@ -146,7 +169,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		Pixmaps and pbuffers are surfaces which only exist in off-screen
 		memory.
 	*/
-	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, (NativeWindowType)x11Window, NULL);
+	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, genWindow, NULL);
 	AbortIfEGLError("eglCreateWindowSurface");
 
 	/*
@@ -170,6 +193,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	*/
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
+#ifdef EMULATION
 	EmulationConfig::Instance().SetLcdDisplayWindow(x11Window);
 #endif	// EMULATION
 }
@@ -177,7 +201,6 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 //----------------------------------------------------------------------
 BrioOpenGLConfig::~BrioOpenGLConfig()
 {
-#ifdef EMULATION
 	/*
 		Step 9 - Terminate OpenGL ES and destroy the window (if present).
 		eglTerminate takes care of destroying any context or surface created
@@ -193,6 +216,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		Step 10 - Destroy the eglWindow.
 		Again, this is platform specific and delegated to a separate function.
 	*/
+#ifdef EMULATION
 	if (x11Window) XDestroyWindow(x11Display, x11Window);
     if (x11Colormap) XFreeColormap( x11Display, x11Colormap );
 	if (x11Display) XCloseDisplay(x11Display);

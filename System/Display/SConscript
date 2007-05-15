@@ -11,7 +11,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
-emulibs		= local_vars['is_emulation'] and ['gles_cl', 'X11'] or []
+emulibs		= local_vars['is_emulation'] and ['gles_cl', 'X11'] or ['ogl']
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
 modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI']
@@ -21,6 +21,9 @@ mpilibs		= ['ModuleMPI'] + emulibs
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
+extinc      = '#../LinuxDist/packages/drivers/include/linux' 
+## FIXME/dm: missing env var handling?
+## extinc      = os.environ['EXTRA_LINUX_HEADER_DIR']
 if local_vars['is_emulation']:
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'#ThirdParty/PowerVR/Include/LinuxPC',
@@ -28,11 +31,8 @@ if local_vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 	myenv.Append(RPATH   = ['#ThirdParty/PowerVR/Libs'])
 else:
-	# FIXME/dm: Use MagicEyes OpenGL ES include path
-	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
-							'#ThirdParty/PowerVR/Include/LinuxPC',
-							os.environ['EXTRA_LINUX_HEADER_DIR']])
-	myenv.Append(LIBPATH = [])
+	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include', extinc])
+	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/arm'])
 	myenv.Append(RPATH   = [])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
