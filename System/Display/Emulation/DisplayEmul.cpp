@@ -28,5 +28,11 @@ void CDisplayModule::InitModule()
 	// TODO:
 }
 
+void CDisplayModule::CleanupModule()
+{
+	// On the target, this is where file descriptors get closed, etc
+	// in emulation, you probably don't need to do anything here
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

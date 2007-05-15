@@ -69,6 +69,7 @@ public:
 
 private:
 	void				InitModule( );
+	void				CleanupModule( );
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions

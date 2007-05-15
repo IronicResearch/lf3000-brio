@@ -1835,3 +1835,16 @@ By Dmilici (Dmilici@leapfrog.com) on 5/15/07 12:44 PM
 1,234 ms. (Cumulative: 231,442 ms)
 
 ----------------
+Revision 279 from svn://localhost/TRUNK/:
+
+adding CleanupModule(), similar to InitModule(), for now this just closes file
+descriptors for device nodes, but we'll likely do more here later.  Placed a
+stub for emulation.  Also cleaned up DisplayHW.cpp comments to reflect what
+we're doing.  
+
+
+By Andrey (Andrey@leapfrog.com) on 5/15/07 12:55 PM
+4 changed, 0 added, 0 deleted.
+1,392 ms. (Cumulative: 232,897 ms)
+
+----------------

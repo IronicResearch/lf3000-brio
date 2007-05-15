@@ -56,6 +56,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 //----------------------------------------------------------------------------
 CDisplayModule::~CDisplayModule()
 {
+	CleanupModule(); // delegate to platform or emulation cleanup
 }
 
 //----------------------------------------------------------------------------

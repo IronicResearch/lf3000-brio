@@ -29,10 +29,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//------------------------------------------------------------------------
-	int			gDevGpio;
-	int			gDevDpc;
-	int			gDevMlc;
-	int			gDevGa3d;
+	int			gDevGpio = -1;
+	int			gDevDpc = -1;
+	int			gDevMlc = -1;
+	int			gDevGa3d = -1;
 }
 
 //============================================================================
@@ -45,31 +45,50 @@ void CDisplayModule::InitModule()
 	union gpio_cmd 	c;
 	int				r;		
 
-	// Load GPIO driver for General Purpose I/O registers
-	gDevGpio = open("/dev/gpio", O_WRONLY);
-	dbg_.Assert(gDevGpio >= 0, "DisplayModule::InitModule: GPIO driver failed");
+	// open GPIO device
+	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
+	dbg_.Assert(gDevGpio >= 0, 
+			"DisplayModule::InitModule: failed to open GPIO device");
 	
-	// Load DPC driver for Display Controller registers
+	// open DPC device XXX: no need for this yet
 	gDevDpc = open("/dev/dpc", O_WRONLY);
-	dbg_.Assert(gDevDpc >= 0, "DisplayModule::InitModule: DPC driver failed");
+	dbg_.Assert(gDevDpc >= 0, 
+			"DisplayModule::InitModule: failed to open DPC device");
 	
-	// Load MLC driver for Multi-layer Controller registers
-	gDevMlc = open("/dev/mlc", O_WRONLY);
-	dbg_.Assert(gDevMlc >= 0, "DisplayModule::InitModule: MLC driver failed");
+	// open MLC device
+	gDevMlc = open("/dev/mlc", O_RDWR|O_SYNC);
+	dbg_.Assert(gDevMlc >= 0, 
+			"DisplayModule::InitModule: failed to open MLC device");
 	
-	// Load GA3D driver for 3D Graphics Accelerator registers
+	// open 3D accelerator device
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
-	dbg_.Assert(gDevGa3d >= 0, "DisplayModule::InitModule: GA3D driver failed");
+	dbg_.Assert(gDevGa3d >= 0, 
+			"DisplayModule::InitModule: failed to open 3D accelerator device");
 
-	// Enable LCD display output via GPIO pins
 	c.outvalue.port = 1;	// GPIO port B
-	c.outvalue.pin	= 10;	// LCD enable
-	c.outvalue.value = 1;
+	c.outvalue.value = 1;	// set pins high
+
+	// enable LCD
+	c.outvalue.pin	= 10;
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	c.outvalue.pin	= 9;	// LCD backlight
+	// turn on LCD backlight
+	c.outvalue.pin	= 9;
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	c.outvalue.pin	= 29;	// blue LED
+	// turn on blue LED
+	c.outvalue.pin	= 29;
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
+}
+
+void CDisplayModule::CleanupModule()
+{
+	if(gDevGpio >= 0)
+		close(gDevGpio);
+	if(gDevDpc >= 0)
+		close(gDevDpc);
+	if(gDevMlc >= 0)
+		close(gDevMlc);
+	if(gDevGa3d >= 0)
+		close(gDevGa3d);
 }
 
 LF_END_BRIO_NAMESPACE()
