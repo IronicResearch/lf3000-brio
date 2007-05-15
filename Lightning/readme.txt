@@ -1,5 +1,5 @@
 =========================
-Lightning Emulation 0.1.1
+Lightning Emulation 0.1.3
 =========================
 
 ============
@@ -53,6 +53,19 @@ The installation tree will look like this:
    |
    +-*.py         (SCons modules for C++ build system)
 
+
+==================
+Target Preparation
+==================
+
+If you are running on actual target hardware, you should probably have received
+an updated root file system with this code drop.  It should have been called
+something like nfsroot-svnxxx.tar.gz.  To install it, extract it to the
+directory that you export via NFS to the target.  This directory is probably
+/home/lfu/nfsroot.
+
+See ReleaseNotes.txt for important information about which versions of other
+software components are required on the target.
 
 ===============
 Running samples

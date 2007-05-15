@@ -1913,3 +1913,19 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/15/07 4:08 PM
 1,173 ms. (Cumulative: 239,992 ms)
 
 ----------------
+Revision 288 from svn://localhost/TRUNK/:
+Revision 289 from svn://localhost/TRUNK/:
+Revision 290 from svn://localhost/TRUNK/:
+
+Added instructions for updating rootfs.
+Added version information for other components (rootfs, kernel, etc.)  The
+actual version numbers will have to be updated after we build the final
+rootfs.  For not they just say XXX in the release notes.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/15/07 4:55 PM
+2 changed, 0 added, 0 deleted.
+1,094 ms. (Cumulative: 241,148 ms)
+
+----------------
