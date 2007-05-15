@@ -9,7 +9,7 @@ Import('*')
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
 if local_vars['is_publish']:
-	samples = ['Simple', 'BrioCube']
+	samples = ['Simple', 'BrioCube', 'Button']
 	dest_dir = os.path.join(local_vars['publish_root'], 'Samples')
 	for s in samples:
 		Command( os.path.join(dest_dir, s), os.path.join('Samples', s), 

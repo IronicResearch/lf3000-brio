@@ -1,3 +1,5 @@
+import os
+
 #-----------------------------------------------------------------------------
 # Brio/System/Button
 #-----------------------------------------------------------------------------
@@ -19,6 +21,15 @@ mpilibs		= ['ModuleMPI']
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
+if os.getenv('EXTRA_LINUX_HEADER_DIR') == '':
+	extinc      = '#../LinuxDist/packages/drivers/include/linux'
+	print "EXTRA_LINUX_HEADER_DIR not defined.  Using default."
+else:
+	extinc      = os.getenv('EXTRA_LINUX_HEADER_DIR')
+
+if local_vars['is_emulation'] == 0:
+	myenv.Append(CPPPATH = [extinc])
+
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, 1)
 Depends(mympi, mymodule)
