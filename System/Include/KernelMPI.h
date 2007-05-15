@@ -100,7 +100,7 @@ public:
 
 /**/tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
 
-	tErrType	StartTimer( tTimerHndl hndl );
+	tErrType	StartTimer( tTimerHndl hndl, const tTimerProperties& props  );
 /**/tErrType	StopTimer( tTimerHndl hndl );
 
 	tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
