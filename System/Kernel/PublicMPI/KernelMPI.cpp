@@ -291,11 +291,11 @@ tErrType CKernelMPI::ResetTimer( tTimerHndl hndl, const tTimerProperties& props 
 }
 	
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::StartTimer(tTimerHndl hndl)
+tErrType CKernelMPI::StartTimer(tTimerHndl hndl, const tTimerProperties& props)
 {
   	if (!pModule_)
 		return kMPINotConnectedErr;
-	return pModule_->StartTimer(hndl);
+	return pModule_->StartTimer(hndl, props);
 }
 	
 //------------------------------------------------------------------------------
