@@ -16,7 +16,9 @@ def MakeTempDirName(module):
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
 modules = []
-modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
+# FIXME/dm: Audio is not supported for embedded target yet
+if local_vars['is_emulation']:
+	modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
 modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
 modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
 modules.append(SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0))

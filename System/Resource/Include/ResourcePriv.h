@@ -17,6 +17,7 @@
 #include <SystemTypes.h>
 #include <CoreModule.h>
 #include <DebugMPI.h>
+#include <stdio.h>				// FIXME/dm: needed for embedded target
 LF_BEGIN_BRIO_NAMESPACE()
 
 

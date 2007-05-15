@@ -17,6 +17,7 @@
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <time.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================	   
@@ -324,8 +325,8 @@ enum{
 
 // 
 enum{
-	TIMER_ABSTIME_SET=TIMER_ABSTIME,
-    TIMER_RELATIVE_SET=TIMER_ABSTIME_SET
+	TIMER_ABSTIME_SET=/* TIMER_ABSTIME */ 0,
+    TIMER_RELATIVE_SET=/* TIMER_ABSTIME_SET */ 1
 };    
 
 struct tTimerProperties {

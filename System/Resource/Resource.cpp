@@ -29,7 +29,7 @@
 #include <string.h> // for strcmp
 #include <dirent.h>
 #include <sys/stat.h>
-#include <linux/stat.h>
+//#include <linux/stat.h>	// FIXME/dm: missing on embedded target -- extraneous?
 #include <stdio.h>
 
 #include <map>		// FIXME: replace with non-STL implementation
@@ -403,8 +403,17 @@ void CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 {
 	CResourceImpl* pimpl = RetrieveImpl(id);
 	pimpl->mDefaultURI = pURIPath;
+#ifdef EMULATION
 	if( pURIPath.at(pURIPath.length()-1) != '/' )
 		pimpl->mDefaultURI += "/";
+#else
+	// FIXME/dm: Implement general CString handling for embedded target
+	const char* str = pURIPath.c_str();
+	int	  len = pURIPath.size();
+	if (str[len-1] != '/')	
+		pimpl->mDefaultURI += "/";
+	
+#endif
 }
 
 //----------------------------------------------------------------------------

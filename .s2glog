@@ -1826,3 +1826,12 @@ By TParker (TParker@leapfrog.com) on 5/15/07 12:23 PM
 1,063 ms. (Cumulative: 230,161 ms)
 
 ----------------
+Revision 278 from svn://localhost/TRUNK/:
+
+Mods to Kernel and Resource sources for embedded target builds.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/15/07 12:44 PM
+5 changed, 0 added, 0 deleted.
+1,234 ms. (Cumulative: 231,442 ms)
+
+----------------
