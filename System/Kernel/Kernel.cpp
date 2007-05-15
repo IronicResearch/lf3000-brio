@@ -37,7 +37,7 @@
 extern "C"
 {
 	void sig_handler(int signal, siginfo_t *psigInfo, void *pFunc);
-	void *sig_handler_timer_task(void *parm);
+//	void *timerTask(void *parm);
 }
 //==============================================================================
 // Defines
@@ -59,11 +59,11 @@ static CKernelModule*	sinst = NULL;
 #define POLLINGTIME 10000000   
 namespace
 {
-	pthread_t pthreadTimer = 0; 
-	unsigned bufferTimer[NUMBERMESSAGES];
-	int counterCreatedTimers = 0;
-	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
-	sigset_t signal_mask;
+	int pthreadTimer = 0; 
+//	unsigned bufferTimer[NUMBERMESSAGES];
+//	int counterCreatedTimers = 0;
+//	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
+//	sigset_t signal_mask;
 }
 	
 //==============================================================================
@@ -681,31 +681,35 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
          				//		};
 
     // Create new task to process timer budder 
-	if( 0 == pthreadTimer )
+	if( 0 == pthreadTimer++ )
 	{
-		ret = sigemptyset(&signal_mask);
+//		ret = sigfillset(&signal_mask);
 // FIXME/ BSK insert handling macro		
-		ret = sigaddset(&signal_mask, SIGUSR1 ); 	
+//		ret = sigaddset(&signal_mask, SIGUSR1 ); 	
 // FIXME/ BSK insert handling macro		
 
-		errno = 0;
-		pthread_sigmask( SIG_BLOCK, &signal_mask, NULL );
-    	ASSERT_POSIX_CALL(errno);
+//		errno = 0;
+//		pthread_sigmask( SIG_BLOCK, &signal_mask, NULL );
+//    	ASSERT_POSIX_CALL(errno);
 
-		errno = 0;
-		pthread_create(&pthreadTimer, NULL,
-    						sig_handler_timer_task, NULL);
-    	ASSERT_POSIX_CALL(errno);
+//		errno = 0;
+//		pthread_create(&pthreadTimer, NULL,
+//    						timerTask, NULL);
+//    	ASSERT_POSIX_CALL(errno);
+
+    	int signum = SIGRTMAX;     
+
+    	/* Setup signal to repond to handler */
+    	struct sigaction act;
+//    	sigfillset( &act.sa_mask );
+    	sigemptyset( &act.sa_mask );
+    	act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
+    	act.sa_sigaction = sig_handler;
+    	sigaction( signum, &act, NULL ); 
 	}	
 
     int signum = SIGRTMAX;     
-    /* Setup signal to repond to handler */
-    struct sigaction act;
-    sigemptyset( &act.sa_mask );
-    act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
-    act.sa_sigaction = sig_handler;
-    sigaction( signum, &act, NULL ); 
- 
+
 	// Set up timer
     struct sigevent se;
     memset(&se, 0, sizeof(se)); 
@@ -718,9 +722,9 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
     errno = 0;
     timer_create(clockid, &se, &posixHndl); // BSK
 	ASSERT_POSIX_CALL( errno );
-	pthread_mutex_lock( &mutexValue);
-	counterCreatedTimers++;
-	pthread_mutex_unlock( &mutexValue);
+//	pthread_mutex_lock( &mutexValue);
+//	counterCreatedTimers++;
+//	pthread_mutex_unlock( &mutexValue);
 	
 	hndl = AsBrioTimerHandle(posixHndl);
 // FIXME/BSK This function only creates timer.	
@@ -736,15 +740,15 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
     timer_delete(AsPosixTimerHandle( hndl ));
 	ASSERT_POSIX_CALL( errno );
 
-	pthread_mutex_lock( &mutexValue);
-	counterCreatedTimers--;
-	pthread_mutex_unlock( &mutexValue);
+//	pthread_mutex_lock( &mutexValue);
+//	counterCreatedTimers--;
+//	pthread_mutex_unlock( &mutexValue);
 
-	if( counterCreatedTimers <= 0 )
-	{
-		pthread_cancel( pthreadTimer );
-		ASSERT_POSIX_CALL( errno );
-	};
+//	if( counterCreatedTimers <= 0 )
+//	{
+//		pthread_cancel( pthreadTimer );
+//		ASSERT_POSIX_CALL( errno );
+//	};
     return kNoErr; 
 }
 	
@@ -933,6 +937,11 @@ extern "C"
 
 void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 {
+
+			pfnTimerCallback callback =
+			        reinterpret_cast<pfnTimerCallback>(psigInfo->si_value.sival_ptr);
+						(*callback)();
+#if 0
 	int i;
 	int ret;
 	for(i = 0; i < NUMBERMESSAGES; i++)
@@ -942,7 +951,7 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 			bufferTimer[ i ] = (unsigned )psigInfo->si_value.sival_ptr;
 			ret = pthread_kill( pthreadTimer, SIGUSR1);
 // FIXME/BSK Insert checking error on return			
-#if 0 // FIXME/BSK
+#if 1 // FIXME/BSK
 			printf("psigInfo->si_errno sival_ptr=0X%x\n",
 		 	psigInfo->si_value.sival_ptr);
 			fflush(stdout);	
@@ -958,16 +967,25 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 		fflush(stdout); 
 #endif
 	}		
+#endif
 }
 
-void *sig_handler_timer_task(void *parm)
+#if 0 // BSK/FIXME delete
+void *timerTask(void *parm)
 {
 	int sig_caught;	// signal caught
 	int ret;
+	sigset_t signalMaskThread;
+
+	ret = sigemptyset(&signalMaskThread);
+	sigaddset( &signalMaskThread, SIGUSR1 );
+// FIXME/ BSK insert handling macro		
+//	ret = sigaddset(&signal_mask, SIGUSR1 ); 	
+// FIXME/ BSK insert handling macro		
 
 	while( 1 )
 	{
-		ret = sigwait( &signal_mask, &sig_caught );		 
+		ret = sigwait( &signalMaskThread, &sig_caught );		 
 // FIXME/BSK Insert the handling error
 		switch( sig_caught )
 		case SIGUSR1:
@@ -988,7 +1006,7 @@ void *sig_handler_timer_task(void *parm)
 		}
 	}
 }	
-
+#endif
 } // extern "C"
 
 // EOF
