@@ -1880,3 +1880,21 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/15/07 1:52 PM
 1,188 ms. (Cumulative: 236,413 ms)
 
 ----------------
+Revision 284 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,188 ms. (Cumulative: 237,647 ms)
+
+----------------
+Revision 285 from svn://localhost/TRUNK/:
+Revision 286 from svn://localhost/TRUNK/:
+
+changed Cleanup -> DeInit, opening layer devices (for later use), GetScreensize
+from hardware in GetScreenStats as a start
+
+
+By Andrey (Andrey@leapfrog.com) on 5/15/07 2:52 PM
+4 changed, 0 added, 0 deleted.
+1,109 ms. (Cumulative: 238,756 ms)
+
+----------------

@@ -28,10 +28,15 @@ void CDisplayModule::InitModule()
 	// TODO:
 }
 
-void CDisplayModule::CleanupModule()
+void CDisplayModule::DeInitModule()
 {
 	// On the target, this is where file descriptors get closed, etc
 	// in emulation, you probably don't need to do anything here
+}
+
+U32 CDisplayModule::GetScreenSize(int screen)
+{
+	return (U32)((320<<16)|(240));
 }
 
 LF_END_BRIO_NAMESPACE()

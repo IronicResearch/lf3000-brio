@@ -56,7 +56,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 //----------------------------------------------------------------------------
 CDisplayModule::~CDisplayModule()
 {
-	CleanupModule(); // delegate to platform or emulation cleanup
+	DeInitModule(); // delegate to platform or emulation cleanup
 }
 
 //----------------------------------------------------------------------------
@@ -75,11 +75,13 @@ U16 CDisplayModule::GetNumberOfScreens() const
 }
 
 //----------------------------------------------------------------------------
-const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen screen) const
+const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen screen)
 {
+	U32 size = GetScreenSize();
+
 	static const tDisplayScreenStats kLightningStats = {
-							240,
-							320,
+							(size>>16),
+							(size & 0xFFFF),
 							kPixelFormatARGB8888,
 							0,
 							"LCD"};

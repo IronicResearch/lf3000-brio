@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include "gpio_ioctl.h"
+#include "mlc_ioctl.h"
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -29,10 +30,11 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//------------------------------------------------------------------------
-	int			gDevGpio = -1;
-	int			gDevDpc = -1;
-	int			gDevMlc = -1;
-	int			gDevGa3d = -1;
+	int			gDevGpio;
+	int			gDevDpc;
+	int			gDevMlc;
+	int			gDevGa3d;
+	int			gDevLayer[4];
 }
 
 //============================================================================
@@ -60,6 +62,14 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(gDevMlc >= 0, 
 			"DisplayModule::InitModule: failed to open MLC device");
 	
+	// open MLC layer devices
+	// TODO: check for failure, how many layers do we want to open, where do
+	//       we manage number of layers and their properties/usage?
+	gDevLayer[0] = open("/dev/layer0", O_RDWR|O_SYNC);
+	gDevLayer[1] = open("/dev/layer1", O_RDWR|O_SYNC);
+	gDevLayer[2] = open("/dev/layer2", O_RDWR|O_SYNC);
+	gDevLayer[3] = open("/dev/layer3", O_RDWR|O_SYNC);
+
 	// open 3D accelerator device
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevGa3d >= 0, 
@@ -79,16 +89,26 @@ void CDisplayModule::InitModule()
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
 }
 
-void CDisplayModule::CleanupModule()
+void CDisplayModule::DeInitModule()
 {
-	if(gDevGpio >= 0)
-		close(gDevGpio);
-	if(gDevDpc >= 0)
-		close(gDevDpc);
-	if(gDevMlc >= 0)
-		close(gDevMlc);
-	if(gDevGa3d >= 0)
-		close(gDevGa3d);
+	close(gDevGpio);
+	close(gDevDpc);
+	close(gDevMlc);
+	close(gDevGa3d);
+	for(int i = 0; i < 4; i++)
+		close(gDevLayer[i]);
+}
+
+U32 CDisplayModule::GetScreenSize(void)
+{
+	union mlc_cmd c;
+	int r;
+
+	r = ioctl(gDevMlc, MLC_IOCGSCREENSIZE, &c);
+	dbg_.Assert(r == 0, "DisplayModule::GetScreenSize: ioctl failed");
+
+	// TODO: struct screensize_cmd is pretty much the same thing...
+	return (U32)(((c.screensize.height)<<16)|(c.screensize.width));
 }
 
 LF_END_BRIO_NAMESPACE()

@@ -42,7 +42,7 @@ public:
 
 	// Screen functionality
 	VTABLE_EXPORT U16							GetNumberOfScreens() const;
-	VTABLE_EXPORT const tDisplayScreenStats*	GetScreenStats(tDisplayScreen screen) const;
+	VTABLE_EXPORT const tDisplayScreenStats*	GetScreenStats(tDisplayScreen screen);
 	VTABLE_EXPORT tErrType						Invalidate(tDisplayScreen screen, 
 															tRect *pDirtyRect);
 
@@ -69,7 +69,8 @@ public:
 
 private:
 	void				InitModule( );
-	void				CleanupModule( );
+	void				DeInitModule( );
+	U32					GetScreenSize( );
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions
