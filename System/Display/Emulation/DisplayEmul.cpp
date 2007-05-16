@@ -68,6 +68,27 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 }
 
 //----------------------------------------------------------------------------
+U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
+{
+    dbg_.DebugOut(kDbgLvlCritical, "GetBuffer not implemented\n");
+    return NULL;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
+{
+    dbg_.DebugOut(kDbgLvlCritical, "GetHeight not implemented\n");
+    return 0;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
+{
+    dbg_.DebugOut(kDbgLvlCritical, "GetWidth not implemented\n");
+    return 0;
+}
+
+//----------------------------------------------------------------------------
 U32 CDisplayModule::GetScreenSize()
 {
 	return (U32)((320<<16)|(240));

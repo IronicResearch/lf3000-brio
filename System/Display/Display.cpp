@@ -101,27 +101,6 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 
 //============================================================================
 //----------------------------------------------------------------------------
-U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
-{
-	dbg_.DebugOut(kDbgLvlCritical, "GetBuffer not implemented\n");
-	return NULL;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
-{
-	dbg_.DebugOut(kDbgLvlCritical, "GetHeight not implemented\n");
-	return 0;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
-{
-	dbg_.DebugOut(kDbgLvlCritical, "GetWidth not implemented\n");
-	return 0;
-}
-
-//----------------------------------------------------------------------------
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
 	dbg_.DebugOut(kDbgLvlCritical, "UnRegister not implemented\n");

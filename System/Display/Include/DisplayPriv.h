@@ -77,6 +77,7 @@ private:
 		U16 width;			// from CreateHandle
 		U16 height;
 		tPixelFormat colorDepth;
+		U8 pitch;			// based on colorDepth
 		U8 *pBuffer;
 		S16 x;				// from Register()
 		S16 y;

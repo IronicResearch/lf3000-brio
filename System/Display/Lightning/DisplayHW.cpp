@@ -127,6 +127,12 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext.width = width;
 	GraphicsContext.colorDepth = colorDepth;
 
+	// TODO: we should have a mapping of PixelFormat->pitch, right?
+	if(colorDepth == kPixelFormatRGB565) // 24-bit horizonal pitch
+		GraphicsContext.pitch = 3;
+	else // 32-bit horizontal pitch
+		GraphicsContext.pitch = 4;
+
 	return (tDisplayHandle)&GraphicsContext;
 }
 
@@ -167,6 +173,28 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                              tDisplayScreen screen)
 {
 	return RegisterLayer(hndl, xPos, yPos);
+}
+
+U8 *CDisplayModule::GetBuffer(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->pBuffer;
+}
+
+/* (this is commented out in DisplayPriv, so commented out here for now)
+U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->pitch;
+}
+*/
+
+U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->height;
+}
+
+U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->width;
 }
 
 LF_END_BRIO_NAMESPACE()

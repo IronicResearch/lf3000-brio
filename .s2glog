@@ -2004,3 +2004,15 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 2:22 PM
 1,219 ms. (Cumulative: 249,604 ms)
 
 ----------------
+Revision 303 from svn://localhost/TRUNK/:
+
+added Width, Height, Buffer 'getters' as per the spec, removed generic versions
+(placed the stubs in Emulation/), added pitch to context in an initial way in
+case we care about it later
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 2:47 PM
+4 changed, 0 added, 0 deleted.
+1,173 ms. (Cumulative: 250,824 ms)
+
+----------------
