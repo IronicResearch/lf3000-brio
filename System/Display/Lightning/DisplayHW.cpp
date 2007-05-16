@@ -98,6 +98,23 @@ U32 CDisplayModule::GetScreenSize(void)
 	return (U32)(((c.screensize.height)<<16)|(c.screensize.width));
 }
 
+//----------------------------------------------------------------------------
+enum tPixelFormat CDisplayModule::GetPixelFormat(void)
+{
+	int format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
+	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
+
+	switch(format) {
+		case kLayerPixelFormatRGB4444:
+		return kPixelFormatRGB4444;
+		case kLayerPixelFormatRGB565:
+		return kPixelFormatRGB565;
+		case kLayerPixelFormatARGB8888:
+		return kPixelFormatARGB8888;
+	}
+	return kPixelFormatError;
+}
+
 // The frame buffer was already allocated by the hardware, therefore pBuffer
 // is ignored.
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 

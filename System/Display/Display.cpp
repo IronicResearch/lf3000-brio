@@ -78,12 +78,16 @@ U16 CDisplayModule::GetNumberOfScreens() const
 const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen screen)
 {
 	U32 size = GetScreenSize();
+	enum tPixelFormat format = GetPixelFormat();
+
+	if(format == kPixelFormatError) //FIXME: is this the right thing to do?
+		dbg_.DebugOut(kDbgLvlCritical, "unknown PixelFormat returned\n");
 
 	static const tDisplayScreenStats kLightningStats = {
 							(size>>16),
 							(size & 0xFFFF),
-							kPixelFormatARGB8888,
-							0,
+							format,
+							0, //TODO
 							"LCD"};
 	return &kLightningStats;
 }

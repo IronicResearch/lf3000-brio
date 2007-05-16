@@ -1974,3 +1974,16 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 12:08 PM
 1,093 ms. (Cumulative: 245,994 ms)
 
 ----------------
+Revision 298 from svn://localhost/TRUNK/:
+Revision 299 from svn://localhost/TRUNK/:
+Revision 300 from svn://localhost/TRUNK/:
+
+GetScreenStats() retrieves pixel format from layer, adding DisplayHW.h for
+MLC-specific definitions (ex: pixel formats)
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 2:14 PM
+4 changed, 1 added, 0 deleted.
+1,188 ms. (Cumulative: 247,229 ms)
+
+----------------

@@ -73,5 +73,10 @@ U32 CDisplayModule::GetScreenSize()
 	return (U32)((320<<16)|(240));
 }
 
+enum tPixelFormat CDisplayModule::GetPixelFormat(void)
+{
+	return kPixelFormatARGB8888;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

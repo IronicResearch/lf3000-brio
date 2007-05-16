@@ -18,7 +18,11 @@
 #include <EventTypes.h>
 #include <DisplayTypes.h>
 #include <DebugMPI.h>
+
+#include "DisplayHW.h"
+
 LF_BEGIN_BRIO_NAMESPACE()
+
 
 
 //==============================================================================
@@ -83,6 +87,7 @@ private:
 	void				InitModule( );
 	void				DeInitModule( );
 	U32					GetScreenSize( );
+	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
 	CDebugMPI			dbg_;
 
