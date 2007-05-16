@@ -64,6 +64,9 @@ public:
 	
 	VTABLE_EXPORT tErrType			LockBuffer(tDisplayHandle hndl);
 	VTABLE_EXPORT tErrType			UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect);
+	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
+	VTABLE_EXPORT void    			DeinitOpenGL();
+
 
 private:
 	struct tDisplayContext {
@@ -77,10 +80,6 @@ private:
 		bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
 	} GraphicsContext;
 
-	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
-	VTABLE_EXPORT void    			DeinitOpenGL();
-
-private:
 	void				InitModule( );
 	void				DeInitModule( );
 	U32					GetScreenSize( );

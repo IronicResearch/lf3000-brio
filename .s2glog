@@ -1952,3 +1952,14 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 11:21 AM
 1,204 ms. (Cumulative: 243,713 ms)
 
 ----------------
+Revision 295 from svn://localhost/TRUNK/:
+
+resolving conflict with r292, correctly this time... however there is still a
+broken build diue to 292, need to investigate
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 11:40 AM
+1 changed, 0 added, 0 deleted.
+1,094 ms. (Cumulative: 244,854 ms)
+
+----------------
