@@ -18,8 +18,10 @@
 #include <BrioOpenGLConfig.h>
 #include <DebugMPI.h>
 #include <EmulationConfig.h>
+#ifndef  EMULATION
+#include "GLES/libogl.h"
+#endif
 LF_BEGIN_BRIO_NAMESPACE()
-
 
 //==============================================================================
 namespace
@@ -42,8 +44,16 @@ namespace
 
 #ifndef EMULATION
 	// TODO/dm: Pass back essential callback info to MagicEyes GLES lib
+	// TODO/dm: All these callbacks should be moved into libDisplay.so module
+	//			but MagicEyes libogl.a links against them *and* EGL funcs.
 	//--------------------------------------------------------------------------
-	extern "C" int  GLESOAL_Initalize( /* ___OAL_MEMORY_INFORMATION__* */ void* pMemoryInfomation ) { return 1; }
+	___OAL_MEMORY_INFORMATION__ 	meminfo;
+	//--------------------------------------------------------------------------
+	extern "C" int  GLESOAL_Initalize(___OAL_MEMORY_INFORMATION__* pMemoryInfo ) 
+	{
+		*pMemoryInfo = meminfo; 
+		return 1; 
+	}
 
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_Finalize( void ) { }
@@ -119,6 +129,12 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	eglDisplay = eglGetDisplay((NativeDisplayType)x11Display);
 	genWindow = (NativeWindowType)x11Window;
 #else	// !EMULATION
+	// Init OpenGL hardware
+	disp_.InitOpenGL(&meminfo);
+	
+	// EGL NativeWindow needs to be some non-NULL struct
+	genWindow = malloc(sizeof(tDisplayScreenStats));
+
 	// Lightning hardware just has one display
 	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #endif	// EMULATION
@@ -221,6 +237,9 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
     if (x11Colormap) XFreeColormap( x11Display, x11Colormap );
 	if (x11Display) XCloseDisplay(x11Display);
 #endif	// EMULATION
+
+	// Exit OpenGL hardware
+	disp_.DeinitOpenGL(); 
 }
 
 LF_END_BRIO_NAMESPACE()

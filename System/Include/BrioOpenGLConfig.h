@@ -23,6 +23,7 @@
 #include <GLES/gl.h>
 
 #include <SystemTypes.h>
+#include <DisplayMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -51,6 +52,9 @@ public:
 	EGLConfig			eglConfig;
 	EGLSurface			eglSurface;
 	EGLContext			eglContext;
+	
+private:
+	CDisplayMPI			disp_;	
 };
 
 LF_END_BRIO_NAMESPACE()	

@@ -18,8 +18,6 @@
 #include <EventTypes.h>
 #include <DisplayTypes.h>
 #include <DebugMPI.h>
-//#include "DisplayPriv.h"
-//using namespace CDisplayModule;
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -66,6 +64,9 @@ public:
 	
 	VTABLE_EXPORT tErrType			LockBuffer(tDisplayHandle hndl);
 	VTABLE_EXPORT tErrType			UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect);
+
+	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
+	VTABLE_EXPORT void    			DeinitOpenGL();
 
 private:
 	void				InitModule( );

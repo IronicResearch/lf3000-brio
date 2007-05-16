@@ -21,10 +21,10 @@ mpilibs		= ['ModuleMPI'] + emulibs
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
-if os.getenv('EXTRA_LINUX_HEADER_DIR') == '':
-	extinc      = '#../LinuxDist/packages/drivers/include/linux'
-else:
-	extinc      = os.getenv('EXTRA_LINUX_HEADER_DIR')
+##if os.getenv('EXTRA_LINUX_HEADER_DIR') == '':
+extinc      = '#../LinuxDist/packages/drivers/include/linux'
+##else:
+##	extinc      = os.getenv('EXTRA_LINUX_HEADER_DIR')
 if local_vars['is_emulation']:
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'#ThirdParty/PowerVR/Include/LinuxPC',

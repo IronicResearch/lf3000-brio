@@ -188,5 +188,20 @@ tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
 	return pModule_->UnlockBuffer(hndl, pDirtyRect);
 }
 
+//----------------------------------------------------------------------------
+void CDisplayMPI::InitOpenGL(void* pCtx)
+{
+	if (!pModule_)
+		return;
+	pModule_->InitOpenGL(pCtx);
+}
+
+//----------------------------------------------------------------------------
+void CDisplayMPI::DeinitOpenGL()
+{
+	if (!pModule_)
+		return;
+	pModule_->DeinitOpenGL();
+}
 
 // EOF

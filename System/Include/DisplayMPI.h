@@ -59,6 +59,9 @@ public:
 	tErrType            LockBuffer(tDisplayHandle hndl);
 	tErrType            UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect = NULL);
 	
+	void				InitOpenGL(void* pCtx);
+	void				DeinitOpenGL();
+	
 private:
 	class CDisplayModule*	pModule_;
 };

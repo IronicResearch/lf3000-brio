@@ -19,8 +19,11 @@
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <unistd.h>
 #include "gpio_ioctl.h"
 #include "mlc_ioctl.h"
+#include "GLES/libogl.h"
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -89,6 +92,7 @@ void CDisplayModule::InitModule()
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
 }
 
+//----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
 	close(gDevGpio);
@@ -99,6 +103,7 @@ void CDisplayModule::DeInitModule()
 		close(gDevLayer[i]);
 }
 
+//----------------------------------------------------------------------------
 U32 CDisplayModule::GetScreenSize(void)
 {
 	union mlc_cmd c;
