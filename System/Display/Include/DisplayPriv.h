@@ -89,6 +89,7 @@ private:
 	U32					GetScreenSize( );
 	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
+	void				SetDirtyBit(void);
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions

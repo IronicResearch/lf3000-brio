@@ -2035,3 +2035,14 @@ By Dmilici (Dmilici@leapfrog.com) on 5/16/07 4:11 PM
 1,110 ms. (Cumulative: 253,296 ms)
 
 ----------------
+Revision 306 from svn://localhost/TRUNK/:
+
+added simple Brio 'stripes' demo, utilizing the DisplayManager module, setting
+the dirty bit and applying geometry and color changes in DisplayManager
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 4:21 PM
+2 changed, 0 added, 0 deleted.
+1,203 ms. (Cumulative: 254,546 ms)
+
+----------------

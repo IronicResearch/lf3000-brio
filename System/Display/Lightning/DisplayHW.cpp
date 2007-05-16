@@ -136,21 +136,42 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
+	enum tLayerPixelFormat hwFormat;
+
 	GraphicsContext.height = height;
 	GraphicsContext.width = width;
 	GraphicsContext.colorDepth = colorDepth;
 
-	// TODO: we should have a mapping of PixelFormat->pitch, right?
-	if(colorDepth == kPixelFormatRGB565) // 24-bit horizonal pitch
-		GraphicsContext.pitch = 3;
-	else // 32-bit horizontal pitch
+	switch(colorDepth) {
+		case kLayerPixelFormatRGB4444:
 		GraphicsContext.pitch = 4;
+		hwFormat = kLayerPixelFormatRGB4444;
+		break;
+
+		case kLayerPixelFormatARGB8888:
+		GraphicsContext.pitch = 4;
+		hwFormat = kLayerPixelFormatRGB4444;
+		break;
+
+		default:
+		case kPixelFormatRGB565:
+		GraphicsContext.pitch = 2;
+		hwFormat = kLayerPixelFormatRGB565;
+		break;
+	}
+
+	// apply to device
+	ioctl(gDevLayer, MLC_IOCTFORMAT, hwFormat);
+	ioctl(gDevLayer, MLC_IOCTHSTRIDE, GraphicsContext.pitch);
+	ioctl(gDevLayer, MLC_IOCTVSTRIDE, GraphicsContext.pitch * width);
+	SetDirtyBit();
 
 	return (tDisplayHandle)&GraphicsContext;
 }
 
 tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
+	union mlc_cmd c;
 	struct tDisplayContext *context;
 	
 	context = (struct tDisplayContext *)hndl;
@@ -159,9 +180,21 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	context->y = yPos;
 	context->isAllocated = true;
 
+	// apply to device
+	c.position.top = yPos;
+	c.position.left = xPos;
+	c.position.right = xPos + context->width;
+	c.position.bottom = yPos + context->height;
+	ioctl(gDevLayer, MLC_IOCSPOSITION, &c);
+	SetDirtyBit();
+
 	return kNoErr;
 }
 
+void CDisplayModule::SetDirtyBit(void)
+{
+	ioctl(gDevLayer, MLC_IOCTDIRTY, 0);
+}
 
 // We are not implementing multiple 2D RGB layers or multiple screens, so
 // insertAfter and screen are ignored.
