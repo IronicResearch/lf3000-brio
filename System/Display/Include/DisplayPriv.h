@@ -80,7 +80,6 @@ private:
 		U8 *pBuffer;
 		S16 x;				// from Register()
 		S16 y;
-		U8 dev;				// /dev/layerN, reassigned by Register()
 		bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
 	} GraphicsContext;
 

@@ -14,7 +14,16 @@
 //
 //==============================================================================
 
-//lookup table providing hardware tPixelFormat equivalents
+// layer to be used by DisplayManager for 2D RGB
+#define RGB_LAYER_ID	0
+#define RGB_LAYER_DEV	"/dev/layer0"
+
+// pins used for LCD and board-specific tasks
+#define PIN_LCD_ENABLE			10
+#define PIN_BACKLIGHT_ENABLE	9
+#define PIN_BLUE_LED			29
+
+// lookup table providing hardware tPixelFormat equivalents
 enum tLayerPixelFormat {
 	kLayerPixelFormatError 		= 0,
 	kLayerPixelFormatRGB4444 	= 0x2211, //A4R4G4B4

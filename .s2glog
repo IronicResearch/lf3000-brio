@@ -1987,3 +1987,20 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 2:14 PM
 1,188 ms. (Cumulative: 247,229 ms)
 
 ----------------
+Revision 301 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,094 ms. (Cumulative: 248,385 ms)
+
+----------------
+Revision 302 from svn://localhost/TRUNK/:
+
+moved some definitions into DisplayHW.h instead of them being hard-coded, these
+will be gone with the next hardware revision (aside from layer number).
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 2:22 PM
+3 changed, 0 added, 0 deleted.
+1,219 ms. (Cumulative: 249,604 ms)
+
+----------------

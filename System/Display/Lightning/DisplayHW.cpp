@@ -59,22 +59,25 @@ void CDisplayModule::InitModule()
 			"DisplayModule::InitModule: failed to open MLC device");
 	
 	// open MLC 2D RGB layer device
-	gDevLayer = open("/dev/layer0", O_RDWR|O_SYNC);
+	gDevLayer = open(RGB_LAYER_DEV, O_RDWR|O_SYNC);
 	dbg_.Assert(gDevLayer >= 0, 
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
 
 	c.outvalue.port = 1;	// GPIO port B
 	c.outvalue.value = 1;	// set pins high
 
-	// enable LCD
-	c.outvalue.pin	= 10;
+	c.outvalue.pin	= PIN_LCD_ENABLE;
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	// turn on LCD backlight
-	c.outvalue.pin	= 9;
+	dbg_.Assert(r >= 0, 
+			"DisplayModule::InitModule: GPIO ioctl failed");
+	c.outvalue.pin	= PIN_BACKLIGHT_ENABLE;
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	// turn on blue LED
-	c.outvalue.pin	= 29;
+	dbg_.Assert(r >= 0, 
+			"DisplayModule::InitModule: GPIO ioctl failed");
+	c.outvalue.pin	= PIN_BLUE_LED;
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
+	dbg_.Assert(r >= 0, 
+			"DisplayModule::InitModule: GPIO ioctl failed");
 }
 
 //----------------------------------------------------------------------------
@@ -143,7 +146,6 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	context->pBuffer = (U8 *)addr;
 	context->x = xPos;
 	context->y = yPos;
-	context->dev = 0; /*XXX*/
 	context->isAllocated = true;
 
 	return kNoErr;
