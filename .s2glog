@@ -1963,3 +1963,14 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 11:40 AM
 1,094 ms. (Cumulative: 244,854 ms)
 
 ----------------
+Revision 296 from svn://localhost/TRUNK/:
+Revision 297 from svn://localhost/TRUNK/:
+
+oops, fixed bad job of resolving conflict, builds now
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 12:08 PM
+1 changed, 0 added, 0 deleted.
+1,093 ms. (Cumulative: 245,994 ms)
+
+----------------

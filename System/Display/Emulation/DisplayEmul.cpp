@@ -38,6 +38,16 @@ void CDisplayModule::DeInitModule()
 //----------------------------------------------------------------------------
 void CDisplayModule::InitOpenGL(void* pCtx)
 {
+}
+
+//----------------------------------------------------------------------------
+void CDisplayModule::DeinitOpenGL()
+{
+}
+
+tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
+                                        tPixelFormat colorDepth, U8 *pBuffer)
+{
     dbg_.DebugOut(kDbgLvlCritical, "CreateHandle not implemented\n");
     return kInvalidDisplayHandle;
 }
@@ -55,11 +65,6 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 {
     dbg_.DebugOut(kDbgLvlCritical, "Register not implemented\n");
     return kNoImplErr;
-}
-
-//----------------------------------------------------------------------------
-void CDisplayModule::DeinitOpenGL()
-{
 }
 
 //----------------------------------------------------------------------------
