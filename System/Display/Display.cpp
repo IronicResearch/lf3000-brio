@@ -97,14 +97,6 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 
 //============================================================================
 //----------------------------------------------------------------------------
-tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
-										tPixelFormat colorDepth, U8 *pBuffer)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "Invalidate not implemented\n");
-	return kInvalidDisplayHandle;
-}
-
-//----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
 	dbg_.DebugOut(kDbgLvlCritical, "GetBuffer not implemented\n");
@@ -123,23 +115,6 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 {
 	dbg_.DebugOut(kDbgLvlCritical, "GetWidth not implemented\n");
 	return 0;
-}
-
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos, 
-								tDisplayHandle insertAfter, tDisplayScreen screen)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "Register not implemented\n");
-	return kNoImplErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos, 
-							 tDisplayZOrder initialZOrder, 
-                             tDisplayScreen screen)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "Register not implemented\n");
-	return kNoImplErr;
 }
 
 //----------------------------------------------------------------------------

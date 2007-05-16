@@ -34,10 +34,8 @@ namespace
 {
 	//------------------------------------------------------------------------
 	int			gDevGpio;
-	int			gDevDpc;
 	int			gDevMlc;
-	int			gDevGa3d;
-	int			gDevLayer[4];
+	int			gDevLayer;
 }
 
 //============================================================================
@@ -55,28 +53,15 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(gDevGpio >= 0, 
 			"DisplayModule::InitModule: failed to open GPIO device");
 	
-	// open DPC device XXX: no need for this yet
-	gDevDpc = open("/dev/dpc", O_WRONLY);
-	dbg_.Assert(gDevDpc >= 0, 
-			"DisplayModule::InitModule: failed to open DPC device");
-	
 	// open MLC device
 	gDevMlc = open("/dev/mlc", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevMlc >= 0, 
 			"DisplayModule::InitModule: failed to open MLC device");
 	
-	// open MLC layer devices
-	// TODO: check for failure, how many layers do we want to open, where do
-	//       we manage number of layers and their properties/usage?
-	gDevLayer[0] = open("/dev/layer0", O_RDWR|O_SYNC);
-	gDevLayer[1] = open("/dev/layer1", O_RDWR|O_SYNC);
-	gDevLayer[2] = open("/dev/layer2", O_RDWR|O_SYNC);
-	gDevLayer[3] = open("/dev/layer3", O_RDWR|O_SYNC);
-
-	// open 3D accelerator device
-	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
-	dbg_.Assert(gDevGa3d >= 0, 
-			"DisplayModule::InitModule: failed to open 3D accelerator device");
+	// open MLC 2D RGB layer device
+	gDevLayer = open("/dev/layer0", O_RDWR|O_SYNC);
+	dbg_.Assert(gDevLayer >= 0, 
+			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
 
 	c.outvalue.port = 1;	// GPIO port B
 	c.outvalue.value = 1;	// set pins high
@@ -96,11 +81,8 @@ void CDisplayModule::InitModule()
 void CDisplayModule::DeInitModule()
 {
 	close(gDevGpio);
-	close(gDevDpc);
 	close(gDevMlc);
-	close(gDevGa3d);
-	for(int i = 0; i < 4; i++)
-		close(gDevLayer[i]);
+	close(gDevLayer);
 }
 
 //----------------------------------------------------------------------------
@@ -114,6 +96,58 @@ U32 CDisplayModule::GetScreenSize(void)
 
 	// TODO: struct screensize_cmd is pretty much the same thing...
 	return (U32)(((c.screensize.height)<<16)|(c.screensize.width));
+}
+
+// The frame buffer was already allocated by the hardware, therefore pBuffer
+// is ignored.
+tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
+										tPixelFormat colorDepth, U8 *pBuffer)
+{
+	GraphicsContext.height = height;
+	GraphicsContext.width = width;
+	GraphicsContext.colorDepth = colorDepth;
+
+	return (tDisplayHandle)&GraphicsContext;
+}
+
+tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
+{
+	int addr;
+	struct tDisplayContext *context;
+	
+	// ask for the frame buffer address
+	addr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
+	if(addr < 0) {
+		dbg_.DebugOut(kDbgLvlCritical, "ioctl failed");
+		return kNoImplErr;
+	}
+
+	context = (struct tDisplayContext *)hndl;
+	context->pBuffer = (U8 *)addr;
+	context->x = xPos;
+	context->y = yPos;
+	context->dev = 0; /*XXX*/
+	context->isAllocated = true;
+
+	return kNoErr;
+}
+
+
+// We are not implementing multiple 2D RGB layers or multiple screens, so
+// insertAfter and screen are ignored.
+tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
+							tDisplayHandle insertAfter, tDisplayScreen screen)
+{
+	return RegisterLayer(hndl, xPos, yPos);
+}
+
+// We are not implementing multiple 2D RGB layers or multiple screens, so
+// initialZOrder and screen are ignored.
+tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
+                             tDisplayZOrder initialZOrder,
+                             tDisplayScreen screen)
+{
+	return RegisterLayer(hndl, xPos, yPos);
 }
 
 LF_END_BRIO_NAMESPACE()

@@ -65,6 +65,18 @@ public:
 	VTABLE_EXPORT tErrType			LockBuffer(tDisplayHandle hndl);
 	VTABLE_EXPORT tErrType			UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect);
 
+private:
+	struct tDisplayContext {
+		U16 width;			// from CreateHandle
+		U16 height;
+		tPixelFormat colorDepth;
+		U8 *pBuffer;
+		S16 x;				// from Register()
+		S16 y;
+		U8 dev;				// /dev/layerN, reassigned by Register()
+		bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
+	} GraphicsContext;
+
 	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
 	VTABLE_EXPORT void    			DeinitOpenGL();
 
@@ -72,6 +84,7 @@ private:
 	void				InitModule( );
 	void				DeInitModule( );
 	U32					GetScreenSize( );
+	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions

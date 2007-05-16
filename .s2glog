@@ -1939,3 +1939,16 @@ By Dmilici (Dmilici@leapfrog.com) on 5/16/07 10:47 AM
 1,251 ms. (Cumulative: 242,446 ms)
 
 ----------------
+Revision 293 from svn://localhost/TRUNK/:
+Revision 294 from svn://localhost/TRUNK/:
+
+implemented Register and CreateHandle for Lightning, added stubs for Emulation
+and moved generic versions out of Display.cpp, cleaned up InitModule to
+reflect not needing DPC and GA3D in DisplayManager, etc
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 11:21 AM
+4 changed, 0 added, 0 deleted.
+1,204 ms. (Cumulative: 243,713 ms)
+
+----------------

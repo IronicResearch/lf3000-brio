@@ -38,6 +38,23 @@ void CDisplayModule::DeInitModule()
 //----------------------------------------------------------------------------
 void CDisplayModule::InitOpenGL(void* pCtx)
 {
+    dbg_.DebugOut(kDbgLvlCritical, "CreateHandle not implemented\n");
+    return kInvalidDisplayHandle;
+}
+
+tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
+                            tDisplayHandle insertAfter, tDisplayScreen screen)
+{
+    dbg_.DebugOut(kDbgLvlCritical, "Register not implemented\n");
+    return kNoImplErr;
+}
+
+tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
+                             tDisplayZOrder initialZOrder,
+                             tDisplayScreen screen)
+{
+    dbg_.DebugOut(kDbgLvlCritical, "Register not implemented\n");
+    return kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
