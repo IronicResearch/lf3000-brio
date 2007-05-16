@@ -64,7 +64,7 @@ namespace
 //----------------------------------------------------------------------------
 void CDisplayModule::InitOpenGL(void* pCtx)
 {
-	dbg_.DebugOut(kDbgLvlCritical, "InitOpenGLHW: enter\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: enter\n");
 
 	// Open device driver for 3D accelerator registers
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
@@ -77,15 +77,15 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Map 3D engine register space
 	gregsize = PAGE_3D * getpagesize();  
 	gpReg3d = mmap(0, gregsize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevGa3d, REG3D_PHYS);
-	dbg_.DebugOut(kDbgLvlCritical, "InitOpenGLHW: %08X mapped to %08X\n", REG3D_PHYS, gpReg3d);
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for framebuffer
     gpMem1 = mmap(MEM1_VIRT, gmem1size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM1_PHYS);
-	dbg_.DebugOut(kDbgLvlCritical, "InitOpenGLHW: %08X mapped to %08X\n", MEM1_PHYS, gpMem1);
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", MEM1_PHYS, gpMem1);
 
 	// Map memory block for (?)
     gpMem2 = mmap(MEM2_VIRT, gmem2size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM2_PHYS);
-	dbg_.DebugOut(kDbgLvlCritical, "InitOpenGLHW: %08X mapped to %08X\n", MEM2_PHYS, gpMem2);
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", MEM2_PHYS, gpMem2);
 
 	// FIXME/dm:
 	// Copy the required mappings into the MagicEyes callback init struct
@@ -121,13 +121,13 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
 #endif
 
-	dbg_.DebugOut(kDbgLvlCritical, "InitOpenGLHW: exit\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
 }
 
 //----------------------------------------------------------------------------
 void CDisplayModule::DeinitOpenGL()
 {
-	dbg_.DebugOut(kDbgLvlCritical, "DeInitOpenGLHW: enter\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: enter\n");
 
     munmap(gpReg3d, gregsize);
     munmap(gpMem1, gmem1size);
@@ -136,7 +136,7 @@ void CDisplayModule::DeinitOpenGL()
 	close(gDevGa3d);
 //	close(gDevLayer);
 
-	dbg_.DebugOut(kDbgLvlCritical, "DeInitOpenGLHW: exit\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
 
 LF_END_BRIO_NAMESPACE()

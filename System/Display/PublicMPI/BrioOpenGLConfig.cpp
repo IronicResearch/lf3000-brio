@@ -31,6 +31,12 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+#if 0	// FIXME/dm: enable for development
+#define	PRINTF	printf
+#else
+#define PRINTF	(void)
+#endif
+
 //==============================================================================
 namespace
 {
@@ -59,15 +65,14 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" int  GLESOAL_Initalize(___OAL_MEMORY_INFORMATION__* pMemoryInfo ) 
 	{
-//		*pMemoryInfo = meminfo;
-		memcpy(pMemoryInfo, &meminfo, sizeof(meminfo)); 
-	    printf("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", 
-		    pMemoryInfo->VirtualAddressOf3DCore,
-		    pMemoryInfo->Memory1D_VirtualAddress,
-		    pMemoryInfo->Memory1D_PhysicalAddress,
-		    pMemoryInfo->Memory1D_SizeInMbyte,
-		    pMemoryInfo->Memory2D_VirtualAddress,
-		    pMemoryInfo->Memory2D_PhysicalAddress,
+		*pMemoryInfo = meminfo;
+	    PRINTF("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
+		    pMemoryInfo->VirtualAddressOf3DCore, \
+		    pMemoryInfo->Memory1D_VirtualAddress, \
+		    pMemoryInfo->Memory1D_PhysicalAddress, \
+		    pMemoryInfo->Memory1D_SizeInMbyte, \
+		    pMemoryInfo->Memory2D_VirtualAddress, \
+		    pMemoryInfo->Memory2D_PhysicalAddress, \
 		    pMemoryInfo->Memory2D_SizeInMbyte);
 		
 		// 3D layer must not be enabled until after this callback returns
@@ -79,7 +84,7 @@ namespace
 	extern "C" void GLESOAL_Finalize( void ) 
 	{
 		// 3D layer must be disabled before this callback returns
-		printf("GLESOAL_Finalize\n");
+		PRINTF("GLESOAL_Finalize\n");
 		int	layer = open( "/dev/layer0", O_WRONLY);
 		ioctl(layer, MLC_IOCT3DENB, (void *)0);
 		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
@@ -89,7 +94,7 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SwapBufferCallback( void ) 
 	{ 
-//		printf("GLESOAL_SwapBufferCallback\n");
+//		PRINTF("GLESOAL_SwapBufferCallback\n");
 	}
 
 	//--------------------------------------------------------------------------
@@ -184,7 +189,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		pass NULL for the second and third parameters.
 	*/
 	EGLint iMajorVersion, iMinorVersion;
-	dbg.DebugOut(kDbgLvlCritical, "eglInitialize()\n");
+	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize()\n");
 	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
 	dbg.Assert(success, "eglInitialize() failed\n");
 
@@ -192,8 +197,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		// NOTE: 3D layer can only be enabled after MagicEyes lib 
 		// sets up 3D accelerator, but this cannot happen
 		// until GLESOAL_Initalize() callback gets mappings.
-//		usleep(5000);
-		printf("eglInitialize post-init layer enable\n");
+		PRINTF("eglInitialize post-init layer enable\n");
 		int	layer = open( "/dev/layer0", O_WRONLY);
 	    
 		// Position 3D layer
@@ -249,7 +253,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		all criteria, so we can limit the number of configs returned to 1.
 	*/
 	int iConfigs;
-	dbg.DebugOut(kDbgLvlCritical, "eglChooseConfig()\n");
+	dbg.DebugOut(kDbgLvlVerbose, "eglChooseConfig()\n");
 	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
 	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed\n");
 
@@ -262,7 +266,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		Pixmaps and pbuffers are surfaces which only exist in off-screen
 		memory.
 	*/
-	dbg.DebugOut(kDbgLvlCritical, "eglCreateWindowSurface()\n");
+	dbg.DebugOut(kDbgLvlVerbose, "eglCreateWindowSurface()\n");
 	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, genWindow, NULL);
 	AbortIfEGLError("eglCreateWindowSurface");
 
@@ -272,7 +276,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		like textures will only be valid inside this context
 		(or shared contexts)
 	*/
-	dbg.DebugOut(kDbgLvlCritical, "eglCreateContext()\n");
+	dbg.DebugOut(kDbgLvlVerbose, "eglCreateContext()\n");
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, NULL);
 	AbortIfEGLError("eglCreateContext");
 
@@ -286,16 +290,16 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		subsequent drawing operations, and one that will be the source
 		of read operations. They can be the same surface.
 	*/
-	dbg.DebugOut(kDbgLvlCritical, "eglMakeCurrent()\n");
+	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
 #ifdef EMULATION
 	EmulationConfig::Instance().SetLcdDisplayWindow(x11Window);
 #endif	// EMULATION
 
-	glClearColorx(0x10000, 0, 0, 0);
+	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	dbg.DebugOut(kDbgLvlCritical, "eglSwapBuffers()\n");
+	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
 	eglSwapBuffers(eglDisplay, eglSurface);
 	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
 }

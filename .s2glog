@@ -2046,3 +2046,18 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 4:21 PM
 1,203 ms. (Cumulative: 254,546 ms)
 
 ----------------
+Revision 307 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,328 ms. (Cumulative: 255,937 ms)
+
+----------------
+Revision 308 from svn://localhost/TRUNK/:
+
+Modified printf tracer output conditionally.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/16/07 4:44 PM
+2 changed, 0 added, 0 deleted.
+1,266 ms. (Cumulative: 257,218 ms)
+
+----------------
