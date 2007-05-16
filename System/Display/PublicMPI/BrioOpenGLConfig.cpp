@@ -18,9 +18,17 @@
 #include <BrioOpenGLConfig.h>
 #include <DebugMPI.h>
 #include <EmulationConfig.h>
+
 #ifndef  EMULATION
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include "mlc_ioctl.h"
 #include "GLES/libogl.h"
 #endif
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -51,21 +59,48 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" int  GLESOAL_Initalize(___OAL_MEMORY_INFORMATION__* pMemoryInfo ) 
 	{
-		*pMemoryInfo = meminfo; 
+//		*pMemoryInfo = meminfo;
+		memcpy(pMemoryInfo, &meminfo, sizeof(meminfo)); 
+	    printf("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", 
+		    pMemoryInfo->VirtualAddressOf3DCore,
+		    pMemoryInfo->Memory1D_VirtualAddress,
+		    pMemoryInfo->Memory1D_PhysicalAddress,
+		    pMemoryInfo->Memory1D_SizeInMbyte,
+		    pMemoryInfo->Memory2D_VirtualAddress,
+		    pMemoryInfo->Memory2D_PhysicalAddress,
+		    pMemoryInfo->Memory2D_SizeInMbyte);
+		
+		// 3D layer must not be enabled until after this callback returns
+
 		return 1; 
 	}
 
 	//--------------------------------------------------------------------------
-	extern "C" void GLESOAL_Finalize( void ) { }
+	extern "C" void GLESOAL_Finalize( void ) 
+	{
+		// 3D layer must be disabled before this callback returns
+		printf("GLESOAL_Finalize\n");
+		int	layer = open( "/dev/layer0", O_WRONLY);
+		ioctl(layer, MLC_IOCT3DENB, (void *)0);
+		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
+	    close(layer);
+	}
 
 	//--------------------------------------------------------------------------
-	extern "C" void GLESOAL_SwapBufferCallback( void ) { }
+	extern "C" void GLESOAL_SwapBufferCallback( void ) 
+	{ 
+//		printf("GLESOAL_SwapBufferCallback\n");
+	}
 
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SetWindow( void* pNativeWindow  ) { }
 	
 	//--------------------------------------------------------------------------
-	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight ) { }
+	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight )
+	{
+	    *pWidth  = 320;
+	    *pHeight = 240;
+	}
 #endif // !EMULATION
 }
 
@@ -149,8 +184,35 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		pass NULL for the second and third parameters.
 	*/
 	EGLint iMajorVersion, iMinorVersion;
+	dbg.DebugOut(kDbgLvlCritical, "eglInitialize()\n");
 	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
 	dbg.Assert(success, "eglInitialize() failed\n");
+
+#ifndef EMULATION
+		// NOTE: 3D layer can only be enabled after MagicEyes lib 
+		// sets up 3D accelerator, but this cannot happen
+		// until GLESOAL_Initalize() callback gets mappings.
+//		usleep(5000);
+		printf("eglInitialize post-init layer enable\n");
+		int	layer = open( "/dev/layer0", O_WRONLY);
+	    
+		// Position 3D layer
+		union mlc_cmd c;
+		c.position.left = c.position.top = 0;
+		c.position.right = 320;
+		c.position.bottom = 240;
+	
+	    // Enable 3D layer
+	    ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+		ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
+		ioctl(layer, MLC_IOCTFORMAT, 0x4432);
+		ioctl(layer, MLC_IOCTHSTRIDE, 2);
+		ioctl(layer, MLC_IOCTVSTRIDE, 4096);
+		ioctl(layer, MLC_IOCT3DENB, (void *)1);
+		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
+
+		close(layer);
+#endif
 
 	/*
 		Step 3 - Specify the required configuration attributes.
@@ -160,10 +222,24 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		Window surface, i.e. it will be visible on screen. The list
 		has to contain key/value pairs, terminated with EGL_NONE.
 	 */
+#ifdef EMULATION
 	EGLint pi32ConfigAttribs[3];
 	pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
 	pi32ConfigAttribs[1] = EGL_WINDOW_BIT;
 	pi32ConfigAttribs[2] = EGL_NONE;
+#else
+	const EGLint pi32ConfigAttribs[] =
+	{
+	    EGL_RED_SIZE,       8,
+	    EGL_GREEN_SIZE,     8,
+	    EGL_BLUE_SIZE,      8,
+	    EGL_ALPHA_SIZE,     EGL_DONT_CARE,
+	    EGL_DEPTH_SIZE,     16,
+	    EGL_STENCIL_SIZE,   EGL_DONT_CARE,
+	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
+	    EGL_NONE,           EGL_NONE
+	};
+#endif
 
 	/*
 		Step 4 - Find a config that matches all requirements.
@@ -173,6 +249,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		all criteria, so we can limit the number of configs returned to 1.
 	*/
 	int iConfigs;
+	dbg.DebugOut(kDbgLvlCritical, "eglChooseConfig()\n");
 	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
 	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed\n");
 
@@ -185,6 +262,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		Pixmaps and pbuffers are surfaces which only exist in off-screen
 		memory.
 	*/
+	dbg.DebugOut(kDbgLvlCritical, "eglCreateWindowSurface()\n");
 	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, genWindow, NULL);
 	AbortIfEGLError("eglCreateWindowSurface");
 
@@ -194,6 +272,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		like textures will only be valid inside this context
 		(or shared contexts)
 	*/
+	dbg.DebugOut(kDbgLvlCritical, "eglCreateContext()\n");
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, NULL);
 	AbortIfEGLError("eglCreateContext");
 
@@ -207,11 +286,18 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		subsequent drawing operations, and one that will be the source
 		of read operations. They can be the same surface.
 	*/
+	dbg.DebugOut(kDbgLvlCritical, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
 #ifdef EMULATION
 	EmulationConfig::Instance().SetLcdDisplayWindow(x11Window);
 #endif	// EMULATION
+
+	glClearColorx(0x10000, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	dbg.DebugOut(kDbgLvlCritical, "eglSwapBuffers()\n");
+	eglSwapBuffers(eglDisplay, eglSurface);
+	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
 }
 
 //----------------------------------------------------------------------

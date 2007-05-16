@@ -2026,3 +2026,12 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 3:30 PM
 1,269 ms. (Cumulative: 252,140 ms)
 
 ----------------
+Revision 305 from svn://localhost/TRUNK/:
+
+Added 3D layer enable/disable code for MagicEyes OGLES lib callbacks (ugly version).
+
+By Dmilici (Dmilici@leapfrog.com) on 5/16/07 4:11 PM
+2 changed, 0 added, 0 deleted.
+1,110 ms. (Cumulative: 253,296 ms)
+
+----------------
