@@ -36,6 +36,7 @@ namespace
 	int			gDevGpio;
 	int			gDevMlc;
 	int			gDevLayer;
+	U8 			*gFrameBuffer;
 }
 
 //============================================================================
@@ -46,7 +47,8 @@ void CDisplayModule::InitModule()
 {
 	// Initialize display manager for hardware target
 	union gpio_cmd 	c;
-	int				r;		
+	int				r;
+	int 			baseAddr;
 
 	// open GPIO device
 	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
@@ -62,6 +64,17 @@ void CDisplayModule::InitModule()
 	gDevLayer = open(RGB_LAYER_DEV, O_RDWR|O_SYNC);
 	dbg_.Assert(gDevLayer >= 0, 
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
+
+	// ask for the Frame Buffer base address
+	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
+	dbg_.Assert(baseAddr >= 0,
+			"DisplayModule::InitModule: MLC layer ioctl failed");
+
+	// get access to the Frame Buffer
+	gFrameBuffer = (U8 *)mmap(0, FB_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
+		   						gDevLayer, baseAddr);
+	dbg_.Assert(gFrameBuffer >= 0,
+			"DisplayModule::InitModule: failed to mmap() frame buffer");
 
 	c.outvalue.port = 1;	// GPIO port B
 	c.outvalue.value = 1;	// set pins high
@@ -138,18 +151,10 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
-	int addr;
 	struct tDisplayContext *context;
 	
-	// ask for the frame buffer address
-	addr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
-	if(addr < 0) {
-		dbg_.DebugOut(kDbgLvlCritical, "ioctl failed");
-		return kNoImplErr;
-	}
-
 	context = (struct tDisplayContext *)hndl;
-	context->pBuffer = (U8 *)addr;
+	context->pBuffer = gFrameBuffer;
 	context->x = xPos;
 	context->y = yPos;
 	context->isAllocated = true;

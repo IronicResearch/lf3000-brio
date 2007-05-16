@@ -23,6 +23,9 @@
 #define PIN_BACKLIGHT_ENABLE	9
 #define PIN_BLUE_LED			29
 
+// size of the frame buffer (note: this is from drivers/mlc/mlc_config.h)
+#define FB_SIZE					0x11A000
+
 // lookup table providing hardware tPixelFormat equivalents
 enum tLayerPixelFormat {
 	kLayerPixelFormatError 		= 0,

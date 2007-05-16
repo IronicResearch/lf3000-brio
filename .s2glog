@@ -2016,3 +2016,13 @@ By Andrey (Andrey@leapfrog.com) on 5/16/07 2:47 PM
 1,173 ms. (Cumulative: 250,824 ms)
 
 ----------------
+Revision 304 from svn://localhost/TRUNK/:
+
+providing the actual mmap'ed frame buffer to users
+
+
+By Andrey (Andrey@leapfrog.com) on 5/16/07 3:30 PM
+2 changed, 0 added, 0 deleted.
+1,269 ms. (Cumulative: 252,140 ms)
+
+----------------
