@@ -68,6 +68,28 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
+{
+    dbg_.DebugOut(kDbgLvlCritical, "Invalidate not implemented\n");
+    return kNoImplErr;
+}
+
+//============================================================================
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
+{
+    dbg_.DebugOut(kDbgLvlCritical, "UnRegister not implemented\n");
+    return kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
+{
+    dbg_.DebugOut(kDbgLvlCritical, "DestroyHandle not implemented\n");
+    return kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
     dbg_.DebugOut(kDbgLvlCritical, "GetBuffer not implemented\n");

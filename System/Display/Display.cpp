@@ -93,28 +93,6 @@ const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen screen)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "Invalidate not implemented\n");
-	return kNoImplErr;
-}
-
-//============================================================================
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "UnRegister not implemented\n");
-	return kNoImplErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "DestroyHandle not implemented\n");
-	return kNoImplErr;
-}
-
-//----------------------------------------------------------------------------
 tErrType CDisplayModule::LockBuffer(tDisplayHandle hndl)
 {
 	dbg_.DebugOut(kDbgLvlCritical, "LockBuffer not implemented\n");

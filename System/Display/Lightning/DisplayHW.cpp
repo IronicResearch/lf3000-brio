@@ -137,36 +137,55 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
 	enum tLayerPixelFormat hwFormat;
+	static tDisplayContext *GraphicsContext = new struct tDisplayContext;
 
-	GraphicsContext.height = height;
-	GraphicsContext.width = width;
-	GraphicsContext.colorDepth = colorDepth;
+	GraphicsContext->height = height;
+	GraphicsContext->width = width;
+	GraphicsContext->colorDepth = colorDepth;
 
 	switch(colorDepth) {
 		case kLayerPixelFormatRGB4444:
-		GraphicsContext.pitch = 4;
+		GraphicsContext->pitch = 4;
 		hwFormat = kLayerPixelFormatRGB4444;
 		break;
 
 		case kLayerPixelFormatARGB8888:
-		GraphicsContext.pitch = 4;
+		GraphicsContext->pitch = 4;
 		hwFormat = kLayerPixelFormatRGB4444;
 		break;
 
 		default:
 		case kPixelFormatRGB565:
-		GraphicsContext.pitch = 2;
+		GraphicsContext->pitch = 2;
 		hwFormat = kLayerPixelFormatRGB565;
 		break;
 	}
 
 	// apply to device
 	ioctl(gDevLayer, MLC_IOCTFORMAT, hwFormat);
-	ioctl(gDevLayer, MLC_IOCTHSTRIDE, GraphicsContext.pitch);
-	ioctl(gDevLayer, MLC_IOCTVSTRIDE, GraphicsContext.pitch * width);
+	ioctl(gDevLayer, MLC_IOCTHSTRIDE, GraphicsContext->pitch);
+	ioctl(gDevLayer, MLC_IOCTVSTRIDE, GraphicsContext->pitch * width);
 	SetDirtyBit();
 
-	return (tDisplayHandle)&GraphicsContext;
+	return (tDisplayHandle)GraphicsContext;
+}
+
+tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
+{
+    return kNoErr;
+}
+
+tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
+{
+	((struct tDisplayContext *)hndl)->isAllocated = false;
+	return kNoErr;
+}
+
+tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
+									   Boolean destroyBuffer)
+{
+	delete hndl;
+	return kNoErr;
 }
 
 tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)

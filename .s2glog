@@ -2157,3 +2157,14 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/17/07 12:40 PM
 1,188 ms. (Cumulative: 271,536 ms)
 
 ----------------
+Revision 322 from svn://localhost/TRUNK/:
+
+dynamically allocating graphics context instead of having a static one,
+starting to implement the UnRegister/Destroy parts of the MPI accordingly
+
+
+By Andrey (Andrey@leapfrog.com) on 5/17/07 3:03 PM
+4 changed, 0 added, 0 deleted.
+1,156 ms. (Cumulative: 272,739 ms)
+
+----------------

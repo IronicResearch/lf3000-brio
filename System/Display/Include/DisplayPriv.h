@@ -82,7 +82,7 @@ private:
 		S16 x;				// from Register()
 		S16 y;
 		bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
-	} GraphicsContext;
+	};
 
 	void				InitModule( );
 	void				DeInitModule( );
