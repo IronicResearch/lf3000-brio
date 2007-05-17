@@ -2061,3 +2061,13 @@ By Dmilici (Dmilici@leapfrog.com) on 5/16/07 4:44 PM
 1,266 ms. (Cumulative: 257,218 ms)
 
 ----------------
+Revision 309 from svn://localhost/TRUNK/:
+Revision 310 from svn://localhost/TRUNK/:
+
+Important note about being su when untarring rootfs.
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/16/07 5:15 PM
+1 changed, 0 added, 0 deleted.
+1,312 ms. (Cumulative: 258,593 ms)
+
+----------------
