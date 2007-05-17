@@ -2135,3 +2135,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/17/07 11:31 AM
 1,187 ms. (Cumulative: 269,098 ms)
 
 ----------------
+Revision 320 from svn://localhost/TRUNK/:
+
+KernelPriv.h and KernelMPI.h function prototypes must agree.
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/17/07 12:12 PM
+2 changed, 0 added, 0 deleted.
+1,172 ms. (Cumulative: 270,317 ms)
+
+----------------

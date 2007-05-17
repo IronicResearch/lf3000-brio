@@ -93,8 +93,8 @@ public:
 //	tTimerHndl 	CreateTimer( pfnTimerCallback callback, tTimerProperties& props,
 //								const char* pDebugName = NULL );
 
-	tErrType CreateTimer(tTimerHndl& hndl, 
-					const tTimerProperties& props, const char* pDebugName = NULL );
+	tErrType CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
+ 						tTimerProperties& props, const char* pDebugName = NULL );
     
     tErrType 	DestroyTimer( tTimerHndl hndl );
 
