@@ -58,6 +58,8 @@ public:
 	
 	tErrType            LockBuffer(tDisplayHandle hndl);
 	tErrType            UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect = NULL);
+	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
+								Boolean enable=true);
 	
 	void				InitOpenGL(void* pCtx);
 	void				DeinitOpenGL();

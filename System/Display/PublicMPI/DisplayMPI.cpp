@@ -188,6 +188,15 @@ tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
 	return pModule_->UnlockBuffer(hndl, pDirtyRect);
 }
 
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetAlpha(hndl, level, enable);
+}
+
 //----------------------------------------------------------------------------
 void CDisplayMPI::InitOpenGL(void* pCtx)
 {

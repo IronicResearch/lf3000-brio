@@ -2184,3 +2184,15 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/17/07 4:00 PM
 1,141 ms. (Cumulative: 273,927 ms)
 
 ----------------
+Revision 324 from svn://localhost/TRUNK/:
+Revision 325 from svn://localhost/TRUNK/:
+
+A little cleanup, and implemented basic SetAlpha MPI method at least for now.
+Added that to the DisplayDemo.  We can remove it if needed.
+
+
+By Andrey (Andrey@leapfrog.com) on 5/17/07 4:48 PM
+6 changed, 0 added, 0 deleted.
+1,282 ms. (Cumulative: 275,255 ms)
+
+----------------

@@ -172,15 +172,19 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
+	SetDirtyBit();
     return kNoErr;
 }
 
+// This method does not have much meaning given the kernel-level frame buffer.
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
+	SetDirtyBit();
 	((struct tDisplayContext *)hndl)->isAllocated = false;
 	return kNoErr;
 }
 
+// There is no buffer to destroy, so destroyBuffer is ignored.
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
 									   Boolean destroyBuffer)
 {
@@ -243,6 +247,22 @@ U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
 	return ((struct tDisplayContext *)hndl)->pitch;
 }
 */
+
+tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
+		Boolean enable)
+{
+	struct tDisplayContext *context = (struct tDisplayContext *)hndl;
+	int r;
+
+	if(level > 100) 
+		level = 100;
+	level = (level*ALPHA_STEP)/100;
+	
+	r = ioctl(gDevLayer, MLC_IOCTALPHA, level);
+	r = ioctl(gDevLayer, MLC_IOCTBLEND, enable);
+	SetDirtyBit();
+	return kNoErr;
+}
 
 U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
 {

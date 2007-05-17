@@ -89,6 +89,13 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffe
     return kNoImplErr;
 }
 
+tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
+	Boolean enable)
+{
+    dbg_.DebugOut(kDbgLvlCritical, "SetAlpha not implemented\n");
+    return kNoImplErr;
+}
+
 //----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
