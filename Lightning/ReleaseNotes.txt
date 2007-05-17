@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.3  (Build 313, released May 17, 2007) 
+v0.1.3  (Build 321, released May 17, 2007) 
 ===========================================
 
 Release only for target hardware, not emulation.
@@ -28,7 +28,18 @@ Known Issues:
   is installed on root file system.
 * Event handling in BrioCube demo is disabled in embedded target build
   due to Kernel and Resource manager problems.
-    
+* When specifying deploy_dir to scons in the examples, specify the absolute
+  path to where you expect the executable to be installed.  For example:
+  deploy_dir=/home/lfu/nfsroot/usr/local/bin.  However, if INSTALL_PREFIX is
+  set in the environment, INSTALL_PREFIX/usr/local/bin will be the install
+  destination.  Expect this to become cleaner in future releases.
+* Whey you run the scons install target in the examples, only the program is
+  installed; the resources (such as Verdana.ttf) are not installed.  They must
+  be copied over manually.
+* Currently, on the embedded target, the module manager and other components
+  are not properly cleaned up if they crash.  This may be a problem with Brio,
+  or it may be a problem with Linux.  So, if you use ctl-c to kill a Brio app,
+  or if your Brio app crashes, you will probably have to reset the board.
 
 ===========================================
 v0.1.2  (Build 154, released May 1, 2007) 

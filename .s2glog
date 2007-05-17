@@ -2144,3 +2144,16 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/17/07 12:12 PM
 1,172 ms. (Cumulative: 270,317 ms)
 
 ----------------
+Revision 321 from svn://localhost/TRUNK/:
+
+Added some work-arounds to the Brio install script
+Made SConstruct files for demos more consistent.
+Fixed library linking for brio cube demo
+Updated release notes.
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/17/07 12:40 PM
+1 changed, 0 added, 0 deleted.
+1,188 ms. (Cumulative: 271,536 ms)
+
+----------------
