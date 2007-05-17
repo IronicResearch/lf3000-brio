@@ -130,8 +130,8 @@ public:
 //	  						   	tTimerProperties& props,
 //							   	const char* pDebugName = NULL );
 
-	VTABLE_EXPORT tErrType CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
- 						tTimerProperties& props, const char* pDebugName = NULL );
+	VTABLE_EXPORT tErrType CreateTimer(tTimerHndl& hndl,
+ 						const tTimerProperties& props, const char* pDebugName = NULL );
     
     VTABLE_EXPORT tErrType 	DestroyTimer( tTimerHndl hndl );
 
