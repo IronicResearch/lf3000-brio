@@ -2168,3 +2168,19 @@ By Andrey (Andrey@leapfrog.com) on 5/17/07 3:03 PM
 1,156 ms. (Cumulative: 272,739 ms)
 
 ----------------
+Revision 323 from svn://localhost/TRUNK/:
+
+Changed button state reporting to be more consistent with what Brio appears to
+want.
+Added open method to button driver to reset state.
+Simplified example code.
+Updated ButtonDemo accordingly.  After launching the ButtonDemo, you have to
+hit enter to get it going.  I'm not sure why.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/17/07 4:00 PM
+1 changed, 0 added, 0 deleted.
+1,141 ms. (Cumulative: 273,927 ms)
+
+----------------

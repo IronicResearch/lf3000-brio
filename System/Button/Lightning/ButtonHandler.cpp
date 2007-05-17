@@ -36,7 +36,6 @@ namespace
 	U32			gLastState;
 	int button_fd;
 	struct button_event current_be;
-	CDebugMPI	dbg(kGroupButton);
 }
 
 
@@ -48,15 +47,17 @@ namespace
 static void* LighteningButtonTask(void*)
 {
 	CEventMPI eventmgr;
+	CDebugMPI	dbg(kGroupButton);
+	dbg.SetDebugLevel(kDbgLvlVerbose);
+
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	
 	while(1) {
 
 		int size = read(button_fd, &current_be, sizeof(struct button_event));
-		dbg.DebugOut(kDbgLvlVerbose, "Read data.\n");
 		dbg.Assert( size >= 0, "button read failed" );
 		
-		tButtonData	data = { current_be.button, current_be.type };		
+		tButtonData	data = { current_be.button_state, current_be.button_trans };
 		CButtonMessage msg(data);
 		eventmgr.PostEvent(msg, kButtonEventPriority);
 
@@ -69,7 +70,6 @@ void CButtonModule::InitModule()
 {
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
-	dbg.SetDebugLevel(kDbgLvlVerbose);
 
 	if( kernel.IsValid() )
 	{
@@ -79,12 +79,12 @@ void CButtonModule::InitModule()
 		properties.TaskMainFcn = LighteningButtonTask;
 		status = kernel.CreateTask(handle, properties);
 	}
-	dbg.Assert( status == kNoErr, 
+	dbg_.Assert( status == kNoErr, 
 				"Lightening Button InitModule: background task creation failed" );
 
 
 	button_fd = open( "/dev/gpio", O_RDWR);
-	dbg.Assert(button_fd != -1, "Lightening Button: cannot open /dev/gpio");
+	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/gpio");
 
 }
 
