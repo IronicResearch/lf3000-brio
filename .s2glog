@@ -2291,3 +2291,12 @@ By Andrey (Andrey@leapfrog.com) on 5/18/07 2:55 PM
 1,172 ms. (Cumulative: 286,459 ms)
 
 ----------------
+Revision 335 from svn://localhost/TRUNK/:
+
+New support library for audio signal processing
+
+By Gklimanis (Gklimanis@leapfrog.com) on 5/18/07 3:29 PM
+0 changed, 12 added, 0 deleted.
+1,547 ms. (Cumulative: 288,068 ms)
+
+----------------
