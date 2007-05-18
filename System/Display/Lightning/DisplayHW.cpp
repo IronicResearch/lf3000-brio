@@ -195,7 +195,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
 									   Boolean destroyBuffer)
 {
-	delete hndl;
+	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
 }
 
@@ -256,7 +256,6 @@ U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
 tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
 		Boolean enable)
 {
-	struct tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int r;
 
 	if(level > 100) 

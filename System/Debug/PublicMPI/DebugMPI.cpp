@@ -205,7 +205,7 @@ void CDebugMPI::DebugOutErr( tDebugLevel lvl, tErrType err,
 		errstr = pModule_->ErrorToString(err);
 	else
 	{
-		sprintf(buf, "0x%x", err);
+		sprintf(buf, "0x%x", (unsigned int)err);
 		errstr = buf;
 	}
 		
