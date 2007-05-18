@@ -136,7 +136,7 @@ public:
 		U32				count;
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( 36, rsrcmgr_->GetNumRsrcs( ) );
+		TS_ASSERT_EQUALS( (unsigned int)36, rsrcmgr_->GetNumRsrcs( ) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 	}
 	
@@ -280,7 +280,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
 			if(buffer[i] != i)
@@ -410,7 +410,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
 			if(buffer_inv_test[i] != buffer_inv[i])
