@@ -259,8 +259,8 @@ namespace
 			// loop through the specified directory, processing recource entries
 			while ((ep = readdir( dp )))
 			{
-				// skip over '.' and '..' entries
-				if (strcmp(ep->d_name, ".") == 0 || strcmp(ep->d_name, "..") == 0)
+				// skip over entries beginnig with '.' ( including '.' and '..' entries)
+				if (ep->d_name[0] == '.')
 					continue;
 				// build the fully resolved filename (URI)
 				cstrTemp = path;
