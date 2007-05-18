@@ -34,7 +34,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #if 0	// FIXME/dm: enable for development
 #define	PRINTF	printf
 #else
-#define PRINTF	(void)
+#define PRINTF(...)
 #endif
 
 //==============================================================================
