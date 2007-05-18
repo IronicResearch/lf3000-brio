@@ -138,6 +138,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 {
 	enum tLayerPixelFormat hwFormat;
 	static tDisplayContext *GraphicsContext = new struct tDisplayContext;
+	U8 bpp;
 
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
@@ -145,26 +146,27 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 	switch(colorDepth) {
 		case kLayerPixelFormatRGB4444:
-		GraphicsContext->pitch = 4;
+		bpp = 4;
 		hwFormat = kLayerPixelFormatRGB4444;
 		break;
 
 		case kLayerPixelFormatARGB8888:
-		GraphicsContext->pitch = 4;
+		bpp = 4;
 		hwFormat = kLayerPixelFormatRGB4444;
 		break;
 
 		default:
 		case kPixelFormatRGB565:
-		GraphicsContext->pitch = 2;
+		bpp = 2;
 		hwFormat = kLayerPixelFormatRGB565;
 		break;
 	}
+	GraphicsContext->pitch = bpp*width;
 
 	// apply to device
 	ioctl(gDevLayer, MLC_IOCTFORMAT, hwFormat);
-	ioctl(gDevLayer, MLC_IOCTHSTRIDE, GraphicsContext->pitch);
-	ioctl(gDevLayer, MLC_IOCTVSTRIDE, GraphicsContext->pitch * width);
+	ioctl(gDevLayer, MLC_IOCTHSTRIDE, bpp);
+	ioctl(gDevLayer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
 	SetDirtyBit();
 
 	return (tDisplayHandle)GraphicsContext;
@@ -241,12 +243,10 @@ U8 *CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 	return ((struct tDisplayContext *)hndl)->pBuffer;
 }
 
-/* (this is commented out in DisplayPriv, so commented out here for now)
 U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pitch;
 }
-*/
 
 tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
 		Boolean enable)

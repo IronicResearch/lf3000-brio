@@ -2206,3 +2206,13 @@ By Gbreniman (Gbreniman@leapfrog.com) on 5/18/07 11:13 AM
 1,172 ms. (Cumulative: 276,489 ms)
 
 ----------------
+Revision 327 from svn://localhost/TRUNK/:
+
+Implemented GetPitch in DisplayManager and the DisplayDemo
+
+
+By Andrey (Andrey@leapfrog.com) on 5/18/07 11:19 AM
+5 changed, 0 added, 0 deleted.
+1,250 ms. (Cumulative: 277,786 ms)
+
+----------------

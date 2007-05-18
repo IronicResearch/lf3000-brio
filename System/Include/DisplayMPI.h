@@ -42,7 +42,7 @@ public:
 	tDisplayHandle      CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, 
 									U8 *pBuffer = NULL);
 	U8*                 GetBuffer(tDisplayHandle hndl) const;
-//	U16                 GetPitch(tDisplayHandle hndl) const;
+	U16                 GetPitch(tDisplayHandle hndl) const;
 	U16                 GetHeight(tDisplayHandle hndl) const;
 	U16                 GetWidth(tDisplayHandle hndl) const;
 	

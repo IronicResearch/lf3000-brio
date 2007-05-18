@@ -189,6 +189,13 @@ tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
 }
 
 
+U16 CDisplayMPI::GetPitch(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetPitch(hndl);
+}
+
 //----------------------------------------------------------------------------
 tErrType CDisplayMPI::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {

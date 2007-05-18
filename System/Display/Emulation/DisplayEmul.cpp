@@ -97,6 +97,13 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 }
 
 //----------------------------------------------------------------------------
+U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
+{
+	//TODO: this is the (bytes per pixel)*(width)
+	return 0;
+}
+
+//----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
     dbg_.DebugOut(kDbgLvlCritical, "GetBuffer not implemented\n");

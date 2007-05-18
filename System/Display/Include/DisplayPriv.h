@@ -52,7 +52,7 @@ public:
 	VTABLE_EXPORT tDisplayHandle	CreateHandle(U16 height, U16 width, 
 												tPixelFormat colorDepth, U8 *pBuffer);
 	VTABLE_EXPORT U8*				GetBuffer(tDisplayHandle hndl) const;
-//	VTABLE_EXPORT U16				GetPitch(tDisplayHandle hndl) const;
+	VTABLE_EXPORT U16				GetPitch(tDisplayHandle hndl) const;
 	VTABLE_EXPORT U16				GetHeight(tDisplayHandle hndl) const;
 	VTABLE_EXPORT U16 				GetWidth(tDisplayHandle hndl) const;
 	
@@ -79,7 +79,7 @@ private:
 		U16 width;			// from CreateHandle
 		U16 height;
 		tPixelFormat colorDepth;
-		U8 pitch;			// based on colorDepth
+		U16 pitch;			// based on colorDepth
 		U8 *pBuffer;
 		S16 x;				// from Register()
 		S16 y;
