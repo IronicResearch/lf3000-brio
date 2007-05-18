@@ -175,6 +175,7 @@ namespace
 			}
 //FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
 //							"Module configuration error, no modules found!");
+			return kNoErr;
 		}
 
 		

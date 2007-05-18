@@ -2238,3 +2238,14 @@ By Andrey (Andrey@leapfrog.com) on 5/18/07 12:15 PM
 1,188 ms. (Cumulative: 280,224 ms)
 
 ----------------
+Revision 330 from svn://localhost/TRUNK/:
+
+Fixed some incorrect casts to get rid of many compiler warnings.  Fixed some
+tests in RsrcMgr that compared unsigned to signed values.
+
+
+By Andrey (Andrey@leapfrog.com) on 5/18/07 12:47 PM
+3 changed, 0 added, 0 deleted.
+1,250 ms. (Cumulative: 281,521 ms)
+
+----------------

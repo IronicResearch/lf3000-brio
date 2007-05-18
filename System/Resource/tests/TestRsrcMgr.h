@@ -322,7 +322,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
 			if(buffer[i] != i)
@@ -334,7 +334,7 @@ public:
 		// seek forward from current position (80 from current, or 160 from start)
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, kBufSize, kSeekRsrcOptionCur) );
 		// write inverted data to the buffer
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			buffer_inv[i] = ~(i + 160);
 		}
@@ -350,7 +350,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
 			if(buffer[i] != i)
@@ -366,7 +366,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
 			if(buffer_inv_test[i] != buffer_inv[i])
@@ -378,7 +378,7 @@ public:
 		// seek back to modified region (SET)
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, kBufSize*2, kSeekRsrcOptionSet) );
 		// write original data to the file
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			buffer_inv[i] = i + 160;
 		}
@@ -394,7 +394,7 @@ public:
 		TS_ASSERT( !handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
 		resetHandler(handler_);
-		for(int i=0; i < kBufSize; ++i)
+		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
 			if(buffer[i] != i)

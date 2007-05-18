@@ -41,7 +41,7 @@ inline tErrType AsBrioErr(int err)
 if(err) \
 { \
 	printf("***** POSIX function fails with error # (%d). File (%s), Line (%d)\n", \
-	err, __FILE__, __LINE__); \
+	(int)err, __FILE__, __LINE__); \
 	printf("Error string: %s\n", strerror(err)); \
 	fflush(stdout); \
 	return(AsBrioErr(err)); \
