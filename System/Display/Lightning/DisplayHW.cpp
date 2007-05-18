@@ -48,7 +48,7 @@ void CDisplayModule::InitModule()
 	// Initialize display manager for hardware target
 	union gpio_cmd 	c;
 	int				r;
-	int 			baseAddr;
+	int 			baseAddr, fb_size;
 
 	// open GPIO device
 	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
@@ -70,8 +70,13 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(baseAddr >= 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 
+	// get the frame buffer's size
+	fb_size = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
+	dbg_.Assert(fb_size > 0,
+			"DisplayModule::InitModule: MLC layer ioctl failed");
+
 	// get access to the Frame Buffer
-	gFrameBuffer = (U8 *)mmap(0, FB_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED,
+	gFrameBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		   						gDevLayer, baseAddr);
 	dbg_.Assert(gFrameBuffer >= 0,
 			"DisplayModule::InitModule: failed to mmap() frame buffer");

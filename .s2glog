@@ -2216,3 +2216,15 @@ By Andrey (Andrey@leapfrog.com) on 5/18/07 11:19 AM
 1,250 ms. (Cumulative: 277,786 ms)
 
 ----------------
+Revision 328 from svn://localhost/TRUNK/:
+
+added ioctl to allow user space to ask the MLC driver for the frame buffer size
+(currently the same for all layers, decided at compile time).  Using that ioctl
+in DisplayManager now in place of a macro.
+
+
+By Andrey (Andrey@leapfrog.com) on 5/18/07 11:32 AM
+2 changed, 0 added, 0 deleted.
+1,157 ms. (Cumulative: 278,990 ms)
+
+----------------
