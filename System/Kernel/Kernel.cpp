@@ -39,6 +39,7 @@ extern "C"
 	void sig_handler(int signal, siginfo_t *psigInfo, void *pFunc);
 //	void *timerTask(void *parm);
 }
+
 //==============================================================================
 // Defines
 //==============================================================================
@@ -55,15 +56,13 @@ static CKernelModule*	sinst = NULL;
 //==============================================================================
 // Definition variables for timer 
 //==============================================================================
-#define NUMBERMESSAGES 10
-#define POLLINGTIME 10000000   
 namespace
 {
+#define NUMBERMESSAGES 10
+#define POLLINGTIME 10000000   
+#define NUMBERTIMERS 20
 	int pthreadTimer = 0; 
-//	unsigned bufferTimer[NUMBERMESSAGES];
-//	int counterCreatedTimers = 0;
-//	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
-//	sigset_t signal_mask;
+	callbackData funcData[NUMBERTIMERS];
 }
 	
 //==============================================================================
@@ -419,7 +418,7 @@ tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
 }
 
 //------------------------------------------------------------------------------
-#if 0 // FIXME/BSK
+#if 0 // FIXME/BSK Unlink was included in the Close
 tErrType CKernelModule::UnlinkMessageQueue(const char *name)
 {
     errno = 0;
@@ -644,12 +643,14 @@ U32   		CKernelModule::GetElapsedTime( U32* pUs )
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
- 						tTimerProperties& props, const char* pDebugName )
+tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
+								const char* pDebugName )
 {
 	tErrType err = kNoErr;
     sigset_t signal_set;
+    int signum = SIGRTMAX;     
     int ret; 
+
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
 						// There are the following possible values:
 						//	CLOCK_MONOTONIC
@@ -682,56 +683,65 @@ tErrType CKernelModule::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-    // Create new task to process timer budder 
+    // Initialize the sigaction structure for handler 
 	if( 0 == pthreadTimer++ )
 	{
-//		ret = sigfillset(&signal_mask);
-// FIXME/ BSK insert handling macro		
-//		ret = sigaddset(&signal_mask, SIGUSR1 ); 	
-// FIXME/ BSK insert handling macro		
-
-//		errno = 0;
-//		pthread_sigmask( SIG_BLOCK, &signal_mask, NULL );
-//    	ASSERT_POSIX_CALL(errno);
-
-//		errno = 0;
-//		pthread_create(&pthreadTimer, NULL,
-//    						timerTask, NULL);
-//    	ASSERT_POSIX_CALL(errno);
-
-    	int signum = SIGRTMAX;     
-
     	/* Setup signal to repond to handler */
     	struct sigaction act;
-//    	sigfillset( &act.sa_mask );
-    	sigemptyset( &act.sa_mask );
+//   	sigemptyset( &act.sa_mask );
+    	sigfillset( &act.sa_mask );
+    	sigaddset( &act.sa_mask, SIGRTMAX ); 
     	act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
     	act.sa_sigaction = sig_handler;
     	sigaction( signum, &act, NULL ); 
 	}	
-
-    int signum = SIGRTMAX;     
-
+    
 	// Set up timer
     struct sigevent se;
     memset(&se, 0, sizeof(se)); 
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
-	se.sigev_value.sival_ptr = (void *)callback;
+	
+//    se.sigev_value.sival_ptr-> = (void *)(callback);
+//	callbackData *ptrData = 
+//		(callbackData *)(malloc(sizeof(callbackData)));
+
+	int i = pthreadTimer - 1; 
+	se.sigev_value.sival_ptr = &funcData[ i ];
+//	se.sigev_value.sival_ptr = (void *)ptrData;
 
 	timer_t	posixHndl;
-
     errno = 0;
     timer_create(clockid, &se, &posixHndl); // BSK
 	ASSERT_POSIX_CALL( errno );
+
+// FIXME/BSK
 //	pthread_mutex_lock( &mutexValue);
 //	counterCreatedTimers++;
 //	pthread_mutex_unlock( &mutexValue);
+
+//typedef struct timer_arg{	void (*pfn)(tTimerHndl argt); void *arg;} callbackData; 
+//struct tTimerProperties { int type; struct itimerspec timeout; };
+
+	tTimerHndl hndl = AsBrioTimerHandle(posixHndl);
+
+// 	*(ptrData->pfn) = callback;
+//	*(void *)ptrData = (void *)callback;
 	
-	hndl = AsBrioTimerHandle(posixHndl);
+	funcData[ i ].pfn = callback;
+	funcData[ i ].arg = hndl;
+
+#if 0 // BSK
+	printf("CALLBACK = 0x%x, ARG =0x%x\n", callback, hndl);
+	fflush(stdout);
+#endif
+
+//	*(tTimerHndl *)ptrData->arg = hndl;
+//	*(U32 *)((callbackData *)se.sigev_value.sival_ptr)->arg = hndl;
 // FIXME/BSK This function only creates timer.	
+// The user must start it
 //	ResetTimer(hndl, props);
-    return kNoErr;
+    return hndl;
 }
 
 //------------------------------------------------------------------------------
@@ -800,8 +810,9 @@ tErrType CKernelModule::StopTimer( tTimerHndl hndl )
 	value.it_interval.tv_nsec = 0;
 	value.it_value.tv_sec = 0;
 	value.it_value.tv_nsec = 0;
-	
-	U32 remaining = GetTimerRemainingTime(hndl);
+
+// FIXME/BSK	
+//	U32 remaining = GetTimerRemainingTime(hndl);
 	
     errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );	
@@ -835,7 +846,8 @@ tErrType CKernelModule::PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValu
 	value.it_value.tv_sec = 0;
 	value.it_value.tv_nsec = 0;
 
-	U32 remaining = GetTimerRemainingTime(hndl);
+// FIXME/BSK
+//	U32 remaining = GetTimerRemainingTime(hndl);
 	
     errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );	
@@ -871,7 +883,7 @@ tErrType CKernelModule::ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveVal
 	
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds // (& microseconds)	
-U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl ) const
+U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const
 {
 	struct itimerspec value;
  //	printf("hndl=%d    12hndl=%d\n", hndl, (timer_t )hndl);
@@ -884,6 +896,10 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl ) const
     U32 milliSeconds = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
           			 (value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000000;
 
+		if( pUs )
+			*pUs =  (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000000 + 
+          			(value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000;
+			
 #if 1 // BSK  Debug printing 
     printf("CKernelModule::GetTimerElapsedTime:\n value.it_interval.tv_sec=%ld\n value.it_value.tv_sec=%ld\n \
             value.it_interval.tv_nsec=%ld\n value.it_value.tv_nsec=%ld\n",
@@ -895,7 +911,7 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl ) const
 	
 //------------------------------------------------------------------------------
 // time remaining in milliseconds (& microseconds)
-U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl ) const
+U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const
 {
 	struct itimerspec value;
 	
@@ -906,6 +922,9 @@ U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl ) const
     U32 milliSeconds = value.it_value.tv_sec * 1000 
     				+ value.it_value.tv_nsec / 1000000;
 	
+	if( pUs )
+			*pUs = value.it_value.tv_sec * 1000000 
+    				+ value.it_value.tv_nsec / 1000; 
     return milliSeconds;	
 }
 
@@ -937,12 +956,41 @@ extern "C"
 		sinst = NULL;
 	}
 
+struct timer_arg1
+{	
+	void (*callback1)(int somearg);
+	void *arg;;
+};            
+
 void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 {
+		callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
 
-			pfnTimerCallback callback =
-			        reinterpret_cast<pfnTimerCallback>(psigInfo->si_value.sival_ptr);
-						(*callback)();
+#if 0 // BSK
+	printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->arg);
+	fflush(stdout);
+#endif
+		(*(ta->pfn))((tTimerHndl )ta->arg);
+
+//		(*(ta->pfn))(*((tTimerHndl *)ta->arg)); 
+
+// FIXME/BSK
+//		(*(ta->pfn))(*ta->arg));
+
+//			callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr; 
+//			pfnTimerCallback callback =
+//			        reinterpret_cast<pfnTimerCallback>(psigInfo->si_value.sival_ptr);
+//			        reinterpret_cast<pfnTimerCallback>(psigInfo->si_value.sival_ptr.pfn);
+//						(*callback)();
+//		ta->pfn((tTimerHndl )(ta->arg));
+//		ta->pfn( (reinterpret_cast<tTimerHndl> )(ta->arg) );
+//		printf("0x%X=    0x%X= \n",
+//				(void )psigInfo->si_value.sival_ptr->pfn,
+//				 (void )psigInfo->si_value.sival_ptr->arg);
+//		printf("0x%X=    0x%X= \n", ta->pfn, *ta->pfn );
+//		fflush( stdout );
+//		(*ta->pfn)(ta->arg);
+
 #if 0
 	int i;
 	int ret;
@@ -953,7 +1001,7 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 			bufferTimer[ i ] = (unsigned )psigInfo->si_value.sival_ptr;
 			ret = pthread_kill( pthreadTimer, SIGUSR1);
 // FIXME/BSK Insert checking error on return			
-#if 1 // FIXME/BSK
+#if 0 // FIXME/BSK
 			printf("psigInfo->si_errno sival_ptr=0X%x\n",
 		 	psigInfo->si_value.sival_ptr);
 			fflush(stdout);	
@@ -1008,7 +1056,7 @@ void *timerTask(void *parm)
 		}
 	}
 }	
-#endif
+#endif  // BSK/FIXME delete
 } // extern "C"
 
 // EOF
