@@ -266,12 +266,15 @@ U32 CKernelMPI::GetElapsedTime( U32* pUs ) const
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
- 						tTimerProperties& props, const char* pDebugName )
+//tErrType CKernelMPI::CreateTimer(tTimerHndl& hndl, 
+// 						const tTimerProperties& props, const char* pDebugName )
+
+tTimerHndl 	CKernelMPI::CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
+								const char* pDebugName )
 {
   	if(!pModule_)
 		return kInvalidTimerHndl;
-	return pModule_->CreateTimer(hndl, callback, props, pDebugName);  
+	return pModule_->CreateTimer(callback, props, pDebugName);  
 }
 
 //------------------------------------------------------------------------------
@@ -323,21 +326,21 @@ tErrType CKernelMPI::ResumeTimer(tTimerHndl hndl, saveTimerSettings& saveValue)
 	
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds
-U32 CKernelMPI::GetTimerElapsedTimeInMilliSec(tTimerHndl hndl) const
+U32 CKernelMPI::GetTimerElapsedTime(tTimerHndl hndl, U32* pUs) const
                                                                     
 {
   	if (!pModule_)
 		return 0;
-	return pModule_->GetTimerElapsedTime(hndl);  
+	return pModule_->GetTimerElapsedTime(hndl, pUs );  
 }
 	
 //------------------------------------------------------------------------------
 // time remaining in milliseconds
-U32 CKernelMPI::GetTimerRemainingTimeInMilliSec(tTimerHndl hndl) const
+U32 CKernelMPI::GetTimerRemainingTime(tTimerHndl hndl, U32* pUs) const
 {
   	if (!pModule_)
 		return 0;
-	return pModule_->GetTimerRemainingTime(hndl);  
+	return pModule_->GetTimerRemainingTime(hndl, pUs );  
 }
 
 // fixme rdg: move the rest of these into the kernel module at some point
