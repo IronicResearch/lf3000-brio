@@ -419,7 +419,7 @@ typedef pthread_cond_t      tCond;
 typedef pthread_condattr_t  tCondAttr;
 typedef struct timespec     tTimeSpec;
 
-typedef void (*pfnTimerCallback)();
+typedef void (*pfnTimerCallback)(tTimerHndl );
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_KERNELTYPES_H
