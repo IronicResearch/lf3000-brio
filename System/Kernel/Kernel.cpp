@@ -62,6 +62,12 @@ namespace
 #define POLLINGTIME 10000000   
 #define NUMBERTIMERS 20
 
+typedef struct timer_arg
+{	
+	void (*pfn)(tTimerHndl arg);
+	tTimerHndl argFunc;
+}callbackData;
+
 	int pthreadTimer = 0; 
 	callbackData funcData[NUMBERTIMERS];
 	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
@@ -710,33 +716,33 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 	se.sigev_signo = signum;
 	
 //    se.sigev_value.sival_ptr-> = (void *)(callback);
-//	callbackData *ptrData = 
-//		(callbackData *)(malloc(sizeof(callbackData)));
+//	pthread_mutex_lock( &mutexValue);
+	callbackData *ptrData = 
+		(callbackData *)(malloc(sizeof(callbackData)));
+	ASSERT_POSIX_CALL( !ptrData );
+//	pthread_mutex_unlock( &mutexValue);
 
 	se.sigev_value.sival_ptr = &funcData[ i ];
-//	se.sigev_value.sival_ptr = (void *)ptrData;
+	se.sigev_value.sival_ptr = (void *)ptrData;
 
 	timer_t	posixHndl;
     errno = 0;
     timer_create(clockid, &se, &posixHndl); // BSK
 	ASSERT_POSIX_CALL( errno );
 
-
-//typedef struct timer_arg{	void (*pfn)(tTimerHndl argt); void *arg;} callbackData; 
+//typedef struct timer_arg{	void (*pfn)(tTimerHndl argt); void arg;} callbackData; 
 //struct tTimerProperties { int type; struct itimerspec timeout; };
 
 	tTimerHndl hndl = AsBrioTimerHandle(posixHndl);
 
-// 	*(ptrData->pfn) = callback;
-//	*(void *)ptrData = (void *)callback;
+// 	ptrData->pfn = callback;
+//	ptrData->argFunc = hndl;
 	
-	funcData[ i ].pfn = callback;
-	funcData[ i ].arg = hndl;
-
-#if 0 // BSK
-	printf("CALLBACK = 0x%x, ARG =0x%x\n", callback, hndl);
-	fflush(stdout);
-#endif
+//	listData ptrList = {(U32 )callback, (U32 )hndl};
+//	listMemory.push_back( ptrList );
+	
+		funcData[ i ].pfn = callback;
+		funcData[ i ].argFunc = hndl;
 
 //	*(tTimerHndl *)ptrData->arg = hndl;
 //	*(U32 *)((callbackData *)se.sigev_value.sival_ptr)->arg = hndl;
@@ -969,10 +975,11 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 		callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
 
 #if 0 // BSK
-	printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->arg);
+	printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->argFunc);
 	fflush(stdout);
 #endif
-		(*(ta->pfn))((tTimerHndl )ta->arg);
+		((ta->pfn))((tTimerHndl )ta->argFunc);
+
 
 //		(*(ta->pfn))(*((tTimerHndl *)ta->arg)); 
 

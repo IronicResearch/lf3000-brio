@@ -2378,3 +2378,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/21/07 11:48 AM
 1,203 ms. (Cumulative: 299,022 ms)
 
 ----------------
+Revision 345 from svn://localhost/TRUNK/:
+
+Temporary changes to fix build
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/21/07 1:46 PM
+1 changed, 0 added, 0 deleted.
+1,141 ms. (Cumulative: 300,210 ms)
+
+----------------
