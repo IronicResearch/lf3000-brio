@@ -87,14 +87,11 @@ public:
 	//==============================================================================
 	// Time & TimerstTimerGenHndl
 	//==============================================================================
-/**/U32 	GetElapsedTime( U32* pUs=NULL ) const;	// elapsed time since System startup 
+	U32 	GetElapsedTime( U32* pUs=NULL ) const;	// elapsed time since System startup 
 //	U32			GetElapsedTimeInMilliSec( ) const;	// elapsed time since System startup 
 // fixme/BSK
-//	tTimerHndl 	CreateTimer( pfnTimerCallback callback, tTimerProperties& props,
-//								const char* pDebugName = NULL );
-
-	tErrType CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
- 						tTimerProperties& props, const char* pDebugName = NULL );
+	tTimerHndl 	CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
+								const char* pDebugName = NULL );
     
     tErrType 	DestroyTimer( tTimerHndl hndl );
 
@@ -106,8 +103,8 @@ public:
 	tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 	tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 
-	U32			GetTimerElapsedTimeInMilliSec( tTimerHndl hndl ) const;
-	U32			GetTimerRemainingTimeInMilliSec( tTimerHndl hndl ) const;
+	U32			GetTimerElapsedTime( tTimerHndl hndl, U32* pUs=NULL ) const;
+	U32			GetTimerRemainingTime( tTimerHndl hndl, U32* pUs=NULL ) const;
 
 	//==============================================================================
 	// Mutexes
