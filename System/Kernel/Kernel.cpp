@@ -61,8 +61,10 @@ namespace
 #define NUMBERMESSAGES 10
 #define POLLINGTIME 10000000   
 #define NUMBERTIMERS 20
+
 	int pthreadTimer = 0; 
 	callbackData funcData[NUMBERTIMERS];
+	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
 }
 	
 //==============================================================================
@@ -683,8 +685,13 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
+	pthread_mutex_lock( &mutexValue);
+	pthreadTimer++;
+	int i = pthreadTimer - 1; 
+	pthread_mutex_unlock( &mutexValue);
+
     // Initialize the sigaction structure for handler 
-	if( 0 == pthreadTimer++ )
+	if( pthreadTimer = 1 )
 	{
     	/* Setup signal to repond to handler */
     	struct sigaction act;
@@ -706,7 +713,6 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 //	callbackData *ptrData = 
 //		(callbackData *)(malloc(sizeof(callbackData)));
 
-	int i = pthreadTimer - 1; 
 	se.sigev_value.sival_ptr = &funcData[ i ];
 //	se.sigev_value.sival_ptr = (void *)ptrData;
 
@@ -715,10 +721,6 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
     timer_create(clockid, &se, &posixHndl); // BSK
 	ASSERT_POSIX_CALL( errno );
 
-// FIXME/BSK
-//	pthread_mutex_lock( &mutexValue);
-//	counterCreatedTimers++;
-//	pthread_mutex_unlock( &mutexValue);
 
 //typedef struct timer_arg{	void (*pfn)(tTimerHndl argt); void *arg;} callbackData; 
 //struct tTimerProperties { int type; struct itimerspec timeout; };
