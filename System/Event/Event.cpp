@@ -105,7 +105,7 @@ public:
 		{
 			if( *ptr == pListener )
 			{
-				for(unsigned int jj = ii; jj < numListeners_; ++jj, ++ptr )
+				for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
 					*ptr = *(ptr + 1);
 				--numListeners_;
 				return kNoErr;

@@ -2351,3 +2351,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/20/07 6:05 PM
 1,126 ms. (Cumulative: 295,335 ms)
 
 ----------------
+Revision 342 from svn://localhost/TRUNK/:
+
+Prever U32 over unsigned int
+
+By TParker (TParker@leapfrog.com) on 5/20/07 11:43 PM
+1 changed, 0 added, 0 deleted.
+1,219 ms. (Cumulative: 296,616 ms)
+
+----------------
