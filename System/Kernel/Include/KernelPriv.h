@@ -130,9 +130,10 @@ public:
 //	  						   	tTimerProperties& props,
 //							   	const char* pDebugName = NULL );
 
-	VTABLE_EXPORT tErrType CreateTimer(tTimerHndl& hndl, pfnTimerCallback callback,
- 						tTimerProperties& props, const char* pDebugName = NULL );
     
+	VTABLE_EXPORT tTimerHndl CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
+								const char* pDebugName = NULL );
+
     VTABLE_EXPORT tErrType 	DestroyTimer( tTimerHndl hndl );
 
 	VTABLE_EXPORT tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
@@ -143,8 +144,8 @@ public:
 	VTABLE_EXPORT tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 	VTABLE_EXPORT tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue);
 
-	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl ) const;		// elapsed time in milliseconds (& microseconds)
-	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl ) const; 	// time remaining in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const;		// elapsed time in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const; 	// time remaining in milliseconds (& microseconds)
 
 private:
 	// Limit object creation to the Module Manager interface functions
