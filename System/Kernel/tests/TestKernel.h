@@ -16,7 +16,7 @@
 #include <KernelMPI.h>
 #include <CoreTypes.h> 
 #include <EventMPI.h>
-#include <Timer.h>
+//#include <Timer.h>
 
 using namespace std;
 
@@ -84,37 +84,37 @@ LF_USING_BRIO_NAMESPACE()
 
 //#ifdef TESTTIMERSEVENT
 
-#define kTimerFiredEvent 0 // FIXME/BSK
+//#define kTimerFiredEvent 0 // FIXME/BSK
 
-tEventType kTimerTypes[] = { kTimerFiredEvent };
+//tEventType kTimerTypes[] = { kTimerFiredEvent };
 
-class MyTimerListener : public IEventListener
-{
-public:
+//class MyTimerListener : public IEventListener
+//{
+//public:
 	//------------------------------------------------------------------------
 //	MyTimerListener(const tEventType* pTypes, U32 count, tTimerHndl id)
-	MyTimerListener(unsigned long  * pTypes, unsigned long count, tTimerHndl id)
-		: IEventListener( pTypes, count),
-		id_(id)
+//	MyTimerListener(unsigned long  * pTypes, unsigned long count, tTimerHndl id)
+//		: IEventListener( pTypes, count),
+//		id_(id)
 //		: IEventListener( kTimerTypes, ArrayCount(kTimerTypes)),
 //		id_(kInvalidTimerHndl)
-	{
-	}
+//	{
+//	}
 	//------------------------------------------------------------------------
-	virtual tEventStatus Notify( const IEventMessage &msg )
-	{
-		const CTimerMessage& m = reinterpret_cast<const CTimerMessage&>(msg);
-		id_ = m.GetTimerHndl();
-		return kEventStatusOKConsumed;
-	}
+//	virtual tEventStatus Notify( const IEventMessage &msg )
+//	{
+//		const CTimerMessage& m = reinterpret_cast<const CTimerMessage&>(msg);
+//		id_ = m.GetTimerHndl();
+//		return kEventStatusOKConsumed;
+//	}
 	//------------------------------------------------------------------------
-	bool IsReset( ) const
-	{
-		return id_ == kInvalidTimerHndl;
-	}
+//	bool IsReset( ) const
+//	{
+//		return id_ == kInvalidTimerHndl;
+//	}
 	//------------------------------------------------------------------------
-	tTimerHndl	id_;
-}; 
+//	tTimerHndl	id_;
+//}; 
 
 //#endif // TESTTIMERSEVENT
 // Remove ----------------------------------------------
@@ -132,32 +132,32 @@ class TestKernelMPI : public CxxTest::TestSuite, TestSuiteBase
 private:
 
 //#ifdef TESTTIMERSEVENT
-	CKernelMPI*		KernelMPI;
-    CKernelMPI*			kernel_;
-	MyTimerListener*	listener_;
-	CEventMPI*			event_;
+//    CKernelMPI*			kernel_;
+//	MyTimerListener*	listener_;
+//	CEventMPI*			event_;
 //#else    
 //#endif //TESTTIMERSEVENT 
 
 public:
+	CKernelMPI*		KernelMPI;
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
 		KernelMPI = new CKernelMPI();
-		event_ = new CEventMPI();
+//		event_ = new CEventMPI();
 				
-		listener_ = new MyTimerListener(kTimerTypes,
-		                                ArrayCount(kTimerTypes),
-		                                 kInvalidTimerHndl);
-		event_->RegisterEventListener(listener_);
-		kernel_ = new CKernelMPI();;
+//		listener_ = new MyTimerListener(kTimerTypes,
+//		                                ArrayCount(kTimerTypes),
+//		                                 kInvalidTimerHndl);
+//		event_->RegisterEventListener(listener_);
+//		kernel_ = new CKernelMPI();;
 	}
 //------------------------------------------------------------------------
 	void tearDown( )
 	{
-		delete event_;
-		delete listener_;
-		delete kernel_;
+//		delete event_;
+//		delete listener_;
+//		delete kernel_;
 		delete KernelMPI; 
 	}
 
@@ -533,117 +533,117 @@ public:
 // Testing Timers with Events
 //----------------------------------------------------------------
 
-	void xtestTimerNotFired( )			
-	{
-
-		static tTimerHndl tHndl_4;
-		static const  tTimerProperties props_4 = {TIMER_ABSTIME_SET,
-												 	{0, 100, 0, 0},
-			                                     };
+//	void xtestTimerNotFired( )			
+//	{
+//
+//		static tTimerHndl tHndl_4;
+//		static const  tTimerProperties props_4 = {TIMER_ABSTIME_SET,
+//												 	{0, 100, 0, 0},
+//			                                     };
 //		tTimerProperties	props_4 = {0};
 //TP		props.msec = 100;
-		TS_ASSERT( listener_->IsReset() );
+//		TS_ASSERT( listener_->IsReset() );
 // 		COneShotTimer timer(props_4);
 //    CKernelMPI* kernel_ = KernelMPI;
 //		KernelMPI->TaskSleep(200);
 //		TS_ASSERT( listener_->IsReset() );
 
-	}
+//	}
 
-	void xxxtestTimerFires( )
-	{
-		static tTimerHndl tHndl_4;
-		const static tTimerProperties props_5 = {TIMER_ABSTIME_SET,
-												 	{0, 100, 0, 0},
-			                                       	};
+//	void xxxtestTimerFires( )
+//	{
+//		static tTimerHndl tHndl_4;
+//		const static tTimerProperties props_5 = {TIMER_ABSTIME_SET,
+//												 	{0, 100, 0, 0},
+//			                                       	};
 //		tTimerProperties	props;
 // 		props.msec = 100;
-		TS_ASSERT( listener_->IsReset() );
-		COneShotTimer	timer(props_5);
-		timer.Start(props_5);
-		kernel_->TaskSleep(50);
-		TS_ASSERT( listener_->IsReset() );
-		kernel_->TaskSleep(100);
-		TS_ASSERT( !listener_->IsReset() );
-		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
-	}
+//		TS_ASSERT( listener_->IsReset() );
+//		COneShotTimer	timer(props_5);
+//		timer.Start(props_5);
+//		kernel_->TaskSleep(50);
+//		TS_ASSERT( listener_->IsReset() );
+//		kernel_->TaskSleep(100);
+//		TS_ASSERT( !listener_->IsReset() );
+//		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
+//	}
 	
-	void xxxtestTimerPauseResume( )
-	{
-		static tTimerHndl tHndl_6;
-		const static tTimerProperties props_6 = {TIMER_ABSTIME_SET,
-												 	{0, 100, 0, 0},
-			                                    };
-		saveTimerSettings saveValue;
+//	void xxxtestTimerPauseResume( )
+//	{
+//		static tTimerHndl tHndl_6;
+//		const static tTimerProperties props_6 = {TIMER_ABSTIME_SET,
+//												 	{0, 100, 0, 0},
+//			                                    };
+//		saveTimerSettings saveValue;
 //TP		tTimerProperties	props;
 //TP		props.msec = 100;
-		TS_ASSERT( listener_->IsReset() );
-		COneShotTimer	timer(props_6);
-		timer.Start(props_6);
-		kernel_->TaskSleep(50);
-		TS_ASSERT( listener_->IsReset() );
-		timer.Pause(saveValue);
-		kernel_->TaskSleep(100);
-		TS_ASSERT( listener_->IsReset() );
-		timer.Resume(saveValue);
-		kernel_->TaskSleep(100);
-		TS_ASSERT( !listener_->IsReset() );
-		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
-	}
+//		TS_ASSERT( listener_->IsReset() );
+//		COneShotTimer	timer(props_6);
+//		timer.Start(props_6);
+//		kernel_->TaskSleep(50);
+//		TS_ASSERT( listener_->IsReset() );
+//		timer.Pause(saveValue);
+//		kernel_->TaskSleep(100);
+//		TS_ASSERT( listener_->IsReset() );
+//		timer.Resume(saveValue);
+//		kernel_->TaskSleep(100);
+//		TS_ASSERT( !listener_->IsReset() );
+//		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
+//	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestTimerRestart( )
-	{
-		static tTimerHndl tHndl_7;
-		const static tTimerProperties props_7 = {TIMER_ABSTIME_SET,
-												 	{0, 100, 0, 0},
-			                                      };
+//	void xxxtestTimerRestart( )
+//	{
+//		static tTimerHndl tHndl_7;
+//		const static tTimerProperties props_7 = {TIMER_ABSTIME_SET,
+//												 	{0, 100, 0, 0},
+//			                                      };
 //TP		tTimerProperties	props;
 //TP		props.msec = 100;
 
-		TS_ASSERT( listener_->IsReset() );
-		COneShotTimer	timer(props_7);
-		for (int ii = 0; ii < 3; ++ii )
-		{
-			timer.Start(props_7);
-    CKernelMPI* kernel_ = KernelMPI;
-			kernel_->TaskSleep(50);
-			TS_ASSERT( listener_->IsReset() );
-		}
-    CKernelMPI* kernel_ = KernelMPI;
-		kernel_->TaskSleep(100);
-		TS_ASSERT( !listener_->IsReset() );
-		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
-	}
+//		TS_ASSERT( listener_->IsReset() );
+//		COneShotTimer	timer(props_7);
+//		for (int ii = 0; ii < 3; ++ii )
+//		{
+//			timer.Start(props_7);
+//   CKernelMPI* kernel_ = KernelMPI;
+//			kernel_->TaskSleep(50);
+//			TS_ASSERT( listener_->IsReset() );
+//		}
+//    CKernelMPI* kernel_ = KernelMPI;
+//		kernel_->TaskSleep(100);
+//		TS_ASSERT( !listener_->IsReset() );
+//		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
+//	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestTimerElapsedTime( )
-	{
-		static tTimerHndl tHndl_8;
-		const static tTimerProperties props_8 = {TIMER_ABSTIME_SET,
-												 	{0, 100, 0, 0},
-			                                       	};
+//	void xxxtestTimerElapsedTime( )
+//	{
+//		static tTimerHndl tHndl_8;
+//		const static tTimerProperties props_8 = {TIMER_ABSTIME_SET,
+//												 	{0, 100, 0, 0},
+//			                                       	};
 //TP		tTimerProperties	props;
 //TP		props.msec = 1000;
-		TS_ASSERT( listener_->IsReset() );
-		COneShotTimer	timer(props_8);
-		U32 start = kernel_->GetElapsedTime();
-		timer.Start(props_8);
-		const int kSleepInterval = 100;
-		const int kDelta = 10;
-		int i = 0; // FIXME/BSK
-		for (int ii = i; ii < 9; ++ii)
-		{
-			kernel_->TaskSleep(kSleepInterval);
-			U32 elapsed = timer.GetTimerElapsedTimeInMilliSec();
-			U32 remaining = timer.GetTimerRemainingTimeInMilliSec();
-			TS_ASSERT_DELTA( elapsed, ii * kSleepInterval, kDelta );
-			TS_ASSERT_DELTA( remaining, (10 - ii) * kSleepInterval, kDelta );
-		}
-		kernel_->TaskSleep(200);
-		TS_ASSERT( !listener_->IsReset() );
-		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
-	}
+//		TS_ASSERT( listener_->IsReset() );
+//		COneShotTimer	timer(props_8);
+//		U32 start = kernel_->GetElapsedTime();
+//		timer.Start(props_8);
+//		const int kSleepInterval = 100;
+//		const int kDelta = 10;
+//		int i = 0; // FIXME/BSK
+//		for (int ii = i; ii < 9; ++ii)
+//		{
+//			kernel_->TaskSleep(kSleepInterval);
+//			U32 elapsed = timer.GetTimerElapsedTimeInMilliSec();
+//			U32 remaining = timer.GetTimerRemainingTimeInMilliSec();
+//			TS_ASSERT_DELTA( elapsed, ii * kSleepInterval, kDelta );
+//			TS_ASSERT_DELTA( remaining, (10 - ii) * kSleepInterval, kDelta );
+//		}
+//		kernel_->TaskSleep(200);
+//		TS_ASSERT( !listener_->IsReset() );
+//		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
+//	}
 };
 //EOF
 
