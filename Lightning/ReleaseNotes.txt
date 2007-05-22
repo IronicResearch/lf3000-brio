@@ -20,7 +20,11 @@ hardware:
 
 * Linux Kernel Image: zImage-2.6.20.1-dev-00
 * u-boot image: u-boot-svn183.bin
-* root file system: nfsroot-svnXXX.tar.gz
+* root file system: nfsroot-svn321.tar.gz
+
+The cross-compiler for building the embedded target binaries is:
+
+* scratchbox-toolchain-arm-gcc4.1-uclibc20061004
 
 Enhancements:
 -------------

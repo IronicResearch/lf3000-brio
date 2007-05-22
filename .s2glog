@@ -2423,3 +2423,16 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/21/07 2:48 PM
 1,172 ms. (Cumulative: 305,023 ms)
 
 ----------------
+Revision 350 from svn://localhost/TRUNK/:
+Revision 351 from svn://localhost/TRUNK/:
+Revision 352 from svn://localhost/TRUNK/:
+Revision 353 from svn://localhost/TRUNK/:
+Revision 354 from svn://localhost/TRUNK/:
+
+Additional notes on development system requirements for NFS and scratchbox tools.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/22/07 12:17 PM
+2 changed, 0 added, 0 deleted.
+1,328 ms. (Cumulative: 306,429 ms)
+
+----------------

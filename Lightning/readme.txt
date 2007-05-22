@@ -65,6 +65,34 @@ directory that you export via NFS to the target.  This directory is probably
 /home/lfu/nfsroot.  Note that you must be root to successfully untar the
 rootfs!!  The reason is that it must create device nodes.
 
+	sudo tar -xzvf nfsroot-svnxxx.tar.gz
+	mv nfsroot-svnxxx nfsroot
+
+Your development system image will also need to have NFS server installed
+and running, and one network adapter configured at the fixed IP address
+192.168.0.113. 
+
+	sudo apt-get nfs-kernel-server
+	/etc/init.d/nfs-kernel-server start
+	
+	ifconfig eth1 192.168.0.113
+	/etc/init.d/xinetd start
+
+The Lightning test board will be flashed with a Linux kernel image which 
+will attempt to NFS mount its root filesystem at this IP address. The test 
+board will be configured to use IP address 192.168.0.111, so this may need 
+to be added to list of allowable addresses in /etc/hosts.allow if firewall
+iptables service is running.
+
+Your development system image will also need to have the cross-compiler
+installed for building ARM binary targets. The version used to date is
+scratchbox toolchain is based on GCC 4.1 with uclib run-time library. 
+
+	sudo apt-get scratchbox-toolchain-arm-gcc4.1-uclibc20061004
+
+Note you may need to modify the CC compiler directive in the arm-g++.py
+script to use the explicit full path to arm-linux-g++.
+	
 See ReleaseNotes.txt for important information about which versions of other
 software components are required on the target.
 
