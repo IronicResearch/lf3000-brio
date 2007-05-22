@@ -17,7 +17,8 @@ import SCons.Util
 #-----------------------------------------------------------------------------
 parent = __import__('SCons.Tool.g++', globals(), locals(), [''])
 
-compiler = 'arm-linux-g++'
+# FIXME/dm: Should not have to use explicit path to arm-linux-g++ compiler
+compiler = '/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/arm-linux-g++'
 
 
 #-----------------------------------------------------------------------------

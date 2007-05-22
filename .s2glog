@@ -2436,3 +2436,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/22/07 12:17 PM
 1,328 ms. (Cumulative: 306,429 ms)
 
 ----------------
+Revision 355 from svn://localhost/TRUNK/:
+
+Use exlicit full path to arm-linux-g++ cross-compiler.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/22/07 12:21 PM
+1 changed, 0 added, 0 deleted.
+1,297 ms. (Cumulative: 307,789 ms)
+
+----------------
