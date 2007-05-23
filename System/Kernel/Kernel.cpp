@@ -24,6 +24,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <list>
 
 #include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -31,13 +32,12 @@
 #include <CoreMPI.h>
 #include <KernelMPI.h>
 #include <KernelPriv.h>
+//#include <FreeMemory.h>
 
-#include <signal.h>
-
+using namespace std;
 extern "C"
 {
 	void sig_handler(int signal, siginfo_t *psigInfo, void *pFunc);
-//	void *timerTask(void *parm);
 }
 
 //==============================================================================
@@ -58,20 +58,44 @@ static CKernelModule*	sinst = NULL;
 //==============================================================================
 namespace
 {
-#define NUMBERMESSAGES 10
-#define POLLINGTIME 10000000   
-#define NUMBERTIMERS 20
-
-typedef struct timer_arg
-{	
-	void (*pfn)(tTimerHndl arg);
-	tTimerHndl argFunc;
-}callbackData;
-
 	int pthreadTimer = 0; 
-	callbackData funcData[NUMBERTIMERS];
-	pthread_mutex_t mutexValue = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutexValue_1 = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutexValue_2 = PTHREAD_MUTEX_INITIALIZER;
+
+class ListData
+{
+	public:
+		ListData(U32 ptr, U32 hndl)
+		: ptr_(ptr), hndl_(hndl)
+		{}
+
+U32 getHndl() const
+{
+	return hndl_;
 }
+void setPtr(U32 ptr)
+{
+	ptr_ = ptr;
+}
+
+private:
+	U32 ptr_;
+	U32 hndl_;
+};
+
+
+struct equal_id : public binary_function<ListData*, int, bool>
+{
+	bool operator()(const ListData* pp, int i) const
+{
+	return pp->getHndl() == i;
+}
+};
+
+	static list<ListData *> listMemory;
+
+}
+
 	
 //==============================================================================
 // Internal untility functions
@@ -216,7 +240,7 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
 	err = pthread_attr_destroy(&tattr);	
 	ASSERT_POSIX_CALL(err);
 	
-	// good to go
+// good to go
 //	*pHndl = pTask->ToOpaqueType();
 //	return kNoErr;
 	// cleanup
@@ -426,16 +450,6 @@ tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
 }
 
 //------------------------------------------------------------------------------
-#if 0 // FIXME/BSK Unlink was included in the Close
-tErrType CKernelModule::UnlinkMessageQueue(const char *name)
-{
-    errno = 0;
-    mq_unlink(name);
-    ASSERT_POSIX_CALL( errno );
-    return kNoErr;
-}
-#endif
-//------------------------------------------------------------------------------
 tErrType CKernelModule::ClearMessageQueue(tMessageQueueHndl hndl)
 {
     int ret;
@@ -445,7 +459,7 @@ tErrType CKernelModule::ClearMessageQueue(tMessageQueueHndl hndl)
     
     /* Determine the # of messages currently in queue and
     max. msg size; allocate buffer to receive msg */
-    
+   
     errno = 0;
     
     mq_getattr(hndl, &attr);
@@ -691,13 +705,12 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-	pthread_mutex_lock( &mutexValue);
+	pthread_mutex_lock( &mutexValue_1);
 	pthreadTimer++;
-	int i = pthreadTimer - 1; 
-	pthread_mutex_unlock( &mutexValue);
+	pthread_mutex_unlock( &mutexValue_1);
 
     // Initialize the sigaction structure for handler 
-	if( pthreadTimer = 1 )
+	if( pthreadTimer >1 )
 	{
     	/* Setup signal to repond to handler */
     	struct sigaction act;
@@ -715,14 +728,9 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
 	
-//    se.sigev_value.sival_ptr-> = (void *)(callback);
-//	pthread_mutex_lock( &mutexValue);
 	callbackData *ptrData = 
 		(callbackData *)(malloc(sizeof(callbackData)));
 	ASSERT_POSIX_CALL( !ptrData );
-//	pthread_mutex_unlock( &mutexValue);
-
-	se.sigev_value.sival_ptr = &funcData[ i ];
 	se.sigev_value.sival_ptr = (void *)ptrData;
 
 	timer_t	posixHndl;
@@ -730,45 +738,46 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
     timer_create(clockid, &se, &posixHndl); // BSK
 	ASSERT_POSIX_CALL( errno );
 
-//typedef struct timer_arg{	void (*pfn)(tTimerHndl argt); void arg;} callbackData; 
-//struct tTimerProperties { int type; struct itimerspec timeout; };
-
 	tTimerHndl hndl = AsBrioTimerHandle(posixHndl);
-
-// 	ptrData->pfn = callback;
-//	ptrData->argFunc = hndl;
+ 	ptrData->pfn = callback;
+	ptrData->argFunc = hndl;
 	
-//	listData ptrList = {(U32 )callback, (U32 )hndl};
-//	listMemory.push_back( ptrList );
-	
-		funcData[ i ].pfn = callback;
-		funcData[ i ].argFunc = hndl;
+	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl);
 
-//	*(tTimerHndl *)ptrData->arg = hndl;
-//	*(U32 *)((callbackData *)se.sigev_value.sival_ptr)->arg = hndl;
-// FIXME/BSK This function only creates timer.	
-// The user must start it
-//	ResetTimer(hndl, props);
+	pthread_mutex_lock( &mutexValue_1);
+	listMemory.push_back( ptrList );
+	pthread_mutex_unlock( &mutexValue_1);
+	
     return hndl;
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 {
-	
     errno = 0;
+
+#if 0
+	printf("DestroyTimer Before Num elements = %d\n", listMemory.size() );
+	fflush(stdout);
+#endif
+
     timer_delete(AsPosixTimerHandle( hndl ));
 	ASSERT_POSIX_CALL( errno );
 
-//	pthread_mutex_lock( &mutexValue);
-//	counterCreatedTimers--;
-//	pthread_mutex_unlock( &mutexValue);
+	list<ListData*>::iterator p = find_if(listMemory.begin(), listMemory.end(),
+	bind2nd(equal_id(), hndl));
 
-//	if( counterCreatedTimers <= 0 )
-//	{
-//		pthread_cancel( pthreadTimer );
-//		ASSERT_POSIX_CALL( errno );
-//	};
+	assert((p != listMemory.end()) && ((*p)->getHndl() == hndl));
+	(*p)->setPtr( 0 );
+	pthread_mutex_lock( &mutexValue_2);
+    listMemory.erase( p ); 
+	pthread_mutex_unlock( &mutexValue_2);
+
+#if 0
+	printf("DestroyTimer After Num elements = %d\n", listMemory.size() );
+	fflush(stdout);
+#endif
+
     return kNoErr; 
 }
 	
@@ -974,98 +983,13 @@ void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 {
 		callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
 
-#if 0 // BSK
+#if 0 // FIXME/BSK
 	printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->argFunc);
 	fflush(stdout);
 #endif
 		((ta->pfn))((tTimerHndl )ta->argFunc);
-
-
-//		(*(ta->pfn))(*((tTimerHndl *)ta->arg)); 
-
-// FIXME/BSK
-//		(*(ta->pfn))(*ta->arg));
-
-//			callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr; 
-//			pfnTimerCallback callback =
-//			        reinterpret_cast<pfnTimerCallback>(psigInfo->si_value.sival_ptr);
-//			        reinterpret_cast<pfnTimerCallback>(psigInfo->si_value.sival_ptr.pfn);
-//						(*callback)();
-//		ta->pfn((tTimerHndl )(ta->arg));
-//		ta->pfn( (reinterpret_cast<tTimerHndl> )(ta->arg) );
-//		printf("0x%X=    0x%X= \n",
-//				(void )psigInfo->si_value.sival_ptr->pfn,
-//				 (void )psigInfo->si_value.sival_ptr->arg);
-//		printf("0x%X=    0x%X= \n", ta->pfn, *ta->pfn );
-//		fflush( stdout );
-//		(*ta->pfn)(ta->arg);
-
-#if 0
-	int i;
-	int ret;
-	for(i = 0; i < NUMBERMESSAGES; i++)
-	{
-		if( 0 == bufferTimer[ i ] )
-		{
-			bufferTimer[ i ] = (unsigned )psigInfo->si_value.sival_ptr;
-			ret = pthread_kill( pthreadTimer, SIGUSR1);
-// FIXME/BSK Insert checking error on return			
-#if 0 // FIXME/BSK
-			printf("psigInfo->si_errno sival_ptr=0X%x\n",
-		 	psigInfo->si_value.sival_ptr);
-			fflush(stdout);	
-#endif
-			break; 	
-		}
-	}	
-// FIXME//BSK insert assertion
-	if(i == NUMBERMESSAGES )
-	{
-#if 1 // FIXME/BSK
-		printf("Lost data from sig_handler\n");
-		fflush(stdout); 
-#endif
-	}		
-#endif
 }
 
-#if 0 // BSK/FIXME delete
-void *timerTask(void *parm)
-{
-	int sig_caught;	// signal caught
-	int ret;
-	sigset_t signalMaskThread;
-
-	ret = sigemptyset(&signalMaskThread);
-	sigaddset( &signalMaskThread, SIGUSR1 );
-// FIXME/ BSK insert handling macro		
-//	ret = sigaddset(&signal_mask, SIGUSR1 ); 	
-// FIXME/ BSK insert handling macro		
-
-	while( 1 )
-	{
-		ret = sigwait( &signalMaskThread, &sig_caught );		 
-// FIXME/BSK Insert the handling error
-		switch( sig_caught )
-		case SIGUSR1:
-		{
-			for(int i = 0; i < NUMBERMESSAGES; i++)
-			{
-				if( 0 != bufferTimer[ i ] )
-				{
-					pfnTimerCallback callback =
-				        reinterpret_cast<pfnTimerCallback>(bufferTimer[ i ]);
-					bufferTimer[ i ] = 0; 	
-					if( callback != NULL )
-					{ 
-						(*callback)();
-					}	
-				}
-			}
-		}
-	}
-}	
-#endif  // BSK/FIXME delete
 } // extern "C"
 
 // EOF
