@@ -11,6 +11,7 @@
 //==============================================================================
 #include <stdio.h>
 #include <errno.h>
+#include <AudioTypes.h>
 #include <AudioTask.h>
 #include <KernelMPI.h>
 #include <AudioOutput.h>
