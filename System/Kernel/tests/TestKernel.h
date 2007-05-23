@@ -384,7 +384,7 @@ public:
 		}								
 	}
 
-	void xtestCreateTimer()
+	void testCreateTimer()
 	{
 //TS_WARN("TODO: Test Create/Destroy Timer!");
 		
@@ -417,7 +417,7 @@ public:
 //		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestStartStopTimer()
+	void testStartStopTimer()
 	{
 		tTimerProperties props = {0};
 		tErrType err;
@@ -447,7 +447,7 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
 	}		
-	void xtestResetTimerRelative()
+	void testResetTimerRelative()
 	{
 //        TS_WARN("TODO: Test Reset Timer Relative!");
 		tTimerProperties props = {0};
@@ -469,7 +469,7 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestPauseResumeTimer()
+	void testPauseResumeTimer()
 	{
 		tErrType err;
 
@@ -498,7 +498,7 @@ public:
 	}
 		
 
-    void xtestDestroyTimer()
+    void testDestroyTimer()
     {
 //        TS_WARN("TODO: Test Destroy Timer!");
 		tErrType err;
