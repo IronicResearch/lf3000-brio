@@ -2460,3 +2460,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/22/07 5:09 PM
 1,391 ms. (Cumulative: 310,742 ms)
 
 ----------------
+Revision 358 from svn://localhost/TRUNK/:
+
+Added sanity check for drawing invalid font selection after load failure.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/22/07 5:09 PM
+1 changed, 0 added, 0 deleted.
+1,141 ms. (Cumulative: 311,914 ms)
+
+----------------

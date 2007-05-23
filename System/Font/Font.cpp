@@ -352,6 +352,13 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 	int				index;
 	
 #if USE_FONT_CACHE_MGR
+	// Sanity check
+	if (handle_.currentFont == NULL) 
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid font selection\n" );
+		return false;
+	}
+	
   	// For selected font, find the glyph matching the char
     index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
 	if (index == 0) 
@@ -367,6 +374,13 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 		return false;
 	}
 #else
+	// Sanity check
+	if (handle_.face == NULL) 
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid font selection\n" );
+		return false;
+	}
+	
   	// For selected font, find the glyph matching the char
 	index = FT_Get_Char_Index(handle_.face, ch);
 	if (index == 0) 
