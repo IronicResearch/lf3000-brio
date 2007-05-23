@@ -72,11 +72,18 @@ Your development system image will also need to have NFS server installed
 and running, and one network adapter configured at the fixed IP address
 192.168.0.113. 
 
-	sudo apt-get nfs-kernel-server
-	/etc/init.d/nfs-kernel-server start
+	sudo apt-get installl nfs-kernel-server
+	sudo /etc/init.d/nfs-kernel-server start
 	
-	ifconfig eth1 192.168.0.113
-	/etc/init.d/xinetd start
+	ifconfig eth1 192.168.0.113 up
+	sudo /etc/init.d/inetd start
+
+The network IP address configuration should be put in a startup script. 
+Note the development system used with Lightning testboard used 'xinetd' 
+instead of 'inetd'.
+
+	sudo apt-get install xinetd
+	sudo /etc/init.d/xinetd start
 
 The Lightning test board will be flashed with a Linux kernel image which 
 will attempt to NFS mount its root filesystem at this IP address. The test 
