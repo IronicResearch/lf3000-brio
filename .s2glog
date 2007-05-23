@@ -2564,3 +2564,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/23/07 2:07 PM
 1,283 ms. (Cumulative: 324,308 ms)
 
 ----------------
+Revision 374 from svn://localhost/TRUNK/:
+
+New files for sound file read/write.  Supports WAV, AIFF among others
+
+By Gklimanis (Gklimanis@leapfrog.com) on 5/23/07 2:42 PM
+0 changed, 25 added, 0 deleted.
+1,675 ms. (Cumulative: 326,061 ms)
+
+----------------
