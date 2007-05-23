@@ -21,7 +21,7 @@ mpilibs		= ['ModuleMPI']
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
-if os.getenv('EXTRA_LINUX_HEADER_DIR') == '':
+if os.getenv('EXTRA_LINUX_HEADER_DIR') == None:
 	extinc      = '#../LinuxDist/packages/drivers/include/linux'
 	print "EXTRA_LINUX_HEADER_DIR not defined.  Using default."
 else:

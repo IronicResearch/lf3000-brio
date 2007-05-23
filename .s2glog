@@ -2506,3 +2506,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/23/07 10:02 AM
 1,328 ms. (Cumulative: 317,024 ms)
 
 ----------------
+Revision 364 from svn://localhost/TRUNK/:
+
+Fixed EXTRA_LINUX_HEADER_DIR env var check.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/23/07 10:19 AM
+1 changed, 0 added, 0 deleted.
+1,140 ms. (Cumulative: 318,211 ms)
+
+----------------
