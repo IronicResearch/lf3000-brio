@@ -2591,3 +2591,14 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/23/07 3:57 PM
 1,143 ms. (Cumulative: 328,516 ms)
 
 ----------------
+Revision 377 from svn://localhost/TRUNK/:
+
+YIKES!  CString work-around was causing NULL pointer deref!
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/23/07 4:02 PM
+1 changed, 0 added, 0 deleted.
+1,219 ms. (Cumulative: 329,782 ms)
+
+----------------

@@ -220,15 +220,15 @@ public:
 
 	// FIXME/dg: need to also overload fcns for wide-chars
 
-	CString() { s = NULL; }
+	CString() { s = 0; }
 //	CString(U32 size);
-	CString(const CString& cstr) { s = strdup(cstr.s);	}
-	CString(const char* str) { s = strdup(str); }
+	CString(const CString& cstr) { (cstr.s != 0)?(s = strdup(cstr.s)):s = 0;}
+	CString(const char* str) { (str != 0)?(s = strdup(str)):s = 0; }
 //	CString(char c);	
 	
 	const char* c_str() const			{ return s; }
 	char operator[](U32 idx) const	{ return *(s+idx); }			   
-	U32 size() const					{ return strlen(s); }
+	U32 size() const { return (s != 0)?strlen(s):0; }
 	
 	CString substr(U32 offset, U32 count) const	// FIXME/non-member
 	{
