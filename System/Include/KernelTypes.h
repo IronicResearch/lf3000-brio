@@ -329,9 +329,15 @@ enum{
     TIMER_RELATIVE_SET=/* TIMER_ABSTIME_SET */ 1
 };    
 
+typedef struct timer_arg
+{	
+	void (*pfn)(tTimerHndl arg);
+	tTimerHndl argFunc;
+}callbackData; 
+
 struct tTimerProperties {
 	
-	int type; 			// Absolute or Relative Timer:
+	int type;			// Absolute or Relative Timer:
 						// If the TIMER_ABSTIME_SET flag is set, the timer is set with a specified 
 						// starting time (the timer is absolute timer.
 						// If the the TIMER_ABSTIME_SET flag is not set, the timer is set relative 
@@ -419,7 +425,17 @@ typedef pthread_cond_t      tCond;
 typedef pthread_condattr_t  tCondAttr;
 typedef struct timespec     tTimeSpec;
 
-typedef void (*pfnTimerCallback)(tTimerHndl );
+typedef void (*pfnTimerCallback)(tTimerHndl arg); // FIXME/BSK
+//typedef void (*pfnTimerCallback)(tPtr arg); // FIXME/BSK
+//typedef void (*pfnTimerCallback)(); // FIXME/BSK
+
+// FIXME/BSK
+//typedef struct timer_arg
+//{	
+//	pfnTimerCallback pfn;
+//	tPtr arg;
+//} callbackData;
+
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_KERNELTYPES_H
