@@ -2487,3 +2487,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/22/07 5:11 PM
 1,250 ms. (Cumulative: 314,414 ms)
 
 ----------------
+Revision 361 from svn://localhost/TRUNK/:
+
+Used ifdef BROKEN_BUILD to exclude code in kernel.cpp that is breaking the build.  PLEASE DO NOT BREAK THE BUILD.
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/23/07 9:37 AM
+1 changed, 0 added, 0 deleted.
+1,156 ms. (Cumulative: 315,633 ms)
+
+----------------
