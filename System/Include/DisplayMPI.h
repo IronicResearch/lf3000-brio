@@ -63,6 +63,8 @@ public:
 	
 	void				InitOpenGL(void* pCtx);
 	void				DeinitOpenGL();
+	void				EnableOpenGL();
+	void				DisableOpenGL();
 	
 private:
 	class CDisplayModule*	pModule_;

@@ -2555,3 +2555,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/23/07 1:31 PM
 1,094 ms. (Cumulative: 322,978 ms)
 
 ----------------
+Revision 373 from svn://localhost/TRUNK/:
+
+Moved X window emulation and OpenGL HW code out of Display MPI lib. 
+
+By Dmilici (Dmilici@leapfrog.com) on 5/23/07 2:07 PM
+7 changed, 0 added, 0 deleted.
+1,283 ms. (Cumulative: 324,308 ms)
+
+----------------

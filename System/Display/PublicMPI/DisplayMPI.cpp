@@ -220,4 +220,20 @@ void CDisplayMPI::DeinitOpenGL()
 	pModule_->DeinitOpenGL();
 }
 
+//----------------------------------------------------------------------------
+void CDisplayMPI::EnableOpenGL()
+{
+	if (!pModule_)
+		return;
+	pModule_->EnableOpenGL();
+}
+
+//----------------------------------------------------------------------------
+void CDisplayMPI::DisableOpenGL()
+{
+	if (!pModule_)
+		return;
+	pModule_->DisableOpenGL();
+}
+
 // EOF

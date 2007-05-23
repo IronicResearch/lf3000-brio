@@ -11,20 +11,21 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
-emulibs		= local_vars['is_emulation'] and ['gles_cl', 'X11'] or ['ogl']
+emulibs		= local_vars['is_emulation'] and ['X11'] or []
+ogllibs		= local_vars['is_emulation'] and ['gles_cl'] or ['ogl']
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
-modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI']
-mpilibs		= ['ModuleMPI'] + emulibs					
+modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI'] + emulibs
+mpilibs		= ['ModuleMPI'] + ogllibs					
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
-##if os.getenv('EXTRA_LINUX_HEADER_DIR') == '':
-extinc      = '#../LinuxDist/packages/drivers/include/linux'
-##else:
-##	extinc      = os.getenv('EXTRA_LINUX_HEADER_DIR')
+if os.getenv('EXTRA_LINUX_HEADER_DIR') == None:
+	extinc      = '#../LinuxDist/packages/drivers/include/linux'
+else:
+	extinc      = os.getenv('EXTRA_LINUX_HEADER_DIR')
 if local_vars['is_emulation']:
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'#ThirdParty/PowerVR/Include/LinuxPC',

@@ -138,6 +138,39 @@ void CDisplayModule::DeinitOpenGL()
 
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
+//----------------------------------------------------------------------------
+void CDisplayModule::EnableOpenGL()
+{
+	// Enable 3D layer as render target after accelerator enabled
+	int	layer = open( "/dev/layer0", O_WRONLY);
+    
+	// Position 3D layer
+	union mlc_cmd c;
+	c.position.left = c.position.top = 0;
+	c.position.right = 320;
+	c.position.bottom = 240;
+
+    // Enable 3D layer
+    ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+	ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
+	ioctl(layer, MLC_IOCTFORMAT, 0x4432);
+	ioctl(layer, MLC_IOCTHSTRIDE, 2);
+	ioctl(layer, MLC_IOCTVSTRIDE, 4096);
+	ioctl(layer, MLC_IOCT3DENB, (void *)1);
+	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
+
+	close(layer);
+}
+
+//----------------------------------------------------------------------------
+void CDisplayModule::DisableOpenGL()
+{
+	// Disable 3D layer render target before accelerator disabled
+	int	layer = open( "/dev/layer0", O_WRONLY);
+	ioctl(layer, MLC_IOCT3DENB, (void *)0);
+	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
+    close(layer);
+}
 
 LF_END_BRIO_NAMESPACE()
 // EOF

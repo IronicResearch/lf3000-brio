@@ -72,6 +72,8 @@ public:
 														Boolean enable=true);
 	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
 	VTABLE_EXPORT void    			DeinitOpenGL();
+	VTABLE_EXPORT void    			EnableOpenGL();
+	VTABLE_EXPORT void    			DisableOpenGL();
 
 
 private:

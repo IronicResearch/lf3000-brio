@@ -76,7 +76,6 @@ namespace
 		    pMemoryInfo->Memory2D_SizeInMbyte);
 		
 		// 3D layer must not be enabled until after this callback returns
-
 		return 1; 
 	}
 
@@ -85,10 +84,6 @@ namespace
 	{
 		// 3D layer must be disabled before this callback returns
 		PRINTF("GLESOAL_Finalize\n");
-		int	layer = open( "/dev/layer0", O_WRONLY);
-		ioctl(layer, MLC_IOCT3DENB, (void *)0);
-		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
-	    close(layer);
 	}
 
 	//--------------------------------------------------------------------------
@@ -193,30 +188,11 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
 	dbg.Assert(success, "eglInitialize() failed\n");
 
-#ifndef EMULATION
-		// NOTE: 3D layer can only be enabled after MagicEyes lib 
-		// sets up 3D accelerator, but this cannot happen
-		// until GLESOAL_Initalize() callback gets mappings.
-		PRINTF("eglInitialize post-init layer enable\n");
-		int	layer = open( "/dev/layer0", O_WRONLY);
-	    
-		// Position 3D layer
-		union mlc_cmd c;
-		c.position.left = c.position.top = 0;
-		c.position.right = 320;
-		c.position.bottom = 240;
-	
-	    // Enable 3D layer
-	    ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
-		ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
-		ioctl(layer, MLC_IOCTFORMAT, 0x4432);
-		ioctl(layer, MLC_IOCTHSTRIDE, 2);
-		ioctl(layer, MLC_IOCTVSTRIDE, 4096);
-		ioctl(layer, MLC_IOCT3DENB, (void *)1);
-		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
-
-		close(layer);
-#endif
+	// NOTE: 3D layer can only be enabled after MagicEyes lib 
+	// sets up 3D accelerator, but this cannot happen
+	// until GLESOAL_Initalize() callback gets mappings.
+	PRINTF("eglInitialize post-init layer enable\n");
+	disp_.EnableOpenGL();
 
 	/*
 		Step 3 - Specify the required configuration attributes.
@@ -307,6 +283,9 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 //----------------------------------------------------------------------
 BrioOpenGLConfig::~BrioOpenGLConfig()
 {
+	// Disable 3D layer before disabling accelerator
+	disp_.DisableOpenGL();
+	
 	/*
 		Step 9 - Terminate OpenGL ES and destroy the window (if present).
 		eglTerminate takes care of destroying any context or surface created
