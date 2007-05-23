@@ -26,6 +26,17 @@
 #include <DisplayMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+//==============================================================================
+// OpenGL Hardware/Emulation context
+//==============================================================================
+struct tOpenGLContext
+{
+	void*				pOEM;			// ptr to OEM-specific HW struct
+	NativeDisplayType	eglDisplay;		// X display or HW context
+	NativeWindowType	eglWindow;		// X window or HW context
+	U16					width;
+	U16					height;
+};
 
 //==============================================================================
 // BrioOpenGLConfig
@@ -35,17 +46,6 @@ class BrioOpenGLConfig
 public:
 	BrioOpenGLConfig();
 	~BrioOpenGLConfig();
-
-	//TODO/tp: Figure out minimal subset of variables to expose
-	
-#ifdef EMULATION	
-	// X11 variables
-	Window				x11Window;
-	Display*			x11Display;
-	long				x11Screen;
-	XVisualInfo*		x11Visual;
-	Colormap			x11Colormap;
-#endif
 
 	// EGL variables
 	EGLDisplay			eglDisplay;

@@ -16,6 +16,7 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
+#include <BrioOpenGLConfig.h>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -59,6 +60,8 @@ namespace
 	int			gmem1size = MEM1_SIZE;
 	int			gmem2size = MEM2_SIZE;
 	int			gregsize = PAGE_3D * 0x1000;
+	tDisplayScreenStats		screen;
+	tDisplayContext			dc;
 }
 
 //----------------------------------------------------------------------------
@@ -87,9 +90,15 @@ void CDisplayModule::InitOpenGL(void* pCtx)
     gpMem2 = mmap(MEM2_VIRT, gmem2size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM2_PHYS);
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", MEM2_PHYS, gpMem2);
 
-	// FIXME/dm:
+	// Pass back essential display context info for OpenGL bindings
+	tOpenGLContext* pOglCtx = (tOpenGLContext*)pCtx;
+	pOglCtx->width = 320;
+	pOglCtx->height = 240;
+	pOglCtx->eglDisplay = &screen;
+	pOglCtx->eglWindow = &dc;
+
 	// Copy the required mappings into the MagicEyes callback init struct
-	___OAL_MEMORY_INFORMATION__* pMemInfo = (___OAL_MEMORY_INFORMATION__*)pCtx;
+	___OAL_MEMORY_INFORMATION__* pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
     pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
 
     pMemInfo->Memory1D_VirtualAddress	= (unsigned int)gpMem1;
@@ -100,28 +109,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
     pMemInfo->Memory2D_PhysicalAddress	= MEM2_PHYS;
     pMemInfo->Memory2D_SizeInMbyte	= MEM2_SIZE >> 20;
  
- #if 0	// FIXME/dm: Too early to enable 3D layer  
-    // Open device driver for Multi-Layer Controller layer
-    gDevLayer = open("/dev/layer0", O_WRONLY);
-	dbg_.Assert(gDevLayer >= 0, "DisplayModule::InitModule: /dev/layer0 driver failed");
-    
-	// Position 3D layer
-	union mlc_cmd c;
-	c.position.left = c.position.top = 0;
-	c.position.right = 320;
-	c.position.bottom = 240;
-
-    // Enable 3D layer
-    ioctl(gDevLayer, MLC_IOCTLAYEREN, (void *)1);
-	ioctl(gDevLayer, MLC_IOCSPOSITION, (void *)&c);
-	ioctl(gDevLayer, MLC_IOCTFORMAT, 0x4432);
-	ioctl(gDevLayer, MLC_IOCTHSTRIDE, 2);
-	ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
-	ioctl(gDevLayer, MLC_IOCT3DENB, (void *)1);
-	ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
-#endif
-
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
+ 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
 }
 
 //----------------------------------------------------------------------------

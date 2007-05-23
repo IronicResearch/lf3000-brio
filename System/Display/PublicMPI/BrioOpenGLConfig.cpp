@@ -20,18 +20,12 @@
 #include <EmulationConfig.h>
 
 #ifndef  EMULATION
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
-#include <unistd.h>
-#include "mlc_ioctl.h"
 #include "GLES/libogl.h"
 #endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-#if 0	// FIXME/dm: enable for development
+#if 0	// NOTBUG/dm: enable for development
 #define	PRINTF	printf
 #else
 #define PRINTF(...)
@@ -40,6 +34,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 namespace
 {
+	//--------------------------------------------------------------------------
+	tOpenGLContext		ctx;
+	
 	//--------------------------------------------------------------------------
 	void AbortIfEGLError(char* pszLocation)
 	{
@@ -98,8 +95,8 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight )
 	{
-	    *pWidth  = 320;
-	    *pHeight = 240;
+	    *pWidth  = ctx.width;
+	    *pHeight = ctx.height;
 	}
 #endif // !EMULATION
 }
@@ -109,49 +106,15 @@ namespace
 //----------------------------------------------------------------------
 BrioOpenGLConfig::BrioOpenGLConfig()
 	: 
-#ifdef EMULATION
-	x11Window(0), x11Display(0), x11Screen(0), x11Visual(0), x11Colormap(0),
-#endif
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
 	CDebugMPI				dbg(kGroupDisplay);
-	NativeWindowType		genWindow = 0;
 
 #ifdef EMULATION
-	const int WINDOW_WIDTH = 320;
-	const int WINDOW_HEIGHT= 240;
-
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
 	*/
-	Window					sRootWindow;
-    XSetWindowAttributes	sWA;
-	unsigned int			ui32Mask;
-	int						i32Depth;
-
-	// Initializes the display and screen
-	x11Display = XOpenDisplay( 0 );
-	dbg.Assert(x11Display != NULL, "Unable to open X display\n");
-	x11Screen = XDefaultScreen( x11Display );
-	
-	// Gets the window parameters
-	sRootWindow = RootWindow(x11Display, x11Screen);
-	i32Depth = DefaultDepth(x11Display, x11Screen);
-	x11Visual = new XVisualInfo;
-	XMatchVisualInfo( x11Display, x11Screen, i32Depth, TrueColor, x11Visual);
-	dbg.Assert(x11Visual != NULL, "Unable to acquire visual\n");
-    x11Colormap = XCreateColormap( x11Display, sRootWindow, x11Visual->visual, AllocNone );
-    sWA.colormap = x11Colormap;
-	
-    // Add to these for handling other events
-    sWA.event_mask = StructureNotifyMask | ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask;
-    ui32Mask = CWBackPixel | CWBorderPixel | CWEventMask | CWColormap;
-	
-	// Creates the X11 window
-    x11Window = XCreateWindow( x11Display, RootWindow(x11Display, x11Screen), 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
-								 0, CopyFromParent, InputOutput, CopyFromParent, ui32Mask, &sWA);
-	XMapWindow(x11Display, x11Window);
-	XFlush(x11Display);
+	disp_.InitOpenGL(&ctx);
 
 	/*
 		Step 1 - Get the default display.
@@ -161,15 +124,13 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		with, we let EGL pick the default display.
 		Querying other displays is platform specific.
 	*/
-	eglDisplay = eglGetDisplay((NativeDisplayType)x11Display);
-	genWindow = (NativeWindowType)x11Window;
+
+	eglDisplay = eglGetDisplay(ctx.eglDisplay);
 #else	// !EMULATION
 	// Init OpenGL hardware
-	disp_.InitOpenGL(&meminfo);
+	ctx.pOEM = &meminfo;
+	disp_.InitOpenGL(&ctx);
 	
-	// EGL NativeWindow needs to be some non-NULL struct
-	genWindow = malloc(sizeof(tDisplayScreenStats));
-
 	// Lightning hardware just has one display
 	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #endif	// EMULATION
@@ -202,12 +163,6 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		Window surface, i.e. it will be visible on screen. The list
 		has to contain key/value pairs, terminated with EGL_NONE.
 	 */
-#ifdef EMULATION
-	EGLint pi32ConfigAttribs[3];
-	pi32ConfigAttribs[0] = EGL_SURFACE_TYPE;
-	pi32ConfigAttribs[1] = EGL_WINDOW_BIT;
-	pi32ConfigAttribs[2] = EGL_NONE;
-#else
 	const EGLint pi32ConfigAttribs[] =
 	{
 	    EGL_RED_SIZE,       8,
@@ -219,7 +174,6 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
 	    EGL_NONE,           EGL_NONE
 	};
-#endif
 
 	/*
 		Step 4 - Find a config that matches all requirements.
@@ -243,7 +197,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		memory.
 	*/
 	dbg.DebugOut(kDbgLvlVerbose, "eglCreateWindowSurface()\n");
-	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, genWindow, NULL);
+	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, ctx.eglWindow, NULL);
 	AbortIfEGLError("eglCreateWindowSurface");
 
 	/*
@@ -270,7 +224,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
 #ifdef EMULATION
-	EmulationConfig::Instance().SetLcdDisplayWindow(x11Window);
+	EmulationConfig::Instance().SetLcdDisplayWindow((U32)ctx.eglWindow);
 #endif	// EMULATION
 
 	glClearColorx(0, 0, 0, 0);
@@ -301,11 +255,6 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		Step 10 - Destroy the eglWindow.
 		Again, this is platform specific and delegated to a separate function.
 	*/
-#ifdef EMULATION
-	if (x11Window) XDestroyWindow(x11Display, x11Window);
-    if (x11Colormap) XFreeColormap( x11Display, x11Colormap );
-	if (x11Display) XCloseDisplay(x11Display);
-#endif	// EMULATION
 
 	// Exit OpenGL hardware
 	disp_.DeinitOpenGL(); 

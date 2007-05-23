@@ -32,6 +32,19 @@ const CString			kDisplayModuleName		= "Display";
 const tVersion			kDisplayModuleVersion	= 2;
 const tEventPriority	kDisplayEventPriority	= 0;
 
+//==============================================================================
+// Typedefs
+//==============================================================================
+struct tDisplayContext {
+	U16 width;			// from CreateHandle
+	U16 height;
+	tPixelFormat colorDepth;
+	U16 pitch;			// based on colorDepth
+	U8 *pBuffer;
+	S16 x;				// from Register()
+	S16 y;
+	bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
+};
 
 //==============================================================================
 class CDisplayModule : public ICoreModule {
@@ -77,17 +90,6 @@ public:
 
 
 private:
-	struct tDisplayContext {
-		U16 width;			// from CreateHandle
-		U16 height;
-		tPixelFormat colorDepth;
-		U16 pitch;			// based on colorDepth
-		U8 *pBuffer;
-		S16 x;				// from Register()
-		S16 y;
-		bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
-	};
-
 	void				InitModule( );
 	void				DeInitModule( );
 	U32					GetScreenSize( );

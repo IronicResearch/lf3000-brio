@@ -16,6 +16,7 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
+#include <BrioOpenGLConfig.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -102,7 +103,14 @@ void CDisplayModule::DeInitModule()
 //----------------------------------------------------------------------------
 void CDisplayModule::InitOpenGL(void* pCtx)
 {
-	// Nothing to do on emulation target
+	// Pass back essential display context info for OpenGL bindings
+	tOpenGLContext*		ctx = (tOpenGLContext*)pCtx;
+	XWindowAttributes	attr;
+	XGetWindowAttributes(x11Display, x11Window, &attr);
+	ctx->eglDisplay = (NativeDisplayType)x11Display;
+	ctx->eglWindow  = (NativeWindowType)x11Window;
+	ctx->width		= attr.width;
+	ctx->height		= attr.height;
 }
       
 //----------------------------------------------------------------------------

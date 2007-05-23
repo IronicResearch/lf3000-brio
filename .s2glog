@@ -2602,3 +2602,12 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/23/07 4:02 PM
 1,219 ms. (Cumulative: 329,782 ms)
 
 ----------------
+Revision 378 from svn://localhost/TRUNK/:
+
+Generalized OpenGL context passed to emulation and hardware modules.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/23/07 4:20 PM
+5 changed, 0 added, 0 deleted.
+1,267 ms. (Cumulative: 331,096 ms)
+
+----------------
