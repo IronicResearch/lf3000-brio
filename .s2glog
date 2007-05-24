@@ -2704,3 +2704,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 1:16 PM
 1,188 ms. (Cumulative: 343,334 ms)
 
 ----------------
+Revision 397 from svn://localhost/TRUNK/:
+
+Added the 'algorithm' and 'functional' header files
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 1:39 PM
+1 changed, 0 added, 0 deleted.
+1,142 ms. (Cumulative: 344,538 ms)
+
+----------------

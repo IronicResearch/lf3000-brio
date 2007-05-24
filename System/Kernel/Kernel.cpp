@@ -34,6 +34,9 @@
 #include <CoreMPI.h>
 #include <KernelMPI.h>
 #include <KernelPriv.h>
+#include <algorithm>
+#include <functional>
+
 //#include <FreeMemory.h>
 
 using namespace std;
