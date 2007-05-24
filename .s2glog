@@ -2685,3 +2685,22 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 11:57 AM
 1,187 ms. (Cumulative: 340,849 ms)
 
 ----------------
+Revision 391 from svn://localhost/TRUNK/:
+Revision 392 from svn://localhost/TRUNK/:
+Revision 393 from svn://localhost/TRUNK/:
+Revision 394 from svn://localhost/TRUNK/:
+Revision 395 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,204 ms. (Cumulative: 342,131 ms)
+
+----------------
+Revision 396 from svn://localhost/TRUNK/:
+
+Added the 'algorithm' and 'functional' header files
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 1:16 PM
+1 changed, 0 added, 0 deleted.
+1,188 ms. (Cumulative: 343,334 ms)
+
+----------------

@@ -25,6 +25,8 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <list>
+#include <algorithm>
+#include <functional>
 
 #include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -83,17 +85,15 @@ private:
 	U32 hndl_;
 };
 
-#ifdef BROKEN_BUILD
 struct equal_id : public binary_function<ListData*, int, bool>
 {
-	bool operator()(const ListData* pp, int i) const
+	bool operator()(const ListData* pp, U32 i) const
 {
 	return pp->getHndl() == i;
 }
 };
 
 	static list<ListData *> listMemory;
-#endif
 
 }
 	
@@ -745,9 +745,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl);
 
 	pthread_mutex_lock( &mutexValue_1);
-#ifdef BROKEN_BUILD
 	listMemory.push_back( ptrList );
-#endif
 	pthread_mutex_unlock( &mutexValue_1);
 	
     return hndl;
@@ -766,7 +764,6 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
     timer_delete(AsPosixTimerHandle( hndl ));
 	ASSERT_POSIX_CALL( errno );
 
-#ifdef BROKEN_BUILD
 	list<ListData*>::iterator p = find_if(listMemory.begin(), listMemory.end(),
 	bind2nd(equal_id(), hndl));
 
@@ -775,7 +772,6 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	pthread_mutex_lock( &mutexValue_2);
     listMemory.erase( p ); 
 	pthread_mutex_unlock( &mutexValue_2);
-#endif
 
 #if 0
 	printf("DestroyTimer After Num elements = %d\n", listMemory.size() );
