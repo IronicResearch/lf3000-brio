@@ -245,8 +245,14 @@ public:
 //	char operator[](U32 index) const;					   // FIXME/dg: need to use wide-char	
 
 	// setting and appending operators
-	CString& 	operator=(const CString& cstr) { s = cstr.s; return *this; }
-	CString& 	operator=(const char* str) { s = str; return *this; }		// FIXME/dg: dummy impl
+	CString& 	operator=(const CString& cstr) {
+		(cstr.s != 0)?(s = strdup(cstr.s)):s = 0;
+		return *this;
+	}
+	CString& 	operator=(const char* str) { 
+		(str != 0)?(s = strdup(str)):s = 0;
+		return *this;
+	}		// FIXME/dg: dummy impl
 //	CString& 	operator=(char c);
 	
 	CString& 	operator+=(const CString& str) { s = strcat((char*)s, str.c_str()); return *this; } // FIXME/dm: hack
@@ -309,16 +315,19 @@ inline CString operator+(const CString& str1, const char* str2)
 
 inline Boolean	operator==(const CString& str1, const CString& str2)
 {
+	if ((str1.s == 0) || (str2.s == 0)) return false;
     return (strcmp(str1.s, str2.s) == 0) ? true : false;
 }
 
 inline Boolean	operator==(const char* str1, const CString& str2)
 {
+	if ((str1 == 0) || (str2.s == 0)) return false;
     return (strcmp(str1, str2.s) == 0) ? true : false;
 }
 
 inline Boolean	operator==(const CString& str1, const char* str2)
 {
+	if ((str1.s == 0) || (str2 == 0)) return false;
     return (strcmp(str1.s, str2) == 0) ? true : false;
 }
 

@@ -189,7 +189,6 @@ namespace
 				MAX_RSRC_URI_SIZE) == 0)
 				return;
 		}
-		rsrcDeviceArray[rsrcDeviceArraySize].uriBase;
 		strncpy(rsrcDeviceArray[rsrcDeviceArraySize].uriBase, tempDevice->uriBase, MAX_RSRC_URI_SIZE);
 		rsrcDeviceArraySize++;
 	}
@@ -251,7 +250,7 @@ namespace
 		struct tRsrcDeviceDescriptor tempDevice;
 		CString cstrTemp;
 		FILE *rFile;
-				
+
 		// open the specified directory
 		dp = opendir( path );
 		if (dp != NULL)
@@ -306,7 +305,7 @@ namespace
 		tRsrcDeviceDescriptor tempDevice;
 		CString URIpath;
 		
-		CURI defaultURI = "/home/lfu/LeapFrog/";
+		CURI defaultURI = "";
 		
 		URIpath = defaultURI + "System/";
 		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
@@ -705,6 +704,7 @@ tErrType  	CResourceModule::CloseAllDevices()
 		{
 			if (rsrcDescBlockSize > 0)
 			{
+				/* TODO: BC: This seems to be segfaulting on embedded target. */
 				delete []rsrcDescPtrArray;
 			}
 			rsrcDescPtrArraySize = 0;

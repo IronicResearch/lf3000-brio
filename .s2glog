@@ -2620,3 +2620,23 @@ By DGibbs (DGibbs@leapfrog.com) on 5/23/07 4:41 PM
 1,236 ms. (Cumulative: 332,379 ms)
 
 ----------------
+Revision 380 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,110 ms. (Cumulative: 333,536 ms)
+
+----------------
+Revision 381 from svn://localhost/TRUNK/:
+Revision 382 from svn://localhost/TRUNK/:
+
+Added resource paths to rootfs.  Run LinuxDist/packages/brio/install.sh to
+generate an updated file system.
+Fixed some CString methods that I'm pretty sure were segfaulting.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/24/07 8:38 AM
+2 changed, 0 added, 0 deleted.
+1,234 ms. (Cumulative: 334,786 ms)
+
+----------------
