@@ -50,9 +50,7 @@ void CDisplayModule::InitModule()
 	const int WINDOW_WIDTH = 320;
 	const int WINDOW_HEIGHT= 240;
 
-	/*
-		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
-	*/
+	// Create an X window for either 2D or 3D target
 	Window					sRootWindow;
     XSetWindowAttributes	sWA;
 	unsigned int			ui32Mask;
@@ -71,6 +69,7 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(x11Visual != NULL, "Unable to acquire visual\n");
     x11Colormap = XCreateColormap( x11Display, sRootWindow, x11Visual->visual, AllocNone );
     sWA.colormap = x11Colormap;
+	sWA.background_pixel = WhitePixel(x11Display, x11Screen);
 	
     // Add to these for handling other events
     sWA.event_mask = StructureNotifyMask | ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask;
@@ -89,12 +88,13 @@ void CDisplayModule::InitModule()
 //----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
-	// On the target, this is where file descriptors get closed, etc
-	// in emulation, you probably don't need to do anything here
+	// Release the X window and its resources 
+	if (gc)
+		XFreeGC(x11Display, gc);
 	if (x11Window) 
 		XDestroyWindow(x11Display, x11Window);
     if (x11Colormap) 
-    	XFreeColormap( x11Display, x11Colormap );
+    	XFreeColormap(x11Display, x11Colormap );
 	if (x11Display) 
 		XCloseDisplay(x11Display);
 }
