@@ -2731,3 +2731,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 2:38 PM
 1,203 ms. (Cumulative: 347,054 ms)
 
 ----------------
+Revision 400 from svn://localhost/TRUNK/:
+
+mpilibs was returned to previous version
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 3:21 PM
+1 changed, 0 added, 0 deleted.
+1,172 ms. (Cumulative: 348,273 ms)
+
+----------------
