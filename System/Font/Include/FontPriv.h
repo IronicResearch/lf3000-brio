@@ -60,6 +60,9 @@ typedef struct  TFont_
     void*        	fileAddress;	// for preloaded files 
     size_t       	fileSize;
 	FT_Face			face;
+	int				height;			// line-to-line spacing
+	int				ascent;			// baseline location
+	int				descent;		// remainder below baseline
 } TFont, *PFont;
 
 // Font library internal management

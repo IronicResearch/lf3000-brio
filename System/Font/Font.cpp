@@ -263,6 +263,11 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
     {
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FTC_Manager_LookupSize failed for font size = %d, pixels = %d, error = %d\n", prop.size, pixelSize, error);
     }
+    // Get font metrics for all glyphs (26:6 fixed-point)
+	font->height = size->metrics.height >> 6;
+	font->ascent = size->metrics.ascender >> 6;
+	font->descent = size->metrics.descender >> 6;
+	dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: font size = %d, pixels = %d, height = %d, ascent = %d, descent = %d\n", prop.size, pixelSize, font->height, font->ascent, font->descent);
 #else
 	// FIXME: Select font size from available sizes
 #endif	
@@ -309,10 +314,14 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, void* 
 	U32	 		color = attr_.color;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
+	// FIXME/dm: Handle general case:
+	// 2D surface = rightside-up bitmap for downward Y window coords
+	// 3D surface = upside-down bitmap for upward Y OpenGL coords
+
 	// Pack RGB color into buffer according to mono bitmap mask
 	w = (source->width+7) / 8;
 	h = source->rows;
-	s = t = (U8*)source->buffer + (h-1) * source->pitch;  // upside down
+	s = t = (U8*)source->buffer; // + (h-1) * source->pitch;  // upside down
 	d = u = (U32*)((U8*)surf->buffer + y0 * surf->pitch + x0 * 4);
 	for (y = 0; y < h; y++) 
 	{
@@ -330,7 +339,7 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, void* 
 			}
 			s++;
 		}
-		t -= source->pitch;	// U8* upside down
+		t += source->pitch;	// U8* // NOT upside down
 		u += surf->pitch/4;	// U32*
 	}				  
 }
@@ -350,6 +359,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
 	int				error = FT_Err_Ok;
 	int				index;
+	PFont			font;
 	
 #if USE_FONT_CACHE_MGR
 	// Sanity check
@@ -358,6 +368,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid font selection\n" );
 		return false;
 	}
+	font = handle_.currentFont;
 	
   	// For selected font, find the glyph matching the char
     index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
@@ -380,6 +391,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid font selection\n" );
 		return false;
 	}
+	font = handle_.fonts[handle_.curFont];
 	
   	// For selected font, find the glyph matching the char
 	index = FT_Get_Char_Index(handle_.face, ch);
@@ -434,11 +446,16 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 	bitmap = (FT_BitmapGlyph)glyph;
 	source = &bitmap->bitmap;
 
+	// Account for bitmap XY bearing offsets and overall font ascent 
+	int dx = bitmap->left;
+	int dy = bitmap->top;
+	int dz = font->ascent;
+
 	// TODO: Handle other source bitmap cases besides 1bpp mono
 	// TODO: Handle other destination buffer cases besides 32bpp RGB
 
 	// Draw mono bitmap into RGB context buffer with current color
-	ConvertBitmapToRGB32(source, x, y, pCtx);
+	ConvertBitmapToRGB32(source, x+dx, y+dz-dy, pCtx);
 
 	// Update the current XY glyph cursor position
 	// Internal glyph cursor is in 16:16 fixed-point

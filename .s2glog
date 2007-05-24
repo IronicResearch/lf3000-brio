@@ -2749,3 +2749,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 3:25 PM
 1,234 ms. (Cumulative: 349,554 ms)
 
 ----------------
+Revision 402 from svn://localhost/TRUNK/:
+
+Correct font bitmap Y offset calculations for 2D surface.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/24/07 4:41 PM
+2 changed, 0 added, 0 deleted.
+1,250 ms. (Cumulative: 350,851 ms)
+
+----------------
