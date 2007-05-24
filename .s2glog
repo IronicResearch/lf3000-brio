@@ -2740,3 +2740,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 3:21 PM
 1,172 ms. (Cumulative: 348,273 ms)
 
 ----------------
+Revision 401 from svn://localhost/TRUNK/:
+
+Added KernelMPI
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 3:25 PM
+1 changed, 0 added, 0 deleted.
+1,234 ms. (Cumulative: 349,554 ms)
+
+----------------
