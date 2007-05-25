@@ -2758,3 +2758,18 @@ By Dmilici (Dmilici@leapfrog.com) on 5/24/07 4:41 PM
 1,250 ms. (Cumulative: 350,851 ms)
 
 ----------------
+Revision 403 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,203 ms. (Cumulative: 352,101 ms)
+
+----------------
+Revision 404 from svn://localhost/TRUNK/:
+
+Change font load message to verbose.
+
+By Dmilici (Dmilici@leapfrog.com) on 5/24/07 5:46 PM
+1 changed, 0 added, 0 deleted.
+1,172 ms. (Cumulative: 353,289 ms)
+
+----------------

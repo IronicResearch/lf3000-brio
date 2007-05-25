@@ -262,12 +262,13 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
     if ( error ) 
     {
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FTC_Manager_LookupSize failed for font size = %d, pixels = %d, error = %d\n", prop.size, pixelSize, error);
+		return false;
     }
     // Get font metrics for all glyphs (26:6 fixed-point)
 	font->height = size->metrics.height >> 6;
 	font->ascent = size->metrics.ascender >> 6;
 	font->descent = size->metrics.descender >> 6;
-	dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: font size = %d, pixels = %d, height = %d, ascent = %d, descent = %d\n", prop.size, pixelSize, font->height, font->ascent, font->descent);
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, pixels = %d, height = %d, ascent = %d, descent = %d\n", prop.size, pixelSize, font->height, font->ascent, font->descent);
 #else
 	// FIXME: Select font size from available sizes
 #endif	
