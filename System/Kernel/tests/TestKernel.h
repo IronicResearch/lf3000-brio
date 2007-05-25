@@ -463,11 +463,191 @@ public:
 		}
     }
 
+    //==============================================================================
+	// Mutexes
+	//==============================================================================
+    // Initializes a mutex with the attributes specified in the specified mutex attribute object
+    void testInit_DeInit_Mutex()
+    {
+		tErrType err;
+		//Note: typedef pthread_mutexattr_t tMutexAttr
+		//Note: typedef pthread_mutex_t     tMutex;
+		tMutex    mutex = PTHREAD_MUTEX_INITIALIZER;
+		tMutex    mutex2;
+		tMutex    mutex3;
+	
+ 	 	tMutexAttr   mta;
+		
+		//C reate a default mutex attribute
+    	err = KernelMPI->InitMutexAttributeObject( mta );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+  		// Create the mutex using the NULL attributes (default)
+//  		rc = pthread_mutex_init(&mutex3, NULL);
+       	err = KernelMPI->InitMutex( mutex3, NULL );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+  		// Create the mutex using a mutex attributes object
+       	err = KernelMPI->InitMutex( mutex2, &mta );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+  		// Destroy three mutexes
+       	err = KernelMPI->DeInitMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+       	err = KernelMPI->DeInitMutex( mutex2 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+       	err = KernelMPI->DeInitMutex( mutex3 );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    }
+	
+    // Destroys a mutex. It was tested in the 'testInit_DeInit_Mutex'
+    void xtestDeInitMutex()
+    {
+		tErrType err;
+		tMutex mutex;
+        err = KernelMPI->DeInitMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    }
+	
+    // Obtains the priority ceiling of a mutex attribute object
+    // This function will not be used on the borad 
+    void xtestGetMutexPriorityCeiling()
+	{
+        // err = KernelMPI->GetMutexPriorityCeiling( const tMutex& mutex );
+    }
+	
+    // Sets the priority ceiling attribute of a mutex attribute object
+    // This function will not be used on the borad 
+    void xtestSetMutexPriorityCeiling()
+    {
+ 		// err = KernelMPI->SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
+    }
+	
+     	// Locks an unlocked mutex
+    void testLockMutex()
+    {
+		tErrType err;
+
+		tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
+
+        err = KernelMPI->LockMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->UnlockMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+       		
+       	err = KernelMPI->DeInitMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    }
+	
+    	// Tries to lock a not xtested
+	void testTryLockMutex_1()
+    {
+		tErrType err;
+		tMutex mutex;
+
+   		err = KernelMPI->InitMutex( mutex, NULL );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+		err = KernelMPI->TryLockMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+			
+   		err = KernelMPI->DeInitMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+			
+			// See http://www.yolinux.com/TUTORIALS/LinuxTutorialPosixThreads.html
+			
+//			pthread_mutex_lock(&mutex_1);
+
+//   		while ( pthread_mutex_trylock(&mutex_2) )  /* Test if already locked   */
+//    		{
+//       			pthread_mutex_unlock(&mutex_1);  /* Free resource to avoid deadlock */
+//       			...
+       			/* stall here   */
+//       			...
+//       			pthread_mutex_lock(&mutex_1);
+//    		}
+//    		count++;
+//    		pthread_mutex_unlock(&mutex_1);
+//    		pthread_mutex_unlock(&mutex_2);
+    
+// 			
+        }
+	
+    // Unlocks a mutex. It was tested
+    void xtestUnlockMutex()
+    {
+        	// err = KernelMPI->UnlockMutex( tMutex& mutex );
+    }
+
+	//==============================================================================
+	// Conditions
+	//==============================================================================
+    // Unblocks all threads that are waiting on a condition variable
+        void xtestBroadcastCond()
+        {
+        	// err = KernelMPI->BroadcastCond( tCond& cond );
+        }	
+    
+    // Destroys a condition variable attribute object
+        void xtestDestroyCond()
+        {
+        	// err = KernelMPI->DestroyCond( tCond& cond );
+        }
+    
+    // Initializes a condition variable with the attributes specified in the
+    // specified condition variable attribute object
+        void xtestInitCond()
+        {
+        	// err = KernelMPI->InitCond( tCond& cond, const tCondAttr& attr );
+        }
+    
+    // Unblocks at least one thread waiting on a condition variable
+        void xtestSignalCond()
+        {
+        	// err = KernelMPI->SignalCond( tCond& cond );
+        }
+    
+    // Automatically unlocks the specified mutex, and places the calling thread into a wait state
+    // FIXME: pAbstime var
+        void xtestTimedWaitOnCond()
+        {
+        	// err = KernelMPI->TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime );
+        }
+    
+    // Automatically unlocks the specified mutex, and places the calling thread into a wait state
+        void xtestWaitOnCond()
+        {
+        	// err = KernelMPI->WaitOnCond( tCond& cond, tMutex& mutex );
+        	
+        }	
+    
+    // Destroys a condition variable
+        void xtestDestroyCondAttr()
+        {
+        	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
+        }
+    
+    // Obtains the process-shared setting of a condition variable attribute object
+        void xtestGetCondAttrPShared()
+        {
+        	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
+        }
+    
+    // Initializes a condition variable attribute object    
+        void xtestInitCondAttr()
+        {
+        	// err = KernelMPI->InitCondAttr( tCondAttr& attr );
+        }
+    
+    // Sets the process-shared attribute in a condition variable attribute object
+    // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
+        void xtestSetCondAttrPShared()
+        {
+        	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
+        }
+
 };
 //EOF
-
-
-
-
-
-
