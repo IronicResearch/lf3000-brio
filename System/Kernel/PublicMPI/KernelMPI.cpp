@@ -21,7 +21,6 @@
 #include <KernelPriv.h>
 #include <StringTypes.h>
 
-#include <pthread.h>
 //==============================================================================
 // Defines
 //==============================================================================
@@ -349,77 +348,56 @@ U32 CKernelMPI::GetTimerRemainingTime(tTimerHndl hndl, U32* pUs) const
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr& attributes )
 {
-    errno = 0;
-    pthread_mutex_init(&mutex, &attributes);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->InitMutex( mutex, attributes );  
 }
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::DeInitMutex( tMutex& mutex )
 {
-    errno = 0;
-    pthread_mutex_destroy(&mutex);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->DeInitMutex( mutex );  
 }
 
 //------------------------------------------------------------------------------
 S32 CKernelMPI::GetMutexPriorityCeiling(const tMutex& mutex) const
 {
-   errno = 0;
-   int prioCeiling = 0;
-// FIXME /BSK NOT DEFINED YET    
-//   pthread_mutex_getprioceiling(&mutex, &prioCeiling);
-   ASSERT_POSIX_CALL( errno );
-   
-   return prioCeiling;
+  	if (!pModule_)
+		return 0;
+	return pModule_->GetMutexPriorityCeiling( mutex );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority )
 {
-   errno = 0;
-
-// FIXME /BSK NOT DEFINED YET    
-//   pthread_mutex_setprioceiling(&mutex, (int)prioCeiling, (int*)pOldPriority);
-   ASSERT_POSIX_CALL( errno );
-    
-   return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->SetMutexPriorityCeiling( mutex, prioCeiling, pOldPriority );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::LockMutex( tMutex& mutex )
 {
-    errno = 0;
-    
-    pthread_mutex_lock(&mutex);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->LockMutex( mutex );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::TryLockMutex( tMutex& mutex )
 {
-    errno = 0;
-    
-    pthread_mutex_trylock(&mutex);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->TryLockMutex( mutex );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::UnlockMutex( tMutex& mutex )
 {
-    errno = 0;
-    
-    pthread_mutex_unlock(&mutex);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->UnlockMutex( mutex );  
 }
 
 //------------------------------------------------------------------------------
@@ -428,112 +406,82 @@ tErrType CKernelMPI::UnlockMutex( tMutex& mutex )
 
 tErrType CKernelMPI::BroadcastCond( tCond& cond )
 {
-    errno = 0;
-
-    pthread_cond_broadcast(&cond);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->BroadcastCond( cond );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::DestroyCond( tCond& cond )
 {
-    errno = 0;
-
-    pthread_cond_destroy(&cond);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->DestroyCond( cond );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::InitCond( tCond& cond, const tCondAttr& attr )
 {
-    errno = 0;
-
-    pthread_cond_init(&cond, &attr);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->InitCond( cond, attr );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::SignalCond( tCond& cond )
 {
-    errno = 0;
-
-    pthread_cond_signal(&cond);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->SignalCond( cond );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime )
 {
-    errno = 0;
-
-    pthread_cond_timedwait(&cond, &mutex, pAbstime );
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->TimedWaitOnCond( cond, mutex, pAbstime );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::WaitOnCond( tCond& cond, tMutex& mutex )
 {
-    errno = 0;
-
-    pthread_cond_wait(&cond, &mutex);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->WaitOnCond( cond, mutex );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::DestroyCondAttr( tCondAttr& attr )
 {
-    errno = 0;
-
-    pthread_condattr_destroy( &attr );
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->DestroyCondAttr( attr );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::GetCondAttrPShared( const tCondAttr& attr, int* pShared )
 {
-    errno = 0;
-// FIXME/BSK To get the new library
-//    pthread_condattr_getpshared( &attr, pShared );
-//    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->GetCondAttrPShared( attr, pShared );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::InitCondAttr( tCondAttr& attr )
 {
-    errno = 0;
-
-    pthread_condattr_init(&attr);
-    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->InitCondAttr( attr );  
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelMPI::SetCondAttrPShared( tCondAttr* pAttr, int shared )
 
 {
-    errno = 0;
-// FIXME/BSK To get the new library
-//    pthread_condattr_setpshared( pAttr, shared );
-//    ASSERT_POSIX_CALL( errno );
-    
-    return kNoErr;
+  	if (!pModule_)
+		return 0;
+	return pModule_->SetCondAttrPShared( pAttr, shared );  
 }
 
 // EOF

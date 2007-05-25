@@ -144,8 +144,68 @@ public:
 	VTABLE_EXPORT tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 	VTABLE_EXPORT tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue);
 
-	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const;		// elapsed time in milliseconds (& microseconds)
-	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const; 	// time remaining in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs = NULL ) const;		// elapsed time in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs = NULL ) const; 	// time remaining in milliseconds (& microseconds)
+
+//------------------------------------------------------------------------------
+// Mutexes
+//------------------------------------------------------------------------------
+    // Initializes a mutex with the attributes specified in the specified mutex attribute object
+    VTABLE_EXPORT tErrType InitMutex( tMutex& mutex, const tMutexAttr& attributes );
+	
+    // Destroys a mutex
+    VTABLE_EXPORT tErrType DeInitMutex( tMutex& mutex );
+	
+    // Obtains the priority ceiling of a mutex attribute object
+    VTABLE_EXPORT S32		 GetMutexPriorityCeiling( const tMutex& mutex ) const;
+	
+    // Sets the priority ceiling attribute of a mutex attribute object
+    VTABLE_EXPORT tErrType SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
+	
+     // Locks an unlocked mutex
+    VTABLE_EXPORT tErrType LockMutex( tMutex& mutex );
+	
+    // Tries to lock a not tested
+    VTABLE_EXPORT tErrType TryLockMutex( tMutex& mutex );
+	
+    // Unlocks a mutex
+    VTABLE_EXPORT tErrType UnlockMutex( tMutex& mutex );
+    
+	//==============================================================================
+	// Conditions
+	//==============================================================================
+    // Unblocks all threads that are waiting on a condition variable
+    VTABLE_EXPORT tErrType BroadcastCond( tCond& cond );
+    
+    // Destroys a condition variable attribute object
+    VTABLE_EXPORT tErrType DestroyCond( tCond& cond );
+    
+    // Initializes a condition variable with the attributes specified in the
+    // specified condition variable attribute object
+    VTABLE_EXPORT tErrType InitCond( tCond& cond, const tCondAttr& attr );
+    
+    // Unblocks at least one thread waiting on a condition variable
+    VTABLE_EXPORT tErrType SignalCond( tCond& cond );
+    
+    // Automatically unlocks the specified mutex, and places the calling thread into a wait state
+    // FIXME: pAbstime var
+    VTABLE_EXPORT tErrType TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime );
+    
+    // Automatically unlocks the specified mutex, and places the calling thread into a wait state
+    VTABLE_EXPORT tErrType WaitOnCond( tCond& cond, tMutex& mutex );
+    
+    // Destroys a condition variable
+    VTABLE_EXPORT tErrType DestroyCondAttr( tCondAttr& attr );
+    
+    // Obtains the process-shared setting of a condition variable attribute object
+    VTABLE_EXPORT tErrType GetCondAttrPShared( const tCondAttr& attr, int* pShared );
+    
+    // Initializes a condition variable attribute object    
+    VTABLE_EXPORT tErrType InitCondAttr( tCondAttr& attr );
+    
+    // Sets the process-shared attribute in a condition variable attribute object
+    // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
+    VTABLE_EXPORT tErrType SetCondAttrPShared( tCondAttr* pAttr, int shared );
 
 private:
 	// Limit object creation to the Module Manager interface functions

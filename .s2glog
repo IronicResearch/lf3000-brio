@@ -2773,3 +2773,12 @@ By Dmilici (Dmilici@leapfrog.com) on 5/24/07 5:46 PM
 1,172 ms. (Cumulative: 353,289 ms)
 
 ----------------
+Revision 405 from svn://localhost/TRUNK/:
+
+Refactored MPI interface
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/24/07 5:47 PM
+3 changed, 0 added, 0 deleted.
+1,203 ms. (Cumulative: 354,539 ms)
+
+----------------
