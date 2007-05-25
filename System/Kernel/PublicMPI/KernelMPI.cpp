@@ -346,7 +346,16 @@ U32 CKernelMPI::GetTimerRemainingTime(tTimerHndl hndl, U32* pUs) const
 //------------------------------------------------------------------------------
 // Mutexes
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr& attributes )
+tErrType CKernelMPI::InitMutexAttributeObject( tMutexAttr& mutexAttr )
+{
+  	if (!pModule_)
+		return 0;
+	return pModule_->InitMutexAttributeObject( mutexAttr );  
+
+}	
+
+
+tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr* attributes )
 {
   	if (!pModule_)
 		return 0;
