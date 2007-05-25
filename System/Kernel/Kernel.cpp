@@ -951,12 +951,31 @@ U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const
 //------------------------------------------------------------------------------
 // Mutexes
 //------------------------------------------------------------------------------
-tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr& attributes )
+    // Initialize a mutex Attribute Object 
+tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 {
     errno = 0;
-    pthread_mutex_init(&mutex, &attributes);
+    tMutexAttr mutexAttrTmp;
+    pthread_mutexattr_init( &mutexAttrTmp );
     ASSERT_POSIX_CALL( errno );
+   
+    mutexAttr = static_cast<tMutexAttr>(mutexAttrTmp);
     
+    return kNoErr;
+
+}	
+
+
+tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr* mutexAttr )
+{
+    errno = 0;
+    
+    tMutex  mutexTmp;
+    pthread_mutex_init(&mutexTmp, mutexAttr);
+    ASSERT_POSIX_CALL( errno );
+
+    mutex = static_cast<tMutex>(mutexTmp);
+
     return kNoErr;
 }
 //------------------------------------------------------------------------------
