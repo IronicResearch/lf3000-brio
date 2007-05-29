@@ -2849,3 +2849,25 @@ By Dmilici (Dmilici@leapfrog.com) on 5/29/07 10:40 AM
 1,141 ms. (Cumulative: 364,227 ms)
 
 ----------------
+Revision 415 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,203 ms. (Cumulative: 365,477 ms)
+
+----------------
+Revision 416 from svn://localhost/TRUNK/:
+
+I'm adding the "ustring" third party package.  It is based on glibmm and its
+numerous dependencies.  The output libraries are greater than 2MB!  This
+library should really be optimized.  libiconv is the biggest hog at 1.2MB.
+This is probably because it is set up to support tons of languages?  Otherwise,
+there's tons of glib stuff that can surely be cut out.  See the README for
+details about what's going on.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 5/29/07 4:01 PM
+0 changed, 240 added, 0 deleted.
+5,532 ms. (Cumulative: 371,009 ms)
+
+----------------

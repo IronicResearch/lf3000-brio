@@ -1,0 +1,100 @@
+Unicode String Library
+======================
+
+The Brio framework requires a unicode string library.  The emulation target
+depends on glib and glibmm (which is simply c++ bindings for glib).  But
+putting glib on the embedded target would be just plain irresponsible!!  So we
+have created a pared down version of the glib ustring class.  It basically
+includes all of the glib headers, some of the glib and glibmm source files, and
+a few dependent libraries.
+
+Quick Start
+-----------
+
+  $ make
+  $ make hello
+  $ make install
+
+The install step puts the libraries at $(INSTALL_PATH)/usr/local/lib.  I'm
+assuming that's the rootfs for your target board.  You can now run the hello
+program on your arm-linux target.
+
+Building From Source
+--------------------
+
+glib is huge and depends on many other packages.  To make building and
+optimizing the ustring class easier, we've checked in arm-linux binaries of
+these dependencies in the libs/ and include-priv/ directories.  You may have to
+recompile later, though, so the following are instructions that you may run to
+build everything completely from source.  Throughout these instructions I refer
+to this directory as $HERE.
+ 
+0) Make sure that the arm-linux compiler is in your path.
+
+1) Build libiconv
+
+   $ wget http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.11.tar.gz
+   $ tar -xvzf libiconv-1.11.tar.gz
+   $ cd libiconv-1.11
+   $ ./configure --host=arm-linux
+   $ make
+   $ cp -a ./lib/.libs/libiconv.so* $HERE/libs/
+   $ cp ./include/iconv.h $HERE/include-priv/
+   $ cp ./include/export.h $HERE/include-priv/
+   $ cd ..   
+
+2) Build gettext.  The no-error-print-program patch eliminates the use of a
+   function defined in gnuc but not in uclibc (which we are using).
+
+   $ wget ftp://ftp.gnu.org/pub/gnu/gettext/gettext-0.16.tar.gz
+   $ tar -xvzf gettext-0.16.tar.gz 
+   $ cd gettext-0.16
+   $ patch -p1 < $HERE/patches/no-error-print-program.patch 
+   $ ./configure --host=arm-linux
+   $ make
+   $ cp -a ./gettext-tools/intl/.libs/libintl.so* $HERE/libs/
+   $ cp ./gettext-tools/intl/libintl.h $HERE/include-priv/
+   $ cd ..   
+
+3) Build glib.  Sigh.  All we need is libcharset, which I believe is just
+   libiconv's libcharset in a glib wrapper.  It probably would be easy to
+   eliminate this step.  The patch fixes a problem with the config file when
+   cross compiling.
+
+   $ wget ftp://ftp.gtk.org/pub/gtk/v2.4/glib-2.4.8.tar.bz2
+   $ tar -xjf glib-2.4.8.tar.bz2
+   $ export CPPFLAGS="-I/path/to/libiconv-1.11/include/ -I/path/to/gettext-0.16/gettext-tools/intl/"
+   $ export LDFLAGS="-L/path/to/libiconv-1.11/lib/.libs/ -L/path/to/gettext-0.16/gettext-tools/intl/.libs/"
+   $ patch -p1 < ../../patches/glib-no-fail-crosscompile.patch
+   $ ./configure --host=arm-linux glib_cv_uscore=no ac_cv_func_posix_getpwuid_r=yes
+   $ make make -C glib/libcharset
+   $ cp -a ./glib/libcharset/.libs/libcharset.a $HERE/libs/
+   $ mkdir $HERE/libcharset
+   $ cp ./glib/libcharset/libcharset.h .$HERE/libcharset/
+
+4) Build libsigc++:
+
+   $ wget http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.0/libsigc++-2.0.17.tar.bz2
+   $ tar xvjf libsigc++-2.0.17.tar.bz2
+   $ cd libsigc++-2.0.17/
+   $ ./configure --host=arm-linux
+   $ make
+   $ cp -a ./sigc++/.libs/libsigc*.so* $HERE/libs/
+   $ cp ./sigc++config.h $HERE
+   $ mkdir -p $HERE/sigc++/adaptors/lambda
+   $ mkdir -p $HERE/sigc++/functors
+   $ for f in `find sigc++ -name "*.h"`; do cp -ra $f $HERE/$f; done
+   $ cd ..
+
+5) Now build the ustring library as described above in the quick start.
+   
+TODO
+----
+
+-- Eliminate dependencies!  There's way too much code here!
+
+-- Investigate refined configurations for libiconv.  It takes up the most
+   memory by far.
+
+-- Eliminate all of the unnecessary glib stuff.  Right now it's just in there
+   to get things compiling.
