@@ -3,6 +3,23 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.5  (Build 407, released May 24, 2007) 
+===========================================
+
+Maintanence Release for emulation and embedded targets. Mainly fixes to
+samples, headers, and build scripts for compatibility between emulation
+and embedded target builds.
+
+Enhancements:
+-------------
+* Display module supports 2D drawing via X window in emulation target.
+* Font module does not crash if attempting to draw with unloaded font.
+
+Known Issues:
+-------------
+* Audio module not connected to emulation platform libraries.
+
+===========================================
 v0.1.4  (Build 336, released May 18, 2007) 
 ===========================================
 
