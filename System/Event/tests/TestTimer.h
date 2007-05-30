@@ -100,11 +100,12 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerFires( )
+	void testTimerFires( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
 			                                    };
+		TS_ASSERT_EQUALS( kNoErr, event_->RegisterEventListener(listener_) );
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		timer.Start(props);

@@ -2955,3 +2955,12 @@ By DGibbs (DGibbs@leapfrog.com) on 5/30/07 11:51 AM
 1,328 ms. (Cumulative: 383,416 ms)
 
 ----------------
+Revision 428 from svn://localhost/TRUNK/:
+
+Changed TestTimerFires method
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/30/07 12:19 PM
+1 changed, 0 added, 0 deleted.
+1,328 ms. (Cumulative: 384,791 ms)
+
+----------------
