@@ -377,7 +377,7 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
 									const char* /*pDebugName*/)
 {
     mqd_t retMq_open = -1;
-    tErrType err = 0;   
+//    tErrType err = 0;   
 
     mq_attr queuAttr = {0};
    
@@ -455,7 +455,7 @@ tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
 //------------------------------------------------------------------------------
 tErrType CKernelModule::ClearMessageQueue(tMessageQueueHndl hndl)
 {
-    int ret;
+
     struct mq_attr attr;
     ssize_t nr;
     char *buf;
@@ -507,10 +507,10 @@ tErrType CKernelModule::SendMessage(tMessageQueueHndl hndl, const CMessage& msg)
 
 #endif
     errno = 0;
-    int err = mq_send(hndl,
-                   reinterpret_cast<const char *>(&msg),
-                   msg.GetMessageSize(),
-                   msg.GetMessagePriority());
+    mq_send(hndl,
+        reinterpret_cast<const char *>(&msg),
+        msg.GetMessageSize(),
+        msg.GetMessagePriority());
     
     ASSERT_POSIX_CALL( errno );
     
@@ -550,10 +550,10 @@ tErrType CKernelModule::SendMessageOrWait(tMessageQueueHndl hndl,
 
 #endif
     errno = 0;
-    int err = mq_timedsend(hndl, 
-                   reinterpret_cast<const char *>(&msg),
-                   msg.GetMessageSize(),
-                   msg.GetMessagePriority(), &tp);
+    mq_timedsend(hndl, 
+          reinterpret_cast<const char *>(&msg),
+          msg.GetMessageSize(),
+          msg.GetMessagePriority(), &tp);
     
    	ASSERT_POSIX_CALL( errno );
     
@@ -582,7 +582,7 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
 --------------------------------------------------------- */
     
 // Retrieve attributes of the messges queque
-   struct mq_attr attr = {0};
+//   struct mq_attr attr = {0};
    unsigned int  msg_prio;
    
 #if 0 // BSK Debug printing
@@ -617,7 +617,7 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 									U32 timeoutMs )
 {
 // Retrieve attributes of the messges queque
-   struct mq_attr attr = {0};
+//   struct mq_attr attr = {0};
    
 #if 0 // BSK Debug printing
    mq_getattr(hndl, &attr);
@@ -662,19 +662,19 @@ U32   		CKernelModule::GetElapsedTime( U32* pUs )
     timeval time;
 
 	gettimeofday( &time, NULL );
-	if( pUs )
-		*pUs = time.tv_usec;
-	return ( time.tv_usec / 1000 );
+// FIXME/BK!
+// time.tv_sec field	
+	*pUs = time.tv_sec;
+	return ( time.tv_usec );
 }
 
 //------------------------------------------------------------------------------
 tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
 								const char* pDebugName )
 {
-	tErrType err = kNoErr;
-    sigset_t signal_set;
+//	tErrType err = kNoErr;
+//    sigset_t signal_set;
     int signum = SIGRTMAX;     
-    int ret; 
 
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
 						// There are the following possible values:
@@ -750,6 +750,10 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 	pthread_mutex_lock( &mutexValue_1);
 	listMemory.push_back( ptrList );
 	pthread_mutex_unlock( &mutexValue_1);
+#if 0 // FIXME/BSK
+		printf("CreateTimer tTimerHndl=0x%x \n", hndl);
+		fflush(stdout);  		
+#endif
 	
     return hndl;
 }
@@ -910,7 +914,7 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const
 //	fflush(stdout);
 	
     errno = 0;
-    int err = timer_gettime( AsPosixTimerHandle( hndl ), &value );
+    timer_gettime( AsPosixTimerHandle( hndl ), &value );
 	ASSERT_POSIX_CALL( errno );
 	
     U32 milliSeconds = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
@@ -966,12 +970,12 @@ tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 }	
 
 
-tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr* mutexAttr )
+tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr )
 {
     errno = 0;
     
     tMutex  mutexTmp;
-    pthread_mutex_init(&mutexTmp, mutexAttr);
+    pthread_mutex_init(&mutexTmp, &mutexAttr);
     ASSERT_POSIX_CALL( errno );
 
     mutex = static_cast<tMutex>(mutexTmp);
@@ -1186,12 +1190,6 @@ extern "C"
 		delete sinst;
 		sinst = NULL;
 	}
-
-struct timer_arg1
-{	
-	void (*callback1)(int somearg);
-	void *arg;;
-};            
 
 void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
 {

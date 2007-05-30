@@ -2871,3 +2871,13 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 5/29/07 4:01 PM
 5,532 ms. (Cumulative: 371,009 ms)
 
 ----------------
+Revision 417 from svn://localhost/TRUNK/:
+
+1. Fixed the 'GetElapsedTime' method. 
+2. Cleaned up to remove the compiler warning
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:10 PM
+1 changed, 0 added, 0 deleted.
+1,297 ms. (Cumulative: 372,368 ms)
+
+----------------
