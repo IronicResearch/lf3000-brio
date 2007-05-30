@@ -2918,3 +2918,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:20 PM
 1,375 ms. (Cumulative: 377,947 ms)
 
 ----------------
+Revision 423 from svn://localhost/TRUNK/:
+
+Added the 'kGroupTimer' value to 'eGroupEnum'
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:21 PM
+1 changed, 0 added, 0 deleted.
+1,344 ms. (Cumulative: 379,338 ms)
+
+----------------

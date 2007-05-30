@@ -29,7 +29,7 @@ enum eGroupEnum {
 	kGroupModule,
 	kGroupResource,
 	kGroupUnitTests,
-	
+	kGroupTimer	
 	// Brio v1.1
 		 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
