@@ -87,7 +87,7 @@ public:
 	//==============================================================================
 	// Time & TimerstTimerGenHndl
 	//==============================================================================
-	U32 	GetElapsedTime( U32* pUs=NULL ) const;	// elapsed time since System startup 
+	U32 	GetElapsedTime( U32* pUs ) const;	// elapsed time since System startup 
 //	U32			GetElapsedTimeInMilliSec( ) const;	// elapsed time since System startup 
 // fixme/BSK
 	tTimerHndl 	CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
@@ -113,7 +113,7 @@ public:
     tErrType InitMutexAttributeObject( tMutexAttr& mutexAttr );
 
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
-    tErrType InitMutex( tMutex& mutex, const tMutexAttr* mutexAttr );
+    tErrType InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr );
 	
     // Destroys a mutex
     tErrType DeInitMutex( tMutex& mutex );
