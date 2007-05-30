@@ -16,15 +16,17 @@
 #include <KernelMPI.h>
 #include <CoreTypes.h> 
 #include <EventMPI.h>
+#include <errno.h>
 
 using namespace std;
 
 namespace
 {
-typedef struct{
-	int numTest;
-	char testDescription[128];
-}thread_arg_t;
+	typedef struct
+	{
+		int numTest;
+		char testDescription[128];
+	}thread_arg_t;
 
 	char *message[3] =  { 	"Properties are default",
 	 						"Properties are set - Test 2",
@@ -73,8 +75,32 @@ typedef struct{
 		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n", counterTimer_3, tHndl );
 		fflush(stdout);
 #endif
-	}	
+	}
+//-----------------------------------------------------------------------------------------
+//		Testing WaitOnCond() function
+//------------------------------------------------------------------------------------------
+int        conditionMet = 0;
+
+#define NTHREADS    5
+
+void *threadfunc_broadcast(void *parm);
+static tCond      cond_broadcast  = PTHREAD_COND_INITIALIZER;
+static tMutex     mutex_broadcast = PTHREAD_MUTEX_INITIALIZER;
+void *threadfunc_broadcast(void *parm)
+{
+	tErrType err;
+//	printf("Thread created\n");
+//	fflush( stdout );
+
+	sleep(3);
+
+	conditionMet = 1;
+    err = pthread_cond_broadcast(&cond_broadcast);
+	TS_ASSERT_EQUALS( err, ((tErrType)0) );
 }
+//------------------------------------------------------------------------------------------
+ 
+}  // workspace
 
 LF_USING_BRIO_NAMESPACE()
 
@@ -84,6 +110,7 @@ LF_USING_BRIO_NAMESPACE()
 class TestKernelMPI : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
+
 public:
 	CKernelMPI*		KernelMPI;
 	//------------------------------------------------------------------------
@@ -463,6 +490,18 @@ public:
 		}
     }
 
+	void testGetElapsedTime()
+	{
+		tErrType err;
+		U32 pUs;
+
+       // No errors are defined for the 'gettimeofday()' function
+       // that used for GetElapsedTime
+		KernelMPI->GetElapsedTime( &pUs );
+
+	}
+	
+		
     //==============================================================================
 	// Mutexes
 	//==============================================================================
@@ -477,6 +516,7 @@ public:
 		tMutex    mutex3;
 	
  	 	tMutexAttr   mta;
+		const tMutexAttr attr = {0};
 		
 		//C reate a default mutex attribute
     	err = KernelMPI->InitMutexAttributeObject( mta );
@@ -484,11 +524,11 @@ public:
 
   		// Create the mutex using the NULL attributes (default)
 //  		rc = pthread_mutex_init(&mutex3, NULL);
-       	err = KernelMPI->InitMutex( mutex3, NULL );
+       	err = KernelMPI->InitMutex( mutex3, attr );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
   		// Create the mutex using a mutex attributes object
-       	err = KernelMPI->InitMutex( mutex2, &mta );
+       	err = KernelMPI->InitMutex( mutex2, mta );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
   		// Destroy three mutexes
@@ -507,6 +547,7 @@ public:
     {
 		tErrType err;
 		tMutex mutex;
+        
         err = KernelMPI->DeInitMutex( mutex );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
     }
@@ -547,8 +588,9 @@ public:
     {
 		tErrType err;
 		tMutex mutex;
+		const tMutexAttr attr = {0};
 
-   		err = KernelMPI->InitMutex( mutex, NULL );
+   		err = KernelMPI->InitMutex( mutex, attr );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
 		err = KernelMPI->TryLockMutex( mutex );
@@ -557,23 +599,7 @@ public:
    		err = KernelMPI->DeInitMutex( mutex );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 			
-			// See http://www.yolinux.com/TUTORIALS/LinuxTutorialPosixThreads.html
 			
-//			pthread_mutex_lock(&mutex_1);
-
-//   		while ( pthread_mutex_trylock(&mutex_2) )  /* Test if already locked   */
-//    		{
-//       			pthread_mutex_unlock(&mutex_1);  /* Free resource to avoid deadlock */
-//       			...
-       			/* stall here   */
-//       			...
-//       			pthread_mutex_lock(&mutex_1);
-//    		}
-//    		count++;
-//    		pthread_mutex_unlock(&mutex_1);
-//    		pthread_mutex_unlock(&mutex_2);
-    
-// 			
         }
 	
     // Unlocks a mutex. It was tested
@@ -584,63 +610,150 @@ public:
 
 	//==============================================================================
 	// Conditions
+	//-----------------------------------------------------------------------------
+	//	Note:
+	//			typedef pthread_cond_t      tCond;
+	// 			typedef pthread_condattr_t  tCondAttr;
+	//
 	//==============================================================================
-    // Unblocks all threads that are waiting on a condition variable
-        void xtestBroadcastCond()
+     // Initializes a condition variable with the attributes specified in the
+    // specified condition variable attribute object
+        void testInitCond()
         {
-        	// err = KernelMPI->BroadcastCond( tCond& cond );
-        }	
-    
-    // Destroys a condition variable attribute object
+			tErrType err;
+        	tCond cond;
+        	const tCondAttr attr = {0};
+        	
+        	err = KernelMPI->InitCond( cond, attr );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+        	err = KernelMPI->DestroyCond( cond );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+        }
+ 
+    // Destroys a condition variable attribute object. Tested above 
         void xtestDestroyCond()
         {
         	// err = KernelMPI->DestroyCond( tCond& cond );
         }
     
-    // Initializes a condition variable with the attributes specified in the
-    // specified condition variable attribute object
-        void xtestInitCond()
+    // Initializes a condition variable attribute object    
+        void testInitCondAttr()
         {
-        	// err = KernelMPI->InitCond( tCond& cond, const tCondAttr& attr );
+			tErrType err;
+        	tCondAttr attr;
+
+			err = KernelMPI->InitCondAttr( attr );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+        	err = KernelMPI->DestroyCondAttr( attr );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
         }
+
+    // Destroys a condition variable Tested
+        void xtestDestroyCondAttr()
+        {
+        	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
+        }
+
+    // Unblocks all threads that are waiting on a condition variable
+        void testBroadcastCond()
+        {
+			tErrType err;
+        	static tCond cond = PTHREAD_COND_INITIALIZER;        	
+        	
+        	err = KernelMPI->BroadcastCond( cond );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+         	err = KernelMPI->DestroyCond( cond );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+ 
+         }	
     
     // Unblocks at least one thread waiting on a condition variable
-        void xtestSignalCond()
+        void testSignalCond()
         {
+			tErrType err;
+        	tCond cond = PTHREAD_COND_INITIALIZER;        	
+        	
+        	err = KernelMPI->SignalCond( cond );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+         	err = KernelMPI->DestroyCond( cond );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+ 
         	// err = KernelMPI->SignalCond( tCond& cond );
         }
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
     // FIXME: pAbstime var
-        void xtestTimedWaitOnCond()
+        void testTimedWaitOnCond()
         {
-        	// err = KernelMPI->TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime );
+			tErrType err;
+        	static tCond cond = PTHREAD_COND_INITIALIZER;  
+			static tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
+			const int sleepDuration = 2;
+
+			tTimeSpec timeout1, timeout2; 
+			time(&timeout1.tv_sec);
+			timeout1.tv_sec += sleepDuration;
+			
+        	err = KernelMPI->TimedWaitOnCond( cond, mutex, &timeout1 );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+			time(&timeout2.tv_sec);
+            TS_ASSERT_LESS_THAN_EQUALS( timeout2.tv_sec - timeout1.tv_sec, 3 );
+               
+         	err = KernelMPI->DestroyCond( cond );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+	   		err = KernelMPI->DeInitMutex( mutex );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+        	//pthread_cond_timedwait(&cond, &mutex, pAbstime );
         }
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-        void xtestWaitOnCond()
+        void testWaitOnCond()
         {
-        	// err = KernelMPI->WaitOnCond( tCond& cond, tMutex& mutex );
-        	
+			tErrType err;
+
+  			int                   rc=0;
+  			int                   i;
+  			tTaskHndl		threadid;
+  			tTaskProperties props;
+  			props.TaskMainFcn = threadfunc_broadcast;
+			tPtr status = NULL;
+				
+				//    rc = pthread_create(&threadid[i], NULL, threadfunc_broadcast, NULL);
+    			err = KernelMPI->CreateTask( threadid,
+    						 (const tTaskProperties )props,	NULL );
+				TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+  			err = KernelMPI->LockMutex( mutex_broadcast );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+			while (!conditionMet) 
+			{
+//    			printf("Thread blocked\n");
+//    			fflush(stdout);
+    			err = KernelMPI->WaitOnCond( cond_broadcast, mutex_broadcast );
+				TS_ASSERT_EQUALS( err, ((tErrType)0) );
+  			}
+
+    		err = KernelMPI->DeInitMutex( mutex_broadcast );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    		err = KernelMPI->DestroyCond( cond_broadcast );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
         }	
     
-    // Destroys a condition variable
-        void xtestDestroyCondAttr()
-        {
-        	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
-        }
-    
+
     // Obtains the process-shared setting of a condition variable attribute object
         void xtestGetCondAttrPShared()
         {
         	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
         }
     
-    // Initializes a condition variable attribute object    
-        void xtestInitCondAttr()
-        {
-        	// err = KernelMPI->InitCondAttr( tCondAttr& attr );
-        }
     
     // Sets the process-shared attribute in a condition variable attribute object
     // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
@@ -650,4 +763,6 @@ public:
         }
 
 };
+
+
 //EOF

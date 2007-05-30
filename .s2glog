@@ -2881,3 +2881,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:10 PM
 1,297 ms. (Cumulative: 372,368 ms)
 
 ----------------
+Revision 418 from svn://localhost/TRUNK/:
+Revision 419 from svn://localhost/TRUNK/:
+
+Added 10 hew tests to cover mutex and conditiond Kernel MPI
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:17 PM
+1 changed, 0 added, 0 deleted.
+1,297 ms. (Cumulative: 373,728 ms)
+
+----------------
