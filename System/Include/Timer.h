@@ -63,7 +63,7 @@ public:
 //	COneShotTimer(const tTimerProperties& props)
 	{
  		pfnTimerCallback pfn = TimerCallback; // FIXME Original TP
-		timer_ = kernel_->CreateTimer(TimerCallback, props, (const char *)0 );
+		timer_ = kernel_.CreateTimer(TimerCallback, props, (const char *)0 );
 		if (timer_ == kInvalidTimerHndl)
 			throw ("CTimer creation failed");
 	}
@@ -71,7 +71,7 @@ public:
 	//--------------------------------------------------------------------------
 	~COneShotTimer()
 	{
-		kernel_->DestroyTimer(timer_);
+		kernel_.DestroyTimer(timer_);
 	}
 	
 	//--------------------------------------------------------------------------
@@ -85,51 +85,54 @@ public:
 	{
 		// Calling Start() in succession restarts the timer with its
 		// original timer period.
-		kernel_->StartTimer(timer_, props);
+		kernel_.StartTimer(timer_, props);
 	}
 	
 	//--------------------------------------------------------------------------
 	void Pause(saveTimerSettings& saveValue)
 	{
-		kernel_->PauseTimer(timer_, saveValue);
+		kernel_.PauseTimer(timer_, saveValue);
 	}
 	
 	//--------------------------------------------------------------------------
 	void Resume(saveTimerSettings& saveValue)
 	{
-		kernel_->ResumeTimer(timer_,  saveValue);
+		kernel_.ResumeTimer(timer_,  saveValue);
 	}
 	
 	//--------------------------------------------------------------------------
 	U32 GetTimerElapsedTimeInMilliSec() const
 	{
-		return kernel_->GetTimerElapsedTime(timer_);
+		return kernel_.GetTimerElapsedTime(timer_);
 	}
 	
 	//--------------------------------------------------------------------------
 	U32 GetTimerRemainingTimeInMilliSec() const
 	{
-		return kernel_->GetTimerRemainingTime(timer_);
+		return kernel_.GetTimerRemainingTime(timer_);
 	}
 	
 // TPprivate:
 	//--------------------------------------------------------------------------
+private:
 	static void TimerCallback(tTimerHndl hndl) // 
 	{
 		CEventMPI	event;
 		CTimerMessage	msg(hndl);
-		event.PostEvent(msg, kTimerEventPriority, NULL);
+		event.PostEvent(msg, kTimerEventPriority );
 #if 0 // FIXME/BSK
-		printf("TimerCallback function was called Timer tTimerHndl=%u \n",  		
+//		printf("TimerCallback function was called Timer tTimerHndl=0x%x \n", hndl);  		
+		timeval timePrint;
+		gettimeofday( &timePrint, NULL );
+		printf("%d.%d   TimerCallback  \n", timePrint.tv_sec, timePrint.tv_usec / 1000 );
+		fflush(stdout);
 #endif
 //tErrType PostEvent(const IEventMessage &msg,
 // 				tEventPriority priority, const IEventListener *pResponse)
-		
 	}
 	
 	//--------------------------------------------------------------------------
-private:
-	CKernelMPI	*kernel_;
+	CKernelMPI	kernel_;
 	tTimerHndl  timer_;
 };
 
