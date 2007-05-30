@@ -253,6 +253,7 @@ SConscript(os.path.join(root_dir, platform[:-3], 'SConscript'), duplicate=0)
 #-----------------------------------------------------------------------------
 Default('..')
 if is_checkheaders:
+	env.Append(CPPPATH = ['ThirdParty/PowerVR/Include', 'ThirdParty/PowerVR/Include/LinuxPC'])
 	Etc.Tools.SConsTools.lfutils.CheckHeaders(root_dir, checkheaders_deploy_dir, env)
 	Default(None)
 	Default(checkheaders_deploy_dir)
