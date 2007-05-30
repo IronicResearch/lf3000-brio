@@ -2936,3 +2936,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:21 PM
 1,297 ms. (Cumulative: 380,682 ms)
 
 ----------------
+Revision 425 from svn://localhost/TRUNK/:
+Revision 426 from svn://localhost/TRUNK/:
+
+Fixed InitMutex prototype
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/30/07 11:48 AM
+1 changed, 0 added, 0 deleted.
+1,313 ms. (Cumulative: 382,041 ms)
+
+----------------

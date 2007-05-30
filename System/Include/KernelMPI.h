@@ -115,6 +115,7 @@ public:
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
     tErrType InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr );
 	
+ 
     // Destroys a mutex
     tErrType DeInitMutex( tMutex& mutex );
 	
