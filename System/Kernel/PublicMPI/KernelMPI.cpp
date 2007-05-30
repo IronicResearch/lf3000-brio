@@ -355,7 +355,7 @@ tErrType CKernelMPI::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 }	
 
 
-tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr* attributes )
+tErrType CKernelMPI::InitMutex( tMutex& mutex, const tMutexAttr& attributes )
 {
   	if (!pModule_)
 		return 0;
