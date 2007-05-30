@@ -2891,3 +2891,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:17 PM
 1,297 ms. (Cumulative: 373,728 ms)
 
 ----------------
+Revision 420 from svn://localhost/TRUNK/:
+
+Fixed the 'GetElapsedTime' method 
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 5/29/07 6:18 PM
+1 changed, 0 added, 0 deleted.
+1,328 ms. (Cumulative: 375,103 ms)
+
+----------------

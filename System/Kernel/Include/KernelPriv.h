@@ -154,7 +154,7 @@ public:
     VTABLE_EXPORT tErrType InitMutexAttributeObject( tMutexAttr& mutexattr );
 
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
-    VTABLE_EXPORT tErrType InitMutex( tMutex& mutex, const tMutexAttr* mutexattr );
+    VTABLE_EXPORT tErrType InitMutex( tMutex& mutex, const tMutexAttr& mutexattr );
 	
     // Destroys a mutex
     VTABLE_EXPORT tErrType DeInitMutex( tMutex& mutex );
