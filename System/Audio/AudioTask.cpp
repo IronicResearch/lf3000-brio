@@ -9,21 +9,25 @@
 //		Audio Manager task.
 //
 //==============================================================================
+//fixme/dg: remove c std headers
 #include <stdio.h>
 #include <errno.h>
+
+#include <KernelMPI.h>
+#include <DebugMPI.h>
+#include <ResourceMPI.h>
 #include <AudioTypes.h>
 #include <AudioTask.h>
-#include <KernelMPI.h>
 #include <AudioOutput.h>
 #include <AudioMsg.h>
+#include <Mixer.h>
 
-//#include <AudioPlayer.h>
-//#include <AudioMsg.h>
+#include <AudioPlayer.h>
+#include <RawPlayer.h>
 //#include <CodecPlayer.h>
-//#include <MidiPlayer.h>
-//#include <RawPlayer.h>
-//#include <AudioOutDriver.h>
-//#include <SystemEvents.h>
+#include <MidiPlayer.h>
+#include <spmidi.h>
+
 
 //==============================================================================
 // Defines
@@ -39,33 +43,26 @@ struct tAudioContext {
 public:	
 	CKernelMPI* 		kernelMPI;
 	CDebugMPI* 			debugMPI;
-	
+	CResourceMPI*		resourceMPI;
 	Boolean				threadRun;			// set to false to exit main thread loop
-//	tAudioRsrcConfig	config;				// Audio rsrc config
-//	CAudioMixer			*pAudioMixer;		// Pointer to the global audio mixer
+	CAudioMixer*		pAudioMixer;		// Pointer to the global audio mixer
+	CMidiPlayer*		pMidiPlayer;			// temp global midi player object for testing	
 //	CAudioEffectsProcessor	*pAudioEffects;	// Pointer to the global audio effects processor
-//	tAudioPlayerNode	*pNode;				// Linked list of audio players
-//	S16					*pAudioOutBuffer;	// Pointer to the audio out buffers
+	tAudioPlayerNode	*pNode;				// Linked list of audio players
 	U16					outSizeInBytes;		// Size of one audio out buffer in bytes
 	U16					outSizeInWords;		// Size of one audio out buffer in words
 	volatile U8			audioOutIndex;		// Index of the current audio out buffer
 	Boolean				audioOutputOn;		// Flag for whether audio out driver is on
 	Boolean				audioCodecActive;	// Flag for whether an audio codec is active
 	volatile Boolean	audioMgrTaskReady;	// Flag for whether audio manager task is ready
-//	tAudioID			nextAudioID;		// Next audioID
+	tAudioID			nextAudioID;		// Next audioID
 	U8					masterVolume;		// Master volume
 	U8					numMixerChannels;
 	U32					sampleRate;
-	const IEventListener*	mpDefaultListener;
+	IEventListener*		pDefaultListener;
 	
 	tMessageQueueHndl 	hSendMsgQueue;
-	tMessageQueueHndl 	hRecvMsgQueue;
-
-//	NU_EVENT_GROUP		audioEvents;		// Audio event group
-//	NU_QUEUE			audioCmdQueue;		// Audio command message queue
-//	NU_TASK             audioCodecTask;		// Audio Codec Task
-	
-	
+	tMessageQueueHndl 	hRecvMsgQueue;	
 };
 }
 
@@ -102,59 +99,65 @@ tErrType InitAudioTask( void )
 	tTaskProperties properties;
 	thread_arg_t threadArg;
 	
-	// Get Kernel MPI
-	gContext.kernelMPI = new CKernelMPI;
-	ret = gContext.kernelMPI->IsValid();
-	if (ret != true)
-		printf("AudioTask ctor-- Couldn't create KernelMPI!\n");
-
 	// Get Debug MPI
 	gContext.debugMPI = new CDebugMPI( kGroupAudio );
 	ret = gContext.debugMPI->IsValid();
 	if (ret != true)
 		printf("AudioTask ctor -- Couldn't create DebugMPI!\n");
 	
+	// Get Kernel MPI
+	gContext.kernelMPI = new CKernelMPI;
+	ret = gContext.kernelMPI->IsValid();
+	if (ret != true)
+		printf("AudioTask ctor-- Couldn't create KernelMPI!\n");
+
+	// Get Kernel MPI
+	gContext.resourceMPI = new CResourceMPI;
+	ret = gContext.resourceMPI->IsValid();
+	if (ret != true)
+		printf("AudioTask ctor-- Couldn't create ResourceMPI!\n");
+
 	gContext.debugMPI->DebugOut( kDbgLvlValuable, 
-		(const char *)"\nKernel and Debug modules created by AudioTask ctor\n");	
+		(const char *)"\nDebug, Kernel, and Resource MPIs created by AudioTask ctor\n");	
 
 
 	// Hard code the configuration resource
 	gContext.numMixerChannels = 	kAudioNumMixerChannels;
 	gContext.sampleRate =			kAudioSampleRate;
 
-	// Set the output buffer sizes
+	// Set the output buffer sizes.  These values are based on
+	// 20ms buffer of stereo samples: see AudioConfig.h
 	gContext.outSizeInWords = kAudioOutBufSizeInWords;
 	gContext.outSizeInBytes = kAudioOutBufSizeInBytes;
 
 	// Allocate the global audio mixer
-//	if ((pAudioMixer = new CAudioMixer()) == kNull)
-//	{
-//		err = kAllocMPIErr;
-//		goto ReturnErr;
-//	}
-
+	gContext.pAudioMixer = new CAudioMixer( kAudioNumMixerChannels );
+	
+	// Get a ptr to the midi player so we can send it commands.
+	gContext.pMidiPlayer = gContext.pAudioMixer->GetMidiPlayer();
+	
 	// Initialize the audio out driver
 	gContext.audioOutIndex = 0;
 	gContext.audioOutputOn = false;
-	InitAudioOutput();
+
+	// Init output driver and register callback.  We have to pass in a pointer
+	// to the mixer object as a bit of "user data" so that when the callback happens,
+	// the C call can get to the mixer's C++ member function for rendering.  
+	// Too complicated!
+	err = InitAudioOutput( &CAudioMixer::WrapperToCallRenderBuffer, (void *)gContext.pAudioMixer );
+	gContext.debugMPI->Assert( kNoErr == err, "AudioTask -- Failed to initalize audio output!\n" );
 
 /*
   	// Set the global audio effects processor to kNull
 	//pAudioEffects = kNull;
-
+ */
 	// Initialize the linked list of audio players
-	pNode = kNull;
+	gContext.pNode = kNull;
 
 	// Initialize the next audioID
-	nextAudioID = 0;
+	gContext.nextAudioID = 0;
 
-	// Create the audio event group
-	if (NU_Create_Event_Group(&audioEvents, "AudioEv") != NU_SUCCESS)
-	{
-		err = kAudioCreateEventErr;
-		goto ReturnErr;
-	}
- */
+
 	// Get set up to create and run the task thread.
 // 	priority;				// 1	
 //	properties.priority = 1;
@@ -193,18 +196,6 @@ tErrType InitAudioTask( void )
 
 	gContext.debugMPI->Assert( kNoErr == err, "AudioTask -- Failed to create AudioTask!\n" );
 
-/*
-
-	// Create the audio codec task
-	NU_Allocate_Memory(&System_Memory, &codecTaskMemory, kAudioCodecTaskSize, NU_NO_SUSPEND);
-	if (NU_Create_Task(&audioCodecTask, "AudCod", AudioCodecTask, 0, NU_NULL,
-		codecTaskMemory, kAudioCodecTaskSize, kAudioCodecTaskPriority, 10, NU_PREEMPT, NU_START) != NU_SUCCESS)
-	{
-		err = kAudioCreateTaskErr;
-		goto ReturnErr;
-	}
-
-*/
 return err;
 }
 
@@ -233,18 +224,19 @@ void DeInitAudioTask( void )
 //									tEventContext callerContext)
 //{
 //	CAudioEventMessage	*pAudioMsg = (CAudioEventMessage*)pMsg;
-//	printf("event:x%x, audioID:%d\n", event, pAudioMsg->audioMsgData.audioCompleted.audioID); 
+//	printf("event:x%x, audioID:%d\n", event, pAud &audioPlayInfo, 0ioMsg->audioMsgData.audioCompleted.audioID); 
 //	return kNoErr;
 //}
 
 //==============================================================================
 //==============================================================================
-static void SendMsgToAudioModule( tErrType taskErr, tAudioID audioID ) 
+static void SendMsgToAudioModule( CAudioReturnMessage msg ) 
 {
 	tErrType err;
-	CAudioReturnMessage	msg(taskErr, audioID);
-
-  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Sending msg back to module...\n");	
+	
+ 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"AudioTask:Sending msg back to module...\n");	
+//  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"AudioTask:Return msg size = %d.\n", msg.GetMessageSize());	
+//  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"AudioTask:size of CAudioReturnMesage = %d.\n", sizeof(CAudioReturnMessage));	
  	
     err = gContext.kernelMPI->SendMessage( gContext.hSendMsgQueue, msg );
     gContext.debugMPI->Assert((kNoErr == err), "After call SendMessage err = %d \n", err );
@@ -253,143 +245,94 @@ static void SendMsgToAudioModule( tErrType taskErr, tAudioID audioID )
 
 //==============================================================================
 //==============================================================================
-// FIXME - MG Decide if this should be moved to the AudioPlayer
-static void SendAudioCompletedMsg(/*CAudioPlayer *player*/) 
+static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg ) 
 {
-/*
-	// First check if done message is needed
-	printf("SendAudioCompletedMsg\n");
-	if (player->SendDoneMessage())
-	{
-		IEventHandler		*pHandler;
-		CAudioEventMessage	*pMsg;
-
-		// Make sure the caller passed in a valid handler
-		pHandler = player->GetEventHandler();
-		if (pHandler != kNull)
-		{
-			// Create the message and then send it via the Notify function
-			if (player->CreateAudioCompletedMsg(0, &pMsg) == kNoErr)
-				pHandler->Notify(kAudioMgrEventTypeAudioCompleted, pMsg, 0);
-		}
-	}
-*/
+	tAudioMasterVolume*	pVolume = pMsg->GetData();
+	gContext.masterVolume = pVolume->volume;
+	gContext.pAudioMixer->SetMasterVolume( gContext.masterVolume );
 }
 
 //==============================================================================
 //==============================================================================
-static void StartPlayAudio(/*tAudioCmdMsgPlayAudio *pMsg*/) 
+static void DoPlayAudio( CAudioMsgPlayAudio* pMsg ) 
 {
-/*
-	U8					iChan;
+	tErrType			err;
+	CAudioReturnMessage	msg;
+	tAudioID			newID;
 	tAudioID			audioID = kNoAudioID;
-	tAudioPlayerNode 	*pNode, *pLast;
-	tAudioHeader		*pHeader;
-	CRsrcMgrMPI 		*pRsrcMgrMPI = kNull;
-	CChannel			*pChannel;
+	tAudioHeader*		pHeader;
+	CChannel*			pChannel;
+	CAudioPlayer*		pPlayer;
+
+	tAudioPlayAudioInfo*	pAudioInfo = pMsg->GetData();
 
 	// Find the best channel for the specified priority
-	iChan = gAudioContext->pAudioMixer->FindBestChannel(pMsg->priority);
-	printf("Best Channel:%d\n", iChan);
-	// If couldn't find a channel, inform the caller
-	if (iChan == kNoChannelAvail)
-		goto ReturnErr;									   
+	pChannel = gContext.pAudioMixer->FindBestChannel( pAudioInfo->priority );
+	printf("Find Best Channel returned:%d\n", pChannel);
 
-// FIXME MG want to put in RsrcMgr when it becomes available
-#if 1
-	// Get the pointer to the audio resource
-	// which is the pointer to the audio header
-	if ((pRsrcMgrMPI = new CRsrcMgrMPI) == kNull)
-		goto ReturnErr;									   
-
-	pRsrcMgrMPI->Init();
-	if (pRsrcMgrMPI->GetRsrcPtr(pMsg->hRsrc, (tPtr*)&pHeader) != kNoErr)
-		goto ReturnErr;
-#else
-	pHeader = (tAudioHeader *)pMsg->hRsrc;
-#endif
+	// If we have a good channel, play the audio, if not return error to caller.
+	if (pChannel != kNull) {
+								   
+		// Load the audio resource using the resource manager.
+		err = gContext.resourceMPI->LoadRsrc( pAudioInfo->hRsrc );  
+		
+		// Get the pointer to the audio header and data.
+		pHeader = (tAudioHeader*)gContext.resourceMPI->GetRsrcPtr( pAudioInfo->hRsrc );
+		
+		// Store pointer in the play struct so that the Player object can access it.
+		pAudioInfo->pAudioHeader = pHeader;
+		
+		printf("Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pAudioInfo->volume, pAudioInfo->priority, pAudioInfo->pan, pAudioInfo->hRsrc,
+				pAudioInfo->pListener, pAudioInfo->payload, pAudioInfo->flags);
 	
-	printf("Msg:%d, %d, %d, x%x, x%x, %d, %d \n", pMsg->volume, pMsg->priority, pMsg->pan, pMsg->hRsrc,
-		pMsg->pHandler, pMsg->payload, pMsg->flags);
-
-	printf("Header:x%x, %d, %d, %d, %d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRateInHz, pHeader->dataSize);
-	// Create a new node for the audio player linked list	
-	pNode = new tAudioPlayerNode(kNull, kNull);
-	//printf("Node:x%x, x%x\n",pNode, gAudioContext->pNode);
-
-	// Branch on the type of audio resource to create a new audio player
-	switch (pHeader->type)
-	{
-	case kAudioRsrcRaw:
-		printf("Create RawPlayer\n");
-		pNode->pPlayer = new CRawPlayer();
-		pNode->pPlayer->Init(pMsg->hRsrc);
-		break;
-
-	case kAudioRsrcAdpcm:
-	case kAudioRsrcGen2:
-		printf("CreateCodecPlayer\n");
-		pNode->pPlayer = new CCodecPlayer();
-		pNode->pPlayer->Init(pMsg->hRsrc);
-		break;
-
-	case kAudioRsrcMIDI:
-		printf("Create MidiPlayer\n");
-		pNode->pPlayer = new CMidiPlayer();
-		pNode->pPlayer->Init(pMsg->hRsrc);
-		break;
-
-	default:
-		printf("Create *NO* Player\n");
-		break;
-
-	} 
+		printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%d, size:%d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRate, pHeader->dataSize);
 	
-	// Set all of the audio player class variables from the message
-	pNode->pPlayer->SetVolume(pMsg->volume);
-	pNode->pPlayer->SetPriority(pMsg->priority);
-	pNode->pPlayer->SetPan(pMsg->pan);
-	pNode->pPlayer->SetEventHandler(pMsg->pHandler);
-	pNode->pPlayer->SetPayload(pMsg->payload);
-	pNode->pPlayer->SetOptionsFlags(pMsg->flags);
+		// Generate the audio ID, accounting for wrap around
+		newID = gContext.nextAudioID++;
+		if (gContext.nextAudioID == kNoAudioID)
+			gContext.nextAudioID = 0;
 	
-	// Acquire the channel found above to play this resource
-	pChannel = &gAudioContext->pAudioMixer->mpChannel[iChan];
-	pNode->pPlayer->SetChannel(pChannel);
-	pNode->pPlayer->SetParentPlayer(kNull);
-	pChannel->Acquire(pHeader);
-	pChannel->mpPlayer = pNode->pPlayer;
-
-	// Get the audioID
-	audioID = pNode->pPlayer->GetAudioID();
-
-	// We're now ready to add the node to the linked list
-	// If the list is empty, assign it to the head node
-	pLast = gAudioContext->pNode;
-	if (pLast == kNull)
-	{
-		gAudioContext->pNode = pNode;
+		// Branch on the type of audio resource to create a new audio player
+		switch (pHeader->type)
+		{
+		case kAudioRsrcRaw:
+			printf("Create RawPlayer\n");
+			pPlayer = new CRawPlayer( pAudioInfo, newID );
+			break;
+	
+		case kAudioRsrcAdpcm:
+		case kAudioRsrcGen2: 
+			printf("Create(fake)CodecPlayer\n");
+			pPlayer = new CRawPlayer( pAudioInfo, newID );
+	//		pPlayer = new CCodecPlayer( pAudioInfo->hRsrc, newID );
+			break;
+	
+		case kAudioRsrcMIDI:
+			printf("Create MidiPlayer\n");
+	//		pPlayer = new CMidiPlayer( pAudioInfo->hRsrc, newID );
+			break;
+	
+		default:
+			printf("Create *NO* Player\n");
+			break;
+	
+		} 
+		
+		// Start channel found above using newly created player.
+		// When the audio is done playing, the player will be destroyed automatically.
+		pChannel->InitChanWithPlayer( pPlayer );
+			 
+		// Send the audioID back to the caller
+		msg.SetAudioErr( kNoErr );
+		msg.SetAudioID( newID );
+	} else {
+		printf("Couldn't Find A Channel!\n");
+		// Send the audioID back to the caller
+		msg.SetAudioErr( kAudioNoChannelAvailErr );
 	}
-	// Otherwise assign it to the last node in linked list
-	else
-	{
-		while (pLast->pNext != kNull)
-			pLast = pLast->pNext;
-		pLast->pNext = pNode;
-	}
-	
-ReturnErr:
-#if 1
-	// Cleanup
-	if (pRsrcMgrMPI != kNull)
-	{
-		pRsrcMgrMPI->DeInit();
-		delete pRsrcMgrMPI;
-	}
-#endif
-	// Send the audioID back to the caller
-	SendBackAudioID(pMsg->pReturnQueue, audioID);
-*/
+
+	SendMsgToAudioModule( msg );
+
 }
 
 //==============================================================================
@@ -410,65 +353,6 @@ void StopAllAudioPlayers()
 */
 }
 
-//==============================================================================
-//==============================================================================
-void ProcessAudioPlayers()
-{
-/*	tAudioPlayerNode 	*pNode = gAudioContext->pNode;
-	tAudioPlayerNode 	*pPrev = kNull;
-
-	// Reset the audio codec active flag
-	gAudioContext->audioCodecActive = 0;
-
-	// Loop through the linked list of audio players
-	while (pNode != kNull)
-	{
-		// Call the player's ProcessTick function
-		pNode->pPlayer->ProcessTick();
-
-		// If the player is now complete
-		if (pNode->pPlayer->IsComplete())
-		{
-			// Release the channel, send done message, and delete the Player
-			CChannel	*pChannel;
-			pChannel = pNode->pPlayer->GetChannel();
-			pChannel->Release();
-			SendAudioCompletedMsg(pNode->pPlayer);
-			pNode->pPlayer->DeInit();
-			delete pNode->pPlayer;
-
-			// Remove the player from the list
-			// if it's at the top of the list
-			if (pNode == gAudioContext->pNode)
-			{
-				gAudioContext->pNode = gAudioContext->pNode->pNext;
-				delete pNode;
-				pNode = gAudioContext->pNode;
-			}
-			// otherwise it's in the middle of the list
-			else
-			{
-				pPrev->pNext = pNode->pNext;
-				delete pNode;
-				pNode = pPrev->pNext;
-			}
-		}
-		// Otherwise update to the next node in the list
-		else
-		{
-			pPrev = pNode;
-			pNode = pNode->pNext;
-		}
-	}
-	// At least one player has an audio codec,
-	// then set the audio decode go bit
-	if (gAudioContext->audioCodecActive)
-	{
-//		NU_Set_Events(&gAudioContext->audioEvents, kAudioDecodeGoBit, NU_OR);
-		printf("send audioCodecActive event\n");
-	}
-	*/
-}
 
 //==============================================================================
 //==============================================================================
@@ -478,20 +362,7 @@ static void FindPlayer(/*tAudioID audioID */)
 /*
 	// Find the audio player with the given audioID
 	CAudioPlayer* 		pPlayer = kNull;
-	tAudioPlayerNode*	pNode = gAudioContext->pNode;
 
-	// Traverse the linked list of audio players
-	while (pNode != kNull)
-	{
-		// If the node's player has the desired audioID
-		// return the pointer to the audio player  
-		if (pNode->pPlayer->GetAudioID() == audioID)
-		{
-			pPlayer = pNode->pPlayer;
-			break;
-		}
-		pNode = pNode->pNext;
-	}
 	return pPlayer;
 	
 */
@@ -503,6 +374,7 @@ static void FindPlayer(/*tAudioID audioID */)
 tErrType StartAudioSystem( void )
 {
 	tErrType err = kNoErr;
+	CAudioReturnMessage	msg;
 	
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Starting audio output driver...\n");	
 
@@ -511,17 +383,18 @@ tErrType StartAudioSystem( void )
 		err = StartAudioOutput();
 	}
 	
+	// Send the status back to the caller
+	msg.SetAudioErr( err );
+	SendMsgToAudioModule( msg );
+
 	return err;
-	
-//	tAudioCmdMsgHeader*	pMsg;
-//	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypeStopAllAudio);
-//	SendCmdMessage(pMsg); 
 }
 
 //----------------------------------------------------------------------------
 tErrType StopAudioSystem( void )
 {
 	tErrType err = kNoErr;
+	CAudioReturnMessage	msg;
 	
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Stopping audio output driver...\n");	
 
@@ -541,12 +414,78 @@ tErrType StopAudioSystem( void )
 	CAudioEventMessage	msg(data);
 	event.PostEvent(msg, kPriorityTBD, mpDefaultListener);
 */
+	// Send the status back to the caller
+	msg.SetAudioErr( err );
+	SendMsgToAudioModule( msg );
+
 	return err;
+}
+
+//==============================================================================
+//==============================================================================
+void DoAcquireMidiPlayer( void ) {
+	CAudioReturnMessage	msg;
 	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Acquiring MIDI player...\n");	
+
+//	if (!gContext.audioOutputOn) {
+//		gContext.audioOutputOn = true;
+//		err = StartAudioOutput();
+//	}
 	
-//	tAudioCmdMsgHeader*	pMsg;
-//	pMsg = (tAudioCmdMsgHeader*)GetMessageBlock(kAudioCmdMsgTypeStopAllAudio);
-//	SendCmdMessage(pMsg); 
+	// Send the status back to the caller
+	msg.SetAudioErr( kNoErr );
+	msg.SetMidiID( 24 );
+	SendMsgToAudioModule( msg );
+}
+	//==============================================================================
+	//==============================================================================
+	void DoMidiNoteOn( CAudioMsgMidiNoteOn* msg ) {
+	tAudioMidiNoteInfo* info = msg->GetData();
+	
+	gContext.pMidiPlayer->NoteOn( 
+			info->channel,
+			info->noteNum,
+			info->velocity,
+			info->flags );
+
+	//	info.priority = kAudioDefaultPriority;
+
+}
+
+//==============================================================================
+//==============================================================================
+void DoMidiNoteOff( CAudioMsgMidiNoteOff* msg ) {
+	tAudioMidiNoteInfo* info = msg->GetData();
+	
+	gContext.pMidiPlayer->NoteOff( 
+			info->channel,
+			info->noteNum,
+			info->velocity,
+			info->flags );
+	
+	//	info.priority = kAudioDefaultPriority;
+
+}
+
+void DoPlayMidiFile( CAudioMsgPlayMidiFile* msg ) {
+	tErrType				err;
+	tAudioMidiFileInfo* 	pInfo = msg->GetData();
+	
+	// Load the midi file using the resource manager.
+	err = gContext.resourceMPI->LoadRsrc( pInfo->hRsrc );  
+	
+	// Store pointer in the struct so that the Player object can access it.
+	pInfo->pMidiFileImage = (U8*)gContext.resourceMPI->GetRsrcPtr( pInfo->hRsrc );
+	pInfo->imageSize = gContext.resourceMPI->GetRsrcUnpackedSize( pInfo->hRsrc );
+
+	printf("Msg: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, pInfo->hRsrc,
+			pInfo->pListener, pInfo->payload, pInfo->flags);
+
+	gContext.pMidiPlayer->PlayMidiFile( pInfo );
+	
+	//	info.priority = kAudioDefaultPriority;
+
 }
 
 //==============================================================================
@@ -574,7 +513,7 @@ void* AudioTaskMain( void* arg )
 	gContext.debugMPI->SetDebugLevel( kDbgLvlVerbose );
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-		(const char *)"\nAudio Task creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
+		(const char *)"Audio Task creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
 	
 	err = gContext.kernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
 
@@ -585,7 +524,7 @@ void* AudioTaskMain( void* arg )
 	msgQueueProperties.mq_msgsize = sizeof(CAudioReturnMessage);
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-		(const char *)"\nAudio Task Creating task outgoing Q. size = %d\n", msgQueueProperties.mq_msgsize );	
+		(const char *)"Audio Task Creating task outgoing Q. size = %d\n", msgQueueProperties.mq_msgsize );	
 
 	err = gContext.kernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
 
@@ -597,7 +536,7 @@ void* AudioTaskMain( void* arg )
 	char 				msgBuf[kMAX_AUDIO_MSG_SIZE];
 	tAudioCmdMsgType 	cmdType;
 	U32					msgSize;
-	CAudioMsg*			pAudioMsg;
+	CAudioCmdMsg*		pAudioMsg;
 	
 	while ( gContext.threadRun ) {
 		gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
@@ -606,23 +545,28 @@ void* AudioTaskMain( void* arg )
 	    err = gContext.kernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 
 								   (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 								   
-	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "ReceivedMessage err = % d\n", err);
+	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "Audio Task: ReceivedMessage err = % d\n", err);
 
-		pAudioMsg = reinterpret_cast<CAudioMsg*>(msgBuf);
+		pAudioMsg = reinterpret_cast<CAudioCmdMsg*>(msgBuf);
 		msgSize = pAudioMsg->GetMessageSize();
-		cmdType = pAudioMsg->GetMessageCmdType();
-	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "Got Audio Command, Type= %d; Msg Size = %d \n", cmdType, msgSize );  
+		cmdType = pAudioMsg->GetCmdType();
+	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "Audio Task: Got Audio Command, Type= %d; Msg Size = %d \n", cmdType, msgSize );  
 
 		switch ( cmdType )
 		{
 		//*********************************
 		case kAudioCmdMsgTypeSetMasterVolume:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: setting master volume.\n" );	
+
+			DoSetMasterVolume( (CAudioMsgSetMasterVolume*)pAudioMsg );
+										   
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypeStartAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"\nAudio Task: starting audio system\n" );	
+				(const char *)"\nAudio Task: starting audio system.\n" );	
 	
 			StartAudioSystem();
 			break;
@@ -637,6 +581,8 @@ void* AudioTaskMain( void* arg )
 
 		//*********************************
 		case kAudioCmdMsgTypePauseAllAudio:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: pause all audio.\n" );	
 			// Loop through the linked list of audio players
 			// and call the player's pause function
 //				pNode = gAudioContext->pNode;
@@ -649,6 +595,8 @@ void* AudioTaskMain( void* arg )
 
 		//*********************************
 		case kAudioCmdMsgTypeResumeAllAudio:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: resume all audio.\n" );	
 			// Loop through the linked list of audio players
 			// and call the player's resume function
 //				pNode = gAudioContext->pNode;
@@ -661,12 +609,16 @@ void* AudioTaskMain( void* arg )
 
 		//*********************************
 		case kAudioCmdMsgTypePlayAudio:
-//				StartPlayAudio((tAudioCmdMsgPlayAudio*)pMsg);
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: kAudioCmdMsgTypePlayAudio : calling DoPlayAudio().\n" );	
+				DoPlayAudio( (CAudioMsgPlayAudio*)pAudioMsg );
 //				audioToStart = 1;
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypeStopAudio:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: stop audio.\n" );	
 			// Find the audio player with the given audioID
 //				if ((pPlayer = FindPlayer(((tAudioCmdMsgStopAudio*)pMsg)->audioID)) != kNull)
 //				{
@@ -679,6 +631,8 @@ void* AudioTaskMain( void* arg )
 
 		//*********************************
 		case kAudioCmdMsgTypePauseAudio:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: pause audio.\n" );	
 			// Find the audio player with the given audioID,
 			// and if one is found, pause it
 //				if ((pPlayer = FindPlayer(((tAudioCmdMsgPauseAudio*)pMsg)->audioID)) != kNull)
@@ -687,83 +641,56 @@ void* AudioTaskMain( void* arg )
 
 		//*********************************
 		case kAudioCmdMsgTypeResumeAudio:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: resume audio.\n" );	
 			// Find the audio player with the given audioID,
 			// and if one is found, resume it
 //				if ((pPlayer = FindPlayer(((tAudioCmdMsgResumeAudio*)pMsg)->audioID)) != kNull)
 //					pPlayer->Resume();
-				break;
+		break;
 
+		
+		//*********************************
+		case kAudioCmdMsgTypeAcquireMidiPlayer:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: Acquire Midi Player.\n" );	
+			DoAcquireMidiPlayer();
+
+			break;
+
+			//*********************************
+		case kAudioCmdMsgTypeMidiNoteOn:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: midi note On.\n" );	
+			DoMidiNoteOn( (CAudioMsgMidiNoteOn*)pAudioMsg );
+
+			break;
+
+		//*********************************
+		case kAudioCmdMsgTypeMidiNoteOff:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: midi note Off.\n" );	
+			
+			DoMidiNoteOff( (CAudioMsgMidiNoteOff*)pAudioMsg );
+			break;
+
+		//*********************************
+		case kAudioCmdMsgTypePlayMidiFile:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: play midi file.\n" );	
+			
+			DoPlayMidiFile( (CAudioMsgPlayMidiFile*)pAudioMsg );
+	
+		break;
+
+		default:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: unhandled audio command!!!.\n" );	
+
+			break;
 		}
 
 	}
-
-/*
-	int					status;
-	U8					audioToStart = 0;
-	tErrType			err;
-//	tAudioCmdMsg		*pMsg;
-//	CAudioPlayer		*pPlayer;
-//	tAudioPlayerNode	*pNode;
-
-
-	// Use command type to cast msg buffer to proper object type.
-	pMsg = new tAudioCmdMsg;
-
-	// Main Task Loop
-	printf("\nAudio Mgr Task\n");
-	while (1)
-	{
-		// If the audio out driver is on, wait for the audio done bit
-		if (gAudioContext->audioOutDriverOn)
-		{
-//			NU_Retrieve_Events(&gAudioContext->audioEvents, kAudioDoneBit, 
-//				NU_OR_CONSUME, &events, NU_SUSPEND);
-		}
-
-		// Main loop to process commands for the current tick
-		while (1)
-		{
-			// If the audio out driver is on, poll for a message
-			// and break if the queue is empty
-			if (gAudioContext->audioOutDriverOn || audioToStart)
-			{
-//				if ((status = NU_Receive_From_Queue(&gAudioContext->audioCmdQueue, 
-//					pMsg, sizeof(tAudioCmdMsg)/sizeof(UNSIGNED), &msgSize, NU_NO_SUSPEND)) == NU_QUEUE_EMPTY) 
-				printf("Poll for audio message\n");
-				break;
-			}
-			// Otherwise wait for an audio command message
-			else
-			{
-//				NU_Receive_From_Queue(&gAudioContext->audioCmdQueue, pMsg, sizeof(tAudioCmdMsg)/sizeof(UNSIGNED), &msgSize, NU_SUSPEND); 
-				printf("Try to get audio cmd msg from queue.\n");
-			}
-
-			// Branch on the command
-
-			printf("AudioCmd:%d\n",pMsg->cmdHeader.audioCmdMsgType);
-		}
-		// Process the channels for the current tick
-		ProcessAudioPlayers();
-		err = gAudioContext->pAudioMixer->ProcessAudioMix();
-		// If needed, stop the audio out from going
-		if ((err == kAudioNoMoreDataErr) && gAudioContext->audioOutDriverOn)
-		{
-			StopAllAudioPlayers();
-			// Turn off the audio out driver
-			gAudioContext->audioOutDriverOn = 0;
-			StopAudioOut();
-		}
-		// If needed, start the audio out going
-		if (audioToStart && (gAudioContext->audioOutDriverOn == 0))
-		{
-			printf("StartAudio\n");
-			gAudioContext->audioOutDriverOn = 1;
-			StartAudioOut();
-		}
-		audioToStart = 0;
-	}
-*/
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 		(const char *)"MyAudioTask is exiting, loop cnt: %u.\n", i);	

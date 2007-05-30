@@ -18,14 +18,15 @@
 #include <CoreModule.h>
 #include <KernelMPI.h>
 #include <DebugMPI.h>
+#include <AudioConfig.h>
 #include <AudioTask.h>
 #include <AudioMsg.h>
+#include <EventListener.h>
 
 //#include <RsrcTypes.h>
 //#include <AudioTypes.h>
 //#include <AudioRsrcs.h>
 //#include <AudioMixer.h>
-//#include <EventHandler.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -48,27 +49,57 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// Overall Audio Control
+	tErrType SetDefaultListener( const IEventListener* pListener );
+
 	VTABLE_EXPORT tErrType	StartAudio( void );
 	VTABLE_EXPORT tErrType	StopAudio( void );
 	VTABLE_EXPORT tErrType	PauseAudio( void );
 	VTABLE_EXPORT tErrType	ResumeAudio( void );
 
+	VTABLE_EXPORT void 		SetMasterVolume( U8 volume );
+
 	VTABLE_EXPORT tAudioID PlayAudio( tRsrcHndl				hRsrc, 
 										U8					volume, 
 										tAudioPriority		priority,
 										S8					pan, 
-										IEventListener		*pHandler,
+										IEventListener		*pListener,
 										tAudioPayload		payload,
 										tAudioOptionsFlags	flags );
 
+	VTABLE_EXPORT tErrType AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiID* pMidiID );
+	VTABLE_EXPORT tErrType ReleaseMidiPlayer( tMidiID midiID );
+	VTABLE_EXPORT tMidiID GetMidiIDForAudioID( tAudioID audioID );
+	VTABLE_EXPORT tAudioID GetAudioIDForMidiID( tMidiID midiID );
+	VTABLE_EXPORT void StopMidiPlayer( tMidiID midiID, Boolean surpressDoneMessage );
+	VTABLE_EXPORT void PauseMidiPlayer( tMidiID midiID );
+	VTABLE_EXPORT void ResumeMidiPlayer( tMidiID midiID );
+	VTABLE_EXPORT tMidiTrackBitMask GetEnabledMidiTracks( tMidiID midiID );
+	VTABLE_EXPORT tErrType EnableMidiTracks( tMidiID midiID, tMidiTrackBitMask trackBitMask );
+	VTABLE_EXPORT tErrType TransposeMidiTracks( tMidiID midiID, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
+	VTABLE_EXPORT tErrType ChangeMidiInstrument( tMidiID midiID, tMidiTrackBitMask trackBitMask, tMidiInstr instr );
+	VTABLE_EXPORT tErrType ChangeMidiTempo( tMidiID midiID, S8 tempo );
+	VTABLE_EXPORT tErrType SendMidiCommand( tMidiID midiID, U8 cmd, U8 data1, U8 data2 );
+	VTABLE_EXPORT tErrType 	MidiNoteOn( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	VTABLE_EXPORT tErrType 	MidiNoteOff( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	VTABLE_EXPORT tAudioID PlayMidiFile( tMidiID	midiID,
+						tRsrcHndl			hRsrc, 
+						U8					volume, 
+						tAudioPriority		priority,
+						IEventListener*		pListener,
+						tAudioPayload		payload,
+						tAudioOptionsFlags	flags );
+	
 private:
 	CKernelMPI* KernelMPI;
 	CDebugMPI* DebugMPI;	
 	tMessageQueueHndl hRecvMsgQueue_;
 	tMessageQueueHndl hSendMsgQueue_;
-	
-	void SendCmdMessage( CAudioMsg& msg );
+	const IEventListener*	pDefaultListener_;
+
+	void SendCmdMessage( CAudioCmdMsg& msg );
 	tAudioID WaitForAudioID( void );
+	tMidiID WaitForMidiID( void );
+	tErrType WaitForStatus( void );
 	
 	// Limit object creation to the Module Manager interface functions
 	CAudioModule();

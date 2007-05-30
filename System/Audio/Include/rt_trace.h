@@ -59,6 +59,7 @@ extern "C"
 
 #if RT_TRACE_REALTIME_EVENTS
 
+unsigned long gettime_usecs( void );
 void RT_ResetTraceMessages();
 void RT_AddTraceMessage( const char *msg, int data );
 void RT_DumpTraceMessages();

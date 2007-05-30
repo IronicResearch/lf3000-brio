@@ -1,10 +1,16 @@
 // TestAudio.h 
 
 #include <cxxtest/TestSuite.h>
+#include <boost/shared_array.hpp>
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <AudioMPI.h>
+#include <DebugMPI.h>
 #include <KernelMPI.h>
+#include <ResourceMPI.h>
+#include <EventListener.h>
+#include <EventMessage.h>
+#include <EventMPI.h>
 #include <UnitTestUtils.h> 
 #include <sys/types.h>
 #include <unistd.h>
@@ -15,6 +21,73 @@
 
 LF_USING_BRIO_NAMESPACE()
 
+const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
+
+//============================================================================
+// MyRsrcEventListener
+//============================================================================
+const tEventType kMyHandledTypes[] = { kAllResourceEvents };						
+//----------------------------------------------------------------------------
+class MyRsrcEventListener : public IEventListener
+{
+
+public:
+	MyRsrcEventListener( ) 
+		: IEventListener(kMyHandledTypes, ArrayCount(kMyHandledTypes))
+	{		
+	}
+	
+	virtual tEventStatus Notify( const IEventMessage& msg )
+	{
+		U16 size		= msg.GetSizeInBytes();
+		msg_			= boost::shared_array<U8>(new U8[size]);
+		memcpy(msg_.get(), &msg, size);
+		return kEventStatusOKConsumed;
+	}
+	
+	const IEventMessage* GetEventMsg() const
+	{
+		return reinterpret_cast<const IEventMessage*>(msg_.get());
+	}
+	
+	void Reset()
+	{
+		msg_.reset();
+	}
+	
+private:
+	boost::shared_array<U8>	msg_;
+};
+
+//============================================================================
+// Audio Listener
+//============================================================================
+const tEventType kMyAudioTypes[] = { kAllAudioEvents };
+
+//----------------------------------------------------------------------------
+class AudioListener : public IEventListener
+{
+public:
+	AudioListener( )
+		: IEventListener(kMyAudioTypes, ArrayCount(kMyAudioTypes)), dbg_(kMyApp)
+	{
+	}
+
+	virtual tEventStatus Notify( const IEventMessage &msgIn )
+	{
+		const CAudioEventMessage& msg = dynamic_cast<const CAudioEventMessage&>(msgIn);
+		if( msg.GetEventType() == kAudioCompletedEvent )
+		{
+			const tAudioMsgDataCompleted& data = msg.audioMsgData.audioCompleted;
+			dbg_.DebugOut(kDbgLvlCritical, "Audio done: id=%d, payload=%d\n", 
+				data.audioID, data.payload);
+			return kEventStatusOKConsumed;
+		}
+	}
+private:
+	CDebugMPI	dbg_;
+};
+
 
 //============================================================================
 // TestAudioMgr functions
@@ -22,64 +95,171 @@ LF_USING_BRIO_NAMESPACE()
 class TestAudio : public CxxTest::TestSuite, TestSuiteBase 
 {
 private:
+	CAudioMPI*			pAudioMPI_;
+	CKernelMPI*			pKernelMPI_;
+	CResourceMPI*		pResourceMPI_;
+	MyRsrcEventListener	resourceListener_;
+	AudioListener		audioListener_;
+
 public:
-	CAudioMPI*		AudioMPI;
-	CKernelMPI*		KernelMPI;
+	
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
 		int err;
 
-		AudioMPI = new CAudioMPI();
-		KernelMPI = new CKernelMPI();
+		pAudioMPI_ = new CAudioMPI();
+		pKernelMPI_ = new CKernelMPI();
+		pResourceMPI_ = new CResourceMPI( &resourceListener_);
+		pResourceMPI_->OpenAllDevices();
 	}
 
 	//------------------------------------------------------------------------
 	void tearDown( )
 	{
-		delete AudioMPI; 
-		delete KernelMPI; 
+		delete pAudioMPI_; 
+		delete pKernelMPI_; 
+
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
 	}
 	
 
 
 	//------------------------------------------------------------------------
+	void resetHandler( MyRsrcEventListener& handler )
+	{
+		handler.Reset();
+	}
+
+	//------------------------------------------------------------------------
+	bool handlerIsReset( MyRsrcEventListener& handler )
+	{
+		return handler.GetEventMsg() == NULL;
+	}
+
+	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
-		TS_ASSERT( AudioMPI != NULL );
-		TS_ASSERT( AudioMPI->IsValid() == true );
-				
-		
 		tErrType err;
+		U16				i;
+		tRsrcHndl		handle1;
+		tRsrcHndl		handle2;
+		tRsrcHndl		handle3;
+		tRsrcHndl		handle4;
+		tRsrcHndl		handle5;
+		tAudioID 		id1;
+		tAudioID 		id2;
+		tAudioID 		id3;
+		tMidiID 		midiID;
+		
 		const int kDuration = 1 * 3000;
 
-		// Start up sine output.
-		err = AudioMPI->StartAudio();
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		TS_ASSERT( pResourceMPI_ != NULL );
+		TS_ASSERT( pResourceMPI_->IsValid() == true );
+
+		// Start up audio system.
+		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
+		pResourceMPI_->SetDefaultURIPath("/home/darren/workspace/Brio2/apprsrc/");
+//		handle = pResourceMPI_->FindRsrc("Crushing_16_11025.raw");
+		handle1 = pResourceMPI_->FindRsrc("BlueNile44m.raw");
+		handle2 = pResourceMPI_->FindRsrc("sine44m.raw");
+		handle3 = pResourceMPI_->FindRsrc("vivaldi44m.raw");
+		handle4 = pResourceMPI_->FindRsrc("FortyTwo.raw");
+		handle5 = pResourceMPI_->FindRsrc("NewHampshireGamelan.mid");
+		
+		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
+		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
+		// volume is faked by right shift at this point
+		id1 = pAudioMPI_->PlayAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+
+		// sleep 1 seconds
+		pKernelMPI_->TaskSleep( 1000 );
+	
+		pAudioMPI_->SetMasterVolume( 30 );
+		
+		// sleep 1 seconds
+		pKernelMPI_->TaskSleep( 1000 );
+
+		pAudioMPI_->SetMasterVolume( 100 );
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		
+		/*  MidiNote Params
+						tMidiID midiID,
+						U8 			track, 
+						U8			pitch, 
+						U8			velocity, 
+						tAudioOptionsFlags	flags)
+		*/
+		pAudioMPI_->MidiNoteOn( midiID, 1, 64, 120, 0 );
+		pKernelMPI_->TaskSleep( 1000 );
+		pAudioMPI_->MidiNoteOff( midiID, 1, 64, 120, 0 );
+		pKernelMPI_->TaskSleep( 1000 );
+		pAudioMPI_->MidiNoteOn( midiID, 1, 68, 120, 0 );		
+		pKernelMPI_->TaskSleep( 1000 );
+		pAudioMPI_->MidiNoteOff( midiID, 1, 68, 120, 0 );
+		pKernelMPI_->TaskSleep( 1000 );
+		
+/*
+		tAudioID CAudioMPI::PlayMidiFile( tMidiID	midiID,
+							tRsrcHndl		hRsrc, 
+							U8					volume, 
+							tAudioPriority		priority,
+							IEventListener*		pHandler,
+							tAudioPayload		payload,
+							tAudioOptionsFlags	flags )
+*/
+		pAudioMPI_->PlayMidiFile( midiID, handle5, 50, 1, &audioListener_, 0, 1 );
+		
+
+
+		id2 = pAudioMPI_->PlayAudio( handle2, 50, 1, 0, &audioListener_, 0, 0 );
+
+		// sleep 1 seconds
+		pKernelMPI_->TaskSleep( 1000 );
+
+		for (i = 0; i < 10; i++) {
+			id3 = pAudioMPI_->PlayAudio( handle4, i*10, 1, 0, &audioListener_, 0, 0 );
+			printf("TestAudio -- PlayAudio() returned ID # %d\n", id3 );
+			if (id3 < 0) {
+				printf("TestAudio -- PlayAudio() returned error # %d\n", id3 );
+			}
+			pKernelMPI_->TaskSleep( 200 );
+		}
+
 		// sleep3 seconds
-		KernelMPI->TaskSleep( kDuration );
+		pKernelMPI_->TaskSleep( kDuration + kDuration + kDuration );
 
 		// stop the engine.
-		err = AudioMPI->StopAudio();
+		err = pAudioMPI_->StopAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep3 seconds
-		KernelMPI->TaskSleep( kDuration );
+		pKernelMPI_->TaskSleep( kDuration );
 
 		// Start up sine output.
-		err = AudioMPI->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
+//		err = pAudioMPI_->StartAudio();
+//		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		KernelMPI->TaskSleep( kDuration );
+//		pKernelMPI_->TaskSleep( kDuration );
 
 		// stop the engine.
-		err = AudioMPI->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
+//		err = pAudioMPI_->StopAudio();
+//		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep3 seconds
-		KernelMPI->TaskSleep( kDuration );
+		pKernelMPI_->TaskSleep( kDuration );
 	}
 	
 	//------------------------------------------------------------------------
@@ -89,14 +269,14 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 		
-		if (AudioMPI->IsValid()) {
-			pName = AudioMPI->GetMPIName();
+		if (pAudioMPI_->IsValid()) {
+			pName = pAudioMPI_->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "AudioMPI" );
-			version = AudioMPI->GetModuleVersion();
+			version = pAudioMPI_->GetModuleVersion();
 			TS_ASSERT_EQUALS( version, 2 );
-			pName = AudioMPI->GetModuleName();
+			pName = pAudioMPI_->GetModuleName();
 			TS_ASSERT_EQUALS( *pName, "Audio" );
-			pURI = AudioMPI->GetModuleOrigin();
+			pURI = pAudioMPI_->GetModuleOrigin();
 			TS_ASSERT_EQUALS( *pURI, "/Somewhere/AudioModule" );
 		}
 	}
@@ -112,20 +292,20 @@ public:
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		printf("Extra Debug Output from test enabled...\n");
 
-		fValid = AudioMPI->IsValid();
+		fValid = pAudioMPI_->IsValid();
 		printf("MPI IsValid = %d\n");
 		
-		if (AudioMPI->IsValid()) {
-			pName = AudioMPI->GetMPIName(); 
+		if (pAudioMPI_->IsValid()) {
+			pName = pAudioMPI_->GetMPIName(); 
 			printf("MPI name is: %s\n", pName->c_str());
 		
-			version = AudioMPI->GetModuleVersion();
+			version = pAudioMPI_->GetModuleVersion();
 			printf("Module version is: %d\n", version);
 			
-			pName = AudioMPI->GetModuleName();
+			pName = pAudioMPI_->GetModuleName();
 			printf("Module name is: %s\n", pName->c_str());
 			
-			pURI = AudioMPI->GetModuleOrigin();
+			pURI = pAudioMPI_->GetModuleOrigin();
 			printf("Module Origin name is: %s\n", pURI->c_str());
 		}		
 #endif
@@ -138,36 +318,36 @@ public:
 		const int kDuration = 1 * 1000;
 		
 		// Start up sine output.
-		err = AudioMPI->StartAudio();
+		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep3 seconds
-		KernelMPI->TaskSleep( kDuration );
+		pKernelMPI_->TaskSleep( kDuration );
 
 		// stop the engine.
-		err = AudioMPI->StopAudio();
+		err = pAudioMPI_->StopAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Start up sine output.
-		err = AudioMPI->StartAudio();
+		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		KernelMPI->TaskSleep( kDuration );
+		pKernelMPI_->TaskSleep( kDuration );
 
 		// stop the engine.
-		err = AudioMPI->StopAudio();
+		err = pAudioMPI_->StopAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Start up sine output.
-		err = AudioMPI->StartAudio();
+		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep 3 seconds
-		KernelMPI->TaskSleep( kDuration );
+		pKernelMPI_->TaskSleep( kDuration );
 
 		// stop the engine.
-		err = AudioMPI->StopAudio();
+		err = pAudioMPI_->StopAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 	}
 	

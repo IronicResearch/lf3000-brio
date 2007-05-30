@@ -2983,3 +2983,14 @@ By TParker (TParker@leapfrog.com) on 5/30/07 1:13 PM
 1,297 ms. (Cumulative: 387,479 ms)
 
 ----------------
+Revision 432 from svn://localhost/TRUNK/:
+Revision 433 from svn://localhost/TRUNK/:
+Revision 434 from svn://localhost/TRUNK/:
+
+Big Audio subsystem update.  This revision introduces a working mixer, supports playing of uncompressed 44K/16bit audio resources, programmatic midi note on/off events, midi file playback. Currently all resources are loaded into RAM, not streamed from storage.  Includes Mobileer headers/lib in ThirdParty to support MIDI playback. 
+
+By DGibbs (DGibbs@leapfrog.com) on 5/30/07 3:14 PM
+14 changed, 36 added, 0 deleted.
+2,203 ms. (Cumulative: 389,729 ms)
+
+----------------

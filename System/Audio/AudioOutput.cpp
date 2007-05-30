@@ -21,9 +21,17 @@
 #include <AudioConfig.h>
 #include <AudioOutput.h>
 
-
 #include "portaudio.h"
 #include "rt_trace.h"
+
+// this turns on callback to Brio, v.s. sine test output
+#define USE_REAL_CALLBACK	1
+
+#if USE_REAL_CALLBACK
+#define kSampleFormat	paInt16
+#else
+#define kSampleFormat	paFloat32
+#endif
 
 // For debug out test tone
 #ifndef M_PI
@@ -42,16 +50,19 @@ paTestData;
 //==============================================================================
 // Global variables
 //==============================================================================
-static PaStream *gPaStream;			// PortAudio stream context
+static PaStream* gPaStream;							// PortAudio stream context
+static BrioAudioRenderCallback* gAudioRenderCallback;
+static void* gCallbackUserData;
 
 // Debug output
 static U32 gCallbackCount;			
 static paTestData gTestData;
-//static S16 gpAudioOutBuffer[kAudioOutBufSizeInWords];
+static unsigned long t1, t2, t3;	// debugging
 
 //==============================================================================
 // PortAudio callback (which is faking a DMA-triggered ISR)
 //==============================================================================
+
 static int paCallback(const void*						inputBuffer,
 						void*                           outputBuffer,
 						unsigned long                   framesPerBuffer,
@@ -62,11 +73,41 @@ static int paCallback(const void*						inputBuffer,
 {
     float *out = (float*)outputBuffer;
     unsigned long i;
-
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
     (void) inputBuffer;
-    
+
+	// Keep count for debugging purposes...
+    gCallbackCount++;
+
+    // figure time since last callback
+//     t3 = gettime_usecs() - t2;
+ //    t3 /= 1000; // convert to ms
+// 	if (t3 > 200)
+//		printf("\n\nAudioOutput:: pa_callback -- not called in time!!!! %u ms.\n\n\n", t3);
+
+ 	//	RT_AddTraceMessage( "Calling Mixer Render", gCallbackCount );
+ //    t1 = gettime_usecs();
+
+#if USE_REAL_CALLBACK
+	// fixme/dg: do proper DebugMPI-based output.
+//	printf("OutputDriver PortAudioCallback bufPtr: %x, frameCount: %d \n", outputBuffer, framesPerBuffer );
+ 
+    // Call audio system callback to fill buffer
+	gAudioRenderCallback( (S16*)outputBuffer, framesPerBuffer, gCallbackUserData );
+
+//	RT_AddTraceMessage( "Back from Mixer Render", gCallbackCount );
+     
+/*
+	for( i = 0; i < framesPerBuffer; i++ ) {
+		if (out[i] != 0.0F)
+       	 printf(" i = %d; samp = %f\n", i, out[i]);
+	}
+*/	
+//	if (gCallbackCount == 50)
+//		RT_DumpTraceMessages();
+		
+#else
     for( i=0; i<framesPerBuffer; i++ )
     {
         *out++ = gTestData.sine[gTestData.left_phase];  // left
@@ -76,61 +117,30 @@ static int paCallback(const void*						inputBuffer,
         gTestData.right_phase += 3; /* higher pitch so we can distinguish left and right. */
         if( gTestData.right_phase >= TABLE_SIZE ) gTestData.right_phase -= TABLE_SIZE;
     }
-    
-    return paContinue;
+#endif
+  
+//    t2 = gettime_usecs();
+// 	if ((t2 - t1) > 10000)
+ //		printf("\n\nAudioOutput:: pa_callback -- body of callback took longer than 1ms!!\n\n\n");
+
+ 	return paContinue;
 }
-	
-/*	U32 i;
-    (void) inputBuffer; // Prevent unused argument warning.
-	S16* outBuffPtr = (S16*)outputBuffer;
-	S16* pMixBuf;
-	
-	if (audioOutIndex == 0)
-	{
-		RT_AddTraceMessage( "paCallback -- Switching to outputBuffer1", gCallbackCount );
-		audioOutIndex = 1;
-		pMixBuf = gpAudioOutBuffer + outSizeInBytes;
-	}
-	else if (audioOutIndex == 1)
-	{
-		RT_AddTraceMessage( "paCallback -- Switching to outputBuffer0", gCallbackCount );
-		audioOutIndex = 0;
-		pMixBuf = gpAudioOutBuffer;
-	}
-	
-	// Copy mix buffer to driver's output buffer.
-	if (kAudioNumOutputChannels == 2) 
-	{
-		for( i=0; i<framesPerBuffer; i++ ) {
-	        *outBuffPtr++ = *pMixBuf++;  // left 
-	        *outBuffPtr++ = *pMixBuf++;  // right
-	     }
-	} else if (kAudioNumOutputChannels == 1) 
-	{
-		for( i=0; i<framesPerBuffer; i++ ) {
-	        *outBuffPtr++ = *pMixBuf++;  // mono
-	     }
-	}
-	
- 	 gCallbackCount++;
- 	 
-     return 0;
-*/
+
 
 
 //==============================================================================
 // InitAudioOutput  
 //==============================================================================
-int InitAudioOutput( void )
+int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 {	
 	int i;
 	PaError err;
     PaStreamParameters outputParameters;
     
-	// Allocate a double buffer for the audio out buffer (each has size 32 * 4 * 4)
-//	gpAudioOutBuffer = 
-//		(S16 *)malloc( kNumAudioOutBuffer * kAudioOutBufSizeInBytes );
-
+    gCallbackCount = 0;
+    gAudioRenderCallback = callback;
+    gCallbackUserData = pUserData;
+    
 	// Init PortAudio layer
     err = Pa_Initialize();
     if( err != paNoError ) goto error;
@@ -141,9 +151,11 @@ int InitAudioOutput( void )
 		goto error;
 	}
 	
-    outputParameters.channelCount = 2;                     /* stereo output */
-    outputParameters.sampleFormat = paFloat32;		// fixme RDG = paInt16;             
-    outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
+    outputParameters.channelCount = kAudioNumOutputChannels;                     /* stereo output */
+    outputParameters.sampleFormat = kSampleFormat;             
+    // outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
+    //printf("PaDefaultOutputLatency = %f\n", outputParameters.suggestedLatency);
+    outputParameters.suggestedLatency = .02;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
     err = Pa_OpenStream( &gPaStream,

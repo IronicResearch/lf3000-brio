@@ -11,15 +11,17 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'))
 mpisrcs		= FindMPISources(Dir('.'))
-modlibs		= ['KernelMPI', 'DebugMPI', 'portaudio', 'asound']
-mpilibs		= ['ModuleMPI', 'KernelMPI']
+modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'portaudio', 'asound', 'me2000']
+mpilibs		= ['ModuleMPI', 'ResourceMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs'])
+myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs'])
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, 1)
 Depends(mympi, mymodule)

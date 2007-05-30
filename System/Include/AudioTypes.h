@@ -43,6 +43,7 @@ const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
 	(kAudioCreateEventErr)		\
 	(kAudioCreateQueueErr)		\
 	(kAudioNullContextErr)		\
+	(kAudioNoChannelAvailErr)	\
 	(kAudioNoDataAvailErr)		\
 	(kAudioNoMoreDataErr)		\
 	(kAudioInvalid)				\
@@ -99,7 +100,8 @@ enum {
 	kAudioRsrcRaw,
 	kAudioRsrcFlashStream,
 	kAudioRsrcSpeechStream,
-	kAudioRsrcStreaming
+	kAudioRsrcStreaming,
+	kAudioRsrcWav
 };
 
 //==============================================================================
@@ -112,7 +114,7 @@ struct tAudioHeader {
 	tRsrcType		type;				// AudioRsrcType
 	U16				flags;				// Bit mask of audio flags
 										// (Bit0: 0=mono, 1=stereo)
-	U16				sampleRateInHz;		// Sample rate in Hz			
+	U16				sampleRate;			// Sample rate in Hz			
 	U32				dataSize;			// Data size in bytes
 };
 

@@ -9,6 +9,7 @@
 #include <EventListener.h>
 
 #include <AudioConfig.h>
+#include <AudioPlayer.h>
 
 //	Enum to indicate mono or stereo data
 enum {
@@ -52,9 +53,9 @@ typedef U8  tAudioSeqStatus;
 #define kNoChannelAvail			255		// Index returned when no channel is available
 
 struct tAudioPlayerNode {
-//	CAudioPlayer			*pPlayer;		// Pointer to the audio player
+	CAudioPlayer			*pPlayer;		// Pointer to the audio player
 	struct tAudioPlayerNode	*pNext;			// Pointer to the next node in the list
-//	tAudioPlayerNode(CAudioPlayer *player, struct tAudioPlayerNode *next) { pPlayer = player; pNext = next; }
+	tAudioPlayerNode(CAudioPlayer *player, struct tAudioPlayerNode *next) { pPlayer = player; pNext = next; }
 };
 
 //==============================================================================

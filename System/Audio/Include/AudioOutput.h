@@ -20,7 +20,16 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-int InitAudioOutput( void );
+/* When audio stream is running the output driver will call this function
+ * expecting the buffer to be filled with frameCount output frames.
+ */
+typedef int BrioAudioRenderCallback(
+    S16 *pOutBuff,
+    unsigned long frameCount,
+    void* pUserData
+    );
+
+int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData );
 int DeInitAudioOutput( void );
 int StartAudioOutput( void );
 int StopAudioOutput( void );
