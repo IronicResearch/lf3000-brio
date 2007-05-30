@@ -17,8 +17,12 @@
 #include <SystemTypes.h>
 #include <CoreModule.h>
 #include <DebugMPI.h>
+#include <ResourceTypes.h>
 #include <stdio.h>				// FIXME/dm: needed for embedded target
 LF_BEGIN_BRIO_NAMESPACE()
+
+// Forward declarations
+class IEventListener;
 
 
 // Constants
