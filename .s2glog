@@ -3104,3 +3104,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 5/31/07 1:22 PM
 2,016 ms. (Cumulative: 410,200 ms)
 
 ----------------
+Revision 451 from svn://localhost/TRUNK/:
+
+Tweak timer test to account for as yet uncharaterized interaction between sleep and timers.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/31/07 1:42 PM
+1 changed, 0 added, 0 deleted.
+1,360 ms. (Cumulative: 411,606 ms)
+
+----------------

@@ -188,7 +188,7 @@ public:
 		U32 start = kernel_->GetElapsedTime( &pUs );
 		timer.Start(props);
 		const int kSleepInterval = 10;
-		const int kDelta = 20;
+		const int kDelta = 25;
 		int i = 0;
 //		for (int ii = i; ii < 9; ++ii)
 		for (int ii = i; ii < 5; ++ii)
