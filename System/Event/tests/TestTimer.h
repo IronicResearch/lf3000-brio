@@ -99,12 +99,12 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerFires( )
+	void testTimerFires( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
 			                                    };
-		TS_ASSERT_EQUALS( kNoErr, event_->RegisterEventListener(listener_) );
+//		TS_ASSERT_EQUALS( kNoErr, event_->RegisterEventListener(listener_) );
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		timer.Start(props);
@@ -136,7 +136,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerPauseResume( )
+	void testTimerPauseResume( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -157,7 +157,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerRestart( )
+	void testTimerRestart( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -177,7 +177,7 @@ public:
 	
 	//------------------------------------------------------------------------
 
-	void xtestTimerElapsedTime( )
+	void testTimerElapsedTime( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 100000000, 0, 10},
