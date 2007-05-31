@@ -100,7 +100,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testTimerFires( )
+	void xtestTimerFires( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
