@@ -21,7 +21,7 @@ long audioFileInfo_wordWidthBits = 16;
 char audioFilePath[500];	
 
 typedef unsigned long U32;
-typedef unsigned long U16;
+typedef unsigned short U16;
 typedef U32 tRsrcType;
 
 struct tAudioHeader {
@@ -30,7 +30,7 @@ struct tAudioHeader {
 	tRsrcType		type;				// AudioRsrcType
 	U16				flags;				// Bit mask of audio flags
 										// (Bit0: 0=mono, 1=stereo)
-	U16				sampleRateInHz;		// Sample rate in Hz			
+	U16				sampleRate;			// Sample rate in Hz			
 	U32				dataSize;			// Data size in bytes
 };
 
@@ -226,7 +226,19 @@ audioFile = OpenAudioFile(inFilePath, &audioFileInfo);if (!audioFile)
 		}
 
 	// Write Brio audio file header
-	fwrite(afi, sizeof(SF_INFO), 1, h);
+	brioFileHeader.offsetToData = sizeof(tAudioHeader);
+	brioFileHeader.type = 0x10001C05;	// brio raw type
+	if (afi->channels == 1)
+		brioFileHeader.flags = 0;
+	else
+		brioFileHeader.flags = 1;
+	
+	brioFileHeader.sampleRate = afi->samplerate;
+	
+	long sampleSizeInBytes = audioFileInfo_wordWidthBits / 8;
+	brioFileHeader.dataSize = ((afi->frames * afi->channels) * sampleSizeInBytes); 
+	
+	fwrite(&brioFileHeader, sizeof(tAudioHeader), 1, h);
 
 	// Write audio file samples
 	for (long i = 0; i < loopCount; i++)
