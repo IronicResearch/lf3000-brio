@@ -3122,3 +3122,12 @@ By GKlimanis (GKlimanis@leapfrog.com) on 5/31/07 1:55 PM
 1,563 ms. (Cumulative: 413,231 ms)
 
 ----------------
+Revision 453 from svn://localhost/TRUNK/:
+
+Now that BrioCube incorporates audio, the audio unit test can lose a lot of kruft.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/31/07 2:01 PM
+1 changed, 0 added, 0 deleted.
+1,359 ms. (Cumulative: 414,653 ms)
+
+----------------

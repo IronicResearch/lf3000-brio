@@ -141,6 +141,109 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		TS_ASSERT( pResourceMPI_ != NULL );
+		TS_ASSERT( pResourceMPI_->IsValid() == true );
+	}
+	
+	//------------------------------------------------------------------------
+	void testCoreMPI( )
+	{
+		tVersion		version;
+		const CString*	pName;
+		const CURI*		pURI;
+		
+		if (pAudioMPI_->IsValid()) {
+			pName = pAudioMPI_->GetMPIName();
+			TS_ASSERT_EQUALS( *pName, "AudioMPI" );
+			version = pAudioMPI_->GetModuleVersion();
+			TS_ASSERT_EQUALS( version, 2 );
+			pName = pAudioMPI_->GetModuleName();
+			TS_ASSERT_EQUALS( *pName, "Audio" );
+			pURI = pAudioMPI_->GetModuleOrigin();
+			TS_ASSERT_EQUALS( *pURI, "/Somewhere/AudioModule" );
+		}
+	}
+	
+	void xxxtestDumpCoreInfo( )
+	{
+		tErrType err;
+		Boolean fValid;
+		tVersion version;
+		ConstPtrCString pName;
+		ConstPtrCURI pURI;
+				
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		printf("Extra Debug Output from test enabled...\n");
+
+		fValid = pAudioMPI_->IsValid();
+		printf("MPI IsValid = %d\n");
+		
+		if (pAudioMPI_->IsValid()) {
+			pName = pAudioMPI_->GetMPIName(); 
+			printf("MPI name is: %s\n", pName->c_str());
+		
+			version = pAudioMPI_->GetModuleVersion();
+			printf("Module version is: %d\n", version);
+			
+			pName = pAudioMPI_->GetModuleName();
+			printf("Module name is: %s\n", pName->c_str());
+			
+			pURI = pAudioMPI_->GetModuleOrigin();
+			printf("Module Origin name is: %s\n", pURI->c_str());
+		}		
+#endif
+	}
+
+	//------------------------------------------------------------------------
+	void xxxtestAudioOutput( )
+	{
+		tErrType err;
+		const int kDuration = 1 * 1000;
+		
+		// Start up sine output.
+		err = pAudioMPI_->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep3 seconds
+		pKernelMPI_->TaskSleep( kDuration );
+
+		// stop the engine.
+		err = pAudioMPI_->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// Start up sine output.
+		err = pAudioMPI_->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep 3 seconds
+		pKernelMPI_->TaskSleep( kDuration );
+
+		// stop the engine.
+		err = pAudioMPI_->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// Start up sine output.
+		err = pAudioMPI_->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// sleep 3 seconds
+		pKernelMPI_->TaskSleep( kDuration );
+
+		// stop the engine.
+		err = pAudioMPI_->StopAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+	}
+	
+};
+
+
+#if 0
 		tErrType err;
 		U16				i;
 		tRsrcHndl		handle1;
@@ -260,95 +363,6 @@ public:
 
 		// sleep3 seconds
 		pKernelMPI_->TaskSleep( kDuration );
-	}
-	
-	//------------------------------------------------------------------------
-	void xxxtestCoreMPI( )
-	{
-		tVersion		version;
-		const CString*	pName;
-		const CURI*		pURI;
-		
-		if (pAudioMPI_->IsValid()) {
-			pName = pAudioMPI_->GetMPIName();
-			TS_ASSERT_EQUALS( *pName, "AudioMPI" );
-			version = pAudioMPI_->GetModuleVersion();
-			TS_ASSERT_EQUALS( version, 2 );
-			pName = pAudioMPI_->GetModuleName();
-			TS_ASSERT_EQUALS( *pName, "Audio" );
-			pURI = pAudioMPI_->GetModuleOrigin();
-			TS_ASSERT_EQUALS( *pURI, "/Somewhere/AudioModule" );
-		}
-	}
-	
-	void xxxtestDumpCoreInfo( )
-	{
-		tErrType err;
-		Boolean fValid;
-		tVersion version;
-		ConstPtrCString pName;
-		ConstPtrCURI pURI;
-				
-#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
-		printf("Extra Debug Output from test enabled...\n");
 
-		fValid = pAudioMPI_->IsValid();
-		printf("MPI IsValid = %d\n");
-		
-		if (pAudioMPI_->IsValid()) {
-			pName = pAudioMPI_->GetMPIName(); 
-			printf("MPI name is: %s\n", pName->c_str());
-		
-			version = pAudioMPI_->GetModuleVersion();
-			printf("Module version is: %d\n", version);
-			
-			pName = pAudioMPI_->GetModuleName();
-			printf("Module name is: %s\n", pName->c_str());
-			
-			pURI = pAudioMPI_->GetModuleOrigin();
-			printf("Module Origin name is: %s\n", pURI->c_str());
-		}		
+	}
 #endif
-	}
-
-	//------------------------------------------------------------------------
-	void xxxtestAudioOutput( )
-	{
-		tErrType err;
-		const int kDuration = 1 * 1000;
-		
-		// Start up sine output.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// Start up sine output.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep 3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// Start up sine output.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep 3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-	}
-	
-};
