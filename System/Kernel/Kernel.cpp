@@ -924,7 +924,7 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const
 			*pUs =  (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000000 + 
           			(value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000;
 			
-#if 1 // BSK  Debug printing 
+#if 0 // BSK  Debug printing 
     printf("CKernelModule::GetTimerElapsedTime:\n value.it_interval.tv_sec=%ld\n value.it_value.tv_sec=%ld\n \
             value.it_interval.tv_nsec=%ld\n value.it_value.tv_nsec=%ld\n",
       value.it_interval.tv_sec, value.it_value.tv_sec, value.it_interval.tv_nsec,value.it_value.tv_nsec);       
