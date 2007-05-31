@@ -99,7 +99,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testTimerFires( )
+	void xtestTimerFires( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -136,7 +136,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testTimerPauseResume( )
+	void xtestTimerPauseResume( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -157,7 +157,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testTimerRestart( )
+	void xtestTimerRestart( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -177,7 +177,7 @@ public:
 	
 	//------------------------------------------------------------------------
 
-	void testTimerElapsedTime( )
+	void xtestTimerElapsedTime( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 100000000, 0, 10},

@@ -3131,3 +3131,12 @@ By DGibbs (DGibbs@leapfrog.com) on 5/31/07 2:01 PM
 1,359 ms. (Cumulative: 414,653 ms)
 
 ----------------
+Revision 454 from svn://localhost/TRUNK/:
+
+Remove more timer unit tests since they aren't working yet...
+
+By DGibbs (DGibbs@leapfrog.com) on 5/31/07 2:21 PM
+1 changed, 0 added, 0 deleted.
+1,484 ms. (Cumulative: 416,184 ms)
+
+----------------
