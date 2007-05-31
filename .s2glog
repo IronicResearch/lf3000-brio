@@ -3047,3 +3047,14 @@ By GKlimanis (GKlimanis@leapfrog.com) on 5/30/07 6:42 PM
 1,312 ms. (Cumulative: 399,214 ms)
 
 ----------------
+Revision 444 from svn://localhost/TRUNK/:
+
+New tool to convert wav or aiff soundfiles to brio sound files.
+
+Includes an executable named sf2brio
+
+By GKlimanis (GKlimanis@leapfrog.com) on 5/30/07 6:51 PM
+0 changed, 6 added, 0 deleted.
+1,532 ms. (Cumulative: 400,793 ms)
+
+----------------
