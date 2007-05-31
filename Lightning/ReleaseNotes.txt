@@ -1,12 +1,40 @@
 ===========================================
 Lightning C++ Development Kit Release Notes
 ===========================================
+===========================================
+v0.1.6  (Build 456, released May 31, 2007) 
+===========================================
+Release for emulation target. Adds lots of new audio functionality.
+
+Enhancements:
+-------------
+* Audio mixer implemented, currently 4 channels + MIDI.
+* PlayAudio() uses the resource mgr to load and play audio.
+* AudioIDs are returned, and audio done events are posted.
+* Programmatic MIDI NoteOn and NoteOff calls are supported.
+* PlayMIDIFile() will load and play a MIDI file using the default mobileer instruments.
+* SetMasterVolume() now works for the output of the mixer.
+* BrioCube demo now plays a soundfile when the 'a' key is pressed and
+  plays a MIDI file when the 'b' key is pressed.
+  
+  See BrioCube demo and AudioMPI.h for new api and comments.
+  
+* Added KernelMPI Event and Timer functionality 
+  
+Known Issues:
+-------------
+* Only 44.1K mono audio is supported.
+* You can't change the volume of sound afte/Limitationsr the Play() call.
+* There are no Stop() functions for audio or MIDI yet.
+* You can't call NoteOn/Off while a MIDI file is playing.
+* You can't play more than one MIDI file at a time.
+* The Audio module doesn't properly support multiple MPI instances yet.
 
 ===========================================
 v0.1.5  (Build 407, released May 24, 2007) 
 ===========================================
 
-Maintanence Release for emulation and embedded targets. Mainly fixes to
+Internal maintanence Release for emulation and embedded targets. Mainly fixes to
 samples, headers, and build scripts for compatibility between emulation
 and embedded target builds.
 
