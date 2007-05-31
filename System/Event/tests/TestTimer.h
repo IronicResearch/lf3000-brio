@@ -18,9 +18,7 @@ LF_USING_BRIO_NAMESPACE()
 //============================================================================
 // MyTimerListener
 //============================================================================
-// FIXME/BSK											  
-const tEventType kTimerFiredEvent = AllEvents(kGroupTimer);
-const tEventType kTimerTypes[] = { kTimerFiredEvent };
+const tEventType kTimerTypes[] = { kAllTimerEvents };
 
 class MyTimerListener : public IEventListener
 {
@@ -100,7 +98,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerFires( )
+	void testTimerFires( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -137,7 +135,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerPauseResume( )
+	void testTimerPauseResume( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -158,7 +156,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerRestart( )
+	void testTimerRestart( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},
@@ -177,7 +175,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestTimerElapsedTime( )
+	void testTimerElapsedTime( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
 												 	{0, 0, 0, 100000000},

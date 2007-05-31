@@ -23,8 +23,20 @@ using namespace std;
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-#define kFoo 20
-#define kTimerEventPriority 21
+
+#define kTimerEventPriority 21	// FIXME/tp: specify all event priorities and adjust
+
+
+//==============================================================================	   
+// Timer events
+//==============================================================================
+#define TIMER_EVENTS					\
+	(kTimerFiredEvent)
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupTimer), TIMER_EVENTS)
+
+const tEventType kAllTimerEvents = AllEvents(kGroupTimer);
+
 
 //==============================================================================	   
 // CTimerMessage
@@ -34,7 +46,7 @@ class CTimerMessage : public IEventMessage
 {
 public:
 	explicit CTimerMessage(tTimerHndl hndl) : 
-				IEventMessage(kFoo, 0), hndl_(hndl) {}
+				IEventMessage(kTimerFiredEvent, 0), hndl_(hndl) {}
 	virtual U16	GetSizeInBytes() const	{ return sizeof(CTimerMessage); }
 	tTimerHndl	GetTimerHndl() const	{ return hndl_; }
 private:
