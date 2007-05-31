@@ -10,8 +10,6 @@
 
 #include <math.h>
 
-//#include <DspData.h>
-//#include "waveutil.h"
 #include <Util.h>
 
 #ifdef __cplusplus

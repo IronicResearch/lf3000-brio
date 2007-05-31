@@ -3058,3 +3058,12 @@ By GKlimanis (GKlimanis@leapfrog.com) on 5/30/07 6:51 PM
 1,532 ms. (Cumulative: 400,793 ms)
 
 ----------------
+Revision 445 from svn://localhost/TRUNK/:
+
+Fixed some C++ include issues, as well as added a binary library as this library is not built from the Brio2 top level.
+
+By GKlimanis (GKlimanis@leapfrog.com) on 5/30/07 6:57 PM
+1 changed, 0 added, 0 deleted.
+1,344 ms. (Cumulative: 402,199 ms)
+
+----------------
