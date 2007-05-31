@@ -2994,3 +2994,25 @@ By DGibbs (DGibbs@leapfrog.com) on 5/30/07 3:14 PM
 2,203 ms. (Cumulative: 389,729 ms)
 
 ----------------
+Revision 435 from svn://localhost/TRUNK/:
+Revision 436 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,329 ms. (Cumulative: 391,136 ms)
+
+----------------
+Revision 437 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,406 ms. (Cumulative: 392,542 ms)
+
+----------------
+Revision 438 from svn://localhost/TRUNK/:
+
+Fix GetElapsedTime() because its return values were swapped.  Also modify BrioCube because GetElapsedTime returns seconds instead of milliseconds.
+
+By DGibbs (DGibbs@leapfrog.com) on 5/30/07 5:23 PM
+1 changed, 0 added, 0 deleted.
+1,328 ms. (Cumulative: 393,886 ms)
+
+----------------

@@ -664,8 +664,8 @@ U32   		CKernelModule::GetElapsedTime( U32* pUs )
 	gettimeofday( &time, NULL );
 // FIXME/BK!
 // time.tv_sec field	
-	*pUs = time.tv_sec;
-	return ( time.tv_usec );
+	*pUs = time.tv_usec;
+	return ( time.tv_sec );
 }
 
 //------------------------------------------------------------------------------
