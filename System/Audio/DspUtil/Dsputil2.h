@@ -13,9 +13,9 @@
 
 //#include "dsputil.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 
 // ----------------------------------------------------
@@ -146,8 +146,8 @@ void  ComputeOscillator_SineBias    (float *out, long length, OSCILLATOR *d);
 void  ComputeOscillator_SampleNHold (float *out, long length, OSCILLATOR *d, int addToOutput);
 void  ComputeOscillator_SineQuadrature(float *outSine, float *outCosine, long length, OSCILLATOR *d);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif  //	__DSPUTIL2_H__
