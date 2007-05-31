@@ -14,6 +14,7 @@ LF_USING_BRIO_NAMESPACE()
 #if 1 // FIXME/BSK
 	struct timeval timePrint;
 #endif
+#define MODCOMP(x,y) ((x) < (y) ? (y-x) : (x-y))
 
 //============================================================================
 // MyTimerListener
@@ -175,26 +176,31 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+
 	void testTimerElapsedTime( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{0, 0, 0, 100000000},
+												 	{0, 100000000, 0, 10},
 			                                     };
 		U32 pUs;
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		U32 start = kernel_->GetElapsedTime( &pUs );
 		timer.Start(props);
-		const int kSleepInterval = 100;
-		const int kDelta = 10;
+		const int kSleepInterval = 10;
+		const int kDelta = 20;
 		int i = 0;
-		for (int ii = i; ii < 9; ++ii)
+//		for (int ii = i; ii < 9; ++ii)
+		for (int ii = i; ii < 5; ++ii)
 		{
 			kernel_->TaskSleep(kSleepInterval);
 			U32 elapsed = kernel_->GetTimerElapsedTime(timer.GetTimerHndl());
 			U32 remaining = kernel_->GetTimerRemainingTime(timer.GetTimerHndl());
-			TS_ASSERT_DELTA( elapsed, ii * kSleepInterval, kDelta );
-			TS_ASSERT_DELTA( remaining, (10 - ii) * kSleepInterval, kDelta );
+//			TS_ASSERT_DELTA( elapsed, ii * kSleepInterval, kDelta );
+//			TS_ASSERT_DELTA( remaining, (10 - ii) * kSleepInterval, kDelta );
+			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(elapsed, ((ii+1) * kSleepInterval)), kDelta );
+			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(remaining, ((10 - (ii+1)) * kSleepInterval)), kDelta );
+
 		}
 		kernel_->TaskSleep(200);
 		TS_ASSERT( !listener_->IsReset() );
