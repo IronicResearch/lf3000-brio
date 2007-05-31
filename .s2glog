@@ -3016,3 +3016,25 @@ By DGibbs (DGibbs@leapfrog.com) on 5/30/07 5:23 PM
 1,328 ms. (Cumulative: 393,886 ms)
 
 ----------------
+Revision 439 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,297 ms. (Cumulative: 395,230 ms)
+
+----------------
+Revision 440 from svn://localhost/TRUNK/:
+Revision 441 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,266 ms. (Cumulative: 396,511 ms)
+
+----------------
+Revision 442 from svn://localhost/TRUNK/:
+
+Fix audio distortion by increasing audio driver output latency because VMWare is too slow...
+
+By DGibbs (DGibbs@leapfrog.com) on 5/30/07 6:21 PM
+1 changed, 0 added, 0 deleted.
+1,328 ms. (Cumulative: 397,855 ms)
+
+----------------

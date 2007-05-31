@@ -155,7 +155,8 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
     outputParameters.sampleFormat = kSampleFormat;             
     // outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
     //printf("PaDefaultOutputLatency = %f\n", outputParameters.suggestedLatency);
-    outputParameters.suggestedLatency = .02;
+ 	//fixme/dg: figure out how to handle latency properly on various platforms.
+    outputParameters.suggestedLatency = .05;
     outputParameters.hostApiSpecificStreamInfo = NULL;
 
     err = Pa_OpenStream( &gPaStream,
