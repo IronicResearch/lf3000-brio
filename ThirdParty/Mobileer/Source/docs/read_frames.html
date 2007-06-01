@@ -1,0 +1,72 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Reading Audio Data from the Synthesizer </h2>
+<p>On the previous page, we saw how to write MIDI bytes to the synthesizer.
+  But how do we get the PCM audio out?
+<p>We can read samples from the synthesizer using SPMIDI_ReadFrames().
+<pre>
+ int SPMIDI_ReadFrames( SPMIDI_Context *spmidiContext, void *samples, int numFrames,
+                        int samplesPerFrame, int bitsPerSample ); </pre>
+<p>It will calculate the audio for the requested number of frames and write
+      them to the buffer. A frame is one sample in mono mode, or two samples
+      in stereo mode. You can tell it whether you want mono or stereo output,
+      and how many bits per sample.&nbsp; Here is an example of reading 256 stereo
+      frames of 16 bit audio from the synthesizer.
+<blockquote>
+<pre>short buffer[ 2 * 256 ];
+numFrames = 256;
+samplesPerFrame = 2;
+bitsPerSample = 16;
+framesRead = SPMIDI_ReadFrames( spmidiContext, buffer, numFrames,
+&nbsp;&nbsp;&nbsp; samplesPerFrame, bitsPerSample );</pre>
+</blockquote>
+<p>The function returns the actual number of frames generated.
+</p>
+<p>You can write this data to an audio device so it can be heard. Or you
+can write it to a file, or analyse it, etcetera. That part is up to you.
+But to make life simple, we have provided some utility functions that use
+PortAudio to play the audio data. We will examine those on the next page.
+<p>[<a href="play_notes.html">Next</a>]
+<br>&nbsp;
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,55 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<b></b>
+<h2>Mobileer Instrument Editor</h2>
+<h3>Changing the Sample Rate </h3>
+<p>When you record your raw sample in the studio you should record them at a high sample rate, eg. 44100 Hz or 48000 Hz. This way you are starting with raw material of high quality.</p>
+<p><img style="float:right" src="images/resampling.png">But you may be producing a wavetable that will be played on a synthesizer running at 16000 Hz. If you used a 44100 Hz sample in that case then you would be wasting memory. That is because a wavetable size is proportional to its sample rate. A 44100 Hz file is bigger than a 16000 Hz file. And you won't hear the higher quality of the 44100 Hz file if it's played at 12000 Hz so the fidelity is wasted. You should, therefore, resample the original wave file to create a wavetable at a lower sample rate.</p>
+<ol>
+    <li>Enter 16000 Hz in the Sample Rate field at the bottom of the WaveTable editor. Note that the text turns red. This is to indicate that it has not yet been entered. Please hit ENTER key to finish entering this number. </li>
+    <li>If you plan on looping the wavetable then click the &quot;Quantize Period&quot; button. <img src="images/quantize_period_button.png"> This will optimize the sample rate so that your loop will be an integer number of samples. This requires a correctly <a href="wave_pitch.html">measured pitch</a>. If you do not quantize the period then the pitch can drop or jump when you play the loop portion of the wavetable. </li>
+    <li>Check the &quot;ReSample&quot; checkbox. You may need to zoom out to find your place in the waveform display. </li>
+</ol>
+<p align="center">| <a href="index.html">Top</a> | <a href="wave_renaming.html">Previous</a> | <a href="wave_loops.html">Next</a> |</p>
+<meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,75 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<p align="center"><a href="index.html">Quality Assurance Home </a></p>
+<h2>'C' Tests</h2>
+<p>The source code for these tests can be found in the directory &quot;<strong>spmidi/qa</strong>&quot;.</p>
+<p><a href="../autodocs/html/files.html">Documentation on individual tests can be found by looking for files that start with &quot;qa_&quot; in the file list. </a></p>
+<p>The tests can be generally divided into two groups:
+
+<ul>
+    <li>'C' tests of the core engine: voice allocation and stealing, pitch resolution, and so on.</li>
+    <li>Memory-related 'C' tests: exercising the memory allocation facilities. These are critical to ensure that the host device running the Mobileer ME3000 engine is not destabilized by memory leaks or invalid references.</li>
+</ul>
+<p>These test types are not mutually exclusive: for example, most file-related
+    tests include extensive memory checks.
+<p>When run, the tests return 0 if successful, or non-0 otherwise. Most tests print a summary line on completion indicating successes and failures. Many tests print specific information at failure points if they fail. 
+<p>Core engine tests use techniques such as pitch measurement using zero-crossing
+      detection and amplitude measurement using envelope following to analyze audio
+      output and compare it against expectations. The SDK has extensive measurement
+      and status-reporting routines that are also used to make sure that expected
+    results actually occur.</p>
+<p>The memory-related portions of the SDK include monitoring and status routines,
+  as well as stress-testing functions that enable tests to specifically cause
+  memory allocations to fail in predictable ways. This allows us to check that
+  other parts of the engine that utilize the memory APIs handle allocation failures
+  properly. </p>
+<p>All qa tests define a main() function. Building a test results in an executable,
+  which can be run from the console. The exit value of the executable indicates
+  success or failure of the test as a whole: 0 means all the tests in the executable
+  succeeded, and non-0 means one or more tests failed. The qa test suite can
+  be run as a whole by building each test and running an appropriate shell script
+  or batch file that
+  executes each built test in sequence, checks the return value and takes appropriate
+  action (for example, logging output).</p>
+<p><meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,150 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Example Programs</h2>
+<p>Several example programs are provided with the SPMIDI SDK. Most of these
+  examples rely on the functions in "spmidi_util.c" and "spmidi_play.c".
+  The simplest example, and a good starting point for experimentation is
+"play_scale.c".
+<table BORDER CELLPADDING=4 >
+
+<tr>
+<td><b><tt><a href="../examples/checksum_player.c">checksum_player.c</a></tt></b></td>
+
+<td>Renders a MIDI file but does not play it. It just calculates a checksum.
+This is useful for benchmarking on low level systems.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/minimal_player.c">minimal_player.c</a></tt></b></td>
+
+<td>Minimal example recommended as a starting point for playing MIDI files on embedded systems.
+It loads its MIDI file from a 'C' char array.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/playmf.c">playmf.c</a></tt></b></td>
+
+<td>This complex example plays a MIDIFile interactively. You can hit keys
+to pause and resume playback, mute channels, print internal status, etcetera.
+For a simpler example see "play_midifile.c" below.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_all_programs.c">play_all_programs.c</a></tt></b></td>
+
+<td>Play all 128 of the General MIDI melody instruments.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_bend.c">play_bend.c</a></tt></b></td>
+
+<td>Play notes with pitch bend.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_chords.c">play_chords.c</a></tt></b></td>
+
+<td>Play several notes simultaneously.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_drums.c">play_drums.c</a></tt></b></td>
+
+<td>Play all of the General MIDI rhythm instruments.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_midifile.c">play_midifile.c</a></tt></b></td>
+
+<td>Play a standard MIDI file.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_programs.c">play_programs.c</a></tt></b></td>
+
+<td>Play selected programs. Used for debugging specific instruments.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_scale.c">play_scale.c</a></tt></b></td>
+
+<td>Play several notes in a scale.</td>
+</tr>
+
+<tr>
+    <td><a href="../examples/play_scale.c"><strong>play_song.c</strong></a></td>
+    <td>Play a song that can be either an SMF file or a Mobile XMF file. </td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/play_vibrator.c">play_vibrator.c</a></tt></b></td>
+
+<td>Define a callback function for the Vibrator callback defined for mobile
+phones. This shows how to play the phone vibrations embedded in some songs.</td>
+</tr>
+
+<tr>
+<td><b><tt><a href="../examples/print_midifile.c">print_midifile.c</a></tt></b></td>
+
+<td>Use the MIDIFile parser to print the contents of a MIDI file. Useful
+for diagnosing problems in a MIDI file.</td>
+</tr>
+<tr>
+  <td><b><tt><a href="../examples/play_file.c">play_song.c</a></tt></b></td>
+  <td>Use the ME3000 PlaySong API to play a MIDI or XMF file. </td>
+</tr>
+</table>
+
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

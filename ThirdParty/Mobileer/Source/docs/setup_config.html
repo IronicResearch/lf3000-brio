@@ -1,0 +1,76 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+-->
+</style>
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Setting up the Configuration File</h2>
+<p>The optional features of the Mobileer Synthesizer are enabled or disabled by defining compiler variables. These are set in a file called &quot;spmidi_config.h&quot;.</p>
+<p>To set up your &quot;spmidi_user_config.h&quot; file, please:</p>
+<ol>
+    <li>Create a header file called &quot;spmidi_user_config.h&quot;. (You may have been provided one by Mobileer.) </li>
+    <li>Add the directory containing that file to your include path. In a Unix Makefile that would be done using the -I flag, for example: <br>
+        <span class="style1">CFLAGS += -IconfigFolder</span> </li>
+    <li>Then tell the ME code to include your configuration file by defining SPMIDI_USER_CONFIG as a compile time variable, for example:<br>
+        <span class="style1">CFLAGS += -DSPMIDI_USER_CONFIG</span></li>
+</ol>
+<p>There are several options that you may want to set in this config file. These options are described in the reference manual from the autodocs for "<a href="autodocs/html/spmidi__config_8h.html">spmidi_config.h</a>". </p>
+<h3>Selecting the ME1000, ME2000 or the ME3000</h3>
+<p>If you have the ME3000 source code, then you can compile for either the ME1000, ME2000 or ME3000 mode by setting compiler flags. The ME1000 features are always compiled. For example, to enable the ME2000 but not the ME3000, put this in your spmidi_config.h file:
+<blockquote>
+    <pre>#define SPMIDI_ME2000 (1)
+#define SPMIDI_ME3000 (0)
+</pre>
+</blockquote>
+<h3>Setting Maximum Values</h3>
+<p>You can save memory by specifying the maximum sample rate and number of voices that you plan to use. For example:</p>
+<blockquote>
+    <pre> #define SPMIDI_MAX_SAMPLE_RATE (16000)
+ #define SPMIDI_MAX_VOICES (12)
+</pre>
+</blockquote>
+<p>[<a href="compile.html">Next</a>]
+<br>
+&nbsp;
+<meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,58 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+-->
+</style>
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>&nbsp;</h2>
+<h2>Compile Using an ARM SDK Project for CodeWarrior </h2>
+<p>Your release package may contain an ARM SDK Project for CodeWarrior. If so, you can use it to build a ringtone player for your target system. </p>
+<ol>
+    <li>Double-click &quot;ME2000Test.mcp&quot; in ME2000Test folder</li>
+    <li>Make the project using the DebugRel target.</li>
+    <li>Run the program using the ARMulator. It will output a file called &quot;ME2000Test_Data\DebugRel\spmidi_output.wav&quot;.</li>
+    <li>Double click the &quot;spmidi_output.wav&quot; file to hear it.</li>
+    <li>The file &quot;spmidi_audio_file.c&quot; writes the output of the ME2000 to a WAV file. To port the ME2000 to your target platform, replace it with a custom file that writes to your audio device driver.</li>
+</ol>
+<p>[<a href="compile_embedded.html">Previous</a>] [<a href="embedded_midi.html">Next</a>]
+    <br>
+&nbsp;</p>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

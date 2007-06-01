@@ -1,0 +1,71 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" --><title>Generating Audio</title><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2>Generating audio</h2>
+<p>The SongPlayer has been started. To generate a buffer's worth of audio suitable
+  for passing off to your audio hardware, use SongPlayer_PlayFrames(). You need
+  to tell the function how many frames to generate into your MIDI context structure. </p>
+<pre>	result = SongPlayer_PlayFrames( songPlayer, FRAMES_PER_BUFFER );</pre>
+<p>If the function successfully returns 0, your MIDI context contains a buffer's
+  worth of audio, which can be retrieved and played in the normal way.</p>
+<pre>	void PlayAudioBufer( SPMIDI_Context *spmidiContext )
+	{
+		#define SAMPLES_PER_BUFFER  (SAMPLES_PER_FRAME * FRAMES_PER_BUFFER)<br>		short samples[SAMPLES_PER_BUFFER];</pre>
+<pre>		/* Generate a buffer full of audio data as 16 bit samples. */
+		numFrames = FRAMES_PER_BUFFER;
+		SPMIDI_ReadFrames( spmidiContext, samples, numFrames, SAMPLES_PER_FRAME, 16 );</pre>
+<pre>		/* Write audio samples to the audio device. */
+		WriteToMyAudioDevice( myAudioDevice, samples, numFrames );
+	}
+</pre>
+<p>To play the entire file image, you should loop through these two calls until
+  SongPlayer_PlayFrames indicates it's out of data by returning something other
+  than 0.</p>
+<pre>	while ( SongPlayer_PlayFrames( songPlayer, FRAMES_PER_BUFFER ) == 0 )
+	{
+		PlayAudioBuffer(spmidiContext);
+	}
+</pre>
+<p>At this point, your file is exhausted, but there may still be audio to generate
+  (the last notes may still be decaying or may not have been turned off, or the
+  reverb may still be generating output).
+  You should continue reading and writing out audio samples until you are sure
+  the SongPlayer is silent, or (if you wish) until a timeout is reached. At that
+  point,  you can shut down your audio device and stop the SongPlayer.</p>
+<pre>	StopMyAudioDevice();
+	SongPlayer_Stop( songPlayer );
+</pre>
+<p>  [<a href="sp_cleanup.html">Next</a>]</p>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

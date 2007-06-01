@@ -1,0 +1,112 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Playing a MIDIFile Using Utility Functions</h2>
+<p>An example of playing a MIDI file can be found in the file "spmidi/examples/play_midifile.c"
+  A very minimal example for embedded systems can be found in "spmidi/examples/minimal_player.c".
+<p>Your audio device interface may use callbacks instead of a blocking write call. This is common for low-level interfaces that work off of DMA interrupts. If so, then you can model your application on the file &quot;examples/minimal_player_pa.c&quot;. 
+<p>A utility is provided that loads a MIDI file into an allocated memory
+space.
+<blockquote>
+<pre>image = SPMUtil_LoadFileImage( fileName, &amp;fileSize );
+if( image == NULL )
+{
+&nbsp;&nbsp;&nbsp; printf("ERROR reading MIDI File.\n" );
+&nbsp;&nbsp;&nbsp; goto error;
+}</pre>
+</blockquote>
+<p>(You may decide to replace the above function with one that finds a MIDIFile
+  image in a ROM based repository.)
+</p>
+<p>We then create a MIDI file player based on that image. We must give
+it a sample rate so it can maintain accurate timing with the synthesizer.
+<pre>&nbsp;&nbsp;&nbsp; MIDIFilePlayer *player;
+&nbsp;&nbsp;&nbsp; result = MIDIFilePlayer_Create( &amp;player, (int) SAMPLE_RATE, image, numBytes );
+&nbsp;&nbsp;&nbsp; if( result &lt; 0 ) goto error;</pre>
+MIDIFilePlayer_Create() will scan the file and validate it as a legal Standard
+MIDI File. If it finds errors then it will return a negative error code.
+<p>Next we start the synthesizer using SPMUtil_Start().
+<p>Now we can start processing the MIDIFile. The MIDIFile player will scan
+across all tracks and write all of the current MIDI commands to the synthesizer.
+We simply tell it how long of a time period to cover. Time is expressed
+in units of audio frames. Here is an example of parsing an audio buffer's
+worth of MIDI data from the file. We&nbsp; use SPMIDI_ReadFrames to harvest
+the audio data. Then we write it to our audio device using our audio abstraction
+layer.
+<blockquote>
+<pre>
+#define SAMPLES_PER_FRAME   (2)
+/* Allocate a buffer to receive the audio data. */
+short samples[ SAMPLES_PER_FRAME * SPMIDI_MAX_FRAMES_PER_BUFFER ];
+
+
+/* Play a buffer's worth of MIDI data from the file. */
+int result = MIDIFilePlayer_PlayFrames( player, spmidiContext, SPMIDI_MAX_FRAMES_PER_BUFFER );
+
+
+/* Read the resulting audio data from the synthesizer. */
+SPMIDI_ReadFrames( spmidiContext, samples, SPMIDI_MAX_FRAMES_PER_BUFFER, SAMPLES_PER_FRAME, 16 );
+
+
+/* Play the audio data using PABLIO or your own audio device. */
+SPMUtil_WriteVirtualAudio( samples, SAMPLES_PER_FRAME, FRAMES_PER_BUFFER );
+</pre>
+</blockquote>
+<p>As an alternative, for systems that support PortAudio, we can simply call
+  a utility function that basically replaces the above code.
+</p>
+<blockquote>
+<pre>while( SPMUtil_PlayFileBuffer( player, spmidiContext ) == 0 );</pre>
+</blockquote>
+<p>When we are done we stop the synthesizer, stop the player, and free the
+  memory image.
+</p>
+<blockquote>
+  <pre>SPMUtil_Stop(spmidiContext);
+MIDIFilePlayer_Delete( player );
+SPMUtil_FreeFileImage( data );</pre>
+</blockquote>
+<p>[<a href="errors.html">Next</a>]
+  <br>
+  &nbsp;
+
+   
+</p>
+<meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

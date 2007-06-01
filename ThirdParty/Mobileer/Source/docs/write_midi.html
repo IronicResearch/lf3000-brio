@@ -1,0 +1,99 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+-->
+</style>
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Writing MIDI Commands</h2>
+<p>Once the synthesizer has been started, you can control it by sending
+  standard MIDI commands. The basic MIDI commands involve turning notes on
+  and off, selecting instruments, bending pitch, etc. More information on
+  the MIDI standard can be found at the <a href="http://www.midi.org/">MIDI.ORG
+  web site</a>.
+<p>Here is an example of reading bytes from a MIDI serial input and writing
+them to the synthesizer. The GetSerialData() function is an imaginary function
+that returns a valid MIDI byte when one is available on the UART, or -1 if
+the port is closed.
+<blockquote>
+<pre>while( (byte = GetSerialData()) >= 0 )
+{
+&nbsp;&nbsp;&nbsp; SPMIDI_WriteByte( spmidiContext, byte );
+}</pre>
+</blockquote>
+<p>The byte steam will be parsed and converted to messages such as NoteOn
+  and PitchBend.
+</p>
+<p>Note that SPMIDI_WriteByte() does not return an error code. This is
+because the parser is designed to recover automatically from any errors
+in the input stream. This is because MIDI is often transmitted over a serial
+cable that may be unplugged or plugged back unexpectedly.
+<p>You can also send a block of bytes using:
+<blockquote>
+  <pre>SPMIDI_Write( SPMIDI_Context *spmidiContext, const unsigned char *data, int numBytes );</pre>
+</blockquote>
+<p>If you are calling the synthesizer from a music application, then you might
+  find it easier to bypass the byte stream parser and simply write messages
+  containing up to 3 bytes. The NoteOn command, for example, starts with
+  a 0x9n byte where 'n' is the MIDI channel, followed by a pitch byte and
+  a velocity byte. A pitch of 60 is Middle C. The velocity byte controls
+  loudness. Here is how one would write a NoteOn command for channel 3, with
+  a pitch of 57 and a velocity of 73:
+</p>
+<blockquote>
+<pre>SPMIDI_WriteCommand( spmidiContext, 0x92, 57, 73 );</pre>
+</blockquote>
+<p>Note that musicians typically think of MIDI channels being indexed from
+  1 to 16. But this software always considers channels as being indexed from
+  0 to 15. So channel 3 above becomes the 2 in 0x92. Note that&nbsp; the
+"drum channel" is indexed as 9 instead of as 10. You can use the definition <span class="style1">MIDI_RHYTHM_CHANNEL_INDEX</span> to avoid confusion in your code. </p>
+<p>If the command requires less than 3 bytes then the extra parameters
+to SPMIDI_WriteCommand() will be ignored. When sending bytes using SPMIDI_WriteByte()
+only write the required bytes.
+<p>These functions, and other related functions, are documented in the
+Reference Manual under the file "spmidi.h".
+<p>[<a href="read_frames.html">Next</a>]
+<br>&nbsp;
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,156 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<p align="center"><a href="index.html">Quality Assurance Home </a></p>
+<h2>XMF Data Files </h2>
+<p>A number of Mobile XMF files are provided for testing and validating the ME3000. Play these files on your target device and compare the output with the same file played using &quot;play_song.exe&quot; on a Windows PC.
+<p>See also the &quot;<a href="badxmf.html">Bad XMF Files</a>&quot;. 
+<p>These files are only for testing purposes only and may <strong>not</strong> be redistributed. 
+<table border="1" cellspacing="1" cellpadding="3">
+    <tr>
+        <th width="192">Files in &quot;xmf/qa&quot; </th>
+        <th width="544">Description</th>
+    </tr>
+    <tr>
+        <td>2RegionTest.mxmf</td>
+        <td>Play note with slow vibrato using Instrument articulation. Then play note with fast vibrato using an overriding region articulation. Then play both together. </td>
+    </tr>
+    <tr>
+        <td>AllTypesTest.mxmf</td>
+        <td>Play notes using ME1000, ME2000 and ME3000 style voices. </td>
+    </tr>
+    <tr>
+        <td>AnyOneHome.mxmf</td>
+        <td>Melody played on bell with door knocking sounds in background. </td>
+    </tr>
+    <tr>
+        <td>BankMelDrumSwap.mxmf</td>
+        <td>Four  notes played on channels 9,10,11,12. One should hear &quot;drum, piano, drum, drum&quot;. Normal instruments assignments are swapped by using GM2 bank selects 120 and 121. </td>
+    </tr>
+    <tr>
+        <td>carumba.mxmf</td>
+        <td>Cartoon character voice over percussion track. </td>
+    </tr>
+    <tr>
+        <td>charge.mxmf</td>
+        <td>Trumpet fanfare and voice yelling &quot;charge&quot;.</td>
+    </tr>
+    <tr>
+        <td>charge_alaw.mxmf</td>
+        <td>Trumpet fanfare and voice yelling &quot;charge&quot;. Voice sample is compressed using ALaw. </td>
+    </tr>
+    <tr>
+        <td>DrumKitFallThroughTest.mxmf</td>
+        <td>Drum notes that do not all have corresponding regions. Notes that do not match a regions should be silent. Should hear only four widely spaced drum sounds. </td>
+    </tr>
+    <tr>
+        <td>DrumKitTest2.mxmf</td>
+        <td>Miscellaneous drum sounds. </td>
+    </tr>
+    <tr>
+        <td>DrumPitch.mxmf</td>
+        <td> Test assignment of pitch based on region and wave information, not note index. Listener should hear four bell sounds at two pitches, &quot;high, high, low, high&quot;.</td>
+    </tr>
+    <tr>
+        <td>EnvelopeDelay.mxmf</td>
+        <td>Two notes started together. One note has volume envelope delay of 145, 750 and 24315 msec. </td>
+    </tr>
+    <tr>
+        <td>EnvelopeDAHDSR.mxmf</td>
+        <td>Envelope with increasing values for all segments, DAHDSR. A short sound marks the NoteOn time. </td>
+    </tr>
+    <tr>
+        <td>EnvelopeHold.mxmf</td>
+        <td>Envelope with short, medium and extremely long hold time. </td>
+    </tr>
+    <tr>
+        <td>Key_to_Pitch.mxmf</td>
+        <td>Plays 3 sequences with four notes 12 keys  apart. The first sequence use Key to Pitch scaling of 20 cents per key. Then 60 cents, then 90 cents. The sequence will expand each time. </td>
+    </tr>
+    <tr>
+        <td>LFOTest1</td>
+        <td>Play a guitar note with vibrato using MOD LFO. Play note with  MOD LFO delayed. Play note with vibrato using Vibrato LFO. Play note with Vibrato LFO delayed. </td>
+    </tr>
+    <tr>
+        <td>ModEnvToPitch.mxmf</td>
+        <td>Play three notes with increasingly large upward pitch contour. Play fourth note with downward pitch contour. </td>
+    </tr>
+    <tr>
+        <td>MOD_LFO_CC1_to_Pitch.mxmf</td>
+        <td>Play three notes with increasing pitch modulation. Depth of modulation is swept from zero to maximum then back to zero using Control Change #1 commands. Modulation source is 1 Hz MOD LFO. </td>
+    </tr>
+    <tr>
+        <td>MOD_LFO_CPress_to_Pitch.mxmf</td>
+        <td>Play three notes with increasing pitch modulation. Depth of modulation is swept from zero to maximum then back to zero using Channel Pressure. Modulation source is 1 Hz MOD LFO. </td>
+    </tr>
+    <tr>
+        <td>TalkinReggae.mxmf</td>
+        <td>Reggae ringtone with spoken words &quot;Reggae&quot; and &quot;Jammin'&quot;. </td>
+    </tr>
+    <tr>
+        <td>Tuning.mxmf</td>
+        <td>Three notes with the same  index that increase in output pitch using Tuning articulation. </td>
+    </tr>
+    <tr>
+        <td>VelocityMatch.mxmf</td>
+        <td>Test matching of notes to regions using velocity range. Listener should hear low pitched &quot;la&quot; then bell, medium pitched &quot;la&quot; then bell, then high pitched &quot;la&quot; then bell. </td>
+    </tr>
+    <tr>
+        <td>Vib_LFO_CC1_to_Pitch.mxmf</td>
+        <td>Play three notes with increasing pitch modulation. Depth of modulation is swept from zero to maximum then back to zero using Control Change #1 commands. Modulation source is 5 Hz Vibrato LFO. </td>
+    </tr>
+    <tr>
+        <td>Vib_LFO_CPress_to_Pitch.mxmf</td>
+        <td>Play three notes with increasing pitch modulation. Depth of modulation is swept from zero to maximum then back to zero using Channel Pressure. Modulation source is 5 Hz Vibrato LFO. </td>
+    </tr>
+    <tr>
+        <td>VoiceLa.mxmf</td>
+        <td>Organ chord followed by ascending series of four vocal notes singing &quot;la&quot;. </td>
+    </tr>
+    <tr>
+        <td>Vol_Env_Sustain2.mxmf</td>
+        <td>Three notes with increasing sustain level. </td>
+    </tr>
+</table>
+<p>These files are only for testing purposes only and may <strong>not</strong> be redistributed.
+<p><meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

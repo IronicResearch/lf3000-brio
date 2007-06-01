@@ -1,0 +1,64 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" --> <b></b>
+<h2>Queuing Songs with  the  JukeBox</h2>
+<p>The JukeBox maintains an internal queue of MIDI songs. This allows you to queue up multiple songs that will play automatically in sequence. There will be no gap between the songs so you can break a song into individual subsongs like an Intro, SectionA, SectionB, Chorus and then queue up parts interactively. Each subsong would have its own MIDI file.</p>
+<p>Songs are referenced by index as <a href="../editor/production.html">exported</a> from the Mobileer Editor. When you queue a song you can specify how many times you would like it to repeat. Pass JUKE_BOX_LOOP_FOREVER if you want the song to go forever. For example:</p>
+<blockquote>
+    <pre>JukeBox_QueueSong( SONG_FUNTOY8, numLoops );
+</pre> 
+</blockquote>
+<p>You can  query how many songs are in the queue using:</p>
+<blockquote>
+    <pre>int JukeBox_GetSongQueueDepth();</pre>
+</blockquote>
+<p>If you already have songs in the queue and decide you want to play another song immediately, then you can do that. You first  need to clear all the songs from the queue. Then stop the current song. Then queue the interrupting song. </p>
+<blockquote>
+    <pre>JukeBox_ClearSongQueue();
+JukeBox_StopCurrentSong();
+JukeBox_QueueSong( SONG_SURPRISE, numLoops );</pre>
+</blockquote>
+<p>If you have queued a song to loop several times and you want it to finish after the current loop then call:</p>
+<blockquote>
+    <pre>JukeBox_FinishSong();</pre>
+</blockquote>
+<p align="center">| <a href="index.html">JukeBox</a> | <a href="starting.html">previous</a> | <a href="events.html">next</a> |</p>
+<p align="center">&nbsp;</p>
+<p align="center">&nbsp; </p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

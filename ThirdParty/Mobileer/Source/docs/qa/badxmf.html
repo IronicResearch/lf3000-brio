@@ -1,0 +1,123 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<p align="center"><a href="index.html">Quality Assurance Home </a></p>
+<h2>Bad XMF Data Files </h2>
+<p>A number of Corrupt Mobile XMF files are provided for testing and validating the ME3000. Play these files using &quot;examples/play_song.c&quot;. These files should cause SongPlayer_Create() to return specific errors when loaded.  These files were created by changing a byte on the file &quot;qa/QuickAllTypes.mxmf&quot;. The exact byte changed can be found by doing a binary comparison with the original file. 
+<p>See also the &quot;<a href="xmf.html">Good XMF Files</a>&quot;.
+<p>These files are only for testing purposes only and may <strong>not</strong> be redistributed. 
+<table border="1" cellspacing="1" cellpadding="3">
+    <tr>
+        <th width="250">Files in &quot;xmf/qa&quot; </th>
+        <th width="303">Returns</th>
+        <th width="427">Details of File Corruption</th>
+    </tr>
+    <tr>
+        <td>Bad_BadFormat.mxmf</td>
+        <td>SPMIDI_Error_BadFormat</td>
+        <td>Caused by bad pool table data. Offset in a poolcue was changed so it does not match an existing wave table. The pool table is used to associate wavetable data with one or more instruments. </td>
+    </tr>
+    <tr>
+        <td>Bad_DetachedNodeContentFound.mxmf</td>
+        <td>XMFParser_Error_DetachedNodeContentFound</td>
+        <td><p>Reference type for content node was changed from 1 (Inline Resource) to 4 (External Resource File). Mobile XMF files cannot reference content outside the file. </p>
+        </td>
+    </tr>
+    <tr>
+        <td>Bad_IllegalFormat.mxmf</td>
+        <td>MIDIFile_Error_IllegalFormat</td>
+        <td>One of the Standard MIDI File  'MTrk' track chunk headers was changed to 'UVrk'. A track typically contains a sequence of notes for an instrument. </td>
+    </tr>
+    <tr>
+        <td>Bad_MissingEndOfTrack.mxmf</td>
+        <td>MIDIFile_Error_MissingEndOfTrack</td>
+        <td>One of the tracks EOT messages is corrupt or missing. The EOT MetaEvent type of 0x2F was changed to a text event 0x03. it marks the end of each track so that the song finishes at the right time. EOT is also necessary to loop a MIDI file correctly. </td>
+    </tr>
+    <tr>
+        <td>Bad_NotDLS.mxmf</td>
+        <td>DLSParser_Error_NotDLS</td>
+        <td>DLS FORM chunk type changed from 'DLS ' to 'DWS '. </td>
+    </tr>
+    <tr>
+        <td>Bad_NotSMF.mxmf</td>
+        <td>MIDIFile_Error_NotSMF</td>
+        <td>SMF header changed from MThd' to 'MTwx'. SMF is Standard MIDI File. </td>
+    </tr>
+    <tr>
+        <td>Bad_NotXMF.mxmf</td>
+        <td>MIDIFile_Error_NotSMF</td>
+        <td>This is just a text file containing an English message. If the XMF header is not recognized then SongPlayer_Create() will search for and try to play the SMF content in the file. </td>
+    </tr>
+    <tr>
+        <td>Bad_ParseErrorNoIns.mxmf</td>
+        <td>DLSParser_Error_ParseError</td>
+        <td>DLS Instrument chunk type 'ins ' was changed to 'iXs '. </td>
+    </tr>
+    <tr>
+        <td>Bad_ParseErrorNoPTBL.mxmf</td>
+        <td>DLSParser_Error_ParseError</td>
+        <td>DLS PTBL chunk type 'ptbl' was changed to 'pZbl'. PTBL is the &quot;pool table&quot; that contains all the wavetables. </td>
+    </tr>
+    <tr>
+        <td>Bad_SizeError.mxmf</td>
+        <td>XMFParser_Error_SizeError</td>
+        <td> The Tree End in header in the XMF was set to exceed the actual file size. That is makes it look there is more data than can fit in the file. </td>
+    </tr>
+    <tr>
+        <td>Bad_UnsupportedSampleFormat.mxmf</td>
+        <td>DLSParser_Error_UnsupportedSampleFormat</td>
+        <td>BitsPerSample in the WAV format chunk was set to 32, which is too big. Only 8 and 16 bit audio data supported by Mobile XMF. </td>
+    </tr>
+    <tr>
+        <td>Bad_WrongType.mxmf</td>
+        <td>XMFParser_Error_WrongType</td>
+        <td>XMF File type is set to 7. Only XMF Type 2 (Mobile XMF) is supported. </td>
+    </tr>
+    <tr>
+        <td>Bad_XMFParseError.mxmf</td>
+        <td>XMFParser_Error_ParseError</td>
+        <td> Reference type for content node was changed from 1 (Inline Resource) to 23, which is an illegal content type.</td>
+    </tr>
+</table>
+<p>These files are only for testing purposes only and may <strong>not</strong> be redistributed.
+<p><meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+   
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

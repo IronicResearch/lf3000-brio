@@ -1,0 +1,47 @@
+<style type="text/css">
+
+body { font-family: verdana, regular; font-size: 10pt;
+	background-color: #f4f8f0; color: #FFFFFF }
+
+h1,h2,h3,h4,h5 { margin-top: 6pt; margin-bottom: 2pt; margin-left: 15px; margin-right: 15px;  font-weight: bold }
+
+h1 { font-family: "Tahoma"; font-size: 15pt; margin-top: 10pt; color: #305090 }
+h2 { color: #527EBB; font-size: 13pt; margin-top: 8pt }
+h3 { color: #527EBB; font-size: 11pt }
+h4 { color: #527EBB; font-size: 10pt }
+h5 { color: #527EBB; font-size: 10pt }
+p { margin-top: 4pt; margin-bottom: 5pt; margin-left: 15px; margin-right: 15px }
+
+#heading h1 { font-family: "Tahoma"; font-size: 22pt; margin-top: 10pt; color: #305090 }
+#heading h3 { color: #4F4C46; font-size: 14pt }
+
+code,tt,pre { font-family: courier, "courier new", monaco; font-size: 10pt }
+
+table { font-size: 10pt; color: #4F4C46 }
+table.pretty { background-color: #808080 }
+th.pretty { background-color: #f4f8f0 }
+tr.pretty { background-color: #ffffff }
+
+.smaller { font-size: 8pt }
+
+.primary { background-color: #FFFFFF; color: #4F4C46; font-size: 10pt  }
+
+.background { background-color: #858583; color: #FFFFFF }
+
+A         { font-family: verdana, regular; font-size: 10pt }
+A:link    { color: #0000EE }
+A:visited { color: #000080 }
+A:hover   { color: #FF0000 }
+A:active  { color: #f8f8f0; background-color: #303030 }
+A:focus   { color: #C0C000 }
+
+#navbar   { font-family: verdana, regular; font-size: 10pt; padding-bottom: 8px;
+			background-color: #F0F0F0; color: #000000; line-height: 120%
+          }		
+#navbar A:link    { color: #0000EE; text-decoration: none }
+#navbar A:visited { color: #000080; text-decoration: none }
+#navbar A:hover   { color: #FF0000; text-decoration: underline }
+#navbar A:active  { color: #f8f8f0; background-color: #E0E0E0; text-decoration: underline }
+#navbar A:focus   { color: #C0C000; text-decoration: none }
+
+</style>

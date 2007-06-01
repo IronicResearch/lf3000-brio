@@ -1,0 +1,60 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" --><title>Create SongPlayer</title><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2>Starting and stopping the SongPlayer</h2>
+<p>Once you have a SongPlayer structure, you can start and stop playback at will.</p>
+<pre>	result = SongPlayer_Start( songPlayer );
+</pre>
+<p>If the function successfully returns 0, you're ready to synthesize MIDI from
+  the XMF or MIDI file image and pass it to your sound playback hardware. You
+  can start your audio hardware engine at this point.</p>
+<pre>	result = StartMyAudioDevice();</pre>
+<p>The function </p>
+<pre>	result = SongPlayer_Stop( songPlayer );
+</pre>
+<p>stops playback. Restarting after stopping will resume synthesizing audio from
+  the position in the file at which you stopped. To restart from the beginning
+  of the file, you should stop, rewind and re-start the SongPlayer:</p>
+<pre>	result = SongPlayer_Stop( songPlayer );
+	if( result &lt; 0 ) handleError();
+
+	result = SongPlayer_Rewind( songPlayer );
+	if( result &lt; 0 ) handleError();
+
+	result = SongPlayer_Start( songPlayer );
+	if( result &lt; 0 ) handleError();
+</pre>
+<p>[<a href="sp_playframes.html">Next</a>]</p>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

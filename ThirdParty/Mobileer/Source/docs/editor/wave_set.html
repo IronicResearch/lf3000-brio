@@ -1,0 +1,66 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<b></b>
+<h2>Mobileer Instrument Editor</h2>
+<h3>Creating a WaveSet </h3>
+<p>A WaveSet is a collection of WaveTables. The WaveTables are all from the same Instrument but played at different pitches. An Instrument can use a WaveSet as the basis for its sound. When a note is played it will select the WaveTable closest in pitch. Note the wavetable name in the screenshot below, "Violin_Bowed_056_1". The _056_ represents MIDI Pitch 56 or "G#3".</p>
+<p align="center"><img src="images/add_waveset.png" alt="GUI for making a WaveSet" border="1"></p>
+<ol>
+    <li>To <strong>create</strong> a new WaveSet, click the &quot;Add WaveSet&quot; button and give it a name. Typical names are &quot;Clarinet&quot; or &quot;YamahaGrand&quot; or &quot;Violin_small&quot;. </li>
+    <li>To <strong>add</strong> a WaveTable to a WaveSet:
+        <ol>
+            <li>Select the WaveSet you wish to add to. Any WaveTables already in the WaveSet will appear in the middle section.</li>
+            <li>Select the WaveTable in the tree on the left, hold the mouse button down and drag it into the middle section. (Note, wave sample files can not be added to a WaveSet, only WaveTables derived from a wave sample. </li>
+            <li>Drop it by releasing the mouse button. It should appear as a member of the WaveSet. The order is not important. </li>
+        </ol>
+    </li>
+    <li>To <strong>remove</strong> a WaveTable from a WaveSet, select the WaveTable in the WaveSet and then select &quot;Remove {name} From WaveSet&quot; from  Edit menu.</li>
+    <li>If you are creating a waveset for a <strong>drum</strong> you should just make a WaveSet with one WaveTable in it.</li>
+</ol>
+<p align="center">| <a href="index.html">Top</a> | <a href="wave_loops.html">Previous</a> | <a href="orc_editor.html">Next</a> |</p>
+<meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

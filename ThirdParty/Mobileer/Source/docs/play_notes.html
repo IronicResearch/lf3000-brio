@@ -1,0 +1,85 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Playing Notes Using Utility Functions</h2>
+<p>Most of the example programs use a utility library to access the SPMIDI
+  synthesizer. It can format MIDI commands. It also harvests PCM audio and
+  writes it to PortAudio or to a file. It is just a convenience layer so
+  it is not necessary to use these utilities.
+<p>These functions are documented in the Reference Manual under "spmidi_util.h"
+and "spmidi_play.h".
+<p>To start the utility library call:
+<blockquote>
+<pre>int SPMUtil_Start( SPMIDI_Context **contextPtr, int sampleRate, const char *wavFileName, int samplesPerFrame );</pre>
+</blockquote>
+<p>You can request the output be written to a WAV file called wavFileName.
+  If wavFileName is NULL then output will be sent to the audio device.
+</p>
+<p>Use the ProgramChange command to select an instrument for a given channel.
+Here we select instrument 0x03, the "Honky-Tonk Piano" for channel 5. Note
+that instruments and channels are always indexed starting at zero in this
+software. Humans typically use indices starting at one. So a human would
+consider this channel 6.
+<pre>&nbsp;&nbsp;&nbsp; SPMUtil_ProgramChange( spmidiContext, 5, 0x03 );</pre>
+To play notes simply call:
+<blockquote>
+<pre>void SPMUtil_NoteOn( SPMIDI_Context *spmidiContext, int channel, int pitch, int velocity );
+void SPMUtil_NoteOff( SPMIDI_Context *spmidiContext, int channel, int pitch, int velocity );</pre>
+</blockquote>
+<p>The utility library can also harvest audio data and play it using SPMUtil_PlayMilliseconds(msec).
+  It will call SPMIDI_ReadFrames() and play the audio, or write it to a file.
+  Here is an example of playing a note with a time delay bewteen the NoteOn
+  and NoteOff events.
+</p>
+<blockquote>
+<pre>SPMUtil_NoteOn( spmidiContext, CHANNEL, PITCH, 64 );
+SPMUtil_PlayMilliseconds( spmidiContext, 500 );
+SPMUtil_NoteOff( spmidiContext, CHANNEL, PITCH, 0 );
+SPMUtil_PlayMilliseconds( spmidiContext, 300 );</pre>
+</blockquote>
+<p>When you are done, stop the synthesizer, and stop the audio device or close
+  the file using:
+</p>
+<blockquote>SPMUtil_Stop(spmidiContext);</blockquote>
+[<a href="play_midifile.html">Next</a>]
+<br>&nbsp;
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

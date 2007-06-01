@@ -1,0 +1,64 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2>Mobileer Song Editor 
+</h2>
+<h3>Previewing and Editing Songs in the Song Editor</h3>
+
+<p><img align="right" src="images/song_preview.png">Once you have selected a song you can listen to it being played by the current Orchestra.</p>
+<ul>
+    <li>To hear the selected song, click on the green Play icon with the arrow. The arrow will turn to a square which means &quot;Stop&quot;. You will see a progress display as the instruments are downloaded to the target.</li>
+    <li>At any time you can set the maximum number of voices using the &quot;Max Voices&quot; combo box. <img src="images/max_voices.png"></li>
+</ul>
+<p>A voice corresponds to one instrument playing one note or percussion sound. The default for General MIDI is 24 voice polyphony. But many embedded systems are limited to fewer voices due to CPU performance issues. </p>
+<p>Notice that some of the notes are interrupt or &quot;stolen&quot;. You can select which voices will be heard at which level of polyphony by setting the MIP level for that channel.</p>
+<ul>
+    <li>While the song is playing, check the solo box for each channel in turn so you can hear how each instrument sounds. You can solo more than one channel at a time. Turn off all the solo boxes to hear all the instruments before continuing. </li>
+    <li> Turn off the song. You cannot update the MIP value while it is playing.</li>
+    <li>Just as an example, set the MIP value for the most important lead instrument to 2. Do so by double clicking on the row in the MIP column. Type in a new value and hit Enter or click somewhere else to finish the entry.</li>
+    <li>Now set the Drums channel MIP value to 5. Then set the other channels to higher values, like 8 or 12.</li>
+    <li>Set the Max voices to 2.</li>
+    <li>Make sure all Solo boxes are unchecked that start the song playing. You should only hear the lead instrument.</li>
+    <li>Set the Max Voices to 5. You should now hear the Drums added in. </li>
+    <li> Increase the Max Voices and notice that other instruments are added in as their MIP value is reached.</li>
+    <li>When you are done editing the Song, you may wish to save it. The MIP information will be saved in the new MIDI file as a System Exclusive message. We recommend saving &quot;whatever.mid&quot; as &quot;whatever_sp.mid&quot; to mark it as having the SP MIP information. This information turns a MIDI file into a SP-MIDI file. </li>
+</ul>
+<div align="left"> </div>
+<p align="center">| <a href="index.html">Top</a> | <a href="song_load.html">Previous</a> | Next |</p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

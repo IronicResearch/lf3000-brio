@@ -1,0 +1,54 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2> Mobileer API Overview </h2>
+<p>Your application writes MIDI bytes to the SPMIDI Synthesizer and then reads back PCM audio samples. The MIDI bytes are parsed into MIDI messages that control the state of the synthesizer.&nbsp; When you read from the synthesizer, it calculates audio samples based on its current state. The audio data can then be written to a file, or to an audio device. </p>
+<p>There is one core API that provides the essential functions of the Mobileer synthesizer. There are also several higher level APIs that are optional.</p>
+<h3>Core API - SPMIDI_* </h3>
+<p>The SPMIDI API is a low level API that lets you directly access the MIDI File Player and the Synthesis Engine. It requires that you only use one thread to call SPMIDI. This API gives the programmer the most flexibility. It is recommended for devices such as mobile phone handsets which are required to play arbitrary songs downloaded from the outside the device.</p>
+<h3>Optional Utility API - SPMUtil_*</h3>
+<p>There are several utility functions used by the example programs to simplify writing code. They make it easy to send MIDI message, for example SPMUtil_NoteOn(). They also provide a simple interface to an audio device. </p>
+<h3>Optional JukeBox API - Jukebox_* </h3>
+<p>The Jukebox is a high level API used for interactive music. It allows you to queue songs for playback and to schedule midi events using time-stamps for accurate sequencing. It uses the Mobileer Editor to gather songs into a playlist. The JukeBox is built on top of the SPMIDI API. The JukeBox API is recommended highly interactive applications such as handheld toys or games.</p>
+<h3>Optional SongPlayer API - SongPlayer_* (ME3000 only) </h3>
+<p>The SongPlayer is used to play either SMF or Mobile XMF song files. It makes use of the lower level ME3000 APIs for DLS and XMF parsing. The ME3000 enhances the capabilities of the ME2000 by introducing the ability
+  to load and play MobileXMF files, which may include MobileDLS instrument definitions
+to supplement the standard GM instrument set.</p>
+<h2 align="center"><a href="programming_guide.html">Continue</a></h2>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

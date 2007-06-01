@@ -1,0 +1,60 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" --><strong></strong> <b></b>
+<h2>Making an FM style Instrument</h2>
+<p>In this instrument we will use one oscillator to modulate the frequency of another to make complex tones. We actually use phase modulation instead of frequency modulation. The resulting sound is the same but PM is a little easier to control than FM. </p>
+<ol>
+    <li>If the &quot;WhizzyOrgan&quot; instrument is not already open then click on the &quot;Edit&quot; button  on the &quot;17. Drawbar Organ&quot; line. <img src="images/whizzy_fm.png" width="283" height="340" style="float:right" border="1"></li>
+    <li>Check the &quot;Phase Mod&quot; button (near top left) if unchecked. This means the modOsc output will be added to the phase of the mainOsc to create an FM effect.</li>
+    <li>Notice that the waveforms available for the mainOsc are now limited to SinePM, SquarePM, SawtoothPM, and TrianglePM. These are the modulated versions of the standard waveforms. Select &quot;SinePM&quot;. </li>
+    <li>Set the &quot;phaseModDepth near the middle. This controls the degree of modulation.</li>
+    <li> For the modOsc, select the &quot;Sine&quot; waveform.</li>
+    <li>You can now control the carrier:modulator ratio which determines the timbre.</li>
+    <li>For both the mainOsc and modOsc select the &quot;Ratio&quot; button. This means the oscillator note will be some ratio of the  frequency of the note being played. </li>
+    <li>Set the mainOsc ratio to 1.0 and the modOsc ratio to 2.0. (Don't forget to hit ENTER if the text is red.) This will give you a 1:2 C:M ratio. Play some notes to hear how that sounds.</li>
+    <li>Now set the modOsc ratio to 1.5 for a 3:2 C:M ratio. How does that sound?</li>
+    <li>If you use a very unusual ratio then you will get enharmonic bell like partials. Try 2.7351 for the modOsc ratio.  </li>
+    <li>You can enter formula in this text box. Try entering &quot;sqrt(2)*5&quot; without the quotes then hit enter. It will be calculated.</li>
+</ol>
+<p align="center">| <a href="index.html">Top</a> | <a href="ins_mix.html">Previous</a> |&nbsp;<a href="ins_wave.html">Next</a> |</p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

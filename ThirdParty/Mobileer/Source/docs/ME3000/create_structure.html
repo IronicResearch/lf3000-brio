@@ -1,0 +1,47 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" --><title>Creating a SongPlayer</title><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2>Creating a SongPlayer </h2>
+<p>The SongPlayer API carries all the information it needs in a SongPlayer structure.
+  You create a SongPlayer using SongPlayer_Create(), which sets a pointer you
+  specify to the new SongPlayer. You need to specify the location of the SPMIDI
+  context you've previously created, and the address and size of the image
+  in memory of the file you want to play. </p>
+<pre>	SongPlayer *songPlayer = NULL;
+<br>	result = SongPlayer_Create( &amp;songPlayer, spmidiContext, address, size );<br>	if( result &lt; 0 ) handleErr();</pre>
+<p>If the function call is successful, result will be 0. In this case, your pointer
+to the context structure will be updated to point to the new SongPlayer.</p>
+<p>[<a href="sp_start_stop.html">Next</a>]</p>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

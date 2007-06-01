@@ -1,0 +1,74 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Error Handling</h2>
+<p>In general, the SPMIDI software has very few instances where it will
+  return an error code. One reason is because it has few dependencies on
+  system calls, or memory allocation. This eliminates a common source of
+  potential errors. Another reason is because the primary parser is a MIDI
+  parser. A MIDI stream can come from any source and may be broken if the
+  serial stream is interrupted. This can be caused by simply unplugging and
+  plugging back in a serial cable. So the MIDI parser is designed to recover
+  gracefully from any input errors.
+<p>The two main sources of error are badly formatted Standard MIDI Files,
+or programmers passing illegal parameters.
+<p>Error codes are always negative and are defined in the file "engine/spmidi.h".
+<p>If you receive a negative error code then you can get a textual description
+of the error by calling:
+<blockquote>
+<pre>const char *SPMUtil_GetErrorText( SPMIDI_Error errorCode );</pre>
+</blockquote>
+<p>For example, here is code to create a MIDIFile player. If a negative error
+  is encountered, the error number and a text message is printed.
+</p>
+<pre>&nbsp;&nbsp;&nbsp; result = MIDIFilePlayer_Create( &amp;player, (int) SAMPLE_RATE, image, numBytes );
+&nbsp;&nbsp;&nbsp; if( result &lt; 0 )
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; printf("Error creating MIDI File Player = %d : %s\n", result,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SPMUtil_GetErrorText( result ) );
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; fflush(stdout);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; goto error;
+&nbsp;&nbsp;&nbsp; }
+
+[<a href="programming_guide.html">Next</a>]</pre>
+ 
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

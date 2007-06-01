@@ -1,0 +1,84 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" --><title>Cleaning Up</title><!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2>Patching the ME3000 in ROM </h2>
+<p>Given the complexity, and the evolving nature of the Mobile XMF standard, it may be necessary to patch the ME3000 software after commiting it to ROM. A mechanism has been provided to replace specific functions in the ME3000 if necessary. This requires an intimate knowledge of the ME3000 and should only be attempted by Mobileer personnel.</p>
+<p>Functions to be patched were chosen based on their complexity, and their depth in the calling tree. A top-level function in ROM that is only called by code in RAM code can simply be replaced with a revised function in RAM without using a function table. </p>
+<p>In order to access the internal structures used by the ME3000, one must first include the following header files from the &quot;engine&quot; folder:</p>
+<blockquote>
+    <pre>#include &quot;spmidi_hybrid.h&quot;
+#include &quot;dls_parser_internal.h&quot;<br>#include &quot;xmf_parser_internal.h&quot;</pre>
+</blockquote>
+<p>When patching functions, it is often useful to call the original function. This allows us to add to a feature to a function that is otherwise correct. Here is example code that creates storage for the original function pointers for two critical functions. </p>
+<blockquote>
+    <pre>
+/* Function to load a DLS Orchestra into the ME3000 */
+SSDLS_LoadOrchestraProcPtr sOldLoadOrchestraProcPtr;
+/* Function to synthesize a DLS voice. */
+SS_SynthesizeVoiceDLS2ProcPtr sSynthesizeDLSProcPtr;</pre>
+</blockquote>
+<p>The DLS parser and XMF parser have many more functions to be replaced. So they return a function table defined in the above header files. Here we create storage for complete copies of the original function table. </p>
+<blockquote>
+    <pre>DLSParser_FunctionTable_t sDLSFunctions = { 0 };
+XMFParser_FunctionTable_t sXMFFunctions = { 0 };</pre>
+</blockquote>
+<p>The following code saves a copy of the original functions and installs a pointer to a replacement function. </p>
+<blockquote>
+    <pre>sSynthesizeDLSProcPtr = SS_GetProc_SynthesizeVoiceDLS2();
+SS_SetProc_SynthesizeVoiceDLS2( &amp;SS_SynthesizeVoiceDLS2_Patched );
+sOldLoadOrchestraProcPtr = SSDLS_GetProc_LoadOrchestra();
+SSDLS_SetProc_LoadOrchestra( &amp;SSDLS_LoadOrchestra_Patched );
+</pre>
+</blockquote>
+<p>Here we make copies of the original function tables, and then replace a couple selected functions in that table. </p>
+<blockquote>
+    <pre>
+/* Make a copy of old function table so we can call the original functions. */
+sDLSFunctions = *DLSParser_GetFunctionTable();
+
+/* Tell DLS parser to use new function. */
+DLSParser_GetFunctionTable()->resolveRegion = ResolveRegionPatch;
+
+/* Copy old function table. */
+sXMFFunctions = *XMFParser_GetFunctionTable();
+XMFParser_GetFunctionTable()->findNodeType = FindNodeTypePatch;
+</pre>
+</blockquote>
+<h3>Static Function Issues</h3>
+<p>Function in ROM  may call static functions or refer to static data. So it would be helpful to keep an image map of all symbols linked into the ROM image. As a last resort, the linked image can be disassembled to find the static address. They can then be accessed using constants in the patched code,. </p>
+<p>[<a href="index.html">Start of Tutorial</a>] <br>
+    <br>
+</p>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

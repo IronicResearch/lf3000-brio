@@ -1,0 +1,66 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>ME3000 Tutorial</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<h2>ME3000 Tutorial</h2>
+<p>The ME3000 enhances the capabilities of the ME2000 by introducing the ability
+  to load and play MobileXMF files, which may include MobileDLS instrument definitions
+  to supplement the standard GM instrument set. To accommodate this, three new
+  APIs have been added to the Mobileer system:</p>
+<ul>
+  <li>the DLSParser API, to allow you to load DLS instruments into the Mobileer
+    engine;</li>
+  <li>the XMFParser API, to allow you to utilize MobileXMF files, and</li>
+  <li>the SongPlayer API, to allow simple loading and playback of either SPMIDI
+    or MobileXMF files.</li>
+</ul>
+<p>The DLS Parser and XMF Parser allow you low-level control over the loading
+  and interpretation of MobileXMF. If you just want to play a file (MIDI or MobileXMF)
+  without worrying about parsing details, you should use the SongPlayer API. </p>
+<h3>Using the SongPlayer API</h3>
+<p>To load and play an SPMIDI or MobileXMF file that you've loaded into RAM,
+  you need to follow the steps below:</p>
+<ol><li><a href="starting_engine.html">Start the MIDI Playback engine</a>.</li>
+  <li><a href="create_structure.html">Create a SongPlayer context structure</a>.</li>
+  <li><a href="sp_start_stop.html">Start the SongPlayer</a>.</li>
+  <li><a href="sp_playframes.html">While there's still data to play,
+    generate a buffer's worth of audio and play it</a>.</li>
+  <li><a href="sp_cleanup.html">Stop the SongPlayer, delete the context and
+    stop the engine</a>.</li>
+</ol>
+<p>An example of SongPlayer use can be found in the release, in <a href="../../examples/play_song.c">/examples/play_song.c</a>. </p>
+<p>[<a href="../programming_guide.html">Back to Programming Guide</a>] </p>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

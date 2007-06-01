@@ -1,0 +1,56 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" --><strong></strong> <b></b>
+<h2>Making a WaveTable based Instrument</h2>
+<p>The ME2000 supports the use of <a href="wave_tut.html">WaveTables</a>, which are digital recordings of instrument sounds. You can use a WaveTable to replace the  mathematical oscillator used in the ME1000 instruments. </p>
+<ol>
+    <li>You can either start by cloning an existing WaveTable instrument, or by converting a synthesis instrument to use WaveTables. You can identify the WaveTable instruments in the Orchestra editor because they have a size after the name, eg. &quot;Violin, 30K&quot;.</li>
+    <li>To make an instrument use WaveTables, select the &quot;WaveTable&quot; item in the main oscillator waveform menu. If the PhaseMod flag is set you must turn it off first.<img src="images/ins_wave.png" width="282" height="339" style="float:right" border="1"></li>
+    <li>You will then be asked to select a WaveSet. A <a href="wave_set.html">WaveSet</a> contains one or more WaveTables that are mapped onto the keyboard.</li>
+    <li>Note that when you have WaveTable selected then the modOsc and several other synthesis options are disabled.</li>
+    <li>If you want to use the natural attack of the WaveTable then check the <strong>&quot;Hold Amp until Loop&quot;</strong> flag at the left edge of the editor. That will cause the ADSR envelope to be ignored until the WaveTable begins to loop.</li>
+    <li>When you first play a WaveTable instrument, the WaveSet will have to be loaded to the target synthesizer. That may take a few seconds for a small WaveTable or a minute for a giant piano WaveSet. A progress dialog will appear when this happens. </li>
+</ol>
+<p align="center">| <a href="index.html">Top</a> | <a href="ins_fm.html">Previous</a> |&nbsp;Next |</p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,177 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Optimizing Loudness of Ringtones</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Optimizing Loudness of Ringtones </h2>
+<h3>Overview</h3>
+<p>Ringtones are often used to personalize mobile phones by playing the users favorite music. But the primary purpose of a ringtone must be to alert the user when they have an incoming call. This is particularly an issue in noisy environments such as airports and on the street. Care must be taken to ensure that the ringtones can be heard in those environments.</p>
+<h3>Hardware Support</h3>
+<p>The amplifier and speaker for playing the ringtone must, of course be optimized for loudness and fidelity. The amplifier should be as powerful as possible without overdriving the speaker or causing an undue drain on the battery. The speaker must not be obscured by the case. The speaker must also be very tightly coupled to the case and if possible should have a convex horn to acoustically amplify the sound. </p>
+<p>Also note that small speakers cannot produce low frequencies very well. It is typical for the frequency response to fall off drastically below 500 Hz. So tones below middle C should be used sparingly. You won't hear the bass notes but they will be contributing to the mix which will require that the overall volume be lowered to account for their presence. </p>
+<h3>Psychoacoustic Considerations</h3>
+<p>The ear is most sensitive to sounds between 700 Hz and 6000 Hz, with a peak sensitivity at 4000 Hz. For comparison, middle C has a fundamental of 261 Hz. The C one octave above that is 523 Hz and then C above that is 1046 Hz. Complex instrument sounds tend to have strong partials that are 2 or 3 times the fundamental so a note in the first octave above middle C will have partials in the optimum range.</p>
+<p>Another issue is whether the ringtone can get the attention of the user. If the music is similar to the sounds that may be occuring in the environment, then the users brain is likely to ignore the ringtone. For example, a pleasantly innocuous ringtone may be confused with  background music if heard in a department store. So a ringtone that is less like normal music is more likely to be noticed. Thus ringtones with long high trills, dissonance, or unusual rhythms are more likely to be noticed. </p>
+<h3>Peak Amplitude versus RMS</h3>
+<p>The digital-to-analog converter (DAC) in the mobile phone is limited in the numeric range that it can support. In order to maximize loudness, and resolution, we want to use all of the available numeric range. The simplest technique is to adjust the amplitude so that the peak amplitude is at the maximum allowed value. This is called <em>normalization</em>. But it is possible for two tones, with similar frequency content, and identical peak amplitudes to have different loudnesses. This is because the perceived loudness is related more to the power of the sound than its amplitude. This is best quantified using the root-mean-square (RMS) value which is expressed by this pseudo-code:</p>
+<blockquote>
+  <pre> LOOP for n = 1 to N : sumSquares +=	signal[n] * signal[n]
+ mean = sumSquares / N
+ RMS = sqrt( mean )
+</pre>
+</blockquote>
+<p>A variety of common instruments were measured for their peak amplitude and their RMS value. If we assume the the output is normalized for Peak Amplitude then the resulting RMS value, as a percentage of Peak Amplitude, can be used as a measure of relative loudness for an instrument. </p>
+<table width="300" border="1">
+  <caption>
+  RMS as a Percentage of Peak Amplitude
+  </caption>
+  <tr>
+    <th scope="col">Instrument</th>
+    <th scope="col"><div align="center">RMS % </div></th>
+  </tr>
+  <tr>
+    <td>Acoustic Grand Piano</td>
+    <td><div align="center">31.4</div></td>
+  </tr>
+  <tr>
+    <td>Harpsichord</td>
+    <td><div align="center">16.0</div></td>
+  </tr>
+  <tr>
+    <td>Clavichord</td>
+    <td><div align="center">57.3</div></td>
+  </tr>
+  <tr>
+    <td>Rock Organ </td>
+    <td><div align="center">31.5</div></td>
+  </tr>
+  <tr>
+    <td>Church Organ </td>
+    <td><div align="center">58.7</div></td>
+  </tr>
+  <tr>
+    <td>Tango Accordian </td>
+    <td><div align="center">64.7</div></td>
+  </tr>
+  <tr>
+    <td>Distortion Guitar </td>
+    <td><div align="center">34.0</div></td>
+  </tr>
+  <tr>
+    <td>Violin</td>
+    <td><div align="center">34.5</div></td>
+  </tr>
+  <tr>
+    <td>Synth Voice </td>
+    <td><div align="center">12.3</div></td>
+  </tr>
+  <tr>
+    <td>Trumpet </td>
+    <td><div align="center">28.2</div></td>
+  </tr>
+  <tr>
+    <td>French Horn </td>
+    <td><div align="center">44.0</div></td>
+  </tr>
+  <tr>
+    <td>Bassoon</td>
+    <td><div align="center">64.9</div></td>
+  </tr>
+  <tr>
+    <td>Whistle</td>
+    <td><div align="center">59.0</div></td>
+  </tr>
+  <tr>
+    <td>Telephone Ring </td>
+    <td><div align="center">61.6</div></td>
+  </tr>
+</table>
+<h3>Dynamic Range Compression</h3>
+<p>Music tends to have some quiet and some loud passages. But for the purpose of a ringtone we want everything to be pretty loud. So we can measure the average loudness as a song progresses and raise or lower the gain to achieve a consistently loud output. This is called Dynamic Range Compression or Automatic Gain Control.</p>
+<p>When a sudden peak is encountered in the music then the gain is lowered to prevent clipping. If there are a lot of peaks then the music volume is generally held at a low volume. For optimal loudness you want song material that does not have lots of peaks. Peaks generally occur if you have percussive instruments like xylophones or bells or drums that start at the same time. So if many percussive instruments start on the beat your loudness will suffer. For optimal loudness you should stagger your note attacks so that the peaks do not coincide. Spread the drum sounds around in the measure. You may also want to arpeggiate your chords so all the notes do not start at once. Also choose instrument that do not have percussive attacks, like violin and trumpet. Avoid percussive instruments like piano and steel guitar. </p>
+<table width="80%"  border="0">
+  <tr>
+    <th scope="col">      <p align="center">Envelope of Tango Accordian </p></th>
+    <th scope="col"><div align="center">Envelope of Acoustic Steel Guitar </div></th>
+  </tr>
+  <tr>
+    <td scope="col"><p align="center"><img src="tango_env.png" width="194" height="162"></p>
+    <p align="center">Notice lack of peak at start of note. </p></td>
+    <td scope="col"><div align="center">
+      <p><img src="guitar_env.png" width="146" height="200" align="bottom"></p>
+      <p>Note peak at start of note. </p>
+    </div></td>
+  </tr>
+</table>
+<p>Another way to avoid peaks in the output is to avoid polyphony. When signals of various pitches are mixed, you occasionally get several waveforms reinforcing each other and creating a big peak. By using a monphonic signal, you have a more even result that allows the compressor to maximize the volume. It is counterintuitive but by using fewer instruments you can get a louder output when using Normalization.</p>
+<p>The following image shows two chords played on a Synth Brass instrument. In the first chord at (A), the three notes all start at once and their peaks coincide. That defines the peak amplitude for this song, which you can see as a thin green line going down next to the(A). The second chord at (B) is arpeggiated so that the peaks do not coincide. </p>
+<p align="center"> <img src="arpeggio.png" width="458" height="310"></p>
+<h3>Soft Clipping</h3>
+<p>When a signal is amplified beyond the range of the DAC it must be clipped to prevent numeric wraparound. Essentially this is coded as:
+<blockquote>
+  <pre>if( input &gt; MAX ) output = MAX;
+else if( input &lt; MIN ) output = MIN;
+else output = input; 
+</pre>
+</blockquote>
+<p>When this sort of clipping occurs, it creates sharp corners where the signal hits the rails. A non-linear amplifier or &quot;soft clipper&quot; can be used that will create rounded corners. This is not ideal but it sounds much better than hard clipping. By using this technique, one can push the gain of a song up to 1.5 or 2.0 times the normal volume. The loudest parts will clip but most of the song will just be louder. To do soft clipping, replace the last line of the above code with: 
+<blockquote>
+  <pre>else output  = 1.5 * (input - ((input^*input*input)/3));   </pre>
+</blockquote>
+<p>As of May of 2004, the Mobileer ringtone engine enables SoftClipping by default to allow very loud rendering. It can be turned off by modifying &quot;spmidi_config.h&quot;.
+</p>
+<h3>User Control</h3>
+<p>It is extremely difficult to predict how a ringtone downloaded off of the web will sound on a mobile device. The loudness can vary significantly from device to device depending on how the waveforms are shaped and the contours of the instrument's amplitude envelopes. The user of the device can hear these effects and make a judgement on how loud to play the ringtone. If they want a pristine sound with no distortion then they can reduce the volume to a clean level. If they want to blast out sound over the noise of an airport then they can crank the volume and pay the price of a little distortion. Each ringtone may have different loudness levels so it would be nice to give the user the ability to set the preferred level for a ringtone. This ringtone specific level would be multipled by the master ringtone volume that most phones offer. </p>
+<h3>Summary of Suggestions for Making Loud Ringtones</h3>
+<ol>
+  <li> 
+    <meta name="Author" content="Phil Burk">
+     <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+                         
+Crank the audio amplifier to 11.</li>
+  <li>Use instrument notes with lots of energy  between 500 and 5000 Hz.</li>
+  <li>Avoid using notes below middle C.</li>
+  <li>Play long trills or do things that do not occur in normal music. </li>
+  <li>Use instruments with high relative RMS values like Tango Accordian and French Horn.</li>
+  <li>Avoid percussive instruments with high peaks.</li>
+  <li>Use just a few voices to avoid lots of peaks.</li>
+  <li>Spread your note attacks around so they do not coincide and cause peaks. </li>
+  <li>Measure the peak amplitude before playback. Then use soft clipping and push the volume up to 2.0 times the measured peak amplitude.</li>
+  <li>Give the user a mechanism for specifying their desired playback volume for individual ringtones. </li>
+</ol>
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

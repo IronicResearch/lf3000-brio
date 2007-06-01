@@ -1,0 +1,91 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+-->
+</style>
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Compiling for Embedded Systems - Part II </h2>
+<h3>Playing MIDI Files</h3>
+To play a Standard MIDI File (SMF) you need to get it into memory as an
+unsigned char array. There are 3 ways to do that.
+<ol>
+<li>
+Convert the MIDI file to 'C' source code for an unsigned char array and
+compile it with your program. This will work on systems that do not support
+file I/O or database access. An example song has been provided in the file
+"spmidi/examples/UpAndDown.c". We can provide a shell tool called "bintoc"
+that will convert SMF files to 'C'. Also the Mobileer Instrument Editor (licensed separately) can export songs and playlists as 'C' source. </li>
+
+<li>
+If you have support for file I/O on your system and want to load MIDI
+files into memory then use the function SPMUtil_LoadFileImage() from "spmidi/util/spmidi_load.c".</li>
+
+<li>
+Load a SMF from your ringtone database.</li>
+</ol>
+The file "minimal_player.c" contains an example program that uses the MIDI
+file contained in "spmidi/examples/UpAndDown.c". I recommend using that
+for testing your first player program.
+<p>At this point you should be able to play any MIDI file that is stored
+as a (char *) array in memory.
+<h3>
+Ringtone Database and System Integration</h3>
+The final step is to integrate the SP-MIDI Ringtone Player with your system.
+You may need support for:
+<ul>
+<li>
+downloading ringtones as SMF files,</li>
+
+<li>
+storing ringtones in a database in Flash ROM,</li>
+
+<li>
+previewing and selecting ringtones,</li>
+
+<li>
+triggering the selected ringtone when the phone rings.</li>
+</ul>
+Those functions are very specific to your system and are not part of the
+basic Mobileer product. But we could develop such software to your specification
+if desired.
+<p>[<a href="start_stop.html">Next</a>]
+<br>&nbsp;
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

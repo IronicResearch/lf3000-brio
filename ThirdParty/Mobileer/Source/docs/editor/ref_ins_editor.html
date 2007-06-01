@@ -1,0 +1,162 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Mobileer Instrument Editor</h2>
+<h2> Instrument Editor Reference
+</h2>
+
+<h3>
+Flags Editor</h3>
+
+<table WIDTH="100%" >
+<tr VALIGN=TOP>
+<td><img SRC="images/flags_editor.gif" HSPACE=6 VSPACE=6 BORDER=0></td>
+
+<td><b>Phase Mod</b> = Enable Phase Modulation, which is very similar to
+Frequency Modulation. The output of the modOsc is added to the phase of
+the mainOsc. The ratio of the modOsc to the mainOsc determines the harmonic
+content of the sound.
+<p><b>Ring Mod</b> = Enable Ring Modulation, where the modOsc and the mainOsc
+are multiplied together. This generates bell like tones.
+<p><b>Ignore Note Off</b> = NoteOff commands have no effect on the sound.
+A NoteOff is normally used to trigger the release portion of the envelopes.
+This is useful with Marimbas and other struck instruments.
+<p><b>mainEnv => modOsc</b> = If set, use the main envelope to control
+the modOsc instead of the mod envelope. This is handy if you are using
+the modEnvelope to control the filter.
+<p><b>Enable Filter</b> = Pass the mixture of the two oscillators through
+a resonant filter.</td>
+</tr>
+</table>
+
+<h3>
+Oscillator Editor</h3>
+
+<table WIDTH="100%" >
+<tr VALIGN=TOP>
+<td><img SRC="images/osc_editor.gif"></td>
+
+<td><b>Waveform Selector</b> = choose between various waveforms such as
+Sine, Sawtooth, Triangle, Square, WhiteNoise, RedNoise, etc.
+<p><b>Absolute Pitch</b> = If set then the oscillator always plays at the
+same pitch. If not set, then the oscillator will track the MIDI NoteOn
+pitch parameter.
+<p><b>Semis/Ratio</b> = Specify pitch as MIDI semitones relative to the
+MIDI pitch, or as a frequency ratio. If you want one oscillator to be an
+octave above the MIDI pitch then use "12.0" semitones, or a ratio of "2.0".
+When using Absolute Pitch, you can choose between MIDI Pitch, or a frequency
+in Hertz.
+<p><b>Numeric Field</b> = value in semitones, or ratio, etcetera, depending
+on the format selected. Note that formulas such "sqrt(2.0)" or "22/15"
+can be used.</td>
+</tr>
+</table>
+
+<h3>
+Envelope Editor</h3>
+
+<table WIDTH="100%" >
+<tr VALIGN=TOP>
+<td><img SRC="images/env_editor.gif"></td>
+
+<td>An envelope is a shape normally used to control the amplitude of an
+oscillator.&nbsp;
+<p><b>Loop At Sustain</b> = If set, then loop back to the beginning when
+the sustain point is reached. The output will climb from the sustain level
+back to 1.0 based on the attack time.
+<p><b>Loop After Release</b> = If set, then loop back to the beginning
+when the release portion is finished.
+<p>No Wait for Release = If set, then don't pause at the sustain point.
+Just continue with the release. Useful for percussive sounds.
+<p><b>Attack</b> = initial rise time from zero to full amplitude in
+milliseconds.
+<p><b>Decay</b> = fall time from full amplitude to Sustain level in milliseconds.
+<p><b>DecayScalar</b> = amount of time subtracted from Decay time at highest
+pitch. Used to shorten high notes like on a piano. SHould not exceed Decay
+time.
+<p><b>SustainLevel</b> = level at which the envelope will stick until the
+NoteOff occurs.
+<p><b>Release</b> = fall time from SustainLavel to zero. Triggered by NoteOff.</td>
+</tr>
+</table>
+
+<h3>
+Modulation Editor</h3>
+
+<table WIDTH="100%" >
+<tr VALIGN=TOP>
+<td><img SRC="images/mod_editor.gif"></td>
+</tr>
+<tr>
+<td><b>phaseModDepth</b> = If PhaseMod is selected, then this controls
+the amount of modulation. If PhaseMod is clear, then this controls the
+level of the modOsc in the mix.
+<p><b>lfoPitchMOdDepth</b> = number of semitones that LFO will modulate
+pitch.
+<p><b>envPitchMOdDepth</b> = number of semitones that modEnv will modulate
+pitch.
+<p><b>boost</b> = increases output level by 2^N
+<p><b>lfoCutoffMOdDepth</b> = number of semitones that LFO will modulate
+filter cutoff.
+<p><b>envPCutoffMOdDepth</b> = number of semitones that modEnv will modulate
+filter cutoff.</td>
+</tr>
+</table>
+
+<h3>
+Filter Editor</h3>
+ 
+<table WIDTH="100%" >
+<tr VALIGN=TOP>
+<td><img SRC="images/filter_editor.gif"></td>
+
+<td>The LowPass filter is a two pole State Variable Filter. It can be used
+to modify the spectrum of the sound.<b></b>
+<p><b>InverseQ</b> = inverse of the resonance of the filter. Values closer
+to zero will increase feedback and self-oscillation in the filter.
+<p>The pitch control controls the filter cutoff just like the pitch of
+the oscillators.</td>
+</tr>
+</table>
+
+<br>&nbsp;
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

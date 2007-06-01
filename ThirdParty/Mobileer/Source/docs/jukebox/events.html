@@ -1,0 +1,79 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" --> <b></b>
+<h2>Scheduling Time Stamped MIDI Events with the JukeBox </h2>
+<p>You can send MIDI events to the JukeBox with a time-stamp that tells it when to play. This allows you to schedule MIDI events very precisely even if your operating system schedules tasks with high latency. One advantage of this scheduling feature is that you do not have to create a thread to &quot;play&quot; a sequence. You can just fire it off and forget about it.</p>
+<p>There are several things you can do with this feature: </p>
+<ol>
+    <li>Trigger sound effects as MIDI notes. You can design arbitrary samples or synthesized sound effects using the Mobileer <a href="../editor/index.html">Editor</a>.</li>
+    <li>Trigger complex sound effects made of multiple notes, pitch bends or control changes. Examples might be a quick fanfare, or a drum roll followed by a cymbal crash, or bells and whistles and chickens clucking. These sequences can be played on top of the songs and can be changed programmatically depending on the state of the application.</li>
+    <li>Create music algorithmically. You can create a musical application that plays multiple tracks including algorithmically generated material and play it all with very accurate timing.</li>
+</ol>
+<p>Here is how to simply play one quick note immediately:</p>
+<blockquote>
+    <pre> // Get current time so note starts as soon as possible.
+ int now = JukeBox_GetTime();
+ JukeBox_NoteOn( time, channel, pitch, velocity );
+ JukeBox_NoteOff( time+1, channel, pitch, 0 );</pre>
+</blockquote>
+<p>If you want to schedule a sequence of notes with specific timing then you need to know how to express time in ticks. You can calculate how many ticks are in a second . It requires a divide so I recommend doing it only once at the beginning of your program:</p>
+<blockquote>
+    <pre>int ticksPerSecond = SAMPLE_RATE / JukeBox_GetFramesPerTick();</pre>
+</blockquote>
+<p>You can then convert a value in milliseconds to a duration in ticks.</p>
+<blockquote>
+    <pre>int durTicks = (ticksPerSecond * durationInMSec) / 1000;</pre>
+</blockquote>
+<p>Here is an example of playing a series of notes with precise timing. </p>
+<blockquote>
+    <pre>int time = JukeBox_GetTime();
+int pitch = 48;
+for( i=0; i&lt;count; i++ )
+{
+     JukeBox_NoteOn( time, channel, pitch, 64 );
+     time += durTicks;
+     JukeBox_NoteOff( time, channel, pitch, 0 );
+     pitch += interval;
+}
+</pre>
+</blockquote>
+<p>See the Reference Manual for "spmidi_jukebox.h" for a description of all the MIDI functions.</p>
+<p align="center">| <a href="index.html">JukeBox</a> | <a href="starting.html">previous</a> |</p>
+
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

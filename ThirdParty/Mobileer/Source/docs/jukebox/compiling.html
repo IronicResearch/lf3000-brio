@@ -1,0 +1,54 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" --> <b></b>
+<h2>Compiling JukeBox</h2>
+<p>To compile the JukeBox add the contents of the &quot;jukebox/&quot; folder to your build:</p>
+<ul>
+    <li>atomic_fifo.c</li>
+    <li>event_buffer.c</li>
+    <li>spmidi_jukebox.c</li>
+</ul>
+<h4>Integration with Song Content</h4>
+<p>The Mobileer Editor can <a href="../editor/production.html">output a MIDI song playlist</a> to a file called &quot;export/spmidi_jukebox_playlist.h&quot;. The JukeBox includes that file so that it can play from the playlist. This playlist contains an array songs that are referenced by an index. </p>
+<p>The application program can include a file called &quot;export/spmidi_jukebox_song_ids.h&quot;. It defines indices so that the programmer can reference songs by a named constant.</p>
+<p>For an example JukeBox application see the file &quot;examples/jukebox_demo.c&quot;. </p>
+<p align="center">| <a href="index.html">JukeBox</a> | <a href="architecture.html">previous</a> | <a href="starting.html">next</a> |</p>
+<p align="center">&nbsp;</p>
+<p align="center">&nbsp; </p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

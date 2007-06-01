@@ -1,0 +1,122 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Compiling ME1000 Programs</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+-->
+</style>
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Compiling for Embedded Systems - Part I </h2>
+<p>The exact mechanism for compiling a program using ME1000 will vary from
+    platform to platform. But if you follow these steps then you will be able
+    to compile an example program on your system. Once you can run the example
+    programs, then it should be easy to integrate the ME1000 software with
+    your system software. </p>
+<h3>
+Define Print Macros</h3>
+The example programs generally use macros for printing debug and error
+messages. These macros are contained in the file "spmidi/include/spmidi_print.h".
+Please examine that file and modify it as needed to provide basic print
+facilities for the ME1000.
+<p>We do not assume that printf() is available. But if it is available then
+you can use it simply by defining the compile time variable "SPMIDI_USE_PRINTF".
+<h3>
+Convert Audio Utilities to Your System</h3>
+The example programs use a set of audio utilities declared in the header
+"include/spmidi_audio.h".&nbsp; These form an audio hardware abstraction layer that is used by the Mobileer test and example programs. The essential audio functions are:
+<ul>
+<li>
+Open audio device.</li>
+
+<li>
+Writes block of samples to audio device.</li>
+
+<li>
+Close audio device.</li>
+</ul>
+<p>The desktop implementation is defined in the file "util/spmidi_audio_pa.c"
+    and uses the PortAudio library for audio output.&nbsp;We also provide &quot;spmidi_audio_file.c&quot; that output to a WAV file instead of an audio device.  </p>
+<p>For an embedded
+    system, if you want to run most of the example programs, you will need to implement a replacement for the file "util/spmidi_audio_pa.c" that uses your audio device. Then all of our example programs should work
+    without modification. </p>
+<p>If you do not wish to use the example programs, then you can simply
+harvest audio samples from ME1000 using SPMIDI_ReadFrames() and play them
+however you wish. The tutorial discusses the use of that function. References
+to that function can be found in the autodocs for "<a href="autodocs/html/spmidi_8h.html">spmidi.h</a>".
+<p>Your audio device interface may use callbacks instead of a blocking write call. This is common for low-level interfaces that work off of DMA interrupts. If so, then you can model your application on the file &quot;examples/minimal_player_pa.c&quot;. 
+<p>A working <strong>Unix Makefile</strong> can be found in the &quot;spmidi/build&quot; folder. It compiles a program that reads a MIDI ringtone, synthesizes audio, and writes it to a WAV file. That may be a useful starting point if you are comfortable with Makefiles.
+<h3>If you are using ARM SDK with CodeWarrior then you can skip to &quot;<a href="compile_armsdk.html">Using ARM SDK</a>&quot;.</h3>
+<h3>
+Compiling and Playing a Simple MIDI Example</h3>
+<p>To compile a working ME*000 program:</p>
+<ol>
+  <li>a) If you have <strong>source code</strong> for the Mobileer engine, then add all of the files in the "spmidi/engine" folder to your project or Makefile. <br>
+    b) Otherwise, if you are compiling from an <strong>object code library</strong>, then add the library to your linker command line. For example to add the ME2000 engine for GNU use: <br>
+    <span class="style1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-Lspmidi/libs/armgcc -lme2000</span></li>
+  <li> Add "spmidi/util/spmidi_play.c".</li>
+  <li> Add your replacement for "spmidi/util/spmidi_audio_pa.c" that calls your audio device instead of PortAudio. OR 
+    if you have support for file I/O on your system and want to read
+  and write WAV files, then add &quot;util/spmidi_audio_file.c&quot; and "util/write_wav.c".</li>
+  <li>
+    Add an example file for ME*000 that simply plays a few notes, for example
+"spmidi/examples/play_scale.c".</li>
+</ol>Specify the following folders as the place to look for header files. For
+"gcc"&nbsp; use the -I command line option.
+<ul>
+<li>
+"spmidi/engine"</li>
+
+<li>
+"spmidi/include"</li>
+<li>
+"spmidi/util"</li>
+</ul>
+<p>To use the standard release orchestra, also add the export folder to the include path. If you have a custom orchestra export directory then use that folder instead. </p>
+<ul>
+    <li> "spmidi/export"</li>
+</ul>
+Compile the program, load it onto your device and run it. You should hear
+notes being played.
+<p>The engine should run in real-time. If not then we can work with you
+to optimize it for your system. We may need to move parts of the code or
+data to on-chip static RAM to reduce the number of wait states.
+<p>[<a href="embedded_midi.html">Next</a>]
+<br>
+&nbsp;
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,0 +1,62 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/SubDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" --><!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="../logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="../index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="../editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="../autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="../programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="../whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" --> <b></b>
+<h2>Starting and Controlling the  JukeBox</h2>
+<p>The JukeBox is started by calling JukeBox_Initialize() with the desired sample rate. It will pass back an SPMIDI_Error error code or zero. For example: </p>
+<blockquote>
+    <pre>err = JukeBox_Initialize( 22050 );
+if( err &lt; 0 ) ... 
+</pre>
+</blockquote>
+<h4>Audio Thread </h4>
+<p>After initializing you can start your audio device thread which can call JukeBox_SynthesizeAudioTick(). That will generate one ticks worth of audio output and will also process the event buffers and song queues. </p>
+<p>The number of audio frames in a tick can vary depending on how the buffers are configured in the SPMIDI code. That number will not exceed SPMIDI_MAX_FRAMES_PER_BUFFER so you can safely use a buffer that size. When you call JukeBox_SynthesizeAudioTick() it will return the number of frames that it actually filled. </p>
+<p>For example:</p>
+<blockquote>
+    <pre>#define SAMPLES_PER_FRAME (2)
+#define MAX_FRAMES_PER_TICK  (SPMIDI_MAX_FRAMES_PER_BUFFER)
+short audioBuffer[ MAX_FRAMES_PER_TICK * SAMPLES_PER_FRAME ];<br>
+framesGenerated = JukeBox_SynthesizeAudioTick( audioBuffer,
+     MAX_FRAMES_PER_TICK, SAMPLES_PER_FRAME );
+if( framesGenerated &lt;= 0 ) ...
+// write framesGenerated frames to the audio device ...
+ </pre>
+</blockquote>
+<p align="center">| <a href="index.html">JukeBox</a> | <a href="compiling.html">previous</a> | <a href="queuing.html">next</a> |</p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>
