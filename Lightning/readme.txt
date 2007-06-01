@@ -95,7 +95,21 @@ Your development system image will also need to have the cross-compiler
 installed for building ARM binary targets. The version used to date is
 scratchbox toolchain is based on GCC 4.1 with uclib run-time library. 
 
-	sudo apt-get scratchbox-toolchain-arm-gcc4.1-uclibc20061004
+You will need root privileges for this part of the Scratchbox installation.
+
+   1. Add the line below to the /etc/apt/sources.list file:	    
+   
+ 			deb http://scratchbox.org/debian ./
+ 
+   			(convenient way to edit file: sudo gedit /etc/apt/sources.list) 
+
+   2. Update the package list with command:
+
+      # sudo apt-get update
+
+   3. Install packages:
+
+      # sudo apt-get install scratchbox-toolchain-arm-gcc4.1-uclibc20061004
 
 Note you may need to modify the CC compiler directive in the arm-g++.py
 script to use the explicit full path to arm-linux-g++.
