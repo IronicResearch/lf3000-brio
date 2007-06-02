@@ -13,7 +13,7 @@
 #	SCons starts with a "SConstruct" file (this file).  This SConstruct
 #	file sets up an "Environment" object with common build settings for
 #	a given platform (a platform is defined by a combination of hardware
-#	product and toolchain, e.g., FlyFusionARC, LightningGCC).  
+#	product and toolchain, e.g., FlyFusion, Lightning).  
 #	This Environment object is used by "SConscript" files that define how 
 #	to build individual modules.
 #
@@ -24,10 +24,8 @@
 #	to install the "subversion" package.
 #=============================================================================
 import os
-import glob
 import SCons.Defaults
-import Etc.Tools.SConsTools.lfutils	# LeapFrog utility functions
-
+import Etc.Tools.SConsTools.Priv.LfUtils	# LeapFrog utility functions
 
 
 #-----------------------------------------------------------------------------
@@ -36,9 +34,8 @@ import Etc.Tools.SConsTools.lfutils	# LeapFrog utility functions
 opts = Options('custom.py')
 opts.Add(BoolOption('checkheaders', 'Set "checkheaders=t" to uncover order of inclusion issues', 0))
 opts.Add(BoolOption('emulation', 'Set "emulation=t" to build the target using emulation', 0))
-opts.Add(EnumOption('platform', 'Set platform to use', 'LightningGCC', 
-						allowed_values=('FlyFusionARC', 
-										'LightningGCC')))
+opts.Add(EnumOption('platform', 'Set platform to use', 'Lightning', 
+						allowed_values=('Lightning')))
 opts.Add(BoolOption('publish', 'Set "publish=t" to create a pulic release', 0))
 opts.Add(BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
@@ -47,205 +44,133 @@ is_checkheaders	= ARGUMENTS.get('checkheaders', 0)
 is_emulation	= ARGUMENTS.get('emulation', 0)
 is_publish		= ARGUMENTS.get('publish', 0)
 is_runtests		= ARGUMENTS.get('runtests', 1)
-platform		= ARGUMENTS.get('platform', 'LightningGCC')
+platform		= ARGUMENTS.get('platform', 'Lightning')
 source_setup	= ARGUMENTS.get('setup', '')
+branch			= source_setup != '' and source_setup or 'TRUNK'
 
+
+#-----------------------------------------------------------------------------
+# Only check headers in emulation mode
+#-----------------------------------------------------------------------------
 if is_checkheaders:
 	is_emulation = 1
+	is_publish   = 0
 
 
 #-----------------------------------------------------------------------------
-# Setup intermediate build and deployment target folder names
+# Constant path values
 #-----------------------------------------------------------------------------
+version = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
+
 root_dir				= Dir('#').abspath
-publish_root			= Dir('#Publish').abspath
-target_subdir			= platform + (is_emulation and '_emulation' or '')
-intermediate_build_dir	= os.path.join('Temp', target_subdir)
-#if is_emulation and is_publish:	#TP: reenable when deliver Release mode emu libs
-#	intermediate_build_dir += '_publish'
+publish_root			= Dir('#Publish_' + version).abspath
 adjust_to_source_dir	= '../../../'
-debug_deploy_dir		= os.path.join('#Build', target_subdir)
-release_deploy_dir		= os.path.join('#Build', target_subdir + (is_emulation and '_publish' or ''))
-checkheaders_deploy_dir	= os.path.join(intermediate_build_dir, 'checkheaders')
-dynamic_deploy_dir		= is_publish and release_deploy_dir or debug_deploy_dir
+#FIXME/tp: Want EXTRA_LINUX_HEADER_DIR going forward?  Print when default or when override?
+extra_driver_headers	= os.getenv('EXTRA_LINUX_HEADER_DIR')
+if extra_driver_headers == None:
+	extra_driver_headers  = Dir('#../LinuxDist/packages/drivers/include/linux').abspath
 
 
 #-----------------------------------------------------------------------------
-# Set up and Python dictionary variables that map generic names
-# to specific paths or library names.  This abstraction allows us to make
-# changes only here, not in all the SConscript files.  It also allows us to
-# support compiling with different compilers that need to link against
-# differently named libraries.
+# Build one or more variants
 #-----------------------------------------------------------------------------
-local_vars		 = { 'adjust_to_source_dir'		: adjust_to_source_dir,
-					 'intermediate_build_dir'	: intermediate_build_dir,
-					 'is_emulation'				: is_emulation,
-					 'is_publish'				: is_publish,
-					 'platform'					: platform,
-					 'publish_root'				: publish_root,
-					 'publish_inc_dir'			: os.path.join(publish_root, 'Include'),
-					 'publish_lib_dir'			: os.path.join(publish_root, 'Libs', target_subdir),
-					 'target_subdir'			: target_subdir,
-				   }
+variants = is_publish and ['emulation', 'embedded'] or is_emulation and ['emulation'] or ['embedded']
+for target in variants:
+	
+	#-------------------------------------------------------------------------
+	# Print banner and set the emulation variable
+	#-------------------------------------------------------------------------
+	print '***', platform, target, 'build  ( version', version, ') ***'
+	is_emulation = (target == 'emulation') and 1 or 0
+	
+	
+	#-------------------------------------------------------------------------
+	# Setup intermediate build and deployment target folder names
+	#-------------------------------------------------------------------------
+	target_subdir			= platform + (is_emulation and '_emulation' or '')
+	intermediate_build_dir	= os.path.join('Temp', target_subdir)
+	#if is_emulation and is_publish:	#TP: reenable when deliver Release mode emu libs
+	#	intermediate_build_dir += '_publish'
+	debug_deploy_dir		= Dir(os.path.join('#Build', target_subdir)).abspath
+	release_deploy_dir		= Dir(os.path.join('#Build', target_subdir + (is_emulation and '_publish' or ''))).abspath
+	checkheaders_deploy_dir	= os.path.join(intermediate_build_dir, 'checkheaders')
+	dynamic_deploy_dir		= is_publish and release_deploy_dir or debug_deploy_dir
+	
+	
+	#-------------------------------------------------------------------------
+	# Set up and Python dictionary variables that map generic names
+	# to specific paths or library names.  This abstraction allows us to make
+	# changes only here, not in all the SConscript files.  It also allows us to
+	# support compiling with different compilers that need to link against
+	# differently named libraries.
+	#-------------------------------------------------------------------------
+	vars	 = { 'platform'					: platform,
+				 'is_emulation'				: is_emulation,
+				 'is_publish'				: is_publish,
+				 'is_checkheaders'			: is_checkheaders,
+				 'is_runtests'				: is_runtests,
+				 'adjust_to_source_dir'		: adjust_to_source_dir,
+				 'dynamic_deploy_dir'		: dynamic_deploy_dir,
+				 'intermediate_build_dir'	: intermediate_build_dir,
+				 'publish_root'				: publish_root,
+				 'publish_inc_dir'			: os.path.join(publish_root, 'Include'),
+				 'publish_lib_dir'			: os.path.join(publish_root, 'Libs', target_subdir),
+				 'target_subdir'			: target_subdir,
+				 'extra_driver_headers'		: extra_driver_headers,
+			   }
+	
+	
+	#------------------------------------------------------------------------
+	# Setup the environment object
+	#-------------------------------------------------------------------------
+	platform_toolset = platform + (is_emulation and '_emulation' or '_embedded')
+	toolpath1 = Dir(os.path.join(root_dir, 'Etc', 'Tools', 'SConsTools')).abspath
+	toolpath2 = os.path.join(toolpath1, 'Priv')
+	env = Environment(	options  = opts,
+						tools = ['default', platform_toolset, 
+								'checkheader', 'cxxtest', 'runtest'], 
+						toolpath = [toolpath1, toolpath2],
+						LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')],
+					 )
+	
+	
+	#-------------------------------------------------------------------------
+	# Allow per-user overrides of global settings
+	#-------------------------------------------------------------------------
+	override = __import__('UserOverrides', globals(), locals(), [''])
+	if override.__dict__.has_key(platform_toolset):
+		override.__dict__[platform_toolset](env)
+	
+	#print env.Dump()
+	
+	
+	#-------------------------------------------------------------------------
+	# Attach the help to the Environment object
+	#-------------------------------------------------------------------------
+	Help(opts.GenerateHelpText(env))
+	
+	
+	#-------------------------------------------------------------------------
+	# Export environment variables to the SConscript files
+	#-------------------------------------------------------------------------
+	Export('env vars')
+	
+	
+	#-------------------------------------------------------------------------
+	# Setup build targets for modules
+	#
+	# Use "duplicate=0" to prevent SCons from copying the source files.
+	# If you don't do this, the problems pane in Eclipse opens up the copied file,
+	# not the true source, so you end up fixing problems in a file that will get
+	# overwritten on the next build.
+	#-------------------------------------------------------------------------
+	SConscript(os.path.join(root_dir, 'System', 'SConscript'), duplicate=0)
+	SConscript(os.path.join(root_dir, 'ThirdParty', 'SConscript'), duplicate=0)
+	SConscript(os.path.join(root_dir, 'Etc', 'SConscript'), duplicate=0)
+	SConscript(os.path.join(root_dir, platform, 'SConscript'), duplicate=0)
 
+# END OF VARIANT LOOP
 
-#-----------------------------------------------------------------------------
-# Setup the environment object
-#-----------------------------------------------------------------------------
-platform_toolset = platform + (is_emulation and '_emulation' or '_embedded')
-toolpath = Dir(os.path.join(root_dir, 'Etc', 'Tools', 'SConsTools')).abspath
-env = Environment(	options  = opts,
-					tools = ['default', platform_toolset, 
-							'checkheader', 'cxxtest', 'runtest'], 
-					toolpath = [toolpath],
-					LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')],
-					ENV = {'PATH' : os.environ['PATH']}
-				 )
-# FIXME/tp: Back out this propogation of the PATH env variable and add only the
-# specific change required.  One of the good features of SCons is that it
-# DOES NOT propogate environment variables.  This means that everything used
-# must be explicitly stated, which cuts down the chances of the build scripts
-# failing on a developer's machine because their system is configured
-# slighly differently.
-
-
-#-----------------------------------------------------------------------------
-# Allow per-user overrides of global settings
-#-----------------------------------------------------------------------------
-override = __import__('UserOverrides', globals(), locals(), [''])
-if override.__dict__.has_key(platform_toolset):
-	override.__dict__[platform_toolset](env)
-
-#print env.Dump()
-
-
-#-----------------------------------------------------------------------------
-# Attach the help to the Environment object
-#-----------------------------------------------------------------------------
-Help(opts.GenerateHelpText(env))
-
-
-#-----------------------------------------------------------------------------
-# Dynamically find sources for a module
-#
-# The "map(lambda ...)" stuff is required because of how SCons deals with
-# separating source folders from build folders.  When you specify a separation
-# (see "build_target" in the "SConscript()" command), SCons copies all the
-# source files into the target build folder.  The "sources" file list below
-# needs to point at the COPIED-TO files in the build folder, but it needs to
-# search (glob.glob in the actual SOURCE folder).  Unintuitive
-#-----------------------------------------------------------------------------
-def FindModuleSources(pdir):
-	source_dir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(pdir.abspath, root_dir)
-	c_pattern = os.path.normpath(os.path.join(source_dir, '*.c'))
-	cpp_pattern = os.path.normpath(os.path.join(source_dir, '*.cpp'))
-	sources =  map(lambda x: os.path.join(pdir.abspath, os.path.split(x)[1]), 
-					glob.glob(c_pattern))
-	sources += map(lambda x: os.path.join(pdir.abspath, os.path.split(x)[1]), 
-					glob.glob(cpp_pattern))
-	temp = (is_emulation and 'Emulation' or 'Lightning') 
-	platform_pattern = os.path.normpath(os.path.join(source_dir, temp, '*.cpp'))
-	sources += map(lambda x: os.path.join(pdir.abspath, temp, os.path.split(x)[1]), 
-					glob.glob(platform_pattern))
-	return sources
-
-
-#-----------------------------------------------------------------------------
-# Dynamically find sources for an MPI interface module
-#
-# See notes on "map(lambda ...)" stuff above.
-#-----------------------------------------------------------------------------
-def FindMPISources(pdir):
-	mpidir = os.path.join(pdir.abspath, 'PublicMPI')
-	source_dir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(mpidir, root_dir)
-	cpp_pattern = os.path.normpath(os.path.join(source_dir, '*.cpp'))
-	sources =  map(lambda x: os.path.join(mpidir, os.path.split(x)[1]), 
-					glob.glob(cpp_pattern))
-	return sources
-
-
-#-----------------------------------------------------------------------------
-# Build a Module (either embedded or emulation target)
-#
-# Prepend any platform-specific libraries to the library list
-# Install the library to the correct installation folder
-# 'ptype' is 0 for modules and '1' for mpi libraries
-#-----------------------------------------------------------------------------
-def MakeMyModule(penv, ptarget, psources, plibs, ptype):
-	if len(psources) != 0:
-		bldenv = penv.Copy()
-		source_dir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(os.path.dirname(psources[0]), root_dir)
-		linklibs = plibs
-		# TODO/tp: put all map files in a single folder, or keep hierarchy?
-		mapfile = File(os.path.join(intermediate_build_dir, adjust_to_source_dir, ptarget + '.map')).abspath
-		priv_incs = (ptype == 0 and 'Include' or os.path.join('..', 'Include'))
-		bldenv.Append(CPPPATH  = [os.path.join(source_dir, priv_incs)])
-		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
-		mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)
-		subdir = (ptype == 0 and 'Module' or 'MPI')
-		deploy_dir = os.path.join(dynamic_deploy_dir, subdir)
-		bldenv.Install(deploy_dir, mylib)
-		return mylib
-
-
-#-----------------------------------------------------------------------------
-# Function for generating and running unit tests
-#
-# Note: "ptarget" is library name, used to build test<name>.exe and link the 
-#		library into it.
-#		"psources" is a list of additional sources to build into the EXE
-#		(normally empty--needed a way to test CmdLineUtils.cpp)
-#		"plibs" are the libraries the tested library was linked against
-#-----------------------------------------------------------------------------
-if is_emulation:
-	platformlibs = ['glibmm-2.4', 'glib-2.0']
-else:
-	platformlibs = ['dl', 'pthread']
-def RunMyTests(ptarget, psources, plibs, penv):
-	if not is_checkheaders:
-		deploy_dir = os.path.join(dynamic_deploy_dir, 'MPI')
-		testenv = penv.Copy()
-		testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
-		testenv.Append(CPPDEFINES = 'UNIT_TESTING')
-		testenv.Append(RPATH = Dir(deploy_dir).abspath)
-		if not is_emulation:
-			testenv.Append(LINKFLAGS = ' -Wl,-rpath-link=' + Dir(deploy_dir).abspath)
-		srcdir = Etc.Tools.SConsTools.lfutils.SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
-		tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
-		unit = 'test_' + ptarget + '.cpp'
-		mytest = testenv.CxxTest(unit, tests)
-		# FIXME/tp: following conditional is getting evaluated too early,
-		# FIXME/tp: need to find alternate/delayed way
-		if os.path.exists(mytest[0].abspath):
-			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs
-			if is_emulation:
-				fulllibs += ['Emulation']
-				testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
-				testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
-			temp = testenv.Program([mytest] + psources, LIBS = fulllibs)
-			mytestexe = testenv.Install(deploy_dir, temp)
-			if is_runtests == 1:
-				testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
-
-
-#-----------------------------------------------------------------------------
-# Export environment variables to the SConscript files
-#-----------------------------------------------------------------------------
-Export('env local_vars FindModuleSources FindMPISources MakeMyModule RunMyTests')
-
-
-#-----------------------------------------------------------------------------
-# Setup build targets for modules
-#
-# Use "duplicate=0" to prevent SCons from copying the source files.
-# If you don't do this, the problems pane in Eclipse opens up the copied file,
-# not the true source, so you end up fixing problems in a file that will get
-# overwritten on the next build.
-#-----------------------------------------------------------------------------
-SConscript(os.path.join(root_dir, 'System', 'SConscript'), duplicate=0)
-SConscript(os.path.join(root_dir, 'ThirdParty', 'SConscript'), duplicate=0)
-SConscript(os.path.join(root_dir, 'Etc', 'SConscript'), duplicate=0)
-SConscript(os.path.join(root_dir, platform[:-3], 'SConscript'), duplicate=0)
 
 
 #-----------------------------------------------------------------------------

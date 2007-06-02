@@ -1,6 +1,7 @@
 #-----------------------------------------------------------------------------
 # Brio/System/Kernel
 #-----------------------------------------------------------------------------
+from Etc.Tools.SConsTools.Priv.LfUtils import *
 Import('*')
 
 module_name	= 'Kernel'
@@ -9,8 +10,8 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
-modsrcs		= FindModuleSources(Dir('.'))
-mpisrcs		= FindMPISources(Dir('.'))
+modsrcs		= FindModuleSources(Dir('.'), vars)
+mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['']
 mpilibs		= ['ModuleMPI', 'pthread', 'rt']
 						
@@ -18,13 +19,13 @@ mpilibs		= ['ModuleMPI', 'pthread', 'rt']
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
-mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, 0)
-mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, 1)
+mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
+mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
 Depends(mympi, mymodule)
 
 #-----------------------------------------------------------------------------
 # Modify the build environment and build and run the unit tests
 #-----------------------------------------------------------------------------
-RunMyTests(module_name, [], mpilibs, myenv)
+RunMyTests(module_name, [], mpilibs, myenv, vars)
 
 Return('mymodule', 'mympi')

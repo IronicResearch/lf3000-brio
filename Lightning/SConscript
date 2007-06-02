@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Brio/LightningGCC Repository
+# Brio/Lightning Repository
 #-----------------------------------------------------------------------------
 import os.path
 import glob
@@ -8,12 +8,15 @@ Import('*')
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
-if local_vars['is_publish']:
+# NOTE: When "publish=t" this file will get invoked twice, but we get
+# scons errors if we perform the same install action twice, so only
+# do this copy on the emulation pass.
+if vars['is_publish'] and vars['is_emulation']:
 	samples = ['Simple', 'BrioCube', 'Button', 'Display']
-	dest_dir = os.path.join(local_vars['publish_root'], 'Samples')
+	dest_dir = os.path.join(vars['publish_root'], 'Samples')
 	for s in samples:
 		Command( os.path.join(dest_dir, s), os.path.join('Samples', s), 
 				Copy("$TARGET", "$SOURCE"))
-	env.Install(local_vars['publish_root'], 'readme.txt')
-	env.Install(local_vars['publish_root'], 'ReleaseNotes.txt')
+	env.Install(vars['publish_root'], 'readme.txt')
+	env.Install(vars['publish_root'], 'ReleaseNotes.txt')
 	

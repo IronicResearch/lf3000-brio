@@ -45,7 +45,7 @@ EmulationConfig& EmulationConfig::Instance( )
 bool EmulationConfig::Initialize( const char* pathIn )
 {
 	CPath path = pathIn;
-	path += "/Libs/LightningGCC_emulation/Module";
+	path += "/Libs/Lightning_emulation/Module";
 	SetModuleSearchPath(path.c_str());
 	return true;
 }

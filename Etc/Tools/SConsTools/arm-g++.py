@@ -35,7 +35,8 @@ def generate(env):
 	# Platform specific settings
 	env['CCFLAGS']		= SCons.Util.CLVar('$CCFLAGS') + '-Wall -fmessage-length=0'
 	env['SHCXXFLAGS']	= SCons.Util.CLVar('$CXXFLAGS')	
-	
+	env['RPATHPREFIX']	= '-Wl,-rpath-link='
+
 	# determine the compiler version
 	if env['CXX']:
 		line = os.popen(env['CXX'] + ' --version').readline()

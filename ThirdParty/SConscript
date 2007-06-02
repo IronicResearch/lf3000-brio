@@ -8,13 +8,13 @@ Import('*')
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
-if local_vars['is_publish']:
-	inc_dir = os.path.join(local_vars['publish_inc_dir'], 'boost')
+if vars['is_publish']:
+	inc_dir = os.path.join(vars['publish_inc_dir'], 'boost')
 	Command(inc_dir, 'boost/boost', Copy("$TARGET", "$SOURCE"))
 
-	if local_vars['is_emulation']:
-		inc_dir = os.path.join(local_vars['publish_inc_dir'], 'OpenGL', local_vars['target_subdir'])
-		lib_dir = os.path.join(local_vars['publish_lib_dir'], 'OpenGL')
+	if vars['is_emulation']:
+		inc_dir = os.path.join(vars['publish_inc_dir'], 'OpenGL', vars['target_subdir'])
+		lib_dir = os.path.join(vars['publish_lib_dir'], 'OpenGL')
 		headers = os.path.join('PowerVR', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 		#	libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so'))
@@ -24,8 +24,8 @@ if local_vars['is_publish']:
 		lib += '.0'
 		env.Install(lib_dir, lib)
 	else:
-		inc_dir = os.path.join(local_vars['publish_inc_dir'], 'OpenGL', local_vars['target_subdir'])
-		lib_dir = os.path.join(local_vars['publish_lib_dir'], 'OpenGL')
+		inc_dir = os.path.join(vars['publish_inc_dir'], 'OpenGL', vars['target_subdir'])
+		lib_dir = os.path.join(vars['publish_lib_dir'], 'OpenGL')
 		headers = os.path.join('MagicEyes', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 		core_name = 'libogl.a'

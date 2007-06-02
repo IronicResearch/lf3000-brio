@@ -20,14 +20,12 @@ def PlatformMods(env):
 	common.SetPlatformIncludePaths(env)
 	common.SetPlatformLibraryPaths(env)
 	
-	boost_path			= '#ThirdParty/boost'
 	gcc_defs 			= env.Split('')
 	emulation_defs		= env.Split('EMULATION')
 	env.Append(CPPDEFINES = gcc_defs + emulation_defs)
 	env.Append(CCFLAGS = '-g')
 	env.Append(LINKFLAGS = '-g')
-	env.Append(CPPPATH = [boost_path, 
-						  	'/usr/include/glib-2.0', 
+	env.Append(CPPPATH = [	'/usr/include/glib-2.0', 
 						  	'/usr/include/glibmm-2.4',
 						  	'/usr/lib/glib-2.0/include', 
 						  	'/usr/lib/glibmm-2.4/include',

@@ -27,7 +27,7 @@ protected:
 	TestSuiteBase()
 	{
 #ifdef EMULATION
-		const char* kPath = "Build/LightningGCC_emulation/Module";
+		const char* kPath = "Build/Lightning_emulation/Module";
 		EmulationConfig::Instance().SetModuleSearchPath(kPath);
 #endif
 	}

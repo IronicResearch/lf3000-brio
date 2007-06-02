@@ -9,7 +9,7 @@ Import('*')
 # Create the folder name for a module's intermediate files
 #-----------------------------------------------------------------------------
 def MakeTempDirName(module):
-	return os.path.join(local_vars['intermediate_build_dir'], module)
+	return os.path.join(vars['intermediate_build_dir'], module)
  
 
 #-----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ def MakeTempDirName(module):
 #-----------------------------------------------------------------------------
 modules = []
 # FIXME/dm: Audio is not supported for embedded target yet
-if local_vars['is_emulation']:
+if vars['is_emulation']:
 	modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
 modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
 modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
@@ -27,18 +27,24 @@ modules.append(SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), 
 modules.append(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
 modules.append(SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0))
 modules.append(SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0))
-if local_vars['is_emulation']:
+if vars['is_emulation']:
 	modules.append(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))
 
 
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
-if local_vars['is_publish']:
-	mod_dir = os.path.join(local_vars['publish_lib_dir'], 'Module')
-	mpi_dir = os.path.join(local_vars['publish_lib_dir'], 'MPI')
-	headers = glob.glob(os.path.join('Include', '*.h'))
-	env.Install(local_vars['publish_inc_dir'], headers)
+if vars['is_publish']:
+	mod_dir = os.path.join(vars['publish_lib_dir'], 'Module')
+	mpi_dir = os.path.join(vars['publish_lib_dir'], 'MPI')
 	for m in modules:
 		env.Install(mod_dir, m[0])
 		env.Install(mpi_dir, m[1])
+		
+	# NOTE: When "publish=t" this file will get invoked twice, but we get
+	# scons errors if we perform the same install action twice, so only
+	# do this copy on the emulation pass.
+	if vars['is_emulation']:
+		headers = glob.glob(os.path.join('Include', '*.h'))
+		env.Install(vars['publish_inc_dir'], headers)
+		

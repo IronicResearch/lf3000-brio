@@ -13,18 +13,16 @@ import SCons.Util
 #-----------------------------------------------------------------------------
 def GetRepositoryMappings():
 	kBrioSystemRepositoryURL	= 'http://source.leapfrog.com/Software/Brio/Brio2/'
-	kBrioLightningRepositoryURL	= 'http://source.leapfrog.com/Software/Brio/Lightning/'
 	return {
-#			kBrioSystemRepositoryURL : 'System',
-#			kBrioLightningRepositoryURL : 'Lightning'
-			}
+			kBrioSystemRepositoryURL : 'System',
+	}
 
 #-----------------------------------------------------------------------------
 # Set all default build parameters that are common to both embedded and
 # emulation builds here.
 #-----------------------------------------------------------------------------
 def SetPlatformFlags(env):
-	env.Append(CCFLAGS = '')
+#	env.Append(CCFLAGS = ' -nostdinc')
 	env.Append(CPPDEFINES = 'LIGHTNING')
 
 def SetPlatformIncludePaths(env):
