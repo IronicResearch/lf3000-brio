@@ -150,17 +150,17 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->colorDepth = colorDepth;
 
 	switch(colorDepth) {
-		case kLayerPixelFormatRGB4444:
-		bpp = 4;
-		hwFormat = kLayerPixelFormatRGB4444;
-		break;
-
-		case kLayerPixelFormatARGB8888:
-		bpp = 4;
+		case kPixelFormatRGB4444:
+		bpp = 2;
 		hwFormat = kLayerPixelFormatRGB4444;
 		break;
 
 		default:
+		case kPixelFormatARGB8888:
+		bpp = 4;
+		hwFormat = kLayerPixelFormatARGB8888;
+		break;
+
 		case kPixelFormatRGB565:
 		bpp = 2;
 		hwFormat = kLayerPixelFormatRGB565;
