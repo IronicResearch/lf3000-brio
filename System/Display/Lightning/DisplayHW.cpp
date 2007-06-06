@@ -237,6 +237,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	c.position.right = xPos + context->width;
 	c.position.bottom = yPos + context->height;
 	ioctl(gDevLayer, MLC_IOCSPOSITION, &c);
+	ioctl(gDevLayer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit();
 
 	return kNoErr;

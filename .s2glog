@@ -3229,3 +3229,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/6/07 11:04 AM
 1,656 ms. (Cumulative: 438,619 ms)
 
 ----------------
+Revision 480 from svn://localhost/TRUNK/:
+
+Added missing layer enable step for very first instance.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/6/07 11:57 AM
+1 changed, 0 added, 0 deleted.
+1,703 ms. (Cumulative: 440,385 ms)
+
+----------------
