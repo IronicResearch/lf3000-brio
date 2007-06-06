@@ -3219,3 +3219,13 @@ By Dmilici (Dmilici@leapfrog.com) on 6/5/07 2:48 PM
 1,609 ms. (Cumulative: 436,900 ms)
 
 ----------------
+Revision 478 from svn://localhost/TRUNK/:
+Revision 479 from svn://localhost/TRUNK/:
+
+Additional pixel formats for YUV video overlay support.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/6/07 11:04 AM
+3 changed, 0 added, 0 deleted.
+1,656 ms. (Cumulative: 438,619 ms)
+
+----------------

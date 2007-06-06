@@ -120,6 +120,9 @@ U32 CDisplayModule::GetScreenSize(void)
 }
 
 //----------------------------------------------------------------------------
+// FIXME/dm:
+// Method is supposed to return global pixel format for display.
+// Implementation is returning pixel format for particular layer.
 enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 {
 	int format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
@@ -127,11 +130,13 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 
 	switch(format) {
 		case kLayerPixelFormatRGB4444:
-		return kPixelFormatRGB4444;
+			return kPixelFormatRGB4444;
 		case kLayerPixelFormatRGB565:
-		return kPixelFormatRGB565;
+			return kPixelFormatRGB565;
 		case kLayerPixelFormatARGB8888:
-		return kPixelFormatARGB8888;
+			return kPixelFormatARGB8888;
+		case kLayerPixelFormatRGB888:
+			return kPixelFormatRGB888;
 	}
 	return kPixelFormatError;
 }
@@ -164,6 +169,22 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		case kPixelFormatRGB565:
 		bpp = 2;
 		hwFormat = kLayerPixelFormatRGB565;
+		break;
+
+		case kPixelFormatRGB888:
+		bpp = 3;
+		hwFormat = kLayerPixelFormatRGB888;
+		break;
+
+		case kPixelFormatYUV420:
+		bpp = 1;
+		width = 4096; // for YUV planar format pitch
+		hwFormat = kLayerPixelFormatYUV420;
+		break;
+
+		case kPixelFormatYUYV422:
+		bpp = 2;
+		hwFormat = kLayerPixelFormatYUYV422;
 		break;
 	}
 	GraphicsContext->pitch = bpp*width;
@@ -225,6 +246,8 @@ void CDisplayModule::SetDirtyBit(void)
 {
 	ioctl(gDevLayer, MLC_IOCTDIRTY, 0);
 }
+
+// FIXME/dm: Actually this seems like the perfect method for video overlays!
 
 // We are not implementing multiple 2D RGB layers or multiple screens, so
 // insertAfter and screen are ignored.
