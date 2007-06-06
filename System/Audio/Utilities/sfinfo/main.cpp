@@ -94,10 +94,11 @@ else
 }
 
 printf("PrintSndFileInfo: $%X \n", d);
-printf("    wordWidth=%d\n", wordWidthBits);
-printf("    channels=%d\n", d->channels);
-printf("    sampleRate=%d\n", d->samplerate);
-printf("    frames=%d\n", d->frames);
+printf("    wordWidth  = %d bits\n", wordWidthBits);
+printf("    channels   = %d\n", d->channels);
+printf("    sampleRate = %d Hz\n", d->samplerate);
+float seconds = ((float) d->frames/d->channels)/(float)d->samplerate;
+printf("    frames     = %d (%g seconds)\n", d->frames, seconds);
 
 } // ---- end PrintSndFileInfo() ----
 
