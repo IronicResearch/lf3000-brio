@@ -58,7 +58,7 @@ long i = 0;
 // "FightClub_first_time_44100_16bit_mono.wav"
 //strcpy(audioFilePath, ".wav");
 
-printf("OpenAudioFile: gonna load '%s' \n", path);
+//printf("OpenAudioFile: gonna load '%s' \n", path);
 
 //	format		= (SF_FORMAT_WAV | SF_FORMAT_PCM_16) ;
 if (!(audioFile = sf_open (path, SFM_READ, afi)))
@@ -76,11 +76,11 @@ long fileFormatMajor =  afi->format & SF_FORMAT_TYPEMASK;
 long fileFormatMinor =  afi->format & SF_FORMAT_SUBMASK  ;
 if (SF_FORMAT_WAV == fileFormatMajor)
 {
-	printf ("OpenAudioFile : This is a WAV file \n") ;
+//	printf ("OpenAudioFile : This is a WAV file \n") ;
 }
 else if (SF_FORMAT_AIFF == fileFormatMajor)
 {
-	printf ("OpenAudioFile : This is a AIFF file \n") ;
+//	printf ("OpenAudioFile : This is a AIFF file \n") ;
 }
 else
 {
@@ -238,7 +238,7 @@ audioFile = OpenAudioFile(inFilePath, &audioFileInfo);if (!audioFile)
 	long sampleSizeInBytes = audioFileInfo_wordWidthBits / 8;
 	brioFileHeader.dataSize = ((afi->frames * afi->channels) * sampleSizeInBytes); 
 	
-	fwrite(&brioFileHeader, sizeof(tAudioHeader), 1, h);
+	fwrite(&brioFileHeader, sizeof(char), sizeof(tAudioHeader), h);
 
 	// Write audio file samples
 	for (long i = 0; i < loopCount; i++)

@@ -3286,3 +3286,12 @@ By GKlimanis (GKlimanis@leapfrog.com) on 6/6/07 2:32 PM
 2,078 ms. (Cumulative: 452,120 ms)
 
 ----------------
+Revision 487 from svn://localhost/TRUNK/:
+
+Removed some debug print statements.
+
+By GKlimanis (GKlimanis@leapfrog.com) on 6/6/07 2:34 PM
+1 changed, 0 added, 0 deleted.
+1,875 ms. (Cumulative: 454,058 ms)
+
+----------------
