@@ -1,12 +1,12 @@
 #-----------------------------------------------------------------------------
-# lfutils.py
+# LfUtils.py
 #
 # Common utilities for use by top level SConstruct files
 #-----------------------------------------------------------------------------
 import os
 import glob
 import SCons.Util
-import pysvn
+#import pysvn
 
 root_dir = os.path.normpath(os.path.join(__file__, '../../../../..'))
 
@@ -113,15 +113,22 @@ def GetRepositoryVersion(platform, branch):
 	mappings = common.GetRepositoryMappings()
 	path = ''
 	revision = 'XXXX'
+	"""
 	try:
 		for repo, reldir in mappings.iteritems():
 			path = os.path.join(repo, branch)
 			client = pysvn.Client()
-			revision = client.info(path).revision
+			print os.getcwd()
+			print path
+			print pysvn.version
+			print pysvn.svn_version
+			client = pysvn.Client()
+			info = client.info2(path)
+			print info
 			
 	except pysvn._pysvn.ClientError:
 		print '*** Unable to get repository version for', path, '***'
-	
+	"""
 	print '*** Using repository revision "' + revision + '" as build number ***'
 	return revision
 	
@@ -177,14 +184,21 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 		source_dir = SourceDirFromBuildDir(os.path.dirname(psources[0]), root_dir)
 		linklibs = plibs
 		# TODO/tp: put all map files in a single folder, or keep hierarchy?
-		mapfile = os.path.normpath(os.path.join(vars['intermediate_build_dir'], vars['adjust_to_source_dir'], ptarget + '.map'))
+		root = source_dir[len(root_dir)+1:]
+		while root.count('/') > 0:
+			root = os.path.dirname(root)
+		mapfile = os.path.normpath(os.path.join(root, vars['intermediate_build_dir'], 'lib' + ptarget + '.map'))
 		priv_incs = (ptype == kBuildModule and 'Include' or os.path.join('..', 'Include'))
 		bldenv.Append(CPPPATH  = [os.path.join(source_dir, priv_incs)])
 		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
 		mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)
-		subdir = (ptype == kBuildModule and 'Module' or 'MPI')
-		deploy_dir = os.path.join(vars['dynamic_deploy_dir'], subdir)
-		bldenv.Install(deploy_dir, mylib)
+		if ptype == kBuildModule:
+			bldenv.Install(vars['lib_deploy_dir'], mylib)
+		elif vars['is_emulation']:
+			bldenv.Install(vars['mpi_deploy_dir'], mylib)
+		else: # mpi lib for embedded build
+			bldenv.Install(vars['lib_deploy_dir'], mylib)
+			bldenv.Install(vars['mpi_deploy_dir'], mylib)
 		return mylib
 
 
@@ -199,11 +213,10 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 #-----------------------------------------------------------------------------
 def RunMyTests(ptarget, psources, plibs, penv, vars):
 	if not vars['is_checkheaders']:
-		deploy_dir = os.path.join(vars['dynamic_deploy_dir'], 'MPI')
 		testenv = penv.Copy()
 		testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
 		testenv.Append(CPPDEFINES = 'UNIT_TESTING')
-		testenv.Append(RPATH = deploy_dir)
+		testenv.Append(RPATH = vars['mpi_deploy_dir'])
 		srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
 		tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
 		unit = 'test_' + ptarget + '.cpp'
@@ -221,8 +234,8 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 				testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 				testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
 			temp = testenv.Program([mytest] + psources, LIBS = fulllibs)
-			mytestexe = testenv.Install(deploy_dir, temp)
-			if vars['is_runtests'] == 1:
+			mytestexe = testenv.Install(vars['bin_deploy_dir'], temp)
+			if vars['is_runtests']:
 				testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
 
 

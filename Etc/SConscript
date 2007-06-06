@@ -8,12 +8,9 @@ Import('*')
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
-# NOTE: When "publish=t" this file will get invoked twice, but we get
-# scons errors if we perform the same install action twice, so only
-# do this copy on the emulation pass.
-if vars['is_publish'] and vars['is_emulation']:
+if vars['is_export']:
 	platform = vars['platform']
-	dest_dir = os.path.join(vars['publish_root'], 'Tools')
+	dest_dir = os.path.join(vars['export_root'], 'Tools')
 	sources =  glob.glob('Tools/SConsTools/*.py')
 	env.Install(dest_dir, sources)
 	exe = os.path.join(dest_dir, 'BuildRsrc')

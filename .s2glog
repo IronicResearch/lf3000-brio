@@ -3238,3 +3238,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/6/07 11:57 AM
 1,703 ms. (Cumulative: 440,385 ms)
 
 ----------------
+Revision 481 from svn://localhost/TRUNK/:
+
+Update to build system for user roles (through 'type' parameter) and platform_variant
+
+By TParker (TParker@leapfrog.com) on 6/6/07 12:41 PM
+9 changed, 1 added, 1 deleted.
+2,125 ms. (Cumulative: 442,557 ms)
+
+----------------

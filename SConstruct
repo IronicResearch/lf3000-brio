@@ -22,6 +22,32 @@
 #
 #	NOTES: Under Linux, you will need to use the Synaptic Package Manager
 #	to install the "subversion" package.
+#
+#-----------------------------------------------------------------------------
+# Logic for various "type" build targets:
+#
+#   Build Type    | Embedded | Emulation | Dbg/Rel | Runtests | DeployDir
+#   --------------+----------+-----------+---------+----------+-----------
+#   checkheaders  |          |     X     |    D    |    N     | N/A
+#   embedded      |    X     |           |    D    |    N     | Build/<Platform>
+#   emulation     |          |     X     |    D    |    Y     | Build/<Platform>_emulation
+#   xembedded     |    X     |           |    D    |    N     | XBuild/Libs/<Platform>
+#   xemulation    |          |     X     |    D    |    N     | XBuild/Libs/<Platform>_emulation
+#   publish       |    X     |     X     |    R    |    Y     | Publish_<NNN>/Libs
+#
+# FIXME/tp: Turn of debug flags for publish builds
+# FIXME/tp: Add Doxygen support
+# FIXME/tp: Add version number to release notes
+#
+# Note: Embedded builds deploy the Module libraries to the "rootfs" folder only.
+# Note: Embedded builds deploy the MPI libraries to both the "DeployDir" folder
+#       in the table above and the "rootfs" folder only.
+# 
+# In addition "publish" builds will:
+#   Version the Publush_<NNN> folder using the Brio2 repository revision number
+#   Add that version to various release notes docs
+#   Run Doxygen go generate documentation
+#
 #=============================================================================
 import os
 import SCons.Defaults
@@ -31,90 +57,142 @@ import Etc.Tools.SConsTools.Priv.LfUtils	# LeapFrog utility functions
 #-----------------------------------------------------------------------------
 # Setup help options and get command line arguments
 #-----------------------------------------------------------------------------
-opts = Options('custom.py')
-opts.Add(BoolOption('checkheaders', 'Set "checkheaders=t" to uncover order of inclusion issues', 0))
-opts.Add(BoolOption('emulation', 'Set "emulation=t" to build the target using emulation', 0))
-opts.Add(EnumOption('platform', 'Set platform to use', 'Lightning', 
-						allowed_values=('Lightning')))
-opts.Add(BoolOption('publish', 'Set "publish=t" to create a pulic release', 0))
+opts = Options('CmdLine.py')
+opts.Add('platform', 'Set platform to use', 'Lightning')
+opts.Add(EnumOption('platform_variant', 'Use in the place of "platform" to specify a bring-up board\n   ', 'Lightning_LF2530BLUE', 
+						allowed_values=('Lightning_LF2530RED', 'Lightning_LF2530BLUE', 'Lightning_LF1000')))
 opts.Add(BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
+opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemulation" export headers, libs & build scripts\n    for external app linkage\n    "checkheaders" uncovers inclusion dependencies\n   ',
+					'embedded', 
+					allowed_values=('checkheaders', 'embedded', 'emulation', 'xembedded', 'xemulation', 'publish')))
 
-is_checkheaders	= ARGUMENTS.get('checkheaders', 0)
-is_emulation	= ARGUMENTS.get('emulation', 0)
-is_publish		= ARGUMENTS.get('publish', 0)
-is_runtests		= ARGUMENTS.get('runtests', 1)
-platform		= ARGUMENTS.get('platform', 'Lightning')
-source_setup	= ARGUMENTS.get('setup', '')
-branch			= source_setup != '' and source_setup or 'TRUNK'
+platform			= ARGUMENTS.get('platform', '')
+platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF2530BLUE')
+source_setup		= ARGUMENTS.get('setup', '')
+is_runtests			= ARGUMENTS.get('runtests', 1)
+type				= ARGUMENTS.get('type', 'embedded')
+variant				= ''
 
+if platform != '' and platform_variant != '':
+	print '*** Exiting: Error!  Do not set the "platform" parameter if "platform_variant" is set'
+	Exit(-1)
+	
+if platform == '' and platform_variant == '':
+	print '*** Exiting: Error!  Need to set either "platform" or "platform_variant"'
+	Exit(-1)
+	
+if platform_variant != '':
+	idx = platform_variant.find('_')
+	if idx == -1:
+		print '*** Exiting: Error!  "platform_variant" needs to be for form <platform>_<variant>'
+	platform = platform_variant[:idx]
+	variant = platform_variant[idx+1:]
 
-#-----------------------------------------------------------------------------
-# Only check headers in emulation mode
-#-----------------------------------------------------------------------------
-if is_checkheaders:
-	is_emulation = 1
-	is_publish   = 0
+branch				= source_setup != '' and source_setup or 'TRUNK'
 
 
 #-----------------------------------------------------------------------------
 # Constant path values
 #-----------------------------------------------------------------------------
-version = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
 
 root_dir				= Dir('#').abspath
-publish_root			= Dir('#Publish_' + version).abspath
+export_root				= Dir('#XBuild').abspath
 adjust_to_source_dir	= '../../../'
-#FIXME/tp: Want EXTRA_LINUX_HEADER_DIR going forward?  Print when default or when override?
+
+#FIXME/tp: Is this the best mechanism for allowing alternate nfsroot locations?
+rootfs = os.getenv('ROOTFS_PATH')
+if rootfs == None:
+	rootfs = Dir('#../../nfsroot').abspath
+
+#FIXME/tp: Replace logic when get super rootfs in place
 extra_driver_headers	= os.getenv('EXTRA_LINUX_HEADER_DIR')
 if extra_driver_headers == None:
 	extra_driver_headers  = Dir('#../LinuxDist/packages/drivers/include/linux').abspath
 
+#-----------------------------------------------------------------------------
+# Build one or more target variants
+#-----------------------------------------------------------------------------
+is_checkheaders		= type == 'checkheaders'
+is_publish			= type == 'publish'
+is_export			= is_publish or type == 'xembedded' or type == 'xemulation'
+is_runtests         = (is_runtests == 1) and (type == 'emulation' or is_publish)
+publish_root		= ''
+if is_publish:
+	version = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
+	publish_root			= Dir('#Publish_' + version).abspath
 
-#-----------------------------------------------------------------------------
-# Build one or more variants
-#-----------------------------------------------------------------------------
-variants = is_publish and ['emulation', 'embedded'] or is_emulation and ['emulation'] or ['embedded']
-for target in variants:
-	
-	#-------------------------------------------------------------------------
-	# Print banner and set the emulation variable
-	#-------------------------------------------------------------------------
-	print '***', platform, target, 'build  ( version', version, ') ***'
-	is_emulation = (target == 'emulation') and 1 or 0
-	
+targets = ['emulation']
+if type == 'publish':
+	targets = ['emulation', 'embedded']
+elif type == 'embedded' or type == 'xembedded':
+	targets = ['embedded']
+
+for target in targets:
 	
 	#-------------------------------------------------------------------------
 	# Setup intermediate build and deployment target folder names
 	#-------------------------------------------------------------------------
+	is_emulation = (target == 'emulation') and 1 or 0
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
 	intermediate_build_dir	= os.path.join('Temp', target_subdir)
-	#if is_emulation and is_publish:	#TP: reenable when deliver Release mode emu libs
-	#	intermediate_build_dir += '_publish'
-	debug_deploy_dir		= Dir(os.path.join('#Build', target_subdir)).abspath
-	release_deploy_dir		= Dir(os.path.join('#Build', target_subdir + (is_emulation and '_publish' or ''))).abspath
-	checkheaders_deploy_dir	= os.path.join(intermediate_build_dir, 'checkheaders')
-	dynamic_deploy_dir		= is_publish and release_deploy_dir or debug_deploy_dir
+	publish_lib_dir			= os.path.join(publish_root, 'Libs', target_subdir)
+	build_base				= Dir(os.path.join('#Build', target_subdir)).abspath
+	xbuild_base				= os.path.join(export_root, 'Libs', target_subdir)
+	hdr_deploy_dir			= ''
+
+	if is_publish:
+		mpi_deploy_dir	= os.path.join(publish_lib_dir, 'MPI')
+		lib_deploy_dir	= os.path.join(publish_lib_dir, 'Module')
+		hdr_deploy_dir  = os.path.join(publish_root, 'Include')
+	elif is_export:
+		mpi_deploy_dir	= os.path.join(xbuild_base, 'MPI')
+		lib_deploy_dir	= os.path.join(xbuild_base, 'Module')
+		hdr_deploy_dir  = os.path.join(export_root, 'Include')
+	else:
+		mpi_deploy_dir	= os.path.join(build_base, 'MPI')
+		lib_deploy_dir	= os.path.join(build_base, 'Module')
+		
+	bin_deploy_dir	= mpi_deploy_dir
+		
+	if not is_emulation:
+		bin_deploy_dir	= os.path.join(rootfs, 'usr', 'local', 'bin')
+		lib_deploy_dir	= os.path.join(rootfs, 'usr', 'local', 'lib')
+		Default(bin_deploy_dir)
+		Default(lib_deploy_dir)
+
 	
-	
+	#-------------------------------------------------------------------------
+	# NOTE: When "publish=t" the SConscript files get invoked multiple times, 
+	# and we will get SCons warnings it we perform Install() actions multiple
+	# times on the same files, so turn off the export variable after the first
+	# pass.
+	#-------------------------------------------------------------------------
+	if targets.index(target) > 0:
+		is_export = 0
+	if is_publish and not is_emulation:
+		is_runtests = 0;
+
 	#-------------------------------------------------------------------------
 	# Set up and Python dictionary variables that map generic names
 	# to specific paths or library names.  This abstraction allows us to make
-	# changes only here, not in all the SConscript files.  It also allows us to
-	# support compiling with different compilers that need to link against
+	# changes only here, not in all the SConscript files.  It also allows us
+	# to support compiling with different compilers that need to link against
 	# differently named libraries.
 	#-------------------------------------------------------------------------
 	vars	 = { 'platform'					: platform,
 				 'is_emulation'				: is_emulation,
 				 'is_publish'				: is_publish,
+				 'is_export'				: is_export,
 				 'is_checkheaders'			: is_checkheaders,
 				 'is_runtests'				: is_runtests,
 				 'adjust_to_source_dir'		: adjust_to_source_dir,
-				 'dynamic_deploy_dir'		: dynamic_deploy_dir,
+				 'mpi_deploy_dir'			: mpi_deploy_dir,
+				 'lib_deploy_dir'			: lib_deploy_dir,
+				 'bin_deploy_dir'			: bin_deploy_dir,
+				 'hdr_deploy_dir'			: hdr_deploy_dir,
 				 'intermediate_build_dir'	: intermediate_build_dir,
-				 'publish_root'				: publish_root,
-				 'publish_inc_dir'			: os.path.join(publish_root, 'Include'),
-				 'publish_lib_dir'			: os.path.join(publish_root, 'Libs', target_subdir),
+				 'export_root'				: is_publish and publish_root or export_root,
 				 'target_subdir'			: target_subdir,
 				 'extra_driver_headers'		: extra_driver_headers,
 			   }
@@ -130,8 +208,10 @@ for target in variants:
 						tools = ['default', platform_toolset, 
 								'checkheader', 'cxxtest', 'runtest'], 
 						toolpath = [toolpath1, toolpath2],
-						LIBPATH = [os.path.join(dynamic_deploy_dir, 'MPI')],
+						LIBPATH = [mpi_deploy_dir],
 					 )
+	if variant != '':
+		env.Append(CPPDEFINES = [variant])
 	
 	
 	#-------------------------------------------------------------------------
@@ -179,8 +259,9 @@ for target in variants:
 Default('..')
 if is_checkheaders:
 	env.Append(CPPPATH = ['ThirdParty/PowerVR/Include', 'ThirdParty/PowerVR/Include/LinuxPC'])
-	Etc.Tools.SConsTools.lfutils.CheckHeaders(root_dir, checkheaders_deploy_dir, env)
+	checkheaders_deploy_dir	= os.path.join(intermediate_build_dir, 'checkheaders')
+	Etc.Tools.SConsTools.Priv.LfUtils.CheckHeaders(root_dir, checkheaders_deploy_dir, env)
 	Default(None)
 	Default(checkheaders_deploy_dir)
 elif source_setup:
-	Etc.Tools.SConsTools.lfutils.CreateSourceTree(root_dir, platform, source_setup, env)
+	Etc.Tools.SConsTools.Priv.LfUtils.CreateSourceTree(root_dir, platform, source_setup, env)

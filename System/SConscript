@@ -15,6 +15,7 @@ def MakeTempDirName(module):
 #-----------------------------------------------------------------------------
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
+#FIXME/tp: remove 'modules' variable (change to deplayment no longer requires it?)
 modules = []
 # FIXME/dm: Audio is not supported for embedded target yet
 if vars['is_emulation']:
@@ -32,19 +33,9 @@ if vars['is_emulation']:
 
 
 #-----------------------------------------------------------------------------
-# Populate the "Publish" folder for a public release
+# Populate the "XBuild" or "Publish" folder
 #-----------------------------------------------------------------------------
-if vars['is_publish']:
-	mod_dir = os.path.join(vars['publish_lib_dir'], 'Module')
-	mpi_dir = os.path.join(vars['publish_lib_dir'], 'MPI')
-	for m in modules:
-		env.Install(mod_dir, m[0])
-		env.Install(mpi_dir, m[1])
-		
-	# NOTE: When "publish=t" this file will get invoked twice, but we get
-	# scons errors if we perform the same install action twice, so only
-	# do this copy on the emulation pass.
-	if vars['is_emulation']:
-		headers = glob.glob(os.path.join('Include', '*.h'))
-		env.Install(vars['publish_inc_dir'], headers)
+if vars['is_export']:
+	headers = glob.glob(os.path.join('Include', '*.h'))
+	env.Install(vars['hdr_deploy_dir'], headers)
 		

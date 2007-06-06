@@ -6,15 +6,16 @@ import glob
 Import('*')
 
 #-----------------------------------------------------------------------------
-# Populate the "Publish" folder for a public release
+# Populate the "XBuild" or "Publish" folders
 #-----------------------------------------------------------------------------
-if vars['is_publish']:
-	inc_dir = os.path.join(vars['publish_inc_dir'], 'boost')
+#FIXME/tp: Export boost stuff without SVN subfolders
+if vars['is_export']:
+	inc_dir = os.path.join(vars['hdr_deploy_dir'], 'boost')
 	Command(inc_dir, 'boost/boost', Copy("$TARGET", "$SOURCE"))
 
 	if vars['is_emulation']:
-		inc_dir = os.path.join(vars['publish_inc_dir'], 'OpenGL', vars['target_subdir'])
-		lib_dir = os.path.join(vars['publish_lib_dir'], 'OpenGL')
+		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
+		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
 		headers = os.path.join('PowerVR', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 		#	libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so'))
@@ -24,8 +25,8 @@ if vars['is_publish']:
 		lib += '.0'
 		env.Install(lib_dir, lib)
 	else:
-		inc_dir = os.path.join(vars['publish_inc_dir'], 'OpenGL', vars['target_subdir'])
-		lib_dir = os.path.join(vars['publish_lib_dir'], 'OpenGL')
+		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
+		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
 		headers = os.path.join('MagicEyes', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 		core_name = 'libogl.a'

@@ -6,50 +6,58 @@
 import os
 import sys
 import SCons
-import SCons.Util
 import SCons.Options
-
-global_dir = os.path.normpath(os.path.join(__file__, '../../../..', 'Global'))
-sys.path.append(global_dir)
+import SCons.Script
+import SCons.Util
 	
 
 #-----------------------------------------------------------------------------
-# Setup common command line options for a Chorus project
+# Setup common command line options for a Lightning project
 #-----------------------------------------------------------------------------
 def SetupOptions():
 	opts = SCons.Options.Options('Lightning.py')
-	opts.Add(SCons.Options.BoolOption('emulation', 'Set "emulation=t" to build the target using emulation', 0))
-	opts.Add(SCons.Options.BoolOption('publish', 'Set "publish=t" to create a pulic release', 0))
 	opts.Add(SCons.Options.BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
-	opts.Add('deploy_dir', '''Default deployment directory is your project's "Build" folder''', '')
+	opts.Add(SCons.Options.EnumOption('type', '"publish" creates an RC\n    "checkheaders" uncovers inclusion dependencies\n   ',
+					'embedded', 
+					allowed_values=('checkheaders', 'embedded', 'emulation', 'publish')))
 	return opts
 
 
 #-----------------------------------------------------------------------------
-# Compile headers alone to expose order-of-inclusion issues.
+# Retrieve common command line options for a Lightning project
 #-----------------------------------------------------------------------------
 def RetrieveOptions(args, root_dir):
 
-	is_emulation	= args.get('emulation', 0)
-	is_publish		= args.get('publish', 0)
 	is_runtests		= args.get('runtests', 1)
+	type			= args.get('type', 'embedded')
 	platform		= 'Lightning'
 	
-	#FIXME/tp: want a separate deploy dir argument???
-	deploy_dir		= args.get('deploy_dir', '')
-	
+	is_emulation 			= type == 'emulation' or type == 'checkheaders'
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
 	intermediate_build_dir	= os.path.join(root_dir, 'Temp', target_subdir)
-	if deploy_dir == '':
-		deploy_dir = os.path.join(root_dir, 'Build', target_subdir)
 	
-	vars = {'is_emulation'			: is_emulation,
-			'is_publish'			: is_publish,
+	#FIXME/tp: Is this the best mechanism for allowing alternate nfsroot locations?
+	rootfs = os.getenv('ROOTFS_PATH')
+	if rootfs == None:
+		rootfs = os.path.normpath(os.path.join(root_dir, '..', '..', 'nfsroot'))
+
+	#FIXME/tp: add mods for type == 'publish' here
+	if is_emulation:
+		bin_deploy_dir	= os.path.join(root_dir, 'Build', target_subdir)
+	else:
+		bin_deploy_dir	= os.path.join(rootfs, 'usr', 'local', 'bin')
+		SCons.Script.Default(bin_deploy_dir)
+		
+	if type == 'publish':
+		print '*** type=publish is a placeholder (a noop at this time).'
+	
+	vars = {'type'					: type,
+			'is_emulation'			: is_emulation,
 			'is_runtests'			: is_runtests,
 			'platform'				: platform,
 			'target_subdir'			: target_subdir,
 			'intermediate_build_dir': intermediate_build_dir,
-			'deploy_dir'			: deploy_dir,
+			'bin_deploy_dir'		: bin_deploy_dir,
 	}
 	
 	return vars
@@ -69,9 +77,11 @@ def CreateEnvironment(opts, vars):
 	platform_toolset = vars['platform'] + (vars['is_emulation'] and '_emulation' or '_embedded')
 
 	env = SCons.Environment.Environment(options  = opts,
-							tools = ['default', platform_toolset, 'cxxtest', 'runtest'], 
+							tools = ['default', platform_toolset, 'cxxtest', 'runtest', 'checkheader'], 
 							toolpath = [toolpath],
 					 )
+	env.Append(CPPDEFINES = ['LF2530BLUE'])
+	#FIXME/tp: Keep this 'variant' field up to date!
 	
 	cdevkit_incpath	= os.path.join(cdevkit_dir, 'Include')
 	ogl_incpath		= os.path.join(cdevkit_incpath, 'OpenGL', target_subdir)
@@ -127,7 +137,8 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	
 	objs  = bldenv.Object(srcs)
 	myapp = bldenv.Program(exe, objs, LIBS = plibs + platformlibs)
-	penv.Install(vars['deploy_dir'], [myapp, mapfile])
+	targets = vars['is_emulation'] and [myapp, mapfile] or [myapp]
+	penv.Install(vars['bin_deploy_dir'], targets)
 	
 	return objs
 

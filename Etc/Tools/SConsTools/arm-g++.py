@@ -30,6 +30,8 @@ def generate(env):
 	"""
 	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
 	parent.generate(env)
+	env['AS']	= compiler
+	env['CC']	= compiler
 	env['CXX']	= compiler
 	
 	# Platform specific settings
