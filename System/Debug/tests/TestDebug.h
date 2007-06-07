@@ -61,12 +61,12 @@ public:
 	}
 	
 	void testDumpCoreInfo( )
-	{
+{
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tVersion version;
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
 
-#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		if ( DebugMPI->IsValid() ) {
 			pName = DebugMPI->GetMPIName();
 			printf("MPI name is: %s\n", pName->c_str());
@@ -98,9 +98,10 @@ public:
 	//------------------------------------------------------------------------
 	void testDebugOut( )
 	{
-		tDebugLevel level;
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		tDebugLevel level;
+
 		if ( DebugMPI->IsValid() ) {
 		    printf("\nHello, world Debug Out Tests!\n");
 		
@@ -157,9 +158,10 @@ public:
 		//------------------------------------------------------------------------
 	void testTimestamps( )
 	{
-		tDebugLevel level;
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		tDebugLevel level;
+
 		if ( DebugMPI->IsValid() ) {
 		    printf("\nHello, world Timestamp Tests!\n");
 		
@@ -200,9 +202,10 @@ public:
 	//------------------------------------------------------------------------
 	void testAsserts( )
 	{
-		tDebugLevel level;
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		tDebugLevel level;
+
 		if ( DebugMPI->IsValid() ) {
 		    printf("\nHello, world Assert Tests!\n");
 		

@@ -3308,3 +3308,15 @@ By TParker (TParker@leapfrog.com) on 6/7/07 10:26 AM
 1,688 ms. (Cumulative: 455,824 ms)
 
 ----------------
+Revision 493 from svn://localhost/TRUNK/:
+Revision 494 from svn://localhost/TRUNK/:
+Revision 495 from svn://localhost/TRUNK/:
+Revision 496 from svn://localhost/TRUNK/:
+
+Fix TestDebug.h to get rid of arm compiler warnings.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/7/07 1:02 PM
+1 changed, 0 added, 0 deleted.
+1,625 ms. (Cumulative: 457,527 ms)
+
+----------------
