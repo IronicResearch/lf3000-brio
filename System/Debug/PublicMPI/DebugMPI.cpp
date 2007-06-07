@@ -341,6 +341,11 @@ Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level ) c
 {
 	if (pModule_)
 		return pModule_->DebugOutIsEnabled( sig, level );
+
+	// if we got here, module not connected
+	assert(false);
+	
+	return false; // get rid of compiler warning
 }
 
 //==============================================================================
@@ -368,6 +373,11 @@ tDebugLevel CDebugMPI::GetDebugLevel() const
 {
 	if (pModule_)
 		return pModule_->GetDebugLevel();
+
+	// if we got here, module not connected
+	assert(false);
+	
+	return kDbgLvlVerbose; // get rid of compiler warning
 }
 
 //==============================================================================
