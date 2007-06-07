@@ -307,9 +307,6 @@ namespace
 		
 		CURI defaultURI = "";
 		
-		URIpath = defaultURI + "System/";
-		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
-		AddDeviceEntry(&tempDevice);
 		URIpath = defaultURI + "Applic/";
 		strncpy(tempDevice.uriBase, URIpath.c_str(), MAX_RSRC_URI_SIZE);
 		AddDeviceEntry(&tempDevice);

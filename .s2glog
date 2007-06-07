@@ -3329,3 +3329,26 @@ By DGibbs (DGibbs@leapfrog.com) on 6/7/07 1:15 PM
 1,672 ms. (Cumulative: 459,261 ms)
 
 ----------------
+Revision 498 from svn://localhost/TRUNK/:
+
+Eliminated old build_rootfs.sh script in favor of new make_rootfs.sh.
+Changed INSTALL_PREFIX to ROOTFS_PATH to be consistent with Brio.
+Moved LinuxDist/packages/brio/install.sh to scripts/brio_install.sh to divorce
+LinuxDist from Brio more clearly.
+Fixed linux-dev install script to install headers.
+Updated README
+Added standard build functions in scripts/functions
+Fixed the packages/*/install.sh scripts to use standard functions and to
+implement the -c option.
+Added a package-list to control which packages get installed in the rootfs.
+Eliminated drivers-install.sh script in favor of conventional install.sh
+Put all LinuxDist stuff in /usr instead of /usr/local.
+Fixed Brio path problems for the embedded build.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/7/07 1:31 PM
+2 changed, 0 added, 0 deleted.
+1,766 ms. (Cumulative: 461,090 ms)
+
+----------------
