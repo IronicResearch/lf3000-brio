@@ -3371,3 +3371,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/8/07 10:09 AM
 2,172 ms. (Cumulative: 463,371 ms)
 
 ----------------
+Revision 510 from svn://localhost/TRUNK/:
+
+Actually check in the ARM libs for Portaudio and Mobileer.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/8/07 10:10 AM
+0 changed, 2 added, 0 deleted.
+1,859 ms. (Cumulative: 465,293 ms)
+
+----------------
