@@ -17,9 +17,7 @@ def MakeTempDirName(module):
 #-----------------------------------------------------------------------------
 #FIXME/tp: remove 'modules' variable (change to deplayment no longer requires it?)
 modules = []
-# FIXME/dm: Audio is not supported for embedded target yet
-if vars['is_emulation']:
-	modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
+modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
 modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
 modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
 modules.append(SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0))

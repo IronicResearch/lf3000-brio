@@ -37,8 +37,6 @@
 CMidiPlayer::CMidiPlayer()
 {
 	S16			midiErr;
-	const U8	*pByte;
-	tErrType	err = kNoErr;
 
 	pMidiRenderBuffer_ = new S16[kAudioOutBufSizeInWords];
 	numFrames_ = 256;
@@ -54,8 +52,7 @@ CMidiPlayer::CMidiPlayer()
 	midiErr = SPMIDI_CreateContext( &pContext_, kAudioSampleRate );
 	if (midiErr < 0)
 	{
-		printf("SPMIDI CreateContext error!: %d\n", midiErr);
-		err = kAudioMidiErr;
+//		printf("SPMIDI CreateContext error!: %d\n", midiErr);
 	}
 
 	// fixme/dg: for now only one player for whole system!  add support for multiple players.
@@ -74,9 +71,7 @@ CMidiPlayer::~CMidiPlayer()
 	if (pFilePlayer_ != kNull)
 		MIDIFilePlayer_Delete( pFilePlayer_ );
 
-error:
 	SPMIDI_Terminate();
-
 }
 
 
@@ -138,8 +133,8 @@ tErrType CMidiPlayer::SendCommand(U8 cmd, U8 data1, U8 data2)
 //==============================================================================
 tErrType 	CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
 {
-	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
-				channel, noteNum, velocity, flags );
+//	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
+//				channel, noteNum, velocity, flags );
  
 	SPMUtil_NoteOn( pContext_, (int) channel, (int) noteNum, (int) velocity );
 
@@ -148,8 +143,8 @@ tErrType 	CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOption
 
 tErrType 	CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
 {
-	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
-				channel, noteNum, velocity, flags );
+//	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
+//				channel, noteNum, velocity, flags );
  
 	SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
 
@@ -176,13 +171,13 @@ tErrType 	CMidiPlayer::PlayMidiFile( tAudioMidiFileInfo* 	pInfo )
 {
 	tErrType result;
 	
-	pInfo->midiID;			// fixme/dg: midiEngineContext object?
-	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
+//	pInfo->midiID;			// fixme/dg: midiEngineContext object?
+//	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
 	volume_ = ((float)pInfo->volume) / 100.0F;
-	pInfo->priority;
+//	pInfo->priority;
 	if ( pInfo->pListener != kNull )
 		pListener_ = pInfo->pListener;
-	pInfo->payload;
+//	pInfo->payload;
 	
 	// fixme/dg: Right now only allow one midi file to play at a time!
 	if (pFilePlayer_ == kNull) {
@@ -192,11 +187,11 @@ tErrType 	CMidiPlayer::PlayMidiFile( tAudioMidiFileInfo* 	pInfo )
 	
 		// Create a player, parse MIDIFile image and setup tracks.
 		result = MIDIFilePlayer_Create( &pFilePlayer_, (int)kAudioSampleRate, pInfo->pMidiFileImage, pInfo->imageSize );
-		if( result < 0 )
-			printf("Couldn't create a midifileplayer!\n");
+//		if( result < 0 )
+//			printf("Couldn't create a midifileplayer!\n");
 	} else {
 		result = -1;
-		printf("CMidiPlayer::PlayMidiFile -- Can't play a new midifile while already playing one!\n");
+//		printf("CMidiPlayer::PlayMidiFile -- Can't play a new midifile while already playing one!\n");
 	}
 	
 	return result;
@@ -214,16 +209,16 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 	U32 	framesRead = 0;
 	U32 	numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 
-	if (numStereoFrames != numFrames_) 
-		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
+//	if (numStereoFrames != numFrames_) 
+//		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
 	
 	// If there is a midi file player, service it
 	if (pFilePlayer_ != kNull) {
 		mfp_result = MIDIFilePlayer_PlayFrames( pFilePlayer_, pContext_, SPMIDI_GetFramesPerBuffer()  );
-		if (mfp_result < 0)
-		{
-			printf("!!!!! CMidiPlayer::RenderBuffer -- MIDIFilePlayer PlayFrames failed!!!\n\n");
-		}
+//		if (mfp_result < 0)
+//		{
+//			printf("!!!!! CMidiPlayer::RenderBuffer -- MIDIFilePlayer PlayFrames failed!!!\n\n");
+//		}
 		// Returning a 1 means MIDI file done.
 		if (mfp_result > 0) {
 			if (loopMidiFile_) {
@@ -257,7 +252,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 		*pMixBuff++ = sum;
 	}
 
-
+	return framesRead;
 }
 
 // EOF	

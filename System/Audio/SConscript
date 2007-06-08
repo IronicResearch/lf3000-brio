@@ -20,10 +20,18 @@ mpilibs		= ['ModuleMPI', 'ResourceMPI', 'KernelMPI', 'DebugMPI']
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
+
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Include'])
-myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs'])
-myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs'])
+
+if vars['is_emulation']:
+	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/x86'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/x86'])
+else:
+	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/arm'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/arm'])
+	myenv.Append(LIBPATH = ['/home/lfu/nfsroot/usr/lib'])
+
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
 Depends(mympi, mymodule)

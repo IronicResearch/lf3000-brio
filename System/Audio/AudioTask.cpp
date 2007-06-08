@@ -120,6 +120,8 @@ tErrType InitAudioTask( void )
 	gContext.debugMPI->DebugOut( kDbgLvlValuable, 
 		(const char *)"\nDebug, Kernel, and Resource MPIs created by AudioTask ctor\n");	
 
+	// only want important stuff.
+	gContext.debugMPI->SetDebugLevel( kDbgLvlImportant );
 
 	// Hard code the configuration resource
 	gContext.numMixerChannels = 	kAudioNumMixerChannels;
@@ -258,17 +260,16 @@ static void DoPlayAudio( CAudioMsgPlayAudio* pMsg )
 {
 	tErrType			err;
 	CAudioReturnMessage	msg;
-	tAudioID			newID;
-	tAudioID			audioID = kNoAudioID;
+	tAudioID			newID = kNoAudioID;
 	tAudioHeader*		pHeader;
-	CChannel*			pChannel;
-	CAudioPlayer*		pPlayer;
+	CChannel*			pChannel = kNull;
+	CAudioPlayer*		pPlayer = kNull;
 
 	tAudioPlayAudioInfo*	pAudioInfo = pMsg->GetData();
 
 	// Find the best channel for the specified priority
 	pChannel = gContext.pAudioMixer->FindBestChannel( pAudioInfo->priority );
-	printf("Find Best Channel returned:%d\n", pChannel);
+//	printf("Find Best Channel returned:%d\n", pChannel);
 
 	// If we have a good channel, play the audio, if not return error to caller.
 	if (pChannel != kNull) {
@@ -282,10 +283,10 @@ static void DoPlayAudio( CAudioMsgPlayAudio* pMsg )
 		// Store pointer in the play struct so that the Player object can access it.
 		pAudioInfo->pAudioHeader = pHeader;
 		
-		printf("Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pAudioInfo->volume, pAudioInfo->priority, pAudioInfo->pan, pAudioInfo->hRsrc,
-				pAudioInfo->pListener, pAudioInfo->payload, pAudioInfo->flags);
+//		printf("Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pAudioInfo->volume, pAudioInfo->priority, pAudioInfo->pan, pAudioInfo->hRsrc,
+//				pAudioInfo->pListener, pAudioInfo->payload, pAudioInfo->flags);
 	
-		printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%d, size:%d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRate, pHeader->dataSize);
+//		printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%d, size:%d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRate, pHeader->dataSize);
 	
 		// Generate the audio ID, accounting for wrap around
 		newID = gContext.nextAudioID++;
@@ -479,8 +480,8 @@ void DoPlayMidiFile( CAudioMsgPlayMidiFile* msg ) {
 	pInfo->pMidiFileImage = (U8*)gContext.resourceMPI->GetRsrcPtr( pInfo->hRsrc );
 	pInfo->imageSize = gContext.resourceMPI->GetRsrcUnpackedSize( pInfo->hRsrc );
 
-	printf("Msg: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, pInfo->hRsrc,
-			pInfo->pListener, pInfo->payload, pInfo->flags);
+//	printf("Msg: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, (int)pInfo->hRsrc,
+//			(unsigned int)pInfo->pListener, (int)pInfo->payload, (int)pInfo->flags);
 
 	gContext.pMidiPlayer->PlayMidiFile( pInfo );
 	
@@ -510,7 +511,7 @@ void* AudioTaskMain( void* arg )
 	};
 	
 	// I want to see everything...
-	gContext.debugMPI->SetDebugLevel( kDbgLvlVerbose );
+	gContext.debugMPI->SetDebugLevel( kDbgLvlCritical );
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 		(const char *)"Audio Task creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
@@ -697,6 +698,8 @@ void* AudioTaskMain( void* arg )
 		
 	// Set the task to byebye
 	gAudioTaskRunning = false;
+
+	return (void *)kNull;
 }
 
 // EOF

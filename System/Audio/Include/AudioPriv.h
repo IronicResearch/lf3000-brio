@@ -90,10 +90,10 @@ public:
 						tAudioOptionsFlags	flags );
 	
 private:
-	CKernelMPI* KernelMPI;
-	CDebugMPI* DebugMPI;	
-	tMessageQueueHndl hRecvMsgQueue_;
-	tMessageQueueHndl hSendMsgQueue_;
+	CKernelMPI* 			pKernelMPI_;
+	CDebugMPI* 				pDebugMPI_;	
+	tMessageQueueHndl 		hRecvMsgQueue_;
+	tMessageQueueHndl 		hSendMsgQueue_;
 	const IEventListener*	pDefaultListener_;
 
 	void SendCmdMessage( CAudioCmdMsg& msg );

@@ -132,6 +132,8 @@ tErrType CAudioMPI::StartAudio()
 	{
 		return pModule_->StartAudio();
 	}
+
+	return kMPINotConnectedErr;
 }
 
 //----------------------------------------------------------------------------
@@ -141,6 +143,8 @@ tErrType CAudioMPI::StopAudio()
 	{
 		return pModule_->StopAudio();
 	}
+
+	return kMPINotConnectedErr;
 }
 
 //----------------------------------------------------------------------------
@@ -150,6 +154,8 @@ tErrType CAudioMPI::PauseAudio()
 	{
 		return pModule_->PauseAudio();
 	}
+
+	return kMPINotConnectedErr;
 }
 
 //----------------------------------------------------------------------------
@@ -159,6 +165,8 @@ tErrType CAudioMPI::ResumeAudio()
 	{
 		return pModule_->ResumeAudio();
 	}
+
+	return kMPINotConnectedErr;
 }
 
 /*
@@ -237,7 +245,7 @@ tAudioID CAudioMPI::PlayAudio( tRsrcHndl			hRsrc,
 								tAudioPayload		payload,
 								tAudioOptionsFlags	flags )
 {
-	printf("AudioMPI:PlayAudio; hRsrc = 0x%x\n", hRsrc);
+//	printf("AudioMPI:PlayAudio; hRsrc = 0x%x\n", hRsrc);
 	
 	if ( pModule_ == kNull )
 	{
@@ -569,6 +577,7 @@ tErrType CAudioMPI::ReleaseMidiPlayer(tMidiID midiID)
 	return pModule_->ReleaseMidiPlayer(midiID);
 }
 
+/*
 //==============================================================================
 //==============================================================================
 tMidiID CAudioMPI::GetMidiIDForAudioID(tAudioID audioID) 
@@ -590,7 +599,7 @@ tAudioID CAudioMPI::GetAudioIDForMidiID(tMidiID midiID)
 	}
 	return pModule_->GetAudioIDForMidiID(midiID);
 }
-
+*/
 //==============================================================================
 //==============================================================================
 void CAudioMPI::StopMidiPlayer(tMidiID midiID, Boolean surpressDoneMessage) 

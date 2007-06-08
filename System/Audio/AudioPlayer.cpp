@@ -35,8 +35,6 @@
 
 CAudioPlayer::CAudioPlayer( tAudioPlayAudioInfo* pData, tAudioID id  )
 {
-	tErrType 		err = kNoErr;
-	
 	id_ = id;
 	
 // FIXME MG want to put in RsrcMgr code if we're going to stream data from storage.
@@ -77,7 +75,7 @@ CAudioPlayer::CAudioPlayer( tAudioPlayAudioInfo* pData, tAudioID id  )
 	// Get data from audio header associated with this player.
 	// fixme/dg: do it for real.
 	pAudioData_ = (void*)(pHeader_ + pHeader_->offsetToData);
-	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", pHeader_, pAudioData_ );
+//	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", pHeader_, pAudioData_ );
 	dataSampleRate_ = pHeader_->sampleRate;
 	audioDataSize_ = pHeader_->dataSize;			
 	if (pHeader_->flags & 0x1)

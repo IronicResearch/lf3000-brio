@@ -57,7 +57,7 @@ static void* gCallbackUserData;
 // Debug output
 static U32 gCallbackCount;			
 static paTestData gTestData;
-static unsigned long t1, t2, t3;	// debugging
+//static unsigned long t1, t2, t3;	// debugging
 
 //==============================================================================
 // PortAudio callback (which is faking a DMA-triggered ISR)
@@ -71,8 +71,8 @@ static int paCallback(const void*						inputBuffer,
 						void*                           userData)
 
 {
-    float *out = (float*)outputBuffer;
-    unsigned long i;
+//    float *out = (float*)outputBuffer;
+//    unsigned long i;
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
     (void) inputBuffer;

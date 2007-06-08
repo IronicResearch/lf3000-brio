@@ -44,8 +44,8 @@ CRawPlayer::CRawPlayer( tAudioPlayAudioInfo* pData, tAudioID id  ) : CAudioPlaye
 	
 	framesLeft_ = numFrames_;
 	
-	printf("CRawPlayer::ctor Number of Frames:%d\n", numFrames_);
-	printf("CRawPlayer::ctor Header flags:%d\n", optionsFlags_);
+//	printf("CRawPlayer::ctor Number of Frames:%d\n", numFrames_);
+//	printf("CRawPlayer::ctor Header flags:%d\n", optionsFlags_);
 }
 
 //==============================================================================
@@ -57,7 +57,7 @@ CRawPlayer::~CRawPlayer()
 	if (pListener_ != kNull)
 		SendDoneMsg();
 
-	printf(" CRawPlayer::dtor -- I'm HERE!!!\n\n\n\n");
+//	printf(" CRawPlayer::dtor -- I'm HERE!!!\n\n\n\n");
 }
 
 /*

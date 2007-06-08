@@ -33,7 +33,7 @@ class CChannel;
 class CAudioPlayer {
 public:
 	CAudioPlayer( tAudioPlayAudioInfo* pData, tAudioID id  );
-	~CAudioPlayer();
+	virtual ~CAudioPlayer();
 	
 //	virtual void	Stop() = 0;
 //	virtual void	Pause() = 0;

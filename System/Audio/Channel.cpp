@@ -29,14 +29,14 @@
 //==============================================================================
 // CChannel implementation
 //==============================================================================
+#if 0
 static void InitConversionRate(tAudioConversion *pRate, U16 inRateInHz, U16 outRateInHz);
 static void ResetConversionRate(tAudioConversion *pRate);
 static void ConvertData(tAudioConversion *pRate, U32 numSamples, S16 *pInBuf, S16 *pOutBuf);
+#endif
 
 CChannel::CChannel()
 {
-	tErrType err = kNoErr;
-
 	// Initialize the class variables
 //	mpChain_ = kNull;
 	pPlayer_ = kNull;
@@ -67,9 +67,9 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 	bInUse_ = 1;
 	SetPan( pPlayer->GetPan() );
 	SetVolume( pPlayer->GetVolume() );
-	printf("CChannel::InitChanWithPlayer - setting volume %f\n", volume_);
+//	printf("CChannel::InitChanWithPlayer - setting volume %f\n", volume_);
 	inSampleRate_ = pPlayer_->GetSampleRate();
-	InitConversionRate(&convRate_, inSampleRate_, kAudioSampleRate);
+//	InitConversionRate(&convRate_, inSampleRate_, kAudioSampleRate);
 	
 	return kNoErr;
 }
@@ -131,15 +131,15 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 
 	// First Check if conversion is necesssary
 //		if ( kAudioSampleRate != inSampleRate_)
-		if ( 0 )
-	{
+//	if ( 0 )
+//	{
 		// convert channel's output buffer and MIX(!) it to caller's buffer.
-		ConvertData(&convRate_, numStereoSamples, pOutBuffer_, pMixBuff);
-	}
+//		ConvertData(&convRate_, numStereoSamples, pOutBuffer_, pMixBuff);
+//	}
 	// Otherwise data is already at the correct sample rate
 	// so just need to add it to the mix buffer
-	else
-	{
+//	else
+//	{
 		S16	*pChanData = pOutBuffer_;
 		float chanOutputSample;
 		S32	sum;
@@ -156,11 +156,12 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 			
 			*pMixBuff++ = (S16)sum;
 		}
-	}
+//	}
 		
 	return playerFramesRendered;
 }
 
+#if 0
 //==============================================================================
 //==============================================================================
 static void InitConversionRate(tAudioConversion *pRate, U16 inRateInHz, U16 outRateInHz)
@@ -242,5 +243,5 @@ static void ConvertData(tAudioConversion *pRate, U32 numSamples, S16 *pInBuf, S1
 	pRate->iLastLeft = iLastLeft;
 	pRate->iLastRight = iLastRight;
 }
-
+#endif
 // EOF	

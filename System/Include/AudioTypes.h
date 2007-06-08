@@ -61,7 +61,7 @@ typedef U32		tAudioID;			// Unique ID for the audio to allow tracking
 typedef U32		tAudioPayload;		// User payload to be sent with the done message
 typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255. 
 									// 0 is lowest priority, 255 highest.
-#define kNoAudioID			(~0)	// ID returned when the system is unable to
+#define kNoAudioID			kU32Max	// ID returned when the system is unable to
 									// play the audio
 
 #define kAudioDoneMsgBit	0x01

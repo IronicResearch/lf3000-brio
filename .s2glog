@@ -3352,3 +3352,22 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 6/7/07 1:31 PM
 1,766 ms. (Cumulative: 461,090 ms)
 
 ----------------
+Revision 499 from svn://localhost/TRUNK/:
+Revision 500 from svn://localhost/TRUNK/:
+Revision 501 from svn://localhost/TRUNK/:
+Revision 502 from svn://localhost/TRUNK/:
+Revision 503 from svn://localhost/TRUNK/:
+Revision 504 from svn://localhost/TRUNK/:
+Revision 505 from svn://localhost/TRUNK/:
+Revision 506 from svn://localhost/TRUNK/:
+Revision 507 from svn://localhost/TRUNK/:
+Revision 508 from svn://localhost/TRUNK/:
+Revision 509 from svn://localhost/TRUNK/:
+
+Modified Audio system to be buildable for ARM.  Add "Third Party" ARM libs for Portaudio and Mobileer engine.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/8/07 10:09 AM
+13 changed, 2 added, 2 deleted.
+2,172 ms. (Cumulative: 463,371 ms)
+
+----------------
