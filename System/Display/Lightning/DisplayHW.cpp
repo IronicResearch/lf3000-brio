@@ -21,8 +21,8 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include "gpio_ioctl.h"
-#include "mlc_ioctl.h"
+#include "linux/gpio_ioctl.h"
+#include "linux/mlc_ioctl.h"
 #include "GLES/libogl.h"
 
 LF_BEGIN_BRIO_NAMESPACE()

@@ -100,15 +100,10 @@ root_dir				= Dir('#').abspath
 export_root				= Dir('#XBuild').abspath
 adjust_to_source_dir	= '../../../'
 
-#FIXME/tp: Is this the best mechanism for allowing alternate nfsroot locations?
 rootfs = os.getenv('ROOTFS_PATH')
 if rootfs == None:
 	rootfs = Dir('#../../nfsroot').abspath
 
-#FIXME/tp: Replace logic when get super rootfs in place
-extra_driver_headers	= os.getenv('EXTRA_LINUX_HEADER_DIR')
-if extra_driver_headers == None:
-	extra_driver_headers  = Dir('#../LinuxDist/packages/drivers/include/linux').abspath
 
 #-----------------------------------------------------------------------------
 # Build one or more target variants
@@ -194,7 +189,6 @@ for target in targets:
 				 'intermediate_build_dir'	: intermediate_build_dir,
 				 'export_root'				: is_publish and publish_root or export_root,
 				 'target_subdir'			: target_subdir,
-				 'extra_driver_headers'		: extra_driver_headers,
 			   }
 	
 	

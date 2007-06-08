@@ -28,7 +28,7 @@ if vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 	myenv.Append(RPATH   = ['#ThirdParty/PowerVR/Libs'])
 else:
-	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include', vars['extra_driver_headers']])
+	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/arm'])
 	myenv.Append(RPATH   = [])
 						

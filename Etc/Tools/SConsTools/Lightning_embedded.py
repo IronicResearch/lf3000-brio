@@ -21,7 +21,13 @@ def PlatformMods(env):
 	gcc_defs 			= env.Split('')
 	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CCFLAGS = '-O4')
-	env.Append(LIBPATH = '#Build/Lightning/MPI')	
+
+	rootfs = os.getenv('ROOTFS_PATH')
+	if rootfs == None:
+		rootfs = os.path.normpath(os.path.join(__file__, '../../../../../../nfsroot'))
+	env.Append(CPPPATH = [os.path.join(rootfs, 'usr', 'include')])	
+	env.Append(LIBPATH = [os.path.join(rootfs, 'usr', 'lib'),
+							os.path.join(rootfs, 'usr', 'local', 'lib')])	
 
 
 #-----------------------------------------------------------------------------

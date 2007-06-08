@@ -3393,3 +3393,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/8/07 1:43 PM
 1,641 ms. (Cumulative: 467,028 ms)
 
 ----------------
+Revision 516 from svn://localhost/TRUNK/:
+
+Build embedded targets against nfsroot
+
+By TParker (TParker@leapfrog.com) on 6/8/07 3:43 PM
+7 changed, 0 added, 0 deleted.
+1,812 ms. (Cumulative: 468,887 ms)
+
+----------------
