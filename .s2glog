@@ -3380,3 +3380,16 @@ By DGibbs (DGibbs@leapfrog.com) on 6/8/07 10:10 AM
 1,859 ms. (Cumulative: 465,293 ms)
 
 ----------------
+Revision 511 from svn://localhost/TRUNK/:
+Revision 512 from svn://localhost/TRUNK/:
+Revision 513 from svn://localhost/TRUNK/:
+Revision 514 from svn://localhost/TRUNK/:
+Revision 515 from svn://localhost/TRUNK/:
+
+Pace button handler thread at timed intervals. (interim fix)
+
+By Dmilici (Dmilici@leapfrog.com) on 6/8/07 1:43 PM
+1 changed, 0 added, 0 deleted.
+1,641 ms. (Cumulative: 467,028 ms)
+
+----------------

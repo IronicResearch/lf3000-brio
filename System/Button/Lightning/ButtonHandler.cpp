@@ -54,6 +54,9 @@ static void* LighteningButtonTask(void*)
 	
 	while(1) {
 
+		// Pace thread at time intervals relavant for button presses
+		usleep(1000);
+
 		int size = read(button_fd, &current_be, sizeof(struct button_event));
 		dbg.Assert( size >= 0, "button read failed" );
 		
@@ -71,6 +74,10 @@ void CButtonModule::InitModule()
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
 
+	// Need valid file descriptor open before starting task thread 
+	button_fd = open( "/dev/gpio", O_RDWR);
+	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/gpio");
+
 	if( kernel.IsValid() )
 	{
 		tTaskHndl handle;
@@ -81,11 +88,6 @@ void CButtonModule::InitModule()
 	}
 	dbg_.Assert( status == kNoErr, 
 				"Lightening Button InitModule: background task creation failed" );
-
-
-	button_fd = open( "/dev/gpio", O_RDWR);
-	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/gpio");
-
 }
 
 
