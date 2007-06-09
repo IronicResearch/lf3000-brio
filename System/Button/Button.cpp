@@ -56,6 +56,7 @@ CButtonModule::CButtonModule() : dbg_(kGroupButton)
 //----------------------------------------------------------------------------
 CButtonModule::~CButtonModule()
 {
+	DeinitModule();	// delegate to platform or emulation deinitializer
 }
 
 //----------------------------------------------------------------------------

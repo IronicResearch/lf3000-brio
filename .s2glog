@@ -3402,3 +3402,12 @@ By TParker (TParker@leapfrog.com) on 6/8/07 3:43 PM
 1,812 ms. (Cumulative: 468,887 ms)
 
 ----------------
+Revision 517 from svn://localhost/TRUNK/:
+
+Added cleanup routine to button handler.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/8/07 6:30 PM
+4 changed, 0 added, 0 deleted.
+1,765 ms. (Cumulative: 470,715 ms)
+
+----------------

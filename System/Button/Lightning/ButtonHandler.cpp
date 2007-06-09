@@ -33,9 +33,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//------------------------------------------------------------------------
-	U32			gLastState;
-	int button_fd;
+	U32					gLastState;
+	int 				button_fd;
 	struct button_event current_be;
+	tTaskHndl			handleButtonTask;
 }
 
 
@@ -46,16 +47,17 @@ namespace
 //----------------------------------------------------------------------------
 static void* LighteningButtonTask(void*)
 {
-	CEventMPI eventmgr;
+	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupButton);
-	dbg.SetDebugLevel(kDbgLvlVerbose);
+	CKernelMPI	kernel;
 
+	dbg.SetDebugLevel(kDbgLvlVerbose);
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	
 	while(1) {
 
 		// Pace thread at time intervals relavant for button presses
-		usleep(1000);
+		kernel.TaskSleep(1);
 
 		int size = read(button_fd, &current_be, sizeof(struct button_event));
 		dbg.Assert( size >= 0, "button read failed" );
@@ -74,22 +76,35 @@ void CButtonModule::InitModule()
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
 
+	dbg_.DebugOut(kDbgLvlVerbose, "Button Init\n");
+
 	// Need valid file descriptor open before starting task thread 
 	button_fd = open( "/dev/gpio", O_RDWR);
 	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/gpio");
 
 	if( kernel.IsValid() )
 	{
-		tTaskHndl handle;
 		tTaskProperties	properties;
 		properties.pTaskMainArgValues = NULL;
 		properties.TaskMainFcn = LighteningButtonTask;
-		status = kernel.CreateTask(handle, properties);
+		status = kernel.CreateTask(handleButtonTask, properties);
 	}
 	dbg_.Assert( status == kNoErr, 
 				"Lightening Button InitModule: background task creation failed" );
 }
 
+//----------------------------------------------------------------------------
+void CButtonModule::DeinitModule()
+{
+	CKernelMPI	kernel;
+
+	dbg_.DebugOut(kDbgLvlVerbose, "Button Deinit\n");
+
+	// Terminate button handler thread, and wait before closing driver
+	kernel.CancelTask(handleButtonTask);
+	kernel.TaskSleep(1);	
+	close(button_fd);
+}
 
 //============================================================================
 // Button state
