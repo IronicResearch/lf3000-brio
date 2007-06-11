@@ -139,7 +139,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testWasCreated( )
+	void xxxtestWasCreated( )
 	{
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -152,7 +152,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testCoreMPI( )
+	void xxtestCoreMPI( )
 	{
 		tVersion		version;
 		const CString*	pName;
@@ -201,7 +201,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void xxxtestAudioOutput( )
+	void xxxtestStartStopAudioSystem( )
 	{
 		tErrType err;
 		const int kDuration = 1 * 1000;
@@ -240,12 +240,12 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 	}
 	
-};
-
-
-#if 0
-		tErrType err;
+	//------------------------------------------------------------------------
+	void testAudioResources( )
+	{
+		tErrType 		err;
 		U16				i;
+		tRsrcHndl		handle;
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
 		tRsrcHndl		handle3;
@@ -271,21 +271,30 @@ public:
 		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		pResourceMPI_->SetDefaultURIPath("/home/darren/workspace/Brio2/apprsrc/");
-//		handle = pResourceMPI_->FindRsrc("Crushing_16_11025.raw");
+//		pResourceMPI_->SetDefaultURIPath("/home/lfu/workspace/Brio2/System/Audio/tests/apprsrc/");
+//		handle1 = pResourceMPI_->FindRsrc("TestAudio1.rsrc");
+//		TS_ASSERT( handle1 != 0 );
+		pResourceMPI_->SetDefaultURIPath("/home/darren/workspace/BrioCube/apprsrc/");
+		handle = pResourceMPI_->FindRsrc("app1.txt");
+
 		handle1 = pResourceMPI_->FindRsrc("BlueNile44m.raw");
+		TS_ASSERT( handle1 != 0 );
 		handle2 = pResourceMPI_->FindRsrc("sine44m.raw");
+		TS_ASSERT( handle2 != 0 );
 		handle3 = pResourceMPI_->FindRsrc("vivaldi44m.raw");
+		TS_ASSERT( handle3 != 0 );
 		handle4 = pResourceMPI_->FindRsrc("FortyTwo.raw");
+		TS_ASSERT( handle4 != 0 );
 		handle5 = pResourceMPI_->FindRsrc("NewHampshireGamelan.mid");
+		TS_ASSERT( handle5 != 0 );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
-		id1 = pAudioMPI_->PlayAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 1 seconds
-		pKernelMPI_->TaskSleep( 1000 );
+		pKernelMPI_->TaskSleep( 1000 ); 
 	
 		pAudioMPI_->SetMasterVolume( 30 );
 		
@@ -322,20 +331,20 @@ public:
 							tAudioPayload		payload,
 							tAudioOptionsFlags	flags )
 */
-		pAudioMPI_->PlayMidiFile( midiID, handle5, 50, 1, &audioListener_, 0, 1 );
+		pAudioMPI_->StartMidiFile( midiID, handle5, 50, 1, &audioListener_, 0, 1 );
 		
 
 
-		id2 = pAudioMPI_->PlayAudio( handle2, 50, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( handle2, 50, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 1 seconds
 		pKernelMPI_->TaskSleep( 1000 );
 
 		for (i = 0; i < 10; i++) {
-			id3 = pAudioMPI_->PlayAudio( handle4, i*10, 1, 0, &audioListener_, 0, 0 );
-			printf("TestAudio -- PlayAudio() returned ID # %d\n", id3 );
+			id3 = pAudioMPI_->StartAudio( handle4, i*10, 1, 0, &audioListener_, 0, 0 );
+			printf("TestAudio -- StartAudio() returned ID # %d\n", id3 );
 			if (id3 < 0) {
-				printf("TestAudio -- PlayAudio() returned error # %d\n", id3 );
+				printf("TestAudio -- StartAudio() returned error # %d\n", id3 );
 			}
 			pKernelMPI_->TaskSleep( 200 );
 		}
@@ -365,4 +374,8 @@ public:
 		pKernelMPI_->TaskSleep( kDuration );
 
 	}
-#endif
+
+};
+
+
+

@@ -72,6 +72,48 @@ CAudioMixer::~CAudioMixer()
 
 //==============================================================================
 //==============================================================================
+CChannel* CAudioMixer::FindChannelUsing( tAudioPriority priority )
+{
+	U8 iChan;
+	
+	// For now, just search for a channel not in use
+	for (iChan=0; iChan<numChannels_; iChan++)
+	{
+		if (!pChannels_[iChan].IsInUse()) return &pChannels_[iChan];
+	}
+	
+	// Reaching this point means all channels are currently in use
+	return kNull;
+}
+
+//==============================================================================
+//==============================================================================
+CChannel* CAudioMixer::FindChannelUsing( tAudioID id )
+{
+	U8 				iChan;
+	tAudioID		idFromPlayer;
+	CChannel*		pChan;
+	CAudioPlayer* 	pPlayer;
+	
+	// Loop through mixer channels, look for one that's in use and then
+	// test the player's ID against the requested id.
+	for (iChan=0; iChan<numChannels_; iChan++)
+	{
+		pChan = &pChannels_[iChan];
+		if (pChan->IsInUse()) {
+			pPlayer = pChan->GetPlayer();
+			idFromPlayer = pPlayer->GetAudioID();
+			if ( idFromPlayer == id )
+				return &pChannels_[iChan];
+		}
+	}
+	
+	// Reaching this point means all no ID matched.
+	return kNull;
+}
+
+//==============================================================================
+//==============================================================================
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 {
 	U32			i;
@@ -103,7 +145,8 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 			// Check to see if the player has finished
 			// If it has, release the channel.
 			if ( framesRendered < numStereoFrames ) {
-				pChan->Release();
+				pChan->Release( false );		// don't suppress done msg if it has been requested
+
 			}
 		}
 	}
@@ -146,18 +189,5 @@ int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOutBuff,
 	return mySelf->RenderBuffer( pOutBuff, numStereoFrames );
 }
 
-//==============================================================================
-//==============================================================================
-CChannel* CAudioMixer::FindBestChannel( tAudioPriority priority )
-{
-	U8 iChan;
-	// For now, just search for a channel not in use
-	for (iChan=0; iChan<numChannels_; iChan++)
-	{
-		if (!pChannels_[iChan].IsInUse()) return &pChannels_[iChan];
-	}
-	// Reaching this point means all channels are currently in use
-	return kNull;
-}
 
 // EOF	

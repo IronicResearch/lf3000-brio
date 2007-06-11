@@ -48,12 +48,10 @@ public:
 	CAudioMixer*		pAudioMixer;		// Pointer to the global audio mixer
 	CMidiPlayer*		pMidiPlayer;			// temp global midi player object for testing	
 //	CAudioEffectsProcessor	*pAudioEffects;	// Pointer to the global audio effects processor
-	tAudioPlayerNode	*pNode;				// Linked list of audio players
 	U16					outSizeInBytes;		// Size of one audio out buffer in bytes
 	U16					outSizeInWords;		// Size of one audio out buffer in words
-	volatile U8			audioOutIndex;		// Index of the current audio out buffer
 	Boolean				audioOutputOn;		// Flag for whether audio out driver is on
-	Boolean				audioCodecActive;	// Flag for whether an audio codec is active
+	Boolean				audioOutputPaused;	// Flag for whether audio out driver is paused
 	volatile Boolean	audioMgrTaskReady;	// Flag for whether audio manager task is ready
 	tAudioID			nextAudioID;		// Next audioID
 	U8					masterVolume;		// Master volume
@@ -81,12 +79,10 @@ typedef struct{
         char *testDescription;
 }thread_arg_t;
 
-// Function Prototypes
-tErrType StopAudio( void );
-void* AudioTaskMain( void* arg );
-tErrType StopAudioSystem( void );
-tErrType StartAudioSystem( void );
 
+// Prototypes
+void* AudioTaskMain( void* arg );
+static tErrType DoStopAudioSystem( void );
 
 //==============================================================================
 //==============================================================================
@@ -139,9 +135,9 @@ tErrType InitAudioTask( void )
 	gContext.pMidiPlayer = gContext.pAudioMixer->GetMidiPlayer();
 	
 	// Initialize the audio out driver
-	gContext.audioOutIndex = 0;
 	gContext.audioOutputOn = false;
-
+	gContext.audioOutputPaused = false;
+	
 	// Init output driver and register callback.  We have to pass in a pointer
 	// to the mixer object as a bit of "user data" so that when the callback happens,
 	// the C call can get to the mixer's C++ member function for rendering.  
@@ -153,12 +149,9 @@ tErrType InitAudioTask( void )
   	// Set the global audio effects processor to kNull
 	//pAudioEffects = kNull;
  */
-	// Initialize the linked list of audio players
-	gContext.pNode = kNull;
 
 	// Initialize the next audioID
 	gContext.nextAudioID = 0;
-
 
 	// Get set up to create and run the task thread.
 // 	priority;				// 1	
@@ -209,7 +202,7 @@ void DeInitAudioTask( void )
 
 	// Exit nicely
 	if ( gContext.audioOutputOn )
-		StopAudioSystem();
+		DoStopAudioSystem();
 		
 	DeInitAudioOutput();
 
@@ -256,7 +249,7 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 
 //==============================================================================
 //==============================================================================
-static void DoPlayAudio( CAudioMsgPlayAudio* pMsg ) 
+static void DoStartAudio( CAudioMsgStartAudio* pMsg ) 
 {
 	tErrType			err;
 	CAudioReturnMessage	msg;
@@ -265,10 +258,10 @@ static void DoPlayAudio( CAudioMsgPlayAudio* pMsg )
 	CChannel*			pChannel = kNull;
 	CAudioPlayer*		pPlayer = kNull;
 
-	tAudioPlayAudioInfo*	pAudioInfo = pMsg->GetData();
+	tAudioStartAudioInfo*	pAudioInfo = pMsg->GetData();
 
 	// Find the best channel for the specified priority
-	pChannel = gContext.pAudioMixer->FindBestChannel( pAudioInfo->priority );
+	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->priority );
 //	printf("Find Best Channel returned:%d\n", pChannel);
 
 	// If we have a good channel, play the audio, if not return error to caller.
@@ -338,48 +331,57 @@ static void DoPlayAudio( CAudioMsgPlayAudio* pMsg )
 
 //==============================================================================
 //==============================================================================
-void StopAllAudioPlayers()
+static void DoPauseAudio( CAudioMsgPauseAudio* pMsg ) 
 {
-/*
-	// Loop through the linked list of audio players
-	// and call the player's stop function
-	// We don't want to delete the nodes yet as some of the players 
-	// (ie CodecPlayer) may take a while to stop processing
-	tAudioPlayerNode 	*pNode = gAudioContext->pNode;
-	while (pNode != kNull)
-	{
-		pNode->pPlayer->Stop();
-		pNode = pNode->pNext;
-	}
-*/
+	CChannel*				pChannel = kNull;
+	tAudioPauseAudioInfo*	pAudioInfo = pMsg->GetData();
+
+	// Find the best channel for the specified priority
+	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->id );
+
+	if (pChannel != kNull)
+		pChannel->Pause();
 }
 
-
 //==============================================================================
 //==============================================================================
-//static CAudioPlayer* FindPlayer(/*tAudioID audioID */) 
-static void FindPlayer(/*tAudioID audioID */) 
+static void DoResumeAudio( CAudioMsgResumeAudio* pMsg ) 
 {
-/*
-	// Find the audio player with the given audioID
-	CAudioPlayer* 		pPlayer = kNull;
+	CChannel*				pChannel = kNull;
+	tAudioResumeAudioInfo*	pAudioInfo = pMsg->GetData();
 
-	return pPlayer;
-	
-*/
+	// Find the best channel for the specified priority
+	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->id );
+
+	if (pChannel != kNull)
+		pChannel->Resume();
+}
+
+//==============================================================================
+//==============================================================================
+static void DoStopAudio( CAudioMsgStopAudio* pMsg ) 
+{
+	CChannel*				pChannel = kNull;
+	tAudioStopAudioInfo*	pAudioInfo = pMsg->GetData();
+
+	// Find the best channel for the specified priority
+	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->id );
+
+	if (pChannel != kNull)
+		pChannel->Release( pAudioInfo->suppressDoneMsg);
 }
 
 //==============================================================================
 // 		Overall Audio System Control
 //==============================================================================
-tErrType StartAudioSystem( void )
+static tErrType DoStartAudioSystem( void )
 {
 	tErrType err = kNoErr;
 	CAudioReturnMessage	msg;
 	
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Starting audio output driver...\n");	
 
-	if (!gContext.audioOutputOn) {
+	if (!gContext.audioOutputOn && !gContext.audioOutputPaused) {
 		gContext.audioOutputOn = true;
 		err = StartAudioOutput();
 	}
@@ -391,8 +393,46 @@ tErrType StartAudioSystem( void )
 	return err;
 }
 
+static tErrType DoPauseAudioSystem( void )
+{
+	tErrType err = kNoErr;
+	CAudioReturnMessage	msg;
+	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Pausing all audio output...\n");	
+
+	if (gContext.audioOutputOn && !gContext.audioOutputPaused) {
+		gContext.audioOutputPaused = true;
+		err = StopAudioOutput();
+	}
+	
+	// Send the status back to the caller
+	msg.SetAudioErr( err );
+	SendMsgToAudioModule( msg );
+
+	return err;
+}
+
+static tErrType DoResumeAudioSystem( void )
+{
+	tErrType err = kNoErr;
+	CAudioReturnMessage	msg;
+	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Resuming all audio output...\n");	
+
+	if (gContext.audioOutputOn && gContext.audioOutputPaused) {
+		gContext.audioOutputPaused = false;
+		err = StartAudioOutput();
+	}
+	
+	// Send the status back to the caller
+	msg.SetAudioErr( err );
+	SendMsgToAudioModule( msg );
+
+	return err;
+}
+
 //----------------------------------------------------------------------------
-tErrType StopAudioSystem( void )
+static tErrType DoStopAudioSystem( void )
 {
 	tErrType err = kNoErr;
 	CAudioReturnMessage	msg;
@@ -428,20 +468,16 @@ void DoAcquireMidiPlayer( void ) {
 	CAudioReturnMessage	msg;
 	
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Acquiring MIDI player...\n");	
-
-//	if (!gContext.audioOutputOn) {
-//		gContext.audioOutputOn = true;
-//		err = StartAudioOutput();
-//	}
 	
 	// Send the status back to the caller
 	msg.SetAudioErr( kNoErr );
-	msg.SetMidiID( 24 );
+	msg.SetMidiID( 1 );
 	SendMsgToAudioModule( msg );
 }
-	//==============================================================================
-	//==============================================================================
-	void DoMidiNoteOn( CAudioMsgMidiNoteOn* msg ) {
+
+//==============================================================================
+//==============================================================================
+void DoMidiNoteOn( CAudioMsgMidiNoteOn* msg ) {
 	tAudioMidiNoteInfo* info = msg->GetData();
 	
 	gContext.pMidiPlayer->NoteOn( 
@@ -469,9 +505,9 @@ void DoMidiNoteOff( CAudioMsgMidiNoteOff* msg ) {
 
 }
 
-void DoPlayMidiFile( CAudioMsgPlayMidiFile* msg ) {
-	tErrType				err;
-	tAudioMidiFileInfo* 	pInfo = msg->GetData();
+void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
+	tErrType					err;
+	tAudioStartMidiFileInfo* 	pInfo = msg->GetData();
 	
 	// Load the midi file using the resource manager.
 	err = gContext.resourceMPI->LoadRsrc( pInfo->hRsrc );  
@@ -483,10 +519,30 @@ void DoPlayMidiFile( CAudioMsgPlayMidiFile* msg ) {
 //	printf("Msg: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, (int)pInfo->hRsrc,
 //			(unsigned int)pInfo->pListener, (int)pInfo->payload, (int)pInfo->flags);
 
-	gContext.pMidiPlayer->PlayMidiFile( pInfo );
+	gContext.pMidiPlayer->StartMidiFile( pInfo );
 	
 	//	info.priority = kAudioDefaultPriority;
+}
 
+void DoPauseMidiFile( CAudioMsgPauseMidiFile* msg ) {
+	tErrType					err;
+	tAudioPauseMidiFileInfo* 	pInfo = msg->GetData();
+
+	gContext.pMidiPlayer->PauseMidiFile( pInfo );
+}
+
+void DoResumeMidiFile( CAudioMsgResumeMidiFile* msg ) {
+	tErrType					err;
+	tAudioResumeMidiFileInfo* 	pInfo = msg->GetData();
+
+	gContext.pMidiPlayer->ResumeMidiFile( pInfo );
+}
+
+void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
+	tErrType					err;
+	tAudioStopMidiFileInfo* 	pInfo = msg->GetData();
+
+	gContext.pMidiPlayer->StopMidiFile( pInfo );
 }
 
 //==============================================================================
@@ -511,7 +567,7 @@ void* AudioTaskMain( void* arg )
 	};
 	
 	// I want to see everything...
-	gContext.debugMPI->SetDebugLevel( kDbgLvlCritical );
+	gContext.debugMPI->SetDebugLevel( kDbgLvlVerbose );
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 		(const char *)"Audio Task creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
@@ -569,7 +625,7 @@ void* AudioTaskMain( void* arg )
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: starting audio system.\n" );	
 	
-			StartAudioSystem();
+			DoStartAudioSystem();
 			break;
 			
 		//*********************************
@@ -577,94 +633,72 @@ void* AudioTaskMain( void* arg )
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: stopping audio system\n" );	
 	
-			StopAudioSystem();
+			DoStopAudioSystem();
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypePauseAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: pause all audio.\n" );	
-			// Loop through the linked list of audio players
-			// and call the player's pause function
-//				pNode = gAudioContext->pNode;
-//				while (pNode != kNull)
-//				{
-//					pNode->pPlayer->Pause();
-//					pNode = pNode->pNext;
-//				}
+	
+			DoPauseAudioSystem();
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypeResumeAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: resume all audio.\n" );	
-			// Loop through the linked list of audio players
-			// and call the player's resume function
-//				pNode = gAudioContext->pNode;
-//				while (pNode != kNull)
-//				{
-//					pNode->pPlayer->Resume();
-//					pNode = pNode->pNext;
-//				}
+
+			DoResumeAudioSystem();
 			break;
 
 		//*********************************
-		case kAudioCmdMsgTypePlayAudio:
+		case kAudioCmdMsgTypeStartAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"\nAudio Task: kAudioCmdMsgTypePlayAudio : calling DoPlayAudio().\n" );	
-				DoPlayAudio( (CAudioMsgPlayAudio*)pAudioMsg );
-//				audioToStart = 1;
+				(const char *)"\nAudio Task: kAudioCmdMsgTypeStartAudio : calling DoStartAudio().\n" );	
+	
+			DoStartAudio( (CAudioMsgStartAudio*)pAudioMsg );
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypeStopAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: stop audio.\n" );	
-			// Find the audio player with the given audioID
-//				if ((pPlayer = FindPlayer(((tAudioCmdMsgStopAudio*)pMsg)->audioID)) != kNull)
-//				{
-//					// Stop the player and if requested, suppress the done message
-//					pPlayer->Stop();
-//					if (((tAudioCmdMsgStopAudio*)pMsg)->suppressDoneMsg)  
-//						pPlayer->SetSendDoneMessage(false);
-//				} 
+
+			DoStopAudio( (CAudioMsgStopAudio*)pAudioMsg );
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypePauseAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: pause audio.\n" );	
-			// Find the audio player with the given audioID,
-			// and if one is found, pause it
-//				if ((pPlayer = FindPlayer(((tAudioCmdMsgPauseAudio*)pMsg)->audioID)) != kNull)
-//					pPlayer->Pause();
+
+			DoPauseAudio( (CAudioMsgPauseAudio*)pAudioMsg );
 			break;
 
 		//*********************************
 		case kAudioCmdMsgTypeResumeAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: resume audio.\n" );	
-			// Find the audio player with the given audioID,
-			// and if one is found, resume it
-//				if ((pPlayer = FindPlayer(((tAudioCmdMsgResumeAudio*)pMsg)->audioID)) != kNull)
-//					pPlayer->Resume();
-		break;
+
+			DoResumeAudio( (CAudioMsgResumeAudio*)pAudioMsg );
+			break;
 
 		
 		//*********************************
 		case kAudioCmdMsgTypeAcquireMidiPlayer:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: Acquire Midi Player.\n" );	
-			DoAcquireMidiPlayer();
 
+			DoAcquireMidiPlayer();
 			break;
 
 			//*********************************
 		case kAudioCmdMsgTypeMidiNoteOn:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: midi note On.\n" );	
-			DoMidiNoteOn( (CAudioMsgMidiNoteOn*)pAudioMsg );
 
+			DoMidiNoteOn( (CAudioMsgMidiNoteOn*)pAudioMsg );
 			break;
 
 		//*********************************
@@ -676,19 +710,42 @@ void* AudioTaskMain( void* arg )
 			break;
 
 		//*********************************
-		case kAudioCmdMsgTypePlayMidiFile:
+		case kAudioCmdMsgTypeStartMidiFile:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"\nAudio Task: play midi file.\n" );	
+				(const char *)"\nAudio Task: Start midi file.\n" );	
 			
-			DoPlayMidiFile( (CAudioMsgPlayMidiFile*)pAudioMsg );
-	
-		break;
+			DoStartMidiFile( (CAudioMsgStartMidiFile*)pAudioMsg );
+			break;
+
+		//*********************************
+		case kAudioCmdMsgTypePauseMidiFile:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: pause midi file.\n" );	
+			
+			DoPauseMidiFile( (CAudioMsgPauseMidiFile*)pAudioMsg );
+			break;
+			
+		//*********************************
+		case kAudioCmdMsgTypeResumeMidiFile:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: resume midi file.\n" );	
+			
+			DoResumeMidiFile( (CAudioMsgResumeMidiFile*)pAudioMsg );
+			break;
+
+		//*********************************
+		case kAudioCmdMsgTypeStopMidiFile:
+			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+				(const char *)"\nAudio Task: stop midi file.\n" );	
+			
+			DoStopMidiFile( (CAudioMsgStopMidiFile*)pAudioMsg );
+			break;
 
 		default:
-			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"\nAudio Task: unhandled audio command!!!.\n" );	
+		gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+			(const char *)"\nAudio Task: unhandled audio command!!!.\n" );	
 
-			break;
+		break;
 		}
 
 	}

@@ -51,7 +51,11 @@ public:
 
 	// Acquire this channel to play this audio rsrc
 	tErrType	InitChanWithPlayer( CAudioPlayer* pPlayer );
-	tErrType	Release();
+	tErrType	Release( Boolean suppressPlayerDoneMsg );
+
+	// Set the pause state of the channel
+	inline void	Pause() { if (bInUse_) bPaused_ = true; }
+	inline void	Resume() {  if (bInUse_) bPaused_ = false; }
 
 	// Ask channel to get data from player and return it to caller's mix buffer.
 	// This will add per-channel fx as well as sample rate convert player
@@ -59,24 +63,20 @@ public:
 	// the remainder of the channel's buffer will be zero padded.
 	// The channel also assumes that the mix buffer is stereo 
 	// so mono data is copied to both stereo channel on mix out.
-	U32		RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  );
+	U32			RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  );
 
-	inline U8				GetVolume() { return (U8)(volume_ * 100.0F); }
-	inline void		 		SetVolume( U8 volume ) { volume_ = ((float)volume) / 100.0F; }
-	inline S8				GetPan() { return pan_; }
-	inline void		 		SetPan(S8 pan) { pan_ = pan; }
+	inline U8		GetVolume() { return (U8)(volume_ * 100.0F); }
+	inline void		SetVolume( U8 volume ) { volume_ = ((float)volume) / 100.0F; }
+	inline S8		GetPan() { return pan_; }
+	inline void		SetPan(S8 pan) { pan_ = pan; }
 
 	// Return the requested status of the channel 
-	inline U8		IsInUse() { return bInUse_; }
-	inline U8		IsPaused() { return bPaused_; }
-	inline U8		HasOwnAudioEffectsProcessor() { return bOwnProcessor_; }
-//	inline U8		NeedsMoreData() { return bMoreData_; }
-//	inline U8		HasDataReady() { return bHasDataReady_; }
+	inline U8				IsInUse() { return bInUse_; }
+	inline U8				IsPaused() { return bPaused_; }
+	inline U8				HasOwnAudioEffectsProcessor() { return bOwnProcessor_; }
+	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 private:
-	// Set the pause state of the channel
-	inline void		SetPauseState(Boolean state) { bPaused_ = state; }
-
 	float						volume_;	// Volume of the channel
 	S8							pan_;		// Pan of the channel 
 
@@ -89,9 +89,7 @@ private:
 	U8		bInUse_:1;			// Channel is in use
 	U8		bPaused_:1;			// Channel is paused
 	U8		bOwnProcessor_:1;	// Channel has own audio effects processor
-//	U8		bMoreData_:1;		// Channel needs to get more data
-//	U8		bHasDataReady_:1;	// Channel has data ready in the input buffer
-	U8		unused_:3;			// Unused
+//	U8		unused_:3;			// Unused
 
 	tAudioConversion			convRate_;	// Conversion rate parameters
 };

@@ -32,24 +32,17 @@ class CChannel;
 //==============================================================================
 class CAudioPlayer {
 public:
-	CAudioPlayer( tAudioPlayAudioInfo* pData, tAudioID id  );
+	CAudioPlayer( tAudioStartAudioInfo* pData, tAudioID id  );
 	virtual ~CAudioPlayer();
-	
-//	virtual void	Stop() = 0;
-//	virtual void	Pause() = 0;
-//	virtual void	Resume() = 0;
-	
+		
 	// Reset internal data pointer back to start of audio data.
-//	virtual void	Restart() = 0;
+	virtual void	Rewind() = 0;
 
 	// Process an audio tick for the class object
 	virtual U32		RenderBuffer( S16 *pOutBuff, U32 numFrames ) = 0;
 
 	// Return the requested status of the class object 
-//	inline U8		IsPaused() { return bPaused_; }
-	inline U8		IsComplete() { return bComplete_; }	
 	inline U8		SendDoneMessage() { return bDoneMessage_; }
-//	inline U8		IsStopping() { return bStopping_; }
 	inline U8		HasAudioCodec() { return bHasCodec_; }
 
 	// Get/Set the class member variables
@@ -63,10 +56,6 @@ public:
 	inline void		 		SetEventListener(IEventListener *pListener) { pListener_ = pListener; }
 	inline U8				GetPan( void ) { return pan_; }
 	inline U8				GetVolume( void ) { return volume_; }
-//	inline CAudioPlayer*	GetParentPlayer() { return pParent_; }
-//	inline void		 		SetParentPlayer(CAudioPlayer *pParent) { pParent_ = pParent; }
-//	inline CChannel*		GetChannel() { return pChannel_; }
-//	inline void		 		SetChannel(CChannel *pChannel) { pChannel_ = pChannel; }
 	inline tAudioOptionsFlags	GetOptionsFlags() { return optionsFlags_; }
 	inline void				SetOptionsFlags(tAudioOptionsFlags optionsFlags) 
 								{ optionsFlags_ = optionsFlags;
@@ -95,9 +84,6 @@ protected:
 	tAudioPayload		payload_;		// User payload of the audio assigned to the player
 	tAudioOptionsFlags	optionsFlags_;	// Options flags of the audio assigned to the player
 	IEventListener 		*pListener_;	// Pointer to AudioEventHandler assigned to the player
-//	CAudioPlayer		*pParent_;	// Pointer to the player's parent player
-//	CChannel			*pChannel_;	// Pointer to the channel assigned to the player
-
 };
 
 #endif		// LF_BRIO_AUDIOPLAYER_H

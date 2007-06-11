@@ -63,6 +63,10 @@ CChannel::~CChannel()
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
+	// If we're pre-empting, release the active player first.
+	if (pPlayer_ != kNull)
+		Release( false );		// don't suppress done msg if it has been requested
+	
 	pPlayer_ = pPlayer;
 	bInUse_ = 1;
 	SetPan( pPlayer->GetPan() );
@@ -76,10 +80,12 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 
 //==============================================================================
 //==============================================================================
-tErrType CChannel::Release()
+tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
 //	mpChain_ = kNull;
-	reinterpret_cast<CRawPlayer*>(pPlayer_)->SendDoneMsg();
+//	reinterpret_cast<CRawPlayer*>(pPlayer_)->SendDoneMsg();  // hack because player dtor not called.
+	if (suppressPlayerDoneMsg)
+		pPlayer_->SetSendDoneMessage( false );
 	delete pPlayer_;
 	pPlayer_ = kNull;
 	bInUse_ = 0;
@@ -91,23 +97,12 @@ tErrType CChannel::Release()
 
 	return kNoErr;
 }
-/*
-//==============================================================================
-//==============================================================================
-tErrType CChannel::KeepAlive(tAudioHeader *pHeader)
-{
-	mpHeader = pHeader;
-	bInUse = 1;
-	InitConversionRate( &mConvRate, mpHeader->sampleRateInHz, kAudioSampleRate );
-	return kNoErr;
-}
-*/
 
 //==============================================================================
 //==============================================================================
 U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 {
-	U32 playerFramesRendered;
+	U32 playerFramesRendered = 0;
 	U32 numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 		
 	// Initialize the output buffer to 0.  This has the side effect of zero
@@ -143,7 +138,6 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 		S16	*pChanData = pOutBuffer_;
 		float chanOutputSample;
 		S32	sum;
-//		bMoreData_ = 1;
 		for (U32 i = 0; i < numStereoSamples; i++)
 		{
 			// Be sure the total sum stays within range
@@ -157,7 +151,7 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 			*pMixBuff++ = (S16)sum;
 		}
 //	}
-		
+
 	return playerFramesRendered;
 }
 

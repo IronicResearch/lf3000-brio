@@ -58,7 +58,7 @@ public:
 
 	VTABLE_EXPORT void 		SetMasterVolume( U8 volume );
 
-	VTABLE_EXPORT tAudioID PlayAudio( tRsrcHndl				hRsrc, 
+	VTABLE_EXPORT tAudioID StartAudio( tRsrcHndl				hRsrc, 
 										U8					volume, 
 										tAudioPriority		priority,
 										S8					pan, 
@@ -66,13 +66,26 @@ public:
 										tAudioPayload		payload,
 										tAudioOptionsFlags	flags );
 
-	VTABLE_EXPORT tErrType AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiID* pMidiID );
+	VTABLE_EXPORT void PauseAudio( tAudioID audioID );
+	VTABLE_EXPORT void ResumeAudio( tAudioID audioID ); 
+	VTABLE_EXPORT void StopAudio( tAudioID audioID, Boolean surpressDoneMessage ); 
+
+	VTABLE_EXPORT tErrType AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiID *midiID );
 	VTABLE_EXPORT tErrType ReleaseMidiPlayer( tMidiID midiID );
+	
+	VTABLE_EXPORT tMidiID StartMidiFile( tMidiID	midiID,
+						tRsrcHndl			hRsrc, 
+						U8					volume, 
+						tAudioPriority		priority,
+						IEventListener*		pListener,
+						tAudioPayload		payload,
+						tAudioOptionsFlags	flags );
+	VTABLE_EXPORT void StopMidiFile( tMidiID midiID, Boolean surpressDoneMessage );
+	VTABLE_EXPORT void PauseMidiFile( tMidiID midiID );
+	VTABLE_EXPORT void ResumeMidiFile( tMidiID midiID );
+
 	VTABLE_EXPORT tMidiID GetMidiIDForAudioID( tAudioID audioID );
 	VTABLE_EXPORT tAudioID GetAudioIDForMidiID( tMidiID midiID );
-	VTABLE_EXPORT void StopMidiPlayer( tMidiID midiID, Boolean surpressDoneMessage );
-	VTABLE_EXPORT void PauseMidiPlayer( tMidiID midiID );
-	VTABLE_EXPORT void ResumeMidiPlayer( tMidiID midiID );
 	VTABLE_EXPORT tMidiTrackBitMask GetEnabledMidiTracks( tMidiID midiID );
 	VTABLE_EXPORT tErrType EnableMidiTracks( tMidiID midiID, tMidiTrackBitMask trackBitMask );
 	VTABLE_EXPORT tErrType TransposeMidiTracks( tMidiID midiID, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
@@ -81,13 +94,6 @@ public:
 	VTABLE_EXPORT tErrType SendMidiCommand( tMidiID midiID, U8 cmd, U8 data1, U8 data2 );
 	VTABLE_EXPORT tErrType 	MidiNoteOn( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	VTABLE_EXPORT tErrType 	MidiNoteOff( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	VTABLE_EXPORT tAudioID PlayMidiFile( tMidiID	midiID,
-						tRsrcHndl			hRsrc, 
-						U8					volume, 
-						tAudioPriority		priority,
-						IEventListener*		pListener,
-						tAudioPayload		payload,
-						tAudioOptionsFlags	flags );
 	
 private:
 	CKernelMPI* 			pKernelMPI_;

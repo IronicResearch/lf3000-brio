@@ -3411,3 +3411,19 @@ By Dmilici (Dmilici@leapfrog.com) on 6/8/07 6:30 PM
 1,765 ms. (Cumulative: 470,715 ms)
 
 ----------------
+Revision 518 from svn://localhost/TRUNK/:
+Revision 519 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,750 ms. (Cumulative: 472,528 ms)
+
+----------------
+Revision 520 from svn://localhost/TRUNK/:
+
+Update Audio system so that pause, resume, and stop functions are available for both audio and midi.  Modified API slightly so that PlayAudio() and PlayMidi() are now StartAudio() and StartMidi() to keep API more consistant.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/11/07 8:48 AM
+19 changed, 0 added, 0 deleted.
+2,094 ms. (Cumulative: 474,638 ms)
+
+----------------

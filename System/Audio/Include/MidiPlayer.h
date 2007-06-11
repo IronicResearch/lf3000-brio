@@ -37,27 +37,29 @@
 class CMidiPlayer {
 public:
 	CMidiPlayer();
-//	CMidiPlayer( tAudioPlayAudioInfo* pData, tAudioID id );
 	~CMidiPlayer();
-	void		Stop();
-	void		Pause();
-	void		Resume();
+
 	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames );
+	bool		IsFileActive() { return bFileActive_; };
 
 	// Get/Set the class member variables
-	inline tMidiID			GetMidiID() { return midiID_; }
+	inline tMidiID				GetMidiID() { return midiID_; }
 	inline tMidiTrackBitMask	GetEnabledTracks() { return trackBitMask_; }
-	tErrType	EnableTracks(tMidiTrackBitMask trackBitMask);
+	tErrType					EnableTracks(tMidiTrackBitMask trackBitMask);
 
 	// Control the playing of the Midi
+	tErrType 	NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	tErrType 	NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	tErrType 	StartMidiFile( tAudioStartMidiFileInfo* pInfo );
+	tErrType 	PauseMidiFile( tAudioPauseMidiFileInfo* pInfo );
+	tErrType 	ResumeMidiFile( tAudioResumeMidiFileInfo* pInfo );
+	tErrType 	StopMidiFile( tAudioStopMidiFileInfo* pInfo );
+
 	tErrType	TransposeTracks( tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
 	tErrType	ChangeInstrument( tMidiTrackBitMask trackBitMask, tMidiInstr instr );
 	tErrType	ChangeTempo( S8 Tempo); 
 	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2);
-	tErrType 	NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	tErrType 	NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	tErrType 	PlayMidiFile( tAudioMidiFileInfo* 	pInfo );
-	
+
 private:
 	SPMIDI_Context*			pContext_;		// Pointer to the Midi context being used
 	MIDIFilePlayer*			pFilePlayer_;	// Pointer to the MidiFile player being used
@@ -67,6 +69,8 @@ private:
 	bool					loopMidiFile_;
 	S16* 					pMidiRenderBuffer_;
 	float					volume_;
+	U8						bFilePaused_:1;				// Player is paused
+	U8						bFileActive_:1;				// Player has active file associated.
 
 	// fixme/dg: make these get set as part of constructor?
 	U32 	numFrames_;

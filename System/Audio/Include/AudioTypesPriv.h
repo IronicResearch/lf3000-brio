@@ -9,8 +9,8 @@ struct tAudioMasterVolume {
 	U8				 	volume;
 };
 
-// kAudioCmdMsgTypePlayAudio
-struct tAudioPlayAudioInfo {
+// kAudioCmdMsgTypeStartAudio
+struct tAudioStartAudioInfo {
 	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
 	tAudioHeader*		pAudioHeader;		// Pointer to header and data, provided by AudioTask, returned from GetRsrcPtr()
 	U8				 	volume;
@@ -23,18 +23,18 @@ struct tAudioPlayAudioInfo {
 
 // kAudioCmdMsgTypeStopAudio
 struct tAudioStopAudioInfo {
-	tAudioID			audioID;
-	U8				 	suppressDoneMsg;
+	tAudioID			id;
+	Boolean				suppressDoneMsg;
 };
 
 // kAudioCmdMsgTypePauseAudio
 struct tAudioPauseAudioInfo {
-	tAudioID			audioID;
+	tAudioID			id;
 };
 
 // kAudioCmdMsgTypeResumeAudio
 struct tAudioResumeAudioInfo {
-	tAudioID			audioID;
+	tAudioID			id;
 };
 
 // kAudioCmdMsgTypeMidiNoteOn
@@ -48,8 +48,8 @@ struct tAudioMidiNoteInfo {
 };
 
 // kAudioCmdMsgTypePlayMidiFile
-struct tAudioMidiFileInfo {
-	tMidiID				midiID;				// fixme/dg: make midiPlayerID?
+struct tAudioStartMidiFileInfo {
+	tMidiID				id;					// fixme/dg: make midiPlayerID?
 	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
 	U8*					pMidiFileImage;		// MIDI file loaded into RAM
 	U32					imageSize;			// Size of MIDI file in RAM
@@ -60,4 +60,19 @@ struct tAudioMidiFileInfo {
 	tAudioOptionsFlags	flags;
 };
 
+// kAudioCmdMsgTypePauseMidiFile
+struct tAudioPauseMidiFileInfo {
+	tMidiID			id;
+};
+
+// kAudioCmdMsgTypeResumeMidiFile
+struct tAudioResumeMidiFileInfo {
+	tMidiID			id;
+};
+
+// kAudioCmdMsgTypeStopMidiFile
+struct tAudioStopMidiFileInfo {
+	tMidiID			id;
+	Boolean			suppressDoneMsg;
+};
 #endif /*LF_BRIO_AUDIOTYPESPRIV_H_*/

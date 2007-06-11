@@ -33,32 +33,18 @@
 // CAudioPlayer implementation
 //==============================================================================
 
-CAudioPlayer::CAudioPlayer( tAudioPlayAudioInfo* pData, tAudioID id  )
+CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pData, tAudioID id  )
 {
 	id_ = id;
 	
-// FIXME MG want to put in RsrcMgr code if we're going to stream data from storage.
-#if 0
-	CRsrcMgrMPI 	*pRsrcMgrMPI;
-
-	// Get the pointer to the resource
-	// which is the pointer to the audio header
-	if ((pRsrcMgrMPI = new CRsrcMgrMPI) == kNull)
-		return kAllocMPIErr;
-
-	if ((err = pRsrcMgrMPI->GetRsrcPtr(pData->hRsrc, (tPtr*)&mpHeader)) != kNoErr)
-		goto ReturnErr;									   
-#else
 	// for now, the Audio task is loading the whole resource into RAM so 
 	// this header allows the player to play it directly.  Later we'll add
 	// support for streaming.
 	pHeader_ = pData->pAudioHeader;
-#endif
 
 	// Initialize class variables
 	bPaused_ = 0;
 	bComplete_ = 0;
-	bDoneMessage_ = 0;
 	bStopping_ = 0;
 	bHasCodec_ = 0;
 	rsrc_ = pData->hRsrc;
@@ -67,8 +53,13 @@ CAudioPlayer::CAudioPlayer( tAudioPlayAudioInfo* pData, tAudioID id  )
 	volume_ = pData->volume;
 	priority_ = pData->priority;
 	pan_ = pData->pan;
-	if (pData->pListener != kNull)
+	if (pData->pListener != kNull) {
 		pListener_ = pData->pListener;
+		bDoneMessage_ = true;
+	} else {
+		pListener_ = kNull;
+		bDoneMessage_ = false;
+	}
 	payload_ = pData->payload;
 	optionsFlags_ = pData->flags;
 	

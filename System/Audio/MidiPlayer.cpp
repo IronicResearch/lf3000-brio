@@ -44,6 +44,8 @@ CMidiPlayer::CMidiPlayer()
 	bitsPerSample_ = 16;
 	pListener_ = kNull;
 	volume_ = 1.0;
+	bFilePaused_ = false;
+	bFileActive_ = false;
 	
 	// Initialize SPMIDI Library
 	SPMIDI_Initialize();
@@ -55,7 +57,7 @@ CMidiPlayer::CMidiPlayer()
 //		printf("SPMIDI CreateContext error!: %d\n", midiErr);
 	}
 
-	// fixme/dg: for now only one player for whole system!  add support for multiple players.
+	// fixme/dg: for now only one player for whole system!  maybe add support for multiple players.
 	pFilePlayer_ = kNull;
 	
 	// Set the maximum number of voices
@@ -66,15 +68,18 @@ CMidiPlayer::CMidiPlayer()
 //==============================================================================
 CMidiPlayer::~CMidiPlayer()
 {
-	SPMIDI_DeleteContext( pContext_ );
-	delete pMidiRenderBuffer_;
+	bFileActive_ = false;
+	
 	if (pFilePlayer_ != kNull)
 		MIDIFilePlayer_Delete( pFilePlayer_ );
 
+	SPMIDI_DeleteContext( pContext_ );
 	SPMIDI_Terminate();
+	
+	delete pMidiRenderBuffer_;
 }
 
-
+/*
 //==============================================================================
 //==============================================================================
 void CMidiPlayer::Stop()
@@ -92,7 +97,112 @@ void CMidiPlayer::Pause()
 void CMidiPlayer::Resume()
 {
 }
+*/
 
+//==============================================================================
+//==============================================================================
+tErrType 	CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
+{
+//	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
+//				channel, noteNum, velocity, flags );
+ 
+	SPMUtil_NoteOn( pContext_, (int) channel, (int) noteNum, (int) velocity );
+
+	return kNoErr;
+}
+
+tErrType 	CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
+{
+//	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
+//				channel, noteNum, velocity, flags );
+ 
+	SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
+
+	return kNoErr;
+}
+
+void CMidiPlayer::SendDoneMsg( void ) {
+	const tEventPriority	kPriorityTBD = 0;
+	tAudioMsgDataCompleted	data;
+	data.audioID = 99;	// dummy
+	data.payload = 101;	// dummy
+	data.count = 1;
+
+	CEventMPI	event;
+	CAudioEventMessage	msg(data);
+	event.PostEvent(msg, kPriorityTBD, pListener_);
+	
+	// fixme/dg: need to find a better way to do done listeners
+	// support multiple midi files playing at the same time.
+	//pListener_ = kNull;
+}
+
+tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo ) 
+{
+	tErrType result = 0;
+	
+	// If a pre-emption is happening, delete the previous player.
+	if (pFilePlayer_ != kNull) {
+		MIDIFilePlayer_Delete( pFilePlayer_ );
+		pFilePlayer_ = kNull;
+	}
+
+//	pInfo->midiID;			// fixme/dg: midiEngineContext object?
+//	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
+	volume_ = ((float)pInfo->volume) / 100.0F;
+//	pInfo->priority;
+	if ( pInfo->pListener != kNull )
+		pListener_ = pInfo->pListener;
+//	pInfo->payload;
+	
+	if (pInfo->flags & 1)
+		loopMidiFile_ = true;
+
+	// Create a player, parse MIDIFile image and setup tracks.
+	result = MIDIFilePlayer_Create( &pFilePlayer_, (int)kAudioSampleRate, pInfo->pMidiFileImage, pInfo->imageSize );
+//		if( result < 0 )
+//			printf("Couldn't create a midifileplayer!\n");
+	
+	bFileActive_ = true;
+	
+	return result;
+}
+
+tErrType 	CMidiPlayer::PauseMidiFile( tAudioPauseMidiFileInfo* pInfo ) 
+{
+	tErrType result = 0;
+	
+	if (bFileActive_)
+		bFilePaused_ = true;
+	
+	return result;
+}
+
+tErrType 	CMidiPlayer::ResumeMidiFile( tAudioResumeMidiFileInfo* pInfo ) 
+{
+	tErrType result = 0;
+	
+	if (bFileActive_)
+		bFilePaused_ = false; 
+	
+	return result;
+}
+
+tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
+{
+	tErrType result = 0;;
+	
+	bFileActive_ = false;
+	bFilePaused_ = false;
+	if ((pListener_ != kNull) && !pInfo->suppressDoneMsg)
+		SendDoneMsg();
+
+	MIDIFilePlayer_Delete( pFilePlayer_ );
+	pFilePlayer_ = kNull;
+	pListener_ = kNull;
+	
+	return result;
+}
 
 //==============================================================================
 //==============================================================================
@@ -131,74 +241,6 @@ tErrType CMidiPlayer::SendCommand(U8 cmd, U8 data1, U8 data2)
 
 //==============================================================================
 //==============================================================================
-tErrType 	CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
-{
-//	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
-//				channel, noteNum, velocity, flags );
- 
-	SPMUtil_NoteOn( pContext_, (int) channel, (int) noteNum, (int) velocity );
-
-	return kNoErr;
-}
-
-tErrType 	CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
-{
-//	printf("MidiPlayer -- NoteOn: chan: %d, note: %d, vel: %d, flags: %d\n", 
-//				channel, noteNum, velocity, flags );
- 
-	SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
-
-	return kNoErr;
-}
-
-void CMidiPlayer::SendDoneMsg( void ) {
-	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgDataCompleted	data;
-	data.audioID = 99;	// dummy
-	data.payload = 101;	// dummy
-	data.count = 1;
-
-	CEventMPI	event;
-	CAudioEventMessage	msg(data);
-	event.PostEvent(msg, kPriorityTBD, pListener_);
-	
-	// fixme/dg: need to find a better way to do done listeners
-	// support multiple midi files playing at the same time.
-	pListener_ = kNull;
-}
-
-tErrType 	CMidiPlayer::PlayMidiFile( tAudioMidiFileInfo* 	pInfo ) 
-{
-	tErrType result;
-	
-//	pInfo->midiID;			// fixme/dg: midiEngineContext object?
-//	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
-	volume_ = ((float)pInfo->volume) / 100.0F;
-//	pInfo->priority;
-	if ( pInfo->pListener != kNull )
-		pListener_ = pInfo->pListener;
-//	pInfo->payload;
-	
-	// fixme/dg: Right now only allow one midi file to play at a time!
-	if (pFilePlayer_ == kNull) {
-			
-		if (pInfo->flags & 1)
-			loopMidiFile_ = true;
-	
-		// Create a player, parse MIDIFile image and setup tracks.
-		result = MIDIFilePlayer_Create( &pFilePlayer_, (int)kAudioSampleRate, pInfo->pMidiFileImage, pInfo->imageSize );
-//		if( result < 0 )
-//			printf("Couldn't create a midifileplayer!\n");
-	} else {
-		result = -1;
-//		printf("CMidiPlayer::PlayMidiFile -- Can't play a new midifile while already playing one!\n");
-	}
-	
-	return result;
-}
-
-//==============================================================================
-//==============================================================================
 U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 {
 	U32 	i;
@@ -213,7 +255,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 //		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
 	
 	// If there is a midi file player, service it
-	if (pFilePlayer_ != kNull) {
+	if ( bFileActive_ && !bFilePaused_ ) {
 		mfp_result = MIDIFilePlayer_PlayFrames( pFilePlayer_, pContext_, SPMIDI_GetFramesPerBuffer()  );
 //		if (mfp_result < 0)
 //		{

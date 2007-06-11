@@ -38,10 +38,6 @@ enum {
 	kAudioCmdMsgTypePauseAllAudio,
 	kAudioCmdMsgTypeResumeAllAudio,
 
-	kAudioCmdMsgTypePlayAudio,
-	kAudioCmdMsgTypePlayAudioArray,
-	kAudioCmdMsgTypeAppendAudioArray,
-
 	kAudioCmdMsgTypeStartAudio,
 	kAudioCmdMsgTypeStopAudio,
 	kAudioCmdMsgTypePauseAudio,
@@ -56,9 +52,6 @@ enum {
 	kAudioCmdMsgTypeReleaseMidiPlayer,
 	kAudioCmdMsgTypeGetMidiIDForAudioID,
 	kAudioCmdMsgTypeGetAudioIDForMidiID,
-	kAudioCmdMsgTypeStopMidiPlayer,
-	kAudioCmdMsgTypePauseMidiPlayer,
-	kAudioCmdMsgTypeResumeMidiPlayer,
 
 	kAudioCmdMsgTypeGetEnabledMidiTracks,
 	kAudioCmdMsgTypeEnableMidiTracks,
@@ -68,7 +61,10 @@ enum {
 	kAudioCmdMsgTypeSendMidiCommand,
 	kAudioCmdMsgTypeMidiNoteOn,
 	kAudioCmdMsgTypeMidiNoteOff,
-	kAudioCmdMsgTypePlayMidiFile
+	kAudioCmdMsgTypeStartMidiFile,
+	kAudioCmdMsgTypePauseMidiFile,
+	kAudioCmdMsgTypeResumeMidiFile,
+	kAudioCmdMsgTypeStopMidiFile
 };
 typedef U8 tAudioCmdMsgType;
 
@@ -96,23 +92,19 @@ private:
 };
 
 
-// kAudioCmdMsgTypePlayAudio
-class CAudioMsgPlayAudio : public CAudioCmdMsg {
-public:    
-	CAudioMsgPlayAudio( const tAudioPlayAudioInfo& data );
-	tAudioPlayAudioInfo*	GetData( void ) { return &data_; }
-	
-private:
-	tAudioPlayAudioInfo			data_;
-};
-
+// kAudioCmdMsgTypeStartAudio
 class CAudioMsgStartAudio : public CAudioCmdMsg {
 public:    
 	// Start the audio system running.
 	CAudioMsgStartAudio( void );
-	tAudioCmdMsgType	GetMessageCmdType( void ) const { return type_; }
+
+	// Start playing an audio resource.
+	CAudioMsgStartAudio( const tAudioStartAudioInfo& data );
+	
+	tAudioStartAudioInfo*	GetData( void ) { return &data_; }
 	
 private:
+	tAudioStartAudioInfo			data_;
 };
 
 // kAudioCmdMsgTypeStopAudio
@@ -125,7 +117,7 @@ public:
 	// Pause only audio indicated by ID.
 	CAudioMsgStopAudio( const tAudioStopAudioInfo& data );
 
-	tAudioStopAudioInfo	GetData( void ) const { return data_; }
+	tAudioStopAudioInfo*	GetData( void ) { return &data_; }
 
 private:
 	tAudioStopAudioInfo			data_;
@@ -141,7 +133,7 @@ public:
 	// Pause only audio indicated by ID.
 	CAudioMsgPauseAudio( const tAudioPauseAudioInfo& data );
 
-	tAudioPauseAudioInfo	GetData( void ) const { return data_; }
+	tAudioPauseAudioInfo*	GetData( void ) { return &data_; }
 	
 private:
 	tAudioPauseAudioInfo		data_;
@@ -158,7 +150,7 @@ public:
 	// Resume only audio indicated by ID.
 	CAudioMsgResumeAudio( const tAudioResumeAudioInfo& data );
 	
-	tAudioResumeAudioInfo	GetData( void ) const { return data_; }
+	tAudioResumeAudioInfo*	GetData( void ) { return &data_; }
 
 private:
 	tAudioResumeAudioInfo		data_;
@@ -170,7 +162,7 @@ class CAudioMsgAcquireMidiPlayer : public CAudioCmdMsg {
 public:    
 	// Start the audio system running.
 	CAudioMsgAcquireMidiPlayer( void );
-	tAudioCmdMsgType	GetMessageCmdType( void ) const { return type_; }
+	tAudioCmdMsgType	GetMessageCmdType( void ) { return type_; }
 	
 private:
 };
@@ -195,14 +187,44 @@ private:
 	tAudioMidiNoteInfo			data_;
 };
 
-// kAudioCmdMsgTypePlayMidiFile
-class CAudioMsgPlayMidiFile : public CAudioCmdMsg {
+// kAudioCmdMsgTypeStartMidiFile
+class CAudioMsgStartMidiFile : public CAudioCmdMsg {
 public:    
-	CAudioMsgPlayMidiFile( const tAudioMidiFileInfo& data );
-	tAudioMidiFileInfo*	GetData( void ) { return &data_; }
+	CAudioMsgStartMidiFile( const tAudioStartMidiFileInfo& data );
+	tAudioStartMidiFileInfo*	GetData( void ) { return &data_; }
 	
 private:
-	tAudioMidiFileInfo			data_;
+	tAudioStartMidiFileInfo			data_;
+};
+
+// kAudioCmdMsgTypePauseMidiFile
+class CAudioMsgPauseMidiFile : public CAudioCmdMsg {
+public:    
+	CAudioMsgPauseMidiFile( const tAudioPauseMidiFileInfo& data );
+	tAudioPauseMidiFileInfo*	GetData( void ) { return &data_; }
+	
+private:
+	tAudioPauseMidiFileInfo			data_;
+};
+
+// kAudioCmdMsgTypeResumeMidiFile
+class CAudioMsgResumeMidiFile : public CAudioCmdMsg {
+public:    
+	CAudioMsgResumeMidiFile( const tAudioResumeMidiFileInfo& data );
+	tAudioResumeMidiFileInfo*	GetData( void ) { return &data_; }
+	
+private:
+	tAudioResumeMidiFileInfo			data_;
+};
+
+// kAudioCmdMsgTypeStopMidiFile
+class CAudioMsgStopMidiFile : public CAudioCmdMsg {
+public:    
+	CAudioMsgStopMidiFile( const tAudioStopMidiFileInfo& data );
+	tAudioStopMidiFileInfo*	GetData( void ) { return &data_; }
+	
+private:
+	tAudioStopMidiFileInfo			data_;
 };
 
 //-----------------------------------------------------------------------
@@ -226,7 +248,7 @@ private:
 	tMidiID			midiID_;
 };
 
-const U32	kMAX_AUDIO_MSG_SIZE	=	(sizeof(CAudioMsgPlayMidiFile) + 4);
+const U32	kMAX_AUDIO_MSG_SIZE	=	(sizeof(CAudioMsgStartMidiFile) + 4);
 
 
 #endif	// LF_BRIO_AUDIOMSG_H

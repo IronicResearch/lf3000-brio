@@ -34,8 +34,15 @@ public:
 	~CAudioMixer();
 		
 	// Find the best channel to use for audio at a given priority
-	CChannel*		FindBestChannel( tAudioPriority priority );
+	CChannel*		FindChannelUsing( tAudioPriority priority );
+	
+	// Find a channel based on the ID of the audio its playing.
+	CChannel*		FindChannelUsing( tAudioID id );
+	
+	// Get the MIDI player for the mixer.
 	CMidiPlayer*	GetMidiPlayer( void ) { return pMidiPlayer_; }
+	
+	// Set the mixer's master volume.
 	void 			SetMasterVolume( U8 vol ) { masterVol_ = ((float)vol) / 100.0F;}
 	
 	// Main routine to handle the processing of data through the audio channels

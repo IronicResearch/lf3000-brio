@@ -58,13 +58,17 @@ public:
 
 	// Plays an audio resource.  Currently only volume and pListener are interpreted.
 	// An audio done mesasge will be posted to the listener if provided.
-	tAudioID PlayAudio( tRsrcHndl			hRsrc, 
-						U8					volume, 
-						tAudioPriority		priority,
-						S8					pan, 
-						IEventListener*		pListener,
-						tAudioPayload		payload,
-						tAudioOptionsFlags	flags );
+	tAudioID 	StartAudio( tRsrcHndl			hRsrc, 
+					U8					volume, 
+					tAudioPriority		priority,
+					S8					pan, 
+					IEventListener*		pListener,
+					tAudioPayload		payload,
+					tAudioOptionsFlags	flags );
+
+	void 		PauseAudio( tAudioID audioID );
+	void 		ResumeAudio( tAudioID audioID ); 
+	void 		StopAudio( tAudioID audioID, Boolean surpressDoneMessage ); 
 
 	// need policy for unloading audio resources after they have been played. ReleaseAudioRsrc()?
 
@@ -74,7 +78,7 @@ public:
 	tErrType 	MidiNoteOn( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	MidiNoteOff( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 
-	tAudioID 	PlayMidiFile( tMidiID	midiID,
+	tMidiID 	StartMidiFile( tMidiID	midiID,
 						tRsrcHndl		hRsrc, 
 						U8					volume, 
 						tAudioPriority		priority,
@@ -82,13 +86,14 @@ public:
 						tAudioPayload		payload,
 						tAudioOptionsFlags	flags );
 
+	void 		PauseMidiFile( tMidiID midiID );
+	void 		ResumeMidiFile( tMidiID midiID );
+	void 		StopMidiFile( tMidiID midiID, Boolean surpressDoneMessage );
+
 	// these are still unimplemented!	
 	tErrType 	ReleaseMidiPlayer( tMidiID midiID );
 	tMidiID 	GetMidiIDForAudioID( tAudioID audioID );
 	tAudioID 	GetAudioIDForMidiID( tMidiID midiID );
-	void 		StopMidiPlayer( tMidiID midiID, Boolean surpressDoneMessage );
-	void 		PauseMidiPlayer( tMidiID midiID );
-	void 		ResumeMidiPlayer( tMidiID midiID );
 	tMidiTrackBitMask GetEnabledMidiTracks( tMidiID midiID );
 	tErrType 	EnableMidiTracks( tMidiID midiID, tMidiTrackBitMask trackBitMask );
 	tErrType 	TransposeMidiTracks( tMidiID midiID, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );

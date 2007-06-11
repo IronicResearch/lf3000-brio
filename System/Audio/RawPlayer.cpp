@@ -32,7 +32,7 @@
 // CRawPlayer implementation
 //==============================================================================
 
-CRawPlayer::CRawPlayer( tAudioPlayAudioInfo* pData, tAudioID id  ) : CAudioPlayer( pData, id  )
+CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAudioPlayer( pData, id  )
 {
 	// Most of the member vars set by superclass; these are RAW specific.
 	pCurFrame_ = (S16*)pAudioData_;
@@ -53,51 +53,22 @@ CRawPlayer::CRawPlayer( tAudioPlayAudioInfo* pData, tAudioID id  ) : CAudioPlaye
 CRawPlayer::~CRawPlayer()
 {
 	// If there's anyone listening, let them know we're done.
-	// fixme/dg: check for suppress done msg flag too!
-	if (pListener_ != kNull)
+	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
 
 //	printf(" CRawPlayer::dtor -- I'm HERE!!!\n\n\n\n");
 }
 
-/*
- * I think these will go away and be handled in the channel...
-//==============================================================================
-//==============================================================================
-void CRawPlayer::Stop()
-{
-	bStopping_ = 1;
-	bComplete_ = 1;
-}
 
 //==============================================================================
 //==============================================================================
-void CRawPlayer::Pause()
-{
-	// Set the player and its assigned channel to the paused state
-	bPaused_ = 1;
-//	mpChannel->SetPauseState(true);
-}
-
-//==============================================================================
-//==============================================================================
-void CRawPlayer::Resume()
-{
-	// Set the player and its assigned channel to the un-paused state
-	bPaused_ = 0;
-//	mpChannel->SetPauseState(false);
-}
-
-
-//==============================================================================
-//==============================================================================
-void CRawPlayer::Restart()
+void CRawPlayer::Rewind()
 {
 	// Point curSample_ back to start and reset total.
 	pCurFrame_ = (S16 *)pAudioData_;
 	framesLeft_ = numFrames_;
 }
-*/
+
 
 void CRawPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;

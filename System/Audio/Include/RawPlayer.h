@@ -31,16 +31,11 @@
 //==============================================================================
 class CRawPlayer : public CAudioPlayer {
 public:
-	CRawPlayer( tAudioPlayAudioInfo* pData, tAudioID id  );
+	CRawPlayer( tAudioStartAudioInfo* pData, tAudioID id  );
 	~CRawPlayer();
-	
-	// These don't make sense.... controlled from mixer channel I think.
-//	void	Stop();
-//	void	Pause();
-//	void	Resume();
-	
+		
 	// Reset player to start from beginning of sample
-//	void	Restart();
+	void	Rewind();
 	
 	// Attempt to fill buffer at pOutBuff with numFrames of data.  
 	// Returns number of frames actually rendered; zero when done.
