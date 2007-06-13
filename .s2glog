@@ -3505,3 +3505,12 @@ By TParker (TParker@leapfrog.com) on 6/13/07 3:47 PM
 2,861 ms. (Cumulative: 489,984 ms)
 
 ----------------
+Revision 538 from svn://localhost/TRUNK/:
+
+Readd lib
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/13/07 4:35 PM
+0 changed, 1 added, 0 deleted.
+1,813 ms. (Cumulative: 491,906 ms)
+
+----------------
