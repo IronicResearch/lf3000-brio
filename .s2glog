@@ -3523,3 +3523,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/13/07 4:57 PM
 1,656 ms. (Cumulative: 493,624 ms)
 
 ----------------
+Revision 540 from svn://localhost/TRUNK/:
+
+Readd lib
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/13/07 4:57 PM
+0 changed, 1 added, 0 deleted.
+1,735 ms. (Cumulative: 495,422 ms)
+
+----------------
