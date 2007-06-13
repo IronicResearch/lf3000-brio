@@ -274,8 +274,10 @@ public:
 //		pResourceMPI_->SetDefaultURIPath("/home/lfu/workspace/Brio2/System/Audio/tests/apprsrc/");
 //		handle1 = pResourceMPI_->FindRsrc("TestAudio1.rsrc");
 //		TS_ASSERT( handle1 != 0 );
-		pResourceMPI_->SetDefaultURIPath("/home/darren/workspace/BrioCube/apprsrc/");
+		// TODO/DM: This should go away with new resource manager
+		pResourceMPI_->SetDefaultURIPath("/home/lfu/workspace/BrioCube/apprsrc/");
 		handle = pResourceMPI_->FindRsrc("app1.txt");
+		TS_ASSERT( handle1 != 0 );
 
 		handle1 = pResourceMPI_->FindRsrc("BlueNile44m.raw");
 		TS_ASSERT( handle1 != 0 );

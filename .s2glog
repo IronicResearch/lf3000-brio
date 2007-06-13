@@ -3479,3 +3479,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/12/07 5:32 PM
 1,672 ms. (Cumulative: 483,591 ms)
 
 ----------------
+Revision 533 from svn://localhost/TRUNK/:
+
+Change platform-specific path in audio test.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/13/07 12:20 PM
+1 changed, 0 added, 0 deleted.
+1,704 ms. (Cumulative: 485,342 ms)
+
+----------------
