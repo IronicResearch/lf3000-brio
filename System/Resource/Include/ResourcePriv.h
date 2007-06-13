@@ -17,61 +17,41 @@
 #include <SystemTypes.h>
 #include <CoreModule.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
 #include <ResourceTypes.h>
-#include <stdio.h>				// FIXME/dm: needed for embedded target
+
+#include <vector>
+#include <boost/scoped_array.hpp>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
+
+//----------------------------------------------------------------------------
 // Forward declarations
+//----------------------------------------------------------------------------
 class IEventListener;
+struct DeviceDescriptor;
+struct PackageDescriptor;
+struct ResourceDescriptor;
 
 
+//----------------------------------------------------------------------------
 // Constants
+//----------------------------------------------------------------------------
 const CString	kResourceModuleName	= "Resource";
 const tVersion	kResourceModuleVersion	= 2;
 
-//FIXME:tp private?
-#define MAX_RSRC_URI_SIZE		128
-#define MAX_RSRC_NAME_SIZE		80
+extern const char*	kBaseRsrcPath;
+extern const char*	kCart1RsrcPath;
 
-struct tRsrcFileDescriptor {
-	char 			uri[MAX_RSRC_URI_SIZE];
-	char			name[MAX_RSRC_NAME_SIZE];
-	tRsrcType		type;
-	tVersion		version;
-	U32				packedSize;
-	U32				unpackedSize;
-//	U32				id;					// not currently in use
-};
 
-struct tRsrcDescriptor {
-	char 			uri[MAX_RSRC_URI_SIZE];
-	char			name[MAX_RSRC_NAME_SIZE];
-	tRsrcType		type;
-	tVersion		version;
-	U32				packedSize;
-	U32				unpackedSize;
-	U32				id;
-	tPtr 			pRsrc;
-	FILE			*pFile;
-	//	need some sort of file pointer (read/seek/write)
-	U32				useCount;			// load/unload
-};
 
-struct tRsrcDeviceDescriptor {
-	char			uriBase[MAX_RSRC_URI_SIZE];
-};
+//----------------------------------------------------------------------------
+// Platform-specific helper functions
+//----------------------------------------------------------------------------
+typedef std::vector<CPath>	MountPoints;
+void GetDeviceMountPoints(MountPoints& mp);
 
-union tRsrcSearchPattern {
-	char 			uri[MAX_RSRC_URI_SIZE];
-	U32				id;
-	tRsrcType		type;
-	tRsrcHndl 		hndl;
-};
-
-struct tRsrcLoadLogEntry {
-	tRsrcHndl		hndl;
-	U32				taskID;
-};
 
 
 //==============================================================================
@@ -83,99 +63,97 @@ public:
 	virtual const CString*	GetModuleName() const;	
 	virtual const CURI*		GetModuleOrigin() const;
 
-	// class-specific functionality
+	// MPI state storage
+	VTABLE_EXPORT	U32				Register( );
 	VTABLE_EXPORT	void			SetDefaultURIPath(U32 id, const CURI &pURIPath);
 	VTABLE_EXPORT	tErrType		SetDefaultListener(U32 id, //FIXME/tp check interface
 												const IEventListener *pListener);
+	VTABLE_EXPORT	void			SetSynchronization(U32 id, eSynchState block);
 
 	// Searching for devices
-	VTABLE_EXPORT	U16				GetNumDevices() const;
-	VTABLE_EXPORT	U16				GetNumDevices(tDeviceType type) const;
+	VTABLE_EXPORT	U16				GetNumDevices(eDeviceType type) const;
 
-	VTABLE_EXPORT	tDeviceHndl		FindFirstDevice() const;
-	VTABLE_EXPORT	tDeviceHndl		FindFirstDevice(tDeviceType type) const;
-	VTABLE_EXPORT	tDeviceHndl		FindNextDevice() const;
+	VTABLE_EXPORT	tDeviceHndl		FindFirstDevice(U32 id, eDeviceType type) const;
+	VTABLE_EXPORT	tDeviceHndl		FindNextDevice(U32 id) const;
 
 	VTABLE_EXPORT	const CString*	GetDeviceName(tDeviceHndl hndl) const;
-	VTABLE_EXPORT	tDeviceType		GetDeviceType(tDeviceHndl hndl) const;
+	VTABLE_EXPORT	eDeviceType		GetDeviceType(tDeviceHndl hndl) const;
 
-	VTABLE_EXPORT	tErrType		OpenDevice(tDeviceHndl hndl, 
+	VTABLE_EXPORT	tErrType		OpenDevice(U32 id, tDeviceHndl hndl, 
 												tOptionFlags openOptions,
 												const IEventListener *pListener);  
-	VTABLE_EXPORT	tErrType		CloseDevice(tDeviceHndl hndl);
+	VTABLE_EXPORT	tErrType		CloseDevice(U32 id, tDeviceHndl hndl);
 
 	VTABLE_EXPORT	tErrType		OpenAllDevices(U32 id, tOptionFlags openOptions,
 												const IEventListener *pListener);  
-	VTABLE_EXPORT	tErrType		CloseAllDevices();
+	VTABLE_EXPORT	tErrType		CloseAllDevices(U32 id);
 
 	// Searching for packages
-	VTABLE_EXPORT	U32				GetNumRsrcPackages(tRsrcPackageType type, 
+	VTABLE_EXPORT	U32				GetNumPackages(U32 id, eRsrcPackageType type, 
 												const CURI *pURIPath) const;
 
-	VTABLE_EXPORT	tRsrcPackageHndl FindRsrcPackage(const CURI& packageURI,
+	VTABLE_EXPORT	tPackageHndl	FindPackage(U32 id, const CURI& packageURI,
 												const CURI *pURIPath) const;
-	VTABLE_EXPORT	tRsrcPackageHndl FindFirstRsrcPackage(tRsrcPackageType type,
+	VTABLE_EXPORT	tPackageHndl	FindFirstPackage(U32 id, eRsrcPackageType type,
 												const CURI *pURIPath) const;	
-	VTABLE_EXPORT	tRsrcPackageHndl FindNextRsrcPackage() const;
+	VTABLE_EXPORT	tPackageHndl	FindNextPackage(U32 id) const;
 
 	// Getting package info
-	VTABLE_EXPORT	const CURI*		 GetRsrcPackageURI(tRsrcPackageHndl hndl) const;
-	VTABLE_EXPORT	const CString*	 GetRsrcPackageName(tRsrcPackageHndl hndl) const;
-	VTABLE_EXPORT	tRsrcPackageType GetRsrcPackageType(tRsrcPackageHndl hndl) const;
-	VTABLE_EXPORT	tVersion		 GetRsrcPackageVersion(tRsrcPackageHndl hndl) const;
-	VTABLE_EXPORT	const CString*	 GetRsrcPackageVersionStr(tRsrcPackageHndl hndl) const;
-	VTABLE_EXPORT	U32				 GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl) const;
-	VTABLE_EXPORT	U32				 GetRsrcPackageSizePacked(tRsrcPackageHndl hndl) const;
+	VTABLE_EXPORT	const CURI*		 GetPackageURI(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	const CString*	 GetPackageName(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	eRsrcPackageType GetPackageType(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	tVersion		 GetPackageVersion(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	const CString*	 GetPackageVersionStr(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	U32				 GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	U32				 GetPackageSizePacked(U32 id, tPackageHndl hndl) const;
 
 	// Opening & closing packages to find resources within them
-	VTABLE_EXPORT	tErrType		OpenRsrcPackage(tRsrcPackageHndl hndl, 
+	VTABLE_EXPORT	tErrType		OpenPackage(U32 id, tPackageHndl hndl, 
 													tOptionFlags openOptions,
 													const IEventListener *pListener);  
-  	VTABLE_EXPORT	tErrType		CloseRsrcPackage(tRsrcPackageHndl hndl);
+  	VTABLE_EXPORT	tErrType		ClosePackage(U32 id, tPackageHndl hndl);
 
 	// Loading & unloading packages
-	VTABLE_EXPORT	tErrType		LoadRsrcPackage(tRsrcPackageHndl hndl, 
+	VTABLE_EXPORT	tErrType		LoadPackage(U32 id, tPackageHndl hndl, 
 													tOptionFlags loadOptions,
 													const IEventListener *pListener);  
-	VTABLE_EXPORT	tErrType		UnloadRsrcPackage(tRsrcPackageHndl hndl, 
+	VTABLE_EXPORT	tErrType		UnloadPackage(U32 id, tPackageHndl hndl, 
 													tOptionFlags unloadOptions,
 													const IEventListener *pListener);  
 
 	// Searching for resources among opened & loaded packages & devices
-	VTABLE_EXPORT	void			SetSearchScope(U32 id, eSearchScope scope); 	
-	VTABLE_EXPORT	eSearchScope	GetSearchScope(U32 id) const; 	
-	VTABLE_EXPORT	U32				GetNumRsrcs(U32 id, const CURI *pURIPath) const; 	
 	VTABLE_EXPORT	U32				GetNumRsrcs(U32 id, tRsrcType type,
 												const CURI *pURIPath) const;
 
 	VTABLE_EXPORT	tRsrcHndl		FindRsrc(U32 id, const CURI &pRsrcURI, 
 												const CURI *pURIPath) const;
-	VTABLE_EXPORT	tRsrcHndl		FindFirstRsrc(U32 id, const CURI *pURIPath) const;
 	VTABLE_EXPORT	tRsrcHndl		FindFirstRsrc(U32 id, tRsrcType type, 
 												const CURI *pURIPath) const;
 	VTABLE_EXPORT	tRsrcHndl		FindNextRsrc(U32 id) const;
 
 	// Getting rsrc info
-	VTABLE_EXPORT	const CURI*		GetRsrcURI(U32 id, tRsrcHndl hndl) const;
-	VTABLE_EXPORT	const CString*	GetRsrcName(U32 id, tRsrcHndl hndl) const;
-	VTABLE_EXPORT	tRsrcType		GetRsrcType(tRsrcHndl hndl) const;
-	VTABLE_EXPORT	tVersion		GetRsrcVersion(tRsrcHndl hndl) const;
-	VTABLE_EXPORT	const CString*	GetRsrcVersionStr(tRsrcHndl hndl) const;	
-	VTABLE_EXPORT	U32				GetRsrcPackedSize(tRsrcHndl hndl) const;
-	VTABLE_EXPORT	U32				GetRsrcUnpackedSize(tRsrcHndl hndl) const;
-	VTABLE_EXPORT	tPtr			GetRsrcPtr(tRsrcHndl hndl) const;
+	VTABLE_EXPORT	const CURI*		GetURI(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	const CString*	GetName(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	tRsrcType		GetType(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	tVersion		GetVersion(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	const CString*	GetVersionStr(U32 id, tRsrcHndl hndl) const;	
+	VTABLE_EXPORT	U32				GetPackedSize(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	U32				GetUnpackedSize(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	tPtr			GetPtr(U32 id, tRsrcHndl hndl) const;
 
 	// Opening & closing resources without loading them
 	VTABLE_EXPORT	tErrType		OpenRsrc(U32 id, tRsrcHndl hndl, 
 											tOptionFlags openOptions,
-											const IEventListener *pListener);  
-	VTABLE_EXPORT	tErrType		CloseRsrc(tRsrcHndl hndl);
+											const IEventListener *pListener,
+											Boolean suppressDoneEvent = false);  
+	VTABLE_EXPORT	tErrType		CloseRsrc(U32 id, tRsrcHndl hndl);
 
 	VTABLE_EXPORT	tErrType		ReadRsrc(U32 id, tRsrcHndl hndl, void* pBuffer, U32 numBytesRequested,
 											U32 *pNumBytesActual,
 											tOptionFlags readOptions,
-											const IEventListener *pListener) const;  
-	VTABLE_EXPORT	tErrType		SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
+											const IEventListener *pListener,
+											Boolean suppressDoneEvent = false) const;  
+	VTABLE_EXPORT	tErrType		SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes, 
 											tOptionFlags seekOptions) const;
 	VTABLE_EXPORT	tErrType		WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer, 
 											U32 numBytesRequested, U32 *pNumBytesActual,
@@ -189,21 +167,25 @@ public:
 											tOptionFlags unloadOptions,
 											const IEventListener *pListener);
 
-	VTABLE_EXPORT	Boolean			RsrcIsLoaded(tRsrcHndl hndl) const;
+	VTABLE_EXPORT	Boolean			RsrcIsLoaded(U32 id, tRsrcHndl hndl) const;
 
 	// Rsrc referencing FIXME: move to smartptr hndl class
 	VTABLE_EXPORT	tErrType		AddRsrcRef(tRsrcHndl hndl);	
 	VTABLE_EXPORT	tErrType		DeleteRsrcRef(tRsrcHndl hndl);
-	VTABLE_EXPORT	tErrType		GetRsrcRefCount(tRsrcHndl hndl);
+	VTABLE_EXPORT	tErrType		GetRefCount(tRsrcHndl hndl);
 
 	// New rsrc creation/deletion
-	VTABLE_EXPORT	tRsrcHndl 		NewRsrc(tRsrcType rsrcType, void* pData);
-	VTABLE_EXPORT	tErrType		DeleteRsrc(tRsrcHndl hndl);
+	VTABLE_EXPORT	tRsrcHndl 		NewRsrc(U32 id, tRsrcType rsrcType, void* pData);
+	VTABLE_EXPORT	tErrType		DeleteRsrc(U32 id, tRsrcHndl hndl);
 	
-	VTABLE_EXPORT	U32				Register( );
 	
 private:
+	void 	OpenDeviceImpl(U32 id, tDeviceHndl hndl, tOptionFlags openOptions);
+	PackageDescriptor*	FindPackagePriv(U32 id, tPackageHndl hndl) const;
+	ResourceDescriptor*	FindRsrcPriv(U32 id, tRsrcHndl hndl) const	;
 	CDebugMPI			dbg_;
+	CKernelMPI 			kernel_;
+	boost::scoped_array<DeviceDescriptor>	pDevices_;
 
 	// Limit object creation to the Module Manager interface functions
 	CResourceModule();

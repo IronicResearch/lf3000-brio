@@ -36,6 +36,10 @@ public:
 	bool		Initialize( const char* );
 	void		SetModuleSearchPath( const char* );
 	const char*	GetModuleSearchPath( ) const;
+	void		SetBaseResourceSearchPath( const char* );
+	const char*	GetBaseResourceSearchPath( ) const;
+	void		SetCartResourceSearchPath( const char* );
+	const char*	GetCartResourceSearchPath( ) const;
 
 	//--------------------------------------------------------------
 	// Frame buffer characteristics

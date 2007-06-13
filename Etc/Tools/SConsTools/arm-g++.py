@@ -33,6 +33,7 @@ def generate(env):
 	env['AS']	= compiler
 	env['CC']	= compiler
 	env['CXX']	= compiler
+	env['LINK']	= compiler
 	
 	# Platform specific settings
 	env['CCFLAGS']		= SCons.Util.CLVar('$CCFLAGS') + '-Wall -fmessage-length=0'

@@ -24,7 +24,8 @@ kBuildMPI		= 1
 exclude_dirs_for_header_compile = [
 	'.svn',
 	'Temp',
-	'Output',
+	'Build',
+	'XBuild',
 	'Publish', 
 	'tests',
 	'disabled',
@@ -224,10 +225,11 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		# FIXME/tp: following conditional is getting evaluated too early,
 		# FIXME/tp: need to find alternate/delayed way
 		if os.path.exists(mytest[0].abspath):
+			platformlibs = ['DebugMPI']
 			if vars['is_emulation']:
-				platformlibs = ['glibmm-2.4', 'glib-2.0']
+				platformlibs += ['glibmm-2.4', 'glib-2.0']
 			else:
-				platformlibs = ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
+				platformlibs += ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
 				testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs'])
 			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs
 			if vars['is_emulation']:

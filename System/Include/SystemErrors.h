@@ -46,7 +46,8 @@ inline tErrType FirstErr( eGroupEnum group )
 	(kNoImplErr)				\
 	(kAllocMPIErr)				\
 	(kPermissionsErr)			\
-	(kMPINotConnectedErr)
+	(kMPINotConnectedErr)		\
+	(kMemoryAllocationErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupCommon), COMMON_ERRORS)
 

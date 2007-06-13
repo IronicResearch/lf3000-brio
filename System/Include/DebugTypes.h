@@ -14,6 +14,7 @@
 //==============================================================================
 
 #include <SystemTypes.h>
+#include <exception>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -101,7 +102,7 @@ typedef U16	tDebugSignature;
 //		by importance the amount of Printf's that cause data to be sent out
 //		the serial port.
 //==============================================================================
-typedef enum
+enum tDebugLevel
 {
 	kDbgLvlSilent = 0,
 	kDbgLvlCritical = 1,
@@ -111,9 +112,9 @@ typedef enum
 	kDbgLvlVerbose,
 
 	kMaxDebugLevel = kDbgLvlVerbose
-} tDebugLevel;
+} ;
 
-///------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // tLogPlayerLoadTypeOffset
 //
 //		Player load type offset used to identify the type of logging record.
@@ -121,13 +122,29 @@ typedef enum
 //		known logging event plus this offset.  (This is so the details of the
 //		logging event types don't need to be made public.)  
 //------------------------------------------------------------------------------
-typedef enum {
+enum tLogPlayerLoadTypeOffset 
+{
 	kLogFlyPlayerLaunchApp = 0,
 	kLogPegPlayerLaunchApp,
 	kLogFlashPlayerLoadMovie,
 	kLogFlashPlayerPlayMovie
-} tLogPlayerLoadTypeOffset;
+};
 
+
+//------------------------------------------------------------------------------
+// UnitTestAssertException
+//
+// For unit tests, better to throw an excetpion than actually assert out.
+//------------------------------------------------------------------------------
+class UnitTestAssertException : public std::exception
+{
+public:
+	virtual const char *what() const throw()
+	{
+		return "Brio DebugMPI::Assert";
+	}
+	virtual ~UnitTestAssertException( ) throw() {}
+};
 		   
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_DEBUGTYPES_H

@@ -15,13 +15,13 @@
 //==============================================================================
 
 #include <SystemTypes.h>
-//#include <SystemRsrcTypes.h>
 #include <ResourceTypes.h>
 #include <StringTypes.h>
 #include <CoreMPI.h>
-#include <EventListener.h>
 #include <EventMessage.h>
 LF_BEGIN_BRIO_NAMESPACE()
+
+class IEventListener;
 
 	
 //==============================================================================
@@ -56,22 +56,21 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-	CResourceMPI(const IEventListener *pListener = NULL);
+	CResourceMPI(eSynchState block = kBlocking,
+				const IEventListener *pListener = NULL);
 	virtual ~CResourceMPI();
 
 	// Setting default search path & handlers
 	void			SetDefaultURIPath(const CURI &pURIPath);
 
 	// Searching for devices
-	U16				GetNumDevices() const;
-	U16				GetNumDevices(tDeviceType type) const;
+	U16				GetNumDevices(eDeviceType type = kRsrcDeviceTypeAll) const;
 
-	tDeviceHndl		FindFirstDevice() const;
-	tDeviceHndl		FindFirstDevice(tDeviceType type) const;
+	tDeviceHndl		FindFirstDevice(eDeviceType type = kRsrcDeviceTypeAll) const;
 	tDeviceHndl		FindNextDevice() const;
 
 	const CString*	GetDeviceName(tDeviceHndl hndl) const;
-	tDeviceType		GetDeviceType(tDeviceHndl hndl) const;
+	eDeviceType		GetDeviceType(tDeviceHndl hndl) const;
 
 	tErrType		OpenDevice(tDeviceHndl hndl, 
 								tOptionFlags openOptions=kNoOptionFlags,
@@ -83,60 +82,58 @@ public:
 	tErrType		CloseAllDevices();
 
 	// Searching for packages
-	U32				 GetNumRsrcPackages( 
-								tRsrcPackageType type = kRsrcPackageTypeUndefined, 
+	U32				GetNumPackages(eRsrcPackageType type = kRsrcPackageTypeAll, 
 								const CURI *pURIPath = kNull) const;
 
-	tRsrcPackageHndl FindRsrcPackage(const CURI& packageURI,
+	tPackageHndl FindPackage(const CURI& packageURI,
 								const CURI *pURIPath = kNull) const;
-	tRsrcPackageHndl FindFirstRsrcPackage(tRsrcPackageType type, 
+	tPackageHndl FindFirstPackage(eRsrcPackageType type = kRsrcPackageTypeAll, 
 								const CURI *pURIPath = kNull) const;	
-	tRsrcPackageHndl FindNextRsrcPackage() const;
+	tPackageHndl FindNextPackage() const;
 
 	// Getting package info
-	const CURI*		 GetRsrcPackageURI(tRsrcPackageHndl hndl) const;
-	const CString*	 GetRsrcPackageName(tRsrcPackageHndl hndl) const;
-	tRsrcPackageType GetRsrcPackageType(tRsrcPackageHndl hndl) const;
-	tVersion		 GetRsrcPackageVersion(tRsrcPackageHndl hndl) const;
-	const CString*	 GetRsrcPackageVersionStr(tRsrcPackageHndl hndl) const;
-	U32				 GetRsrcPackageSizeUnpacked(tRsrcPackageHndl hndl) const;
-	U32				 GetRsrcPackageSizePacked(tRsrcPackageHndl hndl) const;
+	// FIXME/tp: Need Package Name???
+	const CURI*		 GetPackageURI(tPackageHndl hndl) const;
+	const CString*	 GetPackageName(tPackageHndl hndl) const;
+	eRsrcPackageType GetPackageType(tPackageHndl hndl) const;
+	tVersion		 GetPackageVersion(tPackageHndl hndl) const;
+	const CString*	 GetPackageVersionStr(tPackageHndl hndl) const;
+//	U32				 GetPackageSizeUnpacked(tPackageHndl hndl) const;
+//	U32				 GetPackageSizePacked(tPackageHndl hndl) const;
 
 	// Opening & closing packages to find resources within them
-	tErrType		OpenRsrcPackage(tRsrcPackageHndl hndl, 
+	tErrType		OpenPackage(tPackageHndl hndl, 
 								tOptionFlags openOptions=kNoOptionFlags,
 								const IEventListener *pListener = kNull);  
-  	tErrType		CloseRsrcPackage(tRsrcPackageHndl hndl);
+  	tErrType		ClosePackage(tPackageHndl hndl);
 
 	// Loading & unloading packages
-	tErrType		LoadRsrcPackage(tRsrcPackageHndl hndl, 
+	tErrType		LoadPackage(tPackageHndl hndl, 
 								tOptionFlags loadOptions = kNoOptionFlags,
 								const IEventListener *pListener = kNull);  
-	tErrType		UnloadRsrcPackage(tRsrcPackageHndl hndl, 
+	tErrType		UnloadPackage(tPackageHndl hndl, 
 								tOptionFlags unloadOptions = kNoOptionFlags,
 								const IEventListener *pListener = kNull);  
 
 	// Searching for resources among opened & loaded packages & devices
-	void			SetSearchScope(eSearchScope scope); 	
-	eSearchScope	GetSearchScope() const; 	
-	U32				GetNumRsrcs(const CURI *pURIPath = kNull) const; 	
-	U32				GetNumRsrcs(tRsrcType type, const CURI *pURIPath = kNull) const;
+	U32				GetNumRsrcs(tRsrcType type = kRsrcTypeAll, 
+								const CURI *pURIPath = kNull) const;
 
 	tRsrcHndl		FindRsrc(const CURI &pRsrcURI, 
 							const CURI *pURIPath = kNull) const;
-	tRsrcHndl		FindFirstRsrc(const CURI *pURIPath = kNull) const;
-	tRsrcHndl		FindFirstRsrc(tRsrcType type, const CURI *pURIPath = kNull) const;
+	tRsrcHndl		FindFirstRsrc(tRsrcType type = kRsrcTypeAll, 
+									const CURI *pURIPath = kNull) const;
 	tRsrcHndl		FindNextRsrc() const;
 
 	// Getting rsrc info
-	const CURI*		GetRsrcURI(tRsrcHndl hndl) const;
-	const CString*	GetRsrcName(tRsrcHndl hndl) const;
-	tRsrcType		GetRsrcType(tRsrcHndl hndl) const;
-	tVersion		GetRsrcVersion(tRsrcHndl hndl) const;
-	const CString*	GetRsrcVersionStr(tRsrcHndl hndl) const;	
-	U32				GetRsrcPackedSize(tRsrcHndl hndl) const;
-	U32				GetRsrcUnpackedSize(tRsrcHndl hndl) const;
-	tPtr			GetRsrcPtr(tRsrcHndl hndl) const;
+	const CURI*		GetURI(tRsrcHndl hndl) const;
+	const CString*	GetName(tRsrcHndl hndl) const;
+	tRsrcType		GetType(tRsrcHndl hndl) const;
+	tVersion		GetVersion(tRsrcHndl hndl) const;
+	const CString*	GetVersionStr(tRsrcHndl hndl) const;	
+	U32				GetPackedSize(tRsrcHndl hndl) const;
+	U32				GetUnpackedSize(tRsrcHndl hndl) const;
+	tPtr			GetPtr(tRsrcHndl hndl) const;
 
 	// Opening & closing resources without loading them
 	tErrType		OpenRsrc(tRsrcHndl hndl, 
@@ -169,7 +166,7 @@ public:
 	// Rsrc referencing FIXME: move to smartptr hndl class
 	tErrType		AddRsrcRef(tRsrcHndl hndl);	
 	tErrType		DeleteRsrcRef(tRsrcHndl hndl);
-	U32				GetRsrcRefCount(tRsrcHndl hndl);
+	U32				GetRefCount(tRsrcHndl hndl);
 
 	// New rsrc creation/deletion
 	tRsrcHndl		NewRsrc(tRsrcType rsrcType, void* pData);

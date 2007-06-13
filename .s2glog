@@ -3488,3 +3488,20 @@ By Dmilici (Dmilici@leapfrog.com) on 6/13/07 12:20 PM
 1,704 ms. (Cumulative: 485,342 ms)
 
 ----------------
+Revision 534 from svn://localhost/TRUNK/:
+Revision 535 from svn://localhost/TRUNK/:
+Revision 536 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,687 ms. (Cumulative: 487,107 ms)
+
+----------------
+Revision 537 from svn://localhost/TRUNK/:
+
+Massively huge checkin for reworking of Resource Manager module
+
+By TParker (TParker@leapfrog.com) on 6/13/07 3:47 PM
+21 changed, 11 added, 78 deleted.
+2,861 ms. (Cumulative: 489,984 ms)
+
+----------------

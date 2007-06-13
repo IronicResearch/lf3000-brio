@@ -274,6 +274,11 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 		printf( kDebugOutSignatureFmt, sig_ );
 	    vprintf( formatString, arguments ); 
 		va_end( arguments );
+		if (pModule_ && pModule_->ThrowOnAssertIsEnabled())
+		{
+			UnitTestAssertException e;
+			throw e;
+		}
 		assert(false);
 	}
 }
@@ -405,6 +410,33 @@ void CDebugMPI::DisableDebugOutTimestamp()
 {
 	if (pModule_)
 		pModule_->DisableDebugOutTimestamp();
+}
+
+//==============================================================================
+// Function:
+//		EnableThrowOnAssert
+//		DisableThrowOnAssert
+//
+// Parameters:
+//		none
+//
+// Returns:
+//		none
+//
+// Description:
+//		Enable/disable adding timestamp to all debug output.   
+//==============================================================================
+
+void CDebugMPI::EnableThrowOnAssert()
+{
+	if (pModule_)
+		pModule_->EnableThrowOnAssert();
+}
+
+void CDebugMPI::DisableThrowOnAssert()
+{
+	if (pModule_)
+		pModule_->DisableThrowOnAssert();
 }
 
 LF_END_BRIO_NAMESPACE()

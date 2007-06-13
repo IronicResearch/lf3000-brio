@@ -91,6 +91,16 @@ public:
 	void 	EnableDebugOutTimestamp();
 	void 	DisableDebugOutTimestamp();
 
+	//------------------------------------------------------------------------------
+	// Function:	 	EnableThrowOnAssert
+	//				 	DisableThrowOnAssert
+	// Description:		if enabled, Assert() calls throw a UnitTestAssertException
+	//					object instead of performing an assert() and halting the 
+	//					system.  Useful for unit testing.
+	//------------------------------------------------------------------------------
+	void 	EnableThrowOnAssert();
+	void 	DisableThrowOnAssert();
+
 private:
 	class CDebugModule* pModule_;
 	tDebugSignature		sig_;

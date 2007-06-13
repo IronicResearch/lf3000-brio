@@ -64,11 +64,16 @@ public:
 	VTABLE_EXPORT void DisableDebugOutTimestamp( );
 	VTABLE_EXPORT Boolean TimestampIsEnabled( ) const;
 	
+	VTABLE_EXPORT void 	EnableThrowOnAssert();
+	VTABLE_EXPORT void 	DisableThrowOnAssert();
+	VTABLE_EXPORT Boolean ThrowOnAssertIsEnabled( ) const;	
+	
 	VTABLE_EXPORT const char* const ErrorToString( tErrType error ) const;
 	
 private:
 	tDebugLevel		masterDebugLevel_;
 	Boolean			timestampDebugOut_;
+	Boolean			throwOnAssert_;
 	U8				sigDbgBitVecArray_[kSigBitVecArraySize];
 
 	// Limit object creation to the Module Manager interface functions

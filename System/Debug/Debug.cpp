@@ -53,7 +53,7 @@ static CDebugModule*	sinst = NULL;
 
 //==============================================================================
 CDebugModule::CDebugModule(void) : masterDebugLevel_(kDbgLvlValuable),
-		timestampDebugOut_(false)
+		timestampDebugOut_(false), throwOnAssert_(false)
 {
 	// initialize the sigDbgBitVecArray_ so that DebugOut for all modules is 
 	// turned on by default.
@@ -261,6 +261,36 @@ void CDebugModule::DisableDebugOutTimestamp()
 Boolean CDebugModule::TimestampIsEnabled() const
 {
 	return timestampDebugOut_;
+}
+
+//==============================================================================
+// Function:
+//		EnableThrowOnAssert
+//		DisableThrowOnAssert
+//
+// Parameters:
+//		none
+//
+// Returns:
+//		none
+//
+// Description:
+//		Enable/disable adding timestamp to all debug output.   
+//==============================================================================
+
+void CDebugModule::EnableThrowOnAssert()
+{
+	throwOnAssert_ = true;
+}
+
+void CDebugModule::DisableThrowOnAssert()
+{
+	throwOnAssert_ = false;
+}
+
+Boolean CDebugModule::ThrowOnAssertIsEnabled() const
+{
+	return throwOnAssert_;
 }
 
 //==============================================================================

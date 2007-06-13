@@ -271,7 +271,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 		err = gContext.resourceMPI->LoadRsrc( pAudioInfo->hRsrc );  
 		
 		// Get the pointer to the audio header and data.
-		pHeader = (tAudioHeader*)gContext.resourceMPI->GetRsrcPtr( pAudioInfo->hRsrc );
+		pHeader = (tAudioHeader*)gContext.resourceMPI->GetPtr( pAudioInfo->hRsrc );
 		
 		// Store pointer in the play struct so that the Player object can access it.
 		pAudioInfo->pAudioHeader = pHeader;
@@ -513,8 +513,8 @@ void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 	err = gContext.resourceMPI->LoadRsrc( pInfo->hRsrc );  
 	
 	// Store pointer in the struct so that the Player object can access it.
-	pInfo->pMidiFileImage = (U8*)gContext.resourceMPI->GetRsrcPtr( pInfo->hRsrc );
-	pInfo->imageSize = gContext.resourceMPI->GetRsrcUnpackedSize( pInfo->hRsrc );
+	pInfo->pMidiFileImage = (U8*)gContext.resourceMPI->GetPtr( pInfo->hRsrc );
+	pInfo->imageSize = gContext.resourceMPI->GetUnpackedSize( pInfo->hRsrc );
 
 //	printf("Msg: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, (int)pInfo->hRsrc,
 //			(unsigned int)pInfo->pListener, (int)pInfo->payload, (int)pInfo->flags);

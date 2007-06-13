@@ -12,7 +12,7 @@ struct tAudioMasterVolume {
 // kAudioCmdMsgTypeStartAudio
 struct tAudioStartAudioInfo {
 	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
-	tAudioHeader*		pAudioHeader;		// Pointer to header and data, provided by AudioTask, returned from GetRsrcPtr()
+	tAudioHeader*		pAudioHeader;		// Pointer to header and data, provided by AudioTask, returned from GetPtr()
 	U8				 	volume;
 	tAudioPriority	 	priority;
 	S8				 	pan;

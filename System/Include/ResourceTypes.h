@@ -54,35 +54,26 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupResource), RESOURCE_ERRORS
 
 //==============================================================================	   
 // Resource Manager types
-//==============================================================================	   
-enum {
-	kRsrcDeviceTypeUndefined = 0,
+//==============================================================================	
+enum eSynchState { kBlocking = true, kNonBlocking = false };
+   
+enum eDeviceType {
+	kRsrcDeviceTypeInvalid = 0,
+	kRsrcDeviceTypeAll,		// for GetNumDevices()
 	kRsrcDeviceTypeCDROM,
 	kRsrcDeviceTypeUSBMassStorage,
 	kRsrcDeviceTypeSDCard
 };
 
-typedef U16	tDeviceType;
-
-enum {
-	kRsrcPackageTypeUndefined = 0,
+enum eRsrcPackageType {
+	kRsrcPackageTypeInvalid = 0,
+	kRsrcPackageTypeAll,	// for GetNumPakckages(), FindFirstPackage()
 	kRsrcPackageTypeGeneric,
 	kRsrcPackageTypeSystem,
 	kRsrcPackageTypeApp,
 };
 
-typedef U16	tRsrcPackageType;
-
-enum {
-	kRsrcSearchTypeUndefined = 0,
-	kRsrcSearchTypeByURI,
-	kRsrcSearchTypeByID,
-	kRsrcSearchTypeByHandle,
-	kRsrcSearchTypeByType,
-};
-
-typedef U16 tRsrcSearchType;
-
+// FIXME/tp: Rethink these enumerations
 enum {				// bitmask options for OpenRsrc(), unspecified handled as read-only
 	kOpenRsrcOptionRead		= 0x00000001,
 	kOpenRsrcOptionWrite	= 0x00000002
@@ -106,22 +97,17 @@ enum {
 
 typedef U32		tRsrcID;
 typedef tHndl 	tDeviceHndl;
-typedef tHndl 	tRsrcPackageHndl;
+typedef tHndl 	tPackageHndl;
 typedef U32		tRsrcType;
 typedef tHndl 	tRsrcHndl;
 
 typedef	U32		tResourceMsgDat;
 
-enum eSearchScope {
-	kUndefinedSearchScope = 0,
-	kOpenPackages,
-	kOpenPackagesAndDevices
-};
-
 const tDeviceHndl		kInvalidDeviceHndl = static_cast<tDeviceHndl>(0);
-const tRsrcPackageHndl	kInvalidRsrcPackageHndl = static_cast<tRsrcPackageHndl>(0);
+const tPackageHndl		kInvalidPackageHndl = static_cast<tPackageHndl>(0);
 const tRsrcHndl			kInvalidRsrcHndl = static_cast<tRsrcHndl>(0);
 const tRsrcType			kInvalidRsrcType = static_cast<tRsrcType>(0);
+const tRsrcType			kRsrcTypeAll = static_cast<tRsrcType>(1);
 
 
 LF_END_BRIO_NAMESPACE()	

@@ -24,42 +24,6 @@ LF_USING_BRIO_NAMESPACE()
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 
 //============================================================================
-// MyRsrcEventListener
-//============================================================================
-const tEventType kMyHandledTypes[] = { kAllResourceEvents };						
-//----------------------------------------------------------------------------
-class MyRsrcEventListener : public IEventListener
-{
-
-public:
-	MyRsrcEventListener( ) 
-		: IEventListener(kMyHandledTypes, ArrayCount(kMyHandledTypes))
-	{		
-	}
-	
-	virtual tEventStatus Notify( const IEventMessage& msg )
-	{
-		U16 size		= msg.GetSizeInBytes();
-		msg_			= boost::shared_array<U8>(new U8[size]);
-		memcpy(msg_.get(), &msg, size);
-		return kEventStatusOKConsumed;
-	}
-	
-	const IEventMessage* GetEventMsg() const
-	{
-		return reinterpret_cast<const IEventMessage*>(msg_.get());
-	}
-	
-	void Reset()
-	{
-		msg_.reset();
-	}
-	
-private:
-	boost::shared_array<U8>	msg_;
-};
-
-//============================================================================
 // Audio Listener
 //============================================================================
 const tEventType kMyAudioTypes[] = { kAllAudioEvents };
@@ -98,7 +62,6 @@ private:
 	CAudioMPI*			pAudioMPI_;
 	CKernelMPI*			pKernelMPI_;
 	CResourceMPI*		pResourceMPI_;
-	MyRsrcEventListener	resourceListener_;
 	AudioListener		audioListener_;
 
 public:
@@ -110,7 +73,7 @@ public:
 
 		pAudioMPI_ = new CAudioMPI();
 		pKernelMPI_ = new CKernelMPI();
-		pResourceMPI_ = new CResourceMPI( &resourceListener_);
+		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
 	}
 
@@ -124,19 +87,6 @@ public:
 		delete pResourceMPI_;
 	}
 	
-
-
-	//------------------------------------------------------------------------
-	void resetHandler( MyRsrcEventListener& handler )
-	{
-		handler.Reset();
-	}
-
-	//------------------------------------------------------------------------
-	bool handlerIsReset( MyRsrcEventListener& handler )
-	{
-		return handler.GetEventMsg() == NULL;
-	}
 
 	//------------------------------------------------------------------------
 	void xxxtestWasCreated( )
@@ -274,10 +224,8 @@ public:
 //		pResourceMPI_->SetDefaultURIPath("/home/lfu/workspace/Brio2/System/Audio/tests/apprsrc/");
 //		handle1 = pResourceMPI_->FindRsrc("TestAudio1.rsrc");
 //		TS_ASSERT( handle1 != 0 );
-		// TODO/DM: This should go away with new resource manager
-		pResourceMPI_->SetDefaultURIPath("/home/lfu/workspace/BrioCube/apprsrc/");
+		pResourceMPI_->SetDefaultURIPath("/home/darren/workspace/BrioCube/apprsrc/");
 		handle = pResourceMPI_->FindRsrc("app1.txt");
-		TS_ASSERT( handle1 != 0 );
 
 		handle1 = pResourceMPI_->FindRsrc("BlueNile44m.raw");
 		TS_ASSERT( handle1 != 0 );

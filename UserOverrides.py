@@ -20,12 +20,12 @@ import re
 # manipulations, you can add, remove and modify the switches sent to the 
 # compiler
 #-----------------------------------------------------------------------------
-def LightningGCC_embedded(env):
+def Lightning_embedded(env):
 	env['CCFLAGS']		+= ''
 	env['CPPPATH']		+= []
 	env['LIBPATH']		+= []
 
-def LightningGCC_emulation(env):
+def Lightning_emulation(env):
 	env['CCFLAGS']		+= ''
 	env['CPPPATH']		+= []
 	env['LIBPATH']		+= []
