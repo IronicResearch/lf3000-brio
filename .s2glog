@@ -3427,3 +3427,18 @@ By DGibbs (DGibbs@leapfrog.com) on 6/11/07 8:48 AM
 2,094 ms. (Cumulative: 474,638 ms)
 
 ----------------
+Revision 521 from svn://localhost/TRUNK/:
+Revision 522 from svn://localhost/TRUNK/:
+Revision 523 from svn://localhost/TRUNK/:
+Revision 524 from svn://localhost/TRUNK/:
+Revision 525 from svn://localhost/TRUNK/:
+Revision 526 from svn://localhost/TRUNK/:
+Revision 527 from svn://localhost/TRUNK/:
+
+Modified code to use ustring class on a board
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/12/07 5:18 PM
+1 changed, 0 added, 0 deleted.
+1,781 ms. (Cumulative: 476,497 ms)
+
+----------------
