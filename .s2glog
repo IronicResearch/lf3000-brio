@@ -3470,3 +3470,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/12/07 5:31 PM
 1,750 ms. (Cumulative: 481,841 ms)
 
 ----------------
+Revision 532 from svn://localhost/TRUNK/:
+
+Modified code to use ustring class on a board
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/12/07 5:32 PM
+0 changed, 1 added, 0 deleted.
+1,672 ms. (Cumulative: 483,591 ms)
+
+----------------
