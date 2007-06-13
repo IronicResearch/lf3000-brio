@@ -3451,3 +3451,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/12/07 5:19 PM
 1,719 ms. (Cumulative: 478,263 ms)
 
 ----------------
+Revision 529 from svn://localhost/TRUNK/:
+Revision 530 from svn://localhost/TRUNK/:
+
+Modified code to use ustring class on a board
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/12/07 5:29 PM
+1 changed, 0 added, 0 deleted.
+1,703 ms. (Cumulative: 480,013 ms)
+
+----------------

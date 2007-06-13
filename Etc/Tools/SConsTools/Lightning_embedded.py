@@ -21,6 +21,12 @@ def PlatformMods(env):
 	gcc_defs 			= env.Split('')
 	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CCFLAGS = '-O4')
+	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc'])
+	env.Append(LIBPATH = ['#Build/LightningGCC/MPI'])	
+	env.Append(LIBPATH = ['#ThirdParty/ustring/libs'])	
+	env.Append(CPPPATH = ['#ThirdParty/ustring'])
+	env.Append(CPPPATH = ['#../LinuxDist/packages/drivers/include'])
+	env.Append(CPPPATH = ['#LinuxDist/packages/drivers/include'])
 
 	rootfs = os.getenv('ROOTFS_PATH')
 	if rootfs == None:
@@ -28,7 +34,6 @@ def PlatformMods(env):
 	env.Append(CPPPATH = [os.path.join(rootfs, 'usr', 'include')])	
 	env.Append(LIBPATH = [os.path.join(rootfs, 'usr', 'lib'),
 							os.path.join(rootfs, 'usr', 'local', 'lib')])	
-
 
 #-----------------------------------------------------------------------------
 # Inherit properties from the following tools
