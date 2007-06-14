@@ -3545,3 +3545,18 @@ By Dmilici (Dmilici@leapfrog.com) on 6/13/07 5:13 PM
 1,812 ms. (Cumulative: 497,312 ms)
 
 ----------------
+Revision 546 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,703 ms. (Cumulative: 499,078 ms)
+
+----------------
+Revision 547 from svn://localhost/TRUNK/:
+
+Removed step for copying obsolete BuildRsrc utility onto target.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/13/07 5:57 PM
+1 changed, 0 added, 0 deleted.
+1,750 ms. (Cumulative: 500,828 ms)
+
+----------------

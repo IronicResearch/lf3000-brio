@@ -13,9 +13,3 @@ if vars['is_export']:
 	dest_dir = os.path.join(vars['export_root'], 'Tools')
 	sources =  glob.glob('Tools/SConsTools/*.py')
 	env.Install(dest_dir, sources)
-	exe = os.path.join(dest_dir, 'BuildRsrc')
-	Command(exe, 'Tools/BuildRsrc',
-              [
-                Copy("$TARGET", "$SOURCE"),
-                Chmod("$TARGET", 0755),
-              ])
