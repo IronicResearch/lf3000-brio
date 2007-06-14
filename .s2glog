@@ -3532,3 +3532,16 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/13/07 4:57 PM
 1,735 ms. (Cumulative: 495,422 ms)
 
 ----------------
+Revision 541 from svn://localhost/TRUNK/:
+Revision 542 from svn://localhost/TRUNK/:
+Revision 543 from svn://localhost/TRUNK/:
+Revision 544 from svn://localhost/TRUNK/:
+Revision 545 from svn://localhost/TRUNK/:
+
+Updated Font MPI in anticipation of resource manager version.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/13/07 5:13 PM
+5 changed, 0 added, 0 deleted.
+1,812 ms. (Cumulative: 497,312 ms)
+
+----------------

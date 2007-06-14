@@ -17,6 +17,7 @@
 #include <SystemTypes.h>
 #include <FontTypes.h>
 #include <CoreMPI.h>
+#include <ResourceTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -35,12 +36,16 @@ public:
 	virtual ~CFontMPI();
 
 	// font-specific functionality
-    Boolean     LoadFont(const CString* pName, tFontProp prop);
-    Boolean     UnloadFont();
+    tFontHndl   LoadFont(const CString* pName, tFontProp prop);
+    tFontHndl   LoadFont(tRsrcHndl hRsrc, tFontProp prop);
+    Boolean     UnloadFont(tFontHndl hFont);
     Boolean		SetFontAttr(tFontAttr attr);
     Boolean		GetFontAttr(tFontAttr* pAttr);
-    Boolean     DrawString(CString* pStr, int x, int y, void* pCtx);
-
+    Boolean     DrawString(CString* pStr, int x, int y, tFontSurf* pCtx);
+    U32			GetX();
+    U32			GetY();
+    Boolean		GetFontMetrics(tFontMetrics* pMtx);
+ 
 private:
 	class CFontModule*	pModule_;
 	U32					id_;

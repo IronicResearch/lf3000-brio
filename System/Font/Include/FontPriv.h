@@ -18,6 +18,7 @@
 #include <EventTypes.h>
 #include <FontTypes.h>
 #include <DebugMPI.h>
+#include <ResourceTypes.h>
 
 // TODO: The FreeType headers may need to be neutralized for target OS
 #include <ft2build.h>		// FreeType auto-conf settings
@@ -63,6 +64,7 @@ typedef struct  TFont_
 	int				height;			// line-to-line spacing
 	int				ascent;			// baseline location
 	int				descent;		// remainder below baseline
+	int				advance;		// max advance width
 } TFont, *PFont;
 
 // Font library internal management
@@ -95,14 +97,17 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-    VTABLE_EXPORT Boolean		LoadFont(const CString* pName, tFontProp prop);
-    VTABLE_EXPORT Boolean     	UnloadFont();
+    VTABLE_EXPORT tFontHndl		LoadFont(const CString* pName, tFontProp prop);
+    VTABLE_EXPORT tFontHndl		LoadFont(tRsrcHndl hRsrc, tFontProp prop);
+    VTABLE_EXPORT Boolean     	UnloadFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
     VTABLE_EXPORT Boolean		GetFontAttr(tFontAttr* pAttr);
-    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, int x, int y, void* pCtx);
- 
+    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, int x, int y, tFontSurf* pCtx);
+	VTABLE_EXPORT U32			GetX();
+	VTABLE_EXPORT U32			GetY();
+    VTABLE_EXPORT Boolean		GetFontMetrics(tFontMetrics* pMtx);
+
 private:
-	//void				InitModule( );
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions
@@ -116,8 +121,8 @@ private:
 	tFontAttr			attr_;
 	int					curX_;
 	int					curY_;
-    Boolean     		DrawGlyph(char ch, int x, int y, void* pCtx);
-    void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, void* pCtx);
+    Boolean     		DrawGlyph(char ch, int x, int y, tFontSurf* pCtx);
+    void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
 };
 
 

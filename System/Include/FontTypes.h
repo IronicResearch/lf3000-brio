@@ -22,6 +22,18 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Typedefs
 //==============================================================================
 
+typedef tHndl 	tFontHndl;
+
+const tFontHndl	kInvalidFontHndl = static_cast<tFontHndl>(0);
+
+// Font metrics
+struct tFontMetrics {
+	U16		ascent;
+	S16		descent;
+	U16		height;
+	U16		advance;
+};
+
 // Font properties
 struct tFontProp {
 	U16		version;
@@ -40,7 +52,7 @@ struct tFontSurf {
 	U32		width;
 	U32		height;
 	U32		pitch;
-	U32		*buffer;
+	U8*		buffer;
 };
 
 LF_END_BRIO_NAMESPACE()

@@ -16,6 +16,7 @@
 #include <SystemErrors.h>
 #include <FontTypes.h>
 #include <FontPriv.h>
+#include <ResourceMPI.h>
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -106,9 +107,6 @@ OnFaceRequest( FTC_FaceID  faceId,
 //============================================================================
 CFontModule::CFontModule() : dbg_(kGroupDisplay) // FIXME: new enum?
 {
-	// TODO: What does this do? (Holdover from CDisplayModule...)
-	//InitModule();	// delegate to platform or emulation initializer
-
 	// Load FreeType library
 	int error = FT_Init_FreeType(&handle_.library);
 	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
@@ -182,7 +180,7 @@ Boolean	CFontModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
+tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
 {
 	FT_Face			face;
 	PFont			font;
@@ -268,16 +266,33 @@ Boolean CFontModule::LoadFont(const CString* pName, tFontProp prop)
 	font->height = size->metrics.height >> 6;
 	font->ascent = size->metrics.ascender >> 6;
 	font->descent = size->metrics.descender >> 6;
+	font->advance = size->metrics.max_advance >> 6;
 	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, pixels = %d, height = %d, ascent = %d, descent = %d\n", prop.size, pixelSize, font->height, font->ascent, font->descent);
 #else
 	// FIXME: Select font size from available sizes
 #endif	
 		
-	return true;
+	return (tFontHndl)font; //true;
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontModule::UnloadFont()
+tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
+{
+	CResourceMPI	rsrcmgr;
+	const CString*	fontname;
+	
+	if (hRsrc == kInvalidRsrcHndl)
+		return false;
+	
+	// TODO: Use file image loaded in memory by resource manager
+//	fontname = rsrcmgr.GetRsrcName(hRsrc);
+	fontname = rsrcmgr.GetName(hRsrc);
+	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s\n", fontname->c_str());
+	return LoadFont(fontname, prop);
+}
+
+//----------------------------------------------------------------------------
+Boolean CFontModule::UnloadFont(tFontHndl hFont)
 {
 	// TODO
 	if (handle_.face) 
@@ -307,11 +322,11 @@ Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 //----------------------------------------------------------------------------
 // Convert mono bitmap to RGB color buffer
 //----------------------------------------------------------------------------
-void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, void* pCtx)
+void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
 {
 	int 		x,y,w,h,i,mask;
-	U8	 		*s,*t;
-	U32 		*d,*u;
+	U8	 		*s,*t,*u;
+	U32 		*d;
 	U32	 		color = attr_.color;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
@@ -322,12 +337,12 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, void* 
 	// Pack RGB color into buffer according to mono bitmap mask
 	w = (source->width+7) / 8;
 	h = source->rows;
-	s = t = (U8*)source->buffer; // + (h-1) * source->pitch;  // upside down
-	d = u = (U32*)((U8*)surf->buffer + y0 * surf->pitch + x0 * 4);
+	s = t = source->buffer;
+	d = (U32*)(u = surf->buffer + y0 * surf->pitch + x0 * 4);
 	for (y = 0; y < h; y++) 
 	{
 		s = t;
-		d = u;
+		d = (U32*)u;
 		for (x = 0; x < w; x++) 
 		{
 			mask = 0x80;
@@ -340,15 +355,15 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, void* 
 			}
 			s++;
 		}
-		t += source->pitch;	// U8* // NOT upside down
-		u += surf->pitch/4;	// U32*
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
 	}				  
 }
   
 //----------------------------------------------------------------------------
 // Draw single glyph at XY location in rendering context buffer
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
+Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 {
 	// FIXME: Until integration with Display manager is figured out,
 	//        a device context argument will need to passed as argument.
@@ -467,7 +482,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawString(CString* pStr, int x, int y, void* pCtx)
+Boolean CFontModule::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
 {
 	const char*		ch = pStr->c_str();
 	int				len = pStr->size();
@@ -488,6 +503,33 @@ Boolean CFontModule::DrawString(CString* pStr, int x, int y, void* pCtx)
 			return false;
 	}
 
+	return true;
+}
+
+//----------------------------------------------------------------------------
+U32 CFontModule::GetX()
+{
+	return curX_;
+}
+
+//----------------------------------------------------------------------------
+U32 CFontModule::GetY()
+{
+	return curY_;
+}
+
+//----------------------------------------------------------------------------
+Boolean CFontModule::GetFontMetrics(tFontMetrics* pMtx)
+{
+	PFont	font = handle_.currentFont;
+
+	if (font == NULL || pMtx == NULL)
+		return false;
+
+	pMtx->height = font->height;
+	pMtx->ascent = font->ascent;
+	pMtx->descent = font->descent;
+	pMtx->advance = font->advance;		
 	return true;
 }
 

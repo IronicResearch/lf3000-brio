@@ -82,7 +82,7 @@ const CURI* CFontMPI::GetModuleOrigin() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-Boolean CFontMPI::LoadFont(const CString* pName, tFontProp prop)
+tFontHndl CFontMPI::LoadFont(const CString* pName, tFontProp prop)
 {
 	if (!pModule_)
 		return false;
@@ -90,11 +90,19 @@ Boolean CFontMPI::LoadFont(const CString* pName, tFontProp prop)
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontMPI::UnloadFont()
+tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->UnloadFont();
+	return pModule_->LoadFont(hRsrc, prop);
+}
+
+//----------------------------------------------------------------------------
+Boolean CFontMPI::UnloadFont(tFontHndl hFont)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->UnloadFont(hFont);
 }
 
 //----------------------------------------------------------------------------
@@ -114,11 +122,35 @@ Boolean	CFontMPI::GetFontAttr(tFontAttr* pAttr)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CFontMPI::DrawString(CString* pStr, int x, int y, void* pCtx)
+Boolean	CFontMPI::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
 {
 	if (!pModule_)
 		return false;
 	return pModule_->DrawString(pStr, x, y, pCtx);
+}
+
+//----------------------------------------------------------------------------
+U32 CFontMPI::GetX()
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->GetX();
+}
+
+//----------------------------------------------------------------------------
+U32 CFontMPI::GetY()
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->GetY();
+}
+
+//----------------------------------------------------------------------------
+Boolean CFontMPI::GetFontMetrics(tFontMetrics* pMtx)
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->GetFontMetrics(pMtx);
 }
 
 // EOF
