@@ -3569,3 +3569,18 @@ By Dmilici (Dmilici@leapfrog.com) on 6/14/07 9:23 AM
 1,922 ms. (Cumulative: 502,813 ms)
 
 ----------------
+Revision 549 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,751 ms. (Cumulative: 504,627 ms)
+
+----------------
+Revision 550 from svn://localhost/TRUNK/:
+
+Corrected Audio unit test per resource manager expectations.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/14/07 10:16 AM
+3 changed, 0 added, 0 deleted.
+1,735 ms. (Cumulative: 506,362 ms)
+
+----------------

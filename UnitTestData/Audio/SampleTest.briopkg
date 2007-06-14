@@ -1,7 +1,7 @@
 !uri,!packType,!location,!size,!compressedSize,!version
-LF/Brio/UnitTest/Audio/one,txt,app1.txt,47,47,1
-LF/Brio/UnitTest/Audio/two,txt,app2.txt,34,34,2
-LF/Brio/UnitTest/Audio/three,bin,BlueNile44m.raw,815790,815790,3
-LF/Brio/UnitTest/Audio/four,bin,FortyTwo.raw,11282,11282,4
-LF/Brio/UnitTest/Audio/five,bin,sine44m.raw,882046,882046,5
-LF/Brio/UnitTest/Audio/six,bin,NewHampshireGamelan.mid,6222,6222,6
+LF/Brio/UnitTest/Audio/one,0,app1.txt,47,47,1
+LF/Brio/UnitTest/Audio/two,0,app2.txt,34,34,1
+LF/Brio/UnitTest/Audio/BlueNile,0,BlueNile44m.raw,815790,815790,1
+LF/Brio/UnitTest/Audio/FortyTwo,0,FortyTwo.raw,11282,11282,1
+LF/Brio/UnitTest/Audio/sine44,0,sine44m.raw,882046,882046,1
+LF/Brio/UnitTest/Audio/NewHampshireGamelan,0,NewHampshireGamelan.mid,6222,6222,1

@@ -63,8 +63,11 @@ private:
 	CKernelMPI*			pKernelMPI_;
 	CResourceMPI*		pResourceMPI_;
 	AudioListener		audioListener_;
+	tPackageHndl		pkg_;
 
 public:
+	//------------------------------------------------------------------------
+	TestAudio() : TestSuiteBase("Audio") {}	// connect to UnitTestData/Audio
 	
 	//------------------------------------------------------------------------
 	void setUp( )
@@ -75,6 +78,11 @@ public:
 		pKernelMPI_ = new CKernelMPI();
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Audio");
+
+		pkg_ = pResourceMPI_->FindPackage("SampleTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg_ );
+		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg_) );
 	}
 
 	//------------------------------------------------------------------------
@@ -83,6 +91,7 @@ public:
 		delete pAudioMPI_; 
 		delete pKernelMPI_; 
 
+		pResourceMPI_->ClosePackage(pkg_);
 		pResourceMPI_->CloseAllDevices();
 		delete pResourceMPI_;
 	}
@@ -221,20 +230,19 @@ public:
 		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		pResourceMPI_->SetDefaultURIPath("/LF/Brio/UnitTest/Audio");
-		handle = pResourceMPI_->FindRsrc("app1.txt");
-		TS_ASSERT( handle != 0 );
-
-		handle1 = pResourceMPI_->FindRsrc("BlueNile44m.raw");
-		TS_ASSERT( handle1 != 0 );
-		handle2 = pResourceMPI_->FindRsrc("sine44m.raw");
-		TS_ASSERT( handle2 != 0 );
-		handle3 = pResourceMPI_->FindRsrc("vivaldi44m.raw");
-		TS_ASSERT( handle3 != 0 );
-		handle4 = pResourceMPI_->FindRsrc("FortyTwo.raw");
-		TS_ASSERT( handle4 != 0 );
-		handle5 = pResourceMPI_->FindRsrc("NewHampshireGamelan.mid");
-		TS_ASSERT( handle5 != 0 );
+		// Package is already opened in setup
+		handle = pResourceMPI_->FindRsrc("one");
+		TS_ASSERT( handle != kInvalidRsrcHndl );
+		handle1 = pResourceMPI_->FindRsrc("BlueNile");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		handle2 = pResourceMPI_->FindRsrc("sine44");
+		TS_ASSERT( handle2 != kInvalidRsrcHndl );
+//		handle3 = pResourceMPI_->FindRsrc("vivaldi44");
+//		TS_ASSERT( handle3 != kInvalidRsrcHndl );
+		handle4 = pResourceMPI_->FindRsrc("FortyTwo");
+		TS_ASSERT( handle4 != kInvalidRsrcHndl );
+		handle5 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
+		TS_ASSERT( handle5 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
