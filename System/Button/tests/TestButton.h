@@ -106,7 +106,6 @@ public:
 		// setup the handler succeed.  So long as the EventMPI gets
 		// unit tested, we shouldn't need to do much more here.
 		//
-		tListenerId	id;
 		boost::scoped_ptr<CEventMPI> eventmgr(new CEventMPI());
 		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
 		usleep(100);

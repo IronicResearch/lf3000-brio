@@ -47,6 +47,7 @@ public:
 				data.audioID, data.payload);
 			return kEventStatusOKConsumed;
 		}
+		return kEventStatusOK;
 	}
 private:
 	CDebugMPI	dbg_;
@@ -72,8 +73,6 @@ public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
-		int err;
-
 		pAudioMPI_ = new CAudioMPI();
 		pKernelMPI_ = new CKernelMPI();
 		pResourceMPI_ = new CResourceMPI;
@@ -131,13 +130,13 @@ public:
 	
 	void xxxtestDumpCoreInfo( )
 	{
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tErrType err;
 		Boolean fValid;
 		tVersion version;
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
 				
-#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		printf("Extra Debug Output from test enabled...\n");
 
 		fValid = pAudioMPI_->IsValid();
@@ -207,7 +206,7 @@ public:
 		tRsrcHndl		handle;
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
-		tRsrcHndl		handle3;
+//		tRsrcHndl		handle3;
 		tRsrcHndl		handle4;
 		tRsrcHndl		handle5;
 		tAudioID 		id1;
@@ -298,9 +297,9 @@ public:
 
 		for (i = 0; i < 10; i++) {
 			id3 = pAudioMPI_->StartAudio( handle4, i*10, 1, 0, &audioListener_, 0, 0 );
-			printf("TestAudio -- StartAudio() returned ID # %d\n", id3 );
+			printf("TestAudio -- StartAudio() returned ID # %d\n", static_cast<int>(id3) );
 			if (id3 < 0) {
-				printf("TestAudio -- StartAudio() returned error # %d\n", id3 );
+				printf("TestAudio -- StartAudio() returned error # %d\n", static_cast<int>(id3) );
 			}
 			pKernelMPI_->TaskSleep( 200 );
 		}

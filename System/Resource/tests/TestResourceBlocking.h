@@ -122,15 +122,15 @@ public:
 	void testPackageEnumerations()
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( 2, rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(2), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
-		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(1), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(1), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgC);
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(0), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkg);
-		TS_ASSERT_EQUALS( 2, rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(2), rsrcmgr_->GetNumPackages() );
 		
 		tPackageHndl pkg;
 		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll, &gPkgC);
@@ -201,15 +201,15 @@ public:
 	void testGetNumRsrcs()
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumRsrcs() );
+		TS_ASSERT_EQUALS( static_cast<U32>(0), rsrcmgr_->GetNumRsrcs() );
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
 		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest");
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumRsrcs() );
+		TS_ASSERT_EQUALS( static_cast<U32>(0), rsrcmgr_->GetNumRsrcs() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
-		TS_ASSERT_EQUALS( 5, rsrcmgr_->GetNumRsrcs() );
+		TS_ASSERT_EQUALS( static_cast<U32>(5), rsrcmgr_->GetNumRsrcs() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumRsrcs() );
+		TS_ASSERT_EQUALS( static_cast<U32>(0), rsrcmgr_->GetNumRsrcs() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 	}
 	
@@ -245,12 +245,6 @@ public:
 	void testMissingRsrc( )
 	{
 		tRsrcHndl		handle;
-		ConstPtrCString	pStr;
-		ConstPtrCURI	pURI;
-		tRsrcType		type;
-		tVersion		version;
-		U32				size;
-		tPtr			ptr;
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
 		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
@@ -273,11 +267,7 @@ public:
 	void testFindAndLoadTextRsrc( )
 	{
 		tRsrcHndl		handle;
-		ConstPtrCString	pStr;
 		ConstPtrCURI	pURI;
-		tRsrcType		type;
-		tVersion		version;
-		U32				size;
 		tPtr			ptr = (void*) 1;
 
 		const U32		kSizeHelloWorldText	= 21;
@@ -312,12 +302,7 @@ public:
 	void testFindAndOpenBinaryRsrc( )
 	{
 		tRsrcHndl		handle;
-		ConstPtrCString	pStr;
 		ConstPtrCURI	pURI;
-		tRsrcType		type;
-		tVersion		version;
-		U32				size;
-		tPtr			ptr = (void*) 1;
 		const U32		kBellAudioSize	= 3000;
 		const U32		kBufSize	= 80;
 		U8 				buffer[kBufSize];

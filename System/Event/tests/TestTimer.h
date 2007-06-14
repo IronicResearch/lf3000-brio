@@ -89,7 +89,7 @@ public:
 	void testTimerNotFired( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{0, 0, 0, 100000000},
+												 	{{0, 0}, {0, 100000000}},
 			                                     };
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
@@ -102,7 +102,7 @@ public:
 	void testTimerFires( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{0, 0, 0, 100000000},
+												 	{{0, 0}, {0, 100000000}},
 			                                    };
 //		TS_ASSERT_EQUALS( kNoErr, event_->RegisterEventListener(listener_) );
 		TS_ASSERT( listener_->IsReset() );
@@ -139,7 +139,7 @@ public:
 	void testTimerPauseResume( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{0, 0, 0, 100000000},
+												 	{{0, 0}, {0, 100000000}},
 			                                    };
 		saveTimerSettings saveValue;
 		TS_ASSERT( listener_->IsReset() );
@@ -160,7 +160,7 @@ public:
 	void testTimerRestart( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{0, 0, 0, 100000000},
+												 	{{0, 0}, {0, 100000000}},
 			                                     };
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
@@ -180,17 +180,16 @@ public:
 	void testTimerElapsedTime( )
 	{
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{0, 100000000, 0, 10},
+												 	{{0, 100000000}, {0, 10}},
 			                                     };
-		U32 pUs;
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		timer.Start(props);
-		const int kSleepInterval = 10;
-		const int kDelta = 25;
-		int i = 0;
+		const U32 kSleepInterval = 10;
+		const U32 kDelta = 25;
+		U32 i = 0;
 //		for (int ii = i; ii < 9; ++ii)
-		for (int ii = i; ii < 5; ++ii)
+		for (U32 ii = i; ii < 5; ++ii)
 		{
 			kernel_->TaskSleep(kSleepInterval);
 			U32 elapsed = kernel_->GetTimerElapsedTime(timer.GetTimerHndl());

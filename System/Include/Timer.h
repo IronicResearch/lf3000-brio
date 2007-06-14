@@ -72,10 +72,8 @@ class COneShotTimer
 public:
 	//--------------------------------------------------------------------------
 	explicit COneShotTimer(const tTimerProperties& props)
-//	COneShotTimer(const tTimerProperties& props)
 	{
- 		pfnTimerCallback pfn = TimerCallback; // FIXME Original TP
-		timer_ = kernel_.CreateTimer(TimerCallback, props, (const char *)0 );
+ 		timer_ = kernel_.CreateTimer(TimerCallback, props, (const char *)0 );
 		if (timer_ == kInvalidTimerHndl)
 			throw ("CTimer creation failed");
 	}
