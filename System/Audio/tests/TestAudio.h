@@ -221,11 +221,9 @@ public:
 		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-//		pResourceMPI_->SetDefaultURIPath("/home/lfu/workspace/Brio2/System/Audio/tests/apprsrc/");
-//		handle1 = pResourceMPI_->FindRsrc("TestAudio1.rsrc");
-//		TS_ASSERT( handle1 != 0 );
-		pResourceMPI_->SetDefaultURIPath("/home/darren/workspace/BrioCube/apprsrc/");
+		pResourceMPI_->SetDefaultURIPath("/LF/Brio/UnitTest/Audio");
 		handle = pResourceMPI_->FindRsrc("app1.txt");
+		TS_ASSERT( handle != 0 );
 
 		handle1 = pResourceMPI_->FindRsrc("BlueNile44m.raw");
 		TS_ASSERT( handle1 != 0 );
