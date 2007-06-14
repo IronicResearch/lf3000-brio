@@ -118,7 +118,6 @@ namespace Module
 		tErrType status = LoadModuleManagerLib();
 		if( status == kNoErr )
 		{
-			void* pModule;
 			tfnDisconnect funptr = reinterpret_cast<tfnDisconnect>
 										(dlsym(gg_pModuleHandle, "Disconnect"));
 			AbortOnError("Disconnect lookup failure");

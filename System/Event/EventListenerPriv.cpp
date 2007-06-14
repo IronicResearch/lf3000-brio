@@ -34,9 +34,8 @@ namespace Kernel
 //============================================================================
 //----------------------------------------------------------------------------
 CEventListenerImpl::CEventListenerImpl(const tEventType *eventList, U32 count)
-	: pNextListener_(NULL), 
-	pEventList_(NULL), numEvents_(count),
-	pDisabledEventList_(NULL), numDisabledEvents_(0)
+	: pNextListener_(NULL), pEventList_(NULL), pDisabledEventList_(NULL), 
+	numEvents_(count), numDisabledEvents_(0)
 {
 	U32 size = sizeof(tEventType) * count;
 	pEventList_ = reinterpret_cast<tEventType *>(Kernel::Malloc(size));

@@ -3643,3 +3643,13 @@ By Dmilici (Dmilici@leapfrog.com) on 6/14/07 1:53 PM
 2,221 ms. (Cumulative: 514,818 ms)
 
 ----------------
+Revision 562 from svn://localhost/TRUNK/:
+Revision 563 from svn://localhost/TRUNK/:
+
+Simple mods to clear out arm-linux compiler warnings.
+
+By TParker (TParker@leapfrog.com) on 6/14/07 2:36 PM
+4 changed, 0 added, 0 deleted.
+1,735 ms. (Cumulative: 516,615 ms)
+
+----------------

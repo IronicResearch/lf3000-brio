@@ -65,7 +65,7 @@
 // Constants
 //============================================================================
 #ifdef LIGHTNING
-	const int 	kDeviceCount		= 2;
+	const size_t 	kDeviceCount	= 2;
 #endif
 
 const tVersion	kModuleVersion		= 2;
@@ -441,6 +441,7 @@ namespace
 			return it->second;
 		CDebugMPI	dbg(kGroupResource);
 		dbg.Assert(false, "Resource configuration failure, unregistered MPI id!");
+		return it->second;	// dummy return to avoid compiler warning
 	}
 
 	//----------------------------------------------------------------------------
@@ -516,7 +517,7 @@ CResourceModule::CResourceModule() : dbg_(kGroupResource),
 	MountPoints	mp;
 	GetDeviceMountPoints(mp);
 	size_t len = mp.size();
-	for (int ii = 0; ii < len; ++ii)
+	for (size_t ii = 0; ii < len; ++ii)
 		pDevices_[ii].mountPath = mp[ii];
 }
 

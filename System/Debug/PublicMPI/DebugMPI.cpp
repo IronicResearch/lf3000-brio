@@ -29,6 +29,7 @@
 // Module includes
 #include <DebugMPI.h>
 #include <DebugPriv.h>
+#include <KernelMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -43,7 +44,7 @@ const char kAssertTagStr[] 				= "\n!ASSERT: ";
 const char kWarnTagStr[] 				= "!WARNING: ";
 const char kSavedAssertTagStr[] 		= "\n!SAVED ASSERT: ";
 const char kDebugOutSignatureFmt[] 		= "[%d] ";
-const char kDebugOutTimestampFmt[]		= "<@%d.%03dms> ";
+const char kDebugOutTimestampFmt[]		= "<@%dms> ";
 
 //------------------------------------------------------------------------------
 // tDebugOutFormats
@@ -153,12 +154,9 @@ namespace
 			// va_list argumentsif timestamping all output, add timestamp first
 			if (!(debugOutFormat & kDebugOutFormatLiteral) && pModule && pModule->TimestampIsEnabled())
 			{
-				U32 mSec, uSec;
-	            timeval time;
-	
-	//			mSec = CKernelMPI::GetElapsedPrecisionTime(&uSec);
-				gettimeofday( &time, NULL );
-				printf( kDebugOutTimestampFmt, (time.tv_sec / 1000), time.tv_usec );
+				CKernelMPI	kernel;
+				U32 mSec = kernel.GetElapsedTimeAsMSecs();
+				printf( kDebugOutTimestampFmt, mSec);
 			}
 	
 			// va_list argumentsif not asking for literal output, show the module signature
