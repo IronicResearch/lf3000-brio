@@ -25,21 +25,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 class TestSuiteBase
 {
 protected:
-	TestSuiteBase(const char* name = NULL)
+	TestSuiteBase()
 	{
 #ifdef EMULATION
 		const char* kPath = "Build/Lightning_emulation/Module";
 		EmulationConfig::Instance().Initialize("");
 		EmulationConfig::Instance().SetModuleSearchPath(kPath);
-		if (name != NULL)
-		{
-			CPath path = EmulationConfig::Instance().GetCartResourceSearchPath();
-			size_t idx = path.find("/Build/");
-			path = path.substr(0, idx) + "/UnitTestData/";
-			path += name;
-			path += "/";
-			EmulationConfig::Instance().SetCartResourceSearchPath(path.c_str());
-		}
+		CPath path = EmulationConfig::Instance().GetCartResourceSearchPath();
+		size_t idx = path.find("/Build/");
+		path = path.substr(0, idx) + "/UnitTestData/";
+		EmulationConfig::Instance().SetCartResourceSearchPath(path.c_str());
 #endif
 		CDebugMPI	dbg(kGroupUnitTests);
 		dbg.EnableThrowOnAssert();

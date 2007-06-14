@@ -50,6 +50,7 @@
 #
 #=============================================================================
 import os
+import fnmatch
 import SCons.Defaults
 import Etc.Tools.SConsTools.Priv.LfUtils	# LeapFrog utility functions
 
@@ -128,7 +129,7 @@ for target in targets:
 	#-------------------------------------------------------------------------
 	# Setup intermediate build and deployment target folder names
 	#-------------------------------------------------------------------------
-	is_emulation = (target == 'emulation') and 1 or 0
+	is_emulation			= (target == 'emulation') and 1 or 0
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
 	intermediate_build_dir	= os.path.join('Temp', target_subdir)
 	publish_lib_dir			= os.path.join(publish_root, 'Libs', target_subdir)
@@ -248,6 +249,30 @@ for target in targets:
 	SConscript(os.path.join(root_dir, 'Etc', 'SConscript'), duplicate=0)
 	SConscript(os.path.join(root_dir, platform, 'SConscript'), duplicate=0)
 
+	
+	#-------------------------------------------------------------------------
+	# Deploy the unit test data for embedded builds
+	#-------------------------------------------------------------------------
+	if not is_emulation:
+		unit_test_data_root = Dir('UnitTestData').abspath
+		root_len = len(unit_test_data_root) + 1
+		unit_test_data_files = []
+		rootfs_data = os.path.join(rootfs, 'Base', 'rsrc')
+		
+		def callback(arg, directory, files):
+			base = os.path.basename(directory)
+			if base == '.svn':
+				del files[:]
+			else:
+				for file in files:
+					full = os.path.join(directory, file)
+					if os.path.isfile(full):
+						subdir = os.path.dirname(full[root_len:])
+ 						env.Install(os.path.join(rootfs_data, subdir), full)
+
+		os.path.walk(unit_test_data_root, callback, None)
+		Default(rootfs_data)
+			
 # END OF VARIANT LOOP
 
 

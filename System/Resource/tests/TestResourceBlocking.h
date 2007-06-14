@@ -16,10 +16,10 @@ LF_USING_BRIO_NAMESPACE()
 //============================================================================
 // MyRsrcEventListener
 //============================================================================
-CURI	gPkg = "LF/Brio/UnitTest";
-CURI	gPkgA = "LF/Brio/UnitTest/A";
-CURI	gPkgB = "LF/Brio/UnitTest/B";
-CURI	gPkgC = "LF/Brio/UnitTest/C";
+CURI	gPkg = "LF/Brio/UnitTest/Resource";
+CURI	gPkgA = "LF/Brio/UnitTest/Resource/A";
+CURI	gPkgB = "LF/Brio/UnitTest/Resource/B";
+CURI	gPkgC = "LF/Brio/UnitTest/Resource/C";
 /*
 template <typename T, typename D>
 class scoped_resource
@@ -57,9 +57,6 @@ class TestRsrcBlocking : public CxxTest::TestSuite, TestSuiteBase
 private:
 	CResourceMPI*		rsrcmgr_;
 public:
-	//------------------------------------------------------------------------
-	TestRsrcBlocking() : TestSuiteBase("Resource") {}	// connect to UnitTestData/Resource
-	
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
@@ -122,6 +119,7 @@ public:
 	void testPackageEnumerations()
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		rsrcmgr_->SetDefaultURIPath(gPkg);
 		TS_ASSERT_EQUALS( static_cast<U16>(2), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
 		TS_ASSERT_EQUALS( static_cast<U16>(1), rsrcmgr_->GetNumPackages() );
@@ -144,7 +142,7 @@ public:
 		// TODO: test different types and versions when supported
 		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll, &gPkgA);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/A/CountTest" );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
@@ -153,7 +151,7 @@ public:
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
 		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/B/LoadTest" );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
@@ -177,7 +175,7 @@ public:
 
 		pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/A/CountTest" );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
@@ -185,7 +183,7 @@ public:
 		// TODO: test different types and versions when supported
 		pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/B/LoadTest" );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
@@ -278,7 +276,7 @@ public:
 		handle = rsrcmgr_->FindRsrc("one");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		pURI = rsrcmgr_->GetURI(handle);
-		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/B/one", *pURI );
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/one", *pURI );
 //		type = rsrcmgr_->GetType(handle);
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetVersion(handle) );
@@ -314,7 +312,7 @@ public:
 		handle = rsrcmgr_->FindRsrc("five");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		pURI = rsrcmgr_->GetURI(handle);
-		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/B/five", *pURI );
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/five", *pURI );
 //		type = rsrcmgr_->GetType(handle);
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( 5, rsrcmgr_->GetVersion(handle) );

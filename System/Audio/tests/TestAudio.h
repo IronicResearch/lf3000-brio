@@ -68,9 +68,6 @@ private:
 
 public:
 	//------------------------------------------------------------------------
-	TestAudio() : TestSuiteBase("Audio") {}	// connect to UnitTestData/Audio
-	
-	//------------------------------------------------------------------------
 	void setUp( )
 	{
 		pAudioMPI_ = new CAudioMPI();

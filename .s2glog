@@ -3672,3 +3672,13 @@ By TParker (TParker@leapfrog.com) on 6/14/07 3:22 PM
 1,813 ms. (Cumulative: 520,256 ms)
 
 ----------------
+Revision 567 from svn://localhost/TRUNK/:
+Revision 568 from svn://localhost/TRUNK/:
+
+Deploy unit test data folder to ~/nfsroot/Base/rsrc
+
+By TParker (TParker@leapfrog.com) on 6/14/07 4:55 PM
+6 changed, 1 added, 2 deleted.
+2,078 ms. (Cumulative: 522,443 ms)
+
+----------------
