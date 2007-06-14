@@ -3632,3 +3632,14 @@ By TParker (TParker@leapfrog.com) on 6/14/07 12:21 PM
 2,094 ms. (Cumulative: 512,487 ms)
 
 ----------------
+Revision 559 from svn://localhost/TRUNK/:
+Revision 560 from svn://localhost/TRUNK/:
+Revision 561 from svn://localhost/TRUNK/:
+
+Relocated ustring libs for installing into embedded target.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/14/07 1:53 PM
+1 changed, 11 added, 11 deleted.
+2,221 ms. (Cumulative: 514,818 ms)
+
+----------------

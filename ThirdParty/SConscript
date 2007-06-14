@@ -32,3 +32,9 @@ if vars['is_export']:
 		core_name = 'libogl.a'
 		lib = os.path.join('MagicEyes', 'Libs', 'arm', core_name)
 		env.Install(lib_dir, lib)
+		# Export ustring shared libs to target
+		lib_dir = vars['lib_deploy_dir']
+		libs = glob.glob(os.path.join('ustring', 'libs', 'arm', '*'))
+		env.Install(lib_dir, libs)
+		
+		
