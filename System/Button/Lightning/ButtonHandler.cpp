@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "linux/buttons.h"
+#include <linux/lf1000/buttons.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 

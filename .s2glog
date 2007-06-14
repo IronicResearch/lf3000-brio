@@ -3584,3 +3584,28 @@ By Dmilici (Dmilici@leapfrog.com) on 6/14/07 10:16 AM
 1,735 ms. (Cumulative: 506,362 ms)
 
 ----------------
+Revision 551 from svn://localhost/TRUNK/:
+
+Added /dev/buttons with major = 247
+Separated button driver from gpio driver
+Added new gpio API.  See asm-arm/arch-lf1000/gpio.h for interface definition.
+New API supports chained GPIO interrupts.
+Implemented new gpio API in drivers/lf1000/gpio/gpio.c
+Moved drivers/lf1000/gpio/gpio.c to drivers/lf1000/gpio/gpio_priv.c
+Added new key Brio mapping to include/linux/lf1000/buttons.h
+Moved some gpio init stuff from init/main.c to gpio driver.
+Introduced per-board GPIO initialization tables in gpio_config.h
+Introduced per-board key mapping in button_map.h
+Removed resource installation in brio_install.sh.  The resources have moved.
+Added a patch to zlib so that it doesn't build man pages.
+Altered paths in drivers package to look in <linux/lf1000/*> for headers.
+Updated button example to use /dev/buttons instead of /dev/gpio.
+Altered paths in Brio to look in <linux/lf1000/*> for headers.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/14/07 10:44 AM
+3 changed, 0 added, 0 deleted.
+1,860 ms. (Cumulative: 508,284 ms)
+
+----------------
