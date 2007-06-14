@@ -87,8 +87,12 @@ public:
 	//==============================================================================
 	// Time & TimerstTimerGenHndl
 	//==============================================================================
-	U32 	GetElapsedTime( U32* pUs ) const;	// elapsed time since System startup 
-//	U32			GetElapsedTimeInMilliSec( ) const;	// elapsed time since System startup 
+	// Elapsed time since System startup in milliscond
+	U32 	GetElapsedTimeAsMSecs() const; 
+
+	// Elapsed time since System startup in microsecond
+	U64		GetElapsedTimeAsUSecs() const;	 
+
 // fixme/BSK
 	tTimerHndl 	CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
 								const char* pDebugName = NULL );

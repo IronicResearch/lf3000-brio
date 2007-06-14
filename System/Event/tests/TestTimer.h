@@ -185,7 +185,6 @@ public:
 		U32 pUs;
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
-		U32 start = kernel_->GetElapsedTime( &pUs );
 		timer.Start(props);
 		const int kSleepInterval = 10;
 		const int kDelta = 25;

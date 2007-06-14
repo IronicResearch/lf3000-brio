@@ -255,13 +255,22 @@ tErrType CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg
 //==============================================================================
 // Time & Timers
 //==============================================================================
-
-U32 CKernelMPI::GetElapsedTime( U32* pUs ) const
+// Elapsed time since System startup in milliscond
+U32 CKernelMPI::GetElapsedTimeAsMSecs() const
 {
   	if(!pModule_)
 		return kMPINotConnectedErr;
 		
-	return pModule_->GetElapsedTime(pUs);  
+	return pModule_->GetElapsedTimeAsMSecs();  
+}
+
+// Elapsed time since System startup in microsecond
+U64 CKernelMPI::GetElapsedTimeAsUSecs() const
+{
+  	if(!pModule_)
+		return kMPINotConnectedErr;
+		
+	return pModule_->GetElapsedTimeAsUSecs();  
 }
 
 //------------------------------------------------------------------------------

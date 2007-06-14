@@ -657,17 +657,23 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 //==============================================================================
 // Time & Timers
 //==============================================================================
-U32   		CKernelModule::GetElapsedTime( U32* pUs )
+U32	CKernelModule::GetElapsedTimeAsMSecs()
 {
     timeval time;
 
 	gettimeofday( &time, NULL );
-// FIXME/BK!
-// time.tv_sec field	
-	*pUs = time.tv_usec;
-	return ( time.tv_sec );
+	
+	return ( time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
+U64	CKernelModule::GetElapsedTimeAsUSecs()
+{
+    timeval time;
+
+	gettimeofday( &time, NULL );
+
+	return ( ((U64 )time.tv_sec) * 1000000 + time.tv_usec);
+}
 //------------------------------------------------------------------------------
 tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
 								const char* pDebugName )
