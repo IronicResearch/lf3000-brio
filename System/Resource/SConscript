@@ -6,14 +6,22 @@ Import('*')
 
 module_name	= 'Resource'
 mpi_name	= module_name + 'MPI'
+sysmpi_name	= 'System' + module_name + 'MPI'
 
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'), vars)
-mpisrcs		= FindMPISources(Dir('.'), vars)
+mpisrcs		= ['PublicMPI/ResourceMPI.cpp']
 modlibs		= ['EventMPI', 'KernelMPI', 'DebugMPI']
 mpilibs		= ['ModuleMPI']
+
+
+#-----------------------------------------------------------------------------
+# Setup extended mpi source files
+#-----------------------------------------------------------------------------
+sysmpisrcs	= ['PublicMPI/SystemResourceMPI.cpp']
+
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
@@ -21,6 +29,7 @@ mpilibs		= ['ModuleMPI']
 myenv		= env.Copy()
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
+sysmpi		= MakeMyModule(myenv, sysmpi_name, sysmpisrcs, mpilibs, kBuildPrivMPI, vars)
 Depends(mympi, mymodule)
 
 #-----------------------------------------------------------------------------
@@ -29,4 +38,4 @@ Depends(mympi, mymodule)
 RunMyTests(module_name, [], mpilibs + ['EventMPI','DebugMPI'], myenv, vars)
 
 
-Return('mymodule', 'mympi')
+Return('mymodule', 'mympi', 'sysmpi')

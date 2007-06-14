@@ -15,6 +15,7 @@ root_dir = os.path.normpath(os.path.join(__file__, '../../../../..'))
 #-----------------------------------------------------------------------------
 kBuildModule	= 0
 kBuildMPI		= 1
+kBuildPrivMPI	= 2
 
 
 #-----------------------------------------------------------------------------
@@ -195,6 +196,8 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 		mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)
 		if ptype == kBuildModule:
 			bldenv.Install(vars['lib_deploy_dir'], mylib)
+		elif ptype == kBuildPrivMPI:
+			bldenv.Install(vars['priv_mpi_deploy_dir'], mylib)
 		elif vars['is_emulation']:
 			bldenv.Install(vars['mpi_deploy_dir'], mylib)
 		else: # mpi lib for embedded build
@@ -217,7 +220,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		testenv = penv.Copy()
 		testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
 		testenv.Append(CPPDEFINES = 'UNIT_TESTING')
-		testenv.Append(RPATH = vars['mpi_deploy_dir'])
+		testenv.Append(RPATH = [vars['mpi_deploy_dir'], vars['priv_mpi_deploy_dir']])
 		srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
 		tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
 		unit = 'test_' + ptarget + '.cpp'
@@ -246,5 +249,5 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 # Export the minimum set of symbols
 #-----------------------------------------------------------------------------
 __all__ = ["FindModuleSources", "FindMPISources", "MakeMyModule", "RunMyTests", 
-			"kBuildModule", "kBuildMPI"]
+			"kBuildModule", "kBuildMPI", "kBuildPrivMPI"]
 

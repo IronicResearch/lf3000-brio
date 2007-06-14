@@ -172,7 +172,7 @@ public:
 	tRsrcHndl		NewRsrc(tRsrcType rsrcType, void* pData);
 	tErrType		DeleteRsrc(tRsrcHndl hndl);
 
-private:
+protected:
 	class CResourceModule*	pModule_;
 	U32						id_;
 };

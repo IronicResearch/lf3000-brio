@@ -1,4 +1,4 @@
-// TestResourceBlocking.h
+// TestResourceNonBlocking.h
 
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_array.hpp>
@@ -16,10 +16,10 @@ LF_USING_BRIO_NAMESPACE()
 //============================================================================
 // MyRsrcEventListener
 //============================================================================
-CURI	gPkg = "LF/Brio/UnitTest";
-CURI	gPkgA = "LF/Brio/UnitTest/A";
-CURI	gPkgB = "LF/Brio/UnitTest/B";
-CURI	gPkgC = "LF/Brio/UnitTest/C";
+CURI	gPkg_all = "LF/Brio/UnitTest";
+CURI	gPkg_A = "LF/Brio/UnitTest/A";
+CURI	gPkg_B = "LF/Brio/UnitTest/B";
+CURI	gPkg_C = "LF/Brio/UnitTest/C";
 /*
 template <typename T, typename D>
 class scoped_resource
@@ -49,21 +49,54 @@ typedef scoped_resource<tRsrcHndl, RsrcHndlDeleter> RsrcHndl;
 RsrcHndl rsrc(mpi.LoadRsrc(hndl), mpi);
 */
 
+const tEventType kMyHandledTypes[] = { kAllResourceEvents };						
+//----------------------------------------------------------------------------
+class MyRsrcEventListener : public IEventListener
+{
+
+public:
+	MyRsrcEventListener( ) 
+		: IEventListener(kMyHandledTypes, ArrayCount(kMyHandledTypes))
+	{		
+	}
+	
+	virtual tEventStatus Notify( const IEventMessage& msg )
+	{
+		U16 size		= msg.GetSizeInBytes();
+		msg_			= boost::shared_array<U8>(new U8[size]);
+		memcpy(msg_.get(), &msg, size);
+		return kEventStatusOKConsumed;
+	}
+	
+	const IEventMessage* GetEventMsg() const
+	{
+		return reinterpret_cast<const IEventMessage*>(msg_.get());
+	}
+	
+	void Reset()
+	{
+		msg_.reset();
+	}
+	
+private:
+	boost::shared_array<U8>	msg_;
+};
+
+
+
 //============================================================================
 // TestRsrcMgr functions
 //============================================================================
-class TestRsrcBlocking : public CxxTest::TestSuite, TestSuiteBase
+class TestRsrcNonBlocking : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CResourceMPI*		rsrcmgr_;
+	MyRsrcEventListener	handler_;
 public:
-	//------------------------------------------------------------------------
-	TestRsrcBlocking() : TestSuiteBase("Resource") {}	// connect to UnitTestData/Resource
-	
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
-		rsrcmgr_ = new CResourceMPI;
+		rsrcmgr_ = new CResourceMPI(kNonBlocking, &handler_);
 	}
 
 	//------------------------------------------------------------------------
@@ -74,10 +107,28 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void resetHandler( MyRsrcEventListener& handler )
+	{
+		handler.Reset();
+	}
+
+	//------------------------------------------------------------------------
+	bool handlerIsReset( MyRsrcEventListener& handler )
+	{
+		return handler.GetEventMsg() == NULL;
+	}
+
+	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
 		TS_ASSERT( rsrcmgr_ != NULL );
 		TS_ASSERT( rsrcmgr_->IsValid() == true );
+	}
+	
+	//------------------------------------------------------------------------
+	void testFailsWhenBlockingAndListenerSpecified( )
+	{
+		TS_ASSERT_THROWS( CResourceMPI(kBlocking, &handler_), UnitTestAssertException );
 	}
 	
 	//------------------------------------------------------------------------
@@ -100,16 +151,23 @@ public:
 	//------------------------------------------------------------------------
 	void testOpenCloseAllDevices( )
 	{
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
-	}
 
-	//------------------------------------------------------------------------
-	void testDoubleCloseAllDevices( )
-	{
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
+		resetHandler(handler_);
+		MyRsrcEventListener	overrideHandler;
+		TS_ASSERT( handlerIsReset(handler_) );
+		TS_ASSERT( handlerIsReset(overrideHandler) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices(kNoOptionFlags, &overrideHandler) );
+		TS_ASSERT( handlerIsReset(handler_) );
+		TS_ASSERT( !handlerIsReset(overrideHandler) );
+		
+		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, overrideHandler.GetEventMsg()->GetEventType() );
+		resetHandler(overrideHandler);
+		TS_ASSERT( handlerIsReset(overrideHandler) );
 	}
 
 	//------------------------------------------------------------------------
@@ -119,125 +177,11 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testPackageEnumerations()
-	{
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( 2, rsrcmgr_->GetNumPackages() );
-		rsrcmgr_->SetDefaultURIPath(gPkgA);
-		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetNumPackages() );
-		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetNumPackages() );
-		rsrcmgr_->SetDefaultURIPath(gPkgC);
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumPackages() );
-		rsrcmgr_->SetDefaultURIPath(gPkg);
-		TS_ASSERT_EQUALS( 2, rsrcmgr_->GetNumPackages() );
-		
-		tPackageHndl pkg;
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll, &gPkgC);
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageURI(pkg), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageType(pkg), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageVersion(pkg), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageVersionStr(pkg), UnitTestAssertException );
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
-
-		// TODO: test different types and versions when supported
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll, &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/A/CountTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
-		
-		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/B/LoadTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
-		
-		rsrcmgr_->SetDefaultURIPath(gPkg);
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
-	}
-
-	//------------------------------------------------------------------------
 	void testFindPackage()
 	{
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-
-		tPackageHndl pkg;
-		pkg = rsrcmgr_->FindPackage("CountTest");
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, pkg );
-
-		pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/A/CountTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
-
-		// TODO: test different types and versions when supported
-		pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/B/LoadTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
-	
-		rsrcmgr_->SetDefaultURIPath(gPkgA);
-		pkg = rsrcmgr_->FindPackage("CountTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
+		//TODO: Test events on package openings
 	}
 
-	//------------------------------------------------------------------------
-	void testGetNumRsrcs()
-	{
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumRsrcs() );
-		rsrcmgr_->SetDefaultURIPath(gPkgA);
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumRsrcs() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
-		TS_ASSERT_EQUALS( 5, rsrcmgr_->GetNumRsrcs() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
-		TS_ASSERT_EQUALS( 0, rsrcmgr_->GetNumRsrcs() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
-	}
-	
-	//------------------------------------------------------------------------
-	void testDoubleClosePackage( )
-	{
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
-	}
-
-	//------------------------------------------------------------------------
-	void testGetNumRsrcsByType()
-	{
-		// FIXME/tp: Implement for Lightning
-	}
-	
-	//------------------------------------------------------------------------
-	void testGetNumRsrcsWithOverlappingPackages()
-	{
-		//FIXME/tp: Test it!
-		// Count should the sum minus the count of intersecting resources
-	}
-	
 	// FIXME/tp: Test what happens when devices/pkgs/resources are not explicitly freed but CResourceMPI goes out of scope.
 	// FIXME/tp: Work through correct smart handles for devices/pkgs/resources.
 		
@@ -252,8 +196,13 @@ public:
 		U32				size;
 		tPtr			ptr;
 		
+		resetHandler(handler_);
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
+		TS_ASSERT( !handlerIsReset(handler_) );
+		resetHandler(handler_);
+		TS_ASSERT( handlerIsReset(handler_) );
+		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkg_A);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
 
@@ -266,7 +215,7 @@ public:
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackedSize(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetUnpackedSize(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
-
+		TS_ASSERT( handlerIsReset(handler_) );
 	}
 
 	//------------------------------------------------------------------------
@@ -279,16 +228,18 @@ public:
 		tVersion		version;
 		U32				size;
 		tPtr			ptr = (void*) 1;
-
-		const U32		kSizeHelloWorldText	= 21;
+		TS_ASSERT( handlerIsReset(handler_) );
+		const U32		kSizeHelloWorldText	= 17;
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
-		rsrcmgr_->SetDefaultURIPath(gPkgB);
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
+		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkg_B);
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
 		handle = rsrcmgr_->FindRsrc("one");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		pURI = rsrcmgr_->GetURI(handle);
-		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/B/one", *pURI );
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/B.one", *pURI );
 //		type = rsrcmgr_->GetType(handle);
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetVersion(handle) );
@@ -300,11 +251,19 @@ public:
 		
 		// not loaded yet test
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->LoadRsrc(handle) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceLoadedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		ptr = rsrcmgr_->GetPtr(handle);
-		CString	helloWorld = CString(reinterpret_cast<char*>(ptr), 0, kSizeHelloWorldText);
-		TS_ASSERT_EQUALS( helloWorld, "Hello from App1.rsrc\n" );
+		CString	helloWorld = reinterpret_cast<char*>(ptr);
+		TS_ASSERT_EQUALS( helloWorld, "Hello World Text" );
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->UnloadRsrc(handle) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceUnloadedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
 	}
 
@@ -322,10 +281,13 @@ public:
 		const U32		kBufSize	= 80;
 		U8 				buffer[kBufSize];
 		
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
+		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkg_B);
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
-		rsrcmgr_->SetDefaultURIPath(gPkgB);
 		handle = rsrcmgr_->FindRsrc("five");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		pURI = rsrcmgr_->GetURI(handle);
@@ -335,18 +297,27 @@ public:
 		TS_ASSERT_EQUALS( 5, rsrcmgr_->GetVersion(handle) );
 		const CString*	pVer;
 		pVer = rsrcmgr_->GetVersionStr(handle);
-		TS_ASSERT_EQUALS( *pVer, "5" );
+		TS_ASSERT_EQUALS( *pVer, "255" );
 		TS_ASSERT_EQUALS( kBellAudioSize, rsrcmgr_->GetPackedSize(handle) );
 		TS_ASSERT_EQUALS( kBellAudioSize * 2, rsrcmgr_->GetUnpackedSize(handle) );
 		
 		// not loaded test
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->ReadRsrc(handle, buffer, kBufSize), UnitTestAssertException );
+		TS_ASSERT_EQUALS( kResourceNotOpenErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
+		// FIXME/tp: Hmmm, kinda inconsistent to assert in only one place
 		
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenRsrc(handle, kOpenRsrcOptionRead) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
 	
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
@@ -370,16 +341,26 @@ public:
 		U8 				buffer_inv[kBufSize];
 		U8 				buffer_inv_test[kBufSize];
 		
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceAllDevicesOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		rsrcmgr_->SetDefaultURIPath("/home/lfu/workspace/Brio2/apprsrc/Applic2");
 		handle = rsrcmgr_->FindRsrc("app5.bin");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		
+		TS_ASSERT( handlerIsReset(handler_) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenRsrc(handle,
 			(kOpenRsrcOptionRead | kOpenRsrcOptionWrite) ) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceOpenedEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
-
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
@@ -398,10 +379,16 @@ public:
 		}
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->WriteRsrc(handle, buffer_inv, kBufSize, &size) );
 		TS_ASSERT_EQUALS( kBufSize, size );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceWriteDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		// seek back to the start of the file
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, 0, kSeekRsrcOptionSet) );
 		// read/verify normal data (check for no overwrite)
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
@@ -415,6 +402,9 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, kBufSize*2, kSeekRsrcOptionSet) );
 		// read/verify inverted data
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer_inv_test, kBufSize) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
@@ -433,10 +423,16 @@ public:
 		}
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->WriteRsrc(handle, buffer_inv, kBufSize, &size) );
 		TS_ASSERT_EQUALS( kBufSize, size );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceWriteDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		// seek back to the start of the file
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, 0) );
 		// read/verify the original data
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
@@ -450,6 +446,9 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, kBufSize, kSeekRsrcOptionCur) );
 		// read/verify the restored data
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer_inv_test, kBufSize) );
+		TS_ASSERT( !handlerIsReset(handler_) );
+		TS_ASSERT_EQUALS( kResourceReadDoneEvent, handler_.GetEventMsg()->GetEventType() );
+		resetHandler(handler_);
 		for(unsigned int i=0; i < kBufSize; ++i)
 		{
 			// Report only a single failure in the buffer mismatch
@@ -462,6 +461,21 @@ public:
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseRsrc(handle) );
 	}
+
+	//------------------------------------------------------------------------
+	void testFindAndLoadTextRsrcOverloadListener( )
+	{
+		// TODO: Make Load/UnloadRsrc calls with explicit listener parameter
+		// and make sure appropriate listeners get called
+	}
+		
+	//------------------------------------------------------------------------
+	void testFindAndOpenBinaryRsrcOverloadListener( )
+	{
+		// TODO: Make Open/Close/ReadRsrc calls with explicit listener parameter
+		// and make sure appropriate listeners get called
+	}
+	
 };
 
 // Totest: packages containing packages

@@ -69,6 +69,7 @@ public:
 	VTABLE_EXPORT	tErrType		SetDefaultListener(U32 id, //FIXME/tp check interface
 												const IEventListener *pListener);
 	VTABLE_EXPORT	void			SetSynchronization(U32 id, eSynchState block);
+	VTABLE_EXPORT	void			MakeOmniscient(U32 id);
 
 	// Searching for devices
 	VTABLE_EXPORT	U16				GetNumDevices(eDeviceType type) const;

@@ -15,7 +15,7 @@
 
 #include <KernelMPI.h>
 #include <DebugMPI.h>
-#include <ResourceMPI.h>
+#include <SystemResourceMPI.h>
 #include <AudioTypes.h>
 #include <AudioTask.h>
 #include <AudioOutput.h>
@@ -43,7 +43,7 @@ struct tAudioContext {
 public:	
 	CKernelMPI* 		kernelMPI;
 	CDebugMPI* 			debugMPI;
-	CResourceMPI*		resourceMPI;
+	CSystemResourceMPI*	resourceMPI;
 	Boolean				threadRun;			// set to false to exit main thread loop
 	CAudioMixer*		pAudioMixer;		// Pointer to the global audio mixer
 	CMidiPlayer*		pMidiPlayer;			// temp global midi player object for testing	
@@ -108,7 +108,7 @@ tErrType InitAudioTask( void )
 		printf("AudioTask ctor-- Couldn't create KernelMPI!\n");
 
 	// Get Kernel MPI
-	gContext.resourceMPI = new CResourceMPI;
+	gContext.resourceMPI = new CSystemResourceMPI;
 	ret = gContext.resourceMPI->IsValid();
 	if (ret != true)
 		printf("AudioTask ctor-- Couldn't create ResourceMPI!\n");

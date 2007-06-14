@@ -86,7 +86,9 @@ public:
 	//------------------------------------------------------------------------
 	void testDebugOut2( )
 	{
-		TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
+		// NOTE/tp: disabled first test because we initialize debug output
+		// to silent in unit tests.
+//		TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
 		DebugMPI->SetDebugLevel( kDbgLvlCritical );
 		TS_ASSERT_EQUALS( kDbgLvlCritical, DebugMPI->GetDebugLevel() );
 		DebugMPI->SetDebugLevel( kDbgLvlNoteable );

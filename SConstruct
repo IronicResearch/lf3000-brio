@@ -137,22 +137,26 @@ for target in targets:
 	hdr_deploy_dir			= ''
 
 	if is_publish:
-		mpi_deploy_dir	= os.path.join(publish_lib_dir, 'MPI')
-		lib_deploy_dir	= os.path.join(publish_lib_dir, 'Module')
-		hdr_deploy_dir  = os.path.join(publish_root, 'Include')
+		mpi_deploy_dir		= os.path.join(publish_lib_dir, 'MPI')
+		priv_mpi_deploy_dir	= os.path.join(publish_lib_dir, 'PrivMPI')
+		lib_deploy_dir		= os.path.join(publish_lib_dir, 'Module')
+		hdr_deploy_dir 	 	= os.path.join(publish_root, 'Include')
 	elif is_export:
-		mpi_deploy_dir	= os.path.join(xbuild_base, 'MPI')
-		lib_deploy_dir	= os.path.join(xbuild_base, 'Module')
-		hdr_deploy_dir  = os.path.join(export_root, 'Include')
+		mpi_deploy_dir		= os.path.join(xbuild_base, 'MPI')
+		priv_mpi_deploy_dir	= os.path.join(xbuild_base, 'PrivMPI')
+		lib_deploy_dir		= os.path.join(xbuild_base, 'Module')
+		hdr_deploy_dir 		= os.path.join(export_root, 'Include')
 	else:
-		mpi_deploy_dir	= os.path.join(build_base, 'MPI')
-		lib_deploy_dir	= os.path.join(build_base, 'Module')
+		mpi_deploy_dir		= os.path.join(build_base, 'MPI')
+		priv_mpi_deploy_dir	= os.path.join(build_base, 'PrivMPI')
+		lib_deploy_dir		= os.path.join(build_base, 'Module')
 		
 	bin_deploy_dir	= mpi_deploy_dir
 		
 	if not is_emulation:
-		bin_deploy_dir	= os.path.join(rootfs, 'usr', 'local', 'bin')
-		lib_deploy_dir	= os.path.join(rootfs, 'usr', 'local', 'lib')
+		bin_deploy_dir		= os.path.join(rootfs, 'usr', 'local', 'bin')
+		lib_deploy_dir		= os.path.join(rootfs, 'usr', 'local', 'lib')
+		priv_mpi_deploy_dir	= lib_deploy_dir
 		Default(bin_deploy_dir)
 		Default(lib_deploy_dir)
 
@@ -183,6 +187,7 @@ for target in targets:
 				 'is_runtests'				: is_runtests,
 				 'adjust_to_source_dir'		: adjust_to_source_dir,
 				 'mpi_deploy_dir'			: mpi_deploy_dir,
+				 'priv_mpi_deploy_dir'		: priv_mpi_deploy_dir,
 				 'lib_deploy_dir'			: lib_deploy_dir,
 				 'bin_deploy_dir'			: bin_deploy_dir,
 				 'hdr_deploy_dir'			: hdr_deploy_dir,
@@ -202,7 +207,7 @@ for target in targets:
 						tools = ['default', platform_toolset, 
 								'checkheader', 'cxxtest', 'runtest'], 
 						toolpath = [toolpath1, toolpath2],
-						LIBPATH = [mpi_deploy_dir],
+						LIBPATH = [mpi_deploy_dir, priv_mpi_deploy_dir],
 					 )
 	if variant != '':
 		env.Append(CPPDEFINES = [variant])

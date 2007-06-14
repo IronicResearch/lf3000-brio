@@ -189,6 +189,7 @@ namespace
 						: pDevices(pDevs),
 						isBlocking(kBlocking), 
 						pDefaultListener(NULL),
+						isOmniscient(false),
 						curPkgType(kRsrcPackageTypeInvalid),	// FIXME: make "Invalids" consistent
 						cachedPkg(NULL),
 						curRsrcType(kInvalidRsrcType),
@@ -201,7 +202,7 @@ namespace
 		CURI					defaultURI;
 		eSynchState				isBlocking;
 		const IEventListener*	pDefaultListener;
-		Boolean					deviceIsAttached[kDeviceCount];
+		Boolean					isOmniscient;
 
 		CURI					curPkgURI;
 		eRsrcPackageType		curPkgType;
@@ -214,9 +215,27 @@ namespace
 		ResourceDescriptor*		cachedRsrc;// cache last found handle for subsequent operations
 				
 		//--------------------------------------------------------------------
-		Boolean PackageIsAttached(tPackageHndl hndl) const
+		Boolean DeviceIsAttached(size_t index) const
 		{
-			return attachedPackages.count(hndl) ? true : false;
+			return isOmniscient || deviceIsAttached[index] ? true : false;
+		}
+		
+		//--------------------------------------------------------------------
+		void AttachDevice(size_t index)
+		{
+			deviceIsAttached[index] = true;
+		}
+		
+		//--------------------------------------------------------------------
+		void DettachDevice(size_t index)
+		{
+			deviceIsAttached[index] = false;
+		}
+
+		//--------------------------------------------------------------------
+		Boolean PackageIsAttached(tDeviceHndl hndl) const
+		{
+			return isOmniscient || attachedPackages.count(hndl) ? true : false;
 		}
 		
 		//--------------------------------------------------------------------
@@ -232,8 +251,8 @@ namespace
 		}
 
 	private:		
+		Boolean					deviceIsAttached[kDeviceCount];
 		std::set<tPackageHndl>	attachedPackages;
-		std::set<tRsrcHndl>		attachedResources;
 	};
 	typedef std::map<U32, MPIInstanceState>	MPIMap;
 	
@@ -256,7 +275,7 @@ namespace
 		}
 		Boolean GetNext(DeviceDescriptor*& pdd)
 		{
-			while (index_ >= 0 && !mpiState_.deviceIsAttached[index_])
+			while (index_ >= 0 && !mpiState_.DeviceIsAttached(index_))
 				--index_;
 			if (index_ < 0)
 			{
@@ -576,6 +595,12 @@ tErrType CResourceModule::SetDefaultListener(U32 id, const IEventListener *pList
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
+void CResourceModule::MakeOmniscient(U32 id)
+{
+	MPIInstanceState& mpiState = RetrieveMPIState(id);
+	mpiState.isOmniscient = true;
+}
 
 
 //==============================================================================
@@ -632,10 +657,10 @@ tErrType CResourceModule::CloseDevice(U32 id, tDeviceHndl hndl)
 	//
 	size_t index = Handle2Index(hndl);
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	if (!mpiState.deviceIsAttached[index])								//*1
+	if (!mpiState.DeviceIsAttached(index))								//*1
 		return kNoErr;
 		
-	mpiState.deviceIsAttached[index] = false;							//*2
+	mpiState.DettachDevice(index);										//*2
 	DeviceDescriptor& device = pDevices_[index];
 	--device.refCount;
 	
@@ -684,10 +709,10 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	size_t index = Handle2Index(hndl);
 	DeviceDescriptor& device = pDevices_[index];
-	if (mpiState.deviceIsAttached[index])								//*1
+	if (mpiState.DeviceIsAttached(index))								//*1
 		return;
 		
-	mpiState.deviceIsAttached[index] = true;							//*2
+	mpiState.AttachDevice(index);										//*2
 	++device.refCount;
 	
 	if (!device.isOpen)													//*3

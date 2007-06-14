@@ -13,8 +13,9 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
-modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'portaudio', 'asound', 'me2000']
-mpilibs		= ['ModuleMPI', 'ResourceMPI', 'KernelMPI', 'DebugMPI']
+modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'SystemResourceMPI', 
+				'portaudio', 'asound', 'me2000']
+mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
@@ -39,6 +40,6 @@ Depends(mympi, mymodule)
 #-----------------------------------------------------------------------------
 # Modify the build environment and build and run the unit tests
 #-----------------------------------------------------------------------------
-RunMyTests(module_name, [], mpilibs + ['EventMPI'], myenv, vars)
+RunMyTests(module_name, [], mpilibs + ['EventMPI', 'ResourceMPI'], myenv, vars)
 
 Return('mymodule', 'mympi')

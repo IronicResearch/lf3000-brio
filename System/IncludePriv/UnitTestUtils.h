@@ -43,6 +43,7 @@ protected:
 #endif
 		CDebugMPI	dbg(kGroupUnitTests);
 		dbg.EnableThrowOnAssert();
+		dbg.SetDebugLevel(kDbgLvlSilent);
 	}
 };
 

@@ -148,7 +148,7 @@ namespace
 		//		to connect to the underlying module, then print out everything.
 		if (!pModule || pModule->DebugOutIsEnabled(sig, lvl))
 		{
-			// Ready to outputva_list arguments
+			// Ready to output va_list arguments
 	
 			// va_list argumentsif timestamping all output, add timestamp first
 			if (!(debugOutFormat & kDebugOutFormatLiteral) && pModule && pModule->TimestampIsEnabled())
@@ -268,13 +268,22 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 {
 	if (!testResult)
 	{
-		va_list arguments;
-		va_start( arguments, formatString );
-		printf( kAssertTagStr );
-		printf( kDebugOutSignatureFmt, sig_ );
-	    vprintf( formatString, arguments ); 
-		va_end( arguments );
-		if (pModule_ && pModule_->ThrowOnAssertIsEnabled())
+		// For cleaner unit test output, if ThrowOnAssertIsEnabled and
+		// the debug level is kDbgLvlSilent, we don't print any text.
+		// In all other cases we do ouput the "!ASSERT: ..." text.
+		//
+		Boolean throwOnAssert = pModule_ && pModule_->ThrowOnAssertIsEnabled();
+		if (!throwOnAssert || 
+			(pModule_ && (pModule_->GetDebugLevel() != kDbgLvlSilent)))
+		{
+			va_list arguments;
+			va_start( arguments, formatString );
+			printf( kAssertTagStr );
+			printf( kDebugOutSignatureFmt, sig_ );
+		    vprintf( formatString, arguments ); 
+			va_end( arguments );
+		}
+		if (throwOnAssert)
 		{
 			UnitTestAssertException e;
 			throw e;
