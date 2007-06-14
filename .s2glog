@@ -3653,3 +3653,13 @@ By TParker (TParker@leapfrog.com) on 6/14/07 2:36 PM
 1,735 ms. (Cumulative: 516,615 ms)
 
 ----------------
+Revision 564 from svn://localhost/TRUNK/:
+Revision 565 from svn://localhost/TRUNK/:
+
+Fixed path to "ustring" libs
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/14/07 3:11 PM
+1 changed, 0 added, 0 deleted.
+1,687 ms. (Cumulative: 518,380 ms)
+
+----------------

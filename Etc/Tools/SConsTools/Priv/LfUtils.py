@@ -233,7 +233,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 				platformlibs += ['glibmm-2.4', 'glib-2.0']
 			else:
 				platformlibs += ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
-				testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs'])
+				testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/arm'])
 			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs
 			if vars['is_emulation']:
 				fulllibs += ['Emulation']
