@@ -163,11 +163,6 @@ public:
 
 	Boolean			RsrcIsLoaded(tRsrcHndl hndl) const;
 
-	// Rsrc referencing FIXME: move to smartptr hndl class
-	tErrType		AddRsrcRef(tRsrcHndl hndl);	
-	tErrType		DeleteRsrcRef(tRsrcHndl hndl);
-	U32				GetRefCount(tRsrcHndl hndl);
-
 	// New rsrc creation/deletion
 	tRsrcHndl		NewRsrc(tRsrcType rsrcType, void* pData);
 	tErrType		DeleteRsrc(tRsrcHndl hndl);

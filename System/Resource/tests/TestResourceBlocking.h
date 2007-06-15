@@ -196,6 +196,45 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testFindPackageFlexibleDefaultPathSyntax()
+	{
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+
+		CURI d1("LF/Brio/UnitTest/Resource/A");
+		CURI d2("LF/Brio/UnitTest/Resource/A/");
+		CURI d3("/LF/Brio/UnitTest/Resource/A");
+		CURI d4("/LF/Brio/UnitTest/Resource/A/");
+		
+		tPackageHndl pkg1 = rsrcmgr_->FindPackage("CountTest", &d1);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg1 );
+
+		tPackageHndl pkg2 = rsrcmgr_->FindPackage("CountTest", &d2);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg2 );
+
+		tPackageHndl pkg3 = rsrcmgr_->FindPackage("CountTest", &d3);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg3 );
+
+		tPackageHndl pkg4 = rsrcmgr_->FindPackage("CountTest", &d4);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg4 );
+
+		rsrcmgr_->SetDefaultURIPath(d1);
+		tPackageHndl pkg5 = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg5 );
+
+		rsrcmgr_->SetDefaultURIPath(d2);
+		tPackageHndl pkg6 = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg6 );
+
+		rsrcmgr_->SetDefaultURIPath(d3);
+		tPackageHndl pkg7 = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg7 );
+
+		rsrcmgr_->SetDefaultURIPath(d4);
+		tPackageHndl pkg8 = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg8 );
+	}
+
+	//------------------------------------------------------------------------
 	void testGetNumRsrcs()
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );

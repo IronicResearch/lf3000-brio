@@ -13,6 +13,9 @@
 //		Extends the ResourceMPI to give Brio system modules special powers!
 //		(Namely, access to all opened devices, packages and resources).
 //
+//		In the future, we may want to add an accessor that gets the underlying
+//		path name, etc.
+//
 //==============================================================================
 
 #include <ResourceMPI.h>

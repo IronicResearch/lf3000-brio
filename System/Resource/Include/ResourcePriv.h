@@ -170,11 +170,6 @@ public:
 
 	VTABLE_EXPORT	Boolean			RsrcIsLoaded(U32 id, tRsrcHndl hndl) const;
 
-	// Rsrc referencing FIXME: move to smartptr hndl class
-	VTABLE_EXPORT	tErrType		AddRsrcRef(tRsrcHndl hndl);	
-	VTABLE_EXPORT	tErrType		DeleteRsrcRef(tRsrcHndl hndl);
-	VTABLE_EXPORT	tErrType		GetRefCount(tRsrcHndl hndl);
-
 	// New rsrc creation/deletion
 	VTABLE_EXPORT	tRsrcHndl 		NewRsrc(U32 id, tRsrcType rsrcType, void* pData);
 	VTABLE_EXPORT	tErrType		DeleteRsrc(U32 id, tRsrcHndl hndl);

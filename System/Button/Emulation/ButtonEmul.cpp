@@ -45,22 +45,39 @@ namespace
 	{
 		switch( keysym )
 		{
-			case XK_Left:			return kButtonLeftKey;
-			case XK_KP_Left:		return kButtonLeftKey;
-			case XK_Right:			return kButtonRightKey;
-			case XK_KP_Right:		return kButtonRightKey;
-			case XK_Up:				return kButtonUpKey;
-			case XK_KP_Up:			return kButtonUpKey;
-			case XK_Down:			return kButtonDownKey;
-			case XK_KP_Down:		return kButtonDownKey;
-			case XK_a:				return kButtonAKey;
-			case XK_KP_Insert:		return kButtonAKey;
-			case XK_KP_0:			return kButtonAKey;
-			case XK_b:				return kButtonBKey;
-			case XK_KP_Delete:		return kButtonBKey;
-			case XK_KP_Decimal:		return kButtonBKey;
-			case XK_KP_Add:			return kButtonVolumeUp;
-			case XK_KP_Subtract:	return kButtonVolumeDown;
+			case XK_Left:			return kButtonLeft;
+			case XK_KP_Left:		return kButtonLeft;
+			case XK_Right:			return kButtonRight;
+			case XK_KP_Right:		return kButtonRight;
+			case XK_Up:				return kButtonUp;
+			case XK_KP_Up:			return kButtonUp;
+			case XK_Down:			return kButtonDown;
+			case XK_KP_Down:		return kButtonDown;
+			
+			case XK_a:				return kButtonA;
+			case XK_KP_0:			return kButtonA;
+			
+			case XK_b:				return kButtonB;
+			case XK_KP_1:			return kButtonB;
+			case XK_KP_Decimal:		return kButtonB;
+			
+			case XK_Delete:			return kButtonLeftShoulder;
+//			case XK_KP_Delete:		return kButtonLeftShoulder;
+			
+			case XK_Page_Down:		return kButtonRightShoulder;
+//			case XK_KP_Page_Down:	return kButtonRightShoulder;
+
+			case XK_m:				return kButtonMenu;
+			case XK_Insert:			return kButtonMenu;
+			case XK_KP_Insert:		return kButtonMenu;
+
+			case XK_h:				return kButtonHint;
+			case XK_Home:			return kButtonHint;
+			case XK_KP_Home:		return kButtonHint;
+
+			case XK_p:				return kButtonPause;
+			case XK_Page_Up:		return kButtonPause;
+			case XK_KP_Page_Up:		return kButtonPause;
 		}
 		return 0;
 	}

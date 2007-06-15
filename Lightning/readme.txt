@@ -1,6 +1,6 @@
-=========================
-Lightning Emulation 0.1.3
-=========================
+=============
+Lightning SDK
+=============
 
 ============
 Installation
@@ -11,45 +11,53 @@ Use any target folder to which you have user access on your system.
 
 The installation tree will look like this:
 
++-readme.txt         (this file)
+|
++-ReleaseNotes.txt
+|
 +-Include  (Brio MPI headers)
 |  |
 |  +-boost (preprocessor library, auto-generates text descriptions of errors at compile time)
 |  |
 |  +-OpenGL
+|  |  |
+|  |  +-Lighting           (subfolders for MagicEyes headers--not in release 0.1.1)
+|  |  |
+|  |  +-Lighting_emulation (subfolders for PowerVR headers)
+|  |
+|  +-ThirdParty
 |     |
-|     +-LightingGCC           (subfolders for MagicEyes headers--not in release 0.1.1)
-|     |
-|     +-LightingGCC_emulation (subfolders for PowerVR headers)
+|     +-ustring            (for embedded CString class, should disappear in subsequent release)
 |
 +-Libs  (Brio MPI headers)
 |  |
-|  +-LightingGCC  (not in release 0.1.1)
-|  |  |
-|  |  +-Module    (replacable modules, not linked to by apps)
+|  +-Lighting
 |  |  |
 |  |  +-MPI       (module interface objects, directly linked to by apps)
 |  |  |
 |  |  +-OpenGL    (MagicEyes library)
 |  |
-|  +-LightingGCC_emulation
+|  +-Lighting_emulation
 |     |
-|     +-Module    (replacable modules, not linked to by apps)
+|     +-Module    (Brio replacable modules, not linked to by apps)
 |     |
-|     +-MPI       (module interface objects, directly linked to by apps)
+|     +-MPI       (Brio module interface objects, directly linked to by apps)
 |     |
 |     +-OpenGL    (PowerVR library)
+|     |
+|     +-PrivMPI   (module interface objects for Brio modules, not linked to by apps)
 |  
 +-Samples
 |  |
-|  +-readme.txt   (this file)
-|  |
 |  +-BrioCube     (rotating cube with Brio calls that are exercised through button presses)
+|  |
+|  +-Button       (demonstrates button presses on the hardware)
+|  |
+|  +-Display      (demonstrates how to load and use fonts)
 |  |
 |  +-Simple       (simplest OpenGL application, minimal build system)
 |
 +-Tools
-   |
-   +-BuildRsrc    (initial packer for resources)
    |
    +-*.py         (SCons modules for C++ build system)
 

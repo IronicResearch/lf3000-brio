@@ -477,28 +477,6 @@ Boolean CResourceMPI::RsrcIsLoaded(tRsrcHndl hndl) const
 	return pModule_->RsrcIsLoaded(id_, hndl);
 }
 
-	// Rsrc referencing FIXME: move to smartptr hndl class
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::AddRsrcRef(tRsrcHndl hndl)	
-{
-	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->AddRsrcRef(hndl);
-}
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::DeleteRsrcRef(tRsrcHndl hndl)
-{
-	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->DeleteRsrcRef(hndl);
-}
-//----------------------------------------------------------------------------
-tErrType CResourceMPI::GetRefCount(tRsrcHndl hndl)
-{
-	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->GetRefCount(hndl);
-}
 
 	// New rsrc creation/deletion
 //----------------------------------------------------------------------------

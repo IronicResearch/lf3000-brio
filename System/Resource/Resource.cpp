@@ -96,10 +96,10 @@ struct ResourceDescriptor
 	int					fd;
 	tPtr				ptr;
 	
-	ResourceDescriptor(const char* u, const char* t = "", const char* p = "",
+	ResourceDescriptor(const char* u, U32 t = kInvalidRsrcType, const char* p = "",
 					U32 s = 0, U32 us = 0, tVersion v = 1, 
 					PackageDescriptor* d = NULL)
-		: uri(u), type(kInvalidRsrcType), path(p), size(s), usize(us), 
+		: uri(u), type(t), path(p), size(s), usize(us), 
 		version(v), pPkg(d), hndl(kInvalidRsrcHndl), refCount(0), fd(-1), ptr(0)
 	{
 	}
@@ -155,6 +155,7 @@ struct DeviceDescriptor
 	Boolean				isOpen;
 	CPath				mountPath;
 	PackageDescriptors	packages;
+	CString				name;
 	// Utility ctor to initialize state
 	DeviceDescriptor() : refCount(0), isOpen(0) {}
 };
@@ -190,6 +191,8 @@ namespace
 						isBlocking(kBlocking), 
 						pDefaultListener(NULL),
 						isOmniscient(false),
+						curDeviceIndex(0),
+						curDeviceType(kRsrcDeviceTypeInvalid),
 						curPkgType(kRsrcPackageTypeInvalid),	// FIXME: make "Invalids" consistent
 						cachedPkg(NULL),
 						curRsrcType(kInvalidRsrcType),
@@ -204,12 +207,15 @@ namespace
 		const IEventListener*	pDefaultListener;
 		Boolean					isOmniscient;
 
-		CURI					curPkgURI;
+		size_t					curDeviceIndex;		// for FindNextDevice iteration
+		eDeviceType				curDeviceType;
+		
+		CURI					curPkgURI;			// for FindNextPackage iteration
 		eRsrcPackageType		curPkgType;
 		boost::shared_ptr<AttachedPackageIterator>	pPkgIter;
 		PackageDescriptor*		cachedPkg;// cache last found handle for subsequent operations
 				
-		CURI					curRsrcURI;
+		CURI					curRsrcURI;			// for FindNextRsrc iteration
 		tRsrcType				curRsrcType;
 		boost::shared_ptr<AttachedResourceIterator>	pRsrcIter;
 		ResourceDescriptor*		cachedRsrc;// cache last found handle for subsequent operations
@@ -474,6 +480,17 @@ namespace
 		static tRsrcHndl s_next = 0;
 		rd.hndl = ++s_next;
 	}
+
+	//--------------------------------------------------------------------------
+	CURI PrepareSearchURI(const CURI& in)
+	{
+		if (in.empty())
+			return in;
+		CURI uri = AppendPathSeparator(in);
+		if (uri.at(0) == '/')
+			uri.erase(0, 1);
+		return uri;
+	}
 	
 	//--------------------------------------------------------------------------
 	void PostEvent(tEventType type,
@@ -514,11 +531,20 @@ namespace
 CResourceModule::CResourceModule() : dbg_(kGroupResource),
 								pDevices_(new DeviceDescriptor[kDeviceCount])
 {
+	const CString	base = "Base";
+	const CString	cart = "Cart";
 	MountPoints	mp;
 	GetDeviceMountPoints(mp);
 	size_t len = mp.size();
 	for (size_t ii = 0; ii < len; ++ii)
 		pDevices_[ii].mountPath = mp[ii];
+	pDevices_[0].name = base;
+	for (size_t ii = 1; ii < len; ++ii)
+	{
+		char buf[4];
+		sprintf(buf, "%d", ii);
+		pDevices_[ii].name = cart + buf;
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -567,7 +593,7 @@ U32 CResourceModule::Register( )
 void CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	mpiState.defaultURI = AppendPathSeparator(pURIPath);
+	mpiState.defaultURI = PrepareSearchURI(pURIPath);
 }
 
 //----------------------------------------------------------------------------
@@ -605,22 +631,27 @@ U16 CResourceModule::GetNumDevices(eDeviceType type) const
 //----------------------------------------------------------------------------
 tDeviceHndl CResourceModule::FindFirstDevice(U32 id, eDeviceType type) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "FindFirstDevice not implemented");
-	return kInvalidDeviceHndl;
+	MPIInstanceState& mpiState = RetrieveMPIState(id);
+	mpiState.curDeviceIndex = 0;
+	mpiState.curDeviceType = type;
+	return FindNextDevice(id);
 }
 
 //----------------------------------------------------------------------------
 tDeviceHndl CResourceModule::FindNextDevice(U32 id) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "FindNextDevice not implemented");
+	// TODO: Implement Device types
+	MPIInstanceState& mpiState = RetrieveMPIState(id);
+	if (mpiState.curDeviceIndex < kDeviceCount)
+		return ++mpiState.curDeviceIndex;
 	return kInvalidDeviceHndl;
 }
 
 //----------------------------------------------------------------------------
 const CString* CResourceModule::GetDeviceName(tDeviceHndl hndl) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "GetDeviceName not implemented");
-	return &kNullString;
+	size_t index = Handle2Index(hndl);
+	return &(pDevices_[index].name);
 }
 //----------------------------------------------------------------------------
 eDeviceType CResourceModule::GetDeviceType(tDeviceHndl hndl) const
@@ -764,9 +795,7 @@ tPackageHndl CResourceModule::FindPackage(U32 id, const CURI& packageURI,
 												const CURI *pURIPath) const
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	CURI uri = pURIPath ? *pURIPath : mpiState.defaultURI;
-	if (*uri.rbegin() != '/')
-		uri += '/';
+	CURI uri = pURIPath ? PrepareSearchURI(*pURIPath) : mpiState.defaultURI;
 	uri += packageURI;
 	PackageDescriptor	search(uri.c_str());
 	OpenDeviceIterator	iter(mpiState);
@@ -794,7 +823,7 @@ tPackageHndl CResourceModule::FindFirstPackage(U32 id, eRsrcPackageType type,
 												const CURI *pURIPath) const
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	mpiState.curPkgURI = (pURIPath ? *pURIPath : mpiState.defaultURI);
+	mpiState.curPkgURI = pURIPath ? PrepareSearchURI(*pURIPath) : mpiState.defaultURI;
 	mpiState.curPkgType = type;
 	mpiState.pPkgIter.reset(new AttachedPackageIterator(mpiState));
 	return FindNextPackage(id);
@@ -951,7 +980,7 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 			char* size = strchr(file, ','); *size++ = '\0';
 			char* usize = strchr(size, ','); *usize++ = '\0';
 			char* ver = strchr(usize, ','); *ver++ = '\0';
-			ResourceDescriptor rd(uri, type, file, 
+			ResourceDescriptor rd(uri, atoi(type), file, 
 								atoi(size), atoi(usize), atoi(ver), ppd);
 			ppd->resources.push_back(rd);
 		}
@@ -1028,8 +1057,8 @@ U32 CResourceModule::GetNumRsrcs(U32 id, tRsrcType type,
 	tRsrcHndl hndl = FindFirstRsrc(id, type, pURIPath);
 	while (kInvalidRsrcHndl != hndl)
 	{
-		// FIXME/tp: filter by type
-		++count;
+		if (type == kRsrcTypeAll || type == GetType(id, hndl))
+			++count;
 		hndl = FindNextRsrc(id);
 	}
 	return count;
@@ -1040,9 +1069,7 @@ tRsrcHndl CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI,
 									const CURI *pURIPath) const
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	CURI uri = pURIPath ? *pURIPath : mpiState.defaultURI;
-	if (*uri.rbegin() != '/')
-		uri += '/';
+	CURI uri = pURIPath ? PrepareSearchURI(*pURIPath) : mpiState.defaultURI;
 	uri += rsrcURI;
 	ResourceDescriptor	search(uri.c_str());
 	OpenPackageIterator	iter(mpiState);
@@ -1066,7 +1093,7 @@ tRsrcHndl CResourceModule::FindFirstRsrc(U32 id, tRsrcType type,
 										const CURI *pURIPath) const
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	mpiState.curRsrcURI = (pURIPath ? *pURIPath : mpiState.defaultURI);
+	mpiState.curRsrcURI = pURIPath ? PrepareSearchURI(*pURIPath) : mpiState.defaultURI;
 	mpiState.curRsrcType = type;
 	mpiState.pRsrcIter.reset(new AttachedResourceIterator(mpiState));
 	return FindNextRsrc(id);
@@ -1398,7 +1425,7 @@ tErrType CResourceModule::SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes,
 
 	if (prd->fd == -1)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "SeekRsrc() called with non-open resource '%s'", prd->uri.c_str());
+		dbg_.Assert(false, "SeekRsrc() called with non-open resource '%s'", prd->uri.c_str());
 		return kResourceNotOpenErr;
 	}
 		
@@ -1433,7 +1460,7 @@ tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer,
 
 	if (prd->fd == -1)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "ReadRsrc() called with non-open resource '%s'", prd->uri.c_str());
+		dbg_.Assert(false, "WriteRsrc() called with non-open resource '%s'", prd->uri.c_str());
 		return kResourceNotOpenErr;
 	}
 		
@@ -1444,25 +1471,6 @@ tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer,
 	MPIInstanceState& mpiState = RetrieveMPIState(id);					//*4
 	PostEvent(kResourceWriteDoneEvent, 0, mpiState, pListener);
 
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CResourceModule::AddRsrcRef(tRsrcHndl hndl)
-{
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CResourceModule::DeleteRsrcRef(tRsrcHndl hndl)
-{
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CResourceModule::GetRefCount(tRsrcHndl hndl)
-{
-	dbg_.DebugOut(kDbgLvlCritical, "GetRefCount not implemented");
 	return kNoErr;
 }
 
