@@ -120,7 +120,7 @@ struct PackageDescriptor
 	CPath				path;
 	tVersion			version;
 	CString				verstr;
-	eRsrcPackageType	type;
+	ePackageType	type;
 	tDeviceHndl			deviceHndl;
 	tPackageHndl		hndl;
 	U16					refCount;
@@ -129,7 +129,7 @@ struct PackageDescriptor
 	
 	PackageDescriptor(const char* u, const CPath& p = CPath(), 
 					tVersion v = 1, 
-					eRsrcPackageType t = kRsrcPackageTypeInvalid,
+					ePackageType t = kPackageTypeInvalid,
 					tDeviceHndl d = kInvalidDeviceHndl)
 		: uri(u), path(p), version(v), type(t), deviceHndl(d), 
 		hndl(kInvalidPackageHndl), refCount(0), isOpen(false)
@@ -192,8 +192,8 @@ namespace
 						pDefaultListener(NULL),
 						isOmniscient(false),
 						curDeviceIndex(0),
-						curDeviceType(kRsrcDeviceTypeInvalid),
-						curPkgType(kRsrcPackageTypeInvalid),	// FIXME: make "Invalids" consistent
+						curDeviceType(kDeviceTypeInvalid),
+						curPkgType(kPackageTypeInvalid),	// FIXME: make "Invalids" consistent
 						cachedPkg(NULL),
 						curRsrcType(kInvalidRsrcType),
 						cachedRsrc(NULL)
@@ -211,7 +211,7 @@ namespace
 		eDeviceType				curDeviceType;
 		
 		CURI					curPkgURI;			// for FindNextPackage iteration
-		eRsrcPackageType		curPkgType;
+		ePackageType		curPkgType;
 		boost::shared_ptr<AttachedPackageIterator>	pPkgIter;
 		PackageDescriptor*		cachedPkg;// cache last found handle for subsequent operations
 				
@@ -657,7 +657,7 @@ const CString* CResourceModule::GetDeviceName(tDeviceHndl hndl) const
 eDeviceType CResourceModule::GetDeviceType(tDeviceHndl hndl) const
 {
 	dbg_.DebugOut(kDbgLvlCritical, "GetDeviceType not implemented");
-	return kRsrcDeviceTypeInvalid;
+	return kDeviceTypeInvalid;
 }
 
 //----------------------------------------------------------------------------
@@ -758,7 +758,7 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 			char* type = strchr(ver, ','); *type++ = '\0';
 			CPath fullPath = device.mountPath;
 			fullPath += file;
-			PackageDescriptor pd(uri, fullPath, atoi(ver), kRsrcPackageTypeInvalid, hndl);
+			PackageDescriptor pd(uri, fullPath, atoi(ver), kPackageTypeInvalid, hndl);
 			device.packages.push_back(pd);
 			// FIXME/tp: enumerate valid package types
 		}
@@ -776,7 +776,7 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 // Package Functions
 //==============================================================================
 //------------------------------------------------------------------------------
-U32 CResourceModule::GetNumPackages(U32 id, eRsrcPackageType type, 
+U32 CResourceModule::GetNumPackages(U32 id, ePackageType type, 
 										const CURI *pURIPath) const
 {
 	U32 count = 0;
@@ -819,7 +819,7 @@ tPackageHndl CResourceModule::FindPackage(U32 id, const CURI& packageURI,
 }
 
 //----------------------------------------------------------------------------
-tPackageHndl CResourceModule::FindFirstPackage(U32 id, eRsrcPackageType type,
+tPackageHndl CResourceModule::FindFirstPackage(U32 id, ePackageType type,
 												const CURI *pURIPath) const
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
@@ -841,7 +841,7 @@ tPackageHndl CResourceModule::FindNextPackage(U32 id) const
 	PackageDescriptor* ppd;
 	while (mpiState.pPkgIter->GetNext(ppd))
 	{
-		if (mpiState.curPkgType != kRsrcPackageTypeAll 
+		if (mpiState.curPkgType != kPackageTypeAll 
 				&& mpiState.curPkgType != ppd->type)
 			continue;
 		if (ppd->uri.find(mpiState.curPkgURI) == 0)
@@ -902,10 +902,10 @@ const CString* CResourceModule::GetPackageName(U32 id, tPackageHndl hndl) const
 	return &kNullString;
 }
 //----------------------------------------------------------------------------
-eRsrcPackageType CResourceModule::GetPackageType(U32 id, tPackageHndl hndl) const
+ePackageType CResourceModule::GetPackageType(U32 id, tPackageHndl hndl) const
 {
 	const PackageDescriptor* ppd = FindPackagePriv(id, hndl);
-	return ppd ? (ppd->type) : kRsrcPackageTypeInvalid;
+	return ppd ? (ppd->type) : kPackageTypeInvalid;
 }
 //----------------------------------------------------------------------------
 tVersion CResourceModule::GetPackageVersion(U32 id, tPackageHndl hndl) const
