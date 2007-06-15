@@ -693,7 +693,7 @@ public:
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
     // FIXME: pAbstime var
-        void testTimedWaitOnCond()
+        void xtestTimedWaitOnCond()
         {
 			tErrType err;
         	static tCond cond = PTHREAD_COND_INITIALIZER;  
@@ -720,7 +720,7 @@ public:
         }
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-        void testWaitOnCond()
+        void xtestWaitOnCond()
         {
 			tErrType err;
 

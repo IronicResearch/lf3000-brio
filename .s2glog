@@ -3700,3 +3700,14 @@ By Dmilici (Dmilici@leapfrog.com) on 6/14/07 5:24 PM
 1,688 ms. (Cumulative: 525,991 ms)
 
 ----------------
+Revision 571 from svn://localhost/TRUNK/:
+Revision 572 from svn://localhost/TRUNK/:
+
+Commented out the testTimedWaitOnCond and the testWaitOnCond that it will be necessary
+to investigate before running on the board
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/14/07 5:45 PM
+1 changed, 0 added, 0 deleted.
+1,656 ms. (Cumulative: 527,710 ms)
+
+----------------
