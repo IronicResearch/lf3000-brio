@@ -3711,3 +3711,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/14/07 5:45 PM
 1,656 ms. (Cumulative: 527,710 ms)
 
 ----------------
+Revision 573 from svn://localhost/TRUNK/:
+
+Changed path to ustring lib
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/14/07 6:12 PM
+1 changed, 0 added, 0 deleted.
+1,665 ms. (Cumulative: 529,438 ms)
+
+----------------

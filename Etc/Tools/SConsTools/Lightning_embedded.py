@@ -23,7 +23,7 @@ def PlatformMods(env):
 	env.Append(CCFLAGS = '-O4')
 	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc'])
 	env.Append(LIBPATH = ['#Build/LightningGCC/MPI'])	
-	env.Append(LIBPATH = ['#ThirdParty/ustring/libs'])	
+	env.Append(LIBPATH = ['#ThirdParty/ustring/libs/arm'])	
 	env.Append(CPPPATH = ['#ThirdParty/ustring'])
 	env.Append(CPPPATH = ['#../LinuxDist/packages/drivers/include'])
 	env.Append(CPPPATH = ['#LinuxDist/packages/drivers/include'])
