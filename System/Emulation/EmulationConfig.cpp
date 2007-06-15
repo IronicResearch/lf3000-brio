@@ -57,12 +57,12 @@ bool EmulationConfig::Initialize( const char* pathIn )
 	// The module search bath and BaseROM assets path are based off
 	// of the C++ development kit root folder.
 	//
-	CPath path = pathIn;
-	path += "/Libs/Lightning_emulation/Module";
+	CPath path = AppendPathSeparator(pathIn);
+	path += "Libs/Lightning_emulation/Module";
 	SetModuleSearchPath(path.c_str());
 	
-	path = pathIn;
-	path += "/BaseROM/rsrc";
+	path = AppendPathSeparator(pathIn);
+	path += "BaseROM/rsrc";
 	SetBaseResourceSearchPath(path.c_str());
 	
 	boost::scoped_array<char> buf(new char[kMaxPath]);

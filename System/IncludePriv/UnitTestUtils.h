@@ -47,6 +47,7 @@ protected:
 		CPath path = EmulationConfig::Instance().GetCartResourceSearchPath();
 		
 		path = path.substr(0, path.rfind('/'));							//*2
+		path = path.substr(0, path.rfind('/'));
 		CPath modSearch = path + "/Lightning_emulation/Module";
 		EmulationConfig::Instance().SetModuleSearchPath(modSearch.c_str());
 		

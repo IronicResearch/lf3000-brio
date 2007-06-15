@@ -210,7 +210,7 @@ extern const CURI		kNullURI;
 //------------------------------------------------------------------------------
 inline CString AppendPathSeparator(const CString& path)
 {
-	if( path.at(path.length()-1) != '/' )
+	if( path.empty() || path.at(path.length()-1) != '/' )
 		return path + '/';
 	return path;
 }
@@ -219,7 +219,7 @@ inline CString AppendPathSeparator(const CString& path)
 inline CString AppendPathSeparator(const char* pathIn)
 {
 	CString path(pathIn);
-	if( path.at(path.length()-1) != '/' )
+	if( path.empty() || path.at(path.length()-1) != '/' )
 		path += '/';
 	return path;
 }

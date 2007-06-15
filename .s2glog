@@ -3744,3 +3744,12 @@ By TParker (TParker@leapfrog.com) on 6/14/07 8:04 PM
 1,922 ms. (Cumulative: 534,986 ms)
 
 ----------------
+Revision 577 from svn://localhost/TRUNK/:
+
+Fixes so unit tests run correctly again
+
+By TParker (TParker@leapfrog.com) on 6/14/07 9:02 PM
+3 changed, 0 added, 0 deleted.
+1,719 ms. (Cumulative: 536,783 ms)
+
+----------------
