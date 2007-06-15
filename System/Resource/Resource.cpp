@@ -568,17 +568,8 @@ void CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	mpiState.defaultURI = pURIPath;
-#ifdef EMULATION
 	if( pURIPath.at(pURIPath.length()-1) != '/' )
 		mpiState.defaultURI += "/";
-#else
-	// FIXME/dm: Implement general CString handling for embedded target
-	const char* str = pURIPath.c_str();
-	int	  len = pURIPath.size();
-	if (str[len-1] != '/')	
-		mpiState.defaultURI += "/";
-	
-#endif
 }
 
 //----------------------------------------------------------------------------

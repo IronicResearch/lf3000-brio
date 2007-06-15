@@ -3691,3 +3691,12 @@ By TParker (TParker@leapfrog.com) on 6/14/07 5:16 PM
 1,704 ms. (Cumulative: 524,225 ms)
 
 ----------------
+Revision 570 from svn://localhost/TRUNK/:
+
+Remove embedded-specific C string hack.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/14/07 5:24 PM
+1 changed, 0 added, 0 deleted.
+1,688 ms. (Cumulative: 525,991 ms)
+
+----------------
