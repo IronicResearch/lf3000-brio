@@ -525,21 +525,18 @@ void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 }
 
 void DoPauseMidiFile( CAudioMsgPauseMidiFile* msg ) {
-	tErrType					err;
 	tAudioPauseMidiFileInfo* 	pInfo = msg->GetData();
 
 	gContext.pMidiPlayer->PauseMidiFile( pInfo );
 }
 
 void DoResumeMidiFile( CAudioMsgResumeMidiFile* msg ) {
-	tErrType					err;
 	tAudioResumeMidiFileInfo* 	pInfo = msg->GetData();
 
 	gContext.pMidiPlayer->ResumeMidiFile( pInfo );
 }
 
 void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
-	tErrType					err;
 	tAudioStopMidiFileInfo* 	pInfo = msg->GetData();
 
 	gContext.pMidiPlayer->StopMidiFile( pInfo );

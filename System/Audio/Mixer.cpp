@@ -37,7 +37,6 @@
 
 CAudioMixer::CAudioMixer( U8 numChannels )
 {
-	tErrType err = kNoErr;
 	CDebugMPI debugMPI( kGroupAudio );
 
 	masterVol_ = 1.0;
@@ -56,8 +55,6 @@ CAudioMixer::CAudioMixer( U8 numChannels )
 //==============================================================================
 CAudioMixer::~CAudioMixer()
 {
-	tErrType err = kNoErr;
-
 	// Deallocate the channels
 	if (pChannels_)
 	{
