@@ -70,8 +70,7 @@ namespace
 			CString temp = name.substr(3, len-6);
 			pModule->version = 2;
 			strncpy(pModule->name, temp.c_str(), kMaxModuleName);
-			CPath sep("/");
-			temp = dir + sep + name;
+			temp = dir + name;
 			strncpy(pModule->sopath, temp.c_str(), kMaxPath);
 //printf("Module: %s  %s\n", pModule->name, pModule->sopath);
 			return true;

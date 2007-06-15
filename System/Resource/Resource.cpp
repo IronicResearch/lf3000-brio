@@ -567,9 +567,7 @@ U32 CResourceModule::Register( )
 void CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	mpiState.defaultURI = pURIPath;
-	if( pURIPath.at(pURIPath.length()-1) != '/' )
-		mpiState.defaultURI += "/";
+	mpiState.defaultURI = AppendPathSeparator(pURIPath);
 }
 
 //----------------------------------------------------------------------------

@@ -42,7 +42,7 @@ namespace
 		if( gg_pModuleHandle != NULL )
 			return kNoErr;
 		CPath path = GetModuleLibraryLocation();
-		path = path + CPath("/libModule.so");
+		path = path + "libModule.so";
 		const char* str = path.c_str();
 //		dbg.DebugOut(kDbgLvlVerbose, "GetModuleLibraryLocation: %s\n", str);
 		gg_pModuleHandle = dlopen(str, RTLD_LAZY);

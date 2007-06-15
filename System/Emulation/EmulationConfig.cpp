@@ -82,7 +82,7 @@ bool EmulationConfig::Initialize( const char* pathIn )
 //----------------------------------------------------------------------
 void EmulationConfig::SetModuleSearchPath( const char* path )
 {
-	gModuleSearchPath = path;
+	gModuleSearchPath = AppendPathSeparator(path);
 }
 
 //----------------------------------------------------------------------
@@ -94,7 +94,7 @@ const char* EmulationConfig::GetModuleSearchPath( ) const
 //----------------------------------------------------------------------
 void EmulationConfig::SetBaseResourceSearchPath( const char* path )
 {
-	gBaseResourceSearchPath = path;
+	gBaseResourceSearchPath = AppendPathSeparator(path);
 }
 
 //----------------------------------------------------------------------
@@ -106,7 +106,7 @@ const char* EmulationConfig::GetBaseResourceSearchPath( ) const
 //----------------------------------------------------------------------
 void EmulationConfig::SetCartResourceSearchPath( const char* path )
 {
-	gCartResourceSearchPath = path;
+	gCartResourceSearchPath = AppendPathSeparator(path);
 }
 
 //----------------------------------------------------------------------

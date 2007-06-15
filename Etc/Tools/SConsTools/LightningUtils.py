@@ -96,7 +96,7 @@ def CreateEnvironment(opts, vars):
 	env.Append(CPPDEFINES = ['LEAPFROG_CDEVKIT_ROOT=\\"'+cdevkit_dir+'\\"', 'OGLESLITE'])
 	env.Append(CPPPATH = cpppaths)
 	env.Append(LIBPATH = libpaths)
-	env.Append(RPATH = libpaths)
+	env.Append(RPATH = libpaths + [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'PrivMPI')])
 	
 	return env
 

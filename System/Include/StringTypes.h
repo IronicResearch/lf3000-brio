@@ -192,19 +192,38 @@ typedef U32			tUTF32Char;
 
 typedef tUTF16Char	tUniChar;		
 
-	typedef Glib::ustring	CString;
-	typedef Glib::ustring	CPath;
-	typedef Glib::ustring	CURI;
+typedef Glib::ustring	CString;
+typedef Glib::ustring	CPath;
+typedef Glib::ustring	CURI;
 	
-	typedef const CString*	ConstPtrCString;
-	typedef const CURI*		ConstPtrCURI;
-
-
 typedef const CString*	ConstPtrCString;
 typedef const CURI*		ConstPtrCURI;
 
 extern const CString	kNullString;
 extern const CURI		kNullURI;
+
+
+
+//==============================================================================
+// Utility functions
+//==============================================================================
+//------------------------------------------------------------------------------
+inline CString AppendPathSeparator(const CString& path)
+{
+	if( path.at(path.length()-1) != '/' )
+		return path + '/';
+	return path;
+}
+
+//------------------------------------------------------------------------------
+inline CString AppendPathSeparator(const char* pathIn)
+{
+	CString path(pathIn);
+	if( path.at(path.length()-1) != '/' )
+		path += '/';
+	return path;
+}
+
 
 LF_END_BRIO_NAMESPACE()	
 #endif	// LF_BRIO_STRINGTYPES_H
