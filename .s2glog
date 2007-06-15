@@ -3817,3 +3817,12 @@ By TParker (TParker@leapfrog.com) on 6/15/07 4:14 PM
 1,719 ms. (Cumulative: 549,909 ms)
 
 ----------------
+Revision 586 from svn://localhost/TRUNK/:
+
+Add Font MPI unit test for font resources. 
+
+By Dmilici (Dmilici@leapfrog.com) on 6/15/07 4:35 PM
+4 changed, 4 added, 0 deleted.
+1,844 ms. (Cumulative: 551,815 ms)
+
+----------------

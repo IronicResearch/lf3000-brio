@@ -16,7 +16,7 @@
 #include <SystemErrors.h>
 #include <FontTypes.h>
 #include <FontPriv.h>
-#include <ResourceMPI.h>
+#include <SystemResourceMPI.h>
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -180,7 +180,7 @@ Boolean	CFontModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
-tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
+tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize)
 {
 	FT_Face			face;
 	PFont			font;
@@ -198,7 +198,10 @@ tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
 	}
 	
 	// Load font file
-	error = FT_New_Face(handle_.library, filename, 0, &face );
+	if (pFileImage != NULL)
+		error = FT_New_Memory_Face(handle_.library, (const FT_Byte*)pFileImage, fileSize, 0, &face );
+	else
+		error = FT_New_Face(handle_.library, filename, 0, &face );
 	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: FT_New_Face (%s) returned = %d\n", filename, error);
 	if (error)
 	{
@@ -211,6 +214,9 @@ tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
 	
 	font->filepathname = (char*)malloc( strlen( filename ) + 1 );
 	strcpy( (char*)font->filepathname, filename );
+
+	font->fileAddress = pFileImage;
+	font->fileSize = fileSize;
 	
 	font->faceIndex = 0; // i;
 	font->cmapIndex = face->charmap ? FT_Get_Charmap_Index( face->charmap ) : 0;
@@ -276,25 +282,69 @@ tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
 }
 
 //----------------------------------------------------------------------------
+tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
+{
+	return LoadFontInt(pName, prop, NULL, 0);
+}
+
+//----------------------------------------------------------------------------
 tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 {
-	CResourceMPI	rsrcmgr;
-	const CString*	fontname;
-	
+	CSystemResourceMPI	rsrcmgr;
+	const CString*		fontname;
+	tPtr				fileimage;
+	U32					filesize; 
+	tErrType			r;
+	tFontHndl			hFont;
+	PFont				pFont;
+		
 	if (hRsrc == kInvalidRsrcHndl)
-		return false;
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::LoadFont: invalid resource handle passed\n");
+		return kInvalidFontHndl;
+	}
 	
-	// TODO: Use file image loaded in memory by resource manager
-//	fontname = rsrcmgr.GetRsrcName(hRsrc);
-	fontname = rsrcmgr.GetName(hRsrc);
-	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s\n", fontname->c_str());
-	return LoadFont(fontname, prop);
+	// Load font via resource manager
+	r = rsrcmgr.LoadRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
+	if (r != kNoErr) 
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::LoadFont: LoadRsrc failed for %0X\n", hRsrc);
+		return kInvalidFontHndl;
+	}
+	 
+	// Use file image loaded in memory by resource manager
+	fontname = rsrcmgr.GetURI(hRsrc); // GetName(hRsrc);
+	filesize = rsrcmgr.GetUnpackedSize(hRsrc);
+	fileimage = rsrcmgr.GetPtr(hRsrc);
+	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s, file size = %d\n", fontname->c_str(), filesize);
+	
+	hFont = LoadFontInt(fontname, prop, fileimage, filesize);
+
+	if (hFont == kInvalidFontHndl)
+		return kInvalidFontHndl;
+
+	// Save resource handle for unloading
+	pFont = (PFont)hFont;		
+	pFont->hRsrcFont = hRsrc;
+	return hFont;
 }
 
 //----------------------------------------------------------------------------
 Boolean CFontModule::UnloadFont(tFontHndl hFont)
 {
-	// TODO
+	PFont	pFont = (PFont)hFont;
+
+	// Unload font if loaded via resource manager 
+	if (pFont)
+	{
+		if (pFont->hRsrcFont != kInvalidRsrcHndl)
+		{
+			CSystemResourceMPI	rsrcmgr;
+			rsrcmgr.UnloadRsrc(pFont->hRsrcFont);
+			pFont->hRsrcFont = kInvalidRsrcHndl;
+		}
+	}
+
 	if (handle_.face) 
 	{
 		FT_Done_Face(handle_.face);
