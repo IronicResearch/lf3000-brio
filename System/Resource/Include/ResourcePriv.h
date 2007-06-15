@@ -90,19 +90,19 @@ public:
 	VTABLE_EXPORT	tErrType		CloseAllDevices(U32 id);
 
 	// Searching for packages
-	VTABLE_EXPORT	U32				GetNumPackages(U32 id, eRsrcPackageType type, 
+	VTABLE_EXPORT	U32				GetNumPackages(U32 id, ePackageType type, 
 												const CURI *pURIPath) const;
 
 	VTABLE_EXPORT	tPackageHndl	FindPackage(U32 id, const CURI& packageURI,
 												const CURI *pURIPath) const;
-	VTABLE_EXPORT	tPackageHndl	FindFirstPackage(U32 id, eRsrcPackageType type,
+	VTABLE_EXPORT	tPackageHndl	FindFirstPackage(U32 id, ePackageType type,
 												const CURI *pURIPath) const;	
 	VTABLE_EXPORT	tPackageHndl	FindNextPackage(U32 id) const;
 
 	// Getting package info
 	VTABLE_EXPORT	const CURI*		 GetPackageURI(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	const CString*	 GetPackageName(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	eRsrcPackageType GetPackageType(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	ePackageType GetPackageType(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	tVersion		 GetPackageVersion(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	const CString*	 GetPackageVersionStr(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	U32				 GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const;

@@ -3780,3 +3780,13 @@ By TParker (TParker@leapfrog.com) on 6/15/07 3:03 PM
 2,063 ms. (Cumulative: 542,658 ms)
 
 ----------------
+Revision 581 from svn://localhost/TRUNK/:
+Revision 582 from svn://localhost/TRUNK/:
+
+Better Device & Package enum names
+
+By TParker (TParker@leapfrog.com) on 6/15/07 4:13 PM
+5 changed, 0 added, 0 deleted.
+1,797 ms. (Cumulative: 544,533 ms)
+
+----------------

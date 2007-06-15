@@ -64,9 +64,9 @@ public:
 	void			SetDefaultURIPath(const CURI &pURIPath);
 
 	// Searching for devices
-	U16				GetNumDevices(eDeviceType type = kRsrcDeviceTypeAll) const;
+	U16				GetNumDevices(eDeviceType type = kDeviceTypeAll) const;
 
-	tDeviceHndl		FindFirstDevice(eDeviceType type = kRsrcDeviceTypeAll) const;
+	tDeviceHndl		FindFirstDevice(eDeviceType type = kDeviceTypeAll) const;
 	tDeviceHndl		FindNextDevice() const;
 
 	const CString*	GetDeviceName(tDeviceHndl hndl) const;
@@ -82,12 +82,12 @@ public:
 	tErrType		CloseAllDevices();
 
 	// Searching for packages
-	U32				GetNumPackages(eRsrcPackageType type = kRsrcPackageTypeAll, 
+	U32				GetNumPackages(ePackageType type = kPackageTypeAll, 
 								const CURI *pURIPath = kNull) const;
 
 	tPackageHndl FindPackage(const CURI& packageURI,
 								const CURI *pURIPath = kNull) const;
-	tPackageHndl FindFirstPackage(eRsrcPackageType type = kRsrcPackageTypeAll, 
+	tPackageHndl FindFirstPackage(ePackageType type = kPackageTypeAll, 
 								const CURI *pURIPath = kNull) const;	
 	tPackageHndl FindNextPackage() const;
 
@@ -95,7 +95,7 @@ public:
 	// FIXME/tp: Need Package Name???
 	const CURI*		 GetPackageURI(tPackageHndl hndl) const;
 	const CString*	 GetPackageName(tPackageHndl hndl) const;
-	eRsrcPackageType GetPackageType(tPackageHndl hndl) const;
+	ePackageType GetPackageType(tPackageHndl hndl) const;
 	tVersion		 GetPackageVersion(tPackageHndl hndl) const;
 	const CString*	 GetPackageVersionStr(tPackageHndl hndl) const;
 //	U32				 GetPackageSizeUnpacked(tPackageHndl hndl) const;

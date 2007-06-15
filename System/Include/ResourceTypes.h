@@ -58,19 +58,19 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupResource), RESOURCE_ERRORS
 enum eSynchState { kBlocking = true, kNonBlocking = false };
    
 enum eDeviceType {
-	kRsrcDeviceTypeInvalid = 0,
-	kRsrcDeviceTypeAll,		// for GetNumDevices()
-	kRsrcDeviceTypeCDROM,
-	kRsrcDeviceTypeUSBMassStorage,
-	kRsrcDeviceTypeSDCard
+	kDeviceTypeInvalid = 0,
+	kDeviceTypeAll,		// for GetNumDevices()
+	kDeviceTypeCDROM,
+	kDeviceTypeUSBMassStorage,
+	kDeviceTypeSDCard
 };
 
-enum eRsrcPackageType {
-	kRsrcPackageTypeInvalid = 0,
-	kRsrcPackageTypeAll,	// for GetNumPakckages(), FindFirstPackage()
-	kRsrcPackageTypeGeneric,
-	kRsrcPackageTypeSystem,
-	kRsrcPackageTypeApp,
+enum ePackageType {
+	kPackageTypeInvalid = 0,
+	kPackageTypeAll,	// for GetNumPakckages(), FindFirstPackage()
+	kPackageTypeGeneric,
+	kPackageTypeSystem,
+	kPackageTypeApp,
 };
 
 // FIXME/tp: Rethink these enumerations
@@ -95,7 +95,6 @@ enum {
 	kReadRsrcOptionAsync
 };
 
-typedef U32		tRsrcID;
 typedef tHndl 	tDeviceHndl;
 typedef tHndl 	tPackageHndl;
 typedef U32		tRsrcType;

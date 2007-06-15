@@ -144,7 +144,7 @@ const CString* CResourceMPI::GetDeviceName(tDeviceHndl hndl) const
 eDeviceType CResourceMPI::GetDeviceType(tDeviceHndl hndl) const
 {
 	if(!pModule_)
-		return kRsrcDeviceTypeInvalid;
+		return kDeviceTypeInvalid;
 	return pModule_->GetDeviceType(hndl);
 }
 
@@ -186,7 +186,7 @@ tErrType CResourceMPI::CloseAllDevices()
 // Packages
 //==============================================================================
 //----------------------------------------------------------------------------
-U32 CResourceMPI::GetNumPackages(eRsrcPackageType type, 
+U32 CResourceMPI::GetNumPackages(ePackageType type, 
 									const CURI *pURIPath) const
 {
 	if(!pModule_)
@@ -203,7 +203,7 @@ tPackageHndl CResourceMPI::FindPackage(const CURI& packageURI,
 	return pModule_->FindPackage(id_, packageURI, pURIPath);
 }
 //----------------------------------------------------------------------------
-tPackageHndl CResourceMPI::FindFirstPackage(eRsrcPackageType type,
+tPackageHndl CResourceMPI::FindFirstPackage(ePackageType type,
 												const CURI *pURIPath) const	
 {
 	if(!pModule_)
@@ -234,10 +234,10 @@ const CString* CResourceMPI::GetPackageName(tPackageHndl hndl) const
 	return pModule_->GetPackageName(id_, hndl);
 }
 //----------------------------------------------------------------------------
-eRsrcPackageType CResourceMPI::GetPackageType(tPackageHndl hndl) const
+ePackageType CResourceMPI::GetPackageType(tPackageHndl hndl) const
 {
 	if(!pModule_)
-		return kRsrcPackageTypeInvalid;
+		return kPackageTypeInvalid;
 	return pModule_->GetPackageType(id_, hndl);
 }
 //----------------------------------------------------------------------------

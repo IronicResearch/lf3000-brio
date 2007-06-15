@@ -131,7 +131,7 @@ public:
 		TS_ASSERT_EQUALS( static_cast<U16>(2), rsrcmgr_->GetNumPackages() );
 		
 		tPackageHndl pkg;
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll, &gPkgC);
+		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll, &gPkgC);
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackageURI(pkg), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackageType(pkg), UnitTestAssertException );
@@ -140,25 +140,25 @@ public:
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 
 		// TODO: test different types and versions when supported
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll, &gPkgA);
+		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll, &gPkgA);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll);
+		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		
 		rsrcmgr_->SetDefaultURIPath(gPkg);
-		pkg = rsrcmgr_->FindFirstPackage(kRsrcPackageTypeAll);
+		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
@@ -176,7 +176,7 @@ public:
 		pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 
@@ -184,7 +184,7 @@ public:
 		pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kRsrcPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 	
