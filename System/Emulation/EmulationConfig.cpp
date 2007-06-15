@@ -21,7 +21,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 const size_t	kMaxPath = 2048;
-const CPath kAppRsrcFolder("apprsrc");
+const CPath kAppRsrcFolder("/apprsrc");
 
 
 //==============================================================================
@@ -51,6 +51,12 @@ EmulationConfig& EmulationConfig::Instance( )
 //----------------------------------------------------------------------
 bool EmulationConfig::Initialize( const char* pathIn )
 {
+	// For normal (non-unit test) development, the client app needs
+	// to call Initialize() with the root of the installed SDK
+	// C++ development kit.
+	// The module search bath and BaseROM assets path are based off
+	// of the C++ development kit root folder.
+	//
 	CPath path = pathIn;
 	path += "/Libs/Lightning_emulation/Module";
 	SetModuleSearchPath(path.c_str());
@@ -63,10 +69,12 @@ bool EmulationConfig::Initialize( const char* pathIn )
 	memset(buf.get(), 0, kMaxPath);
     if (readlink("/proc/self/exe", buf.get(), kMaxPath) != -1)
 	{
-		char* p = strrchr(buf.get(), '/');
-		*++p = '\0';
-		path = buf.get() + kAppRsrcFolder;
-		SetCartResourceSearchPath(path.c_str());
+		CPath temp(buf.get());
+		temp = temp.substr(0, temp.rfind('/'));
+		temp = temp.substr(0, temp.rfind('/'));
+		temp = temp.substr(0, temp.rfind('/'));
+		temp = temp + kAppRsrcFolder;
+		SetCartResourceSearchPath(temp.c_str());
 	}
 	return true;
 }
