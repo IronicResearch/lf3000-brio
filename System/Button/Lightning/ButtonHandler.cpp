@@ -79,8 +79,8 @@ void CButtonModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, "Button Init\n");
 
 	// Need valid file descriptor open before starting task thread 
-	button_fd = open( "/dev/gpio", O_RDWR);
-	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/gpio");
+	button_fd = open( "/dev/buttons", O_RDWR);
+	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/buttons");
 
 	if( kernel.IsValid() )
 	{

@@ -3762,3 +3762,12 @@ By TParker (TParker@leapfrog.com) on 6/14/07 9:54 PM
 1,766 ms. (Cumulative: 538,627 ms)
 
 ----------------
+Revision 579 from svn://localhost/TRUNK/:
+
+Updated ButtonDemo to work with new button mapping.  Updated ButtonHandler to use /dev/buttons, the new button driver.
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/15/07 2:32 PM
+1 changed, 0 added, 0 deleted.
+1,844 ms. (Cumulative: 540,533 ms)
+
+----------------
