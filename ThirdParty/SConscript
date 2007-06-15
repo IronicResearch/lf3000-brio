@@ -5,15 +5,40 @@ import os.path
 import glob
 Import('*')
 
+
+#-----------------------------------------------------------------------------
+# FIXME/tp: When we hide the ustring class behind our own implementation,
+# the export glib stuff can go away.
+#-----------------------------------------------------------------------------
+def ExportHeaders(dest_dir, src_dir, file_extension):
+
+	root_len = len(src_dir) + 1
+		
+	def callback(arg, directory, files):
+		base = os.path.basename(directory)
+		if base == '.svn':
+			del files[:]
+		else:
+			for file in files:
+				if os.path.splitext(file)[1] == file_extension:
+					full = os.path.join(directory, file)
+					subdir = os.path.dirname(full[root_len:])
+					env.Install(os.path.join(dest_dir, subdir), full)
+						
+	os.path.walk(src_dir, callback, None)
+	Default(dest_dir)
+
+
 #-----------------------------------------------------------------------------
 # Populate the "XBuild" or "Publish" folders
 #-----------------------------------------------------------------------------
-#FIXME/tp: Export boost stuff without SVN subfolders
-if vars['is_export']:
-	inc_dir = os.path.join(vars['hdr_deploy_dir'], 'boost')
-	Command(inc_dir, 'boost/boost', Copy("$TARGET", "$SOURCE"))
+if vars['is_export'] or vars['is_publish']:
 
 	if vars['is_emulation']:
+		ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'boost'), 
+						Dir('boost/boost').abspath, '.hpp')				
+		ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'ustring'), 
+						Dir('ustring').abspath, '.h')	
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
 		headers = os.path.join('PowerVR', 'Include')
@@ -33,8 +58,8 @@ if vars['is_export']:
 		lib = os.path.join('MagicEyes', 'Libs', 'arm', core_name)
 		env.Install(lib_dir, lib)
 		# Export ustring shared libs to target
-		lib_dir = vars['lib_deploy_dir']
 		libs = glob.glob(os.path.join('ustring', 'libs', 'arm', '*'))
-		env.Install(lib_dir, libs)
+		env.Install(vars['lib_deploy_dir'], libs)
+		env.Install(vars['mpi_deploy_dir'], libs)	#FIXME/tp: ICK!
 		
 		

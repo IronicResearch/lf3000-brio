@@ -256,7 +256,6 @@ for target in targets:
 	if not is_emulation:
 		unit_test_data_root = Dir('UnitTestData').abspath
 		root_len = len(unit_test_data_root) + 1
-		unit_test_data_files = []
 		rootfs_data = os.path.join(rootfs, 'Base', 'rsrc')
 		
 		def callback(arg, directory, files):

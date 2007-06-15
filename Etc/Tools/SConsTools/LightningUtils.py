@@ -89,6 +89,9 @@ def CreateEnvironment(opts, vars):
 	
 	if vars['is_emulation']:
 		cpppaths += [os.path.join(ogl_incpath, 'LinuxPC'), '/usr/X11R6/include']
+	else:
+		cpppaths += [os.path.join(cdevkit_incpath, 'ThirdParty', 'ustring')]
+	
 	
 	libpaths = [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'MPI'),
 				os.path.join(cdevkit_dir, 'Libs', target_subdir, 'OpenGL')]
@@ -122,7 +125,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	if vars['is_emulation']:
 		platformlibs = ['gles_cl', 'glibmm-2.4', 'glib-2.0', 'Emulation']
 	else:
-		platformlibs = ['ogl', 'dl', 'pthread']
+		platformlibs = ['ogl', 'dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
 		#FIXME/tp: pthread should go away (curr needed by BrioCube?)
 	
 	# Set up targets

@@ -3753,3 +3753,12 @@ By TParker (TParker@leapfrog.com) on 6/14/07 9:02 PM
 1,719 ms. (Cumulative: 536,783 ms)
 
 ----------------
+Revision 578 from svn://localhost/TRUNK/:
+
+Make samples build for embedded target (export ulib headers & libs)
+
+By TParker (TParker@leapfrog.com) on 6/14/07 9:54 PM
+3 changed, 0 added, 0 deleted.
+1,766 ms. (Cumulative: 538,627 ms)
+
+----------------
