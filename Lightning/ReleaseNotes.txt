@@ -2,6 +2,75 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
+v0.1.7  (Build XXXX, released June 15, 2007) 
+===========================================
+Release for embedded target. UString class; new Resource Manager
+
+Enhancements:
+-------------
+* Ported the glib::ustring class to the embedded target.
+* Changed PlayAudio() and PlayMIDIFile() to StartAudio() and StartMidiFile() 
+  to be consistent with the rest of the API.
+* Implemented Pause, Resume, and Stop for audio, midi, and the audio driver.
+* Updated System/Include/ButtonTypes.h to include the full set of Lightning buttons.
+* Updated emulation keyboard->button mappings per Colleen's request.
+* Implemented the Kernel Module mutex and condition functions
+* Replaced CKernelMPI::GetElapsedTime(usec*) with GetElapsedTimeAsMSecs()
+  and GetElapsedTimeAsUSecs().
+* Changed the Font Manager to use the Resource Manager rather than direct
+  font files.
+* Added functions to the Font Manager to return font metrics.
+* In the resource manager, implemented the package interface functions
+* In System/Include/ResourceTypes.h replaced unnamed enumerations with
+  named enumerations.  Some types changed from tXXX to eXXX.
+* For enumerations in ResourceTypes.h, changed kXXXTypeUndefined to kXXXTypeInvalid.
+* For enumerations in ResourceTypes.h, added kXXXTypeAll to facilitate searches.
+* In the Resource Manager, removed the redundant functions GetNumDevices() 
+  and FindFirstDevice() in favor of using GetNumDevices(eDeviceType) and
+  FindFirstDevice(eDeviceType) using the "kRsrcDeviceTypeAll" enumeration value.
+  This is consistent with the GetNumPackages()/FindFirstPackage() call.
+* In the Resource Manager, removed the redundant functions GetNumRsrcs() 
+  and FindFirstRsrc() in favor of using GetNumRsrcs(tRsrcType) and 
+  FindFirstRsrc(tRsrcType) with "kRsrcTypeAll".
+* In the Resource Manager, changed all of the "GetRsrcXXX" accessors function 
+  names to "GetXXX".
+* In the Resource Manager, changed "XXXRsrcPackageXXX" to "XXXPackageXXX" 
+  in member function names.
+* In the Resource Manager, changed "XXXRsrcDeviceTypeXXX" to "XXXDeviceTypeXXX"
+  in type and enumeration names.
+* In the Resource Manager, changed "XXXRsrcPackageTypeXXX" to "XXXPackageTypeXXX"
+  in type and enumeration names.
+* Removed the Resource Manager AddRsrcRef(), DeleteRsrcRef() and 
+  GetRefCount() functions.  Opening/Closing and Loading/Unloading resources
+  does this work.
+* Added a "blocking" parameter to the CResourceMPI constructor to explicitly
+  set the interface for synchronous or asynchronous operation.  For Lighting,
+  only synchronous/blocking operation is supported.  The constructor defaults
+  to using synchronous mode.
+* Modified the sample projects to use the new Resource Manager scheme, where
+  resources are accessed by opening packages.
+* Added CDebugMPI::EnableThrowOnAssert() to allow unit testing to test
+  conditions that normally assert.
+* Cleaned up unit test output by gating CDebugMPI::Assert() calls on whether
+  EnableThrowOnAssert() is enabled.
+  
+Known Issues:
+-------------
+* Only 44.1K mono audio is supported.
+* You can't change the volume of sound after the Play() call.
+* You can't call NoteOn/Off while a MIDI file is playing.
+* You can't play more than one MIDI file at a time.
+* The Audio module doesn't properly support multiple MPI instances yet.
+* Repeated emulation button events are generated when a button is held down
+* Resource Manager URI searching is case-sensitive
+* The packing tool is not yet in place and the sample projects are running
+  off of the packer-generated (user unfriendly) file formats.
+* The Resource Manager GetPackageSizeUnpacked, GetPackageSizePacked,
+  LoadPackage, UnloadPackage, NewRsrc and DeleteRsrc member functions
+  are not implemented.
+
+
+===========================================
 v0.1.6  (Build 456, released May 31, 2007) 
 ===========================================
 Release for emulation target. Adds lots of new audio functionality.
@@ -24,7 +93,7 @@ Enhancements:
 Known Issues:
 -------------
 * Only 44.1K mono audio is supported.
-* You can't change the volume of sound afte/Limitationsr the Play() call.
+* You can't change the volume of sound after the Play() call.
 * There are no Stop() functions for audio or MIDI yet.
 * You can't call NoteOn/Off while a MIDI file is playing.
 * You can't play more than one MIDI file at a time.
