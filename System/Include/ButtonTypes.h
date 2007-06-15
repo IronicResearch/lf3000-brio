@@ -50,17 +50,17 @@ struct tButtonData {
 	U32	buttonTransition;
 };
 
-const U32 kButtonMenu			= (1 << 0);
-const U32 kButtonUp				= (1 << 1);
-const U32 kButtonDown			= (1 << 2);
+const U32 kButtonUp				= (1 << 0);
+const U32 kButtonDown			= (1 << 1);
+const U32 kButtonRight			= (1 << 2);
 const U32 kButtonLeft			= (1 << 3);
-const U32 kButtonRight			= (1 << 4);
-const U32 kButtonA				= (1 << 5);
-const U32 kButtonB				= (1 << 6);
-const U32 kButtonHint			= (1 << 7);
-const U32 kButtonPause			= (1 << 8);
-const U32 kButtonLeftShoulder	= (1 << 9);
-const U32 kButtonRightShoulder	= (1 << 10);
+const U32 kButtonA				= (1 << 4);
+const U32 kButtonB				= (1 << 5);
+const U32 kButtonLeftShoulder	= (1 << 6);
+const U32 kButtonRightShoulder	= (1 << 7);
+const U32 kButtonMenu			= (1 << 8);
+const U32 kButtonHint			= (1 << 9);
+const U32 kButtonPause			= (1 << 10);
 const U32 kButtonBrightness		= (1 << 11);
 
 

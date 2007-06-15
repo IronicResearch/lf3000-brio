@@ -3826,3 +3826,18 @@ By Dmilici (Dmilici@leapfrog.com) on 6/15/07 4:35 PM
 1,844 ms. (Cumulative: 551,815 ms)
 
 ----------------
+Revision 587 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,687 ms. (Cumulative: 553,565 ms)
+
+----------------
+Revision 588 from svn://localhost/TRUNK/:
+
+Fixing button matching to match button driver.
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/15/07 4:59 PM
+1 changed, 0 added, 0 deleted.
+1,656 ms. (Cumulative: 555,237 ms)
+
+----------------
