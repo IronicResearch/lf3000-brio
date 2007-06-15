@@ -115,22 +115,15 @@ def GetRepositoryVersion(platform, branch):
 	mappings = common.GetRepositoryMappings()
 	path = ''
 	revision = 'XXXX'
-	"""
-	try:
-		for repo, reldir in mappings.iteritems():
-			path = os.path.join(repo, branch)
-			client = pysvn.Client()
-			print os.getcwd()
-			print path
-			print pysvn.version
-			print pysvn.svn_version
-			client = pysvn.Client()
-			info = client.info2(path)
-			print info
+	for repo, reldir in mappings.iteritems():
+		command = 'svn info ' + os.path.join(repo, branch)
+		info = os.popen(command)
+		rev = info.read()
+		begin = rev.find('Revision:')
+		end = rev.find('\n', begin)
+		rev = rev[begin+10:end]
+		revision = rev
 			
-	except pysvn._pysvn.ClientError:
-		print '*** Unable to get repository version for', path, '***'
-	"""
 	print '*** Using repository revision "' + revision + '" as build number ***'
 	return revision
 	

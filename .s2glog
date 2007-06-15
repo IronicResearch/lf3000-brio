@@ -3799,3 +3799,12 @@ By TParker (TParker@leapfrog.com) on 6/15/07 4:13 PM
 1,766 ms. (Cumulative: 546,377 ms)
 
 ----------------
+Revision 584 from svn://localhost/TRUNK/:
+
+Fixed GetRepositoryVersion() function
+
+By TParker (TParker@leapfrog.com) on 6/15/07 4:13 PM
+1 changed, 0 added, 0 deleted.
+1,687 ms. (Cumulative: 548,127 ms)
+
+----------------
