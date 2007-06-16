@@ -2,9 +2,14 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
-v0.1.7  (Build XXXX, released June 15, 2007) 
+v0.1.7  (Build 589 released June 15, 2007) 
 ===========================================
 Release for embedded target. UString class; new Resource Manager
+
+Software components on the target hardware:
+
+* Linux Kernel Image: zImage-svn589.tar.gz
+* root file system: nfsroot-svn589.tar.gz
 
 Enhancements:
 -------------
