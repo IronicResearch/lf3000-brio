@@ -14,6 +14,7 @@
 
 #include <SystemTypes.h>
 #include <SystemErrors.h>
+#include <DisplayHW.h>
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
 #include <BrioOpenGLConfig.h>
@@ -48,9 +49,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//------------------------------------------------------------------------
-	int			gDevGpio = -1;
-	int			gDevDpc = -1;
-	int			gDevMlc = -1;
 	int			gDevLayer = -1;
 	int			gDevGa3d = -1;
 	int			gDevMem = -1;
@@ -68,6 +66,11 @@ namespace
 void CDisplayModule::InitOpenGL(void* pCtx)
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: enter\n");
+
+	// Open device driver for 3D layer
+	gDevLayer = open(OGL_LAYER_DEV, O_WRONLY);
+	dbg_.Assert(gDevLayer >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver failed");
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver opened\n");
 
 	// Open device driver for 3D accelerator registers
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
@@ -122,7 +125,7 @@ void CDisplayModule::DeinitOpenGL()
     munmap(gpMem2, gmem2size);
     close(gDevMem);
 	close(gDevGa3d);
-//	close(gDevLayer);
+	close(gDevLayer);
 
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
@@ -130,7 +133,7 @@ void CDisplayModule::DeinitOpenGL()
 void CDisplayModule::EnableOpenGL()
 {
 	// Enable 3D layer as render target after accelerator enabled
-	int	layer = open( "/dev/layer0", O_WRONLY);
+	int	layer = gDevLayer;
     
 	// Position 3D layer
 	union mlc_cmd c;
@@ -147,17 +150,16 @@ void CDisplayModule::EnableOpenGL()
 	ioctl(layer, MLC_IOCT3DENB, (void *)1);
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 
-	close(layer);
 }
 
 //----------------------------------------------------------------------------
 void CDisplayModule::DisableOpenGL()
 {
 	// Disable 3D layer render target before accelerator disabled
-	int	layer = open( "/dev/layer0", O_WRONLY);
+	int layer = gDevLayer;
 	ioctl(layer, MLC_IOCT3DENB, (void *)0);
+    ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
-    close(layer);
 }
 
 LF_END_BRIO_NAMESPACE()

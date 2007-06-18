@@ -18,6 +18,10 @@
 #define RGB_LAYER_ID	0
 #define RGB_LAYER_DEV	"/dev/layer0"
 
+// layer to be used by DisplayManager for 3D RGB  OpenGL rendering context
+#define OGL_LAYER_ID	1
+#define OGL_LAYER_DEV	"/dev/layer1"
+
 // layer to be used by DisplayManager for Video YUV
 #define YUV_LAYER_ID	3
 #define YUV_LAYER_DEV	"/dev/layer3"

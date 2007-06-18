@@ -3888,3 +3888,24 @@ By TParker (TParker@leapfrog.com) on 6/18/07 12:19 PM
 1,672 ms. (Cumulative: 565,660 ms)
 
 ----------------
+Revision 597 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,766 ms. (Cumulative: 567,473 ms)
+
+----------------
+Revision 598 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,937 ms. (Cumulative: 569,410 ms)
+
+----------------
+Revision 599 from svn://localhost/TRUNK/:
+
+Relocated OpenGL rendering context to MLC /dev/layer1, plus disappear at exit.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/18/07 1:46 PM
+2 changed, 0 added, 0 deleted.
+1,938 ms. (Cumulative: 571,348 ms)
+
+----------------
