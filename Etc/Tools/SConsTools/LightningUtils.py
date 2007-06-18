@@ -58,6 +58,7 @@ def RetrieveOptions(args, root_dir):
 			'target_subdir'			: target_subdir,
 			'intermediate_build_dir': intermediate_build_dir,
 			'bin_deploy_dir'		: bin_deploy_dir,
+			'rootfs'				: rootfs,
 	}
 	
 	return vars
@@ -103,6 +104,27 @@ def CreateEnvironment(opts, vars):
 	
 	return env
 
+#-------------------------------------------------------------------------
+# Deploy the apprsrc assets for embedded builds
+#-------------------------------------------------------------------------
+def CopyResources(penv, vars):
+	data_root = penv.Dir('#apprsrc').abspath
+	root_len = len(data_root) + 1
+	rootfs_data = os.path.join(vars['rootfs'], 'Cart1', 'rsrc')
+	
+	def callback(arg, directory, files):
+		base = os.path.basename(directory)
+		if base == '.svn':
+			del files[:]
+		else:
+			for file in files:
+				full = os.path.join(directory, file)
+				if os.path.isfile(full):
+					subdir = os.path.dirname(full[root_len:])
+					penv.Install(os.path.join(rootfs_data, subdir), full)
+					
+	os.path.walk(data_root, callback, None)
+	penv.Default(rootfs_data)
 
 #-----------------------------------------------------------------------------
 # Build a Module (either embedded or emulation target)
@@ -127,6 +149,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	else:
 		platformlibs = ['ogl', 'dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
 		#FIXME/tp: pthread should go away (curr needed by BrioCube?)
+		CopyResources(penv, vars)
 	
 	# Set up targets
 	exe		= os.path.join(vars['intermediate_build_dir'], ptarget)

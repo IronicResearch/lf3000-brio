@@ -3879,3 +3879,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/18/07 11:47 AM
 1,703 ms. (Cumulative: 563,941 ms)
 
 ----------------
+Revision 596 from svn://localhost/TRUNK/:
+
+Export resources to Cart1/rsrc for embedded builds
+
+By TParker (TParker@leapfrog.com) on 6/18/07 12:19 PM
+1 changed, 0 added, 0 deleted.
+1,672 ms. (Cumulative: 565,660 ms)
+
+----------------
