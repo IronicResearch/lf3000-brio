@@ -21,7 +21,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 const size_t	kMaxPath = 2048;
-const CPath kAppRsrcFolder("/apprsrc");
+const CPath kPackedRsrcFolder("/rsrc");
 
 
 //==============================================================================
@@ -72,8 +72,7 @@ bool EmulationConfig::Initialize( const char* pathIn )
 		CPath temp(buf.get());
 		temp = temp.substr(0, temp.rfind('/'));
 		temp = temp.substr(0, temp.rfind('/'));
-		temp = temp.substr(0, temp.rfind('/'));
-		temp = temp + kAppRsrcFolder;
+		temp = temp + kPackedRsrcFolder;
 		SetCartResourceSearchPath(temp.c_str());
 	}
 	return true;

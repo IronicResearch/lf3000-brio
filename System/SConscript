@@ -37,4 +37,9 @@ if vars['is_emulation']:
 if vars['is_export']:
 	headers = glob.glob(os.path.join('Include', '*.h'))
 	env.Install(vars['hdr_deploy_dir'], headers)
-		
+	
+	#FIXME/tp: temporary! remove when OggVorbis in place
+	dest_dir = os.path.join(vars['export_root'], 'Tools')
+	sf2brio = os.path.join('Audio', 'Utilities', 'sf2brio', 'sf2brio')
+	env.Install(dest_dir, sf2brio)
+	

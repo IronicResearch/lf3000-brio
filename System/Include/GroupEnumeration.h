@@ -24,12 +24,13 @@ enum eGroupEnum {
 	kGroupCommon,
 	kGroupDisplay,
 	kGroupEvent,
+	kGroupFont,
 	kGroupKernel,
 	kGroupHardware,
 	kGroupModule,
 	kGroupResource,
+	kGroupTimer,
 	kGroupUnitTests,
-	kGroupTimer	
 	// Brio v1.1
 		 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!

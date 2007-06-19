@@ -52,6 +52,13 @@ const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupAudio), AUDIO_ERRORS)
 
 
+//==============================================================================	   
+// Audio resource types
+//==============================================================================
+const tRsrcType kAudioRsrcMidi = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 1);
+const tRsrcType kAudioRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 2);
+
+
 //==============================================================================
 // Basic audio types
 //==============================================================================

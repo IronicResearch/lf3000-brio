@@ -13,10 +13,19 @@
 //==============================================================================
 
 // System includes
+#include <GroupEnumeration.h>
 #include <SystemTypes.h>
 //#include <SystemErrors.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
+
+
+//==============================================================================	   
+// Font resource types
+//==============================================================================
+const tRsrcType kFontRsrcTTF = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupFont, 1);
+
+
 
 //==============================================================================
 // Typedefs

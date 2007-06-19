@@ -6,6 +6,9 @@
 import os
 import sys
 import SCons
+import csv
+import shutil
+import glob
 import SCons.Options
 import SCons.Script
 import SCons.Util
@@ -108,7 +111,7 @@ def CreateEnvironment(opts, vars):
 # Deploy the apprsrc assets for embedded builds
 #-------------------------------------------------------------------------
 def CopyResources(penv, vars):
-	data_root = penv.Dir('#apprsrc').abspath
+	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
 	rootfs_data = os.path.join(vars['rootfs'], 'Cart1', 'rsrc')
 	
@@ -168,9 +171,212 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	
 	return objs
 
+#-------------------------------------------------------------------------
+# Functions to enumerate packed filenames
+#-------------------------------------------------------------------------
+valid_chars = range(48,58) + range (64,91)
+valid_chars_count = len(valid_chars)
+sPkgNameIndex	= [0, -1]
+sRsrcNameIndex	= [0, -1]
+
+#-------------------------------------------------------------------------
+def GenerateNextName(idx):
+	name = ''
+	if idx[1] >= 0:
+		name += chr(valid_chars[idx[1]])
+	name += chr(valid_chars[idx[0]])
+	idx[0] = idx[0] + 1
+	if idx[0] == valid_chars_count:
+		idx[0] = 0
+		idx[1] = idx[1] + 1
+	if idx[1] == valid_chars_count:
+		raise 'Exhausted the Resource FileName enumeration space!'
+	return name 
+
+#-------------------------------------------------------------------------
+def GenerateNextResourceFileName():
+	# Generate sequential names:
+	#    0, 1, ... 9, A, B, ..., Z, 00, 01, ..., 0Z, 10, 11, ..., ZZ
+	#
+	global sRsrcNameIndex
+	name = GenerateNextName(sRsrcNameIndex)
+	return name
+
+#-------------------------------------------------------------------------
+def GenerateNextPackageFileName():
+	# Generate sequential names:
+	#    _0, _1, ... _9, _A, _B, ..., _Z, _00, _01, ..., _0Z, _10, _11, ..., _ZZ
+	#
+	global sPkgNameIndex
+	name = GenerateNextName(sPkgNameIndex)
+	return '_' + name 
+
+#-------------------------------------------------------------------------
+# Read 'ActivityMapping' file to create map of Activities to base URI paths
+#-------------------------------------------------------------------------
+def MapAcmeActivitiesToURIs(data_root):
+	mappings =  os.path.join(data_root, 'ActivityMapping')
+	reader = csv.reader(open(mappings, "rb"))
+	dict = {}
+	for row in reader:
+		dict[row[0].strip()] = row[1].strip() + '/'
+	return dict
+
+#-------------------------------------------------------------------------
+# Set up a map of type names and file extensions to numeric type values
+#-------------------------------------------------------------------------
+def SetupTypeConversionMap():
+	types = { 'mid' 	: 1025,
+			  'midi' 	: 1025,
+			  'S'		: 1025,				# for ACME
+			  'ogg'		: 1026,
+			  'wav'		: 1026,
+			  'R'		: 1026,				# for ACME
+			  'font'	: 1024 * 7 + 1,
+			  'ttf'		: 1024 * 7 + 1,
+			  'txt'		: 1024 * 4 + 1,
+			  }
+	return types
+
+#-------------------------------------------------------------------------
+# Pack contents of an individual ACME CSV file
+#-------------------------------------------------------------------------
+def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
+	# 1) Setup field mappings (see note below)
+	# 2) Read in the mapping of activity code to Base URI path
+	#    (for converting acme CSV files)
+	# NOTE: The 'fld' param tells the ProcessPackage() function which
+	# fields are of interest in the input file, where:
+	#   0: activity code or base URL path
+	#   1: "handle" or URL node value
+	#   2: data type string 
+	#   3: file name
+	#
+	fld = [7, 17, 15, 9]	# activity, handle, type, file			#1
+	dict = MapAcmeActivitiesToURIs(data_root)						#2
 	
+	reader = csv.reader(open(pkg, "rb"))
+	pkguri = dict[os.path.basename(pkg)]
+	pkgfile = GenerateNextPackageFileName()
+	enumpkg.writerow([pkguri, pkgfile])
+	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
+	linenum = 0
+	for row in reader:
+		if linenum == 0:
+			# TODO: map 'fld' to 'SHAPE DESCRIPTION', 'FILE', 'AUDIOTYPE', & 'AUDIO HANDLE'
+			linenum += 1
+		elif row[fld[3]] != '':
+			if types.has_key(row[fld[2]]):
+				type = types[row[fld[2]]]
+			else:
+				type = 1025
+			extension = type == 1024 and '.mid' or '.wav'
+			outfile = GenerateNextResourceFileName()
+			srcfile = os.path.join(data_root, row[fld[3]]+extension)
+			srcsize = os.path.getsize(srcfile)
+			writer.writerow([dict[row[fld[0]]] + row[fld[1]], type, outfile, srcsize, srcsize, 1])
+			shutil.copyfile(srcfile, os.path.join(pack_root, outfile))
+
+#-------------------------------------------------------------------------
+# Pack contents of an individual package
+#-------------------------------------------------------------------------
+def ProcessPackage(pkg, types, pack_root, data_root, enumpkg):
+	# Package input format is "baseURIPath, URINode, srcFile, (optional)packtype"
+	#
+	# 1) Open input and output packages
+	# 2) Skip comment lines
+	# 3) The first non-comment line of the input package contains default
+	#    values so parse and store them.  This info can be used to build
+	#    the package URI, so
+	#    add the URI -> path mapping for the package to the EnumPkgs file
+	# 4) Subsequent lines contain resources
+	# 5) Get the type info either from the type field or the file extension
+	# 6) Get the base URL from the line and use the default if not present
+	# 7) Output data describing the resource in the package file
+	# 8) Either copy or transform & copy the file from the source
+	#    folder to the destination folder
+	# NOTE: The sf2brio EXE is a temporary "packer" that puts a header
+	#		in front of a WAV file.  It will be replaced by the OggVorbis
+	#		encoder.
+	#
+	print pkg
+	reader = csv.reader(open(pkg, "rb"))							#1
+	pkgfile = GenerateNextPackageFileName()
+	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
+	linenum = 0
+	defaultBase = ''
+	defaultVersion = '1'
+	
+	for row in reader:
+		if len(row) == 0 or (row[0] and row[0][0] == '#'):			#2
+			continue
+		if linenum == 0:											#3
+			defaultBase = row[0].strip()
+			if len(row) >= 5:
+				defaultVersion = row[4].strip()
+			pkguri = defaultBase + os.path.splitext(os.path.basename(pkg))[0]
+			enumpkg.writerow([pkguri, pkgfile, 1, 1])
+			linenum += 1
+			continue												#4
+			
+		if len(row) >= 4 and row[3].strip() != '':					#5
+			type = types[row[3].strip()]
+		else:
+			ext = os.path.splitext(row[2].strip())[1]
+			type = types[ext[1:].lower()]
+			
+		base = row[0].strip() and row[0].strip() or defaultBase		#6
+		version = len(row) >= 5 and row[5].strip() and row[5].strip() or defaultVersion
+
+		outfile = GenerateNextResourceFileName()					#7
+		outpath = os.path.join(pack_root, outfile)
+		srcfile = os.path.join(data_root, row[2].strip())
+		srcsize = os.path.getsize(srcfile)
+		writer.writerow([base + row[1].strip(), type, outfile, srcsize, srcsize, version])
+		
+		this_dir		= os.path.split(__file__)[0]
+		if type == 1026:											#8
+			os.system(os.path.join(this_dir, 'sf2brio') + ' ' + srcfile + ' ' + outpath)
+		else:
+			shutil.copyfile(srcfile, outpath)
+
+
+#-------------------------------------------------------------------------
+# Deploy the apprsrc assets for embedded builds
+#-------------------------------------------------------------------------
+def PackAllResources(penv):
+	# 1) Setup source and destination folders
+	# 2) Open the rsrc/EnumPkgs file for writing
+	# 3) Find all "ACME" input package defintion files and process them
+	# 4) Find all standard packag input files and process them
+	#
+	data_root = penv.Dir('#apprsrc').abspath						#1
+	build_root = penv.Dir('#Build').abspath
+	pack_root = penv.Dir('#Build/rsrc').abspath
+	if not os.path.exists(build_root):
+		os.mkdir(build_rootbuild_root)
+	if not os.path.exists(pack_root):
+		os.mkdir(pack_root)
+	types = SetupTypeConversionMap()
+	
+	enumpkg_path = os.path.join(pack_root, "EnumPkgs")				#2
+	enumpkg = csv.writer(file(enumpkg_path, "w"))
+		
+	packages =  glob.glob(os.path.join(data_root, '*.acme'))		#3
+	for pkg in packages:
+		ProcessAcme(pkg, types, pack_root, data_root, enumpkg)
+		
+	packages =  glob.glob(os.path.join(data_root, '*.pkg'))			#4
+	for pkg in packages:
+		ProcessPackage(pkg, types, pack_root, data_root, enumpkg)
+	
+
+#TODO: Deal with greater than 36^2 resources (hierarchical folders)
+#TODO: Improve error handling and reporting!
+#TODO: Make packing a 'Tool' so it only runs when sources are touched
+
 #-----------------------------------------------------------------------------
 # Export the all of the functions symbols
 #-----------------------------------------------------------------------------
-__all__ = ["SetupOptions", "RetrieveOptions", "CreateEnvironment", "MakeMyApp"] 
+__all__ = ["SetupOptions", "RetrieveOptions", "CreateEnvironment", "MakeMyApp", "PackAllResources"] 
 

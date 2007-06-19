@@ -24,6 +24,11 @@
 #include <GroupEnumeration.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+//==============================================================================	   
+// System resource types (FIXME/tp: Move to separate file?
+//==============================================================================
+const tRsrcType kCommonRsrcText = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupCommon, 1);
+
 
 //==============================================================================	   
 // Preprocessor macro to generate type values
