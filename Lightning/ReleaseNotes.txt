@@ -2,6 +2,27 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
+v0.1.8  (Build 614 released June 19, 2007) 
+===========================================
+Release for emulation target. New packing scheme in place
+
+Enhancements:
+-------------
+* Removed the Resource Manager GetPackageVersionStr(), GetPackageName(),
+  GetVersionStr() & GetName() functions
+* Added a PackAllResources() function to the LightingUtils.py build file
+* Updated the samples to use the new packing scheme
+* 'apprsrc' folders now contain *.pkg files that get packed into the
+  'Build/rsrc' folder for actual use by embedded and emulation builds
+
+Known Issues:
+-------------
+* Resources get repacked on every build.  Work needs to be done to
+  make the packing an SCons 'tool' so that resources only get packed
+  when needed.
+
+
+===========================================
 v0.1.7  (Build 589 released June 15, 2007) 
 ===========================================
 Release for embedded target. UString class; new Resource Manager
