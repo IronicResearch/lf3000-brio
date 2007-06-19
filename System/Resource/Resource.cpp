@@ -932,7 +932,6 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 	// 4a) Open the package file.  It is a CSV file with
 	//     the following format (there must be NO whitespace in the line):
 	//			URI,type,location,size,compressedSize,version
-	// 4b) The first line is a comment, throw it out
 	// 4c) Read the EnumPkgs file line-by-line
 	// 5) Sort and right-size the PackageDescriptor vector to free any extra space
 	//
@@ -956,7 +955,6 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 		if (fp == NULL)	return kResourceInvalidErr;
 
 		char buf[kMaxBrioPkgLine];
-		fgets(buf, kMaxBrioPkgLine, fp);								//*4b
 		while (NULL != fgets(buf, kMaxBrioPkgLine, fp))
 		{
 			char* uri = buf;

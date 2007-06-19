@@ -354,7 +354,7 @@ def PackAllResources(penv):
 	build_root = penv.Dir('#Build').abspath
 	pack_root = penv.Dir('#Build/rsrc').abspath
 	if not os.path.exists(build_root):
-		os.mkdir(build_rootbuild_root)
+		os.mkdir(build_root)
 	if not os.path.exists(pack_root):
 		os.mkdir(pack_root)
 	types = SetupTypeConversionMap()

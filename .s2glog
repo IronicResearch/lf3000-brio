@@ -4002,3 +4002,12 @@ By TParker (TParker@leapfrog.com) on 6/19/07 4:04 PM
 2,140 ms. (Cumulative: 594,132 ms)
 
 ----------------
+Revision 613 from svn://localhost/TRUNK/:
+
+Validate samples with real packing
+
+By TParker (TParker@leapfrog.com) on 6/19/07 4:23 PM
+2 changed, 0 added, 0 deleted.
+1,954 ms. (Cumulative: 596,149 ms)
+
+----------------
