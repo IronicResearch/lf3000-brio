@@ -85,21 +85,19 @@ public:
 	U32				GetNumPackages(ePackageType type = kPackageTypeAll, 
 								const CURI *pURIPath = kNull) const;
 
-	tPackageHndl FindPackage(const CURI& packageURI,
+	tPackageHndl	FindPackage(const CURI& packageURI,
 								const CURI *pURIPath = kNull) const;
-	tPackageHndl FindFirstPackage(ePackageType type = kPackageTypeAll, 
+	tPackageHndl	FindFirstPackage(ePackageType type = kPackageTypeAll, 
 								const CURI *pURIPath = kNull) const;	
-	tPackageHndl FindNextPackage() const;
+	tPackageHndl	FindNextPackage() const;
 
 	// Getting package info
 	// FIXME/tp: Need Package Name???
-	const CURI*		 GetPackageURI(tPackageHndl hndl) const;
-	const CString*	 GetPackageName(tPackageHndl hndl) const;
-	ePackageType GetPackageType(tPackageHndl hndl) const;
-	tVersion		 GetPackageVersion(tPackageHndl hndl) const;
-	const CString*	 GetPackageVersionStr(tPackageHndl hndl) const;
-//	U32				 GetPackageSizeUnpacked(tPackageHndl hndl) const;
-//	U32				 GetPackageSizePacked(tPackageHndl hndl) const;
+	const CURI*		GetPackageURI(tPackageHndl hndl) const;
+	ePackageType	GetPackageType(tPackageHndl hndl) const;
+	tVersion		GetPackageVersion(tPackageHndl hndl) const;
+//	U32				GetPackageSizeUnpacked(tPackageHndl hndl) const;
+//	U32				GetPackageSizePacked(tPackageHndl hndl) const;
 
 	// Opening & closing packages to find resources within them
 	tErrType		OpenPackage(tPackageHndl hndl, 
@@ -127,10 +125,8 @@ public:
 
 	// Getting rsrc info
 	const CURI*		GetURI(tRsrcHndl hndl) const;
-	const CString*	GetName(tRsrcHndl hndl) const;
 	tRsrcType		GetType(tRsrcHndl hndl) const;
 	tVersion		GetVersion(tRsrcHndl hndl) const;
-	const CString*	GetVersionStr(tRsrcHndl hndl) const;	
 	U32				GetPackedSize(tRsrcHndl hndl) const;
 	U32				GetUnpackedSize(tRsrcHndl hndl) const;
 	tPtr			GetPtr(tRsrcHndl hndl) const;
