@@ -3948,3 +3948,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/19/07 10:50 AM
 2,485 ms. (Cumulative: 582,927 ms)
 
 ----------------
+Revision 607 from svn://localhost/TRUNK/:
+
+Removed the majority of warning messages from the arm compilier
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/19/07 10:59 AM
+1 changed, 0 added, 0 deleted.
+1,751 ms. (Cumulative: 584,740 ms)
+
+----------------

@@ -38,6 +38,7 @@ namespace
 		thread_arg_t *ptr = (thread_arg_t *)arg; 
 		TS_ASSERT( !strcmp(message[ ptr->numTest ], ptr->testDescription ) );
 		sleep(1);
+		return (void *)NULL;
 	}	
 //---------------------------------------------------------
 // Timer testing fuctions
@@ -86,6 +87,7 @@ int        conditionMet = 0;
 void *threadfunc_broadcast(void *parm);
 static tCond      cond_broadcast  = PTHREAD_COND_INITIALIZER;
 static tMutex     mutex_broadcast = PTHREAD_MUTEX_INITIALIZER;
+
 void *threadfunc_broadcast(void *parm)
 {
 	tErrType err;
@@ -97,6 +99,7 @@ void *threadfunc_broadcast(void *parm)
 	conditionMet = 1;
     err = pthread_cond_broadcast(&cond_broadcast);
 	TS_ASSERT_EQUALS( err, ((tErrType)0) );
+	return (void *)NULL;
 }
 //------------------------------------------------------------------------------------------
  
@@ -371,16 +374,14 @@ public:
 //typedef struct timer_arg{	pfnTimerCallback pfn; tPtr arg;} callbackData;
 //struct tTimerProperties { int type; struct itimerspec timeout; callbackData callback;};
 		const static tTimerProperties props_1 = {TIMER_ABSTIME_SET,
-												 	{0, 0, 0, 0},
-		                                       	};
+												 	{{0}}};
 
 		const static tTimerProperties props_2 = {TIMER_ABSTIME_SET,
-						 							{0, 0, 0, 0},
-			                                   	};
+												 	{{0}}};
 
 		const static tTimerProperties props_3 = {TIMER_ABSTIME_SET,
-					 								{0, 0, 0, 0},
-			                                   	};
+												 	{{0}}};
+
 //typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
 		TS_ASSERT_DIFFERS( 0, hndlTimer_1 );
@@ -452,9 +453,9 @@ public:
 	{
 		tErrType err;
 
-		saveTimerSettings save_1 = {0};
-		saveTimerSettings save_2 = {0};
-		saveTimerSettings save_3 = {0};
+		saveTimerSettings save_1 = {{0}};
+		saveTimerSettings save_2 = {{0}};
+		saveTimerSettings save_3 = {{0}};
 
 		err = KernelMPI->PauseTimer( hndlTimer_1, save_1 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -524,7 +525,7 @@ public:
  	 	tMutexAttr   mta;
 		const tMutexAttr attr = {0};
 		
-		//C reate a default mutex attribute
+		//Create a default mutex attribute
     	err = KernelMPI->InitMutexAttributeObject( mta );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
