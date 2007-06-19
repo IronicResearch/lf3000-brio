@@ -3966,3 +3966,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/19/07 3:03 PM
 1,719 ms. (Cumulative: 586,537 ms)
 
 ----------------
+Revision 609 from svn://localhost/TRUNK/:
+
+ooops... fix ThirdParty SConscript to only export libs to nfsroot for embedded (not emulation) builds
+
+By DGibbs (DGibbs@leapfrog.com) on 6/19/07 3:25 PM
+1 changed, 0 added, 0 deleted.
+1,672 ms. (Cumulative: 588,271 ms)
+
+----------------

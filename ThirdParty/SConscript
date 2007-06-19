@@ -59,8 +59,9 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, lib)
 
 # Export ustring shared libs to target
-libs = glob.glob(os.path.join('ustring', 'libs', 'arm', '*'))
-env.Install(vars['lib_deploy_dir'], libs)
-env.Install(vars['mpi_deploy_dir'], libs)	#FIXME/tp: ICK!
+if not vars['is_emulation']:
+	libs = glob.glob(os.path.join('ustring', 'libs', 'arm', '*'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	env.Install(vars['mpi_deploy_dir'], libs)	#FIXME/tp: ICK!
 		
 		
