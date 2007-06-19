@@ -3975,3 +3975,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/19/07 3:25 PM
 1,672 ms. (Cumulative: 588,271 ms)
 
 ----------------
+Revision 610 from svn://localhost/TRUNK/:
+
+Remove Name() and VersionStr() functions
+
+By TParker (TParker@leapfrog.com) on 6/19/07 4:01 PM
+4 changed, 0 added, 0 deleted.
+1,830 ms. (Cumulative: 590,148 ms)
+
+----------------

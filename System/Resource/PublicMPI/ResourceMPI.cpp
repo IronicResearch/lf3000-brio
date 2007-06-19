@@ -227,13 +227,6 @@ const CURI* CResourceMPI::GetPackageURI(tPackageHndl hndl) const
 	return pModule_->GetPackageURI(id_, hndl);
 }
 //----------------------------------------------------------------------------
-const CString* CResourceMPI::GetPackageName(tPackageHndl hndl) const
-{
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetPackageName(id_, hndl);
-}
-//----------------------------------------------------------------------------
 ePackageType CResourceMPI::GetPackageType(tPackageHndl hndl) const
 {
 	if(!pModule_)
@@ -246,13 +239,6 @@ tVersion CResourceMPI::GetPackageVersion(tPackageHndl hndl) const
 	if(!pModule_)
 		return kUndefinedVersion;
 	return pModule_->GetPackageVersion(id_, hndl);
-}
-//----------------------------------------------------------------------------
-const CString* CResourceMPI::GetPackageVersionStr(tPackageHndl hndl) const
-{
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetPackageVersionStr(id_, hndl);
 }
 /*
 //----------------------------------------------------------------------------
@@ -352,13 +338,6 @@ const CURI* CResourceMPI::GetURI(tRsrcHndl hndl) const
 	return pModule_->GetURI(id_, hndl);
 }
 //----------------------------------------------------------------------------
-const CString* CResourceMPI::GetName(tRsrcHndl hndl) const
-{
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetName(id_, hndl);
-}
-//----------------------------------------------------------------------------
 tRsrcType CResourceMPI::GetType(tRsrcHndl hndl) const
 {
 	if(!pModule_)
@@ -371,13 +350,6 @@ tVersion CResourceMPI::GetVersion(tRsrcHndl hndl) const
 	if(!pModule_)
 		return kUndefinedVersion;
 	return pModule_->GetVersion(id_, hndl);
-}
-//----------------------------------------------------------------------------
-const CString* CResourceMPI::GetVersionStr(tRsrcHndl hndl) const
-{
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetVersionStr(id_, hndl);
 }
 //----------------------------------------------------------------------------
 U32 CResourceMPI::GetPackedSize(tRsrcHndl hndl) const

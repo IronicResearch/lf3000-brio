@@ -136,7 +136,6 @@ public:
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackageURI(pkg), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackageType(pkg), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackageVersion(pkg), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageVersionStr(pkg), UnitTestAssertException );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 
 		// TODO: test different types and versions when supported
@@ -145,7 +144,6 @@ public:
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
@@ -154,7 +152,6 @@ public:
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		
 		rsrcmgr_->SetDefaultURIPath(gPkg);
@@ -178,7 +175,6 @@ public:
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 
 		// TODO: test different types and versions when supported
 		pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
@@ -186,7 +182,6 @@ public:
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
 		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageVersionStr(pkg), "1" );
 	
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
 		pkg = rsrcmgr_->FindPackage("CountTest");
@@ -293,7 +288,6 @@ public:
 		// The following calls assert when provided an invalid handle
 		TS_ASSERT_THROWS( rsrcmgr_->GetURI(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetVersion(handle), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetVersionStr(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackedSize(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetUnpackedSize(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
@@ -319,9 +313,6 @@ public:
 //		type = rsrcmgr_->GetType(handle);
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetVersion(handle) );
-		const CString*	pVer;
-		pVer = rsrcmgr_->GetVersionStr(handle);
-		TS_ASSERT_EQUALS( *pVer, "1" );
 		TS_ASSERT_EQUALS( kSizeHelloWorldText, rsrcmgr_->GetPackedSize(handle) );
 		TS_ASSERT_EQUALS( kSizeHelloWorldText, rsrcmgr_->GetUnpackedSize(handle) );
 		
@@ -355,9 +346,6 @@ public:
 //		type = rsrcmgr_->GetType(handle);
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( 5, rsrcmgr_->GetVersion(handle) );
-		const CString*	pVer;
-		pVer = rsrcmgr_->GetVersionStr(handle);
-		TS_ASSERT_EQUALS( *pVer, "5" );
 		TS_ASSERT_EQUALS( kBellAudioSize, rsrcmgr_->GetPackedSize(handle) );
 		TS_ASSERT_EQUALS( kBellAudioSize * 2, rsrcmgr_->GetUnpackedSize(handle) );
 		

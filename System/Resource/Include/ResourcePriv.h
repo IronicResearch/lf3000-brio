@@ -100,13 +100,11 @@ public:
 	VTABLE_EXPORT	tPackageHndl	FindNextPackage(U32 id) const;
 
 	// Getting package info
-	VTABLE_EXPORT	const CURI*		 GetPackageURI(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	const CString*	 GetPackageName(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	ePackageType GetPackageType(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	tVersion		 GetPackageVersion(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	const CString*	 GetPackageVersionStr(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	U32				 GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const;
-	VTABLE_EXPORT	U32				 GetPackageSizePacked(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	const CURI*		GetPackageURI(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	ePackageType	GetPackageType(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	tVersion		GetPackageVersion(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	U32				GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	U32				GetPackageSizePacked(U32 id, tPackageHndl hndl) const;
 
 	// Opening & closing packages to find resources within them
 	VTABLE_EXPORT	tErrType		OpenPackage(U32 id, tPackageHndl hndl, 
@@ -134,10 +132,8 @@ public:
 
 	// Getting rsrc info
 	VTABLE_EXPORT	const CURI*		GetURI(U32 id, tRsrcHndl hndl) const;
-	VTABLE_EXPORT	const CString*	GetName(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	tRsrcType		GetType(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	tVersion		GetVersion(U32 id, tRsrcHndl hndl) const;
-	VTABLE_EXPORT	const CString*	GetVersionStr(U32 id, tRsrcHndl hndl) const;	
 	VTABLE_EXPORT	U32				GetPackedSize(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	U32				GetUnpackedSize(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	tPtr			GetPtr(U32 id, tRsrcHndl hndl) const;

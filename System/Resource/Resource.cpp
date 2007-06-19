@@ -723,7 +723,6 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 	// 3a) Open the device's rsrc/EnumPkgs file.  It is a CSV file with
 	//     the following format (there must be NO whitespace in the line):
 	//			URI,filename,version,type
-	// 3b) The first line is a comment, throw it out
 	// 3c) Read the EnumPkgs file line-by-line
 	// 4) Sort and right-size the PackageDescriptor vector to free any extra space
 	//
@@ -749,7 +748,6 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 			return;
 		}
 		char buf[kMaxBrioPkgLine];
-		fgets(buf, kMaxBrioPkgLine, fp);								//*3b
 		while (NULL != fgets(buf, kMaxBrioPkgLine, fp))
 		{
 			char* uri = buf;
@@ -896,12 +894,6 @@ const CURI* CResourceModule::GetPackageURI(U32 id, tPackageHndl hndl) const
 	return ppd ? &(ppd->uri) : &kNullURI;
 }
 //----------------------------------------------------------------------------
-const CString* CResourceModule::GetPackageName(U32 id, tPackageHndl hndl) const
-{
-	// FIXME/tp: remove?
-	return &kNullString;
-}
-//----------------------------------------------------------------------------
 ePackageType CResourceModule::GetPackageType(U32 id, tPackageHndl hndl) const
 {
 	const PackageDescriptor* ppd = FindPackagePriv(id, hndl);
@@ -912,13 +904,6 @@ tVersion CResourceModule::GetPackageVersion(U32 id, tPackageHndl hndl) const
 {
 	const PackageDescriptor* ppd = FindPackagePriv(id, hndl);
 	return ppd ? (ppd->version) : kUndefinedVersion;
-}
-//----------------------------------------------------------------------------
-const CString* CResourceModule::GetPackageVersionStr(U32 id, tPackageHndl hndl) const
-{
-	// FIXME: Implement or remove?
-	const PackageDescriptor* ppd = FindPackagePriv(id, hndl);
-	return ppd ? &(ppd->verstr) : &kNullString;
 }
 //----------------------------------------------------------------------------
 U32 CResourceModule::GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const
@@ -1164,13 +1149,6 @@ const CURI* CResourceModule::GetURI(U32 id, tRsrcHndl hndl) const
 }
 
 //----------------------------------------------------------------------------
-const CString* CResourceModule::GetName(U32 id, tRsrcHndl hndl) const
-{
-	// FIXME/tp: remove?
-	return &kNullString;
-}
-
-//----------------------------------------------------------------------------
 tRsrcType CResourceModule::GetType(U32 id, tRsrcHndl hndl) const
 {
 	const ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
@@ -1182,17 +1160,6 @@ tVersion CResourceModule::GetVersion(U32 id, tRsrcHndl hndl) const
 {
 	const ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
 	return prd ? prd->version : kUndefinedVersion;
-}
-
-//----------------------------------------------------------------------------
-const CString* CResourceModule::GetVersionStr(U32 id, tRsrcHndl hndl) const
-{
-	// FIXME: Implement or remove?
-	static CString sTemp;
-	char buf[16];
-	sprintf(buf, "%d", GetVersion(id, hndl));
-	sTemp = buf;
-	return &sTemp;
 }
 
 //----------------------------------------------------------------------------
