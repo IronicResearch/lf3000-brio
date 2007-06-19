@@ -3957,3 +3957,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/19/07 10:59 AM
 1,751 ms. (Cumulative: 584,740 ms)
 
 ----------------
+Revision 608 from svn://localhost/TRUNK/:
+
+Copy ThirdParty libs to target (nfsroot) on plain embedded builds (instead of just on export or publish builds).
+
+By DGibbs (DGibbs@leapfrog.com) on 6/19/07 3:03 PM
+1 changed, 0 added, 0 deleted.
+1,719 ms. (Cumulative: 586,537 ms)
+
+----------------
