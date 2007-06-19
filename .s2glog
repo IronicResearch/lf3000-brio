@@ -3929,3 +3929,13 @@ By Dmilici (Dmilici@leapfrog.com) on 6/18/07 5:25 PM
 2,031 ms. (Cumulative: 578,567 ms)
 
 ----------------
+Revision 604 from svn://localhost/TRUNK/:
+Revision 605 from svn://localhost/TRUNK/:
+
+Changed some error checking for POSIX functions
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/19/07 9:15 AM
+2 changed, 0 added, 0 deleted.
+1,750 ms. (Cumulative: 580,395 ms)
+
+----------------

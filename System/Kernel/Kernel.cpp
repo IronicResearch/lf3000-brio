@@ -260,9 +260,9 @@ tErrType CKernelModule::JoinTask( tTaskHndl pHndl, tPtr& threadReturnValue )
 //	return AsBrioErr(pthread_join(pHndl, &threadReturnValue));
 	tErrType err = kNoErr;
 	
-	errno = 0;
+//	errno = 0;
 	err = pthread_join(pHndl, &threadReturnValue);
-	ASSERT_POSIX_CALL(errno);
+	ASSERT_POSIX_CALL(err);
 	
     return kNoErr;
   
@@ -280,8 +280,10 @@ tErrType CKernelModule::CancelTask( tTaskHndl hndl )
 	
 	errno = 0;
 	err = pthread_cancel(hndl);
-	ASSERT_POSIX_CALL(errno);
-	
+	if ( err > 0 && err != ESRCH )
+	{
+		ASSERT_POSIX_CALL(err);
+	}
     return kNoErr;
 }
 //------------------------------------------------------------------------------
@@ -300,7 +302,9 @@ int CKernelModule::GetTaskPriority(tTaskHndl hndl) const
 	int policy;
 	
     if ((err = pthread_getschedparam(hndl, &policy, &param)) != 0)
-    	Printf("FIXME");
+    {
+		ASSERT_POSIX_CALL(err);
+    }
 	else
 		priority = param.sched_priority;
 	return priority;			
@@ -314,7 +318,9 @@ int CKernelModule::GetTaskSchedulingPolicy(tTaskHndl hndl) const
 	int policy = kTaskSchedPolicyUndefined;
     
     if ((err = pthread_getschedparam(hndl, &policy, &param)) != 0)
-    	Printf("FIXME");
+    {
+		ASSERT_POSIX_CALL(err);
+    }
 	return policy;
 }	
 
@@ -490,8 +496,7 @@ int CKernelModule::GetMessageQueueNumMessages(tMessageQueueHndl hndl) const
     
     errno = 0;
     ret = mq_getattr(hndl, &attr);
-    if (errno != 0)
-    	Printf("FIXME");
+    ASSERT_POSIX_CALL( errno );
     
     return attr.mq_curmsgs;
 }
@@ -670,7 +675,9 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 {
     timeval time;
 
+	errno = 0;
 	gettimeofday( &time, NULL );
+    ASSERT_POSIX_CALL( errno );
 
 	return ( ((U64 )time.tv_sec) * 1000000 + time.tv_usec);
 }
@@ -680,6 +687,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 {
 //	tErrType err = kNoErr;
 //    sigset_t signal_set;
+	tErrType err = kNoErr;
     int signum = SIGRTMAX;     
 
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
@@ -767,6 +775,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 //------------------------------------------------------------------------------
 tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 {
+	tErrType err = kNoErr;
     errno = 0;
 
 #if 0
@@ -782,9 +791,11 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 
 	assert((p != listMemory.end()) && ((*p)->getHndl() == hndl));
 	(*p)->setPtr( 0 );
-	pthread_mutex_lock( &mutexValue_2);
+	err = pthread_mutex_lock( &mutexValue_2);
+	ASSERT_POSIX_CALL( err );
     listMemory.erase( p ); 
-	pthread_mutex_unlock( &mutexValue_2);
+	err = pthread_mutex_unlock( &mutexValue_2);
+	ASSERT_POSIX_CALL( err );
 
 #if 0
 	printf("DestroyTimer After Num elements = %d\n", listMemory.size() );
@@ -806,7 +817,6 @@ tErrType CKernelModule::ResetTimer(tTimerHndl hndl, const tTimerProperties& prop
 	
     errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), props.type, &value, NULL );
-    
 	ASSERT_POSIX_CALL( errno );
 	// FIXME/tp: Need to internally track the sigevent and clock the condition
     
@@ -965,9 +975,11 @@ U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const
 tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 {
     errno = 0;
+    tErrType err = kNoErr;
+    
     tMutexAttr mutexAttrTmp;
     pthread_mutexattr_init( &mutexAttrTmp );
-    ASSERT_POSIX_CALL( errno );
+    ASSERT_POSIX_CALL( err );
    
     mutexAttr = static_cast<tMutexAttr>(mutexAttrTmp);
     
@@ -979,10 +991,11 @@ tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr )
 {
     errno = 0;
+    tErrType err = kNoErr;
     
     tMutex  mutexTmp;
     pthread_mutex_init(&mutexTmp, &mutexAttr);
-    ASSERT_POSIX_CALL( errno );
+    ASSERT_POSIX_CALL( err );
 
     mutex = static_cast<tMutex>(mutexTmp);
 
@@ -1105,21 +1118,33 @@ tErrType CKernelModule::SignalCond( tCond& cond )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime )
 {
+	tErrType err = kNoErr;
     errno = 0;
 
-    pthread_cond_timedwait(&cond, &mutex, pAbstime );
-    ASSERT_POSIX_CALL( errno );
-    
+    err = pthread_cond_timedwait(&cond, &mutex, pAbstime );
+
+    if( err == ETIMEDOUT )
+    {
+    	return err;
+    }
+
+    if( err > 0 && err != ETIMEDOUT )
+    {
+    	ASSERT_POSIX_CALL( err );
+    }
+
+
     return kNoErr;
 }
 
 //------------------------------------------------------------------------------
 tErrType CKernelModule::WaitOnCond( tCond& cond, tMutex& mutex )
 {
+	tErrType err = kNoErr;
     errno = 0;
 
-    pthread_cond_wait(&cond, &mutex);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_cond_wait(&cond, &mutex);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }

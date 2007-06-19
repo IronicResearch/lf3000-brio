@@ -37,7 +37,7 @@ namespace
 	{
 		thread_arg_t *ptr = (thread_arg_t *)arg; 
 		TS_ASSERT( !strcmp(message[ ptr->numTest ], ptr->testDescription ) );
-		sleep(1); 
+		sleep(1);
 	}	
 //---------------------------------------------------------
 // Timer testing fuctions
@@ -149,15 +149,15 @@ public:
 	
 	void testGetElapsedTime()
 	{
-		tErrType err;
-		U32 pUs;
-		const U64 threshold = 20000; 
+//		tErrType err;
+//		U32 pUs;
+//		const U64 threshold = 20000; 
 
        // No errors are defined for the 'gettimeofday()' function
        // that used for GetElapsedTime
 		U32 tAsMSecs = KernelMPI->GetElapsedTimeAsMSecs();
 		U64 tAsUSecs = KernelMPI->GetElapsedTimeAsUSecs();
-		U64 delta = tAsUSecs - (U64 )tAsMSecs * 1000;
+//		U64 delta = tAsUSecs - (U64 )tAsMSecs * 1000;
 		//FIXME/BSK
 		//	This test will fail in the emulation mode due overflowing	
 		//	TS_ASSERT_LESS_THAN_EQUALS(	delta, threshold );
@@ -166,7 +166,7 @@ public:
 	
 	void testCreateTask()
 	{
-		const CURI *pTaskURI = NULL;
+//		const CURI *pTaskURI = NULL;
 		tTaskHndl pHndl_1;
 		tTaskHndl pHndl_2;
 		tTaskHndl pHndl_3;
@@ -189,7 +189,7 @@ public:
  */
  
 //-----------------	Test 1	----------------------------        
-        char *message1 = "Properties are default";
+//        char *message1 = "Properties are default";
 
 		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
     	strcpy(threadArg.testDescription, message[ testNumber ] );
@@ -205,16 +205,16 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoinTask( pHndl_1, status));
 
 //-----------------	Test 2	----------------------------        
-    char *message2 = "Properties are set";
+//    char *message2 = "Properties are set";
  // 	priority;				// 1	
 	pProperties.priority = 50;
  
  //	stackAddr;				// 2
-	const unsigned PTHREAD_STACK_ADDRESS = 0xABC;
+//	const unsigned PTHREAD_STACK_ADDRESS = 0xABC;
 //	pProperties.stackAddr = (tAddr ) malloc(PTHREAD_STACK_ADDRESS + 0x4000);
 
 //	stackSize;				// 3	
-    const unsigned PTHREAD_STACK_MINIM = 0x10000;
+//    const unsigned PTHREAD_STACK_MINIM = 0x10000;
 //	pProperties.stackSize = PTHREAD_STACK_MIN + 0x4000;
 
 //	TaskMainFcn;			// 4
@@ -243,7 +243,7 @@ public:
 
 
 //-----------------	Test 3	----------------------------        
-	    char *message3 = "Properties are set";
+//	    char *message3 = "Properties are set";
 
     	strcpy(threadArg.testDescription, message[ testNumber ] );
 		threadArg.numTest = testNumber++;
@@ -562,17 +562,19 @@ public:
     // This function will not be used on the borad 
     void xtestGetMutexPriorityCeiling()
 	{
-        // err = KernelMPI->GetMutexPriorityCeiling( const tMutex& mutex );
+		//tErrType err;
+        //err = KernelMPI->GetMutexPriorityCeiling( const tMutex& mutex );
     }
 	
     // Sets the priority ceiling attribute of a mutex attribute object
     // This function will not be used on the borad 
     void xtestSetMutexPriorityCeiling()
     {
- 		// err = KernelMPI->SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
+		//tErrType err;
+ 		//err = KernelMPI->SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
     }
 	
-     	// Locks an unlocked mutex
+     // Locks an unlocked mutex
     void testLockMutex()
     {
 		tErrType err;
@@ -611,7 +613,7 @@ public:
     // Unlocks a mutex. It was tested
     void xtestUnlockMutex()
     {
-        	// err = KernelMPI->UnlockMutex( tMutex& mutex );
+     	// err = KernelMPI->UnlockMutex( tMutex& mutex );
     }
 
 	//==============================================================================
@@ -693,22 +695,29 @@ public:
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
     // FIXME: pAbstime var
-        void xtestTimedWaitOnCond()
+        void testTimedWaitOnCond()
         {
 			tErrType err;
         	static tCond cond = PTHREAD_COND_INITIALIZER;  
 			static tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
 			const int sleepDuration = 2;
-
-			tTimeSpec timeout1, timeout2; 
-			time(&timeout1.tv_sec);
-			timeout1.tv_sec += sleepDuration;
 			
-        	err = KernelMPI->TimedWaitOnCond( cond, mutex, &timeout1 );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+//			tTimeSpec timeout1, timeout2; 
+//			time(&timeout1.tv_sec);
+//			timeout1.tv_sec += sleepDuration;
+			struct timeval now;		// time when it's started waiting
+			struct timeval end;		// time when it's ended waiting
+			struct timespec timeout;	// timeout value for wait function
 
-			time(&timeout2.tv_sec);
-            TS_ASSERT_LESS_THAN_EQUALS( timeout2.tv_sec - timeout1.tv_sec, 3 );
+			gettimeofday( &now, NULL );			
+			timeout.tv_sec =  now.tv_sec + sleepDuration;
+			timeout.tv_nsec = now.tv_usec * 1000;
+
+        	err = KernelMPI->TimedWaitOnCond( cond, mutex, &timeout );
+			TS_ASSERT_EQUALS( err, ETIMEDOUT );
+
+			gettimeofday( &end, NULL );			
+            TS_ASSERT_LESS_THAN_EQUALS( end.tv_sec - now.tv_sec, 3 );
                
          	err = KernelMPI->DestroyCond( cond );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -720,16 +729,16 @@ public:
         }
     
     // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-        void xtestWaitOnCond()
+        void testWaitOnCond()
         {
 			tErrType err;
 
-  			int                   rc=0;
-  			int                   i;
+//  			int                   rc=0;
+ // 			int                   i;
   			tTaskHndl		threadid;
   			tTaskProperties props;
   			props.TaskMainFcn = threadfunc_broadcast;
-			tPtr status = NULL;
+//			tPtr status = NULL;
 				
 				//    rc = pthread_create(&threadid[i], NULL, threadfunc_broadcast, NULL);
     			err = KernelMPI->CreateTask( threadid,
