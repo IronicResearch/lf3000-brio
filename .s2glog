@@ -3939,3 +3939,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/19/07 9:15 AM
 1,750 ms. (Cumulative: 580,395 ms)
 
 ----------------
+Revision 606 from svn://localhost/TRUNK/:
+
+Initial Video MPI as empty skellaton.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/19/07 10:50 AM
+1 changed, 6 added, 0 deleted.
+2,485 ms. (Cumulative: 582,927 ms)
+
+----------------

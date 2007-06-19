@@ -26,6 +26,7 @@ modules.append(SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), 
 modules.append(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
 modules.append(SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0))
 modules.append(SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0))
+modules.append(SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0))
 if vars['is_emulation']:
 	modules.append(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))
 
