@@ -260,7 +260,6 @@ tErrType CKernelModule::JoinTask( tTaskHndl pHndl, tPtr& threadReturnValue )
 //	return AsBrioErr(pthread_join(pHndl, &threadReturnValue));
 	tErrType err = kNoErr;
 	
-//	errno = 0;
 	err = pthread_join(pHndl, &threadReturnValue);
 	ASSERT_POSIX_CALL(err);
 	
@@ -278,7 +277,6 @@ tErrType CKernelModule::CancelTask( tTaskHndl hndl )
 //	return AsBrioErr(pthread_cancel(hndl));
 	tErrType err = kNoErr;
 	
-	errno = 0;
 	err = pthread_cancel(hndl);
 	if ( err > 0 && err != ESRCH )
 	{
@@ -687,7 +685,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerP
 {
 //	tErrType err = kNoErr;
 //    sigset_t signal_set;
-	tErrType err = kNoErr;
+//	tErrType err = kNoErr;
     int signum = SIGRTMAX;     
 
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
@@ -974,7 +972,6 @@ U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const
     // Initialize a mutex Attribute Object 
 tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 {
-    errno = 0;
     tErrType err = kNoErr;
     
     tMutexAttr mutexAttrTmp;
@@ -990,7 +987,6 @@ tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
 
 tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr )
 {
-    errno = 0;
     tErrType err = kNoErr;
     
     tMutex  mutexTmp;
@@ -1004,9 +1000,10 @@ tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::DeInitMutex( tMutex& mutex )
 {
-    errno = 0;
+    tErrType err = kNoErr;
+
     pthread_mutex_destroy(&mutex);
-    ASSERT_POSIX_CALL( errno );
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1014,11 +1011,11 @@ tErrType CKernelModule::DeInitMutex( tMutex& mutex )
 //------------------------------------------------------------------------------
 S32 CKernelModule::GetMutexPriorityCeiling(const tMutex& mutex) const
 {
-   errno = 0;
+   tErrType err = kNoErr;
    int prioCeiling = 0;
-// FIXME /BSK NOT DEFINED YET    
-//   pthread_mutex_getprioceiling(&mutex, &prioCeiling);
-   ASSERT_POSIX_CALL( errno );
+// FIXME /BSK NOT DEFINED YET for arm    
+// err = pthread_mutex_getprioceiling(&mutex, &prioCeiling);
+   ASSERT_POSIX_CALL( err );
    
    return prioCeiling;
 }
@@ -1026,11 +1023,11 @@ S32 CKernelModule::GetMutexPriorityCeiling(const tMutex& mutex) const
 //------------------------------------------------------------------------------
 tErrType CKernelModule::SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority )
 {
-   errno = 0;
+   tErrType err = kNoErr;
 
-// FIXME /BSK NOT DEFINED YET    
-//   pthread_mutex_setprioceiling(&mutex, (int)prioCeiling, (int*)pOldPriority);
-   ASSERT_POSIX_CALL( errno );
+// FIXME /BSK NOT DEFINED YET for arm   
+// err = pthread_mutex_setprioceiling(&mutex, (int)prioCeiling, (int*)pOldPriority);
+   ASSERT_POSIX_CALL( err );
     
    return kNoErr;
 }
@@ -1038,10 +1035,10 @@ tErrType CKernelModule::SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling,
 //------------------------------------------------------------------------------
 tErrType CKernelModule::LockMutex( tMutex& mutex )
 {
-    errno = 0;
+    tErrType err = kNoErr;
     
-    pthread_mutex_lock(&mutex);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_mutex_lock(&mutex);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1049,10 +1046,10 @@ tErrType CKernelModule::LockMutex( tMutex& mutex )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::TryLockMutex( tMutex& mutex )
 {
-    errno = 0;
+    tErrType err = kNoErr;
     
-    pthread_mutex_trylock(&mutex);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_mutex_trylock(&mutex);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1060,10 +1057,10 @@ tErrType CKernelModule::TryLockMutex( tMutex& mutex )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::UnlockMutex( tMutex& mutex )
 {
-    errno = 0;
+    tErrType err = kNoErr;
     
-    pthread_mutex_unlock(&mutex);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_mutex_unlock(&mutex);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1074,10 +1071,10 @@ tErrType CKernelModule::UnlockMutex( tMutex& mutex )
 
 tErrType CKernelModule::BroadcastCond( tCond& cond )
 {
-    errno = 0;
+    tErrType err = kNoErr;
 
-    pthread_cond_broadcast(&cond);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_cond_broadcast(&cond);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1085,10 +1082,10 @@ tErrType CKernelModule::BroadcastCond( tCond& cond )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::DestroyCond( tCond& cond )
 {
-    errno = 0;
+    tErrType err = kNoErr;
 
     pthread_cond_destroy(&cond);
-    ASSERT_POSIX_CALL( errno );
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1096,10 +1093,10 @@ tErrType CKernelModule::DestroyCond( tCond& cond )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::InitCond( tCond& cond, const tCondAttr& attr )
 {
-    errno = 0;
+    tErrType err = kNoErr;
 
     pthread_cond_init(&cond, &attr);
-    ASSERT_POSIX_CALL( errno );
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1107,10 +1104,10 @@ tErrType CKernelModule::InitCond( tCond& cond, const tCondAttr& attr )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::SignalCond( tCond& cond )
 {
-    errno = 0;
+    tErrType err = kNoErr;
 
-    pthread_cond_signal(&cond);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_cond_signal(&cond);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1119,7 +1116,6 @@ tErrType CKernelModule::SignalCond( tCond& cond )
 tErrType CKernelModule::TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTimeSpec* pAbstime )
 {
 	tErrType err = kNoErr;
-    errno = 0;
 
     err = pthread_cond_timedwait(&cond, &mutex, pAbstime );
 
@@ -1141,7 +1137,6 @@ tErrType CKernelModule::TimedWaitOnCond( tCond& cond, tMutex& mutex, const tTime
 tErrType CKernelModule::WaitOnCond( tCond& cond, tMutex& mutex )
 {
 	tErrType err = kNoErr;
-    errno = 0;
 
     err = pthread_cond_wait(&cond, &mutex);
     ASSERT_POSIX_CALL( err );
@@ -1152,10 +1147,10 @@ tErrType CKernelModule::WaitOnCond( tCond& cond, tMutex& mutex )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::DestroyCondAttr( tCondAttr& attr )
 {
-    errno = 0;
+	tErrType err = kNoErr;
 
-    pthread_condattr_destroy( &attr );
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_condattr_destroy( &attr );
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1163,10 +1158,10 @@ tErrType CKernelModule::DestroyCondAttr( tCondAttr& attr )
 //------------------------------------------------------------------------------
 tErrType CKernelModule::GetCondAttrPShared( const tCondAttr& attr, int* pShared )
 {
-    errno = 0;
+	tErrType err = kNoErr;
 // FIXME/BSK To get the new library
-//    pthread_condattr_getpshared( &attr, pShared );
-//    ASSERT_POSIX_CALL( errno );
+    err = pthread_condattr_getpshared( &attr, pShared );
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1174,10 +1169,10 @@ tErrType CKernelModule::GetCondAttrPShared( const tCondAttr& attr, int* pShared 
 //------------------------------------------------------------------------------
 tErrType CKernelModule::InitCondAttr( tCondAttr& attr )
 {
-    errno = 0;
+	tErrType err = kNoErr;
 
-    pthread_condattr_init(&attr);
-    ASSERT_POSIX_CALL( errno );
+    err = pthread_condattr_init(&attr);
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
@@ -1186,10 +1181,10 @@ tErrType CKernelModule::InitCondAttr( tCondAttr& attr )
 tErrType CKernelModule::SetCondAttrPShared( tCondAttr* pAttr, int shared )
 
 {
-    errno = 0;
+	tErrType err = kNoErr;
 // FIXME/BSK To get the new library
-//    pthread_condattr_setpshared( pAttr, shared );
-//    ASSERT_POSIX_CALL( errno );
+    err = pthread_condattr_setpshared( pAttr, shared );
+    ASSERT_POSIX_CALL( err );
     
     return kNoErr;
 }
