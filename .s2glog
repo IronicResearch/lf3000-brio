@@ -4061,3 +4061,17 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/20/07 4:39 PM
 1,799 ms. (Cumulative: 604,390 ms)
 
 ----------------
+Revision 632 from svn://localhost/TRUNK/:
+Revision 633 from svn://localhost/TRUNK/:
+Revision 634 from svn://localhost/TRUNK/:
+Revision 635 from svn://localhost/TRUNK/:
+Revision 636 from svn://localhost/TRUNK/:
+Revision 637 from svn://localhost/TRUNK/:
+
+Initial port of Ogg/Theora video stream decoding (un-tested).
+
+By Dmilici (Dmilici@leapfrog.com) on 6/20/07 4:59 PM
+1 changed, 0 added, 0 deleted.
+1,704 ms. (Cumulative: 606,172 ms)
+
+----------------
