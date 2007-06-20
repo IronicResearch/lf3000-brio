@@ -48,7 +48,7 @@ protected:
 		
 		path = path.substr(0, path.rfind('/'));							//*2
 		path = path.substr(0, path.rfind('/'));
-		CPath modSearch = path + "/Lightning_emulation/Module";
+		CPath modSearch = path + "/Module";
 		EmulationConfig::Instance().SetModuleSearchPath(modSearch.c_str());
 		
 		size_t idx = path.find("/Brio2/");								//*3

@@ -4020,3 +4020,12 @@ By TParker (TParker@leapfrog.com) on 6/19/07 4:31 PM
 1,828 ms. (Cumulative: 598,040 ms)
 
 ----------------
+Revision 615 from svn://localhost/TRUNK/:
+
+Fixed unit test path setup bug
+
+By TParker (TParker@leapfrog.com) on 6/19/07 5:00 PM
+1 changed, 0 added, 0 deleted.
+1,830 ms. (Cumulative: 599,917 ms)
+
+----------------
