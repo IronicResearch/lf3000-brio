@@ -4029,3 +4029,17 @@ By TParker (TParker@leapfrog.com) on 6/19/07 5:00 PM
 1,830 ms. (Cumulative: 599,917 ms)
 
 ----------------
+Revision 616 from svn://localhost/TRUNK/:
+Revision 617 from svn://localhost/TRUNK/:
+Revision 618 from svn://localhost/TRUNK/:
+Revision 619 from svn://localhost/TRUNK/:
+Revision 620 from svn://localhost/TRUNK/:
+Revision 621 from svn://localhost/TRUNK/:
+
+Update shared libs to be installed on embedded target for FreeType and Vorbis/Tremor.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/20/07 10:12 AM
+2 changed, 5 added, 0 deleted.
+2,487 ms. (Cumulative: 602,482 ms)
+
+----------------

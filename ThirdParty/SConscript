@@ -58,10 +58,14 @@ if vars['is_export'] or vars['is_publish']:
 		lib = os.path.join('MagicEyes', 'Libs', 'arm', core_name)
 		env.Install(lib_dir, lib)
 
-# Export ustring shared libs to target
+# Export shared libs to embedded target
 if not vars['is_emulation']:
 	libs = glob.glob(os.path.join('ustring', 'libs', 'arm', '*'))
 	env.Install(vars['lib_deploy_dir'], libs)
 	env.Install(vars['mpi_deploy_dir'], libs)	#FIXME/tp: ICK!
+	libs = glob.glob(os.path.join('FreeType', 'Libs', 'arm', '*.so*'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('Theora', 'Libs', 'arm', '*.so*'))
+	env.Install(vars['lib_deploy_dir'], libs)
 		
 		
