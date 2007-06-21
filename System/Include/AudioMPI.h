@@ -32,32 +32,51 @@ class IEventListener;
 //==============================================================================
 class CAudioMPI : public ICoreMPI {
 public:
+	//********************************
 	// ICoreMPI functionality
+	//********************************
+
 	virtual	Boolean			IsValid() const;
 	virtual const CString*	GetMPIName() const;		
 	virtual tVersion		GetModuleVersion() const;
 	virtual const CString*	GetModuleName() const;	
 	virtual const CURI*		GetModuleOrigin() const;
 
-	// class-specific functionality
-	// Default listener is not currently used
+	//********************************
+	// Class-specific functionality
+	//********************************    
+
+	// The default listener is not currently used.
 	CAudioMPI( const IEventListener* pDefaultListener = NULL );
 	virtual ~CAudioMPI();
 
 	//********************************
-	// Overall audio control 
-	//********************************
-	// Controls the audio output driver.  
+	// Audio output driver control. 
+	//********************************    
+
+	// Opens the audio output driver and starts the Brio audio system.
 	tErrType	StartAudio( void );
-	tErrType	StopAudio( void );
+
+	// Pauses the output driver, keeping the state of the audio system intact.
+	// While paused, the audio system consumes no CPU.
 	tErrType	PauseAudio( void );
+
+	// Resume the audio system from the previously paused state.
 	tErrType	ResumeAudio( void );
+
+	// Stop the audio output driver and clear the audio system state.
+	tErrType	StopAudio( void );
 	
-	// Set the output gain of the mixer.
+	//********************************
+	// Audio Playback. 
+	//********************************    
+
+	// Set the output gain of the mixer.  (This includes MIDI.)
 	void 		SetMasterVolume( U8 volume );
 
-	// Plays an audio resource.  Currently only volume and pListener are interpreted.
-	// An audio done mesasge will be posted to the listener if provided.
+	// Plays an audio resource.
+	// An audio done event will be posted to the listener if provided.
+	// Currently only volume and pListener are interpreted.
 	tAudioID 	StartAudio( tRsrcHndl			hRsrc, 
 					U8					volume, 
 					tAudioPriority		priority,
@@ -66,18 +85,34 @@ public:
 					tAudioPayload		payload,
 					tAudioOptionsFlags	flags );
 
+	// Pause a playing audio resource.
 	void 		PauseAudio( tAudioID audioID );
+
+	// Resume a playing audio resource from the previously paused position.
 	void 		ResumeAudio( tAudioID audioID ); 
+
+	// Stop the audio resource and free its mixer channel.  Optionally post
+	// an audioDone event via the EventMgr.
 	void 		StopAudio( tAudioID audioID, Boolean surpressDoneMessage ); 
 
-	// need policy for unloading audio resources after they have been played. ReleaseAudioRsrc()?
-
+	//********************************
 	// MIDI functionality
-	// Currently the midiID is ignored, only one file can be played at a time.
-	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pHandler, tMidiID* pMidiID );
-	tErrType 	MidiNoteOn( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	tErrType 	MidiNoteOff( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	//********************************    
 
+	// NOTE: Currently the midiID is ignored because only one file can be played at a time!
+
+	// This function is currently unimplemented.
+	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pHandler, tMidiID* pMidiID );
+	
+	// Trigger a single MIDI note on event.
+	// WARNING: DON'T DO THIS WHILE A MIDI FILE IS PLAYING, bad things may happen!!!
+    tErrType 	MidiNoteOn( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	
+	// Stop the previously trigger MIDI note.
+    tErrType 	MidiNoteOff( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+
+	// Start playback of a MIDI file.
+	// Currently only the volume and pListener options are used.
 	tMidiID 	StartMidiFile( tMidiID	midiID,
 						tRsrcHndl		hRsrc, 
 						U8					volume, 
@@ -86,9 +121,15 @@ public:
 						tAudioPayload		payload,
 						tAudioOptionsFlags	flags );
 
+	// Pause playback of a MIDI file. 
 	void 		PauseMidiFile( tMidiID midiID );
-	void 		ResumeMidiFile( tMidiID midiID );
-	void 		StopMidiFile( tMidiID midiID, Boolean surpressDoneMessage );
+	
+	// Resume playback of a MIDI file.
+    void 		ResumeMidiFile( tMidiID midiID );
+
+	// Stop playback of a MIDI file and free the MIDI player. Optionally post
+	// an audioDone event via the EventMgr.
+    void 		StopMidiFile( tMidiID midiID, Boolean surpressDoneMessage );
 
 	// these are still unimplemented!	
 	tErrType 	ReleaseMidiPlayer( tMidiID midiID );

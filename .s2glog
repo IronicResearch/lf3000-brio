@@ -4075,3 +4075,19 @@ By Dmilici (Dmilici@leapfrog.com) on 6/20/07 4:59 PM
 1,704 ms. (Cumulative: 606,172 ms)
 
 ----------------
+Revision 638 from svn://localhost/TRUNK/:
+Revision 639 from svn://localhost/TRUNK/:
+Revision 640 from svn://localhost/TRUNK/:
+Revision 641 from svn://localhost/TRUNK/:
+Revision 642 from svn://localhost/TRUNK/:
+
+Added support for mono and stereo 44K Ogg Vorbis playback and implmented
+it in terms of the resource manager's streaming API.  The Audio system now determines 
+audio data type using Resource Manager's GetType() (instead of reading it from the audio header).
+Raw data is still loaded into RAM instead of streamed from storage.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/21/07 4:04 PM
+14 changed, 11 added, 0 deleted.
+2,972 ms. (Cumulative: 609,222 ms)
+
+----------------

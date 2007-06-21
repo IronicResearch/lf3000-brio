@@ -17,6 +17,8 @@
 // System includes
 #include <CoreTypes.h>
 #include <SystemTypes.h>
+#include <DebugMPI.h>
+#include <SystemResourceMPI.h>
 //#include <RsrcTypes.h>
 #include <AudioTypes.h>
 #include <EventListener.h>
@@ -32,7 +34,7 @@ class CChannel;
 //==============================================================================
 class CAudioPlayer {
 public:
-	CAudioPlayer( tAudioStartAudioInfo* pData, tAudioID id  );
+	CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  );
 	virtual ~CAudioPlayer();
 		
 	// Reset internal data pointer back to start of audio data.
@@ -47,7 +49,7 @@ public:
 
 	// Get/Set the class member variables
 	inline tAudioID			GetAudioID() { return id_; }
-	inline tRsrcHndl		GetRsrcHandle() { return rsrc_; }
+	inline tRsrcHndl		GetRsrcHandle() { return hRsrc_; }
 	inline tAudioPriority 	GetPriority() { return priority_; }
 	inline void		 		SetPriority(tAudioPriority priority) { priority_ = priority; }
 	inline tAudioPayload	GetPayload() { return payload_; }
@@ -71,9 +73,11 @@ protected:
 	U8			bHasCodec_:1;			// Has audio codec
 	U8			unused_:3;				// Unused
 
+	CDebugMPI*			pDebugMPI_;		// Debug output access.
+	CSystemResourceMPI*	pRsrcMPI_;		// Resource Manager access.
+	
 	tAudioID			id_;			// AudioID of the audio assigned to the player
-	tRsrcHndl			rsrc_;			// Rsrc handle of the audio assigned to the player
-	tAudioHeader*		pHeader_;		// Pointer to header of audio to play
+	tRsrcHndl			hRsrc_;			// Rsrc handle of the audio assigned to the player
 	void*				pAudioData_;
 	U32					audioDataSize_;	// bytes I think it should be...
 	bool				hasStereoData_;

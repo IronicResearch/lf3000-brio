@@ -10,7 +10,7 @@
 //
 // Description:
 //		Defines the message format of messages accepted by the AudioMgr task
-//		from the AudioMPI 
+//		from the AudioMPI.  The format of the message data are in AudioTypesPriv.h 
 //
 //==============================================================================
 

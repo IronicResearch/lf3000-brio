@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'SystemResourceMPI', 
-				'portaudio', 'asound', 'me2000']
+				'portaudio', 'asound', 'me2000', 'vorbisfile']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
@@ -24,13 +24,16 @@ myenv		= env.Copy()
 
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 
 if vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/x86'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/x86'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/x86'])
 else:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/arm'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/arm'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/arm'])
 	myenv.Append(LIBPATH = ['/home/lfu/nfsroot/usr/lib'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)

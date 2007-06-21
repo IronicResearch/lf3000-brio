@@ -52,13 +52,6 @@ const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupAudio), AUDIO_ERRORS)
 
 
-//==============================================================================	   
-// Audio resource types
-//==============================================================================
-const tRsrcType kAudioRsrcMidi = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 1);
-const tRsrcType kAudioRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 2);
-
-
 //==============================================================================
 // Basic audio types
 //==============================================================================
@@ -76,8 +69,7 @@ typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255.
 // Bits 0-1 refer to done messages 
 enum {
 	kAudioOptionsNoDoneMsg				= 0x00,	// No done message
-	kAudioOptionsDoneMsgAfterComplete	= 0x01,	// Done message after audio is complete 
-	kAudioOptionsDoneMsgAfterEvery		= 0x03	// Done message after every audio in array
+	kAudioOptionsDoneMsgAfterComplete	= 0x01	// Done message after audio is complete 
 };
 typedef U32 tAudioOptionsFlags; 
 
@@ -93,28 +85,15 @@ typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
 #define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all Midi tracks
 
 //==============================================================================
-// AudioRsrcType
-//	
-//==============================================================================
-//#define kFirstAudioRsrcType MakeRsrcType(kSystemRsrcGroupAudio, kFirstRsrcTag)
-#define kFirstAudioRsrcType		0x10001C01
-
-enum {
-	kAudioRsrcACS = kFirstAudioRsrcType,
-	kAudioRsrcAdpcm,
-	kAudioRsrcGen2,
-	kAudioRsrcMIDI,
-	kAudioRsrcRaw,
-	kAudioRsrcFlashStream,
-	kAudioRsrcSpeechStream,
-	kAudioRsrcStreaming,
-	kAudioRsrcWav
-};
-
-//==============================================================================
 // Defines for audio resources 
 //==============================================================================
-// Standard header for all audio resources 
+
+/// Audio resource types
+const tRsrcType kAudioRsrcMIDI = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 1);
+const tRsrcType kAudioRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 2);
+const tRsrcType kAudioRsrcRaw = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 3);
+
+// Standard header for raw Brio audio resources 
 struct tAudioHeader {
 	U32				offsetToData;		// Offset from the start of the header to
 										// the start of the data (std is 16)
@@ -125,11 +104,6 @@ struct tAudioHeader {
 	U32				dataSize;			// Data size in bytes
 };
 
-// Extended header for those audio resources where the dataSize is less than the
-// number of bytes that have been allocated to hold the data  
-//struct tAudioHeaderDynamic : public tAudioHeader {
-//	U32				allocatedSize;		// Number of bytes allocated for the data
-//};
 
 //==============================================================================
 // Audio message data payload types
@@ -155,6 +129,7 @@ union tAudioMsgData {
 };
 
 
+
 //==============================================================================
 // Class:
 //		CAudioEventMessage
@@ -171,6 +146,7 @@ public:
 
 	tAudioMsgData	audioMsgData;
 };
+
 
 LF_END_BRIO_NAMESPACE()	
 #endif		// LF_BRIO_AUDIOTYPES_H

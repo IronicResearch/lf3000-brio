@@ -32,8 +32,30 @@
 // CRawPlayer implementation
 //==============================================================================
 
-CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAudioPlayer( pData, id  )
+CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudioPlayer( pAudioInfo, id  )
 {
+	tErrType		err;
+	tAudioHeader*	pHeader;
+	
+	// Load the audio resource using the resource manager.
+	err = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
+	
+	// Get the pointer to the audio header and data.
+	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
+
+	printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%d, size:%d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRate, pHeader->dataSize);
+
+	// Get ptr to data
+	pAudioData_ = (void*)(pHeader + pHeader->offsetToData);
+	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", pHeader, pAudioData_ );
+
+	dataSampleRate_ = pHeader->sampleRate;
+	audioDataSize_ = pHeader->dataSize;			
+	if (pHeader->flags & 0x1)
+		hasStereoData_ = true;
+	else
+		hasStereoData_ = false;
+	
 	// Most of the member vars set by superclass; these are RAW specific.
 	pCurFrame_ = (S16*)pAudioData_;
 	

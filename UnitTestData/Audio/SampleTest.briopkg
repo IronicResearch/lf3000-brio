@@ -1,7 +1,8 @@
-!uri,!packType,!location,!size,!compressedSize,!version
 LF/Brio/UnitTest/Audio/one,0,app1.txt,47,47,1
 LF/Brio/UnitTest/Audio/two,0,app2.txt,34,34,1
-LF/Brio/UnitTest/Audio/BlueNile,0,BlueNile44m.raw,815790,815790,1
-LF/Brio/UnitTest/Audio/FortyTwo,0,FortyTwo.raw,11282,11282,1
-LF/Brio/UnitTest/Audio/sine44,0,sine44m.raw,882046,882046,1
-LF/Brio/UnitTest/Audio/NewHampshireGamelan,0,NewHampshireGamelan.mid,6222,6222,1
+LF/Brio/UnitTest/Audio/BlueNile,1027,BlueNile44m.raw,815790,815790,1
+LF/Brio/UnitTest/Audio/FortyTwo,1027,FortyTwo.raw,11282,11282,1
+LF/Brio/UnitTest/Audio/sine44,1027,sine44m.raw,882046,882046,1
+LF/Brio/UnitTest/Audio/NewHampshireGamelan,1025,NewHampshireGamelan.mid,6222,6222,1
+LF/Brio/UnitTest/Audio/vivaldi,1026,vivaldi.ogg,83305,83305,1
+LF/Brio/UnitTest/Audio/VH_44_mono,1026,VH_44_mono.ogg,760877,760877,1

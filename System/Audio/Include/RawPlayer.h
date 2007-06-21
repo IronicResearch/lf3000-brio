@@ -31,7 +31,7 @@
 //==============================================================================
 class CRawPlayer : public CAudioPlayer {
 public:
-	CRawPlayer( tAudioStartAudioInfo* pData, tAudioID id  );
+	CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  );
 	~CRawPlayer();
 		
 	// Reset player to start from beginning of sample

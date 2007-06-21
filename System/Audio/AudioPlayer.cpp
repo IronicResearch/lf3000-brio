@@ -33,46 +33,49 @@
 // CAudioPlayer implementation
 //==============================================================================
 
-CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pData, tAudioID id  )
+CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 {
-	id_ = id;
+	tErrType ret;
 	
-	// for now, the Audio task is loading the whole resource into RAM so 
-	// this header allows the player to play it directly.  Later we'll add
-	// support for streaming.
-	pHeader_ = pData->pAudioHeader;
-
-	// Initialize class variables
+	// Initialize instance variables
+	id_ = id;
 	bPaused_ = 0;
 	bComplete_ = 0;
 	bStopping_ = 0;
 	bHasCodec_ = 0;
-	rsrc_ = pData->hRsrc;
 
+	// Save the resource handle
+	hRsrc_ = pAudioInfo->hRsrc;
+
+	// Get Debug MPI
+	pDebugMPI_ = new CDebugMPI( kGroupAudio );
+	ret = pDebugMPI_->IsValid();
+	if (ret != true)
+		printf("AudioPlayer ctor -- Couldn't create DebugMPI!\n");
+	
+	// Get Resource MPI
+	pRsrcMPI_ = new CSystemResourceMPI;
+	ret = pRsrcMPI_->IsValid();
+	if (ret != true)
+		printf("AudioPlayer ctor-- Couldn't create ResourceMPI!\n");
+
+	pDebugMPI_->DebugOut( kDbgLvlValuable, 
+		(const char *)"\nDebug and Resource MPIs created by AudioPlayer ctor\n");	
+
+	
 	// Set all of the audio player class variables from the message
-	volume_ = pData->volume;
-	priority_ = pData->priority;
-	pan_ = pData->pan;
-	if (pData->pListener != kNull) {
-		pListener_ = pData->pListener;
+	volume_ = pAudioInfo->volume;
+	priority_ = pAudioInfo->priority;
+	pan_ = pAudioInfo->pan;
+	if (pAudioInfo->pListener != kNull) {
+		pListener_ = pAudioInfo->pListener;
 		bDoneMessage_ = true;
 	} else {
 		pListener_ = kNull;
 		bDoneMessage_ = false;
 	}
-	payload_ = pData->payload;
-	optionsFlags_ = pData->flags;
-	
-	// Get data from audio header associated with this player.
-	// fixme/dg: do it for real.
-	pAudioData_ = (void*)(pHeader_ + pHeader_->offsetToData);
-//	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", pHeader_, pAudioData_ );
-	dataSampleRate_ = pHeader_->sampleRate;
-	audioDataSize_ = pHeader_->dataSize;			
-	if (pHeader_->flags & 0x1)
-		hasStereoData_ = true;
-	else
-		hasStereoData_ = false;
+	payload_ = pAudioInfo->payload;
+	optionsFlags_ = pAudioInfo->flags;
 }
 
 //==============================================================================

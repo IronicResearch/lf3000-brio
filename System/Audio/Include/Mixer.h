@@ -46,7 +46,6 @@ public:
 	void 			SetMasterVolume( U8 vol ) { masterVol_ = ((float)vol) / 100.0F;}
 	
 	// Main routine to handle the processing of data through the audio channels
-	// for one audio tick 
 	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
 	
 	static int WrapperToCallRenderBuffer( S16* pOutBuff, 

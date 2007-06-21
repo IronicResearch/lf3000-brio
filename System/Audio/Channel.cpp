@@ -54,7 +54,7 @@ CChannel::CChannel()
 //==============================================================================
 CChannel::~CChannel()
 {
-	// Deallocate the channel buffers
+	// Free the channel buffers
 	if (pOutBuffer_)
 		delete pOutBuffer_;
 }
@@ -82,10 +82,13 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 //==============================================================================
 tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
-//	mpChain_ = kNull;
-//	reinterpret_cast<CRawPlayer*>(pPlayer_)->SendDoneMsg();  // hack because player dtor not called.
+//	pFxChain_ = kNull;
+
+	printf("CChannel::Release - deleting player 0x%x\n", pPlayer_);
+
 	if (suppressPlayerDoneMsg)
 		pPlayer_->SetSendDoneMessage( false );
+
 	delete pPlayer_;
 	pPlayer_ = kNull;
 	bInUse_ = 0;
@@ -155,7 +158,7 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	return playerFramesRendered;
 }
 
-#if 0
+#if DO_SAMPLE_RATE_CONVERSION
 //==============================================================================
 //==============================================================================
 static void InitConversionRate(tAudioConversion *pRate, U16 inRateInHz, U16 outRateInHz)

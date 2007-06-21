@@ -24,7 +24,7 @@
 
 #include <AudioPlayer.h>
 #include <RawPlayer.h>
-//#include <CodecPlayer.h>
+#include <VorbisPlayer.h>
 #include <MidiPlayer.h>
 #include <spmidi.h>
 
@@ -107,7 +107,7 @@ tErrType InitAudioTask( void )
 	if (ret != true)
 		printf("AudioTask ctor-- Couldn't create KernelMPI!\n");
 
-	// Get Kernel MPI
+	// Get Resource MPI
 	gContext.resourceMPI = new CSystemResourceMPI;
 	ret = gContext.resourceMPI->IsValid();
 	if (ret != true)
@@ -252,13 +252,17 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 static void DoStartAudio( CAudioMsgStartAudio* pMsg ) 
 {
 	tErrType			err;
+	tRsrcType			rsrcType;
 	CAudioReturnMessage	msg;
 	tAudioID			newID = kNoAudioID;
-	tAudioHeader*		pHeader;
 	CChannel*			pChannel = kNull;
 	CAudioPlayer*		pPlayer = kNull;
 
+	// Retrieve the StartAudio message's data.
 	tAudioStartAudioInfo*	pAudioInfo = pMsg->GetData();
+
+	//		printf("Start Audio Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pAudioInfo->volume, pAudioInfo->priority, pAudioInfo->pan, pAudioInfo->hRsrc,
+	//				pAudioInfo->pListener, pAudioInfo->payload, pAudioInfo->flags);
 
 	// Find the best channel for the specified priority
 	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->priority );
@@ -266,48 +270,34 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 
 	// If we have a good channel, play the audio, if not return error to caller.
 	if (pChannel != kNull) {
-								   
-		// Load the audio resource using the resource manager.
-		err = gContext.resourceMPI->LoadRsrc( pAudioInfo->hRsrc );  
-		
-		// Get the pointer to the audio header and data.
-		pHeader = (tAudioHeader*)gContext.resourceMPI->GetPtr( pAudioInfo->hRsrc );
-		
-		// Store pointer in the play struct so that the Player object can access it.
-		pAudioInfo->pAudioHeader = pHeader;
-		
-//		printf("Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pAudioInfo->volume, pAudioInfo->priority, pAudioInfo->pan, pAudioInfo->hRsrc,
-//				pAudioInfo->pListener, pAudioInfo->payload, pAudioInfo->flags);
-	
-//		printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%d, size:%d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRate, pHeader->dataSize);
-	
+								   	
 		// Generate the audio ID, accounting for wrap around
 		newID = gContext.nextAudioID++;
 		if (gContext.nextAudioID == kNoAudioID)
 			gContext.nextAudioID = 0;
 	
 		// Branch on the type of audio resource to create a new audio player
-		switch (pHeader->type)
+		rsrcType = gContext.resourceMPI->GetType( pAudioInfo->hRsrc );  
+
+		switch ( rsrcType )
 		{
 		case kAudioRsrcRaw:
 			printf("Create RawPlayer\n");
 			pPlayer = new CRawPlayer( pAudioInfo, newID );
 			break;
 	
-		case kAudioRsrcAdpcm:
-		case kAudioRsrcGen2: 
-			printf("Create(fake)CodecPlayer\n");
-			pPlayer = new CRawPlayer( pAudioInfo, newID );
-	//		pPlayer = new CCodecPlayer( pAudioInfo->hRsrc, newID );
+		case kAudioRsrcOggVorbis:
+			printf("Create VorbisPlayer\n");
+			pPlayer = new CVorbisPlayer( pAudioInfo, newID );
 			break;
-	
+		
 		case kAudioRsrcMIDI:
-			printf("Create MidiPlayer\n");
+			printf("Faking Create MidiPlayer... DON'T DO THIS! USE MIDI API\n");
 	//		pPlayer = new CMidiPlayer( pAudioInfo->hRsrc, newID );
 			break;
 	
 		default:
-			printf("Create *NO* Player\n");
+			printf("Create *NO* Player... bad news, unhandled audio type!\n");
 			break;
 	
 		} 
@@ -326,7 +316,6 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 	}
 
 	SendMsgToAudioModule( msg );
-
 }
 
 //==============================================================================
@@ -584,7 +573,7 @@ void* AudioTaskMain( void* arg )
 
     gContext.debugMPI->Assert((kNoErr == err), "Trying to create outgoing audio task msg queue. Err = %d \n", err );
 
-	// Set the task to ready
+// Set the task to ready
 	gAudioTaskRunning = true;
 	
 	char 				msgBuf[kMAX_AUDIO_MSG_SIZE];
