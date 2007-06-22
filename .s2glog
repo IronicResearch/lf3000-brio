@@ -4116,3 +4116,12 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 6/22/07 12:01 PM
 1,736 ms. (Cumulative: 612,974 ms)
 
 ----------------
+Revision 649 from svn://localhost/TRUNK/:
+
+Fixed font test crash due to invalid global init state.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/22/07 1:54 PM
+1 changed, 0 added, 0 deleted.
+1,799 ms. (Cumulative: 614,867 ms)
+
+----------------

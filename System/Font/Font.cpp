@@ -107,6 +107,9 @@ OnFaceRequest( FTC_FaceID  faceId,
 //============================================================================
 CFontModule::CFontModule() : dbg_(kGroupDisplay) // FIXME: new enum?
 {
+	// Zero out static global struct
+	memset(&handle_, 0, sizeof(handle_));
+
 	// Load FreeType library
 	int error = FT_Init_FreeType(&handle_.library);
 	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
@@ -239,11 +242,13 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     {
 		handle_.maxFonts = 16;
 		handle_.fonts     = (PFont*)calloc( handle_.maxFonts, sizeof ( PFont ) );
+		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be allocated\n");
     }
     else if ( handle_.numFonts >= handle_.maxFonts ) 
     {
 		handle_.maxFonts *= 2;
 		handle_.fonts      = (PFont*)realloc( handle_.fonts, handle_.maxFonts * sizeof ( PFont ) );
+		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be reallocated\n");
 		
 		memset( &handle_.fonts[handle_.numFonts], 0, ( handle_.maxFonts - handle_.numFonts ) * sizeof ( PFont ) );
     }
