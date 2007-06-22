@@ -4136,3 +4136,15 @@ By TParker (TParker@leapfrog.com) on 6/22/07 2:46 PM
 1,828 ms. (Cumulative: 616,789 ms)
 
 ----------------
+Revision 653 from svn://localhost/TRUNK/:
+
+The lightening button hander was not implementing the getbuttonstate function
+correctly.  It was only working with the event task.  I fixed it.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/22/07 4:01 PM
+1 changed, 0 added, 0 deleted.
+1,781 ms. (Cumulative: 618,648 ms)
+
+----------------
