@@ -4107,3 +4107,12 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 6/22/07 11:37 AM
 1,813 ms. (Cumulative: 611,144 ms)
 
 ----------------
+Revision 648 from svn://localhost/TRUNK/:
+
+Adding some malloc return value checking.
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/22/07 12:01 PM
+1 changed, 0 added, 0 deleted.
+1,736 ms. (Cumulative: 612,974 ms)
+
+----------------

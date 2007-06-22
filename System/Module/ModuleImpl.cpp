@@ -155,8 +155,11 @@ namespace
 			// FIXME/tp: KernelMPI for malloc
 			const int kMaxModuleCount = 20;
 			mpFoundModulesList = reinterpret_cast<FoundModule*>(malloc(kMaxModuleCount * sizeof(FoundModule)));
+			if(!mpFoundModulesList)
+				return -1;
 			mpConnectedModulesList = reinterpret_cast<ConnectedModule*>(malloc(kMaxModuleCount * sizeof(ConnectedModule)));
-			
+			if(!mpFoundModulesList)
+				return -1;
 			mNumFound = 0; 
 			for( size_t ii = 0; ii < ArrayCount(paths); ++ii )
 			{
