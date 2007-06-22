@@ -4091,3 +4091,19 @@ By DGibbs (DGibbs@leapfrog.com) on 6/21/07 4:04 PM
 2,972 ms. (Cumulative: 609,222 ms)
 
 ----------------
+Revision 643 from svn://localhost/TRUNK/:
+Revision 644 from svn://localhost/TRUNK/:
+Revision 645 from svn://localhost/TRUNK/:
+Revision 646 from svn://localhost/TRUNK/:
+Revision 647 from svn://localhost/TRUNK/:
+
+Fixed array overrun in module implementation.
+Added checking of pointers prior to freeing.
+
+
+
+By BCavagnolo (BCavagnolo@leapfrog.com) on 6/22/07 11:37 AM
+1 changed, 0 added, 0 deleted.
+1,813 ms. (Cumulative: 611,144 ms)
+
+----------------

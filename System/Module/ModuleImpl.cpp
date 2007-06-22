@@ -135,9 +135,10 @@ namespace
 		//----------------------------------------------------------------------
 		~CModuleMgrImpl()
 		{
-			// FIXME: Use Kernel::Free()
-			free(mpFoundModulesList);
-			free(mpConnectedModulesList);
+			if(mpFoundModulesList)
+				free(mpFoundModulesList);
+			if(mpFoundModulesList)
+				free(mpConnectedModulesList);
 		}
 	
 		//----------------------------------------------------------------------
@@ -160,16 +161,17 @@ namespace
 			for( size_t ii = 0; ii < ArrayCount(paths); ++ii )
 			{
 				DIR *dirp;
-				struct dirent *dp = (struct dirent *)1;
-				if( (dirp = opendir(paths[ii])) == NULL )
+				struct dirent *dp;
+				dirp = opendir(paths[ii]);
+				if(dirp == NULL)
 					continue;
-				while( dp != NULL )
-				{
-					if( (dp = readdir(dirp)) != NULL 
-						&& AddedValidModule((mpFoundModulesList + mNumFound),
-											paths[ii], dp->d_name) )
+				
+				do {
+					dp = readdir(dirp);
+					if(AddedValidModule((mpFoundModulesList + mNumFound),
+										paths[ii], dp->d_name))
 						++mNumFound;
-				}
+				} while((dp != NULL) && (mNumFound < kMaxModuleCount));
 				closedir(dirp);
 			}
 //FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
