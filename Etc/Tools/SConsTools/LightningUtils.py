@@ -229,9 +229,11 @@ def SetupTypeConversionMap():
 	types = { 'mid' 	: 1025,
 			  'midi' 	: 1025,
 			  'S'		: 1025,				# for ACME
-			  'ogg'		: 1026,
-			  'wav'		: 1026,
-			  'R'		: 1026,				# for ACME
+			  'aogg'	: 1026,
+			  'ogg'		: 1024 * 8 + 1,
+			  'wav'		: 1027,
+			  'R'		: 1027,				# for ACME
+			  'raw'		: 1027,				# for ACME
 			  'font'	: 1024 * 7 + 1,
 			  'ttf'		: 1024 * 7 + 1,
 			  'txt'		: 1024 * 4 + 1,
@@ -298,8 +300,11 @@ def ProcessPackage(pkg, types, pack_root, data_root, enumpkg):
 	# NOTE: The sf2brio EXE is a temporary "packer" that puts a header
 	#		in front of a WAV file.  It will be replaced by the OggVorbis
 	#		encoder.
+	# Field 4 of the CSV file is a combined type/compression/rate field, 
+	# joined together by underscores.  An example would be "AOGG_3_16000"
+	# for and audio OGG file compressed at quality 3 at a sample rate of
+	# 16000.
 	#
-	print pkg
 	reader = csv.reader(open(pkg, "rb"))							#1
 	pkgfile = GenerateNextPackageFileName()
 	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
@@ -319,8 +324,15 @@ def ProcessPackage(pkg, types, pack_root, data_root, enumpkg):
 			linenum += 1
 			continue												#4
 			
+		compression = rate = ''
 		if len(row) >= 4 and row[3].strip() != '':					#5
-			type = types[row[3].strip()]
+			temp = row[3].strip()
+			idx1 = temp.index('_')
+			idx2 = temp.index('_', idx1+1)
+			type = temp[:idx1]
+			compression = temp[idx1+1:idx2]
+			rate = temp[idx2+1:]
+			type = types[type.lower()]
 		else:
 			ext = os.path.splitext(row[2].strip())[1]
 			type = types[ext[1:].lower()]
@@ -336,6 +348,9 @@ def ProcessPackage(pkg, types, pack_root, data_root, enumpkg):
 		
 		this_dir		= os.path.split(__file__)[0]
 		if type == 1026:											#8
+			cmd = 'oggenc --resample ' + rate + ' -q ' + compression + ' -o ' + outpath + ' ' + srcfile
+			os.system(cmd)
+		elif type == 1027:											#9
 			os.system(os.path.join(this_dir, 'sf2brio') + ' ' + srcfile + ' ' + outpath)
 		else:
 			shutil.copyfile(srcfile, outpath)
