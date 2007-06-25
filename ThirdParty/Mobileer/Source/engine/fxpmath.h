@@ -60,13 +60,24 @@ inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
 /* Use ARM DSP Extensions. */
 __inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
 {
-	FXP31 product;
-	__asm
-	{
-	    SMULWT    product, x, y
-	    QADD    product, product, product
-	}
-	return product;
+	FXP31 product = 0;
+// ORIGINAL CODE FROM PHIL
+//	__asm
+//	{
+//	    SMULWT    product, x, y
+//	    QADD    product, product, product
+//	}
+// Attempt at GCC version
+//	asm("smulwt    (product), (x), (y)\n\t"
+//	    "qadd    (product), (product), (product)\n\t"
+//	);
+
+	__asm__ __volatile__ (
+	"smulwt %2, %0, %1\n\t"
+	"qadd   %2, %2, %2\n\t"
+	: "=r" (product) : "r" (x), "r" (y));
+
+return product;
 }
 #else
 /* Portable 'C' macro to multiply two 1.31 fixed-point values. */

@@ -15,6 +15,7 @@ CFLAGS = \
 	$(ME2000_INCLUDEPATH) \
 	-I../examples \
 	-I../qa
+	-DSPMIDI_DSP_ARM946
 	
 DEMO_ME2000_SONG = ../data/FurryLisa_rt.mid
 DEMO_ME3000_SONG = ../data/ZipKit.mxmf

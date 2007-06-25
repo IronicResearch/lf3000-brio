@@ -4166,3 +4166,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/25/07 2:50 PM
 7,939 ms. (Cumulative: 626,697 ms)
 
 ----------------
+Revision 664 from svn://localhost/TRUNK/:
+
+Add Gints' tweaks to support ARM DSP instructions for target builds.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/25/07 3:09 PM
+3 changed, 0 added, 0 deleted.
+1,922 ms. (Cumulative: 628,728 ms)
+
+----------------

@@ -36,12 +36,20 @@
  */
 __inline FXP31 MIX_SCALE_SHIFT_ADD( FXP31 accum, FXP31 signal, FXP31 gain, int shiftby )
 {
-	int temp;
-	__asm
-	{
-		SMULWT    temp, signal, gain
-		ADD       temp, accum, temp, asr shiftby
-	}
+	int temp;  // R4
+
+// ORIGINAL code from Phil Burk
+//	__asm
+//	{
+//		SMULWT    temp, signal, gain
+//		ADD       temp, accum, temp, asr shiftby
+//	}
+
+	__asm__ __volatile__ (
+	"smulwt	%4, %1, %2\n\t"
+	"add    %4, %0, %4, asr %3\n\t"
+	: "=r" (temp) : "r" (accum), "r" (signal), "r" (gain), "r" (shiftby));
+
 	return temp;
 }
 #else
