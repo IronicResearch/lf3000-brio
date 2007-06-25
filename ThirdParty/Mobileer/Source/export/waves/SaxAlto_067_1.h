@@ -2,7 +2,7 @@
 #define _SAXALTO_067_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -253,7 +253,6 @@ static NRLCONST WaveTable_t gSaxAlto_067_1 =
 	(void *) gSaxAlto_067_1Samples,
 #endif
 	sizeof(gSaxAlto_067_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x4340f0),
 	-96386, /* SR = 15911 */
 	1827,
 	1867,

@@ -1,4 +1,4 @@
-/* $Id: wave_manager.c,v 1.17 2006/03/24 19:59:35 philjmsl Exp $ */
+/* $Id: wave_manager.c,v 1.23 2007/06/06 01:50:58 philjmsl Exp $ */
 /**
  *
  * WaveTable manager.
@@ -21,17 +21,20 @@
 #if SPMIDI_ME2000
 
 #if SPMIDI_SUPPORT_EDITING
-static WaveSet_t *WaveManager_UnreferenceWaveSet( WaveSet_t *waveSet );
 static WaveTable_t *WaveManager_UnreferenceWaveTable( WaveTable_t *waveTable );
 #endif /* SPMIDI_SUPPORT_EDITING */
 
 static void WaveManager_FreeWaveTable( WaveTable_t *waveTable );
 static void WaveManager_FreeWaveSet( WaveSet_t *waveSet );
 
-
-#define INCREMENT_REFERENCE(trkr) { if( trkr.referenceCount > 0 ) trkr.referenceCount += 1; }
-#define DECREMENT_REFERENCE(trkr) { if( trkr.referenceCount > 1 ) trkr.referenceCount -= 1; }
-#define CLEAR_REFERENCE(trkr) { if( trkr.referenceCount > 1 ) trkr.referenceCount = 1; }
+/* If the reference count is zero, then the object is in ROM and should not be freed.
+ * So don't count the references.
+ */
+#define REFERENCE_START_TRACKING(trkr) { trkr.referenceCount = 1; }
+#define REFERENCE_IS_TRACKED(trkr) ( trkr.referenceCount > 0 )
+#define REFERENCE_IS_UNUSED(trkr) ( trkr.referenceCount == 1 )
+#define REFERENCE_INCREMENT(trkr) { if( trkr.referenceCount > 0 ) trkr.referenceCount += 1; }
+#define REFERENCE_DECREMENT(trkr) { if( trkr.referenceCount > 1 ) trkr.referenceCount -= 1; }
 
 #define GET_NEXT_ID   (waveManager->nextID++)
 
@@ -55,7 +58,7 @@ spmSInt32 WaveManager_Term( WaveManager_t *waveManager )
 	{
 		WaveSet_t *waveSet = (WaveSet_t *) DLL_First( &waveManager->waveSetList );
 		DLL_Remove( &waveSet->tracker.node );
-		if( waveSet->tracker.referenceCount > 0 )
+		if( REFERENCE_IS_TRACKED( waveSet->tracker ) )
 		{
 			WaveManager_FreeWaveSet(waveSet);
 		}
@@ -64,21 +67,20 @@ spmSInt32 WaveManager_Term( WaveManager_t *waveManager )
 	{
 		WaveTable_t *waveTable = (WaveTable_t *) DLL_First( &waveManager->waveTableList );
 		DLL_Remove( &waveTable->tracker.node );
-		if( waveTable->tracker.referenceCount > 0 )
+		if( REFERENCE_IS_TRACKED( waveTable->tracker ) )
+		{
 			WaveManager_FreeWaveTable(waveTable);
+		}
 	}
 	return SPMIDI_Error_None;
 }
 
 /****************************************************************/
-/** Add WaveSet to managed storage.
- * There is potential conflict if a caller passes a low ID.
- * So this should only be called internally when wavetables are loaded.
+/** 
  */
-spmSInt32 WaveManager_AddWaveSet( WaveManager_t *waveManager, WaveSet_t *waveSet, spmResourceToken id )
+static spmSInt32 WaveManager_JustAddWaveSet( WaveManager_t *waveManager, WaveSet_t *waveSet, spmResourceToken id )
 {
 
-	ResourceMgr_InitResource( &waveSet->tracker );
 	if( id == RESOURCE_UNDEFINED_ID )
 	{
 		id = GET_NEXT_ID; /* TODO review calls to this function and nextID */
@@ -92,9 +94,26 @@ spmSInt32 WaveManager_AddWaveSet( WaveManager_t *waveManager, WaveSet_t *waveSet
 	return id;
 }
 
+/****************************************************************/
+/** Add WaveSet to managed storage.
+ * There is potential conflict if a caller passes a low ID.
+ * So this should only be called internally when wavetables are loaded.
+ */
+spmSInt32 WaveManager_AddWaveSet( WaveManager_t *waveManager, WaveSet_t *waveSet, spmResourceToken id )
+{
+	ResourceMgr_InitResource( &waveSet->tracker );
+	return WaveManager_JustAddWaveSet( waveManager, waveSet, id );
+}
+
+
 WaveSet_t * WaveManager_FindWaveSet( WaveManager_t *waveManager, spmResourceToken token )
 {
 	return (WaveSet_t *) ResourceMgr_Find( &waveManager->waveSetList, token );
+}
+
+WaveSet_t * WaveManager_GetFirstWaveSet( WaveManager_t *waveManager )
+{
+	return (WaveSet_t *) DLL_First( &waveManager->waveSetList );
 }
 
 
@@ -102,12 +121,26 @@ WaveSet_t * WaveManager_FindWaveSet( WaveManager_t *waveManager, spmResourceToke
 
 static void WaveManager_FreeWaveTable( WaveTable_t *waveTable )
 {
-	SPMIDI_FreeMemory( waveTable->samples );    /* MemoryTracking - Free #2 */
+	if( waveTable->samples != NULL )
+	{
+		SPMIDI_FreeMemory( waveTable->samples ); /* MemoryTracking - Free #2 */
+	}
 	SPMIDI_FreeMemory( waveTable );     /* MemoryTracking -  Free #1 */
 }
 static void WaveManager_FreeWaveSet( WaveSet_t *waveSet )
 {
 	SPMIDI_FreeMemory( waveSet );     /* MemoryTracking - Free #3 */
+}
+
+/****************************************************************/
+/** Just add the WaveTable without initializing the resource tracker.
+ * Used when adding a downloaded WaveTable that has already been reference counted.
+ */
+static spmSInt32 WaveManager_JustAddWaveTable( WaveManager_t *waveManager, WaveTable_t *waveTable )
+{
+	ResourceMgr_Add( &waveManager->waveTableList, &waveTable->tracker, GET_NEXT_ID );
+	waveManager->totalWaveBytes += waveTable->numSamples * sizeof(spmSInt16);
+	return waveTable->tracker.token;
 }
 
 /****************************************************************/
@@ -117,12 +150,7 @@ static void WaveManager_FreeWaveSet( WaveSet_t *waveSet )
 spmSInt32 WaveManager_AddWaveTable( WaveManager_t *waveManager, WaveTable_t *waveTable )
 {
 	ResourceMgr_InitResource( &waveTable->tracker );
-	ResourceMgr_Add( &waveManager->waveTableList, &waveTable->tracker, GET_NEXT_ID );
-
-	waveManager->totalWaveBytes += waveTable->numSamples * sizeof(spmSInt16);
-
-	PRTMSGNUMD("totalWaveBytes = ", waveManager->totalWaveBytes );
-	return waveTable->tracker.token;
+	return WaveManager_JustAddWaveTable( waveManager, waveTable );
 }
 
 /****************************************************************/
@@ -132,13 +160,17 @@ spmSInt32 WaveManager_AddWaveTable( WaveManager_t *waveManager, WaveTable_t *wav
 static WaveTable_t *WaveManager_UnreferenceWaveTable( WaveTable_t *waveTable )
 {
 	if( waveTable == NULL )
-		return NULL;
-	DECREMENT_REFERENCE(waveTable->tracker);
-	/* Is everyone done using this? */
-	if( waveTable->tracker.referenceCount == 1 )
 	{
-		if( waveTable->samples != NULL )
-			SPMIDI_FreeMemory( waveTable->samples );
+		return NULL;
+	}
+	
+	REFERENCE_DECREMENT(waveTable->tracker);
+	PRTMSGNUMD("WaveManager_UnreferenceWaveTable: token = ", waveTable->tracker.token );
+	PRTMSGNUMD("WaveManager_UnreferenceWaveTable: count after decrement = ", waveTable->tracker.referenceCount );
+	/* Is everyone done using this? */
+	if( REFERENCE_IS_UNUSED( waveTable->tracker ) )
+	{
+		PRTMSGNUMH("WaveManager_UnreferenceWaveTable: free wavetable at ", (long) waveTable );
 		DLL_Remove( &waveTable->tracker.node );
 		WaveManager_FreeWaveTable( waveTable );
 		waveTable = NULL;
@@ -179,7 +211,6 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 	int numSampleBytes;
 	int bytesRead;
 	int i;
-	FXP16 midiPitch;
 
 	/* Parse stream header */
 	/*
@@ -187,7 +218,6 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 		WaveTable byte stream
 		1	SPMIDI_BEGIN_STREAM
 		1	WaveTableStreamID
-		4 	PitchOctave      basePitch;
 		4	PitchOctave      sampleRateOffset;
 		4	int              loopBegin;
 		4	int              loopEnd;
@@ -215,10 +245,9 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 	}
 	MemTools_Clear( waveTable, sizeof(WaveTable_t) );
 	DLL_InitNode( &waveTable->tracker.node );
-	INCREMENT_REFERENCE(waveTable->tracker);
+	REFERENCE_START_TRACKING( waveTable->tracker );
+	REFERENCE_INCREMENT( waveTable->tracker );
 
-	p = SS_ParseLong( &midiPitch, p );
-	waveTable->basePitch = SPMUtil_MIDIPitchToOctave( midiPitch );
 	p = SS_ParseLong( &waveTable->sampleRateOffset, p );
 	p = SS_ParseLong( &waveTable->loopBegin, p );
 	p = SS_ParseLong( &waveTable->loopEnd, p );
@@ -233,7 +262,7 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 		unsigned char *samples8;
 
 		numSampleBytes = waveTable->numSamples; /* ALaw is one byte per sample. */
-		PRTMSGNUMD("Unpacking ALAW, numSampleBytes = ", numSampleBytes );
+		//PRTMSGNUMD("Unpacking ALAW, numSampleBytes = ", numSampleBytes );
 		samples8 = SPMIDI_AllocateMemory(numSampleBytes);     /* MemoryTracking - Allocation #2 */
 		if( samples8 == NULL )
 		{
@@ -248,7 +277,7 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 			*samples8++ = *p++;
 		}
 		waveTable->type = SPMIDI_WAVE_TYPE_ALAW;
-		PRTMSGNUMD("Finished ALAW, numSampleBytes = ", numSampleBytes );
+		//PRTMSGNUMD("Finished ALAW, numSampleBytes = ", numSampleBytes );
 	}
 	else
 	{
@@ -279,7 +308,7 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 		goto cleanup;
 	}
 
-	return WaveManager_AddWaveTable( waveManager, waveTable );
+	return WaveManager_JustAddWaveTable( waveManager, waveTable );
 
 cleanup:
 	WaveManager_UnreferenceWaveTable( waveTable );
@@ -293,7 +322,7 @@ error:
  */
 spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *data, int numBytes )
 {
-	WaveTable_t **tableArray;
+	WaveSetRegion_t *regionArray;
 	WaveSet_t *waveSet = NULL;
 	int err = SPMIDI_Error_BadFormat;
 	int numTables;
@@ -301,6 +330,7 @@ spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *da
 	int bytesRead;
 	int i;
 	int waveSetSize;
+	FXP16 midiPitch;
 
 	/* Parse stream header */
 	if( *p++ != SPMIDI_BEGIN_STREAM )
@@ -316,8 +346,8 @@ spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *da
 		goto error;
 	}
 
-	/* Allocate WaveSet with table pointer array at end. */
-	waveSetSize = sizeof(WaveSet_t) + (numTables * sizeof(WaveTable_t *));
+	/* Allocate WaveSet with WaveSetRegion array at end. */
+	waveSetSize = sizeof(WaveSet_t) + (numTables * sizeof(WaveSetRegion_t));
 	waveSet = SPMIDI_AllocateMemory(waveSetSize);   /* MemoryTracking - Allocation #3 */
 	if( waveSet == NULL )
 	{
@@ -326,31 +356,54 @@ spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *da
 	}
 	MemTools_Clear( waveSet, sizeof(WaveSet_t) );
 	DLL_InitNode( &waveSet->tracker.node );
-	INCREMENT_REFERENCE(waveSet->tracker);
+	REFERENCE_START_TRACKING( waveSet->tracker );
+	WaveManager_ReferenceWaveSet( waveSet );
 
-	/* Table array is immediately after the waveset. */
-	tableArray = (WaveTable_t **)(waveSet + 1);
-	waveSet->tables = tableArray;
+	/* Region array is immediately after the waveset. */
+	regionArray = (WaveSetRegion_t *)(waveSet + 1);
+	waveSet->regions = regionArray;
 	for( i=0; i<numTables; i++ )
 	{
 		WaveTable_t *waveTable;
 		spmResourceToken token;
+		WaveSetRegion_t *region = &regionArray[i];
+		
+		p = SS_ParseLong( &midiPitch, p );
+		
+		//PRTMSGNUMH( "WaveManager_LoadWaveSet: midiPitch = ", midiPitch );
+		region->basePitch = SPMUtil_MIDIPitchToOctave( midiPitch );
+		region->lowPitch = *p++;
+		//PRTMSGNUMH( "WaveManager_LoadWaveSet: low Pitch = ", region->lowPitch );
+		region->highPitch = *p++;
+		//PRTMSGNUMH( "WaveManager_LoadWaveSet: high Pitch = ", region->highPitch );
+		region->lowVelocity = *p++;
+		region->highVelocity = *p++;
 
 		p = SS_ParseLong( (long *) &token, p );
+
 		waveTable = (WaveTable_t *) ResourceMgr_Find( &waveManager->waveTableList, token );
 		if( waveTable == NULL )
 		{
+			//PRTMSGNUMH( "WaveManager_LoadWaveSet lowPitch = ", region->lowPitch );
+			PRTMSGNUMH( "WaveManager_LoadWaveSet got bad token = ", token );
 			err = SPMIDI_Error_BadToken;
 			goto cleanup;
 		}
-
-		INCREMENT_REFERENCE(waveTable->tracker);
+		//PRTMSGNUMH("REFERENCE WaveTable at ", waveTable );
+		REFERENCE_INCREMENT(waveTable->tracker);
 		waveSet->numTables += 1;
+#if SPMIDI_USE_REGIONS
+		region->table = waveTable;
+#else
 		tableArray[i] = waveTable;
+#endif
 	}
 
 	if( *p++ != SPMIDI_END_STREAM )
+	{
+		PRTMSG( "WaveManager_LoadWaveSet did not see SPMIDI_END_STREAM\n" );
 		goto cleanup;
+	}
 	bytesRead = p - data;
 	if( bytesRead != numBytes )
 	{
@@ -358,8 +411,8 @@ spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *da
 		goto cleanup;
 	}
 
-	/* Assign ID and add WaveWrapper to manager. */
-	WaveManager_AddWaveSet( waveManager, waveSet, GET_NEXT_ID );
+	/* Assign ID and add WaveWrapper to manager. Don't init reference counter. */
+	WaveManager_JustAddWaveSet( waveManager, waveSet, GET_NEXT_ID );
 
 	return waveSet->tracker.token;
 
@@ -369,25 +422,41 @@ error:
 	return err;
 }
 
+/** Reference WaveSet so it does not get deleted while in use. */
+void WaveManager_ReferenceWaveSet( WaveSet_t *waveSet )
+{
+	REFERENCE_INCREMENT( waveSet->tracker );
+}
 
 /****************************************************************/
 /* If reference count == 1 then delete waveSet and return NULL
  * Return waveSet if not deleted.
  */
-static WaveSet_t * WaveManager_UnreferenceWaveSet( WaveSet_t *waveSet )
+WaveSet_t * WaveManager_UnreferenceWaveSet( WaveSet_t *waveSet )
 {
 	int i;
 	if( waveSet == NULL )
 		return NULL;
-	DECREMENT_REFERENCE(waveSet->tracker);
-	/* Is everyone done using this? */
-	if( waveSet->tracker.referenceCount == 1 )
+	REFERENCE_DECREMENT(waveSet->tracker);
+	PRTMSGNUMD("WaveManager_UnreferenceWaveSet: token = ", waveSet->tracker.token );
+	PRTMSGNUMD("WaveManager_UnreferenceWaveSet: count after decrement = ", waveSet->tracker.referenceCount );
+
+	/* Is everyone done using this WaveSet? */
+	if( REFERENCE_IS_UNUSED( waveSet->tracker ) )
 	{
 		for( i=0; i<waveSet->numTables; i++ )
 		{
+#if SPMIDI_USE_REGIONS
+			WaveSetRegion_t *region = &waveSet->regions[i];
+			//PRTMSGNUMH( "DEREFERENCE WaveTable at ", region->table );
+			WaveManager_UnreferenceWaveTable( region->table );
+#else
 			WaveTable_t *waveTable = waveSet->tables[i];
 			WaveManager_UnreferenceWaveTable( waveTable );
+#endif
 		}
+		
+		PRTMSGNUMH("WaveManager_UnreferenceWaveSet: free waveset at ", waveSet );
 		ResourceMgr_Remove( &waveSet->tracker );
 		SPMIDI_FreeMemory(waveSet);
 		waveSet = NULL;
@@ -396,7 +465,7 @@ static WaveSet_t * WaveManager_UnreferenceWaveSet( WaveSet_t *waveSet )
 }
 
 /****************************************************************/
-/* Delete WaveSet if instrument reference count is zero. */
+/* Delete WaveSet if reference count is zero. */
 spmSInt32 WaveManager_UnloadWaveSet( WaveManager_t *waveManager, spmResourceToken token )
 {
 	WaveSet_t *waveSet = (WaveSet_t *) ResourceMgr_Find( &waveManager->waveSetList, token );

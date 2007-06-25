@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_PRINT_H
 #define _SPMIDI_PRINT_H
 
-/* $Id: spmidi_print.h,v 1.14 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: spmidi_print.h,v 1.16 2007/06/18 18:05:51 philjmsl Exp $ */
 /**
  *
  * @file spmidi_print.h
@@ -18,16 +18,16 @@
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#if defined(WIN32) || defined(MACOSX) || defined(SPMIDI_USE_PRINTF)
+#if defined(WIN32) || defined(MACOSX) || defined(LINUX) || defined(SPMIDI_USE_PRINTF)
 
-#include <stdio.h>
+	#include <stdio.h>
 	#define PRTMSG( msg ) { printf( msg ); fflush( stdout ); }
 	#define PRTNUMD( num ) { printf("%ld ", (long)(num)); fflush(stdout); }
 	#define PRTNUMH( num ) { printf("0x%08lX ", (long)(num)); fflush(stdout); }
 
 #elif defined(SPMIDI_USE_PRINT)
-
-#include <stdio.h>
+/* This is for custom platforms that use a special print() function. */
+	#include <stdio.h>
 	#define PRTMSG( msg ) { print( msg ); fflush( stdout ); }
 	#define PRTNUMD( num ) { print("%ld ", (long)(num)); fflush(stdout); }
 	#define PRTNUMH( num ) { print("0x%08lX ", (long)(num)); fflush(stdout); }
@@ -36,23 +36,23 @@
 
 #ifndef NULL
 /* NULL is normally defined in stdio.h so we define it here. */
-#define NULL ((void *) 0)
-	#endif
+	#define NULL ((void *) 0)
+#endif
 
-#ifdef SPMIDI_USE_DEBUG_TOOLS
+	#ifdef SPMIDI_USE_DEBUG_TOOLS
 
-#include "DebugTools.h"
+		#include "DebugTools.h"
 		#define PRTMSG( msg )  Debug_PrintString( msg )
 		#define PRTNUMD( num ) Debug_PrintDecimalNumber( num )
 		#define PRTNUMH( num ) Debug_PrintHexNumber( num )
 
-#else
-
-#define PRTMSG( msg )
+	#else
+		/* Stub out all the print messages. */
+		#define PRTMSG( msg )
 		#define PRTNUMD( num )
 		#define PRTNUMH( num )
 
-#endif
+	#endif
 
 #endif
 

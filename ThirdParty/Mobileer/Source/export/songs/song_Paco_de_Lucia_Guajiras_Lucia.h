@@ -2,12 +2,12 @@
 #define _SONG_PACO_DE_LUCIA_GUAJIRAS_LUCIA_H
 /**
  * SP-MIDI Song
- * Generated automatically by Mobileer Editor - V1.89
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
 
-unsigned char song_Paco_de_Lucia_Guajiras_Lucia[] = {
+const unsigned char song_Paco_de_Lucia_Guajiras_Lucia[] = {
 	77, 84, 104, 100, 0, 0, 0, 6, 
 	0, 1, 0, 3, 0, 120, 77, 84, 
 	114, 107, 0, 0, 1, 216, 0, 255, 

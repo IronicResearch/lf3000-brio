@@ -1,0 +1,64 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<b></b>
+<h2>Mobileer Instrument Editor</h2>
+<h3>Manually Editing the Keyboard Zone</h3>
+<p>The Mobileer Synthesizer uses multiple WaveTables when creating the sound of a single instrument. The WaveTable is chosen on the basis of the desired pitch. Each WaveTable is assigned to a range of pitches. These ranges are calculated automatically from the pitch of the wavetable.</p>
+<ol>
+  <li>In figure 1 we can see that the pitch of the second WaveTable is 61. The next WaveTable  has a pitch of 67. The editor automatically chose a range of 58 to 63 for the WaveTable at 61 and a range of 64 to 69 for the next wavetable at 67.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/zone_auto.png" width="257" height="155"></li>
+  <li>We can override the pitch range by entering a new value. If we type 62 into the box that says 63 and hit Enter then we will see the following. <br> 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/zone_range_man.png" width="250" height="144"></li>
+  <li>Note that the &quot;Manual Pitch Range&quot; Checkbox was automatically checked. If you uncheck it then it will go back to automatically calculating the optimal range.</li>
+  <li>You can also override the pitch setting from the WaveTable editor by entering a new pitch. This is particularly if you want the pitch of the WaveTable to be different when it it used in different WaveSets.</li>
+  <li> You can enter pitches either by number or by name. Pitch names are the letter followed by the octave, for example &quot;D4&quot;. You can specify a sharp using &quot;#&quot; or &quot;S&quot;. If you want the system to display names instead of numbers then check the &quot;NameOr#&quot; box.<br> 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/zone_by_name.png" width="266" height="154"></li>
+</ol>
+<p>&nbsp;</p>
+<p align="center">| <a href="index.html">Top</a> | <a href="wave_loops_nq.html">Previous</a> | <a href="orc_editor.html">Next</a> |</p>
+<meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

@@ -1,4 +1,4 @@
-/* $Id: minimal_player.c,v 1.14 2005/11/15 20:57:25 philjmsl Exp $ */
+/* $Id: minimal_player.c,v 1.15 2006/06/22 22:43:54 philjmsl Exp $ */
 /**
  *
  * Play a MIDI file on an audio device that uses blocking writes.
@@ -42,7 +42,7 @@
  */
 /* Select a ringtone by setting its 0 to a 1, and the others to 0. */
 
-#if 1
+#if 0
 #include "songs/song_FurryLisa.h"
 const unsigned char *midiFileImage = song_FurryLisa;
 int midiFileImage_size = sizeof(song_FurryLisa);

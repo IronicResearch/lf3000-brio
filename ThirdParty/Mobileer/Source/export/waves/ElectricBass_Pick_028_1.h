@@ -2,7 +2,7 @@
 #define _ELECTRICBASS_PICK_028_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -383,7 +383,6 @@ static NRLCONST WaveTable_t gElectricBass_Pick_028_1 =
 	(void *) gElectricBass_Pick_028_1Samples,
 #endif
 	sizeof(gElectricBass_Pick_028_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x1c0240),
 	-95889, /* SR = 15995 */
 	2522,
 	2910,

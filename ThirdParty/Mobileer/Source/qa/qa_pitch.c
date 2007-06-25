@@ -1,8 +1,8 @@
-/* $Id: qa_pitch.c,v 1.8 2006/05/23 02:02:23 philjmsl Exp $ */
+/* $Id: qa_pitch.c,v 1.9 2006/06/21 16:41:01 philjmsl Exp $ */
 /**
  *
- * @file qa_pitch.c
- * @brief Measure pitch of synthesizer.
+ * @file qa_pitch_bend.c
+ * @brief Measure pitch of synthesizer and pitch bend.
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  * 
  * This test uses floating point math to calculate frequencies
@@ -47,34 +47,6 @@ static double PitchToFrequency( double pitch )
 
 static int sCurrentCoarseOffsets[MIDI_NUM_CHANNELS] = { 0 };
 
-#if 0
-/********************************************************************
- * Reset tuning controllers to their default state.
- */
-static void ResetTuningControllers( SPMIDI_Context *spmidiContext )
-{
-	int channel;
-
-	for( channel=0; channel<16; channel++ )
-	{
-		/* Set default coarse tuning. */
-		SPMUtil_ControlChange( spmidiContext, channel,
-			MIDI_CONTROL_RPN_MSB, 0 );
-		SPMUtil_ControlChange( spmidiContext, channel,
-			MIDI_CONTROL_RPN_LSB, MIDI_RPN_COARSE_TUNING );
-		SPMUtil_ControlChange( spmidiContext, channel,
-			MIDI_CONTROL_DATA_ENTRY,   0x40 ); /* Data Entry MSB */
-
-		/* Set default fine tuning. */
-		SPMUtil_ControlChange( spmidiContext, channel,
-			MIDI_CONTROL_RPN_LSB, MIDI_RPN_FINE_TUNING );
-		SPMUtil_ControlChange( spmidiContext, channel,
-			MIDI_CONTROL_DATA_ENTRY,  0x40 ); /* Data Entry MSB */
-		SPMUtil_ControlChange( spmidiContext, channel,
-			MIDI_CONTROL_DATA_ENTRY + MIDI_CONTROL_LSB_OFFSET,   0 ); 
-	}
-}
-#endif
 
 /*******************************************************************/
 void SetTuningOffset( int channel, double semitoneOffset )
@@ -192,11 +164,15 @@ static void CheckPitch( int fullBendRangeCents, double bendFraction,
 	double targetPitch = pitch + (bendRange * bendFraction) + tuningOffset;
 	double expectedFrequency = PitchToFrequency( targetPitch );
 
-	int bend = MIDI_BEND_NONE + (int)((MIDI_BEND_MAX - MIDI_BEND_NONE) * bendFraction);
+	int bend = MIDI_BEND_NONE + (int)((MIDI_BEND_NONE * bendFraction) + 0.5);
+	if( bend > MIDI_BEND_MAX )
+	{
+		bend = MIDI_BEND_MAX;
+	}
 
 	printf("CheckPitch: ----------------------------------------\n");
-	printf("CheckPitch: pitch = %d, bendRange = %d, bendFraction = %f, tuning = %f\n",
-	       pitch, bendRangeSemis, bendFraction, tuningOffset );
+	printf("CheckPitch: pitch = %d, bendRange = %f, bendFraction = %f, tuning = %f\n",
+	       pitch, bendRange, bendFraction, tuningOffset );
 	printf("CheckPitch: targetPitch = %9.5f\n", targetPitch );
 
 	SetTuningOffset( CHANNEL, tuningOffset );
@@ -224,8 +200,12 @@ static void CheckSeveral( double maxDeviation )
 	// bendRangeCents, bendFraction, pitch, tuningOffset, maxDeviation
 	CheckPitch( 200,     0, 60,  0.0, maxDeviation  );
 	CheckPitch( 200,     0, 61,  0.0, maxDeviation  );
-	CheckPitch( 200,     0, 60,  0.1, maxDeviation  );
-	CheckPitch( 200,     0, 60, -0.1, maxDeviation  );
+
+	CheckPitch( 225,     0.5, 61,  0.0, maxDeviation  );
+	CheckPitch( 250,     0.5, 61,  0.0, maxDeviation  );
+	CheckPitch( 275,     0.5, 60,  0.0, maxDeviation  );
+	CheckPitch( 300,     0.5, 60,  0.0, maxDeviation  );
+
 	CheckPitch( 200,     0, 60,  0.932, maxDeviation  );
 	CheckPitch( 200,     0, 60, 3.256, maxDeviation  );
 	CheckPitch( 200,     0, 69,  0.0, maxDeviation  );
@@ -284,7 +264,7 @@ int main(void)
 
 	printf("\nCheck sine oscillator ================================\n\n");
 	SPMUtil_ProgramChange( spmidiContext, CHANNEL, PROGRAM_SINE );
-	CheckSeveral( 0.001 );
+	CheckSeveral( 0.01 / 12 );
 
 	/* Tuning accuracy for filter is not as accurate. */
 	//    printf("\nCheck ringing filter =================================\n\n");
@@ -301,7 +281,7 @@ int main(void)
 	}
 
 error:
-	result = QA_Term( 28 );
+	result = QA_Term( 30 );
 
 	if( result )
 	{

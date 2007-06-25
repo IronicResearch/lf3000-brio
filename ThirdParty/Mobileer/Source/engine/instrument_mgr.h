@@ -49,10 +49,10 @@ extern "C"
 	SPMIDI_Error InsManager_Term( InsManager_t *insManager );
 
 	/* Allocate an instrument and set up its default values. */
-	CustomIns_t *InsManager_Create( InsManager_t *insManager );
+	CustomIns_t *InsManager_CreateInstrument( InsManager_t *insManager );
 
 	/* Delete an instrument. */
-	SPMIDI_Error InsManager_Delete( InsManager_t *insManager, CustomIns_t *instrument );
+	SPMIDI_Error InsManager_DeleteInstrument( InsManager_t *insManager, CustomIns_t *instrument );
 
 	/** Download an Instrument for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.

@@ -2,7 +2,7 @@
 #define _TRUMPET_56_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -422,7 +422,6 @@ static NRLCONST WaveTable_t gTrumpet_56_1 =
 	(void *) gTrumpet_56_1Samples,
 #endif
 	sizeof(gTrumpet_56_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x37ba8f),
 	-96185, /* SR = 15945 */
 	3142,
 	3220,

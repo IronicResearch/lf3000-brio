@@ -4148,3 +4148,21 @@ By BCavagnolo (BCavagnolo@leapfrog.com) on 6/22/07 4:01 PM
 1,781 ms. (Cumulative: 618,648 ms)
 
 ----------------
+Revision 654 from svn://localhost/TRUNK/:
+Revision 655 from svn://localhost/TRUNK/:
+Revision 656 from svn://localhost/TRUNK/:
+Revision 657 from svn://localhost/TRUNK/:
+Revision 658 from svn://localhost/TRUNK/:
+Revision 659 from svn://localhost/TRUNK/:
+Revision 660 from svn://localhost/TRUNK/:
+Revision 661 from svn://localhost/TRUNK/:
+Revision 662 from svn://localhost/TRUNK/:
+Revision 663 from svn://localhost/TRUNK/:
+
+Update Mobileer engine source code to V2.26.  This release adds various features requested by the Audio dept.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/25/07 2:50 PM
+249 changed, 17 added, 0 deleted.
+7,939 ms. (Cumulative: 626,697 ms)
+
+----------------

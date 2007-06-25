@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_USER_CONFIG_H
 #define _SPMIDI_USER_CONFIG_H
 
-/* $Id: spmidi_user_config.h,v 1.5 2005/11/28 18:53:25 philjmsl Exp $ */
+/* $Id: spmidi_user_config.h,v 1.6 2007/06/18 18:02:53 philjmsl Exp $ */
 /**
  *
  * @file spmidi_conig.h
@@ -12,7 +12,7 @@
 /** By defining SPMIDI_USER_CONFIG you can set your compile time configuration variables
  * in file called "spmidi_user_config.h" instead of passing them on the command line.
  */
-#define SPMIDI_ME3000   (1)
+#define SPMIDI_ME3000   (0)
 #define SPMIDI_ME2000   (1)
 
 
@@ -22,7 +22,7 @@
  * Internal structures will be allocated based on this value.
  * The actual maximum number of voices can be lowered dynamically by passing a value to SPMIDI_SetMaxVoices().
  */
-#define SPMIDI_MAX_VOICES          (32)
+#define SPMIDI_MAX_VOICES          (16)
 
 /** Maximum rate that can be specified in call to SPMIDI_CreateContext().
  * This compile time maximum will affect the size of buffers such
@@ -35,14 +35,14 @@
  * One can save some memory by setting this to (1) at compile time but that
  * will prevent calling SPMIDI_ReadFrames() with samplesPerFrame greater than one.
  */
-#define SPMIDI_MAX_SAMPLES_PER_FRAME   (2)
+#define SPMIDI_MAX_SAMPLES_PER_FRAME   (1)
 
 #ifndef SPMIDI_FRAMES_PER_BLOCK_LOG2
 #define SPMIDI_FRAMES_PER_BLOCK_LOG2    (3)
 #endif
 
 /** Define this as zero to disable the dynamic range compressor. */
-#define SPMIDI_USE_COMPRESSOR        (1)
+#define SPMIDI_USE_COMPRESSOR        (0)
 
 /** Define this as one to enable the reverberation effect. */
 #define SPMIDI_USE_REVERB            (0)

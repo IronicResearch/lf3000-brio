@@ -2,7 +2,7 @@
 #define _BASS_BALI_043_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -392,7 +392,6 @@ static NRLCONST WaveTable_t gBass_Bali_043_1 =
 	(void *) gBass_Bali_043_1Samples,
 #endif
 	sizeof(gBass_Bali_043_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x2b08c8),
 	-96409, /* SR = 15907 */
 	2822,
 	2984,

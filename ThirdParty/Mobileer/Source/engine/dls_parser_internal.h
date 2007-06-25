@@ -349,6 +349,13 @@ DLS_ArticulationTracker_t;
 
 typedef struct DLS_Region_s
 {
+	WaveSetRegion_t   waveSetRegion;
+	/* Mobileer WaveTable info for wavetable oscillator.
+	 * Every region needs a wavetable so we keep a static copy here instead of allocating a pointer.
+	 * Note that we must set pointer in waveSetRegion.
+	 */
+	WaveTable_t       waveTable;
+
 	DLS_ArticulationTracker_t articulations;
 
 //	DoubleList        voiceArticulations;
@@ -357,8 +364,6 @@ typedef struct DLS_Region_s
 
 	DLS_Wave_t       *dlsWave;
 	DLS_WaveSample_t *waveSample;
-	/* Mobileer WaveTable info for wavetable oscillator. */
-	WaveTable_t       waveTable;
 	
 	/* Regions can have their own articulations so we need
 	 * a Preset for each region. */
@@ -385,10 +390,6 @@ typedef struct DLS_Region_s
 
 	spmUInt16         options;
 	spmUInt16         keyGroup;
-	spmUInt8          lowestNote;
-	spmUInt8          highestNote;
-	spmUInt8          lowestVelocity;
-	spmUInt8          highestVelocity;
 	spmSInt           RGNHloaded;
 }
 DLS_Region_t;

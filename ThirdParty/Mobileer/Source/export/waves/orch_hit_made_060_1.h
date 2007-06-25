@@ -2,7 +2,7 @@
 #define _ORCH_HIT_MADE_060_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -555,7 +555,6 @@ static NRLCONST WaveTable_t gorch_hit_made_060_1 =
 	(void *) gorch_hit_made_060_1Samples,
 #endif
 	sizeof(gorch_hit_made_060_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3bf6d8),
 	-97859, /* SR = 15665 */
 	-1,
 	-1,

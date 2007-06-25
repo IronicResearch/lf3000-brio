@@ -1,4 +1,4 @@
-/* $Id: render_midifiles.c,v 1.2 2006/05/23 01:25:32 philjmsl Exp $ */
+/* $Id: render_midifiles.c,v 1.3 2007/06/18 18:05:51 philjmsl Exp $ */
 /**
  *
  * Render a MIDI File whose name is passed on the command line.
@@ -32,6 +32,7 @@ typedef struct PlayConfig_s
 	int sampleRate;
 	int maxVoices;
 	int drumVolume;
+	int samplesPerFrame;
 	char maximizeVolume;
 } PlayConfig_t;
 
@@ -50,6 +51,8 @@ int MIDIFile_Play( PlayConfig_t *config, char *outputFileName )
 	int testVolume = 0x040;
 	int masterVolume = SPMIDI_DEFAULT_MASTER_VOLUME;
 	int i;
+	int activeNoteSum = 0;
+	int activeNoteLoops = 0;
 	MIDIFilePlayer *player;
 
 	SPMIDI_Initialize();
@@ -70,7 +73,7 @@ int MIDIFile_Play( PlayConfig_t *config, char *outputFileName )
 		/* Estimate maximum amplitude so that we can calculate
 		 * optimal volume.
 		 */
-		maxAmplitude = SPMUtil_GetMaxAmplitude( player, SAMPLES_PER_FRAME,
+		maxAmplitude = SPMUtil_GetMaxAmplitude( player, config->samplesPerFrame,
 												testVolume, config->sampleRate );
 		if( maxAmplitude < 0 )
 			goto error;
@@ -86,7 +89,7 @@ int MIDIFile_Play( PlayConfig_t *config, char *outputFileName )
 	 * Initialize SPMIDI Synthesizer.
 	 * Output to audio or a file.
 	 */
-	result = SPMUtil_Start( &spmidiContext, config->sampleRate, outputFileName, SAMPLES_PER_FRAME );
+	result = SPMUtil_Start( &spmidiContext, config->sampleRate, outputFileName, config->samplesPerFrame );
 	if( result < 0 )
 		goto error;
 
@@ -114,7 +117,11 @@ int MIDIFile_Play( PlayConfig_t *config, char *outputFileName )
 		 * Generate one buffers worth of data and write it to the output stream.
 		 */
 		while( SPMUtil_PlayFileBuffer( player, spmidiContext ) == 0 )
-			;
+		{
+			activeNoteSum += SPMIDI_GetActiveNoteCount(spmidiContext);
+			activeNoteLoops += 1;
+		}
+			
 
 		/* Rewind song. */
 		SPMUtil_Reset( spmidiContext );
@@ -134,7 +141,10 @@ int MIDIFile_Play( PlayConfig_t *config, char *outputFileName )
 		printf("ERROR: notes still active!\n");
 		SPMIDI_PrintStatus(spmidiContext);
 	}
-	printf("Max voices used = %d\n", SPMIDI_GetMaxNoteCount(spmidiContext) );
+
+	printf("STATS, %s, %d, %d\n", outputFileName,
+		SPMIDI_GetMaxNoteCount(spmidiContext),
+		(activeNoteSum / activeNoteLoops) );
 
 	SPMUtil_Stop(spmidiContext);
 
@@ -213,6 +223,7 @@ int main( int argc, char ** argv )
 	config->maxVoices = SPMIDI_MAX_VOICES;
 	config->drumVolume = SPMIDI_DEFAULT_MASTER_VOLUME;
 	config->maximizeVolume = 0;
+	config->samplesPerFrame = SAMPLES_PER_FRAME;
 
 	/* Parse command line switches. */
 	for( i=1; i<argc; i++ )
@@ -224,6 +235,9 @@ int main( int argc, char ** argv )
 			{
 			case 'l':
 				config->numLoops = atoi( &s[2] );
+				break;
+			case 'c':
+				config->samplesPerFrame = atoi( &s[2] );
 				break;
 			case 'r':
 				config->sampleRate = atoi( &s[2] );

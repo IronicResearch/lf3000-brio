@@ -1,4 +1,4 @@
-/* $Id: spmidi_dls.c,v 1.23 2005/12/09 21:59:39 marsanyi Exp $ */
+/* $Id: spmidi_dls.c,v 1.24 2007/06/12 21:09:08 philjmsl Exp $ */
 /**
  *
  * SPMIDI suport for DLS.
@@ -302,8 +302,8 @@ DLS_Region_t *SSDLS_FindMatchingRegion( DLS_Instrument_t *dlsIns, int pitch, int
 	for( i=0; i<dlsIns->numRegions; i++ )
 	{
 		region = &(dlsIns->regions[i]);
-		if( ((pitch >= region->lowestNote) && (pitch <= region->highestNote)) &&
-		    ((velocity >= region->lowestVelocity) && (velocity <= region->highestVelocity))
+		if( ((pitch >= region->waveSetRegion.lowPitch) && (pitch <= region->waveSetRegion.highPitch)) &&
+		    ((velocity >= region->waveSetRegion.lowVelocity) && (velocity <= region->waveSetRegion.highVelocity))
 		  )
 		{
 			match = region;

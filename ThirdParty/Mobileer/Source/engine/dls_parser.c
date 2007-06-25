@@ -1,5 +1,5 @@
 /*
- * $Id: dls_parser.c,v 1.57 2006/05/20 00:54:27 philjmsl Exp $
+ * $Id: dls_parser.c,v 1.59 2007/06/18 18:03:49 philjmsl Exp $
  * Load a DLS file.
  *
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
@@ -834,15 +834,23 @@ static int LoadChunk_INSH( DLS_Parser_t *dlsParser, long chunkSize )
 	ins->numRegions = DLS_READ_INT_LITTLE;
 	PRTLN_VALUE("Number of regions = ", ins->numRegions );
 
-	/* The file contains the combined bank ID that MSB and LSB
+	/* The file contains the combined bank ID with MSB and LSB
 	 * and perhaps the DrumBit 31.
 	 * The Drum Bit 31 must be ignored so we mask it off here.
 	 * This is described on page 8 of the Mobile XMF spec.
 	 * Prior to 11/23/05, the bit was not masked off.
 	 * We also changed bankID to a short because we only care
 	 * about the low 16 bits.
+	 * On 6/9/07 We changed the way we pack the msb and lsb of the bank.
+	 * Instead of packing as two 8 bit bytes we pack them as two 7 bit fields
+	 * just like we do internally in the ME2000.
 	 */
-	ins->bankID = (spmUInt16) (DLS_READ_INT_LITTLE & 0x00007F7F);
+	{
+		int ulBank = DLS_READ_INT_LITTLE;
+		int msb = (ulBank >> 8) & 0x007F; /* DLS positions the MSB at bit 8, not 7. */
+		int lsb = ulBank & 0x007F;
+		ins->bankID = (spmUInt16) ((msb << SPMIDI_BANK_MSB_SHIFT) | lsb);
+	}
 	PRTLN_HVALUE("Bank Index = ", ins->bankID );
 #if DLS_PRINT_INSTRUMENTS
 	PRTNUMH( ins->bankID );
@@ -879,15 +887,15 @@ static int LoadChunk_RGNH( DLS_Parser_t *dlsParser, long chunkSize )
 		return DLSParser_Error_ParseError; /* 050616 */
 	}
 
-	region->lowestNote = (unsigned char) DLS_READ_SHORT_LITTLE;
-	PRT_VALUE("Key Range = ", region->lowestNote);
-	region->highestNote = (unsigned char) DLS_READ_SHORT_LITTLE;
-	PRTLN_VALUE(" to ", region->highestNote);
+	region->waveSetRegion.lowPitch = (unsigned char) DLS_READ_SHORT_LITTLE;
+	PRT_VALUE("Key Range = ", region->waveSetRegion.lowPitch);
+	region->waveSetRegion.highPitch = (unsigned char) DLS_READ_SHORT_LITTLE;
+	PRTLN_VALUE(" to ", region->waveSetRegion.highPitch);
 
-	region->lowestVelocity = (unsigned char) DLS_READ_SHORT_LITTLE;
-	PRT_VALUE("Velocity Range = ", region->lowestVelocity);
-	region->highestVelocity = (unsigned char) DLS_READ_SHORT_LITTLE;
-	PRTLN_VALUE(" to ", region->highestVelocity);
+	region->waveSetRegion.lowVelocity = (unsigned char) DLS_READ_SHORT_LITTLE;
+	PRT_VALUE("Velocity Range = ", region->waveSetRegion.lowVelocity);
+	region->waveSetRegion.highVelocity = (unsigned char) DLS_READ_SHORT_LITTLE;
+	PRTLN_VALUE(" to ", region->waveSetRegion.highVelocity);
 
 	region->options = (unsigned short) DLS_READ_SHORT_LITTLE;
 	PRT_VALUE("Options = ", region->options);
@@ -2081,6 +2089,8 @@ static int DLSParser_ResolveRegion_Internal( DLS_Wave_t **poolTable,
 	DLS_Wave_t *dlsWave;
 	const DLS_WaveSample_t *waveSample;
 	WaveTable_t *waveTable = &region->waveTable;
+	/* Point to structure in DLS region. */
+	region->waveSetRegion.table = waveTable;
 
 	dlsWave = poolTable[region->tableIndex];
 	region->dlsWave = dlsWave;
@@ -2102,7 +2112,7 @@ static int DLSParser_ResolveRegion_Internal( DLS_Wave_t **poolTable,
 	}
 
 	/* Calculate the base pitch for proper tuning on playback. */
-	waveTable->basePitch = CalculatePitchOctave( waveSample->basePitch, waveSample->fineTune );
+	region->waveSetRegion.basePitch = CalculatePitchOctave( waveSample->basePitch, waveSample->fineTune );
 
 	/* point to sample data */
 	waveTable->samples = dlsWave->samples;

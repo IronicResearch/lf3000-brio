@@ -7,6 +7,7 @@
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
+#define SPMIDI_EDITOR_VERSION (226)
 
 #if SPMIDI_SUPPORT_EDITING
 EDITABLE HybridVoice_Preset_t  gHybridSynthPresets[SS_MAX_PRESETS] =
@@ -2113,7 +2114,8 @@ EDITABLE HybridVoice_Preset_t gHybridSynthPresets[] =
 };
 #define SS_NUM_VALID_PRESETS (131)
 
-EDITABLE unsigned char gHybridSynthProgramMap[GMIDI_NUM_PROGRAMS] =
+static ProgramBankMap_t sMelodicBank_0 = {{0}, 0, 0, 0 };
+static unsigned char sMelodicBank_0_ProgramMap[GMIDI_NUM_PROGRAMS] =
 {
     112, /* Acoustic Grand */
     100, /* Bright Acoustic */
@@ -2245,7 +2247,8 @@ EDITABLE unsigned char gHybridSynthProgramMap[GMIDI_NUM_PROGRAMS] =
     3, /* Gunshot */
 };
 
-EDITABLE unsigned char gHybridSynthDrumMap[GMIDI_NUM_DRUMS] =
+static ProgramBankMap_t sDrumProgram_0_0 = {{0}, 0, 0, 0 };
+static unsigned char sDrumProgram_0_0_ProgramMap[ GMIDI_NUM_DRUMS ] =
 {
     94, /* Acoustic Bass Drum */
     94, /* Bass Drum 1 => Acoustic Bass Drum */
@@ -2296,7 +2299,7 @@ EDITABLE unsigned char gHybridSynthDrumMap[GMIDI_NUM_DRUMS] =
     1, /* Open Triangle */
 };
 
-EDITABLE unsigned char gHybridSynthDrumPitches[GMIDI_NUM_DRUMS] =
+static unsigned char sDrumProgram_0_0_Pitches[ GMIDI_NUM_DRUMS ] =
 {
     40, /* Acoustic Bass Drum */
     36, /* Bass Drum 1 */
@@ -2346,4 +2349,17 @@ EDITABLE unsigned char gHybridSynthDrumPitches[GMIDI_NUM_DRUMS] =
     97, /* Mute Triangle */
     97, /* Open Triangle */
 };
+
+
+void SS_LoadPresetOrchestra( void )
+{
+    sMelodicBank_0.presetMap = sMelodicBank_0_ProgramMap;
+    SS_AddMelodicBankToList( &sMelodicBank_0 );
+
+    sDrumProgram_0_0.pitches = sDrumProgram_0_0_Pitches;
+    sDrumProgram_0_0.presetMap = sDrumProgram_0_0_ProgramMap;
+    SS_AddDrumProgramToList( &sDrumProgram_0_0 );
+
+}
+
 #endif /* _SPMIDI_HYBRID_PRESETS_H */

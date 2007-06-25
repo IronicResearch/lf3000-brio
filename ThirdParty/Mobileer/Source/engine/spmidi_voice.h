@@ -37,7 +37,7 @@ extern "C"
 		EnvelopeADSR_Info_t      ampEnv;
 		SVFilter_Info_t          filter;
 #if SPMIDI_ME2000
-		const WaveSet_t *waveSet; /* Pointer to a structure with an array of possible waveTables. */
+		WaveSet_t               *waveSet; /* Pointer to a structure with an array of possible waveTables. */
 #endif
 		PitchOctave              lfoCutoffModDepth;
 		PitchOctave              envPitchModDepth;
@@ -64,8 +64,8 @@ extern "C"
 		EnvelopeADSR_t        mainEnv;
 		EnvelopeADSR_t        ampEnv;
 		SVFilter_t            filter;
-
-		FXP31                    phaseModDepth;
+		WaveSetRegion_t      *waveSetRegion;
+		FXP31                 phaseModDepth;
 
 		/* Point to data that defines how the instrument is played. */
 		HybridVoice_Info_t   *info;

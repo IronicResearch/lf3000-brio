@@ -35,7 +35,7 @@ NUM_FAILED=0
 # Run all of the tests and keep count of which ones pass and fail.
 echo "Test summary `date`" >${QA_SUMMARY}
 echo "Test details `date`" >${QA_DETAILS}
-for TESTNAME in ${TESTS} "qa_checksum_song ../data/FurryLisa_rt.mid -c1484579613" "qa_checksum_song ../data/ZipKit.mxmf -c4244156808"
+for TESTNAME in ${TESTS} "qa_checksum_song ../data/FurryLisa_rt.mid -c1500002998" "qa_checksum_song ../data/ZipKit.mxmf -c4244565239"
 do
 	echo "Run ${TESTNAME}"
 	

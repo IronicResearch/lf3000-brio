@@ -1,7 +1,7 @@
 #ifndef _OSCILLATOR_H
 #define _OSCILLATOR_H
 
-/* $Id: oscillator.h,v 1.22 2006/02/14 20:09:17 philjmsl Exp $ */
+/* $Id: oscillator.h,v 1.24 2007/05/30 16:52:47 philjmsl Exp $ */
 /**
  *
  * Oscillator - waveform generator
@@ -88,7 +88,6 @@ extern "C"
 
 			struct
 			{
-				const WaveTable_t  *waveTable; /* Currently selected wavetable from waveset. */
 				spmSInt32           sampleIndex;
 				/** Set to loopEnd on noteOn, numSamples on noteOff. */
 				spmSInt32           endAt;
@@ -123,22 +122,30 @@ extern "C"
 	 * Called when oscillator is started for a note.
 	 * Calculates parameters that are an approximate function of pitch.
 	 */
-	void Osc_Start(const Oscillator_Preset_t *preset,  Oscillator_t *osc, FXP16 octavePitch, FXP16 srateOffset );
+	void Osc_Start(const Oscillator_Preset_t *preset,  Oscillator_t *osc, FXP16 octavePitch, FXP16 srateOffset, WaveSetRegion_t *waveSetRegion );
 
-	void Osc_SetPitch(const Oscillator_Preset_t *preset,  Oscillator_t *osc, FXP16 octavePitch, FXP16 srateOffset );
+	void Osc_SetPitch(const Oscillator_Preset_t *preset,  Oscillator_t *osc,
+		FXP16 octavePitch, FXP16 srateOffset );
 
 	void Osc_Next_Sine( Oscillator_t *osc, FXP31 amplitude, FXP31 *output, FXP31 *modulator );
 
 
 #if SPMIDI_ME2000
 
-	void Osc_WaveTableS16( Oscillator_t *osc, FXP31 *output );
-	void Osc_WaveTableU8( Oscillator_t *osc, FXP31 *output );
-	void Osc_WaveTableALaw( Oscillator_t *osc, FXP31 *output );
+	void Osc_SetWavePitch( const Oscillator_Preset_t *preset, Oscillator_t *osc,
+                   FXP16 octavePitch, FXP16 srateOffset, WaveSetRegion_t *waveSetRegion );
 
-	void Osc_WaveTable_Release( Oscillator_t *osc );
+	void Osc_WaveTableS16( Oscillator_t *osc, const WaveTable_t *waveTable, FXP31 *output );
+	void Osc_WaveTableU8( Oscillator_t *osc, const WaveTable_t *waveTable, FXP31 *output );
+	void Osc_WaveTableALaw( Oscillator_t *osc, const WaveTable_t *waveTable, FXP31 *output );
 
+	void Osc_WaveTable_Release( Oscillator_t *osc, const WaveTable_t *waveTable );
+
+#if SPMIDI_USE_REGIONS
+	WaveSetRegion_t *Osc_FindMatchingRegion( const WaveSet_t *waveSet, int pitch, int velocity );
+#else
 	WaveTable_t *Osc_SelectNearestWaveTable( const WaveSet_t *waveSet, FXP16 octavePitch, int velocity );
+#endif
 
 #endif
 

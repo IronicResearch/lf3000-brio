@@ -1,7 +1,7 @@
 #ifndef _WAVE_MANAGER_H
 #define _WAVE_MANAGER_H
 
-/* $Id: wave_manager.h,v 1.10 2006/03/24 19:59:35 philjmsl Exp $ */
+/* $Id: wave_manager.h,v 1.14 2007/06/06 01:50:58 philjmsl Exp $ */
 /**
  *
  * WaveTable and WaveSet manager.
@@ -34,7 +34,9 @@ typedef enum WaveType_e
 		ResourceTracker_t tracker;
 		void             *samples; /**< May be ALaw bytes or signed 16 bit PCM. */
 		spmSInt32         numSamples;
+#if (SPMIDI_USE_REGIONS == 0)
 		PitchOctave       basePitch; /**< Pitch of recorded note. */
+#endif
 		PitchOctave       sampleRateOffset; /**< Pitch offset to account for custom sample rate. 22050 Hz => 0x010000 */
 		/** Sample index of beginning of loop, or -1 if no loop. */
 		spmSInt32         loopBegin;
@@ -49,11 +51,26 @@ typedef enum WaveType_e
 	}
 	WaveTable_t;
 
+	typedef struct WaveSetRegion_s
+	{
+		PitchOctave     basePitch; /**< Pitch of recorded note. */
+		spmSInt8       lowPitch;
+		spmSInt8       highPitch;
+		spmSInt8       lowVelocity;
+		spmSInt8       highVelocity;
+		const WaveTable_t *table;
+	}
+	WaveSetRegion_t;
+
 	typedef struct WaveSet_s
 	{
 		ResourceTracker_t tracker;
 		int               numTables;
-		WaveTable_t	    **tables;
+#if SPMIDI_USE_REGIONS
+		WaveSetRegion_t	  *regions;
+#else
+		WaveTable_t	  **tables;
+#endif
 	}
 	WaveSet_t;
 
@@ -86,10 +103,17 @@ typedef enum WaveType_e
 	 */
 	spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *data, int numBytes );
 
+	/** Reference WaveSet so it does not get deleted while in use. */
+	void WaveManager_ReferenceWaveSet( WaveSet_t *waveSet );
+	WaveSet_t * WaveManager_UnreferenceWaveSet( WaveSet_t *waveSet );
+
 	/* Delete WaveSet if instrument reference count is zero. */
 	spmSInt32 WaveManager_UnloadWaveSet( WaveManager_t *waveManager, spmResourceToken token );
 
 	WaveSet_t *WaveManager_FindWaveSet( WaveManager_t *waveManager, spmResourceToken token );
+
+	/** Get first wave set in case of emergency. */
+	WaveSet_t * WaveManager_GetFirstWaveSet( WaveManager_t *waveManager );
 
 	/**
 	 * @param id should be preallocated by editor or WAVEMGR_UNDEFINED_ID

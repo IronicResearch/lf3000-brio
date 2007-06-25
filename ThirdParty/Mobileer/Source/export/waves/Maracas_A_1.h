@@ -2,7 +2,7 @@
 #define _MARACAS_A_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -102,7 +102,6 @@ static NRLCONST WaveTable_t gMaracas_A_1 =
 	(void *) gMaracas_A_1Samples,
 #endif
 	sizeof(gMaracas_A_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3c0000),
 	-95860, /* SR = 16000 */
 	-1,
 	-1,

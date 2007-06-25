@@ -1,4 +1,4 @@
-/* $Id: wavetable.c,v 1.17 2005/11/28 18:59:49 philjmsl Exp $ */
+/* $Id: wavetable.c,v 1.20 2007/06/12 21:09:08 philjmsl Exp $ */
 /**
  * WaveTable oscillator. Interpolate between adjacent samples
  * to allow variable pitch playback.
@@ -44,7 +44,7 @@
  * @param osc wavetable oscillator state structure
  * @param output array to receive calculated values
  */
-void Osc_WaveTableS16( Oscillator_t *osc, FXP31 *output )
+void Osc_WaveTableS16( Oscillator_t *osc, const WaveTable_t *waveTable, FXP31 *output )
 {
 	spmSInt     outputSamplesLeft;
 	spmSample  *samplePtr;
@@ -70,7 +70,7 @@ void Osc_WaveTableS16( Oscillator_t *osc, FXP31 *output )
 	if( index >= 0 ) /* Is the wavetable still playing? */
 	{
 		/* Cache structure variable in local variables for speed. */
-		samplePtr = &((spmSample *)osc->shared.wave.waveTable->samples)[index];
+		samplePtr = &((spmSample *)waveTable->samples)[index];
 		samplesLeft = osc->shared.wave.endAt - index;
 		phaseInc = osc->phaseInc;
 
@@ -113,11 +113,11 @@ void Osc_WaveTableS16( Oscillator_t *osc, FXP31 *output )
 				if( --samplesLeft <= 0 )
 				{
 					/* Are we in a loop? */
-					if( osc->shared.wave.endAt == osc->shared.wave.waveTable->loopEnd )
+					if( osc->shared.wave.endAt == waveTable->loopEnd )
 					{
 						/* Reset to beginning of loop. */
-						index = osc->shared.wave.waveTable->loopBegin;
-						samplePtr = &((spmSample *)osc->shared.wave.waveTable->samples)[index];
+						index = waveTable->loopBegin;
+						samplePtr = &((spmSample *)waveTable->samples)[index];
 						samplesLeft = osc->shared.wave.endAt - index;
 					}
 					else
@@ -199,7 +199,7 @@ static const spmSInt16 sAlawTable[256] =
 /**
  * Same as Osc_WaveTableU8 except it plays ALaw wave data.
  */
-void Osc_WaveTableALaw( Oscillator_t *osc, FXP31 *output )
+void Osc_WaveTableALaw( Oscillator_t *osc, const WaveTable_t *waveTable, FXP31 *output )
 {
 	spmSInt     outputSamplesLeft;
 	/************* THIS LINE IS DIFFERENT THEN THE S16 VERSION ************/
@@ -229,7 +229,7 @@ void Osc_WaveTableALaw( Oscillator_t *osc, FXP31 *output )
 		/* Cache structure variable in local variables for speed. */
 		/************* THIS LINE IS DIFFERENT THEN THE S16 VERSION ************/
 		/* Point to current position in wavetable. */
-		samplePtr = &(((unsigned char  *)(osc->shared.wave.waveTable->samples))[index]);
+		samplePtr = &(((unsigned char  *)(waveTable->samples))[index]);
 		/*******************************************************************/
 		samplesLeft = osc->shared.wave.endAt - index;
 		phaseInc = osc->phaseInc;
@@ -276,13 +276,13 @@ void Osc_WaveTableALaw( Oscillator_t *osc, FXP31 *output )
 				if( --samplesLeft <= 0 )
 				{
 					/* Are we in a loop? */
-					if( osc->shared.wave.endAt == osc->shared.wave.waveTable->loopEnd )
+					if( osc->shared.wave.endAt == waveTable->loopEnd )
 					{
 						/* Reset to beginning of loop. */
-						index = osc->shared.wave.waveTable->loopBegin;
+						index = waveTable->loopBegin;
 						/************* THIS LINE IS DIFFERENT THEN THE S16 VERSION ************/
 						/* Point to current position in wavetable. */
-						samplePtr = &(((unsigned char  *)(osc->shared.wave.waveTable->samples))[index]);
+						samplePtr = &(((unsigned char  *)(waveTable->samples))[index]);
 						/*******************************************************************/
 						samplesLeft = osc->shared.wave.endAt - index;
 					}
@@ -328,10 +328,10 @@ clearRestOfBuffer:
  * continue to the end of the sample.
  * @param osc wavetable oscillator state structure
  */
-void Osc_WaveTable_Release( Oscillator_t *osc )
+void Osc_WaveTable_Release( Oscillator_t *osc, const WaveTable_t *waveTable )
 {
 	/* Tell oscillator to play to the end of the sample. */
-	osc->shared.wave.endAt = osc->shared.wave.waveTable->numSamples;
+	osc->shared.wave.endAt = waveTable->numSamples;
 }
 
 
@@ -347,7 +347,7 @@ void Osc_WaveTable_Release( Oscillator_t *osc )
  * @param osc wavetable oscillator state structure
  * @param output array to receive calculated values
  */
-void Osc_WaveTableU8( Oscillator_t *osc, FXP31 *output )
+void Osc_WaveTableU8( Oscillator_t *osc, const WaveTable_t *waveTable, FXP31 *output )
 {
 	spmSInt     outputSamplesLeft;
 	/************* THIS LINE IS DIFFERENT THEN THE S16 VERSION ************/
@@ -377,7 +377,7 @@ void Osc_WaveTableU8( Oscillator_t *osc, FXP31 *output )
 		/* Cache structure variable in local variables for speed. */
 		/************* THIS LINE IS DIFFERENT THEN THE S16 VERSION ************/
 		/* Point to current position in wavetable. */
-		samplePtr = &(((unsigned char  *)(osc->shared.wave.waveTable->samples))[index]);
+		samplePtr = &(((unsigned char  *)(waveTable->samples))[index]);
 		/*******************************************************************/
 		samplesLeft = osc->shared.wave.endAt - index;
 		phaseInc = osc->phaseInc;
@@ -424,13 +424,13 @@ void Osc_WaveTableU8( Oscillator_t *osc, FXP31 *output )
 				if( --samplesLeft <= 0 )
 				{
 					/* Are we in a loop? */
-					if( osc->shared.wave.endAt == osc->shared.wave.waveTable->loopEnd )
+					if( osc->shared.wave.endAt == waveTable->loopEnd )
 					{
 						/* Reset to beginning of loop. */
-						index = osc->shared.wave.waveTable->loopBegin;
+						index = waveTable->loopBegin;
 						/************* THIS LINE IS DIFFERENT THEN THE S16 VERSION ************/
 						/* Point to current position in wavetable. */
-						samplePtr = &(((unsigned char  *)(osc->shared.wave.waveTable->samples))[index]);
+						samplePtr = &(((unsigned char  *)(waveTable->samples))[index]);
 						/*******************************************************************/
 						samplesLeft = osc->shared.wave.endAt - index;
 					}

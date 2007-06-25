@@ -1,4 +1,4 @@
-/* $Id: spmidi_host.c,v 1.21 2005/11/28 19:00:38 philjmsl Exp $ */
+/* $Id: spmidi_host.c,v 1.22 2007/05/04 15:55:25 philjmsl Exp $ */
 /**
  *
  * Host dependencies.
@@ -136,8 +136,8 @@ void SPMIDI_LeaveCriticalSection(void)
 /*****************************************************************/
 /*****************************************************************/
 /* Track every memory allocation and free to avoid errors. */
-#define MAGIC_MEMORY_CODE  (0xCAFE5432)
-#define VOODOO_MEMORY_CODE  (0xDEADBEEF)
+#define MEMORY_STATE_ALLOCATED  (0xCAFE5432)
+#define MEMORY_STATE_FREED  (0xDEADBEEF)
 
 typedef struct MemoryTracker_s
 {
@@ -154,6 +154,7 @@ static int sAllocationLimit; /* Initialized to SPMIDI_ALLOCATION_UNLIMITED by SP
 static int sFailCountdown; /* Initialized to SPMIDI_ALLOCATION_UNLIMITED by SPMIDI_HostInit() */
 static int sNumBytesAllocated = 0;
 static int sNumAllocations = 0;
+static int sNextAllocationIndex = 0;
 static int sMaxBytesAllocated = 0;
 
 /*****************************************************************/
@@ -192,11 +193,15 @@ void *SPMIDI_AllocateMemoryNamed(int numBytes, const char *name)
 		{
 			sMaxBytesAllocated = sNumBytesAllocated;
 		}
-		memTracker->magic = MAGIC_MEMORY_CODE;
+		sNumAllocations += 1;
+
+		memTracker->magic = MEMORY_STATE_ALLOCATED;
 		memTracker->numBytes = numBytes;
-		memTracker->index = sNumAllocations++;
+		memTracker->index = sNextAllocationIndex++;
 		memTracker->name = name;
-		DBUGMSG("SPMIDI_AllocateMemory, ");
+		DBUGMSG("SPMIDI_AllocateMemory, at ");
+		DBUGNUMH( memTracker );
+		DBUGMSG(", index = ");
 		DBUGNUMD( memTracker->index );
 		DBUGMSG(", ");
 		DBUGNUMD( numBytes );
@@ -223,7 +228,9 @@ void SPMIDI_FreeMemory( void *ptr)
 		/* Go back before user memory to our structure. */
 		memTracker -= 1;
 		
-		DBUGMSG("SPMIDI_FreeMemory, ");
+		DBUGMSG("SPMIDI_FreeMemory, at ");
+		DBUGNUMH( memTracker );
+		DBUGMSG(", index = ");
 		DBUGNUMD( memTracker->index );
 		DBUGMSG(", ");
 		DBUGNUMD( memTracker->numBytes );
@@ -234,21 +241,23 @@ void SPMIDI_FreeMemory( void *ptr)
 		}
 		DBUGMSG("\n");
 
-		if( memTracker->magic != MAGIC_MEMORY_CODE )
+		/* Is this bogus? */
+		if( memTracker->magic != MEMORY_STATE_ALLOCATED )
 		{
-			if( memTracker->magic == VOODOO_MEMORY_CODE )
+			if( memTracker->magic == MEMORY_STATE_FREED )
 			{
-				PRTMSG("SPMIDI_FreeMemory: detected error, no magic code.\n");
+				PRTMSGNUMD("SPMIDI_FreeMemory: memory freed twice, index = ", memTracker->index);
+				PRTMSGNUMD("SPMIDI_FreeMemory:                     numBytes = ", memTracker->numBytes);
 			}
 			else
 			{
-				PRTMSGNUMD("SPMIDI_FreeMemory: memory freed twice, index = ", memTracker->index);
+				PRTMSGNUMH("SPMIDI_FreeMemory: attempt to free unallocated memory at ", memTracker+1 );
 			}
 		}
 		else
 		{
 			/* Mark as freed. */
-			memTracker->magic = VOODOO_MEMORY_CODE;
+			memTracker->magic = MEMORY_STATE_FREED;
 			sNumAllocations--;
 			sNumBytesAllocated -= memTracker->numBytes;
 			MEHost_FreeMemory( memTracker );

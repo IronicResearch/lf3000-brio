@@ -1,4 +1,4 @@
-/* $Id: spmidi_synth_util.c,v 1.11 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: spmidi_synth_util.c,v 1.12 2007/06/18 18:03:49 philjmsl Exp $ */
 /**
  *
  * SPMIDI Utilities for tuning.
@@ -350,6 +350,7 @@ FXP31 SPMUtil_OctaveToPhaseIncrement( FXP16 octavePitch )
 #endif
 }
 
+#if SPMIDI_USE_SOFTCLIP
 /* Softclip mixer signal so that we can push amplitude without getting too harsh. */
 FXP31 SS_MixerSoftClip( FXP31 input )
 {
@@ -382,7 +383,7 @@ FXP31 SS_MixerSoftClip( FXP31 input )
 	}
 	return output;
 }
-
+#endif
 
 /** Parse 32 bit integer assuming Big Endian byte order. */
 unsigned char *SS_ParseLong( long *data, unsigned char *p)

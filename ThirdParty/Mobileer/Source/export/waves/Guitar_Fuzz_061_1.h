@@ -2,7 +2,7 @@
 #define _GUITAR_FUZZ_061_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -228,7 +228,6 @@ static NRLCONST WaveTable_t gGuitar_Fuzz_061_1 =
 	(void *) gGuitar_Fuzz_061_1Samples,
 #endif
 	sizeof(gGuitar_Fuzz_061_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3d0fc6),
 	-95072, /* SR = 16133 */
 	1610,
 	1668,

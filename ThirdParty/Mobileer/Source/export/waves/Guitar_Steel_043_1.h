@@ -2,7 +2,7 @@
 #define _GUITAR_STEEL_043_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -354,7 +354,6 @@ static NRLCONST WaveTable_t gGuitar_Steel_043_1 =
 	(void *) gGuitar_Steel_043_1Samples,
 #endif
 	sizeof(gGuitar_Steel_043_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x2b0ed0),
 	-96280, /* SR = 15929 */
 	2511,
 	2673,

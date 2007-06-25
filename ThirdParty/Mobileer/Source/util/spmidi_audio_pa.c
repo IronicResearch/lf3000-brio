@@ -1,8 +1,11 @@
-/* $Id: spmidi_audio_pa.c,v 1.6 2005/05/23 22:33:19 philjmsl Exp $ */
+/* $Id: spmidi_audio_pa.c,v 1.7 2007/03/18 20:13:43 philjmsl Exp $ */
 /**
  * Platform specific audio functions used by the Mobileer examples.
  * Please replace this PortAudio version with an equivalent
  * for your audio device.
+ *
+ * This code uses the PABLIO facility of PortAudio.
+ * PABLIO provides a blocking write interface to the audio driver.
  *
  * Copyright 2002 Mobileer, Phil Burk, PROPRIETARY and CONFIDENTIAL
  */

@@ -1,4 +1,4 @@
-/* $Id: qa_common.h,v 1.10 2006/05/20 00:33:32 philjmsl Exp $ */
+/* $Id: qa_common.h,v 1.11 2007/06/18 18:05:51 philjmsl Exp $ */
 /**
  *
  * @file qa_common.h
@@ -19,7 +19,7 @@
 #define DEADBEEF              (0xDEADBEEF)
 
 /* SPMIDI_DIR is defined in "midifile_names.h" */
-#define QADATA_DIR            SPMIDI_DIR"qa\\data\\"
+#define QADATA_DIR            SPMIDI_DIR"qa/data/"
 #define DETECT_PITCH_FRAMES   (256 * 64)
 #define QA_SAMPLE_RATE        (22050)
 #define DETECT_AMP_FRAMES     (QA_SAMPLE_RATE / 250 * 4)

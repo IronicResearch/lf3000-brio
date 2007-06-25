@@ -1,4 +1,4 @@
-/* $Id: minimal_player_pa.c,v 1.5 2006/05/16 00:02:09 philjmsl Exp $ */
+/* $Id: minimal_player_pa.c,v 1.6 2006/07/18 19:24:51 philjmsl Exp $ */
 /**
  *
  * Play a MIDI file using the PortAudio callback interface.
@@ -169,7 +169,7 @@ static int MIDIFile_Play( const unsigned char *image, int numBytes )
 	Pa_StartStream( playerData->stream );
 
 	/* In your program you can repeat as long as you want.
-	 * In a mobile phohne you would repeat the song until
+	 * In a mobile phone you would repeat the song until
 	 * the user answered the phone, or it switched to 
 	 * recording the voice message.
 	 */

@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_HOST_H
 #define _SPMIDI_HOST_H
-/* $Id: spmidi_host.h,v 1.9 2005/11/15 20:49:03 philjmsl Exp $ */
+/* $Id: spmidi_host.h,v 1.10 2007/06/06 01:50:58 philjmsl Exp $ */
 /**
  *
  * Host dependencies.
@@ -26,6 +26,7 @@ extern "C"
 #else
 #define SPMIDI_ALLOC_MEM( numBytes, name ) SPMIDI_AllocateMemoryNamed(numBytes, name)
 #endif
+#define SPMIDI_FREE_MEM  SPMIDI_FreeMemory
 
 	/**
 	 * Allocate a block of memory from the heap.

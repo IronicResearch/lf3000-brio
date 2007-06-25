@@ -2,7 +2,7 @@
 #define _HAT_CLOSED_ZILDJ_01_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -129,7 +129,6 @@ static NRLCONST WaveTable_t gHat_Closed_Zildj_01_1 =
 	(void *) gHat_Closed_Zildj_01_1Samples,
 #endif
 	sizeof(gHat_Closed_Zildj_01_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3c0000),
 	-95860, /* SR = 16000 */
 	-1,
 	-1,

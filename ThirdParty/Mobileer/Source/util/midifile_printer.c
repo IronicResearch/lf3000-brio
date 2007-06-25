@@ -1,4 +1,4 @@
-/* $Id: midifile_printer.c,v 1.2 2005/11/28 19:20:07 philjmsl Exp $ */
+/* $Id: midifile_printer.c,v 1.3 2006/06/21 16:41:48 philjmsl Exp $ */
 /**
  * MIDI File parser and player.
  * The player operates directly on an SMF image.
@@ -129,7 +129,7 @@ static int printController( MIDIFileParser_t *parser, int command, int data1, in
 		name = "Modulation";
 		break;
 	case MIDI_CONTROL_DATA_ENTRY:
-		name = "Data Entry MSB";
+		name = "Data Entry";
 		printRPNData( parser, command, data1, data2 );
 		break;
 	case MIDI_CONTROL_VOLUME:
@@ -235,6 +235,12 @@ static int printHandleEvent( MIDIFileParser_t *parser, int ticks, int command, i
 		break;
 	case MIDI_CONTROL_CHANGE:
 		printController( parser, command, data1, data2 );
+		break;
+	case MIDI_PITCH_BEND:
+		{
+			int bend = (data2 << 7) + data1;
+			PRINTF( (", PitchBend = 0x%04X, offset = %d\n", bend, (bend - MIDI_BEND_NONE) ) );
+		}
 		break;
 	case MIDI_CHANNEL_AFTERTOUCH:
 		PRINTF( (", Channel Aftertouch = %d\n", data1 ) );

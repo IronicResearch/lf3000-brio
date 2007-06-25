@@ -2,7 +2,7 @@
 #define _TOM_MIDCLOSE_2_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -356,7 +356,6 @@ static NRLCONST WaveTable_t gTom_MidClose_2 =
 	(void *) gTom_MidClose_2Samples,
 #endif
 	sizeof(gTom_MidClose_2Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x2eee54),
 	-95935, /* SR = 15987 */
 	-1,
 	-1,

@@ -5,7 +5,7 @@
    <meta name="Author" content="Phil Burk">
    <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
 <!-- InstanceBeginEditable name="doctitle" -->
-   <title>Instrument Editor Overview</title>
+   <title>Instrument Editor, Setting Loops</title>
 <!-- InstanceEndEditable -->
 <!-- InstanceBeginEditable name="head" -->
 
@@ -41,21 +41,22 @@
 <h2>Mobileer Instrument Editor</h2>
 <h3>Setting a Loop</h3>
 <p>If you are creating a pitched WaveTable then you will probably want to set a loop. A loop is a small portion of the middle of a wavetable that you can play repeatedly for a sustained tone. This can save lots of memory.</p>
-<p align="center"><img style="float:right" src="images/looping.png"></p>
+<p align="center"><img src="images/looping.png" width="430" height="303" style="float:right"></p>
 <ol>
-    <li>Let's assume that you have already <a href="wave_pitch.html">measured the pitch</a> accurately.</li>
+    <li>Let's assume that you have already <a href="wave_pitch.html">measured the pitch</a> accurately and that the sample rate has been quantized.</li>
     <li>Click the &quot;Zoom out all the way&quot; button <img src="images/zoom_out_100_button.png"> </li>
     <li>Select a region near the start of the waveform and zoom in on it until you can see individual cycles clearly.</li>
     <li>Find an first area where the cycles are not changing shape radically from one to the next. The timbre is stable here and would make a good loop point.</li>
-    <li>Click down on the waveform and drag to the right until you highlight one cycle. If you pick more than one cycle then you can get low-sounding subharmonic partials when you play the loop. </li>
+    <li>Click down on the waveform and drag to the right until you highlight one cycle. If you pick more than one cycle then you may get low-sounding subharmonic partials when you play the loop. </li>
     <li>Click the &quot;Loop this selection&quot; button <img src="images/set_loop_button.png"> to set the loop. Notice the status info on the wave display changes. Also notice that the loop region is highlighted in a different color.</li>
+    <li>If you quantized the sample rate then the Period will be an integral number of samples and not some fractional number. In this case it is exactly 40 samples. This is important because the wavetable engine may ignore the fractional part causing the pitch to shift slight when entering the loop. </li>
     <li>To hear your loop, click the &quot;Play Button&quot;. <img src="images/play_button.png">. </li>
     <li>To  change loops quickly, select &quot;Options->Auto Set Loop&quot; and select another cycle. The loop will now change automatically and you should hear a very slight change in the tone.</li>
     <li>If the loop sounds too buzzy, then select Options->Auto Crossfade. That will produce a smooth transition between the beginning and the end of the loop. This is often needed for instruments with rapidly changing timbres like pianos and guitars.</li>
     <li>By default, we  trim off the portion after the loop and to make the instrument sound decay using an envelope. If you want to keep the samples after the loop then deselect &quot;Options->Auto Trim After Loop&quot;. </li>
     <li>Hit the Play button again to hear the note-off decay. </li>
 </ol>
-<p align="center">| <a href="index.html">Top</a> | <a href="wave_resampling.html">Previous</a> | <a href="wave_set.html">Next</a> |</p>
+<p align="center">| <a href="index.html">Top</a> | <a href="wave_resampling.html">Previous</a> | <a href="wave_loops_nq.html">Next</a> |</p>
 <meta name="Author" content="Phil Burk">
    <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
 <!-- InstanceEndEditable -->

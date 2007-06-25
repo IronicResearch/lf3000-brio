@@ -6,8 +6,7 @@ include ../build/MakefileVariables
 
 CFLAGS = \
 	-DSPMIDI_USE_PRINTF \
-	-DSPMIDI_ME3000=0 \
-	-DSPMIDI_ME2000=1 \
+	-DSPMIDI_ME3000=1 \
 	-Wall \
 	$(ME2000_INCLUDEPATH) \
 	-I../examples \
@@ -33,17 +32,15 @@ all: me2000.wav me3000.wav
 	@echo "ME2000 Output written to me2000.wav file."
 	@echo "ME3000 Output written to me3000.wav file."
 
-libme2000.a:  $(DEMO_OBJS) $(SPMIDI_OBJS)
-	@echo 'Building target: $@'
-	@echo 'Invoking: GCC Archiver'
-	ar -r "libme2000.a" $(DEMO_OBJS) $(SPMIDI_OBJS)
-	@echo 'Finished building target: $@'
-	@echo ' '
-
-
 $(DEMO_ME2000_EXE): $(DEMO_OBJS) $(SPMIDI_OBJS)
 
 $(DEMO_ME3000_EXE): $(DEMO_OBJS) $(SPMIDI_OBJS)
+
+libme2000.a:  $(DEMO_OBJS) $(SPMIDI_OBJS)
+	@echo 'Building target: $@'
+	ar -r "libme2000.a" $(DEMO_OBJS) $(SPMIDI_OBJS)
+	@echo 'Finished building target: $@'
+	@echo ' '
 
 # Run the demo that converts a MIDI file to a WAV file.
 me2000.wav: $(DEMO_ME2000_EXE)

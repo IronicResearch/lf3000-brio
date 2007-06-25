@@ -1,4 +1,4 @@
-/* $Id: qa_spmidi_errors.c,v 1.3 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_spmidi_errors.c,v 1.4 2006/06/21 16:54:20 philjmsl Exp $ */
 /**
  *
  * @file qa_spmidi_errors.c
@@ -23,12 +23,15 @@ short buffer[1024];
 int TestErrors( void )
 {
 	int result = 0;
-	SPMIDI_Context *spmidiContext;
+	SPMIDI_Context *spmidiContext = (SPMIDI_Context *) 0xcafebaba;
 
 	SPMIDI_Initialize();
 
 	QA_Assert( SPMIDI_CreateContext( &spmidiContext, 12345 ) == SPMIDI_Error_UnsupportedRate,
 		"Trapped unsupported sample rate." );
+
+	QA_Assert( (spmidiContext == NULL),
+		"spmidiContext should be NULL after failure." );
 
 	QA_Assert( SPMIDI_CreateContext( &spmidiContext, 96000 ) == SPMIDI_Error_OutOfRange,
 		"Trapped over SPMIDI_MAX_SAMPLE_RATE." );
@@ -80,6 +83,6 @@ int main(void)
 
 	TestErrors();
 
-	return QA_Term( 14 );
+	return QA_Term( 15 );
 }
 

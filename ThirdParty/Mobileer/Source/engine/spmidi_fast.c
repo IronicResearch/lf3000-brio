@@ -1,4 +1,4 @@
-/* $Id: spmidi_fast.c,v 1.15 2006/02/14 20:09:17 philjmsl Exp $ */
+/* $Id: spmidi_fast.c,v 1.17 2007/06/12 21:09:08 philjmsl Exp $ */
 /**
  *
  * Mixer and high level voice synthesis.
@@ -358,6 +358,7 @@ void SS_SynthesizeVoiceME1000( HybridSynth_t *hybridSynth, HybridVoice_t *voice,
 
 /********************************************************************
  * Synthesize a single complete voice using Hybrid Synthesis.
+ * This is called then the mainOsc waveform is WAVETABLE.
  */
 void SS_SynthesizeVoiceME2000( HybridSynth_t *hybridSynth, HybridVoice_t *voice, int samplesPerFrame )
 {
@@ -368,8 +369,8 @@ void SS_SynthesizeVoiceME2000( HybridSynth_t *hybridSynth, HybridVoice_t *voice,
 	HybridVoice_Info_t *info = voice->info;
 	const HybridVoice_Preset_t *preset = voice->preset;
 	int    isPitchModulated = 0;
-	PitchOctave lfoPitchModDepth;
 	int    doAutoStop;
+	PitchOctave lfoPitchModDepth;
 
 	channel = &hybridSynth->channels[ voice->channel ];
 	basePitch = voice->baseNotePitch + channel->pitchBendOctaveOffset;
@@ -392,7 +393,7 @@ void SS_SynthesizeVoiceME2000( HybridSynth_t *hybridSynth, HybridVoice_t *voice,
 	if( !isPitchModulated )
 	{
 		/* If no LFO then just set pitch once at start of block so we pick up pitchBend. */
-		Osc_SetPitch( &info->preset->mainOsc, &voice->mainOsc, basePitch, hybridSynth->srateOffset );
+		Osc_SetWavePitch( &info->preset->mainOsc, &voice->mainOsc, basePitch, hybridSynth->srateOffset, voice->waveSetRegion );
 	}
 
 	/* ADSR envelopes */
@@ -422,22 +423,22 @@ void SS_SynthesizeVoiceME2000( HybridSynth_t *hybridSynth, HybridVoice_t *voice,
 			pitchSum += FXP_MULT_16_31_16( hybridSynth->lfoOutput[ib], lfoPitchModDepth );
 			pitchSum += FXP_MULT_16_31_16( hybridSynth->modEnvOutput[ib], info->envPitchModDepth );
 
-			Osc_SetPitch( &info->preset->mainOsc, &voice->mainOsc, pitchSum, hybridSynth->srateOffset );
+			Osc_SetWavePitch( &info->preset->mainOsc, &voice->mainOsc, pitchSum, hybridSynth->srateOffset, voice->waveSetRegion );
 		}
 
-		if( voice->mainOsc.shared.wave.waveTable->type == SPMIDI_WAVE_TYPE_ALAW )
+		if( voice->waveSetRegion->table->type == SPMIDI_WAVE_TYPE_ALAW )
 		{
 			/* Generate one block of wavetable output. */
-			Osc_WaveTableALaw( &voice->mainOsc, &hybridSynth->voiceOutput[0] );
+			Osc_WaveTableALaw( &voice->mainOsc, voice->waveSetRegion->table, &hybridSynth->voiceOutput[0] );
 		}
 		else
 		{
 			/* Generate one block of wavetable output. */
-			Osc_WaveTableS16( &voice->mainOsc, &hybridSynth->voiceOutput[0] );
+			Osc_WaveTableS16( &voice->mainOsc, voice->waveSetRegion->table, &hybridSynth->voiceOutput[0] );
 
 			/* If we have hit the loop then start the decay portion. */
 			if( ((preset->ampEnv.flags & ADSR_FLAG_WAIT_DECAY) != 0) &&
-				(voice->mainOsc.shared.wave.sampleIndex >= voice->mainOsc.shared.wave.waveTable->loopBegin) )
+				(voice->mainOsc.shared.wave.sampleIndex >= voice->waveSetRegion->table->loopBegin) )
 			{
 				ADSR_TriggerDecay( &voice->ampEnv );
 			}
@@ -557,7 +558,7 @@ void SS_SynthesizeVoiceDLS2_Internal( HybridSynth_t *hybridSynth, HybridVoice_t 
 	/* If no PITCH mod then just set oscillator pitch once at start of block so we pick up pitchBend. */
 	if( !isPitchModulated )
 	{
-		Osc_SetPitch( &info->preset->mainOsc, &voice->mainOsc, basePitch, hybridSynth->srateOffset );
+		Osc_SetWavePitch( &info->preset->mainOsc, &voice->mainOsc, basePitch, hybridSynth->srateOffset, &voice->dlsRegion->waveSetRegion );
 	}
 
 	/* ADSR envelopes */
@@ -590,7 +591,7 @@ void SS_SynthesizeVoiceDLS2_Internal( HybridSynth_t *hybridSynth, HybridVoice_t 
 			pitchSum += FXP_MULT_16_31_16( hybridSynth->modOscOutput[ib], vibLFOPitchModDepth );
 			pitchSum += FXP_MULT_16_31_16( hybridSynth->modEnvOutput[ib], info->envPitchModDepth );
 
-			Osc_SetPitch( &info->preset->mainOsc, &voice->mainOsc, pitchSum, hybridSynth->srateOffset );
+			Osc_SetWavePitch( &info->preset->mainOsc, &voice->mainOsc, pitchSum, hybridSynth->srateOffset, &voice->dlsRegion->waveSetRegion );
 		}
 
 		/* Generate one block of wavetable output. */
@@ -599,16 +600,16 @@ void SS_SynthesizeVoiceDLS2_Internal( HybridSynth_t *hybridSynth, HybridVoice_t 
 			
 			if( voice->dlsRegion->dlsWave->format == WAVE_FORMAT_ALAW )
 			{
-				Osc_WaveTableALaw( &voice->mainOsc, &hybridSynth->voiceOutput[0] );
+				Osc_WaveTableALaw( &voice->mainOsc, voice->waveSetRegion->table, &hybridSynth->voiceOutput[0] );
 			}
 			else
 			{
-				Osc_WaveTableU8( &voice->mainOsc, &hybridSynth->voiceOutput[0] );
+				Osc_WaveTableU8( &voice->mainOsc, voice->waveSetRegion->table, &hybridSynth->voiceOutput[0] );
 			}
 		}
 		else
 		{
-			Osc_WaveTableS16( &voice->mainOsc, &hybridSynth->voiceOutput[0] );
+			Osc_WaveTableS16( &voice->mainOsc, voice->waveSetRegion->table, &hybridSynth->voiceOutput[0] );
 		}
 
 		/* FILTER osc output. */

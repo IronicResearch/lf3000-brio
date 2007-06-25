@@ -2,7 +2,7 @@
 #define _PIANO_GRAND_061_2_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -310,7 +310,6 @@ static NRLCONST WaveTable_t gPiano_Grand_061_2 =
 	(void *) gPiano_Grand_061_2Samples,
 #endif
 	sizeof(gPiano_Grand_061_2Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3cf341),
 	-102436, /* SR = 14924 */
 	2271,
 	2325,

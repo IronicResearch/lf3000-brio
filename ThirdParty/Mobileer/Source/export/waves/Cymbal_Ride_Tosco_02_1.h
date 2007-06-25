@@ -2,7 +2,7 @@
 #define _CYMBAL_RIDE_TOSCO_02_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -1326,7 +1326,6 @@ static NRLCONST WaveTable_t gCymbal_Ride_Tosco_02_1 =
 	(void *) gCymbal_Ride_Tosco_02_1Samples,
 #endif
 	sizeof(gCymbal_Ride_Tosco_02_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3c0000),
 	-95860, /* SR = 16000 */
 	-1,
 	-1,

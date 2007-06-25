@@ -1,4 +1,4 @@
-/* $Id: playmf_me3000.c,v 1.1 2005/11/28 19:17:54 philjmsl Exp $ */
+/* $Id: playmf_me3000.c,v 1.2 2007/06/12 21:10:19 philjmsl Exp $ */
 /**
  *
  * Play a MIDI File or an MXMF file using the ME3000 Synthesizer.
@@ -44,6 +44,8 @@
 #define GETCH        _getch
 #define KBHIT        _kbhit
 #define PUTCH(c)     _putch((char)(c))
+#else
+#error You need to define these keyboard macros (GETCH,KBHIT PUTCH) for any non-Windows platform.
 #endif
 
 static SPMIDI_AudioDevice  sHostAudioDevice;

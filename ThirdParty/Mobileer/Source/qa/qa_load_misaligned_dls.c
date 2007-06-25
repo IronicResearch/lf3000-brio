@@ -1,14 +1,17 @@
-/* $Id: qa_load_misaligned_dls.c,v 1.1 2005/11/22 18:30:16 marsanyi Exp $ */
+/* $Id: qa_load_misaligned_dls.c,v 1.2 2007/06/18 18:05:51 philjmsl Exp $ */
 /**
  *
  * Test loading of a DLS file.
  * Copyright 2004 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
  */
+
+#define SPMIDI_DIR "/nomad/MIDISynth/code/spmidi/"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "midi.h"
+#include "spmidi_config.h"
 #include "spmidi.h"
 #include "spmidi_util.h"
 #include "spmidi_play.h"
@@ -55,6 +58,8 @@ int main(int argc, char **argv)
 	program = ( argc < 4 ) ? PROGRAM_START : atoi( argv[3] );
 
 	printf("SPMIDI Test: load DLS file on bank %4x, program %d = %s\n", bank, program, MIDI_GetProgramName( program )  );
+
+	printf("Deliberately misalign the waves by copying them to another location, starting on an odd byte.\n");
 
 	SPMIDI_Initialize();
 

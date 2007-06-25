@@ -1,4 +1,4 @@
-/* $Id: spmidi.c,v 1.51 2006/05/16 00:01:51 philjmsl Exp $ */
+/* $Id: spmidi.c,v 1.56 2007/06/09 00:31:09 philjmsl Exp $ */
 /**
  *
  * Scaleable Polyphonic MIDI Engine.
@@ -9,6 +9,7 @@
 #include "spmidi.h"
 #include "spmidi_host.h"
 #include "dls_parser_internal.h"
+#include "spmidi_orchestra.h"
 #include "spmidi_synth.h"
 #include "spmidi_print.h"
 #include "dbl_list.h"
@@ -36,6 +37,9 @@
 #define SPM_NO_PRIORITY        (0xFF)
 #define SPM_LOWEST_PRIORITY    (MIDI_NUM_CHANNELS-1)
 #define SPM_HIGHEST_PRIORITY   (0)
+
+/* This was defined as 8 before we supported multiple banks. */
+#define SPMIDI_BANK_MSB_SHIFT    (7)
 
 /* 15 bit number that is impossible when combining two 7 bit values. */
 #define SPM_INVALID_PARAM_NUMBER (0x7FFF)
@@ -110,6 +114,8 @@ SPMIDIChannel_t;
 /* Define real SPMIDI context. */
 typedef struct SPMIDIContext_s
 {
+	DoubleNode      node; // So we can keep track of and operate on all contexts.
+
 	/* Synthesizer interface. */
 	SoftSynth      *synth;
 
@@ -235,6 +241,7 @@ static SPMIDI_CommandHandler *SystemCommandHandlers[16];
 
 /* Have we called SPMIDI_Initialize()? */
 static int sIsInitialized = 0;
+DoubleList sContextList;
 
 /**********************************************************/
 /********** Allocate SPMIDIContext ************************/
@@ -406,13 +413,14 @@ static void SPMIDI_VoiceOn( SPMIDIContext_t *spmc, SPMIDIVoiceTracker_t *voiceTr
 	}
 	voiceTracker->pitch = (unsigned char) pitch;
 	voiceTracker->velocity = (unsigned char) velocity;
-	/*
-	    PRTMSG("SPMIDI_VoiceOn: id = "); PRTNUMD( voiceTracker->id );
-	    PRTMSG(", chan = "); PRTNUMD( channelIndex );
-	    PRTMSG(", frame = "); PRTNUMD( spmc->frameCount );
-	    PRTMSG(", pitch = "); PRTNUMD( pitch );
-	    PRTMSG("\n");
-	*/
+	
+/*
+	PRTMSG("SPMIDI_VoiceOn: id = "); PRTNUMD( voiceTracker->id );
+    PRTMSG(", chan = "); PRTNUMD( channelIndex );
+    PRTMSG(", frame = "); PRTNUMD( spmc->frameCount );
+    PRTMSG(", pitch = "); PRTNUMD( pitch );
+    PRTMSG("\n");
+*/
 }
 
 /********************************************************************/
@@ -425,14 +433,14 @@ static void SPMIDI_VoiceOff( SPMIDIContext_t *spmc, SPMIDIVoiceTracker_t *voiceT
 	voiceTracker->isOn = FALSE;
 
 	spmc->synth->NoteOff( spmc->synth, voiceTracker->id );
-	/*
-	    PRTMSG("SPMIDI_VoiceOff: id = "); PRTNUMD( voiceTracker->id );
-	    PRTMSG(", frame = "); PRTNUMD( spmc->frameCount );
-	    PRTMSG(", timeOn = "); PRTNUMD( voiceTracker->timeOn );
-	    PRTMSG(", chan = "); PRTNUMD( voiceTracker->channel );
-	    PRTMSG(", pitch = "); PRTNUMD( voiceTracker->pitch );
-	    PRTMSG("\n");
-	*/
+/*
+    PRTMSG("SPMIDI_VoiceOff: id = "); PRTNUMD( voiceTracker->id );
+    PRTMSG(", frame = "); PRTNUMD( spmc->frameCount );
+    PRTMSG(", timeOn = "); PRTNUMD( voiceTracker->timeOn );
+    PRTMSG(", chan = "); PRTNUMD( voiceTracker->channel );
+    PRTMSG(", pitch = "); PRTNUMD( voiceTracker->pitch );
+    PRTMSG("\n");
+*/
 }
 
 #define STEALMSG(x) /* PRTMSG(x) */
@@ -976,6 +984,9 @@ static void SPMIDI_SetChannelBank( SPMIDIContext_t *spmc, int channelIndex, int 
 {
 	SPMIDIChannel_t *channel = &spmc->channels[ channelIndex ];
 	
+	//PRTMSGNUMD("SPMIDI_SetChannelBank: channelIndex = ", channelIndex );
+	//PRTMSGNUMD("SPMIDI_SetChannelBank: bankIndex = ", bankIndex );
+	
 	channel->insBank = (short) bankIndex;
 
 	/* Any channel can be a drum channel if GMIDI_RHYTHM_BANK_MSB is specified.
@@ -983,11 +994,11 @@ static void SPMIDI_SetChannelBank( SPMIDIContext_t *spmc, int channelIndex, int 
 	 */
 	if( channelIndex == MIDI_RHYTHM_CHANNEL_INDEX )
 	{
-		channel->isDrum = (unsigned char) (channel->insBank != (GMIDI_MELODY_BANK_MSB << 8) );
+		channel->isDrum = (unsigned char) (channel->insBank != (GMIDI_MELODY_BANK_MSB << SPMIDI_BANK_MSB_SHIFT) );
 	}
 	else
 	{
-		channel->isDrum = (unsigned char) (channel->insBank == (GMIDI_RHYTHM_BANK_MSB << 8) );
+		channel->isDrum = (unsigned char) (channel->insBank == (GMIDI_RHYTHM_BANK_MSB << SPMIDI_BANK_MSB_SHIFT) );
 	}
 
 	spmc->synth->SetChannelBank( spmc->synth, channelIndex, channel->insBank );
@@ -1008,7 +1019,7 @@ static void SPMIDI_HandleControlChange( SPMIDIContext_t *spmc, int channelIndex,
 	{
 	case MIDI_CONTROL_BANK:
 		/* LSB should not be preserved and should be set to zero. */
-		temp = (short) (value << 8);
+		temp = (short) (value << SPMIDI_BANK_MSB_SHIFT);
 		SPMIDI_SetChannelBank( spmc, channelIndex, temp );
 		break;
 	case MIDI_CONTROL_MODULATION: /* Modulation Depth. */
@@ -1027,7 +1038,7 @@ static void SPMIDI_HandleControlChange( SPMIDIContext_t *spmc, int channelIndex,
 		spmc->synth->SetChannelExpression( spmc->synth, channelIndex, value );
 		break;
 	case (MIDI_CONTROL_BANK + MIDI_CONTROL_LSB_OFFSET):
-		/* Preserve MSB and set LSB */
+		/* Preserve MSB with mask and set LSB */
 		temp = (short) ((channel->insBank & ~0x7F) | value);
 		SPMIDI_SetChannelBank( spmc, channelIndex, temp );
 		break;
@@ -1479,6 +1490,9 @@ int SPMIDI_Initialize( void )
 	{
 		SPMIDI_HostInit();
 
+		/* Initialize list for tracking contexts. */
+		DLL_InitList( &sContextList );
+
 		/* Initialize function table here to prevent ARM compiler warnings. */
 		i = 0;
 		ChannelCommandHandlers[i++] = SPMIDI_HandleNoteOff;       /* 0x80 */
@@ -1541,6 +1555,9 @@ int SPMIDI_CreateContext( SPMIDI_Context **contextPtr, int sampleRate )
 
 	DBUGMSG("SPMIDI Engine (C) Mobileer, built " __DATE__ "\n");
 
+	DLL_InitNode( &spmc->node );
+	DLL_AddTail( &sContextList, &spmc->node );
+
 	spmc->sampleRate = sampleRate;
 	spmc->maxVoices = SPMIDI_MAX_VOICES;
 
@@ -1588,6 +1605,7 @@ error:
 	{
 		SPMIDI_DeleteContext( (SPMIDI_Context *) spmc );
 	}
+	*contextPtr = NULL;
 	return result;
 }
 
@@ -1661,6 +1679,27 @@ void SPMIDI_SetMasterVolume( SPMIDI_Context *context, int masterVolume )
 	spmc->synth->SetMasterVolume( spmc->synth, masterVolume );
 }
 
+/*******************************************************************/
+int SPMIDI_StopAllVoices( void )
+{
+	int result = 0;
+	int err;
+	SPMIDIContext_t *spmc;
+
+	if( sIsInitialized )
+	{
+		/* Look for a voice playing the same pitch on that channel. */
+		DLL_FOR_ALL( SPMIDIContext_t, spmc, &sContextList )
+		{
+			err = spmc->synth->StopAllVoices( spmc->synth );
+			if( err < 0 )
+			{
+				result = err;
+			}
+		}
+	}
+	return result;
+}
 
 /*******************************************************************/
 int SPMIDI_SetParameter( SPMIDI_Context *context, SPMIDI_Parameter parameterIndex, int value )
@@ -1761,6 +1800,9 @@ int SPMIDI_DeleteContext( SPMIDI_Context *context )
 		SS_DeleteSynth( spmc->synth );
 		spmc->synth = NULL;
 	}
+	
+	DLL_Remove( &spmc->node );
+
 	SPMIDIContext_Free(spmc);
 	return 0;
 }
@@ -1816,9 +1858,13 @@ void SPMIDI_PrintStatus( SPMIDI_Context *context )
 			{
 				printf("    Voice: pitch = %d, vel = %d, onAt %d", voice->pitch, voice->velocity, voice->timeOn );
 				if( !voice->isOn )
+				{
 					printf(", offAt %d", voice->timeOff );
+				}
 				if( voice->channel != chan )
+				{
 					printf("ERROR - voice->channel = %d\n", voice->channel );
+				}
 				if( chan == MIDI_RHYTHM_CHANNEL_INDEX )
 				{
 					printf( ", %s", MIDI_GetDrumName( voice->pitch ) );
@@ -1854,12 +1900,14 @@ SoftSynth *SPMIDI_GetSynth( SPMIDI_Context *spmidiContext )
 int SPMIDI_SetInstrumentDefinition( SPMIDI_Context *spmidiContext, int insIndex, unsigned char *data, int numBytes )
 {
 	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
+	SPMIDI_StopAllVoices( );
 	return SS_SetInstrumentDefinition( spmc->synth, insIndex, data, numBytes );
 }
 
 int SPMIDI_SetInstrumentPreset( SPMIDI_Context *spmidiContext, int insIndex, void *inputPreset )
 {
 	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
+	SPMIDI_StopAllVoices( );
 	return SS_SetInstrumentPreset( spmc->synth, insIndex, inputPreset );
 }
 
@@ -1867,19 +1915,17 @@ int SPMIDI_SetInstrumentPreset( SPMIDI_Context *spmidiContext, int insIndex, voi
 /** Map a MIDI program number to an instrument index.
  * This allows multiple programs to be mapped to a single instrument.
  */
-int SPMIDI_SetInstrumentMap( SPMIDI_Context *spmidiContext, int programIndex, int insIndex )
+int SPMIDI_SetInstrumentMap( int bankIndex, int programIndex, int insIndex )
 {
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	return SS_SetInstrumentMap( spmc->synth, programIndex, insIndex );
+	return SS_SetInstrumentMap( bankIndex, programIndex, insIndex );
 }
 
 /** Map a MIDI drum pitch to an instrument index.
  * This allows multiple drums to be mapped to a single instrument.
  */
-int SPMIDI_SetDrumMap( SPMIDI_Context *spmidiContext, int noteIndex, int insIndex, int pitch )
+int SPMIDI_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch )
 {
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	return SS_SetDrumMap( spmc->synth, noteIndex, insIndex, pitch );
+	return SS_SetDrumMap( bankIndex, programIndex, noteIndex, insIndex, pitch );
 }
 
 /** Download a WaveTable for internal storage and use.
@@ -1896,6 +1942,7 @@ int SPMIDI_LoadWaveTable( SPMIDI_Context *spmidiContext, unsigned char *data, in
 int SPMIDI_UnloadWaveTable( SPMIDI_Context *spmidiContext, spmSInt32 token )
 {
 	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
+	SPMIDI_StopAllVoices( );
 	return SS_UnloadWaveTable( spmc->synth, token );
 }
 
@@ -1930,10 +1977,11 @@ int SPMIDI_AddWaveSet( SPMIDI_Context *spmidiContext, WaveSet_t *waveSet )
 	return SS_AddWaveSet( spmc->synth, waveSet, RESOURCE_UNDEFINED_ID );
 }
 
-/* Delete WaveSet if instrument reference count is zero. */
+/* Delete WaveSet if reference count is zero. */
 int SPMIDI_UnloadWaveSet( SPMIDI_Context *spmidiContext, spmSInt32 token )
 {
 	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
+	SPMIDI_StopAllVoices( );
 	return SS_UnloadWaveSet( spmc->synth, token );
 }
 

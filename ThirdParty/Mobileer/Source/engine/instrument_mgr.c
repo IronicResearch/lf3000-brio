@@ -82,7 +82,7 @@ SPMIDI_Error InsManager_Term( InsManager_t *insManager )
 }
 
 /* Allocate an instrument and set up its default values. */
-CustomIns_t *InsManager_Create( InsManager_t *insManager )
+CustomIns_t *InsManager_CreateInstrument( InsManager_t *insManager )
 {
 	/* Make an instrument preset. */
 	CustomIns_t *customInstr = SPMIDI_ALLOC_MEM( sizeof( CustomIns_t ), "CustomIns_t" );
@@ -98,7 +98,7 @@ CustomIns_t *InsManager_Create( InsManager_t *insManager )
 }
 
 /* Delete an instrument. */
-SPMIDI_Error InsManager_Delete( InsManager_t *insManager, CustomIns_t *instrument )
+SPMIDI_Error InsManager_DeleteInstrument( InsManager_t *insManager, CustomIns_t *instrument )
 {
 	if( instrument->tracker.token != RESOURCE_UNDEFINED_ID )
 	{
@@ -125,7 +125,7 @@ SPMIDI_Error InsManager_Clear( InsManager_t *insManager )
 	while( !DLL_IsEmpty( &insManager->insList ) )
 	{
 		CustomIns_t *instrument = (CustomIns_t *) DLL_First( &insManager->insList );
-		InsManager_Delete( insManager, instrument );
+		InsManager_DeleteInstrument( insManager, instrument );
 	}
 	return SPMIDI_Error_None;
 }

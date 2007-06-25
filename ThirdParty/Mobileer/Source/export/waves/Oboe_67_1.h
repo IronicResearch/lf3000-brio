@@ -2,7 +2,7 @@
 #define _OBOE_67_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -88,7 +88,6 @@ static NRLCONST WaveTable_t gOboe_67_1 =
 	(void *) gOboe_67_1Samples,
 #endif
 	sizeof(gOboe_67_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x433fb5),
 	-96412, /* SR = 15906 */
 	509,
 	549,

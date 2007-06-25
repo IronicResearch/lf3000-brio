@@ -1,4 +1,4 @@
-/* $Id: midifile_names_public.h,v 1.1 2005/11/28 19:09:08 philjmsl Exp $ */
+/* $Id: midifile_names_public.h,v 1.2 2006/06/13 02:22:17 philjmsl Exp $ */
 #ifndef _MIDIFILE_NAMES_H
 #define _MIDIFILE_NAMES_H
 /**

@@ -2,12 +2,12 @@
 #define _SONG_024ACGUITAR_H
 /**
  * SP-MIDI Song
- * Generated automatically by Mobileer Editor - V1.89
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
 
-unsigned char song_024AcGuitar[] = {
+const unsigned char song_024AcGuitar[] = {
 	77, 84, 104, 100, 0, 0, 0, 6, 
 	0, 0, 0, 1, 1, 128, 77, 84, 
 	114, 107, 0, 0, 1, 23, 0, 255, 

@@ -2,7 +2,7 @@
 #define _SONG_ECHOECHO_RT_H
 /**
  * SP-MIDI Song
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */

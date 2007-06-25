@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_SYNTH_H
 #define _SPMIDI_SYNTH_H
 
-/* $Id: spmidi_synth.h,v 1.29 2005/10/26 17:18:11 philjmsl Exp $ */
+/* $Id: spmidi_synth.h,v 1.31 2007/06/06 01:50:58 philjmsl Exp $ */
 /**
  *
  * SPMIDI_SYNTH header.
@@ -67,6 +67,7 @@ extern "C"
 	/** Define a pseudo-class for a synthesizer. */
 	typedef struct SoftSynth_s
 	{
+
 		/** Read PCM audio from the synthesis engine. */
 		int (*SynthesizeBuffer)( struct SoftSynth_s *synth, void *samples,
 		                         int samplesPerFrame, int bitsPerSample );
@@ -111,18 +112,20 @@ extern "C"
 		/** Set master volume where 0x080 is unity gain. */
 		void (*SetMasterVolume)( struct SoftSynth_s *synth, FXP7 masterVolume );
 
-
-		/** Turn off all active voices on a channel as if their envelopes had finished.
-		 * AutoStopCallback functions will be called for any voice active.
+		/** Turn off all active voices on a channel by asking them to ramp down ASAP.
+		 * AutoStopCallback functions will be called when they finish ramping down.
 		 */
 		void (*AllSoundOff)( struct SoftSynth_s *synth, int channelIndex );
+
+		/** Immediately kill all voices. Do not ramp down. This will probably click.
+		 */
+		int (*StopAllVoices)( struct SoftSynth_s *synth );
 
 		/**
 		 * Turn General MIDI on or off.
 		 * @param isOn Set to 1 to turn on General MIDI node, 0 for off.
 		 */
 		void (*SetGeneralMIDIMode)( struct SoftSynth_s *synth, int isOn );
-
 
 		/**
 		 * Set indexed parameter for synthesizer.
@@ -169,16 +172,6 @@ extern "C"
 	int SS_SetInstrumentDefinition( SoftSynth *synth, int insIndex, unsigned char *data, int numBytes );
 
 	int SS_SetInstrumentPreset( SoftSynth *synth,  int insIndex, void *inputPreset );
-
-	/** Map a MIDI program number to an instrument index.
-	 * This allows multiple programs to be mapped to a single instrument.
-	 */
-	int SS_SetInstrumentMap( SoftSynth *synth, int programIndex, int insIndex );
-
-	/** Map a MIDI drum pitch to an instrument index.
-	 * This allows multiple drums to be mapped to a single instrument.
-	 */
-	int SS_SetDrumMap( SoftSynth *synth, int noteIndex, int insIndex, int pitch );
 
 
 #if SPMIDI_ME2000

@@ -20,9 +20,9 @@
 #define DBUGNUMH(x)
 #endif
 
-#define FRAME_RATE              (8000)
+#define FRAME_RATE              (22050)
 #define SAMPLES_PER_FRAME       (1)
-#define MAX_SIMULTANEOUS_NOTES  (8)
+#define MAX_SIMULTANEOUS_NOTES  (32)
 
 #define USE_ONLY_WAVETABLES     (1)
 #define USE_HALF_WAVETABLES     (0)
@@ -158,7 +158,7 @@ int Benchmark_Run( long *checkSumPtr, long *numFramesPtr, long *frameRatePtr )
 int Benchmark_Term( void )
 {
 	PRTMSGNUMD( "Max active notes was ",
-		SPMIDI_GetMaxNoteCount( spmidiContext ) );
+	SPMIDI_GetMaxNoteCount( spmidiContext ) );
 	return SPMIDI_DeleteContext(spmidiContext);
 }
 

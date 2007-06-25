@@ -2,7 +2,7 @@
 #define _CLARINET_058_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -254,7 +254,6 @@ static NRLCONST WaveTable_t gClarinet_058_1 =
 	(void *) gClarinet_058_1Samples,
 #endif
 	sizeof(gClarinet_058_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x3a2496),
 	-95972, /* SR = 15981 */
 	1810,
 	1878,

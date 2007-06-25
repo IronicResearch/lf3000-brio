@@ -1,4 +1,4 @@
-/* $Id: oscillator.c,v 1.34 2006/03/24 19:59:35 philjmsl Exp $ */
+/* $Id: oscillator.c,v 1.38 2007/06/18 18:03:49 philjmsl Exp $ */
 /**
  *
  * Oscillator with multiple waveforms.
@@ -385,6 +385,49 @@ void Osc_Term( void )
 
 /***********************************************************************/
 #if SPMIDI_ME2000
+
+#if SPMIDI_USE_REGIONS
+/*******************************************************************************/
+/**
+ * Find first region in instrument that matches the pitch and velocity.
+ */
+WaveSetRegion_t *Osc_FindMatchingRegion( const WaveSet_t *waveSet, int pitch, int velocity )
+{
+	WaveSetRegion_t *candidate = NULL;
+	WaveSetRegion_t *match = NULL;
+	WaveSetRegion_t *bestTableIgnoringVelocity = NULL;
+	int i;
+	(void) velocity;
+
+	//PRTMSGNUMD("Osc_FindMatchingRegion pitch = ", pitch );
+	//PRTMSGNUMH("Osc_FindMatchingRegion numTables = ", waveSet->numTables );
+	for( i=0; i<waveSet->numTables; i++ )
+	{
+		candidate = &(waveSet->regions[i]);
+		//PRTMSGNUMD("Osc_FindMatchingRegion lowPitch = ", candidate->lowPitch );
+		//PRTMSGNUMD("Osc_FindMatchingRegion highPitch = ", candidate->highPitch );
+		if( (pitch >= candidate->lowPitch) && (pitch <= candidate->highPitch))
+		{
+			bestTableIgnoringVelocity = candidate;
+			//PRTMSGNUMH("Osc_FindMatchingRegion bestTableIgnoringVelocity = ", bestTableIgnoringVelocity );
+			if( (velocity >= candidate->lowVelocity) && (velocity <= candidate->highVelocity) )
+			{
+				match = candidate;
+				//PRTMSGNUMH("Osc_FindMatchingRegion matching region = ", match );
+				break;
+			}
+		}
+	}
+	
+	// Just in case no match for velocity range.
+	if( match == NULL )
+	{
+		match = bestTableIgnoringVelocity;
+	}
+	//PRTMSGNUMH("Osc_FindMatchingRegion using table = ", match->table );
+	return match;
+}
+#else
 WaveTable_t *Osc_SelectNearestWaveTable( const WaveSet_t *waveSet, FXP16 octavePitch, int velocityNote )
 {
 	/* Scan for closest table in pitch to starting note. */
@@ -447,8 +490,8 @@ WaveTable_t *Osc_SelectNearestWaveTable( const WaveSet_t *waveSet, FXP16 octaveP
 
 	return bestTable;
 }
+#endif
 #endif /* SPMIDI_ME2000 */
-
 
 /***********************************************************************/
 /** Called when a NoteOn is processed.
@@ -457,14 +500,23 @@ WaveTable_t *Osc_SelectNearestWaveTable( const WaveSet_t *waveSet, FXP16 octaveP
  * parameters based on pitch.
  */
 void Osc_Start( const Oscillator_Preset_t *preset, Oscillator_t *osc,
-                FXP16 octavePitch, FXP16 srateOffset )
+                FXP16 octavePitch, FXP16 srateOffset, WaveSetRegion_t *waveSetRegion )
 {
 	int divisor;
 	int bestWaveForm;
 
 	osc->phase = 0;
 
-	Osc_SetPitch( preset, osc, octavePitch, srateOffset );
+#if SPMIDI_ME2000
+	if( preset->waveform == WAVETABLE )
+	{
+		Osc_SetWavePitch( preset, osc, octavePitch, srateOffset, waveSetRegion );
+	}
+	else
+#endif
+	{
+		Osc_SetPitch( preset, osc, octavePitch, srateOffset );
+	}
 
 	bestWaveForm = preset->waveform;
 
@@ -550,16 +602,16 @@ void Osc_Start( const Oscillator_Preset_t *preset, Oscillator_t *osc,
 		osc->shared.wave.sampleIndex = 0;
 
 		/* Determine when the wave oscillator should stop and decide what to do next. */
-		if ( osc->shared.wave.waveTable->loopEnd > 0 )
+		if ( waveSetRegion->table->loopEnd > 0 )
 		{
 			/* Stop when we get to the end of the loop
 			 * so we can jump back to start of loop. */
-			osc->shared.wave.endAt = osc->shared.wave.waveTable->loopEnd;
+			osc->shared.wave.endAt = waveSetRegion->table->loopEnd;
 		}
 		else
 		{
 			/* No loop so stop at end of the sample. */
-			osc->shared.wave.endAt = osc->shared.wave.waveTable->numSamples;
+			osc->shared.wave.endAt = waveSetRegion->table->numSamples;
 		}
 		
 		break;
@@ -585,30 +637,40 @@ void Osc_SetPitch( const Oscillator_Preset_t *preset, Oscillator_t *osc,
 		octavePitch += preset->pitchControl; /* pitch offset relative to noteOn pitch */
 	}
 	octavePitch += srateOffset;
+	osc->phaseInc = SPMUtil_OctaveToPhaseIncrement( octavePitch );
+}
+
 #if SPMIDI_ME2000
-
-	if ( preset->waveform == WAVETABLE )
+/***********************************************************************/
+/**
+ * Set pitch of oscillator by calculating phaseIncrement.
+ * @param srateOffset Add an offset if the sample rate of the calculation is less than SS_BASE_SAMPLE_RATE.
+ */
+void Osc_SetWavePitch( const Oscillator_Preset_t *preset, Oscillator_t *osc,
+                   FXP16 octavePitch, FXP16 srateOffset, WaveSetRegion_t *waveSetRegion )
+{
+	FXP16 wavePitch;
+	if ( preset->flags & OSC_FLAG_ABSOLUTE_PITCH )
 	{
-		/* SS_WAVE_OCTAVE_BASE is calculated in "spmidi_synth_util.c".
-		 * It is the octavePitch that will result in an equivalent value of 1.0 for the wave phase increment.
-		 */
-#define SS_WAVE_OCTAVE_BASE (0x000c65aa)
-		FXP16 wavePitch = SS_WAVE_OCTAVE_BASE
-		                  + osc->shared.wave.waveTable->sampleRateOffset /* Adjust because samples are recorded at various rates. */
-		                  + (octavePitch - osc->shared.wave.waveTable->basePitch);
-
-		osc->phaseInc = SPMUtil_OctaveToPhaseIncrement( wavePitch );
+		octavePitch = preset->pitchControl; /* absolute pitch, ignore noteOn pitch */
 	}
 	else
-#endif /* SPMIDI_ME2000 */
-
 	{
-		osc->phaseInc = SPMUtil_OctaveToPhaseIncrement( octavePitch );
+		octavePitch += preset->pitchControl; /* pitch offset relative to noteOn pitch */
 	}
-	DBUGMSG("Osc_SetPitch: phaseInc = ");
-	DBUGNUMH(osc->phaseInc);
-	DBUGMSG("\n");
+	octavePitch += srateOffset;
+
+	/* SS_WAVE_OCTAVE_BASE is calculated in "spmidi_synth_util.c".
+	 * It is the octavePitch that will result in an equivalent value of 1.0 for the wave phase increment.
+	 */
+#define SS_WAVE_OCTAVE_BASE (0x000c65aa)
+	wavePitch = SS_WAVE_OCTAVE_BASE
+	                  + waveSetRegion->table->sampleRateOffset /* Adjust because samples are recorded at various rates. */
+					  + octavePitch
+					  - waveSetRegion->basePitch;
+	osc->phaseInc = SPMUtil_OctaveToPhaseIncrement( wavePitch );
 }
+#endif
 
 #if SPMIDI_SUPPORT_EDITING
 /***********************************************************************/

@@ -1,4 +1,4 @@
-/* $Id: spmidi_util.c,v 1.24 2006/05/16 00:01:51 philjmsl Exp $ */
+/* $Id: spmidi_util.c,v 1.26 2007/06/18 18:03:49 philjmsl Exp $ */
 /**
  *
  * Utility functions for playing notes, etc.
@@ -35,11 +35,14 @@ void SPMUtil_ControlChange( SPMIDI_Context *spmidiContext, int channel, int cont
 }
 
 /*******************************************************************/
-/* Use bankIndex because of bank to prevent Blackfin compiler errors. */
+/* Use variable named "bankIndex" instead of "bank" to prevent strange Blackfin compiler errors. */
 void SPMUtil_BankSelect( SPMIDI_Context *spmidiContext, int channel, int bankIndex)
 {
-	SPMIDI_WriteCommand( spmidiContext, MIDI_CONTROL_CHANGE + channel, MIDI_CONTROL_BANK, ( bankIndex >> 8 ) & 0x7F );
-	SPMIDI_WriteCommand( spmidiContext, MIDI_CONTROL_CHANGE + channel, MIDI_CONTROL_BANK + MIDI_CONTROL_LSB_OFFSET, ( bankIndex ) & 0x7F );
+	SPMIDI_WriteCommand( spmidiContext, MIDI_CONTROL_CHANGE + channel,
+		MIDI_CONTROL_BANK, ( bankIndex >> SPMIDI_BANK_MSB_SHIFT ) & 0x7F );
+	/* Write LSB after MSB according to MIDI spec. */
+	SPMIDI_WriteCommand( spmidiContext, MIDI_CONTROL_CHANGE + channel,
+		MIDI_CONTROL_BANK + MIDI_CONTROL_LSB_OFFSET, ( bankIndex ) & 0x7F );
 }
 
 /*******************************************************************/
@@ -86,11 +89,11 @@ void SPMUtil_Reset( SPMIDI_Context *spmidiContext )
 void SPMUtil_SetBendRange( SPMIDI_Context *spmidiContext, int channel, int semitones, int cents)
 {
 	/* Point to bend range RPN. */
-	SPMUtil_ControlChange( spmidiContext, channel, 101, 0 );
+	SPMUtil_ControlChange( spmidiContext, channel, 101, 0 ); /* MSB */
 	SPMUtil_ControlChange( spmidiContext, channel, 100, 0 );
-	/* Set bend range. */
-	SPMUtil_ControlChange( spmidiContext, channel, 6, semitones );
-	SPMUtil_ControlChange( spmidiContext, channel, 38, cents );
+	/* Set bend range. Send MSB first cuz LSB reset when MSB received. */
+	SPMUtil_ControlChange( spmidiContext, channel, 6, semitones ); /* MSB */
+	SPMUtil_ControlChange( spmidiContext, channel, (6+32), cents );
 	/* For safety, reset RPN to NULL. */
 	SPMUtil_ControlChange( spmidiContext, channel, 101, 127 );
 	SPMUtil_ControlChange( spmidiContext, channel, 100, 127 );

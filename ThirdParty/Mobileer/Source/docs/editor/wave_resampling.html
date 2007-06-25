@@ -41,12 +41,13 @@
 <h2>Mobileer Instrument Editor</h2>
 <h3>Changing the Sample Rate </h3>
 <p>When you record your raw sample in the studio you should record them at a high sample rate, eg. 44100 Hz or 48000 Hz. This way you are starting with raw material of high quality.</p>
-<p><img style="float:right" src="images/resampling.png">But you may be producing a wavetable that will be played on a synthesizer running at 16000 Hz. If you used a 44100 Hz sample in that case then you would be wasting memory. That is because a wavetable size is proportional to its sample rate. A 44100 Hz file is bigger than a 16000 Hz file. And you won't hear the higher quality of the 44100 Hz file if it's played at 12000 Hz so the fidelity is wasted. You should, therefore, resample the original wave file to create a wavetable at a lower sample rate.</p>
+<p><img src="images/resampling.png" width="159" height="64" style="float:right">But you may be producing a wavetable that will be played on a synthesizer running at 16000 Hz. If you used a 44100 Hz sample in that case then you would be wasting memory. That is because a wavetable size is proportional to its sample rate. A 44100 Hz file is bigger than a 16000 Hz file. You won't hear the higher quality of the 44100 Hz file if it's played at 12000 Hz so the fidelity is wasted. You should, therefore, resample the original wave file to create a wavetable at a lower sample rate.</p>
 <ol>
     <li>Enter 16000 Hz in the Sample Rate field at the bottom of the WaveTable editor. Note that the text turns red. This is to indicate that it has not yet been entered. Please hit ENTER key to finish entering this number. </li>
     <li>If you plan on looping the wavetable then click the &quot;Quantize Period&quot; button. <img src="images/quantize_period_button.png"> This will optimize the sample rate so that your loop will be an integer number of samples. This requires a correctly <a href="wave_pitch.html">measured pitch</a>. If you do not quantize the period then the pitch can drop or jump when you play the loop portion of the wavetable. </li>
     <li>Check the &quot;ReSample&quot; checkbox. You may need to zoom out to find your place in the waveform display. </li>
 </ol>
+<p>Note that you can change the sample rate for an entire wave tree in a batch process if you wish. Select part of wave tree then select &quot;Change Sample Rate&quot; in File menu of WaveTable tab. This could be handy if you want to use existing wavetables for a new product that can support a higher sample rate, or needs a lower sample rate. </p>
 <p align="center">| <a href="index.html">Top</a> | <a href="wave_renaming.html">Previous</a> | <a href="wave_loops.html">Next</a> |</p>
 <meta name="Author" content="Phil Burk">
    <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">

@@ -1,4 +1,4 @@
-/* $Id: spmidi_hybrid.c,v 1.71 2006/03/24 19:59:35 philjmsl Exp $ */
+/* $Id: spmidi_hybrid.c,v 1.82 2007/06/18 18:03:49 philjmsl Exp $ */
 /**
  *
  * Hybrid SPMIDI Synth that uses
@@ -28,7 +28,7 @@
 #include "memtools.h"
 
 /* Print sizes of major data structures. */
-#define SPMIDI_SUPPORT_SIZE_REPORTING (0)
+#define SPMIDI_REPORT_SIZES (0)
 
 #define SPMIDI_TEST_WAVETABLE  (0)
 
@@ -84,6 +84,11 @@
 /* Data shared among all HybridSynthesizers. */
 HybridSynthShared_t sHybridSynthShared = { 0 };
 
+#if SPMIDI_SUPPORT_MALLOC
+#define HybridSynth_Allocate()   SPMIDI_ALLOC_MEM( sizeof(HybridSynth_t), "HybridSynth_t" )
+#define HybridSynth_Free(cntxt)  SPMIDI_FreeMemory(cntxt)
+#else
+
 /* Pool of synths that can be allocated without using malloc. */
 #ifdef SYNTH_AT_FIXED_ADDRESS
 #define sHybridSynthPool ((HybridSynth_t *)  SYNTH_AT_FIXED_ADDRESS)
@@ -138,6 +143,7 @@ static void HybridSynth_Free( HybridSynth_t *synth )
 	}
 	SPMIDI_LeaveCriticalSection();
 }
+#endif
 
 /*****************************************************************/
 /* Pitch offsets adjust synth tuning to account for different sample rates.*/
@@ -280,6 +286,13 @@ static const short gTestWaveSamples[] = {
 	30000,
 };
 
+/* If non-relocatable, then we can make structures const and init with pointers. */
+#if SPMIDI_RELOCATABLE
+    #define NRLCONST  /* */
+#else
+    #define NRLCONST  const
+#endif
+
 static NRLCONST WaveTable_t gTestWaveTable =
 {
 	{{0}}, /* tracker */
@@ -295,7 +308,12 @@ static NRLCONST WaveTable_t gTestWaveTable =
 	12, // loopEnd
 };
 
-static NRLCONST WaveTable_t *gTestWave_Tables[1];
+#if SPMIDI_USE_REGIONS
+	static WaveSetRegion_t gTestWave_Regions[1] = {{0,127,0,127}};
+#else
+	static NRLCONST WaveTable_t *gTestWave_Tables[1];
+#endif
+
 static WaveSet_t gTestWave_Set = {{{0}}};
 #define SPMIDI_WAVESET_TestWave   (99)
 
@@ -304,9 +322,14 @@ static void SS_LoadTestWaves( WaveManager_t *waveManager )
 #if SPMIDI_RELOCATABLE
   gTestWaveTable.samples = (spmSample *) gTestWaveSamples;
 #endif
-  gTestWave_Tables[0] = &gTestWaveTable;
   gTestWave_Set.numTables = 1;
+#if SPMIDI_USE_REGIONS
+  gTestWave_Regions[0].table = &gTestWaveTable;
+  gTestWave_Set.regions = (WaveSetRegion_t *)gTestWave_Regions;
+#else
+  gTestWave_Tables[0] = &gTestWaveTable;
   gTestWave_Set.tables = (WaveTable_t **)gTestWave_Tables;
+#endif
   WaveManager_AddWaveSet( waveManager, &gTestWave_Set, SPMIDI_WAVESET_TestWave );
 }
 #endif
@@ -482,7 +505,7 @@ void SS_AutoStopVoice( SoftSynth *synth, HybridVoice_t *voice )
 }
 
 /********************************************************************/
-#if SPMIDI_SUPPORT_SIZE_REPORTING
+#if SPMIDI_REPORT_SIZES
 static void SS_ReportSizes( void )
 {
 	int sum = 0;
@@ -507,7 +530,7 @@ static void SS_ReportSizes( void )
 	PRINT_SIZE( WaveSet_t );
 #endif
 
-	PRINT_SIZE_NUM( HybridVoice_Preset_t, SS_NUM_VALID_PRESETS );
+	PRINT_SIZE_NUM( HybridVoice_Preset_t, SS_GetSynthPresetCount() );
 
 	PRINT_SIZE( HybridSynth_t );
 
@@ -520,7 +543,6 @@ static void SS_ReportSizes( void )
 #else
 #define SS_ReportSizes()  /* noop */
 #endif
-
 
 /********************************************************************/
 /**
@@ -535,7 +557,7 @@ static void SS_UpdateInfo( HybridSynth_t *hybridSynth, const HybridVoice_Preset_
 	ADSR_Load( &preset->ampEnv, &info->ampEnv, hybridSynth->controlRate );
 
 #if SPMIDI_ME2000
-
+	info->waveSet = NULL;
 	{
 		WaveSet_t *waveSet = NULL;
 		if( preset->waveSetID != 0 )
@@ -543,11 +565,15 @@ static void SS_UpdateInfo( HybridSynth_t *hybridSynth, const HybridVoice_Preset_
 			waveSet = WaveManager_FindWaveSet( &sHybridSynthShared.waveManager, preset->waveSetID );
 			if( waveSet == NULL )
 			{
-				PRTMSG("ERROR in Osc_LoadWaveSet - waveSet not found.");
+				PRTMSGNUMD("ERROR in Osc_LoadWaveSet - waveSet not found, ID = ", preset->waveSetID );
 				/* To prevent further errors, just use first WaveSet.
-				 * This shouldnot happen during production, only when editing.
+				 * This should not happen during production, only when editing.
 				 */
-				waveSet = WaveManager_FindWaveSet( &sHybridSynthShared.waveManager, 1 );
+				waveSet = WaveManager_GetFirstWaveSet( &sHybridSynthShared.waveManager );
+				if( waveSet == NULL )
+				{
+					PRTMSG("ERROR in Osc_LoadWaveSet - WaveManager_GetFirstWaveSet failed.\n");
+				}
 			}
 		}
 		info->waveSet = waveSet;
@@ -620,6 +646,9 @@ static void SS_FreeInfo( HybridVoice_Info_t *info )
 	info->numUsers -= 1;
 	if( info->numUsers <= 0 )
 	{
+#if SPMIDI_ME2000
+		info->waveSet = NULL;
+#endif
 		info->preset = NULL;
 		info->numUsers = 0;
 	}
@@ -1133,8 +1162,8 @@ static int SS_SynthesizeBuffer( SoftSynth *synth, void *samples,
 }
 
 /***********************************************************************/
-static const HybridVoice_Preset_t *SS_LookupPresetGM( HybridSynth_t *hybridSynth,
-        const spmUInt8 *presetTable, int bankIndex, int program )
+static const HybridVoice_Preset_t *SS_LookupMelodicPresetGM( HybridSynth_t *hybridSynth,
+	int bankIndex, int program )
 {
 	const HybridVoice_Preset_t *preset;
 
@@ -1147,8 +1176,28 @@ static const HybridVoice_Preset_t *SS_LookupPresetGM( HybridSynth_t *hybridSynth
 	}
 	else
 	{
-		int presetIndex = presetTable[ program ];
-		preset = SS_GetSynthPreset( presetIndex );
+		preset = SS_GetSynthMelodicPreset( bankIndex, program );
+	}
+
+	return preset;
+}
+
+/***********************************************************************/
+static const HybridVoice_Preset_t *SS_LookupDrumPresetGM( HybridSynth_t *hybridSynth,
+	int bankIndex, int program, int pitch )
+{
+	const HybridVoice_Preset_t *preset;
+
+	/* When General MIDI is turned off, the normal instruments
+	 * are replaced with simple test instruments. */
+	if(( hybridSynth->isGeneralMidiOff ) && ( bankIndex == SPMIDI_TEST_BANK ))
+	{
+		int presetIndex = program % SS_NUM_TEST_PRESETS;
+		preset = &gHybridSynthTestPresets[ presetIndex ];
+	}
+	else
+	{
+		preset = SS_GetSynthDrumPreset( bankIndex, program, pitch );
 	}
 
 	return preset;
@@ -1235,8 +1284,9 @@ static void SS_AdjustPhaseMod( HybridVoice_t *voice )
 /**
  * Modify pitch of a voice.
  */
-static void SS_SetBasePitch( HybridSynth_t *hybridSynth, HybridVoice_t *voice, int pitch, int velocity )
+static int SS_SetBasePitch( HybridSynth_t *hybridSynth, HybridVoice_t *voice, int pitch, int velocity )
 {
+	WaveSetRegion_t *region = NULL;
 	HybridChannel_t *channel = &hybridSynth->channels[ voice->channel ];
 	int keyCenter = voice->preset->keyCenter;
 	int scaledPitch = ((pitch - keyCenter) * voice->preset->keyScalar) + (keyCenter << SPMIDI_PITCH_SCALAR_SHIFT);
@@ -1247,45 +1297,64 @@ static void SS_SetBasePitch( HybridSynth_t *hybridSynth, HybridVoice_t *voice, i
 	                       channel->tuningOctaveOffset;
 
 	/* Adjust for control rate */
-	Osc_Start( &voice->preset->lfo, &voice->lfo, voice->baseNotePitch, lfoPitchOffset );
+	Osc_Start( &voice->preset->lfo, &voice->lfo, voice->baseNotePitch, lfoPitchOffset, NULL );
 
 	/* Set up modOsc, alias vibratoLFO */
 #if SPMIDI_ME3000
 	if( IS_VOICE_DLS(voice) )
 	{
-		Osc_Start( &voice->preset->vibratoLFO, &voice->vibratoLFO, voice->baseNotePitch, lfoPitchOffset );
+		Osc_Start( &voice->preset->vibratoLFO, &voice->vibratoLFO, voice->baseNotePitch, lfoPitchOffset, NULL );
 	}
 	else
 #endif
 	{
-		Osc_Start( &voice->preset->modOsc, &voice->modOsc, voice->baseNotePitch, hybridSynth->srateOffset );
+		Osc_Start( &voice->preset->modOsc, &voice->modOsc, voice->baseNotePitch, hybridSynth->srateOffset, NULL );
 	}
 
-
 #if SPMIDI_ME2000
-
 	if( voice->preset->mainOsc.waveform == WAVETABLE )
 	{
 #if SPMIDI_ME3000
 		if( IS_VOICE_DLS(voice) )
 		{
-			voice->mainOsc.shared.wave.waveTable = &voice->dlsRegion->waveTable;
+			region = &voice->dlsRegion->waveSetRegion;
 		}
-		else if (voice->info->waveSet != NULL)
+		else 
 #endif /* SPMIDI_ME3000 */
-
+		/* This 'if' phrase was moved outside the above #if statement on 6/26/06
+		 * It prevents a crash in the editor when switching synth targets.
+		 */
+		if (voice->info->waveSet != NULL)
 		{
-			voice->mainOsc.shared.wave.waveTable = Osc_SelectNearestWaveTable(
-			                                           voice->info->waveSet,
-													   voice->baseNotePitch,
-													   velocity );
+			region = Osc_FindMatchingRegion( voice->info->waveSet,
+									pitch,
+									velocity );
+			if( region == NULL )
+			{
+				goto abort_voice;
+			}
+			
+			//PRTMSGNUMH("SS_SetBasePitch: pitch = ", pitch );
+			//PRTMSGNUMH("SS_SetBasePitch: voice->baseNotePitch = ", voice->baseNotePitch );
+			//PRTMSGNUMH("SS_SetBasePitch: waveSetRegion->basePitch = ", voice->waveSetRegion->basePitch );
 		}
+		voice->waveSetRegion = region;
 	}
+#else
+	(void) velocity;
 #endif /* SPMIDI_ME2000 */
 
-	Osc_Start( &voice->preset->mainOsc, &voice->mainOsc, voice->baseNotePitch, hybridSynth->srateOffset );
+
+	Osc_Start( &voice->preset->mainOsc, &voice->mainOsc, voice->baseNotePitch, hybridSynth->srateOffset, region );
 
 	SS_AdjustPhaseMod( voice );
+	return 0;
+
+#if SPMIDI_ME2000
+abort_voice:
+	SS_AutoStopVoice( (SoftSynth *) hybridSynth, voice );
+	return -1;
+#endif
 }
 
 /********************************************************************/
@@ -1312,7 +1381,7 @@ static void SS_NoteOff( SoftSynth *synth, int voiceIndex )
 
 			if( voice->preset->mainOsc.waveform == WAVETABLE )
 			{
-				Osc_WaveTable_Release( &voice->mainOsc );
+				Osc_WaveTable_Release( &voice->mainOsc, voice->waveSetRegion->table );
 			}
 #endif /* SPMIDI_ME2000 */
 
@@ -1349,7 +1418,6 @@ static void SS_StartVoice( HybridSynth_t *hybridSynth, HybridVoice_t *voice, con
 	{
 		SS_FreeInfo( voice->info );
 		voice->info = NULL;
-
 	}
 
 	if( voice->info == NULL )
@@ -1431,17 +1499,18 @@ static void SS_NoteOn( SoftSynth *synth, int voiceIndex, int channelIndex,
 	if( preset == NULL )
 #endif	
 	{
-		preset = SS_LookupPresetGM( hybridSynth, SS_GetSynthProgramMap(),
-			channel->insBank, channel->program );
+		preset = SS_LookupMelodicPresetGM( hybridSynth, channel->insBank, channel->program );
 
-		/* For GM sound effects but not bird tweet, force pitch between 60 and 71 */
+		/* For GM sound effects but not bird tweet, force pitch between 60 and 71.
+		 * Note that 0x78 = 120 and 0x7B = 123.
+		 */
 		if( (channel->program >= 0x78) && (channel->program != 0x7B) )
 		{
 			synthPitch = 60 + (synthPitch % 12);
 		}
 	}
 	
-#if 0	
+#if 0
 		PRTNUMD( pitch ); PRTMSG( " = pitch in SS_NoteOn()\n" );
 		PRTNUMH( synthPitch ); PRTMSG( " = synthPitch\n" );
 	    PRTNUMH( channelIndex ); PRTMSG( " = channelIndex\n" );
@@ -1477,7 +1546,6 @@ static void SS_TriggerDrum( SoftSynth *synth, int voiceIndex, int channelIndex,
 	HybridChannel_t *channel = &hybridSynth->channels[ channelIndex ];
 	int velocity14;
 
-
 	voice->isDrum = 1;
 
 #if SPMIDI_ME3000
@@ -1491,21 +1559,22 @@ static void SS_TriggerDrum( SoftSynth *synth, int voiceIndex, int channelIndex,
 	else
 #endif
 	{
-		int drumIndex = pitch - GMIDI_FIRST_DRUM;
-		if( (drumIndex < 0) ||
-				(drumIndex >= SS_GetSynthDrumMapSize()) )
-		{
-			drumIndex = 0;
-		}
-
-		preset = SS_LookupPresetGM( hybridSynth, SS_GetSynthDrumMap(),
-			channel->insBank, drumIndex );
-		acousticPitch = SS_GetSynthDrumPitchArray()[ drumIndex ];
+		preset = SS_LookupDrumPresetGM( hybridSynth, 
+			channel->insBank, channel->program, pitch );
+		
+		acousticPitch = SS_GetSynthDrumPitch( channel->insBank, channel->program, pitch );
 	}
 
 	velocity = SS_ApplyVelocityEQ( hybridSynth, acousticPitch, velocity );
 	velocity14 = SS_ApplyVelocityTransform( velocity );
-
+/*
+	PRTMSGNUMD("SS_TriggerDrum -------------- pitch = ", pitch );
+	PRTMSGNUMH("preset = ", preset );
+	PRTMSGNUMD("main flags = ", preset->mainEnv.flags );
+	PRTMSGNUMD("amp flags = ", preset->mainEnv.flags );
+	PRTMSGNUMD("mainOsc waveform = ", preset->mainOsc.waveform );
+	PRTMSGNUMD("waveset = ", preset->waveSetID );
+*/
 	/* Apply FXP7 RhythmVolume to FXP14 velocity14 after transform to gain. */
 	velocity14 = (velocity14 * hybridSynth->softSynth.rhythmVolume) >> 7;
 
@@ -1558,6 +1627,37 @@ static void SS_SetGeneralMIDIMode( SoftSynth *synth, int isOn )
 {
 	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
 	hybridSynth->isGeneralMidiOff = (unsigned char) !isOn;
+}
+
+/***********************************************************************/
+static int SS_StopAllVoices( SoftSynth *synth )
+{
+	int result = 0;
+	int i;
+	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
+	HybridVoice_t *voice = &hybridSynth->voices[0];
+	HybridVoice_Info_t *info;
+
+	for( i=0; i<SPMIDI_MAX_VOICES; i++ )
+	{
+		if( voice->active )
+		{
+			SS_AutoStopVoice( synth, voice );
+		}
+		voice++;
+	}
+	
+	/* Scan info structures to make sure that all are free. */
+	for( i=0; i<SS_NUM_INFOS; i++ )
+	{
+		info = &hybridSynth->infoCache[i];
+		if( (info->preset != NULL) || (info->numUsers > 0) )
+		{
+			PRTMSGNUMD("SS_StopAllVoices: ERROR - info not free! numUsers = \n", info->numUsers );
+			result = -1; // TODO add proper error
+		}
+	}
+	return result;
 }
 
 /***********************************************************************/
@@ -1740,6 +1840,7 @@ int SS_Terminate()
 	InsManager_Term( &sHybridSynthShared.insManager );
 #endif
 
+	SS_Orchestra_Term();
 	return SPMIDI_Error_None;
 }
 
@@ -1765,18 +1866,23 @@ int SS_Initialize()
 	/* Initialize data structures shared by all synths. */
 	Osc_Init();
 
+	SS_Orchestra_Init();
+
 #if SPMIDI_SUPPORT_EDITING
 	InsManager_Init( &sHybridSynthShared.insManager );
 #endif
 
 #if SPMIDI_ME2000
 	WaveManager_Init( &sHybridSynthShared.waveManager );
+
 	WaveManager_LoadWaves( &sHybridSynthShared.waveManager );
 	#if SPMIDI_TEST_WAVETABLE
 		/* Load simple waveform for testing. */
 		SS_LoadTestWaves( &sHybridSynthShared.waveManager );
 	#endif
 #endif
+	
+	SS_LoadPresetOrchestra();
 
 	return SPMIDI_Error_None;
 }
@@ -1861,6 +1967,7 @@ int SS_CreateSynth( SoftSynth **synthPtr, int sampleRate )
 	softSynth->TriggerDrum          = SS_TriggerDrum;
 	softSynth->SetParameter         = SS_SetParameter;
 	softSynth->GetParameter         = SS_GetParameter;
+	softSynth->StopAllVoices        = SS_StopAllVoices;
 
 	hybridSynth->softSynth.masterVolume = SPMIDI_DEFAULT_MASTER_VOLUME;
 	hybridSynth->softSynth.rhythmVolume = SPMIDI_DEFAULT_MASTER_VOLUME;
@@ -1898,21 +2005,27 @@ int SS_CreateSynth( SoftSynth **synthPtr, int sampleRate )
 }
 
 #if SPMIDI_SUPPORT_EDITING
+
 /***********************************************************************/
-int SS_SetInstrumentPreset( SoftSynth *synth,  int insIndex, void *inputPreset )
+static int SS_ValidatePreset( HybridSynth_t *hybridSynth,  HybridVoice_Preset_t *preset )
 {
 	HybridVoice_Info_t *info;
-	HybridVoice_Preset_t *preset;
-	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
-
-	/* Lookup preset slot. */
-	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
-		return -2;
-	/* Not const when in editor. */
-	preset = (HybridVoice_Preset_t *) SS_GetSynthPreset( insIndex );
-
-	/* Copy incoming preset to slot. */
-	MemTools_Copy( preset, inputPreset, sizeof( HybridVoice_Preset_t ) );
+	
+#if SPMIDI_ME2000
+	if( preset->mainOsc.waveform == WAVETABLE )
+	{
+		// Check now to make sure we are referencing a valid waveset.
+		if( preset->waveSetID != 0 )
+		{
+			WaveSet_t *waveSet = WaveManager_FindWaveSet( &sHybridSynthShared.waveManager, preset->waveSetID );
+			if( waveSet == NULL )
+			{
+				PRTMSG("ERROR in SS_ValidatePreset - waveSet not found.");
+				return SPMIDI_Error_IllegalArgument;
+			}
+		}
+	}
+#endif
 
 	/* Force update in case already loaded. */
 	info = SS_AllocInfo( hybridSynth, preset );
@@ -1923,10 +2036,33 @@ int SS_SetInstrumentPreset( SoftSynth *synth,  int insIndex, void *inputPreset )
 }
 
 /***********************************************************************/
+int SS_SetInstrumentPreset( SoftSynth *synth,  int insIndex, void *inputPreset )
+{
+	HybridVoice_Preset_t *preset;
+	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
+
+	/* Lookup preset slot. */
+	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
+	{
+		return -2;
+	}
+	/* Not const when in editor. */
+	preset = (HybridVoice_Preset_t *) SS_GetSynthPreset( insIndex );
+	PRTMSGNUMH("SS_SetInstrumentPreset: insIndex = ", insIndex )
+	PRTMSGNUMH("SS_SetInstrumentPreset: preset = ", preset )
+
+	/* Copy incoming preset to slot. */
+	MemTools_Copy( preset, inputPreset, sizeof( HybridVoice_Preset_t ) );
+
+	SS_ValidatePreset( hybridSynth, preset );
+
+	return 0;
+}
+
+/***********************************************************************/
 int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *data, int numBytes )
 {
 	HybridVoice_Preset_t *preset;
-	HybridVoice_Info_t *info;
 	unsigned char *p = data;
 	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
 	int numParsed;
@@ -1936,16 +2072,25 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 	DBUGMSG( " = insIndex in SS_SetInstrumentDefinition()\n" );
 
 	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
+	{
 		return -2;
+	}
 	preset = (HybridVoice_Preset_t *) SS_GetSynthPreset(insIndex);
+	// Clear preset in case we do not set all fields.
+	MemTools_Clear( preset, sizeof( HybridVoice_Preset_t ) );
+	
+	//PRTMSGNUMH("SS_SetInstrumentDefinition: insIndex = ", insIndex )
+	//PRTMSGNUMH("SS_SetInstrumentDefinition: preset = ", preset )
+
 	p = Osc_Define( &preset->modOsc, p );
 	p = Osc_Define( &preset->mainOsc, p );
-#if SPMIDI_ME2000
 
+#if SPMIDI_ME2000
 	if( preset->mainOsc.waveform == WAVETABLE )
 	{
+		// Save waveSetID for later.
 		p = SS_ParseLong( &preset->waveSetID, p );
-		/* PRTMSGNUMD("SS_SetInstrumentDefinition: preset->waveSetID = ", preset->waveSetID); */
+		//PRTMSGNUMD("SS_SetInstrumentDefinition: preset->waveSetID = ", preset->waveSetID);
 	}
 #endif
 
@@ -1970,7 +2115,7 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 		PRTMSG("ERROR in SS_SetInstrumentDefinition - mismatch in data parsed and data sent.\n");
 		PRTMSGNUMD("ERROR in SS_SetInstrumentDefinition: numParsed = ", numParsed);
 		PRTMSGNUMD("ERROR in SS_SetInstrumentDefinition: numBytes = ", numBytes);
-		return -1;
+		return SPMIDI_Error_BadFormat;
 	}
 
 	/* Check for deadly use of phase modulated waveform without PM flag. */
@@ -2006,40 +2151,9 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 	DBUGNUMH( preset->boostLog2 );
 	DBUGMSG( " = boostLog2 in SS_SetInstrumentDefinition()\n" );
 
-	/* Force update in case already loaded. */
-	info = SS_AllocInfo( hybridSynth, preset );
-	SS_UpdateInfo( hybridSynth, preset, info );
-	SS_FreeInfo( info );
-	return 0;
-}
+	//PRTMSGNUMD("SS_SetInstrumentDefinition: preset->mainOsc.waveform = ", preset->mainOsc.waveform );
 
-/***********************************************************************/
-int SS_SetInstrumentMap( SoftSynth *synth, int programIndex, int insIndex )
-{
-	(void) synth;
-	if( programIndex > 127 )
-		return -1;
-	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
-		return -2;
-	((spmUInt8 *)SS_GetSynthProgramMap())[programIndex] = (unsigned char) insIndex;
-	return 0;
-}
-
-
-/***********************************************************************/
-int SS_SetDrumMap( SoftSynth *synth, int noteIndex, int insIndex, int pitch )
-{
-	int drumIndex = noteIndex - GMIDI_FIRST_DRUM;
-	(void) synth;
-	if( (drumIndex >= GMIDI_NUM_DRUMS) || (drumIndex < 0) )
-		return -1;
-	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
-		return -2;
-	if( (pitch > 127) || (pitch < 0) )
-		return -3;
-	((spmUInt8 *)SS_GetSynthDrumMap())[drumIndex] = (unsigned char) insIndex;
-	((spmUInt8 *)SS_GetSynthDrumPitchArray())[drumIndex] = (unsigned char) pitch;
-	return 0;
+	return SS_ValidatePreset( hybridSynth, preset );
 }
 
 /***********************************************************************/
@@ -2101,9 +2215,8 @@ int SS_LoadWaveTable( SoftSynth *synth, unsigned char *data, int numBytes )
 CustomIns_t *SPMIDI_CreateCustomInstrument( SPMIDI_Context *spmidiContext )
 {
 	(void) spmidiContext; /* TODO handle per context instruments, move ins manager to spmidiContext? */
-	return InsManager_Create( &sHybridSynthShared.insManager );
+	return InsManager_CreateInstrument( &sHybridSynthShared.insManager );
 }
-
 
 int SPMIDI_AddCustomInstrument( SPMIDI_Context *spmidiContext, CustomIns_t * instrument,
                                 int bankIndex, int programIndex )

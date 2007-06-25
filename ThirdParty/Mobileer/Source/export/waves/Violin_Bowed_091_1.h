@@ -2,7 +2,7 @@
 #define _VIOLIN_BOWED_091_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -112,7 +112,6 @@ static NRLCONST WaveTable_t gViolin_Bowed_091_1 =
 	(void *) gViolin_Bowed_091_1Samples,
 #endif
 	sizeof(gViolin_Bowed_091_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x5b0688),
 	-97632, /* SR = 15702 */
 	732,
 	742,

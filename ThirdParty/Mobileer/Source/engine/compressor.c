@@ -1,4 +1,4 @@
-/* $Id: compressor.c,v 1.16 2006/05/16 00:00:36 philjmsl Exp $ */
+/* $Id: compressor.c,v 1.18 2007/06/18 18:03:49 philjmsl Exp $ */
 /**
  *
  * Dynamic Range Compressor
@@ -12,6 +12,11 @@
  * that normally has a sharp corner at the threshold value.
  * The result is that softer passage are boosted, but are still
  * softer then loud passages resulting in a more natural sound.
+ *
+ * There are two peak followers.
+ * The fastPeak tracks the peaks of the input samples and decays exponentially.
+ * The slowPeak follows fastPeak except when fastPeak is rising and then slowPeak
+ * rises exponentially based on attack time.
  *
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
@@ -54,16 +59,33 @@
  * Default values are based on 25 msec attack and 260 msec decay times.
  * Times are "half lifes", the time it takes to double or half the value.
  */
+#define ATTACK_SCALE (8)
+
+#if (ATTACK_SCALE == 2)
+/* These will rise 2X in 25 msec. */
 #define ATTACK_16000 PER_10000(10070)
-#define DECAY_16000  PER_10000( 9993)
-#define BLOCK_16000   (4)
-
 #define ATTACK_22050 PER_10000(10101)
-#define DECAY_22050  PER_10000( 9990)
-#define BLOCK_22050   (8)
-
 #define ATTACK_44100 PER_10000(10050)
+
+#elif (ATTACK_SCALE == 4)
+/* These will rise 4X in 25 msec. */
+#define ATTACK_16000 PER_10000(10140)
+#define ATTACK_22050 PER_10000(10203)
+#define ATTACK_44100 PER_10000(10101)
+
+#elif (ATTACK_SCALE == 8)
+/* These will rise 8X in 25 msec. */
+#define ATTACK_16000 PER_10000(10210)
+#define ATTACK_22050 PER_10000(10306)
+#define ATTACK_44100 PER_10000(10152)
+#endif
+
+#define DECAY_16000  PER_10000( 9993)
+#define DECAY_22050  PER_10000( 9990)
 #define DECAY_44100  PER_10000( 9995)
+
+#define BLOCK_22050   (8)
+#define BLOCK_16000   (4)
 #define BLOCK_44100   (8)
 
 /* Sufficient delay to give gain time to drop before big peak is heard. */
@@ -125,13 +147,20 @@ int Compressor_Init( Compressor_t *compressor, int sampleRate )
 
 	compressor->sampleCounter = 0;
 	compressor->writeIndex = 0;
+
 	/* Start peak follower at a reasonable value so beginning of song does not swell or drop. */
-	compressor->fastPeak = ( compressor->threshold > (FXP31_MAX_VALUE >> 5) )
-	                       ? (FXP31_MAX_VALUE >> 5)
-	                       : (compressor->threshold << 5);
+#define START_SHIFT  (3)
+	compressor->fastPeak = ( compressor->threshold > (FXP31_MAX_VALUE >> START_SHIFT) )
+	                       ? (FXP31_MAX_VALUE >> START_SHIFT)
+	                       : (compressor->threshold << START_SHIFT);
 	compressor->slowPeak = compressor->fastPeak;
 
 	compressor->frameDelay = (MSEC_DELAY * sampleRate) / MSEC_PER_SECOND; /* DIVIDE - init */
+
+	/* Hold compressor gain steady to reduce pumping effect. */
+//#define SPMIDI_COMPRESSOR_HOLD_TIME_MSEC  (500)
+//	compressor->holdCounter = 0;
+//	compressor->holdCounterInitial = SPMIDI_COMPRESSOR_HOLD_TIME_MSEC * sampleRate / (1000 * compressor->blockSize);
 
 	return SPMIDI_Error_None;
 }
@@ -142,7 +171,6 @@ void Compressor_CompressBuffer( Compressor_t *compressor, FXP31 *samples, int sa
 	FXP31  scaledSample;
 	FXP31  absSample;
 	FXP31  sample;
-	long   shiftedPeak;
 	long   numerator;
 	int    is;
 	int    numSamples = SS_FRAMES_PER_BUFFER * samplesPerFrame;
@@ -169,9 +197,13 @@ void Compressor_CompressBuffer( Compressor_t *compressor, FXP31 *samples, int sa
 		 */
 		if( (compressor->sampleCounter++ & blockMask) == 0 )
 		{
-			/* Calculate slow peak follower. */
-			if( compressor->fastPeak > compressor->slowPeak )
+			int    isRising;
+			long   shiftedPeak;
+			/* Calculate slow peak follower from fastPeak. */
+			isRising = compressor->fastPeak > compressor->slowPeak;
+			if( isRising )
 			{
+				/* slowPeak rises at a slower speed so that the attack is smooth. */
 				compressor->slowPeak = (compressor->slowPeak >> COMPRESSOR_SHIFT) * compressor->attack;
 			}
 			else
@@ -179,6 +211,11 @@ void Compressor_CompressBuffer( Compressor_t *compressor, FXP31 *samples, int sa
 				/* Decay for fast and slow follower is the same. */
 				compressor->slowPeak = compressor->fastPeak;
 			}
+
+			/* Use slowPeak for calculating gain. */
+			shiftedPeak = compressor->slowPeak >> ((SS_MIXER_BUS_RESOLUTION - 1) - COMPRESSOR_SHIFT);
+
+			compressor->gain = numerator / (shiftedPeak + compressor->curvature); /* DIVIDE - control rate */
 
 			/* Exponentially decay the fast peak by scaling. */
 			compressor->fastPeak = (compressor->fastPeak >> COMPRESSOR_SHIFT)  * compressor->decay;
@@ -188,11 +225,6 @@ void Compressor_CompressBuffer( Compressor_t *compressor, FXP31 *samples, int sa
 			{
 				compressor->fastPeak = compressor->threshold;
 			}
-
-			/* Use slowPeak for calculating gain. */
-			shiftedPeak = compressor->slowPeak >> ((SS_MIXER_BUS_RESOLUTION - 1) - COMPRESSOR_SHIFT);
-
-			compressor->gain = numerator / (shiftedPeak + compressor->curvature); /* DIVIDE - control rate */
 		}
 
 		/* Get next sample from input. Advance pointer when we write to it at end of loop. */
@@ -231,9 +263,11 @@ void Compressor_CompressBuffer( Compressor_t *compressor, FXP31 *samples, int sa
 #endif
 
 		/* Write back to original array. */
-#if 1
-		samples[is] = scaledSample;
-#else
+#define DEBUG_COMPRESSOR  (0)
+#if DEBUG_COMPRESSOR
+#if !defined(PARANOID)
+#error Writing compressor debug data to right channel.
+#endif
 		/* Write debug data to right channel. */
 		if( (is & 1) == 0)
 		{
@@ -246,6 +280,8 @@ void Compressor_CompressBuffer( Compressor_t *compressor, FXP31 *samples, int sa
 			samples[is] = compressor->slowPeak;
 			//samples[is] = compressor->fastPeak;
 		}
+#else
+		samples[is] = scaledSample;
 #endif
 
 	}

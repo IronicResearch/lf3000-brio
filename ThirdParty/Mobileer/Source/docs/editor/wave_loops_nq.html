@@ -1,0 +1,62 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Instrument Editor, Advanced Loop Setting</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+<b></b>
+<h2>Mobileer Instrument Editor</h2>
+<h3>Advanced Loop Setting </h3>
+<p>You may be creating wavetables to be played on a synthesizer other than the Mobileer synthesizer. It may not be able to handle arbitrary sample rates or pitches. In that case you may have a problem with the loop not being an integral number of samples.<img style="float:right" src="images/looping_nq.png" width="740" height="395"></p>
+<p>Suppose that with your current pitch and sample rate that a single cycle is 40.34 samples. If your loop is only one cycle and the fractional part is ignored by the synthesizer then the pitch of the looped sound will be off by 14.65 cents.</p>
+<blockquote>
+  <pre> 14.65 cents = 1200 * log( 40.34 / 40.00 ) / log( 2.0 )
+</pre>
+</blockquote>
+<p>One solution is to make a loop with several cycles and minimize the fractional part. If you combine 3 cycles into a loop then the loop size will be 3 * 40.34 = 121.02 samples. The pitch error in this case will only be 0.29 cents which is not generally detectable. Try to keep the pitch error under 1 cent.</p>
+<p>The Mobileer editor provides a tool that will help you minimize pitch errors in loops. When selecting the region to loop simply note the size at the top of the screen. Choose a number of cycles that is as close as possible to an integer. <br>
+</p>
+<ol>
+    <li>Let's assume that your non-Mobileer synthesizer  forces you to use a sample rate of 16000 Hz. We can see right above this loop end that a single cycle of this sound is 28.102 samples.</li>
+    <li>Drag select a region and watch the &quot;cycles = &quot; status to see when the number of cycles is close to an integer. In this case I chose &quot;10 cycles = 281.022&quot; samples. </li>
+    <li>Also note that the same fractional sample error will cause less of a pitch error if you have more cycles because it is the overall percentage error that affects the pitch. </li>
+</ol>
+<p align="center">| <a href="index.html">Top</a> | <a href="wave_set.html">Previous</a> | <a href="wave_zone.html">Next</a> |</p>
+<meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

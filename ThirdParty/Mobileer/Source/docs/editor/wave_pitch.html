@@ -50,13 +50,14 @@
     <li>Open a wavetable if not already open.</li>
     <li>If the &quot;Resample&quot; box is checked, please uncheck it and then click the &quot;Zoom out all the way&quot; button <img src="images/zoom_out_100_button.png"> or item in the View menu.</li>
     <li>Select a region near the start of the wavetable close to where you might place a loop. </li>
-    <li>Click &quot;Fit Selection&quot; button <img src="images/fit_selection_button.png"> (or menu item) to zoom in on the selected region. You should have at least 5-20 cycles of the waveform selected. Select a new region if you have too much or too little data selected. <img style="float:right" src="images/measure_pitch.png"></li>
-    <li>Click the &quot;Measure&quot; button. <img src="images/measure_button.png"> This will measure the pitch of the waveform using an autocorrelation algorithm. Notice the MIDI pitch will appear to the right of the button.</li>
+    <li>Click &quot;Fit Selection&quot; button <img src="images/fit_selection_button.png"> (or menu item) to zoom in on the selected region. You should have at least 5-20 cycles of the waveform selected. Select a new region if you have too much or too little data selected. <img src="images/measure_pitch.png" width="125" height="64" style="float:right"></li>
+    <li>Click the &quot;Measure&quot; button. <img src="images/measure_button.png"> This will measure the pitch of the waveform using an autocorrelation algorithm. Notice the MIDI pitch will appear in the text field.</li>
     <li>To verify that the pitch is correct, drag the mouse over the waveform. The selection range should automatically snap to a zero crossing and then snap to complete cycles of the waveform. This makes it very easy to find correct loop points.</li>
     <li>Note that some waveforms are very complex and have strong harmonics. The algorithm is designed to take this into account but may get confused. It is most likely that the pitch will be an octave high or an octave low. </li>
-    <li>If you believe the pitch is incorrectly measured then enter a new MIDI pitch and click &quot;Set Pitch&quot;. <img src="images/set_pitch_button.png"> Check it by dragging the mouse as above to see if it snaps to an appropriate boundary.</li>
+    <li>If you believe the pitch is incorrectly measured then enter a new MIDI pitch and hit the Enter key.  Check it by dragging the mouse as above to see if it snaps to an appropriate boundary.</li>
 </ol>
 <p>Please note that it does not matter if the recorded instrument is &quot;in tune&quot;. The musician can be off by half a semitone and it won't matter as long as the actual recorded pitch is measured. The Mobileer synthesizer will account for any difference between the desired pitch and the actual pitch when playing the wavetable.</p>
+<p>Please also note that the pitch can be overriden in the WaveSet Region Editor. </p>
 <p align="center">| <a href="index.html">Top</a> | <a href="wave_chop.html">Previous</a> | <a href="wave_renaming.html">Next</a> | </p>
 <meta name="Author" content="Phil Burk">
    <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">

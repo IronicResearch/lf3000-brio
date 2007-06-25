@@ -2,7 +2,7 @@
 #define _GUITAR_NYLON_067_1_H
 /**
  * WaveTable containing audio samples.
- * Generated automatically by Mobileer Editor - V1.96
+ * Generated automatically by Mobileer Editor
  * Do NOT edit by hand!
  * (C) Mobileer, Inc. CONFIDENTIAL and PROPRIETARY
  */
@@ -163,7 +163,6 @@ static NRLCONST WaveTable_t gGuitar_Nylon_067_1 =
 	(void *) gGuitar_Nylon_067_1Samples,
 #endif
 	sizeof(gGuitar_Nylon_067_1Samples)/sizeof(short),
-	SPMUtil_MIDIPitchToOctave(0x4302b0),
 	-97714, /* SR = 15689 */
 	1108,
 	1148,

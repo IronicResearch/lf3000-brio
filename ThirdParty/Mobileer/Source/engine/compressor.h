@@ -1,7 +1,7 @@
 #ifndef _COMPRESSOR_H
 #define _COMPRESSOR_H
 
-/* $Id: compressor.h,v 1.10 2006/05/16 00:01:16 philjmsl Exp $ */
+/* $Id: compressor.h,v 1.11 2007/06/18 18:03:49 philjmsl Exp $ */
 /**
  *
  * Dynamic Range Compressor
@@ -45,6 +45,10 @@ extern "C"
 		spmSInt32  gain;
 		spmSInt    blockSize;
 		spmSInt    sampleCounter;
+		/* Used to countdown when holding the compressor gain steady. */
+		//spmSInt    holdCounter;
+		/* Value to reset holdCounter. */
+		//spmSInt    holdCounterInitial;
 		/* Delay line allows attack to rise before peak heard. */
 		spmSInt    writeIndex;
 		spmSInt    frameDelay;
