@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testVorbisAudioResources( )
+	void xxxtestVorbisAudioResources( )
 	{
 		tErrType 		err;
 		U16				i;
@@ -244,11 +244,49 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestAudioResources( )
+	void xxxtestMIDIResources( )
 	{
 		tErrType 		err;
 		U16				i;
-		tRsrcHndl		handle;
+		tRsrcHndl		handle1;
+		tRsrcHndl		handle2;
+		tAudioID 		id1;
+		tAudioID 		id2;
+		tRsrcType		rsrcType;
+		
+		const int kDuration = 1 * 3000;
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		TS_ASSERT( pResourceMPI_ != NULL );
+		TS_ASSERT( pResourceMPI_->IsValid() == true );
+
+		// Start up audio system.
+		err = pAudioMPI_->StartAudio();
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// Package is already opened in setup
+		handle1 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		
+		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
+		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
+		// volume is faked by right shift at this point
+		id1 = pAudioMPI_->StartMidiFile( 0, handle1, 100, 1, &audioListener_, 0, 0 );
+
+		// sleep 10 seconds
+		pKernelMPI_->TaskSleep( 10000 ); 
+	}
+	
+	//------------------------------------------------------------------------
+	void testAudioResources( )
+	{
+		tErrType 		err;
+		U16				i;
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
 		tRsrcHndl		handle3;
@@ -275,8 +313,6 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
-		handle = pResourceMPI_->FindRsrc("one");
-		TS_ASSERT( handle != kInvalidRsrcHndl );
 		handle1 = pResourceMPI_->FindRsrc("BlueNile");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		handle2 = pResourceMPI_->FindRsrc("sine44");
@@ -372,7 +408,6 @@ public:
 
 		// sleep3 seconds
 		pKernelMPI_->TaskSleep( kDuration );
-
 	}
 
 };

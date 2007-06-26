@@ -4207,3 +4207,19 @@ By Dmilici (Dmilici@leapfrog.com) on 6/25/07 6:24 PM
 2,297 ms. (Cumulative: 634,885 ms)
 
 ----------------
+Revision 676 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,938 ms. (Cumulative: 636,901 ms)
+
+----------------
+Revision 677 from svn://localhost/TRUNK/:
+Revision 678 from svn://localhost/TRUNK/:
+
+Fix call to StartMidi() in audio test.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/26/07 10:54 AM
+1 changed, 0 added, 0 deleted.
+1,891 ms. (Cumulative: 638,807 ms)
+
+----------------
