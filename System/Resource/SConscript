@@ -29,7 +29,7 @@ sysmpisrcs	= ['PublicMPI/SystemResourceMPI.cpp']
 myenv		= env.Copy()
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
-sysmpi		= MakeMyModule(myenv, sysmpi_name, sysmpisrcs, mpilibs, kBuildPrivMPI, vars)
+sysmpi		= MakeMyModule(myenv, sysmpi_name, sysmpisrcs, mpilibs + ['ResourceMPI'], kBuildPrivMPI, vars)
 Depends(mympi, mymodule)
 
 #-----------------------------------------------------------------------------

@@ -4223,3 +4223,13 @@ By DGibbs (DGibbs@leapfrog.com) on 6/26/07 10:54 AM
 1,891 ms. (Cumulative: 638,807 ms)
 
 ----------------
+Revision 679 from svn://localhost/TRUNK/:
+Revision 680 from svn://localhost/TRUNK/:
+
+System Resource MPI needs to explicitly link Resource MPI.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/26/07 12:46 PM
+1 changed, 0 added, 0 deleted.
+1,891 ms. (Cumulative: 640,761 ms)
+
+----------------
