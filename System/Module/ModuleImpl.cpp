@@ -153,7 +153,7 @@ namespace
 			
 			// FIXME/tp: count first to allocate only enough memory needed
 			// FIXME/tp: KernelMPI for malloc
-			const int kMaxModuleCount = 20;
+			const int kMaxModuleCount = 100;
 			mpFoundModulesList = reinterpret_cast<FoundModule*>(malloc(kMaxModuleCount * sizeof(FoundModule)));
 			if(!mpFoundModulesList)
 				return -1;

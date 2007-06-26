@@ -4242,3 +4242,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/26/07 1:10 PM
 1,844 ms. (Cumulative: 642,667 ms)
 
 ----------------
+Revision 682 from svn://localhost/TRUNK/:
+
+Increase ModuleMgr's kMaxModuleCount to 100 for now... we have lots of libs on the target and the previous value of 20 was not large enough.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/26/07 1:41 PM
+1 changed, 0 added, 0 deleted.
+1,766 ms. (Cumulative: 644,495 ms)
+
+----------------
