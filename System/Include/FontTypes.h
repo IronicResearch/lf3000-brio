@@ -54,6 +54,7 @@ struct tFontAttr {
 	U16		version;
 	U32		color;
 	Boolean	direction;
+	Boolean	antialias;
 };
 
 // Font surface

@@ -105,7 +105,7 @@ OnFaceRequest( FTC_FaceID  faceId,
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CFontModule::CFontModule() : dbg_(kGroupDisplay) // FIXME: new enum?
+CFontModule::CFontModule() : dbg_(kGroupFont)
 {
 	// Zero out static global struct
 	memset(&handle_, 0, sizeof(handle_));
@@ -416,6 +416,57 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontS
 }
   
 //----------------------------------------------------------------------------
+// Convert grayscale bitmap to ARGB color buffer
+//----------------------------------------------------------------------------
+void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	int 		x,y,w,h;
+	U8	 		*s,*t,*u;
+	U32 		*d;
+	U32	 		color = attr_.color;
+	U8 			alpha;
+	U8			R = (color & 0xFF0000) >> 16;
+	U8			G = (color & 0x00FF00) >> 8;
+	U8			B = (color & 0x0000FF) >> 0;
+	tFontSurf	*surf = (tFontSurf*)pCtx;
+
+	// Pack RGB color into buffer according to grayscale values
+	w = source->width;
+	h = source->rows;
+	s = t = source->buffer;
+	d = (U32*)(u = surf->buffer + y0 * surf->pitch + x0 * 4);
+	for (y = 0; y < h; y++) 
+	{
+		s = t;
+		d = (U32*)u;
+		for (x = 0; x < w; x++) 
+		{
+#if 0		// FIXME/dm: Enable real alpha blending
+			if ((alpha = *s) != 0)
+				*d = color | (alpha << 24);
+#else
+			if ((alpha = *s) != 0) 
+			{
+				U32 bgcolor = *d;
+				U32 r = (bgcolor & 0xFF0000) >> 16;
+				U32 g = (bgcolor & 0x00FF00) >> 8;
+				U32 b = (bgcolor & 0x0000FF) >> 0;
+				U8  ialpha = 0xFF - alpha;
+				r = (R * alpha + r * ialpha) / 0xFF;
+				g = (G * alpha + g * ialpha) / 0xFF;
+				b = (B * alpha + b * ialpha) / 0xFF; 
+				*d = (0xFF << 24) | (r << 16) | (g << 8) | (b << 0);
+			}
+#endif
+			d++;
+			s++;
+		}
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
+	}				  
+}
+  
+//----------------------------------------------------------------------------
 // Draw single glyph at XY location in rendering context buffer
 //----------------------------------------------------------------------------
 Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
@@ -436,7 +487,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	// Sanity check
 	if (handle_.currentFont == NULL) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid font selection\n" );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: invalid font selection\n" );
 		return false;
 	}
 	font = handle_.currentFont;
@@ -445,21 +496,21 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
     index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
 	if (index == 0) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to support char = %c, index = %d\n", ch, index );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %c, index = %d\n", ch, index );
 		return false;
 	}
 
 	error = FTC_ImageCache_Lookup( handle_.imageCache, &handle_.imageType, index, &glyph, NULL );
 	if (error) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to locate glyph for char = %c, index = %d, error = %d\n", ch, index, error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %c, index = %d, error = %d\n", ch, index, error );
 		return false;
 	}
 #else
 	// Sanity check
 	if (handle_.face == NULL) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid font selection\n" );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: invalid font selection\n" );
 		return false;
 	}
 	font = handle_.fonts[handle_.curFont];
@@ -468,7 +519,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	index = FT_Get_Char_Index(handle_.face, ch);
 	if (index == 0) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to support char = %c, index = %d\n", ch, index );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %c, index = %d\n", ch, index );
 		return false;
 	}
 
@@ -476,14 +527,14 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	error = FT_Load_Char(handle_.face, index, FT_LOAD_DEFAULT);
 	if (error) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to support char = %c, index = %d, error = %d\n", ch, index, error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %c, index = %d, error = %d\n", ch, index, error );
 		return false;
 	}
 
 	error = FT_Get_Glyph(handle_.face->glyph , &glyph);
 	if (error) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: unable to locate glyph for char = %c, error = %d\n", ch, error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %c, error = %d\n", ch, error );
 		return false;
 	}
 #endif		
@@ -500,6 +551,8 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
 	{
 		// Adjust font render mode as necessary
+		if (attr_.antialias)
+			render_mode = FT_RENDER_MODE_NORMAL;
 			
 		// Render the glyph to a bitmap, don't destroy original 
 		error = FT_Glyph_To_Bitmap( &glyph, render_mode, NULL, false );
@@ -509,7 +562,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	
 	if ( glyph->format != FT_GLYPH_FORMAT_BITMAP ) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::DrawString: invalid glyph format returned, error = %d\n", error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: invalid glyph format returned, error = %d\n", error );
 		return false;
 	}
 	
@@ -526,7 +579,12 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	// TODO: Handle other destination buffer cases besides 32bpp RGB
 
 	// Draw mono bitmap into RGB context buffer with current color
-	ConvertBitmapToRGB32(source, x+dx, y+dz-dy, pCtx);
+	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
+		ConvertBitmapToRGB32(source, x+dx, y+dz-dy, pCtx);
+	else if (source->pixel_mode == FT_PIXEL_MODE_GRAY)
+		ConvertGraymapToRGB32(source, x+dx, y+dz-dy, pCtx);
+	else
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: glyph conversion format %X not supported\n", source->pixel_mode);
 
 	// Update the current XY glyph cursor position
 	// Internal glyph cursor is in 16:16 fixed-point

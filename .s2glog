@@ -4251,3 +4251,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/26/07 1:41 PM
 1,766 ms. (Cumulative: 644,495 ms)
 
 ----------------
+Revision 683 from svn://localhost/TRUNK/:
+
+Updated Font MPI with anti-aliased rendering.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/26/07 2:17 PM
+3 changed, 0 added, 0 deleted.
+1,906 ms. (Cumulative: 646,464 ms)
+
+----------------

@@ -124,6 +124,7 @@ private:
 	int					curY_;
     Boolean     		DrawGlyph(char ch, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertGraymapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
 	tFontHndl			LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize);
 };
 
