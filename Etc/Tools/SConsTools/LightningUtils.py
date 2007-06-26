@@ -230,7 +230,7 @@ def SetupTypeConversionMap():
 			  'midi' 	: 1025,
 			  'S'		: 1025,				# for ACME
 			  'aogg'	: 1026,
-			  'ogg'		: 1024 * 8 + 1,
+			  'ogg'		: 1024 * 14 + 1,
 			  'wav'		: 1027,
 			  'R'		: 1027,				# for ACME
 			  'raw'		: 1027,				# for ACME

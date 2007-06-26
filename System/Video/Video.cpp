@@ -100,7 +100,7 @@ static int queue_page(ogg_page *page)
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CVideoModule::CVideoModule() : dbg_(kGroupDisplay) // FIXME: new enum?
+CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 {
 }
 
@@ -124,6 +124,13 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	tErrType	r;
+
+	// Sanity check
+	if (hRsrc == kInvalidRsrcHndl) 
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: invalid resource handle\n");
+		return kInvalidVideoHndl;
+	}
 
 	// Open Ogg file associated with resource
 	r = rsrcmgr.OpenRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
@@ -262,19 +269,28 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 {
 	Boolean		ready = false;
 	ogg_packet  op;
+	int			bytes;
 
-	// Decode Theora packet from Ogg input stream
-	if (ogg_stream_packetout(&to,&op) > 0)
+	// TODO/dm: Do we want this as a non-blocking call?
+
+	// Modally loop until next frame found or end of file
+	while (!ready)
 	{
-		theora_decode_packetin(&td,&op);
-		ready = true;
-	}
-	else
-	{
-		// Get more packet data from Ogg input stream
-		buffer_data(&oy);
-		while (ogg_sync_pageout(&oy,&og) > 0)
-			queue_page(&og);
+		// Decode Theora packet from Ogg input stream
+		if (ogg_stream_packetout(&to,&op) > 0)
+		{
+			theora_decode_packetin(&td,&op);
+			ready = true;
+		}
+		else
+		{
+			// Get more packet data from Ogg input stream
+			bytes = buffer_data(&oy);
+			if (bytes == 0)
+				break;
+			while (ogg_sync_pageout(&oy,&og) > 0)
+				queue_page(&og);
+		}
 	}
 	
 	return ready;

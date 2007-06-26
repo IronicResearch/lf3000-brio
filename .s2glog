@@ -4195,3 +4195,15 @@ By DGibbs (DGibbs@leapfrog.com) on 6/25/07 5:27 PM
 1,844 ms. (Cumulative: 632,510 ms)
 
 ----------------
+Revision 672 from svn://localhost/TRUNK/:
+Revision 673 from svn://localhost/TRUNK/:
+Revision 674 from svn://localhost/TRUNK/:
+Revision 675 from svn://localhost/TRUNK/:
+
+Updated separate video resource type, add .ogg video clip to unit tests.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/25/07 6:24 PM
+5 changed, 3 added, 0 deleted.
+2,297 ms. (Cumulative: 634,885 ms)
+
+----------------
