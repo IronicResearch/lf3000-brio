@@ -4175,3 +4175,23 @@ By DGibbs (DGibbs@leapfrog.com) on 6/25/07 3:09 PM
 1,922 ms. (Cumulative: 628,728 ms)
 
 ----------------
+Revision 665 from svn://localhost/TRUNK/:
+Revision 666 from svn://localhost/TRUNK/:
+Revision 667 from svn://localhost/TRUNK/:
+Revision 668 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,859 ms. (Cumulative: 630,650 ms)
+
+----------------
+Revision 669 from svn://localhost/TRUNK/:
+Revision 670 from svn://localhost/TRUNK/:
+Revision 671 from svn://localhost/TRUNK/:
+
+checkin verbose debug output version of ARM portaudio lib
+
+By DGibbs (DGibbs@leapfrog.com) on 6/25/07 5:27 PM
+1 changed, 0 added, 0 deleted.
+1,844 ms. (Cumulative: 632,510 ms)
+
+----------------
