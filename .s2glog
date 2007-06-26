@@ -4233,3 +4233,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/26/07 12:46 PM
 1,891 ms. (Cumulative: 640,761 ms)
 
 ----------------
+Revision 681 from svn://localhost/TRUNK/:
+
+check readdir for null return... fixes seg fault on emulation.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/26/07 1:10 PM
+1 changed, 0 added, 0 deleted.
+1,844 ms. (Cumulative: 642,667 ms)
+
+----------------

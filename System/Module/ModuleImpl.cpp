@@ -171,7 +171,7 @@ namespace
 				
 				do {
 					dp = readdir(dirp);
-					if(AddedValidModule((mpFoundModulesList + mNumFound),
+					if((dp != NULL) && AddedValidModule((mpFoundModulesList + mNumFound),
 										paths[ii], dp->d_name))
 						++mNumFound;
 				} while((dp != NULL) && (mNumFound < kMaxModuleCount));
