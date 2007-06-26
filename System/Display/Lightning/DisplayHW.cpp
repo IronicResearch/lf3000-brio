@@ -36,7 +36,9 @@ namespace
 	int			gDevGpio;
 	int			gDevMlc;
 	int			gDevLayer;
+	int			gDevOverlay;
 	U8 			*gFrameBuffer;
+	U8			*gOverlayBuffer;
 }
 
 //============================================================================
@@ -80,6 +82,33 @@ void CDisplayModule::InitModule()
 		   						gDevLayer, baseAddr);
 	dbg_.Assert(gFrameBuffer >= 0,
 			"DisplayModule::InitModule: failed to mmap() frame buffer");
+	dbg_.DebugOut(kDbgLvlVerbose, 
+			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+			baseAddr, fb_size, gFrameBuffer);
+
+	// Open MLC 2D YUV layer device
+	gDevOverlay = open(YUV_LAYER_DEV, O_RDWR|O_SYNC);
+	dbg_.Assert(gDevOverlay >= 0, 
+			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
+
+	// Get the overlay buffer base address
+	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
+	dbg_.Assert(baseAddr >= 0,
+			"DisplayModule::InitModule: MLC layer ioctl failed");
+
+	// Get the overlay buffer's size
+	fb_size = ioctl(gDevOverlay, MLC_IOCQFBSIZE, 0);
+	dbg_.Assert(fb_size > 0,
+			"DisplayModule::InitModule: MLC layer ioctl failed");
+
+	// Get access to the overlay buffer in user space
+	gOverlayBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
+		   						gDevOverlay, baseAddr);
+	dbg_.Assert(gOverlayBuffer >= 0,
+			"DisplayModule::InitModule: failed to mmap() frame buffer");
+	dbg_.DebugOut(kDbgLvlVerbose, 
+			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+			baseAddr, fb_size, gOverlayBuffer);
 
 	c.outvalue.port = 1;	// GPIO port B
 	c.outvalue.value = 1;	// set pins high
@@ -104,6 +133,7 @@ void CDisplayModule::DeInitModule()
 	close(gDevGpio);
 	close(gDevMlc);
 	close(gDevLayer);
+	close(gDevOverlay);
 }
 
 //----------------------------------------------------------------------------
@@ -153,6 +183,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepth = colorDepth;
+	GraphicsContext->isOverlay = false;
 
 	switch(colorDepth) {
 		case kPixelFormatRGB4444:
@@ -180,34 +211,37 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		bpp = 1;
 		width = 4096; // for YUV planar format pitch
 		hwFormat = kLayerPixelFormatYUV420;
+		GraphicsContext->isOverlay = true;
 		break;
 
 		case kPixelFormatYUYV422:
 		bpp = 2;
 		hwFormat = kLayerPixelFormatYUYV422;
+		GraphicsContext->isOverlay = true;
 		break;
 	}
 	GraphicsContext->pitch = bpp*width;
 
 	// apply to device
-	ioctl(gDevLayer, MLC_IOCTFORMAT, hwFormat);
-	ioctl(gDevLayer, MLC_IOCTHSTRIDE, bpp);
-	ioctl(gDevLayer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
-	SetDirtyBit();
+	int layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
+	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
+	ioctl(layer, MLC_IOCTHSTRIDE, bpp);
+	ioctl(layer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
+	SetDirtyBit(layer);
 
 	return (tDisplayHandle)GraphicsContext;
 }
 
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
-	SetDirtyBit();
+	SetDirtyBit(gDevLayer);
     return kNoErr;
 }
 
 // This method does not have much meaning given the kernel-level frame buffer.
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
-	SetDirtyBit();
+	SetDirtyBit(((struct tDisplayContext *)hndl)->isOverlay ? gDevOverlay : gDevLayer);
 	((struct tDisplayContext *)hndl)->isAllocated = false;
 	return kNoErr;
 }
@@ -226,7 +260,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	struct tDisplayContext *context;
 	
 	context = (struct tDisplayContext *)hndl;
-	context->pBuffer = gFrameBuffer;
+	context->pBuffer = (context->isOverlay) ? gOverlayBuffer : gFrameBuffer;
 	context->x = xPos;
 	context->y = yPos;
 	context->isAllocated = true;
@@ -236,16 +270,29 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	c.position.left = xPos;
 	c.position.right = xPos + context->width;
 	c.position.bottom = yPos + context->height;
-	ioctl(gDevLayer, MLC_IOCSPOSITION, &c);
-	ioctl(gDevLayer, MLC_IOCTLAYEREN, (void *)1);
-	SetDirtyBit();
+
+	int layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	ioctl(layer, MLC_IOCSPOSITION, &c);
+	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+
+	// Setup scaler registers too for video overlay
+	if (context->isOverlay)
+	{
+		c.overlaysize.srcwidth = context->width;
+		c.overlaysize.srcheight = context->height;
+		c.overlaysize.dstwidth = context->width;
+		c.overlaysize.dstheight = context->height;
+		ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
+	}
+
+	SetDirtyBit(layer);
 
 	return kNoErr;
 }
 
-void CDisplayModule::SetDirtyBit(void)
+void CDisplayModule::SetDirtyBit(int layer)
 {
-	ioctl(gDevLayer, MLC_IOCTDIRTY, 0);
+	ioctl(layer, MLC_IOCTDIRTY, 0);
 }
 
 // FIXME/dm: Actually this seems like the perfect method for video overlays!
@@ -281,14 +328,16 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 		Boolean enable)
 {
 	int r;
+	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
+	int 	layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
 
-	if(level > 100) 
+	if (level > 100) 
 		level = 100;
 	level = (level*ALPHA_STEP)/100;
 	
-	r = ioctl(gDevLayer, MLC_IOCTALPHA, level);
-	r = ioctl(gDevLayer, MLC_IOCTBLEND, enable);
-	SetDirtyBit();
+	r = ioctl(layer, MLC_IOCTALPHA, level);
+	r = ioctl(layer, MLC_IOCTBLEND, enable);
+	SetDirtyBit(layer);
 	return kNoErr;
 }
 

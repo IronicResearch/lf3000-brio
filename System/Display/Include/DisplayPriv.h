@@ -44,6 +44,7 @@ struct tDisplayContext {
 	S16 x;				// from Register()
 	S16 y;
 	bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
+	bool isOverlay;		// video overlay layer?
 };
 
 //==============================================================================
@@ -95,7 +96,7 @@ private:
 	U32					GetScreenSize( );
 	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
-	void				SetDirtyBit(void);
+	void				SetDirtyBit(int layer);
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions

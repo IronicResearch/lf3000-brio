@@ -4260,3 +4260,14 @@ By Dmilici (Dmilici@leapfrog.com) on 6/26/07 2:17 PM
 1,906 ms. (Cumulative: 646,464 ms)
 
 ----------------
+Revision 684 from svn://localhost/TRUNK/:
+Revision 685 from svn://localhost/TRUNK/:
+Revision 686 from svn://localhost/TRUNK/:
+
+Updated display HW routines to support video overlays.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/26/07 4:15 PM
+4 changed, 0 added, 0 deleted.
+1,953 ms. (Cumulative: 648,480 ms)
+
+----------------

@@ -63,7 +63,6 @@ public:
 	{
 		tRsrcHndl	pkg;
 		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tVideoHndl	video;
 
 		pResourceMPI_ = new CResourceMPI;
