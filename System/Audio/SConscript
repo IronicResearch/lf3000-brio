@@ -30,11 +30,11 @@ if vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/x86'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/x86'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/x86'])
+	myenv.Append(RPATH   = ['#ThirdParty/Theora/Libs/x86'])
 else:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/arm'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/arm'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/arm'])
-	myenv.Append(LIBPATH = ['/home/lfu/nfsroot/usr/lib'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

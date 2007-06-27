@@ -4319,3 +4319,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 12:10 PM
 2,453 ms. (Cumulative: 660,496 ms)
 
 ----------------
+Revision 698 from svn://localhost/TRUNK/:
+
+add RPATH to Audio SConscript for x86 vorbis libs.  removed absolute lib path for ARM build.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 12:36 PM
+1 changed, 0 added, 0 deleted.
+1,859 ms. (Cumulative: 662,434 ms)
+
+----------------
