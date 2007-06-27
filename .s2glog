@@ -4297,3 +4297,14 @@ By Dmilici (Dmilici@leapfrog.com) on 6/26/07 7:08 PM
 1,829 ms. (Cumulative: 654,262 ms)
 
 ----------------
+Revision 692 from svn://localhost/TRUNK/:
+Revision 693 from svn://localhost/TRUNK/:
+Revision 694 from svn://localhost/TRUNK/:
+
+Add makefiles to Portaudio source so we can now build arm and x86 libs in place.  Also add source and exes for portaudio tests.  The provided libs have extra debug turned on in this checkin.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 9:49 AM
+2 changed, 80 added, 0 deleted.
+3,625 ms. (Cumulative: 657,949 ms)
+
+----------------

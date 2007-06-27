@@ -1,0 +1,2 @@
+gcc -o patest_sine patest_sine.c -I../../Include/ -L ../../Libs/x86/ -lportaudio -lm -lpthread
+
