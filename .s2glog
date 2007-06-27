@@ -4308,3 +4308,14 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 9:49 AM
 3,625 ms. (Cumulative: 657,949 ms)
 
 ----------------
+Revision 695 from svn://localhost/TRUNK/:
+Revision 696 from svn://localhost/TRUNK/:
+Revision 697 from svn://localhost/TRUNK/:
+
+Changed portaudio makefiles so that the library can be source debugged.  Built new versions of the test programs that have debug symbols as well.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 12:10 PM
+7 changed, 2 added, 21 deleted.
+2,453 ms. (Cumulative: 660,496 ms)
+
+----------------

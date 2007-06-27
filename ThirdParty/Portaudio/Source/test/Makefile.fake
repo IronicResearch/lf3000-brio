@@ -1,2 +1,2 @@
-gcc -o patest_sine patest_sine.c -I../../Include/ -L ../../Libs/x86/ -lportaudio -lm -lpthread
+arm-linux-gcc -g -o patest_sine patest_sine.c -I../../Include/ -L ../../Libs/arm/ -lportaudio -lm -lpthread
 
