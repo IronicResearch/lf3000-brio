@@ -53,10 +53,15 @@ public:
 											void* pToObject  );
 											
 private:
-	U8 				numChannels_;
-	CChannel*		pChannels_;			// Array of channels
-	CMidiPlayer*	pMidiPlayer_;		// player for doing MIDI
-	float			masterVol_;
+	U8 				numChannels_;			// mono or stereo (for now fixed at stereo)
+	CChannel*		pChannels_;				// Array of channels
+	CMidiPlayer*	pMidiPlayer_;			// player for doing MIDI
+	float			masterVol_;				// fixme/rdg: convert to fixedpoint
+	S16*			pMixBuffer_;			// Pointer to mixed samples from all active chans.
+	S16*			pSRCInBuffer_;			// Pointer to the sample rate converter input buffer
+	S16*			pSRCOutBuffer_;			// Pointer to the sample rate converter output buffer
+	S16*			pSRCOverflowBuffer_;	// Pointer to the sample rate converter output buffer
+
 };
 
 #endif		// LF_BRIO_MIXER_H

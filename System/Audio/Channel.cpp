@@ -29,11 +29,6 @@
 //==============================================================================
 // CChannel implementation
 //==============================================================================
-#if 0
-static void InitConversionRate(tAudioConversion *pRate, U16 inRateInHz, U16 outRateInHz);
-static void ResetConversionRate(tAudioConversion *pRate);
-static void ConvertData(tAudioConversion *pRate, U32 numSamples, S16 *pInBuf, S16 *pOutBuf);
-#endif
 
 CChannel::CChannel()
 {
@@ -108,6 +103,8 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	U32 playerFramesRendered = 0;
 	U32 numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 		
+	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", pOutBuffer_, this );
+
 	// Initialize the output buffer to 0.  This has the side effect of zero
 	// padding the output if the player runs out of data.
 	bzero( pOutBuffer_, kAudioOutBufSizeInBytes );
@@ -115,6 +112,12 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	// Have player render its data into our output buffer.  If the player
 	// contains mono data, it will be rendered out as stereo data.
 	playerFramesRendered = pPlayer_->RenderBuffer( pOutBuffer_, numStereoFrames );
+	
+	printf("Twenty Samples from channel buffer after player render:\n");
+	for (int i = 0; i < 20; i++) {
+		printf("0x%x " , pOutBuffer_[i]);
+	}
+	printf("\n");
 	
 	// decide how to deal with player done i.e. playerFramesRendered comes back 
 	// less than numStereoFrames: does player send done, or channel.
@@ -158,87 +161,4 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	return playerFramesRendered;
 }
 
-#if DO_SAMPLE_RATE_CONVERSION
-//==============================================================================
-//==============================================================================
-static void InitConversionRate(tAudioConversion *pRate, U16 inRateInHz, U16 outRateInHz)
-{
-	U32 incr;
-
-	pRate->iPos = 0;
-	pRate->iLastLeft = 0;
-	pRate->iLastRight = 0;
-	pRate->oPosFrac = 0;
-	pRate->oPos = 0;
-
-	// Compute increment
-	incr = (U32)((double)inRateInHz / (double)outRateInHz * 
-					(double) ((U32) 1 << kFracBits));
-
-	pRate->oPosIncFrac = incr & (((U32) 1 << kFracBits)-1);
-	pRate->oPosInc = incr >> kFracBits;
-}
-
-//==============================================================================
-//==============================================================================
-static void ResetConversionRate(tAudioConversion *pRate)
-{
-	pRate->iPos = 0;
-	pRate->iLastLeft = 0;
-	pRate->iLastRight = 0;
-	pRate->oPosFrac = 0;
-	pRate->oPos = 0;
-}
-
-//==============================================================================
-//==============================================================================
-static void ConvertData(tAudioConversion *pRate, U32 numSamples, S16 *pInBuf, S16 *pOutBuf)
-{
-	S16		*iStart,*oStart;
-	S16		iLastLeft, iLastRight;
-	U32		tmp;
-	S32		sum;
-	double	t;
-
-	iStart = (S16 *)&pInBuf[pRate->iPos << 1];
-	oStart = (S16 *)pOutBuf;
-	//NU_printf("conv:%d, x%x\n",pRate->iPos, iStart);					 
-
-	// Loop through the data, computing 2 samples at a time (since stereo data)
-	for (U16 i=0; i<numSamples; i+=2) 
-	{
-		// read as many input samples so that ipos > opos
-		while (pRate->iPos <= pRate->oPos) 
-		{
-			iLastLeft = *iStart++;
-			iLastRight = *iStart++;
-			pRate->iPos++;
-		}
-
-		// interpolate both samples of the stereo data with the same factor
-		// making sure the total sum stays within range
-       t = (double) pRate->oPosFrac / ((U32) 1 << kFracBits);
-       sum = (S32) (*oStart + (double) iLastLeft * (1.0 - t) + (double) (*iStart) * t);
-		if (sum > kS16Max) sum = kS16Max;
-		else if (sum < kS16Min) sum = kS16Min;
-		*oStart++ = sum;
-//		printf("converted sum left: %d ", sum);
-
-       sum = (S32) (*oStart + (double) iLastRight * (1.0 - t) + (double) (*(iStart+1)) * t);
-		if (sum > kS16Max) sum = kS16Max;
-		else if (sum < kS16Min) sum = kS16Min;
-		*oStart++ = sum;
-//		printf("converted sum right: %d ", sum);
-
-		//if (i < 5)
-		//	NU_printf("%d, %d, %d, %d\n", iLastLeft, iLastRight, *(oStart-2),*(oStart-1));
-       // increment position
-		 tmp = pRate->oPosFrac + pRate->oPosIncFrac;
-		 pRate->oPos = pRate->oPos + pRate->oPosInc + (tmp >> kFracBits);
-		 pRate->oPosFrac = tmp & (((U32) 1 << kFracBits)-1);
-	}
-	pRate->iLastLeft = iLastLeft;
-	pRate->iLastRight = iLastRight;
-}
-#endif
 // EOF	

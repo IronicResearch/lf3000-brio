@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestVorbisAudioResources( )
+	void testVorbisAudioResources( )
 	{
 		tErrType 		err;
 		U16				i;
@@ -222,7 +222,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
-		handle1 = pResourceMPI_->FindRsrc( "VH_44_mono" );
+		handle1 = pResourceMPI_->FindRsrc( "VH_16_mono" );
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		handle2 = pResourceMPI_->FindRsrc( "vivaldi" );
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
@@ -237,7 +237,7 @@ public:
 		// sleep 2 seconds
 		pKernelMPI_->TaskSleep( 2000 ); 
 
-		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
+//		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
 		pKernelMPI_->TaskSleep( 10000 ); 
@@ -270,7 +270,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
-		handle1 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
+		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
@@ -283,7 +283,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testAudioResources( )
+	void xxxtestAudioResources( )
 	{
 		tErrType 		err;
 		U16				i;

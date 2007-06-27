@@ -4271,3 +4271,18 @@ By Dmilici (Dmilici@leapfrog.com) on 6/26/07 4:15 PM
 1,953 ms. (Cumulative: 648,480 ms)
 
 ----------------
+Revision 687 from svn://localhost/TRUNK/:
+
+No changes to commit.
+1,829 ms. (Cumulative: 650,371 ms)
+
+----------------
+Revision 688 from svn://localhost/TRUNK/:
+
+Enable very verbose audio debug output for OSS driver testing
+
+By DGibbs (DGibbs@leapfrog.com) on 6/26/07 5:12 PM
+5 changed, 0 added, 0 deleted.
+1,984 ms. (Cumulative: 652,355 ms)
+
+----------------

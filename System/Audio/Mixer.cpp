@@ -49,6 +49,11 @@ CAudioMixer::CAudioMixer( U8 numChannels )
 	
 	// Init midi player ptr.
 	pMidiPlayer_ = new CMidiPlayer( );
+	
+	pMixBuffer_ = new S16[ kAudioOutBufSizeInWords * 2];
+	pSRCInBuffer_ = new S16[ kAudioOutBufSizeInWords * 2];
+	pSRCOutBuffer_ = new S16[ kAudioOutBufSizeInWords * 2];
+	pSRCOverflowBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 }
 
 //==============================================================================
@@ -119,7 +124,7 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 	CChannel	*pChan;
 
 	// fixme/dg: do proper DebugMPI-based output.
-//	printf("AudioMixer::RenderOutput -- bufPtr: %x, frameCount: %d \n", pOutBuff, numStereoFrames );
+	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %d \n", pOutBuff, numStereoFrames );
 	
 	if ( (numStereoFrames * kAudioBytesPerStereoFrame) != kAudioOutBufSizeInBytes )
 		printf("AudioMixer::RenderOutput -- frameCount doesn't match buffer size!!!\n");
@@ -182,7 +187,8 @@ int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOutBuff,
 	// Cast void ptr to a this ptr:
 	CAudioMixer* mySelf = (CAudioMixer*)pToObject;
 	
-	// Call member function.
+	// Call member function to get a buffer full of stereo data
+	// at 16KHz.
 	return mySelf->RenderBuffer( pOutBuff, numStereoFrames );
 }
 
