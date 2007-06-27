@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'SystemResourceMPI', 
-				'portaudio', 'asound', 'me2000', 'vorbisfile']
+				'portaudio', 'me2000', 'vorbisfile']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
@@ -35,7 +35,6 @@ else:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/arm'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/arm'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/arm'])
-	myenv.Append(LIBPATH = ['/home/lfu/nfsroot/usr/lib'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

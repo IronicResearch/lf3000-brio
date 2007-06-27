@@ -4355,3 +4355,13 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 3:05 PM
 2,047 ms. (Cumulative: 668,731 ms)
 
 ----------------
+Revision 702 from svn://localhost/TRUNK/:
+Revision 703 from svn://localhost/TRUNK/:
+
+Fix audio SConscript since we don't need ALSA anymore, take asound link out.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 4:21 PM
+1 changed, 0 added, 0 deleted.
+2,031 ms. (Cumulative: 670,825 ms)
+
+----------------
