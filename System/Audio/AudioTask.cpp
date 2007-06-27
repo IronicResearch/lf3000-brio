@@ -251,7 +251,6 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 //==============================================================================
 static void DoStartAudio( CAudioMsgStartAudio* pMsg ) 
 {
-	tErrType			err;
 	tRsrcType			rsrcType;
 	CAudioReturnMessage	msg;
 	tAudioID			newID = kNoAudioID;
@@ -375,6 +374,8 @@ static tErrType DoStartAudioSystem( void )
 		err = StartAudioOutput();
 	}
 	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Starting audio output driver...\n");	
+
 	// Send the status back to the caller
 	msg.SetAudioErr( err );
 	SendMsgToAudioModule( msg );

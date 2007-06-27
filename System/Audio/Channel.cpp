@@ -79,7 +79,7 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
 //	pFxChain_ = kNull;
 
-	printf("CChannel::Release - deleting player 0x%x\n", pPlayer_);
+	printf("CChannel::Release - deleting player 0x%x\n", (unsigned int)pPlayer_);
 
 	if (suppressPlayerDoneMsg)
 		pPlayer_->SetSendDoneMessage( false );
@@ -103,7 +103,7 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	U32 playerFramesRendered = 0;
 	U32 numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 		
-	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", pOutBuffer_, this );
+ 	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
 
 	// Initialize the output buffer to 0.  This has the side effect of zero
 	// padding the output if the player runs out of data.

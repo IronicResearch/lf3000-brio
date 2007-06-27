@@ -4328,3 +4328,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 12:36 PM
 1,859 ms. (Cumulative: 662,434 ms)
 
 ----------------
+Revision 699 from svn://localhost/TRUNK/:
+
+fix compiler warnings for ARM gcc.  Add some verbose output temporarily for driver debugging.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 3:04 PM
+9 changed, 0 added, 0 deleted.
+2,063 ms. (Cumulative: 664,544 ms)
+
+----------------

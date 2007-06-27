@@ -196,17 +196,12 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testVorbisAudioResources( )
+	void testVorbisResources( )
 	{
 		tErrType 		err;
-		U16				i;
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
 		tAudioID 		id1;
-		tAudioID 		id2;
-		tRsrcType		rsrcType;
-		
-		const int kDuration = 1 * 3000;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -217,6 +212,8 @@ public:
 		TS_ASSERT( pResourceMPI_ != NULL );
 		TS_ASSERT( pResourceMPI_->IsValid() == true );
 
+		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
+
 		// Start up audio system.
 		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
@@ -224,15 +221,20 @@ public:
 		// Package is already opened in setup
 		handle1 = pResourceMPI_->FindRsrc( "VH_16_mono" );
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		printf("TestAudio -- testVorbisResources() found VH_16_mono, rsrcHandle = %d\n", (int)handle1 );
+
 		handle2 = pResourceMPI_->FindRsrc( "vivaldi" );
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
+		printf("TestAudio -- testVorbisResources() found vivaldi, rsrcHandle = %d\n", (int)handle2 );
 //		handle = pResourceMPI_->FindRsrc( "BlueNile" );
 //		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
+		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
 		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
 		// sleep 2 seconds
 		pKernelMPI_->TaskSleep( 2000 ); 
@@ -247,15 +249,9 @@ public:
 	void xxxtestMIDIResources( )
 	{
 		tErrType 		err;
-		U16				i;
 		tRsrcHndl		handle1;
-		tRsrcHndl		handle2;
 		tAudioID 		id1;
-		tAudioID 		id2;
-		tRsrcType		rsrcType;
 		
-		const int kDuration = 1 * 3000;
-
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
 				

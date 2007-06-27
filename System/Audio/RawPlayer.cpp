@@ -43,11 +43,11 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	// Get the pointer to the audio header and data.
 	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
 
-	printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%d, size:%d\n", pHeader->type, pHeader->offsetToData, pHeader->flags, pHeader->sampleRate, pHeader->dataSize);
+	printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%u, size:%u\n", (unsigned int)pHeader->type, (int)pHeader->offsetToData, pHeader->flags, (unsigned int)pHeader->sampleRate, (unsigned int)pHeader->dataSize);
 
 	// Get ptr to data
 	pAudioData_ = (void*)(pHeader + pHeader->offsetToData);
-	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", pHeader, pAudioData_ );
+	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", (unsigned int)pHeader, (unsigned int)pAudioData_ );
 
 	dataSampleRate_ = pHeader->sampleRate;
 	audioDataSize_ = pHeader->dataSize;			

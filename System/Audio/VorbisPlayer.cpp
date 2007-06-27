@@ -77,15 +77,15 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 	dataSampleRate_ = pVorbisInfo->rate;
 	
 	printf("OggVorbis file's num channels is %d.\n", pVorbisInfo->channels);
-	printf("OggVorbis file's sample rate is %d.\n", pVorbisInfo->rate);
+	printf("OggVorbis file's sample rate is %ld.\n", pVorbisInfo->rate);
 
 	lengthInSeconds = ov_time_total( &vorbisFile_, -1 );
 	printf("OggVorbis file's length in seconds is %f.\n", (float)lengthInSeconds);
 
 	length = ov_raw_total( &vorbisFile_, -1 );
-	printf("OggVorbis file's bitstream length is %d.\n", (long)length);
+	printf("OggVorbis file's bitstream length is %ld.\n", (long)length);
 	length = ov_pcm_total( &vorbisFile_, -1 );
-	printf("OggVorbis file's PCM length is %d.\n", (long)length );
+	printf("OggVorbis file's PCM length is %ld.\n", (long)length );
 	
 //	printf("CVorbisPlayer::ctor Header flags:%d\n", optionsFlags_);
 }

@@ -82,8 +82,8 @@ void RT_DumpTraceMessages()
     printf("DumpTraceMessages: traceIndex = %d\n", traceIndex );
     for( i=0; i<messageCount; i++ )
     {
-        printf("ev# %d: %s, cb count = %u, time = %u\n",
-               i, traceTextArray[i], traceIntArray[i], traceTimeArray[i] );
+        printf("ev# %d: %s, cb count = %ul, time = %ul\n",
+               i, traceTextArray[i], traceIntArray[i], (unsigned int)traceTimeArray[i] );
      }
 
 	fflush(stdout);
