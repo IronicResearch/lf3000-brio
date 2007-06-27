@@ -361,7 +361,14 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 //----------------------------------------------------------------------------
 Boolean	CFontModule::SetFontAttr(tFontAttr attr)
 {
-	// TODO
+	if (attr.version == 1)
+	{
+		attr_.version 	= 1;
+		attr_.color 	= attr.color;
+		attr_.direction	= attr.direction;
+		attr_.antialias	= true;
+		return true;
+	}
 	attr_ = attr;
 	return true;
 }
@@ -369,7 +376,13 @@ Boolean	CFontModule::SetFontAttr(tFontAttr attr)
 //----------------------------------------------------------------------------
 Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 {
-	// TODO
+	if (attr_.version == 1)
+	{
+		pAttr->version		= attr_.version;
+		pAttr->color		= attr_.color;
+		pAttr->direction	= attr_.direction;
+		return true;
+	}
 	*pAttr = attr_;
 	return true;
 }

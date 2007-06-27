@@ -4286,3 +4286,14 @@ By DGibbs (DGibbs@leapfrog.com) on 6/26/07 5:12 PM
 1,984 ms. (Cumulative: 652,355 ms)
 
 ----------------
+Revision 689 from svn://localhost/TRUNK/:
+Revision 690 from svn://localhost/TRUNK/:
+Revision 691 from svn://localhost/TRUNK/:
+
+Font attributes version handling to set anti-aliasing on by default.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/26/07 7:08 PM
+1 changed, 0 added, 0 deleted.
+1,829 ms. (Cumulative: 654,262 ms)
+
+----------------
