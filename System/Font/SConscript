@@ -24,10 +24,9 @@ myenv.Append(CPPPATH = ['#ThirdParty/FreeType/Include',
 # Distinguish x86 vs ARM library binaries
 if vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/x86'])
-	myenv.Append(RPATH   = ['#ThirdParty/FreeType/Libs/x86'])
+	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/FreeType/Libs/x86').abspath)
 else:
 	myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/arm'])
-	myenv.Append(RPATH   = ['#ThirdParty/FreeType/Libs/arm'])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
