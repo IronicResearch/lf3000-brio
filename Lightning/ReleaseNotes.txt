@@ -2,6 +2,32 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
+v0.1.9  (Build 713 released June 28, 2007) 
+===========================================
+Release for embedded target -- ME2530 devkit only.
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-svn713.tar.gz
+* NFS root file system: nfsroot-svn713.tar.gz
+
+Enhancements:
+-------------
+* Provided MPlayer ARM executable with Brio YUV layer output.
+  Invoke as: 'mplayer -vo brioyuv -ao null -nosound YourVideoClip.ogg'
+* Added Video MPI for Ogg video stream playback, with simple VideoDemo.
+* Added anti-aliasing option to Font rendering, on by default.
+* Segmentation faults resolved on exit from all Brio apps.
+* Resource packing tool correctly updates Brio SDK examples on target.
+
+Known Issues:
+-------------
+* Audio subsystem drivers are not functional on embedded target.
+* Video MPI syncs to Theora frames only, ignoring Vorbis audio packets
+  (if any) in Ogg stream.
+* Video MPI video output data is not color converted on emulation targets.
+
+===========================================
 v0.1.8  (Build 614 released June 19, 2007) 
 ===========================================
 Release for emulation target. New packing scheme in place
