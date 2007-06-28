@@ -607,7 +607,7 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
      	return AsBrioErr(errno);
     }	
     assert(msg_prio == msg_ptr->GetMessagePriority());
-#if 1 // BSK Debug printing
+#if 0 // BSK Debug printing
     printf("CKernelModule::ReceiveMessage. Received=%d bytes\n", ret_receive);
     fflush(stdout);
 #endif // BK

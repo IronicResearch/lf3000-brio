@@ -43,7 +43,7 @@ public:
 		if( msg.GetEventType() == kAudioCompletedEvent )
 		{
 			const tAudioMsgDataCompleted& data = msg.audioMsgData.audioCompleted;
-			dbg_.DebugOut(kDbgLvlCritical, "Audio done: id=%d, payload=%d\n", 
+			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
 				data.audioID, data.payload);
 			return kEventStatusOKConsumed;
 		}
@@ -375,7 +375,7 @@ public:
 
 		for (i = 0; i < 10; i++) {
 			id3 = pAudioMPI_->StartAudio( handle4, i*10, 1, 0, &audioListener_, 0, 0 );
-			printf("TestAudio -- StartAudio() returned ID # %d\n", static_cast<int>(id3) );
+//			printf("TestAudio -- StartAudio() returned ID # %d\n", static_cast<int>(id3) );
 			if (id3 < 0) {
 				printf("TestAudio -- StartAudio() returned error # %d\n", static_cast<int>(id3) );
 			}

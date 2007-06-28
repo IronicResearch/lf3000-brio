@@ -281,17 +281,17 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 		switch ( rsrcType )
 		{
 		case kAudioRsrcRaw:
-			printf("Create RawPlayer\n");
+//			printf("Create RawPlayer\n");
 			pPlayer = new CRawPlayer( pAudioInfo, newID );
 			break;
 	
 		case kAudioRsrcOggVorbis:
-			printf("Create VorbisPlayer\n");
+//			printf("Create VorbisPlayer\n");
 			pPlayer = new CVorbisPlayer( pAudioInfo, newID );
 			break;
 		
 		case kAudioRsrcMIDI:
-			printf("Faking Create MidiPlayer... DON'T DO THIS! USE MIDI API\n");
+//			printf("Faking Create MidiPlayer... DON'T DO THIS! USE MIDI API\n");
 	//		pPlayer = new CMidiPlayer( pAudioInfo->hRsrc, newID );
 			break;
 	
@@ -309,7 +309,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 		msg.SetAudioErr( kNoErr );
 		msg.SetAudioID( newID );
 	} else {
-		printf("Couldn't Find A Channel!\n");
+//		printf("Couldn't Find A Channel!\n");
 		// Send the audioID back to the caller
 		msg.SetAudioErr( kAudioNoChannelAvailErr );
 	}
@@ -554,7 +554,7 @@ void* AudioTaskMain( void* arg )
 	};
 	
 	// I want to see everything...
-	gContext.debugMPI->SetDebugLevel( kDbgLvlVerbose );
+	gContext.debugMPI->SetDebugLevel( kDbgLvlImportant );
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 		(const char *)"Audio Task creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	

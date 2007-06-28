@@ -4479,3 +4479,13 @@ By Dmilici (Dmilici@leapfrog.com) on 6/28/07 2:39 PM
 2,360 ms. (Cumulative: 703,572 ms)
 
 ----------------
+Revision 722 from svn://localhost/TRUNK/:
+Revision 723 from svn://localhost/TRUNK/:
+
+Turn off excessive debug output from audio and kernel modules.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 4:00 PM
+4 changed, 0 added, 0 deleted.
+2,423 ms. (Cumulative: 706,058 ms)
+
+----------------

@@ -194,14 +194,12 @@ error:
 int StartAudioOutput( void )
 {
 	PaError err;
-	printf("StartAudioOutput() -- About to start the portaudio stream\n" );
 	err = Pa_StartStream( gPaStream );
 	if( err != paNoError ) {
 	    fprintf( stderr, "An error occured while attempting to start the portaudio stream\n" );
 	    fprintf( stderr, "Error number: %d\n", err );
 	    fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );		
 	}
- 	printf("StartAudioOutput() -- Back from starting the portaudio stream\n" );
 
  	return err;
  }
