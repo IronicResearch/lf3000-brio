@@ -3,6 +3,7 @@
 #-----------------------------------------------------------------------------
 from Etc.Tools.SConsTools.Priv.LfUtils import *
 
+import os.path
 Import('*')
 
 module_name	= 'Audio'
@@ -14,7 +15,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'SystemResourceMPI', 
-				'portaudio', 'me2000', 'vorbisfile']
+				'portaudio', 'me2000', 'vorbisidec']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
@@ -30,7 +31,7 @@ if vars['is_emulation']:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/x86'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/x86'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/x86'])
-	myenv.Append(RPATH   = ['#ThirdParty/Theora/Libs/x86'])
+	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath)
 else:
 	myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/arm'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/arm'])

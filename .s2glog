@@ -4386,3 +4386,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 5:50 PM
 1,875 ms. (Cumulative: 674,779 ms)
 
 ----------------
+Revision 709 from svn://localhost/TRUNK/:
+
+Updated Audio module Vorbis player to use integer-only Vorbis/Tremor libs. 
+
+By Dmilici (Dmilici@leapfrog.com) on 6/27/07 6:35 PM
+3 changed, 8 added, 0 deleted.
+2,079 ms. (Cumulative: 676,920 ms)
+
+----------------

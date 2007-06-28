@@ -21,8 +21,8 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <AudioTypesPriv.h>
-#include "vorbis/codec.h"
-#include "vorbis/vorbisfile.h"
+#include "tremor/ivorbiscodec.h"
+#include "tremor/ivorbisfile.h"
 
 //==============================================================================
 // Class:

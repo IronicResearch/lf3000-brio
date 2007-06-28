@@ -40,7 +40,7 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 {
 	tErrType 		ret = kNoErr;
 	vorbis_info*	pVorbisInfo;
-	double			lengthInSeconds;
+	ogg_int64_t		lengthInSeconds;
 	ogg_int64_t		length;
 	
 //	printf( "Brio Vorbis Test: playback vorbis.\n" );
@@ -290,9 +290,11 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 		bytesRead = ov_read( &vorbisFile_, 
 			bufferPtr, 
 			bytesToRead, 
-	 		VORBIS_LITTLE_ENDIAN, 
-	 		VORBIS_16BIT_WORD, 
-	 		VORBIS_SIGNED_DATA, &dummy );
+	 		//VORBIS_LITTLE_ENDIAN, 
+	 		//VORBIS_16BIT_WORD, 
+	 		//VORBIS_SIGNED_DATA, 
+	 		&dummy );
+	 	// Tremor ov_read() = 16-bit signed native format
 	 		
 //		printf("Vorbis Player::RenderBuffer: ov_read() got %u bytes.\n ", bytesRead);
 	
