@@ -4456,3 +4456,15 @@ By TParker (TParker@leapfrog.com) on 6/28/07 2:05 PM
 2,125 ms. (Cumulative: 698,602 ms)
 
 ----------------
+Revision 718 from svn://localhost/TRUNK/:
+
+1. Removed checking 'errno' after the 'gettimeofday' function call as
+inappropriate.
+2. Changed the GetTimerElapsedTime() and GetTimerRemainingTime function prototypes to return error 
+that occurs if the 'timer_gettime' function has an error.
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/28/07 2:21 PM
+7 changed, 0 added, 0 deleted.
+2,485 ms. (Cumulative: 701,134 ms)
+
+----------------

@@ -477,6 +477,27 @@ public:
 			
 	}
 		
+       void testGetTimerElapsed_OR_Remaining_Time()
+        {
+			U32 elapsed;
+			U32 remaining;
+			tErrType err;
+
+			err = KernelMPI->GetTimerElapsedTime(hndlTimer_1, &elapsed);
+			TS_ASSERT_EQUALS( kNoErr, err );
+			err = KernelMPI->GetTimerRemainingTime(hndlTimer_1, &remaining);
+			TS_ASSERT_EQUALS( kNoErr, err );
+
+//			errno = 0;
+//			err = KernelMPI->GetTimerElapsedTime(hndlTimer_1+20, &elapsed);
+//			TS_ASSERT_EQUALS( EINVAL, errno );
+
+//			errno = 0;
+//			err = KernelMPI->GetTimerRemainingTime(hndlTimer_1+20, &remaining);
+//			TS_ASSERT_EQUALS( EINVAL, errno );
+
+        	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
+        }
 
     void testDestroyTimer()
     {
@@ -608,8 +629,7 @@ public:
    		err = KernelMPI->DeInitMutex( mutex );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 			
-			
-        }
+	}
 	
     // Unlocks a mutex. It was tested
     void xtestUnlockMutex()
@@ -763,7 +783,8 @@ public:
 
         }	
     
-
+ 
+ 
     // Obtains the process-shared setting of a condition variable attribute object
         void xtestGetCondAttrPShared()
         {

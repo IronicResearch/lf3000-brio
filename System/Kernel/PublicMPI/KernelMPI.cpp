@@ -334,21 +334,21 @@ tErrType CKernelMPI::ResumeTimer(tTimerHndl hndl, saveTimerSettings& saveValue)
 	
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds
-U32 CKernelMPI::GetTimerElapsedTime(tTimerHndl hndl, U32* pUs) const
+tErrType CKernelMPI::GetTimerElapsedTime(tTimerHndl hndl, U32* pMs, U32* pUs) const
                                                                     
 {
   	if (!pModule_)
 		return 0;
-	return pModule_->GetTimerElapsedTime(hndl, pUs );  
+	return pModule_->GetTimerElapsedTime(hndl, pMs, pUs );  
 }
 	
 //------------------------------------------------------------------------------
 // time remaining in milliseconds
-U32 CKernelMPI::GetTimerRemainingTime(tTimerHndl hndl, U32* pUs) const
+tErrType CKernelMPI::GetTimerRemainingTime(tTimerHndl hndl, U32* pMs, U32* pUs) const
 {
   	if (!pModule_)
 		return 0;
-	return pModule_->GetTimerRemainingTime(hndl, pUs );  
+	return pModule_->GetTimerRemainingTime(hndl, pMs, pUs );  
 }
 
 // fixme rdg: move the rest of these into the kernel module at some point

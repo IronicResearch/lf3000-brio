@@ -188,12 +188,18 @@ public:
 		const U32 kSleepInterval = 10;
 		const U32 kDelta = 25;
 		U32 i = 0;
+		U32 elapsed;
+		U32 remaining;
+		tErrType err;
+		
 //		for (int ii = i; ii < 9; ++ii)
 		for (U32 ii = i; ii < 5; ++ii)
 		{
 			kernel_->TaskSleep(kSleepInterval);
-			U32 elapsed = kernel_->GetTimerElapsedTime(timer.GetTimerHndl());
-			U32 remaining = kernel_->GetTimerRemainingTime(timer.GetTimerHndl());
+			err = kernel_->GetTimerElapsedTime(timer.GetTimerHndl(), &elapsed);
+			TS_ASSERT_EQUALS( kNoErr, err );
+			err = kernel_->GetTimerRemainingTime(timer.GetTimerHndl(), &remaining);
+			TS_ASSERT_EQUALS( kNoErr, err );
 //			TS_ASSERT_DELTA( elapsed, ii * kSleepInterval, kDelta );
 //			TS_ASSERT_DELTA( remaining, (10 - ii) * kSleepInterval, kDelta );
 			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(elapsed, ((ii+1) * kSleepInterval)), kDelta );

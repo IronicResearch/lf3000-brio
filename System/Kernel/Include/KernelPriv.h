@@ -142,8 +142,8 @@ public:
 	VTABLE_EXPORT tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 	VTABLE_EXPORT tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue);
 
-	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pUs = NULL ) const;		// elapsed time in milliseconds (& microseconds)
-	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pUs = NULL ) const; 	// time remaining in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pMs,U32* pUs = NULL ) const;		// elapsed time in milliseconds (& microseconds)
+	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* pUs = NULL ) const; 	// time remaining in milliseconds (& microseconds)
 
 //------------------------------------------------------------------------------
 // Mutexes

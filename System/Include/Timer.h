@@ -111,15 +111,21 @@ public:
 	}
 	
 	//--------------------------------------------------------------------------
-	U32 GetTimerElapsedTimeInMilliSec() const
+	tErrType GetTimerElapsedTimeInMilliSec(U32* ms) const
 	{
-		return kernel_.GetTimerElapsedTime(timer_);
+    	tErrType err = kNoErr;
+
+		err = kernel_.GetTimerElapsedTime(timer_, ms);
+		return err;
 	}
 	
 	//--------------------------------------------------------------------------
-	U32 GetTimerRemainingTimeInMilliSec() const
+	tErrType GetTimerRemainingTimeInMilliSec(U32* ms) const
 	{
-		return kernel_.GetTimerRemainingTime(timer_);
+    	tErrType err = kNoErr;
+
+		err = kernel_.GetTimerRemainingTime(timer_, ms);
+		return err;
 	}
 	
 // TPprivate:

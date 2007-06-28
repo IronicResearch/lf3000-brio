@@ -99,16 +99,16 @@ public:
     
     tErrType 	DestroyTimer( tTimerHndl hndl );
 
-/**/tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
+    tErrType 	ResetTimer( tTimerHndl hndl, const tTimerProperties& props );
 
 	tErrType	StartTimer( tTimerHndl hndl, const tTimerProperties& props  );
-/**/tErrType	StopTimer( tTimerHndl hndl );
+    tErrType	StopTimer( tTimerHndl hndl );
 
 	tErrType	PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 	tErrType	ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveValue );
 
-	U32			GetTimerElapsedTime( tTimerHndl hndl, U32* pUs=NULL ) const;
-	U32			GetTimerRemainingTime( tTimerHndl hndl, U32* pUs=NULL ) const;
+	tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pMs, U32* pUs=NULL ) const;
+	tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* pUs=NULL ) const;
 
 	//==============================================================================
 	// Mutexes

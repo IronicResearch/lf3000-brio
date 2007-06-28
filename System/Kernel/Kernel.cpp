@@ -673,9 +673,7 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 {
     timeval time;
 
-	errno = 0;
 	gettimeofday( &time, NULL );
-    ASSERT_POSIX_CALL( errno );
 
 	return ( ((U64 )time.tv_sec) * 1000000 + time.tv_usec);
 }
@@ -921,7 +919,7 @@ tErrType CKernelModule::ResumeTimer( tTimerHndl hndl, saveTimerSettings& saveVal
 	
 //------------------------------------------------------------------------------
 // elapsed time in milliseconds // (& microseconds)	
-U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const
+tErrType CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pMs, U32* pUs ) const
 {
 	struct itimerspec value;
  //	printf("hndl=%d    12hndl=%d\n", hndl, (timer_t )hndl);
@@ -931,7 +929,7 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const
     timer_gettime( AsPosixTimerHandle( hndl ), &value );
 	ASSERT_POSIX_CALL( errno );
 	
-    U32 milliSeconds = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
+    *pMs = (value.it_interval.tv_sec -  value.it_value.tv_sec) * 1000 + 
           			 (value.it_interval.tv_nsec - value.it_value.tv_nsec) / 1000000;
 
 		if( pUs )
@@ -944,12 +942,12 @@ U32 CKernelModule::GetTimerElapsedTime( tTimerHndl hndl, U32* pUs ) const
       value.it_interval.tv_sec, value.it_value.tv_sec, value.it_interval.tv_nsec,value.it_value.tv_nsec);       
 #endif	
 
-    return milliSeconds;
+    return kNoErr;
 }
 	
 //------------------------------------------------------------------------------
 // time remaining in milliseconds (& microseconds)
-U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const
+tErrType CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* pUs ) const
 {
 	struct itimerspec value;
 	
@@ -957,13 +955,13 @@ U32 CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pUs ) const
     timer_gettime( AsPosixTimerHandle( hndl ), &value );
     ASSERT_POSIX_CALL( errno );
 	
-    U32 milliSeconds = value.it_value.tv_sec * 1000 
+    *pMs = value.it_value.tv_sec * 1000 
     				+ value.it_value.tv_nsec / 1000000;
 	
 	if( pUs )
 			*pUs = value.it_value.tv_sec * 1000000 
     				+ value.it_value.tv_nsec / 1000; 
-    return milliSeconds;	
+    return kNoErr;	
 }
 
 //------------------------------------------------------------------------------
