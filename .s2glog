@@ -4395,3 +4395,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/27/07 6:35 PM
 2,079 ms. (Cumulative: 676,920 ms)
 
 ----------------
+Revision 710 from svn://localhost/TRUNK/:
+
+Remove unwanted floating-point Vorbis libs.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/27/07 6:54 PM
+0 changed, 0 added, 12 deleted.
+1,938 ms. (Cumulative: 678,936 ms)
+
+----------------
