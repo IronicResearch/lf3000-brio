@@ -39,7 +39,7 @@ CMidiPlayer::CMidiPlayer()
 	S16			midiErr;
 
 	pMidiRenderBuffer_ = new S16[kAudioOutBufSizeInWords];
-	numFrames_ = 256;
+	numFrames_ = 256;	/**< @todo fixme/rdg: don't hardcode this */
 	samplesPerFrame_ = 2;
 	bitsPerSample_ = 16;
 	pListener_ = kNull;
@@ -243,9 +243,10 @@ tErrType CMidiPlayer::SendCommand(U8 cmd, U8 data1, U8 data2)
 //==============================================================================
 U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 {
-	U32 	i;
+	U32 	i, midiLoopCount;
 	int 	mfp_result;
-	S16* 	pMidiRenderBuffer = pMidiRenderBuffer_;  // local ptr to buffer for indexing
+	U32		spmidiFramesPerBuffer;
+	S16* 	pBuffer = pMidiRenderBuffer_;  // local ptr to buffer for indexing
 	float 	outSamp;
 	S32 	sum;
 	U32 	framesRead = 0;
@@ -253,38 +254,55 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 
 //	if (numStereoFrames != numFrames_) 
 //		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
-	
 	// If there is a midi file player, service it
 	if ( bFileActive_ && !bFilePaused_ ) {
-		mfp_result = MIDIFilePlayer_PlayFrames( pFilePlayer_, pContext_, SPMIDI_GetFramesPerBuffer()  );
-//		if (mfp_result < 0)
-//		{
-//			printf("!!!!! CMidiPlayer::RenderBuffer -- MIDIFilePlayer PlayFrames failed!!!\n\n");
-//		}
-		// Returning a 1 means MIDI file done.
-		if (mfp_result > 0) {
-			if (loopMidiFile_) {
-				MIDIFilePlayer_Rewind( pFilePlayer_ ); 
-			} else {
-				if (pListener_ != kNull)
-					SendDoneMsg();
-				MIDIFilePlayer_Delete( pFilePlayer_ );
-				pFilePlayer_ = kNull;
+		
+		// fixme/rdg: make this bulletproof.  Right now no check for sizes.
+		// Figure out how many calls to spmidi we need to make to get a full output buffer
+		spmidiFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
+		midiLoopCount = numStereoFrames / spmidiFramesPerBuffer;
+
+		for (i = 0; i < midiLoopCount; i++) {
+			mfp_result = MIDIFilePlayer_PlayFrames( pFilePlayer_, pContext_, spmidiFramesPerBuffer );
+			if (mfp_result < 0)
+				printf("!!!!! CMidiPlayer::RenderBuffer -- MIDIFilePlayer PlayFrames failed!!!\n");
+	
+			// fixme/dg: rationalize numStereoFrames and numFrames_!!
+			framesRead = SPMIDI_ReadFrames( pContext_, pBuffer, spmidiFramesPerBuffer,
+		    		samplesPerFrame_, bitsPerSample_ );
+	
+			pBuffer += framesRead * 2;
+// 			printf("CMidiPlayer::RenderBuffer -- loop %d, framesRead = %ul, pBuffer = %d\n", i, framesRead, pBuffer);
+			
+			// Returning a 1 means MIDI file done.
+			if (mfp_result > 0) {
+				if (loopMidiFile_) {
+					MIDIFilePlayer_Rewind( pFilePlayer_ ); 
+				} else {
+					if (pListener_ != kNull)
+						SendDoneMsg();
+					MIDIFilePlayer_Delete( pFilePlayer_ );
+					pFilePlayer_ = kNull;
+					break; // bail out of loop.
+				}
 			}
 		}
+	} else {
+		// A midi file is not playing, but notes might be turned on programatically...
+		// fixme/dg: rationalize numStereoFrames and numFrames_!!
+		framesRead = SPMIDI_ReadFrames( pContext_, pMidiRenderBuffer_, numFrames_,
+	    		samplesPerFrame_, bitsPerSample_ );
+
 	}
 	
-	// fixme/dg: rationalize numStereoFrames and numFrames_!!
-	framesRead = SPMIDI_ReadFrames( pContext_, pMidiRenderBuffer_, numFrames_,
-    		samplesPerFrame_, bitsPerSample_ );
-
 //	printf("!!!!! CMidiPlayer::RenderBuffer -- framesRead: %u, pContext_ 0x%x, pMidiRenderBuffer_ 0x%x!!!\n\n", framesRead, pContext_, pMidiRenderBuffer_);
 
 	// fixme/dg: mix to 32 bit buffer and clip once after
+	pBuffer = pMidiRenderBuffer_;
 	for ( i = 0; i < numStereoSamples; i++)
 	{
 		// Be sure the total sum stays within range
-		outSamp = (float)*pMidiRenderBuffer++;
+		outSamp = (float)*pBuffer++;
 		outSamp *= volume_; //  Apply gain
 		sum = *pMixBuff + (S16)outSamp;			
 

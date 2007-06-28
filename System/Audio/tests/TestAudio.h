@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testVorbisResources( )
+	void xxxtestVorbisResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
@@ -266,6 +266,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
+//		handle1 = pResourceMPI_->FindRsrc("Girl_noDrums");
 		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
@@ -275,11 +276,11 @@ public:
 		id1 = pAudioMPI_->StartMidiFile( 0, handle1, 100, 1, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 10000 ); 
+		pKernelMPI_->TaskSleep( 600000000 ); 
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestAudioResources( )
+	void testAudioResources( )
 	{
 		tErrType 		err;
 		U16				i;
@@ -317,7 +318,7 @@ public:
 		TS_ASSERT( handle3 != kInvalidRsrcHndl );
 		handle4 = pResourceMPI_->FindRsrc("FortyTwo");
 		TS_ASSERT( handle4 != kInvalidRsrcHndl );
-		handle5 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
+		handle5 = pResourceMPI_->FindRsrc("Girl_noDrums");
 		TS_ASSERT( handle5 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
@@ -338,7 +339,7 @@ public:
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 		
-		/*  MidiNote Params
+	 	/*  MidiNote Params
 						tMidiID midiID,
 						U8 			track, 
 						U8			pitch, 

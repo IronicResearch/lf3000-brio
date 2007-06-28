@@ -4365,3 +4365,15 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 4:21 PM
 2,031 ms. (Cumulative: 670,825 ms)
 
 ----------------
+Revision 704 from svn://localhost/TRUNK/:
+Revision 705 from svn://localhost/TRUNK/:
+Revision 706 from svn://localhost/TRUNK/:
+Revision 707 from svn://localhost/TRUNK/:
+
+Fix MidiPlayer to pull correct number of frames from midi engine.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 5:12 PM
+2 changed, 0 added, 0 deleted.
+1,922 ms. (Cumulative: 672,841 ms)
+
+----------------
