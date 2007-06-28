@@ -49,6 +49,9 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, lib)
 		lib += '.0'
 		env.Install(lib_dir, lib)
+		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'ThirdParty')
+		libs = glob.glob(os.path.join('Theora', 'Libs', 'x86', '*.so*'))
+		env.Install(lib_dir, libs)
 	else:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')

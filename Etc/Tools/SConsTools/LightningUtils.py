@@ -99,6 +99,8 @@ def CreateEnvironment(opts, vars):
 	
 	libpaths = [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'MPI'),
 				os.path.join(cdevkit_dir, 'Libs', target_subdir, 'OpenGL')]
+	if vars['is_emulation']:
+		libpaths += [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'ThirdParty')]
 
 	env.Append(CPPDEFINES = ['LEAPFROG_CDEVKIT_ROOT=\\"'+cdevkit_dir+'\\"', 'OGLESLITE'])
 	env.Append(CPPPATH = cpppaths)
@@ -109,7 +111,7 @@ def CreateEnvironment(opts, vars):
 
 #-------------------------------------------------------------------------
 # Deploy the apprsrc assets for embedded builds
-#-------------------------------------------------------------------------
+#-------------------------------------------------------------------------    
 def CopyResources(penv, vars):
 	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
@@ -124,7 +126,8 @@ def CopyResources(penv, vars):
 				full = os.path.join(directory, file)
 				if os.path.isfile(full):
 					subdir = os.path.dirname(full[root_len:])
-					penv.Install(os.path.join(rootfs_data, subdir), full)
+					target = penv.Install(os.path.join(rootfs_data, subdir), full)
+					penv.AlwaysBuild(target)
 					
 	os.path.walk(data_root, callback, None)
 	penv.Default(rootfs_data)
@@ -174,7 +177,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 #-------------------------------------------------------------------------
 # Functions to enumerate packed filenames
 #-------------------------------------------------------------------------
-valid_chars = range(48,58) + range (64,91)
+valid_chars = range(48,58) + range (65,91)
 valid_chars_count = len(valid_chars)
 sPkgNameIndex	= [0, -1]
 sRsrcNameIndex	= [0, -1]

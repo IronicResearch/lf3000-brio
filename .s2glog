@@ -4445,3 +4445,14 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 10:57 AM
 11,366 ms. (Cumulative: 696,383 ms)
 
 ----------------
+Revision 715 from svn://localhost/TRUNK/:
+Revision 716 from svn://localhost/TRUNK/:
+Revision 717 from svn://localhost/TRUNK/:
+
+Export and link to ThirdParty vorbis stuff for emulation builds
+
+By TParker (TParker@leapfrog.com) on 6/28/07 2:05 PM
+2 changed, 0 added, 0 deleted.
+2,125 ms. (Cumulative: 698,602 ms)
+
+----------------
