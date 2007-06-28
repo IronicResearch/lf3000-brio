@@ -4404,3 +4404,12 @@ By Dmilici (Dmilici@leapfrog.com) on 6/27/07 6:54 PM
 1,938 ms. (Cumulative: 678,936 ms)
 
 ----------------
+Revision 711 from svn://localhost/TRUNK/:
+
+Correct RPATH link options for .so libs.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/28/07 9:56 AM
+1 changed, 0 added, 0 deleted.
+1,938 ms. (Cumulative: 680,921 ms)
+
+----------------
