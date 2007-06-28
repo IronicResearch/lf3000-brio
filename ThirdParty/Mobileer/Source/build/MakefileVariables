@@ -1,7 +1,7 @@
 # Makefile Variable for Mobileer MIDI Engine
 # (C) 2006 Mobileer, Inc.
 
-EXPORTED_ORCHESTRA=../export
+EXPORTED_ORCHESTRA=../LF_InstSet
 
 ME2000_INCLUDEPATH = \
 	-I../include \

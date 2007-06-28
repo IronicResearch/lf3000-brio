@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_H
 #define _SPMIDI_H
 
-/* $Id: spmidi.h,v 1.39 2006/05/20 00:42:41 philjmsl Exp $ */
+/* $Id: spmidi.h,v 1.46 2007/06/18 18:05:51 philjmsl Exp $ */
 /**
  *
  * @file spmidi.h
@@ -74,11 +74,14 @@ typedef unsigned char spmUInt8;
 typedef short spmSample;
 typedef char spmBoolean;
 
-/* This data type is used for values that can be either 16 or 32 bit data.
+/** This data type is used for values that can be either 16 or 32 bit data.
  * By not requiring one or the other we can optimize this for the platform.
  */
 typedef int spmSInt;
 typedef unsigned int spmUInt;
+
+/** This is the release version number time 100. Thus for V 1.94 this would be 194. */
+#define SPMIDI_VERSION  (212)
 
 /**
  * The Scaleable Polyphony standard defines a special bank and program for
@@ -86,7 +89,7 @@ typedef unsigned int spmUInt;
  * to trigger the phone vibrator during a song.
  * See SPMIDI_SetVibratorCallback().
  */
-#define SPMIDI_VIBRATOR_BANK       (((0x79)<<8) | 0x06)
+#define SPMIDI_VIBRATOR_BANK       (((0x79)<<SPMIDI_BANK_MSB_SHIFT) | 0x06)
 #define SPMIDI_VIBRATOR_PROGRAM    (0x7C)
 
 /**
@@ -95,7 +98,7 @@ typedef unsigned int spmUInt;
  * The identity of these instruments may change without notice.
  * So don't rely on using this bank.
  */
-#define SPMIDI_TEST_BANK           (((0x70)<<8) | 0x00)
+#define SPMIDI_TEST_BANK           (((0x70)<<SPMIDI_BANK_MSB_SHIFT) | 0x00)
 
 /** Default volume for SPMIDI_SetMasterVolume */
 #define SPMIDI_DEFAULT_MASTER_VOLUME   (0x80)
@@ -110,6 +113,11 @@ typedef unsigned int spmUInt;
  * SPMIDI_GetFramesPerBuffer()
  */
 #define SPMIDI_MAX_FRAMES_PER_BUFFER   (256)
+
+/** MIDI Bank indices are made from two 7 bit fields concatenated together.
+ * Set this to 8 for systems assume that treat the MSB and LSB as actual bytes.
+ */
+#define SPMIDI_BANK_MSB_SHIFT   (7)
 
 /** These parameters can be used to control various synthesizer values. */
 typedef enum SPMIDI_Parameter_e
@@ -440,6 +448,14 @@ extern "C"
 	 */
 	int SPMIDI_GetParameter( SPMIDI_Context *spmidiContext, SPMIDI_Parameter parameterIndex, int *valuePtr );
 
+	/**
+	 * Immediately kill all voices on all contexts. This may cause a pop.
+	 * This is normally only used internally by the editor.
+	 * To stop the sound without a pop use the MIDI_CONTROL_ALLSOUNDOFF
+	 * or MIDI_CONTROL_ALLNOTESOFF controllers.
+	 * @return zero or native error code
+	 */
+	int SPMIDI_StopAllVoices( void );
 
 #ifdef __cplusplus
 }

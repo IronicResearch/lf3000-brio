@@ -124,7 +124,7 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 	CChannel	*pChan;
 
 	// fixme/dg: do proper DebugMPI-based output.
-	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
+//	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
 	
 	if ( (numStereoFrames * kAudioBytesPerStereoFrame) != kAudioOutBufSizeInBytes )
 		printf("AudioMixer::RenderOutput -- frameCount doesn't match buffer size!!!\n");

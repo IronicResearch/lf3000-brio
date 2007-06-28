@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_EDITOR_H
 #define _SPMIDI_EDITOR_H
 
-/* $Id: spmidi_editor.h,v 1.10 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: spmidi_editor.h,v 1.12 2007/06/06 01:51:45 philjmsl Exp $ */
 /**
  *
  * Used internally by Instrument Editor
@@ -15,7 +15,6 @@
 #include "spmidi_config.h"
 #include "wave_manager.h"
 #include "spmidi.h"
-#include "dls_parser_internal.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -34,7 +33,7 @@ extern "C"
 	/** Map a MIDI program number to an instrument index.
 	 * This allows multiple programs to be mapped to a single instrument.
 	 */
-	int SPMIDI_SetInstrumentMap( SPMIDI_Context *spmidiContext, int programIndex, int insIndex );
+	int SPMIDI_SetInstrumentMap( int bankIndex, int programIndex, int insIndex );
 
 	/** Map a MIDI drum pitch to an instrument index.
 	 * This allows multiple drums to be mapped to a single instrument.
@@ -42,7 +41,7 @@ extern "C"
 	 * @param insIndex index used when defining instrument with SPMIDI_SetInstrumentDefinition()
 	 * @param pitch pitch of instrument when playing this drum sound
 	 */
-	int SPMIDI_SetDrumMap( SPMIDI_Context *spmidiContext, int noteIndex, int insIndex, int pitch );
+	int SPMIDI_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch );
 
 	/** Identify beginning of data stream. */
 #define SPMIDI_BEGIN_STREAM    (0x00FF)

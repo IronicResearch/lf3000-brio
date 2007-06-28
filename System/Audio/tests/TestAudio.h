@@ -10,7 +10,7 @@
 #include <ResourceMPI.h>
 #include <EventListener.h>
 #include <EventMessage.h>
-#include <EventMPI.h>
+#include <EventMPI.h> 
 #include <UnitTestUtils.h> 
 #include <sys/types.h>
 #include <unistd.h>

@@ -117,7 +117,7 @@ tErrType InitAudioTask( void )
 		(const char *)"\nDebug, Kernel, and Resource MPIs created by AudioTask ctor\n");	
 
 	// only want important stuff.
-	gContext.debugMPI->SetDebugLevel( kDbgLvlVerbose );
+	gContext.debugMPI->SetDebugLevel( kDbgLvlImportant );
 
 	// Hard code the configuration resource
 	gContext.numMixerChannels = 	kAudioNumMixerChannels;

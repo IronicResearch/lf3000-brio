@@ -5,9 +5,12 @@
 include ../build/MakefileVariables
 
 CFLAGS = \
+	-DSPMIDI_PRESETS_CUSTOM=1 \
 	-DSPMIDI_USE_PRINTF \
-	-DSPMIDI_ME3000=1 \
+	-DSPMIDI_ME3000=0 \
+	-DSPMIDI_ME2000=1 \
 	-Wall \
+	-O3 \
 	$(ME2000_INCLUDEPATH) \
 	-I../examples \
 	-I../qa
@@ -16,8 +19,8 @@ DEMO_ME2000_SONG = ../data/FurryLisa_rt.mid
 DEMO_ME3000_SONG = ../data/ZipKit.mxmf
 		 
 # Use simple players from examples folder.
-DEMO_ME2000_EXE = play_midifile
-DEMO_ME3000_EXE = play_song
+#DEMO_ME2000_EXE = play_midifile
+#DEMO_ME3000_EXE = play_song
 
 # Link with utility files that load the MIDI data and output the audio as a WAV file.
 DEMO_OBJS = \
@@ -27,10 +30,8 @@ DEMO_OBJS = \
 	 spmidi_load.o \
 	 write_wav.o
 	 
-all: me2000.wav me3000.wav
-	@echo ""
-	@echo "ME2000 Output written to me2000.wav file."
-	@echo "ME3000 Output written to me3000.wav file."
+all: libme2000.a
+	@echo "Building libme2000.a"
 
 $(DEMO_ME2000_EXE): $(DEMO_OBJS) $(SPMIDI_OBJS)
 

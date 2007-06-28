@@ -47,38 +47,12 @@ typedef long FXP7;
  * two 32-bit fixed-point numbers.
  */
 #if SPMIDI_DSP_BLACKFIN
-inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
-{
-	FXP31 product;
-	asm("%0 = %1.H * %2.H;" 
-		:"=r"(product)     /* output */ 
-		:"r"(x),"r"(y)  /* input  */ 
-		);
-	return product;
-}
+inline FXP31 FXP31_MULT( FXP31 x, FXP31 y );
 #elif SPMIDI_DSP_ARM946
 /* Use ARM DSP Extensions. */
-__inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
-{
-	FXP31 product = 0;
-// ORIGINAL CODE FROM PHIL
-//	__asm
-//	{
-//	    SMULWT    product, x, y
-//	    QADD    product, product, product
-//	}
-// Attempt at GCC version
-//	asm("smulwt    (product), (x), (y)\n\t"
-//	    "qadd    (product), (product), (product)\n\t"
-//	);
+__inline FXP31 FXP31_MULT( FXP31 x, FXP31 y );
 
-	__asm__ __volatile__ (
-	"smulwt %2, %0, %1\n\t"
-	"qadd   %2, %2, %2\n\t"
-	: "=r" (product) : "r" (x), "r" (y));
 
-return product;
-}
 #else
 /* Portable 'C' macro to multiply two 1.31 fixed-point values. */
 #define FXP31_MULT(a,b)   (((a)>>15) * ((b)>>16))

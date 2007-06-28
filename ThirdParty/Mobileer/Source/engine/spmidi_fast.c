@@ -27,6 +27,48 @@
 #include "oscillator.h"
 #include "dls_parser_internal.h"
 
+/* Define fixed point multiplication of the high 16-bit halves of
+ * two 32-bit fixed-point numbers.
+ */
+#if SPMIDI_DSP_BLACKFIN
+inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
+{
+	FXP31 product;
+	asm("%0 = %1.H * %2.H;" 
+		:"=r"(product)     /* output */ 
+		:"r"(x),"r"(y)  /* input  */ 
+		);
+	return product;
+}
+#elif SPMIDI_DSP_ARM946
+
+/* Use ARM DSP Extensions. */
+__inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
+{
+	FXP31 product = 0;
+
+// ORIGINAL CODE FROM PHIL
+//	__asm
+//	{
+//	    SMULWT    product, x, y
+//	    QADD    product, product, product
+//	}
+// Attempt at GCC version
+//	asm("smulwt    (product), (x), (y)\n\t"
+//	    "qadd    (product), (product), (product)\n\t"
+//	);
+
+	__asm__ __volatile__ (
+	"smulwt %2, %0, %1\n\t"
+	"qadd   %2, %2, %2\n\t"
+	: "=r" (product) : "r" (x), "r" (y));
+
+return product;
+}
+
+#endif
+
+
 /* This macro is a code mixing operation.
  * It scales the input signal by the gain and adds it to an accumulator.
  */

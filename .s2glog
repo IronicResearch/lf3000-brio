@@ -4431,3 +4431,17 @@ By Dmilici (Dmilici@leapfrog.com) on 6/28/07 10:22 AM
 1,940 ms. (Cumulative: 684,955 ms)
 
 ----------------
+Revision 714 from svn://localhost/TRUNK/:
+
+Remove verbose audio system msgs for OSS debugging.  
+Modified build for Mobileer and Portaudio so the libs can be built in place using makefiles in the Source folders.  
+Turned on compiler optimization for Mobileer and Portaudio.  
+Added LeapFrog custom instruments to midi engine. 
+Changes in midi engine code to support custom instruments.
+Fixed bug in midi player, was playing midifiles at 1/4 speed.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 10:57 AM
+20 changed, 359 added, 1 deleted.
+11,366 ms. (Cumulative: 696,383 ms)
+
+----------------

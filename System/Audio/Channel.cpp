@@ -79,7 +79,7 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
 //	pFxChain_ = kNull;
 
-	printf("CChannel::Release - deleting player 0x%x\n", (unsigned int)pPlayer_);
+//	printf("CChannel::Release - deleting player 0x%x\n", (unsigned int)pPlayer_);
 
 	if (suppressPlayerDoneMsg)
 		pPlayer_->SetSendDoneMessage( false );
@@ -103,7 +103,7 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	U32 playerFramesRendered = 0;
 	U32 numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 		
- 	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
+ //	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
 
 	// Initialize the output buffer to 0.  This has the side effect of zero
 	// padding the output if the player runs out of data.
@@ -113,11 +113,11 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	// contains mono data, it will be rendered out as stereo data.
 	playerFramesRendered = pPlayer_->RenderBuffer( pOutBuffer_, numStereoFrames );
 	
-	printf("Twenty Samples from channel buffer after player render:\n");
-	for (int i = 0; i < 20; i++) {
-		printf("0x%x " , pOutBuffer_[i]);
-	}
-	printf("\n");
+//	printf("Twenty Samples from channel buffer after player render:\n");
+//	for (int i = 0; i < 20; i++) {
+//		printf("0x%x " , pOutBuffer_[i]);
+//	}
+//	printf("\n");
 	
 	// decide how to deal with player done i.e. playerFramesRendered comes back 
 	// less than numStereoFrames: does player send done, or channel.
