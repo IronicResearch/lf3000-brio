@@ -4377,3 +4377,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/27/07 5:12 PM
 1,922 ms. (Cumulative: 672,841 ms)
 
 ----------------
+Revision 708 from svn://localhost/TRUNK/:
+
+Fix stuck notes when stopping a midifile.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/27/07 5:50 PM
+1 changed, 0 added, 0 deleted.
+1,875 ms. (Cumulative: 674,779 ms)
+
+----------------

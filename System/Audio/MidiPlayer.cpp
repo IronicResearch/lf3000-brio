@@ -197,6 +197,7 @@ tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	if ((pListener_ != kNull) && !pInfo->suppressDoneMsg)
 		SendDoneMsg();
 
+	SPMUtil_Reset( pContext_ );
 	MIDIFilePlayer_Delete( pFilePlayer_ );
 	pFilePlayer_ = kNull;
 	pListener_ = kNull;
@@ -282,6 +283,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 					if (pListener_ != kNull)
 						SendDoneMsg();
 					MIDIFilePlayer_Delete( pFilePlayer_ );
+					SPMUtil_Reset( pContext_ );
 					pFilePlayer_ = kNull;
 					break; // bail out of loop.
 				}
