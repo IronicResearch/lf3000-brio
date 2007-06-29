@@ -4507,3 +4507,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 5:20 PM
 2,172 ms. (Cumulative: 710,527 ms)
 
 ----------------
+Revision 726 from svn://localhost/TRUNK/:
+
+Add a stereo playback example to the audio tests for driver debugging.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 6:40 PM
+5 changed, 1 added, 0 deleted.
+2,375 ms. (Cumulative: 712,949 ms)
+
+----------------

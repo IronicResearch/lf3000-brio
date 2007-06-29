@@ -65,8 +65,8 @@ public:
 	// so mono data is copied to both stereo channel on mix out.
 	U32			RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  );
 
-	inline U8		GetVolume() { return (U8)(volume_ * 100.0F); }
-	inline void		SetVolume( U8 volume ) { volume_ = ((float)volume) / 100.0F; }
+	inline U8		GetVolume() { return volume_; }
+	inline void		SetVolume( U8 volume ) { volume_ = volume; }
 	inline S8		GetPan() { return pan_; }
 	inline void		SetPan(S8 pan) { pan_ = pan; }
 
@@ -77,7 +77,7 @@ public:
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 private:
-	float						volume_;	// Volume of the channel
+	U8							volume_;	// Volume of the channel
 	S8							pan_;		// Pan of the channel 
 
 	S16 						*pOutBuffer_;	// Pointer to the output buffer

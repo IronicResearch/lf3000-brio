@@ -131,14 +131,13 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 			for (index = 0; index < framesToProcess; index++) {			
 				// Copy Left sample
 //				printf("left: %d ", *pCurFrame_);
-				*pOutBuff++ = *pCurSample++; // fixme/!!
+				*pOutBuff++ = *pCurFrame_++; // fixme/!!
 				// Copy Right sample
 //				printf("right: %d ", *pCurFrame_);
-				*pOutBuff++ = *pCurSample++;
+				*pOutBuff++ = *pCurFrame_++;
 			}
 			// Now update the current frame pointer.
 //			printf("stereo buffer: pCurFrame = 0x%x; frames = %d; next pCurFrame Should be: 0x%x\n", pCurFrame_, framesToProcess, (pCurFrame_ + framesToProcess));
-			pCurFrame_ += framesToProcess;
 		} else {
 			for (index = 0; index < framesToProcess; index++) {			
 				// Copy mono sample twice

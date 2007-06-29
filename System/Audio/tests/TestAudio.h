@@ -268,9 +268,9 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
-		handle1 = pResourceMPI_->FindRsrc( "BlueNile" );
+		handle1 = pResourceMPI_->FindRsrc( "vivaldi44stereo" );
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		printf("TestAudio -- testRawResources() found BlueNile, rsrcHandle = %d\n", (int)handle1 );
+		printf("TestAudio -- testRawResources() found vivaldi44stereo, rsrcHandle = %d\n", (int)handle1 );
 
 //		handle = pResourceMPI_->FindRsrc( "BlueNile" );
 //		TS_ASSERT( handle1 != kInvalidRsrcHndl );
@@ -281,7 +281,7 @@ public:
 		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 5000 ); 
+		pKernelMPI_->TaskSleep( 10000 ); 
 	}
 
 	//------------------------------------------------------------------------
