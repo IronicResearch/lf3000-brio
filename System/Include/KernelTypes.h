@@ -228,7 +228,7 @@ typedef U32	tTaskPropertiesMask;
 
 
 struct tTaskProperties {
-	U32 				priority;	            // 1
+	S32 				priority;	            // 1
 	tAddr				stackAddr;				// 2
 	U32 				stackSize;				// 3	
 	tTaskMainFcn_posix	TaskMainFcn;            // 4

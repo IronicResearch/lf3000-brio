@@ -21,7 +21,7 @@
 			<arguments>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.arguments</key>
-					<value>-k runtests=f</value>
+					<value>type=emulation runtests=t</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.core.errorOutputParser</key>

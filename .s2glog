@@ -4560,3 +4560,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/29/07 11:54 AM
 2,047 ms. (Cumulative: 724,216 ms)
 
 ----------------
+Revision 733 from svn://localhost/TRUNK/:
+
+Changed some declarations of variables to remove the compiler's warnings
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/29/07 11:55 AM
+4 changed, 0 added, 0 deleted.
+2,298 ms. (Cumulative: 726,607 ms)
+
+----------------

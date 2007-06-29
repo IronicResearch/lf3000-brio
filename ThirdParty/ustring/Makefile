@@ -16,7 +16,9 @@ OBJS = glibmm/ustring.o glib/gutf8.o glibmm/convert.o \
 	glib/gfileutils.o glib/glist.o glib/gqsort.o glibmm/wrap_init.o \
 	glib/giochannel.o glib/gmarkup.o glib/gshell.o glib/gspawn.o
 
-LIB = libs/libustring.so
+#FIXME/BSK
+#LIB = libs/libustring.so
+LIB = libustring.so
 
 all: $(LIB)
 
