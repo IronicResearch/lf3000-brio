@@ -4526,3 +4526,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 8:22 PM
 2,312 ms. (Cumulative: 715,324 ms)
 
 ----------------
+Revision 728 from svn://localhost/TRUNK/:
+
+Do audio gain optimization in per/channel code.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 8:29 PM
+1 changed, 0 added, 0 deleted.
+2,453 ms. (Cumulative: 717,840 ms)
+
+----------------
