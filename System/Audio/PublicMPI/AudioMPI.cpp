@@ -494,24 +494,24 @@ Boolean CAudioMPI::IsAnyAudioBusy()
 */
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::AcquireMidiPlayer(tAudioPriority priority, IEventListener *pHandler, tMidiID *pMidiID) 
+tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiID *midiPlayerID ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
-	return pModule_->AcquireMidiPlayer(priority, pHandler, pMidiID);
+	return pModule_->AcquireMidiPlayer( priority, pHandler, midiPlayerID );
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::ReleaseMidiPlayer(tMidiID midiID) 
+tErrType CAudioMPI::ReleaseMidiPlayer( tMidiID midiPlayerID ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
-	return pModule_->ReleaseMidiPlayer(midiID);
+	return pModule_->ReleaseMidiPlayer( midiPlayerID );
 }
 
 /*

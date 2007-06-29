@@ -40,7 +40,12 @@ public:
 	~CMidiPlayer();
 
 	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames );
-	bool		IsFileActive() { return bFileActive_; };
+
+	inline bool		IsFileActive() { return bFileActive_; };
+
+	inline bool		IsActive() { return bActive_; };
+	inline void		Activate() { bActive_ = true; }
+	inline void		DeActivate() { bActive_ = false; }
 
 	// Get/Set the class member variables
 	inline tMidiID				GetMidiID() { return midiID_; }
@@ -68,9 +73,10 @@ private:
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of the Midi playing
 	bool					loopMidiFile_;
 	S16* 					pMidiRenderBuffer_;
-	float					volume_;
+	U8						volume_;
 	U8						bFilePaused_:1;				// Player is paused
 	U8						bFileActive_:1;				// Player has active file associated.
+	U8						bActive_:1;					// Player has been acquired by client.
 
 	// fixme/dg: make these get set as part of constructor?
 	U32 	numFrames_;

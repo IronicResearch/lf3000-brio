@@ -115,6 +115,12 @@ CAudioMsgAcquireMidiPlayer::CAudioMsgAcquireMidiPlayer( void ) {
 	messagePriority = kAudioMsgDefaultPriority;
 }
 
+CAudioMsgReleaseMidiPlayer::CAudioMsgReleaseMidiPlayer( void ) {
+	type_ = kAudioCmdMsgTypeReleaseMidiPlayer;
+	messageSize = sizeof(CAudioMsgReleaseMidiPlayer);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
 CAudioMsgMidiNoteOn::CAudioMsgMidiNoteOn( const tAudioMidiNoteInfo& data ) {
 	type_ = kAudioCmdMsgTypeMidiNoteOn;
 	messageSize = sizeof(CAudioMsgMidiNoteOn);
@@ -646,8 +652,13 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority priority, IEventListene
 }
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ReleaseMidiPlayer(tMidiID midiID)
+tErrType CAudioModule::ReleaseMidiPlayer( tMidiID midiID )
 {
+	CAudioMsgReleaseMidiPlayer msg;
+
+	// Send the message.
+ 	SendCmdMessage( msg );
+ 	
 	return kNoErr;
 }
 

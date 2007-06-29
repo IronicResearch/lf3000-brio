@@ -458,7 +458,24 @@ void DoAcquireMidiPlayer( void ) {
 	CAudioReturnMessage	msg;
 	
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Acquiring MIDI player...\n");	
+
+	gContext.pMidiPlayer->Activate();
 	
+	// Send the status back to the caller
+	msg.SetAudioErr( kNoErr );
+	msg.SetMidiID( 1 );
+	SendMsgToAudioModule( msg );
+}
+
+//==============================================================================
+//==============================================================================
+void DoReleaseMidiPlayer( void ) {
+	CAudioReturnMessage	msg;
+	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Releasing MIDI player...\n");	
+	
+	gContext.pMidiPlayer->DeActivate();
+
 	// Send the status back to the caller
 	msg.SetAudioErr( kNoErr );
 	msg.SetMidiID( 1 );
@@ -681,6 +698,14 @@ void* AudioTaskMain( void* arg )
 			break;
 
 			//*********************************
+			case kAudioCmdMsgTypeReleaseMidiPlayer:
+				gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
+					(const char *)"\nAudio Task: Acquire Midi Player.\n" );	
+
+				DoReleaseMidiPlayer();
+				break;
+
+				//*********************************
 		case kAudioCmdMsgTypeMidiNoteOn:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
 				(const char *)"\nAudio Task: midi note On.\n" );	

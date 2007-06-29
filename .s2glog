@@ -4569,3 +4569,16 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 6/29/07 11:55 AM
 2,298 ms. (Cumulative: 726,607 ms)
 
 ----------------
+Revision 734 from svn://localhost/TRUNK/:
+Revision 735 from svn://localhost/TRUNK/:
+
+Change MIDI player's gain calculation to integer from float.
+Make AcquireMidiPlayer() and ReleaseMidiPlayer() determine whether the player's RenderBuffer() function is called. 
+This will allow the client to decide if they want to use MIPS by having the MIDI player active.
+
+
+By DGibbs (DGibbs@leapfrog.com) on 6/29/07 2:09 PM
+10 changed, 0 added, 0 deleted.
+2,235 ms. (Cumulative: 728,904 ms)
+
+----------------

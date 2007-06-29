@@ -162,7 +162,14 @@ class CAudioMsgAcquireMidiPlayer : public CAudioCmdMsg {
 public:    
 	// Start the audio system running.
 	CAudioMsgAcquireMidiPlayer( void );
-	tAudioCmdMsgType	GetMessageCmdType( void ) { return type_; }
+	
+private:
+};
+
+class CAudioMsgReleaseMidiPlayer : public CAudioCmdMsg {
+public:    
+	// Start the audio system running.
+	CAudioMsgReleaseMidiPlayer( void );
 	
 private:
 };

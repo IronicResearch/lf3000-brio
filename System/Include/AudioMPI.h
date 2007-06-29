@@ -100,9 +100,16 @@ public:
 	//********************************    
 
 	// NOTE: Currently the midiID is ignored because only one file can be played at a time!
+	// in the future if we implement multiple MIDI players you would use the midiID to
+	// specify which player to direct the note or midifile msgs.
 
-	// This function is currently unimplemented.
-	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pHandler, tMidiID* pMidiID );
+	// This function activates the MIDI engine.  Don't do this unless you really need to play
+	// MIDI, there is a MIPS cost to having the player active even if you aren't using it.
+	// Always release it when you are done!
+	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pHandler, tMidiID* pMidiPlayerID );
+
+	// Deactivate the MIDI engine.
+	tErrType 	ReleaseMidiPlayer( tMidiID pMidiPlayerID );
 	
 	// Trigger a single MIDI note on event.
 	// WARNING: DON'T DO THIS WHILE A MIDI FILE IS PLAYING, bad things may happen!!!
@@ -113,7 +120,7 @@ public:
 
 	// Start playback of a MIDI file.
 	// Currently only the volume and pListener options are used.
-	tMidiID 	StartMidiFile( tMidiID	midiID,
+	tMidiID 	StartMidiFile( tMidiID	midiPlayerID,
 						tRsrcHndl		hRsrc, 
 						U8					volume, 
 						tAudioPriority		priority,
@@ -122,17 +129,16 @@ public:
 						tAudioOptionsFlags	flags );
 
 	// Pause playback of a MIDI file. 
-	void 		PauseMidiFile( tMidiID midiID );
+	void 		PauseMidiFile( tMidiID midiPlayerID );
 	
 	// Resume playback of a MIDI file.
-    void 		ResumeMidiFile( tMidiID midiID );
+    void 		ResumeMidiFile( tMidiID midiPlayerID );
 
 	// Stop playback of a MIDI file and free the MIDI player. Optionally post
 	// an audioDone event via the EventMgr.
-    void 		StopMidiFile( tMidiID midiID, Boolean surpressDoneMessage );
+    void 		StopMidiFile( tMidiID midiPlayerID, Boolean surpressDoneMessage );
 
 	// these are still unimplemented!	
-	tErrType 	ReleaseMidiPlayer( tMidiID midiID );
 	tMidiID 	GetMidiIDForAudioID( tAudioID audioID );
 	tAudioID 	GetAudioIDForMidiID( tMidiID midiID );
 	tMidiTrackBitMask GetEnabledMidiTracks( tMidiID midiID );

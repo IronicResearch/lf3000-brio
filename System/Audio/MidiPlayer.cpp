@@ -43,15 +43,16 @@ CMidiPlayer::CMidiPlayer()
 	samplesPerFrame_ = 2;
 	bitsPerSample_ = 16;
 	pListener_ = kNull;
-	volume_ = 1.0;
+	volume_ = 100;
 	bFilePaused_ = false;
 	bFileActive_ = false;
+	bActive_ = false;
 	
 	// Initialize SPMIDI Library
 	SPMIDI_Initialize();
 
 	// Start SP-MIDI synthesis engine using the desired sample rate.
-	midiErr = SPMIDI_CreateContext( &pContext_, kAudioSampleRate );
+	midiErr = SPMIDI_CreateContext( &pContext_, kAudioSampleRate );  // fixme run fixed 1/2 sample rate
 	if (midiErr < 0)
 	{
 //		printf("SPMIDI CreateContext error!: %d\n", midiErr);
@@ -149,7 +150,7 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
 
 //	pInfo->midiID;			// fixme/dg: midiEngineContext object?
 //	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
-	volume_ = ((float)pInfo->volume) / 100.0F;
+	volume_ = pInfo->volume;
 //	pInfo->priority;
 	if ( pInfo->pListener != kNull )
 		pListener_ = pInfo->pListener;
@@ -248,7 +249,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 	int 	mfp_result;
 	U32		spmidiFramesPerBuffer;
 	S16* 	pBuffer = pMidiRenderBuffer_;  // local ptr to buffer for indexing
-	float 	outSamp;
+	S32 	outSamp;
 	S32 	sum;
 	U32 	framesRead = 0;
 	U32 	numStereoSamples = numStereoFrames * kAudioBytesPerSample;
@@ -257,7 +258,6 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 //		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
 	// If there is a midi file player, service it
 	if ( bFileActive_ && !bFilePaused_ ) {
-		
 		// fixme/rdg: make this bulletproof.  Right now no check for sizes.
 		// Figure out how many calls to spmidi we need to make to get a full output buffer
 		spmidiFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
@@ -294,7 +294,6 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 		// fixme/dg: rationalize numStereoFrames and numFrames_!!
 		framesRead = SPMIDI_ReadFrames( pContext_, pMidiRenderBuffer_, numFrames_,
 	    		samplesPerFrame_, bitsPerSample_ );
-
 	}
 	
 //	printf("!!!!! CMidiPlayer::RenderBuffer -- framesRead: %u, pContext_ 0x%x, pMidiRenderBuffer_ 0x%x!!!\n\n", framesRead, pContext_, pMidiRenderBuffer_);
@@ -304,14 +303,16 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 	for ( i = 0; i < numStereoSamples; i++)
 	{
 		// Be sure the total sum stays within range
-		outSamp = (float)*pBuffer++;
-		outSamp *= volume_; //  Apply gain
+		outSamp = (S32)*pBuffer++;
+		outSamp = (outSamp * volume_) >> 7; //  Apply gain
 		sum = *pMixBuff + (S16)outSamp;			
 
 		if (sum > kS16Max) sum = kS16Max;
 		else if (sum < kS16Min) sum = kS16Min;
 		
+		// Convert mono midi render to stereo output
 		*pMixBuff++ = sum;
+//		*pMixBuff = sum;
 	}
 
 	return framesRead;

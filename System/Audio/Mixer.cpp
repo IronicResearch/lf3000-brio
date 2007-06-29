@@ -125,7 +125,6 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 
 	// fixme/dg: do proper DebugMPI-based output.
 //	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
-	
 	if ( (numStereoFrames * kAudioBytesPerStereoFrame) != kAudioOutBufSizeInBytes )
 		printf("AudioMixer::RenderOutput -- frameCount doesn't match buffer size!!!\n");
 		
@@ -153,8 +152,8 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 		}
 	}
 
-	// Have the MIDI player render to the output buffer,
-	if ( kNull != pMidiPlayer_ )
+	// Have the MIDI player render to the output buffer if it has been activated by client.
+	if ( pMidiPlayer_->IsActive() )
 		framesRendered = pMidiPlayer_->RenderBuffer( pOutBuff, numStereoFrames ); 
 
 // fixme/rdg:  needs CAudioEffectsProcessor
@@ -165,17 +164,6 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 		gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuff );
 #endif
 
-#if LF_BRIO_AUDIO_DO_FLOATINGPOINT_GAIN_CONTROL
-	// FIXME - MG:Adjust for pan which is now set at 0.5 for each side
-	// fixme/rdg: optimize out float math?
-	S16* pMixBuff = (S16 *)pOutBuff;
-	float samp;
-	for (i = 0; i < kAudioOutBufSizeInWords; i++)
-	{
-		samp = (float)*pMixBuff;
-		*pMixBuff++ = (S16)(samp * masterVol_); 
-	} 
-#else
 	S16* pMixBuff = (S16 *)pOutBuff;
 	S32 samp;
 	for (i = 0; i < kAudioOutBufSizeInWords; i++)
@@ -184,7 +172,6 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 		*pMixBuff++ = (S16)samp; 
 	} 
 
-#endif
 	return kNoErr;
 }
 

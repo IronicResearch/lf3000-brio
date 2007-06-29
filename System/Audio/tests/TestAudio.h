@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testVorbisResources( )
+	void xxtestVorbisResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
@@ -235,7 +235,7 @@ public:
 		// volume is faked by right shift at this point
 //		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
 		id1 = 1;
-//		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
 //		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
 		// sleep 2 seconds
@@ -245,15 +245,17 @@ public:
 		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 10000 ); 
+		pKernelMPI_->TaskSleep( 20000 ); 
 	}
 	
 	//------------------------------------------------------------------------
-	void xxtestRawResources( )
+	void xxxtestRawResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
+		tRsrcHndl		handle2;
 		tAudioID 		id1;
+		tAudioID 		id2;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -275,24 +277,26 @@ public:
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		printf("TestAudio -- testRawResources() found vivaldi44stereo, rsrcHandle = %d\n", (int)handle1 );
 
-//		handle = pResourceMPI_->FindRsrc( "BlueNile" );
-//		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		handle2 = pResourceMPI_->FindRsrc( "BlueNile" );
+		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
 		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 10000 ); 
+		pKernelMPI_->TaskSleep( 15000 ); 
 	}
 
 	//------------------------------------------------------------------------
-	void xxxtestMIDIResources( )
+	void testMIDIResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
 		tAudioID 		id1;
+		tMidiID			midiPlayerID;
 		
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -307,6 +311,9 @@ public:
 		err = pAudioMPI_->StartAudio();
 		TS_ASSERT_EQUALS( kNoErr, err );
 
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+
 		// Package is already opened in setup
 //		handle1 = pResourceMPI_->FindRsrc("Girl_noDrums");
 //		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
@@ -316,10 +323,10 @@ public:
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
-		id1 = pAudioMPI_->StartMidiFile( 0, handle1, 100, 1, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, handle1, 100, 1, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 6000 ); 
+		pKernelMPI_->TaskSleep( 15000 ); 
 	}
 	
 	//------------------------------------------------------------------------
