@@ -152,10 +152,11 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 			chanOutputSample *= volume_; 			// Apply channel gain
 			sum = *pMixBuff + (S16)chanOutputSample;			
 #else
-//			S32 scaledOutputSample = ((*pChanData++ * volume_) / 100); // fixme
-//			sum = *pMixBuff + scaledOutputSample;				
+			// Integer scaling for gain control.
+			S32 scaledOutputSample = ((*pChanData++ * volume_) / 100L); // fixme
+			sum = *pMixBuff + scaledOutputSample;				
 
-			sum = *pMixBuff + *pChanData++;		// working, no volume		
+//			sum = *pMixBuff + *pChanData++;		// working, no volume		
 #endif
 			if (sum > kS16Max) sum = kS16Max;
 			else if (sum < kS16Min) sum = kS16Min;

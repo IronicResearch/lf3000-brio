@@ -196,12 +196,13 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestVorbisResources( )
+	void testVorbisResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
 		tAudioID 		id1;
+		tAudioID 		id2;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -232,21 +233,23 @@ public:
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
-		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
-		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
-		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
+//		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
+		id1 = 1;
+//		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+//		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
 		// sleep 2 seconds
-		pKernelMPI_->TaskSleep( 2000 ); 
+//		pKernelMPI_->TaskSleep( 2000 ); 
 
-//		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
+		pAudioMPI_->SetMasterVolume( 80 );
+		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
 		pKernelMPI_->TaskSleep( 10000 ); 
 	}
 	
 	//------------------------------------------------------------------------
-	void testRawResources( )
+	void xxtestRawResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
@@ -261,7 +264,7 @@ public:
 		TS_ASSERT( pResourceMPI_ != NULL );
 		TS_ASSERT( pResourceMPI_->IsValid() == true );
 
-		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
+		printf("TestAudio -- testRawResources() starting audio driver output\n" );
 
 		// Start up audio system.
 		err = pAudioMPI_->StartAudio();
@@ -306,7 +309,8 @@ public:
 
 		// Package is already opened in setup
 //		handle1 = pResourceMPI_->FindRsrc("Girl_noDrums");
-		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
+//		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
+		handle1 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
@@ -315,7 +319,7 @@ public:
 		id1 = pAudioMPI_->StartMidiFile( 0, handle1, 100, 1, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 600000000 ); 
+		pKernelMPI_->TaskSleep( 6000 ); 
 	}
 	
 	//------------------------------------------------------------------------
@@ -375,6 +379,8 @@ public:
 
 		pAudioMPI_->SetMasterVolume( 100 );
 
+		pAudioMPI_->StopAudio( id1, false );
+				
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 		
@@ -403,6 +409,7 @@ public:
 							tAudioPayload		payload,
 							tAudioOptionsFlags	flags )
 */
+		printf("About to start MIDI file\n");
 		pAudioMPI_->StartMidiFile( midiID, handle5, 50, 1, &audioListener_, 0, 1 );
 		
 

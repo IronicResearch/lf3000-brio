@@ -39,7 +39,7 @@ CAudioMixer::CAudioMixer( U8 numChannels )
 {
 	CDebugMPI debugMPI( kGroupAudio );
 
-	masterVol_ = 1.0;
+	masterVol_ = 100;
 	
 	numChannels_ = numChannels;
 
@@ -166,7 +166,7 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 #endif
 
 #if LF_BRIO_AUDIO_DO_FLOATINGPOINT_GAIN_CONTROL
-		// FIXME - MG:Adjust for pan which is now set at 0.5 for each side
+	// FIXME - MG:Adjust for pan which is now set at 0.5 for each side
 	// fixme/rdg: optimize out float math?
 	S16* pMixBuff = (S16 *)pOutBuff;
 	float samp;
@@ -175,6 +175,15 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 		samp = (float)*pMixBuff;
 		*pMixBuff++ = (S16)(samp * masterVol_); 
 	} 
+#else
+	S16* pMixBuff = (S16 *)pOutBuff;
+	S32 samp;
+	for (i = 0; i < kAudioOutBufSizeInWords; i++)
+	{
+		samp = (*pMixBuff * (int)masterVol_) >> 7; // fixme
+		*pMixBuff++ = (S16)samp; 
+	} 
+
 #endif
 	return kNoErr;
 }

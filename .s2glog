@@ -4516,3 +4516,13 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 6:40 PM
 2,375 ms. (Cumulative: 712,949 ms)
 
 ----------------
+Revision 727 from svn://localhost/TRUNK/:
+
+Integer optimizations for channel and master mixer gain. 
+Added a test for portaudio that can play back raw audio files from the filesystem.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 8:22 PM
+5 changed, 1 added, 0 deleted.
+2,312 ms. (Cumulative: 715,324 ms)
+
+----------------
