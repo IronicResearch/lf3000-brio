@@ -4489,3 +4489,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 4:00 PM
 2,423 ms. (Cumulative: 706,058 ms)
 
 ----------------
+Revision 724 from svn://localhost/TRUNK/:
+
+Version of TestAudio.h that only plays one 44K file using uncompressed source data.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 5:03 PM
+1 changed, 0 added, 0 deleted.
+2,157 ms. (Cumulative: 708,293 ms)
+
+----------------
