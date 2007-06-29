@@ -146,11 +146,14 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 		S32	sum;
 		for (U32 i = 0; i < numStereoSamples; i++)
 		{
+#if LF_BRIO_AUDIO_DO_FLOATINGPOINT_GAIN_CONTROL
 			// Be sure the total sum stays within range
 			chanOutputSample = (float)*pChanData++;
 			chanOutputSample *= volume_; 			// Apply channel gain
 			sum = *pMixBuff + (S16)chanOutputSample;			
-
+#else
+			sum = *pMixBuff + *pChanData++;				
+#endif
 			if (sum > kS16Max) sum = kS16Max;
 			else if (sum < kS16Min) sum = kS16Min;
 			

@@ -165,7 +165,8 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 		gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuff );
 #endif
 
-	// FIXME - MG:Adjust for pan which is now set at 0.5 for each side
+#if LF_BRIO_AUDIO_DO_FLOATINGPOINT_GAIN_CONTROL
+		// FIXME - MG:Adjust for pan which is now set at 0.5 for each side
 	// fixme/rdg: optimize out float math?
 	S16* pMixBuff = (S16 *)pOutBuff;
 	float samp;
@@ -174,7 +175,7 @@ int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 		samp = (float)*pMixBuff;
 		*pMixBuff++ = (S16)(samp * masterVol_); 
 	} 
-
+#endif
 	return kNoErr;
 }
 

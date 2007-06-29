@@ -4498,3 +4498,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 5:03 PM
 2,157 ms. (Cumulative: 708,293 ms)
 
 ----------------
+Revision 725 from svn://localhost/TRUNK/:
+
+Temporarily turn of gain control to remove all float operations from the audio system.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/28/07 5:20 PM
+2 changed, 0 added, 0 deleted.
+2,172 ms. (Cumulative: 710,527 ms)
+
+----------------
