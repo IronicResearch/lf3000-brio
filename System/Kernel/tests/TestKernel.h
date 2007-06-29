@@ -160,6 +160,7 @@ public:
        // that used for GetElapsedTime
 		U32 tAsMSecs = KernelMPI->GetElapsedTimeAsMSecs();
 		U64 tAsUSecs = KernelMPI->GetElapsedTimeAsUSecs();
+		TS_ASSERT_LESS_THAN_EQUALS( tAsMSecs * 1000, tAsUSecs );
 //		U64 delta = tAsUSecs - (U64 )tAsMSecs * 1000;
 		//FIXME/BSK
 		//	This test will fail in the emulation mode due overflowing	
@@ -276,7 +277,7 @@ public:
 		U32 msec = 50;
 		U32 threshold = 10;
 		struct timespec t1, t2;
-		int dt_msec;
+		U32 dt_msec;
 
 		clock_gettime( CLOCK_REALTIME, &t1) ; 
 		KernelMPI->TaskSleep( msec );	
@@ -384,13 +385,13 @@ public:
 
 //typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
-		TS_ASSERT_DIFFERS( 0, hndlTimer_1 );
+		TS_ASSERT_DIFFERS( kUndefinedHndl, hndlTimer_1 );
 
 		hndlTimer_2 = KernelMPI->CreateTimer(myTask_Timer_2, props_2, (const char *)0 );
-		TS_ASSERT_DIFFERS( 0, hndlTimer_2 );
+		TS_ASSERT_DIFFERS( kUndefinedHndl, hndlTimer_2 );
 
 		hndlTimer_3 = KernelMPI->CreateTimer(myTask_Timer_3, props_3, (const char *)0 );
-		TS_ASSERT_DIFFERS( 0, hndlTimer_3 );
+		TS_ASSERT_DIFFERS( kUndefinedHndl, hndlTimer_3 );
 
 //		TS_ASSERT_DIFFERS( hndl, static_cast<hndl>( kNull ));
 //		tErrType err = KernelMPI->DestroyTimer( hndlTimer );
@@ -735,7 +736,7 @@ public:
 			timeout.tv_nsec = now.tv_usec * 1000;
 
         	err = KernelMPI->TimedWaitOnCond( cond, mutex, &timeout );
-			TS_ASSERT_EQUALS( err, ETIMEDOUT );
+			TS_ASSERT_EQUALS( (int )err, ETIMEDOUT );
 
 			gettimeofday( &end, NULL );			
             TS_ASSERT_LESS_THAN_EQUALS( end.tv_sec - now.tv_sec, 3 );
