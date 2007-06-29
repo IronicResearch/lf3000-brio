@@ -4535,3 +4535,19 @@ By DGibbs (DGibbs@leapfrog.com) on 6/28/07 8:29 PM
 2,453 ms. (Cumulative: 717,840 ms)
 
 ----------------
+Revision 729 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,141 ms. (Cumulative: 720,044 ms)
+
+----------------
+Revision 730 from svn://localhost/TRUNK/:
+Revision 731 from svn://localhost/TRUNK/:
+
+Changed some declarations of variables to remove the compiler's warnings
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 6/29/07 11:50 AM
+1 changed, 0 added, 0 deleted.
+2,063 ms. (Cumulative: 722,122 ms)
+
+----------------

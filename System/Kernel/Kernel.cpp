@@ -194,9 +194,9 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
 
 	/* 3. set the priority */
     param.sched_priority = props.priority;
-	unsigned int sched_priority_min = 
+	S32 sched_priority_min = 
 		sched_get_priority_min(props.schedulingPolicy);
-	unsigned int sched_priority_max = 
+	S32 sched_priority_max = 
 		sched_get_priority_max(props.schedulingPolicy);
 	if( props.priority < sched_priority_min )
 	{	
