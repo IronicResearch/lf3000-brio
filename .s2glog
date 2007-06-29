@@ -4582,3 +4582,12 @@ By DGibbs (DGibbs@leapfrog.com) on 6/29/07 2:09 PM
 2,235 ms. (Cumulative: 728,904 ms)
 
 ----------------
+Revision 736 from svn://localhost/TRUNK/:
+
+Add 22K vorbis file to UnitTestRsrcs for testing on ARM target.
+
+By DGibbs (DGibbs@leapfrog.com) on 6/29/07 2:13 PM
+1 changed, 0 added, 0 deleted.
+2,188 ms. (Cumulative: 731,154 ms)
+
+----------------
