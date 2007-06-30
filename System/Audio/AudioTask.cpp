@@ -155,7 +155,7 @@ tErrType InitAudioTask( void )
 
 	// Get set up to create and run the task thread.
 // 	priority;				// 1	
-//	properties.priority = 1;
+	properties.priority = 1;
   
  //	stackAddr;				// 2
 //	const unsigned PTHREAD_STACK_ADDRESS = 0xABC;
@@ -183,7 +183,7 @@ tErrType InitAudioTask( void )
 //	pProperties.startupMode 
 
 //	schedulingPolicy;		// 8
-//   properties.schedulingPolicy = SCHED_FIFO;
+    properties.schedulingPolicy = SCHED_OTHER; //SCHED_FIFO;
 
 	// Set thread's main loop run flag and create thread.
 	gContext.threadRun = true;
@@ -191,7 +191,8 @@ tErrType InitAudioTask( void )
 
 	gContext.debugMPI->Assert( kNoErr == err, "AudioTask -- Failed to create AudioTask!\n" );
 
-return err;
+	gContext.debugMPI->DebugOut( kDbgLvlImportant, "AudioTask Started...\n" );
+	return err;
 }
 
 //==============================================================================

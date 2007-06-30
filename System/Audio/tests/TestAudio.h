@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxtestVorbisResources( )
+	void testVorbisResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
@@ -235,13 +235,13 @@ public:
 		// volume is faked by right shift at this point
 //		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
 		id1 = 1;
-		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+//		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
 //		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
 		// sleep 2 seconds
 //		pKernelMPI_->TaskSleep( 2000 ); 
 
-		pAudioMPI_->SetMasterVolume( 80 );
+//		pAudioMPI_->SetMasterVolume( 80 );
 		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
@@ -291,7 +291,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testMIDIResources( )
+	void xxxtestMIDIResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;

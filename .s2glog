@@ -4591,3 +4591,27 @@ By DGibbs (DGibbs@leapfrog.com) on 6/29/07 2:13 PM
 2,188 ms. (Cumulative: 731,154 ms)
 
 ----------------
+Revision 737 from svn://localhost/TRUNK/:
+Revision 738 from svn://localhost/TRUNK/:
+Revision 739 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,063 ms. (Cumulative: 733,279 ms)
+
+----------------
+Revision 740 from svn://localhost/TRUNK/:
+Revision 741 from svn://localhost/TRUNK/:
+Revision 742 from svn://localhost/TRUNK/:
+Revision 743 from svn://localhost/TRUNK/:
+Revision 744 from svn://localhost/TRUNK/:
+Revision 745 from svn://localhost/TRUNK/:
+Revision 746 from svn://localhost/TRUNK/:
+Revision 747 from svn://localhost/TRUNK/:
+
+Test priority effect on audio message task and simplified audio unit test for embedded target.
+
+By Dmilici (Dmilici@leapfrog.com) on 6/29/07 5:32 PM
+2 changed, 0 added, 0 deleted.
+2,250 ms. (Cumulative: 735,576 ms)
+
+----------------
