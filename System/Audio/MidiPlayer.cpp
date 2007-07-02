@@ -254,7 +254,13 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 	U32 	framesRead = 0;
 	U32 	numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 
-//	if (numStereoFrames != numFrames_) 
+	// Initialize the output buffer to 0
+	bzero( pMidiRenderBuffer_, kAudioOutBufSizeInBytes );
+	
+	// Get a local copy of buffer ptr that we can modify.
+	pBuffer = pMidiRenderBuffer_;
+	
+	//	if (numStereoFrames != numFrames_) 
 //		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
 	// If there is a midi file player, service it
 	if ( bFileActive_ && !bFilePaused_ ) {

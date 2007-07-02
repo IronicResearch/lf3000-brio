@@ -4626,3 +4626,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/2/07 11:25 AM
 2,140 ms. (Cumulative: 737,779 ms)
 
 ----------------
+Revision 751 from svn://localhost/TRUNK/:
+
+Tweaks to MIDI Player for more proper stopping of files.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/2/07 11:29 AM
+1 changed, 0 added, 0 deleted.
+2,141 ms. (Cumulative: 739,967 ms)
+
+----------------
