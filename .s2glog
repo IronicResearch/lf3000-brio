@@ -4644,3 +4644,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/2/07 11:30 AM
 2,094 ms. (Cumulative: 742,108 ms)
 
 ----------------
+Revision 753 from svn://localhost/TRUNK/:
+
+Removed changes to Audio Thread scheduling policy and priority.  For now these aren't useful and might be confusing.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/2/07 11:33 AM
+1 changed, 0 added, 0 deleted.
+2,172 ms. (Cumulative: 744,327 ms)
+
+----------------
