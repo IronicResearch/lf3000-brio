@@ -4678,3 +4678,13 @@ By DGibbs (DGibbs@leapfrog.com) on 7/2/07 12:06 PM
 2,109 ms. (Cumulative: 750,999 ms)
 
 ----------------
+Revision 758 from svn://localhost/TRUNK/:
+
+Disable ARM optimization in MIDI engine for now...
+Tweak makefiles to install libraries on build.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/2/07 12:08 PM
+3 changed, 0 added, 0 deleted.
+2,515 ms. (Cumulative: 753,577 ms)
+
+----------------

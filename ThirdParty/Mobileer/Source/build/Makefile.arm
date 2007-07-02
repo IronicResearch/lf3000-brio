@@ -12,11 +12,11 @@ CFLAGS = \
 	-DSPMIDI_ME3000=0 \
 	-DSPMIDI_ME2000=1 \
 	-Wall \
-	-O4 \
+	-O3 \
 	$(ME2000_INCLUDEPATH) \
 	-I../examples \
-	-I../qa \
-	-DSPMIDI_DSP_ARM946
+	-I../qa 
+#	-DSPMIDI_DSP_ARM946
 	
 #DEMO_ME2000_SONG = ../data/FurryLisa_rt.mid
 #DEMO_ME3000_SONG = ../data/ZipKit.mxmf
@@ -40,6 +40,7 @@ libme2000.a:  $(DEMO_OBJS) $(SPMIDI_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC Archiver'
 	arm-linux-ar -r "libme2000.a" $(DEMO_OBJS) $(SPMIDI_OBJS)
+	mv libme2000.a ../../Libs/arm
 	@echo 'Finished building target: $@'
 	@echo ' '
 

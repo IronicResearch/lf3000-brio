@@ -40,6 +40,7 @@ $(DEMO_ME3000_EXE): $(DEMO_OBJS) $(SPMIDI_OBJS)
 libme2000.a:  $(DEMO_OBJS) $(SPMIDI_OBJS)
 	@echo 'Building target: $@'
 	ar -r "libme2000.a" $(DEMO_OBJS) $(SPMIDI_OBJS)
+	mv libme2000.a ../../Libs/x86
 	@echo 'Finished building target: $@'
 	@echo ' '
 
