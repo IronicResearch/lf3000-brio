@@ -4669,3 +4669,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/2/07 12:00 PM
 2,188 ms. (Cumulative: 748,827 ms)
 
 ----------------
+Revision 757 from svn://localhost/TRUNK/:
+
+Forgot to checkin compiled libs with the PortAudio thread priority fix.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/2/07 12:06 PM
+2 changed, 0 added, 0 deleted.
+2,109 ms. (Cumulative: 750,999 ms)
+
+----------------
