@@ -2,7 +2,7 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
-v0.1.9  (Build 713 released June 28, 2007) 
+v0.1.10  (Build 713 released June 28, 2007) 
 ===========================================
 Release for embedded target -- ME2530 devkit only.
 
@@ -20,12 +20,25 @@ Enhancements:
 * Segmentation faults resolved on exit from all Brio apps.
 * Resource packing tool correctly updates Brio SDK examples on target.
 
+===========================================
+v0.1.9  (Build 759 released July 2, 2007) 
+===========================================
+Release for embedded target -- LF2530 development board with audio.
+
+Software components for target hardware:
+
+* Linux Kernel Image (ME2530 devkit): zImage-ME2530-0.0.4-759
+* Linux Kernel Image (LF2530 boards): zImage-LF2530-0.0.4-759
+* NFS root file system: nfsroot-svn759.tar.gz
+
+Enhancements:
+-------------
+* Audio subsystem drivers are functional on LF2530 development boards.
+
 Known Issues:
 -------------
-* Audio subsystem drivers are not functional on embedded target.
-* Video MPI syncs to Theora frames only, ignoring Vorbis audio packets
-  (if any) in Ogg stream.
-* Video MPI video output data is not color converted on emulation targets.
+* No audio driver supported on ME2530 devkits.
+* LCD module on LF2530 boards not setup for correct contrast. 
 
 ===========================================
 v0.1.8  (Build 614 released June 19, 2007) 
