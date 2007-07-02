@@ -53,7 +53,6 @@ CAudioMixer::CAudioMixer( U8 numChannels )
 	pMixBuffer_ = new S16[ kAudioOutBufSizeInWords * 2];
 	pSRCInBuffer_ = new S16[ kAudioOutBufSizeInWords * 2];
 	pSRCOutBuffer_ = new S16[ kAudioOutBufSizeInWords * 2];
-	pSRCOverflowBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 }
 
 //==============================================================================
@@ -185,7 +184,6 @@ int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOutBuff,
 	CAudioMixer* mySelf = (CAudioMixer*)pToObject;
 	
 	// Call member function to get a buffer full of stereo data
-	// at 16KHz.
 	return mySelf->RenderBuffer( pOutBuff, numStereoFrames );
 }
 
