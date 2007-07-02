@@ -4615,3 +4615,14 @@ By Dmilici (Dmilici@leapfrog.com) on 6/29/07 5:32 PM
 2,250 ms. (Cumulative: 735,576 ms)
 
 ----------------
+Revision 748 from svn://localhost/TRUNK/:
+Revision 749 from svn://localhost/TRUNK/:
+Revision 750 from svn://localhost/TRUNK/:
+
+Make audio systems "frames per buffer" different on emulation v.s. embedded.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/2/07 11:25 AM
+1 changed, 0 added, 0 deleted.
+2,140 ms. (Cumulative: 737,779 ms)
+
+----------------
