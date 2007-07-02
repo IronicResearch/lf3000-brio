@@ -153,8 +153,41 @@ void PaUtil_TerminateThreading( PaUtilThreading *threading )
 
 PaError PaUtil_StartThreading( PaUtilThreading *threading, void *(*threadRoutine)(void *), void *data )
 {
-    pthread_create( &threading->callbackThread, NULL, threadRoutine, data );
-    return paNoError;
+	int err;
+	pthread_attr_t tattr;
+	struct sched_param param;
+	int policy;
+
+//	printf("PaUtil_StartThreading\n ");
+	
+	/* initialized 'tattr' object with with default attributes */
+	err = pthread_attr_init(&tattr);
+
+	/* Setting the thread scheduling attributes */
+  
+	/* 1. set the thread's set scope		*/
+	err = pthread_attr_setscope(&tattr, PTHREAD_SCOPE_SYSTEM);
+//	printf("PaUtil_StartThreading:pthread_attr_setscope -- returned %d\n ", err);
+
+	/* 2. set scheduling policy */
+	err = pthread_attr_setschedpolicy(&tattr, SCHED_FIFO);
+//	printf("PaUtil_StartThreading:pthread_attr_setschedpolicy -- returned %d\n ", err);
+
+	/* 3. set the priority */
+    param.sched_priority = 99;
+    printf("PaUtil_StartThreading:pthread_attr_setschedparam -- setting priority to MAX. %d\n ", err);
+	err = pthread_attr_setschedparam (&tattr, &param);
+//	printf("PaUtil_StartThreading:pthread_attr_setschedparam -- returned %d\n ", err);
+
+	err = pthread_create( &threading->callbackThread, &tattr, threadRoutine, data );
+//	printf("PaUtil_StartThreading:pthread_create -- returned %d\n ", err);
+	
+	err = pthread_getschedparam( threading->callbackThread, &policy, &param );
+//	printf("PaUtil_StartThreading:pthread_getschedparam -- returned %d\n ", err);
+//	printf("PaUtil_StartThreading:pthread_getschedparam -- policy = %d\n ", policy);
+//	printf("PaUtil_StartThreading:pthread_getschedparam -- priority %d\n ", param.sched_priority);
+
+   return paNoError;
 }
 
 PaError PaUtil_CancelThreading( PaUtilThreading *threading, int wait, PaError *exitResult )

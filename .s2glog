@@ -4653,3 +4653,19 @@ By DGibbs (DGibbs@leapfrog.com) on 7/2/07 11:33 AM
 2,172 ms. (Cumulative: 744,327 ms)
 
 ----------------
+Revision 754 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,188 ms. (Cumulative: 746,624 ms)
+
+----------------
+Revision 755 from svn://localhost/TRUNK/:
+Revision 756 from svn://localhost/TRUNK/:
+
+Make PortAudio thread highest priority and SCHED_FIFO!
+
+By DGibbs (DGibbs@leapfrog.com) on 7/2/07 12:00 PM
+1 changed, 0 added, 0 deleted.
+2,188 ms. (Cumulative: 748,827 ms)
+
+----------------
