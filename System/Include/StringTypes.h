@@ -71,7 +71,7 @@ enum {
 	kSystemCharEncodingGroupISO,				// International Standards Org (ISO)
 	kSystemCharEncodingGroupWindows,			// Windows codepages
 	kSystemCharEncodingGroupMac,				// Mac encodings
-	kSystemCharEncodingGroupUnicode,			// Unicode standard
+	kSystemCharEncodingGroupUnicode				// Unicode standard
 };
 
 #define MakeFirstSystemGroupCharEncoding(group)  \
@@ -148,7 +148,7 @@ enum {
 	kUTF32CharEncoding,					// Unicode: uniform 32-bits/character; 
 										//		leading BOM ("byte order mark") value indicates endianness
 	kUTF32BECharEncoding,				// Unicode: UTF32 - guaranteed big endian
-	kUTF32LECharEncoding,				// Unicode: UTF32 - guaranteed little endian
+	kUTF32LECharEncoding				// Unicode: UTF32 - guaranteed little endian
 };
 
 

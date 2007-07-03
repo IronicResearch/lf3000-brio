@@ -27,11 +27,34 @@ const CURI		kNullURI;
 
 
 //============================================================================
+extern "C"
+{
+	typedef tErrType (*tfnFindMod)();
+	typedef tErrType (*tfnConnect)(void**, const char*, tVersion);
+	typedef tErrType (*tfnDisconnect)(const ICoreModule*);
+}
+
+
+//============================================================================
 // Local Utility Functions
 //============================================================================
 namespace
 {
-	
+	//========================================================================
+	// This union is some syntactic grease that allows us to take the void*
+	// returned by dlsym() and "cast" it to an appropriate function pointer
+	// when the "-pedantic-error" compiler switch is enabled.
+	// Directly casting an object* to a function* causes a compiler error when
+	// "-pedantic-error" is enabled.
+	//========================================================================	   
+	union ObjPtrToFunPtrConverter
+	{
+		void* 			voidptr;
+		tfnFindMod		pfnFind;
+		tfnConnect		pfnConnect;
+		tfnDisconnect	pfnDisconnect;
+	};
+		
 	//------------------------------------------------------------------------
 	void* gg_pModuleHandle = NULL;
 	
@@ -78,24 +101,16 @@ namespace Module
 	// For normal, non-LF_MONOLITHIC_DEBUG builds, call through to the libModule.so
 	// replacable shared object for the implementation.
 	//------------------------------------------------------------------------
-	
-	extern "C"
-	{
-		typedef tErrType (*tfnFindMod)();
-		typedef tErrType (*tfnConnect)(void**, const char*, tVersion);
-		typedef tErrType (*tfnDisconnect)(const ICoreModule*);
-	}
-	
-	//------------------------------------------------------------------------
+		//------------------------------------------------------------------------
 	tErrType FindModules()
 	{
 		tErrType status = LoadModuleManagerLib();
 		if( status == kNoErr )
 		{
-			tfnFindMod funptr = reinterpret_cast<tfnFindMod>
-										(dlsym(gg_pModuleHandle, "FindModules"));
+		    ObjPtrToFunPtrConverter fp;
+		    fp.voidptr = dlsym(gg_pModuleHandle, "FindModules");
 			AbortOnError("FindModules lookup failure");
-		  	status = (*funptr)();
+		  	status = (*(fp.pfnFind))();
 		}
 		return status;
 	}
@@ -111,10 +126,10 @@ namespace Module
 		if( status == kNoErr )
 		{
 			void* pModule = NULL;
-			tfnConnect funptr = reinterpret_cast<tfnConnect>
-										(dlsym(gg_pModuleHandle, "Connect"));
+			ObjPtrToFunPtrConverter fp;
+			fp.voidptr = dlsym(gg_pModuleHandle, "Connect");
 			AbortOnError("Connect lookup failure");
-		  	status = (*funptr)(&pModule, name.c_str(), version);
+		  	status = (*(fp.pfnConnect))(&pModule, name.c_str(), version);
 		  	ptr = reinterpret_cast<ICoreModule*>(pModule);
 		}
 		return status;
@@ -126,10 +141,10 @@ namespace Module
 		tErrType status = LoadModuleManagerLib();
 		if( status == kNoErr )
 		{
-			tfnDisconnect funptr = reinterpret_cast<tfnDisconnect>
-										(dlsym(gg_pModuleHandle, "Disconnect"));
+			ObjPtrToFunPtrConverter fp;
+			fp.voidptr = dlsym(gg_pModuleHandle, "Disconnect");
 			AbortOnError("Disconnect lookup failure");
-		  	status = (*funptr)(ptr);
+		  	status = (*(fp.pfnDisconnect))(ptr);
 		}
 		return status;
 	}

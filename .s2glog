@@ -4746,3 +4746,15 @@ By TParker (TParker@leapfrog.com) on 7/3/07 2:52 PM
 2,141 ms. (Cumulative: 767,360 ms)
 
 ----------------
+Revision 770 from svn://localhost/TRUNK/:
+Revision 771 from svn://localhost/TRUNK/:
+Revision 772 from svn://localhost/TRUNK/:
+Revision 773 from svn://localhost/TRUNK/:
+
+Cleanups for -pedantic-error
+
+By TParker (TParker@leapfrog.com) on 7/3/07 4:08 PM
+22 changed, 0 added, 0 deleted.
+2,564 ms. (Cumulative: 770,002 ms)
+
+----------------

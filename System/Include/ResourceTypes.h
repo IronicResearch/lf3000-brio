@@ -70,7 +70,7 @@ enum ePackageType {
 	kPackageTypeAll,	// for GetNumPakckages(), FindFirstPackage()
 	kPackageTypeGeneric,
 	kPackageTypeSystem,
-	kPackageTypeApp,
+	kPackageTypeApp
 };
 
 // FIXME/tp: Rethink these enumerations

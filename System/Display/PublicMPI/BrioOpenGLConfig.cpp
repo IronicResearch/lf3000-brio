@@ -25,10 +25,11 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-#if 0	// NOTBUG/dm: enable for development
-#define	PRINTF	printf
+#define LOCAL_DEBUG 0
+#if LOCAL_DEBUG	// NOTBUG/dm: enable for development
+#define	PRINTF(a)	printf(a)
 #else
-#define PRINTF(...)
+#define PRINTF(a)
 #endif
 
 //==============================================================================
@@ -63,7 +64,9 @@ namespace
 	extern "C" int  GLESOAL_Initalize(___OAL_MEMORY_INFORMATION__* pMemoryInfo ) 
 	{
 		*pMemoryInfo = meminfo;
-	    PRINTF("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
+#ifdef LOCAL_DEBUG
+		char buf[256];
+		sprintf(buf, "GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n",
 		    pMemoryInfo->VirtualAddressOf3DCore, \
 		    pMemoryInfo->Memory1D_VirtualAddress, \
 		    pMemoryInfo->Memory1D_PhysicalAddress, \
@@ -71,6 +74,8 @@ namespace
 		    pMemoryInfo->Memory2D_VirtualAddress, \
 		    pMemoryInfo->Memory2D_PhysicalAddress, \
 		    pMemoryInfo->Memory2D_SizeInMbyte);
+		PRINTF(buf);
+#endif
 		
 		// 3D layer must not be enabled until after this callback returns
 		return 1; 

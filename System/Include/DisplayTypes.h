@@ -63,13 +63,13 @@ enum tPixelFormat {
 	kPixelFormatARGB8888,
 	kPixelFormatRGB888,
 	kPixelFormatYUV420,
-	kPixelFormatYUYV422,
+	kPixelFormatYUYV422
 };
 
 enum tDisplayZOrder {
 	kInvalidZOrder = 0,
 	kDisplayOnTop,
-	kDisplayOnBottom,
+	kDisplayOnBottom
 };
 
 struct tDisplayScreenStats {

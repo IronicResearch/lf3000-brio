@@ -30,6 +30,20 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================	   
 namespace
 {
+	//==========================================================================
+	// This union is some syntactic grease that allows us to take the void*
+	// returned by dlsym() and "cast" it to an appropriate function pointer
+	// when the "-pedantic-error" compiler switch is enabled.
+	// Directly casting an object* to a function* causes a compiler error when
+	// "-pedantic-error" is enabled.
+	//==========================================================================   
+	union ObjPtrToFunPtrConverter
+	{
+		void* 				voidptr;
+		pFnCreateInstance	pfnCreate;
+		pFnDestroyInstance	pfnDestroy;
+	};
+
 	const int kMaxModuleName	= 30;
 	const int kMaxPath			= 256;	// FIXME: common handling 
 	
@@ -231,8 +245,8 @@ namespace
 			}
 			
 		    dlerror();														//*4
-			pFnCreateInstance funptr = reinterpret_cast<pFnCreateInstance>
-						(dlsym(pLib, kCreateInstanceFnName));
+		    ObjPtrToFunPtrConverter fp;
+		    fp.voidptr = dlsym(pLib, kCreateInstanceFnName);
 		    const char *dlsym_error = dlerror();
 		    if( dlsym_error )
 		    {
@@ -240,7 +254,7 @@ namespace
 		    	return kModuleLoadFail;
 		    }
 		    
-			ptr = (*funptr)(version);										//*5
+			ptr = (*(fp.pfnCreate))(version);								//*5
 			if( !ptr )
 			{
 				//TODO: DebugMPI message
@@ -279,11 +293,11 @@ namespace
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
 		    dlerror();
-			pFnDestroyInstance funptr = reinterpret_cast<pFnDestroyInstance>
-						(dlsym(pModule->handle, kDestroyInstanceFnName));
+		    ObjPtrToFunPtrConverter fp;
+		    fp.voidptr = dlsym(pModule->handle, kDestroyInstanceFnName);
 		    const char *dlsym_error = dlerror();
 		    if( !dlsym_error )
-		    	(*funptr)(pModule->ptr);
+		    	(*(fp.pfnDestroy))(pModule->ptr);
 		    else
 		    {
 				//TODO: DebugMPI message

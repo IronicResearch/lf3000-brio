@@ -41,7 +41,7 @@ enum tLayerPixelFormat {
 	kLayerPixelFormatARGB8888	= 0x0653, //A8R8G8B8
 	kLayerPixelFormatRGB888		= 0x4653, //R8G8B8
 	kLayerPixelFormatYUV420		= 0xFFF0, //YUV planar	
-	kLayerPixelFormatYUYV422	= 0xFFF2, //YUYV packed
+	kLayerPixelFormatYUYV422	= 0xFFF2  //YUYV packed
 };
 
 // TODO/dm: Implement actual lookup table for format codes!

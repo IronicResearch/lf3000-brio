@@ -69,7 +69,7 @@ const tMessagePriority	kInvalidMessagePriority	 = static_cast<tMessagePriority>(
 
 
 enum {
-	kTaskSchedPolicyUndefined 	= 0,
+	kTaskSchedPolicyUndefined 	= 0
 //	kTaskSchedPolicyFIFO = SCHED_FIFO,			
 //	kTaskSchedPolicyRR = SCHED_RR,			
 //	kTaskSchedPolicyOTHER = SCHED_OTHER,			
@@ -87,7 +87,7 @@ enum {
 	kTaskBlockingPolicyFIFO,
 	kTaskBlockingPolicyPriority,
 	// default
-	kTaskBlockingPolicyDefault = kTaskBlockingPolicyFIFO,
+	kTaskBlockingPolicyDefault = kTaskBlockingPolicyFIFO
 };
 
 typedef U16 	tTaskBlockingPolicy;
@@ -135,7 +135,7 @@ enum {
 									// new task releases semaphore
 
 	// default
-	kTaskStartupModeDefault	= kTaskStartupModeRun,
+	kTaskStartupModeDefault	= kTaskStartupModeRun
 };
 
 typedef U16	tTaskStartupMode;
@@ -158,7 +158,7 @@ enum {
 	// extents
 	kFirstTaskProperty		= kTaskPropertyPriority,
 	kLastTaskProperty		= kTaskPropertySchedInterval,
-	kNumTaskProperties		= (kLastTaskProperty - kFirstTaskProperty + 1),
+	kNumTaskProperties		= (kLastTaskProperty - kFirstTaskProperty + 1)
 };
 
 typedef U32	tTaskPropertiesMask;
@@ -262,7 +262,7 @@ enum {
 	kMemoryPoolAllocPolicyFixedSize,
 
 	// default
-	kMemoryPoolAllocPolicyDefault = kMemoryPoolAllocPolicyFirstFit,
+	kMemoryPoolAllocPolicyDefault = kMemoryPoolAllocPolicyFirstFit
 };
 
 typedef U16 tMemoryPoolAllocPolicy;
@@ -287,7 +287,7 @@ enum {
 	kMessageQueueAllocPolicyFixedSize,
 
 	// default
-	kMessageQueueAllocPolicyDefault = kMessageQueueAllocPolicyMessagePtr,
+	kMessageQueueAllocPolicyDefault = kMessageQueueAllocPolicyMessagePtr
 };
 
 typedef U16 tMessageQueueAllocPolicy;
@@ -320,7 +320,7 @@ struct tMessageQueuePropertiesPosix{
 };
 
 enum{
-    wrongQueueFlagParameter = 1001,
+    wrongQueueFlagParameter = 1001
 };
 
 // 
