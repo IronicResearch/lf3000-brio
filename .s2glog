@@ -4721,3 +4721,18 @@ By TParker (TParker@leapfrog.com) on 7/2/07 8:49 PM
 2,813 ms. (Cumulative: 760,828 ms)
 
 ----------------
+Revision 766 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,188 ms. (Cumulative: 763,125 ms)
+
+----------------
+Revision 767 from svn://localhost/TRUNK/:
+
+Turn off unwanted key repeats in button emulation.
+
+By TParker (TParker@leapfrog.com) on 7/3/07 12:36 PM
+1 changed, 0 added, 0 deleted.
+2,016 ms. (Cumulative: 765,141 ms)
+
+----------------

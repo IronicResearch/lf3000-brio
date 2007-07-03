@@ -17,6 +17,7 @@
 #define XK_MISCELLANY
 #define XK_LATIN1
 #include <X11/keysymdef.h>
+#include <X11/XKBlib.h>
 
 #include <ButtonPriv.h>
 #include <EmulationConfig.h>
@@ -105,6 +106,7 @@ void* EmulationButtonTask(void*)
  	data.buttonState = data.buttonTransition = 0;
 
 	Window win = (Window)EmulationConfig::Instance().GetLcdDisplayWindow();
+	XkbChangeEnabledControls(gXDisplay, XkbUseCoreKbd, XkbRepeatKeysMask, 0);
 	XSelectInput(gXDisplay, win, KeyPress | KeyRelease);
 	for( bool bDone = false; !bDone; )	// FIXME/tp: when break out???
 	{
