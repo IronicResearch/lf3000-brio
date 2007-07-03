@@ -22,7 +22,8 @@ def GetRepositoryMappings():
 # emulation builds here.
 #-----------------------------------------------------------------------------
 def SetPlatformFlags(env):
-#	env.Append(CCFLAGS = ' -nostdinc')
+#	env.Append(CCFLAGS = ' -nostdinc -Wextra')
+	env.Append(CCFLAGS = ' -Werror')
 	env.Append(CPPDEFINES = 'LIGHTNING')
 
 def SetPlatformIncludePaths(env):

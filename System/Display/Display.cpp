@@ -75,7 +75,7 @@ U16 CDisplayModule::GetNumberOfScreens() const
 }
 
 //----------------------------------------------------------------------------
-const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen screen)
+const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen /*screen*/)
 {
 	U32 size = GetScreenSize();
 	enum tPixelFormat format = GetPixelFormat();
@@ -93,14 +93,14 @@ const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen screen)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::LockBuffer(tDisplayHandle hndl)
+tErrType CDisplayModule::LockBuffer(tDisplayHandle /*hndl*/)
 {
 	dbg_.DebugOut(kDbgLvlCritical, "LockBuffer not implemented\n");
 	return kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
+tErrType CDisplayModule::UnlockBuffer(tDisplayHandle hndl, tRect* /*pDirtyRect*/)
 {
 	dbg_.DebugOut(kDbgLvlCritical, "UnlockBuffer not implemented\n");
 	return kNoImplErr;
@@ -117,22 +117,24 @@ LF_END_BRIO_NAMESPACE()
 
 LF_USING_BRIO_NAMESPACE()
 
-static CDisplayModule*	sinst = NULL;
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance(tVersion version)
-{
-	if( sinst == NULL )
-		sinst = new CDisplayModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance(ICoreModule* ptr)
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	static CDisplayModule*	sinst = NULL;
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance(tVersion /*version*/)
+	{
+		if( sinst == NULL )
+			sinst = new CDisplayModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance(ICoreModule* /*ptr*/)
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 
 // EOF

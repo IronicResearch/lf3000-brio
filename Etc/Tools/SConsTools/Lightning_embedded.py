@@ -22,11 +22,9 @@ def PlatformMods(env):
 	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CCFLAGS = '-O4')
 	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc'])
-	env.Append(LIBPATH = ['#Build/LightningGCC/MPI'])	
-	env.Append(LIBPATH = ['#ThirdParty/ustring/libs/arm'])	
-	env.Append(CPPPATH = ['#ThirdParty/ustring'])
-	env.Append(CPPPATH = ['#../LinuxDist/packages/drivers/include'])
-	env.Append(CPPPATH = ['#LinuxDist/packages/drivers/include'])
+	root = os.path.normpath(os.path.join(__file__, '../../../../ThirdParty/ustring'))
+	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
+	env.Append(CPPPATH = [root])
 
 	rootfs = os.getenv('ROOTFS_PATH')
 	if rootfs == None:

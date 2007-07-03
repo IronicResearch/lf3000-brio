@@ -29,7 +29,7 @@ if vars['is_emulation']:
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/arm'])
+	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

@@ -668,22 +668,24 @@ LF_END_BRIO_NAMESPACE()
 
 LF_USING_BRIO_NAMESPACE()
 
-static CFontModule*	sinst = NULL;
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance(tVersion version)
-{
-	if( sinst == NULL )
-		sinst = new CFontModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance(ICoreModule* ptr)
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	static CFontModule*	sinst = NULL;
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance(tVersion version)
+	{
+		if( sinst == NULL )
+			sinst = new CFontModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance(ICoreModule* ptr)
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 
 // EOF

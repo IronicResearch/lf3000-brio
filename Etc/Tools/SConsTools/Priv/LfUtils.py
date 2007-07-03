@@ -186,9 +186,12 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 		priv_incs = (ptype == kBuildModule and 'Include' or os.path.join('..', 'Include'))
 		bldenv.Append(CPPPATH  = [os.path.join(source_dir, priv_incs)])
 		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
-		mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)
+		if vars['is_monolithic']:
+			mylib = bldenv.StaticLibrary(ptarget, psources, LIBS = linklibs)
+		else:
+			mylib = bldenv.SharedLibrary(ptarget, psources, LIBS = linklibs)
 		if ptype == kBuildModule:
-			bldenv.Install(vars['lib_deploy_dir'], mylib)
+			bldenv.Install(vars['mod_deploy_dir'], mylib)
 		elif ptype == kBuildPrivMPI:
 			bldenv.Install(vars['priv_mpi_deploy_dir'], mylib)
 		elif vars['is_emulation']:
@@ -209,33 +212,55 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 #		"plibs" are the libraries the tested library was linked against
 #-----------------------------------------------------------------------------
 def RunMyTests(ptarget, psources, plibs, penv, vars):
-	if not vars['is_checkheaders']:
-		testenv = penv.Copy()
-		testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
-		testenv.Append(CPPDEFINES = 'UNIT_TESTING')
-		testenv.Append(RPATH = [vars['mpi_deploy_dir'], vars['priv_mpi_deploy_dir']])
-		srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
-		tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
-		unit = 'test_' + ptarget + '.cpp'
-		mytest = testenv.CxxTest(unit, tests)
-		# FIXME/tp: following conditional is getting evaluated too early,
-		# FIXME/tp: need to find alternate/delayed way
-		if os.path.exists(mytest[0].abspath):
-			platformlibs = ['DebugMPI']
-			if vars['is_emulation']:
-				platformlibs += ['glibmm-2.4', 'glib-2.0']
-			else:
-				platformlibs += ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
-				testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/arm'])
-			fulllibs = plibs + [ptarget + 'MPI'] + platformlibs
-			if vars['is_emulation']:
-				fulllibs += ['Emulation']
-				testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
-				testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
-			temp = testenv.Program([mytest] + psources, LIBS = fulllibs)
-			mytestexe = testenv.Install(vars['bin_deploy_dir'], temp)
-			if vars['is_runtests']:
-				testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
+
+	if vars['is_checkheaders'] or vars['is_export'] and not vars['is_publish']:
+		return
+		
+	srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
+	tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
+	if len(tests) == 0:
+		return
+		
+	testenv = penv.Copy()
+	testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
+	testenv.Append(CPPDEFINES = 'UNIT_TESTING')
+	testenv.Append(RPATH = [vars['mpi_deploy_dir'], vars['priv_mpi_deploy_dir']])
+	unit = 'test_' + ptarget + '.cpp'
+	mytest = testenv.CxxTest(unit, tests)
+
+	platformlibs = ['DebugMPI']
+	if vars['is_emulation']:
+		platformlibs += ['glibmm-2.4', 'glib-2.0']
+	else:
+		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
+	fulllibs = plibs + [ptarget + 'MPI']
+	if vars['is_emulation']:
+		fulllibs += ['Emulation']
+		testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
+		testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
+	if vars['is_monolithic']:
+		libpaths = [vars['mod_deploy_dir'], vars['lib_deploy_dir'], 
+					os.path.join(root_dir, 'ThirdParty/Theora/Libs', vars['cpu_subdir']),
+					os.path.join(root_dir, 'ThirdParty/Portaudio/Libs', vars['cpu_subdir']),
+					os.path.join(root_dir, 'ThirdParty/Mobileer/Libs', vars['cpu_subdir'])]
+		testenv.Append(LIBPATH = libpaths)
+		testenv.Append(RPATH = vars['lib_deploy_dir'])
+		fulllibs += testenv.Split('''ModuleMPI 
+									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
+									FontMPI ResourceMPI VideoMPI KernelMPI
+									Audio Button Debug Display Event Font Resource 
+									Video Kernel Module
+									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
+									FontMPI ResourceMPI VideoMPI KernelMPI
+									portaudio me2000 vorbisidec
+									SystemResourceMPI ogg theora freetype
+									''')
+		if vars['is_emulation']:
+			fulllibs +=  ['X11']
+	temp = testenv.Program([mytest] + psources, LIBS = fulllibs + platformlibs)
+	mytestexe = testenv.Install(vars['bin_deploy_dir'], temp)
+	if vars['is_runtests']:
+		testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
 
 
 #-----------------------------------------------------------------------------

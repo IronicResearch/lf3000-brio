@@ -58,11 +58,12 @@ CAudioMsgStartAudio::CAudioMsgStartAudio( void ) {
 }
 
 //------------------------------------------------------------------------------
-CAudioMsgStartAudio::CAudioMsgStartAudio( const tAudioStartAudioInfo& data ) {
+CAudioMsgStartAudio::CAudioMsgStartAudio( const tAudioStartAudioInfo& data )
+	: data_(data)
+{
 	type_ = kAudioCmdMsgTypeStartAudio;
 	messageSize = sizeof(CAudioMsgStartAudio);
 	messagePriority = kAudioMsgDefaultPriority;
-	data_ = data;
 }
 
 //------------------------------------------------------------------------------
@@ -314,17 +315,11 @@ tErrType CAudioModule::SetDefaultListener( const IEventListener* pListener )
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
+#ifndef LF_MONOLITHIC_DEBUG
 extern "C"
 {
 	//------------------------------------------------------------------------
-	tVersion ReportVersion()
-	{
-		// TBD: ask modules for this or incorporate verion into so file name
-		return kAudioModuleVersion;
-	}
-	
-	//------------------------------------------------------------------------
-	ICoreModule* CreateInstance(tVersion version)
+	ICoreModule* CreateInstance(tVersion /*version*/)
 	{
 		if( sinst == NULL )
 			sinst = new CAudioModule;
@@ -332,13 +327,15 @@ extern "C"
 	}
 	
 	//------------------------------------------------------------------------
-	void DestroyInstance(ICoreModule* ptr)
+	void DestroyInstance(ICoreModule* /*ptr*/)
 	{
 //		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;
 	}
 }
+#endif	// LF_MONOLITHIC_DEBUG
+
 
 
 //==============================================================================
@@ -449,15 +446,8 @@ tAudioID CAudioModule::StartAudio( tRsrcHndl hRsrc, U8 volume,
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 		(const char *)"AudioMgr:StartAudio; hRsrc = 0x%x\n", hRsrc );	
 
-	tAudioStartAudioInfo msgData;
-
-	msgData.hRsrc = hRsrc;
-	msgData.volume = volume;
-	msgData.priority = priority;
-	msgData.pan = pan;
-	msgData.pListener = pListener;
-	msgData.payload = payload;
-	msgData.flags = flags;
+	tAudioStartAudioInfo msgData(hRsrc, volume, priority, pan, 
+								pListener, payload, flags);
 
 	CAudioMsgStartAudio	msg( msgData );
 	
@@ -652,7 +642,7 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority priority, IEventListene
 }
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ReleaseMidiPlayer( tMidiID midiID )
+tErrType CAudioModule::ReleaseMidiPlayer(tMidiID midiID)
 {
 	CAudioMsgReleaseMidiPlayer msg;
 

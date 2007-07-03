@@ -10,15 +10,26 @@ struct tAudioMasterVolume {
 };
 
 // kAudioCmdMsgTypeStartAudio
-struct tAudioStartAudioInfo {
+struct tAudioStartAudioInfo { 
 	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
-	tAudioHeader*		pAudioHeader;		// For Brio Raw types, pointer to header and data, provided by AudioTask, returned from GetPtr()
 	U8				 	volume;
 	tAudioPriority	 	priority;
 	S8				 	pan;
 	IEventListener		*pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
+	tAudioHeader*		pAudioHeader;		// For Brio Raw types, pointer to header and data, provided by AudioTask, returned from GetPtr()
+	
+	tAudioStartAudioInfo(tRsrcHndl r = kInvalidRsrcHndl, 
+						U8 v = 0, 
+						tAudioPriority p = 0, 
+						S8 pn = 0, 
+						IEventListener* l = NULL, 
+						tAudioPayload pl = 0, 
+						tAudioOptionsFlags f = 0, 
+						tAudioHeader* h = NULL)
+		: hRsrc(r), volume(v), priority(p), pan(pn), pListener(l),
+		payload(pl), flags(f), pAudioHeader(h) {}
 };
 
 // kAudioCmdMsgTypeStopAudio

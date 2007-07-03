@@ -307,27 +307,22 @@ LF_END_BRIO_NAMESPACE()
 //============================================================================
 
 LF_USING_BRIO_NAMESPACE()
-//------------------------------------------------------------------------
-extern "C" tVersion ReportVersion()
-{
-	// TBD: ask modules for this or incorporate verion into so file name
-	return kDebugModuleVersion;
-}
-	
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance( tVersion version )
-{
-	if (sinst == NULL)
-		sinst = new CDebugModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance( ICoreModule* ptr )
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance( tVersion /*version*/ )
+	{
+		if (sinst == NULL)
+			sinst = new CDebugModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance( ICoreModule* /*ptr*/ )
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 // EOF

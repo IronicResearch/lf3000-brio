@@ -38,7 +38,7 @@
 
 CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAudioPlayer( pData, id  )
 {
-	tErrType 		ret = kNoErr;
+	tErrType		ret = kNoErr;
 	vorbis_info*	pVorbisInfo;
 	ogg_int64_t		lengthInSeconds;
 	ogg_int64_t		length;
@@ -63,8 +63,8 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 	oggCallbacks_.close_func = &CVorbisPlayer::WrapperForVorbisClose;
       
 	// open the file
-	ret = ov_open_callbacks( this, &vorbisFile_, NULL, 0, oggCallbacks_ );
-	if ( ret < 0)
+	S32 ret2 = ov_open_callbacks( this, &vorbisFile_, NULL, 0, oggCallbacks_ );
+	if ( ret2 < 0)
 		printf("Could not open input as an OggVorbis file.\n\n");
 
 	// Figure out how big the vorbis bitstream actually is.
@@ -94,8 +94,6 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 //==============================================================================
 CVorbisPlayer::~CVorbisPlayer()
 {
-	tErrType ret;
-	
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
@@ -105,7 +103,7 @@ CVorbisPlayer::~CVorbisPlayer()
 		delete pPcmBuffer_;
 	
 	// Close the vorbis file
-	ret = ov_clear( &vorbisFile_ );
+	S32 ret = ov_clear( &vorbisFile_ );
 	if ( ret < 0)
 		printf("Could not close OggVorbis file.\n");
 
@@ -174,8 +172,8 @@ int CVorbisPlayer::VorbisSeek(
 			break;
 
 		default:
-			printf("The 'origin' argument must be one of the following constants, defined in STDIO.H!\n");
-			break;
+			seekOptions = kSeekRsrcOptionSet;	// bogus assignment to avoid warning
+			pDebugMPI_->Assert(false, "CVorbisPlayer::VorbisSeek() invalid origin parameter.\n");
 	}
 	 
 	// Seek to the requested place in the bitstream.

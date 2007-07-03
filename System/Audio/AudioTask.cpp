@@ -552,7 +552,7 @@ void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
 
 //==============================================================================
 //==============================================================================
-void* AudioTaskMain( void* arg )
+void* AudioTaskMain( void* /*arg*/ )
 {
 	tErrType err;
 	U32 i = 0;

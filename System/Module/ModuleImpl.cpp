@@ -95,7 +95,7 @@ namespace
 		}
 
 		//----------------------------------------------------------------------
-		ConnectedModule* FindCachedModule( const CString& name, tVersion version )
+		ConnectedModule* FindCachedModule( const CString& name, tVersion /*version*/ )
 		{
 			ConnectedModule* pModule = mpConnectedModulesList;
 			for( U16 ii = mNumConnected; ii > 0; --ii, ++pModule )
@@ -135,10 +135,9 @@ namespace
 		//----------------------------------------------------------------------
 		~CModuleMgrImpl()
 		{
-			if(mpFoundModulesList)
-				free(mpFoundModulesList);
-			if(mpFoundModulesList)
-				free(mpConnectedModulesList);
+			// FIXME: Use Kernel::Free()
+			free(mpFoundModulesList);
+			free(mpConnectedModulesList);
 		}
 	
 		//----------------------------------------------------------------------
@@ -155,26 +154,22 @@ namespace
 			// FIXME/tp: KernelMPI for malloc
 			const int kMaxModuleCount = 100;
 			mpFoundModulesList = reinterpret_cast<FoundModule*>(malloc(kMaxModuleCount * sizeof(FoundModule)));
-			if(!mpFoundModulesList)
-				return -1;
 			mpConnectedModulesList = reinterpret_cast<ConnectedModule*>(malloc(kMaxModuleCount * sizeof(ConnectedModule)));
-			if(!mpFoundModulesList)
-				return -1;
+			
 			mNumFound = 0; 
 			for( size_t ii = 0; ii < ArrayCount(paths); ++ii )
 			{
 				DIR *dirp;
-				struct dirent *dp;
-				dirp = opendir(paths[ii]);
-				if(dirp == NULL)
+				struct dirent *dp = (struct dirent *)1;
+				if( (dirp = opendir(paths[ii])) == NULL )
 					continue;
-				
-				do {
-					dp = readdir(dirp);
-					if((dp != NULL) && AddedValidModule((mpFoundModulesList + mNumFound),
-										paths[ii], dp->d_name))
+				while( dp != NULL )
+				{
+					if( (dp = readdir(dirp)) != NULL 
+						&& AddedValidModule((mpFoundModulesList + mNumFound),
+											paths[ii], dp->d_name) )
 						++mNumFound;
-				} while((dp != NULL) && (mNumFound < kMaxModuleCount));
+				}
 				closedir(dirp);
 			}
 //FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
@@ -309,26 +304,30 @@ LF_END_BRIO_NAMESPACE()
 //============================================================================
 // Module
 //============================================================================
-//------------------------------------------------------------------------
-extern "C" tErrType FindModules()
-{
-	return g_impl.FindModules();
-}
-//------------------------------------------------------------------------
-extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
-{
-	static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
-	ICoreModule* ptr = NULL;
-	tErrType status =  g_impl.Connect(ptr, name, version);
-	if( status == kNoErr )
-		*pModule = ptr;
-	return status;
-}
-//------------------------------------------------------------------------
-extern "C" tErrType Disconnect(const ICoreModule* ptr)
-{
-	return g_impl.Disconnect(ptr);
-}
+	//------------------------------------------------------------------------
+	extern "C" tErrType FindModules()
+	{
+		return g_impl.FindModules();
+	}
+	//------------------------------------------------------------------------
+	extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
+	{
+		static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
+		init = !!init;		// bogus line to revmove "unused variable 'init'" warning
 
-
+		ICoreModule* ptr = NULL;
+		tErrType status =  g_impl.Connect(ptr, name, version);
+		if( status == kNoErr )
+			*pModule = ptr;
+		return status;
+	}
+	//------------------------------------------------------------------------
+	extern "C" tErrType Disconnect(const ICoreModule* ptr)
+	{
+		return g_impl.Disconnect(ptr);
+	}
+	
+	// NOTE: For LF_MONOLITHIC_DEBUG builds, the Module.cpp file never loads this
+	// library or calls its functions.
+	
 // eof

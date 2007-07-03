@@ -8,6 +8,7 @@ import sys
 import SCons
 import csv
 import shutil
+import filecmp
 import glob
 import SCons.Options
 import SCons.Script
@@ -115,7 +116,12 @@ def CreateEnvironment(opts, vars):
 def CopyResources(penv, vars):
 	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
-	rootfs_data = os.path.join(vars['rootfs'], 'Cart1', 'rsrc')
+	rootfs_data = os.path.join(vars['rootfs'], 'Cart1')
+	if not os.path.exists(rootfs_data):
+		os.mkdir(rootfs_data)
+	rootfs_data = os.path.join(rootfs_data, 'rsrc')
+	if not os.path.exists(rootfs_data):
+		os.mkdir(rootfs_data)
 	
 	def callback(arg, directory, files):
 		base = os.path.basename(directory)
@@ -127,7 +133,8 @@ def CopyResources(penv, vars):
 				if os.path.isfile(full):
 					subdir = os.path.dirname(full[root_len:])
 					target = penv.Install(os.path.join(rootfs_data, subdir), full)
-					penv.AlwaysBuild(target)
+					if not os.path.exists(target[0].abspath) or not filecmp.cmp(full, target[0].abspath):
+						penv.AlwaysBuild(target)
 					
 	os.path.walk(data_root, callback, None)
 	penv.Default(rootfs_data)
@@ -349,9 +356,10 @@ def ProcessPackage(pkg, types, pack_root, data_root, enumpkg):
 		srcsize = os.path.getsize(srcfile)
 		writer.writerow([base + row[1].strip(), type, outfile, srcsize, srcsize, version])
 		
-		this_dir		= os.path.split(__file__)[0]
-		if type == 1026:											#8
-			cmd = 'oggenc --resample ' + rate + ' -q ' + compression + ' -o ' + outpath + ' ' + srcfile
+		this_dir	= os.path.split(__file__)[0]
+		oggenc		= 'LD_LIBRARY_PATH=' + this_dir + ' ' + os.path.join(this_dir, 'oggenc')	
+		if type == 1026 and rate != '':								#8
+			cmd = oggenc +' --resample ' + rate + ' -q ' + compression + ' -o ' + outpath + ' ' + srcfile
 			os.system(cmd)
 		elif type == 1027:											#9
 			os.system(os.path.join(this_dir, 'sf2brio') + ' ' + srcfile + ' ' + outpath)

@@ -128,7 +128,7 @@ public:
 	}
 	//------------------------------------------------------------------------
 	tErrType PostEvent(const IEventMessage &msg, 
-						tEventPriority priority, 
+						tEventPriority /*priority*/, 
 						const IEventListener *pResponse) const
 	{
 		// 1) If there was a response listener provided (e.g., from
@@ -136,6 +136,7 @@ public:
 		// 2) Post the message to all of the async/non-response listeners
 		// TODO/tp: Optimize this by keeping a multimap of event types to
 		// listeners???
+		// FIXME/tp: Remove priority parameter
 		//
 		PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
 		
@@ -180,7 +181,7 @@ Boolean	CEventModule::IsValid() const
 //============================================================================
 //----------------------------------------------------------------------------
 tErrType CEventModule::RegisterEventListener(const IEventListener *pListener,
-											tEventRegistrationFlags flags)
+											tEventRegistrationFlags /*flags*/)
 {
 	pinst->AddListener(pListener);
 	return kNoErr;
@@ -225,28 +226,23 @@ LF_END_BRIO_NAMESPACE()
 
 LF_USING_BRIO_NAMESPACE()
 
-static CEventModule*	sinst = NULL;
-//------------------------------------------------------------------------
-extern "C" tVersion ReportVersion()
-{
-	// TBD: ask modules for this or incorporate verion into so file name
-	return kEventModuleVersion;
-}
-	
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance(tVersion version)
-{
-	if( sinst == NULL )
-		sinst = new CEventModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance(ICoreModule* ptr)
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	static CEventModule*	sinst = NULL;
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance(tVersion /*version*/)
+	{
+		if( sinst == NULL )
+			sinst = new CEventModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance(ICoreModule* /*ptr*/)
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 // EOF

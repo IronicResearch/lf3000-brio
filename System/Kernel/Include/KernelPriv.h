@@ -19,6 +19,7 @@
 #include <StringTypes.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <errno.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 

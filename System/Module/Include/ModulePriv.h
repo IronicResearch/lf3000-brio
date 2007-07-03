@@ -23,7 +23,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 	inline CPath GetModuleLibraryLocation()
 	{
-		return "/usr/local/lib/";
+		return "/Module/";
 	}
 	
 #else // !EMULATION

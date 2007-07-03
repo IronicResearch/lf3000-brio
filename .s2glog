@@ -4710,3 +4710,14 @@ By TParker (TParker@leapfrog.com) on 7/2/07 6:42 PM
 2,110 ms. (Cumulative: 757,953 ms)
 
 ----------------
+Revision 765 from svn://localhost/TRUNK/:
+
+Added monolithic=t command line parameter; 
+Warnings now are treated as errors by the Brio build scripts!
+Cleanups to make everything compile without warnings
+
+By TParker (TParker@leapfrog.com) on 7/2/07 8:49 PM
+34 changed, 0 added, 0 deleted.
+2,813 ms. (Cumulative: 760,828 ms)
+
+----------------

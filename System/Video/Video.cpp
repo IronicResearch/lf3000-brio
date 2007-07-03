@@ -71,7 +71,6 @@ namespace
 
 	// Video MPI global vars
 	tRsrcHndl			ghVideo;
-	CSystemResourceMPI	rsrcmgr;
 }
 
 //============================================================================
@@ -82,6 +81,7 @@ namespace
 // Grab some more compressed bitstream and sync it for page extraction
 static int buffer_data(/* FILE *in, */ ogg_sync_state *oy)
 {
+	CSystemResourceMPI	rsrcmgr;
 	char 	*buffer = ogg_sync_buffer(oy,4096);
 	U32 	bytes; // = fread(buffer,1,4096,in);
 	rsrcmgr.ReadRsrc(ghVideo, buffer, 4096, &bytes, kOpenRsrcOptionRead, NULL);
@@ -133,6 +133,7 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
 	}
 
 	// Open Ogg file associated with resource
+	CSystemResourceMPI	rsrcmgr;
 	r = rsrcmgr.OpenRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
 	if (r != kNoErr) 
 	{
@@ -258,6 +259,7 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	ogg_sync_clear(&oy);
 	
 	// Close file associated with resource
+	CSystemResourceMPI	rsrcmgr;
 	rsrcmgr.CloseRsrc(ghVideo);
 	ghVideo = kInvalidRsrcHndl;
 			
@@ -340,22 +342,24 @@ LF_END_BRIO_NAMESPACE()
 
 LF_USING_BRIO_NAMESPACE()
 
-static CVideoModule*	sinst = NULL;
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance(tVersion version)
-{
-	if( sinst == NULL )
-		sinst = new CVideoModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance(ICoreModule* ptr)
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	static CVideoModule*	sinst = NULL;
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance(tVersion version)
+	{
+		if( sinst == NULL )
+			sinst = new CVideoModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance(ICoreModule* ptr)
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 
 // EOF

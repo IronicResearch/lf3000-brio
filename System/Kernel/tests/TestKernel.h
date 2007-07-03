@@ -375,13 +375,13 @@ public:
 //typedef struct timer_arg{	pfnTimerCallback pfn; tPtr arg;} callbackData;
 //struct tTimerProperties { int type; struct itimerspec timeout; callbackData callback;};
 		const static tTimerProperties props_1 = {TIMER_ABSTIME_SET,
-												 	{{0}}};
+												 	{{0, 0}, {0, 0}},};
 
 		const static tTimerProperties props_2 = {TIMER_ABSTIME_SET,
-												 	{{0}}};
+												 	{{0, 0}, {0, 0}},};
 
 		const static tTimerProperties props_3 = {TIMER_ABSTIME_SET,
-												 	{{0}}};
+												 	{{0, 0}, {0, 0}},};
 
 //typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
@@ -400,7 +400,8 @@ public:
 
 	void testStartStopTimer()
 	{
-		tTimerProperties props = {0};
+		tTimerProperties props = {TIMER_ABSTIME_SET,
+									{{0, 0}, {0, 0}},};
 		tErrType err;
 		props.type = TIMER_RELATIVE_SET; 	
 		// Timer period
@@ -431,7 +432,8 @@ public:
 	void testResetTimerRelative()
 	{
 //        TS_WARN("TODO: Test Reset Timer Relative!");
-		tTimerProperties props = {0};
+		tTimerProperties props = {TIMER_ABSTIME_SET,
+									{{0, 0}, {0, 0}},};
 		tErrType err;
 		props.type = TIMER_RELATIVE_SET; 	
 		// Timer period
@@ -454,9 +456,9 @@ public:
 	{
 		tErrType err;
 
-		saveTimerSettings save_1 = {{0}};
-		saveTimerSettings save_2 = {{0}};
-		saveTimerSettings save_3 = {{0}};
+		saveTimerSettings save_1 = {{0, 0}, {0, 0}};
+		saveTimerSettings save_2 = {{0, 0}, {0, 0}};
+		saveTimerSettings save_3 = {{0, 0}, {0, 0}};
 
 		err = KernelMPI->PauseTimer( hndlTimer_1, save_1 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );

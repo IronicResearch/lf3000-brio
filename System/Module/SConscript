@@ -20,6 +20,11 @@ mpilibs		= emulib
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
+if vars['is_monolithic']:
+	myenv.Append(CPPPATH = ['#System', 
+							'#System/Audio/Include',
+							'#ThirdParty/FreeType/Include',
+							'#ThirdParty/FreeType/Include/freetype'])
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
 Depends(mympi, mymodule)

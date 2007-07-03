@@ -60,6 +60,7 @@ import Etc.Tools.SConsTools.Priv.LfUtils	# LeapFrog utility functions
 #-----------------------------------------------------------------------------
 opts = Options('CmdLine.py')
 opts.Add('platform', 'Set platform to use', 'Lightning')
+opts.Add(BoolOption('monolithic', 'Set "monolithic=t" to link EXEs against .a files rather than .so files', 0))
 opts.Add(EnumOption('platform_variant', 'Use in the place of "platform" to specify a bring-up board\n   ', 'Lightning_LF2530BLUE', 
 						allowed_values=('Lightning_LF2530RED', 'Lightning_LF2530BLUE', 'Lightning_LF1000')))
 opts.Add(BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
@@ -68,6 +69,7 @@ opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemul
 					'embedded', 
 					allowed_values=('checkheaders', 'embedded', 'emulation', 'xembedded', 'xemulation', 'publish')))
 
+is_monolithic		= ARGUMENTS.get('monolithic', 0)
 platform			= ARGUMENTS.get('platform', '')
 platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF2530BLUE')
 source_setup		= ARGUMENTS.get('setup', '')
@@ -131,36 +133,43 @@ for target in targets:
 	#-------------------------------------------------------------------------
 	is_emulation			= (target == 'emulation') and 1 or 0
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
+	if is_monolithic:
+		target_subdir += '_s'
 	intermediate_build_dir	= os.path.join('Temp', target_subdir)
 	publish_lib_dir			= os.path.join(publish_root, 'Libs', target_subdir)
 	build_base				= Dir(os.path.join('#Build', target_subdir)).abspath
 	xbuild_base				= os.path.join(export_root, 'Libs', target_subdir)
 	hdr_deploy_dir			= ''
+	bin_deploy_dir			= os.path.join(build_base, 'bin')
+	lib_deploy_dir			= os.path.join(build_base, 'lib')	# unused for emulation
 
 	if is_publish:
 		mpi_deploy_dir		= os.path.join(publish_lib_dir, 'MPI')
 		priv_mpi_deploy_dir	= os.path.join(publish_lib_dir, 'PrivMPI')
-		lib_deploy_dir		= os.path.join(publish_lib_dir, 'Module')
+		mod_deploy_dir		= os.path.join(publish_lib_dir, 'Module')
 		hdr_deploy_dir 	 	= os.path.join(publish_root, 'Include')
 	elif is_export:
 		mpi_deploy_dir		= os.path.join(xbuild_base, 'MPI')
 		priv_mpi_deploy_dir	= os.path.join(xbuild_base, 'PrivMPI')
-		lib_deploy_dir		= os.path.join(xbuild_base, 'Module')
+		mod_deploy_dir		= os.path.join(xbuild_base, 'Module')
 		hdr_deploy_dir 		= os.path.join(export_root, 'Include')
 	else:
 		mpi_deploy_dir		= os.path.join(build_base, 'MPI')
 		priv_mpi_deploy_dir	= os.path.join(build_base, 'PrivMPI')
-		lib_deploy_dir		= os.path.join(build_base, 'Module')
-		
-	bin_deploy_dir	= mpi_deploy_dir
+		mod_deploy_dir		= os.path.join(build_base, 'Module')
 		
 	if not is_emulation:
 		bin_deploy_dir		= os.path.join(rootfs, 'usr', 'local', 'bin')
 		lib_deploy_dir		= os.path.join(rootfs, 'usr', 'local', 'lib')
-		priv_mpi_deploy_dir	= lib_deploy_dir
 		Default(bin_deploy_dir)
 		Default(lib_deploy_dir)
 
+	if not is_emulation and not is_monolithic:
+		priv_mpi_deploy_dir	= lib_deploy_dir
+		mod_deploy_dir		= os.path.join(rootfs, 'Module')
+		Default(mod_deploy_dir)
+		
+	cpu_subdir = is_emulation and 'x86' or 'arm'
 	
 	#-------------------------------------------------------------------------
 	# NOTE: When "publish=t" the SConscript files get invoked multiple times, 
@@ -186,13 +195,16 @@ for target in targets:
 				 'is_export'				: is_export,
 				 'is_checkheaders'			: is_checkheaders,
 				 'is_runtests'				: is_runtests,
+				 'is_monolithic'			: is_monolithic,
 				 'adjust_to_source_dir'		: adjust_to_source_dir,
 				 'mpi_deploy_dir'			: mpi_deploy_dir,
 				 'priv_mpi_deploy_dir'		: priv_mpi_deploy_dir,
 				 'lib_deploy_dir'			: lib_deploy_dir,
 				 'bin_deploy_dir'			: bin_deploy_dir,
 				 'hdr_deploy_dir'			: hdr_deploy_dir,
+				 'mod_deploy_dir'			: mod_deploy_dir,
 				 'intermediate_build_dir'	: intermediate_build_dir,
+				 'cpu_subdir'				: cpu_subdir,
 				 'export_root'				: is_publish and publish_root or export_root,
 				 'target_subdir'			: target_subdir,
 			   }
@@ -208,10 +220,13 @@ for target in targets:
 						tools = ['default', platform_toolset, 
 								'checkheader', 'cxxtest', 'runtest'], 
 						toolpath = [toolpath1, toolpath2],
-						LIBPATH = [mpi_deploy_dir, priv_mpi_deploy_dir],
 					 )
+
+	env.Prepend(LIBPATH = [mpi_deploy_dir, priv_mpi_deploy_dir])
 	if variant != '':
 		env.Append(CPPDEFINES = [variant])
+	if is_monolithic:
+		env.Append(CPPDEFINES = 'LF_MONOLITHIC_DEBUG')
 	
 	
 	#-------------------------------------------------------------------------

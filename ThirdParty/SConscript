@@ -50,7 +50,7 @@ if vars['is_export'] or vars['is_publish']:
 		lib += '.0'
 		env.Install(lib_dir, lib)
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'ThirdParty')
-		libs = glob.glob(os.path.join('Theora', 'Libs', 'x86', '*.so*'))
+		libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], '*.so*'))
 		env.Install(lib_dir, libs)
 	else:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
@@ -58,17 +58,17 @@ if vars['is_export'] or vars['is_publish']:
 		headers = os.path.join('MagicEyes', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 		core_name = 'libogl.a'
-		lib = os.path.join('MagicEyes', 'Libs', 'arm', core_name)
+		lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
 		env.Install(lib_dir, lib)
 
 # Export shared libs to embedded target
 if not vars['is_emulation']:
-	libs = glob.glob(os.path.join('ustring', 'libs', 'arm', '*'))
+	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], '*'))
 	env.Install(vars['lib_deploy_dir'], libs)
 	env.Install(vars['mpi_deploy_dir'], libs)	#FIXME/tp: ICK!
-	libs = glob.glob(os.path.join('FreeType', 'Libs', 'arm', '*.so*'))
+	libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so*'))
 	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Theora', 'Libs', 'arm', '*.so*'))
+	libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], '*.so*'))
 	env.Install(vars['lib_deploy_dir'], libs)
 		
 		

@@ -13,3 +13,6 @@ if vars['is_export']:
 	dest_dir = os.path.join(vars['export_root'], 'Tools')
 	sources =  glob.glob('Tools/SConsTools/*.py')
 	env.Install(dest_dir, sources)
+	env.Install(dest_dir, 'Tools/oggenc')
+	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
+	

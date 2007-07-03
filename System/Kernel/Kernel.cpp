@@ -227,6 +227,7 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
 	}
     
 	pthread_attr_setinheritsched(&tattr, PTHREAD_EXPLICIT_SCHED);
+
 	ASSERT_POSIX_CALL(err);
 	
 	pthread_t	pthread;
@@ -383,7 +384,7 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
     mqd_t retMq_open = -1;
 //    tErrType err = 0;   
 
-    mq_attr queuAttr = {0};
+    mq_attr queuAttr = {0, 0, 0, 0, {0, 0, 0, 0}};
    
     if (props.mq_flags != 0 && props.mq_flags != O_NONBLOCK)
 		return kInvalidParamErr;
@@ -489,7 +490,7 @@ tErrType CKernelModule::ClearMessageQueue(tMessageQueueHndl hndl)
 //------------------------------------------------------------------------------
 int CKernelModule::GetMessageQueueNumMessages(tMessageQueueHndl hndl) const
 {
-    struct mq_attr attr = {0};
+    struct mq_attr attr = {0, 0, 0, 0, {0, 0, 0, 0}};
     mqd_t ret = -1;
     
     errno = 0;
@@ -616,7 +617,7 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
 
 //------------------------------------------------------------------------------
 tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl, 
-									CMessage* msg_ptr, U32 maxMessageSize, 
+									CMessage* msg_ptr, U32 /*maxMessageSize*/, 
 									U32 timeoutMs )
 {
 // Retrieve attributes of the messges queque
@@ -678,8 +679,9 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 	return ( ((U64 )time.tv_sec) * 1000000 + time.tv_usec);
 }
 //------------------------------------------------------------------------------
-tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
-								const char* pDebugName )
+tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, 
+								const tTimerProperties& /*props*/,
+								const char* /*pDebugName*/ )
 {
 //	tErrType err = kNoErr;
 //    sigset_t signal_set;
@@ -1007,7 +1009,7 @@ tErrType CKernelModule::DeInitMutex( tMutex& mutex )
 }
 
 //------------------------------------------------------------------------------
-S32 CKernelModule::GetMutexPriorityCeiling(const tMutex& mutex) const
+S32 CKernelModule::GetMutexPriorityCeiling(const tMutex& /*mutex*/) const
 {
    tErrType err = kNoErr;
    int prioCeiling = 0;
@@ -1019,7 +1021,8 @@ S32 CKernelModule::GetMutexPriorityCeiling(const tMutex& mutex) const
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelModule::SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority )
+tErrType CKernelModule::SetMutexPriorityCeiling( tMutex& /*mutex*/, 
+											S32 /*prioCeiling*/, S32* /*pOldPriority*/ )
 {
    tErrType err = kNoErr;
 
@@ -1190,17 +1193,11 @@ tErrType CKernelModule::SetCondAttrPShared( tCondAttr* pAttr, int shared )
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
+#ifndef LF_MONOLITHIC_DEBUG
 extern "C"
 {
 	//------------------------------------------------------------------------
-	tVersion ReportVersion()
-	{
-		// TBD: ask modules for this or incorporate verion into so file name
-		return kKernelModuleVersion;
-	}
-	
-	//------------------------------------------------------------------------
-	ICoreModule* CreateInstance( tVersion version )
+	ICoreModule* CreateInstance( tVersion /*version*/ )
 	{
 		if (sinst == NULL)
 			sinst = new CKernelModule;
@@ -1208,23 +1205,30 @@ extern "C"
 	}
 	
 	//------------------------------------------------------------------------
-	void DestroyInstance( ICoreModule* ptr )
+	void DestroyInstance( ICoreModule* /*ptr*/ )
 	{
 //		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;
 	}
+	
+} // extern "C"
 
-void sig_handler( int signal, siginfo_t *psigInfo, void *pFunc)
+#endif	// LF_MONOLITHIC_DEBUG
+
+extern "C"
 {
-		callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
-
-#if 0 // FIXME/BSK
-	printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->argFunc);
-	fflush(stdout);
-#endif
-		((ta->pfn))((tTimerHndl )ta->argFunc);
-}
+	//------------------------------------------------------------------------
+	void sig_handler( int /*signal*/, siginfo_t *psigInfo, void * /*pFunc*/)
+	{
+			callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
+	
+	#if 0 // FIXME/BSK
+		printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->argFunc);
+		fflush(stdout);
+	#endif
+			((ta->pfn))((tTimerHndl )ta->argFunc);
+	}
 
 } // extern "C"
 

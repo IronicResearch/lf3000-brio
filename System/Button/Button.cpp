@@ -75,22 +75,24 @@ LF_END_BRIO_NAMESPACE()
 
 LF_USING_BRIO_NAMESPACE()
 
-static CButtonModule*	sinst = NULL;
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance(tVersion version)
-{
-	if( sinst == NULL )
-		sinst = new CButtonModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance(ICoreModule* ptr)
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	static CButtonModule*	sinst = NULL;
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance(tVersion /*version*/)
+	{
+		if( sinst == NULL )
+			sinst = new CButtonModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance(ICoreModule* /*ptr*/)
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 
 // eof

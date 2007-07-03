@@ -20,12 +20,9 @@ mpilibs		= ['ModuleMPI']
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
-# Distinguish x86 vs ARM library binaries
+myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + vars['cpu_subdir']])
 if vars['is_emulation']:
-	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/x86'])
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath)
-else:
-	myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/arm'])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

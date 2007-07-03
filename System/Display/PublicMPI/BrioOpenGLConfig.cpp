@@ -90,7 +90,7 @@ namespace
 	}
 
 	//--------------------------------------------------------------------------
-	extern "C" void GLESOAL_SetWindow( void* pNativeWindow  ) { }
+	extern "C" void GLESOAL_SetWindow( void* /*pNativeWindow*/ ) { }
 	
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight )

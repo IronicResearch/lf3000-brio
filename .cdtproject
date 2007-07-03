@@ -53,5 +53,47 @@
 <pathentry kind="out" path=""/>
 <pathentry kind="con" path="org.eclipse.cdt.make.core.DISCOVERED_SCANNER_INFO"/>
 </item>
+<item id="org.eclipse.cdt.make.core.buildtargets">
+<buildTargets>
+<target name="xembedded" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>scons</buildCommand>
+<buildArguments>-k type=xembedded</buildArguments>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="embedded" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>scons</buildCommand>
+<buildArguments>-k type=embedded</buildArguments>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="emulation" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>scons</buildCommand>
+<buildArguments>-k type=emulation</buildArguments>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="xemulation" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>scons</buildCommand>
+<buildArguments>-k type=xemulation</buildArguments>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="embedded clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>scons</buildCommand>
+<buildArguments>-k type=embedded -c</buildArguments>
+<buildTarget></buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+<target name="emulation clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>scons</buildCommand>
+<buildArguments>-k type=emulation -c</buildArguments>
+<buildTarget></buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+</target>
+</buildTargets>
+</item>
 </data>
 </cdtproject>

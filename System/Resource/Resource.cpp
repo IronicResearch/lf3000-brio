@@ -1459,21 +1459,23 @@ tErrType CResourceModule::DeleteRsrc(U32 id, tRsrcHndl hndl)
 // Instance management interface for the Module Manager
 //============================================================================
 
-static CResourceModule*	sinst = NULL;
-//------------------------------------------------------------------------
-extern "C" ICoreModule* CreateInstance(tVersion version)
-{
-	if (sinst == NULL)
-		sinst = new CResourceModule;
-	return sinst;
-}
-	
-//------------------------------------------------------------------------
-extern "C" void DestroyInstance(ICoreModule* ptr)
-{
-//		assert(ptr == sinst);
-	delete sinst;
-	sinst = NULL;
-}
+#ifndef LF_MONOLITHIC_DEBUG
+	static CResourceModule*	sinst = NULL;
+	//------------------------------------------------------------------------
+	extern "C" ICoreModule* CreateInstance(tVersion /*version*/)
+	{
+		if (sinst == NULL)
+			sinst = new CResourceModule;
+		return sinst;
+	}
+		
+	//------------------------------------------------------------------------
+	extern "C" void DestroyInstance(ICoreModule* /*ptr*/)
+	{
+	//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+#endif	// LF_MONOLITHIC_DEBUG
 
 // EOF
