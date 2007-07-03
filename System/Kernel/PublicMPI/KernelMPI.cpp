@@ -12,7 +12,8 @@
 //
 //==============================================================================
 
-#include <errno.h>	// for posix calls not yet moved to module...
+#include <stdarg.h>		// for varargs
+#include <assert.h>		// for assert()
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <Module.h>
@@ -501,5 +502,28 @@ tErrType CKernelMPI::SetCondAttrPShared( tCondAttr* pAttr, int shared )
 		return 0;
 	return pModule_->SetCondAttrPShared( pAttr, shared );  
 }
+
+
+//----------------------------------------------------------------------------
+void CKernelMPI::Printf( const char * formatString, ... ) const
+{
+	va_list arguments;
+	va_start(arguments, formatString);
+	vprintf(formatString, arguments);
+	va_end(arguments);
+}
+
+//----------------------------------------------------------------------------
+void CKernelMPI::VPrintf( const char * formatString, va_list arguments ) const
+{
+	vprintf(formatString, arguments);
+}
+
+//----------------------------------------------------------------------------
+void CKernelMPI::PowerDown() const
+{
+	assert(!"PowerDown!");
+}
+
 
 // EOF

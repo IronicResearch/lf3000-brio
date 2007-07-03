@@ -13,9 +13,6 @@
 //
 //==============================================================================
 
-// std includes
-#include <stdarg.h>		// for varargs
-
 // System includes
 #include <SystemTypes.h>
 #include <StringTypes.h>

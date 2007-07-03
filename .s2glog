@@ -4736,3 +4736,13 @@ By TParker (TParker@leapfrog.com) on 7/3/07 12:36 PM
 2,016 ms. (Cumulative: 765,141 ms)
 
 ----------------
+Revision 768 from svn://localhost/TRUNK/:
+Revision 769 from svn://localhost/TRUNK/:
+
+New Kernel module Printf() & PowerDown() functions
+
+By TParker (TParker@leapfrog.com) on 7/3/07 2:52 PM
+4 changed, 0 added, 0 deleted.
+2,141 ms. (Cumulative: 767,360 ms)
+
+----------------

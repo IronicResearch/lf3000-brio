@@ -174,6 +174,20 @@ public:
     // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
     tErrType SetCondAttrPShared( tCondAttr* pAttr, int shared );
 
+	//==============================================================================
+	// I/O Functions
+	//==============================================================================
+    // Standard printf syntax to output a string through the serial port
+    void	Printf( const char * formatString, ... ) const;
+
+    // Standard vprintf syntax to output a string through the serial port
+    void	VPrintf( const char * formatString, va_list arguments ) const;
+    
+	//==============================================================================
+	// Power Control Functions
+	//==============================================================================
+    void	PowerDown() const;
+    
 private:
 	class CKernelModule *pModule_;
 };

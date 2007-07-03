@@ -14,11 +14,10 @@
 
 // std includes
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>		// for vprintfs
-#include <assert.h>
-#include <stdarg.h>		// for vprintfs()
+//#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdarg.h>		// for vprintfs
+//#include <assert.h>
 #include <sys/time.h>	// for gettimeofday()
 
 // system includes
@@ -150,25 +149,25 @@ namespace
 		if (!pModule || pModule->DebugOutIsEnabled(sig, lvl))
 		{
 			// Ready to output va_list arguments
+			CKernelMPI	kernel;
 	
 			// va_list argumentsif timestamping all output, add timestamp first
 			if (!(debugOutFormat & kDebugOutFormatLiteral) && pModule && pModule->TimestampIsEnabled())
 			{
-				CKernelMPI	kernel;
 				U32 mSec = kernel.GetElapsedTimeAsMSecs();
-				printf( kDebugOutTimestampFmt, mSec);
+				kernel.Printf( kDebugOutTimestampFmt, mSec);
 			}
 	
 			// va_list argumentsif not asking for literal output, show the module signature
 			if (!(debugOutFormat & kDebugOutFormatLiteral))
-				printf(kDebugOutSignatureFmt, sig);
+				kernel.Printf(kDebugOutSignatureFmt, sig);
 	
 			// va_list argumentsif this is a warning, output warning string
 			if (debugOutFormat & kDebugOutFormatWarn)
-				printf(kWarnTagStr);
+				kernel.Printf(kWarnTagStr);
 	
 			// va_list argumentsnow output the requested data.
-			vprintf(formatString, arguments);
+			kernel.VPrintf(formatString, arguments);
 		}
 	}
 }
@@ -270,15 +269,16 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 		// the debug level is kDbgLvlSilent, we don't print any text.
 		// In all other cases we do ouput the "!ASSERT: ..." text.
 		//
+		CKernelMPI	kernel;
 		Boolean throwOnAssert = pModule_ && pModule_->ThrowOnAssertIsEnabled();
 		if (!throwOnAssert || 
 			(pModule_ && (pModule_->GetDebugLevel() != kDbgLvlSilent)))
 		{
 			va_list arguments;
 			va_start( arguments, formatString );
-			printf( kAssertTagStr );
-			printf( kDebugOutSignatureFmt, sig_ );
-		    vprintf( formatString, arguments ); 
+			kernel.Printf( kAssertTagStr );
+			kernel.Printf( kDebugOutSignatureFmt, sig_ );
+			kernel.VPrintf( formatString, arguments ); 
 			va_end( arguments );
 		}
 		if (throwOnAssert)
@@ -286,7 +286,7 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 			UnitTestAssertException e;
 			throw e;
 		}
-		assert(false);
+		kernel.PowerDown();
 	}
 }
 			
@@ -355,7 +355,8 @@ Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level ) c
 		return pModule_->DebugOutIsEnabled( sig, level );
 
 	// if we got here, module not connected
-	assert(false);
+	CKernelMPI	kernel;
+	kernel.PowerDown();
 	
 	return false; // get rid of compiler warning
 }
@@ -387,7 +388,8 @@ tDebugLevel CDebugMPI::GetDebugLevel() const
 		return pModule_->GetDebugLevel();
 
 	// if we got here, module not connected
-	assert(false);
+	CKernelMPI	kernel;
+	kernel.PowerDown();
 	
 	return kDbgLvlVerbose; // get rid of compiler warning
 }
