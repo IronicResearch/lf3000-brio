@@ -120,7 +120,7 @@ public:
 	{
 	}
 	//------------------------------------------------------------------------
-	virtual tEventStatus Notify( const IEventMessage &msg )
+	virtual tEventStatus Notify( const IEventMessage& /*msg*/ )
 	{
 //		id_ = CKernelMPI::GetCurrentTask();
 //		sleep(kSlowDelay);

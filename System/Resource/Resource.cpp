@@ -45,6 +45,7 @@
 #include <SystemErrors.h>
 
 #include <ResourcePriv.h>
+#include <ResourceMPI.h>
 #include <EventListener.h>
 #include <EventMPI.h>
 
@@ -510,7 +511,7 @@ namespace
 #ifndef UNIT_TESTING
 		CDebugMPI	dbg(kGroupResource);									//*2
 		dbg.Assert(false, "Asyncronous/non-blocking Resource Manager calls are not yet supported");
-#else // UNIT_TESTING
+#endif // UNIT_TESTING
 
 		const tEventPriority	kPriorityTBD = 0;							//*3
 		CEventMPI	event;
@@ -518,7 +519,6 @@ namespace
 		const IEventListener *pListener = pOverrideListener
 										? pOverrideListener : mpiState.pDefaultListener;
 		event.PostEvent(msg, kPriorityTBD, pListener);
-#endif // UNIT_TESTING
 	}
 }
 
@@ -714,7 +714,7 @@ tErrType CResourceModule::CloseAllDevices(U32 id)
 
 //----------------------------------------------------------------------------
 void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl, 
-									tOptionFlags openOptions)
+									tOptionFlags /*openOptions*/)
 {
 	// 1) If the connected MPI instance has already opened the device,
 	//		return immedately with no error.
@@ -906,13 +906,13 @@ tVersion CResourceModule::GetPackageVersion(U32 id, tPackageHndl hndl) const
 	return ppd ? (ppd->version) : kUndefinedVersion;
 }
 //----------------------------------------------------------------------------
-U32 CResourceModule::GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const
+U32 CResourceModule::GetPackageSizeUnpacked(U32 /*id*/, tPackageHndl /*hndl*/) const
 {
 	dbg_.DebugOut(kDbgLvlCritical, "GetPackageSizeUnpacked not implemented");
 	return 0;
 }
 //----------------------------------------------------------------------------
-U32 CResourceModule::GetPackageSizePacked(U32 id, tPackageHndl hndl) const
+U32 CResourceModule::GetPackageSizePacked(U32 /*id*/, tPackageHndl /*hndl*/) const
 {
 	dbg_.DebugOut(kDbgLvlCritical, "GetPackageSizePacked not implemented");
 	return 0;
@@ -921,7 +921,7 @@ U32 CResourceModule::GetPackageSizePacked(U32 id, tPackageHndl hndl) const
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl, 
-									tOptionFlags openOptions,
+									tOptionFlags /*openOptions*/,
 									const IEventListener *pListener)  
 {
 	// 1) If the connected MPI instance has already opened the package,
@@ -974,6 +974,7 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 		std::for_each(temp.begin(), temp.end(), AssignResourceHndl);
 		ppd->resources.swap(temp);
 	}
+	PostEvent(kResourcePackageOpenedEvent, 0, mpiState, pListener);
 	return kNoErr;
 }
 
@@ -1012,7 +1013,7 @@ tErrType CResourceModule::ClosePackage(U32 id, tPackageHndl hndl)
 	// Loading & unloading packages
 //----------------------------------------------------------------------------
 tErrType CResourceModule::LoadPackage(U32 id, tPackageHndl hndl, 
-									tOptionFlags loadOptions,
+									tOptionFlags /*loadOptions*/,
 									const IEventListener *pListener)  
 {
 	dbg_.DebugOut(kDbgLvlCritical, "LoadPackage not implemented");
@@ -1021,7 +1022,7 @@ tErrType CResourceModule::LoadPackage(U32 id, tPackageHndl hndl,
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::UnloadPackage(U32 id, tPackageHndl hndl, 
-									tOptionFlags unloadOptions,
+									tOptionFlags /*unloadOptions*/,
 									const IEventListener *pListener)  
 {
 	dbg_.DebugOut(kDbgLvlCritical, "UnloadPackage not implemented");
@@ -1349,7 +1350,7 @@ tErrType CResourceModule::LoadRsrc(U32 id, tRsrcHndl hndl,
 
 //----------------------------------------------------------------------------
 tErrType CResourceModule::UnloadRsrc(U32 id, tRsrcHndl hndl, 
-									tOptionFlags unloadOptions,
+									tOptionFlags /*unloadOptions*/,
 									const IEventListener *pListener)
 {
 	// 1) Free memory
@@ -1402,7 +1403,7 @@ tErrType CResourceModule::SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes,
 //----------------------------------------------------------------------------
 tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
-									tOptionFlags writeOptions,
+									tOptionFlags /*writeOptions*/,
 									const IEventListener *pListener) const
 {
 	// 1) Check parameters for early returns
