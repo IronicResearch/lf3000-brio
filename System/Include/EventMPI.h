@@ -47,6 +47,10 @@ public:
 						const IEventListener *pResponseListener = NULL) const;
 private:
 	class CEventModule*	pModule_;
+
+	// Disable copy semantics
+	CEventMPI(const CEventMPI&);
+	CEventMPI& operator=(const CEventMPI&);
 };
 
 

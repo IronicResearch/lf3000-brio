@@ -166,6 +166,10 @@ public:
 protected:
 	class CResourceModule*	pModule_;
 	U32						id_;
+
+	// Disable copy semantics
+	CResourceMPI(const CResourceMPI&);
+	CResourceMPI& operator=(const CResourceMPI&);
 };
 
 

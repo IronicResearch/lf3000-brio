@@ -307,6 +307,10 @@ namespace
 		
 		// unresolved issues:
 		//   what to do if two modules with same name and version are found
+	private:
+		// Disable copy semantics
+		CModuleMgrImpl(const CModuleMgrImpl&);
+		CModuleMgrImpl& operator=(const CModuleMgrImpl&);
 	};
 
 	CModuleMgrImpl	g_impl;

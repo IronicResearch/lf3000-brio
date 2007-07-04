@@ -46,6 +46,10 @@ private:
 	class CEventListenerImpl *pimpl_;
 	friend class CEventListenerImpl;
 	friend class CEventManagerImpl;
+	
+	// Disable copy semantics
+	IEventListener(const IEventListener&);
+	IEventListener& operator=(const IEventListener&);
 };
 
 

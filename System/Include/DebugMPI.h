@@ -101,6 +101,10 @@ public:
 private:
 	class CDebugModule* pModule_;
 	tDebugSignature		sig_;
+
+	// Disable copy semantics
+	CDebugMPI(const CDebugMPI&);
+	CDebugMPI& operator=(const CDebugMPI&);
 };
 		   
 LF_END_BRIO_NAMESPACE()	

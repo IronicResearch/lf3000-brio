@@ -40,6 +40,10 @@ private:
 	tEventType*				pDisabledEventList_;
 	const U16				numEvents_;
 	U16						numDisabledEvents_;
+
+	// Disable copy semantics
+	CEventListenerImpl(const CEventListenerImpl&);
+	CEventListenerImpl& operator=(const CEventListenerImpl&);
 };
 
 

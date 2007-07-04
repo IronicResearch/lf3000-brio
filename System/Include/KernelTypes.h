@@ -363,6 +363,8 @@ public:
 class CMessage 
 {
 public:
+	virtual	~CMessage()	{}
+	
 	U16		GetMessageSize() const { return messageSize; }
 	U8		GetMessagePriority() const { return messagePriority; }
 //	virtual ~CMessage(){};
