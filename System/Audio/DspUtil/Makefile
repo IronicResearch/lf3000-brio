@@ -1,9 +1,9 @@
 # source files.
-SRC =  	Dsputil.cpp Dsputil2.cpp
+SRC =  	Dsputil.cpp Dsputil2.cpp fir.cpp src.cpp util.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
-OUT = libdsputil.a
+OUT = LibX86/libdsputil.a
 
 # include directories
 INCLUDES = -I. -I../include/ -I/usr/local/include -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include
@@ -37,7 +37,9 @@ dep:
 	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
 
 clean:
-	rm -f $(OBJ) $(OUT) Makefile.bak 
+	rm -f $(OBJ) Makefile.bak 
+#	rm -f $(OBJ) $(OUT) Makefile.bak 
+
 # DO NOT DELETE
 
 Dsputil.o: /usr/include/stdio.h /usr/include/features.h
@@ -77,3 +79,55 @@ Dsputil2.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
 Dsputil2.o: /usr/include/math.h /usr/include/bits/huge_val.h
 Dsputil2.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 Dsputil2.o: /usr/include/string.h ./Dsputil.h ./Util.h ./Dsputil2.h
+fir.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
+fir.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
+fir.o: /usr/include/gnu/stubs-32.h
+fir.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
+fir.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+fir.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h
+fir.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+fir.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+fir.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+fir.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+fir.o: /usr/include/endian.h /usr/include/bits/endian.h
+fir.o: /usr/include/sys/select.h /usr/include/bits/select.h
+fir.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+fir.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
+fir.o: /usr/include/alloca.h /usr/include/math.h /usr/include/bits/huge_val.h
+fir.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h util.h
+fir.o: /usr/include/sys/time.h fir.h
+src.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
+src.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
+src.o: /usr/include/gnu/stubs-32.h
+src.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
+src.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+src.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h
+src.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+src.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+src.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+src.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+src.o: /usr/include/endian.h /usr/include/bits/endian.h
+src.o: /usr/include/sys/select.h /usr/include/bits/select.h
+src.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+src.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
+src.o: /usr/include/alloca.h /usr/include/math.h /usr/include/bits/huge_val.h
+src.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h ./Dsputil.h
+src.o: ./Util.h src.h util.h /usr/include/sys/time.h
+util.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
+util.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
+util.o: /usr/include/gnu/stubs-32.h
+util.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
+util.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
+util.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h
+util.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+util.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+util.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+util.o: /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h
+util.o: /usr/include/endian.h /usr/include/bits/endian.h
+util.o: /usr/include/sys/select.h /usr/include/bits/select.h
+util.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
+util.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
+util.o: /usr/include/alloca.h /usr/include/math.h
+util.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
+util.o: /usr/include/bits/mathcalls.h /usr/include/string.h util.h
+util.o: /usr/include/sys/time.h
