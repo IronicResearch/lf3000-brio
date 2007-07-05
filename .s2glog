@@ -4805,3 +4805,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/5/07 3:36 PM
 2,376 ms. (Cumulative: 779,443 ms)
 
 ----------------
+Revision 789 from svn://localhost/TRUNK/:
+
+Fix Audio DSP Utils previous broken checkin
+
+By DGibbs (DGibbs@leapfrog.com) on 7/5/07 3:37 PM
+0 changed, 1 added, 0 deleted.
+2,189 ms. (Cumulative: 781,710 ms)
+
+----------------
