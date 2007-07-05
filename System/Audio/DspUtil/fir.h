@@ -52,5 +52,44 @@ void PrepareFIR(FIR *d);
 void RunFIR_Shorts(short *in, short *out, long length, FIR *d);
 void RunFIRFixedPoint_Shorts(short *in, short *out, long length, FIR *d);
 
+#define kFIR_HalfBandV1_Length 15
+extern float firHalfBand_V1_GainCompensationDB;
+extern float firHalfBandHz_V1[kFIR_HalfBandV1_Length];
+
+#define kFIR_HalfBand31_Length 31
+extern float firHalfBand_31_GainCompensationDB;
+extern float firHalfBand31Hz[kFIR_HalfBand31_Length];
+
+#define kFIR_BandPassHz_Length	15
+extern float firBandPass_GainCompensationDB;
+extern float firBandPassHz[kFIR_BandPassHz_Length];
+
+#define kFIR_BandStopHz_Length	17
+extern float firBandStop_GainCompensationDB;
+extern float firBandStopHz[kFIR_BandStopHz_Length];
+
+#define kFIR_Notch_Hz_Length 15
+extern float fir_Notch_GainCompensationDB;
+extern float fir_Notch_Hz[kFIR_Notch_Hz_Length];
+
+#define kFIR_HighPassHz_Length	15
+extern float firHighPass_GainCompensationDB;
+extern float firHighPassHz[kFIR_HighPassHz_Length];
+
+#define kFIR_LowPassHz_Length	15
+extern float firLowPass_GainCompensationDB;
+extern float firLowPassHz[kFIR_LowPassHz_Length];
+
+#define kFIR_LowPass_HalfBandHz_Length	15
+extern float firLowPass_HalfBand_GainCompensationDB;
+extern float firLowPass_HalfBandHz[kFIR_LowPass_HalfBandHz_Length];
+
+#define kFIR_LowPass58dB_HalfBandHz_Length	31
+extern float firLowPass58dB_HalfBand_GainCompensationDB;
+extern float firLowPass58dB_HalfBandHz[kFIR_LowPass58dB_HalfBandHz_Length];
+
+#define kFIR_ThirdBandV1_Hz_Length 15
+extern float fir_ThirdBandV1_GainCompensationDB ;
+extern float fir_ThirdBandV1_Hz[kFIR_ThirdBandV1_Hz_Length];
 
 #endif  //	end __FIR_H__
