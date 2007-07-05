@@ -301,7 +301,7 @@ short Binary16ToShort(char *s);
 #define kSqrt2		 1.414213562
 #define kSqrt2d2	(kSqrt2/2.0)
 #define kSqrt2f		 ((float) kSqrt2)
-#define kSqrt2d2f	 ((float) kSqrt2d2)
+#define kSqrt2d2kTwoTof	 ((float) kSqrt2d2)
 
 #define Log10of2	 0.3010299956639812
 #define Log10of2f	 0.3010299956639812f
@@ -379,7 +379,12 @@ short Binary16ToShort(char *s);
 
 #define	kTwoTo15i		     32768
 #define	kTwoTo16i		     65536
-#define	kTwoTo22i		   4194304
+#define	kTwoTo17i		   (2<<17)
+#define	kTwoTo18i		   (2<<18)
+#define	kTwoTo19i		   (2<<19)
+#define	kTwoTo20i		   (2<<20)
+#define	kTwoTo21i		   (2<<21)
+#define	kTwoTo22i		   (2<<22)
 #define	kTwoTo23i		   8388608
 #define	kTwoTo24i		  16777216
 #define kTwoTo29i		 536870912
