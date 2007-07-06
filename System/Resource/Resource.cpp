@@ -447,7 +447,7 @@ namespace
 		if (it != gMPIMap.end())
 			return it->second;
 		CDebugMPI	dbg(kGroupResource);
-		dbg.Assert(false, "Resource configuration failure, unregistered MPI id!");
+		dbg.Assert(false, "CResourceModuleResource::RetrieveMPIState: configuration failure, unregistered MPI id!");
 		return it->second;	// dummy return to avoid compiler warning
 	}
 
@@ -461,7 +461,7 @@ namespace
 		if (tmp < 1 || tmp > kDeviceCount)
 		{
 			CDebugMPI	dbg(kGroupResource);
-			dbg.Assert(false, "Programming Error: Invalid Device handle: %d", tmp);
+			dbg.Assert(false, "CResourceModule::Handle2Index: Programming Error: Invalid Device handle: %d", tmp);
 		}		
 		return tmp - 1;
 	}
@@ -510,7 +510,7 @@ namespace
 			
 #ifndef UNIT_TESTING
 		CDebugMPI	dbg(kGroupResource);									//*2
-		dbg.Assert(false, "Asyncronous/non-blocking Resource Manager calls are not yet supported");
+		dbg.Assert(false, "CResourceModule::PostEvent: Asyncronous/non-blocking Resource Manager calls are not yet supported");
 #endif // UNIT_TESTING
 
 		const tEventPriority	kPriorityTBD = 0;							//*3
@@ -743,7 +743,7 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 		if (fp == NULL)
 		{
 			// FIXME/tp: Assert on Base device if not found?
-			dbg_.Warn("OpenDeviceImpl: '%s' file not found on '%s'", 
+			dbg_.Warn("CResourceModule::OpenDeviceImpl: '%s' file not found on '%s'", 
 						kEnumPkgsFile, device.mountPath.c_str());
 			return;
 		}
@@ -835,7 +835,7 @@ tPackageHndl CResourceModule::FindNextPackage(U32 id) const
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	dbg_.Assert(mpiState.pPkgIter.get() != NULL, 
-		"Programming Error: FindNextPackage() called with before initial FindFirstPackage()");	// FIXME/tp: replace with non-assert in release mode
+		"CResourceModule::FindNextPackage: Programming Error: FindNextPackage() called with before initial FindFirstPackage()");	// FIXME/tp: replace with non-assert in release mode
 	PackageDescriptor* ppd;
 	while (mpiState.pPkgIter->GetNext(ppd))
 	{
@@ -879,7 +879,7 @@ PackageDescriptor* CResourceModule::FindPackagePriv(U32 id, tPackageHndl hndl) c
 		}
 	}
 	dbg_.Assert(false, 
-			"Programming Error: FindPackagePriv() called with invalid handle 0x%x", hndl);
+			"CResourceModule::FindPackagePriv: Programming Error: FindPackagePriv() called with invalid handle 0x%x", hndl);
 	// FIXME/tp: replace with non-assert in release mode
 	return NULL;
 }
@@ -908,13 +908,13 @@ tVersion CResourceModule::GetPackageVersion(U32 id, tPackageHndl hndl) const
 //----------------------------------------------------------------------------
 U32 CResourceModule::GetPackageSizeUnpacked(U32 /*id*/, tPackageHndl /*hndl*/) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "GetPackageSizeUnpacked not implemented");
+	dbg_.DebugOut(kDbgLvlCritical, "ResourceModule::GetPackageSizeUnpacked not implemented");
 	return 0;
 }
 //----------------------------------------------------------------------------
 U32 CResourceModule::GetPackageSizePacked(U32 /*id*/, tPackageHndl /*hndl*/) const
 {
-	dbg_.DebugOut(kDbgLvlCritical, "GetPackageSizePacked not implemented");
+	dbg_.DebugOut(kDbgLvlCritical, "ResourceModule::GetPackageSizePacked not implemented");
 	return 0;
 }
 
@@ -950,7 +950,7 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 	{
 		ppd->isOpen = true;
 		FILE* fp = fopen(ppd->path.c_str(), "r");						//*4a
-		dbg_.Assert(fp != NULL, "OpenDeviceImpl: file not found '%s'", 
+		dbg_.Assert(fp != NULL, "CResourceModule::OpenPackage: file not found '%s'", 
 					ppd->path.c_str());
 		if (fp == NULL)	return kResourceInvalidErr;
 
@@ -1016,7 +1016,7 @@ tErrType CResourceModule::LoadPackage(U32 id, tPackageHndl hndl,
 									tOptionFlags /*loadOptions*/,
 									const IEventListener *pListener)  
 {
-	dbg_.DebugOut(kDbgLvlCritical, "LoadPackage not implemented");
+	dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::LoadPackage not implemented");
 	return kNoErr;
 }
 
@@ -1025,7 +1025,7 @@ tErrType CResourceModule::UnloadPackage(U32 id, tPackageHndl hndl,
 									tOptionFlags /*unloadOptions*/,
 									const IEventListener *pListener)  
 {
-	dbg_.DebugOut(kDbgLvlCritical, "UnloadPackage not implemented");
+	dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::UnloadPackage not implemented");
 	return kNoErr;
 }
 
@@ -1091,7 +1091,7 @@ tRsrcHndl CResourceModule::FindNextRsrc(U32 id) const
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	dbg_.Assert(mpiState.pRsrcIter.get() != NULL, 
-		"Programming Error: FindNextRsrc() called with before initial FindFirstRsrc()");	// FIXME/tp: replace with non-assert in release mode
+		"CResourceModule::FindNextRsrc: Programming Error: FindNextRsrc() called with before initial FindFirstRsrc()");	// FIXME/tp: replace with non-assert in release mode
 	ResourceDescriptor* prd;
 	while (mpiState.pRsrcIter->GetNext(prd))
 	{
@@ -1135,7 +1135,7 @@ ResourceDescriptor* CResourceModule::FindRsrcPriv(U32 id, tRsrcHndl hndl) const
 		}
 	}
 	dbg_.Assert(false, 
-			"Programming Error: FindRsrcPriv() called with invalid handle 0x%x", hndl);
+			"CResourceModule::FindRsrcPriv: Programming Error: FindRsrcPriv() called with invalid handle 0x%x", hndl);
 	// FIXME/tp: replace with non-assert in release mode
 	return NULL;
 }
@@ -1187,7 +1187,7 @@ tPtr CResourceModule::GetPtr(U32 id, tRsrcHndl hndl) const
 	
 	if (prd->ptr == NULL)
 	{
-		dbg_.Assert(false, "GetPtr() called when resource not yet loaded '%s'", prd->uri.c_str());
+		dbg_.Assert(false, "CResourceModule::GetPtr: GetPtr() called when resource not yet loaded '%s'", prd->uri.c_str());
 		return 0;
 	}
 	return prd->ptr;
@@ -1209,7 +1209,7 @@ tErrType CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*1
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "OpenRsrc() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::OpenRsrc: OpenRsrc() called with invalid resource handle (0x%x)", hndl);
 		return kResourceInvalidErr;
 	}
 	
@@ -1230,7 +1230,7 @@ tErrType CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 	prd->fd = open(fullPath.c_str(), flags);
 	if (prd->fd == -1)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "OpenRsrc() failed for '%s' (%s)",
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::OpenRsrc: OpenRsrc() failed for '%s' (%s)",
 						prd->uri.c_str(), fullPath.c_str());
 		return kResourceInvalidErr;
 	}
@@ -1252,7 +1252,7 @@ tErrType CResourceModule::CloseRsrc(U32 id, tRsrcHndl hndl)
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "OpenRsrc() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::CloseRsrc: called with invalid resource handle (0x%x)", hndl);
 		return kResourceInvalidErr;
 	}
 	
@@ -1288,13 +1288,13 @@ tErrType CResourceModule::ReadRsrc(U32 id, tRsrcHndl hndl,
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*2
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "ReadRsrc() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::ReadRsrc: called with invalid resource handle (0x%x)", hndl);
 		return kResourceInvalidErr;
 	}
 
 	if (prd->fd == -1)
 	{
-		dbg_.Assert(false, "ReadRsrc() called with non-open resource '%s'", prd->uri.c_str());
+		dbg_.Assert(false, "CResourceModule::ReadRsrc: called with non-open resource '%s'", prd->uri.c_str());
 		return kResourceNotOpenErr;
 	}
 		
@@ -1331,7 +1331,7 @@ tErrType CResourceModule::LoadRsrc(U32 id, tRsrcHndl hndl,
 	if (!prd->ptr)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, 
-			"LoadRsrc() memory allocation failure '%s'", prd->uri.c_str());
+			"CResourceModule::LoadRsrc: memory allocation failure '%s'", prd->uri.c_str());
 		return kMemoryAllocationErr;
 	}
 	
@@ -1391,7 +1391,7 @@ tErrType CResourceModule::SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes,
 
 	if (prd->fd == -1)
 	{
-		dbg_.Assert(false, "SeekRsrc() called with non-open resource '%s'", prd->uri.c_str());
+		dbg_.Assert(false, "CResourceModule::SeekRsrc: called with non-open resource '%s'", prd->uri.c_str());
 		return kResourceNotOpenErr;
 	}
 		
@@ -1426,7 +1426,7 @@ tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer,
 
 	if (prd->fd == -1)
 	{
-		dbg_.Assert(false, "WriteRsrc() called with non-open resource '%s'", prd->uri.c_str());
+		dbg_.Assert(false, "CResourceModule::WriteRsrc: called with non-open resource '%s'", prd->uri.c_str());
 		return kResourceNotOpenErr;
 	}
 		
