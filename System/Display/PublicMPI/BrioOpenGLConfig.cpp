@@ -37,6 +37,7 @@ namespace
 {
 	//--------------------------------------------------------------------------
 	tOpenGLContext		ctx;
+	CDisplayMPI*		dispmgr;
 	
 	//--------------------------------------------------------------------------
 	void AbortIfEGLError(char* pszLocation)
@@ -94,8 +95,7 @@ namespace
 		PRINTF("GLESOAL_SwapBufferCallback\n");
 
 		// 3D layer needs to sync to OGL calls
-		CDisplayMPI disp;
-		disp.UpdateOpenGL();
+		dispmgr->UpdateOpenGL();
 	}
 
 	//--------------------------------------------------------------------------
@@ -118,6 +118,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
 	CDebugMPI				dbg(kGroupDisplay);
+	dispmgr = &disp_;
 
 #ifdef EMULATION
 	/*
