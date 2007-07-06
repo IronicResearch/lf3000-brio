@@ -14,20 +14,19 @@ Building
 3) In the Eclipse Syncronize Perspective, update to the latest source
 4) In the Eclipse C/C++ Perspective, Right click on the Brio2 root and select "Properties".
 	Click on the "C/C++ Make Properties" tab
-5) Make sure the make command line is "scons -k emulation=t publish=t"
+5) Make sure the make command line is "scons -k type=publish"
 	Make sure the Build Behavior fields are set as: Build (inc.) ""  and  Clean "-c"
 6) Clean the Brio2 project
 7) Build the Brio2 project
-8) Build it again to build and run the unit tests
-9) Verify that all unit tests pass and work with team to fix any failures
-10) The end result is a fully populated "Brio2/Publish" folder
-11) Verify the build by creating a new C/C++ Standard Make project
-    a) Change its C/C++ Make Properties to "scons -k emulation=t"
+8) Verify that all unit tests pass and work with team to fix any failures
+9) The end result is a fully populated "Brio2/Publish_SVN#" folder
+10) Verify the build by creating a new C/C++ Standard Make project
+    a) Change its C/C++ Make Properties to "scons -k type=emulation"
     b) Copy the contents of the /Brio2/Lightning/Samples/BrioCube folder into your new project folder
     c) Build the new project
     d) Run the new project.  Try pressing the arrow keys, the keypad + and -, Ins and Del keys and
        verify that audio, resource loading, and button events are working
-12) Repeat step 11 using the contents of the /Brio2/Lightning/Samples/Simple project
+11) Repeat step 10 using the contents of the other sample projects
 
 
 ===============
