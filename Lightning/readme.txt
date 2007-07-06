@@ -9,7 +9,7 @@ Installation
 Unarchive this file to create a distribution folder.
 Use any target folder to which you have user access on your system.
 
-The installation tree will look like this:
+The installation tree will look something like this:
 
 +-readme.txt         (this file)
 |
@@ -134,7 +134,7 @@ From your Eclipse Workspace:
    a) Right click on the top level project and select the "Properties" menu
    b) Select the "C/C++ Make Project" item
    c) On the "Make Builder" tab, uncheck "Use default"
-   d) In "Build command", enter "scons -k emulation=t" if you are running the
+   d) In "Build command", enter "scons -k type=emulation" if you are running the
       emulation target.  If you are running on the actual hardware, enter
 	  "scons runtests=f deploy_dir=</path/to/your/nfsroot/>".  Your nfsroot is
 	  wherever you chose to untar the nfsroot, probably /home/lfu/nfsroot/.
