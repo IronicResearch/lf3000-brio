@@ -2,6 +2,36 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
+v0.1.11  (Build 807 released July 06, 2007) 
+===========================================
+Joint embedded and emulation release
+
+Software components for target hardware:
+
+* No updates
+
+Enhancements:
+-------------
+* Build: Turned on '-Werror for all targets, which treats warnings as errors.
+  You can no longer ignore warnings!
+* Build: Turned on '-pedantic-errors' for all targets, which provides a higher
+  level of static code analysis.
+* Build: Turned on '-Wextra' for emulation targets, which provides a higher
+  level of static code analysis.
+* Build: Module files are now copied into a new "/Modules" folder on the embedded
+  target.
+* Emulation: Turned off button key repeats (was an emulation only problem)
+* Emulation: Theora shared object files now distributed in Libs/ThirdParty
+* Resource packing: Fixed an off-by-one issue in generation of packed file names 
+  (keeps all filenames ISO-9660 compliant).
+* Resource packing: The contents of each file in each Build/rsrc source file are 
+  compared against nfsroot/Cart1/rsrc destination files, and if they are different 
+  the /Cart1/rsrc file will be overwritten.  (Fixes the problem where switching
+  between different Eclipse projects didn't update the packed resource folder
+  for embedded builds.)
+
+
+===========================================
 v0.1.10  (Build 713 released June 28, 2007) 
 ===========================================
 Release for embedded target -- ME2530 devkit only.
@@ -19,6 +49,7 @@ Enhancements:
 * Added anti-aliasing option to Font rendering, on by default.
 * Segmentation faults resolved on exit from all Brio apps.
 * Resource packing tool correctly updates Brio SDK examples on target.
+
 
 ===========================================
 v0.1.9  (Build 759 released July 2, 2007) 
@@ -39,6 +70,7 @@ Known Issues:
 -------------
 * No audio driver supported on ME2530 devkits.
 * LCD module on LF2530 boards not setup for correct contrast. 
+
 
 ===========================================
 v0.1.8  (Build 614 released June 19, 2007) 
