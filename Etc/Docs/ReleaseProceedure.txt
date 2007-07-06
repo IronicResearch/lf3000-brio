@@ -46,8 +46,15 @@ For now, do this:
 1) Rename the "Publish" folder to be "LightningSDK_<build#>, where build # is the current
    SVN repository #.
 2) Zip up the renamed folder
-3) Email it to the other team members for a quick smoke test
-4) After smoke testing, email it to the following people: 
+3) Create a folder on S:\Lightning called "LightningSDK_<build#>
+4) Copy the zipped SDK into this folder along with
+5) Use the linux-dist/scripts/brio_install.sh script to install brio into nfsroot.
+6) tar up the nfsroot folder and name it nfsroot-svn>build#>.tar.gz
+7) Copy the nfsroot archive into the Lightning SDK folder on the S: drive.
+8) Zip up the zImage for the current linux-dist and name it zImage-svn<build#>.tar.gz
+9) Copy the zImage archive into the Lightning SDK folder on the S: drive.
+10) Email a notice of the release to the other team members for a quick smoke test
+11) After smoke testing, email notice to the following people: 
 	Lovica Callisti; Chris Fernandes; Dennis O'Brien; Celso Aguiar; Emil Gilliam
     
 
