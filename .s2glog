@@ -4865,3 +4865,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/6/07 10:32 AM
 2,173 ms. (Cumulative: 792,871 ms)
 
 ----------------
+Revision 801 from svn://localhost/TRUNK/:
+
+Fix Button Assert()s
+
+By DGibbs (DGibbs@leapfrog.com) on 7/6/07 10:35 AM
+2 changed, 0 added, 0 deleted.
+2,066 ms. (Cumulative: 794,999 ms)
+
+----------------

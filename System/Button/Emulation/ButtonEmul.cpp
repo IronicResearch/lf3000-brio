@@ -136,7 +136,7 @@ void CButtonModule::InitModule()
 	{
 		gXDisplay = XOpenDisplay(kDefaultDisplay);
 		if (gXDisplay == NULL)
-			dbg_.DebugOut(kDbgLvlCritical, "Emulation XOpenDisplay() failed, buttons disabled!\n");
+			dbg_.DebugOut(kDbgLvlCritical, "CButtonModule::InitModule(): Emulation XOpenDisplay() failed, buttons disabled!\n");
 		tErrType	status = kModuleLoadFail;
 		CKernelMPI	kernel;
 	
@@ -149,7 +149,7 @@ void CButtonModule::InitModule()
 			status = kernel.CreateTask(handle, properties);
 		}
 		dbg_.Assert( status == kNoErr, 
-					"Button Emulation InitModule: background task creation failed" );
+					"CButtonModule::InitModule(): Button Emulation InitModule: background task creation failed" );
 	}
 }
 
