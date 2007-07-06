@@ -12,6 +12,7 @@ Software components for target hardware:
 
 Enhancements:
 -------------
+* OpenGL double-buffering fix to set dirty bit on swap.
 * Build: Turned on '-Werror for all targets, which treats warnings as errors.
   You can no longer ignore warnings!
 * Build: Turned on '-pedantic-errors' for all targets, which provides a higher
@@ -29,6 +30,8 @@ Enhancements:
   the /Cart1/rsrc file will be overwritten.  (Fixes the problem where switching
   between different Eclipse projects didn't update the packed resource folder
   for embedded builds.)
+* Assert()s updated to provide more information about the location of the failure.
+
 
 
 ===========================================
