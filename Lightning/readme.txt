@@ -1,18 +1,26 @@
-=============
+======================================================
 Lightning SDK
-=============
+======================================================
 
-============
+Lightning SDKs typically consist of three parts:
+  LighningSDK_xxxx.tar.gz - this contains the Brio components necesasry for development
+  nfsroot-svnxxxx.tar.gz  - this contains the linux nfsroot folder necessary for booting the target
+  zImage-svnxxxx.tar.gz   - the linux kernel.  If you aren't booting using tftp, you will need to
+                            flash this file in the NAND of the target board.
+                            
+These three pieces MUST be used together!  The <xxxx> numbers for a release will generally be
+the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
+release together or you will almost certainly have problems.
+
+======================================================
 Installation
-============
+======================================================
 
 Unarchive this file to create a distribution folder.
 Use any target folder to which you have user access on your system.
 
-The installation tree will look something like this:
+The installation tree will look more or less like this:
 
-+-readme.txt         (this file)
-|
 +-ReleaseNotes.txt
 |
 +-Include  (Brio MPI headers)
@@ -61,10 +69,19 @@ The installation tree will look something like this:
    |
    +-*.py         (SCons modules for C++ build system)
 
+To point the build system to the SDK, set the environment variable LEAPFROG_PLUGIN_ROOT to point 
+to the location of your SDK folder.  At the command line you can type:
 
-==================
-Target Preparation
-==================
+	export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
+
+You may also want to add this to your .bashrc file in the lfu home directory so it will always 
+be setup:
+	
+	export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_816
+
+======================================================
+Target Preparation : installing nfsroot
+======================================================
 
 If you are running on actual target hardware, you should probably have received
 an updated root file system with this code drop.  It should have been called
@@ -75,6 +92,13 @@ rootfs!!  The reason is that it must create device nodes.
 
 	sudo tar -xzvf nfsroot-svnxxx.tar.gz
 	mv nfsroot-svnxxx nfsroot
+
+======================================================
+Target Preparation -- setting up tftp
+======================================================
+
+Obviouslly, you only need to do these steps if you system hasn't already 
+been configured.
 
 Your development system image will also need to have NFS server installed
 and running, and one network adapter configured at the fixed IP address
@@ -125,9 +149,9 @@ script to use the explicit full path to arm-linux-g++.
 See ReleaseNotes.txt for important information about which versions of other
 software components are required on the target.
 
-===============
-Running samples
-===============
+======================================================
+Running samples  -- Emulation
+======================================================
 From your Eclipse Workspace:
 1) Create a new C++ standard make project. 
 2) Change its C/C++ Make project properties for SCons
@@ -138,6 +162,8 @@ From your Eclipse Workspace:
       emulation target.  If you are running on the actual hardware, enter
 	  "scons runtests=f deploy_dir=</path/to/your/nfsroot/>".  Your nfsroot is
 	  wherever you chose to untar the nfsroot, probably /home/lfu/nfsroot/.
+	  YThe environment variable ROOTFS_PATH will be used instead if it is defined:
+	  export ROOTFS_PATH=/home/lfu/nfsroot
    e) Clear out the "Build" field
    f) Put '-c' in the "Clean" field
    g) Click "OK" to dismiss the dialog
@@ -145,13 +171,17 @@ From your Eclipse Workspace:
    (you may need to use the File Browser to do this)
 4) In Eclipse, right click on the top level project and select the "Refresh" menu
 5) In Eclipse, open the "SConstruct" file.  On line 34, change "cdevkit_dir = '<install_dir>'"
-   to the root location where you installed this distribution.  Alternatively,
-   you can set the environment variable BRIO_DEVKIT_DIR to point to the root location.
+   to the root location where you installed this distribution. The environment variable
+   LEAPFROG_PLUGIN_ROOT will be used instead if it is defined.
 6) From the Eclipse "Project" menu, select "Build Project"
 7) If you are running the emulation target, open the newly created
    "Build/LightingGCC_emulation" folder.  You should see "BrioCube" there.
    Right click on "BrioCube", and select "Run As | Run Local C/C++
    Application".  Click through any dialogs you need to.  That's it!
-8) If you are running on the actual hardware, you should just be able to run
+
+======================================================
+Running samples  -- Target
+======================================================
+1) If you are running on the actual hardware, you should just be able to run
    the command "BrioCube" in the serial console.
 
