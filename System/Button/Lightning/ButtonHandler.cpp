@@ -61,7 +61,7 @@ void *LighteningButtonTask(void*)
 		kernel.TaskSleep(1);
 
 		int size = read(button_fd, &current_be, sizeof(struct button_event));
-		dbg.Assert( size >= 0, "button read failed" );
+		dbg.Assert( size >= 0, "CButtonModule::LighteningButtonTask: button read failed" );
 		
 		data.buttonState = current_be.button_state;
 		data.buttonTransition = current_be.button_trans;
@@ -86,7 +86,7 @@ void CButtonModule::InitModule()
 
 	// Need valid file descriptor open before starting task thread 
 	button_fd = open( "/dev/buttons", O_RDWR);
-	dbg_.Assert(button_fd != -1, "Lightening Button: cannot open /dev/buttons");
+	dbg_.Assert(button_fd != -1, "CButtonModule::InitModule: cannot open /dev/buttons");
 
 	if( kernel.IsValid() )
 	{
@@ -96,7 +96,7 @@ void CButtonModule::InitModule()
 		status = kernel.CreateTask(handleButtonTask, properties);
 	}
 	dbg_.Assert( status == kNoErr, 
-				"Lightening Button InitModule: background task creation failed" );
+				"CButtonModule::InitModule: background task creation failed" );
 }
 
 //----------------------------------------------------------------------------
@@ -104,7 +104,7 @@ void CButtonModule::DeinitModule()
 {
 	CKernelMPI	kernel;
 
-	dbg_.DebugOut(kDbgLvlVerbose, "Button Deinit\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "ButtonModule::DeinitModule: Button Deinit\n");
 
 	// Terminate button handler thread, and wait before closing driver
 	kernel.CancelTask(handleButtonTask);
