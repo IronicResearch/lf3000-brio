@@ -4843,3 +4843,15 @@ By DGibbs (DGibbs@leapfrog.com) on 7/6/07 9:20 AM
 2,032 ms. (Cumulative: 788,370 ms)
 
 ----------------
+Revision 795 from svn://localhost/TRUNK/:
+Revision 796 from svn://localhost/TRUNK/:
+Revision 797 from svn://localhost/TRUNK/:
+Revision 798 from svn://localhost/TRUNK/:
+
+Optimization to use OpenGL class instance of display manager in C callback.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/6/07 10:03 AM
+1 changed, 0 added, 0 deleted.
+2,172 ms. (Cumulative: 790,620 ms)
+
+----------------
