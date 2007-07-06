@@ -212,7 +212,7 @@ CAudioModule::CAudioModule( )
 
 	// Create the Audio Task...
 	err = InitAudioTask();
-	pDebugMPI_->Assert((kNoErr == err), "Audio task create failed.\n");
+	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Audio task create failed.\n");
 
 	// Wait for the AudioMgr task to be ready
 	while (!gAudioTaskRunning)
@@ -221,7 +221,7 @@ CAudioModule::CAudioModule( )
 	}
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		(const char *)"AudioModule thinks the audio task is running now...\n");	
+		(const char *)"CAudioModule::ctor: AudioModule thinks the audio task is running now...\n");	
 	
 	// First, create a msg queue that allows the Audio Task to RECEIVE msgs from us.
 	tMessageQueuePropertiesPosix msgQueueProperties = 
@@ -238,22 +238,22 @@ CAudioModule::CAudioModule( )
 	};
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		(const char *)"Audio Module creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
+		(const char *)"CAudioModule::ctor: creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
 	
 	err = pKernelMPI_->OpenMessageQueue( hSendMsgQueue_, msgQueueProperties, NULL );
 
-    pDebugMPI_->Assert((kNoErr == err), "Trying to create incoming audio task msg queue. err = %d \n", err );
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor:Trying to create incoming audio task msg queue. err = %d \n", err );
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
 	msgQueueProperties.mq_msgsize = sizeof(CAudioReturnMessage);
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		(const char *)"Audio Module creating task outgoing Q. size = %d\n", msgQueueProperties.mq_msgsize );	
+		(const char *)"CAudioModule::ctor: creating task outgoing Q. size = %d\n", msgQueueProperties.mq_msgsize );	
 
 	err = pKernelMPI_->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
 
-    pDebugMPI_->Assert((kNoErr == err), "Trying to create outgoing audio task msg queue. Err = %d \n", err );
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Trying to create outgoing audio task msg queue. Err = %d \n", err );
 }
 
 //==============================================================================
@@ -261,7 +261,7 @@ CAudioModule::CAudioModule( )
 CAudioModule::~CAudioModule(void)
 {
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		(const char *)"Audio Module dtor called\n" );	
+		(const char *)"CAudioModule::dtor: dtor called\n" );	
 
 	DeInitAudioTask();
 	
