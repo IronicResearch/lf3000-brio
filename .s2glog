@@ -4874,3 +4874,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/6/07 10:35 AM
 2,066 ms. (Cumulative: 794,999 ms)
 
 ----------------
+Revision 802 from svn://localhost/TRUNK/:
+
+Fix Assert()s in Display and Resource modules
+
+By DGibbs (DGibbs@leapfrog.com) on 7/6/07 10:47 AM
+2 changed, 0 added, 0 deleted.
+2,094 ms. (Cumulative: 797,140 ms)
+
+----------------

@@ -58,7 +58,7 @@ void CDisplayModule::InitModule()
 
 	// Initializes the display and screen
 	x11Display = XOpenDisplay( 0 );
-	dbg_.Assert(x11Display != NULL, "Unable to open X display\n");
+	dbg_.Assert(x11Display != NULL, "CDisplayModule::InitModule: Unable to open X display\n");
 	x11Screen = XDefaultScreen( x11Display );
 	
 	// Gets the window parameters
@@ -66,7 +66,7 @@ void CDisplayModule::InitModule()
 	i32Depth = DefaultDepth(x11Display, x11Screen);
 	x11Visual = new XVisualInfo;
 	XMatchVisualInfo( x11Display, x11Screen, i32Depth, TrueColor, x11Visual);
-	dbg_.Assert(x11Visual != NULL, "Unable to acquire visual\n");
+	dbg_.Assert(x11Visual != NULL, "CDisplayModule::InitModule: Unable to acquire visual\n");
     x11Colormap = XCreateColormap( x11Display, sRootWindow, x11Visual->visual, AllocNone );
     sWA.colormap = x11Colormap;
 	sWA.background_pixel = WhitePixel(x11Display, x11Screen);
