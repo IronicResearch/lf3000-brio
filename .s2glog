@@ -4855,3 +4855,13 @@ By Dmilici (Dmilici@leapfrog.com) on 7/6/07 10:03 AM
 2,172 ms. (Cumulative: 790,620 ms)
 
 ----------------
+Revision 799 from svn://localhost/TRUNK/:
+Revision 800 from svn://localhost/TRUNK/:
+
+Fix Assert()s in audio.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/6/07 10:32 AM
+2 changed, 0 added, 0 deleted.
+2,173 ms. (Cumulative: 792,871 ms)
+
+----------------
