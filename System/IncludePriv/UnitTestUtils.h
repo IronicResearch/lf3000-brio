@@ -51,8 +51,9 @@ protected:
 		CPath modSearch = path + "/Module";
 		EmulationConfig::Instance().SetModuleSearchPath(modSearch.c_str());
 		
-		size_t idx = path.find("/Brio2/");								//*3
-		path = path.substr(0, idx + 7) + "UnitTestData/";
+		path = path.substr(0, path.rfind('/'));							//*2
+		path = path.substr(0, path.rfind('/'));
+		path += "/UnitTestData/";
 		EmulationConfig::Instance().SetCartResourceSearchPath(path.c_str());
 #endif
 		CDebugMPI	dbg(kGroupUnitTests);
