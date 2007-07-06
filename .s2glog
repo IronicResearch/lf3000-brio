@@ -4911,3 +4911,18 @@ By TParker (TParker@leapfrog.com) on 7/6/07 12:13 PM
 2,078 ms. (Cumulative: 803,531 ms)
 
 ----------------
+Revision 807 from svn://localhost/TRUNK/:
+Revision 808 from svn://localhost/TRUNK/:
+Revision 809 from svn://localhost/TRUNK/:
+Revision 810 from svn://localhost/TRUNK/:
+Revision 811 from svn://localhost/TRUNK/:
+Revision 812 from svn://localhost/TRUNK/:
+Revision 813 from svn://localhost/TRUNK/:
+
+Update release notes for release. Added a  #ifndef EMULATION  for a kernel test that fails always on emulation.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/6/07 1:42 PM
+2 changed, 0 added, 0 deleted.
+2,141 ms. (Cumulative: 805,766 ms)
+
+----------------

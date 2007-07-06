@@ -208,6 +208,9 @@ public:
 
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoinTask( pHndl_1, status));
 
+// These tests will always fail in emulation because non-privliged
+// users are not allowed to set SCHED_FIFO.
+#ifndef EMULATION
 //-----------------	Test 2	----------------------------        
 //    char *message2 = "Properties are set";
  // 	priority;				// 1	
@@ -245,7 +248,6 @@ public:
 
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoinTask( pHndl_2, status));
 
-
 //-----------------	Test 3	----------------------------        
 //	    char *message3 = "Properties are set";
 
@@ -270,6 +272,7 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_1 ) );
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_2 ) );
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_3 ) );
+#endif
 	}
 
 	void testTaskSleep()
