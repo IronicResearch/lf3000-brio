@@ -4883,3 +4883,13 @@ By DGibbs (DGibbs@leapfrog.com) on 7/6/07 10:47 AM
 2,094 ms. (Cumulative: 797,140 ms)
 
 ----------------
+Revision 803 from svn://localhost/TRUNK/:
+Revision 804 from svn://localhost/TRUNK/:
+
+Fix Resource search to be relative instead of looking for "Brio2" in the path.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/6/07 11:33 AM
+1 changed, 0 added, 0 deleted.
+2,078 ms. (Cumulative: 799,296 ms)
+
+----------------
