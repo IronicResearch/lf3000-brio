@@ -88,7 +88,7 @@ public:
 	VTABLE_EXPORT void    			DeinitOpenGL();
 	VTABLE_EXPORT void    			EnableOpenGL();
 	VTABLE_EXPORT void    			DisableOpenGL();
-
+	VTABLE_EXPORT void    			UpdateOpenGL();
 
 private:
 	void				InitModule( );

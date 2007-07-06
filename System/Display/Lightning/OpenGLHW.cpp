@@ -153,6 +153,13 @@ void CDisplayModule::EnableOpenGL()
 }
 
 //----------------------------------------------------------------------------
+void CDisplayModule::UpdateOpenGL()
+{
+	// 3D layer needs to sync to OGL calls
+	ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
+}
+
+//----------------------------------------------------------------------------
 void CDisplayModule::DisableOpenGL()
 {
 	// Disable 3D layer render target before accelerator disabled

@@ -65,6 +65,7 @@ public:
 	void				DeinitOpenGL();
 	void				EnableOpenGL();
 	void				DisableOpenGL();
+	void				UpdateOpenGL();
 	
 private:
 	class CDisplayModule*	pModule_;

@@ -229,6 +229,14 @@ void CDisplayMPI::EnableOpenGL()
 }
 
 //----------------------------------------------------------------------------
+void CDisplayMPI::UpdateOpenGL()
+{
+	if (!pModule_)
+		return;
+	pModule_->UpdateOpenGL();
+}
+
+//----------------------------------------------------------------------------
 void CDisplayMPI::DisableOpenGL()
 {
 	if (!pModule_)

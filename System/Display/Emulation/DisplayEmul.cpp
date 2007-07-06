@@ -126,6 +126,12 @@ void CDisplayModule::EnableOpenGL()
 }
       
 //----------------------------------------------------------------------------
+void CDisplayModule::UpdateOpenGL()
+{
+	// Nothing to do on emulation target
+}
+      
+//----------------------------------------------------------------------------
 void CDisplayModule::DisableOpenGL()
 {
 	// Nothing to do on emulation target

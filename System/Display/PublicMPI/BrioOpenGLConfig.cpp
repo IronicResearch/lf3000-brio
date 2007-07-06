@@ -21,11 +21,6 @@
 
 #ifndef  EMULATION
 #include "GLES/libogl.h"
-#include <DisplayHW.h>
-#include <DisplayPriv.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <linux/lf1000/mlc_ioctl.h>
 #endif
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -98,14 +93,9 @@ namespace
 	{ 
 		PRINTF("GLESOAL_SwapBufferCallback\n");
 
-		static int layer = -1;
-		if (layer == -1)
-		    layer = open(OGL_LAYER_DEV, O_WRONLY);
-		     
 		// 3D layer needs to sync to OGL calls
-		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
-		
-//		eglWaitGL();
+		CDisplayMPI disp;
+		disp.UpdateOpenGL();
 	}
 
 	//--------------------------------------------------------------------------

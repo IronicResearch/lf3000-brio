@@ -4825,3 +4825,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/5/07 6:26 PM
 2,159 ms. (Cumulative: 783,962 ms)
 
 ----------------
+Revision 793 from svn://localhost/TRUNK/:
+
+Added OpenGL update method for syncing MLC updates with OGL lib callbacks.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/5/07 7:32 PM
+6 changed, 0 added, 0 deleted.
+2,204 ms. (Cumulative: 786,244 ms)
+
+----------------
