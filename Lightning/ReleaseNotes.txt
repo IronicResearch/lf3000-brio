@@ -2,7 +2,7 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
-v0.1.11  (Build 807 released July 06, 2007) 
+v0.1.11  (Build 814 released July 06, 2007) 
 ===========================================
 Joint embedded and emulation release
 
