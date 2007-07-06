@@ -4814,3 +4814,14 @@ By DGibbs (DGibbs@leapfrog.com) on 7/5/07 3:37 PM
 2,189 ms. (Cumulative: 781,710 ms)
 
 ----------------
+Revision 790 from svn://localhost/TRUNK/:
+Revision 791 from svn://localhost/TRUNK/:
+Revision 792 from svn://localhost/TRUNK/:
+
+Toggled 3D layer dirty bit after OGL swap callbacks for correct 2D/3D display sync.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/5/07 6:26 PM
+1 changed, 0 added, 0 deleted.
+2,159 ms. (Cumulative: 783,962 ms)
+
+----------------
