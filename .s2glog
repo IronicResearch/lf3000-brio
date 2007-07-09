@@ -4974,3 +4974,23 @@ By DGibbs (DGibbs@leapfrog.com) on 7/6/07 5:10 PM
 2,141 ms. (Cumulative: 816,673 ms)
 
 ----------------
+Revision 824 from svn://localhost/TRUNK/:
+Revision 825 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,282 ms. (Cumulative: 819,017 ms)
+
+----------------
+Revision 826 from svn://localhost/TRUNK/:
+Revision 827 from svn://localhost/TRUNK/:
+Revision 828 from svn://localhost/TRUNK/:
+Revision 829 from svn://localhost/TRUNK/:
+Revision 830 from svn://localhost/TRUNK/:
+
+Renaming Library directories in DspUtil for consistancy
+
+By DGibbs (DGibbs@leapfrog.com) on 7/9/07 2:52 PM
+0 changed, 2 added, 2 deleted.
+2,500 ms. (Cumulative: 821,548 ms)
+
+----------------
