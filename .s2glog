@@ -5039,3 +5039,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/10/07 3:17 PM
 2,050 ms. (Cumulative: 830,835 ms)
 
 ----------------
+Revision 844 from svn://localhost/TRUNK/:
+
+Fix arm-g++ varargs compile errors.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/10/07 3:17 PM
+1 changed, 0 added, 0 deleted.
+2,050 ms. (Cumulative: 832,939 ms)
+
+----------------
