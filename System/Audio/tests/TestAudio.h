@@ -44,7 +44,7 @@ public:
 		{
 			const tAudioMsgDataCompleted& data = msg.audioMsgData.audioCompleted;
 			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
-				data.audioID, data.payload);
+					static_cast<int>(data.audioID), static_cast<int>(data.payload));
 			return kEventStatusOKConsumed;
 		}
 		return kEventStatusOK;

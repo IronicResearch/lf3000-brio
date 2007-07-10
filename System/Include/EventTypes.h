@@ -38,7 +38,7 @@ typedef U32		tListenerId;
 typedef U32		tEventRegistrationFlags;
 typedef U8		tEventPriority;
 
-const tListenerId kNoListener = (tListenerId)(0);
+const tListenerId kNoListener = static_cast<tListenerId>(0);
 
 
 LF_END_BRIO_NAMESPACE()	

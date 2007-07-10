@@ -51,7 +51,7 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 	// Use rsrc manager to open the ogg file.
 	ret = pRsrcMPI_->OpenRsrc( hRsrc_ );  
     if (ret != kNoErr)
-        pDebugMPI_->DebugOut( kDbgLvlCritical, (const char *)"VorbisPlayer -- ctor: Could not open oggvorbis file." );
+        pDebugMPI_->DebugOut( kDbgLvlCritical, "VorbisPlayer -- ctor: Could not open oggvorbis file." );
  
     // Keep track of where we are int he bitstream now that it's open.
     filePos_ = 0;
@@ -122,7 +122,7 @@ U32 CVorbisPlayer::VorbisRead(
 
 	ret	= pRsrcMPI_->ReadRsrc( hRsrc_, data_ptr, sizeToRead, &bytesRead ); 
     if (ret != kNoErr)
-        pDebugMPI_->DebugOut( kDbgLvlCritical, (const char *)"VorbisRead: ReadRsrc() returned error %d.", ret );
+        pDebugMPI_->DebugOutErr( kDbgLvlCritical, ret, "VorbisRead: ReadRsrc() returned error\n" );
 	
 //	printf("Vorbis Player::VorbisRead: ReadRsrc returned %d bytes\n", bytesRead); fflush(stdout);
 

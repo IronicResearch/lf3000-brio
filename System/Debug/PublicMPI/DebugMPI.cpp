@@ -141,6 +141,11 @@ namespace
 	void DebugOutPriv( const CDebugModule* pModule, tDebugSignature sig, 
 						tDebugLevel lvl, const char * formatString, 
 						va_list arguments, U16 debugOutFormat )
+			__attribute__ ((format (printf, 4, 0)));
+	
+	void DebugOutPriv( const CDebugModule* pModule, tDebugSignature sig, 
+						tDebugLevel lvl, const char * formatString, 
+						va_list arguments, U16 debugOutFormat )
 	{
 		// NOTE: get out as fast as possible if not going to print out.  Using
 		//		the helper fcn for this.
@@ -169,6 +174,38 @@ namespace
 			// va_list argumentsnow output the requested data.
 			kernel.VPrintf(formatString, arguments);
 		}
+	}
+
+	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig, 
+						const char* errString, const char * formatString, 
+						va_list arguments )
+			__attribute__ ((format (printf, 4, 0)));
+	
+	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig, 
+						const char* errString, const char * formatString, 
+						va_list arguments )
+	{
+		// For cleaner unit test output, if ThrowOnAssertIsEnabled and
+		// the debug level is kDbgLvlSilent, we don't print any text.
+		// In all other cases we do ouput the "!ASSERT: ..." text.
+		//
+		CKernelMPI	kernel;
+		Boolean throwOnAssert = pModule && pModule->ThrowOnAssertIsEnabled();
+		if (!throwOnAssert || 
+			(pModule && (pModule->GetDebugLevel() != kDbgLvlSilent)))
+		{
+			kernel.Printf( kAssertTagStr );
+			kernel.Printf( kDebugOutSignatureFmt, sig );
+			if (errString)
+				kernel.Printf( "%s: ", errString );
+			kernel.VPrintf( formatString, arguments ); 
+		}
+		if (throwOnAssert)
+		{
+			UnitTestAssertException e;
+			throw e;
+		}
+		kernel.PowerDown();
 	}
 }
 
@@ -259,37 +296,44 @@ void CDebugMPI::Warn( const char * formatString, ... ) const
 	DebugOutPriv( pModule_, sig_, kDbgLvlCritical, formatString, arguments, kDebugOutFormatWarn );
 	va_end( arguments );
 }
-						
+
 //----------------------------------------------------------------------------
 void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 {
 	if (!testResult)
 	{
-		// For cleaner unit test output, if ThrowOnAssertIsEnabled and
-		// the debug level is kDbgLvlSilent, we don't print any text.
-		// In all other cases we do ouput the "!ASSERT: ..." text.
-		//
-		CKernelMPI	kernel;
-		Boolean throwOnAssert = pModule_ && pModule_->ThrowOnAssertIsEnabled();
-		if (!throwOnAssert || 
-			(pModule_ && (pModule_->GetDebugLevel() != kDbgLvlSilent)))
-		{
-			va_list arguments;
-			va_start( arguments, formatString );
-			kernel.Printf( kAssertTagStr );
-			kernel.Printf( kDebugOutSignatureFmt, sig_ );
-			kernel.VPrintf( formatString, arguments ); 
-			va_end( arguments );
-		}
-		if (throwOnAssert)
-		{
-			UnitTestAssertException e;
-			throw e;
-		}
-		kernel.PowerDown();
+		va_list arguments;
+		va_start( arguments, formatString );
+		AssertPriv( pModule_, sig_, NULL, formatString, arguments );
+		va_end( arguments );
 	}
 }
+
+
+//----------------------------------------------------------------------------
+void CDebugMPI::AssertNoErr( tErrType err, const char * formatString, ... ) const
+{
+	if (err != kNoErr)
+	{
+		const char* errstr = NULL;
+		char buf[16];
+		if( pModule_ )
+			errstr = pModule_->ErrorToString(err);
+		else
+		{
+			sprintf(buf, "0x%x", (unsigned int)err);
+			errstr = buf;
+		}
 			
+		va_list arguments;
+		va_start( arguments, formatString );
+		AssertPriv( pModule_, sig_, errstr, formatString, arguments );
+		va_end( arguments );
+	}
+}
+
+
+
 //==============================================================================
 // Function:
 //		DisableDebugOut

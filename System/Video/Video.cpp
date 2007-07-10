@@ -137,7 +137,8 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
 	r = rsrcmgr.OpenRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
 	if (r != kNoErr) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: LoadRsrc failed for %0X\n", hRsrc);
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: LoadRsrc failed for %0X\n", 
+					static_cast<unsigned int>(hRsrc));
 		return kInvalidVideoHndl;
 	}
 	hVideo = (tVideoHndl)(ghVideo = hRsrc); 
