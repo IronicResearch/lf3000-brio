@@ -114,7 +114,7 @@ tErrType InitAudioTask( void )
 		printf("InitAudioTask() -- Couldn't create ResourceMPI!\n");
 
 	gContext.debugMPI->DebugOut( kDbgLvlValuable, 
-		(const char *)"InitAudioTask() -- Debug, Kernel, and Resource MPIs created.\n");	
+		"InitAudioTask() -- Debug, Kernel, and Resource MPIs created.\n");	
 
 	// only want important stuff.
 	gContext.debugMPI->SetDebugLevel( kDbgLvlImportant );
@@ -199,7 +199,7 @@ tErrType InitAudioTask( void )
 //==============================================================================
 void DeInitAudioTask( void )
 {
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"DeInitAudioTask called...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "DeInitAudioTask called...\n");	
 
 	// Exit nicely
 	if ( gContext.audioOutputOn )
@@ -230,12 +230,12 @@ static void SendMsgToAudioModule( CAudioReturnMessage msg )
 {
 	tErrType err;
 	
- 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"AudioTask:Sending msg back to module...\n");	
-//  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"AudioTask:Return msg size = %d.\n", msg.GetMessageSize());	
-//  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"AudioTask:size of CAudioReturnMesage = %d.\n", sizeof(CAudioReturnMessage));	
+ 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:Sending msg back to module...\n");	
+//  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:Return msg size = %d.\n", msg.GetMessageSize());	
+//  	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:size of CAudioReturnMesage = %d.\n", sizeof(CAudioReturnMessage));	
  	
     err = gContext.kernelMPI->SendMessage( gContext.hSendMsgQueue, msg );
-    gContext.debugMPI->Assert((kNoErr == err), "SendMsgToAudioModule() -- After call SendMessage err = %d \n", err );
+    gContext.debugMPI->AssertNoErr(err, "SendMsgToAudioModule() -- After call SendMessage().\n" );
 
 }
 
@@ -368,14 +368,14 @@ static tErrType DoStartAudioSystem( void )
 	tErrType err = kNoErr;
 	CAudioReturnMessage	msg;
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Starting audio output driver...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Starting audio output driver...\n");	
 
 	if (!gContext.audioOutputOn && !gContext.audioOutputPaused) {
 		gContext.audioOutputOn = true;
 		err = StartAudioOutput();
 	}
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Starting audio output driver...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Starting audio output driver...\n");	
 
 	// Send the status back to the caller
 	msg.SetAudioErr( err );
@@ -389,7 +389,7 @@ static tErrType DoPauseAudioSystem( void )
 	tErrType err = kNoErr;
 	CAudioReturnMessage	msg;
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Pausing all audio output...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Pausing all audio output...\n");	
 
 	if (gContext.audioOutputOn && !gContext.audioOutputPaused) {
 		gContext.audioOutputPaused = true;
@@ -408,7 +408,7 @@ static tErrType DoResumeAudioSystem( void )
 	tErrType err = kNoErr;
 	CAudioReturnMessage	msg;
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Resuming all audio output...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Resuming all audio output...\n");	
 
 	if (gContext.audioOutputOn && gContext.audioOutputPaused) {
 		gContext.audioOutputPaused = false;
@@ -428,7 +428,7 @@ static tErrType DoStopAudioSystem( void )
 	tErrType err = kNoErr;
 	CAudioReturnMessage	msg;
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Stopping audio output driver...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Stopping audio output driver...\n");	
 
 	if (gContext.audioOutputOn) {
 		gContext.audioOutputOn = false;
@@ -458,7 +458,7 @@ static tErrType DoStopAudioSystem( void )
 void DoAcquireMidiPlayer( void ) {
 	CAudioReturnMessage	msg;
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Acquiring MIDI player...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Acquiring MIDI player...\n");	
 
 	gContext.pMidiPlayer->Activate();
 	
@@ -473,7 +473,7 @@ void DoAcquireMidiPlayer( void ) {
 void DoReleaseMidiPlayer( void ) {
 	CAudioReturnMessage	msg;
 	
-	gContext.debugMPI->DebugOut( kDbgLvlVerbose, (const char *)"Releasing MIDI player...\n");	
+	gContext.debugMPI->DebugOut( kDbgLvlVerbose, "Releasing MIDI player...\n");	
 	
 	gContext.pMidiPlayer->DeActivate();
 
@@ -575,22 +575,24 @@ void* AudioTaskMain( void* /*arg*/ )
 	gContext.debugMPI->SetDebugLevel( kDbgLvlImportant );
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-		(const char *)"Audio Task creating task incoming Q. size = %d\n", kMAX_AUDIO_MSG_SIZE );	
+		"Audio Task creating task incoming Q. size = %d\n", 
+		static_cast<int>(kMAX_AUDIO_MSG_SIZE) );	
 	
 	err = gContext.kernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
 
-    gContext.debugMPI->Assert((kNoErr == err), "AudioTaskMain() -- Trying to create incoming audio task msg queue. err = %d \n", err );
+    gContext.debugMPI->AssertNoErr( err, "AudioTaskMain() -- Trying to create incoming audio task msg queue.\n" );
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
 	msgQueueProperties.mq_msgsize = sizeof(CAudioReturnMessage);
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-		(const char *)"AudioTaskMain() -- Audio Task Creating task outgoing Q. size = %d\n", msgQueueProperties.mq_msgsize );	
+		"AudioTaskMain() -- Audio Task Creating task outgoing Q. size = %d\n", 
+		static_cast<int>(msgQueueProperties.mq_msgsize) );	
 
 	err = gContext.kernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
 
-    gContext.debugMPI->Assert((kNoErr == err), "AudioTaskMain() -- Trying to create outgoing audio task msg queue. Err = %d \n", err );
+    gContext.debugMPI->AssertNoErr(err, "AudioTaskMain() -- Trying to create outgoing audio task msg queue.\n" );
 
 // Set the task to ready
 	gAudioTaskRunning = true;
@@ -602,24 +604,26 @@ void* AudioTaskMain( void* /*arg*/ )
 	
 	while ( gContext.threadRun ) {
 		gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-			(const char *)"AudioTaskMain() -- top of loop, cnt: %u.\n", i++);	
+			"AudioTaskMain() -- top of loop, cnt: %u.\n", static_cast<unsigned int>(i++));	
    
 	    err = gContext.kernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 
 								   (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 								   
-	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "AudioTaskMain() -- ReceivedMessage err = % d\n", err);
+	    gContext.debugMPI->DebugOutErr(kDbgLvlVerbose, err, "AudioTaskMain() -- ReceivedMessage err\n");
 
 		pAudioMsg = reinterpret_cast<CAudioCmdMsg*>(msgBuf);
 		msgSize = pAudioMsg->GetMessageSize();
 		cmdType = pAudioMsg->GetCmdType();
-	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "AudioTaskMain() -- Got Audio Command, Type= %d; Msg Size = %d \n", cmdType, msgSize );  
+	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, 
+	    		"AudioTaskMain() -- Got Audio Command, Type= %d; Msg Size = %d \n", 
+	    		cmdType, static_cast<int>(msgSize) );  
 
 		switch ( cmdType )
 		{
 		//*********************************
 		case kAudioCmdMsgTypeSetMasterVolume:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- setting master volume.\n" );	
+				"AudioTaskMain() -- setting master volume.\n" );	
 
 			DoSetMasterVolume( (CAudioMsgSetMasterVolume*)pAudioMsg );
 										   
@@ -628,7 +632,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeStartAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- starting audio system.\n" );	
+				"AudioTaskMain() -- starting audio system.\n" );	
 	
 			DoStartAudioSystem();
 			break;
@@ -636,7 +640,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeStopAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- stopping audio system\n" );	
+				"AudioTaskMain() -- stopping audio system\n" );	
 	
 			DoStopAudioSystem();
 			break;
@@ -644,7 +648,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypePauseAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- pause all audio.\n" );	
+				"AudioTaskMain() -- pause all audio.\n" );	
 	
 			DoPauseAudioSystem();
 			break;
@@ -652,7 +656,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeResumeAllAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- resume all audio.\n" );	
+				"AudioTaskMain() -- resume all audio.\n" );	
 
 			DoResumeAudioSystem();
 			break;
@@ -660,7 +664,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeStartAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- kAudioCmdMsgTypeStartAudio : calling DoStartAudio().\n" );	
+				"AudioTaskMain() -- kAudioCmdMsgTypeStartAudio : calling DoStartAudio().\n" );	
 	
 			DoStartAudio( (CAudioMsgStartAudio*)pAudioMsg );
 			break;
@@ -668,7 +672,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeStopAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- stop audio.\n" );	
+				"AudioTaskMain() -- stop audio.\n" );	
 
 			DoStopAudio( (CAudioMsgStopAudio*)pAudioMsg );
 			break;
@@ -676,7 +680,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypePauseAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- pause audio.\n" );	
+				"AudioTaskMain() -- pause audio.\n" );	
 
 			DoPauseAudio( (CAudioMsgPauseAudio*)pAudioMsg );
 			break;
@@ -684,7 +688,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeResumeAudio:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- resume audio.\n" );	
+				"AudioTaskMain() -- resume audio.\n" );	
 
 			DoResumeAudio( (CAudioMsgResumeAudio*)pAudioMsg );
 			break;
@@ -693,7 +697,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeAcquireMidiPlayer:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- Acquire Midi Player.\n" );	
+				"AudioTaskMain() -- Acquire Midi Player.\n" );	
 
 			DoAcquireMidiPlayer();
 			break;
@@ -701,7 +705,7 @@ void* AudioTaskMain( void* /*arg*/ )
 			//*********************************
 			case kAudioCmdMsgTypeReleaseMidiPlayer:
 				gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-					(const char *)"AudioTaskMain() -- Acquire Midi Player.\n" );	
+					"AudioTaskMain() -- Acquire Midi Player.\n" );	
 
 				DoReleaseMidiPlayer();
 				break;
@@ -709,7 +713,7 @@ void* AudioTaskMain( void* /*arg*/ )
 				//*********************************
 		case kAudioCmdMsgTypeMidiNoteOn:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- midi note On.\n" );	
+				"AudioTaskMain() -- midi note On.\n" );	
 
 			DoMidiNoteOn( (CAudioMsgMidiNoteOn*)pAudioMsg );
 			break;
@@ -717,7 +721,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeMidiNoteOff:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- midi note Off.\n" );	
+				"AudioTaskMain() -- midi note Off.\n" );	
 			
 			DoMidiNoteOff( (CAudioMsgMidiNoteOff*)pAudioMsg );
 			break;
@@ -725,7 +729,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeStartMidiFile:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- Start midi file.\n" );	
+				"AudioTaskMain() -- Start midi file.\n" );	
 			
 			DoStartMidiFile( (CAudioMsgStartMidiFile*)pAudioMsg );
 			break;
@@ -733,7 +737,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypePauseMidiFile:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- pause midi file.\n" );	
+				"AudioTaskMain() -- pause midi file.\n" );	
 			
 			DoPauseMidiFile( (CAudioMsgPauseMidiFile*)pAudioMsg );
 			break;
@@ -741,7 +745,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeResumeMidiFile:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- resume midi file.\n" );	
+				"AudioTaskMain() -- resume midi file.\n" );	
 			
 			DoResumeMidiFile( (CAudioMsgResumeMidiFile*)pAudioMsg );
 			break;
@@ -749,14 +753,14 @@ void* AudioTaskMain( void* /*arg*/ )
 		//*********************************
 		case kAudioCmdMsgTypeStopMidiFile:
 			gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-				(const char *)"AudioTaskMain() -- stop midi file.\n" );	
+				"AudioTaskMain() -- stop midi file.\n" );	
 			
 			DoStopMidiFile( (CAudioMsgStopMidiFile*)pAudioMsg );
 			break;
 
 		default:
 		gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-			(const char *)"AudioTaskMain() -- unhandled audio command!!!.\n" );	
+			"AudioTaskMain() -- unhandled audio command!!!.\n" );	
 
 		break;
 		}
@@ -764,7 +768,7 @@ void* AudioTaskMain( void* /*arg*/ )
 	}
 
 	gContext.debugMPI->DebugOut( kDbgLvlVerbose, 
-		(const char *)"AudioTaskMain() -- exiting, loop cnt: %u.\n", i);	
+		"AudioTaskMain() -- exiting, loop cnt: %u.\n", static_cast<unsigned int>(i));	
 		
 	// Set the task to byebye
 	gAudioTaskRunning = false;

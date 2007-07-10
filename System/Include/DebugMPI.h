@@ -44,27 +44,35 @@ public:
 	// value is prepended in the output to allow easy debug identification.  These are
 	// the primary calls to use for output.
 	// Example: "This is my text output" -> [3] This is my text output 
-	void 	DebugOut(tDebugLevel lvl, const char * formatString, ...) const;
-	void	VDebugOut(tDebugLevel lvl, const char * formatString, va_list arguments) const;
-
-	void 	DebugOutErr(tDebugLevel lvl, tErrType err, const char * formatString, ...) const;
+	void 	DebugOut(tDebugLevel lvl, const char * formatString, ...) const
+				__attribute__ ((format (printf, 3, 4)));
+	void	VDebugOut(tDebugLevel lvl, const char * formatString, va_list arguments) const
+				__attribute__ ((format (printf, 3, 0)));
+	void 	DebugOutErr(tDebugLevel lvl, tErrType err, const char * formatString, ...) const
+				__attribute__ ((format (printf, 4, 5)));
 
 	// same as above, but without anything prepended or postfixed in the output.  This is useful
 	// when printing a sequence of output that needs to be cleanly formatted (tables, etc).
 	// Example:  "This is my text output" -> This is my text output
-	void	DebugOutLiteral(tDebugLevel lvl, const char * formatString, ...) const;
-	void	VDebugOutLiteral(tDebugLevel lvl, const char * formatString, va_list arguments) const;
+	void	DebugOutLiteral(tDebugLevel lvl, const char * formatString, ...) const
+				__attribute__ ((format (printf, 3, 4)));
+	void	VDebugOutLiteral(tDebugLevel lvl, const char * formatString, va_list arguments) const
+				__attribute__ ((format (printf, 3, 0)));
 
 	// issue a warning that a critical, but recoverable, error occurred.  This
 	// is just one step below Asserting.  The warning message is printed
 	// on the screen, &/or out the serial port, and could be accompanied by
 	// an audio alert to indicate a critical error occurred.
 	// (suppressible based on tDebugSignature)
-	void	Warn(const char * formatString, ...) const;
+	void	Warn(const char * formatString, ...) const
+				__attribute__ ((format (printf, 2, 3)));
 
 	// Assert
-	void 	Assert(int testResult, const char * formatString, ...) const;
-								
+	void 	Assert(int testResult, const char * formatString, ...) const
+				__attribute__ ((format (printf, 3, 4)));
+	void 	AssertNoErr(tErrType err, const char * formatString, ...) const
+				__attribute__ ((format (printf, 3, 4)));
+							
 	// turning on & off debug-out on a debug-signature basis
 	void 	DisableDebugOut(tDebugSignature sig);
  	void 	EnableDebugOut(tDebugSignature sig);

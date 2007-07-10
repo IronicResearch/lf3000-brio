@@ -98,9 +98,6 @@ void* EmulationButtonTask(void*)
 	CDebugMPI	dbg(kGroupButton);
 	dbg.DebugOut(kDbgLvlVerbose, "EmulationButtonTask: Started\n");
 
-	Window focus;
-	int revert;
-
 	CEventMPI		eventmgr;
 	tButtonData		data;
  	data.buttonState = data.buttonTransition = 0;

@@ -5014,3 +5014,12 @@ By TParker (TParker@leapfrog.com) on 7/9/07 7:14 PM
 2,230 ms. (Cumulative: 826,158 ms)
 
 ----------------
+Revision 835 from svn://localhost/TRUNK/:
+
+Added -Wformat compiler check to check printf syntax; other cleanups
+
+By TParker (TParker@leapfrog.com) on 7/9/07 7:16 PM
+15 changed, 0 added, 0 deleted.
+2,412 ms. (Cumulative: 828,636 ms)
+
+----------------

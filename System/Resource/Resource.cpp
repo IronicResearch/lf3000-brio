@@ -879,7 +879,8 @@ PackageDescriptor* CResourceModule::FindPackagePriv(U32 id, tPackageHndl hndl) c
 		}
 	}
 	dbg_.Assert(false, 
-			"CResourceModule::FindPackagePriv: Programming Error: FindPackagePriv() called with invalid handle 0x%x", hndl);
+			"CResourceModule::FindPackagePriv: Programming Error: called with invalid handle 0x%x", 
+			static_cast<unsigned int>(hndl));
 	// FIXME/tp: replace with non-assert in release mode
 	return NULL;
 }
@@ -1135,7 +1136,8 @@ ResourceDescriptor* CResourceModule::FindRsrcPriv(U32 id, tRsrcHndl hndl) const
 		}
 	}
 	dbg_.Assert(false, 
-			"CResourceModule::FindRsrcPriv: Programming Error: FindRsrcPriv() called with invalid handle 0x%x", hndl);
+			"CResourceModule::FindRsrcPriv: Programming Error: FindRsrcPriv() called with invalid handle 0x%x", 
+			static_cast<unsigned int>(hndl));
 	// FIXME/tp: replace with non-assert in release mode
 	return NULL;
 }
@@ -1181,7 +1183,8 @@ tPtr CResourceModule::GetPtr(U32 id, tRsrcHndl hndl) const
 	const ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "GetPtr() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "GetPtr() called with invalid resource handle (0x%x)", 
+				static_cast<unsigned int>(hndl));
 		return 0;
 	}
 	
@@ -1209,7 +1212,8 @@ tErrType CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*1
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::OpenRsrc: OpenRsrc() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::OpenRsrc() called with invalid resource handle (0x%x)", 
+					static_cast<unsigned int>(hndl));
 		return kResourceInvalidErr;
 	}
 	
@@ -1252,7 +1256,8 @@ tErrType CResourceModule::CloseRsrc(U32 id, tRsrcHndl hndl)
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::CloseRsrc: called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::CloseRsrc(): called with invalid resource handle (0x%x)",
+						static_cast<unsigned int>(hndl));
 		return kResourceInvalidErr;
 	}
 	
@@ -1288,7 +1293,8 @@ tErrType CResourceModule::ReadRsrc(U32 id, tRsrcHndl hndl,
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*2
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::ReadRsrc: called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "CResourceModule::ReadRsrc: called with invalid resource handle (0x%x)", 
+						static_cast<unsigned int>(hndl));
 		return kResourceInvalidErr;
 	}
 
@@ -1385,7 +1391,8 @@ tErrType CResourceModule::SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes,
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*1
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "SeekRsrc() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "SeekRsrc() called with invalid resource handle (0x%x)", 
+						static_cast<unsigned int>(hndl));
 		return kResourceInvalidErr;
 	}
 
@@ -1420,7 +1427,8 @@ tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer,
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*2
 	if (prd == NULL)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "ReadRsrc() called with invalid resource handle (0x%x)", hndl);
+		dbg_.DebugOut(kDbgLvlCritical, "ReadRsrc() called with invalid resource handle (0x%x)",
+						static_cast<unsigned int>(hndl));
 		return kResourceInvalidErr;
 	}
 

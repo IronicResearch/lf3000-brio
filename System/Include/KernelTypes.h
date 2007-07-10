@@ -60,8 +60,8 @@ const tTaskPriority		kInvalidTaskPriorityl	 = static_cast<tTaskPriority>(0);
 const tMessagePriority	kInvalidMessagePriority	 = static_cast<tMessagePriority>(0);
 
 #define kUndefinedMessageSize		((U16)0)
-#define kUndefinedMemoryPoolHndl 	((tMemoryPoolHndl)kUndefinedHndl)
-#define kUndefinedTaskHndl 		((tTaskHndl)kUndefinedHndl)
+#define kUndefinedMemoryPoolHndl 	((tMemoryPoolHndl)kInvalidHndl)
+#define kUndefinedTaskHndl 		((tTaskHndl)kInvalidHndl)
 
 //------------------------------------------------------------------------------
 // Task scheduling & blocking

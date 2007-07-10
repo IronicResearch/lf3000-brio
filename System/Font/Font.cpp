@@ -112,7 +112,8 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 
 	// Load FreeType library
 	int error = FT_Init_FreeType(&handle_.library);
-	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule: FT_Init_FreeType returned = %d, %p\n", error, handle_.library);
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule: FT_Init_FreeType returned = %d, %p\n", 
+				error, static_cast<void*>(handle_.library));
 	if (error) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule: FT_Init_FreeType failed, error = %d\n", error);
@@ -313,7 +314,8 @@ tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 	r = rsrcmgr.LoadRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
 	if (r != kNoErr) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::LoadFont: LoadRsrc failed for %0X\n", hRsrc);
+		dbg_.DebugOutErr(kDbgLvlCritical, r, "FontModule::LoadFont: LoadRsrc failed for %0X\n", 
+				static_cast<unsigned int>(hRsrc));
 		return kInvalidFontHndl;
 	}
 	 
@@ -321,7 +323,8 @@ tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 	fontname = rsrcmgr.GetURI(hRsrc); // GetName(hRsrc);
 	filesize = rsrcmgr.GetUnpackedSize(hRsrc);
 	fileimage = rsrcmgr.GetPtr(hRsrc);
-	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s, file size = %d\n", fontname->c_str(), filesize);
+	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s, file size = %d\n", 
+				fontname->c_str(), static_cast<int>(filesize));
 	
 	hFont = LoadFontInt(fontname, prop, fileimage, filesize);
 

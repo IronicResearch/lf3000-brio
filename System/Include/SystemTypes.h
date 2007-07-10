@@ -21,11 +21,11 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 typedef U32			tOptionFlags;	// std call options bitmask type
 
-const tOptionFlags	kNoOptionFlags	= (tOptionFlags)(0);
+const tOptionFlags	kNoOptionFlags	= static_cast<tOptionFlags>(0);
 
 typedef tOpaqueType	tHndl;			// generic handle
 
-const tHndl			kUndefinedHndl	= (tHndl)(0);
+const tHndl			kInvalidHndl	= static_cast<tHndl>(0);
 
 
 //----------------------------------------------------------------------------
@@ -267,7 +267,7 @@ typedef tU32NumSpace	tErrType;
 
 #define MakeErrType(domain, group, tag) ((tErrType)MakeU32NumSpace(domain, group, tag))
 
-#define kNoErr			((tErrType)0)
+#define kNoErr			static_cast<tErrType>(0)
 
 
 LF_END_BRIO_NAMESPACE()	
