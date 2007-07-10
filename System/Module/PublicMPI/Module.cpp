@@ -12,14 +12,14 @@
 //
 //==============================================================================
 
-#include <dlfcn.h>
-
 #include <SystemTypes.h>
 #include <Module.h>
 #include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
 #include <DebugMPI.h>
+#include <BootSafeKernelMPI.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kNullString;
@@ -56,37 +56,30 @@ namespace
 	};
 		
 	//------------------------------------------------------------------------
-	void* gg_pModuleHandle = NULL;
+	tHndl gg_pModuleHandle = kInvalidHndl;
 	
 	//------------------------------------------------------------------------
 	tErrType LoadModuleManagerLib()
 	{
-//		CDebugMPI	dbg(kGroupModule);
-		if( gg_pModuleHandle != NULL )
+		CBootSafeKernelMPI	kernel;
+		if( gg_pModuleHandle != kInvalidHndl )
 			return kNoErr;
 		CPath path = GetModuleLibraryLocation();
 		path = path + "libModule.so";
-		const char* str = path.c_str();
-//		dbg.DebugOut(kDbgLvlVerbose, "GetModuleLibraryLocation: %s\n", str);
-		gg_pModuleHandle = dlopen(str, RTLD_LAZY);
-//		dbg.Assert(gg_pModuleHandle != NULL, "LoadModuleManagerLib() failed:%s\n", dlerror());
-	    dlerror();
+		gg_pModuleHandle = kernel.LoadModule(path);
+		if( gg_pModuleHandle == kInvalidHndl )
+		{
+			kernel.Printf("BOOTFAIL: Failed to load found module at sopath: %s\n", path.c_str());
+			kernel.PowerDown();
+		}
 	    return kNoErr;
 	}
 	
 	//------------------------------------------------------------------------
 	void UnloadModuldManagerLib()
 	{
-		dlclose(gg_pModuleHandle);
-	}
-	
-	//------------------------------------------------------------------------
-	inline void AbortOnError(const char* /*msg*/)
-	{
-		// FIXME/tp: Implement
-//		const char *dlsym_error = dlerror();
-//		CDebugMPI	dbg(kGroupModule);
-//		dbg.Assert(dlsym_error == NULL, msg);
+		CBootSafeKernelMPI	kernel;
+		kernel.UnloadModule(gg_pModuleHandle);
 	}
 }
 
@@ -101,15 +94,20 @@ namespace Module
 	// For normal, non-LF_MONOLITHIC_DEBUG builds, call through to the libModule.so
 	// replacable shared object for the implementation.
 	//------------------------------------------------------------------------
-		//------------------------------------------------------------------------
+	//------------------------------------------------------------------------
 	tErrType FindModules()
 	{
 		tErrType status = LoadModuleManagerLib();
 		if( status == kNoErr )
 		{
 		    ObjPtrToFunPtrConverter fp;
-		    fp.voidptr = dlsym(gg_pModuleHandle, "FindModules");
-			AbortOnError("FindModules lookup failure");
+			CBootSafeKernelMPI	kernel;
+		    fp.voidptr = kernel.RetrieveSymbolFromModule(gg_pModuleHandle, "FindModules");
+		    if( fp.voidptr == NULL )
+		    {
+				kernel.Printf("BOOTFAIL: Failed to find FindModules()\n");
+				kernel.PowerDown();
+		    }
 		  	status = (*(fp.pfnFind))();
 		}
 		return status;
@@ -127,8 +125,13 @@ namespace Module
 		{
 			void* pModule = NULL;
 			ObjPtrToFunPtrConverter fp;
-			fp.voidptr = dlsym(gg_pModuleHandle, "Connect");
-			AbortOnError("Connect lookup failure");
+			CBootSafeKernelMPI	kernel;
+		    fp.voidptr = kernel.RetrieveSymbolFromModule(gg_pModuleHandle, "Connect");
+		    if( fp.voidptr == NULL )
+		    {
+				kernel.Printf("BOOTFAIL: Failed to find Connect()\n");
+				kernel.PowerDown();
+		    }
 		  	status = (*(fp.pfnConnect))(&pModule, name.c_str(), version);
 		  	ptr = reinterpret_cast<ICoreModule*>(pModule);
 		}
@@ -142,8 +145,13 @@ namespace Module
 		if( status == kNoErr )
 		{
 			ObjPtrToFunPtrConverter fp;
-			fp.voidptr = dlsym(gg_pModuleHandle, "Disconnect");
-			AbortOnError("Disconnect lookup failure");
+			CBootSafeKernelMPI	kernel;
+		    fp.voidptr = kernel.RetrieveSymbolFromModule(gg_pModuleHandle, "Disconnect");
+		    if( fp.voidptr == NULL )
+		    {
+				kernel.Printf("BOOTFAIL: Failed to find Disconnect()\n");
+				kernel.PowerDown();
+		    }
 		  	status = (*(fp.pfnDisconnect))(ptr);
 		}
 		return status;

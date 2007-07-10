@@ -5005,3 +5005,12 @@ By TParker (TParker@leapfrog.com) on 7/9/07 7:11 PM
 2,204 ms. (Cumulative: 823,830 ms)
 
 ----------------
+Revision 834 from svn://localhost/TRUNK/:
+
+Migrated filesystem and module loading functions from Module to Kernel.
+
+By TParker (TParker@leapfrog.com) on 7/9/07 7:14 PM
+7 changed, 1 added, 0 deleted.
+2,230 ms. (Cumulative: 826,158 ms)
+
+----------------

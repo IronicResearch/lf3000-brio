@@ -12,16 +12,13 @@
 //
 //==============================================================================
 
-#include <iostream>
-#include <dirent.h>
-#include <dlfcn.h>
-#include <unistd.h>
-
 #include <SystemTypes.h>
 #include <Module.h>
 #include <ModulePriv.h>
 #include <CoreModule.h>
 #include <SystemErrors.h>
+#include <BootSafeKernelMPI.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -60,7 +57,7 @@ namespace
 		struct ConnectedModule {
 			char			name[kMaxModuleName];
 			char			sopath[kMaxPath];
-			void*			handle;
+			tHndl			handle;
 			U32				connect_count;
 			ICoreModule*	ptr;
 			// FIXME/tp: initializing ctor
@@ -72,20 +69,20 @@ namespace
 		U16				mNumConnected;
 			
 		//----------------------------------------------------------------------
-		Boolean AddedValidModule( FoundModule* pModule, const CPath& dir, 
-									const CPath& name )
+		Boolean AddedValidModule( FoundModule* pModule, const CPath& path )
 		{
 			// TODO: Either parse version from file name or load and
 			// querry the library (probably the former)
 			//
+			size_t idx = path.rfind('/');
+			CPath name = path.substr(idx+1);
 			size_t len = name.size();
 			if( len <= 6 || name[0] == '.' )
 				return false;
 			CString temp = name.substr(3, len-6);
 			pModule->version = 2;
 			strncpy(pModule->name, temp.c_str(), kMaxModuleName);
-			temp = dir + name;
-			strncpy(pModule->sopath, temp.c_str(), kMaxPath);
+			strncpy(pModule->sopath, path.c_str(), kMaxPath);
 //printf("Module: %s  %s\n", pModule->name, pModule->sopath);
 			return true;
 		}
@@ -157,9 +154,6 @@ namespace
 		//----------------------------------------------------------------------
 		tErrType FindModules()
 		{
-			// FIXME/tp: Implement actual search paths rather than cur working dir
-			// FIXME/tp: Hide search paths in function which can have separate 
-			//				emulation/embedded implementations.
 			static const char* paths[1];
 			CPath path = GetModuleLibraryLocation();
 			paths[0] = path.c_str();
@@ -170,24 +164,22 @@ namespace
 			mpFoundModulesList = reinterpret_cast<FoundModule*>(malloc(kMaxModuleCount * sizeof(FoundModule)));
 			mpConnectedModulesList = reinterpret_cast<ConnectedModule*>(malloc(kMaxModuleCount * sizeof(ConnectedModule)));
 			
+			CBootSafeKernelMPI	kernel;
 			mNumFound = 0; 
-			for( size_t ii = 0; ii < ArrayCount(paths); ++ii )
+			for (size_t ii = 0; ii < ArrayCount(paths); ++ii)
 			{
-				DIR *dirp;
-				struct dirent *dp = (struct dirent *)1;
-				if( (dirp = opendir(paths[ii])) == NULL )
-					continue;
-				while( dp != NULL )
+				std::vector<CPath> files = kernel.GetFilesInDirectory(paths[ii]);
+				for (size_t jj = 0; jj < files.size(); ++jj)
 				{
-					if( (dp = readdir(dirp)) != NULL 
-						&& AddedValidModule((mpFoundModulesList + mNumFound),
-											paths[ii], dp->d_name) )
+					if (AddedValidModule((mpFoundModulesList + mNumFound), files[jj]))
 						++mNumFound;
 				}
-				closedir(dirp);
 			}
-//FIXME/tp			CDebugMPI::Assert(mNumFound > 0, 
-//							"Module configuration error, no modules found!");
+			if (mNumFound == 0)
+			{
+				kernel_.Printf("BOOTFAIL: No modules found in: %s\n", path.c_str());
+				kernel_.PowerDown();
+			}
 			return kNoErr;
 		}
 
@@ -231,39 +223,35 @@ namespace
 			FoundModule* pFound = FindBestModuleMatch(name, version);		//*2
 			if( pFound == NULL )
 			{
-				//TODO: DebugMPI message
-				return kModuleNotFound;
-			}
-				
-			void* pLib = dlopen(pFound->sopath, RTLD_LAZY);					//*3
-			if( !pLib )
-			{
-				printf("\n Failed to load found module at sopath: %s\n", pFound->sopath);	//FIXME
-				printf("\n dlerror() says: %s\n", dlerror());	//FIXME
-				//TODO: DebugMPI message
-				return kModuleOpenFail;
+				kernel_.Printf("BOOTFAIL: Failed to find match for module: %s\n", name.c_str());
+				kernel_.PowerDown();
 			}
 			
-		    dlerror();														//*4
-		    ObjPtrToFunPtrConverter fp;
-		    fp.voidptr = dlsym(pLib, kCreateInstanceFnName);
-		    const char *dlsym_error = dlerror();
-		    if( dlsym_error )
+			tHndl module = kernel_.LoadModule(pFound->sopath);				//*3
+			if( module == kInvalidHndl )
+			{
+				kernel_.Printf("BOOTFAIL: Failed to load found module at sopath: %s\n", pFound->sopath);
+				kernel_.PowerDown();
+			}
+			
+		    ObjPtrToFunPtrConverter fp;										//*4
+		    fp.voidptr = kernel_.RetrieveSymbolFromModule(module, kCreateInstanceFnName);
+		    if( fp.voidptr == NULL )
 		    {
-				//TODO: DebugMPI message
-		    	return kModuleLoadFail;
+				kernel_.Printf("BOOTFAIL: Failed to find CreateInstance() for: %s\n", pFound->sopath);
+				kernel_.PowerDown();
 		    }
 		    
 			ptr = (*(fp.pfnCreate))(version);								//*5
 			if( !ptr )
 			{
-				//TODO: DebugMPI message
-		    	return kModuleLoadFail;
+				kernel_.Printf("BOOTFAIL: CreateInstance() failed for: %s\n", pFound->sopath);
+				kernel_.PowerDown();
 			}
 
 			pModule = mpConnectedModulesList + mNumConnected;				//*6
 			++mNumConnected;
-			pModule->handle = pLib;
+			pModule->handle = module;
 			strcpy(pModule->name, pFound->name);
 			strcpy(pModule->sopath, pFound->sopath);
 			pModule->connect_count = 1;
@@ -292,17 +280,16 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
-		    dlerror();
 		    ObjPtrToFunPtrConverter fp;
-		    fp.voidptr = dlsym(pModule->handle, kDestroyInstanceFnName);
-		    const char *dlsym_error = dlerror();
-		    if( !dlsym_error )
+		    fp.voidptr = kernel_.RetrieveSymbolFromModule(pModule->handle, kDestroyInstanceFnName);
+		    if( fp.voidptr != NULL )
 		    	(*(fp.pfnDestroy))(pModule->ptr);
 		    else
 		    {
-				//TODO: DebugMPI message
+				kernel_.Printf("BOOTFAIL: Failed to find DestroyInstance() for: %s\n", pModule->sopath);
+				kernel_.PowerDown();
 		    }
-			dlclose(pModule->handle);
+		    kernel_.UnloadModule(pModule->handle);
 		}
 		
 		// unresolved issues:
@@ -311,6 +298,7 @@ namespace
 		// Disable copy semantics
 		CModuleMgrImpl(const CModuleMgrImpl&);
 		CModuleMgrImpl& operator=(const CModuleMgrImpl&);
+		CBootSafeKernelMPI		kernel_;
 	};
 
 	CModuleMgrImpl	g_impl;

@@ -13,6 +13,7 @@
 //
 //==============================================================================
 
+#include <vector>
 #include <SystemTypes.h>
 #include <CoreMPI.h>
 #include <KernelTypes.h>
@@ -53,7 +54,7 @@ public:
 	// Memory Allocation
 	//==============================================================================
 	tPtr		Malloc( U32 size );
-	tErrType	Free( tPtr pAllocatedMemory );
+	void		Free( tPtr pAllocatedMemory );
 
 	//==============================================================================
 	// Message Queues
@@ -178,16 +179,32 @@ public:
 	// I/O Functions
 	//==============================================================================
     // Standard printf syntax to output a string through the serial port
-    void	Printf( const char * formatString, ... ) const;
+    void	Printf( const char * formatString, ... ) const
+						__attribute__ ((format (printf, 2, 3)));
 
     // Standard vprintf syntax to output a string through the serial port
-    void	VPrintf( const char * formatString, va_list arguments ) const;
-    
+    void	VPrintf( const char * formatString, va_list arguments ) const
+						__attribute__ ((format (printf, 2, 0)));
+   
 	//==============================================================================
 	// Power Control Functions
 	//==============================================================================
     void	PowerDown() const;
     
+	//==============================================================================
+	// File System Functions
+	//==============================================================================
+    std::vector<CPath>	GetFilesInDirectory( const CPath& dir ) const;
+    
+    Boolean				IsDirectory( const CPath& dir ) const;
+    
+	//==============================================================================
+	// Code Module Functions
+	//==============================================================================
+    tHndl	LoadModule( const CPath& dir ) const;
+    void*	RetrieveSymbolFromModule( tHndl obj, const CString& symbol ) const;
+    void	UnloadModule( tHndl obj ) const;
+ 
 private:
 	class CKernelModule *pModule_;
 };

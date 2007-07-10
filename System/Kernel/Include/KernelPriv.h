@@ -95,9 +95,10 @@ public:
 	VTABLE_EXPORT tErrType	Free( tPtr ptr );
 	
 	// IO
-	VTABLE_EXPORT void		Printf( const char* format, ... ) const;
-	VTABLE_EXPORT void		Printf( const char* format, va_list arguments ) const;
-	
+	VTABLE_EXPORT void		Printf( const char* format, ... ) const
+								__attribute__ ((format (printf, 2, 3)));
+	VTABLE_EXPORT void		Printf( const char* format, va_list arguments ) const
+								__attribute__ ((format (printf, 2, 0)));
 	// Message queues
 	VTABLE_EXPORT tErrType	OpenMessageQueue( tMessageQueueHndl& hndl,
 										const tMessageQueuePropertiesPosix& properties,
