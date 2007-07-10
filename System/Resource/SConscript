@@ -12,7 +12,7 @@ sysmpi_name	= 'System' + module_name + 'MPI'
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'), vars)
-mpisrcs		= ['PublicMPI/ResourceMPI.cpp']
+mpisrcs		= [File('PublicMPI/ResourceMPI.cpp').abspath]
 modlibs		= ['EventMPI', 'KernelMPI', 'DebugMPI']
 mpilibs		= ['ModuleMPI']
 
@@ -20,7 +20,7 @@ mpilibs		= ['ModuleMPI']
 #-----------------------------------------------------------------------------
 # Setup extended mpi source files
 #-----------------------------------------------------------------------------
-sysmpisrcs	= ['PublicMPI/SystemResourceMPI.cpp']
+sysmpisrcs	= [File('PublicMPI/SystemResourceMPI.cpp').abspath]
 
 						
 #-----------------------------------------------------------------------------
