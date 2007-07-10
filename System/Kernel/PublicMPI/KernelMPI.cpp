@@ -14,13 +14,19 @@
 
 #include <stdarg.h>		// for varargs
 #include <assert.h>		// for assert()
+#include <dlfcn.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <Module.h>
 #include <KernelMPI.h>
-
+#include <BootSafeKernelMPI.h>
 #include <KernelPriv.h>
 #include <StringTypes.h>
+//extern int vprintf (__const char *__restrict __format, _G_va_list __arg)
+//				__attribute__ ((format (printf, 1, 0)));
 
 //==============================================================================
 // Defines
@@ -35,10 +41,134 @@
 //				at runtime.
 //==============================================================================
 static const CString kMPIName = "KernelMPI";
+static const CString kBSMPIName = "BootSafeKernelMPI";
+
 
 //==============================================================================
-// Global variables
+// Local implementation functions
 //==============================================================================
+namespace
+{
+	//--------------------------------------------------------------------------
+	void Printf_Impl( const char * formatString, ... )
+				__attribute__ ((format (printf, 1, 2)));
+	void VPrintf_Impl( const char * formatString, va_list arguments )
+				__attribute__ ((format (printf, 1, 0)));
+	
+	//--------------------------------------------------------------------------
+	void VPrintf_Impl( const char * formatString, va_list arguments )
+	{
+		vprintf(formatString, arguments);
+	}
+	
+	//--------------------------------------------------------------------------
+	void Printf_Impl( const char * formatString, ... )
+	{
+		va_list arguments;
+		va_start(arguments, formatString);
+		VPrintf_Impl(formatString, arguments);
+		va_end(arguments);
+	}
+
+	//--------------------------------------------------------------------------
+	void PowerDown_Impl()
+	{
+		assert(!"PowerDown!");
+	}
+	
+	//--------------------------------------------------------------------------
+	tPtr Malloc_Impl(U32 size)
+	{
+		tPtr ptr = malloc( size );
+		if (!ptr)
+		{
+			Printf_Impl("BRIO FATAL: Memory allocation error, shutting down (allocation size was 0x%x\n", 
+						static_cast<unsigned int>(size));
+			PowerDown_Impl();
+		}
+		return ptr;
+	}
+	
+	//--------------------------------------------------------------------------
+	void Free_Impl(tPtr ptr)
+	{
+		free(ptr);
+	}
+
+	//--------------------------------------------------------------------------
+	std::vector<CPath> GetFilesInDirectory_Impl( const CPath& dirIn )
+	{
+		const CPath	kCurrentDirString = ".";
+		const CPath	kParentDirString = "..";
+	
+		CPath dir = AppendPathSeparator(dirIn);
+		std::vector<CPath>	files;
+		DIR *dirp = opendir(dirIn.c_str());
+		if( dirp == NULL )
+			return files;
+		
+		struct dirent *dp;
+		do
+		{
+			if( (dp = readdir(dirp)) != NULL
+					&& dp->d_name != kCurrentDirString
+					&& dp->d_name != kParentDirString )
+				files.push_back(dir + dp->d_name);
+		} while(dp != NULL);
+			
+		closedir(dirp);
+		return files;
+	}
+	
+	//------------------------------------------------------------------------------
+	Boolean IsDirectory_Impl( const CPath& dir )
+	{
+		struct stat filestat;
+		if (stat(dir.c_str(), &filestat) == 0
+				&& filestat.st_mode & S_IFDIR)
+			return true;
+		return false;
+	}
+	
+	//------------------------------------------------------------------------------
+	tHndl LoadModule_Impl( const CPath& dir )
+	{
+		void* pLib = dlopen(dir.c_str(), RTLD_LAZY);
+		if (pLib == NULL)
+		{
+			const char *err = dlerror();
+			Printf_Impl("BRIO WARNING: unable to open module '%s', %s", dir.c_str(), err);
+		}
+		return reinterpret_cast<tHndl>(pLib);
+	}
+	
+	//------------------------------------------------------------------------------
+	void* RetrieveSymbolFromModule_Impl( tHndl module, const CString& symbol )
+	{
+		if (module == kInvalidHndl)
+			return NULL;
+	    dlerror();
+	    void* pLib = reinterpret_cast<void*>(module);
+		void* ptr = dlsym(pLib, symbol.c_str());
+		if (ptr == NULL)
+		{
+			const char *err = dlerror();
+			Printf_Impl("BRIO WARNING: unable to retrieve symbol '%s', %s", symbol.c_str(), err);
+		}
+		return ptr;
+	}
+	
+	//------------------------------------------------------------------------------
+	void UnloadModule_Impl( tHndl module )
+	{
+		if (module != kInvalidHndl)
+		{
+			void* pLib = reinterpret_cast<void*>(module);
+			dlclose(pLib);
+		}
+	}
+}
+
 
 //==============================================================================
 // CKernelMPI implementation
@@ -158,17 +288,13 @@ void CKernelMPI::TaskSleep(U32 msec) const
 //============================================================================
 tPtr CKernelMPI::Malloc(U32 size)
 {
-	if (!pModule_)
-		return kNull;		
-	return pModule_->Malloc(size);
+	return Malloc_Impl(size);
 }
 
 //------------------------------------------------------------------------------
-tErrType CKernelMPI::Free(tPtr ptr)
+void CKernelMPI::Free(tPtr ptr)
 {
-	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->Free(ptr);
+	Free_Impl(ptr);
 }
 
 //============================================================================
@@ -504,26 +630,166 @@ tErrType CKernelMPI::SetCondAttrPShared( tCondAttr* pAttr, int shared )
 }
 
 
+
 //----------------------------------------------------------------------------
 void CKernelMPI::Printf( const char * formatString, ... ) const
 {
 	va_list arguments;
 	va_start(arguments, formatString);
-	vprintf(formatString, arguments);
+	VPrintf_Impl(formatString, arguments);
 	va_end(arguments);
 }
 
 //----------------------------------------------------------------------------
 void CKernelMPI::VPrintf( const char * formatString, va_list arguments ) const
 {
-	vprintf(formatString, arguments);
+	VPrintf_Impl(formatString, arguments);
 }
 
 //----------------------------------------------------------------------------
 void CKernelMPI::PowerDown() const
 {
-	assert(!"PowerDown!");
+	PowerDown_Impl();
 }
 
+//------------------------------------------------------------------------------
+std::vector<CPath> CKernelMPI::GetFilesInDirectory( const CPath& dir ) const
+{
+	return GetFilesInDirectory_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+Boolean CKernelMPI::IsDirectory( const CPath& dir ) const
+{
+	return IsDirectory_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+tHndl CKernelMPI::LoadModule( const CPath& dir ) const
+{
+	return LoadModule_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+void* CKernelMPI::RetrieveSymbolFromModule( tHndl module, const CString& symbol ) const
+{
+	return RetrieveSymbolFromModule_Impl(module, symbol);
+}
+
+//------------------------------------------------------------------------------
+void CKernelMPI::UnloadModule( tHndl module ) const
+{
+	UnloadModule_Impl(module);
+}
+
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+//==============================================================================
+// CBootSafeKernelMPI implementation
+//==============================================================================
+CBootSafeKernelMPI::CBootSafeKernelMPI()
+{
+}
+
+
+//============================================================================
+// Informational functions
+//============================================================================
+Boolean CBootSafeKernelMPI::IsValid() const
+{
+	return true;
+}
+
+//----------------------------------------------------------------------------
+const CString* CBootSafeKernelMPI::GetMPIName() const
+{
+	return &kBSMPIName;
+}
+
+//----------------------------------------------------------------------------
+tVersion CBootSafeKernelMPI::GetModuleVersion() const
+{
+	return 1;
+}
+
+//----------------------------------------------------------------------------
+const CString* CBootSafeKernelMPI::GetModuleName() const
+{
+	return &kBSMPIName;
+}
+
+//----------------------------------------------------------------------------
+const CURI* CBootSafeKernelMPI::GetModuleOrigin() const
+{
+	return &kNullURI;
+}
+
+//------------------------------------------------------------------------------
+tPtr CBootSafeKernelMPI::Malloc(U32 size)
+{
+	return Malloc_Impl(size);
+}
+
+//------------------------------------------------------------------------------
+void CBootSafeKernelMPI::Free(tPtr ptr)
+{
+	Free_Impl(ptr);
+}
+
+//----------------------------------------------------------------------------
+void CBootSafeKernelMPI::Printf( const char * formatString, ... ) const
+{
+	va_list arguments;
+	va_start(arguments, formatString);
+	VPrintf_Impl(formatString, arguments);
+	va_end(arguments);
+}
+
+//----------------------------------------------------------------------------
+void CBootSafeKernelMPI::VPrintf( const char * formatString, va_list arguments ) const
+{
+	VPrintf_Impl(formatString, arguments);
+}
+
+//----------------------------------------------------------------------------
+void CBootSafeKernelMPI::PowerDown() const
+{
+	PowerDown_Impl();
+}
+
+//------------------------------------------------------------------------------
+std::vector<CPath> CBootSafeKernelMPI::GetFilesInDirectory( const CPath& dir ) const
+{
+	return GetFilesInDirectory_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+Boolean CBootSafeKernelMPI::IsDirectory( const CPath& dir ) const
+{
+	return IsDirectory_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+tHndl CBootSafeKernelMPI::LoadModule( const CPath& dir ) const
+{
+	return LoadModule_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+void* CBootSafeKernelMPI::RetrieveSymbolFromModule( tHndl module, const CString& symbol ) const
+{
+	return RetrieveSymbolFromModule_Impl(module, symbol);
+}
+
+//------------------------------------------------------------------------------
+void CBootSafeKernelMPI::UnloadModule( tHndl module ) const
+{
+	UnloadModule_Impl(module);
+}
 
 // EOF

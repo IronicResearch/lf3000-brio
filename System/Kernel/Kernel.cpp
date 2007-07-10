@@ -1190,6 +1190,8 @@ tErrType CKernelModule::SetCondAttrPShared( tCondAttr* pAttr, int shared )
     return kNoErr;
 }
 
+
+
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================

@@ -150,7 +150,76 @@ public:
 		TS_ASSERT_EQUALS( *pURI, "/LF/System/Kernel" );
 	}
 	
-	void testGetElapsedTime()
+
+	//==============================================================================
+	// FileSystem
+	//==============================================================================
+	//------------------------------------------------------------------------------
+    CPath GetSourceFile()
+    {
+    	CPath curFile = __FILE__;
+		if (curFile[0] == '.')
+		{
+			char buf[1024];
+			getcwd(buf, sizeof(buf));
+			curFile = buf + curFile.substr(1);
+		}
+    	return curFile;
+    }
+    
+	//------------------------------------------------------------------------------
+    CPath GetSourceDirectory()
+    {
+    	CPath curDir;
+    	CPath curFile = GetSourceFile();
+    	size_t idx = curFile.rfind('/');
+    	if (idx > 0)
+    		curDir = curFile.substr(0, idx);
+    	return curDir;
+    }
+    
+	//------------------------------------------------------------------------------
+    void testIsDirectory()
+    {
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(""), false);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/"), true);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/home"), true);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/home/"), true);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/home/non-existing-file"), false);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(GetSourceFile()), false);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(GetSourceDirectory()), true);
+    }
+
+	//------------------------------------------------------------------------------
+    void testFilesInDirectory()
+    {
+    	std::vector<CPath>	files;
+    	size_t kZero = 0;
+    	files = KernelMPI->GetFilesInDirectory("");
+		TS_ASSERT_EQUALS(files.size(), kZero);
+    	files = KernelMPI->GetFilesInDirectory("/home");
+		TS_ASSERT_DIFFERS(files.size(), kZero);
+    	files = KernelMPI->GetFilesInDirectory("/home/");
+		TS_ASSERT_DIFFERS(files.size(), kZero);
+    	files = KernelMPI->GetFilesInDirectory("/home/non-existing-file");
+    	TS_ASSERT_EQUALS(files.size(), kZero);
+    	files = KernelMPI->GetFilesInDirectory(GetSourceFile());
+    	TS_ASSERT_EQUALS(files.size(), kZero);
+    	
+    	CPath curDir = GetSourceDirectory();
+    	files = KernelMPI->GetFilesInDirectory(curDir);
+    	TS_ASSERT_DIFFERS(files.size(), kZero);
+    	bool found = false;
+    	for (size_t ii = 0; ii < files.size(); ++ii)
+    	{
+    		if (files[ii] == GetSourceFile())
+    			found = true;
+    	}
+    	TS_ASSERT(found == true);
+	}
+
+    
+    void testGetElapsedTime()
 	{
 //		tErrType err;
 //		U32 pUs;
@@ -303,7 +372,7 @@ public:
 //		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Free( pPtr ) );
         
   		TS_ASSERT_DIFFERS( (void*)NULL, pPtr );
-  		TS_ASSERT_EQUALS( kNoErr, KernelMPI->Free( pPtr ) );
+  		KernelMPI->Free( pPtr );
 	}
 		
 	void TestCreateMessageQueue_1() 
@@ -388,13 +457,13 @@ public:
 
 //typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
-		TS_ASSERT_DIFFERS( kUndefinedHndl, hndlTimer_1 );
+		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_1 );
 
 		hndlTimer_2 = KernelMPI->CreateTimer(myTask_Timer_2, props_2, (const char *)0 );
-		TS_ASSERT_DIFFERS( kUndefinedHndl, hndlTimer_2 );
+		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_2 );
 
 		hndlTimer_3 = KernelMPI->CreateTimer(myTask_Timer_3, props_3, (const char *)0 );
-		TS_ASSERT_DIFFERS( kUndefinedHndl, hndlTimer_3 );
+		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_3 );
 
 //		TS_ASSERT_DIFFERS( hndl, static_cast<hndl>( kNull ));
 //		tErrType err = KernelMPI->DestroyTimer( hndlTimer );
@@ -483,27 +552,27 @@ public:
 			
 	}
 		
-       void testGetTimerElapsed_OR_Remaining_Time()
-        {
-			U32 elapsed;
-			U32 remaining;
-			tErrType err;
+   void testGetTimerElapsed_OR_Remaining_Time()
+    {
+		U32 elapsed;
+		U32 remaining;
+		tErrType err;
 
-			err = KernelMPI->GetTimerElapsedTime(hndlTimer_1, &elapsed);
-			TS_ASSERT_EQUALS( kNoErr, err );
-			err = KernelMPI->GetTimerRemainingTime(hndlTimer_1, &remaining);
-			TS_ASSERT_EQUALS( kNoErr, err );
+		err = KernelMPI->GetTimerElapsedTime(hndlTimer_1, &elapsed);
+		TS_ASSERT_EQUALS( kNoErr, err );
+		err = KernelMPI->GetTimerRemainingTime(hndlTimer_1, &remaining);
+		TS_ASSERT_EQUALS( kNoErr, err );
 
-//			errno = 0;
-//			err = KernelMPI->GetTimerElapsedTime(hndlTimer_1+20, &elapsed);
-//			TS_ASSERT_EQUALS( EINVAL, errno );
+//		errno = 0;
+//		err = KernelMPI->GetTimerElapsedTime(hndlTimer_1+20, &elapsed);
+//		TS_ASSERT_EQUALS( EINVAL, errno );
 
-//			errno = 0;
-//			err = KernelMPI->GetTimerRemainingTime(hndlTimer_1+20, &remaining);
-//			TS_ASSERT_EQUALS( EINVAL, errno );
+//		errno = 0;
+//		err = KernelMPI->GetTimerRemainingTime(hndlTimer_1+20, &remaining);
+//		TS_ASSERT_EQUALS( EINVAL, errno );
 
-        	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
-        }
+   	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
+    }
 
     void testDestroyTimer()
     {
@@ -666,32 +735,32 @@ public:
         }
  
     // Destroys a condition variable attribute object. Tested above 
-        void xtestDestroyCond()
-        {
-        	// err = KernelMPI->DestroyCond( tCond& cond );
-        }
-    
-    // Initializes a condition variable attribute object    
-        void testInitCondAttr()
-        {
-			tErrType err;
-        	tCondAttr attr;
+    void xtestDestroyCond()
+    {
+    	// err = KernelMPI->DestroyCond( tCond& cond );
+    }
 
-			err = KernelMPI->InitCondAttr( attr );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+// Initializes a condition variable attribute object    
+    void testInitCondAttr()
+    {
+		tErrType err;
+    	tCondAttr attr;
 
-        	err = KernelMPI->DestroyCondAttr( attr );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		err = KernelMPI->InitCondAttr( attr );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-        }
+    	err = KernelMPI->DestroyCondAttr( attr );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-    // Destroys a condition variable Tested
-        void xtestDestroyCondAttr()
-        {
-        	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
-        }
+    }
 
-    // Unblocks all threads that are waiting on a condition variable
+// Destroys a condition variable Tested
+    void xtestDestroyCondAttr()
+    {
+    	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
+    }
+
+// Unblocks all threads that are waiting on a condition variable
         void testBroadcastCond()
         {
 			tErrType err;
@@ -718,64 +787,64 @@ public:
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
  
         	// err = KernelMPI->SignalCond( tCond& cond );
-        }
-    
-    // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-    // FIXME: pAbstime var
-        void testTimedWaitOnCond()
-        {
-			tErrType err;
-        	static tCond cond = PTHREAD_COND_INITIALIZER;  
-			static tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
-			const int sleepDuration = 2;
-			
+    }
+
+// Automatically unlocks the specified mutex, and places the calling thread into a wait state
+// FIXME: pAbstime var
+    void testTimedWaitOnCond()
+    {
+		tErrType err;
+    	static tCond cond = PTHREAD_COND_INITIALIZER;  
+		static tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
+		const int sleepDuration = 2;
+		
 //			tTimeSpec timeout1, timeout2; 
 //			time(&timeout1.tv_sec);
 //			timeout1.tv_sec += sleepDuration;
-			struct timeval now;		// time when it's started waiting
-			struct timeval end;		// time when it's ended waiting
-			struct timespec timeout;	// timeout value for wait function
+		struct timeval now;		// time when it's started waiting
+		struct timeval end;		// time when it's ended waiting
+		struct timespec timeout;	// timeout value for wait function
 
-			gettimeofday( &now, NULL );			
-			timeout.tv_sec =  now.tv_sec + sleepDuration;
-			timeout.tv_nsec = now.tv_usec * 1000;
+		gettimeofday( &now, NULL );			
+		timeout.tv_sec =  now.tv_sec + sleepDuration;
+		timeout.tv_nsec = now.tv_usec * 1000;
 
-        	err = KernelMPI->TimedWaitOnCond( cond, mutex, &timeout );
-			TS_ASSERT_EQUALS( (int )err, ETIMEDOUT );
+    	err = KernelMPI->TimedWaitOnCond( cond, mutex, &timeout );
+		TS_ASSERT_EQUALS( (int )err, ETIMEDOUT );
 
-			gettimeofday( &end, NULL );			
-            TS_ASSERT_LESS_THAN_EQUALS( end.tv_sec - now.tv_sec, 3 );
-               
-         	err = KernelMPI->DestroyCond( cond );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		gettimeofday( &end, NULL );			
+        TS_ASSERT_LESS_THAN_EQUALS( end.tv_sec - now.tv_sec, 3 );
+           
+     	err = KernelMPI->DestroyCond( cond );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-	   		err = KernelMPI->DeInitMutex( mutex );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+   		err = KernelMPI->DeInitMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-        	//pthread_cond_timedwait(&cond, &mutex, pAbstime );
-        }
-    
-    // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-        void testWaitOnCond()
-        {
-			tErrType err;
+    	//pthread_cond_timedwait(&cond, &mutex, pAbstime );
+    }
+
+// Automatically unlocks the specified mutex, and places the calling thread into a wait state
+    void testWaitOnCond()
+    {
+		tErrType err;
 
 //  			int                   rc=0;
  // 			int                   i;
-  			tTaskHndl		threadid;
-  			tTaskProperties props;
-  			props.TaskMainFcn = threadfunc_broadcast;
+		tTaskHndl		threadid;
+		tTaskProperties props;
+		props.TaskMainFcn = threadfunc_broadcast;
 //			tPtr status = NULL;
-				
-				//    rc = pthread_create(&threadid[i], NULL, threadfunc_broadcast, NULL);
-    			err = KernelMPI->CreateTask( threadid,
-    						 (const tTaskProperties )props,	NULL );
-				TS_ASSERT_EQUALS( err, ((tErrType)0) );
-
-  			err = KernelMPI->LockMutex( mutex_broadcast );
+			
+			//    rc = pthread_create(&threadid[i], NULL, threadfunc_broadcast, NULL);
+			err = KernelMPI->CreateTask( threadid,
+						 (const tTaskProperties )props,	NULL );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-			while (!conditionMet) 
-			{
+
+		err = KernelMPI->LockMutex( mutex_broadcast );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		while (!conditionMet) 
+		{
 //    			printf("Thread blocked\n");
 //    			fflush(stdout);
     			err = KernelMPI->WaitOnCond( cond_broadcast, mutex_broadcast );
@@ -792,19 +861,18 @@ public:
  
  
     // Obtains the process-shared setting of a condition variable attribute object
-        void xtestGetCondAttrPShared()
-        {
-        	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
-        }
-    
-    
-    // Sets the process-shared attribute in a condition variable attribute object
-    // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
-        void xtestSetCondAttrPShared()
-        {
-        	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
-        }
+    void xtestGetCondAttrPShared()
+    {
+    	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
+    }
 
+
+// Sets the process-shared attribute in a condition variable attribute object
+// to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
+    void xtestSetCondAttrPShared()
+    {
+    	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
+    }
 };
 
 
