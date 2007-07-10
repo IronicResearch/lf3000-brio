@@ -4994,3 +4994,14 @@ By DGibbs (DGibbs@leapfrog.com) on 7/9/07 2:52 PM
 2,500 ms. (Cumulative: 821,548 ms)
 
 ----------------
+Revision 831 from svn://localhost/TRUNK/:
+Revision 832 from svn://localhost/TRUNK/:
+Revision 833 from svn://localhost/TRUNK/:
+
+Restore variadic macro
+
+By TParker (TParker@leapfrog.com) on 7/9/07 7:11 PM
+1 changed, 0 added, 0 deleted.
+2,204 ms. (Cumulative: 823,830 ms)
+
+----------------
