@@ -83,15 +83,15 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Map 3D engine register space
 	gregsize = PAGE_3D * getpagesize();  
 	gpReg3d = mmap(0, gregsize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevGa3d, REG3D_PHYS);
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", REG3D_PHYS, gpReg3d);
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for framebuffer
     gpMem1 = mmap(MEM1_VIRT, gmem1size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM1_PHYS);
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", MEM1_PHYS, gpMem1);
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", MEM1_PHYS, gpMem1);
 
 	// Map memory block for (?)
     gpMem2 = mmap(MEM2_VIRT, gmem2size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM2_PHYS);
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %08X\n", MEM2_PHYS, gpMem2);
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", MEM2_PHYS, gpMem2);
 
 	// Pass back essential display context info for OpenGL bindings
 	tOpenGLContext* pOglCtx = (tOpenGLContext*)pCtx;
