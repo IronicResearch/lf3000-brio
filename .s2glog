@@ -5023,3 +5023,19 @@ By TParker (TParker@leapfrog.com) on 7/9/07 7:16 PM
 2,412 ms. (Cumulative: 828,636 ms)
 
 ----------------
+Revision 836 from svn://localhost/TRUNK/:
+Revision 837 from svn://localhost/TRUNK/:
+Revision 838 from svn://localhost/TRUNK/:
+Revision 839 from svn://localhost/TRUNK/:
+Revision 840 from svn://localhost/TRUNK/:
+Revision 841 from svn://localhost/TRUNK/:
+Revision 842 from svn://localhost/TRUNK/:
+Revision 843 from svn://localhost/TRUNK/:
+
+Fix build problem, needed to use full pathnames to Resource directory in SConscript.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/10/07 3:17 PM
+1 changed, 0 added, 0 deleted.
+2,050 ms. (Cumulative: 830,835 ms)
+
+----------------
