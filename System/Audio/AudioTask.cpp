@@ -580,7 +580,8 @@ void* AudioTaskMain( void* /*arg*/ )
 	
 	err = gContext.kernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
 
-    gContext.debugMPI->AssertNoErr( err, "AudioTaskMain() -- Trying to create incoming audio task msg queue.\n" );
+    gContext.debugMPI->Assert((kNoErr == err), "AudioTaskMain() -- Trying to create incoming audio task msg queue. err = %d \n", 
+    		static_cast<int>(err) );
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
@@ -592,7 +593,7 @@ void* AudioTaskMain( void* /*arg*/ )
 
 	err = gContext.kernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
 
-    gContext.debugMPI->AssertNoErr(err, "AudioTaskMain() -- Trying to create outgoing audio task msg queue.\n" );
+   gContext.debugMPI->AssertNoErr(err, "AudioTaskMain() -- Trying to create outgoing audio task msg queue.\n" );
 
 // Set the task to ready
 	gAudioTaskRunning = true;
@@ -609,7 +610,8 @@ void* AudioTaskMain( void* /*arg*/ )
 	    err = gContext.kernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 
 								   (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 								   
-	    gContext.debugMPI->DebugOutErr(kDbgLvlVerbose, err, "AudioTaskMain() -- ReceivedMessage err\n");
+	    gContext.debugMPI->DebugOut(kDbgLvlVerbose, "AudioTaskMain() -- ReceivedMessage err = % d\n", 
+	    		static_cast<int>(err) );
 
 		pAudioMsg = reinterpret_cast<CAudioCmdMsg*>(msgBuf);
 		msgSize = pAudioMsg->GetMessageSize();
