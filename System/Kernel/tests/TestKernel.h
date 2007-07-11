@@ -157,6 +157,9 @@ public:
 	//------------------------------------------------------------------------------
     CPath GetSourceFile()
     {
+#ifndef EMULATION
+    	return "/usr/include/stdio.h";
+#else
     	CPath curFile = __FILE__;
 		if (curFile[0] == '.')
 		{
@@ -165,6 +168,7 @@ public:
 			curFile = buf + curFile.substr(1);
 		}
     	return curFile;
+#endif
     }
     
 	//------------------------------------------------------------------------------
@@ -183,8 +187,8 @@ public:
     {
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(""), false);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/"), true);
-		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/home"), true);
-		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/home/"), true);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/usr"), true);
+		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/usr/"), true);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/home/non-existing-file"), false);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(GetSourceFile()), false);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(GetSourceDirectory()), true);
@@ -197,9 +201,9 @@ public:
     	size_t kZero = 0;
     	files = KernelMPI->GetFilesInDirectory("");
 		TS_ASSERT_EQUALS(files.size(), kZero);
-    	files = KernelMPI->GetFilesInDirectory("/home");
+    	files = KernelMPI->GetFilesInDirectory("/usr");
 		TS_ASSERT_DIFFERS(files.size(), kZero);
-    	files = KernelMPI->GetFilesInDirectory("/home/");
+    	files = KernelMPI->GetFilesInDirectory("/usr/");
 		TS_ASSERT_DIFFERS(files.size(), kZero);
     	files = KernelMPI->GetFilesInDirectory("/home/non-existing-file");
     	TS_ASSERT_EQUALS(files.size(), kZero);
