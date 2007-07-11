@@ -73,6 +73,9 @@ namespace
 	//--------------------------------------------------------------------------
 	void PowerDown_Impl()
 	{
+		Printf_Impl("\n\n");
+		fflush(stdout);
+		fflush(stderr);
 		assert(!"PowerDown!");
 	}
 	
@@ -137,7 +140,7 @@ namespace
 		if (pLib == NULL)
 		{
 			const char *err = dlerror();
-			Printf_Impl("BRIO WARNING: unable to open module '%s', %s", dir.c_str(), err);
+			Printf_Impl("BRIO WARNING: unable to open module '%s', %s\n", dir.c_str(), err);
 		}
 		return reinterpret_cast<tHndl>(pLib);
 	}
@@ -153,7 +156,8 @@ namespace
 		if (ptr == NULL)
 		{
 			const char *err = dlerror();
-			Printf_Impl("BRIO WARNING: unable to retrieve symbol '%s', %s", symbol.c_str(), err);
+			Printf_Impl("BRIO WARNING: unable to retrieve symbol '%s', %s\n", 
+					symbol.c_str(), err);
 		}
 		return ptr;
 	}
