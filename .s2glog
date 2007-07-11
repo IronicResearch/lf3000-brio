@@ -5129,3 +5129,13 @@ By Dmilici (Dmilici@leapfrog.com) on 7/11/07 11:56 AM
 2,161 ms. (Cumulative: 852,404 ms)
 
 ----------------
+Revision 862 from svn://localhost/TRUNK/:
+Revision 863 from svn://localhost/TRUNK/:
+
+Added glColor4ub() stub for emulation linking.
+
+By TParker (TParker@leapfrog.com) on 7/11/07 12:42 PM
+1 changed, 0 added, 0 deleted.
+2,096 ms. (Cumulative: 854,570 ms)
+
+----------------
