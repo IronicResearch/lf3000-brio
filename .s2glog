@@ -5139,3 +5139,12 @@ By TParker (TParker@leapfrog.com) on 7/11/07 12:42 PM
 2,096 ms. (Cumulative: 854,570 ms)
 
 ----------------
+Revision 864 from svn://localhost/TRUNK/:
+
+Updated missing glColor4u() function with correct conversion.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/11/07 1:33 PM
+2 changed, 0 added, 0 deleted.
+2,356 ms. (Cumulative: 857,002 ms)
+
+----------------

@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.12  (Build 859 released July 11, 2007) 
+v0.1.12  (Build 864 released July 11, 2007) 
 ===========================================
 Release for embedded target -- LF2530 development board with audio.
 
@@ -16,7 +16,8 @@ Enhancements:
 -------------
 * LCD module on LF2530 boards configured with correct settings.
 * Brightness and Contrast controls added to Display MPI.
-* OpenGL library updated with eglSwapBuffers() fix.
+* OpenGL embedded library updated with eglSwapBuffers() fix.
+* OpenGL emulation library updated with glColor4u() fix. 
 * Sound buffer sizes increased for fewer audible clicks.
 * Stricter compiler warnings for *printf() variable arguments.
 * New CKernelMPI methods to better encapsulate system porting: 

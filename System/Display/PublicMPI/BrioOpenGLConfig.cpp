@@ -28,11 +28,13 @@
 //============================================================================
 // Stub function to allow emulation builds to link
 //============================================================================
+inline GLfixed B2FIX(GLubyte x) { return (x * 0x10000 / 0xFF); }
 void glColor4ub( GLubyte red,
                  GLubyte green,
                  GLubyte blue,
                  GLubyte alpha )
 {
+	glColor4x( B2FIX(red), B2FIX(green), B2FIX(blue), B2FIX(alpha));
 }
 #endif
 
