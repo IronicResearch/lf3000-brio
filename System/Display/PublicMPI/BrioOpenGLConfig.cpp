@@ -23,6 +23,20 @@
 #include "GLES/libogl.h"
 #endif
 
+
+#ifdef  EMULATION
+//============================================================================
+// Stub function to allow emulation builds to link
+//============================================================================
+void glColor4ub( GLubyte red,
+                 GLubyte green,
+                 GLubyte blue,
+                 GLubyte alpha )
+{
+}
+#endif
+
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 #if 0	// NOTBUG/dm: enable for development
