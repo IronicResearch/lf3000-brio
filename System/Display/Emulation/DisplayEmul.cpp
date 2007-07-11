@@ -276,5 +276,33 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 	return kPixelFormatARGB8888;
 }
 
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
+{
+	// Nothing to do on emulation target
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
+{
+	// Nothing to do on emulation target
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
+{
+	// Nothing to do on emulation target
+	return 0;
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetContrast(tDisplayScreen screen)
+{
+	// Nothing to do on emulation target
+	return 0;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

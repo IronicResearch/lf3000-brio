@@ -89,7 +89,12 @@ public:
 	VTABLE_EXPORT void    			EnableOpenGL();
 	VTABLE_EXPORT void    			DisableOpenGL();
 	VTABLE_EXPORT void    			UpdateOpenGL();
-
+	
+	VTABLE_EXPORT tErrType			SetBrightness(tDisplayScreen screen, S8 brightness);
+	VTABLE_EXPORT tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
+	VTABLE_EXPORT S8				GetBrightness(tDisplayScreen screen);
+	VTABLE_EXPORT S8				GetContrast(tDisplayScreen screen);
+	
 private:
 	void				InitModule( );
 	void				DeInitModule( );

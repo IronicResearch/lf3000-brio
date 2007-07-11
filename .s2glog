@@ -5048,3 +5048,30 @@ By DGibbs (DGibbs@leapfrog.com) on 7/10/07 3:17 PM
 2,050 ms. (Cumulative: 832,939 ms)
 
 ----------------
+Revision 845 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,058 ms. (Cumulative: 835,069 ms)
+
+----------------
+Revision 846 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,041 ms. (Cumulative: 837,118 ms)
+
+----------------
+Revision 847 from svn://localhost/TRUNK/:
+Revision 848 from svn://localhost/TRUNK/:
+Revision 849 from svn://localhost/TRUNK/:
+Revision 850 from svn://localhost/TRUNK/:
+Revision 851 from svn://localhost/TRUNK/:
+Revision 852 from svn://localhost/TRUNK/:
+Revision 853 from svn://localhost/TRUNK/:
+
+Add brightness and contrast controls to Display MPI.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/10/07 5:48 PM
+6 changed, 0 added, 0 deleted.
+2,194 ms. (Cumulative: 839,364 ms)
+
+----------------
