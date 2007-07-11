@@ -103,6 +103,38 @@ tErrType CDisplayMPI::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 	return pModule_->Invalidate(screen, pDirtyRect);
 }
 
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetBrightness(tDisplayScreen screen, S8 brightness)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetBrightness(screen, brightness);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetContrast(tDisplayScreen screen, S8 contrast)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetContrast(screen, contrast);
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayMPI::GetBrightness(tDisplayScreen screen)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetBrightness(screen);
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayMPI::GetContrast(tDisplayScreen screen)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetContrast(screen);
+}
+
 //============================================================================
 //----------------------------------------------------------------------------
 tDisplayHandle CDisplayMPI::CreateHandle(U16 height, U16 width, 

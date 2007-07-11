@@ -67,6 +67,11 @@ public:
 	void				DisableOpenGL();
 	void				UpdateOpenGL();
 	
+	tErrType			SetBrightness(tDisplayScreen screen, S8 brightness);
+	tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
+	S8					GetBrightness(tDisplayScreen screen);
+	S8					GetContrast(tDisplayScreen screen);
+	
 private:
 	class CDisplayModule*	pModule_;
 };

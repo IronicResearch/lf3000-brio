@@ -27,9 +27,14 @@
 #define YUV_LAYER_DEV	"/dev/layer3"
 
 // pins used for LCD and board-specific tasks
+#ifdef  ME2530
 #define PIN_LCD_ENABLE			10
 #define PIN_BACKLIGHT_ENABLE	9
 #define PIN_BLUE_LED			29
+#else
+#define PIN_LCD_ENABLE			31
+#define PIN_BACKLIGHT_ENABLE	28
+#endif
 
 #define ALPHA_STEP				15
 

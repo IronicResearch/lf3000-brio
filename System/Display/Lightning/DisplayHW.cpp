@@ -22,6 +22,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <linux/lf1000/gpio_ioctl.h>
+#include <linux/lf1000/dpc_ioctl.h>
 #include <linux/lf1000/mlc_ioctl.h>
 #include "GLES/libogl.h"
 
@@ -34,6 +35,7 @@ namespace
 {
 	//------------------------------------------------------------------------
 	int			gDevGpio;
+	int			gDevDpc;
 	int			gDevMlc;
 	int			gDevLayer;
 	int			gDevOverlay;
@@ -56,6 +58,11 @@ void CDisplayModule::InitModule()
 	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
 	dbg_.Assert(gDevGpio >= 0, 
 			"DisplayModule::InitModule: failed to open GPIO device");
+	
+	// open DPC device
+	gDevMlc = open("/dev/dpc", O_RDWR|O_SYNC);
+	dbg_.Assert(gDevMlc >= 0, 
+			"DisplayModule::InitModule: failed to open DPC device");
 	
 	// open MLC device
 	gDevMlc = open("/dev/mlc", O_RDWR|O_SYNC);
@@ -110,6 +117,7 @@ void CDisplayModule::InitModule()
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gOverlayBuffer);
 
+	// TODO: Drivers should auto-enable LCD from now on
 	c.outvalue.port = 1;	// GPIO port B
 	c.outvalue.value = 1;	// set pins high
 
@@ -121,16 +129,13 @@ void CDisplayModule::InitModule()
 	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
 	dbg_.Assert(r >= 0, 
 			"DisplayModule::InitModule: GPIO ioctl failed");
-	c.outvalue.pin	= PIN_BLUE_LED;
-	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	dbg_.Assert(r >= 0, 
-			"DisplayModule::InitModule: GPIO ioctl failed");
 }
 
 //----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
 	close(gDevGpio);
+	close(gDevDpc);
 	close(gDevMlc);
 	close(gDevLayer);
 	close(gDevOverlay);
@@ -171,6 +176,7 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 	return kPixelFormatError;
 }
 
+//----------------------------------------------------------------------------
 // The frame buffer was already allocated by the hardware, therefore pBuffer
 // is ignored.
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
@@ -232,12 +238,14 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	return (tDisplayHandle)GraphicsContext;
 }
 
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
 	SetDirtyBit(gDevLayer);
     return kNoErr;
 }
 
+//----------------------------------------------------------------------------
 // This method does not have much meaning given the kernel-level frame buffer.
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
@@ -246,6 +254,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
 // There is no buffer to destroy, so destroyBuffer is ignored.
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
 									   Boolean destroyBuffer)
@@ -254,6 +263,7 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	union mlc_cmd c;
@@ -290,11 +300,13 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
 void CDisplayModule::SetDirtyBit(int layer)
 {
 	ioctl(layer, MLC_IOCTDIRTY, 0);
 }
 
+//----------------------------------------------------------------------------
 // FIXME/dm: Actually this seems like the perfect method for video overlays!
 
 // We are not implementing multiple 2D RGB layers or multiple screens, so
@@ -305,6 +317,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	return RegisterLayer(hndl, xPos, yPos);
 }
 
+//----------------------------------------------------------------------------
 // We are not implementing multiple 2D RGB layers or multiple screens, so
 // initialZOrder and screen are ignored.
 tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
@@ -314,16 +327,19 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	return RegisterLayer(hndl, xPos, yPos);
 }
 
+//----------------------------------------------------------------------------
 U8 *CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pBuffer;
 }
 
+//----------------------------------------------------------------------------
 U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pitch;
 }
 
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
 		Boolean enable)
 {
@@ -341,14 +357,56 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
 U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->height;
 }
 
+//----------------------------------------------------------------------------
 U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->width;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
+{
+	unsigned long	p = brightness;
+	int 			r;
+	
+	r = ioctl(gDevDpc, DPC_IOCTBRIGHTNESS, p);
+	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
+{
+	unsigned long	p = contrast;
+	int 			r;
+	
+	r = ioctl(gDevDpc, DPC_IOCTCONTRAST, p);
+	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
+{
+	unsigned long	p = 0x8000 | 0x0F00;
+	int 			r;
+	
+	r = ioctl(gDevDpc, DPC_IOCTSPIREG, p);
+	return (r < 0) ? 0 : r & 0xFF;
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetContrast(tDisplayScreen screen)
+{
+	unsigned long	p = 0x8000 | 0x0E00;
+	int 			r;
+	
+	r = ioctl(gDevDpc, DPC_IOCTSPIREG, p);
+	return (r < 0) ? 0 : r & 0xFF;
 }
 
 LF_END_BRIO_NAMESPACE()
