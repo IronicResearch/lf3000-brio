@@ -5075,3 +5075,14 @@ By Dmilici (Dmilici@leapfrog.com) on 7/10/07 5:48 PM
 2,194 ms. (Cumulative: 839,364 ms)
 
 ----------------
+Revision 854 from svn://localhost/TRUNK/:
+Revision 855 from svn://localhost/TRUNK/:
+
+Had to remove AsserNoErr() and DebugOutErr() because they cause a segfault on the ARM target.  
+Need to debug these functions after release.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/10/07 6:11 PM
+2 changed, 0 added, 0 deleted.
+2,131 ms. (Cumulative: 841,586 ms)
+
+----------------

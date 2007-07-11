@@ -243,7 +243,8 @@ CAudioModule::CAudioModule( )
 	
 	err = pKernelMPI_->OpenMessageQueue( hSendMsgQueue_, msgQueueProperties, NULL );
 
-    pDebugMPI_->AssertNoErr(err, "CAudioModule::ctor:Trying to create incoming audio task msg queue.\n");
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor:Trying to create incoming audio task msg queue. err = %d \n", 
+    		static_cast<int>(err) );
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
@@ -255,7 +256,8 @@ CAudioModule::CAudioModule( )
 
 	err = pKernelMPI_->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
 
-    pDebugMPI_->AssertNoErr(err, "CAudioModule::ctor: Trying to create outgoing audio task msg queue.\n" );
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Trying to create outgoing audio task msg queue. Err = %d \n", 
+    		static_cast<int>(err) );
 }
 
 //==============================================================================
@@ -828,7 +830,8 @@ void CAudioModule::SendCmdMessage( CAudioCmdMsg& msg )
 							msg.GetMessageSize(), msg.GetCmdType());	
 	
     err = pKernelMPI_->SendMessage( hSendMsgQueue_, msg );
-    pDebugMPI_->AssertNoErr(err, "CAudioModule::SendCmdMessage -- After call SendMessage().\n" );
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::SendCmdMessage -- After call SendMessage err = %d \n", 
+    		static_cast<int>(err) );
 }
 
 //==============================================================================
@@ -843,7 +846,8 @@ tAudioID CAudioModule::WaitForAudioID( void )
 			"CAudioModule::WaitForAudioID -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
-	pDebugMPI_->DebugOutErr(kDbgLvlVerbose, err, "Audio Task: ReceivedMessage err\n");
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "Audio Task: ReceivedMessage err = % d\n", 
+			static_cast<int>(err) );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
@@ -865,7 +869,8 @@ tMidiID CAudioModule::WaitForMidiID( void )
 			"CAudioModule::WaitForAudioID -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
-	pDebugMPI_->DebugOutErr(kDbgLvlVerbose, err, "Audio Task: ReceivedMessage err\n");
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "Audio Task: ReceivedMessage err = % d\n", 
+			static_cast<int>(err) );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
@@ -887,12 +892,14 @@ tAudioID CAudioModule::WaitForStatus( void )
 			"CAudioModule::WaitForStatus -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
-	pDebugMPI_->DebugOutErr(kDbgLvlVerbose, err, "CAudioModule::WaitForStatus: ReceivedMessage err\n");
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForStatus -- ReceivedMessage err = % d\n", 
+			static_cast<int>(err) );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
-	pDebugMPI_->DebugOutErr(kDbgLvlVerbose, msg->GetAudioErr(),
-			"CAudioModule::WaitForStatus -- Got bad status\n");
+	err = msg->GetAudioErr();
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForStatus -- Got status = %d \n",
+	    	   static_cast<int>(err) );  
 		    	  
 	return msg->GetAudioErr();
 }
