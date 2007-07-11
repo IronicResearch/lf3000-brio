@@ -5086,3 +5086,18 @@ By DGibbs (DGibbs@leapfrog.com) on 7/10/07 6:11 PM
 2,131 ms. (Cumulative: 841,586 ms)
 
 ----------------
+Revision 856 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,089 ms. (Cumulative: 843,727 ms)
+
+----------------
+Revision 857 from svn://localhost/TRUNK/:
+
+Updated MagicEyes OpenGL lib with eglSwapBuffers() fix.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/11/07 10:06 AM
+1 changed, 0 added, 0 deleted.
+2,196 ms. (Cumulative: 845,930 ms)
+
+----------------
