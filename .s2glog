@@ -5148,3 +5148,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/11/07 1:33 PM
 2,356 ms. (Cumulative: 857,002 ms)
 
 ----------------
+Revision 865 from svn://localhost/TRUNK/:
+
+Flush output before PowerDown() assertion, fixes bug #20
+
+By TParker (TParker@leapfrog.com) on 7/11/07 3:05 PM
+1 changed, 0 added, 0 deleted.
+2,233 ms. (Cumulative: 859,331 ms)
+
+----------------
