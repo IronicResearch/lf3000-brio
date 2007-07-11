@@ -5101,3 +5101,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/11/07 10:06 AM
 2,196 ms. (Cumulative: 845,930 ms)
 
 ----------------
+Revision 858 from svn://localhost/TRUNK/:
+
+Correct brightness and contrast settings for LF2530 LCD module.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/11/07 10:45 AM
+1 changed, 0 added, 0 deleted.
+2,035 ms. (Cumulative: 848,023 ms)
+
+----------------
