@@ -60,8 +60,8 @@ void CDisplayModule::InitModule()
 			"DisplayModule::InitModule: failed to open GPIO device");
 	
 	// open DPC device
-	gDevMlc = open("/dev/dpc", O_RDWR|O_SYNC);
-	dbg_.Assert(gDevMlc >= 0, 
+	gDevDpc = open("/dev/dpc", O_RDWR|O_SYNC);
+	dbg_.Assert(gDevDpc >= 0, 
 			"DisplayModule::InitModule: failed to open DPC device");
 	
 	// open MLC device
@@ -372,7 +372,7 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 {
-	unsigned long	p = brightness;
+	unsigned long	p = brightness + 128;
 	int 			r;
 	
 	r = ioctl(gDevDpc, DPC_IOCTBRIGHTNESS, p);
@@ -382,7 +382,7 @@ tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 {
-	unsigned long	p = contrast;
+	unsigned long	p = (contrast + 128) >> 4;
 	int 			r;
 	
 	r = ioctl(gDevDpc, DPC_IOCTCONTRAST, p);
@@ -396,7 +396,7 @@ S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 	int 			r;
 	
 	r = ioctl(gDevDpc, DPC_IOCTSPIREG, p);
-	return (r < 0) ? 0 : r & 0xFF;
+	return (r < 0) ? 0 : (r & 0xFF) - 128;
 }
 
 //----------------------------------------------------------------------------
@@ -406,7 +406,7 @@ S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 	int 			r;
 	
 	r = ioctl(gDevDpc, DPC_IOCTSPIREG, p);
-	return (r < 0) ? 0 : r & 0xFF;
+	return (r < 0) ? 0 : ((r & 0xFF) << 4) - 128;
 }
 
 LF_END_BRIO_NAMESPACE()
