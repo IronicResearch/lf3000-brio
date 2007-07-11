@@ -3,11 +3,28 @@ Lightning SDK
 ======================================================
 
 Lightning SDKs typically consist of three parts:
-  LighningSDK_xxxx.tar.gz - this contains the Brio components necesasry for development
+  LightningSDK_xxxx.tar.gz -this contains the Brio components necesasry for development
   nfsroot-svnxxxx.tar.gz  - this contains the linux nfsroot folder necessary for booting the target
   zImage-svnxxxx.tar.gz   - the linux kernel.  If you aren't booting using tftp, you will need to
                             flash this file in the NAND of the target board.
                             
+The SDK can be unzipped as is and located anywhere.
+
+	tar -xzvf LightningSDK_xxxx.tar.gz
+	export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
+
+The NFS root image must be unzipped as root user and located off the home user path.
+
+	sudo tar -xzvf nfsroot-svnxxx.tar.gz
+	mv nfsroot-svnxxx nfsroot
+	
+The Linux kernel zImage will copied to your TFTP server base directory, and subsequently downloaded
+onto the traget board via the U-Boot loader.
+
+	tar -xzvf zImage-svnxxxx.tar.gz
+	mv zImage* ~/tftpboot
+	...
+
 These three pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
 release together or you will almost certainly have problems.
@@ -39,13 +56,13 @@ The installation tree will look more or less like this:
 |
 +-Libs  (Brio MPI headers)
 |  |
-|  +-Lighting
+|  +-Lightning
 |  |  |
 |  |  +-MPI       (module interface objects, directly linked to by apps)
 |  |  |
 |  |  +-OpenGL    (MagicEyes library)
 |  |
-|  +-Lighting_emulation
+|  +-Lightning_emulation
 |     |
 |     +-Module    (Brio replacable modules, not linked to by apps)
 |     |
@@ -54,14 +71,18 @@ The installation tree will look more or less like this:
 |     +-OpenGL    (PowerVR library)
 |     |
 |     +-PrivMPI   (module interface objects for Brio modules, not linked to by apps)
+|     |
+|     +-ThirdParty(Ogg, Vorbis, and Theora support libraries)
 |  
 +-Samples
 |  |
 |  +-BrioCube     (rotating cube with Brio calls that are exercised through button presses)
 |  |
+|  +-BrioVideo    (video playback demo to YUV video surface layer)
+|  |
 |  +-Button       (demonstrates button presses on the hardware)
 |  |
-|  +-Display      (demonstrates how to load and use fonts)
+|  +-Display      (demonstrates 2D RGB display surface layer and fonts)
 |  |
 |  +-Simple       (simplest OpenGL application, minimal build system)
 |
@@ -77,7 +98,7 @@ to the location of your SDK folder.  At the command line you can type:
 You may also want to add this to your .bashrc file in the lfu home directory so it will always 
 be setup:
 	
-	export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_816
+	export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_<xxxx>
 
 ======================================================
 Target Preparation : installing nfsroot
@@ -162,7 +183,7 @@ From your Eclipse Workspace:
       emulation target.  If you are running on the actual hardware, enter
 	  "scons runtests=f deploy_dir=</path/to/your/nfsroot/>".  Your nfsroot is
 	  wherever you chose to untar the nfsroot, probably /home/lfu/nfsroot/.
-	  YThe environment variable ROOTFS_PATH will be used instead if it is defined:
+	  The environment variable ROOTFS_PATH will be used instead if it is defined:
 	  export ROOTFS_PATH=/home/lfu/nfsroot
    e) Clear out the "Build" field
    f) Put '-c' in the "Clean" field

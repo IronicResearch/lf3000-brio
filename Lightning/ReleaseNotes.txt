@@ -1,6 +1,36 @@
 ===========================================
 Lightning C++ Development Kit Release Notes
 ===========================================
+
+===========================================
+v0.1.12  (Build 859 released July 11, 2007) 
+===========================================
+Release for embedded target -- LF2530 development board with audio.
+
+Software components for target hardware:
+
+* Linux Kernel Image (LF2530 boards only): zImage-0.2.1-854
+* NFS root file system: nfsroot-svn859.tar.gz
+
+Enhancements:
+-------------
+* LCD module on LF2530 boards configured with correct settings.
+* Brightness and Contrast controls added to Display MPI.
+* OpenGL library updated with eglSwapBuffers() fix.
+* Sound buffer sizes increased for fewer audible clicks.
+* Stricter compiler warnings for *printf() variable arguments.
+* New CKernelMPI methods to better encapsulate system porting: 
+  PowerDown(), Printf(), VPrintf(), GetFilesinDirectory(), 
+  IsDirectory(), LoadModule(), RetrieveSymbolFromModule(), 
+  and UnloadModule().
+ 
+Known Issues:
+-------------
+* Audio MPI Vorbis codec does not support audio stream from
+  interleaved audio-video format Ogg files.
+* Video MPI ignores audio stream in same format Ogg files.
+ 
+
 ===========================================
 v0.1.11  (Build 816 released July 06, 2007) 
 ===========================================
