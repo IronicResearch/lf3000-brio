@@ -26,6 +26,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace 
 {	
 	// X11 variables
+	const int 			WINDOW_WIDTH = 320;
+	const int 			WINDOW_HEIGHT= 240;
 	Window				x11Window;
 	Display*			x11Display;
 	long				x11Screen;
@@ -38,6 +40,8 @@ namespace
 	Pixmap					pixmap;
 	_XImage*				image;
 	tRect					rect;
+	S8						brightness_;
+	S8						contrast_;
 }
 
 //============================================================================
@@ -47,8 +51,6 @@ namespace
 void CDisplayModule::InitModule()
 {
 	// Initialize display manager for emulation target
-	const int WINDOW_WIDTH = 320;
-	const int WINDOW_HEIGHT= 240;
 
 	// Create an X window for either 2D or 3D target
 	Window					sRootWindow;
@@ -165,7 +167,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->x = 0;
 	dc->y = 0;
 	dc->isAllocated = true;
-	
+	dc->isOverlay = (colorDepth == kPixelFormatYUYV422);	
+	dc_ = dc;
+
 	memset(dc->pBuffer, 0, width * height);
 	
 	rect.left = rect.top = 0;
@@ -203,6 +207,37 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
+	if (dc_->isOverlay)
+	{
+		// Repack YUYV format surface into ARGB format surface
+		S8			buffer[WINDOW_WIDTH*2];
+		S8* 		s = &buffer[0];
+		S8*			d = (S8*)image->data;
+		S8			y,z,u,v;
+		int			i,j,m,n;
+		for (i = 0; i < dc_->height; i++) 
+		{
+			memcpy(s, d, dc_->width * 2);
+			for (j = m = n = 0; j < dc_->width; j+=2, m+=4, n+=8) 
+			{
+				y = s[m+0];
+				u = s[m+1];
+				z = s[m+2];
+				v = s[m+3];
+				// TODO/dm: Need weighted differences for correct RGB colors
+				d[n+0] = y; // - u;
+				d[n+1] = y; // - u - v;
+				d[n+2] = y; // - v;
+				d[n+3] = (S8)0xFF;
+				d[n+4] = z; // - u;
+				d[n+5] = z; // - u - v;
+				d[n+6] = z; // - v;
+				d[n+7] = (S8)0xFF;
+			}
+			d += dc_->pitch;
+		}
+	}
+	
 	XPutImage(x11Display, x11Window, gc, image, 0, 0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 	XFlush(x11Display);
 	return kNoErr;
@@ -224,6 +259,8 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffe
 	if (pixmap)
 		XFreePixmap(x11Display, pixmap);
 	pixmap = 0;
+	if (dc_ == dc)
+ 		dc_ = NULL;
  	delete dc;
 	return kNoErr;
 }
@@ -267,7 +304,7 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 U32 CDisplayModule::GetScreenSize()
 {
-	return (U32)((320<<16)|(240));
+	return (U32)((WINDOW_WIDTH<<16)|(WINDOW_HEIGHT));
 }
 
 //----------------------------------------------------------------------------
@@ -280,6 +317,7 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 {
 	// Nothing to do on emulation target
+	brightness_ = brightness;
 	return kNoErr;
 }
 
@@ -287,6 +325,7 @@ tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 {
 	// Nothing to do on emulation target
+	contrast_ = contrast;
 	return kNoErr;
 }
 
@@ -294,14 +333,14 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 {
 	// Nothing to do on emulation target
-	return 0;
+	return brightness_;
 }
 
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 {
 	// Nothing to do on emulation target
-	return 0;
+	return contrast_;
 }
 
 LF_END_BRIO_NAMESPACE()
