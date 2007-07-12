@@ -3,6 +3,7 @@ Lightning SDK
 ======================================================
 
 Lightning SDKs typically consist of three parts:
+
   LightningSDK_xxxx.tar.gz -this contains the Brio components necesasry for development
   nfsroot-svnxxxx.tar.gz  - this contains the linux nfsroot folder necessary for booting the target
   zImage-svnxxxx.tar.gz   - the linux kernel.  If you aren't booting using tftp, you will need to
@@ -19,11 +20,11 @@ The NFS root image must be unzipped as root user and located off the home user p
 	mv nfsroot-svnxxx nfsroot
 	
 The Linux kernel zImage will copied to your TFTP server base directory, and subsequently downloaded
-onto the traget board via the U-Boot loader.
+onto the target board via the U-Boot loader. (Refer to kernel image
+download instructions below.)
 
 	tar -xzvf zImage-svnxxxx.tar.gz
-	mv zImage* ~/tftpboot
-	...
+	cp zImage-xxxx ~/tftpboot
 
 These three pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
@@ -101,7 +102,7 @@ be setup:
 	export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_<xxxx>
 
 ======================================================
-Target Preparation : installing nfsroot
+Target Preparation : installing nfsroot image
 ======================================================
 
 If you are running on actual target hardware, you should probably have received
@@ -115,7 +116,7 @@ rootfs!!  The reason is that it must create device nodes.
 	mv nfsroot-svnxxx nfsroot
 
 ======================================================
-Target Preparation -- setting up tftp
+Target Preparation -- setting up NFS
 ======================================================
 
 Obviouslly, you only need to do these steps if you system hasn't already 
@@ -144,6 +145,53 @@ board will be configured to use IP address 192.168.0.111, so this may need
 to be added to list of allowable addresses in /etc/hosts.allow if firewall
 iptables service is running.
 
+======================================================
+Target Preparation -- downloading kernel image
+======================================================
+
+With the network services up and running for the specific development system
+IP address, you will also be able to use the U-boot loader installed on
+the Lightning target board to download updated Linux kernel images.
+
+You will need to have a serial console connected to interrupt the target
+board's normal boot sequence and run U-boot commands. 
+
+To boot up U-boot, hold down any button on the target board while pressing 
+the RESET button. When the "U-boot" loader message appears, press any key
+on the serial console to enter U-boot. Otherwise the board will continue
+loading its pre-flashed Linux kernel.
+
+At the U-boot prompt, test pinging the development system first.
+
+	ping 192.168.0.113
+	
+Then download the updated kernel zImage from its TFTP location on the
+development system. On Ubuntu Linux, TFTP is typically configured
+at the ~/tftpboot directory, so this is where the zImage file needs to
+be copied to. The zImage file provided in releases will typically have
+some version number suffix, like zImage-xxxx.
+
+	tftp 02000000 zImage-xxxx 
+
+After the zImage is downloaded, you have the option to immediately run it
+from RAM, or flash into NAND memory and reboot.
+
+To immediately test the downloaded zImage from RAM:
+
+	go 02000000
+	
+To flash the downloaded zImage into NAND:
+
+	nand erase clean 00080000 100000
+	nand write 02000000 00080000 100000
+
+Either method should execute the updated Linux kernel and NFS mount the
+root file system located on the development system.
+
+======================================================
+Target Preparation -- installing ARM cross-compiler
+======================================================
+
 Your development system image will also need to have the cross-compiler
 installed for building ARM binary targets. The version used to date is
 scratchbox toolchain is based on GCC 4.1 with uclib run-time library. 
@@ -152,9 +200,9 @@ You will need root privileges for this part of the Scratchbox installation.
 
    1. Add the line below to the /etc/apt/sources.list file:	    
    
- 			deb http://scratchbox.org/debian ./
+		deb http://scratchbox.org/debian ./
  
-   			(convenient way to edit file: sudo gedit /etc/apt/sources.list) 
+   		(convenient way to edit file: sudo gedit /etc/apt/sources.list) 
 
    2. Update the package list with command:
 
@@ -203,6 +251,9 @@ From your Eclipse Workspace:
 ======================================================
 Running samples  -- Target
 ======================================================
-1) If you are running on the actual hardware, you should just be able to run
+1) Perform the same steps above except omitting the 'type=emulation' build
+   target in step 2d. The executable and any associated resources will be
+   automatically copied into the appropriate nfsroot directories.
+2) If you are running on the actual hardware, you should just be able to run
    the command "BrioCube" in the serial console.
 
