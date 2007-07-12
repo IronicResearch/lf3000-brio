@@ -5186,3 +5186,21 @@ By Dmilici (Dmilici@leapfrog.com) on 7/11/07 6:16 PM
 2,143 ms. (Cumulative: 865,975 ms)
 
 ----------------
+Revision 874 from svn://localhost/TRUNK/:
+Revision 875 from svn://localhost/TRUNK/:
+Revision 876 from svn://localhost/TRUNK/:
+Revision 877 from svn://localhost/TRUNK/:
+Revision 878 from svn://localhost/TRUNK/:
+Revision 879 from svn://localhost/TRUNK/:
+Revision 880 from svn://localhost/TRUNK/:
+Revision 881 from svn://localhost/TRUNK/:
+Revision 882 from svn://localhost/TRUNK/:
+Revision 883 from svn://localhost/TRUNK/:
+
+Added support for YUV video output on emulation target, but only monochrome at moment.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/12/07 12:35 PM
+1 changed, 0 added, 0 deleted.
+2,079 ms. (Cumulative: 868,179 ms)
+
+----------------
