@@ -5157,3 +5157,22 @@ By TParker (TParker@leapfrog.com) on 7/11/07 3:05 PM
 2,233 ms. (Cumulative: 859,331 ms)
 
 ----------------
+Revision 866 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,188 ms. (Cumulative: 861,581 ms)
+
+----------------
+Revision 867 from svn://localhost/TRUNK/:
+Revision 868 from svn://localhost/TRUNK/:
+Revision 869 from svn://localhost/TRUNK/:
+Revision 870 from svn://localhost/TRUNK/:
+Revision 871 from svn://localhost/TRUNK/:
+
+#ifdef a different portaudio latency setting for emulation because VMWare on the PC sucks.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/11/07 6:05 PM
+1 changed, 0 added, 0 deleted.
+2,142 ms. (Cumulative: 863,770 ms)
+
+----------------
