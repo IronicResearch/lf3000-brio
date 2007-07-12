@@ -3,14 +3,14 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.12  (Build 864 released July 11, 2007) 
+v0.1.12  (Build 873 released July 11, 2007) 
 ===========================================
 Release for embedded target -- LF2530 development board with audio.
 
 Software components for target hardware:
 
 * Linux Kernel Image (LF2530 boards only): zImage-0.2.1-854
-* NFS root file system: nfsroot-svn859.tar.gz
+* NFS root file system: nfsroot-svn873.tar.gz
 
 Enhancements:
 -------------
@@ -24,13 +24,19 @@ Enhancements:
   PowerDown(), Printf(), VPrintf(), GetFilesinDirectory(), 
   IsDirectory(), LoadModule(), RetrieveSymbolFromModule(), 
   and UnloadModule().
- 
+* Asserts now flush stdout to insure correct message strings are 
+  output from origin of assertion errors.
+    
 Known Issues:
 -------------
 * Audio MPI Vorbis codec does not support audio stream from
   interleaved audio-video format Ogg files.
 * Video MPI ignores audio stream in same format Ogg files.
- 
+* Video playback in emulation is not color converted from YUV format,
+  so will appear with wrong colors and aspect ratio. 
+* Key repeats are turned off when running Brio SDK examples
+  in emulation targets, and can only be turned back on manually
+  (System > Preferences > Keyboard). 
 
 ===========================================
 v0.1.11  (Build 816 released July 06, 2007) 
