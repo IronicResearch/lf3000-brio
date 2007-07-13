@@ -4,6 +4,7 @@
 <cdtproject id="org.eclipse.cdt.make.core.make">
 <extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 <extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+<extension id="org.eclipse.cdt.core.nullindexer" point="org.eclipse.cdt.core.CIndexer"/>
 <data>
 <item id="scannerConfiguration">
 <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile"/>
@@ -82,14 +83,14 @@
 <target name="embedded clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>scons</buildCommand>
 <buildArguments>-k type=embedded -c</buildArguments>
-<buildTarget></buildTarget>
+<buildTarget/>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 </target>
 <target name="emulation clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>scons</buildCommand>
 <buildArguments>-k type=emulation -c</buildArguments>
-<buildTarget></buildTarget>
+<buildTarget/>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 </target>
