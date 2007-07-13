@@ -354,6 +354,7 @@ def ProcessPackage(pkg, types, pack_root, data_root, enumpkg):
 		outpath = os.path.join(pack_root, outfile)
 		srcfile = os.path.join(data_root, row[2].strip())
 		srcsize = os.path.getsize(srcfile)
+		#FIXME/tp: store in list, sort, then write whole list to file
 		writer.writerow([base + row[1].strip(), type, outfile, srcsize, srcsize, version])
 		
 		this_dir	= os.path.split(__file__)[0]
@@ -376,6 +377,9 @@ def PackAllResources(penv):
 	# 3) Find all "ACME" input package defintion files and process them
 	# 4) Find all standard packag input files and process them
 	#
+	if penv.GetOption('clean'):
+		return
+		
 	data_root = penv.Dir('#apprsrc').abspath						#1
 	build_root = penv.Dir('#Build').abspath
 	pack_root = penv.Dir('#Build/rsrc').abspath

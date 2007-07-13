@@ -60,6 +60,7 @@
 #include <set>
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //============================================================================
@@ -763,6 +764,8 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 		fclose(fp);
 		
 		std::vector<PackageDescriptor>	temp(device.packages);			//*4
+		// FIXME/tp: Remove the std::sort() for improved runtime performance
+		// (make sure packer pre-sorts items)
 		std::sort(temp.begin(), temp.end());
 		std::for_each(temp.begin(), temp.end(), AssignPackageHndl);
 		device.packages.swap(temp);
@@ -1461,17 +1464,22 @@ tErrType CResourceModule::DeleteRsrc(U32 id, tRsrcHndl hndl)
 	dbg_.DebugOut(kDbgLvlCritical, "DeleteRsrc not implemented");
 	return kNoErr;
 }
+LF_END_BRIO_NAMESPACE()
 
 
 
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
-
 #ifndef LF_MONOLITHIC_DEBUG
-	static CResourceModule*	sinst = NULL;
+LF_USING_BRIO_NAMESPACE()
+
+static CResourceModule*	sinst = NULL;
+
+extern "C"
+{
 	//------------------------------------------------------------------------
-	extern "C" ICoreModule* CreateInstance(tVersion /*version*/)
+	ICoreModule* CreateInstance(tVersion /*version*/)
 	{
 		if (sinst == NULL)
 			sinst = new CResourceModule;
@@ -1479,12 +1487,13 @@ tErrType CResourceModule::DeleteRsrc(U32 id, tRsrcHndl hndl)
 	}
 		
 	//------------------------------------------------------------------------
-	extern "C" void DestroyInstance(ICoreModule* /*ptr*/)
+	void DestroyInstance(ICoreModule* /*ptr*/)
 	{
 	//		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;
 	}
+}
 #endif	// LF_MONOLITHIC_DEBUG
 
 // EOF

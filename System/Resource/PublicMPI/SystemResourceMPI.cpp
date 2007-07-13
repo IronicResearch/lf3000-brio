@@ -16,6 +16,8 @@
 #include <SystemResourceMPI.h>
 #include <ResourcePriv.h>
 
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 const CString	kMPIName = "SystemResourceMPI";
 
@@ -35,4 +37,5 @@ const CString* CSystemResourceMPI::GetMPIName() const
 	return &kMPIName;
 }	
 
+LF_END_BRIO_NAMESPACE()
 // EOF

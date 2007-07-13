@@ -17,6 +17,7 @@
 #include <AudioTypes.h>
 #include <AudioPriv.h>
 #include <Channel.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -159,4 +160,5 @@ U32 CChannel::RenderBuffer( S16 *pMixBuff, U32 numStereoFrames  )
 	return playerFramesRendered;
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF	

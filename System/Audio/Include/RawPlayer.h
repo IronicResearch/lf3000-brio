@@ -21,6 +21,7 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <AudioTypesPriv.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Class:
@@ -49,6 +50,7 @@ private:
 	U32		framesLeft_;		// num frames left
 };
 
+LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_RAWPLAYER_H
 
 // EOF	

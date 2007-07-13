@@ -19,6 +19,7 @@
 #include <AudioPriv.h>
 #include <AudioTypesPriv.h>
 #include <RawPlayer.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -154,5 +155,6 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	// Return the number of frames rendered.
 	return framesToProcess;
 }
+LF_END_BRIO_NAMESPACE()
 
 // EOF	

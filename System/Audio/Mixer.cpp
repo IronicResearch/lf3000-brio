@@ -22,6 +22,7 @@
 #include <AudioPriv.h>
 #include <Mixer.h>
 #include <AudioOutput.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -188,4 +189,5 @@ int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOutBuff,
 }
 
 
+LF_END_BRIO_NAMESPACE()
 // EOF	

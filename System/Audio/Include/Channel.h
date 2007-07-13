@@ -20,6 +20,7 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <RawPlayer.h> // fixme/dg: hack for RawPlayer dtor not getting called
+LF_BEGIN_BRIO_NAMESPACE()
 
 #define kFracBits 16
 
@@ -94,6 +95,7 @@ private:
 	tAudioConversion			convRate_;	// Conversion rate parameters
 };
 
+LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_CHANNEL_H
 
 // EOF	

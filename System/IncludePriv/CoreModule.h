@@ -96,14 +96,15 @@ LF_END_BRIO_NAMESPACE()
 //==============================================================================
 // Instance management interface for the Module Manager
 //==============================================================================
-LF_USING_BRIO_NAMESPACE()
-extern "C" ICoreModule* CreateInstance(tVersion version);
-extern "C" void			DestroyInstance(ICoreModule*);
+extern "C" LF_ADD_BRIO_NAMESPACE(ICoreModule*) 
+				CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+extern "C" void	DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 
 extern "C"
 {
-	typedef ICoreModule* (*pFnCreateInstance)(tVersion);
-	typedef void	(*pFnDestroyInstance)(ICoreModule*);
+	typedef LF_ADD_BRIO_NAMESPACE(ICoreModule*) 
+					(*pFnCreateInstance)(LF_ADD_BRIO_NAMESPACE(tVersion));
+	typedef void	(*pFnDestroyInstance)(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 }
 
 #define kCreateInstanceFnName	"CreateInstance"

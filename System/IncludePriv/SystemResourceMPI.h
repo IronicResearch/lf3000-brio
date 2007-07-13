@@ -35,6 +35,7 @@ public:
 };
 
 
+LF_END_BRIO_NAMESPACE()
 #endif // LF_BRIO_SYSTEMRESOURCEMPI_H
 
 // eof

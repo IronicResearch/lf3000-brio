@@ -10,6 +10,7 @@
 
 #include <AudioConfig.h>
 #include <AudioPlayer.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //	Enum to indicate mono or stereo data
 enum {
@@ -24,4 +25,5 @@ typedef U8  tAudioSound;
 tErrType InitAudioTask( void );
 void DeInitAudioTask( void );
 
+LF_END_BRIO_NAMESPACE()
 #endif /* LF_BRIO_AUDIOTASK_H */

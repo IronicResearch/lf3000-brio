@@ -45,6 +45,8 @@ extern "C"
 	void sig_handler(int signal, siginfo_t *psigInfo, void *pFunc);
 }
 
+LF_BEGIN_BRIO_NAMESPACE()
+
 //==============================================================================
 // Defines
 //==============================================================================
@@ -1190,12 +1192,15 @@ tErrType CKernelModule::SetCondAttrPShared( tCondAttr* pAttr, int shared )
     return kNoErr;
 }
 
+LF_END_BRIO_NAMESPACE()
+
 
 
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
 #ifndef LF_MONOLITHIC_DEBUG
+LF_USING_BRIO_NAMESPACE()
 extern "C"
 {
 	//------------------------------------------------------------------------

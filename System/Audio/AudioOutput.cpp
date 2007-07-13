@@ -23,6 +23,7 @@
 
 #include "portaudio.h"
 #include "rt_trace.h"
+LF_BEGIN_BRIO_NAMESPACE()
 
 // this turns on callback to Brio, v.s. sine test output
 #define USE_REAL_CALLBACK	1
@@ -162,7 +163,7 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 #else
     outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
 #endif    
- 
+
     err = Pa_OpenStream( &gPaStream,
                          NULL,              /* No input. */
                          &outputParameters, /* As above. */
@@ -234,4 +235,5 @@ int DeInitAudioOutput( void )
 	
 	return 0;
 }
+LF_END_BRIO_NAMESPACE()
 // EOF

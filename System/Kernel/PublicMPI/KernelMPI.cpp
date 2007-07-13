@@ -25,8 +25,8 @@
 #include <BootSafeKernelMPI.h>
 #include <KernelPriv.h>
 #include <StringTypes.h>
-//extern int vprintf (__const char *__restrict __format, _G_va_list __arg)
-//				__attribute__ ((format (printf, 1, 0)));
+
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -796,4 +796,5 @@ void CBootSafeKernelMPI::UnloadModule( tHndl module ) const
 	UnloadModule_Impl(module);
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF

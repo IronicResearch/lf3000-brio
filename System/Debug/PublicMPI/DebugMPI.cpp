@@ -138,11 +138,13 @@ namespace
 	//		be allowed or ignored. Implementation of standard "C" printf.  
 	//		Calls the Kernel module's printf.  
 	//==========================================================================
+	//--------------------------------------------------------------------------
 	void DebugOutPriv( const CDebugModule* pModule, tDebugSignature sig, 
 						tDebugLevel lvl, const char * formatString, 
 						va_list arguments, U16 debugOutFormat )
 			__attribute__ ((format (printf, 4, 0)));
 	
+	//--------------------------------------------------------------------------
 	void DebugOutPriv( const CDebugModule* pModule, tDebugSignature sig, 
 						tDebugLevel lvl, const char * formatString, 
 						va_list arguments, U16 debugOutFormat )
@@ -176,11 +178,13 @@ namespace
 		}
 	}
 
+	//--------------------------------------------------------------------------
 	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig, 
 						const char* errString, const char * formatString, 
 						va_list arguments )
 			__attribute__ ((format (printf, 4, 0)));
 	
+	//--------------------------------------------------------------------------
 	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig, 
 						const char* errString, const char * formatString, 
 						va_list arguments )

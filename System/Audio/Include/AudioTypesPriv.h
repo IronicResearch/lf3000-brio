@@ -3,6 +3,7 @@
 
 #include <SystemTypes.h>
 #include <AudioTypes.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 // kAudioCmdMsgTypeSetMasterVolume
 struct tAudioMasterVolume {
@@ -86,4 +87,6 @@ struct tAudioStopMidiFileInfo {
 	tMidiID			id;
 	Boolean			suppressDoneMsg;
 };
+
+LF_END_BRIO_NAMESPACE()
 #endif /*LF_BRIO_AUDIOTYPESPRIV_H_*/

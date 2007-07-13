@@ -20,6 +20,7 @@
 #include <AudioPlayer.h>
 
 #include <AudioPriv.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -85,4 +86,5 @@ CAudioPlayer::~CAudioPlayer()
 }
 
 
+LF_END_BRIO_NAMESPACE()
 // EOF	

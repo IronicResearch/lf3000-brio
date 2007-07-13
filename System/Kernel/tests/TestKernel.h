@@ -19,6 +19,7 @@
 #include <errno.h>
 
 using namespace std;
+LF_USING_BRIO_NAMESPACE()
 
 namespace
 {

@@ -72,13 +72,15 @@ LF_END_BRIO_NAMESPACE()
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
-
+#ifndef LF_MONOLITHIC_DEBUG
 LF_USING_BRIO_NAMESPACE()
 
-#ifndef LF_MONOLITHIC_DEBUG
-	static CButtonModule*	sinst = NULL;
+static CButtonModule*	sinst = NULL;
+
+extern "C"
+{
 	//------------------------------------------------------------------------
-	extern "C" ICoreModule* CreateInstance(tVersion /*version*/)
+	ICoreModule* CreateInstance(tVersion /*version*/)
 	{
 		if( sinst == NULL )
 			sinst = new CButtonModule;
@@ -86,12 +88,13 @@ LF_USING_BRIO_NAMESPACE()
 	}
 		
 	//------------------------------------------------------------------------
-	extern "C" void DestroyInstance(ICoreModule* /*ptr*/)
+	void DestroyInstance(ICoreModule* /*ptr*/)
 	{
 	//		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;
 	}
+}
 #endif	// LF_MONOLITHIC_DEBUG
 
 
