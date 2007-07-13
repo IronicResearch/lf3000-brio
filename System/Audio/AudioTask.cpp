@@ -27,6 +27,7 @@
 #include <VorbisPlayer.h>
 #include <MidiPlayer.h>
 #include <spmidi.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 //==============================================================================
@@ -778,5 +779,6 @@ void* AudioTaskMain( void* /*arg*/ )
 	return (void *)kNull;
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF
 

@@ -18,6 +18,7 @@
 #include <AudioTask.h>
 #include <AudioMsg.h>
 #include <AudioTypesPriv.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -314,31 +315,6 @@ tErrType CAudioModule::SetDefaultListener( const IEventListener* pListener )
 	pDefaultListener_ = pListener;
 	return kNoErr;
 }
-
-
-//============================================================================
-// Instance management interface for the Module Manager
-//============================================================================
-#ifndef LF_MONOLITHIC_DEBUG
-extern "C"
-{
-	//------------------------------------------------------------------------
-	ICoreModule* CreateInstance(tVersion /*version*/)
-	{
-		if( sinst == NULL )
-			sinst = new CAudioModule;
-		return sinst;
-	}
-	
-	//------------------------------------------------------------------------
-	void DestroyInstance(ICoreModule* /*ptr*/)
-	{
-//		assert(ptr == sinst);
-		delete sinst;
-		sinst = NULL;
-	}
-}
-#endif	// LF_MONOLITHIC_DEBUG
 
 
 
@@ -905,7 +881,33 @@ tAudioID CAudioModule::WaitForStatus( void )
 }
 
 
+LF_END_BRIO_NAMESPACE()
 
+
+//============================================================================
+// Instance management interface for the Module Manager
+//============================================================================
+#ifndef LF_MONOLITHIC_DEBUG
+LF_USING_BRIO_NAMESPACE()
+extern "C"
+{
+	//------------------------------------------------------------------------
+	ICoreModule* CreateInstance(tVersion /*version*/)
+	{
+		if( sinst == NULL )
+			sinst = new CAudioModule;
+		return sinst;
+	}
+	
+	//------------------------------------------------------------------------
+	void DestroyInstance(ICoreModule* /*ptr*/)
+	{
+//		assert(ptr == sinst);
+		delete sinst;
+		sinst = NULL;
+	}
+}
+#endif	// LF_MONOLITHIC_DEBUG
 
 // EOF
 

@@ -112,4 +112,5 @@ Boolean CVideoMPI::PutVideoFrame(tVideoHndl hVideo, void* pCtx)
 	return pModule_->PutVideoFrame(hVideo, pCtx);
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF

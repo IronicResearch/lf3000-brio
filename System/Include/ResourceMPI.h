@@ -173,6 +173,7 @@ protected:
 };
 
 
+LF_END_BRIO_NAMESPACE()
 #endif // LF_BRIO_RESOURCEMPI_H
 
 // eof

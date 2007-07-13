@@ -110,12 +110,6 @@ public:
 
 private:
 	CDebugMPI			dbg_;
-
-	// Limit object creation to the Module Manager interface functions
-	CFontModule();
-	virtual ~CFontModule();
-	friend ICoreModule*	::CreateInstance(tVersion version);
-	friend void			::DestroyInstance(ICoreModule*);
 	
 	// FreeType-specific functionality
 	tFontInt			handle_;
@@ -126,6 +120,13 @@ private:
     void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertGraymapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
 	tFontHndl			LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize);
+
+	// Limit object creation to the Module Manager interface functions
+	CFontModule();
+	virtual ~CFontModule();
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 };
 
 

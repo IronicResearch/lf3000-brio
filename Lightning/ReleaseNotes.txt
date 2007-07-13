@@ -1,6 +1,10 @@
 ===========================================
 Lightning C++ Development Kit Release Notes
 ===========================================
+* Wraped all Brio calls in the "LeapFrog::Brio" namespace.  
+  You may need to add the LF_USING_BRIO_NAMESPACE() macro after 
+  the #include sections of your files.
+* Cleaning a project no longer invokes the packer.
 
 ===========================================
 v0.1.12  (Build 873 released July 11, 2007) 

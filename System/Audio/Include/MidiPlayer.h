@@ -25,6 +25,7 @@
 #include <spmidi.h>
 #include <spmidi_util.h>
 #include <midifile_player.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Class:
@@ -86,6 +87,7 @@ private:
 	void SendDoneMsg( void );
 };
 
+LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_MIDIPLAYER_H
 
 // EOF	

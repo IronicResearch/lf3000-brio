@@ -276,4 +276,5 @@ void CDisplayMPI::DisableOpenGL()
 	pModule_->DisableOpenGL();
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF

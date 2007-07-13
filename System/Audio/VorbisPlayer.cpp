@@ -19,6 +19,7 @@
 #include <AudioPriv.h>
 #include <AudioTypesPriv.h>
 #include <VorbisPlayer.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -344,4 +345,5 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	return framesRead;
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF	

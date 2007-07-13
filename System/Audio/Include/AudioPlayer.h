@@ -23,6 +23,8 @@
 #include <AudioTypes.h>
 #include <EventListener.h>
 #include <AudioTypesPriv.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 class CChannel;
 //==============================================================================
@@ -90,6 +92,7 @@ protected:
 	IEventListener 		*pListener_;	// Pointer to AudioEventHandler assigned to the player
 };
 
+LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_AUDIOPLAYER_H
 
 // EOF	

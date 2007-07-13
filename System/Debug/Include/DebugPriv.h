@@ -79,8 +79,9 @@ private:
 	// Limit object creation to the Module Manager interface functions
 	CDebugModule( );
 	virtual ~CDebugModule( );
-	friend ICoreModule*	::CreateInstance(tVersion version);
-	friend void			::DestroyInstance(ICoreModule*);
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 };
 
 LF_END_BRIO_NAMESPACE()	

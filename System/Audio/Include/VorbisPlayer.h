@@ -23,6 +23,7 @@
 #include <AudioTypesPriv.h>
 #include "tremor/ivorbiscodec.h"
 #include "tremor/ivorbisfile.h"
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Class:
@@ -85,6 +86,7 @@ private:
 	U32				filePos_;			// position in the vorbis byte stream
 };
 
+LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_VORBISPLAYER_H
 
 // EOF	

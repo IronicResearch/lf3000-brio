@@ -19,6 +19,7 @@
 #include <AudioPriv.h>
 #include <MidiPlayer.h>
 #include <EventMPI.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Defines
@@ -324,4 +325,5 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 	return framesRead;
 }
 
+LF_END_BRIO_NAMESPACE()
 // EOF	

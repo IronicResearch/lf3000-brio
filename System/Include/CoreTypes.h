@@ -15,14 +15,16 @@
 //============================================================================
 #include <boost/static_assert.hpp>
 
-#ifdef LF_USE_CPP_NAMESPACES
+#if LF_USE_CPP_NAMESPACES
 	#define LF_BEGIN_BRIO_NAMESPACE()	namespace LeapFrog { namespace Brio {
 	#define LF_END_BRIO_NAMESPACE()		} }
 	#define LF_USING_BRIO_NAMESPACE()	using namespace LeapFrog::Brio;
+	#define LF_ADD_BRIO_NAMESPACE(var)	LeapFrog::Brio::var
 #else
 	#define LF_BEGIN_BRIO_NAMESPACE() 
 	#define LF_END_BRIO_NAMESPACE()
 	#define LF_USING_BRIO_NAMESPACE()
+	#define LF_ADD_BRIO_NAMESPACE(var)	var
 #endif
 
 LF_BEGIN_BRIO_NAMESPACE()

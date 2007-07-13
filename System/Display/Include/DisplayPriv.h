@@ -107,8 +107,9 @@ private:
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();
 	virtual ~CDisplayModule();
-	friend ICoreModule*	::CreateInstance(tVersion version);
-	friend void			::DestroyInstance(ICoreModule*);
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 };
 
 

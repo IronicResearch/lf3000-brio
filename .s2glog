@@ -5218,3 +5218,12 @@ By TParker (TParker@leapfrog.com) on 7/13/07 11:02 AM
 2,265 ms. (Cumulative: 870,554 ms)
 
 ----------------
+Revision 890 from svn://localhost/TRUNK/:
+
+Wrap all Brio calls in the LeapFrog::Brio namespace
+
+By TParker (TParker@leapfrog.com) on 7/13/07 1:40 PM
+52 changed, 0 added, 0 deleted.
+3,813 ms. (Cumulative: 874,445 ms)
+
+----------------

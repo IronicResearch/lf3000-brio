@@ -20,6 +20,7 @@
 #include <AudioTypes.h>
 #include <Channel.h>
 #include <MidiPlayer.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 // Class:
@@ -66,4 +67,5 @@ private:
 
 #endif		// LF_BRIO_MIXER_H
 
+LF_END_BRIO_NAMESPACE()
 // EOF	

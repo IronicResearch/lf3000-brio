@@ -21,6 +21,8 @@
 #include <AudioTypes.h>
 #include <AudioTypesPriv.h>
 
+LF_BEGIN_BRIO_NAMESPACE()
+
 const U8 kAudioMsgDefaultPriority = 0;
 
 enum {
@@ -258,6 +260,7 @@ private:
 const U32	kMAX_AUDIO_MSG_SIZE	=	(sizeof(CAudioMsgStartMidiFile) + 4);
 
 
+LF_END_BRIO_NAMESPACE()	
 #endif	// LF_BRIO_AUDIOMSG_H
 
 // EOF	

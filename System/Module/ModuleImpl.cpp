@@ -310,29 +310,30 @@ LF_END_BRIO_NAMESPACE()
 //============================================================================
 // Module
 //============================================================================
-	//------------------------------------------------------------------------
-	extern "C" tErrType FindModules()
-	{
-		return g_impl.FindModules();
-	}
-	//------------------------------------------------------------------------
-	extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
-	{
-		static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
-		init = !!init;		// bogus line to revmove "unused variable 'init'" warning
+LF_USING_BRIO_NAMESPACE()
+//------------------------------------------------------------------------
+extern "C" tErrType FindModules()
+{
+	return g_impl.FindModules();
+}
+//------------------------------------------------------------------------
+extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
+{
+	static tErrType init = FindModules();	// FIXME/tp: temp startup, replace with real call from boot module
+	init = !!init;		// bogus line to revmove "unused variable 'init'" warning
 
-		ICoreModule* ptr = NULL;
-		tErrType status =  g_impl.Connect(ptr, name, version);
-		if( status == kNoErr )
-			*pModule = ptr;
-		return status;
-	}
-	//------------------------------------------------------------------------
-	extern "C" tErrType Disconnect(const ICoreModule* ptr)
-	{
-		return g_impl.Disconnect(ptr);
-	}
-	
+	ICoreModule* ptr = NULL;
+	tErrType status =  g_impl.Connect(ptr, name, version);
+	if( status == kNoErr )
+		*pModule = ptr;
+	return status;
+}
+//------------------------------------------------------------------------
+extern "C" tErrType Disconnect(const ICoreModule* ptr)
+{
+	return g_impl.Disconnect(ptr);
+}
+
 	// NOTE: For LF_MONOLITHIC_DEBUG builds, the Module.cpp file never loads this
 	// library or calls its functions.
 	

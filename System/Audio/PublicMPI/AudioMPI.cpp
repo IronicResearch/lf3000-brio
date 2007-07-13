@@ -21,8 +21,9 @@
 #include <AudioTypes.h>
 //#include <RsrcMgrMPI.h>
 #include <AudioMPI.h>
-
 #include <AudioPriv.h>
+LF_BEGIN_BRIO_NAMESPACE()
+
 
 //==============================================================================
 // Defines
@@ -681,4 +682,5 @@ void CAudioMPI::StopMidiFile( tMidiID midiID, Boolean surpressDoneMessage )
 	}
 }
 
+LF_END_BRIO_NAMESPACE()	
 // EOF	

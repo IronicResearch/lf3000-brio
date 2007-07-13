@@ -19,6 +19,7 @@
 #include <ResourceMPI.h>
 #include <ResourcePriv.h>
 #include <Module.h>
+LF_BEGIN_BRIO_NAMESPACE()
 
 
 const CString	kMPIName = "ResourceMPI";
@@ -467,4 +468,5 @@ tErrType CResourceMPI::DeleteRsrc(tRsrcHndl hndl)
 }
 	
 
+LF_END_BRIO_NAMESPACE()
 // EOF

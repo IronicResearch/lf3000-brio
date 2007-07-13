@@ -305,11 +305,12 @@ LF_END_BRIO_NAMESPACE()
 //============================================================================
 // Instance management interface for the Module Manager
 //============================================================================
-
-LF_USING_BRIO_NAMESPACE()
 #ifndef LF_MONOLITHIC_DEBUG
+LF_USING_BRIO_NAMESPACE()
+extern "C"
+{
 	//------------------------------------------------------------------------
-	extern "C" ICoreModule* CreateInstance( tVersion /*version*/ )
+	ICoreModule* CreateInstance( tVersion /*version*/ )
 	{
 		if (sinst == NULL)
 			sinst = new CDebugModule;
@@ -317,12 +318,13 @@ LF_USING_BRIO_NAMESPACE()
 	}
 		
 	//------------------------------------------------------------------------
-	extern "C" void DestroyInstance( ICoreModule* /*ptr*/ )
+	void DestroyInstance( ICoreModule* /*ptr*/ )
 	{
 	//		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;
 	}
+}
 #endif	// LF_MONOLITHIC_DEBUG
 
 // EOF
