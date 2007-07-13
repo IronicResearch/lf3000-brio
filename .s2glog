@@ -5204,3 +5204,17 @@ By Dmilici (Dmilici@leapfrog.com) on 7/12/07 12:35 PM
 2,079 ms. (Cumulative: 868,179 ms)
 
 ----------------
+Revision 884 from svn://localhost/TRUNK/:
+Revision 885 from svn://localhost/TRUNK/:
+Revision 886 from svn://localhost/TRUNK/:
+Revision 887 from svn://localhost/TRUNK/:
+Revision 888 from svn://localhost/TRUNK/:
+Revision 889 from svn://localhost/TRUNK/:
+
+Implement PostEvent dispatching in background thread.
+
+By TParker (TParker@leapfrog.com) on 7/13/07 11:02 AM
+6 changed, 0 added, 0 deleted.
+2,265 ms. (Cumulative: 870,554 ms)
+
+----------------

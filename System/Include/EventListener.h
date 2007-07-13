@@ -33,10 +33,17 @@ class IEventListener {
 	// The tEventType* list passed to the ctor must be the complete list of
 	// events handled by the listener, DisableNotifyForEventType() &
 	// ReenableNotifyForEventType() work off of this list.
+	//
+	// NOTE: The Notify() member function's "msg" parameter is passed by 
+	// reference, and the lifetime of that message is not guaranteed beyond
+	// the return from the Notify() function.  So if you need access to that
+	// message outside of the Notify() function, you must copy that information
+	// out of the message for later use.
+	//
 public:
 	IEventListener(const tEventType* pTypes, U32 count);
 	virtual ~IEventListener();
-	virtual tEventStatus	Notify(const IEventMessage& pMsg) = 0;
+	virtual tEventStatus	Notify(const IEventMessage& msg) = 0;
 	const IEventListener*	GetNextListener() const;
 	tErrType				SetNextListener(const IEventListener* pListener);
 	tErrType				DisableNotifyForEventType(tEventType type);

@@ -7,6 +7,7 @@
 #include <SystemEvents.h>
 #include <StringTypes.h>
 #include <UnitTestUtils.h>
+#include <KernelMPI.h>
 
 LF_USING_BRIO_NAMESPACE()
 				
@@ -108,7 +109,6 @@ private:
 const tEventType kSlowHandledTypes[] = { kAllUnitTestEvents };
 const int		kSlowDelay = 1000;
 const int		kExpectedElapsedTimeDelta = 15;
-typedef U32 tTaskHndl;	//FIXME
 
 class MySlowTestListener : public IEventListener
 {
@@ -116,14 +116,15 @@ public:
 	//------------------------------------------------------------------------
 	MySlowTestListener( )
 		: IEventListener(kSlowHandledTypes, ArrayCount(kSlowHandledTypes)),
-		id_(0)
+		id_(kInvalidTaskHndl)
 	{
 	}
 	//------------------------------------------------------------------------
 	virtual tEventStatus Notify( const IEventMessage& /*msg*/ )
 	{
-//		id_ = CKernelMPI::GetCurrentTask();
-//		sleep(kSlowDelay);
+		CKernelMPI	kernel;
+		id_ = kernel.GetCurrentTask();
+		kernel.TaskSleep(kSlowDelay);
 		return kEventStatusOKConsumed;
 	}
 	
@@ -157,7 +158,6 @@ const U32 kPayload9 = 999;
 
 
 const tEventPriority	kPriorityCritical	= 1;
-const tEventPriority	kPriorityMedium		= 50;
 const tEventPriority	kPriorityLow		= 200;
 
 //============================================================================
@@ -171,6 +171,8 @@ public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
+//		CDebugMPI	debug(kGroupUnitTests);
+//		debug.SetDebugLevel(kDbgLvlVerbose);
 		eventmgr_ = new CEventMPI();
 	}
 
@@ -201,7 +203,7 @@ public:
 		pName = eventmgr_->GetModuleName();
 		TS_ASSERT_EQUALS( *pName, "Event" );
 		pURI = eventmgr_->GetModuleOrigin();
-		TS_ASSERT_EQUALS( *pURI, "Event FIXME" );
+		TS_ASSERT_EQUALS( *pURI, "/LF/System/Event" );
 	}
 	
 	//------------------------------------------------------------------------
@@ -649,11 +651,12 @@ public:
 		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
 		
 		// Fire an event and verify we stay in same thread and block
-//		U32 start = KernelMPI::GetElapsedTime();
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical) );
-//		U32 end = KernelMPI::GetElapsedTime();
-//		TS_ASSERT_EQUALS( listener._id, CKernelMPI::GetCurrentTask() );
-//		TS_ASSERT_EQUALS_DELTA( start + kSlowDelay, end, kExpectedElapsedTimeDelta );
+		CKernelMPI	kernel;
+		U32 start = kernel.GetElapsedTimeAsMSecs();
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityCritical, &listener) );
+		U32 end = kernel.GetElapsedTimeAsMSecs();
+		TS_ASSERT_EQUALS( listener.id_, kernel.GetCurrentTask() );
+		TS_ASSERT_DELTA( start + kSlowDelay, end, kExpectedElapsedTimeDelta );
 	}
 	
 	//------------------------------------------------------------------------
@@ -664,11 +667,14 @@ public:
 		MyUnitTestMsg	msg1(kUnitTestEvent1, kUnitTestRsrcHndl1, kPayload1);
 		
 		// Fire an event and verify we stay in same thread and block
-//		U32 start = KernelMPI::GetElapsedTime();
-		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityMedium) );
-//		U32 end = KernelMPI::GetElapsedTime();
-//		TS_ASSERT_NOT_EQUALS( listener._id, CKernelMPI::GetCurrentTask() );
-//		TS_ASSERT_EQUALS_DELTA( start, end, kExpectedElapsedTimeDelta );
+		CKernelMPI	kernel;
+		U32 start = kernel.GetElapsedTimeAsMSecs();
+		TS_ASSERT_EQUALS( kNoErr, eventmgr_->PostEvent(msg1, kPriorityLow, &listener) );
+		U32 end = kernel.GetElapsedTimeAsMSecs();
+		kernel.TaskSleep(100);
+		TS_ASSERT_DIFFERS( listener.id_, kInvalidTaskHndl );
+		TS_ASSERT_DIFFERS( listener.id_, kernel.GetCurrentTask() );
+		TS_ASSERT_DELTA( start, end, kExpectedElapsedTimeDelta );
 	}
 	
 	//------------------------------------------------------------------------

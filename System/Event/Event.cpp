@@ -16,18 +16,17 @@
 #include <StringTypes.h>
 #include <SystemErrors.h>
 
-//#include <KernelMPI.h>
+#include <KernelMPI.h>
+#include <DebugMPI.h>
 #include <EventListener.h>
 #include <EventListenerPriv.h>
 #include <EventMessage.h>
 #include <EventMPI.h>
 #include <EventPriv.h>
 
-#include <stdlib.h>	// FIXME: remove when include KernelMPI
-#include <cstring>
 LF_BEGIN_BRIO_NAMESPACE() 
 
-const CURI	kModuleURI	= "Event FIXME";
+const CURI	kModuleURI	= "/LF/System/Event";
 
 
 //============================================================================
@@ -53,6 +52,28 @@ const CURI* CEventModule::GetModuleOrigin() const
 
 
 //============================================================================
+// Event dispatching message
+//============================================================================
+namespace
+{
+	class CEventDispatchMessage : public CMessage
+	{
+	public:
+		CEventDispatchMessage(const IEventMessage *m = NULL, 
+							const IEventListener *r = NULL)
+		: pMsg(m), pResponse(r)
+		{
+			messageSize = sizeof(CEventDispatchMessage);
+		}
+		const IEventMessage*	pMsg;
+		const IEventListener*	pResponse;
+	};
+	const U32 kEventDispatchMessageSize = sizeof(CEventDispatchMessage);
+	
+	char*	g_msgQueueName = "/eventDispatchQueue";
+}	
+	
+//============================================================================
 // Module internal state
 //============================================================================
 //----------------------------------------------------------------------------
@@ -60,18 +81,112 @@ class CEventManagerImpl
 {
 	// Assumptions: The number of listeners in the system at any one time
 	// is not huge (< 20), so little is done in the way of optimization.
+	//
+	// NOTE: This class is not in an unnamed namespace because it is a friend
+	// of CEventListenerImpl.
 private:
 	//------------------------------------------------------------------------
 	const IEventListener**	ppListeners_;
 	U32						numListeners_;
 	U32						listSize_;
-	enum { kGrowBySize = 2 };
+	mutable CKernelMPI		kernel_;
+	CDebugMPI				debug_;
+	tMessageQueueHndl		hMsgQueueFG_ ;
 	
+	enum { kGrowBySize = 2 };
+	static tMessageQueueHndl	g_hMsgQueueBG_ ;
+	static bool 				g_threadRun_;
+	static tTaskHndl			g_hThread_;
+	
+	//============================================================================
+	// Event dispatching task
+	//============================================================================
+	static void* EventDispatchTask( void* arg )
+	{
+		// 1) Create a msg queue that allows this thread to receive messages
+		// 2) Task loop, receive and dispatch messages
+		//
+		CEventManagerImpl*	pThis = reinterpret_cast<CEventManagerImpl*>(arg);
+		CKernelMPI	kernel;
+		CDebugMPI	debug(kGroupEvent);
+	
+		tMessageQueuePropertiesPosix props = 								//*1
+		{
+		    0,                          // msgProperties.blockingPolicy;  
+		    g_msgQueueName,    			// msgProperties.nameQueue
+		    S_IRUSR,                    // msgProperties.mode 
+		    O_RDONLY,    				// msgProperties.oflag  
+		    0,                          // msgProperties.priority
+		    0,                          // msgProperties.mq_flags
+		    8,                          // msgProperties.mq_maxmsg
+		    kEventDispatchMessageSize, 	// msgProperties.mq_msgsize
+		    0                           // msgProperties.mq_curmsgs
+		};
+		tErrType err = kernel.OpenMessageQueue(g_hMsgQueueBG_, props, NULL);
+		debug.AssertNoErr(err, "EventDispatchTask(): Failed to create msg queue!\n" );
+		debug.DebugOut(kDbgLvlVerbose, "EventDispatchTask() Message queue created %d\n", 
+						static_cast<int>(g_hMsgQueueBG_));
+	
+		CEventDispatchMessage	msg;										//*2
+		while (g_threadRun_)
+		{
+		    err = kernel.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
+			debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
+		    pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
+		}
+		return NULL;
+	}
+
 public:
 	//------------------------------------------------------------------------
 	CEventManagerImpl() 
-		: ppListeners_(NULL), numListeners_(0), listSize_(0)
+		: ppListeners_(NULL), numListeners_(0), listSize_(0), 
+		debug_(kGroupEvent), hMsgQueueFG_(kInvalidMessageQueueHndl)
+
 	{
+		// 1) Create the message queue for communicating with the
+		//    background dispatching thread
+		// 2) Create the background event dispatching thread
+		//
+		CDebugMPI	debug(kGroupEvent);
+		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Initializing Event Manager\n");
+
+		tMessageQueuePropertiesPosix props = 							//*1
+		{
+		    0,                          // msgProperties.blockingPolicy;  
+		    g_msgQueueName,    			// msgProperties.nameQueue
+		    S_IRWXU,                    // msgProperties.mode 
+		    O_WRONLY|O_CREAT|O_TRUNC,   // msgProperties.oflag  
+		    0,                          // msgProperties.priority
+		    0,                          // msgProperties.mq_flags
+		    8,                          // msgProperties.mq_maxmsg
+		    kEventDispatchMessageSize,  		// msgProperties.mq_msgsize
+		    0                           // msgProperties.mq_curmsgs
+		};
+		
+		tErrType err = kernel_.OpenMessageQueue(hMsgQueueFG_, props, NULL);
+
+		debug.AssertNoErr(err, "CEventManagerImpl::ctor: Failed to create message queue!\n");
+		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Message queue created %d\n", 
+						static_cast<int>(hMsgQueueFG_));
+
+		tTaskProperties properties;										//*2
+
+		properties.TaskMainFcn = CEventManagerImpl::EventDispatchTask;
+		properties.pTaskMainArgValues = this;
+		err = kernel_.CreateTask(g_hThread_, properties, NULL);
+
+		debug.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create EventDispatchTask!\n" );
+	}
+	
+	//------------------------------------------------------------------------
+	~CEventManagerImpl() 
+	{
+		delete ppListeners_;
+		g_threadRun_ = false;
+		// TODO/tp: Debug thread join (not exercising as of 7/07)!
+		tPtr ptr;
+		kernel_.JoinTask(g_hThread_, ptr);
 	}
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener)
@@ -127,8 +242,7 @@ public:
 		}
 	}
 	//------------------------------------------------------------------------
-	tErrType PostEvent(const IEventMessage &msg, 
-						tEventPriority /*priority*/, 
+	tErrType PostEventImpl(const IEventMessage &msg, 
 						const IEventListener *pResponse) const
 	{
 		// 1) If there was a response listener provided (e.g., from
@@ -136,7 +250,6 @@ public:
 		// 2) Post the message to all of the async/non-response listeners
 		// TODO/tp: Optimize this by keeping a multimap of event types to
 		// listeners???
-		// FIXME/tp: Remove priority parameter
 		//
 		PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
 		
@@ -145,12 +258,37 @@ public:
 			PostEventToChain(const_cast<IEventListener*>(*ptr), msg);
 		return kNoErr;
 	}
+	//------------------------------------------------------------------------
+	tErrType PostEvent(const IEventMessage &msg, 
+						tEventPriority priority, 
+						const IEventListener *pResponse) const
+	{
+		// NOTE: 0 is the highest priority, 255 the lowest.  
+		// 1) For high priority requests, call through on the poster's thread
+		//  to minimize overhead.
+		// 2) For low priority requests, dispatch through the background thread.
+		//
+		if (priority < 128)												//*1
+			return PostEventImpl(msg, pResponse);
+
+		// FIXME: copy msg to buffer!
+		CEventDispatchMessage	dmsg(&msg, pResponse);					//*2
+		tErrType err = kernel_.SendMessage(hMsgQueueFG_, dmsg);
+		debug_.AssertNoErr(err, "PostEvent -- SendMessage failed!\n");
+		return err;
+	}
 };
+
+//----------------------------------------------------------------------------
+tMessageQueueHndl	CEventManagerImpl::g_hMsgQueueBG_ = kInvalidMessageQueueHndl;
+bool 				CEventManagerImpl::g_threadRun_   = true;
+tTaskHndl			CEventManagerImpl::g_hThread_	  = kInvalidTaskHndl;
 	
 namespace
 {
 	CEventManagerImpl* pinst = NULL;
 }
+
 
 
 //============================================================================

@@ -13,6 +13,7 @@
 //==============================================================================
 
 #include <SystemTypes.h>
+#include <boost/scoped_array.hpp>
 LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventListener;	// forward declaration
@@ -35,11 +36,11 @@ public:
 	virtual tErrType	ReenableNotifyForEventType(tEventType type);
 	virtual Boolean		HandlesEvent(tEventType type) const;
 private:
-	const IEventListener*	pNextListener_;
-	tEventType*				pEventList_;
-	tEventType*				pDisabledEventList_;
-	const U16				numEvents_;
-	U16						numDisabledEvents_;
+	const IEventListener*			pNextListener_;
+	boost::scoped_array<tEventType>	eventList_;
+	boost::scoped_array<tEventType>	disabledEventList_;
+	const U16						numEvents_;
+	U16								numDisabledEvents_;
 
 	// Disable copy semantics
 	CEventListenerImpl(const CEventListenerImpl&);

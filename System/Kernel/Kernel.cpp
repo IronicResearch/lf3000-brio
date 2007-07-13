@@ -409,7 +409,7 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
                           &queuAttr);
     
 	ASSERT_POSIX_CALL(errno);
-    hndl = retMq_open;
+    hndl = (retMq_open == -1) ? kInvalidMessageQueueHndl : retMq_open;
     
 #if 0 // BSK Debug Printing
     printf("Return value of mq_open function is %d ERRNO=%d\n", retMq_open, errno);
@@ -501,7 +501,7 @@ int CKernelModule::GetMessageQueueNumMessages(tMessageQueueHndl hndl) const
 }
  
 //------------------------------------------------------------------------------
-tErrType CKernelModule::SendMessage(tMessageQueueHndl hndl, const CMessage& msg) 
+tErrType CKernelModule::SendMessage(tMessageQueueHndl hndl, const CMessage& msg)
 {
 #if 0 // BSK
     printf("pMessage->GetMessageSize() = %d\n", pMessage->GetMessageSize());
