@@ -5,6 +5,8 @@ import os.path
 import glob
 Import('*')
 
+copyenv = DefaultEnvironment()
+
 
 #-----------------------------------------------------------------------------
 # FIXME/tp: When we hide the ustring class behind our own implementation,
@@ -23,7 +25,7 @@ def ExportHeaders(dest_dir, src_dir, file_extension):
 				if os.path.splitext(file)[1] == file_extension:
 					full = os.path.join(directory, file)
 					subdir = os.path.dirname(full[root_len:])
-					env.Install(os.path.join(dest_dir, subdir), full)
+					copyenv.Install(os.path.join(dest_dir, subdir), full)
 						
 	os.path.walk(src_dir, callback, None)
 	Default(dest_dir)
@@ -34,11 +36,12 @@ def ExportHeaders(dest_dir, src_dir, file_extension):
 #-----------------------------------------------------------------------------
 if vars['is_export'] or vars['is_publish']:
 
+	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'boost'), 
+					Dir('boost/boost').abspath, '.hpp')				
+	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'ustring'), 
+					Dir('ustring').abspath, '.h')
+					
 	if vars['is_emulation']:
-		ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'boost'), 
-						Dir('boost/boost').abspath, '.hpp')				
-		ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'ustring'), 
-						Dir('ustring').abspath, '.h')	
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
 		headers = os.path.join('PowerVR', 'Include')
