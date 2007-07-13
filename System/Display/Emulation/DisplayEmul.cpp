@@ -206,7 +206,6 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 
 //----------------------------------------------------------------------------
 // YUV to RGB color conversion: <http://en.wikipedia.org/wiki/YUV>
-#if 1	// Integer formula = OK
 inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8>(X); }
 inline	S16 C(U8 Y)  			{ return (Y - 16); }
 inline 	S16 D(U8 U)  			{ return (U - 128); }
@@ -214,12 +213,6 @@ inline 	S16 E(U8 V)  			{ return (V - 128); }
 inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
 inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
 inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
-#else	// MagicEyes formula = too magenta 
-inline 	U8 clip(float X)		{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8>(X); }
-inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip((Y + 1.4 * V)); }
-inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip((Y - 0.3 * U + 0.7 * V)); }
-inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip((Y + 1.8 * U)); }
-#endif
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
