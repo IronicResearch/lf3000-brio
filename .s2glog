@@ -5272,3 +5272,13 @@ By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:26 PM
 2,472 ms. (Cumulative: 885,856 ms)
 
 ----------------
+Revision 896 from svn://localhost/TRUNK/:
+
+Deleting old libraries, as Eclipse doesn't want to update with newer archives.  So, I'll add the new ones in the net checkin.
+
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:27 PM
+0 changed, 0 added, 2 deleted.
+2,173 ms. (Cumulative: 888,076 ms)
+
+----------------
