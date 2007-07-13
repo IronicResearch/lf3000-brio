@@ -5254,3 +5254,12 @@ By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:07 PM
 2,157 ms. (Cumulative: 881,118 ms)
 
 ----------------
+Revision 894 from svn://localhost/TRUNK/:
+
+Copy headers for both emulation and embedded targets, and only copy once for publish builds.
+
+By TParker (TParker@leapfrog.com) on 7/13/07 4:11 PM
+1 changed, 0 added, 0 deleted.
+2,173 ms. (Cumulative: 883,338 ms)
+
+----------------
