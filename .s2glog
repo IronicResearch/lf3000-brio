@@ -5245,3 +5245,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/13/07 3:15 PM
 2,110 ms. (Cumulative: 878,899 ms)
 
 ----------------
+Revision 893 from svn://localhost/TRUNK/:
+
+Deleting files with incorrect capitalization, although the new files also include new code.
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:07 PM
+0 changed, 0 added, 2 deleted.
+2,157 ms. (Cumulative: 881,118 ms)
+
+----------------
