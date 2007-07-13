@@ -5282,3 +5282,13 @@ By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:27 PM
 2,173 ms. (Cumulative: 888,076 ms)
 
 ----------------
+Revision 897 from svn://localhost/TRUNK/:
+
+These are the new ARM and x86 binaries for libdsputil .  The binaries are checked in because these directories are currently not included in the Brio build.
+
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:36 PM
+1 changed, 2 added, 0 deleted.
+2,282 ms. (Cumulative: 890,420 ms)
+
+----------------
