@@ -248,12 +248,12 @@ switch (d->waveform)
 		{
 		for (int i = 0; i < kOscillator_MaxDelayElements; i++)
 			d->z[i] = 0.0;
-		d->uz = (unsigned long)(0.5 + kTwoTo32m1*d->phase/kTwoPi);
+		d->uz = (unsigned long)(0.5 + kTwoTo32m1d*d->phase/kTwoPi);
 		}   
 	break;
 
 	case kOscillatorWaveform_SampleNHold:
-		d->uz      = (unsigned long)(0.5 + kTwoTo32m1*d->phase/kTwoPi);
+		d->uz      = (unsigned long)(0.5 + kTwoTo32m1d*d->phase/kTwoPi);
 		d->counter = d->udelta;
 	break;
 
@@ -262,7 +262,7 @@ switch (d->waveform)
 	case kOscillatorWaveform_SawtoothDown:
 	case kOscillatorWaveform_Square:
 	default:
-		d->uz = (unsigned long)(0.5 + kTwoTo32m1*d->phase/kTwoPi);
+		d->uz = (unsigned long)(0.5 + kTwoTo32m1d*d->phase/kTwoPi);
 	//printf("ResetOscillator: phase=%g -> %g %X\n", d->phase, (double)d->uz, d->uz);
 	break;
 	}
@@ -338,7 +338,7 @@ ComputeOscillator_SawtoothDown(float *out, long length, OSCILLATOR *d, int addTo
 {
 unsigned long delta = d->udelta;
 unsigned long z0    = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo32m1));
+float k = (float)(d->gain*(1.0/kTwoTo32m1d));
 
 if (addToOutput)
 	{
@@ -422,7 +422,7 @@ ComputeOscillator_SawtoothUp(float *outBuffer, long bufferLength, OSCILLATOR *d,
 {
 unsigned long delta = d->udelta;	// delta wave increment
 unsigned long z0    = d->uz;		// last state
-float k = (float)(d->gain*(1.0/kTwoTo32m1));
+float k = (float)(d->gain*(1.0/kTwoTo32m1d));
 
 if (addToOutput)
 	{

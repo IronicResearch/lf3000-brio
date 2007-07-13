@@ -11,14 +11,32 @@
 #include "util.h"
 #include "fir.h"
 
+#define kFIR_Triangle_3_Length 3
+float fir_Triangle_3_GainCompensationDB = -6.0;
+float fir_Triangle_3_Hz[kFIR_Triangle_3_Length] = {
+1.0f/2.0f,
+1.0f/1.0f,
+1.0f/2.0f,
+};
+
+#define kFIR_Triangle_9_Length 9
+float fir_Triangle_9_GainCompensationDB = -6.0;
+float fir_Triangle_9_Hz[kFIR_Triangle_9_Length] = {
+1.0f/4.0f,
+1.0f/3.0f,
+1.0f/2.0f,
+1.0f/1.0f,
+1.0f/2.0f,
+1.0f/3.0f,
+1.0f/4.0f
+};
 
 // FIR low pass pseudo-Half Band filter
-// Edges (normalized)       :  0...0.1904761905 , 0.275...0.5 
+// Edges (normalized)       : 0...0.1904761905 , 0.275...0.5 
 // Specified deviations (dB): 0.4237859814, -26.02059991
 // Worst deviations     (dB): 0.3934868464, -26.6782971
-#define kFIR_HalfBandV1_Length 15
-static float firHalfBand_V1_GainCompensationDB = -0.393f;
-static float firHalfBandHz_V1[kFIR_HalfBandV1_Length] = {
+float fir_HalfBand_15_GainCompensationDB = -0.393f;
+float fir_HalfBand_15_Hz[kFIR_HalfBand_15_Hz_Length] = {
 -1.966319704923826E-002,     
  3.222681179230342E-002,     
  4.623194395383842E-002,     
@@ -36,13 +54,52 @@ static float firHalfBandHz_V1[kFIR_HalfBandV1_Length] = {
 -1.966319704923826E-002      
 };
 
+// FIR lowpass filter -> pseudo half band filter
+// Edges (normalized)       : 0...0.1791666667 , 0.2654761905...0.5 
+// Specified deviations (dB): 0.4237859814 , -26.02059991
+// Worst deviations     (dB): 0.02865429754, -49.67700052
+// 31 coefficients: 
+float fir_HalfBand_31_GainCompensationDB = -0.393f;
+float fir_HalfBand_31_Hz[kFIR_HalfBand_31_Hz_Length] = {
+ 2.247704521932946E-003,     
+ 3.348591333106603E-003,     
+-4.269349366420656E-003,     
+-6.846542685131934E-003,     
+ 3.705493985646418E-003,     
+ 1.450129295379501E-002,     
+-9.951944571807069E-005,     
+-2.424019128960734E-002,     
+-1.079184077189607E-002,     
+ 3.534300127151398E-002,     
+ 3.409931841349848E-002,     
+-4.562321268940390E-002,     
+-8.613741395861341E-002,     
+ 5.294673024837716E-002,     
+ 3.112456066215704E-001,     
+ 4.444013734618702E-001,     
+ 3.112456066215704E-001,     
+ 5.294673024837716E-002,     
+-8.613741395861341E-002,     
+-4.562321268940390E-002,     
+ 3.409931841349848E-002,     
+ 3.534300127151398E-002,     
+-1.079184077189607E-002,     
+-2.424019128960734E-002,     
+-9.951944571807069E-005,     
+ 1.450129295379501E-002,     
+ 3.705493985646418E-003,     
+-6.846542685131934E-003,     
+-4.269349366420656E-003,     
+ 3.348591333106603E-003,     
+ 2.247704521932946E-003      
+};
+
 // FIR band pass filter 
 // Edges (normalized)       : 0...0.125 , 0.1875...0.3125 , 0.375...0.5 
 // Specified deviations (dB): -26.02059991, 0.4237859814, -26.02059991
 // Worst deviations     (dB): -17.52475309, 1.083071175, -17.52475309
-#define kFIR_BandPassHz_Length	15
-static float firBandPass_GainCompensationDB = -0.393f;
-float firBandPassHz[kFIR_BandPassHz_Length] = {
+float fir_BandPass_GainCompensationDB = -0.393f;
+float fir_BandPass_Hz[kFIR_BandPass_Hz_Length] = {
  1.054007141981783E-016,     
  4.626067510926039E-002,     
  3.284771181906916E-017,    
@@ -64,9 +121,8 @@ float firBandPassHz[kFIR_BandPassHz_Length] = {
 // Edges (normalized)       : 0...0.125 , 0.1875...0.3125 , 0.375...0.5 
 // Specified deviations (dB): 0.4237859814, -26.02059991, 0.4237859814
 // Worst deviations     (dB): 0.4433194267, -25.65037324, 0.4433194267
-#define kFIR_BandStopHz_Length	17
-static float firBandStop_GainCompensationDB = -0.444f;
-float firBandStopHz[kFIR_BandStopHz_Length] = {
+float fir_BandStop_GainCompensationDB = -0.444f;
+float fir_BandStop_Hz[kFIR_BandStop_Hz_Length] = {
  5.808898833541933E-002,     
  4.784520410580150E-017,     
 -2.745784022961546E-002,     
@@ -86,13 +142,35 @@ float firBandStopHz[kFIR_BandStopHz_Length] = {
  5.808898833541933E-002      
 };
 
+// FIR bandstop filter 
+// Edges (normalized)       : 0...0.05476190476, 0.09702380952...0.2446428571, 0.2738095238...0.5 
+// Specified deviations (dB): 0.4237859814, -26.02059991, 0.4237859814
+// Worst deviations     (dB): 1.868578976, -12.38890846, 1.871478139
+float fir_Notch_GainCompensationDB = -1.87f;
+float fir_Notch_Hz[kFIR_Notch_Hz_Length] = {
+ 1.64909722E-002,     
+ 6.49425240E-002,    
+-7.91175331E-002,     
+ 8.01686616E-002,     
+ 2.36217196E-001,    
+ 1.62159823E-001,    
+-1.73590635E-001,     
+ 6.25478722E-001,    
+-1.73590635E-001,    
+ 1.62159823E-001,     
+ 2.36217196E-001,     
+ 8.01686616E-002,    
+-7.91175331E-002,     
+ 6.49425240E-002,     
+ 1.64909722E-002      
+};
+
 // FIR highpass filter 
 // Edges (normalized)       : 0...0.225 , 0.275...0.5 
 // Specified deviations (dB): -26.02059991, 0.4237859814
 // Worst deviations     (dB): -20.05716543, 0.8213132248
-#define kFIR_HighPassHz_Length	15
-static float firHighPass_GainCompensationDB = -0.822f;
-float firHighPassHz[kFIR_HighPassHz_Length] = {
+float fir_HighPass_GainCompensationDB = -0.822f;
+float fir_HighPass_Hz[kFIR_HighPass_Hz_Length] = {
  7.170315600633288E-002,     
 -1.318044505937485E-004,     
 -5.754117820612641E-002,     
@@ -115,9 +193,8 @@ float firHighPassHz[kFIR_HighPassHz_Length] = {
 // Specified deviations (dB): 0.4237859814, -26.02059991
 // Worst deviations     (dB): 0.04450512642, -43.69790572
 // 15 coefficients: 
-#define kFIR_LowPassHz_Length	15
-static float firLowPass_GainCompensationDB = -0.045f;
-float firLowPassHz[kFIR_LowPassHz_Length] = {
+float fir_LowPass_GainCompensationDB = -0.045f;
+float fir_LowPass_Hz[kFIR_LowPass_Hz_Length] = {
  1.012450863421694E-002,     
  2.135048804652548E-002,     
  3.902844636949630E-002,     
@@ -135,13 +212,12 @@ float firLowPassHz[kFIR_LowPassHz_Length] = {
  1.012450863421694E-002      
 };
 
-// Low Pass FIR Half Band filter
+// Low Pass FIR 1/2 Band filter
 // Stop Band Ripple               : -32.8 dB
 // Pass band as fraction of band  : 0.8
 // Weight on transition band error: 1.0E-6
-#define kFIR_LowPass_HalfBandHz_Length	15
-static float firLowPass_HalfBand_GainCompensationDB = 0.0f;
-float firLowPass_HalfBandHz[kFIR_LowPass_HalfBandHz_Length] = {
+float fir_HalfBand_32dB_GainCompensationDB = 0.0f;
+float fir_HalfBand_32dB_Hz[kFIR_HalfBand_32dB_Hz_Length] = {
      -0.025915889069,
       0.000000000000,
       0.043797262013,
@@ -157,6 +233,106 @@ float firLowPass_HalfBandHz[kFIR_LowPass_HalfBandHz_Length] = {
       0.043797262013,
       0.000000000000,
      -0.025915889069
+};
+
+// Low Pass FIR 1/2 Band filter
+// Stop Band Ripple               : -58 dB
+// Pass band as fraction of band  : 0.8
+// Weight on transition band error: 1.0E-6
+float fir_HalfBand_58dB_GainCompensationDB = 0.0f;
+float fir_HalfBand_58dB_Hz[kFIR_HalfBand_58dB_Hz_Length] = {
+     -0.002013340127,
+      0.000000000000,
+      0.004528076388,
+      0.000000000000,
+     -0.009264231659,
+      0.000000000000,
+      0.017020016909,
+      0.000000000000,
+     -0.029593331739,
+      0.000000000000,
+      0.051360368729,
+      0.000000000000,
+     -0.098308317363,
+      0.000000000000,
+      0.315639346838,
+      0.500000000000,
+      0.315639346838,
+      0.000000000000,
+     -0.098308317363,
+      0.000000000000,
+      0.051360368729,
+      0.000000000000,
+     -0.029593331739,
+      0.000000000000,
+      0.017020016909,
+      0.000000000000,
+     -0.009264231659,
+      0.000000000000,
+      0.004528076388,
+      0.000000000000,
+     -0.002013340127
+};
+
+// FIR low pass 1/3 Band filter
+// Edges (normalized)       : 0...0.05476190476 , 0.1660714286...0.5 
+// Specified deviations (dB): 0.4237859814, -26.02059991
+// Worst deviations     (dB): 0.1664067777, -34.27288912
+float fir_ThirdBand_15_GainCompensationDB = -0.43f;
+float fir_ThirdBand_15_Hz[kFIR_ThirdBand_15_Hz_Length] = { 
+-2.06583462E-002,     
+-2.27924394E-002,     
+-1.31107674E-002,     
+ 2.16633934E-002,     
+ 8.01341135E-002,     
+ 1.47992286E-001,     
+ 2.02693761E-001,     
+ 2.23676473E-001,     
+ 2.02693761E-001,     
+ 1.47992286E-001,     
+ 8.01341135E-002,    
+ 2.16633934E-002,     
+-1.31107674E-002,     
+-2.27924394E-002,     
+-2.06583462E-002    
+};
+// FIR low pass 1/3 Band Filter
+// Edges (normalized)       :  0...0.125  0.206547619...0.5 
+// Specified deviations (dB):  0.4237859814 ,  -26.02059991
+// Worst deviations     (dB):  0.04356962041 ,  -45.98843395
+float fir_ThirdBand_31_GainCompensationDB = -0.044f;
+float fir_ThirdBand_31_Hz[kFIR_ThirdBand_31_Hz_Length] = { 
+-6.439899153609271E-004,     
+ 4.930494991348698E-003,    
+ 5.259429622388441E-003,     
+-5.341869304173750E-004,     
+-1.024559963005230E-002,     
+-1.262301867027688E-002,     
+ 9.507424661052187E-004,     
+ 2.223353644409178E-002,     
+ 2.715711572640033E-002,     
+-1.343170179396962E-003,     
+-4.702534451436245E-002,     
+-6.090389517417872E-002,     
+ 1.628546599067582E-003,     
+ 1.349405231328744E-001,     
+ 2.729190996458141E-001,     
+ 3.315991259913736E-001,     
+ 2.729190996458141E-001,     
+ 1.349405231328744E-001,     
+ 1.628546599067582E-003,     
+-6.090389517417872E-002,     
+-4.702534451436245E-002,     
+-1.343170179396962E-003,     
+ 2.715711572640033E-002,     
+ 2.223353644409178E-002,   
+ 9.507424661052187E-004,     
+-1.262301867027688E-002,     
+-1.024559963005230E-002,     
+-5.341869304173750E-004,     
+ 5.259429622388441E-003,     
+ 4.930494991348698E-003,     
+-6.439899153609271E-004      
 };
 
 // *************************************************************** 
@@ -185,30 +361,69 @@ switch (d->type)
 	{
 	default:
 	case kFIR_Type_LowPass:
-		d->order =  kFIR_LowPassHz_Length;
-		d->outLevelDB = firLowPass_GainCompensationDB;
-		CopyFloats(firLowPassHz, d->h, d->order);
+		d->order      = kFIR_LowPass_Hz_Length;
+		d->outLevelDB = fir_LowPass_GainCompensationDB;
+		CopyFloats(fir_LowPass_Hz, d->h, d->order);
 	break;
 	case kFIR_Type_HighPass:
-		d->order =  kFIR_HighPassHz_Length;
-		d->outLevelDB = firHighPass_GainCompensationDB;
-		CopyFloats(firHighPassHz, d->h, d->order);
+		d->order      = kFIR_HighPass_Hz_Length;
+		d->outLevelDB = fir_HighPass_GainCompensationDB;
+		CopyFloats(fir_HighPass_Hz, d->h, d->order);
 	break;
 	case kFIR_Type_BandPass:
-		d->order =  kFIR_BandPassHz_Length;
-		d->outLevelDB = firBandPass_GainCompensationDB;
-		CopyFloats(firBandPassHz, d->h, d->order);
+		d->order      = kFIR_BandPass_Hz_Length;
+		d->outLevelDB = fir_BandPass_GainCompensationDB;
+		CopyFloats(fir_BandPass_Hz, d->h, d->order);
 	break;
 	case kFIR_Type_BandStop:
-		d->order =  kFIR_BandStopHz_Length;
-		d->outLevelDB = firBandStop_GainCompensationDB;
-		CopyFloats(firBandStopHz, d->h, d->order);
+		d->order     =  kFIR_BandStop_Hz_Length;
+		d->outLevelDB = fir_BandStop_GainCompensationDB;
+		CopyFloats(fir_BandStop_Hz, d->h, d->order);
 	break;
-	case kFIR_Type_HalfBand:
-		d->order =  kFIR_LowPass_HalfBandHz_Length;
-		d->outLevelDB = firLowPass_HalfBand_GainCompensationDB;
-		CopyFloats(firLowPass_HalfBandHz, d->h, d->order);
+// 1/2 Band filters (fc = fs/4)
+	case kFIR_Type_HalfBand_32dB:
+		d->order      = kFIR_HalfBand_32dB_Hz_Length;
+		d->outLevelDB = fir_HalfBand_32dB_GainCompensationDB;
+		CopyFloats(fir_HalfBand_32dB_Hz, d->h, d->order);
 	break;
+	case kFIR_Type_HalfBand_58dB:
+		d->order      = kFIR_HalfBand_58dB_Hz_Length;
+		d->outLevelDB = fir_HalfBand_58dB_GainCompensationDB;
+		CopyFloats(fir_HalfBand_58dB_Hz, d->h, d->order);
+	break;
+	case kFIR_Type_HalfBand_15:
+		d->order      = kFIR_HalfBand_15_Hz_Length;
+		d->outLevelDB = fir_HalfBand_15_GainCompensationDB;
+		CopyFloats(fir_HalfBand_15_Hz, d->h, d->order);
+	break;
+	case kFIR_Type_HalfBand_31:
+		d->order      = kFIR_HalfBand_31_Hz_Length;
+		d->outLevelDB = fir_HalfBand_31_GainCompensationDB;
+		CopyFloats(fir_HalfBand_31_Hz, d->h, d->order);
+	break;
+// 1/3 Band filters (fc = fs/6)
+	case kFIR_Type_ThirdBand_15:
+		d->order      = kFIR_ThirdBand_15_Hz_Length;
+		d->outLevelDB = fir_ThirdBand_15_GainCompensationDB;
+		CopyFloats(fir_ThirdBand_15_Hz, d->h, d->order);
+	break;
+	case kFIR_Type_ThirdBand_31:
+		d->order      = kFIR_ThirdBand_31_Hz_Length;
+		d->outLevelDB = fir_ThirdBand_31_GainCompensationDB;
+		CopyFloats(fir_ThirdBand_31_Hz, d->h, d->order);
+	break;
+// Triangle filters
+	case kFIR_Type_Triangle_3:
+		d->order      = kFIR_Triangle_3_Hz_Length;
+		d->outLevelDB = fir_Triangle_3_GainCompensationDB;
+		CopyFloats(fir_Triangle_3_Hz, d->h, d->order);
+	break;
+	case kFIR_Type_Triangle_9:
+		d->order      = kFIR_Triangle_9_Hz_Length;
+		d->outLevelDB = fir_Triangle_9_GainCompensationDB;
+		CopyFloats(fir_Triangle_9_Hz, d->h, d->order);
+	break;
+
 	}
 d->outLevel = DecibelToLinear(d->outLevelDB);
 
@@ -249,21 +464,20 @@ ResetFIR(d);
 }	// ---- end PrepareFIR() ---- 
 
 // *************************************************************** 
-// RunFIR_Shorts:	Main calculation routine, 32-bit floating point
+// RunFIR_Shortsf:	Main calculation routine, 32-bit floating point
 // ***************************************************************
 	void
-RunFIR_Shorts(short *in, short *out, long length, FIR *d)
+RunFIR_Shortsf(short *in, short *out, long length, FIR *d)
 {
 long    i, j;
 long lAcc;
-short *zP = in;
 
-//{static long c=0; printf("RunFIR_Shorts %d \n", c++);}
+//{static long c=0; printf("RunFIR_Shortsf: %d \n", c++);}
 
 for (i = 0; i < length; i++)
 	{
 	float acc = 0.0f;
-        zP = &in[i-(d->order-1)];
+        short *zP = &in[i-(d->order-1)];
 // Compute FIR filter 
         for (j = 0; j < d->order; j++)
 		acc += d->h[j]*(float)zP[j];
@@ -280,24 +494,26 @@ for (i = 0; i < length; i++)
 // Save end of buffer to start of buffer for next iteration
 for (i = 0; i < d->order; i++)
 	in[-1-i] = in[length-1-i];
-}	// ---- end RunFIR_Shorts() ---- 
+}	// ---- end RunFIR_Shortsf() ---- 
 
 // *************************************************************** 
-// RunFIRFixedPoint_Shorts:	Main calculation routine, 16-bit fixed point
+// RunFIR_Shortsi:	Main calculation routine, 16-bit fixed point
 // ***************************************************************
 	void
-RunFIRFixedPoint_Shorts(short *in, short *out, long length, FIR *d)
+RunFIR_Shortsi(short *in, short *out, long length, FIR *d)
 {
 long i;
-{static long c=0; printf("RunFIRFixedPoint_Shorts %d \n", c++);}
+//{static long c=0; printf("RunFIR_Shortsi %d \n", c++);}
+short *hI = d->hI;
 
 for (i = 0; i < length; i++)
 	{
 	long lAcc = 0;
+
         short *zP = &in[i-(d->order-1)];
 // Compute FIR filter 
         for (long j = 0; j < d->order; j++)
-		lAcc += d->hI[j]*zP[j];
+		lAcc += (long)(hI[j]*zP[j]);
 
 // Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
 	lAcc = lAcc>>15;  // instead of 16 for guard bits, TEMPORARY
@@ -311,5 +527,5 @@ for (i = 0; i < length; i++)
 // Save end of buffer to start of buffer for next iteration
 for (i = 0; i < d->order; i++)
 	in[-1-i] = in[length-1-i];
-}	// ---- end RunFIRFixedPoint_Shorts() ---- 
+}	// ---- end RunFIR_Shortsi() ---- 
 

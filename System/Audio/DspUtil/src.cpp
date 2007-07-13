@@ -1,5 +1,8 @@
 // *************************************************************** 
-// src.cpp:		Sampling rate conversion routines
+// src.cpp:		Sampling rate conversion routines,
+//			currently 32-bit floating point,
+//			16-bit or 32-bit fixed point or a development
+//			fixed-point/floating-point hybrid.p
 //
 //		Written by Gints Klimanis, 2007
 // ***************************************************************
@@ -9,115 +12,9 @@
 #include <math.h>
 
 #include "Dsputil.h"
+#include "fir.h"
 #include "src.h"
 
-#define kSRC_FIR_Triangle9_Length 9
-float srcHz_Triangle9[kSRC_FIR_Triangle9_Length] = {
-1.0f/4.0f,
-1.0f/3.0f,
-1.0f/2.0f,
-1.0f/1.0f,
-1.0f/2.0f,
-1.0f/3.0f,
-1.0f/4.0f
-};
-
-// FIR low pass pseudo-Half Band filter
-// Edges (normalized)       : 0...0.1904761905 , 0.275...0.5 
-// Specified deviations (dB): 0.4237859814, -26.02059991
-// Worst deviations     (dB): 0.3934868464, -26.6782971
-#define kSRC_FIR_HalfBandV1_Length 15
-float srcHz_FIR_HalfBandV1_GainCompensationDB = -0.43f;
-float srcHz_FIR_HalfBandV1[kSRC_FIR_HalfBandV1_Length] = {
--1.966319704923826E-002,     
- 3.222681179230342E-002,     
- 4.623194395383842E-002,     
--2.482473304234042E-002,     
--8.977879949891251E-002,     
- 3.260044908950705E-002,     
- 3.132100525943124E-001,     
- 4.663313867843080E-001,     
- 3.132100525943124E-001,     
- 3.260044908950705E-002,     
--8.977879949891251E-002,     
--2.482473304234042E-002,     
- 4.623194395383842E-002,     
- 3.222681179230342E-002,     
--1.966319704923826E-002      
-};
-
-// FIR low pass pseudo-Third Band filter
-// Edges (normalized)       : 0...0.05476190476 , 0.1660714286...0.5 
-// Specified deviations (dB): 0.4237859814, -26.02059991
-// Worst deviations     (dB): 0.1664067777, -34.27288912
-#define kSRC_FIR_ThirdBandV1_Length 15
-float srcHz_FIR_ThirdBandV1_GainCompensationDB = -0.43f;
-float srcHz_FIR_ThirdBandV1[kSRC_FIR_ThirdBandV1_Length] = { 
--2.06583462E-002,     
--2.27924394E-002,     
--1.31107674E-002,     
- 2.16633934E-002,     
- 8.01341135E-002,     
- 1.47992286E-001,     
- 2.02693761E-001,     
- 2.23676473E-001,     
- 2.02693761E-001,     
- 1.47992286E-001,     
- 8.01341135E-002,    
- 2.16633934E-002,     
--1.31107674E-002,     
--2.27924394E-002,     
--2.06583462E-002    
-};
-
-
-// FIR bandstop filter 
-// Edges (normalized)       : 0...0.05476190476, 0.09702380952...0.2446428571, 0.2738095238...0.5 
-// Specified deviations (dB): 0.4237859814, -26.02059991, 0.4237859814
-// Worst deviations     (dB): 1.868578976, -12.38890846, 1.871478139
-#define kSRC_FIR_NotchTest_Length 15
-float srcHz_FIR_NotchTest_GainCompensationDB = -1.87f;
-float srcHz_FIR_NotchTest[kSRC_FIR_NotchTest_Length] = {
- 1.64909722E-002,     
- 6.49425240E-002,    
--7.91175331E-002,     
- 8.01686616E-002,     
- 2.36217196E-001,    
- 1.62159823E-001,    
--1.73590635E-001,     
- 6.25478722E-001,    
--1.73590635E-001,    
- 1.62159823E-001,     
- 2.36217196E-001,     
- 8.01686616E-002,    
--7.91175331E-002,     
- 6.49425240E-002,     
- 1.64909722E-002      
-};
-
-// Low Pass FIR Half Band filter
-// Stop Band Ripple               : -32.8 dB
-// Pass band as fraction of band  : 0.8
-// Weight on transition band error: 1.0E-6
-#define kSRC_LowPass_HalfBandHz_Length	15
-static float srcLowPass_HalfBand_GainCompensationDB = 0.0f;
-float srcLowPass_HalfBandHz[kSRC_LowPass_HalfBandHz_Length] = {
-     -0.025915889069,
-      0.000000000000,
-      0.043797262013,
-      0.000000000000,
-     -0.093198247254,
-      0.000000000000,
-      0.313836872578,
-      0.500000000000,
-      0.313836872578,
-      0.000000000000,
-     -0.093198247254,
-      0.000000000000,
-      0.043797262013,
-      0.000000000000,
-     -0.025915889069
-};
 
 // *************************************************************** 
 // DefaultSRC:		Set Default high-level parameter values
@@ -128,8 +25,9 @@ DefaultSRC(SRC *d)
 long i;
 // AddDrop, Linear, FIR1	
 
-d->type = kSRC_Interpolation_Type_AddDrop;
+d->type = kSRC_Interpolation_Type_FIR;
 d->useFixedPoint = True;
+d->useImpulse    = False;
 
 d->inSamplingFrequency  = 1.0f;
 d->outSamplingFrequency = 1.0f;
@@ -137,6 +35,12 @@ d->inScale = 1.0f;
 
 for (i = 0; i < kSRC_Filter_MaxCoeffs; i++)
 	d->h[i] = 0.0f;
+
+//printf("kSRC_Linear_MSBits =%d \n", kSRC_Linear_MSBits);
+//printf("kSRC_Linear_LSBits =%d \n", kSRC_Linear_LSBits);
+//printf("kSRC_Linear_MSmask =%08X \n", kSRC_Linear_MSmask);
+//printf("kSRC_Linear_LSmask =%08X \n", kSRC_Linear_LSmask);
+//printf("kSRC_Linear_Divisor = %d \n", kSRC_Linear_Divisor);
 
 d->samplingFrequency = 1.0f;
 }	// ---- end DefaultSRC() ---- 
@@ -157,40 +61,47 @@ long iOutInRateRatio = (long) d->outInRateRatio;
 // by2 interpolation or decimation
 if 	(2 == iInOutRateRatio || 2 == iOutInRateRatio)
 	{
-//	d->firLength = kSRC_FIR_HalfBandV1_Length;
-//	CopyFloats(srcHz_FIR_HalfBandV1, d->h, d->firLength);
-//	d->inScaleDB = srcHz_FIR_HalfBandV1_GainCompensationDB;
+//	d->firLength = kFIR_HalfBandV1_Length;
+//	d->hP        = firHz_FIR_HalfBandV1
+//	d->inScaleDB = firHz_FIR_HalfBandV1_GainCompensationDB;
 
-//#define kSRC_LowPass_HalfBandHz_Length	15
-//static float srcLowPass_HalfBand_GainCompensationDB = 0.0f;
-//float srcLowPass_HalfBandHz[kFIR_LowPass_HalfBandHz_Length] = {
-
-	d->firLength = kSRC_FIR_HalfBandV1_Length;
-	CopyFloats(srcLowPass_HalfBandHz, d->h, d->firLength);
-	d->inScaleDB = srcLowPass_HalfBand_GainCompensationDB;
+	if (kSRC_Interpolation_Type_FIR == d->type)
+		{
+//		d->hP        = firLowPass33dB_HalfBandHz;
+//		d->firLength = kFIR_LowPass33dB_HalfBandHz_Length;
+//		d->inScaleDB = firLowPass33dB_HalfBand_GainCompensationDB;
+		d->hP        = fir_HalfBand_58dB_Hz;
+		d->firLength = kFIR_HalfBand_58dB_Hz_Length;
+		d->inScaleDB = fir_HalfBand_58dB_GainCompensationDB;
+//printf("UpdateSRC: firLength = %d \n", d->firLength);
+		}
 	}
 // by3 interpolation or decimation
 else if (3 == iInOutRateRatio || 3 == iOutInRateRatio)
 	{
-	d->firLength = kSRC_FIR_ThirdBandV1_Length;
-	CopyFloats(srcHz_FIR_ThirdBandV1, d->h, d->firLength);
-	d->inScaleDB = srcHz_FIR_ThirdBandV1_GainCompensationDB;
+	d->firLength = kFIR_ThirdBand_31_Hz_Length;
+	d->hP        = fir_ThirdBand_31_Hz;
+	d->inScaleDB = fir_ThirdBand_31_GainCompensationDB;
 	}
 // whatever, junk data
 else
 	{
-	d->firLength = kSRC_FIR_NotchTest_Length;
-	CopyFloats(srcHz_FIR_NotchTest, d->h, d->firLength);
-	d->inScaleDB = srcHz_FIR_NotchTest_GainCompensationDB;
+	d->firLength = kFIR_Notch_Hz_Length;
+	d->hP        = fir_Notch_Hz;
+	d->inScaleDB = fir_Notch_GainCompensationDB;
 	}
 
+d->delta  = d->inOutRateRatio;
+d->argInc = (unsigned long)(d->inOutRateRatio*(double)(kSRC_Linear_Divisor));
+//printf("inOutRateRatio=%g argInc= %d (%X) \n", d->inOutRateRatio, d->argInc, d->argInc);
+
 d->inScale = DecibelToLinear(d->inScaleDB);
-printf("UpdateSRC: inScale %g dB -> %g \n", d->inScaleDB, d->inScale);
-printf("UpdateSRC: inOutRateRatio = %g , outInRateRatio = %g \n", d->inOutRateRatio, d->outInRateRatio);
+//printf("UpdateSRC: inScale %g dB -> %g \n", d->inScaleDB, d->inScale);
+//printf("UpdateSRC: inOutRateRatio = %g , outInRateRatio = %g \n", d->inOutRateRatio, d->outInRateRatio);
 
 // Scale coefficients by output level
 for (i = 0; i < d->firLength; i++)
-	d->h[i] *= d->inScale;
+	d->h[i] = d->inScale*d->hP[i];
 
 // Convert 32-bit floating point coefficients to signed 16-bit fixed point
 for (i = 0; i < d->firLength; i++)
@@ -208,7 +119,9 @@ for (i = 0; i < d->firLength; i++)
 ResetSRC(SRC *d)
 {
 long i;
-d->x = 0.0f;
+d->x   = 0.0;
+d->arg = 0;
+d->computingDone = False;
 
 for (i = 0; i < kSRC_Filter_MaxDelayElements; i++)
 	d->z[i] = 0;
@@ -225,55 +138,175 @@ ResetSRC(d);
 }	// ---- end PrepareSRC() ---- 
 
 // *************************************************************** 
-// InterpolateShorts_AddDrop:		Resample by fractional counter
+// ImpulseShortsf:		Resample by fractional counter
 // ***************************************************************
     static void 
-InterpolateShorts_AddDrop(short *in, short *out, long inLength, long outLength, double delta)
+InterpolateShortsf(short *in, short *out, long inLength, long outLength, SRC *d)
 // outLength:		# of samples to produce
-// delta:		inLength/outLength
 {
-long    i;
-double x = 0.0;
-//{static long c=0; printf("InterpolateShorts_AddDrop%d delta=%g\n", c++, delta);}
+//{static long c=0; printf("InterpolateShortsf %d : delta=%g x=%g \n", c++, d->delta, d->x);}
 
 // General interpolation/decimation with zero filtering
-for (i = 0; i < outLength; i++) 
+for (long i = 0; i < outLength; i++) 
 	{
-	out[i] = in[(long) x];
-	x     += delta;
+	out[i] = in[(long) d->x];
+	d->x  += d->delta;
 	}
-x -= outLength;
-}	// ---- end InterpolateShorts_AddDrop() ---- 
+// Save fractional part of counter
+d->x -= d->delta*(double)outLength;
+}	// ---- end InterpolateShortsf() ---- 
 
 // *************************************************************** 
-// InterpolateShorts_Linear:		Resample by linear interpolation
+// InterpolateShorts_AddDropf:		Resample by fractional counter
+// ***************************************************************
+    static void 
+InterpolateShorts_AddDropf(short *in, short *out, long inLength, long outLength, SRC *d)
+// outLength:		# of samples to produce
+{
+//{static long c=0; printf("InterpolateShorts_AddDropf %d : delta=%g x=%g \n", c++, d->delta, d->x);}
+
+// General interpolation/decimation with zero filtering
+for (long i = 0; i < outLength; i++) 
+	{
+	out[i] = in[(long) d->x];
+	d->x  += d->delta;
+	}
+// Save fractional part of counter
+d->x -= d->delta*(double)outLength;
+}	// ---- end InterpolateShorts_AddDropf() ---- 
+
+// *************************************************************** 
+// InterpolateShorts_AddDropi:		Resample by fractional counter
+// ***************************************************************
+    static void 
+InterpolateShorts_AddDropi(short *in, short *out, long inLength, long outLength, SRC *d)
+// outLength:		# of samples to produce
+{
+//{static long c=0; printf("InterpolateShorts_AddDropi %d : arg=%d argInc=%d\n", 
+//			c++, d->arg, d->argInc);}
+
+// General interpolation/decimation with zero filtering
+for (long i = 0; i < outLength; i++) 
+	{
+	unsigned long xi = (d->arg)>>kSRC_Linear_LSBits;
+//printf("%3d : arg=%d argInc=%d %g\n", i, d->arg, d->argInc, x);
+	out[i]  = in[xi];
+	d->arg += d->argInc;
+	}
+// Save fractional part of counter
+d->arg -= d->argInc*outLength;
+}	// ---- end InterpolateShorts_AddDropi() ---- 
+
+// *************************************************************** 
+// InterpolateShorts_Linearf:		Resample by linear interpolation
 //
 //		In-place operation: can   decimate in-place but
 //							can't interpolate in-place
 // ***************************************************************
     static void 
-InterpolateShorts_Linear(short *in, short *out, long inLength, long outLength, float *x, float xInc)
+InterpolateShorts_Linearf(short *in, short *out, long inLength, long outLength, SRC *d)
 // outLength:		# of samples to produce
-// delta:			inLength/outLength
 {
-//{static long c=0; printf("InterpolateShorts_Linear%d\n", c++);}
+//{static long c=0; printf("InterpolateShorts_Linearf %d\n", c++);}
 
 // General interpolation/decimation
 for (long i = 0; i < outLength; i++) 
 	{
-	long  x0       = (long ) *x;
-	float fraction = (float)(*x - (float)x0);
-	short *p      = &in[x0-1];
-	*x    += xInc;
+	long  x0       = (long ) d->x;
+	float fraction = (float)(d->x - (float)x0);
+	d->x    += d->delta;
 
-	out[i] = (short)(((float)p[0]) + ((float)(p[1]-p[0]))*fraction);
+	short *p      = &in[x0-1];
+	float diff    = (float)(p[1]-p[0]);
+
+	out[i] = (short)(p[0] + (long)(fraction*diff));
 	}
+
 // Save fractional part of counter
-*x = (float)(*x - (float)((long ) *x));
+d->x -= d->delta*(double)outLength;
 
 // Save end of buffer to start of buffer for next iteration
 in[-1] = in[inLength-1];
-}	// ---- end InterpolateShorts_Linear() ---- 
+}	// ---- end InterpolateShorts_Linearf() ---- 
+
+// *************************************************************** 
+// InterpolateShorts_Lineari_TEST:		Resample by linear interpolation
+//
+//		In-place operation: can   decimate in-place but
+//							can't interpolate in-place
+// ***************************************************************
+    static void 
+InterpolateShorts_Lineari_TEST(short *in, short *out, long inLength, long outLength, SRC *d)
+// outLength:		# of samples to produce
+{
+{static long c=0; printf("InterpolateShorts_Lineari_TEST %d\n", c++);}
+
+#define kSRC_Lineari_Shift 3 // FIXXX hard-coded to line up with bit15 of signed 16-bit
+
+for (long i = 0; i < outLength; i++) 
+	{
+	long  x0       = (long ) d->x;
+	float fraction = (float)(d->x - (float)x0);
+	short *p      = &in[x0-1];
+	float diff    = (float)(p[1]-p[0]);
+	long y        = (long) p[0];
+	d->x    += d->delta;
+	out[i] = (short)(y + (long)(fraction*diff));
+	}
+
+// General interpolation/decimation
+//unsigned long arg = d->arg;
+//short *lastP = &in[1];
+//for (long i = 0; i < outLength; i++) 
+//	{
+//	long  x0      = (arg)>>kSRC_Linear_LSBits;
+//	short *p      = &lastP[x0];
+//	long fraction = (arg & kSRC_Linear_LSmask)>>kSRC_Lineari_Shift;
+//	long  y       = fraction*(long)(p[1]-p[0]);  
+//
+//	arg += d->argInc;
+//	out[i] = (short)(((y>>16) + p[0]));
+//	}
+// Save fractional part of counter
+//d->arg = arg - ((d->argInc*outLength));
+
+// Save last sample of buffer for next iteration
+in[-1] = in[inLength-1];
+}	// ---- end InterpolateShorts_Lineari_TEST() ---- 
+
+// *************************************************************** 
+// InterpolateShorts_Lineari:		Resample by linear interpolation
+//
+//		In-place operation: can   decimate in-place but
+//							can't interpolate in-place
+// ***************************************************************
+    static void 
+InterpolateShorts_Lineari(short *in, short *out, long inLength, long outLength, SRC *d)
+// outLength:		# of samples to produce
+{
+//{static long c=0; printf("InterpolateShorts_Lineari %d\n", c++);}
+
+#define kSRC_Lineari_Shift 3 // FIXXX hard-coded to line up with bit15 of signed 16-bit
+
+// General interpolation/decimation
+unsigned long arg = d->arg;
+short *lastP = &in[1];
+for (long i = 0; i < outLength; i++) 
+	{
+	long  x0      = (arg)>>kSRC_Linear_LSBits;
+	short *p      = &lastP[x0];
+	long fraction = (arg & kSRC_Linear_LSmask)>>kSRC_Lineari_Shift;
+	long  y       = fraction*(long)(p[1]-p[0]);  
+
+	arg += d->argInc;
+	out[i] = (short)(((y>>16) + p[0]));
+	}
+// Save fractional part of counter
+d->arg = arg - ((d->argInc*outLength));
+
+// Save last sample of buffer for next iteration
+in[-1] = in[inLength-1];
+}	// ---- end InterpolateShorts_Lineari ---- 
 
 // *************************************************************** 
 // SRCShorts_Triangle2		Resample by Avg2 interpolation
@@ -284,7 +317,7 @@ in[-1] = in[inLength-1];
     static void 
 SRCShorts_Triangle2(short *in, short *out, long inLength, long outLength)
 {
-{static long c=0; printf("SRCShorts_Triangle%d\n", c++);}
+//{static long c=0; printf("SRCShorts_Triangle%d\n", c++);}
 
 // ---- Downsampling by 2
 if (outLength < inLength)
@@ -336,10 +369,8 @@ for (i = 0; i < length; i++)
 
 // Saturate accumulator and write output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[i] = (short) lAcc;
 	}
 
@@ -349,23 +380,21 @@ for (i = 0; i < d->firLength; i++)
 }	// ---- end ComputeSRC_TestFIR() ---- 
 
 // *************************************************************** 
-// ComputeSRC_DownBy2FIR:	Sampling rate downconversion by factor 2
+// ComputeSRC_DownBy2FIRf:	Sampling rate downconversion by factor 2
 //				with FIR filtering
 // ***************************************************************
     void 
-ComputeSRC_DownBy2FIR(short *in, short *out, long inLength, long outLength, SRC *d)
-// length:		# of samples to produce
+ComputeSRC_DownBy2FIRf(short *in, short *out, long inLength, long outLength, SRC *d)
 {
 long   i = 0, j = 0, k = 0, lAcc;
 short *zP = in;
-float *h = d->h;
-{static long c=0; printf("ComputeSRC_DownBy2FIR %d outLength=%d\n", c++, outLength);}
+float *h  = d->h;
+{static long c=0; printf("ComputeSRC_DownBy2FIRf %d outLength=%d\n", c++, outLength);}
 
 for (i = 0, k = 0; i < outLength; i++, k +=2) 
 	{
         float acc = 0.0f;
-// Compute FIR filter.  Since half the outputs are thrown away, there is no need 
-//                      to compute them. 
+// Compute FIR filter.  Half the outputs are tossed, so don't compute them. 
         zP = &in[k];
         for (j = 0; j < d->firLength; j++)
 		acc += h[j]*(float)zP[j-(d->firLength-1)];
@@ -373,30 +402,62 @@ for (i = 0, k = 0; i < outLength; i++, k +=2)
 
 // Saturate accumulator and write output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[i] = (short) lAcc;
 	}
 
 // Save end of buffer to start of buffer for next iteration
 for (i = 0; i < d->firLength; i++)
 	in[-1-i] = in[inLength-1-i];
-}	// ---- end ComputeSRC_DownBy2FIR() ---- 
+}	// ---- end ComputeSRC_DownBy2FIRf() ---- 
 
 // *************************************************************** 
-// ComputeSRC_DownBy3FIR:	Sampling rate downconversion by factor 3
+// ComputeSRC_DownBy2FIRi:	Sampling rate downconversion by factor 2
+//				with FIR filtering
+//				Fixed-point implementation
+// ***************************************************************
+    void 
+ComputeSRC_DownBy2FIRi(short *in, short *out, long inLength, long outLength, SRC *d)
+{
+long   i = 0, j = 0, k = 0;
+long   hI, zI, lAcc;
+short *zP, *hi = d->hI;
+
+{static long c=0; printf("ComputeSRC_DownBy2FIRi %d inLength=%d outLength=%d\n", c++, inLength, outLength);}
+
+for (i = 0, k = 0; i < outLength; i++, k +=2) 
+	{
+// Compute FIR filter.  Half the outputs are tossed, so don't compute them. 
+        zP = &in[k];
+        for (hI = 0, zI = 0, lAcc = 0; hI < d->firLength; hI++, zI--)
+		lAcc += hi[hI]*zP[zI];
+//	acc *= d->inScale;  // FIXXX tuck into coefficients
+
+// Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
+// 15 instead of 16 for guard bits, TEMPORARY
+//	if      (lAcc >  32767) lAcc =  32767;
+//	else if (lAcc < -32768) lAcc = -32768;
+	out[i] = (short) (lAcc>>15);
+	}
+
+// Save end of buffer to start of buffer for next iteration
+for (i = 0; i < d->firLength; i++)
+	in[-1-i] = in[inLength-1-i];
+}	// ---- end ComputeSRC_DownBy2FIRi() ---- 
+
+// *************************************************************** 
+// ComputeSRC_DownBy3FIRf:	Sampling rate downconversion by factor 3
 //				with FIR filtering
 // ***************************************************************
     void 
-ComputeSRC_DownBy3FIR(short *in, short *out, long inLength, long outLength, SRC *d)
+ComputeSRC_DownBy3FIRf(short *in, short *out, long inLength, long outLength, SRC *d)
 // length:		# of samples to produce
 {
 long   i = 0, j = 0, k = 0, lAcc;
 short *zP = in;
 float *h = d->h;
-{static long c=0; printf("ComputeSRC_DownBy3FIR %d outLength=%d\n", c++, outLength);}
+{static long c=0; printf("ComputeSRC_DownBy3FIRf %d outLength=%d\n", c++, outLength);}
 
 for (i = 0, k = 0; i < outLength; i++, k +=3) 
 	{
@@ -409,17 +470,49 @@ for (i = 0, k = 0; i < outLength; i++, k +=3)
 	acc *= d->inScale;  // FIXXX tuck into coefficients
 // Saturate accumulator and write output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[i] = (short) lAcc;
 	}
 
 // Save end of buffer to start of buffer for next iteration
 for (i = 0; i < d->firLength; i++)
 	in[-1-i] = in[inLength-1-i];
-}	// ---- end ComputeSRC_DownBy3FIR() ---- 
+}	// ---- end ComputeSRC_DownBy3FIRf() ---- 
+
+// *************************************************************** 
+// ComputeSRC_DownBy3FIRi:	Sampling rate downconversion by factor 3
+//				with FIR filtering
+//				Fixed-point implementation
+// ***************************************************************
+    void 
+ComputeSRC_DownBy3FIRi(short *in, short *out, long inLength, long outLength, SRC *d)
+{
+long   i = 0, j = 0, k = 0;
+long   hI, zI, lAcc;
+short *zP, *hi = d->hI;
+
+{static long c=0; printf("ComputeSRC_DownBy3FIRi %d inLength=%d outLength=%d\n", c++, inLength, outLength);}
+
+for (i = 0, k = 0; i < outLength; i++, k +=3) 
+	{
+// Compute FIR filter.  Half the outputs are tossed, so don't compute them. 
+        zP = &in[k];
+        for (hI = 0, zI = 0, lAcc = 0; hI < d->firLength; hI++, zI--)
+		lAcc += hi[hI]*zP[zI];
+//	acc *= d->inScale;  // FIXXX tuck into coefficients
+
+// Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
+// 15 instead of 16 for guard bits, TEMPORARY
+//	if      (lAcc >  32767) lAcc =  32767;
+//	else if (lAcc < -32768) lAcc = -32768;
+	out[i] = (short) (lAcc>>15);
+	}
+
+// Save end of buffer to start of buffer for next iteration
+for (i = 0; i < d->firLength; i++)
+	in[-1-i] = in[inLength-1-i];
+}	// ---- end ComputeSRC_DownBy3FIRi() ---- 
 
 #ifdef NEEDED
 // *************************************************************** 
@@ -458,10 +551,8 @@ for (i = 0, j = 0; i < inLength; i++, j +=2)
 
 // Saturate accumulator and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j] = (short) lAcc;
 
 // Compute FIR filter (odd coeffs)
@@ -476,15 +567,13 @@ for (i = 0, j = 0; i < inLength; i++, j +=2)
 
 // Saturate accumulator and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j+1] = (short) lAcc;
 	}
 
 // Save end of buffer to start of buffer for next iteration
-for (i = 0; i < d->firLength/2; i++)
+for (i = 0; i < d->firLength; i++)
 	in[-1-i] = in[inLength-1-i];
 }	// ---- end InterpolateShortsBy2_FIR15() ---- 
 #endif
@@ -499,50 +588,118 @@ ComputeSRC_UpBy2FIRf(short *in, short *out, long inLength, long outLength, SRC *
 {
 long    i, j;
 long hI, zI, lAcc;
-short *zP = in;
-float *h = d->h;
+short *zP;
+float *h = d->h, acc;
 float k = 2.0f*d->inScale;
 
-//{static long c=0; printf("ComputeSRC_UpBy2FIRf %d\n", c++);}
+//{static long c=0; printf("ComputeSRC_UpBy2FIRf %d inLength=%d outLength=%d\n", c++, inLength, outLength);}
 
 // Produce two output values for each input value
 for (i = 0, j = 0; i < inLength; i++, j +=2) 
 	{
-	float acc = 0.0f;
         zP = &in[i];
 // Compute FIR filter (even coeffs)
-        acc = 0.0f;
-        for (hI = 0, zI = 0; hI < d->firLength; hI += 2, zI--)
-		acc += h[hI]*(float)zP[zI];
+        for (hI = 0, zI = 0, acc = 0.0f; hI < d->firLength; hI += 2, zI--)
+		acc += h[hI]*(float)zP[zI];		
 	acc *= k;  // FIXXX tuck into coefficients in Update() for efficiency
 
 // Saturate accumulator and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j] = (short) lAcc;
 
 // Compute FIR filter (odd coeffs)
-        acc = 0.0f;
-        for (hI = 1, zI = 0; hI < d->firLength; hI += 2, zI--)
+        for (hI = 1, zI = 0, acc = 0.0f; hI < d->firLength; hI += 2, zI--)
 		acc += h[hI]*(float)zP[zI];
 	acc *= k;  // FIXXX tuck into coefficients in Update() for efficiency
 
 // Saturate accumulator and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j+1] = (short) lAcc;
 	}
 
 // Save end of buffer to start of buffer for next iteration
-for (i = 0; i < d->firLength/2; i++)
+for (i = 0; i < d->firLength; i++)
 	in[-1-i] = in[inLength-1-i];
 }	// ---- end ComputeSRC_UpBy2FIRf() ---- 
+
+// *************************************************************** 
+// ComputeSRC_UpBy2FIRf_Unfiltered:	Resample by 2 interpolation, NO FIR filter
+//
+//			32-bit floating point implementation
+// ***************************************************************
+    static void 
+ComputeSRC_UpBy2FIRf_Unfiltered(short *in, short *out, long inLength, long outLength, SRC *d)
+{
+long    i, j, lY;
+
+{static long c=0; printf("ComputeSRC_UpBy2FIRf_Unfiltered %d\n", c++);}
+
+// Interpolation loop (unfiltered)
+for (i = 0, j = 0; i < inLength; i++, j +=2) 
+	{
+//        out[j  ] = in[i];
+//	float y = 2.0f*(float)in[i];
+// Saturate accumulator and output
+//	lY = (long) y;
+//	if      (lY >  32767) lY =  32767;
+//	else if (lY < -32768) lY = -32768;
+//	out[j] = (short) lY;
+
+	out[j] = in[i];
+	out[j+1] = 0;
+	}
+}	// ---- end ComputeSRC_UpBy2FIRf_Unfiltered() ---- 
+
+// *************************************************************** 
+// ComputeSRC_UpBy2FIRf_BREAKOUT:	Resample by 2 interpolation with FIR filter
+//
+//			32-bit floating point implementation
+// ***************************************************************
+    static void 
+ComputeSRC_UpBy2FIRf_BREAKOUT(short *in, short *out, long inLength, long outLength, SRC *d)
+{
+long    i, j;
+long hI, zI, lAcc;
+short *zP = in;
+float *h = d->h;
+float k = 2.0f*d->inScale;
+static short tmpBuf[10000];
+short *tmpBufP = &tmpBuf[kSRC_Filter_MaxDelayElements];
+
+//{static long c=0; printf("ComputeSRC_UpBy2FIRf_BREAKOUT %d : inLength=%d outLength=%d\n", c++, inLength, outLength);}
+
+// Interpolation loop (unfiltered)
+for (i = 0, j = 0; i < inLength+d->firLength; i++, j +=2) 
+	{
+        tmpBuf[j  ] = in[i-d->firLength];
+	tmpBuf[j+1] = 0;
+	}
+
+// Save end of buffer to start of buffer for next iteration
+for (i = 0; i < d->firLength; i++)
+	in[-1-i] = in[inLength-1-i];
+
+// Filter loop:  input already interpolated by factor 2
+for (i = 0; i < outLength; i++) 
+	{
+	float acc = 0.0f;
+        zP = &tmpBufP[i];
+// Compute FIR filter (all coeffs)
+        for (hI = 0, zI = 0; hI < d->firLength; hI++, zI--)
+		acc += h[hI]*(float)zP[zI];
+	acc *= k;  // FIXXX tuck into coefficients in Update() for efficiency
+
+// Saturate accumulator and output
+	lAcc = (long) acc;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
+	out[i] = (short) lAcc;
+	}
+}	// ---- end ComputeSRC_UpBy2FIRf_BREAKOUT() ---- 
 
 // *************************************************************** 
 // ComputeSRC_UpBy2FIRi:	Resample by 2 interpolation with FIR filter
@@ -552,119 +709,145 @@ for (i = 0; i < d->firLength/2; i++)
     static void 
 ComputeSRC_UpBy2FIRi(short *in, short *out, long inLength, long outLength, SRC *d)
 {
-long    i, j;
-long hI, zI, lAcc;
-short *zP = in;
-short *hi = d->hI;
-//float k = 2.0f*d->inScale;
+long   i, j;
+long   hI, zI, lAcc;
+short *zP, *hi = d->hI;
 
-//{static long c=0; printf("ComputeSRC_UpBy2FIRi %d\n", c++);}
+//{static long c=0; printf("ComputeSRC_UpBy2FIRi %d inLength=%d firLength=%d\n", c++, inLength, d->firLength);}
 
 // Produce two output values for each input value
-for (i = 0, j = 0; i < inLength; i++, j +=2) 
+for (i = 0, j = 0; i < inLength ; i++, j +=2) 
 	{
         zP = &in[i];
 // Compute FIR filter (even coeffs)
-        long lAcc = 0;
-        for (hI = 0, zI = 0; hI < d->firLength; hI += 2, zI--)
+        for (hI = 0, zI = 0, lAcc = 0; hI < d->firLength; hI += 2, zI--)
 		lAcc += hi[hI]*zP[zI];
 
 // Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
-	lAcc = lAcc>>14;  // 15 instead of 16 for guard bits, TEMPORARY
-			  // 14 to compensate for by2 interpolation
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
-	out[j] = (short) lAcc;
+// 15 instead of 16 for guard bits, TEMPORARY
+// 14 to compensate for by2 interpolation
+//	if      (lAcc >  32767) lAcc =  32767;
+//	else if (lAcc < -32768) lAcc = -32768;
+	out[j] = (short) (lAcc>>14);
 
 // Compute FIR filter (odd coeffs)
-        lAcc = 0;
-        for (hI = 1, zI = 0; hI < d->firLength; hI += 2, zI--)
+        for (hI = 1, zI = 0, lAcc = 0; hI < d->firLength; hI += 2, zI--)
 		lAcc += hi[hI]*zP[zI];
-
-// Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
-	lAcc = lAcc>>14;  // 15 instead of 16 for guard bits, TEMPORARY
-			  // 14 to compensate for by2 interpolation
-//	if      (lAcc >  32767)
-//		lAcc = 32767;
-//	else if (lAcc < -32768)
-//		lAcc = -32768;
-	out[j+1] = (short) lAcc;
+	out[j+1] = (short) (lAcc>>14);
 	}
 
 // Save end of buffer to start of buffer for next iteration
-for (i = 0; i < d->firLength/2; i++)
+for (i = 0; i < d->firLength; i++)
 	in[-1-i] = in[inLength-1-i];
 }	// ---- end ComputeSRC_UpBy2FIRi() ---- 
 
 // *************************************************************** 
-// ComputeSRC_UpBy3FIR:	Resample by 3 interpolation with FIR filter
+// ComputeSRC_UpBy3FIRf:	Resample by 3 interpolation with FIR filter
 //
+//			32-bit floating point implementation
 // ***************************************************************
     static void 
-ComputeSRC_UpBy3FIR(short *in, short *out, long inLength, long outLength, SRC *d)
+ComputeSRC_UpBy3FIRf(short *in, short *out, long inLength, long outLength, SRC *d)
 {
 long    i, j;
 long hI, zI, lAcc;
-short *zP = in;
+short *zP;
 float *h = d->h;
 float k = 3.0f*d->inScale;
 
-//{static long c=0; printf("ComputeSRC_UpBy3FIR %d\n", c++);}
+//{static long c=0; printf("ComputeSRC_UpBy3FIRf %d\n", c++);}
 
 // Produce three output values for each input value
 for (i = 0, j = 0; i < inLength; i++, j += 3) 
 	{
-	float acc = 0.0f;
+	float acc;
         zP = &in[i];
 // Compute FIR filter output #1
-        acc = 0.0f;
-        for (hI = 0, zI = 0; hI < d->firLength; hI += 3, zI--)
+        for (hI = 0, zI = 0, acc = 0.0f; hI < d->firLength; hI += 3, zI--)
 		acc += h[hI]*(float)zP[zI];
 	acc *= k;  // FIXXX tuck into coefficients in Update() for efficiency
 
 // Saturate and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j] = (short) acc;
 
 // Compute FIR filter output #2
-        acc = 0.0f;
-        for (hI = 1, zI = 0; hI < d->firLength; hI += 3, zI--)
+        for (hI = 1, zI = 0, acc = 0.0f; hI < d->firLength; hI += 3, zI--)
 		acc += h[hI]*(float)zP[zI];
 	acc *= k;  // FIXXX tuck into coefficients in Update() for efficiency
 
 // Saturate and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j+1] = (short) lAcc;
 
 // Compute FIR filter output #3
-        acc = 0.0f;
-        for (hI = 2, zI = 0; hI < d->firLength; hI += 3, zI--)
+        for (hI = 2, zI = 0, acc = 0.0f; hI < d->firLength; hI += 3, zI--)
 		acc += h[hI]*(float)zP[zI];
 	acc *= k;  // FIXXX tuck into coefficients in Update() for efficiency
 
 // Saturate and output
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	if      (lAcc >  32767) lAcc =  32767;
+	else if (lAcc < -32768) lAcc = -32768;
 	out[j+2] = (short) lAcc;
 	}
 
 // Save end of buffer to start of buffer for next iteration
-for (i = 0; i < d->firLength/2; i++)
+for (i = 0; i < d->firLength; i++)
 	in[-1-i] = in[inLength-1-i];
-}	// ---- end ComputeSRC_UpBy3FIR() ---- 
+}	// ---- end ComputeSRC_UpBy3FIRf() ---- 
+
+// *************************************************************** 
+// ComputeSRC_UpBy3FIRi:	Resample by 3 interpolation with FIR filter
+//
+//			16-bit fixed-point implementation
+// ***************************************************************
+    static void 
+ComputeSRC_UpBy3FIRi(short *in, short *out, long inLength, long outLength, SRC *d)
+{
+long    i, j;
+long   hI, zI, lAcc;
+short *zP, *hi = d->hI;
+short compI = (short)(32767.0f * d->inScale);
+// {static long c=0; printf("ComputeSRC_UpBy3FIRi %d\n", c++);}
+
+// Produce three output values for each input value
+for (i = 0, j = 0; i < inLength; i++, j += 3) 
+	{
+        zP = &in[i];
+// Compute output #1
+        for (hI = 0, zI = 0, lAcc = 0; hI < d->firLength; hI += 3, zI--)
+		lAcc += hi[hI]*zP[zI];
+
+// Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
+// 15 instead of 16 for guard bits, TEMPORARY
+// 14 to compensate for by2 interpolation  FIXXX: need by3
+//	if      (lAcc >  32767) lAcc =  32767;
+//	else if (lAcc < -32768) lAcc = -32768;
+	lAcc = (lAcc + (lAcc>>1))>>14; // Scale by 3 to compensate for By3 interpolation
+	out[j] = (short) ((lAcc*compI)>>15);
+
+// Compute output #2
+        for (hI = 1, zI = 0, lAcc = 0; hI < d->firLength; hI += 3, zI--)
+		lAcc += hi[hI]*zP[zI];
+	lAcc = (lAcc + (lAcc>>1))>>14;
+	out[j+1] = (short) ((lAcc*compI)>>15);
+
+// Compute output #3
+        for (hI = 2, zI = 0, lAcc = 0; hI < d->firLength; hI += 3, zI--)
+		lAcc += hi[hI]*zP[zI];
+	lAcc = (lAcc + (lAcc>>1))>>14;	
+	out[j+2] = (short) ((lAcc*compI)>>15);
+	}
+
+// Save end of buffer to start of buffer for next iteration
+for (i = 0; i < d->firLength; i++)
+	in[-1-i] = in[inLength-1-i];
+}	// ---- end ComputeSRC_UpBy3FIRi() ---- 
 
 // *************************************************************** 
 // RunSRC:		Resample, big-mama routine
@@ -672,19 +855,39 @@ for (i = 0; i < d->firLength/2; i++)
 	void
 RunSRC(short *in, short *out, long inLength, long outLength, SRC *d)
 {
+//{static long c=0; printf("RunSRC %d:   type=%d\n", c++, d->type);}
+
+if (d->useImpulse)
+	{
+	ClearShorts(in, inLength);
+	if (1 == d->useImpulse)
+		{
+		in[0] = 10000;
+		d->useImpulse = 2;
+//		printf("RunSRC: impulse generated \n");
+		}
+//	printf("RunSRC: clearing input buffer \n");
+	}
+
 switch (d->type)
 	{
 	case kSRC_Interpolation_Type_AddDrop:
-		InterpolateShorts_AddDrop(in, out, inLength, outLength, d->inOutRateRatio);
+		if (d->useFixedPoint)
+			InterpolateShorts_AddDropi(in, out, inLength, outLength, d);
+		else
+			InterpolateShorts_AddDropf(in, out, inLength, outLength, d);
 	break;
 	default:
 	case kSRC_Interpolation_Type_Linear:
-		InterpolateShorts_Linear(in, out, inLength, outLength, &d->x, d->inOutRateRatio);
+		if (d->useFixedPoint)
+			InterpolateShorts_Lineari(in, out, inLength, outLength, d);
+		else
+			InterpolateShorts_Linearf(in, out, inLength, outLength, d);
 	break;
 	case kSRC_Interpolation_Type_Triangle:
 		SRCShorts_Triangle2(in, out, inLength, outLength);
 	break;
-	case kSRC_Interpolation_Type_FIR1:
+	case kSRC_Interpolation_Type_FIR:
 		{
 		if (inLength > outLength)
 			{
@@ -692,11 +895,62 @@ switch (d->type)
 			switch (iRatio)
 				{	
 				case 2:
-				ComputeSRC_DownBy2FIR(in, out, inLength, outLength, d);
+				if (d->useFixedPoint)
+					ComputeSRC_DownBy2FIRi(in, out, inLength, outLength, d);
+				else
+					ComputeSRC_DownBy2FIRf(in, out, inLength, outLength, d);
 				break;
 				case 3:
-				ComputeSRC_DownBy3FIR(in, out, inLength, outLength, d);
+				if (d->useFixedPoint)
+					ComputeSRC_DownBy3FIRi(in, out, inLength, outLength, d);
+				else
+					ComputeSRC_DownBy3FIRf(in, out, inLength, outLength, d);
 				break;
+				default:
+				printf("Unsupported FIR decimation ratio = %d \n", iRatio);
+				break;
+				}
+			}
+		else
+			{
+			long iRatio = outLength/inLength;
+			switch (iRatio)
+				{	
+				case 2:
+				if (d->useFixedPoint)
+					ComputeSRC_UpBy2FIRi(in, out, inLength, outLength, d);
+				else
+					{
+//					ComputeSRC_UpBy2FIRf_BREAKOUT(in, out, inLength, outLength, d, True);
+					ComputeSRC_UpBy2FIRf(in, out, inLength, outLength, d);
+					}
+				break;
+				case 3:
+				if (d->useFixedPoint)
+					ComputeSRC_UpBy3FIRi(in, out, inLength, outLength, d);
+				else
+					{
+//					ComputeSRC_UpBy3FIRf_BREAKOUT(in, out, inLength, outLength, d, True);
+					ComputeSRC_UpBy3FIRf(in, out, inLength, outLength, d);
+					}
+				break;
+				default:
+				printf("Unsupported interpolation ratio = %d \n", iRatio);
+				break;
+				}
+			}
+		}
+	break;
+	case kSRC_Interpolation_Type_TestFIR:
+		ComputeSRC_TestFIR(in, out, inLength, d);
+	break;
+	case kSRC_Interpolation_Type_Unfiltered:
+		{
+		if (inLength > outLength)
+			{
+			long iRatio = inLength/outLength;
+			switch (iRatio)
+				{	
 				default:
 				printf("Unsupported decimation ratio = %d \n", iRatio);
 				break;
@@ -708,23 +962,16 @@ switch (d->type)
 			switch (iRatio)
 				{	
 				case 2:
-				if (d->useFixedPoint)
-				ComputeSRC_UpBy2FIRi(in, out, inLength, outLength, d);
-				else
-				ComputeSRC_UpBy2FIRf(in, out, inLength, outLength, d);
+					ComputeSRC_UpBy2FIRf_Unfiltered(in, out, inLength, outLength, d);
 				break;
-				case 3:
-				ComputeSRC_UpBy3FIR(in, out, inLength, outLength, d);
-				break;
+//				case 3:
+//				break;
 				default:
 				printf("Unsupported interpolation ratio = %d \n", iRatio);
 				break;
 				}
 			}
 		}
-	break;
-	case kSRC_Interpolation_Type_TestFIR:
-		ComputeSRC_TestFIR(in, out, inLength, d);
 	break;
 	}
 }	// ---- end RunSRC() ---- 

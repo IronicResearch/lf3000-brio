@@ -2,28 +2,16 @@
 //
 // DspUtil.cpp		
 //
-//					Written by Gints Klimanis
+//			Written by Gints Klimanis
 // **********************************************************************
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
-#include <Util.h>
+#include <util.h>
 #include <Dsputil.h>
 #include <Dsputil2.h>
-
-
-static char _logFilePath[_MAX_PATH] = "gkDspUtilLog.txt";
-char         _gkS[2000];	// convenience space for WriteToLogFile()
-int _dspSnapShotFlag = Off;
-
-
-#define DEBUG_GINTS_DSP
-
-//extern "C" {
-//extern BOOL _playing;	// For use with AudioFX
-//}
 
 // *************************************************************** 
 // VolumeToGain:   Convert volume slider value to gain, where
@@ -208,47 +196,14 @@ for (long i = 0; i < length; i++)
 }	// ---- end ClearLongs() ---- 
 
 // *************************************************************** 
-// SetChars:   Fill CHAR buffer w/'value'
-// ***************************************************************
-    void 
-SetChars(unsigned char *d, long length, char value)
-{
-for (long i = 0; i < length; i++) 
-    d[i] = value;
-}	// ---- end SetChars() ---- 
-
-// *************************************************************** 
-// CopyBytes:    Copy Bytes from in to out buffer
-// ***************************************************************
-    void 
-CopyBytes(void *in, void *out, long length)
-{
-char *x = (char *)  in;
-char *y = (char *) out;
-	
-for (long i = 0; i < length; i++) 
-    y[i] = x[i];
-}	// ---- end CopyBytes() ---- 
-
-// *************************************************************** 
 // CopyFloats:    Copy FLOATs from in to out buffer
 // ***************************************************************
-    void 
-CopyFloats(float *in, float *out, long length)
-{
-for (long i = 0; i < length; i++) 
-    out[i] = in[i];
-}	// ---- end CopyFloats() ---- 
-
-// *************************************************************** 
-// ReverseFloats:    Reverse-copy FLOATs from in to out buffer
-// ***************************************************************
-    void 
-ReverseFloats(float *in, float *out, long length)
-{
-for (long i = 0; i < length; i++) 
-    out[i] = in[length-1-i];
-}	// ---- end ReverseFloats() ---- 
+//    void 
+//CopyFloats(float *in, float *out, long length)
+//{
+//for (long i = 0; i < length; i++) 
+//    out[i] = in[i];
+//}	// ---- end CopyFloats() ---- 
 
 // *************************************************************** 
 // FanOutFloats:    Copy FLOATs from in to N out buffers
@@ -271,16 +226,6 @@ for (long i = 0; i < length; i++)
 	diff += (a[i] != b[i]);
 return (diff);
 }	// ---- end CompareFloats() ---- 
-
-// *************************************************************** 
-// CopyChars:    Copy CHARs from in to out buffer
-// ***************************************************************
-    void 
-CopyChars(unsigned char *in, unsigned char *out, long length)
-{
-for (long i = 0; i < length; i++) 
-    out[i] = in[i];
-}	// ---- end CopyChars() ---- 
 
 // *************************************************************** 
 // CopyShorts:    Copy SHORTs from in to out buffer
@@ -358,35 +303,6 @@ double y = (1.0/32768.0)*(double)x;
 
 return (y);
 }	// ---- end FractionalIntegerToDouble() ----
-
-// *************************************************************** 
-// GetEquivalentRectangularBandwidthRateScaleBandwidth:    
-//			ERB auditory band rate scale method is believed to
-//			be theoretically better than Bark scale
-//
-//			Return approximated bandwidth for given center frequency
-// ***************************************************************
-	double 
-GetEquivalentRectangularBandwidthRateScaleBandwidth(double fc)
-// fc		center frequency
-{
-return (24.7*(4.37*fc + 1.0));
-}	// ---- end GetEquivalentRectangularBandwidthRateScaleBandwidth() ---- 
-
-// *************************************************************** 
-// GetCriticalBandBarkScaleBandwidth:    
-//			Bark scale for auditory critical bandwidth
-//
-//			Return approximated bandwidth for given center frequency
-// ***************************************************************
-	double 
-GetCriticalBandBarkScaleBandwidth(double fc)
-// fc		center frequency
-{
-double y = 1.0 + 1.4*(fc/1000.0)*(fc/1000.0);
-
-return (25.0 + 75.0*pow(y, 0.69));
-}	// ---- end GetCriticalBandBarkScaleBandwidth() ---- 
 
 // *************************************************************** 
 // PrintFloatLine:    Print floats with no NewLine characters
@@ -527,7 +443,6 @@ for (i = 0; i < length; i++)
 return (PrintFloatsToFile(d, length, path));
 }	// ---- end PrintFloatsToFile_ZeroClamp() ---- 
 
-
 // *************************************************************** 
 // PrintFloatsDB:    
 //			Negative values and zero "floored" to -120 dB
@@ -666,32 +581,6 @@ else
 }	//---- end FloatsToShorts() ---- 
 
 // *************************************************************** 
-// Rectify_FullWave:	Take absolute value of buffer
-//				(ok for "in place" scale )
-// ***************************************************************
-    void 
-Rectify_FullWave(float *in, float *out, long length)
-{
-long 	i;			
-
-for (i = 0; i < length; i++)
-    out[i] = fabsf(in[i]);
-}	// ---- end Rectify_FullWave() ---- 
-
-// *************************************************************** 
-// Bias:	Add constant FLOATs from to in buffer 
-//				(ok for "in place" operation )
-// ***************************************************************
-    void 
-Bias(float *in, float *out, long length, float k)
-{
-long 	i;			
-
-for (i = 0; i < length; i++)
-    out[i] = in[i] + k;
-}	// ---- end Bias() ---- 
-
-// *************************************************************** 
 // Scale:	Scale FLOATs from in buffer to out buffer
 //				(ok for "in place" operation )
 // ***************************************************************
@@ -726,6 +615,63 @@ for (i = 0; i < length; i++)
 }	// ---- end Scale() ---- 
 
 // *************************************************************** 
+// FloatToFrac16:	Convert 32-bit floating point value to 16-bit
+//			fractional integer  (1.15)
+// ***************************************************************
+    short 
+FloatToFrac16(float k)
+{
+return ((short)(kTwoTo15m1f*k));
+}	// ---- end FloatToFrac16() ---- 
+
+// *************************************************************** 
+// FloatToFrac32:	Convert 32-bit floating point value to 32-bit
+//			fractional integer  (1.31)
+// ***************************************************************
+    long 
+FloatToFrac32(float k)
+{
+return ((short)(kTwoTo31m1*k));
+}	// ---- end FloatToFrac32() ---- 
+
+// *************************************************************** 
+// ScaleShortsf:	Scale 'short' from in buffer to out buffer
+//			32-bit floating-point implementation
+//				( ok for "in place" operation )
+// ***************************************************************
+    void 
+ScaleShortsf(short *in, short *out, long length, float k)
+{
+for (long i = 0; i < length; i++)
+    out[i] = (short)(k*(float)in[i]);
+}	// ---- end ScaleShortsf() ---- 
+
+// *************************************************************** 
+// ScaleShortsi_Fractional:	Scale 'short' from in buffer to out buffer
+//				Fixed point implementation.  
+//				 0 <= k < 1
+//				(ok for "in place" operation )
+// ***************************************************************
+    void 
+ScaleShortsi_Fractional(short *in, short *out, long length, short k)
+{
+for (long i = 0; i < length; i++)
+    out[i] = (short)(k*(float)in[i]);
+}	// ---- end ScaleShortsi_Fractional() ---- 
+
+// *************************************************************** 
+// ScaleShortsi:	Scale 'short' from in buffer to out buffer
+//				Fixed point implementation.  
+//				(ok for "in place" operation )
+// ***************************************************************
+    void 
+ScaleShortsi(short *in, short *out, long length, float k)
+{
+for (long i = 0; i < length; i++)
+    out[i] = (short)(k*(float)in[i]);
+}	// ---- end ScaleShortsi() ---- 
+
+// *************************************************************** 
 // Ramp:	Generate buffer that linearly ramps from 'start' to 'end'
 // ***************************************************************
     void 
@@ -737,42 +683,6 @@ float delta = (end - start)/(float)length;
 for (i = 0; i < length; i++, start += delta)
     out[i] = start;
 }	// ---- end Ramp() ---- 
-
-// *************************************************************** 
-// Normalize:	Normalize FLOATs from in buffer to out buffer
-//				(ok for "in place" operation )
-//		Two pass operation.
-// ***************************************************************
-    void 
-Normalize(float *in, float *out, long length, float k)
-//	k			reference value
-{
-long 	i;			
-float max = 0.0f;
-
-// Scan for largest magnitude
-for (i = 0; i < length; i++)
-	{
-	float x = (float) fabsf(in[i]);
-	if (x > max)
-		max = x;
-	}
-if (max != 0.0f)
-	Scale(in, out, length, k/max);
-}	// ---- end Normalize() ---- 
-
-// *************************************************************** 
-// Square:	y = x*x
-//				(ok for "in place" operation )
-// ***************************************************************
-    void 
-Square(float *in, float *out, long length)
-{
-long 	i;			
-
-for (i = 0; i < length; i++)
-    out[i] = in[i]*in[i];
-}	// ---- end Square() ---- 
 
 // **********************************************************************
 // Envelope:    Compute Envelope of signal
@@ -875,20 +785,8 @@ long 	i;
 // Convert buffer without saturation 
 if (!saturate)
     {
-#ifdef USE_ASM
-	_asm mov	ecx	, len		
-	_asm mov	eax	, input	
-	_asm mov	edx , output			
- _asm ScaleFloatsToShortsAsmLoop:
-	_asm fld	 FPTR [eax + ecx*4 - 4]
-	_asm fmul	 g
-	_asm fistp	 WPTR [edx + ecx*2 - 2]
-	_asm dec	 ecx			
-	_asm jnz ScaleFloatsToShortsAsmLoop
-#else
     for (i = 0; i < len; i++) 
 		output[i] = (short) (g*input[i]);
-#endif
     }
 // Convert buffer w/saturation to integer range [-32768..32767] 
 else
@@ -923,20 +821,8 @@ long 	i;
 // Convert buffer without saturation 
 if (!saturate)
     {
-#ifdef USE_ASM
-	_asm mov	ecx		, len		
-	_asm mov	eax		, input	
-	_asm mov	edx		, output			
-	_asm ScaleFloatsToLongsAsmLoop:
-		_asm fld	 FPTR  [eax + ecx*4 - 4]
-		_asm fmul	 g
-		_asm fistp	 DWPTR [edx + ecx*4 - 4]
-		_asm dec	 ecx			
-		_asm jnz ScaleFloatsToLongsAsmLoop
-#else
     for (i = 0; i < len; i++) 
 		output[i] = (long) (g*input[i]);
-#endif
    }
 // Convert buffer w/saturation to integer range [-32768..32767] 
 else
@@ -1205,37 +1091,6 @@ for (i = (outLength&0x3); --i >= 0; in += 2)
     *outR++ = in[1];  
     }
 }	// ---- end DeinterleaveShorts() ---- 
-
-// **************************************************************
-// DeinterleaveNCharsToFloats:    Deinterleave to N buffers
-//				
-//		Convert 'unsigned char' to 'float'
-//			The first word of input buffer at 'input' 
-//			will be first word in output buffer 'outputLeft.'
-// ***************************************************************
-    void 
-DeinterleaveNCharsToFloats(char *in, float *outs[], long outLength, int interleave)
-// input		ptr to input buffer
-//  outs		ptr to array of output buffers
-// outLength		length of output buffer 
-//  interleave	# output buffers (interleave factor)
-{
-long	i, j;
-
-// Deinterleave of N-sample frames  
-for (i = 0; i < outLength; i++) 
-    {
-    for (j = 0; j < interleave; j++) 
-		{
-		unsigned char value = in[j];
-//		value = 1 - 128 + value;
-		long duh = value - 128 + 1;
-		outs[j][i] = (float) (duh);
-		}
-    in += interleave;
-    }
-}	// ---- end DeinterleaveNCharsToFloats() ---- 
-
 // **************************************************************
 // DeinterleaveNShortsToFloats:    Deinterleave to N buffers
 //				
@@ -1352,114 +1207,6 @@ else
 }	// ---- end InterleaveFloatsToShorts() ----
 
 // ***************************************************************
-// InterleaveFloatsToChars:	
-//		Interleave data word streams of buffers
-//			'inputLeft' and 'inputRight' to output buffer
-//			'output'. Option to saturate to 8-bits.
-//				
-//			Input buffers are assumed to be of equal length
-//			and data type.
-//			Output buffer is assumed to be twice the length
-//			of input buffer.  The first word of input buffer
-//			at 'inputLeft' will be first word in output buffer
-//			'output.'
-//
-//			Assumt that floats are roughly in the range [-128 .. 127]
-// ****************************************************************
-    void 
-InterleaveFloatsToChars(float *inL, float *inR, char *out, 
-							long inLength, int saturate, int stride)
-/* inL		ptr to left input buffer
-   inR		ptr to right input buffer
-   outs		ptr to output buffer
-   inLength	length of input buffer 
-   saturate	if TRUE, perform saturation 
-*/
-{
-long i;
-int step = 2*stride;
-
-// Rounding = truncation + 1/2 bit DC offset -->> just truncate 
-// Convert buffer w/saturation to integer range [iFloor..iCeiling] 
-if (saturate)
-    {
-    float value;
-    float ceiling =  127;
-    float floor   = -128;
-
-    for (i = 0; i < inLength; i++, out += step) 
-		{
-	// Left channel 
-		value = inL[i];
-		BOUND(value, -128.0, 127.0);
-		out[0] = (char)(value + 128.0f);
-	// Right channel 
-		value = inR[i];
-		BOUND(value, -128.0, 127.0);
-		out[1] = (char)(value + 128.0f);
-		}
-    }
-// Convert buffer without saturation 
-else 
-    {
-    for (i = 0; i < inLength; i++, out += step) 
-		{
-		out[0] = (char) (inL[i] + 128.0f);
-		out[1] = (char) (inR[i] + 128.0f);
-		}
-    }
-}	// ---- end InterleaveFloatsToChars() ----
-
-// ***************************************************************
-// InterleaveNFloatsToChars: Interleave N buffers
-//
-//			Option to saturate to 8-bits.
-//				Assume input to be in range [-128 .. 127]
-//
-//			Input buffers are assumed to be of equal length
-//			and data type.
-//			Output buffer is N*length of input buffer.  First 
-//			word of input buffer[0] will be first word of 
-//			output buffer
-// ***************************************************************
-    void 
-InterleaveNFloatsToChars(float *ins[], char *out, long inLength, 
-				int interleave, int saturate)
-// ins		ptr to array of input buffers
-// out		ptr to output buffer
-// inLength	length of input buffer 
-// interleave	# input buffers 
-// saturate	if TRUE, do saturation 
-{
-long	   i, j;
-
-// Rounding = truncation + 1/2 bit DC offset -->> just truncate 
-
-// Convert buffer, no saturation 
-if (!saturate)
-    {
-    for (i = 0; i < inLength; i++, out += interleave) 
-		{
-		for (j = 0; j < interleave; j++) 
-			out[j] = (char) (ins[j][i] + 128.0f);
-		}
-    }
-// Convert buffer w/saturation to integer range [iFloor..iCeiling] 
-else 
-    {
-    for (i = 0; i < inLength; i++, out += interleave) 
-		{
-		for (j = 0; j < interleave; j++) 
-			{
-			float fValue = ins[j][i];
-			BOUND(fValue, -128.0f, 127.0f);
-			out[j] = (char) (fValue + 128.0f);
-			}
-		}
-    }
-}	// ---- end InterleaveNFloatsToChars() ---- 
-
-// ***************************************************************
 // InterleaveNFloatsToShorts: Interleave N buffers
 //
 //			Option to saturate to 16-bits.
@@ -1554,56 +1301,6 @@ for (i = 0; i < inLength; i++, out += 2)
 	out[1] = inR[i];
 	}
 }	// ---- end InterleaveShorts() ----
-
-// **************************************************************
-// DeinterleaveCharsToFloats: Deinterleave 2 channel buffer 
-//				
-//			First word of input buffer at 'input' will 
-//			be first word in output buffer 'outputLeft.'
-// **************************************************************
-    void 
-DeinterleaveCharsToFloats(char *in, float *outL, float *outR, long outLength)
-{
-long	i;
-
-// Handle deinterleaves of paired samples from input buffer  
-for (i = (outLength/4); --i >= 0;) 
-    {
-// NOTE w/type conversion (thus most likely good instruction
-//	scheduling, dunno if memory optimization pays off 
-      outL[0] = -128.0f + (float) in[0];
-      outR[0] = -128.0f + (float) in[1];
-      outL[1] = -128.0f + (float) in[2];
-      outR[1] = -128.0f + (float) in[3];
-      outL[2] = -128.0f + (float) in[4];
-      outR[2] = -128.0f + (float) in[5];
-      outL[3] = -128.0f + (float) in[6];
-      outR[3] = -128.0f + (float) in[7];
-      outL   += 4;
-      outR   += 4;
-      in     += 8;
-    }
-
-// Could be 1-3 sample pairs left over. Not pretty.  
-for (i = (outLength&0x3); --i >= 0; in += 2)
-    {
-    *outL++ = -128.0f + (float) in[0];
-    *outR++ = -128.0f + (float) in[1];  
-    }
-}	// ---- end DeinterleaveCharsToFloats() ---- 
-
-// **********************************************************************************
-// InvertSpectrum:		 Invert spectrum
-// ********************************************************************************** 
-	void 
-InvertSpectrum(float *in, float *out, long length)
-{
-long i;
-
-// Invert every other sample:	y[n] = x[n] * cos(n*Pi)
-for (i = 0; i < length; i += 2)	
-	in[i] = -in[i];
-}	// ---- end InvertSpectrum() ---- 
 
 // **********************************************************************************
 // DotFloats:		 Take dot product of two arrays of floats
@@ -1731,7 +1428,7 @@ SetUpSawtoothOscillator(unsigned long *z, unsigned long *delta, float normalFreq
 // **********************************************************************
     void 
 SampleNHoldOscillator(float *out, long length, unsigned long *z, 
-					  unsigned long *counter, unsigned long delta)
+			unsigned long *counter, unsigned long delta)
 // z		ptr to last state
 // delta	counter increment
 {
@@ -3149,53 +2846,6 @@ fclose(h);
 
 return (True);
 }	// ---- end WriteToFile() ---- 
-
-// ****************************************************************
-// SetLogFilePath:	Set log file path
-//					Return Boolean success
-// ****************************************************************
-	int 
-SetLogFilePath(char *fullPath)
-{
-strcpy(_logFilePath, fullPath);
-return (True);
-}	// ---- end SetLogFilePath() ---- 
-
-// ****************************************************************
-// WriteToLogFile:	Append text string to log file
-//					Return Boolean success
-// ****************************************************************
-	int 
-WriteToLogFile(char *text)
-{
-FILE *h;
-
-// If log file name not set, use "gkDspUtilLog.txt"
-//if (_logFilePath[0] == '\0')
-//	strcpy(_logFilePath, "gkDspUtilLog.txt");
-
-if (NULL == (h = fopen(_logFilePath, "a+t"))) 
-	{
-	printf("WriteToLogFile: unable to open log file '%s'\n", _logFilePath);
-	return (False);
-	}
-
-fwrite(text, 1, strlen(text),  h);
-fclose(h);
-
-return (True);
-}	// ---- end WriteToLogFile() ---- 
-
-// ****************************************************************
-// WriteToLogFile2:	Append current _gkS text buffer to log file
-//					Return Boolean success
-// ****************************************************************
-	int 
-WriteToLogFile2()
-{
-return (WriteToLogFile(_gkS));
-}	// ---- end WriteToLogFile2() ---- 
-
 // **********************************************************************
 // ChangeRangeLog10: 
 // **********************************************************************
@@ -3337,4 +2987,43 @@ outS[6] = '\0';
 return (returnValue);
 }	// ---- end FloatToHexFrac24() ---- 
 
+// **********************************************************************************
+// TestDsputil:		Routine just to call tests
+// ********************************************************************************** 
+	void   
+TestDsputil()
+{
+float k, l, m;
+float x, y, z;
+short xi, yi, zi;
+long length = 1;
+
+// 
+// ---- Tests for scaling routines
+//
+x = 10000.0;
+k = 0.25;
+Scale(&x, &y, length, k);
+printf("Scale: %g * %g = %g \n", x, k, y);
+
+xi = 10000;
+k  = 0.25;
+ScaleShortsf(&xi, &yi, length, k);
+printf("ScaleShortsf: %d * %g = %d \n", xi, k, yi);
+
+xi = 10000;
+k  = 0.25;
+//ScaleShortsi(&xi, &yi, length, k);
+//printf("ScaleShortsi: %d * %g = %d \n", xi, k, yi);
+
+xi = 10000;
+k  = 0.25;
+//ScaleShortsi_Fractional(&xi, &yi, length, k);
+//printf("ScaleShortsi: %d * %g = %d \n", xi, k, yi);
+
+//void ScaleShortsf(short *in, short *out, long length, float k);
+//void ScaleShortsi(short *in, short *out, long length, float k);
+//void ScaleShortsi_Fractional(short *in, short *out, long length, short k);
+
+}	// ---- end TestDsputil() ---- 
 

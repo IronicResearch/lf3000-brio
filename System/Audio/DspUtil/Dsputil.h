@@ -10,13 +10,11 @@
 
 #include <math.h>
 
-#include <Util.h>
+#include "util.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define GK_DSPAPI	__cdecl
 
 #ifndef FALSE
 #define FALSE	0
@@ -74,12 +72,108 @@ extern "C" {
 #define Hi		HI
 #endif
 
+#define	kTwoTo14		(     16384.0 )
+#define	kTwoTo14f		(     16384.0f)
+#define	kTwoTo15		(     32768.0 )
+#define	kTwoTo15f		(     32768.0f)
+#define	kTwoTo16		(     65536.0 )
+#define	kTwoTo16f		(     65536.0f)
+#define	kTwoTo17		(    131072.0 )
+#define	kTwoTo17f		(    131072.0f)
+#define	kTwoTo18		(    262144.0 )
+#define	kTwoTo18f		(    262144.0f)
+#define	kTwoTo19		(    524288.0 )
+#define	kTwoTo19f		(    524288.0f)
+
+#define	kTwoTo20		(   1048576.0 )
+#define	kTwoTo20f		(   1048576.0f)
+#define	kTwoTo21		(   2097152.0 )
+#define	kTwoTo21f		(   2097152.0f)
+#define	kTwoTo22		(   4194304.0 )
+#define	kTwoTo22f		(   4194304.0f)
+#define	kTwoTo23		(   8388608.0 )
+#define	kTwoTo23f		(   8388608.0f)
+#define	kTwoTo24		(  16777216.0 )
+
+// Note that any power of 2 > 23 will not fit into a 32-bit single precision floating point
+// respresentation, limited by the 23-bit mantissa width
+//#define	TwoTo24f	(  16777216.0f)
+
+#define	kTwoTo25		(  33554432.0 )
+#define	kTwoTo25f		(  33554432.0f)
+#define	kTwoTo26		(  67108864.0 )
+#define	kTwoTo26f		(  67108864.0f)
+#define	kTwoTo27		( 134217728.0 )
+#define	kTwoTo27f		( 134217728.0f)
+#define	kTwoTo28		( 268435456.0 )
+#define	kTwoTo28f		( 268435456.0f)
+#define	kTwoTo29		( 536870912.0 )
+#define	kTwoTo29f		( 536870912.0f)
+
+#define kTwoTo30		(1073741824.0 )
+#define kTwoTo30f		(1073741824.0f)
+#define kTwoTo31		(2147483648.0 )
+#define kTwoTo31f		(2147483648.0f)
+#define kTwoTo32		(4294967296.0 )
+#define kTwoTo32f		(4294967296.0f)
+
+#define twoToTheMinus15		(1.0/kTwoTo15)
+#define twoToTheMinus15f	(1.0f/kTwoTo15f)
+#define twoToTheMinus31		(1.0/kTwoTo31)
+#define twoToTheMinus31f	((float)(1.0/kTwoTo31))
+
+
+#define	kTwoTo15i		     32768
+#define	kTwoTo16i		     65536
+#define	kTwoTo17i		   (2<<17)
+#define	kTwoTo18i		   (2<<18)
+#define	kTwoTo19i		   (2<<19)
+#define	kTwoTo20i		   (2<<20)
+#define	kTwoTo21i		   (2<<21)
+#define	kTwoTo22i		   (2<<22)
+#define	kTwoTo23i		   8388608
+#define	kTwoTo24i		  16777216
+#define kTwoTo29i		 536870912
+#define kTwoTo30i		1073741824
+#define kTwoTo31i		2147483648
+#define kTwoTo32i		4294967296
+
+#define	kTwoTo15m1		(     32767.0 )
+#define	kTwoTo15m1f		(     32767.0f)
+#define	kTwoTo16m1		(     65535.0 )
+#define	kTwoTo16m1f		(     65535.0f)
+#define	kTwoTo22m1		(   4194303.0 )
+#define	kTwoTo22m1f		(   4194303.0f)
+#define	kTwoTo23m1		(   8388607.0 )
+#define	kTwoTo23m1f		(   8388607.0f)
+#define	kTwoTo24m1		(  16777215.0 )
+#define kTwoTo29m1		( 536870911.0 )
+#define kTwoTo30m1		(1073741823.0 )
+#define kTwoTo31m1		(2147483647.0 )
+#define kTwoTo32m1d		(4294967295.0 )
+
+#define	kTwoTo15m1i		     32767
+#define	kTwoTo16m1i		     65535
+#define	kTwoTo22m1i		   4194303
+#define	kTwoTo23m1i		   8388607
+#define	kTwoTo24m1i		  16777215
+#define kTwoTo29m1i		 536870911
+#define kTwoTo30m1i		1073741823
+#define kTwoTo31m1i		2147483647
+#define kTwoTo32m1i		4294967295
+
+// These purist definitions cause problems
+//#define kTwoTo30m1i		((1<<30) - 1)
+//#define kTwoTo31m1i		((1<<31) - 1)
+//#define kTwoTo32m1i		(2<<32 - 1)
+#define kTwoTo30m1i		1073741823
+#define kTwoTo31m1i		2147483647
+#define kTwoTo32m1i		4294967295
+
 // For triple parameter arrays
 #define kMin		0
 #define kMax		1
 #define kDefault	2
-
-extern int _dspSnapShotFlag;
 
 #define DODO
 #ifdef DODO
@@ -87,10 +181,6 @@ extern int _dspSnapShotFlag;
 #define FPrintf fprintf
 #define SPrintf	sprintf	
 
-extern char _gkS[2000];	// convenience space for WriteToLogFile()
-int SetLogFilePath (char *s);
-int WriteToLogFile (char *text);
-int WriteToLogFile2();
 #else
 #define  Printf	{}
 #define FPrintf {}
@@ -101,10 +191,6 @@ int WriteToLogFile2();
 #endif
 
 int WriteToFile(char *text, char *path);
-
-#ifdef _win
-#pragma warning( error : 4100 )	// C4100: unreferenced formal parameter
-#endif
 
 #define kPrintStringSpace	1000
 
@@ -326,103 +412,6 @@ short Binary16ToShort(char *s);
 #define RCTimeConstant(r, c) 		(    (TwoPi*(r)*(c)))
 #define RCFrequency(  r, c) 		(1.0/(TwoPi*(r)*(c)))
 
-#define	kTwoTo14		(     16384.0 )
-#define	kTwoTo14f		(     16384.0f)
-#define	kTwoTo15		(     32768.0 )
-#define	kTwoTo15f		(     32768.0f)
-#define	kTwoTo16		(     65536.0 )
-#define	kTwoTo16f		(     65536.0f)
-#define	kTwoTo17		(    131072.0 )
-#define	kTwoTo17f		(    131072.0f)
-#define	kTwoTo18		(    262144.0 )
-#define	kTwoTo18f		(    262144.0f)
-#define	kTwoTo19		(    524288.0 )
-#define	kTwoTo19f		(    524288.0f)
-
-#define	kTwoTo20		(   1048576.0 )
-#define	kTwoTo20f		(   1048576.0f)
-#define	kTwoTo21		(   2097152.0 )
-#define	kTwoTo21f		(   2097152.0f)
-#define	kTwoTo22		(   4194304.0 )
-#define	kTwoTo22f		(   4194304.0f)
-#define	kTwoTo23		(   8388608.0 )
-#define	kTwoTo23f		(   8388608.0f)
-#define	kTwoTo24		(  16777216.0 )
-
-// Note that any power of 2 > 23 will not fit into a 32-bit single precision floating point
-// respresentation, limited by the 23-bit mantissa width
-//#define	TwoTo24f	(  16777216.0f)
-
-#define	kTwoTo25		(  33554432.0 )
-#define	kTwoTo25f		(  33554432.0f)
-#define	kTwoTo26		(  67108864.0 )
-#define	kTwoTo26f		(  67108864.0f)
-#define	kTwoTo27		( 134217728.0 )
-#define	kTwoTo27f		( 134217728.0f)
-#define	kTwoTo28		( 268435456.0 )
-#define	kTwoTo28f		( 268435456.0f)
-#define	kTwoTo29		( 536870912.0 )
-#define	kTwoTo29f		( 536870912.0f)
-
-#define kTwoTo30		(1073741824.0 )
-#define kTwoTo30f		(1073741824.0f)
-#define kTwoTo31		(2147483648.0 )
-#define kTwoTo31f		(2147483648.0f)
-#define kTwoTo32		(4294967296.0 )
-#define kTwoTo32f		(4294967296.0f)
-
-#define twoToTheMinus15		(1.0/kTwoTo15)
-#define twoToTheMinus15f	(1.0f/kTwoTo15f)
-#define twoToTheMinus31		(1.0/kTwoTo31)
-#define twoToTheMinus31f	((float)(1.0/kTwoTo31))
-
-
-#define	kTwoTo15i		     32768
-#define	kTwoTo16i		     65536
-#define	kTwoTo17i		   (2<<17)
-#define	kTwoTo18i		   (2<<18)
-#define	kTwoTo19i		   (2<<19)
-#define	kTwoTo20i		   (2<<20)
-#define	kTwoTo21i		   (2<<21)
-#define	kTwoTo22i		   (2<<22)
-#define	kTwoTo23i		   8388608
-#define	kTwoTo24i		  16777216
-#define kTwoTo29i		 536870912
-#define kTwoTo30i		1073741824
-#define kTwoTo31i		2147483648
-#define kTwoTo32i		4294967296
-
-#define	kTwoTo15m1		(     32767.0 )
-#define	kTwoTo15m1f		(     32767.0f)
-#define	kTwoTo16m1		(     65535.0 )
-#define	kTwoTo16m1f		(     65535.0f)
-#define	kTwoTo22m1		(   4194303.0 )
-#define	kTwoTo22m1f		(   4194303.0f)
-#define	kTwoTo23m1		(   8388607.0 )
-#define	kTwoTo23m1f		(   8388607.0f)
-#define	kTwoTo24m1		(  16777215.0 )
-#define kTwoTo29m1		( 536870911.0 )
-#define kTwoTo30m1		(1073741823.0 )
-#define kTwoTo31m1		(2147483647.0 )
-#define kTwoTo32m1		(4294967295.0 )
-
-#define	kTwoTo15m1i		     32767
-#define	kTwoTo16m1i		     65535
-#define	kTwoTo22m1i		   4194303
-#define	kTwoTo23m1i		   8388607
-#define	kTwoTo24m1i		  16777215
-#define kTwoTo29m1i		 536870911
-#define kTwoTo30m1i		1073741823
-#define kTwoTo31m1i		2147483647
-#define kTwoTo32m1i		4294967295
-
-// These purist definitions cause problems
-//#define kTwoTo30m1i		((1<<30) - 1)
-//#define kTwoTo31m1i		((1<<31) - 1)
-//#define kTwoTo32m1i		(2<<32 - 1)
-#define kTwoTo30m1i		1073741823
-#define kTwoTo31m1i		2147483647
-#define kTwoTo32m1i		4294967295
 
 // WARNING: Workaround for screwed up double -> 32-bit unsigned long, 
 // so convert to 31-bits and shift left once
@@ -469,7 +458,7 @@ short Binary16ToShort(char *s);
 #define NORMALTwoTo31f(x)   ((float)NORMALTwoTo31d((x)))
 #define NORMALTwoTo31       NORMALTwoTo31f
 
-#define NORMALTwoTo31m1d(x) ((1.0 /kTwoTo31m1 )*(double)(x))
+#define NORMALTwoTo31m1d(x) ((1.0 /kTwoTo31m1)*(double)(x))
 #define NORMALTwoTo31m1f(x) ((float)NORMALTwoTo31m1d((x)))
 #define NORMALTwoTo31m1     NORMALTwoTo31m1f
 
@@ -477,7 +466,7 @@ short Binary16ToShort(char *s);
 #define NORMALTwoTo32f(x)   ((float)NORMALTwoTo32d((x)))
 #define NORMALTwoTo32       NORMALTwoTo32f
 
-#define NORMALTwoTo32m1d(x) ((1.0 /kTwoTo32m1 )*(double)(x))
+#define NORMALTwoTo32m1d(x) ((1.0 /kTwoTo32m1d )*(double)(x))
 #define NORMALTwoTo32m1f(x) ((float)NORMALTwoTo32m1d((x)))
 #define NORMALTwoTo32m1     NORMALTwoTo32m1f
 
@@ -485,7 +474,7 @@ short Binary16ToShort(char *s);
 #define NormalTwoTo30m1f(x) ((float)NormalTwoTo30m1d((x)))
 #define NormalTwoTo31m1d(x) ((1.0/kTwoTo31m1)*(double)(x))
 #define NormalTwoTo31m1f(x) ((float)NormalTwoTo31m1d((x)))
-#define NormalTwoTo32m1d(x) ((1.0/kTwoTo32m1)*(double)(x))
+#define NormalTwoTo32m1d(x) ((1.0/kTwoTo32m1d)*(double)(x))
 #define NormalTwoTo32m1f(x) ((float)NormalTwoTo32m1d((x)))
 
 #define kMIDI_Cm1	0
@@ -790,10 +779,6 @@ short Binary16ToShort(char *s);
 #define LinearToCentibelf(x)	((float) LinearToCentibel((x)))
 #define LinearToMillibelf(x)	((float) LinearToMillibel((x)))
 
-// Auditory weighting bandwidths
-double GetEquivalentRectangularBandwidthRateScaleBandwidth(double fc);
-double GetCriticalBandBarkScaleBandwidth                  (double fc);
-
 // Careful:  these macros will not work when values at bottom and top
 //				of integer numerical range are compared
 #define BOUND(x, lo, hi) {\
@@ -855,21 +840,14 @@ void AbsCosSinf(float w, float *outs);
 void SetDoubles (double *d, long length, double value);
 void SetFloats  (float  *d, long length, float  value);
 void SetShorts  (short  *d, long length, short  value);
-void SetChars   (unsigned char *d, long length, char   value);
 
 #define ClearDoubles(p, l)	(SetDoubles((p), (l), 0.0 ))
 //#define ClearFloats( p, l)	(SetFloats( (p), (l), 0.0f))
 void ClearFloats(float  *d, long length);
 
 //#define ClearShorts( p, l)	(SetShorts( (p), (l), 0   ))
-void ClearChars (char  *d, long length);
 void ClearShorts(short *d, long length);
 void ClearLongs (long  *d, long length);
-
-void CopyBytes (void  *in, void  *out, long length);
-void CopyShorts(short *in, short *out, long length);
-void CopyFloats(float *in, float *out, long length);
-void CopyLongs (long  *in, long  *out, long length);
 
 void ReverseFloats  (float *in, float *out,    long length);
 void FanOutFloats	  (float *in, float *outs[], long length, long count);
@@ -897,15 +875,11 @@ void DecibelDoubles(double *in, double *out, long length);
 void ShortsToFloats		(short *in, float *out, long length);
 void FloatsToShorts		(float *in, short *out, long length, int saturate);
 
-void DeinterleaveCharsToFloats  (char  *in, float *outL,   float *outR,      long outLength);
-void DeinterleaveNCharsToFloats (char  *in, float *outs[], long   outLength, int  interleave);
 void DeinterleaveShorts		    (short *in, short *outL,   short *outR,      long outLength);
 void DeinterleaveNShorts		(short *in, short *outs[], long   outLength, int  interleave);
 void DeinterleaveShortsToFloats (short *in, float *outL,   float *outR,      long outLength);
 void DeinterleaveNShortsToFloats(short *in, float *outs[], long   outLength, int  interleave);
 
-void InterleaveFloatsToChars  (float *inL, float *inR, char *out, long inLength, int saturate, int stride);
-void InterleaveNFloatsToChars (float *ins[], char *out, long inLength, int interleave, int saturate);
 void InterleaveFloatsToShorts (float *inL, float *inR, short *out, long inLength, int saturate, int stride);
 void InterleaveNFloatsToShorts(float *ins[], short *out, long inLength, int interleave, int saturate);
 void InterleaveNShorts	  	  (short *ins[], short *out, long inLength, int interleave);
@@ -918,8 +892,6 @@ long Gate  (float *in, float *out, long length, float floor, float ceiling);
 
 long Bound				    (float *in, float *out, long length, float floor, float ceiling);
 void Mask				    (float *in, float *out, long length, long mask);	
-void Rectify_FullWave	    (float *in, float *out, long length);
-#define Rectify	Rectify_FullWave
 void ScaleAdd			    (float *in, float *out, long length, float g);
 void ScaleRamp			    (float *in, float *out, long length, float g, float delta);
 void ScaleFloatsToShorts	(float *in, short *out, long length, float g, int saturate);
@@ -931,12 +903,13 @@ void Square				    (float *in, float *out, long length);
 void Envelope				(float *in, float *out, long length, 
 									   float attack, float release, float loThreshold, float hiThreshold, float *lastX);
 
-void Bias	  (float *in, float *out, long length, float k);
 void Scale	  (float *in, float *out, long length, float k);
-void Normalize(float *in, float *out, long length, float k);
 void Ramp     (float *out, long length, float start, float end);
 
-void InvertSpectrum	(float *in, float *out, long length);
+void ScaleShortsf(short *in, short *out, long length, float k);
+void ScaleShortsi(short *in, short *out, long length, float k);
+void ScaleShortsi_Fractional(short *in, short *out, long length, short k);
+
 void Add		    (float *a , float *b, float *out, long length);
 void Subtract		(float *a , float *b, float *out, long length);
 void DotFloats		(float *a , float *b, float *out, long length);
@@ -991,13 +964,6 @@ void TriangleOscillator   (float *out, long length, unsigned long *z, unsigned l
 
 void BlastSineOscillator(float *out, long length, double *z, double *h, float gain, int *init);
 
-
-
-int LowerPrime	(int number, int lowerBound);
-int UpperPrime	(int number, int upperBound);
-int NearestPrime(int number, int lowerBound, int upperBound);
-int IsPrime		(int number);
-
 double SamplesToSeconds(int samples, double samplingFrequency);
 int    SecondsToSamples(double time, double samplingFrequency);
 
@@ -1013,20 +979,22 @@ int    SecondsToSamples(double time, double samplingFrequency);
 #define RINT(x) ((int)(x + 0.5))
 #endif
 
-FILE * CreateTextFile  (char *path);
-FILE * CreateFileOrExit(char *path);
+FILE *CreateTextFile  (char *path);
+FILE *CreateFileOrExit(char *path);
 
-int RemoveCharacter			(char *s, char target);
-int RemoveNonNumericals	    (char *s);
-int IsNumerical			(char *s);
+int RemoveCharacter	(char *s, char target);
+int RemoveNonNumericals	(char *s);
+int IsNumerical		(char *s);
 int IsPositiveNumerical (char *s);
 
 // Hex24 routines
 int ByteToHex(char c, int capitalize, char *outS);
 int FloatToHexFrac24(float x, int capitalize, char *outS);
 
+void TestDsputil();
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif  //	__DSPUTIL_H__
+#endif  // end __DSPUTIL_H__

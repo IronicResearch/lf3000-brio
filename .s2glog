@@ -5263,3 +5263,12 @@ By TParker (TParker@leapfrog.com) on 7/13/07 4:11 PM
 2,173 ms. (Cumulative: 883,338 ms)
 
 ----------------
+Revision 895 from svn://localhost/TRUNK/:
+
+Many updates, including sampling rate conversion, FIR filtering in floating point and fixed point.  
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 4:26 PM
+8 changed, 1 added, 0 deleted.
+2,472 ms. (Cumulative: 885,856 ms)
+
+----------------
