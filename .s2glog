@@ -5227,3 +5227,12 @@ By TParker (TParker@leapfrog.com) on 7/13/07 1:40 PM
 3,813 ms. (Cumulative: 874,445 ms)
 
 ----------------
+Revision 891 from svn://localhost/TRUNK/:
+
+Correct YUV to RGB color conversion for video emulation.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/13/07 3:13 PM
+1 changed, 0 added, 0 deleted.
+2,156 ms. (Cumulative: 876,742 ms)
+
+----------------
