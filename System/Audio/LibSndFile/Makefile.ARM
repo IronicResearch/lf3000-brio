@@ -3,29 +3,36 @@ SRC =  	aiff.c common.c double64.c float32.c sndfile.c strings.c wav.c command.c
 
 OBJ = $(SRC:.c=.o)
 
-OUT = x86/libsndfile.a
+OUT = arm/libsndfile.a
+
+SCRATCH = /scratchbox/compilers/arm-gcc4.1-uclibc20061004
 
 # include directories
-INCLUDES = -I. -I../include/ -I/usr/local/include -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I/usr/include/sys
+INCLUDES = -I. -I../include/ -I/usr/local/include -I$(SCRATCH)/include -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include
 # -I/usr/include/linux
+# /usr/lib/gcc/i486-linux-gnu/4.1.2/include  --> needed for stdarg.h
+# -I/usr/include/sys
 
 # C++ compiler flags (-g -O2 -Wall)
-CCFLAGS = -g
+# ARM flags -O2 -D_ARM_ASSEM -fsigned-char 
+CCFLAGS = -O2 -D_ARM_ASSEM -fsigned-char -DHAVE_SNPRINTF
 
 # compiler
-CCC = g++
+# x86: g++   ARM: arm-linux-gcc
+CCC = arm-linux-gcc
 
 # library paths
-LIBS = -L../ -L/usr/local/lib -lm
+LIBS = -L../ -lm
+# -L/usr/local/lib 
 
 # compile flags
 LDFLAGS = -g
 
-.SUFFIXES: .cpp
+.SUFFIXES: .c
 
 default: dep $(OUT)
 
-.cpp.o:
+.c.o:
 	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
@@ -37,7 +44,8 @@ dep:
 	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
 
 clean:
-	rm -f $(OBJ) $(OUT) Makefile.bak 
+	rm -f $(OBJ) Makefile.bak 
+#	rm -f $(OBJ) $(OUT) Makefile.bak 
 # DO NOT DELETE
 
 aiff.o: sfconfig.h config.h /usr/include/stdio.h /usr/include/features.h
@@ -57,25 +65,25 @@ aiff.o: /usr/include/bits/endian.h /usr/include/sys/sysmacros.h
 aiff.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
 aiff.o: /usr/include/string.h /usr/include/ctype.h sndfile.h sfendian.h
 aiff.o: /usr/include/stdint.h common.h
-common.o: /usr/include/stdio.h /usr/include/features.h
+common.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+common.o: /usr/include/string.h /usr/include/features.h
 common.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
 common.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
 common.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
-common.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
-common.o: /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h
-common.o: /usr/include/bits/wchar.h /usr/include/gconv.h
-common.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
-common.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
-common.o: /usr/include/stdlib.h /usr/include/sys/types.h
-common.o: /usr/include/sys/time.h /usr/include/bits/time.h
-common.o: /usr/include/sys/select.h /usr/include/bits/select.h
-common.o: /usr/include/bits/sigset.h /usr/include/endian.h
-common.o: /usr/include/bits/endian.h /usr/include/sys/sysmacros.h
-common.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
-common.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+common.o: /usr/include/ctype.h /usr/include/bits/types.h
+common.o: /usr/include/bits/typesizes.h /usr/include/endian.h
+common.o: /usr/include/bits/endian.h /usr/include/math.h
 common.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-common.o: /usr/include/bits/mathcalls.h /usr/include/sys/time.h sndfile.h
-common.o: sfendian.h sfconfig.h config.h /usr/include/stdint.h common.h
+common.o: /usr/include/bits/mathcalls.h /usr/include/sys/time.h
+common.o: /usr/include/bits/time.h /usr/include/sys/select.h
+common.o: /usr/include/bits/select.h /usr/include/bits/sigset.h sndfile.h
+common.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+common.o: /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h
+common.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+common.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+common.o: /usr/include/bits/pthreadtypes.h sfendian.h sfconfig.h config.h
+common.o: /usr/include/stdint.h common.h /usr/include/stdlib.h
+common.o: /usr/include/alloca.h
 double64.o: sfconfig.h config.h /usr/include/stdio.h /usr/include/features.h
 double64.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
 double64.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h

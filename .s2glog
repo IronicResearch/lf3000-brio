@@ -5318,3 +5318,12 @@ By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 6:59 PM
 2,766 ms. (Cumulative: 897,858 ms)
 
 ----------------
+Revision 902 from svn://localhost/TRUNK/:
+
+Updates to this library for ARM and x86 builds.
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/13/07 7:01 PM
+3 changed, 2 added, 0 deleted.
+2,438 ms. (Cumulative: 900,358 ms)
+
+----------------

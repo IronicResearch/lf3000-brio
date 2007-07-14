@@ -1816,7 +1816,7 @@ sf_writef_short	(SNDFILE *sndfile, const short *ptr, sf_count_t frames)
 
 	VALIDATE_SNDFILE_AND_ASSIGN_PSF (sndfile, psf, 1) ;
 
-	printf("sf_writef_short: Block[0]: %d \n", *ptr);
+//	printf("sf_writef_short: Block[0]: %d \n", *ptr);
 
 	if (psf->mode == SFM_READ)
 	{	psf->error = SFE_NOT_WRITEMODE ;
@@ -1834,22 +1834,22 @@ sf_writef_short	(SNDFILE *sndfile, const short *ptr, sf_count_t frames)
 
 	if (psf->have_written == SF_FALSE && psf->write_header != NULL)
 	{
-	printf("psf->write_header 11111 \n");
+//	printf("psf->write_header 11111 \n");
 		psf->write_header (psf, SF_FALSE) ;
 	}
 	psf->have_written = SF_TRUE ;
 
 	count = psf->write_short (psf, ptr, frames * psf->sf.channels) ;
-	printf("count=%d sf.channels=%d ptr=%X\n", count, psf->sf.channels, ptr);
+//	printf("count=%d sf.channels=%d ptr=%X\n", count, psf->sf.channels, ptr);
 
 	psf->write_current += count / psf->sf.channels ;
-	printf("psf->write_current=%d\n", psf->write_current);
+//	printf("psf->write_current=%d\n", psf->write_current);
 
 	psf->last_op = SFM_WRITE ;
 
 	if (psf->auto_header && psf->write_header != NULL)
 	{
-	printf("psf->write_header !!!!\n");
+//	printf("psf->write_header !!!!\n");
 		psf->write_header (psf, SF_TRUE) ;
 	}
 
