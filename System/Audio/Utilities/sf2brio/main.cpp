@@ -344,7 +344,7 @@ long result = 0;
 SRC srcData;
 FIR firData;
 
-#define TEST_DSPUTIL
+//#define TEST_DSPUTIL
 #ifdef TEST_DSPUTIL
 TestDsputil();  // Keep this here
 exit(0);
