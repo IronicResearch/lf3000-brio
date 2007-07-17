@@ -126,11 +126,10 @@ Your development system image will also need to have NFS server installed
 and running, and one network adapter configured at the fixed IP address
 192.168.0.113. 
 
-	sudo apt-get installl nfs-kernel-server
-	sudo /etc/init.d/nfs-kernel-server start
+	sudo apt-get install nfs-user-server
+	sudo /etc/init.d/nfs-user-server start
 	
 	ifconfig eth1 192.168.0.113 up
-	sudo /etc/init.d/inetd start
 
 The network IP address configuration should be put in a startup script. 
 Note the development system used with Lightning testboard used 'xinetd' 
@@ -144,6 +143,26 @@ will attempt to NFS mount its root filesystem at this IP address. The test
 board will be configured to use IP address 192.168.0.111, so this may need 
 to be added to list of allowable addresses in /etc/hosts.allow if firewall
 iptables service is running.
+
+Configure the nfs server using your favorite text editor:
+
+Add these lines to the end of the file /etc/hosts.allow:
+
+	ALL: 192.168.0.111
+
+Add these lines to the end of the file /etc/hosts.deny
+
+	ALL: ALL
+
+Add this line to the end of the file /etc/exports
+
+	/home/lfu/nfsroot 192.168.0.111(rw,no_root_squash,async)
+
+Now restart the the NFS server:
+
+   $ sudo /etc/init.d/nfs-kernel-server restart
+
+
 
 ======================================================
 Target Preparation -- setting up tftp
@@ -272,7 +291,7 @@ You will need root privileges for this part of the Scratchbox installation.
 
    1. Add the line below to the /etc/apt/sources.list file:	    
    
-		deb http://scratchbox.org/debian ./
+		deb http://scratchbox.org/debian ../download/files/sbox-releases/stable/deb
  
    		(convenient way to edit file: sudo gedit /etc/apt/sources.list) 
 
@@ -282,10 +301,16 @@ You will need root privileges for this part of the Scratchbox installation.
 
    3. Install packages:
 
+      # sudo apt-get install scratchbox-core scratchbox-libs
       # sudo apt-get install scratchbox-toolchain-arm-gcc4.1-uclibc20061004
+      # sudo /scratchbox/sbin/sbox_adduser <yourusername>
 
 Note you may need to modify the CC compiler directive in the arm-g++.py
-script to use the explicit full path to arm-linux-g++.
+script to use the explicit full path to arm-linux-g++. Or put this:
+
+export PATH=$PATH:/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/
+
+in your .bashrc
 	
 See ReleaseNotes.txt for important information about which versions of other
 software components are required on the target.
@@ -294,38 +319,42 @@ software components are required on the target.
 Running samples  -- Emulation
 ======================================================
 From your Eclipse Workspace:
-1) Create a new C++ standard make project. 
-2) Change its C/C++ Make project properties for SCons
-   a) Right click on the top level project and select the "Properties" menu
-   b) Select the "C/C++ Make Project" item
-   c) On the "Make Builder" tab, uncheck "Use default"
-   d) In "Build command", enter "scons -k type=emulation" if you are running the
-      emulation target.  If you are running on the actual hardware, enter
-	  "scons runtests=f deploy_dir=</path/to/your/nfsroot/>".  Your nfsroot is
-	  wherever you chose to untar the nfsroot, probably /home/lfu/nfsroot/.
+1) Create a new C++ project. 
+   a) Right Click in the Project explorer and choose "New Project"
+   b) Select C++ -> C++ Project
+   c) Give the project a name -- try "BrioCube" for this example.
+   d) Choose "Makefile Project" from the list of Project Types.
+   e) Leave --Other Toolchain-- selected
+   b) Click Finish.
+
+ The default build command is "scons -k type=emulation" assuming you are 
+      starting by running the emulation target.  If you are running on the 
+      actual hardware, enter "scons runtests=f deploy_dir=</path/to/your/nfsroot/>".  
+      Your nfsroot is wherever you chose to untar the nfsroot, probably 
+      /home/lfu/nfsroot/.
 	  The environment variable ROOTFS_PATH will be used instead if it is defined:
 	  export ROOTFS_PATH=/home/lfu/nfsroot
-   e) Clear out the "Build" field
-   f) Put '-c' in the "Clean" field
-   g) Click "OK" to dismiss the dialog
-3) Copy the contents of one of the sample projects into your newly created project folder
-   (you may need to use the File Browser to do this)
-4) In Eclipse, right click on the top level project and select the "Refresh" menu
-5) In Eclipse, open the "SConstruct" file.  On line 34, change "cdevkit_dir = '<install_dir>'"
+
+2) Copy the contents of one of the sample projects into your newly created project folder
+   (you may need to use the File Browser to do this).  You can drag the files from the ubuntu
+   file browser directly into the Project folder you've created in eclipse.
+3) In Eclipse, open the "SConstruct" file.  On line 36, change "cdevkit_dir = '<install_dir>'"
    to the root location where you installed this distribution. The environment variable
    LEAPFROG_PLUGIN_ROOT will be used instead if it is defined.
-6) From the Eclipse "Project" menu, select "Build Project"
+6) From the Eclipse "Project" menu, turn off "Build Automatically".
+7) Right Click on your project folder and select "Build Project"
 7) If you are running the emulation target, open the newly created
-   "Build/LightingGCC_emulation" folder.  You should see "BrioCube" there.
+   "Build/Lighting_emulation" folder.  You should see "BrioCube" there.
    Right click on "BrioCube", and select "Run As | Run Local C/C++
    Application".  Click through any dialogs you need to.  That's it!
 
 ======================================================
 Running samples  -- Target
 ======================================================
-1) Perform the same steps above except omitting the 'type=emulation' build
-   target in step 2d. The executable and any associated resources will be
+1) Right Click on your project folder and select "Properties"
+2) Change "scons type=emulation" to "scons type=embedded"
+3) Rebuild the project. The executable and any associated resources will be
    automatically copied into the appropriate nfsroot directories.
-2) If you are running on the actual hardware, you should just be able to run
+3) If you are running on the actual hardware, you should just be able to run
    the command "BrioCube" in the serial console.
 
