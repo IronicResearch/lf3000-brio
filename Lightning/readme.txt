@@ -146,6 +146,78 @@ to be added to list of allowable addresses in /etc/hosts.allow if firewall
 iptables service is running.
 
 ======================================================
+Target Preparation -- setting up tftp
+======================================================
+
+1. Install tftp and related packages.
+
+	sudo apt-get install tftpd tftp
+
+
+2. Create /etc/xinetd.d/tftp and put this entry:
+
+	sudo vi /etc/xinetd.d/tftp
+	
+service tftp
+{
+protocol    = udp
+port        = 69
+socket_type = dgram
+wait        = yes
+user        = lfu
+server      = /usr/sbin/in.tftpd
+server_args = /home/lfu/tftproot
+disable     = no
+}
+
+
+3. Make /home/lfu/tftproot directory.
+
+	mkdir -p /home/lfu/tftproot
+	chmod -R 777 /home/lfu/tftproot
+
+
+4. Ensure /etc/hosts.allow file allows computers on 192.168.0.0 network access.
+
+# /etc/hosts.allow: list of hosts that are allowed to access the system.
+#                   See the manual pages hosts_access(5), hosts_options(5)
+#                   and /usr/doc/netbase/portmapper.txt.gz
+#
+# Example:    ALL: LOCAL @some_netgroup
+#             ALL: .foobar.edu EXCEPT terminalserver.foobar.edu
+#
+# If you're going to protect the portmapper use the name "portmap" for the
+# daemon name. Remember that you can only use the keyword "ALL" and IP
+# addresses (NOT host or domain names) for the portmapper, as well as for
+# rpc.mountd (the NFS mount daemon). See portmap(8), rpc.mountd(8) and 
+# /usr/share/doc/portmap/portmapper.txt.gz for further information.
+#
+ALL:192.168.0.0/24
+
+
+5. Start tftpd through xinetd
+
+	sudo /etc/init.d/xinetd restart
+
+
+6. Testing. Transferring file hda.txt to server
+
+	cd ~lfu
+	touch hda.txt
+	tftp 192.168.0.113
+
+	tftp> put hda.txt
+	tftp> quit
+
+	ls -l /home/lfu/tftproot
+	-rw------- 1 lfu lfu 0 2007-06-04 12:10 hda.txt
+
+
+7. Troubleshooting. Check the /var/log/syslog file for tftp error messages.
+
+	tail -f /var/log/syslog
+
+======================================================
 Target Preparation -- downloading kernel image
 ======================================================
 
