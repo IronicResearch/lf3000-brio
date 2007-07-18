@@ -5385,3 +5385,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/17/07 4:36 PM
 2,156 ms. (Cumulative: 914,312 ms)
 
 ----------------
+Revision 918 from svn://localhost/TRUNK/:
+
+Fix for global vs per-pixel alpha blend for ARGB format.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/17/07 5:41 PM
+1 changed, 0 added, 0 deleted.
+2,172 ms. (Cumulative: 916,531 ms)
+
+----------------
