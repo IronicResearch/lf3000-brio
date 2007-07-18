@@ -353,6 +353,9 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 	
 	r = ioctl(layer, MLC_IOCTALPHA, level);
 	r = ioctl(layer, MLC_IOCTBLEND, enable);
+	// Distinguish global vs per-pixel alpha for ARGB8888 format (bpp unchanged)
+	if (context->colorDepth == kPixelFormatARGB8888)
+		ioctl(layer, MLC_IOCTFORMAT, (enable) ? kLayerPixelFormatRGB888 : kLayerPixelFormatARGB8888);
 	SetDirtyBit(layer);
 	return kNoErr;
 }
