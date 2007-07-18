@@ -1,6 +1,18 @@
 ===========================================
 Lightning C++ Development Kit Release Notes
 ===========================================
+===========================================
+v0.1.13  (Build 919 released July 17, 2007) 
+===========================================
+Release for LF2530 embedded target boards (blue or brown).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.3.0-917
+* NFS root file system: nfsroot-svn919.tar.gz
+
+Enhancements:
+-------------
 * Wraped all Brio calls in the "LeapFrog::Brio" namespace.  
   You may need to add the LF_USING_BRIO_NAMESPACE() macro after 
   the #include sections of your files.
