@@ -5414,3 +5414,13 @@ By Chris Cornell (ChrisCornell@leapfrog.com) on 7/17/07 9:27 PM
 2,204 ms. (Cumulative: 920,985 ms)
 
 ----------------
+Revision 923 from svn://localhost/TRUNK/:
+Revision 924 from svn://localhost/TRUNK/:
+
+Replace  accidentally checked in .project file with contents of previous version.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/18/07 3:34 PM
+1 changed, 0 added, 0 deleted.
+2,235 ms. (Cumulative: 923,282 ms)
+
+----------------
