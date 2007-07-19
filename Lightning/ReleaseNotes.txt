@@ -1,6 +1,9 @@
 ===========================================
 Lightning C++ Development Kit Release Notes
 ===========================================
+
+* OpenGL embedded library updated for 4444 texture fix.
+
 ===========================================
 v0.1.13  (Build 919 released July 17, 2007) 
 ===========================================
