@@ -17,6 +17,7 @@
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
 #include <BrioOpenGLConfig.h>
+#include <EmulationConfig.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -85,6 +86,8 @@ void CDisplayModule::InitModule()
 	
 	// Create X graphics context for any drawing we need to do
 	gc = XCreateGC(x11Display, x11Window, 0, NULL);
+	
+	EmulationConfig::Instance().SetLcdDisplayWindow(static_cast<U32>(x11Window));
 }
 
 //----------------------------------------------------------------------------

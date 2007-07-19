@@ -5455,3 +5455,17 @@ By Dmilici (Dmilici@leapfrog.com) on 7/19/07 10:50 AM
 3,485 ms. (Cumulative: 931,470 ms)
 
 ----------------
+Revision 932 from svn://localhost/TRUNK/:
+Revision 933 from svn://localhost/TRUNK/:
+Revision 934 from svn://localhost/TRUNK/:
+Revision 935 from svn://localhost/TRUNK/:
+Revision 936 from svn://localhost/TRUNK/:
+Revision 937 from svn://localhost/TRUNK/:
+
+Change where LcdWindow is set to EmuationConfig so CButtonMgr fails less.
+
+By TParker (TParker@leapfrog.com) on 7/19/07 2:01 PM
+2 changed, 0 added, 0 deleted.
+2,250 ms. (Cumulative: 933,814 ms)
+
+----------------
