@@ -17,7 +17,6 @@
 #define XK_MISCELLANY
 #define XK_LATIN1
 #include <X11/keysymdef.h>
-#include <X11/XKBlib.h>
 
 #include <ButtonPriv.h>
 #include <EmulationConfig.h>
@@ -39,7 +38,8 @@ namespace
 	//------------------------------------------------------------------------
 	const char* kDefaultDisplay = ":0";
 	U32			gLastState;
-	Display *gXDisplay = NULL;
+	Display*	gXDisplay = NULL;
+	bool		gDone = false;
 
 	//------------------------------------------------------------------------
 	U32 KeySymToButton( KeySym keysym )
@@ -79,6 +79,7 @@ namespace
 			case XK_p:				return kButtonPause;
 			case XK_Page_Up:		return kButtonPause;
 			case XK_KP_Page_Up:		return kButtonPause;
+			case XK_Pause:			return kButtonPause;
 		}
 		return 0;
 	}
@@ -102,10 +103,18 @@ void* EmulationButtonTask(void*)
 	tButtonData		data;
  	data.buttonState = data.buttonTransition = 0;
 
-	Window win = (Window)EmulationConfig::Instance().GetLcdDisplayWindow();
-	XkbChangeEnabledControls(gXDisplay, XkbUseCoreKbd, XkbRepeatKeysMask, 0);
-	XSelectInput(gXDisplay, win, KeyPress | KeyRelease);
-	for( bool bDone = false; !bDone; )	// FIXME/tp: when break out???
+	U32 dw = EmulationConfig::Instance().GetLcdDisplayWindow();
+	if (dw == 0)
+	{
+		dbg.DebugOut(kDbgLvlImportant, 
+				"EmulationButtonTask: no display window created, disabling buttons\n");
+		XAutoRepeatOn(gXDisplay);
+		return NULL;
+	}
+	Window win = static_cast<Window>(dw);
+	
+	XSelectInput(gXDisplay, win, KeyPress | KeyRelease | ClientMessage);
+	while( !gDone )
 	{
 		XEvent	event;
 		XNextEvent(gXDisplay, &event);
@@ -123,6 +132,7 @@ void* EmulationButtonTask(void*)
 			eventmgr.PostEvent(msg, kButtonEventPriority);
 		}
 	}
+	XAutoRepeatOn(gXDisplay);
 	return NULL;
 }
 
@@ -134,6 +144,7 @@ void CButtonModule::InitModule()
 		gXDisplay = XOpenDisplay(kDefaultDisplay);
 		if (gXDisplay == NULL)
 			dbg_.DebugOut(kDbgLvlCritical, "CButtonModule::InitModule(): Emulation XOpenDisplay() failed, buttons disabled!\n");
+		XAutoRepeatOff(gXDisplay);
 		tErrType	status = kModuleLoadFail;
 		CKernelMPI	kernel;
 	
@@ -153,6 +164,8 @@ void CButtonModule::InitModule()
 //----------------------------------------------------------------------------
 void CButtonModule::DeinitModule()
 {
+	gDone = true;
+	XAutoRepeatOn(gXDisplay);
 }
 
 //============================================================================

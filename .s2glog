@@ -5469,3 +5469,12 @@ By TParker (TParker@leapfrog.com) on 7/19/07 2:01 PM
 2,250 ms. (Cumulative: 933,814 ms)
 
 ----------------
+Revision 938 from svn://localhost/TRUNK/:
+
+Cleanup attempts to turn auto key repeat back on.
+
+By TParker (TParker@leapfrog.com) on 7/19/07 2:05 PM
+1 changed, 0 added, 0 deleted.
+2,235 ms. (Cumulative: 936,111 ms)
+
+----------------
