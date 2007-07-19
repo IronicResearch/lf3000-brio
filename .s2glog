@@ -5424,3 +5424,16 @@ By DGibbs (DGibbs@leapfrog.com) on 7/18/07 3:34 PM
 2,235 ms. (Cumulative: 923,282 ms)
 
 ----------------
+Revision 925 from svn://localhost/TRUNK/:
+Revision 926 from svn://localhost/TRUNK/:
+Revision 927 from svn://localhost/TRUNK/:
+Revision 928 from svn://localhost/TRUNK/:
+Revision 929 from svn://localhost/TRUNK/:
+
+Updated MagicEyes OpenGL lib with 4444 texture fix.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/18/07 5:46 PM
+1 changed, 0 added, 0 deleted.
+2,313 ms. (Cumulative: 925,673 ms)
+
+----------------
