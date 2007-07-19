@@ -244,9 +244,6 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
-#ifdef EMULATION
-	EmulationConfig::Instance().SetLcdDisplayWindow((U32)ctx.eglWindow);
-#endif	// EMULATION
 
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
