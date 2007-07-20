@@ -27,9 +27,7 @@ floor1.lo floor1.o: floor1.c \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathdef.h \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathcalls.h \
   ogg.h os_types.h config_types.h ivorbiscodec.h codec_internal.h \
-  codebook.h registry.h backends.h misc.h os.h \
-  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h \
-  asm_arm.h block.h
+  codebook.h registry.h backends.h misc.h os.h asm_arm.h block.h
 
 /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/stdlib.h:
 
@@ -104,8 +102,6 @@ backends.h:
 misc.h:
 
 os.h:
-
-/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h:
 
 asm_arm.h:
 

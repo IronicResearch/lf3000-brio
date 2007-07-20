@@ -5504,3 +5504,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/20/07 11:53 AM
 2,234 ms. (Cumulative: 940,736 ms)
 
 ----------------
+Revision 949 from svn://localhost/TRUNK/:
+
+Added files needed to build from auto-configured makefile.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/20/07 12:30 PM
+15 changed, 4 added, 0 deleted.
+2,797 ms. (Cumulative: 943,596 ms)
+
+----------------

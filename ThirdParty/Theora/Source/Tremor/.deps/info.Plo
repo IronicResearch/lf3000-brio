@@ -30,7 +30,6 @@ info.lo info.o: info.c \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/huge_val.h \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathdef.h \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathcalls.h \
-  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h \
   asm_arm.h
 
 /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/stdlib.h:
@@ -112,7 +111,5 @@ os.h:
 /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathdef.h:
 
 /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathcalls.h:
-
-/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h:
 
 asm_arm.h:

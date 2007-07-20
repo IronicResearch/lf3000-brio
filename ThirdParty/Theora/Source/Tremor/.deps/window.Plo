@@ -25,10 +25,8 @@ window.lo window.o: window.c \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/huge_val.h \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathdef.h \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathcalls.h \
-  misc.h ivorbiscodec.h ogg.h os_types.h config_types.h os.h \
-  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h \
-  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/string.h \
-  asm_arm.h window.h window_lookup.h
+  misc.h ivorbiscodec.h ogg.h os_types.h config_types.h os.h asm_arm.h \
+  window.h window_lookup.h
 
 /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/stdlib.h:
 
@@ -93,10 +91,6 @@ os_types.h:
 config_types.h:
 
 os.h:
-
-/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h:
-
-/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/string.h:
 
 asm_arm.h:
 
