@@ -5522,3 +5522,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/20/07 1:17 PM
 2,172 ms. (Cumulative: 945,830 ms)
 
 ----------------
+Revision 951 from svn://localhost/TRUNK/:
+
+Added setup scripts for building Ogg and Theora libs from source archives.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/20/07 1:40 PM
+0 changed, 2 added, 0 deleted.
+2,219 ms. (Cumulative: 948,112 ms)
+
+----------------
