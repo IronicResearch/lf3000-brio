@@ -27,7 +27,6 @@ codebook.lo codebook.o: codebook.c \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathdef.h \
   /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/mathcalls.h \
   ogg.h os_types.h config_types.h ivorbiscodec.h codebook.h misc.h os.h \
-  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h \
   asm_arm.h
 
 /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/stdlib.h:
@@ -97,7 +96,5 @@ codebook.h:
 misc.h:
 
 os.h:
-
-/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/memory.h:
 
 asm_arm.h:
