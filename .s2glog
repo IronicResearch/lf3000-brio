@@ -5531,3 +5531,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/20/07 1:40 PM
 2,219 ms. (Cumulative: 948,112 ms)
 
 ----------------
+Revision 952 from svn://localhost/TRUNK/:
+
+Fix missing wget step from archive host.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/20/07 4:33 PM
+1 changed, 0 added, 0 deleted.
+2,297 ms. (Cumulative: 950,471 ms)
+
+----------------
