@@ -5513,3 +5513,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/20/07 12:30 PM
 2,797 ms. (Cumulative: 943,596 ms)
 
 ----------------
+Revision 950 from svn://localhost/TRUNK/:
+
+Updated Tremor lib setup script for building from SVN source.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/20/07 1:17 PM
+1 changed, 0 added, 0 deleted.
+2,172 ms. (Cumulative: 945,830 ms)
+
+----------------
