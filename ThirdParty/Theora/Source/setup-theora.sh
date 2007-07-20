@@ -20,6 +20,10 @@ set_standard_opts $*
 
 pushd .
 
+if [ ! -e $THEORA_LIB_SRC ]; then
+	wget http://downloads.xiph.org/releases/theora/$THEORA_LIB_SRC
+fi
+
 if [ "$CLEAN" == "1" -o ! -e $THEORA_LIB_DIR ]; then
 	rm -rf $THEORA_LIB_DIR
 	tar -xzf $THEORA_LIB_SRC
