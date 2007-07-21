@@ -5568,3 +5568,13 @@ By Scott Esters (SEsters@leapfrog.com) on 7/20/07 5:22 PM
 2,565 ms. (Cumulative: 965,044 ms)
 
 ----------------
+Revision 956 from svn://localhost/TRUNK/:
+
+Changed data rate from 44100 to 32000 Hz
+
+
+By Scott Esters (SEsters@leapfrog.com) on 7/20/07 5:22 PM
+1 changed, 0 added, 0 deleted.
+2,548 ms. (Cumulative: 967,639 ms)
+
+----------------
