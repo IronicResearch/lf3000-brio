@@ -1,0 +1,88 @@
+libtheora_la-encoder_disabled.lo libtheora_la-encoder_disabled.o:  \
+ encoder_disabled.c ../config.h toplevel_lookup.h codec_internal.h \
+  ../include/theora/theora.h /usr/local/include/ogg/ogg.h \
+  /usr/local/include/ogg/os_types.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/types.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/features.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/uClibc_config.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/uClibc_arch_features.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/cdefs.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/types.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/wordsize.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/include/stddef.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/kernel_types.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/typesizes.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/pthreadtypes.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/sched.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/time.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/endian.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/endian.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/select.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/select.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/sigset.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/time.h \
+  /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/sysmacros.h \
+  /usr/local/include/ogg/config_types.h huffman.h dsp.h \
+  ../include/theora/theora.h toplevel.h
+
+../config.h:
+
+toplevel_lookup.h:
+
+codec_internal.h:
+
+../include/theora/theora.h:
+
+/usr/local/include/ogg/ogg.h:
+
+/usr/local/include/ogg/os_types.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/types.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/features.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/uClibc_config.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/uClibc_arch_features.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/cdefs.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/types.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/wordsize.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/include/stddef.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/kernel_types.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/typesizes.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/pthreadtypes.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/sched.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/time.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/endian.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/endian.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/select.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/select.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/sigset.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/bits/time.h:
+
+/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/sys-include/sys/sysmacros.h:
+
+/usr/local/include/ogg/config_types.h:
+
+huffman.h:
+
+dsp.h:
+
+../include/theora/theora.h:
+
+toplevel.h:
