@@ -5590,3 +5590,14 @@ By Dmilici (Dmilici@leapfrog.com) on 7/20/07 5:36 PM
 2,891 ms. (Cumulative: 970,608 ms)
 
 ----------------
+Revision 961 from svn://localhost/TRUNK/:
+Revision 962 from svn://localhost/TRUNK/:
+Revision 963 from svn://localhost/TRUNK/:
+
+Wrap audio encoders in SCons tools to integrate them into SCons dependency checking.
+
+By TParker (TParker@leapfrog.com) on 7/23/07 2:56 PM
+0 changed, 2 added, 0 deleted.
+2,751 ms. (Cumulative: 973,422 ms)
+
+----------------
