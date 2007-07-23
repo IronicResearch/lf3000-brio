@@ -5637,3 +5637,12 @@ By TParker (TParker@leapfrog.com) on 7/23/07 3:04 PM
 2,469 ms. (Cumulative: 983,692 ms)
 
 ----------------
+Revision 968 from svn://localhost/TRUNK/:
+
+Added new resource types; assume pre-sorted input files to resource manager
+
+By TParker (TParker@leapfrog.com) on 7/23/07 3:05 PM
+8 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 986,442 ms)
+
+----------------
