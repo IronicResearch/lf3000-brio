@@ -3,6 +3,13 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 * OpenGL embedded library updated for 4444 texture fix.
+* Shifted sorting of Resource Manager packed files from runtime to pack time
+* Made Resource Manager URIs case insensitive
+* Avoid packing duplicate files (e.g., if two URIs point to the same source
+  file, only pack it once and at runtime return the same handle for the two URIs.
+* Packer reports errors for multiply defined URIs
+* Added new resource types for bitmaps and data files
+
 
 ===========================================
 v0.1.13  (Build 919 released July 17, 2007) 
