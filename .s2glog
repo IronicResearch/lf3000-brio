@@ -5601,3 +5601,12 @@ By TParker (TParker@leapfrog.com) on 7/23/07 2:56 PM
 2,751 ms. (Cumulative: 973,422 ms)
 
 ----------------
+Revision 964 from svn://localhost/TRUNK/:
+
+Pre sort packed files (case insensitive); avoid packing duplicate files; errors for multiply defined URIs; add new resource types.
+
+By TParker (TParker@leapfrog.com) on 7/23/07 2:56 PM
+1 changed, 0 added, 0 deleted.
+2,519 ms. (Cumulative: 976,003 ms)
+
+----------------
