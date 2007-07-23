@@ -9,6 +9,8 @@ Lightning C++ Development Kit Release Notes
   file, only pack it once and at runtime return the same handle for the two URIs.
 * Packer reports errors for multiply defined URIs
 * Added new resource types for bitmaps and data files
+* Tied the audio encoders into SCons dependency checking so they only get
+  reencoded when required, not on every build.
 
 
 ===========================================
