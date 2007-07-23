@@ -87,6 +87,7 @@ const size_t	kMaxBrioPkgLine	= 128;	// FIXME/tp: verify
 struct ResourceDescriptor
 {
 	CURI 				uri;
+	std::string			caseInsensitiveRep;
 	tRsrcType			type;
 	CPath				path;
 	U32					size;
@@ -101,13 +102,21 @@ struct ResourceDescriptor
 	ResourceDescriptor(const char* u, U32 t = kInvalidRsrcType, const char* p = "",
 					U32 s = 0, U32 us = 0, tVersion v = 1, 
 					PackageDescriptor* d = NULL)
-		: uri(u), type(t), path(p), size(s), usize(us), 
-		version(v), pPkg(d), hndl(kInvalidRsrcHndl), refCount(0), fd(-1), ptr(0)
+		: uri(u), caseInsensitiveRep(uri.casefold_collate_key()), 
+		type(t), path(p), size(s), usize(us), 
+		version(v), pPkg(d), hndl(kInvalidRsrcHndl), 
+		refCount(0), fd(-1), ptr(0)
 	{
 	}
 	bool operator<(const ResourceDescriptor& rhs) const
 	{
-		return uri < rhs.uri;
+		return caseInsensitiveRep < rhs.caseInsensitiveRep;
+//		return uri.casefold_collate_key() < rhs.uri.casefold_collate_key();
+		/* The basic space vs. speed tradeoff here.  
+		 * Either use the caseInsensitiveRep member (more space, less time)
+		 * or change this function to generate the casefold_collate_key()
+		 * for comparisons (less space, more time)
+		 */
 	}
 };
 typedef std::vector<ResourceDescriptor>	ResourceDescriptors;
@@ -119,10 +128,11 @@ typedef std::vector<ResourceDescriptor>	ResourceDescriptors;
 struct PackageDescriptor
 {
 	CURI 				uri;
+	std::string			caseInsensitiveRep;
 	CPath				path;
 	tVersion			version;
 	CString				verstr;
-	ePackageType	type;
+	ePackageType		type;
 	tDeviceHndl			deviceHndl;
 	tPackageHndl		hndl;
 	U16					refCount;
@@ -133,7 +143,8 @@ struct PackageDescriptor
 					tVersion v = 1, 
 					ePackageType t = kPackageTypeInvalid,
 					tDeviceHndl d = kInvalidDeviceHndl)
-		: uri(u), path(p), version(v), type(t), deviceHndl(d), 
+		: uri(u), caseInsensitiveRep(uri.casefold_collate_key()), 
+		path(p), version(v), type(t), deviceHndl(d), 
 		hndl(kInvalidPackageHndl), refCount(0), isOpen(false)
 	{
 		char buf[16];
@@ -142,7 +153,13 @@ struct PackageDescriptor
 	}
 	bool operator<(const PackageDescriptor& rhs) const
 	{
-		return uri < rhs.uri;
+		return caseInsensitiveRep < rhs.caseInsensitiveRep;
+//		return uri.casefold_collate_key() < rhs.uri.casefold_collate_key();
+		/* The basic space vs. speed tradeoff here.  
+		 * Either use the caseInsensitiveRep member (more space, less time)
+		 * or change this function to generate the casefold_collate_key()
+		 * for comparisons (less space, more time)
+		 */
 	}
 };
 typedef std::vector<PackageDescriptor>	PackageDescriptors;
@@ -725,7 +742,7 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 	//     the following format (there must be NO whitespace in the line):
 	//			URI,filename,version,type
 	// 3c) Read the EnumPkgs file line-by-line
-	// 4) Sort and right-size the PackageDescriptor vector to free any extra space
+	// 4) Right-size the PackageDescriptor vector to free any extra space
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	size_t index = Handle2Index(hndl);
@@ -763,11 +780,9 @@ void CResourceModule::OpenDeviceImpl(U32 id, tDeviceHndl hndl,
 		}
 		fclose(fp);
 		
-		std::vector<PackageDescriptor>	temp(device.packages);			//*4
-		// FIXME/tp: Remove the std::sort() for improved runtime performance
-		// (make sure packer pre-sorts items)
-		std::sort(temp.begin(), temp.end());
-		std::for_each(temp.begin(), temp.end(), AssignPackageHndl);
+		std::for_each(device.packages.begin(), device.packages.end(),	//*4
+						AssignPackageHndl);
+		std::vector<PackageDescriptor>	temp(device.packages);		
 		device.packages.swap(temp);
 	}
 }
@@ -845,6 +860,7 @@ tPackageHndl CResourceModule::FindNextPackage(U32 id) const
 		if (mpiState.curPkgType != kPackageTypeAll 
 				&& mpiState.curPkgType != ppd->type)
 			continue;
+		//FIXME/tp: Case-insensitive
 		if (ppd->uri.find(mpiState.curPkgURI) == 0)
 		{
 			mpiState.cachedPkg = ppd;
@@ -937,7 +953,7 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 	//     the following format (there must be NO whitespace in the line):
 	//			URI,type,location,size,compressedSize,version
 	// 4c) Read the EnumPkgs file line-by-line
-	// 5) Sort and right-size the PackageDescriptor vector to free any extra space
+	// 5) Right-size the PackageDescriptor vector to free any extra space
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	if (mpiState.PackageIsAttached(hndl))								//*1
@@ -973,9 +989,9 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 		}
 		fclose(fp);
 		
-		std::vector<ResourceDescriptor>	temp(ppd->resources);			//*4
-		std::sort(temp.begin(), temp.end());
-		std::for_each(temp.begin(), temp.end(), AssignResourceHndl);
+		std::for_each(ppd->resources.begin(), ppd->resources.end(),	//*4
+						AssignResourceHndl);
+		std::vector<ResourceDescriptor>	temp(ppd->resources);
 		ppd->resources.swap(temp);
 	}
 	PostEvent(kResourcePackageOpenedEvent, 0, mpiState, pListener);
@@ -1102,6 +1118,7 @@ tRsrcHndl CResourceModule::FindNextRsrc(U32 id) const
 		if (mpiState.curRsrcType != kRsrcTypeAll 
 				&& mpiState.curRsrcType != prd->type)
 			continue;
+		// FIXME/tp: Case-insensitive
 		if (prd->uri.find(mpiState.curRsrcURI) == 0)
 		{
 			mpiState.cachedRsrc = prd;
