@@ -19,7 +19,6 @@
 #include <SystemEvents.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
-
 //==============================================================================	   
 // Display events
 //==============================================================================
@@ -44,6 +43,15 @@ const tEventType kAllDisplayEvents = AllEvents(kGroupDisplay);
 	(kDisplayScreenInitErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupDisplay), DISPLAY_ERRORS)
+
+
+//==============================================================================	   
+// Display resource types
+//==============================================================================
+const tRsrcType kDisplayRsrcBmp = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupDisplay, 1);
+const tRsrcType kDisplayRsrcGif = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupDisplay, 2);
+const tRsrcType kDisplayRsrcJpg = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupDisplay, 3);
+const tRsrcType kDisplayRsrcPng = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupDisplay, 4);
 
 
 //==============================================================================	   

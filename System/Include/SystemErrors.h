@@ -28,6 +28,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 // System resource types (FIXME/tp: Move to separate file?
 //==============================================================================
 const tRsrcType kCommonRsrcText = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupCommon, 1);
+const tRsrcType kCommonRsrcBin  = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupCommon, 2);
+const tRsrcType kCommonRsrcJson = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupCommon, 3);
+const tRsrcType kCommonRsrcXml  = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupCommon, 4);
 
 
 //==============================================================================	   

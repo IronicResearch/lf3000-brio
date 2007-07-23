@@ -191,6 +191,26 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testFindPackageCaseInsensitive()
+	{
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+
+		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
+
+		tPackageHndl pkg1 = rsrcmgr_->FindPackage("COUNTTEST", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg1 );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg1), "LF/Brio/UnitTest/Resource/A/CountTest" );
+
+		tPackageHndl pkg2 = rsrcmgr_->FindPackage("counttest", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg2 );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg2), "LF/Brio/UnitTest/Resource/A/CountTest" );
+		TS_ASSERT_EQUALS( pkg, pkg1);
+		TS_ASSERT_EQUALS( pkg, pkg2);
+	}
+	
+	//------------------------------------------------------------------------
 	void testFindPackageFlexibleDefaultPathSyntax()
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
@@ -291,7 +311,6 @@ public:
 		TS_ASSERT_THROWS( rsrcmgr_->GetPackedSize(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetUnpackedSize(handle), UnitTestAssertException );
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
-
 	}
 
 	//------------------------------------------------------------------------
@@ -326,6 +345,41 @@ public:
 		TS_ASSERT_THROWS( rsrcmgr_->GetPtr(handle), UnitTestAssertException );
 	}
 
+	//------------------------------------------------------------------------
+	void testFindtRsrcCaseInsensitive( )
+	{
+		ConstPtrCURI	pURI;
+
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
+		rsrcmgr_->SetDefaultURIPath(gPkgB);
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
+		
+		tRsrcHndl hndl = rsrcmgr_->FindRsrc("one");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, hndl );
+		pURI = rsrcmgr_->GetURI(hndl);
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/one", *pURI );
+		
+		tRsrcHndl hndl1 = rsrcmgr_->FindRsrc("One");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, hndl1 );
+		pURI = rsrcmgr_->GetURI(hndl1);
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/one", *pURI );
+		
+		tRsrcHndl hndl2 = rsrcmgr_->FindRsrc("ONE");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, hndl2 );
+		pURI = rsrcmgr_->GetURI(hndl2);
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/one", *pURI );
+		TS_ASSERT_EQUALS( hndl, hndl1 );
+		TS_ASSERT_EQUALS( hndl, hndl2 );
+		
+		rsrcmgr_->SetDefaultURIPath("lf/brio/UNITTEST/RESOURCE/b");
+		hndl2 = rsrcmgr_->FindRsrc("ONE");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, hndl2 );
+		pURI = rsrcmgr_->GetURI(hndl2);
+		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/one", *pURI );
+		TS_ASSERT_EQUALS( hndl, hndl2 );
+	}
+	
 	//------------------------------------------------------------------------
 	void testFindAndOpenBinaryRsrc( )
 	{
