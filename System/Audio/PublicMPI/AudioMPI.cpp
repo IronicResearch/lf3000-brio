@@ -279,6 +279,8 @@ U32 CAudioMPI::GetAudioTime( tAudioID id )
 	{
 		return pModule_->GetAudioTime( id );
 	}
+	
+	return 0;
 }
 
 //==============================================================================
