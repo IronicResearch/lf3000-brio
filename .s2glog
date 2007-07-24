@@ -5701,3 +5701,13 @@ By TParker (TParker@leapfrog.com) on 7/24/07 10:38 AM
 2,563 ms. (Cumulative: 1,000,397 ms)
 
 ----------------
+Revision 982 from svn://localhost/TRUNK/:
+Revision 983 from svn://localhost/TRUNK/:
+
+Updated Tremor libs with vorbis file open test fix.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/24/07 10:45 AM
+1 changed, 0 added, 0 deleted.
+2,609 ms. (Cumulative: 1,003,084 ms)
+
+----------------
