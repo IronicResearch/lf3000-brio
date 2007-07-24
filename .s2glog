@@ -5672,3 +5672,13 @@ By Dmilici (Dmilici@leapfrog.com) on 7/23/07 6:44 PM
 2,563 ms. (Cumulative: 992,318 ms)
 
 ----------------
+Revision 978 from svn://localhost/TRUNK/:
+
+Increase the max_message_size of the internal audio message queues so we don't have to 
+delete and recreate them when the size of the messages increases.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/24/07 10:05 AM
+3 changed, 0 added, 0 deleted.
+2,656 ms. (Cumulative: 995,021 ms)
+
+----------------

@@ -278,7 +278,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 	// Find the best channel for the specified priority
 	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->priority );
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
-			"AudioTask::DoStartAudio -- Find Best Channel returned:%d\n", reinterpret_cast<int>(pChannel) );
+			"AudioTask::DoStartAudio -- Find Best Channel returned:0x%x\n", reinterpret_cast<unsigned int>(pChannel) );
 
 	// If we have a good channel, play the audio, if not return error to caller.
 	if (pChannel != kNull) {
@@ -681,7 +681,6 @@ void* AudioTaskMain( void* /*arg*/ )
 
     // Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
-	msgQueueProperties.mq_msgsize = sizeof(CAudioReturnMessage);
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
 		"AudioTaskMain() -- Audio Task Creating task outgoing Q. size = %d\n", 
