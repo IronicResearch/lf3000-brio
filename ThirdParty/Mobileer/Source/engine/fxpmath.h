@@ -52,7 +52,6 @@ inline FXP31 FXP31_MULT( FXP31 x, FXP31 y );
 /* Use ARM DSP Extensions. */
 __inline FXP31 FXP31_MULT( FXP31 x, FXP31 y );
 
-
 #else
 /* Portable 'C' macro to multiply two 1.31 fixed-point values. */
 #define FXP31_MULT(a,b)   (((a)>>15) * ((b)>>16))

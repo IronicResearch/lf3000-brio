@@ -5778,3 +5778,28 @@ By Dmilici (Dmilici@leapfrog.com) on 7/24/07 2:25 PM
 2,735 ms. (Cumulative: 1,021,212 ms)
 
 ----------------
+Revision 995 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,562 ms. (Cumulative: 1,023,821 ms)
+
+----------------
+Revision 996 from svn://localhost/TRUNK/:
+Revision 997 from svn://localhost/TRUNK/:
+
+Fix for assembly code acceleration for Mobileer MIDI engine.  The "P1" fix is most of the improvement, providing a metric (have to use that word as everyone, including those without an on-line MBA, else is currently using it twenty times a day).
+
+With the "P1" fix, the MIDi engine needs 1.70 MIPS/voice when 16 voices are playing at fs=16000Hz.  The "P2" fix promises more improvement to 1.59 MIPS/voice, though currently, there is some sort of stereo bug.
+
+NO ARM :     2.4 MIPS/voice    (38 MIPS/16 voices)
+P1 ARM:       1.7 MIPS/voice   (27 MIPS/16 voices)
+P2 ARM:       1.6 MIPS/voice   (25 MIPS/16 voices)
+
+Only the "P1" fix is currently enabled in the ARM build.
+
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/24/07 3:03 PM
+4 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,026,415 ms)
+
+----------------
