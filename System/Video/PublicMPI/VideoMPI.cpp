@@ -97,19 +97,35 @@ Boolean CVideoMPI::StopVideo(tVideoHndl hVideo)
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoMPI::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
+Boolean CVideoMPI::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->GetVideoFrame(hVideo, pCtx);
+	return pModule_->GetVideoFrame(hVideo, pCtx, bDrop);
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoMPI::PutVideoFrame(tVideoHndl hVideo, void* pCtx)
+Boolean CVideoMPI::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	if (!pModule_)
 		return false;
 	return pModule_->PutVideoFrame(hVideo, pCtx);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetVideoInfo(hVideo, pInfo);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetVideoTime(hVideo, pTime);
 }
 
 LF_END_BRIO_NAMESPACE()

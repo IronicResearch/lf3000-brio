@@ -187,6 +187,8 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
 			}
 			else
 			{
+				// it is vorbis, but we can't use vorbisfile interface
+				memcpy(&vo,&test,sizeof(test));
 				// whatever it is, we don't care about it
     			ogg_stream_clear(&test);
 			}
@@ -241,12 +243,25 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
 
 	// Start decoder stream
 	theora_decode_init(&td,&ti);
+	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: %dx%d, %d:%d aspect, %d:%d fps\n",
+		ti.width, ti.height, ti.aspect_numerator, ti.aspect_denominator, ti.fps_numerator, ti.fps_denominator);
+	dbg_.Assert(ti.fps_numerator != 0, "VideoModule::StartVideo: bad fps numerator\n");
+	dbg_.Assert(ti.fps_denominator != 0, "VideoModule::StartVideo: bad fps denominator\n");
 
 	// Queue remaining pages that did not contain headers
 	while (ogg_sync_pageout(&oy,&og) > 0)
 		queue_page(&og);
 
 	return hVideo;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
+{
+	pInfo->width	= ti.width;
+	pInfo->height	= ti.height;
+	pInfo->fps		= ti.fps_numerator / ti.fps_denominator;
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -268,13 +283,27 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
+Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
+{
+	// Note theora_granule_time() returns only seconds
+	pTime->frame = theora_granule_frame(&td,td.granulepos);
+	pTime->time  = pTime->frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+	return true;	
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
 	Boolean		ready = false;
 	ogg_packet  op;
+	ogg_int64_t frame;
+	ogg_int64_t ftime;
+	tVideoTime*	pTime = pCtx;
 	int			bytes;
 
-	// TODO/dm: Do we want this as a non-blocking call?
+	// Compute next frame if time-based drop-frame mode selected 
+	if (bDrop)
+		pTime->frame = pTime->time * ti.fps_numerator / (ti.fps_denominator * 1000);
 
 	// Modally loop until next frame found or end of file
 	while (!ready)
@@ -282,8 +311,20 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 		// Decode Theora packet from Ogg input stream
 		if (ogg_stream_packetout(&to,&op) > 0)
 		{
-			theora_decode_packetin(&td,&op);
-			ready = true;
+			// Only decode if at selected time frame or no dropped frames 
+			frame = theora_granule_frame(&td,op.granulepos);
+			if (!bDrop || frame >= pTime->frame)
+			{
+				theora_decode_packetin(&td,&op);
+				frame = theora_granule_frame(&td,td.granulepos);
+				ftime = static_cast<ogg_int64_t>(theora_granule_time(&td,td.granulepos));
+				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoFrame: %ld frame, %ld time\n", 
+					static_cast<long>(frame), static_cast<long>(ftime));
+				// Note theora_granule_time() returns only seconds
+				pTime->frame = frame;
+				pTime->time  = frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+				ready = true;
+			}
 		}
 		else
 		{
@@ -300,14 +341,14 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, void* pCtx)
+Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
 	theora_decode_YUVout(&td,&yuv);
 
 	// Pack into YUYV format surface
-	tVideoSurf*	surf = (tVideoSurf*)pCtx;
+	tVideoSurf*	surf = pCtx;
 	U8* 		s = yuv.y;
 	U8*			u = yuv.u;
 	U8*			v = yuv.v;
