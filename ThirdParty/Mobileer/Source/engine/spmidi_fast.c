@@ -1,7 +1,8 @@
 /* $Id: spmidi_fast.c,v 1.17 2007/06/12 21:09:08 philjmsl Exp $ */
 /**
  *
- * Mixer and high level voice synthesis.
+ * Mixer and high level voice synthesis.arm946
+
  * This is performance critical code.
  * This code may be placed in tightly coupled memory to optimize performance.
  *
@@ -31,7 +32,7 @@
  * two 32-bit fixed-point numbers.
  */
 #if SPMIDI_DSP_BLACKFIN
-inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
+inline  FXP31_MULT( FXP31 x, FXP31 y )
 {
 	FXP31 product;
 	asm("%0 = %1.H * %2.H;" 
@@ -40,45 +41,43 @@ inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
 		);
 	return product;
 }
-#elif SPMIDI_DSP_ARM946
+#elif SPMIDI_DSP_ARM946_P1
 
 /* Use ARM DSP Extensions. */
-__inline FXP31 FXP31_MULT( FXP31 x, FXP31 y )
+
+__inline FXP31 FXP31_MULT( FXP31 x_1 , FXP31 y_2 )
 {
-	FXP31 product = 0;
+FXP31 product_0;
+//{static int c=0; if (!c) printf("FXP31_MULT: %d using ARM946_P1 \n", c++);}
 
 // ORIGINAL CODE FROM PHIL
-//	__asm
-//	{
+//	__asm {
 //	    SMULWT    product, x, y
 //	    QADD    product, product, product
 //	}
-// Attempt at GCC version
-//	asm("smulwt    (product), (x), (y)\n\t"
-//	    "qadd    (product), (product), (product)\n\t"
-//	);
-
-	__asm__ __volatile__ (
-	"smulwt %2, %0, %1\n\t"
-	"qadd   %2, %2, %2\n\t"
-	: "=r" (product) : "r" (x), "r" (y));
-
-return product;
+asm volatile (
+	"smulwt %0, %1, %2\n\t"
+	"qadd   %0, %0, %0\n\t"
+	: "=r" (product_0) 
+        : "r" (x_1), "r" (y_2)
+        );
+return (product_0);
 }
-
 #endif
 
 
 /* This macro is a code mixing operation.
  * It scales the input signal by the gain and adds it to an accumulator.
  */
-#if SPMIDI_DSP_ARM946
 /* Inline function for optimized ARM version.
  * Note this macro is missing the QADD so we have to adjust shiftby accordingly.
  */
-__inline FXP31 MIX_SCALE_SHIFT_ADD( FXP31 accum, FXP31 signal, FXP31 gain, int shiftby )
+#if SPMIDI_DSP_ARM946_P2
+__inline FXP31 MIX_SCALE_SHIFT_ADD( FXP31 accum_1, FXP31 signal_2, FXP31 gain_3, int shiftby_4 )
 {
-	int temp;  // R4
+
+int temp_0;  // R4
+//{static int c=0; if (!c) printf("MIX_SCALE_SHIFT_ADD %d: using ARM946_P2 \n", c++);}
 
 // ORIGINAL code from Phil Burk
 //	__asm
@@ -87,12 +86,15 @@ __inline FXP31 MIX_SCALE_SHIFT_ADD( FXP31 accum, FXP31 signal, FXP31 gain, int s
 //		ADD       temp, accum, temp, asr shiftby
 //	}
 
-	__asm__ __volatile__ (
-	"smulwt	%4, %1, %2\n\t"
-	"add    %4, %0, %4, asr %3\n\t"
-	: "=r" (temp) : "r" (accum), "r" (signal), "r" (gain), "r" (shiftby));
-
-	return temp;
+asm volatile (
+	"smulwt	%0, %2, %3\n\t"
+//	"add    %0, %1, %0, asr %4\n\t"
+	"asr    %0, %4\n\t"
+	"add    %0, %1, %0\n\t"
+	: "=r" (temp_0) 
+        : "r" (accum_1), "r" (signal_2), "r" (gain_3), "r" (shiftby_4)
+        );
+return (temp_0);
 }
 #else
 
