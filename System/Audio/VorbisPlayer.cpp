@@ -168,17 +168,19 @@ int CVorbisPlayer::VorbisSeek(
 	ogg_int64_t offset,
     int origin ) 
 {
-	tErrType 		ret = kNoErr;
+	tErrType 		err = kNoErr;
 	tOptionFlags	seekOptions;
+	U32				newFPos;
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisSeek: offset = %d, origin = %d.\n "
+		"Vorbis Player::VorbisSeek() -- Seek offset = %d, origin = %d.\n "
 		, static_cast<int>(offset), origin );
 
 	switch (origin) {
 		// Seek from start of file
 		case SEEK_SET: 
 			seekOptions = kSeekRsrcOptionSet;
+			newFPos = offset;
 			break;
 	    
 		// Seek from where we are
@@ -193,12 +195,13 @@ int CVorbisPlayer::VorbisSeek(
 
 		default:
 			seekOptions = kSeekRsrcOptionSet;	// bogus assignment to avoid warning
-			pDebugMPI_->Assert(false, "CVorbisPlayer::VorbisSeek() invalid origin parameter.\n");
+			pDebugMPI_->Assert(false, "CVorbisPlayer::VorbisSeek() -- invalid origin parameter.\n");
 	}
 	 
 	// Seek to the requested place in the bitstream.
-	ret = pRsrcMPI_->SeekRsrc( hRsrc_, (U32)offset, seekOptions );
-	
+	err = pRsrcMPI_->SeekRsrc( hRsrc_, (U32)offset, seekOptions );
+	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- Seeking rsrc failed.\n");
+
 	filePos_ = offset;
 	
 	return -1;
