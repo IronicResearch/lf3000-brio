@@ -797,7 +797,7 @@ int ov_test(FILE *f,OggVorbis_File *vf,char *initial,long ibytes){
 }
   
 int ov_test_open(OggVorbis_File *vf){
-  if(vf->ready_state!=PARTOPEN)return(OV_EINVAL);
+  if(vf->ready_state<PARTOPEN)return(OV_EINVAL);
   return _ov_open2(vf);
 }
 

@@ -5682,3 +5682,13 @@ By DGibbs (DGibbs@leapfrog.com) on 7/24/07 10:05 AM
 2,656 ms. (Cumulative: 995,021 ms)
 
 ----------------
+Revision 979 from svn://localhost/TRUNK/:
+Revision 980 from svn://localhost/TRUNK/:
+
+Fix for vorbis file open logic.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/24/07 10:30 AM
+1 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 997,772 ms)
+
+----------------
