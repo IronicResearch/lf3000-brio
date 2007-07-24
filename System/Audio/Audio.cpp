@@ -283,11 +283,6 @@ CAudioModule::CAudioModule( )
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
-	msgQueueProperties.mq_msgsize = sizeof(CAudioReturnMessage);
-
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::ctor: creating task outgoing Q. size = %u\n", 
-				static_cast<unsigned int>(msgQueueProperties.mq_msgsize) );	
 
 	err = pKernelMPI_->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
 
