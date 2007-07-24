@@ -6,7 +6,7 @@
 
 #define kAudioNumOutputChannels		2		// stereo output
 #define kAudioBytesPerSample		2		// 16 bit
-#define	kAudioSampleRate			44100	// obvious
+#define	kAudioSampleRate			32000	// obvious
 #define kAudioTickInMS				20		// audio system interrupt rate 
 
 #define kAudioMgrTaskPriority		10
