@@ -14,27 +14,13 @@
 //==============================================================================
 
 // System includes
-#include <CoreTypes.h>
 #include <SystemTypes.h>
 //#include <RsrcTypes.h>
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <RawPlayer.h> // fixme/dg: hack for RawPlayer dtor not getting called
+#include <DebugMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
-
-#define kFracBits 16
-
-struct tAudioConversion {
-	U32 oPosFrac;		// Fractional position of the output buffer in the input buffer
-	U32 oPos;			// Current position in the output buffer
-
-	U32 oPosIncFrac;	// Fractional position increment in the output buffer
-	U32 oPosInc; 
-
-	U32 iPos;			// Current position in the input buffer
-	S16 iLastLeft;		// Last left-side sample in the input buffer
-	S16 iLastRight;		// Last right-side sample in the input buffer
-};
 
 class CAudioPlayer;
 //==============================================================================
@@ -87,12 +73,12 @@ private:
 //	CAudioEffectsProcessor		*pChain_;		// Pointer to a special effects processor
 	CAudioPlayer				*pPlayer_;		// Pointer to the player assigned to this channel
 	
-	U8		bInUse_:1;			// Channel is in use
-	U8		bPaused_:1;			// Channel is paused
-	U8		bOwnProcessor_:1;	// Channel has own audio effects processor
-//	U8		unused_:3;			// Unused
-
-	tAudioConversion			convRate_;	// Conversion rate parameters
+	U8			bInUse_:1;			// Channel is in use
+	U8			bPaused_:1;			// Channel is paused
+	U8			bOwnProcessor_:1;	// Channel has own audio effects processor
+//	U8			unused_:3;			// Unused
+	
+	CDebugMPI	*pDebugMPI_;
 };
 
 LF_END_BRIO_NAMESPACE()

@@ -67,17 +67,19 @@ public:
 	// Stop the audio output driver and clear the audio system state.
 	tErrType	StopAudio( void );
 	
+
+	// Set the final output gain of the mixer.  (This includes MIDI.)
+	void 		SetMasterVolume( U8 volume );
+	U8			GetMasterVolume( void );
+
 	//********************************
 	// Audio Playback. 
 	//********************************    
-
-	// Set the output gain of the mixer.  (This includes MIDI.)
-	void 		SetMasterVolume( U8 volume );
-
+	
 	// Plays an audio resource.
 	// An audio done event will be posted to the listener if provided.
 	// Currently only volume and pListener are interpreted.
-	tAudioID 	StartAudio( tRsrcHndl			hRsrc, 
+	tAudioID 	StartAudio( tRsrcHndl	hRsrc, 
 					U8					volume, 
 					tAudioPriority		priority,
 					S8					pan, 
@@ -85,15 +87,24 @@ public:
 					tAudioPayload		payload,
 					tAudioOptionsFlags	flags );
 
+	// Returns the time in ms since the file started playing.
+	U32 		GetAudioTime( tAudioID id );
+
 	// Pause a playing audio resource.
-	void 		PauseAudio( tAudioID audioID );
+	void 		PauseAudio( tAudioID id );
 
 	// Resume a playing audio resource from the previously paused position.
-	void 		ResumeAudio( tAudioID audioID ); 
+	void 		ResumeAudio( tAudioID id ); 
 
 	// Stop the audio resource and free its mixer channel.  Optionally post
 	// an audioDone event via the EventMgr.
-	void 		StopAudio( tAudioID audioID, Boolean surpressDoneMessage ); 
+	void 		StopAudio( tAudioID id, Boolean surpressDoneMessage ); 
+
+	// Is this piece of audio still playing?
+	Boolean		IsAudioPlaying( tAudioID id );
+	
+	// Is the audio system playing anything?
+	Boolean		IsAudioPlaying( void );
 
 	//********************************
 	// MIDI functionality
@@ -106,48 +117,53 @@ public:
 	// This function activates the MIDI engine.  Don't do this unless you really need to play
 	// MIDI, there is a MIPS cost to having the player active even if you aren't using it.
 	// Always release it when you are done!
-	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pHandler, tMidiID* pMidiPlayerID );
+	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pHandler, tMidiPlayerID* pID );
 
 	// Deactivate the MIDI engine.
-	tErrType 	ReleaseMidiPlayer( tMidiID pMidiPlayerID );
+	tErrType 	ReleaseMidiPlayer( tMidiPlayerID id );
 	
-	// Trigger a single MIDI note on event.
-	// WARNING: DON'T DO THIS WHILE A MIDI FILE IS PLAYING, bad things may happen!!!
-    tErrType 	MidiNoteOn( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	
-	// Stop the previously trigger MIDI note.
-    tErrType 	MidiNoteOff( tMidiID midiID, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-
 	// Start playback of a MIDI file.
 	// Currently only the volume and pListener options are used.
-	tMidiID 	StartMidiFile( tMidiID	midiPlayerID,
-						tRsrcHndl		hRsrc, 
+    tErrType 	StartMidiFile( tMidiPlayerID	id,
+						tRsrcHndl			hRsrc, 
 						U8					volume, 
 						tAudioPriority		priority,
 						IEventListener*		pListener,
 						tAudioPayload		payload,
 						tAudioOptionsFlags	flags );
 
+	// Is this MIDI file still playing?
+	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
+	
+	// Is the MIDI system playing anything?
+	Boolean		IsMidiFilePlaying( void );
+
 	// Pause playback of a MIDI file. 
-	void 		PauseMidiFile( tMidiID midiPlayerID );
+	void 		PauseMidiFile( tMidiPlayerID id );
 	
 	// Resume playback of a MIDI file.
-    void 		ResumeMidiFile( tMidiID midiPlayerID );
+    void 		ResumeMidiFile( tMidiPlayerID id );
 
 	// Stop playback of a MIDI file and free the MIDI player. Optionally post
 	// an audioDone event via the EventMgr.
-    void 		StopMidiFile( tMidiID midiPlayerID, Boolean surpressDoneMessage );
+    void 		StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage );
 
-	// these are still unimplemented!	
-	tMidiID 	GetMidiIDForAudioID( tAudioID audioID );
-	tAudioID 	GetAudioIDForMidiID( tMidiID midiID );
-	tMidiTrackBitMask GetEnabledMidiTracks( tMidiID midiID );
-	tErrType 	EnableMidiTracks( tMidiID midiID, tMidiTrackBitMask trackBitMask );
-	tErrType 	TransposeMidiTracks( tMidiID midiID, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
-	tErrType 	ChangeMidiInstrument( tMidiID midiID, tMidiTrackBitMask trackBitMask, tMidiInstr instr );
-	tErrType 	ChangeMidiTempo( tMidiID midiID, S8 tempo );
-	tErrType 	SendMidiCommand( tMidiID midiID, U8 cmd, U8 data1, U8 data2 );
+    // Get and set properities of a playing MIDI file.
+    tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
+	tErrType 	EnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
+	tErrType 	TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr );
+	tErrType 	ChangeMidiTempo( tMidiPlayerID id, S8 tempo );
 
+	// Send MIDI data to a player instance.
+	// Trigger a single MIDI note on event.
+	// WARNING: DON'T DO THIS WHILE A MIDI FILE IS PLAYING, bad things may happen!!!
+    tErrType 	MidiNoteOn( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	
+	// Stop the previously trigger MIDI note.
+    tErrType 	MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+
+	tErrType 	SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 private:
 	class CAudioModule*	pModule_;

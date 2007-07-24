@@ -14,6 +14,7 @@
 
 // System includes
 #include <SystemTypes.h>
+#include <GroupEnumeration.h>
 //#include <RsrcTypes.h>
 //#include <RsrcMgrMPI.h>
 //#include <EventListener.h>
@@ -79,7 +80,7 @@ typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer);
 //==============================================================================
 // MIDI audio types 
 //==============================================================================
-typedef U8		tMidiID;			// MidiPlayer ID
+typedef U8		tMidiPlayerID;		// MidiPlayer ID
 typedef U32		tMidiInstr;			// MidiPlayer intrument
 typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
 #define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all Midi tracks

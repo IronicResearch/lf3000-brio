@@ -75,6 +75,9 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 //==============================================================================
 CRawPlayer::~CRawPlayer()
 {
+	// Unload the audio resource.
+	pRsrcMPI_->UnloadRsrc( hRsrc_ );  
+
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
@@ -92,7 +95,15 @@ void CRawPlayer::Rewind()
 	framesLeft_ = numFrames_;
 }
 
+//==============================================================================
+//==============================================================================
+U32 CRawPlayer::GetAudioTime( void ) 
+{
+	return 0;
+}
 
+//==============================================================================
+//==============================================================================
 void CRawPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgDataCompleted	data;

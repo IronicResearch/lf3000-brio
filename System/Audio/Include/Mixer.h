@@ -40,6 +40,10 @@ public:
 	// Find a channel based on the ID of the audio its playing.
 	CChannel*		FindChannelUsing( tAudioID id );
 	
+	// Returns true if any audio playing on a mixer channel.
+	// Note: this doesn't include MIDI.
+	Boolean IsAnyAudioActive( void );
+
 	// Get the MIDI player for the mixer.
 	CMidiPlayer*	GetMidiPlayer( void ) { return pMidiPlayer_; }
 	

@@ -44,15 +44,18 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 	ogg_int64_t		lengthInSeconds;
 	ogg_int64_t		length;
 	
-//	printf( "Brio Vorbis Test: playback vorbis.\n" );
-	
+	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose );
+
 	// Allocate the player's sample buffer
 	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 
 	// Use rsrc manager to open the ogg file.
-	ret = pRsrcMPI_->OpenRsrc( hRsrc_ );  
-    if (ret != kNoErr)
-        pDebugMPI_->DebugOut( kDbgLvlCritical, "VorbisPlayer -- ctor: Could not open oggvorbis file." );
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"VorbisPlayer::ctor -- OggVorbis file's resource ID is %d.\n", static_cast<int>(hRsrc_) );
+
+	ret = pRsrcMPI_->OpenRsrc( hRsrc_ );
+	pDebugMPI_->AssertNoErr( ret, 
+		"VorbisPlayer::ctor -- Could not open oggvorbis file.\n" );
  
     // Keep track of where we are int he bitstream now that it's open.
     filePos_ = 0;
@@ -64,10 +67,17 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 	oggCallbacks_.close_func = &CVorbisPlayer::WrapperForVorbisClose;
       
 	// open the file
-	S32 ret2 = ov_open_callbacks( this, &vorbisFile_, NULL, 0, oggCallbacks_ );
-	if ( ret2 < 0)
-		printf("Could not open input as an OggVorbis file.\n\n");
+	int ov_ret = ov_test_callbacks( this, &vorbisFile_, NULL, 0, oggCallbacks_ );
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"VorbisPlayer::ctor -- ov_test_callbacks returned: %d.\n", static_cast<int>(ov_ret) );
+	pDebugMPI_->AssertNoErr( ov_ret, 
+		"VorbisPlayer::ctor -- Input resource failed Vorbis open test. Is this an OggVorbis file?!\n");
 
+	ov_ret = ov_test_open( &vorbisFile_ );
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"VorbisPlayer::ctor -- ov_test_open returned: %d.\n", static_cast<int>(ov_ret) );
+	pDebugMPI_->AssertNoErr( ov_ret, "VorbisPlayer::ctor -- Couldn't finish opening an OggVorbis file.\n");
+	
 	// Figure out how big the vorbis bitstream actually is.
 	pVorbisInfo = ov_info( &vorbisFile_, -1 );
 	if (pVorbisInfo->channels == 2)
@@ -77,18 +87,20 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 	
 	dataSampleRate_ = pVorbisInfo->rate;
 	
-	printf("OggVorbis file's num channels is %d.\n", pVorbisInfo->channels);
-	printf("OggVorbis file's sample rate is %ld.\n", pVorbisInfo->rate);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"VorbisPlayer::ctor -- OggVorbis file's num channels is %d.\n", pVorbisInfo->channels);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"VorbisPlayer::ctor -- OggVorbis file's sample rate is %ld.\n", pVorbisInfo->rate);
 
 	lengthInSeconds = ov_time_total( &vorbisFile_, -1 );
-//	printf("OggVorbis file's length in seconds is %f.\n", (float)lengthInSeconds);
+//	printf("VorbisPlayer::ctor -- OggVorbis file's length in seconds is %f.\n", (float)lengthInSeconds);
 
 	length = ov_raw_total( &vorbisFile_, -1 );
-//	printf("OggVorbis file's bitstream length is %ld.\n", (long)length);
+//	printf("VorbisPlayer::ctor -- OggVorbis file's bitstream length is %ld.\n", (long)length);
 	length = ov_pcm_total( &vorbisFile_, -1 );
-//	printf("OggVorbis file's PCM length is %ld.\n", (long)length );
+//	printf("VorbisPlayer::ctor -- OggVorbis file's PCM length is %ld.\n", (long)length );
 	
-//	printf("CVorbisPlayer::ctor Header flags:%d\n", optionsFlags_);
+//	printf("VorbisPlayer::ctor -- CVorbisPlayer::ctor Header flags:%d\n", optionsFlags_);
 }
 
 //==============================================================================
@@ -108,7 +120,8 @@ CVorbisPlayer::~CVorbisPlayer()
 	if ( ret < 0)
 		printf("Could not close OggVorbis file.\n");
 
-//	printf(" CVorbisPlayer::dtor -- I'm HERE!!!\n\n\n\n");
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		" CVorbisPlayer::dtor -- I'm HERE!!!\n");
 }
 
 U32 CVorbisPlayer::VorbisRead(
@@ -119,13 +132,17 @@ U32 CVorbisPlayer::VorbisRead(
 	tErrType 	ret = kNoErr;
 	U32			bytesRead;
 	
-//	printf("Vorbis Player::VorbisRead: requestToRead = %d\n", sizeToRead); fflush(stdout);
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+//		"Vorbis Player::VorbisRead: bytes to read = %d.\n ", sizeToRead) ;
 
 	ret	= pRsrcMPI_->ReadRsrc( hRsrc_, data_ptr, sizeToRead, &bytesRead ); 
     if (ret != kNoErr)
-        pDebugMPI_->DebugOutErr( kDbgLvlCritical, ret, "VorbisRead: ReadRsrc() returned error\n" );
+        pDebugMPI_->DebugOutErr( kDbgLvlCritical, ret,
+        	"VorbisRead: ReadRsrc() returned error\n" );
 	
-//	printf("Vorbis Player::VorbisRead: ReadRsrc returned %d bytes\n", bytesRead); fflush(stdout);
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+//		"Vorbis Player::VorbisRead: bytes actually read = %d.\n ", 
+//		static_cast<int>(bytesRead) );
 
 	filePos_ += bytesRead;
 	
@@ -138,8 +155,6 @@ size_t CVorbisPlayer::WrapperForVorbisRead (
     size_t sizeToRead,  	// Maximum number of items to be read
     void* pToObject)      	// A pointer to the o we passed into ov_open_callbacks
 {
-//	printf("Vorbis Player::WrapperForVorbisRead: Entering method.\n "); fflush(stdout);
-
 	// Cast void ptr to a this ptr:
 	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
 	
@@ -156,6 +171,10 @@ int CVorbisPlayer::VorbisSeek(
 	tErrType 		ret = kNoErr;
 	tOptionFlags	seekOptions;
 	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::VorbisSeek: offset = %d, origin = %d.\n "
+		, static_cast<int>(offset), origin );
+
 	switch (origin) {
 		// Seek from start of file
 		case SEEK_SET: 
@@ -190,8 +209,6 @@ int CVorbisPlayer::WrapperForVorbisSeek(
 	ogg_int64_t offset,				// Number of bytes from origin
     int origin )					// Initial position
 {
-//	printf("Vorbis Player::WrapperForVorbisSeek: Entering method.\n ");
-
 	// Cast void ptr to a this ptr:
 	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
 	
@@ -202,13 +219,15 @@ int CVorbisPlayer::WrapperForVorbisSeek(
 
 long CVorbisPlayer::VorbisTell( void )
 {
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::VorbisTell: location = %d.\n ", 
+		static_cast<int>(filePos_) );
+
 	return filePos_;
 }
 
 long CVorbisPlayer::WrapperForVorbisTell( void* pToObject )
 {
-//	printf("Vorbis Player::WrapperForVorbisTell: Entering method.\n ");
-
 	// Cast void ptr to a this ptr:
 	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
 	
@@ -220,6 +239,9 @@ int CVorbisPlayer::VorbisClose( void )
 {
 	tErrType ret = kNoErr;
 	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::VorbisClose -- rsrc ID = %d.\n ", static_cast<int>(hRsrc_) ); 
+
 	ret = pRsrcMPI_->CloseRsrc( hRsrc_ );
 	if ( ret != kNoErr )
 		printf("Could not CloseRsrc for OggVorbis file.\n");
@@ -229,8 +251,6 @@ int CVorbisPlayer::VorbisClose( void )
 
 int CVorbisPlayer::WrapperForVorbisClose( void* pToObject )
 {
-//	printf("Vorbis Player::WrapperForVorbisClose: Entering method.\n ");
-
 	// Cast void ptr to a this ptr:
 	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
 	
@@ -244,15 +264,38 @@ int CVorbisPlayer::WrapperForVorbisClose( void* pToObject )
 void CVorbisPlayer::Rewind()
 {
 	// Point curSample_ back to start and reset total.
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::Rewind.\n "); 
 }
 
+//==============================================================================
+//==============================================================================
+U32 CVorbisPlayer::GetAudioTime( void )
+{
+	double vorbisTime;
+	U32 timeInMS;
+		
+	vorbisTime = ov_time_tell( &vorbisFile_ );
+	timeInMS = (U32)vorbisTime;
 
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::GetAudioTime() -- vorbisTime = %f; time in ms = %d.\n ",
+		vorbisTime, static_cast<int>(timeInMS) ); 
+
+	return timeInMS;
+}
+
+//==============================================================================
+//==============================================================================
 void CVorbisPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgDataCompleted	data;
 	data.audioID = id_;	// dummy
 	data.payload = 101;	// dummy
 	data.count = 1;
+
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::SendDoneMsg.\n "); 
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);

@@ -5,11 +5,6 @@
 #include <AudioTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
-// kAudioCmdMsgTypeSetMasterVolume
-struct tAudioMasterVolume {
-	U8				 	volume;
-};
-
 // kAudioCmdMsgTypeStartAudio
 struct tAudioStartAudioInfo { 
 	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
@@ -21,14 +16,14 @@ struct tAudioStartAudioInfo {
 	tAudioOptionsFlags	flags;
 	tAudioHeader*		pAudioHeader;		// For Brio Raw types, pointer to header and data, provided by AudioTask, returned from GetPtr()
 	
-	tAudioStartAudioInfo(tRsrcHndl r = kInvalidRsrcHndl, 
+	tAudioStartAudioInfo( tRsrcHndl r = kInvalidRsrcHndl, 
 						U8 v = 0, 
 						tAudioPriority p = 0, 
 						S8 pn = 0, 
 						IEventListener* l = NULL, 
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0, 
-						tAudioHeader* h = NULL)
+						tAudioHeader* h = NULL )
 		: hRsrc(r), volume(v), priority(p), pan(pn), pListener(l),
 		payload(pl), flags(f), pAudioHeader(h) {}
 };
@@ -37,16 +32,10 @@ struct tAudioStartAudioInfo {
 struct tAudioStopAudioInfo {
 	tAudioID			id;
 	Boolean				suppressDoneMsg;
-};
 
-// kAudioCmdMsgTypePauseAudio
-struct tAudioPauseAudioInfo {
-	tAudioID			id;
-};
-
-// kAudioCmdMsgTypeResumeAudio
-struct tAudioResumeAudioInfo {
-	tAudioID			id;
+	tAudioStopAudioInfo( tAudioID i = -1, 
+						 Boolean s = false )
+		: id(i), suppressDoneMsg(s) {}
 };
 
 // kAudioCmdMsgTypeMidiNoteOn
@@ -57,11 +46,20 @@ struct tAudioMidiNoteInfo {
 	tAudioPriority	 	priority;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
+
+	tAudioMidiNoteInfo( U8 c = 0, 
+						U8 n = 0, 
+						U8 v = 0, 
+						tAudioPriority p = 0, 
+						tAudioPayload pl = 0, 
+						tAudioOptionsFlags f = 0 )
+		: channel(c), noteNum(n), velocity(v), priority(p),
+		  payload(pl), flags(f) {}
 };
 
 // kAudioCmdMsgTypePlayMidiFile
 struct tAudioStartMidiFileInfo {
-	tMidiID				id;					// fixme/dg: make midiPlayerID?
+	tMidiPlayerID		id;					// fixme/dg: make midiPlayerID?
 	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
 	U8*					pMidiFileImage;		// MIDI file loaded into RAM
 	U32					imageSize;			// Size of MIDI file in RAM
@@ -70,22 +68,27 @@ struct tAudioStartMidiFileInfo {
 	IEventListener*		pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
-};
 
-// kAudioCmdMsgTypePauseMidiFile
-struct tAudioPauseMidiFileInfo {
-	tMidiID			id;
-};
-
-// kAudioCmdMsgTypeResumeMidiFile
-struct tAudioResumeMidiFileInfo {
-	tMidiID			id;
+	tAudioStartMidiFileInfo( tMidiPlayerID	i = 0,
+						tRsrcHndl r = kInvalidRsrcHndl, 
+						U8 *pi = NULL,
+						U32 is = 0,
+						tAudioPriority p = 0,
+						IEventListener* l = NULL, 
+						tAudioPayload pl = 0, 
+						tAudioOptionsFlags f = 0 )
+		: id(i), hRsrc(r), pMidiFileImage(pi), priority(p), pListener(l),
+		payload(pl), flags(f) {}
 };
 
 // kAudioCmdMsgTypeStopMidiFile
 struct tAudioStopMidiFileInfo {
-	tMidiID			id;
-	Boolean			suppressDoneMsg;
+	tMidiPlayerID		id;
+	Boolean				suppressDoneMsg;
+
+	tAudioStopMidiFileInfo( tMidiPlayerID i = -1, 
+						 Boolean s = false )
+		: id(i), suppressDoneMsg(s) {}
 };
 
 LF_END_BRIO_NAMESPACE()

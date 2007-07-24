@@ -116,6 +116,26 @@ CChannel* CAudioMixer::FindChannelUsing( tAudioID id )
 
 //==============================================================================
 //==============================================================================
+Boolean CAudioMixer::IsAnyAudioActive( void )
+{
+	Boolean 	result = false;
+	U32 		iChan = 0;
+	CChannel*	pChan = NULL;
+
+	// Loop over the number of channels
+	for (iChan = 0; iChan < numChannels_; iChan++)
+	{
+		pChan = &pChannels_[iChan];
+	
+		if (pChan->IsInUse())
+			result = true;
+	}
+	
+	return result;
+}
+
+//==============================================================================
+//==============================================================================
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numStereoFrames )
 {
 	U32			i;

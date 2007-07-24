@@ -28,11 +28,11 @@ myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 
 if vars['is_emulation']:
-	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath)
+	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/Theora/Source/Tremor/.libs').abspath)
 
 myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/' + vars['cpu_subdir']])
 myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/' + vars['cpu_subdir']])
-myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + vars['cpu_subdir']])
+myenv.Append(LIBPATH = ['#ThirdParty/Theora/Source/Tremor/.libs/'])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

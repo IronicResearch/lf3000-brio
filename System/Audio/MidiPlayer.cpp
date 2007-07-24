@@ -170,7 +170,7 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
 	return result;
 }
 
-tErrType 	CMidiPlayer::PauseMidiFile( tAudioPauseMidiFileInfo* pInfo ) 
+tErrType 	CMidiPlayer::PauseMidiFile( void ) 
 {
 	tErrType result = 0;
 	
@@ -180,7 +180,7 @@ tErrType 	CMidiPlayer::PauseMidiFile( tAudioPauseMidiFileInfo* pInfo )
 	return result;
 }
 
-tErrType 	CMidiPlayer::ResumeMidiFile( tAudioResumeMidiFileInfo* pInfo ) 
+tErrType 	CMidiPlayer::ResumeMidiFile( void ) 
 {
 	tErrType result = 0;
 	
@@ -261,8 +261,10 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 	// Get a local copy of buffer ptr that we can modify.
 	pBuffer = pMidiRenderBuffer_;
 	
-	//	if (numStereoFrames != numFrames_) 
-//		printf("!!!!! CMidiPlayer::RenderBuffer -- System frames per buffer and midi frames per buffer disagree!!!\n\n");
+
+//	printf("CMidiPlayer::RenderBuffer -- numFrames %d, bFileActive = %ul, bFilePaused_ = %d\n", 
+//			(int)numStereoFrames, (int)bFileActive_, (int)bFilePaused_);
+
 	// If there is a midi file player, service it
 	if ( bFileActive_ && !bFilePaused_ ) {
 		// fixme/rdg: make this bulletproof.  Right now no check for sizes.
