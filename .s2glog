@@ -5692,3 +5692,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/24/07 10:30 AM
 2,688 ms. (Cumulative: 997,772 ms)
 
 ----------------
+Revision 981 from svn://localhost/TRUNK/:
+
+Fix packing of resource file path to be relative
+
+By TParker (TParker@leapfrog.com) on 7/24/07 10:38 AM
+1 changed, 1 added, 0 deleted.
+2,563 ms. (Cumulative: 1,000,397 ms)
+
+----------------

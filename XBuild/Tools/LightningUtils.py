@@ -485,6 +485,7 @@ def PackAllResources(penv):
 		
 	pkgs = glob.glob(os.path.join(data_root, '*.pkg'))				#3
 	for pkg in pkgs:
+		print pack_root
 		ProcessPackage(pkg, types, pack_root, data_root, packages)
 	
 	enumpkg_path = os.path.join(pack_root, "EnumPkgs")				#4
