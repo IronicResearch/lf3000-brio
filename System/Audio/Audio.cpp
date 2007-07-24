@@ -38,7 +38,7 @@ tMutex		gAudioConditionMutex;
 tMutexAttr 	gAudioConditionMutexAttributes;
 tCond		gAudioCondition;
 tCondAttr 	gAudioConditionAttributes;
-bool		gAudioTaskRunning = false;
+Boolean		gAudioTaskRunning = false;
 
 //============================================================================
 // CAudioCmdMessages
@@ -252,7 +252,9 @@ CAudioModule::CAudioModule( )
 	// Wait for the AudioMgr task to be ready
 	while (!gAudioTaskRunning)
 	{
-		pKernelMPI_->TaskSleep(5);
+		pKernelMPI_->TaskSleep(10);
+		pDebugMPI_->DebugOut(kDbgLvlVerbose, 
+			"CAudioModule::ctor: AudioModule is waiting for the audio task to start up...\n");	
 	}
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
@@ -276,6 +278,10 @@ CAudioModule::CAudioModule( )
 		"CAudioModule::ctor: creating task incoming Q. size = %d\n", 
 				static_cast<int>(kMAX_AUDIO_MSG_SIZE) );	
 	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"Audio Task: verifing incoming Q size = %d\n", 
+		static_cast<int>(msgQueueProperties.mq_msgsize) );	
+
 	err = pKernelMPI_->OpenMessageQueue( hSendMsgQueue_, msgQueueProperties, NULL );
 
     pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor:Trying to create incoming audio task msg queue. err = %d \n", 
@@ -283,6 +289,10 @@ CAudioModule::CAudioModule( )
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
+
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"Audio Task: verifing outgoing Q size = %d\n", 
+		static_cast<int>(msgQueueProperties.mq_msgsize) );	
 
 	err = pKernelMPI_->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
 
@@ -858,7 +868,7 @@ tAudioID CAudioModule::WaitForAudioID( void )
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CAudioModule::WaitForAudioID -- Waiting for message from audio task.\n" );	
 
-	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
+	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForAudioID -- Could not get audio ID from Audio Task.\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
@@ -880,7 +890,7 @@ tMidiPlayerID CAudioModule::WaitForMidiID( void )
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CAudioModule::WaitForMidiID -- Waiting for message from audio task.\n" );	
 
-	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
+	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForMidiID -- Could not get MIDI Player ID from Audio Task.\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
@@ -900,9 +910,11 @@ tAudioID CAudioModule::WaitForStatus( void )
 	CAudioReturnMessage* 	msg;
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-			"CAudioModule::WaitForStatus -- Waiting for message from audio task.\n" );	
+			"CAudioModule::WaitForStatus -- Waiting for message from audio task. MsgSize = %d.\n", sizeof(CAudioReturnMessage) );fflush(stdout);
 
-	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
+	pKernelMPI_->TaskSleep(2000);
+			
+	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForStatus -- Could not get status from Audio Task.\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
@@ -926,7 +938,7 @@ Boolean CAudioModule::WaitForBooleanResult( void )
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CAudioModule::WaitForBooleanResult -- Waiting for message from audio task.\n" );	
 
-	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
+	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForBooleanResult -- Could not get result from Audio Task.\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
@@ -950,7 +962,7 @@ U32 CAudioModule::WaitForU32Result( void )
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CAudioModule::WaitForU32Result -- Waiting for message from audio task.\n" );	
 
-	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, sizeof(CAudioReturnMessage) );
+	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForU32Result -- Could not get U32 value from Audio Task.\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);

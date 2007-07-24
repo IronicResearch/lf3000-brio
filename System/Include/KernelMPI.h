@@ -80,6 +80,10 @@ public:
 
 	// FIXME/tp: Work these and incorporate with IEventMessage
 	// FIXME/tp: Think through order of parameters
+	// FIXME/dg: ReceiveMessage's maxMessageSize param MUST be the same as
+	//           the max message size you pass in to the OpenMessageQueue's props.
+	//           It would be better if the KernelMPI remembered this for you so
+	//           we could leave it out of the API.
 	tErrType  	ReceiveMessage( tMessageQueueHndl hndl, CMessage* msg, 
 									U32 maxMessageSize );
 	tErrType  	ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg,  
