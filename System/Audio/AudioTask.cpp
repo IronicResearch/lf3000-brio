@@ -712,9 +712,7 @@ void* AudioTaskMain( void* /*arg*/ )
 	    err = gContext.pKernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 
 								   (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
 								   
-	    gContext.pDebugMPI->DebugOut(kDbgLvlVerbose, 
-	    	"AudioTaskMain() -- ReceivedMessage err = % d\n", 
-	    	static_cast<int>(err) );
+		pDebugMPI_->AssertNoErr( err, "AudioTask::MainLoop -- Could not get cmd message from AudioModule.\n" );
 
 		pAudioMsg = reinterpret_cast<CAudioCmdMsg*>(msgBuf);
 		msgSize = pAudioMsg->GetMessageSize();
