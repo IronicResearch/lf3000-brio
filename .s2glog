@@ -5803,3 +5803,12 @@ By GKlimanis (GKlimanis@leapfrog.com) on 7/24/07 3:03 PM
 2,578 ms. (Cumulative: 1,026,415 ms)
 
 ----------------
+Revision 998 from svn://localhost/TRUNK/:
+
+Check for errors on audio message receive so we fail appropriately.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/24/07 3:23 PM
+1 changed, 0 added, 0 deleted.
+2,563 ms. (Cumulative: 1,029,041 ms)
+
+----------------
