@@ -45,6 +45,9 @@ public:
 	// Process an audio tick for the class object
 	virtual U32		RenderBuffer( S16 *pOutBuff, U32 numFrames ) = 0;
 
+	// Returns milliseconds since start of audio playback.
+	virtual U32 GetAudioTime( void ) = 0;
+
 	// Return the requested status of the class object 
 	inline U8		SendDoneMessage() { return bDoneMessage_; }
 	inline U8		HasAudioCodec() { return bHasCodec_; }

@@ -38,6 +38,9 @@ public:
 	// Reset player to start from beginning of sample
 	void	Rewind();
 	
+	// Returns milliseconds since start of audio.
+	U32 GetAudioTime( void );
+
 	// Attempt to fill buffer at pOutBuff with numFrames of data.  
 	// Returns number of frames actually rendered; zero when done.
 	U32		RenderBuffer( S16 *pOutBuff, U32 numStereoFrames );

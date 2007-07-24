@@ -49,7 +49,7 @@ public:
 	inline void		DeActivate() { bActive_ = false; }
 
 	// Get/Set the class member variables
-	inline tMidiID				GetMidiID() { return midiID_; }
+	inline tMidiPlayerID		GetMidiID() { return id_; }
 	inline tMidiTrackBitMask	GetEnabledTracks() { return trackBitMask_; }
 	tErrType					EnableTracks(tMidiTrackBitMask trackBitMask);
 
@@ -57,20 +57,20 @@ public:
 	tErrType 	NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	StartMidiFile( tAudioStartMidiFileInfo* pInfo );
-	tErrType 	PauseMidiFile( tAudioPauseMidiFileInfo* pInfo );
-	tErrType 	ResumeMidiFile( tAudioResumeMidiFileInfo* pInfo );
+	tErrType 	PauseMidiFile( void );
+	tErrType 	ResumeMidiFile( void );
 	tErrType 	StopMidiFile( tAudioStopMidiFileInfo* pInfo );
 
 	tErrType	TransposeTracks( tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
 	tErrType	ChangeInstrument( tMidiTrackBitMask trackBitMask, tMidiInstr instr );
 	tErrType	ChangeTempo( S8 Tempo); 
-	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2);
+	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
 
 private:
 	SPMIDI_Context*			pContext_;		// Pointer to the Midi context being used
 	MIDIFilePlayer*			pFilePlayer_;	// Pointer to the MidiFile player being used
 	const IEventListener*	pListener_;		// pointer to caller's listener for done event
-	tMidiID					midiID_;		// MidiID of the Midi playing 
+	tMidiPlayerID			id_;			// player ID 
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of the Midi playing
 	bool					loopMidiFile_;
 	S16* 					pMidiRenderBuffer_;

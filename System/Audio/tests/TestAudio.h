@@ -198,11 +198,13 @@ public:
 	//------------------------------------------------------------------------
 	void testVorbisResources( )
 	{
-		tErrType 		err;
-		tRsrcHndl		handle1;
-		tRsrcHndl		handle2;
-		tAudioID 		id1;
-		tAudioID 		id2;
+		tErrType 	err;
+		U32			index;
+		tRsrcHndl	handle1;
+		tRsrcHndl	handle2;
+		tAudioID 	id1;
+		tAudioID 	id2;
+		U32			audioTime;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -230,6 +232,7 @@ public:
 //		handle = pResourceMPI_->FindRsrc( "BlueNile" );
 //		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
+		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
@@ -244,8 +247,11 @@ public:
 //		pAudioMPI_->SetMasterVolume( 80 );
 		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
 
-		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 20000 ); 
+		// loop sleep 1 second
+		for (index = 0; index < 20; index++) {
+			audioTime = pAudioMPI_->GetAudioTime( id2 );
+			pKernelMPI_->TaskSleep( 250 ); 
+		}
 	}
 	
 	//------------------------------------------------------------------------
@@ -296,7 +302,7 @@ public:
 		tErrType 		err;
 		tRsrcHndl		handle1;
 		tAudioID 		id1;
-		tMidiID			midiPlayerID;
+		tMidiPlayerID			midiPlayerID;
 		
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -342,7 +348,7 @@ public:
 		tAudioID 		id1;
 		tAudioID 		id2;
 		tAudioID 		id3;
-		tMidiID 		midiID;
+		tMidiPlayerID 		midiID;
 		
 		const int kDuration = 1 * 3000;
 

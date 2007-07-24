@@ -44,6 +44,8 @@ CChannel::CChannel()
 	
 	// Allocate the channel's output buffer
 	pOutBuffer_ = new S16[ kAudioOutBufSizeInWords ];
+	
+	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 }
 
 //==============================================================================
@@ -67,7 +69,10 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 	bInUse_ = 1;
 	SetPan( pPlayer->GetPan() );
 	SetVolume( pPlayer->GetVolume() );
-//	printf("CChannel::InitChanWithPlayer - setting volume %f\n", volume_);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+			"CChannel::InitChanWithPlayer - setting volume %d\n", 
+			static_cast<int>(volume_) );	
+	
 	inSampleRate_ = pPlayer_->GetSampleRate();
 //	InitConversionRate(&convRate_, inSampleRate_, kAudioSampleRate);
 	
@@ -80,7 +85,9 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
 //	pFxChain_ = kNull;
 
-//	printf("CChannel::Release - deleting player 0x%x\n", (unsigned int)pPlayer_);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"CChannel::Release - deleting player 0x%x\n", 
+		(unsigned int)pPlayer_);
 
 	if (suppressPlayerDoneMsg)
 		pPlayer_->SetSendDoneMessage( false );
