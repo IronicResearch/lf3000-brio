@@ -5769,3 +5769,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/24/07 2:23 PM
 2,517 ms. (Cumulative: 1,018,399 ms)
 
 ----------------
+Revision 994 from svn://localhost/TRUNK/:
+
+Update Video MPI with drop-frame support for time-based sync.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/24/07 2:25 PM
+5 changed, 0 added, 0 deleted.
+2,735 ms. (Cumulative: 1,021,212 ms)
+
+----------------

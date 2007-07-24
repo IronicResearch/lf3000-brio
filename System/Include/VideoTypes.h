@@ -30,12 +30,25 @@ const tVideoHndl	kInvalidVideoHndl = static_cast<tVideoHndl>(0);
 const tRsrcType 	kVideoRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupVideo, 1);
 const tRsrcType 	kVideoRsrcOggTheora = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupVideo, 2);
 
+// Video info
+struct tVideoInfo {
+	U32		width;
+	U32		height;
+	U64		fps;
+};
+
 // Video surface
 struct tVideoSurf {
 	U32		width;
 	U32		height;
 	U32		pitch;
 	U8*		buffer;
+};
+
+// Video time frame
+struct tVideoTime {
+	S64		frame;
+	S64		time;
 };
 
 LF_END_BRIO_NAMESPACE()
