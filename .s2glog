@@ -5663,3 +5663,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/23/07 5:57 PM
 3,110 ms. (Cumulative: 989,693 ms)
 
 ----------------
+Revision 977 from svn://localhost/TRUNK/:
+
+Revert linking to non-debug builld of libvorbisidec.so.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/23/07 6:44 PM
+1 changed, 0 added, 0 deleted.
+2,563 ms. (Cumulative: 992,318 ms)
+
+----------------
