@@ -234,9 +234,8 @@ static void SendMsgToAudioModule( CAudioReturnMessage msg )
 	tErrType err;
 	
  	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:Sending msg back to module...\n");	
- 	// gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:Return msg size = %d.\n", msg.GetMessageSize());	
- 	// gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:size of CAudioReturnMesage = %d.\n", sizeof(CAudioReturnMessage));	
- 	
+ 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask:Return msg size = %d.\n", msg.GetMessageSize());	
+  	
     err = gContext.pKernelMPI->SendMessage( gContext.hSendMsgQueue, msg );
     gContext.pDebugMPI->AssertNoErr(err, "SendMsgToAudioModule() -- After call SendMessage().\n" );
 
@@ -668,6 +667,10 @@ void* AudioTaskMain( void* /*arg*/ )
 		"Audio Task creating task incoming Q. size = %d\n", 
 		static_cast<int>(kMAX_AUDIO_MSG_SIZE) );	
 	
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+		"Audio Task: verifing incoming Q size = %d\n", 
+		static_cast<int>(msgQueueProperties.mq_msgsize) );	
+
 	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
 
     gContext.pDebugMPI->Assert((kNoErr == err), 
@@ -684,6 +687,10 @@ void* AudioTaskMain( void* /*arg*/ )
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
 		"AudioTaskMain() -- Audio Task Creating task outgoing Q. size = %d\n", 
+		static_cast<int>(msgQueueProperties.mq_msgsize) );	
+
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+		"Audio Task: verifing outgoing Q size = %d\n", 
 		static_cast<int>(msgQueueProperties.mq_msgsize) );	
 
 	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );

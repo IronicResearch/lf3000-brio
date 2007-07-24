@@ -5841,3 +5841,15 @@ By DGibbs (DGibbs@leapfrog.com) on 7/24/07 3:35 PM
 2,578 ms. (Cumulative: 1,036,932 ms)
 
 ----------------
+Revision 1,004 from svn://localhost/TRUNK/:
+Revision 1,005 from svn://localhost/TRUNK/:
+Revision 1,006 from svn://localhost/TRUNK/:
+Revision 1,007 from svn://localhost/TRUNK/:
+
+Fix Audio message queue problem...
+
+By DGibbs (DGibbs@leapfrog.com) on 7/24/07 4:58 PM
+4 changed, 0 added, 0 deleted.
+2,563 ms. (Cumulative: 1,039,573 ms)
+
+----------------

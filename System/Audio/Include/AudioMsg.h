@@ -320,7 +320,7 @@ private:
 	U32				u32Value_;
 };
 
-const U32	kMAX_AUDIO_MSG_SIZE	=	(sizeof(CAudioMsgStartMidiFile) * 2);
+const U32	kMAX_AUDIO_MSG_SIZE	=	256;
 
 
 LF_END_BRIO_NAMESPACE()	
