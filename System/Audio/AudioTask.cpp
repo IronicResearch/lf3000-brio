@@ -381,7 +381,7 @@ static void DoIsAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
 }
 
 static void DoIsAnyAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
-	tAudioID  			id = msg->GetData();
+//	tAudioID  			id = msg->GetData();
 	CAudioReturnMessage	retMsg;
 	Boolean				isAudioActive;
 
@@ -594,7 +594,7 @@ static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 }
 
 static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
-	tAudioID  			id = msg->GetData();
+//	tAudioID  			id = msg->GetData();
 	CAudioReturnMessage	retMsg;
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
@@ -622,13 +622,13 @@ static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
 }
 
 static void DoPauseMidiFile( CAudioMsgPauseMidiFile* msg ) {
-	tMidiPlayerID  	id = msg->GetData();
+//	tMidiPlayerID  	id = msg->GetData();
 
 	gContext.pMidiPlayer->PauseMidiFile();
 }
 
 static void DoResumeMidiFile( CAudioMsgResumeMidiFile* msg ) {
-	tMidiPlayerID  	id = msg->GetData();
+//	tMidiPlayerID  	id = msg->GetData();
 
 	gContext.pMidiPlayer->ResumeMidiFile();
 }
