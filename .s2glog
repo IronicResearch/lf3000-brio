@@ -5738,3 +5738,16 @@ By TParker (TParker@leapfrog.com) on 7/24/07 11:03 AM
 2,516 ms. (Cumulative: 1,010,773 ms)
 
 ----------------
+Revision 987 from svn://localhost/TRUNK/:
+Revision 988 from svn://localhost/TRUNK/:
+Revision 989 from svn://localhost/TRUNK/:
+Revision 990 from svn://localhost/TRUNK/:
+Revision 991 from svn://localhost/TRUNK/:
+
+Fix errors in arm build.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/24/07 2:17 PM
+1 changed, 0 added, 0 deleted.
+2,469 ms. (Cumulative: 1,013,320 ms)
+
+----------------
