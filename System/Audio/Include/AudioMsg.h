@@ -303,8 +303,8 @@ public:
 	void SetAudioErr( tErrType err ) { err_ = err; };
 	void SetAudioID( tAudioID id ) { audioID_ = id; };
 	void SetMidiID( tMidiPlayerID id ) { midiPlayerID_ = id; };
-	Boolean SetBooleanResult( Boolean val ) { booleanValue_ = val; }
-	U32 SetU32Result( U32 val ) { u32Value_ = val; }
+	void SetBooleanResult( Boolean val ) { booleanValue_ = val; }
+	void SetU32Result( U32 val ) { u32Value_ = val; }
 	
 	tMidiPlayerID GetMidiID( void ) { return midiPlayerID_; }
 	tAudioID GetAudioID( void ) { return audioID_; }
