@@ -5830,3 +5830,14 @@ By DGibbs (DGibbs@leapfrog.com) on 7/24/07 3:26 PM
 2,547 ms. (Cumulative: 1,034,291 ms)
 
 ----------------
+Revision 1,001 from svn://localhost/TRUNK/:
+Revision 1,002 from svn://localhost/TRUNK/:
+Revision 1,003 from svn://localhost/TRUNK/:
+
+Fix cut and paste error in AudioTask.cpp
+
+By DGibbs (DGibbs@leapfrog.com) on 7/24/07 3:35 PM
+1 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,036,932 ms)
+
+----------------
