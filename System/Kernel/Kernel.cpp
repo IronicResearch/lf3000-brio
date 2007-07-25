@@ -397,7 +397,7 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
     queuAttr.mq_curmsgs	= props.mq_curmsgs;
     
 #if 0 // BSK Debug Printing
-    printf("THe Input MUEUE parameters are :\n"); 
+    printf("The Input parameters are :\n"); 
     printf("name=%s oflag=%d mode=%d \n mq_flags=%d mq_maxmsg=%d mq_msgsize=%d mq_curmsgs=%d\n",
     	props.nameQueue, props.oflag, props.mode,
     	queuAttr.mq_flags, props.mq_maxmsg, props.mq_msgsize, props.mq_curmsgs);   
@@ -410,7 +410,12 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
                           props.mode,      // 448
                           &queuAttr);
     
-	ASSERT_POSIX_CALL(errno);
+    // Pre existing queue is not a fatal error...
+    if (errno == EEXIST)
+    	return EEXIST;
+    else
+    	ASSERT_POSIX_CALL(errno);
+    
     hndl = (retMq_open == -1) ? kInvalidMessageQueueHndl : retMq_open;
     
 #if 0 // BSK Debug Printing
@@ -425,12 +430,12 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
     
     struct mq_attr attr = {0};
     mq_getattr(retMq_open, &attr);
-   	printf("\n-----After opening QUEQUE attributes are: ----\n");
+   	printf("\n-----After opening QUEUE attributes are: ----\n");
    	printf("mq_flags=%d mq_maxmsg=%d mq_msgsize=%d mq_curmsq=%d\n",
 	attr.mq_flags, attr.mq_maxmsg, attr.mq_msgsize, attr.mq_curmsgs);
     fflush(stdout);
    
-    printf("retMq_open=%u \n", retMq_open);
+    printf("retMq_open=%d \n", retMq_open);
     fflush(stdout);
 
 #endif // BK

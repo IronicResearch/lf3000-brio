@@ -320,7 +320,8 @@ private:
 	U32				u32Value_;
 };
 
-const U32	kMAX_AUDIO_MSG_SIZE	=	256;
+const U32	kAUDIO_MAX_MSG_SIZE	=	256;
+const U32	kAUDIO_MAX_NUM_MSGS	=	8;
 
 
 LF_END_BRIO_NAMESPACE()	
