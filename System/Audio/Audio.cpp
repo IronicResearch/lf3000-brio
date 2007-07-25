@@ -219,14 +219,12 @@ CAudioModule::CAudioModule( )
 	// Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
 	ret = pKernelMPI_->IsValid();
-//	if (ret != true)
-//		printf("AudioModule -- Couldn't create KernelMPI!\n");
+	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor: Couldn't create KernelMPI.\n");
 
 	// Get Debug MPI
 	pDebugMPI_ =  new CDebugMPI( kGroupAudio );
 	ret = pDebugMPI_->IsValid();
-//	if (ret != true)
-//		printf("AudioModule -- Couldn't create DebugMPI!\n");
+	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor: Couldn't create DebugMPI.\n");
 
 	// Set debug level from a constant
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
@@ -264,29 +262,21 @@ CAudioModule::CAudioModule( )
 	};
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::ctor: creating task incoming Q. size = %d\n", 
+		"CAudioModule::ctor: Opening module outgoing Q. size = %d\n", 
 				static_cast<int>(kAUDIO_MAX_MSG_SIZE) );	
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"Audio Task: verifing incoming Q size = %d\n", 
-		static_cast<int>(msgQueueProperties.mq_msgsize) );	
-
 	err = pKernelMPI_->OpenMessageQueue( hSendMsgQueue_, msgQueueProperties, NULL );
 
-    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor:Trying to create incoming audio task msg queue. err = %d \n", 
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor:Trying to open Module outgoing msg queue. err = %d \n", 
     		static_cast<int>(err) );
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
 	msgQueueProperties.oflag = O_RDONLY;
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"Audio Task: verifing outgoing Q size = %d\n", 
-		static_cast<int>(msgQueueProperties.mq_msgsize) );	
-
 	err = pKernelMPI_->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
 
-    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Trying to create outgoing audio task msg queue. Err = %d \n", 
+    pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Trying to open Module incoming msg queue. Err = %d \n", 
     		static_cast<int>(err) );
 }
 
