@@ -5959,3 +5959,18 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 2:08 PM
 3,143 ms. (Cumulative: 1,068,880 ms)
 
 ----------------
+Revision 1,020 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,609 ms. (Cumulative: 1,071,552 ms)
+
+----------------
+Revision 1,021 from svn://localhost/TRUNK/:
+
+Make some of the audio module debug output msgs a little more clear.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 2:47 PM
+1 changed, 0 added, 0 deleted.
+2,407 ms. (Cumulative: 1,073,959 ms)
+
+----------------
