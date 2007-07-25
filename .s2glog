@@ -5983,3 +5983,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/25/07 2:53 PM
 2,500 ms. (Cumulative: 1,076,506 ms)
 
 ----------------
+Revision 1,023 from svn://localhost/TRUNK/:
+
+Deprecated original LoadFont() file-based method.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/25/07 2:56 PM
+1 changed, 0 added, 0 deleted.
+2,501 ms. (Cumulative: 1,079,069 ms)
+
+----------------

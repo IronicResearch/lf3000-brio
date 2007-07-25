@@ -81,6 +81,7 @@ const CURI* CFontMPI::GetModuleOrigin() const
 
 //============================================================================
 
+#if 0	// deprecated method
 //----------------------------------------------------------------------------
 tFontHndl CFontMPI::LoadFont(const CString* pName, tFontProp prop)
 {
@@ -88,6 +89,7 @@ tFontHndl CFontMPI::LoadFont(const CString* pName, tFontProp prop)
 		return false;
 	return pModule_->LoadFont(pName, prop);
 }
+#endif
 
 //----------------------------------------------------------------------------
 tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
