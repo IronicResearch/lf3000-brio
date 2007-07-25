@@ -38,7 +38,7 @@ public:
 	// MPI-specific functionality
     tVideoHndl	StartVideo(tRsrcHndl hRsrc);
 	Boolean 	StopVideo(tVideoHndl hVideo);
-	Boolean 	GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
+	Boolean 	GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop = false);
 	Boolean 	PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
 	Boolean		GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo);
 	Boolean 	GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
