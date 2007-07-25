@@ -312,12 +312,14 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean
 		if (ogg_stream_packetout(&to,&op) > 0)
 		{
 			// Only decode if at selected time frame or no dropped frames 
-			frame = theora_granule_frame(&td,op.granulepos);
+			theora_decode_packetin(&td,&op);
+			frame = theora_granule_frame(&td,td.granulepos);
 			if (!bDrop || frame >= pTime->frame)
 			{
-				theora_decode_packetin(&td,&op);
 				frame = theora_granule_frame(&td,td.granulepos);
+#ifdef EMULATION
 				ftime = static_cast<ogg_int64_t>(theora_granule_time(&td,td.granulepos));
+#endif
 				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoFrame: %ld frame, %ld time\n", 
 					static_cast<long>(frame), static_cast<long>(ftime));
 				// Note theora_granule_time() returns only seconds
