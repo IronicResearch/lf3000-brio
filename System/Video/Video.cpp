@@ -292,7 +292,7 @@ Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
+Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
 	Boolean		ready = false;
 	ogg_packet  op;
@@ -328,7 +328,7 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean
 			}
 			else
 			{
-				dbg_.DebugOut(kDbgLvlCritical, "VideoModule::GetVideoFrame: Dropped frame %ld, time %ld (msec)\n", 
+				dbg_.DebugOut(kDbgLvlImportant, "VideoModule::GetVideoFrame: Dropped frame %ld, time %ld (msec)\n", 
 					static_cast<long>(frame), static_cast<long>(pTime->time));
 			}
 		}
@@ -344,6 +344,21 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean
 	}
 	
 	return ready;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
+{
+	// TODO
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
+{
+	tVideoTime	time;
+	(void)		pCtx;	// unused in original MPI
+	return SyncVideoFrame(hVideo, &time, false);
 }
 
 //----------------------------------------------------------------------------

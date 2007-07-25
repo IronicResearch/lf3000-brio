@@ -36,13 +36,30 @@ public:
 	virtual ~CVideoMPI();
 
 	// MPI-specific functionality
+	
+	// Start video stream from open resource
     tVideoHndl	StartVideo(tRsrcHndl hRsrc);
+
+    // Stop video stream to close resource
 	Boolean 	StopVideo(tVideoHndl hVideo);
-	Boolean 	GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop = false);
+
+	// Get the next frame from video stream (pCtx not used)
+	Boolean 	GetVideoFrame(tVideoHndl hVideo, void* pCtx);
+
+	// Output the video frame to display surface (pCtx surface descriptor)
 	Boolean 	PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
+	
+	// Get info properties about video stream (width, height, fps)
 	Boolean		GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo);
+	
+	// Get time stamp of current video frame (frame number, time in milliseconds)
 	Boolean 	GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
-	// SeekVideoFrame
+	
+	// Get the next video frame synced at time stamp, dropping inbetween frames as directed
+	Boolean 	SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop = false);
+
+	// Seek to the video frame at selected time stamp
+	Boolean 	SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx);
  
 private:
 	class CVideoModule*	pModule_;
