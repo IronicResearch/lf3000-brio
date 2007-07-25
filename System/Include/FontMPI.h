@@ -18,6 +18,7 @@
 #include <FontTypes.h>
 #include <CoreMPI.h>
 #include <ResourceTypes.h>
+#include <DisplayTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -36,15 +37,36 @@ public:
 	virtual ~CFontMPI();
 
 	// font-specific functionality
-    tFontHndl   LoadFont(const CString* pName, tFontProp prop);
+	
+	// Loads a font via its file name for a selected property size (deprecated)
+//	tFontHndl   LoadFont(const CString* pName, tFontProp prop);
+    
+    // Loads a font via its associated resource for a selected property size
     tFontHndl   LoadFont(tRsrcHndl hRsrc, tFontProp prop);
+    
+    // Unloads the font loaded by LoadFont()
     Boolean     UnloadFont(tFontHndl hFont);
+    
+    // Sets the font's drawing attributes
     Boolean		SetFontAttr(tFontAttr attr);
+    
+    // Gets the font's current drawing attributes
     Boolean		GetFontAttr(tFontAttr* pAttr);
+    
+    // Draws a text string at selected X,Y position in display surface context
     Boolean     DrawString(CString* pStr, int x, int y, tFontSurf* pCtx);
+    
+    // Returns the current X drawing position updated by DrawString()
     U32			GetX();
+    
+    // Returns the current Y drawing position updated by DrawString()
     U32			GetY();
+    
+    // Returns the current metrics for the loaded font and property size
     Boolean		GetFontMetrics(tFontMetrics* pMtx);
+ 
+ 	// Returns the bounding rectangle for the selected text string
+// 	Boolean		GetStringRect(CString *pStr, tRect* pRect); // TODO
  
 private:
 	class CFontModule*	pModule_;

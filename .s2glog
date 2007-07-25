@@ -5974,3 +5974,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 2:47 PM
 2,407 ms. (Cumulative: 1,073,959 ms)
 
 ----------------
+Revision 1,022 from svn://localhost/TRUNK/:
+
+Annotated Font MPI header with comments summarizing interface methods. Deprecated original LoadFont() file-based method.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/25/07 2:53 PM
+1 changed, 0 added, 0 deleted.
+2,500 ms. (Cumulative: 1,076,506 ms)
+
+----------------
