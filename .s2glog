@@ -5890,3 +5890,17 @@ By Dmilici (Dmilici@leapfrog.com) on 7/25/07 10:56 AM
 2,641 ms. (Cumulative: 1,050,057 ms)
 
 ----------------
+Revision 1,013 from svn://localhost/TRUNK/:
+
+Re-work the message queue code in the audio system.  Now it will delete pre-existing msg queues
+and re-create them in case the parameters of the queue have changed.  This keeps developers
+from having to delete queues by hand in the file system.  I also cleaned up error checking.  This 
+change required a tweak to the Kernel module because the only way to find out if a queue exists 
+is to try to Open it with create|exclusive bits set.  You get back the posix error EEXIST, which the 
+kernel module was treating as a fatal error.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 12:40 PM
+6 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,052,761 ms)
+
+----------------

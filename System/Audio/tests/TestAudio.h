@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testVorbisResources( )
+	void xxxtestVorbisResources( )
 	{
 		tErrType 	err;
 		U32			index;
@@ -297,12 +297,12 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void xxxtestMIDIResources( )
+	void testMIDIResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;
 		tAudioID 		id1;
-		tMidiPlayerID			midiPlayerID;
+		tMidiPlayerID	midiPlayerID;
 		
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -322,8 +322,8 @@ public:
 
 		// Package is already opened in setup
 //		handle1 = pResourceMPI_->FindRsrc("Girl_noDrums");
-//		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
-		handle1 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
+		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
+//		handle1 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 

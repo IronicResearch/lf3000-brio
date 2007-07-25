@@ -118,9 +118,8 @@ tErrType InitAudioTask( void )
 	gContext.pDebugMPI->DebugOut( kDbgLvlValuable, 
 		"InitAudioTask() -- Debug, Kernel, and Resource MPIs created.\n");	
 
-	// only want important stuff.
-//	gContext.pDebugMPI->SetDebugLevel( kDbgLvlImportant );
-	gContext.pDebugMPI->SetDebugLevel( kDbgLvlVerbose );
+	// Setup debug level.
+	gContext.pDebugMPI->SetDebugLevel( kAudioDebugLevel );
 
 	// Hard code the configuration resource
 	gContext.numMixerChannels = 	kAudioNumMixerChannels;
@@ -642,71 +641,130 @@ static void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
 //==============================================================================
 void* AudioTaskMain( void* /*arg*/ )
 {
-	tErrType err;
-	U32 i = 0;
+	tErrType 			err = kNoErr;
+	U32 				i = 0;
+	tMessageQueueHndl 	hQueue;
 	
-	// First, create a msg queue that allows the Audio Task to RECEIVE msgs from the audio module.
+	// Set appropriate debug level
+	gContext.pDebugMPI->SetDebugLevel( kAudioDebugLevel );
+
+    gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+		"AudioTaskMain() -- Audio task starting to run...\n" );	
+
+    // Create a msg queue that allows the Audio Task to RECEIVE msgs from the audio module.
+
+	// Begin by setting up properties with EXCL so we can detect an existing
+	// Queue and delete it if it was orphaned.
 	tMessageQueuePropertiesPosix msgQueueProperties = 
 	{
-	    0,                          // msgProperties.blockingPolicy;  
-	    "/audioTaskIncomingQ",      // msgProperties.nameQueue
-	    S_IRWXU,                    // msgProperties.mode 
-	    O_RDWR|O_CREAT|O_TRUNC,     // msgProperties.oflag  
-	    0,                          // msgProperties.priority
-	    0,                          // msgProperties.mq_flags
-	    8,                          // msgProperties.mq_maxmsg
-	    kMAX_AUDIO_MSG_SIZE,   		// msgProperties.mq_msgsize
-	    0                           // msgProperties.mq_curmsgs
+	    0,							// msgProperties.blockingPolicy;  
+	    "/audioTaskIncomingQ",		// msgProperties.nameQueue
+	    S_IRUSR|S_IWUSR,			// msgProperties.mode, file permission bits
+	    O_RDONLY|O_CREAT|O_EXCL,	// msgProperties.oflag, queue creation props
+	    0,							// msgProperties.priority
+	    0,							// msgProperties.mq_flags
+	    kAUDIO_MAX_NUM_MSGS,		// msgProperties.mq_maxmsg
+	    kAUDIO_MAX_MSG_SIZE,		// msgProperties.mq_msgsize
+	    0							// msgProperties.mq_curmsgs
 	};
 	
-	// I want to see everything...
-//	gContext.pDebugMPI->SetDebugLevel( kDbgLvlImportant );
-	gContext.pDebugMPI->SetDebugLevel( kDbgLvlVerbose );
+    gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+		"AudioTaskMain() -- Attempting to create incoming msg queue.\n" );	
 
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"Audio Task creating task incoming Q. size = %d\n", 
-		static_cast<int>(kMAX_AUDIO_MSG_SIZE) );	
+    err = gContext.pKernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
+    
+    if (err != kNoErr) {
+		if (err == EEXIST) {
+			// Apparently the queue already exists, so lets delete it and create 
+			// a new one in case properties/size have changed since the last time 
+			// a queue was created.
+			gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+				"AudioTaskMain() -- Attempting to delete orphaned incoming msg queue.\n" );
+			
+			msgQueueProperties.oflag = O_RDONLY;
+		   	err = gContext.pKernelMPI->OpenMessageQueue( hQueue, msgQueueProperties, NULL );
+		    gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to open incoming msg queue in preparation for deletion. err = %d \n", 
+		    	static_cast<int>(err) );
 	
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"Audio Task: verifing incoming Q size = %d\n", 
-		static_cast<int>(msgQueueProperties.mq_msgsize) );	
+		    err = gContext.pKernelMPI->CloseMessageQueue( hQueue, msgQueueProperties );
+		    gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to close/delete incoming msg queue. err = %d \n", 
+		    	static_cast<int>(err) );
+		    
+		    hQueue = 0;
 
-	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
+		    // Now that the old one is deleted, create a new one.
+		    gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+				"Audio Task creating task incoming Q. size = %d\n", 
+				static_cast<int>(kAUDIO_MAX_MSG_SIZE) );	
 
-    gContext.pDebugMPI->Assert((kNoErr == err), 
-    	"AudioTaskMain() -- Trying to create incoming audio task msg queue. err = %d \n", 
-    	static_cast<int>(err) );
+		    msgQueueProperties.oflag = O_RDONLY|O_CREAT;
+		   	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hRecvMsgQueue, msgQueueProperties, NULL );
+		    gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to creaet incoming msg queue after deletion of orphan. err = %d \n", 
+		    	static_cast<int>(err) );
 
-	err = gContext.pKernelMPI->ClearMessageQueue( gContext.hRecvMsgQueue );
+		} else {
+			// Unknown error, bail out.
+			gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to create incoming audio task msg queue. err = %d \n", 
+		    	static_cast<int>(err) );			
+		}
+	}
+ 
+    // Now create a msg queue that allows the Audio Task to send msgs back to Audio Module
+   gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+		"AudioTaskMain() -- Attempting to create outgoing msg queue.\n" );	
 
-    gContext.pDebugMPI->AssertNoErr(err, 
-    	"AudioTaskMain() -- Trying to clear incoming audio task msg queue.\n" );
-
-    // Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
+    msgQueueProperties.oflag = O_WRONLY|O_CREAT|O_EXCL;
 
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTaskMain() -- Audio Task Creating task outgoing Q. size = %d\n", 
-		static_cast<int>(msgQueueProperties.mq_msgsize) );	
+ 	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
+	if (err != kNoErr) {
+		if (err == EEXIST) {
+			// Apparently the queue already exists, so lets delete it and create 
+			// a new one in case properties/size have changed since the last time 
+			// a queue was created.
+			gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+				"AudioTaskMain() -- Attempting to delete orphaned outgoing msg queue.\n" );
+			
+			msgQueueProperties.oflag = O_WRONLY;
+		   	err = gContext.pKernelMPI->OpenMessageQueue( hQueue, msgQueueProperties, NULL );
+		    gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to open outgoing msg queue in preparation for deletion. err = %d \n", 
+		    	static_cast<int>(err) );
+	
+		    err = gContext.pKernelMPI->CloseMessageQueue( hQueue, msgQueueProperties );
+		    gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to close/delete outgoing msg queue. err = %d \n", 
+		    	static_cast<int>(err) );
+		    
+		    hQueue = 0;
 
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"Audio Task: verifing outgoing Q size = %d\n", 
-		static_cast<int>(msgQueueProperties.mq_msgsize) );	
+		    // Now that the old one is deleted, create a new one.
+		    gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+				"AudioTaskMain() -- creating task outgoing Q. size = %d\n", 
+				static_cast<int>(kAUDIO_MAX_MSG_SIZE) );	
 
-	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
+		    msgQueueProperties.oflag = O_WRONLY|O_CREAT;
+		   	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
+		    gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to creaet outgoing msg queue after deletion of orphan. err = %d \n", 
+		    	static_cast<int>(err) );
 
-    gContext.pDebugMPI->AssertNoErr(err, 
-    	"AudioTaskMain() -- Trying to create outgoing audio task msg queue.\n" );
-
-	err = gContext.pKernelMPI->ClearMessageQueue( gContext.hSendMsgQueue );
-
-    gContext.pDebugMPI->AssertNoErr(err,
-    	"AudioTaskMain() -- Trying to clear outgoing audio task msg queue.\n" );
-   
+		} else {
+			// Unknown error, bail out.
+			gContext.pDebugMPI->Assert((kNoErr == err), 
+		    	"AudioTaskMain() -- Trying to create outgoing audio task msg queue. err = %d \n", 
+		    	static_cast<int>(err) );			
+		}
+	}
+    
     // Set the task to ready
 	gAudioTaskRunning = true;
 	
-	char 				msgBuf[kMAX_AUDIO_MSG_SIZE];
+	char 				msgBuf[kAUDIO_MAX_MSG_SIZE];
 	tAudioCmdMsgType 	cmdType;
 	U32					msgSize;
 	CAudioCmdMsg*		pAudioMsg;
@@ -717,7 +775,7 @@ void* AudioTaskMain( void* /*arg*/ )
 			static_cast<unsigned int>(i++));	
    
 	    err = gContext.pKernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 
-								   (CMessage*)msgBuf, kMAX_AUDIO_MSG_SIZE );
+								   (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 								   
 	    gContext.pDebugMPI->AssertNoErr( err, "AudioTask::MainLoop -- Could not get cmd message from AudioModule.\n" );
 
