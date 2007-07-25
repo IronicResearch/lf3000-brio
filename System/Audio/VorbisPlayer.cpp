@@ -275,15 +275,15 @@ void CVorbisPlayer::Rewind()
 //==============================================================================
 U32 CVorbisPlayer::GetAudioTime( void )
 {
-	double vorbisTime;
+	ogg_int64_t vorbisTime;
 	U32 timeInMS;
 		
 	vorbisTime = ov_time_tell( &vorbisFile_ );
 	timeInMS = (U32)vorbisTime;
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::GetAudioTime() -- vorbisTime = %f; time in ms = %d.\n ",
-		vorbisTime, static_cast<int>(timeInMS) ); 
+		"Vorbis Player::GetAudioTime() -- vorbisTime = %ld; time in ms = %d.\n ",
+		static_cast<long>(vorbisTime), static_cast<int>(timeInMS) ); 
 
 	return timeInMS;
 }
