@@ -5941,3 +5941,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 1:27 PM
 2,453 ms. (Cumulative: 1,063,109 ms)
 
 ----------------
+Revision 1,018 from svn://localhost/TRUNK/:
+
+turn off verbose debugging again...
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 1:37 PM
+1 changed, 0 added, 0 deleted.
+2,502 ms. (Cumulative: 1,065,674 ms)
+
+----------------
