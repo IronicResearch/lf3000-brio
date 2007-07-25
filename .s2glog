@@ -5950,3 +5950,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 1:37 PM
 2,502 ms. (Cumulative: 1,065,674 ms)
 
 ----------------
+Revision 1,019 from svn://localhost/TRUNK/:
+
+Slight makefile change and binary lib for ARM with assembly optimizations included. 
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 2:08 PM
+2 changed, 0 added, 0 deleted.
+3,143 ms. (Cumulative: 1,068,880 ms)
+
+----------------
