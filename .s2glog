@@ -5913,3 +5913,13 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 12:44 PM
 2,533 ms. (Cumulative: 1,055,357 ms)
 
 ----------------
+Revision 1,015 from svn://localhost/TRUNK/:
+
+Remove StartAudio() from the AudioMPI.  Now the audio system starts up when the MPI is 
+instantiated and is stopped when the MPI is destroyed
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 12:56 PM
+6 changed, 0 added, 0 deleted.
+2,626 ms. (Cumulative: 1,058,046 ms)
+
+----------------
