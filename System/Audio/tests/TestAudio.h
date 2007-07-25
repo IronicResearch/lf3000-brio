@@ -196,7 +196,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestVorbisResources( )
+	void testVorbisResources( )
 	{
 		tErrType 	err;
 		U32			index;
@@ -297,7 +297,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testMIDIResources( )
+	void xxxtestMIDIResources( )
 	{
 		tErrType 		err;
 		tRsrcHndl		handle1;

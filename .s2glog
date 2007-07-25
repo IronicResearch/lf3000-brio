@@ -5904,3 +5904,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 12:40 PM
 2,641 ms. (Cumulative: 1,052,761 ms)
 
 ----------------
+Revision 1,014 from svn://localhost/TRUNK/:
+
+Make audio verbosity be changable in one place: AudioConfig.h.  I set debug output back to "Critical".
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 12:44 PM
+3 changed, 0 added, 0 deleted.
+2,533 ms. (Cumulative: 1,055,357 ms)
+
+----------------
