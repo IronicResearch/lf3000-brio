@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <errno.h>
  
-// For lots of text output, enable this:
+//  For lots of text output, enable this:
 //#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
 LF_USING_BRIO_NAMESPACE()
@@ -158,7 +158,6 @@ public:
 	//------------------------------------------------------------------------
 	void testVorbisResources( )
 	{
-		tErrType 	err;
 		U32			index;
 		tRsrcHndl	handle1;
 		tRsrcHndl	handle2;
@@ -213,7 +212,6 @@ public:
 	//------------------------------------------------------------------------
 	void xxxtestRawResources( )
 	{
-		tErrType 		err;
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
 		tAudioID 		id1;
@@ -390,7 +388,7 @@ public:
 
 		// sleep3 seconds
 		pKernelMPI_->TaskSleep( kDuration );
-	}
+}
 
 };
 

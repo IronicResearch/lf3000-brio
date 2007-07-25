@@ -5932,3 +5932,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/25/07 1:14 PM
 2,484 ms. (Cumulative: 1,060,593 ms)
 
 ----------------
+Revision 1,017 from svn://localhost/TRUNK/:
+
+Someday I really will remember to build every change with both arm and x86 compilers...
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 1:27 PM
+1 changed, 0 added, 0 deleted.
+2,453 ms. (Cumulative: 1,063,109 ms)
+
+----------------
