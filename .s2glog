@@ -5862,3 +5862,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/24/07 5:00 PM
 2,610 ms. (Cumulative: 1,042,245 ms)
 
 ----------------
+Revision 1,009 from svn://localhost/TRUNK/:
+
+Compatible Video MPI functionality for embedded vs emulation targets.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/24/07 6:26 PM
+1 changed, 0 added, 0 deleted.
+2,577 ms. (Cumulative: 1,044,884 ms)
+
+----------------

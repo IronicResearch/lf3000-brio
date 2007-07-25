@@ -297,7 +297,7 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean
 	Boolean		ready = false;
 	ogg_packet  op;
 	ogg_int64_t frame;
-	ogg_int64_t ftime;
+	ogg_int64_t ftime = 0;
 	tVideoTime*	pTime = pCtx;
 	int			bytes;
 
@@ -316,16 +316,20 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean
 			frame = theora_granule_frame(&td,td.granulepos);
 			if (!bDrop || frame >= pTime->frame)
 			{
-				frame = theora_granule_frame(&td,td.granulepos);
-#ifdef EMULATION
-				ftime = static_cast<ogg_int64_t>(theora_granule_time(&td,td.granulepos));
-#endif
-				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoFrame: %ld frame, %ld time\n", 
-					static_cast<long>(frame), static_cast<long>(ftime));
 				// Note theora_granule_time() returns only seconds
 				pTime->frame = frame;
 				pTime->time  = frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+#ifdef EMULATION
+				ftime = static_cast<ogg_int64_t>(theora_granule_time(&td,td.granulepos));
+#endif
+				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoFrame: Found frame %ld, time %ld (msec), time %ld (theora)\n", 
+					static_cast<long>(frame), static_cast<long>(pTime->time), static_cast<long>(ftime));
 				ready = true;
+			}
+			else
+			{
+				dbg_.DebugOut(kDbgLvlCritical, "VideoModule::GetVideoFrame: Dropped frame %ld, time %ld (msec)\n", 
+					static_cast<long>(frame), static_cast<long>(pTime->time));
 			}
 		}
 		else
