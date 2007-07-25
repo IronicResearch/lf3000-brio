@@ -5871,3 +5871,13 @@ By Dmilici (Dmilici@leapfrog.com) on 7/24/07 6:26 PM
 2,577 ms. (Cumulative: 1,044,884 ms)
 
 ----------------
+Revision 1,010 from svn://localhost/TRUNK/:
+Revision 1,011 from svn://localhost/TRUNK/:
+
+change GetAudioTime() to use int and not double...
+
+By DGibbs (DGibbs@leapfrog.com) on 7/25/07 10:03 AM
+1 changed, 0 added, 0 deleted.
+2,408 ms. (Cumulative: 1,047,354 ms)
+
+----------------
