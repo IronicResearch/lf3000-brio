@@ -5923,3 +5923,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 12:56 PM
 2,626 ms. (Cumulative: 1,058,046 ms)
 
 ----------------
+Revision 1,016 from svn://localhost/TRUNK/:
+
+Annotated with comments summarizing Display MPI interface methods.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/25/07 1:14 PM
+1 changed, 0 added, 0 deleted.
+2,484 ms. (Cumulative: 1,060,593 ms)
+
+----------------
