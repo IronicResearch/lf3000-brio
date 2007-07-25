@@ -46,10 +46,12 @@ public:
 	// class-specific functionality
     VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc);
     VTABLE_EXPORT Boolean     	StopVideo(tVideoHndl hVideo);
-	VTABLE_EXPORT Boolean 		GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
+	VTABLE_EXPORT Boolean 		GetVideoFrame(tVideoHndl hVideo, void* pCtx);
 	VTABLE_EXPORT Boolean 		PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
 	VTABLE_EXPORT Boolean 		GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo);
 	VTABLE_EXPORT Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
+	VTABLE_EXPORT Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
+	VTABLE_EXPORT Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx);
 
 private:
 	CDebugMPI			dbg_;

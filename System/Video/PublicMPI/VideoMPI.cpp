@@ -97,11 +97,27 @@ Boolean CVideoMPI::StopVideo(tVideoHndl hVideo)
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoMPI::GetVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
+Boolean CVideoMPI::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->GetVideoFrame(hVideo, pCtx, bDrop);
+	return pModule_->GetVideoFrame(hVideo, pCtx);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SyncVideoFrame(hVideo, pCtx, bDrop);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SeekVideoFrame(hVideo, pCtx);
 }
 
 //----------------------------------------------------------------------------

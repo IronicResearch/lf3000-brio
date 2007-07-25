@@ -5881,3 +5881,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/25/07 10:03 AM
 2,408 ms. (Cumulative: 1,047,354 ms)
 
 ----------------
+Revision 1,012 from svn://localhost/TRUNK/:
+
+Modified Video MPI to maintain backwards compatibility with previous GetVideoFrame() method.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/25/07 10:56 AM
+4 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,050,057 ms)
+
+----------------
