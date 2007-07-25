@@ -51,10 +51,10 @@ public:
 	// Overall Audio Control
 	tErrType SetDefaultListener( const IEventListener* pListener );
 
-	VTABLE_EXPORT tErrType	StartAudio( void );
-	VTABLE_EXPORT tErrType	PauseAudio( void );
-	VTABLE_EXPORT tErrType	ResumeAudio( void );
-	VTABLE_EXPORT tErrType	StopAudio( void );
+	VTABLE_EXPORT tErrType	StartAudioSystem( void );
+	VTABLE_EXPORT tErrType	PauseAudioSystem( void );
+	VTABLE_EXPORT tErrType	ResumeAudioSystem( void );
+	VTABLE_EXPORT tErrType	StopAudioSystem( void );
 
 	VTABLE_EXPORT void 		SetMasterVolume( U8 volume );
 	VTABLE_EXPORT U8		GetMasterVolume( void );

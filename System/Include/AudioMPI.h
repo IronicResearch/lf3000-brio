@@ -54,19 +54,12 @@ public:
 	// Audio output driver control. 
 	//********************************    
 
-	// Opens the audio output driver and starts the Brio audio system.
-	tErrType	StartAudio( void );
-
 	// Pauses the output driver, keeping the state of the audio system intact.
 	// While paused, the audio system consumes no CPU.
-	tErrType	PauseAudio( void );
+	tErrType	PauseAudioSystem( void );
 
 	// Resume the audio system from the previously paused state.
-	tErrType	ResumeAudio( void );
-
-	// Stop the audio output driver and clear the audio system state.
-	tErrType	StopAudio( void );
-	
+	tErrType	ResumeAudioSystem( void );
 
 	// Set the final output gain of the mixer.  (This includes MIDI.)
 	void 		SetMasterVolume( U8 volume );

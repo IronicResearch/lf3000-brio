@@ -304,10 +304,6 @@ CAudioModule::~CAudioModule(void)
 	{
 		pKernelMPI_->TaskSleep(5);
 	}
-	
-//	pKernelMPI_->DestroyMessageQueue( hRecvMsgQueue_ )
-//	pKernelMPI_->DestroyMessageQueue( hSendMsgQueue_ )
-	
 }
 
 //============================================================================
@@ -350,7 +346,7 @@ tErrType CAudioModule::SetDefaultListener( const IEventListener* pListener )
 //==============================================================================
 // 		Overall Audio System Control
 //==============================================================================
-tErrType CAudioModule::StartAudio( void )
+tErrType CAudioModule::StartAudioSystem( void )
 {
     CAudioMsgStartAudio msg;
 
@@ -360,7 +356,7 @@ tErrType CAudioModule::StartAudio( void )
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioModule::StopAudio( void )
+tErrType CAudioModule::StopAudioSystem( void )
 {
     CAudioMsgStopAudio msg;
 
@@ -370,7 +366,7 @@ tErrType CAudioModule::StopAudio( void )
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioModule::PauseAudio( void )
+tErrType CAudioModule::PauseAudioSystem( void )
 {
     CAudioMsgPauseAudio msg;
 
@@ -380,7 +376,7 @@ tErrType CAudioModule::PauseAudio( void )
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioModule::ResumeAudio( void )
+tErrType CAudioModule::ResumeAudioSystem( void )
 {
     CAudioMsgResumeAudio msg;
 

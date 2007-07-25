@@ -156,46 +156,6 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void xxxtestStartStopAudioSystem( )
-	{
-		tErrType err;
-		const int kDuration = 1 * 1000;
-		
-		// Start up sine output.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// Start up sine output.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep 3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// Start up sine output.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep 3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-	}
-	
-	//------------------------------------------------------------------------
 	void testVorbisResources( )
 	{
 		tErrType 	err;
@@ -216,10 +176,6 @@ public:
 		TS_ASSERT( pResourceMPI_->IsValid() == true );
 
 		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
-
-		// Start up audio system.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
 		handle1 = pResourceMPI_->FindRsrc( "VH_16_mono" );
@@ -274,10 +230,6 @@ public:
 
 		printf("TestAudio -- testRawResources() starting audio driver output\n" );
 
-		// Start up audio system.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
 		// Package is already opened in setup
 		handle1 = pResourceMPI_->FindRsrc( "vivaldi44stereo" );
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
@@ -312,10 +264,6 @@ public:
 		
 		TS_ASSERT( pResourceMPI_ != NULL );
 		TS_ASSERT( pResourceMPI_->IsValid() == true );
-
-		// Start up audio system.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
 
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
@@ -360,10 +308,6 @@ public:
 		
 		TS_ASSERT( pResourceMPI_ != NULL );
 		TS_ASSERT( pResourceMPI_->IsValid() == true );
-
-		// Start up audio system.
-		err = pAudioMPI_->StartAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// Package is already opened in setup
 		handle1 = pResourceMPI_->FindRsrc("BlueNile");
@@ -443,24 +387,6 @@ public:
 
 		// sleep3 seconds
 		pKernelMPI_->TaskSleep( kDuration + kDuration + kDuration );
-
-		// stop the engine.
-		err = pAudioMPI_->StopAudio();
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep3 seconds
-		pKernelMPI_->TaskSleep( kDuration );
-
-		// Start up sine output.
-//		err = pAudioMPI_->StartAudio();
-//		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// sleep 3 seconds
-//		pKernelMPI_->TaskSleep( kDuration );
-
-		// stop the engine.
-//		err = pAudioMPI_->StopAudio();
-//		TS_ASSERT_EQUALS( kNoErr, err );
 
 		// sleep3 seconds
 		pKernelMPI_->TaskSleep( kDuration );

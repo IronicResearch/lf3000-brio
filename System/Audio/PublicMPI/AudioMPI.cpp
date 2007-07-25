@@ -79,11 +79,14 @@ CAudioMPI::CAudioMPI( const IEventListener* pListener ) : pModule_(NULL)
 //		pModule_->SetDefaultListener(pListener);
 	}
 
+	pModule_->StartAudioSystem();
 }
 
 //----------------------------------------------------------------------------
 CAudioMPI::~CAudioMPI()
 {
+	pModule_->StopAudioSystem();
+
 	Module::Disconnect( pModule_ );
 }
 
@@ -127,44 +130,22 @@ const CURI* CAudioMPI::GetModuleOrigin() const
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::StartAudio() 
+tErrType CAudioMPI::PauseAudioSystem() 
 {
 	if ( pModule_ != kNull )
 	{
-		return pModule_->StartAudio();
+		return pModule_->PauseAudioSystem();
 	}
 
 	return kMPINotConnectedErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CAudioMPI::StopAudio() 
+tErrType CAudioMPI::ResumeAudioSystem() 
 {
 	if ( pModule_ != kNull )
 	{
-		return pModule_->StopAudio();
-	}
-
-	return kMPINotConnectedErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CAudioMPI::PauseAudio() 
-{
-	if ( pModule_ != kNull )
-	{
-		return pModule_->PauseAudio();
-	}
-
-	return kMPINotConnectedErr;
-}
-
-//----------------------------------------------------------------------------
-tErrType CAudioMPI::ResumeAudio() 
-{
-	if ( pModule_ != kNull )
-	{
-		return pModule_->ResumeAudio();
+		return pModule_->ResumeAudioSystem();
 	}
 
 	return kMPINotConnectedErr;
