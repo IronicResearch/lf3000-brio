@@ -6032,3 +6032,13 @@ By Dmilici (Dmilici@leapfrog.com) on 7/26/07 1:16 PM
 2,641 ms. (Cumulative: 1,087,007 ms)
 
 ----------------
+Revision 1,040 from svn://localhost/TRUNK/:
+Revision 1,041 from svn://localhost/TRUNK/:
+
+Updated Display MPI to use new brightness and contrast IOCTL queries.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/26/07 3:44 PM
+1 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,089,663 ms)
+
+----------------
