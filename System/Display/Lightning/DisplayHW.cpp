@@ -41,6 +41,8 @@ namespace
 	int			gDevOverlay;
 	U8 			*gFrameBuffer;
 	U8			*gOverlayBuffer;
+	int			gFrameSize;
+	int			gOverlaySize;
 }
 
 //============================================================================
@@ -50,8 +52,6 @@ namespace
 void CDisplayModule::InitModule()
 {
 	// Initialize display manager for hardware target
-	union gpio_cmd 	c;
-	int				r;
 	int 			baseAddr, fb_size;
 
 	// open GPIO device
@@ -83,6 +83,7 @@ void CDisplayModule::InitModule()
 	fb_size = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
+	gFrameSize = fb_size;
 
 	// get access to the Frame Buffer
 	gFrameBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
@@ -107,6 +108,7 @@ void CDisplayModule::InitModule()
 	fb_size = ioctl(gDevOverlay, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
+	gOverlaySize = fb_size;
 
 	// Get access to the overlay buffer in user space
 	gOverlayBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
@@ -116,24 +118,13 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gOverlayBuffer);
-
-	// TODO: Drivers should auto-enable LCD from now on
-	c.outvalue.port = 1;	// GPIO port B
-	c.outvalue.value = 1;	// set pins high
-
-	c.outvalue.pin	= PIN_LCD_ENABLE;
-	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	dbg_.Assert(r >= 0, 
-			"DisplayModule::InitModule: GPIO ioctl failed");
-	c.outvalue.pin	= PIN_BACKLIGHT_ENABLE;
-	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	dbg_.Assert(r >= 0, 
-			"DisplayModule::InitModule: GPIO ioctl failed");
 }
 
 //----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
+    munmap(gOverlayBuffer, gOverlaySize);
+    munmap(gFrameBuffer, gFrameSize);
 	close(gDevGpio);
 	close(gDevDpc);
 	close(gDevMlc);
@@ -249,8 +240,13 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 // This method does not have much meaning given the kernel-level frame buffer.
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
-	SetDirtyBit(((struct tDisplayContext *)hndl)->isOverlay ? gDevOverlay : gDevLayer);
-	((struct tDisplayContext *)hndl)->isAllocated = false;
+	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
+	int 	layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+
+	// Remove layer from visibility on screen
+	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
+	SetDirtyBit(layer);
+	context->isAllocated = false;
 	return kNoErr;
 }
 

@@ -6006,3 +6006,13 @@ By Dmilici (Dmilici@leapfrog.com) on 7/25/07 7:24 PM
 2,500 ms. (Cumulative: 1,081,662 ms)
 
 ----------------
+Revision 1,030 from svn://localhost/TRUNK/:
+Revision 1,031 from svn://localhost/TRUNK/:
+
+Minor updates to Display and OpenGL interfaces for consistant functionality.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/26/07 10:06 AM
+3 changed, 0 added, 0 deleted.
+2,547 ms. (Cumulative: 1,084,272 ms)
+
+----------------

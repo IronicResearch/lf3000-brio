@@ -5,6 +5,7 @@
 #include <StringTypes.h>
 #include <DisplayMPI.h>
 #include <UnitTestUtils.h>
+#include <BrioOpenGLConfig.h>
 
 LF_USING_BRIO_NAMESPACE()
 
@@ -100,6 +101,47 @@ public:
 		pDisplayMPI_->DestroyHandle(handle, false);
 	}
 
+	//------------------------------------------------------------------------
+	void testOpenGLContext( )
+	{
+		BrioOpenGLConfig*	oglctx = new BrioOpenGLConfig();
+		
+		TS_ASSERT( oglctx != NULL );
+		TS_ASSERT( oglctx->eglContext );
+		TS_ASSERT( oglctx->eglDisplay );
+		TS_ASSERT( oglctx->eglSurface );
+
+		sleep(1);
+		eglWaitGL();
+
+		glClearColorx(0x10000, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
+		sleep(1);
+		
+		glClearColorx(0, 0x10000, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
+		sleep(1);
+
+		glClearColorx(0, 0, 0x10000, 0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
+		sleep(1);
+
+		for (int i = 0; i < 100; i++)
+		{
+			(i % 2) 
+				? glClearColorx(0x10000, 0, 0, 0)
+				: glClearColorx(0, 0, 0x10000, 0);
+			glClear(GL_COLOR_BUFFER_BIT);
+			eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
+		}
+		
+		eglWaitGL();
+
+		delete oglctx;
+	}
 };
 
 // EOF
