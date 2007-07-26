@@ -391,20 +391,20 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 {
-	unsigned long	p = 0x8000 | 0x0F00;
+	unsigned long	p = 0;
 	int 			r;
 	
-	r = ioctl(gDevDpc, DPC_IOCTSPIREG, p);
+	r = ioctl(gDevDpc, DPC_IOCQBRIGHTNESS, p);
 	return (r < 0) ? 0 : (r & 0xFF) - 128;
 }
 
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 {
-	unsigned long	p = 0x8000 | 0x0E00;
+	unsigned long	p = 0;
 	int 			r;
 	
-	r = ioctl(gDevDpc, DPC_IOCTSPIREG, p);
+	r = ioctl(gDevDpc, DPC_IOCQCONTRAST, p);
 	return (r < 0) ? 0 : ((r & 0xFF) << 4) - 128;
 }
 
