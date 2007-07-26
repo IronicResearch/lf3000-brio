@@ -6016,3 +6016,19 @@ By Dmilici (Dmilici@leapfrog.com) on 7/26/07 10:06 AM
 2,547 ms. (Cumulative: 1,084,272 ms)
 
 ----------------
+Revision 1,032 from svn://localhost/TRUNK/:
+Revision 1,033 from svn://localhost/TRUNK/:
+Revision 1,034 from svn://localhost/TRUNK/:
+Revision 1,035 from svn://localhost/TRUNK/:
+Revision 1,036 from svn://localhost/TRUNK/:
+Revision 1,037 from svn://localhost/TRUNK/:
+Revision 1,038 from svn://localhost/TRUNK/:
+Revision 1,039 from svn://localhost/TRUNK/:
+
+Add optional arguments  to OpenGL context constructor for MagicEyes heap size settings.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/26/07 1:16 PM
+3 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,087,007 ms)
+
+----------------

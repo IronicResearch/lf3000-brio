@@ -26,6 +26,10 @@
 #include <DisplayMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+// Default heap allocation for OEM OpenGL library
+const U32	kHeap1DMeg = 8;
+const U32	kHeap2DMeg = 8;		
+
 //==============================================================================
 // OpenGL Hardware/Emulation context
 //==============================================================================
@@ -44,7 +48,7 @@ struct tOpenGLContext
 class BrioOpenGLConfig
 {
 public:
-	BrioOpenGLConfig();
+	BrioOpenGLConfig(U32 size1D = kHeap1DMeg, U32 size2D = kHeap2DMeg);
 	~BrioOpenGLConfig();
 
 	// EGL variables
