@@ -5992,3 +5992,17 @@ By Dmilici (Dmilici@leapfrog.com) on 7/25/07 2:56 PM
 2,501 ms. (Cumulative: 1,079,069 ms)
 
 ----------------
+Revision 1,024 from svn://localhost/TRUNK/:
+Revision 1,025 from svn://localhost/TRUNK/:
+Revision 1,026 from svn://localhost/TRUNK/:
+Revision 1,027 from svn://localhost/TRUNK/:
+Revision 1,028 from svn://localhost/TRUNK/:
+Revision 1,029 from svn://localhost/TRUNK/:
+
+Added display context test to Display MPI unit test.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/25/07 7:24 PM
+1 changed, 0 added, 0 deleted.
+2,500 ms. (Cumulative: 1,081,662 ms)
+
+----------------
