@@ -55,9 +55,11 @@ namespace
 	void*		gpMem1 = NULL;
 	void*		gpMem2 = NULL;
 	void*		gpReg3d = NULL;
-	int			gmem1size = MEM1_SIZE;
-	int			gmem2size = MEM2_SIZE;
-	int			gregsize = PAGE_3D * 0x1000;
+	unsigned int gMem1Phys = MEM1_PHYS;
+	unsigned int gMem2Phys = MEM2_PHYS;
+	unsigned int gMem1Size = MEM1_SIZE;
+	unsigned int gMem2Size = MEM2_SIZE;
+	unsigned int gRegSize = PAGE_3D * 0x1000;
 	tDisplayScreenStats		screen;
 	tDisplayContext			dc;
 }
@@ -66,6 +68,17 @@ namespace
 void CDisplayModule::InitOpenGL(void* pCtx)
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: enter\n");
+
+	// Dereference OpenGL context for MagicEyes memory size overides
+	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
+	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
+	unsigned int					mem2Virt;
+
+	// 2nd heap size and addresses must be 4 Meg aligned
+	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+3) & ~3) << 20;
+	gMem2Size = ((pMemInfo->Memory2D_SizeInMbyte+3) & ~3) << 20;
+	gMem2Phys = gMem1Phys + gMem1Size;
+	mem2Virt = (unsigned int)MEM1_VIRT + gMem1Size;
 
 	// Open device driver for 3D layer
 	gDevLayer = open(OGL_LAYER_DEV, O_WRONLY);
@@ -81,36 +94,32 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.Assert(gDevMem >= 0, "DisplayModule::InitModule: /dev/mem driver failed");
 
 	// Map 3D engine register space
-	gregsize = PAGE_3D * getpagesize();  
-	gpReg3d = mmap(0, gregsize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevGa3d, REG3D_PHYS);
+	gRegSize = PAGE_3D * getpagesize();  
+	gpReg3d = mmap(0, gRegSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevGa3d, REG3D_PHYS);
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
 
-	// Map memory block for framebuffer
-    gpMem1 = mmap(MEM1_VIRT, gmem1size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM1_PHYS);
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", MEM1_PHYS, gpMem1);
+	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
+    gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
+	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
-	// Map memory block for (?)
-    gpMem2 = mmap(MEM2_VIRT, gmem2size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, MEM2_PHYS);
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", MEM2_PHYS, gpMem2);
+	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
+    gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
+	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
 	// Pass back essential display context info for OpenGL bindings
-	tOpenGLContext* pOglCtx = (tOpenGLContext*)pCtx;
 	pOglCtx->width = 320;
 	pOglCtx->height = 240;
 	pOglCtx->eglDisplay = &screen;
 	pOglCtx->eglWindow = &dc;
 
 	// Copy the required mappings into the MagicEyes callback init struct
-	___OAL_MEMORY_INFORMATION__* pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
     pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
-
     pMemInfo->Memory1D_VirtualAddress	= (unsigned int)gpMem1;
-    pMemInfo->Memory1D_PhysicalAddress	= MEM1_PHYS;
-    pMemInfo->Memory1D_SizeInMbyte	= (MEM1_SIZE-0x100000) >> 20;
-
+    pMemInfo->Memory1D_PhysicalAddress	= gMem1Phys;
+    pMemInfo->Memory1D_SizeInMbyte		= gMem1Size >> 20;
     pMemInfo->Memory2D_VirtualAddress	= (unsigned int)gpMem2;
-    pMemInfo->Memory2D_PhysicalAddress	= MEM2_PHYS;
-    pMemInfo->Memory2D_SizeInMbyte	= MEM2_SIZE >> 20;
+    pMemInfo->Memory2D_PhysicalAddress	= gMem2Phys;
+    pMemInfo->Memory2D_SizeInMbyte		= gMem2Size >> 20;
  
  	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
 }
@@ -120,9 +129,9 @@ void CDisplayModule::DeinitOpenGL()
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: enter\n");
 
-    munmap(gpReg3d, gregsize);
-    munmap(gpMem1, gmem1size);
-    munmap(gpMem2, gmem2size);
+    munmap(gpReg3d, gRegSize);
+    munmap(gpMem1, gMem1Size);
+    munmap(gpMem2, gMem2Size);
     close(gDevMem);
 	close(gDevGa3d);
 	close(gDevLayer);

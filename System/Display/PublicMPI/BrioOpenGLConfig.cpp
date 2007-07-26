@@ -124,7 +124,7 @@ namespace
 
 //==============================================================================
 //----------------------------------------------------------------------
-BrioOpenGLConfig::BrioOpenGLConfig()
+BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	: 
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
@@ -133,6 +133,8 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 
 #ifndef EMULATION
 	// Init OpenGL hardware callback struct
+	meminfo.Memory1D_SizeInMbyte = size1D;
+	meminfo.Memory2D_SizeInMbyte = size2D;
 	ctx.pOEM = &meminfo;
 #endif
 	/*
