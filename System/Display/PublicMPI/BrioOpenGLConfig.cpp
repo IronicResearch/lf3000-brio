@@ -131,7 +131,10 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	CDebugMPI				dbg(kGroupDisplay);
 	dispmgr = &disp_;
 
-#ifdef EMULATION
+#ifndef EMULATION
+	// Init OpenGL hardware callback struct
+	ctx.pOEM = &meminfo;
+#endif
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
 	*/
@@ -145,16 +148,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 		with, we let EGL pick the default display.
 		Querying other displays is platform specific.
 	*/
-
 	eglDisplay = eglGetDisplay(ctx.eglDisplay);
-#else	// !EMULATION
-	// Init OpenGL hardware
-	ctx.pOEM = &meminfo;
-	disp_.InitOpenGL(&ctx);
-	
-	// Lightning hardware just has one display
-	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-#endif	// EMULATION
 
 	/*
 		Step 2 - Initialize EGL.
@@ -245,6 +239,7 @@ BrioOpenGLConfig::BrioOpenGLConfig()
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
 
+	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
