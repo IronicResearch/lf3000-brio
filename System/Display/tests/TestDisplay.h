@@ -114,6 +114,7 @@ public:
 		sleep(1);
 		eglWaitGL();
 
+#if 0	// FIXME/dm: Find source of segfault at exit triggered by OGL calls 
 		glClearColorx(0x10000, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
@@ -137,8 +138,8 @@ public:
 			glClear(GL_COLOR_BUFFER_BIT);
 			eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
 		}
-		
 		eglWaitGL();
+#endif
 
 		delete oglctx;
 	}
