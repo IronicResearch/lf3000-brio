@@ -6058,3 +6058,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/26/07 5:03 PM
 2,719 ms. (Cumulative: 1,092,460 ms)
 
 ----------------
+Revision 1,046 from svn://localhost/TRUNK/:
+
+Added brightness/contrast test. Min/Max bounds logic needs rework.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/26/07 5:49 PM
+1 changed, 0 added, 0 deleted.
+2,500 ms. (Cumulative: 1,095,007 ms)
+
+----------------
