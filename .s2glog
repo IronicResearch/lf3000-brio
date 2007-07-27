@@ -6096,3 +6096,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/27/07 9:48 AM
 2,562 ms. (Cumulative: 1,103,070 ms)
 
 ----------------
+Revision 1,052 from svn://localhost/TRUNK/:
+
+Workaround to suppress segfault at exit on embedded target triggered by OGL calls.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/27/07 10:10 AM
+1 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,105,914 ms)
+
+----------------
