@@ -263,8 +263,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 	tAudioStartAudioInfo*	pAudioInfo = pMsg->GetData();
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
-			"AudioTask::DoStartAudio -- Start Audio Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, \
-			listen:0x%x, payload:%d, flags:%d \n",
+			"AudioTask::DoStartAudio -- Start Audio Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n",
 			static_cast<int>(pAudioInfo->volume), 
 			static_cast<int>(pAudioInfo->priority), 
 			static_cast<int>(pAudioInfo->pan), 
@@ -437,7 +436,8 @@ static void DoStopAudio( CAudioMsgStopAudio* pMsg )
 	// Find the best channel for the specified priority
 	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->id );
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoStopAudio() -- AudioID's channel is = 0x%x...\n", 
+		"AudioTask::DoStopAudio() -- AudioID %d on channel 0x%x...\n", 
+		static_cast<int>(pAudioInfo->id), 
 		reinterpret_cast<unsigned int>(pChannel));	
 
 	if (pChannel != kNull)
@@ -573,22 +573,31 @@ static void DoMidiNoteOff( CAudioMsgMidiNoteOff* msg ) {
 }
 
 static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
-	tErrType					err;
+	tErrType					result;
 	tAudioStartMidiFileInfo* 	pInfo = msg->GetData();
+	CAudioReturnMessage			retMsg;
 	
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartMidiFile -- Info: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, (int)pInfo->hRsrc,
+				reinterpret_cast<unsigned int>(pInfo->pListener), static_cast<int>(pInfo->payload), static_cast<int>(pInfo->flags) );
+
 	// Load the midi file using the resource manager.
-	err = gContext.pResourceMPI->LoadRsrc( pInfo->hRsrc );  
+	result = gContext.pResourceMPI->LoadRsrc( pInfo->hRsrc );  
+    gContext.pDebugMPI->Assert((kNoErr == result), 
+    	"AudioTask::DoStartMidiFile() -- Failed to load rsrc for midi file. err = %d \n", 
+    	static_cast<int>(result) );
 	
 	// Store pointer in the struct so that the Player object can access it.
 	pInfo->pMidiFileImage = (U8*)gContext.pResourceMPI->GetPtr( pInfo->hRsrc );
 	pInfo->imageSize = gContext.pResourceMPI->GetUnpackedSize( pInfo->hRsrc );
 
-//	printf("Msg: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, (int)pInfo->hRsrc,
-//			(unsigned int)pInfo->pListener, (int)pInfo->payload, (int)pInfo->flags);
+	result = gContext.pMidiPlayer->StartMidiFile( pInfo );
+	gContext.pDebugMPI->Assert((kNoErr == result), 
+		"AudioTask::DoStartMidiFile() -- Failed to load rsrc for midi file. err = %d \n", 
+		static_cast<int>(result) );
 
-	gContext.pMidiPlayer->StartMidiFile( pInfo );
-	
-	//	info.priority = kAudioDefaultPriority;
+	// Send the status back to the caller
+	retMsg.SetAudioErr( result );
+	SendMsgToAudioModule( retMsg );
 }
 
 static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {

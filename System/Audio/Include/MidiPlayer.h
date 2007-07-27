@@ -67,13 +67,16 @@ public:
 	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
 
 private:
+	CDebugMPI* 				pDebugMPI_;	
+	CKernelMPI* 			pKernelMPI_;	
 	SPMIDI_Context*			pContext_;		// Pointer to the Midi context being used
 	MIDIFilePlayer*			pFilePlayer_;	// Pointer to the MidiFile player being used
 	const IEventListener*	pListener_;		// pointer to caller's listener for done event
 	tMidiPlayerID			id_;			// player ID 
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of the Midi playing
-	bool					loopMidiFile_;
+	Boolean					loopMidiFile_;
 	S16* 					pMidiRenderBuffer_;
+	tMutex     				render_mutex_;
 	U8						volume_;
 	U8						bFilePaused_:1;				// Player is paused
 	U8						bFileActive_:1;				// Player has active file associated.

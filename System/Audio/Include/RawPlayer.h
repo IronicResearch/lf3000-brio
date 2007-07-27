@@ -48,6 +48,10 @@ public:
 	void SendDoneMsg( void );
 
 private:
+	CKernelMPI* 	pKernelMPI_;		// For mutex calls
+	tMutex			render_mutex_;		// Need to protect the renderbuffer call
+										// because it's in a different thread.
+
 	U32		numFrames_;			// frames of sample data
 	S16*	pCurFrame_;			// ptr to current frame
 	U32		framesLeft_;		// num frames left

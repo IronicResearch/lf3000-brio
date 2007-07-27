@@ -80,7 +80,7 @@ public:
 	VTABLE_EXPORT tErrType	AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiPlayerID *id );
 	VTABLE_EXPORT tErrType	ReleaseMidiPlayer( tMidiPlayerID id );
 	
-	VTABLE_EXPORT tMidiPlayerID StartMidiFile( tMidiPlayerID	id,
+	VTABLE_EXPORT tErrType StartMidiFile( tMidiPlayerID	id,
 						tRsrcHndl			hRsrc, 
 						U8					volume, 
 						tAudioPriority		priority,

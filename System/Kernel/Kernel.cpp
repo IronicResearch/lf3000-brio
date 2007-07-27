@@ -1057,9 +1057,9 @@ tErrType CKernelModule::TryLockMutex( tMutex& mutex )
     tErrType err = kNoErr;
     
     err = pthread_mutex_trylock(&mutex);
-    ASSERT_POSIX_CALL( err );
+ //   ASSERT_POSIX_CALL( err );
     
-    return kNoErr;
+    return err;
 }
 
 //------------------------------------------------------------------------------

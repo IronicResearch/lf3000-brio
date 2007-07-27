@@ -6042,3 +6042,19 @@ By Dmilici (Dmilici@leapfrog.com) on 7/26/07 3:44 PM
 2,578 ms. (Cumulative: 1,089,663 ms)
 
 ----------------
+Revision 1,042 from svn://localhost/TRUNK/:
+Revision 1,043 from svn://localhost/TRUNK/:
+Revision 1,044 from svn://localhost/TRUNK/:
+Revision 1,045 from svn://localhost/TRUNK/:
+
+Fix several nasty-subtle crashing bugs in the audio system.  The RenderBuffer() calls needed to be protected with a mutex so that 
+the method won't get called in the middle of its destructor.  There was also a problem with a message being sent by the 
+AudioTask that wasn't being polled for by the AudioModule so the state of the world could get way out of sync.  
+The Channel::Release() method also had a problem where it was deleting its player object before setting itself to an
+invalid state so the Mixer would stop calling its RenderBuffer() method.  This fixes TTPro #22.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/26/07 5:03 PM
+11 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,092,460 ms)
+
+----------------

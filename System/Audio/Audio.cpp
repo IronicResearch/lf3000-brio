@@ -435,7 +435,7 @@ tAudioID CAudioModule::StartAudio( tRsrcHndl hRsrc, U8 volume,
 {
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"AudioMgr:StartAudio; hRsrc = 0x%x\n", static_cast<unsigned int>(hRsrc) );	
+		"CAudioModule::StartAudio --  hRsrc = 0x%x\n", static_cast<unsigned int>(hRsrc) );	
 
 	tAudioStartAudioInfo msgData( hRsrc, volume, priority, pan, 
 								pListener, payload, flags );
@@ -497,7 +497,7 @@ void CAudioModule::StopAudio( tAudioID id, Boolean surpressDoneMessage )
 {
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"AudioMgr:StopAudio; ID = %d\n", static_cast<int>(id) );	
+		"CAudioModule::StopAudio -- ID = %d\n", static_cast<int>(id) );	
 
 	tAudioStopAudioInfo msgData;
 	
@@ -652,7 +652,7 @@ tErrType CAudioModule::ReleaseMidiPlayer(tMidiPlayerID id)
 	// Send the message.
  	SendCmdMessage( msg );
  	
-	return kNoErr;
+	return WaitForStatus();
 }
 
 //==============================================================================
@@ -697,7 +697,7 @@ tErrType CAudioModule::MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8
 
 //==============================================================================
 //==============================================================================
-tMidiPlayerID CAudioModule::StartMidiFile( tMidiPlayerID	id,
+tErrType CAudioModule::StartMidiFile( tMidiPlayerID	id,
 						tRsrcHndl			hRsrc, 
 						U8					volume, 
 						tAudioPriority		priority,
@@ -720,7 +720,7 @@ tMidiPlayerID CAudioModule::StartMidiFile( tMidiPlayerID	id,
 	
 	SendCmdMessage( msg );
 	
-	return kNoErr;
+	return WaitForStatus();
 }
 
 //==============================================================================
