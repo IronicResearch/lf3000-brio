@@ -6105,3 +6105,16 @@ By Dmilici (Dmilici@leapfrog.com) on 7/27/07 10:10 AM
 2,797 ms. (Cumulative: 1,105,914 ms)
 
 ----------------
+Revision 1,053 from svn://localhost/TRUNK/:
+Revision 1,054 from svn://localhost/TRUNK/:
+Revision 1,055 from svn://localhost/TRUNK/:
+Revision 1,056 from svn://localhost/TRUNK/:
+Revision 1,057 from svn://localhost/TRUNK/:
+
+Fixed Brio SDK examples for additional font descriptor field for pixel format.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/27/07 3:31 PM
+1 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 1,108,711 ms)
+
+----------------

@@ -11,6 +11,12 @@ Lightning C++ Development Kit Release Notes
 * Added new resource types for bitmaps and data files
 * Tied the audio encoders into SCons dependency checking so they only get
   reencoded when required, not on every build.
+* BrioOpenGLConfig class constructor now accepts 2 optional parameters for
+  configuring OpenGL embedded library 1D and 2D heap sizes (in Megs).
+* Display MPI now removes 2D or video layer from being visible on Lightning
+  display hardware during cleanup.
+* Video MPI methods added or changed to match Audio MPI functionality.
+* Font MPI surface descriptor field added for pixel format type.
 
 
 ===========================================
