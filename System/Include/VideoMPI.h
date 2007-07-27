@@ -18,6 +18,7 @@
 #include <VideoTypes.h>
 #include <CoreMPI.h>
 #include <ResourceTypes.h>
+#include <EventListener.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -38,7 +39,7 @@ public:
 	// MPI-specific functionality
 	
 	// Start video stream from open resource
-    tVideoHndl	StartVideo(tRsrcHndl hRsrc);
+    tVideoHndl	StartVideo(tRsrcHndl hRsrc, Boolean bLoop = false, IEventListener* pListener = NULL);
 
     // Stop video stream to close resource
 	Boolean 	StopVideo(tVideoHndl hVideo);
@@ -61,6 +62,21 @@ public:
 	// Seek to the video frame at selected time stamp
 	Boolean 	SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx);
  
+	// Pause video
+	Boolean 	PauseVideo(tVideoHndl hVideo);
+
+	// Resume paused video
+	Boolean 	ResumeVideo(tVideoHndl hVideo);
+
+	// Is video paused?
+	Boolean 	IsVideoPaused(tVideoHndl hVideo);
+
+	// Is video playing?
+	Boolean 	IsVideoPlaying(tVideoHndl hVideo);
+
+	// Is video looped?
+	Boolean 	IsVideoLooped(tVideoHndl hVideo);
+
 private:
 	class CVideoModule*	pModule_;
 	U32					id_;

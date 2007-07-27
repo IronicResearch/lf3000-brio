@@ -19,6 +19,7 @@
 #include <VideoTypes.h>
 #include <DebugMPI.h>
 #include <ResourceTypes.h>
+#include <EventListener.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -44,7 +45,7 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc);
+    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListener* pListener);
     VTABLE_EXPORT Boolean     	StopVideo(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		GetVideoFrame(tVideoHndl hVideo, void* pCtx);
 	VTABLE_EXPORT Boolean 		PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
@@ -52,6 +53,11 @@ public:
 	VTABLE_EXPORT Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
 	VTABLE_EXPORT Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
 	VTABLE_EXPORT Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx);
+	VTABLE_EXPORT Boolean 		PauseVideo(tVideoHndl hVideo);
+	VTABLE_EXPORT Boolean 		ResumeVideo(tVideoHndl hVideo);
+	VTABLE_EXPORT Boolean 		IsVideoPaused(tVideoHndl hVideo);
+	VTABLE_EXPORT Boolean 		IsVideoPlaying(tVideoHndl hVideo);
+	VTABLE_EXPORT Boolean 		IsVideoLooped(tVideoHndl hVideo);
 
 private:
 	CDebugMPI			dbg_;
