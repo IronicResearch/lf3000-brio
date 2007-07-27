@@ -154,6 +154,15 @@ Boolean CFontMPI::GetFontMetrics(tFontMetrics* pMtx)
 		return 0;
 	return pModule_->GetFontMetrics(pMtx);
 }
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::GetStringRect(CString* pStr, tRect* pRect)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetStringRect(pStr, pRect);
+}
+
 LF_END_BRIO_NAMESPACE()
 
 // EOF

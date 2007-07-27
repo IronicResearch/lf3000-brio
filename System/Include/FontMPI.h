@@ -66,7 +66,7 @@ public:
     Boolean		GetFontMetrics(tFontMetrics* pMtx);
  
  	// Returns the bounding rectangle for the selected text string
-// 	Boolean		GetStringRect(CString *pStr, tRect* pRect); // TODO
+ 	Boolean		GetStringRect(CString *pStr, tRect* pRect);
  
 private:
 	class CFontModule*	pModule_;

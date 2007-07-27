@@ -19,8 +19,8 @@
 #include <FontTypes.h>
 #include <DebugMPI.h>
 #include <ResourceTypes.h>
+#include <DisplayTypes.h> 
 
-// TODO: The FreeType headers may need to be neutralized for target OS
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
 #define  USE_FONT_CACHE_MGR		1   
@@ -107,6 +107,7 @@ public:
 	VTABLE_EXPORT U32			GetX();
 	VTABLE_EXPORT U32			GetY();
     VTABLE_EXPORT Boolean		GetFontMetrics(tFontMetrics* pMtx);
+    VTABLE_EXPORT Boolean     	GetStringRect(CString* pStr, tRect* pRect);
 
 private:
 	CDebugMPI			dbg_;
