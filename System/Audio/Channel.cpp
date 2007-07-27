@@ -46,6 +46,8 @@ CChannel::CChannel()
 	pOutBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 	
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
+
+	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 }
 
 //==============================================================================
@@ -55,6 +57,10 @@ CChannel::~CChannel()
 	// Free the channel buffers
 	if (pOutBuffer_)
 		delete pOutBuffer_;
+	
+	// Free debug MPI
+	if (pDebugMPI_)
+		delete pDebugMPI_;
 }
 
 //==============================================================================
@@ -89,17 +95,25 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 		"CChannel::Release - deleting player 0x%x\n", 
 		(unsigned int)pPlayer_);
 
+	// Send the done message back to the initiator of the PlayAudio() call.
 	if (suppressPlayerDoneMsg)
 		pPlayer_->SetSendDoneMessage( false );
 
-	delete pPlayer_;
-	pPlayer_ = kNull;
-	bInUse_ = 0;
-	bPaused_ = 0;
+	// Once this is set, the mixer will no longer call our RenderBuffer()
+	// method so we're safe to delete the other resources.
+	bInUse_ = false;
+	
+	bPaused_ = false;
 	bOwnProcessor_ = 0;
 	pan_ = 0;
 	volume_ = 0;
 	inSampleRate_ = 0;
+
+	// The player's dtors are protected with a mutex so they are
+	// safe to be deleted.  They dtors will wait until RenderBuffer()
+	// is complete before delete internal resources.
+	delete pPlayer_;
+	pPlayer_ = kNull;
 
 	return kNoErr;
 }

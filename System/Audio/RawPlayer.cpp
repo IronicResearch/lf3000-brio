@@ -12,6 +12,8 @@
 //==============================================================================
 
 // System includes
+#include <pthread.h>
+#include <errno.h>
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <EventMPI.h>
@@ -35,11 +37,22 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudioPlayer( pAudioInfo, id  )
 {
-	tErrType		err;
-	tAudioHeader*	pHeader;
+	tErrType			result;
+	tAudioHeader*		pHeader;
+	const tMutexAttr 	attr = {0};
 	
+	// Get Kernel MPI
+	pKernelMPI_ =  new CKernelMPI();
+	result = pKernelMPI_->IsValid();
+	pDebugMPI_->Assert((true == result), "CRawPlayer::ctor -- Couldn't create KernelMPI.\n");
+
+	// Setup Mutex object for protecting render calls
+	result = pKernelMPI_->InitMutex( render_mutex_, attr );
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't init mutex.\n");
+
 	// Load the audio resource using the resource manager.
-	err = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
+	result = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't load resource.\n");
 	
 	// Get the pointer to the audio header and data.
 	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
@@ -75,14 +88,34 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 //==============================================================================
 CRawPlayer::~CRawPlayer()
 {
+	tErrType result;
+	
+	result = pKernelMPI_->LockMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor -- Couldn't lock mutex.\n");
+
 	// Unload the audio resource.
-	pRsrcMPI_->UnloadRsrc( hRsrc_ );  
+	result = pRsrcMPI_->UnloadRsrc( hRsrc_ );  
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't unload resource.\n");
 
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
 
-//	printf(" CRawPlayer::dtor -- I'm HERE!!!\n\n\n\n");
+	result = pKernelMPI_->UnlockMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor: Couldn't unlock mutex.\n");
+	result = pKernelMPI_->DeInitMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor -- Couldn't deinit mutex.\n");
+
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		" CRawPlayer::dtor -- vaporizing...\n");
+
+	// Free debug MPI
+	if (pDebugMPI_)
+		delete pDebugMPI_;
+
+	// Free kernel MPI
+	if (pKernelMPI_)
+		delete pKernelMPI_;
 }
 
 
@@ -120,11 +153,22 @@ void CRawPlayer::SendDoneMsg( void ) {
 //==============================================================================
 U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 {	
+	tErrType result;
 	U32		index;
 	U32		framesToProcess = 0;
 	S16*	pCurSample;
 	
 //	printf("Raw Player::RenderBuffer: entered.  ");
+
+	// Don't want to try to render if stop() or dtor() have been entered.
+	result = pKernelMPI_->TryLockMutex( render_mutex_ );
+	
+	// TODO/dg: this is a really ugly hack.  need to figure out what to return
+	// in the case of render being called while stopping/dtor is running.
+	if (result == EBUSY)
+		return numStereoFrames;
+	else
+		pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer -- Couldn't lock mutex.\n");
 
 	// Check if there are any more samples to process 
 	if (framesLeft_ > 0) {
@@ -163,6 +207,9 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	framesLeft_ -= framesToProcess;	
 	}
 			
+	result = pKernelMPI_->UnlockMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
+
 	// Return the number of frames rendered.
 	return framesToProcess;
 }

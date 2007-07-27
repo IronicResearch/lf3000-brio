@@ -17,7 +17,7 @@
 // System includes
 #include <CoreTypes.h>
 #include <SystemTypes.h>
-//#include <RsrcTypes.h>
+#include <KernelMPI.h>
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <AudioTypesPriv.h>
@@ -86,6 +86,9 @@ private:
 	OggVorbis_File	vorbisFile_;		// codec context data
 	ov_callbacks 	oggCallbacks_;		// set of callbacks to wrap resource mgr functions	
 	S16 			*pPcmBuffer_;		// Pointer to the vorbis decode buffer
+	CKernelMPI* 	pKernelMPI_;		// For mutex
+	tMutex     		render_mutex_;		// Need to protect renderbuffer call 
+										// because it's in a different thread.
 	U32				filePos_;			// position in the vorbis byte stream
 };
 

@@ -12,6 +12,8 @@
 //==============================================================================
 
 // System includes
+#include <pthread.h>
+#include <errno.h>
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <EventMPI.h>
@@ -39,15 +41,25 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAudioPlayer( pData, id  )
 {
-	tErrType		ret = kNoErr;
-	vorbis_info*	pVorbisInfo;
-	ogg_int64_t		lengthInSeconds;
-	ogg_int64_t		length;
+	tErrType			ret = kNoErr;
+	vorbis_info*		pVorbisInfo;
+	ogg_int64_t			lengthInSeconds;
+	ogg_int64_t			length;
+	const tMutexAttr 	attr = {0};
 	
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
 	// Allocate the player's sample buffer
 	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
+
+	// Get Kernel MPI
+	pKernelMPI_ =  new CKernelMPI();
+	ret = pKernelMPI_->IsValid();
+	pDebugMPI_->Assert((true == ret), "CVorbisPlayer::ctor: Couldn't create KernelMPI.\n");
+
+	// Setup Mutex object for protecting render calls
+  	ret = pKernelMPI_->InitMutex( render_mutex_, attr );
+	pDebugMPI_->Assert((kNoErr == ret), "CVorbisPlayer::ctor: Couldn't init mutex.\n");
 
 	// Use rsrc manager to open the ogg file.
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
@@ -107,6 +119,11 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
 //==============================================================================
 CVorbisPlayer::~CVorbisPlayer()
 {
+	tErrType result;
+	
+	result = pKernelMPI_->LockMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::dtor -- Couldn't lock mutex.\n");
+
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
@@ -120,8 +137,22 @@ CVorbisPlayer::~CVorbisPlayer()
 	if ( ret < 0)
 		printf("Could not close OggVorbis file.\n");
 
+	result = pKernelMPI_->UnlockMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::dtor: Couldn't unlock mutex.\n");
+	result = pKernelMPI_->DeInitMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::dtor: Couldn't deinit mutex.\n");
+
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		" CVorbisPlayer::dtor -- I'm HERE!!!\n");
+		" CVorbisPlayer::dtor -- vaporizing...\n");
+
+	// Free debug MPI
+	if (pDebugMPI_)
+		delete pDebugMPI_;
+
+	// Free kernel MPI
+	if (pKernelMPI_)
+		delete pKernelMPI_;
+
 }
 
 U32 CVorbisPlayer::VorbisRead(
@@ -309,6 +340,7 @@ void CVorbisPlayer::SendDoneMsg( void ) {
 //==============================================================================
 U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 {	
+	tErrType result;
 	U32		index;
 	int 	dummy;
 	U32		framesToProcess = 0;
@@ -319,7 +351,12 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	S16*	pCurSample;
 	U32		framesRead = 0;
 	
-//	printf("Vorbis Player::RenderBuffer: Entering method.\n ");
+	result = pKernelMPI_->TryLockMutex( render_mutex_ );
+	
+	if (result == EBUSY)
+		return numStereoFrames;
+	else
+		pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::RenderBuffer -- Couldn't lock mutex.\n");
 
 	if (hasStereoData_)
 		bytesToRead = numStereoFrames * 2 * 2;	// 16bit stereo
@@ -387,6 +424,9 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 		}
 	}
 	
+	result = pKernelMPI_->UnlockMutex( render_mutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
+
 	// Return the number of frames rendered.
 	return framesRead;
 }
