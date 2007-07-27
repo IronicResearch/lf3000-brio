@@ -596,6 +596,7 @@ static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 		static_cast<int>(result) );
 
 	// Send the status back to the caller
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartMidiFile -- Sending result back to Module...\n" );
 	retMsg.SetAudioErr( result );
 	SendMsgToAudioModule( retMsg );
 }

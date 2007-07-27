@@ -6087,3 +6087,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/26/07 7:36 PM
 2,672 ms. (Cumulative: 1,100,445 ms)
 
 ----------------
+Revision 1,051 from svn://localhost/TRUNK/:
+
+Remove a bit of debugging cruft accidentally left in from last audio checkin.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/27/07 9:48 AM
+3 changed, 0 added, 0 deleted.
+2,562 ms. (Cumulative: 1,103,070 ms)
+
+----------------

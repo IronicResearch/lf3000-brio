@@ -888,8 +888,6 @@ tAudioID CAudioModule::WaitForStatus( void )
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CAudioModule::WaitForStatus -- Waiting for message from audio task. MsgSize = %d.\n", sizeof(CAudioReturnMessage) );fflush(stdout);
 
-	pKernelMPI_->TaskSleep(2000);
-			
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForStatus -- Could not get status from Audio Task.\n" );
 	
