@@ -255,6 +255,9 @@ tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 {
 	tErrType result = 0;
 	
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
+		"CMidiPlayer::StopMidiFile -- Entering method, about to lock render_mutex...\n");	
+
 	result = pKernelMPI_->LockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile -- Couldn't lock mutex.\n");
 
