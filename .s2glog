@@ -6078,3 +6078,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/26/07 7:11 PM
 2,626 ms. (Cumulative: 1,097,711 ms)
 
 ----------------
+Revision 1,050 from svn://localhost/TRUNK/:
+
+Updated Video MPI with stubs for additional methods compatible with Audio MPI.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/26/07 7:36 PM
+4 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,100,445 ms)
+
+----------------

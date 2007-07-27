@@ -120,10 +120,13 @@ Boolean	CVideoModule::IsValid() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
+tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListener* pListener)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	tErrType	r;
+
+	(void)bLoop; // TODO
+	(void)pListener; // TODO
 
 	// Sanity check
 	if (hRsrc == kInvalidRsrcHndl) 
@@ -394,6 +397,41 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	}
 
 	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
+{
+	// TODO
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
+{
+	// TODO
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
+{
+	// TODO
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
+{
+	// TODO
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
+{
+	// TODO
+	return false;
 }
 
 LF_END_BRIO_NAMESPACE()

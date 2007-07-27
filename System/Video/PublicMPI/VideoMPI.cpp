@@ -81,11 +81,11 @@ const CURI* CVideoMPI::GetModuleOrigin() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc)
+tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListener* pListener)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->StartVideo(hRsrc);
+	return pModule_->StartVideo(hRsrc, bLoop, pListener);
 }
 
 //----------------------------------------------------------------------------
@@ -142,6 +142,46 @@ Boolean CVideoMPI::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 	if (!pModule_)
 		return false;
 	return pModule_->GetVideoTime(hVideo, pTime);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::PauseVideo(tVideoHndl hVideo)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->PauseVideo(hVideo);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::ResumeVideo(tVideoHndl hVideo)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->ResumeVideo(hVideo);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::IsVideoPaused(tVideoHndl hVideo)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->IsVideoPaused(hVideo);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::IsVideoPlaying(tVideoHndl hVideo)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->IsVideoPlaying(hVideo);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::IsVideoLooped(tVideoHndl hVideo)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->IsVideoLooped(hVideo);
 }
 
 LF_END_BRIO_NAMESPACE()
