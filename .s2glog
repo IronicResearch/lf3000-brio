@@ -6067,3 +6067,14 @@ By Dmilici (Dmilici@leapfrog.com) on 7/26/07 5:49 PM
 2,500 ms. (Cumulative: 1,095,007 ms)
 
 ----------------
+Revision 1,047 from svn://localhost/TRUNK/:
+Revision 1,048 from svn://localhost/TRUNK/:
+Revision 1,049 from svn://localhost/TRUNK/:
+
+Updated Font MPI with stub for additional GetStringRect() method.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/26/07 7:11 PM
+5 changed, 0 added, 0 deleted.
+2,626 ms. (Cumulative: 1,097,711 ms)
+
+----------------

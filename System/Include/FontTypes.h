@@ -15,7 +15,7 @@
 // System includes
 #include <GroupEnumeration.h>
 #include <SystemTypes.h>
-//#include <SystemErrors.h>
+#include <DisplayTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -63,6 +63,7 @@ struct tFontSurf {
 	U32		height;
 	U32		pitch;
 	U8*		buffer;
+	tPixelFormat format;
 };
 
 LF_END_BRIO_NAMESPACE()

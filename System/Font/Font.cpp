@@ -593,6 +593,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 
 	// TODO: Handle other source bitmap cases besides 1bpp mono
 	// TODO: Handle other destination buffer cases besides 32bpp RGB
+	// TODO: ie, use newly added pixel format field
 
 	// Draw mono bitmap into RGB context buffer with current color
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
@@ -660,6 +661,13 @@ Boolean CFontModule::GetFontMetrics(tFontMetrics* pMtx)
 	pMtx->descent = font->descent;
 	pMtx->advance = font->advance;		
 	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
+{
+	// TODO
+	return false;
 }
 
 LF_END_BRIO_NAMESPACE()
