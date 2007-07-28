@@ -401,10 +401,6 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontS
 	U32	 		color = attr_.color;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// FIXME/dm: Handle general case:
-	// 2D surface = rightside-up bitmap for downward Y window coords
-	// 3D surface = upside-down bitmap for upward Y OpenGL coords
-
 	// Pack RGB color into buffer according to mono bitmap mask
 	w = (source->width+7) / 8;
 	h = source->rows;
@@ -429,6 +425,90 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontS
 		t += source->pitch;	// U8*
 		u += surf->pitch;	// U8*
 	}				  
+}
+
+//----------------------------------------------------------------------------
+void CFontModule::ConvertBitmapToRGB24(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	int 		x,y,w,h,i,mask;
+	U8	 		*s,*t;
+	U8  		*d,*u;
+	U32	 		color = attr_.color;
+	U8			R = (color & 0xFF0000) >> 16;
+	U8			G = (color & 0x00FF00) >> 8;
+	U8			B = (color & 0x0000FF) >> 0;
+	tFontSurf	*surf = (tFontSurf*)pCtx;
+
+	// Pack RGB color into buffer according to mono bitmap mask
+	w = (source->width+7) / 8;
+	h = source->rows;
+	s = t = source->buffer;
+	d = u = surf->buffer + y0 * surf->pitch + x0 * 3;
+	for (y = 0; y < h; y++) 
+	{
+		s = t;
+		d = u;
+		for (x = 0; x < w; x++) 
+		{
+			mask = 0x80;
+			for (i = 0; i < 8; i++) 
+			{
+				if (mask & *s)
+				{
+					*d++ = B;
+					*d++ = G;
+					*d++ = R;
+				}
+				else
+					d+=3;
+				mask >>= 1;
+			}
+			s++;
+		}
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
+	}				  
+}
+
+//----------------------------------------------------------------------------
+void CFontModule::ConvertBitmapToRGB4444(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	int 		x,y,w,h,i,mask;
+	U8	 		*s,*t,*u;
+	U16 		*d;
+	U16	 		color = attr_.color;
+	tFontSurf	*surf = (tFontSurf*)pCtx;
+
+	// Pack RGB color into buffer according to mono bitmap mask
+	w = (source->width+7) / 8;
+	h = source->rows;
+	s = t = source->buffer;
+	d = (U16*)(u = surf->buffer + y0 * surf->pitch + x0 * 2);
+	for (y = 0; y < h; y++) 
+	{
+		s = t;
+		d = (U16*)u;
+		for (x = 0; x < w; x++) 
+		{
+			mask = 0x80;
+			for (i = 0; i < 8; i++) 
+			{
+				if (mask & *s)
+					*d = color;
+				mask >>= 1;
+				d++; // U16*
+			}
+			s++;
+		}
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
+	}				  
+}
+  
+//----------------------------------------------------------------------------
+void CFontModule::ConvertBitmapToRGB565(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	ConvertBitmapToRGB4444(source, x0, y0, pCtx);
 }
   
 //----------------------------------------------------------------------------
@@ -475,6 +555,136 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 			}
 #endif
 			d++;
+			s++;
+		}
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
+	}				  
+}
+
+//----------------------------------------------------------------------------
+void CFontModule::ConvertGraymapToRGB24(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	int 		x,y,w,h;
+	U8	 		*s,*t;
+	U8  		*d,*u;
+	U32	 		color = attr_.color;
+	U8 			alpha;
+	U8			R = (color & 0xFF0000) >> 16;
+	U8			G = (color & 0x00FF00) >> 8;
+	U8			B = (color & 0x0000FF) >> 0;
+	tFontSurf	*surf = (tFontSurf*)pCtx;
+
+	// Pack RGB color into buffer according to grayscale values
+	w = source->width;
+	h = source->rows;
+	s = t = source->buffer;
+	d = u = surf->buffer + y0 * surf->pitch + x0 * 3;
+	for (y = 0; y < h; y++) 
+	{
+		s = t;
+		d = u;
+		for (x = 0; x < w; x++) 
+		{
+			if ((alpha = *s) != 0) 
+			{
+				U8  ialpha = 0xFF - alpha;
+				*d++ = (B * alpha + *d * ialpha) / 0xFF; 
+				*d++ = (R * alpha + *d * ialpha) / 0xFF;
+				*d++ = (G * alpha + *d * ialpha) / 0xFF;
+			}
+			else
+				d+=3;
+			s++;
+		}
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
+	}				  
+}
+  
+//----------------------------------------------------------------------------
+void CFontModule::ConvertGraymapToRGB4444(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	int 		x,y,w,h;
+	U8	 		*s,*t;
+	U8  		*d,*u;
+	U32	 		color = attr_.color;
+	U8 			alpha;
+	U8			R = (color & 0x0F00) >> 8;
+	U8			G = (color & 0x00F0) >> 4;
+	U8			B = (color & 0x000F) >> 0;
+	tFontSurf	*surf = (tFontSurf*)pCtx;
+
+	// Pack RGB color into buffer according to grayscale values
+	w = source->width;
+	h = source->rows;
+	s = t = source->buffer;
+	d = u = surf->buffer + y0 * surf->pitch + x0 * 2;
+	for (y = 0; y < h; y++) 
+	{
+		s = t;
+		d = u;
+		for (x = 0; x < w; x++) 
+		{
+			if ((alpha = *s) != 0) 
+			{
+				U8  ialpha = 0xFF - alpha;
+				U16* p16 = (U16*)d;
+				U16 bgcolor = *p16;
+				U16 r = (bgcolor & 0x0F00) >> 8;
+				U16 g = (bgcolor & 0x00F0) >> 4;
+				U16 b = (bgcolor & 0x000F) >> 0;
+				b = (B * alpha + b * ialpha) / 0xFF; 
+				g = (R * alpha + g * ialpha) / 0xFF;
+				r = (G * alpha + r * ialpha) / 0xFF;
+				*p16 = (r << 8) | (g << 4) | (b << 0); 
+			}
+			d+=2;
+			s++;
+		}
+		t += source->pitch;	// U8*
+		u += surf->pitch;	// U8*
+	}				  
+}
+  
+//----------------------------------------------------------------------------
+void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
+{
+	int 		x,y,w,h;
+	U8	 		*s,*t;
+	U8  		*d,*u;
+	U32	 		color = attr_.color;
+	U8 			alpha;
+	U8			R = (color & 0xF800) >> 11;
+	U8			G = (color & 0x07E0) >> 5;
+	U8			B = (color & 0x001F) >> 0;
+	tFontSurf	*surf = (tFontSurf*)pCtx;
+
+	// Pack RGB color into buffer according to grayscale values
+	w = source->width;
+	h = source->rows;
+	s = t = source->buffer;
+	d = u = surf->buffer + y0 * surf->pitch + x0 * 2;
+	for (y = 0; y < h; y++) 
+	{
+		s = t;
+		d = u;
+		for (x = 0; x < w; x++) 
+		{
+			if ((alpha = *s) != 0) 
+			{
+				U8  ialpha = 0xFF - alpha;
+				U16* p16 = (U16*)d;
+				U16 bgcolor = *p16;
+				U16 r = (bgcolor & 0xF800) >> 11;
+				U16 g = (bgcolor & 0x07E0) >> 5;
+				U16 b = (bgcolor & 0x001F) >> 0;
+				b = (B * alpha + b * ialpha) / 0xFF; 
+				g = (R * alpha + g * ialpha) / 0xFF;
+				r = (G * alpha + r * ialpha) / 0xFF;
+				*p16 = (r << 11) | (g << 5) | (b << 0); 
+			}
+			d+=2;
 			s++;
 		}
 		t += source->pitch;	// U8*
@@ -597,9 +807,43 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 
 	// Draw mono bitmap into RGB context buffer with current color
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
-		ConvertBitmapToRGB32(source, x+dx, y+dz-dy, pCtx);
+	{
+		switch (pCtx->format)
+		{
+			default:
+			case kPixelFormatARGB8888:
+				ConvertBitmapToRGB32(source, x+dx, y+dz-dy, pCtx); 
+				break;
+			case kPixelFormatRGB888:
+				ConvertBitmapToRGB24(source, x+dx, y+dz-dy, pCtx); 
+				break;
+			case kPixelFormatRGB4444:
+				ConvertBitmapToRGB4444(source, x+dx, y+dz-dy, pCtx); 
+				break;
+			case kPixelFormatRGB565:
+				ConvertBitmapToRGB565(source, x+dx, y+dz-dy, pCtx); 
+				break;
+		}
+	}
 	else if (source->pixel_mode == FT_PIXEL_MODE_GRAY)
-		ConvertGraymapToRGB32(source, x+dx, y+dz-dy, pCtx);
+	{
+		switch (pCtx->format)
+		{
+			default:
+			case kPixelFormatARGB8888:
+				ConvertGraymapToRGB32(source, x+dx, y+dz-dy, pCtx);
+				break;
+			case kPixelFormatRGB888:
+				ConvertGraymapToRGB24(source, x+dx, y+dz-dy, pCtx);
+				break;
+			case kPixelFormatRGB4444:
+				ConvertGraymapToRGB4444(source, x+dx, y+dz-dy, pCtx);
+				break;
+			case kPixelFormatRGB565:
+				ConvertGraymapToRGB565(source, x+dx, y+dz-dy, pCtx);
+				break;
+		}
+	}
 	else
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: glyph conversion format %X not supported\n", source->pixel_mode);
 

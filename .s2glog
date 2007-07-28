@@ -6136,3 +6136,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/27/07 6:10 PM
 2,594 ms. (Cumulative: 1,114,228 ms)
 
 ----------------
+Revision 1,060 from svn://localhost/TRUNK/:
+
+Added font rendering routines for other RGB formats: 888, 4444, 565.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/27/07 7:19 PM
+3 changed, 0 added, 0 deleted.
+2,547 ms. (Cumulative: 1,116,837 ms)
+
+----------------
