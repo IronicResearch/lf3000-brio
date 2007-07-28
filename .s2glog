@@ -6118,3 +6118,12 @@ By Dmilici (Dmilici@leapfrog.com) on 7/27/07 3:31 PM
 2,703 ms. (Cumulative: 1,108,711 ms)
 
 ----------------
+Revision 1,058 from svn://localhost/TRUNK/:
+
+Implement some more of the MIDI API.
+
+By DGibbs (DGibbs@leapfrog.com) on 7/27/07 5:34 PM
+10 changed, 2 added, 0 deleted.
+2,813 ms. (Cumulative: 1,111,571 ms)
+
+----------------

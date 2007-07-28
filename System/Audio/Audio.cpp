@@ -200,6 +200,48 @@ CAudioMsgIsMidiFilePlaying::CAudioMsgIsMidiFilePlaying( const tMidiPlayerID id )
 }
 
 //------------------------------------------------------------------------------
+CAudioMsgMidiFilePlaybackParams::CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id ) {
+	type_ = kAudioCmdMsgTypeGetEnabledMidiTracks;
+	messageSize = sizeof(CAudioMsgMidiFilePlaybackParams);
+	messagePriority = kAudioMsgDefaultPriority;
+	data_.id = id;
+}
+
+CAudioMsgMidiFilePlaybackParams::CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask ) {
+	type_ = kAudioCmdMsgTypeSetEnableMidiTracks;
+	messageSize = sizeof(CAudioMsgMidiFilePlaybackParams);
+	messagePriority = kAudioMsgDefaultPriority;
+	data_.id = id;
+	data_.trackBitMask = trackBitMask;
+}
+
+CAudioMsgMidiFilePlaybackParams::CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const S8 transposeAmount ) {
+	type_ = kAudioCmdMsgTypeTransposeMidiTracks;
+	messageSize = sizeof(CAudioMsgMidiFilePlaybackParams);
+	messagePriority = kAudioMsgDefaultPriority;
+	data_.id = id;
+	data_.trackBitMask = trackBitMask;
+	data_.transposeAmount = transposeAmount;
+}
+
+CAudioMsgMidiFilePlaybackParams::CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const tMidiInstr instr ) {
+	type_ = kAudioCmdMsgTypeChangeMidiInstrument;
+	messageSize = sizeof(CAudioMsgMidiFilePlaybackParams);
+	messagePriority = kAudioMsgDefaultPriority;
+	data_.id = id;
+	data_.trackBitMask = trackBitMask;
+	data_.instrument = instr;
+}
+
+CAudioMsgMidiFilePlaybackParams::CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const S8 tempo ) {
+	type_ = kAudioCmdMsgTypeChangeMidiTempo;
+	messageSize = sizeof(CAudioMsgMidiFilePlaybackParams);
+	messagePriority = kAudioMsgDefaultPriority;
+	data_.id = id;
+	data_.tempo = tempo;
+}
+
+//------------------------------------------------------------------------------
 CAudioReturnMessage::CAudioReturnMessage( ) {
 	messageSize = sizeof(CAudioReturnMessage);
 	messagePriority = kAudioMsgDefaultPriority;
@@ -375,35 +417,27 @@ tErrType CAudioModule::ResumeAudioSystem( void )
 	return WaitForStatus();
 }
 
-/*
 //==============================================================================
 //==============================================================================
-static tErrType CAudioModule::RegisterGetStereoAudioStreamFcn(tRsrcType type, tGetStereoAudioStreamFcn pFcn)
+tErrType CAudioModule::RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain )
 {
-	return kNoErr;
-};
+	return kNoImplErr;
+}
 
 //==============================================================================
 //==============================================================================
-static tErrType CAudioModule::RegisterAudioEffectsProcessor(tRsrcType type, CAudioEffectsProcessor *pChain)
+tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain )
 {
-	return kNoErr;
-};
+	return kNoImplErr;
+}
 
 //==============================================================================
 //==============================================================================
-static tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor(CAudioEffectsProcessor *pChain)
+tErrType CAudioModule::ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain )
 {
-	return kNoErr;
-};
+	return kNoImplErr;
+}
 
-//==============================================================================
-//==============================================================================
-static tErrType CAudioModule::ChangeAudioEffectsProcessor(tAudioID id, CAudioEffectsProcessor *pChain)
-{
-	return kNoErr;
-};
-*/
 //==============================================================================
 //==============================================================================
 void CAudioModule::SetMasterVolume( U8 volume )
@@ -781,40 +815,66 @@ void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage )
 //==============================================================================
 tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID id )
 {
-	return 0;
+	tMidiTrackBitMask bm;
+	U32 temp;
+	CAudioMsgMidiFilePlaybackParams msg( id );
+	
+	SendCmdMessage( msg );
+
+	temp = WaitForU32Result();
+	
+	bm = (tMidiTrackBitMask)temp;
+	
+	return bm;
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::EnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask )
+tErrType CAudioModule::SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask )
 {
-	return kNoErr;
+	CAudioMsgMidiFilePlaybackParams msg( id, trackBitMask );
+	
+	SendCmdMessage( msg );
+
+	return WaitForStatus();
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tracktBitMask, S8 transposeAmount )
+tErrType CAudioModule::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount )
 {
-	return kNoErr;
+	CAudioMsgMidiFilePlaybackParams msg( id, trackBitMask, transposeAmount );
+	
+	SendCmdMessage( msg );
+
+	return WaitForStatus();
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ChangeMidiInstrument(tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr)
+tErrType CAudioModule::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr )
 {
-	return kNoErr;
+	CAudioMsgMidiFilePlaybackParams msg( id, trackBitMask, instr );
+	
+	SendCmdMessage( msg );
+
+	return WaitForStatus();
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ChangeMidiTempo(tMidiPlayerID id, S8 tempo) 
+tErrType CAudioModule::ChangeMidiTempo( tMidiPlayerID id, S8 tempo ) 
 {
-	return kNoErr;
+	CAudioMsgMidiFilePlaybackParams msg( id, tempo );
+	
+	SendCmdMessage( msg );
+
+	return WaitForStatus();
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::SendMidiCommand(tMidiPlayerID id, U8 cmd, U8 data1, U8 data2)
+tErrType CAudioModule::SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 )
 {
 	return kNoErr;
 }

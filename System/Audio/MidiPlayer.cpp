@@ -28,6 +28,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 #define kSamplesPerFrame   (2)
 #define kBitsPerSample     (sizeof(S16)*8)
+#define kNumMIDIChannels	16
 
 //==============================================================================
 // Global variables
@@ -153,6 +154,18 @@ tErrType 	CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptio
 		"CMidiPlayer::NoteOff -- chan: %d, note: %d, vel: %d, flags: %d\n", channel, noteNum, velocity, static_cast<int>(flags) );
  
 	SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
+
+	return kNoErr;
+}
+
+//==============================================================================
+//==============================================================================
+tErrType CMidiPlayer::SendCommand( U8 cmd, U8 data1, U8 data2 )
+{
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
+		"CMidiPlayer::SendCommand -- ...\n");	
+
+	SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, (int)data2 );
 
 	return kNoErr;
 }
@@ -285,17 +298,57 @@ tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::EnableTracks(tMidiTrackBitMask trackBitMask)
+tErrType CMidiPlayer::GetEnableTracks( tMidiTrackBitMask* trackBitMask )
 {
+	U32					chan;
+	tMidiTrackBitMask	mask = 0;
+	int					isEnabled;
+	
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::EnableTracks -- ...\n");	
+		"CMidiPlayer::GetEnableTracks -- ...\n");	
+
+	// Loop through the channels and set mask
+	for (chan = 0; chan < kNumMIDIChannels; chan++) {
+		isEnabled = SPMIDI_GetChannelEnable( pContext_, chan );
+		if (isEnabled){
+			mask |= 1 << chan;
+		}
+	}
+
+	*trackBitMask = mask;
+	
+	return kNoErr;
+}
+
+
+//==============================================================================
+//==============================================================================
+#define kMIDITrackEnable		1
+#define kMIDITrackDisable		0
+
+tErrType CMidiPlayer::SetEnableTracks( tMidiTrackBitMask trackBitMask )
+{
+	U32					chan;
+	tMidiTrackBitMask	mask;
+	
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SetEnableTracks -- ...\n");	
+
+	// Loop through the channels and set mask
+	for (chan = 0; chan < kNumMIDIChannels; chan++) {
+		mask = 0;					// clear it out
+		mask = 1 << chan;			// set the bit corresponding to this chan
+		if (trackBitMask && mask)	// if it's set, enable the channel
+			SPMIDI_SetChannelEnable( pContext_, chan, kMIDITrackEnable );
+		else
+			SPMIDI_SetChannelEnable( pContext_, chan, kMIDITrackDisable );
+	}
 
 	return kNoErr;
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::TransposeTracks(tMidiTrackBitMask trackBitMask, S8 transposeAmount)
+tErrType CMidiPlayer::TransposeTracks( tMidiTrackBitMask trackBitMask, S8 transposeAmount )
 {
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CMidiPlayer::TransposeTracks -- ...\n");	
@@ -305,17 +358,17 @@ tErrType CMidiPlayer::TransposeTracks(tMidiTrackBitMask trackBitMask, S8 transpo
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::ChangeInstrument(tMidiTrackBitMask trackBitMask, tMidiInstr instr)
+tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask trackBitMask, tMidiInstr instr )
 {
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::ChangeInstrument -- ...\n");	
+		"CMidiPlayer::ChangeProgram -- ...\n");	
 
 	return kNoErr;
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::ChangeTempo(S8 Tempo)
+tErrType CMidiPlayer::ChangeTempo( S8 Tempo )
 {
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CMidiPlayer::ChangeTempo -- ...\n");	
@@ -323,15 +376,6 @@ tErrType CMidiPlayer::ChangeTempo(S8 Tempo)
 	return kNoErr;
 }
 
-//==============================================================================
-//==============================================================================
-tErrType CMidiPlayer::SendCommand(U8 cmd, U8 data1, U8 data2)
-{
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::SendCommand -- ...\n");	
-
-	return kNoErr;
-}
 
 //==============================================================================
 //==============================================================================
