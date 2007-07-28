@@ -47,6 +47,9 @@ struct tFontMetrics {
 struct tFontProp {
 	U16		version;
 	U8		size;
+	// version 2 properties
+	U32		encoding;
+	Boolean useEncoding;
 };
 
 // Font rendering attributes
@@ -55,6 +58,13 @@ struct tFontAttr {
 	U32		color;
 	Boolean	direction;
 	Boolean	antialias;
+	// version 2 attributes
+	U32		horizJust;
+	U32		vertJust;
+	U32		spaceExtra;
+	U32		leading;
+	Boolean	useKerning;
+	Boolean useUnderlining;
 };
 
 // Font surface

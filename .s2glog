@@ -6127,3 +6127,12 @@ By DGibbs (DGibbs@leapfrog.com) on 7/27/07 5:34 PM
 2,813 ms. (Cumulative: 1,111,571 ms)
 
 ----------------
+Revision 1,059 from svn://localhost/TRUNK/:
+
+Added placeholders for future Font MPI members and modified SDK examples to ignore them.
+
+By Dmilici (Dmilici@leapfrog.com) on 7/27/07 6:10 PM
+1 changed, 0 added, 0 deleted.
+2,594 ms. (Cumulative: 1,114,228 ms)
+
+----------------
