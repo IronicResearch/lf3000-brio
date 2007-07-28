@@ -66,8 +66,8 @@ public:
 		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
-		tFontProp	prop1 = {1, 12};
-		tFontProp	prop2 = {1, 24};
+		tFontProp	prop1 = {1, 12, 0, 0};
+		tFontProp	prop2 = {1, 24, 0, 0};
 
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();

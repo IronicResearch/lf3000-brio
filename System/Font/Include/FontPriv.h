@@ -119,7 +119,13 @@ private:
 	int					curY_;
     Boolean     		DrawGlyph(char ch, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertBitmapToRGB24(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertBitmapToRGB4444(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertBitmapToRGB565(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertGraymapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertGraymapToRGB24(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertGraymapToRGB4444(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
+    void				ConvertGraymapToRGB565(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
 	tFontHndl			LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize);
 
 	// Limit object creation to the Module Manager interface functions
