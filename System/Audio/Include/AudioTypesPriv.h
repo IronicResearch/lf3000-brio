@@ -1,5 +1,16 @@
 #ifndef LF_BRIO_AUDIOTYPESPRIV_H_
 #define LF_BRIO_AUDIOTYPESPRIV_H_
+//==============================================================================
+// Copyright (c) LeapFrog Enterprises, Inc.
+//==============================================================================
+//
+// File:
+//		AudioTypesPriv.h
+//
+// Description:
+//		Defines the private, hidden types used by AudioMgrMPI. 
+//
+//==============================================================================
 
 #include <SystemTypes.h>
 #include <AudioTypes.h>
@@ -86,9 +97,30 @@ struct tAudioStopMidiFileInfo {
 	tMidiPlayerID		id;
 	Boolean				suppressDoneMsg;
 
-	tAudioStopMidiFileInfo( tMidiPlayerID i = -1, 
-						 Boolean s = false )
+	tAudioStopMidiFileInfo( tMidiPlayerID i = -1, Boolean s = false )
 		: id(i), suppressDoneMsg(s) {}
+};
+
+//kAudioCmdMsgTypeGetEnabledMidiTracks
+//kAudioCmdMsgTypeEnableMidiTracks
+//kAudioCmdMsgTypeTransposeMidiTracks
+//kAudioCmdMsgTypeChangeMidiInstrument
+//kAudioCmdMsgTypeChangeMidiTempo
+
+struct tAudioMidiFilePlaybackParams {
+	tMidiPlayerID		id;						// ID of player to change
+	tMidiTrackBitMask 	trackBitMask;
+	S8 					transposeAmount;
+	tMidiInstr 			instrument;
+	S8 					tempo;
+
+	tAudioMidiFilePlaybackParams( tMidiPlayerID	i = 0,
+						tMidiTrackBitMask tbm = 0,
+						S8 tsp = 0,
+						tMidiInstr mi = 0,
+						S8 t = 0 )
+		: id(i),  trackBitMask(tbm), transposeAmount(tsp), instrument(mi),
+		tempo(t) {}
 };
 
 LF_END_BRIO_NAMESPACE()

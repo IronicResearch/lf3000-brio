@@ -21,6 +21,7 @@
 #include <AudioConfig.h>
 #include <AudioTask.h>
 #include <AudioMsg.h>
+#include <AudioEffectsProcessor.h>
 #include <EventListener.h>
 
 //#include <RsrcTypes.h>
@@ -77,6 +78,10 @@ public:
 	VTABLE_EXPORT Boolean	IsAudioPlaying( void );
 
 	
+	VTABLE_EXPORT tErrType RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain );
+	VTABLE_EXPORT tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); 
+	VTABLE_EXPORT tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); 
+
 	VTABLE_EXPORT tErrType	AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiPlayerID *id );
 	VTABLE_EXPORT tErrType	ReleaseMidiPlayer( tMidiPlayerID id );
 	
@@ -87,15 +92,15 @@ public:
 						IEventListener*		pListener,
 						tAudioPayload		payload,
 						tAudioOptionsFlags	flags );
-	VTABLE_EXPORT void StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage );
 	VTABLE_EXPORT void PauseMidiFile( tMidiPlayerID id );
 	VTABLE_EXPORT void ResumeMidiFile( tMidiPlayerID id );
+	VTABLE_EXPORT void StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage );
 
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( tMidiPlayerID id );
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( void );
 
 	VTABLE_EXPORT tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-	VTABLE_EXPORT tErrType EnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
+	VTABLE_EXPORT tErrType SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
 	VTABLE_EXPORT tErrType TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
 	VTABLE_EXPORT tErrType ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr );
 	VTABLE_EXPORT tErrType ChangeMidiTempo( tMidiPlayerID id, S8 tempo );

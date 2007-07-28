@@ -50,21 +50,22 @@ public:
 
 	// Get/Set the class member variables
 	inline tMidiPlayerID		GetMidiID() { return id_; }
-	inline tMidiTrackBitMask	GetEnabledTracks() { return trackBitMask_; }
-	tErrType					EnableTracks(tMidiTrackBitMask trackBitMask);
 
-	// Control the playing of the Midi
+	// Control the playing of MIDI data
 	tErrType 	NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
+
 	tErrType 	StartMidiFile( tAudioStartMidiFileInfo* pInfo );
 	tErrType 	PauseMidiFile( void );
 	tErrType 	ResumeMidiFile( void );
 	tErrType 	StopMidiFile( tAudioStopMidiFileInfo* pInfo );
 
-	tErrType	TransposeTracks( tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
-	tErrType	ChangeInstrument( tMidiTrackBitMask trackBitMask, tMidiInstr instr );
-	tErrType	ChangeTempo( S8 Tempo); 
-	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
+	tErrType	GetEnableTracks( tMidiTrackBitMask* trackBitMask );
+	tErrType	SetEnableTracks( tMidiTrackBitMask trackBitMask);
+	tErrType	TransposeTracks( tMidiTrackBitMask trackBitMask, S8 transposeAmount );
+	tErrType	ChangeProgram( tMidiTrackBitMask trackBitMask, tMidiInstr instr );
+	tErrType	ChangeTempo( S8 Tempo ); 
 
 private:
 	CDebugMPI* 				pDebugMPI_;	

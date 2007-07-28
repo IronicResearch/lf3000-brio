@@ -67,7 +67,7 @@ enum {
 	kAudioCmdMsgTypeIsAnyMidiFilePlaying,
 	
 	kAudioCmdMsgTypeGetEnabledMidiTracks,
-	kAudioCmdMsgTypeEnableMidiTracks,
+	kAudioCmdMsgTypeSetEnableMidiTracks,
 	kAudioCmdMsgTypeTransposeMidiTracks,
 	kAudioCmdMsgTypeChangeMidiInstrument,
 	kAudioCmdMsgTypeChangeMidiTempo,
@@ -270,6 +270,25 @@ public:
 
 private:
 	tMidiPlayerID	id_;
+};
+
+//kAudioCmdMsgTypeGetEnabledMidiTracks
+//kAudioCmdMsgTypeSetEnableMidiTracks
+//kAudioCmdMsgTypeTransposeMidiTracks
+//kAudioCmdMsgTypeChangeMidiInstrument
+//kAudioCmdMsgTypeChangeMidiTempo
+class CAudioMsgMidiFilePlaybackParams : public CAudioCmdMsg {
+public:
+	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id );
+	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask );
+	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const S8 transposeAmount );
+	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const tMidiInstr instr );
+	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const S8 tempo );
+
+	tAudioMidiFilePlaybackParams*	GetData( void ) { return &data_; }
+	
+private:
+	tAudioMidiFilePlaybackParams		data_;
 };
 
 // kAudioCmdMsgTypeMidiNoteOn

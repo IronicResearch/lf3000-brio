@@ -17,7 +17,7 @@
 #include <ResourceTypes.h>
 #include <AudioTypes.h>
 #include <CoreMPI.h>
-//#include <EventListener.h>
+#include <AudioEffectsProcessor.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventListener;
@@ -99,12 +99,20 @@ public:
 	// Is the audio system playing anything?
 	Boolean		IsAudioPlaying( void );
 
+	
+	//********************************
+	// Audio FX functionality
+	//********************************    
+	tErrType RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain );
+	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); 
+	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); 
+
 	//********************************
 	// MIDI functionality
 	//********************************    
 
 	// NOTE: Currently the midiID is ignored because only one file can be played at a time!
-	// in the future if we implement multiple MIDI players you would use the midiID to
+	// In the future if we implement multiple MIDI players you would use the midiID to
 	// specify which player to direct the note or midifile msgs.
 
 	// This function activates the MIDI engine.  Don't do this unless you really need to play
@@ -143,8 +151,10 @@ public:
 
     // Get and set properities of a playing MIDI file.
     tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-	tErrType 	EnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
-	tErrType 	TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
+	tErrType 	SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
+	
+	// these three are still unimplemented
+	tErrType 	TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount );
 	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr );
 	tErrType 	ChangeMidiTempo( tMidiPlayerID id, S8 tempo );
 
@@ -156,6 +166,7 @@ public:
 	// Stop the previously trigger MIDI note.
     tErrType 	MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 
+    // Send raw MIDI msg to player.
 	tErrType 	SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 private:
