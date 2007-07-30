@@ -65,11 +65,11 @@ public:
 
 	// MPI state storage
 	VTABLE_EXPORT	U32				Register( );
+	VTABLE_EXPORT	void			Unregister(U32 id);
 	VTABLE_EXPORT	void			SetDefaultURIPath(U32 id, const CURI &pURIPath);
 	VTABLE_EXPORT	tErrType		SetDefaultListener(U32 id, //FIXME/tp check interface
 												const IEventListener *pListener);
 	VTABLE_EXPORT	void			SetSynchronization(U32 id, eSynchState block);
-	VTABLE_EXPORT	void			MakeOmniscient(U32 id);
 
 	// Searching for devices
 	VTABLE_EXPORT	U16				GetNumDevices(eDeviceType type) const;
@@ -152,6 +152,7 @@ public:
 											Boolean suppressDoneEvent = false) const;  
 	VTABLE_EXPORT	tErrType		SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes, 
 											tOptionFlags seekOptions) const;
+	VTABLE_EXPORT	U32				TellRsrc(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	tErrType		WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer, 
 											U32 numBytesRequested, U32 *pNumBytesActual,
 											tOptionFlags writeOptions,
@@ -167,9 +168,19 @@ public:
 	VTABLE_EXPORT	Boolean			RsrcIsLoaded(U32 id, tRsrcHndl hndl) const;
 
 	// New rsrc creation/deletion
-	VTABLE_EXPORT	tRsrcHndl 		NewRsrc(U32 id, tRsrcType rsrcType, void* pData);
-	VTABLE_EXPORT	tErrType		DeleteRsrc(U32 id, tRsrcHndl hndl);
-	
+	VTABLE_EXPORT	tRsrcHndl		AddNewRsrcToPackage( U32 id, tPackageHndl hPkg, 
+										const CURI& fullRsrcURI, 
+										tRsrcType rsrcType );
+	  
+	VTABLE_EXPORT	tRsrcHndl		AddRsrcToPackageFromFile( U32 id, tPackageHndl hPkg, 
+											const CURI& fullRsrcURI, 
+											tRsrcType rsrcType,
+											const CPath& fullPath );
+
+	VTABLE_EXPORT	tErrType		RemoveRsrcFromPackage( U32 id, tPackageHndl hPkg,
+			 								const CURI& fullURI, 
+			 								bool deleteRsrc);
+
 	
 private:
 	void 	OpenDeviceImpl(U32 id, tDeviceHndl hndl, tOptionFlags openOptions);

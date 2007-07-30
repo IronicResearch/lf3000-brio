@@ -2,4 +2,5 @@ LF/Brio/UnitTest/Audio/SampleTest,Audio/SampleTest.briopkg,1,1
 LF/Brio/UnitTest/Font/FontTest,Font/FontTest.briopkg,1,1
 LF/Brio/UnitTest/Resource/A/CountTest,Resource/CountTest.briopkg,1,1
 LF/Brio/UnitTest/Resource/B/LoadTest,Resource/LoadTest.briopkg,1,1
+LF/Brio/UnitTest/Resource/C/AddTest,Resource/AddTest.briopkg,1,1
 LF/Brio/UnitTest/Video/ClipTest,Video/ClipTest.briopkg,1,1

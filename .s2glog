@@ -6175,3 +6175,12 @@ By tparker (tparker@leapfrog.com) on 7/30/07 3:32 PM
 2,688 ms. (Cumulative: 1,122,338 ms)
 
 ----------------
+Revision 1,075 from svn://localhost/TRUNK/:
+
+Implement the Add/Remove() functions, remove SystemResourceMPI
+
+By tparker (tparker@leapfrog.com) on 7/30/07 3:33 PM
+7 changed, 1 added, 0 deleted.
+2,703 ms. (Cumulative: 1,125,119 ms)
+
+----------------

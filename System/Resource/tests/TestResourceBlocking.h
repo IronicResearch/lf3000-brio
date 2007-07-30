@@ -2,8 +2,10 @@
 
 #include <cxxtest/TestSuite.h>
 #include <boost/shared_array.hpp>
-#include <ResourceMPI.h>
+#include <errno.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
+#include <ResourceMPI.h>
 #include <EventMessage.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
@@ -20,6 +22,7 @@ CURI	gPkg = "LF/Brio/UnitTest/Resource";
 CURI	gPkgA = "LF/Brio/UnitTest/Resource/A";
 CURI	gPkgB = "LF/Brio/UnitTest/Resource/B";
 CURI	gPkgC = "LF/Brio/UnitTest/Resource/C";
+CURI	gPkgD = "LF/Brio/UnitTest/Resource/D";
 /*
 template <typename T, typename D>
 class scoped_resource
@@ -48,6 +51,13 @@ typedef scoped_resource<tRsrcHndl, RsrcHndlDeleter> RsrcHndl;
 
 RsrcHndl rsrc(mpi.LoadRsrc(hndl), mpi);
 */
+//----------------------------------------------------------------------------
+inline bool FileExists( const CPath& path )
+{
+	struct stat filestat;
+	return stat(path.c_str(), &filestat) == 0;
+}
+
 
 //============================================================================
 // TestRsrcMgr functions
@@ -66,8 +76,21 @@ public:
 	//------------------------------------------------------------------------
 	void tearDown( )
 	{
-		rsrcmgr_->CloseAllDevices();
-		delete rsrcmgr_; 
+		// The Add/remove resources tests mess with the unit test
+		// data file, so clean up any files that failed to get cleaned up
+		// otherwise.
+		//
+		delete rsrcmgr_;
+		CKernelMPI	kernel;
+		CPath path = EmulationConfig::Instance().GetCartResourceSearchPath();
+		std::vector<CPath>	files = kernel.GetFilesInDirectory(path + "Resource");
+		for (size_t ii = 0; ii < files.size(); ++ii)
+		{
+			if (files[ii].find("/AddTest.briopkg") != CPath::npos)
+				remove(files[ii].c_str());
+			if (*files[ii].rbegin() == '_')
+				remove(files[ii].c_str());
+		}
 	}
 	
 	//------------------------------------------------------------------------
@@ -120,43 +143,46 @@ public:
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
 		rsrcmgr_->SetDefaultURIPath(gPkg);
-		TS_ASSERT_EQUALS( static_cast<U16>(2), rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(3), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
 		TS_ASSERT_EQUALS( static_cast<U16>(1), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
 		TS_ASSERT_EQUALS( static_cast<U16>(1), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkgC);
+		TS_ASSERT_EQUALS( static_cast<U16>(1), rsrcmgr_->GetNumPackages() );
+		rsrcmgr_->SetDefaultURIPath(gPkgD);
 		TS_ASSERT_EQUALS( static_cast<U16>(0), rsrcmgr_->GetNumPackages() );
 		rsrcmgr_->SetDefaultURIPath(gPkg);
-		TS_ASSERT_EQUALS( static_cast<U16>(2), rsrcmgr_->GetNumPackages() );
+		TS_ASSERT_EQUALS( static_cast<U16>(3), rsrcmgr_->GetNumPackages() );
 		
-		tPackageHndl pkg;
-		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll, &gPkgC);
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageURI(pkg), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageType(pkg), UnitTestAssertException );
-		TS_ASSERT_THROWS( rsrcmgr_->GetPackageVersion(pkg), UnitTestAssertException );
+		tPackageHndl hPkg;
+		hPkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll, &gPkgD);
+		TS_ASSERT_EQUALS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_THROWS( rsrcmgr_->GetPackageURI(hPkg), UnitTestAssertException );
+		TS_ASSERT_THROWS( rsrcmgr_->GetPackageType(hPkg), UnitTestAssertException );
+		TS_ASSERT_THROWS( rsrcmgr_->GetPackageVersion(hPkg), UnitTestAssertException );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 
 		// TODO: test different types and versions when supported
-		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll, &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
+		hPkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll, &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(hPkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(hPkg), kPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(hPkg), 1 );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
+		hPkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(hPkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(hPkg), kPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(hPkg), 1 );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		
 		rsrcmgr_->SetDefaultURIPath(gPkg);
-		pkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		hPkg = rsrcmgr_->FindFirstPackage(kPackageTypeAll);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 		TS_ASSERT_EQUALS( kInvalidPackageHndl, rsrcmgr_->FindNextPackage() );
 	}
@@ -166,26 +192,26 @@ public:
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
 
-		tPackageHndl pkg;
-		pkg = rsrcmgr_->FindPackage("CountTest");
-		TS_ASSERT_EQUALS( kInvalidPackageHndl, pkg );
+		tPackageHndl hPkg;
+		hPkg = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_EQUALS( kInvalidPackageHndl, hPkg );
 
-		pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
+		hPkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(hPkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(hPkg), kPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(hPkg), 1 );
 
 		// TODO: test different types and versions when supported
-		pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(pkg), kPackageTypeInvalid );
-		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(pkg), 1 );
+		hPkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(hPkg), "LF/Brio/UnitTest/Resource/B/LoadTest" );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageType(hPkg), kPackageTypeInvalid );
+		TS_ASSERT_EQUALS( rsrcmgr_->GetPackageVersion(hPkg), 1 );
 	
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
-		pkg = rsrcmgr_->FindPackage("CountTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		hPkg = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
 
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 	}
@@ -195,9 +221,9 @@ public:
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
 
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(hPkg), "LF/Brio/UnitTest/Resource/A/CountTest" );
 
 		tPackageHndl pkg1 = rsrcmgr_->FindPackage("COUNTTEST", &gPkgA);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg1 );
@@ -206,8 +232,8 @@ public:
 		tPackageHndl pkg2 = rsrcmgr_->FindPackage("counttest", &gPkgA);
 		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg2 );
 		TS_ASSERT_EQUALS( *rsrcmgr_->GetPackageURI(pkg2), "LF/Brio/UnitTest/Resource/A/CountTest" );
-		TS_ASSERT_EQUALS( pkg, pkg1);
-		TS_ASSERT_EQUALS( pkg, pkg2);
+		TS_ASSERT_EQUALS( hPkg, pkg1);
+		TS_ASSERT_EQUALS( hPkg, pkg2);
 	}
 	
 	//------------------------------------------------------------------------
@@ -255,12 +281,12 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
 		TS_ASSERT_EQUALS( static_cast<U32>(0), rsrcmgr_->GetNumRsrcs() );
 		rsrcmgr_->SetDefaultURIPath(gPkgA);
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
 		TS_ASSERT_EQUALS( static_cast<U32>(0), rsrcmgr_->GetNumRsrcs() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
 		TS_ASSERT_EQUALS( static_cast<U32>(5), rsrcmgr_->GetNumRsrcs() );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );
 		TS_ASSERT_EQUALS( static_cast<U32>(0), rsrcmgr_->GetNumRsrcs() );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 	}
@@ -269,11 +295,11 @@ public:
 	void testDoubleClosePackage( )
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(pkg) );
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
 	}
 
@@ -299,9 +325,9 @@ public:
 		tRsrcHndl		handle;
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("CountTest", &gPkgA);
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
 
 		handle = rsrcmgr_->FindRsrc("bogus_resource_name");
 		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
@@ -322,9 +348,9 @@ public:
 
 		const U32		kSizeHelloWorldText	= 21;
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
 		handle = rsrcmgr_->FindRsrc("one");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		pURI = rsrcmgr_->GetURI(handle);
@@ -351,9 +377,9 @@ public:
 		ConstPtrCURI	pURI;
 
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
 		
 		tRsrcHndl hndl = rsrcmgr_->FindRsrc("one");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, hndl );
@@ -390,8 +416,8 @@ public:
 		U8 				buffer[kBufSize];
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		tPackageHndl pkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(pkg) );
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("LoadTest", &gPkgB);
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
 		rsrcmgr_->SetDefaultURIPath(gPkgB);
 		handle = rsrcmgr_->FindRsrc("five");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
@@ -424,24 +450,164 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseRsrc(handle) );
 	}
 	
-	void xtestFindOpenAndWriteBinaryRsrc( )
+	
+	//------------------------------------------------------------------------
+	void testAddRemoveRsrc( )
 	{
-		// FIXME/tp: Reenable after 6/15 delivery
+		// Since we will be modifying the package file, copy it from a
+		// version controlled archive so we can get back to a clean state.
+		//
+		CPath dir	= EmulationConfig::Instance().GetCartResourceSearchPath();
+		dir			+= "Resource/";
+		CPath in	= dir + "SVNAddTest.briopkg";
+		CPath out	= dir + "AddTest.briopkg";
+		CString command = "cp -f " + in + " " + out;
+		int status = system(command.c_str());
+		TS_ASSERT_DIFFERS( status, -1 );
+		
 		tRsrcHndl		handle;
+		CURI			kFullURI = "LF/Brio/UnitTest/Resource/C/bookish";
+
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		rsrcmgr_->SetDefaultURIPath(gPkgC);
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("AddTest");
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		TS_ASSERT_EQUALS( 5UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish");
+		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
+		tRsrcHndl hndlC1 = rsrcmgr_->FindRsrc("C");
+		handle = rsrcmgr_->AddNewRsrcToPackage(hPkg, kFullURI, kCommonRsrcJson);
+		tRsrcHndl hndlC2 = rsrcmgr_->FindRsrc("C");
+		TS_ASSERT_DIFFERS( hndlC1, hndlC2 );		// Validate that existing handles are invalidated
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
+		tRsrcHndl h2 = rsrcmgr_->FindRsrc("bookish");
+		TS_ASSERT_EQUALS( h2, handle );
+		TS_ASSERT_EQUALS( kCommonRsrcJson, rsrcmgr_->GetType(handle) );
+		TS_ASSERT_EQUALS( 1UL, rsrcmgr_->GetVersion(handle) );
+		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetPackedSize(handle) );
+		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetUnpackedSize(handle) );
+		TS_ASSERT_EQUALS( kFullURI, *rsrcmgr_->GetURI(handle) );
+		TS_ASSERT_EQUALS( 6UL, rsrcmgr_->GetNumRsrcs() );
+		
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );	// Validate that package file is persisted
+		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish");
+		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		TS_ASSERT_EQUALS( 6UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
+
+		
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->RemoveRsrcFromPackage(hPkg, kFullURI) );
+		TS_ASSERT_EQUALS( 5UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish");
+		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
+	}
+	
+	
+	//------------------------------------------------------------------------
+	void testAddRemoveRsrcFromFile( )
+	{
+		// Since we will be modifying the package file, copy it from a
+		// version controlled archive so we can get back to a clean state.
+		//
+		CPath dir	= EmulationConfig::Instance().GetCartResourceSearchPath();
+		dir			+= "Resource/";
+		CPath in	= dir + "SVNAddTest.briopkg";
+		CPath out	= dir + "AddTest.briopkg";
+		CString command = "cp -f " + in + " " + out;
+		int status = system(command.c_str());
+		TS_ASSERT_DIFFERS( status, -1 );
+		
+		tRsrcHndl		handle;
+		CURI			kFullURI = "LF/Brio/UnitTest/Resource/C/bookish2";
+
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		rsrcmgr_->SetDefaultURIPath(gPkgC);
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("AddTest");
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		TS_ASSERT_EQUALS( 5UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish2");
+		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
+		tRsrcHndl hndlC1 = rsrcmgr_->FindRsrc("C");
+		handle = rsrcmgr_->AddRsrcToPackageFromFile(hPkg, kFullURI, 
+											kCommonRsrcJson, dir + "ZZ_");
+		tRsrcHndl hndlC2 = rsrcmgr_->FindRsrc("C");
+		TS_ASSERT_DIFFERS( hndlC1, hndlC2 );		// Validate that existing handles are invalidated
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
+		tRsrcHndl h2 = rsrcmgr_->FindRsrc("bookish2");
+		TS_ASSERT_EQUALS( h2, handle );
+		TS_ASSERT( FileExists(dir + "ZZ_") );
+		TS_ASSERT_EQUALS( kCommonRsrcJson, rsrcmgr_->GetType(handle) );
+		TS_ASSERT_EQUALS( 1UL, rsrcmgr_->GetVersion(handle) );
+		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetPackedSize(handle) );
+		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetUnpackedSize(handle) );
+		TS_ASSERT_EQUALS( kFullURI, *rsrcmgr_->GetURI(handle) );
+		TS_ASSERT_EQUALS( 6UL, rsrcmgr_->GetNumRsrcs() );
+		
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );	// Validate that package file is persisted
+		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish2");
+		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		TS_ASSERT_EQUALS( 6UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish2");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
+
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->RemoveRsrcFromPackage(hPkg, kFullURI) );
+		TS_ASSERT_EQUALS( 5UL, rsrcmgr_->GetNumRsrcs() );
+		handle = rsrcmgr_->FindRsrc("bookish2");
+		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
+		TS_ASSERT( !FileExists(dir + "ZZ_") );
+
+		handle = rsrcmgr_->AddRsrcToPackageFromFile(hPkg, kFullURI, 
+											kCommonRsrcJson, dir + "ZY_");
+		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
+		TS_ASSERT( FileExists(dir + "ZY_") );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->RemoveRsrcFromPackage(hPkg, kFullURI, false) );
+		TS_ASSERT( FileExists(dir + "ZY_") );
+}
+	
+	//------------------------------------------------------------------------
+	void testCreateAndWriteRsrc( )
+	{
+		// Since we will be modifying the package file, copy it from a
+		// version controlled archive so we can get back to a clean state.
+		//
+		CPath dir	= EmulationConfig::Instance().GetCartResourceSearchPath();
+		dir			+= "Resource/";
+		CPath in	= dir + "SVNAddTest.briopkg";
+		CPath out	= dir + "AddTest.briopkg";
+		CString command = "cp -f " + in + " " + out;
+		int status = system(command.c_str());
+		TS_ASSERT_DIFFERS( status, -1 );
+		
+		in = dir + "app5.bin";
+		out = dir + "XX_";
+		command = "cp -f " + in + " " + out;
+		status = system(command.c_str());
+		TS_ASSERT_DIFFERS( status, -1 );
+		
+		tRsrcHndl		handle;
+		CURI			kFullURI = "LF/Brio/UnitTest/Resource/C/test";
 		U32				size;
 		const U32		kBufSize	= 80;
 		U8 				buffer[kBufSize];
 		U8 				buffer_inv[kBufSize];
 		U8 				buffer_inv_test[kBufSize];
-		
+
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
-		rsrcmgr_->SetDefaultURIPath("/home/lfu/workspace/Brio2/apprsrc/Applic2");
-		handle = rsrcmgr_->FindRsrc("app5.bin");
+		rsrcmgr_->SetDefaultURIPath(gPkgC);
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("AddTest");
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		handle = rsrcmgr_->AddRsrcToPackageFromFile(hPkg, kFullURI, 
+						kCommonRsrcBin, dir + "XX_");
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		
-		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenRsrc(handle,
-			(kOpenRsrcOptionRead | kOpenRsrcOptionWrite) ) );
-
+		TS_ASSERT_EQUALS( rsrcmgr_->TellRsrc(handle), rsrcmgr_->GetUnpackedSize(handle) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->SeekRsrc(handle, 0) );
+		TS_ASSERT_EQUALS( rsrcmgr_->TellRsrc(handle), 0UL );
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ReadRsrc(handle, buffer, kBufSize) );
 
 		for(unsigned int i=0; i < kBufSize; ++i)
@@ -525,9 +691,6 @@ public:
 		}
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseRsrc(handle) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->RemoveRsrcFromPackage(hPkg, kFullURI, false) );
 	}
 };
-
-// Totest: packages containing packages
-// packages containing resources with URIs with alternate bases
-

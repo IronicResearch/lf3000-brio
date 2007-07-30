@@ -63,6 +63,7 @@ CResourceMPI::CResourceMPI(eSynchState block, const IEventListener *pListener)
 //----------------------------------------------------------------------------
 CResourceMPI::~CResourceMPI()
 {
+	pModule_->Unregister(id_);
 	Module::Disconnect(pModule_);
 }
 
@@ -412,6 +413,13 @@ tErrType CResourceMPI::SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes,
 	return pModule_->SeekRsrc(id_, hndl, numSeekBytes, seekOptions);
 }
 //----------------------------------------------------------------------------
+U32 CResourceMPI::TellRsrc(tRsrcHndl hndl) const
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->TellRsrc(id_, hndl);
+}
+//----------------------------------------------------------------------------
 tErrType CResourceMPI::WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags writeOptions,
@@ -441,7 +449,6 @@ tErrType CResourceMPI::UnloadRsrc(tRsrcHndl hndl,
 		return kMPINotConnectedErr;
 	return pModule_->UnloadRsrc(id_, hndl, unloadOptions, pListener);
 }
-
 //----------------------------------------------------------------------------
 Boolean CResourceMPI::RsrcIsLoaded(tRsrcHndl hndl) const
 {
@@ -451,20 +458,37 @@ Boolean CResourceMPI::RsrcIsLoaded(tRsrcHndl hndl) const
 }
 
 
-	// New rsrc creation/deletion
 //----------------------------------------------------------------------------
-tRsrcHndl CResourceMPI::NewRsrc(tRsrcType rsrcType, void* pData)
+// New rsrc creation/deletion
+//----------------------------------------------------------------------------
+tRsrcHndl CResourceMPI::AddNewRsrcToPackage( tPackageHndl hPkg, 
+									const CURI& fullRsrcURI, 
+									tRsrcType rsrcType )
 {
 	if(!pModule_)
 		return kInvalidRsrcHndl;
-	return pModule_->NewRsrc(id_, rsrcType, pData);
+	return pModule_->AddNewRsrcToPackage(id_, hPkg, fullRsrcURI, rsrcType);
 }
+ 
 //----------------------------------------------------------------------------
-tErrType CResourceMPI::DeleteRsrc(tRsrcHndl hndl)
+tRsrcHndl CResourceMPI::AddRsrcToPackageFromFile( tPackageHndl hPkg, 
+									const CURI& fullRsrcURI, 
+									tRsrcType rsrcType,
+									const CPath& fullPath )
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->DeleteRsrc(id_, hndl);
+		return kInvalidRsrcHndl;
+	return pModule_->AddRsrcToPackageFromFile(id_, hPkg, fullRsrcURI, rsrcType, fullPath);
+}
+
+//----------------------------------------------------------------------------
+tErrType CResourceMPI::RemoveRsrcFromPackage( tPackageHndl hPkg,
+		 						const CURI& fullRsrcURI, 
+		 						bool deleteRsrc )
+{
+	if(!pModule_)
+		return kInvalidRsrcHndl;
+	return pModule_->RemoveRsrcFromPackage(id_, hPkg, fullRsrcURI, deleteRsrc);
 }
 	
 

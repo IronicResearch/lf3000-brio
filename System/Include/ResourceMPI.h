@@ -144,6 +144,7 @@ public:
 							const IEventListener *pListener = kNull) const;  
 	tErrType		SeekRsrc(tRsrcHndl hndl, U32 numSeekBytes, 
 							tOptionFlags seekOptions = kNoOptionFlags) const;
+	U32				TellRsrc(tRsrcHndl hndl) const;
 	tErrType		WriteRsrc(tRsrcHndl hndl, const void *pBuffer, 
 							U32 numBytesRequested, U32 *pNumBytesActual,
 							tOptionFlags writeOptions = kNoOptionFlags,
@@ -159,9 +160,30 @@ public:
 
 	Boolean			RsrcIsLoaded(tRsrcHndl hndl) const;
 
-	// New rsrc creation/deletion
-	tRsrcHndl		NewRsrc(tRsrcType rsrcType, void* pData);
-	tErrType		DeleteRsrc(tRsrcHndl hndl);
+	// Create a new empty resource and add to a package.
+	// Performs an implicit OpenRsrc(), can immediately follow with WriteRsrc().
+	// Will fail and return a kInvalidRsrcHndl if more than 26^2 resources
+	// are created in a single package.
+	// Adding resources invalidates any outstanding tRsrcHndls that have been
+	// retrieved from the package via FindRsrc() or FindFirstRsrc/FindNextRsrc()
+	// (similar to insertions invalidating STL collection iterators).
+	tRsrcHndl		AddNewRsrcToPackage( tPackageHndl hPkg, 
+										const CURI& fullRsrcURI, 
+										tRsrcType rsrcType );
+	  
+	// Add an existing file to a package.  
+	// Performs an implicit OpenRsrc() and rewinds to offset 0 for subsequent reading.
+	// Comments for AddNewRsrcToPackage() apply here.
+	tRsrcHndl		AddRsrcToPackageFromFile( tPackageHndl hPkg, 
+										const CURI& fullRsrcURI, 
+										tRsrcType rsrcType,
+										const CPath& fullPath );
+	
+	// Remove a resource entry from a package. 
+	// By default frees up the underlying storage, but allows override.
+	tErrType		RemoveRsrcFromPackage( tPackageHndl hPkg,
+			 						const CURI& fullRsrcURI, 
+			 						bool deleteRsrc = true );
 
 protected:
 	class CResourceModule*	pModule_;
