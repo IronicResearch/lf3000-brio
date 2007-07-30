@@ -16,7 +16,7 @@
 #include <SystemErrors.h>
 #include <VideoTypes.h>
 #include <VideoPriv.h>
-#include <SystemResourceMPI.h>
+#include <ResourceMPI.h>
 
 //#define _GNU_SOURCE
 //#define _LARGEFILE_SOURCE
@@ -81,7 +81,7 @@ namespace
 // Grab some more compressed bitstream and sync it for page extraction
 static int buffer_data(/* FILE *in, */ ogg_sync_state *oy)
 {
-	CSystemResourceMPI	rsrcmgr;
+	CResourceMPI	rsrcmgr;
 	char 	*buffer = ogg_sync_buffer(oy,4096);
 	U32 	bytes; // = fread(buffer,1,4096,in);
 	rsrcmgr.ReadRsrc(ghVideo, buffer, 4096, &bytes, kOpenRsrcOptionRead, NULL);
@@ -136,7 +136,7 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListen
 	}
 
 	// Open Ogg file associated with resource
-	CSystemResourceMPI	rsrcmgr;
+	CResourceMPI	rsrcmgr;
 	r = rsrcmgr.OpenRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
 	if (r != kNoErr) 
 	{
@@ -278,7 +278,7 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	ogg_sync_clear(&oy);
 	
 	// Close file associated with resource
-	CSystemResourceMPI	rsrcmgr;
+	CResourceMPI	rsrcmgr;
 	rsrcmgr.CloseRsrc(ghVideo);
 	ghVideo = kInvalidRsrcHndl;
 			

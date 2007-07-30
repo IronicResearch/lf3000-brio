@@ -18,7 +18,7 @@
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <DebugMPI.h>
-#include <SystemResourceMPI.h>
+#include <ResourceMPI.h>
 //#include <RsrcTypes.h>
 #include <AudioTypes.h>
 #include <EventListener.h>
@@ -79,7 +79,7 @@ protected:
 	U8			unused_:3;				// Unused
 
 	CDebugMPI*			pDebugMPI_;		// Debug output access.
-	CSystemResourceMPI*	pRsrcMPI_;		// Resource Manager access.
+	CResourceMPI*		pRsrcMPI_;		// Resource Manager access.
 	
 	tAudioID			id_;			// AudioID of the audio assigned to the player
 	tRsrcHndl			hRsrc_;			// Rsrc handle of the audio assigned to the player

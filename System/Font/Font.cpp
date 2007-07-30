@@ -16,7 +16,7 @@
 #include <SystemErrors.h>
 #include <FontTypes.h>
 #include <FontPriv.h>
-#include <SystemResourceMPI.h>
+#include <ResourceMPI.h>
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -296,7 +296,7 @@ tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
 //----------------------------------------------------------------------------
 tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 {
-	CSystemResourceMPI	rsrcmgr;
+	CResourceMPI		rsrcmgr;
 	const CString*		fontname;
 	tPtr				fileimage;
 	U32					filesize; 
@@ -347,7 +347,7 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 	{
 		if (pFont->hRsrcFont != kInvalidRsrcHndl)
 		{
-			CSystemResourceMPI	rsrcmgr;
+			CResourceMPI	rsrcmgr;
 			rsrcmgr.UnloadRsrc(pFont->hRsrcFont);
 			pFont->hRsrcFont = kInvalidRsrcHndl;
 		}

@@ -55,7 +55,7 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 		printf("AudioPlayer ctor -- Couldn't create DebugMPI!\n");
 	
 	// Get Resource MPI
-	pRsrcMPI_ = new CSystemResourceMPI;
+	pRsrcMPI_ = new CResourceMPI;
 	ret = pRsrcMPI_->IsValid();
 	if (ret != true)
 		printf("AudioPlayer ctor-- Couldn't create ResourceMPI!\n");
