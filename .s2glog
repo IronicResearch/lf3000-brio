@@ -6204,3 +6204,12 @@ By dgibbs (dgibbs@leapfrog.com) on 7/30/07 4:29 PM
 2,641 ms. (Cumulative: 1,130,385 ms)
 
 ----------------
+Revision 1,080 from svn://localhost/TRUNK/:
+
+Fixed ARM CC warnings and copy-paste errors per format.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/07 4:40 PM
+1 changed, 0 added, 0 deleted.
+2,531 ms. (Cumulative: 1,132,963 ms)
+
+----------------
