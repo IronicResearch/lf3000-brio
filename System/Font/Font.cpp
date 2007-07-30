@@ -433,7 +433,7 @@ void CFontModule::ConvertBitmapToRGB24(FT_Bitmap* source, int x0, int y0, tFontS
 	int 		x,y,w,h,i,mask;
 	U8	 		*s,*t;
 	U8  		*d,*u;
-	U32	 		color = attr_.color;
+	U32	 		color = (U16)attr_.color;
 	U8			R = (color & 0xFF0000) >> 16;
 	U8			G = (color & 0x00FF00) >> 8;
 	U8			B = (color & 0x0000FF) >> 0;
@@ -508,6 +508,7 @@ void CFontModule::ConvertBitmapToRGB4444(FT_Bitmap* source, int x0, int y0, tFon
 //----------------------------------------------------------------------------
 void CFontModule::ConvertBitmapToRGB565(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
 {
+	// No pixel unpacking/repacking for 16bpp format, so same code as above
 	ConvertBitmapToRGB4444(source, x0, y0, pCtx);
 }
   
@@ -589,9 +590,9 @@ void CFontModule::ConvertGraymapToRGB24(FT_Bitmap* source, int x0, int y0, tFont
 			if ((alpha = *s) != 0) 
 			{
 				U8  ialpha = 0xFF - alpha;
-				*d++ = (B * alpha + *d * ialpha) / 0xFF; 
-				*d++ = (R * alpha + *d * ialpha) / 0xFF;
-				*d++ = (G * alpha + *d * ialpha) / 0xFF;
+				*d = (B * alpha + *d * ialpha) / 0xFF; d++;
+				*d = (G * alpha + *d * ialpha) / 0xFF; d++;
+				*d = (R * alpha + *d * ialpha) / 0xFF; d++;
 			}
 			else
 				d+=3;
@@ -637,7 +638,7 @@ void CFontModule::ConvertGraymapToRGB4444(FT_Bitmap* source, int x0, int y0, tFo
 				b = (B * alpha + b * ialpha) / 0xFF; 
 				g = (R * alpha + g * ialpha) / 0xFF;
 				r = (G * alpha + r * ialpha) / 0xFF;
-				*p16 = (r << 8) | (g << 4) | (b << 0); 
+				*p16 = 0xF000 | (r << 8) | (g << 4) | (b << 0); 
 			}
 			d+=2;
 			s++;
