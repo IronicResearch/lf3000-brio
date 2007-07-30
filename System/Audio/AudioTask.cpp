@@ -692,7 +692,7 @@ static void DoTransposeMidiTracks( CAudioMsgMidiFilePlaybackParams* msg ) {
 
 	SendMsgToAudioModule( retMsg );
 }
-
+ 
 static void DoChangeMidiInstrument( CAudioMsgMidiFilePlaybackParams* msg ) {
 	tErrType				result;
 	CAudioReturnMessage		retMsg;
