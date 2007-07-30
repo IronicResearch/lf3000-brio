@@ -6193,3 +6193,14 @@ By tparker (tparker@leapfrog.com) on 7/30/07 3:41 PM
 2,500 ms. (Cumulative: 1,127,682 ms)
 
 ----------------
+Revision 1,077 from svn://localhost/TRUNK/:
+Revision 1,078 from svn://localhost/TRUNK/:
+Revision 1,079 from svn://localhost/TRUNK/:
+
+Add the rest of the AudioMPI methods, tagged at stubbed out.  The public audio/midi API should be complete.
+
+By dgibbs (dgibbs@leapfrog.com) on 7/30/07 4:29 PM
+1 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,130,385 ms)
+
+----------------
