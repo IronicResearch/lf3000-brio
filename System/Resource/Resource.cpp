@@ -73,12 +73,14 @@ LF_BEGIN_BRIO_NAMESPACE()
 const tVersion	kModuleVersion		= 2;
 const CString	kModuleName			= "Resource";
 const CURI		kModuleURI			= "/LF/System/Resource";
+const CURI		kNullURI			= "";
 
 extern const char*	kBaseRsrcPath 	= "/Base/rsrc/";
 extern const char*	kCart1RsrcPath	= "/Cart1/rsrc/";
 const char	kEnumPkgsFile[]			= "EnumPkgs";
 
 const size_t	kMaxBrioPkgLine	= 128;	// FIXME/tp: verify
+const U32		kMaxAddNewRsrcs = 26 * 26;
 
 
 //============================================================================
@@ -94,17 +96,17 @@ struct ResourceDescriptor
 	U32					usize;
 	tVersion			version;
 	PackageDescriptor*	pPkg;
-	tRsrcHndl			hndl;
 	U16					refCount;
 	int					fd;
 	tPtr				ptr;
 	
-	ResourceDescriptor(const char* u, U32 t = kInvalidRsrcType, const char* p = "",
+	ResourceDescriptor(const char* u, U32 t = kInvalidRsrcType, 
+					const CPath& p = CPath(),
 					U32 s = 0, U32 us = 0, tVersion v = 1, 
 					PackageDescriptor* d = NULL)
 		: uri(u), caseInsensitiveRep(uri.casefold_collate_key()), 
 		type(t), path(p), size(s), usize(us), 
-		version(v), pPkg(d), hndl(kInvalidRsrcHndl), 
+		version(v), pPkg(d), 
 		refCount(0), fd(-1), ptr(0)
 	{
 	}
@@ -130,6 +132,7 @@ struct PackageDescriptor
 	CURI 				uri;
 	std::string			caseInsensitiveRep;
 	CPath				path;
+	CPath				folder;
 	tVersion			version;
 	CString				verstr;
 	ePackageType		type;
@@ -138,6 +141,9 @@ struct PackageDescriptor
 	U16					refCount;
 	Boolean				isOpen;
 	ResourceDescriptors	resources;
+	tRsrcHndl			startRsrcHndl;
+	bool				dirtyWithRetrievedRsrcHndls;
+	bool				dirtyWithChangedRsrcs;
 	
 	PackageDescriptor(const char* u, const CPath& p = CPath(), 
 					tVersion v = 1, 
@@ -145,8 +151,13 @@ struct PackageDescriptor
 					tDeviceHndl d = kInvalidDeviceHndl)
 		: uri(u), caseInsensitiveRep(uri.casefold_collate_key()), 
 		path(p), version(v), type(t), deviceHndl(d), 
-		hndl(kInvalidPackageHndl), refCount(0), isOpen(false)
+		hndl(kInvalidPackageHndl), refCount(0), isOpen(false),
+		startRsrcHndl(kInvalidRsrcHndl),
+		dirtyWithRetrievedRsrcHndls(false),
+		dirtyWithChangedRsrcs(false)
 	{
+		if(!path.empty())
+			folder = path.substr(0, path.rfind('/') + 1);
 		char buf[16];
 		sprintf(buf, "%d", v);
 		verstr = buf;
@@ -160,6 +171,23 @@ struct PackageDescriptor
 		 * or change this function to generate the casefold_collate_key()
 		 * for comparisons (less space, more time)
 		 */
+	}
+	void Flush()
+	{
+		if (!dirtyWithChangedRsrcs)
+			return;
+		FILE* fp = fopen(path.c_str(), "w");
+		ResourceDescriptors::iterator it = resources.begin();
+		ResourceDescriptors::iterator itEnd = resources.end();
+		for ( ; it != itEnd; ++it)
+			fprintf(fp, "%s,%d,%s,%d,%d,%d\n", 
+					it->uri.c_str(),
+					static_cast<int>(it->type), 
+					it->path.c_str(), 
+					static_cast<int>(it->size),
+					static_cast<int>(it->usize), 
+					static_cast<int>(it->version));
+		fclose(fp);
 	}
 };
 typedef std::vector<PackageDescriptor>	PackageDescriptors;
@@ -189,6 +217,16 @@ namespace
 	class	AttachedPackageIterator;	// forward declaration
 	class	AttachedResourceIterator;	// forward declaration
 	
+	
+	//------------------------------------------------------------------------
+	U32 GetNextRsrcStartHndl(U32 size)
+	{
+		static U32	gNextRsrcStartHndl = 1;
+		U32 retval = gNextRsrcStartHndl;
+		gNextRsrcStartHndl += size + kMaxAddNewRsrcs;
+		return retval;
+	}
+	
 	//------------------------------------------------------------------------
 	// MPIInstanceState
 	//------------------------------------------------------------------------
@@ -209,13 +247,13 @@ namespace
 						: pDevices(pDevs),
 						isBlocking(kBlocking), 
 						pDefaultListener(NULL),
-						isOmniscient(false),
 						curDeviceIndex(0),
 						curDeviceType(kDeviceTypeInvalid),
 						curPkgType(kPackageTypeInvalid),	// FIXME: make "Invalids" consistent
 						cachedPkg(NULL),
 						curRsrcType(kInvalidRsrcType),
-						cachedRsrc(NULL)
+						cachedRsrc(NULL),
+						cachedRsrcHndl(kInvalidRsrcHndl)
 		{
 			for (size_t ii = kDeviceCount; ii > 0; --ii)
 				deviceIsAttached[ii-1] = false;
@@ -224,13 +262,12 @@ namespace
 		CURI					defaultURI;
 		eSynchState				isBlocking;
 		const IEventListener*	pDefaultListener;
-		Boolean					isOmniscient;
 
 		size_t					curDeviceIndex;		// for FindNextDevice iteration
 		eDeviceType				curDeviceType;
 		
 		CURI					curPkgURI;			// for FindNextPackage iteration
-		ePackageType		curPkgType;
+		ePackageType			curPkgType;
 		boost::shared_ptr<AttachedPackageIterator>	pPkgIter;
 		PackageDescriptor*		cachedPkg;// cache last found handle for subsequent operations
 				
@@ -238,11 +275,12 @@ namespace
 		tRsrcType				curRsrcType;
 		boost::shared_ptr<AttachedResourceIterator>	pRsrcIter;
 		ResourceDescriptor*		cachedRsrc;// cache last found handle for subsequent operations
-				
+		tRsrcHndl				cachedRsrcHndl;
+		
 		//--------------------------------------------------------------------
 		Boolean DeviceIsAttached(size_t index) const
 		{
-			return isOmniscient || deviceIsAttached[index] ? true : false;
+			return deviceIsAttached[index] ? true : false;
 		}
 		
 		//--------------------------------------------------------------------
@@ -260,7 +298,7 @@ namespace
 		//--------------------------------------------------------------------
 		Boolean PackageIsAttached(tDeviceHndl hndl) const
 		{
-			return isOmniscient || attachedPackages.count(hndl) ? true : false;
+			return attachedPackages.count(hndl) ? true : false;
 		}
 		
 		//--------------------------------------------------------------------
@@ -273,6 +311,14 @@ namespace
 		void DettachPackage(tPackageHndl hndl)
 		{
 			attachedPackages.erase(hndl);
+		}
+
+		//--------------------------------------------------------------------
+		tPackageHndl GetFirstOpenPackageHandle()
+		{
+			if (attachedPackages.empty())
+				return kInvalidPackageHndl;
+			return *attachedPackages.begin();
 		}
 
 	private:		
@@ -363,7 +409,7 @@ namespace
 	private:
 		PackageDescriptors::iterator itPkgCur_;
 		PackageDescriptors::iterator itPkgEnd_;
-		OpenDeviceIterator		itDev_;
+		OpenDeviceIterator			itDev_;
 		DeviceDescriptor*			pdd_;
 	};
 
@@ -440,6 +486,15 @@ namespace
 			prd = NULL;
 			return false;
 		}
+		void MarkPackageDirty()
+		{
+			ppd_->dirtyWithRetrievedRsrcHndls = true;
+		}
+		tRsrcHndl CurHandle()
+		{
+			return ppd_->startRsrcHndl
+					+ std::distance(ppd_->resources.begin(), itCur_);
+		}
 	private:
 		ResourceDescriptors::iterator itCur_;
 		ResourceDescriptors::iterator itEnd_;
@@ -447,7 +502,67 @@ namespace
 		PackageDescriptor*			ppd_;
 	};
 	
-	
+
+
+	//------------------------------------------------------------------------
+	// AllPackageIterator
+	//------------------------------------------------------------------------
+	class AllPackageIterator
+	{
+		//--------------------------------------------------------------------
+		// Iterate over all the packages that are present on devices which the 
+		// calling MPI interface object has opened via the "OpenAllDevices" or 
+		// "OpenDevice" calls.
+		//--------------------------------------------------------------------
+	public:
+		explicit AllPackageIterator(const MPIInstanceState& mpiState)
+			: mpiState_(mpiState), devIndex_(kDeviceCount-1)
+		{
+			NextDevice();
+		}
+		Boolean GetNext(PackageDescriptor*& ppd)
+		{
+			// 1) Loop through all devices (the ctor set us up with the first one) 
+			// 2) If we have not iterated through all of the packages in the
+			//    current device, return the next one and increment the iterator
+			// 3) If done with packages on this device, bump to the next one.
+			//
+			while (pdd_)													//*1
+			{
+				if (itPkgCur_ != itPkgEnd_)									//*2
+				{
+					ppd = &(*itPkgCur_++);
+					return true;
+				}
+				NextDevice();												//*3
+			}
+			ppd = NULL;
+			return false;
+		}
+	private:
+		void NextDevice()
+		{
+			pdd_ = &(mpiState_.pDevices[devIndex_--]);
+			while (!pdd_ || pdd_->packages.empty())
+			{
+				if (devIndex_ < 0)
+				{
+					pdd_ = NULL;
+					return;
+				}
+				pdd_ = &(mpiState_.pDevices[devIndex_--]);
+			}
+			itPkgCur_ = pdd_->packages.begin();
+			itPkgEnd_ = pdd_->packages.end();	
+		}
+		
+		PackageDescriptors::iterator itPkgCur_;
+		PackageDescriptors::iterator itPkgEnd_;
+		const MPIInstanceState& 	mpiState_;
+		DeviceDescriptor*			pdd_;
+		S16							devIndex_;
+	};
+
 
 	//============================================================================
 	// Utility functions
@@ -490,14 +605,6 @@ namespace
 		// Guarantee that all tPackageHndls are unique.
 		static tPackageHndl s_next = 0;
 		pd.hndl = ++s_next;
-	}
-	
-	//--------------------------------------------------------------------------
-	void AssignResourceHndl(ResourceDescriptor& rd)
-	{
-		// Guarantee that all tPackageHndls are unique.
-		static tRsrcHndl s_next = 0;
-		rd.hndl = ++s_next;
 	}
 
 	//--------------------------------------------------------------------------
@@ -608,6 +715,22 @@ U32 CResourceModule::Register( )
 }
 
 //----------------------------------------------------------------------------
+void CResourceModule::Unregister(U32 id)
+{
+	// FIXME/tp: Handle threading issues through lock
+	MPIMap::iterator it = gMPIMap.find(id);
+	if (it != gMPIMap.end())
+	{
+		for (tPackageHndl hPkg = it->second.GetFirstOpenPackageHandle();
+				hPkg != kInvalidPackageHndl;
+				hPkg = it->second.GetFirstOpenPackageHandle())
+			ClosePackage(id, hPkg);
+		CloseAllDevices(id);
+		gMPIMap.erase(it);
+	}
+}
+
+//----------------------------------------------------------------------------
 void CResourceModule::SetDefaultURIPath(U32 id, const CURI &pURIPath)
 {
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
@@ -627,13 +750,6 @@ tErrType CResourceModule::SetDefaultListener(U32 id, const IEventListener *pList
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	mpiState.pDefaultListener = pListener;
 	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
-void CResourceModule::MakeOmniscient(U32 id)
-{
-	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	mpiState.isOmniscient = true;
 }
 
 
@@ -879,7 +995,7 @@ PackageDescriptor* CResourceModule::FindPackagePriv(U32 id, tPackageHndl hndl) c
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	OpenDeviceIterator	iter(mpiState);
-	if (mpiState.cachedPkg && mpiState.cachedPkg->hndl == hndl)
+	if (mpiState.cachedPkg->hndl == hndl)
 		return mpiState.cachedPkg;
 		
 	DeviceDescriptor* pdd;
@@ -965,6 +1081,7 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 		
 	mpiState.AttachPackage(hndl);										//*3
 	++ppd->refCount;
+	size_t rootLen = ppd->folder.size();
 	
 	if (!ppd->isOpen)													//*4
 	{
@@ -983,16 +1100,18 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 			char* size = strchr(file, ','); *size++ = '\0';
 			char* usize = strchr(size, ','); *usize++ = '\0';
 			char* ver = strchr(usize, ','); *ver++ = '\0';
-			ResourceDescriptor rd(uri, atoi(type), file, 
+			CPath path(file);
+			if (path.find(ppd->folder) == 0)
+				path = path.substr(rootLen);
+			ResourceDescriptor rd(uri, atoi(type), path, 
 								atoi(size), atoi(usize), atoi(ver), ppd);
 			ppd->resources.push_back(rd);
 		}
 		fclose(fp);
 		
-		std::for_each(ppd->resources.begin(), ppd->resources.end(),	//*4
-						AssignResourceHndl);
-		std::vector<ResourceDescriptor>	temp(ppd->resources);
+		std::vector<ResourceDescriptor>	temp(ppd->resources);		//*5
 		ppd->resources.swap(temp);
+		ppd->startRsrcHndl = GetNextRsrcStartHndl(ppd->resources.size());
 	}
 	PostEvent(kResourcePackageOpenedEvent, 0, mpiState, pListener);
 	return kNoErr;
@@ -1002,31 +1121,34 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 tErrType CResourceModule::ClosePackage(U32 id, tPackageHndl hndl)
 {
 	// 1) Return immediately if this instance has already closed this package
-	// 2) Free up the resource state:
-	// 2a)	Close all contained resources
-	// 2b)	Free up all the ResourceDescriptor structures
-	// 3) Change MPI state to indicate detached and decrement underlying refCount
+	// 2) Change MPI state to indicate detached and decrement underlying refCount
+	// 3) Free up the resource state:
+	// 3a)	Close all contained resources
+	// 3b)	Free up all the ResourceDescriptor structures
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	if (!mpiState.PackageIsAttached(hndl))								//*1
 		return kNoErr;
 	
 	PackageDescriptor* ppd = FindPackagePriv(id, hndl);
-	if (ppd->refCount == 0)												//*2
+	if (ppd == NULL)
+		return kResourceInvalidErr;
+	ppd->Flush();
+
+	mpiState.DettachPackage(hndl);										//*2
+	--ppd->refCount;
+	
+
+	if (ppd->refCount == 0)												//*3
 	{
 		ppd->isOpen = false;
 		ResourceDescriptors::iterator	it = ppd->resources.begin();
 		ResourceDescriptors::iterator	itEnd = ppd->resources.end();
-		for ( ; it != itEnd; ++it)										//*2a
-			CloseRsrc(id, it->hndl);
-		ppd->resources.clear();											//*2b
+		for ( U32 ii = 0; it != itEnd; ++it, ++ii)						//*3a
+			CloseRsrc(id, ppd->startRsrcHndl + ii);
+		ppd->resources.clear();											//*3b
 	}
 		
-	mpiState.DettachPackage(hndl);										//*3
-	if (ppd == NULL)
-		return kResourceInvalidErr;
-	--ppd->refCount;
-	
 	return kNoErr;
 }
 
@@ -1086,7 +1208,10 @@ tRsrcHndl CResourceModule::FindRsrc(U32 id, const CURI &rsrcURI,
 		if (ret.first != ret.second)
 		{
 			mpiState.cachedRsrc = &(*ret.first);
-			return mpiState.cachedRsrc->hndl;
+			mpiState.cachedRsrcHndl = ppd->startRsrcHndl 
+							+ std::distance(ppd->resources.begin(), ret.first);
+			ppd->dirtyWithRetrievedRsrcHndls = true;
+			return mpiState.cachedRsrcHndl;
 		}
 	}
 	return kInvalidRsrcHndl;
@@ -1121,8 +1246,10 @@ tRsrcHndl CResourceModule::FindNextRsrc(U32 id) const
 		// FIXME/tp: Case-insensitive
 		if (prd->uri.find(mpiState.curRsrcURI) == 0)
 		{
+			mpiState.pRsrcIter->MarkPackageDirty();
+			mpiState.cachedRsrcHndl = mpiState.pRsrcIter->CurHandle();
 			mpiState.cachedRsrc = prd;
-			return mpiState.cachedRsrc->hndl;
+			return mpiState.cachedRsrcHndl;
 		}
 	}
 	return kInvalidRsrcHndl;
@@ -1136,8 +1263,8 @@ ResourceDescriptor* CResourceModule::FindRsrcPriv(U32 id, tRsrcHndl hndl) const
 	// an alternate exit mechanism.
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
-	OpenPackageIterator	iter(mpiState);
-	if (mpiState.cachedRsrc && mpiState.cachedRsrc->hndl == hndl)
+	AllPackageIterator	iter(mpiState);
+	if (hndl != kInvalidRsrcHndl && mpiState.cachedRsrcHndl == hndl)
 		return mpiState.cachedRsrc;
 
 	PackageDescriptor* ppd;
@@ -1145,13 +1272,13 @@ ResourceDescriptor* CResourceModule::FindRsrcPriv(U32 id, tRsrcHndl hndl) const
 	{
 		if (ppd->resources.empty())
 			continue;
-		tRsrcHndl last = ppd->resources.back().hndl;
-		if (hndl > last)
+		tRsrcHndl begin = ppd->startRsrcHndl;
+		tRsrcHndl end = begin + ppd->resources.size();
+		if (hndl >= end)
 			continue;
-		tRsrcHndl first = ppd->resources.front().hndl;
-		if (hndl >= first)
+		if (hndl >= begin)
 		{
-			mpiState.cachedRsrc = &(ppd->resources[hndl - first]);
+			mpiState.cachedRsrc = &(ppd->resources[hndl - begin]);
 			return mpiState.cachedRsrc;
 		}
 	}
@@ -1428,6 +1555,28 @@ tErrType CResourceModule::SeekRsrc(U32 id, tRsrcHndl hndl, U32 numSeekBytes,
 }
 
 //----------------------------------------------------------------------------
+U32 CResourceModule::TellRsrc(U32 id, tRsrcHndl hndl) const
+{
+	// 1) Find the resource and validate it is open
+	// 2) Tell
+	//	
+	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);					//*1
+	if (prd == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "SeekRsrc() called with invalid resource handle (0x%x)", 
+						static_cast<unsigned int>(hndl));
+		return kResourceInvalidErr;
+	}
+
+	if (prd->fd == -1)
+	{
+		dbg_.Assert(false, "CResourceModule::SeekRsrc: called with non-open resource '%s'", prd->uri.c_str());
+		return kResourceNotOpenErr;
+	}
+	return lseek(prd->fd, 0, SEEK_CUR);									//*2
+}
+
+//----------------------------------------------------------------------------
 tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer, 
 									U32 numBytesRequested, U32 *pNumBytesActual,
 									tOptionFlags /*writeOptions*/,
@@ -1468,19 +1617,174 @@ tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer,
 	return kNoErr;
 }
 
+
 //----------------------------------------------------------------------------
-tRsrcHndl CResourceModule::NewRsrc(U32 id, tRsrcType rsrcType, void* pData)
+// New rsrc creation/deletion
+//----------------------------------------------------------------------------
+inline bool FileExists( const CPath& path )
 {
-	dbg_.DebugOut(kDbgLvlCritical, "NewRsrc not implemented");
-	return kInvalidRsrcHndl;
+	struct stat filestat;
+	return stat(path.c_str(), &filestat) == 0;
 }
 
 //----------------------------------------------------------------------------
-tErrType CResourceModule::DeleteRsrc(U32 id, tRsrcHndl hndl)
+inline U32 FileSize( const CPath& path )
 {
-	dbg_.DebugOut(kDbgLvlCritical, "DeleteRsrc not implemented");
+	struct stat filestat;
+	int status = stat(path.c_str(), &filestat);
+	return (status == 0) ? filestat.st_size : 0;
+}
+
+//----------------------------------------------------------------------------
+tRsrcHndl CResourceModule::AddNewRsrcToPackage(U32 id, tPackageHndl hPkg, 
+									const CURI& fullRsrcURI, 
+									tRsrcType rsrcType)
+{
+	// 1) Validate input package exists
+	// 2) Find the next available filename, create the empty file
+	// 3) Delegate the rest to AddRsrcToPackageFromFile()
+	//
+	PackageDescriptor* ppd = FindPackagePriv(id, hPkg);					//*1
+	if (ppd == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "AddNewRsrcToPackage() called with invalid package handle (0x%x)\n",
+						static_cast<unsigned int>(hPkg));
+		return kInvalidRsrcHndl;
+	}
+	
+	CPath dir = ppd->folder;											//*2
+	char f1[] = "A";
+	char f2[] = "A";
+	CPath f3 = "_";
+	CPath file = CPath(f1) + f2 + f3;
+	while (FileExists(dir + file))
+	{
+		if (f2[0] != 'Z')
+			++f2[0];
+		else if (f1[0] != 'Z')
+		{
+			f2[0] = 'A';
+			++f1[0];
+		}
+		else
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "AddNewRsrcToPackage() more than %d directory entries!\n", 26*26);
+			return kInvalidRsrcHndl;		
+		}
+		file = CPath(f1) + f2 + f3;
+	}
+	CPath fullPath = dir + file;
+	
+	return AddRsrcToPackageFromFile(id, hPkg, fullRsrcURI, rsrcType, fullPath);
+}
+
+//----------------------------------------------------------------------------
+tRsrcHndl CResourceModule::AddRsrcToPackageFromFile(U32 id, tPackageHndl hPkg, 
+									const CURI& fullRsrcURI, 
+									tRsrcType rsrcType,
+									const CPath& fullPath)
+{
+	// 1) Validate input package exists
+	// 2) Verify package does not already contain new URI
+	// 3) Open or create the file
+	// 4) Create the resource and update the package with it
+	// 5) Protect against unexpected behavior on app-cached handles by
+	//    invalidating the existing package handles and assigning new ones
+	// 6) Mark the package as dirty (closing it will flush it to disk)
+	//    and return the new resource handle value
+	//
+	PackageDescriptor* ppd = FindPackagePriv(id, hPkg);					//*1
+	if (ppd == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, 
+				"AddRsrcToPackageFromFile() called with invalid package handle (0x%x)",
+				static_cast<unsigned int>(hPkg));
+		return kInvalidPackageHndl;
+	}
+
+	tRsrcHndl hndl = FindRsrc(id, fullRsrcURI, &kNullURI);				//*2
+	if (hndl != kInvalidRsrcHndl)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, 
+				"AddNewRsrcToPackage/AddRsrcToPackageFromFile() called with existing URI '%s'\n",
+				fullRsrcURI.c_str());
+		return kInvalidRsrcHndl;		
+	}
+
+	U32 flags = FileExists(fullPath) ? O_RDWR : (O_RDWR | O_CREAT);		//*3
+	int fd = open(fullPath.c_str(), flags);
+	if (fd == -1)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, 
+				"AddNewRsrcToPackage/AddRsrcToPackageFromFile() failed to open/create file for '%s'!\n", 
+				fullRsrcURI.c_str());
+		return kInvalidRsrcHndl;		
+	}
+	lseek(fd, 0, SEEK_END);
+	
+	tVersion ver = 1; 													//*4
+	U32 size = FileSize(fullPath);
+	CPath file = (fullPath.find(ppd->folder) == CPath::npos)
+				? fullPath : fullPath.substr(ppd->folder.size());
+	ResourceDescriptor res(fullRsrcURI.c_str(), rsrcType, file,
+							size, size, ver, ppd);
+	res.fd = fd;
+	ResourceDescriptors::iterator it = 
+		std::lower_bound(ppd->resources.begin(), ppd->resources.end(), res);
+	it = ppd->resources.insert(it, res);
+	
+	if (ppd->dirtyWithRetrievedRsrcHndls)								//*5
+	{
+		ppd->startRsrcHndl = GetNextRsrcStartHndl(ppd->resources.size());
+		ppd->dirtyWithRetrievedRsrcHndls = false;
+	}
+	
+	ppd->dirtyWithChangedRsrcs = true;									//*6
+	return ppd->startRsrcHndl + std::distance(ppd->resources.begin(), it);
+}
+
+//----------------------------------------------------------------------------
+tErrType CResourceModule::RemoveRsrcFromPackage(U32 id, tPackageHndl hPkg,
+		 						const CURI& fullURI, 
+		 						bool deleteRsrc)
+{
+	// 1) Validate input package exists
+	// 2) Verify package contains the resource
+	// 3) Optionally delete the file that is backing the resource
+	// 4) Remove the resource from the package file
+	//
+	PackageDescriptor* ppd = FindPackagePriv(id, hPkg);					//*1
+	if (ppd == NULL)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "RemoveRsrcFromPackage() called with invalid package handle (0x%x)\n",
+						static_cast<unsigned int>(hPkg));
+		return kResourceInvalidErr;
+	}
+	
+	typedef std::pair<ResourceDescriptors::iterator, 					//*2
+						ResourceDescriptors::iterator> Ret;
+	ResourceDescriptor	search(fullURI.c_str());
+	Ret ret = std::equal_range(ppd->resources.begin(), ppd->resources.end(), search);
+	if (ret.first == ret.second)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "RemoveRsrcFromPackage() called with non-existing URI '%s'\n",
+						fullURI.c_str());
+		return kResourceNotFoundErr;
+	}
+	
+	if (deleteRsrc)														//*3
+	{
+		CPath fullPath = (ret.first->path[0] == '/')
+				? ret.first->path
+				: ppd->folder + ret.first->path;
+		remove(fullPath.c_str());
+	}
+
+	ppd->resources.erase(ret.first);									//*4
+	ppd->dirtyWithChangedRsrcs = true;
 	return kNoErr;
 }
+
 LF_END_BRIO_NAMESPACE()
 
 
