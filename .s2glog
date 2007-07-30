@@ -6184,3 +6184,12 @@ By tparker (tparker@leapfrog.com) on 7/30/07 3:33 PM
 2,703 ms. (Cumulative: 1,125,119 ms)
 
 ----------------
+Revision 1,076 from svn://localhost/TRUNK/:
+
+Document implementation of the Resource Manager Add/Remove() functions
+
+By tparker (tparker@leapfrog.com) on 7/30/07 3:41 PM
+1 changed, 0 added, 0 deleted.
+2,500 ms. (Cumulative: 1,127,682 ms)
+
+----------------

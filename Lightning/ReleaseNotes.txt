@@ -3,6 +3,12 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 * OpenGL embedded library updated for 4444 texture fix.
+* Added the Resource Manager AddNewRsrcToPackage(), AddRsrcToPackageFromFile(),
+  and RemoveRsrcFromPackage() functions.
+* Made the CResourceMPI destructor force close all open packages and devices.
+* Removed the CSystemResourceMPI class.  A CResourceMPI instance now succeeds
+  in opening/loading/getting info about tRsrcHndls even if it doesn't have
+  the enclosing package open.
 * Shifted sorting of Resource Manager packed files from runtime to pack time
 * Made Resource Manager URIs case insensitive
 * Avoid packing duplicate files (e.g., if two URIs point to the same source
