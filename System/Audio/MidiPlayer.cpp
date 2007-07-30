@@ -298,7 +298,7 @@ tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::GetEnableTracks( tMidiTrackBitMask* trackBitMask )
+tErrType CMidiPlayer::GetEnableTracks( tMidiTrackBitMask* trackBitMask ) 
 {
 	U32					chan;
 	tMidiTrackBitMask	mask = 0;
