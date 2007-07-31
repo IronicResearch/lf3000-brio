@@ -73,26 +73,8 @@
  *   - wide character/string conversions: lc, ls, and nonstandard
  *     synonyms C and S
  *   - writeback of converted string length: conversion character n
- *   - the n$ specification for direct reference to n-th argument
- *   - locales
- *
- * It is permitted for str_m to be zero, and it is permitted to specify NULL
- * pointer for resulting string argument if str_m is zero (as per ISO C99).
- *
- * The return value is the number of characters which would be generated
- * for the given input, excluding the trailing null. If this value
- * is greater or equal to str_m, not all characters from the result
- * have been stored in str, output bytes beyond the (str_m-1) -th character
- * are discarded. If str_m is greater than zero it is guaranteed
- * the resulting string will be null-terminated.
- *
- * NOTE that this matches the ISO C99, OpenBSD, and GNU C library 2.1,
- * but is different from some older and vendor implementations,
- * and is also different from XPG, XSH5, SUSv2 specifications.
- * For historical discussion on changes in the semantics and standards
- * of snprintf see printf(3) man page in the Linux programmers manual.
- *
- * Routines asprintf and vasprintf return a pointer (in the ptr argument)
+ *   - the n$ specification for direct refe
+ a pointer (in the ptr argument)
  * to a buffer sufficiently large to hold the resulting string. This pointer
  * should be passed to free(3) to release the allocated storage when it is
  * no longer needed. If sufficient space cannot be allocated, these functions
@@ -192,7 +174,7 @@
  * causing this portable version of snprintf to be called portable_snprintf
  * (and portable_vsnprintf).
  */
-/* #define HAVE_SNPRINTF */
+/*#define HAVE_SNPRINTF*/
 
 /* Define PREFER_PORTABLE_SNPRINTF if your system does have snprintf and
  * vsnprintf but you would prefer to use the portable routine(s) instead.
@@ -240,8 +222,8 @@
  * with "ap2 = ap", in this case you must not call va_end(ap2) !
  *   #define va_copy(ap2,ap) ap2 = ap
  */
-#define NEED_ASPRINTF   
-#define NEED_ASNPRINTF  
+//#define NEED_ASPRINTF   
+//#define NEED_ASNPRINTF  
 //#define NEED_VASPRINTF  
 //#define NEED_VASNPRINTF 
 

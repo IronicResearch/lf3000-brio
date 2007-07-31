@@ -1,9 +1,10 @@
 # source files.
-SRC =  	main.cpp play_midifile.cpp
+SRC = main.cpp play_midifile.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
-OUT = sf2brio
+# OUT sf2brio
+OUT = sfconvert
 MOBILEER = ../../../../ThirdParty/Mobileer
 
 # include directories
@@ -25,13 +26,14 @@ LDFLAGS =
 
 .SUFFIXES: .cpp
 
-default: dep $(OUT)
+default: dep $(OUT) 
 
 .cpp.o:
 	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
 	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) -static
+
 
 depend: dep
 
@@ -66,7 +68,7 @@ main.o: ../../../../ThirdParty/Mobileer/Include/spmidi.h
 main.o: ../../../../ThirdParty/Mobileer/Include/spmidi_config.h
 main.o: ../../../../ThirdParty/Mobileer/Include/spmidi_errors.h
 main.o: ../../DspUtil/Dsputil.h ../../DspUtil/util.h ../../DspUtil/fir.h
-main.o: ../../DspUtil/src.h
+main.o: ../../DspUtil/mix.h ../../DspUtil/src.h main.h
 play_midifile.o: /usr/include/stdio.h /usr/include/features.h
 play_midifile.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
 play_midifile.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
@@ -95,6 +97,7 @@ play_midifile.o: ../../../../ThirdParty/Mobileer/Include/midifile_player.h
 play_midifile.o: ../../../../ThirdParty/Mobileer/Include/midifile_parser.h
 play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_load.h
 play_midifile.o: ../../../../ThirdParty/Mobileer/Source/examples/midifile_names.h
-play_midifile.o: ../../DspUtil/util.h /usr/include/math.h
+play_midifile.o: ../../DspUtil/Dsputil.h /usr/include/math.h
 play_midifile.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-play_midifile.o: /usr/include/bits/mathcalls.h
+play_midifile.o: /usr/include/bits/mathcalls.h ../../DspUtil/util.h main.h
+play_midifile.o: ../../DspUtil/src.h

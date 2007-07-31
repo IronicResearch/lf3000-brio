@@ -3,7 +3,7 @@ SRC = main.cpp play_midifile.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
-OUT = sf2brio
+OUT = sfconvert
 MOBILEER = ../../../../ThirdParty/Mobileer
 
 # include directories
@@ -39,7 +39,7 @@ default: dep $(OUT)
 $(OUT): $(OBJ)
 	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) 
 	cp $(OUT) ~/nfsroot
-	echo "Copied to ~/nfsroot"
+#	echo "Copied to ~/nfsroot"
 	
 depend: dep
 

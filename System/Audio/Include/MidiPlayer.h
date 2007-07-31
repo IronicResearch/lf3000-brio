@@ -40,7 +40,7 @@ public:
 	CMidiPlayer();
 	~CMidiPlayer();
 
-	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames );
+	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOutput  );
 
 	inline bool		IsFileActive() { return bFileActive_; };
 
@@ -65,7 +65,7 @@ public:
 	tErrType	SetEnableTracks( tMidiTrackBitMask trackBitMask);
 	tErrType	TransposeTracks( tMidiTrackBitMask trackBitMask, S8 transposeAmount );
 	tErrType	ChangeProgram( tMidiTrackBitMask trackBitMask, tMidiInstr instr );
-	tErrType	ChangeTempo( S8 Tempo ); 
+	tErrType	ChangeTempo( S8 Tempo); 
 
 private:
 	CDebugMPI* 				pDebugMPI_;	

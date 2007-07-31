@@ -166,16 +166,6 @@ for (long i = 0; i < length; i++)
 }	// ---- end SetShorts() ---- 
 
 // *************************************************************** 
-// ClearChars:   Fill CHAR buffer w/0
-// ***************************************************************
-    void 
-ClearChars(char *d, long length)
-{
-for (long i = 0; i < length; i++) 
-    d[i] = 0;
-}	// ---- end ClearChars() ---- 
-
-// *************************************************************** 
 // ClearShorts:   Fill SHORT buffer w/0
 // ***************************************************************
     void 
@@ -183,6 +173,7 @@ ClearShorts(short *d, long length)
 {
 for (long i = 0; i < length; i++) 
     d[i] = 0;
+//bzero( d, length*sizeof(short));
 }	// ---- end ClearShorts() ---- 
 
 // *************************************************************** 
@@ -191,43 +182,11 @@ for (long i = 0; i < length; i++)
     void 
 ClearLongs(long *d, long length)
 {
-for (long i = 0; i < length; i++) 
-    d[i] = 0;
-}	// ---- end ClearLongs() ---- 
-
-// *************************************************************** 
-// CopyFloats:    Copy FLOATs from in to out buffer
-// ***************************************************************
-//    void 
-//CopyFloats(float *in, float *out, long length)
-//{
 //for (long i = 0; i < length; i++) 
-//    out[i] = in[i];
-//}	// ---- end CopyFloats() ---- 
-
-// *************************************************************** 
-// FanOutFloats:    Copy FLOATs from in to N out buffers
-// ***************************************************************
-    void 
-FanOutFloats(float *in, float *outs[], long length, long count)
-{
-for (long i = 0; i < count; i++) 
-    CopyFloats(in, outs[i], length);
-}	// ---- end FanOutFloats() ---- 
-
-// *************************************************************** 
-// CompareFloats:    Compare two buffers and return #differences
-// ***************************************************************
-    long 
-CompareFloats(float *a, float *b, long length)
-{
-long diff = 0;			
-for (long i = 0; i < length; i++) 
-	diff += (a[i] != b[i]);
-return (diff);
-}	// ---- end CompareFloats() ---- 
-
-// *************************************************************** 
+//    d[i] = 0;
+bzero( d, length*sizeof(long));
+}	// ---- end ClearLongs() ---- 
+// *************************************************************** 
 // CopyShorts:    Copy SHORTs from in to out buffer
 // ***************************************************************
     void 
@@ -246,6 +205,48 @@ CopyLongs(long *in, long *out, long length)
 for (long i = 0; i < length; i++) 
     out[i] = in[i];
 }	// ---- end CopyLongs() ---- 
+
+// *************************************************************** 
+// CopyFloats:    Copy 'float's from in to out buffer
+// ***************************************************************
+    void 
+CopyFloats(long *in, long *out, long length)
+{
+for (long i = 0; i < length; i++) 
+    out[i] = in[i];
+}	// ---- end CopyFloats() ---- 
+
+// *************************************************************** 
+// FanOutFloats:    Copy FLOATs from in to N out buffers
+// ***************************************************************
+    void 
+FanOutFloats(float *in, float *outs[], long length, long N)
+{
+for (long i = 0; i < N; i++) 
+    CopyFloats(in, outs[i], length);
+}	// ---- end FanOutFloats() ---- 
+
+// *************************************************************** 
+// FanOutShorts:    Copy 'shorts' from in to N out buffers
+// ***************************************************************
+    void 
+FanOutShorts(short *in, short *outs[], long length, long N)
+{
+for (long i = 0; i < N; i++) 
+    CopyShorts(in, outs[i], length);
+}	// ---- end FanOutShorts() ---- 
+
+// *************************************************************** 
+// CompareFloats:    Compare two buffers and return #differences
+// ***************************************************************
+    long 
+CompareFloats(float *a, float *b, long length)
+{
+long diff = 0;			
+for (long i = 0; i < length; i++) 
+	diff += (a[i] != b[i]);
+return (diff);
+}	// ---- end CompareFloats() ---- 
 
 // *************************************************************** 
 // CompareShorts:    Compare two buffers and return #differences
@@ -288,7 +289,7 @@ for (long i = 0; i < length; i++)
 DoubleToFractionalInteger(double x)
 //	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
 {
-short y = (short)(0.5 + x*32768.0);
+short y = (short)(0.5 + x*k2To15);
 
 return (y);
 }	// ---- end DoubleToFractionalInteger() ----
@@ -299,7 +300,7 @@ return (y);
 	double 
 FractionalIntegerToDouble(short x)
 {
-double y = (1.0/32768.0)*(double)x;
+double y = (1.0/k2To15)*(double)x;
 
 return (y);
 }	// ---- end FractionalIntegerToDouble() ----
@@ -555,8 +556,8 @@ long 	i;
 float	value;
 float	ceiling, floor;
 
-ceiling =  32767;
-floor   = -32768;
+ceiling =  k2To15m1i;
+floor   = -k2To15i;
 
 // Convert buffer without saturation 
 if (!saturate)
@@ -564,16 +565,16 @@ if (!saturate)
     for (i = 0; i < length; i++) 
 		out[i] = (short) in[i];
     }
-// Convert buffer w/saturation to integer range [-32768..32767] 
+// Convert buffer w/saturation to 16-bit integer range 
 else
     {
     for (i = 0; i < length; i++) 
 	{
 	value = in[i];
 	if	(value > ceiling)
-	    out[i] =  32767;
+	    out[i] =  k2To15m1i;
 	else if (value < floor)
-	    out[i] = -32768;
+	    out[i] = -k2To15i;
 	else 
 	    out[i] = (short) value;
 	}
@@ -621,7 +622,7 @@ for (i = 0; i < length; i++)
     short 
 FloatToFrac16(float k)
 {
-return ((short)(kTwoTo15m1f*k));
+return ((short)(k2To15m1f*k));
 }	// ---- end FloatToFrac16() ---- 
 
 // *************************************************************** 
@@ -631,7 +632,7 @@ return ((short)(kTwoTo15m1f*k));
     long 
 FloatToFrac32(float k)
 {
-return ((short)(kTwoTo31m1*k));
+return ((short)(k2To31m1*k));
 }	// ---- end FloatToFrac32() ---- 
 
 // *************************************************************** 
@@ -671,6 +672,142 @@ for (long i = 0; i < length; i++)
     out[i] = (short)(k*(float)in[i]);
 }	// ---- end ScaleShortsi() ---- 
 
+// *************************************************************** 
+// ScaleAddShortsf:	Scale and Add in buffer to out buffer
+//			32-bit floating-point implementation
+//				( ok for "in place" operation )
+//			No Saturation
+// ***************************************************************
+    void 
+ScaleAddShortsf(short *in, short *out, long length, float k)
+{
+for (long i = 0; i < length; i++)
+    out[i] += (short)(k*(float)in[i]);
+}	// ---- end ScaleAddShortsf() ---- 
+
+// *************************************************************** 
+// ScaleAddShorts:	Add in buffer to out buffer
+//			32-bit floating-point implementation
+//				( ok for "in place" operation )
+//			Saturation option to 16-bit range
+// ***************************************************************
+    void 
+AddShorts(short *in, short *out, long length, long saturate)
+{
+if (saturate)
+	{
+	for (long i = 0; i < length; i++)
+		{
+		long acc = ((long)out[i]) + (long) in[i];
+		if 	(acc > k2To15m1i)
+			out[i] = k2To15m1i;
+		else if (acc < -k2To15i)
+			out[i] = k2To15i;
+		else
+			out[i] = (short) acc;
+		}
+	}
+else
+	{
+	for (long i = 0; i < length; i++)
+	    out[i] += in[i];
+	}
+}	// ---- end AddShorts() ---- 
+
+// *************************************************************** 
+// Add2_Shortsi:	Add two buffers of 'short' with saturation
+//
+//			16-bit fixed-point implementation
+// ***************************************************************
+    void 
+Add2_Shortsi(short *inA, short *inB, short *outY, long length)
+{
+//{static long c=0; printf("Add2_Shorts%d : start\n", c++);}
+
+for (long i = 0; i < length; i++) 
+	{
+	long lAcc = ((long) inA[i]) + (long) inB[i];
+	SATURATE_16BIT(lAcc);	// Macro doesn't return a value
+
+	outY[i] = (short) lAcc;
+	}
+}	// ---- end Add2_Shortsi() ---- 
+
+// *************************************************************** 
+// Mix2_Shortsf:	Mix two buffers of 'short' with saturation
+//
+//			32-bit fixed-point implementation
+// ***************************************************************
+    void 
+Mix2_Shortsf(short *inA, short *inB, short *outY, long length, float kA, float kB)
+{
+{static long c=0; printf("Mix2_Shortsf %d : start\n", c++);}
+
+for (long i = 0; i < length; i++) 
+	{
+	float acc = kA*((float)inA[i]) + kB*((float) inB[i]);
+	long lAcc = (long) acc;
+	SATURATE_16BIT(lAcc);	// Macro doesn't return a value
+
+	outY[i] = (short) lAcc;
+	}
+}	// ---- end Mix2_Shortsf() ---- 
+
+// *************************************************************** 
+// Mix2_Shortsi:	Mix two buffers of 'short' with saturation
+//
+//			16x16=32-bit fixed-point implementation
+// ***************************************************************
+    void 
+Mix2_Shortsi(short *inA, short *inB, short *outY, long length, short kA, short kB)
+{
+//{static long c=0; printf("Mix2_Shortsi %d : start\n", c++);}
+
+for (long i = 0; i < length; i++) 
+	{
+	long lAcc = (kA*inA[i]); 
+        lAcc     += (kB*inB[i]);
+	lAcc = (lAcc>>16);
+	SATURATE_16BIT(lAcc);	// Macro doesn't return a value
+
+	outY[i] = (short) (lAcc>>17);
+	}
+}	// ---- end Mix2_Shortsi() ---- 
+
+// *************************************************************** 
+// Pan_Shortsf:	"Pan"  buffer of 'short'
+//		yRight  = 
+//		32-bit floating-point implementation
+// ***************************************************************
+    void 
+Pan_Shortsf(short *x, short *yLeft, short *yRight, long length, float gainLeft, float gainRight)
+{
+//{static long c=0; printf("Pan_Shortsf %d : start\n", c++);}
+
+for (long i = 0; i < length; i++) 
+	{
+// NOTE:  May need saturation to 16-bits
+	yLeft [i] = (short)(gainLeft *(float)x[i]);
+	yRight[i] = (short)(gainRight*(float)x[i]);
+	}
+}	// ---- end Pan_Shortsf() ---- 
+
+// *************************************************************** 
+// Pan_Shortsi:	"Pan"  buffer of 'short'
+//		yRight  = 
+//		Fixed-point implementation
+// ***************************************************************
+    void 
+Pan_Shortsi(short *x, short *yLeft, short *yRight, long length, short gainLeft, short gainRight)
+{
+//{static long c=0; printf("Pan_Shortsi %d : start\n", c++);}
+
+for (long i = 0; i < length; i++) 
+	{
+	yLeft [i] = (gainLeft *x[i])>>16;
+	yRight[i] = (gainRight*x[i])>>16;
+	}
+}	// ---- end Pan_Shortsi() ---- 
 // *************************************************************** 
 // Ramp:	Generate buffer that linearly ramps from 'start' to 'end'
 // ***************************************************************
@@ -727,7 +864,7 @@ for (i = 0; i < length; i++)
 // *************************************************************** 
 // ScaleFloatsToShorts:	Convert floats to shorts.  
 //			Saturate option to 16-bits. 
-// Assume input float range is basically	[-32768.0 .. -32767.0 ]
+// Assume input float range is dynamic range of signed 16-bit	
 // ***************************************************************
     void 
 ScaleFloatsToShorts(float *input, short *output, long length, float g, int saturate)
@@ -740,31 +877,20 @@ if (!saturate)
     {
     for (i = 0; i < length; i++) 
 		output[i] = (short) (g*input[i]);
-#ifdef SAFE
-	_asm mov	ecx		, len		
-	_asm mov	eax		, input	
-	_asm mov	edx		, output			
- _asm ScaleFloatsToShortsAsmLoop:
-	_asm fld	 FPTR [eax + ecx*4 - 4]
-	_asm fmul	 g
-	_asm fistp	 WPTR [edx + ecx*2 - 2]
-	_asm dec	 ecx			
-	_asm jnz ScaleFloatsToShortsAsmLoop
-#endif
     }
-// Convert buffer w/saturation to integer range [-32768..32767] 
+// Convert buffer w/saturation to 16-bit integer range 
 else
     {
 	float	value;
-	float	ceiling =  32767.0f;
-	float 	floor   = -32768.0f;
+	float	ceiling =  k2To15m1;
+	float 	floor   = -k2To15;
     for (i = 0; i < length; i++) 
 		{
 		value = g*input[i];
 		if		(value > ceiling)
-		    output[i] =  32767;
+		    output[i] =  k2To15m1i;
 		else if (value < floor)
-		    output[i] = -32768;
+		    output[i] = -k2To15i;
 		else 
 		    output[i] = (short) value;
 		}
@@ -772,45 +898,9 @@ else
 }	//---- end ScaleFloatsToShorts() ---- 
 
 // *************************************************************** 
-// ScaleFloatsToShortsAsm:	Convert floats to shorts.  
-//			Saturate option to 16-bits. 
-// Assume input float range is basically	[-32768.0 .. -32767.0 ]
-// ***************************************************************
-    void 
-ScaleFloatsToShortsAsm(float *input, short *output, long len, float g, int saturate)
-// saturate		if True, perform saturation 
-{
-long 	i;			
-
-// Convert buffer without saturation 
-if (!saturate)
-    {
-    for (i = 0; i < len; i++) 
-		output[i] = (short) (g*input[i]);
-    }
-// Convert buffer w/saturation to integer range [-32768..32767] 
-else
-    {
-	float	value;
-	float	ceiling =  32767.0f;
-	float 	floor   = -32768.0f;
-    for (i = 0; i < len; i++) 
-		{
-		value = g*input[i];
-		if		(value > ceiling)
-		    output[i] =  32767;
-		else if (value < floor)
-		    output[i] = -32768;
-		else 
-		    output[i] = (short) value;
-		}
-    }
-}	//---- end ScaleFloatsToShortsAsm() ---- 
-
-// *************************************************************** 
 // ScaleFloatsToLongs:	Convert floats to longs.  
 //			Saturate option to 32-bits. 
-// Assume input float range is basically	[-32768.0 .. -32767.0 ]
+// Assume input float range is that of signed 16-bit integer
 // ***************************************************************
     void 
 ScaleFloatsToLongs(float *input, long *output, long len, float g, int saturate)
@@ -824,18 +914,18 @@ if (!saturate)
     for (i = 0; i < len; i++) 
 		output[i] = (long) (g*input[i]);
    }
-// Convert buffer w/saturation to integer range [-32768..32767] 
+// Convert buffer w/saturation to signed 16-bit integer range  
 else
     {
-	float	ceiling =  32767.0f;
-	float 	floor   = -32768.0f;
+	float	ceiling =  k2To15m1;
+	float 	floor   = -k2To15;
     for (i = 0; i < len; i++) 
 		{
 		float value = g*input[i];
 		if		(value > ceiling)
-		    output[i] =  32767;
+		    output[i] =  k2To15m1i;
 		else if (value < floor)
-		    output[i] = -32768;
+		    output[i] = -k2To15i;
 		else 
 		    output[i] = (long) value;
 		}
@@ -843,8 +933,39 @@ else
 }	//---- end ScaleFloatsToLongs() ---- 
 
 // *************************************************************** 
+// CopyFloats:		Copy buffer of 32-bit floating point numbers
+// ***************************************************************
+	void 
+CopyFloats(float *inP, float *outP, long length)
+{
+for (long i = 0; i < length; i++)
+	outP[i] = inP[i];
+}	// ---- end CopyFloats() ---- 
+
+// *************************************************************** 
+// ScaleFloats:		scale floating point buffer
+// ***************************************************************
+	void 
+ScaleFloats(float *inP, float *outP, long length, float k)
+{
+for (long i = 0; i < length; i++)
+	outP[i] = inP[i]*k;
+}	// ---- end ScaleFloats() ---- 
+
+// *************************************************************** 
+// ScaleShorts:		scale buffer of 'short'
+// ***************************************************************
+	void 
+ScaleShorts(short *inP, short *outP, long length, float k)
+{
+for (long i = 0; i < length; i++)
+	outP[i] = (short)(k*(float)inP[i]);
+}	// ---- end ScaleShorts() ---- 
+
+
+// *************************************************************** 
 // ScaleAdd:		Scale and add input to output
-//			ISO9000 certified "in place" operation
+//			OK for "in place" operation
 // ***************************************************************
     void 
 ScaleAdd(float *in, float *out, long length, float gain)
@@ -1171,26 +1292,26 @@ int step = 2*stride;
 if (saturate)
     {
     float value;
-    float ceiling =  32767;
-    float floor   = -32768;
+    float ceiling =  k2To15m1;
+    float floor   = -k2To15;
 
     for (i = 0; i < inLength; i++, out += step) 
 	{
     // Left channel 
 	value = inL[i];
 	if	(value > ceiling)
-	    out[0] =  32767;
+	    out[0] =  k2To15m1i;
 	else if (value < floor)
-	    out[0] = -32768;
+	    out[0] = -k2To15i;
 	else 
 	    out[0] = (short) value;
 
     // Right channel 
 	value = inR[i];
 	if	(value > ceiling)
-	    out[1] =  32767;
+	    out[1] =  k2To15m1i;
 	else if (value < floor)
-	    out[1] = -32768;
+	    out[1] = -k2To15i;
 	else 
 	    out[1] = (short) value;
 	}
@@ -1242,10 +1363,10 @@ if (!saturate)
 // Convert buffer w/saturation to integer range [iFloor..iCeiling] 
 else 
     {
-    float fCeiling =  32767;
-    float fFloor   = -32768;
-    short iCeiling =  32767;	//  2^15 - 1 
-    short iFloor   = -32768;	// -2^15 
+    float fCeiling =  k2To15m1;
+    float fFloor   = -k2To15;
+    short iCeiling =  k2To15m1i;	//  2^15 - 1 
+    short iFloor   = -k2To15i;	// -2^15 
 
     for (i = 0; i < inLength; i++, out += interleave) 
 	{
@@ -1347,7 +1468,7 @@ PrepareSineOscillator(double *h,
 // For sine    wave: phase  =  90*(Pi/180) = Pi/2
 // For cosine  wave: phase  = 180*(Pi/180) = Pi
 // For -cosine wave: phase  = 180*( 0/180) = 0
-double tuning = cos(kTwoPi*frequency);
+double tuning = cos(k2Pi*frequency);
 h[0] = tuning;
 
 // Initialize delay elements, if supplied
@@ -1508,7 +1629,7 @@ for (i = 0; i < length; i++)
 	*z = z0 + delta;
 
 // If > 2^31, output 0
-	if (z0 < kTwoTo31m1i)
+	if (z0 < k2To31m1i)
 		out[i] =  1.0f;
 	else
 		out[i] = -1.0f;
@@ -1553,9 +1674,9 @@ for (i = 0; i < length; i++)
 	*z = z0 + delta;
 
 // Mirror down to 2^31 range
-	if (z0 > kTwoTo31m1i)
-	 	z0 = kTwoTo31m1i - z0 + kTwoTo31m1i;
-	tmp = z0 - (unsigned long) kTwoTo30m1i;
+	if (z0 > k2To31m1i)
+	 	z0 = k2To31m1i - z0 + k2To31m1i;
+	tmp = z0 - (unsigned long) k2To30m1i;
 
 // Convert to to range [-1..1] 
 	out[i] = NORMALTwoTo30m1f(tmp);
@@ -1571,7 +1692,7 @@ BlastSineOscillator(float *out, long length, double *z, double *h, float gain, i
 {
 if (!*init)
 	{	
-	PrepareSineOscillator(h, z, 32767.0/4.0, 440.0/44100.0, kPi/2.0);
+	PrepareSineOscillator(h, z, k2To15m1/4.0, 440.0/44100.0, kPi/2.0);
 	*init=True;
 	}
 ComputeSineOscillator(out, length, z, h);
@@ -2953,7 +3074,7 @@ if (capitalize)
 
 // Squeeze out 6 nibbles (4-bit) as ASCII characters
 //y    = 0x00FFFFFF & (long)(0.5 + x*k2To23);	// five +1 diffs
-y    = 0x00FFFFFF & (long)(x*kTwoTo23);	// two -1, two +1 diffs
+y    = 0x00FFFFFF & (long)(x*k2To23);	// two -1, two +1 diffs
 //y    = 0x00FFFFFF & (long)(0.5 + x*k2To23m1); // four +1, one -1, one +2
 //y    = 0x00FFFFFF & (long)(x*k2To23m1); // four +1, one -2, one +2, one -2
 
@@ -2987,43 +3108,543 @@ outS[6] = '\0';
 return (returnValue);
 }	// ---- end FloatToHexFrac24() ---- 
 
+// **********************************************************************
+// FloatToQ31: Convert 32-bit float to 32-bit 1.31 signed integer
+// **********************************************************************
+	Q31 
+FloatToQ31(float x)
+//	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
+{
+Q31 y = (Q31)(0.5 + x*k2To31m1);
+return (y);
+}	// ---- end FloatToQ31() ----
+
+// **********************************************************************
+// Q31ToFloat: Convert 32-bit 1.31 signed integer to 32-bit float
+// **********************************************************************
+	float 
+Q31ToFloat(Q31 x)
+//	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
+{
+float y = ((float)x)*(1.0/k2To31m1);
+return (y);
+}	// ---- end Q31ToFloat() ----
+
+// **********************************************************************
+// FloatToQ15: Convert 32-bit float to 32-bit 1.31 signed integer
+// **********************************************************************
+	Q15 
+FloatToQ15(float x)
+//	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
+{
+Q15 y = (Q15)(0.5 + x*k2To15m1);
+return (y);
+}	// ---- end FloatToQ15() ----
+
+// **********************************************************************
+// Q15ToFloat: Convert 16-bit 1.15 signed integer to 32-bit float
+// **********************************************************************
+	float 
+Q15ToFloat(Q15 x)
+//	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
+{
+float y = (1.0/k2To15m1)*(float)x;
+return (y);
+}	// ---- end Q15ToFloat() ----
+
 // **********************************************************************************
-// TestDsputil:		Routine just to call tests
+// AddQ15:		Add two Q15 (1.15) integers with saturation arithmetic
+// ********************************************************************************** 
+__inline Q15 AddQ15( Q15 x, Q15 y )
+{
+Q15 z;
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+	"qadd   %0, %1, %2\n\t"
+	: "=r" (z) 
+	: "r" (x), "r" (y)
+	);
+#else
+z = x + y;  // FIXX: no saturation here
+#endif
+return (z);
+}	// ---- end AddQ15() ---- 
+
+// **********************************************************************************
+// SubQ15:	Subtract two Q15 (1.15) integers with saturation arithmetic
+//			z = x - y;
+// ********************************************************************************** 
+__inline Q15 SubQ15( Q15 x, Q15 y )
+{
+Q15 z;
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+	"qsub   %0, %1, %2\n\t"
+	: "=r" (z) 
+	: "r" (x), "r" (y)
+	);
+#else
+z = x - y;  // FIXX: no saturation here
+#endif
+return (z);
+}	// ---- end SubQ15() ---- 
+
+// *************************************************************** 
+// MultQ15:	Integer multiplication
+//
+//			16x16=32-bit fixed-point implementation
+//				1.15 x 1.15 = 1.30
+// ***************************************************************
+__inline Q15 MultQ15( Q15 a, Q15 b )
+{
+Q15 y;
+
+//	__asm {
+//	    SMULWT    y, a, b
+//	    QADD    y, y, y
+//	}
+// Attempt at GCC version (doesn't compile)
+//	asm("smulwt    (product), (x), (y)\n\t"
+//	    "qadd    (product), (product), (product)\n\t"
+//	);
+#ifdef USE_ARM946_DSPEXT
+// NOTE:  volatile instructs compiler to skip optimization of assembly instructions
+// __asm__  __volatile__ (  // Use this for stricter compilers
+asm volatile (
+	"smulbb %0, %1, %2\n\t"
+	"mov %0, %0, asr#15\n\t"
+	: "=r" (y) 
+	: "r" (a), "r" (b)
+	: "r3"
+	);
+#else
+y = (a*b)>>15;
+#endif
+
+return (y);
+}	// ---- end MultQ15() ---- 
+
+// *************************************************************** 
+// MacQ15:	Integer multiplication and addition
+//
+//				1.15 x 1.15 = 1.30
+// ***************************************************************
+__inline Q15 MacQ15( Q15 y, Q15 a, Q15 b )
+{
+Q15 z;
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+	"smulbb %0, %1, %2\n\t"
+	"mov %0, %0, asr#15\n\t"
+	: "=r" (z) 
+	: "r" (y), "r" (a), "r" (b)
+	: "r3"
+	);
+#else
+z = y + ((a*b)>>15);
+#endif
+
+return (z);
+}	// ---- end MacQ15() ---- 
+
+// **********************************************************************************
+// AddQ31:		Add two Q31 (1.31) integers with saturation arithmetic
+// ********************************************************************************** 
+__inline Q31 AddQ31( Q31 x, Q31 y )
+{
+Q31 z;
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+	"qadd   %0, %1, %2\n\t"
+	: "=r" (z) 
+	: "r" (x), "r" (y)
+	);
+#else
+z = x + y;  // FIXX: no saturation here
+#endif
+return (z);
+}	// ---- end AddQ31() ---- 
+
+// **********************************************************************************
+// SubQ31:	Subtract two Q31 (1.31) integers with saturation arithmetic
+//			z = x - y;
+// ********************************************************************************** 
+__inline Q31 SubQ31( Q31 x, Q31 y )
+{
+Q31 z;
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+	"qsub   %0, %1, %2\n\t"
+	: "=r" (z) 
+	: "r" (x), "r" (y)
+	);
+#else
+z = x - y;  // FIXX: no saturation here
+#endif
+return (z);
+}	// ---- end SubQ31() ---- 
+
+// *************************************************************** 
+// MultQ31:	Integer 
+//
+//			16x16=32-bit fixed-point implementation
+// Use ARM DSP Extensions. 
+// ***************************************************************
+__inline Q31 MultQ31( Q31 a, Q31 b )
+{
+Q31 yl;
+
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+//	"smulwt %2, %0, %1\n\t"
+//	"qadd   %2, %2, %2\n\t"
+	"smulwt %0, %1, %2\n\t"
+	"qadd   %0, %0, %0\n\t"
+	: "=r" (yl) 
+	: "r" (a), "r" (b)
+	);
+#else
+// 32x32=64 multiply doesn't work unless arguments are promoted to 64-bit type
+yl = (Q31) (((((long long)a) * (long long)b))>>31);
+//printf("MultQ31 :  yll= %llu (%16llX) \n", yll, yll);
+//printf("MultQ31 :  yl= %d (%08X) \n", yl, yl);
+#endif
+
+return (yl);
+}	// ---- end MultQ31() ---- 
+
+// *************************************************************** 
+// MacQ31:	Integer Multiply-accumulate
+//
+//			16x16=32-bit fixed-point implementation
+// Use ARM DSP Extensions. 
+// ***************************************************************
+__inline Q31 MacQ31(Q31 x, Q31 a, Q31 b )
+{
+Q31 yl;
+
+#ifdef USE_ARM946_DSPEXT
+asm volatile (
+//	"smulwt %2, %0, %1\n\t"
+//	"qadd   %2, %2, %2\n\t"
+	"smulwt %0, %2, %3\n\t"
+	"qadd   %0, %0, %1\n\t"
+	"qadd   %0, %0, %0\n\t"
+	: "=r" (yl) 
+	: "r" (x), "r" (a), "r" (b)
+	);
+#else
+// 32x32=64 multiply doesn't work unless arguments are promoted to 64-bit type
+yl = x + (Q31) (((((long long)a) * (long long)b))>>31);
+//printf("MultQ31 :  yll= %llu (%16llX) \n", yll, yll);
+//printf("MultQ31 :  yl= %d (%08X) \n", yl, yl);
+#endif
+
+return (yl);
+}	// ---- end MacQ31() ---- 
+
+// **********************************************************************************
+// htonl:		test routine: swap bytes (big to little endian)
+// ********************************************************************************** 
+unsigned long htonl(unsigned long inVal)
+{
+unsigned long rVal = 0;
+
+#ifdef USE_ARM946_DSPEXT
+    asm volatile ("eor r3, %1, %1, ror #16\n\t"
+                  "bic r3, r3, #0x00FF0000\n\t"
+                  "mov %0, %1, ror #8\n\t"
+                  "eor %0, %0, r3, lsr #8"
+                  : "=r" (rVal)
+                  : "r"(inVal)
+                  : "r3" 
+        );
+#else
+#endif
+    return (rVal);
+}	// ---- end htonl() ---- 
+
+// *************************************************************** 
+// FXP31_MULT:	Integer 
+//			Used in Mobileer MIDI engine
+//
+// Use ARM DSP Extensions. 
+// ***************************************************************
+__inline FXP31 testFXP31_MULT( FXP31 x_1, FXP31 y_2 )
+{
+FXP31 yl_0;
+
+#ifdef USE_ARM946_DSPEXT
+{static int c=0; if (!c) printf("testFXP31_MULT %d: using ARM946\n", c++);}
+asm volatile (
+//	"smulwt %2, %0, %1\n\t"
+//	"qadd   %2, %2, %2\n\t"
+	"smulwt %0, %1, %2\n\t"
+	"qadd   %0, %0, %0\n\t"
+	: "=r" (yl_0) 
+	: "r" (x_1), "r" (y_2)
+	);
+#else
+/* Portable 'C' macro to multiply two 1.31 fixed-point values. */
+{static int c=0; if (!c) printf("testFXP31_MULT %d: portable C version\n", c++);}
+yl_0 = (x_1>>15) * (y_2>>16);
+#endif
+
+return (yl_0);
+}	// ---- end testFXP31_MULT() ---- 
+
+/* This macro is a code mixing operation.
+ * It scales the input signal by the gain and adds it to an accumulator.
+ */
+/* Inline function for optimized ARM version.
+ * Note this macro is missing the QADD so we have to adjust shiftby accordingly.
+ */
+__inline FXP31 testMIX_SCALE_SHIFT_ADD( FXP31 accum_1, FXP31 signal_2, FXP31 gain_3, int shiftby_4 )
+{
+FXP31 temp_0;  // R4
+
+#ifdef USE_ARM946_DSPEXT
+{static int c=0; if (!c) printf("testMIX_SCALE_SHIFT_ADD %d: using ARM946 \n", c++);}
+// ORIGINAL code from Phil Burk
+//	__asm
+//	{
+//		SMULWT    temp, signal, gain
+//		ADD       temp, accum, temp, asr shiftby
+//	}
+asm volatile (
+	"smulwt	%0, %2, %3\n\t"
+//	"add    %0, %1, %0, asr %4\n\t"
+	"asr    %0, %4\n\t"
+	"add    %0, %1, %0\n\t"
+	: "=r" (temp_0) 
+        : "r" (accum_1), "r" (signal_2), "r" (gain_3), "r" (shiftby_4)
+        );
+#else
+{static int c=0; if (!c) printf("testMIX_SCALE_SHIFT_ADD %d: portable C version\n", c++);}
+/* Portable 'C' version of core mixing element. */
+temp_0 = accum_1 + (testFXP31_MULT( signal_2, gain_3 ) >> shiftby_4);
+#endif
+
+return (temp_0);
+}	// ---- end testMIX_SCALE_SHIFT_ADD()
+
+// **********************************************************************************
+// Test_Dsputil:		Routine just to call tests
 // ********************************************************************************** 
 	void   
-TestDsputil()
+Test_Dsputil()
 {
-float k, l, m;
-float x, y, z;
+long i = 0, j = 0, k = 0;
+Q15   x15 = 0, y15 = 0, z15 = 0;
+Q15   a15 = 0, b15 = 0, c15 = 0;
+Q31   x31 = 0, y31 = 0, z31 = 0;
+Q31   a31 = 0, b31 = 0, c31 = 0;
+float af = 0.0f, bf = 0.0f, cf = 0.0f;
+float xf = 0.0f, yf = 0.0f, zf = 0.0f;
+float df = 0.0f, gf = 0.0f, kf = 0.0f;
+float xfout = 0.0f, yfout = 0.0f, zfout = 0.0f;
 short xi, yi, zi;
-long length = 1;
+unsigned long aul, bul, cul;
+
+printf("Test_Dsputil: start \n");
 
 // 
 // ---- Tests for scaling routines
 //
-x = 10000.0;
-k = 0.25;
-Scale(&x, &y, length, k);
-printf("Scale: %g * %g = %g \n", x, k, y);
+//#define TEST_SCALING_ROUTINES
+#ifdef TEST_SCALING_ROUTINES
+{
+long length = 1;
+
+printf("Test_Dsputil: start  TEST_SCALING_ROUTINES \n");
+
+xf = 10000.0;
+kf = 0.25;
+Scale(&xf, &yf, length, kf);
+printf("Scale: %g * %g = %g \n", xf, kf, yf);
 
 xi = 10000;
-k  = 0.25;
+kf = 0.25;
 ScaleShortsf(&xi, &yi, length, k);
-printf("ScaleShortsf: %d * %g = %d \n", xi, k, yi);
+printf("ScaleShortsf: %d * %g = %d \n", xi, kf, yi);
 
 xi = 10000;
-k  = 0.25;
+kf = 0.25;
 //ScaleShortsi(&xi, &yi, length, k);
-//printf("ScaleShortsi: %d * %g = %d \n", xi, k, yi);
-
-xi = 10000;
-k  = 0.25;
-//ScaleShortsi_Fractional(&xi, &yi, length, k);
-//printf("ScaleShortsi: %d * %g = %d \n", xi, k, yi);
-
+//printf("ScaleShortsi: %d * %g = %d \n", xi, kf, yi);
 //void ScaleShortsf(short *in, short *out, long length, float k);
 //void ScaleShortsi(short *in, short *out, long length, float k);
 //void ScaleShortsi_Fractional(short *in, short *out, long length, short k);
+}
+#endif // end TEST_SCALING_ROUTINES
 
-}	// ---- end TestDsputil() ---- 
+//#define TEST_Q15_ROUTINES
+#ifdef TEST_Q15_ROUTINES
+{
+printf("---- Q15 routines ---- \n");
+
+xf = 0.125f;
+yf = 0.125f;
+x15 = FloatToQ15(xf);
+y15 = FloatToQ15(yf);
+z15 = AddQ15(x15, y15);
+zf    = xf + yf;
+zfout = Q15ToFloat(z15);
+printf("AddQ15: REF %g + %g = %g \n", xf, yf, zf);
+printf("AddQ15: OUT %g + %g = %g \n", xf, yf, zfout);
+printf("AddQ15: %d + %d = %d \n", x15, y15, z15);
+printf("AddQ15: $%04X + $%04X = $%04X \n\n", x15, y15, z15);
+
+xf = 0.250f;
+yf = 0.125f;
+x15 = FloatToQ15(xf);
+y15 = FloatToQ15(yf);
+z15 = SubQ15(x15, y15);
+zf    = xf - yf;
+zfout = Q15ToFloat(z15);
+printf("SubQ15: REF %g - %g = %g \n", xf, yf, zf);
+printf("SubQ15: OUT %g - %g = %g \n", xf, yf, zfout);
+printf("SubQ15: %d - %d = %d \n", x15, y15, z15);
+printf("SubQ15: $%04X - $%04X = $%04X \n\n", x15, y15, z15);
+
+xf  = 0.25f;
+yf  = 0.25f;
+x15 = FloatToQ15(xf);
+y15 = FloatToQ15(yf);
+z15 = MultQ15(x15, y15);
+zf     = xf * yf;
+zfout  = Q15ToFloat(z15);
+printf("MultQ15: REF %g * %g = %g \n", xf, yf, zf);
+printf("MultQ15: OUT %g * %g = %g \n", xf, yf, zfout);
+printf("MultQ15: %d * %d = %d \n", x15, y15, z15);
+printf("MultQ15: $%04X * $%04X = $%04X \n\n", x15, y15, z15);
+
+xf  =  0.25f;
+yf  = -0.75f;
+x15 = FloatToQ15(xf);
+y15 = FloatToQ15(yf);
+z15 = MultQ15(x15, y15);
+zf    = xf * yf;
+zfout = Q15ToFloat(z15);
+printf("MultQ15: REF %g * %g = %g \n", xf, yf, zf);
+printf("MultQ15: OUT %g * %g = %g \n", xf, yf, zfout);
+printf("MultQ15: %d * %d = %d \n", x15, y15, z15);
+printf("MultQ15: $%04X * $%04X = $%04X \n\n", 0xffff&x15, 0xffff&y15, 0xffff&z15);
+
+af = 0.10f;
+xf = 0.25f;
+yf = 0.25f;
+a15 = FloatToQ15(af);
+x15 = FloatToQ15(xf);
+y15 = FloatToQ15(yf);
+z15 = MacQ15(a15, x15, y15);
+zf    = af + xf*yf;
+zfout = Q15ToFloat(z15);
+printf("MacQ15: REF %g + %g * %g = %g \n", af, xf, yf, zf);
+printf("MacQ15: OUT %g + %g * %g = %g \n", af, xf, yf, zfout);
+printf("MacQ15: %d + %d * %d = %d \n", a15, x15, y15, z15);
+printf("MacQ15: $%04X + $%04X * $%04X = $%04X \n\n", 0xffff&a15, 0xffff&x15, 0xffff&y15, 0xffff&z15);
+}
+#endif // end TEST_Q15_ROUTINES
+
+//aul = 0x12345678;
+//bul = htonl(aul);
+//printf("htonl(): $%08X -> $%08X \n", aul, bul);
+//bul = htonl(aul);
+//printf("htonl(): $%08X -> $%08X \n", bul, aul);
+
+//#define TEST_Q31_ROUTINES
+#ifdef TEST_Q31_ROUTINES
+{
+printf("---- Q31 routines ---- \n");
+
+xf = 0.125f;
+yf = 0.125f;
+x31 = FloatToQ31(xf);
+y31 = FloatToQ31(yf);
+z31 = AddQ31(x31, y31);
+zf    = xf + yf;
+zfout = Q31ToFloat(z31);
+printf("AddQ31: REF %g + %g * %g = %g \n", af, xf, yf, zf);
+printf("AddQ31: OUT %g + %g * %g = %g \n", af, xf, yf, zfout);
+printf("AddQ31: %d + %d = %d \n", x31, y31, z31);
+printf("AddQ31: $%08X + $%08X = $%08X \n\n", x31, y31, z31);
+
+xf = 0.250f;
+yf = 0.125f;
+x31 = FloatToQ31(xf);
+y31 = FloatToQ31(yf);
+z31 = SubQ31(x31, y31);
+zf    = xf - yf;
+zfout = Q31ToFloat(z31);
+printf("SubQ31: REF %g + %g * %g = %g \n", af, xf, yf, zf);
+printf("SubQ31: OUT %g + %g * %g = %g \n", af, xf, yf, zfout);
+printf("SubQ31: %d - %d = %d \n", x31, y31, z31);
+printf("SubQ31: $%08X - $%08X = $%08X \n\n", x31, y31, z31);
+
+xf = 0.125f;
+yf = 0.125f;
+x31 = FloatToQ31(xf);
+y31 = FloatToQ31(yf);
+z31 = MultQ31(x31, y31);
+zf    = xf * yf;
+zfout = Q31ToFloat(z31);
+printf("MultQ31: REF %g + %g * %g = %g \n", af, xf, yf, zf);
+printf("MultQ31: OUT %g + %g * %g = %g \n", af, xf, yf, zfout);
+printf("MultQ31: %d * %d = %d \n", x31, y31, z31);
+printf("MultQ31: $%08X * $%08X = $%08X \n\n", x31, y31, z31);
+
+af = 0.10f;
+xf = 0.25f;
+yf = 0.25f;
+a31 = FloatToQ31(af);
+x31 = FloatToQ31(xf);
+y31 = FloatToQ31(yf);
+z31 = MacQ31(a31, x31, y31);
+zf    = af + xf * yf;
+zfout = Q31ToFloat(z31);
+printf("MacQ31: REF %g + %g * %g = %g \n", af, xf, yf, zf);
+printf("MacQ31: OUT %g + %g * %g = %g \n", af, xf, yf, zfout);
+printf("MacQ31: %d + %d * %d = %d \n", a31, x31, y31, z31);
+printf("MacQ31: $%08X + $%08X * $%08X = $%08X \n\n", a31, x31, y31, z31);
+}
+#endif // end TEST_Q31_ROUTINES
+
+#define TEST_FXP31_ROUTINES
+#ifdef TEST_FXP31_ROUTINES
+{
+FXP31 afx, bfx, cfx, dfx, efx;
+long shiftValue = 3;
+printf("---- FXP31 routines ---- \n");
+
+afx = 0x2fffffff;
+bfx = 0x1fffffff;
+cfx = testFXP31_MULT(afx, bfx);
+af = Q31ToFloat(afx);
+bf = Q31ToFloat(bfx);
+cf = Q31ToFloat(cfx);
+
+printf("FXP31_MULT: afx=$%08X * bfx=$%08X  = cfx=$%08X\n", afx, bfx, cfx);
+printf("FXP31_MULT: OUT %g * %g = %g \n", af, bf, cf);
+
+afx = 0x2fffffff;
+bfx = 0x1fffffff;
+dfx = 0x3fffffff;
+// FXP31 testMIX_SCALE_SHIFT_ADD( afx, bfx, dfx, -1 );
+cfx = testMIX_SCALE_SHIFT_ADD(dfx, afx, bfx, shiftValue);
+af = Q31ToFloat(afx);
+bf = Q31ToFloat(bfx);
+cf = Q31ToFloat(cfx);
+df = Q31ToFloat(dfx);
+
+efx = testFXP31_MULT(afx, bfx);
+efx >>= shiftValue;
+//printf("MIX_SCALE_SHIFT_ADD: afx=$%08X * bfx=$%08X +dfx=$%08X  =  cfx=$%08X\n", afx, bfx, dfx, cfx);
+printf("MIX_SCALE_SHIFT_ADD: (%g * %g)>>%d) =%g\n", af, bf, shiftValue, Q31ToFloat(efx));
+printf("MIX_SCALE_SHIFT_ADD: OUT %g + ((%g * %g)>>%d) = %g \n", df, af, bf, shiftValue, cf);
+
+}
+#endif // end TEST_FXP31_ROUTINES
+
+}	// ---- end Test_Dsputil() ---- 
 

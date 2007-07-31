@@ -30,6 +30,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define kBitsPerSample     (sizeof(S16)*8)
 #define kNumMIDIChannels	16
 
+#define kMIDI_SamplingFrequencyDivisor (2)
+#define kMIDI_SamplingFrequency     (kAudioSampleRate/kMIDI_SamplingFrequencyDivisor)
+
 //==============================================================================
 // Global variables
 //==============================================================================
@@ -47,9 +50,11 @@ CMidiPlayer::CMidiPlayer()
 	
 	// Setup member vars...
 	pMidiRenderBuffer_ = new S16[kAudioOutBufSizeInWords];
-	numFrames_ = 256;	/**< @todo fixme/rdg: don't hardcode this */
-	samplesPerFrame_ = 2;
-	bitsPerSample_ = 16;
+
+	numFrames_       = 256;	/**< @todo fixme/rdg: don't hardcode this */
+	samplesPerFrame_ = kSamplesPerFrame;
+	bitsPerSample_   = kBitsPerSample;
+
 	pListener_ = kNull;
 	volume_ = 100;
 	bFilePaused_ = false;
@@ -80,7 +85,7 @@ CMidiPlayer::CMidiPlayer()
 	SPMIDI_Initialize();
 
 	// Start SP-MIDI synthesis engine using the desired sample rate.
-	midiErr = SPMIDI_CreateContext( &pContext_, kAudioSampleRate );  // fixme run fixed 1/2 sample rate
+	midiErr = SPMIDI_CreateContext( &pContext_, kMIDI_SamplingFrequency);  
 	pDebugMPI_->Assert((midiErr == kNoErr), "CAudioModule::ctor: SPMIDI_CreateContext() failed.\n");
 
 	// fixme/dg: for now only one player for whole system!  maybe add support for multiple players.
@@ -172,6 +177,7 @@ tErrType CMidiPlayer::SendCommand( U8 cmd, U8 data1, U8 data2 )
 
 //==============================================================================
 //==============================================================================
+
 void CMidiPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgDataCompleted	data;
@@ -220,7 +226,7 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
 		loopMidiFile_ = true;
 
 	// Create a player, parse MIDIFile image and setup tracks.
-	result = MIDIFilePlayer_Create( &pFilePlayer_, (int)kAudioSampleRate, pInfo->pMidiFileImage, pInfo->imageSize );
+	result = MIDIFilePlayer_Create( &pFilePlayer_, (int)kMIDI_SamplingFrequency, pInfo->pMidiFileImage, pInfo->imageSize );
 //		if( result < 0 )
 //			printf("Couldn't create a midifileplayer!\n");
 	
@@ -320,7 +326,6 @@ tErrType CMidiPlayer::GetEnableTracks( tMidiTrackBitMask* trackBitMask )
 	return kNoErr;
 }
 
-
 //==============================================================================
 //==============================================================================
 #define kMIDITrackEnable		1
@@ -330,7 +335,7 @@ tErrType CMidiPlayer::SetEnableTracks( tMidiTrackBitMask trackBitMask )
 {
 	U32					chan;
 	tMidiTrackBitMask	mask;
-	
+
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SetEnableTracks -- ...\n");	
 
 	// Loop through the channels and set mask
@@ -376,10 +381,9 @@ tErrType CMidiPlayer::ChangeTempo( S8 Tempo )
 	return kNoErr;
 }
 
-
 //==============================================================================
 //==============================================================================
-U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
+U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOutput )
 {
 	tErrType result;
 	U32 	i, midiLoopCount;
@@ -431,7 +435,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 			framesRead = SPMIDI_ReadFrames( pContext_, pBuffer, spmidiFramesPerBuffer,
 		    		samplesPerFrame_, bitsPerSample_ );
 	
-			pBuffer += framesRead * 2;
+			pBuffer += framesRead * kSamplesPerFrame;
 // 			printf("CMidiPlayer::RenderBuffer -- loop %d, framesRead = %ul, pBuffer = %d\n", i, framesRead, pBuffer);
 			
 			// Returning a 1 means MIDI file done.
@@ -465,21 +469,32 @@ U32	CMidiPlayer::RenderBuffer( S16* pMixBuff, U32 numStereoFrames )
 
 	// fixme/dg: mix to 32 bit buffer and clip once after
 	pBuffer = pMidiRenderBuffer_;
-	for ( i = 0; i < numStereoSamples; i++)
-	{
-		// Be sure the total sum stays within range
-		outSamp = (S32)*pBuffer++;
-		outSamp = (outSamp * volume_) >> 7; //  Apply gain
-		sum = *pMixBuff + (S16)outSamp;			
-
-		if (sum > kS16Max) sum = kS16Max;
-		else if (sum < kS16Min) sum = kS16Min;
-		
-		// Convert mono midi render to stereo output
-		*pMixBuff++ = sum;
-//		*pMixBuff = sum;
-	}
-
+	if (addToOutput)
+		{
+		for ( i = 0; i < numStereoSamples; i++)
+			{
+		 //  Apply gain
+			sum = pOutBuff[i] + (S16)((volume_ * (S32)pMidiRenderBuffer_[i])>>7);			
+		// Saturate to 16-bit range
+			if      (sum > kS16Max) sum = kS16Max;
+			else if (sum < kS16Min) sum = kS16Min;
+		// Convert mono midi render to stereo output  GK: ?
+			pOutBuff[i] = sum;
+			}
+		}
+	else
+		{
+		for ( i = 0; i < numStereoSamples; i++)
+			{
+		 //  Apply gain
+			sum = (S16)((volume_ * (S32)pMidiRenderBuffer_[i])>>7);			
+		// Saturate to 16-bit range
+			if      (sum > kS16Max) sum = kS16Max;
+			else if (sum < kS16Min) sum = kS16Min;
+		// Convert mono midi render to stereo output  GK: ?
+			pOutBuff[i] = sum;
+			}
+		}
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
 

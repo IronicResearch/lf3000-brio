@@ -188,7 +188,7 @@ switch (d->waveform)
 	{
 	case kOscillatorWaveform_Sine:
 		{
-		d->h[0] =  cos(kTwoPi*d->frequency/d->samplingFrequency);
+		d->h[0] =  cos(k2Pi*d->frequency/d->samplingFrequency);
 		d->z[0] =  sin(d->phase)*sqrt((1.0 - d->h[0])/(1.0 + d->h[0]));
 		d->z[1] = -cos(d->phase);
 		}
@@ -248,12 +248,12 @@ switch (d->waveform)
 		{
 		for (int i = 0; i < kOscillator_MaxDelayElements; i++)
 			d->z[i] = 0.0;
-		d->uz = (unsigned long)(0.5 + kTwoTo32m1d*d->phase/kTwoPi);
+		d->uz = (unsigned long)(0.5 + d->phase*(k2To32m1d/k2Pi));
 		}   
 	break;
 
 	case kOscillatorWaveform_SampleNHold:
-		d->uz      = (unsigned long)(0.5 + kTwoTo32m1d*d->phase/kTwoPi);
+		d->uz      = (unsigned long)(0.5 + d->phase*(k2To32m1d/k2Pi));
 		d->counter = d->udelta;
 	break;
 
@@ -262,7 +262,7 @@ switch (d->waveform)
 	case kOscillatorWaveform_SawtoothDown:
 	case kOscillatorWaveform_Square:
 	default:
-		d->uz = (unsigned long)(0.5 + kTwoTo32m1d*d->phase/kTwoPi);
+		d->uz = (unsigned long)(0.5 + d->phase*(k2To32m1d/k2Pi));
 	//printf("ResetOscillator: phase=%g -> %g %X\n", d->phase, (double)d->uz, d->uz);
 	break;
 	}
@@ -338,14 +338,15 @@ ComputeOscillator_SawtoothDown(float *out, long length, OSCILLATOR *d, int addTo
 {
 unsigned long delta = d->udelta;
 unsigned long z0    = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo32m1d));
+float k = (float)(d->gain*(1.0/k2To32m1d));
+unsigned long twoTo32m1i = (unsigned long) (k2To32m1d);  // Crazy cast to get past compiler warning
 
 if (addToOutput)
 	{
 	for (long i = 0; i < length; i++)
 		{
 	// Convert to range [0 .. gain] 
-		out[i] += k*(float)(kTwoTo32m1i - z0); //d->gain*NormalTwoTo32m1f(kTwoTo32m1i - z0);
+		out[i] += k*(float)(twoTo32m1i - z0); //d->gain*NormalTwoTo32m1f(k2To32m1i - z0);
 		z0     += delta;
 		}
 	}
@@ -354,7 +355,7 @@ else
 	for (long i = 0; i < length; i++)
 		{
 	// Convert to range [0 .. gain] 
-		out[i] = k*(float)(kTwoTo32m1i - z0); //d->gain*NormalTwoTo32m1f(kTwoTo32m1i - z0);
+		out[i] = k*(float)(twoTo32m1i - z0); //d->gain*NormalTwoTo32m1f(k2To32m1i - z0);
 		z0    += delta;
 		}
 	}
@@ -376,7 +377,7 @@ ComputeOscillator_Triangle(float *outBuffer, long bufferLength, OSCILLATOR *d, i
 long tmp;
 unsigned long delta = d->udelta;
 unsigned long z0    = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo30m1));
+float k = (float)(d->gain*(1.0/k2To30m1));
 	
 if (addToOutput)
 	{
@@ -386,9 +387,9 @@ if (addToOutput)
 		d->uz = z0 + delta;
 
 		// Reflect down to 2^31 range
-		if (z0 > kTwoTo31m1i)
-			z0 = kTwoTo31m1i - z0 + kTwoTo31m1i;
-		tmp = z0 - (unsigned long) kTwoTo30m1i;
+		if (z0 > k2To31m1i)
+			z0 = k2To31m1i - z0 + k2To31m1i;
+		tmp = z0 - (unsigned long) k2To30m1i;
 
 		// Convert to range [-gain .. gain] 
 		outBuffer[i] += k*(float)tmp; // d->gain*NormalTwoTo30m1f(tmp);
@@ -402,9 +403,9 @@ else
 		d->uz = z0 + delta;
 
 		// Reflect down to 2^31 range
-		if (z0 > kTwoTo31m1i)
-			z0 = kTwoTo31m1i - z0 + kTwoTo31m1i;
-		tmp = z0 - (unsigned long) kTwoTo30m1i;
+		if (z0 > k2To31m1i)
+			z0 = k2To31m1i - z0 + k2To31m1i;
+		tmp = z0 - (unsigned long) k2To30m1i;
 
 		// Convert to range [-gain .. gain] 
 		outBuffer[i] = k*(float)tmp; // d->gain*NormalTwoTo30m1f(tmp);
@@ -422,7 +423,7 @@ ComputeOscillator_SawtoothUp(float *outBuffer, long bufferLength, OSCILLATOR *d,
 {
 unsigned long delta = d->udelta;	// delta wave increment
 unsigned long z0    = d->uz;		// last state
-float k = (float)(d->gain*(1.0/kTwoTo32m1d));
+float k = (float)(d->gain*(1.0/k2To32m1d));
 
 if (addToOutput)
 	{
@@ -462,7 +463,7 @@ if (addToOutput)
 	{
 	for (long i = 0; i < bufferLength; i++)
 		{
-		if (z0 > kTwoTo31m1i)
+		if (z0 > k2To31m1i)
 			outBuffer[i] += d->gain;
 		else
 			outBuffer[i] -= d->gain;
@@ -473,7 +474,7 @@ else
 	{		
 	for (long i = 0; i < bufferLength; i++)
 		{
-		if (z0 > kTwoTo31m1i)
+		if (z0 > k2To31m1i)
 			outBuffer[i] =  d->gain;
 		else
 			outBuffer[i] = -d->gain;
@@ -597,7 +598,7 @@ ComputeOscillator_WhiteNoise(float *out, long length, OSCILLATOR *d, int addToOu
 // delta	counter increment
 {
 unsigned long z0 = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo31m1));
+float k = (float)(d->gain*(1.0/k2To31m1));
 
 //{static long c=0; printf("ComputeOscillator_WhiteNoise%d: z0=%d delta=%d\n", c++, z0, delta);}
 
@@ -637,7 +638,7 @@ ComputeOscillator_PinkNoise(float *out, long length, OSCILLATOR *d, int addToOut
 {
 int j = 0;
 unsigned long z0 = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo31m1));
+float k = (float)(d->gain*(1.0/k2To31m1));
 double x, y;
 double *z = d->z;
 double *h = d->h;
@@ -734,7 +735,7 @@ ComputeOscillator_RedNoise(float *out, long length, OSCILLATOR *d, int addToOutp
 {
 long sum;
 unsigned long z0 = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo31m1));
+float k = (float)(d->gain*(1.0/k2To31m1));
 
 //{static long c=0; printf("ComputeOscillator_RedNoise%d: z0=%d delta=%d\n", c++, z0, delta);}
 
@@ -784,7 +785,7 @@ ComputeOscillator_VioletNoise(float *out, long length, OSCILLATOR *d, int addToO
 {
 long sum;
 unsigned long z0 = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo31m1));
+float k = (float)(d->gain*(1.0/k2To31m1));
 
 //{static long c=0; printf("ComputeOscillator_VioletNoise%d: z0=%d delta=%d\n", c++, z0, delta);}
 
@@ -833,7 +834,7 @@ ComputeOscillator_SampleNHold(float *out, long length, OSCILLATOR *d, int addToO
 // delta	counter increment
 {
 unsigned long z0 = d->uz;
-float k = (float)(d->gain*(1.0/kTwoTo31m1));
+float k = (float)(d->gain*(1.0/k2To31m1));
 
 //{static long c=0; printf("ComputeOscillator_SampleNHold%d: z0=%d delta=%d count=%d\n", c++, z0, d->udelta, d->counter);}
 

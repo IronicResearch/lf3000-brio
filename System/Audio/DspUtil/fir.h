@@ -9,15 +9,14 @@
 
 #include <math.h>
 
+#include "Dsputil.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 #ifdef __cplusplus
 }
 #endif
-
-#define DecibelToLinear(d)		(pow(10.0, ((double)(d))*(1.0/20.0)))
-#define LinearToDecibel(x)		(log10((x))*20.0)
 
 #define kFIR_Type_LowPass	0
 #define kFIR_Type_HighPass	1
