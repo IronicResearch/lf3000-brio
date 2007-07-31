@@ -6213,3 +6213,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/30/07 4:40 PM
 2,531 ms. (Cumulative: 1,132,963 ms)
 
 ----------------
+Revision 1,081 from svn://localhost/TRUNK/:
+
+Correct link to ResourceMPI lib now that SystemResourceMPI lib is gone. 
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/07 5:33 PM
+2 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,135,651 ms)
+
+----------------

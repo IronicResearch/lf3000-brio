@@ -12,7 +12,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
-modlibs		= ['freetype', 'DebugMPI', 'SystemResourceMPI']
+modlibs		= ['freetype', 'DebugMPI', 'ResourceMPI']
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
