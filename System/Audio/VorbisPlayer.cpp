@@ -207,7 +207,7 @@ int CVorbisPlayer::VorbisSeek(
 {
 	tErrType 		err = kNoErr;
 	tOptionFlags	seekOptions;
-	U32				newFPos;
+	U32				fPos;
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"Vorbis Player::VorbisSeek() -- Seek offset = %d, origin = %d.\n "
@@ -217,7 +217,6 @@ int CVorbisPlayer::VorbisSeek(
 		// Seek from start of file
 		case SEEK_SET: 
 			seekOptions = kSeekRsrcOptionSet;
-			newFPos = offset;
 			break;
 	    
 		// Seek from where we are
@@ -238,10 +237,12 @@ int CVorbisPlayer::VorbisSeek(
 	// Seek to the requested place in the bitstream.
 	err = pRsrcMPI_->SeekRsrc( hRsrc_, (U32)offset, seekOptions );
 	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- Seeking rsrc failed.\n");
-
-	filePos_ = offset;
 	
-	return -1;
+	// Return the location we seeked to.
+	fPos = pRsrcMPI_->TellRsrc( hRsrc_ );
+	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- Tell rsrc failed.\n");
+
+	return fPos;
 }
 
 int CVorbisPlayer::WrapperForVorbisSeek(
@@ -259,11 +260,16 @@ int CVorbisPlayer::WrapperForVorbisSeek(
 
 long CVorbisPlayer::VorbisTell( void )
 {
+	U32 fPos;
+	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"Vorbis Player::VorbisTell: location = %d.\n ", 
 		static_cast<int>(filePos_) );
 
-	return filePos_;
+	// Return the location we seeked to.
+	fPos = pRsrcMPI_->TellRsrc( hRsrc_ );
+
+	return (long)fPos;
 }
 
 long CVorbisPlayer::WrapperForVorbisTell( void* pToObject )
