@@ -1,3 +1,7 @@
+//============================================================================
+//  sf2brio (sfconvert)  
+//
+//============================================================================
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>#include <string.h>
@@ -18,13 +22,19 @@
 #include "Dsputil.h"
 #include "util.h"
 #include "fir.h"
+#include "mix.h"
 #include "src.h"
 
-char *appName = "sf2brio";
+#include "main.h"
+
+#define kAppType_sf2brio   0
+#define kAppType_sfconvert 1
+char appName[100]; // sf2brio, sfconvert
+long appType = kAppType_sfconvert;
+
 long verbose = False;
 
-#define TEST_SNDFILE_READ_MAX_SAMPLES 50000
-short shortBlock[TEST_SNDFILE_READ_MAX_SAMPLES];
+// Sound file variables
 SNDFILE	*inSoundFile = NULL;
 SF_INFO	inSoundFileInfo ;
 long inSoundFileInfo_wordWidthBits = 16;
@@ -37,37 +47,48 @@ SF_INFO	outSoundFileInfo ;
 
 // Sampling rate conversion parameters
 // AddDrop, Linear, FIR, IIR, Unfiltered
-long interpolationType = kSRC_Interpolation_Type_AddDrop;
+static long srcType  = kSRC_Interpolation_Type_AddDrop;
+#define kSRC_Order_Unspecified (-1)
+static long srcOrder = kSRC_Order_Unspecified;
+static long srcFilterVersion = kSRC_FilterVersion_Default;
 
+SRC srcData[kMaxChannels];
+#define kBlockLength	1024
+#define kMaxBlockLength 50000
+#define kBlockStorageSize (kMaxBlockLength+kSRC_Filter_MaxDelayElements)
+long inBlockLength  = kBlockLength;
+long outBlockLength = kBlockLength;
+
+static short inBlock [kBlockStorageSize];
+static short outBlock[kBlockStorageSize];
+#define kMaxTempBufs	4
+static short tmpBuffers[kMaxTempBufs][kBlockStorageSize];static short *tmpBufPtrs[kMaxTempBufs];
 long useFIR = False;
-long writeHeaderlessRawFile = False;
+FIR firData[kMaxChannels];
 
-#define kOutFileFormat_Brio	0
-#define kOutFileFormat_AIFF	1
-#define kOutFileFormat_WAV	2
-#define kOutFileFormat_Raw	3
-long outFileFormat = kOutFileFormat_Brio;
+long writeHeaderlessRawFile = False;
+long outFileFormat = kOutFileFormat_Unspecified;
 
 long processOnlyOneBlock = False;
 long inputIsImpulse = False;
 
 long useFixedPoint = False;
-long useTimer    = False;
+long useTimer      = False;
 long useLargeBlockLength = False;
 
+long channels = 2;
 float inGain  = 1.0f;
 float outGain = 1.0f;
+long outSamplingFrequencySpecified = False;
+long inSamplingFrequency  = kSamplingFrequency_Unspecified;
+long outSamplingFrequency = kSamplingFrequency_Unspecified;
 
 // MIDI variables
-long voiceCount      = 1;
-long voiceLimit      = SPMIDI_MAX_VOICES;
-long samplingFrequencySpecified = False;
-long samplingFrequency = 22050;
-long channels          = 2;
+long midiSamplingFrequency = 22050;
+long midiVoiceCount_ForTimingCalculation = 1;
+long midiVoiceLimit        = SPMIDI_MAX_VOICES;
 
 long inputIsMIDIFile = False;
-int PlayMIDIFile(char *inFileName, char *outFileName, double *fileTime, double *execTime);
-
 
 // Timer variables
 long iteration, totalIterations = 1;
@@ -100,9 +121,9 @@ struct tAudioHeader {
 	U32	 dataSize;		// Data size in bytes
 };
 
-// ********************************************************************************** 
+//============================================================================
 // Print_SF_INFO  :   Print SF_INFO data structure
-// ********************************************************************************** 
+//============================================================================
 	void
 Print_SF_INFO(SF_INFO *d)
 {	     
@@ -282,35 +303,39 @@ CloseSoundFile(soundFile);
 }		// ---- end RewindSoundFile() ----
 #endif // end NEEDED
 
-// **********************************************************************************
+//============================================================================
 // PrintUsage:		
-// ********************************************************************************** 
+//============================================================================
 	void   
 PrintUsage()
 {
 printf("Usage:  %s <infile> <outfile>\n", appName);
 //printf("Usage:  %s [Options] <infile><outfile>\n", appName);
 printf("Options:\n");
-printf("    -midi   Input file rendered with General MIDI \n");
-printf("    -i      iterations \n");
+printf("    -v  verbose operation\n");
+printf("    -reps   iterations \n");
 printf("    -t      timer : Use timer for MIDI rendering\n");
 printf("    -1      singleblock : process only one block\n");
 printf("    -c      channels \n");
+printf("    -i      infile \n");
 printf("    -o      outfile \n");
-printf("    -outFormat brio, aiff, wav, raw \n");
+printf("    -outFormat brio, aiff, wav, raw (default is in format)\n");
 printf("    -largeBlocks \n");
-printf("    -fs     samplingFrequency\n");
-printf("    -voices midi voice count\n");
-printf("    -fir    \n");
-printf("    -firType  {LowPass,HighPass,BandPass,BandStop} \n");
+printf("    -fs     sampling frequency (Hz)\n");
 printf("    -fixedpt	Use Fixed point arithmetic (Integer)    \n");
 printf("    -floatingpt	Use 32-bit floating point arithmetic (Default)    \n");
 printf("    -inGain     input  gain (Linear)   \n");
 printf("    -inGainDB   input  gain (Decibels) \n");
 printf("    -outGain    output gain (Linear)   \n");
 printf("    -outGainDB  output gain (Decibels) \n");
+printf("---- MIDI Parameters \n");
+printf("    -fs_midi  MIDI engine internal sampling frequency (Hz)\n");
+printf("    -midi     Input file rendered with General MIDI \n");
+printf("    -voices   MIDI voice count\n");
+printf("---- FIR Filter Parameters \n");
+printf("    -fir    \n");
+printf("    -firType  {LowPass,HighPass,BandPass,BandStop} \n");
 //
-//printf("    -v  verbose operation\n");
 printf("\n");
 }	// ---- end PrintUsage() ---- 
 
@@ -328,30 +353,40 @@ exit(-1);
 }	// ---- end CleanUpAndExit() ---- 
 
 //============================================================================
-// main : 
+// main(): 
 //============================================================================
 	int 
 main(int argc, char *argv[]) 
 {
 long i = 0, j = 0;
-SF_INFO *isfi = &inSoundFileInfo;
-SF_INFO *osfi = &outSoundFileInfo;
+//SF_INFO *isfi = &inSoundFileInfo;
+//SF_INFO *osfi = &outSoundFileInfo;
 double execTime = 0.0;
 #define MAX_FILENAME_LENGTH 500
 char inFilePath [MAX_FILENAME_LENGTH];
 char outFilePath[MAX_FILENAME_LENGTH];
 long result = 0;
-SRC srcData;
-FIR firData;
 
 //#define TEST_DSPUTIL
 #ifdef TEST_DSPUTIL
-TestDsputil();  // Keep this here
+printf("Tests !!! Will exit \n");
+Test_Dsputil();  
+Test_Mixer();
 exit(0);
 #endif 
 
-DefaultSRC(&srcData);
-DefaultFIR(&firData);
+// Determine application type by its name
+if (!Stricmp(argv[0], "-sfconvert"))
+	appType = kAppType_sfconvert;
+else // if (!Stricmp(s, "-sf2brio"))
+	appType = kAppType_sf2brio;
+strcpy(appName, argv[0]);
+
+for (i = 0; i < kMaxChannels; i++)
+	{
+	DefaultSRC(&srcData[i]);
+	DefaultFIR(&firData[i]);
+	}
 
 inFilePath [0] = '\0';
 outFilePath[0] = '\0';
@@ -367,14 +402,14 @@ for (i = 1; i < argc; i++)
 {
 char *s = argv[i];
 
-if (!Stricmp(s, "-v"))
+if 	(!Stricmp(s, "-v") || !Stricmp(s, "-verbose"))
 	verbose = True;
 else if (!Stricmp(s, "-h") || !Stricmp(s, "-help"))
 	{
 	PrintUsage();
 	exit(0);
 	}
-else if (!Stricmp(s, "-i") || !Stricmp(s, "-iterations"))
+else if (!Stricmp(s, "-reps") || !Stricmp(s, "-iterations"))
 	{
 	totalIterations = atoi(argv[++i]);
 //printf("totalIterations=%d\n", totalIterations);
@@ -382,30 +417,178 @@ else if (!Stricmp(s, "-i") || !Stricmp(s, "-iterations"))
 else if (!Stricmp(s, "-inGain"))
 	{
 	inGain = atof(argv[++i]);
-printf("inGain=%g\n", inGain);
+//printf("inGain=%g\n", inGain);
 	}
 else if (!Stricmp(s, "-inGainDB"))
 	{
 	float inGainDB = atof(argv[++i]);
 	inGain = DecibelToLinear(inGainDB);
-printf("inGainDB = %g -> %g\n", inGainDB, inGain);
+//printf("inGainDB = %g -> %g\n", inGainDB, inGain);
 	}
 else if (!Stricmp(s, "-outGain"))
 	{
 	outGain = atof(argv[++i]);
-printf("outGain=%g\n", outGain);
+//printf("outGain=%g\n", outGain);
 	}
 else if (!Stricmp(s, "-outGainDB"))
 	{
 	float outGainDB = atof(argv[++i]);
 	outGain = DecibelToLinear(outGainDB);
-printf("outGainDB = %g -> %g\n", outGainDB, outGain);
+//printf("outGainDB = %g -> %g\n", outGainDB, outGain);
 	}
 
-else if (!Stricmp(s, "-m") || !Stricmp(s, "-midi"))
+
+// 
+// ----------- Sampling rate conversion parameters
+//
+else if (!Stricmp(s, "-srcType"))
+	{
+	long type = -1;
+	char *s = argv[++i];
+	if 	(!Stricmp(s, "AddDrop"))
+		type = kSRC_Interpolation_Type_AddDrop;
+	else if (!Stricmp(s, "Linear"))
+		type = kSRC_Interpolation_Type_Linear;
+	else if (!Stricmp(s, "FIR") || !Stricmp(s, "FIR1"))
+		type = kSRC_Interpolation_Type_FIR;
+	else if (!Stricmp(s, "IIR"))
+		type = kSRC_Interpolation_Type_IIR;
+	else if (!Stricmp(s, "Triangle"))
+		type = kSRC_Interpolation_Type_Triangle;
+	else if (!Stricmp(s, "testfir"))
+		type = kSRC_Interpolation_Type_TestFIR;
+	else if (!Stricmp(s, "unfiltered"))
+		type = kSRC_Interpolation_Type_Unfiltered;
+	else
+		{
+		printf("Invalid interpolation type '%s'\n", s);
+		exit(-1);
+		}
+	printf("srcType =%d '%s'\n", type, s);
+	srcType = type;
+	}
+else if (!Stricmp(s, "-srcOrder"))
+	{
+	srcOrder = atoi(argv[++i]);
+printf("srcOrder=%d\n", srcOrder);
+	}
+else if (!Stricmp(s, "-srcV"))
+	{
+	srcFilterVersion = atoi(argv[++i]);
+printf("srcFilterVersion=%d\n", srcFilterVersion);
+	}
+
+// 
+// ------  MIDI File playback parameters
+//
+else if (!Stricmp(s, "-midi"))
 	{
 	inputIsMIDIFile = True;
 //printf("inputIsMIDIFile=%d\n", inputIsMIDIFile);
+	}
+else if (!Stricmp(s, "-voices"))
+	{
+	midiVoiceCount_ForTimingCalculation = atoi(argv[++i]);
+//printf("midiVoiceCount_ForTimingCalculation=%d\n", midiVoiceCount_ForTimingCalculation);
+	}
+else if (!Stricmp(s, "-voicelimit"))
+	{
+	midiVoiceLimit = atoi(argv[++i]);
+	if (midiVoiceLimit < 1 || midiVoiceLimit > SPMIDI_MAX_VOICES)
+		{
+		printf("Invalid MIDI VoiceLimit %d . Must be in range [1..%d]\n", midiVoiceLimit, SPMIDI_MAX_VOICES);
+		}
+//printf("midiVoiceLimit=%d\n", midiVoiceLimit);
+	}
+else if (!Stricmp(s, "-fs_midi"))
+	{
+	midiSamplingFrequency = atoi(argv[++i]);
+printf("midiSamplingFrequency=%d Hz\n", midiSamplingFrequency);
+	}
+
+//
+// ------------ FIR filter parameters
+//
+else if (!Stricmp(s, "-useFIR"))
+	{
+	useFIR = True;
+//printf("useFIR=%d\n", useFIR);
+	}
+else if (!Stricmp(s, "-firType"))
+	{
+	long firType = -1;
+	char *s = argv[++i];
+	if 	(!Stricmp(s, "LowPass"))
+		firType = kFIR_Type_LowPass;
+	else if (!Stricmp(s, "HighPass"))
+		firType = kFIR_Type_HighPass;
+	else if (!Stricmp(s, "BandPass"))
+		firType = kFIR_Type_BandPass;
+	else if (!Stricmp(s, "BandStop"))
+		firType = kFIR_Type_BandStop;
+// 1/2 Band filters
+	else if (!Stricmp(s, "HalfBand") || !Stricmp(s, "HalfBand_15"))
+		firType = kFIR_Type_HalfBand_15;
+	else if (!Stricmp(s, "HalfBand_31"))
+		firType = kFIR_Type_HalfBand_31;
+	else if (!Stricmp(s, "HalfBand_32dB"))
+		firType = kFIR_Type_HalfBand_32dB;
+	else if (!Stricmp(s, "HalfBand_32dB"))
+		firType = kFIR_Type_HalfBand_32dB;
+	else if (!Stricmp(s, "HalfBand_58dB"))
+		firType = kFIR_Type_HalfBand_58dB;
+// 1/3 band filters
+	else if (!Stricmp(s, "ThirdBand") || !Stricmp(s, "ThirdBand_15"))
+		firType = kFIR_Type_ThirdBand_15;
+	else if (!Stricmp(s, "ThirdBand_31"))
+		firType = kFIR_Type_ThirdBand_31;
+// Triangle filters
+	else if (!Stricmp(s, "Triangle_3"))
+		firType = kFIR_Type_Triangle_3;
+	else if (!Stricmp(s, "Triangle_9"))
+		firType = kFIR_Type_Triangle_9;
+	else
+		{
+		printf("Invalid : '%s'\n", argv[i-1], s);
+		exit(-1);
+		}
+	printf("FIR type =%d '%s'\n", firType, s);
+	firData[0].type = firType;
+	}
+
+//
+// --------- General parameters
+//
+else if (!strcmp(s, "-c") || !strcmp(s, "-channels"))
+	{
+	channels = atoi(argv[++i]);
+//printf("channels=%d\n", channels);
+	}
+else if (!Stricmp(s, "-fs") || !Stricmp(s, "-fs_out"))
+	{
+	outSamplingFrequency = atoi(argv[++i]);
+	outSamplingFrequencySpecified = True;
+printf("outSamplingFrequency=%d Hz\n", outSamplingFrequency);
+	}
+else if (!Stricmp(s, "-t") || !Stricmp(s, "-timer"))
+	{
+	useTimer = True;
+printf("useTimer=%d\n", useTimer);
+	}
+else if (!Stricmp(s, "-largeBlocks"))
+	{
+	useLargeBlockLength = True;
+printf("useLargeBlockLength=%d\n", useLargeBlockLength);
+	}
+else if (!Stricmp(s, "-fixedpt") || !Stricmp(s, "-fixedpoint"))
+	{
+	useFixedPoint = True;
+printf("useFixedPoint=%d\n", useFixedPoint);
+	}
+else if (!Stricmp(s, "-floatingpoint") || !Stricmp(s, "-floatpt"))
+	{
+	useFixedPoint = False;
+printf("useFixedPoint=%d\n", useFixedPoint);
 	}
 else if (!Stricmp(s, "-1") || !Stricmp(s, "-singleblock"))
 	{
@@ -416,6 +599,11 @@ else if (!Stricmp(s, "-impulse"))
 	{
 	inputIsImpulse = True;
 printf("inputIsImpulse = %d\n", inputIsImpulse);
+	}
+else if (!Stricmp(s, "-i") || !Stricmp(s, "-infile"))
+	{
+	strcpy(inFilePath , argv[++i]);
+	printf("inFilePath = '%s'\n", inFilePath);
 	}
 else if (!Stricmp(s, "-o") || !Stricmp(s, "-outfile"))
 	{
@@ -440,125 +628,7 @@ else if (!Stricmp(s, "-outFormat"))
 		}
 //	printf("outputFileFormat = %d '%s'\n", outFileFormat, s);
 	}
-else if (!Stricmp(s, "-srcType"))
-	{
-	long type = -1;
-	char *s = argv[++i];
-	if 	(!Stricmp(s, "AddDrop"))
-		type = kSRC_Interpolation_Type_AddDrop;
-	else if (!Stricmp(s, "Linear"))
-		type = kSRC_Interpolation_Type_Linear;
-	else if (!Stricmp(s, "FIR") || !Stricmp(s, "FIR1"))
-		type = kSRC_Interpolation_Type_FIR;
-	else if (!Stricmp(s, "IIR"))
-		type = kSRC_Interpolation_Type_FIR;
-	else if (!Stricmp(s, "Triangle"))
-		type = kSRC_Interpolation_Type_Triangle;
-	else if (!Stricmp(s, "testfir"))
-		type = kSRC_Interpolation_Type_TestFIR;
-	else if (!Stricmp(s, "unfiltered"))
-		type = kSRC_Interpolation_Type_Unfiltered;
-	else
-		{
-		printf("Invalid interpolation type '%s'\n", s);
-		exit(-1);
-		}
-	printf("interpolation =%d '%s'\n", type, s);
-	interpolationType = type;
-	}
-else if (!Stricmp(s, "-voices"))
-	{
-	voiceCount = atoi(argv[++i]);
-//printf("voiceCount=%d\n", voiceCount);
-	}
-else if (!Stricmp(s, "-voicelimit"))
-	{
-	voiceLimit = atoi(argv[++i]);
-	if (voiceLimit < 1 || voiceLimit > SPMIDI_MAX_VOICES)
-		{
-		printf("Invalid VoiceLimit %d . Must be in range [1..%d]\n", voiceLimit, SPMIDI_MAX_VOICES);
-		}
-//printf("voiceLimit=%d\n", voiceLimit);
-	}
-else if (!strcmp(s, "-c") || !strcmp(s, "-channels"))
-	{
-	channels = atoi(argv[++i]);
-//printf("channels=%d\n", channels);
-	}
-else if (!Stricmp(s, "-fs") || !Stricmp(s, "-samplingFrequency"))
-	{
-	samplingFrequency = atoi(argv[++i]);
-	samplingFrequencySpecified = True;
-printf("samplingFrequency=%d Hz\n", samplingFrequency);
-	}
-else if (!Stricmp(s, "-t") || !Stricmp(s, "-timer"))
-	{
-	useTimer = True;
-printf("useTimer=%d\n", useTimer);
-	}
-else if (!Stricmp(s, "-largeBlocks"))
-	{
-	useLargeBlockLength = True;
-printf("useLargeBlockLength=%d\n", useLargeBlockLength);
-	}
-else if (!Stricmp(s, "-useFIR"))
-	{
-	useFIR = True;
-//printf("useFIR=%d\n", useFIR);
-	}
-else if (!Stricmp(s, "-fixedpt") || !Stricmp(s, "-fixedpoint"))
-	{
-	useFixedPoint = True;
-printf("useFixedPoint=%d\n", useFixedPoint);
-	}
-else if (!Stricmp(s, "-floatingpoint") || !Stricmp(s, "-floatpt"))
-	{
-	useFixedPoint = False;
-printf("useFixedPoint=%d\n", useFixedPoint);
-	}
-
-else if (!Stricmp(s, "-firType"))
-	{
-	long type = -1;
-	char *s = argv[++i];
-	if 	(!Stricmp(s, "LowPass"))
-		type = kFIR_Type_LowPass;
-	else if (!Stricmp(s, "HighPass"))
-		type = kFIR_Type_HighPass;
-	else if (!Stricmp(s, "BandPass"))
-		type = kFIR_Type_BandPass;
-	else if (!Stricmp(s, "BandStop"))
-		type = kFIR_Type_BandStop;
-// 1/2 Band filters
-	else if (!Stricmp(s, "HalfBand") || !Stricmp(s, "HalfBand_15"))
-		type = kFIR_Type_HalfBand_15;
-	else if (!Stricmp(s, "HalfBand_31"))
-		type = kFIR_Type_HalfBand_31;
-	else if (!Stricmp(s, "HalfBand_32dB"))
-		type = kFIR_Type_HalfBand_32dB;
-	else if (!Stricmp(s, "HalfBand_32dB"))
-		type = kFIR_Type_HalfBand_32dB;
-	else if (!Stricmp(s, "HalfBand_58dB"))
-		type = kFIR_Type_HalfBand_58dB;
-// 1/3 band filters
-	else if (!Stricmp(s, "ThirdBand") || !Stricmp(s, "ThirdBand_15"))
-		type = kFIR_Type_ThirdBand_15;
-	else if (!Stricmp(s, "ThirdBand_31"))
-		type = kFIR_Type_ThirdBand_31;
-// Triangle filters
-	else if (!Stricmp(s, "Triangle_3"))
-		type = kFIR_Type_Triangle_3;
-	else if (!Stricmp(s, "Triangle_9"))
-		type = kFIR_Type_Triangle_9;
-	else
-		{
-		printf("Invalid : '%s'\n", argv[i-1], s);
-		exit(-1);
-		}
-//	printf("FIR type =%d '%s'\n", type, s);
-	firData.type = type;
-	}
-
+// Assign random parameters to input and output files - kinda dumb
 else if (inFilePath[0] == '\0')
 	strcpy(inFilePath , argv[i]);
 else if (outFilePath[0] == '\0')
@@ -578,11 +648,29 @@ printf("outFilePath = '%s'\n", outFilePath);
 
 ClearTimeval(&totalTv);
 
+
+// Initialize structures for sampling rate conversion
+for (i = 0; i < kMaxChannels; i++)
+	{
+	srcData[i].useFixedPoint        = useFixedPoint;
+	srcData[i].type                 = srcType;
+	srcData[i].samplingFrequency    = outSamplingFrequency;
+	}
 // 
 // ---- Convert MIDI file using Mobileer MIDI engine
 //
 if (inputIsMIDIFile)
 	{
+// Update sampling rate conversion structures
+for (i = 0; i < channels; i++)
+	{
+	srcData[i].samplingFrequency    = outSamplingFrequency;
+	srcData[i].inSamplingFrequency  = midiSamplingFrequency;
+	srcData[i].outSamplingFrequency = outSamplingFrequency;
+
+	PrepareSRC(&srcData[i]);
+	}
+
 for (iteration = 0; iteration < totalIterations; iteration++)
 	{
 	if (useTimer)
@@ -604,7 +692,7 @@ printf("\nDecoding MIDI: iteration %d/%d \n", iteration+1, totalIterations);
 	if (useTimer)
 		{
 		printf("\n-----------------------------------------------\n");
-		printf("totalTime  = %g Sec for %d voices\n", totalTime, voiceCount);
+		printf("totalTime  = %g Sec for %d voices\n", totalTime, midiVoiceCount_ForTimingCalculation);
 
 		double realTime = 0.0, cpuTime = 0.0;
 		double avgTime, startTime, endTime;
@@ -615,7 +703,7 @@ printf("\nDecoding MIDI: iteration %d/%d \n", iteration+1, totalIterations);
 		cpuTime  = avgTime/inFileTime;
 		//printf("Real Time = %d X\n", (int)realTime);
 		printf("Real Time CPU Load = %g %%  (%d MIPS)\n", 100.0*cpuTime, (int) (cpuTime*cpuClockMHz + 0.5));
-		printf("CPU Frequency=%d MHz:  MIPS= %g/voice\n", (int)cpuClockMHz, (cpuTime*cpuClockMHz)/(double)voiceCount);
+		printf("CPU Frequency=%d MHz:  MIPS= %g/voice\n", (int)cpuClockMHz, (cpuTime*cpuClockMHz)/(double)midiVoiceCount_ForTimingCalculation);
 		}
 	}
 // 
@@ -623,6 +711,8 @@ printf("\nDecoding MIDI: iteration %d/%d \n", iteration+1, totalIterations);
 //
 else
 {
+long framesRead = 0, framesWritten = 0;
+long loopCount, loopRemnants;
 
 // Open audio file if input is not a generated impulse
 if (!inputIsImpulse)
@@ -630,50 +720,58 @@ if (!inputIsImpulse)
 	inSoundFile = OpenSoundFile(inFilePath, &inSoundFileInfo, SFM_READ);	if (!inSoundFile)
 		{
 		printf("Unable to open input file '%s'\n", inFilePath);
-		exit(0);
+		CleanUpAndExit();
 		}
 	} // if (!inputIsImpulse)
 
-#define BLOCK_LENGTH	1024
-#define MAX_BLOCK_LENGTH 50000
-	long inBlockLength  = BLOCK_LENGTH;
-	long outBlockLength = BLOCK_LENGTH;
-	long framesRead = 0, framesWritten = 0;
-#define BLOCK_STORAGE_SIZE (2*MAX_BLOCK_LENGTH+kSRC_Filter_MaxDelayElements)
-	static short inBlock [BLOCK_STORAGE_SIZE];
-	static short outBlock[BLOCK_STORAGE_SIZE];
+// Select sampling rate, for which command-line specification overrides the file value
+	inSamplingFrequency  = inSoundFileInfo.samplerate;
+	if (!outSamplingFrequencySpecified)
+		outSamplingFrequency = inSamplingFrequency;
 
-	long loopCount, loopRemnants;
-	long inSamplingRate, outSamplingRate;
+// Update sampling rate conversion structures
+for (i = 0; i < kMaxChannels; i++)
+	{
+	srcData[i].samplingFrequency    = inSamplingFrequency;
+	srcData[i].inSamplingFrequency  = inSamplingFrequency;
+	srcData[i].outSamplingFrequency = outSamplingFrequency;
+
+	PrepareSRC(&srcData[i]);
+	}
+
+// Select output format as input format, if not already specified
+//  FIXXX: incomplete:  doesn't handle Brio or RAW
+if (kOutFileFormat_Unspecified == outFileFormat)
+	{
+	long fileFormatType = (inSoundFileInfo.format & SF_FORMAT_TYPEMASK);
+	if 	(SF_FORMAT_AIFF == fileFormatType)
+		outFileFormat = kOutFileFormat_AIFF;
+	else if (SF_FORMAT_WAV == fileFormatType)
+		outFileFormat = kOutFileFormat_WAV;
+	else
+		{
+		printf("%s: currently do not support this input file type: %d\n", appName, fileFormatType);
+		CleanUpAndExit();
+		}
+	}
 
 // Clear buffers
-	ClearShorts(inBlock , BLOCK_STORAGE_SIZE);
-	ClearShorts(outBlock, BLOCK_STORAGE_SIZE);
+	ClearShorts(inBlock , kBlockStorageSize);
+	ClearShorts(outBlock, kBlockStorageSize);
 
 // Set up input for generated (no input file opened) impulse
 	if (inputIsImpulse)
 		{
-		isfi->samplerate = 44100;
-		isfi->frames = isfi->samplerate*10;
-		isfi->channels = 1;
+		inSoundFileInfo.samplerate = 44100;
+		inSoundFileInfo.frames = inSoundFileInfo.samplerate*10;
+		inSoundFileInfo.channels = 1;
 		}
 
-// Select sampling rate, for which command-line specification overrides the file value
-	if ( samplingFrequencySpecified)
-		{
-		inSamplingRate  = isfi->samplerate;
-		outSamplingRate = samplingFrequency;
-		}
-	else
-		{
-		inSamplingRate  = isfi->samplerate;
-		outSamplingRate = inSamplingRate;
-		}
 
 // Open output file , if specified
 	if (outFilePath[0] != '\0')
 		{
-	// Brio or RAW
+	// Brio or RAW: need to open a RAW binary file as LibSndFile doesn't help here.
 		if (kOutFileFormat_Brio == outFileFormat || kOutFileFormat_Raw == outFileFormat)
 			{
 			outH = fopen(outFilePath, "wb");
@@ -686,18 +784,18 @@ if (!inputIsImpulse)
 	// AIFF or WAV
 		else if (kOutFileFormat_AIFF == outFileFormat || kOutFileFormat_WAV == outFileFormat)
 			{
-			osfi->frames     = 0;		
-			osfi->samplerate = outSamplingRate;
-			osfi->channels   = isfi->channels;
-			osfi->format     = SF_FORMAT_PCM_16;
+			outSoundFileInfo.frames     = 0;		
+			outSoundFileInfo.samplerate = outSamplingFrequency;
+			outSoundFileInfo.channels   = inSoundFileInfo.channels;
+			outSoundFileInfo.format     = SF_FORMAT_PCM_16;
 			if (kOutFileFormat_AIFF == outFileFormat)
-				osfi->format |= SF_FORMAT_AIFF;
+				outSoundFileInfo.format |= SF_FORMAT_AIFF;
 			else
-				osfi->format |= SF_FORMAT_WAV;
-			osfi->sections = 1;
-			osfi->seekable = 1;
+				outSoundFileInfo.format |= SF_FORMAT_WAV;
+			outSoundFileInfo.sections = 1;
+			outSoundFileInfo.seekable = 1;
 
-			outSoundFile = OpenSoundFile( outFilePath, osfi, SFM_WRITE);
+			outSoundFile = OpenSoundFile( outFilePath, &outSoundFileInfo, SFM_WRITE);
 			}
 		}
 	
@@ -708,47 +806,47 @@ if (!inputIsImpulse)
 
 		long sampleSizeInBytes = inSoundFileInfo_wordWidthBits / 8;
 
-		brioFileHeader.sampleRate   = outSamplingRate;
-		brioFileHeader.dataSize     = ((isfi->frames * isfi->channels) * sampleSizeInBytes); 
+		brioFileHeader.sampleRate   = outSamplingFrequency;
+		brioFileHeader.dataSize     = ((inSoundFileInfo.frames * inSoundFileInfo.channels) * sampleSizeInBytes); 
 		brioFileHeader.offsetToData = sizeof(tAudioHeader);
 		brioFileHeader.type         = 0x10001C05;	// Brio raw type
-		if (1 == isfi->channels)
+		if (1 == inSoundFileInfo.channels)
 			brioFileHeader.flags = 0;  // Mono for Brio
 		else
 			brioFileHeader.flags = 1;  // Stereo for Brio
 		fwrite(&brioFileHeader, sizeof(char), sizeof(tAudioHeader), outH);
 //printf("Wrote Brio header file in %d bytes\n", sizeof(tAudioHeader));
 		}
-	inFileTime = ((double) isfi->frames)/(double)isfi->samplerate;
+	inFileTime = ((double) inSoundFileInfo.frames)/(double)inSoundFileInfo.samplerate;
 printf("inFileTime = %g  seconds \n", inFileTime);
 
 // Shorten to some block size.  Try to get the value of a few hundred .
- if ( !useLargeBlockLength && (0 == inSamplingRate%100 ) && (0 == outSamplingRate%100 ) )
+ if ( !useLargeBlockLength && (0 == inSamplingFrequency%100 ) && (0 == outSamplingFrequency%100 ) )
 	{
-	inBlockLength  = inSamplingRate /100;
-	outBlockLength = outSamplingRate/100;
+	inBlockLength  = inSamplingFrequency /100;
+	outBlockLength = outSamplingFrequency/100;
 	}
-else if ( (0 == inSamplingRate%10  ) && (0 == outSamplingRate%10  ) )
+else if ( (0 == inSamplingFrequency%10  ) && (0 == outSamplingFrequency%10  ) )
 	{
-	inBlockLength  = inSamplingRate /10;
-	outBlockLength = outSamplingRate/10;
+	inBlockLength  = inSamplingFrequency /10;
+	outBlockLength = outSamplingFrequency/10;
 	}
 else
 	{
-	inBlockLength  = inSamplingRate ;
-	outBlockLength = outSamplingRate;
+	inBlockLength  = inSamplingFrequency;
+	outBlockLength = outSamplingFrequency;
 	}
-//printf("inBlockLength=%d outBlockLength=%d \n", inBlockLength, outBlockLength);
-
 // ---- Write audio file samples (input sampling rate = output sampling rate)
 if (inBlockLength == outBlockLength)
 {
 short *inBlockP  = &inBlock [kFIR_MaxDelayElements];
 short *outBlockP = &outBlock[kFIR_MaxDelayElements];
 long length = inBlockLength;
+
 if (useFIR)
 	{
-	PrepareFIR(&firData);
+	for (i = 0; i < kMaxChannels; i++)
+		PrepareFIR(&firData[i]);
 	}
 
 	if (processOnlyOneBlock)
@@ -758,8 +856,8 @@ if (useFIR)
 		}
 	else
 		{
-		loopCount    = isfi->frames/length;
-		loopRemnants = isfi->frames%length;
+		loopCount    = inSoundFileInfo.frames/length;
+		loopRemnants = inSoundFileInfo.frames%length;
 		}
 	if (useTimer)
 		gettimeofday(&taskStartTv, NULL);
@@ -786,18 +884,18 @@ if (useFIR)
 		if (useFIR)
 			{
 			if (useFixedPoint)
-				RunFIR_Shortsi(inBlockP, outBlockP, length, &firData);
+				RunFIR_Shortsi(inBlockP, outBlockP, length, &firData[0]);
 			else
-				RunFIR_Shortsf(inBlockP, outBlockP, length, &firData);
+				RunFIR_Shortsf(inBlockP, outBlockP, length, &firData[0]);
 			if (outH)
-				fwrite(outBlockP, sizeof(short), length*isfi->channels, outH);
+				fwrite(outBlockP, sizeof(short), length*inSoundFileInfo.channels, outH);
 			else if (outSoundFile)
 				framesWritten = sf_writef_short(outSoundFile, outBlockP, length);
 			}
 		else {
 			
 			if (outH)
-				fwrite(inBlockP, sizeof(short), length*isfi->channels, outH);
+				fwrite(inBlockP, sizeof(short), length*inSoundFileInfo.channels, outH);
 			else if (outSoundFile)
 				framesWritten = sf_writef_short(outSoundFile, inBlockP, length);
 			}
@@ -816,7 +914,7 @@ if (useFIR)
                 if (framesRead != length)
 		    printf("Remnants Short read of %d/%d samples\n", framesRead, length);
 		if (outH)
-		   fwrite(inBlockP, isfi->channels*sizeof(short), loopRemnants, outH);
+		   fwrite(inBlockP, inSoundFileInfo.channels*sizeof(short), loopRemnants, outH);
 		else if (outSoundFile)
 			framesWritten = sf_writef_short(outSoundFile, inBlockP, loopRemnants);
 		}
@@ -839,25 +937,30 @@ else
 short *inBlockP  = &inBlock [kSRC_Filter_MaxDelayElements];
 short *outBlockP = &outBlock[kSRC_Filter_MaxDelayElements];
 
-srcData.useFixedPoint        = useFixedPoint;
-srcData.type                 = interpolationType;
-srcData.samplingFrequency    = inSamplingRate;
-srcData.inSamplingFrequency  = inSamplingRate;
-srcData.outSamplingFrequency = outSamplingRate;
-
-// To test FIR in SRC module, sampling rate conversion is bypassed
-if (srcData.type == kSRC_Interpolation_Type_TestFIR)
+//printf("inBlockLength=%d outBlockLength=%d \n", inBlockLength, outBlockLength);
+for (i = 0; i < inSoundFileInfo.channels; i++)
 	{
-printf("TestSRC FIR ...\n");
-	srcData.inSamplingFrequency  = inSamplingRate;
-	srcData.outSamplingFrequency = outSamplingRate;
-	inBlockLength = outBlockLength;
+	srcData[i].useFixedPoint        = useFixedPoint;
+	srcData[i].type                 = srcType;
+	srcData[i].samplingFrequency    = inSamplingFrequency;
+	srcData[i].inSamplingFrequency  = inSamplingFrequency;
+	srcData[i].outSamplingFrequency = outSamplingFrequency;
+	// To test FIR in SRC module, sampling rate conversion is bypassed
+	if (kSRC_Interpolation_Type_TestFIR == srcData[i].type)
+		{
+	printf("TestSRC FIR ...\n");
+		srcData[i].inSamplingFrequency  = inSamplingFrequency;
+		srcData[i].outSamplingFrequency = outSamplingFrequency;
+		inBlockLength = outBlockLength;
+		}
+
+	PrepareSRC(&srcData[i]);
 	}
 
-PrepareSRC(&srcData);
+
 printf("inBlockLength = %d outBlockLength=%d\n", inBlockLength, outBlockLength);
 
-printf("Audio SRC : %d -> %d Hz\n", inSamplingRate, outSamplingRate);
+printf("Audio SRC : %d -> %d Hz\n", inSamplingFrequency, outSamplingFrequency);
 	if (processOnlyOneBlock)
 		{
 		loopCount    = 1;
@@ -865,21 +968,44 @@ printf("Audio SRC : %d -> %d Hz\n", inSamplingRate, outSamplingRate);
 		}
 	else
 		{
-		loopCount    = isfi->frames/inBlockLength;
-		loopRemnants = isfi->frames%inBlockLength;
+		loopCount    = inSoundFileInfo.frames/inBlockLength;
+		loopRemnants = inSoundFileInfo.frames%inBlockLength;
 		}
 	if (useTimer)
 		gettimeofday(&taskStartTv, NULL);
 	totalTime = 0.0;
-	for (long i = 0; i < loopCount; i++)
+	for (long loop = 0; loop < loopCount; loop++)
 		{
+		long ch;
+		//  CAREFUL with the reuse of the Temp buffers.  The SRC routines write some history
+		//   samples for successive iterations.
+		for (ch = 0; ch < 4; ch++)
+			tmpBufPtrs[ch] = &tmpBuffers[ch][kSRC_Filter_MaxDelayElements];
+
 		framesRead = sf_readf_short(inSoundFile, inBlockP, inBlockLength);
                 if (framesRead != inBlockLength)
 		    printf("Short read of %d/%d samples\n", framesRead, inBlockLength);
 
+//printf("HERE channels=%d\n", inSoundFileInfo.channels);
+
 		if (useTimer)
 			gettimeofday(&iterationStartTv, NULL);
-		RunSRC(inBlockP, outBlockP, inBlockLength, outBlockLength, &srcData);
+		if (1 == inSoundFileInfo.channels)
+			{
+			RunSRC(inBlockP, outBlockP, inBlockLength, outBlockLength, &srcData[0]);
+			}
+		else
+			{
+		// Deinterleave and convert
+			DeinterleaveShorts(inBlockP, tmpBufPtrs[0], tmpBufPtrs[1], inBlockLength);
+		// Convert sampling rate (unsuitable for in-place operation)
+			for (ch = 0; ch < channels; ch++)
+				RunSRC(tmpBufPtrs[ch], tmpBufPtrs[2+ch], inBlockLength, outBlockLength, &srcData[ch]);
+		// Interleave and write to file
+			InterleaveShorts(tmpBufPtrs[2], tmpBufPtrs[3], outBlockP, outBlockLength);
+		// NOTE:  will need to save last few samples of state
+			}
+
 		if (useTimer)
 			{
 			gettimeofday(&iterationEndTv, NULL);
@@ -887,9 +1013,10 @@ printf("Audio SRC : %d -> %d Hz\n", inSamplingRate, outSamplingRate);
 			AddTimevalDiff(&totalTv, &iterationStartTv, &iterationEndTv);
 			}
 
+	// Write results to file
 //		CopyShorts(inBlockP, outBlockP, inBlockLength);
-		if (outH)
-			fwrite(outBlockP, isfi->channels*sizeof(short), outBlockLength, outH);
+		if 	(outH)
+			fwrite(outBlockP, inSoundFileInfo.channels*sizeof(short), outBlockLength, outH);
 		else if (outSoundFile)
 			framesWritten = sf_writef_short(outSoundFile, outBlockP, outBlockLength);
 

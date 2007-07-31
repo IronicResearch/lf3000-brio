@@ -20,6 +20,10 @@
 #include <AudioTypes.h>
 #include <Channel.h>
 #include <MidiPlayer.h>
+
+#include <briomixer.h>
+#include <src.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -47,25 +51,36 @@ public:
 	// Get the MIDI player for the mixer.
 	CMidiPlayer*	GetMidiPlayer( void ) { return pMidiPlayer_; }
 	
-	// Set the mixer's master volume.
 	void 			SetMasterVolume( U8 vol ) { masterVol_ = vol; }
 	
 	// Main routine to handle the processing of data through the audio channels
 	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
 	
-	static int WrapperToCallRenderBuffer( S16* pOutBuff, 
-											unsigned long frameCount,
-											void* pToObject  );
+	static int WrapperToCallRenderBuffer( S16* pOutBuff, unsigned long frameCount, void* pToObject  );
 											
 private:
-	U8 				numChannels_;			// mono or stereo (for now fixed at stereo)
-	CChannel*		pChannels_;				// Array of channels
-	CMidiPlayer*	pMidiPlayer_;			// player for doing MIDI
-	U8				masterVol_;				// fixme/rdg: convert to fixedpoint
-	S16*			pMixBuffer_;			// Pointer to mixed samples from all active chans.
-	S16*			pSRCInBuffer_;			// Pointer to the sample rate converter input buffer
-	S16*			pSRCOutBuffer_;			// Pointer to the sample rate converter output buffer
-	S16*			pSRCOverflowBuffer_;	// Pointer to the sample rate converter output buffer
+	BRIOMIXER		pDSP_;
+#define kAudioMixer_SRC_MixBinCount	3	// For sampling rates 8, 16, 32 kHz
+#define kAudioMixer_SRC_MixBin_0_8000Hz	 0
+#define kAudioMixer_SRC_MixBin_1_16000Hz 1
+#define kAudioMixer_SRC_MixBin_2_32000Hz 2
+	SRC			src_[kAudioMixer_SRC_MixBinCount][2];
+	S16			*srcMixBinBufferPtrs_[kAudioMixer_SRC_MixBinCount][2];
+	long			 srcMixBinFilled_[kAudioMixer_SRC_MixBinCount];
+
+	U8 			numChannels_;			// mono or stereo (for now fixed at stereo)
+	CChannel*		pChannels_;			// Array of channels
+
+	CMidiPlayer*		pMidiPlayer_;			// player for doing MIDI
+	U8			masterVol_;			// fixme/rdg: convert to fixedpoint
+	S16*			pMixBuffer_; // Ptr to mixed samples from all active channels
+
+#define kAudioMixer_MaxTempBuffers	8
+	S16*			pTmpBuffers_[kAudioMixer_MaxTempBuffers]; // Ptr to intermediate result buffer
+	S16*			tmpBufOffsetPtrs_[kAudioMixer_MaxTempBuffers]; 
+
+	S16*			pSRCInBuffer_;			// Ptr to sample rate converter input buffer
+	S16*			pSRCOutBuffer_;			// Ptr to sample rate converter output buffer
 
 };
 

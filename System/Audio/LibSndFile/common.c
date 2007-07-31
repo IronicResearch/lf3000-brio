@@ -16,11 +16,14 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include	<stdio.h>
+#include	<stdlib.h>
 #include	<stdarg.h>
 #include	<string.h>
 #include	<ctype.h>
 #include	<math.h>
 #include	<time.h>
+#include	<sys/time.h>
 
 #include	"sndfile.h"
 #include	"sfendian.h"
@@ -1209,11 +1212,15 @@ psf_memset (void *s, int c, sf_count_t len)
 } /* psf_memset */
 
 void psf_get_date_str (char *str, int maxlen)
-{	time_t		current ;
-	struct tm	timedata, *tmptr ;
+{	
+#if !defined (_ARM_ASSEM)
+time_t		current ;
+struct tm	timedata, *tmptr ;
 timedata.tm_sec = 0;
 
 	time (&current) ;
+#endif  // end _ARM_ASSEM
+
 
 #if defined (HAVE_GMTIME_R)
 	/* If the re-entrant version is available, use it. */
@@ -1233,8 +1240,6 @@ timedata.tm_sec = 0;
 //	else
 //		LSF_SNPRINTF (str, maxlen, "Unknown date") ;
 printf("psf_get_date_str: LSF_SNPRINTF commented out for Windows build\n");
-
-
 	return ;
 } /* psf_get_date_str */
 

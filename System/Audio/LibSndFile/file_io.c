@@ -49,7 +49,7 @@
 //#include <io.h>
 
 #include <string.h>
-#include <fcntl.h>
+#include <fcntl.h>  // don't need it
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>

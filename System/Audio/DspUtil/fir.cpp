@@ -434,7 +434,7 @@ for (i = 0; i < d->order; i++)
 // Convert 32-bit floating point coefficients to signed 16-bit fixed point
 for (i = 0; i < d->order; i++)
 	{
-	d->hI[i] = (short)(32767.0f * d->h[i]);
+	d->hI[i] = (short)(k2To15m1f * d->h[i]);
 //	printf("UpdateFIR  hI[%2d] = %d <- %g \n", i, d->hI[i], d->h[i]);
 	}
 
@@ -484,10 +484,7 @@ for (i = 0; i < length; i++)
 
 // Saturate and output:  
 	lAcc = (long) acc;
-	if      (lAcc >  32767)
-		lAcc = 32767;
-	else if (lAcc < -32768)
-		lAcc = -32768;
+	SATURATE_16BIT(lAcc);  // Macro but no return value
 	out[i] = (short) lAcc;
 	}
 
@@ -503,8 +500,8 @@ for (i = 0; i < d->order; i++)
 RunFIR_Shortsi(short *in, short *out, long length, FIR *d)
 {
 long i;
-//{static long c=0; printf("RunFIR_Shortsi %d \n", c++);}
 short *hI = d->hI;
+//{static long c=0; printf("RunFIR_Shortsi %d \n", c++);}
 
 for (i = 0; i < length; i++)
 	{
@@ -517,10 +514,7 @@ for (i = 0; i < length; i++)
 
 // Saturate and output:  FIXXX add guard bits to accumulator, then add saturation code
 	lAcc = lAcc>>15;  // instead of 16 for guard bits, TEMPORARY
-//	if      (lAcc >  (32767))
-//		lAcc = (32767);
-//	else if (lAcc < (-32768)
-//		lAcc = (-32768;
+	SATURATE_16BIT(lAcc);  // Macro but no return value
 	out[i] = (short) lAcc;
 	}
 

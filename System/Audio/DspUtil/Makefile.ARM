@@ -1,5 +1,5 @@
 # source files.
-SRC =  	Dsputil.cpp Dsputil2.cpp fir.cpp src.cpp util.cpp
+SRC =  	Dsputil.cpp Dsputil2.cpp briomixer.cpp fir.cpp mix.cpp src.cpp util.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -11,9 +11,10 @@ BASE = /scratchbox/compilers/arm-gcc4.1-uclibc20061004
 INCLUDES = -I. -I../include/ -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I$(BASE)/include -I/usr/local/include 
 # -I/usr/include/linux
 
+#  ARM 926EJ with ARMv5TEJ instruction set
 # C++ compiler flags (-g -O2 -Wall)
 # ARM flags -O2 -D_ARM_ASSEM -fsigned-char 
-CCFLAGS = -O2 -D_ARM_ASSEM -fsigned-char
+CCFLAGS = -O2 -DUSE_ARM946_DSPEXT
 
 # compiler
 # x86: g++   ARM: arm-linux-gcc

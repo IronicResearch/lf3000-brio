@@ -23,8 +23,18 @@ extern "C" {
 #define kSRC_Interpolation_Type_IIR	   3
 #define kSRC_Interpolation_Type_Unfiltered 4
 #define kSRC_Interpolation_Type_Triangle   5
+#define kSRC_Interpolation_Type_TestFIR	   10
 
-#define kSRC_Interpolation_Type_TestFIR	10
+#define kSRC_FilterVersion_0 0
+#define kSRC_FilterVersion_1 1
+#define kSRC_FilterVersion_2 2
+#define kSRC_FilterVersion_3 3
+#define kSRC_FilterVersion_4 4
+#define kSRC_FilterVersion_5 5
+#define kSRC_FilterVersion_6 6
+#define kSRC_FilterVersion_7 7
+#define kSRC_FilterVersion_8 8
+#define kSRC_FilterVersion_Default kSRC_FilterVersion_0
 
 #define kSRC_Linear_MSBits 13
 #define kSRC_Linear_LSBits (32-kSRC_Linear_MSBits)
@@ -33,20 +43,20 @@ extern "C" {
 #define kSRC_Linear_Divisor (1<<kSRC_Linear_LSBits)
 
 typedef struct src {
-	long type; // AddDrop, Linear, FIR1
+	long type; 
+	long filterVersion; 
 	long useFixedPoint;
 	long useImpulse;
 
 	float inSamplingFrequency;
 	float outSamplingFrequency;
 
-	unsigned long arg, argInc;
-	float x, delta;
-
-	float inScale, inScaleDB;
-
+	unsigned long xI, xIncI;
+	float         xF, xIncF;
 	float inOutRateRatio;
 	float outInRateRatio;	
+
+	float inScale, inScaleDB;
 
 #define kSRC_Filter_MaxCoeffs 		63
 #define kSRC_Filter_MaxDelayElements 	63
@@ -65,6 +75,8 @@ void DefaultSRC(SRC *d);
 void UpdateSRC (SRC *d);
 void ResetSRC  (SRC *d);
 void PrepareSRC(SRC *d);
+void SRC_SetInSamplingFrequency (SRC *d, float x);
+void SRC_SetOutSamplingFrequency(SRC *d, float x);
 
 void RunSRC(short *in, short *out, long inLength, long outLength, SRC *d);
 

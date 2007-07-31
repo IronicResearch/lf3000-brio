@@ -11,36 +11,6 @@
 
 #include "util.h"
 
-// *************************************************************** 
-// CopyFloats:		Copy buffer of 32-bit floating point numbers
-// ***************************************************************
-	void 
-CopyFloats(float *inP, float *outP, long length)
-{
-for (long i = 0; i < length; i++)
-	outP[i] = inP[i];
-}	// ---- end CopyFloats() ---- 
-
-// *************************************************************** 
-// ScaleFloats:		scale floating point buffer
-// ***************************************************************
-	void 
-ScaleFloats(float *inP, float *outP, long length, float k)
-{
-for (long i = 0; i < length; i++)
-	outP[i] = inP[i]*k;
-}	// ---- end ScaleFloats() ---- 
-
-// *************************************************************** 
-// ScaleShorts:		scale buffer of 'short'
-// ***************************************************************
-	void 
-ScaleShorts(short *inP, short *outP, long length, float k)
-{
-for (long i = 0; i < length; i++)
-	outP[i] = (short)(k*(float)inP[i]);
-}	// ---- end ScaleShorts() ---- 
-
 // **********************************************************************************
 // PrintTimeval:	Print struct stuff to console
 // ********************************************************************************** 

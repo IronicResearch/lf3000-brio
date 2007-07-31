@@ -19,19 +19,16 @@
 #include "midifile_player.h"
 #include "midifile_names.h"
 
+#include "Dsputil.h"
 #include "util.h"
+#include "main.h"
 
-//ORIG #define SAMPLE_RATE         (22050)
-//#define SAMPLES_PER_FRAME   (2)
-#define kMAX_SAMPLES_PER_FRAME   (2)
-extern long samplingFrequency;
-extern long samplingFrequencySpecified;
-extern long channels;
-extern long voiceLimit;
+#define kMaxSamplePerBuffer  (kMaxChannels*(SPMIDI_MAX_FRAMES_PER_BUFFER+kSRC_Filter_MaxDelayElements))
+static short inSampleBuffer [kMaxSamplePerBuffer];static short outSampleBuffer[kMaxSamplePerBuffer*kMaxSamplingFrequency_UpsamplingRatio];
+static short *inSampleBufPtr  = &inSampleBuffer [kSRC_Filter_MaxDelayElements];static short *outSampleBufPtr = &outSampleBuffer[kSRC_Filter_MaxDelayElements];
 
-#define SAMPLES_PER_BUFFER  (kMAX_SAMPLES_PER_FRAME * SPMIDI_MAX_FRAMES_PER_BUFFER)
-static short sSampleBuffer[SAMPLES_PER_BUFFER];
-
+#define kMaxTempBufs	4
+static short tmpBuffers[kMaxTempBufs][kMaxSamplePerBuffer];static short *tmpBufPtrs[kMaxTempBufs];
 /****************************************************************
  * Print a text meta event.
  * Lyrics are type 5 in a standard MIDI file.
@@ -45,7 +42,7 @@ void MyTextCallback( int trackIndex, int metaEventType,
 	for( i=0; i<numChars; i++ )
 		printf("%c", addr[i] );
 	printf("\n");
-}
+}	// ---- end MyTextCallback() ----
 
 /****************************************************************
  * Play a MIDI file one audio buffer at a time.
@@ -61,22 +58,23 @@ int MIDIFile_Play( unsigned char *image, int numBytes, const char *outFilePath ,
 	MIDIFilePlayer *player;
 	SPMIDI_Context *spmidiContext = NULL;
 struct timeval startTv, endTv;
-long framesPerBuffer;
 
 	SPMIDI_Initialize();
+	inSamplingFrequency = midiSamplingFrequency;
 
-//printf("MIDIFile_Play:  samplingFrequency=%d, channels=%d\n", samplingFrequency, channels);
+//printf("MIDIFile_Play:  START midiSamplingFrequency=%d, channels=%d\n", midiSamplingFrequency, channels);
 
 	/* Create a player, parse MIDIFile image and setup tracks. */
-	result = MIDIFilePlayer_Create( &player, (int) samplingFrequency, image, numBytes );
+	result = MIDIFilePlayer_Create( &player, (int) midiSamplingFrequency, image, numBytes );
 	if( result < 0 )
 		goto error;
 
-	msec = MIDIFilePlayer_GetDurationInMilliseconds( player );
-	seconds = msec / 1000;
+	msec     = MIDIFilePlayer_GetDurationInMilliseconds( player );
+	seconds  = msec / 1000;
 	rem_msec = msec - (seconds * 1000);
 	*fileTime = 0.001 * (double) msec;
 printf("MIDIFile_Play fileTime = %g Seconds\n", *fileTime);
+
 	// Set function to be called when a text MetaEvent is
 	// encountered while playing. Includes Lyric events.
 //	MIDIFilePlayer_SetTextCallback( player, MyTextCallback, NULL );
@@ -84,15 +82,15 @@ printf("MIDIFile_Play fileTime = %g Seconds\n", *fileTime);
 	// Initialize SPMIDI Synthesizer. Output to audio or a file.	 
 	
 	/* Start synthesis engine with default number of voices. */
-	result = SPMIDI_CreateContext( &spmidiContext, samplingFrequency );
+	result = SPMIDI_CreateContext( &spmidiContext, midiSamplingFrequency );
 	if( result < 0 )
 		goto error;
-	SPMIDI_SetMaxVoices( spmidiContext, voiceLimit );
+	SPMIDI_SetMaxVoices( spmidiContext, midiVoiceLimit );
 
 	if (outFilePath)
 		{
-	printf("Writing to file '%s' \n", outFilePath);
-		result = SPMUtil_StartVirtualAudio( samplingFrequency, outFilePath, channels );
+//	printf("Writing to file '%s' \n", outFilePath);
+		result = SPMUtil_StartVirtualAudio( midiSamplingFrequency, outFilePath, channels );
 		if( result < 0 )
 			goto error;
 		}
@@ -105,17 +103,23 @@ printf("MIDIFile_Play fileTime = %g Seconds\n", *fileTime);
 	 * by a time equivalent to a buffers worth of frames.
 	 * Generate one buffers worth of data and write it to the output stream.
 	 */
+
+// Start performance timer
 	if (execTime)
 		{
 		*execTime = 0.0;
 		gettimeofday(&startTv, NULL);
 		}
-// FIXXX: experiment with various buffer sizes
-framesPerBuffer = SPMIDI_GetFramesPerBuffer();
-//printf("framesPerBuffer=%d \n", framesPerBuffer);
+
+// NOTE:  buffersizes from 128..1024 had little impact on performance, 64 slightly worse
+inBlockLength  = SPMIDI_GetFramesPerBuffer();
+outBlockLength = (inBlockLength*outSamplingFrequency)/inSamplingFrequency;
+printf("MIDI inBlockLength=%d outBlockLength=%d\n", inBlockLength, outBlockLength);
+printf("MIDI inSamplingFrequency=%d outSamplingFrequency=%d\n", inSamplingFrequency, outSamplingFrequency);
+
 	while( go )
 	{
-	int mfperr = MIDIFilePlayer_PlayFrames( player, spmidiContext, framesPerBuffer );
+	int mfperr = MIDIFilePlayer_PlayFrames( player, spmidiContext, inBlockLength );
 		if( mfperr < 0 )
 		{
 			result = mfperr;
@@ -125,19 +129,47 @@ framesPerBuffer = SPMIDI_GetFramesPerBuffer();
 			go = 0;
 
 	/* Synthesize samples and fill buffer */
-	SPMIDI_ReadFrames( spmidiContext, sSampleBuffer, framesPerBuffer, channels, 16 );
+	SPMIDI_ReadFrames( spmidiContext, inSampleBufPtr, inBlockLength, channels, 16 );
 	if (outFilePath)
-		SPMUtil_WriteVirtualAudio( sSampleBuffer, channels, framesPerBuffer );
+		{
+	// Convert sampling rate and write to output device
+		if (inBlockLength != outBlockLength)
+			{
+			if (1 == channels)
+				{
+				RunSRC(inSampleBufPtr, outSampleBufPtr, inBlockLength, outBlockLength, &srcData[0]);
+				SPMUtil_WriteVirtualAudio( outSampleBufPtr, channels, outBlockLength );
+				}
+			else
+				{
+				long i, ch;
+				for (i = 0; i < 4; i++)
+					tmpBufPtrs[i] = &tmpBuffers[i][kSRC_Filter_MaxDelayElements];
+			// Deinterleave and convert
+				DeinterleaveShorts(inSampleBufPtr, tmpBufPtrs[0], tmpBufPtrs[1], inBlockLength);
+			// Convert sampling rate (unsuitable for in-place operation)
+				for (ch = 0; ch < channels; ch++)
+					RunSRC(tmpBufPtrs[ch], tmpBufPtrs[2+ch], inBlockLength, outBlockLength, &srcData[i]);
+			// Interleave and write to file
+				InterleaveShorts(tmpBufPtrs[2], tmpBufPtrs[3], outSampleBufPtr, outBlockLength);
+				SPMUtil_WriteVirtualAudio( outSampleBufPtr, channels, outBlockLength );
+				}
+			}
+	// Just write to output device
+		else
+			SPMUtil_WriteVirtualAudio( inSampleBufPtr, channels, outBlockLength );
+		}
 	}
 
 	/* Wait for sound to die out. */
-	timeout = (samplingFrequency * 4) / SPMIDI_MAX_FRAMES_PER_BUFFER;
+	timeout = (midiSamplingFrequency * 4) / SPMIDI_MAX_FRAMES_PER_BUFFER;
 	while( (SPMIDI_GetActiveNoteCount(spmidiContext) > 0) && (timeout-- > 0) )
 	{
-		SPMIDI_ReadFrames( spmidiContext, sSampleBuffer, framesPerBuffer, channels, 16 );
-		SPMUtil_WriteVirtualAudio( sSampleBuffer, channels, framesPerBuffer );
+		SPMIDI_ReadFrames( spmidiContext, inSampleBufPtr, inBlockLength, channels, 16 );
+		SPMUtil_WriteVirtualAudio( inSampleBufPtr, channels, outBlockLength );
 	}
-// end timer
+
+// Stop performance timer
 	if (execTime)
 		{
 		gettimeofday(&endTv, NULL);
@@ -151,7 +183,7 @@ framesPerBuffer = SPMIDI_GetFramesPerBuffer();
 error:
 	SPMIDI_Terminate();
 	return result;
-}
+}	// ---- end MIDIFile_Play() ----
 
 // ***************************************************************
 // PlayMIDIFile
@@ -197,5 +229,7 @@ error:
 		SPMUtil_FreeFileImage( data );
 //	printf("PlayMIDIFile: end\n" );
 	return result;
-} // 
+}	// ---- end PlayMIDIFile() ----
+ 
+
 
