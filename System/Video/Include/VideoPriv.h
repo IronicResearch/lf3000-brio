@@ -44,6 +44,8 @@ struct tVideoContext {
 	IEventListener*		pListener;
 	Boolean				bLooped;
 	Boolean				bDropFramed;
+	Boolean				bPaused;
+	Boolean				bPlaying;
 };
 
 //==============================================================================

@@ -6285,3 +6285,13 @@ By dgibbs (dgibbs@leapfrog.com) on 7/31/07 12:07 PM
 2,501 ms. (Cumulative: 1,154,436 ms)
 
 ----------------
+Revision 1,089 from svn://localhost/TRUNK/:
+Revision 1,090 from svn://localhost/TRUNK/:
+
+Added pause/resume and stop functionality via logic vars.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/07 1:41 PM
+3 changed, 0 added, 0 deleted.
+2,535 ms. (Cumulative: 1,157,033 ms)
+
+----------------

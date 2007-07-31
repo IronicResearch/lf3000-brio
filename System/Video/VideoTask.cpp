@@ -52,19 +52,29 @@ void* VideoTaskMain( void* arg )
 
 	while (bRunning)
 	{
+		pctx->bPlaying = true;
 		pctx->hAudio = audmgr.StartAudio(pctx->hRsrcAudio, 100, 1, 0, pctx->pListener, 0, 0);
 		vtm.time = marktime = audmgr.GetAudioTime(pctx->hAudio);
+		nexttime = marktime;
 		marktime += lapsetime;
-		while (vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, true))
+		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, true))
 		{	
 			vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
 			dispmgr.Invalidate(0, NULL);
-			while ((nexttime = audmgr.GetAudioTime(pctx->hAudio)) < marktime)
+			while (bRunning && ((nexttime = audmgr.GetAudioTime(pctx->hAudio)) < marktime))
 				kernel.TaskSleep(1);
 			marktime = nexttime + lapsetime;
 			vtm.time = nexttime;	
+			if (pctx->bPaused)
+			{
+				audmgr.PauseAudio(pctx->hAudio);
+				while (bRunning && pctx->bPaused)
+					kernel.TaskSleep(1);
+				audmgr.ResumeAudio(pctx->hAudio);
+			}
 		}
 		audmgr.StopAudio(pctx->hAudio, false);
+		pctx->bPlaying = false;
 		while (bRunning)
 			kernel.TaskSleep(1);
 	}
@@ -105,8 +115,13 @@ tErrType DeInitVideoTask( void )
 	if (hVideoThread == kNull)
 		return kNoErr;
 
+	// TODO: Need real sync protection via mutexes when killing task
+	//		 Letting task exit itself works most times on embedded target
+	
 	// Stop running task
-	kernel.CancelTask(hVideoThread);
+	bRunning = false;
+	kernel.TaskSleep(2);
+//	kernel.CancelTask(hVideoThread);
 	hVideoThread = kNull;
 	
 	return kNoErr;
