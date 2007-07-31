@@ -15,6 +15,7 @@
 //==============================================================================
 #include <SystemTypes.h>
 #include <CoreModule.h>
+#include <AudioTypes.h>
 #include <EventTypes.h>
 #include <VideoTypes.h>
 #include <DebugMPI.h>
@@ -34,6 +35,23 @@ const tEventPriority	kVideoEventPriority	= 0;
 // Typedefs
 //==============================================================================
 
+struct tVideoContext {
+	tRsrcHndl			hRsrcVideo;
+	tRsrcHndl			hRsrcAudio;
+	tVideoHndl			hVideo;
+	tAudioID			hAudio;
+	tVideoSurf*			pSurfVideo;
+	IEventListener*		pListener;
+	Boolean				bLooped;
+	Boolean				bDropFramed;
+};
+
+//==============================================================================
+// External function prototypes
+//==============================================================================
+
+tErrType InitVideoTask( tVideoContext* pCtx );
+tErrType DeInitVideoTask( void );
 
 //==============================================================================
 class CVideoModule : public ICoreModule {
@@ -45,7 +63,8 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListener* pListener);
+    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc);
+    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener);
     VTABLE_EXPORT Boolean     	StopVideo(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		GetVideoFrame(tVideoHndl hVideo, void* pCtx);
 	VTABLE_EXPORT Boolean 		PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
@@ -70,8 +89,8 @@ private:
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 	
 	// Implementation-specific functionality
+    tVideoHndl			StartVideoInt(tRsrcHndl hRsrc);
 };
-
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_VIDEOPRIV_H

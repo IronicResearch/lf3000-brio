@@ -64,7 +64,8 @@ public:
 		tRsrcHndl	pkg;
 		tRsrcHndl	handle1;
 		tVideoHndl	video;
-
+//		tVideoSurf	surf;
+		
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
 		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
@@ -76,6 +77,7 @@ public:
 		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 
+		// TODO: update for new MPI
 		video = pVideoMPI_->StartVideo(handle1);
 		TS_ASSERT( video != kInvalidVideoHndl );
 

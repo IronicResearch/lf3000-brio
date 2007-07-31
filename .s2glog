@@ -6231,3 +6231,12 @@ By dgibbs (dgibbs@leapfrog.com) on 7/30/07 5:39 PM
 2,751 ms. (Cumulative: 1,138,465 ms)
 
 ----------------
+Revision 1,083 from svn://localhost/TRUNK/:
+
+Added support for auto-playing video thread. No audio or control messages yet.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/07 5:41 PM
+6 changed, 1 added, 0 deleted.
+2,797 ms. (Cumulative: 1,141,324 ms)
+
+----------------

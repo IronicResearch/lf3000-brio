@@ -17,6 +17,7 @@
 #include <VideoTypes.h>
 #include <VideoPriv.h>
 #include <ResourceMPI.h>
+#include <AudioMPI.h>
 
 //#define _GNU_SOURCE
 //#define _LARGEFILE_SOURCE
@@ -120,13 +121,39 @@ Boolean	CVideoModule::IsValid() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListener* pListener)
+tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+{
+	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(malloc(sizeof(tVideoContext)));
+	tVideoHndl		hVideo = StartVideoInt(hRsrc);
+
+//	CAudioMPI		audmgr;
+//	tAudioID		hAudio = audmgr.StartAudio(hRsrc+1, 100, 1, 0, pListener, 0, 0);
+	
+	pVidCtx->hRsrcVideo = hRsrc;
+	pVidCtx->hRsrcAudio = hRsrc+1; // hack
+	pVidCtx->hVideo 	= hVideo;
+//	pVidCtx->hAudio 	= hAudio;
+	pVidCtx->pSurfVideo = pSurf;
+	pVidCtx->pListener 	= pListener;
+	pVidCtx->bLooped 	= bLoop;
+
+	InitVideoTask(pVidCtx);	
+
+	// TODO: Wrap pVidCtx into handle...
+	return hVideo;
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
+{
+	return StartVideoInt(hRsrc);
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	tErrType	r;
-
-	(void)bLoop; // TODO
-	(void)pListener; // TODO
 
 	// Sanity check
 	if (hRsrc == kInvalidRsrcHndl) 
@@ -270,6 +297,10 @@ Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
+	// Kill video task, if running
+	DeInitVideoTask();
+	
+	
 	// Cleanup decoder stream resources
 	ogg_stream_clear(&to);
 	theora_clear(&td);
