@@ -6222,3 +6222,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/30/07 5:33 PM
 2,641 ms. (Cumulative: 1,135,651 ms)
 
 ----------------
+Revision 1,082 from svn://localhost/TRUNK/:
+
+Implement the MPI and Module functions for the rest of the audio API.  Re-compare with spec... it should be complete now.
+
+By dgibbs (dgibbs@leapfrog.com) on 7/30/07 5:39 PM
+5 changed, 0 added, 0 deleted.
+2,751 ms. (Cumulative: 1,138,465 ms)
+
+----------------
