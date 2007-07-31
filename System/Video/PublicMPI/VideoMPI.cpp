@@ -81,11 +81,19 @@ const CURI* CVideoMPI::GetModuleOrigin() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc, Boolean bLoop, IEventListener* pListener)
+tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->StartVideo(hRsrc, bLoop, pListener);
+	return pModule_->StartVideo(hRsrc);
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->StartVideo(hRsrc, pSurf, bLoop, pListener);
 }
 
 //----------------------------------------------------------------------------
