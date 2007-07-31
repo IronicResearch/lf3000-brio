@@ -34,7 +34,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 class CVorbisPlayer : public CAudioPlayer {
 public:
-	CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  );
+	CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	~CVorbisPlayer();
 		
 	// Reset player to start from beginning of sample
@@ -90,6 +90,7 @@ private:
 	tMutex     		render_mutex_;		// Need to protect renderbuffer call 
 										// because it's in a different thread.
 	U32				filePos_;			// position in the vorbis byte stream
+	Boolean			loop_;				// should the file loop when it reaches the end?
 };
 
 LF_END_BRIO_NAMESPACE()
