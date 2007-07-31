@@ -58,6 +58,17 @@ inline bool FileExists( const CPath& path )
 	return stat(path.c_str(), &filestat) == 0;
 }
 
+//----------------------------------------------------------------------------
+inline CPath GetPackedRsrcFolder( )
+{
+#ifdef EMULATION
+	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
+	return dir + "Resource/";
+#else	// EMULATION
+	return "/Base/rsrc/Resource/";
+#endif	// EMULATION
+}
+
 
 //============================================================================
 // TestRsrcMgr functions
@@ -82,8 +93,8 @@ public:
 		//
 		delete rsrcmgr_;
 		CKernelMPI	kernel;
-		CPath path = EmulationConfig::Instance().GetCartResourceSearchPath();
-		std::vector<CPath>	files = kernel.GetFilesInDirectory(path + "Resource");
+		CPath path = GetPackedRsrcFolder();
+		std::vector<CPath>	files = kernel.GetFilesInDirectory(path);
 		for (size_t ii = 0; ii < files.size(); ++ii)
 		{
 			if (files[ii].find("/AddTest.briopkg") != CPath::npos)
@@ -457,8 +468,7 @@ public:
 		// Since we will be modifying the package file, copy it from a
 		// version controlled archive so we can get back to a clean state.
 		//
-		CPath dir	= EmulationConfig::Instance().GetCartResourceSearchPath();
-		dir			+= "Resource/";
+		CPath dir	= GetPackedRsrcFolder();
 		CPath in	= dir + "SVNAddTest.briopkg";
 		CPath out	= dir + "AddTest.briopkg";
 		CString command = "cp -f " + in + " " + out;
@@ -512,8 +522,7 @@ public:
 		// Since we will be modifying the package file, copy it from a
 		// version controlled archive so we can get back to a clean state.
 		//
-		CPath dir	= EmulationConfig::Instance().GetCartResourceSearchPath();
-		dir			+= "Resource/";
+		CPath dir	= GetPackedRsrcFolder();
 		CPath in	= dir + "SVNAddTest.briopkg";
 		CPath out	= dir + "AddTest.briopkg";
 		CString command = "cp -f " + in + " " + out;
@@ -575,8 +584,7 @@ public:
 		// Since we will be modifying the package file, copy it from a
 		// version controlled archive so we can get back to a clean state.
 		//
-		CPath dir	= EmulationConfig::Instance().GetCartResourceSearchPath();
-		dir			+= "Resource/";
+		CPath dir	= GetPackedRsrcFolder();
 		CPath in	= dir + "SVNAddTest.briopkg";
 		CPath out	= dir + "AddTest.briopkg";
 		CString command = "cp -f " + in + " " + out;

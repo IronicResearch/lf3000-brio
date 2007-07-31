@@ -6258,3 +6258,12 @@ By dgibbs (dgibbs@leapfrog.com) on 7/31/07 10:25 AM
 2,548 ms. (Cumulative: 1,146,591 ms)
 
 ----------------
+Revision 1,086 from svn://localhost/TRUNK/:
+
+Conditionalize packed resource folder location for ARM targets.
+
+By tparker (tparker@leapfrog.com) on 7/31/07 10:45 AM
+1 changed, 0 added, 0 deleted.
+2,500 ms. (Cumulative: 1,149,153 ms)
+
+----------------
