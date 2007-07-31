@@ -159,6 +159,7 @@ tErrType CAudioMPI::RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffects
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->RegisterAudioEffectsProcessor( type, pChain );
 }
 
@@ -170,6 +171,7 @@ tErrType CAudioMPI::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor 
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->RegisterGlobalAudioEffectsProcessor( pChain );
 }
 
@@ -181,6 +183,7 @@ tErrType CAudioMPI::ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProce
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->ChangeAudioEffectsProcessor( id, pChain );
 }
 
@@ -202,6 +205,7 @@ U8 CAudioMPI::GetMasterVolume()
 	{
 		return 0;
 	}
+	
 	return pModule_->GetMasterVolume();
 }
 
@@ -211,7 +215,7 @@ tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc,
 								U8					volume, 
 								tAudioPriority		priority,
 								S8					pan, 
-								IEventListener		*pHandler,
+								IEventListener		*pListener,
 								tAudioPayload		payload,
 								tAudioOptionsFlags	flags )
 {
@@ -223,33 +227,35 @@ tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc,
 	}
 	
 	// Try to play the resource and return a valid ID if successful.
-	return pModule_->StartAudio( hRsrc, volume, priority, pan, pHandler, payload, flags );
+	return pModule_->StartAudio( hRsrc, volume, priority, pan, pListener, payload, flags );
 }
-/*
+
 //==============================================================================
 //==============================================================================
-tAudioID CAudioMPI::StartAudio(tRsrcHndl			hRsrc, 
+tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc, 
 								tAudioPayload		payload,
-								tAudioOptionsFlags	flags)
+								tAudioOptionsFlags	flags )
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoAudioID;
 	}
-	return pModule_->pStartAudioDefault(pModule_, hRsrc, payload, flags);
+	
+	return pModule_->StartAudio( hRsrc, payload, flags );
 }
-*/
+
 
 //==============================================================================
 //==============================================================================
 U32 CAudioMPI::GetAudioTime( tAudioID id ) 
 {
-	if ( pModule_ != kNull )
+	if ( pModule_ == kNull )
 	{
-		return pModule_->GetAudioTime( id );
+		return 0;
 	}
 	
-	return 0;
+	return pModule_->GetAudioTime( id );
+
 }
 
 //==============================================================================
@@ -283,175 +289,183 @@ void CAudioMPI::ResumeAudio( tAudioID id )
 	}
 }
 
-/*
+
 //==============================================================================
 //==============================================================================
-U8 CAudioMPI::GetAudioVolume(tAudioID id) 
+U8 CAudioMPI::GetAudioVolume( tAudioID id ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return 0;
 	}
-	return pModule_->pGetAudioVolume(id);
+	
+	return pModule_->GetAudioVolume( id );
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetAudioVolume(tAudioID id, U8 volume) 
+void CAudioMPI::SetAudioVolume( tAudioID id, U8 volume ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetAudioVolume(id, volume);
+		pModule_->SetAudioVolume( id, volume );
 	}
 }
 
 //==============================================================================
 //==============================================================================
-tAudioPriority CAudioMPI::GetAudioPriority(tAudioID id) 
+tAudioPriority CAudioMPI::GetAudioPriority( tAudioID id ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return 0;
 	}
-	return pModule_->pGetAudioPriority(id);
+	
+	return pModule_->GetAudioPriority( id );
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetAudioPriority(tAudioID id, tAudioPriority priority) 
+void CAudioMPI::SetAudioPriority( tAudioID id, tAudioPriority priority ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetAudioPriority(id, priority);
+		pModule_->SetAudioPriority( id, priority );
 	}
 }
 
 //==============================================================================
 //==============================================================================
-S8 CAudioMPI::GetAudioPan(tAudioID id) 
+S8 CAudioMPI::GetAudioPan( tAudioID id ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return 0;
 	}
-	return pModule_->pGetAudioPan(id);
+	
+	return pModule_->GetAudioPan( id );
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetAudioPan(tAudioID id, S8 pan) 
+void CAudioMPI::SetAudioPan( tAudioID id, S8 pan ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetAudioPan(id, pan);
+		pModule_->SetAudioPan( id, pan );
 	}
 }
 
 //==============================================================================
 //==============================================================================
-IEventListener* CAudioMPI::GetAudioEventHandler(tAudioID id) 
+IEventListener* CAudioMPI::GetAudioEventListener( tAudioID id ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return NULL;
 	}
-	return pModule_->pGetAudioEventHandler(id);
+	
+	return pModule_->GetAudioEventListener( id );
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetAudioEventHandler(tAudioID id, IEventListener *pHandler) 
+void CAudioMPI::SetAudioEventListener( tAudioID id, IEventListener *pListener ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetAudioEventHandler(id, pHandler);
+		pModule_->SetAudioEventListener( id, pListener );
 	}
 }
 
 //==============================================================================
 //==============================================================================
-U8 CAudioMPI::GetDefaultAudioVolume() 
+U8 CAudioMPI::GetDefaultAudioVolume( void ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return 0;
 	}
-	return pModule_->pGetDefaultAudioVolume();
+	
+	return pModule_->GetDefaultAudioVolume();
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetDefaultAudioVolume(U8 volume) 
+void CAudioMPI::SetDefaultAudioVolume( U8 volume ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetDefaultAudioVolume(volume);
+		pModule_->SetDefaultAudioVolume( volume );
 	}
 }
 
 //==============================================================================
 //==============================================================================
-tAudioPriority CAudioMPI::GetDefaultAudioPriority() 
+tAudioPriority CAudioMPI::GetDefaultAudioPriority( void ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return 0;
 	}
-	return pModule_->pGetDefaultAudioPriority();
+	
+	return pModule_->GetDefaultAudioPriority();
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetDefaultAudioPriority(tAudioPriority priority) 
+void CAudioMPI::SetDefaultAudioPriority( tAudioPriority priority ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetDefaultAudioPriority(priority);
+		pModule_->SetDefaultAudioPriority( priority );
 	}
 }
 
 //==============================================================================
 //==============================================================================
-S8 CAudioMPI::GetDefaultAudioPan() 
+S8 CAudioMPI::GetDefaultAudioPan( void ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return 0;
 	}
-	return pModule_->pGetDefaultAudioPan();
+	
+	return pModule_->GetDefaultAudioPan();
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetDefaultAudioPan(S8 pan) 
+void CAudioMPI::SetDefaultAudioPan( S8 pan ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetDefaultAudioPan(pan);
+		pModule_->SetDefaultAudioPan(pan);
 	}
 }
 
 //==============================================================================
 //==============================================================================
-IEventListener* CAudioMPI::GetDefaultAudioEventHandler() 
+IEventListener* CAudioMPI::GetDefaultAudioEventListener( void ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return NULL;
 	}
-	return pModule_->pGetDefaultAudioEventHandler();
+	
+	return pModule_->GetDefaultAudioEventListener();
 }
 
 //==============================================================================
 //==============================================================================
-void CAudioMPI::SetDefaultAudioEventHandler(IEventListener *pHandler) 
+void CAudioMPI::SetDefaultAudioEventListener( IEventListener *pListener ) 
 {
 	if ( pModule_ != kNull )
 	{
-		pModule_->pSetDefaultAudioEventHandler(pHandler);
+		pModule_->SetDefaultAudioEventListener( pListener );
 	}
 }
-*/
+
 //==============================================================================
 //==============================================================================
 Boolean CAudioMPI::IsAudioPlaying( tAudioID id ) 
@@ -460,29 +474,32 @@ Boolean CAudioMPI::IsAudioPlaying( tAudioID id )
 	{
 		return false;
 	}
+	
 	return pModule_->IsAudioPlaying( id );
 }
 
 //==============================================================================
 //==============================================================================
-Boolean CAudioMPI::IsAudioPlaying() 
+Boolean CAudioMPI::IsAudioPlaying( void ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return false;
 	}
+	
 	return pModule_->IsAudioPlaying();
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiPlayerID *midiPlayerID ) 
+tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *pListener, tMidiPlayerID *midiPlayerID ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
-	return pModule_->AcquireMidiPlayer( priority, pHandler, midiPlayerID );
+	
+	return pModule_->AcquireMidiPlayer( priority, pListener, midiPlayerID );
 }
 
 //==============================================================================
@@ -493,6 +510,7 @@ tErrType CAudioMPI::ReleaseMidiPlayer( tMidiPlayerID midiPlayerID )
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->ReleaseMidiPlayer( midiPlayerID );
 }
 
@@ -500,7 +518,7 @@ tErrType CAudioMPI::StartMidiFile( tMidiPlayerID	id,
 					tRsrcHndl			hRsrc, 
 					U8					volume, 
 					tAudioPriority		priority,
-					IEventListener*		pHandler,
+					IEventListener*		pListener,
 					tAudioPayload		payload,
 					tAudioOptionsFlags	flags )
 {
@@ -509,7 +527,7 @@ tErrType CAudioMPI::StartMidiFile( tMidiPlayerID	id,
 		return kNoImplErr;
 	}
 
-	return pModule_->StartMidiFile( id, hRsrc, volume, priority, pHandler, payload, flags );
+	return pModule_->StartMidiFile( id, hRsrc, volume, priority, pListener, payload, flags );
 }
 
 //==============================================================================
@@ -520,6 +538,7 @@ Boolean CAudioMPI::IsMidiFilePlaying( tMidiPlayerID id )
 	{
 		return false;
 	}
+	
 	return pModule_->IsMidiFilePlaying( id );
 }
 
@@ -531,6 +550,7 @@ Boolean CAudioMPI::IsMidiFilePlaying()
 	{
 		return false;
 	}
+	
 	return pModule_->IsMidiFilePlaying();
 }
 
@@ -572,6 +592,7 @@ tMidiTrackBitMask CAudioMPI::GetEnabledMidiTracks( tMidiPlayerID id )
 	{
 		return 0;
 	}
+	
 	return pModule_->GetEnabledMidiTracks( id );
 }
 
@@ -583,6 +604,7 @@ tErrType CAudioMPI::SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tra
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->SetEnableMidiTracks( id, trackBitMask );
 }
 
@@ -594,6 +616,7 @@ tErrType CAudioMPI::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tra
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->TransposeMidiTracks( id, trackBitMask, transposeAmount );
 }
 
@@ -605,6 +628,7 @@ tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask tr
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->ChangeMidiInstrument( id, trackBitMask, instr );
 }
 
@@ -616,6 +640,7 @@ tErrType CAudioMPI::ChangeMidiTempo( tMidiPlayerID id, S8 tempo )
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->ChangeMidiTempo( id, tempo );
 }
 
@@ -627,6 +652,7 @@ tErrType CAudioMPI::SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->SendMidiCommand( id, cmd, data1, data2 );
 }
 
@@ -642,6 +668,7 @@ tErrType CAudioMPI::MidiNoteOn( tMidiPlayerID	id,
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->MidiNoteOn( id, channel, noteNum, velocity, flags );
 }
 
@@ -657,6 +684,7 @@ tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
 	{
 		return kNoImplErr;
 	}
+	
 	return pModule_->MidiNoteOff( id, channel, noteNum, velocity, flags );
 }
 

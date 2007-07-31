@@ -108,7 +108,7 @@ tErrType InitAudioTask( void )
 	if (ret != true)
 		printf("InitAudioTask() -- Couldn't create KernelMPI!\n");
 
-	// Get Resource MPI
+	// Get Resource	
 	gContext.pResourceMPI = new CResourceMPI;
 	ret = gContext.pResourceMPI->IsValid();
 	if (ret != true)

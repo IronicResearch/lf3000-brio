@@ -80,6 +80,11 @@ public:
 					tAudioPayload		payload,
 					tAudioOptionsFlags	flags );
 
+	// Same as above, but uses defaults for unspecified params.
+	tAudioID 	StartAudio( tRsrcHndl	hRsrc, 
+					tAudioPayload		payload,
+					tAudioOptionsFlags	flags );
+	
 	// Pause a playing audio resource.
 	void 		PauseAudio( tAudioID id );
 
@@ -99,7 +104,9 @@ public:
 	//********************************
 	// Get/Set the Volume/Priority/Pan using a given audioID
 	//********************************    
-	// 
+	// Returns the time in ms since the file started playing.
+	U32 	GetAudioTime( tAudioID id );
+	
 	U8		GetAudioVolume( tAudioID id ); // TODO: stub
 	void	SetAudioVolume( tAudioID id, U8 volume ); // TODO: stub
 
@@ -112,9 +119,6 @@ public:
 	IEventListener*	GetAudioEventListener( tAudioID id ); // TODO: stub
 	void	SetAudioEventListener( tAudioID id, IEventListener *pListener ); // TODO: stub
 
-	// Returns the time in ms since the file started playing.
-	U32 	GetAudioTime( tAudioID id );
-	
 	//********************************
 	// Defaults to use when value is not specified in the Start() call.
 	//********************************    
@@ -173,10 +177,10 @@ public:
 						tAudioOptionsFlags	flags );
 
 	// Is this MIDI file still playing?
-	Boolean		IsMidiFilePlaying( tMidiPlayerID id ); // TODO: stub
+	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
 	
 	// Is the MIDI system playing anything?
-	Boolean		IsMidiFilePlaying( void ); // TODO: stub
+	Boolean		IsMidiFilePlaying( void );
 
 	// Pause playback of a MIDI file. 
 	void 		PauseMidiFile( tMidiPlayerID id );

@@ -481,16 +481,14 @@ tAudioID CAudioModule::StartAudio( tRsrcHndl hRsrc, U8 volume,
 	
  	return WaitForAudioID();
 }
-/*
+
 //==============================================================================
 //==============================================================================
-static tAudioID CAudioModule::StartAudioDefault(CAudioMgrMPIImpl *pImpl, tRsrcHndl hRsrc, 
-	tAudioPayload payload, tAudioOptionsFlags flags)
+tAudioID CAudioModule::StartAudio( tRsrcHndl hRsrc, tAudioPayload payload, 
+				tAudioOptionsFlags flags)
 {
 	return 0;
 }
-
-*/
 
 //==============================================================================
 //==============================================================================
@@ -559,111 +557,110 @@ void CAudioModule::ResumeAudio( tAudioID id )
 	SendCmdMessage( msg ); 
 }
 
-/*
+
 //==============================================================================
 //==============================================================================
-static U8 CAudioModule::GetAudioVolume(tAudioID id) 
+U8 CAudioModule::GetAudioVolume( tAudioID id ) 
 {
 	return 0;
-};
+}
 
 //==============================================================================
 //==============================================================================
-static void CAudioModule::SetAudioVolume(tAudioID id, U8 volume) 
+void CAudioModule::SetAudioVolume( tAudioID id, U8 volume ) 
 {
-};
+}
 
 //==============================================================================
 //==============================================================================
-static tAudioPriority CAudioModule::GetAudioPriority(tAudioID id) 
-{
-	return 0;
-};
-
-//==============================================================================
-//==============================================================================
-static void CAudioModule::SetAudioPriority(tAudioID id, tAudioPriority priority) 
-{
-};
-
-//==============================================================================
-//==============================================================================
-static S8 CAudioModule::GetAudioPan(tAudioID id) 
+tAudioPriority CAudioModule::GetAudioPriority( tAudioID id ) 
 {
 	return 0;
-};
+}
 
 //==============================================================================
 //==============================================================================
-static void CAudioModule::SetAudioPan(tAudioID id, S8 pan) 
+void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority ) 
 {
-};
+}
 
 //==============================================================================
 //==============================================================================
-static IEventListener* CAudioModule::GetAudioEventHandler(tAudioID id) 
+S8 CAudioModule::GetAudioPan( tAudioID id ) 
+{
+	return 0;
+}
+
+//==============================================================================
+//==============================================================================
+void CAudioModule::SetAudioPan( tAudioID id, S8 pan ) 
+{
+}
+
+//==============================================================================
+//==============================================================================
+IEventListener* CAudioModule::GetAudioEventListener( tAudioID id ) 
 {
 	return NULL;
-};
+}
 
 //==============================================================================
 //==============================================================================
-static void CAudioModule::SetAudioEventHandler(tAudioID id, IEventListener *pHandler) 
+void CAudioModule::SetAudioEventListener( tAudioID id, IEventListener *pListener) 
 {
-};
+}
 
 //==============================================================================
 //==============================================================================
-static U8 CAudioModule::GetDefaultAudioVolume() 
-{
-	return 0;
-};
-
-//==============================================================================
-//==============================================================================
-static void CAudioModule::SetDefaultAudioVolume(U8 volume) 
-{
-};
-
-//==============================================================================
-//==============================================================================
-static tAudioPriority CAudioModule::GetDefaultAudioPriority() 
+U8 CAudioModule::GetDefaultAudioVolume( void ) 
 {
 	return 0;
-};
+}
 
 //==============================================================================
 //==============================================================================
-static void CAudioModule::SetDefaultAudioPriority(tAudioPriority priority) 
+void CAudioModule::SetDefaultAudioVolume( U8 volume ) 
 {
-};
+}
 
 //==============================================================================
 //==============================================================================
-static S8 CAudioModule::GetDefaultAudioPan() 
+tAudioPriority CAudioModule::GetDefaultAudioPriority( void ) 
 {
 	return 0;
-};
+}
 
 //==============================================================================
 //==============================================================================
-static void CAudioModule::SetDefaultAudioPan(S8 pan) 
+void CAudioModule::SetDefaultAudioPriority( tAudioPriority priority ) 
 {
-};
+}
 
 //==============================================================================
 //==============================================================================
-static IEventListener* CAudioModule::GetDefaultAudioEventHandler() 
+S8 CAudioModule::GetDefaultAudioPan( void ) 
+{
+	return 0;
+}
+
+//==============================================================================
+//==============================================================================
+void CAudioModule::SetDefaultAudioPan( S8 pan ) 
+{
+}
+
+//==============================================================================
+//==============================================================================
+IEventListener* CAudioModule::GetDefaultAudioEventListener( void ) 
 {
 	return NULL;
-};
+}
 
 //==============================================================================
 //==============================================================================
-static void CAudioModule::SetDefaultAudioEventHandler(IEventListener *pHandler) 
+void CAudioModule::SetDefaultAudioEventListener( IEventListener *pListener ) 
 {
-};
-*/
+}
 
 //==============================================================================
 //==============================================================================
@@ -679,7 +676,7 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority priority, IEventListene
 }
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ReleaseMidiPlayer(tMidiPlayerID id)
+tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID id )
 {
 	CAudioMsgReleaseMidiPlayer msg;
 
@@ -689,6 +686,10 @@ tErrType CAudioModule::ReleaseMidiPlayer(tMidiPlayerID id)
 	return WaitForStatus();
 }
 
+tAudioID	CAudioModule::GetAudioIDForMidiID( tMidiPlayerID id ) 
+{
+	return kNoAudioID;
+}
 //==============================================================================
 //==============================================================================
 tErrType CAudioModule::MidiNoteOn( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, 
