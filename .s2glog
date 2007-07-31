@@ -6295,3 +6295,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/31/07 1:41 PM
 2,535 ms. (Cumulative: 1,157,033 ms)
 
 ----------------
+Revision 1,091 from svn://localhost/TRUNK/:
+Revision 1,092 from svn://localhost/TRUNK/:
+
+Added paths to include libdsputil.
+
+By GKlimanis (GKlimanis@leapfrog.com) on 7/31/07 3:12 PM
+1 changed, 0 added, 0 deleted.
+2,454 ms. (Cumulative: 1,159,549 ms)
+
+----------------
