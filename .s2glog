@@ -6267,3 +6267,12 @@ By tparker (tparker@leapfrog.com) on 7/31/07 10:45 AM
 2,500 ms. (Cumulative: 1,149,153 ms)
 
 ----------------
+Revision 1,087 from svn://localhost/TRUNK/:
+
+Some support for looping vorbis.
+
+By dgibbs (dgibbs@leapfrog.com) on 7/31/07 11:53 AM
+2 changed, 0 added, 0 deleted.
+2,656 ms. (Cumulative: 1,151,872 ms)
+
+----------------

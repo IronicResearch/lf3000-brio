@@ -39,7 +39,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // CVorbisPlayer implementation
 //==============================================================================
 
-CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAudioPlayer( pData, id  )
+CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlayer( pInfo, id  )
 {
 	tErrType			ret = kNoErr;
 	vorbis_info*		pVorbisInfo;
@@ -72,7 +72,13 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pData, tAudioID id  ) : CAud
     // Keep track of where we are int he bitstream now that it's open.
     filePos_ = 0;
 
-    // Setup the vorbisfile library's custom callback structure
+    // Find out if the caller has requested looping.
+	if (pInfo->flags & 1)
+		loop_ = true;
+	else 
+		loop_ = false;
+
+	// Setup the vorbisfile library's custom callback structure
 	oggCallbacks_.read_func = &CVorbisPlayer::WrapperForVorbisRead;
 	oggCallbacks_.seek_func = &CVorbisPlayer::WrapperForVorbisSeek;
 	oggCallbacks_.tell_func = &CVorbisPlayer::WrapperForVorbisTell;
@@ -300,6 +306,9 @@ void CVorbisPlayer::Rewind()
 	// Point curSample_ back to start and reset total.
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"Vorbis Player::Rewind.\n "); 
+	
+	// Seek back to beginning
+	ov_time_seek( &vorbisFile_, 0 );
 }
 
 //==============================================================================
