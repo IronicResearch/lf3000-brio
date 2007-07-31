@@ -72,6 +72,7 @@ namespace
 
 	// Video MPI global vars
 	tRsrcHndl			ghVideo;
+	tVideoContext*		gpVidCtx;
 }
 
 //============================================================================
@@ -137,6 +138,7 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean 
 	InitVideoTask(pVidCtx);	
 
 	// TODO: Wrap pVidCtx into handle...
+	gpVidCtx = pVidCtx;
 	return hVideo;
 }
 
@@ -430,36 +432,33 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 {
-	// TODO
-	return false;
+	gpVidCtx->bPaused = true;
+	return true;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 {
-	// TODO
-	return false;
+	gpVidCtx->bPaused = false;
+	return true;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 {
-	// TODO
-	return false;
+	return gpVidCtx->bPaused;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 {
-	// TODO
-	return false;
+	return gpVidCtx->bPlaying;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
 {
-	// TODO
-	return false;
+	return gpVidCtx->bLooped;
 }
 
 LF_END_BRIO_NAMESPACE()
