@@ -44,6 +44,7 @@ void* VideoTaskMain( void* arg )
 	CKernelMPI	kernel;
 	CDisplayMPI dispmgr;
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
+	tVideoTime		vtm;
 	U32				marktime,nexttime,lapsetime = 30;
 	
 	bRunning = true;
@@ -51,16 +52,19 @@ void* VideoTaskMain( void* arg )
 
 	while (bRunning)
 	{
-		marktime = kernel.GetElapsedTimeAsMSecs();
+		pctx->hAudio = audmgr.StartAudio(pctx->hRsrcAudio, 100, 1, 0, pctx->pListener, 0, 0);
+		vtm.time = marktime = audmgr.GetAudioTime(pctx->hAudio);
 		marktime += lapsetime;
-		while (vidmgr.GetVideoFrame(pctx->hVideo, NULL))
+		while (vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, true))
 		{	
 			vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
 			dispmgr.Invalidate(0, NULL);
-			while ((nexttime = kernel.GetElapsedTimeAsMSecs()) < marktime)
+			while ((nexttime = audmgr.GetAudioTime(pctx->hAudio)) < marktime)
 				kernel.TaskSleep(1);
 			marktime = nexttime + lapsetime;
+			vtm.time = nexttime;	
 		}
+		audmgr.StopAudio(pctx->hAudio, false);
 		while (bRunning)
 			kernel.TaskSleep(1);
 	}
