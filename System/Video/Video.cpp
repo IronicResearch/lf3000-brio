@@ -126,9 +126,6 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean 
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(malloc(sizeof(tVideoContext)));
 	tVideoHndl		hVideo = StartVideoInt(hRsrc);
 
-//	CAudioMPI		audmgr;
-//	tAudioID		hAudio = audmgr.StartAudio(hRsrc+1, 100, 1, 0, pListener, 0, 0);
-	
 	pVidCtx->hRsrcVideo = hRsrc;
 	pVidCtx->hRsrcAudio = hRsrc+1; // hack
 	pVidCtx->hVideo 	= hVideo;
