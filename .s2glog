@@ -6327,3 +6327,12 @@ By dgibbs (dgibbs@leapfrog.com) on 7/31/07 5:39 PM
 2,641 ms. (Cumulative: 1,169,160 ms)
 
 ----------------
+Revision 1,099 from svn://localhost/TRUNK/:
+
+Fixes for font rendering formats RGB 4444 and 565.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/07 7:13 PM
+4 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,171,910 ms)
+
+----------------
