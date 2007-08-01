@@ -22,6 +22,7 @@ Lightning C++ Development Kit Release Notes
 * Display MPI now removes 2D or video layer from being visible on Lightning
   display hardware during cleanup.
 * Video MPI methods added or changed to match Audio MPI functionality.
+  Seek and Loop functionality not implemented yet.
 * Font MPI surface descriptor field added for pixel format type.
   Formats supported: ARGB8888, RGB888, ARGB4444, RGB565.
 * Removed StartAudio() and StopAudio() calls from the AudioMPI.  Starting the 

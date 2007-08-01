@@ -122,15 +122,15 @@ Boolean	CVideoModule::IsValid() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tRsrcHndl hRsrcAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(malloc(sizeof(tVideoContext)));
 	tVideoHndl		hVideo = StartVideoInt(hRsrc);
 
 	pVidCtx->hRsrcVideo = hRsrc;
-	pVidCtx->hRsrcAudio = hRsrc+1; // hack
+	pVidCtx->hRsrcAudio = hRsrcAudio;
 	pVidCtx->hVideo 	= hVideo;
-//	pVidCtx->hAudio 	= hAudio;
+	pVidCtx->hAudio 	= 0; // handled inside video task
 	pVidCtx->pSurfVideo = pSurf;
 	pVidCtx->pListener 	= pListener;
 	pVidCtx->bLooped 	= bLoop;
@@ -432,6 +432,8 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 {
+	if (!gpVidCtx)
+		return false;
 	gpVidCtx->bPaused = true;
 	return true;
 }
@@ -439,6 +441,8 @@ Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 {
+	if (!gpVidCtx)
+		return false;
 	gpVidCtx->bPaused = false;
 	return true;
 }
@@ -446,19 +450,19 @@ Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 {
-	return gpVidCtx->bPaused;
+	return (gpVidCtx) ? gpVidCtx->bPaused : false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 {
-	return gpVidCtx->bPlaying;
+	return (gpVidCtx) ? gpVidCtx->bPlaying : false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
 {
-	return gpVidCtx->bLooped;
+	return (gpVidCtx) ? gpVidCtx->bLooped : false;
 }
 
 LF_END_BRIO_NAMESPACE()

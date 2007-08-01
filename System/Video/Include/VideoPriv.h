@@ -66,7 +66,7 @@ public:
 
 	// class-specific functionality
     VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc);
-    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener);
+    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc, tRsrcHndl hAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener);
     VTABLE_EXPORT Boolean     	StopVideo(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		GetVideoFrame(tVideoHndl hVideo, void* pCtx);
 	VTABLE_EXPORT Boolean 		PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
