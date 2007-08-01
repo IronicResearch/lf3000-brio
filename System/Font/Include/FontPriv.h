@@ -61,6 +61,8 @@ typedef struct  TFont_
     void*        	fileAddress;	// for preloaded files 
     size_t       	fileSize;
 	FT_Face			face;
+	FT_Size			size;			// for instanced point size
+	FTC_ScalerRec	scaler;			// for instanced point size
 	int				height;			// line-to-line spacing
 	int				ascent;			// baseline location
 	int				descent;		// remainder below baseline
@@ -101,6 +103,7 @@ public:
     VTABLE_EXPORT tFontHndl		LoadFont(const CString* pName, tFontProp prop);
     VTABLE_EXPORT tFontHndl		LoadFont(tRsrcHndl hRsrc, tFontProp prop);
     VTABLE_EXPORT Boolean     	UnloadFont(tFontHndl hFont);
+    VTABLE_EXPORT Boolean     	SelectFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
     VTABLE_EXPORT Boolean		GetFontAttr(tFontAttr* pAttr);
     VTABLE_EXPORT Boolean     	DrawString(CString* pStr, int x, int y, tFontSurf* pCtx);

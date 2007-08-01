@@ -161,6 +161,12 @@ public:
 		pFontMPI_->DrawString(&text1, 0, 2*mtrx.height, &surf);
 		pFontMPI_->DrawString(&text2, 0, 3*mtrx.height, &surf);
 		
+		attr.color = 0x00FF00;
+		pFontMPI_->SelectFont(font1);
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text1, 0, 4*mtrx.height, &surf);
+		pFontMPI_->DrawString(&text2, 0, 5*mtrx.height, &surf);
+		
 		pDisplayMPI_->Invalidate(0, NULL);
 		sleep(1);
 

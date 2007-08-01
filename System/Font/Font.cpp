@@ -21,6 +21,7 @@
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
 #include <ftglyph.h>
+#include <ftsizes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
@@ -275,7 +276,9 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 		return false;
     }
     // Get font metrics for all glyphs (26:6 fixed-point)
-	font->height = size->metrics.height >> 6;
+    font->size = size;
+    font->scaler = scaler;
+    font->height = size->metrics.height >> 6;
 	font->ascent = size->metrics.ascender >> 6;
 	font->descent = size->metrics.descender >> 6;
 	font->advance = size->metrics.max_advance >> 6;
@@ -358,6 +361,23 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 		FT_Done_Face(handle_.face);
 		handle_.face = NULL;
 	}
+	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean CFontModule::SelectFont(tFontHndl hFont)
+{
+	PFont	pFont = (PFont)hFont;
+
+	if (pFont == NULL || pFont->hRsrcFont == kInvalidRsrcHndl)
+		return false;
+
+	// Reload cached settings
+	handle_.currentFont = pFont;
+	FT_Activate_Size(pFont->size);
+    handle_.imageType.face_id = reinterpret_cast<FTC_FaceID>(pFont);
+    handle_.imageType.width = pFont->scaler.width;
+    handle_.imageType.height = pFont->scaler.height;
 	return true;
 }
 

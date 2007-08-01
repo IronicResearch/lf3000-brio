@@ -47,6 +47,9 @@ public:
     // Unloads the font loaded by LoadFont()
     Boolean     UnloadFont(tFontHndl hFont);
     
+    // Selects the font loaded by LoadFont()
+    Boolean     SelectFont(tFontHndl hFont);
+    
     // Sets the font's drawing attributes
     Boolean		SetFontAttr(tFontAttr attr);
     
