@@ -6385,3 +6385,28 @@ By dgibbs (dgibbs@leapfrog.com) on 8/1/07 10:53 AM
 2,562 ms. (Cumulative: 1,189,411 ms)
 
 ----------------
+Revision 1,107 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,625 ms. (Cumulative: 1,193,099 ms)
+
+----------------
+Revision 1,108 from svn://localhost/TRUNK/:
+Revision 1,109 from svn://localhost/TRUNK/:
+Revision 1,110 from svn://localhost/TRUNK/:
+Revision 1,111 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,532 ms. (Cumulative: 1,195,662 ms)
+
+----------------
+Revision 1,112 from svn://localhost/TRUNK/:
+Revision 1,113 from svn://localhost/TRUNK/:
+
+Fix multi-line comment which the ARM compiler thinks is an error
+
+By dgibbs (dgibbs@leapfrog.com) on 8/1/07 1:48 PM
+1 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,198,256 ms)
+
+----------------
