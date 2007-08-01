@@ -6448,3 +6448,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/1/07 3:03 PM
 3,125 ms. (Cumulative: 1,209,866 ms)
 
 ----------------
+Revision 1,120 from svn://localhost/TRUNK/:
+Revision 1,121 from svn://localhost/TRUNK/:
+
+Update notes to mention looping vorbis.
+
+By DGibbs (DGibbs@leapfrog.com) on 8/1/07 3:11 PM
+1 changed, 0 added, 0 deleted.
+2,657 ms. (Cumulative: 1,212,601 ms)
+
+----------------
