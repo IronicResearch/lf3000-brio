@@ -6419,3 +6419,14 @@ By dgibbs (dgibbs@leapfrog.com) on 8/1/07 2:15 PM
 2,860 ms. (Cumulative: 1,201,178 ms)
 
 ----------------
+Revision 1,115 from svn://localhost/TRUNK/:
+Revision 1,116 from svn://localhost/TRUNK/:
+Revision 1,117 from svn://localhost/TRUNK/:
+
+Add looping vorbis test...
+
+By dgibbs (dgibbs@leapfrog.com) on 8/1/07 2:49 PM
+1 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,203,944 ms)
+
+----------------

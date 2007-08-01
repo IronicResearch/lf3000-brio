@@ -211,7 +211,6 @@ public:
 	//------------------------------------------------------------------------
 	void xxxtestVorbisLooping( )
 	{
-		U32			index;
 		tRsrcHndl	handle1;
 		tAudioID 	id1;
 		U32			audioTime;
