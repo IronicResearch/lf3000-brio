@@ -6336,3 +6336,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/31/07 7:13 PM
 2,688 ms. (Cumulative: 1,171,910 ms)
 
 ----------------
+Revision 1,100 from svn://localhost/TRUNK/:
+
+New sample application that allows playback of multiple test files at different sampling rates.
+
+By dgibbs (dgibbs@leapfrog.com) on 7/31/07 7:51 PM
+1 changed, 0 added, 0 deleted.
+3,890 ms. (Cumulative: 1,175,863 ms)
+
+----------------
