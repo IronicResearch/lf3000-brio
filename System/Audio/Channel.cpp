@@ -87,7 +87,6 @@ CChannel::~CChannel()
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
-long ch = 0;
 	// If we're pre-empting, release the active player first.
 	if (pPlayer_ != kNull)
 		Release( false );		// don't suppress done msg if it has been requested

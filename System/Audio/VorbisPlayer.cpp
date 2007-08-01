@@ -74,9 +74,9 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 
     // Find out if the caller has requested looping.
 	if (pInfo->flags & 1)
-		loop_ = true;
+		shouldLoop_ = true;
 	else 
-		loop_ = false;
+		shouldLoop_ = false;
 
 	// Setup the vorbisfile library's custom callback structure
 	oggCallbacks_.read_func = &CVorbisPlayer::WrapperForVorbisRead;
@@ -396,8 +396,12 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 //		printf("Vorbis Player::RenderBuffer: ov_read() got %u bytes.\n ", bytesRead);
 	
 		// at EOF
-		if ( bytesRead == 0 )
-			break;
+		if ( bytesRead == 0 ) {
+			if (shouldLoop_)
+				Rewind();
+			else
+				break;
+		}
 		
 		// Keep track of where we are...
 		bytesToRead -= bytesRead;

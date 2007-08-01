@@ -199,7 +199,7 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 //==============================================================================
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
 {
-	U32		i, ch;
+	U32		i;
 	U32 		framesRendered;
 	U8		iChan;
 	CChannel	*pChan;
