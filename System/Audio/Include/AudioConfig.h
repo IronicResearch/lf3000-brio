@@ -2,7 +2,7 @@
 #define LF_BRIO_AUDIOCONFIG_H
 
 // Debug output level
-#define kAudioDebugLevel			kDbgLvlVerbose
+#define kAudioDebugLevel			kDbgLvlCritical
 
 // Fundamental assumptions
 #define	kAudioNumMixerChannels		4		// Number of mixer channels max.

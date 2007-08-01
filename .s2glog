@@ -6430,3 +6430,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/1/07 2:49 PM
 2,672 ms. (Cumulative: 1,203,944 ms)
 
 ----------------
+Revision 1,118 from svn://localhost/TRUNK/:
+
+Turn off audio debug messages.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/1/07 2:49 PM
+1 changed, 0 added, 0 deleted.
+2,687 ms. (Cumulative: 1,206,678 ms)
+
+----------------
