@@ -31,7 +31,19 @@ Lightning C++ Development Kit Release Notes
 * New mixer, soon to be optimzed in ARM assembly.
 * Audio System includes a sample rate converter, supports 8KHz, 16KHz, 32KHz
 * New BrioAudio application demonstrating playback of test files at different rates.
-
+* Emulation Key Equivilants:
+    Up				= Up Arrow
+	Down			= Down Arrow
+	Left			= Left Arrow
+	Right			= Right Arrow
+	A				= 'a' or '0'
+	B				= 'b' or '1'
+	Hint			= 'h' or Home
+	Right Shoulder	= Page Down
+	Left Shoulder	= Delete
+	Menu			= 'm' or Insert
+	Pause			= 'p' or Page Up 
+     
 
 ===========================================
 v0.1.13  (Build 919 released July 17, 2007) 
