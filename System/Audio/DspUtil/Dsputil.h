@@ -813,8 +813,8 @@ short Binary16ToShort(char *s);
 #define CEILINGWRAP(x, lo, hi) {\
 	if ((x) >= (hi))	(x) = (lo)+ mFractionf(x);\
 }
-//#define FLOORWRAP(x, lo, hi) {\
-//	if ((x) <= (lo))	(x) = (lo)+ mFractionf(x);\
+//#define FLOORWRAP(x, lo, hi) { REMOVED BACKSLASH BECAUCE OF ARM COMPILER ERROR
+//	if ((x) <= (lo))	(x) = (lo)+ mFractionf(x);
 //}
 // No return value
 #define SATURATE_16BIT(x) {\
