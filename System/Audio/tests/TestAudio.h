@@ -209,6 +209,40 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void xxxtestVorbisLooping( )
+	{
+		U32			index;
+		tRsrcHndl	handle1;
+		tAudioID 	id1;
+		U32			audioTime;
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		TS_ASSERT( pResourceMPI_ != NULL );
+		TS_ASSERT( pResourceMPI_->IsValid() == true );
+
+		printf("TestAudio -- testVorbisLooping() starting \n" );
+
+		// Package is already opened in setup
+		handle1 = pResourceMPI_->FindRsrc( "vivaldi" );
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		printf("TestAudio -- testVorbisResources() found vivaldi, rsrcHandle = %d\n", (int)handle1 );
+		
+		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 1 );
+		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
+
+		// loop sleep 1 second
+		while (1) {
+			audioTime = pAudioMPI_->GetAudioTime( id1 );
+			pKernelMPI_->TaskSleep( 250 ); 
+		}
+	}
+	
+	//------------------------------------------------------------------------
 	void xxxtestRawResources( )
 	{
 		tRsrcHndl		handle1;
@@ -284,8 +318,8 @@ public:
 	void testVorbisPlusMIDIResources( )
 	{
 		U32			index;
-		tRsrcHndl	handle1, handle2, handle3;
-		tAudioID 	id1, id2, id3;
+		tRsrcHndl	handle1, handle2, handle3, handle4;
+		tAudioID 	id1, id2, id3, id4;
 		U32			audioTime;
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -309,40 +343,43 @@ public:
 		handle2 = pResourceMPI_->FindRsrc( "vivaldi" );
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 		printf("TestAudio -- testVorbisResources() found vivaldi, rsrcHandle = %d\n", (int)handle2 );
-//		handle = pResourceMPI_->FindRsrc( "BlueNile" );
-//		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		
-		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// Package is already opened in setup
-//		handle3 = pResourceMPI_->FindRsrc("Girl_noDrums");
-//		handle3 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
-		handle3 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
+		handle3 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
 		TS_ASSERT( handle3 != kInvalidRsrcHndl );
+		printf("TestAudio -- testVorbisResources() found Neutr_3_noDrums, rsrcHandle = %d\n", (int)handle3 );
+
+		handle4 = pResourceMPI_->FindRsrc( "Sine44" );
+		TS_ASSERT( handle4 != kInvalidRsrcHndl );
+		printf("TestAudio -- testVorbisResources() found sine44, rsrcHandle = %d\n", (int)handle4 );
+
+		// volume is faked by right shift at this point
+		id4 = pAudioMPI_->StartAudio( handle4, 100, 1, 0, &audioListener_, 0, 0 );
 
 		
-		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
-		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
-		// volume is faked by right shift at this point
-//		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
 		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
 		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
-		// sleep 1 seconds
-		pKernelMPI_->TaskSleep(1000 ); 
+		pKernelMPI_->TaskSleep(4000 ); 
 
 //		pAudioMPI_->SetMasterVolume( 80 );
-		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( handle2, 80, 1, 0, &audioListener_, 0, 0 );
+	
+		pKernelMPI_->TaskSleep(4000 ); 
 
-		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
 		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
 		// volume is faked by right shift at this point
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+
 		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, handle3, 100, 1, &audioListener_, 0, 0 );
 
+		pKernelMPI_->TaskSleep(4000 ); 
+//		pAudioMPI_->SetMasterVolume( 80 );
+		id4 = pAudioMPI_->StartAudio( handle4, 100, 1, 0, &audioListener_, 0, 0 );
+
 		// loop sleep 1 second
-		for (index = 0; index < 20; index++) {
+		for (index = 0; index < 40; index++) {
 			audioTime = pAudioMPI_->GetAudioTime( id2 );
 			pKernelMPI_->TaskSleep( 250 ); 
 		}

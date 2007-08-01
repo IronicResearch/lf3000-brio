@@ -41,6 +41,8 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	tAudioHeader*		pHeader;
 	const tMutexAttr 	attr = {0};
 	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- Entering ctor...\n");
+
 	// Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
 	result = pKernelMPI_->IsValid();
@@ -54,14 +56,19 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	result = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't load resource.\n");
 	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- Loaded resource...\n");
+
 	// Get the pointer to the audio header and data.
 	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
 
-//	printf("Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%u, size:%u\n", (unsigned int)pHeader->type, (int)pHeader->offsetToData, pHeader->flags, (unsigned int)pHeader->sampleRate, (unsigned int)pHeader->dataSize);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%u, size:%u\n", 
+		(unsigned int)pHeader->type, (int)pHeader->offsetToData, pHeader->flags, (unsigned int)pHeader->sampleRate, 
+		(unsigned int)pHeader->dataSize);
 
 	// Get ptr to data
 	pAudioData_ = (void*)(pHeader + pHeader->offsetToData);
-//	printf("AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", (unsigned int)pHeader, (unsigned int)pAudioData_ );
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", 
+		(unsigned int)pHeader, (unsigned int)pAudioData_ );
 
 	dataSampleRate_ = pHeader->sampleRate;
 	audioDataSize_ = pHeader->dataSize;			
@@ -80,8 +87,8 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	
 	framesLeft_ = numFrames_;
 	
-//	printf("CRawPlayer::ctor Number of Frames:%d\n", numFrames_);
-//	printf("CRawPlayer::ctor Header flags:%d\n", optionsFlags_);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor Number of Frames:%d\n", (int)numFrames_);
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor Header flags:%d\n", (int)optionsFlags_);
 }
 
 //==============================================================================

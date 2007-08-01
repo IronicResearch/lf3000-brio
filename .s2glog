@@ -6410,3 +6410,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/1/07 1:48 PM
 2,578 ms. (Cumulative: 1,198,256 ms)
 
 ----------------
+Revision 1,114 from svn://localhost/TRUNK/:
+
+Fix missing symbols in ARM dsputil lib.  Add looping to Vorbis player.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/1/07 2:15 PM
+8 changed, 0 added, 0 deleted.
+2,860 ms. (Cumulative: 1,201,178 ms)
+
+----------------

@@ -90,7 +90,7 @@ private:
 	tMutex     		render_mutex_;		// Need to protect renderbuffer call 
 										// because it's in a different thread.
 	U32				filePos_;			// position in the vorbis byte stream
-	Boolean			loop_;				// should the file loop when it reaches the end?
+	Boolean			shouldLoop_;				// should the file loop when it reaches the end?
 };
 
 LF_END_BRIO_NAMESPACE()

@@ -390,7 +390,6 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 	int 	mfp_result;
 	U32		spmidiFramesPerBuffer;
 	S16* 	pBuffer = pMidiRenderBuffer_;  // local ptr to buffer for indexing
-	S32 	outSamp;
 	S32 	sum;
 	U32 	framesRead = 0;
 	U32 	numStereoSamples = numStereoFrames * kAudioBytesPerSample;
