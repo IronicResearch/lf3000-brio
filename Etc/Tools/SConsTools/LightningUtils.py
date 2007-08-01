@@ -307,7 +307,7 @@ def PackFile(srcfile, pack_root, type, compression, rate):
 	outfile = os.path.join(pack_root, outname)
 	sSourceToDestMap[srcfile] = outfile								#3
 	
-	if type == 1026 and rate != '':									#3
+	if type == 1026 and rate != '':									#4
 		enc = sEnv.OggEnc(outfile, srcfile, OGGENC_RATE=rate, OGGENC_COMPRESSION=compression)
 		
 	elif type == 1027:												#5
