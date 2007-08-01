@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
-modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'SystemResourceMPI', 
+modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'ResourceMPI', 
 				'portaudio', 'me2000', 'vorbisidec', 'dsputil']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
