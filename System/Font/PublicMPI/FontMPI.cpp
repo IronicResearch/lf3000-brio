@@ -108,6 +108,14 @@ Boolean CFontMPI::UnloadFont(tFontHndl hFont)
 }
 
 //----------------------------------------------------------------------------
+Boolean CFontMPI::SelectFont(tFontHndl hFont)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SelectFont(hFont);
+}
+
+//----------------------------------------------------------------------------
 Boolean	CFontMPI::SetFontAttr(tFontAttr attr)
 {
 	if (!pModule_)

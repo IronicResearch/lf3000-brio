@@ -6366,3 +6366,13 @@ By dgibbs (dgibbs@leapfrog.com) on 7/31/07 7:59 PM
 2,829 ms. (Cumulative: 1,184,005 ms)
 
 ----------------
+Revision 1,104 from svn://localhost/TRUNK/:
+Revision 1,105 from svn://localhost/TRUNK/:
+
+Added SelectFont() MPI method for reselecting any font cached by LoadFont().
+
+By Dave Milici (dmilici@leapfrog.com) on 8/1/07 10:35 AM
+5 changed, 0 added, 0 deleted.
+2,704 ms. (Cumulative: 1,186,771 ms)
+
+----------------
