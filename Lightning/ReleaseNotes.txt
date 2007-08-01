@@ -2,6 +2,19 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+===========================================
+v0.1.14  (Build 1127 released August 1, 2007) 
+===========================================
+
+Release for LF2530 embedded target boards (blue or brown).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.4.0-1078
+* NFS root file system: nfsroot-svn1127.tar.gz
+
+Enhancements:
+-------------
 * OpenGL embedded library updated for 4444 texture fix.
 * Added the Resource Manager AddNewRsrcToPackage(), AddRsrcToPackageFromFile(),
   and RemoveRsrcFromPackage() functions.
