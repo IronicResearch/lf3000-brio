@@ -6467,3 +6467,15 @@ By DGibbs (DGibbs@leapfrog.com) on 8/1/07 3:16 PM
 2,563 ms. (Cumulative: 1,215,226 ms)
 
 ----------------
+Revision 1,123 from svn://localhost/TRUNK/:
+Revision 1,124 from svn://localhost/TRUNK/:
+Revision 1,125 from svn://localhost/TRUNK/:
+Revision 1,126 from svn://localhost/TRUNK/:
+
+Fixed auto-play video test.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/1/07 4:29 PM
+2 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,217,898 ms)
+
+----------------
