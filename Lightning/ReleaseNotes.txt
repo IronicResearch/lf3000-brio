@@ -28,6 +28,10 @@ Lightning C++ Development Kit Release Notes
   audio system now happens automatically when you create an MPI instance.
 * Changed type tMidiID to tMidiPlayerID to reflect its actual usage.
 * Many new functions have been added to the AudioMPI, see header for details.
+* New mixer, soon to be optimzed in ARM assembly.
+* Audio System includes a sample rate converter, supports 8KHz, 16KHz, 32KHz
+* New BrioAudio application demonstrating playback of test files at different rates.
+
 
 ===========================================
 v0.1.13  (Build 919 released July 17, 2007) 
