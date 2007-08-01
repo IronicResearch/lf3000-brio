@@ -611,12 +611,14 @@ void CFontModule::ConvertGraymapToRGB4444(FT_Bitmap* source, int x0, int y0, tFo
 	U8  		*d,*u;
 	U32	 		color = attr_.color;
 	U8 			alpha;
+	U8			A = (color & 0xF000) >> 12;
 	U8			R = (color & 0x0F00) >> 8;
 	U8			G = (color & 0x00F0) >> 4;
 	U8			B = (color & 0x000F) >> 0;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Pack RGB color into buffer according to grayscale values
+	// All ARGB components are repacked for GL_RGBA 4444 textures
 	w = source->width;
 	h = source->rows;
 	s = t = source->buffer;
@@ -632,13 +634,15 @@ void CFontModule::ConvertGraymapToRGB4444(FT_Bitmap* source, int x0, int y0, tFo
 				U8  ialpha = 0xFF - alpha;
 				U16* p16 = (U16*)d;
 				U16 bgcolor = *p16;
+				U16 a = (bgcolor & 0xF000) >> 12;
 				U16 r = (bgcolor & 0x0F00) >> 8;
 				U16 g = (bgcolor & 0x00F0) >> 4;
 				U16 b = (bgcolor & 0x000F) >> 0;
 				b = (B * alpha + b * ialpha) / 0xFF; 
-				g = (R * alpha + g * ialpha) / 0xFF;
-				r = (G * alpha + r * ialpha) / 0xFF;
-				*p16 = 0xF000 | (r << 8) | (g << 4) | (b << 0); 
+				g = (G * alpha + g * ialpha) / 0xFF;
+				r = (R * alpha + r * ialpha) / 0xFF;
+				a = (A * alpha + a * ialpha) / 0xFF;
+				*p16 = (a << 12) | (r << 8) | (g << 4) | (b << 0); 
 			}
 			d+=2;
 			s++;
@@ -681,8 +685,8 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 				U16 g = (bgcolor & 0x07E0) >> 5;
 				U16 b = (bgcolor & 0x001F) >> 0;
 				b = (B * alpha + b * ialpha) / 0xFF; 
-				g = (R * alpha + g * ialpha) / 0xFF;
-				r = (G * alpha + r * ialpha) / 0xFF;
+				g = (G * alpha + g * ialpha) / 0xFF;
+				r = (R * alpha + r * ialpha) / 0xFF;
 				*p16 = (r << 11) | (g << 5) | (b << 0); 
 			}
 			d+=2;

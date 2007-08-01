@@ -23,6 +23,7 @@ Lightning C++ Development Kit Release Notes
   display hardware during cleanup.
 * Video MPI methods added or changed to match Audio MPI functionality.
 * Font MPI surface descriptor field added for pixel format type.
+  Formats supported: ARGB8888, RGB888, ARGB4444, RGB565.
 * Removed StartAudio() and StopAudio() calls from the AudioMPI.  Starting the 
   audio system now happens automatically when you create an MPI instance.
 * Changed type tMidiID to tMidiPlayerID to reflect its actual usage.
