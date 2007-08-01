@@ -31,6 +31,7 @@ Lightning C++ Development Kit Release Notes
 * Many new functions have been added to the AudioMPI, see header for details.
 * New mixer, soon to be optimzed in ARM assembly.
 * Audio System includes a sample rate converter, supports 8KHz, 16KHz, 32KHz
+* Looping of Vorbis files now works.
 * New BrioAudio application demonstrating playback of test files at different rates.
 * Emulation Key Equivilants:
     Up				= Up Arrow
