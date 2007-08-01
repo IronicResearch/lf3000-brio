@@ -7,11 +7,44 @@
 #include <DisplayMPI.h>
 #include <KernelMPI.h>
 #include <ResourceMPI.h>
+#include <EventMPI.h>
+#include <EventListener.h>
+#include <AudioTypes.h>
 #include <UnitTestUtils.h>
 
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
+
+//============================================================================
+// Audio Listener
+//============================================================================
+const tEventType kMyAudioTypes[] = { kAllAudioEvents };
+
+//----------------------------------------------------------------------------
+class AudioListener : public IEventListener
+{
+public:
+	AudioListener( )
+		: IEventListener(kMyAudioTypes, ArrayCount(kMyAudioTypes)), dbg_(kMyApp)
+	{
+	}
+
+	virtual tEventStatus Notify( const IEventMessage &msgIn )
+	{
+		const CAudioEventMessage& msg = dynamic_cast<const CAudioEventMessage&>(msgIn);
+		if( msg.GetEventType() == kAudioCompletedEvent )
+		{
+			const tAudioMsgDataCompleted& data = msg.audioMsgData.audioCompleted;
+			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
+					static_cast<int>(data.audioID), static_cast<int>(data.payload));
+			return kEventStatusOKConsumed;
+		}
+		return kEventStatusOK;
+	}
+private:
+	CDebugMPI	dbg_;
+};
 
 //============================================================================
 // TestVideoMPI functions
@@ -90,7 +123,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVideoDisplay()
+	void xxxxtestVideoDisplay()
 	{
 		tRsrcHndl	pkg;
 		tRsrcHndl	handle1;
@@ -158,7 +191,7 @@ public:
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUYV422, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -182,24 +215,29 @@ public:
 		handle2 = pResourceMPI_->FindRsrc("Vorbis0");
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 
-		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, NULL);
-		TS_ASSERT( video != kInvalidVideoHndl );
+		CKernelMPI*	kernel = new CKernelMPI();
+		CEventMPI*  evtmgr = new CEventMPI();
+		AudioListener  audioListener;
+		evtmgr->RegisterEventListener(&audioListener);
 
+		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, &audioListener);
+		TS_ASSERT( video != kInvalidVideoHndl );
+		
 		for (int i = 0; i < 100; i++)
 		{
 			Boolean 	r;
 			tVideoTime	vt;
-			CKernelMPI*	kernel = new CKernelMPI();
 			
 			kernel->TaskSleep(30);
+
 			r = pVideoMPI_->GetVideoTime(video, &vt);
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.time >= 0 );
 		}
-		pVideoMPI_->PauseVideo(video);
-		sleep(1);
-		pVideoMPI_->ResumeVideo(video);
-		sleep(1);
+//		pVideoMPI_->PauseVideo(video);
+//		sleep(1);
+//		pVideoMPI_->ResumeVideo(video);
+//		sleep(1);
 		
 		pVideoMPI_->StopVideo(video);
 
