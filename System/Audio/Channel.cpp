@@ -100,7 +100,6 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 	inSampleRate_ = pPlayer_->GetSampleRate();
 
 	pDSP_->samplingFrequency = (float) inSampleRate_;
-printf("CChannel::InitChanWithPlayer: samplingFrequency=%g \n", pDSP_->samplingFrequency);
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CChannel::InitChanWithPlayer - samplingFrequency=%g\n", 
 			static_cast<float>(pDSP_->samplingFrequency) );	
