@@ -40,7 +40,7 @@ public:
 	
 	// Start video stream from open resource
 	tVideoHndl	StartVideo(tRsrcHndl hRsrc);
-	tVideoHndl	StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop = false, IEventListener* pListener = NULL);
+	tVideoHndl	StartVideo(tRsrcHndl hRsrc, tRsrcHndl hAudio, tVideoSurf* pSurf, Boolean bLoop = false, IEventListener* pListener = NULL);
 
 	// Stop video stream to close resource
 	Boolean 	StopVideo(tVideoHndl hVideo);

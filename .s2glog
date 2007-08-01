@@ -6439,3 +6439,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/1/07 2:49 PM
 2,687 ms. (Cumulative: 1,206,678 ms)
 
 ----------------
+Revision 1,119 from svn://localhost/TRUNK/:
+
+Updated Video MPI test and demo for auto-playing task thread.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/1/07 3:03 PM
+9 changed, 1 added, 0 deleted.
+3,125 ms. (Cumulative: 1,209,866 ms)
+
+----------------

@@ -75,8 +75,9 @@ void* VideoTaskMain( void* arg )
 		}
 		audmgr.StopAudio(pctx->hAudio, false);
 		pctx->bPlaying = false;
-		while (bRunning)
-			kernel.TaskSleep(1);
+//		while (bRunning)
+//			kernel.TaskSleep(1);
+		bRunning = false;
 	}
 
 	return kNull;
@@ -103,6 +104,8 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 
 	// Save task handle for cleanup
 	hVideoThread = hndl;
+	while (!bRunning)
+		kernel.TaskSleep(1);
 
 	return r;
 }

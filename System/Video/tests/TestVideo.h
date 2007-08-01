@@ -4,6 +4,8 @@
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <VideoMPI.h>
+#include <DisplayMPI.h>
+#include <KernelMPI.h>
 #include <ResourceMPI.h>
 #include <UnitTestUtils.h>
 
@@ -19,6 +21,7 @@ class TestVideo : public CxxTest::TestSuite, TestSuiteBase
 private:
 	CVideoMPI*		pVideoMPI_;
 	CResourceMPI*	pResourceMPI_;
+	CDisplayMPI*	pDisplayMPI_;
 public:
 	//------------------------------------------------------------------------
 	void setUp( )
@@ -64,7 +67,6 @@ public:
 		tRsrcHndl	pkg;
 		tRsrcHndl	handle1;
 		tVideoHndl	video;
-//		tVideoSurf	surf;
 		
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
@@ -77,7 +79,6 @@ public:
 		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 
-		// TODO: update for new MPI
 		video = pVideoMPI_->StartVideo(handle1);
 		TS_ASSERT( video != kInvalidVideoHndl );
 
@@ -86,6 +87,128 @@ public:
 		pResourceMPI_->ClosePackage(pkg);
 		pResourceMPI_->CloseAllDevices();
 		delete pResourceMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testVideoDisplay()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUYV422, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
+
+		pkg = pResourceMPI_->FindPackage("ClipTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
+
+		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+
+		video = pVideoMPI_->StartVideo(handle1);
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		for (int i = 0; i < 100; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+
+			r = pVideoMPI_->GetVideoFrame(video, NULL);
+			TS_ASSERT( r == true );
+			r = pVideoMPI_->PutVideoFrame(video, &surf);
+			TS_ASSERT( r == true );
+			pDisplayMPI_->Invalidate(0, NULL);
+			
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.frame == i );
+			TS_ASSERT( vt.time >= 0 );
+		}
+		
+		pVideoMPI_->StopVideo(video);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testVideoAudio()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tRsrcHndl	handle2;
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUYV422, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
+
+		pkg = pResourceMPI_->FindPackage("ClipTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
+
+		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		handle2 = pResourceMPI_->FindRsrc("Vorbis0");
+		TS_ASSERT( handle2 != kInvalidRsrcHndl );
+
+		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, NULL);
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		for (int i = 0; i < 100; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+			CKernelMPI*	kernel = new CKernelMPI();
+			
+			kernel->TaskSleep(30);
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.time >= 0 );
+		}
+		pVideoMPI_->PauseVideo(video);
+		sleep(1);
+		pVideoMPI_->ResumeVideo(video);
+		sleep(1);
+		
+		pVideoMPI_->StopVideo(video);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete pDisplayMPI_;
 	}
 
 };

@@ -89,11 +89,11 @@ tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc)
 }
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc, tRsrcHndl hAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->StartVideo(hRsrc, pSurf, bLoop, pListener);
+	return pModule_->StartVideo(hRsrc, hAudio, pSurf, bLoop, pListener);
 }
 
 //----------------------------------------------------------------------------
