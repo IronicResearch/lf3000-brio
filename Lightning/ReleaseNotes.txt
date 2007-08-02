@@ -59,6 +59,11 @@ Enhancements:
 	Menu			= 'm' or Insert
 	Pause			= 'p' or Page Up 
      
+NOTE: Starting with this release, uncompressed audio is deprecated.  It will
+work in this release, but it doesn't sound good.  We would like SDK customers 
+to begin using Vorbis for all linear audio playback because this is the officially
+support Brio audio format.  Also, Vorbis audio is streamed from storage, whereas
+uncompressed audio is loaded entirely into RAM before playback. 
 
 ===========================================
 v0.1.13  (Build 919 released July 17, 2007) 

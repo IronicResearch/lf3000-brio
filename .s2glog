@@ -6500,3 +6500,13 @@ By Scott Esters (SEsters@leapfrog.com) on 8/1/07 4:43 PM
 2,641 ms. (Cumulative: 1,223,227 ms)
 
 ----------------
+Revision 1,130 from svn://localhost/TRUNK/:
+Revision 1,131 from svn://localhost/TRUNK/:
+
+Update release notes: uncompressed audio is deprecated.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/1/07 5:19 PM
+1 changed, 0 added, 0 deleted.
+2,609 ms. (Cumulative: 1,225,914 ms)
+
+----------------
