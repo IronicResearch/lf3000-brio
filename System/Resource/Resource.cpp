@@ -11,35 +11,56 @@
 // Description:
 //		Implements the Resource Manager.  This module serves as a singleton.
 //
-// Design: FIXME
-//		MPIInstance state
-//		Resource caching
-//		Iterators
-//		Handle enumerations
-
-// FIXME: repeated resources should be searched for when opening packages
+// Design:
+//		MPIInstanceState: stores open device, open package, and search/iteration
+//						state for a CResourceMPI instance.
+//						Each MPI instance invokes this module's Register()
+//						function in its ctor, which adds a new MPIInstanceState
+//						to a global map and returns a U32 key used to retrieve.
+//						that state.  All subsequenc calls to this module use
+//						that U32 id as their first parameter.
+//						Storing this information in this module rather than
+//						in the CResourceMPI class allows us to freely add
+//						new features, optimizations and bug fixes without
+//						breaking existing code that links against the
+//						CResourceMPI class.
+//						
+//		Resource caching:  The RAM cost of keeping a device open is fairly
+//						low, and you can't really do much with the resource
+//						manager without having an open device, so we leave
+//						cache device state even when the reference count
+//						for a device goes to zero.  Open packages require
+//						more runtime RAM, and when a client closes a package
+//						there is a high likelihood that they will not
+//						reopen it (e.g., switching to a new game), so
+//						memory is reclaimed when a package reference count
+//						goes to zero.
+//
+//		Iterators		When counting or enumerating resources,
+//						we limit the search domain to devices and packages
+//						that the client CResourceMPI object has opened.
+//						To better encapsulate this iteration this file
+//						implements a series of iterator objects, where
+//						the package iterator uses the device iterator,
+//						and the resource iterator uses the package iterator.
+//
+//		Handle enumerations  Handles are not stored in resoures, instead
+//						each package defines a base resource value and
+//						an individual resource's handle is determined by
+//						adding this base value to its index in the package's
+//						vector of resources.  Dynamically adding or removing
+//						resources from a package invalidates any previously
+//						retrieved handle values (similar to insertions
+//						or erasures invalidating existing STL iterators),
+//						so we track whether any handles have been found
+//						or enumerated in a package, and if so, we set
+//						the base resource value to a new value to invalidate
+//						any previously-retrieved handles.
+//
+// TODO: repeated resources should be searched for when opening packages
 //  resrouces vector should be of shared_ptrs?
 //
 //==============================================================================
-
-/*
- * Base
- *   rsrc
- *   bin
- *   lib
- * 
- * Title
- *   Common
- *     bin
- *     lib
- *     rsrc
- *   1
- *     bin
- *     rsrc
- *  ...
- * 
- * CartN/Title
- * */
 
 #include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -91,14 +112,14 @@ struct ResourceDescriptor
 	CURI 				uri;
 	std::string			caseInsensitiveRep;
 	tRsrcType			type;
-	CPath				path;
-	U32					size;
-	U32					usize;
+	CPath				path;		// relative path to save space
+	U32					size;		// size of file "path"
+	U32					usize;		// uncompressed size of reource
 	tVersion			version;
-	PackageDescriptor*	pPkg;
+	PackageDescriptor*	pPkg;		// containing package (lookup state to avoid duplication)
 	U16					refCount;
 	int					fd;
-	tPtr				ptr;
+	tPtr				ptr;		// managed by LoadRsrc()/UnloadRsrc()
 	
 	ResourceDescriptor(const char* u, U32 t = kInvalidRsrcType, 
 					const CPath& p = CPath(),
@@ -131,19 +152,17 @@ struct PackageDescriptor
 {
 	CURI 				uri;
 	std::string			caseInsensitiveRep;
-	CPath				path;
-	CPath				folder;
+	CPath				path;		// relative path to save space
+	CPath				folder;		// parent folder of "path" (heavily used value)
 	tVersion			version;
-	CString				verstr;
 	ePackageType		type;
-	tDeviceHndl			deviceHndl;
-	tPackageHndl		hndl;
+	tDeviceHndl			deviceHndl;	// handle of the containing device
+	tPackageHndl		hndl;		// this package's handle value
 	U16					refCount;
-	Boolean				isOpen;
 	ResourceDescriptors	resources;
-	tRsrcHndl			startRsrcHndl;
-	bool				dirtyWithRetrievedRsrcHndls;
-	bool				dirtyWithChangedRsrcs;
+	tRsrcHndl			startRsrcHndl;					// base resource handle for the pkg
+	bool				dirtyWithRetrievedRsrcHndls;	// reset handle on add/remove rsrc?
+	bool				dirtyWithChangedRsrcs;			// serialize out on Close?
 	
 	PackageDescriptor(const char* u, const CPath& p = CPath(), 
 					tVersion v = 1, 
@@ -151,16 +170,13 @@ struct PackageDescriptor
 					tDeviceHndl d = kInvalidDeviceHndl)
 		: uri(u), caseInsensitiveRep(uri.casefold_collate_key()), 
 		path(p), version(v), type(t), deviceHndl(d), 
-		hndl(kInvalidPackageHndl), refCount(0), isOpen(false),
+		hndl(kInvalidPackageHndl), refCount(0), 
 		startRsrcHndl(kInvalidRsrcHndl),
 		dirtyWithRetrievedRsrcHndls(false),
 		dirtyWithChangedRsrcs(false)
 	{
 		if(!path.empty())
 			folder = path.substr(0, path.rfind('/') + 1);
-		char buf[16];
-		sprintf(buf, "%d", v);
-		verstr = buf;
 	}
 	bool operator<(const PackageDescriptor& rhs) const
 	{
@@ -174,6 +190,9 @@ struct PackageDescriptor
 	}
 	void Flush()
 	{
+		// If resources were added or removed, rewrite the package file
+		// out to disk (called from ClosePackage()).
+		//
 		if (!dirtyWithChangedRsrcs)
 			return;
 		FILE* fp = fopen(path.c_str(), "w");
@@ -198,6 +217,9 @@ typedef std::vector<PackageDescriptor>	PackageDescriptors;
 //============================================================================
 struct DeviceDescriptor
 {
+	// NOTE: If we were unloading cached data when refCount==0, we wouldn't 
+	// need "isOpen".  As it stands, we don't really need "refCount"
+	//
 	U16					refCount;
 	Boolean				isOpen;
 	CPath				mountPath;
@@ -258,7 +280,7 @@ namespace
 			for (size_t ii = kDeviceCount; ii > 0; --ii)
 				deviceIsAttached[ii-1] = false;
 		}
-		DeviceDescriptor*		pDevices;
+		DeviceDescriptor*		pDevices;			// points to global array of devices
 		CURI					defaultURI;
 		eSynchState				isBlocking;
 		const IEventListener*	pDefaultListener;
@@ -656,6 +678,8 @@ namespace
 CResourceModule::CResourceModule() : dbg_(kGroupResource),
 								pDevices_(new DeviceDescriptor[kDeviceCount])
 {
+	// Initialize the DeviceDescriptor array
+	//
 	const CString	base = "Base";
 	const CString	cart = "Cart";
 	MountPoints	mp;
@@ -819,9 +843,10 @@ tErrType CResourceModule::CloseDevice(U32 id, tDeviceHndl hndl)
 	DeviceDescriptor& device = pDevices_[index];
 	--device.refCount;
 	
-	// TODO/FUTURE: Release memory if refcount goes to zero if need memory
+	// TODO/FUTURE: Release memory if refcount goes to zero if need memory.
+	// Probably never needed unless you have rarely-opened devices,
+	// which is not the case for Lightning.
 //	if (device.refCount == 0)
-//		device.isOpen = false;
 //		free memory
 	
 	return kNoErr;
@@ -1083,9 +1108,8 @@ tErrType CResourceModule::OpenPackage(U32 id, tPackageHndl hndl,
 	++ppd->refCount;
 	size_t rootLen = ppd->folder.size();
 	
-	if (!ppd->isOpen)													//*4
+	if (ppd->refCount == 1)												//*4
 	{
-		ppd->isOpen = true;
 		FILE* fp = fopen(ppd->path.c_str(), "r");						//*4a
 		dbg_.Assert(fp != NULL, "CResourceModule::OpenPackage: file not found '%s'", 
 					ppd->path.c_str());
@@ -1125,6 +1149,8 @@ tErrType CResourceModule::ClosePackage(U32 id, tPackageHndl hndl)
 	// 3) Free up the resource state:
 	// 3a)	Close all contained resources
 	// 3b)	Free up all the ResourceDescriptor structures
+	// NOTE: The device's list of packages never changes, so we don't have
+	// any cleanup to do in the "DeviceDescriptor" state.
 	//
 	MPIInstanceState& mpiState = RetrieveMPIState(id);
 	if (!mpiState.PackageIsAttached(hndl))								//*1
@@ -1138,10 +1164,8 @@ tErrType CResourceModule::ClosePackage(U32 id, tPackageHndl hndl)
 	mpiState.DettachPackage(hndl);										//*2
 	--ppd->refCount;
 	
-
 	if (ppd->refCount == 0)												//*3
 	{
-		ppd->isOpen = false;
 		ResourceDescriptors::iterator	it = ppd->resources.begin();
 		ResourceDescriptors::iterator	itEnd = ppd->resources.end();
 		for ( U32 ii = 0; it != itEnd; ++it, ++ii)						//*3a
