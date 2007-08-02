@@ -307,7 +307,7 @@ def PackFile(srcfile, pack_root, type, compression, rate):
 	outfile = os.path.join(pack_root, outname)
 	sSourceToDestMap[srcfile] = outfile								#3
 	
-	if type == 1026 and rate != '':									#4
+	if type == 1026 and rate != '':									#3
 		enc = sEnv.OggEnc(outfile, srcfile, OGGENC_RATE=rate, OGGENC_COMPRESSION=compression)
 		
 	elif type == 1027:												#5
@@ -325,7 +325,16 @@ def PackFile(srcfile, pack_root, type, compression, rate):
 def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 	# 1) Setup field mappings (see note below)
 	# 2) Read in the mapping of activity code to Base URI path
-	#    (for converting acme CSV files)
+	# 3) Open the input package
+	# 4) The first line contains field descriptions, so skip it.
+	#    Subsequent lines define resources.
+	# 5) Convert the ACME type info value into the Brio audio type.
+	# 6) Pack the file
+	# 7) Record the URI & location to later report any duplicates
+	# 8) Add a line describing the resource to the "resources" list.
+	# 9) Sort the resources list by URI (case-insenstive) and write out
+	#    the output package file (see the following URL for an explanation
+	#    of this sorting method: http://wiki.python.org/moin/HowTo/Sorting)
 	# NOTE: The 'fld' param tells the ProcessPackage() function which
 	# fields are of interest in the input file, where:
 	#   0: activity code or base URL path
@@ -333,23 +342,23 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 	#   2: data type string 
 	#   3: file name
 	#	
-	fld = [7, 17, 15, 9]	# activity, handle, type, file			#1
-	dict = MapAcmeActivitiesToURIs(data_root)						#2
+	fld = [7, 17, 15, 9]	# activity, handle, type, file				#1
+	dict = MapAcmeActivitiesToURIs(data_root)							#2
 	resources = []
 	pack_root_len = len(pack_root) + 1
 	
-	reader = csv.reader(open(pkg, "rb"))
+	reader = csv.reader(open(pkg, "rb"))								#3
 	pkguri = dict[os.path.basename(pkg)]
 	pkgfile = GenerateNextPackageFileName()
 	packages += [[pkguri, pkgfile, 1, 1]]
 	line = 0
 	for row in reader:
 		line += 1
-		if line == 0:
+		if line == 0:													#4
 			# TODO: map 'fld' to 'SHAPE DESCRIPTION', 'FILE', 'AUDIOTYPE', & 'AUDIO HANDLE'
 			dummy = line	
 		elif row[fld[3]] != '':
-			compression = rate = ''
+			compression = rate = ''										#5
 			if types.has_key(row[fld[2]]):
 				type = types[row[fld[2]]]
 			else:
@@ -357,15 +366,15 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 			extension = type == 1024 and '.mid' or '.wav'
 			srcfile = os.path.join(data_root, row[fld[3]]+extension)
 			srcsize = os.path.getsize(srcfile)
-			outfile = PackFile(srcfile, pack_root, type, compression, rate)
+			outfile = PackFile(srcfile, pack_root, type, compression, rate)	#6
 			outsize = outfile.getsize()
 			uri = dict[row[fld[0]]] + row[fld[1]]
-			AddURILocation(uri, pkg, line)
+			AddURILocation(uri, pkg, line)								#7
 			out = outfile.abspath[pack_root_len:]
-			resources += [[uri, type, out, outsize, srcsize, version]]
+			resources += [[uri, type, out, outsize, srcsize, version]]	#8
 
 	deco = [ (res[0].upper(), i, res) for i, res in enumerate(resources) ]
-	deco.sort()														#8
+	deco.sort()															#9
 	resources = [ res for _, _, res in deco ]
 	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
 	writer.writerows(resources)
@@ -377,7 +386,7 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 def ProcessPackage(pkg, types, pack_root, data_root, packages):
 	# Package input format is "baseURIPath, URINode, srcFile, (optional)packtype"
 	#
-	# 1) Open input and output packages
+	# 1) Open the input package
 	# 2) Skip comment lines
 	# 3) The first non-comment line of the input package contains default
 	#    values so parse and store them.  This info can be used to build
@@ -390,9 +399,10 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 	#    for and audio OGG file compressed at quality 3 at a sample rate of
 	#    16000.  Parse that into its constituent parts.
 	# 6) Get the base URL from the line and use the default if not present
-	# 7) Get the source file name and pack or copy the source to the output.
-	#    Add a line describing the resource to the "resources" list.
-	# 8) Sort the resources list by URI (case-insenstive) and write out
+	# 7) Pack the resource file
+	# 8) Record the URI & location to later report any duplicates
+	# 9) Add a line describing the resource to the "resources" list.
+	# 10) Sort the resources list by URI (case-insenstive) and write out
 	#    the output package file (see the following URL for an explanation
 	#    of this sorting method: http://wiki.python.org/moin/HowTo/Sorting)
 	#
@@ -435,17 +445,17 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 		base = row[0].strip() and row[0].strip() or defaultBase		#6
 		version = len(row) >= 5 and row[5].strip() and row[5].strip() or defaultVersion
 
-		srcfile = os.path.join(data_root, row[2].strip())			#7
+		srcfile = os.path.join(data_root, row[2].strip())
 		srcsize = os.path.getsize(srcfile)
-		outfile = PackFile(srcfile, pack_root, type, compression, rate)
+		outfile = PackFile(srcfile, pack_root, type, compression, rate)	#7
 		outsize = outfile.getsize()
 		uri = base + row[1].strip()
-		AddURILocation(uri, pkg, line)
+		AddURILocation(uri, pkg, line)								#8
 		out = outfile.abspath[pack_root_len:]
-		resources += [[uri, type, out, outsize, srcsize, version]]
+		resources += [[uri, type, out, outsize, srcsize, version]]	#9
 
 	deco = [ (res[0].upper(), i, res) for i, res in enumerate(resources) ]
-	deco.sort()														#8
+	deco.sort()														#10
 	resources = [ res for _, _, res in deco ]
 	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
 	writer.writerows(resources)
@@ -460,7 +470,7 @@ def PackAllResources(penv):
 	# 2) Find all "ACME" input package definition files and process them
 	# 3) Find all standard package input files and process them
 	# 4) Sort the packages and report any duplicate package URIs
-	# 5) Report any duplicate package names
+	# 5) Report any duplicate resource URIs
 	# 6) Write them to the rsrc/EnumPkgs file
 	#
 	if penv.GetOption('clean'):										#0
@@ -505,7 +515,7 @@ def PackAllResources(penv):
 	sawError = False												#5
 	for k, v in sResourceURIMap.iteritems():
 		if len(v) > 1:
-			print 'ERROR: Duplicate URIs found on the following lines:'
+			print 'ERROR: Duplicate Resource URIs found on the following lines:'
 			for vals in v:
 				print '\t', vals[0], 'line', vals[1]
 			sawError = True
