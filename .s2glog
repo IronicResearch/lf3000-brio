@@ -6528,3 +6528,14 @@ By tparker (tparker@leapfrog.com) on 8/2/07 1:00 PM
 2,594 ms. (Cumulative: 1,228,633 ms)
 
 ----------------
+Revision 1,142 from svn://localhost/TRUNK/:
+Revision 1,143 from svn://localhost/TRUNK/:
+Revision 1,144 from svn://localhost/TRUNK/:
+
+Add comments, remove redundant "isOpen" variable in PackageDesc
+
+By tparker (tparker@leapfrog.com) on 8/2/07 2:19 PM
+1 changed, 0 added, 0 deleted.
+2,673 ms. (Cumulative: 1,231,369 ms)
+
+----------------
