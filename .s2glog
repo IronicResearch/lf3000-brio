@@ -6567,3 +6567,20 @@ By dgibbs (dgibbs@leapfrog.com) on 8/3/07 2:14 PM
 2,610 ms. (Cumulative: 1,239,578 ms)
 
 ----------------
+Revision 1,149 from svn://localhost/TRUNK/:
+Revision 1,150 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,313 ms. (Cumulative: 1,245,953 ms)
+
+----------------
+Revision 1,151 from svn://localhost/TRUNK/:
+
+For emulation, add mappings for the "r" and "l" keys to "RightShoulder" and "LeftShoulder" buttons respectively. 
+ "Delete" and "Page Down" are arcane, and don't work in all emulation environments (Mac OS X VMWare for example).
+
+By dgibbs (dgibbs@leapfrog.com) on 8/3/07 4:36 PM
+1 changed, 0 added, 0 deleted.
+2,595 ms. (Cumulative: 1,248,548 ms)
+
+----------------
