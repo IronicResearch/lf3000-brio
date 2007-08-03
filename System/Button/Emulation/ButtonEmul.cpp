@@ -62,9 +62,11 @@ namespace
 			case XK_KP_1:			return kButtonB;
 			case XK_KP_Decimal:		return kButtonB;
 			
+			case XK_l:				return kButtonLeftShoulder;
 			case XK_Delete:			return kButtonLeftShoulder;
 //			case XK_KP_Delete:		return kButtonLeftShoulder;
 			
+			case XK_r:				return kButtonRightShoulder;
 			case XK_Page_Down:		return kButtonRightShoulder;
 //			case XK_KP_Page_Down:	return kButtonRightShoulder;
 
