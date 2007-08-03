@@ -17,6 +17,7 @@
 #include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <DisplayMPI.h>
+#include <EventMPI.h>
 #include <VideoPriv.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -43,8 +44,10 @@ void* VideoTaskMain( void* arg )
 	CAudioMPI	audmgr;
 	CKernelMPI	kernel;
 	CDisplayMPI dispmgr;
+	CEventMPI	evntmgr;
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
 	tVideoTime		vtm;
+	tVideoMsgData	data;
 	U32				marktime,nexttime,lapsetime = 30;
 	
 	bRunning = true;
@@ -79,6 +82,12 @@ void* VideoTaskMain( void* arg )
 //			kernel.TaskSleep(1);
 		bRunning = false;
 	}
+
+	// Post done message to event listener
+	data.hVideo = pctx->hVideo;
+	data.isDone = true;
+	CVideoEventMessage msg(data);
+	evntmgr.PostEvent(msg, 0, pctx->pListener);
 
 	return kNull;
 }

@@ -24,6 +24,20 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kMPIName = "VideoMPI";
 
+//============================================================================
+// CVideoEventMessage
+//============================================================================
+//------------------------------------------------------------------------------
+CVideoEventMessage::CVideoEventMessage( const tVideoMsgData& data ) 
+	: IEventMessage(kVideoCompletedEvent, 0), data_(data)
+{
+}
+
+//------------------------------------------------------------------------------
+U16	CVideoEventMessage::GetSizeInBytes() const
+{
+	return sizeof(CVideoEventMessage);
+}
 
 //============================================================================
 // CVideoMPI
