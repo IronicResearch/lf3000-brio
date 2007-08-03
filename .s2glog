@@ -6548,3 +6548,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/2/07 6:42 PM
 2,738 ms. (Cumulative: 1,234,169 ms)
 
 ----------------
+Revision 1,146 from svn://localhost/TRUNK/:
+Revision 1,147 from svn://localhost/TRUNK/:
+
+Re-organized internal video routines to support seeking and looping.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/3/07 1:13 PM
+3 changed, 0 added, 0 deleted.
+2,659 ms. (Cumulative: 1,236,906 ms)
+
+----------------

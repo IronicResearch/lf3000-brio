@@ -92,6 +92,8 @@ private:
 	
 	// Implementation-specific functionality
     tVideoHndl			StartVideoInt(tRsrcHndl hRsrc);
+    Boolean				InitVideoInt(tVideoHndl hVideo);
+    void				DeInitVideoInt(tVideoHndl hVideo);
 };
 
 LF_END_BRIO_NAMESPACE()	

@@ -18,6 +18,7 @@
 #include <VideoPriv.h>
 #include <ResourceMPI.h>
 #include <AudioMPI.h>
+#include <KernelMPI.h>
 
 //#define _GNU_SOURCE
 //#define _LARGEFILE_SOURCE
@@ -124,7 +125,8 @@ Boolean	CVideoModule::IsValid() const
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tRsrcHndl hRsrcAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
-	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(malloc(sizeof(tVideoContext)));
+	CKernelMPI		kernel;
+	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
 	tVideoHndl		hVideo = StartVideoInt(hRsrc);
 
 	pVidCtx->hRsrcVideo = hRsrc;
@@ -153,7 +155,8 @@ tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	tErrType	r;
-
+	Boolean		b;
+	
 	// Sanity check
 	if (hRsrc == kInvalidRsrcHndl) 
 	{
@@ -172,6 +175,22 @@ tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 	}
 	hVideo = (tVideoHndl)(ghVideo = hRsrc); 
 
+	// Init Theora video codec for Ogg file
+	b = InitVideoInt(hVideo);
+	if (!b)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: InitVideoInt failed to init codec for %0X\n", 
+					static_cast<unsigned int>(hRsrc));
+		rsrcmgr.CloseRsrc(hRsrc);
+		return kInvalidVideoHndl;
+	}
+	
+	return hVideo;
+}	
+	
+//----------------------------------------------------------------------------
+Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
+{	
 	// Start up Ogg stream synchronization layer
 	ogg_sync_init(&oy);
 	
@@ -235,8 +254,7 @@ tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 			if ((ret<0) || (theora_decode_header(&ti,&tc,&op)))
 			{
 				dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: Error parsing Theora stream headers\n");
-				rsrcmgr.CloseRsrc(hRsrc);
-				return kInvalidVideoHndl;
+				return false;
 			}
 			theorapkts++;
 			if (theorapkts == 3)
@@ -256,8 +274,7 @@ tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 			if (ret==0)
 			{
 				dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: End of file while searching for codec headers\n");
-				rsrcmgr.CloseRsrc(hRsrc);
-				return kInvalidVideoHndl;
+				return false;
 			}
 		}
 	}
@@ -266,8 +283,7 @@ tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 	if (!theorapkts)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: Unable to find Theora stream headers\n");
-		rsrcmgr.CloseRsrc(hRsrc);
-		return kInvalidVideoHndl;
+		return false;
 	}
 
 	// Start decoder stream
@@ -281,7 +297,7 @@ tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
 	while (ogg_sync_pageout(&oy,&og) > 0)
 		queue_page(&og);
 
-	return hVideo;
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -294,24 +310,38 @@ Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
-{
-	// Kill video task, if running
-	DeInitVideoTask();
-	
-	
+void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
+{	
 	// Cleanup decoder stream resources
 	ogg_stream_clear(&to);
 	theora_clear(&td);
 	theora_comment_clear(&tc);
 	theora_info_clear(&ti);
 	ogg_sync_clear(&oy);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
+{
+	// Kill video task, if running
+	DeInitVideoTask();
+	
+	// Cleanup decoder stream resources
+	DeInitVideoInt(ghVideo);
 	
 	// Close file associated with resource
 	CResourceMPI	rsrcmgr;
 	rsrcmgr.CloseRsrc(ghVideo);
 	ghVideo = kInvalidRsrcHndl;
-			
+
+	// Free video context created for task thread, if any
+	if (gpVidCtx) 
+	{
+		CKernelMPI		kernel;
+		kernel.Free(gpVidCtx);
+		gpVidCtx = NULL;
+	}
+
 	return true;
 }
 
@@ -382,8 +412,50 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 //----------------------------------------------------------------------------
 Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 {
-	// TODO
-	return false;
+	tVideoTime	time;
+	Boolean		found = false;
+	ogg_packet  op;
+	ogg_int64_t frame;
+	int			bytes;
+	
+	// Compare selected frame time to current frame time
+	GetVideoTime(hVideo, &time);
+	if (time.frame > pCtx->frame)
+	{	
+		// If we already past seek frame, we need to rewind from start
+		CResourceMPI	rsrcmgr;
+		DeInitVideoInt(hVideo);
+		rsrcmgr.SeekRsrc(ghVideo, 0);
+		InitVideoInt(hVideo);
+	}
+	
+	// Loop until we find the selected frame or end of file
+	while (!found)
+	{
+		// Get Theora packet from Ogg input stream
+		if (ogg_stream_packetout(&to,&op) > 0)
+		{
+			// Find Theora packet at selected time frame
+			theora_decode_packetin(&td,&op);
+			frame = theora_granule_frame(&td,td.granulepos);
+			if (frame == pCtx->frame)
+			{
+				found = true;
+				break;
+			}
+		}
+		else
+		{
+			// Get more packet data from Ogg input stream
+			bytes = buffer_data(&oy);
+			if (bytes == 0)
+				break;
+			while (ogg_sync_pageout(&oy,&og) > 0)
+				queue_page(&og);
+		}
+	}
+
+	return found;
 }
 
 //----------------------------------------------------------------------------
