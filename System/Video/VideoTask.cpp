@@ -46,7 +46,7 @@ void* VideoTaskMain( void* arg )
 	CDisplayMPI dispmgr;
 	CEventMPI	evntmgr;
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
-	tVideoTime		vtm;
+	tVideoTime		vtm,vtm0 = {0, 0};
 	tVideoMsgData	data;
 	U32				marktime,nexttime,lapsetime = 30;
 	
@@ -55,10 +55,10 @@ void* VideoTaskMain( void* arg )
 
 	while (bRunning)
 	{
+		// Start audio playback and sync each video frame to audio time stamp
 		pctx->bPlaying = true;
 		pctx->hAudio = audmgr.StartAudio(pctx->hRsrcAudio, 100, 1, 0, pctx->pListener, 0, 0);
-		vtm.time = marktime = audmgr.GetAudioTime(pctx->hAudio);
-		nexttime = marktime;
+		vtm.time = marktime = nexttime = 0; //audmgr.GetAudioTime(pctx->hAudio);
 		marktime += lapsetime;
 		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, true))
 		{	
@@ -77,10 +77,12 @@ void* VideoTaskMain( void* arg )
 			}
 		}
 		audmgr.StopAudio(pctx->hAudio, false);
-		pctx->bPlaying = false;
-//		while (bRunning)
-//			kernel.TaskSleep(1);
-		bRunning = false;
+		// Reloop from 1st video frame if selected, or exit thread
+		if (pctx->bLooped)
+			pctx->bPlaying = vidmgr.SeekVideoFrame(pctx->hVideo, &vtm0);
+		else
+			pctx->bPlaying = false;
+		bRunning = pctx->bPlaying;
 	}
 
 	// Post done message to event listener
