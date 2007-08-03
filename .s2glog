@@ -6539,3 +6539,12 @@ By tparker (tparker@leapfrog.com) on 8/2/07 2:19 PM
 2,673 ms. (Cumulative: 1,231,369 ms)
 
 ----------------
+Revision 1,145 from svn://localhost/TRUNK/:
+
+Added video event message support for video playback done.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/2/07 6:42 PM
+4 changed, 0 added, 0 deleted.
+2,738 ms. (Cumulative: 1,234,169 ms)
+
+----------------

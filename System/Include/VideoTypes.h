@@ -15,6 +15,8 @@
 // System includes
 #include <SystemTypes.h>
 #include <GroupEnumeration.h>
+#include <EventMessage.h>
+#include <SystemEvents.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -22,6 +24,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Typedefs
 //==============================================================================
 
+// Video handle
 typedef tHndl 		tVideoHndl;
 
 const tVideoHndl	kInvalidVideoHndl = static_cast<tVideoHndl>(0);
@@ -49,6 +52,31 @@ struct tVideoSurf {
 struct tVideoTime {
 	S64		frame;
 	S64		time;
+};
+
+//==============================================================================	   
+// Video events and messages
+//==============================================================================
+#define VIDEO_EVENTS					\
+	(kVideoCompletedEvent)				
+
+BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupVideo), VIDEO_EVENTS)
+
+const tEventType 	kAllVideoEvents = AllEvents(kGroupVideo);
+
+//------------------------------------------------------------------------------
+struct tVideoMsgData {
+	tVideoHndl	hVideo;
+	Boolean		isDone;
+};
+
+//------------------------------------------------------------------------------
+class CVideoEventMessage : public IEventMessage {
+public:
+	CVideoEventMessage( const tVideoMsgData& data );
+	virtual U16	GetSizeInBytes() const;
+//private:
+	tVideoMsgData	data_;
 };
 
 LF_END_BRIO_NAMESPACE()

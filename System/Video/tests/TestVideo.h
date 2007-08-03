@@ -17,27 +17,28 @@ LF_USING_BRIO_NAMESPACE()
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 
 //============================================================================
-// Audio Listener
+// Video Listener
 //============================================================================
-const tEventType kMyAudioTypes[] = { kAllAudioEvents };
+const tEventType kMyVideoTypes[] = { kAllVideoEvents };
 
 //----------------------------------------------------------------------------
-class AudioListener : public IEventListener
+class VideoListener : public IEventListener
 {
 public:
-	AudioListener( )
-		: IEventListener(kMyAudioTypes, ArrayCount(kMyAudioTypes)), dbg_(kMyApp)
+	VideoListener( )
+		: IEventListener(kMyVideoTypes, ArrayCount(kMyVideoTypes)), dbg_(kMyApp)
 	{
 	}
 
 	virtual tEventStatus Notify( const IEventMessage &msgIn )
 	{
-		const CAudioEventMessage& msg = dynamic_cast<const CAudioEventMessage&>(msgIn);
-		if( msg.GetEventType() == kAudioCompletedEvent )
+		const CVideoEventMessage& msg = reinterpret_cast<const CVideoEventMessage&>(msgIn);
+		if( msg.GetEventType() == kVideoCompletedEvent )
 		{
-			const tAudioMsgDataCompleted& data = msg.audioMsgData.audioCompleted;
-			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
-					static_cast<int>(data.audioID), static_cast<int>(data.payload));
+			const tVideoMsgData& data = msg.data_;
+			dbg_.DebugOut(kDbgLvlCritical, "Video done: %s, %08X\n", 
+					data.isDone ? "true" : "false", 
+					static_cast<unsigned int>(data.hVideo));
 			return kEventStatusOKConsumed;
 		}
 		return kEventStatusOK;
@@ -217,10 +218,10 @@ public:
 
 		CKernelMPI*	kernel = new CKernelMPI();
 		CEventMPI*  evtmgr = new CEventMPI();
-		AudioListener  audioListener;
-		evtmgr->RegisterEventListener(&audioListener);
+		VideoListener  videoListener;
+//		evtmgr->RegisterEventListener(&videoListener);
 
-		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, &audioListener);
+		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, &videoListener);
 		TS_ASSERT( video != kInvalidVideoHndl );
 		
 		for (int i = 0; i < 100; i++)
