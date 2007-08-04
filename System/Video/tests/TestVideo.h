@@ -36,8 +36,10 @@ public:
 		if( msg.GetEventType() == kVideoCompletedEvent )
 		{
 			const tVideoMsgData& data = msg.data_;
-			dbg_.DebugOut(kDbgLvlCritical, "Video done: %s, %08X\n", 
+			dbg_.DebugOut(kDbgLvlCritical, "Video done: %s, msec %lld, frame %lld, hndl %08X\n", 
 					data.isDone ? "true" : "false", 
+					data.timeStamp.time,
+					data.timeStamp.frame,
 					static_cast<unsigned int>(data.hVideo));
 			return kEventStatusOKConsumed;
 		}
@@ -219,7 +221,7 @@ public:
 		CKernelMPI*	kernel = new CKernelMPI();
 		CEventMPI*  evtmgr = new CEventMPI();
 		VideoListener  videoListener;
-//		evtmgr->RegisterEventListener(&videoListener);
+		evtmgr->RegisterEventListener(&videoListener);
 
 		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, &videoListener);
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -235,11 +237,26 @@ public:
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.time >= 0 );
 		}
-//		pVideoMPI_->PauseVideo(video);
-//		sleep(1);
-//		pVideoMPI_->ResumeVideo(video);
-//		sleep(1);
+
+		pVideoMPI_->PauseVideo(video);
+		TS_ASSERT( true == pVideoMPI_->IsVideoPaused(video) );
+		kernel->TaskSleep(1000);
+		pVideoMPI_->ResumeVideo(video);
+		TS_ASSERT( false == pVideoMPI_->IsVideoPaused(video) );
+		kernel->TaskSleep(1000);
 		
+		for (int i = 0; i < 100; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+			
+			kernel->TaskSleep(30);
+
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.time > 0 );
+		}
+
 		pVideoMPI_->StopVideo(video);
 
 		pDisplayMPI_->UnRegister(disp, 0);

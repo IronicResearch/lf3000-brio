@@ -68,6 +68,7 @@ const tEventType 	kAllVideoEvents = AllEvents(kGroupVideo);
 struct tVideoMsgData {
 	tVideoHndl	hVideo;
 	Boolean		isDone;
+	tVideoTime	timeStamp;
 };
 
 //------------------------------------------------------------------------------
