@@ -2,6 +2,9 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+* Video MPI StartVideo() task posts event message to listener when done.
+* Video MPI SeekVideoFrame() and Looping functionality implemented.  
+
 ===========================================
 v0.1.14  (Build 1127 released August 1, 2007) 
 ===========================================

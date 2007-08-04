@@ -6593,3 +6593,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/3/07 5:47 PM
 2,859 ms. (Cumulative: 1,251,470 ms)
 
 ----------------
+Revision 1,153 from svn://localhost/TRUNK/:
+
+Updated video demo for combined event message handler.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/3/07 6:59 PM
+4 changed, 0 added, 0 deleted.
+2,782 ms. (Cumulative: 1,254,330 ms)
+
+----------------

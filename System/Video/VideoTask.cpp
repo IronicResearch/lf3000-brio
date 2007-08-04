@@ -88,6 +88,7 @@ void* VideoTaskMain( void* arg )
 	// Post done message to event listener
 	data.hVideo = pctx->hVideo;
 	data.isDone = true;
+	data.timeStamp = vtm;
 	CVideoEventMessage msg(data);
 	evntmgr.PostEvent(msg, 0, pctx->pListener);
 
