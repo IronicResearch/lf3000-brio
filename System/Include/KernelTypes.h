@@ -13,11 +13,10 @@
 //		System Kernel's basic types.
 //
 //==============================================================================
-#include <mqueue.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
-#include <time.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================	   
@@ -345,8 +344,20 @@ struct tTimerProperties {
 
 	struct itimerspec timeout;  // Timer interval
 };
-typedef struct itimerspec saveTimerSettings; 
+typedef struct current_time
+{
+        int sec;
+        int min;
+        int hour;
+        int mday;
+        int mon;
+        int year;
+        int wday;
+        int yday;
+        int isdst;
+} Current_Time;
 
+typedef struct itimerspec saveTimerSettings; 
 
 class CObject {
 public:
@@ -437,6 +448,45 @@ typedef void (*pfnTimerCallback)(tTimerHndl arg); // FIXME/BSK
 //	pfnTimerCallback pfn;
 //	tPtr arg;
 //} callbackData;
+
+#define B_O_ACCMODE          0003
+#define B_O_RDONLY             00
+#define B_O_WRONLY             01
+#define B_O_RDWR               02
+#define B_O_CREAT            0100 /* not fcntl */
+#define B_O_EXCL             0200 /* not fcntl */
+#define B_O_NOCTTY           0400 /* not fcntl */
+#define B_O_TRUNC           01000 /* not fcntl */
+#define B_O_APPEND          02000
+#define B_O_NONBLOCK        04000
+#define B_O_NDELAY        	B_O_NONBLOCK
+#define B_O_SYNC           010000
+#define B_O_FSYNC          B_O_SYNC
+#define B_O_ASYNC          020000
+
+#define B_S_IFMT 0170000 	// bitmask for the file type bitfields
+#define B_S_IFSOCK 0140000 	// socket
+#define B_S_IFLNK 0120000 	// symbolic link
+#define B_S_IFREG 0100000 	// regular file
+#define B_S_IFBLK 0060000 	// block device
+#define B_S_IFDIR 0040000 	// directory
+#define B_S_IFCHR 0020000 	// character device
+#define B_S_IFIFO 0010000 	// fifo
+#define B_S_ISUID 0004000 	// set UID bit
+#define B_S_ISGID 0002000 	// set GID bit (see below)
+#define B_S_ISVTX 0001000 	// sticky bit (see below)
+#define B_S_IRWXU 00700 	// mask for file owner permissions
+#define B_S_IRUSR 00400 	// owner has read permission
+#define B_S_IWUSR 00200 	// owner has write permission
+#define B_S_IXUSR 00100 	// owner has execute permission
+#define B_S_IRWXG 00070 	// mask for group permissions
+#define B_S_IRGRP 00040 	// group has read permission
+#define B_S_IWGRP 00020 	// group has write permission
+#define B_S_IXGRP 00010 	// group has execute permission
+#define B_S_IRWXO 00007 	// mask for permissions for others (not in group)
+#define B_S_IROTH 00004 	// others have read permission
+#define B_S_IWOTH 00002 	// others have write permisson
+#define B_S_IXOTH 00001 	// others have execute permission
 
 
 LF_END_BRIO_NAMESPACE()	

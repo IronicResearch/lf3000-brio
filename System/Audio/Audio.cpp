@@ -295,7 +295,7 @@ CAudioModule::CAudioModule( )
 	    0,							// msgProperties.blockingPolicy;  
 	    "/audioTaskIncomingQ",		// msgProperties.nameQueue
 	    0,							// msgProperties.mode 
-	    O_WRONLY,					// msgProperties.oflag  
+	    B_O_WRONLY,					// msgProperties.oflag  
 	    0,							// msgProperties.priority
 	    0,							// msgProperties.mq_flags
 	    kAUDIO_MAX_NUM_MSGS,		// msgProperties.mq_maxmsg
@@ -314,7 +314,7 @@ CAudioModule::CAudioModule( )
 
 	// Now create a msg queue that allows the Audio Task to send messages back to us.
 	msgQueueProperties.nameQueue = "/audioTaskOutgoingQ";
-	msgQueueProperties.oflag = O_RDONLY;
+	msgQueueProperties.oflag = B_O_RDONLY;
 
 	err = pKernelMPI_->OpenMessageQueue( hRecvMsgQueue_,  msgQueueProperties, NULL );
 

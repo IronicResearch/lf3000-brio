@@ -125,12 +125,22 @@ public:
 										U32 timeoutMs = kMaxTimeoutMs );
 				
 	// Time & Timers
+#if 1 // FIXME/BSK
 	VTABLE_EXPORT U32	GetElapsedTimeAsMSecs(); // elapsed time since System startup 
 												// in milliseconds	
 
 	VTABLE_EXPORT U64	GetElapsedTimeAsUSecs();	// elapsed time since System startup 
 												// in microseconds	
-    
+#endif   
+
+	VTABLE_EXPORT tErrType 	GetHRTAsUsec(U32 &uSec) const; 
+
+	// Elapsed time since System startup in seconds
+	VTABLE_EXPORT tErrType	GetElapsedAsSec(U32 &sec) const;	 
+
+	// Elapsed time since System startup as structure
+	VTABLE_EXPORT tErrType	GetElapsedTimeAsStructure(Current_Time &curTime) const;
+	
 	VTABLE_EXPORT tTimerHndl CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
 								const char* pDebugName = NULL );
 

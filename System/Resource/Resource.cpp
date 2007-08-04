@@ -75,6 +75,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <algorithm>
 #include <map>
@@ -1393,11 +1395,11 @@ tErrType CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 		
 	int flags = 0;														//*3
 	if (!(openOptions & kOpenRsrcOptionWrite))
-		flags |= O_RDONLY;
+		flags |= B_O_RDONLY;
 	else if (openOptions & kOpenRsrcOptionRead)
-		flags |= O_RDWR | O_APPEND;
+		flags |= B_O_RDWR | B_O_APPEND;
 	else
-		flags |= O_WRONLY | O_TRUNC | O_CREAT;
+		flags |= B_O_WRONLY | B_O_TRUNC | B_O_CREAT;
 		
 	// FIXME/tp: assumes no '..' in path, validate it	
 	CPath fullPath = prd->pPkg->path.substr(0, prd->pPkg->path.rfind('/')+1);//*4
@@ -1735,7 +1737,7 @@ tRsrcHndl CResourceModule::AddRsrcToPackageFromFile(U32 id, tPackageHndl hPkg,
 		return kInvalidRsrcHndl;		
 	}
 
-	U32 flags = FileExists(fullPath) ? O_RDWR : (O_RDWR | O_CREAT);		//*3
+	U32 flags = FileExists(fullPath) ? B_O_RDWR : (B_O_RDWR | B_O_CREAT);		//*3
 	int fd = open(fullPath.c_str(), flags);
 	if (fd == -1)
 	{
