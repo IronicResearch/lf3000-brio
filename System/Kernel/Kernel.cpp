@@ -24,9 +24,9 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <signal.h>
-#include <list>
-#include <algorithm>
-#include <functional>
+#include <linux/rtc.h>
+#include <sys/ioctl.h>
+#include <mqueue.h>
 
 #include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -34,10 +34,10 @@
 #include <CoreMPI.h>
 #include <KernelMPI.h>
 #include <KernelPriv.h>
+
+#include <list>
 #include <algorithm>
 #include <functional>
-
-//#include <FreeMemory.h>
 
 using namespace std;
 extern "C"
@@ -68,6 +68,16 @@ namespace
 	int pthreadTimer = 0; 
 	pthread_mutex_t mutexValue_1 = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_t mutexValue_2 = PTHREAD_MUTEX_INITIALIZER;
+	
+	pthread_mutex_t mutexValue_T1 = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutexValue_T2 = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutexValue_T3 = PTHREAD_MUTEX_INITIALIZER;
+	
+#ifdef EMULATION
+static const char default_rtc[] = "/dev/rtc";
+#else
+static const char default_rtc[] = "/dev/rtc0";
+#endif
 
 class ListData
 {
@@ -668,6 +678,7 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 //==============================================================================
 // Time & Timers
 //==============================================================================
+#if 1 // FIXME/BSK
 U32	CKernelModule::GetElapsedTimeAsMSecs()
 {
     timeval time;
@@ -685,14 +696,116 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 
 	return ( ((U64 )time.tv_sec) * 1000000 + time.tv_usec);
 }
+#endif
+
+	tErrType 	CKernelModule::GetHRTAsUsec(U32 &uSec) const
+	{
+#if defined(EMULATION)  // FIXME/BSK
+		printf("*** Sorry! This test fails in the emulation mode! \n");
+		return 1;
+#endif			
+		tErrType err = 0; 
+		errno = 0;
+		const char *rtc = default_rtc;
+		struct rtc_pll_info rtc_timer;
+		int fd; 
+
+		
+		errno = 0;
+		err = pthread_mutex_lock( &mutexValue_T1);
+		ASSERT_POSIX_CALL( err );
+		
+		fd = open(rtc, O_RDONLY);
+		ASSERT_POSIX_CALL( errno );
+
+		ioctl(fd, RTC_PLL_GET, &rtc_timer);
+        err = errno;
+		ASSERT_POSIX_CALL( errno );
+		
+		close(fd);
+		err = pthread_mutex_unlock( &mutexValue_T1);
+		ASSERT_POSIX_CALL( err );
+
+        unsigned long long freq, value;  
+        
+        freq = rtc_timer.pll_clock;
+    	value = rtc_timer.pll_value;
+    	uSec = (1000000 * value) / freq;
+        		
+		return err; // FIXME/BSK	
+	}	 
+
+	// Elapsed time since System startup in seconds
+	tErrType		CKernelModule::GetElapsedAsSec(U32 &sec) const
+	{
+#if defined(EMULATION)  // FIXME/BSK
+		printf("*** Sorry! This test fails in the emulation mode! \n");
+		return 1;
+#endif			
+
+		tErrType err = 0;  
+		int fd;
+		const char *rtc = default_rtc;
+		struct rtc_pll_info rtc_timer;
+
+		
+		err = pthread_mutex_lock( &mutexValue_T2);
+		ASSERT_POSIX_CALL( err );
+
+		/* Read the RTC time/date */
+		errno = 0;
+		fd = open(rtc, O_RDONLY);
+		ASSERT_POSIX_CALL( errno );
+
+		ioctl(fd, RTC_PLL_GET, &rtc_timer);
+		ASSERT_POSIX_CALL( errno );
+
+		sec = (U32 )rtc_timer.pll_min;
+		
+		close(fd);
+		err = pthread_mutex_unlock( &mutexValue_T2);
+		ASSERT_POSIX_CALL( err );
+
+		return err; // FIXME/BSK	
+	}		 
+
+	// Elapsed time since System startup as structure
+	tErrType		CKernelModule::GetElapsedTimeAsStructure(Current_Time &curTime) const
+	{
+#if defined(EMULATION)  // FIXME/BSK
+		printf("*** Sorry! This test fails in the emulation mode! \n");
+		return 1;
+#endif			
+
+		tErrType err = 0;  
+		int fd;
+		const char *rtc = default_rtc;
+
+
+		err = pthread_mutex_lock( &mutexValue_T3);
+		ASSERT_POSIX_CALL( err );
+		/* Read the RTC time/date */
+		
+		errno = 0;
+		fd = open(rtc, O_RDONLY);
+		ASSERT_POSIX_CALL( errno );
+
+		ioctl(fd, RTC_RD_TIME, &curTime);
+		ASSERT_POSIX_CALL( errno );
+
+		close(fd);
+		err = pthread_mutex_unlock( &mutexValue_T3);
+		ASSERT_POSIX_CALL( err );
+
+		return err; // FIXME/BSK	
+	}	
+
 //------------------------------------------------------------------------------
 tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback, 
 								const tTimerProperties& /*props*/,
 								const char* /*pDebugName*/ )
 {
-//	tErrType err = kNoErr;
-//    sigset_t signal_set;
-//	tErrType err = kNoErr;
+	tErrType err = kNoErr;
     int signum = SIGRTMAX;     
 
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
@@ -727,9 +840,11 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-	pthread_mutex_lock( &mutexValue_1);
+	err = pthread_mutex_lock( &mutexValue_1);
+	ASSERT_POSIX_CALL( err );
 	pthreadTimer++;
-	pthread_mutex_unlock( &mutexValue_1);
+	err = pthread_mutex_unlock( &mutexValue_1);
+	ASSERT_POSIX_CALL( err );
 
     // Initialize the sigaction structure for handler 
 	if( pthreadTimer >1 )
@@ -766,7 +881,9 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	
 	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl);
 
-	pthread_mutex_lock( &mutexValue_1);
+	err = pthread_mutex_lock( &mutexValue_1);
+	ASSERT_POSIX_CALL( err );
+
 	listMemory.push_back( ptrList );
 	pthread_mutex_unlock( &mutexValue_1);
 #if 0 // FIXME/BSK

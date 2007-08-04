@@ -6584,3 +6584,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/3/07 4:36 PM
 2,595 ms. (Cumulative: 1,248,548 ms)
 
 ----------------
+Revision 1,152 from svn://localhost/TRUNK/:
+
+1. Removed the mqueue.h file from the KernelTypes.h file that is affected on the several files. 2. Added three Kernel MPI calls for RTC.
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/3/07 5:47 PM
+11 changed, 0 added, 0 deleted.
+2,859 ms. (Cumulative: 1,251,470 ms)
+
+----------------

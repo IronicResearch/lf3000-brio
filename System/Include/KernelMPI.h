@@ -98,6 +98,14 @@ public:
 	// Elapsed time since System startup in microsecond
 	U64		GetElapsedTimeAsUSecs() const;	 
 
+	tErrType 	GetHRTAsUsec(U32 &uSec) const; 
+
+	// Elapsed time since System startup in seconds
+	tErrType	GetElapsedAsSec(U32 &sec) const;	 
+
+	// Elapsed time since System startup as structure
+	tErrType	GetElapsedTimeAsStructure(Current_Time &curTime) const;
+
 // fixme/BSK
 	tTimerHndl 	CreateTimer( pfnTimerCallback callback, const tTimerProperties& props,
 								const char* pDebugName = NULL );

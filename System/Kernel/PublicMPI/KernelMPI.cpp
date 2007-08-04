@@ -387,6 +387,8 @@ tErrType CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg
 // Time & Timers
 //==============================================================================
 // Elapsed time since System startup in milliscond
+
+#if 1 // FIXME/BSK
 U32 CKernelMPI::GetElapsedTimeAsMSecs() const
 {
   	if(!pModule_)
@@ -403,6 +405,35 @@ U64 CKernelMPI::GetElapsedTimeAsUSecs() const
 		
 	return pModule_->GetElapsedTimeAsUSecs();  
 }
+#endif
+
+	tErrType 	CKernelMPI::GetHRTAsUsec(U32 &uSec) const
+	{
+	  	if(!pModule_)
+			return kMPINotConnectedErr;
+		
+		return pModule_->GetHRTAsUsec(uSec);  
+	
+	}	 
+
+	// Elapsed time since System startup in seconds
+	tErrType	CKernelMPI::GetElapsedAsSec(U32 &sec) const
+	{
+  		if(!pModule_)
+			return kMPINotConnectedErr;
+		
+		return pModule_->GetElapsedAsSec(sec);  
+	
+	}		 
+
+	// Elapsed time since System startup as structure
+	tErrType	CKernelMPI::GetElapsedTimeAsStructure(Current_Time &curTime) const
+	{
+  		if(!pModule_)
+			return kMPINotConnectedErr;
+		
+		return pModule_->GetElapsedTimeAsStructure( curTime );  
+	}	
 
 //------------------------------------------------------------------------------
 //tErrType CKernelMPI::CreateTimer(tTimerHndl& hndl, 

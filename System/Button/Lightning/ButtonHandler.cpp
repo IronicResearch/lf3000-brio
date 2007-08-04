@@ -20,6 +20,8 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <linux/lf1000/buttons.h>
 
@@ -85,7 +87,7 @@ void CButtonModule::InitModule()
 	data.buttonTransition = 0;
 
 	// Need valid file descriptor open before starting task thread 
-	button_fd = open( "/dev/buttons", O_RDWR);
+	button_fd = open( "/dev/buttons", B_O_RDWR);
 	dbg_.Assert(button_fd != -1, "CButtonModule::InitModule: cannot open /dev/buttons");
 
 	if( kernel.IsValid() )

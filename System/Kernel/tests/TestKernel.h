@@ -41,6 +41,7 @@ namespace
 		sleep(1);
 		return (void *)NULL;
 	}	
+	void ptintf_test_info( char *pName );
 //---------------------------------------------------------
 // Timer testing fuctions
 //----------------------------------------------------------
@@ -130,6 +131,8 @@ public:
 
  	void testWasCreated( )
 	{
+		ptintf_test_info("testWasCreated");
+
 		TS_ASSERT( KernelMPI != NULL );
 		TS_ASSERT( KernelMPI->IsValid() == true );
 	}
@@ -137,6 +140,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		ptintf_test_info("testCoreMPI");
+
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -186,6 +191,8 @@ public:
 	//------------------------------------------------------------------------------
     void testIsDirectory()
     {
+		ptintf_test_info("testIsDirectory");
+
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(""), false);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/"), true);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/usr"), true);
@@ -198,6 +205,8 @@ public:
 	//------------------------------------------------------------------------------
     void testFilesInDirectory()
     {
+		ptintf_test_info("testFilesInDirectory");
+
     	std::vector<CPath>	files;
     	size_t kZero = 0;
     	files = KernelMPI->GetFilesInDirectory("");
@@ -226,6 +235,8 @@ public:
     
     void testGetElapsedTime()
 	{
+		ptintf_test_info("testGetElapsedTime");
+
 //		tErrType err;
 //		U32 pUs;
 //		const U64 threshold = 20000; 
@@ -244,6 +255,8 @@ public:
 	
 	void testCreateTask()
 	{
+		ptintf_test_info("testCreateTask");
+
 //		const CURI *pTaskURI = NULL;
 		tTaskHndl pHndl_1;
 		tTaskHndl pHndl_2;
@@ -252,6 +265,7 @@ public:
         int testNumber = 0;
  	    tTaskProperties pProperties;
         tPtr status = NULL;
+
 /*
  struct tTaskProperties {
 	U32 				priority;	            // 1
@@ -351,6 +365,8 @@ public:
 
 	void testTaskSleep()
 	{
+		ptintf_test_info("testTaskSleep");
+
 		U32 msec = 50;
 		U32 threshold = 10;
 		struct timespec t1, t2;
@@ -368,6 +384,8 @@ public:
 	
 	void testMemory()
 	{
+		ptintf_test_info("testMemory");
+
         U32 size = 0x5000;
         tPtr pPtr = NULL;
         
@@ -382,20 +400,22 @@ public:
 		
 	void TestCreateMessageQueue_1() 
 	{
+		ptintf_test_info("TestCreateMessageQueue_1");
+
 		tErrType err;
 		tMessageQueueHndl hndl;
 		
 		const tMessageQueuePropertiesPosix msgProperties = 
 		{
-    		0,                          // msgProperties.blockingPolicy;  
-    		"/test_q_1",                  // msgProperties.nameQueue
-    		S_IRWXU,                    // msgProperties.mode 
-    		O_RDWR|O_CREAT|O_TRUNC,       // msgProperties.oflag  
-    		0,                          // msgProperties.priority
-    		0,                          // msgProperties.mq_flags
-    		10,                          // msgProperties.mq_maxmsg
-    		sizeof(CEventMessage),      // msgProperties.mq_msgsize
-    		0                           // msgProperties.mq_curmsgs
+    		0,                          	// msgProperties.blockingPolicy;  
+    		"/test_q_1",                  	// msgProperties.nameQueue
+    		S_IRWXU,                    	// msgProperties.mode 
+    		B_O_RDWR|B_O_CREAT|B_O_TRUNC,   // msgProperties.oflag  
+    		0,                          	// msgProperties.priority
+    		0,                          	// msgProperties.mq_flags
+    		10,                          	// msgProperties.mq_maxmsg
+    		sizeof(CEventMessage),      	// msgProperties.mq_msgsize
+    		0                           	// msgProperties.mq_curmsgs
 		};
 
 //        TS_WARN("TODO: Test Create/Destroy Message Queue_1!");
@@ -414,20 +434,22 @@ public:
 			
 	void TestCreateMessageQueue_2() 
 	{
+		ptintf_test_info("TestCreateMessageQueue_2");
+
 		tErrType err;
 		tMessageQueueHndl hndl;
 		
 		const tMessageQueuePropertiesPosix msgProperties = 
 		{
-    		0,                          // msgProperties.blockingPolicy;  
-    		"/test_q_2",                // msgProperties.nameQueue
-    		S_IRWXU,                    // msgProperties.mode 
-    		O_RDWR|O_CREAT|O_TRUNC,     // msgProperties.oflag  
-    		0,                          // msgProperties.priority
-    		0,                          // msgProperties.mq_flags
-    		10,                         // msgProperties.mq_maxmsg
-    		sizeof(CEventMessage)/2,    // msgProperties.mq_msgsize
-    		0                           // msgProperties.mq_curmsgs
+    		0,                          	// msgProperties.blockingPolicy;  
+    		"/test_q_2",                	// msgProperties.nameQueue
+    		S_IRWXU,                    	// msgProperties.mode 
+    		B_O_RDWR|B_O_CREAT|B_O_TRUNC,	// msgProperties.oflag  
+    		0,                          	// msgProperties.priority
+    		0,                          	// msgProperties.mq_flags
+    		10,                         	// msgProperties.mq_maxmsg
+    		sizeof(CEventMessage)/2,    	// msgProperties.mq_msgsize
+    		0                           	// msgProperties.mq_curmsgs
 		};
 
 //        TS_WARN("TODO: Test Create/Destroy Message Queue_2!");
@@ -446,6 +468,8 @@ public:
 
 	void testCreateTimer()
 	{
+		ptintf_test_info("testCreateTimer");
+
 //TS_WARN("TODO: Test Create/Destroy Timer!");
 		
 // NOTE:
@@ -477,9 +501,12 @@ public:
 
 	void testStartStopTimer()
 	{
+		ptintf_test_info("testStartStopTimer");
+
 		tTimerProperties props = {TIMER_ABSTIME_SET,
 									{{0, 0}, {0, 0}},};
 		tErrType err;
+
 		props.type = TIMER_RELATIVE_SET; 	
 		// Timer period
     	props.timeout.it_interval.tv_sec = 0;
@@ -508,10 +535,13 @@ public:
 	}		
 	void testResetTimerRelative()
 	{
+		ptintf_test_info("testResetTimerRelative");
+
 //        TS_WARN("TODO: Test Reset Timer Relative!");
 		tTimerProperties props = {TIMER_ABSTIME_SET,
 									{{0, 0}, {0, 0}},};
 		tErrType err;
+
 		props.type = TIMER_RELATIVE_SET; 	
 		// Timer period
     	props.timeout.it_interval.tv_sec = 0;
@@ -531,6 +561,8 @@ public:
 
 	void testPauseResumeTimer()
 	{
+		ptintf_test_info("testPauseResumeTimer");
+
 		tErrType err;
 
 		saveTimerSettings save_1 = {{0, 0}, {0, 0}};
@@ -559,6 +591,8 @@ public:
 		
    void testGetTimerElapsed_OR_Remaining_Time()
     {
+		ptintf_test_info("testGetTimerElapsed_OR_Remaining_Time");
+
 		U32 elapsed;
 		U32 remaining;
 		tErrType err;
@@ -581,6 +615,8 @@ public:
 
     void testDestroyTimer()
     {
+		ptintf_test_info("testDestroyTimer");
+
 //        TS_WARN("TODO: Test Destroy Timer!");
 		tErrType err;
 		struct timespec sleeptime = { 1, 0 };
@@ -616,6 +652,8 @@ public:
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
     void testInit_DeInit_Mutex()
     {
+		ptintf_test_info("testInit_DeInit_Mutex");
+
 		tErrType err;
 		//Note: typedef pthread_mutexattr_t tMutexAttr
 		//Note: typedef pthread_mutex_t     tMutex;
@@ -653,6 +691,8 @@ public:
     // Destroys a mutex. It was tested in the 'testInit_DeInit_Mutex'
     void xtestDeInitMutex()
     {
+		ptintf_test_info("xtestDeInitMutex");
+
 		tErrType err;
 		tMutex mutex;
         
@@ -664,6 +704,8 @@ public:
     // This function will not be used on the borad 
     void xtestGetMutexPriorityCeiling()
 	{
+		ptintf_test_info("xtestGetMutexPriorityCeiling");
+
 		//tErrType err;
         //err = KernelMPI->GetMutexPriorityCeiling( const tMutex& mutex );
     }
@@ -672,6 +714,8 @@ public:
     // This function will not be used on the borad 
     void xtestSetMutexPriorityCeiling()
     {
+		ptintf_test_info("xtestSetMutexPriorityCeiling");
+
 		//tErrType err;
  		//err = KernelMPI->SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
     }
@@ -679,6 +723,8 @@ public:
      // Locks an unlocked mutex
     void testLockMutex()
     {
+		ptintf_test_info("testLockMutex");
+
 		tErrType err;
 
 		tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -696,6 +742,8 @@ public:
     	// Tries to lock a not xtested
 	void testTryLockMutex_1()
     {
+		ptintf_test_info("testTryLockMutex_1");
+
 		tErrType err;
 		tMutex mutex;
 		const tMutexAttr attr = {0};
@@ -714,6 +762,7 @@ public:
     // Unlocks a mutex. It was tested
     void xtestUnlockMutex()
     {
+		ptintf_test_info("xtestUnlockMutex");
      	// err = KernelMPI->UnlockMutex( tMutex& mutex );
     }
 
@@ -729,6 +778,8 @@ public:
     // specified condition variable attribute object
         void testInitCond()
         {
+			ptintf_test_info("testInitCond");
+
 			tErrType err;
         	tCond cond;
         	const tCondAttr attr = {0};
@@ -742,12 +793,14 @@ public:
     // Destroys a condition variable attribute object. Tested above 
     void xtestDestroyCond()
     {
+		ptintf_test_info("xtestDestroyCond");
     	// err = KernelMPI->DestroyCond( tCond& cond );
     }
 
 // Initializes a condition variable attribute object    
     void testInitCondAttr()
     {
+		ptintf_test_info("testInitCondAttr");
 		tErrType err;
     	tCondAttr attr;
 
@@ -762,12 +815,14 @@ public:
 // Destroys a condition variable Tested
     void xtestDestroyCondAttr()
     {
+		ptintf_test_info("xtestDestroyCondAttr");
     	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
     }
 
 // Unblocks all threads that are waiting on a condition variable
         void testBroadcastCond()
         {
+			ptintf_test_info("testBroadcastCond");
 			tErrType err;
         	static tCond cond = PTHREAD_COND_INITIALIZER;        	
         	
@@ -782,6 +837,7 @@ public:
     // Unblocks at least one thread waiting on a condition variable
         void testSignalCond()
         {
+			ptintf_test_info("testSignalCond");
 			tErrType err;
         	tCond cond = PTHREAD_COND_INITIALIZER;        	
         	
@@ -798,6 +854,7 @@ public:
 // FIXME: pAbstime var
     void testTimedWaitOnCond()
     {
+		ptintf_test_info("testTimedWaitOnCond");
 		tErrType err;
     	static tCond cond = PTHREAD_COND_INITIALIZER;  
 		static tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -832,6 +889,7 @@ public:
 // Automatically unlocks the specified mutex, and places the calling thread into a wait state
     void testWaitOnCond()
     {
+		ptintf_test_info("testWaitOnCond");
 		tErrType err;
 
 //  			int                   rc=0;
@@ -868,6 +926,7 @@ public:
     // Obtains the process-shared setting of a condition variable attribute object
     void xtestGetCondAttrPShared()
     {
+		ptintf_test_info("xtestGetCondAttrPShared");
     	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
     }
 
@@ -876,8 +935,143 @@ public:
 // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
     void xtestSetCondAttrPShared()
     {
+		ptintf_test_info("xtestSetCondAttrPShared");
     	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
     }
+
+	void testGetHRTAsUsec()
+	{
+		ptintf_test_info("testGetHRTAsUsec");
+
+		U32 uSec;
+		U32 uSecPrev;
+		tErrType err;
+		struct timespec sleeptime;
+
+		sleeptime.tv_sec = 0;
+		sleeptime.tv_nsec = 10000;
+		unsigned dt = 10200;
+		
+		err = KernelMPI->GetHRTAsUsec(uSec);
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		uSecPrev = uSec;
+
+		for(int i = 0; i < 10; i++ )
+		{
+			nanosleep( &sleeptime, NULL ); 
+			err = KernelMPI->GetHRTAsUsec(uSec);
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+			if(uSec <= uSecPrev)
+			{
+ 				uSecPrev = uSec;
+				continue;
+			}		
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+            TS_ASSERT_LESS_THAN_EQUALS(	(uSec - uSecPrev), dt);        	
+			uSecPrev = uSec;
+		}	
+	}
+	
+	void testGetElapsedAsSec()
+	{
+		ptintf_test_info("testGetElapsedAsSec");
+
+		U32 sec;
+		U32 secPrev;
+		tErrType err;
+		struct timespec sleeptime;
+
+		sleeptime.tv_sec = 1;
+		sleeptime.tv_nsec = 0;
+		float dt = 1.1;
+		
+		err = KernelMPI->GetElapsedAsSec(sec);
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		secPrev = sec;
+
+		for(int i = 0; i < 10; i++ )
+		{
+			nanosleep( &sleeptime, NULL ); 
+			err = KernelMPI->GetElapsedAsSec(sec);
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+//		    printf("testGetElapsedAsSec=%u\n", (unsigned int)sec);
+
+			if(sec <= secPrev)
+			{
+ 				secPrev = sec;
+				continue;
+			}		
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+            TS_ASSERT_LESS_THAN_EQUALS(	(sec - secPrev), dt);        	
+			secPrev = sec;
+		}	
+
+	}
+
+	void testGetElapsedTimeAsStructure()
+	{
+		ptintf_test_info("testGetElapsedTimeAsStructure");
+
+		tErrType err;
+		Current_Time curTime;
+		Current_Time curTimePrev;
+		
+		err = KernelMPI->GetElapsedTimeAsStructure(curTime);
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		curTimePrev = curTime;
+
+		struct timespec sleeptime;
+		sleeptime.tv_sec = 1;
+		sleeptime.tv_nsec = 0;
+
+		for(int i = 0; i < 10; i++ )
+		{
+			nanosleep( &sleeptime, NULL );
+			err = KernelMPI->GetElapsedTimeAsStructure(curTime);
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+//		    printf("testGetElapsedAsSec=%u\n", (unsigned int)sec);
+
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		
+			if( curTime.sec - curTimePrev.sec < 0 )
+        	{
+				curTimePrev = curTime;
+				continue;		        	
+        	}
+        
+        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.sec -  curTimePrev.sec),1);
+        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.min -  curTimePrev.min),59);
+        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.hour - curTimePrev.hour),23);
+        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.mday - curTimePrev.mday),30);
+        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.mon -  curTimePrev.mon),11);
+        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.year - curTimePrev.year),1);
+
+			curTimePrev = curTime;
+
+#if 0 // FIXME/BSK
+			printf("\n\ni=%d.  Current RTC date/time is %d-%d-%d, %02d:%02d:%02d.\n",
+				i, curTime.mday, curTime.mon, curTime.year + 1900,
+					curTime.hour, curTime.min, curTime.sec);
+			fflush(stdout);		
+#endif        
+		}	
+
+	}
+	
+		
+// =========================================================
+	void ptintf_test_info( char *pName )
+	{
+		static int testNum = 1;
+		if( testNum == 1 )
+		{
+			printf("\n");
+			printf(".");
+		}
+		printf("Number=%3d Test Name = %s\n", testNum++, pName );
+		fflush(stdout);
+	}	
 };
 
 

@@ -114,8 +114,8 @@ private:
 		{
 		    0,                          // msgProperties.blockingPolicy;  
 		    g_msgQueueName,    			// msgProperties.nameQueue
-		    S_IRUSR,                    // msgProperties.mode 
-		    O_RDONLY,    				// msgProperties.oflag  
+		    B_S_IRUSR,                    // msgProperties.mode 
+		    B_O_RDONLY,    				// msgProperties.oflag  
 		    0,                          // msgProperties.priority
 		    0,                          // msgProperties.mq_flags
 		    8,                          // msgProperties.mq_maxmsg
@@ -153,15 +153,15 @@ public:
 
 		tMessageQueuePropertiesPosix props = 							//*1
 		{
-		    0,                          // msgProperties.blockingPolicy;  
-		    g_msgQueueName,    			// msgProperties.nameQueue
-		    S_IRWXU,                    // msgProperties.mode 
-		    O_WRONLY|O_CREAT|O_TRUNC,   // msgProperties.oflag  
-		    0,                          // msgProperties.priority
-		    0,                          // msgProperties.mq_flags
-		    8,                          // msgProperties.mq_maxmsg
-		    kEventDispatchMessageSize,  		// msgProperties.mq_msgsize
-		    0                           // msgProperties.mq_curmsgs
+		    0,                          	// msgProperties.blockingPolicy;  
+		    g_msgQueueName,    				// msgProperties.nameQueue
+		    B_S_IRWXU,                    	// msgProperties.mode 
+		    B_O_WRONLY|B_O_CREAT|B_O_TRUNC, // msgProperties.oflag  
+		    0,                          	// msgProperties.priority
+		    0,                          	// msgProperties.mq_flags
+		    8,                          	// msgProperties.mq_maxmsg
+		    kEventDispatchMessageSize,  	// msgProperties.mq_msgsize
+		    0                           	// msgProperties.mq_curmsgs
 		};
 		
 		tErrType err = kernel_.OpenMessageQueue(hMsgQueueFG_, props, NULL);
