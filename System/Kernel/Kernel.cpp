@@ -707,7 +707,15 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		tErrType err = 0; 
 		errno = 0;
 		const char *rtc = default_rtc;
-		struct rtc_pll_info rtc_timer;
+		struct rtc_pll_info rtc_timer;  // struct rtc_pll_info{
+										//	int pll_ctrl;     placeholder for fancier control 
+										//	int pll_value;    get/set correction value 
+										//	int pll_max;      max +ve (faster) adjustment value 
+										//	int pll_min;      max -ve (slower) adjustment value 
+										//	int pll_posmult;  factor for +ve correction 
+										//	int pll_negmult;  factor for -ve correction 
+										//	long pll_clock;   base PLL frequency 
+										//};
 		int fd; 
 
 		
@@ -726,12 +734,16 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		err = pthread_mutex_unlock( &mutexValue_T1);
 		ASSERT_POSIX_CALL( err );
 
-        unsigned long long freq, value;  
+        unsigned long long freq = rtc_timer.pll_clock;
+        unsigned long long value = rtc_timer.pll_value;  
         
-        freq = rtc_timer.pll_clock;
-    	value = rtc_timer.pll_value;
     	uSec = (1000000 * value) / freq;
-        		
+
+#if 0 // FIXME/BSK
+		printf("rtc_timer.pll_value=%u rtc_timer.pll_clock=%d uSec=%u\n",
+		       (unsigned )rtc_timer.pll_value, (int )rtc_timer.pll_clock, (unsigned)uSec);
+		fflush(stdout);       
+#endif        		
 		return err; // FIXME/BSK	
 	}	 
 

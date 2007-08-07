@@ -6677,3 +6677,18 @@ By tparker (tparker@leapfrog.com) on 8/7/07 1:25 PM
 2,610 ms. (Cumulative: 1,270,800 ms)
 
 ----------------
+Revision 1,181 from svn://localhost/TRUNK/:
+Revision 1,182 from svn://localhost/TRUNK/:
+Revision 1,183 from svn://localhost/TRUNK/:
+Revision 1,184 from svn://localhost/TRUNK/:
+Revision 1,185 from svn://localhost/TRUNK/:
+Revision 1,186 from svn://localhost/TRUNK/:
+Revision 1,187 from svn://localhost/TRUNK/:
+
+Changed the calculation of the 'uSec' in the 'GetHRTAsUsec' method.
+
+By bkuznetsov (bkuznetsov@leapfrog.com) on 8/7/07 4:16 PM
+1 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,273,472 ms)
+
+----------------
