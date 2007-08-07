@@ -41,11 +41,12 @@ inline tErrType AsBrioErr(int err)
 #define ASSERT_POSIX_CALL(err) \
 if(err) \
 { \
+	int errsave = errno; \
 	printf("\n***** POSIX function fails with error # (%d). File (%s), Line (%d)\n", \
 	(int)err, __FILE__, __LINE__); \
-	printf("Error string: %s\n", strerror(err)); \
+	printf("Error string: %s\n", strerror(errsave)); \
 	fflush(stdout); \
-	return(AsBrioErr(err)); \
+	return(AsBrioErr(errsave)); \
 }
                                                            
 #define ASSERT_ERROR(expression,value) 

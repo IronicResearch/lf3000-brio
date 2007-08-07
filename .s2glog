@@ -6626,3 +6626,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/6/07 5:32 PM
 2,672 ms. (Cumulative: 1,257,205 ms)
 
 ----------------
+Revision 1,170 from svn://localhost/TRUNK/:
+Revision 1,171 from svn://localhost/TRUNK/:
+
+Fixed  the 'ASSERT_POSIX_CALL' macro
+
+By bkuznetsov (bkuznetsov@leapfrog.com) on 8/6/07 6:39 PM
+1 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,259,940 ms)
+
+----------------
