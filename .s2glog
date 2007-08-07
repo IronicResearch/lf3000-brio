@@ -6668,3 +6668,12 @@ By tparker (tparker@leapfrog.com) on 8/7/07 1:22 PM
 2,719 ms. (Cumulative: 1,268,128 ms)
 
 ----------------
+Revision 1,180 from svn://localhost/TRUNK/:
+
+Dynamically size the number of module found and their path lengths.
+
+By tparker (tparker@leapfrog.com) on 8/7/07 1:25 PM
+2 changed, 0 added, 0 deleted.
+2,610 ms. (Cumulative: 1,270,800 ms)
+
+----------------
