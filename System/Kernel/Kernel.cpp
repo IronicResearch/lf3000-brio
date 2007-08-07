@@ -887,7 +887,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	listMemory.push_back( ptrList );
 	pthread_mutex_unlock( &mutexValue_1);
 #if 0 // FIXME/BSK
-		printf("CreateTimer tTimerHndl=0x%x \n", hndl);
+		printf("CreateTimer tTimerHndl=0x%x \n", (unsigned int)hndl);
 		fflush(stdout);  		
 #endif
 	

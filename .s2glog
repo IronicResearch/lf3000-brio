@@ -6636,3 +6636,12 @@ By bkuznetsov (bkuznetsov@leapfrog.com) on 8/6/07 6:39 PM
 2,672 ms. (Cumulative: 1,259,940 ms)
 
 ----------------
+Revision 1,172 from svn://localhost/TRUNK/:
+
+Fixed debugging printing
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/6/07 6:46 PM
+1 changed, 0 added, 0 deleted.
+2,594 ms. (Cumulative: 1,262,596 ms)
+
+----------------
