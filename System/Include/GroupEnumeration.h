@@ -18,6 +18,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //----------------------------------------------------------------------------
 enum eGroupEnum { 
 	// Brio v1.0	 
+	// Make sure any changes here get reflected in LightningUtils.py's SetupTypeConversionMap()
 	kGroupAudio = kFirstNumSpaceGroup,
 	kGroupBoot,
 	kGroupButton,
