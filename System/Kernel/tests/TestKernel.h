@@ -57,8 +57,10 @@ namespace
 	{
 		counterTimer_1++;
 #if 0 // FIXME /BSK
-		printf("\nmyTask_Timer_1 - The timer called me %d tHndl 0x%x\n", counterTimer_1, tHndl );
+		printf("\nmyTask_Timer_1 - The timer called me %d tHndl 0x%x\n",
+			counterTimer_1, (unsigned int )tHndl );
 		fflush(stdout);
+
 #endif
 	}	
 
@@ -66,7 +68,8 @@ namespace
 	{
 		counterTimer_2++;
 #if 0		// FIXME /BSK
-		printf("myTask_Timer_2 - The timer called me %d tHndl 0x%x\n", counterTimer_2, tHndl );
+		printf("myTask_Timer_2 - The timer called me %d tHndl 0x%x\n",
+			counterTimer_2, (unsigned int )tHndl );
 		fflush(stdout);
 #endif
 	}	
@@ -75,7 +78,8 @@ namespace
 	{
 		counterTimer_3++;
 #if 0	// FIXME /BSK
-		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n", counterTimer_3, tHndl );
+		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n",
+			 counterTimer_3, (unsigned int )tHndl );
 		fflush(stdout);
 #endif
 	}
@@ -619,14 +623,14 @@ public:
 
 //        TS_WARN("TODO: Test Destroy Timer!");
 		tErrType err;
+#if 0 // FIXME/BSK
 		struct timespec sleeptime = { 1, 0 };
 		const int limit = 3; 
-
 		while (( counterTimer_1 < limit && counterTimer_2 < limit && counterTimer_3 < limit ))
 		{
 			nanosleep( &sleeptime, NULL );  
 		}
-
+#endif
 		if( hndlTimer_1 != 0 )
 		{	
 			err = KernelMPI->DestroyTimer( hndlTimer_1 );
@@ -941,7 +945,7 @@ public:
 
 	void testGetHRTAsUsec()
 	{
-		ptintf_test_info("testGetHRTAsUsec");
+		ptintf_test_info("testGetHRTAsUsec. ");
 
 		U32 uSec;
 		U32 uSecPrev;
@@ -975,7 +979,7 @@ public:
 	
 	void testGetElapsedAsSec()
 	{
-		ptintf_test_info("testGetElapsedAsSec");
+		ptintf_test_info("testGetElapsedAsSec. Test takes 10 sec");
 
 		U32 sec;
 		U32 secPrev;
@@ -1011,7 +1015,7 @@ public:
 
 	void testGetElapsedTimeAsStructure()
 	{
-		ptintf_test_info("testGetElapsedTimeAsStructure");
+		ptintf_test_info("testGetElapsedTimeAsStructure. Test takes 10 sec");
 
 		tErrType err;
 		Current_Time curTime;

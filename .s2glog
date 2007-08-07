@@ -6645,3 +6645,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/6/07 6:46 PM
 2,594 ms. (Cumulative: 1,262,596 ms)
 
 ----------------
+Revision 1,173 from svn://localhost/TRUNK/:
+
+ testDestroyTimer
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/6/07 6:51 PM
+1 changed, 0 added, 0 deleted.
+2,656 ms. (Cumulative: 1,265,315 ms)
+
+----------------
