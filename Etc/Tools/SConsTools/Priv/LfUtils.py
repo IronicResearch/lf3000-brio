@@ -218,6 +218,8 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		
 	srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
 	tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
+	subdir = (vars['is_emulation'] and 'Emulation' or vars['platform']) 
+	tests += glob.glob(os.path.join(srcdir, 'tests', subdir, '*.h'))
 	if len(tests) == 0:
 		return
 		
