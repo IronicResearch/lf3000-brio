@@ -15,20 +15,18 @@ def MakeTempDirName(module):
 #-----------------------------------------------------------------------------
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
-#FIXME/tp: remove 'modules' variable (change to deplayment no longer requires it?)
-modules = []
-modules.append(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
-modules.append(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
-modules.append(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
-modules.append(SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0))
-modules.append(SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0))
-modules.append(SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0))
-modules.append(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
-modules.append(SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0))
-modules.append(SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0))
-modules.append(SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0))
+SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
+SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0)
+SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0)
+SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0)
+SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0)
+SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0)
+SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0)
+SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0)
+SConscript('Resource/SConscript', build_dir=MakeTempDirName('Resource'), duplicate=0)
+SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0)
 if vars['is_emulation']:
-	modules.append(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))
+	SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0)
 
 
 #-----------------------------------------------------------------------------
@@ -38,7 +36,6 @@ if vars['is_export']:
 	headers = glob.glob(os.path.join('Include', '*.h'))
 	env.Install(vars['hdr_deploy_dir'], headers)
 	
-	#FIXME/tp: temporary! remove when OggVorbis in place
 	dest_dir = os.path.join(vars['export_root'], 'Tools')
 	sf2brio = os.path.join('Audio', 'Utilities', 'sf2brio', 'sf2brio')
 	env.Install(dest_dir, sf2brio)
