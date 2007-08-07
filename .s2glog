@@ -6692,3 +6692,12 @@ By bkuznetsov (bkuznetsov@leapfrog.com) on 8/7/07 4:16 PM
 2,578 ms. (Cumulative: 1,273,472 ms)
 
 ----------------
+Revision 1,188 from svn://localhost/TRUNK/:
+
+Support target-specific 'Emulation' and 'Lightning' folders off of the 'tests' folder for generating unit tests.
+
+By tparker (tparker@leapfrog.com) on 8/7/07 4:45 PM
+1 changed, 0 added, 0 deleted.
+2,734 ms. (Cumulative: 1,276,269 ms)
+
+----------------
