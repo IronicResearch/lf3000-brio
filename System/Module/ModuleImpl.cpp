@@ -41,35 +41,34 @@ namespace
 		pFnDestroyInstance	pfnDestroy;
 	};
 
-	const int kMaxModuleName	= 30;
-	const int kMaxPath			= 256;	// FIXME: common handling 
-	
+	//--------------------------------------------------------------------------   
 	class CModuleMgrImpl
 	{
 	private:
 		//----------------------------------------------------------------------
 		struct FoundModule {
-			char			name[kMaxModuleName];
-			char			sopath[kMaxPath];
+			CString			name;
+			CPath			sopath;
 			tVersion		version;
+			// initializing ctor
+			FoundModule() : version(kUndefinedVersion) {}
 		};
 		//----------------------------------------------------------------------
 		struct ConnectedModule {
-			char			name[kMaxModuleName];
-			char			sopath[kMaxPath];
+			CString			name;
+			CPath			sopath;
 			tHndl			handle;
 			U32				connect_count;
 			ICoreModule*	ptr;
-			// FIXME/tp: initializing ctor
+			// initializing ctor
+			ConnectedModule() : handle(kInvalidHndl), connect_count(0), ptr(NULL) {}
 		};
 		//----------------------------------------------------------------------
-		FoundModule		*mpFoundModulesList;
-		ConnectedModule	*mpConnectedModulesList;
-		U16				mNumFound;
-		U16				mNumConnected;
-			
+		std::vector<FoundModule>		mFoundModulesList;
+		std::vector<ConnectedModule>	mConnectedModulesList;
+		
 		//----------------------------------------------------------------------
-		Boolean AddedValidModule( FoundModule* pModule, const CPath& path )
+		void AddValidModule( const CPath& path )
 		{
 			// TODO: Either parse version from file name or load and
 			// querry the library (probably the former)
@@ -77,29 +76,29 @@ namespace
 			size_t idx = path.rfind('/');
 			CPath name = path.substr(idx+1);
 			size_t len = name.size();
-			if( len <= 6 || name[0] == '.' )
-				return false;
-			CString temp = name.substr(3, len-6);
-			pModule->version = 2;
-			strncpy(pModule->name, temp.c_str(), kMaxModuleName);
-			strncpy(pModule->sopath, path.c_str(), kMaxPath);
-//printf("Module: %s  %s\n", pModule->name, pModule->sopath);
-			return true;
+			if( len > 6 && name[0] != '.' )
+			{
+				CString temp = name.substr(3, len-6);
+				FoundModule	module;
+				module.version = 2;
+				module.name = temp;
+				module.sopath = path;
+				mFoundModulesList.push_back(module);
+			}
 		}
 
 		//----------------------------------------------------------------------
 		FoundModule* FindBestModuleMatch( const CString& name, tVersion version )
 		{
-			FoundModule* pModule = mpFoundModulesList;
-			for( U16 ii = mNumFound; ii > 0; --ii, ++pModule )
+			for( int ii = mFoundModulesList.size() - 1; ii >= 0; --ii )
 			{
-				if( pModule->name == name )
+				if( mFoundModulesList[ii].name == name )
 				{
 					// TODO: Implement more sophisticated version matching scheme:
 					//	(use highest version with same major version number)
 					//	(if no major version match, match if module version > MPI version)
-					if( version == pModule->version )
-						return pModule;
+					if( version == mFoundModulesList[ii].version )
+						return &mFoundModulesList[ii];
 				}
 			}
 			return NULL;
@@ -108,13 +107,12 @@ namespace
 		//----------------------------------------------------------------------
 		ConnectedModule* FindCachedModule( const CString& name, tVersion /*version*/ )
 		{
-			ConnectedModule* pModule = mpConnectedModulesList;
-			for( U16 ii = mNumConnected; ii > 0; --ii, ++pModule )
+			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
-				if( pModule->name == name )
+				if( mConnectedModulesList[ii].name == name )
 				{
 					// TODO: Make sure we have a version match
-					return pModule;
+					return &mConnectedModulesList[ii];
 				}
 			}
 			return NULL;
@@ -123,13 +121,12 @@ namespace
 		//----------------------------------------------------------------------
 		ConnectedModule* FindCachedModule( const ICoreModule* ptr )
 		{
-			ConnectedModule* pModule = mpConnectedModulesList;
-			for( U16 ii = mNumConnected; ii > 0; --ii, ++pModule )
+			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
-				if( pModule->ptr == ptr )
+				if( mConnectedModulesList[ii].ptr == ptr )
 				{
 					// TODO: Make sure we have a version match
-					return pModule;
+					return &mConnectedModulesList[ii];
 				}
 			}
 			return NULL;
@@ -138,17 +135,12 @@ namespace
 	public:
 		//----------------------------------------------------------------------
 		CModuleMgrImpl()
-			: mpFoundModulesList(NULL), mpConnectedModulesList(NULL),
-			mNumFound(0), mNumConnected(0)
 		{
 		}
 		
 		//----------------------------------------------------------------------
 		~CModuleMgrImpl()
 		{
-			// FIXME: Use Kernel::Free()
-			free(mpFoundModulesList);
-			free(mpConnectedModulesList);
 		}
 	
 		//----------------------------------------------------------------------
@@ -157,29 +149,20 @@ namespace
 			static const char* paths[1];
 			CPath path = GetModuleLibraryLocation();
 			paths[0] = path.c_str();
-			
-			// FIXME/tp: count first to allocate only enough memory needed
-			// FIXME/tp: KernelMPI for malloc
-			const int kMaxModuleCount = 100;
-			mpFoundModulesList = reinterpret_cast<FoundModule*>(malloc(kMaxModuleCount * sizeof(FoundModule)));
-			mpConnectedModulesList = reinterpret_cast<ConnectedModule*>(malloc(kMaxModuleCount * sizeof(ConnectedModule)));
-			
+						
 			CBootSafeKernelMPI	kernel;
-			mNumFound = 0; 
 			for (size_t ii = 0; ii < ArrayCount(paths); ++ii)
 			{
 				std::vector<CPath> files = kernel.GetFilesInDirectory(paths[ii]);
 				for (size_t jj = 0; jj < files.size(); ++jj)
-				{
-					if (AddedValidModule((mpFoundModulesList + mNumFound), files[jj]))
-						++mNumFound;
-				}
+					AddValidModule(files[jj]);
 			}
-			if (mNumFound == 0)
+			if (mFoundModulesList.size() == 0)
 			{
 				kernel_.Printf("BOOTFAIL: No modules found in: %s\n", path.c_str());
 				kernel_.PowerDown();
 			}
+
 			return kNoErr;
 		}
 
@@ -227,35 +210,35 @@ namespace
 				kernel_.PowerDown();
 			}
 			
-			tHndl module = kernel_.LoadModule(pFound->sopath);				//*3
-			if( module == kInvalidHndl )
+			tHndl hModule = kernel_.LoadModule(pFound->sopath);				//*3
+			if( hModule == kInvalidHndl )
 			{
-				kernel_.Printf("BOOTFAIL: Failed to load found module at sopath: %s\n", pFound->sopath);
+				kernel_.Printf("BOOTFAIL: Failed to load found module at sopath: %s\n", pFound->sopath.c_str());
 				kernel_.PowerDown();
 			}
 			
 		    ObjPtrToFunPtrConverter fp;										//*4
-		    fp.voidptr = kernel_.RetrieveSymbolFromModule(module, kCreateInstanceFnName);
+		    fp.voidptr = kernel_.RetrieveSymbolFromModule(hModule, kCreateInstanceFnName);
 		    if( fp.voidptr == NULL )
 		    {
-				kernel_.Printf("BOOTFAIL: Failed to find CreateInstance() for: %s\n", pFound->sopath);
+				kernel_.Printf("BOOTFAIL: Failed to find CreateInstance() for: %s\n", pFound->sopath.c_str());
 				kernel_.PowerDown();
 		    }
 		    
 			ptr = (*(fp.pfnCreate))(version);								//*5
 			if( !ptr )
 			{
-				kernel_.Printf("BOOTFAIL: CreateInstance() failed for: %s\n", pFound->sopath);
+				kernel_.Printf("BOOTFAIL: CreateInstance() failed for: %s\n", pFound->sopath.c_str());
 				kernel_.PowerDown();
 			}
 
-			pModule = mpConnectedModulesList + mNumConnected;				//*6
-			++mNumConnected;
-			pModule->handle = module;
-			strcpy(pModule->name, pFound->name);
-			strcpy(pModule->sopath, pFound->sopath);
-			pModule->connect_count = 1;
-			pModule->ptr = ptr;
+			ConnectedModule module;											//*6
+			module.handle = hModule;
+			module.name = pFound->name;
+			module.sopath = pFound->sopath;
+			module.connect_count = 1;
+			module.ptr = ptr;
+			mConnectedModulesList.push_back(module);
 
 			return kNoErr;
 		}
@@ -270,8 +253,7 @@ namespace
 				if( pModule->connect_count == 0 )
 				{
 //					DestroyModuleInstance(pModule);
-//					--mNumConnected;
-					// FIXME/tp: remove module from list by copying higher entries down
+//					// RemoveCachedModule(pModule);	// FIXME/tp: implement by vector.erase()
 				}
 			}
 			return kNoErr;
@@ -286,13 +268,13 @@ namespace
 		    	(*(fp.pfnDestroy))(pModule->ptr);
 		    else
 		    {
-				kernel_.Printf("BOOTFAIL: Failed to find DestroyInstance() for: %s\n", pModule->sopath);
+				kernel_.Printf("BOOTFAIL: Failed to find DestroyInstance() for: %s\n", pModule->sopath.c_str());
 				kernel_.PowerDown();
 		    }
 		    kernel_.UnloadModule(pModule->handle);
 		}
 		
-		// unresolved issues:
+		// TODO: unresolved issues:
 		//   what to do if two modules with same name and version are found
 	private:
 		// Disable copy semantics
@@ -334,7 +316,7 @@ extern "C" tErrType Disconnect(const ICoreModule* ptr)
 	return g_impl.Disconnect(ptr);
 }
 
-	// NOTE: For LF_MONOLITHIC_DEBUG builds, the Module.cpp file never loads this
-	// library or calls its functions.
+// NOTE: For LF_MONOLITHIC_DEBUG builds, the Module.cpp file never loads this
+// library or calls its functions.
 	
 // eof

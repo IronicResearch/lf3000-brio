@@ -14,7 +14,7 @@
 //
 //==============================================================================
 #include <SystemTypes.h>
-#include <EmulationConfig.h>	//FIXME/tp: Remove
+#include <EmulationConfig.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
