@@ -6602,3 +6602,27 @@ By Dave Milici (dmilici@leapfrog.com) on 8/3/07 6:59 PM
 2,782 ms. (Cumulative: 1,254,330 ms)
 
 ----------------
+Revision 1,154 from svn://localhost/TRUNK/:
+Revision 1,155 from svn://localhost/TRUNK/:
+Revision 1,156 from svn://localhost/TRUNK/:
+Revision 1,157 from svn://localhost/TRUNK/:
+Revision 1,158 from svn://localhost/TRUNK/:
+Revision 1,159 from svn://localhost/TRUNK/:
+Revision 1,160 from svn://localhost/TRUNK/:
+Revision 1,161 from svn://localhost/TRUNK/:
+Revision 1,162 from svn://localhost/TRUNK/:
+Revision 1,163 from svn://localhost/TRUNK/:
+Revision 1,164 from svn://localhost/TRUNK/:
+Revision 1,165 from svn://localhost/TRUNK/:
+Revision 1,166 from svn://localhost/TRUNK/:
+Revision 1,167 from svn://localhost/TRUNK/:
+Revision 1,168 from svn://localhost/TRUNK/:
+Revision 1,169 from svn://localhost/TRUNK/:
+
+Add font tests for OpenGL texture formats. 
+
+By Dave Milici (dmilici@leapfrog.com) on 8/6/07 5:32 PM
+2 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,257,205 ms)
+
+----------------

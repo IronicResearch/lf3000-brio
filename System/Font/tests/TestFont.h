@@ -6,6 +6,7 @@
 #include <FontMPI.h>
 #include <ResourceMPI.h>
 #include <DisplayMPI.h>
+#include <BrioOpenGLConfig.h>
 #include <UnitTestUtils.h>
 
 LF_USING_BRIO_NAMESPACE()
@@ -145,7 +146,7 @@ public:
 		TS_ASSERT( mtrx.height != 0 );
 
 		attr.version = 1;
-		attr.color = 0x0000FFFF;
+		attr.color = 0x000000FF; // blue
 		attr.antialias = true;
 		pFontMPI_->SetFontAttr(attr);
 		pFontMPI_->DrawString(&text1, 0, 0, &surf);
@@ -156,12 +157,12 @@ public:
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
 
-		attr.color = 0x00FF0000;
+		attr.color = 0x00FF0000; // red
 		pFontMPI_->SetFontAttr(attr);
 		pFontMPI_->DrawString(&text1, 0, 2*mtrx.height, &surf);
 		pFontMPI_->DrawString(&text2, 0, 3*mtrx.height, &surf);
 		
-		attr.color = 0x00FF00;
+		attr.color = 0x0000FF00; // green
 		pFontMPI_->SelectFont(font1);
 		pFontMPI_->SetFontAttr(attr);
 		pFontMPI_->DrawString(&text1, 0, 4*mtrx.height, &surf);
@@ -180,6 +181,330 @@ public:
 		pResourceMPI_->CloseAllDevices();
 		delete pResourceMPI_;
 		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testFontOpenGL()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tFontHndl	font1;
+		tFontProp	prop1 = {1, 24, 0, 0};
+		tFontAttr	attr;
+		tFontSurf	surf;
+		tFontMetrics mtrx;
+		CString		text1 = CString("Red");
+		CString		text2 = CString("Green");
+		CString		text3 = CString("Blue");
+		CString		text4 = CString("ARGB8888");
+		GLuint 		texture;
+		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
+		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
+		
+		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
+
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
+		pkg = pResourceMPI_->FindPackage("FontTest");
+		TS_ASSERT( pkg != kInvalidPackageHndl );
+		pResourceMPI_->OpenPackage(pkg);
+		handle1 = pResourceMPI_->FindRsrc("Verdana");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		
+		// Create local buffer for texture
+		surf.width = surf.height = 128;
+		surf.pitch = surf.width * 4;
+		surf.format = kPixelFormatARGB8888;
+		surf.buffer = static_cast<U8*>(malloc(surf.pitch * surf.height));
+		TS_ASSERT( surf.buffer != NULL );
+		memset(surf.buffer, 0, surf.pitch * surf.height);
+		
+		// Draw text to buffer
+		attr.version = 1;
+		attr.color = 0xFF0000FF; // GL red
+		attr.antialias = true;
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text1, 0, 0, &surf);
+		attr.color = 0xFF00FF00; // GL green
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
+		attr.color = 0xFFFF0000; // GL blue
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text3, 0, 2*mtrx.height, &surf);
+		attr.color = 0xFFFFFFFF; // GL white
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
+		
+		// Download buffer as texture and render textured quad
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf.width, surf.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, surf.buffer);
+		glEnable(GL_TEXTURE_2D);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glVertexPointer(3, GL_SHORT, 0, quad);
+		glTexCoordPointer(2, GL_SHORT, 0, texmap);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		eglSwapBuffers(ctx->eglDisplay, ctx->eglSurface);
+
+		sleep(1);
+
+		glDeleteTextures(1, &texture);
+		free(surf.buffer);
+		pFontMPI_->UnloadFont(font1);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete ctx;
+	}
+
+	//------------------------------------------------------------------------
+	void testFontOpenGL24bpp()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tFontHndl	font1;
+		tFontProp	prop1 = {1, 24, 0, 0};
+		tFontAttr	attr;
+		tFontSurf	surf;
+		tFontMetrics mtrx;
+		CString		text1 = CString("Red");
+		CString		text2 = CString("Green");
+		CString		text3 = CString("Blue");
+		CString		text4 = CString("RGB888");
+		GLuint 		texture;
+		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
+		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
+		
+		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
+
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
+		pkg = pResourceMPI_->FindPackage("FontTest");
+		TS_ASSERT( pkg != kInvalidPackageHndl );
+		pResourceMPI_->OpenPackage(pkg);
+		handle1 = pResourceMPI_->FindRsrc("Verdana");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		
+		// Create local buffer for texture = 24bpp RGB
+		surf.width = surf.height = 128;
+		surf.pitch = surf.width * 3;
+		surf.format = kPixelFormatRGB888;
+		surf.buffer = static_cast<U8*>(malloc(surf.pitch * surf.height));
+		TS_ASSERT( surf.buffer != NULL );
+		memset(surf.buffer, 0, surf.pitch * surf.height);
+		
+		// Draw text to buffer
+		attr.version = 1;
+		attr.color = 0x0000FF; // GL red
+		attr.antialias = true;
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text1, 0, 0, &surf);
+		attr.color = 0x00FF00; // GL green
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
+		attr.color = 0xFF0000; // GL blue
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text3, 0, 2*mtrx.height, &surf);
+		attr.color = 0xFFFFFF; // GL white
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
+		
+		// Download buffer as texture and render textured quad
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, surf.width, surf.height, 0, GL_RGB, GL_UNSIGNED_BYTE, surf.buffer);
+		glEnable(GL_TEXTURE_2D);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glVertexPointer(3, GL_SHORT, 0, quad);
+		glTexCoordPointer(2, GL_SHORT, 0, texmap);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		eglSwapBuffers(ctx->eglDisplay, ctx->eglSurface);
+
+		sleep(1);
+
+		glDeleteTextures(1, &texture);
+		free(surf.buffer);
+		pFontMPI_->UnloadFont(font1);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete ctx;
+	}
+
+	//------------------------------------------------------------------------
+	void testFontOpenGL16bppARGB()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tFontHndl	font1;
+		tFontProp	prop1 = {1, 24, 0, 0};
+		tFontAttr	attr;
+		tFontSurf	surf;
+		tFontMetrics mtrx;
+		CString		text1 = CString("Red");
+		CString		text2 = CString("Green");
+		CString		text3 = CString("Blue");
+		CString		text4 = CString("ARGB4444");
+		GLuint 		texture;
+		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
+		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
+		
+		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
+
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
+		pkg = pResourceMPI_->FindPackage("FontTest");
+		TS_ASSERT( pkg != kInvalidPackageHndl );
+		pResourceMPI_->OpenPackage(pkg);
+		handle1 = pResourceMPI_->FindRsrc("Verdana");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		
+		// Create local buffer for texture = 16bpp ARGB4444 format
+		surf.width = surf.height = 128;
+		surf.pitch = surf.width * 2;
+		surf.format = kPixelFormatRGB4444;
+		surf.buffer = static_cast<U8*>(malloc(surf.pitch * surf.height));
+		TS_ASSERT( surf.buffer != NULL );
+		memset(surf.buffer, 0, surf.pitch * surf.height);
+		
+		// Draw text to buffer
+		attr.version = 1;
+		attr.color = 0xF00F; // 16bpp packed GL red 
+		attr.antialias = true;
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text1, 0, 0, &surf);
+		attr.color = 0x0F0F; // 16bpp packed GL green
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
+		attr.color = 0x00FF; // 16bpp packed GL blue
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text3, 0, 2*mtrx.height, &surf);
+		attr.color = 0xFFFF; // 16bpp packed GL white
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
+		
+		// Download buffer as texture and render textured quad
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf.width, surf.height, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, surf.buffer);
+		glEnable(GL_TEXTURE_2D);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glVertexPointer(3, GL_SHORT, 0, quad);
+		glTexCoordPointer(2, GL_SHORT, 0, texmap);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		eglSwapBuffers(ctx->eglDisplay, ctx->eglSurface);
+
+		sleep(1);
+
+		glDeleteTextures(1, &texture);
+		free(surf.buffer);
+		pFontMPI_->UnloadFont(font1);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete ctx;
+	}
+
+	//------------------------------------------------------------------------
+	void testFontOpenGL16bppRGB()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tFontHndl	font1;
+		tFontProp	prop1 = {1, 24, 0, 0};
+		tFontAttr	attr;
+		tFontSurf	surf;
+		tFontMetrics mtrx;
+		CString		text1 = CString("Red");
+		CString		text2 = CString("Green");
+		CString		text3 = CString("Blue");
+		CString		text4 = CString("RGB565");
+		GLuint 		texture;
+		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
+		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
+		
+		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
+
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
+		pkg = pResourceMPI_->FindPackage("FontTest");
+		TS_ASSERT( pkg != kInvalidPackageHndl );
+		pResourceMPI_->OpenPackage(pkg);
+		handle1 = pResourceMPI_->FindRsrc("Verdana");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		
+		// Create local buffer for texture = 16bpp RGB565 format
+		surf.width = surf.height = 128;
+		surf.pitch = surf.width * 2;
+		surf.format = kPixelFormatRGB565;
+		surf.buffer = static_cast<U8*>(malloc(surf.pitch * surf.height));
+		TS_ASSERT( surf.buffer != NULL );
+		memset(surf.buffer, 0, surf.pitch * surf.height);
+		
+		// Draw text to buffer
+		attr.version = 1;
+		attr.color = 0xF800; // 16bpp packed GL red
+		attr.antialias = true;
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text1, 0, 0, &surf);
+		attr.color = 0x07E0; // 16bpp packed GL green
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
+		attr.color = 0x001F; // 16bpp packed GL blue
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text3, 0, 2*mtrx.height, &surf);
+		attr.color = 0xFFFF; // 16bpp packed GL white
+		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
+		
+		// Download buffer as texture and render textured quad
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, surf.width, surf.height, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, surf.buffer);
+		glEnable(GL_TEXTURE_2D);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glVertexPointer(3, GL_SHORT, 0, quad);
+		glTexCoordPointer(2, GL_SHORT, 0, texmap);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		eglSwapBuffers(ctx->eglDisplay, ctx->eglSurface);
+
+		sleep(1);
+
+		glDeleteTextures(1, &texture);
+		free(surf.buffer);
+		pFontMPI_->UnloadFont(font1);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete ctx;
 	}
 
 };
