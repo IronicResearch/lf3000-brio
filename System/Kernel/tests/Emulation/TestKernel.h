@@ -133,7 +133,7 @@ public:
 		delete KernelMPI; 
 	}
 
- 	void xtestWasCreated( )
+ 	void testWasCreated( )
 	{
 		ptintf_test_info("testWasCreated");
 
@@ -142,7 +142,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestCoreMPI( )
+	void testCoreMPI( )
 	{
 		ptintf_test_info("testCoreMPI");
 
@@ -193,7 +193,7 @@ public:
     }
     
 	//------------------------------------------------------------------------------
-    void xtestIsDirectory()
+    void testIsDirectory()
     {
 		ptintf_test_info("testIsDirectory");
 
@@ -207,7 +207,7 @@ public:
     }
 
 	//------------------------------------------------------------------------------
-    void xtestFilesInDirectory()
+    void testFilesInDirectory()
     {
 		ptintf_test_info("testFilesInDirectory");
 
@@ -237,7 +237,7 @@ public:
 	}
 
     
-    void xtestGetElapsedTime()
+    void testGetElapsedTime()
 	{
 		ptintf_test_info("testGetElapsedTime");
 
@@ -257,7 +257,7 @@ public:
 			
 	}
 	
-	void xtestCreateTask()
+	void testCreateTask()
 	{
 		ptintf_test_info("testCreateTask");
 
@@ -367,7 +367,7 @@ public:
 #endif
 	}
 
-	void xtestTaskSleep()
+	void testTaskSleep()
 	{
 		ptintf_test_info("testTaskSleep");
 
@@ -386,7 +386,7 @@ public:
 	}
 			
 	
-	void xtestMemory()
+	void testMemory()
 	{
 		ptintf_test_info("testMemory");
 
@@ -402,7 +402,7 @@ public:
   		KernelMPI->Free( pPtr );
 	}
 		
-	void xTestCreateMessageQueue_1() 
+	void TestCreateMessageQueue_1() 
 	{
 		ptintf_test_info("TestCreateMessageQueue_1");
 
@@ -436,7 +436,7 @@ public:
 		}
 	}
 			
-	void xTestCreateMessageQueue_2() 
+	void TestCreateMessageQueue_2() 
 	{
 		ptintf_test_info("TestCreateMessageQueue_2");
 
@@ -470,7 +470,7 @@ public:
 		}								
 	}
 
-	void xtestCreateTimer()
+	void testCreateTimer()
 	{
 		ptintf_test_info("testCreateTimer");
 
@@ -503,7 +503,7 @@ public:
 //		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestStartStopTimer()
+	void testStartStopTimer()
 	{
 		ptintf_test_info("testStartStopTimer");
 
@@ -537,7 +537,7 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
 	}		
-	void xtestResetTimerRelative()
+	void testResetTimerRelative()
 	{
 		ptintf_test_info("testResetTimerRelative");
 
@@ -563,7 +563,7 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestPauseResumeTimer()
+	void testPauseResumeTimer()
 	{
 		ptintf_test_info("testPauseResumeTimer");
 
@@ -593,7 +593,7 @@ public:
 			
 	}
 		
-   void xtestGetTimerElapsed_OR_Remaining_Time()
+   void testGetTimerElapsed_OR_Remaining_Time()
     {
 		ptintf_test_info("testGetTimerElapsed_OR_Remaining_Time");
 
@@ -617,7 +617,7 @@ public:
    	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
     }
 
-    void xtestDestroyTimer()
+    void testDestroyTimer()
     {
 		ptintf_test_info("testDestroyTimer");
 
@@ -654,7 +654,7 @@ public:
 	// Mutexes
 	//==============================================================================
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
-    void xtestInit_DeInit_Mutex()
+    void testInit_DeInit_Mutex()
     {
 		ptintf_test_info("testInit_DeInit_Mutex");
 
@@ -725,7 +725,7 @@ public:
     }
 	
      // Locks an unlocked mutex
-    void xtestLockMutex()
+    void testLockMutex()
     {
 		ptintf_test_info("testLockMutex");
 
@@ -744,7 +744,7 @@ public:
     }
 	
     	// Tries to lock a not xtested
-	void xtestTryLockMutex_1()
+	void testTryLockMutex_1()
     {
 		ptintf_test_info("testTryLockMutex_1");
 
@@ -780,7 +780,7 @@ public:
 	//==============================================================================
      // Initializes a condition variable with the attributes specified in the
     // specified condition variable attribute object
-        void xtestInitCond()
+        void testInitCond()
         {
 			ptintf_test_info("testInitCond");
 
@@ -802,7 +802,7 @@ public:
     }
 
 // Initializes a condition variable attribute object    
-    void xtestInitCondAttr()
+    void testInitCondAttr()
     {
 		ptintf_test_info("testInitCondAttr");
 		tErrType err;
@@ -824,7 +824,7 @@ public:
     }
 
 // Unblocks all threads that are waiting on a condition variable
-        void xtestBroadcastCond()
+        void testBroadcastCond()
         {
 			ptintf_test_info("testBroadcastCond");
 			tErrType err;
@@ -839,7 +839,7 @@ public:
          }	
     
     // Unblocks at least one thread waiting on a condition variable
-        void xtestSignalCond()
+        void testSignalCond()
         {
 			ptintf_test_info("testSignalCond");
 			tErrType err;
@@ -856,7 +856,7 @@ public:
 
 // Automatically unlocks the specified mutex, and places the calling thread into a wait state
 // FIXME: pAbstime var
-    void xtestTimedWaitOnCond()
+    void testTimedWaitOnCond()
     {
 		ptintf_test_info("testTimedWaitOnCond");
 		tErrType err;
@@ -891,7 +891,7 @@ public:
     }
 
 // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-    void xtestWaitOnCond()
+    void testWaitOnCond()
     {
 		ptintf_test_info("testWaitOnCond");
 		tErrType err;

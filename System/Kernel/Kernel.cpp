@@ -700,10 +700,6 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 
 	tErrType 	CKernelModule::GetHRTAsUsec(U32 &uSec) const
 	{
-#if defined(EMULATION)  // FIXME/BSK
-		printf("*** Sorry! This test fails in the emulation mode! \n");
-		return 1;
-#endif			
 		tErrType err = 0; 
 		errno = 0;
 		const char *rtc = default_rtc;
@@ -750,10 +746,6 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 	// Elapsed time since System startup in seconds
 	tErrType		CKernelModule::GetElapsedAsSec(U32 &sec) const
 	{
-#if defined(EMULATION)  // FIXME/BSK
-		printf("*** Sorry! This test fails in the emulation mode! \n");
-		return 1;
-#endif			
 
 		tErrType err = 0;  
 		int fd;
@@ -784,10 +776,6 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 	// Elapsed time since System startup as structure
 	tErrType		CKernelModule::GetElapsedTimeAsStructure(Current_Time &curTime) const
 	{
-#if defined(EMULATION)  // FIXME/BSK
-		printf("*** Sorry! This test fails in the emulation mode! \n");
-		return 1;
-#endif			
 
 		tErrType err = 0;  
 		int fd;
@@ -912,7 +900,7 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	tErrType err = kNoErr;
     errno = 0;
 
-#if 0
+#if 0 // FIXME/BSK
 	printf("DestroyTimer Before Num elements = %d\n", listMemory.size() );
 	fflush(stdout);
 #endif
@@ -931,7 +919,7 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	err = pthread_mutex_unlock( &mutexValue_2);
 	ASSERT_POSIX_CALL( err );
 
-#if 0
+#if 0 // FIXME/BSK
 	printf("DestroyTimer After Num elements = %d\n", listMemory.size() );
 	fflush(stdout);
 #endif
