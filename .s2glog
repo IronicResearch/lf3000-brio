@@ -6713,3 +6713,14 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/7/07 5:40 PM
 2,782 ms. (Cumulative: 1,279,129 ms)
 
 ----------------
+Revision 1,193 from svn://localhost/TRUNK/:
+Revision 1,194 from svn://localhost/TRUNK/:
+Revision 1,195 from svn://localhost/TRUNK/:
+
+Implement Font MPI GetStringRect() initial functionality. Pixel rounding needs attention.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/8/07 11:51 AM
+3 changed, 0 added, 0 deleted.
+2,828 ms. (Cumulative: 1,282,051 ms)
+
+----------------

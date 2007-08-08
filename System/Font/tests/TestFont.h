@@ -114,6 +114,7 @@ public:
 		tDisplayHandle 	disp;
 		CString			text1 = CString("The Quick Brown Fox");
 		CString			text2 = CString("Jumps Over the Lazy Dog");
+		tRect			rect1,rect2;
 
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
@@ -144,14 +145,25 @@ public:
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
-
+		TS_ASSERT( mtrx.ascent != 0 );
+		TS_ASSERT( mtrx.descent != 0 );
+		
+		pFontMPI_->GetStringRect(&text1, &rect1);
+		TS_ASSERT( rect1.top <= mtrx.ascent );
+		TS_ASSERT( rect1.bottom >= mtrx.descent );
+		pFontMPI_->GetStringRect(&text2, &rect2);
+		TS_ASSERT( rect2.top <= mtrx.ascent );
+		TS_ASSERT( rect2.bottom >= mtrx.descent );
+		
 		attr.version = 1;
 		attr.color = 0x000000FF; // blue
 		attr.antialias = true;
 		pFontMPI_->SetFontAttr(attr);
 		pFontMPI_->DrawString(&text1, 0, 0, &surf);
+		TS_ASSERT( static_cast<unsigned>(rect1.right - rect1.left) == pFontMPI_->GetX() );
 		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
-
+		TS_ASSERT( static_cast<unsigned>(rect2.right - rect2.left) == pFontMPI_->GetX() );
+		
 		font2 = pFontMPI_->LoadFont(handle2, prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
@@ -281,7 +293,7 @@ public:
 		GLuint 		texture;
 		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
 		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
-		
+
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
 		pResourceMPI_ = new CResourceMPI;

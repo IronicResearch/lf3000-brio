@@ -120,6 +120,7 @@ private:
 	tFontAttr			attr_;
 	int					curX_;
 	int					curY_;
+    Boolean     		GetGlyph(char ch, FT_Glyph* pGlyph);
     Boolean     		DrawGlyph(char ch, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB24(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
