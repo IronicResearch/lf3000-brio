@@ -797,7 +797,6 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	FT_Bitmap*      source;
 	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
 	int				error = FT_Err_Ok;
-	int				index;
 	PFont			font = handle_.currentFont;
 	Boolean			rc = false;
 	

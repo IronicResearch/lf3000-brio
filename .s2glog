@@ -6724,3 +6724,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/8/07 11:51 AM
 2,828 ms. (Cumulative: 1,282,051 ms)
 
 ----------------
+Revision 1,196 from svn://localhost/TRUNK/:
+
+Fix for ARM CC build and Work-around for pixel rounding result.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/8/07 12:00 PM
+2 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,284,848 ms)
+
+----------------
