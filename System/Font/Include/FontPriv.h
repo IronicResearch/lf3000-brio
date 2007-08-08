@@ -106,9 +106,9 @@ public:
     VTABLE_EXPORT Boolean     	SelectFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
     VTABLE_EXPORT Boolean		GetFontAttr(tFontAttr* pAttr);
-    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, int x, int y, tFontSurf* pCtx);
-	VTABLE_EXPORT U32			GetX();
-	VTABLE_EXPORT U32			GetY();
+    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
+	VTABLE_EXPORT S32			GetX();
+	VTABLE_EXPORT S32			GetY();
     VTABLE_EXPORT Boolean		GetFontMetrics(tFontMetrics* pMtx);
     VTABLE_EXPORT Boolean     	GetStringRect(CString* pStr, tRect* pRect);
 

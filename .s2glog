@@ -6733,3 +6733,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/8/07 12:00 PM
 2,719 ms. (Cumulative: 1,284,848 ms)
 
 ----------------
+Revision 1,197 from svn://localhost/TRUNK/:
+Revision 1,198 from svn://localhost/TRUNK/:
+
+Correct Font MPI parameters with consistant Brio types.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/8/07 1:04 PM
+5 changed, 0 added, 0 deleted.
+2,751 ms. (Cumulative: 1,287,661 ms)
+
+----------------
