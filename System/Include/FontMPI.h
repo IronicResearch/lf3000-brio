@@ -57,13 +57,13 @@ public:
     Boolean		GetFontAttr(tFontAttr* pAttr);
     
     // Draws a text string at selected X,Y position in display surface context
-    Boolean     DrawString(CString* pStr, int x, int y, tFontSurf* pCtx);
+    Boolean     DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     
     // Returns the current X drawing position updated by DrawString()
-    U32			GetX();
+    S32			GetX();
     
     // Returns the current Y drawing position updated by DrawString()
-    U32			GetY();
+    S32			GetY();
     
     // Returns the current metrics for the loaded font and property size
     Boolean		GetFontMetrics(tFontMetrics* pMtx);

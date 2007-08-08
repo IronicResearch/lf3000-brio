@@ -895,7 +895,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 }
 
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
+Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
 	// TODO: Handle multi-byte code instead of plain char
 	const char*		ch = pStr->c_str();
@@ -903,7 +903,8 @@ Boolean CFontModule::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
 	int				i;
 	Boolean			rc;
 	
-	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::DrawString: %s, XY = %d,%d, length = %d\n", ch, x, y, len);
+	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::DrawString: %s, XY = %d,%d, length = %d\n", 
+			ch, static_cast<int>(x), static_cast<int>(y), len);
 
 	// Set current XY glyph cursor position
 	curX_ = x;
@@ -921,13 +922,13 @@ Boolean CFontModule::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
 }
 
 //----------------------------------------------------------------------------
-U32 CFontModule::GetX()
+S32 CFontModule::GetX()
 {
 	return curX_;
 }
 
 //----------------------------------------------------------------------------
-U32 CFontModule::GetY()
+S32 CFontModule::GetY()
 {
 	return curY_;
 }

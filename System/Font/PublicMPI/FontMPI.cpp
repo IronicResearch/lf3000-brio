@@ -132,7 +132,7 @@ Boolean	CFontMPI::GetFontAttr(tFontAttr* pAttr)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CFontMPI::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
+Boolean	CFontMPI::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
 	if (!pModule_)
 		return false;
@@ -140,7 +140,7 @@ Boolean	CFontMPI::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
 }
 
 //----------------------------------------------------------------------------
-U32 CFontMPI::GetX()
+S32 CFontMPI::GetX()
 {
 	if (!pModule_)
 		return 0;
@@ -148,7 +148,7 @@ U32 CFontMPI::GetX()
 }
 
 //----------------------------------------------------------------------------
-U32 CFontMPI::GetY()
+S32 CFontMPI::GetY()
 {
 	if (!pModule_)
 		return 0;
