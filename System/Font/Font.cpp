@@ -80,7 +80,7 @@ OnFaceRequest( FTC_FaceID  faceId,
 		char*  suffix;
 		char   orig[4];
 		
-		
+		// Support for separate kerning metrics files for Adobe Type 1 fonts
 		suffix = strrchr( font->filepathname, '.' );
 		if ( suffix && ( strcasecmp( suffix, ".pfa" ) == 0 || strcasecmp( suffix, ".pfb" ) == 0 ) )
 	    {
@@ -718,22 +718,15 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 }
   
 //----------------------------------------------------------------------------
-// Draw single glyph at XY location in rendering context buffer
+// Get glyph matching character code 
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
+Boolean CFontModule::GetGlyph(char ch, FT_Glyph* pGlyph)
 {
-	// FIXME: Until integration with Display manager is figured out,
-	//        a device context argument will need to passed as argument.
-	//        For now, this is a pointer to tFontSurf surface descriptor. 
-
 	FT_Glyph		glyph;
-	FT_BitmapGlyph  bitmap;
-	FT_Bitmap*      source;
-	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
 	int				error = FT_Err_Ok;
 	int				index;
 	PFont			font;
-	
+
 #if USE_FONT_CACHE_MGR
 	// Sanity check
 	if (handle_.currentFont == NULL) 
@@ -790,6 +783,32 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	}
 #endif		
 
+	*pGlyph = glyph;
+	return true;
+}
+
+//----------------------------------------------------------------------------
+// Draw single glyph at XY location in rendering context buffer
+//----------------------------------------------------------------------------
+Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
+{
+	FT_Glyph		glyph;
+	FT_BitmapGlyph  bitmap;
+	FT_Bitmap*      source;
+	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
+	int				error = FT_Err_Ok;
+	int				index;
+	PFont			font = handle_.currentFont;
+	Boolean			rc = false;
+	
+	// Get glyph matching char code
+	rc = GetGlyph(ch, &glyph);
+	if (!rc)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %c\n", ch );
+		return false;
+	}
+	
 	// Special handling for spaces: (and other non-visible glyphs?)
 	// No bitmaps are created, though XY cursor still needs to advance.
 	if ( ch == ' ' ) 
@@ -825,10 +844,6 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	int dx = bitmap->left;
 	int dy = bitmap->top;
 	int dz = font->ascent;
-
-	// TODO: Handle other source bitmap cases besides 1bpp mono
-	// TODO: Handle other destination buffer cases besides 32bpp RGB
-	// TODO: ie, use newly added pixel format field
 
 	// Draw mono bitmap into RGB context buffer with current color
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
@@ -883,6 +898,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 //----------------------------------------------------------------------------
 Boolean CFontModule::DrawString(CString* pStr, int x, int y, tFontSurf* pCtx)
 {
+	// TODO: Handle multi-byte code instead of plain char
 	const char*		ch = pStr->c_str();
 	int				len = pStr->size();
 	int				i;
@@ -935,8 +951,39 @@ Boolean CFontModule::GetFontMetrics(tFontMetrics* pMtx)
 //----------------------------------------------------------------------------
 Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 {
-	// TODO
-	return false;
+	// TODO: Handle multi-byte code instead of plain char
+	const char*		ch = pStr->c_str();
+	int				len = pStr->size();
+	PFont			font = handle_.currentFont;
+	FT_Glyph		glyph;
+	FT_BBox			bbox,gbox = {0, 0, 0, 0};
+	int				dx = 0, dy = 0;
+	
+	if (font == NULL || pRect == NULL)
+		return false;
+
+	// Get bounding box for each glyph in char string
+	for (int i = 0; i < len; i++)
+	{
+		if (!GetGlyph(ch[i], &glyph))
+			continue;
+		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
+		// TODO: Adjust for kerning
+		gbox.xMin = std::min(bbox.xMin+dx, gbox.xMin);
+		gbox.yMin = std::min(bbox.yMin+dy, gbox.yMin);
+		gbox.xMax = std::max(bbox.xMax+dx, gbox.xMax);
+		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
+		// TODO: Adjust for glyph position
+		dx += ( glyph->advance.x + 0x8000 ) >> 16;
+		dy += ( glyph->advance.y + 0x8000 ) >> 16;
+	}
+
+	// Pass back bounding box min/max coords as rect param
+	pRect->left = gbox.xMin;
+	pRect->top  = gbox.yMax;
+	pRect->right = gbox.xMax;
+	pRect->bottom = gbox.yMin;
+	return true;
 }
 
 LF_END_BRIO_NAMESPACE()
