@@ -6701,3 +6701,15 @@ By tparker (tparker@leapfrog.com) on 8/7/07 4:45 PM
 2,734 ms. (Cumulative: 1,276,269 ms)
 
 ----------------
+Revision 1,189 from svn://localhost/TRUNK/:
+Revision 1,190 from svn://localhost/TRUNK/:
+Revision 1,191 from svn://localhost/TRUNK/:
+Revision 1,192 from svn://localhost/TRUNK/:
+
+Updated to RunMy Tests unit test generation after Terry's improvments
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/7/07 5:40 PM
+2 changed, 2 added, 0 deleted.
+2,782 ms. (Cumulative: 1,279,129 ms)
+
+----------------
