@@ -114,7 +114,7 @@ public:
 		sleep(1);
 		eglWaitGL();
 
-#if 0	// FIXME/dm: Find source of segfault at exit triggered by OGL calls 
+#if 1	// FIXME/dm: segfault traced back to MagicEyes libogl free() call at exit
 		glClearColorx(0x10000, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
