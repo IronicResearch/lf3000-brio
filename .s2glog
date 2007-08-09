@@ -6846,3 +6846,19 @@ By tgillette (tgillette@leapfrog.com) on 8/9/07 3:14 PM
 2,759 ms. (Cumulative: 1,317,406 ms)
 
 ----------------
+Revision 1,232 from svn://localhost/TRUNK/:
+Revision 1,233 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,672 ms. (Cumulative: 1,320,140 ms)
+
+----------------
+Revision 1,234 from svn://localhost/TRUNK/:
+
+Checkin unit test with segfault comment (for SVN test).
+
+By Dmilici (Dmilici@leapfrog.com) on 8/9/07 3:23 PM
+1 changed, 0 added, 0 deleted.
+2,518 ms. (Cumulative: 1,322,674 ms)
+
+----------------
