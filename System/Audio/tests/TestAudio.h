@@ -35,21 +35,33 @@ class AudioListener : public IEventListener
 {
 public:
 	AudioListener( )
-		: IEventListener(kMyAudioTypes, ArrayCount(kMyAudioTypes)), dbg_(kMyApp)
+		: IEventListener(kMyAudioTypes, ArrayCount( kMyAudioTypes )), dbg_( kMyApp )
 	{
+		dbg_.SetDebugLevel( kDbgLvlVerbose );
+		dbg_.DebugOut( kDbgLvlVerbose, "Audio Listener created...\n" );
 	}
 
 	virtual tEventStatus Notify( const IEventMessage &msgIn )
 	{
+		tEventStatus status = kEventStatusOK;
+		
 		const CAudioEventMessage& msg = dynamic_cast<const CAudioEventMessage&>(msgIn);
 		if( msg.GetEventType() == kAudioCompletedEvent )
 		{
-			const tAudioMsgDataCompleted& data = msg.audioMsgData.audioCompleted;
+			const tAudioMsgAudioCompleted& data = msg.audioMsgData.audioCompleted;
 			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
 					static_cast<int>(data.audioID), static_cast<int>(data.payload));
-			return kEventStatusOKConsumed;
+			status = kEventStatusOKConsumed;
+		} 
+		else if( msg.GetEventType() == kMidiCompletedEvent )
+		{
+			const tAudioMsgMidiCompleted& data = msg.audioMsgData.midiCompleted;
+			dbg_.DebugOut(kDbgLvlVerbose, "MIDI File done: player id=%d, payload=%d\n", 
+					static_cast<int>(data.midiPlayerID), static_cast<int>(data.payload));
+			status = kEventStatusOKConsumed;
 		}
-		return kEventStatusOK;
+
+		return status;
 	}
 private:
 	CDebugMPI	dbg_;
@@ -318,11 +330,11 @@ public:
 	//------------------------------------------------------------------------
 	void testVorbisPlusMIDIResources( )
 	{
-		U32			index;
-		tRsrcHndl	handle1, handle2, handle3, handle4;
-		tAudioID 	id1, id2, id3, id4;
-		U32			audioTime;
 		tErrType 		err;
+		U32				index;
+		tRsrcHndl		handle1, handle2, handle3, handle4;
+		tAudioID 		id1, id2, id3, id4;
+		U32				audioTime;
 		tMidiPlayerID	midiPlayerID;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
@@ -339,26 +351,25 @@ public:
 		// Package is already opened in setup
 		handle1 = pResourceMPI_->FindRsrc( "VH_16_mono" );
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found VH_16_mono, rsrcHandle = %d\n", (int)handle1 );
+		printf("TestAudio -- testVorbisPlusMIDIResources() found VH_16_mono, rsrcHandle = %d\n", (int)handle1 );
 
 		handle2 = pResourceMPI_->FindRsrc( "vivaldi" );
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found vivaldi, rsrcHandle = %d\n", (int)handle2 );
+		printf("TestAudio -- testVorbisPlusMIDIResources() found vivaldi, rsrcHandle = %d\n", (int)handle2 );
 		
 		handle3 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
 		TS_ASSERT( handle3 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found Neutr_3_noDrums, rsrcHandle = %d\n", (int)handle3 );
+		printf("TestAudio -- testVorbisPlusMIDIResources() found Neutr_3_noDrums, rsrcHandle = %d\n", (int)handle3 );
 
 		handle4 = pResourceMPI_->FindRsrc( "Sine44" );
 		TS_ASSERT( handle4 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found sine44, rsrcHandle = %d\n", (int)handle4 );
+		printf("TestAudio -- testVorbisPlusMIDIResources() found sine44, rsrcHandle = %d\n", (int)handle4 );
 
 		// volume is faked by right shift at this point
 		id4 = pAudioMPI_->StartAudio( handle4, 100, 1, 0, &audioListener_, 0, 0 );
 
-		
 		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
-		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
+		printf("TestAudio -- testVorbisPlusMIDIResources() back from calling StartAudio()\n" );
 
 		pKernelMPI_->TaskSleep(4000 ); 
 
@@ -400,7 +411,7 @@ public:
 		tAudioID 		id1;
 		tAudioID 		id2;
 		tAudioID 		id3;
-		tMidiPlayerID 		midiID;
+		tMidiPlayerID 	midiID;
 		
 		const int kDuration = 1 * 3000;
 

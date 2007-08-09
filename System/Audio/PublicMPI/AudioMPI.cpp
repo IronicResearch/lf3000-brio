@@ -47,10 +47,22 @@ static const CString kMPIName = "AudioMPI";
 // CAudioEventMessage
 //============================================================================
 //------------------------------------------------------------------------------
-CAudioEventMessage::CAudioEventMessage( const tAudioMsgDataCompleted& data ) 
+CAudioEventMessage::CAudioEventMessage( const tAudioMsgAudioCompleted& data ) 
 	: IEventMessage(kAudioCompletedEvent, 0)
 {
 	audioMsgData.audioCompleted = data;
+}
+
+CAudioEventMessage::CAudioEventMessage( const tAudioMsgMidiCompleted& data ) 
+	: IEventMessage(kMidiCompletedEvent, 0)
+{
+	audioMsgData.midiCompleted = data;
+}
+
+CAudioEventMessage::CAudioEventMessage( const tAudioMsgCuePoint& data ) 
+	: IEventMessage(kAudioCuePointEvent, 0)
+{
+	audioMsgData.audioCuePoint = data;
 }
 
 //------------------------------------------------------------------------------

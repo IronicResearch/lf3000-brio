@@ -6771,3 +6771,18 @@ By tparker (tparker@leapfrog.com) on 8/9/07 9:42 AM
 2,578 ms. (Cumulative: 1,293,114 ms)
 
 ----------------
+Revision 1,211 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,562 ms. (Cumulative: 1,295,739 ms)
+
+----------------
+Revision 1,212 from svn://localhost/TRUNK/:
+
+Changes to support MidiDone events, separate from AudioDone events.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/9/07 10:14 AM
+12 changed, 0 added, 0 deleted.
+2,876 ms. (Cumulative: 1,298,615 ms)
+
+----------------

@@ -27,6 +27,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Defines
 //==============================================================================
+#define	BRIO_MIDI_PLAYER_ID		1	// Hard code player ID for now...
 
 //==============================================================================
 // Global variables
@@ -37,60 +38,63 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 CAudioMixer::CAudioMixer( U8 numChannels )
 {
-long i, ch;
-	CDebugMPI debugMPI( kGroupAudio );
+	long i, ch;
 
 	masterVol_   = 100;
 	numChannels_ = numChannels;
 
 	DefaultBrioMixer(&pDSP_);
 	pDSP_.channelCount = numChannels_;
-printf("CAudioMixer::CAudioMixer: numChannels_=%d \n", numChannels_);
+	
+	pDebugMPI_ = new CDebugMPI( kGroupAudio );
+	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioMixer::CAudioMixer: numChannels_=%d \n", numChannels_);
+	
 	// Allocate audio channels
 	pChannels_ = new CChannel[ numChannels_ ];
-	debugMPI.Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: Mixer couldn't allocate channels!\n" );
+	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: Mixer couldn't allocate channels!\n" );
 
 	// Init midi player ptr
-	pMidiPlayer_   = new CMidiPlayer( );
-	
-// Allocate and configure intermediate buffers and sampling rate conversion
+	pMidiPlayer_   = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+		
+	// Allocate and configure intermediate buffers and sampling rate conversion
 	pMixBuffer_    = new S16[   kAudioOutBufSizeInWords * sizeof(S16)];
 	pSRCInBuffer_  = new S16[ 2*kAudioOutBufSizeInWords * sizeof(S16)];
 	pSRCOutBuffer_ = new S16[ 2*kAudioOutBufSizeInWords * sizeof(S16)];
-
-long fsRack[3];
-fsRack[0] =  8000;
-fsRack[1] = 16000;
-fsRack[2] = 32000;
-for (i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
-	{
-// Initialize sampling rate converters  
-	for (ch = 0; ch < 2; ch++)
+	
+	long fsRack[3];
+	fsRack[0] =  8000;
+	fsRack[1] = 16000;
+	fsRack[2] = 32000;
+	for (i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
 		{
-		srcMixBinBufferPtrs_[i][ch] = new S16[2*kAudioOutBufSizeInWords * sizeof(S16)];
-		DefaultSRC(&src_[i][ch]);
-		src_[i][ch].type = kSRC_Interpolation_Type_Triangle; // Linear, Triangle, FIR
-		SRC_SetInSamplingFrequency (&src_[i][ch], (float)fsRack[i]);
-		SRC_SetOutSamplingFrequency(&src_[i][ch], (float)kAudioSampleRate);
-		UpdateSRC(&src_[i][ch]);
-		ResetSRC(&src_[i][ch]);
+	// Initialize sampling rate converters  
+		for (ch = 0; ch < 2; ch++)
+			{
+			srcMixBinBufferPtrs_[i][ch] = new S16[2*kAudioOutBufSizeInWords * sizeof(S16)];
+			DefaultSRC(&src_[i][ch]);
+			src_[i][ch].type = kSRC_Interpolation_Type_Triangle; // Linear, Triangle, FIR
+			SRC_SetInSamplingFrequency (&src_[i][ch], (float)fsRack[i]);
+			SRC_SetOutSamplingFrequency(&src_[i][ch], (float)kAudioSampleRate);
+			UpdateSRC(&src_[i][ch]);
+			ResetSRC(&src_[i][ch]);
+			}
+		srcMixBinFilled_[i] = False;
 		}
-	srcMixBinFilled_[i] = False;
-	}
-
-// Configure DSP engine
-for (i = 0; i < pDSP_.channelCount; i++)
-	{
-	pChannels_[i].SetMixerChannelDataPtr(&pDSP_.channels[i]);
-	}
-
-for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
-	{
-	long bufWords = 2*kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements;
-	pTmpBuffers_[i] = new S16[ bufWords * sizeof(S16)];
-	tmpBufOffsetPtrs_[i] = &pTmpBuffers_[i][kSRC_Filter_MaxDelayElements];
-	}
+	
+	// Configure DSP engine
+	for (i = 0; i < pDSP_.channelCount; i++)
+		{
+		pChannels_[i].SetMixerChannelDataPtr(&pDSP_.channels[i]);
+		}
+	
+	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
+		{
+		long bufWords = 2*kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements;
+		pTmpBuffers_[i] = new S16[ bufWords * sizeof(S16)];
+		tmpBufOffsetPtrs_[i] = &pTmpBuffers_[i][kSRC_Filter_MaxDelayElements];
+		}
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
 //==============================================================================
@@ -98,7 +102,8 @@ for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 //==============================================================================
 CAudioMixer::~CAudioMixer()
 {
-long i;
+	long i;
+
 	// Deallocate the channels
 	if (pChannels_)
 	{
@@ -110,26 +115,26 @@ long i;
 	if (pMidiPlayer_)
 		delete pMidiPlayer_;
 
-// Dellocate buffers 
-if (pMixBuffer_)
-	free(pMixBuffer_);
-if (pSRCInBuffer_)
-	free(pSRCInBuffer_);
-if (pSRCOutBuffer_)
-	free(pSRCOutBuffer_);
-for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
-	{
-	if (pTmpBuffers_[i])
-		free(pTmpBuffers_[i]);
-	}
-
-for (long i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
-	{
-	if (srcMixBinBufferPtrs_[i][0])
-		free(srcMixBinBufferPtrs_[i][0]);
-	if (srcMixBinBufferPtrs_[i][1])
-		free(srcMixBinBufferPtrs_[i][1]);
-	}
+	// Dellocate buffers 
+	if (pMixBuffer_)
+		free(pMixBuffer_);
+	if (pSRCInBuffer_)
+		free(pSRCInBuffer_);
+	if (pSRCOutBuffer_)
+		free(pSRCOutBuffer_);
+	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
+		{
+		if (pTmpBuffers_[i])
+			free(pTmpBuffers_[i]);
+		}
+	
+	for (long i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
+		{
+		if (srcMixBinBufferPtrs_[i][0])
+			free(srcMixBinBufferPtrs_[i][0]);
+		if (srcMixBinBufferPtrs_[i][1])
+			free(srcMixBinBufferPtrs_[i][1]);
+		}
 }  // ---- end ~CAudioMixer::CAudioMixer() ----
 
 //==============================================================================
@@ -199,19 +204,16 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 //==============================================================================
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
 {
-	U32		i;
+	U32			i;
 	U32 		framesRendered;
-	U8		iChan;
+	U8			iChan;
 	CChannel	*pChan;
-long mixBinIndex;
-long channelsPerFrame = 2;
+	long 		mixBinIndex;
+	long 		channelsPerFrame = 2;
 
-//	printf("AudioMixer::RenderBuffer -- START \n");
-
-	// fixme/dg: do proper DebugMPI-based output.
 //	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
-	if ( (numFrames * kAudioBytesPerStereoFrame) != kAudioOutBufSizeInBytes )
-		printf("AudioMixer::RenderBuffer -- frameCount doesn't match buffer size!!!\n");
+	pDebugMPI_->Assert( ((numFrames * kAudioBytesPerStereoFrame) == kAudioOutBufSizeInBytes ),
+		"AudioMixer::RenderBuffer -- frameCount doesn't match buffer size!!!\n");
 		
 	// Clear output buffers
 	ClearShorts( pOutBuff, numFrames * channelsPerFrame );
@@ -220,12 +222,12 @@ long channelsPerFrame = 2;
 
 // printf("numStereoFrames=%ld kAudioBytesPerStereoFrame=%d kAudioOutBufSizeInBytes=%d \n",		numFrames, kAudioBytesPerStereoFrame, kAudioOutBufSizeInBytes);
 
-// Clear stereo mix buffers
-for (i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
-	{
-	ClearShorts( srcMixBinBufferPtrs_[i][0], numFrames*channelsPerFrame);
-	ClearShorts( srcMixBinBufferPtrs_[i][1], numFrames*channelsPerFrame);
-	}
+	// Clear stereo mix buffers
+	for (i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
+		{
+		ClearShorts( srcMixBinBufferPtrs_[i][0], numFrames*channelsPerFrame);
+		ClearShorts( srcMixBinBufferPtrs_[i][1], numFrames*channelsPerFrame);
+		}
 
 	//
 	// ---- Render each channel to mix buffer with corresponding sampling frequency
@@ -276,31 +278,31 @@ for (i = 0; i < kAudioMixer_SRC_MixBinCount; i++)
 		Add2_Shortsi(pTmpBuffers_[0], mixBuf, mixBuf, midiFrames*2);
 		}
 
-// 
-// Convert Mix buffers to output sampling rate
-//
-mixBinIndex = kAudioMixer_SRC_MixBin_2_32000Hz;
-CopyShorts(srcMixBinBufferPtrs_[mixBinIndex][0], pOutBuff, numFrames*2);
-
-// Deinterleave and process each channel separately
-//mixBinIndex = kAudioMixer_SRC_MixBin_0_8000Hz;
-//DeinterleaveShorts(srcMixBinBufferPtrs_[mixBinIndex][0], pTmpBuffers_[2], pTmpBuffers_[3], numFrames);
-//RunSRC(pTmpBuffers_[2], pTmpBuffers_[0], numFrames/4, numFrames, &src_[mixBinIndex][0]);
-//RunSRC(pTmpBuffers_[3], pTmpBuffers_[1], numFrames/4, numFrames, &src_[mixBinIndex][1]);
-//InterleaveShorts(pTmpBuffers_[0], pTmpBuffers_[1], pTmpBuffers_[6], numFrames);
-//Add2_Shortsi(pTmpBuffers_[6], pOutBuff, pOutBuff, numFrames*2);
-//CopyShorts(pTmpBuffers_[6], pOutBuff, numFrames*2);
-
-mixBinIndex = kAudioMixer_SRC_MixBin_1_16000Hz;
-DeinterleaveShorts(srcMixBinBufferPtrs_[mixBinIndex][0], pTmpBuffers_[4], pTmpBuffers_[5], numFrames);
-RunSRC(pTmpBuffers_[4], pTmpBuffers_[0], numFrames/2, numFrames, &src_[mixBinIndex][0]);
-RunSRC(pTmpBuffers_[5], pTmpBuffers_[1], numFrames/2, numFrames, &src_[mixBinIndex][1]);
-InterleaveShorts(pTmpBuffers_[0], pTmpBuffers_[1], pTmpBuffers_[6], numFrames);
-Add2_Shortsi(pTmpBuffers_[6], pOutBuff, pOutBuff, numFrames*2);
-//CopyShorts(pTmpBuffers_[6], pOutBuff, numFrames*2);
+	// 
+	// Convert Mix buffers to output sampling rate
+	//
+	mixBinIndex = kAudioMixer_SRC_MixBin_2_32000Hz;
+	CopyShorts(srcMixBinBufferPtrs_[mixBinIndex][0], pOutBuff, numFrames*2);
+	
+	// Deinterleave and process each channel separately
+	//mixBinIndex = kAudioMixer_SRC_MixBin_0_8000Hz;
+	//DeinterleaveShorts(srcMixBinBufferPtrs_[mixBinIndex][0], pTmpBuffers_[2], pTmpBuffers_[3], numFrames);
+	//RunSRC(pTmpBuffers_[2], pTmpBuffers_[0], numFrames/4, numFrames, &src_[mixBinIndex][0]);
+	//RunSRC(pTmpBuffers_[3], pTmpBuffers_[1], numFrames/4, numFrames, &src_[mixBinIndex][1]);
+	//InterleaveShorts(pTmpBuffers_[0], pTmpBuffers_[1], pTmpBuffers_[6], numFrames);
+	//Add2_Shortsi(pTmpBuffers_[6], pOutBuff, pOutBuff, numFrames*2);
+	//CopyShorts(pTmpBuffers_[6], pOutBuff, numFrames*2);
+	
+	mixBinIndex = kAudioMixer_SRC_MixBin_1_16000Hz;
+	DeinterleaveShorts(srcMixBinBufferPtrs_[mixBinIndex][0], pTmpBuffers_[4], pTmpBuffers_[5], numFrames);
+	RunSRC(pTmpBuffers_[4], pTmpBuffers_[0], numFrames/2, numFrames, &src_[mixBinIndex][0]);
+	RunSRC(pTmpBuffers_[5], pTmpBuffers_[1], numFrames/2, numFrames, &src_[mixBinIndex][1]);
+	InterleaveShorts(pTmpBuffers_[0], pTmpBuffers_[1], pTmpBuffers_[6], numFrames);
+	Add2_Shortsi(pTmpBuffers_[6], pOutBuff, pOutBuff, numFrames*2);
+	//CopyShorts(pTmpBuffers_[6], pOutBuff, numFrames*2);
 		
 #if 0
-// fixme/rdg:  needs CAudioEffectsProcessor
+	// fixme/rdg:  needs CAudioEffectsProcessor
 	// If at least one audio channel is playing, Process global audio effects
 	if (numPlaying && (gAudioContext->pAudioEffects != kNull))
 		gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuff );
@@ -315,9 +317,9 @@ Add2_Shortsi(pTmpBuffers_[6], pOutBuff, pOutBuff, numFrames*2);
 		pOutBuff[i] = (S16)((pOutBuff[i] * (int)masterVol_) >> 7); // fixme; 
 	} 
 #else
-// Run_BrioMixer(short **ins, short **outs, long length, BRIOMIXER *d)
-// Initial integration code:  scale stereo/interleaved buffer 
-ScaleShortsf(pOutBuff, pOutBuff, length, d->outGainf[0]);
+	// Run_BrioMixer(short **ins, short **outs, long length, BRIOMIXER *d)
+	// Initial integration code:  scale stereo/interleaved buffer 
+	ScaleShortsf(pOutBuff, pOutBuff, length, d->outGainf[0]);
 
 #endif
 

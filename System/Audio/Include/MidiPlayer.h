@@ -37,7 +37,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //class CMidiPlayer : public CAudioPlayer {
 class CMidiPlayer {
 public:
-	CMidiPlayer();
+	CMidiPlayer( tMidiPlayerID id );
 	~CMidiPlayer();
 
 	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOutput  );
@@ -49,7 +49,7 @@ public:
 	inline void		DeActivate() { bActive_ = false; }
 
 	// Get/Set the class member variables
-	inline tMidiPlayerID		GetMidiID() { return id_; }
+	inline tMidiPlayerID		GetID() { return id_; }
 
 	// Control the playing of MIDI data
 	tErrType 	NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
