@@ -6862,3 +6862,20 @@ By Dmilici (Dmilici@leapfrog.com) on 8/9/07 3:23 PM
 2,518 ms. (Cumulative: 1,322,674 ms)
 
 ----------------
+Revision 1,235 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,500 ms. (Cumulative: 1,325,236 ms)
+
+----------------
+Revision 1,236 from svn://localhost/TRUNK/:
+Revision 1,237 from svn://localhost/TRUNK/:
+Revision 1,238 from svn://localhost/TRUNK/:
+
+testStartStopTimer was modified
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/9/07 4:05 PM
+2 changed, 0 added, 0 deleted.
+2,531 ms. (Cumulative: 1,327,783 ms)
+
+----------------
