@@ -6762,3 +6762,12 @@ By Dmilici (Dmilici@leapfrog.com) on 8/8/07 7:45 PM
 2,672 ms. (Cumulative: 1,290,473 ms)
 
 ----------------
+Revision 1,210 from svn://localhost/TRUNK/:
+
+When a listener listened to both async & response events, normal usage would generate 2 notifications for the response event.  Now only call the async registered listeners if there is no response listener.
+
+By tparker (tparker@leapfrog.com) on 8/9/07 9:42 AM
+2 changed, 0 added, 0 deleted.
+2,578 ms. (Cumulative: 1,293,114 ms)
+
+----------------
