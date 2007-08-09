@@ -17,6 +17,7 @@
 #include <FontTypes.h>
 #include <FontPriv.h>
 #include <ResourceMPI.h>
+#include <KernelMPI.h>
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -156,6 +157,8 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 //----------------------------------------------------------------------------
 CFontModule::~CFontModule()
 {
+	CKernelMPI	kernel;
+	
 	if (!handle_.library)
 		return;
 
@@ -163,9 +166,13 @@ CFontModule::~CFontModule()
 	for (int i = 0; i < handle_.numFonts; i++) 
 	{
 		if (handle_.fonts[i])
-			free(handle_.fonts[i]);
+		{
+			if (handle_.fonts[i]->filepathname)
+				kernel.Free((char*)(handle_.fonts[i]->filepathname));
+			kernel.Free(handle_.fonts[i]);
+		}
 	}
-	free(handle_.fonts);
+	kernel.Free(handle_.fonts);
 
 #if USE_FONT_CACHE_MGR
 	// Unload FreeType font cache manager
@@ -191,9 +198,8 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	PFont			font;
 	int				error;
 	const char*		filename = pName->c_str();
-	int				pixelSize;
-	FTC_ScalerRec	scaler;
     FT_Size      	size;
+    CKernelMPI		kernel;
 	
 	// Bogus font file name?
 	if (filename == NULL) 
@@ -215,14 +221,13 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	}
 		
 	// Allocate mem for font face
-	font = (PFont)malloc( sizeof ( *font ) );
-	
-	font->filepathname = (char*)malloc( strlen( filename ) + 1 );
+	font = static_cast<PFont>(kernel.Malloc( sizeof ( TFont ) ) );
+	dbg_.Assert(font != NULL, "CFontModule::LoadFont: font struct could not be allocated\n");
+	font->filepathname = static_cast<char*>(kernel.Malloc( strlen( filename ) + 1 ) );
+	dbg_.Assert(font->filepathname != NULL, "CFontModule::LoadFont: font filepathname could not be allocated\n");
 	strcpy( (char*)font->filepathname, filename );
-
 	font->fileAddress = pFileImage;
 	font->fileSize = fileSize;
-	
 	font->faceIndex = 0; // i;
 	font->cmapIndex = face->charmap ? FT_Get_Charmap_Index( face->charmap ) : 0;
 	
@@ -243,24 +248,31 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     if ( handle_.maxFonts == 0 ) 
     {
 		handle_.maxFonts = 16;
-		handle_.fonts     = (PFont*)calloc( handle_.maxFonts, sizeof ( PFont ) );
+		handle_.fonts     = static_cast<PFont*>(kernel.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
 		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be allocated\n");
+		memset( &handle_.fonts[0], 0, handle_.maxFonts * sizeof ( PFont ) );
     }
     else if ( handle_.numFonts >= handle_.maxFonts ) 
     {
+    	PFont* 	oldlist = handle_.fonts;
 		handle_.maxFonts *= 2;
-		handle_.fonts      = (PFont*)realloc( handle_.fonts, handle_.maxFonts * sizeof ( PFont ) );
+		handle_.fonts      = static_cast<PFont*>(kernel.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
 		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be reallocated\n");
-		
+		memcpy( &handle_.fonts[0], oldlist, handle_.numFonts * sizeof ( PFont ) );
 		memset( &handle_.fonts[handle_.numFonts], 0, ( handle_.maxFonts - handle_.numFonts ) * sizeof ( PFont ) );
+		kernel.Free(oldlist);
     }
 
 	// Add this font to our list of fonts
-    handle_.fonts[handle_.numFonts++] = font;
+    handle_.fonts[handle_.numFonts] = font;
+    handle_.curFont = handle_.numFonts++;
+    handle_.currentFont = font;
     
 #if USE_FONT_CACHE_MGR
- 	// Set current font for cache manager   
-    handle_.currentFont = font;
+	FTC_ScalerRec	scaler;
+	int				pixelSize;
+
+	// Set current font for cache manager   
     scaler.face_id = handle_.imageType.face_id = (FTC_FaceID)font;
     
     // Set selected font size
@@ -275,17 +287,25 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FTC_Manager_LookupSize failed for font size = %d, pixels = %d, error = %d\n", prop.size, pixelSize, error);
 		return false;
     }
-    // Get font metrics for all glyphs (26:6 fixed-point)
     font->size = size;
     font->scaler = scaler;
+#else
+	// Select font size explicitly
+	error = FT_Set_Char_Size(face, prop.size << 6, prop.size << 6, 72, 72);
+    if ( error ) 
+    {
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FT_Set_Char_Size failed for font size = %d, error = %d\n", prop.size, error);
+		return false;
+    }
+	font->size = size = face->size;
+#endif	
+
+	// Get font metrics for all glyphs (26:6 fixed-point)
     font->height = size->metrics.height >> 6;
 	font->ascent = size->metrics.ascender >> 6;
 	font->descent = size->metrics.descender >> 6;
 	font->advance = size->metrics.max_advance >> 6;
-	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, pixels = %d, height = %d, ascent = %d, descent = %d\n", prop.size, pixelSize, font->height, font->ascent, font->descent);
-#else
-	// FIXME: Select font size from available sizes
-#endif	
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, height = %d, ascent = %d, descent = %d\n", prop.size, font->height, font->ascent, font->descent);
 		
 	return (tFontHndl)font; //true;
 }
@@ -354,13 +374,17 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 			rsrcmgr.UnloadRsrc(pFont->hRsrcFont);
 			pFont->hRsrcFont = kInvalidRsrcHndl;
 		}
+
+#if !USE_FONT_CACHE_MGR
+		// Release FreeType font face instance (no cache manager)
+		if (pFont->face != NULL)
+		{
+			FT_Done_Face(pFont->face);
+			pFont->face = NULL;
+		}
+#endif
 	}
 
-	if (handle_.face) 
-	{
-		FT_Done_Face(handle_.face);
-		handle_.face = NULL;
-	}
 	return true;
 }
 
@@ -375,10 +399,12 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
 	// Reload cached settings
 	handle_.currentFont = pFont;
 	FT_Activate_Size(pFont->size);
+#if USE_FONT_CACHE_MGR
     handle_.imageType.face_id = reinterpret_cast<FTC_FaceID>(pFont);
     handle_.imageType.width = pFont->scaler.width;
     handle_.imageType.height = pFont->scaler.height;
-	return true;
+#endif
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -720,65 +746,57 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 //----------------------------------------------------------------------------
 // Get glyph matching character code 
 //----------------------------------------------------------------------------
-Boolean CFontModule::GetGlyph(char ch, FT_Glyph* pGlyph)
+Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph)
 {
 	FT_Glyph		glyph;
 	int				error = FT_Err_Ok;
 	int				index;
-	PFont			font;
+	PFont			font = handle_.currentFont;
 
-#if USE_FONT_CACHE_MGR
 	// Sanity check
-	if (handle_.currentFont == NULL) 
+	if (font == NULL) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: invalid font selection\n" );
 		return false;
 	}
-	font = handle_.currentFont;
 	
+#if USE_FONT_CACHE_MGR
   	// For selected font, find the glyph matching the char
     index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
 	if (index == 0) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %c, index = %d\n", ch, index );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d\n", static_cast<unsigned int>(ch), index );
 		return false;
 	}
 
 	error = FTC_ImageCache_Lookup( handle_.imageCache, &handle_.imageType, index, &glyph, NULL );
 	if (error) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %c, index = %d, error = %d\n", ch, index, error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %08X, index = %d, error = %d\n", static_cast<unsigned int>(ch), index, error );
 		return false;
 	}
 #else
-	// Sanity check
-	if (handle_.face == NULL) 
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: invalid font selection\n" );
-		return false;
-	}
-	font = handle_.fonts[handle_.curFont];
-	
   	// For selected font, find the glyph matching the char
-	index = FT_Get_Char_Index(handle_.face, ch);
+	index = FT_Get_Char_Index(font->face, ch);
 	if (index == 0) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %c, index = %d\n", ch, index );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d\n", static_cast<unsigned int>(ch), index );
 		return false;
 	}
 
-	// FIXME: Error 36 = invalid size selection
-	error = FT_Load_Char(handle_.face, index, FT_LOAD_DEFAULT);
+	// Load indexed glyph into face's internal glyph record slot
+	error = FT_Load_Glyph(font->face, index, FT_LOAD_DEFAULT);
 	if (error) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %c, index = %d, error = %d\n", ch, index, error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d, error = %d\n", static_cast<unsigned int>(ch), index, error );
 		return false;
 	}
-
-	error = FT_Get_Glyph(handle_.face->glyph , &glyph);
+	
+	// Copy glyph from face's internal glyph record slot (not exact same struct)
+	error = FT_Get_Glyph(font->face->glyph , &glyph);
 	if (error) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %c, error = %d\n", ch, error );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %08X, error = %d\n", static_cast<unsigned int>(ch), error );
 		return false;
 	}
 #endif		
@@ -790,7 +808,7 @@ Boolean CFontModule::GetGlyph(char ch, FT_Glyph* pGlyph)
 //----------------------------------------------------------------------------
 // Draw single glyph at XY location in rendering context buffer
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
+Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx)
 {
 	FT_Glyph		glyph;
 	FT_BitmapGlyph  bitmap;
@@ -804,7 +822,7 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 	rc = GetGlyph(ch, &glyph);
 	if (!rc)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %c\n", ch );
+		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %08X\n", static_cast<unsigned int>(ch) );
 		return false;
 	}
 	
@@ -897,12 +915,12 @@ Boolean CFontModule::DrawGlyph(char ch, int x, int y, tFontSurf* pCtx)
 //----------------------------------------------------------------------------
 Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
-	// TODO: Handle multi-byte code instead of plain char
 	const char*		ch = pStr->c_str();
 	int				len = pStr->size();
 	int				i;
 	Boolean			rc;
 	
+	// C char string only used for debug output now
 	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::DrawString: %s, XY = %d,%d, length = %d\n", 
 			ch, static_cast<int>(x), static_cast<int>(y), len);
 
@@ -913,7 +931,8 @@ Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 	// Draw each char glyph in the string
 	for (i = 0; i < len; i++) 
 	{
-		rc = DrawGlyph(ch[i], curX_, curY_, pCtx);
+		tWChar charcode = pStr->at(i);
+		rc = DrawGlyph(charcode, curX_, curY_, pCtx);
 		if (!rc)
 			return false;
 	}
@@ -951,7 +970,6 @@ Boolean CFontModule::GetFontMetrics(tFontMetrics* pMtx)
 //----------------------------------------------------------------------------
 Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 {
-	// TODO: Handle multi-byte code instead of plain char
 	const char*		ch = pStr->c_str();
 	int				len = pStr->size();
 	PFont			font = handle_.currentFont;
@@ -965,7 +983,8 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 	// Get bounding box for each glyph in char string
 	for (int i = 0; i < len; i++)
 	{
-		if (!GetGlyph(ch[i], &glyph))
+		tWChar charcode = pStr->at(i);
+		if (!GetGlyph(charcode, &glyph))
 			continue;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
 		// TODO: Adjust for kerning
@@ -973,10 +992,15 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 		gbox.yMin = std::min(bbox.yMin+dy, gbox.yMin);
 		gbox.xMax = std::max(bbox.xMax+dx, gbox.xMax);
 		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
-		// TODO: Adjust for glyph position
+		// Adjust for glyph position
 		dx += ( glyph->advance.x + 0x8000 ) >> 16;
 		dy += ( glyph->advance.y + 0x8000 ) >> 16;
 	}
+
+	// C char string only used for debug output now
+	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::GetStringRect: %s, length %d, min %d,%d, max %d,%d\n", 
+			ch, len, static_cast<int>(gbox.xMin), static_cast<int>(gbox.yMin), 
+			static_cast<int>(gbox.xMax), static_cast<int>(gbox.yMax));
 
 	// Pass back bounding box min/max coords as rect param
 	pRect->left = gbox.xMin;

@@ -23,19 +23,13 @@
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
+#include <ftglyph.h>
 #define  USE_FONT_CACHE_MGR		1   
 #if 	 USE_FONT_CACHE_MGR
 #include FT_CACHE_H
 #include FT_CACHE_MANAGER_H
 #include FT_GLYPH_H
 #include FT_BITMAP_H
-#endif
-
-#define DBG						0
-#if		DBG
-#define	PRINTF					printf
-#else
-#define	PRINTF					(void)
 #endif
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -62,7 +56,9 @@ typedef struct  TFont_
     size_t       	fileSize;
 	FT_Face			face;
 	FT_Size			size;			// for instanced point size
+#if USE_FONT_CACHE_MGR
 	FTC_ScalerRec	scaler;			// for instanced point size
+#endif
 	int				height;			// line-to-line spacing
 	int				ascent;			// baseline location
 	int				descent;		// remainder below baseline
@@ -84,9 +80,9 @@ struct tFontInt {
     FTC_ImageCache  	imageCache;        // the glyph image cache           
     FTC_SBitCache   	sbitsCache;        // the glyph small bitmaps cache   
     FTC_CMapCache   	cmapCache;         // the charmap cache..             
-    PFont           	currentFont;       // selected font
     FTC_ImageTypeRec	imageType;         // cached image record
 #endif
+    PFont           	currentFont;       // selected font
    
 };
 
@@ -120,8 +116,8 @@ private:
 	tFontAttr			attr_;
 	int					curX_;
 	int					curY_;
-    Boolean     		GetGlyph(char ch, FT_Glyph* pGlyph);
-    Boolean     		DrawGlyph(char ch, int x, int y, tFontSurf* pCtx);
+    Boolean     		GetGlyph(tWChar ch, FT_Glyph* pGlyph);
+    Boolean     		DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB24(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB4444(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);

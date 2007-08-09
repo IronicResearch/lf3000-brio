@@ -6743,3 +6743,22 @@ By Dave Milici (dmilici@leapfrog.com) on 8/8/07 1:04 PM
 2,751 ms. (Cumulative: 1,287,661 ms)
 
 ----------------
+Revision 1,199 from svn://localhost/TRUNK/:
+Revision 1,200 from svn://localhost/TRUNK/:
+Revision 1,201 from svn://localhost/TRUNK/:
+Revision 1,202 from svn://localhost/TRUNK/:
+Revision 1,203 from svn://localhost/TRUNK/:
+Revision 1,204 from svn://localhost/TRUNK/:
+Revision 1,205 from svn://localhost/TRUNK/:
+Revision 1,206 from svn://localhost/TRUNK/:
+Revision 1,207 from svn://localhost/TRUNK/:
+Revision 1,208 from svn://localhost/TRUNK/:
+Revision 1,209 from svn://localhost/TRUNK/:
+
+Internal rework of Font module, with or without cache manager, multi-byte char code support.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/8/07 7:45 PM
+3 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,290,473 ms)
+
+----------------
