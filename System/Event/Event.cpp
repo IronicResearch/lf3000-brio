@@ -184,7 +184,8 @@ public:
 	{
 		delete ppListeners_;
 		g_threadRun_ = false;
-		// TODO/tp: Debug thread join (not exercising as of 7/07)!
+		// TODO/tp: Debug the kernel_.JoinTask() call (not exercising as of 8/2007,
+		// since we never unload modules, even when the refcount goes to 0).
 		tPtr ptr;
 		kernel_.JoinTask(g_hThread_, ptr);
 	}
@@ -211,8 +212,8 @@ public:
 	//------------------------------------------------------------------------
 	tErrType RemoveListener(const IEventListener* pListener)
 	{
-		// TODO: Will the number of listeners ever vary enough to be worth
-		// reclaiming memory?
+		// TODO/tp: Will the number of listeners ever vary enough to be worth
+		// reclaiming memory?  Unlikely, but you can add some profiling info.
 		// If we find the listener in the list, shift other listeners down
 		// down to keep the list contiguous and decrement the listeners count.
 		const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);		
@@ -247,15 +248,27 @@ public:
 	{
 		// 1) If there was a response listener provided (e.g., from
 		//		a PlayAudio() or timer call), post to it.
-		// 2) Post the message to all of the async/non-response listeners
-		// TODO/tp: Optimize this by keeping a multimap of event types to
-		// listeners???
+		// 2) Otherwise, post the message to all of the async/non-response listeners
+		// 3) TODO/tp: If you want the ability to install event "monitors" that are
+		//    able to see all response events (even though the monitors don't make
+		//    the calls that generate these events), you will need to clone the
+		//    ppListeners_ & numListeners_ variables for a list of "monitors"
+		//    that are registered through a new event manager member function
+		//    (with the same signatures as the RegisterEventListener()/
+		//    UnregisterEventListener() functions).
+		// TODO/tp: Speed could be optimized by keeping a multimap of event types to
+		// listeners, but only consider it if profiling indicates a need.
 		//
-		PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
-		
-		const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);//*2
-		for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
-			PostEventToChain(const_cast<IEventListener*>(*ptr), msg);
+		if (pResponse)
+			PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
+		else
+		{
+			const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);//*2
+			for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
+				PostEventToChain(const_cast<IEventListener*>(*ptr), msg);
+		}
+		// TODO: copy and modify the "else" clause immediately above to call
+		// all global event "monitors".
 		return kNoErr;
 	}
 	//------------------------------------------------------------------------

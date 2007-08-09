@@ -5,7 +5,7 @@
 //============================================================================
 //
 // File:
-//		Event.cpp
+//		EventMPI.cpp
 //
 // Description:
 //		Implements the Module Public Interface (MPI) for the Brio 
