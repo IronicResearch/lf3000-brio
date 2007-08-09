@@ -659,15 +659,16 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 
    unsigned int  msg_prio;
    errno = 0;
-   int ret_receive = mq_timedreceive(hndl,
-                                  (char *)msg_ptr,
-                                  (size_t )sizeof(CEventMessage),
-                                  &msg_prio,
-                                  (const struct timespec *)&tp);
+//   int ret_receive = mq_timedreceive(hndl,
+   mq_timedreceive(hndl,
+                    (char *)msg_ptr,
+                    (size_t )sizeof(CEventMessage),
+                    &msg_prio,
+                    (const struct timespec *)&tp);
 	ASSERT_POSIX_CALL( errno );
     assert(msg_prio == msg_ptr->GetMessagePriority());
 
-#if 1 // BSK Debug printing
+#if 0 // BSK Debug printing
     printf("CKernelModule::ReceiveMessage. Received=%d bytes\n", ret_receive);
     fflush(stdout);
 #endif // BSK
@@ -864,6 +865,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
     memset(&se, 0, sizeof(se)); 
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
+	se.sigev_value.sival_int = 0;
 	
 	callbackData *ptrData = 
 		(callbackData *)(malloc(sizeof(callbackData)));
@@ -951,6 +953,11 @@ tErrType CKernelModule::StartTimer( tTimerHndl hndl, const tTimerProperties& pro
 	struct itimerspec value;
 	// FIXME/tp: Lookup timer properties stored in ResetTimer and initialize "value"
 
+#if 0 // README/BSK
+	printf("CKernelModule::StartTimer\n");
+	fflush(stdout);
+#endif
+
     value.it_interval.tv_sec = props.timeout.it_interval.tv_sec;
 	value.it_interval.tv_nsec = props.timeout.it_interval.tv_nsec;
 	value.it_value.tv_sec = props.timeout.it_value.tv_sec;
@@ -966,6 +973,10 @@ tErrType CKernelModule::StartTimer( tTimerHndl hndl, const tTimerProperties& pro
 //------------------------------------------------------------------------------
 tErrType CKernelModule::StopTimer( tTimerHndl hndl )
 {
+#if 0 // README/BSK
+	printf("CKernelModule::StopTimer\n");
+	fflush(stdout);
+#endif
 	struct itimerspec value;
 
     value.it_interval.tv_sec = 0;
@@ -1353,7 +1364,8 @@ extern "C"
 			callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
 	
 	#if 0 // FIXME/BSK
-		printf("HANDLER CALLBACK = 0x%x, ARG =0x%x\n", *(ta->pfn), (tTimerHndl )ta->argFunc);
+		printf("*********  HANDLER CALLBACK = 0x%x, ARG =0x%x\n",
+		(unsigned int )( *(ta->pfn)), (unsigned int )((tTimerHndl )ta->argFunc));
 		fflush(stdout);
 	#endif
 			((ta->pfn))((tTimerHndl )ta->argFunc);
