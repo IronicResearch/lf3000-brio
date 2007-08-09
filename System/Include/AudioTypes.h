@@ -29,6 +29,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 #define AUDIO_EVENTS					\
 	(kAudioCompletedEvent)				\
+	(kMidiCompletedEvent)				\
 	(kAudioCuePointEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupAudio), AUDIO_EVENTS)
@@ -110,14 +111,20 @@ struct tAudioHeader {
 // Audio message data payload types
 //==============================================================================
 //	kAudioMsgCompleted
-struct tAudioMsgDataCompleted {
+struct tAudioMsgAudioCompleted {
 	tAudioID			audioID;
 	tAudioPayload		payload;
 	U8					count;
 };
 
+struct tAudioMsgMidiCompleted {
+	tMidiPlayerID		midiPlayerID;
+	tAudioPayload		payload;
+	U8					count;
+};
+
 //	kAudioMsgCuePoint
-struct tAudioMsgDataCuePoint {
+struct tAudioMsgCuePoint {
 	tAudioID			audioID;
 	tAudioPayload		payload;
 	tAudioCuePoint		cuePoint;
@@ -125,8 +132,9 @@ struct tAudioMsgDataCuePoint {
 
 
 union tAudioMsgData {
-	tAudioMsgDataCompleted		audioCompleted;
-	tAudioMsgDataCuePoint		audioCuePoint;
+	tAudioMsgAudioCompleted		audioCompleted;
+	tAudioMsgMidiCompleted		midiCompleted;
+	tAudioMsgCuePoint			audioCuePoint;
 };
 
 
@@ -142,7 +150,9 @@ union tAudioMsgData {
 class CAudioEventMessage : public IEventMessage 
 {
 public:
-	CAudioEventMessage( const tAudioMsgDataCompleted& data );
+	CAudioEventMessage( const tAudioMsgAudioCompleted& data );
+	CAudioEventMessage( const tAudioMsgMidiCompleted& data );
+	CAudioEventMessage( const tAudioMsgCuePoint& data );
 	virtual U16	GetSizeInBytes() const;
 
 	tAudioMsgData	audioMsgData;

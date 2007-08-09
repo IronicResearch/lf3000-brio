@@ -41,7 +41,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // CMidiPlayer implementation
 //==============================================================================
 
-CMidiPlayer::CMidiPlayer()
+CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 {
 	tErrType			err;
 	S16					midiErr;
@@ -49,6 +49,8 @@ CMidiPlayer::CMidiPlayer()
 	const tMutexAttr 	attr = {0};
 	
 	// Setup member vars...
+	id_ = id;
+	
 	pMidiRenderBuffer_ = new S16[kAudioOutBufSizeInWords];
 
 	numFrames_       = 256;	/**< @todo fixme/rdg: don't hardcode this */
@@ -180,9 +182,9 @@ tErrType CMidiPlayer::SendCommand( U8 cmd, U8 data1, U8 data2 )
 
 void CMidiPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgDataCompleted	data;
-	data.audioID = 99;	// dummy
-	data.payload = 101;	// dummy
+	tAudioMsgMidiCompleted	data;
+	data.midiPlayerID = id_;
+	data.payload = 0;	
 	data.count = 1;
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 

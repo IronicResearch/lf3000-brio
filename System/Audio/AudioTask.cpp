@@ -522,7 +522,7 @@ static void DoAcquireMidiPlayer( void ) {
 	
 	// Send the status back to the caller
 	msg.SetAudioErr( kNoErr );
-	msg.SetMidiID( 1 );
+	msg.SetMidiID( gContext.pMidiPlayer->GetID() );
 	SendMsgToAudioModule( msg );
 }
 

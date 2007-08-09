@@ -146,7 +146,7 @@ U32 CRawPlayer::GetAudioTime( void )
 //==============================================================================
 void CRawPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgDataCompleted	data;
+	tAudioMsgAudioCompleted	data;
 	data.audioID = id_;	// dummy
 	data.payload = 101;	// dummy
 	data.count = 1;

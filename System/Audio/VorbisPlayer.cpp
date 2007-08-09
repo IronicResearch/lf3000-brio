@@ -200,7 +200,6 @@ size_t CVorbisPlayer::WrapperForVorbisRead (
 }
 
 
-// FIXME/dg: THIS CODE IS STRAW... right now it always returns -1 to indicated that the stream is not seekable
 int CVorbisPlayer::VorbisSeek(		
 	ogg_int64_t offset,
     int origin ) 
@@ -338,8 +337,9 @@ U32 CVorbisPlayer::GetAudioTime( void )
 //==============================================================================
 void CVorbisPlayer::SendDoneMsg( void ) {
 	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgDataCompleted	data;
-	data.audioID = id_;	// dummy
+	tAudioMsgAudioCompleted	data;
+
+	data.audioID = id_;
 	data.payload = 101;	// dummy
 	data.count = 1;
 
