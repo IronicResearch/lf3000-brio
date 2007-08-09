@@ -23,6 +23,7 @@ LF_USING_BRIO_NAMESPACE()
 
 namespace
 {
+#define MS_TO_NS(x) (x*1000000) 	
 	typedef struct
 	{
 		int numTest;
@@ -55,8 +56,8 @@ namespace
 
 	void myTask_Timer_1(tTimerHndl tHndl)
 	{
-		counterTimer_1++;
-#if 1 // FIXME /BSK
+		counterTimer_1--;
+#if 0 // FIXME /BSK
 		printf("\nmyTask_Timer_1 - The timer called me %d tHndl 0x%x\n",
 			counterTimer_1, (unsigned int )tHndl );
 		fflush(stdout);
@@ -66,8 +67,8 @@ namespace
 
 	void myTask_Timer_2(tTimerHndl tHndl)
 	{
-		counterTimer_2++;
-#if 1		// FIXME /BSK
+		counterTimer_2--;
+#if 0		// FIXME /BSK
 		printf("myTask_Timer_2 - The timer called me %d tHndl 0x%x\n",
 			counterTimer_2, (unsigned int )tHndl );
 		fflush(stdout);
@@ -77,7 +78,7 @@ namespace
 	void myTask_Timer_3(tTimerHndl tHndl)
 	{
 		counterTimer_3++;
-#if 1	// FIXME /BSK
+#if 0	// FIXME /BSK
 		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n",
 			 counterTimer_3, (unsigned int )tHndl );
 		fflush(stdout);
@@ -402,9 +403,9 @@ public:
   		KernelMPI->Free( pPtr );
 	}
 		
-	void TestCreateMessageQueue_1() 
+	void testCreateMessageQueue_1() 
 	{
-		ptintf_test_info("TestCreateMessageQueue_1");
+		ptintf_test_info("testCreateMessageQueue_1");
 
 		tErrType err;
 		tMessageQueueHndl hndl;
@@ -507,22 +508,82 @@ public:
 	{
 		ptintf_test_info("testStartStopTimer");
 
+//-------------------------------------------------------------------
+#if 0 // FIXME/BSK
+		// Testing clock_gettime
+		struct timespec mytime;
+		for(int i=1; i < 10; i++ )
+		{
+			clock_gettime(CLOCK_REALTIME, &mytime);
+			printf("CLOCK_GETTIME values:\n");
+			printf("Sec=%u Nsec=%u\n", (unsigned int )mytime.tv_sec,
+										(unsigned int )mytime.tv_nsec);
+			fflush(stdout);
+		}		 
+#endif
+//------------------------------------------------------------------
+
 		tTimerProperties props = {TIMER_ABSTIME_SET,
 									{{0, 0}, {0, 0}},};
 		tErrType err;
 
 		props.type = TIMER_RELATIVE_SET; 	
-		// Timer period
+
+//----------------------------------------------------------------------------------
+// Case #1 Timer establishes the repetition value 
     	props.timeout.it_interval.tv_sec = 0;
-		props.timeout.it_interval.tv_nsec = 500000000L;
+		props.timeout.it_interval.tv_nsec = MS_TO_NS(500); //500000000L;  // 0.5 sec
 		// Timer expirated
 		props.timeout.it_value.tv_sec = 1;
 		props.timeout.it_value.tv_nsec = 0;
+		
+		struct timespec sleeptime;
+		unsigned int dt = 0;
+		sleeptime.tv_sec = 0;
+		sleeptime.tv_nsec = MS_TO_NS(20); // 10 ms
+        const int num_interval = 3; 
+		counterTimer_1 = num_interval; 
 		err = KernelMPI->StartTimer( hndlTimer_1, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
+#if 1 // FIXME/BSK
+		while( counterTimer_1 )
+		{
+			nanosleep( &sleeptime, NULL );
+			dt += sleeptime.tv_nsec;
+		}
+#endif
+
+		TS_ASSERT_LESS_THAN_EQUALS( (unsigned int )(dt),
+			 (unsigned int )(MS_TO_NS(1000) + (num_interval-1) * MS_TO_NS(500) + MS_TO_NS(20)) );
+
+//----------------------------------------------------------------------------------
+//  Case #2 Timer establishes only the initial expiration time
+    	props.timeout.it_interval.tv_sec = 0;
+		props.timeout.it_interval.tv_nsec = 0; 
+		// Timer expirated
+		props.timeout.it_value.tv_sec = 1;
+		props.timeout.it_value.tv_nsec = 0;
+		
+		dt = 0;
+		sleeptime.tv_sec = 0;
+		sleeptime.tv_nsec = MS_TO_NS(10); // 10 ms
+
+		counterTimer_2 = 1; 
+
 		err = KernelMPI->StartTimer( hndlTimer_2, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+#if 1 // FIXME/BSK
+		while( counterTimer_2 )
+		{
+			nanosleep( &sleeptime, NULL );
+			dt += sleeptime.tv_nsec;
+		}
+#endif
+		TS_ASSERT_LESS_THAN_EQUALS( (unsigned int )(dt),
+			 (unsigned int )(MS_TO_NS(1000) + MS_TO_NS(20)) );
+
 
 		err = KernelMPI->StartTimer( hndlTimer_3, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -536,7 +597,8 @@ public:
 		err = KernelMPI->StopTimer( hndlTimer_3 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-	}		
+	}
+
 	void testResetTimerRelative()
 	{
 		ptintf_test_info("testResetTimerRelative");
@@ -617,39 +679,6 @@ public:
    	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
     }
 
-    void testDestroyTimer()
-    {
-		ptintf_test_info("testDestroyTimer");
-
-//        TS_WARN("TODO: Test Destroy Timer!");
-		tErrType err;
-#if 0 // FIXME/BSK
-		struct timespec sleeptime = { 1, 0 };
-		const int limit = 3; 
-		while (( counterTimer_1 < limit && counterTimer_2 < limit && counterTimer_3 < limit ))
-		{
-			nanosleep( &sleeptime, NULL );  
-		}
-#endif
-		if( hndlTimer_1 != 0 )
-		{	
-			err = KernelMPI->DestroyTimer( hndlTimer_1 );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		}
-		
-		if( hndlTimer_1 != 0 )
-		{
-			err = KernelMPI->DestroyTimer( hndlTimer_2 );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		}
-		if( hndlTimer_1 != 0 )
-		{
-			err = KernelMPI->DestroyTimer( hndlTimer_3 );
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		}
-    }
-
-		
     //==============================================================================
 	// Mutexes
 	//==============================================================================
@@ -916,7 +945,7 @@ public:
 //    			fflush(stdout);
     			err = KernelMPI->WaitOnCond( cond_broadcast, mutex_broadcast );
 				TS_ASSERT_EQUALS( err, ((tErrType)0) );
-  			}
+  		}
 
     		err = KernelMPI->DeInitMutex( mutex_broadcast );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -1068,6 +1097,38 @@ public:
 		}	
 
 	}
+
+	void testDestroyTimer()
+    {
+		ptintf_test_info("testDestroyTimer");
+
+//        TS_WARN("TODO: Test Destroy Timer!");
+		tErrType err;
+#if 0 // FIXME/BSK
+		struct timespec sleeptime = { 1, 0 };
+		const int limit = 3; 
+		while (( counterTimer_1 < limit && counterTimer_2 < limit && counterTimer_3 < limit ))
+		{
+			nanosleep( &sleeptime, NULL );  
+		}
+#endif
+		if( hndlTimer_1 != 0 )
+		{	
+			err = KernelMPI->DestroyTimer( hndlTimer_1 );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		}
+		
+		if( hndlTimer_1 != 0 )
+		{
+			err = KernelMPI->DestroyTimer( hndlTimer_2 );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		}
+		if( hndlTimer_1 != 0 )
+		{
+			err = KernelMPI->DestroyTimer( hndlTimer_3 );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		}
+    }
 	
 		
 // =========================================================
