@@ -6898,3 +6898,19 @@ By tgillette (tgillette@leapfrog.com) on 8/9/07 4:16 PM
 2,563 ms. (Cumulative: 1,332,909 ms)
 
 ----------------
+Revision 1,242 from svn://localhost/TRUNK/:
+Revision 1,243 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,658 ms. (Cumulative: 1,335,629 ms)
+
+----------------
+Revision 1,244 from svn://localhost/TRUNK/:
+
+Fixed the testTimerElapsedTime test on the board
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/9/07 5:52 PM
+1 changed, 0 added, 0 deleted.
+2,644 ms. (Cumulative: 1,338,273 ms)
+
+----------------
