@@ -23,6 +23,7 @@
 #include <freetype.h>
 #include <ftglyph.h>
 #include <ftsizes.h>
+#include FT_TRUETYPE_IDS_H
 
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
@@ -55,6 +56,59 @@ const CURI* CFontModule::GetModuleOrigin() const
 //============================================================================
 // C function support
 //============================================================================
+
+//----------------------------------------------------------------------------
+// Select FreeType/TrueType character encoding from Brio enums
+//----------------------------------------------------------------------------
+static int FindEncoding(FT_Face face, U32 encoding, int* numcodes)
+{
+	FT_Int		platformid = TT_PLATFORM_ISO;
+	FT_Int		encodingid = TT_ISO_ID_10646;
+	
+	// Unicode, ASCII, Apple, and Adobe encodings set by FT_Select_Charmap
+	switch (encoding)
+	{
+	case kASCIICharEncoding:
+		*numcodes = 0x100L;
+		return FT_Select_Charmap(face, FT_ENCODING_NONE);
+	case kUTF8CharEncoding:
+	case kUTF16CharEncoding:
+	case kUTF16BECharEncoding:
+	case kUTF16LECharEncoding:
+	case kUTF32CharEncoding:
+	case kUTF32BECharEncoding:
+	case kUTF32LECharEncoding:
+		*numcodes = 0x110000L;
+		return FT_Select_Charmap(face, FT_ENCODING_UNICODE);
+	case kMacRomanCharEncoding:
+		*numcodes = 0x100L;
+		return FT_Select_Charmap(face, FT_ENCODING_APPLE_ROMAN);
+	case kISOLatin1CharEncoding:
+		*numcodes = 0x100L;
+		platformid = TT_PLATFORM_ISO; 
+		encodingid = TT_ISO_ID_8859_1;
+		break;
+	case kWindowsUSCharEncoding:
+		*numcodes = 0x100L;
+		platformid = TT_PLATFORM_MICROSOFT; 
+		encodingid = TT_MS_LANGID_ENGLISH_UNITED_STATES;
+		break;
+	default:
+		// TODO: Other ISO code tables?
+		// TODO: Other Microsoft code pages?
+		return -1;
+	}
+
+	// Loop thru charmaps for matching TrueType platform and encoding IDs
+	for (int i = 0; i < face->num_charmaps; i++)
+	{
+		FT_CharMap cmap = face->charmaps[i];
+		if (cmap->platform_id == platformid && cmap->encoding_id == encodingid)
+			return FT_Set_Charmap(face, cmap);
+	}
+	
+	return -1;
+}
 
 #if USE_FONT_CACHE_MGR
 //----------------------------------------------------------------------------
@@ -196,7 +250,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 {
 	FT_Face			face;
 	PFont			font;
-	int				error;
+	int				error, numcodes = 0;
 	const char*		filename = pName->c_str();
     FT_Size      	size;
     CKernelMPI		kernel;
@@ -220,6 +274,18 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 		return false;
 	}
 		
+	// Handle character encoding cases
+	if (prop.encoding)
+	{
+		error = FindEncoding(face, prop.encoding, &numcodes);
+		if (error)
+		{
+			FT_Done_Face(face);
+			dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FindEncoding for %d (%s) failed, error = %d\n", static_cast<int>(prop.encoding), filename, error);
+			return false;
+		}
+	}
+	
 	// Allocate mem for font face
 	font = static_cast<PFont>(kernel.Malloc( sizeof ( TFont ) ) );
 	dbg_.Assert(font != NULL, "CFontModule::LoadFont: font struct could not be allocated\n");
@@ -228,12 +294,9 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	strcpy( (char*)font->filepathname, filename );
 	font->fileAddress = pFileImage;
 	font->fileSize = fileSize;
-	font->faceIndex = 0; // i;
+	font->faceIndex = 0;
 	font->cmapIndex = face->charmap ? FT_Get_Charmap_Index( face->charmap ) : 0;
-	
-	// TODO: Handle character encoding cases
-	// This is default encoding case
-    font->numIndices = face->num_glyphs;
+    font->numIndices = (numcodes) ? numcodes : face->num_glyphs;
 
 #if USE_FONT_CACHE_MGR
 	// Don't need any more font face info after this point
