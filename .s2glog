@@ -6923,3 +6923,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/9/07 5:54 PM
 2,579 ms. (Cumulative: 1,340,914 ms)
 
 ----------------
+Revision 1,246 from svn://localhost/TRUNK/:
+Revision 1,247 from svn://localhost/TRUNK/:
+
+Support for Unicode and other character encodings defined in Brio StringTypes.h
+
+By Dmilici (Dmilici@leapfrog.com) on 8/9/07 7:10 PM
+1 changed, 0 added, 0 deleted.
+2,594 ms. (Cumulative: 1,343,586 ms)
+
+----------------
