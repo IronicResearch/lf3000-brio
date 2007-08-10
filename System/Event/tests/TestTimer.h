@@ -14,6 +14,7 @@ LF_USING_BRIO_NAMESPACE()
 #if 1 // FIXME/BSK
 	struct timeval timePrint;
 #endif
+
 #define MODCOMP(x,y) ((x) < (y) ? (y-x) : (x-y))
 
 //============================================================================
@@ -179,36 +180,53 @@ public:
 
 	void testTimerElapsedTime( )
 	{
+		#define MS_TO_NS(x) (x*1000000)  // convert millisecond in nanosecond
+		const int t_timer_0 = 10;  // Millisecond
+		const int t_timer_exp = 100;  // Millisecond
+
 		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
-												 	{{0, 100000000}, {0, 10}},
-			                                     };
-		TS_ASSERT( listener_->IsReset() );
-		COneShotTimer	timer(props);
-		timer.Start(props);
-		const U32 kSleepInterval = 10;
-		const U32 kDelta = 25;
-		U32 i = 0;
+												 {{0, MS_TO_NS(t_timer_exp)},  // Interval
+												  {0, MS_TO_NS(t_timer_0)}}, // Initial expiration
+   		                                       };
+		const U32 kSleepInterval = 10; // Millisecond
+		const U32 kDelta = 25;		   // Millisecond
+		const U32 nIter = 20;
+		const U32 i_start = 0;
 		U32 elapsed;
 		U32 remaining;
 		tErrType err;
+
+		TS_ASSERT( listener_->IsReset() );
+		COneShotTimer	timer(props);
+		timer.Start(props);
 		
-//		for (int ii = i; ii < 9; ++ii)
-		for (U32 ii = i; ii < 5; ++ii)
+		for (U32 ii = i_start; ii < nIter; ++ii)
 		{
 			kernel_->TaskSleep(kSleepInterval);
+
 			err = kernel_->GetTimerElapsedTime(timer.GetTimerHndl(), &elapsed);
 			TS_ASSERT_EQUALS( kNoErr, err );
+			
 			err = kernel_->GetTimerRemainingTime(timer.GetTimerHndl(), &remaining);
 			TS_ASSERT_EQUALS( kNoErr, err );
-//			TS_ASSERT_DELTA( elapsed, ii * kSleepInterval, kDelta );
-//			TS_ASSERT_DELTA( remaining, (10 - ii) * kSleepInterval, kDelta );
-			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(elapsed, ((ii+1) * kSleepInterval)), kDelta );
-			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(remaining, ((10 - (ii+1)) * kSleepInterval)), kDelta );
+			
+			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(elapsed,
+												 ((ii+1) * kSleepInterval)),
+												 kDelta + MS_TO_NS(t_timer_exp) );
 
+			TS_ASSERT_LESS_THAN_EQUALS(MODCOMP(remaining,
+												 ((nIter - (ii+1)) * kSleepInterval)),
+												 kDelta + MS_TO_NS(t_timer_exp));
+#if 0 // FIXME/BSK
+		printf("\nii=%u  elapsed=%u remaining=%u\n",
+				(unsigned int )ii, (unsigned int )elapsed, (unsigned int )remaining);
+		fflush(stdout); 
+#endif
+			  
 		}
 		kernel_->TaskSleep(200);
 		TS_ASSERT( !listener_->IsReset() );
 		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
+		
 	}
-	
 };
