@@ -338,12 +338,24 @@ struct tTimerProperties {
 	
 	int type;			// Absolute or Relative Timer:
 						// If the TIMER_ABSTIME_SET flag is set, the timer is set with a specified 
-						// starting time (the timer is absolute timer.
+						// starting time (the timer is absolute timer).
 						// If the the TIMER_ABSTIME_SET flag is not set, the timer is set relative 
 						// to the current time (the timer is a relative timer)
 
-	struct itimerspec timeout;  // Timer interval
-};
+	struct itimerspec timeout;  /* 
+									The struct id defined in the the /usr/include/time.h file
+								    struct itimerspec { 
+  									    struct timespec it_interval;
+    									struct timespec it_value;
+  									};
+  										Where 
+  										typedef struct timespec {
+  											time_t tv_sec;	
+  											long   tv_nsec;  
+  								        };
+  								*/		
+  };
+
 typedef struct current_time
 {
         int sec;
