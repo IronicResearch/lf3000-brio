@@ -37,10 +37,10 @@ const tFontHndl	kInvalidFontHndl = static_cast<tFontHndl>(0);
 
 // Font metrics
 struct tFontMetrics {
-	U16		ascent;
+	S16		ascent;
 	S16		descent;
-	U16		height;
-	U16		advance;
+	S16		height;
+	S16		advance;
 };
 
 // Font properties
@@ -69,9 +69,9 @@ struct tFontAttr {
 
 // Font surface
 struct tFontSurf {
-	U32		width;
-	U32		height;
-	U32		pitch;
+	S32		width;
+	S32		height;
+	S32		pitch;
 	U8*		buffer;
 	tPixelFormat format;
 };

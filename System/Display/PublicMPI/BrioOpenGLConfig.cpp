@@ -265,13 +265,16 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
 	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
 	eglTerminate(eglDisplay);
-
+	eglContext = NULL;
+	eglSurface = NULL;
+	
 	/*
 		Step 10 - Destroy the eglWindow.
 		Again, this is platform specific and delegated to a separate function.
 	*/
 
 	// Exit OpenGL hardware
+	disp_.DisableOpenGL();
 	disp_.DeinitOpenGL(); 
 }
 

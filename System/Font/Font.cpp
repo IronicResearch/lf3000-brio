@@ -500,6 +500,35 @@ Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 }
 
 //----------------------------------------------------------------------------
+// Clip source bitmap bounds to destination drawable surface area
+//----------------------------------------------------------------------------
+inline Boolean ClipBounds(int& x, int& y, int& sw, int& sh, int dw, int dh)
+{
+	int dx = 0;
+	int dy = 0;
+
+	// Out of bounds?
+	if (x > dw || y > dh)
+		return true;
+	
+	// Right edge clipping?
+	if (x + sw > dw)
+		dx = x + sw - dw;
+	if (dx > sw)
+		return true;
+
+	// Bottom edge clipping?
+	if (y + sh > dh)
+		dy = y + sh - dh;
+	if (dy > sh)
+		return true;
+
+	sw -= dx;
+	sh -= dy;
+	return false;
+}
+
+//----------------------------------------------------------------------------
 // Convert mono bitmap to RGB color buffer
 //----------------------------------------------------------------------------
 void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontSurf* pCtx)
@@ -510,9 +539,13 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontS
 	U32	 		color = attr_.color;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to mono bitmap mask
+	// Clip bounds to drawable surface area
 	w = (source->width+7) / 8;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to mono bitmap mask
 	s = t = source->buffer;
 	d = (U32*)(u = surf->buffer + y0 * surf->pitch + x0 * 4);
 	for (y = 0; y < h; y++) 
@@ -548,9 +581,13 @@ void CFontModule::ConvertBitmapToRGB24(FT_Bitmap* source, int x0, int y0, tFontS
 	U8			B = (color & 0x0000FF) >> 0;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to mono bitmap mask
+	// Clip bounds to drawable surface area
 	w = (source->width+7) / 8;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to mono bitmap mask
 	s = t = source->buffer;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 3;
 	for (y = 0; y < h; y++) 
@@ -588,9 +625,13 @@ void CFontModule::ConvertBitmapToRGB4444(FT_Bitmap* source, int x0, int y0, tFon
 	U16	 		color = attr_.color;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to mono bitmap mask
+	// Clip bounds to drawable surface area
 	w = (source->width+7) / 8;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to mono bitmap mask
 	s = t = source->buffer;
 	d = (U16*)(u = surf->buffer + y0 * surf->pitch + x0 * 2);
 	for (y = 0; y < h; y++) 
@@ -636,9 +677,13 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 	U8			B = (color & 0x0000FF) >> 0;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to grayscale values
+	// Clip bounds to drawable surface area
 	w = source->width;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to grayscale values
 	s = t = source->buffer;
 	d = (U32*)(u = surf->buffer + y0 * surf->pitch + x0 * 4);
 	for (y = 0; y < h; y++) 
@@ -685,9 +730,13 @@ void CFontModule::ConvertGraymapToRGB24(FT_Bitmap* source, int x0, int y0, tFont
 	U8			B = (color & 0x0000FF) >> 0;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to grayscale values
+	// Clip bounds to drawable surface area
 	w = source->width;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to grayscale values
 	s = t = source->buffer;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 3;
 	for (y = 0; y < h; y++) 
@@ -726,10 +775,14 @@ void CFontModule::ConvertGraymapToRGB4444(FT_Bitmap* source, int x0, int y0, tFo
 	U8			B = (color & 0x000F) >> 0;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to grayscale values
-	// All ARGB components are repacked for GL_RGBA 4444 textures
+	// Clip bounds to drawable surface area
 	w = source->width;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to grayscale values
+	// All ARGB components are repacked for GL_RGBA 4444 textures
 	s = t = source->buffer;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 2;
 	for (y = 0; y < h; y++) 
@@ -774,9 +827,13 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 	U8			B = (color & 0x001F) >> 0;
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
-	// Pack RGB color into buffer according to grayscale values
+	// Clip bounds to drawable surface area
 	w = source->width;
 	h = source->rows;
+	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+		return;
+
+	// Pack RGB color into buffer according to grayscale values
 	s = t = source->buffer;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 2;
 	for (y = 0; y < h; y++) 
@@ -806,6 +863,16 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 	}				  
 }
   
+//----------------------------------------------------------------------------
+// Advance glyph cursor XY position  
+//----------------------------------------------------------------------------
+void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
+{
+	// Internal glyph cursor is in 16:16 fixed-point
+	x += ( glyph->advance.x + 0x8000 ) >> 16;
+    y += ( glyph->advance.y + 0x8000 ) >> 16;
+}
+
 //----------------------------------------------------------------------------
 // Get glyph matching character code 
 //----------------------------------------------------------------------------
@@ -891,13 +958,14 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx)
 	
 	// Special handling for spaces: (and other non-visible glyphs?)
 	// No bitmaps are created, though XY cursor still needs to advance.
+#if 0	// FIXME: not necessarily chars anymore...
 	if ( ch == ' ' ) 
 	{
-		curX_ += ( glyph->advance.x + 0x8000 ) >> 16;
-	    curY_ += ( glyph->advance.y + 0x8000 ) >> 16;
+		AdvanceGlyphPosition(glyph, curX_, curY_);
 		return true;		
 	}
-
+#endif
+	
 	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
 	{
 		// Adjust font render mode as necessary
@@ -968,9 +1036,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx)
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: glyph conversion format %X not supported\n", source->pixel_mode);
 
 	// Update the current XY glyph cursor position
-	// Internal glyph cursor is in 16:16 fixed-point
-	curX_ += ( glyph->advance.x + 0x8000 ) >> 16;
-    curY_ += ( glyph->advance.y + 0x8000 ) >> 16;
+	AdvanceGlyphPosition(glyph, curX_, curY_);
 	
 	return true;
 }
@@ -996,8 +1062,8 @@ Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 	{
 		tWChar charcode = pStr->at(i);
 		rc = DrawGlyph(charcode, curX_, curY_, pCtx);
-		if (!rc)
-			return false;
+//		if (!rc)
+//			return false;
 	}
 
 	return true;
@@ -1056,8 +1122,7 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 		gbox.xMax = std::max(bbox.xMax+dx, gbox.xMax);
 		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
 		// Adjust for glyph position
-		dx += ( glyph->advance.x + 0x8000 ) >> 16;
-		dy += ( glyph->advance.y + 0x8000 ) >> 16;
+		AdvanceGlyphPosition(glyph, dx, dy);
 	}
 
 	// C char string only used for debug output now

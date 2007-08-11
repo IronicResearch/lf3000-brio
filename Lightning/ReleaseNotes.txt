@@ -3,7 +3,10 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 * Video MPI StartVideo() task posts event message to listener when done.
-* Video MPI SeekVideoFrame() and Looping functionality implemented.  
+* Video MPI SeekVideoFrame() and Looping functionality implemented.
+* Font MPI GetStringRect() functionality implemented.
+* Font MPI DrawString() renderings now clip to drawing surface area.
+* Font encoding property supported for Unicode UTF8/UTF16/UTF32 character codes.  
 
 ===========================================
 v0.1.14  (Build 1127 released August 1, 2007) 
