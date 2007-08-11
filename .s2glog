@@ -6933,3 +6933,16 @@ By Dmilici (Dmilici@leapfrog.com) on 8/9/07 7:10 PM
 2,594 ms. (Cumulative: 1,343,586 ms)
 
 ----------------
+Revision 1,248 from svn://localhost/TRUNK/:
+Revision 1,249 from svn://localhost/TRUNK/:
+Revision 1,250 from svn://localhost/TRUNK/:
+Revision 1,251 from svn://localhost/TRUNK/:
+Revision 1,252 from svn://localhost/TRUNK/:
+
+Added clipping to font rendering. Fixed SDK demos for additional encoding property field.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/10/07 5:57 PM
+6 changed, 3 added, 0 deleted.
+3,156 ms. (Cumulative: 1,346,820 ms)
+
+----------------
