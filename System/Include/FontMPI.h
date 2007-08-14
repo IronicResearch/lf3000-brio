@@ -56,12 +56,14 @@ public:
     Boolean		SetFontAttr(tFontAttr attr);
     Boolean		SetFontColor(U32 color);
     Boolean		SetFontAntiAliasing(Boolean antialias);
+    Boolean		SetFontKerning(Boolean kern);
     
     // Gets the font's current drawing attributes
     Boolean		GetFontAttr(tFontAttr* pAttr);
     tFontAttr*	GetFontAttr();
     U32			GetFontColor();
     Boolean		GetFontAntiAliasing();
+    Boolean		GetFontKerning();
     
     // Draws a text string at selected X,Y position in display surface context
     Boolean     DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);

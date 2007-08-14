@@ -109,6 +109,8 @@ public:
     VTABLE_EXPORT U32			GetFontColor() { return attr_.color; }
     VTABLE_EXPORT Boolean		SetFontAntiAliasing(Boolean antialias) { attr_.antialias = antialias; return true; }
     VTABLE_EXPORT Boolean		GetFontAntiAliasing() { return attr_.antialias; }
+    VTABLE_EXPORT Boolean		SetFontKerning(Boolean kern) { attr_.useKerning = kern; return true; }
+    VTABLE_EXPORT Boolean		GetFontKerning() { return attr_.useKerning; }
     VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
 	VTABLE_EXPORT S32			GetX();
@@ -127,8 +129,9 @@ private:
 	tFontAttr			attr_;
 	int					curX_;
 	int					curY_;
-    Boolean     		GetGlyph(tWChar ch, FT_Glyph* pGlyph);
-    Boolean     		DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx);
+	void				GetFace(FT_Face* pFace);
+    Boolean     		GetGlyph(tWChar ch, FT_Glyph* pGlyph, int* pIndex);
+    Boolean     		DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool isFirst);
     void				ConvertBitmapToRGB32(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB24(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertBitmapToRGB4444(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);

@@ -6973,3 +6973,13 @@ By Dmilici (Dmilici@leapfrog.com) on 8/13/07 6:25 PM
 3,001 ms. (Cumulative: 1,352,743 ms)
 
 ----------------
+Revision 1,264 from svn://localhost/TRUNK/:
+Revision 1,265 from svn://localhost/TRUNK/:
+
+Added support for font kerning adjustments.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/14/07 12:57 PM
+5 changed, 0 added, 0 deleted.
+2,907 ms. (Cumulative: 1,355,743 ms)
+
+----------------

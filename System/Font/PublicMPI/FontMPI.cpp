@@ -188,6 +188,22 @@ Boolean	CFontMPI::GetFontAntiAliasing()
 }
 
 //----------------------------------------------------------------------------
+Boolean	CFontMPI::SetFontKerning(Boolean kern)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SetFontKerning(kern);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::GetFontKerning()
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetFontKerning();
+}
+
+//----------------------------------------------------------------------------
 Boolean	CFontMPI::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
 	if (!pModule_)
