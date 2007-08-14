@@ -203,6 +203,7 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
     	return;
     }
 
+    // Small bitmaps cache
     error = FTC_SBitCache_New( handle_.cacheManager, &handle_.sbitsCache );
     if ( error ) 
     {
@@ -210,6 +211,7 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
     	return;
     }
 
+    // Glyph image cache
     error = FTC_ImageCache_New( handle_.cacheManager, &handle_.imageCache );
     if ( error ) 
     {
@@ -217,6 +219,7 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
     	return;
     }
 
+    // Character code mapping cache
     error = FTC_CMapCache_New( handle_.cacheManager, &handle_.cmapCache );
     if ( error ) 
     {
@@ -312,6 +315,9 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 		}
 	}
 	
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: metrics: horizontal=%s, vertical=%s, kerning=%s\n", 
+		FT_HAS_HORIZONTAL(face) ? "yes" : "no",	FT_HAS_VERTICAL(face) ? "yes" : "no", FT_HAS_KERNING(face) ? "yes" : "no");
+
 	// Allocate mem for font face
 	font = static_cast<PFont>(kernel.Malloc( sizeof ( TFont ) ) );
 	dbg_.Assert(font != NULL, "CFontModule::LoadFont: font struct could not be allocated\n");
@@ -922,9 +928,33 @@ inline void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
 }
 
 //----------------------------------------------------------------------------
+// Adjust glyph position for kerning  
+//----------------------------------------------------------------------------
+inline void KernGlyphPosition(FT_Face face, int index, int prev, int& dx)
+{
+	FT_Vector 		delta; 
+
+	// Kerning adjustments are usually negative (26.6 fixed-point) 
+	FT_Get_Kerning( face, prev, index, FT_KERNING_DEFAULT, &delta ); 	
+	dx = (delta.x < 0) ? (delta.x - 0x10) >> 6 : (delta.x + 0x10) >> 6;
+}
+
+//----------------------------------------------------------------------------
+// Get the font face which glyphs belong to   
+//----------------------------------------------------------------------------
+inline void CFontModule::GetFace(FT_Face* pFace)
+{
+#if USE_FONT_CACHE_MGR
+	FTC_Manager_LookupFace(handle_.cacheManager, handle_.imageType.face_id, pFace);
+#else
+	*pFace = font->face;
+#endif
+}
+
+//----------------------------------------------------------------------------
 // Get glyph matching character code 
 //----------------------------------------------------------------------------
-Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph)
+Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph, int* pIndex)
 {
 	FT_Glyph		glyph;
 	int				error = FT_Err_Ok;
@@ -947,6 +977,7 @@ Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph)
 		return false;
 	}
 
+	// Get the glyph at char index
 	error = FTC_ImageCache_Lookup( handle_.imageCache, &handle_.imageType, index, &glyph, NULL );
 	if (error) 
 	{
@@ -980,29 +1011,36 @@ Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph)
 #endif		
 
 	*pGlyph = glyph;
+	*pIndex = index;
 	return true;
 }
 
 //----------------------------------------------------------------------------
 // Draw single glyph at XY location in rendering context buffer
 //----------------------------------------------------------------------------
-Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx)
+Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool isFirst)
 {
 	FT_Glyph		glyph;
+	FT_Face			face;
 	FT_BitmapGlyph  bitmap;
 	FT_Bitmap*      source;
 	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
 	int				error = FT_Err_Ok;
 	PFont			font = handle_.currentFont;
 	Boolean			rc = false;
+	int				index;
+	static int		prevIndex = 0;
 	
 	// Get glyph matching char code
-	rc = GetGlyph(ch, &glyph);
+	rc = GetGlyph(ch, &glyph, &index);
 	if (!rc)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %08X\n", static_cast<unsigned int>(ch) );
 		return false;
 	}
+
+	// Get font face 
+	GetFace(&face);
 	
 	// Special handling for spaces: (and other non-visible glyphs?)
 	// No bitmaps are created, though XY cursor still needs to advance.
@@ -1040,7 +1078,14 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx)
 	int dx = bitmap->left;
 	int dy = bitmap->top;
 	int dz = font->ascent;
+	int dk = 0;
 
+	// Account for kerning adjustment for preceding glyph
+	if (attr_.useKerning && !isFirst)
+		KernGlyphPosition(face, index, prevIndex, dk);
+	dx += dk;
+	prevIndex = index;
+	
 	// Draw mono bitmap into RGB context buffer with current color
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
 	{
@@ -1085,6 +1130,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx)
 
 	// Update the current XY glyph cursor position
 	AdvanceGlyphPosition(glyph, curX_, curY_);
+	curX_ += dk;
 	
 	return true;
 }
@@ -1109,9 +1155,7 @@ Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 	for (i = 0; i < len; i++) 
 	{
 		tWChar charcode = pStr->at(i);
-		rc = DrawGlyph(charcode, curX_, curY_, pCtx);
-//		if (!rc)
-//			return false;
+		rc = DrawGlyph(charcode, curX_, curY_, pCtx, i==0);
 	}
 
 	return true;
@@ -1168,26 +1212,39 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 	int				len = pStr->size();
 	PFont			font = handle_.currentFont;
 	FT_Glyph		glyph;
+	FT_Face			face;
 	FT_BBox			bbox,gbox = {0, 0, 0, 0};
-	int				dx = 0, dy = 0;
+	int				dx = 0, dy = 0, dk = 0;
+	int				index,prev = 0;
 	
 	if (font == NULL || pRect == NULL)
 		return false;
 
+	// Need font face and each preceding glyph index for kerning
+	GetFace(&face);
+	
 	// Get bounding box for each glyph in char string
 	for (int i = 0; i < len; i++)
 	{
 		tWChar charcode = pStr->at(i);
-		if (!GetGlyph(charcode, &glyph))
+		if (!GetGlyph(charcode, &glyph, &index))
 			continue;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
-		// TODO: Adjust for kerning
+		// Adjust for kerning
+		if (attr_.useKerning && prev)
+		{
+			KernGlyphPosition(face, index, prev, dk);
+			bbox.xMin += dk;
+			bbox.xMax += dk;
+		}
 		gbox.xMin = std::min(bbox.xMin+dx, gbox.xMin);
 		gbox.yMin = std::min(bbox.yMin+dy, gbox.yMin);
 		gbox.xMax = std::max(bbox.xMax+dx, gbox.xMax);
 		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
 		// Adjust for glyph position
 		AdvanceGlyphPosition(glyph, dx, dy);
+		// Save previous glyph index if kerning
+		prev = index;
 	}
 
 	// C char string only used for debug output now
