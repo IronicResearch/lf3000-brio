@@ -75,8 +75,8 @@ public:
 		tFontHndl	font4;
 		tFontProp	prop1 = {1, 12, 0, 0};
 		tFontProp	prop2 = {1, 24, 0, 0};
-		tFontProp	prop3 = {1, 24, kUTF16CharEncoding, 0};
-		tFontProp	prop4 = {1, 24, kUTF16CharEncoding, 0};
+		tFontProp	prop3 = {2, 24, kUTF16CharEncoding, true};
+		tFontProp	prop4 = {2, 24, kUTF16CharEncoding, true};
 
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
@@ -175,10 +175,12 @@ public:
 		attr.color = 0x000000FF; // blue
 		attr.antialias = true;
 		pFontMPI_->SetFontAttr(attr);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontColor(), attr.color );
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontAntiAliasing(), attr.antialias );
 		pFontMPI_->DrawString(&text1, 0, 0, &surf);
 		TS_ASSERT_EQUALS( (rect1.right - rect1.left), pFontMPI_->GetX() );
 		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
-		TS_ASSERT_EQUALS( (rect2.right - rect2.left), pFontMPI_->GetX() );
+//		TS_ASSERT_EQUALS( (rect2.right - rect2.left), pFontMPI_->GetX() );
 		
 		font2 = pFontMPI_->LoadFont(handle2, prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
@@ -187,12 +189,14 @@ public:
 
 		attr.color = 0x00FF0000; // red
 		pFontMPI_->SetFontAttr(attr);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontColor(), attr.color );
 		pFontMPI_->DrawString(&text1, 0, 2*mtrx.height, &surf);
 		pFontMPI_->DrawString(&text2, 0, 3*mtrx.height, &surf);
 		
 		attr.color = 0x0000FF00; // green
 		pFontMPI_->SelectFont(font1);
 		pFontMPI_->SetFontAttr(attr);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontColor(), attr.color );
 		pFontMPI_->DrawString(&text1, 0, 4*mtrx.height, &surf);
 		pFontMPI_->DrawString(&text2, 0, 5*mtrx.height, &surf);
 		
@@ -219,13 +223,9 @@ public:
 		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
-		tFontProp	prop1 = {1, 24, 0, 0};
-		tFontProp	prop2 = {1, 36, 0, 0};
-		tFontAttr	attr;
 		tFontSurf	surf;
 		tFontMetrics	mtrx;
 		tDisplayHandle 	disp;
-		tRect			rect;
 		CString			text[9] = {CString("The "),CString("Quick "),CString("Brown "),
 							CString("Fox "),CString("Jumps "),CString("Over "), 
 							CString("the "),CString("Lazy "),CString("Dog")};
@@ -253,47 +253,44 @@ public:
 		handle2 = pResourceMPI_->FindRsrc("Avatar");
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		font1 = pFontMPI_->LoadFont(handle1, 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
-
-		attr.version = 1;
-		attr.color = 0x0000FFFF; // cyan
-		attr.antialias = true;
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x0000FFFF); // cyan
 		
-		int x = 0;
-		int y = 0;
+		S32 x = 0;
+		S32 y = 0;
 		for (int n = 0; n < 9; n++)
 		{
-			pFontMPI_->GetStringRect(&text[n], &rect);
-			if (x + rect.right > surf.width)
+			tRect* prect = pFontMPI_->GetStringRect(text[n]);
+			if (x + prect->right > surf.width)
 			{
 				x = 0;
 				y += mtrx.height;
 			}
-			pFontMPI_->DrawString(&text[n], x, y, &surf);
-			x = pFontMPI_->GetX();
+			pFontMPI_->DrawString(text[n], x, y, surf);
+			TS_ASSERT_EQUALS(x, pFontMPI_->GetX());
+			TS_ASSERT_EQUALS(y, pFontMPI_->GetY());
 		}
 		
-		font2 = pFontMPI_->LoadFont(handle2, prop2);
+		font2 = pFontMPI_->LoadFont(handle2, 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
-		
-		attr.color = 0x00FF00FF; // magenta
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x00FF00FF); // magenta
+
 		for (int n = 0; n < 9; n++)
 		{
-			pFontMPI_->GetStringRect(&text[n], &rect);
-			if (x + rect.right > surf.width)
+			tRect* prect = pFontMPI_->GetStringRect(text[n]);
+			if (x + prect->right > surf.width)
 			{
 				x = 0;
 				y += mtrx.height;
 			}
-			pFontMPI_->DrawString(&text[n], x, y, &surf);
-			x = pFontMPI_->GetX();
+			pFontMPI_->DrawString(text[n], x, y, surf);
+			TS_ASSERT_EQUALS(x, pFontMPI_->GetX());
+			TS_ASSERT_EQUALS(y, pFontMPI_->GetY());
 		}
 		
 		pDisplayMPI_->Invalidate(0, NULL);
@@ -317,9 +314,6 @@ public:
 		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
-		tFontProp	prop1 = {1, 24, 0, 0};
-		tFontProp	prop2 = {1, 36, 0, 0};
-		tFontAttr	attr;
 		tFontSurf	surf;
 		tDisplayHandle 	disp;
 		CString			text = CString("Clipped String Test");
@@ -347,13 +341,9 @@ public:
 		handle2 = pResourceMPI_->FindRsrc("Avatar");
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		font1 = pFontMPI_->LoadFont(handle1, 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
-
-		attr.version = 1;
-		attr.color = 0x00FFFFFF; // white
-		attr.antialias = true;
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x00FFFFFF); // white
 		
 		for (int x = 0; x < 320; x++)
 		{
@@ -362,7 +352,7 @@ public:
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
 		
-		font2 = pFontMPI_->LoadFont(handle2, prop2);
+		font2 = pFontMPI_->LoadFont(handle2, 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		
 		for (int y = 0; y < 240; y++)
@@ -396,13 +386,10 @@ public:
 		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
-		tFontProp	prop1 = {1, 24, kUTF16CharEncoding, 0};
-		tFontProp	prop2 = {1, 24, kUTF16CharEncoding, 0};
-		tFontAttr	attr;
 		tFontSurf	surf;
 		tFontMetrics	mtrx;
 		tDisplayHandle 	disp;
-		int				y,dy;
+		S32				x,y,dy;
 		
 		// TODO: Use UTF16 codes?
 		CString text1 = CString("Primary Test를 통해 현재");
@@ -433,22 +420,19 @@ public:
 		handle2 = pResourceMPI_->FindRsrc("FreeSerif");
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		font1 = pFontMPI_->LoadFont(handle1, 24, kUTF16CharEncoding);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
-		attr.version = 1;
-		attr.color = 0x00FFFFFF; // white
-		attr.antialias = true;
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x00FFFFFF); // white
 		
-		y = 0; dy = mtrx.height;
+		x = y = 0; dy = mtrx.height;
 		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
 		pFontMPI_->DrawString(&text2, 0, y, &surf); y+=dy;
 		pFontMPI_->DrawString(&text3, 0, y, &surf); y+=dy;
 		pFontMPI_->DrawString(&text4, 0, y, &surf); y+=dy;
 		
-		font2 = pFontMPI_->LoadFont(handle2, prop2);
+		font2 = pFontMPI_->LoadFont(handle2, 24, kUTF16CharEncoding);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		
 		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
@@ -557,7 +541,6 @@ public:
 		tRsrcHndl	handle1;
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
-		tFontAttr	attr;
 		tFontSurf	surf;
 		tFontMetrics mtrx;
 		CString		text1 = CString("Red");
@@ -591,19 +574,13 @@ public:
 		memset(surf.buffer, 0, surf.pitch * surf.height);
 		
 		// Draw text to buffer
-		attr.version = 1;
-		attr.color = 0x0000FF; // GL red
-		attr.antialias = true;
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x0000FF); // GL red
 		pFontMPI_->DrawString(&text1, 0, 0, &surf);
-		attr.color = 0x00FF00; // GL green
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x00FF00); // GL green
 		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
-		attr.color = 0xFF0000; // GL blue
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0xFF0000); // GL blue
 		pFontMPI_->DrawString(&text3, 0, 2*mtrx.height, &surf);
-		attr.color = 0xFFFFFF; // GL white
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0xFFFFFF); // GL white
 		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
 		
 		// Download buffer as texture and render textured quad
@@ -637,8 +614,6 @@ public:
 		tRsrcHndl	pkg;
 		tRsrcHndl	handle1;
 		tFontHndl	font1;
-		tFontProp	prop1 = {1, 24, 0, 0};
-		tFontAttr	attr;
 		tFontSurf	surf;
 		tFontMetrics mtrx;
 		CString		text1 = CString("Red");
@@ -659,7 +634,7 @@ public:
 		pResourceMPI_->OpenPackage(pkg);
 		handle1 = pResourceMPI_->FindRsrc("Verdana");
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		font1 = pFontMPI_->LoadFont(handle1, 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -672,19 +647,13 @@ public:
 		memset(surf.buffer, 0, surf.pitch * surf.height);
 		
 		// Draw text to buffer
-		attr.version = 1;
-		attr.color = 0xF00F; // 16bpp packed GL red 
-		attr.antialias = true;
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0xF00F); // 16bpp packed GL red
 		pFontMPI_->DrawString(&text1, 0, 0, &surf);
-		attr.color = 0x0F0F; // 16bpp packed GL green
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x0F0F); // 16bpp packed GL green
 		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
-		attr.color = 0x00FF; // 16bpp packed GL blue
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0x00FF); // 16bpp packed GL blue
 		pFontMPI_->DrawString(&text3, 0, 2*mtrx.height, &surf);
-		attr.color = 0xFFFF; // 16bpp packed GL white
-		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontColor(0xFFFF); // 16bpp packed GL white
 		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
 		
 		// Download buffer as texture and render textured quad

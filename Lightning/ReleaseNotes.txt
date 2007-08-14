@@ -7,6 +7,8 @@ Lightning C++ Development Kit Release Notes
 * Font MPI GetStringRect() functionality implemented.
 * Font MPI DrawString() renderings now clip to drawing surface area.
 * Font encoding property supported for Unicode UTF8/UTF16/UTF32 character codes.  
+* Additional Font MPI methods for setting font properties and drawing attributes 
+  more intuitively.
 
 ===========================================
 v0.1.14  (Build 1127 released August 1, 2007) 

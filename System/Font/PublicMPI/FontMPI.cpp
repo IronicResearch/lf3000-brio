@@ -100,6 +100,22 @@ tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 }
 
 //----------------------------------------------------------------------------
+tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, U8 size)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->LoadFont(hRsrc, size);
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->LoadFont(hRsrc, size, encoding);
+}
+
+//----------------------------------------------------------------------------
 Boolean CFontMPI::UnloadFont(tFontHndl hFont)
 {
 	if (!pModule_)
@@ -132,11 +148,59 @@ Boolean	CFontMPI::GetFontAttr(tFontAttr* pAttr)
 }
 
 //----------------------------------------------------------------------------
+tFontAttr* CFontMPI::GetFontAttr()
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetFontAttr();
+}
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::SetFontColor(U32 color)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SetFontColor(color);
+}
+
+//----------------------------------------------------------------------------
+U32 CFontMPI::GetFontColor()
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->GetFontColor();
+}
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::SetFontAntiAliasing(Boolean antialias)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SetFontAntiAliasing(antialias);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::GetFontAntiAliasing()
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetFontAntiAliasing();
+}
+
+//----------------------------------------------------------------------------
 Boolean	CFontMPI::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
 	if (!pModule_)
 		return false;
 	return pModule_->DrawString(pStr, x, y, pCtx);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->DrawString(str, x, y, surf);
 }
 
 //----------------------------------------------------------------------------
@@ -164,11 +228,27 @@ Boolean CFontMPI::GetFontMetrics(tFontMetrics* pMtx)
 }
 
 //----------------------------------------------------------------------------
+tFontMetrics* CFontMPI::GetFontMetrics()
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetFontMetrics();
+}
+
+//----------------------------------------------------------------------------
 Boolean	CFontMPI::GetStringRect(CString* pStr, tRect* pRect)
 {
 	if (!pModule_)
 		return false;
 	return pModule_->GetStringRect(pStr, pRect);
+}
+
+//----------------------------------------------------------------------------
+tRect* CFontMPI::GetStringRect(CString& str)
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetStringRect(str);
 }
 
 LF_END_BRIO_NAMESPACE()

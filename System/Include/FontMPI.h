@@ -43,6 +43,8 @@ public:
     
     // Loads a font via its associated resource for a selected property size
     tFontHndl   LoadFont(tRsrcHndl hRsrc, tFontProp prop);
+    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size);
+    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
     
     // Unloads the font loaded by LoadFont()
     Boolean     UnloadFont(tFontHndl hFont);
@@ -52,12 +54,18 @@ public:
     
     // Sets the font's drawing attributes
     Boolean		SetFontAttr(tFontAttr attr);
+    Boolean		SetFontColor(U32 color);
+    Boolean		SetFontAntiAliasing(Boolean antialias);
     
     // Gets the font's current drawing attributes
     Boolean		GetFontAttr(tFontAttr* pAttr);
+    tFontAttr*	GetFontAttr();
+    U32			GetFontColor();
+    Boolean		GetFontAntiAliasing();
     
     // Draws a text string at selected X,Y position in display surface context
     Boolean     DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
+    Boolean     DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
     
     // Returns the current X drawing position updated by DrawString()
     S32			GetX();
@@ -67,10 +75,12 @@ public:
     
     // Returns the current metrics for the loaded font and property size
     Boolean		GetFontMetrics(tFontMetrics* pMtx);
+    tFontMetrics* GetFontMetrics();
  
  	// Returns the bounding rectangle for the selected text string
- 	Boolean		GetStringRect(CString *pStr, tRect* pRect);
- 
+ 	Boolean		GetStringRect(CString* pStr, tRect* pRect);
+ 	tRect*		GetStringRect(CString& str);
+ 	
 private:
 	class CFontModule*	pModule_;
 	U32					id_;

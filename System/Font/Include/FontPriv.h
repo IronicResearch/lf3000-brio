@@ -98,21 +98,32 @@ public:
 	// class-specific functionality
     VTABLE_EXPORT tFontHndl		LoadFont(const CString* pName, tFontProp prop);
     VTABLE_EXPORT tFontHndl		LoadFont(tRsrcHndl hRsrc, tFontProp prop);
+    VTABLE_EXPORT tFontHndl   	LoadFont(tRsrcHndl hRsrc, U8 size);
+    VTABLE_EXPORT tFontHndl   	LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
     VTABLE_EXPORT Boolean     	UnloadFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean     	SelectFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
     VTABLE_EXPORT Boolean		GetFontAttr(tFontAttr* pAttr);
+    VTABLE_EXPORT tFontAttr*	GetFontAttr();
+    VTABLE_EXPORT Boolean		SetFontColor(U32 color) { attr_.color = color; return true; }
+    VTABLE_EXPORT U32			GetFontColor() { return attr_.color; }
+    VTABLE_EXPORT Boolean		SetFontAntiAliasing(Boolean antialias) { attr_.antialias = antialias; return true; }
+    VTABLE_EXPORT Boolean		GetFontAntiAliasing() { return attr_.antialias; }
     VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
+    VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
 	VTABLE_EXPORT S32			GetX();
 	VTABLE_EXPORT S32			GetY();
     VTABLE_EXPORT Boolean		GetFontMetrics(tFontMetrics* pMtx);
+    VTABLE_EXPORT tFontMetrics*	GetFontMetrics();
     VTABLE_EXPORT Boolean     	GetStringRect(CString* pStr, tRect* pRect);
+    VTABLE_EXPORT tRect*		GetStringRect(CString& str);
 
 private:
 	CDebugMPI			dbg_;
 	
 	// FreeType-specific functionality
 	tFontInt			handle_;
+	tFontProp			prop_;
 	tFontAttr			attr_;
 	int					curX_;
 	int					curY_;

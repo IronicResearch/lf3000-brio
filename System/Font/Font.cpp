@@ -166,6 +166,24 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 	// Zero out static global struct
 	memset(&handle_, 0, sizeof(handle_));
 
+	// Default font properties and drawing attributes
+	prop_.version = 2;
+	prop_.size = 12;
+	prop_.encoding = 0;
+	prop_.useEncoding = false;
+	attr_.version = 2;
+	attr_.color = 0xFFFFFFFF;
+	attr_.direction = false;
+	attr_.antialias = true;
+	attr_.horizJust = 0;
+	attr_.vertJust = 0;
+	attr_.spaceExtra = 0;
+	attr_.leading = 0;
+	attr_.useKerning = false;
+	attr_.useUnderlining = false;
+	curX_ = 0;
+	curY_ = 0;
+	
 	// Load FreeType library
 	int error = FT_Init_FreeType(&handle_.library);
 	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule: FT_Init_FreeType returned = %d, %p\n", 
@@ -255,7 +273,15 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     FT_Size      	size;
     CKernelMPI		kernel;
 	
-	// Bogus font file name?
+    // Font instance property versioning
+    if (prop.version == 1)
+    {
+    	prop.encoding = 0;
+    	prop.useEncoding = false;
+    }
+    prop_ = prop;
+    
+    // Bogus font file name?
 	if (filename == NULL) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: invalid filename passed\n");
@@ -370,7 +396,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	font->advance = size->metrics.max_advance >> 6;
 	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, height = %d, ascent = %d, descent = %d\n", prop.size, font->height, font->ascent, font->descent);
 		
-	return (tFontHndl)font; //true;
+	return reinterpret_cast<tFontHndl>(font);
 }
 
 //----------------------------------------------------------------------------
@@ -421,6 +447,21 @@ tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 	pFont = (PFont)hFont;		
 	pFont->hRsrcFont = hRsrc;
 	return hFont;
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size)
+{
+	prop_.size = size;
+	return LoadFont(hRsrc, prop_);
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding)
+{
+	prop_.size = size;
+	prop_.encoding = encoding;
+	return LoadFont(hRsrc, prop_);
 }
 
 //----------------------------------------------------------------------------
@@ -497,6 +538,13 @@ Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 	}
 	*pAttr = attr_;
 	return true;
+}
+
+//----------------------------------------------------------------------------
+tFontAttr* CFontModule::GetFontAttr()
+{
+	static tFontAttr attr = attr_;
+	return &attr;
 }
 
 //----------------------------------------------------------------------------
@@ -866,7 +914,7 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 //----------------------------------------------------------------------------
 // Advance glyph cursor XY position  
 //----------------------------------------------------------------------------
-void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
+inline void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
 {
 	// Internal glyph cursor is in 16:16 fixed-point
 	x += ( glyph->advance.x + 0x8000 ) >> 16;
@@ -1070,6 +1118,15 @@ Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 }
 
 //----------------------------------------------------------------------------
+Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf)
+{
+	Boolean rc = DrawString(&str, x, y, &surf);
+	x = curX_;
+	y = curY_;
+	return rc;
+}
+
+//----------------------------------------------------------------------------
 S32 CFontModule::GetX()
 {
 	return curX_;
@@ -1094,6 +1151,14 @@ Boolean CFontModule::GetFontMetrics(tFontMetrics* pMtx)
 	pMtx->descent = font->descent;
 	pMtx->advance = font->advance;		
 	return true;
+}
+
+//----------------------------------------------------------------------------
+tFontMetrics* CFontModule::GetFontMetrics()
+{
+	static tFontMetrics metrics;
+	GetFontMetrics(&metrics);
+	return &metrics;
 }
 
 //----------------------------------------------------------------------------
@@ -1136,6 +1201,14 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 	pRect->right = gbox.xMax;
 	pRect->bottom = gbox.yMin;
 	return true;
+}
+
+//----------------------------------------------------------------------------
+tRect* CFontModule::GetStringRect(CString& str)
+{
+	static tRect rect;
+	GetStringRect(&str, &rect);
+	return &rect;
 }
 
 LF_END_BRIO_NAMESPACE()
