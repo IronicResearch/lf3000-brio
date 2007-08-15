@@ -1006,7 +1006,7 @@ void* AudioTaskMain( void* /*arg*/ )
 	
 	while ( gContext.threadRun ) {
 		gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-			"AudioTaskMain() -- top of loop, cnt: %u.\n", 
+			"\n---------- AudioTaskMain() -- top of loop, cnt: %u.\n", 
 			static_cast<unsigned int>(i++));	
    
 	    err = gContext.pKernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 

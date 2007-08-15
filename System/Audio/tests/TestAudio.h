@@ -228,7 +228,15 @@ public:
 			pListener = pAudioMPI_->GetAudioEventListener( id2 );
 			printf("TestAudio::testVorbisResources -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
 					(int)id2, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
-			pKernelMPI_->TaskSleep( 250 ); 
+			
+			pKernelMPI_->TaskSleep( 125 ); 
+
+			pAudioMPI_->SetAudioVolume( id2, volume - (index*2) );
+			pAudioMPI_->SetAudioPriority( id2, priority + index );
+			pAudioMPI_->SetAudioPan( id2, pan - (index*4));
+
+			pKernelMPI_->TaskSleep( 125 ); 
+
 		}
 	}
 	
