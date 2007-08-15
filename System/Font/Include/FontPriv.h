@@ -111,6 +111,8 @@ public:
     VTABLE_EXPORT Boolean		GetFontAntiAliasing() { return attr_.antialias; }
     VTABLE_EXPORT Boolean		SetFontKerning(Boolean kern) { attr_.useKerning = kern; return true; }
     VTABLE_EXPORT Boolean		GetFontKerning() { return attr_.useKerning; }
+    VTABLE_EXPORT Boolean		SetFontUnderlining(Boolean underline) { attr_.useUnderlining = underline; return true; }
+    VTABLE_EXPORT Boolean		GetFontUnderlining() { return attr_.useUnderlining; }
     VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
 	VTABLE_EXPORT S32			GetX();

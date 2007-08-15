@@ -916,7 +916,25 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 		u += surf->pitch;	// U8*
 	}				  
 }
-  
+
+//----------------------------------------------------------------------------
+// Add underline bits to glyph bitmap
+//----------------------------------------------------------------------------
+inline void UnderlineBitmap(FT_Bitmap* source, int y, int dy)
+{
+	int		w = source->width;
+	U8*		s = source->buffer + (y-dy) * source->pitch;
+	
+	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
+		w = (w+7)/8;
+	
+	for (int h = y-dy; h < y+dy && h < source->rows; h++)
+	{
+		memset(s, 0xFF, w);
+		s += source->pitch;
+	}
+}
+
 //----------------------------------------------------------------------------
 // Advance glyph cursor XY position  
 //----------------------------------------------------------------------------
@@ -1070,10 +1088,10 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		return false;
 	}
 	
-	// The glyph is now a bitmap
-	bitmap = (FT_BitmapGlyph)glyph;
+	// The glyph now has bitmap data
+	bitmap = reinterpret_cast<FT_BitmapGlyph>(glyph);
 	source = &bitmap->bitmap;
-
+	
 	// Account for bitmap XY bearing offsets and overall font ascent 
 	int dx = bitmap->left;
 	int dy = bitmap->top;
@@ -1085,6 +1103,14 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		KernGlyphPosition(face, index, prevIndex, dk);
 	dx += dk;
 	prevIndex = index;
+	
+	// Add underline to glyph bitmap image
+	if (attr_.useUnderlining)
+	{
+		int du = face->underline_position >> 6;
+		int dt = face->underline_thickness >> 6;
+		UnderlineBitmap(source, dy-du, dt);
+	}
 	
 	// Draw mono bitmap into RGB context buffer with current color
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)

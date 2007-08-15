@@ -6983,3 +6983,12 @@ By Dmilici (Dmilici@leapfrog.com) on 8/14/07 12:57 PM
 2,907 ms. (Cumulative: 1,355,743 ms)
 
 ----------------
+Revision 1,266 from svn://localhost/TRUNK/:
+
+Add underlined font drawing support. Initial draft incorrectly presumes glyph bitmaps are long enough to extend below baseline.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/14/07 5:12 PM
+5 changed, 0 added, 0 deleted.
+2,860 ms. (Cumulative: 1,358,681 ms)
+
+----------------
