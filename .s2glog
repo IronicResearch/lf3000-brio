@@ -7022,3 +7022,13 @@ By dgibbs (dgibbs@leapfrog.com) on 8/15/07 11:28 AM
 2,906 ms. (Cumulative: 1,367,353 ms)
 
 ----------------
+Revision 1,273 from svn://localhost/TRUNK/:
+Revision 1,274 from svn://localhost/TRUNK/:
+
+Tweaks to get/set functionality.  Added to unit test.  Turned off debugging output.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/15/07 12:22 PM
+4 changed, 0 added, 0 deleted.
+2,750 ms. (Cumulative: 1,370,181 ms)
+
+----------------

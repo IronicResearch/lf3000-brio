@@ -107,32 +107,32 @@ public:
 	// Returns the time in ms since the file started playing.
 	U32 	GetAudioTime( tAudioID id ) const;
 	
-	U8		GetAudioVolume( tAudioID id ) const; // TODO: stub
-	void	SetAudioVolume( tAudioID id, U8 volume ); // TODO: stub
+	U8		GetAudioVolume( tAudioID id ) const;
+	void	SetAudioVolume( tAudioID id, U8 volume );
 
-	tAudioPriority	GetAudioPriority( tAudioID id ) const; // TODO: stub
-	void	SetAudioPriority( tAudioID id, tAudioPriority priority ); // TODO: stub
+	tAudioPriority	GetAudioPriority( tAudioID id ) const;
+	void	SetAudioPriority( tAudioID id, tAudioPriority priority );
 
-	S8		GetAudioPan( tAudioID id ) const; // TODO: stub
-	void	SetAudioPan( tAudioID id, S8 pan ); // TODO: stub
+	S8		GetAudioPan( tAudioID id ) const;
+	void	SetAudioPan( tAudioID id, S8 pan );
 
-	const IEventListener*	GetAudioEventListener( tAudioID id ) const; // TODO: stub
-	void	SetAudioEventListener( tAudioID id, IEventListener *pListener ); // TODO: stub
+	const IEventListener*	GetAudioEventListener( tAudioID id ) const;
+	void	SetAudioEventListener( tAudioID id, IEventListener *pListener );
 
 	//********************************
 	// Defaults to use when value is not specified in the Start() call.
 	//********************************    
-	U8		GetDefaultAudioVolume( void ) const; // TODO: stub
-	void	SetDefaultAudioVolume( U8 volume ); // TODO: stub
+	U8		GetDefaultAudioVolume( void ) const;
+	void	SetDefaultAudioVolume( U8 volume );
 
-	tAudioPriority	GetDefaultAudioPriority( void ) const; // TODO: stub
-	void	SetDefaultAudioPriority( tAudioPriority priority ); // TODO: stub
+	tAudioPriority	GetDefaultAudioPriority( void ) const;
+	void	SetDefaultAudioPriority( tAudioPriority priority );
 
-	S8		GetDefaultAudioPan( void ) const; // TODO: stub
-	void	SetDefaultAudioPan( S8 pan ); // TODO: stub
+	S8		GetDefaultAudioPan( void ) const;
+	void	SetDefaultAudioPan( S8 pan );
 
-	const IEventListener*	GetDefaultAudioEventListener( void ) const;  // TODO: stub
-	void	SetDefaultAudioEventListener( IEventListener *pListener );  // TODO: stub
+	const IEventListener*	GetDefaultAudioEventListener( void ) const;
+	void	SetDefaultAudioEventListener( IEventListener *pListener );
 	
 	//********************************
 	// Audio FX functionality
