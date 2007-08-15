@@ -161,9 +161,12 @@ static void *myTask(void* arg)
 		audioMPI.SetAudioPan( id, pan - (index*4));
 
 		kernelMPI.TaskSleep( 125 ); 
-
 	}
 
+	// Stop audio instead of just bailing out of the thread 
+	// so we can get done msg from player.
+	audioMPI.StopAudio( id, false );
+	
 	// sleep 2 seconds waiting for completion even to post to listener.
 	kernelMPI.TaskSleep( 2000 ); 
 

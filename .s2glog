@@ -7066,3 +7066,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/15/07 4:22 PM
 2,766 ms. (Cumulative: 1,381,714 ms)
 
 ----------------
+Revision 1,280 from svn://localhost/TRUNK/:
+
+Stop playing audio deliberately so we'll get audiodone msgs...
+
+By dgibbs (dgibbs@leapfrog.com) on 8/15/07 4:26 PM
+1 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,384,464 ms)
+
+----------------
