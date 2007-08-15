@@ -7032,3 +7032,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/15/07 12:22 PM
 2,750 ms. (Cumulative: 1,370,181 ms)
 
 ----------------
+Revision 1,275 from svn://localhost/TRUNK/:
+
+Correct underlining with expanded glyph bitmap width and height.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/15/07 12:55 PM
+2 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,372,963 ms)
+
+----------------

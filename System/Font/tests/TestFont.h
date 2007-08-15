@@ -497,6 +497,8 @@ public:
 		TS_ASSERT( pFontMPI_->GetFontUnderlining() == true );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->SetFontUnderlining(false);
+		TS_ASSERT( pFontMPI_->GetFontUnderlining() == false );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		
 		font2 = pFontMPI_->LoadFont(handle2, 36);
@@ -505,11 +507,13 @@ public:
 		TS_ASSERT( pmtrx != kNull );
 		dy = pmtrx->height;
 		
-		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->SetFontUnderlining(true);
+		TS_ASSERT( pFontMPI_->GetFontUnderlining() == true );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		pFontMPI_->SetFontUnderlining(false);
 		TS_ASSERT( pFontMPI_->GetFontUnderlining() == false );
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		pDisplayMPI_->Invalidate(0, NULL);
 		sleep(1);
 		
