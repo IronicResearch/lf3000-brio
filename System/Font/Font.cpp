@@ -918,17 +918,51 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 }
 
 //----------------------------------------------------------------------------
+// Expand glyph bitmap to new width and height
+//----------------------------------------------------------------------------
+inline void ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, int height)
+{
+	CKernelMPI	kernel;
+	int			w = source->pitch;
+	int			h = source->rows;
+	U8* 		s = source->buffer;
+	U8* 		d = dest->buffer = static_cast<U8*>(kernel.Malloc(width * height));
+
+	// Effectively use pitch for full bitmap width
+	dest->pitch = dest->width = width;
+	dest->rows = height;
+	dest->pixel_mode = source->pixel_mode;
+
+	memset(d, 0, width * height);
+	for (int i = 0; i < h; i++)
+	{
+		memcpy(d, s, w);
+		s += w;
+		d += width;
+	}
+}
+
+//----------------------------------------------------------------------------
+// Free expanded glyph bitmap memory 
+//----------------------------------------------------------------------------
+inline void FreeBitmap(FT_Bitmap* dest)
+{
+	CKernelMPI	kernel;
+	kernel.Free(dest->buffer);
+}
+
+//----------------------------------------------------------------------------
 // Add underline bits to glyph bitmap
 //----------------------------------------------------------------------------
 inline void UnderlineBitmap(FT_Bitmap* source, int y, int dy)
 {
 	int		w = source->width;
-	U8*		s = source->buffer + (y-dy) * source->pitch;
+	U8*		s = source->buffer + y * source->pitch;
 	
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
 		w = (w+7)/8;
 	
-	for (int h = y-dy; h < y+dy && h < source->rows; h++)
+	for (int h = y; h < y+dy && h < source->rows; h++)
 	{
 		memset(s, 0xFF, w);
 		s += source->pitch;
@@ -1041,7 +1075,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	FT_Glyph		glyph;
 	FT_Face			face;
 	FT_BitmapGlyph  bitmap;
-	FT_Bitmap*      source;
+	FT_Bitmap*      source,clone;
 	FT_Render_Mode  render_mode = FT_RENDER_MODE_MONO;
 	int				error = FT_Err_Ok;
 	PFont			font = handle_.currentFont;
@@ -1059,16 +1093,6 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 
 	// Get font face 
 	GetFace(&face);
-	
-	// Special handling for spaces: (and other non-visible glyphs?)
-	// No bitmaps are created, though XY cursor still needs to advance.
-#if 0	// FIXME: not necessarily chars anymore...
-	if ( ch == ' ' ) 
-	{
-		AdvanceGlyphPosition(glyph, curX_, curY_);
-		return true;		
-	}
-#endif
 	
 	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
 	{
@@ -1110,16 +1134,12 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		int du = face->underline_position >> 6;
 		int dt = face->underline_thickness >> 6;
 		int dh = face->height >> 6;
-		// FIXME: Horrible hack to enlarge bitmap buffer to extend full glyph height
-		FT_Bitmap clone;
-		FT_Bitmap_New(&clone);
-		FT_Bitmap_Copy(handle_.library, source, &clone);
-		source->buffer = (U8*)realloc(source->buffer, dh * source->pitch); // HACK! 
-		memset(source->buffer, 0, dh * clone.pitch);
-		memcpy(source->buffer, clone.buffer, clone.rows * clone.pitch);
-		FT_Bitmap_Done(handle_.library, &clone);
-		source->rows = dh;
+		int dw = ( glyph->advance.x + 0x8000 ) >> 16;
+		// Expand glyph bitmap width and height to fit underline bits
+		ExpandBitmap(source, &clone, dw, dh);
+		source = &clone;
 		UnderlineBitmap(source, dy-du, dt);
+		dx = 0; // fills gaps -- affects positioning
 	}
 	
 	// Draw mono bitmap into RGB context buffer with current color
@@ -1167,6 +1187,10 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	// Update the current XY glyph cursor position
 	AdvanceGlyphPosition(glyph, curX_, curY_);
 	curX_ += dk;
+
+	// Release expanded bitmap memory used for underlining
+	if (attr_.useUnderlining)
+		FreeBitmap(&clone);
 	
 	return true;
 }
