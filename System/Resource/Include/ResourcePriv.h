@@ -188,6 +188,7 @@ private:
 	ResourceDescriptor*	FindRsrcPriv(U32 id, tRsrcHndl hndl) const	;
 	CDebugMPI			dbg_;
 	CKernelMPI 			kernel_;
+	tMutex     			mpiMutex_;
 	boost::scoped_array<DeviceDescriptor>	pDevices_;
 
 	// Limit object creation to the Module Manager interface functions

@@ -7001,3 +7001,15 @@ By Dmilici (Dmilici@leapfrog.com) on 8/14/07 5:55 PM
 2,781 ms. (Cumulative: 1,361,540 ms)
 
 ----------------
+Revision 1,268 from svn://localhost/TRUNK/:
+Revision 1,269 from svn://localhost/TRUNK/:
+Revision 1,270 from svn://localhost/TRUNK/:
+Revision 1,271 from svn://localhost/TRUNK/:
+
+Add mutex to serialize MPI registration.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/15/07 11:25 AM
+2 changed, 0 added, 0 deleted.
+2,766 ms. (Cumulative: 1,364,384 ms)
+
+----------------

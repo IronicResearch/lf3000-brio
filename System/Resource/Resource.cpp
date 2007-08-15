@@ -680,6 +680,9 @@ namespace
 CResourceModule::CResourceModule() : dbg_(kGroupResource),
 								pDevices_(new DeviceDescriptor[kDeviceCount])
 {
+	tErrType 			result = kNoErr;
+	const tMutexAttr 	attr = {0};
+	
 	// Initialize the DeviceDescriptor array
 	//
 	const CString	base = "Base";
@@ -696,11 +699,19 @@ CResourceModule::CResourceModule() : dbg_(kGroupResource),
 		sprintf(buf, "%d", ii);
 		pDevices_[ii].name = cart + buf;
 	}
+
+	// Init mutex for serialization of MPI calls
+	result = kernel_.InitMutex( mpiMutex_, attr );
+	dbg_.Assert((kNoErr == result), "CResourceModule::ctor: Couldn't init mutex.\n");
 }
 
 //----------------------------------------------------------------------------
 CResourceModule::~CResourceModule()
 {
+	tErrType result = kNoErr;
+
+	result = kernel_.DeInitMutex( mpiMutex_ );
+	dbg_.Assert((kNoErr == result), "CResourceModule::dtor --  Couldn't deinit mutex.\n");
 }
 
 //----------------------------------------------------------------------------
@@ -734,17 +745,29 @@ const CURI* CResourceModule::GetModuleOrigin() const
 //----------------------------------------------------------------------------
 U32 CResourceModule::Register( )
 {
-	// FIXME/tp: Handle threading issues through lock
-	static U32 sNextIndex = 0;
+	tErrType 	result = kNoErr;
+	static U32	sNextIndex = 0;
+
+	result = kernel_.LockMutex( mpiMutex_ );
+	dbg_.Assert((kNoErr == result), "CResourceModule::Register -- Couldn't lock mutex.\n");
+
 	gMPIMap.insert(MPIMap::value_type(++sNextIndex, MPIInstanceState(pDevices_.get())));
+
+	result = kernel_.UnlockMutex( mpiMutex_ );
+	dbg_.Assert((kNoErr == result), "CResourceModule::Register --  Couldn't unlock mutex.\n");
+
 	return sNextIndex;
 }
 
 //----------------------------------------------------------------------------
 void CResourceModule::Unregister(U32 id)
 {
-	// FIXME/tp: Handle threading issues through lock
-	MPIMap::iterator it = gMPIMap.find(id);
+	tErrType 			result = kNoErr;
+	MPIMap::iterator 	it = gMPIMap.find(id);
+
+	result = kernel_.LockMutex( mpiMutex_ );
+	dbg_.Assert((kNoErr == result), "CResourceModule::Unregister -- Couldn't lock mutex.\n");
+
 	if (it != gMPIMap.end())
 	{
 		for (tPackageHndl hPkg = it->second.GetFirstOpenPackageHandle();
@@ -754,6 +777,9 @@ void CResourceModule::Unregister(U32 id)
 		CloseAllDevices(id);
 		gMPIMap.erase(it);
 	}
+	
+	result = kernel_.UnlockMutex( mpiMutex_ );
+	dbg_.Assert((kNoErr == result), "CAudioModule::Unregister --  Couldn't unlock mutex.\n");
 }
 
 //----------------------------------------------------------------------------
