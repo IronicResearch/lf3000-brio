@@ -204,6 +204,22 @@ Boolean	CFontMPI::GetFontKerning()
 }
 
 //----------------------------------------------------------------------------
+Boolean	CFontMPI::SetFontUnderlining(Boolean underline)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SetFontUnderlining(underline);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::GetFontUnderlining()
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetFontUnderlining();
+}
+
+//----------------------------------------------------------------------------
 Boolean	CFontMPI::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
 	if (!pModule_)

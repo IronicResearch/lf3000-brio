@@ -450,6 +450,80 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void testFontUnderlining()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tRsrcHndl	handle2;
+		tFontHndl	font1;
+		tFontHndl	font2;
+		tFontSurf	surf;
+		tFontMetrics	*pmtrx;
+		tDisplayHandle 	disp;
+		CString			text = CString("Underline yes/no question.");
+		S32				dy,y = 0;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = kPixelFormatARGB8888;
+		memset(surf.buffer, 0, surf.height * surf.pitch);
+		
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
+		pkg = pResourceMPI_->FindPackage("FontTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
+		handle1 = pResourceMPI_->FindRsrc("Verdana");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		handle2 = pResourceMPI_->FindRsrc("Avatar");
+		TS_ASSERT( handle2 != kInvalidRsrcHndl );
+
+		font1 = pFontMPI_->LoadFont(handle1, 24);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pmtrx = pFontMPI_->GetFontMetrics();
+		TS_ASSERT( pmtrx != kNull );
+		dy = pmtrx->height;
+		
+		pFontMPI_->SetFontColor(0xFFFFFFFF);
+		pFontMPI_->SetFontUnderlining(true);
+		TS_ASSERT( pFontMPI_->GetFontUnderlining() == true );
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		
+		font2 = pFontMPI_->LoadFont(handle2, 36);
+		TS_ASSERT( font2 != kInvalidFontHndl );
+		pmtrx = pFontMPI_->GetFontMetrics();
+		TS_ASSERT( pmtrx != kNull );
+		dy = pmtrx->height;
+		
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
+		pFontMPI_->SetFontUnderlining(false);
+		TS_ASSERT( pFontMPI_->GetFontUnderlining() == false );
+		pDisplayMPI_->Invalidate(0, NULL);
+		sleep(1);
+		
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pFontMPI_->UnloadFont(font1);
+		pFontMPI_->UnloadFont(font2);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete pDisplayMPI_;
+	}
+	
+	//------------------------------------------------------------------------
 	void testFontUnicode()
 	{
 		tRsrcHndl	pkg;
