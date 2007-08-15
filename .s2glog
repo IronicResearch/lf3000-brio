@@ -6992,3 +6992,12 @@ By Dmilici (Dmilici@leapfrog.com) on 8/14/07 5:12 PM
 2,860 ms. (Cumulative: 1,358,681 ms)
 
 ----------------
+Revision 1,267 from svn://localhost/TRUNK/:
+
+Workaround to enlarge glyph bitmap buffer to full glyph height for underlining.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/14/07 5:55 PM
+1 changed, 0 added, 0 deleted.
+2,781 ms. (Cumulative: 1,361,540 ms)
+
+----------------
