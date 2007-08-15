@@ -48,7 +48,7 @@ public:
 
 	// The default listener is not currently used.
 	CAudioMPI( const IEventListener* pDefaultListener = NULL );
-	virtual ~CAudioMPI();
+	virtual ~CAudioMPI( void );
 
 	//********************************
 	// Audio output driver control. 
@@ -63,7 +63,7 @@ public:
 
 	// Set the final output gain of the mixer.  (This includes MIDI.)
 	void 		SetMasterVolume( U8 volume );
-	U8			GetMasterVolume( void );
+	U8			GetMasterVolume( void ) const;
 
 	//********************************
 	// Audio Playback. 
@@ -76,9 +76,9 @@ public:
 					U8					volume, 
 					tAudioPriority		priority,
 					S8					pan, 
-					IEventListener*		pListener,
-					tAudioPayload		payload,
-					tAudioOptionsFlags	flags );
+					const IEventListener*	pListener = kNull,
+					tAudioPayload		payload = 0,
+					tAudioOptionsFlags	flags = 0 );
 
 	// Same as above, but uses defaults for unspecified params.
 	tAudioID 	StartAudio( tRsrcHndl	hRsrc, 
@@ -105,33 +105,33 @@ public:
 	// Get/Set the Volume/Priority/Pan using a given audioID
 	//********************************    
 	// Returns the time in ms since the file started playing.
-	U32 	GetAudioTime( tAudioID id );
+	U32 	GetAudioTime( tAudioID id ) const;
 	
-	U8		GetAudioVolume( tAudioID id ); // TODO: stub
+	U8		GetAudioVolume( tAudioID id ) const; // TODO: stub
 	void	SetAudioVolume( tAudioID id, U8 volume ); // TODO: stub
 
-	tAudioPriority	GetAudioPriority( tAudioID id); // TODO: stub
-	void	SetAudioPriority( tAudioID id, tAudioPriority priority); // TODO: stub
+	tAudioPriority	GetAudioPriority( tAudioID id ) const; // TODO: stub
+	void	SetAudioPriority( tAudioID id, tAudioPriority priority ); // TODO: stub
 
-	S8		GetAudioPan( tAudioID id ); // TODO: stub
+	S8		GetAudioPan( tAudioID id ) const; // TODO: stub
 	void	SetAudioPan( tAudioID id, S8 pan ); // TODO: stub
 
-	IEventListener*	GetAudioEventListener( tAudioID id ); // TODO: stub
+	const IEventListener*	GetAudioEventListener( tAudioID id ) const; // TODO: stub
 	void	SetAudioEventListener( tAudioID id, IEventListener *pListener ); // TODO: stub
 
 	//********************************
 	// Defaults to use when value is not specified in the Start() call.
 	//********************************    
-	U8		GetDefaultAudioVolume( void ); // TODO: stub
+	U8		GetDefaultAudioVolume( void ) const; // TODO: stub
 	void	SetDefaultAudioVolume( U8 volume ); // TODO: stub
 
-	tAudioPriority	GetDefaultAudioPriority( void ); // TODO: stub
+	tAudioPriority	GetDefaultAudioPriority( void ) const; // TODO: stub
 	void	SetDefaultAudioPriority( tAudioPriority priority ); // TODO: stub
 
-	S8		GetDefaultAudioPan( void ); // TODO: stub
+	S8		GetDefaultAudioPan( void ) const; // TODO: stub
 	void	SetDefaultAudioPan( S8 pan ); // TODO: stub
 
-	IEventListener*	GetDefaultAudioEventListener( void );  // TODO: stub
+	const IEventListener*	GetDefaultAudioEventListener( void ) const;  // TODO: stub
 	void	SetDefaultAudioEventListener( IEventListener *pListener );  // TODO: stub
 	
 	//********************************
@@ -176,6 +176,12 @@ public:
 						tAudioPayload		payload,
 						tAudioOptionsFlags	flags );
 
+    // Uses defaults from MPI for volume, priority, and listener.
+    tErrType 	StartMidiFile( tMidiPlayerID		id,
+    							tRsrcHndl			hRsrc, 
+    							tAudioPayload		payload,
+    							tAudioOptionsFlags	flags );
+    
 	// Is this MIDI file still playing?
 	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
 	
@@ -213,6 +219,7 @@ public:
 	
 private:
 	class CAudioModule*	pModule_;
+	U32					mpiID_;
 };
 
 LF_END_BRIO_NAMESPACE()	

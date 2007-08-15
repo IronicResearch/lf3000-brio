@@ -62,13 +62,16 @@ public:
 	inline S8		GetPan()       { return pan_; }
 	inline void		SetPan(S8 pan) { pan_ = pan; }
 
-	inline float		GetEQ_Frequency()        { return eq_frequency_; }
+	inline tAudioPriority	GetPriority()            				{ return priority_; }
+	inline void				SetPriority( tAudioPriority priority ) 	{ priority_ = priority; }
+
+	inline float	GetEQ_Frequency()        { return eq_frequency_; }
 	inline void		SetEQ_Frequency(float x) { eq_frequency_ = x; }
 
-	inline float		GetEQ_Q()        { return eq_q_; }
+	inline float	GetEQ_Q()        { return eq_q_; }
 	inline void		SetEQ_Q(float x) { eq_q_ = x; }
 
-	inline float		GetEQ_GainDB()        { return eq_gainDB_; }
+	inline float	GetEQ_GainDB()        { return eq_gainDB_; }
 	inline void		SetEQ_GainDB(float x) { eq_gainDB_ = x; }
 
 	inline void		SetMixerChannelDataPtr(MIXERCHANNEL *d) { pDSP_ = d; }
@@ -86,16 +89,17 @@ public:
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 private:
-	U8			volume_;	// Volume of the channel
-	S8			pan_;		// Pan of the channel 
+	U8				volume_;	// Volume of the channel
+	S8				pan_;		// Pan of the channel 
+	tAudioPriority	priority_;	// channel priority
 
 	float			eq_frequency_;
 	float			eq_q_;
 	float			eq_gainDB_;
 
-	U32			inSampleRate_;	// Sample rate of data as reported by player
+	U32				inSampleRate_;	// Sample rate of data as reported by player
 
-	MIXERCHANNEL		*pDSP_;
+	MIXERCHANNEL	*pDSP_;
 
 	S16 			*pOutBuffer_;	// Pointer to the output buffer
 #define kChannel_MaxTempBuffers		2

@@ -7013,3 +7013,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/15/07 11:25 AM
 2,766 ms. (Cumulative: 1,364,384 ms)
 
 ----------------
+Revision 1,272 from svn://localhost/TRUNK/:
+
+Add support for multiple MPIs.  Add get/set methods for volume, pan, priority, and event listener.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/15/07 11:28 AM
+12 changed, 0 added, 0 deleted.
+2,906 ms. (Cumulative: 1,367,353 ms)
+
+----------------

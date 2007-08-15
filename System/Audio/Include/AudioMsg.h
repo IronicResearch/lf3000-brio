@@ -51,10 +51,14 @@ enum {
 	kAudioCmdMsgTypeIsAnyAudioPlaying,
 
 	kAudioCmdMsgTypeSetAudioVolume,
+	kAudioCmdMsgTypeGetAudioVolume,
 	kAudioCmdMsgTypeSetAudioPriority,
+	kAudioCmdMsgTypeGetAudioPriority,
 	kAudioCmdMsgTypeSetAudioPan,
-	kAudioCmdMsgTypeSetAudioEventHandler,
-
+	kAudioCmdMsgTypeGetAudioPan,
+	kAudioCmdMsgTypeSetAudioListener,
+	kAudioCmdMsgTypeGetAudioListener,
+	
 	kAudioCmdMsgTypeAcquireMidiPlayer,
 	kAudioCmdMsgTypeReleaseMidiPlayer,
 
@@ -85,7 +89,7 @@ typedef U8 tAudioCmdMsgType;
 class CAudioCmdMsg: public CMessage {
 public:    
 	tAudioCmdMsgType	GetCmdType( void ) const { return type_; }
-	void				SetCmdType( tAudioCmdMsgType type ) { type_ = type; }
+//	void				SetCmdType( tAudioCmdMsgType type ) { type_ = type; }
 
 protected:
 	tAudioCmdMsgType			type_;
@@ -93,7 +97,6 @@ protected:
 
 
 // kAudioCmdMsgTypeSetMasterVolume
-
 class CAudioMsgSetMasterVolume : public CAudioCmdMsg {
 public:    
 	CAudioMsgSetMasterVolume( const U8 masterVolume );
@@ -101,6 +104,86 @@ public:
 	
 private:
 	U8	masterVolume_;
+};
+
+//kAudioCmdMsgTypeSetAudioVolume,
+//kAudioCmdMsgTypeGetAudioVolume,
+class CAudioMsgSetAudioVolume : public CAudioCmdMsg {
+public:    
+	CAudioMsgSetAudioVolume( const tAudioVolumeInfo vi );
+	tAudioVolumeInfo	GetData( void ) { return vi_; }
+	
+private:
+	tAudioVolumeInfo	vi_;
+};
+
+class CAudioMsgGetAudioVolume : public CAudioCmdMsg {
+public:    
+	CAudioMsgGetAudioVolume( tAudioID id );
+	tAudioVolumeInfo	GetData( void ) { return vi_; }
+	
+private:
+	tAudioVolumeInfo	vi_;
+};
+
+//kAudioCmdMsgTypeSetAudioPriority,
+//kAudioCmdMsgTypeGetAudioPriority,
+class CAudioMsgSetAudioPriority : public CAudioCmdMsg {
+public:    
+	CAudioMsgSetAudioPriority( const tAudioPriorityInfo pi );
+	tAudioPriorityInfo	GetData( void ) { return pi_; }
+	
+private:
+	tAudioPriorityInfo	pi_;
+};
+
+class CAudioMsgGetAudioPriority : public CAudioCmdMsg {
+public:    
+	CAudioMsgGetAudioPriority( tAudioID id );
+	tAudioPriorityInfo	GetData( void ) { return pi_; }
+	
+private:
+	tAudioPriorityInfo	pi_;
+};
+
+//kAudioCmdMsgTypeSetAudioPan,
+//kAudioCmdMsgTypeGetAudioPan,
+class CAudioMsgSetAudioPan : public CAudioCmdMsg {
+public:    
+	CAudioMsgSetAudioPan( const tAudioPanInfo pi );
+	tAudioPanInfo	GetData( void ) { return pi_; }
+	
+private:
+	tAudioPanInfo	pi_;
+};
+
+class CAudioMsgGetAudioPan : public CAudioCmdMsg {
+public:    
+	CAudioMsgGetAudioPan( tAudioID id );
+	tAudioPanInfo	GetData( void ) { return pi_; }
+	
+private:
+	tAudioPanInfo	pi_;
+};
+
+//kAudioCmdMsgTypeSetAudioListener,
+//kAudioCmdMsgTypeGetAudioListener,
+class CAudioMsgSetAudioListener : public CAudioCmdMsg {
+public:    
+	CAudioMsgSetAudioListener( const tAudioListenerInfo li );
+	tAudioListenerInfo	GetData( void ) { return li_; }
+	
+private:
+	tAudioListenerInfo	li_;
+};
+
+class CAudioMsgGetAudioListener : public CAudioCmdMsg {
+public:    
+	CAudioMsgGetAudioListener( tAudioID id );
+	tAudioListenerInfo	GetData( void ) { return li_; }
+	
+private:
+	tAudioListenerInfo	li_;
 };
 
 // kAudioCmdMsgTypeStartAudio
@@ -119,7 +202,6 @@ private:
 };
 
 // kAudioCmdMsgTypeGetAudioTime
-
 class CAudioMsgGetAudioTime : public CAudioCmdMsg {
 public:    
 	// Pause ALL audio.
@@ -135,7 +217,6 @@ private:
 };
 
 // kAudioCmdMsgTypePauseAudio
-
 class CAudioMsgPauseAudio : public CAudioCmdMsg {
 public:    
 	// Pause ALL audio.
@@ -151,7 +232,6 @@ private:
 };
 
 // kAudioCmdMsgTypeResumeAudio
-
 class CAudioMsgResumeAudio : public CAudioCmdMsg {
 public:    
 	// Resume ALL audio.
@@ -167,7 +247,6 @@ private:
 };
 
 // kAudioCmdMsgTypeStopAudio
-
 class CAudioMsgStopAudio : public CAudioCmdMsg {
 public:    
 	// Pause ALL audio.
@@ -183,7 +262,6 @@ private:
 };
 
 // kAudioCmdMsgTypeIsAudioPlaying
-
 class CAudioMsgIsAudioPlaying : public CAudioCmdMsg {
 public:    
 	// Is any audio playing?

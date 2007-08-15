@@ -22,7 +22,7 @@ struct tAudioStartAudioInfo {
 	U8				 	volume;
 	tAudioPriority	 	priority;
 	S8				 	pan;
-	IEventListener		*pListener;
+	const IEventListener *pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
 	tAudioHeader*		pAudioHeader;		// For Brio Raw types, pointer to header and data, provided by AudioTask, returned from GetPtr()
@@ -31,12 +31,64 @@ struct tAudioStartAudioInfo {
 						U8 v = 0, 
 						tAudioPriority p = 0, 
 						S8 pn = 0, 
-						IEventListener* l = NULL, 
+						const IEventListener* l = NULL, 
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0, 
 						tAudioHeader* h = NULL )
 		: hRsrc(r), volume(v), priority(p), pan(pn), pListener(l),
 		payload(pl), flags(f), pAudioHeader(h) {}
+};
+
+// kAudioCmdMsgTypeSetAudioVolume
+// kAudioCmdMsgTypeGetAudioVolume
+struct tAudioVolumeInfo { 
+	tAudioID				id;
+	U8				 		volume;
+	
+	tAudioVolumeInfo(   tAudioID				i = 0,
+						U8 						v = 0 )
+		: id(i), volume(v) 
+		
+		{ }
+};
+
+// kAudioCmdMsgTypeSetAudioPriority
+// kAudioCmdMsgTypeGetAudioPriority
+struct tAudioPriorityInfo { 
+	tAudioID				id;
+	tAudioPriority	 		priority;
+	
+	tAudioPriorityInfo(   tAudioID				i = 0, 
+						tAudioPriority			p = 0 )
+		: id(i), priority(p) 
+		
+		{ }
+};
+
+// kAudioCmdMsgTypeSetAudioPan
+// kAudioCmdMsgTypeGetAudioPan
+struct tAudioPanInfo { 
+	tAudioID				id;
+	S8				 		pan;
+	
+	tAudioPanInfo(   tAudioID				i = 0,
+						S8 						pn = 0 )
+		: id(i), pan(pn) 
+		
+		{ }
+};
+
+// kAudioCmdMsgTypeSetAudioListener
+// kAudioCmdMsgTypeGetAudioListener
+struct tAudioListenerInfo { 
+	tAudioID				id;
+	const IEventListener 	*pListener;
+	
+	tAudioListenerInfo(   tAudioID				i = 0,
+						const IEventListener* 	l = NULL )
+		: id(i), pListener(l) 
+		
+		{ }
 };
 
 // kAudioCmdMsgTypeStopAudio
@@ -54,17 +106,15 @@ struct tAudioMidiNoteInfo {
 	U8					channel;
 	U8					noteNum;
 	U8				 	velocity;
-	tAudioPriority	 	priority;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
 
 	tAudioMidiNoteInfo( U8 c = 0, 
 						U8 n = 0, 
 						U8 v = 0, 
-						tAudioPriority p = 0, 
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0 )
-		: channel(c), noteNum(n), velocity(v), priority(p),
+		: channel(c), noteNum(n), velocity(v), 
 		  payload(pl), flags(f) {}
 };
 
@@ -76,7 +126,7 @@ struct tAudioStartMidiFileInfo {
 	U32					imageSize;			// Size of MIDI file in RAM
 	U8				 	volume;
 	tAudioPriority		priority;
-	IEventListener*		pListener;
+	const IEventListener* pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
 
@@ -85,7 +135,7 @@ struct tAudioStartMidiFileInfo {
 						U8 *pi = NULL,
 						U32 is = 0,
 						tAudioPriority p = 0,
-						IEventListener* l = NULL, 
+						const IEventListener* l = NULL, 
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0 )
 		: id(i), hRsrc(r), pMidiFileImage(pi), priority(p), pListener(l),

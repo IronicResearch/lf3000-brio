@@ -59,8 +59,8 @@ public:
 	inline void		 		SetPriority(tAudioPriority priority) { priority_ = priority; }
 	inline tAudioPayload	GetPayload() { return payload_; }
 	inline void		 		SetPayload(tAudioPayload value) { payload_ = value; }
-	inline IEventListener*	GetEventListener() { return pListener_; }
-	inline void		 		SetEventListener(IEventListener *pListener) { pListener_ = pListener; }
+	inline const IEventListener*	GetEventListener() { return pListener_; }
+	inline void		 		SetEventListener( const IEventListener *pListener) { pListener_ = pListener; }
 	inline U8				GetPan( void ) { return pan_; }
 	inline U8				GetVolume( void ) { return volume_; }
 	inline tAudioOptionsFlags	GetOptionsFlags() { return optionsFlags_; }
@@ -92,7 +92,7 @@ protected:
 	tAudioPriority		priority_;		// Priority of the audio assigned to the player
 	tAudioPayload		payload_;		// User payload of the audio assigned to the player
 	tAudioOptionsFlags	optionsFlags_;	// Options flags of the audio assigned to the player
-	IEventListener 		*pListener_;	// Pointer to AudioEventHandler assigned to the player
+	const IEventListener *pListener_;	// Pointer to AudioEventHandler assigned to the player
 };
 
 LF_END_BRIO_NAMESPACE()
