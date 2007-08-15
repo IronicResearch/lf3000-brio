@@ -81,7 +81,7 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	
 	// Setup Mutex object for protecting render calls
   	err = pKernelMPI_->InitMutex( render_mutex_, attr );
-	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
+	pDebugMPI_->Assert((kNoErr == err), "CMidiPlayer::ctor: Couldn't init mutex.\n");
 	
 	// Initialize SPMIDI Library
 	SPMIDI_Initialize();

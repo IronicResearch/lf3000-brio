@@ -170,14 +170,18 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void xxxtestVorbisResources( )
+	void testVorbisResources( )
 	{
-		U32			index;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
-		tAudioID 	id1;
-		tAudioID 	id2;
-		U32			audioTime;
+		U32						index;
+		tRsrcHndl				handle1;
+		tRsrcHndl				handle2;
+		tAudioID 				id1;
+		tAudioID 				id2;
+		U32						time;
+		U8						volume;
+		S8						pan;
+		tAudioPriority 			priority;
+		const IEventListener* 	pListener;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -217,7 +221,13 @@ public:
 
 		// loop sleep 1 second
 		for (index = 0; index < 20; index++) {
-			audioTime = pAudioMPI_->GetAudioTime( id2 );
+			time = pAudioMPI_->GetAudioTime( id2 );
+			volume = pAudioMPI_->GetAudioVolume( id2 );
+			priority = pAudioMPI_->GetAudioPriority( id2 );
+			pan = pAudioMPI_->GetAudioPan( id2 );
+			pListener = pAudioMPI_->GetAudioEventListener( id2 );
+			printf("TestAudio::testVorbisResources -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
+					(int)id2, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
 			pKernelMPI_->TaskSleep( 250 ); 
 		}
 	}
@@ -328,7 +338,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVorbisPlusMIDIResources( )
+	void xxxtestVorbisPlusMIDIResources( )
 	{
 		tErrType 		err;
 		U32				index;
