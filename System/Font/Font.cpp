@@ -965,7 +965,7 @@ inline void CFontModule::GetFace(FT_Face* pFace)
 #if USE_FONT_CACHE_MGR
 	FTC_Manager_LookupFace(handle_.cacheManager, handle_.imageType.face_id, pFace);
 #else
-	*pFace = font->face;
+	*pFace = handle_.currentFont->face;
 #endif
 }
 
@@ -1109,6 +1109,16 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	{
 		int du = face->underline_position >> 6;
 		int dt = face->underline_thickness >> 6;
+		int dh = face->height >> 6;
+		// FIXME: Horrible hack to enlarge bitmap buffer to extend full glyph height
+		FT_Bitmap clone;
+		FT_Bitmap_New(&clone);
+		FT_Bitmap_Copy(handle_.library, source, &clone);
+		source->buffer = (U8*)realloc(source->buffer, dh * source->pitch); // HACK! 
+		memset(source->buffer, 0, dh * clone.pitch);
+		memcpy(source->buffer, clone.buffer, clone.rows * clone.pitch);
+		FT_Bitmap_Done(handle_.library, &clone);
+		source->rows = dh;
 		UnderlineBitmap(source, dy-du, dt);
 	}
 	
