@@ -45,6 +45,9 @@ public:
 	{
 		tEventStatus status = kEventStatusOK;
 		
+		// TODO: Shouldn't have to do this but it seems necessary...
+		dbg_.SetDebugLevel( kDbgLvlVerbose );
+
 		const CAudioEventMessage& msg = dynamic_cast<const CAudioEventMessage&>(msgIn);
 		if( msg.GetEventType() == kAudioCompletedEvent )
 		{
@@ -66,6 +69,108 @@ public:
 private:
 	CDebugMPI	dbg_;
 };
+
+// Task to test multithreading and multi-MPIs.
+typedef struct
+{
+	int threadNum;
+}thread_arg_t;
+
+static void *myTask(void* arg)
+{
+	CAudioMPI				audioMPI;
+	CKernelMPI				kernelMPI;
+	CResourceMPI			resourceMPI;
+
+	tPackageHndl			pkg;
+
+	U32						index;
+	tRsrcHndl				handle;
+	tAudioID 				id;
+	U32						time;
+	U8						volume;
+	S8						pan;
+	tAudioPriority 			priority;
+	AudioListener			audioListener;
+	const IEventListener* 	pListener;
+
+	thread_arg_t 			*ptr = (thread_arg_t *)arg; 
+	int						threadNum = ptr->threadNum;
+
+	TS_ASSERT( audioMPI.IsValid() == true );
+	TS_ASSERT( kernelMPI.IsValid() == true );
+	TS_ASSERT( resourceMPI.IsValid() == true );
+
+	printf("myTask( thread %d ) -- test task thread starting up.\n", threadNum );
+
+	resourceMPI.OpenAllDevices();
+	resourceMPI.SetDefaultURIPath("LF/Brio/UnitTest/Audio");
+
+	pkg = resourceMPI.FindPackage("SampleTest");
+	TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+	TS_ASSERT_EQUALS( kNoErr, resourceMPI.OpenPackage(pkg) );
+
+	// Package is already opened in setup
+	switch( threadNum ) {
+		case 1:
+			handle = resourceMPI.FindRsrc( "vivaldi" );
+			TS_ASSERT( handle != kInvalidRsrcHndl );
+			printf("myTask( thread %d ) found vivaldi, rsrcHandle = %d\n", threadNum, (int)handle );	
+		break;
+
+		case 2:
+			handle = resourceMPI.FindRsrc( "VH_16_mono" );
+			TS_ASSERT( handle != kInvalidRsrcHndl );
+			printf("myTask( thread %d ) found VH_16_mono, rsrcHandle = %d\n", threadNum, (int)handle );	
+		break;
+
+		case 3:
+			handle = resourceMPI.FindRsrc( "sfx" );
+			TS_ASSERT( handle != kInvalidRsrcHndl );
+			printf("myTask( thread %d ) found sfx, rsrcHandle = %d\n", threadNum, (int)handle );	
+		break;
+
+		case 4:
+			handle = resourceMPI.FindRsrc( "voice" );
+			TS_ASSERT( handle != kInvalidRsrcHndl );
+			printf("myTask( thread %d ) found voice, rsrcHandle = %d\n", threadNum, (int)handle );	
+		break;
+
+	}
+	
+	id = audioMPI.StartAudio( handle, 100, 1, 0, &audioListener, 0, 0 );
+	printf("myTask( thread %d ) back from calling StartAudio()\n", threadNum );
+
+	// sleep 2 seconds
+	kernelMPI.TaskSleep( 2000 ); 
+
+	// loop sleep 1 second
+	for (index = 0; index < 20; index++) {
+		time = audioMPI.GetAudioTime( id );
+		volume = audioMPI.GetAudioVolume( id );
+		priority = audioMPI.GetAudioPriority( id );
+		pan = audioMPI.GetAudioPan( id );
+		pListener = audioMPI.GetAudioEventListener( id );
+		printf("myTask( thread %d ) -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
+				threadNum, (int)id, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
+		
+		kernelMPI.TaskSleep( 125 ); 
+
+		audioMPI.SetAudioVolume( id, volume - (index*2) );
+		audioMPI.SetAudioPriority( id, priority + index );
+		audioMPI.SetAudioPan( id, pan - (index*4));
+
+		kernelMPI.TaskSleep( 125 ); 
+
+	}
+
+	// sleep 2 seconds waiting for completion even to post to listener.
+	kernelMPI.TaskSleep( 2000 ); 
+
+	printf("myTask( thread %d ) Exiting... \n" , threadNum );
+
+	return (void *)NULL;
+}	
 
 
 //============================================================================
@@ -170,7 +275,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVorbisResources( )
+	void xxtestVorbisResources( )
 	{
 		U32						index;
 		tRsrcHndl				handle1;
@@ -274,7 +379,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestRawResources( )
+	void xxtestRawResources( )
 	{
 		tRsrcHndl		handle1;
 		tRsrcHndl		handle2;
@@ -297,7 +402,7 @@ public:
 		TS_ASSERT( handle1 != kInvalidRsrcHndl );
 		printf("TestAudio -- testRawResources() found vivaldi44stereo, rsrcHandle = %d\n", (int)handle1 );
 
-		handle2 = pResourceMPI_->FindRsrc( "BlueNile" );
+		handle2 = pResourceMPI_->FindRsrc( "sine44" );
 		TS_ASSERT( handle2 != kInvalidRsrcHndl );
 		
 		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
@@ -524,6 +629,59 @@ public:
 		// sleep3 seconds
 		pKernelMPI_->TaskSleep( kDuration );
 }
+
+	//------------------------------------------------------------------------
+	void testThreading()
+	{
+		printf("testThreading starting... \n");
+
+		const int 		kDuration = 1 * 3000;
+
+		CKernelMPI		kernelMPI;
+
+		tTaskHndl 		hndl_1;
+		tTaskHndl 		hndl_2;
+		tTaskHndl 		hndl_3;
+		tTaskHndl 		hndl_4;
+        thread_arg_t 	threadArg;
+ 	    tTaskProperties pProperties;
+        tPtr 			status = NULL;
+
+		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
+ 		threadArg.threadNum = 1;
+		pProperties.pTaskMainArgValues = &threadArg;
+		
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_1,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 2;
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_2,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 3;
+		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_3,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 4;
+		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_4,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_1, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_2, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_3, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_4, status ));
+
+		// this will exit when all threads exit.
+	}
 
 };
 

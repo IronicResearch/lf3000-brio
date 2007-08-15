@@ -369,6 +369,8 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	result = pKernelMPI_->TryLockMutex( render_mutex_ );
 	
 	if (result == EBUSY)
+		// TODO/dg: this is a really ugly hack.  need to figure out what to return
+		// in the case of render being called while stopping/dtor is running.
 		return numStereoFrames;
 	else
 		pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::RenderBuffer -- Couldn't lock mutex.\n");
