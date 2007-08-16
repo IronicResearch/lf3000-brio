@@ -7112,3 +7112,13 @@ By dgibbs (dgibbs@leapfrog.com) on 8/16/07 1:37 PM
 2,766 ms. (Cumulative: 1,395,590 ms)
 
 ----------------
+Revision 1,286 from svn://localhost/TRUNK/:
+Revision 1,287 from svn://localhost/TRUNK/:
+
+Upgrade of audio mixer and sampling rate conversion signal flow.
+
+By gklimanis (gklimanis@leapfrog.com) on 8/16/07 2:43 PM
+11 changed, 0 added, 0 deleted.
+3,110 ms. (Cumulative: 1,398,778 ms)
+
+----------------

@@ -31,13 +31,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // CChannel implementation
 //==============================================================================
-
 CChannel::CChannel()
 {
-	// Initialize the class variables
+// Initialize class variables
 //	mpChain_ = kNull;
 	pPlayer_ = kNull;
-	bInUse_ = 0;
+	bInUse_  = 0;
 	bPaused_ = 0;
 	bOwnProcessor_ = 0;
 
@@ -49,7 +48,7 @@ CChannel::CChannel()
 	pDSP_ = NULL;
 //	DefaultMixerChannel(&pDSP_);
 //	pDSP_->inGainDB = 0.0f;
-//	pDSP_->EQ	EQ          ;
+//	pDSP_->EQ;
 //	pDSP_->reverbSendDB = 0.0f;
 //	pDSP_->pan         = kPanValue_Center;
 //	pDSP_->postGainDB = 0.0f;
@@ -62,13 +61,14 @@ CChannel::CChannel()
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-}
+}	// ---- end CChannel::CChannel ----
 
 //==============================================================================
+// CChannel::~CChannel
 //==============================================================================
 CChannel::~CChannel()
 {
-	// Free the channel buffers
+	// Free tchannel buffers
 	if (pOutBuffer_)
 		delete pOutBuffer_;
 	
@@ -81,44 +81,50 @@ CChannel::~CChannel()
 	// Free debug MPI
 	if (pDebugMPI_)
 		delete pDebugMPI_;
-}
+}	// ---- end CChannel::~CChannel ----
 
 //==============================================================================
+// CChannel::InitChanWithPlayer
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
+long ch = 0;
 	// If we're pre-empting, release the active player first.
 	if (pPlayer_ != kNull)
 		Release( false );		// don't suppress done msg if it has been requested
 	
 	pPlayer_ = pPlayer;
 	bInUse_  = 1;
+ch = 0;
 
 // Convert interface parameters to DSP level data and reset channel
-	SetPan( pPlayer->GetPan() );
+	SetPan(    pPlayer->GetPan() );
 	SetVolume( pPlayer->GetVolume() );
 	inSampleRate_ = pPlayer_->GetSampleRate();
 
 	pDSP_->samplingFrequency = (float) inSampleRate_;
+//printf("CChannel::InitChanWithPlayer: samplingFrequency=%g \n", pDSP_->samplingFrequency);
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CChannel::InitChanWithPlayer - samplingFrequency=%g\n", 
 			static_cast<float>(pDSP_->samplingFrequency) );	
 	MixerChannel_SetSamplingFrequency(pDSP_, inSampleRate_);
 	UpdateMixerChannel(pDSP_);
 	ResetMixerChannel (pDSP_);
-// FIXX: these buffers will migrate to briomixer.cp/Mixer.cpp
+// FIXX: these buffers will migrate to briomixer.cpp/Mixer.cpp
 	MixerChannel_SetAllTempBuffers(pDSP_, tmpPs_, kChannel_MaxTempBuffers);
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CChannel::InitChanWithPlayer - setting volume %d\n", 
 			static_cast<int>(volume_) );	
-	
-//	InitConversionRate(&convRate_, inSampleRate_, kAudioSampleRate);
+
+// Convert high level parameters to values suitable for DSP
+//printf("CChannel::InitChanWithPlayer : pan=%d volume=%d \n", pan_, volume_);
 
 	return kNoErr;
-}
+}	// ---- end CChannel::InitChanWithPlayer ----
 
 //==============================================================================
+// CChannel::Release
 //==============================================================================
 tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
@@ -150,9 +156,38 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 	pPlayer_ = kNull;
 
 	return kNoErr;
-}
+}	// ---- end CChannel::Release ----
 
 //==============================================================================
+// CChannel::SetPan
+//==============================================================================
+void CChannel::SetPan( S8 x )
+{
+pan_ = x;
+// ChangeRangef(x, L1, H1, L2, H2)
+//#define kPanValue_FullLeft ( 1.0)
+//#define kPanValue_Center      0.0
+//#define kPanValue_FullRight (-1.0)
+float xf = ChangeRangef((float)x, -100, 100, -1.0, 1.0);
+
+//PanValues   (xf, panValuesf);
+ConstantPowerValues(xf, &panValuesf[kLeft], &panValuesf[kRight]);
+printf("CChannel::SetPan: %d -> <%f, %f> \n", (int)x, panValuesf[kLeft],  panValuesf[kRight]);
+}	// ---- end CChannel::SetPan ----
+
+//==============================================================================
+// CChannel::SetVolume : Convert range [0 .. 100] to [-100 ..0 dB]
+//==============================================================================
+void CChannel::SetVolume( U8 x )
+{
+volume_ = x;
+// ChangeRangef(x, L1, H1, L2, H2)
+long xI = (long)x;
+
+}	// ---- end CChannel::SetVolume ----
+
+//==============================================================================
+// CChannel::RenderBuffer
 //==============================================================================
 U32 CChannel::RenderBuffer( S16 *outP, U32 numFrames , long addToOutputBuffer )
 {
@@ -168,35 +203,17 @@ U32 CChannel::RenderBuffer( S16 *outP, U32 numFrames , long addToOutputBuffer )
 	// Have player render its data into our output buffer.  If the player
 	// contains mono data, it will be rendered out as stereo data.
 	playerFramesRendered = pPlayer_->RenderBuffer( tmpPs_[0], numFrames );
-	
-//	printf("Twenty Samples from channel buffer after player render:\n");
-//	for (int i = 0; i < 20; i++) {
-//		printf("0x%x " , pOutBuffer_[i]);
-//	}
-//	printf("\n");
-	
+		
 	// decide how to deal with player done i.e. playerFramesRendered comes back 
 	// less than numStereoFrames: does player send done, or channel.
 	
 // fixme/dg:  needs CAudioEffectsProcessor
 #if 0
-	// If the channel has an effects processor, render the effect into the
-	// pOutBuffer_, then sample rate convert after.
+	// If channel has an effects processor, render the effect into pOutBuffer_
 	if (pFxChain_ != kNull)
 		pFxChain->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuffer_ );
 #endif
 
-	// First Check if conversion is necesssary
-//		if ( kAudioSampleRate != inSampleRate_)
-//	if ( 0 )
-//	{
-		// convert channel's output buffer and MIX(!) it to caller's buffer.
-//		ConvertData(&convRate_, numStereoSamples, pOutBuffer_, pMixBuff);
-//	}
-	// Otherwise data is already at the correct sample rate
-	// so just need to add it to the mix buffer
-//	else
-//	{
 // Add rendered output to out buffer
 	if (addToOutputBuffer)
 		{
@@ -225,10 +242,10 @@ U32 CChannel::RenderBuffer( S16 *outP, U32 numFrames , long addToOutputBuffer )
 			outP[i] = (S16)y;
 			}
 		}
-//	}
+
 
 	return playerFramesRendered;
-}
+}	// ---- end CChannel::RenderBuffer ----
 
 LF_END_BRIO_NAMESPACE()
 // EOF	

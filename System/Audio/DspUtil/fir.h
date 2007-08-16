@@ -45,6 +45,7 @@ typedef struct fir {
 	float outLevelDB;
 	long order;
 	long coeffCount;
+	long useFixedPoint; 
 
 	float samplingFrequency;
 // Low level data
@@ -61,8 +62,9 @@ void UpdateFIR (FIR *d);
 void ResetFIR  (FIR *d);
 void PrepareFIR(FIR *d);
 
-void RunFIR_Shortsf(short *in, short *out, long length, FIR *d);
-void RunFIR_Shortsi(short *in, short *out, long length, FIR *d);
+//void RunFIR_Shortsf(short *in, short *out, long length, FIR *d);
+//void RunFIR_Shortsi(short *in, short *out, long length, FIR *d);
+void RunFIR_Shorts(short *in, short *out, long length, FIR *d);
 
 
 #define kFIR_Triangle_3_Hz_Length 3

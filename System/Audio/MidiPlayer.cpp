@@ -81,7 +81,7 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	
 	// Setup Mutex object for protecting render calls
   	err = pKernelMPI_->InitMutex( render_mutex_, attr );
-	pDebugMPI_->Assert((kNoErr == err), "CMidiPlayer::ctor: Couldn't init mutex.\n");
+	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
 	
 	// Initialize SPMIDI Library
 	SPMIDI_Initialize();
@@ -460,7 +460,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 	} else {
 		// A midi file is not playing, but notes might be turned on programatically...
 		// fixme/dg: rationalize numStereoFrames and numFrames_!!
-		pDebugMPI_->DebugOut(kDbgLvlVerbose, 
+		pDebugMPI_->DebugOut(kAudioDebugLevel, 
 			"CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames(), no file active\n");
 		framesRead = SPMIDI_ReadFrames( pContext_, pMidiRenderBuffer_, numFrames_,
 	    		samplesPerFrame_, bitsPerSample_ );

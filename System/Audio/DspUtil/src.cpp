@@ -58,7 +58,7 @@ d->outInRateRatio = 1.0f/d->inOutRateRatio;
 
 long iInOutRateRatio = (long) d->inOutRateRatio;
 long iOutInRateRatio = (long) d->outInRateRatio;	
-
+char *firName = "Dunno";
 // by2 interpolation or decimation
 if 	(2 == iInOutRateRatio || 2 == iOutInRateRatio)
 	{
@@ -75,48 +75,40 @@ if 	(2 == iInOutRateRatio || 2 == iOutInRateRatio)
 				d->hP        = fir_HalfBand_58dB_Hz;
 				d->firLength = kFIR_HalfBand_58dB_Hz_Length;
 				d->inScaleDB = fir_HalfBand_58dB_GainCompensationDB;
-printf("UpdateSRC: filterVersion%d : HalfBand_58dB length=%d inScaleDB=%g\n", 
-	d->filterVersion, d->firLength, d->inScaleDB);
+				firName      = "HalfBand_58dB";
 			break;
 			case kSRC_FilterVersion_1:
 				d->hP        = fir_HalfBand_32dB_Hz;
 				d->firLength = kFIR_HalfBand_32dB_Hz_Length;
 				d->inScaleDB = fir_HalfBand_32dB_GainCompensationDB;
-printf("UpdateSRC: filterVersion%d : LowPass_33dB length=%d inScaleDB=%g\n", 
-	d->filterVersion, d->firLength, d->inScaleDB);
+				firName      = "HalfBand_32dB";
 			break;
 
 			case kSRC_FilterVersion_2:
 				d->hP        = fir_Triangle_3_Hz;
 				d->firLength = kFIR_Triangle_3_Hz_Length;
 				d->inScaleDB = fir_Triangle_3_GainCompensationDB;
-printf("UpdateSRC: filterVersion%d : Triangle_3 length=%d inScaleDB=%g\n", 
-	d->filterVersion, d->firLength, d->inScaleDB);
+				firName      = "Triangle_3";
 			break;
 			case kSRC_FilterVersion_3:
 				d->hP        = fir_Triangle_9_Hz;
 				d->firLength = kFIR_Triangle_9_Hz_Length;
 				d->inScaleDB = fir_Triangle_9_GainCompensationDB;
-printf("UpdateSRC: filterVersion%d : Triangle_9 length=%d inScaleDB=%g\n", 
-	d->filterVersion, d->firLength, d->inScaleDB);
+				firName      = "Triangle_9";
 			break;
 
 			case kSRC_FilterVersion_4:
 				d->hP        = fir_HalfBand_15_Hz;
 				d->firLength = kFIR_HalfBand_15_Hz_Length;
 				d->inScaleDB = fir_HalfBand_15_GainCompensationDB ;
-printf("UpdateSRC: filterVersion%d : HalfBand_15 length=%d inScaleDB=%g\n", 
-	d->filterVersion, d->firLength, d->inScaleDB);
+				firName      = "HalfBand_15";
 			break;
 			case kSRC_FilterVersion_5:
 				d->hP        = fir_HalfBand_31_Hz;
 				d->firLength = kFIR_HalfBand_31_Hz_Length;
 				d->inScaleDB = fir_HalfBand_31_GainCompensationDB ;
-printf("UpdateSRC: filterVersion%d : HalfBand_15 length=%d inScaleDB=%g\n", 
-	d->filterVersion, d->firLength, d->inScaleDB);
+				firName      = "HalfBand_31";
 			break;
-
-
 			}
 
 		}
@@ -127,6 +119,7 @@ else if (3 == iInOutRateRatio || 3 == iOutInRateRatio)
 	d->firLength = kFIR_ThirdBand_31_Hz_Length;
 	d->hP        = fir_ThirdBand_31_Hz;
 	d->inScaleDB = fir_ThirdBand_31_GainCompensationDB;
+	firName      = "ThirdBand_31";
 	}
 // Whatever, junk data
 else
@@ -134,6 +127,7 @@ else
 	d->firLength = kFIR_Notch_Hz_Length;
 	d->hP        = fir_Notch_Hz;
 	d->inScaleDB = fir_Notch_GainCompensationDB;
+	firName      = "fir_Notch";
 	}
 
 d->xIncF = d->inOutRateRatio;
@@ -156,7 +150,7 @@ for (i = 0; i < d->firLength; i++)
 //	printf("UpdateSRC  hI[%2d] = %d <- %g \n", i, d->hI[i], d->h[i]);
 	}
 
-printf("UpdateSRC: fir : Length = %d inScaleDB=%g\n", d->firLength, d->inScaleDB);
+//printf("UpdateSRC: '%s': Length = %d inScaleDB=%g\n", firName, d->firLength, d->inScaleDB);
 }	// ---- end UpdateSRC() ---- 
 
 // ============================================================================
@@ -392,6 +386,56 @@ else
 // Save end of buffer to start of buffer for next iteration
 in[-1] = in[inLength-1];
 }	// ---- end SRCShorts_Triangle2() ---- 
+
+// ============================================================================
+// SRCShorts_Triangle4		Resample by triangle interpolation
+//
+// y[n] = 1/4*x[n] + 1/2*x[n-1] + 1/4*x[n-2]
+//		Unsuitable for in-place operation due to trick to save state of
+//			previous iteration
+// ============================================================================
+    static void 
+SRCShorts_Triangle4(short *in, short *out, long inLength, long outLength)
+{
+//{static long c=0; printf("SRCShorts_Triangle4 %d start\n", c++);}
+short *p = &in[-3];
+
+// Downsampling by 4
+if (outLength < inLength)
+	{
+	for (long i = 0; i < outLength; i++) 
+		{
+		long y = ((long)p[i]) + ((long)p[i+2])>>1;
+		out[i] = (short)  ((y +  (long)p[i+1])>>1);
+		}
+	}
+// Upsampling by 4
+else
+	{
+	for (long i = 0, j = 0; i < inLength; i++, j += 4) 
+		{
+		long diffd4 = (((long) p[i+1]) - (long)p[i])>>2;
+		long x      = (long) p[i];
+// FIXXX: someday, redo with shifting to avoid truncation of difference
+	// Output 1 of 4
+		out[j  ] = (short)x;
+		x += diffd4;
+	// Output 2 of 4
+		out[j+1] = (short)x;
+		x += diffd4;
+	// Output 3 of 4
+		out[j+2] = (short)x;
+		x += diffd4;
+	// Output 4 of 4
+		out[j+3] = (short)x;
+		}
+	}
+
+// Save end of buffer to start of buffer for next iteration
+in[-1] = in[inLength-1];
+in[-2] = in[inLength-2];
+in[-3] = in[inLength-3];
+}	// ---- end SRCShorts_Triangle4() ---- 
 
 // ============================================================================
 // ComputeSRC_TestFIR:	FIR filter test, no rate change
@@ -905,7 +949,10 @@ d->outSamplingFrequency = x;
 	void
 RunSRC(short *in, short *out, long inLength, long outLength, SRC *d)
 {
-//{static long c=0; printf("RunSRC %d:   type=%d\n", c++, d->type);}
+long oiRatio = outLength/inLength;
+long ioRatio = inLength/outLength;
+
+//{static long c=0; printf("RunSRC %d:   type=%d inLength=%d outLength=%d fixedPoint=%d \n", c++, d->type, inLength, outLength, d->useFixedPoint);}
 
 if (d->useImpulse)
 	{
@@ -935,14 +982,19 @@ switch (d->type)
 			InterpolateShorts_Linearf(in, out, inLength, outLength, d);
 	break;
 	case kSRC_Interpolation_Type_Triangle:
-		SRCShorts_Triangle2(in, out, inLength, outLength);
+// FIXXX:  only impemented for a few cases of upsampling, for now
+		if 	(2 == oiRatio)
+			SRCShorts_Triangle2(in, out, inLength, outLength);
+		else if (4 == oiRatio)
+			SRCShorts_Triangle4(in, out, inLength, outLength);
+		else
+			printf("RunSRC: Type_Triangle oiRatio=%d  or ioRatio=%d\n", oiRatio, ioRatio);
 	break;
 	case kSRC_Interpolation_Type_FIR:
 		{
 		if (inLength > outLength)
 			{
-			long iRatio = inLength/outLength;
-			switch (iRatio)
+			switch (ioRatio)
 				{	
 				case 2:
 				if (d->useFixedPoint)
@@ -957,35 +1009,30 @@ switch (d->type)
 					ComputeSRC_DownBy3FIRf(in, out, inLength, outLength, d);
 				break;
 				default:
-				printf("RunSRC: Unsupported FIR decimation ratio = %d \n", iRatio);
+				printf("RunSRC: Unsupported FIR decimation ratio = %d \n", ioRatio);
 				break;
 				}
 			}
 		else
 			{
-			long iRatio = outLength/inLength;
-			switch (iRatio)
+			switch (oiRatio)
 				{	
 				case 2:
 				if (d->useFixedPoint)
 					ComputeSRC_UpBy2FIRi(in, out, inLength, outLength, d);
 				else
-					{
-//					ComputeSRC_UpBy2FIRf_BREAKOUT(in, out, inLength, outLength, d, True);
 					ComputeSRC_UpBy2FIRf(in, out, inLength, outLength, d);
-					}
+//				ComputeSRC_UpBy2FIRf_BREAKOUT(in, out, inLength, outLength, d, True);
 				break;
 				case 3:
 				if (d->useFixedPoint)
 					ComputeSRC_UpBy3FIRi(in, out, inLength, outLength, d);
 				else
-					{
-//					ComputeSRC_UpBy3FIRf_BREAKOUT(in, out, inLength, outLength, d, True);
 					ComputeSRC_UpBy3FIRf(in, out, inLength, outLength, d);
-					}
+//				ComputeSRC_UpBy3FIRf_BREAKOUT(in, out, inLength, outLength, d, True);
 				break;
 				default:
-				printf("RunSRC: Unsupported interpolation ratio = %d \n", iRatio);
+				printf("RunSRC: Unsupported interpolation ratio = %d \n", oiRatio);
 				break;
 				}
 			}
@@ -998,18 +1045,16 @@ switch (d->type)
 		{
 		if (inLength > outLength)
 			{
-			long iRatio = inLength/outLength;
-			switch (iRatio)
+			switch (ioRatio)
 				{	
 				default:
-				printf("RunSRC: Unsupported decimation ratio = %d \n", iRatio);
+				printf("RunSRC: Unsupported decimation ratio = %d \n", ioRatio);
 				break;
 				}
 			}
 		else
 			{
-			long iRatio = outLength/inLength;
-			switch (iRatio)
+			switch (oiRatio)
 				{	
 				case 2:
 					ComputeSRC_UpBy2FIRf_Unfiltered(in, out, inLength, outLength, d);
@@ -1017,7 +1062,7 @@ switch (d->type)
 //				case 3:
 //				break;
 				default:
-				printf("RunSRC: Unsupported interpolation ratio = %d \n", iRatio);
+				printf("RunSRC: Unsupported interpolation ratio = %d \n", oiRatio);
 				break;
 				}
 			}
