@@ -82,6 +82,7 @@ namespace
 			 counterTimer_3, (unsigned int )tHndl );
 		fflush(stdout);
 #endif
+		pthread_exit((void *)2007);
 	}
 //-----------------------------------------------------------------------------------------
 //		Testing WaitOnCond() function
@@ -360,6 +361,7 @@ public:
 		TS_ASSERT_EQUALS( pProperties.schedulingPolicy, KernelMPI->GetTaskSchedulingPolicy( pHndl_3 ) ); 
 
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoinTask( pHndl_3, status));
+		TS_ASSERT_EQUALS((int )status -2007, 0 );
 
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_1 ) );
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_2 ) );

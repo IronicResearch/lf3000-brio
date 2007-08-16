@@ -7084,3 +7084,12 @@ By Dmilici (Dmilici@leapfrog.com) on 8/15/07 6:44 PM
 2,626 ms. (Cumulative: 1,387,152 ms)
 
 ----------------
+Revision 1,282 from svn://localhost/TRUNK/:
+
+Added the thread termination status checking in the JoinTask method
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/15/07 6:51 PM
+1 changed, 0 added, 0 deleted.
+2,735 ms. (Cumulative: 1,389,949 ms)
+
+----------------
