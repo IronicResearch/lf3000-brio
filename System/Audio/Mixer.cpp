@@ -98,8 +98,8 @@ for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	tmpBufOffsetPtrs_[i] = &p[2*kSRC_Filter_MaxDelayElements];
 	}
 
-readInSoundFile   = True;
-writeOutSoundFile = True;
+readInSoundFile   = false;
+writeOutSoundFile = false;
 inSoundFile  = NULL;
 outSoundFile = NULL;
 
