@@ -89,7 +89,8 @@ CAudioMPI::CAudioMPI( const IEventListener* pListener ) : pModule_(NULL)
 	{
 		pModule_ = reinterpret_cast<CAudioModule*>(pModule);
 		mpiID_ = pModule_->Register();
-		pModule_->SetDefaultAudioEventListener( mpiID_, pListener );
+		if (pListener)
+			pModule_->SetDefaultAudioEventListener( mpiID_, pListener );
 	}
 }
 
