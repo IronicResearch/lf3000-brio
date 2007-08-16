@@ -85,7 +85,7 @@ static void *myTask(void* arg)
 	tPackageHndl			pkg;
 
 	U32						index;
-	tRsrcHndl				handle;
+	tRsrcHndl				handle = kInvalidRsrcHndl;
 	tAudioID 				id;
 	U32						time;
 	U8						volume;
