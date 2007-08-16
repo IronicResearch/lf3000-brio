@@ -7075,3 +7075,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/15/07 4:26 PM
 2,688 ms. (Cumulative: 1,384,464 ms)
 
 ----------------
+Revision 1,281 from svn://localhost/TRUNK/:
+
+Fix ARM CC warning for uninitialized variable.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/15/07 6:44 PM
+1 changed, 0 added, 0 deleted.
+2,626 ms. (Cumulative: 1,387,152 ms)
+
+----------------
