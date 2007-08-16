@@ -7103,3 +7103,12 @@ By Dmilici (Dmilici@leapfrog.com) on 8/16/07 12:58 PM
 2,734 ms. (Cumulative: 1,392,761 ms)
 
 ----------------
+Revision 1,285 from svn://localhost/TRUNK/:
+
+Don't set SCHED_FIFO on VideoTask in emulation.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/16/07 1:37 PM
+1 changed, 0 added, 0 deleted.
+2,766 ms. (Cumulative: 1,395,590 ms)
+
+----------------
