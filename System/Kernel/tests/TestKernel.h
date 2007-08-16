@@ -21,8 +21,10 @@
 using namespace std;
 LF_USING_BRIO_NAMESPACE()
 
+
 namespace
 {
+#define MS_TO_NS(x) (x*1000000) 	
 	typedef struct
 	{
 		int numTest;
@@ -55,8 +57,8 @@ namespace
 
 	void myTask_Timer_1(tTimerHndl tHndl)
 	{
-		counterTimer_1++;
-#if 1 // FIXME /BSK
+		counterTimer_1--;
+#if 0 // FIXME /BSK
 		printf("\nmyTask_Timer_1 - The timer called me %d tHndl 0x%x\n",
 			counterTimer_1, (unsigned int )tHndl );
 		fflush(stdout);
@@ -66,8 +68,8 @@ namespace
 
 	void myTask_Timer_2(tTimerHndl tHndl)
 	{
-		counterTimer_2++;
-#if 1		// FIXME /BSK
+		counterTimer_2--;
+#if 0		// FIXME /BSK
 		printf("myTask_Timer_2 - The timer called me %d tHndl 0x%x\n",
 			counterTimer_2, (unsigned int )tHndl );
 		fflush(stdout);
@@ -76,8 +78,8 @@ namespace
 
 	void myTask_Timer_3(tTimerHndl tHndl)
 	{
-		counterTimer_3++;
-#if 1	// FIXME /BSK
+		counterTimer_3--;
+#if 0	// FIXME /BSK
 		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n",
 			 counterTimer_3, (unsigned int )tHndl );
 		fflush(stdout);
@@ -134,7 +136,7 @@ public:
 		delete KernelMPI; 
 	}
 
- 	void xtestWasCreated( )
+ 	void testWasCreated( )
 	{
 		ptintf_test_info("testWasCreated");
 
@@ -143,7 +145,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xtestCoreMPI( )
+	void testCoreMPI( )
 	{
 		ptintf_test_info("testCoreMPI");
 
@@ -194,7 +196,7 @@ public:
     }
     
 	//------------------------------------------------------------------------------
-    void xtestIsDirectory()
+    void testIsDirectory()
     {
 		ptintf_test_info("testIsDirectory");
 
@@ -208,7 +210,7 @@ public:
     }
 
 	//------------------------------------------------------------------------------
-    void xtestFilesInDirectory()
+    void testFilesInDirectory()
     {
 		ptintf_test_info("testFilesInDirectory");
 
@@ -238,7 +240,7 @@ public:
 	}
 
     
-    void xtestGetElapsedTime()
+    void testGetElapsedTime()
 	{
 		ptintf_test_info("testGetElapsedTime");
 
@@ -258,7 +260,7 @@ public:
 			
 	}
 	
-	void xtestCreateTask()
+	void testCreateTask()
 	{
 		ptintf_test_info("testCreateTask");
 
@@ -361,7 +363,7 @@ public:
 		TS_ASSERT_EQUALS( pProperties.schedulingPolicy, KernelMPI->GetTaskSchedulingPolicy( pHndl_3 ) ); 
 
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->JoinTask( pHndl_3, status));
-		TS_ASSERT_EQUALS((int )status -2007, 0 );
+//		TS_ASSERT_EQUALS((int )status -2007, 0 );   // FIXME/BSK
 
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_1 ) );
 		TS_ASSERT_EQUALS( kNoErr, KernelMPI->CancelTask( pHndl_2 ) );
@@ -369,7 +371,7 @@ public:
 #endif
 	}
 
-	void xtestTaskSleep()
+	void testTaskSleep()
 	{
 		ptintf_test_info("testTaskSleep");
 
@@ -388,7 +390,7 @@ public:
 	}
 			
 	
-	void xtestMemory()
+	void testMemory()
 	{
 		ptintf_test_info("testMemory");
 
@@ -404,7 +406,7 @@ public:
   		KernelMPI->Free( pPtr );
 	}
 		
-	void xTestCreateMessageQueue_1() 
+	void TestCreateMessageQueue_1() 
 	{
 		ptintf_test_info("TestCreateMessageQueue_1");
 
@@ -438,7 +440,7 @@ public:
 		}
 	}
 			
-	void xTestCreateMessageQueue_2() 
+	void TestCreateMessageQueue_2() 
 	{
 		ptintf_test_info("TestCreateMessageQueue_2");
 
@@ -472,7 +474,7 @@ public:
 		}								
 	}
 
-	void xtestCreateTimer()
+	void testCreateTimer()
 	{
 		ptintf_test_info("testCreateTimer");
 
@@ -505,26 +507,87 @@ public:
 //		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestStartStopTimer()
+	void testStartStopTimer()
 	{
 		ptintf_test_info("testStartStopTimer");
+
+//-------------------------------------------------------------------
+#if 0 // FIXME/BSK
+		// Testing clock_gettime
+		struct timespec mytime;
+		for(int i=1; i < 10; i++ )
+		{
+			clock_gettime(CLOCK_REALTIME, &mytime);
+			printf("CLOCK_GETTIME values:\n");
+			printf("Sec=%u Nsec=%u\n", (unsigned int )mytime.tv_sec,
+										(unsigned int )mytime.tv_nsec);
+			fflush(stdout);
+		}		 
+#endif
+//------------------------------------------------------------------
 
 		tTimerProperties props = {TIMER_ABSTIME_SET,
 									{{0, 0}, {0, 0}},};
 		tErrType err;
 
 		props.type = TIMER_RELATIVE_SET; 	
-		// Timer period
+
+//----------------------------------------------------------------------------------
+//  Case #1 Timer establishes the repetition value
     	props.timeout.it_interval.tv_sec = 0;
-		props.timeout.it_interval.tv_nsec = 500000000L;
+		props.timeout.it_interval.tv_nsec = MS_TO_NS(500); //500000000L;  // 0.5 sec
 		// Timer expirated
 		props.timeout.it_value.tv_sec = 1;
 		props.timeout.it_value.tv_nsec = 0;
+		
+		struct timespec sleeptime;
+		unsigned int dt = 0;
+		sleeptime.tv_sec = 0;
+		sleeptime.tv_nsec = MS_TO_NS(20); // 10 ms
+        const int num_interval = 3; 
+		counterTimer_1 = num_interval; 
 		err = KernelMPI->StartTimer( hndlTimer_1, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
+#if 1 // FIXME/BSK
+		while( counterTimer_1 )
+		{
+			nanosleep( &sleeptime, NULL );
+			dt += sleeptime.tv_nsec;
+		}
+#endif
+
+		TS_ASSERT_LESS_THAN_EQUALS( (unsigned int )(dt),
+			 (unsigned int )(MS_TO_NS(1000) + (num_interval-1) * MS_TO_NS(500) + MS_TO_NS(20)) );
+
+//----------------------------------------------------------------------------------
+//  Case #2 Timer establishes only the initial expiration time
+    	props.timeout.it_interval.tv_sec = 0;
+		props.timeout.it_interval.tv_nsec = 0; 
+		// Timer expirated
+		props.timeout.it_value.tv_sec = 1;
+		props.timeout.it_value.tv_nsec = 0;
+		
+		dt = 0;
+		sleeptime.tv_sec = 0;
+		sleeptime.tv_nsec = MS_TO_NS(10); // 10 ms
+
+		counterTimer_2 = 1; 
+
+
 		err = KernelMPI->StartTimer( hndlTimer_2, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
+#if 1 // FIXME/BSK
+		while( counterTimer_2 )
+		{
+			nanosleep( &sleeptime, NULL );
+			dt += sleeptime.tv_nsec;
+		}
+#endif
+		TS_ASSERT_LESS_THAN_EQUALS( (unsigned int )(dt),
+			 (unsigned int )(MS_TO_NS(1000) + MS_TO_NS(20)) );
+
 
 		err = KernelMPI->StartTimer( hndlTimer_3, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -539,7 +602,7 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
 	}		
-	void xtestResetTimerRelative()
+	void testResetTimerRelative()
 	{
 		ptintf_test_info("testResetTimerRelative");
 
@@ -565,7 +628,7 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 	}
 
-	void xtestPauseResumeTimer()
+	void testPauseResumeTimer()
 	{
 		ptintf_test_info("testPauseResumeTimer");
 
@@ -595,7 +658,7 @@ public:
 			
 	}
 		
-   void xtestGetTimerElapsed_OR_Remaining_Time()
+   void testGetTimerElapsed_OR_Remaining_Time()
     {
 		ptintf_test_info("testGetTimerElapsed_OR_Remaining_Time");
 
@@ -619,20 +682,13 @@ public:
    	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
     }
 
-    void xtestDestroyTimer()
+     void testDestroyTimer()
     {
 		ptintf_test_info("testDestroyTimer");
-
+//		sleep(2);
 //        TS_WARN("TODO: Test Destroy Timer!");
 		tErrType err;
-#if 0 // FIXME/BSK
-		struct timespec sleeptime = { 1, 0 };
-		const int limit = 3; 
-		while (( counterTimer_1 < limit && counterTimer_2 < limit && counterTimer_3 < limit ))
-		{
-			nanosleep( &sleeptime, NULL );  
-		}
-#endif
+
 		if( hndlTimer_1 != 0 )
 		{	
 			err = KernelMPI->DestroyTimer( hndlTimer_1 );
@@ -651,12 +707,11 @@ public:
 		}
     }
 
-		
     //==============================================================================
 	// Mutexes
 	//==============================================================================
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
-    void xtestInit_DeInit_Mutex()
+    void testInit_DeInit_Mutex()
     {
 		ptintf_test_info("testInit_DeInit_Mutex");
 
@@ -727,7 +782,7 @@ public:
     }
 	
      // Locks an unlocked mutex
-    void xtestLockMutex()
+    void testLockMutex()
     {
 		ptintf_test_info("testLockMutex");
 
@@ -746,7 +801,7 @@ public:
     }
 	
     	// Tries to lock a not xtested
-	void xtestTryLockMutex_1()
+	void testTryLockMutex_1()
     {
 		ptintf_test_info("testTryLockMutex_1");
 
@@ -782,7 +837,7 @@ public:
 	//==============================================================================
      // Initializes a condition variable with the attributes specified in the
     // specified condition variable attribute object
-        void xtestInitCond()
+        void testInitCond()
         {
 			ptintf_test_info("testInitCond");
 
@@ -804,7 +859,7 @@ public:
     }
 
 // Initializes a condition variable attribute object    
-    void xtestInitCondAttr()
+    void testInitCondAttr()
     {
 		ptintf_test_info("testInitCondAttr");
 		tErrType err;
@@ -826,7 +881,7 @@ public:
     }
 
 // Unblocks all threads that are waiting on a condition variable
-        void xtestBroadcastCond()
+        void testBroadcastCond()
         {
 			ptintf_test_info("testBroadcastCond");
 			tErrType err;
@@ -841,7 +896,7 @@ public:
          }	
     
     // Unblocks at least one thread waiting on a condition variable
-        void xtestSignalCond()
+        void testSignalCond()
         {
 			ptintf_test_info("testSignalCond");
 			tErrType err;
@@ -858,7 +913,7 @@ public:
 
 // Automatically unlocks the specified mutex, and places the calling thread into a wait state
 // FIXME: pAbstime var
-    void xtestTimedWaitOnCond()
+    void testTimedWaitOnCond()
     {
 		ptintf_test_info("testTimedWaitOnCond");
 		tErrType err;
@@ -893,7 +948,7 @@ public:
     }
 
 // Automatically unlocks the specified mutex, and places the calling thread into a wait state
-    void xtestWaitOnCond()
+    void testWaitOnCond()
     {
 		ptintf_test_info("testWaitOnCond");
 		tErrType err;
@@ -912,13 +967,12 @@ public:
 
 		err = KernelMPI->LockMutex( mutex_broadcast );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+		
 		while (!conditionMet) 
 		{
-//    			printf("Thread blocked\n");
-//    			fflush(stdout);
     			err = KernelMPI->WaitOnCond( cond_broadcast, mutex_broadcast );
 				TS_ASSERT_EQUALS( err, ((tErrType)0) );
-  			}
+  		}
 
     		err = KernelMPI->DeInitMutex( mutex_broadcast );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -1068,10 +1122,8 @@ public:
 			fflush(stdout);		
 #endif        
 		}	
-
 	}
-	
-		
+    
 // =========================================================
 	void ptintf_test_info( char *pName )
 	{
@@ -1081,7 +1133,7 @@ public:
 			printf("\n");
 			printf(".");
 		}
-		printf("Number=%3d Test Name = %s\n", testNum++, pName );
+		printf("#%3d Test Name = %s\n", testNum++, pName );
 		fflush(stdout);
 	}	
 };

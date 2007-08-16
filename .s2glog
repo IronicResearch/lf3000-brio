@@ -7122,3 +7122,12 @@ By gklimanis (gklimanis@leapfrog.com) on 8/16/07 2:43 PM
 3,110 ms. (Cumulative: 1,398,778 ms)
 
 ----------------
+Revision 1,288 from svn://localhost/TRUNK/:
+
+Refactored KernelMPI tests files
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/16/07 3:03 PM
+3 changed, 0 added, 0 deleted.
+3,141 ms. (Cumulative: 1,401,997 ms)
+
+----------------
