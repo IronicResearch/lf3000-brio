@@ -75,7 +75,7 @@ public:
 		tFontHndl	font4;
 		tFontProp	prop1 = {1, 12, 0, 0};
 		tFontProp	prop2 = {1, 24, 0, 0};
-		tFontProp	prop3 = {2, 24, kUTF16CharEncoding, true};
+		tFontProp	prop3 = {2, 24, kUTF8CharEncoding, true};
 		tFontProp	prop4 = {2, 24, kUTF16CharEncoding, true};
 
 		pResourceMPI_ = new CResourceMPI;
@@ -540,12 +540,89 @@ public:
 		tDisplayHandle 	disp;
 		S32				x,y,dy;
 		
-		// TODO: Use UTF16 codes?
+		// UTF8 text copied from email
 		CString text1 = CString("Primary Test를 통해 현재");
 		CString text2 = CString("LF1000의 Major한 Feature들(3D 제외)");
 		CString text3 = CString("* Audio : 진행중 - PCM In/Out 확인.");
 		CString text4 = CString("* 3D Engine : 진행중");
 
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = kPixelFormatARGB8888;
+		memset(surf.buffer, 0, surf.height * surf.pitch);
+		
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
+		pkg = pResourceMPI_->FindPackage("FontTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
+		handle1 = pResourceMPI_->FindRsrc("FreeSans");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+		handle2 = pResourceMPI_->FindRsrc("FreeSerif");
+		TS_ASSERT( handle2 != kInvalidRsrcHndl );
+
+		font1 = pFontMPI_->LoadFont(handle1, 24, kUTF8CharEncoding);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		TS_ASSERT( mtrx.height != 0 );
+		pFontMPI_->SetFontColor(0x00FFFFFF); // white
+		
+		x = y = 0; dy = mtrx.height;
+		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text2, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text3, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text4, 0, y, &surf); y+=dy;
+		
+		font2 = pFontMPI_->LoadFont(handle2, 24, kUTF8CharEncoding);
+		TS_ASSERT( font2 != kInvalidFontHndl );
+		
+		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text2, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text3, 0, y, &surf); y+=dy;
+		pFontMPI_->DrawString(&text4, 0, y, &surf); y+=dy;
+		
+		pDisplayMPI_->Invalidate(0, NULL);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pFontMPI_->UnloadFont(font1);
+		pFontMPI_->UnloadFont(font2);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete pDisplayMPI_;
+	}
+	
+	//------------------------------------------------------------------------
+	void testFontUnicode16()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tRsrcHndl	handle2;
+		tFontHndl	font1;
+		tFontHndl	font2;
+		tFontSurf	surf;
+		tFontMetrics	mtrx;
+		tDisplayHandle 	disp;
+		S32				x,y,dy;
+		const gunichar	kLatinExt = 0x0100;
+		const gunichar	kGreek = 0x03B1;
+		const gunichar	kCyrillic = 0x0400;
+//		const gunichar	kHebrew = 0x05D0;
+//		const gunichar	kArabic = 0x0621;
+//		const gunichar 	kBengali = 0x0994;
+		const gunichar	kKatakana = 0x30A1;
+//		const gunichar 	kChineseUni =0x4E00;
+		
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -576,18 +653,60 @@ public:
 		pFontMPI_->SetFontColor(0x00FFFFFF); // white
 		
 		x = y = 0; dy = mtrx.height;
-		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
-		pFontMPI_->DrawString(&text2, 0, y, &surf); y+=dy;
-		pFontMPI_->DrawString(&text3, 0, y, &surf); y+=dy;
-		pFontMPI_->DrawString(&text4, 0, y, &surf); y+=dy;
+		for (gunichar c = kLatinExt; c<kLatinExt+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
+		x = 0; y += dy;
+		for (gunichar c = kGreek; c<kGreek+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
+		x = 0; y += dy;
+		for (gunichar c = kCyrillic; c<kCyrillic+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
+		x = 0; y += dy;
+		for (gunichar c = kKatakana; c<kKatakana+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
 		
 		font2 = pFontMPI_->LoadFont(handle2, 24, kUTF16CharEncoding);
 		TS_ASSERT( font2 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		TS_ASSERT( mtrx.height != 0 );
+		dy = mtrx.height;
 		
-		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
-		pFontMPI_->DrawString(&text2, 0, y, &surf); y+=dy;
-		pFontMPI_->DrawString(&text3, 0, y, &surf); y+=dy;
-		pFontMPI_->DrawString(&text4, 0, y, &surf); y+=dy;
+		x = 0; y += dy;
+		for (gunichar c = kLatinExt; c<kLatinExt+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
+		x = 0; y += dy;
+		for (gunichar c = kGreek; c<kGreek+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
+		x = 0; y += dy;
+		for (gunichar c = kCyrillic; c<kCyrillic+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
+		x = 0; y += dy;
+		for (gunichar c = kKatakana; c<kKatakana+0x10; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(code, x, y, surf);
+		}
 		
 		pDisplayMPI_->Invalidate(0, NULL);
 		sleep(1);
