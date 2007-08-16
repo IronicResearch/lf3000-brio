@@ -7149,3 +7149,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/16/07 4:25 PM
 2,625 ms. (Cumulative: 1,407,434 ms)
 
 ----------------
+Revision 1,291 from svn://localhost/TRUNK/:
+
+Turn off soundfile reading/writing in audio mixer.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/16/07 4:38 PM
+1 changed, 0 added, 0 deleted.
+2,627 ms. (Cumulative: 1,410,108 ms)
+
+----------------
