@@ -7131,3 +7131,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/16/07 3:03 PM
 3,141 ms. (Cumulative: 1,401,997 ms)
 
 ----------------
+Revision 1,289 from svn://localhost/TRUNK/:
+
+Check in pre-built libs for updated sample rate conversion code.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/16/07 4:16 PM
+2 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,404,747 ms)
+
+----------------
