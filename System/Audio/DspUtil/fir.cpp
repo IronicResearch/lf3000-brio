@@ -345,6 +345,7 @@ DefaultFIR(FIR *d)
 
 d->type = kFIR_Type_LowPass;
 d->outLevelDB = 0.0f;
+d->useFixedPoint = False;
 
 d->samplingFrequency = 1.0f;
 }	// ---- end DefaultFIR() ---- 
@@ -522,4 +523,17 @@ for (i = 0; i < length; i++)
 for (i = 0; i < d->order; i++)
 	in[-1-i] = in[length-1-i];
 }	// ---- end RunFIR_Shortsi() ---- 
+
+// *************************************************************** 
+// RunFIR_Shorts:	Main calculation routine
+// ***************************************************************
+	void
+RunFIR_Shorts(short *inP, short *outP, long length, FIR *d)
+{
+if (d->useFixedPoint)
+	RunFIR_Shortsi(inP, outP, length, d);
+else
+	RunFIR_Shortsf(inP, outP, length, d);
+}	// ---- end RunFIR_Shorts() ---- 
+
 
