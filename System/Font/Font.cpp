@@ -62,8 +62,8 @@ const CURI* CFontModule::GetModuleOrigin() const
 //----------------------------------------------------------------------------
 static int FindEncoding(FT_Face face, U32 encoding, int* numcodes)
 {
-	FT_Int		platformid = TT_PLATFORM_ISO;
-	FT_Int		encodingid = TT_ISO_ID_10646;
+	FT_Int		platformid = TT_PLATFORM_MICROSOFT; //3; //TT_PLATFORM_ISO;
+	FT_Int		encodingid = TT_MS_ID_UNICODE_CS; //1; //TT_ISO_ID_10646;
 	
 	// Unicode, ASCII, Apple, and Adobe encodings set by FT_Select_Charmap
 	switch (encoding)
@@ -459,12 +459,14 @@ tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size)
 {
 	prop_.size = size;
+	prop_.encoding = 0;
 	return LoadFont(hRsrc, prop_);
 }
 
 //----------------------------------------------------------------------------
 tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding)
 {
+	prop_.version = 2;
 	prop_.size = size;
 	prop_.encoding = encoding;
 	return LoadFont(hRsrc, prop_);
@@ -1196,10 +1198,45 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 }
 
 //----------------------------------------------------------------------------
+// Unpack Unicode char sequence
+//----------------------------------------------------------------------------
+inline void UnpackUnicode(tWChar* charcode, CString* pStr, int* i)
+{
+	// NOTE: Looks like glib::ustring is already parsed into 16-bit codes
+	
+	// Scan for UTF8 multi-byte sequences for 1, 2, or 3 additional bytes
+	if ( *charcode >= 0xC0 )
+	{
+		int numbytes = 0;
+		if ( *charcode < 0xE0 )			// U+0080 .. U+07FF
+		{
+		    numbytes = 1;
+		    *charcode &= 0x1F;
+		}
+		else if ( *charcode < 0xF0 )	// U+0800 .. U+FFFF
+		{
+			numbytes = 2;
+		    *charcode &= 0x0F;
+		}
+		else if ( *charcode < 0xF8 )	// U+10000 .. U+10FFFF
+		{
+			numbytes = 3;
+			*charcode &= 0x07;
+		}
+		while (numbytes--)
+		{
+			tWChar nextchar = pStr->at(*i++);
+			*charcode <<= 6;
+			*charcode |= nextchar & 0x3F;
+		}
+	}
+}
+
+//----------------------------------------------------------------------------
 Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
 	const char*		ch = pStr->c_str();
-	int				len = pStr->size();
+	int				len = pStr->length();
 	int				i;
 	Boolean			rc;
 	
@@ -1215,6 +1252,8 @@ Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 	for (i = 0; i < len; i++) 
 	{
 		tWChar charcode = pStr->at(i);
+		if (prop_.encoding == kUTF8CharEncoding)
+			UnpackUnicode(&charcode, pStr, &i);
 		rc = DrawGlyph(charcode, curX_, curY_, pCtx, i==0);
 	}
 
@@ -1269,7 +1308,7 @@ tFontMetrics* CFontModule::GetFontMetrics()
 Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 {
 	const char*		ch = pStr->c_str();
-	int				len = pStr->size();
+	int				len = pStr->length();
 	PFont			font = handle_.currentFont;
 	FT_Glyph		glyph;
 	FT_Face			face;
@@ -1287,6 +1326,8 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 	for (int i = 0; i < len; i++)
 	{
 		tWChar charcode = pStr->at(i);
+		if (prop_.encoding == kUTF8CharEncoding)
+			UnpackUnicode(&charcode, pStr, &i);
 		if (!GetGlyph(charcode, &glyph, &index))
 			continue;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);

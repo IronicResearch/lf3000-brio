@@ -7093,3 +7093,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/15/07 6:51 PM
 2,735 ms. (Cumulative: 1,389,949 ms)
 
 ----------------
+Revision 1,283 from svn://localhost/TRUNK/:
+Revision 1,284 from svn://localhost/TRUNK/:
+
+Fixes and updates for charset encoding support with Unicode strings.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/16/07 12:58 PM
+2 changed, 0 added, 0 deleted.
+2,734 ms. (Cumulative: 1,392,761 ms)
+
+----------------
