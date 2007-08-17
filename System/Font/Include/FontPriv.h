@@ -115,6 +115,7 @@ public:
     VTABLE_EXPORT Boolean		GetFontUnderlining() { return attr_.useUnderlining; }
     VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
+    VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap);
 	VTABLE_EXPORT S32			GetX();
 	VTABLE_EXPORT S32			GetY();
     VTABLE_EXPORT Boolean		GetFontMetrics(tFontMetrics* pMtx);
