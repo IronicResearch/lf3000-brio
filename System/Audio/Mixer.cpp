@@ -55,7 +55,7 @@ long i, ch;
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioMixer::CAudioMixer: numChannels_=%d \n", numChannels_);
 
 	// Allocate audio channels
-printf("CAudioMixer::CAudioMixer: numChannels_=%d \n", numChannels_);
+	//printf("CAudioMixer::CAudioMixer: numChannels_=%d \n", numChannels_);
 	pChannels_ = new CChannel[ numChannels_ ];
 
 	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: Mixer couldn't allocate channels!\n" );
@@ -138,8 +138,8 @@ if (readInSoundFile)
 //==============================================================================
 CAudioMixer::~CAudioMixer()
 {
-long i;
-printf("CAudioMixer::~CAudioMixer : HERE \n");
+	long i;
+	//printf("CAudioMixer::~CAudioMixer : HERE \n");
 
 	// Deallocate channels
 	if (pChannels_)
@@ -152,23 +152,23 @@ printf("CAudioMixer::~CAudioMixer : HERE \n");
 	if (pMidiPlayer_)
 		delete pMidiPlayer_;
 
-// Dellocate buffers 
-for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
-	{
-	if (pTmpBuffers_[i])
-		free(pTmpBuffers_[i]);
-	}
-
-for (long i = 0; i < kAudioMixer_MixBinCount; i++)
-	{
-	if (mixBinBufferPtrs_[i][0])
-		free(mixBinBufferPtrs_[i][0]);
-	if (mixBinBufferPtrs_[i][1])
-		free(mixBinBufferPtrs_[i][1]);
-	}
-
-if (writeOutSoundFile)
-	CloseSoundFile(&outSoundFile);
+	// Dellocate buffers 
+	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
+		{
+		if (pTmpBuffers_[i])
+			free(pTmpBuffers_[i]);
+		}
+	
+	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
+		{
+		if (mixBinBufferPtrs_[i][0])
+			free(mixBinBufferPtrs_[i][0]);
+		if (mixBinBufferPtrs_[i][1])
+			free(mixBinBufferPtrs_[i][1]);
+		}
+	
+	if (writeOutSoundFile)
+		CloseSoundFile(&outSoundFile);
 
 }  // ---- end ~CAudioMixer::CAudioMixer() ----
 
@@ -224,12 +224,12 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 	U32 iChan = 0;
 	CChannel*	pChan = NULL;
 	
-// Loop over the number of channels
-for (long i = 0; i < numChannels_; i++)
-	{
-	if (pChannels_[i].IsInUse())
-		return (true);
-	}
+	// Loop over the number of channels
+	for (long i = 0; i < numChannels_; i++)
+		{
+		if (pChannels_[i].IsInUse())
+			return (true);
+		}
 	
 	return false;
 }
@@ -239,25 +239,25 @@ for (long i = 0; i < numChannels_; i++)
 //==============================================================================
 long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 {
-long index =  kAudioMixer_MixBin_Index_FsDiv1;
-
-// FIXXX: currently matches numbers.  In the future, should assign mix bin
-// with closest sampling frequency and do conversion
-switch (samplingFrequency)
-	{
-	default:
-	case kAudioSampleRate :
-		index = kAudioMixer_MixBin_Index_FsDiv1;
-	break;
-	case kAudioSampleRate_Div2 :
-		index = kAudioMixer_MixBin_Index_FsDiv2;
-	break;
-	case kAudioSampleRate_Div4 :
-		index = kAudioMixer_MixBin_Index_FsDiv4;
-	break;
-	}
-
-return (index);
+	long index =  kAudioMixer_MixBin_Index_FsDiv1;
+	
+	// FIXXX: currently matches numbers.  In the future, should assign mix bin
+	// with closest sampling frequency and do conversion
+	switch (samplingFrequency)
+		{
+		default:
+		case kAudioSampleRate :
+			index = kAudioMixer_MixBin_Index_FsDiv1;
+		break;
+		case kAudioSampleRate_Div2 :
+			index = kAudioMixer_MixBin_Index_FsDiv2;
+		break;
+		case kAudioSampleRate_Div4 :
+			index = kAudioMixer_MixBin_Index_FsDiv4;
+		break;
+		}
+	
+	return (index);
 }  // ---- end CAudioMixer::GetMixBinIndex() ----
 
 //==============================================================================
@@ -266,25 +266,25 @@ return (index);
 //==============================================================================
 long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 {
-long div =  1;
-
-// FIXXX: currently matches numbers.  In the future, should assign mix bin
-// with closest sampling frequency and do conversion
-switch (samplingFrequency)
-	{
-	default:
-	case kAudioSampleRate :
-		div = 1;
-	break;
-	case kAudioSampleRate_Div2 :
-		div = 2;
-	break;
-	case kAudioSampleRate_Div4 :
-		div = 4;
-	break;
-	}
-
-return (div);
+	long div =  1;
+	
+	// FIXXX: currently matches numbers.  In the future, should assign mix bin
+	// with closest sampling frequency and do conversion
+	switch (samplingFrequency)
+		{
+		default:
+		case kAudioSampleRate :
+			div = 1;
+		break;
+		case kAudioSampleRate_Div2 :
+			div = 2;
+		break;
+		case kAudioSampleRate_Div4 :
+			div = 4;
+		break;
+		}
+	
+	return (div);
 }  // ---- end CAudioMixer::GetSamplingRateDivisor() ----
 
 //==============================================================================

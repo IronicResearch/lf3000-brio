@@ -7207,3 +7207,24 @@ By dgibbs (dgibbs@leapfrog.com) on 8/17/07 12:30 PM
 2,719 ms. (Cumulative: 1,423,921 ms)
 
 ----------------
+Revision 1,301 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,002 ms. (Cumulative: 1,426,986 ms)
+
+----------------
+Revision 1,302 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,096 ms. (Cumulative: 1,430,098 ms)
+
+----------------
+Revision 1,303 from svn://localhost/TRUNK/:
+
+comment out some printf()s
+
+By dgibbs (dgibbs@leapfrog.com) on 8/17/07 12:59 PM
+2 changed, 0 added, 0 deleted.
+3,156 ms. (Cumulative: 1,433,254 ms)
+
+----------------
