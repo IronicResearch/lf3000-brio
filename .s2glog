@@ -7228,3 +7228,18 @@ By dgibbs (dgibbs@leapfrog.com) on 8/17/07 12:59 PM
 3,156 ms. (Cumulative: 1,433,254 ms)
 
 ----------------
+Revision 1,304 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,703 ms. (Cumulative: 1,436,020 ms)
+
+----------------
+Revision 1,305 from svn://localhost/TRUNK/:
+
+Added code to restore resource iterator state after intervening GetNumRsrcs() calls.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/17/07 1:59 PM
+2 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,438,708 ms)
+
+----------------

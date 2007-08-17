@@ -303,6 +303,43 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void testGetNumRsrcsFindNext()
+	{
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
+		rsrcmgr_->SetDefaultURIPath(gPkgA);
+		tPackageHndl hPkg = rsrcmgr_->FindPackage("CountTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, hPkg );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		U32 count = rsrcmgr_->GetNumRsrcs();
+		TS_ASSERT_EQUALS( static_cast<U32>(5), count );
+		tRsrcHndl hRsrc;
+		hRsrc = rsrcmgr_->FindFirstRsrc();
+		TS_ASSERT_DIFFERS( kInvalidHndl, hRsrc );
+		while (--count)
+		{
+			hRsrc = rsrcmgr_->FindNextRsrc();
+			TS_ASSERT_DIFFERS( kInvalidHndl, hRsrc );
+		}
+		hRsrc = rsrcmgr_->FindNextRsrc();
+		TS_ASSERT_EQUALS( kInvalidHndl, hRsrc );
+		count = 0;
+		for (hRsrc = rsrcmgr_->FindFirstRsrc(); 
+			 hRsrc != kInvalidRsrcHndl; 
+			 hRsrc = rsrcmgr_->FindNextRsrc())
+		{
+			U32 count2 = rsrcmgr_->GetNumRsrcs();
+			TS_ASSERT_EQUALS( static_cast<U32>(5), count2 );
+			count++;
+			TS_ASSERT( count <= count2 );
+			if (count > count2)
+				break; // should never happen...
+		}
+		TS_ASSERT_EQUALS( static_cast<U32>(5), count );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );
+		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->CloseAllDevices() );
+	}
+	
+	//------------------------------------------------------------------------
 	void testDoubleClosePackage( )
 	{
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenAllDevices() );
