@@ -1136,7 +1136,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		int du = face->underline_position >> 6;
 		int dt = face->underline_thickness >> 6;
 		int dh = face->height >> 6;
-		int dw = ( glyph->advance.x + 0x8000 ) >> 16;
+		int dw = (( glyph->advance.x + 0x8000 ) >> 16) + attr_.spaceExtra;
 		// Expand glyph bitmap width and height to fit underline bits
 		ExpandBitmap(source, &clone, dw, dh);
 		source = &clone;
@@ -1188,6 +1188,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 
 	// Update the current XY glyph cursor position
 	AdvanceGlyphPosition(glyph, curX_, curY_);
+    curX_ += attr_.spaceExtra;
 	curX_ += dk;
 
 	// Release expanded bitmap memory used for underlining
@@ -1288,7 +1289,7 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 	
 	// Parse string for space breaks to draw incrementally
 	n = len = str.length();
-	dy = handle_.currentFont->height;
+	dy = handle_.currentFont->height + attr_.leading;
 	for (i = p = 0; i < len; i++)
 	{
 		// Parse string for space breaks
@@ -1396,6 +1397,7 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
 		// Adjust for glyph position
 		AdvanceGlyphPosition(glyph, dx, dy);
+		dx += attr_.spaceExtra;
 		// Save previous glyph index if kerning
 		prev = index;
 	}

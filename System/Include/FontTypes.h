@@ -37,10 +37,10 @@ const tFontHndl	kInvalidFontHndl = static_cast<tFontHndl>(0);
 
 // Font metrics
 struct tFontMetrics {
-	S16		ascent;
-	S16		descent;
-	S16		height;
-	S16		advance;
+	S16		ascent;			// max vertical above baseline 
+	S16		descent;		// max vertical below baseline (negative)
+	S16		height;			// max per-line vertical advance
+	S16		advance;		// max per-glyph horizontal advance
 };
 
 // Font properties
@@ -48,8 +48,8 @@ struct tFontProp {
 	U16		version;
 	U8		size;
 	// version 2 properties
-	U32		encoding;
-	Boolean useEncoding;
+	U32		encoding;		// kSystemCharEncoding* enum
+	Boolean useEncoding;	// redundant
 };
 
 // Font rendering attributes
@@ -61,9 +61,9 @@ struct tFontAttr {
 	// version 2 attributes
 	U32		horizJust;
 	U32		vertJust;
-	U32		spaceExtra;
-	U32		leading;
-	Boolean	useKerning;
+	S32		spaceExtra;		// extra per-glyph horizontal spacing
+	S32		leading;		// extra per-line vertical spacing
+	Boolean	useKerning;		// glyph-paired horizontal adjustments
 	Boolean useUnderlining;
 };
 
@@ -73,7 +73,7 @@ struct tFontSurf {
 	S32		height;
 	S32		pitch;
 	U8*		buffer;
-	tPixelFormat format;
+	tPixelFormat format;	// kPixelFormat* enum
 };
 
 LF_END_BRIO_NAMESPACE()
