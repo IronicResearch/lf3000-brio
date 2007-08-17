@@ -1231,7 +1231,12 @@ tErrType CResourceModule::UnloadPackage(U32 id, tPackageHndl hndl,
 U32 CResourceModule::GetNumRsrcs(U32 id, tRsrcType type, 
 								const CURI *pURIPath) const
 {
+	// Save and restore the iterator state before/after counting
 	U32 count = 0;
+	MPIInstanceState& mpiState = RetrieveMPIState(id);
+	const CURI curRsrcURI = mpiState.curRsrcURI;
+	tRsrcType curRsrcType = mpiState.curRsrcType;
+	tRsrcHndl curRsrcHndl = mpiState.cachedRsrcHndl;
 	tRsrcHndl hndl = FindFirstRsrc(id, type, pURIPath);
 	while (kInvalidRsrcHndl != hndl)
 	{
@@ -1239,6 +1244,9 @@ U32 CResourceModule::GetNumRsrcs(U32 id, tRsrcType type,
 			++count;
 		hndl = FindNextRsrc(id);
 	}
+	hndl = FindFirstRsrc(id, curRsrcType, &curRsrcURI);
+	while (hndl != curRsrcHndl && hndl != kInvalidRsrcHndl)
+		hndl = FindNextRsrc(id);
 	return count;
 }
  
