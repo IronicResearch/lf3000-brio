@@ -7261,3 +7261,18 @@ By dgibbs (dgibbs@leapfrog.com) on 8/17/07 2:35 PM
 2,797 ms. (Cumulative: 1,444,333 ms)
 
 ----------------
+Revision 1,308 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,625 ms. (Cumulative: 1,447,021 ms)
+
+----------------
+Revision 1,309 from svn://localhost/TRUNK/:
+
+Max 16 midi voices.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/17/07 3:35 PM
+1 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,449,677 ms)
+
+----------------
