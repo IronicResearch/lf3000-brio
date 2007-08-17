@@ -7189,3 +7189,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/17/07 11:08 AM
 2,641 ms. (Cumulative: 1,418,374 ms)
 
 ----------------
+Revision 1,299 from svn://localhost/TRUNK/:
+
+Annotations for font attribute fields, including support for extra space and leading.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/17/07 12:11 PM
+2 changed, 0 added, 0 deleted.
+2,704 ms. (Cumulative: 1,421,140 ms)
+
+----------------
