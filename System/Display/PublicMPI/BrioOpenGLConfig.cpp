@@ -274,7 +274,6 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	*/
 
 	// Exit OpenGL hardware
-	disp_.DisableOpenGL();
 	disp_.DeinitOpenGL(); 
 }
 

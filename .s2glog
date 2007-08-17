@@ -7276,3 +7276,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/17/07 3:35 PM
 2,641 ms. (Cumulative: 1,449,677 ms)
 
 ----------------
+Revision 1,310 from svn://localhost/TRUNK/:
+
+Remove static display context pointer stomping multiple context instances, plus minor updates.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/17/07 3:54 PM
+3 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 1,452,443 ms)
+
+----------------
