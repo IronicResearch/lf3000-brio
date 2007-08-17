@@ -58,7 +58,7 @@
  * Internal structures will be allocated based on this value.
  * The actual maximum number of voices can be lowered dynamically by passing a value to SPMIDI_SetMaxVoices().
  */
-#define SPMIDI_MAX_VOICES          (64)
+#define SPMIDI_MAX_VOICES          (16)
 #endif
 
 #ifndef SPMIDI_MAX_SAMPLEMEM
@@ -109,7 +109,7 @@
  */
 
 #ifndef SPMIDI_FRAMES_PER_BLOCK_LOG2
-#define SPMIDI_FRAMES_PER_BLOCK_LOG2    (3)
+#define SPMIDI_FRAMES_PER_BLOCK_LOG2    (4)
 #endif
 
 #ifndef SPMIDI_USE_COMPRESSOR
