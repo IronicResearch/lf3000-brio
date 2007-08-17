@@ -9,6 +9,16 @@ Lightning C++ Development Kit Release Notes
 * Font encoding property supported for Unicode UTF8/UTF16/UTF32 character codes.  
 * Additional Font MPI methods for setting font properties and drawing attributes 
   more intuitively.
+* Audio MPI - support for multiple MPI instances.
+* Audio MPI - implemented a big chunk of stubbed out functionality.
+* Audio MPI - there is one name change: 
+	tAudioMsgDataCompleted was changed to tAudioMsgAudioCompleted
+	tAudioMsgMidiCompleted was added to support MIDI file events.
+	
+	LightingCore needs this change in two files: 
+		LightningCore/LightningBase/Include/AudioListener.h   line 37
+		LightningCore/Demos/VideoDemo/main.cpp   line 113
+
 
 ===========================================
 v0.1.14  (Build 1127 released August 1, 2007) 
