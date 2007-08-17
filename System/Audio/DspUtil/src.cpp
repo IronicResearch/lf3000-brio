@@ -59,6 +59,13 @@ d->outInRateRatio = 1.0f/d->inOutRateRatio;
 long iInOutRateRatio = (long) d->inOutRateRatio;
 long iOutInRateRatio = (long) d->outInRateRatio;	
 char *firName = "Dunno";
+
+// Defaults
+d->hP        = fir_HalfBand_58dB_Hz;
+d->firLength = kFIR_HalfBand_58dB_Hz_Length;
+d->inScaleDB = fir_HalfBand_58dB_GainCompensationDB;
+firName      = "HalfBand_58dB";
+
 // by2 interpolation or decimation
 if 	(2 == iInOutRateRatio || 2 == iOutInRateRatio)
 	{
