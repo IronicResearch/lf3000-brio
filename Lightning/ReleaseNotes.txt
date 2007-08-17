@@ -2,6 +2,19 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+===========================================
+v0.1.15  (Build 1311 released August 17, 2007) 
+===========================================
+
+Release for LF2530 embedded target boards (blue or brown).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.5.0-1261
+* NFS root file system: nfsroot-svn1311.tar.gz
+
+Enhancements:
+-------------
 * Video MPI StartVideo() task posts event message to listener when done.
 * Video MPI SeekVideoFrame() and Looping functionality implemented.
 * Font MPI GetStringRect() functionality implemented.
@@ -19,6 +32,11 @@ Lightning C++ Development Kit Release Notes
 		LightningCore/LightningBase/Include/AudioListener.h   line 37
 		LightningCore/Demos/VideoDemo/main.cpp   line 113
 
+* DisplayMPI - multiple display context instances now fixed. 
+
+Known Issues:
+-------------
+* Exception Handling on embedded target doesn't work.
 
 ===========================================
 v0.1.14  (Build 1127 released August 1, 2007) 
