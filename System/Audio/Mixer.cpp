@@ -193,7 +193,7 @@ CChannel* CAudioMixer::FindChannelUsing( tAudioPriority priority )
 //==============================================================================
 CChannel* CAudioMixer::FindChannelUsing( tAudioID id )
 {
-	U8 				iChan;
+//	U8 				iChan;
 	tAudioID		idFromPlayer;
 	CChannel*		pChan;
 	CAudioPlayer* 	pPlayer;
@@ -220,9 +220,9 @@ CChannel* CAudioMixer::FindChannelUsing( tAudioID id )
 //==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
 {
-	Boolean 	result = false;
-	U32 iChan = 0;
-	CChannel*	pChan = NULL;
+//	Boolean 	result = false;
+//	U32 iChan = 0;
+//	CChannel*	pChan = NULL;
 	
 	// Loop over the number of channels
 	for (long i = 0; i < numChannels_; i++)

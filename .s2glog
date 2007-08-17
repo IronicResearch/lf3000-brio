@@ -7243,3 +7243,12 @@ By Dmilici (Dmilici@leapfrog.com) on 8/17/07 1:59 PM
 2,672 ms. (Cumulative: 1,438,708 ms)
 
 ----------------
+Revision 1,306 from svn://localhost/TRUNK/:
+
+Fixed warning-errors for embedded build
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/17/07 2:11 PM
+2 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 1,441,473 ms)
+
+----------------

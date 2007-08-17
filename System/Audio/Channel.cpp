@@ -182,7 +182,7 @@ void CChannel::SetVolume( U8 x )
 {
 volume_ = x;
 // ChangeRangef(x, L1, H1, L2, H2)
-long xI = (long)x;
+//long xI = (long)x;
 
 }	// ---- end CChannel::SetVolume ----
 
