@@ -172,7 +172,7 @@ float xf = ChangeRangef((float)x, -100, 100, -1.0, 1.0);
 
 //PanValues   (xf, panValuesf);
 ConstantPowerValues(xf, &panValuesf[kLeft], &panValuesf[kRight]);
-printf("CChannel::SetPan: %d -> <%f, %f> \n", (int)x, panValuesf[kLeft],  panValuesf[kRight]);
+//printf("CChannel::SetPan: %d -> <%f, %f> \n", (int)x, panValuesf[kLeft],  panValuesf[kRight]);
 }	// ---- end CChannel::SetPan ----
 
 //==============================================================================
