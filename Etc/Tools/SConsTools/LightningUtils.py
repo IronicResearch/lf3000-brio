@@ -255,8 +255,6 @@ def MapAcmeActivitiesToURIs(data_root):
 # Set up a map of type names and file extensions to numeric type values
 #-------------------------------------------------------------------------
 def SetupTypeConversionMap():
-	# Keep this function in sync with GroupEnumeration.h and each of the
-	# *Types.h files
 	types = { 'mid' 	: 1024 *  1 + 1,	#Audio Group
 			  'midi' 	: 1024 *  1 + 1,
 			  'S'		: 1024 *  1 + 1,		# for ACME
@@ -267,7 +265,8 @@ def SetupTypeConversionMap():
 			  'txt'		: 1024 *  4 + 1,	# Common Group
 			  'bin'		: 1024 *  4 + 2,
 			  'json'	: 1024 *  4 + 3,
-			  'xml'		: 1024 *  4 + 4,
+			  'so'		: 1024 *  4 + 4,
+			  'xml'		: 1024 *  4 + 5,	# we need .so to be part of package
 			  'bmp'		: 1024 *  5 + 1,	# Display Group
 			  'gif'		: 1024 *  5 + 2,
 			  'jpg'		: 1024 *  5 + 3,
@@ -293,7 +292,7 @@ def AddURILocation(uri, file, line):
 #-------------------------------------------------------------------------
 # Transform or copy source file to packed output file
 #-------------------------------------------------------------------------
-def PackFile(srcfile, pack_root, type, compression, rate):
+def PackFile(pkg, srcfile, pack_root, type, compression, rate):
 	# 1) If we have already processed this source file, return the
 	#    already processed destination file
 	# 2) Create output file path
@@ -306,6 +305,11 @@ def PackFile(srcfile, pack_root, type, compression, rate):
 		return sEnv.File(sSourceToDestMap[srcfile])
 		
 	outname = GenerateNextResourceFileName()						#2
+	# this will make sure AboutMe so files are all named App.so
+	if pkg.endswith("AboutMe.pkg"):
+		if srcfile.endswith(".so"):
+			outname = "App.so"
+    
 	outfile = os.path.join(pack_root, outname)
 	sSourceToDestMap[srcfile] = outfile								#3
 	
@@ -439,7 +443,7 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 
 		srcfile = os.path.join(data_root, row[2].strip())			#7
 		srcsize = os.path.getsize(srcfile)
-		outfile = PackFile(srcfile, pack_root, type, compression, rate)
+		outfile = PackFile(pkg, srcfile, pack_root, type, compression, rate)
 		outsize = outfile.getsize()
 		uri = base + row[1].strip()
 		AddURILocation(uri, pkg, line)
