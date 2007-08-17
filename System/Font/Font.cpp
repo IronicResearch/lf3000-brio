@@ -1270,6 +1270,58 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf)
 }
 
 //----------------------------------------------------------------------------
+Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap)
+{
+	Boolean	rc = false;
+	tRect 	rect;
+	CString	part;
+	int		len,dy,i,p,n;
+	
+	// Nothing to calculate if no wrapping
+	if (!bWrap)
+		return DrawString(str, x, y, surf);
+	
+	// If entire string fits, then draw as is
+	GetStringRect(&str, &rect);
+	if (rect.right - rect.left <= surf.width)
+		return DrawString(str, x, y, surf);
+	
+	// Parse string for space breaks to draw incrementally
+	n = len = str.length();
+	dy = handle_.currentFont->height;
+	for (i = p = 0; i < len; i++)
+	{
+		// Parse string for space breaks
+		if (str.at(i) == ' ')
+		{
+			n = i+1-p;
+			part = str.substr(p, n);
+			p = i+1;
+			// Wrap XY pre-drawing
+			GetStringRect(&part, &rect);
+			if (x + rect.right > surf.width) 
+			{
+				x = 0;
+				y += dy;
+			}
+			rc = DrawString(part, x, y, surf);
+			// Wrap XY post-drawing (in case of long words)
+			if (x > surf.width)
+			{
+				x = 0;
+				y += dy;
+			}
+		}
+	}		
+
+	// Draw the last part of the string, or entire string if no space breaks
+	part = str.substr(p, n);
+	rc = DrawString(part, x, y, surf);
+	
+	return rc;
+}
+
+//----------------------------------------------------------------------------
 S32 CFontModule::GetX()
 {
 	return curX_;

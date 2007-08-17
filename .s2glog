@@ -7167,3 +7167,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/16/07 5:57 PM
 2,688 ms. (Cumulative: 1,412,842 ms)
 
 ----------------
+Revision 1,293 from svn://localhost/TRUNK/:
+
+Add Font method to perform text wrapping with font metrics internally.
+
+By Dmilici (Dmilici@leapfrog.com) on 8/16/07 6:47 PM
+5 changed, 0 added, 0 deleted.
+2,734 ms. (Cumulative: 1,415,639 ms)
+
+----------------

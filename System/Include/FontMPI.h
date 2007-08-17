@@ -70,6 +70,7 @@ public:
     // Draws a text string at selected X,Y position in display surface context
     Boolean     DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     Boolean     DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
+    Boolean     DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap);
     
     // Returns the current X drawing position updated by DrawString()
     S32			GetX();

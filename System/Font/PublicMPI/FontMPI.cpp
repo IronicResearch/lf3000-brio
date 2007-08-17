@@ -236,6 +236,14 @@ Boolean	CFontMPI::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf)
 }
 
 //----------------------------------------------------------------------------
+Boolean	CFontMPI::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->DrawString(str, x, y, surf, bWrap);
+}
+
+//----------------------------------------------------------------------------
 S32 CFontMPI::GetX()
 {
 	if (!pModule_)
