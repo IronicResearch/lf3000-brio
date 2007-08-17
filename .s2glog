@@ -7252,3 +7252,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/17/07 2:11 PM
 2,703 ms. (Cumulative: 1,441,473 ms)
 
 ----------------
+Revision 1,307 from svn://localhost/TRUNK/:
+
+Include some resource packing changes submitted by Screen team.  This allows packing of .so files.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/17/07 2:35 PM
+1 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,444,333 ms)
+
+----------------
