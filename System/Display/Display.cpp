@@ -87,7 +87,7 @@ const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen /*scree
 							(size>>16),
 							(size & 0xFFFF),
 							format,
-							0, //TODO
+							(size & 0xFFFF) * 4,
 							"LCD"};
 	return &kLightningStats;
 }
@@ -95,15 +95,15 @@ const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen /*scree
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::LockBuffer(tDisplayHandle /*hndl*/)
 {
-	dbg_.DebugOut(kDbgLvlCritical, "LockBuffer not implemented\n");
-	return kNoImplErr;
+	// Nothing to do when no 2D accelerator
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::UnlockBuffer(tDisplayHandle hndl, tRect* /*pDirtyRect*/)
 {
-	dbg_.DebugOut(kDbgLvlCritical, "UnlockBuffer not implemented\n");
-	return kNoImplErr;
+	// Nothing to do when no 2D accelerator
+	return kNoErr;
 }
 
 

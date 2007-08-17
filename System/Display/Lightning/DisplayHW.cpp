@@ -174,7 +174,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
 	enum tLayerPixelFormat hwFormat;
-	static tDisplayContext *GraphicsContext = new struct tDisplayContext;
+	tDisplayContext *GraphicsContext = new struct tDisplayContext;
 	U8 bpp;
 
 	GraphicsContext->height = height;
@@ -232,7 +232,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
-	SetDirtyBit(gDevLayer);
+	// No hardware settings have actually changed
+//	SetDirtyBit(gDevLayer);
     return kNoErr;
 }
 
