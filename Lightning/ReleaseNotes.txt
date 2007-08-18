@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.15  (Build 1311 released August 17, 2007) 
+v0.1.15  (Build 1314 released August 17, 2007) 
 ===========================================
 
 Release for LF2530 embedded target boards (blue or brown).
@@ -11,10 +11,12 @@ Release for LF2530 embedded target boards (blue or brown).
 Software components for target hardware:
 
 * Linux Kernel Image: zImage-0.5.0-1261
-* NFS root file system: nfsroot-svn1311.tar.gz
+* NFS root file system: nfsroot-svn1314.tar.gz
 
 Enhancements:
 -------------
+* Updated Drivers for button debouncing, volume wheel response, realtime clock.
+* Kernel MPI uses realtime clock support on embedded target for elapsed time. 
 * Video MPI StartVideo() task posts event message to listener when done.
 * Video MPI SeekVideoFrame() and Looping functionality implemented.
 * Font MPI GetStringRect() functionality implemented.
