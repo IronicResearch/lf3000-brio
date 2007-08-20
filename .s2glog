@@ -7338,3 +7338,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/20/07 10:29 AM
 2,672 ms. (Cumulative: 1,463,413 ms)
 
 ----------------
+Revision 1,335 from svn://localhost/TRUNK/:
+Revision 1,336 from svn://localhost/TRUNK/:
+
+Add setup/boot script for getting FreeType source from public repository into Brio tree.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/20/07 4:32 PM
+0 changed, 1 added, 0 deleted.
+2,906 ms. (Cumulative: 1,466,397 ms)
+
+----------------
