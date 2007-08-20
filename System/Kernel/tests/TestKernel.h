@@ -815,6 +815,9 @@ public:
 		err = KernelMPI->TryLockMutex( mutex );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 			
+		err = KernelMPI->UnlockMutex( mutex );
+		TS_ASSERT_EQUALS( err, ((tErrType)0) );
+
    		err = KernelMPI->DeInitMutex( mutex );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 			
@@ -974,8 +977,12 @@ public:
 				TS_ASSERT_EQUALS( err, ((tErrType)0) );
   		}
 
+ 			err = KernelMPI->UnlockMutex( mutex_broadcast );
+			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    	
     		err = KernelMPI->DeInitMutex( mutex_broadcast );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    	
     		err = KernelMPI->DestroyCond( cond_broadcast );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 

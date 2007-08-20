@@ -716,18 +716,19 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		int fd; 
 
 		
-		errno = 0;
 		err = pthread_mutex_lock( &mutexValue_T1);
 		ASSERT_POSIX_CALL( err );
 		
+		errno = 0;
 		fd = open(rtc, O_RDONLY);
 		ASSERT_POSIX_CALL( errno );
 
 		ioctl(fd, RTC_PLL_GET, &rtc_timer);
-        err = errno;
-		ASSERT_POSIX_CALL( errno );
+ 		ASSERT_POSIX_CALL( errno );
 		
 		close(fd);
+		ASSERT_POSIX_CALL( errno );
+
 		err = pthread_mutex_unlock( &mutexValue_T1);
 		ASSERT_POSIX_CALL( err );
 
@@ -768,6 +769,8 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		sec = (U32 )rtc_timer.pll_min;
 		
 		close(fd);
+		ASSERT_POSIX_CALL( errno );
+
 		err = pthread_mutex_unlock( &mutexValue_T2);
 		ASSERT_POSIX_CALL( err );
 
@@ -795,6 +798,8 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		ASSERT_POSIX_CALL( errno );
 
 		close(fd);
+		ASSERT_POSIX_CALL( errno );
+
 		err = pthread_mutex_unlock( &mutexValue_T3);
 		ASSERT_POSIX_CALL( err );
 
@@ -870,6 +875,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	callbackData *ptrData = 
 		(callbackData *)(malloc(sizeof(callbackData)));
 	ASSERT_POSIX_CALL( !ptrData );
+
 	se.sigev_value.sival_ptr = (void *)ptrData;
 
 	timer_t	posixHndl;
@@ -1024,7 +1030,6 @@ tErrType CKernelModule::PauseTimer( tTimerHndl hndl, saveTimerSettings& saveValu
 	
     errno = 0;
     timer_settime(AsPosixTimerHandle( hndl ), 0, &value, NULL );	
-	
     ASSERT_POSIX_CALL( errno );
 
     return kNoErr;
@@ -1110,7 +1115,7 @@ tErrType CKernelModule::InitMutexAttributeObject( tMutexAttr& mutexAttr )
     tErrType err = kNoErr;
     
     tMutexAttr mutexAttrTmp;
-    pthread_mutexattr_init( &mutexAttrTmp );
+    err = pthread_mutexattr_init( &mutexAttrTmp );
     ASSERT_POSIX_CALL( err );
    
     mutexAttr = static_cast<tMutexAttr>(mutexAttrTmp);
@@ -1125,7 +1130,7 @@ tErrType CKernelModule::InitMutex( tMutex& mutex, const tMutexAttr& mutexAttr )
     tErrType err = kNoErr;
     
     tMutex  mutexTmp;
-    pthread_mutex_init(&mutexTmp, &mutexAttr);
+    err = pthread_mutex_init(&mutexTmp, &mutexAttr);
     ASSERT_POSIX_CALL( err );
 
     mutex = static_cast<tMutex>(mutexTmp);
@@ -1137,7 +1142,7 @@ tErrType CKernelModule::DeInitMutex( tMutex& mutex )
 {
     tErrType err = kNoErr;
 
-    pthread_mutex_destroy(&mutex);
+    err = pthread_mutex_destroy(&mutex);
     ASSERT_POSIX_CALL( err );
     
     return kNoErr;
@@ -1220,7 +1225,7 @@ tErrType CKernelModule::DestroyCond( tCond& cond )
 {
     tErrType err = kNoErr;
 
-    pthread_cond_destroy(&cond);
+    err = pthread_cond_destroy(&cond);
     ASSERT_POSIX_CALL( err );
     
     return kNoErr;
@@ -1231,7 +1236,7 @@ tErrType CKernelModule::InitCond( tCond& cond, const tCondAttr& attr )
 {
     tErrType err = kNoErr;
 
-    pthread_cond_init(&cond, &attr);
+    err = pthread_cond_init(&cond, &attr);
     ASSERT_POSIX_CALL( err );
     
     return kNoErr;
