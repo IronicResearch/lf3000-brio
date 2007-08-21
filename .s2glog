@@ -7369,3 +7369,27 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/20/07 6:38 PM
 2,704 ms. (Cumulative: 1,472,148 ms)
 
 ----------------
+Revision 1,342 from svn://localhost/TRUNK/:
+Revision 1,343 from svn://localhost/TRUNK/:
+Revision 1,344 from svn://localhost/TRUNK/:
+Revision 1,345 from svn://localhost/TRUNK/:
+Revision 1,346 from svn://localhost/TRUNK/:
+Revision 1,347 from svn://localhost/TRUNK/:
+Revision 1,348 from svn://localhost/TRUNK/:
+Revision 1,349 from svn://localhost/TRUNK/:
+Revision 1,350 from svn://localhost/TRUNK/:
+Revision 1,351 from svn://localhost/TRUNK/:
+Revision 1,352 from svn://localhost/TRUNK/:
+Revision 1,353 from svn://localhost/TRUNK/:
+Revision 1,354 from svn://localhost/TRUNK/:
+Revision 1,355 from svn://localhost/TRUNK/:
+Revision 1,356 from svn://localhost/TRUNK/:
+Revision 1,357 from svn://localhost/TRUNK/:
+
+Fixes for complete monolithic builds with Brio namespace mods and additional libs. 
+
+By Dave Milici (dmilici@leapfrog.com) on 8/21/07 2:01 PM
+3 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 1,475,007 ms)
+
+----------------
