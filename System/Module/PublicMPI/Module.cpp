@@ -23,8 +23,9 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kNullString;
+#ifndef LF_MONOLITHIC_DEBUG		// also declared in Resource module
 const CURI		kNullURI;
-
+#endif
 
 //============================================================================
 extern "C"
@@ -164,6 +165,9 @@ namespace Module
 // For LF_MONOLITHIC_DEBUG builds, create instances of all of the modules and
 //------------------------------------------------------------------------
 
+LF_END_BRIO_NAMESPACE()
+
+LF_USING_BRIO_NAMESPACE()
 #include <Audio/Include/AudioPriv.h>
 #include <Button/Include/ButtonPriv.h>
 #include <Debug/Include/DebugPriv.h>
@@ -209,6 +213,8 @@ extern "C" ICoreModule* CreateInstance(tVersion)
 	return NULL;		
 }
 	
+LF_BEGIN_BRIO_NAMESPACE()
+
 namespace Module
 {	
 	//------------------------------------------------------------------------
@@ -239,7 +245,6 @@ namespace Module
 }
 #endif	// LF_MONOLITHIC_DEBUG
 
-
-
 LF_END_BRIO_NAMESPACE()
+
 // eof

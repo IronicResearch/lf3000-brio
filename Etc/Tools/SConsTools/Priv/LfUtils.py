@@ -232,9 +232,9 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 
 	platformlibs = ['DebugMPI']
 	if vars['is_emulation']:
-		platformlibs += ['glibmm-2.4', 'glib-2.0']
+		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread', 'gles_cl']
 	else:
-		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
+		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt', 'ogl']
 	fulllibs = plibs + [ptarget + 'MPI']
 	if vars['is_emulation']:
 		fulllibs += ['Emulation']
@@ -242,9 +242,14 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
 	if vars['is_monolithic']:
 		libpaths = [vars['mod_deploy_dir'], vars['lib_deploy_dir'], 
+					os.path.join(root_dir, 'ThirdParty/ustring/libs', vars['cpu_subdir']),
+					os.path.join(root_dir, 'ThirdParty/MagicEyes/Libs', vars['cpu_subdir']),
+					os.path.join(root_dir, 'ThirdParty/FreeType/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Theora/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Portaudio/Libs', vars['cpu_subdir']),
-					os.path.join(root_dir, 'ThirdParty/Mobileer/Libs', vars['cpu_subdir'])]
+					os.path.join(root_dir, 'ThirdParty/Mobileer/Libs', vars['cpu_subdir']),
+					os.path.join(root_dir, 'System/Audio/DspUtil', vars['cpu_subdir']),
+					os.path.join(root_dir, 'System/Audio/LibSndFile', vars['cpu_subdir'])]
 		testenv.Append(LIBPATH = libpaths)
 		testenv.Append(RPATH = vars['lib_deploy_dir'])
 		fulllibs += testenv.Split('''ModuleMPI 
@@ -254,8 +259,8 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 									Video Kernel Module
 									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
 									FontMPI ResourceMPI VideoMPI KernelMPI
-									portaudio me2000 vorbisidec
-									SystemResourceMPI ogg theora freetype
+									portaudio me2000 vorbisidec dsputil sndfile
+									ogg theora freetype
 									''')
 		if vars['is_emulation']:
 			fulllibs +=  ['X11']

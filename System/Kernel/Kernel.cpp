@@ -234,8 +234,12 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
 
 	if( props.stackAddr )
 	{
+#if defined(LF_MONOLITHIC_DEBUG) && !defined(EMULATION)
+		err = pthread_attr_setstackaddr(&tattr, (void *)props.stackAddr);
+#else
 		err = pthread_attr_setstack(&tattr, (void *)props.stackAddr, props.stackSize);
-        ASSERT_POSIX_CALL(err);
+#endif 
+		ASSERT_POSIX_CALL(err);
 	}
     
 	pthread_attr_setinheritsched(&tattr, PTHREAD_EXPLICIT_SCHED);
@@ -1361,6 +1365,7 @@ extern "C"
 
 #endif	// LF_MONOLITHIC_DEBUG
 
+LF_USING_BRIO_NAMESPACE()
 extern "C"
 {
 	//------------------------------------------------------------------------
