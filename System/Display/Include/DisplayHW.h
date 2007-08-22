@@ -1,5 +1,5 @@
-#ifndef LF_DUSPLAYHW_H
-#define LF_DUSPLAYHW_H
+#ifndef LF_DISPLAYHW_H
+#define LF_DISPLAYHW_H
 //=============================================================================
 // $Source: $
 //
@@ -13,6 +13,9 @@
 //      Hardware-specific definitions for the DisplayManager
 //
 //==============================================================================
+
+#include <SystemTypes.h>
+LF_USING_BRIO_NAMESPACE()
 
 // layer to be used by DisplayManager for 2D RGB
 #define RGB_LAYER_ID	0
@@ -38,19 +41,14 @@
 
 #define ALPHA_STEP				15
 
-// lookup table providing hardware tPixelFormat equivalents
-enum tLayerPixelFormat {
-	kLayerPixelFormatError 		= 0,
-	kLayerPixelFormatRGB4444 	= 0x2211, //A4R4G4B4
-	kLayerPixelFormatRGB565		= 0x4432, //R5G6B5
-	kLayerPixelFormatARGB8888	= 0x0653, //A8R8G8B8
-	kLayerPixelFormatRGB888		= 0x4653, //R8G8B8
-	kLayerPixelFormatYUV420		= 0xFFF0, //YUV planar	
-	kLayerPixelFormatYUYV422	= 0xFFF2  //YUYV packed
-};
+// Hardware layer format codes corresponding to tPixelFormat equivalents
+const U32	kLayerPixelFormatRGB4444 	= 0x2211; //A4R4G4B4
+const U32	kLayerPixelFormatRGB565		= 0x4432; //R5G6B5
+const U32	kLayerPixelFormatARGB8888	= 0x0653; //A8R8G8B8
+const U32	kLayerPixelFormatRGB888		= 0x4653; //R8G8B8
+const U32	kLayerPixelFormatYUV420		= 0xFFF0; //YUV planar	
+const U32	kLayerPixelFormatYUYV422	= 0xFFF2; //YUYV packed
 
-// TODO/dm: Implement actual lookup table for format codes!
-// Enum values for YUV format codes currently need padding with 0xFFF0.
-// Format codes may possibly change in future hardware register specs.
+#endif // LF_DISPLAYHW_H
 
-#endif
+// EOF

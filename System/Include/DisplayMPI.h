@@ -10,7 +10,7 @@
 //		DisplayMPI.h
 //
 // Description:
-//		Defines the interface for the private underlying Display manager module. 
+//		Defines the Module Public Interface (MPI) for the Display module. 
 //
 //==============================================================================
 #include <CoreMPI.h>

@@ -48,7 +48,7 @@ namespace
 // Asynchronous notifications
 //============================================================================
 //----------------------------------------------------------------------------
-void *LighteningButtonTask(void*)
+void *LightningButtonTask(void*)
 {
 	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupButton);
@@ -63,7 +63,7 @@ void *LighteningButtonTask(void*)
 		kernel.TaskSleep(1);
 
 		int size = read(button_fd, &current_be, sizeof(struct button_event));
-		dbg.Assert( size >= 0, "CButtonModule::LighteningButtonTask: button read failed" );
+		dbg.Assert( size >= 0, "CButtonModule::LightningButtonTask: button read failed" );
 		
 		data.buttonState = current_be.button_state;
 		data.buttonTransition = current_be.button_trans;
@@ -94,7 +94,7 @@ void CButtonModule::InitModule()
 	{
 		tTaskProperties	properties;
 		properties.pTaskMainArgValues = NULL;
-		properties.TaskMainFcn = LighteningButtonTask;
+		properties.TaskMainFcn = LightningButtonTask;
 		status = kernel.CreateTask(handleButtonTask, properties);
 	}
 	dbg_.Assert( status == kNoErr, 

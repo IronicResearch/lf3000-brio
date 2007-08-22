@@ -22,9 +22,9 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-const CString	kNullString;
+const CString	kNullString = "";
 #ifndef LF_MONOLITHIC_DEBUG		// also declared in Resource module
-const CURI		kNullURI;
+const CURI		kNullURI = "";
 #endif
 
 //============================================================================
