@@ -10,7 +10,7 @@
 //		VideoMPI.h
 //
 // Description:
-//		Defines the interface for the private underlying Video module. 
+//		Defines the Module Public Interface (MPI) for the Video module. 
 //
 //==============================================================================
 

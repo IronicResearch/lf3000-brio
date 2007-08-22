@@ -141,17 +141,14 @@ U32 CDisplayModule::GetScreenSize(void)
 	r = ioctl(gDevMlc, MLC_IOCGSCREENSIZE, &c);
 	dbg_.Assert(r == 0, "DisplayModule::GetScreenSize: ioctl failed");
 
-	// TODO: struct screensize_cmd is pretty much the same thing...
 	return (U32)(((c.screensize.height)<<16)|(c.screensize.width));
 }
 
 //----------------------------------------------------------------------------
-// FIXME/dm:
-// Method is supposed to return global pixel format for display.
-// Implementation is returning pixel format for particular layer.
+// Returns pixel format of primary RGB layer
 enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 {
-	int format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
+	U32 format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
 	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
 
 	switch(format) {
@@ -164,7 +161,8 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 		case kLayerPixelFormatRGB888:
 			return kPixelFormatRGB888;
 	}
-	return kPixelFormatError;
+	// All MLC layers output same ARGB format combined
+	return kPixelARGB8888;
 }
 
 //----------------------------------------------------------------------------
@@ -173,7 +171,7 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
-	enum tLayerPixelFormat hwFormat;
+	U32 hwFormat;
 	tDisplayContext *GraphicsContext = new struct tDisplayContext;
 	U8 bpp;
 

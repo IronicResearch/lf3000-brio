@@ -10,7 +10,7 @@
 //		FontMPI.h
 //
 // Description:
-//		Defines the interface for the private underlying Font module. 
+//		Defines the Module Public Interface (MPI) for the Font module. 
 //
 //==============================================================================
 
