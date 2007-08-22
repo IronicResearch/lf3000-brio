@@ -232,15 +232,16 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 
 	platformlibs = ['DebugMPI']
 	if vars['is_emulation']:
-		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread', 'gles_cl']
+		platformlibs += ['glibmm-2.4', 'glib-2.0']
 	else:
-		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt', 'ogl']
+		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
 	fulllibs = plibs + [ptarget + 'MPI']
 	if vars['is_emulation']:
 		fulllibs += ['Emulation']
 		testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 		testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
 	if vars['is_monolithic']:
+		fulllibs += vars['is_emulation'] and ['gles_cl'] or ['ogl']
 		libpaths = [vars['mod_deploy_dir'], vars['lib_deploy_dir'], 
 					os.path.join(root_dir, 'ThirdParty/ustring/libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/MagicEyes/Libs', vars['cpu_subdir']),

@@ -7393,3 +7393,24 @@ By Dave Milici (dmilici@leapfrog.com) on 8/21/07 2:01 PM
 2,703 ms. (Cumulative: 1,475,007 ms)
 
 ----------------
+Revision 1,358 from svn://localhost/TRUNK/:
+Revision 1,359 from svn://localhost/TRUNK/:
+Revision 1,360 from svn://localhost/TRUNK/:
+Revision 1,361 from svn://localhost/TRUNK/:
+Revision 1,362 from svn://localhost/TRUNK/:
+Revision 1,363 from svn://localhost/TRUNK/:
+Revision 1,364 from svn://localhost/TRUNK/:
+Revision 1,365 from svn://localhost/TRUNK/:
+Revision 1,366 from svn://localhost/TRUNK/:
+Revision 1,367 from svn://localhost/TRUNK/:
+Revision 1,368 from svn://localhost/TRUNK/:
+Revision 1,369 from svn://localhost/TRUNK/:
+Revision 1,370 from svn://localhost/TRUNK/:
+
+Correct lib list for non-monolithic builds.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/22/07 10:23 AM
+1 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,477,836 ms)
+
+----------------
