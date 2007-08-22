@@ -162,7 +162,7 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 			return kPixelFormatRGB888;
 	}
 	// All MLC layers output same ARGB format combined
-	return kPixelARGB8888;
+	return kPixelFormatARGB8888;
 }
 
 //----------------------------------------------------------------------------
