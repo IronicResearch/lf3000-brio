@@ -45,7 +45,8 @@ LF_USING_BRIO_NAMESPACE()
 const U32	kLayerPixelFormatRGB4444 	= 0x2211; //A4R4G4B4
 const U32	kLayerPixelFormatRGB565		= 0x4432; //R5G6B5
 const U32	kLayerPixelFormatARGB8888	= 0x0653; //A8R8G8B8
-const U32	kLayerPixelFormatRGB888		= 0x4653; //R8G8B8
+const U32	kLayerPixelFormatXRGB8888	= 0x4653; //X8R8G8B8 (HStride=4)
+const U32	kLayerPixelFormatRGB888		= 0x4653; //R8G8B8 (HStride=3)
 const U32	kLayerPixelFormatYUV420		= 0xFFF0; //YUV planar	
 const U32	kLayerPixelFormatYUYV422	= 0xFFF2; //YUYV packed
 

@@ -7495,3 +7495,12 @@ By Scott Esters (SEsters@leapfrog.com) on 8/23/07 4:21 PM
 2,907 ms. (Cumulative: 1,500,616 ms)
 
 ----------------
+Revision 1,391 from svn://localhost/TRUNK/:
+
+Fixed display context pitch mixup on subsequent calls.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/23/07 4:58 PM
+3 changed, 0 added, 0 deleted.
+2,891 ms. (Cumulative: 1,503,554 ms)
+
+----------------
