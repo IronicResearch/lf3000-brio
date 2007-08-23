@@ -24,7 +24,7 @@ onto the target board via the U-Boot loader. (Refer to kernel image
 download instructions below.)
 
 	tar -xzvf zImage-svnxxxx.tar.gz
-	cp zImage-xxxx ~/tftpboot
+	cp zImage-xxxx ~/tftproot
 
 These three pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
@@ -258,7 +258,7 @@ At the U-boot prompt, test pinging the development system first.
 	
 Then download the updated kernel zImage from its TFTP location on the
 development system. On Ubuntu Linux, TFTP is typically configured
-at the ~/tftpboot directory, so this is where the zImage file needs to
+at the ~/tftproot directory, so this is where the zImage file needs to
 be copied to. The zImage file provided in releases will typically have
 some version number suffix, like zImage-xxxx.
 
@@ -273,8 +273,13 @@ To immediately test the downloaded zImage from RAM:
 	
 To flash the downloaded zImage into NAND:
 
-	nand erase clean 00080000 100000
-	nand write 02000000 00080000 100000
+	nand erase clean 00080000 111800
+	nand write 02000000 00080000 111800
+	
+Note that the size of the zImage has grown over 1 Meg since its initial release,
+so the size used for nand erase and write commands must be at least the size transfered
+via tftp rounded up to the next highest 800 (hex) multiple. For example, transfered
+bytes 11176C (hex) would be rounded up to size 111800 (hex).
 
 Either method should execute the updated Linux kernel and NFS mount the
 root file system located on the development system.
