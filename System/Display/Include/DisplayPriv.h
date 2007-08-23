@@ -38,8 +38,11 @@ const tEventPriority	kDisplayEventPriority	= 0;
 struct tDisplayContext {
 	U16 width;			// from CreateHandle
 	U16 height;
-	tPixelFormat colorDepth;
-	U16 pitch;			// based on colorDepth
+	tPixelFormat colorDepthFormat; // pixel format enum
+	U32 format;			// cached HW format code
+	U16	depth;			// bits per pixel
+	U16	bpp;			// bytes per pixel
+	U16 pitch;			// bytes per line
 	U8 *pBuffer;
 	S16 x;				// from Register()
 	S16 y;

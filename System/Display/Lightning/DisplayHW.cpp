@@ -177,7 +177,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
-	GraphicsContext->colorDepth = colorDepth;
+	GraphicsContext->colorDepthFormat = colorDepth;
 	GraphicsContext->isOverlay = false;
 
 	switch(colorDepth) {
@@ -216,9 +216,13 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		break;
 	}
 	GraphicsContext->pitch = bpp*width;
+	GraphicsContext->bpp = bpp;
+	GraphicsContext->depth = 8*bpp;
+	GraphicsContext->format = hwFormat;
 
 	// apply to device
 	int layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
+	ioctl(layer, MLC_IOCTBLEND, 0);
 	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
 	ioctl(layer, MLC_IOCTHSTRIDE, bpp);
 	ioctl(layer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
@@ -276,10 +280,14 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	c.position.right = xPos + context->width;
 	c.position.bottom = yPos + context->height;
 
+	// Reload format and stride registers for subsequent context references
 	int layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	ioctl(layer, MLC_IOCTFORMAT, context->format);
+	ioctl(layer, MLC_IOCTHSTRIDE, context->bpp);
+	ioctl(layer, MLC_IOCTVSTRIDE, context->pitch);
 	ioctl(layer, MLC_IOCSPOSITION, &c);
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
-
+	
 	// Setup scaler registers too for video overlay
 	if (context->isOverlay)
 	{
@@ -346,11 +354,11 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 		level = 100;
 	level = (level*ALPHA_STEP)/100;
 	
+	// Distinguish global vs per-pixel alpha for ARGB8888 format (bpp unchanged)
+	if (context->colorDepthFormat == kPixelFormatARGB8888)
+		ioctl(layer, MLC_IOCTFORMAT, context->format = (enable) ? kLayerPixelFormatXRGB8888 : kLayerPixelFormatARGB8888);
 	r = ioctl(layer, MLC_IOCTALPHA, level);
 	r = ioctl(layer, MLC_IOCTBLEND, enable);
-	// Distinguish global vs per-pixel alpha for ARGB8888 format (bpp unchanged)
-	if (context->colorDepth == kPixelFormatARGB8888)
-		ioctl(layer, MLC_IOCTFORMAT, (enable) ? kLayerPixelFormatRGB888 : kLayerPixelFormatARGB8888);
 	SetDirtyBit(layer);
 	return kNoErr;
 }
