@@ -59,10 +59,12 @@ public:
 	void testDisplayContext( )
 	{
 		tDisplayHandle 	handle;
+		tPixelFormat	format;
 		U8* 			buffer;
 		U16				width;
 		U16				height;
 		U16				pitch;
+		U16				depth;
 		const U16		WIDTH = 320;
 		const U16		HEIGHT = 240;
 
@@ -72,10 +74,14 @@ public:
 
 		buffer = pDisplayMPI_->GetBuffer(handle);
 		TS_ASSERT( buffer != kNull );
+		format = pDisplayMPI_->GetPixelFormat(handle);
+		TS_ASSERT( format == kPixelFormatARGB8888 );
 		width = pDisplayMPI_->GetWidth(handle);
 		TS_ASSERT( width == WIDTH );
 		pitch = pDisplayMPI_->GetPitch(handle);
 		TS_ASSERT( pitch == 4 * WIDTH );
+		depth = pDisplayMPI_->GetDepth(handle);
+		TS_ASSERT( depth == 32 );
 		height = pDisplayMPI_->GetHeight(handle);
 		TS_ASSERT( height == HEIGHT );
 
