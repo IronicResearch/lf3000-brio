@@ -48,7 +48,7 @@ namespace
 // Asynchronous notifications
 //============================================================================
 //----------------------------------------------------------------------------
-void *LighteningPowerTask(void*)
+void *LightningPowerTask(void*)
 {
 	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupPower);
@@ -59,13 +59,13 @@ void *LighteningPowerTask(void*)
 	
 	while(1) {
 
-		// Pace thread at time intervals relavant for power presses
+		// Pace thread at time intervals relavant for power events
 		kernel.TaskSleep(1);
 
 		int size = read(power_fd, &current_pe, sizeof(struct power_event));
-		dbg.Assert( size >= 0, "CPowerModule::LighteningPowerTask: power read failed" );
+		dbg.Assert( size >= 0, "CPowerModule::LightningPowerTask: power read failed" );
 		
-		data.powerState = current_pe.power_state;
+		data.powerState = current_pe.powerState;
 		CPowerMessage msg(data);
 		eventmgr.PostEvent(msg, kPowerEventPriority);
 
@@ -92,7 +92,7 @@ void CPowerModule::InitModule()
 	{
 		tTaskProperties	properties;
 		properties.pTaskMainArgValues = NULL;
-		properties.TaskMainFcn = LighteningPowerTask;
+		properties.TaskMainFcn = LightningPowerTask;
 		status = kernel.CreateTask(handlePowerTask, properties);
 	}
 	dbg_.Assert( status == kNoErr, 
