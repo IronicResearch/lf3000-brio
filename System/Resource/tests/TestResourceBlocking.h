@@ -368,7 +368,7 @@ public:
 	// FIXME/tp: Work through correct smart handles for devices/pkgs/resources.
 		
 	//------------------------------------------------------------------------
-	void testMissingRsrc( )
+	void xxxxtestMissingRsrc( )
 	{
 		tRsrcHndl		handle;
 		
@@ -392,6 +392,8 @@ public:
 	{
 		tRsrcHndl		handle;
 		ConstPtrCURI	pURI;
+		const CPath*	pPath;
+		CPath			dir = GetPackedRsrcFolder();
 		tPtr			ptr = (void*) 1;
 
 		const U32		kSizeHelloWorldText	= 21;
@@ -403,6 +405,10 @@ public:
 		TS_ASSERT_DIFFERS( kInvalidRsrcHndl, handle );
 		pURI = rsrcmgr_->GetURI(handle);
 		TS_ASSERT_EQUALS( "LF/Brio/UnitTest/Resource/B/one", *pURI );
+		pPath = rsrcmgr_->GetPackagePath(hPkg);
+		TS_ASSERT_EQUALS( dir, *pPath );
+		pPath = rsrcmgr_->GetPath(handle);
+		TS_ASSERT_EQUALS( "app1.txt", *pPath );
 //		type = rsrcmgr_->GetType(handle);
 //		TS_ASSERT_EQUALS( type, kTextFile );
 		TS_ASSERT_EQUALS( 1, rsrcmgr_->GetVersion(handle) );
@@ -573,6 +579,7 @@ public:
 		rsrcmgr_->SetDefaultURIPath(gPkgC);
 		tPackageHndl hPkg = rsrcmgr_->FindPackage("AddTest");
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->OpenPackage(hPkg) );
+		TS_ASSERT_EQUALS( dir, *rsrcmgr_->GetPackagePath(hPkg) );
 		TS_ASSERT_EQUALS( 5UL, rsrcmgr_->GetNumRsrcs() );
 		handle = rsrcmgr_->FindRsrc("bookish2");
 		TS_ASSERT_EQUALS( kInvalidRsrcHndl, handle );
@@ -590,6 +597,7 @@ public:
 		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetPackedSize(handle) );
 		TS_ASSERT_EQUALS( 0UL, rsrcmgr_->GetUnpackedSize(handle) );
 		TS_ASSERT_EQUALS( kFullURI, *rsrcmgr_->GetURI(handle) );
+		TS_ASSERT_EQUALS( "ZZ_", *rsrcmgr_->GetPath(handle) );
 		TS_ASSERT_EQUALS( 6UL, rsrcmgr_->GetNumRsrcs() );
 		
 		TS_ASSERT_EQUALS( kNoErr, rsrcmgr_->ClosePackage(hPkg) );	// Validate that package file is persisted

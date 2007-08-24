@@ -101,6 +101,7 @@ public:
 
 	// Getting package info
 	VTABLE_EXPORT	const CURI*		GetPackageURI(U32 id, tPackageHndl hndl) const;
+	VTABLE_EXPORT	const CPath*	GetPackagePath(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	ePackageType	GetPackageType(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	tVersion		GetPackageVersion(U32 id, tPackageHndl hndl) const;
 	VTABLE_EXPORT	U32				GetPackageSizeUnpacked(U32 id, tPackageHndl hndl) const;
@@ -132,6 +133,7 @@ public:
 
 	// Getting rsrc info
 	VTABLE_EXPORT	const CURI*		GetURI(U32 id, tRsrcHndl hndl) const;
+	VTABLE_EXPORT	const CPath*	GetPath(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	tRsrcType		GetType(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	tVersion		GetVersion(U32 id, tRsrcHndl hndl) const;
 	VTABLE_EXPORT	U32				GetPackedSize(U32 id, tRsrcHndl hndl) const;

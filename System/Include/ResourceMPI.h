@@ -94,6 +94,7 @@ public:
 	// Getting package info
 	// FIXME/tp: Need Package Name???
 	const CURI*		GetPackageURI(tPackageHndl hndl) const;
+	const CPath*	GetPackagePath(tPackageHndl hndl) const;
 	ePackageType	GetPackageType(tPackageHndl hndl) const;
 	tVersion		GetPackageVersion(tPackageHndl hndl) const;
 //	U32				GetPackageSizeUnpacked(tPackageHndl hndl) const;
@@ -125,6 +126,7 @@ public:
 
 	// Getting rsrc info
 	const CURI*		GetURI(tRsrcHndl hndl) const;
+	const CPath*	GetPath(tRsrcHndl hndl) const;
 	tRsrcType		GetType(tRsrcHndl hndl) const;
 	tVersion		GetVersion(tRsrcHndl hndl) const;
 	U32				GetPackedSize(tRsrcHndl hndl) const;
