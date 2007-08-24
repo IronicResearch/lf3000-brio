@@ -331,15 +331,27 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 }
 
 //----------------------------------------------------------------------------
-U8 *CDisplayModule::GetBuffer(tDisplayHandle hndl) const
+U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pBuffer;
+}
+
+//----------------------------------------------------------------------------
+tPixelFormat CDisplayModule::GetPixelFormat(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->colorDepthFormat;
 }
 
 //----------------------------------------------------------------------------
 U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pitch;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->depth;
 }
 
 //----------------------------------------------------------------------------
@@ -361,6 +373,15 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 	r = ioctl(layer, MLC_IOCTBLEND, enable);
 	SetDirtyBit(layer);
 	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+U8 CDisplayModule::GetAlpha(tDisplayHandle hndl) const
+{
+	struct tDisplayContext *context = (struct tDisplayContext *)hndl;
+	int layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	int alpha = ioctl(layer, MLC_IOCQALPHA, 0);
+	return (alpha < 0) ? 0 : (alpha*100)/ALPHA_STEP;
 }
 
 //----------------------------------------------------------------------------

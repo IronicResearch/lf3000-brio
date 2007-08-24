@@ -220,12 +220,28 @@ tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
 	return pModule_->UnlockBuffer(hndl, pDirtyRect);
 }
 
+//----------------------------------------------------------------------------
+tPixelFormat CDisplayMPI::GetPixelFormat(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return kPixelFormatError;
+	return pModule_->GetPixelFormat(hndl);
+}
 
+//----------------------------------------------------------------------------
 U16 CDisplayMPI::GetPitch(tDisplayHandle hndl) const
 {
 	if(!pModule_)
-		return kMPINotConnectedErr;
+		return 0;
 	return pModule_->GetPitch(hndl);
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayMPI::GetDepth(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetDepth(hndl);
 }
 
 //----------------------------------------------------------------------------
@@ -234,6 +250,14 @@ tErrType CDisplayMPI::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 	if(!pModule_)
 		return kMPINotConnectedErr;
 	return pModule_->SetAlpha(hndl, level, enable);
+}
+
+//----------------------------------------------------------------------------
+U8 CDisplayMPI::GetAlpha(tDisplayHandle hndl) const
+{
+	if(!pModule_)
+		return 0;
+	return pModule_->GetAlpha(hndl);
 }
 
 //----------------------------------------------------------------------------

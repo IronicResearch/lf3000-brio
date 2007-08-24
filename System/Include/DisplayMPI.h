@@ -55,9 +55,15 @@ public:
 	// Returns the buffer address in user memory space of the display surface
 	U8*                 GetBuffer(tDisplayHandle hndl) const;
 
+	// Returns the pixel format enum of the display surface
+	tPixelFormat		GetPixelFormat(tDisplayHandle hndl) const;
+	
 	// Returns the bytes per scanline pitch (stride) of the display surface
 	U16                 GetPitch(tDisplayHandle hndl) const;
 	
+	// Returns the bits per pixel depth of the display surface
+	U16                 GetDepth(tDisplayHandle hndl) const;
+
 	// Returns the height of the display surface
 	U16                 GetHeight(tDisplayHandle hndl) const;
 	
@@ -89,6 +95,9 @@ public:
 	// Sets the alpha transparency value for the display surface layer
 	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
 								Boolean enable=true);
+
+	// Returns the alpha transparency value of the display surface layer
+	U8                  GetAlpha(tDisplayHandle hndl) const;
 
 	// OpenGL context interface
 	//=========================

@@ -159,7 +159,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 	dc->width = width;
 	dc->height = height;
-	dc->colorDepth = colorDepth;
+	dc->colorDepthFormat = colorDepth;
+	dc->depth = depth;
+	dc->bpp = depth/8;
 
 	// TODO/dm: Bind these to display context
 	/* Pixmap */ pixmap = XCreatePixmap(x11Display, x11Window, width, height, depth);
@@ -286,10 +288,30 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 }
 
 //----------------------------------------------------------------------------
+U8 CDisplayModule::GetAlpha(tDisplayHandle hndl) const
+{
+	return 0;
+}
+
+//----------------------------------------------------------------------------
+tPixelFormat CDisplayModule::GetPixelFormat(tDisplayHandle hndl) const
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	return dc->colorDepthFormat;
+}
+
+//----------------------------------------------------------------------------
 U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
 	return dc->pitch;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	return dc->depth;
 }
 
 //----------------------------------------------------------------------------

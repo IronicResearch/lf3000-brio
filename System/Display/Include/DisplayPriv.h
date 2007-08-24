@@ -69,7 +69,9 @@ public:
 	VTABLE_EXPORT tDisplayHandle	CreateHandle(U16 height, U16 width, 
 												tPixelFormat colorDepth, U8 *pBuffer);
 	VTABLE_EXPORT U8*				GetBuffer(tDisplayHandle hndl) const;
+	VTABLE_EXPORT tPixelFormat		GetPixelFormat(tDisplayHandle hndl) const;
 	VTABLE_EXPORT U16				GetPitch(tDisplayHandle hndl) const;
+	VTABLE_EXPORT U16				GetDepth(tDisplayHandle hndl) const;
 	VTABLE_EXPORT U16				GetHeight(tDisplayHandle hndl) const;
 	VTABLE_EXPORT U16 				GetWidth(tDisplayHandle hndl) const;
 	
@@ -87,6 +89,7 @@ public:
 	VTABLE_EXPORT tErrType			UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect);
 	VTABLE_EXPORT tErrType 			SetAlpha(tDisplayHandle hndl, U8 level,
 														Boolean enable=true);
+	VTABLE_EXPORT U8 				GetAlpha(tDisplayHandle hndl) const;
 	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
 	VTABLE_EXPORT void    			DeinitOpenGL();
 	VTABLE_EXPORT void    			EnableOpenGL();
