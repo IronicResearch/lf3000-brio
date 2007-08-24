@@ -7526,3 +7526,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/07 2:23 PM
 2,813 ms. (Cumulative: 1,509,617 ms)
 
 ----------------
+Revision 1,398 from svn://localhost/TRUNK/:
+
+Fixed driver parameter reference, plus minor typos.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/07 2:37 PM
+1 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,512,383 ms)
+
+----------------
