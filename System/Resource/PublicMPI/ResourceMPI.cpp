@@ -229,6 +229,13 @@ const CURI* CResourceMPI::GetPackageURI(tPackageHndl hndl) const
 	return pModule_->GetPackageURI(id_, hndl);
 }
 //----------------------------------------------------------------------------
+const CPath* CResourceMPI::GetPackagePath(tPackageHndl hndl) const
+{
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetPackagePath(id_, hndl);
+}
+//----------------------------------------------------------------------------
 ePackageType CResourceMPI::GetPackageType(tPackageHndl hndl) const
 {
 	if(!pModule_)
@@ -338,6 +345,13 @@ const CURI* CResourceMPI::GetURI(tRsrcHndl hndl) const
 	if(!pModule_)
 		return &kNullURI;
 	return pModule_->GetURI(id_, hndl);
+}
+//----------------------------------------------------------------------------
+const CPath* CResourceMPI::GetPath(tRsrcHndl hndl) const
+{
+	if(!pModule_)
+		return &kNullString;
+	return pModule_->GetPath(id_, hndl);
 }
 //----------------------------------------------------------------------------
 tRsrcType CResourceMPI::GetType(tRsrcHndl hndl) const

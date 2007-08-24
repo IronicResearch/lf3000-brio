@@ -1083,6 +1083,12 @@ const CURI* CResourceModule::GetPackageURI(U32 id, tPackageHndl hndl) const
 	return ppd ? &(ppd->uri) : &kNullURI;
 }
 //----------------------------------------------------------------------------
+const CPath* CResourceModule::GetPackagePath(U32 id, tPackageHndl hndl) const
+{
+	const PackageDescriptor* ppd = FindPackagePriv(id, hndl);
+	return ppd ? &(ppd->folder) : &kNullString;
+}
+//----------------------------------------------------------------------------
 ePackageType CResourceModule::GetPackageType(U32 id, tPackageHndl hndl) const
 {
 	const PackageDescriptor* ppd = FindPackagePriv(id, hndl);
@@ -1354,6 +1360,13 @@ const CURI* CResourceModule::GetURI(U32 id, tRsrcHndl hndl) const
 {
 	const ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
 	return prd ? &(prd->uri) : &kNullURI;
+}
+
+//----------------------------------------------------------------------------
+const CPath* CResourceModule::GetPath(U32 id, tRsrcHndl hndl) const
+{
+	const ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
+	return prd ? &(prd->path) : &kNullString;
 }
 
 //----------------------------------------------------------------------------

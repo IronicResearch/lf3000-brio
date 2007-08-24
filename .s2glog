@@ -7516,3 +7516,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/23/07 6:29 PM
 3,078 ms. (Cumulative: 1,506,726 ms)
 
 ----------------
+Revision 1,396 from svn://localhost/TRUNK/:
+Revision 1,397 from svn://localhost/TRUNK/:
+
+Added GetPath() methods to Resource MPI.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/07 2:23 PM
+5 changed, 0 added, 0 deleted.
+2,813 ms. (Cumulative: 1,509,617 ms)
+
+----------------
