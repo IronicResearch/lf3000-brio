@@ -292,6 +292,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 			break;
 	
 		case kAudioRsrcOggVorbis:
+		case kAudioRsrcOggTheora:
 			gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
 				"AudioTask::DoStartAudio -- Create VorbisPlayer\n");
 			pPlayer = new CVorbisPlayer( pAudioInfo, newID );

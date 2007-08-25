@@ -7535,3 +7535,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/07 2:37 PM
 2,688 ms. (Cumulative: 1,512,383 ms)
 
 ----------------
+Revision 1,399 from svn://localhost/TRUNK/:
+
+Added "AVOG" audio type for extracting OggVorbis audio from OggTheora interleaved video. 
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/07 7:08 PM
+6 changed, 3 added, 0 deleted.
+3,219 ms. (Cumulative: 1,515,664 ms)
+
+----------------

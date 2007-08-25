@@ -84,7 +84,7 @@ def CreateEnvironment(opts, vars):
 	platform_toolset = vars['platform'] + (vars['is_emulation'] and '_emulation' or '_embedded')
 
 	env = SCons.Environment.Environment(options  = opts,
-							tools = ['default', platform_toolset, 'cxxtest', 'runtest', 'checkheader', 'oggenc'], 
+							tools = ['default', platform_toolset, 'cxxtest', 'runtest', 'checkheader', 'oggenc', 'oggext'], 
 							toolpath = [toolpath],
 					 )
 	env.Append(CPPDEFINES = ['LF2530BROWN'])
@@ -191,7 +191,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 #-------------------------------------------------------------------------
 # Hooks to encoders
 #-------------------------------------------------------------------------
-sEnv		= SCons.Environment.Environment(tools = ['oggenc', 'rawenc'], 
+sEnv		= SCons.Environment.Environment(tools = ['oggenc', 'rawenc', 'oggext'], 
 							toolpath = [toolpath])
 
 #-------------------------------------------------------------------------
@@ -262,7 +262,8 @@ def SetupTypeConversionMap():
 			  'wav'		: 1024 *  1 + 3,
 			  'R'		: 1024 *  1 + 3,		# for ACME
 			  'raw'		: 1024 *  1 + 3,		# for ACME
-			  'txt'		: 1024 *  4 + 1,	# Common Group
+			  'avog'    : 1024 *  1 + 4,
+              'txt'		: 1024 *  4 + 1,	# Common Group
 			  'bin'		: 1024 *  4 + 2,
 			  'json'	: 1024 *  4 + 3,
 			  'so'		: 1024 *  4 + 4,
@@ -275,6 +276,7 @@ def SetupTypeConversionMap():
 			  'font'	: 1024 *  7 + 1,	# Font Group
 			  'ttf'		: 1024 *  7 + 1,
 			  'ogg'		: 1024 * 14 + 1,	# Video Group
+			  'vogg'	: 1024 * 14 + 2,
 			  }
 	return types
 		
@@ -297,8 +299,10 @@ def PackFile(pkg, srcfile, pack_root, type, compression, rate):
 	#    already processed destination file
 	# 2) Create output file path
 	# 3) Add the new output file to the Source->Dest map, return it
+    #    (Not applicable to OGG Theora->Vorbis extraction) 
 	# 4) Invoke OGG encoder
 	# 5) Invoke utility that converts WAV to RAW PCM w/Brio header
+	# 6) Invoke utility that extracts OGG Vorbis from OGG Theora
 	# A) No encoder needed, just copy the file
 	#
 	if sSourceToDestMap.has_key(srcfile):							#1
@@ -311,7 +315,8 @@ def PackFile(pkg, srcfile, pack_root, type, compression, rate):
 			outname = "App.so"
     
 	outfile = os.path.join(pack_root, outname)
-	sSourceToDestMap[srcfile] = outfile								#3
+	if type != (1024*14+1):
+		sSourceToDestMap[srcfile] = outfile							#3
 	
 	if type == 1026 and rate != '':									#4
 		enc = sEnv.OggEnc(outfile, srcfile, OGGENC_RATE=rate, OGGENC_COMPRESSION=compression)
@@ -319,6 +324,9 @@ def PackFile(pkg, srcfile, pack_root, type, compression, rate):
 	elif type == 1027:												#5
 		enc = sEnv.RawEnc(outfile, srcfile)
 		
+	elif type == 1028 and rate != '':							    #6
+		enc = sEnv.OggExt(outfile, srcfile)
+
 	else:
 		enc = sEnv.Command(outfile, srcfile, [SCons.Defaults.Copy('$TARGET', '$SOURCE')])	#A
 		
