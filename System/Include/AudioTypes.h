@@ -94,6 +94,7 @@ typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
 const tRsrcType kAudioRsrcMIDI = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 1);
 const tRsrcType kAudioRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 2);
 const tRsrcType kAudioRsrcRaw = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 3);
+const tRsrcType kAudioRsrcOggTheora = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 4);
 
 // Standard header for raw Brio audio resources 
 struct tAudioHeader {

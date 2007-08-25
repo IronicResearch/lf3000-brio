@@ -14,5 +14,7 @@ if vars['is_export']:
 	sources =  glob.glob('Tools/SConsTools/*.py')
 	env.Install(dest_dir, sources)
 	env.Install(dest_dir, 'Tools/oggenc')
+	env.Install(dest_dir, 'Tools/oggenc-aotuvb5')
+	env.Install(dest_dir, 'Tools/ffmpeg')
 	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
 	
