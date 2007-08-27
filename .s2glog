@@ -7581,3 +7581,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/27/07 12:37 PM
 3,203 ms. (Cumulative: 1,521,778 ms)
 
 ----------------
+Revision 1,420 from svn://localhost/TRUNK/:
+
+Add CPU specific gcc option (-mcpu=arm926ej-s) to embedded build.
+
+By dgibbs (dgibbs@leapfrog.com) on 8/27/07 1:11 PM
+1 changed, 0 added, 0 deleted.
+2,656 ms. (Cumulative: 1,524,481 ms)
+
+----------------
