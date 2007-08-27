@@ -7567,3 +7567,17 @@ By ayurovsky (ayurovsky@leapfrog.com) on 8/26/07 7:43 PM
 2,645 ms. (Cumulative: 1,518,465 ms)
 
 ----------------
+Revision 1,414 from svn://localhost/TRUNK/:
+Revision 1,415 from svn://localhost/TRUNK/:
+Revision 1,416 from svn://localhost/TRUNK/:
+Revision 1,417 from svn://localhost/TRUNK/:
+Revision 1,418 from svn://localhost/TRUNK/:
+Revision 1,419 from svn://localhost/TRUNK/:
+
+Added ffmpeg .so libs for ffmpeg tool.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/27/07 12:37 PM
+1 changed, 3 added, 0 deleted.
+3,203 ms. (Cumulative: 1,521,778 ms)
+
+----------------
