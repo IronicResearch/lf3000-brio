@@ -7590,3 +7590,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/27/07 1:11 PM
 2,656 ms. (Cumulative: 1,524,481 ms)
 
 ----------------
+Revision 1,421 from svn://localhost/TRUNK/:
+
+Add symlinks to ffmpeg versioned libs.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/27/07 1:56 PM
+1 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,527,232 ms)
+
+----------------
