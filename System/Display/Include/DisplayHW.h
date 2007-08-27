@@ -26,8 +26,13 @@ LF_USING_BRIO_NAMESPACE()
 #define OGL_LAYER_DEV	"/dev/layer1"
 
 // layer to be used by DisplayManager for Video YUV
+#ifdef LF1000
+#define YUV_LAYER_ID	2
+#define YUV_LAYER_DEV	"/dev/layer2"
+#else
 #define YUV_LAYER_ID	3
 #define YUV_LAYER_DEV	"/dev/layer3"
+#endif
 
 // pins used for LCD and board-specific tasks
 #ifdef  ME2530

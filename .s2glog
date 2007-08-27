@@ -7544,3 +7544,26 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/07 7:08 PM
 3,219 ms. (Cumulative: 1,515,664 ms)
 
 ----------------
+Revision 1,400 from svn://localhost/TRUNK/:
+Revision 1,401 from svn://localhost/TRUNK/:
+Revision 1,402 from svn://localhost/TRUNK/:
+Revision 1,403 from svn://localhost/TRUNK/:
+Revision 1,404 from svn://localhost/TRUNK/:
+Revision 1,405 from svn://localhost/TRUNK/:
+Revision 1,406 from svn://localhost/TRUNK/:
+Revision 1,407 from svn://localhost/TRUNK/:
+Revision 1,408 from svn://localhost/TRUNK/:
+Revision 1,409 from svn://localhost/TRUNK/:
+Revision 1,410 from svn://localhost/TRUNK/:
+Revision 1,411 from svn://localhost/TRUNK/:
+Revision 1,412 from svn://localhost/TRUNK/:
+Revision 1,413 from svn://localhost/TRUNK/:
+
+fix layer number for YUV on LF1000 platform_variant
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 8/26/07 7:43 PM
+1 changed, 0 added, 0 deleted.
+2,645 ms. (Cumulative: 1,518,465 ms)
+
+----------------
