@@ -7,6 +7,7 @@ Import('*')
 
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
+# FIXME/dm: Better way for handling symlinks, like Python 'symlink()'?
 #-----------------------------------------------------------------------------
 if vars['is_export']:
 	platform = vars['platform']
@@ -19,5 +20,11 @@ if vars['is_export']:
 	env.Install(dest_dir, 'Tools/libavcodec.so.0d.51.11.0')
 	env.Install(dest_dir, 'Tools/libavformat.so.0d.50.5.0')
 	env.Install(dest_dir, 'Tools/libavutil.so.0d.49.0.0')
+	if None == env.FindFile('libavcodec.so.0d', dest_dir):
+		env.Command(dest_dir + '/libavcodec.so.0d', dest_dir + '/libavcodec.so.0d.51.11.0', 'ln -s $SOURCE $TARGET')
+	if None == env.FindFile('libavformat.so.0d', dest_dir):
+		env.Command(dest_dir + '/libavformat.so.0d', dest_dir + '/libavformat.so.0d.50.5.0', 'ln -s $SOURCE $TARGET')
+	if None == env.FindFile('libavutil.so.0d', dest_dir):
+		env.Command(dest_dir + '/libavutil.so.0d', dest_dir + '/libavutil.so.0d.49.0.0', 'ln -s $SOURCE $TARGET')
 	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
 	
