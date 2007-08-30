@@ -7634,3 +7634,12 @@ By dgibbs (dgibbs@leapfrog.com) on 8/30/07 2:35 PM
 2,750 ms. (Cumulative: 1,535,717 ms)
 
 ----------------
+Revision 1,436 from svn://localhost/TRUNK/:
+
+Changed time functions in order to get time in the emulation and embedded modes identically
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 8/30/07 2:54 PM
+3 changed, 0 added, 0 deleted.
+2,750 ms. (Cumulative: 1,538,514 ms)
+
+----------------
