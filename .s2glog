@@ -7622,3 +7622,15 @@ By Dave Milici (dmilici@leapfrog.com) on 8/29/07 7:52 PM
 2,860 ms. (Cumulative: 1,532,873 ms)
 
 ----------------
+Revision 1,432 from svn://localhost/TRUNK/:
+Revision 1,433 from svn://localhost/TRUNK/:
+Revision 1,434 from svn://localhost/TRUNK/:
+Revision 1,435 from svn://localhost/TRUNK/:
+
+Add profiling code for ARM target using HighResolutionTimer.  Turn on/off with #define in VorbisPlayer.h
+
+By dgibbs (dgibbs@leapfrog.com) on 8/30/07 2:35 PM
+2 changed, 0 added, 0 deleted.
+2,750 ms. (Cumulative: 1,535,717 ms)
+
+----------------

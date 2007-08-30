@@ -119,6 +119,13 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 //	printf("VorbisPlayer::ctor -- OggVorbis file's PCM length is %ld.\n", (long)length );
 	
 //	printf("VorbisPlayer::ctor -- CVorbisPlayer::ctor Header flags:%d\n", optionsFlags_);
+
+#if PROFILE_DECODE_LOOP
+	totalUsecs_ = 0;
+	minUsecs_ = 1000000;
+	maxUsecs_ = 0;
+	totalBytes_ = 0;
+#endif
 }
 
 //==============================================================================
@@ -150,7 +157,7 @@ CVorbisPlayer::~CVorbisPlayer()
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		" CVorbisPlayer::dtor -- vaporizing...\n");
-
+	
 	// Free debug MPI
 	if (pDebugMPI_)
 		delete pDebugMPI_;
@@ -336,11 +343,11 @@ U32 CVorbisPlayer::GetAudioTime( void )
 //==============================================================================
 //==============================================================================
 void CVorbisPlayer::SendDoneMsg( void ) {
-	const tEventPriority	kPriorityTBD = 0;
+	const tEventPriority	kPriorityTBD = 130;
 	tAudioMsgAudioCompleted	data;
 
 	data.audioID = id_;
-	data.payload = 101;	// dummy
+	data.payload = 1;	// dummy
 	data.count = 1;
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
@@ -365,6 +372,10 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	char* 	bufferPtr = kNull;
 	S16*	pCurSample;
 	U32		framesRead = 0;
+
+#if PROFILE_DECODE_LOOP
+	U32		startTime, endTime, elapsedTime;
+#endif
 	
 	result = pKernelMPI_->TryLockMutex( render_mutex_ );
 	
@@ -380,6 +391,9 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	else
 		bytesToRead = numStereoFrames * 2;		// 16bit mono
 	
+#if	PROFILE_DECODE_LOOP
+	pKernelMPI_->GetHRTAsUsec( startTime );
+#endif	
 	// We may have to read multiple times because vorbis doesn't always
 	// give you what you ask for.
 	bufferPtr = (char*)pPcmBuffer_;
@@ -411,7 +425,30 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	 	bufferPtr += bytesRead;
 	}
 
-//	printf("Vorbis Player::RenderBuffer: read loop got %u total bytes.\n\n ", bytesRead);
+#if	PROFILE_DECODE_LOOP
+	pKernelMPI_->GetHRTAsUsec( endTime );
+
+	if (endTime > startTime) {
+		elapsedTime = endTime - startTime;
+		if (elapsedTime < minUsecs_)
+			minUsecs_ = elapsedTime;
+		if (elapsedTime > maxUsecs_)
+			maxUsecs_ = elapsedTime;
+		
+		totalUsecs_ += elapsedTime;
+		totalBytes_ += totalBytesRead;
+	}
+	
+
+	// 1KB of mono 16KHz = 32ms of data
+	if ( totalBytes_ == 1024 ) {
+		printf("Vorbis Player::RenderBuffer: Accumulated %lu total bytes.\n\n ", (long unsigned int)totalBytes_);
+		printf("Vorbis Player::RenderBuffer: this took %lu usecs.\n\n ", (long unsigned int)totalUsecs_ );
+		printf("Utilization (assuming 16KHz mono data): %f\n", (float)(totalUsecs_/(float)32000));  
+		totalUsecs_ = 0;
+		totalBytes_ = 0;
+	}
+#endif
 
 	// Convert bytes back into sample frames
 	if (hasStereoData_)

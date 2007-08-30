@@ -25,6 +25,10 @@
 #include "tremor/ivorbisfile.h"
 LF_BEGIN_BRIO_NAMESPACE()
 
+
+// Enable this to generate timing/profiling output for Vorbis decode
+#define PROFILE_DECODE_LOOP		0
+
 //==============================================================================
 // Class:
 //		CVorbisPlayer
@@ -91,6 +95,13 @@ private:
 										// because it's in a different thread.
 	U32				filePos_;			// position in the vorbis byte stream
 	Boolean			shouldLoop_;				// should the file loop when it reaches the end?
+	
+#if	PROFILE_DECODE_LOOP
+	S32				totalUsecs_;
+	S32				totalBytes_;
+	U32				minUsecs_;
+	U32				maxUsecs_;
+#endif
 };
 
 LF_END_BRIO_NAMESPACE()
