@@ -111,7 +111,7 @@ public:
     	return curDir;
     }
 
-	void testGetHRTAsUsec()
+	void xtestGetHRTAsUsec()
 	{
 		ptintf_test_info("testGetHRTAsUsec. Only Board Test ");
 
@@ -151,7 +151,7 @@ public:
 		}	
 	}
 	
-	void testGetElapsedAsSec()
+	void xtestGetElapsedAsSec()
 	{
 		ptintf_test_info("testGetElapsedAsSec. Only Board Test. Test takes 10 sec");
 
@@ -187,7 +187,7 @@ public:
 
 	}
 
-	void testGetElapsedTimeAsStructure()
+	void xtestGetElapsedTimeAsStructure()
 	{
 		ptintf_test_info("testGetElapsedTimeAsStructure. Only Board Test. Test takes 10 sec");
 

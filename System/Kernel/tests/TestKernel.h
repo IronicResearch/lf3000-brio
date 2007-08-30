@@ -1006,9 +1006,9 @@ public:
     	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
     }
 
-	void xtestGetHRTAsUsec()
+	void testGetHRTAsUsec()
 	{
-		ptintf_test_info("testGetHRTAsUsec. ");
+		ptintf_test_info("testGetHRTAsUsec.");
 
 		U32 uSec;
 		U32 uSecPrev;
@@ -1046,7 +1046,7 @@ public:
 		}	
 	}
 	
-	void xtestGetElapsedAsSec()
+	void testGetElapsedAsSec()
 	{
 		ptintf_test_info("testGetElapsedAsSec. Test takes 10 sec");
 
@@ -1082,7 +1082,7 @@ public:
 
 	}
 
-	void xtestGetElapsedTimeAsStructure()
+	void testGetElapsedTimeAsStructure()
 	{
 		ptintf_test_info("testGetElapsedTimeAsStructure. Test takes 10 sec");
 
@@ -1103,10 +1103,9 @@ public:
 			nanosleep( &sleeptime, NULL );
 			err = KernelMPI->GetElapsedTimeAsStructure(curTime);
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-//		    printf("i= %4d DT=%u\n", i, (unsigned int)(curTime.sec - curTimePrev.sec));
-
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		
+#if 0 // FIXME/BSK
+		    printf("i= %4d DT=%u\n", i, (unsigned int)(curTime.sec - curTimePrev.sec));
+#endif
 			if( curTime.sec - curTimePrev.sec < 0 )
         	{
 				curTimePrev = curTime;
@@ -1129,8 +1128,8 @@ public:
 			fflush(stdout);		
 #endif        
 		}	
+
 	}
-    
 // =========================================================
 	void ptintf_test_info( char *pName )
 	{

@@ -16,22 +16,22 @@
 #include <sched.h>
 #include <stdlib.h>
 #include <math.h>
-#include <stdio.h>
-#include <errno.h>
+//#include <stdio.h>
+//#include <errno.h>
 #include <sys/time.h>	// for gettimeofday()
 #include <unistd.h>
 #include <sys/types.h>
 #include <assert.h>
-#include <stdarg.h>
+//#include <stdarg.h>
 #include <signal.h>
 #include <linux/rtc.h>
 #include <sys/ioctl.h>
 #include <mqueue.h>
 
-#include <SystemTypes.h>
+//#include <SystemTypes.h>
 #include <SystemErrors.h>
-#include <StringTypes.h>
-#include <CoreMPI.h>
+//#include <StringTypes.h>
+//#include <CoreMPI.h>
 #include <KernelMPI.h>
 #include <KernelPriv.h>
 
@@ -65,6 +65,8 @@ static CKernelModule*	sinst = NULL;
 //==============================================================================
 namespace
 {
+    // \ name Unnamed
+//@{
 	int pthreadTimer = 0; 
 	pthread_mutex_t mutexValue_1 = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_t mutexValue_2 = PTHREAD_MUTEX_INITIALIZER;
@@ -110,6 +112,7 @@ struct equal_id : public binary_function<ListData*, int, bool>
 
 	static list<ListData *> listMemory;
 
+//@}
 }
 	
 //==============================================================================
@@ -707,6 +710,8 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 	{
 		tErrType err = 0; 
 		errno = 0;
+
+#ifndef EMULATION
 		const char *rtc = default_rtc;
 		struct rtc_pll_info rtc_timer;  // struct rtc_pll_info{
 										//	int pll_ctrl;     placeholder for fancier control 
@@ -747,6 +752,16 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		fflush(stdout);       
 #endif        		
 		return err; // FIXME/BSK	
+#else
+    	timeval time;
+
+		gettimeofday( &time, NULL ); 	// No errors are defined.
+
+		uSec =  ( ((U64 )time.tv_sec) * 1000000 + time.tv_usec);
+
+		return err;
+#endif	// EMULATION
+
 	}	 
 
 	// Elapsed time since System startup in seconds
@@ -754,6 +769,8 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 	{
 
 		tErrType err = 0;  
+
+#ifndef EMULATION
 		int fd;
 		const char *rtc = default_rtc;
 		struct rtc_pll_info rtc_timer;
@@ -779,13 +796,23 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		ASSERT_POSIX_CALL( err );
 
 		return err; // FIXME/BSK	
+#else
+		timeval time;
+		gettimeofday( &time, NULL ); 	// No errors are defined.
+		sec =  time.tv_sec;
+
+		return err;
+		
+#endif	// EMULATION
+
 	}		 
 
 	// Elapsed time since System startup as structure
 	tErrType		CKernelModule::GetElapsedTimeAsStructure(Current_Time &curTime) const
 	{
-
 		tErrType err = 0;  
+
+#ifndef EMULATION
 		int fd;
 		const char *rtc = default_rtc;
 
@@ -808,6 +835,31 @@ U64	CKernelModule::GetElapsedTimeAsUSecs()
 		ASSERT_POSIX_CALL( err );
 
 		return err; // FIXME/BSK	
+#else
+			time_t now;
+			struct tm *tmstruct;		
+
+			errno = 0;
+			time(&now);
+			tmstruct = localtime( &now );
+			ASSERT_POSIX_CALL( errno );
+			
+			curTime.sec  = tmstruct->tm_sec;
+			curTime.min  = tmstruct->tm_min;
+			curTime.hour = tmstruct->tm_hour;
+			curTime.mday = tmstruct->tm_mday;
+			curTime.mon  = tmstruct->tm_mon;
+			curTime.year = tmstruct->tm_year;
+
+#if 0 // FIXME/BSK			
+			printf("\n\n Linux Local time time is %d-%d-%d, %02d:%02d:%02d.\n",
+				tmstruct->tm_mday, tmstruct->tm_mon, tmstruct->tm_year + 1900,
+					tmstruct->tm_hour, tmstruct->tm_min, tmstruct->tm_sec);
+			fflush(stdout);		
+#endif
+			return err;
+			
+#endif	// EMULATION
 	}	
 
 //------------------------------------------------------------------------------
@@ -857,7 +909,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	ASSERT_POSIX_CALL( err );
 
     // Initialize the sigaction structure for handler 
-	if( pthreadTimer >1 )
+	if( pthreadTimer > 1 )
 	{
     	/* Setup signal to repond to handler */
     	struct sigaction act;
