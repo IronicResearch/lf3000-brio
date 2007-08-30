@@ -126,7 +126,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void xxxxtestVideoDisplay()
+	void testVideoDisplay()
 	{
 		tRsrcHndl	pkg;
 		tRsrcHndl	handle1;
@@ -143,6 +143,7 @@ public:
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
@@ -176,6 +177,7 @@ public:
 		}
 		
 		pVideoMPI_->StopVideo(video);
+		sleep(1);
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
@@ -204,7 +206,8 @@ public:
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
-		
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+				
 		pResourceMPI_ = new CResourceMPI;
 		pResourceMPI_->OpenAllDevices();
 		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");

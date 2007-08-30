@@ -17,6 +17,7 @@
 #include <GroupEnumeration.h>
 #include <EventMessage.h>
 #include <SystemEvents.h>
+#include <DisplayTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -46,6 +47,7 @@ struct tVideoSurf {
 	U32		height;
 	U32		pitch;
 	U8*		buffer;
+	tPixelFormat format;
 };
 
 // Video time frame
