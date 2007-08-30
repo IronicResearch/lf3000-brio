@@ -467,13 +467,23 @@ Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 }
 
 //----------------------------------------------------------------------------
+// YUV to RGB color conversion: <http://en.wikipedia.org/wiki/YUV>
+inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8>(X); }
+inline	S16 C(U8 Y)  			{ return (Y - 16); }
+inline 	S16 D(U8 U)  			{ return (U - 128); }
+inline 	S16 E(U8 V)  			{ return (V - 128); }
+inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
+inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
+inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+
+//----------------------------------------------------------------------------
 Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
 	theora_decode_YUVout(&td,&yuv);
 
-	// Pack into YUYV format surface
+	// Pack into YUV or RGB format surface
 	tVideoSurf*	surf = pCtx;
 	U8* 		s = yuv.y;
 	U8*			u = yuv.u;
@@ -501,7 +511,7 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 			}
 		}
 	}
-	else
+	else if (surf->format == kPixelFormatYUYV422)
 	{
 		// Pack into YUYV format surface
 		for (i = 0; i < yuv.y_height; i++) 
@@ -522,7 +532,37 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 			}
 		}
 	}
-
+	else if (surf->format == kPixelFormatARGB8888)
+	{
+		// Convert YUV to RGB format surface
+		for (i = 0; i < yuv.y_height; i++) 
+		{
+			for (j = k = m = 0; k < yuv.y_width; j++, k+=2, m+=8) 
+			{
+				U8 y0 = s[k];
+				U8 y1 = s[k+1];
+				U8 u0 = u[j];
+				U8 v0 = v[j];
+				d[m+0] = B(y0,u0,v0);
+				d[m+1] = G(y0,u0,v0);
+				d[m+2] = R(y0,u0,v0);
+				d[m+3] = 0xFF;
+				d[m+4] = B(y1,u0,v0);
+				d[m+5] = G(y1,u0,v0);
+				d[m+6] = R(y1,u0,v0);
+				d[m+7] = 0xFF;
+			}
+			s += yuv.y_stride;
+			d += surf->pitch;
+			if (i % 2) 
+			{
+				u += yuv.uv_stride;
+				v += yuv.uv_stride;
+			}
+		}
+	}
+	else
+		return false;
 	return true;
 }
 

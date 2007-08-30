@@ -7643,3 +7643,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 8/30/07 2:54 PM
 2,750 ms. (Cumulative: 1,538,514 ms)
 
 ----------------
+Revision 1,437 from svn://localhost/TRUNK/:
+
+Added option in Video module to render to RGB format surface.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/07 3:46 PM
+2 changed, 0 added, 0 deleted.
+2,829 ms. (Cumulative: 1,541,405 ms)
+
+----------------

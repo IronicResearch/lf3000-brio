@@ -188,6 +188,67 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testVideoDisplayRGB()
+	{
+		tRsrcHndl	pkg;
+		tRsrcHndl	handle1;
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatARGB8888 );
+		
+		pResourceMPI_ = new CResourceMPI;
+		pResourceMPI_->OpenAllDevices();
+		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
+		pkg = pResourceMPI_->FindPackage("ClipTest");
+		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
+		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
+		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
+		TS_ASSERT( handle1 != kInvalidRsrcHndl );
+
+		video = pVideoMPI_->StartVideo(handle1);
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		for (int i = 0; i < 100; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+
+			r = pVideoMPI_->GetVideoFrame(video, NULL);
+			TS_ASSERT( r == true );
+			r = pVideoMPI_->PutVideoFrame(video, &surf);
+			TS_ASSERT( r == true );
+			pDisplayMPI_->Invalidate(0, NULL);
+			
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.frame == i );
+			TS_ASSERT( vt.time >= 0 );
+		}
+		
+		pVideoMPI_->StopVideo(video);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pResourceMPI_->ClosePackage(pkg);
+		pResourceMPI_->CloseAllDevices();
+		delete pResourceMPI_;
+		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
 	void testVideoAudio()
 	{
 		tRsrcHndl	pkg;
