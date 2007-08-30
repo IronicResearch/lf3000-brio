@@ -43,6 +43,8 @@ namespace
 	U8			*gOverlayBuffer;
 	int			gFrameSize;
 	int			gOverlaySize;
+	U32			gFrameBase;
+	U32			gOverlayBase;
 }
 
 //============================================================================
@@ -54,6 +56,8 @@ void CDisplayModule::InitModule()
 	// Initialize display manager for hardware target
 	int 			baseAddr, fb_size;
 
+	dbg_.SetDebugLevel(kDbgLvlVerbose);
+	
 	// open GPIO device
 	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
 	dbg_.Assert(gDevGpio >= 0, 
@@ -78,6 +82,7 @@ void CDisplayModule::InitModule()
 	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr >= 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
+	gFrameBase = baseAddr;
 
 	// get the frame buffer's size
 	fb_size = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
@@ -103,14 +108,17 @@ void CDisplayModule::InitModule()
 	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr >= 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
-
+	gOverlayBase = baseAddr;
+	
 	// Get the overlay buffer's size
 	fb_size = ioctl(gDevOverlay, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
+	fb_size *= 2;
 	gOverlaySize = fb_size;
 
 	// Get access to the overlay buffer in user space
+//	baseAddr += 0x20000000;
 	gOverlayBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		   						gDevOverlay, baseAddr);
 	dbg_.Assert(gOverlayBuffer >= 0,
@@ -166,6 +174,18 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 }
 
 //----------------------------------------------------------------------------
+// Convert linear address to XY block address
+/* inline */ U32 LIN2XY(U32 addr)
+{
+	const U32 k16Meg = 4096 * 4096;
+	U32 segment = addr / k16Meg;
+	U32 offset  = addr % k16Meg;
+	U32 y = offset / 4096;
+	U32 x = offset % 4096;
+//	dbg_.DebugOut(kDbgLvlImportant, "LIN2XY: lin=%08X, seg=%d, ofs=%d, y=%d, x=%d\n", addr, segment, offset, y, x);
+	return 0x20000000 | (segment << 24) | (y << 12) | (x << 0);
+}
+//----------------------------------------------------------------------------
 // The frame buffer was already allocated by the hardware, therefore pBuffer
 // is ignored.
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
@@ -207,6 +227,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		width = 4096; // for YUV planar format pitch
 		hwFormat = kLayerPixelFormatYUV420;
 		GraphicsContext->isOverlay = true;
+		// Switch video overlay linear address to XY Block address
+		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase /* - gFrameBase */));
 		break;
 
 		case kPixelFormatYUYV422:
@@ -248,6 +270,9 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 
 	// Remove layer from visibility on screen
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
+	// Restore video overlay linear address for subsequent instances
+	if (context->isOverlay)
+		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
 	SetDirtyBit(layer);
 	context->isAllocated = false;
 	return kNoErr;

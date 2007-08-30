@@ -480,22 +480,47 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	U8*			v = yuv.v;
 	U8*			d = surf->buffer; // + (y * surf->pitch) + (x * 2);
 	int			i,j,k,m;
-	for (i = 0; i < yuv.y_height; i++) 
+	if (surf->format == kPixelFormatYUV420)
 	{
-		for (j = k = m = 0; k < yuv.y_width; j++, k+=2, m+=4) 
+		// Pack into separate YUV planar surface regions
+		U8*		du = surf->buffer + surf->width * surf->height;
+		U8*		dv = surf->buffer + surf->width * surf->height*3/2;
+		for (i = 0; i < yuv.y_height; i++) 
 		{
-			d[m+0] = s[k];
-			d[m+1] = u[j];
-			d[m+2] = s[k+1];
-			d[m+3] = v[j];
+			memcpy(d, s, yuv.y_width);
+			memcpy(du, u, yuv.uv_width);
+			memcpy(dv, v, yuv.uv_width);
+			s += yuv.y_stride;
+			d += surf->width;
+			if (i % 2) 
+			{
+				u += yuv.uv_stride;
+				v += yuv.uv_stride;
+				du += surf->width;
+				dv += surf->width;
+			}
 		}
-		s += yuv.y_stride;
-		if (i % 2) 
+	}
+	else
+	{
+		// Pack into YUYV format surface
+		for (i = 0; i < yuv.y_height; i++) 
 		{
-			u += yuv.uv_stride;
-			v += yuv.uv_stride;
+			for (j = k = m = 0; k < yuv.y_width; j++, k+=2, m+=4) 
+			{
+				d[m+0] = s[k];
+				d[m+1] = u[j];
+				d[m+2] = s[k+1];
+				d[m+3] = v[j];
+			}
+			s += yuv.y_stride;
+			d += surf->pitch;
+			if (i % 2) 
+			{
+				u += yuv.uv_stride;
+				v += yuv.uv_stride;
+			}
 		}
-		d += surf->pitch;
 	}
 
 	return true;

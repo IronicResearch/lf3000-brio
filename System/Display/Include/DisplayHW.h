@@ -52,8 +52,8 @@ const U32	kLayerPixelFormatRGB565		= 0x4432; //R5G6B5
 const U32	kLayerPixelFormatARGB8888	= 0x0653; //A8R8G8B8
 const U32	kLayerPixelFormatXRGB8888	= 0x4653; //X8R8G8B8 (HStride=4)
 const U32	kLayerPixelFormatRGB888		= 0x4653; //R8G8B8 (HStride=3)
-const U32	kLayerPixelFormatYUV420		= 0xFFF0; //YUV planar	
-const U32	kLayerPixelFormatYUYV422	= 0xFFF2; //YUYV packed
+const U32	kLayerPixelFormatYUV420		= 0x0000; //YUV planar	
+const U32	kLayerPixelFormatYUYV422	= 0x0002; //YUYV packed
 
 #endif // LF_DISPLAYHW_H
 

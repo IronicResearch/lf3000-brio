@@ -7599,3 +7599,26 @@ By Dave Milici (dmilici@leapfrog.com) on 8/27/07 1:56 PM
 2,688 ms. (Cumulative: 1,527,232 ms)
 
 ----------------
+Revision 1,422 from svn://localhost/TRUNK/:
+Revision 1,423 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,672 ms. (Cumulative: 1,529,966 ms)
+
+----------------
+Revision 1,424 from svn://localhost/TRUNK/:
+Revision 1,425 from svn://localhost/TRUNK/:
+Revision 1,426 from svn://localhost/TRUNK/:
+Revision 1,427 from svn://localhost/TRUNK/:
+Revision 1,428 from svn://localhost/TRUNK/:
+Revision 1,429 from svn://localhost/TRUNK/:
+Revision 1,430 from svn://localhost/TRUNK/:
+Revision 1,431 from svn://localhost/TRUNK/:
+
+Added pixel format type to video surface descriptor to support other video formats.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/29/07 7:52 PM
+5 changed, 0 added, 0 deleted.
+2,860 ms. (Cumulative: 1,532,873 ms)
+
+----------------
