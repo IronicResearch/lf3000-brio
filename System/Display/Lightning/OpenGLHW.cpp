@@ -105,7 +105,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.Assert(gDevGa3d >= 0, "DisplayModule::InitModule: /dev/ga3d driver failed");
 
 	// Open memory driver for mapping register space and framebuffer
-    gDevMem = open("/dev/mem", O_RDWR|O_SYNC);
+	gDevMem = open("/dev/mem", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevMem >= 0, "DisplayModule::InitModule: /dev/mem driver failed");
 
 	// Map 3D engine register space
@@ -128,15 +128,15 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	pOglCtx->eglWindow = &dc;
 
 	// Copy the required mappings into the MagicEyes callback init struct
-    pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
-    pMemInfo->Memory1D_VirtualAddress	= (unsigned int)gpMem1;
-    pMemInfo->Memory1D_PhysicalAddress	= gMem1Phys;
-    pMemInfo->Memory1D_SizeInMbyte		= gMem1Size >> 20;
-    pMemInfo->Memory2D_VirtualAddress	= (unsigned int)gpMem2;
-    pMemInfo->Memory2D_PhysicalAddress	= gMem2Phys;
-    pMemInfo->Memory2D_SizeInMbyte		= gMem2Size >> 20;
+	pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
+	pMemInfo->Memory1D_VirtualAddress	= (unsigned int)gpMem1;
+	pMemInfo->Memory1D_PhysicalAddress	= gMem1Phys;
+	pMemInfo->Memory1D_SizeInMbyte		= gMem1Size >> 20;
+	pMemInfo->Memory2D_VirtualAddress	= (unsigned int)gpMem2;
+	pMemInfo->Memory2D_PhysicalAddress	= gMem2Phys;
+	pMemInfo->Memory2D_SizeInMbyte		= gMem2Size >> 20;
  
- 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
 }
 
 //----------------------------------------------------------------------------
