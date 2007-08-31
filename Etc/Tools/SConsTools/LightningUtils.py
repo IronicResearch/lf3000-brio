@@ -40,6 +40,7 @@ def RetrieveOptions(args, root_dir):
 	is_runtests		= args.get('runtests', 1)
 	type			= args.get('type', 'embedded')
 	platform		= 'Lightning'
+	variant			= args.get('variant', 'LF2530')
 	
 	is_emulation 			= type == 'emulation' or type == 'checkheaders'
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
@@ -64,6 +65,7 @@ def RetrieveOptions(args, root_dir):
 			'is_emulation'			: is_emulation,
 			'is_runtests'			: is_runtests,
 			'platform'				: platform,
+			'variant'				: variant,
 			'target_subdir'			: target_subdir,
 			'intermediate_build_dir': intermediate_build_dir,
 			'bin_deploy_dir'		: bin_deploy_dir,
@@ -87,7 +89,7 @@ def CreateEnvironment(opts, vars):
 							tools = ['default', platform_toolset, 'cxxtest', 'runtest', 'checkheader', 'oggenc', 'oggext'], 
 							toolpath = [toolpath],
 					 )
-	env.Append(CPPDEFINES = ['LF2530BROWN'])
+	env.Append(CPPDEFINES = vars['variant'])
 	#FIXME/tp: Keep this 'variant' field up to date! Remove at final hardware.
 	
 	cdevkit_incpath	= os.path.join(cdevkit_dir, 'Include')
@@ -162,7 +164,8 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	if vars['is_emulation']:
 		platformlibs = ['gles_cl', 'glibmm-2.4', 'glib-2.0', 'Emulation']
 	else:
-		platformlibs = ['ogl', 'dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
+		ogl	= vars['variant'] == 'LF1000' and ['ogl_lf1000'] or ['ogl']
+		platformlibs = ogl + ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
 		#FIXME/tp: pthread should go away
 		CopyResources(penv, vars)
 	

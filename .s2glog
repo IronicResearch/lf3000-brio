@@ -7756,3 +7756,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/31/07 2:15 PM
 2,703 ms. (Cumulative: 1,564,266 ms)
 
 ----------------
+Revision 1,460 from svn://localhost/TRUNK/:
+
+Exported build target option 'variant=LFxxxx' for propogating platform variants into Brio SDK apps.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/31/07 3:15 PM
+1 changed, 0 added, 0 deleted.
+2,672 ms. (Cumulative: 1,567,079 ms)
+
+----------------
