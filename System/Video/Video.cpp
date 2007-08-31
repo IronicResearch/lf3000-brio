@@ -493,21 +493,21 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	if (surf->format == kPixelFormatYUV420)
 	{
 		// Pack into separate YUV planar surface regions
-		U8*		du = surf->buffer + surf->width * surf->height;
-		U8*		dv = surf->buffer + surf->width * surf->height*3/2;
+		U8*		du = surf->buffer + surf->pitch * surf->height;
+		U8*		dv = surf->buffer + surf->pitch * surf->height*3/2;
 		for (i = 0; i < yuv.y_height; i++) 
 		{
 			memcpy(d, s, yuv.y_width);
 			memcpy(du, u, yuv.uv_width);
 			memcpy(dv, v, yuv.uv_width);
 			s += yuv.y_stride;
-			d += surf->width;
+			d += surf->pitch;
 			if (i % 2) 
 			{
 				u += yuv.uv_stride;
 				v += yuv.uv_stride;
-				du += surf->width;
-				dv += surf->width;
+				du += surf->pitch;
+				dv += surf->pitch;
 			}
 		}
 	}
