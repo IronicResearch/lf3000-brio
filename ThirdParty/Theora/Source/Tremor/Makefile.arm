@@ -112,7 +112,7 @@ AUTOMAKE = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Tremor/mi
 AWK = mawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O2 -Wall -fsigned-char  -D_REENTRANT -DUSE_MEMORY_H
+CFLAGS = -Wall -O4 -mcpu=arm926ej-s -fsigned-char -D_ARM_ASSEM_ -D_REENTRANT -DUSE_MEMORY_H
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
