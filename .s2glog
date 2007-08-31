@@ -7696,3 +7696,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/07 7:28 PM
 2,703 ms. (Cumulative: 1,550,077 ms)
 
 ----------------
+Revision 1,448 from svn://localhost/TRUNK/:
+Revision 1,449 from svn://localhost/TRUNK/:
+
+Correct support for YUV planar video modes needs full 4K x 4K tiled memory region mapped.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/07 8:14 PM
+2 changed, 0 added, 0 deleted.
+2,687 ms. (Cumulative: 1,552,827 ms)
+
+----------------

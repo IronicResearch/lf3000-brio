@@ -114,11 +114,12 @@ void CDisplayModule::InitModule()
 	fb_size = ioctl(gDevOverlay, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
-	fb_size *= 2;
+//	fb_size *= 2;
+	fb_size = 4096 * 4096;
 	gOverlaySize = fb_size;
 
 	// Get access to the overlay buffer in user space
-//	baseAddr += 0x20000000;
+	baseAddr += 0x20000000;
 	gOverlayBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		   						gDevOverlay, baseAddr);
 	dbg_.Assert(gOverlayBuffer >= 0,
@@ -228,7 +229,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		hwFormat = kLayerPixelFormatYUV420;
 		GraphicsContext->isOverlay = true;
 		// Switch video overlay linear address to XY Block address
-		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase /* - gFrameBase */));
+		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + width*height));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + width*height*3/2));
 		break;
 
 		case kPixelFormatYUYV422:
