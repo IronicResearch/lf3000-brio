@@ -23,7 +23,6 @@
 #include "GLES/libogl.h"
 #endif
 
-
 #ifdef  EMULATION
 //============================================================================
 // Stub function to allow emulation builds to link
@@ -77,8 +76,16 @@ namespace
 	//--------------------------------------------------------------------------
 	___OAL_MEMORY_INFORMATION__ 	meminfo;
 	//--------------------------------------------------------------------------
+#ifdef LF1000
+	extern "C" GLESOALbool GLESOAL_Initalize( ___OAL_MEMORY_INFORMATION__* pMemoryInfo, int FSAAEnb)
+#else // !LF1000
 	extern "C" int  GLESOAL_Initalize(___OAL_MEMORY_INFORMATION__* pMemoryInfo ) 
+#endif
 	{
+#ifdef LF1000
+// TODO: set FSSAval so that OpenGLHW functions use it!  Something like:
+//	dispmgr->FSAAval = FSAAEnb;
+#endif
 		*pMemoryInfo = meminfo;
 	    PRINTF("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
 		    pMemoryInfo->VirtualAddressOf3DCore, \
@@ -118,9 +125,29 @@ namespace
 	    *pWidth  = ctx.width;
 	    *pHeight = ctx.height;
 	}
+
+#ifdef LF1000
+	// (added for LF1000)
+	extern "C" void GLESOAL_Sleep(unsigned long Milliseconds )
+	{
+		usleep( Milliseconds*1000);
+	}
+
+	// (added for LF1000)
+	extern "C" void GLESOAL_SetDisplayAddress(
+			const unsigned int DisplayBufferPhysicalAddress )
+	{
+		dispmgr->SetOpenGLDisplayAddress(DisplayBufferPhysicalAddress);
+	}
+
+	// (added for LF1000)
+	extern "C" void GLESOAL_WaitForDisplayAddressPatched( void )
+	{
+		dispmgr->WaitForDisplayAddressPatched();
+	}
+#endif // LF1000
 #endif // !EMULATION
 }
-
 
 //==============================================================================
 //----------------------------------------------------------------------

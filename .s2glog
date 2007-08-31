@@ -7652,3 +7652,23 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/07 3:46 PM
 2,829 ms. (Cumulative: 1,541,405 ms)
 
 ----------------
+Revision 1,438 from svn://localhost/TRUNK/:
+Revision 1,439 from svn://localhost/TRUNK/:
+Revision 1,440 from svn://localhost/TRUNK/:
+Revision 1,441 from svn://localhost/TRUNK/:
+Revision 1,442 from svn://localhost/TRUNK/:
+Revision 1,443 from svn://localhost/TRUNK/:
+Revision 1,444 from svn://localhost/TRUNK/:
+Revision 1,445 from svn://localhost/TRUNK/:
+
+checking in Brio OpenGL changes for LF1000, except for the new libopengl.a for
+now.  please make sure that this patch doesn't break anything on the 2530!
+
+These changes should only be available with platform_variant=Lightning_LF1000
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 6:01 PM
+8 changed, 0 added, 0 deleted.
+2,875 ms. (Cumulative: 1,544,389 ms)
+
+----------------

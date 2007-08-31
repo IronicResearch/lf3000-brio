@@ -50,6 +50,8 @@ namespace
 {
 	//------------------------------------------------------------------------
 	int			gDevLayer = -1;
+	int			gDevLayerEven = -1;
+	int			gDevLayerOdd = -1;
 	int			gDevGa3d = -1;
 	int			gDevMem = -1;
 	void*		gpMem1 = NULL;
@@ -60,6 +62,7 @@ namespace
 	unsigned int gMem1Size = MEM1_SIZE;
 	unsigned int gMem2Size = MEM2_SIZE;
 	unsigned int gRegSize = PAGE_3D * 0x1000;
+	int		FSAAval = 0;
 	tDisplayScreenStats		screen;
 	tDisplayContext			dc;
 }
@@ -81,9 +84,21 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	mem2Virt = (unsigned int)MEM1_VIRT + gMem1Size;
 
 	// Open device driver for 3D layer
-	gDevLayer = open(OGL_LAYER_DEV, O_WRONLY);
-	dbg_.Assert(gDevLayer >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver failed");
-	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver opened\n");
+	if(FSAAval) {
+		// open Even layer
+		gDevLayerEven = open(OGL_LAYER_EVEN_DEV, O_WRONLY);
+		dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver failed");
+		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver opened\n");
+		// open odd layer
+		gDevLayerOdd = open(OGL_LAYER_ODD_DEV, O_WRONLY);
+		dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver failed");
+		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver opened\n");
+	}
+	else {
+		gDevLayer = open(OGL_LAYER_DEV, O_WRONLY);
+		dbg_.Assert(gDevLayer >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver failed");
+		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver opened\n");
+	}
 
 	// Open device driver for 3D accelerator registers
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
@@ -99,11 +114,11 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-    gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
+    	gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
-    gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
+	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
 	// Pass back essential display context info for OpenGL bindings
@@ -129,12 +144,18 @@ void CDisplayModule::DeinitOpenGL()
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: enter\n");
 
-    munmap(gpReg3d, gRegSize);
-    munmap(gpMem1, gMem1Size);
-    munmap(gpMem2, gMem2Size);
-    close(gDevMem);
+	munmap(gpReg3d, gRegSize);
+	munmap(gpMem1, gMem1Size);
+	munmap(gpMem2, gMem2Size);
+	close(gDevMem);
 	close(gDevGa3d);
-	close(gDevLayer);
+	if(FSAAval) {
+		close(gDevLayerEven);
+		close(gDevLayerOdd);
+	}
+	else {
+		close(gDevLayer);
+	}
 
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
@@ -150,13 +171,19 @@ void CDisplayModule::EnableOpenGL()
 	c.position.right = 320;
 	c.position.bottom = 240;
 
-    // Enable 3D layer
-    ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+	// Enable 3D layer
+	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
 	ioctl(layer, MLC_IOCTFORMAT, 0x4432);
 	ioctl(layer, MLC_IOCTHSTRIDE, 2);
 	ioctl(layer, MLC_IOCTVSTRIDE, 4096);
-	ioctl(layer, MLC_IOCT3DENB, (void *)1);
+	if(FSAAval) {
+		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)1);
+		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)1);
+	}
+	else {
+		ioctl(layer, MLC_IOCT3DENB, (void *)1);
+	}
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 
 }
@@ -173,10 +200,73 @@ void CDisplayModule::DisableOpenGL()
 {
 	// Disable 3D layer render target before accelerator disabled
 	int layer = gDevLayer;
-	ioctl(layer, MLC_IOCT3DENB, (void *)0);
-    ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
-	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
+	if(FSAAval) {
+		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)0);
+		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)0);
+		ioctl(gDevLayerEven, MLC_IOCTLAYEREN, (void *)0);
+		ioctl(gDevLayerEven, MLC_IOCTDIRTY, (void *)1);
+		ioctl(gDevLayerOdd, MLC_IOCTLAYEREN, (void *)0);
+		ioctl(gDevLayerOdd, MLC_IOCTDIRTY, (void *)1);
+	}
+	else {
+		ioctl(layer, MLC_IOCT3DENB, (void *)0);
+		ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
+		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
+	}
 }
+
+#ifdef LF1000
+//----------------------------------------------------------------------------
+// (added for LF1000)
+void CDisplayModule::WaitForDisplayAddressPatched(void)
+{
+	if(FSAAval) {
+		while(ioctl(gDevLayerEven, MLC_IOCQDIRTY, (void *)0));
+		while(ioctl(gDevLayerOdd , MLC_IOCQDIRTY, (void *)0));
+	}
+	else {
+		while(ioctl(gDevLayer , MLC_IOCQDIRTY, (void *)0));
+	}
+}
+
+//----------------------------------------------------------------------------
+// (added for LF1000)
+void CDisplayModule::SetOpenGLDisplayAddress(
+		const unsigned int DisplayBufferPhysicalAddress)
+{
+	if(FSAAval) {
+		ioctl(gDevLayerEven, MLC_IOCTFORMAT, 0x4432); /*R5G6B5*/
+		ioctl(gDevLayerOdd , MLC_IOCTFORMAT, 0x4432);
+
+		ioctl(gDevLayerEven, MLC_IOCTHSTRIDE, 2);
+		ioctl(gDevLayerEven, MLC_IOCTVSTRIDE, 8192);
+		ioctl(gDevLayerOdd , MLC_IOCTHSTRIDE, 2);
+		ioctl(gDevLayerOdd , MLC_IOCTVSTRIDE, 8192);
+
+		ioctl(gDevLayerEven, MLC_IOCTADDRESS, MEM1_PHYS);
+		ioctl(gDevLayerOdd , MLC_IOCTADDRESS, MEM1_PHYS+4096);
+
+		ioctl(gDevLayerOdd, MLC_IOCTBLEND, (void *)1); //enable Alpha
+		ioctl(gDevLayerOdd, MLC_IOCTALPHA, 8); //set to 50%
+
+		ioctl(gDevLayerEven, MLC_IOCTLAYEREN, true);
+		ioctl(gDevLayerOdd , MLC_IOCTLAYEREN, true);
+
+		ioctl(gDevLayerEven, MLC_IOCTDIRTY, (void *)1);
+		ioctl(gDevLayerOdd , MLC_IOCTDIRTY, (void *)1);
+	}
+	else {
+		ioctl(gDevLayer, MLC_IOCTFORMAT, 0x4432); /*R5G6B5*/
+
+		ioctl(gDevLayer, MLC_IOCTHSTRIDE, 2);
+		ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
+
+		ioctl(gDevLayer, MLC_IOCTADDRESS, MEM1_PHYS);
+		ioctl(gDevLayer, MLC_IOCTLAYEREN, true);
+		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)0);
+	}
+}
+#endif
 
 LF_END_BRIO_NAMESPACE()
 // EOF

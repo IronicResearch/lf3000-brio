@@ -98,9 +98,13 @@ public:
 	
 	VTABLE_EXPORT tErrType			SetBrightness(tDisplayScreen screen, S8 brightness);
 	VTABLE_EXPORT tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
-	VTABLE_EXPORT S8				GetBrightness(tDisplayScreen screen);
-	VTABLE_EXPORT S8				GetContrast(tDisplayScreen screen);
-	
+	VTABLE_EXPORT S8			GetBrightness(tDisplayScreen screen);
+	VTABLE_EXPORT S8			GetContrast(tDisplayScreen screen);
+#ifdef LF1000
+	VTABLE_EXPORT void			WaitForDisplayAddressPatched(void);
+	VTABLE_EXPORT void			SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
+#endif
+
 private:
 	void				InitModule( );
 	void				DeInitModule( );
