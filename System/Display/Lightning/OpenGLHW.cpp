@@ -249,9 +249,6 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayerOdd, MLC_IOCTBLEND, (void *)1); //enable Alpha
 		ioctl(gDevLayerOdd, MLC_IOCTALPHA, 8); //set to 50%
 
-		ioctl(gDevLayerEven, MLC_IOCTLAYEREN, true);
-		ioctl(gDevLayerOdd , MLC_IOCTLAYEREN, true);
-
 		ioctl(gDevLayerEven, MLC_IOCTDIRTY, (void *)1);
 		ioctl(gDevLayerOdd , MLC_IOCTDIRTY, (void *)1);
 	}
@@ -262,7 +259,6 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
 
 		ioctl(gDevLayer, MLC_IOCTADDRESS, MEM1_PHYS);
-		ioctl(gDevLayer, MLC_IOCTLAYEREN, true);
 		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)0);
 	}
 }
