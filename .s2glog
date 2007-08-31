@@ -7733,3 +7733,17 @@ By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 10:24 PM
 2,719 ms. (Cumulative: 1,558,328 ms)
 
 ----------------
+Revision 1,454 from svn://localhost/TRUNK/:
+Revision 1,455 from svn://localhost/TRUNK/:
+Revision 1,456 from svn://localhost/TRUNK/:
+Revision 1,457 from svn://localhost/TRUNK/:
+Revision 1,458 from svn://localhost/TRUNK/:
+
+Update Vorbis decoder libs and Makefile for ARM.  Added -O4 (up from - O2) and -mcpu=arm926ej-s flags.  
+Substantial performance improvement!
+
+By dgibbs (dgibbs@leapfrog.com) on 8/31/07 11:40 AM
+3 changed, 0 added, 0 deleted.
+2,875 ms. (Cumulative: 1,561,422 ms)
+
+----------------
