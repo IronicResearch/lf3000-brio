@@ -7687,3 +7687,12 @@ By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 6:57 PM
 2,859 ms. (Cumulative: 1,547,311 ms)
 
 ----------------
+Revision 1,447 from svn://localhost/TRUNK/:
+
+Updated Display Scons script for linking LF1000 vs LF2530 OGL libs.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/07 7:28 PM
+1 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 1,550,077 ms)
+
+----------------
