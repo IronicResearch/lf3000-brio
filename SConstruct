@@ -189,7 +189,8 @@ for target in targets:
 	# to support compiling with different compilers that need to link against
 	# differently named libraries.
 	#-------------------------------------------------------------------------
-	vars	 = { 'platform'					: platform,
+	vars	 = {		 'platform'				: platform,
+				 'variant'				: variant,
 				 'is_emulation'				: is_emulation,
 				 'is_publish'				: is_publish,
 				 'is_export'				: is_export,
