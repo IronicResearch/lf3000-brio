@@ -60,7 +60,10 @@ if vars['is_export'] or vars['is_publish']:
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
 		headers = os.path.join('MagicEyes', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
-		core_name = 'libogl.a'
+		if vars['variant'] == 'LF1000':
+			core_name = 'libogl_lf1000.a'
+		else:
+			core_name = 'libogl.a'
 		lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
 		env.Install(lib_dir, lib)
 

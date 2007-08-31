@@ -7672,3 +7672,18 @@ By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 6:01 PM
 2,875 ms. (Cumulative: 1,544,389 ms)
 
 ----------------
+Revision 1,446 from svn://localhost/TRUNK/:
+
+checking in initial libogl for lf1000 from MagicEyes, as well as a first 
+attempt to get scons to link against that instead of the regular libogl.a when
+building for platform_variant=Lightning_LF1000
+
+However the build system still seems to be choosing the wrong library, perhaps
+it's hard-coded somewhere?
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 6:57 PM
+2 changed, 1 added, 0 deleted.
+2,859 ms. (Cumulative: 1,547,311 ms)
+
+----------------
