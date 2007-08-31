@@ -7718,3 +7718,18 @@ By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 10:01 PM
 2,640 ms. (Cumulative: 1,555,546 ms)
 
 ----------------
+Revision 1,453 from svn://localhost/TRUNK/:
+
+fix nasty Brio/3D crash by removing 3DEnb from the new functions... see
+comment in BrioOpenGLConfig.cpp for info on why this is a problem!
+
+// NOTE: 3D layer can only be enabled after MagicEyes lib 
+// sets up 3D accelerator, but this cannot happen
+// until GLESOAL_Initalize() callback gets mappings
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 8/30/07 10:24 PM
+1 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,558,328 ms)
+
+----------------
