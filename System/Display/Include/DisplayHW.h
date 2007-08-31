@@ -22,8 +22,12 @@ LF_USING_BRIO_NAMESPACE()
 #define RGB_LAYER_DEV	"/dev/layer0"
 
 // layer to be used by DisplayManager for 3D RGB  OpenGL rendering context
-#define OGL_LAYER_ID	1
-#define OGL_LAYER_DEV	"/dev/layer1"
+#define OGL_LAYER_ID		1
+#define OGL_LAYER_DEV		"/dev/layer1"
+#define OGL_LAYER_EVEN_ID	0
+#define OGL_LAYER_EVEN_DEV	"/dev/layer0"
+#define OGL_LAYER_ODD_ID	OGL_LAYER_ID
+#define OGL_LAYER_ODD_DEV	OGL_LAYER_DEV
 
 // layer to be used by DisplayManager for Video YUV
 #ifdef LF1000

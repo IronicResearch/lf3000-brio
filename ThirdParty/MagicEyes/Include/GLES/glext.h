@@ -61,13 +61,6 @@ GL_API void glGetHWBufferParameterivOES(GLenum target, GLenum pname, GLint * par
 GL_API void glHWBufferDataOES(GLenum target, GLsizeiptr n, const GLvoid * data, GLenum format);
 GL_API void glHWBufferSubDataOES(GLenum target, GLintptr offset_n, GLsizeiptr n, const GLvoid *data);
 
-/* OES video texture */
-GL_API void glTexImage2DFromVideoOES(const GLvoid *pY,const GLvoid *pCb,const GLvoid *pCr,
-									 GLint clipx, GLint clipy, GLsizei clipwidth, GLsizei clipheight );
-
-/* OES set color key */
-GL_API void glTexColorKeyOES(GLboolean enable, GLshort colorkey_r5g6b5 );
-
 #ifdef __cplusplus
 }
 #endif

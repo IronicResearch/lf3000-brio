@@ -300,5 +300,22 @@ void CDisplayMPI::DisableOpenGL()
 	pModule_->DisableOpenGL();
 }
 
+#ifdef LF1000
+//----------------------------------------------------------------------------
+void CDisplayMPI::WaitForDisplayAddressPatched()
+{
+	if (!pModule_)
+		return;
+	pModule_->WaitForDisplayAddressPatched();
+}
+
+void CDisplayMPI::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
+{
+	if (!pModule_)
+		return;
+	pModule_->SetOpenGLDisplayAddress(DisplayBufferPhysicalAddress);
+}
+#endif
+
 LF_END_BRIO_NAMESPACE()
 // EOF
