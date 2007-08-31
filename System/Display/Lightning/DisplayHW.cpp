@@ -41,10 +41,13 @@ namespace
 	int			gDevOverlay;
 	U8 			*gFrameBuffer;
 	U8			*gOverlayBuffer;
+	U8			*gPlanarBuffer;
 	int			gFrameSize;
 	int			gOverlaySize;
+	int			gPlanarSize;
 	U32			gFrameBase;
 	U32			gOverlayBase;
+	U32			gPlanarBase;
 }
 
 //============================================================================
@@ -114,12 +117,9 @@ void CDisplayModule::InitModule()
 	fb_size = ioctl(gDevOverlay, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
-//	fb_size *= 2;
-	fb_size = 4096 * 4096;
 	gOverlaySize = fb_size;
 
 	// Get access to the overlay buffer in user space
-	baseAddr += 0x20000000;
 	gOverlayBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		   						gDevOverlay, baseAddr);
 	dbg_.Assert(gOverlayBuffer >= 0,
@@ -127,11 +127,25 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gOverlayBuffer);
+
+	// Get access to the overlay planar array buffer in user space
+	fb_size = 4096 * 4096;
+	baseAddr += 0x20000000;
+	gPlanarBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
+		   						gDevOverlay, baseAddr);
+	dbg_.Assert(gPlanarBuffer >= 0,
+			"DisplayModule::InitModule: failed to mmap() frame buffer");
+	dbg_.DebugOut(kDbgLvlVerbose, 
+			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+			baseAddr, fb_size, gPlanarBuffer);
+	gPlanarBase = baseAddr;
+	gPlanarSize = fb_size;
 }
 
 //----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
+    munmap(gPlanarBuffer, gPlanarSize);
     munmap(gOverlayBuffer, gOverlaySize);
     munmap(gFrameBuffer, gFrameSize);
 	close(gDevGpio);
@@ -176,7 +190,7 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 
 //----------------------------------------------------------------------------
 // Convert linear address to XY block address
-/* inline */ U32 LIN2XY(U32 addr)
+inline U32 LIN2XY(U32 addr)
 {
 	const U32 k16Meg = 4096 * 4096;
 	U32 segment = addr / k16Meg;
@@ -200,6 +214,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepthFormat = colorDepth;
 	GraphicsContext->isOverlay = false;
+	GraphicsContext->isPlanar = false;
 
 	switch(colorDepth) {
 		case kPixelFormatRGB4444:
@@ -228,6 +243,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		width = 4096; // for YUV planar format pitch
 		hwFormat = kLayerPixelFormatYUV420;
 		GraphicsContext->isOverlay = true;
+		GraphicsContext->isPlanar = true;
 		// Switch video overlay linear address to XY Block address
 		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
 		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + width*height));
@@ -274,7 +290,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	// Remove layer from visibility on screen
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
 	// Restore video overlay linear address for subsequent instances
-	if (context->isOverlay)
+	if (context->isOverlay && context->isPlanar)
 		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
 	SetDirtyBit(layer);
 	context->isAllocated = false;
@@ -297,7 +313,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	struct tDisplayContext *context;
 	
 	context = (struct tDisplayContext *)hndl;
-	context->pBuffer = (context->isOverlay) ? gOverlayBuffer : gFrameBuffer;
+	context->pBuffer = (context->isPlanar) ? gPlanarBuffer : (context->isOverlay) ? gOverlayBuffer : gFrameBuffer;
 	context->x = xPos;
 	context->y = yPos;
 	context->isAllocated = true;

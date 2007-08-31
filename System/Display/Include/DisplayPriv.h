@@ -48,6 +48,7 @@ struct tDisplayContext {
 	S16 y;
 	bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
 	bool isOverlay;		// video overlay layer?
+	bool isPlanar;		// video overlay planar?
 };
 
 //==============================================================================
