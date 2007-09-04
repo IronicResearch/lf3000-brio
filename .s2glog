@@ -7801,3 +7801,17 @@ By dgibbs (dgibbs@leapfrog.com) on 9/4/07 10:50 AM
 2,907 ms. (Cumulative: 1,576,142 ms)
 
 ----------------
+Revision 1,470 from svn://localhost/TRUNK/:
+Revision 1,471 from svn://localhost/TRUNK/:
+Revision 1,472 from svn://localhost/TRUNK/:
+Revision 1,473 from svn://localhost/TRUNK/:
+Revision 1,474 from svn://localhost/TRUNK/:
+Revision 1,475 from svn://localhost/TRUNK/:
+
+Defect #43: Update size fields in WriteRsrc() and CloseRsrc() fcn calls.
+
+By Rcabrera (Rcabrera@leapfrog.com) on 9/4/07 2:39 PM
+1 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,579,095 ms)
+
+----------------
