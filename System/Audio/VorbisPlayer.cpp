@@ -343,7 +343,7 @@ U32 CVorbisPlayer::GetAudioTime( void )
 //==============================================================================
 //==============================================================================
 void CVorbisPlayer::SendDoneMsg( void ) {
-	const tEventPriority	kPriorityTBD = 130;
+	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgAudioCompleted	data;
 
 	data.audioID = id_;

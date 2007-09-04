@@ -36,10 +36,11 @@ CChannel::CChannel()
 // Initialize class variables
 //	mpChain_ = kNull;
 	pPlayer_ = kNull;
-	bInUse_  = 0;
-	bPaused_ = 0;
-	bOwnProcessor_ = 0;
-
+	fInUse_  = false;
+	fPaused_ = false;
+	fOwnProcessor_ = false;
+	fReleasing_ = false;
+	
 // Channel Interface parameters
 	volume_ = 0;
 	pan_    = 0;
@@ -88,14 +89,14 @@ CChannel::~CChannel()
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
-long ch = 0;
+	long ch = 0;
 	// If we're pre-empting, release the active player first.
 	if (pPlayer_ != kNull)
 		Release( false );		// don't suppress done msg if it has been requested
 	
 	pPlayer_ = pPlayer;
-	bInUse_  = 1;
-ch = 0;
+	fInUse_  = true;
+	ch = 0;
 
 // Convert interface parameters to DSP level data and reset channel
 	SetPan(    pPlayer->GetPan() );
@@ -134,15 +135,17 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 		"CChannel::Release - deleting player 0x%x\n", 
 		(unsigned int)pPlayer_);
 
+	// we're resetting the channel
+	fReleasing_ = true;
+	
 	// Send the done message back to the initiator of the PlayAudio() call.
 	if (suppressPlayerDoneMsg)
 		pPlayer_->SetSendDoneMessage( false );
 
 	// Once this is set, the mixer will no longer call our RenderBuffer()
 	// method so we're safe to delete the other resources.
-	bInUse_  = false;
-	bPaused_ = false;
-	bOwnProcessor_ = 0;
+	fPaused_ = false;
+	fOwnProcessor_ = 0;
 
 // Set DSP player values to arbitrary 0's
 	pan_    = 0;
@@ -154,6 +157,10 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 	// is complete before delete internal resources.
 	delete pPlayer_;
 	pPlayer_ = kNull;
+
+	// no longer in use
+	fReleasing_ = false;
+	fInUse_  = false;
 
 	return kNoErr;
 }	// ---- end CChannel::Release ----
@@ -185,6 +192,19 @@ volume_ = x;
 //long xI = (long)x;
 
 }	// ---- end CChannel::SetVolume ----
+
+
+//==============================================================================
+// CChannel::ShouldRender
+//==============================================================================
+Boolean CChannel::ShouldRender( void ) {
+	Boolean result = false;
+	
+	if (fInUse_ && !fPaused_ && !fReleasing_)
+		result = true;
+	
+	return result;
+}
 
 //==============================================================================
 // CChannel::RenderBuffer

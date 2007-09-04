@@ -344,7 +344,7 @@ for (ch = 0; ch < numChannels_; ch++)
 	CChannel *pCh = &pChannels_[ch];
 
 	// Render if channel is in use and not paused
-	if (pCh->IsInUse() && !pCh->IsPaused())
+	if (pCh->ShouldRender())
 		{
 		long channelSamplingFrequency = pCh->GetSamplingFrequency();
 		U32 framesToRender = (numFrames*channelSamplingFrequency)/kAudioSampleRate;
