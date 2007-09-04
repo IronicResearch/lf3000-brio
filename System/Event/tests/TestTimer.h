@@ -7,6 +7,7 @@
 #include <UnitTestUtils.h>
 #include <KernelMPI.h>
 #include <GroupEnumeration.h>
+#include <DebugMPI.h>
 
 
 LF_USING_BRIO_NAMESPACE()
@@ -16,6 +17,8 @@ LF_USING_BRIO_NAMESPACE()
 #endif
 
 #define MODCOMP(x,y) ((x) < (y) ? (y-x) : (x-y))
+
+const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 
 //============================================================================
 // MyTimerListener
@@ -27,9 +30,11 @@ class MyTimerListener : public IEventListener
 public:
 	//------------------------------------------------------------------------
 	MyTimerListener( )
-		: IEventListener(kTimerTypes, ArrayCount(kTimerTypes)),
-		id_(kInvalidTimerHndl)
+		: IEventListener(kTimerTypes, ArrayCount(kTimerTypes)), 
+		id_(kInvalidTimerHndl), dbg_(kMyApp)
 	{
+		id_ = kInvalidTimerHndl;
+		
 #if 0 // FIXME/BSK
 		printf("MyTimerListener constructor\n");
 		fflush(stdout);
@@ -43,9 +48,10 @@ public:
 		id_ = m.GetTimerHndl();
 
 #if 0 // FIXME/BSK
-		printf("tEventStatus Notify id=%u\n",id_);
+		printf("tEventStatus Notify id=%u\n",(unsigned )id_);
 		fflush(stdout);
 #endif
+		dbg_.DebugOut(kDbgLvlCritical, "tEventStatus Notify id=%u\n", (unsigned)id_);
 		return kEventStatusOKConsumed;
 	}
 	//------------------------------------------------------------------------
@@ -56,8 +62,10 @@ public:
 	
 	//------------------------------------------------------------------------
 	tTimerHndl	id_;
+	CDebugMPI	dbg_;
 };
 
+	void ptintf_test_info( char *pName );
 
 //============================================================================
 // TestEvent functions
@@ -89,9 +97,10 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerNotFired( )
 	{
-		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
+		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                     };
+		ptintf_test_info("testTimerNotFired");
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		kernel_->TaskSleep(200);
@@ -102,9 +111,10 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerFires( )
 	{
-		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
+		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                    };
+		ptintf_test_info("testTimerFires");
 //		TS_ASSERT_EQUALS( kNoErr, event_->RegisterEventListener(listener_) );
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
@@ -112,7 +122,7 @@ public:
 
 #if 0 // FIXME/BSK
 		gettimeofday( &timePrint, NULL );
-		printf("\n%d.%d   testTimerFires 1 \n", timePrint.tv_sec, timePrint.tv_usec / 1000 );
+		printf("\n%u.%u   testTimerFires 1 \n", (unsigned )timePrint.tv_sec, (unsigned )timePrint.tv_usec / 1000 );
 		fflush(stdout);
 #endif		
 
@@ -122,7 +132,7 @@ public:
 
 #if 0 // FIXME/BSK
 		gettimeofday( &timePrint, NULL );
-		printf("%d.%d   testTimerFires 2 \n", timePrint.tv_sec, timePrint.tv_usec / 1000 );
+		printf("%u.%u   testTimerFires 2 \n", (unsigned )timePrint.tv_sec, (unsigned )timePrint.tv_usec / 1000 );
 		fflush(stdout);
 #endif		
 
@@ -131,17 +141,19 @@ public:
 
 #if 0 // FIXME/BSK
 		gettimeofday( &timePrint, NULL );
-		printf("%d.%d   testTimerFires 3 \n", timePrint.tv_sec, timePrint.tv_usec / 1000 );
+		printf("%u.%u   testTimerFires 3 \n", (unsigned )timePrint.tv_sec, (unsigned )timePrint.tv_usec / 1000 );
 		fflush(stdout);
-#endif		
+#endif
+		sleep(2);		
 	}
 	
 	//------------------------------------------------------------------------
 	void testTimerPauseResume( )
 	{
-		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
+		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                    };
+		ptintf_test_info("testTimerPauseResume");
 		saveTimerSettings saveValue;
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
@@ -160,9 +172,10 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerRestart( )
 	{
-		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
+		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                     };
+		ptintf_test_info("testTimerRestart");
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		for (int ii = 0; ii < 3; ++ii )
@@ -184,10 +197,11 @@ public:
 		const int t_timer_0 = 10;  // Millisecond
 		const int t_timer_exp = 100;  // Millisecond
 
-		static const  tTimerProperties props = {TIMER_ABSTIME_SET,
+		static const  tTimerProperties props = { TIMER_RELATIVE_SET,
 												 {{0, MS_TO_NS(t_timer_exp)},  // Interval
 												  {0, MS_TO_NS(t_timer_0)}}, // Initial expiration
    		                                       };
+		ptintf_test_info("testTimerElapsedTime");
 		const U32 kSleepInterval = 10; // Millisecond
 		const U32 kDelta = 25;		   // Millisecond
 		const U32 nIter = 20;
@@ -206,7 +220,7 @@ public:
 
 			err = kernel_->GetTimerElapsedTime(timer.GetTimerHndl(), &elapsed);
 			TS_ASSERT_EQUALS( kNoErr, err );
-			
+
 			err = kernel_->GetTimerRemainingTime(timer.GetTimerHndl(), &remaining);
 			TS_ASSERT_EQUALS( kNoErr, err );
 			
@@ -229,4 +243,17 @@ public:
 		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
 		
 	}
+// =========================================================
+	void ptintf_test_info( char *pName )
+	{
+		static int testNum = 1;
+		if( testNum == 1 )
+		{
+			printf("\n\n");
+			printf(".");
+		}
+		printf("#%3d Test Name = %s\n", testNum++, pName );
+		fflush(stdout);
+	}	
+
 };

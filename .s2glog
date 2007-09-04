@@ -7765,3 +7765,18 @@ By Dave Milici (dmilici@leapfrog.com) on 8/31/07 3:15 PM
 2,672 ms. (Cumulative: 1,567,079 ms)
 
 ----------------
+Revision 1,461 from svn://localhost/TRUNK/:
+Revision 1,462 from svn://localhost/TRUNK/:
+Revision 1,463 from svn://localhost/TRUNK/:
+Revision 1,464 from svn://localhost/TRUNK/:
+Revision 1,465 from svn://localhost/TRUNK/:
+Revision 1,466 from svn://localhost/TRUNK/:
+Revision 1,467 from svn://localhost/TRUNK/:
+
+Fixed the 'TIMER_ABSTIME_SET' and 'TIMER_RELATIVE_SET' enum definition
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 9/4/07 10:04 AM
+4 changed, 0 added, 0 deleted.
+2,891 ms. (Cumulative: 1,570,204 ms)
+
+----------------

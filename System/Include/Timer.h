@@ -62,7 +62,7 @@ private:
 
 //static tTimerHndl tHndl_1;
 
-//const static tTimerProperties props = {TIMER_ABSTIME_SET,
+//const static tTimerProperties props = {TIMER_RELATIVE_SET,
 //										{0, 0, 0, 0},
 //			                            TimerCallback,
 //			                            &tHndl_1};
@@ -131,6 +131,7 @@ public:
 // TPprivate:
 	//--------------------------------------------------------------------------
 private:
+
 	static void TimerCallback(tTimerHndl hndl) // 
 	{
 		CEventMPI	event;
@@ -140,7 +141,8 @@ private:
 //		printf("TimerCallback function was called Timer tTimerHndl=0x%x \n", hndl);  		
 		timeval timePrint;
 		gettimeofday( &timePrint, NULL );
-		printf("%d.%d   TimerCallback  \n", timePrint.tv_sec, timePrint.tv_usec / 1000 );
+		printf("Timer.h file ****TimerCallback**** %d.%d\n",
+					 (int )timePrint.tv_sec, (int )timePrint.tv_usec / 1000 );
 		fflush(stdout);
 #endif
 //tErrType PostEvent(const IEventMessage &msg,
