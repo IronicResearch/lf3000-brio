@@ -902,24 +902,14 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-	err = pthread_mutex_lock( &mutexValue_1);
-	ASSERT_POSIX_CALL( err );
-	pthreadTimer++;
-	err = pthread_mutex_unlock( &mutexValue_1);
-	ASSERT_POSIX_CALL( err );
 
     // Initialize the sigaction structure for handler 
-	if( pthreadTimer > 1 )
-	{
-    	/* Setup signal to repond to handler */
-    	struct sigaction act;
-//   	sigemptyset( &act.sa_mask );
-    	sigfillset( &act.sa_mask );
-    	sigaddset( &act.sa_mask, SIGRTMAX ); 
-    	act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
-    	act.sa_sigaction = sig_handler;
-    	sigaction( signum, &act, NULL ); 
-	}	
+   	// Setup signal to repond to handler
+   	struct sigaction act;
+   	sigfillset( &act.sa_mask );
+   	act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
+   	act.sa_sigaction = sig_handler;
+   	sigaction( signum, &act, NULL ); 
     
 	// Set up timer
     struct sigevent se;
@@ -951,7 +941,8 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	listMemory.push_back( ptrList );
 	pthread_mutex_unlock( &mutexValue_1);
 #if 0 // FIXME/BSK
-		printf("CreateTimer tTimerHndl=0x%x \n", (unsigned int)hndl);
+		printf("CreateTimer tTimerHndl=0x%x callback=0x%x \n",
+		           (unsigned int )hndl, (unsigned int )callback);
 		fflush(stdout);  		
 #endif
 	
