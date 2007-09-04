@@ -7815,3 +7815,12 @@ By Rcabrera (Rcabrera@leapfrog.com) on 9/4/07 2:39 PM
 2,719 ms. (Cumulative: 1,579,095 ms)
 
 ----------------
+Revision 1,476 from svn://localhost/TRUNK/:
+
+Added YUV planar format to emulation, unit test, SDK example.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/4/07 4:07 PM
+2 changed, 0 added, 0 deleted.
+2,734 ms. (Cumulative: 1,581,939 ms)
+
+----------------
