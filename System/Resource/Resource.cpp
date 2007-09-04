@@ -1471,6 +1471,14 @@ tErrType CResourceModule::OpenRsrc(U32 id, tRsrcHndl hndl,
 }  
 
 //----------------------------------------------------------------------------
+inline U32 FileSize( const CPath& path )
+{
+	struct stat filestat;
+	int status = stat(path.c_str(), &filestat);
+	return (status == 0) ? filestat.st_size : 0;
+}
+
+//----------------------------------------------------------------------------
 tErrType CResourceModule::CloseRsrc(U32 id, tRsrcHndl hndl)
 {
 	ResourceDescriptor* prd = FindRsrcPriv(id, hndl);
@@ -1480,6 +1488,10 @@ tErrType CResourceModule::CloseRsrc(U32 id, tRsrcHndl hndl)
 						static_cast<unsigned int>(hndl));
 		return kResourceInvalidErr;
 	}
+	
+	CPath rPath = prd->pPkg->path.substr(0, prd->pPkg->path.rfind('/')+1);
+	rPath += prd->path;
+	prd->size = prd->usize = FileSize(rPath);
 	
 	--prd->refCount;
 	if (prd->refCount == 0)
@@ -1679,7 +1691,11 @@ tErrType CResourceModule::WriteRsrc(U32 id, tRsrcHndl hndl, const void *pBuffer,
 		dbg_.Assert(false, "CResourceModule::WriteRsrc: called with non-open resource '%s'", prd->uri.c_str());
 		return kResourceNotOpenErr;
 	}
-		
+	
+	CPath rPath = prd->pPkg->path.substr(0, prd->pPkg->path.rfind('/')+1);
+	rPath += prd->path;
+	prd->size = prd->usize = FileSize(rPath);
+	
 	U32 countWritten = write(prd->fd, pBuffer, numBytesRequested);		//*3
 	if (pNumBytesActual != NULL)
 		*pNumBytesActual = countWritten;
@@ -1698,14 +1714,6 @@ inline bool FileExists( const CPath& path )
 {
 	struct stat filestat;
 	return stat(path.c_str(), &filestat) == 0;
-}
-
-//----------------------------------------------------------------------------
-inline U32 FileSize( const CPath& path )
-{
-	struct stat filestat;
-	int status = stat(path.c_str(), &filestat);
-	return (status == 0) ? filestat.st_size : 0;
 }
 
 //----------------------------------------------------------------------------
