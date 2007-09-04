@@ -483,13 +483,13 @@ public:
 // NOTE:
 //typedef struct timer_arg{	pfnTimerCallback pfn; tPtr arg;} callbackData;
 //struct tTimerProperties { int type; struct itimerspec timeout; callbackData callback;};
-		const static tTimerProperties props_1 = {TIMER_ABSTIME_SET,
+		const static tTimerProperties props_1 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
-		const static tTimerProperties props_2 = {TIMER_ABSTIME_SET,
+		const static tTimerProperties props_2 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
-		const static tTimerProperties props_3 = {TIMER_ABSTIME_SET,
+		const static tTimerProperties props_3 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
 //typedef void (*pfnTimerCallback)(tTimerHndl arg)		
@@ -526,7 +526,7 @@ public:
 #endif
 //------------------------------------------------------------------
 
-		tTimerProperties props = {TIMER_ABSTIME_SET,
+		tTimerProperties props = {TIMER_RELATIVE_SET,
 									{{0, 0}, {0, 0}},};
 		tErrType err;
 
@@ -607,7 +607,7 @@ public:
 		ptintf_test_info("testResetTimerRelative");
 
 //        TS_WARN("TODO: Test Reset Timer Relative!");
-		tTimerProperties props = {TIMER_ABSTIME_SET,
+		tTimerProperties props = {TIMER_RELATIVE_SET,
 									{{0, 0}, {0, 0}},};
 		tErrType err;
 

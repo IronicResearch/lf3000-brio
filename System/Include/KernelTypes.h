@@ -446,8 +446,8 @@ enum{
 
 // 
 enum{
-	TIMER_ABSTIME_SET=/* TIMER_ABSTIME */ 0,
-    TIMER_RELATIVE_SET=/* TIMER_ABSTIME_SET */ 1
+    TIMER_RELATIVE_SET = 0,
+	TIMER_ABSTIME_SET = 1
 };    
 
 typedef struct timer_arg
