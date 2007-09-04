@@ -164,7 +164,7 @@ public:
 	// Get the Audio ID associated with a currently playing MidiFile. 
 	// You only need this if you want to change the Volume/Priority/Pan/Listener
 	// using the methods above.
-	tAudioID		GetAudioIDForMidiID( tMidiPlayerID id ); // TODO: stub
+	tAudioID	GetAudioIDForMidiID( tMidiPlayerID id ); // TODO: stub
 	
 	// Start playback of a MIDI file.
 	// Currently only the volume and pListener options are used.

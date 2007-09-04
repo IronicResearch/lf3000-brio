@@ -7789,3 +7789,15 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 9/4/07 10:08 AM
 2,781 ms. (Cumulative: 1,573,110 ms)
 
 ----------------
+Revision 1,469 from svn://localhost/TRUNK/:
+
+Change the way AudioDone events are generated.  There was a logic problem causing a lockup when StartAudio() was called'
+in an AudioDone event Listener's Notify() method.  This is a first-pass fix for the content team (TTPro #46).  A full fix involves
+sending the AudioDone event from the Mixer after the player is deleted and the channel is free.  With this fix there is no lockup,
+but to do an audio sequence with the AudioDone event requires two free audio channels; more of a ping-pong than a sequence.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/4/07 10:50 AM
+5 changed, 0 added, 0 deleted.
+2,907 ms. (Cumulative: 1,576,142 ms)
+
+----------------
