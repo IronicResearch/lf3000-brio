@@ -163,16 +163,22 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->depth = depth;
 	dc->bpp = depth/8;
 
+	if (colorDepth == kPixelFormatYUV420)
+		height *= 2;
+	
 	// TODO/dm: Bind these to display context
 	/* Pixmap */ pixmap = XCreatePixmap(x11Display, x11Window, width, height, depth);
 	/* _XImage* */ image = XGetImage(x11Display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
 	
+	dc->depth = image->bitmap_unit;
+	dc->bpp = image->bits_per_pixel;
 	dc->pitch = image->bytes_per_line;
 	dc->pBuffer = (U8*)image->data;
 	dc->x = 0;
 	dc->y = 0;
 	dc->isAllocated = true;
 	dc->isOverlay = (colorDepth == kPixelFormatYUYV422);	
+	dc->isPlanar = (colorDepth == kPixelFormatYUV420);	
 	dc_ = dc;
 
 	memset(dc->pBuffer, 0, width * height);
@@ -222,7 +228,43 @@ inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)            
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
-	if (dc_->isOverlay)
+	if (dc_->isPlanar)
+	{
+		// Repack YUV planar format surface into ARGB format surface
+		U8			buffer[WINDOW_WIDTH];
+		U8* 		s = &buffer[0];
+		U8*			d = reinterpret_cast<U8*>(image->data);
+		U8*			su = d + image->bytes_per_line * image->height;
+		U8*			sv = d + image->bytes_per_line * image->height*3/2;
+		U8			y,z,u,v;
+		int			i,j,m,n;
+		for (i = 0; i < dc_->height; i++) 
+		{
+			memcpy(s, d, dc_->width);
+			for (j = m = n = 0; m < dc_->width; j++, m+=2, n+=8) 
+			{
+				y = s[m+0];
+				z = s[m+1];
+				u = 0x7f; //su[j];
+				v = 0x7f; //sv[j];
+				d[n+0] = B(y,u,v); // y + u;
+				d[n+1] = G(y,u,v); // y - u - v;
+				d[n+2] = R(y,u,v); // y + v;
+				d[n+3] = 0xFF;
+				d[n+4] = B(z,u,v); // z + u;
+				d[n+5] = G(z,u,v); // z - u - v;
+				d[n+6] = R(z,u,v); // z + v;
+				d[n+7] = 0xFF;
+			}
+			d += dc_->pitch;
+			if (i % 2)
+			{
+				su += image->bytes_per_line;
+				sv += image->bytes_per_line;
+			}
+		}
+	}
+	else if (dc_->isOverlay)
 	{
 		// Repack YUYV format surface into ARGB format surface
 		U8			buffer[WINDOW_WIDTH*2];
