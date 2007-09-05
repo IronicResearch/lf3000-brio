@@ -7870,3 +7870,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/5/07 10:05 AM
 2,747 ms. (Cumulative: 1,588,062 ms)
 
 ----------------
+Revision 1,505 from svn://localhost/TRUNK/:
+
+Correct V and U buffer offset calculation for emulation double-height buffer.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/5/07 10:10 AM
+2 changed, 0 added, 0 deleted.
+2,704 ms. (Cumulative: 1,590,828 ms)
+
+----------------

@@ -234,8 +234,8 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 		U8			buffer[WINDOW_WIDTH];
 		U8* 		s = &buffer[0];
 		U8*			d = reinterpret_cast<U8*>(image->data);
-		U8*			su = d + image->bytes_per_line * image->height;
-		U8*			sv = d + image->bytes_per_line * image->height*3/2;
+		U8*			su = d + image->bytes_per_line * dc_->height;
+		U8*			sv = d + image->bytes_per_line * dc_->height*3/2;
 		U8			y,z,u,v;
 		int			i,j,m,n;
 		for (i = 0; i < dc_->height; i++) 
@@ -245,8 +245,8 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 			{
 				y = s[m+0];
 				z = s[m+1];
-				u = 0x7f; //su[j];
-				v = 0x7f; //sv[j];
+				u = su[j];
+				v = sv[j];
 				d[n+0] = B(y,u,v); // y + u;
 				d[n+1] = G(y,u,v); // y - u - v;
 				d[n+2] = R(y,u,v); // y + v;
