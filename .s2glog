@@ -7824,3 +7824,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/4/07 4:07 PM
 2,734 ms. (Cumulative: 1,581,939 ms)
 
 ----------------
+Revision 1,477 from svn://localhost/TRUNK/:
+Revision 1,478 from svn://localhost/TRUNK/:
+
+checking in newest OpenGL library for LF1000, from MagicEyes.  This one fixes
+some known bugs.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 9/4/07 7:40 PM
+1 changed, 0 added, 0 deleted.
+2,830 ms. (Cumulative: 1,584,925 ms)
+
+----------------
