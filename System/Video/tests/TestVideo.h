@@ -320,7 +320,7 @@ public:
 		tDisplayHandle disp;
 
 		pDisplayMPI_ = new CDisplayMPI;
-		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUYV422, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
