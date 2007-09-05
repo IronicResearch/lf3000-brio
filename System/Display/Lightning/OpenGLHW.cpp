@@ -84,7 +84,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	mem2Virt = (unsigned int)MEM1_VIRT + gMem1Size;
 
 	// Open device driver for 3D layer
-	if(FSAAval) {
+	if (FSAAval) {
 		// open Even layer
 		gDevLayerEven = open(OGL_LAYER_EVEN_DEV, O_WRONLY);
 		dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver failed");
@@ -114,7 +114,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-    	gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
+    gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
@@ -176,12 +176,13 @@ void CDisplayModule::EnableOpenGL()
 	ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
 	ioctl(layer, MLC_IOCTFORMAT, 0x4432);
 	ioctl(layer, MLC_IOCTHSTRIDE, 2);
-	ioctl(layer, MLC_IOCTVSTRIDE, 4096);
 	if(FSAAval) {
+		ioctl(layer, MLC_IOCTVSTRIDE, 8192);
 		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)1);
 		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)1);
 	}
 	else {
+		ioctl(layer, MLC_IOCTVSTRIDE, 4096);
 		ioctl(layer, MLC_IOCT3DENB, (void *)1);
 	}
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
