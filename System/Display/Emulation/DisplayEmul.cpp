@@ -125,7 +125,7 @@ void CDisplayModule::DeinitOpenGL()
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::EnableOpenGL()
+void CDisplayModule::EnableOpenGL(void* pCtx)
 {
 	// Nothing to do on emulation target
 }
