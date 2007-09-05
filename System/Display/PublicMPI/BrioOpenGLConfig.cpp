@@ -83,8 +83,8 @@ namespace
 #endif
 	{
 #ifdef LF1000
-// TODO: set FSSAval so that OpenGLHW functions use it!  Something like:
-//	dispmgr->FSAAval = FSAAEnb;
+		// OGL needs 2 layers for fullscreen anti-aliasing option
+		ctx.bFSAA = FSAAEnb;
 #endif
 		*pMemoryInfo = meminfo;
 	    PRINTF("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
@@ -163,6 +163,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	meminfo.Memory1D_SizeInMbyte = size1D;
 	meminfo.Memory2D_SizeInMbyte = size2D;
 	ctx.pOEM = &meminfo;
+	// FIXME/dm: How is LF1000 OGL lib configured for FSAA option?
+	ctx.bFSAA = false;
 #endif
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
@@ -197,7 +199,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// sets up 3D accelerator, but this cannot happen
 	// until GLESOAL_Initalize() callback gets mappings.
 	PRINTF("eglInitialize post-init layer enable\n");
-	disp_.EnableOpenGL();
+	disp_.EnableOpenGL(&ctx);
 
 	/*
 		Step 3 - Specify the required configuration attributes.

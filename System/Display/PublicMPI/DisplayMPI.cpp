@@ -277,11 +277,11 @@ void CDisplayMPI::DeinitOpenGL()
 }
 
 //----------------------------------------------------------------------------
-void CDisplayMPI::EnableOpenGL()
+void CDisplayMPI::EnableOpenGL(void* pCtx)
 {
 	if (!pModule_)
 		return;
-	pModule_->EnableOpenGL();
+	pModule_->EnableOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------

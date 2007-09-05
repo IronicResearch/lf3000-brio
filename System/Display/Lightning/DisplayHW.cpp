@@ -189,18 +189,6 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 }
 
 //----------------------------------------------------------------------------
-// Convert linear address to XY block address
-inline U32 LIN2XY(U32 addr)
-{
-	const U32 k16Meg = 4096 * 4096;
-	U32 segment = addr / k16Meg;
-	U32 offset  = addr % k16Meg;
-	U32 y = offset / 4096;
-	U32 x = offset % 4096;
-//	dbg_.DebugOut(kDbgLvlImportant, "LIN2XY: lin=%08X, seg=%d, ofs=%d, y=%d, x=%d\n", addr, segment, offset, y, x);
-	return 0x20000000 | (segment << 24) | (y << 12) | (x << 0);
-}
-//----------------------------------------------------------------------------
 // The frame buffer was already allocated by the hardware, therefore pBuffer
 // is ignored.
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 

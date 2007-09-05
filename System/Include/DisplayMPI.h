@@ -109,7 +109,7 @@ public:
 	void				DeinitOpenGL();
 	
 	// Enables OpenGL hardware 3D engine rendering output to display surface layer
-	void				EnableOpenGL();
+	void				EnableOpenGL(void* pCtx);
 	
 	// Disables OpenGL hardware 3D engine rendering output to display surface layer
 	void				DisableOpenGL();
