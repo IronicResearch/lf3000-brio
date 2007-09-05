@@ -24,7 +24,7 @@ onto the target board via the U-Boot loader. (Refer to kernel image
 download instructions below.)
 
 	tar -xzvf zImage-svnxxxx.tar.gz
-	cp zImage-xxxx ~/tftproot
+	cp zImage-xxxx ~/tftpboot
 
 These three pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
@@ -185,15 +185,20 @@ socket_type = dgram
 wait        = yes
 user        = lfu
 server      = /usr/sbin/in.tftpd
-server_args = /home/lfu/tftproot
+server_args = /home/lfu/tftpboot
 disable     = no
 }
 
 
-3. Make /home/lfu/tftproot directory.
+3. Make /home/lfu/tftpboot directory.
 
-	mkdir -p /home/lfu/tftproot
-	chmod -R 777 /home/lfu/tftproot
+	mkdir -p /home/lfu/tftpboot
+	chmod -R 777 /home/lfu/tftpboot
+	
+Note some previous release notes and wiki notes may have referred to 'tftproot' as
+the TFTP server home directory. External software developers may continue to use
+that name (or any other name) for their TFTP directory for consistancy. (Internal
+firmware developers need to use 'tftpboot' for automated script support.) 
 
 
 4. Ensure /etc/hosts.allow file allows computers on 192.168.0.0 network access.
@@ -228,7 +233,7 @@ ALL:192.168.0.0/24
 	tftp> put hda.txt
 	tftp> quit
 
-	ls -l /home/lfu/tftproot
+	ls -l /home/lfu/tftpboot
 	-rw------- 1 lfu lfu 0 2007-06-04 12:10 hda.txt
 
 
@@ -258,7 +263,7 @@ At the U-boot prompt, test pinging the development system first.
 	
 Then download the updated kernel zImage from its TFTP location on the
 development system. On Ubuntu Linux, TFTP is typically configured
-at the ~/tftproot directory, so this is where the zImage file needs to
+at the ~/tftpboot directory, so this is where the zImage file needs to
 be copied to. The zImage file provided in releases will typically have
 some version number suffix, like zImage-xxxx.
 
@@ -273,13 +278,13 @@ To immediately test the downloaded zImage from RAM:
 	
 To flash the downloaded zImage into NAND:
 
-	nand erase clean 00080000 111800
-	nand write 02000000 00080000 111800
+	nand erase clean 00080000 nnnnnn
+	nand write 02000000 00080000 nnnnnn
 	
 Note that the size of the zImage has grown over 1 Meg since its initial release,
 so the size used for nand erase and write commands must be at least the size transfered
 via tftp rounded up to the next highest 800 (hex) multiple. For example, transfered
-bytes 11176C (hex) would be rounded up to size 111800 (hex).
+bytes 1123e8 (hex) would be rounded up to nand size 'nnnnnn' = 112800 (hex).
 
 Either method should execute the updated Linux kernel and NFS mount the
 root file system located on the development system.

@@ -3,6 +3,30 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.16  (Build 1507 released Sep 5, 2007) 
+===========================================
+
+Release for LF1000 embedded target boards only (green).
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.6.0-1498 (flash size = 112800 hex)
+* NFS root file system: nfsroot-svn1507.tar.gz
+
+Enhancements:
+-------------
+* Updated OpenGL driver for new LF1000 3D hardware.
+* YUV planar video format supported for LF1000 and emulation.
+
+Known Issues:
+-------------
+
+* SDK examples for the LF1000 board must be built with 'variant=LF1000' option.
+  'scons type=embedded variant=LF1000'
+* OpenGL driver is incomplete. 54 of 58 accelerated functions implemented so far.
+ 
+  
+===========================================
 v0.1.15  (Build 1314 released August 17, 2007) 
 ===========================================
 
