@@ -40,6 +40,7 @@ struct tOpenGLContext
 	NativeWindowType	eglWindow;		// X window or HW context
 	U16					width;
 	U16					height;
+	Boolean				bFSAA;			// fullscreen anti-aliasing feature (LF1000 only)
 };
 
 //==============================================================================

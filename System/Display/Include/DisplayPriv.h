@@ -93,7 +93,7 @@ public:
 	VTABLE_EXPORT U8 				GetAlpha(tDisplayHandle hndl) const;
 	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
 	VTABLE_EXPORT void    			DeinitOpenGL();
-	VTABLE_EXPORT void    			EnableOpenGL();
+	VTABLE_EXPORT void    			EnableOpenGL(void* pCtx);
 	VTABLE_EXPORT void    			DisableOpenGL();
 	VTABLE_EXPORT void    			UpdateOpenGL();
 	

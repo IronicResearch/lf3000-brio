@@ -59,6 +59,18 @@ const U32	kLayerPixelFormatRGB888		= 0x4653; //R8G8B8 (HStride=3)
 const U32	kLayerPixelFormatYUV420		= 0x0000; //YUV planar	
 const U32	kLayerPixelFormatYUYV422	= 0x0002; //YUYV packed
 
+//----------------------------------------------------------------------------
+// Convert linear address to XY block address
+inline U32 LIN2XY(U32 addr)
+{
+	const U32 k16Meg = 4096 * 4096;
+	U32 segment = addr / k16Meg;
+	U32 offset  = addr % k16Meg;
+	U32 y = offset / 4096;
+	U32 x = offset % 4096;
+	return 0x20000000 | (segment << 24) | (y << 12) | (x << 0);
+}
+
 #endif // LF_DISPLAYHW_H
 
 // EOF

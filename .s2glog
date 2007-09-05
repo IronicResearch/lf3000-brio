@@ -7894,3 +7894,18 @@ By Dave Milici (dmilici@leapfrog.com) on 9/5/07 10:58 AM
 2,768 ms. (Cumulative: 1,596,285 ms)
 
 ----------------
+Revision 1,508 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,706 ms. (Cumulative: 1,599,038 ms)
+
+----------------
+Revision 1,509 from svn://localhost/TRUNK/:
+
+Added support for LF1000 FSAA option, plus major work-around for MLC 3D/video layer enable bug.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/5/07 2:33 PM
+9 changed, 0 added, 0 deleted.
+2,828 ms. (Cumulative: 1,601,866 ms)
+
+----------------
