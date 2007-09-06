@@ -7927,3 +7927,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/5/07 3:38 PM
 2,720 ms. (Cumulative: 1,607,555 ms)
 
 ----------------
+Revision 1,512 from svn://localhost/TRUNK/:
+Revision 1,513 from svn://localhost/TRUNK/:
+Revision 1,514 from svn://localhost/TRUNK/:
+Revision 1,515 from svn://localhost/TRUNK/:
+
+Include baseAddr definition only for LF1000 build
+
+
+By Scott Esters (SEsters@leapfrog.com) on 9/5/07 6:00 PM
+1 changed, 0 added, 0 deleted.
+2,707 ms. (Cumulative: 1,610,372 ms)
+
+----------------
