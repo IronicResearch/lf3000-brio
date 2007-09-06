@@ -77,8 +77,10 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
 	unsigned int					mem2Virt;
+#ifdef LF1000
 	unsigned int					baseAddr;
-	
+#endif
+
 	// 2nd heap size and addresses must be 4 Meg aligned
 	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+3) & ~3) << 20;
 	gMem2Size = ((pMemInfo->Memory2D_SizeInMbyte+3) & ~3) << 20;
