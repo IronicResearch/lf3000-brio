@@ -7940,3 +7940,23 @@ By Scott Esters (SEsters@leapfrog.com) on 9/5/07 6:00 PM
 2,707 ms. (Cumulative: 1,610,372 ms)
 
 ----------------
+Revision 1,516 from svn://localhost/TRUNK/:
+Revision 1,517 from svn://localhost/TRUNK/:
+Revision 1,518 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,766 ms. (Cumulative: 1,613,216 ms)
+
+----------------
+Revision 1,519 from svn://localhost/TRUNK/:
+Revision 1,520 from svn://localhost/TRUNK/:
+Revision 1,521 from svn://localhost/TRUNK/:
+Revision 1,522 from svn://localhost/TRUNK/:
+
+Bind X pixmap emulation vars for general display context support.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/6/07 3:05 PM
+2 changed, 0 added, 0 deleted.
+2,734 ms. (Cumulative: 1,615,981 ms)
+
+----------------
