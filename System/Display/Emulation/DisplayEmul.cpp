@@ -38,9 +38,6 @@ namespace
 	// Display context
 	struct tDisplayContext*	dc_;
 	GC						gc;
-	Pixmap					pixmap;
-	_XImage*				image;
-	tRect					rect;
 	S8						brightness_;
 	S8						contrast_;
 }
@@ -142,6 +139,20 @@ void CDisplayModule::DisableOpenGL()
 	// Nothing to do on emulation target
 }
 
+#ifdef LF1000	// Defined independently of EMULATION
+//----------------------------------------------------------------------------
+void CDisplayModule::WaitForDisplayAddressPatched()
+{
+	// Nothing to do on emulation target
+}
+
+//----------------------------------------------------------------------------
+void CDisplayModule::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
+{
+	// Nothing to do on emulation target
+}
+#endif
+
 //----------------------------------------------------------------------------
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
                                         tPixelFormat colorDepth, U8 *pBuffer)
@@ -160,16 +171,17 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->width = width;
 	dc->height = height;
 	dc->colorDepthFormat = colorDepth;
-	dc->depth = depth;
-	dc->bpp = depth/8;
 
+	// YUV planar format needs double-height surface for U and V buffers
 	if (colorDepth == kPixelFormatYUV420)
 		height *= 2;
 	
-	// TODO/dm: Bind these to display context
-	/* Pixmap */ pixmap = XCreatePixmap(x11Display, x11Window, width, height, depth);
-	/* _XImage* */ image = XGetImage(x11Display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
+	// Bind X pixmap and image data to display context
+	Pixmap pixmap = XCreatePixmap(x11Display, x11Window, width, height, depth);
+	_XImage* image = XGetImage(x11Display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
 	
+	dc->pixmap = pixmap;
+	dc->image = image;
 	dc->depth = image->bitmap_unit;
 	dc->bpp = image->bits_per_pixel;
 	dc->pitch = image->bytes_per_line;
@@ -183,9 +195,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 	memset(dc->pBuffer, 0, width * height);
 	
-	rect.left = rect.top = 0;
-	rect.right = width;
-	rect.bottom = height;
+	dc->rect.left = dc->rect.top = 0;
+	dc->rect.right = width;
+	dc->rect.bottom = height;
 	
 	return (tDisplayHandle)dc;
 }
@@ -195,10 +207,10 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                             tDisplayHandle insertAfter, tDisplayScreen screen)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	rect.left = dc->x = xPos;
-	rect.top  = dc->y = yPos;
-	rect.right = rect.left + dc->width;
-	rect.bottom = rect.top + dc->height;
+	dc->rect.left = dc->x = xPos;
+	dc->rect.top  = dc->y = yPos;
+	dc->rect.right = dc->rect.left + dc->width;
+	dc->rect.bottom = dc->rect.top + dc->height;
 	return kNoErr;
 }
 
@@ -208,10 +220,10 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                              tDisplayScreen screen)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	rect.left = dc->x = xPos;
-	rect.top  = dc->y = yPos;
-	rect.right = rect.left + dc->width;
-	rect.bottom = rect.top + dc->height;
+	dc->rect.left = dc->x = xPos;
+	dc->rect.top  = dc->y = yPos;
+	dc->rect.right = dc->rect.left + dc->width;
+	dc->rect.bottom = dc->rect.top + dc->height;
 	return kNoErr;
 }
 
@@ -226,22 +238,21 @@ inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V
 inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
+// Repack YUV planar format surface into ARGB format surface
+inline void YUV2ARGB(tDisplayContext* dc)
 {
-	if (dc_->isPlanar)
-	{
 		// Repack YUV planar format surface into ARGB format surface
 		U8			buffer[WINDOW_WIDTH];
 		U8* 		s = &buffer[0];
-		U8*			d = reinterpret_cast<U8*>(image->data);
-		U8*			su = d + image->bytes_per_line * dc_->height;
-		U8*			sv = d + image->bytes_per_line * dc_->height*3/2;
+		U8*			d = reinterpret_cast<U8*>(dc->image->data);
+		U8*			su = d + dc->image->bytes_per_line * dc->height;
+		U8*			sv = d + dc->image->bytes_per_line * dc->height*3/2;
 		U8			y,z,u,v;
 		int			i,j,m,n;
-		for (i = 0; i < dc_->height; i++) 
+		for (i = 0; i < dc->height; i++) 
 		{
-			memcpy(s, d, dc_->width);
-			for (j = m = n = 0; m < dc_->width; j++, m+=2, n+=8) 
+			memcpy(s, d, dc->width);
+			for (j = m = n = 0; m < dc->width; j++, m+=2, n+=8) 
 			{
 				y = s[m+0];
 				z = s[m+1];
@@ -256,26 +267,29 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 				d[n+6] = R(z,u,v); // z + v;
 				d[n+7] = 0xFF;
 			}
-			d += dc_->pitch;
+			d += dc->pitch;
 			if (i % 2)
 			{
-				su += image->bytes_per_line;
-				sv += image->bytes_per_line;
+				su += dc->image->bytes_per_line;
+				sv += dc->image->bytes_per_line;
 			}
 		}
-	}
-	else if (dc_->isOverlay)
-	{
+}
+
+//----------------------------------------------------------------------------
+// Repack YUYV format surface into ARGB format surface
+inline void YUYV2ARGB(tDisplayContext* dc)
+{
 		// Repack YUYV format surface into ARGB format surface
 		U8			buffer[WINDOW_WIDTH*2];
 		U8* 		s = &buffer[0];
-		U8*			d = reinterpret_cast<U8*>(image->data);
+		U8*			d = reinterpret_cast<U8*>(dc->image->data);
 		U8			y,z,u,v;
 		int			i,j,m,n;
-		for (i = 0; i < dc_->height; i++) 
+		for (i = 0; i < dc->height; i++) 
 		{
-			memcpy(s, d, dc_->width * 2);
-			for (j = m = n = 0; j < dc_->width; j+=2, m+=4, n+=8) 
+			memcpy(s, d, dc->width * 2);
+			for (j = m = n = 0; j < dc->width; j+=2, m+=4, n+=8) 
 			{
 				y = s[m+0];
 				u = s[m+1];
@@ -290,11 +304,23 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 				d[n+6] = R(z,u,v); // z + v;
 				d[n+7] = 0xFF;
 			}
-			d += dc_->pitch;
+			d += dc->pitch;
 		}
-	}
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
+{
+	// TODO/dm: Use linked list instead of single global dc_
+	tDisplayContext* dc = dc_;
 	
-	XPutImage(x11Display, x11Window, gc, image, 0, 0, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	// Repack YUV format pixmap into ARGB format for X window
+	if (dc->isPlanar)
+		YUV2ARGB(dc);
+	else if (dc->isOverlay)
+		YUYV2ARGB(dc);
+		
+	XPutImage(x11Display, x11Window, gc, dc->image, 0, 0, dc->rect.left, dc->rect.top, dc->rect.right - dc->rect.left, dc->rect.bottom - dc->rect.top);
 	XFlush(x11Display);
 	return kNoErr;
 }
@@ -309,12 +335,12 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	if (image)
-		XDestroyImage(image);
-	image = NULL;
-	if (pixmap)
-		XFreePixmap(x11Display, pixmap);
-	pixmap = 0;
+	if (dc == NULL)
+		return kNoErr;
+	if (dc->image)
+		XDestroyImage(dc->image);
+	if (dc->pixmap)
+		XFreePixmap(x11Display, dc->pixmap);
 	if (dc_ == dc)
  		dc_ = NULL;
  	delete dc;

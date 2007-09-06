@@ -19,7 +19,11 @@
 #include <DisplayTypes.h>
 #include <DebugMPI.h>
 
+#ifdef EMULATION
+#include <X11/Xlib.h>
+#else
 #include "DisplayHW.h"
+#endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -49,6 +53,11 @@ struct tDisplayContext {
 	bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
 	bool isOverlay;		// video overlay layer?
 	bool isPlanar;		// video overlay planar?
+#ifdef EMULATION
+	Pixmap	pixmap;		// X offscreen pixmap
+	_XImage	*image;		// X pixmap internals
+	tRect	rect;		// active rect from Register()
+#endif	
 };
 
 //==============================================================================
