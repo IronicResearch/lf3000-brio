@@ -265,11 +265,14 @@ void CDisplayModule::DisableOpenGL()
 void CDisplayModule::WaitForDisplayAddressPatched(void)
 {
 	if(FSAAval) {
-		while(ioctl(gDevLayerEven, MLC_IOCQDIRTY, (void *)0));
-		while(ioctl(gDevLayerOdd , MLC_IOCQDIRTY, (void *)0));
+		while(ioctl(gDevLayerEven, MLC_IOCQDIRTY, (void *)0)) 
+			usleep(100);
+		while(ioctl(gDevLayerOdd , MLC_IOCQDIRTY, (void *)0)) 
+			usleep(100);
 	}
 	else {
-		while(ioctl(gDevLayer , MLC_IOCQDIRTY, (void *)0));
+		while(ioctl(gDevLayer , MLC_IOCQDIRTY, (void *)0)) 
+			usleep(100);
 	}
 	// Now safe to disable video layer
 	ioctl(gDevLayerVideo, MLC_IOCTLAYEREN, 0);
