@@ -7960,3 +7960,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/6/07 3:05 PM
 2,734 ms. (Cumulative: 1,615,981 ms)
 
 ----------------
+Revision 1,523 from svn://localhost/TRUNK/:
+Revision 1,524 from svn://localhost/TRUNK/:
+Revision 1,525 from svn://localhost/TRUNK/:
+
+Arg!  Adding sleep in what was a busy-wait.  Please don't busy-wait!
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 9/6/07 7:54 PM
+1 changed, 0 added, 0 deleted.
+2,922 ms. (Cumulative: 1,618,982 ms)
+
+----------------
