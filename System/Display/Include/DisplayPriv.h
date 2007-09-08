@@ -57,7 +57,8 @@ struct tDisplayContext {
 	Pixmap	pixmap;		// X offscreen pixmap
 	_XImage	*image;		// X pixmap internals
 	tRect	rect;		// active rect from Register()
-#endif	
+#endif
+	void*	pdc;		// next dc in list
 };
 
 //==============================================================================
@@ -122,6 +123,7 @@ private:
 	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
 	void				SetDirtyBit(int layer);
+	tErrType			Update(tDisplayContext* dc);
 	CDebugMPI			dbg_;
 
 	// Limit object creation to the Module Manager interface functions

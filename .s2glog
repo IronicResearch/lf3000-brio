@@ -7972,3 +7972,12 @@ By ayurovsky (ayurovsky@leapfrog.com) on 9/6/07 7:54 PM
 2,922 ms. (Cumulative: 1,618,982 ms)
 
 ----------------
+Revision 1,526 from svn://localhost/TRUNK/:
+
+Added linked list support for multiple display contexts.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/7/07 6:27 PM
+2 changed, 0 added, 0 deleted.
+2,735 ms. (Cumulative: 1,621,779 ms)
+
+----------------
