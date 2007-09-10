@@ -122,6 +122,7 @@ private:
 	U32					GetScreenSize( );
 	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
+	tErrType 			UnRegisterLayer(tDisplayHandle hndl);
 	void				SetDirtyBit(int layer);
 	tErrType			Update(tDisplayContext* dc);
 	CDebugMPI			dbg_;
