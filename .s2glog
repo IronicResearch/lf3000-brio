@@ -7981,3 +7981,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/7/07 6:27 PM
 2,735 ms. (Cumulative: 1,621,779 ms)
 
 ----------------
+Revision 1,527 from svn://localhost/TRUNK/:
+Revision 1,528 from svn://localhost/TRUNK/:
+
+Reorganize linked list of display contexts for both emulation and embedded targets.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/07 11:20 AM
+4 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,624,545 ms)
+
+----------------

@@ -36,8 +36,6 @@ namespace
 	Colormap			x11Colormap;
 
 	// Display context
-//	struct tDisplayContext*	dc_;
-	struct tDisplayContext*	pdcListHead = NULL;
 	GC						gc;
 	S8						brightness_;
 	S8						contrast_;
@@ -189,10 +187,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->pBuffer = (U8*)image->data;
 	dc->x = 0;
 	dc->y = 0;
-	dc->isAllocated = true;
+	dc->isAllocated = (pBuffer != NULL);
 	dc->isOverlay = (colorDepth == kPixelFormatYUYV422);	
 	dc->isPlanar = (colorDepth == kPixelFormatYUV420);	
-//	dc_ = dc;
 
 	memset(dc->pBuffer, 0, width * height);
 	
@@ -200,83 +197,25 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->rect.right = width;
 	dc->rect.bottom = height;
 	
-	return (tDisplayHandle)dc;
+	return reinterpret_cast<tDisplayHandle>(dc);
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
-                            tDisplayHandle insertAfter, tDisplayScreen screen)
+tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
 	dc->rect.left = dc->x = xPos;
 	dc->rect.top  = dc->y = yPos;
 	dc->rect.right = dc->rect.left + dc->width;
 	dc->rect.bottom = dc->rect.top + dc->height;
-
-	// Insert display context at head or tail of linked list
-	tDisplayContext*	pdc = pdcListHead;
-	tDisplayContext*	pdcAfter = static_cast<tDisplayContext*>(insertAfter);
-	if (pdcListHead == NULL)
-	{
-		// Start from empty list
-		pdcListHead = dc;
-		dc->pdc = NULL;
-	}
-	else while (pdc != NULL)
-	{
-		// Walk list to insert after selected handle, or at tail
-		if (pdc == pdcAfter || pdc->pdc == NULL)
-		{
-			dc->pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-			pdc->pdc = reinterpret_cast<tDisplayContext*>(dc);
-			break;
-		}
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-	}
-	
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
-                             tDisplayZOrder initialZOrder,
-                             tDisplayScreen screen)
+tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 {
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	dc->rect.left = dc->x = xPos;
-	dc->rect.top  = dc->y = yPos;
-	dc->rect.right = dc->rect.left + dc->width;
-	dc->rect.bottom = dc->rect.top + dc->height;
-
-	// Insert display context at head or tail of linked list
-	tDisplayContext*	pdc = pdcListHead;
-	if (pdcListHead == NULL)
-	{
-		// Start from empty list
-		pdcListHead = dc;
-		dc->pdc = NULL;
-	}
-	else if (kDisplayOnTop == initialZOrder)
-	{
-		// Replace previous head of list
-		pdcListHead = dc;
-		dc->pdc = pdc;
-	}
-	else while (pdc != NULL)
-	{
-		// Walk list to insert at tail
-		if (pdc->pdc == NULL)
-		{
-			pdc->pdc = dc;
-			dc->pdc = NULL;
-			break;
-		}
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-	}
-	
-	return kNoErr;
+	// Nothing to do on emulation target
 }
-
 //----------------------------------------------------------------------------
 // YUV to RGB color conversion: <http://en.wikipedia.org/wiki/YUV>
 inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8>(X); }
@@ -373,48 +312,6 @@ tErrType CDisplayModule::Update(tDisplayContext* dc)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
-{
-	tDisplayContext*	pdc = pdcListHead;
-	tErrType		 	rc = kNoErr;
-
-	// Walk list of display contexts to update screen
-	while (pdc != NULL)
-	{
-		rc = Update(pdc);
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-	}
-	return rc;
-}
-
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
-{
-	tDisplayContext*	dc = static_cast<tDisplayContext*>(hndl);
-	tDisplayContext*	pdc = pdcListHead;
-	tDisplayContext*	pdcPrev = pdcListHead;
-	tDisplayContext*	pdcNext;
-
-	// Remove display context from linked list
-	while (pdc != NULL)
-	{
-		if (pdc == dc)
-		{
-			// Link next context pointer to previous context
-			pdcNext = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-			pdcPrev->pdc = reinterpret_cast<tDisplayContext*>(pdcNext);
-			// List is empty again?
-			if (pdcPrev == pdcListHead)
-				pdcListHead = NULL;
-			break;
-		}
-		pdcPrev = pdc;
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-	}
-	return kNoErr;
-}
-
-//----------------------------------------------------------------------------
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
@@ -425,8 +322,6 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffe
 		XDestroyImage(dc->image);
 	if (dc->pixmap)
 		XFreePixmap(x11Display, dc->pixmap);
-//	if (dc_ == dc)
-//		dc_ = NULL;
  	delete dc;
 	return kNoErr;
 }

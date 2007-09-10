@@ -189,8 +189,8 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 }
 
 //----------------------------------------------------------------------------
-// The frame buffer was already allocated by the hardware, therefore pBuffer
-// is ignored.
+// pBuffer == NULL indicates onscreen context.
+// pBuffer != NULL indicates offscreen context.
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
@@ -201,6 +201,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepthFormat = colorDepth;
+	GraphicsContext->pBuffer = pBuffer;
+	GraphicsContext->isAllocated = (pBuffer != NULL);
 	GraphicsContext->isOverlay = false;
 	GraphicsContext->isPlanar = false;
 
@@ -257,20 +259,19 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	ioctl(layer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
 	SetDirtyBit(layer);
 
-	return (tDisplayHandle)GraphicsContext;
+	return reinterpret_cast<tDisplayHandle>(GraphicsContext);
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
+tErrType CDisplayModule::Update(tDisplayContext *dc)
 {
 	// No hardware settings have actually changed
-//	SetDirtyBit(gDevLayer);
     return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-// This method does not have much meaning given the kernel-level frame buffer.
-tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
+// Hide onscreen display context from being visible.
+tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 {
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int 	layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
@@ -281,7 +282,6 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	if (context->isOverlay && context->isPlanar)
 		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
 	SetDirtyBit(layer);
-	context->isAllocated = false;
 	return kNoErr;
 }
 
@@ -298,13 +298,16 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	union mlc_cmd c;
-	struct tDisplayContext *context;
+	struct tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
 	
-	context = (struct tDisplayContext *)hndl;
+	// Nothing to do yet if offscreen context
+	if (context->isAllocated)
+		return kNoErr;
+	
+	// Assign mapped framebuffer address if onscreen context
 	context->pBuffer = (context->isPlanar) ? gPlanarBuffer : (context->isOverlay) ? gOverlayBuffer : gFrameBuffer;
 	context->x = xPos;
 	context->y = yPos;
-	context->isAllocated = true;
 
 	// apply to device
 	c.position.top = yPos;
@@ -339,27 +342,6 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 void CDisplayModule::SetDirtyBit(int layer)
 {
 	ioctl(layer, MLC_IOCTDIRTY, 0);
-}
-
-//----------------------------------------------------------------------------
-// FIXME/dm: Actually this seems like the perfect method for video overlays!
-
-// We are not implementing multiple 2D RGB layers or multiple screens, so
-// insertAfter and screen are ignored.
-tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
-							tDisplayHandle insertAfter, tDisplayScreen screen)
-{
-	return RegisterLayer(hndl, xPos, yPos);
-}
-
-//----------------------------------------------------------------------------
-// We are not implementing multiple 2D RGB layers or multiple screens, so
-// initialZOrder and screen are ignored.
-tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
-                             tDisplayZOrder initialZOrder,
-                             tDisplayScreen screen)
-{
-	return RegisterLayer(hndl, xPos, yPos);
 }
 
 //----------------------------------------------------------------------------

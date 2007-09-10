@@ -22,6 +22,13 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Display";
 
+//============================================================================
+// Globals
+//============================================================================
+namespace 
+{	
+	tDisplayContext*	pdcListHead = NULL;
+}
 
 //============================================================================
 // CDisplayModule: Informational functions
@@ -106,7 +113,122 @@ tErrType CDisplayModule::UnlockBuffer(tDisplayHandle hndl, tRect* /*pDirtyRect*/
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
+// Linked list management for all display contexts
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
+                            tDisplayHandle insertAfter, tDisplayScreen screen)
+{
+	// Register HW or emulation layer
+	RegisterLayer(hndl, xPos, yPos);
+	
+	// Insert display context at head or tail of linked list
+	tDisplayContext* 	dc = reinterpret_cast<tDisplayContext*>(hndl);
+	tDisplayContext*	pdc = pdcListHead;
+	tDisplayContext*	pdcAfter = reinterpret_cast<tDisplayContext*>(insertAfter);
+	if (pdcListHead == NULL)
+	{
+		// Start from empty list
+		pdcListHead = dc;
+		dc->pdc = NULL;
+	}
+	else while (pdc != NULL)
+	{
+		// Walk list to insert after selected handle, or at tail
+		if (pdc == pdcAfter || pdc->pdc == NULL)
+		{
+			dc->pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+			pdc->pdc = reinterpret_cast<tDisplayContext*>(dc);
+			break;
+		}
+		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+	}
+	
+	return kNoErr;
+}
 
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
+                             tDisplayZOrder initialZOrder,
+                             tDisplayScreen screen)
+{
+	// Register HW or emulation layer
+	RegisterLayer(hndl, xPos, yPos);
+	
+	// Insert display context at head or tail of linked list
+	tDisplayContext* 	dc = reinterpret_cast<tDisplayContext*>(hndl);
+	tDisplayContext*	pdc = pdcListHead;
+	if (pdcListHead == NULL)
+	{
+		// Start from empty list
+		pdcListHead = dc;
+		dc->pdc = NULL;
+	}
+	else if (kDisplayOnTop == initialZOrder)
+	{
+		// Replace previous head of list
+		pdcListHead = dc;
+		dc->pdc = pdc;
+	}
+	else while (pdc != NULL)
+	{
+		// Walk list to insert at tail
+		if (pdc->pdc == NULL)
+		{
+			pdc->pdc = dc;
+			dc->pdc = NULL;
+			break;
+		}
+		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+	}
+	
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
+{
+	// UnRegister HW or emulation layer
+	UnRegisterLayer(hndl);
+	
+	tDisplayContext*	dc = reinterpret_cast<tDisplayContext*>(hndl);
+	tDisplayContext*	pdc = pdcListHead;
+	tDisplayContext*	pdcPrev = pdcListHead;
+	tDisplayContext*	pdcNext;
+
+	// Remove display context from linked list
+	while (pdc != NULL)
+	{
+		if (pdc == dc)
+		{
+			// Link next context pointer to previous context
+			pdcNext = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+			pdcPrev->pdc = reinterpret_cast<tDisplayContext*>(pdcNext);
+			// List is empty again?
+			if (pdcPrev == pdcListHead)
+				pdcListHead = NULL;
+			break;
+		}
+		pdcPrev = pdc;
+		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+	}
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
+{
+	tDisplayContext*	pdc = pdcListHead;
+	tErrType		 	rc = kNoErr;
+
+	// Walk list of display contexts to update screen
+	while (pdc != NULL)
+	{
+		rc = Update(pdc);
+		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+	}
+	return rc;
+}
 
 LF_END_BRIO_NAMESPACE()
 
