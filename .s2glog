@@ -7991,3 +7991,17 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/07 11:20 AM
 2,688 ms. (Cumulative: 1,624,545 ms)
 
 ----------------
+Revision 1,529 from svn://localhost/TRUNK/:
+Revision 1,530 from svn://localhost/TRUNK/:
+Revision 1,531 from svn://localhost/TRUNK/:
+Revision 1,532 from svn://localhost/TRUNK/:
+Revision 1,533 from svn://localhost/TRUNK/:
+Revision 1,534 from svn://localhost/TRUNK/:
+
+Added pixel format conversion to non-default X pixmap formats.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/07 2:41 PM
+1 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,627,279 ms)
+
+----------------
