@@ -230,9 +230,6 @@ public:
 	VTABLE_EXPORT tErrType	CloseMessageQueue( tMessageQueueHndl hndl,
 										const tMessageQueuePropertiesPosix& properties );
 	
-#if 0 // FIXME/BSK	
-	VTABLE_EXPORT tErrType	UnlinkMessageQueue( const char *name );
-#endif
 	VTABLE_EXPORT tErrType  ClearMessageQueue( tMessageQueueHndl hndl );
 
 	VTABLE_EXPORT int	 	GetMessageQueueNumMessages( tMessageQueueHndl hndl ) const;
@@ -249,13 +246,11 @@ public:
 										U32 timeoutMs = kMaxTimeoutMs );
 				
 	// Time & Timers
-#if 1 // FIXME/BSK
-	VTABLE_EXPORT U32	GetElapsedTimeAsMSecs(); // elapsed time since System startup 
-												// in milliseconds	
+	VTABLE_EXPORT U32	GetElapsedTimeAsMSecs(); 	// elapsed time since System startup 
+													// in milliseconds	from Linux
 
 	VTABLE_EXPORT U64	GetElapsedTimeAsUSecs();	// elapsed time since System startup 
-												// in microseconds	
-#endif   
+													// in microseconds from Linux	
 
 	VTABLE_EXPORT tErrType 	GetHRTAsUsec(U32 &uSec) const; 
 
