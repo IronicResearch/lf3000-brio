@@ -149,7 +149,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 	BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupKernel), KERNEL_ERRORS)
 
-
 //==============================================================================	   
 // Kernel types
 //==============================================================================
@@ -158,12 +157,6 @@ typedef tHndl	tMemoryPoolHndl;
 typedef tHndl	tMessageQueueHndl;
 // FIXME // BSK changed declaration
 typedef tHndl	tTimerHndl;
-
-// FIXME/BSK
-//typedef struct{
-//	tTimerHndl tHndl_timer;
-//	tTaskHndl  tHndl_task;
-//}tTimerGenHndl; 	
 
 typedef U8		tTaskPriority;
 typedef U8		tMessagePriority;
@@ -346,8 +339,6 @@ typedef U32	tTaskPropertiesMask;
 //
 //--------------------------------------------------------------------------------
 
-
-
 struct tTaskProperties {
 	S32 				priority;	            // 1
 	tAddr				stackAddr;				// 2
@@ -496,12 +487,6 @@ typedef struct itimerspec saveTimerSettings;
 class CObject {
 public:
 
-/*
-	virtual tObjTypeID		GetObjType() = 0;
-	virtual const CUTI*		GetObjUTI() = 0;
-//	e.g. DEFINE_OBJTYPE_SIGNATURE(CEventMessage, kEventMessageObj, "/LF/Brio/System/Message/EventMessage");
-//	e.g. DEFINE_OBJTYPE_SIGNATURE(CEventMessage, kEventMessageObj, "/LF/Brio/System/Message/EventMessage");
-*/
 };
 
 // class CMessage : CObject {
@@ -513,16 +498,10 @@ public:
 	U16		GetMessageSize() const { return messageSize; }
 	U8		GetMessagePriority() const { return messagePriority; }
 //	virtual ~CMessage(){};
-#if 1 // BK
     U8      GetMessageReserved(){ return messageReserved;}    
-#endif
-
 	void	SetMessageSize(U16 size) { messageSize = size; }
   	void	SetMessagePriority(U8 priority) { messagePriority = priority; }	
-                                                                               
-#if 1 // BK
     void    SetMessageReserved( U8 reserved) {messageReserved = reserved; }
-#endif
 
 protected:
 	U16	   	messageSize;
@@ -535,33 +514,12 @@ class CEventMessage : public CMessage
 //	virtual CEventMessage(){};
 public:    
 
-#if 1 // BK
    tEventType GetMessageEventType() {return eventType; }
    void       SetMessageEventType(tEventType value) {eventType = value; }
-#endif
 
 protected:
 	tEventType		eventType;
 };
-
-/*
-class CReturnReceiptEventMessage : public CEventMessage {
-protected:
-	IEventHandler*	returnEventHandler;
-
-};
-
-
-class CAddressedEventMessage :  public CEventMessage {
-public:
-	tRsrcHndl		GetSenderRsrcHndl() { return senderRsrcHndl; }
-	tRsrcHndl		GetReceiverRsrcHndl() { return receiverRsrcHndl; }
-
-protected:
-	tRsrcHndl		senderRsrcHndl;
-	tRsrcHndl		receiverRsrcHndl;
-};
-*/
 
 // Mutex declarations
 typedef pthread_mutex_t     tMutex;
@@ -573,15 +531,6 @@ typedef pthread_condattr_t  tCondAttr;
 typedef struct timespec     tTimeSpec;
 
 typedef void (*pfnTimerCallback)(tTimerHndl arg); // FIXME/BSK
-//typedef void (*pfnTimerCallback)(tPtr arg); // FIXME/BSK
-//typedef void (*pfnTimerCallback)(); // FIXME/BSK
-
-// FIXME/BSK
-//typedef struct timer_arg
-//{	
-//	pfnTimerCallback pfn;
-//	tPtr arg;
-//} callbackData;
 
 #define B_O_ACCMODE          0003
 #define B_O_RDONLY             00

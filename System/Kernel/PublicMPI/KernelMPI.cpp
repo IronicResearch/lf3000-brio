@@ -12,13 +12,13 @@
 //
 //==============================================================================
 
-#include <stdarg.h>		// for varargs
+//#include <stdarg.h>		// for varargs
 #include <assert.h>		// for assert()
 #include <dlfcn.h>
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include <SystemTypes.h>
+//#include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <Module.h>
 #include <KernelMPI.h>
@@ -322,16 +322,6 @@ tErrType CKernelMPI::CloseMessageQueue(tMessageQueueHndl hndl,
 	return pModule_->CloseMessageQueue(hndl, properties);  
 }
 
-//------------------------------------------------------------------------------
-#if 0 // FIXME//BSK 
-tErrType CKernelMPI::UnlinkMessageQueue(const char *hndl)
-{
- 	if(!pModule_)
-		return kMPINotConnectedErr;
-	return pModule_->UnlinkMessageQueue(hndl);  
-}
-#endif 
-//------------------------------------------------------------------------------
 tErrType CKernelMPI::ClearMessageQueue(tMessageQueueHndl hndl)
 {
   	if(!pModule_)
@@ -388,7 +378,6 @@ tErrType CKernelMPI::ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg
 //==============================================================================
 // Elapsed time since System startup in milliscond
 
-#if 1 // FIXME/BSK
 U32 CKernelMPI::GetElapsedTimeAsMSecs() const
 {
   	if(!pModule_)
@@ -405,7 +394,6 @@ U64 CKernelMPI::GetElapsedTimeAsUSecs() const
 		
 	return pModule_->GetElapsedTimeAsUSecs();  
 }
-#endif
 
 	tErrType 	CKernelMPI::GetHRTAsUsec(U32 &uSec) const
 	{
