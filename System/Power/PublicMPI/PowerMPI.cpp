@@ -15,6 +15,7 @@
 
 #include <PowerMPI.h>
 #include <PowerPriv.h>
+#include <EventMPI.h>
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
@@ -101,6 +102,20 @@ const CURI* CPowerMPI::GetModuleOrigin() const
 
 
 //============================================================================
+//----------------------------------------------------------------------------
+tErrType CPowerMPI::RegisterEventListener(const IEventListener *pListener)
+{
+	CEventMPI eventmgr;
+	return eventmgr.RegisterEventListener(pListener);
+}
+
+//----------------------------------------------------------------------------
+tErrType CPowerMPI::UnregisterEventListener(const IEventListener *pListener)
+{
+	CEventMPI eventmgr;
+	return eventmgr.UnregisterEventListener(pListener);
+}
+
 //----------------------------------------------------------------------------
 tPowerData CPowerMPI::GetPowerState() const
 {

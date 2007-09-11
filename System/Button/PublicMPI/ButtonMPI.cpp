@@ -15,6 +15,7 @@
 
 #include <ButtonMPI.h>
 #include <ButtonPriv.h>
+#include <EventMPI.h>
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
@@ -101,6 +102,20 @@ const CURI* CButtonMPI::GetModuleOrigin() const
 
 
 //============================================================================
+//----------------------------------------------------------------------------
+tErrType CButtonMPI::RegisterEventListener(const IEventListener *pListener)
+{
+	CEventMPI eventmgr;
+	return eventmgr.RegisterEventListener(pListener);
+}
+
+//----------------------------------------------------------------------------
+tErrType CButtonMPI::UnregisterEventListener(const IEventListener *pListener)
+{
+	CEventMPI eventmgr;
+	return eventmgr.UnregisterEventListener(pListener);
+}
+
 //----------------------------------------------------------------------------
 tButtonData CButtonMPI::GetButtonState() const
 {

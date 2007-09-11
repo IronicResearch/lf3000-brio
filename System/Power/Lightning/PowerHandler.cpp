@@ -80,6 +80,13 @@ void CPowerModule::InitModule()
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
 
+	// instantiate event manager, needed to resolve symbol
+	// '_ZN8LeapFrog4Brio63_GLOBAL__N__ZNK8LeapFrog4Brio12CEventModule16
+	// GetModuleVersionEv5pinstE'
+	
+	CEventMPI	eventmgr;
+
+	
 	dbg_.DebugOut(kDbgLvlVerbose, "Power Init\n");
 
 	data.powerState = 0;

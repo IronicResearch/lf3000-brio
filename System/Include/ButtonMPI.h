@@ -16,6 +16,7 @@
 
 #include <CoreMPI.h>
 #include <ButtonTypes.h>
+#include <EventMPI.h>
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -33,7 +34,12 @@ public:
 	// class-specific functionality
 	CButtonMPI();
 	virtual ~CButtonMPI();
-
+	
+	// register handler
+	tErrType RegisterEventListener(const IEventListener *pListener);
+	// unregister handler
+	tErrType UnregisterEventListener(const IEventListener *pListener);
+	
 	// Get button state
 	tButtonData		GetButtonState() const;
 

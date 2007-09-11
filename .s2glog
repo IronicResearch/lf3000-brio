@@ -8016,3 +8016,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 9/11/07 1:18 PM
 2,739 ms. (Cumulative: 1,630,096 ms)
 
 ----------------
+Revision 1,538 from svn://localhost/TRUNK/:
+
+Added RegisterEventListener and UnregisterEventListener to ButtonMPI.
+Updated sample code to use new button methods.
+
+By Scott Esters (SEsters@leapfrog.com) on 9/11/07 4:34 PM
+6 changed, 0 added, 0 deleted.
+3,172 ms. (Cumulative: 1,633,331 ms)
+
+----------------
