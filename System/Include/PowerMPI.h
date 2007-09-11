@@ -16,6 +16,7 @@
 
 #include <CoreMPI.h>
 #include <PowerTypes.h>
+#include <EventMPI.h>
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -34,6 +35,12 @@ public:
 	CPowerMPI();
 	virtual ~CPowerMPI();
 
+	// register handler
+	tErrType RegisterEventListener(const IEventListener *pListener);
+	
+	// unregister handler
+	tErrType UnregisterEventListener(const IEventListener *pListener);
+	
 	// Get power state
 	tPowerData		GetPowerState() const;
 
