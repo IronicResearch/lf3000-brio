@@ -49,7 +49,7 @@ void* VideoTaskMain( void* arg )
 	tVideoTime		vtm,vtm0 = {0, 0};
 	tVideoMsgData	data;
 	U32				marktime,nexttime,lapsetime = 30;
-	Boolean			bAudio = false;
+	Boolean			bAudio = (pctx->pPathAudio != NULL) ? true : false;
 	
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
@@ -59,7 +59,7 @@ void* VideoTaskMain( void* arg )
 		// Start audio playback and sync each video frame to audio time stamp
 		pctx->bPlaying = true;
 		if (bAudio)
-			pctx->hAudio = audmgr.StartAudio(pctx->pathAudio, 100, 1, 0, pctx->pListener, 0, 0);
+			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, 0);
 		vtm.time = marktime = nexttime = 0;
 		if (!bAudio)
 			marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
