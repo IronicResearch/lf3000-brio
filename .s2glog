@@ -8054,3 +8054,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/07 11:50 AM
 2,969 ms. (Cumulative: 1,642,425 ms)
 
 ----------------
+Revision 1,543 from svn://localhost/TRUNK/:
+
+Remove custom callback I/O from Vorbis and just use stdio.  This fixes looping which was broken in previous checkin.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/12/07 12:11 PM
+1 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,645,285 ms)
+
+----------------

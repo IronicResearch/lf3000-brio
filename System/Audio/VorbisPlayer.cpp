@@ -69,32 +69,18 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 	pDebugMPI_->Assert( file_ > 0, 
 		"VorbisPlayer::ctor -- Could not open oggvorbis file: %s.\n", pInfo->path->c_str() );
  
-    // Keep track of where we are int he bitstream now that it's open.
-    filePos_ = 0;
-
     // Find out if the caller has requested looping.
 	if (pInfo->flags & 1)
 		shouldLoop_ = true;
 	else 
 		shouldLoop_ = false;
 
-	// Setup the vorbisfile library's custom callback structure
-	oggCallbacks_.read_func = &CVorbisPlayer::WrapperForVorbisRead;
-	oggCallbacks_.seek_func = &CVorbisPlayer::WrapperForVorbisSeek;
-	oggCallbacks_.tell_func = &CVorbisPlayer::WrapperForVorbisTell;
-	oggCallbacks_.close_func = &CVorbisPlayer::WrapperForVorbisClose;
-      
 	// open the file
-	int ov_ret = ov_test_callbacks( this, &vorbisFile_, NULL, 0, oggCallbacks_ );
+	int ov_ret = ov_open( file_, &vorbisFile_, NULL, 0 );
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"VorbisPlayer::ctor -- ov_test_callbacks returned: %d.\n", static_cast<int>(ov_ret) );
+		"VorbisPlayer::ctor -- ov_open() returned: %d.\n", static_cast<int>(ov_ret) );
 	pDebugMPI_->AssertNoErr( ov_ret, 
 		"VorbisPlayer::ctor -- Input resource failed Vorbis open test. Is this an OggVorbis file?!\n");
-
-	ov_ret = ov_test_open( &vorbisFile_ );
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"VorbisPlayer::ctor -- ov_test_open returned: %d.\n", static_cast<int>(ov_ret) );
-	pDebugMPI_->AssertNoErr( ov_ret, "VorbisPlayer::ctor -- Couldn't finish opening an OggVorbis file.\n");
 	
 	// Figure out how big the vorbis bitstream actually is.
 	pVorbisInfo = ov_info( &vorbisFile_, -1 );
@@ -167,127 +153,6 @@ CVorbisPlayer::~CVorbisPlayer()
 		delete pKernelMPI_;
 
 }
-
-U32 CVorbisPlayer::VorbisRead(
-		void* data_ptr,
-	    size_t byteSize, 
-	    size_t sizeToRead )
-{
-	tErrType 	ret = kNoErr;
-	U32			bytesRead;
-	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisRead: bytes to read = %d.\n ", sizeToRead) ;
-
-	bytesRead = fread( data_ptr, 1, sizeToRead, file_ ); 
-    if (bytesRead <  sizeToRead)
-        pDebugMPI_->DebugOutErr( kDbgLvlCritical, ret,
-        	"VorbisRead: ReadRsrc() returned error\n" );
-	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisRead: bytes actually read = %d.\n ", 
-		static_cast<int>(bytesRead) );
-
-	filePos_ += bytesRead;
-	
-	return bytesRead;
-}
-
-size_t CVorbisPlayer::WrapperForVorbisRead (
-	void* data_ptr,			// A pointer to the data that the vorbis files need
-    size_t byteSize,     	// Byte size on this particular system
-    size_t sizeToRead,  	// Maximum number of items to be read
-    void* pToObject)      	// A pointer to the o we passed into ov_open_callbacks
-{
-	// Cast void ptr to a this ptr:
-	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
-	
-	// Call member function.
-	return (size_t)mySelf->VorbisRead( data_ptr, byteSize, sizeToRead );
-}
-
-
-int CVorbisPlayer::VorbisSeek(		
-	ogg_int64_t offset,
-    int origin ) 
-{
-	tErrType 		err = kNoErr;
-	U32				fPos;
-	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisSeek() -- Seek offset = %d, origin = %d.\n "
-		, static_cast<int>(offset), origin );
-
-	// Seek to the requested place in the bitstream.
-	err = fseek( file_, offset, origin );
-	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- fseek() failed.\n");
-	
-	// Return the location we seeked to.
-	fPos = ftell( file_ );
-	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- ftell() failed.\n");
-
-	return fPos;
-}
-
-int CVorbisPlayer::WrapperForVorbisSeek(
-	void* pToObject, 		
-	ogg_int64_t offset,				// Number of bytes from origin
-    int origin )					// Initial position
-{
-	// Cast void ptr to a this ptr:
-	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
-	
-	// Call member function.
-	return mySelf->VorbisSeek( offset, origin );
-}
-
-
-long CVorbisPlayer::VorbisTell( void )
-{
-	U32 fPos;
-	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisTell: location = %d.\n ", 
-		static_cast<int>(filePos_) );
-
-	// Return the location we seeked to.
-	fPos = ftell( file_ );
-
-	return (long)fPos;
-}
-
-long CVorbisPlayer::WrapperForVorbisTell( void* pToObject )
-{
-	// Cast void ptr to a this ptr:
-	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
-	
-	// Call member function.
-	return mySelf->VorbisTell();
-}
-
-int CVorbisPlayer::VorbisClose( void )
-{
-	tErrType ret = kNoErr;
-	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisClose -- FILE = %d.\n ", reinterpret_cast<int>(file_) ); 
-
-	ret = fclose( file_ );
-	if ( ret != kNoErr )
-		printf("Could not CloseRsrc for OggVorbis file.\n");
-	
-	return ret;
-}
-
-int CVorbisPlayer::WrapperForVorbisClose( void* pToObject )
-{
-	// Cast void ptr to a this ptr:
-	CVorbisPlayer* mySelf = (CVorbisPlayer*)pToObject;
-	
-	// Call member function.
-	return mySelf->VorbisClose( );
-}
-
 
 //==============================================================================
 //==============================================================================
