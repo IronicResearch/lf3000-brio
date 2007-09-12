@@ -38,7 +38,7 @@ const tDebugLevel		kVideoDebugLevel	= kDbgLvlImportant;
 struct tVideoContext {
 	tVideoHndl			hVideo;
 	tAudioID			hAudio;
-	CPath&				pathAudio;
+	const CPath*		pPathAudio;
 	tVideoSurf*			pSurfVideo;
 	IEventListener*		pListener;
 	Boolean				bLooped;

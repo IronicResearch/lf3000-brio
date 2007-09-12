@@ -8108,3 +8108,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/07 1:30 PM
 2,719 ms. (Cumulative: 1,659,474 ms)
 
 ----------------
+Revision 1,549 from svn://localhost/TRUNK/:
+Revision 1,550 from svn://localhost/TRUNK/:
+
+Correct handling for audio path with video autoplay method.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/07 2:41 PM
+3 changed, 0 added, 0 deleted.
+2,781 ms. (Cumulative: 1,662,333 ms)
+
+----------------

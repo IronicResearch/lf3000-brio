@@ -145,13 +145,20 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, tVideoSurf* pSurf, Boolea
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
+	tVideoHndl		hVideo = StartVideoInt(path);
+	if (hVideo == kInvalidVideoHndl)
+		return kInvalidVideoHndl;
+	
 	CKernelMPI		kernel;
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
-	tVideoHndl		hVideo = StartVideoInt(path);
+	
+	// Determine if audio track is available and at what path?
+	bool			nopath = (pathAudio.length() == 0) ? true : false;
+	const CPath		filepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;
 
 	pVidCtx->hVideo 	= hVideo;
 	pVidCtx->hAudio 	= 0; // handled inside video task
-//	pVidCtx->pathAudio  = pathAudio; // FIXME
+	pVidCtx->pPathAudio = (nopath) ? NULL : &filepath; // pass by pointer
 	pVidCtx->pSurfVideo = pSurf;
 	pVidCtx->pListener 	= pListener;
 	pVidCtx->bLooped 	= bLoop;
