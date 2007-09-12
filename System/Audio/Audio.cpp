@@ -657,6 +657,8 @@ tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 
 	mpiState.path = new CPath( path );
+	
+	return kNoErr;
 }
 //==============================================================================
 //==============================================================================

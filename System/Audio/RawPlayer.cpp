@@ -37,7 +37,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudioPlayer( pAudioInfo, id  )
 {
-	tErrType			result;
+/*	tErrType			result;
 	tAudioHeader*		pHeader;
 	const tMutexAttr 	attr = {0};
 	
@@ -89,6 +89,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor Number of Frames:%d\n", (int)numFrames_);
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor Header flags:%d\n", (int)optionsFlags_);
+*/
 }
 
 //==============================================================================
