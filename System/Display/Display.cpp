@@ -57,6 +57,7 @@ const CURI* CDisplayModule::GetModuleOrigin() const
 //============================================================================
 CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
+	dbg_.SetDebugLevel(kDisplayDebugLevel);
 	InitModule();	// delegate to platform or emulation initializer
 }
 

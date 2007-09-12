@@ -59,8 +59,6 @@ void CDisplayModule::InitModule()
 	// Initialize display manager for hardware target
 	int 			baseAddr, fb_size;
 
-	dbg_.SetDebugLevel(kDbgLvlVerbose);
-	
 	// open GPIO device
 	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
 	dbg_.Assert(gDevGpio >= 0, 
