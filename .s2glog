@@ -8036,3 +8036,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/12/07 11:36 AM
 3,125 ms. (Cumulative: 1,636,534 ms)
 
 ----------------
+Revision 1,541 from svn://localhost/TRUNK/:
+
+Use global constant for Display module debug level.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/07 11:44 AM
+3 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,639,394 ms)
+
+----------------
