@@ -30,7 +30,7 @@ const CString	kMPIName = "PowerMPI";
 //============================================================================
 //------------------------------------------------------------------------------
 CPowerMessage::CPowerMessage( const tPowerData& data ) 
-	: IEventMessage(kPowerStateChanged, 0), mData(data)
+	: IEventMessage(kPowerStateChanged), mData(data)
 {
 }
 

@@ -8099,3 +8099,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/07 1:29 PM
 2,969 ms. (Cumulative: 1,656,692 ms)
 
 ----------------
+Revision 1,548 from svn://localhost/TRUNK/:
+
+Misc fixes for event structs no longer storing resource handles.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/07 1:30 PM
+2 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,659,474 ms)
+
+----------------
