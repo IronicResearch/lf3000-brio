@@ -20,7 +20,7 @@ SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0
 SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0)
 SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0)
 SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0)
-#SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0)
+SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0)
 SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0)
 SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0)
 SConscript('Power/SConscript', build_dir=MakeTempDirName('Power'), duplicate=0)

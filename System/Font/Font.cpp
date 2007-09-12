@@ -16,8 +16,10 @@
 #include <SystemErrors.h>
 #include <FontTypes.h>
 #include <FontPriv.h>
-#include <ResourceMPI.h>
 #include <KernelMPI.h>
+#if USE_RSRC_MGR
+#include <ResourceMPI.h>
+#endif
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -31,6 +33,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Font";
 
+namespace
+{
+	CPath				gpath = "";
+}
 
 //============================================================================
 // CFontModule: Informational functions
@@ -163,6 +169,8 @@ OnFaceRequest( FTC_FaceID  faceId,
 //============================================================================
 CFontModule::CFontModule() : dbg_(kGroupFont)
 {
+	dbg_.SetDebugLevel(kFontDebugLevel);
+	
 	// Zero out static global struct
 	memset(&handle_, 0, sizeof(handle_));
 
@@ -267,13 +275,31 @@ Boolean	CFontModule::IsValid() const
 }
 
 //----------------------------------------------------------------------------
+// MPI-specific methods
+//----------------------------------------------------------------------------
+tErrType CFontModule::SetFontResourcePath(const CPath &path)
+{
+	gpath = path;
+	if (gpath.length() > 1 && gpath.at(gpath.length()-1) != '/')
+		gpath += '/';
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+CPath* CFontModule::GetFontResourcePath() const
+{
+	return &gpath;
+}
+
+//----------------------------------------------------------------------------
 tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize)
 {
 	FT_Face			face;
 	PFont			font;
 	int				error, numcodes = 0;
-	const char*		filename = pName->c_str();
-    FT_Size      	size;
+	CPath			filepath = (pName->at(0) == '/') ? *pName : gpath + *pName;
+	const char*		filename = filepath.c_str();
+	FT_Size      	size;
     CKernelMPI		kernel;
 	
     // Font instance property versioning
@@ -284,12 +310,14 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     }
     prop_ = prop;
     
+#if 0
     // Bogus font file name?
 	if (filename == NULL) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: invalid filename passed\n");
 		return false;
 	}
+#endif
 	
 	// Load font file
 	if (pFileImage != NULL)
@@ -321,6 +349,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	// Allocate mem for font face
 	font = static_cast<PFont>(kernel.Malloc( sizeof ( TFont ) ) );
 	dbg_.Assert(font != NULL, "CFontModule::LoadFont: font struct could not be allocated\n");
+	memset(font, 0, sizeof(TFont));
 	font->filepathname = static_cast<char*>(kernel.Malloc( strlen( filename ) + 1 ) );
 	dbg_.Assert(font->filepathname != NULL, "CFontModule::LoadFont: font filepathname could not be allocated\n");
 	strcpy( (char*)font->filepathname, filename );
@@ -412,6 +441,34 @@ tFontHndl CFontModule::LoadFont(const CString* pName, tFontProp prop)
 }
 
 //----------------------------------------------------------------------------
+tFontHndl CFontModule::LoadFont(const CPath& name, tFontProp prop)
+{
+//	CString path = CString(name);
+	return LoadFontInt(&name, prop, NULL, 0);
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontModule::LoadFont(const CPath& name, U8 size)
+{
+//	CString path = CString(name);
+	prop_.version = 2;
+	prop_.size = size;
+	prop_.encoding = 0;
+	return LoadFontInt(&name, prop_, NULL, 0);
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontModule::LoadFont(const CPath& name, U8 size, U32 encoding)
+{
+//	CString path = CString(name);
+	prop_.version = 2;
+	prop_.size = size;
+	prop_.encoding = encoding;
+	return LoadFontInt(&name, prop_, NULL, 0);
+}
+
+#if USE_RSRC_MGR
+//----------------------------------------------------------------------------
 tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 {
 	CResourceMPI		rsrcmgr;
@@ -438,7 +495,7 @@ tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 	}
 	 
 	// Use file image loaded in memory by resource manager
-	fontname = rsrcmgr.GetURI(hRsrc); // GetName(hRsrc);
+	fontname = rsrcmgr.GetPath(hRsrc);
 	filesize = rsrcmgr.GetUnpackedSize(hRsrc);
 	fileimage = rsrcmgr.GetPtr(hRsrc);
 	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s, file size = %d\n", 
@@ -471,6 +528,7 @@ tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding)
 	prop_.encoding = encoding;
 	return LoadFont(hRsrc, prop_);
 }
+#endif // USE_RSRC_MGR
 
 //----------------------------------------------------------------------------
 Boolean CFontModule::UnloadFont(tFontHndl hFont)
@@ -480,13 +538,15 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 	// Unload font if loaded via resource manager 
 	if (pFont)
 	{
+#if USE_RSRC_MGR
 		if (pFont->hRsrcFont != kInvalidRsrcHndl)
 		{
 			CResourceMPI	rsrcmgr;
 			rsrcmgr.UnloadRsrc(pFont->hRsrcFont);
 			pFont->hRsrcFont = kInvalidRsrcHndl;
 		}
-
+#endif
+		
 #if !USE_FONT_CACHE_MGR
 		// Release FreeType font face instance (no cache manager)
 		if (pFont->face != NULL)
@@ -505,7 +565,7 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
 {
 	PFont	pFont = (PFont)hFont;
 
-	if (pFont == NULL || pFont->hRsrcFont == kInvalidRsrcHndl)
+	if (pFont == NULL /* || pFont->hRsrcFont == kInvalidRsrcHndl */)
 		return false;
 
 	// Reload cached settings

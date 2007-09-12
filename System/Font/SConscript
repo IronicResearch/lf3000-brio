@@ -12,7 +12,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
-modlibs		= ['DebugMPI', 'KernelMPI', 'ResourceMPI', 'freetype']
+modlibs		= ['DebugMPI', 'KernelMPI', 'freetype']
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
@@ -44,6 +44,6 @@ else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
 
-RunMyTests(module_name, [], mpilibs + ogllibs + ['ResourceMPI', 'DisplayMPI'], myenv, vars)
+RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI'], myenv, vars)
 
 Return('mymodule', 'mympi')

@@ -81,6 +81,22 @@ const CURI* CFontMPI::GetModuleOrigin() const
 
 //============================================================================
 
+//----------------------------------------------------------------------------
+tErrType CFontMPI::SetFontResourcePath(const CPath &path)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetFontResourcePath(path);
+}
+
+//----------------------------------------------------------------------------
+CPath* CFontMPI::GetFontResourcePath() const
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetFontResourcePath();
+}
+
 #if 0	// deprecated method
 //----------------------------------------------------------------------------
 tFontHndl CFontMPI::LoadFont(const CString* pName, tFontProp prop)
@@ -91,6 +107,31 @@ tFontHndl CFontMPI::LoadFont(const CString* pName, tFontProp prop)
 }
 #endif
 
+//----------------------------------------------------------------------------
+tFontHndl CFontMPI::LoadFont(const CPath& name, tFontProp prop)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->LoadFont(name, prop);
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontMPI::LoadFont(const CPath& name, U8 size)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->LoadFont(name, size);
+}
+
+//----------------------------------------------------------------------------
+tFontHndl CFontMPI::LoadFont(const CPath& name, U8 size, U32 encoding)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->LoadFont(name, size, encoding);
+}
+
+#if 0	// deprecated
 //----------------------------------------------------------------------------
 tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
 {
@@ -114,6 +155,7 @@ tFontHndl CFontMPI::LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding)
 		return false;
 	return pModule_->LoadFont(hRsrc, size, encoding);
 }
+#endif
 
 //----------------------------------------------------------------------------
 Boolean CFontMPI::UnloadFont(tFontHndl hFont)

@@ -4,7 +4,6 @@
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <FontMPI.h>
-#include <ResourceMPI.h>
 #include <DisplayMPI.h>
 #include <BrioOpenGLConfig.h>
 #include <UnitTestUtils.h>
@@ -13,6 +12,17 @@ LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 
+//----------------------------------------------------------------------------
+inline CPath GetTestRsrcFolder( )
+{
+#ifdef EMULATION
+	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
+	return dir + "Font/";
+#else	// EMULATION
+	return "/Base/rsrc/Font/";
+#endif	// EMULATION
+}
+
 //============================================================================
 // TestFontMPI functions
 //============================================================================
@@ -20,7 +30,6 @@ class TestFont : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CFontMPI*		pFontMPI_;
-	CResourceMPI*	pResourceMPI_;
 	CDisplayMPI*	pDisplayMPI_;
 public:
 	//------------------------------------------------------------------------
@@ -64,11 +73,6 @@ public:
 	//------------------------------------------------------------------------
 	void testFontResources()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
-		tRsrcHndl	handle3;
-		tRsrcHndl	handle4;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontHndl	font3;
@@ -78,48 +82,29 @@ public:
 		tFontProp	prop3 = {2, 24, kUTF8CharEncoding, true};
 		tFontProp	prop4 = {2, 24, kUTF16CharEncoding, true};
 
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-		handle3 = pResourceMPI_->FindRsrc("FreeSans");
-		TS_ASSERT( handle3 != kInvalidRsrcHndl );
-		handle4 = pResourceMPI_->FindRsrc("FreeSerif");
-		TS_ASSERT( handle4 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		CPath dir = GetTestRsrcFolder();
+		pFontMPI_->SetFontResourcePath(dir);
+		CPath* path = pFontMPI_->GetFontResourcePath();
+		TS_ASSERT( dir == *path );
+		
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
-		font2 = pFontMPI_->LoadFont(handle2, prop2);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
-		font3 = pFontMPI_->LoadFont(handle3, prop3);
+		font3 = pFontMPI_->LoadFont("FreeSans.ttf", prop3);
 		TS_ASSERT( font1 != kInvalidFontHndl );
-		font4 = pFontMPI_->LoadFont(handle4, prop4);
+		font4 = pFontMPI_->LoadFont("FreeSerif.ttf", prop4);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
 		pFontMPI_->UnloadFont(font3);
 		pFontMPI_->UnloadFont(font4);
-
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 	}
 
 	//------------------------------------------------------------------------
 	void testFontDisplay()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontProp	prop1 = {1, 18, 0, 0};
@@ -144,20 +129,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -182,7 +155,7 @@ public:
 		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
 		TS_ASSERT_DELTA( (rect2.right - rect2.left), pFontMPI_->GetX(), 1 );
 		
-		font2 = pFontMPI_->LoadFont(handle2, prop2);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -205,22 +178,14 @@ public:
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
-		
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 
 	//------------------------------------------------------------------------
 	void testFontMetrics()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -242,18 +207,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 24);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -274,7 +229,7 @@ public:
 			TS_ASSERT_EQUALS(y, pFontMPI_->GetY());
 		}
 		
-		font2 = pFontMPI_->LoadFont(handle2, 36);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -300,18 +255,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontTextWrapping()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -330,18 +279,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 24);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->SetFontColor(0x00FFFF00); // yellow
 		
@@ -351,7 +290,7 @@ public:
 		TS_ASSERT_EQUALS(x, pFontMPI_->GetX());
 		TS_ASSERT_EQUALS(y, pFontMPI_->GetY());
 		
-		font2 = pFontMPI_->LoadFont(handle2, 36);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->SetFontColor(0x0000FFFF); // cyan
 
@@ -366,18 +305,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontClipping()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -396,18 +329,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 24);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->SetFontColor(0x00FFFFFF); // white
 		
@@ -418,7 +341,7 @@ public:
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
 		
-		font2 = pFontMPI_->LoadFont(handle2, 36);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		
 		for (int y = 0; y < 240; y++)
@@ -432,18 +355,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontKerning()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -464,18 +381,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 36);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", 36);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -490,7 +397,7 @@ public:
 		TS_ASSERT( pFontMPI_->GetFontKerning() == true );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		
-		font2 = pFontMPI_->LoadFont(handle2, 48);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", 48);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -509,18 +416,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontUnderlining()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -541,18 +442,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Avatar");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 24);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -567,7 +458,7 @@ public:
 		TS_ASSERT( pFontMPI_->GetFontUnderlining() == false );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		
-		font2 = pFontMPI_->LoadFont(handle2, 36);
+		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -587,18 +478,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontUnicode()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -624,18 +509,9 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("FreeSans");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("FreeSerif");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 24, kUTF8CharEncoding);
+		// Extra glyphs not supported by FreeSans/Serif or DejaVuSans/Serif
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("FreeSans.ttf", 24, kUTF8CharEncoding);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -647,7 +523,7 @@ public:
 		pFontMPI_->DrawString(&text3, 0, y, &surf); y+=dy;
 		pFontMPI_->DrawString(&text4, 0, y, &surf); y+=dy;
 		
-		font2 = pFontMPI_->LoadFont(handle2, 24, kUTF8CharEncoding);
+		font2 = pFontMPI_->LoadFont("FreeSerif.ttf", 24, kUTF8CharEncoding);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		
 		pFontMPI_->DrawString(&text1, 0, y, &surf); y+=dy;
@@ -662,18 +538,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontUnicode16()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -701,18 +571,8 @@ public:
 		surf.format = kPixelFormatARGB8888;
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("FreeSans");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("FreeSerif");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
-		font1 = pFontMPI_->LoadFont(handle1, 24, kUTF16CharEncoding);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("FreeSans.ttf", 24, kUTF16CharEncoding);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -743,7 +603,7 @@ public:
 			pFontMPI_->DrawString(code, x, y, surf);
 		}
 		
-		font2 = pFontMPI_->LoadFont(handle2, 24, kUTF16CharEncoding);
+		font2 = pFontMPI_->LoadFont("FreeSerif.ttf", 24, kUTF16CharEncoding);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -781,17 +641,12 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 	
 	//------------------------------------------------------------------------
 	void testFontOpenGL()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
 		tFontAttr	attr;
@@ -807,15 +662,8 @@ public:
 		
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT( pkg != kInvalidPackageHndl );
-		pResourceMPI_->OpenPackage(pkg);
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -862,17 +710,12 @@ public:
 		glDeleteTextures(1, &texture);
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete ctx;
 	}
 
 	//------------------------------------------------------------------------
 	void testFontOpenGL24bpp()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
 		tFontSurf	surf;
@@ -887,15 +730,8 @@ public:
 
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT( pkg != kInvalidPackageHndl );
-		pResourceMPI_->OpenPackage(pkg);
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -936,17 +772,12 @@ public:
 		glDeleteTextures(1, &texture);
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete ctx;
 	}
 
 	//------------------------------------------------------------------------
-	void testFontOpenGL16bppARGB()
+	void XXXXtestFontOpenGL16bppARGB()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tFontHndl	font1;
 		tFontSurf	surf;
 		tFontMetrics mtrx;
@@ -960,15 +791,8 @@ public:
 		
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT( pkg != kInvalidPackageHndl );
-		pResourceMPI_->OpenPackage(pkg);
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		font1 = pFontMPI_->LoadFont(handle1, 24);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -1009,17 +833,12 @@ public:
 		glDeleteTextures(1, &texture);
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete ctx;
 	}
 
 	//------------------------------------------------------------------------
 	void testFontOpenGL16bppRGB()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
 		tFontAttr	attr;
@@ -1035,15 +854,8 @@ public:
 		
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Font");
-		pkg = pResourceMPI_->FindPackage("FontTest");
-		TS_ASSERT( pkg != kInvalidPackageHndl );
-		pResourceMPI_->OpenPackage(pkg);
-		handle1 = pResourceMPI_->FindRsrc("Verdana");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		font1 = pFontMPI_->LoadFont(handle1, prop1);
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -1090,9 +902,6 @@ public:
 		glDeleteTextures(1, &texture);
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete ctx;
 	}
 

@@ -13,13 +13,16 @@
 //		Defines the interface for the private underlying Font manager module. 
 //
 //==============================================================================
+#define  USE_RSRC_MGR			0   
 #include <SystemTypes.h>
 #include <CoreModule.h>
 #include <EventTypes.h>
 #include <FontTypes.h>
 #include <DebugMPI.h>
-#include <ResourceTypes.h>
 #include <DisplayTypes.h> 
+#if      USE_RSRC_MGR
+#include <ResourceTypes.h>
+#endif
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -40,6 +43,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString			kFontModuleName		= "Font";
 const tVersion			kFontModuleVersion	= 2;
 const tEventPriority	kFontEventPriority	= 0;
+const tDebugLevel		kFontDebugLevel		= kDbgLvlCritical;
 
 //==============================================================================
 // Typedefs
@@ -63,7 +67,9 @@ typedef struct  TFont_
 	int				ascent;			// baseline location
 	int				descent;		// remainder below baseline
 	int				advance;		// max advance width
+#if USE_RSRC_MGR
 	tRsrcHndl		hRsrcFont;		// resource handle used for loading font	    
+#endif
 } TFont, *PFont;
 
 // Font library internal management
@@ -96,10 +102,17 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-    VTABLE_EXPORT tFontHndl		LoadFont(const CString* pName, tFontProp prop);
+	VTABLE_EXPORT tErrType		SetFontResourcePath(const CPath &path);
+	VTABLE_EXPORT CPath*		GetFontResourcePath() const;
+	VTABLE_EXPORT tFontHndl		LoadFont(const CString* pName, tFontProp prop);
+    VTABLE_EXPORT tFontHndl		LoadFont(const CPath& name, tFontProp prop);
+    VTABLE_EXPORT tFontHndl		LoadFont(const CPath& name, U8 size);
+    VTABLE_EXPORT tFontHndl		LoadFont(const CPath& name, U8 size, U32 encoding);
+#if USE_RSRC_MGR
     VTABLE_EXPORT tFontHndl		LoadFont(tRsrcHndl hRsrc, tFontProp prop);
     VTABLE_EXPORT tFontHndl   	LoadFont(tRsrcHndl hRsrc, U8 size);
     VTABLE_EXPORT tFontHndl   	LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
+#endif
     VTABLE_EXPORT Boolean     	UnloadFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean     	SelectFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
