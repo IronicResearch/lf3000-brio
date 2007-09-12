@@ -63,11 +63,11 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 
 	// Use rsrc manager to open the ogg file.
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"VorbisPlayer::ctor -- OggVorbis file's resource ID is %d.\n", static_cast<int>(hRsrc_) );
+		"VorbisPlayer::ctor -- OggVorbis file struct is %d.\n", reinterpret_cast<int>(file_) );
 
-	ret = pRsrcMPI_->OpenRsrc( hRsrc_ );
-	pDebugMPI_->AssertNoErr( ret, 
-		"VorbisPlayer::ctor -- Could not open oggvorbis file.\n" );
+	file_ = fopen( pInfo->path->c_str(), "r" );
+	pDebugMPI_->Assert( file_ > 0, 
+		"VorbisPlayer::ctor -- Could not open oggvorbis file: %s.\n", pInfo->path->c_str() );
  
     // Keep track of where we are int he bitstream now that it's open.
     filePos_ = 0;
@@ -176,17 +176,17 @@ U32 CVorbisPlayer::VorbisRead(
 	tErrType 	ret = kNoErr;
 	U32			bytesRead;
 	
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-//		"Vorbis Player::VorbisRead: bytes to read = %d.\n ", sizeToRead) ;
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::VorbisRead: bytes to read = %d.\n ", sizeToRead) ;
 
-	ret	= pRsrcMPI_->ReadRsrc( hRsrc_, data_ptr, sizeToRead, &bytesRead ); 
-    if (ret != kNoErr)
+	bytesRead = fread( data_ptr, 1, sizeToRead, file_ ); 
+    if (bytesRead <  sizeToRead)
         pDebugMPI_->DebugOutErr( kDbgLvlCritical, ret,
         	"VorbisRead: ReadRsrc() returned error\n" );
 	
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-//		"Vorbis Player::VorbisRead: bytes actually read = %d.\n ", 
-//		static_cast<int>(bytesRead) );
+	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+		"Vorbis Player::VorbisRead: bytes actually read = %d.\n ", 
+		static_cast<int>(bytesRead) );
 
 	filePos_ += bytesRead;
 	
@@ -212,41 +212,19 @@ int CVorbisPlayer::VorbisSeek(
     int origin ) 
 {
 	tErrType 		err = kNoErr;
-	tOptionFlags	seekOptions;
 	U32				fPos;
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"Vorbis Player::VorbisSeek() -- Seek offset = %d, origin = %d.\n "
 		, static_cast<int>(offset), origin );
 
-	switch (origin) {
-		// Seek from start of file
-		case SEEK_SET: 
-			seekOptions = kSeekRsrcOptionSet;
-			break;
-	    
-		// Seek from where we are
-		case SEEK_CUR: 
-			seekOptions = kSeekRsrcOptionCur;
-			break;
-	 		
-		// Seek from the end of the file
-		case SEEK_END:
-			seekOptions = kSeekRsrcOptionEnd;
-			break;
-
-		default:
-			seekOptions = kSeekRsrcOptionSet;	// bogus assignment to avoid warning
-			pDebugMPI_->Assert(false, "CVorbisPlayer::VorbisSeek() -- invalid origin parameter.\n");
-	}
-	 
 	// Seek to the requested place in the bitstream.
-	err = pRsrcMPI_->SeekRsrc( hRsrc_, (U32)offset, seekOptions );
-	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- Seeking rsrc failed.\n");
+	err = fseek( file_, offset, origin );
+	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- fseek() failed.\n");
 	
 	// Return the location we seeked to.
-	fPos = pRsrcMPI_->TellRsrc( hRsrc_ );
-	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- Tell rsrc failed.\n");
+	fPos = ftell( file_ );
+	pDebugMPI_->AssertNoErr(err, "CVorbisPlayer::VorbisSeek() -- ftell() failed.\n");
 
 	return fPos;
 }
@@ -273,7 +251,7 @@ long CVorbisPlayer::VorbisTell( void )
 		static_cast<int>(filePos_) );
 
 	// Return the location we seeked to.
-	fPos = pRsrcMPI_->TellRsrc( hRsrc_ );
+	fPos = ftell( file_ );
 
 	return (long)fPos;
 }
@@ -292,9 +270,9 @@ int CVorbisPlayer::VorbisClose( void )
 	tErrType ret = kNoErr;
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::VorbisClose -- rsrc ID = %d.\n ", static_cast<int>(hRsrc_) ); 
+		"Vorbis Player::VorbisClose -- FILE = %d.\n ", reinterpret_cast<int>(file_) ); 
 
-	ret = pRsrcMPI_->CloseRsrc( hRsrc_ );
+	ret = fclose( file_ );
 	if ( ret != kNoErr )
 		printf("Could not CloseRsrc for OggVorbis file.\n");
 	

@@ -18,16 +18,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 // kAudioCmdMsgTypeStartAudio
 struct tAudioStartAudioInfo { 
-	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
+	const CPath* 		path;
 	U8				 	volume;
 	tAudioPriority	 	priority;
 	S8				 	pan;
-	const IEventListener *pListener;
+	const IEventListener* pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
 	tAudioHeader*		pAudioHeader;		// For Brio Raw types, pointer to header and data, provided by AudioTask, returned from GetPtr()
 	
-	tAudioStartAudioInfo( tRsrcHndl r = kInvalidRsrcHndl, 
+	tAudioStartAudioInfo( const CPath* pa = NULL,
 						U8 v = 0, 
 						tAudioPriority p = 0, 
 						S8 pn = 0, 
@@ -35,7 +35,7 @@ struct tAudioStartAudioInfo {
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0, 
 						tAudioHeader* h = NULL )
-		: hRsrc(r), volume(v), priority(p), pan(pn), pListener(l),
+		: path(pa), volume(v), priority(p), pan(pn), pListener(l),
 		payload(pl), flags(f), pAudioHeader(h) {}
 };
 
@@ -120,8 +120,8 @@ struct tAudioMidiNoteInfo {
 
 // kAudioCmdMsgTypePlayMidiFile
 struct tAudioStartMidiFileInfo {
-	tMidiPlayerID		id;					// fixme/dg: make midiPlayerID?
-	tRsrcHndl			hRsrc;				// Resource Handle, provided by app, returned from FindResource()
+	tMidiPlayerID		id;
+	const CPath* 		path;
 	U8*					pMidiFileImage;		// MIDI file loaded into RAM
 	U32					imageSize;			// Size of MIDI file in RAM
 	U8				 	volume;
@@ -131,14 +131,13 @@ struct tAudioStartMidiFileInfo {
 	tAudioOptionsFlags	flags;
 
 	tAudioStartMidiFileInfo( tMidiPlayerID	i = 0,
-						tRsrcHndl r = kInvalidRsrcHndl, 
 						U8 *pi = NULL,
 						U32 is = 0,
 						tAudioPriority p = 0,
 						const IEventListener* l = NULL, 
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0 )
-		: id(i), hRsrc(r), pMidiFileImage(pi), priority(p), pListener(l),
+		: id(i), path(NULL), pMidiFileImage(pi), priority(p), pListener(l),
 		payload(pl), flags(f) {}
 };
 

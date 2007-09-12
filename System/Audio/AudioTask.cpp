@@ -12,16 +12,14 @@
 //fixme/dg: remove c std headers
 #include <stdio.h>
 #include <errno.h>
-
+#include <sys/stat.h>
 #include <KernelMPI.h>
 #include <DebugMPI.h>
-#include <ResourceMPI.h>
 #include <AudioTypes.h>
 #include <AudioTask.h>
 #include <AudioOutput.h>
 #include <AudioMsg.h>
 #include <Mixer.h>
-
 #include <AudioPlayer.h>
 #include <Channel.h>
 #include <RawPlayer.h>
@@ -44,7 +42,6 @@ struct tAudioContext {
 public:	
 	CKernelMPI* 		pKernelMPI;
 	CDebugMPI* 			pDebugMPI;
-	CResourceMPI*		pResourceMPI;
 	Boolean				threadRun;			// set to false to exit main thread loop
 	CAudioMixer*		pAudioMixer;		// Pointer to the global audio mixer
 	CMidiPlayer*		pMidiPlayer;			// temp global MIDI player object for testing	
@@ -104,14 +101,8 @@ tErrType InitAudioTask( void )
 	if (ret != true)
 		printf("InitAudioTask() -- Couldn't create KernelMPI!\n");
 
-	// Get Resource	
-	gContext.pResourceMPI = new CResourceMPI;
-	ret = gContext.pResourceMPI->IsValid();
-	if (ret != true)
-		printf("InitAudioTask() -- Couldn't create ResourceMPI!\n");
-
 	gContext.pDebugMPI->DebugOut( kDbgLvlValuable, 
-		"InitAudioTask() -- Debug, Kernel, and Resource MPIs created.\n");	
+		"InitAudioTask() -- Debug and Kernel MPIs created.\n");	
 
 	// Setup debug level.
 	gContext.pDebugMPI->SetDebugLevel( kAudioDebugLevel );
@@ -253,19 +244,30 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 	tAudioID			newID = kNoAudioID;
 	CChannel*			pChannel = kNull;
 	CAudioPlayer*		pPlayer = kNull;
+	CPath				filename;
+	CPath				fileExtension;
 
 	// Retrieve the StartAudio message's data.
 	tAudioStartAudioInfo*	pAudioInfo = pMsg->GetData();
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
-			"AudioTask::DoStartAudio -- Start Audio Msg: vol:%d, pri:%d, pan:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n",
+			"AudioTask::DoStartAudio -- Start Audio Msg: vol:%d, pri:%d, pan:%d, path:%s, listen:%p, payload:%d, flags:%d \n",
 			static_cast<int>(pAudioInfo->volume), 
 			static_cast<int>(pAudioInfo->priority), 
 			static_cast<int>(pAudioInfo->pan), 
-			static_cast<int>(pAudioInfo->hRsrc),
-			reinterpret_cast<int>(pAudioInfo->pListener),
+			pAudioInfo->path->c_str(),
+			(void *)pAudioInfo->pListener,
 			static_cast<int>(pAudioInfo->payload), 
 			static_cast<int>(pAudioInfo->flags) );
+
+	filename = pAudioInfo->path->substr(0, pAudioInfo->path->rfind('/') + 1);
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
+			"AudioTask::DoStartAudio -- Filename: %s\n", filename.c_str() );
+
+	fileExtension  = pAudioInfo->path->substr(0, pAudioInfo->path->rfind('.') + 1);
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
+			"AudioTask::DoStartAudio -- Extension: %s\n", fileExtension.c_str() );
+
 
 	// Find the best channel for the specified priority
 	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->priority );
@@ -280,8 +282,9 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 		if (gContext.nextAudioID == kNoAudioID)
 			gContext.nextAudioID = 0;
 	
+		// TODO: determin rsrc type based on file extension 
 		// Branch on the type of audio resource to create a new audio player
-		rsrcType = gContext.pResourceMPI->GetType( pAudioInfo->hRsrc );  
+		rsrcType = kAudioRsrcOggVorbis;  
 
 		switch ( rsrcType )
 		{
@@ -721,25 +724,35 @@ static void DoMidiNoteOff( CAudioMsgMidiNoteOff* msg ) {
 
 static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 	tErrType					result;
+	int							err;
+	int							bytesRead;
 	tAudioStartMidiFileInfo* 	pInfo = msg->GetData();
 	CAudioReturnMessage			retMsg;
+	struct stat					fileStat;
+	FILE*						file;
 	
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartMidiFile -- Info: vol:%d, pri:%d, rsrc:0x%x, listen:0x%x, payload:%d, flags:%d \n", pInfo->volume, pInfo->priority, (int)pInfo->hRsrc,
+	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartMidiFile -- Info: vol:%d, pri:%d, path:%s, listen:0x%x, payload:%d, flags:%d \n", 
+				pInfo->volume, pInfo->priority, pInfo->path->c_str(),
 				reinterpret_cast<unsigned int>(pInfo->pListener), static_cast<int>(pInfo->payload), static_cast<int>(pInfo->flags) );
 
-	// Load the MIDI file using the resource manager.
-	result = gContext.pResourceMPI->LoadRsrc( pInfo->hRsrc );  
-    gContext.pDebugMPI->Assert((kNoErr == result), 
-    	"AudioTask::DoStartMidiFile() -- Failed to load rsrc for MIDI file. err = %d \n", 
-    	static_cast<int>(result) );
+	// Find out how big the MIDI file is.
+	err = stat( pInfo->path->c_str(), &fileStat );
+	gContext.pDebugMPI->Assert((kNoErr == err), 
+		"AudioTask::DoStartMidiFile() -- MIDI file does not appear to exist. path = %s \n", 
+		pInfo->path->c_str() );
 	
-	// Store pointer in the struct so that the Player object can access it.
-	pInfo->pMidiFileImage = (U8*)gContext.pResourceMPI->GetPtr( pInfo->hRsrc );
-	pInfo->imageSize = gContext.pResourceMPI->GetUnpackedSize( pInfo->hRsrc );
-
+	// Malloc the buffer for the file image and store the size.
+	pInfo->pMidiFileImage = (U8*)gContext.pKernelMPI->Malloc( fileStat.st_size );
+	pInfo->imageSize = fileStat.st_size;
+	
+	// Open the file and load the image.
+	file = fopen( pInfo->path->c_str(), "r" );
+	bytesRead = fread( pInfo->pMidiFileImage, 1, fileStat.st_size, file );
+	err = fclose( file );
+		
 	result = gContext.pMidiPlayer->StartMidiFile( pInfo );
 	gContext.pDebugMPI->Assert((kNoErr == result), 
-		"AudioTask::DoStartMidiFile() -- Failed to load rsrc for MIDI file. err = %d \n", 
+		"AudioTask::DoStartMidiFile() -- Failed to start MIDI file. result = %d \n", 
 		static_cast<int>(result) );
 
 	// Send the status back to the caller

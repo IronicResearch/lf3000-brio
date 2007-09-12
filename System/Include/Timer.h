@@ -46,7 +46,7 @@ class CTimerMessage : public IEventMessage
 {
 public:
 	explicit CTimerMessage(tTimerHndl hndl) : 
-				IEventMessage(kTimerFiredEvent, 0), hndl_(hndl) {}
+				IEventMessage(kTimerFiredEvent), hndl_(hndl) {}
 	virtual U16	GetSizeInBytes() const	{ return sizeof(CTimerMessage); }
 	tTimerHndl	GetTimerHndl() const	{ return hndl_; }
 private:

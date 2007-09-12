@@ -338,12 +338,14 @@ namespace
 		// CAudioMPI instance.
 		//--------------------------------------------------------------------
 		MPIInstanceState( void )
-						: pListener(NULL),
+						: path(NULL),
+						pListener(NULL),
 						volume(100),
 						pan(0),
 						priority(0)
 		{ }
 						
+		const CPath* 			path;
 		const IEventListener*	pListener;
 		U8 						volume;
 		S8						pan;
@@ -617,6 +619,9 @@ void CAudioModule::SetMasterVolume( U8 volume )
 {
 	tErrType 	result = kNoErr;
 
+	// Keep local copy.
+	masterVolume_ = volume;
+	
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetMasterVolume -- Couldn't lock mutex.\n");
 
@@ -644,7 +649,31 @@ U8 CAudioModule::GetMasterVolume( void )
 
 //==============================================================================
 //==============================================================================
-tAudioID CAudioModule::StartAudio( U32 mpiID, tRsrcHndl hRsrc, U8 volume,  
+tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
+{
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"CAudioModule::SetAudioResourcePath -- mpiID = %d\n", static_cast<int>(mpiID) );	
+	
+	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+
+	mpiState.path = new CPath( path );
+}
+//==============================================================================
+//==============================================================================
+
+const CPath* CAudioModule::GetAudioResourcePath( U32 mpiID )
+{
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"CAudioModule::GetAudioResourcePath -- mpiID = %d\n", static_cast<int>(mpiID) );	
+	
+	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+	return mpiState.path;
+}
+
+
+//==============================================================================
+//==============================================================================
+tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, U8 volume,  
 	tAudioPriority priority, S8 pan, const IEventListener *pListener, 
 	tAudioPayload payload, tAudioOptionsFlags flags )
 {
@@ -654,11 +683,19 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, tRsrcHndl hRsrc, U8 volume,
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register -- Couldn't lock mutex.\n");
 
+	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+
+	// If the path passed to us is a full path, then use it, otherwise
+	// append what was passed to the MPI's default path.
+	CPath fullPath = (path[0] == '/')
+			? path
+			: *mpiState.path + path;
+
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StartAudio --  hRsrc = 0x%x\n", static_cast<unsigned int>(hRsrc) );	
+		"CAudioModule::StartAudio --  path = %s\n", fullPath.c_str() );	
 
-	tAudioStartAudioInfo msgData( hRsrc, volume, priority, pan, 
+	tAudioStartAudioInfo msgData( &fullPath, volume, priority, pan, 
 								pListener, payload, flags );
 
 	CAudioMsgStartAudio	msg( msgData );
@@ -676,7 +713,7 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, tRsrcHndl hRsrc, U8 volume,
 
 //==============================================================================
 //==============================================================================
-tAudioID CAudioModule::StartAudio( U32 mpiID, tRsrcHndl hRsrc, tAudioPayload payload, 
+tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload payload, 
 				tAudioOptionsFlags flags)
 {
 	tErrType 			result = kNoErr;
@@ -686,12 +723,19 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, tRsrcHndl hRsrc, tAudioPayload pay
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio -- Couldn't lock mutex.\n");
 
+	// If the path passed to us is a full path, then use it, otherwise
+	// append what was passed to the MPI's default path.
+	CPath fullPath = (path[0] == '/')
+			? path
+			: *mpiState.path + path;
+
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StartAudio --  hRsrc = 0x%x\n", static_cast<unsigned int>(hRsrc) );	
+		"CAudioModule::StartAudio --  path = %s\n", fullPath.c_str() );	
 
-	tAudioStartAudioInfo msgData( hRsrc, mpiState.volume, mpiState.priority, mpiState.pan, 
-			mpiState.pListener, payload, flags );
+
+	tAudioStartAudioInfo msgData( &fullPath, mpiState.volume, mpiState.priority, mpiState.pan, 
+			mpiState.pListener, payload, flags);
 
 	CAudioMsgStartAudio	msg( msgData );
 	
@@ -1129,7 +1173,7 @@ tErrType CAudioModule::MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8
 //==============================================================================
 tErrType CAudioModule::StartMidiFile( 	U32 				mpiID, 
 										tMidiPlayerID		id,
-										tRsrcHndl			hRsrc, 
+										const CPath 		&path, 
 										U8					volume, 
 										tAudioPriority		priority,
 										IEventListener*		pListener,
@@ -1138,12 +1182,20 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 {
 	tAudioStartMidiFileInfo info;
 	
+	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+
+	// If the path passed to us is a full path, then use it, otherwise
+	// append what was passed to the MPI's default path.
+	CPath fullPath = (path[0] == '/')
+			? path
+			: *mpiState.path + path;
+
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StartMidiFile --  hRsrc = 0x%x\n", static_cast<unsigned int>(hRsrc) );	
+		"CAudioModule::StartMidiFile --  path = %s\n", fullPath.c_str() );	
 
 	info.id = id;
-	info.hRsrc = hRsrc;
+	info.path = &fullPath;
 	info.volume = volume;
 	info.priority = priority;
 	info.pListener = pListener;
@@ -1160,19 +1212,25 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 
 tErrType CAudioModule::StartMidiFile( 	U32 				mpiID, 
 										tMidiPlayerID		id,
-										tRsrcHndl			hRsrc, 
+										const CPath 		&path, 
 										tAudioPayload		payload,
 										tAudioOptionsFlags	flags )
 {
 	tAudioStartMidiFileInfo info;
 	MPIInstanceState& 		mpiState = RetrieveMPIState( mpiID );
 	
+	// If the path passed to us is a full path, then use it, otherwise
+	// append what was passed to the MPI's default path.
+	CPath fullPath = (path[0] == '/')
+			? path
+			: *mpiState.path + path;
+
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StartMidiFile --  hRsrc = 0x%x\n", static_cast<unsigned int>(hRsrc) );	
-	
+		"CAudioModule::StartMidiFile --  path = %s\n", fullPath.c_str() );	
+
 	info.id = id;
-	info.hRsrc = hRsrc;
+	info.path = &fullPath;
 	info.volume = mpiState.volume;
 	info.priority = mpiState.priority;
 	info.pListener = mpiState.pListener;

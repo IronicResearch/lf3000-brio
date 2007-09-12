@@ -14,7 +14,7 @@
 
 // System includes
 #include <SystemTypes.h>
-#include <ResourceTypes.h>
+#include <StringTypes.h>
 #include <AudioTypes.h>
 #include <CoreMPI.h>
 #include <AudioEffectsProcessor.h>
@@ -65,6 +65,11 @@ public:
 	void 		SetMasterVolume( U8 volume );
 	U8			GetMasterVolume( void ) const;
 
+	// Sets/Gets the default location in the file system that the MPI will
+	// use to load/play audio resources.
+	tErrType		SetAudioResourcePath( const CPath &path );
+	const CPath* 	GetAudioResourcePath( void ) const;
+	
 	//********************************
 	// Audio Playback. 
 	//********************************    
@@ -72,7 +77,7 @@ public:
 	// Plays an audio resource.
 	// An audio done event will be posted to the listener if provided.
 	// Currently only volume and pListener are interpreted.
-	tAudioID 	StartAudio( tRsrcHndl	hRsrc, 
+	tAudioID 	StartAudio( const CPath &path, 
 					U8					volume, 
 					tAudioPriority		priority,
 					S8					pan, 
@@ -81,7 +86,7 @@ public:
 					tAudioOptionsFlags	flags = 0 );
 
 	// Same as above, but uses defaults for unspecified params.
-	tAudioID 	StartAudio( tRsrcHndl	hRsrc, 
+	tAudioID 	StartAudio( const CPath &path, 
 					tAudioPayload		payload,
 					tAudioOptionsFlags	flags );
 	
@@ -169,7 +174,7 @@ public:
 	// Start playback of a MIDI file.
 	// Currently only the volume and pListener options are used.
     tErrType 	StartMidiFile( tMidiPlayerID	id,
-						tRsrcHndl			hRsrc, 
+    					const CPath 		&path, 
 						U8					volume, 
 						tAudioPriority		priority,
 						IEventListener*		pListener,
@@ -178,7 +183,7 @@ public:
 
     // Uses defaults from MPI for volume, priority, and listener.
     tErrType 	StartMidiFile( tMidiPlayerID		id,
-    							tRsrcHndl			hRsrc, 
+    							const CPath 		&path, 
     							tAudioPayload		payload,
     							tAudioOptionsFlags	flags );
     

@@ -45,9 +45,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 	bStopping_ = 0;
 	bHasCodec_ = 0;
 
-	// Save the resource handle
-	hRsrc_ = pAudioInfo->hRsrc;
-
 	// Get Debug MPI
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	ret = pDebugMPI_->IsValid();
@@ -55,12 +52,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 		printf("AudioPlayer ctor -- Couldn't create DebugMPI!\n");
 	
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-
-	// Get Resource MPI
-	pRsrcMPI_ = new CResourceMPI;
-	ret = pRsrcMPI_->IsValid();
-	if (ret != true)
-		printf("AudioPlayer ctor-- Couldn't create ResourceMPI!\n");
 
 	pDebugMPI_->DebugOut( kDbgLvlValuable, 
 		(const char *)"\nDebug and Resource MPIs created by AudioPlayer ctor\n");	

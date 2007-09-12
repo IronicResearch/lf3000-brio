@@ -18,8 +18,6 @@
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <DebugMPI.h>
-#include <ResourceMPI.h>
-//#include <RsrcTypes.h>
 #include <AudioTypes.h>
 #include <EventListener.h>
 #include <AudioTypesPriv.h>
@@ -54,7 +52,6 @@ public:
 
 	// Get/Set the class member variables
 	inline tAudioID			GetAudioID() { return id_; }
-	inline tRsrcHndl		GetRsrcHandle() { return hRsrc_; }
 	inline tAudioPriority 	GetPriority() { return priority_; }
 	inline void		 		SetPriority(tAudioPriority priority) { priority_ = priority; }
 	inline tAudioPayload	GetPayload() { return payload_; }
@@ -78,11 +75,9 @@ protected:
 	U8			bHasCodec_:1;			// Has audio codec
 	U8			unused_:3;				// Unused
 
-	CDebugMPI*			pDebugMPI_;		// Debug output access.
-	CResourceMPI*		pRsrcMPI_;		// Resource Manager access.
-	
+	CDebugMPI*			pDebugMPI_;		// Debug output access.	
 	tAudioID			id_;			// AudioID of the audio assigned to the player
-	tRsrcHndl			hRsrc_;			// Rsrc handle of the audio assigned to the player
+	FILE*				file_;			// file struct of open file
 	void*				pAudioData_;
 	U32					audioDataSize_;	// bytes I think it should be...
 	bool				hasStereoData_;

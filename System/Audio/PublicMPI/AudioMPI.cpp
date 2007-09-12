@@ -13,13 +13,11 @@
 
 // System includes
 #include <SystemTypes.h>
-#include <SystemTypes.h>
-#include <ResourceTypes.h>
+#include <StringTypes.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <Module.h>
 #include <AudioTypes.h>
-//#include <RsrcMgrMPI.h>
 #include <AudioMPI.h>
 #include <AudioPriv.h>
 LF_BEGIN_BRIO_NAMESPACE()
@@ -48,19 +46,19 @@ static const CString kMPIName = "AudioMPI";
 //============================================================================
 //------------------------------------------------------------------------------
 CAudioEventMessage::CAudioEventMessage( const tAudioMsgAudioCompleted& data ) 
-	: IEventMessage(kAudioCompletedEvent, 0)
+	: IEventMessage(kAudioCompletedEvent)
 {
 	audioMsgData.audioCompleted = data;
 }
 
 CAudioEventMessage::CAudioEventMessage( const tAudioMsgMidiCompleted& data ) 
-	: IEventMessage(kMidiCompletedEvent, 0)
+	: IEventMessage(kMidiCompletedEvent)
 {
 	audioMsgData.midiCompleted = data;
 }
 
 CAudioEventMessage::CAudioEventMessage( const tAudioMsgCuePoint& data ) 
-	: IEventMessage(kAudioCuePointEvent, 0)
+	: IEventMessage(kAudioCuePointEvent)
 {
 	audioMsgData.audioCuePoint = data;
 }
@@ -220,9 +218,29 @@ U8 CAudioMPI::GetMasterVolume() const
 	return pModule_->GetMasterVolume();
 }
 
+tErrType	CAudioMPI::SetAudioResourcePath( const CPath &path )
+{
+	if ( pModule_ == kNull )
+	{
+		return kNoImplErr;
+	}
+
+	return pModule_->SetAudioResourcePath( mpiID_, path );
+}
+
+const CPath* 	CAudioMPI::GetAudioResourcePath( void ) const
+{
+	if ( pModule_ == kNull )
+	{
+		return kNull;
+	}
+	
+	return pModule_->GetAudioResourcePath( mpiID_ );
+}
+
 //==============================================================================
 //==============================================================================
-tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc, 
+tAudioID CAudioMPI::StartAudio( const CPath			&path, 
 								U8					volume, 
 								tAudioPriority		priority,
 								S8					pan, 
@@ -238,12 +256,12 @@ tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc,
 	}
 	
 	// Try to play the resource and return a valid ID if successful.
-	return pModule_->StartAudio( mpiID_, hRsrc, volume, priority, pan, pListener, payload, flags );
+	return pModule_->StartAudio( mpiID_, path, volume, priority, pan, pListener, payload, flags );
 }
 
 //==============================================================================
 //==============================================================================
-tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc, 
+tAudioID CAudioMPI::StartAudio( const CPath 		&path, 
 								tAudioPayload		payload,
 								tAudioOptionsFlags	flags )
 {
@@ -252,7 +270,7 @@ tAudioID CAudioMPI::StartAudio( tRsrcHndl			hRsrc,
 		return kNoAudioID;
 	}
 	
-	return pModule_->StartAudio( mpiID_, hRsrc, payload, flags );
+	return pModule_->StartAudio( mpiID_, path, payload, flags );
 }
 
 
@@ -526,7 +544,7 @@ tErrType CAudioMPI::ReleaseMidiPlayer( tMidiPlayerID midiPlayerID )
 }
 
 tErrType CAudioMPI::StartMidiFile( 	tMidiPlayerID		id,
-									tRsrcHndl			hRsrc, 
+									const CPath 		&path, 
 									U8					volume, 
 									tAudioPriority		priority,
 									IEventListener*		pListener,
@@ -538,13 +556,13 @@ tErrType CAudioMPI::StartMidiFile( 	tMidiPlayerID		id,
 		return kNoImplErr;
 	}
 
-	return pModule_->StartMidiFile( mpiID_, id, hRsrc, volume, priority, pListener, payload, flags );
+	return pModule_->StartMidiFile( mpiID_, id, path, volume, priority, pListener, payload, flags );
 }
 
 //==============================================================================
 //==============================================================================
 tErrType CAudioMPI::StartMidiFile( tMidiPlayerID		id,
-									tRsrcHndl			hRsrc, 
+									const CPath 		&path, 
 									tAudioPayload		payload,
 									tAudioOptionsFlags	flags )
 {
@@ -553,7 +571,7 @@ tErrType CAudioMPI::StartMidiFile( tMidiPlayerID		id,
 		return kNoImplErr;
 	}
 
-	return pModule_->StartMidiFile( mpiID_, id, hRsrc, payload, flags );
+	return pModule_->StartMidiFile( mpiID_, id, path, payload, flags );
 }
 
 //==============================================================================
