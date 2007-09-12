@@ -268,16 +268,9 @@ public:
 
 
 	//------------------------------------------------------------------------
-	void testVorbisResources( )
+	void xxxtestVorbisResources( )
 	{
-		U32						index;
-		tAudioID 				id1;
-		tAudioID 				id2;
-		U32						time;
-		U8						volume;
-		S8						pan;
-		tAudioPriority 			priority;
-		const IEventListener* 	pListener;
+		tAudioID 				id;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -287,7 +280,7 @@ public:
 		
 		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
 
-		id2 = pAudioMPI_->StartAudio( "vivaldi.ogg", 100, 1, 0, &audioListener_, 0, 0 );
+		id = pAudioMPI_->StartAudio( "vivaldi.ogg", 100, 1, 0, &audioListener_, 0, 0 );
 
 		pKernelMPI_->TaskSleep( 5000 ); 
 	}
@@ -377,13 +370,13 @@ public:
 		// sleep 10 seconds
 		pKernelMPI_->TaskSleep( 15000 ); 
 	}
-
+#endif
+	
 	//------------------------------------------------------------------------
-	void xxxtestVorbisPlusMIDIResources( )
+	void testVorbisPlusMIDIResources( )
 	{
 		tErrType 		err;
 		U32				index;
-		tRsrcHndl		handle1, handle2, handle3, handle4;
 		tAudioID 		id1, id2, id3, id4;
 		U32				audioTime;
 		tMidiPlayerID	midiPlayerID;
@@ -394,38 +387,17 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		TS_ASSERT( pResourceMPI_ != NULL );
-		TS_ASSERT( pResourceMPI_->IsValid() == true );
+		printf("TestAudio -- testVorbisPlusMIDIResources()\n" );
 
-		printf("TestAudio -- testVorbisPlusMIDIResources() starting audio driver output\n" );
+		id4 = pAudioMPI_->StartAudio( "Sine44.ogg", 100, 1, 0, &audioListener_, 0, 0 );
 
-		// Package is already opened in setup
-		handle1 = pResourceMPI_->FindRsrc( "VH_16_mono" );
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisPlusMIDIResources() found VH_16_mono, rsrcHandle = %d\n", (int)handle1 );
-
-		handle2 = pResourceMPI_->FindRsrc( "vivaldi" );
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisPlusMIDIResources() found vivaldi, rsrcHandle = %d\n", (int)handle2 );
-		
-		handle3 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
-		TS_ASSERT( handle3 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisPlusMIDIResources() found Neutr_3_noDrums, rsrcHandle = %d\n", (int)handle3 );
-
-		handle4 = pResourceMPI_->FindRsrc( "Sine44" );
-		TS_ASSERT( handle4 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisPlusMIDIResources() found sine44, rsrcHandle = %d\n", (int)handle4 );
-
-		// volume is faked by right shift at this point
-		id4 = pAudioMPI_->StartAudio( handle4, 100, 1, 0, &audioListener_, 0, 0 );
-
-		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartAudio( "VH_16_mono.ogg", 100, 1, 0, &audioListener_, 0, 0 );
 		printf("TestAudio -- testVorbisPlusMIDIResources() back from calling StartAudio()\n" );
 
 		pKernelMPI_->TaskSleep(4000 ); 
 
 //		pAudioMPI_->SetMasterVolume( 80 );
-		id2 = pAudioMPI_->StartAudio( handle2, 80, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( "vivaldi.ogg", 80, 1, 0, &audioListener_, 0, 0 );
 	
 		pKernelMPI_->TaskSleep(4000 ); 
 
@@ -435,11 +407,11 @@ public:
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, handle3, 100, 1, &audioListener_, 0, 0 );
+		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, "Neutr_3_noDrums.mid", 100, 1, &audioListener_, 0, 0 );
 
 		pKernelMPI_->TaskSleep(4000 ); 
 //		pAudioMPI_->SetMasterVolume( 80 );
-		id4 = pAudioMPI_->StartAudio( handle4, 100, 1, 0, &audioListener_, 0, 0 );
+		id4 = pAudioMPI_->StartAudio( "Sine44.ogg", 100, 1, 0, &audioListener_, 0, 0 );
 
 		// loop sleep 1 second
 		for (index = 0; index < 40; index++) {
@@ -448,7 +420,7 @@ public:
 		}
 	}
 
-	
+#if 0	
 	//------------------------------------------------------------------------
 	void xxxtestAudioResources( )
 	{

@@ -8081,3 +8081,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/12/07 12:34 PM
 2,750 ms. (Cumulative: 1,650,848 ms)
 
 ----------------
+Revision 1,546 from svn://localhost/TRUNK/:
+
+Fix ARM compile errors for audio unit tset.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/12/07 12:54 PM
+1 changed, 0 added, 0 deleted.
+2,751 ms. (Cumulative: 1,653,661 ms)
+
+----------------
