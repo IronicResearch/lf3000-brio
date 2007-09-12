@@ -19,7 +19,6 @@
 #include <EventTypes.h>
 #include <VideoTypes.h>
 #include <DebugMPI.h>
-#include <ResourceTypes.h>
 #include <EventListener.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -30,16 +29,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString			kVideoModuleName	= "Video";
 const tVersion			kVideoModuleVersion	= 2;
 const tEventPriority	kVideoEventPriority	= 0;
+const tDebugLevel		kVideoDebugLevel	= kDbgLvlImportant;
 
 //==============================================================================
 // Typedefs
 //==============================================================================
 
 struct tVideoContext {
-	tRsrcHndl			hRsrcVideo;
-	tRsrcHndl			hRsrcAudio;
 	tVideoHndl			hVideo;
 	tAudioID			hAudio;
+	CPath&				pathAudio;
 	tVideoSurf*			pSurfVideo;
 	IEventListener*		pListener;
 	Boolean				bLooped;
@@ -65,8 +64,11 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc);
-    VTABLE_EXPORT tVideoHndl	StartVideo(tRsrcHndl hRsrc, tRsrcHndl hAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener);
+	VTABLE_EXPORT tErrType		SetVideoResourcePath(const CPath& path);
+	VTABLE_EXPORT CPath*		GetVideoResourcePath() const;
+	VTABLE_EXPORT tVideoHndl	StartVideo(const CPath& path);
+	VTABLE_EXPORT tVideoHndl	StartVideo(const CPath& path, tVideoSurf* pSurf, Boolean bLoop = false, IEventListener* pListener = NULL);
+	VTABLE_EXPORT tVideoHndl	StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop = false, IEventListener* pListener = NULL);
     VTABLE_EXPORT Boolean     	StopVideo(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		GetVideoFrame(tVideoHndl hVideo, void* pCtx);
 	VTABLE_EXPORT Boolean 		PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx);
@@ -91,7 +93,7 @@ private:
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 	
 	// Implementation-specific functionality
-    tVideoHndl			StartVideoInt(tRsrcHndl hRsrc);
+    tVideoHndl			StartVideoInt(const CPath& path);
     Boolean				InitVideoInt(tVideoHndl hVideo);
     void				DeInitVideoInt(tVideoHndl hVideo);
 };

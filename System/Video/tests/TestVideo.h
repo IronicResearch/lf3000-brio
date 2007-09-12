@@ -6,7 +6,6 @@
 #include <VideoMPI.h>
 #include <DisplayMPI.h>
 #include <KernelMPI.h>
-#include <ResourceMPI.h>
 #include <EventMPI.h>
 #include <EventListener.h>
 #include <AudioTypes.h>
@@ -15,6 +14,17 @@
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
+
+//----------------------------------------------------------------------------
+inline CPath GetTestRsrcFolder( )
+{
+#ifdef EMULATION
+	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
+	return dir + "Video/";
+#else	// EMULATION
+	return "/Base/rsrc/Video/";
+#endif	// EMULATION
+}
 
 //============================================================================
 // Video Listener
@@ -56,7 +66,6 @@ class TestVideo : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CVideoMPI*		pVideoMPI_;
-	CResourceMPI*	pResourceMPI_;
 	CDisplayMPI*	pDisplayMPI_;
 public:
 	//------------------------------------------------------------------------
@@ -100,36 +109,23 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoResources()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tVideoHndl	video;
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
-
-		pkg = pResourceMPI_->FindPackage("ClipTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-
-		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-
-		video = pVideoMPI_->StartVideo(handle1);
+		CPath dir = GetTestRsrcFolder();
+		pVideoMPI_->SetVideoResourcePath(dir);
+ 		CPath* path = pVideoMPI_->GetVideoResourcePath();
+ 		TS_ASSERT( *path == dir );
+		
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
 
 		pVideoMPI_->StopVideo(video);
-
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 	}
 
+#if defined(EMULATION) || !defined(LF1000) // YUYV422 not supported on LF1000
 	//------------------------------------------------------------------------
 	void testVideoDisplay()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -145,18 +141,8 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
-
-		pkg = pResourceMPI_->FindPackage("ClipTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-
-		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-
-		video = pVideoMPI_->StartVideo(handle1);
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
 
 		for (int i = 0; i < 100; i++)
@@ -181,17 +167,13 @@ public:
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
-
+#endif
+	
 	//------------------------------------------------------------------------
 	void testVideoDisplayRGB()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -208,16 +190,8 @@ public:
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatARGB8888 );
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
-		pkg = pResourceMPI_->FindPackage("ClipTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-
-		video = pVideoMPI_->StartVideo(handle1);
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
 
 		for (int i = 0; i < 100; i++)
@@ -242,17 +216,12 @@ public:
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 
 	//------------------------------------------------------------------------
 	void testVideoDisplayYUV()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -269,16 +238,8 @@ public:
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatYUV420 );
 		
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
-		pkg = pResourceMPI_->FindPackage("ClipTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-
-		video = pVideoMPI_->StartVideo(handle1);
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
 
 		for (int i = 0; i < 100; i++)
@@ -303,18 +264,12 @@ public:
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 
 	//------------------------------------------------------------------------
 	void testVideoAudio()
 	{
-		tRsrcHndl	pkg;
-		tRsrcHndl	handle1;
-		tRsrcHndl	handle2;
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -330,25 +285,13 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 				
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Video");
-
-		pkg = pResourceMPI_->FindPackage("ClipTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg) );
-
-		handle1 = pResourceMPI_->FindRsrc("Theora10Vorbis0");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		handle2 = pResourceMPI_->FindRsrc("Vorbis0");
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-
 		CKernelMPI*	kernel = new CKernelMPI();
 		CEventMPI*  evtmgr = new CEventMPI();
 		VideoListener  videoListener;
 		evtmgr->RegisterEventListener(&videoListener);
 
-		video = pVideoMPI_->StartVideo(handle1, handle2, &surf, false, &videoListener);
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg", "Vorbis0_mono16kHz.ogg", &surf, false, &videoListener);
 		TS_ASSERT( video != kInvalidVideoHndl );
 		
 		for (int i = 0; i < 100; i++)
@@ -383,12 +326,8 @@ public:
 		}
 
 		pVideoMPI_->StopVideo(video);
-
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
-		pResourceMPI_->ClosePackage(pkg);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 		delete pDisplayMPI_;
 	}
 

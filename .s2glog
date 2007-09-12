@@ -8090,3 +8090,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/12/07 12:54 PM
 2,751 ms. (Cumulative: 1,653,661 ms)
 
 ----------------
+Revision 1,547 from svn://localhost/TRUNK/:
+
+Modified Video module to not use Resource manager.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/07 1:29 PM
+8 changed, 0 added, 0 deleted.
+2,969 ms. (Cumulative: 1,656,692 ms)
+
+----------------
