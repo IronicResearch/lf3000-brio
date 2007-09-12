@@ -16,7 +16,6 @@
 #include <SystemErrors.h>
 #include <VideoTypes.h>
 #include <VideoPriv.h>
-#include <ResourceMPI.h>
 #include <AudioMPI.h>
 #include <KernelMPI.h>
 
@@ -72,8 +71,9 @@ namespace
 	theora_state     	td;
 
 	// Video MPI global vars
-	tRsrcHndl			ghVideo;
 	tVideoContext*		gpVidCtx;
+	CPath				gpath = "";
+	FILE*				gfile = NULL;
 }
 
 //============================================================================
@@ -84,10 +84,8 @@ namespace
 // Grab some more compressed bitstream and sync it for page extraction
 static int buffer_data(/* FILE *in, */ ogg_sync_state *oy)
 {
-	CResourceMPI	rsrcmgr;
 	char 	*buffer = ogg_sync_buffer(oy,4096);
-	U32 	bytes; // = fread(buffer,1,4096,in);
-	rsrcmgr.ReadRsrc(ghVideo, buffer, 4096, &bytes, kOpenRsrcOptionRead, NULL);
+	U32 	bytes = fread(buffer,1,4096,gfile);
 	ogg_sync_wrote(oy,bytes);
 	return bytes;
 }
@@ -105,6 +103,7 @@ static int queue_page(ogg_page *page)
 //============================================================================
 CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 {
+	dbg_.SetDebugLevel(kVideoDebugLevel);
 }
 
 //----------------------------------------------------------------------------
@@ -122,17 +121,37 @@ Boolean	CVideoModule::IsValid() const
 // Video-specific Implementation
 //============================================================================
 
+tErrType CVideoModule::SetVideoResourcePath(const CPath &path)
+{
+	gpath = path;
+	if (gpath.length() > 1 && gpath.at(gpath.length()-1) != '/')
+		gpath += '/';
+	return kNoErr;
+}
+
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tRsrcHndl hRsrcAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+CPath* CVideoModule::GetVideoResourcePath() const
+{
+	return &gpath;
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoModule::StartVideo(const CPath& path, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+{
+	CPath pathAudio = "";
+	return StartVideo(path, pathAudio, pSurf, bLoop, pListener);
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
 	CKernelMPI		kernel;
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
-	tVideoHndl		hVideo = StartVideoInt(hRsrc);
+	tVideoHndl		hVideo = StartVideoInt(path);
 
-	pVidCtx->hRsrcVideo = hRsrc;
-	pVidCtx->hRsrcAudio = hRsrcAudio;
 	pVidCtx->hVideo 	= hVideo;
 	pVidCtx->hAudio 	= 0; // handled inside video task
+//	pVidCtx->pathAudio  = pathAudio; // FIXME
 	pVidCtx->pSurfVideo = pSurf;
 	pVidCtx->pListener 	= pListener;
 	pVidCtx->bLooped 	= bLoop;
@@ -145,43 +164,36 @@ tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc, tRsrcHndl hRsrcAudio, tVide
 }
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideo(tRsrcHndl hRsrc)
+tVideoHndl CVideoModule::StartVideo(const CPath& path)
 {
-	return StartVideoInt(hRsrc);
+	return StartVideoInt(path);
 }
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideoInt(tRsrcHndl hRsrc)
+tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	tErrType	r;
 	Boolean		b;
+	CPath		filepath = (path.at(0) == '/') ? path : gpath + path;
+	const char*	filename = filepath.c_str();
 	
-	// Sanity check
-	if (hRsrc == kInvalidRsrcHndl) 
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: invalid resource handle\n");
-		return kInvalidVideoHndl;
-	}
-
 	// Open Ogg file associated with resource
-	CResourceMPI	rsrcmgr;
-	r = rsrcmgr.OpenRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
-	if (r != kNoErr) 
+	gfile = fopen(filename, "r");
+	if (gfile == NULL) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: LoadRsrc failed for %0X\n", 
-					static_cast<unsigned int>(hRsrc));
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: LoadRsrc failed for %s\n", filename);
 		return kInvalidVideoHndl;
 	}
-	hVideo = (tVideoHndl)(ghVideo = hRsrc); 
-
+	hVideo = reinterpret_cast<tVideoHndl>(gfile); // ???
+	
 	// Init Theora video codec for Ogg file
 	b = InitVideoInt(hVideo);
 	if (!b)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: InitVideoInt failed to init codec for %0X\n", 
-					static_cast<unsigned int>(hRsrc));
-		rsrcmgr.CloseRsrc(hRsrc);
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: InitVideoInt failed to init codec for %s\n", filename);
+		fclose(gfile);
+		gfile = NULL;
 		return kInvalidVideoHndl;
 	}
 	
@@ -327,12 +339,14 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	DeInitVideoTask();
 	
 	// Cleanup decoder stream resources
-	DeInitVideoInt(ghVideo);
+	DeInitVideoInt(hVideo);
 	
 	// Close file associated with resource
-	CResourceMPI	rsrcmgr;
-	rsrcmgr.CloseRsrc(ghVideo);
-	ghVideo = kInvalidRsrcHndl;
+	if (gfile != NULL)
+	{
+		fclose(gfile);
+		gfile = NULL;
+	}
 
 	// Free video context created for task thread, if any
 	if (gpVidCtx) 
@@ -423,9 +437,8 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	if (time.frame > pCtx->frame)
 	{	
 		// If we already past seek frame, we need to rewind from start
-		CResourceMPI	rsrcmgr;
 		DeInitVideoInt(hVideo);
-		rsrcmgr.SeekRsrc(ghVideo, 0);
+		fseek(gfile, 0, SEEK_SET);
 		InitVideoInt(hVideo);
 	}
 	

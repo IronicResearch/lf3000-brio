@@ -29,7 +29,7 @@ const CString	kMPIName = "VideoMPI";
 //============================================================================
 //------------------------------------------------------------------------------
 CVideoEventMessage::CVideoEventMessage( const tVideoMsgData& data ) 
-	: IEventMessage(kVideoCompletedEvent, 0), data_(data)
+	: IEventMessage(kVideoCompletedEvent), data_(data)
 {
 }
 
@@ -95,6 +95,47 @@ const CURI* CVideoMPI::GetModuleOrigin() const
 //============================================================================
 
 //----------------------------------------------------------------------------
+tErrType CVideoMPI::SetVideoResourcePath(const CPath& path)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetVideoResourcePath(path);
+}
+
+//----------------------------------------------------------------------------
+CPath* CVideoMPI::GetVideoResourcePath() const
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetVideoResourcePath();
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoMPI::StartVideo(const CPath& path)
+{
+	if (!pModule_)
+		return kInvalidVideoHndl;
+	return pModule_->StartVideo(path);
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoMPI::StartVideo(const CPath& path, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+{
+	if (!pModule_)
+		return kInvalidVideoHndl;
+	return pModule_->StartVideo(path, pSurf, bLoop, pListener);
+}
+
+//----------------------------------------------------------------------------
+tVideoHndl CVideoMPI::StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
+{
+	if (!pModule_)
+		return kInvalidVideoHndl;
+	return pModule_->StartVideo(path, pathAudio, pSurf, bLoop, pListener);
+}
+
+#if 0	// deprecated
+//----------------------------------------------------------------------------
 tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc)
 {
 	if (!pModule_)
@@ -109,6 +150,7 @@ tVideoHndl CVideoMPI::StartVideo(tRsrcHndl hRsrc, tRsrcHndl hAudio, tVideoSurf* 
 		return false;
 	return pModule_->StartVideo(hRsrc, hAudio, pSurf, bLoop, pListener);
 }
+#endif
 
 //----------------------------------------------------------------------------
 Boolean CVideoMPI::StopVideo(tVideoHndl hVideo)
