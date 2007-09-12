@@ -8026,3 +8026,13 @@ By Scott Esters (SEsters@leapfrog.com) on 9/11/07 4:34 PM
 3,172 ms. (Cumulative: 1,633,331 ms)
 
 ----------------
+Revision 1,539 from svn://localhost/TRUNK/:
+Revision 1,540 from svn://localhost/TRUNK/:
+
+First pass at removing Resource Manager from Brio... this checkin gets audio building and working.  More to come...
+
+By dgibbs (dgibbs@leapfrog.com) on 9/12/07 11:36 AM
+17 changed, 0 added, 0 deleted.
+3,125 ms. (Cumulative: 1,636,534 ms)
+
+----------------

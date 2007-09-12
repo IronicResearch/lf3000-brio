@@ -13,7 +13,6 @@
 //
 //============================================================================
 
-#include <ResourceTypes.h>
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -21,17 +20,15 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 class IEventMessage { 
 public:
-	IEventMessage(tEventType type, tRsrcHndl handle)
-		: eventType_(type), eventSource_(handle) { };
+	IEventMessage(tEventType type)
+		: eventType_(type){ };
 	virtual ~IEventMessage() { };
 
 	tEventType	GetEventType() const	{ return eventType_; }
-	tRsrcHndl	GetEventSource() const	{ return eventSource_; }
 	virtual U16	GetSizeInBytes() const	= 0;
 
 private:
 	tEventType	eventType_;			// Event type
-	tRsrcHndl	eventSource_;		// Source of the message FIXME/tp: needed?
 };
 
 LF_END_BRIO_NAMESPACE()	

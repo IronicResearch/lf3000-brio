@@ -7,7 +7,6 @@
 #include <AudioMPI.h>
 #include <DebugMPI.h>
 #include <KernelMPI.h>
-#include <ResourceMPI.h>
 #include <EventListener.h>
 #include <EventMessage.h>
 #include <EventMPI.h> 
@@ -24,6 +23,17 @@
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
+
+//----------------------------------------------------------------------------
+inline CPath GetAudioRsrcFolder( void )
+{
+#ifdef EMULATION
+	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
+	return dir + "Audio/";
+#else	// EMULATION
+	return "/Base/rsrc/Audio/";
+#endif	// EMULATION
+}
 
 //============================================================================
 // Audio Listener
@@ -44,7 +54,7 @@ public:
 	virtual tEventStatus Notify( const IEventMessage &msgIn )
 	{
 		tEventStatus status = kEventStatusOK;
-		
+		CAudioMPI	audioMPI;
 		// TODO: Shouldn't have to do this but it seems necessary...
 		dbg_.SetDebugLevel( kDbgLvlVerbose );
 
@@ -55,7 +65,10 @@ public:
 			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
 					static_cast<int>(data.audioID), static_cast<int>(data.payload));
 			status = kEventStatusOKConsumed;
-		} 
+
+//			audioMPI.StartAudio( handle1, 100, 1, 0, kNull, 0, 0 );
+//			printf("TestAudio -- AudioListener:: Notify() back from calling StartAudio()\n" );
+} 
 		else if( msg.GetEventType() == kMidiCompletedEvent )
 		{
 			const tAudioMsgMidiCompleted& data = msg.audioMsgData.midiCompleted;
@@ -70,6 +83,7 @@ private:
 	CDebugMPI	dbg_;
 };
 
+#if 0
 // Task to test multithreading and multi-MPIs.
 typedef struct
 {
@@ -80,12 +94,8 @@ static void *myTask(void* arg)
 {
 	CAudioMPI				audioMPI;
 	CKernelMPI				kernelMPI;
-	CResourceMPI			resourceMPI;
-
-	tPackageHndl			pkg;
 
 	U32						index;
-	tRsrcHndl				handle = kInvalidRsrcHndl;
 	tAudioID 				id;
 	U32						time;
 	U8						volume;
@@ -99,16 +109,8 @@ static void *myTask(void* arg)
 
 	TS_ASSERT( audioMPI.IsValid() == true );
 	TS_ASSERT( kernelMPI.IsValid() == true );
-	TS_ASSERT( resourceMPI.IsValid() == true );
 
 	printf("myTask( thread %d ) -- test task thread starting up.\n", threadNum );
-
-	resourceMPI.OpenAllDevices();
-	resourceMPI.SetDefaultURIPath("LF/Brio/UnitTest/Audio");
-
-	pkg = resourceMPI.FindPackage("SampleTest");
-	TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg );
-	TS_ASSERT_EQUALS( kNoErr, resourceMPI.OpenPackage(pkg) );
 
 	// Package is already opened in setup
 	switch( threadNum ) {
@@ -175,6 +177,7 @@ static void *myTask(void* arg)
 	return (void *)NULL;
 }	
 
+#endif
 
 //============================================================================
 // TestAudioMgr functions
@@ -184,9 +187,7 @@ class TestAudio : public CxxTest::TestSuite, TestSuiteBase
 private:
 	CAudioMPI*			pAudioMPI_;
 	CKernelMPI*			pKernelMPI_;
-	CResourceMPI*		pResourceMPI_;
 	AudioListener		audioListener_;
-	tPackageHndl		pkg_;
 
 public:
 	//------------------------------------------------------------------------
@@ -194,13 +195,7 @@ public:
 	{
 		pAudioMPI_ = new CAudioMPI();
 		pKernelMPI_ = new CKernelMPI();
-		pResourceMPI_ = new CResourceMPI;
-		pResourceMPI_->OpenAllDevices();
-		pResourceMPI_->SetDefaultURIPath("LF/Brio/UnitTest/Audio");
-
-		pkg_ = pResourceMPI_->FindPackage("SampleTest");
-		TS_ASSERT_DIFFERS( kInvalidPackageHndl, pkg_ );
-		TS_ASSERT_EQUALS( kNoErr, pResourceMPI_->OpenPackage(pkg_) );
+		pAudioMPI_->SetAudioResourcePath( GetAudioRsrcFolder() );
 	}
 
 	//------------------------------------------------------------------------
@@ -208,10 +203,6 @@ public:
 	{
 		delete pAudioMPI_; 
 		delete pKernelMPI_; 
-
-		pResourceMPI_->ClosePackage(pkg_);
-		pResourceMPI_->CloseAllDevices();
-		delete pResourceMPI_;
 	}
 	
 
@@ -224,8 +215,6 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		TS_ASSERT( pResourceMPI_ != NULL );
-		TS_ASSERT( pResourceMPI_->IsValid() == true );
 	}
 	
 	//------------------------------------------------------------------------
@@ -277,12 +266,11 @@ public:
 #endif
 	}
 
+
 	//------------------------------------------------------------------------
-	void xxtestVorbisResources( )
+	void testVorbisResources( )
 	{
 		U32						index;
-		tRsrcHndl				handle1;
-		tRsrcHndl				handle2;
 		tAudioID 				id1;
 		tAudioID 				id2;
 		U32						time;
@@ -297,63 +285,43 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		TS_ASSERT( pResourceMPI_ != NULL );
-		TS_ASSERT( pResourceMPI_->IsValid() == true );
-
 		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
 
-		// Package is already opened in setup
-		handle1 = pResourceMPI_->FindRsrc( "VH_16_mono" );
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found VH_16_mono, rsrcHandle = %d\n", (int)handle1 );
+		id2 = pAudioMPI_->StartAudio( "vivaldi.ogg", 100, 1, 0, &audioListener_, 0, 0 );
 
-		handle2 = pResourceMPI_->FindRsrc( "vivaldi" );
-		TS_ASSERT( handle2 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found vivaldi, rsrcHandle = %d\n", (int)handle2 );
-//		handle = pResourceMPI_->FindRsrc( "BlueNile" );
-//		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		
-		
-		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
-		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
-		// volume is faked by right shift at this point
-//		printf("TestAudio -- testVorbisResources() about to call StartAudio()\n" );
-		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
-		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
-
-		// sleep 2 seconds
-		pKernelMPI_->TaskSleep( 2000 ); 
-
-//		pAudioMPI_->SetMasterVolume( 80 );
-		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
-
-		// loop sleep 1 second
-		for (index = 0; index < 20; index++) {
-			time = pAudioMPI_->GetAudioTime( id2 );
-			volume = pAudioMPI_->GetAudioVolume( id2 );
-			priority = pAudioMPI_->GetAudioPriority( id2 );
-			pan = pAudioMPI_->GetAudioPan( id2 );
-			pListener = pAudioMPI_->GetAudioEventListener( id2 );
-			printf("TestAudio::testVorbisResources -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
-					(int)id2, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
-			
-			pKernelMPI_->TaskSleep( 125 ); 
-
-			pAudioMPI_->SetAudioVolume( id2, volume - (index*2) );
-			pAudioMPI_->SetAudioPriority( id2, priority + index );
-			pAudioMPI_->SetAudioPan( id2, pan - (index*4));
-
-			pKernelMPI_->TaskSleep( 125 ); 
-
-		}
+		pKernelMPI_->TaskSleep( 5000 ); 
 	}
 	
 	//------------------------------------------------------------------------
+	void xxxtestMIDIResources( )
+	{
+		tErrType 		err;
+		tAudioID 		id1;
+		tMidiPlayerID	midiPlayerID;
+		
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+
+		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
+		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
+		// volume is faked by right shift at this point
+		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "Neutr_3_noDrums.mid", 100, 1, &audioListener_, 0, 0 );
+
+		// sleep 10 seconds
+		pKernelMPI_->TaskSleep( 15000 ); 
+	}
+
+	//------------------------------------------------------------------------
 	void xxxtestVorbisLooping( )
 	{
-		tRsrcHndl	handle1;
 		tAudioID 	id1;
-		U32			audioTime;
+		U32			seconds = 0;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -361,26 +329,18 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		TS_ASSERT( pResourceMPI_ != NULL );
-		TS_ASSERT( pResourceMPI_->IsValid() == true );
+		printf("TestAudio -- testVorbisLooping() starting, will run for 20 seconds, listen for looping... \n" );
 
-		printf("TestAudio -- testVorbisLooping() starting \n" );
-
-		// Package is already opened in setup
-		handle1 = pResourceMPI_->FindRsrc( "vivaldi" );
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		printf("TestAudio -- testVorbisResources() found vivaldi, rsrcHandle = %d\n", (int)handle1 );
-		
-		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 1 );
+		id1 = pAudioMPI_->StartAudio( "vivaldi.ogg", 100, 1, 0, &audioListener_, 0, 1 );
 		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
 		// loop sleep 1 second
-		while (1) {
-			audioTime = pAudioMPI_->GetAudioTime( id1 );
-			pKernelMPI_->TaskSleep( 250 ); 
+		while ( seconds < 20 ) {
+			pKernelMPI_->TaskSleep( 1000 ); 
 		}
 	}
 	
+#if 0	
 	//------------------------------------------------------------------------
 	void xxtestRawResources( )
 	{
@@ -413,41 +373,6 @@ public:
 		// volume is faked by right shift at this point
 		id1 = pAudioMPI_->StartAudio( handle1, 100, 1, 0, &audioListener_, 0, 0 );
 		id2 = pAudioMPI_->StartAudio( handle2, 100, 1, 0, &audioListener_, 0, 0 );
-
-		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 15000 ); 
-	}
-
-	//------------------------------------------------------------------------
-	void xxxtestMIDIResources( )
-	{
-		tErrType 		err;
-		tRsrcHndl		handle1;
-		tAudioID 		id1;
-		tMidiPlayerID	midiPlayerID;
-		
-		TS_ASSERT( pAudioMPI_ != NULL );
-		TS_ASSERT( pAudioMPI_->IsValid() == true );
-				
-		TS_ASSERT( pKernelMPI_ != NULL );
-		TS_ASSERT( pKernelMPI_->IsValid() == true );
-		
-		TS_ASSERT( pResourceMPI_ != NULL );
-		TS_ASSERT( pResourceMPI_->IsValid() == true );
-
-		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
-		TS_ASSERT_EQUALS( kNoErr, err );
-
-		// Package is already opened in setup
-//		handle1 = pResourceMPI_->FindRsrc("Girl_noDrums");
-//		handle1 = pResourceMPI_->FindRsrc("Neutr_3_noDrums");
-		handle1 = pResourceMPI_->FindRsrc("NewHampshireGamelan");
-		TS_ASSERT( handle1 != kInvalidRsrcHndl );
-		
-		// tRsrcHndl hRsrc, U8 volume,  tAudioPriority priority, S8 pan, 
-		// IEventListener* pHandler, tAudioPayload payload, tAudioOptionsFlags flags)
-		// volume is faked by right shift at this point
-		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, handle1, 100, 1, &audioListener_, 0, 0 );
 
 		// sleep 10 seconds
 		pKernelMPI_->TaskSleep( 15000 ); 
@@ -634,7 +559,7 @@ public:
 }
 
 	//------------------------------------------------------------------------
-	void testThreading()
+	void xxxtestThreading()
 	{
 		printf("testThreading starting... \n");
 
@@ -685,7 +610,7 @@ public:
 
 		// this will exit when all threads exit.
 	}
-
+#endif
 };
 
 

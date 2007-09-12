@@ -52,14 +52,14 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	result = pKernelMPI_->InitMutex( render_mutex_, attr );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't init mutex.\n");
 
-	// Load the audio resource using the resource manager.
-	result = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
-	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't load resource.\n");
+	// TODO: Load the audio resource using the filesysetm.
+//	result = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
+//	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't load resource.\n");
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- Loaded resource...\n");
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- Loaded resource...\n");
 
 	// Get the pointer to the audio header and data.
-	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
+//	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%u, size:%u\n", 
 		(unsigned int)pHeader->type, (int)pHeader->offsetToData, pHeader->flags, (unsigned int)pHeader->sampleRate, 
@@ -100,9 +100,9 @@ CRawPlayer::~CRawPlayer()
 	result = pKernelMPI_->LockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor -- Couldn't lock mutex.\n");
 
-	// Unload the audio resource.
-	result = pRsrcMPI_->UnloadRsrc( hRsrc_ );  
-	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't unload resource.\n");
+	// TODO: fix Unload the audio resource.
+//	result = pRsrcMPI_->UnloadRsrc( hRsrc_ );  
+//	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't unload resource.\n");
 
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)

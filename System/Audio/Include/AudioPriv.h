@@ -63,8 +63,11 @@ public:
 	VTABLE_EXPORT U8		GetMasterVolume( void );
 
 	// Specific to MPIs
+	VTABLE_EXPORT tErrType SetAudioResourcePath( U32 mpiID, const CPath &path );
+	VTABLE_EXPORT const CPath* GetAudioResourcePath( U32 mpiID );
+	
 	VTABLE_EXPORT tAudioID StartAudio( U32					mpiID,
-										tRsrcHndl			hRsrc, 
+										const CPath 		&path, 
 										U8					volume, 
 										tAudioPriority		priority,
 										S8					pan, 
@@ -73,7 +76,7 @@ public:
 										tAudioOptionsFlags	flags );
 
 	VTABLE_EXPORT tAudioID 	StartAudio( U32					mpiID,
-										tRsrcHndl			hRsrc, 
+										const CPath 		&path, 
 										tAudioPayload		payload,
 										tAudioOptionsFlags	flags );
 
@@ -126,7 +129,7 @@ public:
 
 	VTABLE_EXPORT tErrType StartMidiFile( U32				mpiID,
 										tMidiPlayerID		id,
-										tRsrcHndl			hRsrc, 
+										const CPath 		&path, 
 										U8					volume, 
 										tAudioPriority		priority,
 										IEventListener*		pListener,
@@ -134,7 +137,7 @@ public:
 										tAudioOptionsFlags	flags );
 	VTABLE_EXPORT tErrType StartMidiFile( 	U32 				mpiID, 
 											tMidiPlayerID		id,
-											tRsrcHndl			hRsrc, 
+											const CPath 		&path, 
 											tAudioPayload		payload,
 											tAudioOptionsFlags	flags );
 	VTABLE_EXPORT void PauseMidiFile( tMidiPlayerID id );

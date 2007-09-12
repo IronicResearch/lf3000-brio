@@ -30,7 +30,7 @@ const CString	kMPIName = "ButtonMPI";
 //============================================================================
 //------------------------------------------------------------------------------
 CButtonMessage::CButtonMessage( const tButtonData& data ) 
-	: IEventMessage(kButtonStateChanged, 0), mData(data)
+	: IEventMessage(kButtonStateChanged), mData(data)
 {
 }
 
