@@ -8072,3 +8072,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/12/07 12:12 PM
 2,687 ms. (Cumulative: 1,648,035 ms)
 
 ----------------
+Revision 1,545 from svn://localhost/TRUNK/:
+
+Fix ARM compiler warnings.  Raw/uncompressed audio playback is not working for now.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/12/07 12:34 PM
+2 changed, 0 added, 0 deleted.
+2,750 ms. (Cumulative: 1,650,848 ms)
+
+----------------
