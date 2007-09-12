@@ -17,7 +17,7 @@
 #include <SystemTypes.h>
 #include <FontTypes.h>
 #include <CoreMPI.h>
-#include <ResourceTypes.h>
+//#include <ResourceTypes.h>
 #include <DisplayTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -38,28 +38,34 @@ public:
 
 	// font-specific functionality
 	
-	// Loads a font via its file name for a selected property size (deprecated)
-//	tFontHndl   LoadFont(const CString* pName, tFontProp prop);
+	/// Sets the default font resource path for subsequent LoadFont() calls
+	tErrType	SetFontResourcePath(const CPath& path);
+	CPath*		GetFontResourcePath() const;
+	
+	/// Loads a font via its file name for a selected property size
+	tFontHndl   LoadFont(const CPath& name, tFontProp prop);
+    tFontHndl   LoadFont(const CPath& name, U8 size);
+    tFontHndl   LoadFont(const CPath& name, U8 size, U32 encoding);
     
     // Loads a font via its associated resource for a selected property size
-    tFontHndl   LoadFont(tRsrcHndl hRsrc, tFontProp prop);
-    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size);
-    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
+//    tFontHndl   LoadFont(tRsrcHndl hRsrc, tFontProp prop);
+//    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size);
+//    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
     
-    // Unloads the font loaded by LoadFont()
+    /// Unloads the font loaded by LoadFont()
     Boolean     UnloadFont(tFontHndl hFont);
     
-    // Selects the font loaded by LoadFont()
+    /// Selects the font loaded by LoadFont()
     Boolean     SelectFont(tFontHndl hFont);
     
-    // Sets the font's drawing attributes
+    /// Sets the font's drawing attributes
     Boolean		SetFontAttr(tFontAttr attr);
     Boolean		SetFontColor(U32 color);
     Boolean		SetFontAntiAliasing(Boolean antialias);
     Boolean		SetFontKerning(Boolean kern);
     Boolean		SetFontUnderlining(Boolean underline);
     
-    // Gets the font's current drawing attributes
+    /// Gets the font's current drawing attributes
     Boolean		GetFontAttr(tFontAttr* pAttr);
     tFontAttr*	GetFontAttr();
     U32			GetFontColor();
@@ -67,22 +73,22 @@ public:
     Boolean		GetFontKerning();
     Boolean		GetFontUnderlining();
     
-    // Draws a text string at selected X,Y position in display surface context
+    /// Draws a text string at selected X,Y position in display surface context
     Boolean     DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     Boolean     DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
     Boolean     DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap);
     
-    // Returns the current X drawing position updated by DrawString()
+    /// Returns the current X drawing position updated by DrawString()
     S32			GetX();
     
-    // Returns the current Y drawing position updated by DrawString()
+    /// Returns the current Y drawing position updated by DrawString()
     S32			GetY();
     
-    // Returns the current metrics for the loaded font and property size
+    /// Returns the current metrics for the loaded font and property size
     Boolean		GetFontMetrics(tFontMetrics* pMtx);
     tFontMetrics* GetFontMetrics();
  
- 	// Returns the bounding rectangle for the selected text string
+ 	/// Returns the bounding rectangle for the selected text string
  	Boolean		GetStringRect(CString* pStr, tRect* pRect);
  	tRect*		GetStringRect(CString& str);
  	

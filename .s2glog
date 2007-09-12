@@ -8045,3 +8045,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/07 11:44 AM
 2,797 ms. (Cumulative: 1,639,394 ms)
 
 ----------------
+Revision 1,542 from svn://localhost/TRUNK/:
+
+Modified Font module to not use Resource manager.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/07 11:50 AM
+7 changed, 0 added, 0 deleted.
+2,969 ms. (Cumulative: 1,642,425 ms)
+
+----------------
