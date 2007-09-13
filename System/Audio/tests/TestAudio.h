@@ -94,7 +94,7 @@ static void *myTask(void* arg)
 	CKernelMPI				kernelMPI;
 
 	U32						index;
-	CPath*					filePath;
+	CPath*					filePath = kNull;
 	tAudioID 				id;
 	U32						time;
 	U8						volume;
@@ -329,7 +329,6 @@ public:
 		tErrType 		err;
 		U32				index;
 		tAudioID 		id1, id2, id3;
-		U32				audioTime;
 		tMidiPlayerID	midiPlayerID;
 
 		TS_ASSERT( pAudioMPI_ != NULL );
