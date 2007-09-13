@@ -2,6 +2,14 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+* Resource manager MPI has been completely removed.
+* Audio, Video, and Font MPIs modified to use file system paths now for 
+  locating and loading respective resources.
+* Button MPI added Register/Unregister methods for button event handling.
+* Power MPI added to Brio for power event notifications.
+* SDK examples updated for latest MPIs. 
+
+
 ===========================================
 v0.1.16  (Build 1510 released Sep 5, 2007) 
 ===========================================
