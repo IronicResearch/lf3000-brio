@@ -8168,3 +8168,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/13/07 2:57 PM
 2,938 ms. (Cumulative: 1,677,539 ms)
 
 ----------------
+Revision 1,564 from svn://localhost/TRUNK/:
+
+Added missing ffmpeg libs to tools. Removed bad symlink commands.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/13/07 3:48 PM
+1 changed, 3 added, 0 deleted.
+2,938 ms. (Cumulative: 1,680,555 ms)
+
+----------------
