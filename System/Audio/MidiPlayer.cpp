@@ -414,7 +414,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 
 	// If there is a midi file player, service it
 	if ( bFileActive_ && !bFilePaused_ ) {
-		// fixme/rdg: make this bulletproof.  Right now no check for sizes.
+		// TODO: make this bulletproof.  Right now no check for sizes.
 		// Figure out how many calls to spmidi we need to make to get a full output buffer
 		spmidiFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
 		midiLoopCount = numStereoFrames / spmidiFramesPerBuffer;
@@ -459,11 +459,22 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 		}
 	} else {
 		// A midi file is not playing, but notes might be turned on programatically...
-		// fixme/dg: rationalize numStereoFrames and numFrames_!!
-		pDebugMPI_->DebugOut(kAudioDebugLevel, 
-			"CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames(), no file active\n");
-		framesRead = SPMIDI_ReadFrames( pContext_, pMidiRenderBuffer_, numFrames_,
+		// TODO: rationalize numStereoFrames and numFrames_!!
+//		pDebugMPI_->DebugOut(kAudioDebugLevel, 
+//			"CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames(), no file active\n");
+
+		// TODO: make this bulletproof.  Right now no check for sizes.
+		// Figure out how many calls to spmidi we need to make to get a full output buffer
+		spmidiFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
+		midiLoopCount = numStereoFrames / spmidiFramesPerBuffer;
+
+		for (i = 0; i < midiLoopCount; i++) {
+
+			framesRead = SPMIDI_ReadFrames( pContext_, pBuffer, spmidiFramesPerBuffer,
 	    		samplesPerFrame_, bitsPerSample_ );
+
+			pBuffer += framesRead * kSamplesPerFrame;
+		}
 	}
 	
 //	printf("!!!!! CMidiPlayer::RenderBuffer -- framesRead: %u, pContext_ 0x%x, pMidiRenderBuffer_ 0x%x!!!\n\n", framesRead, pContext_, pMidiRenderBuffer_);
