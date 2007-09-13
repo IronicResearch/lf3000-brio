@@ -8118,3 +8118,20 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/07 2:41 PM
 2,781 ms. (Cumulative: 1,662,333 ms)
 
 ----------------
+Revision 1,551 from svn://localhost/TRUNK/:
+Revision 1,552 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,719 ms. (Cumulative: 1,665,115 ms)
+
+----------------
+Revision 1,553 from svn://localhost/TRUNK/:
+Revision 1,554 from svn://localhost/TRUNK/:
+
+Modified Brio SDK examples and "packing" tool to work without resource manager.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/12/07 6:33 PM
+4 changed, 2 added, 0 deleted.
+3,110 ms. (Cumulative: 1,668,240 ms)
+
+----------------

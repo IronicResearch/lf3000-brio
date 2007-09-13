@@ -180,7 +180,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path)
 tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
-	tErrType	r;
+//	tErrType	r;
 	Boolean		b;
 	CPath		filepath = (path.at(0) == '/') ? path : gpath + path;
 	const char*	filename = filepath.c_str();

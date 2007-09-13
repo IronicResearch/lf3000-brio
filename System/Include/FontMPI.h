@@ -17,7 +17,6 @@
 #include <SystemTypes.h>
 #include <FontTypes.h>
 #include <CoreMPI.h>
-//#include <ResourceTypes.h>
 #include <DisplayTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -46,11 +45,6 @@ public:
 	tFontHndl   LoadFont(const CPath& name, tFontProp prop);
     tFontHndl   LoadFont(const CPath& name, U8 size);
     tFontHndl   LoadFont(const CPath& name, U8 size, U32 encoding);
-    
-    // Loads a font via its associated resource for a selected property size
-//    tFontHndl   LoadFont(tRsrcHndl hRsrc, tFontProp prop);
-//    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size);
-//    tFontHndl   LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
     
     /// Unloads the font loaded by LoadFont()
     Boolean     UnloadFont(tFontHndl hFont);

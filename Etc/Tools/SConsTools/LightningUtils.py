@@ -297,10 +297,11 @@ def AddURILocation(uri, file, line):
 #-------------------------------------------------------------------------
 # Transform or copy source file to packed output file
 #-------------------------------------------------------------------------
-def PackFile(pkg, srcfile, pack_root, type, compression, rate):
+def PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate):
 	# 1) If we have already processed this source file, return the
 	#    already processed destination file
 	# 2) Create output file path
+	#    No auto-generated names now that resource manager is gone.
 	# 3) Add the new output file to the Source->Dest map, return it
     #    (Not applicable to OGG Theora->Vorbis extraction) 
 	# 4) Invoke OGG encoder
@@ -311,7 +312,10 @@ def PackFile(pkg, srcfile, pack_root, type, compression, rate):
 	if sSourceToDestMap.has_key(srcfile):							#1
 		return sEnv.File(sSourceToDestMap[srcfile])
 		
-	outname = GenerateNextResourceFileName()						#2
+	## outname = GenerateNextResourceFileName()						#2
+	# use outname as-is since there is no resource manager anymore 
+	outname = srcname
+
 	# this will make sure AboutMe so files are all named App.so
 	if pkg.endswith("AboutMe.pkg"):
 		if srcfile.endswith(".so"):
@@ -321,13 +325,16 @@ def PackFile(pkg, srcfile, pack_root, type, compression, rate):
 	if type != (1024*14+1):
 		sSourceToDestMap[srcfile] = outfile							#3
 	
-	if type == 1026 and rate != '':									#4
+	if type == 1026 and rate != '':
+		outfile = outfile + ".ogg"
 		enc = sEnv.OggEnc(outfile, srcfile, OGGENC_RATE=rate, OGGENC_COMPRESSION=compression)
 		
 	elif type == 1027:												#5
+		outfile = outfile + ".raw"
 		enc = sEnv.RawEnc(outfile, srcfile)
 		
 	elif type == 1028 and rate != '':							    #6
+		outfile = outfile + ".avog"
 		enc = sEnv.OggExt(outfile, srcfile)
 
 	else:
@@ -372,9 +379,10 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 			else:
 				type = 1025
 			extension = type == 1024 and '.mid' or '.wav'
+			srcname = row[fld[3]]+extension
 			srcfile = os.path.join(data_root, row[fld[3]]+extension)
 			srcsize = os.path.getsize(srcfile)
-			outfile = PackFile(srcfile, pack_root, type, compression, rate)
+			outfile = PackFile(srcfile, srcname, pack_root, type, compression, rate)
 			outsize = outfile.getsize()
 			uri = dict[row[fld[0]]] + row[fld[1]]
 			AddURILocation(uri, pkg, line)
@@ -452,13 +460,14 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 		base = row[0].strip() and row[0].strip() or defaultBase		#6
 		version = len(row) >= 5 and row[5].strip() and row[5].strip() or defaultVersion
 
+		srcname = row[2].strip()
 		srcfile = os.path.join(data_root, row[2].strip())			#7
 		srcsize = os.path.getsize(srcfile)
-		outfile = PackFile(pkg, srcfile, pack_root, type, compression, rate)
+		outfile = PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate)
 		outsize = outfile.getsize()
 		uri = base + row[1].strip()
 		AddURILocation(uri, pkg, line)
-		out = outfile.abspath[pack_root_len:]
+		out = outfile.abspath ##[pack_root_len:]
 		resources += [[uri, type, out, outsize, srcsize, version]]
 
 	deco = [ (res[0].upper(), i, res) for i, res in enumerate(resources) ]
