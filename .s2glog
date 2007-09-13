@@ -8135,3 +8135,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/12/07 6:33 PM
 3,110 ms. (Cumulative: 1,668,240 ms)
 
 ----------------
+Revision 1,555 from svn://localhost/TRUNK/:
+Revision 1,556 from svn://localhost/TRUNK/:
+
+Modify audio unit test for new ResourceMgr-free Brio world.  Changed unit test data.  Fixed bug in MIDI player.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/13/07 10:27 AM
+3 changed, 7 added, 15 deleted.
+3,250 ms. (Cumulative: 1,671,584 ms)
+
+----------------
