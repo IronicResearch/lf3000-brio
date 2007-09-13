@@ -8154,3 +8154,17 @@ By dgibbs (dgibbs@leapfrog.com) on 9/13/07 11:51 AM
 2,861 ms. (Cumulative: 1,674,507 ms)
 
 ----------------
+Revision 1,558 from svn://localhost/TRUNK/:
+Revision 1,559 from svn://localhost/TRUNK/:
+Revision 1,560 from svn://localhost/TRUNK/:
+Revision 1,561 from svn://localhost/TRUNK/:
+Revision 1,562 from svn://localhost/TRUNK/:
+Revision 1,563 from svn://localhost/TRUNK/:
+
+Fix problem with LF1000 build of video unit test.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/13/07 2:57 PM
+1 changed, 0 added, 0 deleted.
+2,938 ms. (Cumulative: 1,677,539 ms)
+
+----------------

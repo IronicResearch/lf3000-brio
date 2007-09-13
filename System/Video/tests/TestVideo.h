@@ -122,10 +122,10 @@ public:
 		pVideoMPI_->StopVideo(video);
 	}
 
-#if defined(EMULATION) || !defined(LF1000) // YUYV422 not supported on LF1000
 	//------------------------------------------------------------------------
 	void testVideoDisplay()
 	{
+#if defined(EMULATION) || !defined(LF1000) // YUYV422 not supported on LF1000
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -168,8 +168,8 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		delete pDisplayMPI_;
-	}
 #endif
+	}
 	
 	//------------------------------------------------------------------------
 	void testVideoDisplayRGB()
