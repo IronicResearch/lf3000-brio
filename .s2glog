@@ -8197,3 +8197,18 @@ By dgibbs (dgibbs@leapfrog.com) on 9/14/07 2:40 PM
 2,722 ms. (Cumulative: 1,686,169 ms)
 
 ----------------
+Revision 1,569 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,752 ms. (Cumulative: 1,688,984 ms)
+
+----------------
+Revision 1,570 from svn://localhost/TRUNK/:
+
+Removing last vestige of ResourceMgr from Brio.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/14/07 2:49 PM
+0 changed, 0 added, 10 deleted.
+3,000 ms. (Cumulative: 1,692,000 ms)
+
+----------------
