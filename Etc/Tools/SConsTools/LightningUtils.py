@@ -25,10 +25,11 @@ toolpath		= os.path.join(cdevkit_dir, 'Tools')
 #-----------------------------------------------------------------------------
 def SetupOptions():
 	opts = SCons.Options.Options('Lightning.py')
-	opts.Add(SCons.Options.BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
+	opts.Add(SCons.Options.BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 0))
 	opts.Add(SCons.Options.EnumOption('type', '"publish" creates an RC\n    "checkheaders" uncovers inclusion dependencies\n   ',
 					'embedded', 
 					allowed_values=('checkheaders', 'embedded', 'emulation', 'publish')))
+	opts.Add(SCons.Options.BoolOption('resource', 'Default is to process resources, set "resource=f" to disable', 0))
 	return opts
 
 
@@ -42,7 +43,8 @@ def RetrieveOptions(args, root_dir):
 	platform		= 'Lightning'
 	variant			= args.get('variant', 'LF1000')
 	
-	is_emulation 			= type == 'emulation' or type == 'checkheaders'
+	is_emulation 	= type == 'emulation' or type == 'checkheaders'
+	is_resource		= args.get('resource', 1)	
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
 	intermediate_build_dir	= os.path.join(root_dir, 'Temp', target_subdir)
 	
@@ -70,6 +72,7 @@ def RetrieveOptions(args, root_dir):
 			'intermediate_build_dir': intermediate_build_dir,
 			'bin_deploy_dir'		: bin_deploy_dir,
 			'rootfs'				: rootfs,
+			'is_resource'			: is_resource,
 	}
 	
 	return vars
@@ -117,10 +120,13 @@ def CreateEnvironment(opts, vars):
 #-------------------------------------------------------------------------
 # Deploy the apprsrc assets for embedded builds
 #-------------------------------------------------------------------------    
-def CopyResources(penv, vars):
+def CopyResources(penv, vars, psubfolder):
+	
+	if vars['is_emulation']:
+		return
 	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
-	rootfs_data = os.path.join(vars['rootfs'], 'Cart1')
+	rootfs_data = os.path.join(vars['rootfs'], 'Cart1', psubfolder)
 	if not os.path.exists(rootfs_data):
 		os.mkdir(rootfs_data)
 	rootfs_data = os.path.join(rootfs_data, 'rsrc')
@@ -167,7 +173,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 		ogl	= vars['variant'] == 'LF1000' and ['ogl_lf1000'] or ['ogl']
 		platformlibs = ogl + ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
 		#FIXME/tp: pthread should go away
-		CopyResources(penv, vars)
+		#RC CopyResources(penv, vars, psubfolder)
 	
 	# Set up targets
 	exe		= os.path.join(vars['intermediate_build_dir'], ptarget)
@@ -201,7 +207,6 @@ sEnv		= SCons.Environment.Environment(tools = ['oggenc', 'rawenc', 'oggext'],
 # Cache state to avoid duplicate packing and report multiple definitions
 #-------------------------------------------------------------------------
 sSourceToDestMap = {}
-sResourceURIMap  = {}
 
 #-------------------------------------------------------------------------
 # Functions to enumerate packed filenames
@@ -224,35 +229,6 @@ def GenerateNextName(idx):
 	if idx[1] == valid_chars_count:
 		raise 'Exhausted the Resource FileName enumeration space!'
 	return name 
-
-#-------------------------------------------------------------------------
-def GenerateNextResourceFileName():
-	# Generate sequential names:
-	#    0, 1, ... 9, A, B, ..., Z, 00, 01, ..., 0Z, 10, 11, ..., ZZ
-	#
-	global sRsrcNameIndex
-	name = GenerateNextName(sRsrcNameIndex)
-	return name
-
-#-------------------------------------------------------------------------
-def GenerateNextPackageFileName():
-	# Generate sequential names:
-	#    _0, _1, ... _9, _A, _B, ..., _Z, _00, _01, ..., _0Z, _10, _11, ..., _ZZ
-	#
-	global sPkgNameIndex
-	name = GenerateNextName(sPkgNameIndex)
-	return '_' + name 
-
-#-------------------------------------------------------------------------
-# Read 'ActivityMapping' file to create map of Activities to base URI paths
-#-------------------------------------------------------------------------
-def MapAcmeActivitiesToURIs(data_root):
-	mappings =  os.path.join(data_root, 'ActivityMapping')
-	reader = csv.reader(open(mappings, "rb"))
-	dict = {}
-	for row in reader:
-		dict[row[0].strip()] = row[1].strip() + '/'
-	return dict
 
 #-------------------------------------------------------------------------
 # Set up a map of type names and file extensions to numeric type values
@@ -282,17 +258,6 @@ def SetupTypeConversionMap():
 			  'vogg'	: 1024 * 14 + 2,
 			  }
 	return types
-		
-#-------------------------------------------------------------------------
-# Track duplicate URIs
-#-------------------------------------------------------------------------
-def AddURILocation(uri, file, line):
-	key = uri.upper()
-	locations = []
-	if key in sResourceURIMap:
-		locations = sResourceURIMap[key]
-	locations += [[file, line]]
-	sResourceURIMap[key] = locations
 
 #-------------------------------------------------------------------------
 # Transform or copy source file to packed output file
@@ -350,6 +315,7 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 	# 1) Setup field mappings (see note below)
 	# 2) Read in the mapping of activity code to Base URI path
 	#    (for converting acme CSV files)
+	#    No more Base URI path in the pkg input file.
 	# NOTE: The 'fld' param tells the ProcessPackage() function which
 	# fields are of interest in the input file, where:
 	#   0: activity code or base URL path
@@ -358,14 +324,11 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 	#   3: file name
 	#	
 	fld = [7, 17, 15, 9]	# activity, handle, type, file			#1
-	dict = MapAcmeActivitiesToURIs(data_root)						#2
+	# dict = MapAcmeActivitiesToURIs(data_root)						#2
 	resources = []
 	pack_root_len = len(pack_root) + 1
 	
 	reader = csv.reader(open(pkg, "rb"))
-	pkguri = dict[os.path.basename(pkg)]
-	pkgfile = GenerateNextPackageFileName()
-	packages += [[pkguri, pkgfile, 1, 1]]
 	line = 0
 	for row in reader:
 		line += 1
@@ -383,18 +346,6 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 			srcfile = os.path.join(data_root, row[fld[3]]+extension)
 			srcsize = os.path.getsize(srcfile)
 			outfile = PackFile(srcfile, srcname, pack_root, type, compression, rate)
-			outsize = outfile.getsize()
-			uri = dict[row[fld[0]]] + row[fld[1]]
-			AddURILocation(uri, pkg, line)
-			out = outfile.abspath[pack_root_len:]
-			resources += [[uri, type, out, outsize, srcsize, version]]
-
-	deco = [ (res[0].upper(), i, res) for i, res in enumerate(resources) ]
-	deco.sort()														#8
-	resources = [ res for _, _, res in deco ]
-	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
-	writer.writerows(resources)
-
 
 #-------------------------------------------------------------------------
 # Pack contents of an individual package
@@ -408,6 +359,7 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 	#    values so parse and store them.  This info can be used to build
 	#    the package URI, so add the URI -> path mapping for the package
 	#    to the EnumPkgs file.
+	#	 No more URI info in the pkg input file.
 	# 4) Subsequent lines contain resources
 	# 5) Get the type info either from the type field or the file extension.
 	#    Field 4 of the CSV file is a combined type/compression/rate field, 
@@ -420,12 +372,10 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 	# 8) Sort the resources list by URI (case-insenstive) and write out
 	#    the output package file (see the following URL for an explanation
 	#    of this sorting method: http://wiki.python.org/moin/HowTo/Sorting)
-	#
+	#	 No longer sort since URI path is gone in the input pkg file.
 	reader = csv.reader(open(pkg, "rb"))							#1
-	pkgfile = GenerateNextPackageFileName()
 	line = 0
 	defaultBase = ''
-	defaultVersion = '1'
 	isDefaultRow = True
 	resources = []
 	pack_root_len = len(pack_root) + 1
@@ -439,8 +389,7 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 			defaultBase = row[0].strip()
 			if len(row) >= 5:
 				defaultVersion = row[4].strip()
-			pkguri = defaultBase + os.path.splitext(os.path.basename(pkg))[0]
-			packages += [[pkguri, pkgfile, 1, 1]]
+			
 			isDefaultRow = False
 			continue												#4
 			
@@ -464,23 +413,12 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 		srcfile = os.path.join(data_root, row[2].strip())			#7
 		srcsize = os.path.getsize(srcfile)
 		outfile = PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate)
-		outsize = outfile.getsize()
-		uri = base + row[1].strip()
-		AddURILocation(uri, pkg, line)
-		out = outfile.abspath ##[pack_root_len:]
-		resources += [[uri, type, out, outsize, srcsize, version]]
-
-	deco = [ (res[0].upper(), i, res) for i, res in enumerate(resources) ]
-	deco.sort()														#8
-	resources = [ res for _, _, res in deco ]
-	writer = csv.writer(open(os.path.join(pack_root, pkgfile), "w"))
-	writer.writerows(resources)
 
 
 #-------------------------------------------------------------------------
 # Deploy the apprsrc assets for embedded builds
 #-------------------------------------------------------------------------
-def PackAllResources(penv):
+def ProcessResources(penv, vars, pappname):
 	# 0) Do nothing for "clean" operations
 	# 1) Setup source and destination folders
 	# 2) Find all "ACME" input package definition files and process them
@@ -488,7 +426,7 @@ def PackAllResources(penv):
 	# 4) Sort the packages and report any duplicate package URIs
 	# 5) Report any duplicate package names
 	# 6) Write them to the rsrc/EnumPkgs file
-	#
+	#	No longer doing steps 4 to 6 now that the resource manager is gone.
 	if penv.GetOption('clean'):										#0
 		return
 	
@@ -513,39 +451,12 @@ def PackAllResources(penv):
 	for pkg in pkgs:
 		ProcessPackage(pkg, types, pack_root, data_root, packages)
 	
-	enumpkg_path = os.path.join(pack_root, "EnumPkgs")				#4
-	deco = [ (pkg[0].upper(), i, pkg) for i, pkg in enumerate(packages) ]
-	deco.sort()
-	n = len(deco)
-	last, _, _ = deco[0]
-	i = 1
-	while i < n:
-		next, _, _ = deco[i]
-		if next == last:
-			_, _, duplicate = deco[i]
-			print 'ERROR: Duplicate package URIs used:', duplicate[0]
-			raise 'ERROR: Duplicate package URIs used!'
-		last = next
-		i += 1
-
-	sawError = False												#5
-	for k, v in sResourceURIMap.iteritems():
-		if len(v) > 1:
-			print 'ERROR: Duplicate URIs found on the following lines:'
-			for vals in v:
-				print '\t', vals[0], 'line', vals[1]
-			sawError = True
-	if sawError:
-		raise 'Duplicate URIs found, aborting!'
-	
-	packages = [ pkg for _, _, pkg in deco ]						#6
-	writer = csv.writer(file(enumpkg_path, "w"))
-	writer.writerows(packages)
-
+	CopyResources(penv, vars, pappname)
+		
 #TODO: Deal with greater than 36^2 resources (hierarchical folders).  Currently an exception is raised.
 
 #-----------------------------------------------------------------------------
 # Export the all of the functions symbols
 #-----------------------------------------------------------------------------
-__all__ = ["SetupOptions", "RetrieveOptions", "CreateEnvironment", "MakeMyApp", "PackAllResources"] 
+__all__ = ["SetupOptions", "RetrieveOptions", "CreateEnvironment", "MakeMyApp", "ProcessResources"] 
 
