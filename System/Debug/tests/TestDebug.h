@@ -6,7 +6,7 @@
 #include <DebugMPI.h>
 #include <UnitTestUtils.h>
 #include <AudioTypes.h>
-#include <ResourceTypes.h>
+//#include <ResourceTypes.h>
 
 // For lots of text output, enable this:
 //#define	LF_BRIO_VERBOSE_TEST_OUTPUT
