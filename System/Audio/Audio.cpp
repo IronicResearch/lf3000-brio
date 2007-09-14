@@ -372,8 +372,8 @@ namespace
 		if (it != gMPIMap.end())
 			return it->second;
 		
-		CDebugMPI	dbg(kGroupResource);
-		dbg.Assert(false, "CResourceModuleResource::RetrieveMPIState: configuration failure, unregistered MPI id!");
+		CDebugMPI	dbg(kGroupAudio);
+		dbg.Assert(false, "CAudioModule::RetrieveMPIState: configuration failure, unregistered MPI id!");
 
 		return it->second;	// dummy return to avoid compiler warning
 	}

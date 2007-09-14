@@ -8188,3 +8188,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 9/14/07 2:01 PM
 2,751 ms. (Cumulative: 1,683,385 ms)
 
 ----------------
+Revision 1,568 from svn://localhost/TRUNK/:
+
+Remove reference to kGroupResource (cut and paste error)
+
+By dgibbs (dgibbs@leapfrog.com) on 9/14/07 2:40 PM
+1 changed, 0 added, 0 deleted.
+2,722 ms. (Cumulative: 1,686,169 ms)
+
+----------------
