@@ -29,7 +29,7 @@
 #include <EventTypes.h>
 #include <KernelTypes.h>
 #include <CoreModule.h>
-#include <ResourceTypes.h>
+//#include <ResourceTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -65,7 +65,7 @@ const char* const ErrToStr( tErrType error )
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , EVENT_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , KERNEL_ERRORS)
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , MODULE_ERRORS)
-		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , RESOURCE_ERRORS)
+//		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , RESOURCE_ERRORS)
 	};
 	static U32 size = ArrayCount(g_errorLookup);
 	
