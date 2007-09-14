@@ -55,7 +55,7 @@ const char* const ErrToStr( tErrType error )
 					&&	kGroupDisplay	< kGroupEvent
 					&&	kGroupEvent		< kGroupKernel
 					&&	kGroupKernel	< kGroupModule
-					&&	kGroupModule 	< kGroupResource
+//					&&	kGroupModule 	< kGroupResource
 					);
 	static ValueToString g_errorLookup[] = {
 		BOOST_PP_SEQ_FOR_EACH(GEN_VALUE_TO_STRING, , AUDIO_ERRORS)
