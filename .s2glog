@@ -8212,3 +8212,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/14/07 2:49 PM
 3,000 ms. (Cumulative: 1,692,000 ms)
 
 ----------------
+Revision 1,571 from svn://localhost/TRUNK/:
+
+Removed the obsolete kGroupResource
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 9/14/07 2:50 PM
+2 changed, 0 added, 0 deleted.
+2,641 ms. (Cumulative: 1,694,703 ms)
+
+----------------

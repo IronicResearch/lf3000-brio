@@ -29,7 +29,7 @@ enum eGroupEnum {
 	kGroupKernel,
 	kGroupHardware,
 	kGroupModule,
-	kGroupResource,
+//	kGroupResource,
 	kGroupTimer,
 	kGroupUnitTests,
 	kGroupVideo,
