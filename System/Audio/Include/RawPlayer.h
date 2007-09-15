@@ -52,9 +52,10 @@ private:
 	tMutex			render_mutex_;		// Need to protect the renderbuffer call
 										// because it's in a different thread.
 
-	U32		numFrames_;			// frames of sample data
-	S16*	pCurFrame_;			// ptr to current frame
-	U32		framesLeft_;		// num frames left
+	S16 			*pPcmBuffer_;		// Pointer to the vorbis decode buffer
+	tAudioHeader	rawHeader;			// header data for RAW audio
+	U32				numFrames_;			// frames of sample data
+	U32				framesLeft_;		// num frames left
 };
 
 LF_END_BRIO_NAMESPACE()

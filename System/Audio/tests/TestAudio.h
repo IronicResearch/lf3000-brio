@@ -260,6 +260,26 @@ public:
 	}
 
 
+	void xxxtestRawResources( )
+	{
+		tAudioID 		id1;
+		tAudioID 		id2;
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		printf("TestAudio -- testRawResources() \n" );
+
+		id1 = pAudioMPI_->StartAudio( "Temptation.raw", 100, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( "Sine.raw", 100, 1, 0, &audioListener_, 0, 0 );
+
+		// sleep 10 seconds
+		pKernelMPI_->TaskSleep( 15000 ); 
+	}
+	
 	//------------------------------------------------------------------------
 	void xxxtestVorbisSimple( )
 	{

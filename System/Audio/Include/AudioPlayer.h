@@ -82,6 +82,7 @@ protected:
 	U32					audioDataSize_;	// bytes I think it should be...
 	bool				hasStereoData_;
 	U32					dataSampleRate_;	// sampling rate of the data associated with the player
+	Boolean				shouldLoop_;		// should the file loop when it reaches the end?
 	U8					volume_;		// Volume of the audio assigned to the player 
 	S8					pan_;			// Pan of the audio assigned to the player 
 	tAudioPriority		priority_;		// Priority of the audio assigned to the player
