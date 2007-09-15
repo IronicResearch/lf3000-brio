@@ -8272,3 +8272,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/14/07 5:39 PM
 3,110 ms. (Cumulative: 1,714,084 ms)
 
 ----------------
+Revision 1,582 from svn://localhost/TRUNK/:
+
+Turn off verbose output.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/14/07 5:40 PM
+1 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,716,959 ms)
+
+----------------

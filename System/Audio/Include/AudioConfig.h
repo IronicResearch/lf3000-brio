@@ -2,7 +2,7 @@
 #define LF_BRIO_AUDIOCONFIG_H
 
 // Debug output level
-#define kAudioDebugLevel		kDbgLvlVerbose
+#define kAudioDebugLevel		kDbgLvlCritical
 //kDbgLvl Silent,Critical,Important, Valuable, Noteable,Verbose,
 
 // Fundamental assumptions
