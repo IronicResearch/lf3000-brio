@@ -35,10 +35,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 // CRawPlayer implementation
 //==============================================================================
 
-CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudioPlayer( pAudioInfo, id  )
+CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlayer( pInfo, id  )
 {
-/*	tErrType			result;
-	tAudioHeader*		pHeader;
+	tErrType			result;
+	int					bytesRead;
 	const tMutexAttr 	attr = {0};
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- Entering ctor...\n");
@@ -52,34 +52,29 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	result = pKernelMPI_->InitMutex( render_mutex_, attr );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't init mutex.\n");
 
-	// TODO: Load the audio resource using the filesysetm.
-//	result = pRsrcMPI_->LoadRsrc( pAudioInfo->hRsrc );  
-//	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't load resource.\n");
+	// Allocate the player's sample buffer
+	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
+
+	// Open the  file.
+	file_ = fopen( pInfo->path->c_str(), "r" );
+	pDebugMPI_->Assert( file_ > 0, 
+		"CRawPlayer::ctor -- Could not open RAW audio file: %s.\n", pInfo->path->c_str() );
+
+	// Get the  header.
+	bytesRead = fread( &rawHeader, 1, sizeof(tAudioHeader), file_);
 	
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- Loaded resource...\n");
-
-	// Get the pointer to the audio header and data.
-//	pHeader = (tAudioHeader*)pRsrcMPI_->GetPtr( pAudioInfo->hRsrc );
-
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%u, size:%u\n", 
-		(unsigned int)pHeader->type, (int)pHeader->offsetToData, pHeader->flags, (unsigned int)pHeader->sampleRate, 
-		(unsigned int)pHeader->dataSize);
+		(unsigned int)rawHeader.type, (int)rawHeader.offsetToData, rawHeader.flags, (unsigned int)rawHeader.sampleRate, 
+		(unsigned int)rawHeader.dataSize);
 
-	// Get ptr to data
-	pAudioData_ = (void*)(pHeader + pHeader->offsetToData);
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioPlayer::ctor -- Audio Header @ 0x%x, Audio Data at 0x%x.\n", 
-		(unsigned int)pHeader, (unsigned int)pAudioData_ );
-
-	dataSampleRate_ = pHeader->sampleRate;
-	audioDataSize_ = pHeader->dataSize;			
-	if (pHeader->flags & 0x1)
+	dataSampleRate_ = rawHeader.sampleRate;
+	audioDataSize_ = rawHeader.dataSize;			
+	if (rawHeader.flags & 0x1)
 		hasStereoData_ = true;
 	else
 		hasStereoData_ = false;
 	
 	// Most of the member vars set by superclass; these are RAW specific.
-	pCurFrame_ = (S16*)pAudioData_;
-	
 	if (!hasStereoData_)
 		numFrames_ = (audioDataSize_ / kAudioBytesPerMonoFrame);
 	else
@@ -89,7 +84,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  ) : CAudi
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor Number of Frames:%d\n", (int)numFrames_);
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor Header flags:%d\n", (int)optionsFlags_);
-*/
+
 }
 
 //==============================================================================
@@ -101,14 +96,17 @@ CRawPlayer::~CRawPlayer()
 	result = pKernelMPI_->LockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor -- Couldn't lock mutex.\n");
 
-	// TODO: fix Unload the audio resource.
-//	result = pRsrcMPI_->UnloadRsrc( hRsrc_ );  
-//	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor -- Couldn't unload resource.\n");
-
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
 
+	// Free the sample buffer
+	if (pPcmBuffer_)
+		delete pPcmBuffer_;
+
+	// Close the file
+	fclose( file_ );
+	
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor: Couldn't unlock mutex.\n");
 	result = pKernelMPI_->DeInitMutex( render_mutex_ );
@@ -131,8 +129,8 @@ CRawPlayer::~CRawPlayer()
 //==============================================================================
 void CRawPlayer::Rewind()
 {
-	// Point curSample_ back to start and reset total.
-	pCurFrame_ = (S16 *)pAudioData_;
+	// Point back to start of audio data and reset total.
+	fseek( file_, sizeof(tAudioHeader), SEEK_SET);
 	framesLeft_ = numFrames_;
 }
 
@@ -163,9 +161,11 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 {	
 	tErrType result;
 	U32		index;
-	U32		framesToProcess = 0;
+	U32		framesRead = 0, framesToProcess = 0;
+	U32		totalBytesRead = 0, bytesRead = 0, bytesToRead = 0;
 	S16*	pCurSample;
-	
+	char* 	bufferPtr = kNull;
+
 //	printf("Raw Player::RenderBuffer: entered.  ");
 
 	// Don't want to try to render if stop() or dtor() have been entered.
@@ -180,7 +180,7 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 
 	// Check if there are any more samples to process 
 	if (framesLeft_ > 0) {
-//		printf("curFramePtr:0x%x; framesLeft: %d\n", pCurFrame_, framesLeft_); 
+//		printf("CRawPlayer::RenderBuffer -- curFramePtr:0x%x; framesLeft: %d\n", pCurFrame_, framesLeft_); 
 
 		// Fill the buffer with the requested number of sample frames.
 		// (Or as many as we have left).
@@ -190,36 +190,75 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 			framesToProcess = framesLeft_;
 
 		// Copy the requested frames from our audioDatPtr to the output buffer.
+		if (hasStereoData_)
+			bytesToRead = numStereoFrames * 2 * 2;	// 16bit stereo
+		else
+			bytesToRead = numStereoFrames * 2;		// 16bit mono
+
+		// We may have to read multiple times because vorbis doesn't always
+		// give you what you ask for.
+		bufferPtr = (char*)pPcmBuffer_;
+		while ( bytesToRead > 0 ) {
+	//		printf("CRawPlayer::RenderBuffer -- about to ov_read() %u bytes.\n ", bytesToRead);
+			
+			bytesRead = fread( bufferPtr, 1, bytesToRead, file_ );
+		 		
+	//		printf("CRawPlayer::RenderBuffer -- ov_read() got %u bytes.\n ", bytesRead);
+		
+			// at EOF
+			if ( bytesRead == 0 ) {
+				if (shouldLoop_)
+					Rewind();
+				else
+					break;
+			}
+			
+			// Keep track of where we are...
+			bytesToRead -= bytesRead;
+			totalBytesRead += bytesRead;
+		 	bufferPtr += bytesRead;
+		}
+			
+	
+		// Convert bytes back into sample frames
+		if (hasStereoData_)
+			framesRead = totalBytesRead / 2 / 2;
+		else
+			framesRead = totalBytesRead / 2;
+
+		// Account for the frames we've rendered.
+		framesLeft_ -= framesRead;	
+
+		// Copy the requested frames from our local buffer to the output buffer.
+		framesToProcess = framesRead;
+		pCurSample = pPcmBuffer_;
+
 		if (hasStereoData_) {
-			pCurSample = pCurFrame_;
 			for (index = 0; index < framesToProcess; index++) {			
 				// Copy Left sample
-//				printf("left: %d ", *pCurFrame_);
-				*pOutBuff++ = *pCurFrame_++; // fixme/!!
+	//				printf("left: %d ", *pCurSample);
+				*pOutBuff++ = *pCurSample++; // fixme/!!
 				// Copy Right sample
-//				printf("right: %d ", *pCurFrame_);
-				*pOutBuff++ = *pCurFrame_++;
+	//				printf("right: %d ", *pCurSample);
+				*pOutBuff++ = *pCurSample++;
 			}
 			// Now update the current frame pointer.
-//			printf("stereo buffer: pCurFrame = 0x%x; frames = %d; next pCurFrame Should be: 0x%x\n", pCurFrame_, framesToProcess, (pCurFrame_ + framesToProcess));
+	//			printf("stereo buffer: pCurSample = 0x%x; frames = %d; next pCurSample Should be: 0x%x\n", pCupCurSamplerFrame_, framesToProcess, (pCurSample + framesToProcess));
 		} else {
 			for (index = 0; index < framesToProcess; index++) {			
 				// Copy mono sample twice
-//				printf("mono(doubled): %d ", *pCurFrame_);
-				*pOutBuff++ = *pCurFrame_;
-				*pOutBuff++ = *pCurFrame_++;
+	//				printf("mono(doubled): %d ", *pCurSample);
+				*pOutBuff++ = *pCurSample;
+				*pOutBuff++ = *pCurSample++;
 			}
 		}
-	
-	// Account for the frames we've rendered.
-	framesLeft_ -= framesToProcess;	
-	}
+}
 			
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
 
 	// Return the number of frames rendered.
-	return framesToProcess;
+	return framesRead;
 }
 LF_END_BRIO_NAMESPACE()
 

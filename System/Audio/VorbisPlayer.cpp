@@ -61,10 +61,7 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
   	ret = pKernelMPI_->InitMutex( render_mutex_, attr );
 	pDebugMPI_->Assert((kNoErr == ret), "CVorbisPlayer::ctor: Couldn't init mutex.\n");
 
-	// Use rsrc manager to open the ogg file.
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"VorbisPlayer::ctor -- OggVorbis file struct is %d.\n", reinterpret_cast<int>(file_) );
-
+	// Open the ogg file.
 	file_ = fopen( pInfo->path->c_str(), "r" );
 	pDebugMPI_->Assert( file_ > 0, 
 		"VorbisPlayer::ctor -- Could not open oggvorbis file: %s.\n", pInfo->path->c_str() );

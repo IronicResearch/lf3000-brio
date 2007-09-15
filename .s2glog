@@ -8231,3 +8231,44 @@ By Rcabrera (Rcabrera@leapfrog.com) on 9/14/07 4:02 PM
 2,736 ms. (Cumulative: 1,697,517 ms)
 
 ----------------
+Revision 1,574 from svn://localhost/TRUNK/:
+Revision 1,575 from svn://localhost/TRUNK/:
+Revision 1,576 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,628 ms. (Cumulative: 1,700,208 ms)
+
+----------------
+Revision 1,577 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,657 ms. (Cumulative: 1,702,880 ms)
+
+----------------
+Revision 1,578 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,657 ms. (Cumulative: 1,705,552 ms)
+
+----------------
+Revision 1,579 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,656 ms. (Cumulative: 1,708,208 ms)
+
+----------------
+Revision 1,580 from svn://localhost/TRUNK/:
+
+No changes to commit.
+2,751 ms. (Cumulative: 1,710,959 ms)
+
+----------------
+Revision 1,581 from svn://localhost/TRUNK/:
+
+Fix playback of uncompressed audio and update UnitTestData.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/14/07 5:39 PM
+8 changed, 2 added, 0 deleted.
+3,110 ms. (Cumulative: 1,714,084 ms)
+
+----------------

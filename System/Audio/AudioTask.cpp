@@ -239,13 +239,14 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 //==============================================================================
 static void DoStartAudio( CAudioMsgStartAudio* pMsg ) 
 {
-	tRsrcType			rsrcType;
+	tRsrcType			rsrcType = kUndefinedRsrcType;
 	CAudioReturnMessage	msg;
 	tAudioID			newID = kNoAudioID;
 	CChannel*			pChannel = kNull;
 	CAudioPlayer*		pPlayer = kNull;
 	CPath				filename;
 	CPath				fileExtension;
+	int					strIndex;
 
 	// Retrieve the StartAudio message's data.
 	tAudioStartAudioInfo*	pAudioInfo = pMsg->GetData();
@@ -260,11 +261,15 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 			static_cast<int>(pAudioInfo->payload), 
 			static_cast<int>(pAudioInfo->flags) );
 
-	filename = pAudioInfo->path->substr(0, pAudioInfo->path->rfind('/') + 1);
+	// Extract the filename (including extension).
+	strIndex = pAudioInfo->path->rfind('/', pAudioInfo->path->size());
+	filename = pAudioInfo->path->substr(strIndex + 1, pAudioInfo->path->size());
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
 			"AudioTask::DoStartAudio -- Filename: %s\n", filename.c_str() );
 
-	fileExtension  = pAudioInfo->path->substr(0, pAudioInfo->path->rfind('.') + 1);
+	// Extract the file extension.
+	strIndex = pAudioInfo->path->rfind('.', pAudioInfo->path->size());
+	fileExtension  = pAudioInfo->path->substr(strIndex + 1, strIndex+3);
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
 			"AudioTask::DoStartAudio -- Extension: %s\n", fileExtension.c_str() );
 
@@ -284,7 +289,10 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 	
 		// TODO: determin rsrc type based on file extension 
 		// Branch on the type of audio resource to create a new audio player
-		rsrcType = kAudioRsrcOggVorbis;  
+		if (strcmp( fileExtension.c_str(), "raw") == 0)
+			rsrcType = kAudioRsrcRaw;  
+		else if (strcmp( fileExtension.c_str(), "ogg") == 0)
+			rsrcType = kAudioRsrcOggVorbis; 
 
 		switch ( rsrcType )
 		{
