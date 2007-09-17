@@ -8335,3 +8335,16 @@ By Scott Esters (sesters@leapfrog.com) on 9/17/07 3:39 PM
 2,909 ms. (Cumulative: 1,736,318 ms)
 
 ----------------
+Revision 1,595 from svn://localhost/TRUNK/:
+
+Added USBDevice MPI initial implementation.  It is stubbed out and doesn't work.
+It builds for Lightning and emulation.
+There's a very uninteresting unit test.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 9/17/07 4:59 PM
+2 changed, 9 added, 0 deleted.
+2,907 ms. (Cumulative: 1,739,296 ms)
+
+----------------
