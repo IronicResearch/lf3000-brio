@@ -23,7 +23,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <linux/lf1000/power.h>
+#include <PowerTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -37,7 +37,7 @@ namespace
 	//------------------------------------------------------------------------
 	U32					gLastState;
 	int 				power_fd;
-	struct power_event  current_pe;
+	struct tPowerData   current_pe;
 	tTaskHndl			handlePowerTask;
 	tPowerData			data;
 }
@@ -62,7 +62,7 @@ void *LightningPowerTask(void*)
 		// Pace thread at time intervals relavant for power events
 		kernel.TaskSleep(1);
 
-		int size = read(power_fd, &current_pe, sizeof(struct power_event));
+		int size = read(power_fd, &current_pe, sizeof(struct tPowerData));
 		dbg.Assert( size >= 0, "CPowerModule::LightningPowerTask: power read failed" );
 		
 		data.powerState = current_pe.powerState;
