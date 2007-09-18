@@ -126,7 +126,10 @@ def CopyResources(penv, vars, psubfolder):
 		return
 	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
-	rootfs_data = os.path.join(vars['rootfs'], 'Cart1', psubfolder)
+	rootfs_data = os.path.join(vars['rootfs'], 'Cart1')
+	if not os.path.exists(rootfs_data):
+		os.mkdir(rootfs_data)	
+	rootfs_data = os.path.join(rootfs_data, psubfolder)
 	if not os.path.exists(rootfs_data):
 		os.mkdir(rootfs_data)
 	rootfs_data = os.path.join(rootfs_data, 'rsrc')
