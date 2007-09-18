@@ -8427,3 +8427,14 @@ By dgibbs (dgibbs@leapfrog.com) on 9/18/07 11:56 AM
 2,735 ms. (Cumulative: 1,764,998 ms)
 
 ----------------
+Revision 1,610 from svn://localhost/TRUNK/:
+Revision 1,611 from svn://localhost/TRUNK/:
+Revision 1,612 from svn://localhost/TRUNK/:
+
+Fix threading test... no need to have event listeners, too complicated for unit test.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/18/07 4:18 PM
+1 changed, 0 added, 0 deleted.
+2,703 ms. (Cumulative: 1,767,779 ms)
+
+----------------

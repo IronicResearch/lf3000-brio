@@ -41,6 +41,11 @@ inline CPath GetAudioRsrcFolder( void )
 const tEventType kMyAudioTypes[] = { kAllAudioEvents };
 
 //----------------------------------------------------------------------------
+// global audio IDs, one for each thread.  This makes sure that the thread doesn't
+// exit until the audio done event has been received by the listener.
+// TODO: kind of a hack.
+tAudioID 				id1, id2, id3, id4;
+
 class AudioListener : public IEventListener
 {
 public:
@@ -97,18 +102,16 @@ static void *myTask(void* arg)
 
 	U32						index;
 	CPath*					filePath = kNull;
-	tAudioID 				id;
+	tAudioID 				id = 0;
 	U32						time;
 	U8						volume;
 	S8						pan;
 	tAudioPriority 			priority;
-	AudioListener			audioListener;
-	const IEventListener* 	pListener;
 
 	thread_arg_t 			*ptr = (thread_arg_t *)arg; 
 	int						threadNum = ptr->threadNum;
 
-	printf("myTask( thread %d ) -- test task thread starting up.\n", threadNum );
+	printf("==== myTask( thread %d ) -- test task thread starting up.\n", threadNum );
 
 	// Set the default location to search for resources.
 	audioMPI.SetAudioResourcePath( GetAudioRsrcFolder() );
@@ -118,27 +121,37 @@ static void *myTask(void* arg)
 		case 1:
 			filePath = new CPath( "Vivaldi.ogg" );
 			printf("myTask( thread %d ) loading Vivaldi, path = %s\n", threadNum, filePath->c_str() );	
-		break;
+			id = audioMPI.StartAudio( *filePath, 100, 1, 0, kNull, 0, 0 );
+			id1 = id;
+			delete filePath;
+			break;
 
 		case 2:
 			filePath = new CPath( "VH_16_mono.ogg" );
 			printf("myTask( thread %d ) found VH_16_mono, path = %s\n", threadNum, filePath->c_str() );	
+			id = audioMPI.StartAudio( *filePath, 100, 1, 0, kNull, 0, 0 );
+			id2 = id;
+			delete filePath;
 		break;
 
 		case 3:
 			filePath = new CPath( "SFX.ogg" );
 			printf("myTask( thread %d ) found SFX, path = %s\n", threadNum, filePath->c_str() );	
+			id = audioMPI.StartAudio( *filePath, 100, 1, 0, kNull, 0, 0 );
+			id3 = id;
+			delete filePath;
 		break;
 
 		case 4:
 			filePath = new CPath( "Voice.ogg" );
 			printf("myTask( thread %d ) found Voice, path = %s\n", threadNum, filePath->c_str() );	
+			id = audioMPI.StartAudio( *filePath, 100, 1, 0, kNull, 0, 0 );
+			id4 = id;
+			delete filePath;
 		break;
-
 	}
 	
-	id = audioMPI.StartAudio( *filePath, 100, 1, 0, &audioListener, 0, 0 );
-	printf("myTask( thread %d ) back from calling StartAudio()\n", threadNum );
+	printf("===== myTask( thread %d ) back from calling StartAudio(); id = %d\n", threadNum, (int)id );
 
 	// sleep 2 seconds
 	kernelMPI.TaskSleep( 2000 ); 
@@ -149,14 +162,12 @@ static void *myTask(void* arg)
 		volume = audioMPI.GetAudioVolume( id );
 		priority = audioMPI.GetAudioPriority( id );
 		pan = audioMPI.GetAudioPan( id );
-		pListener = audioMPI.GetAudioEventListener( id );
-		printf("myTask( thread %d, loop #%i ) -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
-				threadNum, (int)index, (int)id, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
+		printf("==== myTask( thread %d, loop #%i ) -- id = %d, time = %u, vol = %d, priority = %d, pan = %d.\n", 
+				threadNum, (int)index, (int)id, (unsigned int)time, (int)volume, (int)priority, (int)pan );
 		
 		kernelMPI.TaskSleep( 125 ); 
 
 		audioMPI.SetAudioVolume( id, volume - (index*2) );
-		audioMPI.SetAudioPriority( id, priority + index );
 		audioMPI.SetAudioPan( id, pan - (index*4));
 
 		kernelMPI.TaskSleep( 125 ); 
@@ -167,13 +178,9 @@ static void *myTask(void* arg)
 	// Stop audio instead of just bailing out of the thread 
 	// so we can get done msg from player.
 	audioMPI.StopAudio( id, false );
-	printf("myTask( thread %d ) back from calling StopAudio()\n", threadNum );
+	printf("==== myTask( thread %d ) back from calling StopAudio()\n", threadNum );
 	
-	// !!!!! TODO: sleep 2 seconds waiting for completion even to post to listener.
-	// this is stupid, should architect the test differently.
-	kernelMPI.TaskSleep( 2000 ); 
-
-	printf("+++++++++++++++++++ myTask( thread %d ) Exiting... \n" , threadNum );
+	printf("+++++++++++ myTask( thread %d ) Exiting... \n" , threadNum );
 
 	return (void *)NULL;
 }	
