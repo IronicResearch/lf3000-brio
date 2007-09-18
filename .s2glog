@@ -8406,3 +8406,13 @@ By dgibbs (dgibbs@leapfrog.com) on 9/18/07 10:52 AM
 2,766 ms. (Cumulative: 1,759,192 ms)
 
 ----------------
+Revision 1,607 from svn://localhost/TRUNK/:
+
+Oops, intermediate PowerMPI changes broke build.  Adding Shutdown function back in.
+
+
+By Scott Esters (sesters@leapfrog.com) on 9/18/07 11:51 AM
+3 changed, 0 added, 0 deleted.
+2,946 ms. (Cumulative: 1,762,200 ms)
+
+----------------

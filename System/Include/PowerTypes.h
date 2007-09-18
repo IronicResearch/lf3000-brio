@@ -63,7 +63,27 @@ class CPowerMessage : public IEventMessage {
 public:
 	CPowerMessage(const tPowerData& data);
 	virtual U16 GetSizeInBytes() const;
+	
+	// Get current power state which is the same as the last message passing
+	// through the event manager
 	tPowerData  GetPowerState() const;
+	
+	// Conserve power.  Passing a non-zero value places the system
+	// in power conservation mode.  Call with zero to exit power conserve
+	// mode.
+	tPowerData	SetConservePower(bool) const;
+	
+	// Complete system shutdown.  This is the application's response to the kPowerShutdown
+	// message.  It indicates shutdown can proceed immediately, overriding the shutdown
+	// watchdog timer.
+	U32			Shutdown() const;
+	
+	// get shutdown time in milliseconds
+	U32			GetShutdownTime() const;
+	
+	// set shutdown time in milliseconds.  Returns actual millisecond shutdown time.
+	U32			SetShutdownTime(U32) const;
+	
 	
 private:
 	tPowerData mData;

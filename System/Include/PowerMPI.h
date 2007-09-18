@@ -43,6 +43,9 @@ public:
 	
 	// Get power state
 	tPowerData		GetPowerState() const;
+	
+	// Shut system down
+	//tPowerData		Shutdown() const;
 
 private:
 	class CPowerModule*		pModule_;
