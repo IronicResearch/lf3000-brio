@@ -47,7 +47,7 @@ public:
 	AudioListener( )
 		: IEventListener(kMyAudioTypes, ArrayCount( kMyAudioTypes )), dbg_( kMyApp )
 	{
-//		dbg_.SetDebugLevel( kDbgLvlVerbose );
+		//dbg_.SetDebugLevel( kDbgLvlVerbose );
 		dbg_.DebugOut( kDbgLvlVerbose, "Audio Listener created...\n" );
 	}
 
@@ -60,7 +60,8 @@ public:
 		if( msg.GetEventType() == kAudioCompletedEvent )
 		{
 			const tAudioMsgAudioCompleted& data = msg.audioMsgData.audioCompleted;
-			dbg_.DebugOut(kDbgLvlVerbose, "Audio done: id=%d, payload=%d\n", 
+			// dbg_.DebugOut(kDbgLvlVerbose, 
+			printf("****** Audio done: id=%d, payload=%d\n", 
 					static_cast<int>(data.audioID), static_cast<int>(data.payload));
 			status = kEventStatusOKConsumed;
 
@@ -71,7 +72,8 @@ public:
 		else if( msg.GetEventType() == kMidiCompletedEvent )
 		{
 			const tAudioMsgMidiCompleted& data = msg.audioMsgData.midiCompleted;
-			dbg_.DebugOut(kDbgLvlVerbose, "MIDI File done: player id=%d, payload=%d\n", 
+			// dbg_.DebugOut(kDbgLvlVerbose, 
+			printf("****** MIDI File done: player id=%d, payload=%d\n", 
 					static_cast<int>(data.midiPlayerID), static_cast<int>(data.payload));
 			status = kEventStatusOKConsumed;
 		}
@@ -148,8 +150,8 @@ static void *myTask(void* arg)
 		priority = audioMPI.GetAudioPriority( id );
 		pan = audioMPI.GetAudioPan( id );
 		pListener = audioMPI.GetAudioEventListener( id );
-		printf("myTask( thread %d ) -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
-				threadNum, (int)id, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
+		printf("myTask( thread %d, loop #%i ) -- id = %d, time = %u, vol = %d, priority = %d, pan = %d, listener = 0x%x.\n", 
+				threadNum, (int)index, (int)id, (unsigned int)time, (int)volume, (int)priority, (int)pan, (unsigned int)pListener  );
 		
 		kernelMPI.TaskSleep( 125 ); 
 
@@ -160,14 +162,18 @@ static void *myTask(void* arg)
 		kernelMPI.TaskSleep( 125 ); 
 	}
 
+	printf("----------------- myTask( thread %d ) done looping over API tests.()\n", threadNum );
+
 	// Stop audio instead of just bailing out of the thread 
 	// so we can get done msg from player.
 	audioMPI.StopAudio( id, false );
+	printf("myTask( thread %d ) back from calling StopAudio()\n", threadNum );
 	
-	// sleep 2 seconds waiting for completion even to post to listener.
+	// !!!!! TODO: sleep 2 seconds waiting for completion even to post to listener.
+	// this is stupid, should architect the test differently.
 	kernelMPI.TaskSleep( 2000 ); 
 
-	printf("myTask( thread %d ) Exiting... \n" , threadNum );
+	printf("+++++++++++++++++++ myTask( thread %d ) Exiting... \n" , threadNum );
 
 	return (void *)NULL;
 }	
