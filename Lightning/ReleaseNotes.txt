@@ -7,7 +7,9 @@ Lightning C++ Development Kit Release Notes
   locating and loading respective resources.
 * Button MPI added Register/Unregister methods for button event handling.
 * Power MPI added to Brio for power event notifications.
+* USBDevice MPI added to Brio for handling USB events and state.
 * SDK examples updated for latest MPIs. 
+* Uncompressed audio playback fixed.
 
 
 ===========================================
