@@ -127,6 +127,15 @@ tPowerData CPowerMPI::GetPowerState() const
 	return pModule_->GetPowerState();
 }
 
-
+//----------------------------------------------------------------------------
+tPowerData CPowerMPI::Shutdown() const
+{
+	if(!pModule_)
+	{
+		tPowerData data = { kPowerNull };
+		return data;
+	}
+	return pModule_->Shutdown();
+}
 LF_END_BRIO_NAMESPACE()
 // EOF
