@@ -127,6 +127,7 @@ tPowerData CPowerMPI::GetPowerState() const
 	return pModule_->GetPowerState();
 }
 
+#if 0
 //----------------------------------------------------------------------------
 tPowerData CPowerMPI::Shutdown() const
 {
@@ -137,5 +138,7 @@ tPowerData CPowerMPI::Shutdown() const
 	}
 	return pModule_->Shutdown();
 }
+#endif
 LF_END_BRIO_NAMESPACE()
+
 // EOF
