@@ -776,7 +776,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestFontOpenGL16bppARGB()
+	void testFontOpenGL16bppARGB()
 	{
 		tFontHndl	font1;
 		tFontSurf	surf;

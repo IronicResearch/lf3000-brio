@@ -822,7 +822,7 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 				r = (R * alpha + r * ialpha) / 0xFF;
 				g = (G * alpha + g * ialpha) / 0xFF;
 				b = (B * alpha + b * ialpha) / 0xFF; 
-				*d = (0xFF << 24) | (r << 16) | (g << 8) | (b << 0);
+				*d = (alpha << 24) | (r << 16) | (g << 8) | (b << 0);
 			}
 #endif
 			d++;
@@ -1144,6 +1144,14 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	Boolean			rc = false;
 	int				index;
 	static int		prevIndex = 0;
+	
+	// Update XY cursor without drawing anything if newline detected
+	if (ch == '\n')
+	{
+		curX_ = 0;
+		curY_ += font->height + attr_.leading;
+		return true;
+	}
 	
 	// Get glyph matching char code
 	rc = GetGlyph(ch, &glyph, &index);
