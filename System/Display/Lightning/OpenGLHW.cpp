@@ -77,9 +77,6 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
 	unsigned int					mem2Virt;
-#ifdef LF1000
-	unsigned int					baseAddr;
-#endif
 
 	// 2nd heap size and addresses must be 4 Meg aligned
 	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+3) & ~3) << 20;
@@ -108,32 +105,6 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver opened\n");
 	}
 
-#ifdef LF1000
-	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
-//	ioctl(gDevLayer, MLC_IOCTADDRESS, LIN2XY(baseAddr));
-
-#if 0	// Horrible hack to get 3D layer mappings to work	
-	tDisplayHandle hndl = CreateHandle(240, 320, kPixelFormatYUV420, NULL);
-	RegisterLayer(hndl, 0, 0);
-//	UnRegister(hndl, 0);
-#else	// Work-around for Video layer enable bug (in MLC driver???)	
-	gDevLayerVideo = open(YUV_LAYER_DEV, O_RDWR|O_SYNC);
-	union mlc_cmd c;
-	c.overlaysize.srcwidth = 320;
-	c.overlaysize.srcheight = 240;
-	c.overlaysize.dstwidth = 320;
-	c.overlaysize.dstheight = 240;
-	ioctl(gDevLayerVideo, MLC_IOCSOVERLAYSIZE, &c);
-	c.position.top = 0;
-	c.position.left = 0;
-	c.position.right = 320;
-	c.position.bottom = 240;
-	ioctl(gDevLayerVideo, MLC_IOCSPOSITION, &c);
-	ioctl(gDevLayerVideo, MLC_IOCTLAYEREN, 1);
-	ioctl(gDevLayerVideo, MLC_IOCTDIRTY, 1);
-#endif	
-#endif	// LF1000
-	
 	// Open device driver for 3D accelerator registers
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevGa3d >= 0, "DisplayModule::InitModule: /dev/ga3d driver failed");
@@ -148,12 +119,10 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-//	gMem1Phys |= 0x20000000;
 	gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
-//	gMem2Phys |= 0x20000000;
 	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
@@ -193,6 +162,9 @@ void CDisplayModule::DeinitOpenGL()
 		close(gDevLayer);
 	}
 	
+	// Release mappings in underlying Display manager too
+	DeInitModule();
+	
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
 //----------------------------------------------------------------------------
@@ -228,8 +200,6 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 	}
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 
-//	ioctl(gDevLayerVideo, MLC_IOCTLAYEREN, 0);
-//	ioctl(gDevLayerVideo, MLC_IOCTDIRTY, 1);
 }
 
 //----------------------------------------------------------------------------
@@ -274,9 +244,6 @@ void CDisplayModule::WaitForDisplayAddressPatched(void)
 		while(ioctl(gDevLayer , MLC_IOCQDIRTY, (void *)0)) 
 			usleep(100);
 	}
-	// Now safe to disable video layer
-	ioctl(gDevLayerVideo, MLC_IOCTLAYEREN, 0);
-	ioctl(gDevLayerVideo, MLC_IOCTDIRTY, 1);
 }
 
 //----------------------------------------------------------------------------

@@ -8438,3 +8438,13 @@ By dgibbs (dgibbs@leapfrog.com) on 9/18/07 4:18 PM
 2,703 ms. (Cumulative: 1,767,779 ms)
 
 ----------------
+Revision 1,613 from svn://localhost/TRUNK/:
+Revision 1,614 from svn://localhost/TRUNK/:
+
+Reorganized HW callbacks per ME example, eliminating MLC layer enable work-around.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/18/07 5:08 PM
+3 changed, 0 added, 0 deleted.
+2,802 ms. (Cumulative: 1,770,644 ms)
+
+----------------
