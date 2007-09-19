@@ -8512,3 +8512,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/07 4:23 PM
 2,891 ms. (Cumulative: 1,785,714 ms)
 
 ----------------
+Revision 1,633 from svn://localhost/TRUNK/:
+
+Add API to headers for loadable MIDI instruments, implemetnation to follow in subsequent release.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/19/07 4:24 PM
+3 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,788,573 ms)
+
+----------------

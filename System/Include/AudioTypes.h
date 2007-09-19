@@ -86,6 +86,9 @@ typedef U32		tMidiInstr;			// MidiPlayer intrument
 typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
 #define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all Midi tracks
 
+typedef U32		tMidiProgramList;	// TODO: ?
+
+
 //==============================================================================
 // Defines for audio resources 
 //==============================================================================

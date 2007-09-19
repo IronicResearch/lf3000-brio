@@ -10,7 +10,7 @@ Lightning C++ Development Kit Release Notes
 * USBDevice MPI added to Brio for handling USB events and state.
 * SDK examples updated for latest MPIs. 
 * Uncompressed audio playback fixed.
-
+* Add API to support loadable MIDI instruments.
 
 ===========================================
 v0.1.16  (Build 1510 released Sep 5, 2007) 

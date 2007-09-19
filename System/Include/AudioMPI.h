@@ -222,6 +222,38 @@ public:
     // Send raw MIDI msg to player.
 	tErrType 	SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
+	// ******** Loadable Instrument Support (NOT IMPLEMENTED YET) ********
+	// Create an empty list of programs and drums. This can be used to keep 
+	// track of which resources are needed to play a group of songs.
+	tErrType CreateProgramList( tMidiProgramList **programList );
+	
+	// Add a bank/program combination to the list of programs used. If the
+	// bank/program has already been added then this will have no effect.  You can
+	// use this to add sound effects of MIDI notes that are not in a MIDI File.
+	tErrType AddToProgramList( tMidiProgramList *programList, U8 bank, U8 program );
+
+	// Add a bank/program/pitch combination to the list of drums used.
+	tErrType AddDrumToProgramList( tMidiProgramList *programList, U8 bank, U8 program, int pitch );
+	
+	tErrType DeleteProgramList( tMidiProgramList *programList );
+
+	// Add all programs and drums used in this song to the list.
+	tErrType ScanForPrograms( tMidiPlayerID id, tMidiProgramList *programList );
+	
+	/* Load a set of instruments from a file or an in memory image using a stream.
+	If programList is NULL then all instruments in the set will be loaded.
+	Otherwise, only the instruments associated with programs and drums in the
+	list will be loaded.
+
+	You can call this multiple times. If there is a conflict with an instrument
+	with the same bank and program number as a previous file then the most
+	recently loaded instrument will be used. */	
+	tErrType LoadInstrumentFile( const CPath &path , tMidiProgramList *programList );
+	
+	// All instruments loaded dynamically by LoadInstrumentFile() will be
+	// unloaded. Instruments that were compiled with the engine will not be affected.	
+	tErrType UnloadAllInstruments( void );
+	
 private:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;
