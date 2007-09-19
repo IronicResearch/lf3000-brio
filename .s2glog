@@ -8462,3 +8462,20 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 9/18/07 5:23 PM
 2,923 ms. (Cumulative: 1,773,645 ms)
 
 ----------------
+Revision 1,617 from svn://localhost/TRUNK/:
+Revision 1,618 from svn://localhost/TRUNK/:
+Revision 1,619 from svn://localhost/TRUNK/:
+Revision 1,620 from svn://localhost/TRUNK/:
+Revision 1,621 from svn://localhost/TRUNK/:
+Revision 1,622 from svn://localhost/TRUNK/:
+Revision 1,623 from svn://localhost/TRUNK/:
+
+Improved USBDevice Manger.  It no longer spawns a process to get the job done:)
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 9/19/07 11:46 AM
+2 changed, 0 added, 0 deleted.
+2,800 ms. (Cumulative: 1,776,570 ms)
+
+----------------
