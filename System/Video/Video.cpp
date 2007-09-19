@@ -27,6 +27,8 @@
 #include <ogg/ogg.h>
 #include <theora/theora.h>
 
+#define USE_PROFILE			0
+
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 // Constants
@@ -74,11 +76,37 @@ namespace
 	tVideoContext*		gpVidCtx;
 	CPath				gpath = "";
 	FILE*				gfile = NULL;
+	
+	// Profile vars
+	U32					usecStart;
+	U32					usecEnd;
+	U32					usecDiff;
 }
 
 //============================================================================
 // C function support
 //============================================================================
+
+//----------------------------------------------------------------------------
+inline void PROFILE_BEGIN(void)
+{
+#if USE_PROFILE
+	CKernelMPI	kernel;
+	kernel.GetHRTAsUsec(usecStart);
+#endif
+}
+
+//----------------------------------------------------------------------------
+inline void PROFILE_END(const char* msg)
+{
+#if USE_PROFILE
+	CKernelMPI	kernel;
+	CDebugMPI	dbg(kGroupVideo);
+	kernel.GetHRTAsUsec(usecEnd);
+	usecDiff = usecEnd - usecStart;
+	dbg.DebugOut(kDbgLvlVerbose, "%s: lapse time = %u\n", msg, static_cast<unsigned int>(usecDiff));
+#endif
+}
 
 //----------------------------------------------------------------------------
 // Grab some more compressed bitstream and sync it for page extraction
@@ -393,10 +421,15 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	while (!ready)
 	{
 		// Decode Theora packet from Ogg input stream
-		if (ogg_stream_packetout(&to,&op) > 0)
+		// (Dropped frames must decode from next key frame)
+		if ((ogg_stream_packetout(&to,&op) > 0) /* && 
+				(!bDrop || theora_packet_iskeyframe(&op) && 
+					theora_granule_frame(&td,op.granulepos) >= pTime->frame) */ )
 		{
-			// Only decode if at selected time frame or no dropped frames 
+			// Only decode if at selected time frame or no dropped frames
+			PROFILE_BEGIN();
 			theora_decode_packetin(&td,&op);
+			PROFILE_END("theora_decode_packetin");
 			frame = theora_granule_frame(&td,td.granulepos);
 			if (!bDrop || frame >= pTime->frame)
 			{
@@ -501,7 +534,9 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
+	PROFILE_BEGIN();
 	theora_decode_YUVout(&td,&yuv);
+	PROFILE_END("theora_decode_YUVout");
 
 	// Pack into YUV or RGB format surface
 	tVideoSurf*	surf = pCtx;
@@ -518,12 +553,12 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 		for (i = 0; i < yuv.y_height; i++) 
 		{
 			memcpy(d, s, yuv.y_width);
-			memcpy(du, u, yuv.uv_width);
-			memcpy(dv, v, yuv.uv_width);
 			s += yuv.y_stride;
 			d += surf->pitch;
 			if (i % 2) 
 			{
+				memcpy(du, u, yuv.uv_width);
+				memcpy(dv, v, yuv.uv_width);
 				u += yuv.uv_stride;
 				v += yuv.uv_stride;
 				du += surf->pitch;

@@ -8502,3 +8502,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/07 2:07 PM
 3,203 ms. (Cumulative: 1,782,729 ms)
 
 ----------------
+Revision 1,631 from svn://localhost/TRUNK/:
+Revision 1,632 from svn://localhost/TRUNK/:
+
+Modify video playback audio file extension, plus profile timing for video decoding steps.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/07 4:23 PM
+2 changed, 0 added, 0 deleted.
+2,891 ms. (Cumulative: 1,785,714 ms)
+
+----------------

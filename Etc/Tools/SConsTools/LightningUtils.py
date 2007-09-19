@@ -302,7 +302,7 @@ def PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate):
 		enc = sEnv.RawEnc(outfile, srcfile)
 		
 	elif type == 1028 and rate != '':							    #6
-		outfile = outfile + ".avog"
+		outfile = outfile + ".ogg"
 		enc = sEnv.OggExt(outfile, srcfile)
 
 	else:
