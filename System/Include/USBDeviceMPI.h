@@ -48,18 +48,18 @@ public:
 	// USBDeviceTypes for details on the USBDeviceData structure.
 	tUSBDeviceData GetUSBDeviceState() const;
 
-	// Activate USB Device Drivers.  The drivers argument is a bit mask that
-	// says which drivers should be activated. The underlying implementation may
-	// or may not support multiple USB drivers simultaneously. Also, underlying
+	// Enable USB Device Drivers.  The drivers argument is a bit mask that says
+	// which drivers should be enabled. The underlying implementation may or may
+	// not support multiple USB drivers simultaneously. Also, underlying
 	// implementations may not all support the same drivers.  If the user
-	// attempts to activate too many drivers, or to activate an unsupported
-	// driver, this function returns a suitable error.  In this case, the actual
-	// USB behavior is undefined, but the user can call GetUSBDeviceState to
+	// attempts to enable too many drivers, or to enable an unsupported driver,
+	// this function returns a suitable error.  In this case, the actual USB
+	// behavior is undefined, but the user can call GetUSBDeviceState to
 	// determine what actually happend.
-	tErrType ActivateUSBDeviceDrivers(U32 drivers);
+	tErrType EnableUSBDeviceDrivers(U32 drivers);
 
- 	// DeactivateUSBDeviceDrivers is the opposite of ActivateUSBDeviceDrivers
-	tErrType DeactivateUSBDeviceDrivers(U32 drivers);
+ 	// DisableUSBDeviceDrivers is the opposite of EnableUSBDeviceDrivers
+	tErrType DisableUSBDeviceDrivers(U32 drivers);
 
 private:
 	class CUSBDeviceModule*	pModule_;

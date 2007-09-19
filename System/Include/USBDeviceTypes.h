@@ -64,8 +64,8 @@ class CUSBDeviceMessage : public IEventMessage {
 //==============================================================================
 #define USBDEVICE_ERRORS			\
 	(kUSBDeviceUnsupportedDriver)	\
-	(kUSBDeviceTooManyDrivers)
-
+	(kUSBDeviceTooManyDrivers)		\
+	(kUSBDeviceFailure)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupUSBDevice), USBDEVICE_ERRORS)
 

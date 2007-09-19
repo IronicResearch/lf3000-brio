@@ -39,13 +39,13 @@ tUSBDeviceData CUSBDeviceModule::GetUSBDeviceState() const
 	return data;
 }
 
-tErrType CUSBDeviceModule::ActivateUSBDeviceDrivers(U32 drivers)
+tErrType CUSBDeviceModule::EnableUSBDeviceDrivers(U32 drivers)
 {
 	return kUSBDeviceUnsupportedDriver;
 }
 
 //----------------------------------------------------------------------------
-tErrType CUSBDeviceModule::DeactivateUSBDeviceDrivers(U32 drivers)
+tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 {
 	return kUSBDeviceUnsupportedDriver;
 }

@@ -39,8 +39,8 @@ public:
 
 	// class-specific functionality
 	VTABLE_EXPORT tUSBDeviceData	GetUSBDeviceState() const;
-	VTABLE_EXPORT tErrType			ActivateUSBDeviceDrivers(U32 drivers);
-	VTABLE_EXPORT tErrType			DeactivateUSBDeviceDrivers(U32 drivers);
+	VTABLE_EXPORT tErrType			EnableUSBDeviceDrivers(U32 drivers);
+	VTABLE_EXPORT tErrType			DisableUSBDeviceDrivers(U32 drivers);
 
 private:
 	void				InitModule( );

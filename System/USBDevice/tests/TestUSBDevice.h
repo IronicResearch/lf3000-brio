@@ -3,6 +3,7 @@
 #include <cxxtest/TestSuite.h>
 #include <boost/scoped_ptr.hpp>
 #include <USBDeviceMPI.h>
+#include <USBDeviceTypes.h>
 #include <EventMPI.h>
 #include <EventListener.h>
 #include <SystemErrors.h>
@@ -107,6 +108,38 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
 		usleep(100);
 		TS_ASSERT_EQUALS( handler_.data_.USBDeviceState, kBadUSBDeviceState );
+	}
+
+	//------------------------------------------------------------------------
+	void testDisableUSB( )
+	{
+		// Note: If device is connected to a Linux host, we may not be able to
+		// disable.	 This is why we err == kUSBDeviceFailure does not count as a
+		// test failure.
+		tErrType err;
+		tUSBDeviceData data = usbmgr_->GetUSBDeviceState();
+		if(data.USBDeviceSupports & kUSBDeviceIsMassStorage) {
+			err = usbmgr_->DisableUSBDeviceDrivers(kUSBDeviceIsMassStorage);
+			TS_ASSERT(err == kNoErr || err == kUSBDeviceFailure);
+		}
+	}
+
+	//------------------------------------------------------------------------
+	void testEnableUSB( )
+	{
+		tErrType err;
+		tUSBDeviceData data = usbmgr_->GetUSBDeviceState();
+		if(data.USBDeviceSupports & kUSBDeviceIsMassStorage) {
+			err = usbmgr_->EnableUSBDeviceDrivers(kUSBDeviceIsMassStorage);
+			TS_ASSERT_EQUALS(err, kNoErr);
+		}
+	}
+
+	//------------------------------------------------------------------------
+	void testEnabledReportedProperly( )
+	{
+		tUSBDeviceData data = usbmgr_->GetUSBDeviceState();
+		TS_ASSERT(data.USBDeviceDriver & kUSBDeviceIsMassStorage);
 	}
 
 };

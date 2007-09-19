@@ -8448,3 +8448,17 @@ By Dave Milici (dmilici@leapfrog.com) on 9/18/07 5:08 PM
 2,802 ms. (Cumulative: 1,770,644 ms)
 
 ----------------
+Revision 1,615 from svn://localhost/TRUNK/:
+Revision 1,616 from svn://localhost/TRUNK/:
+
+First pass implementation of Brio USBDeviceMPI is complete for Lightning.  It's
+terrible.  It spawns a process!  I can't believe I'm allowed to right software!
+Improvement to follow.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 9/18/07 5:23 PM
+7 changed, 0 added, 0 deleted.
+2,923 ms. (Cumulative: 1,773,645 ms)
+
+----------------
