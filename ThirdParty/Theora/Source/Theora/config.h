@@ -62,13 +62,13 @@
 #define STDC_HEADERS 1
 
 /* Define to exclude encode support from the build */
-/* #undef THEORA_DISABLE_ENCODE */
+#define THEORA_DISABLE_ENCODE 
 
 /* Define to exclude floating point code from the build */
-/* #undef THEORA_DISABLE_FLOAT */
+#define THEORA_DISABLE_FLOAT 
 
 /* make use of asm optimization */
-#define USE_ASM 
+/* #undef USE_ASM */
 
 /* Version number of package */
 #define VERSION "1.0alpha7"
