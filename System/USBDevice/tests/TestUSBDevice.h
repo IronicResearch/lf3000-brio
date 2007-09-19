@@ -138,8 +138,14 @@ public:
 	//------------------------------------------------------------------------
 	void testEnabledReportedProperly( )
 	{
+		tErrType err;
 		tUSBDeviceData data = usbmgr_->GetUSBDeviceState();
-		TS_ASSERT(data.USBDeviceDriver & kUSBDeviceIsMassStorage);
+		if(data.USBDeviceSupports & kUSBDeviceIsMassStorage) {
+			err = usbmgr_->EnableUSBDeviceDrivers(kUSBDeviceIsMassStorage);
+			TS_ASSERT_EQUALS(err, kNoErr);
+            tUSBDeviceData data = usbmgr_->GetUSBDeviceState();
+            TS_ASSERT(data.USBDeviceDriver & kUSBDeviceIsMassStorage);
+        }
 	}
 
 };
