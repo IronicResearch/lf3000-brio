@@ -8521,3 +8521,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/19/07 4:24 PM
 2,797 ms. (Cumulative: 1,788,573 ms)
 
 ----------------
+Revision 1,634 from svn://localhost/TRUNK/:
+
+Added newline support to advance font XY cursor; Correct alpha component in ARGB8888 rendering.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/07 4:28 PM
+2 changed, 0 added, 0 deleted.
+2,769 ms. (Cumulative: 1,791,405 ms)
+
+----------------
