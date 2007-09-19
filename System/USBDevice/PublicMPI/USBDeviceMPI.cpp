@@ -128,7 +128,7 @@ tUSBDeviceData CUSBDeviceMPI::GetUSBDeviceState() const
 }
 
 //----------------------------------------------------------------------------
-tErrType CUSBDeviceMPI::ActivateUSBDeviceDrivers(U32 drivers)
+tErrType CUSBDeviceMPI::EnableUSBDeviceDrivers(U32 drivers)
 {
 	if(!pModule_)
 	{
@@ -136,17 +136,17 @@ tErrType CUSBDeviceMPI::ActivateUSBDeviceDrivers(U32 drivers)
 			return kUSBDeviceTooManyDrivers;
 		return kNoErr;
 	}
-	return pModule_->ActivateUSBDeviceDrivers(drivers);
+	return pModule_->EnableUSBDeviceDrivers(drivers);
 }
 
 //----------------------------------------------------------------------------
-tErrType CUSBDeviceMPI::DeactivateUSBDeviceDrivers(U32 drivers)
+tErrType CUSBDeviceMPI::DisableUSBDeviceDrivers(U32 drivers)
 {
 	if(!pModule_)
 	{
 		return kNoErr;
 	}
-	return pModule_->DeactivateUSBDeviceDrivers(drivers);
+	return pModule_->DisableUSBDeviceDrivers(drivers);
 }
 
 LF_END_BRIO_NAMESPACE()
