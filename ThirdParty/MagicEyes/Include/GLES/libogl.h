@@ -31,15 +31,22 @@ extern "C" {
     	unsigned int	Memory2D_SizeInMbyte    ; // size (Mbyte), must be multiple of 4
     } ___OAL_MEMORY_INFORMATION__;
         
+#ifdef LF1000    
     GLESOALbool	GLESOAL_Initalize( ___OAL_MEMORY_INFORMATION__* pMemoryInfomation, int FSAAEnb );
+#else
+    GLESOALbool	GLESOAL_Initalize( ___OAL_MEMORY_INFORMATION__* pMemoryInfomation );
+#endif
     void	GLESOAL_Finalize ( void );    
     void	GLESOAL_SwapBufferCallback( void );
     void	GLESOAL_SetWindow    ( void* pNativeWindow  );
     void	GLESOAL_GetWindowSize( int* pWidth, int* pHeight );
     
+#ifdef LF1000    
     void	GLESOAL_WaitForDisplayAddressPatched( void );
     void	GLESOAL_SetDisplayAddress( const unsigned int DisplayBufferPhysicalAddress );
     void	GLESOAL_Sleep( unsigned long Milliseconds );
+#endif
+    
 #ifdef __cplusplus
 }
 #endif
