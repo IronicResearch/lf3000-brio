@@ -35,9 +35,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = i686-pc-linux-gnu
-host_triplet = i686-pc-linux-gnu
-target_triplet = i686-pc-linux-gnu
+build_triplet = x86-unknown-linux-gnu
+host_triplet = arm-unknown-linux-gnu
+target_triplet = arm-unknown-linux-gnu
 subdir = lib
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/Version_script.in
@@ -69,21 +69,21 @@ am__libtheora_la_SOURCES_DIST = blockmap.c comment.c dct.c \
 	$(arch_dir)/dsp_mmxext.c $(arch_dir)/recon_mmx.c \
 	$(arch_dir)/fdct_mmx.c dct_encode.c encode.c \
 	encoder_toplevel.c encoder_disabled.c
-am__objects_1 =  \
-	libtheora_la-dsp_mmx.lo \
-	libtheora_la-dsp_mmxext.lo \
-	libtheora_la-recon_mmx.lo \
-	libtheora_la-fdct_mmx.lo
+#am__objects_1 =  \
+#	libtheora_la-dsp_mmx.lo \
+#	libtheora_la-dsp_mmxext.lo \
+#	libtheora_la-recon_mmx.lo \
+#	libtheora_la-fdct_mmx.lo
 #am__objects_1 = libtheora_la-dsp_mmx.lo \
 #	libtheora_la-dsp_mmxext.lo \
 #	libtheora_la-recon_mmx.lo \
 #	libtheora_la-fdct_mmx.lo
-am__objects_2 =  \
-	libtheora_la-dct_encode.lo \
-	libtheora_la-encode.lo \
-	libtheora_la-encoder_toplevel.lo
 #am__objects_2 =  \
-#	libtheora_la-encoder_disabled.lo
+#	libtheora_la-dct_encode.lo \
+#	libtheora_la-encode.lo \
+#	libtheora_la-encoder_toplevel.lo
+am__objects_2 =  \
+	libtheora_la-encoder_disabled.lo
 am_libtheora_la_OBJECTS = libtheora_la-blockmap.lo \
 	libtheora_la-comment.lo libtheora_la-dct.lo \
 	libtheora_la-dct_decode.lo libtheora_la-decode.lo \
@@ -117,24 +117,24 @@ ACLOCAL_AMFLAGS = -I m4
 AMDEP_FALSE = #
 AMDEP_TRUE = 
 AMTAR = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Theora/missing --run tar
-AR = ar
+AR = arm-linux-ar
 AUTOCONF = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Theora/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Theora/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Theora/missing --run automake-1.9
 AWK = mawk
 BINDIR = @BINDIR@
-BUILDABLE_EXAMPLES =  encoder_example$(EXEEXT) player_example
-CC = gcc
+BUILDABLE_EXAMPLES = 
+CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -Wall -O3 -fforce-addr -fomit-frame-pointer -finline-functions -funroll-loops 
-CPP = gcc -E
+CFLAGS = -Wall -O4 -mcpu=arm926ej-s -fforce-addr -fomit-frame-pointer -finline-functions -funroll-loops 
+CPP = arm-linux-gcc -E
 CPPFLAGS = 
-CPU_x86_32_FALSE = #
-CPU_x86_32_TRUE = 
+CPU_x86_32_FALSE = 
+CPU_x86_32_TRUE = #
 CPU_x86_64_FALSE = 
 CPU_x86_64_TRUE = #
-CXX = g++
-CXXCPP = g++ -E
+CXX = arm-linux-g++
+CXXCPP = arm-linux-g++ -E
 CXXDEPMODE = depmode=gcc3
 CXXFLAGS = -g -O2
 CYGPATH_W = echo
@@ -151,9 +151,9 @@ EXEEXT =
 F77 = 
 FFLAGS = 
 GETOPT_OBJS = 
-HAVE_DOXYGEN = false
-HAVE_DOXYGEN_FALSE = 
-HAVE_DOXYGEN_TRUE = #
+HAVE_DOXYGEN = true
+HAVE_DOXYGEN_FALSE = #
+HAVE_DOXYGEN_TRUE = 
 HAVE_PKG_CONFIG = yes
 HAVE_PYTHON = true
 HAVE_PYTHON_FALSE = #
@@ -164,7 +164,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -L/home/lfu/nfsroot/usr/local/lib -Wl,--rpath-link -Wl,/home/lfu/nfsroot/usr/local/lib
 LIBDIR = @LIBDIR@
 LIBOBJS = 
 LIBS = 
@@ -176,8 +176,8 @@ MAINTAINER_MODE_FALSE =
 MAINTAINER_MODE_TRUE = #
 MAKEINFO = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Theora/missing --run makeinfo
 OBJEXT = o
-OGG_CFLAGS = -I/usr/local/include  
-OGG_LIBS = -L/usr/local/lib -logg  
+OGG_CFLAGS = -I/home/lfu/nfsroot/usr/local/include
+OGG_LIBS = -L/home/lfu/nfsroot/usr/local/lib -logg
 PACKAGE = libtheora
 PACKAGE_BUGREPORT = 
 PACKAGE_NAME = libtheora
@@ -187,33 +187,33 @@ PACKAGE_VERSION = 1.0alpha7
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PROFILE = -Wall -pg -g -O3 -fno-inline-functions -DDEBUG
-RANLIB = ranlib
-SDL_CFLAGS = -I/usr/local/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
-SDL_CONFIG = /usr/local/bin/sdl-config
-SDL_LIBS = -L/usr/local/lib -Wl,-rpath,/usr/local/lib -lSDL -lpthread
+RANLIB = arm-linux-ranlib
+SDL_CFLAGS = 
+SDL_CONFIG = no
+SDL_LIBS = 
 SET_MAKE = 
 SHELL = /bin/bash
 SHLIB_VERSION_ARG = -Wl,--version-script=Version_script
-STRIP = strip
-THEORA_DISABLE_ENCODE_FALSE = 
-THEORA_DISABLE_ENCODE_TRUE = #
-THEORA_DISABLE_FLOAT_FALSE = 
-THEORA_DISABLE_FLOAT_TRUE = #
+STRIP = arm-linux-strip
+THEORA_DISABLE_ENCODE_FALSE = #
+THEORA_DISABLE_ENCODE_TRUE = 
+THEORA_DISABLE_FLOAT_FALSE = #
+THEORA_DISABLE_FLOAT_TRUE = 
 VALGRIND_ENVIRONMENT = 
 VERSION = 1.0alpha7
 VORBISENC_LIBS = -lvorbisenc
-VORBISFILE_LIBS = 
-VORBIS_CFLAGS = -I/usr/local/include  
-VORBIS_LIBS = -L/usr/local/lib -lvorbis -lm -logg  
+VORBISFILE_LIBS = -lvorbisfile
+VORBIS_CFLAGS = 
+VORBIS_LIBS = -L${exec_prefix}/lib -lvorbis -lm
 V_LIB_AGE = 2
 V_LIB_CURRENT = 2
 V_LIB_REVISION = 0
-ac_ct_AR = ar
-ac_ct_CC = gcc
-ac_ct_CXX = g++
+ac_ct_AR = 
+ac_ct_CC = 
+ac_ct_CXX = 
 ac_ct_F77 = 
-ac_ct_RANLIB = ranlib
-ac_ct_STRIP = strip
+ac_ct_RANLIB = 
+ac_ct_STRIP = 
 am__fastdepCC_FALSE = #
 am__fastdepCC_TRUE = 
 am__fastdepCXX_FALSE = #
@@ -224,18 +224,18 @@ am__quote =
 am__tar = ${AMTAR} chof - "$$tardir"
 am__untar = ${AMTAR} xf -
 bindir = ${exec_prefix}/bin
-build = i686-pc-linux-gnu
-build_alias = 
-build_cpu = i686
+build = x86-unknown-linux-gnu
+build_alias = x86-linux
+build_cpu = x86
 build_os = linux-gnu
-build_vendor = pc
+build_vendor = unknown
 datadir = ${prefix}/share
 exec_prefix = ${prefix}
-host = i686-pc-linux-gnu
-host_alias = 
-host_cpu = i686
+host = arm-unknown-linux-gnu
+host_alias = arm-linux
+host_cpu = arm
 host_os = linux-gnu
-host_vendor = pc
+host_vendor = unknown
 includedir = ${prefix}/include
 infodir = ${prefix}/info
 install_sh = /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Theora/install-sh
@@ -245,16 +245,16 @@ localstatedir = ${prefix}/var
 mandir = ${prefix}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
-prefix = /usr/local
+prefix = /home/lfu/nfsroot/usr/local/lib
 program_transform_name = s,x,x,
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 sysconfdir = ${prefix}/etc
-target = i686-pc-linux-gnu
+target = arm-unknown-linux-gnu
 target_alias = 
-target_cpu = i686
+target_cpu = arm
 target_os = linux-gnu
-target_vendor = pc
+target_vendor = unknown
 INCLUDES = -I$(top_srcdir)/include
 EXTRA_DIST = Version_script.in \
 	x86_32/dsp_mmx.c \
@@ -274,15 +274,15 @@ EXTRA_DIST = Version_script.in \
 	encoder_toplevel.c
 
 lib_LTLIBRARIES = libtheora.la
-encoder_sources = dct_encode.c encode.c encoder_toplevel.c
-#encoder_sources = encoder_disabled.c
-arch_dir = x86_32
+#encoder_sources = dct_encode.c encode.c encoder_toplevel.c
+encoder_sources = encoder_disabled.c
+#arch_dir = x86_32
 #arch_dir = x86_64
-arch_sources = \
-	$(arch_dir)/dsp_mmx.c \
-	$(arch_dir)/dsp_mmxext.c \
-	$(arch_dir)/recon_mmx.c \
-	$(arch_dir)/fdct_mmx.c
+#arch_sources = \
+#	$(arch_dir)/dsp_mmx.c \
+#	$(arch_dir)/dsp_mmxext.c \
+#	$(arch_dir)/recon_mmx.c \
+#	$(arch_dir)/fdct_mmx.c
 
 #arch_sources = \
 #	$(arch_dir)/dsp_mmx.c \
