@@ -143,6 +143,8 @@ void CDisplayModule::InitModule()
 //----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::DeInitModuleHW: enter\n");
+
     munmap(gPlanarBuffer, gPlanarSize);
     munmap(gOverlayBuffer, gOverlaySize);
     munmap(gFrameBuffer, gFrameSize);
@@ -151,6 +153,8 @@ void CDisplayModule::DeInitModule()
 	close(gDevMlc);
 	close(gDevLayer);
 	close(gDevOverlay);
+
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::DeInitModuleHW: exit\n");
 }
 
 //----------------------------------------------------------------------------

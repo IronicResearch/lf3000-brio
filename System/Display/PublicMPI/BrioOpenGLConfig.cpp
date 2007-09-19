@@ -52,6 +52,8 @@ namespace
 	//--------------------------------------------------------------------------
 	tOpenGLContext		ctx;
 	CDisplayMPI*		dispmgr;
+	NativeWindowType	hwnd;
+	bool				isEnabled = false;
 	
 	//--------------------------------------------------------------------------
 	void AbortIfEGLError(char* pszLocation)
@@ -86,6 +88,7 @@ namespace
 		// OGL needs 2 layers for fullscreen anti-aliasing option
 		ctx.bFSAA = FSAAEnb;
 #endif
+		dispmgr->InitOpenGL(&ctx);
 		*pMemoryInfo = meminfo;
 	    PRINTF("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
 		    pMemoryInfo->VirtualAddressOf3DCore, \
@@ -105,6 +108,9 @@ namespace
 	{
 		// 3D layer must be disabled before this callback returns
 		PRINTF("GLESOAL_Finalize\n");
+		dispmgr->DisableOpenGL();
+		dispmgr->DeinitOpenGL();
+		isEnabled = false;
 	}
 
 	//--------------------------------------------------------------------------
@@ -113,7 +119,12 @@ namespace
 		PRINTF("GLESOAL_SwapBufferCallback\n");
 
 		// 3D layer needs to sync to OGL calls
-		dispmgr->UpdateOpenGL();
+//		dispmgr->UpdateOpenGL();
+		if (!isEnabled) 
+		{
+			dispmgr->EnableOpenGL(&ctx);
+			isEnabled = true;
+		}
 	}
 
 	//--------------------------------------------------------------------------
@@ -169,7 +180,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
 	*/
-	disp_.InitOpenGL(&ctx);
+//	disp_.InitOpenGL(&ctx);
+	ctx.eglWindow = &hwnd; // something non-NULL 
 
 	/*
 		Step 1 - Get the default display.
@@ -179,7 +191,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		with, we let EGL pick the default display.
 		Querying other displays is platform specific.
 	*/
-	eglDisplay = eglGetDisplay(ctx.eglDisplay);
+	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
 	/*
 		Step 2 - Initialize EGL.
@@ -194,12 +206,16 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize()\n");
 	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
 	dbg.Assert(success, "eglInitialize() failed\n");
-
+	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize(): success = %d, version = %d.%d\n", success, iMajorVersion, iMinorVersion);
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
+	
 	// NOTE: 3D layer can only be enabled after MagicEyes lib 
 	// sets up 3D accelerator, but this cannot happen
 	// until GLESOAL_Initalize() callback gets mappings.
-	PRINTF("eglInitialize post-init layer enable\n");
-	disp_.EnableOpenGL(&ctx);
+//	PRINTF("eglInitialize post-init layer enable\n");
+//	disp_.EnableOpenGL(&ctx);
 
 	/*
 		Step 3 - Specify the required configuration attributes.
@@ -271,18 +287,18 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	AbortIfEGLError("eglMakeCurrent");
 
 	// Clear garbage pixels from previous OpenGL context (embedded target)
-	glClearColorx(0, 0, 0, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
-	eglSwapBuffers(eglDisplay, eglSurface);
-	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
+//	glClearColorx(0, 0, 0, 0);
+//	glClear(GL_COLOR_BUFFER_BIT);
+//	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
+//	eglSwapBuffers(eglDisplay, eglSurface);
+//	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
 }
 
 //----------------------------------------------------------------------
 BrioOpenGLConfig::~BrioOpenGLConfig()
 {
 	// Disable 3D layer before disabling accelerator
-	disp_.DisableOpenGL();
+//	disp_.DisableOpenGL();
 	
 	/*
 		Step 9 - Terminate OpenGL ES and destroy the window (if present).
@@ -303,7 +319,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	*/
 
 	// Exit OpenGL hardware
-	disp_.DeinitOpenGL(); 
+//	disp_.DeinitOpenGL(); 
 }
 
 LF_END_BRIO_NAMESPACE()
