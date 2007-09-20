@@ -182,12 +182,12 @@ tErrType CKernelModule::CreateTask(tTaskHndl& hndl,
 
  /*  Application program can define property using the tTaskProperties structure
   struct tTaskProperties {
-	U32 				priority;				// 1	
+	U32					priority;				// 1
 	tAddr				stackAddr;				// 2
-	U32 				stackSize;				// 3	
+	U32					stackSize;				// 3
 	tTaskMainFcn_posix	TaskMainFcn;			// 4
 	U32					taskMainArgCount;		// 5
-	tPtr				pTaskMainArgValues;		// 6						
+	tPtr				pTaskMainArgValues;		// 6
 	tTaskStartupMode	startupMode;			// 7
 	tTaskSchedPolicy	schedulingPolicy;		// 8
 	U32					schedulingInterval;		// 9
@@ -662,8 +662,13 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
    ASSERT_POSIX_CALL( errno );
 
    tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
-   tp.tv_nsec = tp.tv_nsec + timeoutMs * 1000000; // convert from ms to nanosecond
-
+   tp.tv_nsec = tp.tv_nsec + ( timeoutMs % 1000 ) * 1000000; // convert from ms to nanosecond
+   if( tp.tv_nsec >= 1000000000 )
+   {
+	   tp.tv_sec += 1;
+	   tp.tv_nsec = tp.tv_nsec - 1000000000;
+   }
+     
    unsigned int  msg_prio;
    errno = 0;
 //   int ret_receive = mq_timedreceive(hndl,
@@ -672,6 +677,10 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
                     (size_t )sizeof(CEventMessage),
                     &msg_prio,
                     (const struct timespec *)&tp);
+   if( errno == ETIMEDOUT )
+   {
+	   return AsBrioErr( ETIMEDOUT );
+   }
 	ASSERT_POSIX_CALL( errno );
     assert(msg_prio == msg_ptr->GetMessagePriority());
 

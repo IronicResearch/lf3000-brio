@@ -8551,3 +8551,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/07 6:38 PM
 2,844 ms. (Cumulative: 1,797,202 ms)
 
 ----------------
+Revision 1,640 from svn://localhost/TRUNK/:
+
+Fixed the Kernel.cpp method
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 9/20/07 8:51 AM
+1 changed, 0 added, 0 deleted.
+2,844 ms. (Cumulative: 1,800,109 ms)
+
+----------------
