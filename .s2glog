@@ -8660,3 +8660,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/07 12:35 PM
 2,750 ms. (Cumulative: 1,831,658 ms)
 
 ----------------
+Revision 1,656 from svn://localhost/TRUNK/:
+
+Message size has to agree with queue message size
+
+By dgibbs (dgibbs@leapfrog.com) on 9/20/07 2:03 PM
+1 changed, 0 added, 0 deleted.
+2,719 ms. (Cumulative: 1,834,439 ms)
+
+----------------
