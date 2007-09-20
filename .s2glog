@@ -8669,3 +8669,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/20/07 2:03 PM
 2,719 ms. (Cumulative: 1,834,439 ms)
 
 ----------------
+Revision 1,657 from svn://localhost/TRUNK/:
+
+Tweak for ReceiveMessageOrWait(), unit test still failing.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/20/07 2:21 PM
+1 changed, 0 added, 0 deleted.
+2,656 ms. (Cumulative: 1,837,158 ms)
+
+----------------
