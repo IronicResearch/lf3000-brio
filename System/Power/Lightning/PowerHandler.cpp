@@ -22,6 +22,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/lf1000/power_ioctl.h>
 
 #include <PowerTypes.h>
 
@@ -39,7 +41,7 @@ namespace
 	int 				power_fd;
 	struct tPowerData   current_pe;
 	tTaskHndl			handlePowerTask;
-	tPowerData			data;
+	struct tPowerData	data;
 }
 
 
@@ -89,7 +91,7 @@ void CPowerModule::InitModule()
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "Power Init\n");
 
-	data.powerState = 0;
+	data.powerState = kPowerNull;
 
 	// Need valid file descriptor open before starting task thread 
 	power_fd = open( "/dev/power", B_O_RDWR);
@@ -123,10 +125,63 @@ void CPowerModule::DeinitModule()
 // Power state
 //============================================================================
 //----------------------------------------------------------------------------
-tPowerData CPowerModule::GetPowerState() const
+enum tPowerState CPowerModule::GetPowerState() const
 {
-	return data;
+	return data.powerState;
 }
 
+//----------------------------------------------------------------------------
+int CPowerModule::GetConserve() const
+{
+	CDebugMPI	dbg(kGroupPower);
+	int status = ioctl(power_fd, POWER_IOCQ_CONSERVE, 0);
+	dbg.Assert(status >= 0, "PowerModule::GetConserve: ioctl failed");
+	return status;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::SetConserve(bool value) const
+{
+	CDebugMPI	dbg(kGroupPower);
+	int status = ioctl(power_fd, POWER_IOCT_CONSERVE, value);
+	dbg.Assert(status >= 0, "PowerModule::SetConserve: ioctl failed");
+	return status;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::Shutdown() const
+{
+	CDebugMPI	dbg(kGroupPower);
+	int status = ioctl(power_fd, POWER_IOCT_SHUTDOWN, 0);
+	dbg.Assert(status >= 0, "PowerModule::Shutdown: ioctl failed");
+	return status;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::GetShutdownTimeMS() const
+{
+	CDebugMPI	dbg(kGroupPower);
+	int status = ioctl(power_fd, POWER_IOCQ_SHUTDOWN_TIME_MS, 0);
+	dbg.Assert(status >= 0, "PowerModule::GetShutdownTimeMS: ioctl failed");
+	return status;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::SetShutdownTimeMS(int iMilliseconds) const
+{
+	CDebugMPI	dbg(kGroupPower);
+	int status = ioctl(power_fd, POWER_IOCT_SHUTDOWN_TIME_MS, iMilliseconds);
+	dbg.Assert(status >= 0, "PowerModule::SetShutdownTimeMS: ioctl failed");
+	return status;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::Reset() const
+{
+	CDebugMPI	dbg(kGroupPower);
+//	int status = ioctl(power_fd, POWER_IOCT_RESET, 0);
+	dbg.Assert(1, "PowerModule::Reset: not implemented");
+	return 0;
+}
 LF_END_BRIO_NAMESPACE()
 // EOF

@@ -135,9 +135,9 @@ void CPowerModule::DeinitModule()
 // Power state
 //============================================================================
 //----------------------------------------------------------------------------
-tPowerData CPowerModule::GetPowerState() const
+enum tPowerState CPowerModule::GetPowerState() const
 {
-	tPowerData data = { kPowerNull } ;
+	enum tPowerState state = kPowerNull;
 
 	if( gXDisplay != NULL )
 	{
@@ -150,13 +150,80 @@ tPowerData CPowerModule::GetPowerState() const
 			{
 		     	KeySym keysym = XKeycodeToKeysym(gXDisplay, i, 0);
 		     	if( keysym )
-		    	 	data.powerState = KeySymToPower(keysym);
+		     		state = KeySymToPower(keysym);
 			}
 		}
-		gLastState = data.powerState;
+		gLastState = state;
 	}
-	return data;
+	return state;
 }
 
+
+//----------------------------------------------------------------------------
+int CPowerModule::GetConserve() const
+{
+	enum tPowerState state = kPowerNull;
+
+	CDebugMPI	dbg(kGroupPower);
+	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: GetConserve() not implemented.\n");
+	
+	return state;
+}
+
+
+//----------------------------------------------------------------------------
+int CPowerModule::SetConserve(boot bConserve) const
+{
+	enum tPowerState state = kPowerNull;
+
+	CDebugMPI	dbg(kGroupPower);
+	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: SetConserve() not implemented.\n");
+	
+	return state;
+}
+
+
+//----------------------------------------------------------------------------
+int CPowerModule::Shutdown() const
+{
+	enum tPowerState state = kPowerNull;
+
+	CDebugMPI	dbg(kGroupPower);
+	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: Shutdown() not implemented.\n");
+	
+	return state;
+}
+
+
+//----------------------------------------------------------------------------
+int CPowerModule::GetShutdownTimeMS() const
+{
+	enum tPowerState state = kPowerNull;
+
+	CDebugMPI	dbg(kGroupPower);
+	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: Shutdown() not implemented.\n");
+	
+	return state;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::SetShutdownTimeMS(int milliSeconds) const
+{
+	enum tPowerState state = kPowerNull;
+
+	CDebugMPI	dbg(kGroupPower);
+	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: SetShutdownTimeMS() not implemented.\n");
+	
+	return state;
+}
+
+//----------------------------------------------------------------------------
+int CPowerModule::Reset() const
+{
+	CDebugMPI	dbg(kGroupPower);
+	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: Reset() not implemented.\n");
+	
+	return state;
+}
 LF_END_BRIO_NAMESPACE()
 // EOF

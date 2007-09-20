@@ -11,7 +11,7 @@
 
 LF_USING_BRIO_NAMESPACE()
 
-const U32 kBadPowerState = 0xBAADF00D;
+const enum tPowerState kBadPowerState = (enum tPowerState)0xBAADF00D;
 
 
 //============================================================================
@@ -31,7 +31,8 @@ public:
 		TS_ASSERT_EQUALS( size, sizeof(CPowerMessage) );
 		type_ = msg.GetEventType();
 		const CPowerMessage& pwrmsg = reinterpret_cast<const CPowerMessage&>(msg);
-		tPowerData state = pwrmsg.GetPowerState();
+		tPowerData state;
+		state.powerState = pwrmsg.GetPowerState();
 		memcpy(&data_, &state, sizeof(data_));
 		return kEventStatusOKConsumed;
 	}
@@ -92,7 +93,7 @@ public:
 	{
 		tPowerData	data;
 		data.powerState	= kBadPowerState;
-		data = pwrmgr_->GetPowerState();
+		data.powerState = pwrmgr_->GetPowerState();
 		TS_ASSERT_DIFFERS( data.powerState, kBadPowerState );
 	}
 
