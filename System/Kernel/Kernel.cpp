@@ -640,14 +640,12 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
 }
 
 //------------------------------------------------------------------------------
-#define OneSecAsNanoSecs	(1000000000)
+#define kOneSecAsNanoSecs	(1000000000)
 
 tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl, 
 									CMessage* msg_ptr, U32 maxMessageSize, 
 									U32 timeoutMs )
-{
-	U32	nSecs;
-	
+{	
 // Retrieve attributes of the messges queque
 //   struct mq_attr attr = {0};
    
@@ -667,10 +665,10 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
    
    tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
    tp.tv_nsec = tp.tv_nsec + ( timeoutMs % 1000 ) * 1000000; // convert from ms to nanosecond
-   if( tp.tv_nsec >= OneSecAsNanoSecs )
+   if( tp.tv_nsec >= kOneSecAsNanoSecs )
    {
 	   tp.tv_sec += 1;
-	   tp.tv_nsec = tp.tv_nsec - OneSecAsNanoSecs;
+	   tp.tv_nsec = tp.tv_nsec - kOneSecAsNanoSecs;
    }
     
    unsigned int  msg_prio;
