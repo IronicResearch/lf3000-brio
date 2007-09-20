@@ -8632,3 +8632,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/20/07 12:04 PM
 2,735 ms. (Cumulative: 1,823,095 ms)
 
 ----------------
+Revision 1,649 from svn://localhost/TRUNK/:
+
+Bug fixes... change the way AudioTask thread exits (use msg instead of global flag).
+
+By dgibbs (dgibbs@leapfrog.com) on 9/20/07 12:04 PM
+4 changed, 0 added, 0 deleted.
+2,859 ms. (Cumulative: 1,826,001 ms)
+
+----------------

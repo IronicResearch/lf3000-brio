@@ -38,13 +38,6 @@ const CURI	kModuleURI	= "/Somewhere/AudioModule";
 // single instance of module object.
 static CAudioModule*	sinst = NULL;
 
-// Globals that must be accessable to other modules for operation.
-tMutex		gAudioConditionMutex;
-tMutexAttr 	gAudioConditionMutexAttributes;
-tCond		gAudioCondition;
-tCondAttr 	gAudioConditionAttributes;
-Boolean		gAudioTaskRunning = false;
-
 //============================================================================
 // CAudioCmdMessages
 //============================================================================
@@ -316,6 +309,14 @@ CAudioReturnMessage::CAudioReturnMessage( ) {
 	messagePriority = kAudioMsgDefaultPriority;
 }
 
+//------------------------------------------------------------------------------
+CAudioCmdMsgExitThread::CAudioCmdMsgExitThread( ) {
+	type_ = kAudioCmdMsgExitThread;
+	messageSize = sizeof(CAudioCmdMsg);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
+
 //============================================================================
 // MPI state and utility functions
 //============================================================================
@@ -387,34 +388,26 @@ CAudioModule::CAudioModule( void )
 	tErrType			err = kNoErr;
 	Boolean				ret = false;
 	const tMutexAttr 	attr = {0};
-
+		
 	// Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
 	ret = pKernelMPI_->IsValid();
-	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor: Couldn't create KernelMPI.\n");
+	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor -- Couldn't create KernelMPI.\n");
 
 	// Get Debug MPI
 	pDebugMPI_ =  new CDebugMPI( kGroupAudio );
 	ret = pDebugMPI_->IsValid();
-	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor: Couldn't create DebugMPI.\n");
+	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor -- Couldn't create DebugMPI.\n");
 
 	// Set debug level from a constant
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 		
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"Kernel and Debug modules created by AudioModule\n");	
+			"CAudioModule::ctor -- Initalizing Audio Module...");
 	
-	// Create the Audio Task...
+	// Create the Audio Task... this wont return until the task is running.
 	err = InitAudioTask();
 	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Audio task create failed.\n");
-
-	// Wait for the AudioMgr task to be ready
-	while (!gAudioTaskRunning)
-	{
-		pKernelMPI_->TaskSleep(10);
-		pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-			"CAudioModule::ctor: AudioModule is waiting for the audio task to start up...\n");	
-	}
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CAudioModule::ctor: AudioModule thinks the audio task is running now...\n");	
@@ -455,9 +448,6 @@ CAudioModule::CAudioModule( void )
  	err = pKernelMPI_->InitMutex( mpiMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
 
-    // Start up output driver.
-	StartAudioSystem();
-	
 	masterVolume_ = 100;  // TODO: hack, should get this from the mixer.
 }
 
@@ -470,17 +460,14 @@ CAudioModule::~CAudioModule( void )
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 		"CAudioModule::dtor: dtor called\n" );	
 
-	// Shut down output driver
-	StopAudioSystem();
+	// Send message to thread to exit main while loop
+	CAudioCmdMsgExitThread msg;
 
+	SendCmdMessage( msg ); 
+
+	// This won't return until the task is exited.
 	DeInitAudioTask();
-	
-	// Wait for the AudioMgr task to die
-	while (gAudioTaskRunning)
-	{
-		pKernelMPI_->TaskSleep(5);
-	}
-	
+		
 	result = pKernelMPI_->DeInitMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::dtor --  Couldn't deinit mutex.\n");
 
@@ -652,7 +639,7 @@ U8 CAudioModule::GetMasterVolume( void )
 tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
 {
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetAudioResourcePath -- mpiID = %d\n", static_cast<int>(mpiID) );	
+		"CAudioModule::SetAudioResourcePath -- mpiID = %d; path: %s.\n", static_cast<int>(mpiID), path.c_str() );	
 	
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 
