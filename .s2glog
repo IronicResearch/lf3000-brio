@@ -8687,3 +8687,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/07 3:11 PM
 2,735 ms. (Cumulative: 1,839,940 ms)
 
 ----------------
+Revision 1,659 from svn://localhost/TRUNK/:
+Revision 1,660 from svn://localhost/TRUNK/:
+
+Modified ProcessResources script to ignore 1st line = URI default assignment. 
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/07 4:57 PM
+1 changed, 0 added, 0 deleted.
+3,094 ms. (Cumulative: 1,843,253 ms)
+
+----------------

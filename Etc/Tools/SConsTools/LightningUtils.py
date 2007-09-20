@@ -358,28 +358,19 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 	#
 	# 1) Open input and output packages
 	# 2) Skip comment lines
-	# 3) The first non-comment line of the input package contains default
-	#    values so parse and store them.  This info can be used to build
-	#    the package URI, so add the URI -> path mapping for the package
-	#    to the EnumPkgs file.
-	#	 No more URI info in the pkg input file.
-	# 4) Subsequent lines contain resources
+	# 3) No more URI info in the pkg input file.
+	# 4) No more default line. 
 	# 5) Get the type info either from the type field or the file extension.
 	#    Field 4 of the CSV file is a combined type/compression/rate field, 
 	#    joined together by underscores.  An example would be "AOGG_3_16000"
 	#    for and audio OGG file compressed at quality 3 at a sample rate of
 	#    16000.  Parse that into its constituent parts.
-	# 6) Get the base URL from the line and use the default if not present
+	# 6) No more URI info for each line.
 	# 7) Get the source file name and pack or copy the source to the output.
 	#    Add a line describing the resource to the "resources" list.
-	# 8) Sort the resources list by URI (case-insenstive) and write out
-	#    the output package file (see the following URL for an explanation
-	#    of this sorting method: http://wiki.python.org/moin/HowTo/Sorting)
-	#	 No longer sort since URI path is gone in the input pkg file.
+	# 8) No longer sort since URI path is gone in the input pkg file.
 	reader = csv.reader(open(pkg, "rb"))							#1
 	line = 0
-	defaultBase = ''
-	isDefaultRow = True
 	resources = []
 	pack_root_len = len(pack_root) + 1
 	
@@ -387,15 +378,7 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 		line += 1
 		if len(row) == 0 or (row[0] and row[0][0] == '#'):			#2
 			continue
-			
-		if isDefaultRow:											#3
-			defaultBase = row[0].strip()
-			if len(row) >= 5:
-				defaultVersion = row[4].strip()
-			
-			isDefaultRow = False
-			continue												#4
-			
+
 		compression = rate = ''
 		if len(row) >= 4 and row[3].strip() != '':					#5
 			temp = row[3].strip()
@@ -409,8 +392,6 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 			ext = os.path.splitext(row[2].strip())[1]
 			type = types[ext[1:].lower()]
 			
-		base = row[0].strip() and row[0].strip() or defaultBase		#6
-
 		srcname = row[2].strip()
 		srcfile = os.path.join(data_root, row[2].strip())			#7
 		srcsize = os.path.getsize(srcfile)
