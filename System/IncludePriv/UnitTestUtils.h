@@ -26,6 +26,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 class TestSuiteBase
 {
+
 protected:
 	TestSuiteBase()
 	{
@@ -56,10 +57,19 @@ protected:
 		path += "/UnitTestData/";
 		EmulationConfig::Instance().SetCartResourceSearchPath(path.c_str());
 #endif
-		CDebugMPI	dbg(kGroupUnitTests);
-		dbg.EnableThrowOnAssert();										//*4
-		dbg.SetDebugLevel(kDbgLvlSilent);								//*5
+		pDbg_ = new CDebugMPI(kGroupUnitTests);
+		pDbg_->EnableThrowOnAssert();									//*4
+		pDbg_->SetDebugLevel(kDbgLvlSilent);							//*5
+
 	}
+	
+	~TestSuiteBase()
+	{
+		delete pDbg_;
+	}
+private:
+	CDebugMPI*	pDbg_;	
+
 };
 
 LF_END_BRIO_NAMESPACE()	
