@@ -8614,3 +8614,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/20/07 12:01 PM
 2,718 ms. (Cumulative: 1,817,547 ms)
 
 ----------------
+Revision 1,647 from svn://localhost/TRUNK/:
+
+Remove ResourceMgr from Conscript file...
+
+By dgibbs (dgibbs@leapfrog.com) on 9/20/07 12:02 PM
+1 changed, 0 added, 0 deleted.
+2,688 ms. (Cumulative: 1,820,298 ms)
+
+----------------
