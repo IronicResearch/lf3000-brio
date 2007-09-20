@@ -8578,3 +8578,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/07 9:50 AM
 2,907 ms. (Cumulative: 1,805,922 ms)
 
 ----------------
+Revision 1,643 from svn://localhost/TRUNK/:
+
+Added Reset() stub to MPI, along with minor editing changes.
+
+By Scott Esters (sesters@leapfrog.com) on 9/20/07 11:40 AM
+7 changed, 0 added, 0 deleted.
+2,953 ms. (Cumulative: 1,808,937 ms)
+
+----------------

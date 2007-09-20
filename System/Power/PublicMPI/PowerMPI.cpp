@@ -41,9 +41,9 @@ U16	CPowerMessage::GetSizeInBytes() const
 }
 
 //------------------------------------------------------------------------------
-tPowerData CPowerMessage::GetPowerState() const
+enum tPowerState CPowerMessage::GetPowerState() const
 {
-	return mData;
+	return mData.powerState;
 }
 
 
@@ -117,28 +117,75 @@ tErrType CPowerMPI::UnregisterEventListener(const IEventListener *pListener)
 }
 
 //----------------------------------------------------------------------------
-tPowerData CPowerMPI::GetPowerState() const
+enum tPowerState CPowerMPI::GetPowerState() const
 {
 	if(!pModule_)
 	{
-		tPowerData data = { kPowerNull };
-		return data;
+		return kPowerNull;
 	}
 	return pModule_->GetPowerState();
 }
 
-#if 0
 //----------------------------------------------------------------------------
-tPowerData CPowerMPI::Shutdown() const
+int CPowerMPI::GetConserve() const
 {
 	if(!pModule_)
 	{
-		tPowerData data = { kPowerNull };
-		return data;
+		return kPowerNull;
+	}
+	return pModule_->GetConserve();
+}
+
+//----------------------------------------------------------------------------
+int CPowerMPI::SetConserve(bool bConserve) const
+{
+	if(!pModule_)
+	{
+		return kPowerNull;
+	}
+	return pModule_->SetConserve(bConserve);
+}
+
+//----------------------------------------------------------------------------
+int CPowerMPI::Shutdown() const
+{
+	if(!pModule_)
+	{
+		return kPowerNull;
 	}
 	return pModule_->Shutdown();
 }
-#endif
+
+//----------------------------------------------------------------------------
+int CPowerMPI::GetShutdownTimeMS() const
+{
+	if(!pModule_)
+	{
+		return kPowerNull;
+	}
+	return pModule_->GetShutdownTimeMS();
+}
+
+//----------------------------------------------------------------------------
+int CPowerMPI::SetShutdownTimeMS(int iMilliseconds) const
+{
+	if(!pModule_)
+	{
+		return kPowerNull;
+	}
+	return pModule_->SetShutdownTimeMS(iMilliseconds);
+}
+
+//----------------------------------------------------------------------------
+int CPowerMPI::Reset() const
+{
+	if(!pModule_)
+	{
+		return kPowerNull;
+	}
+	return pModule_->Reset();
+}
+
 LF_END_BRIO_NAMESPACE()
 
 // EOF

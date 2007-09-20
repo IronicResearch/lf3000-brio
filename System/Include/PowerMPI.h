@@ -41,12 +41,36 @@ public:
 	// unregister handler
 	tErrType UnregisterEventListener(const IEventListener *pListener);
 	
-	// Get power state
-	tPowerData		GetPowerState() const;
+	// Get current power state which is the same as the last message passing
+	// through the event manager
+	enum tPowerState GetPowerState() const;
 	
-	// Shut system down
-	//tPowerData		Shutdown() const;
-
+	// Get current power conservation setting.  Non-zero means conserving power.  Negative
+	// number indicates error.
+	int		GetConserve() const;
+	
+	// Conserve power.  Passing a non-zero value places the system
+	// in power conservation mode.  Call with zero to exit power conserve
+	// mode.
+	int		SetConserve(bool) const;
+	
+	// Complete system shutdown.  This is the application's response to the kPowerShutdown
+	// message.  The application calls Shutdown() to indicate data has been saved and
+	// system shutdown can proceed immediately, overriding the shutdown watchdog timer.
+	// Negative number indicates error.
+	int		Shutdown() const;
+	
+	// get shutdown time in milliseconds.  This sets the watchdog timer.  Negative number
+	// indicates error.
+	int		GetShutdownTimeMS() const;
+	
+	// set shutdown time in milliseconds.  Returns actual watchdog time in milliseconds.
+	// Negative number indicates error.
+	int		SetShutdownTimeMS(int) const;
+	
+	// Reset system
+	int		Reset() const;
+	
 private:
 	class CPowerModule*		pModule_;
 };

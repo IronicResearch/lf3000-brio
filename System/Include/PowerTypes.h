@@ -46,49 +46,56 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupPower), POWER_ERRORS)
 //==============================================================================
 //------------------------------------------------------------------------------
 
-struct tPowerData {
-	U32 powerState;
+enum tPowerState {
+	kPowerNull	   	 = 0,	/* invalid power state	*/
+	kPowerExternal   = 1,	/* on external power	*/
+	kPowerBattery    = 2,	/* battery powered		*/
+	kPowerLowBattery = 3,	/* low battery			*/
+	kPowerShutdown   = 4	/* shutdown requested	*/
 };
 
-const U32 kPowerNull	   = 0;	/* invalid power state	*/
-const U32 kPowerExternal   = 1;	/* on external power	*/
-const U32 kPowerBattery    = 2;	/* battery powered		*/
-const U32 kPowerLowBattery = 3;	/* low battery			*/
-const U32 kPowerConserve   = 4;	/* conserving power		*/
-const U32 kPowerShutdown   = 5;	/* shutdown requested	*/
-
+struct tPowerData {
+	enum tPowerState powerState;
+};
 
 //------------------------------------------------------------------------------
 class CPowerMessage : public IEventMessage {
 public:
 	CPowerMessage(const tPowerData& data);
 	virtual U16 GetSizeInBytes() const;
-	
+
 	// Get current power state which is the same as the last message passing
 	// through the event manager
-	tPowerData  GetPowerState() const;
+	enum tPowerState GetPowerState() const;
 	
-	// Conserve power.  Passing a non-zero value places the system
-	// in power conservation mode.  Call with zero to exit power conserve
-	// mode.
-	tPowerData	SetConservePower(bool) const;
+	// Get current power conservation setting.  Non-zero means conserving power.  Negative
+	// number indicates error.
+	int		GetPowerConserve() const;
 	
+	// Set Power conservation.  Non-zero means conserve power by turning off backlight.
+	// Returns prior power setting.  Negative number indicates error.
+	int		SetPowerConserve(bool) const;
+
 	// Complete system shutdown.  This is the application's response to the kPowerShutdown
-	// message.  It indicates shutdown can proceed immediately, overriding the shutdown
-	// watchdog timer.
-	U32			Shutdown() const;
+	// message.  The application calls Shutdown() to indicate data has been saved and
+	// system shutdown can proceed immediately, overriding the shutdown watchdog timer.
+	// Negative number indicates error.
+	int		Shutdown() const;
 	
-	// get shutdown time in milliseconds
-	U32			GetShutdownTime() const;
+	// get shutdown time in milliseconds.  This sets the watchdog timer.  Negative number
+	// indicates error.
+	int		GetShutdownTimeMS() const;
 	
-	// set shutdown time in milliseconds.  Returns actual millisecond shutdown time.
-	U32			SetShutdownTime(U32) const;
+	// set shutdown time in milliseconds.  Returns actual watchdog time in milliseconds.
+	// Negative number indicates error.
+	int		SetShutdownTimeMS(int) const;
 	
+	// Reset system
+	int		Reset() const;
 	
 private:
 	tPowerData mData;
 };
-
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_POWERTYPES_H
