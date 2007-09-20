@@ -293,6 +293,8 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 			rsrcType = kAudioRsrcRaw;  
 		else if (strcmp( fileExtension.c_str(), "ogg") == 0)
 			rsrcType = kAudioRsrcOggVorbis; 
+		else if (strcmp( fileExtension.c_str(), "aogg") == 0)
+			rsrcType = kAudioRsrcOggVorbis; 
 
 		switch ( rsrcType )
 		{

@@ -294,15 +294,15 @@ def PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate):
 		sSourceToDestMap[srcfile] = outfile							#3
 	
 	if type == 1026 and rate != '':
-		outfile = outfile + ".ogg"
+		outfile = outfile.replace(".wav", ".ogg")
 		enc = sEnv.OggEnc(outfile, srcfile, OGGENC_RATE=rate, OGGENC_COMPRESSION=compression)
 		
 	elif type == 1027:												#5
-		outfile = outfile + ".raw"
+		outfile = outfile.replace(".wav", ".raw")
 		enc = sEnv.RawEnc(outfile, srcfile)
 		
 	elif type == 1028 and rate != '':							    #6
-		outfile = outfile + ".ogg"
+		outfile = outfile.replace(".ogg", ".aogg")
 		enc = sEnv.OggExt(outfile, srcfile)
 
 	else:
