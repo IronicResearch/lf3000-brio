@@ -52,6 +52,7 @@ namespace
 	//--------------------------------------------------------------------------
 	tOpenGLContext		ctx;
 	CDisplayMPI*		dispmgr;
+	NativeDisplayType	display;
 	NativeWindowType	hwnd;
 	bool				isEnabled = false;
 	
@@ -176,13 +177,16 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	ctx.pOEM = &meminfo;
 	// FIXME/dm: How is LF1000 OGL lib configured for FSAA option?
 	ctx.bFSAA = false;
-#endif
+	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
+	ctx.eglDisplay = &display;
+	ctx.eglWindow = &hwnd; // something non-NULL 
+#else
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
 	*/
-//	disp_.InitOpenGL(&ctx);
-	ctx.eglWindow = &hwnd; // something non-NULL 
-
+	disp_.InitOpenGL(&ctx);
+#endif
+	
 	/*
 		Step 1 - Get the default display.
 		EGL uses the concept of a "display" which in most environments
@@ -191,7 +195,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		with, we let EGL pick the default display.
 		Querying other displays is platform specific.
 	*/
-	eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	eglDisplay = eglGetDisplay(ctx.eglDisplay);
 
 	/*
 		Step 2 - Initialize EGL.
