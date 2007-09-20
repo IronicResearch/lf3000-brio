@@ -78,18 +78,17 @@ enum {
 	
 	kAudioCmdMsgTypeSendMidiCommand,
 	kAudioCmdMsgTypeMidiNoteOn,
-	kAudioCmdMsgTypeMidiNoteOff
+	kAudioCmdMsgTypeMidiNoteOff,
+	kAudioCmdMsgExitThread
 };
 typedef U8 tAudioCmdMsgType;
 
 //************************************
 //************************************
-
 // All audio commands are derived from this...
 class CAudioCmdMsg: public CMessage {
 public:    
 	tAudioCmdMsgType	GetCmdType( void ) const { return type_; }
-//	void				SetCmdType( tAudioCmdMsgType type ) { type_ = type; }
 
 protected:
 	tAudioCmdMsgType			type_;
@@ -389,6 +388,11 @@ private:
 	tAudioMidiNoteInfo			data_;
 };
 
+// kAudioCmdMsgExitThread
+class CAudioCmdMsgExitThread : public CAudioCmdMsg {
+public:    
+	CAudioCmdMsgExitThread( void );
+};
 
 //-----------------------------------------------------------------------
 // return message

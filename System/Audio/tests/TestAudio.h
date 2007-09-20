@@ -50,12 +50,18 @@ class AudioListener : public IEventListener
 {
 public:
 	AudioListener( )
-		: IEventListener(kMyAudioTypes, ArrayCount( kMyAudioTypes )), dbg_( kMyApp )
+		: IEventListener(kMyAudioTypes, ArrayCount( kMyAudioTypes ))
 	{
-		//dbg_.SetDebugLevel( kDbgLvlVerbose );
-		dbg_.DebugOut( kDbgLvlVerbose, "Audio Listener created...\n" );
+		pDbg_ = new CDebugMPI(kMyApp);
+		pDbg_->SetDebugLevel( kDbgLvlVerbose );
+		pDbg_->DebugOut( kDbgLvlVerbose, "Audio Listener created...\n" );
 	}
 
+	~AudioListener() {
+		pDbg_->DebugOut( kDbgLvlVerbose, "Audio Listener destructing...\n" );
+		delete pDbg_;
+	}
+	
 	virtual tEventStatus Notify( const IEventMessage &msgIn )
 	{
 		tEventStatus status = kEventStatusOK;
@@ -86,13 +92,14 @@ public:
 		return status;
 	}
 private:
-	CDebugMPI	dbg_;
+	CDebugMPI*	pDbg_;
 };
 
 // Task to test multithreading and multi-MPIs.
 typedef struct
 {
 	int threadNum;
+	int loopCount;
 }thread_arg_t;
 
 static void *myTask(void* arg)
@@ -100,7 +107,7 @@ static void *myTask(void* arg)
 	CAudioMPI				audioMPI;
 	CKernelMPI				kernelMPI;
 
-	U32						index;
+	int						index;
 	CPath*					filePath = kNull;
 	tAudioID 				id = 0;
 	U32						time;
@@ -110,6 +117,7 @@ static void *myTask(void* arg)
 
 	thread_arg_t 			*ptr = (thread_arg_t *)arg; 
 	int						threadNum = ptr->threadNum;
+	int						loopCount = ptr->loopCount;
 
 	printf("==== myTask( thread %d ) -- test task thread starting up.\n", threadNum );
 
@@ -157,7 +165,7 @@ static void *myTask(void* arg)
 	kernelMPI.TaskSleep( 2000 ); 
 
 	// loop sleep 1 second
-	for (index = 0; index < 20; index++) {
+	for (index = 0; index < loopCount; index++) {
 		time = audioMPI.GetAudioTime( id );
 		volume = audioMPI.GetAudioVolume( id );
 		priority = audioMPI.GetAudioPriority( id );
@@ -193,7 +201,7 @@ class TestAudio : public CxxTest::TestSuite, TestSuiteBase
 private:
 	CAudioMPI*			pAudioMPI_;
 	CKernelMPI*			pKernelMPI_;
-	AudioListener		audioListener_;
+	AudioListener*		pAudioListener_;
 
 public:
 	//------------------------------------------------------------------------
@@ -201,6 +209,7 @@ public:
 	{
 		pAudioMPI_ = new CAudioMPI();
 		pKernelMPI_ = new CKernelMPI();
+		pAudioListener_ = new AudioListener();
 		pAudioMPI_->SetAudioResourcePath( GetAudioRsrcFolder() );
 	}
 
@@ -209,6 +218,7 @@ public:
 	{
 		delete pAudioMPI_; 
 		delete pKernelMPI_; 
+		delete pAudioListener_;
 	}
 	
 
@@ -286,8 +296,8 @@ public:
 		
 		printf("TestAudio -- testRawResources() \n" );
 
-		id1 = pAudioMPI_->StartAudio( "Temptation.raw", 100, 1, 0, &audioListener_, 0, 0 );
-		id2 = pAudioMPI_->StartAudio( "Sine.raw", 100, 1, 0, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartAudio( "Temptation.raw", 100, 1, 0, pAudioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( "Sine.raw", 100, 1, 0, pAudioListener_, 0, 0 );
 
 		// sleep 10 seconds
 		pKernelMPI_->TaskSleep( 15000 ); 
@@ -306,9 +316,9 @@ public:
 		
 		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
 
-		id = pAudioMPI_->StartAudio( "vivaldi.ogg", 100, 1, 0, &audioListener_, 0, 0 );
+		id = pAudioMPI_->StartAudio( "Vivaldi.ogg", 100, 1, 0, pAudioListener_, 0, 0 );
 
-		pKernelMPI_->TaskSleep( 5000 ); 
+		pKernelMPI_->TaskSleep( 15000 ); 
 	}
 	
 	//------------------------------------------------------------------------
@@ -327,7 +337,7 @@ public:
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1, pAudioListener_, 0, 0 );
 
 		// sleep 10 seconds
 		pKernelMPI_->TaskSleep( 15000 ); 
@@ -347,7 +357,7 @@ public:
 		
 		printf("TestAudio -- testVorbisLooping() starting, will run for 20 seconds, listen for looping... \n" );
 
-		id1 = pAudioMPI_->StartAudio( "Sine_500Hz.ogg", 100, 1, 0, &audioListener_, 0, 1 );
+		id1 = pAudioMPI_->StartAudio( "Sine_500Hz.ogg", 100, 1, 0, pAudioListener_, 0, 1 );
 		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
 
 		// loop sleep 1 second
@@ -372,19 +382,19 @@ public:
 		
 		printf("TestAudio -- testVorbisPlusMIDIResources()\n" );
 
-		id1 = pAudioMPI_->StartAudio( "VH_16_mono.ogg", 100, 1, 0, &audioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartAudio( "VH_16_mono.ogg", 100, 1, 0, pAudioListener_, 0, 0 );
 		printf("TestAudio -- testVorbisPlusMIDIResources() back from calling StartAudio()\n" );
 
 		pKernelMPI_->TaskSleep(4000 ); 
 
-		id2 = pAudioMPI_->StartAudio( "vivaldi.ogg", 80, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( "Vivaldi.ogg", 80, 1, 0, pAudioListener_, 0, 0 );
 	
 		pKernelMPI_->TaskSleep(4000 ); 
 
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, "Neutr_3_noDrums.mid", 100, 1, &audioListener_, 0, 0 );
+		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, "Neutr_3_noDrums.mid", 100, 1, pAudioListener_, 0, 0 );
 
 		// loop sleep 1 second
 		for (index = 0; index < 20; index++) {
@@ -414,7 +424,7 @@ public:
 										100, 				// volume
 										1, 					// priority
 										0, 					// pan
-										&audioListener_, 	// event listener
+										pAudioListener_, 	// event listener
 										0, 					// payload
 										0 );				// flags
 
@@ -459,17 +469,17 @@ public:
 							tAudioOptionsFlags	flags )
 */
 		printf("About to start MIDI file\n");
-		pAudioMPI_->StartMidiFile( playerID, "POWMusic.mid", 50, 1, &audioListener_, 0, 1 );
+		pAudioMPI_->StartMidiFile( playerID, "POWMusic.mid", 50, 1, pAudioListener_, 0, 1 );
 		
 
 
-		id2 = pAudioMPI_->StartAudio( "Sine_500Hz.ogg", 50, 1, 0, &audioListener_, 0, 0 );
+		id2 = pAudioMPI_->StartAudio( "Sine_500Hz.ogg", 50, 1, 0, pAudioListener_, 0, 0 );
 
 		// sleep 1 seconds
 		pKernelMPI_->TaskSleep( 1000 );
 
 		for (i = 0; i < 10; i++) {
-			id3 = pAudioMPI_->StartAudio( "Sine_500Hz.ogg", i*10, 1, 0, &audioListener_, 0, 0 );
+			id3 = pAudioMPI_->StartAudio( "Sine_500Hz.ogg", i*10, 1, 0, pAudioListener_, 0, 0 );
 //			printf("TestAudio -- StartAudio() returned ID # %d\n", static_cast<int>(id3) );
 //			if (id3 < 0) {
 //				printf("TestAudio -- StartAudio() returned error # %d\n", static_cast<int>(id3) );
@@ -498,9 +508,12 @@ public:
  	    tTaskProperties pProperties;
         tPtr 			status = NULL;
 
+		threadArg.loopCount = 20;
+
 		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
- 		threadArg.threadNum = 1;
 		pProperties.pTaskMainArgValues = &threadArg;
+
+		threadArg.threadNum = 1;
 		
 		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_1,
 		 	    		 (const tTaskProperties )pProperties, NULL) );
@@ -533,6 +546,99 @@ public:
 
 		// this will exit when all threads exit.
 	}
+	
+	//------------------------------------------------------------------------
+	void xxxtestModuleDestruction()
+	{
+		printf("testModuleDestruction starting... \n");
+
+		const int 		kDuration = 1 * 3000;
+
+		CKernelMPI		kernelMPI;
+
+		tTaskHndl 		hndl_1;
+		tTaskHndl 		hndl_2;
+		tTaskHndl 		hndl_3;
+		tTaskHndl 		hndl_4;
+        thread_arg_t 	threadArg;
+ 	    tTaskProperties pProperties;
+        tPtr 			status = NULL;
+
+		threadArg.loopCount = 5;
+
+		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
+
+		pProperties.pTaskMainArgValues = &threadArg;
+ 
+		threadArg.threadNum = 1;		
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_1,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 2;
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_2,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 3;
+		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_3,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 4;
+		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_4,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_1, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_2, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_3, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_4, status ));
+
+		// We should be hanging out here waiting for all 4 threads to finish.
+		// When we get here, the audio module should get destructed.
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		// now see if we can re-create the module and start over.
+		
+		threadArg.threadNum = 1;		
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_1,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 2;
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_2,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 3;
+		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_3,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		// sleep3 seconds
+		kernelMPI.TaskSleep( kDuration );
+
+		threadArg.threadNum = 4;
+		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_4,
+		 	    		 (const tTaskProperties )pProperties, NULL) );
+
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_1, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_2, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_3, status ));
+		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_4, status ));
+
+	}
+
 };
 
 
