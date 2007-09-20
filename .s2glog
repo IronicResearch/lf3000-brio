@@ -8530,3 +8530,14 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/07 4:28 PM
 2,769 ms. (Cumulative: 1,791,405 ms)
 
 ----------------
+Revision 1,635 from svn://localhost/TRUNK/:
+Revision 1,636 from svn://localhost/TRUNK/:
+Revision 1,637 from svn://localhost/TRUNK/:
+
+Fix to get OpenGL context working on X emulation window again.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/07 5:41 PM
+1 changed, 0 added, 0 deleted.
+2,797 ms. (Cumulative: 1,794,280 ms)
+
+----------------
