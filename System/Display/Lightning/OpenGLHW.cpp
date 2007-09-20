@@ -163,7 +163,7 @@ void CDisplayModule::DeinitOpenGL()
 	}
 	
 	// Release mappings in underlying Display manager too
-	DeInitModule();
+//	DeInitModule();
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }

@@ -119,13 +119,16 @@ namespace
 	{ 
 		PRINTF("GLESOAL_SwapBufferCallback\n");
 
-		// 3D layer needs to sync to OGL calls
-//		dispmgr->UpdateOpenGL();
+		// Enable 3D layer on 1st update
 		if (!isEnabled) 
 		{
 			dispmgr->EnableOpenGL(&ctx);
 			isEnabled = true;
 		}
+#ifndef LF1000
+		// 3D layer needs to sync to OGL calls (LF2530 only)
+		dispmgr->UpdateOpenGL();
+#endif
 	}
 
 	//--------------------------------------------------------------------------
