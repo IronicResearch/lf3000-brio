@@ -474,6 +474,106 @@ public:
 		}								
 	}
 
+//------------------------------
+//	tErrType  	ReceiveMessageOrWait( tMessageQueueHndl hndl, CMessage* msg,  
+//									U32 maxMessageSize, U32 timeoutMs = kMaxTimeoutMs );
+
+	void TestReceiveMessageOrWait() 
+	{
+/*****************************************************************
+		struct   timespec tm;
+
+		clock_gettime(CLOCK_REALTIME, &tm);
+		tm.tv_sec += 1;
+		if( 0 > mq_timedreceive( fd, buf, 4096, NULL,  t ) )  {
+		  &hellip;
+		}
+		struct timespec mytime;
+		for(int i=1; i < 10; i++ )
+		{
+			clock_gettime(CLOCK_REALTIME, &mytime);
+			printf("CLOCK_GETTIME values:\n");
+			printf("Sec=%u Nsec=%u\n", (unsigned int )mytime.tv_sec,
+										(unsigned int )mytime.tv_nsec);
+		}
+*******************************************************************/		
+		
+		ptintf_test_info("TestReceiveMessageOrWait");
+		tErrType err;
+		tErrType err_open;
+		tErrType err_receive;
+		tMessageQueueHndl hndl;
+		
+		const tMessageQueuePropertiesPosix msgProperties = 
+		{
+			0,                              // msgProperties.blockingPolicy;  
+    		"/test_q_wait",                	// msgProperties.nameQueue
+    		S_IRWXU,                    	// msgProperties.mode 
+    		B_O_RDWR|B_O_CREAT|B_O_TRUNC,	// msgProperties.oflag  
+    		0,                          	// msgProperties.priority
+    		0,                          	// msgProperties.mq_flags
+    		10,                         	// msgProperties.mq_maxmsg
+    		sizeof(CEventMessage),    	// msgProperties.mq_msgsize
+    		0                           	// msgProperties.mq_curmsgs
+		};
+
+//        TS_WARN("TODO: Test Create/Destroy Message Queue_2!");
+		err_open = KernelMPI->OpenMessageQueue(hndl,
+							msgProperties,
+							(const char* )NULL );
+		TS_ASSERT_EQUALS( kNoErr, err_open );							
+
+		CMessage msg;
+		U32 maxMessageSize = sizeof( CMessage );
+		
+		struct timespec now;		// time when it's started waiting
+		struct timespec end;		// time when it's ended waiting
+//		struct timespec timeout;	// timeout value for wait function
+        U32    diff_time = 0;
+        U32 delay = 100;  //millisec
+
+		for(int i = 1; i < 10; i++)
+		{	
+			clock_gettime(CLOCK_REALTIME, &now);
+			err_receive = KernelMPI->ReceiveMessageOrWait( hndl, &msg,  
+										maxMessageSize, delay );
+			{
+				clock_gettime(CLOCK_REALTIME, &end);
+				
+				switch ( end.tv_sec - now.tv_sec )
+				{
+					case 0:
+						diff_time = end.tv_nsec - now.tv_nsec;
+						break;
+					case 1:
+						diff_time = end.tv_nsec + (1000000000 - now.tv_nsec);
+						break;
+					case 2:	
+					diff_time = end.tv_nsec + (2000000000 - now.tv_nsec);
+				}	
+                    TS_ASSERT_EQUALS( err_receive,  kConnectionTimedOutErr );
+				TS_ASSERT_LESS_THAN( delay * 1000000, diff_time );
+//FIXME/BSK
+#if 0
+				printf("i = %d duff_time = %u\n", i, (unsigned int)diff_time);
+				fflush( stdout );
+#endif
+			}
+		}
+		
+		
+		if( !err_open )
+		{
+			err = KernelMPI->CloseMessageQueue( hndl, msgProperties );
+			TS_ASSERT_EQUALS( kNoErr, err );
+//			err = KernelMPI->UnlinkMessageQueue( msgProperties.nameQueue );
+//			TS_ASSERT_EQUALS( kNoErr, err );
+		}								
+	}
+
+//------------------------------	
+	
+	
 	void testCreateTimer()
 	{
 		ptintf_test_info("testCreateTimer");
@@ -896,7 +996,7 @@ public:
          	err = KernelMPI->DestroyCond( cond );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
  
-         }	
+         }
     
     // Unblocks at least one thread waiting on a condition variable
         void testSignalCond()

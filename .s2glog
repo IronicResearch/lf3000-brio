@@ -8560,3 +8560,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 9/20/07 8:51 AM
 2,844 ms. (Cumulative: 1,800,109 ms)
 
 ----------------
+Revision 1,641 from svn://localhost/TRUNK/:
+
+Added the TestReceiveMessageOrWait test
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 9/20/07 8:52 AM
+1 changed, 0 added, 0 deleted.
+2,782 ms. (Cumulative: 1,802,953 ms)
+
+----------------
