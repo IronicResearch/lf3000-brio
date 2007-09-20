@@ -410,7 +410,6 @@ def ProcessPackage(pkg, types, pack_root, data_root, packages):
 			type = types[ext[1:].lower()]
 			
 		base = row[0].strip() and row[0].strip() or defaultBase		#6
-		version = len(row) >= 5 and row[5].strip() and row[5].strip() or defaultVersion
 
 		srcname = row[2].strip()
 		srcfile = os.path.join(data_root, row[2].strip())			#7

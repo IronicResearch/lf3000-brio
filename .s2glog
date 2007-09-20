@@ -8569,3 +8569,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 9/20/07 8:52 AM
 2,782 ms. (Cumulative: 1,802,953 ms)
 
 ----------------
+Revision 1,642 from svn://localhost/TRUNK/:
+
+Remove URIs from SDK example packing lists.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/07 9:50 AM
+1 changed, 0 added, 0 deleted.
+2,907 ms. (Cumulative: 1,805,922 ms)
+
+----------------
