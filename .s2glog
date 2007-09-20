@@ -8697,3 +8697,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/07 4:57 PM
 3,094 ms. (Cumulative: 1,843,253 ms)
 
 ----------------
+Revision 1,661 from svn://localhost/TRUNK/:
+
+Add .aogg file extension for vorbis audio track extracted from video.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/07 4:59 PM
+1 changed, 0 added, 0 deleted.
+2,718 ms. (Cumulative: 1,846,018 ms)
+
+----------------
