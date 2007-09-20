@@ -513,7 +513,7 @@ public:
     		0,                          	// msgProperties.priority
     		0,                          	// msgProperties.mq_flags
     		10,                         	// msgProperties.mq_maxmsg
-    		sizeof(CEventMessage),    	// msgProperties.mq_msgsize
+    		sizeof(CEventMessage),    		// msgProperties.mq_msgsize
     		0                           	// msgProperties.mq_curmsgs
 		};
 
@@ -523,8 +523,8 @@ public:
 							(const char* )NULL );
 		TS_ASSERT_EQUALS( kNoErr, err_open );							
 
-		CMessage msg;
-		U32 maxMessageSize = sizeof( CMessage );
+		CEventMessage msg;
+		U32 maxMessageSize = sizeof( CEventMessage );
 		
 		struct timespec now;		// time when it's started waiting
 		struct timespec end;		// time when it's ended waiting
