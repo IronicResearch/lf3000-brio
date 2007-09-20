@@ -8623,3 +8623,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/20/07 12:02 PM
 2,688 ms. (Cumulative: 1,820,298 ms)
 
 ----------------
+Revision 1,648 from svn://localhost/TRUNK/:
+
+Remove static DebugMPI instance.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/20/07 12:04 PM
+1 changed, 0 added, 0 deleted.
+2,735 ms. (Cumulative: 1,823,095 ms)
+
+----------------
