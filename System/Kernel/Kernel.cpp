@@ -663,6 +663,7 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
    if(clock_gettime(CLOCK_REALTIME, &tp) == -1)
    ASSERT_POSIX_CALL( errno );
    
+#if 1
    tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
    tp.tv_nsec = tp.tv_nsec + ( timeoutMs % 1000 ) * 1000000; // convert from ms to nanosecond
    if( tp.tv_nsec >= kOneSecAsNanoSecs )
@@ -670,11 +671,23 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 	   tp.tv_sec += 1;
 	   tp.tv_nsec = tp.tv_nsec - kOneSecAsNanoSecs;
    }
-    
+#else
+	// I thought this would fix the invalid param error, but it doesn't.
+   // Figure out if the requested timeout wraps timespec + one second.
+   // if it does, increment seconds; then calculate leftover nsecs
+   // if it doesn't , just add timeout in nanosecs
+   U32 nSecs = tp.tv_nsec + (timeoutMs * 1000000);
+   if ( nSecs > kOneSecAsNanoSecs ) {
+           tp.tv_sec += 1; 
+           tp.tv_nsec = (timeoutMs * 1000000) - (kOneSecAsNanoSecs - tp.tv_nsec);
+   } else {
+           tp.tv_nsec = nSecs; // convert from ms to nanosecond
+   }   
+#endif
+
    unsigned int  msg_prio;
    errno = 0;
-//   int ret_receive = mq_timedreceive(hndl,
-   mq_timedreceive(hndl,
+   mq_timedreceive(	hndl,
 		   			(char *)msg_ptr,
                     maxMessageSize,
                     &msg_prio,
