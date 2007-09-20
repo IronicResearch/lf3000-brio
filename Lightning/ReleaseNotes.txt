@@ -2,6 +2,31 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+===========================================
+v0.1.17  (Build XXXX released Sep 20, 2007) 
+===========================================
+
+Release for LF1000 (green) and LF2530 (brown, blue) embedded target boards.
+
+Software components for target hardware:
+
+* Linux Kernel Image: zImage-0.7.0-1631-LF1000 (flash size = 11A800 hex)
+* Linux Kernel Image: zImage-0.7.0-1631-MP2530F (flash size = 11A000 hex)
+* NFS root file system: nfsroot-svnXXXX.tar.gz
+
+Use the following script to update all firmware (see Readme.txt for details):
+
+	lightning_install.py /dev/ttyS0 uniboot-0.7.0-1631-LF1000.bin:0 u-boot-0.7.0-1631-LF1000.bin:0x80000 zImage-0.7.0-1631-LF1000:0x100000
+
+Or for LF2530 boards:
+
+	lightning_install.py /dev/ttyS0 uniboot-0.7.0-1631-MP2530F.bin:0 u-boot-0.7.0-1631-MP2530F.bin:0x80000 zImage-0.7.0-1631-MP2530F:0x100000
+
+This script will update all 3 major firmware components, including the uniboot loader,
+U-boot, and the Linux kernel zImage. 
+
+Enhancements:
+-------------
 * Resource manager MPI has been completely removed.
 * Audio, Video, and Font MPIs modified to use file system paths now for 
   locating and loading respective resources.
