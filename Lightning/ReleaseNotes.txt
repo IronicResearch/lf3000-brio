@@ -5,6 +5,9 @@ Lightning C++ Development Kit Release Notes
 * Resource manager MPI has been completely removed.
 * Audio, Video, and Font MPIs modified to use file system paths now for 
   locating and loading respective resources.
+* Previous packing tool is now called ProcessResources for copying resources.
+  Audio resources are encoded for OggVorbis and renamed with .ogg extensions.
+  Brio appname may be used for resource subdirectory path on embedded targets.
 * Button MPI added Register/Unregister methods for button event handling.
 * Power MPI added to Brio for power event notifications.
 * USBDevice MPI added to Brio for handling USB events and state.

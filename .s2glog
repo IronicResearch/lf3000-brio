@@ -8541,3 +8541,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/07 5:41 PM
 2,797 ms. (Cumulative: 1,794,280 ms)
 
 ----------------
+Revision 1,638 from svn://localhost/TRUNK/:
+Revision 1,639 from svn://localhost/TRUNK/:
+
+Updated ProcessResources tool to rename audio file extensions instead of append.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/07 6:38 PM
+3 changed, 0 added, 0 deleted.
+2,844 ms. (Cumulative: 1,797,202 ms)
+
+----------------
