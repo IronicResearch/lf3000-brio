@@ -8587,3 +8587,12 @@ By Scott Esters (sesters@leapfrog.com) on 9/20/07 11:40 AM
 2,953 ms. (Cumulative: 1,808,937 ms)
 
 ----------------
+Revision 1,644 from svn://localhost/TRUNK/:
+
+ReceiveMessageOrWait must respect maxMessageSize parameter (it was commented out).
+
+By dgibbs (dgibbs@leapfrog.com) on 9/20/07 11:55 AM
+1 changed, 0 added, 0 deleted.
+2,750 ms. (Cumulative: 1,811,766 ms)
+
+----------------
