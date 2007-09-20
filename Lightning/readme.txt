@@ -242,7 +242,7 @@ ALL:192.168.0.0/24
 	tail -f /var/log/syslog
 
 ======================================================
-Target Preparation -- downloading kernel image
+Target Preparation -- downloading kernel image manually
 ======================================================
 
 With the network services up and running for the specific development system
@@ -278,17 +278,48 @@ To immediately test the downloaded zImage from RAM:
 	
 To flash the downloaded zImage into NAND:
 
-	nand erase clean 00080000 nnnnnn
-	nand write 02000000 00080000 nnnnnn
+	nand erase clean 00100000 nnnnnn
+	nand write 02000000 00100000 nnnnnn
 	
 Note that the size of the zImage has grown over 1 Meg since its initial release,
 so the size used for nand erase and write commands must be at least the size transfered
 via tftp rounded up to the next highest 800 (hex) multiple. For example, transfered
 bytes 1123e8 (hex) would be rounded up to nand size 'nnnnnn' = 112800 (hex).
 
+Note that the target address for the zImage location has also changed since previous releases. 
+
 Either method should execute the updated Linux kernel and NFS mount the
 root file system located on the development system.
 
+======================================================
+Target Preparation -- flashing kernel image via script
+======================================================
+
+A Python script is provided for automating the U-boot commands externally from the
+development system side. You will need the Python serial package installed on your
+development system.
+
+	sudo apt-get install python-serial
+
+You will also need a copy of the Python script in the same TFTP directory as
+the firmware binaries (to simplify file paths).
+
+	cp host_tools/lightning_install.py ~/tftpboot 
+
+Reboot the embedded target board to the U-boot prompt as above. Then instead of
+entering the U-boot commands manually, close the serial terminal and run the
+following script from the development system.
+
+	cd ~/tftpboot
+	./lightning_install.py /dev/ttyS0 uniboot-XXXX.bin:0 u-boot-XXXX.bin:0x80000 zImage-XXXX:0x100000
+
+'XXXX' refers to the version number of specific release, such as '0.7.0-1631-LF1000'
+or '0.7.0-1631-MP2530F'.
+
+This script will update all 3 major firmware components, including the uniboot loader,
+U-boot, and the Linux kernel zImage. Note that the target address location for the zImage 
+(and U-boot) have changed since previous releases. 
+ 
 ======================================================
 Target Preparation -- installing ARM cross-compiler
 ======================================================
