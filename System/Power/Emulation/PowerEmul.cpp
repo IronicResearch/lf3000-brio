@@ -49,8 +49,7 @@ namespace
 			case XK_F1:		return kPowerExternal;
 			case XK_F2:		return kPowerBattery;
 			case XK_F3:		return kPowerLowBattery;
-			case XK_F4:		return kPowerConserve;
-			case XK_F5:		return kPowerShutdown;
+			case XK_F4:		return kPowerShutdown;
 		}
 		return kPowerNull;
 	}
@@ -150,7 +149,7 @@ enum tPowerState CPowerModule::GetPowerState() const
 			{
 		     	KeySym keysym = XKeycodeToKeysym(gXDisplay, i, 0);
 		     	if( keysym )
-		     		state = KeySymToPower(keysym);
+		     		state = (tPowerState)KeySymToPower(keysym);
 			}
 		}
 		gLastState = state;
@@ -172,7 +171,7 @@ int CPowerModule::GetConserve() const
 
 
 //----------------------------------------------------------------------------
-int CPowerModule::SetConserve(boot bConserve) const
+int CPowerModule::SetConserve(bool bConserve) const
 {
 	enum tPowerState state = kPowerNull;
 
@@ -223,7 +222,7 @@ int CPowerModule::Reset() const
 	CDebugMPI	dbg(kGroupPower);
 	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: Reset() not implemented.\n");
 	
-	return state;
+	return -1;
 }
 LF_END_BRIO_NAMESPACE()
 // EOF

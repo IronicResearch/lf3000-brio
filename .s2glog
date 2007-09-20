@@ -8596,3 +8596,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/20/07 11:55 AM
 2,750 ms. (Cumulative: 1,811,766 ms)
 
 ----------------
+Revision 1,645 from svn://localhost/TRUNK/:
+
+Oops, fixed PowerMPI emulation build errors.
+
+By Scott Esters (sesters@leapfrog.com) on 9/20/07 11:57 AM
+2 changed, 0 added, 1 deleted.
+2,938 ms. (Cumulative: 1,814,766 ms)
+
+----------------
