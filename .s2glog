@@ -8737,3 +8737,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/21/07 3:13 PM
 2,859 ms. (Cumulative: 1,854,816 ms)
 
 ----------------
+Revision 1,669 from svn://localhost/TRUNK/:
+
+Add FreeType 2.3.5 source to Brio SVN depot.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/07 4:41 PM
+0 changed, 641 added, 0 deleted.
+14,552 ms. (Cumulative: 1,869,431 ms)
+
+----------------
