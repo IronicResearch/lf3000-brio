@@ -8746,3 +8746,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/21/07 4:41 PM
 14,552 ms. (Cumulative: 1,869,431 ms)
 
 ----------------
+Revision 1,670 from svn://localhost/TRUNK/:
+
+Updated FreeType libs from 2.3.5 source.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/07 4:59 PM
+4 changed, 2 added, 6 deleted.
+3,922 ms. (Cumulative: 1,873,556 ms)
+
+----------------
