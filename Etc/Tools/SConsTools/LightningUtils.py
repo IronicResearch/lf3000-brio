@@ -41,7 +41,7 @@ def RetrieveOptions(args, root_dir):
 	is_runtests		= args.get('runtests', 1)
 	type			= args.get('type', 'embedded')
 	platform		= 'Lightning'
-	variant			= args.get('variant', 'LF2530BLUE')
+	variant			= args.get('variant', 'LF1000')
 	
 	is_emulation 	= type == 'emulation' or type == 'checkheaders'
 	is_resource		= args.get('resource', 1)	

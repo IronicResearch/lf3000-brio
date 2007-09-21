@@ -71,7 +71,7 @@ opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemul
 
 is_monolithic		= ARGUMENTS.get('monolithic', 0)
 platform			= ARGUMENTS.get('platform', '')
-platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF2530BLUE')
+platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF1000')
 source_setup		= ARGUMENTS.get('setup', '')
 is_runtests			= ARGUMENTS.get('runtests', 1)
 type				= ARGUMENTS.get('type', 'embedded')
