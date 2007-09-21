@@ -3,16 +3,17 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.17  (Build XXXX released Sep 20, 2007) 
+v0.1.17  (Build 1662 released Sep 20, 2007) 
 ===========================================
 
 Release for LF1000 (green) and LF2530 (brown, blue) embedded target boards.
 
 Software components for target hardware:
 
-* Linux Kernel Image: zImage-0.7.0-1631-LF1000 (flash size = 11A800 hex)
-* Linux Kernel Image: zImage-0.7.0-1631-MP2530F (flash size = 11A000 hex)
-* NFS root file system: nfsroot-svnXXXX.tar.gz
+* Linux Kernel Image: zImage-0.7.2-1659-LF1000 (flash size = 11A800 hex)
+* Linux Kernel Image: zImage-0.7.2-1659-MP2530F (flash size = 11A000 hex)
+* NFS root file system: nfsroot-svn1662-LF1000.tar.gz
+* NFS root file system: nfsroot-svn1662-LF2530.tar.gz
 
 Use the following script to update all firmware (see Readme.txt for details):
 
