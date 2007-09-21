@@ -8724,3 +8724,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/07 5:36 PM
 2,828 ms. (Cumulative: 1,851,863 ms)
 
 ----------------
+Revision 1,664 from svn://localhost/TRUNK/:
+Revision 1,665 from svn://localhost/TRUNK/:
+Revision 1,666 from svn://localhost/TRUNK/:
+Revision 1,667 from svn://localhost/TRUNK/:
+Revision 1,668 from svn://localhost/TRUNK/:
+
+Copy only specific versioned .so libs onto embedded target directory.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/07 3:13 PM
+1 changed, 0 added, 0 deleted.
+2,859 ms. (Cumulative: 1,854,816 ms)
+
+----------------
