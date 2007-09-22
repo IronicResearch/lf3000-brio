@@ -8764,3 +8764,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/21/07 5:19 PM
 3,328 ms. (Cumulative: 1,876,947 ms)
 
 ----------------
+Revision 1,672 from svn://localhost/TRUNK/:
+Revision 1,673 from svn://localhost/TRUNK/:
+
+Removed unnecessary FreeType packages and options for ARM lib
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/07 6:37 PM
+2 changed, 1 added, 0 deleted.
+3,348 ms. (Cumulative: 1,880,373 ms)
+
+----------------
