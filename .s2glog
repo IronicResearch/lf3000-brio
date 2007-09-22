@@ -8755,3 +8755,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/21/07 4:59 PM
 3,922 ms. (Cumulative: 1,873,556 ms)
 
 ----------------
+Revision 1,671 from svn://localhost/TRUNK/:
+
+Build FreeType ARM libs with optimizations on, debug symbols off.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/07 5:19 PM
+1 changed, 2 added, 0 deleted.
+3,328 ms. (Cumulative: 1,876,947 ms)
+
+----------------
