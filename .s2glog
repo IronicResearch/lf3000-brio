@@ -8774,3 +8774,17 @@ By Dave Milici (dmilici@leapfrog.com) on 9/21/07 6:37 PM
 3,348 ms. (Cumulative: 1,880,373 ms)
 
 ----------------
+Revision 1,674 from svn://localhost/TRUNK/:
+Revision 1,675 from svn://localhost/TRUNK/:
+Revision 1,676 from svn://localhost/TRUNK/:
+Revision 1,677 from svn://localhost/TRUNK/:
+Revision 1,678 from svn://localhost/TRUNK/:
+Revision 1,679 from svn://localhost/TRUNK/:
+
+Update ffmpeg libs for major-only versioned .so
+
+By Dave Milici (dmilici@leapfrog.com) on 9/24/07 11:10 AM
+1 changed, 5 added, 5 deleted.
+3,766 ms. (Cumulative: 1,884,249 ms)
+
+----------------
