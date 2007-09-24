@@ -8806,3 +8806,24 @@ By dgibbs (dgibbs@leapfrog.com) on 9/24/07 1:44 PM
 3,188 ms. (Cumulative: 1,890,812 ms)
 
 ----------------
+Revision 1,682 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,281 ms. (Cumulative: 1,894,140 ms)
+
+----------------
+Revision 1,683 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,266 ms. (Cumulative: 1,897,422 ms)
+
+----------------
+Revision 1,684 from svn://localhost/TRUNK/:
+
+1. Added the new SendMessageOrWait test. 2. Done some cleaning
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 9/24/07 3:31 PM
+2 changed, 0 added, 0 deleted.
+3,344 ms. (Cumulative: 1,900,766 ms)
+
+----------------
