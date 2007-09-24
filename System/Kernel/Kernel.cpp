@@ -11,6 +11,7 @@
 //		Underlying implementation code used by the KernelMPI
 //
 //==============================================================================
+#define _XOPEN_SOURCE 600
 
 #include <pthread.h>
 #include <sched.h>
@@ -26,6 +27,7 @@
 #include <signal.h>
 #include <linux/rtc.h>
 #include <sys/ioctl.h>
+#include <time.h>
 #include <mqueue.h>
 
 //#include <SystemTypes.h>
@@ -663,7 +665,7 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
    if(clock_gettime(CLOCK_REALTIME, &tp) == -1)
    ASSERT_POSIX_CALL( errno );
    
-#if 1
+#if 0
    tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
    tp.tv_nsec = tp.tv_nsec + ( timeoutMs % 1000 ) * 1000000; // convert from ms to nanosecond
    if( tp.tv_nsec >= kOneSecAsNanoSecs )
@@ -671,7 +673,8 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 	   tp.tv_sec += 1;
 	   tp.tv_nsec = tp.tv_nsec - kOneSecAsNanoSecs;
    }
-#else
+
+   #else
 	// I thought this would fix the invalid param error, but it doesn't.
    // Figure out if the requested timeout wraps timespec + one second.
    // if it does, increment seconds; then calculate leftover nsecs
@@ -682,16 +685,21 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
            tp.tv_nsec = (timeoutMs * 1000000) - (kOneSecAsNanoSecs - tp.tv_nsec);
    } else {
            tp.tv_nsec = nSecs; // convert from ms to nanosecond
-   }   
+   }
 #endif
 
    unsigned int  msg_prio;
    errno = 0;
+#if 0 // FIXME/BSK
+   	printf("tp.tv_sec=%u tp.tv_nsec=%u", (unsigned int )tp.tv_sec, (unsigned int )tp.tv_nsec );
+   	fflush(stdout);
+#endif
+   	
    mq_timedreceive(	hndl,
 		   			(char *)msg_ptr,
                     maxMessageSize,
                     &msg_prio,
-                    (const struct timespec *)&tp);
+                    /*(const struct timespec *)*/&tp);
  
    // if we timed out, then just return status... otherwise check for real error.
    if ( errno == ETIMEDOUT )

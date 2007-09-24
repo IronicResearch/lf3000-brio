@@ -8788,3 +8788,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/24/07 11:10 AM
 3,766 ms. (Cumulative: 1,884,249 ms)
 
 ----------------
+Revision 1,680 from svn://localhost/TRUNK/:
+
+Changed the timer test functions so the timers are created and destroyed inside the every test functions
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 9/24/07 12:40 PM
+2 changed, 0 added, 0 deleted.
+3,251 ms. (Cumulative: 1,887,562 ms)
+
+----------------
