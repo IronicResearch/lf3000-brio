@@ -52,6 +52,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Defines
 //==============================================================================
+#define kOneSecAsNanoSecs	(1000000000)
 
 //==============================================================================
 // Global variables
@@ -570,20 +571,21 @@ tErrType CKernelModule::SendMessageOrWait(tMessageQueueHndl hndl,
    	ASSERT_POSIX_CALL( errno );
 
     tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
-    tp.tv_nsec = tp.tv_nsec + timeoutMs * 1000000; // convert from ms to nanosecond
+    tp.tv_nsec = tp.tv_nsec + ( timeoutMs % 1000 ) * 1000000; // convert from ms to nanosecond
+    if( tp.tv_nsec >= kOneSecAsNanoSecs )
+    {
+ 	   tp.tv_sec += 1;
+ 	   tp.tv_nsec = tp.tv_nsec - kOneSecAsNanoSecs;
+    }
 
-#if 0 // BSK
-    printf("pMessage->GetMessageSize() = %d\n", pMessage->GetMessageSize());
-    printf("pMessage.GetMessageEventType() =%d\n",
-            ((CEventMessage *)pMessage)->GetMessageEventType()); 
-    fflush(stdout);
-
-#endif
     errno = 0;
     mq_timedsend(hndl, 
           reinterpret_cast<const char *>(&msg),
           msg.GetMessageSize(),
           msg.GetMessagePriority(), &tp);
+
+    if ( errno == ETIMEDOUT )
+ 	   return AsBrioErr( ETIMEDOUT );
     
    	ASSERT_POSIX_CALL( errno );
     
@@ -642,7 +644,6 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
 }
 
 //------------------------------------------------------------------------------
-#define kOneSecAsNanoSecs	(1000000000)
 
 tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl, 
 									CMessage* msg_ptr, U32 maxMessageSize, 
@@ -665,7 +666,7 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
    if(clock_gettime(CLOCK_REALTIME, &tp) == -1)
    ASSERT_POSIX_CALL( errno );
    
-#if 0
+#if 1
    tp.tv_sec = tp.tv_sec + timeoutMs / 1000; 
    tp.tv_nsec = tp.tv_nsec + ( timeoutMs % 1000 ) * 1000000; // convert from ms to nanosecond
    if( tp.tv_nsec >= kOneSecAsNanoSecs )
