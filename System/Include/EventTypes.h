@@ -7,10 +7,10 @@
 //==============================================================================
 //
 // File:
-//		EventMPI.h
+//		EventTypes.h
 //
 // Description:
-//		Defines the Module Public Interface (MPI) for the Event module. 
+//		Defines enums and types for EventMgr. 
 //
 //==============================================================================
 
