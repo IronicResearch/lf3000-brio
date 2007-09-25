@@ -8827,3 +8827,18 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 9/24/07 3:31 PM
 3,344 ms. (Cumulative: 1,900,766 ms)
 
 ----------------
+Revision 1,685 from svn://localhost/TRUNK/:
+Revision 1,686 from svn://localhost/TRUNK/:
+Revision 1,687 from svn://localhost/TRUNK/:
+Revision 1,688 from svn://localhost/TRUNK/:
+Revision 1,689 from svn://localhost/TRUNK/:
+Revision 1,690 from svn://localhost/TRUNK/:
+Revision 1,691 from svn://localhost/TRUNK/:
+
+Remove internal DebugMPI from unit test utils, it appears to not be used...
+
+By dgibbs (dgibbs@leapfrog.com) on 9/25/07 12:10 PM
+1 changed, 0 added, 0 deleted.
+3,344 ms. (Cumulative: 1,904,250 ms)
+
+----------------
