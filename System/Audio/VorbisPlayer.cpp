@@ -67,7 +67,7 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 		"VorbisPlayer::ctor -- Could not open oggvorbis file: %s.\n", pInfo->path->c_str() );
  
     // Find out if the caller has requested looping.
-	if (pInfo->flags & 1)
+	if (optionsFlags_ & 1)
 		shouldLoop_ = true;
 	else 
 		shouldLoop_ = false;

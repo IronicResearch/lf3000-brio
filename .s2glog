@@ -8851,3 +8851,13 @@ By dgibbs (dgibbs@leapfrog.com) on 9/25/07 12:13 PM
 3,375 ms. (Cumulative: 1,907,688 ms)
 
 ----------------
+Revision 1,693 from svn://localhost/TRUNK/:
+Revision 1,694 from svn://localhost/TRUNK/:
+
+Fix looping for raw files.  Get shouldLoop flag from superclass.
+
+By dgibbs (dgibbs@leapfrog.com) on 9/25/07 4:28 PM
+2 changed, 0 added, 0 deleted.
+3,250 ms. (Cumulative: 1,911,032 ms)
+
+----------------
