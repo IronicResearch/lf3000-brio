@@ -55,6 +55,12 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 	// Allocate the player's sample buffer
 	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 
+    // Find out if the caller has requested looping.
+	if (optionsFlags_ & 1)
+		shouldLoop_ = true;
+	else 
+		shouldLoop_ = false;
+
 	// Open the  file.
 	file_ = fopen( pInfo->path->c_str(), "r" );
 	pDebugMPI_->Assert( file_ > 0, 
@@ -178,81 +184,62 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	else
 		pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer -- Couldn't lock mutex.\n");
 
-	// Check if there are any more samples to process 
-	if (framesLeft_ > 0) {
-//		printf("CRawPlayer::RenderBuffer -- curFramePtr:0x%x; framesLeft: %d\n", pCurFrame_, framesLeft_); 
+	// Copy the requested frames from our audioDatPtr to the output buffer.
+	if (hasStereoData_)
+		bytesToRead = numStereoFrames * 2 * 2;	// 16bit stereo
+	else
+		bytesToRead = numStereoFrames * 2;		// 16bit mono
 
-		// Fill the buffer with the requested number of sample frames.
-		// (Or as many as we have left).
-		if (framesLeft_ >= numStereoFrames)
-			framesToProcess = numStereoFrames;
-		else
-			framesToProcess = framesLeft_;
-
-		// Copy the requested frames from our audioDatPtr to the output buffer.
-		if (hasStereoData_)
-			bytesToRead = numStereoFrames * 2 * 2;	// 16bit stereo
-		else
-			bytesToRead = numStereoFrames * 2;		// 16bit mono
-
-		// We may have to read multiple times because vorbis doesn't always
-		// give you what you ask for.
-		bufferPtr = (char*)pPcmBuffer_;
-		while ( bytesToRead > 0 ) {
-	//		printf("CRawPlayer::RenderBuffer -- about to ov_read() %u bytes.\n ", bytesToRead);
-			
-			bytesRead = fread( bufferPtr, 1, bytesToRead, file_ );
-		 		
-	//		printf("CRawPlayer::RenderBuffer -- ov_read() got %u bytes.\n ", bytesRead);
+	// We may have to read multiple times because vorbis doesn't always
+	// give you what you ask for.
+	bufferPtr = (char*)pPcmBuffer_;
+	while ( bytesToRead > 0 ) {			
+		bytesRead = fread( bufferPtr, 1, bytesToRead, file_ );
+	 				
+		// at EOF
+		if ( bytesRead < bytesToRead ) {
+			if (shouldLoop_)
+				Rewind();
+			else
+				break;
+		}
 		
-			// at EOF
-			if ( bytesRead == 0 ) {
-				if (shouldLoop_)
-					Rewind();
-				else
-					break;
-			}
-			
-			// Keep track of where we are...
-			bytesToRead -= bytesRead;
-			totalBytesRead += bytesRead;
-		 	bufferPtr += bytesRead;
+		// Keep track of where we are...
+		bytesToRead -= bytesRead;
+		totalBytesRead += bytesRead;
+	 	bufferPtr += bytesRead;
+	}
+		
+
+	// Convert bytes back into sample frames
+	if (hasStereoData_)
+		framesRead = totalBytesRead / 2 / 2;
+	else
+		framesRead = totalBytesRead / 2;
+
+	// Copy the requested frames from our local buffer to the output buffer.
+	framesToProcess = framesRead;
+	pCurSample = pPcmBuffer_;
+
+	if (hasStereoData_) {
+		for (index = 0; index < framesToProcess; index++) {			
+			// Copy Left sample
+//				printf("left: %d ", *pCurSample);
+			*pOutBuff++ = *pCurSample++; // fixme/!!
+			// Copy Right sample
+//				printf("right: %d ", *pCurSample);
+			*pOutBuff++ = *pCurSample++;
 		}
-			
-	
-		// Convert bytes back into sample frames
-		if (hasStereoData_)
-			framesRead = totalBytesRead / 2 / 2;
-		else
-			framesRead = totalBytesRead / 2;
-
-		// Account for the frames we've rendered.
-		framesLeft_ -= framesRead;	
-
-		// Copy the requested frames from our local buffer to the output buffer.
-		framesToProcess = framesRead;
-		pCurSample = pPcmBuffer_;
-
-		if (hasStereoData_) {
-			for (index = 0; index < framesToProcess; index++) {			
-				// Copy Left sample
-	//				printf("left: %d ", *pCurSample);
-				*pOutBuff++ = *pCurSample++; // fixme/!!
-				// Copy Right sample
-	//				printf("right: %d ", *pCurSample);
-				*pOutBuff++ = *pCurSample++;
-			}
-			// Now update the current frame pointer.
-	//			printf("stereo buffer: pCurSample = 0x%x; frames = %d; next pCurSample Should be: 0x%x\n", pCupCurSamplerFrame_, framesToProcess, (pCurSample + framesToProcess));
-		} else {
-			for (index = 0; index < framesToProcess; index++) {			
-				// Copy mono sample twice
-	//				printf("mono(doubled): %d ", *pCurSample);
-				*pOutBuff++ = *pCurSample;
-				*pOutBuff++ = *pCurSample++;
-			}
+		// Now update the current frame pointer.
+//			printf("stereo buffer: pCurSample = 0x%x; frames = %d; next pCurSample Should be: 0x%x\n", pCupCurSamplerFrame_, framesToProcess, (pCurSample + framesToProcess));
+	} else {
+		for (index = 0; index < framesToProcess; index++) {			
+			// Copy mono sample twice
+//				printf("mono(doubled): %d ", *pCurSample);
+			*pOutBuff++ = *pCurSample;
+			*pOutBuff++ = *pCurSample++;
 		}
-}
+	}
 			
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
