@@ -8842,3 +8842,12 @@ By dgibbs (dgibbs@leapfrog.com) on 9/25/07 12:10 PM
 3,344 ms. (Cumulative: 1,904,250 ms)
 
 ----------------
+Revision 1,692 from svn://localhost/TRUNK/:
+
+Enable module destruction when a module's MPI count goes to zero.  This requried some tweaking of the event manager...
+
+By dgibbs (dgibbs@leapfrog.com) on 9/25/07 12:13 PM
+7 changed, 0 added, 0 deleted.
+3,375 ms. (Cumulative: 1,907,688 ms)
+
+----------------

@@ -216,9 +216,9 @@ public:
 	//------------------------------------------------------------------------
 	void tearDown( )
 	{
-		delete pAudioMPI_; 
-		delete pKernelMPI_; 
 		delete pAudioListener_;
+		delete pKernelMPI_; 
+		delete pAudioMPI_; 
 	}
 	
 

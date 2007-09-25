@@ -28,11 +28,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 //----------------------------------------------------------------------------
 CEventListenerImpl::CEventListenerImpl(const tEventType *eventList, U32 count)
-	: pNextListener_(NULL), eventList_(new tEventType[count]), 
+	: pEvent_(NULL), pNextListener_(NULL), eventList_(new tEventType[count]), 
 	disabledEventList_(new tEventType[count]), 
 	numEvents_(count), numDisabledEvents_(0)
 {
-	CKernelMPI	kernel;
 	U32 size = sizeof(tEventType) * count;
 	memcpy(eventList_.get(), eventList, size);
 	// TBD: sort the list so HandlesEvent() can do binary search?

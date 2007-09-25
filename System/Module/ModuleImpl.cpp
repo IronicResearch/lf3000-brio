@@ -121,8 +121,13 @@ namespace
 		//----------------------------------------------------------------------
 		ConnectedModule* FindCachedModule( const ICoreModule* ptr )
 		{
+//			printf("FindCachedModule:: size of connected modules list: %d\n",
+//					( int)mConnectedModulesList.size());
+			
 			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
+//				printf("FindCachedModule:: looking for ptr: 0x%x, comparing with: 0x%x (module name: %s)\n",
+//						(unsigned int)ptr, (unsigned int)mConnectedModulesList[ii].ptr, mConnectedModulesList[ii].name.c_str());
 				if( mConnectedModulesList[ii].ptr == ptr )
 				{
 					// TODO: Make sure we have a version match
@@ -244,25 +249,39 @@ namespace
 		}
 
 		//----------------------------------------------------------------------
-		tErrType Disconnect(const ICoreModule* ptr)
+		void RemoveCachedModule(ConnectedModule* pModule)
 		{
-			ConnectedModule* pModule = FindCachedModule(ptr);
-			if( pModule )
-			{
-				--pModule->connect_count;
-				if( pModule->connect_count == 0 )
+			std::vector<ConnectedModule>::iterator tempIterator;
+			
+//			printf("RemoveCachedModule:: size of connected modules list: %d\n",
+//					(int)mConnectedModulesList.size());
+
+			tempIterator = mConnectedModulesList.begin(); 
+			while ( tempIterator != mConnectedModulesList.end() )
 				{
-//					DestroyModuleInstance(pModule);
-//					// RemoveCachedModule(pModule);	// FIXME/tp: implement by vector.erase()
+//				printf("RemoveCachedModule:: looking for ptr: 0x%x (name: %s), comparing with: 0x%x (name %s)\n",
+//							(unsigned int)tempIterator->ptr, tempIterator->name.c_str(), 
+//							(unsigned int)pModule->ptr, pModule->name.c_str() );
+
+				if( (ICoreModule*)tempIterator->ptr == (ICoreModule*)pModule->ptr )
+					{
+//						printf("RemoveCachedModule:: removing: * %s * module from list.\n",
+//							tempIterator->name.c_str() );						
+						// TODO: Make sure we have a version match
+						mConnectedModulesList.erase(tempIterator);
+						break;
+					}
+					tempIterator++;
 				}
-			}
-			return kNoErr;
 		}
-		
+
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
-		    ObjPtrToFunPtrConverter fp;
+		//	printf("DestroyModuleInstance:: destroying ptr: 0x%x; name: %s)\n",
+		//			(unsigned int)pModule->ptr, pModule->name.c_str() );
+
+					ObjPtrToFunPtrConverter fp;
 		    fp.voidptr = kernel_.RetrieveSymbolFromModule(pModule->handle, kDestroyInstanceFnName);
 		    if( fp.voidptr != NULL )
 		    	(*(fp.pfnDestroy))(pModule->ptr);
@@ -272,6 +291,22 @@ namespace
 				kernel_.PowerDown();
 		    }
 		    kernel_.UnloadModule(pModule->handle);
+		}
+
+		//----------------------------------------------------------------------
+		tErrType Disconnect(const ICoreModule* ptr)
+		{
+			ConnectedModule* pModule = FindCachedModule(ptr);
+			if( pModule )
+			{
+				--pModule->connect_count;
+				if( pModule->connect_count == 0 )
+				{
+					DestroyModuleInstance(pModule);
+					RemoveCachedModule(pModule);
+				}
+			}
+			return kNoErr;
 		}
 		
 		// TODO: unresolved issues:

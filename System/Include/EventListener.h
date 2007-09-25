@@ -14,6 +14,7 @@
 
 #include <SystemTypes.h>
 #include <SystemEvents.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventMessage;		// forward declaration
@@ -53,7 +54,7 @@ private:
 	class CEventListenerImpl *pimpl_;
 	friend class CEventListenerImpl;
 	friend class CEventManagerImpl;
-	
+
 	// Disable copy semantics
 	IEventListener(const IEventListener&);
 	IEventListener& operator=(const IEventListener&);

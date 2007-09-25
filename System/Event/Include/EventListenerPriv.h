@@ -13,6 +13,7 @@
 //==============================================================================
 
 #include <SystemTypes.h>
+#include <EventPriv.h>
 #include <boost/scoped_array.hpp>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -35,6 +36,10 @@ public:
 	virtual tErrType	DisableNotifyForEventType(tEventType type);
 	virtual tErrType	ReenableNotifyForEventType(tEventType type);
 	virtual Boolean		HandlesEvent(tEventType type) const;
+
+// TODO: why can't this be a private member of a friend class and compile?	
+	CEventModule*					pEvent_;
+
 private:
 	const IEventListener*			pNextListener_;
 	boost::scoped_array<tEventType>	eventList_;
