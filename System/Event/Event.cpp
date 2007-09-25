@@ -96,6 +96,7 @@ private:
 	enum { kGrowBySize = 2 };
 	static tMessageQueueHndl	g_hMsgQueueBG_ ;
 	static bool 				g_threadRun_;
+	static bool					g_threadRunning_;
 	static tTaskHndl			g_hThread_;
 	
 	//============================================================================
@@ -128,12 +129,19 @@ private:
 						static_cast<int>(g_hMsgQueueBG_));
 	
 		CEventDispatchMessage	msg;										//*2
+
+		g_threadRunning_ = true;
 		while (g_threadRun_)
 		{
-		    err = kernel.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
-			debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
-		    pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
+			// Wake up every 250ms to see if we need to exit, otherwise wake up on msg and process it.
+			err = kernel.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 250);
+		    if ( err != kConnectionTimedOutErr ) {
+		    	debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
+		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
+		    }
 		}
+		
+		g_threadRunning_ = false;
 		return NULL;
 	}
 
@@ -143,7 +151,7 @@ public:
 		: ppListeners_(NULL), numListeners_(0), listSize_(0), 
 		debug_(kGroupEvent), hMsgQueueFG_(kInvalidMessageQueueHndl)
 
-	{
+	{		
 		// 1) Create the message queue for communicating with the
 		//    background dispatching thread
 		// 2) Create the background event dispatching thread
@@ -177,18 +185,26 @@ public:
 		err = kernel_.CreateTask(g_hThread_, properties, NULL);
 
 		debug.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create EventDispatchTask!\n" );
-	}
+
+		// Wait for thread to start up...
+		while ( !g_threadRunning_ ) {
+			kernel_.TaskSleep(10);
+		}
+}
 	
 	//------------------------------------------------------------------------
 	~CEventManagerImpl() 
 	{
+		CDebugMPI	debug(kGroupEvent);
+		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::dtor: Event Manager going away...\n");
+
 		delete ppListeners_;
 		g_threadRun_ = false;
-		// TODO/tp: Debug the kernel_.JoinTask() call (not exercising as of 8/2007,
-		// since we never unload modules, even when the refcount goes to 0).
-		tPtr ptr;
-		kernel_.JoinTask(g_hThread_, ptr);
+		while ( g_threadRunning_ ) {
+			kernel_.TaskSleep(10);
+		}
 	}
+	
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener)
 	{
@@ -216,17 +232,20 @@ public:
 		// reclaiming memory?  Unlikely, but you can add some profiling info.
 		// If we find the listener in the list, shift other listeners down
 		// down to keep the list contiguous and decrement the listeners count.
-		const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);		
-		for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
-		{
-			if( *ptr == pListener )
+		if (ppListeners_) {	
+			const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);		
+			for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
 			{
-				for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
-					*ptr = *(ptr + 1);
-				--numListeners_;
-				return kNoErr;
+				if( *ptr == pListener )
+				{
+					for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
+						*ptr = *(ptr + 1);
+					--numListeners_;
+					return kNoErr;
+				}
 			}
 		}
+		
 		return kEventListenerNotRegisteredErr;
 	}
 	//------------------------------------------------------------------------
@@ -295,6 +314,7 @@ public:
 //----------------------------------------------------------------------------
 tMessageQueueHndl	CEventManagerImpl::g_hMsgQueueBG_ = kInvalidMessageQueueHndl;
 bool 				CEventManagerImpl::g_threadRun_   = true;
+bool 				CEventManagerImpl::g_threadRunning_  = false;
 tTaskHndl			CEventManagerImpl::g_hThread_	  = kInvalidTaskHndl;
 	
 namespace
