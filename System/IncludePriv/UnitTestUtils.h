@@ -57,18 +57,18 @@ protected:
 		path += "/UnitTestData/";
 		EmulationConfig::Instance().SetCartResourceSearchPath(path.c_str());
 #endif
-		pDbg_ = new CDebugMPI(kGroupUnitTests);
-		pDbg_->EnableThrowOnAssert();									//*4
-		pDbg_->SetDebugLevel(kDbgLvlSilent);							//*5
+//		pDbg_ = new CDebugMPI(kGroupUnitTests);
+//		pDbg_->EnableThrowOnAssert();									//*4
+//		pDbg_->SetDebugLevel(kDbgLvlSilent);							//*5
 
 	}
 	
 	~TestSuiteBase()
 	{
-		delete pDbg_;
+//		delete pDbg_;
 	}
 private:
-	CDebugMPI*	pDbg_;	
+//	CDebugMPI*	pDbg_;	
 
 };
 
