@@ -37,6 +37,19 @@ namespace
 //============================================================================
 
 //----------------------------------------------------------------------------
+inline U32 GetMSecs(void)
+{
+	CKernelMPI	kernel;
+#if 0
+	U32			usec;
+	kernel.GetHRTAsUsec(usec);
+	return usec / 1000;
+#else
+	return kernel.GetElapsedTimeAsMSecs();
+#endif
+}
+
+//----------------------------------------------------------------------------
 void* VideoTaskMain( void* arg )
 {
 	CDebugMPI	dbg(kGroupVideo);
@@ -48,8 +61,8 @@ void* VideoTaskMain( void* arg )
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
 	tVideoTime		vtm,vtm0 = {0, 0};
 	tVideoMsgData	data;
-	U32				marktime,nexttime,lapsetime = 30;
-	Boolean			bAudio = (pctx->pPathAudio != NULL) ? true : false;
+	U32				basetime,marktime,nexttime,lapsetime = 33;
+	Boolean			bAudio = /* (pctx->pPathAudio != NULL) ? true : */ false;
 	
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
@@ -58,11 +71,11 @@ void* VideoTaskMain( void* arg )
 	{
 		// Start audio playback and sync each video frame to audio time stamp
 		pctx->bPlaying = true;
-		if (bAudio)
+		if (pctx->pPathAudio != NULL) //(bAudio)
 			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, 0);
-		vtm.time = marktime = nexttime = 0;
+		vtm.time = basetime = marktime = nexttime = 0;
 		if (!bAudio)
-			marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
+			basetime = marktime = nexttime = GetMSecs(); //kernel.GetElapsedTimeAsMSecs();
 		marktime += lapsetime;
 		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, bAudio))
 		{	
@@ -72,14 +85,13 @@ void* VideoTaskMain( void* arg )
 				if (bAudio)
 					nexttime = audmgr.GetAudioTime(pctx->hAudio);
 				else
-					nexttime = kernel.GetElapsedTimeAsMSecs();
+					nexttime = GetMSecs(); //kernel.GetElapsedTimeAsMSecs();
 				if (nexttime >= marktime)
 					break;
 				kernel.TaskSleep(1);
 			}
-			marktime = nexttime + lapsetime;
-			if (bAudio)
-				vtm.time = nexttime;	
+			// Next target time is relative to current frame time stamp
+			marktime = vtm.time + basetime + lapsetime;
 			if (pctx->bPaused)
 			{
 				if (bAudio)
