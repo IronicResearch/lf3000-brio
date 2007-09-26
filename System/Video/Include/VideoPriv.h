@@ -45,6 +45,7 @@ struct tVideoContext {
 	Boolean				bDropFramed;
 	Boolean				bPaused;
 	Boolean				bPlaying;
+	U32					uFrameTime;
 };
 
 //==============================================================================

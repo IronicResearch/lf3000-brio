@@ -8877,3 +8877,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/25/07 7:08 PM
 3,251 ms. (Cumulative: 1,917,580 ms)
 
 ----------------
+Revision 1,698 from svn://localhost/TRUNK/:
+
+Pre-Calculate frame time based on video clip FPS setting. 
+
+By Dave Milici (dmilici@leapfrog.com) on 9/25/07 7:18 PM
+4 changed, 0 added, 0 deleted.
+3,469 ms. (Cumulative: 1,921,111 ms)
+
+----------------

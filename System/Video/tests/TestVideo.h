@@ -258,7 +258,7 @@ public:
 			TS_ASSERT( vt.frame == i );
 			TS_ASSERT( vt.time >= 0 );
 		}
-		
+
 		pVideoMPI_->StopVideo(video);
 		sleep(1);
 

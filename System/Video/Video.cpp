@@ -190,6 +190,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	pVidCtx->pSurfVideo = pSurf;
 	pVidCtx->pListener 	= pListener;
 	pVidCtx->bLooped 	= bLoop;
+	pVidCtx->uFrameTime = 1000 * ti.fps_denominator / ti.fps_numerator;
 
 	InitVideoTask(pVidCtx);	
 
