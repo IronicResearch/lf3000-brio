@@ -8861,3 +8861,19 @@ By dgibbs (dgibbs@leapfrog.com) on 9/25/07 4:28 PM
 3,250 ms. (Cumulative: 1,911,032 ms)
 
 ----------------
+Revision 1,695 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,219 ms. (Cumulative: 1,914,314 ms)
+
+----------------
+Revision 1,696 from svn://localhost/TRUNK/:
+Revision 1,697 from svn://localhost/TRUNK/:
+
+Correct calculation of target times relative to current frame time stamps.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/25/07 7:08 PM
+1 changed, 0 added, 0 deleted.
+3,251 ms. (Cumulative: 1,917,580 ms)
+
+----------------
