@@ -61,8 +61,9 @@ void* VideoTaskMain( void* arg )
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
 	tVideoTime		vtm,vtm0 = {0, 0};
 	tVideoMsgData	data;
-	U32				basetime,marktime,nexttime,lapsetime = 33;
+	U32				basetime,marktime,nexttime,lapsetime = pctx->uFrameTime;
 	Boolean			bAudio = /* (pctx->pPathAudio != NULL) ? true : */ false;
+	// FIXME: bAudio status is impacting looping logic
 	
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
@@ -71,11 +72,11 @@ void* VideoTaskMain( void* arg )
 	{
 		// Start audio playback and sync each video frame to audio time stamp
 		pctx->bPlaying = true;
-		if (pctx->pPathAudio != NULL) //(bAudio)
+		if (pctx->pPathAudio != NULL)
 			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, 0);
 		vtm.time = basetime = marktime = nexttime = 0;
 		if (!bAudio)
-			basetime = marktime = nexttime = GetMSecs(); //kernel.GetElapsedTimeAsMSecs();
+			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
 		marktime += lapsetime;
 		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, bAudio))
 		{	
@@ -85,7 +86,7 @@ void* VideoTaskMain( void* arg )
 				if (bAudio)
 					nexttime = audmgr.GetAudioTime(pctx->hAudio);
 				else
-					nexttime = GetMSecs(); //kernel.GetElapsedTimeAsMSecs();
+					nexttime = kernel.GetElapsedTimeAsMSecs();
 				if (nexttime >= marktime)
 					break;
 				kernel.TaskSleep(1);
