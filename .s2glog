@@ -8886,3 +8886,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/25/07 7:18 PM
 3,469 ms. (Cumulative: 1,921,111 ms)
 
 ----------------
+Revision 1,699 from svn://localhost/TRUNK/:
+Revision 1,700 from svn://localhost/TRUNK/:
+
+Remove SCHED_FIFO for minimum impact on other running threads (like volume wheel?)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/26/07 4:00 PM
+1 changed, 0 added, 0 deleted.
+3,250 ms. (Cumulative: 1,924,439 ms)
+
+----------------
