@@ -163,6 +163,7 @@ int CPowerModule::Reset() const
 	CDebugMPI	dbg(kGroupPower);
 	int status = ioctl(power_fd, POWER_IOCT_RESET, 0);
 	dbg.Assert(status >= 0, "PowerModule::Reset: ioctl failed");
+	return status;
 }
 LF_END_BRIO_NAMESPACE()
 // EOF
