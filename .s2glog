@@ -8966,3 +8966,12 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 9/28/07 11:41 AM
 3,297 ms. (Cumulative: 1,945,019 ms)
 
 ----------------
+Revision 1,722 from svn://localhost/TRUNK/:
+
+Can't have static MPI instances...
+
+By dgibbs (dgibbs@leapfrog.com) on 9/28/07 12:28 PM
+3 changed, 0 added, 0 deleted.
+3,408 ms. (Cumulative: 1,948,490 ms)
+
+----------------

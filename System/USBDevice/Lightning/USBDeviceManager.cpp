@@ -201,7 +201,7 @@ void CUSBDeviceModule::InitModule()
 	CEventMPI	eventmgr;
 	int vbus;
 
-	dbg_.DebugOut(kDbgLvlVerbose, "USBDevice Init\n");
+	pDbg_->DebugOut(kDbgLvlVerbose, "USBDevice Init\n");
 
 	data.USBDeviceSupports = kUSBDeviceIsMassStorage;
 	data.USBDeviceDriver = 0;
@@ -216,7 +216,7 @@ void CUSBDeviceModule::InitModule()
 	vbus = get_vbus();
 	if(vbus == -1) {
 		// Perhaps the low level USB driver's not loaded?
-		dbg_.DebugOut(kDbgLvlVerbose, "USBDevice initialization failed.\n");	  
+		pDbg_->DebugOut(kDbgLvlVerbose, "USBDevice initialization failed.\n");	  
 		return;
 	}
 	if(vbus == 1)
@@ -230,7 +230,7 @@ void CUSBDeviceModule::InitModule()
 		status = kernel.CreateTask(USBDeviceTask, properties);
 
 	}
-	dbg_.Assert( status == kNoErr, 
+	pDbg_->Assert( status == kNoErr, 
 				"CUSBDeviceModule::InitModule: background task creation failed" );
 }
 
@@ -239,7 +239,7 @@ void CUSBDeviceModule::DeinitModule()
 {
 	CKernelMPI	kernel;
 
-	dbg_.DebugOut(kDbgLvlVerbose, "USBDeviceModule::DeinitModule\n");
+	pDbg_->DebugOut(kDbgLvlVerbose, "USBDeviceModule::DeinitModule\n");
 
 	// Terminate handler thread, and wait before closing driver
 	kernel.CancelTask(USBDeviceTask);
