@@ -48,8 +48,9 @@ const CURI* CUSBDeviceModule::GetModuleOrigin() const
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CUSBDeviceModule::CUSBDeviceModule() : dbg_(kGroupUSBDevice)
+CUSBDeviceModule::CUSBDeviceModule()
 {
+	pDbg_ = new CDebugMPI(kGroupUSBDevice);
 	InitModule();	// delegate to platform or emulation initializer
 }
 
@@ -57,6 +58,7 @@ CUSBDeviceModule::CUSBDeviceModule() : dbg_(kGroupUSBDevice)
 CUSBDeviceModule::~CUSBDeviceModule()
 {
 	DeinitModule();	// delegate to platform or emulation deinitializer
+	delete pDbg_;
 }
 
 //----------------------------------------------------------------------------

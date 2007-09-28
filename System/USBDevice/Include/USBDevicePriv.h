@@ -45,7 +45,7 @@ public:
 private:
 	void				InitModule( );
 	void				DeinitModule();
-	CDebugMPI			dbg_;
+	CDebugMPI*			pDbg_;
 
 	// Limit object creation to the Module Manager interface functions
 	CUSBDeviceModule();
