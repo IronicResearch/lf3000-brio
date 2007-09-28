@@ -8955,3 +8955,14 @@ By Scott Esters (sesters@leapfrog.com) on 9/28/07 10:33 AM
 3,219 ms. (Cumulative: 1,941,660 ms)
 
 ----------------
+Revision 1,721 from svn://localhost/TRUNK/:
+
+Updated Brio USBDevice manager for the updated single LUN case.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 9/28/07 11:41 AM
+1 changed, 0 added, 0 deleted.
+3,297 ms. (Cumulative: 1,945,019 ms)
+
+----------------
