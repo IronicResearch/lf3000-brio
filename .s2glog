@@ -8945,3 +8945,13 @@ By Scott Esters (sesters@leapfrog.com) on 9/28/07 10:12 AM
 3,328 ms. (Cumulative: 1,938,378 ms)
 
 ----------------
+Revision 1,720 from svn://localhost/TRUNK/:
+
+Fixed Reset function, adding missing return()
+
+
+By Scott Esters (sesters@leapfrog.com) on 9/28/07 10:33 AM
+1 changed, 0 added, 0 deleted.
+3,219 ms. (Cumulative: 1,941,660 ms)
+
+----------------
