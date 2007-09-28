@@ -8925,3 +8925,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/27/07 6:54 PM
 3,375 ms. (Cumulative: 1,931,424 ms)
 
 ----------------
+Revision 1,717 from svn://localhost/TRUNK/:
+Revision 1,718 from svn://localhost/TRUNK/:
+
+Added LCD backlight duty cycle control to Brio Display MPI.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/27/07 7:33 PM
+5 changed, 0 added, 0 deleted.
+3,469 ms. (Cumulative: 1,934,972 ms)
+
+----------------

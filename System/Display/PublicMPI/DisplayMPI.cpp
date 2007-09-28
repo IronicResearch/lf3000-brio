@@ -120,6 +120,14 @@ tErrType CDisplayMPI::SetContrast(tDisplayScreen screen, S8 contrast)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetBacklight(tDisplayScreen screen, S8 backlight)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetBacklight(screen, backlight);
+}
+
+//----------------------------------------------------------------------------
 S8	CDisplayMPI::GetBrightness(tDisplayScreen screen)
 {
 	if (!pModule_)
@@ -133,6 +141,14 @@ S8	CDisplayMPI::GetContrast(tDisplayScreen screen)
 	if (!pModule_)
 		return kMPINotConnectedErr;
 	return pModule_->GetContrast(screen);
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayMPI::GetBacklight(tDisplayScreen screen)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetBacklight(screen);
 }
 
 //============================================================================

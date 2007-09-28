@@ -433,6 +433,16 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
+{
+	unsigned long	p = backlight;
+	int 			r;
+	
+	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHT, p);
+	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
+}
+
+//----------------------------------------------------------------------------
 S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 {
 	unsigned long	p = 0;
@@ -450,6 +460,16 @@ S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 	
 	r = ioctl(gDevDpc, DPC_IOCQCONTRAST, p);
 	return (r < 0) ? 0 : ((r & 0xFF) << 4) - 128;
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
+{
+	unsigned long	p = 0;
+	int 			r;
+	
+	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHT, p);
+	return (r < 0) ? 0 : r;
 }
 
 LF_END_BRIO_NAMESPACE()

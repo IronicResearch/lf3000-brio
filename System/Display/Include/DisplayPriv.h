@@ -35,7 +35,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString			kDisplayModuleName		= "Display";
 const tVersion			kDisplayModuleVersion	= 2;
 const tEventPriority	kDisplayEventPriority	= 0;
-const tDebugLevel		kDisplayDebugLevel		= kDbgLvlCritical;
+const tDebugLevel		kDisplayDebugLevel		= kDbgLvlVerbose;
 
 //==============================================================================
 // Typedefs
@@ -116,6 +116,8 @@ public:
 	VTABLE_EXPORT void			WaitForDisplayAddressPatched(void);
 	VTABLE_EXPORT void			SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 #endif
+	VTABLE_EXPORT tErrType		SetBacklight(tDisplayScreen screen, S8 backlight);
+	VTABLE_EXPORT S8			GetBacklight(tDisplayScreen screen);
 
 private:
 	void				InitModule( );
