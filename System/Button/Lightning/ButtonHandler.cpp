@@ -13,6 +13,7 @@
 //
 //============================================================================
 #include <ButtonPriv.h>
+#include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <KernelMPI.h>
 #include <KernelTypes.h>
@@ -53,7 +54,13 @@ void *LightningButtonTask(void*)
 	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupButton);
 	CKernelMPI	kernel;
-
+	CDisplayMPI dispmgr;
+	int			brightness = dispmgr.GetBrightness(0);
+	const int	kBrightInc = 8;
+	const int	kBrightMax = 127 - kBrightInc;
+	const int	kBrightMin = -128 + kBrightInc;
+	bool		isBrightening = (brightness < kBrightMax) ? true : false;
+	
 	dbg.SetDebugLevel(kDbgLvlVerbose);
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	
@@ -69,7 +76,24 @@ void *LightningButtonTask(void*)
 		data.buttonTransition = current_be.button_trans;
 		CButtonMessage msg(data);
 		eventmgr.PostEvent(msg, kButtonEventPriority);
-
+		
+		// Special internal handling for Brightness button
+		if (data.buttonTransition & data.buttonState & kButtonBrightnessKey)
+		{
+			if (isBrightening)
+			{
+				brightness += kBrightInc;
+				if (brightness >= kBrightMax)
+					isBrightening = false;
+			}
+			else
+			{
+				brightness -= kBrightInc;
+				if (brightness <= kBrightMin)
+					isBrightening = true;
+			}
+			dispmgr.SetBrightness(0, brightness);
+		}
 	}
 	return NULL;
 }
