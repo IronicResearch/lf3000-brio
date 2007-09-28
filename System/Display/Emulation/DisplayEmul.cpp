@@ -37,8 +37,9 @@ namespace
 
 	// Display context
 	GC						gc;
-	S8						brightness_;
-	S8						contrast_;
+	S8						brightness_ = 0;
+	S8						contrast_ = 0;
+	S8						backlight_ = 100;
 }
 
 //============================================================================
@@ -490,6 +491,14 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
+{
+	// Nothing to do on emulation target
+	backlight_ = backlight;
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
 S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 {
 	// Nothing to do on emulation target
@@ -501,6 +510,13 @@ S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 {
 	// Nothing to do on emulation target
 	return contrast_;
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
+{
+	// Nothing to do on emulation target
+	return backlight_;
 }
 
 LF_END_BRIO_NAMESPACE()
