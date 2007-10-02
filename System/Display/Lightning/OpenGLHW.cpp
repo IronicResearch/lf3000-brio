@@ -35,8 +35,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define PAGE_3D		2
 #define	REG3D_PHYS	0xc001a000
 
-#define	MEM1_PHYS	0x03000000
-#define	MEM1_SIZE	0x00800000
+#ifdef LF1000_FF
+#define	MEM1_PHYS	0x01000000	// @ 16Meg
+#else
+#define	MEM1_PHYS	0x03000000	// @ 48Meg
+#endif
+#define	MEM1_SIZE	0x00800000	// 8Meg
 #define	MEM1_VIRT	(void*)0xb1000000
 
 #define	MEM2_PHYS	(MEM1_PHYS + MEM1_SIZE)
