@@ -93,17 +93,10 @@ typedef U32		tMidiProgramList;	// TODO: ?
 // Defines for audio resources 
 //==============================================================================
 
-/// Audio resource types
-const tRsrcType kAudioRsrcMIDI = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 1);
-const tRsrcType kAudioRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 2);
-const tRsrcType kAudioRsrcRaw = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 3);
-const tRsrcType kAudioRsrcOggTheora = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupAudio, 4);
-
 // Standard header for raw Brio audio resources 
 struct tAudioHeader {
 	U32				offsetToData;		// Offset from the start of the header to
 										// the start of the data (std is 16)
-	tRsrcType		type;				// AudioRsrcType
 	U16				flags;				// Bit mask of audio flags
 										// (Bit0: 0=mono, 1=stereo)
 	U16				sampleRate;			// Sample rate in Hz			

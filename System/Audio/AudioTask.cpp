@@ -19,6 +19,7 @@
 #include <AudioTask.h>
 #include <AudioOutput.h>
 #include <AudioMsg.h>
+#include <AudioPriv.h>
 #include <Mixer.h>
 #include <AudioPlayer.h>
 #include <Channel.h>
@@ -236,7 +237,7 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 //==============================================================================
 static void DoStartAudio( CAudioMsgStartAudio* pMsg ) 
 {
-	tRsrcType			rsrcType = kUndefinedRsrcType;
+	tAudioTypeInt		rsrcType = kAudioRsrcUndefined;
 	CAudioReturnMessage	msg;
 	tAudioID			newID = kNoAudioID;
 	CChannel*			pChannel = kNull;

@@ -33,11 +33,19 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 class IEventListener;
 
-typedef U32 tRsrcHndl;
-
 // Constants
 const CString	kAudioModuleName	= "Audio";
 const tVersion	kAudioModuleVersion	= 2;
+
+/// Audio internal resource types
+
+enum tAudioTypeInt {
+	kAudioRsrcUndefined = 0,
+	kAudioRsrcMIDI = 1,
+	kAudioRsrcOggVorbis = 2,
+	kAudioRsrcRaw = 3,
+	kAudioRsrcOggTheora = 4
+};
 
 
 //==============================================================================
@@ -116,11 +124,11 @@ public:
 	VTABLE_EXPORT const IEventListener*	GetDefaultAudioEventListener( U32 mpiID );  // TODO: stub
 	VTABLE_EXPORT void		SetDefaultAudioEventListener( U32 mpiID, const IEventListener *pListener );  // TODO: stub
 
-	VTABLE_EXPORT tErrType 	RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain ); // TODO: stub
+	VTABLE_EXPORT tErrType 	RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ); // TODO: stub
 	VTABLE_EXPORT tErrType 	RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); // TODO: stub
 	VTABLE_EXPORT tErrType 	ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain );  // TODO: stub
 
-	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); // TODO: stub
+	tErrType RegisterGetStereoAudioStreamFcn( /* tRsrcType type, */ tGetStereoAudioStreamFcn pFcn ); // TODO: stub
 
 	VTABLE_EXPORT tErrType	AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiPlayerID *id );
 	VTABLE_EXPORT tErrType	ReleaseMidiPlayer( tMidiPlayerID id );

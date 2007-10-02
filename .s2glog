@@ -9015,3 +9015,18 @@ By Dave Milici (dmilici@leapfrog.com) on 10/1/07 5:28 PM
 3,206 ms. (Cumulative: 1,955,243 ms)
 
 ----------------
+Revision 1,747 from svn://localhost/TRUNK/:
+Revision 1,748 from svn://localhost/TRUNK/:
+Revision 1,749 from svn://localhost/TRUNK/:
+Revision 1,750 from svn://localhost/TRUNK/:
+Revision 1,751 from svn://localhost/TRUNK/:
+Revision 1,752 from svn://localhost/TRUNK/:
+Revision 1,753 from svn://localhost/TRUNK/:
+
+Removed old references to Resource manager types.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/2/07 10:58 AM
+12 changed, 0 added, 0 deleted.
+3,409 ms. (Cumulative: 1,958,777 ms)
+
+----------------

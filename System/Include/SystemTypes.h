@@ -193,32 +193,6 @@ typedef tU32NumSpace 	tObjTypeID;
 
 //----------------------------------------------------------------------------
 // Type:
-//		tRsrcType
-//
-//	Description:
-//		Storage for a resource type, comprised of three elements:
-//
-//			MSBit: [4 bit domain][8 bits reserved][10 bit group][10 bit tag] :LSBit
-//
-//		- the domain, which segments system, product and application resource types 
-//		- the group, which specifies the group to which the resource type belongs
-//		- the tag - a key number that identifies the specific resource sub-type 
-//			within its group
-//
-//		Application code may use any product or System-defined types, but 
-//		can only define new application types -- not product or System
-//		types.  Similarly, product code may use any System-defined types,
-//		but can only define new product types -- not application or System types.
-//----------------------------------------------------------------------------
-
-typedef tU32NumSpace 	tRsrcType;
-
-#define MakeRsrcType(domain, group, tag) ((tRsrcType)MakeU32NumSpace(domain, group, tag))
-
-#define kUndefinedRsrcType		((tRsrcType)0)
-
-//----------------------------------------------------------------------------
-// Type:
 //		tEventType
 //
 //	Description:
