@@ -133,9 +133,13 @@ private:
 		g_threadRunning_ = true;
 		while (g_threadRun_)
 		{
+#if 0	// FIXME/dm: Not ready to timeout message queue on embedded target
 			// Wake up every 250ms to see if we need to exit, otherwise wake up on msg and process it.
 			err = kernel.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 250);
-		    if ( err != kConnectionTimedOutErr ) {
+#else
+			err = kernel.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
+#endif
+			if ( err != kConnectionTimedOutErr ) {
 		    	debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
 		    }

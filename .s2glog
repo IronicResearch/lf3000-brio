@@ -8975,3 +8975,34 @@ By dgibbs (dgibbs@leapfrog.com) on 9/28/07 12:28 PM
 3,408 ms. (Cumulative: 1,948,490 ms)
 
 ----------------
+Revision 1,723 from svn://localhost/TRUNK/:
+Revision 1,724 from svn://localhost/TRUNK/:
+Revision 1,725 from svn://localhost/TRUNK/:
+Revision 1,726 from svn://localhost/TRUNK/:
+Revision 1,727 from svn://localhost/TRUNK/:
+Revision 1,728 from svn://localhost/TRUNK/:
+Revision 1,729 from svn://localhost/TRUNK/:
+Revision 1,730 from svn://localhost/TRUNK/:
+Revision 1,731 from svn://localhost/TRUNK/:
+Revision 1,732 from svn://localhost/TRUNK/:
+Revision 1,733 from svn://localhost/TRUNK/:
+Revision 1,734 from svn://localhost/TRUNK/:
+Revision 1,735 from svn://localhost/TRUNK/:
+Revision 1,736 from svn://localhost/TRUNK/:
+Revision 1,737 from svn://localhost/TRUNK/:
+Revision 1,738 from svn://localhost/TRUNK/:
+Revision 1,739 from svn://localhost/TRUNK/:
+Revision 1,740 from svn://localhost/TRUNK/:
+Revision 1,741 from svn://localhost/TRUNK/:
+Revision 1,742 from svn://localhost/TRUNK/:
+Revision 1,743 from svn://localhost/TRUNK/:
+Revision 1,744 from svn://localhost/TRUNK/:
+Revision 1,745 from svn://localhost/TRUNK/:
+
+Revert module manager and event message queue working previously on embedded target. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/1/07 5:26 PM
+2 changed, 0 added, 0 deleted.
+3,250 ms. (Cumulative: 1,951,975 ms)
+
+----------------

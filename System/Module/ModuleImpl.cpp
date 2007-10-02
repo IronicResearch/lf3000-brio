@@ -302,8 +302,10 @@ namespace
 				--pModule->connect_count;
 				if( pModule->connect_count == 0 )
 				{
+#if 0	// FIXME/dm: Not ready to release on embedded target with Event manager active
 					DestroyModuleInstance(pModule);
 					RemoveCachedModule(pModule);
+#endif
 				}
 			}
 			return kNoErr;
