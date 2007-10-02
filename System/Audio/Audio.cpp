@@ -581,7 +581,7 @@ tErrType CAudioModule::ResumeAudioSystem( void )
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain )
+tErrType CAudioModule::RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain )
 {
 	return kNoImplErr;
 }

@@ -30,10 +30,6 @@ typedef tHndl 		tVideoHndl;
 
 const tVideoHndl	kInvalidVideoHndl = static_cast<tVideoHndl>(0);
 
-// Video resource types
-const tRsrcType 	kVideoRsrcOggVorbis = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupVideo, 1);
-const tRsrcType 	kVideoRsrcOggTheora = MakeRsrcType(kUndefinedNumSpaceDomain, kGroupVideo, 2);
-
 // Video info
 struct tVideoInfo {
 	U32		width;

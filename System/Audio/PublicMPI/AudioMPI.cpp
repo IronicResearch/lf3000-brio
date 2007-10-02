@@ -162,14 +162,14 @@ tErrType CAudioMPI::ResumeAudioSystem()
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain ) 
+tErrType CAudioMPI::RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->RegisterAudioEffectsProcessor( type, pChain );
+	return pModule_->RegisterAudioEffectsProcessor( /* type, */ pChain );
 }
 
 //==============================================================================

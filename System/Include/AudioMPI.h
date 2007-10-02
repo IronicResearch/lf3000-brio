@@ -142,12 +142,12 @@ public:
 	//********************************
 	// Audio FX functionality
 	//********************************    
-	tErrType RegisterAudioEffectsProcessor( tRsrcType type, CAudioEffectsProcessor *pChain ); // TODO: stub
+	tErrType RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ); // TODO: stub
 	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); // TODO: stub
 	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); // TODO: stub
 
 	// Registers function to call to get the next chunk of stereo audio stream data // TODO: stub
-	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); // TODO: stub
+//	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); // TODO: stub
 
 	//********************************
 	// MIDI functionality

@@ -69,8 +69,8 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 	// Get the  header.
 	bytesRead = fread( &rawHeader, 1, sizeof(tAudioHeader), file_);
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, "Header: type: 0x%x, dataOffset:%d, flags:%d, rate:%u, size:%u\n", 
-		(unsigned int)rawHeader.type, (int)rawHeader.offsetToData, rawHeader.flags, (unsigned int)rawHeader.sampleRate, 
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "Header: dataOffset:%d, flags:%d, rate:%u, size:%u\n", 
+		(int)rawHeader.offsetToData, rawHeader.flags, (unsigned int)rawHeader.sampleRate, 
 		(unsigned int)rawHeader.dataSize);
 
 	dataSampleRate_ = rawHeader.sampleRate;
