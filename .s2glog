@@ -9006,3 +9006,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/1/07 5:26 PM
 3,250 ms. (Cumulative: 1,951,975 ms)
 
 ----------------
+Revision 1,746 from svn://localhost/TRUNK/:
+
+Lower OpenGL memory allocation on LF1000 form-factor boards to start at 16Meg boundary.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/1/07 5:28 PM
+2 changed, 0 added, 0 deleted.
+3,206 ms. (Cumulative: 1,955,243 ms)
+
+----------------
