@@ -9051,3 +9051,26 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 10/2/07 3:24 PM
 3,235 ms. (Cumulative: 1,962,169 ms)
 
 ----------------
+Revision 1,767 from svn://localhost/TRUNK/:
+Revision 1,768 from svn://localhost/TRUNK/:
+Revision 1,769 from svn://localhost/TRUNK/:
+Revision 1,770 from svn://localhost/TRUNK/:
+Revision 1,771 from svn://localhost/TRUNK/:
+Revision 1,772 from svn://localhost/TRUNK/:
+Revision 1,773 from svn://localhost/TRUNK/:
+Revision 1,774 from svn://localhost/TRUNK/:
+Revision 1,775 from svn://localhost/TRUNK/:
+Revision 1,776 from svn://localhost/TRUNK/:
+Revision 1,777 from svn://localhost/TRUNK/:
+Revision 1,778 from svn://localhost/TRUNK/:
+Revision 1,779 from svn://localhost/TRUNK/:
+Revision 1,780 from svn://localhost/TRUNK/:
+Revision 1,781 from svn://localhost/TRUNK/:
+
+Added 'kGroupMfgTest' to eGroupEnum.
+
+By Sanaa Fawzy (SFawzy@leapfrog.com) on 10/3/07 3:58 PM
+1 changed, 0 added, 0 deleted.
+3,344 ms. (Cumulative: 1,965,670 ms)
+
+----------------
