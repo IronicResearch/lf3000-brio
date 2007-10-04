@@ -68,14 +68,6 @@ public:
 	// through the event manager
 	enum tPowerState GetPowerState() const;
 	
-	// Get current power conservation setting.  Non-zero means conserving power.  Negative
-	// number indicates error.
-	int		GetPowerConserve() const;
-	
-	// Set Power conservation.  Non-zero means conserve power by turning off backlight.
-	// Returns prior power setting.  Negative number indicates error.
-	int		SetPowerConserve(bool) const;
-
 	// Complete system shutdown.  This is the application's response to the kPowerShutdown
 	// message.  The application calls Shutdown() to indicate data has been saved and
 	// system shutdown can proceed immediately, overriding the shutdown watchdog timer.

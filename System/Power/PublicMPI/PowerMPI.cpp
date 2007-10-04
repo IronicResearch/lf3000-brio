@@ -127,26 +127,6 @@ enum tPowerState CPowerMPI::GetPowerState() const
 }
 
 //----------------------------------------------------------------------------
-int CPowerMPI::GetConserve() const
-{
-	if(!pModule_)
-	{
-		return kPowerNull;
-	}
-	return pModule_->GetConserve();
-}
-
-//----------------------------------------------------------------------------
-int CPowerMPI::SetConserve(bool bConserve) const
-{
-	if(!pModule_)
-	{
-		return kPowerNull;
-	}
-	return pModule_->SetConserve(bConserve);
-}
-
-//----------------------------------------------------------------------------
 int CPowerMPI::Shutdown() const
 {
 	if(!pModule_)

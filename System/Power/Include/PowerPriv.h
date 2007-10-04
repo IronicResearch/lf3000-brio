@@ -40,8 +40,6 @@ public:
 
 	// class-specific functionality
 	VTABLE_EXPORT enum tPowerState GetPowerState() const;
-	VTABLE_EXPORT int		GetConserve() const;
-	VTABLE_EXPORT int		SetConserve(bool) const;
 	VTABLE_EXPORT int		Shutdown() const;
 	VTABLE_EXPORT int		GetShutdownTimeMS() const;
 	VTABLE_EXPORT int		SetShutdownTimeMS(int) const;
