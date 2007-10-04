@@ -63,7 +63,7 @@ public:
 	inline tAudioOptionsFlags	GetOptionsFlags() { return optionsFlags_; }
 	inline void				SetOptionsFlags(tAudioOptionsFlags optionsFlags) 
 								{ optionsFlags_ = optionsFlags;
-								if (optionsFlags_ && kAudioDoneMsgBit) bDoneMessage_ = 1; }
+								  bDoneMessage_ = (optionsFlags_ & kAudioDoneMsgBit) ? true : false; }
 	inline void		 		SetSendDoneMessage(Boolean doneMsg) { bDoneMessage_ = doneMsg; }
 	inline U32				GetSampleRate( void ) { return dataSampleRate_; }
 	
