@@ -9086,3 +9086,13 @@ By Scott Esters (sesters@leapfrog.com) on 10/4/07 11:28 AM
 3,344 ms. (Cumulative: 1,969,076 ms)
 
 ----------------
+Revision 1,785 from svn://localhost/TRUNK/:
+
+Removed unused power conserve getter / setter functions
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/4/07 11:41 AM
+4 changed, 0 added, 0 deleted.
+3,344 ms. (Cumulative: 1,972,498 ms)
+
+----------------
