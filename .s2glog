@@ -9074,3 +9074,15 @@ By Sanaa Fawzy (SFawzy@leapfrog.com) on 10/3/07 3:58 PM
 3,344 ms. (Cumulative: 1,965,670 ms)
 
 ----------------
+Revision 1,782 from svn://localhost/TRUNK/:
+Revision 1,783 from svn://localhost/TRUNK/:
+Revision 1,784 from svn://localhost/TRUNK/:
+
+Remove unused power conserve getter / setter functions
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/4/07 11:28 AM
+1 changed, 0 added, 0 deleted.
+3,344 ms. (Cumulative: 1,969,076 ms)
+
+----------------

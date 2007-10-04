@@ -159,30 +159,6 @@ enum tPowerState CPowerModule::GetPowerState() const
 
 
 //----------------------------------------------------------------------------
-int CPowerModule::GetConserve() const
-{
-	enum tPowerState state = kPowerNull;
-
-	CDebugMPI	dbg(kGroupPower);
-	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: GetConserve() not implemented.\n");
-	
-	return state;
-}
-
-
-//----------------------------------------------------------------------------
-int CPowerModule::SetConserve(bool bConserve) const
-{
-	enum tPowerState state = kPowerNull;
-
-	CDebugMPI	dbg(kGroupPower);
-	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: SetConserve() not implemented.\n");
-	
-	return state;
-}
-
-
-//----------------------------------------------------------------------------
 int CPowerModule::Shutdown() const
 {
 	enum tPowerState state = kPowerNull;
