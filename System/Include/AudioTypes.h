@@ -15,8 +15,6 @@
 // System includes
 #include <SystemTypes.h>
 #include <GroupEnumeration.h>
-//#include <RsrcTypes.h>
-//#include <RsrcMgrMPI.h>
 //#include <EventListener.h>
 #include <EventMessage.h>
 #include <SystemErrors.h>
@@ -71,7 +69,8 @@ typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255.
 // Bits 0-1 refer to done messages 
 enum {
 	kAudioOptionsNoDoneMsg				= 0x00,	// No done message
-	kAudioOptionsDoneMsgAfterComplete	= 0x01	// Done message after audio is complete 
+	kAudioOptionsDoneMsgAfterComplete	= 0x01,	// Done message after audio is complete 
+	kAudioOptionsLooped					= 0x02	// Loop audio sample playback
 };
 typedef U32 tAudioOptionsFlags; 
 

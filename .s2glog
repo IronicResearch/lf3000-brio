@@ -9096,3 +9096,16 @@ By Scott Esters (sesters@leapfrog.com) on 10/4/07 11:41 AM
 3,344 ms. (Cumulative: 1,972,498 ms)
 
 ----------------
+Revision 1,786 from svn://localhost/TRUNK/:
+Revision 1,787 from svn://localhost/TRUNK/:
+Revision 1,788 from svn://localhost/TRUNK/:
+Revision 1,789 from svn://localhost/TRUNK/:
+Revision 1,790 from svn://localhost/TRUNK/:
+
+Added looping flag to StartAudio() MPI with event message post per loop.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/4/07 2:21 PM
+4 changed, 0 added, 0 deleted.
+3,378 ms. (Cumulative: 1,975,986 ms)
+
+----------------

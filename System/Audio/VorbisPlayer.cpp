@@ -67,10 +67,11 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 		"VorbisPlayer::ctor -- Could not open oggvorbis file: %s.\n", pInfo->path->c_str() );
  
     // Find out if the caller has requested looping.
-	if (optionsFlags_ & 1)
+	if (optionsFlags_ & kAudioOptionsLooped)
 		shouldLoop_ = true;
 	else 
 		shouldLoop_ = false;
+	loopCounter_ = 0;
 
 	// open the file
 	int ov_ret = ov_open( file_, &vorbisFile_, NULL, 0 );
@@ -120,10 +121,12 @@ CVorbisPlayer::~CVorbisPlayer()
 	result = pKernelMPI_->LockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::dtor -- Couldn't lock mutex.\n");
 
+#if 0	// BUGFIX/dm: Too late here? -- Post done message in RenderBuffer()
 	// If there's anyone listening, let them know we're done.
 	if ((pListener_ != kNull) && bDoneMessage_)
 		SendDoneMsg();
-
+#endif
+	
 	// Free the sample buffer
 	if (pPcmBuffer_)
 		delete pPcmBuffer_;
@@ -182,13 +185,14 @@ U32 CVorbisPlayer::GetAudioTime( void )
 
 //==============================================================================
 //==============================================================================
-void CVorbisPlayer::SendDoneMsg( void ) {
-	const tEventPriority	kPriorityTBD = 0;
+void CVorbisPlayer::SendDoneMsg( void ) 
+{
+	const tEventPriority	kPriorityTBD = 0; // lower priority for async post
 	tAudioMsgAudioCompleted	data;
 
 	data.audioID = id_;
-	data.payload = 1;	// dummy
-	data.count = 1;
+	data.payload = payload_;
+	data.count = loopCounter_;
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"Vorbis Player::SendDoneMsg.\n "); 
@@ -253,6 +257,9 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	
 		// at EOF
 		if ( bytesRead == 0 ) {
+			loopCounter_++;
+			if ((pListener_ != kNull) && bDoneMessage_)
+				SendDoneMsg();
 			if (shouldLoop_)
 				Rewind();
 			else
