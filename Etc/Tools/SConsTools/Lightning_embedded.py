@@ -21,7 +21,7 @@ def PlatformMods(env):
 	gcc_defs 			= env.Split('')
 	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CCFLAGS = '-O4 -mcpu=arm926ej-s')
-	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc'])
+	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
 	root = os.path.normpath(os.path.join(__file__, '../../../../ThirdParty/ustring'))
 	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
 	env.Append(CPPPATH = [root])
@@ -29,8 +29,6 @@ def PlatformMods(env):
 	rootfs = os.getenv('ROOTFS_PATH')
 	if rootfs == None:
 		rootfs = os.path.normpath(os.path.join(__file__, '../../../../../../nfsroot'))
-	elif rootfs.startswith('/media'):
-		rootfs = os.path.join(rootfs, 'Didj') 
 	env.Append(LIBPATH = [os.path.join(rootfs, 'Base', 'Brio', 'lib')])
 
 	extinc = os.getenv('EXTRA_LINUX_HEADER_DIR')

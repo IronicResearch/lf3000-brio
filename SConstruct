@@ -107,8 +107,7 @@ adjust_to_source_dir	= '../../../'
 rootfs = os.getenv('ROOTFS_PATH')
 if rootfs == None:
 	rootfs = Dir('#../../nfsroot').abspath
-elif rootfs.startswith('/media'):
-	rootfs = os.path.join(rootfs, 'Didj') 
+is_cartridge 		= rootfs.startswith('/media')
 
 #-----------------------------------------------------------------------------
 # Build one or more target variants
