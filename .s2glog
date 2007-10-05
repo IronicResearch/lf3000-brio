@@ -9157,3 +9157,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/07 2:36 PM
 3,219 ms. (Cumulative: 1,989,690 ms)
 
 ----------------
+Revision 1,810 from svn://localhost/TRUNK/:
+
+Default embedded target path to /Didj/Base/Brio
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/07 3:57 PM
+6 changed, 0 added, 0 deleted.
+3,454 ms. (Cumulative: 1,993,222 ms)
+
+----------------

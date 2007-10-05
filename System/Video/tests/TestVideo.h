@@ -22,7 +22,7 @@ inline CPath GetTestRsrcFolder( )
 	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
 	return dir + "Video/";
 #else	// EMULATION
-	return "/Base/Brio/rsrc/Video/";
+	return "/Didj/Base/Brio/rsrc/Video/";
 #endif	// EMULATION
 }
 
