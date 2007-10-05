@@ -9127,3 +9127,22 @@ By Dave Milici (dmilici@leapfrog.com) on 10/4/07 6:24 PM
 3,390 ms. (Cumulative: 1,982,736 ms)
 
 ----------------
+Revision 1,796 from svn://localhost/TRUNK/:
+Revision 1,797 from svn://localhost/TRUNK/:
+Revision 1,798 from svn://localhost/TRUNK/:
+Revision 1,799 from svn://localhost/TRUNK/:
+Revision 1,800 from svn://localhost/TRUNK/:
+Revision 1,801 from svn://localhost/TRUNK/:
+Revision 1,802 from svn://localhost/TRUNK/:
+Revision 1,803 from svn://localhost/TRUNK/:
+Revision 1,804 from svn://localhost/TRUNK/:
+Revision 1,805 from svn://localhost/TRUNK/:
+Revision 1,806 from svn://localhost/TRUNK/:
+
+Relocate Brio libs and unit test binaries and resources runtime path to /Base/Brio.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/07 1:21 PM
+5 changed, 0 added, 6 deleted.
+3,500 ms. (Cumulative: 1,986,377 ms)
+
+----------------
