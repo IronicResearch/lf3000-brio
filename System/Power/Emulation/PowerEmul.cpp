@@ -166,6 +166,9 @@ int CPowerModule::Shutdown() const
 	CDebugMPI	dbg(kGroupPower);
 	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: Shutdown() not implemented.\n");
 	
+	// Embedded version will never return
+	exit(kKernelExitShutdown);
+	
 	return state;
 }
 
@@ -197,6 +200,9 @@ int CPowerModule::Reset() const
 {
 	CDebugMPI	dbg(kGroupPower);
 	dbg.DebugOut(kDbgLvlVerbose, "EmulationPowerTask: Reset() not implemented.\n");
+
+	// Embedded version will never return
+	exit(kKernelExitReset);
 	
 	return -1;
 }

@@ -178,6 +178,15 @@ const tMessagePriority	kInvalidMessagePriority	 = static_cast<tMessagePriority>(
 #define kUndefinedTaskHndl 		((tTaskHndl)kInvalidHndl)
 
 //------------------------------------------------------------------------------
+// Application exit codes
+//------------------------------------------------------------------------------
+const int	kKernelExitSuccess 	= 0;	// success 
+const int	kKernelExitError 	= 1;	// general error
+const int	kKernelExitShutdown	= 0;	// Brio shutdown condition
+const int	kKernelExitReset 	= 3;	// Brio reset condition
+const int	kKernelExitAssert 	= 4;	// Brio assert condition
+
+//------------------------------------------------------------------------------
 // Task scheduling & blocking
 //------------------------------------------------------------------------------
 

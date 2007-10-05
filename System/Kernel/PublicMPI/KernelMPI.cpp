@@ -76,7 +76,8 @@ namespace
 		Printf_Impl("\n\n");
 		fflush(stdout);
 		fflush(stderr);
-		assert(!"PowerDown!");
+		Printf_Impl("PowerDown/Assert exit!\n\n");
+		exit(kKernelExitAssert);
 	}
 	
 	//--------------------------------------------------------------------------
