@@ -9146,3 +9146,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/07 1:21 PM
 3,500 ms. (Cumulative: 1,986,377 ms)
 
 ----------------
+Revision 1,807 from svn://localhost/TRUNK/:
+Revision 1,808 from svn://localhost/TRUNK/:
+Revision 1,809 from svn://localhost/TRUNK/:
+
+Added option to detect target rootfs path as USB device mount point.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/07 2:36 PM
+2 changed, 0 added, 0 deleted.
+3,219 ms. (Cumulative: 1,989,690 ms)
+
+----------------

@@ -29,9 +29,13 @@ def PlatformMods(env):
 	rootfs = os.getenv('ROOTFS_PATH')
 	if rootfs == None:
 		rootfs = os.path.normpath(os.path.join(__file__, '../../../../../../nfsroot'))
-	env.Append(CPPPATH = [os.path.join(rootfs, 'usr', 'include')])	
-	env.Append(LIBPATH = [os.path.join(rootfs, 'usr', 'lib'),
-							os.path.join(rootfs, 'usr', 'local', 'lib')])	
+	elif rootfs.startswith('/media'):
+		rootfs = os.path.join(rootfs, 'Didj') 
+	env.Append(LIBPATH = [os.path.join(rootfs, 'Base', 'Brio', 'lib')])
+
+	extinc = os.getenv('EXTRA_LINUX_HEADER_DIR')
+	if extinc != None:
+		env.Append(CPPPATH = [extinc])	
 
 #-----------------------------------------------------------------------------
 # Inherit properties from the following tools

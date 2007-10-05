@@ -103,10 +103,12 @@ root_dir				= Dir('#').abspath
 export_root				= Dir('#XBuild').abspath
 adjust_to_source_dir	= '../../../'
 
+# Target rootfs path may be USB device mount point instead of NFS path 
 rootfs = os.getenv('ROOTFS_PATH')
 if rootfs == None:
 	rootfs = Dir('#../../nfsroot').abspath
-
+elif rootfs.startswith('/media'):
+	rootfs = os.path.join(rootfs, 'Didj') 
 
 #-----------------------------------------------------------------------------
 # Build one or more target variants
