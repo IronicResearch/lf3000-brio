@@ -9166,3 +9166,37 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/07 3:57 PM
 3,454 ms. (Cumulative: 1,993,222 ms)
 
 ----------------
+Revision 1,811 from svn://localhost/TRUNK/:
+Revision 1,812 from svn://localhost/TRUNK/:
+Revision 1,813 from svn://localhost/TRUNK/:
+Revision 1,814 from svn://localhost/TRUNK/:
+Revision 1,815 from svn://localhost/TRUNK/:
+Revision 1,816 from svn://localhost/TRUNK/:
+Revision 1,817 from svn://localhost/TRUNK/:
+Revision 1,818 from svn://localhost/TRUNK/:
+Revision 1,819 from svn://localhost/TRUNK/:
+Revision 1,820 from svn://localhost/TRUNK/:
+Revision 1,821 from svn://localhost/TRUNK/:
+Revision 1,822 from svn://localhost/TRUNK/:
+Revision 1,823 from svn://localhost/TRUNK/:
+Revision 1,824 from svn://localhost/TRUNK/:
+Revision 1,825 from svn://localhost/TRUNK/:
+Revision 1,826 from svn://localhost/TRUNK/:
+Revision 1,827 from svn://localhost/TRUNK/:
+Revision 1,828 from svn://localhost/TRUNK/:
+Revision 1,829 from svn://localhost/TRUNK/:
+Revision 1,830 from svn://localhost/TRUNK/:
+Revision 1,831 from svn://localhost/TRUNK/:
+Revision 1,832 from svn://localhost/TRUNK/:
+Revision 1,833 from svn://localhost/TRUNK/:
+Revision 1,834 from svn://localhost/TRUNK/:
+Revision 1,835 from svn://localhost/TRUNK/:
+
+check-in python XLRD package to extract data from Excel spreadsheet files, needed to
+ converst ACME(.xls) to .audioCsv file.
+
+By Rcabrera (Rcabrera@leapfrog.com) on 10/8/07 10:01 AM
+0 changed, 38 added, 0 deleted.
+4,078 ms. (Cumulative: 1,997,597 ms)
+
+----------------
