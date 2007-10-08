@@ -10,6 +10,7 @@ import csv
 import shutil
 import filecmp
 import glob
+import time
 import SCons.Options
 import SCons.Script
 import SCons.Util
@@ -19,6 +20,190 @@ import SCons.Defaults
 this_dir		= os.path.split(__file__)[0]
 cdevkit_dir		= os.path.normpath(os.path.join(this_dir, '..'))
 toolpath		= os.path.join(cdevkit_dir, 'Tools')
+
+
+#-----------------------------------------------------------------------------
+# Get date and time for logging.
+#-----------------------------------------------------------------------------
+class datetime(object):
+    def __init__(self, *argv):
+        self.t = time.struct_time(argv+(0,)*(9-len(argv)))    # append to length 9 
+    def __getattr__(self, name):
+        try:
+            i = ['year', 'month', 'day', 'hour', 'minute', 'second', 'weekday'].index(name)
+            return self.t[i]
+        except:
+            return getattr(self.t, name)
+    def __len__(self): return len(self.t)
+    def __getitem__(self, key): return self.t[key]
+    def __repr__(self): return repr(self.t)
+    def now(self=None):
+        return datetime(*time.localtime())
+    now = staticmethod(now)
+    def strftime(self, fmt="%Y-%m-%d %H:%M:%S"):
+        return time.strftime(fmt, self.t)
+
+#-----------------------------------------------------------------------------------------
+# Easily extract data from microsoft excel files using this wrapper class for xlrd 
+# (http://www.lexicon.net/sjmachin/xlrd.htm). The class allows you to create a generator 
+# which returns excel data one row at a time as either a list or dictionary. I found this 
+# very handy for easily pulling in a variety of excel files without having to deal with 
+# COM calls or even needing to have windows. 
+#-----------------------------------------------------------------------------------------
+class readexcel(object):
+    """ Simple OS Independent Class for Extracting Data from Excel Files 
+        the using xlrd module found at http://www.lexicon.net/sjmachin/xlrd.htm
+        
+        Versions of Excel supported: 2004, 2002, XP, 2000, 97, 95, 5, 4, 3
+        xlrd version tested: 0.5.2
+        
+        Data is extracted by creating a iterator object which can be used to 
+        return data one row at a time. The default extraction method assumes 
+        that the worksheet is in tabular format with the first nonblank row
+        containing variable names and all subsequent rows containing values.
+        This method returns a dictionary which uses the variables names as keys
+        for each piece of data in the row.  Data can also be extracted with 
+        each row represented by a list.
+        
+        Extracted data is represented fairly logically. By default dates are
+        returned as strings in "yyyy/mm/dd" format or "yyyy/mm/dd hh:mm:ss",
+        as appropriate.  However, dates can be return as a tuple containing
+        (Year, Month, Day, Hour, Min, Second) which is appropriate for usage
+        with mxDateTime or DateTime.  Numbers are returned as either INT or 
+        FLOAT, whichever is needed to support the data.  Text, booleans, and
+        error codes are also returned as appropriate representations.
+        
+        Quick Example:
+        xl = readexcel('testdata.xls')
+        sheetnames = xl.worksheets()
+        for sheet in sheetnames:
+            print sheet
+            for row in xl.getiter(sheet):
+                # Do Something here
+        """ 
+    def __init__(self, filename):
+        """ Returns a readexcel object of the specified filename - this may
+        take a little while because the file must be parsed into memory """
+        import xlrd
+        import os.path
+        if not os.path.isfile(filename):
+            raise NameError, "%s is not a valid filename" % filename
+        self.__filename__ = filename
+        self.__book__ = xlrd.open_workbook(filename)
+        self.__sheets__ = {}
+        self.__sheetnames__ = []
+        for i in self.__book__.sheet_names():
+            uniquevars = []
+            firstrow = 0
+            sheet = self.__book__.sheet_by_name(i)
+            for row in range(sheet.nrows):
+                types,values = sheet.row_types(row),sheet.row_values(row)
+                nonblank = False
+                for j in values:
+                    if j != '':
+                        nonblank=True
+                        break
+                if nonblank:
+                    # Generate a listing of Unique Variable Names for Use as
+                    # Dictionary Keys In Extraction. Duplicate Names will
+                    # be replaced with "F#"
+                    variables = self.__formatrow__(types,values,False)
+                    unknown = 1
+                    while variables:
+                        var = variables.pop(0)
+                        if var in uniquevars or var == '':
+                            var = 'F' + str(unknown)
+                            unknown += 1
+                        uniquevars.append(str(var))
+                    firstrow = row + 1
+                    break
+            self.__sheetnames__.append(i)
+            self.__sheets__.setdefault(i,{}).__setitem__('rows',sheet.nrows)
+            self.__sheets__.setdefault(i,{}).__setitem__('cols',sheet.ncols)
+            self.__sheets__.setdefault(i,{}).__setitem__('firstrow',firstrow)
+            self.__sheets__.setdefault(i,{}).__setitem__('variables',uniquevars[:])
+    def getiter(self, sheetname, returnlist=False, returntupledate=False):
+        """ Return an generator object which yields the lines of a worksheet;
+        Default returns a dictionary, specifing returnlist=True causes lists
+        to be returned.  Calling returntupledate=True causes dates to returned
+        as tuples of (Year, Month, Day, Hour, Min, Second) instead of as a
+        string """
+        if sheetname not in self.__sheets__.keys():
+            raise NameError, "%s is not present in %s" % (sheetname,\
+                                                          self.__filename__)
+        if returnlist:
+            return __iterlist__(self, sheetname, returntupledate)
+        else:
+            return __iterdict__(self, sheetname, returntupledate)
+    def worksheets(self):
+        """ Returns a list of the Worksheets in the Excel File """
+        return self.__sheetnames__
+    def nrows(self, worksheet):
+        """ Return the number of rows in a worksheet """
+        return self.__sheets__[worksheet]['rows']
+    def ncols(self, worksheet):
+        """ Return the number of columns in a worksheet """
+        return self.__sheets__[worksheet]['cols']
+    def variables(self,worksheet):
+        """ Returns a list of Column Names in the file,
+            assuming a tabular format of course. """
+        return self.__sheets__[worksheet]['variables']
+    def __formatrow__(self, types, values, wanttupledate):
+        """ Internal function used to clean up the incoming excel data """
+        ##  Data Type Codes:
+        ##  EMPTY 0
+        ##  TEXT 1 a Unicode string 
+        ##  NUMBER 2 float 
+        ##  DATE 3 float 
+        ##  BOOLEAN 4 int; 1 means TRUE, 0 means FALSE 
+        ##  ERROR 5 
+        import xlrd
+        returnrow = []
+        for i in range(len(types)):
+            type,value = types[i],values[i]
+            if type == 2:
+                if value == int(value):
+                    value = int(value)
+            elif type == 3:
+                datetuple = xlrd.xldate_as_tuple(value, self.__book__.datemode)
+                if wanttupledate:
+                    value = datetuple
+                else:
+                    # time only no date component
+                    if datetuple[0] == 0 and datetuple[1] == 0 and \
+                       datetuple[2] == 0: 
+                        value = "%02d:%02d:%02d" % datetuple[3:]
+                    # date only, no time
+                    elif datetuple[3] == 0 and datetuple[4] == 0 and \
+                         datetuple[5] == 0:
+                        value = "%04d/%02d/%02d" % datetuple[:3]
+                    else: # full date
+                        value = "%04d/%02d/%02d %02d:%02d:%02d" % datetuple
+            elif type == 5:
+                value = xlrd.error_text_from_code[value]
+            returnrow.append(value)
+        return returnrow
+    
+def __iterlist__(excel, sheetname, tupledate):
+    """ Function Used To Create the List Iterator """
+    sheet = excel.__book__.sheet_by_name(sheetname)
+    for row in range(excel.__sheets__[sheetname]['rows']):
+        types,values = sheet.row_types(row),sheet.row_values(row)
+        yield excel.__formatrow__(types, values, tupledate)
+
+def __iterdict__(excel, sheetname, tupledate):
+    """ Function Used To Create the Dictionary Iterator """
+    sheet = excel.__book__.sheet_by_name(sheetname)
+    for row in range(excel.__sheets__[sheetname]['firstrow'],\
+                     excel.__sheets__[sheetname]['rows']):
+        types,values = sheet.row_types(row),sheet.row_values(row)
+        formattedrow = excel.__formatrow__(types, values, tupledate)
+        # Pad a Short Row With Blanks if Needed
+        for i in range(len(formattedrow),\
+                       len(excel.__sheets__[sheetname]['variables'])):
+            formattedrow.append('')
+        yield dict(zip(excel.__sheets__[sheetname]['variables'],formattedrow))
+#RC-------------------------
 
 #-----------------------------------------------------------------------------
 # Setup common command line options for a Lightning project
@@ -240,10 +425,13 @@ def SetupTypeConversionMap():
 	types = { 'mid' 	: 1024 *  1 + 1,	#Audio Group
 			  'midi' 	: 1024 *  1 + 1,
 			  'S'		: 1024 *  1 + 1,		# for ACME
+			  'SYN'		: 1024 *  1 + 1,		# for AudioCsv
 			  'aogg'	: 1024 *  1 + 2,
+			  'OGG'		: 1024 *  1 + 2,		# for AudioCsv
 			  'wav'		: 1024 *  1 + 3,
 			  'R'		: 1024 *  1 + 3,		# for ACME
 			  'raw'		: 1024 *  1 + 3,		# for ACME
+			  'RAW'		: 1024 *  1 + 3,		# for AudioCsv
 			  'avog'    : 1024 *  1 + 4,
               'txt'		: 1024 *  4 + 1,	# Common Group
 			  'bin'		: 1024 *  4 + 2,
@@ -263,6 +451,96 @@ def SetupTypeConversionMap():
 			  }
 	return types
 
+#-------------------------------------------------------------------------
+# Convert the .xls to .audioCsv file. 
+#-------------------------------------------------------------------------
+def ConvertXlsToCsv(penv):
+	#.audioCsv file contains the following fiels extracted from the input .xls files
+	#    !Handle, !Type, !Compression, !Source File Location, Phrase Description, Character, Talent, Inflection_num
+	#
+	data_root = penv.Dir('#apprsrc').abspath
+	pack_root = penv.Dir('#Build/rsrc').abspath
+	
+	xlfiles = glob.glob(os.path.join(data_root, '*.xls'))
+	for xlfile in xlfiles:
+		lines = []
+		missing = []
+		xl = readexcel(xlfile)
+		xlfile = xlfile.replace(".xls", ".audioCsv")
+		writer = csv.writer(open(os.path.join(data_root, xlfile), "w"))
+		lines  += [['!Handle', '!Type', '!Compression', '!Source File Location', 'Phrase Description',  'Character', 'Talent', 'Inflection_num']]
+		sheetnames = xl.worksheets()
+		for sheet in sheetnames:
+			for row in xl.getiter(sheet):
+				handle = row['AUDIO HANDLE']
+				if handle == '':
+					continue
+				audio_type = row['AUDIOTYPE']
+				if (audio_type == 'L4'):
+					type = 'LFC'
+					compression = 'LFC4'
+				elif audio_type == 'L6':
+					type = 'LFC'
+					compression = 'LFC6' 
+				elif audio_type == 'L8':
+					type = 'LFC'
+					compression = 'LFC8' 
+				elif audio_type == 'S':
+					type = 'SYN'
+					compression = ''
+				elif audio_type == 'R':
+					type = 'RAW'
+					compression = '' 
+				elif audio_type == 'WBH':
+					type = 'WB'
+					compression = 'WBH' 
+				elif audio_type == 'WBM':
+					type = 'WB'
+					compression = 'WBM'
+				elif audio_type == 'WBL':
+					type = 'WB'
+					compression = 'WBL' 
+				elif audio_type == 'O-2':
+					type = 'OGG'
+					compression = 'OGG-2'
+				elif audio_type == 'O-1':
+					type = 'OGG'
+					compression = 'OGG-1' 
+				elif audio_type == 'O':
+					type = 'OGG'
+					compression = 'OGG0' 
+				elif audio_type == 'O1':
+					type = 'OGG'
+					compression = 'OGG1' 
+				elif audio_type == 'O2':
+					type = 'OGG'
+					compression = 'OGG2'
+				elif audio_type == 'O3':
+					type = 'OGG'
+					compression = 'OGG3' 
+				elif audio_type == 'O4':
+					type = 'OGG'
+					compression = 'OGG4' 
+				else:
+					raise 'Invalid audio type : %s' % audio_type
+				
+				source = row['FILENAME']
+				if source == '':
+					print 'Warning! Missing source for handle = ', handle
+						
+				phrase 		= row['PHRASE DESCRIPTION']
+				character 	= row['CHARACTER']
+				talent 		= row['TALENT']
+				inflection	= row['INFLECTION']
+				
+				lines += [[handle, type, compression, source, phrase, character, talent, inflection]]
+		
+		deco = [(res[0].upper(), i, res) for i, res in enumerate(lines)]
+		deco.sort()
+		lines = [res for _, _, res in deco]
+		writer.writerows(lines)	
+#-------------------------------------------------------------------------
+     
 #-------------------------------------------------------------------------
 # Transform or copy source file to packed output file
 #-------------------------------------------------------------------------
@@ -315,7 +593,7 @@ def PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate):
 #-------------------------------------------------------------------------
 # Pack contents of an individual ACME CSV file
 #-------------------------------------------------------------------------
-def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
+def ProcessAudioCsv(pkg, types, pack_root, data_root, enumpkg):
 	# 1) Setup field mappings (see note below)
 	# 2) Read in the mapping of activity code to Base URI path
 	#    (for converting acme CSV files)
@@ -327,30 +605,70 @@ def ProcessAcme(pkg, types, pack_root, data_root, enumpkg):
 	#   2: data type string 
 	#   3: file name
 	#	
-	fld = [7, 17, 15, 9]	# activity, handle, type, file			#1
+	#RC fld = [7, 17, 15, 9]	# activity, handle, type, file			#1
 	# dict = MapAcmeActivitiesToURIs(data_root)						#2
-	resources = []
+	dict = {}	
 	pack_root_len = len(pack_root) + 1
 	
+	log = open(os.path.join(pack_root, 'log.txt'), 'w')
+	d = datetime.now()
+	log.write("ProcessAudioCsv : %s \n" % d.strftime())
+
 	reader = csv.reader(open(pkg, "rb"))
 	line = 0
+	statusline = []
 	for row in reader:
 		line += 1
-		if line == 0:
+		if len(row) == 0 or (row[0] and row[0][0] == '!') or (row[0] and row[0][0] == '#'):			
+			continue
+		if line == 1:
 			# TODO: map 'fld' to 'SHAPE DESCRIPTION', 'FILE', 'AUDIOTYPE', & 'AUDIO HANDLE'
 			dummy = line	
-		elif row[fld[3]] != '':
+		elif row[3] != '':
 			compression = rate = ''
-			if types.has_key(row[fld[2]]):
-				type = types[row[fld[2]]]
+				
+			if types.has_key(row[1]):
+				type = types[row[1]]
 			else:
 				type = 1025
-			extension = type == 1024 and '.mid' or '.wav'
-			srcname = row[fld[3]]+extension
-			srcfile = os.path.join(data_root, row[fld[3]]+extension)
-			srcsize = os.path.getsize(srcfile)
-			outfile = PackFile(srcfile, srcname, pack_root, type, compression, rate)
-
+				
+			if type == 1026:
+				if row[2] == 'OGG-2' or row[2] == 'OGG-1':
+					compression = -1
+				elif row[2] == 'OGG0':
+					compression = 0
+				elif row[2] == 'OGG1':
+					compression = 1
+				elif row[2] == 'OGG2':
+					compression = 2
+				elif row[2] == 'OGG1':
+					compression = 3
+				elif row[2] == 'OGG2':
+					compression = 4
+				else:	
+					compression = 0
+				rate = 16000
+				
+			extension = type == 1024 and '.mid' or '.wav' or '.aif'
+			srcname = row[3]+extension
+			srcfile = os.path.join(data_root, row[3]+extension)
+			
+			handle = row[0]
+			
+			if dict.has_key(handle):
+				log.write('ProcessAudioCsv: Duplicate handle : %s \n' %handle)
+				log.write('ProcessAudioCsv: Build fails due to duplicate handles! \n')
+				raise 'Error! Build fails due to duplicate handles!'
+				
+			
+			if dict.get(handle) == srcname:
+				print 'Warning! %s : referenced multiple times '%srcname
+				log.write('ProcessAudioCsv: %s referenced multiple times \n' %srcname)
+				
+			dict[handle] = srcname	#RC Store handle->source file mapping
+			srcname = srcname[:0] + handle + extension
+			outfile = PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate)
+	
 #-------------------------------------------------------------------------
 # Pack contents of an individual package
 #-------------------------------------------------------------------------
@@ -427,9 +745,11 @@ def ProcessResources(penv, vars, pappname):
 	types = SetupTypeConversionMap()
 	penv.Default(pack_root)
 	
-	pkgs = glob.glob(os.path.join(data_root, '*.acme'))				#2
+	ConvertXlsToCsv(penv)
+					
+	pkgs = glob.glob(os.path.join(data_root, '*.audioCsv'))				#2
 	for pkg in pkgs:
-		ProcessAcme(pkg, types, pack_root, data_root, packages)
+		ProcessAudioCsv(pkg, types, pack_root, data_root, packages)
 		
 	pkgs = glob.glob(os.path.join(data_root, '*.pkg'))				#3
 	for pkg in pkgs:
