@@ -57,7 +57,7 @@ def RetrieveOptions(args, root_dir):
 	if is_emulation:
 		bin_deploy_dir	= os.path.join(root_dir, 'Build', target_subdir)
 	else:
-		bin_deploy_dir	= os.path.join(rootfs, 'usr', 'local', 'bin')
+		bin_deploy_dir	= os.path.join(rootfs, 'Base', 'Brio', 'bin')
 		SCons.Script.Default(bin_deploy_dir)
 		
 	if type == 'publish':
@@ -126,7 +126,7 @@ def CopyResources(penv, vars, psubfolder):
 		return
 	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
-	rootfs_data = os.path.join(vars['rootfs'], 'Cart1')
+	rootfs_data = os.path.join(vars['rootfs'], 'Data')
 	if not os.path.exists(rootfs_data):
 		os.mkdir(rootfs_data)	
 	rootfs_data = os.path.join(rootfs_data, psubfolder)
@@ -255,6 +255,7 @@ def SetupTypeConversionMap():
 			  'jpg'		: 1024 *  5 + 3,
 			  'jpeg'	: 1024 *  5 + 3,
 			  'png'		: 1024 *  5 + 4,
+			  'rgb'		: 1024 *  5 + 5,
 			  'font'	: 1024 *  7 + 1,	# Font Group
 			  'ttf'		: 1024 *  7 + 1,
 			  'ogg'		: 1024 * 14 + 1,	# Video Group

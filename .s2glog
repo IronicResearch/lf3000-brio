@@ -9200,3 +9200,12 @@ By Rcabrera (Rcabrera@leapfrog.com) on 10/8/07 10:01 AM
 4,078 ms. (Cumulative: 1,997,597 ms)
 
 ----------------
+Revision 1,836 from svn://localhost/TRUNK/:
+
+Update Brio SDK examples to use /Didj/Data root directory for locating app resources.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/8/07 10:08 AM
+1 changed, 0 added, 0 deleted.
+3,500 ms. (Cumulative: 2,001,175 ms)
+
+----------------
