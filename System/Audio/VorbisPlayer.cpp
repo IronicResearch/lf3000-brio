@@ -260,7 +260,7 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 			loopCounter_++;
 			if ((pListener_ != kNull) && bDoneMessage_)
 				SendDoneMsg();
-			if (shouldLoop_)
+			if (shouldLoop_ && loopCounter_ != payload_)
 				Rewind();
 			else
 				break;
