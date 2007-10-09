@@ -9245,3 +9245,25 @@ By Dave Milici (dmilici@leapfrog.com) on 10/8/07 5:17 PM
 3,219 ms. (Cumulative: 2,015,223 ms)
 
 ----------------
+Revision 1,844 from svn://localhost/TRUNK/:
+Revision 1,845 from svn://localhost/TRUNK/:
+Revision 1,846 from svn://localhost/TRUNK/:
+Revision 1,847 from svn://localhost/TRUNK/:
+Revision 1,848 from svn://localhost/TRUNK/:
+Revision 1,849 from svn://localhost/TRUNK/:
+Revision 1,850 from svn://localhost/TRUNK/:
+Revision 1,851 from svn://localhost/TRUNK/:
+Revision 1,852 from svn://localhost/TRUNK/:
+Revision 1,853 from svn://localhost/TRUNK/:
+Revision 1,854 from svn://localhost/TRUNK/:
+Revision 1,855 from svn://localhost/TRUNK/:
+Revision 1,856 from svn://localhost/TRUNK/:
+Revision 1,857 from svn://localhost/TRUNK/:
+
+Updating Brio USB with revised enable/disable semantics
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 10/9/07 10:20 AM
+1 changed, 0 added, 0 deleted.
+3,391 ms. (Cumulative: 2,018,771 ms)
+
+----------------

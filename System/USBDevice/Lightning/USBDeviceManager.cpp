@@ -24,12 +24,13 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-#define SYSFS_LUN_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun0/file"
+#define SYSFS_LUN0_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun0/enabled"
+#define SYSFS_LUN1_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun1/enabled"
 #define SYSFS_VBUS_PATH "/sys/devices/platform/lf1000-usbgadget/vbus"
-#define UBI_VOL_NAME "Brio_Base"
 
 //============================================================================
 // Local state and utility functions
@@ -63,92 +64,99 @@ static int get_vbus(void)
 static int is_enabled()
 {
 	FILE *f;
-	char buf[100];
-	int ret;
-
-	f = fopen(SYSFS_LUN_PATH, "r");
+	int enabled0, enabled1 = 1;
+	int ret = 0;
+	
+	/* First check LUN0 */
+	f = fopen(SYSFS_LUN0_PATH, "r");
 	if(!f)
 		return -1;
 	
-	ret = fscanf(f, "%s\n", buf);
-	if(ret == 1)
+	ret = fscanf(f, "%d\n", &enabled0);
+	fclose(f);
+	if(ret != 1)
+		return -1;
+
+	/* LUN1 may or may not exist */
+	ret = 0;
+	f = fopen(SYSFS_LUN1_PATH, "r");
+	if(!f && errno == ENOENT)
+		enabled1 = 1;
+	else if(!f)
+		return -1;
+	else
+		ret = fscanf(f, "%d\n", &enabled1);
+	fclose(f);
+	if (ret != 1)
+		return -1;
+
+	if(enabled0 == 1 && enabled1 == 1)
 		return 1;
 	else
 		return 0;
 }
 
-static void find_mtds(void)
+static tErrType enable()
 {
 	FILE *f;
-	char buf1[256], buf2[256], name[256];
-	char *prev, *cur, *tmp;
-	int cur_mtd_num, len;
-	unsigned int size, erase;
-
-	mtd_num = -1;
-
-	f = fopen("/proc/mtd", "r");
-	if(!f)
-		return;
-	
-	// read off the first line.
-	if(fgets(buf1, 256, f) == (char *)EOF)
-		return;
-
-	prev = buf1;
-	prev[0] = 0;
-	cur = buf2;
-	while(fgets(cur, 256, f) != (char *)EOF) {
-
-		//For some reason, sysfs files don't return EOF.  They just keep
-		//returning the last line of the file.
-		if(strcmp(cur, prev) == 0)
-			break;
-		sscanf(cur, "mtd%d: %x %x \"%s\"\n", &cur_mtd_num, &size, &erase, name);
-		//Chomp any trailing double quote
-		len = strlen(name);
-		if(name[len-1] == '"')
-			name[len-1] = 0;
-
-		if(strcmp(name, UBI_VOL_NAME) == 0)
-			mtd_num = cur_mtd_num;
-		tmp = prev;
-		prev = cur;
-		cur = tmp;
-		cur[0] = 0;
-	}
-
-	return;
-}
-
-static tErrType enable_lun()
-{
-	FILE *f;
-	char buf[100];
 	int ret, len;
+	char *buf = "1";
 
-	f = fopen(SYSFS_LUN_PATH, "w");
+	f = fopen(SYSFS_LUN0_PATH, "w");
 	if(!f)
 		return kUSBDeviceFailure;
 
-	sprintf(buf, "/dev/mtdblock%d", mtd_num);
 	len = strlen(buf);
 	ret = fwrite(buf, 1, len, f);
 	fclose(f);
 	if(ret != len)
 		return kUSBDeviceFailure;
-	else
+
+	/* LUN1 may not exist */
+	f = fopen(SYSFS_LUN1_PATH, "w");
+	if(!f && errno == ENOENT)
 		return kNoErr;
+	else if(!f)
+		return kUSBDeviceFailure;
+	else
+		ret = fwrite(buf, 1, len, f);
+	fclose(f);
+
+	if(ret != len)
+		return kUSBDeviceFailure;
+
+	return kNoErr;
 }
 
-static tErrType disable_lun()
+static tErrType disable()
 {
 	FILE *f;
+	int ret, len;
+	char *buf = "0";
 
-	f = fopen(SYSFS_LUN_PATH, "w");
+	f = fopen(SYSFS_LUN0_PATH, "w");
 	if(!f)
 		return kUSBDeviceFailure;
+
+	len = strlen(buf);
+	ret = fwrite(buf, 1, len, f);
 	fclose(f);
+	if(ret != len)
+		return kUSBDeviceFailure;
+
+	/* LUN1 may not exist */
+	f = fopen(SYSFS_LUN1_PATH, "w");
+	if(!f && errno == ENOENT)
+		return kNoErr;
+	else if(!f)
+		return kUSBDeviceFailure;
+	else
+		ret = fwrite(buf, 1, len, f);
+	fclose(f);
+
+	if(ret != len)
+		return kUSBDeviceFailure;
+
 	return kNoErr;
 }
 
@@ -265,22 +273,18 @@ tUSBDeviceData CUSBDeviceModule::GetUSBDeviceState() const
 //----------------------------------------------------------------------------
 tErrType CUSBDeviceModule::EnableUSBDeviceDrivers(U32 drivers)
 {
-	int lun_enabled;
+	int enabled;
 	int ret = kNoErr;
 	
 	if(drivers & ~kUSBDeviceIsMassStorage)
 		return kUSBDeviceUnsupportedDriver;
 
-	find_mtds();
-	if(mtd_num == -1)
-		return kUSBDeviceFailure;
-
-	lun_enabled = is_enabled();
-	if(lun_enabled == -1)
+	enabled = is_enabled();
+	if(enabled == -1)
 		return kUSBDeviceFailure;
 		
-	if(!lun_enabled)
-		ret = enable_lun();
+	if(!enabled)
+		ret = enable();
 	
 	if(ret == kNoErr) {
 		data.USBDeviceDriver |= kUSBDeviceIsMassStorage;
@@ -294,18 +298,18 @@ tErrType CUSBDeviceModule::EnableUSBDeviceDrivers(U32 drivers)
 //----------------------------------------------------------------------------
 tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 {
-	int lun_enabled;
+	int enabled;
 	int ret = kNoErr;
 
 	if(drivers & ~kUSBDeviceIsMassStorage)
 		return kUSBDeviceUnsupportedDriver;
 
-	lun_enabled = is_enabled();
-	if(lun_enabled == -1)
+	enabled = is_enabled();
+	if(enabled == -1)
 		return kUSBDeviceFailure;
 		
-	if(lun_enabled)
-		ret = disable_lun();
+	if(enabled)
+		ret = disable();
 	
 	if(ret == kNoErr) {
 		data.USBDeviceDriver = 0;
