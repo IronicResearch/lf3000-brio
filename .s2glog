@@ -9236,3 +9236,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/8/07 5:09 PM
 3,516 ms. (Cumulative: 2,011,926 ms)
 
 ----------------
+Revision 1,843 from svn://localhost/TRUNK/:
+
+Allow payload parameter to be used for optional loop count when looping active.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/8/07 5:17 PM
+1 changed, 0 added, 0 deleted.
+3,219 ms. (Cumulative: 2,015,223 ms)
+
+----------------
