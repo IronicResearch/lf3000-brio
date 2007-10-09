@@ -217,7 +217,24 @@ U8 CAudioMPI::GetMasterVolume() const
 	
 	return pModule_->GetMasterVolume();
 }
+//==============================================================================
+//==============================================================================
+// Get/Set the speaker hardware equalizer.  The speaker equalizer may be
+// set or cleared when a kHeadphoneJackDetect message is received
+// This will not work on emulation, Lightning specific.  Need to hook into
+// lf1000-audio driver via ioctl().
+Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
+{
+	return 0;
+}
+//----------------------------------------------------------------------------
+void	CAudioMPI:: SetSpeakerEqualizer(Boolean enable)
+{
+	return;
+}
 
+//==============================================================================
+//==============================================================================
 tErrType	CAudioMPI::SetAudioResourcePath( const CPath &path )
 {
 	if ( pModule_ == kNull )

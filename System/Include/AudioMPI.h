@@ -65,6 +65,11 @@ public:
 	void 		SetMasterVolume( U8 volume );
 	U8			GetMasterVolume( void ) const;
 
+	// Get/Set the speaker hardware equalizer.  The speaker equalizer may be
+	// set or cleared when a kHeadphoneJackDetect message is received
+	Boolean		GetSpeakerEqualizer(void) const;
+	void		SetSpeakerEqualizer(Boolean enable);
+	
 	// Sets/Gets the default location in the file system that the MPI will
 	// use to load/play audio resources.
 	tErrType		SetAudioResourcePath( const CPath &path );

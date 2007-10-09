@@ -9280,3 +9280,14 @@ By Scott Esters (sesters@leapfrog.com) on 10/9/07 11:53 AM
 3,234 ms. (Cumulative: 2,022,083 ms)
 
 ----------------
+Revision 1,862 from svn://localhost/TRUNK/:
+
+Initial check-in of speaker equalizer getter / setter functions.  This allows
+different equalizer settings for headphones and speaker.
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/9/07 12:04 PM
+2 changed, 0 added, 0 deleted.
+3,313 ms. (Cumulative: 2,025,474 ms)
+
+----------------
