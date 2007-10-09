@@ -9291,3 +9291,14 @@ By Scott Esters (sesters@leapfrog.com) on 10/9/07 12:04 PM
 3,313 ms. (Cumulative: 2,025,474 ms)
 
 ----------------
+Revision 1,863 from svn://localhost/TRUNK/:
+Revision 1,864 from svn://localhost/TRUNK/:
+Revision 1,865 from svn://localhost/TRUNK/:
+
+Updated SysAppDemo event detection logic.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/9/07 2:02 PM
+2 changed, 0 added, 0 deleted.
+3,485 ms. (Cumulative: 2,029,037 ms)
+
+----------------

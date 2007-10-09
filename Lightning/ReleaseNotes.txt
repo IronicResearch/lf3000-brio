@@ -2,6 +2,15 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+* Embedded binaries are now located off /Didj root path for embedded (non-NFS) filesystem.
+  Brio libs will be located at /Didj/Base/Brio.
+  Brio apps will be located at /Didj/ProgramFiles.
+  Brio app resources will be located at /Didj/Data.
+* SDK example SysAppDemo added to demonstrate handling of system events like USB, Power.
+* Headphone jack detect and Cartridge insert/remove events added to Button MPI.
+* Audio MPI options flag added for looping samples.
+
+
 ===========================================
 v0.1.17  (Build 1663 released Sep 20, 2007) 
 ===========================================

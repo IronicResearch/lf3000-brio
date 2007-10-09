@@ -9,7 +9,7 @@ Import('*')
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
 if vars['is_publish'] and vars['is_export']:
-	samples = ['Simple', 'BrioCube', 'BrioAudio', 'Button', 'Display', 'BrioVideo', 'Power']
+	samples = ['Simple', 'BrioCube', 'BrioAudio', 'Button', 'Display', 'BrioVideo', 'Power', 'USBDemo', 'SysAppDemo', 'PlayAudio']
 	dest_dir = os.path.join(vars['export_root'], 'Samples')
 	for s in samples:
 		Command( os.path.join(dest_dir, s), os.path.join('Samples', s), 
