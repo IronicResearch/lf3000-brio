@@ -62,6 +62,8 @@ const U32 kButtonMenu			= (1 << 8);
 const U32 kButtonHint			= (1 << 9);
 const U32 kButtonPause			= (1 << 10);
 const U32 kButtonBrightness		= (1 << 11);
+const U32 kHeadphoneJackDetect  = (1 << 12);
+const U32 kCartridgeDetect      = (1 << 13);
 
 
 //------------------------------------------------------------------------------
