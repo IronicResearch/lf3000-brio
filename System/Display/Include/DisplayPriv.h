@@ -41,19 +41,19 @@ const tDebugLevel		kDisplayDebugLevel		= kDbgLvlCritical;
 // Typedefs
 //==============================================================================
 struct tDisplayContext {
-	U16 width;			// from CreateHandle
-	U16 height;
+	U16 	width;		// from CreateHandle
+	U16 	height;
 	tPixelFormat colorDepthFormat; // pixel format enum
-	U32 format;			// cached HW format code
-	U16	depth;			// bits per pixel
-	U16	bpp;			// bytes per pixel
-	U16 pitch;			// bytes per line
-	U8 *pBuffer;
-	S16 x;				// from Register()
-	S16 y;
-	bool isAllocated;	// toggled by CreateHandle()/DestroyHandle()
-	bool isOverlay;		// video overlay layer?
-	bool isPlanar;		// video overlay planar?
+	U32 	format;		// cached HW format code
+	U16		depth;		// bits per pixel
+	U16		bpp;		// bytes per pixel
+	U16 	pitch;		// bytes per line
+	U8 		*pBuffer;
+	S16 	x;			// from Register()
+	S16 	y;
+	bool 	isAllocated;// allocated by caller?
+	bool 	isOverlay;	// video overlay layer?
+	bool 	isPlanar;	// video overlay planar?
 #ifdef EMULATION
 	Pixmap	pixmap;		// X offscreen pixmap
 	_XImage	*image;		// X pixmap internals
@@ -61,6 +61,164 @@ struct tDisplayContext {
 #endif
 	void*	pdc;		// next dc in list
 };
+
+//----------------------------------------------------------------------------
+inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+{
+	// Repack 16bpp RGB4444 format surface into 32bpp ARGB format surface
+	U8* 		s = sdc->pBuffer;
+	U8*			d = ddc->pBuffer;
+	int			i,j,m,n;
+	for (i = 0; i < sdc->height; i++) 
+	{
+		for (j = m = n = 0; j < sdc->width; j++, m+=2, n+=4) 
+		{
+			U16 color = (s[m+1] << 8) | (s[m]);
+			d[n+0] = ((color & 0x000F) >> 0) << 4;
+			d[n+1] = ((color & 0x00F0) >> 4) << 4;
+			d[n+2] = ((color & 0x0F00) >> 8) << 4;
+			d[n+3] = ((color & 0xF000) >> 12) << 4;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
+inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+{
+	// Repack 16bpp RGB565 format surface into 32bpp ARGB format surface
+	U8* 		s = sdc->pBuffer;
+	U8*			d = ddc->pBuffer;
+	int			i,j,m,n;
+	for (i = 0; i < sdc->height; i++) 
+	{
+		for (j = m = n = 0; j < sdc->width; j++, m+=2, n+=4) 
+		{
+			U16 color = (s[m+1] << 8) | (s[m]);
+			d[n+0] = ((color & 0x001F) >> 0) << 3;
+			d[n+1] = ((color & 0x07E0) >> 5) << 2;
+			d[n+2] = ((color & 0xF800) >> 11) << 3;
+			d[n+3] = 0xFF;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
+inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+{
+	// Repack 24bpp RGB888 format surface into 32bpp ARGB format surface
+	U8* 		s = sdc->pBuffer;
+	U8*			d = ddc->pBuffer;
+	int			i,j,m,n;
+	for (i = 0; i < sdc->height; i++) 
+	{
+		for (j = m = n = 0; j < sdc->width; j++, m+=3, n+=4) 
+		{
+			d[n+0] = s[m+0];
+			d[n+1] = s[m+1];
+			d[n+2] = s[m+2];
+			d[n+3] = 0xFF;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
+inline void ARGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+{
+	// Copy 32bpp ARGB8888 format surface into 32bpp ARGB format surface
+	U8* 		s = sdc->pBuffer;
+	U8*			d = ddc->pBuffer;
+	for (int i = 0; i < sdc->height; i++) 
+	{
+		memcpy(d, s, 4 * sdc->width);
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
+// YUV to RGB color conversion: <http://en.wikipedia.org/wiki/YUV>
+inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8>(X); }
+inline	S16 C(U8 Y)  			{ return (Y - 16); }
+inline 	S16 D(U8 U)  			{ return (U - 128); }
+inline 	S16 E(U8 V)  			{ return (V - 128); }
+inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
+inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
+inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+
+//----------------------------------------------------------------------------
+// Repack YUV planar format surface into ARGB format surface
+inline void YUV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+{
+	// Repack YUV planar format surface into ARGB format surface
+	U8* 		s = sdc->pBuffer;
+	U8*			d = ddc->pBuffer;
+	U8*			su = s + sdc->pitch * sdc->height;
+	U8*			sv = s + sdc->pitch * sdc->height*3/2;
+	U8			y,z,u,v;
+	int			i,j,m,n;
+	for (i = 0; i < sdc->height; i++) 
+	{
+		for (j = m = n = 0; m < sdc->width; j++, m+=2, n+=8) 
+		{
+			y = s[m+0];
+			z = s[m+1];
+			u = su[j];
+			v = sv[j];
+			d[n+0] = B(y,u,v); // y + u;
+			d[n+1] = G(y,u,v); // y - u - v;
+			d[n+2] = R(y,u,v); // y + v;
+			d[n+3] = 0xFF;
+			d[n+4] = B(z,u,v); // z + u;
+			d[n+5] = G(z,u,v); // z - u - v;
+			d[n+6] = R(z,u,v); // z + v;
+			d[n+7] = 0xFF;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+		if (i % 2)
+		{
+			su += sdc->pitch;
+			sv += sdc->pitch;
+		}
+	}
+}
+
+//----------------------------------------------------------------------------
+// Repack YUYV format surface into ARGB format surface
+inline void YUYV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+{
+	// Repack YUYV format surface into ARGB format surface
+	U8* 		s = sdc->pBuffer;
+	U8*			d = ddc->pBuffer;
+	U8			y,z,u,v;
+	int			i,j,m,n;
+	for (i = 0; i < sdc->height; i++) 
+	{
+		for (j = m = n = 0; j < sdc->width; j+=2, m+=4, n+=8) 
+		{
+			y = s[m+0];
+			u = s[m+1];
+			z = s[m+2];
+			v = s[m+3];
+			d[n+0] = B(y,u,v); // y + u;
+			d[n+1] = G(y,u,v); // y - u - v;
+			d[n+2] = R(y,u,v); // y + v;
+			d[n+3] = 0xFF;
+			d[n+4] = B(z,u,v); // z + u;
+			d[n+5] = G(z,u,v); // z - u - v;
+			d[n+6] = R(z,u,v); // z + v;
+			d[n+7] = 0xFF;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
 
 //==============================================================================
 class CDisplayModule : public ICoreModule {
@@ -129,6 +287,7 @@ private:
 	void				SetDirtyBit(int layer);
 	tErrType			Update(tDisplayContext* dc);
 	CDebugMPI			dbg_;
+	tDisplayContext*	pdcPrimary_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();
