@@ -59,11 +59,22 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
 	InitModule();	// delegate to platform or emulation initializer
+	pdcListHead = NULL;
+	pdcPrimary_ = reinterpret_cast<tDisplayContext*>
+		(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
 }
 
 //----------------------------------------------------------------------------
 CDisplayModule::~CDisplayModule()
 {
+	tDisplayContext*	pdc = pdcListHead;
+	while (pdc != NULL)
+	{
+		DestroyHandle(pdc, true);
+		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
+	}
+	if (pdcPrimary_)
+		DestroyHandle(pdcPrimary_, true);
 	DeInitModule(); // delegate to platform or emulation cleanup
 }
 

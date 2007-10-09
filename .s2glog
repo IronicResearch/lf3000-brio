@@ -9218,3 +9218,21 @@ By Rcabrera (Rcabrera@leapfrog.com) on 10/8/07 10:28 AM
 3,594 ms. (Cumulative: 2,004,832 ms)
 
 ----------------
+Revision 1,838 from svn://localhost/TRUNK/:
+Revision 1,839 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,485 ms. (Cumulative: 2,008,395 ms)
+
+----------------
+Revision 1,840 from svn://localhost/TRUNK/:
+Revision 1,841 from svn://localhost/TRUNK/:
+Revision 1,842 from svn://localhost/TRUNK/:
+
+Generalized display context pixel format repacking. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/8/07 5:09 PM
+6 changed, 0 added, 0 deleted.
+3,516 ms. (Cumulative: 2,011,926 ms)
+
+----------------

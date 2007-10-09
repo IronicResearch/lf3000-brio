@@ -236,10 +236,6 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		hwFormat = kLayerPixelFormatYUV420;
 		GraphicsContext->isOverlay = true;
 		GraphicsContext->isPlanar = true;
-		// Switch video overlay linear address to XY Block address
-		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + width*height));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + width*height*3/2));
 		break;
 
 		case kPixelFormatYUYV422:
@@ -253,12 +249,23 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->depth = 8*bpp;
 	GraphicsContext->format = hwFormat;
 
+	// Offscreen context does not affect hardware settings
+	if (GraphicsContext->isAllocated)
+		return reinterpret_cast<tDisplayHandle>(GraphicsContext);
+		
 	// apply to device
 	int layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
 	ioctl(layer, MLC_IOCTBLEND, 0);
 	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
 	ioctl(layer, MLC_IOCTHSTRIDE, bpp);
 	ioctl(layer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
+	if (GraphicsContext->isPlanar)
+	{
+		// Switch video overlay linear address to XY Block address
+		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + width*height));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + width*height*3/2));
+	}
 	SetDirtyBit(layer);
 
 	return reinterpret_cast<tDisplayHandle>(GraphicsContext);
@@ -267,6 +274,20 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::Update(tDisplayContext *dc)
 {
+	// Copy offscreen context to primary display context
+	if (dc->isAllocated)
+	{
+		switch (dc->colorDepthFormat) 
+		{
+		case kPixelFormatRGB4444: 	RGB4444ARGB(dc,pdcPrimary_); break;
+		case kPixelFormatRGB565: 	RGB565ARGB(dc,pdcPrimary_); break;
+		case kPixelFormatRGB888: 	RGB2ARGB(dc,pdcPrimary_); break;
+		default:
+		case kPixelFormatARGB8888: 	ARGB2ARGB(dc,pdcPrimary_); break;
+		case kPixelFormatYUV420: 	YUV2ARGB(dc,pdcPrimary_); break;
+		case kPixelFormatYUYV422: 	YUYV2ARGB(dc,pdcPrimary_); break;
+		}
+	}
 	// No hardware settings have actually changed
     return kNoErr;
 }
@@ -292,6 +313,7 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
 									   Boolean destroyBuffer)
 {
+	UnRegister(hndl, 0);
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
 }
@@ -303,13 +325,13 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	struct tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
 	
 	// Nothing to do yet if offscreen context
+	context->x = xPos;
+	context->y = yPos;
 	if (context->isAllocated)
 		return kNoErr;
 	
 	// Assign mapped framebuffer address if onscreen context
 	context->pBuffer = (context->isPlanar) ? gPlanarBuffer : (context->isOverlay) ? gOverlayBuffer : gFrameBuffer;
-	context->x = xPos;
-	context->y = yPos;
 
 	// apply to device
 	c.position.top = yPos;
@@ -333,6 +355,10 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		c.overlaysize.dstwidth = context->width;
 		c.overlaysize.dstheight = context->height;
 		ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
+
+		// Reload XY block address for planar video format
+		if (context->isPlanar)
+			ioctl(layer, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
 	}
 
 	SetDirtyBit(layer);
