@@ -253,6 +253,11 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (GraphicsContext->isAllocated)
 		return reinterpret_cast<tDisplayHandle>(GraphicsContext);
 		
+	// Assign mapped framebuffer address if onscreen context
+	GraphicsContext->pBuffer = 
+		(GraphicsContext->isPlanar) ? gPlanarBuffer : 
+		(GraphicsContext->isOverlay) ? gOverlayBuffer : gFrameBuffer;
+	
 	// apply to device
 	int layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
 	ioctl(layer, MLC_IOCTBLEND, 0);
