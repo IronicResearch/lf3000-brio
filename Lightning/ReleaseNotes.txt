@@ -2,10 +2,13 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+* Support for embedded NAND filesystem as alternate to NFS mounted filesystem.
+	ROOTFS_PATH variable should be set to USB device mount point instead of NFS path,
+	ie, '/media/disk', when NAND partition is mounted on Linux development system. 
 * Embedded binaries are now located off /Didj root path for embedded (non-NFS) filesystem.
-  Brio libs will be located at /Didj/Base/Brio.
-  Brio apps will be located at /Didj/ProgramFiles.
-  Brio app resources will be located at /Didj/Data.
+	Brio libs will be located at /Didj/Base/Brio/lib.
+	Brio apps will be located at /Didj/Base/Brio/bin.
+	Brio app resources will be located at /Didj/Data/<app_name>.
 * SDK example SysAppDemo added to demonstrate handling of system events like USB, Power.
 * Headphone jack detect and Cartridge insert/remove events added to Button MPI.
 * Audio MPI options flag added for looping samples.

@@ -226,7 +226,7 @@ def RetrieveOptions(args, root_dir):
 	is_runtests		= args.get('runtests', 1)
 	type			= args.get('type', 'embedded')
 	platform		= 'Lightning'
-	variant			= args.get('variant', 'LF1000')
+	variant			= 'LF1000'
 	
 	is_emulation 	= type == 'emulation' or type == 'checkheaders'
 	is_resource		= args.get('resource', 1)	
@@ -234,9 +234,15 @@ def RetrieveOptions(args, root_dir):
 	intermediate_build_dir	= os.path.join(root_dir, 'Temp', target_subdir)
 	
 	#FIXME/tp: Is this the best mechanism for allowing alternate nfsroot locations?
+	# Target rootfs path may be USB device mount point instead of NFS path 
+	# USB mount point for NAND partition contains implicit /Didj root path
+	# NFS mount point needs explicit /Didj root path prepended
 	rootfs = os.getenv('ROOTFS_PATH')
 	if rootfs == None:
 		rootfs = os.path.normpath(os.path.join(root_dir, '..', '..', 'nfsroot'))
+	is_nandrootfs 		= rootfs.startswith('/media')
+	if not is_nandrootfs:
+		rootfs			= os.path.join(rootfs, 'Didj')
 
 	#FIXME/tp: add mods for type == 'publish' here
 	if is_emulation:
