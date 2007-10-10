@@ -9358,3 +9358,18 @@ By Dave Milici (dmilici@leapfrog.com) on 10/10/07 10:02 AM
 4,031 ms. (Cumulative: 2,073,150 ms)
 
 ----------------
+Revision 1,890 from svn://localhost/TRUNK/:
+Revision 1,891 from svn://localhost/TRUNK/:
+Revision 1,892 from svn://localhost/TRUNK/:
+Revision 1,893 from svn://localhost/TRUNK/:
+Revision 1,894 from svn://localhost/TRUNK/:
+Revision 1,895 from svn://localhost/TRUNK/:
+Revision 1,896 from svn://localhost/TRUNK/:
+
+Updated Brio build script to create required /Didj/Base/Brio subdirectories.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/10/07 12:59 PM
+1 changed, 0 added, 5 deleted.
+3,938 ms. (Cumulative: 2,077,197 ms)
+
+----------------

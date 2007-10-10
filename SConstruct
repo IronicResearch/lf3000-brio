@@ -166,12 +166,18 @@ for target in targets:
 	if not is_emulation:
 		bin_deploy_dir		= os.path.join(rootfs, 'Base', 'Brio', 'bin')
 		lib_deploy_dir		= os.path.join(rootfs, 'Base', 'Brio', 'lib')
+		if not os.path.exists(bin_deploy_dir):
+			os.mkdir(bin_deploy_dir)
+		if not os.path.exists(lib_deploy_dir):
+			os.mkdir(lib_deploy_dir)
 		Default(bin_deploy_dir)
 		Default(lib_deploy_dir)
 
 	if not is_emulation and not is_monolithic:
 		priv_mpi_deploy_dir	= lib_deploy_dir
 		mod_deploy_dir		= os.path.join(rootfs, 'Base', 'Brio', 'Module')
+		if not os.path.exists(mod_deploy_dir):
+			os.mkdir(mod_deploy_dir)
 		Default(mod_deploy_dir)
 		
 	cpu_subdir = is_emulation and 'x86' or 'arm'
@@ -278,6 +284,8 @@ for target in targets:
 		unit_test_data_root = Dir('UnitTestData').abspath
 		root_len = len(unit_test_data_root) + 1
 		rootfs_data = os.path.join(rootfs, 'Base', 'Brio', 'rsrc')
+		if not os.path.exists(rootfs_data):
+			os.mkdir(rootfs_data)
 		
 		def callback(arg, directory, files):
 			base = os.path.basename(directory)
