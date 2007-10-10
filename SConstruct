@@ -104,10 +104,14 @@ export_root				= Dir('#XBuild').abspath
 adjust_to_source_dir	= '../../../'
 
 # Target rootfs path may be USB device mount point instead of NFS path 
+# USB mount point for NAND partition contains implicit /Didj root path
+# NFS mount point needs explicit /Didj root path prepended
 rootfs = os.getenv('ROOTFS_PATH')
 if rootfs == None:
 	rootfs = Dir('#../../nfsroot').abspath
-is_cartridge 		= rootfs.startswith('/media')
+is_nandrootfs 		= rootfs.startswith('/media')
+if not is_nandrootfs:
+	rootfs			= os.path.join(rootfs, 'Didj')
 
 #-----------------------------------------------------------------------------
 # Build one or more target variants

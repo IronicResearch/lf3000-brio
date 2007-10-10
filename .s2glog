@@ -9335,3 +9335,26 @@ By Dave Milici (dmilici@leapfrog.com) on 10/9/07 7:51 PM
 3,797 ms. (Cumulative: 2,068,962 ms)
 
 ----------------
+Revision 1,875 from svn://localhost/TRUNK/:
+Revision 1,876 from svn://localhost/TRUNK/:
+Revision 1,877 from svn://localhost/TRUNK/:
+Revision 1,878 from svn://localhost/TRUNK/:
+Revision 1,879 from svn://localhost/TRUNK/:
+Revision 1,880 from svn://localhost/TRUNK/:
+Revision 1,881 from svn://localhost/TRUNK/:
+Revision 1,882 from svn://localhost/TRUNK/:
+Revision 1,883 from svn://localhost/TRUNK/:
+Revision 1,884 from svn://localhost/TRUNK/:
+Revision 1,885 from svn://localhost/TRUNK/:
+Revision 1,886 from svn://localhost/TRUNK/:
+Revision 1,887 from svn://localhost/TRUNK/:
+Revision 1,888 from svn://localhost/TRUNK/:
+Revision 1,889 from svn://localhost/TRUNK/:
+
+Resolve NFS vs NAND mount points with explicit vs implicit /Didj root. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/10/07 10:02 AM
+3 changed, 0 added, 0 deleted.
+4,031 ms. (Cumulative: 2,073,150 ms)
+
+----------------
