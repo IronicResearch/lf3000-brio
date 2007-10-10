@@ -9316,3 +9316,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/9/07 3:48 PM
 32,003 ms. (Cumulative: 2,061,134 ms)
 
 ----------------
+Revision 1,872 from svn://localhost/TRUNK/:
+Revision 1,873 from svn://localhost/TRUNK/:
+
+Correct audio stopping logic per video playback loop.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/9/07 6:21 PM
+1 changed, 0 added, 0 deleted.
+3,798 ms. (Cumulative: 2,065,103 ms)
+
+----------------
