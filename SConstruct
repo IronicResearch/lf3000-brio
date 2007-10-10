@@ -112,6 +112,8 @@ if rootfs == None:
 is_nandrootfs 		= rootfs.startswith('/media')
 if not is_nandrootfs:
 	rootfs			= os.path.join(rootfs, 'Didj')
+	if not os.path.exists(rootfs):
+		os.mkdir(rootfs)
 
 #-----------------------------------------------------------------------------
 # Build one or more target variants
@@ -166,6 +168,10 @@ for target in targets:
 	if not is_emulation:
 		bin_deploy_dir		= os.path.join(rootfs, 'Base', 'Brio', 'bin')
 		lib_deploy_dir		= os.path.join(rootfs, 'Base', 'Brio', 'lib')
+		if not os.path.exists(os.path.join(rootfs, 'Base')):
+			os.mkdir(os.path.join(rootfs, 'Base'))
+		if not os.path.exists(os.path.join(rootfs, 'Base', 'Brio')):
+			os.mkdir(os.path.join(rootfs, 'Base', 'Brio'))
 		if not os.path.exists(bin_deploy_dir):
 			os.mkdir(bin_deploy_dir)
 		if not os.path.exists(lib_deploy_dir):
