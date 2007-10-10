@@ -9326,3 +9326,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/9/07 6:21 PM
 3,798 ms. (Cumulative: 2,065,103 ms)
 
 ----------------
+Revision 1,874 from svn://localhost/TRUNK/:
+
+Fix initial framebuffer assignment for offscreen context support.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/9/07 7:51 PM
+1 changed, 0 added, 0 deleted.
+3,797 ms. (Cumulative: 2,068,962 ms)
+
+----------------
