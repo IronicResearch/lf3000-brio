@@ -342,7 +342,8 @@ def CopyResources(penv, vars, psubfolder):
 					
 	os.path.walk(data_root, callback, None)
 	penv.Default(rootfs_data)
-
+	
+	
 #-----------------------------------------------------------------------------
 # Build a Module (either embedded or emulation target)
 #
@@ -437,7 +438,6 @@ def SetupTypeConversionMap():
 			  'wav'		: 1024 *  1 + 3,
 			  'R'		: 1024 *  1 + 3,		# for ACME
 			  'raw'		: 1024 *  1 + 3,		# for ACME
-			  'RAW'		: 1024 *  1 + 3,		# for AudioCsv
 			  'avog'    : 1024 *  1 + 4,
               'txt'		: 1024 *  4 + 1,	# Common Group
 			  'bin'		: 1024 *  4 + 2,
@@ -482,33 +482,9 @@ def ConvertXlsToCsv(penv):
 				if handle == '':
 					continue
 				audio_type = row['AUDIOTYPE']
-				if (audio_type == 'L4'):
-					type = 'LFC'
-					compression = 'LFC4'
-				elif audio_type == 'L6':
-					type = 'LFC'
-					compression = 'LFC6' 
-				elif audio_type == 'L8':
-					type = 'LFC'
-					compression = 'LFC8' 
-				elif audio_type == 'S':
+				if (audio_type == 'S'): 
 					type = 'SYN'
-					compression = ''
-				elif audio_type == 'R':
-					type = 'RAW'
 					compression = '' 
-				elif audio_type == 'WBH':
-					type = 'WB'
-					compression = 'WBH' 
-				elif audio_type == 'WBM':
-					type = 'WB'
-					compression = 'WBM'
-				elif audio_type == 'WBL':
-					type = 'WB'
-					compression = 'WBL' 
-				elif audio_type == 'O-2':
-					type = 'OGG'
-					compression = 'OGG-2'
 				elif audio_type == 'O-1':
 					type = 'OGG'
 					compression = 'OGG-1' 
@@ -528,9 +504,10 @@ def ConvertXlsToCsv(penv):
 					type = 'OGG'
 					compression = 'OGG4' 
 				else:
-					raise 'Invalid audio type : %s' % audio_type
+					print 'ConvertXlsToCsv: %s is an unsupported/invalid audio type' %audio_type
+					raise 'Build Failed due to invalid/unsupported audio type'
 				
-				source = row['FILENAME']
+				source = row['FILENAME']	
 				if source == '':
 					print 'Warning! Missing source for handle = ', handle
 						
@@ -568,7 +545,7 @@ def PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate):
 	## outname = GenerateNextResourceFileName()						#2
 	# use outname as-is since there is no resource manager anymore 
 	outname = srcname
-
+	
 	# this will make sure AboutMe so files are all named App.so
 	if pkg.endswith("AboutMe.pkg"):
 		if srcfile.endswith(".so"):
@@ -632,14 +609,14 @@ def ProcessAudioCsv(pkg, types, pack_root, data_root, enumpkg):
 			dummy = line	
 		elif row[3] != '':
 			compression = rate = ''
-				
+			
 			if types.has_key(row[1]):
 				type = types[row[1]]
 			else:
 				type = 1025
 				
 			if type == 1026:
-				if row[2] == 'OGG-2' or row[2] == 'OGG-1':
+				if row[2] == 'OGG-1':
 					compression = -1
 				elif row[2] == 'OGG0':
 					compression = 0
@@ -652,7 +629,8 @@ def ProcessAudioCsv(pkg, types, pack_root, data_root, enumpkg):
 				elif row[2] == 'OGG2':
 					compression = 4
 				else:	
-					compression = 0
+					log.write('ProcessAudioCsv: Invalid/unsupported audio type: %s\n' %row[2])
+					raise 'Error! Invalid audio type!'
 				rate = 16000
 				
 			extension = type == 1024 and '.mid' or '.wav' or '.aif'
@@ -660,7 +638,6 @@ def ProcessAudioCsv(pkg, types, pack_root, data_root, enumpkg):
 			srcfile = os.path.join(data_root, row[3]+extension)
 			
 			handle = row[0]
-			
 			if dict.has_key(handle):
 				log.write('ProcessAudioCsv: Duplicate handle : %s \n' %handle)
 				log.write('ProcessAudioCsv: Build fails due to duplicate handles! \n')
@@ -673,8 +650,13 @@ def ProcessAudioCsv(pkg, types, pack_root, data_root, enumpkg):
 				
 			dict[handle] = srcname	#RC Store handle->source file mapping
 			srcname = srcname[:0] + handle + extension
+			
+			shutil.copyfile(srcfile, os.path.join(data_root, srcname))
+			srcfile = os.path.join(data_root, srcname)
+			
 			outfile = PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate)
-	
+			
+			
 #-------------------------------------------------------------------------
 # Pack contents of an individual package
 #-------------------------------------------------------------------------
@@ -756,13 +738,15 @@ def ProcessResources(penv, vars, pappname):
 	pkgs = glob.glob(os.path.join(data_root, '*.audioCsv'))				#2
 	for pkg in pkgs:
 		ProcessAudioCsv(pkg, types, pack_root, data_root, packages)
-		
+						
 	pkgs = glob.glob(os.path.join(data_root, '*.pkg'))				#3
 	for pkg in pkgs:
 		ProcessPackage(pkg, types, pack_root, data_root, packages)
-	
+					
 	CopyResources(penv, vars, pappname)
-		
+	
+	
+					
 #TODO: Deal with greater than 36^2 resources (hierarchical folders).  Currently an exception is raised.
 
 #-----------------------------------------------------------------------------
