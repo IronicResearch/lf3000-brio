@@ -9397,3 +9397,14 @@ By Rcabrera (Rcabrera@leapfrog.com) on 10/11/07 9:12 AM
 3,953 ms. (Cumulative: 2,085,229 ms)
 
 ----------------
+Revision 1,903 from svn://localhost/TRUNK/:
+Revision 1,904 from svn://localhost/TRUNK/:
+Revision 1,905 from svn://localhost/TRUNK/:
+
+Temporarily disable tests using OGL contexts to avoid libogl exit segfaults.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/11/07 10:19 AM
+2 changed, 0 added, 0 deleted.
+3,954 ms. (Cumulative: 2,089,308 ms)
+
+----------------
