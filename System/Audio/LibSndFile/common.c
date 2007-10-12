@@ -1213,13 +1213,13 @@ psf_memset (void *s, int c, sf_count_t len)
 
 void psf_get_date_str (char *str, int maxlen)
 {	
-#if !defined (_ARM_ASSEM)
+//#if !defined (_ARM_ASSEM)
 time_t		current ;
 struct tm	timedata, *tmptr ;
 timedata.tm_sec = 0;
 
 	time (&current) ;
-#endif  // end _ARM_ASSEM
+//#endif  // end _ARM_ASSEM
 
 
 #if defined (HAVE_GMTIME_R)

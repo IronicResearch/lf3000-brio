@@ -9491,3 +9491,12 @@ By gklimanis (gklimanis@leapfrog.com) on 10/12/07 4:43 PM
 4,485 ms. (Cumulative: 2,150,022 ms)
 
 ----------------
+Revision 1,920 from svn://localhost/TRUNK/:
+
+Fixed for build break :  undefined symbol OpenSoundFile()
+
+By gklimanis (gklimanis@leapfrog.com) on 10/12/07 4:48 PM
+4 changed, 2 added, 0 deleted.
+4,242 ms. (Cumulative: 2,154,326 ms)
+
+----------------
