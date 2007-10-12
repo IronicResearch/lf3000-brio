@@ -64,7 +64,7 @@ static int get_vbus(void)
 static int is_enabled()
 {
 	FILE *f;
-	int enabled0, enabled1 = 1;
+	int enabled0 = 0, enabled1 = 0;
 	int ret = 0;
 	
 	/* First check LUN0 */
@@ -81,7 +81,7 @@ static int is_enabled()
 	ret = 0;
 	f = fopen(SYSFS_LUN1_PATH, "r");
 	if(!f && errno == ENOENT)
-		enabled1 = 1;
+		return enabled0;
 	else if(!f)
 		return -1;
 	else
