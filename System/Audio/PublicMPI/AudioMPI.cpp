@@ -196,27 +196,26 @@ tErrType CAudioMPI::ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProce
 	return pModule_->ChangeAudioEffectsProcessor( id, pChain );
 }
 
-//==============================================================================
-//==============================================================================
-void CAudioMPI::SetMasterVolume( U8 volume ) 
-{
-	if ( pModule_ != kNull )
-	{
-		pModule_->SetMasterVolume( volume );
-	}
-}
-
-//==============================================================================
-//==============================================================================
+// ==============================================================================
+// GetMasterVolume
+// ==============================================================================
 U8 CAudioMPI::GetMasterVolume() const
 {
-	if ( pModule_ == kNull )
-	{
+	if ( kNull == pModule_  )
 		return 0;
-	}
 	
 	return pModule_->GetMasterVolume();
 }
+
+// ==============================================================================
+// SetMasterVolume
+// ==============================================================================
+void CAudioMPI::SetMasterVolume( U8 volume ) 
+{
+	if ( kNull != pModule_ )
+		pModule_->SetMasterVolume( volume );
+}
+
 //==============================================================================
 //==============================================================================
 // Get/Set the speaker hardware equalizer.  The speaker equalizer may be
@@ -225,12 +224,14 @@ U8 CAudioMPI::GetMasterVolume() const
 // lf1000-audio driver via ioctl().
 Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
 {
-	return 0;
+	if ( kNull == pModule_  )
+		return 0;
+return (pModule_->GetOutputEqualizer());
 }
-//----------------------------------------------------------------------------
-void	CAudioMPI:: SetSpeakerEqualizer(Boolean enable)
+void CAudioMPI:: SetSpeakerEqualizer(Boolean enable)
 {
-	return;
+	if ( kNull != pModule_ )
+		pModule_->SetOutputEqualizer( enable );
 }
 
 //==============================================================================

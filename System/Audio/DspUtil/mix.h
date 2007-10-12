@@ -10,7 +10,8 @@
 #include <math.h>
 #include "util.h"
 
-#include "mix.h"
+#include "eq.h"
+#include "shape.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,17 +29,18 @@ typedef struct mix {
 
 #define kMixerChannel_Type_In1_Out1	0
 #define kMixerChannel_Type_In1_Out2	1
-#define kMixerChannel_Type_In2_Out1	2
-#define kMixerChannel_Type_In2_Out2	3
+#define kMixerChannel_Type_In2_Out2	2
 
 typedef struct mixerchannel {
 // High Level parameters
 	float   inGainDB;
-	long     enableEQ;
-//	EQ	equalizer[2];
-	float   reverbSendDB;
+//	long    useEQ;
+
+#define kMixerChannel_EQ_MaxBands 2
+//	EQ	equalizer[kMixerChannel_EQ_MaxBands];       // NOTE:  not enough for 2 In/2 Out channel type
+//	float   reverbSendDB;
 	float   pan;
-	float   postGainDB;
+	float   outGainDB;
 
 	long 	useFixedPoint;
 	long    type;
@@ -49,13 +51,14 @@ typedef struct mixerchannel {
 
 // Low level algorithm data  (many float variables will be displaced by their Q15 equivalents
 	float   inGainf;
-	float   reverbSendf;
+//	float   reverbSendf;
 	float	panValuesf[2];
-	float   postGainf;
+	float   outGainf;
+
 	Q15     inGaini;
-	Q15     reverbSendi;
-	Q15	panValuesi[2];
-	Q15     postGaini;
+//	Q15     reverbSendi;
+	Q15	    panValuesi[2];
+	Q15     outGaini;
 
 	float   samplingFrequency;
 } MIXERCHANNEL;
@@ -69,7 +72,41 @@ void MixerChannel_SetSamplingFrequency(MIXERCHANNEL *d, float x);
 void MixerChannel_SetAllTempBuffers(MIXERCHANNEL *d, short **bufs, long count);
 
 void RunMixerChannelf(short **ins, short **outs, long length, MIXERCHANNEL *d);
-void RunMixerChanneli(short **ins, short **outs, long length, MIXERCHANNEL *d);
+void RunMixerChanneli(Q15   **ins, Q15   **outs, long length, MIXERCHANNEL *d);
+
+typedef struct mixer {
+#define kMixer_MaxInChannels  6
+#define kMixer_MaxOutChannels 2
+// High Level parameters
+    long channelCount;
+    MIXERCHANNEL  channels[kMixer_MaxInChannels];
+
+// Output section
+	float   outGainDB;
+
+	long    useOutEQ;
+#define kMixer_OutEQ_MaxBands 3
+	EQ	    outEQ[kMixer_MaxOutChannels][kMixer_OutEQ_MaxBands];
+
+	long    useOutSoftClipper;
+    WAVESHAPER outSoftClipper[kMixer_MaxOutChannels];
+
+// Low Level parameters
+    float outGainf;
+    Q15   outGaini;
+    float samplingFrequency;
+} MIXER;
+
+void DefaultMixer(MIXER *d);
+void UpdateMixer (MIXER *d);
+void ResetMixer  (MIXER *d);
+void PrepareMixer(MIXER *d);
+
+void Mixer_SetAllChannelTempBuffers(MIXER *d, short **bufs, long count);
+void Mixer_SetSamplingFrequency(MIXER *d, float x);
+
+void RunMixerf(short **ins, short **outs, long length, MIXER *d);
+void RunMixeri(Q15   **ins, Q15   **outs, long length, MIXER *d);
 
 // Mixer channel functions
 void Test_Mixer();

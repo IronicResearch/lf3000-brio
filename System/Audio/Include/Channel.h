@@ -39,7 +39,6 @@ public:
 	CChannel();
 	~CChannel();
 
-
 	// Acquire this channel to play this audio rsrc
 	tErrType	InitChanWithPlayer( CAudioPlayer* pPlayer );
 	tErrType	Release( Boolean suppressPlayerDoneMsg );
@@ -54,7 +53,7 @@ public:
 	// the remainder of the channel's buffer will be zero padded.
 	// The channel also assumes that the mix buffer is stereo 
 	// so mono data is copied to both stereo channel on mix out.
-	U32			RenderBuffer( S16 *pMixBuff, U32 numStereoFrames , long addToOutputBuffer );
+	U32			RenderBuffer( S16 *pOutP, S16 *pTmp, int numStereoFrames, Boolean addToOutputBuffer );
 
 	// Mixer needs to know if the channel is in a state appropriate
 	// for calling RenderBuffer().  Keeps flag state inside of channel.
@@ -69,22 +68,19 @@ public:
 	inline tAudioPriority	GetPriority()            				{ return priority_; }
 	inline void				SetPriority( tAudioPriority priority ) 	{ priority_ = priority; }
 
-	inline float	GetEQ_Frequency()        { return eq_frequency_; }
-	inline void		SetEQ_Frequency(float x) { eq_frequency_ = x; }
+	inline float	GetEQ_Frequency()   { return eq_frequency_; }
+	inline float	GetEQ_Q()           { return eq_q_; }
+	inline float	GetEQ_GainDB()      { return eq_gainDB_; }
 
-	inline float	GetEQ_Q()        { return eq_q_; }
-	inline void		SetEQ_Q(float x) { eq_q_ = x; }
-
-	inline float	GetEQ_GainDB()        { return eq_gainDB_; }
-	inline void		SetEQ_GainDB(float x) { eq_gainDB_ = x; }
+	inline void		SetEQ_Parameters(float frequency, float q, float gainDB) { eq_frequency_ = frequency; eq_q_ = q; eq_gainDB_ = gainDB;}
 
 	inline void		SetMixerChannelDataPtr(MIXERCHANNEL *d) { pDSP_ = d; }
 
 //	inline long		GetMixBinIndex()       { return mixBinIndex_; }
 //	inline void		SetMixBinIndex(long x) { mixBinIndex_ = x; }
 
-	inline long		GetSamplingFrequency()        { return inSampleRate_; }
-//	inline void		SetSamplingFrequency(float x) { inSampleRate_ = x; }
+	inline long		GetSamplingFrequency()        { return samplingFrequency_; }
+//	inline void		SetSamplingFrequency(float x) { samplingFrequency_ = x; }
 
 	// Return the requested status of the channel 
 	inline Boolean			IsInUse()  { return fInUse_; }
@@ -92,35 +88,40 @@ public:
 	inline Boolean			HasOwnAudioEffectsProcessor() { return fOwnProcessor_; }
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
+//    S16 *outP;   // TEMPORARY.  Used only during rearchitecture
 private:
-	U8				volume_;	// Volume of the channel
-	S8				pan_;		// Pan of the channel 
-	float			panValuesf[2];
-	Q15				panValuesi[2];
+	U8			volume_;	
+	S8			pan_;		 
+
+#define kAudioMixerChannel_MaxOutChannels 2
+	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
+	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
+	float		gainf;
+	Q15			gaini;
+    float       levelsf[kAudioMixerChannel_MaxOutChannels]; // gain * panValue
+    Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
+
 	tAudioPriority	priority_;	// channel priority
 
-	float			eq_frequency_;
-	float			eq_q_;
-	float			eq_gainDB_;
+	float		eq_frequency_;
+	float		eq_q_;
+	float		eq_gainDB_;
 
-	U32			inSampleRate_;	// Sample rate of data as reported by player
+	U32			samplingFrequency_;	
 
 	MIXERCHANNEL	*pDSP_;
-
-	S16 			*pOutBuffer_;	// Pointer to the output buffer
-
-#define kChannel_MaxTempBuffers		2
-	S16 			*tmpPs_[kChannel_MaxTempBuffers];	
 
 //	CAudioEffectsProcessor		*pChain_;		// Pointer to a special effects processor
 	CAudioPlayer				*pPlayer_;		// Pointer to the player assigned to this channel
 	
-	Boolean fInUse_;		// Channel is in use
-	Boolean fPaused_;		// Channel is paused
+	Boolean fInUse_;		
+	Boolean fPaused_;		
 	Boolean fReleasing_;	// Channel is in the process of being reset
 	Boolean fOwnProcessor_;	// Channel has own audio effects processor
 	
 	CDebugMPI	*pDebugMPI_;
+
+    void   RecalculateLevels();
 };
 
 LF_END_BRIO_NAMESPACE()

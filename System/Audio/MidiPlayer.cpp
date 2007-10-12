@@ -219,6 +219,15 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
 //	pInfo->midiID;			// fixme/dg: midiEngineContext object?
 //	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
 	volume_ = pInfo->volume;
+// FIXX: move to decibels, but for now, linear volume
+    levelf_  = ChangeRangef((float)volume_, 0.0f, 100.0f, 0.0f, 1.0f);
+    levelf_ *= DecibelToLinearf(-3.0);
+    //gainf = ChangeRangef((float)volume_, 0.0f, 100.0f, -100.0f, 0.0f);
+    //gainf =  DecibelToLinearf(gainf);
+
+    // Convert 32-bit floating-point to Q15 fractional integer format 
+    leveli_ = FloatToQ15(levelf_);
+
 //	pInfo->priority;
 	if ( pInfo->pListener != kNull )
 		pListener_ = pInfo->pListener;
@@ -392,7 +401,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 	int 	mfp_result;
 	U32		spmidiFramesPerBuffer;
 	S16* 	pBuffer = pMidiRenderBuffer_;  // local ptr to buffer for indexing
-	S32 	sum;
+//	S32 	sum;
 	U32 	framesRead = 0;
 	U32 	numStereoSamples = numStereoFrames * kAudioBytesPerSample;
 	
@@ -480,18 +489,23 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 //	printf("!!!!! CMidiPlayer::RenderBuffer -- framesRead: %u, pContext_ 0x%x, pMidiRenderBuffer_ 0x%x!!!\n\n", framesRead, pContext_, pMidiRenderBuffer_);
 
 	// fixme/dg: mix to 32 bit buffer and clip once after
+    {
 	pBuffer = pMidiRenderBuffer_;
+    S32 y;
 	if (addToOutput)
 		{
 		for ( i = 0; i < numStereoSamples; i++)
 			{
-		 //  Apply gain
-			sum = pOutBuff[i] + (S16)((volume_ * (S32)pMidiRenderBuffer_[i])>>7);			
+//		 //  Apply gain
+//			y = pOutBuff[i] + (S16)((volume_ * (S32)pBuffer[i])>>7);	// ORIG rdg
+//			y = pOutBuff[i] + (S32)(levelsf * (float)pBuffer[i]);	// FLOAT			
+ 			y = pOutBuff[i] + (S32) MultQ15(leveli_, pBuffer[i]);	// Q15  1.15 Fixed-point		
+
 		// Saturate to 16-bit range
-			if      (sum > kS16Max) sum = kS16Max;
-			else if (sum < kS16Min) sum = kS16Min;
+			if      (y > kS16Max) y = kS16Max;
+			else if (y < kS16Min) y = kS16Min;
 		// Convert mono midi render to stereo output  GK: ?
-			pOutBuff[i] = sum;
+			pOutBuff[i] = y;
 			}
 		}
 	else
@@ -499,14 +513,19 @@ U32	CMidiPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOut
 		for ( i = 0; i < numStereoSamples; i++)
 			{
 		 //  Apply gain
-			sum = (S16)((volume_ * (S32)pMidiRenderBuffer_[i])>>7);			
+//		 //  Apply gain
+//			y = (S32)((volume_ * (S32)pBuffer[i])>>7);	// ORIG rdg
+//			y = (S32)(levelsf * (float)pBuffer[i]);	    // FLOAT			
+ 			y = (S32) MultQ15(leveli_, pBuffer[i]);	    // Q15  1.15 Fixed-point		
+
 		// Saturate to 16-bit range
-			if      (sum > kS16Max) sum = kS16Max;
-			else if (sum < kS16Min) sum = kS16Min;
+			if      (y > kS16Max) y = kS16Max;
+			else if (y < kS16Min) y = kS16Min;
 		// Convert mono midi render to stereo output  GK: ?
-			pOutBuff[i] = sum;
+			pOutBuff[i] = y;
 			}
 		}
+    }
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
 

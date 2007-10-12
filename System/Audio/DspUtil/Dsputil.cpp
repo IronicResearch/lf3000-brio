@@ -14,21 +14,68 @@
 #include <Dsputil2.h>
 
 // *************************************************************** 
-// VolumeToGain:   Convert volume slider value to gain, where
-//						
+// BoundS16:   Force value to specified range
+//              16-bit signed integer version.
+//          Modify pointer address as well as return the modified value.
 // ***************************************************************
-    float
-VolumeToGain(float x, float *xRange)
+	S16 
+BoundS16(S16 *x, S16 lo, S16 hi)
 {
-float y;
+//printf("BoundS16: x=%d  [%d .. %d] \n", *x, lo, hi);
+if      (*x < lo)
+    *x = lo;
+else if (*x > hi)
+    *x = hi;
+return (*x);
+}	// ---- end BoundS16() ---- 
 
+// *************************************************************** 
+// BoundS32:   Force value to specified range
+//              32-bit signed integer version.
+//          Modify pointer address as well as return the modified value.
+// ***************************************************************
+	S32 
+BoundS32(S32 *x, S32 lo, S32 hi)
+{
+//printf("BoundS32: x=%d  [%d .. %d] \n", *x, lo, hi);
+if      (*x < lo)
+    *x = lo;
+else if (*x > hi)
+    *x = hi;
+return (*x);
+}	// ---- end BoundS32() ---- 
+
+// *************************************************************** 
+// Boundf:   Force value to specified range
+//              32-bit float version
+// ***************************************************************
+	float 
+Boundf(float *x, float lo, float hi)
+{
+//printf("Boundf: x=%g  [%g .. %g] \n", *x, lo, hi);
+if      (*x < lo)
+    *x = lo;
+else if (*x > hi)
+    *x = hi;
+return (*x);
+}	// ---- end Boundf() ---- 
+
+// *************************************************************** 
+// VolumeToGain:   Convert volume slider value to gain, where
+//						Dumb function.  NEEDED for anything ?
+// ***************************************************************
+//    float
+//VolumeToGain(float x, float *xRange)
+//{
+//float y;
+//
 // Convert from range [0 to 10]  to [0.0 to 10/7],
 //	where 7 is unity gain
-y = x*(1.0f/7.0f);
-y = y*y;
+//y = x*(1.0f/7.0f);
+//y = y*y;
 //printf("VolumeToGain: %g -> %g (Temporary: extra 10)\n", x, y);
-return (y);
-}	// ---- end VolumeToGain() ---- 
+//return (y);
+//}	// ---- end VolumeToGain() ---- 
 
 // *************************************************************** 
 // PanValues:   Convert x position in range[-1 .. 1] to constant
@@ -100,7 +147,6 @@ if (x >= inMid)
 	x = ChangeRangef(x, inMid, inHi , outMid, outHi); 
 else
 	x = ChangeRangef(x, inLo,  inMid, outLo, outMid); 
-
 return (x);
 }	// ---- end SegmentChangeRanged() ---- 
 
@@ -109,18 +155,18 @@ return (x);
 //						power values
 // ***************************************************************
 	void 
-ConstantPowerValues(float x, float *left, float *right)
+ConstantPowerValues(float x, float *outLeft, float *outRight)
 {
 // Convert from range [0 to 1]  to [0 to Pi/2],
 x *= (float) (kPi/2.0);
 
-// This is constant power
-*left  = (float) cos(x);
-*right = (float) sin(x);
+// This is constant power  sin(x)^2 + cos(x)^2 = 1
+*outLeft  = (float) cos(x);
+*outRight = (float) sin(x);
 //CosSinf(x, outs);
 // Also, consider L2 Norm (A^2 + B^2)^(1/2)
 
-//printf("ConstantPowerValues: x=%g -> <%g, %g>\n", x, outs[Left], outs[Right]);
+//printf("ConstantPowerValues: x=%g -> <%g, %g>\n", x, *outLeft, *outRight);
 }	// ---- end ConstantPowerValues() ---- 
 
 // *************************************************************** 
@@ -171,9 +217,9 @@ for (long i = 0; i < length; i++)
     void 
 ClearShorts(short *d, long length)
 {
-for (long i = 0; i < length; i++) 
-    d[i] = 0;
-//bzero( d, length*sizeof(short));
+//for (long i = 0; i < length; i++) 
+//    d[i] = 0;
+bzero( d, length*sizeof(short));
 }	// ---- end ClearShorts() ---- 
 
 // *************************************************************** 
@@ -192,8 +238,9 @@ bzero( d, length*sizeof(long));
     void 
 CopyShorts(short *in, short *out, long length)
 {
-for (long i = 0; i < length; i++) 
-    out[i] = in[i];
+//for (long i = 0; i < length; i++) 
+//    out[i] = in[i];
+bcopy(in, out, length*sizeof(long));
 }	// ---- end CopyShorts() ---- 
 
 // *************************************************************** 
@@ -202,8 +249,9 @@ for (long i = 0; i < length; i++)
     void 
 CopyLongs(long *in, long *out, long length)
 {
-for (long i = 0; i < length; i++) 
-    out[i] = in[i];
+//for (long i = 0; i < length; i++) 
+//    out[i] = in[i];
+bcopy(in, out, length*sizeof(long));
 }	// ---- end CopyLongs() ---- 
 
 // *************************************************************** 
@@ -212,8 +260,9 @@ for (long i = 0; i < length; i++)
     void 
 CopyFloats(long *in, long *out, long length)
 {
-for (long i = 0; i < length; i++) 
-    out[i] = in[i];
+//for (long i = 0; i < length; i++) 
+//    out[i] = in[i];
+bcopy(in, out, length*sizeof(long));
 }	// ---- end CopyFloats() ---- 
 
 // *************************************************************** 
@@ -343,33 +392,6 @@ if (h != stderr)
 
 return (True);
 }	// ---- end PrintDualAxisFloatsToFile() ---- 
-
-// *************************************************************** 
-// PrintBinary16:    
-// ***************************************************************
-    void 
-PrintBinary16(FILE *h, short x)
-{
-fprintf(h, "%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n", 
-			(x & 0x8000) != 0,
-			(x & 0x4000) != 0,
-			(x & 0x2000) != 0,
-			(x & 0x1000) != 0,
-			(x & 0x0800) != 0,
-			(x & 0x0400) != 0,
-			(x & 0x0200) != 0,
-			(x & 0x0100) != 0,
-
-			(x & 0x0080) != 0,
-			(x & 0x0040) != 0,
-			(x & 0x0020) != 0,
-			(x & 0x0010) != 0,
-			(x & 0x0008) != 0,
-			(x & 0x0004) != 0,
-			(x & 0x0002) != 0,
-			(x & 0x0001) != 0
-			);
-}	// ---- end PrintBinary16() ---- 
 
 // *************************************************************** 
 // PrintFloatsToFile:    
@@ -590,8 +612,8 @@ Scale(float *in, float *out, long length, float scale)
 {
 long 	i;			
 
-//#define REAL
-#ifdef REAL
+//#define SCALE_UNROLL
+#ifdef SCALE_UNROLL
 // Scale buffer 
 for (i = (length/8); --i >= 0;)
     { 
@@ -616,26 +638,6 @@ for (i = 0; i < length; i++)
 }	// ---- end Scale() ---- 
 
 // *************************************************************** 
-// FloatToFrac16:	Convert 32-bit floating point value to 16-bit
-//			fractional integer  (1.15)
-// ***************************************************************
-    short 
-FloatToFrac16(float k)
-{
-return ((short)(k2To15m1f*k));
-}	// ---- end FloatToFrac16() ---- 
-
-// *************************************************************** 
-// FloatToFrac32:	Convert 32-bit floating point value to 32-bit
-//			fractional integer  (1.31)
-// ***************************************************************
-    long 
-FloatToFrac32(float k)
-{
-return ((short)(k2To31m1*k));
-}	// ---- end FloatToFrac32() ---- 
-
-// *************************************************************** 
 // ScaleShortsf:	Scale 'short' from in buffer to out buffer
 //			32-bit floating-point implementation
 //				( ok for "in place" operation )
@@ -644,21 +646,42 @@ return ((short)(k2To31m1*k));
 ScaleShortsf(short *in, short *out, long length, float k)
 {
 for (long i = 0; i < length; i++)
-    out[i] = (short)(k*(float)in[i]);
+    {
+    long y = (long)(k*(float)in[i]);
+    if      (y < kS16_Min)
+        y = kS16_Min;
+    else if (y > kS16_Max)
+        y = kS16_Max;
+
+    out[i] = (short)y;
+    }
 }	// ---- end ScaleShortsf() ---- 
 
 // *************************************************************** 
-// ScaleShortsi_Fractional:	Scale 'short' from in buffer to out buffer
-//				Fixed point implementation.  
+// ScaleShortsi_Q15:	Scale 'short' from in buffer to out buffer
+//				1.15 Fixed point implementation.  
 //				 0 <= k < 1
 //				(ok for "in place" operation )
 // ***************************************************************
     void 
-ScaleShortsi_Fractional(short *in, short *out, long length, short k)
+ScaleShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k)
 {
 for (long i = 0; i < length; i++)
-    out[i] = (short)(k*(float)in[i]);
-}	// ---- end ScaleShortsi_Fractional() ---- 
+    out[i] = MultQ15(in[i], k);
+}	// ---- end ScaleShortsi_Q15() ---- 
+
+// *************************************************************** 
+// MACShortsi_Q15:	Scale 'short' from 'in' and add to 'out'
+//				1.15 Fixed point implementation.  
+//				 0 <= k < 1
+//				(ok for "in place" operation )
+// ***************************************************************
+    void 
+MACShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k)
+{
+for (long i = 0; i < length; i++)
+    out[i] = MacQ15(out[i], in[i], k);
+}	// ---- end MACShortsi_Q15() ---- 
 
 // *************************************************************** 
 // ScaleShortsi:	Scale 'short' from in buffer to out buffer
@@ -1536,10 +1559,10 @@ SetUpSampleNHoldOscillator(unsigned long *z, unsigned long *counter,
 SetUpSawtoothOscillator(unsigned long *z, unsigned long *delta, float normalFrequency, float phase)
 // z		ptr to last state
 // delta	counter increment
-// normalFrequency	hertz*d->samplingPeriod
+// normalFrequency	hertz*samplingPeriod
 {
-*delta = mDoubleToULong(normalFrequency);
-*z     = mDoubleToULong(phase);
+*delta = mFloatToULong(normalFrequency);
+*z     = mFloatToULong(phase);
 }	// ---- end SetUpSawtoothOscillator() ----
 
 // **********************************************************************
@@ -1593,10 +1616,30 @@ for (i = 0; i < length; i++)
 	z0 = *z;
 	*z = z0 + delta;
 
-// Convert to to range [-1..1] 
+// Convert to range [-1..1] 
 	out[i] = NORMALTwoTo31m1f((long)z0);
 	}
 }	// ---- end SawtoothOscillator() ----
+
+// **********************************************************************
+// SawtoothOscillator_S16:    Generate band-unlimited sawtooth wave
+//
+//					Return value in range:	[-32768 .. 32767]
+// **********************************************************************
+    void 
+SawtoothOscillator_S16(short *outP, long length, unsigned long *z, unsigned long delta)
+// z		ptr to last state
+// delta	counter increment
+{
+for (long i = 0; i < length; i++)
+	{
+	unsigned long z0 = *z;
+	*z = z0 + delta;
+
+// Convert to range [-32768..32767] 
+	outP[i] = (short) (((long)z0)>>1);
+	}
+}	// ---- end SawtoothOscillator_S16() ----
 
 // **********************************************************************
 // SetUpSquareOscillator:    
@@ -1723,7 +1766,7 @@ Sine(float *out, long length, double amplitude, double phase)
 {
 long   i;
 double arg    = phase;
-double argInc = TwoPi/(double) length;
+double argInc = kTwoPi/(double) length;
 
 for (i = 0; i < length; i++, arg += argInc)
     out[i] = (float)(amplitude*sin(arg));
@@ -3047,6 +3090,7 @@ else
 return (True);
 }	// ---- end ByteToHex() ---- 
 
+#ifdef NEEDED
 // **********************************************************************************
 // FloatToHexFrac24:		Convert 32-bit floating point number to 6 char hex ASCII string 
 //
@@ -3107,6 +3151,7 @@ outS[6] = '\0';
 
 return (returnValue);
 }	// ---- end FloatToHexFrac24() ---- 
+#endif // NEEDED
 
 // **********************************************************************
 // FloatToQ31: Convert 32-bit float to 32-bit 1.31 signed integer
@@ -3115,31 +3160,46 @@ return (returnValue);
 FloatToQ31(float x)
 //	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
 {
-Q31 y = (Q31)(0.5 + x*k2To31m1);
-return (y);
+float y = (Q31)(0.5f + x*k2To31m1);
+//Boundf(&y, kS32_Min, kS32_Max);
+return ((Q31) y);
 }	// ---- end FloatToQ31() ----
 
 // **********************************************************************
 // Q31ToFloat: Convert 32-bit 1.31 signed integer to 32-bit float
+//                 NOTE: Precision lost when 32-bit value is stored in 24-bit mantissa
 // **********************************************************************
 	float 
 Q31ToFloat(Q31 x)
 //	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
 {
-float y = ((float)x)*(1.0/k2To31m1);
-return (y);
+return ((1.0/k2To31m1)*(float)x);       // FIXXX: Never tested
 }	// ---- end Q31ToFloat() ----
 
 // **********************************************************************
-// FloatToQ15: Convert 32-bit float to 32-bit 1.31 signed integer
+// FloatToQ15: Convert 32-bit float to 16-bit 1.15 signed integer
+//                      Return 
 // **********************************************************************
 	Q15 
 FloatToQ15(float x)
 //	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
 {
-Q15 y = (Q15)(0.5 + x*k2To15m1);
-return (y);
+long y = (long)(0.5f + k2To15m1*x);
+return ((Q15) BoundS32(&y, kS16_Min, kS16_Max));
 }	// ---- end FloatToQ15() ----
+
+// **********************************************************************
+// FloatToQ15v2: Convert 32-bit float to 16-bit 1.15 signed integer range
+//                          But in lower 16-bits of 32-bit container
+// **********************************************************************
+	Q31
+FloatToQ15v2(float x)
+//	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
+{
+long y = (long)(k2To15m1*x);
+//BoundS32(&y, kS16_Min, kS16_Max);
+return ((Q31) y);
+}	// ---- end FloatToQ15v2() ----
 
 // **********************************************************************
 // Q15ToFloat: Convert 16-bit 1.15 signed integer to 32-bit float
@@ -3148,9 +3208,26 @@ return (y);
 Q15ToFloat(Q15 x)
 //	x	Range [-1 .. 1]  well, up to one LSB less than 1.0
 {
-float y = (1.0/k2To15m1)*(float)x;
-return (y);
+return ((1.0f/k2To15m1)*(float)x);
 }	// ---- end Q15ToFloat() ----
+
+// **********************************************************************
+// PrintQ15asFloat: Print 16-bit 1.15 signed integer as a 32-bit float
+// **********************************************************************
+	void 
+PrintQ15asFloat(Q15 x)
+{
+printf("PrintQ15asFloat: %04X -> %g \n", x, Q15ToFloat(x));
+}	// ---- end PrintQ15asFloat() ----
+
+// **********************************************************************
+// PrintQ31asFloat: Print 32-bit 1.31 signed integer as a 32-bit float
+// **********************************************************************
+	void 
+PrintQ31asFloat(Q15 x)
+{
+printf("PrintQ15asFloat: %08X -> %g \n", x, Q31ToFloat(x));
+}	// ---- end PrintQ31asFloat() ----
 
 // **********************************************************************************
 // AddQ15:		Add two Q15 (1.15) integers with saturation arithmetic
@@ -3188,64 +3265,6 @@ z = x - y;  // FIXX: no saturation here
 #endif
 return (z);
 }	// ---- end SubQ15() ---- 
-
-// *************************************************************** 
-// MultQ15:	Integer multiplication
-//
-//			16x16=32-bit fixed-point implementation
-//				1.15 x 1.15 = 1.30
-// ***************************************************************
-__inline Q15 MultQ15( Q15 a, Q15 b )
-{
-Q15 y;
-
-//	__asm {
-//	    SMULWT    y, a, b
-//	    QADD    y, y, y
-//	}
-// Attempt at GCC version (doesn't compile)
-//	asm("smulwt    (product), (x), (y)\n\t"
-//	    "qadd    (product), (product), (product)\n\t"
-//	);
-#ifdef USE_ARM946_DSPEXT
-// NOTE:  volatile instructs compiler to skip optimization of assembly instructions
-// __asm__  __volatile__ (  // Use this for stricter compilers
-asm volatile (
-	"smulbb %0, %1, %2\n\t"
-	"mov %0, %0, asr#15\n\t"
-	: "=r" (y) 
-	: "r" (a), "r" (b)
-	: "r3"
-	);
-#else
-y = (a*b)>>15;
-#endif
-
-return (y);
-}	// ---- end MultQ15() ---- 
-
-// *************************************************************** 
-// MacQ15:	Integer multiplication and addition
-//
-//				1.15 x 1.15 = 1.30
-// ***************************************************************
-__inline Q15 MacQ15( Q15 y, Q15 a, Q15 b )
-{
-Q15 z;
-#ifdef USE_ARM946_DSPEXT
-asm volatile (
-	"smulbb %0, %1, %2\n\t"
-	"mov %0, %0, asr#15\n\t"
-	: "=r" (z) 
-	: "r" (y), "r" (a), "r" (b)
-	: "r3"
-	);
-#else
-z = y + ((a*b)>>15);
-#endif
-
-return (z);
-}	// ---- end MacQ15() ---- 
 
 // **********************************************************************************
 // AddQ31:		Add two Q31 (1.31) integers with saturation arithmetic

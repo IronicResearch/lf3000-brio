@@ -11,6 +11,10 @@
 
 #include "util.h"
 
+//char _logFilePath[_MAX_PATH];
+//char _gkS[2000];	// convenience space for WriteToLogFile()
+//int _dspSnapShotFlag = Off;
+
 // **********************************************************************************
 // PrintTimeval:	Print struct stuff to console
 // ********************************************************************************** 
@@ -151,5 +155,55 @@ if (s1[i] == '\0' && s2[i] == '\0')
 	return (0);
 return (1);
 }	// ---- end Stricmp() ---- 
+
+#ifdef NEED_LOGFILE_FUNCTIONS
+// ****************************************************************
+// SetLogFilePath:	Set log file path
+//					Return Boolean success
+// ****************************************************************
+	int 
+SetLogFilePath(char *fullPath)
+{
+strcpy(_logFilePath, fullPath);
+return (True);
+}	// ---- end SetLogFilePath() ---- 
+
+// ****************************************************************
+// WriteToLogFile:	Append text string to log file
+//					Return Boolean success
+// ****************************************************************
+	int 
+WriteToLogFile(char *text)
+{
+FILE *h;
+
+// If log file name not set, use "gkDspUtilLog.txt"
+//if (_logFilePath[0] == '\0')
+//	strcpy(_logFilePath, "gkDspUtilLog.txt");
+
+if (NULL == (h = fopen(_logFilePath, "a+t"))) 
+	{
+	printf("WriteToLogFile: unable to open log file '%s'\n", _logFilePath);
+	return (FALSE);
+	}
+
+fwrite(text, sizeof(char), strlen(text),  h);
+fclose(h);
+
+return (True);
+}	// ---- end WriteToLogFile() ---- 
+
+// ****************************************************************
+// WriteToLogFile2:	Append current _gkS text buffer to log file
+//					Return Boolean success
+// ****************************************************************
+	int 
+WriteToLogFile2()
+{
+return (WriteToLogFile(_gkS));
+}	// ---- end WriteToLogFile2() ---- 
+#endif
+
+
 
 

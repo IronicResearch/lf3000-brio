@@ -9442,3 +9442,18 @@ By gklimanis (gklimanis@leapfrog.com) on 10/12/07 1:24 PM
 30,737 ms. (Cumulative: 2,132,092 ms)
 
 ----------------
+Revision 1,911 from svn://localhost/TRUNK/:
+
+Added 1)
+1) 2nd Order IIR Equalizer functions (16x16 Q15 integer arithmetic) for :
+Low Pass, High pass, Low Shelving, High Shelving, Parametric (fc, Q, gainDB)
+2) Soft clipper (polynomial S-curve)
+3) control path from audio message to mixer for output EQ switch
+4) lots of other things that can't deserve commentation due to check-in timing ...
+
+
+By gklimanis (gklimanis@leapfrog.com) on 10/12/07 1:39 PM
+21 changed, 4 added, 0 deleted.
+4,722 ms. (Cumulative: 2,136,892 ms)
+
+----------------

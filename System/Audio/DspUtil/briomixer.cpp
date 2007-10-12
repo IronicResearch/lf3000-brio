@@ -263,7 +263,7 @@ for (index = kBrioMixer_In_VOX_CH1; index <= kBrioMixer_In_VOX_CH2; index++)
 
 		// Pan to Submix buffers 
 		// FIXXX: combine pan and gain
-		ScaleShortsf(   tmpPs[0], tmpPs[0], length, d->channels[index].postGainf);
+		ScaleShortsf(   tmpPs[0], tmpPs[0], length, d->channels[index].outGainf);
 		ScaleAddShortsf(tmpPs[0], subPs[0], length, d->channels[index].panValuesf[kLeft ]);
 		ScaleAddShortsf(tmpPs[0], subPs[1], length, d->channels[index].panValuesf[kRight]);
 		}
@@ -303,7 +303,7 @@ for (index = kBrioMixer_In_SFX_CH1_Left; index <= kBrioMixer_In_SFX_CH2_Left; in
 		//		ScaleAddShorts(tmpPs[0], d->fxSendBuffers[kBrioMixer_FxSend_Reverb], length, True);
 
 			// Copy to Submix buffers with Stereo panning
-				ScaleAddShortsf(tmpPs[0], subPs[ch], length, d->channels[index+ch].postGainf);
+				ScaleAddShortsf(tmpPs[0], subPs[ch], length, d->channels[index+ch].outGainf);
 				}
 			}
 
@@ -322,15 +322,15 @@ for (index = kBrioMixer_In_MSX_CH1_Left; index <= kBrioMixer_In_MSX_CH1_Left; in
 	if (inPs[index] && !inPs[index+1])
 		{
 	//  Scale by gain and then copy to output temporary mix (Center Pan)
-		ScaleAddShortsf(inPs[index], tmpPs[kLeft ], length, d->channels[index+kLeft].postGainf);
-		ScaleAddShortsf(inPs[index], tmpPs[kRight], length, d->channels[index+kLeft].postGainf);
+		ScaleAddShortsf(inPs[index], tmpPs[kLeft ], length, d->channels[index+kLeft].outGainf);
+		ScaleAddShortsf(inPs[index], tmpPs[kRight], length, d->channels[index+kLeft].outGainf);
 		}
 // Stereo case
 	else if (inPs[index] && inPs[index+1])
 		{
 	//  Scale by gain and then copy to output temporary mix (Center Pan)
-		ScaleAddShortsf(inPs[index  ], tmpPs[kLeft ], length, d->channels[index+kLeft].postGainf);
-		ScaleAddShortsf(inPs[index+1], tmpPs[kRight], length, d->channels[index+kRight].postGainf);
+		ScaleAddShortsf(inPs[index  ], tmpPs[kLeft ], length, d->channels[index+kLeft].outGainf);
+		ScaleAddShortsf(inPs[index+1], tmpPs[kRight], length, d->channels[index+kRight].outGainf);
 		}
 
 	// Process summed music channels as a stereo stream
@@ -342,7 +342,7 @@ for (index = kBrioMixer_In_MSX_CH1_Left; index <= kBrioMixer_In_MSX_CH1_Left; in
 	//		ScaleAddShorts(tmpPs[ch], d->fxSendBuffers[kBrioMixer_FxSend_Reverb], length, True);
 
 		// Scale to Submix buffers with Center panning
-			ScaleAddShortsf(tmpPs[ch], subPs[ch], length, d->channels[index].postGainf);
+			ScaleAddShortsf(tmpPs[ch], subPs[ch], length, d->channels[index].outGainf);
 			}
 		}
 	}

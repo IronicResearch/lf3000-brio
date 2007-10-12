@@ -54,9 +54,12 @@ public:
 	Boolean				audioOutputPaused;	// Flag for whether audio out driver is paused
 	volatile Boolean	audioMgrTaskReady;	// Flag for whether audio manager task is ready
 	tAudioID			nextAudioID;		// Next audioID
-	U8					masterVolume;		// Master volume
+
+	U8					masterVolume;		// NOTE: free of the burden "units"
+	U8					outputEqualizerEnabled;		
 	U8					numMixerChannels;
 	U32					sampleRate;
+
 	IEventListener*		pDefaultListener;
 	
 	tMessageQueueHndl 	hSendMsgQueue;
@@ -228,9 +231,18 @@ static void SendMsgToAudioModule( CAudioReturnMessage msg )
 //==============================================================================
 static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg ) 
 {
-	U8 volume = pMsg->GetData();
-	gContext.masterVolume = volume;
+	U8 x = pMsg->GetData();
+	gContext.masterVolume = x;
 	gContext.pAudioMixer->SetMasterVolume( gContext.masterVolume );
+}
+
+//==============================================================================
+//==============================================================================
+static void DoSetOutputEqualizer( CAudioMsgSetOutputEqualizer* pMsg ) 
+{
+	U8 x = pMsg->GetData();
+	gContext.outputEqualizerEnabled = x;
+	gContext.pAudioMixer->SetOutputEqualizer( gContext.outputEqualizerEnabled );
 }
 
 //==============================================================================
@@ -1054,6 +1066,14 @@ void* AudioTaskMain( void* /*arg*/ )
 				DoSetMasterVolume( (CAudioMsgSetMasterVolume*)pAudioMsg );				   
 				break;
 	
+			//*********************************
+			case kAudioCmdMsgTypeSetOutputEqualizer:
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+					"AudioTaskMain() -- output equalizer enable adjustment.\n" );	
+	
+				DoSetOutputEqualizer( (CAudioMsgSetOutputEqualizer*)pAudioMsg );				   
+				break;
+
 			//*********************************
 			case kAudioCmdMsgTypePauseAllAudio:
 				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 

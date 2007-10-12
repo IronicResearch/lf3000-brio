@@ -2,74 +2,18 @@
 //
 // Header file DSP functions
 //
-//				Written by Gints Klimanis
+//				Written by Gints Klimanis, 1996-present
 // *************************************************************************
 
 #ifndef __DSPUTIL_H__
 #define	__DSPUTIL_H__
 
 #include <math.h>
+#include <stdio.h>
 
 #include "util.h"
-
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#ifndef FALSE
-#define FALSE	0
-#endif
-#ifndef False
-#define False	0
-#endif
-
-#ifndef TRUE
-#define TRUE	1
-#endif
-#ifndef True
-#define True	1	
-#endif
-
-#ifndef LEFT
-#define LEFT	0
-#endif
-#ifndef Left
-#define Left	LEFT
-#endif
-
-#ifndef RIGHT
-#define RIGHT	1
-#endif
-
-#ifndef Right
-#define Right	RIGHT
-#endif
-
-#ifndef OFF
-#define OFF		0
-#endif
-#ifndef Off
-#define Off		OFF
-#endif
-
-#ifndef ON
-#define ON		1
-#endif
-#ifndef On
-#define On		ON
-#endif
-
-#ifndef LO
-#define LO		1
-#endif
-#ifndef Lo
-#define Lo		LO
-#endif
-#ifndef HI
-#define HI		1
-#endif
-#ifndef Hi
-#define Hi		HI
 #endif
 
 #ifndef kLeft
@@ -173,7 +117,7 @@ extern "C" {
 #define k2To32f		((float ) k2To32i)
 
 #define k2ToTheMinus15		(1.0/k2To15)
-#define k2ToTheMinus15f	        (1.0f/k2To15f)
+#define k2ToTheMinus15f	    (1.0f/k2To15f)
 #define k2ToTheMinus31		(1.0/k2To31)
 #define k2ToTheMinus31f	((float)(1.0/k2To31))
 
@@ -226,9 +170,29 @@ int WriteToFile(char *text, char *path);
 #define kPrintLevelAppendAll	(kPrintLevelAppend | kPrintLevelAll )
 #define kPrintLevelAppendBoth	kPrintAppendLevelAll
 
-#define kPrintLevelNone	0x0
+#define kPrintLevelNone	        0x0
 
-#define kDefaultSeamLevel	(-96.0)		// Decibels
+typedef short           S16;   
+typedef long            S32;   
+typedef unsigned long   U32;   
+
+typedef short Q15;   // 1.15 format in 16 bits
+typedef long  Q31;   // 1.31 format in 32 bits
+
+#define kS16_Max ( 32767)
+#define kS16_Min (-32768)
+#define kS16_Maxf ((float)kS16_Max)
+#define kS16_Minf ((float)kS16_Min)
+
+#define kQ15_Max ( 32767)
+#define kQ15_Min (-32768)
+#define kQ15_Maxf ((float)kQ15_Max)
+#define kQ15_Minf ((float)kQ15_Min)
+
+#define kS32_Max ( k2To32m1i)
+#define kS32_Min (-k2To32i)
+#define kS32_Maxd ((float)kS16_Max)  // Need 64-bit float to preserve 32-bit precision
+#define kS32_Mind ((float)kS16_Min)
 
 #define kMaxSamplingFrequency	48000.0
 #define kMaxSamplingRate		kMaxSamplingFrequency
@@ -254,6 +218,7 @@ int WriteToFile(char *text, char *path);
 #ifndef ChangeRange
 #define	ChangeRange ChangeRanged
 #endif
+//void ChangeRangef(float x, float L1, float H1, float L2, float H2);
 
 // ShiftRange: Massage Range [LO1 .. HI1] to [LO2 .. HI2]
 // y = (x - LO1)*((HI2 - LO2)/(HI1 - LO1)) + LO2
@@ -320,7 +285,7 @@ void FrequencyInHertz (double frequency, char *out, char printFormat);
 #define Roundl(x)	   ((long )((x) + 0.5)) 
 #define Rounds(x)	   ((short)((x) + 0.5))
 
-float VolumeToGain(float x, float *xRange);
+//float VolumeToGain(float x, float *xRange);
 
 #define kPanValue_FullLeft ( 1.0)
 #define kPanValue_Center      0.0
@@ -329,12 +294,6 @@ void  PanValues   (float x, float *outs);
 void  ConstantPowerValues(float x, float *left, float *right);
 
 #define kE		 2.718281828
-#define	kPi		 3.14159265358979323846
-#define	k2Pi	(2.0*kPi)
-#define	kHalfPi	(0.5*kPi)
-#define	kPif	 ((float) kPi)
-#define	k2Pif	 ((float) k2Pi)
-#define	kHalfPif ((float) kHalfPi)
 
 #define kLog10_2   0.3010299956639812
 #define kLog10_2f ((float) kLog10_2)
@@ -400,17 +359,18 @@ short Binary16ToShort(char *s);
 //#define M_PI	 	(3.14159265358979323846)
 #define M_2PI	 	(2.0*M_PI)
 
-#define Pi			M_PI
-#define TwoPi		M_2PI
-#define Sqrt2		M_SQRT2
+#define kPi			M_PI // 3.14159265358979323846
+#define	k2Pi	    (2.0*kPi)
+#define kTwoPi		k2Pi
+#define kSqrt2		M_SQRT2 // 1.414213562
 
-#define Pif			((float) Pi)
-#define TwoPif		((float) TwoPi)
-#define Sqrt2f		((float) Sqrt2)
+#define kPif		((float) kPi)
+#define kTwoPif		((float) kTwoPi)
+#define kSqrt2f		((float) kSqrt2)
 
-#define kSqrt2		 1.414213562
-#define kSqrt2d2	(kSqrt2/2.0)
-#define kSqrt2f		 ((float) kSqrt2)
+#define	kHalfPi	(0.5*kPi)
+#define	kHalfPif ((float) kHalfPi)
+#define kSqrt2d2	(kSqrt2/2.0)
 #define kSqrt2d2k2Tof	 ((float) kSqrt2d2)
 
 #define Log10of2	 0.3010299956639812
@@ -803,6 +763,9 @@ short Binary16ToShort(char *s);
     if      ((x) < (r)[LO]) (x) = (r)[LO];\
     else if ((x) > (r)[HI]) (x) = (r)[HI];\
 }
+S16   BoundS16(S16 *x, S16 lo, S16 hi);
+S32   BoundS32(S32 *x, S32 lo, S32 hi);
+float Boundf(float *x, float lo, float hi);
 
 #define CEILING(x, hi) {\
 	if ((x) > (hi))		(x) = (hi);\
@@ -875,7 +838,7 @@ void PrintFloatsDB	  (float *d, long length);
 char PrintFloatsToFile(float *d, long length, char *path);
 char PrintFloatsToFile_ZeroClamp(float *d, long length, char *path, float lo, float hi);
 char PrintDualAxisFloatsToFile(float *x, float *y, long length, char *path);
-void PrintBinary16(FILE *h, short x);
+//void PrintBinary16(FILE *h, short x);
 
 void PrintFloatLine   (float *d, long length);
 void PrintAxisFloats  (float *d, long length, double x0, double x1);
@@ -925,9 +888,11 @@ void Ramp     (float *out, long length, float start, float end);
 
 void ScaleShortsf(short *in, short *out, long length, float k);
 void ScaleShortsi(short *in, short *out, long length, float k);
-void ScaleShortsi_Fractional(short *in, short *out, long length, short k);
+void ScaleShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k);
 
 void ScaleAddShortsf(short *in, short *out, long length, float k);
+void MACShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k);
+
 void AddShorts(short *in, short *out, long length, long saturate);
 
 // Mixer value functions
@@ -990,6 +955,9 @@ void ComputeSineOscillator(float *out, long length, double *z, double *h);
 void SquareOscillator	  (float *out, long length, unsigned long *z, unsigned long delta);
 void TriangleOscillator   (float *out, long length, unsigned long *z, unsigned long delta);
 
+    void 
+SawtoothOscillator_S16(short *outP, long length, unsigned long *z, unsigned long delta);
+
 void BlastSineOscillator(float *out, long length, double *z, double *h, float gain, int *init);
 
 double SamplesToSeconds(int samples, double samplingFrequency);
@@ -1022,10 +990,9 @@ int FloatToHexFrac24(float x, int capitalize, char *outS);
 // Q fixed point integer routines
 // Define fixed point multiplication of the high 16-bit halves of
 // two 32-bit fixed-point numbers.
-typedef short Q15;   // 1.15 format in 16 bits
-typedef long  Q31;   // 1.31 format in 32 bits
 
 Q15 FloatToQ15(float x);
+Q31 FloatToQ15v2(float x);
 float Q15ToFloat(Q15 x);
 
 Q31 FloatToQ31(float x);
@@ -1033,13 +1000,78 @@ float Q31ToFloat(Q31 x);
 
 __inline Q15 AddQ15 ( Q15 a, Q15 b );
 __inline Q15 SubQ15 ( Q15 a, Q15 b );
-__inline Q15 MultQ15( Q15 a, Q15 b );
-__inline Q15 MacQ15 ( Q15 x, Q15 a, Q15 b );
+//__inline Q15 MultQ15( Q15 a, Q15 b );
+//__inline Q15 MacQ15 ( Q15 x, Q15 a, Q15 b );
 
 __inline Q31 AddQ31 ( Q31 a, Q31 b );
 __inline Q31 SubQ31 ( Q31 a, Q31 b );
 __inline Q31 MultQ31( Q31 a, Q31 b );
 __inline Q31 MacQ31 ( Q31 x, Q31 a, Q31 b );
+
+void PrintQ15asFloat(Q15 x);
+void PrintQ31asFloat(Q31 x);
+
+// *************************************************************** 
+// MultQ15:	Integer multiplication
+//
+//			16x16=32-bit fixed-point implementation
+//				1.15 x 1.15 = 1.30
+// ***************************************************************
+__inline Q15 MultQ15( Q15 a, Q15 b )
+{
+Q15 y;
+
+//	__asm {
+//	    SMULWT    y, a, b
+//	    QADD    y, y, y
+//	}
+// Attempt at GCC version (doesn't compile)
+//	asm("smulwt    (product), (x), (y)\n\t"
+//	    "qadd    (product), (product), (product)\n\t"
+//	);
+#ifdef USE_ARM946_DSPEXT
+// NOTE:  volatile instructs compiler to skip optimization of assembly instructions
+// __asm__  __volatile__ (  // Use this for stricter compilers
+asm volatile (
+	"smulbb %0, %1, %2\n\t"
+	"mov %0, %0, asr#15\n\t"
+	: "=r" (y) 
+	: "r" (a), "r" (b)
+	: "r3"
+	);
+#else
+y = (a*b)>>15;
+#endif
+
+return (y);
+}	// ---- end MultQ15() ---- 
+
+// *************************************************************** 
+// MacQ15:	1.15 Integer multiplication and addition
+//
+//          Return z = y + a*b
+//				1.15 x 1.15 = 1.30
+// ***************************************************************
+__inline Q15 MacQ15( Q15 y, Q15 a, Q15 b )
+{
+Q15 z;
+#ifdef USE_ARM946_DSPEXT
+//	"smulbb %0, %1, %2\n\t"
+//	"smlabb %0, %1, %2\n\t"
+asm volatile (
+	"smulbb %0, %2, %3\n\t"
+	"mov %0, %0, asr#15\n\t"
+	"qadd %0, %0, %1\n\t"
+	: "=r" (z) 
+	: "r" (y), "r" (a), "r" (b)
+	: "r3"
+	);
+#else
+z = y + ((a*b)>>15);
+#endif
+
+return (z);
+}	// ---- end MacQ15() ---- 
 
 // Test for Mobileer FXP31 routines
 /* Define fixed-point data types. The number indicates the number of fractional bits. */

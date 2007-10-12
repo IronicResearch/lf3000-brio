@@ -42,11 +42,17 @@ static CAudioModule*	sinst = NULL;
 // CAudioCmdMessages
 //============================================================================
 //------------------------------------------------------------------------------
-CAudioMsgSetMasterVolume::CAudioMsgSetMasterVolume( const U8 masterVolume ) {
+CAudioMsgSetMasterVolume::CAudioMsgSetMasterVolume( const U8 x ) {
 	type_ = kAudioCmdMsgTypeSetMasterVolume;
 	messageSize = sizeof(CAudioMsgSetMasterVolume);
 	messagePriority = kAudioMsgDefaultPriority;
-	masterVolume_ = masterVolume;
+	masterVolume_ = x;
+}
+CAudioMsgSetOutputEqualizer::CAudioMsgSetOutputEqualizer( const U8 x ) {
+	type_ = kAudioCmdMsgTypeSetOutputEqualizer;
+	messageSize = sizeof(CAudioMsgSetOutputEqualizer);
+	messagePriority = kAudioMsgDefaultPriority;
+	outputEqualizerEnabled_ = x;
 }
 
 ///------------------------------------------------------------------------------
@@ -448,7 +454,8 @@ CAudioModule::CAudioModule( void )
  	err = pKernelMPI_->InitMutex( mpiMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
 
-	masterVolume_ = 100;  // TODO: hack, should get this from the mixer.
+	masterVolume_           = 100;  // FIXX TODO: hack, should get this from the mixer.
+	outputEqualizerEnabled_ = false;  // FIXX TODO: hack, should get this from the mixer.
 }
 
 //==============================================================================
@@ -634,6 +641,39 @@ U8 CAudioModule::GetMasterVolume( void )
 	return masterVolume_;
 }
 
+//==============================================================================
+//==============================================================================
+void CAudioModule::SetOutputEqualizer( U8 x )
+{
+	tErrType 	result = kNoErr;
+
+	// Keep local copy.
+	outputEqualizerEnabled_ = x;
+	
+	result = pKernelMPI_->LockMutex( mpiMutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetOutputEqualizer -- Couldn't lock mutex.\n");
+
+	// Need to inform the audio mixer that the master volume has changed
+	// Generate the command message to send to the audio Mgr task
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"AudioMgr:SetMasterVolume; outputEqualizerEnabled_ = %d\n", outputEqualizerEnabled_ );	
+
+	CAudioMsgSetOutputEqualizer	msg( outputEqualizerEnabled_ );
+	
+	// Send the message and wait to get the audioID back from the audio Mgr task
+ 	SendCmdMessage( msg ); 
+
+ 	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
+ 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetOutputEqualizer --  Couldn't unlock mutex.\n");
+}
+
+//==============================================================================
+//==============================================================================
+U8 CAudioModule::GetOutputEqualizer( void )
+{
+	// TODO: This probably should call through to the mixer...
+	return outputEqualizerEnabled_;
+}
 //==============================================================================
 //==============================================================================
 tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
@@ -873,7 +913,7 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 
 //==============================================================================
 //==============================================================================
-void CAudioModule::SetAudioVolume( tAudioID id, U8 volume ) 
+void CAudioModule::SetAudioVolume( tAudioID id, U8 x ) 
 {
 	tAudioVolumeInfo				info;
 
@@ -881,7 +921,7 @@ void CAudioModule::SetAudioVolume( tAudioID id, U8 volume )
 		"CAudioModule::SetAudioVolume -- ID = %d\n", static_cast<int>(id) );	
 
 	info.id = id;
-	info.volume = volume;
+	info.volume = x;
 
 	CAudioMsgSetAudioVolume		msg( info );
 	
@@ -1027,13 +1067,13 @@ U8 CAudioModule::GetDefaultAudioVolume( U32 mpiID )
 
 //==============================================================================
 //==============================================================================
-void CAudioModule::SetDefaultAudioVolume( U32 mpiID, U8 volume ) 
+void CAudioModule::SetDefaultAudioVolume( U32 mpiID, U8 x ) 
 {
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 		"CAudioModule::SetDefaultAudioVolume -- mpiID = %d\n", static_cast<int>(mpiID) );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
-	mpiState.volume = volume;
+	mpiState.volume = x;
 }
 
 //==============================================================================

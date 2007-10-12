@@ -34,6 +34,7 @@ enum {
 	kAudioCmdMsgTypeChangeAudioEffectsProcessor,
 
 	kAudioCmdMsgTypeSetMasterVolume,
+	kAudioCmdMsgTypeSetOutputEqualizer,
 
 	kAudioCmdMsgTypeStartAllAudio,
 	kAudioCmdMsgTypePauseAllAudio,
@@ -103,6 +104,16 @@ public:
 	
 private:
 	U8	masterVolume_;
+};
+
+// kAudioCmdMsgTypeSetOutputEqualizer
+class CAudioMsgSetOutputEqualizer : public CAudioCmdMsg {
+public:    
+	CAudioMsgSetOutputEqualizer( const U8 enable );
+	U8	GetData( void ) { return outputEqualizerEnabled_; }
+	
+private:
+	U8	outputEqualizerEnabled_;
 };
 
 //kAudioCmdMsgTypeSetAudioVolume,
