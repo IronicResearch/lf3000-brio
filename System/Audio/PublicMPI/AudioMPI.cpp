@@ -228,8 +228,10 @@ Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
 		return 0;
 return (pModule_->GetOutputEqualizer());
 }
+
 void CAudioMPI:: SetSpeakerEqualizer(Boolean enable)
 {
+//printf("CAudioMPI::SetOutputEqualizer: enable=%d\n", enable);
 	if ( kNull != pModule_ )
 		pModule_->SetOutputEqualizer( enable );
 }

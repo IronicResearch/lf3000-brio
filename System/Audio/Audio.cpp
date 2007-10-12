@@ -622,7 +622,7 @@ void CAudioModule::SetMasterVolume( U8 volume )
 	// Need to inform the audio mixer that the master volume has changed
 	// Generate the command message to send to the audio Mgr task
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"AudioMgr:SetMasterVolume; volume = %d\n", volume );	
+		"CAudioModule::SetMasterVolume; volume = %d\n", volume );	
 
 	CAudioMsgSetMasterVolume	msg( volume );
 	
@@ -655,8 +655,8 @@ void CAudioModule::SetOutputEqualizer( U8 x )
 
 	// Need to inform the audio mixer that the master volume has changed
 	// Generate the command message to send to the audio Mgr task
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"AudioMgr:SetMasterVolume; outputEqualizerEnabled_ = %d\n", outputEqualizerEnabled_ );	
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//		"CAudioModule::SetOutputEqualizer: outputEqualizerEnabled_ = %d\n", outputEqualizerEnabled_ );	
 
 	CAudioMsgSetOutputEqualizer	msg( outputEqualizerEnabled_ );
 	

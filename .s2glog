@@ -9480,3 +9480,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/12/07 3:55 PM
 4,234 ms. (Cumulative: 2,145,474 ms)
 
 ----------------
+Revision 1,919 from svn://localhost/TRUNK/:
+
+Connected Button handerl to Audio MPI
+
+Lightning headphone jack now toggles output equalizer properly.
+
+By gklimanis (gklimanis@leapfrog.com) on 10/12/07 4:43 PM
+3 changed, 0 added, 0 deleted.
+4,485 ms. (Cumulative: 2,150,022 ms)
+
+----------------

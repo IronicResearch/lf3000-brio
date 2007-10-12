@@ -520,13 +520,14 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 // Compute Output Equalizer
 // NOTE: should have 32-bit data path here for EQ before soft clipper
 //useOutEQ_ = True;
+//{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
     if (useOutEQ_)
         {
-{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
+//{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
         for (long j = 0; j < outEQ_BandCount_; j++)
             {
 //            ComputeEQf(pIn, pOut, numFrames, &outEQ_[ch][j]);
-            ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
+//            ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
             pOut = pIn;
             }
         }
@@ -682,7 +683,7 @@ printf("CAudioMixer::UpdateDebugGain: postGainDB %g -> %g (%04X) \n", postGainDB
 // ==============================================================================
 void CAudioMixer::SetOutputEqualizer(Boolean x)
 {
-printf("CAudioMixer::SetOutputEqualizer: useOutEQ_=%ld\n", useOutEQ_);
+//printf("CAudioMixer::SetOutputEqualizer: useOutEQ_=%ld->%ld\n", (long)useOutEQ_, (long)x);
 // Careful with reset if DSP is running in a separate thread.
 ResetDSP();
 useOutEQ_ = x;
