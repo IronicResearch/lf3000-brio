@@ -41,9 +41,9 @@ const tVersion	kAudioModuleVersion	= 2;
 
 enum tAudioTypeInt {
 	kAudioRsrcUndefined = 0,
-	kAudioRsrcMIDI = 1,
+	kAudioRsrcMIDI      = 1,
 	kAudioRsrcOggVorbis = 2,
-	kAudioRsrcRaw = 3,
+	kAudioRsrcRaw       = 3,
 	kAudioRsrcOggTheora = 4
 };
 
@@ -69,6 +69,8 @@ public:
 
 	VTABLE_EXPORT void 		SetMasterVolume( U8 volume );
 	VTABLE_EXPORT U8		GetMasterVolume( void );
+	VTABLE_EXPORT void 		SetOutputEqualizer( U8 enable );
+	VTABLE_EXPORT U8		GetOutputEqualizer( void );
 
 	// Specific to MPIs
 	VTABLE_EXPORT tErrType SetAudioResourcePath( U32 mpiID, const CPath &path );
@@ -88,23 +90,23 @@ public:
 										tAudioPayload		payload,
 										tAudioOptionsFlags	flags );
 
-	VTABLE_EXPORT void		PauseAudio( tAudioID id );
+	VTABLE_EXPORT void		PauseAudio(  tAudioID id );
 	VTABLE_EXPORT void 		ResumeAudio( tAudioID id ); 
-	VTABLE_EXPORT void 		StopAudio( tAudioID id, Boolean surpressDoneMessage ); 
+	VTABLE_EXPORT void 		StopAudio(   tAudioID id, Boolean surpressDoneMessage ); 
 
 	VTABLE_EXPORT Boolean	IsAudioPlaying( tAudioID id );
 	VTABLE_EXPORT Boolean	IsAudioPlaying( void );
 
 	VTABLE_EXPORT U32 		GetAudioTime( tAudioID id );
 
-	VTABLE_EXPORT U8		GetAudioVolume( tAudioID id ); // TODO: stub
-	VTABLE_EXPORT void		SetAudioVolume( tAudioID id, U8 volume ); // TODO: stub
+	VTABLE_EXPORT U8		GetAudioVolume( tAudioID id ); 
+	VTABLE_EXPORT void		SetAudioVolume( tAudioID id, U8 volume ); 
 
 	VTABLE_EXPORT tAudioPriority	GetAudioPriority( tAudioID id); // TODO: stub
 	VTABLE_EXPORT void		SetAudioPriority( tAudioID id, tAudioPriority priority); // TODO: stub
 
-	VTABLE_EXPORT S8		GetAudioPan( tAudioID id ); // TODO: stub
-	VTABLE_EXPORT void		SetAudioPan( tAudioID id, S8 pan ); // TODO: stub
+	VTABLE_EXPORT S8		GetAudioPan( tAudioID id ); 
+	VTABLE_EXPORT void		SetAudioPan( tAudioID id, S8 pan ); 
 
 	VTABLE_EXPORT const IEventListener*	GetAudioEventListener( tAudioID id ); // TODO: stub
 	VTABLE_EXPORT void		SetAudioEventListener( tAudioID id, const IEventListener *pListener ); // TODO: stub
@@ -113,7 +115,7 @@ public:
 	// Defaults to use when value is not specified in the Start() call.
 	//********************************    
 	VTABLE_EXPORT U8		GetDefaultAudioVolume( U32 mpiID ); // TODO: stub
-	VTABLE_EXPORT void		SetDefaultAudioVolume(  U32 mpiID, U8 volume ); // TODO: stub
+	VTABLE_EXPORT void		SetDefaultAudioVolume( U32 mpiID, U8 volume ); // TODO: stub
 
 	VTABLE_EXPORT tAudioPriority	GetDefaultAudioPriority( U32 mpiID ); // TODO: stub
 	VTABLE_EXPORT void		SetDefaultAudioPriority( U32 mpiID, tAudioPriority priority ); // TODO: stub
@@ -171,6 +173,7 @@ private:
 	tMessageQueueHndl 		hRecvMsgQueue_;
 	tMessageQueueHndl 		hSendMsgQueue_;
 	U8						masterVolume_;
+	U8						outputEqualizerEnabled_;
 	tMutex     				mpiMutex_;
 
 	void 			SendCmdMessage( CAudioCmdMsg& msg );

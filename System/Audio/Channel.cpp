@@ -34,6 +34,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 CChannel::CChannel()
 {
 // Initialize class variables
+//{static int c=0; printf("CChannel::CChannel %d \n", c++);}
+
 //	mpChain_ = kNull;
 	pPlayer_ = kNull;
 	fInUse_  = false;
@@ -54,14 +56,10 @@ CChannel::CChannel()
 //	pDSP_->pan         = kPanValue_Center;
 //	pDSP_->postGainDB = 0.0f;
 
-	// Allocate the channel's output buffer
-	pOutBuffer_ = new S16[ 2*kAudioOutBufSizeInWords ];  // Factor 2 to allow for 2x upsampling
-	for (long i = 0; i < kChannel_MaxTempBuffers; i++)
-		tmpPs_[i] = new S16[ 2*kAudioOutBufSizeInWords ];	
-
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-
-	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
+	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CChannel::CChannel: volume_=%d pan_=%d\n", volume_, pan_);
+//	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
 }	// ---- end CChannel::CChannel ----
 
 //==============================================================================
@@ -69,16 +67,7 @@ CChannel::CChannel()
 //==============================================================================
 CChannel::~CChannel()
 {
-	// Free tchannel buffers
-	if (pOutBuffer_)
-		delete pOutBuffer_;
-	
-	for (long i = 0; i < kChannel_MaxTempBuffers; i++)
-		{
-		if (tmpPs_[i])
-			free(tmpPs_[i]);	
-		}
-
+{static int c=0; printf("CChannel::~CChannel %d \n", c++);}
 	// Free debug MPI
 	if (pDebugMPI_)
 		delete pDebugMPI_;
@@ -89,30 +78,28 @@ CChannel::~CChannel()
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
-	long ch = 0;
 	// If we're pre-empting, release the active player first.
 	if (pPlayer_ != kNull)
 		Release( false );		// don't suppress done msg if it has been requested
 	
 	pPlayer_ = pPlayer;
 	fInUse_  = true;
-	ch = 0;
 
 // Convert interface parameters to DSP level data and reset channel
 	SetPan(    pPlayer->GetPan() );
 	SetVolume( pPlayer->GetVolume() );
-	inSampleRate_ = pPlayer_->GetSampleRate();
+	samplingFrequency_ = pPlayer_->GetSampleRate();
 
-	pDSP_->samplingFrequency = (float) inSampleRate_;
+	pDSP_->samplingFrequency = (float) samplingFrequency_;
 //printf("CChannel::InitChanWithPlayer: samplingFrequency=%g \n", pDSP_->samplingFrequency);
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CChannel::InitChanWithPlayer - samplingFrequency=%g\n", 
 			static_cast<float>(pDSP_->samplingFrequency) );	
-	MixerChannel_SetSamplingFrequency(pDSP_, inSampleRate_);
+	MixerChannel_SetSamplingFrequency(pDSP_, samplingFrequency_);
 	UpdateMixerChannel(pDSP_);
 	ResetMixerChannel (pDSP_);
 // FIXX: these buffers will migrate to briomixer.cpp/Mixer.cpp
-	MixerChannel_SetAllTempBuffers(pDSP_, tmpPs_, kChannel_MaxTempBuffers);
+//	MixerChannel_SetAllTempBuffers(pDSP_, tmpPs_, kChannel_MaxTempBuffers);
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 			"CChannel::InitChanWithPlayer - setting volume %d\n", 
@@ -150,7 +137,7 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 // Set DSP player values to arbitrary 0's
 	pan_    = 0;
 	volume_ = 0;
-	inSampleRate_ = 0;
+	samplingFrequency_ = 0;
 
 	// The player's dtors are protected with a mutex so they are
 	// safe to be deleted.  They dtors will wait until RenderBuffer()
@@ -160,70 +147,92 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 
 	// no longer in use
 	fReleasing_ = false;
-	fInUse_  = false;
+	fInUse_     = false;
 
 	return kNoErr;
 }	// ---- end CChannel::Release ----
 
 //==============================================================================
-// CChannel::SetPan
+// CChannel::SetPan : 
 //==============================================================================
 void CChannel::SetPan( S8 x )
 {
 pan_ = x;
+// Convert input range of [-100 .. 100] to range [0 .. 1] suitable
+// for the constant power calculation
 // ChangeRangef(x, L1, H1, L2, H2)
-//#define kPanValue_FullLeft ( 1.0)
-//#define kPanValue_Center      0.0
-//#define kPanValue_FullRight (-1.0)
-float xf = ChangeRangef((float)x, -100, 100, -1.0, 1.0);
+float xf = ChangeRangef((float)x, -100.0f, 100.0f, 0.0f, 1.0f);
 
-//PanValues   (xf, panValuesf);
+//#define kPanValue_FullLeft ( 0.0)
+//#define kPanValue_Center    (0.5)
+//#define kPanValue_FullRight (1.0)
+// PanValues(xf, panValuesf);
 ConstantPowerValues(xf, &panValuesf[kLeft], &panValuesf[kRight]);
-//printf("CChannel::SetPan: %d -> <%f, %f> \n", (int)x, panValuesf[kLeft],  panValuesf[kRight]);
+//printf("CChannel::SetPan : printf %d -> <%f , %f> \n", x, panValuesf[kLeft], panValuesf[kRight]);
+RecalculateLevels();
 }	// ---- end CChannel::SetPan ----
 
 //==============================================================================
-// CChannel::SetVolume : Convert range [0 .. 100] to [-100 ..0 dB]
+// CChannel::SetVolume : Convert range [0 .. 100] to [-100 ..0] dB
 //==============================================================================
 void CChannel::SetVolume( U8 x )
 {
+//printf("CChannel::SetVolume : printf  %d\n", x);
 volume_ = x;
 // ChangeRangef(x, L1, H1, L2, H2)
-//long xI = (long)x;
 
+// FIXX: move to decibels, but for now, linear volume
+gainf = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
+gainf *= DecibelToLinearf(-3.0);
+//gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
+//gainf =  DecibelToLinearf(gainf);
+
+//pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CChannel::SetVolume - %d -> %f\n", static_cast<int>(volume_) , static_cast<int>(gainf) );	
+RecalculateLevels();
 }	// ---- end CChannel::SetVolume ----
 
+//==============================================================================
+// CChannel::RecalculateLevels : Recalculate levels when either pan or volume changes
+//==============================================================================
+void CChannel::RecalculateLevels()
+{
+//printf("CChannel::RecalculateLevels : \n");
+
+levelsf[0] =  panValuesf[0]*gainf;
+levelsf[1] =  panValuesf[1]*gainf;
+
+// Convert 32-bit floating-point to Q15 fractional integer format 
+levelsi[0] = FloatToQ15(levelsf[0]);
+levelsi[1] = FloatToQ15(levelsf[1]);
+
+//printf("CChannel::RecalculateLevels : levelsf [0]=%g [1]=%g\n", levelsf[0], levelsf[1]);
+}	// ---- end CChannel::RecalculateLevels ----
 
 //==============================================================================
 // CChannel::ShouldRender
 //==============================================================================
 Boolean CChannel::ShouldRender( void ) {
 	Boolean result = false;
-	
+//printf("CChannel::ShouldRender : fInUse_=%d !fPaused_=%d && !fReleasing_=%d\n", fInUse_, !fPaused_, !fReleasing_);
+
 	if (fInUse_ && !fPaused_ && !fReleasing_)
 		result = true;
 	
 	return result;
-}
+}	// ---- end CChannel::ShouldRender ----
 
 //==============================================================================
 // CChannel::RenderBuffer
 //==============================================================================
-U32 CChannel::RenderBuffer( S16 *outP, U32 numFrames , long addToOutputBuffer )
+U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOutputBuffer )
 {
-	U32 playerFramesRendered = 0;
-	U32 numStereoSamples = numFrames * kAudioBytesPerSample;
-		
+	U32 numSamples = numFrames * 2;  // 2 channels
+	S32 y;
+
  //	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
+//{static long c=0; printf("CChannel::RenderBuffer: START %ld addToOutputBuffer=%d\n", c++, addToOutputBuffer); }
 
-	// Initialize the output buffer to 0.  This has the side effect of zero
-	// padding the output if the player runs out of data.
-	bzero( tmpPs_[0], kAudioOutBufSizeInBytes );
-
-	// Have player render its data into our output buffer.  If the player
-	// contains mono data, it will be rendered out as stereo data.
-	playerFramesRendered = pPlayer_->RenderBuffer( tmpPs_[0], numFrames );
-		
 	// decide how to deal with player done i.e. playerFramesRendered comes back 
 	// less than numStereoFrames: does player send done, or channel.
 	
@@ -233,39 +242,56 @@ U32 CChannel::RenderBuffer( S16 *outP, U32 numFrames , long addToOutputBuffer )
 	if (pFxChain_ != kNull)
 		pFxChain->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuffer_ );
 #endif
+	int playerFramesRendered = pPlayer_->RenderBuffer( pTmp, numFrames );
 
-// Add rendered output to out buffer
+//printf("levelsf <%f , %f > \n", levelsf[0], levelsf[1]);
+//printf("levelsi <%f , %f > \n", Q15ToFloat(levelsi[0]), Q15ToFloat(levelsi[1]));
+
+// ---- Add rendered output to out buffer
 	if (addToOutputBuffer)
 		{
-		for (U32 i = 0; i < numStereoSamples; i++)
+		for (U32 i = 0; i < numSamples; i += 2)
 			{
-		// Integer scaling for gain control.  fixme
-			S32 y = outP[i] + ((tmpPs_[0][i] * volume_)>>7);				
+		// Integer scaling for gain control
+//            y = pOut[i] + ((pTmp[i] * volume_)>>7);	        // ORIG rbg			
+//			y = pOut[i] + (S32)(levelsf[0] * (float)pTmp[i]);	// FLOAT			
+ 			y = pOut[i] + (S32) MultQ15(levelsi[0], pTmp[i]);	// Q15  1.15 Fixed-point		
 		// Saturate to 16-bit range				
 			if      (y > kS16Max) y = kS16Max;
-			else if (y < kS16Min) y = kS16Min;
-				
-			outP[i] = (S16)y;
+			else if (y < kS16Min) y = kS16Min;				
+			pOut[i] = (S16)y;
+
+ 			y = pOut[i+1] + (S32) MultQ15(levelsi[1], pTmp[i+1]);				
+		// Saturate to 16-bit range				
+			if      (y > kS16Max) y = kS16Max;
+			else if (y < kS16Min) y = kS16Min;				
+			pOut[i+1] = (S16)y;
 			}
 		}
-// Copy rendered output to out buffer
+// ---- Render to out buffer
 	else
 		{
-		for (U32 i = 0; i < numStereoSamples; i++)
+		for (U32 i = 0; i < numSamples; i += 2)
 			{
-		// Integer scaling for gain control.  fixme
-			S32 y = ((tmpPs_[0][i] * volume_)>>7);
+		// Integer scaling for gain control
+//  		y = ((pTmp[i] * volume_)>>7);		        // ORIG rdg		
+//			y = (S32)(levelsf[0] * (float)pTmp[i]);		// FLOAT
+ 			y = (S32) MultQ15(levelsi[0], pTmp[i]);		// Q15  1.15 Fixed-point	
 		// Saturate to 16-bit range				
 			if      (y > kS16Max) y = kS16Max;
-			else if (y < kS16Min) y = kS16Min;
-				
-			outP[i] = (S16)y;
+			else if (y < kS16Min) y = kS16Min;				
+			pOut[i] = (S16)y;
+
+ 			y = (S32) MultQ15(levelsi[1], pTmp[i+1]);				
+		// Saturate to 16-bit range				
+			if      (y > kS16Max) y = kS16Max;
+			else if (y < kS16Min) y = kS16Min;				
+			pOut[i+1] = (S16)y;
 			}
 		}
 
-
-	return playerFramesRendered;
-}	// ---- end CChannel::RenderBuffer ----
+	return (playerFramesRendered);
+}	// ---- end CChannel::RenderPlayerToBuffer ----
 
 LF_END_BRIO_NAMESPACE()
 // EOF	

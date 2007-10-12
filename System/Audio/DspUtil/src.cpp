@@ -60,7 +60,8 @@ long iInOutRateRatio = (long) d->inOutRateRatio;
 long iOutInRateRatio = (long) d->outInRateRatio;	
 char *firName = "Dunno";
 
-// Defaults
+
+// Set default filters values to cover initialization, even if they are unused.
 d->hP        = fir_HalfBand_58dB_Hz;
 d->firLength = kFIR_HalfBand_58dB_Hz_Length;
 d->inScaleDB = fir_HalfBand_58dB_GainCompensationDB;
@@ -146,18 +147,19 @@ d->inScale = DecibelToLinear(d->inScaleDB);
 //printf("UpdateSRC: inScale %g dB -> %g \n", d->inScaleDB, d->inScale);
 //printf("UpdateSRC: inOutRateRatio = %g , outInRateRatio = %g \n", d->inOutRateRatio, d->outInRateRatio);
 
+if (kSRC_Interpolation_Type_FIR == d->type)
+	{
 // Scale coefficients by output level
-for (i = 0; i < d->firLength; i++)
-	d->h[i] = d->inScale*d->hP[i];
+	for (i = 0; i < d->firLength; i++)
+		d->h[i] = d->inScale*d->hP[i];
 
 // Convert 32-bit floating point coefficients to signed 16-bit fixed point
-for (i = 0; i < d->firLength; i++)
-	{
-	d->hI[i] = (short)(k2To15m1f * d->h[i]);
+	for (i = 0; i < d->firLength; i++)
+		d->hI[i] = (short)(k2To15m1f * d->h[i]);
 //	printf("UpdateSRC  hI[%2d] = %d <- %g \n", i, d->hI[i], d->h[i]);
 	}
 
-//printf("UpdateSRC: '%s': Length = %d inScaleDB=%g\n", firName, d->firLength, d->inScaleDB);
+//printf("UpdateSRC: JOEJOE '%s': Length = %d inScaleDB=%g\n", firName, d->firLength, d->inScaleDB);
 }	// ---- end UpdateSRC() ---- 
 
 // ============================================================================

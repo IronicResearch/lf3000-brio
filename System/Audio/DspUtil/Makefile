@@ -1,5 +1,5 @@
 # source files.
-SRC =  	Dsputil.cpp Dsputil2.cpp briomixer.cpp fir.cpp mix.cpp src.cpp util.cpp
+SRC =  	Dsputil.cpp Dsputil2.cpp briomixer.cpp eq.cpp fir.cpp mix.cpp src.cpp shape.cpp util.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -99,6 +99,21 @@ briomixer.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
 briomixer.o: /usr/include/math.h /usr/include/bits/huge_val.h
 briomixer.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
 briomixer.o: ./Dsputil.h ./util.h /usr/include/sys/time.h briomixer.h mix.h
+briomixer.o: eq.h shape.h
+eq.o: /usr/include/string.h /usr/include/features.h /usr/include/sys/cdefs.h
+eq.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
+eq.o: /usr/include/gnu/stubs-32.h
+eq.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h eq.h ./Dsputil.h
+eq.o: /usr/include/math.h /usr/include/bits/huge_val.h
+eq.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+eq.o: /usr/include/stdio.h /usr/include/bits/types.h
+eq.o: /usr/include/bits/typesizes.h /usr/include/libio.h
+eq.o: /usr/include/_G_config.h /usr/include/wchar.h /usr/include/bits/wchar.h
+eq.o: /usr/include/gconv.h /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+eq.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h ./util.h
+eq.o: /usr/include/time.h /usr/include/sys/time.h /usr/include/bits/time.h
+eq.o: /usr/include/sys/select.h /usr/include/bits/select.h
+eq.o: /usr/include/bits/sigset.h
 fir.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
 fir.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
 fir.o: /usr/include/gnu/stubs-32.h
@@ -132,7 +147,7 @@ mix.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
 mix.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
 mix.o: /usr/include/alloca.h /usr/include/math.h /usr/include/bits/huge_val.h
 mix.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h ./Dsputil.h
-mix.o: ./util.h /usr/include/sys/time.h mix.h
+mix.o: ./util.h /usr/include/sys/time.h mix.h eq.h shape.h
 src.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
 src.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
 src.o: /usr/include/gnu/stubs-32.h
@@ -150,6 +165,21 @@ src.o: /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h
 src.o: /usr/include/alloca.h /usr/include/math.h /usr/include/bits/huge_val.h
 src.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h ./Dsputil.h
 src.o: ./util.h /usr/include/sys/time.h fir.h src.h
+shape.o: /usr/include/string.h /usr/include/features.h
+shape.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+shape.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+shape.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h shape.h
+shape.o: ./Dsputil.h /usr/include/math.h /usr/include/bits/huge_val.h
+shape.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+shape.o: /usr/include/stdio.h /usr/include/bits/types.h
+shape.o: /usr/include/bits/typesizes.h /usr/include/libio.h
+shape.o: /usr/include/_G_config.h /usr/include/wchar.h
+shape.o: /usr/include/bits/wchar.h /usr/include/gconv.h
+shape.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+shape.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+shape.o: ./util.h /usr/include/time.h /usr/include/sys/time.h
+shape.o: /usr/include/bits/time.h /usr/include/sys/select.h
+shape.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
 util.o: /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h
 util.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
 util.o: /usr/include/gnu/stubs-32.h
