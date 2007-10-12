@@ -9408,3 +9408,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/11/07 10:19 AM
 3,954 ms. (Cumulative: 2,089,308 ms)
 
 ----------------
+Revision 1,906 from svn://localhost/TRUNK/:
+
+Updated SDK readme and release notes with new info about embedded NAND filesystem and USB mounting. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/11/07 6:20 PM
+2 changed, 0 added, 0 deleted.
+3,984 ms. (Cumulative: 2,093,370 ms)
+
+----------------

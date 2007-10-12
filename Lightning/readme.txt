@@ -2,34 +2,56 @@
 Lightning SDK
 ======================================================
 
-Lightning SDKs typically consist of three parts:
+Lightning SDKs typically consist of these parts:
 
-  LightningSDK_xxxx.tar.gz -this contains the Brio components necesasry for development
-  nfsroot-svnxxxx.tar.gz  - this contains the linux nfsroot folder necessary for booting the target
-  zImage-svnxxxx.tar.gz   - the linux kernel.  If you aren't booting using tftp, you will need to
-                            flash this file in the NAND of the target board.
+  LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
+  embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board. 
+  nfsroot-svnxxxx.tar.gz  - optional nfsroot folder for booting the target board.
                             
 The SDK can be unzipped as is and located anywhere.
 
 	tar -xzvf LightningSDK_xxxx.tar.gz
 	export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
 
+The embedded binary images need to be copied to your TFTP server base directory, and 
+subsequently downloaded onto the target board via the U-Boot loader. (Refer to image
+flashing instructions below.)
+
+	tar -xzvf embedded-svnxxxx.tar.gz
+	cp kernel-xxxx ~/tftpboot
+	cp erootfs-xxxx ~/tftpboot
+	cp lightning_boot-xxxx ~/tftpboot
+	cp lightning_install.py ~/tftpboot
+
 The NFS root image must be unzipped as root user and located off the home user path.
 
 	sudo tar -xzvf nfsroot-svnxxx.tar.gz
 	mv nfsroot-svnxxx nfsroot
 	
-The Linux kernel zImage will copied to your TFTP server base directory, and subsequently downloaded
-onto the target board via the U-Boot loader. (Refer to kernel image
-download instructions below.)
-
-	tar -xzvf zImage-svnxxxx.tar.gz
-	cp zImage-xxxx ~/tftpboot
-
-These three pieces MUST be used together!  The <xxxx> numbers for a release will generally be
+These pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
 release together or you will almost certainly have problems.
 
+======================================================
+*** IMPORTANT NOTE ***: 
+======================================================
+
+The embedded target binaries are significantly different from previous releases. 
+This release now uses a fully embedded filesystem, with the option to expose
+NAND flash partitions as USB mounted devices.
+
+These binaries consist of the following:
+
+	lightning_boot-xxxx.bin	- Lightning boot loader (replaces uniboot)
+	kernel-xxxx.jffs2		- Linux kernel image (replaces zImage and u-boot)
+	erootfs-xxxx.jffs2		- Embedded root filesystem (alternative to nfsroot)
+
+All 3 binaries need to be flashed into new locations described below. 
+
+The NFS root filesystem may be used for continued development as alternative to
+the embedded root filesystem. You will need to set a flag file after booting the 
+embedded target to switch booting back to the NFS root filesystem.
+	
 ======================================================
 Installation
 ======================================================
@@ -81,11 +103,15 @@ The installation tree will look more or less like this:
 |  |
 |  +-BrioVideo    (video playback demo to YUV video surface layer)
 |  |
+|  +-BrioAudio    (audio playback demo for testing mixer channels)
+|  |
 |  +-Button       (demonstrates button presses on the hardware)
 |  |
 |  +-Display      (demonstrates 2D RGB display surface layer and fonts)
 |  |
 |  +-Simple       (simplest OpenGL application, minimal build system)
+|  |
+|  +-SysAppDemo   (system application demo for handling USB and Power events)
 |
 +-Tools
    |
@@ -102,6 +128,87 @@ be setup:
 	export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_<xxxx>
 
 ======================================================
+Target Preparation : mounting NAND partition via USB
+======================================================
+
+In order to install application binaries and resources onto the embedded target board,
+a designated NAND partition is available for mounting as a USB mass storage device on
+the host development system.
+
+Internally the NAND partition is mounted at bootup as '/Didj'.
+
+	mount -t vfat -o sync /dev/mtdblock9 /Didj
+	
+To expose the NAND partition to the development system:
+
+	usbctl -d mass_storage -a enable
+	usbctl -d mass_storage -a unlock
+
+Connecting a USB cable to the embedded target board should make the board appear as a
+mounted USB device. On Ubuntu Linux, the mounted device name is '/media/disk'. This
+name should be set as the root filesystem path for the Lightning SDK.
+
+	export ROOTFS_PATH=/media/disk   
+
+Embedded target application binaries and resources will then be copied to their
+respective subdirectory locations on the mounted NAND partition. When copying files
+is completed and it is time to disconnect the USB cable, be sure to unmount (eject)
+the mounted device on the host side before disabling it from the target.  
+
+To remove the NAND partition from the development system:
+	 
+	usbctl -d mass_storage -a lock 
+	usbctl -d mass_storage -a disable
+
+Note that at this stage in the USB device interface's development, some extra steps
+may need to be taken to insure synchronization of the copied files onto the NAND
+flash medium. For the time being you may have to issue explicit sync, or unmount and
+remount commands to see the NAND partition updated at '/Didj'.
+
+	sync 
+	ls /Didj
+	
+	umount /Didj
+	mount -t vfat -o sync /dev/mtdblock9 /Didj
+	ls /Didj
+	
+======================================================
+Target Preparation : booting to NFS root filesystem 
+======================================================
+
+In situations it might be desirable to revert to booting the root filesystem over NFS
+instead of from NAND. Use of debugger and profiling tools which cannot fit into NAND
+partition would be examples.
+
+You would need to set a flag file on the embedded target to switch between booting from
+NAND root filesystem to NFS mounted root filesystem. 
+
+To examine the current root filesystem setting:
+
+	cat /flags/rootfs
+
+To set NFS root filesystem booting:
+
+	echo NFS0 > /flags/rootfs
+	
+Restarting the embedded target should now complete booting at the NFS mounted location
+at Ethernet IP address 192.168.0.113 as previous releases (described below).
+
+In order to see files copied to the '/Didj' directory at the NFS mounted location,
+you will need to unmount the NAND partition.
+
+	umount /Didj
+	ls /Didj
+
+When building SDK apps, be sure ROOTFS_PATH is pointing to the NFS path on the
+development system.
+
+	export ROOTFS_PATH=/home/lfu/nfsroot
+
+Embedded target application binaries and resources will then be copied to their
+respective subdirectory locations on the development system's NFS rootfs directory.
+
+======================================================
 Target Preparation : installing nfsroot image
 ======================================================
 
@@ -114,6 +221,11 @@ rootfs!!  The reason is that it must create device nodes.
 
 	sudo tar -xzvf nfsroot-svnxxx.tar.gz
 	mv nfsroot-svnxxx nfsroot
+
+The environment variable ROOTFS_PATH should be set to point to the nfsroot path
+so the SDK build scripts will know where to install application binaries and resources.
+
+	export ROOTFS_PATH=/home/lfu/nfsroot
 
 ======================================================
 Target Preparation -- setting up NFS
@@ -165,7 +277,7 @@ Now restart the the NFS server:
 
 
 ======================================================
-Target Preparation -- setting up tftp
+Target Preparation -- setting up TFTP
 ======================================================
 
 1. Install tftp and related packages.
@@ -306,19 +418,23 @@ the firmware binaries (to simplify file paths).
 
 	cp host_tools/lightning_install.py ~/tftpboot 
 
-Reboot the embedded target board to the U-boot prompt as above. Then instead of
+Reboot the embedded target board to the U-boot prompt as above. That is, hold one of
+the buttons down when powering on or pressing the RESET button. Then instead of
 entering the U-boot commands manually, close the serial terminal and run the
 following script from the development system.
 
 	cd ~/tftpboot
-	./lightning_install.py /dev/ttyS0 uniboot-XXXX.bin:0 u-boot-XXXX.bin:0x80000 zImage-XXXX:0x100000
+	./lightning_install.py /dev/ttyS0 lightning_boot-XXXX.bin:0 \ 
+			kernel-XXXX.jffs2:200000 erootfs-XXXX.jffs2:400000 \
+			kernel-XXXX.jffs2:1200000 erootfs-XXXX.jffs2:1400000 
 
-'XXXX' refers to the version number of specific release, such as '0.7.0-1631-LF1000'
-or '0.7.0-1631-MP2530F'.
+'XXXX' refers to the version number of specific release, such as '0.8.0-1888-LF1000'
+or '0.8.0-1888-MP2530F'.
 
-This script will update all 3 major firmware components, including the uniboot loader,
-U-boot, and the Linux kernel zImage. Note that the target address location for the zImage 
-(and U-boot) have changed since previous releases. 
+This script will update all 3 major firmware components, including the boot loader,
+the Linux kernel image (with U-boot), and the embedded root filesystem. All of these
+components have changed significantly since previous releases, including their names
+and (more importantly) their locations! 
  
 ======================================================
 Target Preparation -- installing ARM cross-compiler
