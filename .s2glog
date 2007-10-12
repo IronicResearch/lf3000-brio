@@ -9417,3 +9417,18 @@ By Dave Milici (dmilici@leapfrog.com) on 10/11/07 6:20 PM
 3,984 ms. (Cumulative: 2,093,370 ms)
 
 ----------------
+Revision 1,907 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,922 ms. (Cumulative: 2,097,355 ms)
+
+----------------
+Revision 1,908 from svn://localhost/TRUNK/:
+
+Fix USB module crash to early out of 2nd device file check.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/12/07 12:04 PM
+1 changed, 0 added, 0 deleted.
+3,906 ms. (Cumulative: 2,101,277 ms)
+
+----------------
