@@ -373,35 +373,37 @@ At the U-boot prompt, test pinging the development system first.
 
 	ping 192.168.0.113
 	
-Then download the updated kernel zImage from its TFTP location on the
+Then download the updated kernel images from its TFTP location on the
 development system. On Ubuntu Linux, TFTP is typically configured
-at the ~/tftpboot directory, so this is where the zImage file needs to
-be copied to. The zImage file provided in releases will typically have
-some version number suffix, like zImage-xxxx.
+at the ~/tftpboot directory, so this is where the image files need to
+be copied to. The image files provided in releases will typically have
+some version number 'XXXX', which is something like '0.8.0-1888-ME_LF1000'.
 
-	tftp 02000000 zImage-xxxx 
+In this release, all new binaries need to be flashed, and it is advisable
+to erase all flash memory first.
 
-After the zImage is downloaded, you have the option to immediately run it
-from RAM, or flash into NAND memory and reboot.
-
-To immediately test the downloaded zImage from RAM:
-
-	go 02000000
+	nand erase
 	
-To flash the downloaded zImage into NAND:
+To download and flash the new boot loader:
 
-	nand erase clean 00100000 nnnnnn
-	nand write 02000000 00100000 nnnnnn
+	tftp 02000000 lightning-boot-XXXX.bin
+	nand write 02000000 0 1800
 	
-Note that the size of the zImage has grown over 1 Meg since its initial release,
-so the size used for nand erase and write commands must be at least the size transfered
-via tftp rounded up to the next highest 800 (hex) multiple. For example, transfered
-bytes 1123e8 (hex) would be rounded up to nand size 'nnnnnn' = 112800 (hex).
+To download and flash the new kernel image:
 
-Note that the target address for the zImage location has also changed since previous releases. 
+	tftp 02000000 kernel-XXXX.jffs2
+	nand write 02000000 00200000 160000
+	nand write 02000000 01200000 160000
 
-Either method should execute the updated Linux kernel and NFS mount the
-root file system located on the development system.
+To download and flash the new embedded root filesystem image:
+
+	tftp 02000000 erootfs-XXXX.jffs2
+	nand write 02000000 00400000 520000
+	nand write 02000000 01400000 520000
+
+Once all components are flashed, reboot the system by pressing the RESET
+button. You should see Linux boot messages on the serial console when
+flashing was successful.
 
 ======================================================
 Target Preparation -- flashing kernel image via script
@@ -424,12 +426,15 @@ entering the U-boot commands manually, close the serial terminal and run the
 following script from the development system.
 
 	cd ~/tftpboot
-	./lightning_install.py /dev/ttyS0 lightning_boot-XXXX.bin:0 \ 
+	./lightning_install.py /dev/ttyS0 -e lightning-boot-XXXX.bin:0 \ 
 			kernel-XXXX.jffs2:200000 erootfs-XXXX.jffs2:400000 \
 			kernel-XXXX.jffs2:1200000 erootfs-XXXX.jffs2:1400000 
 
-'XXXX' refers to the version number of specific release, such as '0.8.0-1888-LF1000'
-or '0.8.0-1888-MP2530F'.
+'XXXX' refers to the version number of the release, such as '0.8.0-1888-ME_LF1000'
+for the LF1000 green development board, or '0.8.0-1888-LF_LF1000' for the LF1000
+form-factor board.
+
+The '-e' option is recommended in this release to erase all flash memory.
 
 This script will update all 3 major firmware components, including the boot loader,
 the Linux kernel image (with U-boot), and the embedded root filesystem. All of these

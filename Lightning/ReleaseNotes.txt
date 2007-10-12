@@ -16,7 +16,7 @@ These binaries consist of the following:
 
 All 3 binaries need to be flashed into new locations: 
 
-	lightning_install.py /dev/ttyS0 lightning_boot-XXXX.bin:0 \ 
+	lightning_install.py /dev/ttyS0 lightning-boot-XXXX.bin:0 \ 
 			kernel-XXXX.jffs2:200000 erootfs-XXXX.jffs2:400000 \
 			kernel-XXXX.jffs2:1200000 erootfs-XXXX.jffs2:1400000 
 
@@ -36,6 +36,14 @@ Enhancements:
 * Audio MPI options flag added for looping samples.
 * Updated audio resource processing tools in LightningUtils.py script.
 * Updated Boost template library headers to v1.34.1 release.
+* Audio mixer support updated for changing settings on headphone jack detection.
+
+Known Issues:
+-------------
+
+* File transfers via USB mounted NAND partition need to be synchronized internally
+  before they show up on the embedded target board's /Didj directory. Refer to the
+  readme.txt instructions for 'mounting NAND partition via USB' for details.
 
 ===========================================
 v0.1.17  (Build 1663 released Sep 20, 2007) 
