@@ -1,0 +1,487 @@
+Archive member included because of file (symbol)
+
+/usr/lib/libc_nonshared.a(elf-init.oS)
+                              /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o (__libc_csu_fini)
+
+Discarded input sections
+
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 Temp/Lightning_emulation/oggi2wav.o
+ __i686.get_pc_thunk.bx
+                0x0000000000000000        0x0 /usr/lib/libc_nonshared.a(elf-init.oS)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/libc_nonshared.a(elf-init.oS)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+LOAD Temp/Lightning_emulation/oggi2wav.o
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libAudioMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libButtonMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libDebugMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libEventMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libKernelMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libResourceMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libDisplayMPI.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/ThirdParty/libvorbisidec.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/OpenGL/libgles_cl.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/libglibmm-2.4.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/libglib-2.0.so
+LOAD /home/lfu/workspace/Brio2/XBuild/Libs/Lightning_emulation/MPI/libEmulation.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/libstdc++.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/libm.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/libgcc_s.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/libgcc.a
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/libc.so
+START GROUP
+LOAD /lib/libc.so.6
+LOAD /usr/lib/libc_nonshared.a
+LOAD /lib/ld-linux.so.2
+END GROUP
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/libgcc_s.so
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/libgcc.a
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+LOAD /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+                0x0000000008048000                PROVIDE (__executable_start, 0x8048000)
+                0x0000000008048134                . = (0x8048000 + SIZEOF_HEADERS)
+
+.interp         0x0000000008048134       0x13
+ *(.interp)
+ .interp        0x0000000008048134       0x13 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.note.ABI-tag   0x0000000008048148       0x20
+ .note.ABI-tag  0x0000000008048148       0x20 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.hash           0x0000000008048168       0xc8
+ *(.hash)
+ .hash          0x0000000008048168       0xc8 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.gnu.hash       0x0000000008048230       0x44
+ *(.gnu.hash)
+ .gnu.hash      0x0000000008048230       0x44 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.dynsym         0x0000000008048274      0x1f0
+ *(.dynsym)
+ .dynsym        0x0000000008048274      0x1f0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.dynstr         0x0000000008048464      0x34a
+ *(.dynstr)
+ .dynstr        0x0000000008048464      0x34a /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.gnu.version    0x00000000080487ae       0x3e
+ *(.gnu.version)
+ .gnu.version   0x00000000080487ae       0x3e /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.gnu.version_d  0x00000000080487ec        0x0
+ *(.gnu.version_d)
+ .gnu.version_d
+                0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.gnu.version_r  0x00000000080487ec       0x80
+ *(.gnu.version_r)
+ .gnu.version_r
+                0x00000000080487ec       0x80 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.rel.dyn        0x000000000804886c       0x10
+ *(.rel.init)
+ *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*)
+ .rel.text      0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ *(.rel.fini)
+ *(.rel.rodata .rel.rodata.* .rel.gnu.linkonce.r.*)
+ *(.rel.data.rel.ro* .rel.gnu.linkonce.d.rel.ro.*)
+ *(.rel.data .rel.data.* .rel.gnu.linkonce.d.*)
+ *(.rel.tdata .rel.tdata.* .rel.gnu.linkonce.td.*)
+ *(.rel.tbss .rel.tbss.* .rel.gnu.linkonce.tb.*)
+ *(.rel.ctors)
+ *(.rel.dtors)
+ *(.rel.got)
+ .rel.got       0x000000000804886c        0x8 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*)
+ .rel.bss       0x0000000008048874        0x8 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .rel.eh_frame  0x0000000000000000        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.rela.dyn
+ *(.rela.init)
+ *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+ *(.rela.fini)
+ *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+ *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+ *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+ *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+ *(.rela.ctors)
+ *(.rela.dtors)
+ *(.rela.got)
+ *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+
+.rel.plt        0x000000000804887c       0xb0
+ *(.rel.plt)
+ .rel.plt       0x000000000804887c       0xb0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+
+.rela.plt
+ *(.rela.plt)
+
+.init           0x000000000804892c       0x17
+ *(.init)
+ .init          0x000000000804892c        0xb /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+                0x000000000804892c                _init
+ .init          0x0000000008048937        0x5 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ .init          0x000000000804893c        0x5 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+ .init          0x0000000008048941        0x2 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+.plt            0x0000000008048944      0x170
+ *(.plt)
+ .plt           0x0000000008048944      0x170 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x0000000008048954                ov_clear
+                0x0000000008048964                ov_info
+                0x0000000008048974                __divdi3@@GLIBC_2.0
+                0x0000000008048984                ov_pcm_total
+                0x00000000080489a4                __libc_start_main@@GLIBC_2.0
+                0x00000000080489b4                gettimeofday@@GLIBC_2.0
+                0x00000000080489c4                ov_raw_seek
+                0x00000000080489d4                fclose@@GLIBC_2.1
+                0x00000000080489e4                ov_open
+                0x00000000080489f4                fopen@@GLIBC_2.1
+                0x0000000008048a04                strcpy@@GLIBC_2.0
+                0x0000000008048a14                printf@@GLIBC_2.0
+                0x0000000008048a24                ov_comment
+                0x0000000008048a34                atoi@@GLIBC_2.0
+                0x0000000008048a44                fwrite@@GLIBC_2.0
+                0x0000000008048a54                fprintf@@GLIBC_2.0
+                0x0000000008048a64                time@@GLIBC_2.0
+                0x0000000008048a74                __stack_chk_fail@@GLIBC_2.4
+                0x0000000008048a84                ov_read
+                0x0000000008048a94                __gxx_personality_v0@@CXXABI_1.3
+                0x0000000008048aa4                exit@@GLIBC_2.0
+
+.text           0x0000000008048ac0      0xaf8
+ *(.text .stub .text.* .gnu.linkonce.t.*)
+ .text          0x0000000008048ac0       0x24 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x0000000008048ac0                _start
+ .text          0x0000000008048ae4       0x26 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ *fill*         0x0000000008048b0a        0x6 90909090
+ .text          0x0000000008048b10       0x53 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ *fill*         0x0000000008048b63        0x1 90909090
+ .text          0x0000000008048b64      0x9aa Temp/Lightning_emulation/oggi2wav.o
+                0x0000000008048c2a                _Z10AddTimevalP7timevalS0_
+                0x0000000008048c80                _Z10SubTimevalP7timevalS0_
+                0x0000000008048bcc                _Z22SecondsFromTimevalDiffP7timevalS0_
+                0x0000000008048d12                _Z7StricmpPcS_
+                0x0000000008048b64                _Z12ClearTimevalP7timeval
+                0x0000000008048f0c                _Z12PrintTimevalP7timeval
+                0x0000000008048b98                _Z18SecondsFromTimevalP7timeval
+                0x0000000008048b7c                _Z10SetTimevalP7timevalS0_
+                0x0000000008048cd4                _Z14AddTimevalDiffP7timevalS0_S0_
+                0x0000000008048f5c                main
+ *fill*         0x000000000804950e        0x2 90909090
+ .text          0x0000000008049510       0x79 /usr/lib/libc_nonshared.a(elf-init.oS)
+                0x0000000008049510                __libc_csu_fini
+                0x0000000008049520                __libc_csu_init
+ .text.__i686.get_pc_thunk.bx
+                0x0000000008049589        0x4 /usr/lib/libc_nonshared.a(elf-init.oS)
+                0x0000000008049589                __i686.get_pc_thunk.bx
+ *fill*         0x000000000804958d        0x3 90909090
+ .text          0x0000000008049590       0x28 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+ .text          0x00000000080495b8        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+ *(.text.*personality*)
+ *(.gnu.warning)
+
+.fini           0x00000000080495b8       0x1c
+ *(.fini)
+ .fini          0x00000000080495b8       0x13 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+                0x00000000080495b8                _fini
+ .fini          0x00000000080495cb        0x5 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ .fini          0x00000000080495d0        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+                0x00000000080495d4                PROVIDE (__etext, .)
+                0x00000000080495d4                PROVIDE (_etext, .)
+                0x00000000080495d4                PROVIDE (etext, .)
+
+.rodata         0x00000000080495d8      0x19a
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata        0x00000000080495d8        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x00000000080495d8                _fp_hw
+ .rodata.cst4   0x00000000080495dc        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x00000000080495dc                _IO_stdin_used
+ .rodata        0x00000000080495e0      0x192 Temp/Lightning_emulation/oggi2wav.o
+
+.rodata1
+ *(.rodata1)
+
+.eh_frame_hdr   0x0000000008049774       0x1c
+ *(.eh_frame_hdr)
+ .eh_frame_hdr  0x0000000008049774       0x1c Temp/Lightning_emulation/oggi2wav.o
+
+.eh_frame       0x0000000008049790       0x68
+ *(.eh_frame)
+ .eh_frame      0x0000000008049790       0x64 Temp/Lightning_emulation/oggi2wav.o
+ .eh_frame      0x00000000080497f4        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+                0x00000000080497f8                . = (ALIGN (0x1000) - ((0x1000 - .) & 0xfff))
+                0x000000000804a7f8                . = (0x1000 DATA_SEGMENT_ALIGN 0x1000)
+
+.eh_frame
+ *(.eh_frame)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.tdata
+ *(.tdata .tdata.* .gnu.linkonce.td.*)
+
+.tbss
+ *(.tbss .tbss.* .gnu.linkonce.tb.*)
+ *(.tcommon)
+
+.preinit_array  0x000000000804a7f8        0x0
+                0x000000000804a7f8                PROVIDE (__preinit_array_start, .)
+ *(.preinit_array)
+                0x000000000804a7f8                PROVIDE (__preinit_array_end, .)
+
+.init_array     0x000000000804a7f8        0x0
+                0x000000000804a7f8                PROVIDE (__init_array_start, .)
+ *(SORT(.init_array.*))
+ *(.init_array)
+                0x000000000804a7f8                PROVIDE (__init_array_end, .)
+
+.fini_array     0x000000000804a7f8        0x0
+                0x000000000804a7f8                PROVIDE (__fini_array_start, .)
+ *(.fini_array)
+ *(SORT(.fini_array.*))
+                0x000000000804a7f8                PROVIDE (__fini_array_end, .)
+
+.ctors          0x000000000804a7f8        0x8
+ *crtbegin.o(.ctors)
+ .ctors         0x000000000804a7f8        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ *crtbegin?.o(.ctors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+ *(SORT(.ctors.*))
+ *(.ctors)
+ .ctors         0x000000000804a7fc        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+
+.dtors          0x000000000804a800        0x8
+ *crtbegin.o(.dtors)
+ .dtors         0x000000000804a800        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ *crtbegin?.o(.dtors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+ *(SORT(.dtors.*))
+ *(.dtors)
+ .dtors         0x000000000804a804        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+
+.jcr            0x000000000804a808        0x4
+ *(.jcr)
+ .jcr           0x000000000804a808        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ .jcr           0x000000000804a808        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+
+.data.rel.ro
+ *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*)
+ *(.data.rel.ro* .gnu.linkonce.d.rel.ro.*)
+
+.dynamic        0x000000000804a80c      0x150
+ *(.dynamic)
+ .dynamic       0x000000000804a80c      0x150 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x000000000804a80c                _DYNAMIC
+
+.got            0x000000000804a95c        0x4
+ *(.got)
+ .got           0x000000000804a95c        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x000000000804a960                . = (. DATA_SEGMENT_RELRO_END 0xc)
+
+.got.plt        0x000000000804a960       0x64
+ *(.got.plt)
+ .got.plt       0x000000000804a960       0x64 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x000000000804a960                _GLOBAL_OFFSET_TABLE_
+
+.data           0x000000000804a9c8       0x20
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data          0x000000000804a9c8        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x000000000804a9c8                data_start
+                0x000000000804a9c8                __data_start
+ .data          0x000000000804a9cc        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .data          0x000000000804a9cc        0x8 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+                0x000000000804a9cc                __dso_handle
+ *fill*         0x000000000804a9d4        0x4 00
+ .data          0x000000000804a9d8       0x10 Temp/Lightning_emulation/oggi2wav.o
+                0x000000000804a9e0                cpuClockMHz
+                0x000000000804a9d8                totalIterations
+ .data          0x000000000804a9e8        0x0 /usr/lib/libc_nonshared.a(elf-init.oS)
+ .data          0x000000000804a9e8        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+ .data          0x000000000804a9e8        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+ *(.gnu.linkonce.d.*personality*)
+
+.data1
+ *(.data1)
+                0x000000000804a9e8                _edata = .
+                0x000000000804a9e8                PROVIDE (edata, .)
+                0x000000000804a9e8                __bss_start = .
+
+.bss            0x000000000804aa00     0x10a0
+ *(.dynbss)
+ .dynbss        0x000000000804aa00        0x4 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                0x000000000804aa00                stderr@@GLIBC_2.0
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0x000000000804aa04        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .bss           0x000000000804aa04        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .bss           0x000000000804aa04        0x1 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ *fill*         0x000000000804aa05       0x1b 00
+ .bss           0x000000000804aa20     0x1080 Temp/Lightning_emulation/oggi2wav.o
+                0x000000000804aa20                iteration
+                0x000000000804aa50                iTotalTime
+                0x000000000804aa64                taskStartTv
+                0x000000000804aaa0                pcmout
+                0x000000000804aa28                endTT
+                0x000000000804aa54                startTs
+                0x000000000804aa30                startTime
+                0x000000000804aa5c                totalTv
+                0x000000000804aa40                iterationTime
+                0x000000000804aa6c                taskEndTv
+                0x000000000804aa58                endTs
+                0x000000000804aa48                totalTime
+                0x000000000804aa7c                iterationEndTv
+                0x000000000804aa38                endTime
+                0x000000000804aa88                execTime
+                0x000000000804aa74                iterationStartTv
+                0x000000000804aa90                inFileTime
+                0x000000000804aa24                startTT
+ .bss           0x000000000804baa0        0x0 /usr/lib/libc_nonshared.a(elf-init.oS)
+ .bss           0x000000000804baa0        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+ .bss           0x000000000804baa0        0x0 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+ *(COMMON)
+                0x000000000804baa0                . = ALIGN ((. != 0x0)?0x4:0x1)
+                0x000000000804baa0                . = ALIGN (0x4)
+                0x000000000804baa0                . = ALIGN (0x4)
+                0x000000000804baa0                _end = .
+                0x000000000804baa0                PROVIDE (end, .)
+                0x000000000804baa0                . = DATA_SEGMENT_END (.)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000      0x126
+ *(.comment)
+ .comment       0x0000000000000000       0x2a /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .comment       0x000000000000002a       0x2a /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .comment       0x0000000000000054       0x2a /usr/lib/gcc/i486-linux-gnu/4.1.2/crtbegin.o
+ .comment       0x000000000000007e       0x2a Temp/Lightning_emulation/oggi2wav.o
+ .comment       0x00000000000000a8       0x2a /usr/lib/libc_nonshared.a(elf-init.oS)
+ .comment       0x00000000000000d2       0x2a /usr/lib/gcc/i486-linux-gnu/4.1.2/crtend.o
+ .comment       0x00000000000000fc       0x2a /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000       0x78
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x30 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .debug_aranges
+                0x0000000000000030       0x20 Temp/Lightning_emulation/oggi2wav.o
+ .debug_aranges
+                0x0000000000000050       0x28 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+.debug_pubnames
+                0x0000000000000000      0x200
+ *(.debug_pubnames)
+ .debug_pubnames
+                0x0000000000000000       0x25 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .debug_pubnames
+                0x0000000000000025      0x1db Temp/Lightning_emulation/oggi2wav.o
+
+.debug_info     0x0000000000000000     0x1928
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000       0x91 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .debug_info    0x0000000000000091       0x8e /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .debug_info    0x000000000000011f     0x177b Temp/Lightning_emulation/oggi2wav.o
+ .debug_info    0x000000000000189a       0x8e /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+.debug_abbrev   0x0000000000000000      0x246
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000       0x42 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .debug_abbrev  0x0000000000000042       0x12 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .debug_abbrev  0x0000000000000054      0x1e0 Temp/Lightning_emulation/oggi2wav.o
+ .debug_abbrev  0x0000000000000234       0x12 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+.debug_line     0x0000000000000000      0x361
+ *(.debug_line)
+ .debug_line    0x0000000000000000       0x27 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+ .debug_line    0x0000000000000027       0x9c /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .debug_line    0x00000000000000c3      0x224 Temp/Lightning_emulation/oggi2wav.o
+ .debug_line    0x00000000000002e7       0x7a /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o
+
+.debug_frame    0x0000000000000000      0x114
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000      0x114 Temp/Lightning_emulation/oggi2wav.o
+
+.debug_str      0x0000000000000000      0x191
+ *(.debug_str)
+ .debug_str     0x0000000000000000       0xbb /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crt1.o
+                                         0xf4 (size before relaxing)
+ .debug_str     0x00000000000000bb       0xd6 Temp/Lightning_emulation/oggi2wav.o
+
+.debug_loc      0x0000000000000000      0x1cf
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000      0x1cf Temp/Lightning_emulation/oggi2wav.o
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+/DISCARD/
+ *(.note.GNU-stack)
+OUTPUT(Temp/Lightning_emulation/oggi2wav elf32-i386)
+
+.debug_ranges   0x0000000000000000       0x48
+ .debug_ranges  0x0000000000000000       0x28 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crti.o
+ .debug_ranges  0x0000000000000028       0x20 /usr/lib/gcc/i486-linux-gnu/4.1.2/../../../../lib/crtn.o

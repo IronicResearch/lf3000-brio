@@ -1,15 +1,18 @@
 # source files.
-SRC = main.cpp play_midifile.cpp
+SRC = main.cpp sf.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
-# OUT sf2brio
-OUT = sfconvert
-MOBILEER = ../../../../ThirdParty/Mobileer
+OUT = sf2brio
+BRIO=/home/lfu/workspace/Brio2
+#MOBILEER = $(BRIO)/ThirdParty/Mobileer
+BRIO_AUDIO = $(BRIO)/System/Audio
 
 # include directories
-INCLUDES = -I. -I../include/ -I/usr/local/include -I../../LibSndFile -I../../DspUtil -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I../../../Include -I../../../Audio/Include -I$(MOBILEER)/Include -I$(MOBILEER)/Source/examples
+INCLUDES = -I. -I/usr/local/include -I$(BRIO_AUDIO)/LibSndFile -I$(BRIO_AUDIO)/DspUtil -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I$(BRIO_AUDIO)/Include 
+#-I$(MOBILEER)/Include -I$(MOBILEER)/Source/examples
 # -I/usr/include/linux
+# -I../../../Include
 
 # C++ compiler flags (-g -O2 -Wall)
 CCFLAGS = -O2
@@ -18,8 +21,10 @@ CCFLAGS = -O2
 CCC = g++
 
 # library paths
-LIBDIRS = -L../ -L/usr/local/lib -L../../LibSndFile/x86 -L../../DspUtil/x86 -L$(MOBILEER)/Libs/x86
-LIBS = -lsndfile -ldsputil -lme2000
+LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/x86 -L$(BRIO_AUDIO)/DspUtil/x86 
+#-L$(MOBILEER)/Libs/x86
+LIBS = -lsndfile -ldsputil 
+#-lme2000
 
 # compile flags (-g)
 LDFLAGS = 
@@ -62,42 +67,32 @@ main.o: /usr/include/_G_config.h /usr/include/wchar.h
 main.o: /usr/include/bits/wchar.h /usr/include/gconv.h
 main.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
 main.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
-main.o: ../../LibSndFile/sfconfig.h ../../LibSndFile/config.h
-main.o: ../../LibSndFile/sndfile.h /usr/include/sys/time.h
-main.o: ../../../../ThirdParty/Mobileer/Include/spmidi.h
-main.o: ../../../../ThirdParty/Mobileer/Include/spmidi_config.h
-main.o: ../../../../ThirdParty/Mobileer/Include/spmidi_errors.h
-main.o: ../../DspUtil/Dsputil.h ../../DspUtil/util.h ../../DspUtil/fir.h
-main.o: ../../DspUtil/mix.h ../../DspUtil/src.h main.h
-play_midifile.o: /usr/include/stdio.h /usr/include/features.h
-play_midifile.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
-play_midifile.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
-play_midifile.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
-play_midifile.o: /usr/include/bits/types.h /usr/include/bits/typesizes.h
-play_midifile.o: /usr/include/libio.h /usr/include/_G_config.h
-play_midifile.o: /usr/include/wchar.h /usr/include/bits/wchar.h
-play_midifile.o: /usr/include/gconv.h
-play_midifile.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
-play_midifile.o: /usr/include/bits/stdio_lim.h
-play_midifile.o: /usr/include/bits/sys_errlist.h /usr/include/stdlib.h
-play_midifile.o: /usr/include/sys/types.h /usr/include/time.h
-play_midifile.o: /usr/include/endian.h /usr/include/bits/endian.h
-play_midifile.o: /usr/include/sys/select.h /usr/include/bits/select.h
-play_midifile.o: /usr/include/bits/sigset.h /usr/include/bits/time.h
-play_midifile.o: /usr/include/sys/sysmacros.h
-play_midifile.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
-play_midifile.o: /usr/include/sys/time.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_config.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_errors.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_play.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_util.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_errortext.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/midifile_player.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/midifile_parser.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Include/spmidi_load.h
-play_midifile.o: ../../../../ThirdParty/Mobileer/Source/examples/midifile_names.h
-play_midifile.o: ../../DspUtil/Dsputil.h /usr/include/math.h
-play_midifile.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
-play_midifile.o: /usr/include/bits/mathcalls.h ../../DspUtil/util.h main.h
-play_midifile.o: ../../DspUtil/src.h
+main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sfconfig.h
+main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/config.h
+main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfile.h
+main.o: /usr/include/sys/time.h
+main.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/Dsputil.h
+main.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/util.h
+main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfileutil.h
+main.o: main.h /home/lfu/workspace/Brio2/System/Audio/DspUtil/src.h sf.h
+sf.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
+sf.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
+sf.o: /usr/include/gnu/stubs-32.h /usr/include/bits/huge_val.h
+sf.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+sf.o: /usr/include/stdlib.h
+sf.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
+sf.o: /usr/include/sys/types.h /usr/include/bits/types.h
+sf.o: /usr/include/bits/typesizes.h /usr/include/time.h /usr/include/endian.h
+sf.o: /usr/include/bits/endian.h /usr/include/sys/select.h
+sf.o: /usr/include/bits/select.h /usr/include/bits/sigset.h
+sf.o: /usr/include/bits/time.h /usr/include/sys/sysmacros.h
+sf.o: /usr/include/bits/pthreadtypes.h /usr/include/alloca.h
+sf.o: /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h
+sf.o: /usr/include/wchar.h /usr/include/bits/wchar.h /usr/include/gconv.h
+sf.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
+sf.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h sf.h
+sf.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sfconfig.h
+sf.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/config.h
+sf.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfile.h
+sf.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/util.h
+sf.o: /usr/include/sys/time.h
