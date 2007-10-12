@@ -21,9 +21,11 @@ extern "C" {
 
 #define kOutFileFormat_Unspecified	(-1)
 #define kOutFileFormat_Brio	0
+#define kOutFileFormat_BRIO	kOutFileFormat_Brio
 #define kOutFileFormat_AIFF	1
 #define kOutFileFormat_WAV	2
 #define kOutFileFormat_Raw	3
+#define kOutFileFormat_RAW	kOutFileFormat_Raw
 
 #define kMaxSamplingFrequency_UpsamplingRatio	3
 #define kMaxChannels	2
