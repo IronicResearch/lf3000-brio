@@ -2,6 +2,18 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+===========================================
+v0.1.18  (Build 1920 released Oct 12, 2007) 
+===========================================
+
+Release for LF1000 (green) embedded target boards.
+
+Software components for target hardware:
+
+* Embedded binaries: embedded-svn1920.tar.gz
+* Brio library binaries: basebrio-svn1920.tar.gz
+* NFS root file system: nfsroot-svn1920.tar.gz
+
 *** IMPORTANT NOTE ***: 
 
 The embedded target binaries are significantly different from previous releases. 
@@ -10,15 +22,13 @@ NAND flash partitions as USB mounted devices.
 
 These binaries consist of the following:
 
-	lightning_boot-xxxx.bin	- Lightning boot loader (replaces uniboot)
-	kernel-xxxx.jffs2		- Linux kernel image (replaces zImage and u-boot)
-	erootfs-xxxx.jffs2		- Embedded root filesystem (alternative to nfsroot)
+	lightning_boot-0.8.2-1917-ME_LF1000.bin	- Lightning boot loader (replaces uniboot)
+	kernel-0.8.2-1917-ME_LF1000.jffs2		- Linux kernel image (replaces zImage and u-boot)
+	erootfs-0.8.2-1917-ME_LF1000.jffs2		- Embedded root filesystem (alternative to nfsroot)
 
 All 3 binaries need to be flashed into new locations: 
 
-	lightning_install.py /dev/ttyS0 lightning-boot-XXXX.bin:0 \ 
-			kernel-XXXX.jffs2:200000 erootfs-XXXX.jffs2:400000 \
-			kernel-XXXX.jffs2:1200000 erootfs-XXXX.jffs2:1400000 
+	lightning_install.py /dev/ttyS0 -e lightning-boot-0.8.2-1917-ME_LF1000.bin:0 kernel-0.8.2-1917-ME_LF1000.jffs2:200000 erootfs-0.8.2-1917-ME_LF1000.jffs2:400000 kernel-0.8.2-1917-ME_LF1000.jffs2:1200000 erootfs-0.8.2-1917-ME_LF1000.jffs2:1400000 
 
 Refer to the Lightning SDK's 'readme.txt' file for further details.
  
