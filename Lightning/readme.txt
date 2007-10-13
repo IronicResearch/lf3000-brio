@@ -5,7 +5,8 @@ Lightning SDK
 Lightning SDKs typically consist of these parts:
 
   LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
-  embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board. 
+  embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board.
+  basebrio-svnxxxx.tar.gz - Brio binaries to be copied onto target NAND partition via USB. 
   nfsroot-svnxxxx.tar.gz  - optional nfsroot folder for booting the target board.
                             
 The SDK can be unzipped as is and located anywhere.
@@ -149,6 +150,13 @@ mounted USB device. On Ubuntu Linux, the mounted device name is '/media/disk'. T
 name should be set as the root filesystem path for the Lightning SDK.
 
 	export ROOTFS_PATH=/media/disk   
+
+Once mounted, the Brio binaries will need to copied onto the exposed NAND partition.
+This is intended to begin populating the /Didj directory after the board is reflashed.
+On the Ubuntu development system side:
+
+	tar -xzvf basebrio.tar.gz 
+	cp -R Base/* /media/disk/  
 
 Embedded target application binaries and resources will then be copied to their
 respective subdirectory locations on the mounted NAND partition. When copying files
