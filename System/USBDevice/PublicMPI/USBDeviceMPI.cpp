@@ -149,5 +149,25 @@ tErrType CUSBDeviceMPI::DisableUSBDeviceDrivers(U32 drivers)
 	return pModule_->DisableUSBDeviceDrivers(drivers);
 }
 
+//----------------------------------------------------------------------------
+U32 CUSBDeviceMPI::GetUSBDeviceWatchdog(void)
+{
+	if(!pModule_)
+	{
+		return kUSBDeviceInvalidWatchdog;
+	}
+	return pModule_->GetUSBDeviceWatchdog();
+}
+
+//----------------------------------------------------------------------------
+void CUSBDeviceMPI::SetUSBDeviceWatchdog(U32 timerSec)
+{
+	if(!pModule_)
+	{
+		return;
+	}
+	pModule_->SetUSBDeviceWatchdog(timerSec);
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

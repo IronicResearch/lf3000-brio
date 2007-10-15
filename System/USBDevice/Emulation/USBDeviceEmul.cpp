@@ -50,6 +50,17 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 	return kUSBDeviceUnsupportedDriver;
 }
 
+//----------------------------------------------------------------------------
+U32 CUSBDeviceModule::GetUSBDeviceWatchdog(void)
+{
+	return kUSBDeviceInvalidWatchdog;
+}
+
+//----------------------------------------------------------------------------
+void CUSBDeviceModule::SetUSBDeviceWatchdog(U32 timerSec)
+{
+	return;
+}
 
 LF_END_BRIO_NAMESPACE()
 // EOF

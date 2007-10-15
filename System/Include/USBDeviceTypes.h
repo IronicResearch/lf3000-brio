@@ -69,6 +69,7 @@ class CUSBDeviceMessage : public IEventMessage {
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupUSBDevice), USBDEVICE_ERRORS)
 
+const U32 kUSBDeviceInvalidWatchdog = 0xffffffff;
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_USBDEVICETYPES_H

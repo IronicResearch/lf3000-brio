@@ -31,6 +31,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define SYSFS_LUN0_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun0/enabled"
 #define SYSFS_LUN1_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun1/enabled"
 #define SYSFS_VBUS_PATH "/sys/devices/platform/lf1000-usbgadget/vbus"
+#define SYSFS_WD_PATH "/sys/devices/platform/lf1000-usbgadget/watchdog_seconds"
 
 //============================================================================
 // Local state and utility functions
@@ -318,6 +319,39 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 	}
 	
 	return kUSBDeviceFailure;
+}
+
+//----------------------------------------------------------------------------
+U32 CUSBDeviceModule::GetUSBDeviceWatchdog(void)
+{
+	FILE *f;
+	unsigned int value;
+	int ret;
+
+	f = fopen(SYSFS_WD_PATH, "r");
+	if(!f)
+		return kUSBDeviceInvalidWatchdog;
+	
+	ret = fscanf(f, "%u\n", &value);
+	fclose(f);
+	if(ret != 1)
+		return kUSBDeviceInvalidWatchdog;
+
+	return value;
+}
+
+//----------------------------------------------------------------------------
+void CUSBDeviceModule::SetUSBDeviceWatchdog(U32 timerSec)
+{
+	FILE *f;
+	int ret;
+
+	f = fopen(SYSFS_WD_PATH, "w");
+	if(!f)
+		return;
+
+	ret = fprintf(f, "%u", (unsigned int)timerSec);
+	fclose(f);
 }
 
 LF_END_BRIO_NAMESPACE()
