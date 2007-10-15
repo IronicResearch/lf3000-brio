@@ -9533,3 +9533,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/15/07 3:32 PM
 4,345 ms. (Cumulative: 2,163,405 ms)
 
 ----------------
+Revision 1,938 from svn://localhost/TRUNK/:
+
+Added watchdog interface for USBDeviceMPI.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 10/15/07 4:48 PM
+7 changed, 0 added, 0 deleted.
+4,344 ms. (Cumulative: 2,167,827 ms)
+
+----------------

@@ -148,4 +148,15 @@ public:
         }
 	}
 
+	//------------------------------------------------------------------------
+	void testWDGetAndSet( )
+	{
+        U32 timerval, newval;
+        timerval = usbmgr_->GetUSBDeviceWatchdog();
+        TS_ASSERT_DIFFERS(timerval, kUSBDeviceInvalidWatchdog);
+        usbmgr_->SetUSBDeviceWatchdog(timerval + 1);
+        newval = usbmgr_->GetUSBDeviceWatchdog();
+        TS_ASSERT_EQUALS(timerval + 1, newval);
+	}
+
 };

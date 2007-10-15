@@ -12,6 +12,17 @@
 // Description: Defines the Module Public Interface (MPI) for the USBDevice
 // Manager module.
 //
+// Note: USB behavior is required to always operate.  The reason is that it is
+// critical for system restore.  So, if an app is misbehaving because it has
+// been corrupted, etc., USB must still work.  To ensure this, a watchdog timer
+// is launched whenever the USB is plugged in to a host.  As usual, this will
+// generate an event.  The application must then prepare itself for connection
+// to the host and call EnableUSBDeviceDrivers.  If the application fails to
+// call EnableUSBDeviceDrivers before the watchdog timer expires, the system
+// will reset and the application will die.  The watchdog timer is set to a
+// sensible default when the application is launched.  Its value can be queried
+// and set using GetUSBDeviceWatchdog and SetUSBDeviceWatchdog.
+//
 //==============================================================================
 
 #include <CoreMPI.h>
@@ -60,6 +71,14 @@ public:
 
  	// DisableUSBDeviceDrivers is the opposite of EnableUSBDeviceDrivers
 	tErrType DisableUSBDeviceDrivers(U32 drivers);
+
+    // Get the current value in seconds of the watchdog timer.
+    // kUSBDeviceInvalidWatchdog is returned if an error occurs.
+    U32 GetUSBDeviceWatchdog(void);
+
+    // Set the watchdog to timerSec.  If timerSec is 0, the watchdog is
+    // disabled.
+    void SetUSBDeviceWatchdog(U32 timerSec);
 
 private:
 	class CUSBDeviceModule*	pModule_;

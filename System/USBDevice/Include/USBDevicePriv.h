@@ -41,6 +41,8 @@ public:
 	VTABLE_EXPORT tUSBDeviceData	GetUSBDeviceState() const;
 	VTABLE_EXPORT tErrType			EnableUSBDeviceDrivers(U32 drivers);
 	VTABLE_EXPORT tErrType			DisableUSBDeviceDrivers(U32 drivers);
+    VTABLE_EXPORT U32				GetUSBDeviceWatchdog(void);
+    VTABLE_EXPORT void				SetUSBDeviceWatchdog(U32 timerSec);
 
 private:
 	void				InitModule( );
