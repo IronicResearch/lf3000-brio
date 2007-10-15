@@ -23,9 +23,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kNullString = "";
-#ifndef LF_MONOLITHIC_DEBUG		// also declared in Resource module
 const CURI		kNullURI = "";
-#endif
 
 //============================================================================
 extern "C"
@@ -175,7 +173,8 @@ LF_USING_BRIO_NAMESPACE()
 #include <Event/Include/EventPriv.h>
 #include <Font/Include/FontPriv.h>
 #include <Kernel/Include/KernelPriv.h>
-#include <Resource/Include/ResourcePriv.h>
+#include <Power/Include/PowerPriv.h>
+#include <USBDevice/Include/USBDevicePriv.h>
 #include <Video/Include/VideoPriv.h>
 #include <map>
 #include <vector>
@@ -205,8 +204,10 @@ extern "C" ICoreModule* CreateInstance(tVersion)
 		g_map[kFontModuleName]		= new CFontModule;
 	else if (g_requestedName == kKernelModuleName)
 		g_map[kKernelModuleName]	= new CKernelModule;
-	else if (g_requestedName == kResourceModuleName)
-		g_map[kResourceModuleName]	= new CResourceModule;
+	else if (g_requestedName == kPowerModuleName)
+		g_map[kPowerModuleName]		= new CPowerModule;
+	else if (g_requestedName == kUSBDeviceModuleName)
+		g_map[kUSBDeviceModuleName]	= new CUSBDeviceModule;
 	else if (g_requestedName == kVideoModuleName)
 		g_map[kVideoModuleName]		= new CVideoModule;
 

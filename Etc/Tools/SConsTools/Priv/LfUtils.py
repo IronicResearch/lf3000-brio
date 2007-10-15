@@ -241,7 +241,8 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 		testenv.Append(RPATH = [os.path.join(root_dir, 'ThirdParty', 'PowerVR', 'Libs')])
 	if vars['is_monolithic']:
-		fulllibs += vars['is_emulation'] and ['gles_cl'] or ['ogl']
+		hwogllibs = vars['variant'] == 'LF1000' and ['ogl_lf1000'] or ['ogl']
+		fulllibs += vars['is_emulation'] and ['gles_cl'] or hwogllibs
 		libpaths = [vars['mod_deploy_dir'], vars['lib_deploy_dir'], 
 					os.path.join(root_dir, 'ThirdParty/ustring/libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/MagicEyes/Libs', vars['cpu_subdir']),
@@ -255,11 +256,11 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		testenv.Append(RPATH = vars['lib_deploy_dir'])
 		fulllibs += testenv.Split('''ModuleMPI 
 									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
-									FontMPI ResourceMPI VideoMPI KernelMPI
-									Audio Button Debug Display Event Font Resource 
-									Video Kernel Module
+									FontMPI KernelMPI PowerMPI USBDeviceMPI VideoMPI 
+									Audio Button Debug Display Event Font 
+									Kernel Module Power USBDevice Video 
 									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
-									FontMPI ResourceMPI VideoMPI KernelMPI
+									FontMPI KernelMPI PowerMPI USBDeviceMPI VideoMPI 
 									portaudio me2000 vorbisidec dsputil sndfile
 									ogg theora freetype
 									''')
