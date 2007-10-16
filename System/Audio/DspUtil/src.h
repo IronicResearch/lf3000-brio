@@ -19,11 +19,11 @@ extern "C" {
 
 #define kSRC_Interpolation_Type_AddDrop	   0
 #define kSRC_Interpolation_Type_Linear	   1
-#define kSRC_Interpolation_Type_FIR	   2
-#define kSRC_Interpolation_Type_IIR	   3
+#define kSRC_Interpolation_Type_FIR	       2
+#define kSRC_Interpolation_Type_IIR	       3
 #define kSRC_Interpolation_Type_Unfiltered 4
 #define kSRC_Interpolation_Type_Triangle   5
-#define kSRC_Interpolation_Type_Box	   6
+#define kSRC_Interpolation_Type_Box	       6
 
 #define kSRC_Interpolation_Type_TestFIR	   10
 

@@ -9579,3 +9579,13 @@ By gklimanis (gklimanis@leapfrog.com) on 10/16/07 3:59 PM
 5,250 ms. (Cumulative: 2,185,781 ms)
 
 ----------------
+Revision 1,945 from svn://localhost/TRUNK/:
+
+1) Added Infinite Impulse Response (IIR) filter class 
+2) Added sound bounding functions for Dsputil.cpp
+
+By gklimanis (gklimanis@leapfrog.com) on 10/16/07 4:10 PM
+8 changed, 3 added, 0 deleted.
+4,453 ms. (Cumulative: 2,190,297 ms)
+
+----------------

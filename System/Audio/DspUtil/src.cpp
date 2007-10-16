@@ -2,7 +2,7 @@
 // src.cpp:		Sampling rate conversion routines,
 //			currently 32-bit floating point,
 //			16-bit or 32-bit fixed point or a development
-//			fixed-point/floating-point hybrid.p
+//			fixed-point/floating-point hybrid
 //
 //		Written by Gints Klimanis, 2007
 // ***************************************************************
@@ -15,9 +15,8 @@
 #include "fir.h"
 #include "src.h"
 
-
 // ============================================================================
-// DefaultSRC:		Set Default high-level parameter values
+// DefaultSRC:		Set high-level parameter values
 // ============================================================================
     void 
 DefaultSRC(SRC *d)
