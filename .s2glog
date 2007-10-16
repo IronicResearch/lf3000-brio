@@ -9598,3 +9598,12 @@ By gklimanis (gklimanis@leapfrog.com) on 10/16/07 4:13 PM
 4,250 ms. (Cumulative: 2,194,641 ms)
 
 ----------------
+Revision 1,947 from svn://localhost/TRUNK/:
+
+Fix for 32000 Hz audio crashes.  Now, test_Audio, BrioAudio, BrioCube, BrioMixer, SysAppDemo and BrioVideo run without crashing.
+
+By gklimanis (gklimanis@leapfrog.com) on 10/16/07 4:16 PM
+2 changed, 0 added, 0 deleted.
+4,328 ms. (Cumulative: 2,199,032 ms)
+
+----------------

@@ -153,15 +153,16 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 }	// ---- end CChannel::Release ----
 
 //==============================================================================
-// CChannel::SetPan : 
+// CChannel::SetPan :     Channel stereo position   Left .. Center .. Right
 //==============================================================================
 void CChannel::SetPan( S8 x )
 {
-pan_ = x;
-// Convert input range of [-100 .. 100] to range [0 .. 1] suitable
+pan_ = BoundS8(&x, kS8_Min, kS8_Max);
+
+// Convert input range to [-128 .. 127]range [0 .. 1] suitable
 // for the constant power calculation
 // ChangeRangef(x, L1, H1, L2, H2)
-float xf = ChangeRangef((float)x, -100.0f, 100.0f, 0.0f, 1.0f);
+float xf = ChangeRangef((float)pan_, kS8_Minf, kS8_Maxf, 0.0f, 1.0f);
 
 //#define kPanValue_FullLeft ( 0.0)
 //#define kPanValue_Center    (0.5)

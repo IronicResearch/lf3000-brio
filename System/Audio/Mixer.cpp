@@ -73,11 +73,14 @@ long i, j, ch;
 fsRack_[0] = (long)(samplingFrequency_*0.25f); // kAudioSampleRate_Div4;
 fsRack_[1] = (long)(samplingFrequency_*0.5f ); // kAudioSampleRate_Div2;
 fsRack_[2] = (long)(samplingFrequency_);       // kAudioSampleRate_Div1;
+//for (i = 0; i < 3; i++)
+//printf("fsRack_[%ld] = %ld\n", i, fsRack_[i]);
+
 for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		{
-		mixBinBufferPtrs_[i][ch] = new S16[kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords * sizeof(S16)];
+		mixBinBufferPtrs_[i][ch] = new S16[2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords];
 
 // Initialize sampling rate converters  
 		DefaultSRC(&src_[i][ch]);
@@ -359,13 +362,16 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 // CAudioMixer::RenderBuffer
 //==============================================================================
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
+// numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
 U32	i, ch;
 U32 	playerFramesRendered;
 long mixBinIndex;
 long channelsPerFrame = kAudioMixer_MaxOutChannels;
+// FIXXXX: mystery.  Offset Ptrs don't work !!!
+short **tPtrs = tmpBufferPtrs_; // pTmpBuffers_, tmpBufOffsetPtrs_
 
-//{static long c=0; printf("CAudioMixer::RenderBuffer : start %ld \n", c++);}
+//{static long c=0; printf("CAudioMixer::RenderBuffer : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channelsPerFrame);}
 
 //	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
 //	pDebugMPI_->Assert( ((numFrames * kAudioBytesPerStereoFrame) == kAudioOutBufSizeInBytes ),
@@ -409,7 +415,6 @@ if (readInSoundFile)
 	}
 else
 {
-
 for (ch = 0; ch < numInChannels_; ch++)
 	{
 	CChannel *pCh = &pChannels_[ch];
@@ -465,14 +470,20 @@ if ( pMidiPlayer_->IsActive() )
 //
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv1;
 if (mixBinFilled_[mixBinIndex])
-	CopyShorts(mixBinBufferPtrs_[mixBinIndex][0], pOutBuff, numFrames*channelsPerFrame);
+    {
+//printf("PRE 2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords=%d\n", 2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords);
+//printf("PRE numFrames=%ld channelsPerFrame=%ld\n", numFrames, channelsPerFrame);
+//printf("BEFO: mixBinP[%ld]=%X pOutBuff=%X len=%ld\n", mixBinIndex, (unsigned int) mixBinBufferPtrs_[mixBinIndex][0], (unsigned int) pOutBuff, numFrames*channelsPerFrame);
+CopyShorts(mixBinBufferPtrs_[mixBinIndex][0], pOutBuff, numFrames); //*channelsPerFrame/2); //numFrames*channelsPerFrame);
+//printf("AFTA: \n");
+    }
 else
 	ClearShorts( pOutBuff, numFrames * channelsPerFrame );
 
+#define MIX_THE_MIX_BINS
+#ifdef MIX_THE_MIX_BINS
 // Deinterleave and process each MixBuffer separately
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv4;
-// FIXXXX: mystery.  Offset Ptrs don't work !!!
-short **tPtrs = tmpBufferPtrs_; // pTmpBuffers_, tmpBufOffsetPtrs_
 if (mixBinFilled_[mixBinIndex])
 	{
 	DeinterleaveShorts(mixBinBufferPtrs_[mixBinIndex][0], tPtrs[2], tPtrs[3], numFrames/4);
@@ -494,12 +505,10 @@ if (mixBinFilled_[mixBinIndex])
 //CopyShorts(tPs[6], pOutBuff, numFrames*channelsPerFrame);
 	}
 		
-#if 0
 // fixme/rdg:  needs CAudioEffectsProcessor
 // If at least one audio channel is playing, Process global audio effects
-if (numPlaying && (gAudioContext->pAudioEffects != kNull))
-	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuff );
-#endif
+//if (numPlaying && (gAudioContext->pAudioEffects != kNull))
+//	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuff );
 
 // Scale stereo/interleaved buffer by master volume
 /// NOTE: volume here is interpreted as a linear value
@@ -507,8 +516,12 @@ if (numPlaying && (gAudioContext->pAudioEffects != kNull))
 //		pOutBuff[i] = (S16)((pOutBuff[i] * (int)masterVolume_) >> 7); // fixme; 
 //ScaleShortsf(pOutBuff, pOutBuff, numFrames*channelsPerFrame, masterGainf_[0]);
 ScaleShortsi_Q15(pOutBuff, pOutBuff, numFrames*channelsPerFrame, masterGaini_[0]);
+#endif // end WHOLE_THING
+
 
 // ---- Output DSP block
+long useOutDSP = False;
+if (useOutDSP)
 {
 DeinterleaveShorts(pOutBuff, tPtrs[4], tPtrs[5], numFrames);
 
@@ -527,7 +540,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
         for (long j = 0; j < outEQ_BandCount_; j++)
             {
 //            ComputeEQf(pIn, pOut, numFrames, &outEQ_[ch][j]);
-//            ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
+            ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
             pOut = pIn;
             }
         }
@@ -540,7 +553,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
         }
     }
 InterleaveShorts(tPtrs[4], tPtrs[5], pOutBuff, numFrames);
-}
+}  // if (useOutDSP)
 
 // Debug:  write output of mixer to sound file
 if (writeOutSoundFile)
@@ -549,6 +562,7 @@ if (writeOutSoundFile)
 framesWritten = 0;
 }
 
+//printf("CAudioMixer::RenderBuffer: END \n");
 	return kNoErr;
 } // ---- end CAudioMixer::RenderBuffer() ----
 
