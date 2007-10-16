@@ -3,16 +3,16 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.18  (Build 1920 released Oct 12, 2007) 
+v0.1.18  (Build 1938 released Oct 15, 2007) 
 ===========================================
 
 Release for LF1000 (green) embedded target boards.
 
 Software components for target hardware:
 
-* Embedded binaries: embedded-svn1920.tar.gz
-* Brio library binaries: basebrio-svn1920.tar.gz
-* NFS root file system: nfsroot-svn1920.tar.gz
+* Embedded binaries: embedded-svn1937.tar.gz
+* Brio library binaries: basebrio-svn1938.tar.gz
+* NFS root file system: nfsroot-svn1938.tar.gz
 
 *** IMPORTANT NOTE ***: 
 
@@ -22,13 +22,13 @@ NAND flash partitions as USB mounted devices.
 
 These binaries consist of the following:
 
-	lightning_boot-0.8.2-1917-ME_LF1000.bin	- Lightning boot loader (replaces uniboot)
-	kernel-0.8.2-1917-ME_LF1000.jffs2		- Linux kernel image (replaces zImage and u-boot)
-	erootfs-0.8.2-1917-ME_LF1000.jffs2		- Embedded root filesystem (alternative to nfsroot)
+	lightning-boot-0.8.3-1937-ME_LF1000.bin	- Lightning boot loader (replaces uniboot)
+	kernel-0.8.3-1937-ME_LF1000.jffs2		- Linux kernel image (replaces zImage and u-boot)
+	erootfs-0.8.3-1937-ME_LF1000.jffs2		- Embedded root filesystem (alternative to nfsroot)
 
 All 3 binaries need to be flashed into new locations: 
 
-	lightning_install.py /dev/ttyS0 -e lightning-boot-0.8.2-1917-ME_LF1000.bin:0 kernel-0.8.2-1917-ME_LF1000.jffs2:200000 erootfs-0.8.2-1917-ME_LF1000.jffs2:400000 kernel-0.8.2-1917-ME_LF1000.jffs2:1200000 erootfs-0.8.2-1917-ME_LF1000.jffs2:1400000 
+	lightning_install.py /dev/ttyS0 -e lightning-boot-0.8.3-1937-ME_LF1000.bin:0 kernel-0.8.3-1937-ME_LF1000.jffs2:200000 erootfs-0.8.3-1937-ME_LF1000.jffs2:400000 kernel-0.8.3-1937-ME_LF1000.jffs2:1200000 erootfs-0.8.3-1937-ME_LF1000.jffs2:1400000 
 
 Refer to the Lightning SDK's 'readme.txt' file for further details.
  
@@ -46,14 +46,18 @@ Enhancements:
 * Audio MPI options flag added for looping samples.
 * Updated audio resource processing tools in LightningUtils.py script.
 * Updated Boost template library headers to v1.34.1 release.
-* Audio mixer support updated for changing settings on headphone jack detection.
 
 Known Issues:
 -------------
 
-* File transfers via USB mounted NAND partition need to be synchronized internally
-  before they show up on the embedded target board's /Didj directory. Refer to the
-  readme.txt instructions for 'mounting NAND partition via USB' for details.
+* File transfers via USB mounted NAND partition currently have synchronization
+  problems unless the embedded target is rebooted. It is recommended to use the
+  NFS mounted filesystem for external software development until subsequent release.
+  Refer to 'booting to NFS root filesystem' section in SDK readme.txt file.
+* For NFS bootup, you will need to explicitly unmount the NAND /Didj partition
+  after each reboot before the NFS /Didj directory will be effective.
+  ie, 'umount /Didj'.
+* Audio mixer and MIDI updates deferred until subsequent release.
 
 ===========================================
 v0.1.17  (Build 1663 released Sep 20, 2007) 

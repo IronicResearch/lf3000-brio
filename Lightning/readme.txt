@@ -21,7 +21,7 @@ flashing instructions below.)
 	tar -xzvf embedded-svnxxxx.tar.gz
 	cp kernel-xxxx ~/tftpboot
 	cp erootfs-xxxx ~/tftpboot
-	cp lightning_boot-xxxx ~/tftpboot
+	cp lightning-boot-xxxx ~/tftpboot
 	cp lightning_install.py ~/tftpboot
 
 The NFS root image must be unzipped as root user and located off the home user path.
@@ -43,7 +43,7 @@ NAND flash partitions as USB mounted devices.
 
 These binaries consist of the following:
 
-	lightning_boot-xxxx.bin	- Lightning boot loader (replaces uniboot)
+	lightning-boot-xxxx.bin	- Lightning boot loader (replaces uniboot)
 	kernel-xxxx.jffs2		- Linux kernel image (replaces zImage and u-boot)
 	erootfs-xxxx.jffs2		- Embedded root filesystem (alternative to nfsroot)
 
