@@ -13,6 +13,7 @@
 //
 //============================================================================
 #include <ButtonPriv.h>
+#include <AudioMPI.h>
 #include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <KernelMPI.h>
@@ -93,6 +94,17 @@ void *LightningButtonTask(void*)
 					isBrightening = true;
 			}
 			dispmgr.SetBrightness(0, brightness);
+		}
+		// Special internal handling for Headphone jack plug/unplug
+//printf("ButtonHandler: buttonState=$%X buttonTransition=%X kHeadphoneJackDetect=$%X \n", 
+ //   (unsigned int) data.buttonState, (unsigned int) data.buttonTransition, (unsigned int)kHeadphoneJackDetect);
+		if (data.buttonTransition & kHeadphoneJackDetect)
+		{
+        CAudioMPI audioMPI;
+        bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
+
+//printf("ButtonHandler: kHeadphoneJackDetect state_SpeakerEnabled = %d\n", state_SpeakerEnabled);
+        audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
 		}
 	}
 	return NULL;

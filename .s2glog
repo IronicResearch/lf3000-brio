@@ -9589,3 +9589,12 @@ By gklimanis (gklimanis@leapfrog.com) on 10/16/07 4:10 PM
 4,453 ms. (Cumulative: 2,190,297 ms)
 
 ----------------
+Revision 1,946 from svn://localhost/TRUNK/:
+
+Tweak for headset detect event to change Audio Mixer output equalizer.
+
+By gklimanis (gklimanis@leapfrog.com) on 10/16/07 4:13 PM
+1 changed, 0 added, 0 deleted.
+4,250 ms. (Cumulative: 2,194,641 ms)
+
+----------------
