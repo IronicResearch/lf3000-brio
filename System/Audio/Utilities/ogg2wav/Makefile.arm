@@ -1,0 +1,71 @@
+# source files.
+SRC = oggi2wav.cpp
+OBJ = $(SRC:.cpp=.o)
+OUT = oggi2wav
+
+BRIO=/home/lfu/workspace/Brio2
+BRIO_AUDIO = $(BRIO)/System/Audio
+#THEORA = $(BRIO)/ThirdParty/Theora
+TREMOR2 = $(BRIO_AUDIO)/Tremor2
+
+# include directories
+INCLUDES = -I. -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I/scratchbox/compilers/arm-gcc4.1-uclibc20061004/include/ -I$(BRIO_AUDIO)/DspUtil -I$(TREMOR2) -I$(BRIO_AUDIO)/LibSndFile 
+# -I/usr/include/sys 
+# -I$(BRIO_AUDIO)/Include 
+
+# C++ compiler flags (-g -O2 -Wall)
+# ARM flags -O2 -mcpu=arm926ej-s -fsigned-char 
+CCFLAGS = -O4 -mcpu=arm926ej-s -fsigned-char -D_CPU_IS_ARM
+
+# compiler
+# x86: g++   ARM: arm-linux-gcc
+CCC = arm-linux-gcc
+
+# library paths
+LIBDIRS = -L../ -L$(BRIO_AUDIO)/LibSndFile/arm -L$(BRIO_AUDIO)/DspUtil/arm -L$(TREMOR2)/arm
+# -L$(THEORA)/Libs/arm
+# -L/usr/local/lib 
+LIBS     = -lsndfile -ldsputil -lvorbisidec -lm
+LIBS_O4  = -lsndfile -ldsputil -lvorbisidec_O4
+LIBS_ARM_ASSEM = -lsndfile -ldsputil -lvorbisidec_ARM_ASSEM
+LIBS_926 = -lsndfile -ldsputil -lvorbisidec_926
+LIBS_ALL = -lsndfile -ldsputil -lvorbisidec_ALL
+# -lvorbisidec_O4 -lvorbisidec_926 -lvorbisidec_ARM_ASSEM -lvorbisidec_ALL
+
+# compile flags
+LDFLAGS = -g
+
+.SUFFIXES: .cpp
+
+default: dep $(OUT)
+
+.cpp.o:
+	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) 
+	sudo cp $(OUT) ~/nfsroot/usr/local/bin
+	sudo cp $(OUT) ~/nfsroot/Ogg
+
+#	$(CCC) -o $(OUT)_O4 $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS_O4) 
+#	sudo cp $(OUT)_O4 ~/nfsroot/Ogg
+
+#	$(CCC) -o $(OUT)_ARM_ASSEM $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS_ARM_ASSEM) 
+#	sudo cp $(OUT)_ARM_ASSEM ~/nfsroot/Ogg
+
+#	$(CCC) -o $(OUT)_926 $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS_926) 
+#	sudo cp $(OUT)_926 ~/nfsroot/Ogg
+
+#	$(CCC) -o $(OUT)_ALL $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS_ALL) 
+#	sudo cp $(OUT)_ALL ~/nfsroot/Ogg
+
+#	sudo cp $(OUT)   ~/nfsroot/Ogg
+#	echo "Copied to ~/nfsroot/usr/local/bin"
+	
+depend: dep
+
+dep:
+	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
+
+clean:
+	rm -f $(OBJ) $(OUT) Makefile.bak 
