@@ -2,7 +2,6 @@
 //  sf.cpp : some libsndfile routines
 //
 //============================================================================
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>#include <string.h>
 

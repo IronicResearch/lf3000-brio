@@ -11,16 +11,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-//#include "spmidi.h"
-
-// Brio headers
-//#include <CoreTypes.h>
-//#include "AudioTypes.h"
-//#include <AudioConfig.h>
-//#include <AudioOutput.h>
-
-#include "Dsputil.h"
-#include "util.h"
+//#include "util.h"
 #include "sndfileutil.h"
 
 #include "main.h"
@@ -45,46 +36,63 @@ SF_INFO	outSoundFileInfo ;
 
 #define kBlockLength	1024
 #define kMaxBlockLength 50000
-#define kBlockStorageSize (kMaxBlockLength+kSRC_Filter_MaxDelayElements)
+#define kBlockStorageSize kMaxBlockLength
 long inBlockLength  = kBlockLength;
 long outBlockLength = kBlockLength;
 
 static short inBlock [kBlockStorageSize];
 static short outBlock[kBlockStorageSize];
-#define kMaxTempBufs	4
-static short tmpBuffers[kMaxTempBufs][kBlockStorageSize];static short *tmpBufPtrs[kMaxTempBufs];
 
 long writeHeaderlessRawFile = False;
 long outFileFormat = kOutFileFormat_Brio;
 
-long processOnlyOneBlock = False;
-long inputIsImpulse = False;
-
-long useFixedPoint = False;
-long useTimer      = False;
 long useLargeBlockLength = False;
 
 long channels = 2;
-float inGain  = 1.0f;
-float outGain = 1.0f;
 long outSamplingFrequencySpecified = False;
 long inSamplingFrequency  = kSamplingFrequency_Unspecified;
 long outSamplingFrequency = kSamplingFrequency_Unspecified;
 
-// Timer variables
-long iteration, totalIterations = 1;
-time_t startTT, endTT;
-double startTime, endTime;
-double iterationTime, totalTime;
-long iTotalTime;
-time_t startTs, endTs;
-struct timeval totalTv;
-struct timeval taskStartTv, taskEndTv;
-struct timeval iterationStartTv, iterationEndTv;
-// 280 MHz = Blue board
-// 320 MHz = Magic Eyes 
-// 385 MHz = target Lightning clock frequency
-double cpuClockMHz = 385.0;
+// **********************************************************************************
+// Stricmp:	Compare two strings with case insensitivity.
+//			Return 0 if strings are the same.	
+// ********************************************************************************** 
+	int   
+Stricmp(char *inS1, char *inS2)
+{
+char s1[1000], s2[1000];
+long i, j;
+long returnValue = 1;
+
+if ((!inS1) || (!inS2))
+	return (1);
+
+strcpy(s1, inS1);
+strcpy(s2, inS2);
+// Force all values to lower case
+for (i = 0; s1[i] != '\0'; i++)
+	{
+	if (s1[i] >= 'A' && s1[i] <= 'Z')
+		s1[i] = s1[i] - 'A' + 'a';
+	}
+for (i = 0; s2[i] != '\0'; i++)
+	{
+	if (s2[i] >= 'A' && s2[i] <= 'Z')
+		s2[i] = s2[i] - 'A' + 'a';
+	}
+//printf("inS1 '%s' -> '%s'\n", inS1, s1);
+//printf("inS2 '%s' -> '%s'\n", inS2, s2);
+
+for (i = 0; s1[i] != '\0' && s2[i] != '\0'; i++)
+	{
+	if (s1[i] != s2[i])
+		break;
+	}
+// Check if reached end of either string.  If both, strings are the same
+if (s1[i] == '\0' && s2[i] == '\0')
+	return (0);
+return (1);
+}	// ---- end Stricmp() ---- 
 
 //============================================================================
 // PrintUsage:		
@@ -98,9 +106,6 @@ printf("Options:\n");
 printf("    -outFormat brio, aiff, wav, raw (default: brio)\n");
 printf("                       \n");
 printf("    -v  verbose operation\n");
-//printf("    -reps   iterations \n");
-//printf("    -t      timer : Use timer for rendering\n");
-//printf("    -c      channels \n");
 //printf("    -i      infile \n");
 //printf("    -o      outfile \n");
 //
@@ -127,8 +132,6 @@ exit(-1);
 main(int argc, char *argv[]) 
 {
 long i = 0, j = 0;
-//SF_INFO *isfi = &inSoundFileInfo;
-//SF_INFO *osfi = &outSoundFileInfo;
 double execTime = 0.0;
 #define MAX_FILENAME_LENGTH 500
 char inFilePath [MAX_FILENAME_LENGTH];
@@ -163,53 +166,6 @@ else if (!Stricmp(s, "-h") || !Stricmp(s, "-help"))
 	{
 	PrintUsage();
 	exit(0);
-	}
-else if (!Stricmp(s, "-reps") || !Stricmp(s, "-iterations"))
-	{
-	totalIterations = atoi(argv[++i]);
-//printf("totalIterations=%d\n", totalIterations);
-	}
-else if (!Stricmp(s, "-inGain"))
-	{
-	inGain = atof(argv[++i]);
-//printf("inGain=%g\n", inGain);
-	}
-else if (!Stricmp(s, "-inGainDB"))
-	{
-	float inGainDB = atof(argv[++i]);
-	inGain = DecibelToLinear(inGainDB);
-//printf("inGainDB = %g -> %g\n", inGainDB, inGain);
-	}
-else if (!Stricmp(s, "-outGain"))
-	{
-	outGain = atof(argv[++i]);
-//printf("outGain=%g\n", outGain);
-	}
-else if (!Stricmp(s, "-outGainDB"))
-	{
-	float outGainDB = atof(argv[++i]);
-	outGain = DecibelToLinear(outGainDB);
-//printf("outGainDB = %g -> %g\n", outGainDB, outGain);
-	}
-
-//
-// --------- General parameters
-//
-else if (!strcmp(s, "-c") || !strcmp(s, "-channels"))
-	{
-	channels = atoi(argv[++i]);
-//printf("channels=%d\n", channels);
-	}
-else if (!Stricmp(s, "-fs") || !Stricmp(s, "-fs_out"))
-	{
-	outSamplingFrequency = atoi(argv[++i]);
-	outSamplingFrequencySpecified = True;
-printf("outSamplingFrequency=%d Hz\n", outSamplingFrequency);
-	}
-else if (!Stricmp(s, "-t") || !Stricmp(s, "-timer"))
-	{
-	useTimer = True;
-printf("useTimer=%d\n", useTimer);
 	}
 else if (!Stricmp(s, "-i") || !Stricmp(s, "-infile"))
 	{
@@ -251,15 +207,12 @@ else
 	}
 }  // ---- end argument parsing
    
-if (inputIsImpulse)
-	strcpy(inFilePath, "impulse");
 
 if (verbose)
 {
 printf("inFilePath  = '%s'\n", inFilePath);
 printf("outFilePath = '%s'\n", outFilePath);
 }
-ClearTimeval(&totalTv);
 
 // 
 // -------------------- Convert audio file
@@ -269,14 +222,11 @@ long framesRead = 0, framesWritten = 0;
 long loopCount, loopRemnants;
 
 // Open audio file if input is not a generated impulse
-if (!inputIsImpulse)
-	{	
 	inSoundFile = OpenSoundFile(inFilePath, &inSoundFileInfo, SFM_READ);	if (!inSoundFile)
 		{
 		printf("Unable to open input file '%s'\n", inFilePath);
 		CleanUpAndExit();
 		}
-	} // if (!inputIsImpulse)
 
 // Select sampling rate, for which command-line specification overrides the file value
 	inSamplingFrequency  = inSoundFileInfo.samplerate;
@@ -305,16 +255,8 @@ if (kOutFileFormat_Unspecified == outFileFormat)
 	}
 
 // Clear buffers
-	ClearShorts(inBlock , kBlockStorageSize);
-	ClearShorts(outBlock, kBlockStorageSize);
-
-// Set up input for generated (no input file opened) impulse
-	if (inputIsImpulse)
-		{
-		inSoundFileInfo.samplerate = 44100;
-		inSoundFileInfo.frames = inSoundFileInfo.samplerate*10;
-		inSoundFileInfo.channels = 1;
-		}
+    bzero(inBlock , kBlockStorageSize*sizeof(short));
+    bzero(outBlock, kBlockStorageSize*sizeof(short));
 
 // Open output file , if specified
 	if (outFilePath[0] != '\0')
@@ -363,131 +305,54 @@ if (kOutFileFormat_Unspecified == outFileFormat)
 		else
 			brioFileHeader.flags = 1;  // Stereo for Brio
 		fwrite(&brioFileHeader, sizeof(char), sizeof(tAudioHeader), outH);
-if (verbose)
-{
-PrintBrioAudioHeader(&brioFileHeader);
-printf("Wrote Brio header file in %d bytes\n", sizeof(tAudioHeader));
-}
-		}
-	inFileTime = ((double) inSoundFileInfo.frames)/(double)inSoundFileInfo.samplerate;
-if (verbose)
-printf("inFileTime = %g  seconds \n", inFileTime);
 
-// Shorten to some block size.  Try to get the value of a few hundred .
- if ( !useLargeBlockLength && (0 == inSamplingFrequency%100 ) && (0 == outSamplingFrequency%100 ) )
-	{
-	inBlockLength  = inSamplingFrequency /100;
-	outBlockLength = outSamplingFrequency/100;
-	}
-else if ( (0 == inSamplingFrequency%10  ) && (0 == outSamplingFrequency%10  ) )
-	{
-	inBlockLength  = inSamplingFrequency /10;
-	outBlockLength = outSamplingFrequency/10;
-	}
-else
-	{
-	inBlockLength  = inSamplingFrequency;
-	outBlockLength = outSamplingFrequency;
-	}
+        if (verbose)
+            {
+            PrintBrioAudioHeader(&brioFileHeader);
+            printf("Wrote Brio header file in %d bytes\n", sizeof(tAudioHeader));
+            }
+        }
+
+inFileTime = ((double) inSoundFileInfo.frames)/(double)inSoundFileInfo.samplerate;
+if (verbose)
+    printf("inFileTime = %g  seconds \n", inFileTime);
+
+inBlockLength  = inSamplingFrequency;
+outBlockLength = outSamplingFrequency;
+
 // ---- Write audio file samples (input sampling rate = output sampling rate)
-if (inBlockLength == outBlockLength)
 {
 short *inBlockP  = &inBlock [0];
 short *outBlockP = &outBlock[0];
 long length = inBlockLength;
 
-	if (processOnlyOneBlock)
-		{
-		loopCount    = 1;
-		loopRemnants = 0;
-		}
-	else
-		{
-		loopCount    = inSoundFileInfo.frames/length;
-		loopRemnants = inSoundFileInfo.frames%length;
-		}
-	if (useTimer)
-		gettimeofday(&taskStartTv, NULL);
+loopCount    = inSoundFileInfo.frames/length;
+loopRemnants = inSoundFileInfo.frames%length;
+
 	for (long i = 0; i < loopCount; i++)
 		{
-		if (inputIsImpulse)
-			{
-			static long impulseGenerated = False;
-			ClearShorts(inBlockP, length);
-			if (!impulseGenerated)
-				{
-				impulseGenerated = True;
-				inBlockP[0] = 10000;
-				}
-			}
-		else
-			{
-			framesRead = sf_readf_short(inSoundFile, inBlockP, length);
-	        if (verbose && framesRead != length)
-			    printf("Short read of %d/%d samples\n", framesRead, length);
-			}
-	if (useTimer)
-		gettimeofday(&iterationStartTv, NULL);
+		framesRead = sf_readf_short(inSoundFile, inBlockP, length);
+        if (verbose && framesRead != length)
+		    printf("Short read of %d/%d samples\n", framesRead, length);
 		
 			if (outH)
 				fwrite(inBlockP, sizeof(short), length*inSoundFileInfo.channels, outH);
 			else if (outSoundFile)
 				framesWritten = sf_writef_short(outSoundFile, inBlockP, length);
+        }
 
-	if (useTimer)
-		{
-		gettimeofday(&iterationEndTv, NULL);
-//		totalTime += SecondsFromTimevalDiff(&iterationStartTv, &iterationEndTv);
-		AddTimevalDiff(&totalTv, &iterationStartTv, &iterationEndTv);
-		}
-		}
 // Write remainder of samples
 	if (loopRemnants)
 		{
 	//	printf("writing remaining %d frames\n", remnants);
 		framesRead = sf_readf_short(inSoundFile, inBlockP, loopRemnants);
-//        if (verbose && framesRead != length)
-//		    printf("Remnants Short read of %d/%d samples\n", framesRead, length);
+
 		if (outH)
 		   fwrite(inBlockP, inSoundFileInfo.channels*sizeof(short), loopRemnants, outH);
 		else if (outSoundFile)
 			framesWritten = sf_writef_short(outSoundFile, inBlockP, loopRemnants);
 		}
-	if (useTimer)
-		gettimeofday(&taskEndTv, NULL);
-if (processOnlyOneBlock)
-	{
-	for (j = 0; j < 20; j++)
-		printf("inBlockP %2d : %d\n", j, inBlockP[j]);
-	for (j = 0; j < 20; j++)
-		printf("outBlockP %2d : %d\n", j, outBlockP[j]);
-	printf("NOTE: single block test \n");
-	}
-	}
-
-// 
-// Report final results averaged by # of iterations
-//
-if (useTimer)
-	{
-	printf("\n");
-	totalTime = SecondsFromTimeval(&totalTv);
-	printf("totalTime  = %g Sec \n", totalTime);
-
-	double realTime = 0.0, cpuTime = 0.0;
-	double avgTime, startTime, endTime;
-	avgTime = ((double)totalTime)/(double)totalIterations;
-	if (totalIterations > 1)
-		printf("Avg  Time/file  =%g Sec\n", avgTime);
-
-	//realTime = inFileTime/avgTime;
-	cpuTime  = avgTime/inFileTime;
-	//printf("Real Time = %d X\n", (int)realTime);
-	printf("Real Time CPU Load = %g %% (%d MIPS)\n", 100.0*cpuTime, (int) (cpuTime*cpuClockMHz + 0.5));
-	printf("CPU Frequency=%d MHz:  MIPS= %g\n", (int)cpuClockMHz, cpuTime*cpuClockMHz);
-	printf("\n-----------------------------------------------\n");
-	}
-
+}
 } // end Convert Audio File
 
 printf("\n");

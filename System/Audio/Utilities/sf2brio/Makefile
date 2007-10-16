@@ -5,14 +5,10 @@ OBJ = $(SRC:.cpp=.o)
 
 OUT = sf2brio
 BRIO=/home/lfu/workspace/Brio2
-#MOBILEER = $(BRIO)/ThirdParty/Mobileer
 BRIO_AUDIO = $(BRIO)/System/Audio
 
 # include directories
-INCLUDES = -I. -I/usr/local/include -I$(BRIO_AUDIO)/LibSndFile -I$(BRIO_AUDIO)/DspUtil -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I$(BRIO_AUDIO)/Include 
-#-I$(MOBILEER)/Include -I$(MOBILEER)/Source/examples
-# -I/usr/include/linux
-# -I../../../Include
+INCLUDES = -I. -I/usr/local/include -I$(BRIO_AUDIO)/LibSndFile -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I$(BRIO_AUDIO)/Include 
 
 # C++ compiler flags (-g -O2 -Wall)
 CCFLAGS = -O2
@@ -21,10 +17,10 @@ CCFLAGS = -O2
 CCC = g++
 
 # library paths
-LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/x86 -L$(BRIO_AUDIO)/DspUtil/x86 
-#-L$(MOBILEER)/Libs/x86
-LIBS = -lsndfile -ldsputil 
-#-lme2000
+LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/x86 
+#-L$(BRIO_AUDIO)/DspUtil/x86 
+LIBS = -lsndfile 
+#-ldsputil 
 
 # compile flags (-g)
 LDFLAGS = 
@@ -38,7 +34,8 @@ default: dep $(OUT)
 
 $(OUT): $(OBJ)
 	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) -static
-
+	cp $(OUT) ./x86
+#	echo "Copied to ~/nfsroot"
 
 depend: dep
 
@@ -71,15 +68,11 @@ main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sfconfig.h
 main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/config.h
 main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfile.h
 main.o: /usr/include/sys/time.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/Dsputil.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/util.h
 main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfileutil.h
-main.o: main.h /home/lfu/workspace/Brio2/System/Audio/DspUtil/src.h sf.h
-sf.o: /usr/include/math.h /usr/include/features.h /usr/include/sys/cdefs.h
+main.o: main.h sf.h
+sf.o: /usr/include/stdlib.h /usr/include/features.h /usr/include/sys/cdefs.h
 sf.o: /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h
-sf.o: /usr/include/gnu/stubs-32.h /usr/include/bits/huge_val.h
-sf.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
-sf.o: /usr/include/stdlib.h
+sf.o: /usr/include/gnu/stubs-32.h
 sf.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h
 sf.o: /usr/include/sys/types.h /usr/include/bits/types.h
 sf.o: /usr/include/bits/typesizes.h /usr/include/time.h /usr/include/endian.h
@@ -94,5 +87,3 @@ sf.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h sf.h
 sf.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sfconfig.h
 sf.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/config.h
 sf.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfile.h
-sf.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/util.h
-sf.o: /usr/include/sys/time.h
