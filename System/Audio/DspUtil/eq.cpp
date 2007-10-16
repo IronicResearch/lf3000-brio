@@ -314,51 +314,12 @@ AdjustGainEQHz(float *h, float gainDB)
 {
 float k = DecibelToLinear(gainDB);
 
-//Printf("AdjustGainEQHz: gainDB=%g -> gain=%g\n", gainDB, gain);
+//printf("AdjustGainEQHz: gainDB=%g -> gain=%g\n", gainDB, k);
 
 h[kEQ_b0] *= k;
 h[kEQ_b1] *= k;
 h[kEQ_b2] *= k;
 }	// ---- end AdjustGainEQHz() ---- 
-
-// ************************************************************************
-// DampingFromQ:	Return damping value for specified Q
-// ************************************************************************ 
-    float
-DampingFromQ(float q)
-{
-return (2.0*sinh(1.0/(q+q)));
-}   // ---- end DampingFromQ() ---- 
-
-// ************************************************************************
-// QFromDamping:	Return Q value for specified damping
-// ************************************************************************ 
-//    float
-//QFromDamping(float damping)
-//{
-//return (0.5/Asinh(0.5*damping));
-//}   // ---- end QFromDamping() ---- 
-
-// ************************************************************************
-// DampingFromQ_v2:	Return damping value for specified Q
-// ************************************************************************ 
-//    float
-//DampingFromQ_v2(float frequency, float q)
-//{
-//float w0 = kTwoPi*frequency;
-//return (tan(w0/(q+q))/sin(w0));
-//}   // ---- end DampingFromQ_v2() ---- 
-
-// ************************************************************************
-// QFromDamping_v2:	Return Q value for specified damping
-// ************************************************************************ 
-//    float
-//QFromDamping_v2(float frequency, float damping)
-//{
-//float w0 = kTwoPi*frequency;
-//
-//return (0.5*w0/atan(damping*sin(w0)));
-//}   // ---- end QFromDamping_v2() ---- 
 
 // ************************************************************************
 // UpdateEQ:	Compute coefficients (when  lowLevelDataBogus=True)

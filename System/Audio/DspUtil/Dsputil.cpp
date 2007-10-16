@@ -14,9 +14,25 @@
 #include <Dsputil2.h>
 
 // *************************************************************** 
+// BoundS8:   Force value to specified range
+//              8-bit signed integer version.
+//          Modify pointer address as well as return the bounded value.
+// ***************************************************************
+	S8 
+BoundS8(S8 *x, S8 lo, S8 hi)
+{
+//printf("BoundS8: x=%d  [%d .. %d] \n", *x, lo, hi);
+if      (*x < lo)
+    *x = lo;
+else if (*x > hi)
+    *x = hi;
+return (*x);
+}	// ---- end BoundS8() ---- 
+
+// *************************************************************** 
 // BoundS16:   Force value to specified range
 //              16-bit signed integer version.
-//          Modify pointer address as well as return the modified value.
+//          Modify pointer address as well as return the bounded value.
 // ***************************************************************
 	S16 
 BoundS16(S16 *x, S16 lo, S16 hi)
@@ -32,7 +48,7 @@ return (*x);
 // *************************************************************** 
 // BoundS32:   Force value to specified range
 //              32-bit signed integer version.
-//          Modify pointer address as well as return the modified value.
+//          Modify pointer address as well as return the bounded value.
 // ***************************************************************
 	S32 
 BoundS32(S32 *x, S32 lo, S32 hi)

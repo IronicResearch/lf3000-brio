@@ -172,12 +172,18 @@ int WriteToFile(char *text, char *path);
 
 #define kPrintLevelNone	        0x0
 
+typedef signed char     S8;   
 typedef short           S16;   
 typedef long            S32;   
 typedef unsigned long   U32;   
 
 typedef short Q15;   // 1.15 format in 16 bits
 typedef long  Q31;   // 1.31 format in 32 bits
+
+#define kS8_Max ( 127)
+#define kS8_Min (-128)
+#define kS8_Maxf ((float)kS8_Max)
+#define kS8_Minf ((float)kS8_Min)
 
 #define kS16_Max ( 32767)
 #define kS16_Min (-32768)
@@ -763,6 +769,8 @@ short Binary16ToShort(char *s);
     if      ((x) < (r)[LO]) (x) = (r)[LO];\
     else if ((x) > (r)[HI]) (x) = (r)[HI];\
 }
+
+S8    BoundS8( S8  *x, S8  lo, S8 hi);
 S16   BoundS16(S16 *x, S16 lo, S16 hi);
 S32   BoundS32(S32 *x, S32 lo, S32 hi);
 float Boundf(float *x, float lo, float hi);
