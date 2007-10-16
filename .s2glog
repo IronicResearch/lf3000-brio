@@ -9553,3 +9553,20 @@ By Dave Milici (dmilici@leapfrog.com) on 10/15/07 6:40 PM
 4,063 ms. (Cumulative: 2,171,968 ms)
 
 ----------------
+Revision 1,940 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,172 ms. (Cumulative: 2,176,202 ms)
+
+----------------
+Revision 1,941 from svn://localhost/TRUNK/:
+Revision 1,942 from svn://localhost/TRUNK/:
+Revision 1,943 from svn://localhost/TRUNK/:
+
+Added testing for IIR, SoftClipper and EQ DSP functions
+
+By gklimanis (gklimanis@leapfrog.com) on 10/16/07 3:57 PM
+8 changed, 0 added, 0 deleted.
+4,250 ms. (Cumulative: 2,180,468 ms)
+
+----------------

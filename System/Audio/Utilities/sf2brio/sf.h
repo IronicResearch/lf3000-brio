@@ -10,8 +10,6 @@
 #include "sfconfig.h"
 #include "sndfile.h"
 
-#include "util.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,13 +26,14 @@ typedef                U32 tRsrcType;
 // Brio audio file header
 struct tAudioHeader {
 	U32	  offsetToData;		// Offset from the start of the header to
-					// the start of the data (std is 16)
+					        // the start of the data (std is 16)
 	tRsrcType type;			// AudioRsrcType
-	U16	  flags;		// Bit mask of audio flags
-					// (Bit0: 0=mono, 1=stereo)
+	U16	  flags;		    // Bit mask of audio flags
+					        // (Bit0: 0=mono, 1=stereo)
 	U16	 sampleRate;		// Sample rate in Hz			
-	U32	 dataSize;		// Data size in bytes
+	U32	 dataSize;		    // Data size in bytes
 };
+
 void PrintBrioAudioHeader( tAudioHeader *d );
 
 #endif  //	end __SF_H__

@@ -7,10 +7,7 @@
 #ifndef __MAIN_H__
 #define	__MAIN_H__
 
-#include <math.h>
-
-#include "src.h"
-#include "util.h"
+//#include "util.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +15,20 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+#ifndef False
+#define False 0
+#endif
+#ifndef True
+#define True 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef TRUE
+#define TRUE 1
+#endif
+
 
 #define kOutFileFormat_Unspecified	(-1)
 #define kOutFileFormat_Brio	0
@@ -35,17 +46,9 @@ extern long inSamplingFrequency;
 extern long outSamplingFrequency;
 extern long outSamplingFrequencySpecified;
 
-extern SRC srcData[kMaxChannels];
 extern long inBlockLength, outBlockLength;
 extern long inSamplingRate, outSamplingRate;
 
 extern long channels;
-
-// MIDI variables
-extern long midiSamplingFrequency;
-extern long midiVoiceCount;
-extern long midiVoiceLimit;
-
-int PlayMIDIFile(char *inFileName, char *outFileName, double *fileTime, double *execTime);
 
 #endif  //	__MAIN_H__
