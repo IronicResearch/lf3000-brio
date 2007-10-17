@@ -97,68 +97,49 @@ static int is_enabled()
 		return 0;
 }
 
+extern "C" char **environ;
+static char *enable_args[] = {"usbctl", "-d", "mass_storage", "-a", "enable", 0};
+
 static tErrType enable()
 {
-	FILE *f;
-	int ret, len;
-	char *buf = "1";
 
-	f = fopen(SYSFS_LUN0_PATH, "w");
-	if(!f)
-		return kUSBDeviceFailure;
+	pid_t c, ws;
+	int ret;
 
-	len = strlen(buf);
-	ret = fwrite(buf, 1, len, f);
-	fclose(f);
-	if(ret != len)
-		return kUSBDeviceFailure;
-
-	/* LUN1 may not exist */
-	f = fopen(SYSFS_LUN1_PATH, "w");
-	if(!f && errno == ENOENT)
-		return kNoErr;
-	else if(!f)
+	c = fork();
+	if(c == 0)
+		execve("/usr/bin/usbctl", enable_args, environ);
+	else if(c == -1)
 		return kUSBDeviceFailure;
 	else
-		ret = fwrite(buf, 1, len, f);
-	fclose(f);
+		ws = waitpid(c, &ret, 0);
 
-	if(ret != len)
+	if(WIFEXITED(ret) && !WEXITSTATUS(ret)) {
+		return kNoErr;
+	} else {
 		return kUSBDeviceFailure;
-
-	return kNoErr;
+	}
 }
 
+static char *disable_args[] = {"usbctl", "-d", "mass_storage", "-a", "disable", 0};
 static tErrType disable()
 {
-	FILE *f;
-	int ret, len;
-	char *buf = "0";
+	pid_t c, ws;
+	int ret;
 
-	f = fopen(SYSFS_LUN0_PATH, "w");
-	if(!f)
-		return kUSBDeviceFailure;
-
-	len = strlen(buf);
-	ret = fwrite(buf, 1, len, f);
-	fclose(f);
-	if(ret != len)
-		return kUSBDeviceFailure;
-
-	/* LUN1 may not exist */
-	f = fopen(SYSFS_LUN1_PATH, "w");
-	if(!f && errno == ENOENT)
-		return kNoErr;
-	else if(!f)
+	c = fork();
+	if(c == 0)
+		execve("/usr/bin/usbctl", disable_args, environ);
+	else if(c == -1)
 		return kUSBDeviceFailure;
 	else
-		ret = fwrite(buf, 1, len, f);
-	fclose(f);
+		ws = waitpid(c, &ret, 0);
 
-	if(ret != len)
+	if(WIFEXITED(ret) && !WEXITSTATUS(ret)) {
+		return kNoErr;
+	} else {
 		return kUSBDeviceFailure;
-
-	return kNoErr;
+	}
 }
 
 //============================================================================
