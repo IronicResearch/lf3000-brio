@@ -9607,3 +9607,22 @@ By gklimanis (gklimanis@leapfrog.com) on 10/16/07 4:16 PM
 4,328 ms. (Cumulative: 2,199,032 ms)
 
 ----------------
+Revision 1,948 from svn://localhost/TRUNK/:
+Revision 1,949 from svn://localhost/TRUNK/:
+Revision 1,950 from svn://localhost/TRUNK/:
+Revision 1,951 from svn://localhost/TRUNK/:
+Revision 1,952 from svn://localhost/TRUNK/:
+
+Okay.  I made the USB Device manager spawn a process and run a script.  I know
+this is a bit sinful, but we have all sorts of mounting and unmounting,
+grepping, and other script-like stuff.  So that's how it is.  If you want to go
+about creating a userspace lib implementing the usb behavior that we're trying
+to acheive, that's probably more sensible...and time consuming.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 10/16/07 6:13 PM
+1 changed, 0 added, 0 deleted.
+4,235 ms. (Cumulative: 2,203,361 ms)
+
+----------------
