@@ -9705,3 +9705,19 @@ By Scott Esters (sesters@leapfrog.com) on 10/19/07 1:09 PM
 4,158 ms. (Cumulative: 2,225,146 ms)
 
 ----------------
+Revision 1,989 from svn://localhost/TRUNK/:
+Revision 1,990 from svn://localhost/TRUNK/:
+Revision 1,991 from svn://localhost/TRUNK/:
+Revision 1,992 from svn://localhost/TRUNK/:
+Revision 1,993 from svn://localhost/TRUNK/:
+Revision 1,994 from svn://localhost/TRUNK/:
+Revision 1,995 from svn://localhost/TRUNK/:
+Revision 1,996 from svn://localhost/TRUNK/:
+
+Fixes for offscreen contexts and non-native formats on X emulation.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/19/07 4:43 PM
+3 changed, 0 added, 0 deleted.
+4,144 ms. (Cumulative: 2,229,399 ms)
+
+----------------

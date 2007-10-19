@@ -176,7 +176,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		pdcListHead = dc;
 		dc->pdc = NULL;
 	}
-	else if (kDisplayOnTop == initialZOrder)
+	else if (kDisplayOnTop != initialZOrder)
 	{
 		// Replace previous head of list
 		pdcListHead = dc;
