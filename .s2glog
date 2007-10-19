@@ -9626,3 +9626,44 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 10/16/07 6:13 PM
 4,235 ms. (Cumulative: 2,203,361 ms)
 
 ----------------
+Revision 1,953 from svn://localhost/TRUNK/:
+Revision 1,954 from svn://localhost/TRUNK/:
+Revision 1,955 from svn://localhost/TRUNK/:
+Revision 1,956 from svn://localhost/TRUNK/:
+Revision 1,957 from svn://localhost/TRUNK/:
+Revision 1,958 from svn://localhost/TRUNK/:
+Revision 1,959 from svn://localhost/TRUNK/:
+Revision 1,960 from svn://localhost/TRUNK/:
+Revision 1,961 from svn://localhost/TRUNK/:
+Revision 1,962 from svn://localhost/TRUNK/:
+Revision 1,963 from svn://localhost/TRUNK/:
+Revision 1,964 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,391 ms. (Cumulative: 2,207,908 ms)
+
+----------------
+Revision 1,965 from svn://localhost/TRUNK/:
+Revision 1,966 from svn://localhost/TRUNK/:
+Revision 1,967 from svn://localhost/TRUNK/:
+Revision 1,968 from svn://localhost/TRUNK/:
+Revision 1,969 from svn://localhost/TRUNK/:
+Revision 1,970 from svn://localhost/TRUNK/:
+Revision 1,971 from svn://localhost/TRUNK/:
+Revision 1,972 from svn://localhost/TRUNK/:
+Revision 1,973 from svn://localhost/TRUNK/:
+Revision 1,974 from svn://localhost/TRUNK/:
+Revision 1,975 from svn://localhost/TRUNK/:
+Revision 1,976 from svn://localhost/TRUNK/:
+Revision 1,977 from svn://localhost/TRUNK/:
+Revision 1,978 from svn://localhost/TRUNK/:
+Revision 1,979 from svn://localhost/TRUNK/:
+Revision 1,980 from svn://localhost/TRUNK/:
+
+Use framebuffer address from driver with alignment requirements for ME OGL heaps.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/18/07 7:24 PM
+2 changed, 0 added, 0 deleted.
+4,157 ms. (Cumulative: 2,212,190 ms)
+
+----------------

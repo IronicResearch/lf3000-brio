@@ -35,17 +35,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define PAGE_3D		2
 #define	REG3D_PHYS	0xc001a000
 
-#ifdef LF1000_FF
-#define	MEM1_PHYS	0x01000000	// @ 16Meg
-#else
-#define	MEM1_PHYS	0x03000000	// @ 48Meg
-#endif
 #define	MEM1_SIZE	0x00800000	// 8Meg
-#define	MEM1_VIRT	(void*)0xb1000000
-
-#define	MEM2_PHYS	(MEM1_PHYS + MEM1_SIZE)
-#define	MEM2_SIZE	MEM1_SIZE
-#define	MEM2_VIRT	(void*)((unsigned int)MEM1_VIRT + MEM1_SIZE)
+#define	MEM1_VIRT	0xb1000000
 
 //============================================================================
 // Local device driver handles
@@ -62,10 +53,10 @@ namespace
 	void*		gpMem1 = NULL;
 	void*		gpMem2 = NULL;
 	void*		gpReg3d = NULL;
-	unsigned int gMem1Phys = MEM1_PHYS;
-	unsigned int gMem2Phys = MEM2_PHYS;
-	unsigned int gMem1Size = MEM1_SIZE;
-	unsigned int gMem2Size = MEM2_SIZE;
+	unsigned int gMem1Phys = 0; //MEM1_PHYS;
+	unsigned int gMem2Phys = 0; //MEM2_PHYS;
+	unsigned int gMem1Size = 0; //MEM1_SIZE;
+	unsigned int gMem2Size = 0; //MEM2_SIZE;
 	unsigned int gRegSize = PAGE_3D * 0x1000;
 	bool					FSAAval = false; // fullscreen anti-aliasing
 	tDisplayScreenStats		screen;
@@ -80,13 +71,8 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Dereference OpenGL context for MagicEyes memory size overides
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
+	unsigned int					mem1Virt = MEM1_VIRT;
 	unsigned int					mem2Virt;
-
-	// 2nd heap size and addresses must be 4 Meg aligned
-	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+3) & ~3) << 20;
-	gMem2Size = ((pMemInfo->Memory2D_SizeInMbyte+3) & ~3) << 20;
-	gMem2Phys = gMem1Phys + gMem1Size;
-	mem2Virt = (unsigned int)MEM1_VIRT + gMem1Size;
 
 	// Need 2 layers for LF1000 fullscreen anti-aliasing option
 	FSAAval = pOglCtx->bFSAA;
@@ -109,6 +95,28 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver opened\n");
 	}
 
+	
+	// Get framebuffer address from driver
+	gMem1Phys = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
+	dbg_.Assert(gMem1Phys >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
+
+	// 1st heap size and addresses must be 1 Meg aligned
+	// 2nd heap size and addresses must be 4 Meg aligned
+	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+1) & ~1) << 20;
+	gMem2Size = ((pMemInfo->Memory2D_SizeInMbyte+3) & ~3) << 20;
+	mem2Virt = mem1Virt + gMem1Size;
+
+	// Now round down size to accomodate reserved 1Meg for 2D and Video
+	gMem1Size -= k1Meg;
+	gMem1Phys += (k1Meg - 1);
+	gMem1Phys &= ~(k1Meg - 1);
+	gMem2Phys = gMem1Phys + gMem1Size;
+	gMem2Phys += (4 * k1Meg - 1);
+	gMem2Phys &= ~(4 * k1Meg - 1);
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X, Mem1Size = %08X\n", gMem1Phys, gMem1Size);
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem2Phys = %08X, Mem2Size = %08X\n", gMem2Phys, gMem2Size);
+	
 	// Open device driver for 3D accelerator registers
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevGa3d >= 0, "DisplayModule::InitModule: /dev/ga3d driver failed");
@@ -123,7 +131,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-	gpMem1 = mmap(MEM1_VIRT, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
+	gpMem1 = mmap((void*)mem1Virt, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
@@ -264,8 +272,8 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayerOdd , MLC_IOCTHSTRIDE, 2);
 		ioctl(gDevLayerOdd , MLC_IOCTVSTRIDE, 8192);
 
-		ioctl(gDevLayerEven, MLC_IOCTADDRESS, MEM1_PHYS);
-		ioctl(gDevLayerOdd , MLC_IOCTADDRESS, MEM1_PHYS+4096);
+		ioctl(gDevLayerEven, MLC_IOCTADDRESS, gMem1Phys);
+		ioctl(gDevLayerOdd , MLC_IOCTADDRESS, gMem1Phys+4096);
 
 		ioctl(gDevLayerOdd, MLC_IOCTBLEND, (void *)1); //enable Alpha
 		ioctl(gDevLayerOdd, MLC_IOCTALPHA, 8); //set to 50%
@@ -279,7 +287,7 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayer, MLC_IOCTHSTRIDE, 2);
 		ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
 
-		ioctl(gDevLayer, MLC_IOCTADDRESS, MEM1_PHYS);
+		ioctl(gDevLayer, MLC_IOCTADDRESS, gMem1Phys);
 		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)0);
 	}
 }

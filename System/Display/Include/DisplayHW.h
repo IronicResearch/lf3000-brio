@@ -59,6 +59,7 @@ const U32	kLayerPixelFormatRGB888		= 0x4653; //R8G8B8 (HStride=3)
 const U32	kLayerPixelFormatYUV420		= 0x0000; //YUV planar	
 const U32	kLayerPixelFormatYUYV422	= 0x0002; //YUYV packed
 
+const U32	k1Meg  = 1024 * 1024;
 const U32 	k16Meg = 4096 * 4096;
 
 //----------------------------------------------------------------------------
