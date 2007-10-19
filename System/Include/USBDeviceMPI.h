@@ -15,13 +15,19 @@
 // Note: USB behavior is required to always operate.  The reason is that it is
 // critical for system restore.  So, if an app is misbehaving because it has
 // been corrupted, etc., USB must still work.  To ensure this, a watchdog timer
-// is launched whenever the USB is plugged in to a host.  As usual, this will
+// is launched whenever the USB is plugged into a host.  As usual, this will
 // generate an event.  The application must then prepare itself for connection
-// to the host and call EnableUSBDeviceDrivers.  If the application fails to
-// call EnableUSBDeviceDrivers before the watchdog timer expires, the system
-// will reset and the application will die.  The watchdog timer is set to a
-// sensible default when the application is launched.  Its value can be queried
-// and set using GetUSBDeviceWatchdog and SetUSBDeviceWatchdog.
+// to the host and either call Shutdown or EnableUSBDeviceDrivers.  If the
+// application fails to call EnableUSBDeviceDrivers or Shutdown before the
+// watchdog timer expires, the system will reset and the application will die.
+// The watchdog timer is set to a sensible default when the application is
+// launched.  Its value can be queried and set using GetUSBDeviceWatchdog and
+// SetUSBDeviceWatchdog.
+//
+// On some systems, enabling some drivers requires that no application is
+// running.  On such systems, EnableUSBDeviceDrivers is a one-way function when
+// called with a driver that is supported but requires that no application is
+// running.
 //
 //==============================================================================
 
@@ -67,6 +73,9 @@ public:
 	// this function returns a suitable error.  In this case, the actual USB
 	// behavior is undefined, but the user can call GetUSBDeviceState to
 	// determine what actually happend.
+    // 
+    // Some drivers on some systems require that no application is running when
+    // USB is enabled.  For these drivers, EnableUSBDeviceDrivers never returns.
 	tErrType EnableUSBDeviceDrivers(U32 drivers);
 
  	// DisableUSBDeviceDrivers is the opposite of EnableUSBDeviceDrivers

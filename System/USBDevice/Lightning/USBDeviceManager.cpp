@@ -15,6 +15,7 @@
 #include <EventMPI.h>
 #include <KernelMPI.h>
 #include <KernelTypes.h>
+#include <PowerMPI.h>
 #include <SystemErrors.h>
 
 #include <stdio.h>
@@ -97,51 +98,6 @@ static int is_enabled()
 		return 0;
 }
 
-extern "C" char **environ;
-static char *enable_args[] = {"usbctl", "-d", "mass_storage", "-a", "enable", 0};
-
-static tErrType enable()
-{
-
-	pid_t c, ws;
-	int ret;
-
-	c = fork();
-	if(c == 0)
-		execve("/usr/bin/usbctl", enable_args, environ);
-	else if(c == -1)
-		return kUSBDeviceFailure;
-	else
-		ws = waitpid(c, &ret, 0);
-
-	if(WIFEXITED(ret) && !WEXITSTATUS(ret)) {
-		return kNoErr;
-	} else {
-		return kUSBDeviceFailure;
-	}
-}
-
-static char *disable_args[] = {"usbctl", "-d", "mass_storage", "-a", "disable", 0};
-static tErrType disable()
-{
-	pid_t c, ws;
-	int ret;
-
-	c = fork();
-	if(c == 0)
-		execve("/usr/bin/usbctl", disable_args, environ);
-	else if(c == -1)
-		return kUSBDeviceFailure;
-	else
-		ws = waitpid(c, &ret, 0);
-
-	if(WIFEXITED(ret) && !WEXITSTATUS(ret)) {
-		return kNoErr;
-	} else {
-		return kUSBDeviceFailure;
-	}
-}
-
 //============================================================================
 // Asynchronous notifications
 //============================================================================
@@ -189,7 +145,8 @@ void CUSBDeviceModule::InitModule()
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
 	CEventMPI	eventmgr;
-	int vbus;
+	CDebugMPI	dbg(kGroupUSBDevice);
+	int vbus, enabled;
 
 	pDbg_->DebugOut(kDbgLvlVerbose, "USBDevice Init\n");
 
@@ -197,10 +154,9 @@ void CUSBDeviceModule::InitModule()
 	data.USBDeviceDriver = 0;
 	data.USBDeviceState = 0;
 
-	if(is_enabled()) {
-		data.USBDeviceDriver |= kUSBDeviceIsMassStorage;
-		data.USBDeviceState |= kUSBDeviceEnabled;
-	}
+	/* On lightning, the app can't be running while USB is enabled! */
+	enabled = is_enabled();
+	dbg.Assert(!enabled, "Lightning can't run apps while USB enabled");
 
 	// Check if we're connected
 	vbus = get_vbus();
@@ -255,26 +211,14 @@ tUSBDeviceData CUSBDeviceModule::GetUSBDeviceState() const
 //----------------------------------------------------------------------------
 tErrType CUSBDeviceModule::EnableUSBDeviceDrivers(U32 drivers)
 {
-	int enabled;
-	int ret = kNoErr;
-	
+
+	CPowerMPI power;
+
 	if(drivers & ~kUSBDeviceIsMassStorage)
 		return kUSBDeviceUnsupportedDriver;
 
-	enabled = is_enabled();
-	if(enabled == -1)
-		return kUSBDeviceFailure;
-		
-	if(!enabled)
-		ret = enable();
-	
-	if(ret == kNoErr) {
-		data.USBDeviceDriver |= kUSBDeviceIsMassStorage;
-		data.USBDeviceState |= kUSBDeviceEnabled;
-		return kNoErr;
-	}
-
-	return kUSBDeviceFailure;
+	/* This is a one-way ticket on Lightning */
+	return power.Shutdown();
 }
 
 //----------------------------------------------------------------------------
@@ -282,6 +226,7 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 {
 	int enabled;
 	int ret = kNoErr;
+	CDebugMPI	dbg(kGroupUSBDevice);
 
 	if(drivers & ~kUSBDeviceIsMassStorage)
 		return kUSBDeviceUnsupportedDriver;
@@ -290,9 +235,9 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 	if(enabled == -1)
 		return kUSBDeviceFailure;
 		
-	if(enabled)
-		ret = disable();
-	
+	/* On lightning, the app can't be running while USB is enabled! */
+	dbg.Assert(!enabled, "Lightning can't run apps while USB enabled");
+
 	if(ret == kNoErr) {
 		data.USBDeviceDriver = 0;
 		data.USBDeviceState &= ~kUSBDeviceEnabled;
