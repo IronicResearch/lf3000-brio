@@ -1050,6 +1050,40 @@ public:
     }
 
     //==============================================================================
+ 	// Watchdog Timer
+ 	//==============================================================================
+     
+     // minimal start watchdog timer test.  See function exists, but don't start timer
+     void testStartWatchdog()
+     {
+    	 ptintf_test_info("testStartWatchdog");
+    	 tErrType err;
+    	 
+    	 err = KernelMPI->StartWatchdog(0);		// zero keeps watchdog disabled
+    	 TS_ASSERT_EQUALS( err, (tErrType)0 );
+     }
+
+     // minimal stop watchdog timer test.  See function exists
+     void testStopWatchdog()
+     {
+    	 ptintf_test_info("testStopWatchdog");
+    	 tErrType err;
+    	 
+    	 err = KernelMPI->StopWatchdog();		// zero keeps watchdog disabled
+    	 TS_ASSERT_EQUALS( err, (tErrType)0 );
+     }
+     
+     // minimal start watchdog timer test.  See function exists, but don't start timer
+     void testKeepWatchdogAlive()
+     {
+    	 ptintf_test_info("testKeepWatchdogAlive");
+    	 tErrType err;
+    	 
+    	 err = KernelMPI->KeepWatchdogAlive();		// zero keeps watchdog disabled
+    	 TS_ASSERT_EQUALS( err, (tErrType)0 );
+     }
+     
+    //==============================================================================
 	// Mutexes
 	//==============================================================================
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
