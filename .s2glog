@@ -9680,3 +9680,17 @@ By Scott Esters (sesters@leapfrog.com) on 10/19/07 11:55 AM
 4,313 ms. (Cumulative: 2,216,596 ms)
 
 ----------------
+Revision 1,985 from svn://localhost/TRUNK/:
+Revision 1,986 from svn://localhost/TRUNK/:
+
+Updating USB behavior.  EnableUSB now calls shutdown.  The USB manager fails to
+instantiate if the usb is enabled.  This breaks the unit tests, which I sinfully
+deleted.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 10/19/07 12:57 PM
+3 changed, 0 added, 0 deleted.
+4,236 ms. (Cumulative: 2,220,910 ms)
+
+----------------
