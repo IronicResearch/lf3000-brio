@@ -187,6 +187,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->rect.left = dc->rect.top = 0;
 	dc->rect.right = width;
 	dc->rect.bottom = height;
+	dc->pixmap = 0;
+	dc->image = NULL;
 	
 	// Offscreen context allocated by caller?
 	if (dc->isAllocated)
@@ -199,12 +201,15 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	// Bind X pixmap and image data to display context
 	Pixmap pixmap = XCreatePixmap(x11Display, x11Window, width, height, depth);
 	_XImage* image = XGetImage(x11Display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
+	dbg_.Assert(image != NULL, "CDisplayModule::CreateHandle: Unable to create X pixmap\n");
 	
 	dc->pixmap = pixmap;
 	dc->image = image;
-	dc->bpp = image->bitmap_unit;
-	dc->depth = image->bits_per_pixel;
-	dc->pitch = image->bytes_per_line;
+	if (colorDepth == kPixelFormatARGB8888) {
+		dc->bpp = image->bitmap_unit;
+		dc->depth = image->bits_per_pixel;
+		dc->pitch = image->bytes_per_line;
+	}
 	dc->pBuffer = (U8*)image->data;
 
 	memset(dc->pBuffer, 0, width * height);
@@ -245,6 +250,8 @@ tErrType CDisplayModule::Update(tDisplayContext* dc)
 		RGB565ARGB(dc,pdcDest);
 	else if (dc->colorDepthFormat == kPixelFormatRGB4444)
 		RGB4444ARGB(dc,pdcDest);
+	else if (dc->isAllocated)
+		ARGB2ARGB(dc,pdcDest);
 	else
 		pdcDest = dc;
 	

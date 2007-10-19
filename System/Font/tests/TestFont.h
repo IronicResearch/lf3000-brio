@@ -316,9 +316,10 @@ public:
 		tFontSurf	surf;
 		tDisplayHandle 	disp;
 		CString			text = CString("Clipped String Test");
+		U8*				buffer = new U8[320 * 240 * 4];
 
 		pDisplayMPI_ = new CDisplayMPI;
-		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, buffer);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
 
@@ -326,7 +327,7 @@ public:
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
-		surf.format = kPixelFormatARGB8888;
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
@@ -356,6 +357,7 @@ public:
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
 		delete pDisplayMPI_;
+		delete buffer;
 	}
 	
 	//------------------------------------------------------------------------
