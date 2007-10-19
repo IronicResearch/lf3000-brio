@@ -276,6 +276,19 @@ public:
 	VTABLE_EXPORT tErrType	GetTimerElapsedTime( tTimerHndl hndl, U32* pMs,U32* pUs = NULL ) const;		// elapsed time in milliseconds (& microseconds)
 	VTABLE_EXPORT tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* pUs = NULL ) const; 	// time remaining in milliseconds (& microseconds)
 
+//==============================================================================
+// Watchdog Timer
+//==============================================================================
+
+	// Start Watchdog Timer
+	VTABLE_EXPORT tErrType StartWatchdog( U32 seconds ) const;
+
+	// Stop Watchdog Timer
+	VTABLE_EXPORT tErrType StopWatchdog( void ) const;
+
+	// KeepAlive request to Watchdog Timer
+	VTABLE_EXPORT tErrType KeepWatchdogAlive( void ) const;
+	
 //------------------------------------------------------------------------------
 // Mutexes
 //------------------------------------------------------------------------------

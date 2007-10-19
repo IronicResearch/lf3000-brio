@@ -178,6 +178,18 @@ public:
 	tErrType	GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* pUs=NULL ) const;
 
 	///==============================================================================
+	/// Watchdog Timer
+	///==============================================================================
+	// Start Watchdog Timer
+	tErrType StartWatchdog( U32 seconds ) const;
+
+	// Stop Watchdog Timer
+	tErrType StopWatchdog( void ) const;
+
+	// KeepAlive request to Watchdog Timer
+	tErrType KeepWatchdogAlive( void ) const;
+
+	///==============================================================================
 	/// Mutexes
 	///==============================================================================
     /// Initialize a mutex Attribute Object 

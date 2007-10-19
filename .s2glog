@@ -9667,3 +9667,16 @@ By Dave Milici (dmilici@leapfrog.com) on 10/18/07 7:24 PM
 4,157 ms. (Cumulative: 2,212,190 ms)
 
 ----------------
+Revision 1,981 from svn://localhost/TRUNK/:
+Revision 1,982 from svn://localhost/TRUNK/:
+Revision 1,983 from svn://localhost/TRUNK/:
+Revision 1,984 from svn://localhost/TRUNK/:
+
+Watchdog functions added to KernelMPI, initial check-in.
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/19/07 11:55 AM
+4 changed, 0 added, 0 deleted.
+4,313 ms. (Cumulative: 2,216,596 ms)
+
+----------------

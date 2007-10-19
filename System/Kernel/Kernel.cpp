@@ -1187,6 +1187,31 @@ tErrType CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* p
     return kNoErr;	
 }
 
+//==============================================================================
+// Watchdog Timer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+// Start Watchdog Timer
+tErrType CKernelModule::StartWatchdog( U32 seconds ) const
+{
+	return kNoErr;
+}
+
+//------------------------------------------------------------------------------
+// Stop Watchdog Timer
+tErrType CKernelModule::StopWatchdog( void ) const
+{
+	return kNoErr;
+}
+
+//------------------------------------------------------------------------------
+// KeepAlive request to Watchdog Timer
+tErrType CKernelModule::KeepWatchdogAlive( void ) const
+{
+	return kNoErr;
+}
+
 //------------------------------------------------------------------------------
 // Mutexes
 //------------------------------------------------------------------------------

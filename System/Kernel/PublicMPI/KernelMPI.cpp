@@ -502,6 +502,37 @@ tErrType CKernelMPI::GetTimerRemainingTime(tTimerHndl hndl, U32* pMs, U32* pUs) 
 	return pModule_->GetTimerRemainingTime(hndl, pMs, pUs );  
 }
 
+//==============================================================================
+// Watchdog Timer
+//==============================================================================
+
+//------------------------------------------------------------------------------
+// Start Watchdog Timer
+tErrType CKernelMPI::StartWatchdog( U32 seconds ) const
+{
+  	if (!pModule_)
+		return 0;
+	return pModule_->StartWatchdog( seconds );  
+}
+
+//------------------------------------------------------------------------------
+// Stop Watchdog Timer
+tErrType CKernelMPI::StopWatchdog( void ) const
+{
+  	if (!pModule_)
+		return 0;
+	return pModule_->StopWatchdog();  
+}
+
+//------------------------------------------------------------------------------
+// KeepAlive request to Watchdog Timer
+tErrType CKernelMPI::KeepWatchdogAlive( void ) const
+{
+  	if (!pModule_)
+		return 0;
+	return pModule_->KeepWatchdogAlive();  
+}
+
 // fixme rdg: move the rest of these into the kernel module at some point
 //------------------------------------------------------------------------------
 // Mutexes
