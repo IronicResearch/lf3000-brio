@@ -9694,3 +9694,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 10/19/07 12:57 PM
 4,236 ms. (Cumulative: 2,220,910 ms)
 
 ----------------
+Revision 1,987 from svn://localhost/TRUNK/:
+Revision 1,988 from svn://localhost/TRUNK/:
+
+Added watchdog timer tests
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/19/07 1:09 PM
+1 changed, 0 added, 0 deleted.
+4,158 ms. (Cumulative: 2,225,146 ms)
+
+----------------
