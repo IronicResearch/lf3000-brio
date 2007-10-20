@@ -59,7 +59,7 @@ if vars['is_export'] or vars['is_publish']:
 		headers = os.path.join('MagicEyes', 'Include')
 		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
 		if vars['variant'] == 'LF1000':
-			core_name = 'libogl_lf1000.a'
+			core_name = 'libogl_lf1000.so'
 		else:
 			core_name = 'libogl.a'
 		lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
@@ -89,3 +89,6 @@ if not vars['is_emulation']:
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], 'libvorbisidec.so.1'))
 	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], 'opengles_lite.so'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	

@@ -9721,3 +9721,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/19/07 4:43 PM
 4,144 ms. (Cumulative: 2,229,399 ms)
 
 ----------------
+Revision 1,997 from svn://localhost/TRUNK/:
+Revision 1,998 from svn://localhost/TRUNK/:
+Revision 1,999 from svn://localhost/TRUNK/:
+
+Updated MagicEyes OGL with shared lib. Internal soname is non-standard, so symlink and rpathlink is used. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/19/07 7:15 PM
+4 changed, 2 added, 0 deleted.
+4,221 ms. (Cumulative: 2,233,698 ms)
+
+----------------

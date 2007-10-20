@@ -690,7 +690,6 @@ public:
 		pFontMPI_->SetFontAttr(attr);
 		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
 		
-#if 0	// FIXME/dm: libogl exit segfault
 		GLuint 		texture;
 		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
 		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
@@ -711,7 +710,6 @@ public:
 		sleep(1);
 
 		glDeleteTextures(1, &texture);
-#endif
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
 		delete ctx;
@@ -754,7 +752,6 @@ public:
 		pFontMPI_->SetFontColor(0xFFFFFF); // GL white
 		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
 		
-#if 0	// FIXME/dm: libogl exit segfault
 		GLuint 		texture;
 		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
 		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
@@ -775,7 +772,6 @@ public:
 		sleep(1);
 
 		glDeleteTextures(1, &texture);
-#endif
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
 		delete ctx;
@@ -817,7 +813,6 @@ public:
 		pFontMPI_->SetFontColor(0xFFFF); // 16bpp packed GL white
 		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
 		
-#if 0	// FIXME/dm: libogl exit segfault
 		GLuint 		texture;
 		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
 		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
@@ -838,7 +833,6 @@ public:
 		sleep(1);
 
 		glDeleteTextures(1, &texture);
-#endif
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
 		delete ctx;
@@ -888,7 +882,6 @@ public:
 		pFontMPI_->SetFontAttr(attr);
 		pFontMPI_->DrawString(&text4, 0, 3*mtrx.height, &surf);
 		
-#if 0	// FIXME/dm: libogl exit segfault
 		GLuint 		texture;
 		GLshort 	quad[] = { -1,-1,0,  1,-1,0,  1,1,0,  -1,1,0 }; 
 		GLshort 	texmap[] = { 0,1,  1,1,  1,0,  0,0 };  
@@ -909,7 +902,6 @@ public:
 		sleep(1);
 
 		glDeleteTextures(1, &texture);
-#endif
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
 		delete ctx;
