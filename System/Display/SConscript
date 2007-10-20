@@ -31,6 +31,7 @@ if vars['is_emulation']:
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
+	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/MagicEyes/Libs' + vars['cpu_subdir']).abspath)
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

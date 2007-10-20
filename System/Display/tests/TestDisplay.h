@@ -120,7 +120,6 @@ public:
 		sleep(1);
 		eglWaitGL();
 
-#if 0	// FIXME/dm: segfault traced back to MagicEyes libogl free() call at exit
 		glClearColorx(0x10000, 0, 0, 0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
@@ -145,7 +144,6 @@ public:
 			eglSwapBuffers(oglctx->eglDisplay, oglctx->eglSurface);
 		}
 		eglWaitGL();
-#endif
 
 		delete oglctx;
 	}
