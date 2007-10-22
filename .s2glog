@@ -9732,3 +9732,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/19/07 7:15 PM
 4,221 ms. (Cumulative: 2,233,698 ms)
 
 ----------------
+Revision 2,000 from svn://localhost/TRUNK/:
+Revision 2,001 from svn://localhost/TRUNK/:
+
+Updated MagicEyes OGL shared lib with conventional soname.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/22/07 11:12 AM
+4 changed, 1 added, 1 deleted.
+4,547 ms. (Cumulative: 2,238,339 ms)
+
+----------------

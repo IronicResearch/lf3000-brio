@@ -365,7 +365,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	if vars['is_emulation']:
 		platformlibs = ['gles_cl', 'glibmm-2.4', 'glib-2.0', 'Emulation']
 	else:
-		ogl	= vars['variant'] == 'LF1000' and ['ogl_lf1000'] or ['ogl']
+		ogl	= vars['variant'] == 'LF1000' and ['opengles_lite'] or ['ogl']
 		platformlibs = ogl + ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
 		#FIXME/tp: pthread should go away
 		#RC CopyResources(penv, vars, psubfolder)
