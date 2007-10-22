@@ -9758,3 +9758,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/22/07 2:50 PM
 4,302 ms. (Cumulative: 2,242,782 ms)
 
 ----------------
+Revision 2,010 from svn://localhost/TRUNK/:
+
+Added -ar audio resampling rate parameter to OggExt audio extraction tool. Added another missing ffmpeg lib.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/22/07 2:58 PM
+3 changed, 1 added, 0 deleted.
+4,016 ms. (Cumulative: 2,246,861 ms)
+
+----------------

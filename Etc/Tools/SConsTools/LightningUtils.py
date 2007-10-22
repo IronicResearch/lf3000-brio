@@ -565,7 +565,7 @@ def PackFile(pkg, srcfile, srcname, pack_root, type, compression, rate):
 		
 	elif type == 1028 and rate != '':							    #6
 		outfile = outfile.replace(".ogg", ".aogg")
-		enc = sEnv.OggExt(outfile, srcfile)
+		enc = sEnv.OggExt(outfile, srcfile, OGGEXT_RATE=rate)
 
 	else:
 		enc = sEnv.Command(outfile, srcfile, [SCons.Defaults.Copy('$TARGET', '$SOURCE')])	#A

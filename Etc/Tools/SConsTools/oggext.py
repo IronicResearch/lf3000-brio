@@ -15,7 +15,7 @@ oggext		= os.path.exists(path1) and path1 or path2
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object
 #-----------------------------------------------------------------------------
-act = SCons.Action.Action([['LD_LIBRARY_PATH=' + this_dir, oggext, '-i', '$SOURCE', '-acodec', 'vorbis', '-vn', '-f', 'ogg', '$TARGET']])
+act = SCons.Action.Action([['LD_LIBRARY_PATH=' + this_dir, oggext, '-i', '$SOURCE', '-acodec', 'vorbis',  '-ar', '$OGGEXT_RATE', '-vn', '-f', 'ogg', '$TARGET']])
 
 def generate(env):
     bld = SCons.Builder.Builder(action = act, single_source=1)
