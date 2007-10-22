@@ -22,6 +22,7 @@ if vars['is_export']:
 	env.Install(dest_dir, 'Tools/libavutil.so.0d')
 	env.Install(dest_dir, 'Tools/liba52-0.7.4.so')
 	env.Install(dest_dir, 'Tools/libdc1394_control.so.13')
+	env.Install(dest_dir, 'Tools/libgsm.so.1')
 	env.Install(dest_dir, 'Tools/libraw1394.so.8')
 	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
 	
