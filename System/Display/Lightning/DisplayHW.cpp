@@ -125,7 +125,9 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gOverlayBuffer);
-
+	memset(gOverlayBuffer, 0, fb_size/4);
+	memset(gOverlayBuffer + fb_size/4, 0x7F, fb_size/4);
+	
 	// Get access to the overlay planar array buffer in user space
 	fb_size = 4096 * 4096;
 	baseAddr += 0x20000000;
@@ -292,6 +294,8 @@ tErrType CDisplayModule::Update(tDisplayContext *dc)
 		case kPixelFormatYUV420: 	YUV2ARGB(dc,pdcPrimary_); break;
 		case kPixelFormatYUYV422: 	YUYV2ARGB(dc,pdcPrimary_); break;
 		}
+		// Make sure primary context is enabled
+		RegisterLayer(pdcPrimary_, 0, 0);
 	}
 	// No hardware settings have actually changed
     return kNoErr;
