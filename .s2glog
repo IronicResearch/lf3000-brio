@@ -9788,3 +9788,15 @@ By Dave Milici (dmilici@leapfrog.com) on 10/22/07 6:04 PM
 3,829 ms. (Cumulative: 2,254,580 ms)
 
 ----------------
+Revision 2,019 from svn://localhost/TRUNK/:
+Revision 2,020 from svn://localhost/TRUNK/:
+Revision 2,021 from svn://localhost/TRUNK/:
+Revision 2,022 from svn://localhost/TRUNK/:
+
+Updating power and sysappdemo to work with neh new runtime behavior
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 10/23/07 12:27 PM
+1 changed, 0 added, 0 deleted.
+4,172 ms. (Cumulative: 2,258,846 ms)
+
+----------------
