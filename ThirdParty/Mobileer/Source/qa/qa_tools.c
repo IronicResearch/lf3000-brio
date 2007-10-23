@@ -1,13 +1,13 @@
-/* $Id: qa_tools.c,v 1.2 2006/05/22 23:29:10 philjmsl Exp $ */
+/* $Id: qa_tools.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * QA - Quality Assurance Tools
  *
  * @author Phil Burk, Copyright 1996 Phil Burk and Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include <spmidi.h>
-#include <spmidi_print.h>
-#include "qa_tools.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/qa/qa_tools.h"
 
 static const char *gTestName = "QA_Init() not called!";
 static int gQA_NumSuccesses;

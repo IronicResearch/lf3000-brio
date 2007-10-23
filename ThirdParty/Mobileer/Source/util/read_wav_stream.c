@@ -1,4 +1,4 @@
-/* $Id: read_wav_stream.c,v 1.2 2005/11/28 19:20:37 philjmsl Exp $ */
+/* $Id: read_wav_stream.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * WAV parser.
  * Parses a WAV file image from a StreamIO
@@ -10,11 +10,11 @@
 #include <memory.h>
 #endif
 
-#include "memtools.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "streamio.h"
-#include "read_wav.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "include/spmidi_print.h"
+#include "include/streamio.h"
+#include "include/read_wav.h"
 
 /** Read 16 bit signed integer assuming Little Endian byte order. */
 unsigned long ParseLongLE( unsigned char **addrPtr )

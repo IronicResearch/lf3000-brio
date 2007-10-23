@@ -1,7 +1,7 @@
 #ifndef _MIDISTREAM_PLAYER_H
 #define _MIDISTREAM_PLAYER_H
 
-/* $Id: midistream_player.h,v 1.1 2005/11/15 20:51:32 philjmsl Exp $ */
+/* $Id: midistream_player.h,v 1.2 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file midistream_player.h
@@ -28,7 +28,7 @@
 
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
-#include "spmidi.h"
+#include "include/spmidi.h"
 
 #define MIDISTREAM_HEADER_SIZE  (8)
 

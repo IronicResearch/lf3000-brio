@@ -78,6 +78,8 @@ CChannel::~CChannel()
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
+//{static long c=0; printf("CChannel::InitChanWithPlayer: %ld start \n", c++);}
+
 	// If we're pre-empting, release the active player first.
 	if (pPlayer_ != kNull)
 		Release( false );		// don't suppress done msg if it has been requested
@@ -157,12 +159,15 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 //==============================================================================
 void CChannel::SetPan( S8 x )
 {
-pan_ = BoundS8(&x, kS8_Min, kS8_Max);
+S8 lower = -100;
+S8 upper =  100;
 
-// Convert input range to [-128 .. 127]range [0 .. 1] suitable
+pan_ = BoundS8(&x, lower, upper);
+
+// Convert input range to [-100 .. 100]range [0 .. 1] suitable
 // for the constant power calculation
 // ChangeRangef(x, L1, H1, L2, H2)
-float xf = ChangeRangef((float)pan_, kS8_Minf, kS8_Maxf, 0.0f, 1.0f);
+float xf = ChangeRangef((float)pan_, (float) lower, (float)upper, 0.0f, 1.0f);
 
 //#define kPanValue_FullLeft ( 0.0)
 //#define kPanValue_Center    (0.5)
@@ -184,12 +189,18 @@ volume_ = x;
 
 // FIXX: move to decibels, but for now, linear volume
 gainf = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
-gainf *= DecibelToLinearf(-3.0);
+gainf *= kDecibelToLinearf_m3dBf; // DecibelToLinearf(-3.0);
 //gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
 //gainf =  DecibelToLinearf(gainf);
 
 //pDebugMPI_->DebugOut( kDbgLvlVerbose, 
 //			"CChannel::SetVolume - %d -> %f\n", static_cast<int>(volume_) , static_cast<int>(gainf) );	
+//printf( "CChannel::SetVolume - %d -> %g\n", volume_, gainf );	
+
+//printf("%f dB -> %f \n", -3.01, DecibelToLinearf(-3.01));
+//printf("%f dB -> %f \n", -6.02, DecibelToLinearf(-6.02));
+//printf("sqrt(2)/2 = %g\n", 0.5f*sqrt(2.0));
+
 RecalculateLevels();
 }	// ---- end CChannel::SetVolume ----
 
@@ -275,7 +286,7 @@ U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOut
 		for (U32 i = 0; i < numSamples; i += 2)
 			{
 		// Integer scaling for gain control
-//  		y = ((pTmp[i] * volume_)>>7);		        // ORIG rdg		
+//  		y = ((pTmp[i] * volume_)>>7);		        // ORIG rdg	Darren	
 //			y = (S32)(levelsf[0] * (float)pTmp[i]);		// FLOAT
  			y = (S32) MultQ15(levelsi[0], pTmp[i]);		// Q15  1.15 Fixed-point	
 		// Saturate to 16-bit range				

@@ -25,6 +25,29 @@
 #include <Mixer.h>
 #include <AudioOutput.h>
 
+
+// Debug : info for sound file input/output
+long readInSoundFile   = false;
+long writeOutSoundFile = false;
+long inSoundFileDone = false;
+
+SNDFILE	*inSoundFile;
+SF_INFO	inSoundFileInfo ;
+char *inSoundFileName = "SINE/sine_db00_0500Hz_16k_c1.wav";
+//"GoldenTestSet_16k/B_Quigley.wav";
+//"SINE/sine_db00_0250Hz_16k_c1.wav";
+//"GoldenTestSet_16k/B_Quigley.wav";
+//"Music/Temptation_16k_st.wav";
+//"SINE/sine_db00_0250Hz_16k_c1.wav";
+// GoldenTestSet_16k
+// B_Quigley.wav
+// B_DOT.wav
+// C_DJ2.wav
+
+SNDFILE	*outSoundFile;
+SF_INFO	outSoundFileInfo ;
+char *outSoundFilePath = "BrioOut.wav";
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -155,32 +178,39 @@ for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	tmpBufOffsetPtrs_[i] = &p[2*kSRC_Filter_MaxDelayElements];
 	}
 
-readInSoundFile   = false;
-writeOutSoundFile = false;
 inSoundFile  = NULL;
 outSoundFile = NULL;
 
 // Open a stereo WAV file to write output of mixer
 if (writeOutSoundFile)
 	{
-	char *outFilePath = "brioMixerOut.wav";
-
 	outSoundFileInfo.frames     = 0;		
 	outSoundFileInfo.samplerate = (long) samplingFrequency_;
 	outSoundFileInfo.channels   = 2;
 	outSoundFileInfo.format     = SF_FORMAT_PCM_16 | SF_FORMAT_WAV;
 	outSoundFileInfo.sections = 1;
 	outSoundFileInfo.seekable = 1;
-printf("CAudioMixer::CAudioMixer: opened output file '%s' \n", outFilePath);
-	outSoundFile = OpenSoundFile( outFilePath, &outSoundFileInfo, SFM_WRITE);
+printf("CAudioMixer::CAudioMixer: opened output file '%s' \n", outSoundFilePath);
+	outSoundFile = OpenSoundFile( outSoundFilePath, &outSoundFileInfo, SFM_WRITE);
 	}
 
-// Open a stereo WAV file for input to mixer
+// Open WAV file for input to mixer
 if (readInSoundFile)
 	{
-// SINE08.WAV, SINE16.WAV, SINE32.WAV
-// SINE08ST.WAV, SINE16ST.WAV, SINE32ST.WAV
-	char *inFilePath = "/home/lfu/workspace/Brio2/Lightning/Samples/BrioAudio/Build/Lightning_emulation/SINE32.WAV";
+    char inFilePath[1000];
+#ifdef EMULATION
+   strcpy(inFilePath, "/home/lfu/AudioFiles/");
+#else
+    strcpy(inFilePath, "/AudioFiles/");
+#endif
+
+// SINE/ : sine_db0_1000Hz_32k.wav sine_dbM3_1000Hz_32k sine_dbM6_1000Hz_32k
+// at db {00, M3, M6} and fs={16k,32k} and f= { 125, 250, 500, 1000, 2000, 4000, 8000 }
+// Representative Audio
+//	char *inFileName = "GoldenTestSet_16k/A_AP.wav";
+char *inFileName = inSoundFileName;
+
+    strcat(inFilePath, inFileName);
 	inSoundFile = OpenSoundFile(inFilePath, &inSoundFileInfo, SFM_READ);	if (!inSoundFile)
 		{
 		printf("CAudioMixer::CAudioMixer: Unable to open input file '%s'\n", inFilePath);
@@ -190,11 +220,11 @@ if (readInSoundFile)
         {
 		printf("CAudioMixer::CAudioMixer: opened input file '%s'\n", inFilePath);
 // inSoundFileInfo.samplerate, frames, channels
-	printf("CAudioMixer::CAudioMixer: opened inFile: fs=%d frames=%d ch=%d \n", 
-		inSoundFileInfo.samplerate, (int)inSoundFileInfo.frames, inSoundFileInfo.channels);
+//	printf("CAudioMixer::CAudioMixer: opened inFile: fs=%d frames=%d ch=%d \n", 
+//		inSoundFileInfo.samplerate, (int)inSoundFileInfo.frames, inSoundFileInfo.channels);
     	}
+    inSoundFileDone = false;
 	}
-
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
 //==============================================================================
@@ -393,22 +423,28 @@ for (i = 0; i < kAudioMixer_MixBinCount; i++)
 //
 // ---- Render each channel to mix buffer with corresponding sampling frequency
 //
-if (readInSoundFile)
+if (readInSoundFile && !inSoundFileDone)
 	{
-	long mixBinIndex  = GetMixBinIndex(inSoundFileInfo.samplerate);
+    long mixBinIndex  = GetMixBinIndex(inSoundFileInfo.samplerate);
+	S16 *mixBinP      = (S16 *) mixBinBufferPtrs_[mixBinIndex][0];
 	long framesToRead = numFrames/GetSamplingRateDivisor(inSoundFileInfo.samplerate);
 	long framesRead   = 0;
 
+    ClearShorts(mixBinP, framesToRead*2);
 // Copy stereo input to stereo mix buffer
 	if (2 == inSoundFileInfo.channels)
- 		framesRead = sf_readf_short(inSoundFile, mixBinBufferPtrs_[mixBinIndex][0], framesToRead);
+ 		framesRead = sf_readf_short(inSoundFile, mixBinP, framesToRead);
 // Replicate mono input file to both channels of stereo mix buffer
 	else
 		{
  		framesRead = sf_readf_short(inSoundFile, tmpBufferPtrs_[0], framesToRead);
-		InterleaveShorts(tmpBufferPtrs_[0], tmpBufferPtrs_[0], mixBinBufferPtrs_[mixBinIndex][0], framesRead);
+		InterleaveShorts(tmpBufferPtrs_[0], tmpBufferPtrs_[0], mixBinP, framesRead);
 		}
-	
+    if (framesRead < framesToRead)
+        {
+	    inSoundFileDone = true;
+        printf("inSoundFileDone ! %ld/%ld frames read \n", framesRead, framesToRead); 
+        }
 	mixBinFilled_[mixBinIndex] = True;
 //printf("AudioMixer::RenderBuffer: read %ld samples from WAV file \n", framesRead);
 //  inSoundFileInfo.samplerate, frames, channels
@@ -518,7 +554,6 @@ if (mixBinFilled_[mixBinIndex])
 ScaleShortsi_Q15(pOutBuff, pOutBuff, numFrames*channelsPerFrame, masterGaini_[0]);
 #endif // end WHOLE_THING
 
-
 // ---- Output DSP block
 long useOutDSP = False;
 if (useOutDSP)
@@ -533,7 +568,6 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 // Compute Output Equalizer
 // NOTE: should have 32-bit data path here for EQ before soft clipper
 //useOutEQ_ = True;
-//{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
     if (useOutEQ_)
         {
 //{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
@@ -546,9 +580,9 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
         }
 // Compute Output Soft Clipper
 //useOutSoftClipper_ = True;
-//{static long c=0; printf("ComputeWaveShaper %ld On=%ld: \n", c++, useOutSoftClipper_);}
     if (useOutSoftClipper_)
         {
+{static long c=0; printf("ComputeWaveShaper %ld On=%ld: \n", c++, useOutSoftClipper_);}
         ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
         }
     }
@@ -557,24 +591,32 @@ InterleaveShorts(tPtrs[4], tPtrs[5], pOutBuff, numFrames);
 
 // Debug:  write output of mixer to sound file
 if (writeOutSoundFile)
-{
-   long framesWritten = sf_writef_short(outSoundFile, pOutBuff, numFrames);
-framesWritten = 0;
-}
+    {
+    long framesWritten = sf_writef_short(outSoundFile, pOutBuff, numFrames);
+//
+    framesWritten = 0;
+    if (inSoundFileDone)
+        {
+    	CloseSoundFile(&outSoundFile);
+        outSoundFile = NULL;
+        writeOutSoundFile = false;
+printf("Closed outSoundFile\n");
+        }
+    }
 
 //printf("CAudioMixer::RenderBuffer: END \n");
 	return kNoErr;
 } // ---- end CAudioMixer::RenderBuffer() ----
 
 //==============================================================================
+// WrapperToCallRenderBuffer
 //==============================================================================
 int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOut,  unsigned long numStereoFrames, void* pToObject  )
 {
-	// Cast void ptr to a this ptr:
-	CAudioMixer* mySelf = (CAudioMixer*)pToObject;
+//	CAudioMixer* mySelf = (CAudioMixer*)pToObject;
 	
 	// Call member function to get a buffer full of stereo data
-	return mySelf->RenderBuffer( pOut, numStereoFrames );
+	return ((CAudioMixer*)pToObject)->RenderBuffer( pOut, numStereoFrames );
 } // ---- end CAudioMixer::WrapperToCallRenderBuffer() ----
 
 // ==============================================================================
@@ -680,14 +722,13 @@ ResetDSP();
 // ==============================================================================
 void CAudioMixer::UpdateDebugGain()
 {
-
 preGainf = DecibelToLinearf(preGainDB);
 preGaini = FloatToQ15(preGainf);
-printf("CAudioMixer::UpdateDebugGain: preGainDB %g -> %g (%04X) \n", preGainDB, preGainf, preGaini);
+//printf("CAudioMixer::UpdateDebugGain: preGainDB %g -> %g (%04X) \n", preGainDB, preGainf, preGaini);
 
 postGainf = DecibelToLinearf(postGainDB);
 postGaini = FloatToQ15(postGainf);
-printf("CAudioMixer::UpdateDebugGain: postGainDB %g -> %g (%04X) \n", postGainDB, postGainf, postGaini);
+//printf("CAudioMixer::UpdateDebugGain: postGainDB %g -> %g (%04X) \n", postGainDB, postGainf, postGaini);
 
 } // ---- end CAudioMixer::UpdateDebugGain() ----
 
@@ -699,8 +740,11 @@ void CAudioMixer::SetOutputEqualizer(Boolean x)
 {
 //printf("CAudioMixer::SetOutputEqualizer: useOutEQ_=%ld->%ld\n", (long)useOutEQ_, (long)x);
 // Careful with reset if DSP is running in a separate thread.
-ResetDSP();
-useOutEQ_ = x;
+//ResetDSP();
+//useOutEQ_ = x;
+
+//useOutSoftClipper_ = x;
+
 } // ---- end CAudioMixer::SetOutputEqualizer() ----
 
 

@@ -65,19 +65,11 @@ If you want to use PortAudio for audio output on Windows then add the file &quot
 
 <h3>
 Folders to Search for Header Files</h3>
-Specify the following folders as the place to look for header files. For
-"gcc"&nbsp; use the -I command line option, for example: <span class="style1">-Ispmidi/util
-</span>
-<ol>
-<li>
-"spmidi/engine"</li>
-
-<li>
-"spmidi/includes"</li>
-
-<li>
-"spmidi/util"</li>
-</ol>
+<p>Add the  folder that contains the &quot;spmidi&quot; folder to your Include Path. For
+  "gcc"&nbsp; use the -I command line option. For example: </p>
+<blockquote>
+  <pre>-Iproject/ME2000</pre>
+</blockquote>
 <p>To use the standard release for ME2000, also add the export folder to the include path. If you have a custom export directory then use that folder instead. </p>
 <blockquote>
     <p>"spmidi/export"</p>

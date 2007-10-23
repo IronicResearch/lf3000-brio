@@ -1,4 +1,4 @@
-/* $Id: print_midifile.c,v 1.1 2005/11/28 19:17:54 philjmsl Exp $ */
+/* $Id: print_midifile.c,v 1.2 2007/10/02 16:24:51 philjmsl Exp $ */
 /**
  *
  * Print a MIDI File specified on command line.
@@ -9,10 +9,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/midifile_player.h"
 #include "midifile_names.h"
 
 /****************************************************************/

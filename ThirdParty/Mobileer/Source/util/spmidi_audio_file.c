@@ -1,4 +1,4 @@
-/* $Id: spmidi_audio_file.c,v 1.2 2005/05/23 22:33:19 philjmsl Exp $ */
+/* $Id: spmidi_audio_file.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * Generic audio functions used by the Mobileer examples.
  * This implementation write the audio to a file.
@@ -6,8 +6,8 @@
  * Copyright 2002 Mobileer, Phil Burk, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "write_wav.h"
-#include "spmidi_audio.h"
+#include "include/write_wav.h"
+#include "include/spmidi_audio.h"
 
 #ifndef SPMIDI_DEFAULT_WAVE_FILE
 #define SPMIDI_DEFAULT_WAVE_FILE  ("spmidi_output.wav")

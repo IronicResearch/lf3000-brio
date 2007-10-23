@@ -1,4 +1,4 @@
-/* $Id: qa_common.h,v 1.11 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: qa_common.h,v 1.12 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_common.h
@@ -10,11 +10,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "dls_parser.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/dls_parser.h"
 
 #define DEADBEEF              (0xDEADBEEF)
 

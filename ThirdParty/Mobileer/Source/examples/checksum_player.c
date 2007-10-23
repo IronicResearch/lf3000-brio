@@ -1,4 +1,4 @@
-/* $Id: checksum_player.c,v 1.8 2005/11/15 20:57:25 philjmsl Exp $ */
+/* $Id: checksum_player.c,v 1.9 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Render a MIDI file and just print the checksum result.
@@ -12,18 +12,18 @@
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/midifile_player.h"
 
 #define USE_SOURCE  (1)
 
 #if USE_SOURCE
 #include "UpAndDown.c"
 #else
-#include "spmidi_load.h"
+#include "spmidi/include/spmidi_load.h"
 #endif
 
 /*

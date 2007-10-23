@@ -93,6 +93,7 @@ return (*x);
 //return (y);
 //}	// ---- end VolumeToGain() ---- 
 
+#ifdef NEEDED
 // *************************************************************** 
 // PanValues:   Convert x position in range[-1 .. 1] to constant
 //						power pan values
@@ -115,6 +116,7 @@ outs[Right] = (float) sin(x);
 
 //printf("PanValues: x=%g -> <%g, %g>\n", x, outs[Left], outs[Right]);
 }	// ---- end PanValues() ---- 
+#endif
 
 // ****************************************************************
 // RandRangeF:	 Return random float value in given Range

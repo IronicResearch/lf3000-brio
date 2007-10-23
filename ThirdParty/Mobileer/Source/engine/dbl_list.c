@@ -1,4 +1,4 @@
-/* $Id: dbl_list.c,v 1.5 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: dbl_list.c,v 1.6 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Doubly Linked List
@@ -9,7 +9,7 @@
  * PROPRIETARY and CONFIDENTIAL
  */
 
-#include "dbl_list.h"
+#include "engine/dbl_list.h"
 
 #define PRINT(x)  /* { printf x; fflush(stdout); }; */
 

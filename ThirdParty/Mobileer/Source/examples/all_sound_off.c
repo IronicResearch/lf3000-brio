@@ -1,4 +1,4 @@
-/* $Id: all_sound_off.c,v 1.1 2005/10/14 22:45:32 philjmsl Exp $ */
+/* $Id: all_sound_off.c,v 1.2 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Force sound to stop abruptly using MIDI_CONTROL_ALLSOUNDOFF.
@@ -8,10 +8,10 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
 
 #define SAMPLE_RATE         (44100)
 #define SAMPLES_PER_FRAME  (2)

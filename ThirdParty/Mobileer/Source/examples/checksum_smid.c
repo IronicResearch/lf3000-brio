@@ -1,4 +1,4 @@
-/* $Id: checksum_smid.c,v 1.1 2005/11/15 20:49:42 philjmsl Exp $ */
+/* $Id: checksum_smid.c,v 1.2 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Render a MIDI Stream file and just print the checksum result.
@@ -12,18 +12,18 @@
  * Copyright 2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "midistream_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/midistream_player.h"
 
 #define USE_SOURCE  (1)
 
 #if USE_SOURCE
 #include "UpAndDown_smid.c"
 #else
-#include "spmidi_load.h"
+#include "spmidi/include/spmidi_load.h"
 #endif
 
 /*

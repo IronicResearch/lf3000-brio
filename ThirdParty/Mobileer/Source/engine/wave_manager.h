@@ -1,7 +1,7 @@
 #ifndef _WAVE_MANAGER_H
 #define _WAVE_MANAGER_H
 
-/* $Id: wave_manager.h,v 1.14 2007/06/06 01:50:58 philjmsl Exp $ */
+/* $Id: wave_manager.h,v 1.15 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * WaveTable and WaveSet manager.
@@ -11,10 +11,10 @@
  *
  */
 
-#include "fxpmath.h"
-#include "dbl_list.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
+#include "engine/fxpmath.h"
+#include "engine/dbl_list.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
 #include "resource_mgr.h"
 
 #ifdef __cplusplus
@@ -53,7 +53,7 @@ typedef enum WaveType_e
 
 	typedef struct WaveSetRegion_s
 	{
-		PitchOctave     basePitch; /**< Pitch of recorded note. */
+		PitchOctave    basePitch; /**< Pitch of recorded note. */
 		spmSInt8       lowPitch;
 		spmSInt8       highPitch;
 		spmSInt8       lowVelocity;
@@ -83,7 +83,6 @@ typedef enum WaveType_e
 	}
 	WaveManager_t;
 
-
 	/* Initialize linked lists and prepare for storing tables. */
 	spmSInt32 WaveManager_Init( WaveManager_t *waveManager );
 
@@ -100,8 +99,9 @@ typedef enum WaveType_e
 
 	/** Download a WaveSet for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.
+	 * @param optional token map for mapping external IDs to internal tokens
 	 */
-	spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *data, int numBytes );
+	spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes );
 
 	/** Reference WaveSet so it does not get deleted while in use. */
 	void WaveManager_ReferenceWaveSet( WaveSet_t *waveSet );

@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_HYBRID_H
 #define _SPMIDI_HYBRID_H
-/* $Id: spmidi_hybrid.h,v 1.39 2006/02/14 20:09:17 philjmsl Exp $ */
+/* $Id: spmidi_hybrid.h,v 1.40 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Hybrid Synthesizer for SPMIDI Engine.
@@ -9,18 +9,18 @@
  *
  */
 
-#include "fxpmath.h"
-#include "midi.h"
-#include "spmidi.h"
+#include "engine/fxpmath.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
 #if SPMIDI_ME3000
 #include "dls_parser_internal.h"
 #endif /* SPMIDI_ME3000 */
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
 #include "spmidi_voice.h"
-#include "spmidi_print.h"
-#include "compressor.h"
-#include "instrument_mgr.h"
+#include "include/spmidi_print.h"
+#include "engine/compressor.h"
+#include "engine/instrument_mgr.h"
 #include "reverb.h"
 
 #ifdef __cplusplus
@@ -66,12 +66,12 @@ extern "C"
 	{
 		int            reserved; /* To allow simple static initializer {0}. */
 #if SPMIDI_ME2000
-		WaveManager_t  waveManager;
-#endif
-#if SPMIDI_SUPPORT_EDITING
-		InsManager_t   insManager;
+	WaveManager_t  waveManager;
 #endif /* SPMIDI_ME2000 */
 
+#if SPMIDI_SUPPORT_INSMANAGER
+		InsManager_t   insManager;
+#endif /* SPMIDI_SUPPORT_INSMANAGER */
 	}
 	HybridSynthShared_t;
 

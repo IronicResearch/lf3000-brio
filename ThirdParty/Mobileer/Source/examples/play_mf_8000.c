@@ -1,4 +1,4 @@
-/* $Id: play_mf_8000.c,v 1.9 2005/10/14 23:26:30 philjmsl Exp $ */
+/* $Id: play_mf_8000.c,v 1.10 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a MIDI File at 8000 Hz by synthesizing at 16000 Hz
@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "spmidi.h"
-#include "spmidi_play.h"
-#include "spmidi_load.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/midifile_player.h"
 #include "midifile_names.h"
 
 #define SYNTHESIS_RATE      (16000)

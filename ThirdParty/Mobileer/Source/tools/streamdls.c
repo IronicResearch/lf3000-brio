@@ -1,4 +1,4 @@
-/* $Id: streamdls.c,v 1.1 2005/12/09 22:01:47 marsanyi Exp $
+/* $Id: streamdls.c,v 1.2 2007/10/02 16:24:51 philjmsl Exp $
  *
  * Use DLS Parser to generate a stream in proprietary StreamDLS format.
  * This can be played by a StreamDLS player.
@@ -7,10 +7,10 @@
  * Copyright 2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "dls_parser.h"
+#include "spmidi/include/dls_parser.h"
 #include "dls_parser_internal.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
 
 #include "sdls_parser_internal.h"
 #include <stdio.h>

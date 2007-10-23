@@ -1,11 +1,11 @@
-/* $Id: midi_names.c,v 1.8 2005/05/18 11:00:34 philjmsl Exp $ */
+/* $Id: midi_names.c,v 1.9 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * Lookup table containing names for General MIDI Instruments.
  * Only used for printing utility and debugging.
  * Copyright 2002 Mobileer
  */
 
-#include "midi.h"
+#include "include/midi.h"
 
 #if MIDI_SUPPORT_NAME_LOOKUP
 

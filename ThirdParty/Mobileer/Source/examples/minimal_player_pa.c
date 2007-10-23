@@ -1,4 +1,4 @@
-/* $Id: minimal_player_pa.c,v 1.6 2006/07/18 19:24:51 philjmsl Exp $ */
+/* $Id: minimal_player_pa.c,v 1.7 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a MIDI file using the PortAudio callback interface.
@@ -18,11 +18,11 @@
  * Copyright 2002-4 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/midifile_player.h"
 
 /* PortAudio is an open-source audio API available free from www.portaudio.com */
 #include "portaudio.h"

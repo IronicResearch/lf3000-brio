@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_SYNTH_H
 #define _SPMIDI_SYNTH_H
 
-/* $Id: spmidi_synth.h,v 1.31 2007/06/06 01:50:58 philjmsl Exp $ */
+/* $Id: spmidi_synth.h,v 1.32 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * SPMIDI_SYNTH header.
@@ -13,9 +13,11 @@
  *
  */
 
-#include "spmidi_config.h"
-#include "fxpmath.h"
-#include "wave_manager.h"
+#include "include/spmidi_config.h"
+#include "engine/fxpmath.h"
+#include "engine/wave_manager.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_orchestra.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -169,9 +171,9 @@ extern "C"
 	/** Download an instrument definition as a byte stream.
 	 * The contents of the definition are specific to the synthesizer in use.
 	 */
-	int SS_SetInstrumentDefinition( SoftSynth *synth, int insIndex, unsigned char *data, int numBytes );
+	int SS_SetInstrumentDefinition( int insIndex, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes );
 
-	int SS_SetInstrumentPreset( SoftSynth *synth,  int insIndex, void *inputPreset );
+	int SS_ParseInstrumentDefinition( HybridOrchestra_t *orchestra, int insIndex, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes );
 
 
 #if SPMIDI_ME2000
@@ -180,25 +182,23 @@ extern "C"
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * Returns negative error or positive waveTable token.
 	 */
-	int SS_LoadWaveTable( SoftSynth *synth, unsigned char *data, int numBytes );
+	int SS_LoadWaveTable( unsigned char *data, int numBytes );
 
 	/* Delete WaveTable if WaveSet reference count is zero. */
-	int SS_UnloadWaveTable( SoftSynth *synth, spmSInt32 token );
+	int SS_UnloadWaveTable( spmSInt32 token );
 
 	/** Download a WaveSet for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * Returns negative error or positive waveSet token.
 	 */
-	int SS_LoadWaveSet( SoftSynth *synth, unsigned char *data, int numBytes );
+	int SS_LoadWaveSet( ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes );
 
 	/* Delete WaveSet if instrument reference count is zero. */
-	int SS_UnloadWaveSet( SoftSynth *synth, spmSInt32 token );
-
-	int SS_UnloadAllWaveData( SoftSynth *synth );
+	int SS_UnloadWaveSet( spmSInt32 token );
 
 #endif /* SPMIDI_ME2000 */
 
-#if (SPMIDI_SUPPORT_EDITING || SPMIDI_ME3000)
+#if (SPMIDI_SUPPORT_LOADING || SPMIDI_ME3000)
 	/** Download a WaveTable for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.
 	 */

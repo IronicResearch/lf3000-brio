@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_HOST_H
 #define _SPMIDI_HOST_H
-/* $Id: spmidi_host.h,v 1.10 2007/06/06 01:50:58 philjmsl Exp $ */
+/* $Id: spmidi_host.h,v 1.11 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Host dependencies.
@@ -8,7 +8,7 @@
  * @author Phil Burk, Copyright 2004 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
  */
-#include "spmidi_config.h"
+#include "include/spmidi_config.h"
 
 
 #ifdef __cplusplus

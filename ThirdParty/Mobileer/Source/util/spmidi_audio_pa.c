@@ -1,4 +1,4 @@
-/* $Id: spmidi_audio_pa.c,v 1.7 2007/03/18 20:13:43 philjmsl Exp $ */
+/* $Id: spmidi_audio_pa.c,v 1.8 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * Platform specific audio functions used by the Mobileer examples.
  * Please replace this PortAudio version with an equivalent
@@ -11,7 +11,7 @@
  */
 
 #include "pablio.h"
-#include "spmidi_audio.h"
+#include "include/spmidi_audio.h"
 
 /* This section is used to play SPMIDI in a foreground thread
  * using the PABLIO blocking I/O interface.

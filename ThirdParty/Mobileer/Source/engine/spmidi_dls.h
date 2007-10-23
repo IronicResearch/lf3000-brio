@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_DLS_H
 #define _SPMIDI_DLS_H
-/* $Id: spmidi_dls.h,v 1.10 2005/12/09 21:59:39 marsanyi Exp $ */
+/* $Id: spmidi_dls.h,v 1.11 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * SPMIDI suport for DLS.
@@ -9,10 +9,10 @@
  *
  */
 
-#include "fxpmath.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
+#include "engine/fxpmath.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
 #include "dls_parser_internal.h"
 
 #ifdef __cplusplus

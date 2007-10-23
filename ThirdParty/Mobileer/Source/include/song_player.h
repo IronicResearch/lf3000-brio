@@ -14,7 +14,7 @@
  * @author Phil Burk, Robert Marsanyi Copyright 2004 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
+#include "include/spmidi.h"
 
 #ifdef __cplusplus
 extern "C"

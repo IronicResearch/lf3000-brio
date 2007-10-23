@@ -1,6 +1,6 @@
 #ifndef _MEMTOOLS_H
 #define _MEMTOOLS_H
-/* $Id: memtools.h,v 1.11 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: memtools.h,v 1.12 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Miscellaneous Memory Tools.

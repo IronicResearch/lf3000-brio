@@ -1,8 +1,8 @@
-/* $Id: qa_multi_contexts.c,v 1.2 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: qa_multi_contexts.c,v 1.4 2007/10/02 16:53:20 philjmsl Exp $ */
 /**
  *
- * @file qa_spmidi.c
- * @brief Test note stealing based on the example in the Scaleable Polyphony MIDI spec.
+ * @file qa_multi_contexts.c
+ * @brief Test creating and deleting multiple SPMIDI_Contexts.
  *
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
@@ -10,14 +10,13 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "qa_tools.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/qa/qa_tools.h"
 
 /*******************************************************************/
 /**
- * Run all tests verifying that notes are correctly sounded and muted
  * @return 0 if all tests succeed, non-0 otherwise.
  */
 int main(void);

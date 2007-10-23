@@ -1,4 +1,4 @@
-/* $Id: read_wav.h,v 1.2 2005/11/28 19:14:08 philjmsl Exp $ */
+/* $Id: read_wav.h,v 1.3 2007/10/02 16:20:00 philjmsl Exp $ */
 #ifndef _READ_WAV_H
 #define _READ_WAV_H
 /**

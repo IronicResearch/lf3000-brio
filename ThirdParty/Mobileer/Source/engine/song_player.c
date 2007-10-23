@@ -1,4 +1,4 @@
-/* $Id: song_player.c,v 1.14 2005/11/15 20:49:03 philjmsl Exp $ */
+/* $Id: song_player.c,v 1.15 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Load XMF file and play it
@@ -7,21 +7,21 @@
  * Author: Robert Marsanyi, Phil Burk
  */
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_host.h"
-#include "spmidi_play.h"
-#include "spmidi_editor.h"
-#include "spmidi_hybrid.h"
-#include "song_player.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "include/spmidi_print.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_load.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_play.h"
+#include "include/spmidi_editor.h"
+#include "engine/spmidi_hybrid.h"
+#include "include/song_player.h"
 
-#include "memtools.h"
-#include "wave_manager.h"
-#include "dls_parser.h"
-#include "xmf_parser.h"
+#include "engine/memtools.h"
+#include "engine/wave_manager.h"
+#include "include/dls_parser.h"
+#include "include/xmf_parser.h"
 
 /* Only compile if supporting ME3000 API */
 #if SPMIDI_ME3000

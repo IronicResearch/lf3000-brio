@@ -1,4 +1,4 @@
-/* $Id: qa_note_on_off.c,v 1.6 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_note_on_off.c,v 1.7 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_note_on_off.c
@@ -9,10 +9,10 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "qa_tools.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/qa/qa_tools.h"
 
 #define SAMPLE_RATE         (44100)
 

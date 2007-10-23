@@ -1,4 +1,4 @@
-/* $Id: qa_xmf_corrupt.c,v 1.8 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_xmf_corrupt.c,v 1.9 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_xmf_corrupt.c
@@ -14,19 +14,19 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "memtools.h"
-#include "spmidi_load.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_play.h"
-#include "spmidi_print.h"
-#include "xmf_parser.h"
-#include "dls_parser.h"
-#include "song_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/engine/memtools.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/xmf_parser.h"
+#include "spmidi/include/dls_parser.h"
+#include "spmidi/include/song_player.h"
 
 #include "qa_common.h"
-#include "qa_tools.h"
+#include "spmidi/qa/qa_tools.h"
 int sReturn = 0;
 MemoryCheck_t gMemoryCheck;
 

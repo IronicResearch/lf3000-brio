@@ -1,4 +1,4 @@
-/* $Id: bench_64v.c,v 1.5 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: bench_64v.c,v 1.6 2007/10/02 16:12:57 philjmsl Exp $ */
 /**
  *
  * Benchmark 64 voices print the checksum result.
@@ -9,11 +9,11 @@
  * Copyright 2002 Mobileer
  */
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
 
 /*
  * Adjust these for your system.

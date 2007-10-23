@@ -1,4 +1,4 @@
-/* $Id: spmidi_host.c,v 1.22 2007/05/04 15:55:25 philjmsl Exp $ */
+/* $Id: spmidi_host.c,v 1.23 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Host dependencies.
@@ -8,10 +8,10 @@
  *
  */
 
-#include "spmidi_config.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_print.h"
+#include "include/spmidi_config.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_print.h"
 
 #if 0
 #define DBUGMSG(x)   PRTMSG(x)
@@ -25,7 +25,7 @@
 
 #define DBUGMSGNUMD( msg, num ) { DBUGMSG( msg ); DBUGNUMD( num ); DBUGMSG("\n"); }
 
-#if SPMIDI_SUPPORT_EDITING || SPMIDI_SUPPORT_MALLOC
+#if SPMIDI_SUPPORT_LOADING || SPMIDI_SUPPORT_MALLOC
 
 #ifdef BUILD_FOR_PALMOS
 
@@ -103,7 +103,7 @@ static int MEHost_Term(void)
 
 #endif /* BUILD_FOR_PALMOS */
 
-#else /* SPMIDI_SUPPORT_EDITING || SPMIDI_SUPPORT_MALLOC */
+#else /* SPMIDI_SUPPORT_LOADING || SPMIDI_SUPPORT_MALLOC */
 
 /* Stub out memory allocation routines. */
 static void *MEHost_AllocateMemory(int numBytes)
@@ -124,7 +124,7 @@ static int MEHost_Term(void)
 	return SPMIDI_Error_None;
 }
 
-#endif /* SPMIDI_SUPPORT_EDITING || SPMIDI_SUPPORT_MALLOC */
+#endif /* SPMIDI_SUPPORT_LOADING || SPMIDI_SUPPORT_MALLOC */
 
 
 void SPMIDI_EnterCriticalSection(void)

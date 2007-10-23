@@ -1,26 +1,26 @@
 /*
- * $Id: dls_parser.c,v 1.59 2007/06/18 18:03:49 philjmsl Exp $
+ * $Id: dls_parser.c,v 1.60 2007/10/02 16:14:42 philjmsl Exp $
  * Load a DLS file.
  *
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
  */
-#include "streamio.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_host.h"
-#include "spmidi_editor.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_dls.h"
-#include "parse_riff.h"
-#include "stack.h"
-#include "dls_parser.h"
+#include "include/streamio.h"
+#include "include/spmidi.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_load.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_editor.h"
+#include "engine/spmidi_hybrid.h"
+#include "engine/spmidi_dls.h"
+#include "engine/parse_riff.h"
+#include "engine/stack.h"
+#include "include/dls_parser.h"
 #include "dls_parser_internal.h"
 
-#include "memtools.h"
-#include "wave_manager.h"
-#include "instrument_mgr.h"
+#include "engine/memtools.h"
+#include "engine/wave_manager.h"
+#include "engine/instrument_mgr.h"
 
 /* Only compile if supporting ME3000 API */
 #if SPMIDI_ME3000

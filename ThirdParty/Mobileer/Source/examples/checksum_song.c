@@ -1,4 +1,4 @@
-/* $Id: checksum_song.c,v 1.3 2005/05/09 00:04:56 philjmsl Exp $ */
+/* $Id: checksum_song.c,v 1.4 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Process a file using the SongPlayer API.
@@ -17,14 +17,14 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_errortext.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "song_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_errortext.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/song_player.h"
 
 
 

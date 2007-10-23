@@ -1,4 +1,4 @@
-/* $Id: qa_smf_errors.c,v 1.3 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_smf_errors.c,v 1.4 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_smf_errors.c
@@ -11,14 +11,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_print.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/midifile_player.h"
 
-#include "qa_tools.h"
+#include "spmidi/qa/qa_tools.h"
 
 #define SAMPLE_RATE  (22050)
 

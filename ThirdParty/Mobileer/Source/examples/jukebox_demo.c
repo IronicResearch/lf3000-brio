@@ -1,4 +1,4 @@
-/* $Id: jukebox_demo.c,v 1.5 2006/02/14 20:09:48 philjmsl Exp $ */
+/* $Id: jukebox_demo.c,v 1.6 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Use JukeBox to play songs in a queue
@@ -10,12 +10,12 @@
 #include <conio.h>
 
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
-#include "spmidi_play.h"
-#include "spmidi_jukebox.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_jukebox.h"
 
 /* PortAudio is an open-source audio API available free from www.portaudio.com */
 #include "portaudio.h"

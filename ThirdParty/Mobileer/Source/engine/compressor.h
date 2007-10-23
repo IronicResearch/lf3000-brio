@@ -1,7 +1,7 @@
 #ifndef _COMPRESSOR_H
 #define _COMPRESSOR_H
 
-/* $Id: compressor.h,v 1.11 2007/06/18 18:03:49 philjmsl Exp $ */
+/* $Id: compressor.h,v 1.12 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Dynamic Range Compressor

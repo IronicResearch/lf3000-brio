@@ -3,11 +3,11 @@
  * Copyright 2002 Mobileer
  *
  */
-#include "stdio.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
+#include <stdio.h>
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_print.h"
 #include "bench_tools.h"
 
 #if 0

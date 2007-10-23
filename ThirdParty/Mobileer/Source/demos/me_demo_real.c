@@ -1,4 +1,4 @@
-/* $Id: me_demo_real.c,v 1.12 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: me_demo_real.c,v 1.13 2007/10/02 16:13:35 philjmsl Exp $ */
 /**
  *
  * Mobileer Demo with very simple API for integrating with
@@ -8,11 +8,11 @@
  * Copyright 2004 Mobileer, All Rights Reserved
  */
 
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_print.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/midifile_player.h"
 
 
 #define DEMO_MAX_VOICES   (8)

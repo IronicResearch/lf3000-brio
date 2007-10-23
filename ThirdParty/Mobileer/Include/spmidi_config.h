@@ -2,7 +2,7 @@
 #ifndef _SPMIDI_CONFIG_H
 #define _SPMIDI_CONFIG_H
 
-/* $Id: spmidi_config.h,v 1.38 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: spmidi_config.h,v 1.39 2007/10/02 16:20:00 philjmsl Exp $ */
 
 /**
  * @file spmidi_config.h
@@ -144,6 +144,15 @@
 #ifndef SPMIDI_SUPPORT_EDITING
 /** Define this as one to enable the instrument editing support. */
 #define SPMIDI_SUPPORT_EDITING      (0)
+#endif
+
+#if SPMIDI_SUPPORT_EDITING
+#define SPMIDI_SUPPORT_LOADING  (1)
+#else
+#ifndef SPMIDI_SUPPORT_LOADING
+/** Define this as one to enable loading orchestras from files. */
+#define SPMIDI_SUPPORT_LOADING      (0)
+#endif
 #endif
 
 #ifndef SPMIDI_SMOOTH_MIXER_GAIN

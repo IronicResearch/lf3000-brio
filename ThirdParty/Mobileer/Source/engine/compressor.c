@@ -1,4 +1,4 @@
-/* $Id: compressor.c,v 1.18 2007/06/18 18:03:49 philjmsl Exp $ */
+/* $Id: compressor.c,v 1.19 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Dynamic Range Compressor
@@ -22,15 +22,15 @@
  *
  */
 
-#include "fxpmath.h"
-#include "memtools.h"
-#include "spmidi.h"
-#include "compressor.h"
-#include "spmidi_host.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_print.h"
+#include "engine/fxpmath.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "engine/compressor.h"
+#include "engine/spmidi_host.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
+#include "include/spmidi_print.h"
 
 #if 0
 #define DBUGMSG(x)   PRTMSG(x)

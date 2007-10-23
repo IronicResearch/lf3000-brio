@@ -12,8 +12,7 @@
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 typedef struct StreamIO
@@ -30,8 +29,7 @@ typedef struct StreamIO
 	void (*close)( struct StreamIO *stream );
 	/* Get address if an in-memory stream, or return NULL. */
 	char *(*getAddress)( struct StreamIO *stream );
-}
-StreamIO;
+} StreamIO;
 
 StreamIO *Stream_OpenImage( char *dataPtr, int numBytes );
 StreamIO *Stream_OpenFile( char *fileName, char *mode );
@@ -45,7 +43,7 @@ void Stream_Close( StreamIO *sio );
 #define Stream_GetAddress(sio)  ((sio)->getAddress(sio))
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif

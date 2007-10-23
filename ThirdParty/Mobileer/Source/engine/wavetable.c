@@ -1,4 +1,4 @@
-/* $Id: wavetable.c,v 1.20 2007/06/12 21:09:08 philjmsl Exp $ */
+/* $Id: wavetable.c,v 1.21 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * WaveTable oscillator. Interpolate between adjacent samples
  * to allow variable pitch playback.
@@ -6,13 +6,13 @@
  * Copyright 2004 Mobileer, Phil Burk, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "fxpmath.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
-#include "spmidi_print.h"
+#include "engine/fxpmath.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
+#include "include/spmidi_print.h"
 
-#include "oscillator.h"
+#include "engine/oscillator.h"
 
 #define NOMINAL_PHASE_INCREMENT   (0x01000000)
 

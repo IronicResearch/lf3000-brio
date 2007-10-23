@@ -1,6 +1,6 @@
 #ifndef _STACK_H
 #define _STACK_H
-/* $Id: stack.h,v 1.4 2006/05/20 00:41:40 philjmsl Exp $ */
+/* $Id: stack.h,v 1.5 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * Stack operations
  *
@@ -11,8 +11,8 @@
  *
  */
 
-#include "spmidi.h"
-#include "spmidi_host.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
 
 #ifndef TRUE
 #define TRUE (1)

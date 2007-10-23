@@ -7,13 +7,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi_host.h"
-#include "ima_adpcm.h"
-#include "ima_adpcm_wav.h"
-#include "read_wav.h"
-#include "spmidi_load.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/ima_adpcm.h"
+#include "spmidi/include/ima_adpcm_wav.h"
+#include "spmidi/include/read_wav.h"
+#include "spmidi/include/spmidi_load.h"
 
-#include "spmidi_audio.h"
+#include "spmidi/include/spmidi_audio.h"
 
 #define SAMPLES_PER_BLOCK  (512)
 #define COMPRESSION_RATIO  (4)

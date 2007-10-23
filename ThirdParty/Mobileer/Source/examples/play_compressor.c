@@ -1,4 +1,4 @@
-/* $Id: play_compressor.c,v 1.5 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: play_compressor.c,v 1.6 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a MIDI File with various compressor settings.
@@ -10,10 +10,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/midifile_player.h"
 
 #include "midifile_names.h"
 

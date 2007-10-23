@@ -1,4 +1,4 @@
-/* $Id: dls_articulations.c,v 1.1 2005/11/28 18:56:09 philjmsl Exp $ */
+/* $Id: dls_articulations.c,v 1.2 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * DLS Articulation support.
@@ -8,11 +8,11 @@
  *
  */
 
-#include "memtools.h"
-#include "spmidi.h"
-#include "spmidi_dls.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_dls.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
 
 #if 0
 #define DBUGMSG(x)   PRTMSG(x)

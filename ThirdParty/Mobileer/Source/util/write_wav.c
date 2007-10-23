@@ -1,4 +1,4 @@
-/* $Id: write_wav.c,v 1.8 2005/11/28 19:20:37 philjmsl Exp $ */
+/* $Id: write_wav.c,v 1.9 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Write WAV formatted audio to a file.
@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "wav_format.h"
+#include "include/wav_format.h"
 
 typedef struct WAV_Writer_s
 {

@@ -1,17 +1,17 @@
-/* $Id: ima_adpcm_decoder_wav.c,v 1.1 2005/11/28 19:19:19 philjmsl Exp $ */
+/* $Id: ima_adpcm_decoder_wav.c,v 1.2 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * High level WAV file format IMA Intel/DVI ADPCM decoder and encoder
  *
  * @author Phil Burk, Copyright 1997-2005 Phil Burk, Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi_errors.h"
-#include "memtools.h"
-#include "spmidi_host.h"
-#include "read_wav.h"
-#include "write_wav.h"
-#include "ima_adpcm.h"
-#include "ima_adpcm_wav.h"
+#include "include/spmidi_errors.h"
+#include "engine/memtools.h"
+#include "engine/spmidi_host.h"
+#include "include/read_wav.h"
+#include "include/write_wav.h"
+#include "include/ima_adpcm.h"
+#include "include/ima_adpcm_wav.h"
 
 #define PRINT(x) /* { printf x; } */
 

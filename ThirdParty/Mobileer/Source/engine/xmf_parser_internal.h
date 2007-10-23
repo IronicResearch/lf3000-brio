@@ -10,9 +10,9 @@
  * Author: Robert Marsanyi, Phil Burk
  * Copyright 2005 Mobileer
  */
-#include "streamio.h"
-#include "spmidi.h"
-#include "xmf_parser.h"
+#include "include/streamio.h"
+#include "include/spmidi.h"
+#include "include/xmf_parser.h"
 
 #ifdef __cplusplus
 extern "C"

@@ -1,4 +1,4 @@
-/* $Id: adsr_envelope.c,v 1.21 2005/12/31 02:12:04 philjmsl Exp $ */
+/* $Id: adsr_envelope.c,v 1.22 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * ADSR Envelope.
@@ -14,7 +14,7 @@
 #include "adsr_envelope.h"
 #include "spmidi_synth_util.h"
 #include "spmidi_synth.h"
-#include "spmidi_print.h"
+#include "include/spmidi_print.h"
 
 #if 0
 #define DBUGMSG(x)   PRTMSG(x)
@@ -354,7 +354,7 @@ void ADSR_Load( const EnvelopeADSR_Preset_t *preset, EnvelopeADSR_Info_t *info, 
 	info->attackIncrement = ADSR_MSecToIncrement(preset->attackTime, envelopeSampleRate);
 }
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 /********************************************************************/
 /**
  * Extract preset information from bulk dump format passed from instrument editor.
@@ -369,7 +369,7 @@ unsigned char *ADSR_Define( EnvelopeADSR_Preset_t *preset, unsigned char *p )
 	preset->flags = *p++;
 	return p;
 }
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */
 
 #if 0
 /********************************************************************/

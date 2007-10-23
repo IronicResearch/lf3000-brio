@@ -1,6 +1,6 @@
 #ifndef _REVERB_H
 #define _REVERB_H
-/* $Id: reverb.h,v 1.8 2005/10/26 17:18:11 philjmsl Exp $ */
+/* $Id: reverb.h,v 1.9 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Reverberation - delay based effect that adds ambience to a sound
@@ -9,9 +9,9 @@
  *
  */
 
-#include "fxpmath.h"
-#include "spmidi.h"
-#include "spmidi_synth.h"
+#include "engine/fxpmath.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth.h"
 
 /** Delay line size. Must be power of two so we can mask indices. */
 #define REVERB_MAX_DELAY    (4096)

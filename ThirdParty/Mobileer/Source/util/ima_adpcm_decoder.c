@@ -1,4 +1,4 @@
-/* $Id: ima_adpcm_decoder.c,v 1.1 2005/11/28 19:19:19 philjmsl Exp $ */
+/* $Id: ima_adpcm_decoder.c,v 1.2 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * Low level IMA Intel/DVI ADPCM decoder and encoder.
  *
@@ -12,7 +12,7 @@
  * @author Phil Burk, Copyright 1997-2005 Phil Burk, Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "ima_adpcm.h"
+#include "include/ima_adpcm.h"
 
 //#include "stdio.h"
 //#define PRINT(x) { printf x; }

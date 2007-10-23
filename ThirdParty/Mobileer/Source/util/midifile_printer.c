@@ -1,4 +1,4 @@
-/* $Id: midifile_printer.c,v 1.3 2006/06/21 16:41:48 philjmsl Exp $ */
+/* $Id: midifile_printer.c,v 1.4 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * MIDI File parser and player.
  * The player operates directly on an SMF image.
@@ -9,14 +9,14 @@
  */
 
 
-#include "dbl_list.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
-#include "midifile_parser.h"
-#include "memtools.h"
+#include "engine/dbl_list.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_print.h"
+#include "include/midifile_parser.h"
+#include "engine/memtools.h"
 
 #define PRINTF( parms )		     { printf parms; }
 #define MIDIFILE_SUPPORT_PRINT   (1)

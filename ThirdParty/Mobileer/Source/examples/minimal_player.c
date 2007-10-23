@@ -1,4 +1,4 @@
-/* $Id: minimal_player.c,v 1.15 2006/06/22 22:43:54 philjmsl Exp $ */
+/* $Id: minimal_player.c,v 1.16 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a MIDI file on an audio device that uses blocking writes.
@@ -16,11 +16,11 @@
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/midifile_player.h"
 
 /*
  * Adjust these for your system.

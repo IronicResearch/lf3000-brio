@@ -2,7 +2,7 @@
 #ifndef _SPMIDI_CONFIG_H
 #define _SPMIDI_CONFIG_H
 
-/* $Id: spmidi_config.h,v 1.38 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: spmidi_config.h,v 1.39 2007/10/02 16:20:00 philjmsl Exp $ */
 
 /**
  * @file spmidi_config.h
@@ -58,7 +58,7 @@
  * Internal structures will be allocated based on this value.
  * The actual maximum number of voices can be lowered dynamically by passing a value to SPMIDI_SetMaxVoices().
  */
-#define SPMIDI_MAX_VOICES          (16)
+#define SPMIDI_MAX_VOICES          (64)
 #endif
 
 #ifndef SPMIDI_MAX_SAMPLEMEM
@@ -109,7 +109,7 @@
  */
 
 #ifndef SPMIDI_FRAMES_PER_BLOCK_LOG2
-#define SPMIDI_FRAMES_PER_BLOCK_LOG2    (4)
+#define SPMIDI_FRAMES_PER_BLOCK_LOG2    (3)
 #endif
 
 #ifndef SPMIDI_USE_COMPRESSOR
@@ -144,6 +144,15 @@
 #ifndef SPMIDI_SUPPORT_EDITING
 /** Define this as one to enable the instrument editing support. */
 #define SPMIDI_SUPPORT_EDITING      (0)
+#endif
+
+#if SPMIDI_SUPPORT_EDITING
+#define SPMIDI_SUPPORT_LOADING  (1)
+#else
+#ifndef SPMIDI_SUPPORT_LOADING
+/** Define this as one to enable loading orchestras from files. */
+#define SPMIDI_SUPPORT_LOADING      (0)
+#endif
 #endif
 
 #ifndef SPMIDI_SMOOTH_MIXER_GAIN
@@ -228,8 +237,9 @@
  * determine paths to needed files; for example, the QA suite expects
  * to find data files at SPMIDI_DIR/qa/data.
  */
-#define SPMIDI_DIR "/nomad/MIDISynth/code/spmidi/"
+//#define SPMIDI_DIR "/nomad/MIDISynth/code/spmidi/"
 //#define SPMIDI_DIR  "code/spmidi/"
+#define SPMIDI_DIR  "~/workspace/Brio2/ThirdParty/Mobileer/Source"
 #endif
 
 #ifndef SPMIDI_LEAVE_DLS_WAVES_IN_IMAGE

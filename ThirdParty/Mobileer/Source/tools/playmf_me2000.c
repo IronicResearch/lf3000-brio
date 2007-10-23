@@ -1,4 +1,4 @@
-/* $Id: playmf_me2000.c,v 1.3 2006/02/22 01:05:28 philjmsl Exp $ */
+/* $Id: playmf_me2000.c,v 1.5 2007/10/02 17:25:46 philjmsl Exp $ */
 /**
  *
  * Play a MIDI File using the ME1000 Synthesizer.
@@ -15,15 +15,18 @@
 #include <stdlib.h>
 
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "midifile_player.h"
+#include "spmidi/include/streamio.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/midifile_player.h"
+#include "spmidi/include/program_list.h"
+
+#include "spmidi/examples/midifile_names.h"
 #include "portaudio.h"
 
-#include "midifile_names.h"
 
 /* Set velocity based EQ which attenuates low notes if pitch < 64. */
 /* #define VEQ_GAIN_AT_ZERO   (0) */
@@ -34,6 +37,8 @@
 #define SAMPLE_RATE         (44100)
 #define OPTIMIZE_VOLUME     (0)
 #define COMPRESSOR_ONOFF    (1)
+#define DEFAULT_ORCHESTRA_FILENAME (NULL)
+//#define DEFAULT_ORCHESTRA_FILENAME ("D:\\mobileer_work\\A_Orchestra\\exports\\exported.mbis")
 
 //#define SOLO_TRACK          (1)
 
@@ -47,7 +52,7 @@
 /****************************************************************/
 static void usage( void )
 {
-	printf("playmf [-rRATE] [-wWAVFILE] [-mMAXVOICES]\n");
+	printf("playmf [-rRATE] [-wWAVFILE] [-mMAXVOICES] [-oOrchestra File]\n");
 	printf("       [-nNUMREPS] [-cCHANNELS] [-vRHYTHMVOLUME] midiFileName\n");
 	printf("Hit keys to control playback:\n");
 	printf(" 0-9 = enter index\n");
@@ -58,6 +63,7 @@ static void usage( void )
 	printf(" E = Enable all channels\n");
 	printf(" g = Go to indexed frame position.\n");
 	printf(" m = set Max voices to index\n");
+	printf(" 0 = Orchestra File with .mbis suffix.\n");
 	printf(" p = Pause\n");
 	printf(" r = Resume\n");
 	printf(" s = print Status of instruments and notes playing\n");
@@ -140,7 +146,8 @@ static void EnableOrDisableAllChannels( SPMIDI_Context *spmidiContext, int onOrO
 
 
 /****************************************************************/
-int MIDIFile_Play( unsigned char *image, int numBytes, const char *fileName,
+int MIDIFile_Play( const char *orchestraFileName,
+				  unsigned char *image, int numBytes, const char *fileName,
                    int sampleRate, int maxVoices, int numLoops, int numChannels,
                    int rhythmVolume )
 {
@@ -153,6 +160,7 @@ int MIDIFile_Play( unsigned char *image, int numBytes, const char *fileName,
 	int seconds;
 	int rem_msec;
 	SPMIDI_Context *spmidiContext = NULL;
+	SPMIDI_Orchestra *orchestra = NULL;
 	MIDIFilePlayer *player = NULL;
 
 #if OPTIMIZE_VOLUME
@@ -166,6 +174,42 @@ int MIDIFile_Play( unsigned char *image, int numBytes, const char *fileName,
 	int oldValue, newValue;
 
 	SPMIDI_Initialize();
+
+	if( orchestraFileName != NULL )
+	{
+		unsigned char* fileStart = NULL;
+		spmSInt32 fileSize;
+		StreamIO *sio = NULL;
+		SPMIDI_ProgramList *programList =  NULL;
+		
+		result = SPMIDI_CreateProgramList( &programList );
+		if( result < 0 ) goto error1;
+		
+		// Scan the MIDIFile to see what instruments we should load.
+		result = MIDIFile_ScanForPrograms( programList, image, numBytes );
+		if( result < 0 ) goto error1;
+
+		// Load file into a memory stream and parse it.
+		fileStart = SPMUtil_LoadFileImage( orchestraFileName, (int *)&( fileSize ) );
+		if( fileStart != NULL )
+		{
+			sio = Stream_OpenImage( (char *)fileStart, fileSize );
+			if( sio == NULL )
+			{
+				goto error2;
+			}
+
+			result = SPMIDI_LoadOrchestra( sio, programList, &orchestra );
+			if( result < 0 )
+			{
+				printf( "SPMIDI_LoadOrchestra returned %d\n", result );
+				goto error2;
+			}
+		}
+		
+		SPMIDI_DeleteProgramList( programList );
+		//printf("Bytes allocated = %d\n", SPMIDI_GetMemoryBytesAllocated() );
+	}
 
 	/* Create a player, parse MIDIFile image and setup tracks. */
 	result = MIDIFilePlayer_Create( &player, (int) sampleRate, image, numBytes );
@@ -456,6 +500,8 @@ error2:
 
 	MIDIFilePlayer_Delete( player );
 
+	SPMIDI_DeleteOrchestra( orchestra );
+
 	SPMIDI_Terminate();
 error1:
 	return result;
@@ -474,6 +520,7 @@ int main( int argc, char ** argv )
 	int   rhythmVolume = SPMIDI_DEFAULT_MASTER_VOLUME;
 	int   sampleRate = SAMPLE_RATE;
 	char *inputFileName = DEFAULT_FILENAME;
+	char *orchestraFileName = DEFAULT_ORCHESTRA_FILENAME;
 
 char *outputFileName = NULL;
 //char *outputFileName = "playmf_output.wav";
@@ -490,6 +537,9 @@ char *outputFileName = NULL;
 			{
 			case 'w':
 				outputFileName = &s[2];
+				break;
+			case 'o':
+				orchestraFileName = &s[2];
 				break;
 			case 'r':
 				sampleRate = atoi( &s[2] );
@@ -532,8 +582,9 @@ char *outputFileName = NULL;
 
 	printf("Sample Rate: %d\n", sampleRate );
 
-	result = MIDIFile_Play( data, fileSize, outputFileName,
-	                        sampleRate, maxVoices, numLoops, numChannels, rhythmVolume );
+	result = MIDIFile_Play( orchestraFileName,
+		data, fileSize, outputFileName,
+	    sampleRate, maxVoices, numLoops, numChannels, rhythmVolume );
 	if( result < 0 )
 	{
 		printf("Error playing MIDI File = %d = %s\n", result,

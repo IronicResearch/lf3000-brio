@@ -1,4 +1,4 @@
-/* $Id: svfilter.c,v 1.9 2005/07/22 06:48:51 philjmsl Exp $ */
+/* $Id: svfilter.c,v 1.10 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * State Variable Filter.
@@ -8,11 +8,11 @@
  *
  */
  
-#include "fxpmath.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
-#include "spmidi_print.h"
+#include "engine/fxpmath.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
+#include "include/spmidi_print.h"
 #include "svfilter.h"
 
 #ifdef WIN32
@@ -133,7 +133,7 @@ void SVFilter_Load( const SVFilter_Preset_t *preset, SVFilter_Info_t *info )
 	info->flags        = preset->flags;
 }
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 /***********************************************************************
  * The byte order must match the save() method in the FilterModel class in the HybridEditor.
  */
@@ -152,10 +152,10 @@ unsigned char *SVFilter_Define( SVFilter_Preset_t *preset, unsigned char *p )
 
 	return p;
 }
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */
 
 #if 0
-#include "write_wav.h"
+#include "include/write_wav.h"
 
 /* Render filter to file for external viewing with wave editor. */
 int main( void )

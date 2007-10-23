@@ -1,4 +1,4 @@
-/* $Id: qa_alltypes.c,v 1.5 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_alltypes.c,v 1.6 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @brief Verify checksum, min and max on a few buffers of audio.
@@ -27,14 +27,14 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_audio.h"
-#include "spmidi_load.h"
-#include "song_player.h"
-#include "qa_tools.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/song_player.h"
+#include "spmidi/qa/qa_tools.h"
 
 /* Set this to (1) if you want to print expected data for a subsequent test.
  * For most devices you can generate the result on a PC.

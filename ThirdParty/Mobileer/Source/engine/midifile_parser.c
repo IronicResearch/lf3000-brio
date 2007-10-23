@@ -1,4 +1,4 @@
-/* $Id: midifile_parser.c,v 1.1 2005/11/15 20:48:28 philjmsl Exp $ */
+/* $Id: midifile_parser.c,v 1.2 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * Standard MIDI File parser.
  * This parser scans the SMF image and calls the user specified
@@ -8,14 +8,14 @@
  * Copyright 2002-2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "dbl_list.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
-#include "midifile_player.h"
-#include "memtools.h"
+#include "engine/dbl_list.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_print.h"
+#include "include/midifile_player.h"
+#include "engine/memtools.h"
 
 #if 0
 	#define DBUGMSG(x)   PRTMSG(x)
@@ -195,9 +195,14 @@ static SPMIDI_Error parseTrack( MIDIFileParser_t *parser, int index )
 	parser->gotEndOfTrack = 0;
 
 	/* Call handler to start saving new track. */
-	result = (parser->beginTrackProc)( parser, index, chunkLen );
-	if( result < 0 )
-		return (SPMIDI_Error) result;
+	if( parser->beginTrackProc != NULL )
+	{
+		result = (parser->beginTrackProc)( parser, index, chunkLen );
+		if( result < 0 )
+		{
+			return (SPMIDI_Error) result;
+		}
+	}
 
 	/* Loop on remaining bytes. */
 	while( (parser->bytesRead < byteLimit) &&
@@ -244,7 +249,11 @@ static SPMIDI_Error parseTrack( MIDIFileParser_t *parser, int index )
 	}
 
 	/* Call handler to finish saving new track. */
-	(parser->endTrackProc)( parser, index );
+	if( parser->endTrackProc != NULL )
+	{
+		(parser->endTrackProc)( parser, index );
+	}
+	
 	return SPMIDI_Error_None;
 }
 

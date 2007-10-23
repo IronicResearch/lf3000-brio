@@ -1,4 +1,4 @@
-/* $Id: ima_adpcm_encoder.c,v 1.2 2006/02/22 01:06:04 philjmsl Exp $ */
+/* $Id: ima_adpcm_encoder.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /*
  * Low level IMA Intel/DVI ADPCM encoder.
  * The encoder requires the decoder.
@@ -12,7 +12,7 @@
  * @author Phil Burk, Copyright 1997-2005 Phil Burk, Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "ima_adpcm.h"
+#include "include/ima_adpcm.h"
 
 extern const int gIMA_ADPCM_StepSizes[];
 extern const int gIMA_ADPCM_IndexDeltas[];

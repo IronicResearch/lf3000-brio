@@ -17,8 +17,8 @@
 ** All Rights Reserved
 */
 
-#include "spmidi_print.h"
-#include "event_buffer.h"
+#include "include/spmidi_print.h"
+#include "jukebox/event_buffer.h"
 
 #define TimeGreaterThan(a,b) (((int32)((a)-(b))) > 0)
 #define TimeGreaterThanOrEqual(a,b) (((int32)((a)-(b))) >= 0)

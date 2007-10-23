@@ -1,4 +1,4 @@
-/* $Id: play_scale_async.c,v 1.1 2005/07/22 06:49:38 philjmsl Exp $ */
+/* $Id: play_scale_async.c,v 1.2 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a scale using Mobileer ME2000 asynchronously.
@@ -7,10 +7,10 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
 #include "portaudio.h"
 
 #define SAMPLE_RATE         (44100)

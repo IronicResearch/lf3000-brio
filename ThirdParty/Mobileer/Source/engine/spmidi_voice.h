@@ -9,14 +9,14 @@
  *
  */
 
-#include "fxpmath.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "adsr_envelope.h"
-#include "oscillator.h"
+#include "engine/fxpmath.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/adsr_envelope.h"
+#include "engine/oscillator.h"
 #include "svfilter.h"
 #include "reverb.h"
-#include "spmidi_preset.h"
+#include "engine/spmidi_preset.h"
 #include "dls_parser_internal.h"
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 #ifndef _OSCILLATOR_H
 #define _OSCILLATOR_H
 
-/* $Id: oscillator.h,v 1.24 2007/05/30 16:52:47 philjmsl Exp $ */
+/* $Id: oscillator.h,v 1.25 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Oscillator - waveform generator
@@ -11,8 +11,8 @@
  */
 
 #include "fxpmath.h"
-#include "spmidi.h"
-#include "wave_manager.h"
+#include "include/spmidi.h"
+#include "engine/wave_manager.h"
 
 #ifdef __cplusplus
 extern "C"

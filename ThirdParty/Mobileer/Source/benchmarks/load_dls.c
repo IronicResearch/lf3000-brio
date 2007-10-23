@@ -3,14 +3,14 @@
  * Copyright 2002 Mobileer
  *
  */
-#include "stdio.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_print.h"
+#include <stdio.h>
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_print.h"
 #include "bench_tools.h"
-#include "song_player.h"
+#include "spmidi/include/song_player.h"
 
 #if 0
 #define DBUGMSG(x)   PRTMSG(x)

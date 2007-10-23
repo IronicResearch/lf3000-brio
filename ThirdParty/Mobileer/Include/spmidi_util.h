@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_UTIL_H
 #define _SPMIDI_UTIL_H
-/* $Id: spmidi_util.h,v 1.14 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: spmidi_util.h,v 1.15 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file spmidi_util.h

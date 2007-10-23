@@ -1,4 +1,4 @@
-/* $Id: qa_pitch.c,v 1.9 2006/06/21 16:41:01 philjmsl Exp $ */
+/* $Id: qa_pitch.c,v 1.10 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_pitch_bend.c
@@ -13,11 +13,11 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-//#include "spmidi_util.h"
-#include "spmidi_play.h"
-#include "qa_tools.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+//#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/qa/qa_tools.h"
 
 #define SAMPLE_RATE         (44100)
 

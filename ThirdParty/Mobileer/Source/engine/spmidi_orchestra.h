@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_ORCHESTRA_H
 #define _SPMIDI_ORCHESTRA_H
 
-/* $Id: spmidi_orchestra.h,v 1.7 2007/06/12 21:09:08 philjmsl Exp $ */
+/* $Id: spmidi_orchestra.h,v 1.8 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Isolate Orchestra data so it can be linked separately from the code.
@@ -9,8 +9,9 @@
  * @author Phil Burk, Copyright 2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
  */
-#include "spmidi_config.h"
-#include "spmidi.h"
+#include "include/spmidi_config.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_preset.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -18,34 +19,45 @@ extern "C"
 #endif
 
 /* Determine whether instrument is read-only. */
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 #define EDITABLE /* */
 #define SPMIDI_MAX_PROGRAM_MAP_BANKS (256)
 #else
 #define EDITABLE const
 #endif
 
+typedef struct HybridOrchestra_s
+{
+	DoubleNode     node;
+	struct HybridVoice_Preset_s *hybridSynthPresets;
+	DoubleList     melodicBankList;
+	DoubleList     drumProgramList;
+} HybridOrchestra_t;
+
+/** @return Orchestra compiled from source code. */
+HybridOrchestra_t *SS_GetCompiledOrchestra( void );
+
 /** @return Indexed preset structure from instrument library. */
-EDITABLE HybridVoice_Preset_t *SS_GetSynthPreset( int presetIndex );
+EDITABLE struct HybridVoice_Preset_s *SS_GetSynthPreset( HybridOrchestra_t *orchestra, int presetIndex );
 
 /** @return number of valid preset structures in instrument library */
 int SS_GetSynthPresetCount( void );
 
 /** @return preset corresponding to drum bank, program and pitch. */
-EDITABLE HybridVoice_Preset_t *SS_GetSynthDrumPreset( int bank, int program, int pitch );
+EDITABLE struct HybridVoice_Preset_s *SS_GetSynthDrumPreset( int bank, int program, int pitch );
 
 /** @return preset corresponding to melodic bank and program. */
-EDITABLE HybridVoice_Preset_t *SS_GetSynthMelodicPreset( int bank, int program );
+EDITABLE struct HybridVoice_Preset_s *SS_GetSynthMelodicPreset( int bank, int program );
 
 /** Map a MIDI program number to an instrument index.
  * This allows multiple programs to be mapped to a single instrument.
  */
-int SS_SetInstrumentMap( int bankIndex, int programIndex, int insIndex );
+int SS_SetInstrumentMap( HybridOrchestra_t *orchestra, int bankIndex, int programIndex, int insIndex );
 
 /** Map a MIDI drum pitch to an instrument index.
  * This allows multiple drums to be mapped to a single instrument.
  */
-int SS_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch );
+int SS_SetDrumMap( HybridOrchestra_t * orchestra, int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch );
 
 /**
  * MIDI drums are indexed by noteIndex or "pitch".

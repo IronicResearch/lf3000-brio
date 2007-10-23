@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_HYBRID_PRESETS_H
 #define _SPMIDI_HYBRID_PRESETS_H
 
-#include "spmidi_config.h"
+#include "include/spmidi_config.h"
 /*
  * Preset definitions for Hybrid SP-MIDI Synthesizer
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
@@ -9,7 +9,7 @@
 
 #define SPMIDI_EDITOR_VERSION (226)
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 EDITABLE HybridVoice_Preset_t  gHybridSynthPresets[SS_MAX_PRESETS] =
 #else
 EDITABLE HybridVoice_Preset_t gHybridSynthPresets[] =
@@ -2359,7 +2359,6 @@ void SS_LoadPresetOrchestra( void )
     sDrumProgram_0_0.pitches = sDrumProgram_0_0_Pitches;
     sDrumProgram_0_0.presetMap = sDrumProgram_0_0_ProgramMap;
     SS_AddDrumProgramToList( &sDrumProgram_0_0 );
-
 }
 
 #endif /* _SPMIDI_HYBRID_PRESETS_H */

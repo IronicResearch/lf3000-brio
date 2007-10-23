@@ -1,13 +1,13 @@
-/* $Id: streamio_ram.c,v 1.6 2005/11/28 19:05:54 philjmsl Exp $ */
+/* $Id: streamio_ram.c,v 1.7 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * Stream IO - emulate file I/O from in-memory char arrays.
  *
  * @author Phil Burk, Copyright 1997-2005 Phil Burk, Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "streamio.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
+#include "include/streamio.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
 
 
 typedef struct ImageStreamIO_s

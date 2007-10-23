@@ -1,4 +1,4 @@
-/* $Id: loop_midifile.c,v 1.11 2005/10/26 18:05:19 philjmsl Exp $ */
+/* $Id: loop_midifile.c,v 1.12 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  * Loop a MIDI File whose name is passed on the command line.
  * Assume that the EndOfTrack events are positioned appropriately so that
@@ -12,10 +12,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/midifile_player.h"
 
 #include "midifile_names.h"
 

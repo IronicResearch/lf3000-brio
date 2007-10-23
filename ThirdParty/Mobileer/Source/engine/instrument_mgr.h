@@ -39,7 +39,7 @@ extern "C"
 
 	void InsManager_InitializePreset( HybridVoice_Preset_t *preset );
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 
 
 	/* Initialize linked lists and prepare for storing instruments. */

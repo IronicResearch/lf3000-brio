@@ -26,6 +26,11 @@
 #include <spmidi_util.h>
 #include <midifile_player.h>
 
+#include "program_list.h"
+#include "spmidi_load.h"
+#include "spmidi_print.h"
+#include "engine/spmidi_host.h"
+
 #include "Dsputil.h"
 
 LF_BEGIN_BRIO_NAMESPACE()

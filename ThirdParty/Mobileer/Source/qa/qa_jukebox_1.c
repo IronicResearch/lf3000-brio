@@ -1,4 +1,4 @@
-/* $Id: qa_jukebox_1.c,v 1.6 2006/05/20 01:50:57 philjmsl Exp $ */
+/* $Id: qa_jukebox_1.c,v 1.7 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_jukebox_1.c
@@ -12,12 +12,12 @@
 #include <stdio.h>
 
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
-#include "spmidi_play.h"
-#include "spmidi_jukebox.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_jukebox.h"
 
 /*
  * Adjust these for your system.

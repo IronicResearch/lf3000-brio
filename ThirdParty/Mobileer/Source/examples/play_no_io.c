@@ -1,4 +1,4 @@
-/* $Id: play_no_io.c,v 1.1 2005/06/17 08:16:53 philjmsl Exp $ */
+/* $Id: play_no_io.c,v 1.2 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Call SPMIDI Library without doing any I/O.
@@ -8,8 +8,8 @@
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/midifile_player.h"
 #include "UpAndDown.c"
 
 /*

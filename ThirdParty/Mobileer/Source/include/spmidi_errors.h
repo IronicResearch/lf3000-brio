@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_ERRORS_H
 #define _SPMIDI_ERRORS_H
 
-/* $Id: spmidi_errors.h,v 1.16 2005/12/09 22:00:24 marsanyi Exp $ */
+/* $Id: spmidi_errors.h,v 1.17 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file spmidi_errors.h
@@ -58,8 +58,10 @@ typedef enum SPMIDI_Error_e
 	MIDIStream_Error_NotSMID,           /**< The file being parsed is not a Mobileer MIDI Stream file! */
 
 	SDLSStream_Error_NotSDLS,           /**< The file being parsed is not a Mobileer SDLS Stream file! */
-	SDLSStream_Error_WrongVersion       /**< The file version is not current */
+	SDLSStream_Error_WrongVersion,       /**< The file version is not current */
 
+    MBISParser_Error_NotMBIS,           /**< Not a MBIS file based on the initial chunk ID. */
+    MBISParser_Error_ParseError        /**< Data inside the file did not make sense. Perhaps the file was corrupted. */
 } SPMIDI_Error;
 
 

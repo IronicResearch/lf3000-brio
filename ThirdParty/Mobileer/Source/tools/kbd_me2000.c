@@ -1,4 +1,4 @@
-/* $Id: kbd_me2000.c,v 1.2 2006/03/24 20:00:41 philjmsl Exp $ */
+/* $Id: kbd_me2000.c,v 1.3 2007/10/02 16:24:51 philjmsl Exp $ */
 /****************************************
  * Play ME2000 using a MIDI Keyboard on Windows.
  *
@@ -11,12 +11,12 @@
 #include <mmsystem.h>
 #include <math.h>
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
-#include "spmidi_play.h"
-#include "spmidi_jukebox.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_jukebox.h"
 
 /* PortAudio is an open-source audio API available free from www.portaudio.com */
 #include "portaudio.h"

@@ -1,4 +1,4 @@
-/* $Id: spmidi_load.c,v 1.7 2005/11/28 19:20:37 philjmsl Exp $ */
+/* $Id: spmidi_load.c,v 1.8 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Load a file in to a memory image.
@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi_load.h"
+#include "include/spmidi_load.h"
 
 void SPMUtil_FreeFileImage( void *image )
 {

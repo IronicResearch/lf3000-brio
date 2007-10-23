@@ -1,4 +1,4 @@
-/* $Id: spmidi_play.h,v 1.13 2006/05/16 00:05:23 philjmsl Exp $ */
+/* $Id: spmidi_play.h,v 1.14 2007/10/02 16:20:00 philjmsl Exp $ */
 #ifndef _SPMIDI_PLAY_H
 #define _SPMIDI_PLAY_H
 /**
@@ -7,8 +7,8 @@
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "spmidi_util.h"
+#include "include/spmidi.h"
+#include "include/spmidi_util.h"
 
 #ifdef __cplusplus
 extern "C"

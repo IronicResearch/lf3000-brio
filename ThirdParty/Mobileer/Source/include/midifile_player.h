@@ -1,15 +1,15 @@
 #ifndef _MIDIFILE_PLAYER_H
 #define _MIDIFILE_PLAYER_H
 
-/* $Id: midifile_player.h,v 1.17 2005/11/15 20:54:36 philjmsl Exp $ */
+/* $Id: midifile_player.h,v 1.18 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file midifile_player.h
  * @brief MIDI File Parser and Player
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
-#include "spmidi.h"
-#include "midifile_parser.h"
+#include "include/spmidi.h"
+#include "include/midifile_parser.h"
 
 #ifdef __cplusplus
 extern "C"

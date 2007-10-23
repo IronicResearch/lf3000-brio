@@ -12,8 +12,8 @@
  *
  * @author Phil Burk, Robert Marsanyi Copyright 2004 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
-#include "streamio.h"
-#include "spmidi.h"
+#include "include/streamio.h"
+#include "include/spmidi.h"
 
 #ifdef __cplusplus
 extern "C"
