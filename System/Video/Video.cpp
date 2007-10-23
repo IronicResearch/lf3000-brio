@@ -185,7 +185,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	const CPath		filepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;
 
 	pVidCtx->hVideo 	= hVideo;
-	pVidCtx->hAudio 	= 0; // handled inside video task
+	pVidCtx->hAudio 	= kNoAudioID; // handled inside video task
 	pVidCtx->pPathAudio = (nopath) ? NULL : &filepath; // pass by pointer
 	pVidCtx->pSurfVideo = pSurf;
 	pVidCtx->pListener 	= pListener;

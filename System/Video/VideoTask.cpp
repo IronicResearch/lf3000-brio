@@ -95,15 +95,15 @@ void* VideoTaskMain( void* arg )
 			marktime = vtm.time + basetime + lapsetime;
 			if (pctx->bPaused)
 			{
-				if (pctx->hAudio)
+				if (pctx->hAudio != kNoAudioID)
 					audmgr.PauseAudio(pctx->hAudio);
 				while (bRunning && pctx->bPaused)
 					kernel.TaskSleep(1);
-				if (pctx->hAudio)
+				if (pctx->hAudio != kNoAudioID)
 					audmgr.ResumeAudio(pctx->hAudio);
 			}
 		}
-		if (pctx->hAudio)
+		if (pctx->hAudio != kNoAudioID)
 			audmgr.StopAudio(pctx->hAudio, false);
 		// Reloop from 1st video frame if selected, or exit thread
 		if (pctx->bLooped)
