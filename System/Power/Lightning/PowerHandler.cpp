@@ -133,13 +133,13 @@ enum tPowerState CPowerModule::GetPowerState() const
 //----------------------------------------------------------------------------
 int CPowerModule::Shutdown() const
 {
-	CDebugMPI	dbg(kGroupPower);
-	int status = ioctl(power_fd, POWER_IOCT_SHUTDOWN, 0);
-	dbg.Assert(status >= 0, "PowerModule::Shutdown: ioctl failed");
+	//CDebugMPI	dbg(kGroupPower);
+	//int status = ioctl(power_fd, POWER_IOCT_SHUTDOWN, 0);
+	//dbg.Assert(status >= 0, "PowerModule::Shutdown: ioctl failed");
 
 	// Embedded version should never get here
 	exit(kKernelExitShutdown);
-	return status;
+	return kKernelExitError;
 }
 
 //----------------------------------------------------------------------------
@@ -163,13 +163,13 @@ int CPowerModule::SetShutdownTimeMS(int iMilliseconds) const
 //----------------------------------------------------------------------------
 int CPowerModule::Reset() const
 {
-	CDebugMPI	dbg(kGroupPower);
-	int status = ioctl(power_fd, POWER_IOCT_RESET, 0);
-	dbg.Assert(status >= 0, "PowerModule::Reset: ioctl failed");
+	//CDebugMPI	dbg(kGroupPower);
+	//int status = ioctl(power_fd, POWER_IOCT_RESET, 0);
+	//dbg.Assert(status >= 0, "PowerModule::Reset: ioctl failed");
 
 	// Embedded version should never get here
 	exit(kKernelExitReset);
-	return status;
+	return kKernelExitError;
 }
 LF_END_BRIO_NAMESPACE()
 // EOF
