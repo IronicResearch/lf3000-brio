@@ -53,6 +53,8 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so*'))
 		env.Install(lib_dir, libs)
+		# libs = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'libme2000.so'))
+		# env.Install(vars['lib_deploy_dir'], libs)
 	else:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
@@ -91,4 +93,12 @@ if not vars['is_emulation']:
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], 'libopengles_lite.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
+	# libs = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'libme2000.so'))
+	# env.Install(vars['lib_deploy_dir'], libs)
+
+#-----------------------------------------------------------------------------
+# Export support modules to embedded or emulation target
+#-----------------------------------------------------------------------------
+ext_mod = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'orchestra.mbis'))
+env.Install(vars['mod_deploy_dir'], ext_mod)
 	
