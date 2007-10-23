@@ -1,4 +1,4 @@
-/* $Id: ima_adpcm_wav.h,v 1.2 2005/11/28 19:12:53 philjmsl Exp $ */
+/* $Id: ima_adpcm_wav.h,v 1.3 2007/10/02 16:20:00 philjmsl Exp $ */
 #ifndef _IMA_ADPCM_WAV
 #define _IMA_ADPCM_WAV
 /**

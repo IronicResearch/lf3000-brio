@@ -94,17 +94,12 @@ Compiling and Playing a Simple MIDI Example</h3>
   <li>
     Add an example file for ME*000 that simply plays a few notes, for example
 "spmidi/examples/play_scale.c".</li>
-</ol>Specify the following folders as the place to look for header files. For
-"gcc"&nbsp; use the -I command line option.
-<ul>
-<li>
-"spmidi/engine"</li>
-
-<li>
-"spmidi/include"</li>
-<li>
-"spmidi/util"</li>
-</ul>
+</ol>
+<p>Add the  folder that contains the &quot;spmidi&quot; folder to your Include Path. For
+  "gcc"&nbsp; use the -I command line option. For example: </p>
+<blockquote>
+  <pre>-Iproject/ME2000</pre>
+</blockquote>
 <p>To use the standard release orchestra, also add the export folder to the include path. If you have a custom orchestra export directory then use that folder instead. </p>
 <ul>
     <li> "spmidi/export"</li>

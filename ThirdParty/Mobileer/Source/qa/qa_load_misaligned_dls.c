@@ -1,4 +1,4 @@
-/* $Id: qa_load_misaligned_dls.c,v 1.2 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: qa_load_misaligned_dls.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Test loading of a DLS file.
@@ -11,17 +11,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "spmidi_config.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
-#include "spmidi_editor.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_load.h"
+#include "spmidi/include/spmidi_config.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_editor.h"
+#include "spmidi/engine/spmidi_hybrid.h"
+#include "spmidi/include/spmidi_load.h"
 
-#include "memtools.h"
-#include "wave_manager.h"
-#include "dls_parser.h"
+#include "spmidi/engine/memtools.h"
+#include "spmidi/engine/wave_manager.h"
+#include "spmidi/include/dls_parser.h"
 #include "qa_common.h"
 
 #define DEFAULT_FILENAME    QADATA_DIR"multi_sine_set.dls"

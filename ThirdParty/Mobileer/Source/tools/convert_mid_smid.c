@@ -1,4 +1,4 @@
-/* $Id: convert_mid_smid.c,v 1.1 2005/11/28 19:17:54 philjmsl Exp $ */
+/* $Id: convert_mid_smid.c,v 1.2 2007/10/02 16:24:51 philjmsl Exp $ */
 /**
  *
  * Convert an SMF file to a SMID file.
@@ -11,12 +11,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_play.h"
-#include "spmidi_load.h"
-#include "midifile_player.h"
-#include "midistream_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/midifile_player.h"
+#include "spmidi/include/midistream_player.h"
 
 #define FRAMES_PER_SECOND   (22050)
 #define SAMPLES_PER_FRAME   (1)

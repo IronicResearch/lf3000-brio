@@ -1,14 +1,14 @@
 #ifndef _SPMIDI_HYBRID_PRESETS_H
 #define _SPMIDI_HYBRID_PRESETS_H
 
-#include "spmidi_config.h"
+#include "include/spmidi_config.h"
 /*
  * Preset definitions for Hybrid SP-MIDI Synthesizer
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 EDITABLE HybridVoice_Preset_t  gHybridSynthPresets[SS_MAX_PRESETS] =
 #else
 EDITABLE HybridVoice_Preset_t gHybridSynthPresets[] =

@@ -1,4 +1,4 @@
-/* $Id: qa_64v.c,v 1.5 2006/05/22 20:35:23 philjmsl Exp $ */
+/* $Id: qa_64v.c,v 1.6 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Play 64 voices for your listening pleasure.
@@ -9,13 +9,13 @@
  * Copyright 2002-5 Mobileer
  */
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "spmidi_errortext.h"
-#include "qa_tools.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_errortext.h"
+#include "spmidi/qa/qa_tools.h"
 
 /*
  * Adjust these for your system.

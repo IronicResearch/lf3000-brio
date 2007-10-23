@@ -12,7 +12,7 @@ void Print_SF_INFO(SF_INFO *d);
 
 SNDFILE	*OpenSoundFile( char *path, SF_INFO *sfi, long rwType);
 int CloseSoundFile( SNDFILE **soundFile );
-// int RewindSoundFile( SNDFILE **soundFile, SF_INFO *afi, char *path )
+int RewindSoundFile( SNDFILE **soundFile, SF_INFO *afi, char *path );
 
 /* Add whatever here */
 #ifdef __cplusplus

@@ -1,11 +1,11 @@
-/* $Id: streamio.c,v 1.5 2005/11/28 19:07:17 philjmsl Exp $ */
+/* $Id: streamio.c,v 1.6 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * Stream IO - emulate file I/O from in-memory char arrays.
  *
  * @author Phil Burk, Copyright 1997-2005 Phil Burk, Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "streamio.h"
+#include "include/streamio.h"
 
 /******************************************************************
 ** Read from Stream

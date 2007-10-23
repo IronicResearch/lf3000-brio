@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_SYNTH_UTIL_H
 #define _SPMIDI_SYNTH_UTIL_H
-/* $Id: spmidi_synth_util.h,v 1.12 2005/05/13 23:15:32 philjmsl Exp $ */
+/* $Id: spmidi_synth_util.h,v 1.13 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Internal tools for use by synthesizer.
@@ -8,7 +8,7 @@
  *
  */
 
-#include "fxpmath.h"
+#include "engine/fxpmath.h"
 
 #ifdef __cplusplus
 extern "C"

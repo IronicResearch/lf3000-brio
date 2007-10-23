@@ -1,4 +1,4 @@
-/* $Id: qa_common.c,v 1.11 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_common.c,v 1.12 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_common.c
@@ -10,8 +10,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_play.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_play.h"
 #include "qa_common.h"
 
 /************************************************************/

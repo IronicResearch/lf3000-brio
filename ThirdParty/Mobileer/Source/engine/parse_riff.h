@@ -1,13 +1,13 @@
 #ifndef _PARS_RIFF_H
 #define _PARS_RIFF_H
 /*
- * WAV parser.
- * Parses a WAV file image from an in-memory image.
+ * RIFF parser.
+ * Parses a RIFF file image from a stream.
  *
  * Author: Phil Burk
  * Copyright 2002 Mobileer
  */
-#include "streamio.h"
+#include "include/streamio.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -38,7 +38,8 @@ extern "C"
 	}
 	RiffParser_t;
 
-	/* Parse a StreamIO of a RIFF file and return information call user function with chunks.
+	/* Parse a StreamIO of a RIFF file and return information.
+	 * Call user function with chunks.
 	 * A zero is returned if no error occurs.
 	 * A negative number is returned if a parsing error occurs.
 	 */
@@ -52,6 +53,9 @@ extern "C"
 	/** Read 16 bit signed integer assuming Little Endian byte order. */
 	int Stream_ReadShortLittle( StreamIO *stream );
 
+	/** Read 16 bit signed integer assuming Big Endian byte order. */
+	int Stream_ReadShortBig( StreamIO *stream );
+
 	/* Parse data from a Little Endian byte stream. */
 	/** Read 32 bit signed integer assuming Little Endian byte order. */
 #define RIFF_ReadIntLittle( riffParser ) Stream_ReadIntLittle( (riffParser)->stream )
@@ -61,6 +65,9 @@ extern "C"
 
 	/** Read 16 bit signed integer assuming Little Endian byte order. */
 #define RIFF_ReadShortLittle( riffParser ) Stream_ReadShortLittle( (riffParser)->stream )
+
+	/** Read 16 bit signed integer assuming Big Endian byte order. */
+#define RIFF_ReadShortBig( riffParser ) Stream_ReadShortBig( (riffParser)->stream )
 
 #ifdef __cplusplus
 };

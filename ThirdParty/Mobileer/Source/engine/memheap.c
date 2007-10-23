@@ -5,9 +5,9 @@
 ** Copyright 2005 Mobileer
 ***************************************************************/
 
-#include "dbl_list.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
+#include "engine/dbl_list.h"
+#include "include/spmidi.h"
+#include "include/spmidi_print.h"
 
 #if SPMIDI_USE_INTERNAL_MEMHEAP
 

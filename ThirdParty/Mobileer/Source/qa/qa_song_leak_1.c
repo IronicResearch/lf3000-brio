@@ -1,4 +1,4 @@
-/* $Id: qa_song_leak_1.c,v 1.6 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: qa_song_leak_1.c,v 1.7 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_song_leak_1.c
@@ -15,14 +15,14 @@
 #include <string.h>  // for memset
 #include <math.h>
 
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "song_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/song_player.h"
 #include "midifile_names.h"
 
 /*

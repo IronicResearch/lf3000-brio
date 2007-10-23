@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_H
 #define _SPMIDI_H
 
-/* $Id: spmidi.h,v 1.46 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: spmidi.h,v 1.48 2007/10/02 17:25:11 philjmsl Exp $ */
 /**
  *
  * @file spmidi.h
@@ -81,7 +81,7 @@ typedef int spmSInt;
 typedef unsigned int spmUInt;
 
 /** This is the release version number time 100. Thus for V 1.94 this would be 194. */
-#define SPMIDI_VERSION  (212)
+#define SPMIDI_VERSION  (230)
 
 /**
  * The Scaleable Polyphony standard defines a special bank and program for
@@ -202,6 +202,9 @@ extern "C"
 
 	/** Opaque data type representing an internal SPMIDI context. */
 	typedef void SPMIDI_Context;
+
+	/** Opaque data type representing an internal SPMIDI orchestra containing multiple instruments. */
+	typedef void SPMIDI_Orchestra;
 
 	/** Initialize SPMIDI Library.
 	 * This should be called before calling any other Mobileer functions.
@@ -456,6 +459,10 @@ extern "C"
 	 * @return zero or native error code
 	 */
 	int SPMIDI_StopAllVoices( void );
+
+	// TODO
+	int SPMIDI_CreateOrchestra( SPMIDI_Orchestra **spmidiOrchestraPtr, spmSInt32 numInstruments );
+	void SPMIDI_DeleteOrchestra( SPMIDI_Orchestra *spmidiOrchestra );
 
 #ifdef __cplusplus
 }

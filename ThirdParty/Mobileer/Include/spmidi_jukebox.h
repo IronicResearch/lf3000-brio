@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_JUKEBOX_H
 #define _SPMIDI_JUKEBOX_H
 
-/* $Id: spmidi_jukebox.h,v 1.5 2005/10/11 18:53:58 marsanyi Exp $ */
+/* $Id: spmidi_jukebox.h,v 1.6 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  * @file spmidi_jukebox.h
  * @brief Tools for playing from a selection of songs.

@@ -1,4 +1,4 @@
-/* $Id: play_all_programs.c,v 1.11 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: play_all_programs.c,v 1.12 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play each MIDI Program
@@ -7,10 +7,10 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
 
 #define SAMPLE_RATE   (22050)
 #define CHANNEL           (3)

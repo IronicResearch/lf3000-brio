@@ -6,7 +6,7 @@
  * All Rights Reserved.
  */
 
-#include "atomic_fifo.h"
+#include "jukebox/atomic_fifo.h"
 
 #define AFIFO_CHECK_MASK(fifo)  (((fifo)->af_NumElements*2)-1)
 #define AFIFO_PTR_MASK(fifo)  ((fifo)->af_NumElements-1)

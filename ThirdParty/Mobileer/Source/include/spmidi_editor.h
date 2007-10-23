@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_EDITOR_H
 #define _SPMIDI_EDITOR_H
 
-/* $Id: spmidi_editor.h,v 1.12 2007/06/06 01:51:45 philjmsl Exp $ */
+/* $Id: spmidi_editor.h,v 1.13 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * Used internally by Instrument Editor
@@ -12,9 +12,9 @@
  *
  */
 
-#include "spmidi_config.h"
-#include "wave_manager.h"
-#include "spmidi.h"
+#include "include/spmidi_config.h"
+#include "engine/wave_manager.h"
+#include "include/spmidi.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -26,14 +26,12 @@ extern "C"
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * @param insIndex index within internal presets array
 	 */
-	int SPMIDI_SetInstrumentDefinition( SPMIDI_Context *spmidiContext, int insIndex, unsigned char *data, int numBytes );
-
-	int SPMIDI_SetInstrumentPreset( SPMIDI_Context *spmidiContext, int insIndex, void *inputPreset );
+	int SPMIDI_SetInstrumentDefinition( int insIndex, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes );
 
 	/** Map a MIDI program number to an instrument index.
 	 * This allows multiple programs to be mapped to a single instrument.
 	 */
-	int SPMIDI_SetInstrumentMap( int bankIndex, int programIndex, int insIndex );
+	int SPMIDI_SetInstrumentMap( SPMIDI_Orchestra *orchestra, int bankIndex, int programIndex, int insIndex );
 
 	/** Map a MIDI drum pitch to an instrument index.
 	 * This allows multiple drums to be mapped to a single instrument.
@@ -41,7 +39,9 @@ extern "C"
 	 * @param insIndex index used when defining instrument with SPMIDI_SetInstrumentDefinition()
 	 * @param pitch pitch of instrument when playing this drum sound
 	 */
-	int SPMIDI_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch );
+	int SPMIDI_SetDrumMap( SPMIDI_Orchestra *orchestra, int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch );
+
+	SPMIDI_Orchestra *SPMIDI_GetCompiledOrchestra( void );
 
 	/** Identify beginning of data stream. */
 #define SPMIDI_BEGIN_STREAM    (0x00FF)
@@ -62,33 +62,33 @@ extern "C"
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * Returns negative error or positive waveTable token.
 	 */
-	int SPMIDI_LoadWaveTable( SPMIDI_Context *spmidiContext, unsigned char *data, int numBytes );
+	int SPMIDI_LoadWaveTable( unsigned char *data, int numBytes );
 
 	/* Delete WaveTable if WaveSet reference count is zero. */
-	int SPMIDI_UnloadWaveTable( SPMIDI_Context *spmidiContext, spmSInt32 token );
+	int SPMIDI_UnloadWaveTable( spmSInt32 token );
 
 	/** Download a WaveSet for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * Returns negative error or positive waveSet token.
 	 */
-	int SPMIDI_LoadWaveSet( SPMIDI_Context *spmidiContext, unsigned char *data, int numBytes );
+	int SPMIDI_LoadWaveSet( ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes );
 
 	/* Delete WaveSet if instrument reference count is zero. */
-	int SPMIDI_UnloadWaveSet( SPMIDI_Context *spmidiContext, spmSInt32 token );
+	int SPMIDI_UnloadWaveSet( spmSInt32 token );
 
-	int SPMIDI_UnloadAllWaveData( SPMIDI_Context *spmidiContext );
+	int SPMIDI_UnloadAllWaveData( );
 
 	/** Add a WaveTable for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * Returns negative error or positive waveTable token.
 	 */
-	int SPMIDI_AddWaveTable( SPMIDI_Context *spmidiContext, WaveTable_t *waveTable );
+	int SPMIDI_AddWaveTable( WaveTable_t *waveTable );
 
 	/** Add a WaveSet for internal storage and use.
 	 * The contents of the definition are specific to the synthesizer in use.
 	 * Returns negative error or positive waveSet token.
 	 */
-	int SPMIDI_AddWaveSet( SPMIDI_Context *spmidiContext, WaveSet_t *waveSet );
+	int SPMIDI_AddWaveSet( WaveSet_t *waveSet, int id );
 
 #endif /* SPMIDI_ME2000 */
 

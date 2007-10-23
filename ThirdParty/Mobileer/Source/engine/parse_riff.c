@@ -2,11 +2,11 @@
  * RIFF File Parser
  *
  * Author: Phil Burk
- * Copyright 2002 Mobileer
+ * Copyright 2002 Mobileer Inc
  */
 
-#include "streamio.h"
-#include "parse_riff.h"
+#include "include/streamio.h"
+#include "engine/parse_riff.h"
 
 static int RIFF_ParseChunk( RiffParser_t *riffParser, RIFF_ChunkID chunkID, int chunkSize );
 static int RIFF_ParseForm( RiffParser_t *riffParser, int formSize );
@@ -33,6 +33,14 @@ int Stream_ReadShortLittle( StreamIO *stream )
 	unsigned char pad[2];
 	stream->read( stream, (char *) pad, sizeof(pad) );
 	return (int)((short)((pad[1] << 8) + pad[0]));
+}
+
+/** Read 16 bit signed integer assuming Big Endian byte order. */
+int Stream_ReadShortBig( StreamIO *stream )
+{
+	unsigned char pad[2];
+	stream->read( stream, (char *) pad, sizeof(pad) );
+	return (int)((short)((pad[0] << 8) + pad[1]));
 }
 
 /************************************************************************/
@@ -66,13 +74,19 @@ static int RIFF_ParseChunk( RiffParser_t *riffParser, RIFF_ChunkID chunkID, int 
 		int type = RIFF_ReadIntBig( riffParser );
 		result = riffParser->handleBeginForm( riffParser->userData, type, chunkSize - 4 );
 		if( result < 0 )
+		{
 			goto error;
+		}
 		result = RIFF_ParseForm( riffParser, chunkSize - 4 );
 		if( result < 0 )
+		{
 			goto error;
+		}
 		result = riffParser->handleEndForm( riffParser->userData, type, 0 );
 		if( result < 0 )
+		{
 			goto error;
+		}
 	}
 	else if( chunkID == FOURCC_LIST )
 	{
@@ -81,20 +95,28 @@ static int RIFF_ParseChunk( RiffParser_t *riffParser, RIFF_ChunkID chunkID, int 
 		int type = RIFF_ReadIntBig( riffParser );
 		result = riffParser->handleBeginList( riffParser->userData, type, chunkSize - 4 );
 		if( result < 0 )
+		{
 			goto error;
+		}
 		result = RIFF_ParseForm( riffParser, chunkSize - 4 );
 		if( result < 0 )
+		{
 			goto error;
+		}
 		result = riffParser->handleEndList( riffParser->userData, type, 0 );
 		if( result < 0 )
+		{
 			goto error;
+		}
 		riffParser->listState = savedState;
 	}
 	else
 	{
 		result = riffParser->handleChunk( riffParser->userData, chunkID, chunkSize );
 		if( result < 0 )
+		{
 			goto error;
+		}
 	}
 
 	endOffset = riffParser->stream->getPosition( riffParser->stream );
@@ -129,12 +151,18 @@ static int RIFF_ParseForm( RiffParser_t *riffParser, int formSize )
 		int size = RIFF_ReadIntLittle( riffParser );
 		bytesLeft -= 8;
 		if( size <= 0 )
+		{
 			return size;
+		}
 		result = RIFF_ParseChunk( riffParser, chunkID, size );
 		if( result < 0 )
+		{
 			goto error;
+		}
 		if( (size & 1) == 1)
+		{
 			size++;  /* even-up */
+		}
 		bytesLeft -= size;
 	}
 error:

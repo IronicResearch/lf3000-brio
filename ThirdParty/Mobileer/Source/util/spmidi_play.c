@@ -1,4 +1,4 @@
-/* $Id: spmidi_play.c,v 1.20 2006/05/16 00:10:20 philjmsl Exp $ */
+/* $Id: spmidi_play.c,v 1.21 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Utility functions for playing notes, etc.
@@ -15,14 +15,14 @@
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_audio.h"
-#include "spmidi_play.h"
-#include "spmidi_print.h"
-#include "write_wav.h"
-#include "midifile_player.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_audio.h"
+#include "include/spmidi_play.h"
+#include "include/spmidi_print.h"
+#include "include/write_wav.h"
+#include "include/midifile_player.h"
 
 
 /*****************************************************************/

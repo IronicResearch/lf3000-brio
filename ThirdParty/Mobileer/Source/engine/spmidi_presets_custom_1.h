@@ -418,7 +418,7 @@ void WaveManager_LoadWaves( WaveManager_t *waveManager )
 
 
 /* Make room for all possible instruments if editing. */
-#ifdef SPMIDI_SUPPORT_EDITING
+#ifdef SPMIDI_SUPPORT_LOADING
 EDITABLE HybridVoice_Preset_t  gHybridSynthPresets[SS_MAX_PRESETS] =
 #else
 EDITABLE HybridVoice_Preset_t gHybridSynthPresets[] =

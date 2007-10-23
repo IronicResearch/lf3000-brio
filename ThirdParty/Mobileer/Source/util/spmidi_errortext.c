@@ -1,4 +1,4 @@
-/* $Id: spmidi_errortext.c,v 1.9 2005/11/15 20:55:01 philjmsl Exp $ */
+/* $Id: spmidi_errortext.c,v 1.10 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Error handling and reporting functions
@@ -6,8 +6,8 @@
  * Copyright 2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "spmidi_errortext.h"
+#include "include/spmidi.h"
+#include "include/spmidi_errortext.h"
 
 #define TOUCH(value) \
 	(void)value

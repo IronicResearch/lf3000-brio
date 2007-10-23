@@ -1,4 +1,4 @@
-/* $Id: wave_manager.c,v 1.23 2007/06/06 01:50:58 philjmsl Exp $ */
+/* $Id: wave_manager.c,v 1.24 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * WaveTable manager.
@@ -7,22 +7,22 @@
  *
  */
 
-#include "fxpmath.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
-#include "spmidi_host.h"
-#include "spmidi_print.h"
-#include "spmidi_editor.h"
-#include "oscillator.h"
-#include "wave_manager.h"
-#include "memtools.h"
+#include "engine/fxpmath.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_print.h"
+#include "include/spmidi_editor.h"
+#include "engine/oscillator.h"
+#include "engine/wave_manager.h"
+#include "engine/memtools.h"
 
 #if SPMIDI_ME2000
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 static WaveTable_t *WaveManager_UnreferenceWaveTable( WaveTable_t *waveTable );
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */
 
 static void WaveManager_FreeWaveTable( WaveTable_t *waveTable );
 static void WaveManager_FreeWaveSet( WaveSet_t *waveSet );
@@ -117,7 +117,7 @@ WaveSet_t * WaveManager_GetFirstWaveSet( WaveManager_t *waveManager )
 }
 
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 
 static void WaveManager_FreeWaveTable( WaveTable_t *waveTable )
 {
@@ -217,7 +217,7 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 		Must match stream builder in Java editor and test routines.
 		WaveTable byte stream
 		1	SPMIDI_BEGIN_STREAM
-		1	WaveTableStreamID
+		1	SPMIDI_WAVETABLE_STREAM_ID
 		4	PitchOctave      sampleRateOffset;
 		4	int              loopBegin;
 		4	int              loopEnd;
@@ -229,6 +229,7 @@ spmSInt32 WaveManager_LoadWaveTable( WaveManager_t *waveManager, unsigned char *
 		  numSamples*2 short[]	samples; if S16
 		OR
 		  numSamples byte[]	samples; if ALaw
+
 		1	SPMIDI_END_STREAM
 	*/
 	if( *p++ != SPMIDI_BEGIN_STREAM )
@@ -320,7 +321,7 @@ error:
 /** Download a WaveSet for internal storage and use.
  * The contents of the definition are specific to the synthesizer in use.
  */
-spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *data, int numBytes )
+spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes )
 {
 	WaveSetRegion_t *regionArray;
 	WaveSet_t *waveSet = NULL;
@@ -381,6 +382,11 @@ spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *da
 
 		p = SS_ParseLong( (long *) &token, p );
 
+		// If we have a token map then map external token to internal token.
+		if( tokenMap != NULL )
+		{
+			token = tokenMap[ token ].token;
+		}
 		waveTable = (WaveTable_t *) ResourceMgr_Find( &waveManager->waveTableList, token );
 		if( waveTable == NULL )
 		{
@@ -389,7 +395,7 @@ spmSInt32 WaveManager_LoadWaveSet( WaveManager_t *waveManager, unsigned char *da
 			err = SPMIDI_Error_BadToken;
 			goto cleanup;
 		}
-		//PRTMSGNUMH("REFERENCE WaveTable at ", waveTable );
+		//PRTMSGNUMH("WaveManager_LoadWaveSet referenced WaveTable at ", waveTable );
 		REFERENCE_INCREMENT(waveTable->tracker);
 		waveSet->numTables += 1;
 #if SPMIDI_USE_REGIONS
@@ -449,7 +455,7 @@ WaveSet_t * WaveManager_UnreferenceWaveSet( WaveSet_t *waveSet )
 #if SPMIDI_USE_REGIONS
 			WaveSetRegion_t *region = &waveSet->regions[i];
 			//PRTMSGNUMH( "DEREFERENCE WaveTable at ", region->table );
-			WaveManager_UnreferenceWaveTable( region->table );
+			WaveManager_UnreferenceWaveTable( (WaveTable_t *)region->table );
 #else
 			WaveTable_t *waveTable = waveSet->tables[i];
 			WaveManager_UnreferenceWaveTable( waveTable );
@@ -479,7 +485,7 @@ spmSInt32 WaveManager_UnloadWaveSet( WaveManager_t *waveManager, spmResourceToke
 
 	return SPMIDI_Error_None;
 }
-#else /* SPMIDI_SUPPORT_EDITING */
+#else /* SPMIDI_SUPPORT_LOADING */
 /* Stubs for runtime.
 * These are required because simpler stubs result in compiler warnings.
 */
@@ -491,7 +497,7 @@ static void WaveManager_FreeWaveSet( WaveSet_t *waveSet )
 {
 	(void) waveSet;
 }
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */
 
 
 #endif  /* SPMIDI_ME2000 */

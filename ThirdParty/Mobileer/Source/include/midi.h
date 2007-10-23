@@ -1,7 +1,7 @@
 #ifndef _MIDI_H
 #define _MIDI_H
 
-/* $Id: midi.h,v 1.11 2005/11/28 19:13:33 philjmsl Exp $ */
+/* $Id: midi.h,v 1.12 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file midi.h
@@ -15,7 +15,7 @@ extern "C"
 #endif
 
 #ifndef MIDI_SUPPORT_NAME_LOOKUP
-#define MIDI_SUPPORT_NAME_LOOKUP  (0)
+#define MIDI_SUPPORT_NAME_LOOKUP  (1)
 #endif
 
 #define MIDI_MakeFourCC(a,b,c,d)  (((a)<<24) | ((b)<<16) | ((c)<<8) | (d))

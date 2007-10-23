@@ -1,7 +1,7 @@
 #ifndef _MIDIFILE_PARSER_H
 #define _MIDIFILE_PARSER_H
 
-/* $Id: midifile_parser.h,v 1.1 2005/11/15 20:51:32 philjmsl Exp $ */
+/* $Id: midifile_parser.h,v 1.2 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file midifile_parser.h
@@ -9,7 +9,7 @@
  * @author Phil Burk, Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
+#include "include/spmidi.h"
 
 #ifdef __cplusplus
 extern "C"

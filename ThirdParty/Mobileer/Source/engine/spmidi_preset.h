@@ -1,6 +1,6 @@
 #ifndef _SPMIDI_PRESET_H
 #define _SPMIDI_PRESET_H
-/* $Id: spmidi_preset.h,v 1.2 2005/05/13 23:15:32 philjmsl Exp $ */
+/* $Id: spmidi_preset.h,v 1.3 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Hybrid Synthesizer for SPMIDI Engine.
@@ -9,12 +9,12 @@
  *
  */
 
-#include "fxpmath.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "oscillator.h"
-#include "adsr_envelope.h"
+#include "engine/fxpmath.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/oscillator.h"
+#include "engine/adsr_envelope.h"
 #include "svfilter.h"
 #include "reverb.h"
 

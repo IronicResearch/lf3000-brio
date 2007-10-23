@@ -1,4 +1,4 @@
-/* $Id: play_chords.c,v 1.7 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: play_chords.c,v 1.8 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play chords using SPMIDI
@@ -7,9 +7,9 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
 
 #define SAMPLE_RATE         (44100)
 

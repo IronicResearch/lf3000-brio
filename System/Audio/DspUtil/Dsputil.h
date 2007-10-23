@@ -759,6 +759,10 @@ short Binary16ToShort(char *s);
 //#define DecibelToLinear(d)		(pow(10.0, ((double)(d))*(1.0/20.0)))
 //#define LinearToDecibel(x)		(log10((x))*20.0)
 
+// These constants are not very precise
+#define kDecibelToLinearf_m3dBf  0.707131f
+#define kDecibelToLinearf_m6dBf  0.500035f
+
 // Careful:  these macros will not work when values at bottom and top
 //				of integer numerical range are compared
 #define BOUND(x, lo, hi) {\

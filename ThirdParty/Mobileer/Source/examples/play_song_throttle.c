@@ -1,4 +1,4 @@
-/* $Id: play_song_throttle.c,v 1.1 2005/06/17 08:17:33 philjmsl Exp $ */
+/* $Id: play_song_throttle.c,v 1.2 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a file using the SongPlayer API.
@@ -14,13 +14,13 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_audio.h"
-#include "spmidi_load.h"
-#include "song_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/song_player.h"
 #include "midifile_names.h"
 
 /*

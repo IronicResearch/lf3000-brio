@@ -1,4 +1,4 @@
-/* $Id: midistream_player.c,v 1.2 2005/11/28 19:19:47 philjmsl Exp $ */
+/* $Id: midistream_player.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Play a MIDI Stream File whose name is passed on the command line.
@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "spmidi.h"
-#include "spmidi_play.h"
-#include "spmidi_load.h"
-#include "midistream_player.h"
+#include "include/spmidi.h"
+#include "include/spmidi_play.h"
+#include "include/spmidi_load.h"
+#include "include/midistream_player.h"
 
 /*****************************************************************/
 /**

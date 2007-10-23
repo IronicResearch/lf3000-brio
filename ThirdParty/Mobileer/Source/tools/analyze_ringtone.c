@@ -1,4 +1,4 @@
-/* $Id: analyze_ringtone.c,v 1.1 2006/02/14 20:12:18 philjmsl Exp $ */
+/* $Id: analyze_ringtone.c,v 1.2 2007/10/02 16:24:51 philjmsl Exp $ */
 /**
  *
  * Analyse voice profile and memory usage of a ringtone.
@@ -10,13 +10,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "midifile_player.h"
-#include "song_player.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/midifile_player.h"
+#include "spmidi/include/song_player.h"
 
 #include "midifile_names.h"
 

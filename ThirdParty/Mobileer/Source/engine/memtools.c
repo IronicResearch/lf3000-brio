@@ -1,4 +1,4 @@
-/* $Id: memtools.c,v 1.10 2005/11/28 18:58:57 philjmsl Exp $ */
+/* $Id: memtools.c,v 1.11 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Memory Tools.
@@ -7,7 +7,7 @@
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
  */
-#include "memtools.h"
+#include "engine/memtools.h"
 
 #ifndef SPMIDI_USE_STDLIB
 #define SPMIDI_USE_STDLIB (0)

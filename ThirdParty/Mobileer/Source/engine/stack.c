@@ -1,5 +1,5 @@
 /*
- * $Id: stack.c,v 1.2 2005/11/15 20:49:03 philjmsl Exp $
+ * $Id: stack.c,v 1.3 2007/10/02 16:14:42 philjmsl Exp $
  * Stack operations
  *
  * Implements standard stack operators like push, pop, etc using an array, assuming
@@ -9,9 +9,9 @@
  *
  */
 
-#include "spmidi_print.h"
-#include "memtools.h"
-#include "stack.h"
+#include "include/spmidi_print.h"
+#include "engine/memtools.h"
+#include "engine/stack.h"
 
 #if 1
 #define DBUGMSG(x)   PRTMSG(x)

@@ -132,17 +132,6 @@ private:
     Q15     preGaini;
     Q15     postGaini;
     void UpdateDebugGain();
-
-// Debug : info for sound file input/output
-long readInSoundFile;
-long writeOutSoundFile ;
-
-SNDFILE	*inSoundFile;
-SF_INFO	inSoundFileInfo ;
-char inSoundFilePath[500];	
-
-SNDFILE	*outSoundFile;
-SF_INFO	outSoundFileInfo ;
 };
 
 #endif		// LF_BRIO_MIXER_H

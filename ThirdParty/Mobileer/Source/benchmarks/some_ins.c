@@ -3,11 +3,11 @@
  * Copyright 2002 Mobileer
  *
  */
-#include "stdio.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
+#include <stdio.h>
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_print.h"
 #include "bench_tools.h"
 
 #if 0
@@ -171,9 +171,9 @@ int main( void )
 	Benchmark_Init();
 	Benchmark_Run( &checkSum, &numFrames, &frameRate );
 	Benchmark_Term();
-	printf("checkSum = 0x%08lX\n", checkSum);
-	printf("numFrames = %ld\n", numFrames);
-	printf("frameRate = %ld\n", frameRate);
+	PRTMSGNUMH("checkSum = ", checkSum);
+	PRTMSGNUMD("numFrames = ", numFrames);
+	PRTMSGNUMD("frameRate = ", frameRate);
 	return 0;
 }
 #endif

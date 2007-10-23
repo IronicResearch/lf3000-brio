@@ -1,4 +1,4 @@
-/* $Id: spmidi_dls.c,v 1.24 2007/06/12 21:09:08 philjmsl Exp $ */
+/* $Id: spmidi_dls.c,v 1.25 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * SPMIDI suport for DLS.
@@ -7,11 +7,11 @@
  *
  */
 
-#include "memtools.h"
-#include "spmidi.h"
-#include "spmidi_dls.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_dls.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
 
 #if 0
 #define DBUGMSG(x)   PRTMSG(x)

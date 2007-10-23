@@ -1,4 +1,4 @@
-/* $Id: qa_checksum_song.c,v 1.2 2006/05/22 23:56:32 philjmsl Exp $ */
+/* $Id: qa_checksum_song.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Generate checksum of a song a file using the SongPlayer API.
@@ -15,14 +15,14 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_audio.h"
-#include "spmidi_load.h"
-#include "song_player.h"
-#include "qa_tools.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_print.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/song_player.h"
+#include "spmidi/qa/qa_tools.h"
 
 #include "midifile_names.h"
 #ifndef DEFAULT_FILENAME

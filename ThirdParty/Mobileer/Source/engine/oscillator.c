@@ -1,4 +1,4 @@
-/* $Id: oscillator.c,v 1.38 2007/06/18 18:03:49 philjmsl Exp $ */
+/* $Id: oscillator.c,v 1.39 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Oscillator with multiple waveforms.
@@ -9,12 +9,12 @@
  *
  */
 
-#include "fxpmath.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
-#include "spmidi_print.h"
-#include "oscillator.h"
+#include "engine/fxpmath.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
+#include "include/spmidi_print.h"
+#include "engine/oscillator.h"
 
 /** Enable variable slope waveforms, which reduces
  * high harmonics and aliasing in sawtooth and square waves.
@@ -513,6 +513,8 @@ void Osc_Start( const Oscillator_Preset_t *preset, Oscillator_t *osc,
 		Osc_SetWavePitch( preset, osc, octavePitch, srateOffset, waveSetRegion );
 	}
 	else
+#else
+	(void) waveSetRegion;
 #endif
 	{
 		Osc_SetPitch( preset, osc, octavePitch, srateOffset );
@@ -548,7 +550,14 @@ void Osc_Start( const Oscillator_Preset_t *preset, Oscillator_t *osc,
 	}
 
 	/* Set function that creates the desired waveform. */
-	osc->nextProc = sNextProcs[ bestWaveForm ];
+	if( bestWaveForm < NUM_WAVEFORMS )
+	{
+		osc->nextProc = sNextProcs[ bestWaveForm ];
+	}
+	else
+	{
+		osc->nextProc = (SS_OscillatorNextProc *) OSC_Next_Sawtooth;
+	}
 
 	/* For low frequencies, use straight square.
 	 * For higher frequencies, use a more sloped waveform.
@@ -672,7 +681,7 @@ void Osc_SetWavePitch( const Oscillator_Preset_t *preset, Oscillator_t *osc,
 }
 #endif
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 /***********************************************************************/
 /** Parse preset information from the byte stream.
  */
@@ -683,7 +692,7 @@ unsigned char *Osc_Define( Oscillator_Preset_t *preset, unsigned char *p )
 	p = SS_ParseLong( &preset->pitchControl, p );
 	return p;
 }
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */
 
 /***********************************************************************/
 /************** Tests and Tools ****************************************/

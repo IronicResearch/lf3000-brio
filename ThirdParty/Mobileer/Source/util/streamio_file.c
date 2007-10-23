@@ -6,14 +6,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "streamio.h"
+#include "include/streamio.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#include "streamio.h"
+#include "include/streamio.h"
 
 	typedef struct FileStreamIO
 	{

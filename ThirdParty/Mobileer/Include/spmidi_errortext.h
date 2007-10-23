@@ -1,7 +1,7 @@
 #ifndef _SPMIDI_ERRORTEXT_H
 #define _SPMIDI_ERRORTEXT_H
 
-/* $Id: spmidi_errortext.h,v 1.4 2005/07/22 06:42:26 philjmsl Exp $ */
+/* $Id: spmidi_errortext.h,v 1.5 2007/10/02 16:20:00 philjmsl Exp $ */
 /**
  *
  * @file spmidi_errortext.h

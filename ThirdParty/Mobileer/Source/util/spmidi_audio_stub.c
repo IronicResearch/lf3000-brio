@@ -1,4 +1,4 @@
-/* $Id: spmidi_audio_stub.c,v 1.2 2006/06/22 01:55:27 philjmsl Exp $ */
+/* $Id: spmidi_audio_stub.c,v 1.3 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  * Stub for audio functions used by the Mobileer examples.
  * This is often used on simulators and can be used as a template
@@ -6,8 +6,8 @@
  *
  * Copyright 2002 Mobileer, Phil Burk, PROPRIETARY and CONFIDENTIAL
  */
-#include "spmidi_audio.h"
-#include "spmidi_errors.h"
+#include "include/spmidi_audio.h"
+#include "include/spmidi_errors.h"
 
 /****************************************************************/
 /* Just keep the linker happy. */

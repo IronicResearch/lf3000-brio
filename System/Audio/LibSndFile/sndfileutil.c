@@ -165,7 +165,6 @@ int CloseSoundFile( SNDFILE **soundFile )
 return (False);
 }		// ---- end CloseSoundFile() ----
 
-#ifdef NEEDED
 //==============================================================================
 // RewindSoundFile  :   Seek to beginning of file
 //
@@ -173,7 +172,7 @@ return (False);
 //
 //					Return Boolean success
 //==============================================================================
-int RewindSoundFile( SNDFILE **soundFile, SF_INFO *afi, char *path )
+int RewindSoundFile( SNDFILE **soundFile, SF_INFO *sfi, char *path )
 {	     
 //printf("RewindSoundFile: start 222\n");
 
@@ -181,7 +180,7 @@ int RewindSoundFile( SNDFILE **soundFile, SF_INFO *afi, char *path )
 // FIXXXX: use seek()
 CloseSoundFile(soundFile);
   	 
-*soundFile = OpenSoundFile(path, afi);
+*soundFile = OpenSoundFile(path, sfi, SFM_READ);
  if (!*soundFile)
  {
  	printf("RewindSoundFile: unable to reopen '%s'\n", path);
@@ -192,7 +191,6 @@ CloseSoundFile(soundFile);
 
 	return (True);
 }		// ---- end RewindSoundFile() ----
-#endif // end NEEDED
 
 
 

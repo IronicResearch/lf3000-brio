@@ -1,16 +1,16 @@
-/* $Id: spmidi_synth_util.c,v 1.12 2007/06/18 18:03:49 philjmsl Exp $ */
+/* $Id: spmidi_synth_util.c,v 1.13 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * SPMIDI Utilities for tuning.
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_print.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
+#include "engine/spmidi_synth_util.h"
+#include "include/spmidi_print.h"
 
 #define USE_TABLE   (1)
 

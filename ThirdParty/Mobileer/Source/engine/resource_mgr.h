@@ -10,8 +10,8 @@
  *
  */
 
-#include "dbl_list.h"
-#include "spmidi.h"
+#include "engine/dbl_list.h"
+#include "include/spmidi.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -20,9 +20,18 @@ extern "C"
 
 #define RESOURCE_UNDEFINED_ID   (0)
 
-	typedef spmUInt32 spmResourceToken;
+	typedef spmUInt32 spmResourceToken; // TODO can this be an spmSInt32 instead so we can pass negative errors?
 
-	/* Used to keep track of resources in linked lists.
+	/** Used to map external IDs to internal resource tokens. */
+	typedef struct ResourceTokenMap_s
+	{
+		/** Internal token allocated by WaveManager. */
+		spmResourceToken    token;
+		/** Set true if we need to load this resource to play the chosen songs. */
+		spmUInt8            needed;
+	} ResourceTokenMap_t;
+
+	/** Used to keep track of resources in linked lists.
 	 * Resource is identified by a token.
 	 * References are counted to prevent deletion of
 	 * resources still in use.

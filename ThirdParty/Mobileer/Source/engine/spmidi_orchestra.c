@@ -1,36 +1,42 @@
-/* $Id: spmidi_orchestra.c,v 1.8 2007/06/18 18:03:49 philjmsl Exp $ */
+/* $Id: spmidi_orchestra.c,v 1.9 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
- * Orchestra data.
+ * The Synthesizer can play instruments from an ordered list of Orchestras.
+ * Each Orchestra contains an array of up to 255 Instrument Presets
+ * and a list of Maps for mapping Bank/Program/Pitch information to those Presets.
+ * It also contains the WaveTables and WaveSets used by those Instruments.
  *
- * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
+ * Objects in one Orchestra cannot reference objects in another Orchestra.
+ *
+ * Copyright 2002-2007 Mobileer, PROPRIETARY and CONFIDENTIAL
  *
  */
 #if defined(WIN32) || defined(MACOSX)
 #include <math.h>
 #endif
 
-#include "dbl_list.h"
-#include "fxpmath.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_host.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_print.h"
-#include "spmidi_dls.h"
-#include "compressor.h"
-#include "adsr_envelope.h"
-#include "oscillator.h"
-#include "wave_manager.h"
+#include "engine/dbl_list.h"
+#include "engine/fxpmath.h"
+#include "include/midi.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_host.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
+#include "include/spmidi_print.h"
+#include "engine/spmidi_dls.h"
+//#include "engine/compressor.h"
+//#include "engine/adsr_envelope.h"
+//#include "engine/oscillator.h"
+#include "engine/wave_manager.h"
 
-#include "spmidi_orchestra.h"
+#include "engine/spmidi_orchestra.h"
 
 /*********************************************************************/
 /*********************************************************************/
 /*********************************************************************/
-/* Define these here becase they are needed by the following
+/* Define these here because they are needed by the following
  * include of spmidi_presets_*.h */
 /* These are specific to a melodic bank or drum program. */
 typedef unsigned char ProgramMapIndex;
@@ -38,7 +44,7 @@ typedef unsigned char ProgramMapIndex;
 #define SS_PROGRAM_MAP_ALLOCATED   (1<<0)
 
 /** Use same structure for both MelodicMaps and DrumPrograms
- * Note that this structure is initialized from the MObileer Editor so do NOT change its structure.
+ * Note that this structure is initialized from the Mobileer Editor so do NOT change its structure.
  * Adding to it is OK.
  */
 typedef struct ProgramBankMap_s
@@ -51,11 +57,17 @@ typedef struct ProgramBankMap_s
 	ProgramMapIndex *pitches;
 } ProgramBankMap_t;
 
+
+static DoubleList sOrchestraList;
+
+/* These are used for the orchestra compiled from the source put out by the editor. */
+static HybridOrchestra_t sCompiledOrchestra;
+
 void SS_AddMelodicBankToList( ProgramBankMap_t *melodicBank );
 void SS_AddDrumProgramToList( ProgramBankMap_t *drumProgram );
 
-#define MELODIC_STUB_INDEX  (0)
-#define DRUM_STUB_INDEX     (1)
+#define MELODIC_STUB_INDEX  (0xFF)
+#define DRUM_STUB_INDEX     (0xFE)
 
 /*********************************************************************/
 /******* Load Preset Orchestra ***************************************/
@@ -104,12 +116,15 @@ void SS_AddDrumProgramToList( ProgramBankMap_t *drumProgram );
 	#error Included preset file is obsolete. Please use newly exported instrument set.
 #endif
 
-static DoubleList sMelodicBankList;
-static DoubleList sDrumProgramList;
 
 /** @return Number of entries in DrumMap */
 static int SS_GetSynthDrumMapSize( void );
 
+/********************************************************************************/
+HybridOrchestra_t *SS_GetCompiledOrchestra( void )
+{
+	return &sCompiledOrchestra;
+}
 
 /********************************************************************************/
 static void SS_FreeMelodicBank( ProgramBankMap_t *melodicBank )
@@ -160,32 +175,44 @@ static ProgramBankMap_t *SS_AllocateMelodicBankNode( int bankIndex )
 }
 
 /********************************************************************************/
-void SS_AddMelodicBankToList( ProgramBankMap_t *melodicBank )
+static void SS_AddMelodicBankToOrchestra( HybridOrchestra_t *orchestra, ProgramBankMap_t *melodicBank )
 {
 	DLL_InitNode( &melodicBank->node );
-	DLL_AddTail( &sMelodicBankList, &melodicBank->node );
+	DLL_AddTail( &orchestra->melodicBankList, &melodicBank->node );
+}
+
+/********************************************************************************/
+static void SS_AddDrumProgramToOrchestra( HybridOrchestra_t *orchestra, ProgramBankMap_t *drumProgram )
+{
+	DLL_InitNode( &drumProgram->node );
+	DLL_AddTail( &orchestra->drumProgramList, &drumProgram->node );
+}
+
+/********************************************************************************/
+void SS_AddMelodicBankToList( ProgramBankMap_t *melodicBank )
+{
+	SS_AddMelodicBankToOrchestra( SS_GetCompiledOrchestra(), melodicBank );
 }
 
 /********************************************************************************/
 void SS_AddDrumProgramToList( ProgramBankMap_t *drumProgram )
 {
-	DLL_InitNode( &drumProgram->node );
-	DLL_AddTail( &sDrumProgramList, &drumProgram->node );
+	SS_AddDrumProgramToOrchestra( SS_GetCompiledOrchestra(), drumProgram );
 }
 
 /********************************************************************************/
-static ProgramBankMap_t *SS_AllocateMelodicBank( int bankIndex )
+static ProgramBankMap_t *SS_AllocateMelodicBank( HybridOrchestra_t *orchestra, int bankIndex )
 {
 	ProgramBankMap_t *melodicBank = SS_AllocateMelodicBankNode( bankIndex );
 	if( melodicBank != NULL )
 	{
-		SS_AddMelodicBankToList( melodicBank );
+		SS_AddMelodicBankToOrchestra( orchestra, melodicBank );
 	}
 	return melodicBank;
 }
 
 /********************************************************************************/
-static ProgramBankMap_t *SS_AllocateDrumProgram( int bankIndex, int programIndex )
+static ProgramBankMap_t *SS_AllocateDrumProgram( HybridOrchestra_t *orchestra, int bankIndex, int programIndex )
 {
 	int i;
 	ProgramBankMap_t *drumProgram = SS_AllocateMelodicBankNode( bankIndex );
@@ -210,19 +237,19 @@ static ProgramBankMap_t *SS_AllocateDrumProgram( int bankIndex, int programIndex
 		drumProgram->pitches[i] = 60; /* Middle C */
 	}
 	
-	SS_AddDrumProgramToList( drumProgram );
+	SS_AddDrumProgramToOrchestra( orchestra, drumProgram );
 	
 	return drumProgram;
 }
 
 
 /********************************************************************************/
-static ProgramBankMap_t *SS_FindMelodicBank( int bankIndex )
+static ProgramBankMap_t *SS_FindMelodicBank( HybridOrchestra_t *orchestra, int bankIndex )
 {
 	ProgramBankMap_t *melodicBank = NULL;
 	ProgramBankMap_t *candidate;
-	/* Find voice that is on and playing the pitch. */
-	DLL_FOR_ALL( ProgramBankMap_t, candidate, &sMelodicBankList )
+	DoubleList *bankList = &orchestra->melodicBankList;
+	DLL_FOR_ALL( ProgramBankMap_t, candidate, bankList )
 	{
 		if( candidate->bankIndex == bankIndex )
 		{
@@ -233,23 +260,35 @@ static ProgramBankMap_t *SS_FindMelodicBank( int bankIndex )
 	return melodicBank;
 }
 
-
 /********************************************************************************/
 /* Always return some bank so that we always have an instrument to play. */
-static ProgramBankMap_t *SS_FindMelodicBankSafe( int bankIndex )
+static ProgramBankMap_t *SS_FindMelodicBankSafe( int bankIndex, HybridOrchestra_t **orchestraPtr )
 {
-	ProgramBankMap_t *melodicBank = SS_FindMelodicBank( bankIndex );
+	ProgramBankMap_t *melodicBank = NULL;
+	HybridOrchestra_t *orchestra;
+	DLL_FOR_ALL( HybridOrchestra_t, orchestra, &sOrchestraList )
+	{
+		melodicBank = SS_FindMelodicBank( orchestra, bankIndex );
+		if( melodicBank != NULL )
+		{
+			*orchestraPtr = orchestra;
+			break;
+		}
+	}
+
 	//PRTMSGNUMD("SS_FindMelodicBankSafe: bankIndex = ", bankIndex );
 	//PRTMSGNUMD("SS_FindMelodicBankSafe: melodicBank = ", (int)melodicBank );
 	if( melodicBank == NULL )
 	{
-		if( DLL_IsEmpty( &sMelodicBankList ) )
+		orchestra = (HybridOrchestra_t *) DLL_Last( &sOrchestraList );
+		*orchestraPtr = orchestra;
+		if( DLL_IsEmpty( &orchestra->melodicBankList ) )
 		{
-			melodicBank = SS_AllocateMelodicBank( 0 );
+			melodicBank = SS_AllocateMelodicBank( orchestra, 0 );
 		}
 		else
 		{
-			melodicBank = (ProgramBankMap_t *) DLL_First( &sMelodicBankList );
+			melodicBank = (ProgramBankMap_t *) DLL_First( &orchestra->melodicBankList );
 		}
 	}
 	//PRTMSGNUMD("SS_FindMelodicBankSafe: melodicBank.bankIndex = ", melodicBank->bankIndex );
@@ -257,12 +296,12 @@ static ProgramBankMap_t *SS_FindMelodicBankSafe( int bankIndex )
 }
 
 /********************************************************************************/
-static ProgramBankMap_t * SS_FindDrumProgram( int bankIndex, int programIndex )
+static ProgramBankMap_t * SS_FindDrumProgram( HybridOrchestra_t *orchestra, int bankIndex, int programIndex )
 {
 	ProgramBankMap_t *drumProgram = NULL;
 	ProgramBankMap_t *candidate;
-	/* Find voice that is on and playing the pitch. */
-	DLL_FOR_ALL( ProgramBankMap_t, candidate, &sDrumProgramList )
+	DoubleList *programList = &orchestra->drumProgramList;
+	DLL_FOR_ALL( ProgramBankMap_t, candidate, programList )
 	{
 		if( (candidate->bankIndex == bankIndex) && (candidate->programIndex == programIndex))
 		{
@@ -275,21 +314,34 @@ static ProgramBankMap_t * SS_FindDrumProgram( int bankIndex, int programIndex )
 
 /********************************************************************************/
 /* Always return some bank so that we always have an instrument to play. */
-static ProgramBankMap_t *SS_FindDrumProgramSafe( int bankIndex, int programIndex )
+static ProgramBankMap_t *SS_FindDrumProgramSafe( int bankIndex, int programIndex, HybridOrchestra_t **orchestraPtr )
 {
-	ProgramBankMap_t *drumProgram = SS_FindDrumProgram( bankIndex, programIndex );
+	ProgramBankMap_t *drumProgram = NULL;
+	HybridOrchestra_t *orchestra;
+	DLL_FOR_ALL( HybridOrchestra_t, orchestra, &sOrchestraList )
+	{
+		drumProgram = SS_FindDrumProgram( orchestra, bankIndex, programIndex );
+		if( drumProgram != NULL )
+		{
+			*orchestraPtr = orchestra;
+			break;
+		}
+	}
+
 	//PRTMSGNUMD("SS_FindDrumProgramSafe: bankIndex = ", bankIndex );
 	//PRTMSGNUMD("SS_FindDrumProgramSafe: programIndex = ", programIndex );
 	//PRTMSGNUMD("SS_FindDrumProgramSafe: drumProgram = ", (int)drumProgram );
 	if( drumProgram == NULL )
 	{
-		if( DLL_IsEmpty( &sDrumProgramList ) )
+		orchestra = (HybridOrchestra_t *) DLL_Last( &sOrchestraList );
+		*orchestraPtr = orchestra;
+		if( DLL_IsEmpty( &orchestra->drumProgramList ) )
 		{
-			drumProgram = SS_AllocateDrumProgram( 0, 0 );
+			drumProgram = SS_AllocateDrumProgram( orchestra, 0, 0 );
 		}
 		else
 		{
-			drumProgram = (ProgramBankMap_t *) DLL_First( &sDrumProgramList );
+			drumProgram = (ProgramBankMap_t *) DLL_First( &orchestra->drumProgramList );
 		}
 	}
 	//PRTMSGNUMD("SS_FindDrumProgramSafe: drumProgram->bankIndex = ", drumProgram->bankIndex );
@@ -306,23 +358,36 @@ static int SS_GetSynthDrumMapSize( void )
 /********************************************************************************/
 /********************************************************************************/
 /********************************************************************************/
-EDITABLE HybridVoice_Preset_t *SS_GetSynthPreset( int presetIndex )
+EDITABLE HybridVoice_Preset_t *SS_GetSynthPreset( HybridOrchestra_t *orchestra, int presetIndex )
 {
-	return &gHybridSynthPresets[ presetIndex ];
+	if( presetIndex == MELODIC_STUB_INDEX )
+	{
+		return &gHybridSynthPresets[ 0 ];
+	}
+	else if( presetIndex == DRUM_STUB_INDEX )
+	{
+		return &gHybridSynthPresets[ 1 ];
+	}
+	else
+	{
+		return &orchestra->hybridSynthPresets[ presetIndex ];
+	}
 }
 
 /********************************************************************************/
 EDITABLE HybridVoice_Preset_t *SS_GetSynthMelodicPreset( int bankIndex, int programIndex )
 {
-	ProgramBankMap_t *melodicBank = SS_FindMelodicBankSafe( bankIndex );
+	HybridOrchestra_t *orchestra;
+	ProgramBankMap_t *melodicBank = SS_FindMelodicBankSafe( bankIndex, &orchestra );
 	int presetIndex = melodicBank->presetMap[programIndex];
-	return SS_GetSynthPreset( presetIndex );
+	return SS_GetSynthPreset( orchestra, presetIndex );
 }
 
 /********************************************************************************/
 EDITABLE HybridVoice_Preset_t *SS_GetSynthDrumPreset( int bankIndex, int programIndex, int pitch )
 {
 	int presetIndex;
+	HybridOrchestra_t *orchestra;
 	ProgramBankMap_t *drumProgram;
 	int drumIndex = pitch - GMIDI_FIRST_DRUM;
 	if( (drumIndex < 0) ||
@@ -330,9 +395,9 @@ EDITABLE HybridVoice_Preset_t *SS_GetSynthDrumPreset( int bankIndex, int program
 	{
 		drumIndex = 0;
 	}
-	drumProgram = SS_FindDrumProgramSafe( bankIndex, programIndex );
+	drumProgram = SS_FindDrumProgramSafe( bankIndex, programIndex, &orchestra );
 	presetIndex = drumProgram->presetMap[drumIndex];
-	return SS_GetSynthPreset( presetIndex );
+	return SS_GetSynthPreset( orchestra, presetIndex );
 }
 
 /********************************************************************************/
@@ -344,7 +409,8 @@ int SS_GetSynthPresetCount( void )
 /********************************************************************************/
 int SS_GetSynthDrumPitch( int bankIndex, int programIndex, int noteIndex )
 {
-	ProgramBankMap_t *drumProgram = SS_FindDrumProgramSafe( bankIndex, programIndex );
+	HybridOrchestra_t *orchestra;
+	ProgramBankMap_t *drumProgram = SS_FindDrumProgramSafe( bankIndex, programIndex, &orchestra );
 	int drumIndex = noteIndex - GMIDI_FIRST_DRUM;
 	if( (drumIndex < 0) ||
 			(drumIndex >= SS_GetSynthDrumMapSize()) )
@@ -355,7 +421,7 @@ int SS_GetSynthDrumPitch( int bankIndex, int programIndex, int noteIndex )
 }
 
 /********************************************************************************/
-int SS_SetInstrumentMap( int bankIndex, int programIndex, int insIndex )
+int SS_SetInstrumentMap( HybridOrchestra_t * orchestra, int bankIndex, int programIndex, int insIndex )
 {
 	ProgramBankMap_t *melodicBank;
 
@@ -364,15 +430,15 @@ int SS_SetInstrumentMap( int bankIndex, int programIndex, int insIndex )
 	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
 		return SPMIDI_Error_OutOfRange;
 	
-	melodicBank = SS_FindMelodicBank( bankIndex );
+	melodicBank = SS_FindMelodicBank( orchestra, bankIndex );
 	if( melodicBank == NULL )
 	{
 		// Make sure we have a fallback bank of zero.
-		if( DLL_IsEmpty( &sMelodicBankList ) && (bankIndex != 0) )
+		if( DLL_IsEmpty( &orchestra->melodicBankList ) && (bankIndex != 0) )
 		{
-			SS_AllocateMelodicBank( 0 );
+			SS_AllocateMelodicBank( orchestra, 0 );
 		}
-		melodicBank = SS_AllocateMelodicBank( bankIndex );
+		melodicBank = SS_AllocateMelodicBank( orchestra, bankIndex );
 	}
 
 	melodicBank->presetMap[programIndex] = (unsigned char) insIndex;
@@ -380,7 +446,7 @@ int SS_SetInstrumentMap( int bankIndex, int programIndex, int insIndex )
 }
 
 /********************************************************************************/
-int SS_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch )
+int SS_SetDrumMap( HybridOrchestra_t * orchestra, int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch )
 {
 	ProgramBankMap_t *drumProgram;
 	int drumIndex = noteIndex - GMIDI_FIRST_DRUM;
@@ -392,15 +458,15 @@ int SS_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex,
 	if( (pitch > 127) || (pitch < 0) )
 		return SPMIDI_Error_OutOfRange;
 
-	drumProgram = SS_FindDrumProgram( bankIndex, programIndex );
+	drumProgram = SS_FindDrumProgram( orchestra, bankIndex, programIndex );
 	if( drumProgram == NULL )
 	{
 		// Make sure we have a fallback bank of zero.
-		if( DLL_IsEmpty( &sDrumProgramList ) && (bankIndex != 0) && (programIndex != 0) )
+		if( DLL_IsEmpty( &orchestra->drumProgramList ) && (bankIndex != 0) && (programIndex != 0) )
 		{
-			SS_AllocateDrumProgram( 0, 0 );
+			SS_AllocateDrumProgram( orchestra, 0, 0 );
 		}
-		drumProgram = SS_AllocateDrumProgram( bankIndex, programIndex );
+		drumProgram = SS_AllocateDrumProgram( orchestra, bankIndex, programIndex );
 	}
 
 	drumProgram->presetMap[drumIndex] = (unsigned char) insIndex;
@@ -412,7 +478,8 @@ int SS_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex,
 /********************************************************************************/
 void SS_ChangeMelodicMap( int oldBankIndex, int newBankIndex )
 {
-	ProgramBankMap_t *melodicMap = SS_FindMelodicBank( oldBankIndex );
+	// Only used by editor.
+	ProgramBankMap_t *melodicMap = SS_FindMelodicBank( SS_GetCompiledOrchestra(), oldBankIndex );
 	//PRTMSGNUMD("SS_ChangeMelodicMap: oldBankIndex = ", oldBankIndex );
 	//PRTMSGNUMD("SS_ChangeMelodicMap: newBankIndex = ", newBankIndex );
 	//PRTMSGNUMD("SS_ChangeMelodicMap: melodicMap = ", (int)melodicMap );
@@ -425,7 +492,7 @@ void SS_ChangeMelodicMap( int oldBankIndex, int newBankIndex )
 /********************************************************************************/
 void SS_ChangeDrumMap( int oldBankIndex, int oldProgramIndex, int newBankIndex, int newProgramIndex )
 {
-	ProgramBankMap_t *drumProgram = SS_FindDrumProgram( oldBankIndex, oldProgramIndex );
+	ProgramBankMap_t *drumProgram = SS_FindDrumProgram( SS_GetCompiledOrchestra(), oldBankIndex, oldProgramIndex );
 	
 	//PRTMSGNUMD("SS_ChangeDrumMap: oldBankIndex = ", oldBankIndex );
 	//PRTMSGNUMD("SS_ChangeDrumMap: oldProgramIndex = ", oldProgramIndex );
@@ -444,7 +511,7 @@ void SS_RemoveMelodicMap( int bankIndex )
 {
 	ProgramBankMap_t *melodicBank;
 
-	melodicBank = SS_FindMelodicBank( bankIndex );
+	melodicBank = SS_FindMelodicBank( SS_GetCompiledOrchestra(), bankIndex );
 	//PRTMSGNUMD("SS_RemoveMelodicMap: bankIndex = ", bankIndex );
 	//PRTMSGNUMD("SS_RemoveMelodicMap: melodicBank = ", (int)melodicBank );
 	if( melodicBank != NULL )
@@ -458,7 +525,7 @@ void SS_RemoveDrumMap( int bankIndex, int programIndex )
 {
 	ProgramBankMap_t *drumProgram;
 
-	drumProgram = SS_FindDrumProgram( bankIndex, programIndex );
+	drumProgram = SS_FindDrumProgram( SS_GetCompiledOrchestra(), bankIndex, programIndex );
 	//PRTMSGNUMD("SS_RemoveDrumMap: bankIndex = ", bankIndex );
 	//PRTMSGNUMD("SS_RemoveDrumMap: programIndex = ", programIndex );
 	//PRTMSGNUMD("SS_RemoveDrumMap: drumProgram = ", (int)drumProgram );
@@ -470,26 +537,98 @@ void SS_RemoveDrumMap( int bankIndex, int programIndex )
 }
 
 /********************************************************************************/
+int SS_Orchestra_InitOrchestra( HybridOrchestra_t * orchestra )
+{
+	MemTools_Clear( orchestra, sizeof( HybridOrchestra_t ) );
+	DLL_InitNode( &orchestra->node );
+	DLL_InitList( &orchestra->melodicBankList );
+	DLL_InitList( &orchestra->drumProgramList );
+	return 0;
+}
+
+/********************************************************************************/
+void SS_Orchestra_TermOrchestra( HybridOrchestra_t * orchestra )
+{
+	while( !DLL_IsEmpty( &orchestra->melodicBankList ) )
+	{
+		ProgramBankMap_t *melodicBank = (ProgramBankMap_t *) DLL_First( &orchestra->melodicBankList );
+		DLL_Remove( &melodicBank->node );
+		SS_FreeMelodicBank( melodicBank );
+	}
+	while( !DLL_IsEmpty( &orchestra->drumProgramList ) )
+	{
+		ProgramBankMap_t *drumProgram = (ProgramBankMap_t *) DLL_First( &orchestra->drumProgramList );
+		DLL_Remove( &drumProgram->node );
+		SS_FreeDrumProgram( drumProgram );
+	}
+}
+
+/********************************************************************************/
+int SPMIDI_CreateOrchestra( SPMIDI_Orchestra **spmidiOrchestraPtr, spmSInt32 numInstruments )
+{
+	HybridOrchestra_t *orchestra = SPMIDI_ALLOC_MEM( sizeof( HybridOrchestra_t ), "HybridOrchestra" );
+	if( orchestra == NULL )
+	{
+		return SPMIDI_Error_OutOfMemory;
+	}
+
+	SS_Orchestra_InitOrchestra( orchestra );
+
+	orchestra->hybridSynthPresets = SPMIDI_ALLOC_MEM( numInstruments * sizeof(HybridVoice_Preset_t), "PresetArray" );
+	if( orchestra->hybridSynthPresets == NULL )
+	{
+		SPMIDI_FREE_MEM( orchestra );
+		return SPMIDI_Error_OutOfMemory;
+	}
+
+	/* Add to the head so it will be seen before other orchestras and override them. */
+	DLL_AddHead( &sOrchestraList, &orchestra->node );
+
+	*spmidiOrchestraPtr = orchestra;
+	return 0;
+}
+
+/********************************************************************************/
+void SPMIDI_DeleteOrchestra( SPMIDI_Orchestra *spmidiOrchestra )
+{
+	HybridOrchestra_t * orchestra = (HybridOrchestra_t *) spmidiOrchestra;
+	if( orchestra == NULL )
+	{
+		return;
+	}
+	DLL_Remove( &orchestra->node );
+
+	SS_Orchestra_TermOrchestra( orchestra );
+	if( orchestra->hybridSynthPresets != NULL )
+	{
+		SPMIDI_FREE_MEM( orchestra->hybridSynthPresets );
+	}
+	SPMIDI_FREE_MEM( orchestra );
+}
+
+/********************************************************************************/
 int SS_Orchestra_Init( void )
 {
-	DLL_InitList( &sMelodicBankList );
-	DLL_InitList( &sDrumProgramList );
+	DLL_InitList( &sOrchestraList );
+	SS_Orchestra_InitOrchestra( &sCompiledOrchestra );
+	sCompiledOrchestra.hybridSynthPresets = gHybridSynthPresets;
+	DLL_AddTail( &sOrchestraList, &sCompiledOrchestra.node );
 	return 0;
 }
 
 /********************************************************************************/
 void SS_Orchestra_Term( void )
 {
-	while( !DLL_IsEmpty( &sMelodicBankList ) )
+	while( !DLL_IsEmpty( &sOrchestraList ) )
 	{
-		ProgramBankMap_t *melodicBank = (ProgramBankMap_t *) DLL_First( &sMelodicBankList );
-		DLL_Remove( &melodicBank->node );
-		SS_FreeMelodicBank( melodicBank );
-	}
-	while( !DLL_IsEmpty( &sDrumProgramList ) )
-	{
-		ProgramBankMap_t *drumProgram = (ProgramBankMap_t *) DLL_First( &sDrumProgramList );
-		DLL_Remove( &drumProgram->node );
-		SS_FreeDrumProgram( drumProgram );
+		HybridOrchestra_t * orchestra = (HybridOrchestra_t *) DLL_First( &sOrchestraList );
+		if( orchestra == &sCompiledOrchestra )
+		{
+			DLL_Remove( &orchestra->node );
+		}
+		else
+		{
+			SPMIDI_DeleteOrchestra( (SPMIDI_Orchestra *) orchestra );
+		}
 	}
 }

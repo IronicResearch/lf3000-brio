@@ -1,21 +1,22 @@
-/* $Id: spmidi.c,v 1.56 2007/06/09 00:31:09 philjmsl Exp $ */
+/* $Id: spmidi.c,v 1.58 2007/10/02 17:24:45 philjmsl Exp $ */
 /**
  *
  * Scaleable Polyphonic MIDI Engine.
  * Copyright 2002 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
 #include "dls_parser_internal.h"
-#include "spmidi_orchestra.h"
-#include "spmidi_synth.h"
-#include "spmidi_print.h"
-#include "dbl_list.h"
-#include "memtools.h"
-#include "wave_manager.h"
-#include "spmidi_dls.h"
+#include "engine/spmidi_orchestra.h"
+#include "engine/spmidi_synth.h"
+#include "include/spmidi_print.h"
+#include "include/spmidi_editor.h"
+#include "engine/dbl_list.h"
+#include "engine/memtools.h"
+#include "engine/wave_manager.h"
+#include "engine/spmidi_dls.h"
 
 #ifdef WIN32
 	#include <assert.h>
@@ -1200,9 +1201,13 @@ static void SPMIDI_GeneralOn( SPMIDIContext_t *spmc )
 
 	for( i=0; i<MIDI_NUM_CHANNELS; i++ )
 	{
+#if SPMIDI_ME3000
 		int defaultBank = (i == MIDI_RHYTHM_CHANNEL_INDEX) ?
 		    GMIDI_RHYTHM_BANK_MSB :
 		    GMIDI_MELODY_BANK_MSB;
+#else
+		int defaultBank = 0; // TODO - how should we handle default bank?
+#endif
 		SPMIDI_HandleControlChange( spmc, i, MIDI_CONTROL_BANK, defaultBank );
 
 		SPMIDI_HandleProgramChange( spmc, i, 0, 0 );
@@ -1893,96 +1898,52 @@ SoftSynth *SPMIDI_GetSynth( SPMIDI_Context *spmidiContext )
 }
 #endif /* SPMIDI_ME3000 */
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 /** Download an instrument definition as a byte stream.
  * The contents of the definition are specific to the synthesizer in use.
  */
-int SPMIDI_SetInstrumentDefinition( SPMIDI_Context *spmidiContext, int insIndex, unsigned char *data, int numBytes )
+int SPMIDI_SetInstrumentDefinition( int insIndex, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes )
 {
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
 	SPMIDI_StopAllVoices( );
-	return SS_SetInstrumentDefinition( spmc->synth, insIndex, data, numBytes );
+	return SS_SetInstrumentDefinition( insIndex, tokenMap, data, numBytes );
 }
-
-int SPMIDI_SetInstrumentPreset( SPMIDI_Context *spmidiContext, int insIndex, void *inputPreset )
-{
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	SPMIDI_StopAllVoices( );
-	return SS_SetInstrumentPreset( spmc->synth, insIndex, inputPreset );
-}
-
 
 /** Map a MIDI program number to an instrument index.
  * This allows multiple programs to be mapped to a single instrument.
  */
-int SPMIDI_SetInstrumentMap( int bankIndex, int programIndex, int insIndex )
+int SPMIDI_SetInstrumentMap( SPMIDI_Orchestra *orchestra, int bankIndex, int programIndex, int insIndex )
 {
-	return SS_SetInstrumentMap( bankIndex, programIndex, insIndex );
+	return SS_SetInstrumentMap( (HybridOrchestra_t *) orchestra, bankIndex, programIndex, insIndex );
 }
 
 /** Map a MIDI drum pitch to an instrument index.
  * This allows multiple drums to be mapped to a single instrument.
  */
-int SPMIDI_SetDrumMap( int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch )
+int SPMIDI_SetDrumMap( SPMIDI_Orchestra *orchestra, int bankIndex, int programIndex, int noteIndex, int insIndex, int pitch )
 {
-	return SS_SetDrumMap( bankIndex, programIndex, noteIndex, insIndex, pitch );
+	return SS_SetDrumMap( (HybridOrchestra_t *) orchestra, bankIndex, programIndex, noteIndex, insIndex, pitch );
 }
 
-/** Download a WaveTable for internal storage and use.
- * The contents of the definition are specific to the synthesizer in use.
- * Returns negative error or positive waveTable token.
+/** Return Orchestra compiled with synthesizer.
  */
-int SPMIDI_LoadWaveTable( SPMIDI_Context *spmidiContext, unsigned char *data, int numBytes )
+SPMIDI_Orchestra *SPMIDI_GetCompiledOrchestra( void )
 {
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	return SS_LoadWaveTable( spmc->synth, data, numBytes );
+	return (SPMIDI_Orchestra *) SS_GetCompiledOrchestra();
 }
 
 /* Delete WaveTable if WaveSet reference count is zero. */
-int SPMIDI_UnloadWaveTable( SPMIDI_Context *spmidiContext, spmSInt32 token )
+int SPMIDI_UnloadWaveTable( spmSInt32 token )
 {
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
 	SPMIDI_StopAllVoices( );
-	return SS_UnloadWaveTable( spmc->synth, token );
+	return SS_UnloadWaveTable( token );
 }
 
-/** Add a WaveTable for internal storage and use.
- * The contents of the definition are specific to the synthesizer in use.
- * Returns negative error or positive waveTable token.
- */
-int SPMIDI_AddWaveTable( SPMIDI_Context *spmidiContext, WaveTable_t *waveTable )
-{
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	return SS_AddWaveTable( spmc->synth, waveTable );
-}
-
-
-/** Download a WaveSet for internal storage and use.
- * The contents of the definition are specific to the synthesizer in use.
- * Returns negative error or positive waveSet token.
- */
-int SPMIDI_LoadWaveSet( SPMIDI_Context *spmidiContext, unsigned char *data, int numBytes )
-{
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	return SS_LoadWaveSet( spmc->synth, data, numBytes );
-}
-
-/** Add a WaveSet for internal storage and use.
- * The contents of the definition are specific to the synthesizer in use.
- * Returns negative error or positive waveSet token.
- */
-int SPMIDI_AddWaveSet( SPMIDI_Context *spmidiContext, WaveSet_t *waveSet )
-{
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
-	return SS_AddWaveSet( spmc->synth, waveSet, RESOURCE_UNDEFINED_ID );
-}
 
 /* Delete WaveSet if reference count is zero. */
-int SPMIDI_UnloadWaveSet( SPMIDI_Context *spmidiContext, spmSInt32 token )
+int SPMIDI_UnloadWaveSet( spmSInt32 token )
 {
-	SPMIDIContext_t *spmc = (SPMIDIContext_t *) spmidiContext;
 	SPMIDI_StopAllVoices( );
-	return SS_UnloadWaveSet( spmc->synth, token );
+	return SS_UnloadWaveSet( token );
 }
 
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */

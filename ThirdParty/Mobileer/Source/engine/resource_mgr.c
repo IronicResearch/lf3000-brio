@@ -7,9 +7,9 @@
  *
  */
 
-#include "dbl_list.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
+#include "engine/dbl_list.h"
+#include "include/spmidi.h"
+#include "include/spmidi_print.h"
 #include "resource_mgr.h"
 
 void ResourceMgr_InitResource( ResourceTracker_t *resource )

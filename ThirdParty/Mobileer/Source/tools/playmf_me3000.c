@@ -1,4 +1,4 @@
-/* $Id: playmf_me3000.c,v 1.2 2007/06/12 21:10:19 philjmsl Exp $ */
+/* $Id: playmf_me3000.c,v 1.4 2007/10/02 17:25:46 philjmsl Exp $ */
 /**
  *
  * Play a MIDI File or an MXMF file using the ME3000 Synthesizer.
@@ -15,16 +15,16 @@
 #include <conio.h>
 #include <stdlib.h>
 
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_load.h"
-#include "spmidi_audio.h"
-#include "midifile_player.h"
 #include "portaudio.h"
-#include "song_player.h"
 
-#include "midifile_names.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/midifile_player.h"
+#include "spmidi/include/song_player.h"
+#include "spmidi/examples/midifile_names.h"
 
 /* Set velocity based EQ which attenuates low notes if < 64. */
 /* #define VEQ_GAIN_AT_ZERO   (0) */

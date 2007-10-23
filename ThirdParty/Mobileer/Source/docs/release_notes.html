@@ -42,6 +42,12 @@
 
 <h2>Release Notes</h2>
 <p>(The Release Notes for the Mobileer Instrument Editor after V1.94 may be found <a href="editor/releases.html">here</a>.)</p>
+<h3>Release 2.30 10/2/07</h3>
+<ul>
+  <li>Changed includes so that they now are relative to the release directory. Thus #include &quot;spmidi.h&quot; has become #include &quot;/spmidi/include/spmidi.h&quot;. So now you only have to specify a single directory on your include path.</li>
+  <li>Add support for loading an orchestra from a .MBIS file. To use this feature you must define the compiler variable -DSPMIDI_SUPPORT_LOADING=1</li>
+  <li>Add SPMIDI_CreateProgramList() and related functions for loading only the instruments needed for a group of songs.</li>
+</ul>
 <h3>Release 2.00 4/?/07</h3>
 <ul>
   <li>Added support for lowPitch, highPitch, lowVelocity and highVelocity to WaveSetRegion. Requires new format of orchestra exported from Mobileer Editor.  </li>

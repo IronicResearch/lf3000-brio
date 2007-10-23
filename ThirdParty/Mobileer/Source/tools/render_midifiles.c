@@ -1,4 +1,4 @@
-/* $Id: render_midifiles.c,v 1.3 2007/06/18 18:05:51 philjmsl Exp $ */
+/* $Id: render_midifiles.c,v 1.4 2007/10/02 16:24:51 philjmsl Exp $ */
 /**
  *
  * Render a MIDI File whose name is passed on the command line.
@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_play.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/midifile_player.h"
 
 #ifdef WIN32
 #include <windows.h>

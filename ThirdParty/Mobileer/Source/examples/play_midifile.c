@@ -1,4 +1,4 @@
-/* $Id: play_midifile.c,v 1.16 2006/05/23 00:11:06 philjmsl Exp $ */
+/* $Id: play_midifile.c,v 1.17 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a MIDI File whose name is passed on the command line.
@@ -11,10 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "spmidi.h"
-#include "spmidi_play.h"
-#include "spmidi_load.h"
-#include "midifile_player.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/midifile_player.h"
 #include "midifile_names.h"
 
 #define SAMPLE_RATE         (44100)

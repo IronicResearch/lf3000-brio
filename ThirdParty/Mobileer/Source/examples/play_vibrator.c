@@ -1,4 +1,4 @@
-/* $Id: play_vibrator.c,v 1.7 2005/06/02 06:12:39 philjmsl Exp $ */
+/* $Id: play_vibrator.c,v 1.8 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Test callback used to vibrate phone during a ringtone.
@@ -8,10 +8,10 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
 
 #define SAMPLE_RATE         (44100)
 #define NUM_NOTES           (8)

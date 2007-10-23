@@ -1,4 +1,4 @@
-/* $Id: spmidi_async.c,v 1.6 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: spmidi_async.c,v 1.7 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * Utility functions for playing notes Asynchronously, etc.
@@ -19,13 +19,13 @@
 #if defined(WIN32) || defined(MACOSX)
 #include "pablio.h"
 #endif
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
-#include "spmidi_print.h"
-#include "write_wav.h"
-#include "midifile_player.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_play.h"
+#include "include/spmidi_print.h"
+#include "include/write_wav.h"
+#include "include/midifile_player.h"
 
 #if defined(WIN32) || defined(MACOSX)
 

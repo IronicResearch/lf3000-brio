@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-#include "spmidi.h"
+#include "include/spmidi.h"
 
 #ifndef FALSE
 #define FALSE    (0)

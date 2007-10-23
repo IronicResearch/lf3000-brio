@@ -1,4 +1,4 @@
-/* $Id: ima_adpcm_wav.h,v 1.2 2005/11/28 19:12:53 philjmsl Exp $ */
+/* $Id: ima_adpcm_wav.h,v 1.3 2007/10/02 16:20:00 philjmsl Exp $ */
 #ifndef _IMA_ADPCM_WAV
 #define _IMA_ADPCM_WAV
 /**
@@ -16,8 +16,8 @@
  * @author Phil Burk, Copyright 1997-2005 Phil Burk, Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "streamio.h"
-#include "read_wav.h"
+#include "include/streamio.h"
+#include "include/read_wav.h"
 
 #ifdef __cplusplus
 extern "C" {

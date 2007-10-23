@@ -1,4 +1,4 @@
-/* $Id: qa_memheap.c,v 1.4 2006/05/22 01:28:59 philjmsl Exp $ */
+/* $Id: qa_memheap.c,v 1.5 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_memheap.c
@@ -14,9 +14,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
+#include "spmidi/include/spmidi.h"
 #include "memheap.h"
-#include "qa_tools.h"
+#include "spmidi/qa/qa_tools.h"
 
 #define MAX_ALLOCATIONS  (1024)
 void *aAllocatedBlocks[MAX_ALLOCATIONS] = { NULL };

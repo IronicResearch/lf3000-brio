@@ -1,6 +1,6 @@
 #ifndef _SVFILTER_H
 #define _SVFILTER_H
-/* $Id: svfilter.h,v 1.8 2005/05/03 22:04:00 philjmsl Exp $ */
+/* $Id: svfilter.h,v 1.9 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * State Variable Filter.
@@ -9,8 +9,8 @@
  *
  */
 
-#include "fxpmath.h"
-#include "spmidi_synth_util.h"
+#include "engine/fxpmath.h"
+#include "engine/spmidi_synth_util.h"
 
 #ifdef __cplusplus
 extern "C"

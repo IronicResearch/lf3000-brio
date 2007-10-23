@@ -1,6 +1,6 @@
 #ifndef _ADSR_ENVELOPE_H
 #define _ADSR_ENVELOPE_H
-/* $Id: adsr_envelope.h,v 1.18 2005/12/31 02:12:04 philjmsl Exp $ */
+/* $Id: adsr_envelope.h,v 1.19 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * ADSR Envelope.

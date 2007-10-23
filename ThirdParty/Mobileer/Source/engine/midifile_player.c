@@ -1,4 +1,4 @@
-/* $Id: midifile_player.c,v 1.37 2005/11/15 20:49:03 philjmsl Exp $ */
+/* $Id: midifile_player.c,v 1.38 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  * MIDI File parser and player.
  * The player operates directly on an SMF image.
@@ -9,14 +9,14 @@
  */
 
 
-#include "dbl_list.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_util.h"
-#include "spmidi_print.h"
-#include "midifile_player.h"
-#include "memtools.h"
+#include "engine/dbl_list.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_print.h"
+#include "include/midifile_player.h"
+#include "engine/memtools.h"
 
 #ifndef SPMIDI_MALLOC_PLAYER
 	#define SPMIDI_MALLOC_PLAYER  (0)

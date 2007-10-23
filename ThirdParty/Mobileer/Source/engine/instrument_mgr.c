@@ -7,14 +7,14 @@
  *
  */
 
-#include "fxpmath.h"
-#include "dbl_list.h"
-#include "memtools.h"
-#include "spmidi.h"
-#include "spmidi_host.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
-#include "instrument_mgr.h"
+#include "engine/fxpmath.h"
+#include "engine/dbl_list.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_host.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
+#include "engine/instrument_mgr.h"
 
 #define SPMIDI_USE_DRUMBIT  (1)
 
@@ -48,7 +48,7 @@ void InsManager_InitializePreset( HybridVoice_Preset_t *preset )
 	MemTools_Copy( preset, &sInstrumentTemplate, sizeof( sInstrumentTemplate ) );
 }
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 
 
 /* Combine bank and program into unique token for quick search.
@@ -132,9 +132,9 @@ SPMIDI_Error InsManager_Clear( InsManager_t *insManager )
 
 CustomIns_t *InsManager_Find( InsManager_t *insManager, int bankIndex, int programIndex )
 {
-	spmResourceToken token= MakeInsToken( bankIndex, programIndex );
+	spmResourceToken token = MakeInsToken( bankIndex, programIndex );
 	return (CustomIns_t *) ResourceMgr_Find( &insManager->insList, token );
 }
 
-#endif /* SPMIDI_SUPPORT_EDITING */
+#endif /* SPMIDI_SUPPORT_LOADING */
 

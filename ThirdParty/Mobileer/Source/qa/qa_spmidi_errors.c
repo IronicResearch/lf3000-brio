@@ -1,4 +1,4 @@
-/* $Id: qa_spmidi_errors.c,v 1.4 2006/06/21 16:54:20 philjmsl Exp $ */
+/* $Id: qa_spmidi_errors.c,v 1.5 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_spmidi_errors.c
@@ -10,13 +10,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_print.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_print.h"
 
-#include "qa_tools.h"
+#include "spmidi/qa/qa_tools.h"
 
 short buffer[1024];
 

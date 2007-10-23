@@ -1,4 +1,4 @@
-/* $Id: play_bend.c,v 1.7 2005/05/09 00:04:56 philjmsl Exp $ */
+/* $Id: play_bend.c,v 1.8 2007/10/02 16:15:32 philjmsl Exp $ */
 /**
  *
  * Play a note with pitch bend using SPMIDI
@@ -7,10 +7,10 @@
  */
 #include <stdio.h>
 #include <math.h>
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
+#include "spmidi/include/midi.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_play.h"
 
 #define SAMPLE_RATE     (44100)
 #define CHANNEL         (0)

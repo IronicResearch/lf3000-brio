@@ -1,6 +1,6 @@
 
-#ifndef _PARSE_DLS_H
-#define _PARSE_DLS_H
+#ifndef _DLS_PARSER_INTERNAL_H
+#define _DLS_PARSER_INTERNAL_H
 /**
  
    dls_parser_internal.h
@@ -611,4 +611,4 @@ DLSParser_FunctionTable_t *DLSParser_GetFunctionTable( void );
  */
 DLS_Orchestra_t *DLSParser_GetOrchestra( DLSParser parser );
 
-#endif /* _PARSE_DLS_H */
+#endif /* _DLS_PARSER_INTERNAL_H */

@@ -1,4 +1,4 @@
-/* $Id: load_sdls.c,v 1.1 2005/12/09 22:01:47 marsanyi Exp $
+/* $Id: load_sdls.c,v 1.2 2007/10/02 16:24:51 philjmsl Exp $
  *
  * Reconstruct DLS Orchestra from SDLS stream.  This can then be loaded into ME3000.
  *
@@ -6,20 +6,20 @@
  * Copyright 2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "spmidi.h"
-#include "dls_parser.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/dls_parser.h"
 #include "dls_parser_internal.h"
-#include "midifile_player.h"
-#include "spmidi_host.h"
-#include "spmidi_audio.h"
-#include "spmidi_load.h"
-#include "spmidi_util.h"
-#include "spmidi_errors.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_dls.h"
-#include "spmidi_play.h"
-#include "instrument_mgr.h"
-#include "memtools.h"
+#include "spmidi/include/midifile_player.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_audio.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/include/spmidi_errors.h"
+#include "spmidi/engine/spmidi_hybrid.h"
+#include "spmidi/engine/spmidi_dls.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/engine/instrument_mgr.h"
+#include "spmidi/engine/memtools.h"
 
 #include "sdls_parser_internal.h"
 #include <stdio.h>

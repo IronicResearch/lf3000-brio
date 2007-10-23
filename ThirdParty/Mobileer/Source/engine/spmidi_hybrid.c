@@ -1,4 +1,4 @@
-/* $Id: spmidi_hybrid.c,v 1.82 2007/06/18 18:03:49 philjmsl Exp $ */
+/* $Id: spmidi_hybrid.c,v 1.83 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Hybrid SPMIDI Synth that uses
@@ -11,21 +11,23 @@
 #include <math.h>
 #endif
 
-#include "fxpmath.h"
-#include "midi.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_host.h"
-#include "spmidi_synth.h"
-#include "spmidi_hybrid.h"
-#include "spmidi_print.h"
-#include "spmidi_orchestra.h"
-#include "spmidi_dls.h"
-#include "compressor.h"
-#include "adsr_envelope.h"
-#include "oscillator.h"
-#include "wave_manager.h"
-#include "memtools.h"
+#include "engine/fxpmath.h"
+#include "include/midi.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_host.h"
+#include "engine/spmidi_synth.h"
+#include "engine/spmidi_hybrid.h"
+#include "engine/spmidi_orchestra.h"
+#include "engine/spmidi_dls.h"
+#include "engine/compressor.h"
+#include "engine/adsr_envelope.h"
+#include "engine/oscillator.h"
+#include "engine/wave_manager.h"
+#include "engine/memtools.h"
+
+#include "include/spmidi_editor.h"
+#include "include/spmidi_print.h"
 
 /* Print sizes of major data structures. */
 #define SPMIDI_REPORT_SIZES (0)
@@ -37,7 +39,7 @@
 #endif
 
 /* Determine whether instrument is read-only. */
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 #define EDITABLE /* */
 #else
 #define EDITABLE const
@@ -565,14 +567,14 @@ static void SS_UpdateInfo( HybridSynth_t *hybridSynth, const HybridVoice_Preset_
 			waveSet = WaveManager_FindWaveSet( &sHybridSynthShared.waveManager, preset->waveSetID );
 			if( waveSet == NULL )
 			{
-				PRTMSGNUMD("ERROR in Osc_LoadWaveSet - waveSet not found, ID = ", preset->waveSetID );
+				PRTMSGNUMD("ERROR in SS_UpdateInfo - waveSet not found, ID = ", preset->waveSetID );
 				/* To prevent further errors, just use first WaveSet.
 				 * This should not happen during production, only when editing.
 				 */
 				waveSet = WaveManager_GetFirstWaveSet( &sHybridSynthShared.waveManager );
 				if( waveSet == NULL )
 				{
-					PRTMSG("ERROR in Osc_LoadWaveSet - WaveManager_GetFirstWaveSet failed.\n");
+					PRTMSG("ERROR in SS_UpdateInfo - WaveManager_GetFirstWaveSet failed.\n");
 				}
 			}
 		}
@@ -595,7 +597,7 @@ static void SS_UpdateInfo( HybridSynth_t *hybridSynth, const HybridVoice_Preset_
  * Bump resource use count.
  * This allocation should never fail because there is an info structure for each voice.
  */
-static HybridVoice_Info_t *SS_AllocInfo( HybridSynth_t *hybridSynth, const HybridVoice_Preset_t *preset )
+static HybridVoice_Info_t *SS_FindOrAllocateInfo( HybridSynth_t *hybridSynth, const HybridVoice_Preset_t *preset )
 {
 	int i;
 	HybridVoice_Info_t *match = NULL;
@@ -1422,7 +1424,7 @@ static void SS_StartVoice( HybridSynth_t *hybridSynth, HybridVoice_t *voice, con
 
 	if( voice->info == NULL )
 	{
-		voice->info = SS_AllocInfo( hybridSynth, voice->preset );
+		voice->info = SS_FindOrAllocateInfo( hybridSynth, voice->preset );
 	}
 
 	voice->active = TRUE;
@@ -1836,7 +1838,7 @@ int SS_Terminate()
 	WaveManager_Term( &sHybridSynthShared.waveManager );
 #endif
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_INSMANAGER
 	InsManager_Term( &sHybridSynthShared.insManager );
 #endif
 
@@ -1868,7 +1870,7 @@ int SS_Initialize()
 
 	SS_Orchestra_Init();
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_INSMANAGER
 	InsManager_Init( &sHybridSynthShared.insManager );
 #endif
 
@@ -2004,67 +2006,19 @@ int SS_CreateSynth( SoftSynth **synthPtr, int sampleRate )
 
 }
 
-#if SPMIDI_SUPPORT_EDITING
+#if SPMIDI_SUPPORT_LOADING
 
 /***********************************************************************/
-static int SS_ValidatePreset( HybridSynth_t *hybridSynth,  HybridVoice_Preset_t *preset )
+int SS_SetInstrumentDefinition( int insIndex, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes )
 {
-	HybridVoice_Info_t *info;
-	
-#if SPMIDI_ME2000
-	if( preset->mainOsc.waveform == WAVETABLE )
-	{
-		// Check now to make sure we are referencing a valid waveset.
-		if( preset->waveSetID != 0 )
-		{
-			WaveSet_t *waveSet = WaveManager_FindWaveSet( &sHybridSynthShared.waveManager, preset->waveSetID );
-			if( waveSet == NULL )
-			{
-				PRTMSG("ERROR in SS_ValidatePreset - waveSet not found.");
-				return SPMIDI_Error_IllegalArgument;
-			}
-		}
-	}
-#endif
-
-	/* Force update in case already loaded. */
-	info = SS_AllocInfo( hybridSynth, preset );
-	SS_UpdateInfo( hybridSynth, preset, info );
-	SS_FreeInfo( info );
-
-	return 0;
+	return SS_ParseInstrumentDefinition( SS_GetCompiledOrchestra(), insIndex, tokenMap, data, numBytes );
 }
 
 /***********************************************************************/
-int SS_SetInstrumentPreset( SoftSynth *synth,  int insIndex, void *inputPreset )
-{
-	HybridVoice_Preset_t *preset;
-	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
-
-	/* Lookup preset slot. */
-	if( (insIndex >= SS_MAX_PRESETS) || (insIndex < 0) )
-	{
-		return -2;
-	}
-	/* Not const when in editor. */
-	preset = (HybridVoice_Preset_t *) SS_GetSynthPreset( insIndex );
-	PRTMSGNUMH("SS_SetInstrumentPreset: insIndex = ", insIndex )
-	PRTMSGNUMH("SS_SetInstrumentPreset: preset = ", preset )
-
-	/* Copy incoming preset to slot. */
-	MemTools_Copy( preset, inputPreset, sizeof( HybridVoice_Preset_t ) );
-
-	SS_ValidatePreset( hybridSynth, preset );
-
-	return 0;
-}
-
-/***********************************************************************/
-int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *data, int numBytes )
+int SS_ParseInstrumentDefinition( HybridOrchestra_t *orchestra, int insIndex, ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes )
 {
 	HybridVoice_Preset_t *preset;
 	unsigned char *p = data;
-	HybridSynth_t *hybridSynth = (HybridSynth_t *) synth;
 	int numParsed;
 
 	DBUGMSG( "-----------------------\n" );
@@ -2075,12 +2029,22 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 	{
 		return -2;
 	}
-	preset = (HybridVoice_Preset_t *) SS_GetSynthPreset(insIndex);
+	preset = (HybridVoice_Preset_t *) SS_GetSynthPreset( orchestra, insIndex );
 	// Clear preset in case we do not set all fields.
 	MemTools_Clear( preset, sizeof( HybridVoice_Preset_t ) );
 	
 	//PRTMSGNUMH("SS_SetInstrumentDefinition: insIndex = ", insIndex )
 	//PRTMSGNUMH("SS_SetInstrumentDefinition: preset = ", preset )
+
+	/* Parse stream header */
+	if( *p++ != SPMIDI_BEGIN_STREAM )
+	{
+		return SPMIDI_Error_BadFormat;
+	}
+	if( *p++ != SPMIDI_INSTRUMENT_STREAM_ID )
+	{
+		return SPMIDI_Error_BadFormat;
+	}
 
 	p = Osc_Define( &preset->modOsc, p );
 	p = Osc_Define( &preset->mainOsc, p );
@@ -2090,7 +2054,23 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 	{
 		// Save waveSetID for later.
 		p = SS_ParseLong( &preset->waveSetID, p );
-		//PRTMSGNUMD("SS_SetInstrumentDefinition: preset->waveSetID = ", preset->waveSetID);
+		// PRTMSGNUMD("SS_ParseInstrumentDefinition: preset->waveSetID = ", preset->waveSetID);
+		if( tokenMap != NULL )
+		{
+			preset->waveSetID = tokenMap[ preset->waveSetID ].token;
+			// PRTMSGNUMD("SS_ParseInstrumentDefinition: waveSetID mapped to = ", preset->waveSetID);
+		}
+		
+		// Check now to make sure we are referencing a valid waveset.
+		if( preset->waveSetID != 0 )
+		{
+			WaveSet_t *waveSet = WaveManager_FindWaveSet( &sHybridSynthShared.waveManager, preset->waveSetID );
+			if( waveSet == NULL )
+			{
+				PRTMSG("ERROR in SS_ParseInstrumentDefinition - waveSet not found.");
+				return SPMIDI_Error_IllegalArgument;
+			}
+		}
 	}
 #endif
 
@@ -2108,6 +2088,12 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 	preset->boostLog2 = (signed char) *p++;
 	preset->keyCenter = (unsigned char) *p++;
 	preset->keyScalar = (unsigned char) *p++;
+
+	if( *p++ != SPMIDI_END_STREAM )
+	{
+		PRTMSG( "SS_SetInstrumentDefinition did not see SPMIDI_END_STREAM\n" );
+		return SPMIDI_Error_BadFormat;
+	}
 
 	numParsed = p - data;
 	if( numParsed != numBytes )
@@ -2153,24 +2139,22 @@ int SS_SetInstrumentDefinition( SoftSynth *synth,  int insIndex, unsigned char *
 
 	//PRTMSGNUMD("SS_SetInstrumentDefinition: preset->mainOsc.waveform = ", preset->mainOsc.waveform );
 
-	return SS_ValidatePreset( hybridSynth, preset );
+	return 0;
 }
 
 /***********************************************************************/
 /** Download a WaveTable for internal storage and use.
  * The contents of the definition are specific to the synthesizer in use.
  */
-int SS_AddWaveTable( SoftSynth *synth, WaveTable_t *waveTable )
+int SPMIDI_AddWaveTable( WaveTable_t *waveTable )
 {
-	(void) synth;
 	return WaveManager_AddWaveTable( &sHybridSynthShared.waveManager, waveTable );
 }
 
 /***********************************************************************/
 /* Delete WaveTable if WaveSet reference count is zero. */
-int SS_UnloadWaveTable( SoftSynth *synth, spmSInt32 token )
+int SS_UnloadWaveTable( spmSInt32 token )
 {
-	(void) synth;
 	return WaveManager_UnloadWaveTable( &sHybridSynthShared.waveManager, token );
 }
 
@@ -2178,27 +2162,23 @@ int SS_UnloadWaveTable( SoftSynth *synth, spmSInt32 token )
 /** Download a WaveSet for internal storage and use.
  * The contents of the definition are specific to the synthesizer in use.
  */
-int SS_LoadWaveSet( SoftSynth *synth, unsigned char *data, int numBytes )
+int SPMIDI_LoadWaveSet( ResourceTokenMap_t *tokenMap, unsigned char *data, int numBytes )
 {
-	(void) synth;
-	return WaveManager_LoadWaveSet( &sHybridSynthShared.waveManager, data, numBytes );
+	return WaveManager_LoadWaveSet( &sHybridSynthShared.waveManager, tokenMap, data, numBytes );
 }
 
 /***********************************************************************/
 /** Add a WaveSet for internal storage and use.
  */
-int SS_AddWaveSet( SoftSynth *synth, WaveSet_t *waveSet, int id )
+int SPMIDI_AddWaveSet( WaveSet_t *waveSet, int id )
 {
-	(void) synth;
 	return WaveManager_AddWaveSet( &sHybridSynthShared.waveManager, waveSet, id );
 }
 
-
 /***********************************************************************/
 /* Delete WaveSet if instrument reference count is zero. */
-int SS_UnloadWaveSet( SoftSynth *synth, spmSInt32 token )
+int SS_UnloadWaveSet( spmSInt32 token )
 {
-	(void) synth;
 	return WaveManager_UnloadWaveSet( &sHybridSynthShared.waveManager, token );
 }
 
@@ -2206,12 +2186,12 @@ int SS_UnloadWaveSet( SoftSynth *synth, spmSInt32 token )
 /** Download a WaveTable for internal storage and use.
  * The contents of the definition are specific to the synthesizer in use.
  */
-int SS_LoadWaveTable( SoftSynth *synth, unsigned char *data, int numBytes )
+int SPMIDI_LoadWaveTable( unsigned char *data, int numBytes )
 {
-	(void) synth;
 	return WaveManager_LoadWaveTable( &sHybridSynthShared.waveManager, data, numBytes );
 }
 
+#if SPMIDI_SUPPORT_INSMANAGER
 CustomIns_t *SPMIDI_CreateCustomInstrument( SPMIDI_Context *spmidiContext )
 {
 	(void) spmidiContext; /* TODO handle per context instruments, move ins manager to spmidiContext? */
@@ -2231,7 +2211,7 @@ int SPMIDI_UnloadAllCustomInstruments( SPMIDI_Context *spmidiContext )
 	(void) spmidiContext; /* TODO handle per context instruments, move ins manager to spmidiContext? */
 	return InsManager_Clear( &sHybridSynthShared.insManager );
 }
+#endif /* SPMIDI_SUPPORT_INSMANAGER */
 
-#endif /* SPMIDI_SUPPORT_EDITING */
-
+#endif /* SPMIDI_SUPPORT_LOADING */
 

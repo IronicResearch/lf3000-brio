@@ -21,6 +21,9 @@
 #include <AudioPriv.h>
 #include <MidiPlayer.h>
 #include <EventMPI.h>
+
+#include <EmulationConfig.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -36,6 +39,21 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Global variables
 //==============================================================================
+
+//============================================================================
+// Emulation setup
+//============================================================================
+
+//----------------------------------------------------------------------------
+CPath GetAppRsrcFolder( void )
+{
+#ifdef EMULATION
+	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
+	return dir ; //+ "MIDI/";
+#else	
+	return "/Didj/Data/rsrc/"; //MIDI";
+#endif	// EMULATION
+}
 
 //==============================================================================
 // CMidiPlayer implementation
@@ -61,7 +79,7 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	volume_ = 100;
 	bFilePaused_ = false;
 	bFileActive_ = false;
-	bActive_ = false;
+	bActive_     = false;
 
 	// Get Debug MPI
 	pDebugMPI_ =  new CDebugMPI( kGroupAudio );
@@ -219,11 +237,9 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
 //	pInfo->midiID;			// fixme/dg: midiEngineContext object?
 //	pInfo->hRsrc;			// Resource Handle, provided by app, returned from FindResource()
 	volume_ = pInfo->volume;
-// FIXX: move to decibels, but for now, linear volume
+// FIXX: move to range [-100 .. 0] dB, but for now, linear volume
     levelf_  = ChangeRangef((float)volume_, 0.0f, 100.0f, 0.0f, 1.0f);
-    levelf_ *= DecibelToLinearf(-3.0);
-    //gainf = ChangeRangef((float)volume_, 0.0f, 100.0f, -100.0f, 0.0f);
-    //gainf =  DecibelToLinearf(gainf);
+    levelf_ *= kDecibelToLinearf_m3dBf; // DecibelToLinearf(-3.0);
 
     // Convert 32-bit floating-point to Q15 fractional integer format 
     leveli_ = FloatToQ15(levelf_);
@@ -236,10 +252,85 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
 	if (pInfo->flags & 1)
 		loopMidiFile_ = true;
 
+// **************************************************************************************
+// **************************************************************************************
+// Selectively load instruments
+{
+	int err;
+//	void *orchestraImage = NULL;
+//	int  orchestraFileSize;
+	int preOrchestraCount = 0;
+
+	StreamIO *sio = NULL;
+	SPMIDI_Orchestra *orchestra = NULL;
+	
+	SPMIDI_ProgramList *programList =  NULL;
+    CPath orchestraFileName;
+
+//#define GK_ORCHESTRALOAD_TEST
+#ifdef GK_ORCHESTRALOAD_TEST
+    orchestraFileName = "/home/lfu/workspace/Brio2/ThirdParty/Mobileer/Libs/orch_100207.mbis";
+//"/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis"; 
+#else
+    orchestraFileName = GetAppRsrcFolder() /*+ "MIDI/" */ + "orch_100207.mbis";
+#endif
+//orchestraFileName = "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis"; 
+//orchestraFileName = "/Didj/Base/Brio/rsrc/orch_100207.mbis"; 
+
+// "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orchestra_071002.mbis"; // 358,796 Bytes
+// "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis";
+// "D:\\mobileer_work\\A_Orchestra\\exports\\exported.mbis";
+
+//	printf( "Num blocks allocated before SPMIDI_CreateProgramList = %d\n", SPMIDI_GetMemoryAllocationCount() );
+	err = SPMIDI_CreateProgramList( &programList );
+	if( err < 0 ) 
+		printf("SPMIDI_CreateProgramList failed\n");
+
+	// Scan the MIDIFile to see what instruments we should load.
+	err = MIDIFile_ScanForPrograms( programList, pInfo->pMidiFileImage, pInfo->imageSize );
+	if( err < 0 ) 
+		printf("MIDIFile_ScanForPrograms failed\n");
+
+	// Load an Orchestra file into a memory stream and parse it.
+//	orchestraImage = SPMUtil_LoadFileImage( (char *)orchestraFileName.c_str(), (int *)&( orchestraFileSize ) );
+//	if( orchestraImage == NULL )
+//		printf("Error: can't open orchestra file '%s'\n", (char *)orchestraFileName.c_str());
+//    else 
+//        printf("CMidiPlayer::StartMidiFile: loaded orchestraFile='%s'\n", orchestraFileName.c_str());
+
+	// Create a stream object for reading the orchestra.
+//	sio = Stream_OpenImage( (char *)orchestraImage, orchestraFileSize );
+// streamio.h
+	sio = Stream_OpenFile( (char *)orchestraFileName.c_str(), "rb"); //(char *)orchestraImage, orchestraFileSize );
+	if( sio == NULL )
+		printf("Stream_OpenFile failed on '%s'\n", (char *)orchestraFileName.c_str());
+
+//	printf( "Num blocks allocated before SPMIDI_LoadOrchestra = %d\n", SPMIDI_GetMemoryAllocationCount() );
+
+	preOrchestraCount = SPMIDI_GetMemoryAllocationCount();
+	// Load just the instruments we need from the orchestra t play the song.
+	if( SPMIDI_LoadOrchestra( sio, programList, &orchestra ) < 0 )
+		printf( "SPMIDI_LoadOrchestra failed \n");
+	
+	// Close the orchestra stream.
+	if( sio != NULL )
+		Stream_Close( sio );
+//	free( orchestraImage );
+
+//	printf( "Num blocks allocated before SPMIDI_DeleteOrchestra = %d\n", SPMIDI_GetMemoryAllocationCount() );
+//	TOO SOON SPMIDI_DeleteOrchestra( orchestra );
+//	printf( "Num blocks allocated after SPMIDI_DeleteOrchestra = %d\n", SPMIDI_GetMemoryAllocationCount() );
+
+	SPMIDI_DeleteProgramList( programList );
+//	printf( "Final num blocks after SPMIDI_DeleteProgramList = %d\n", SPMIDI_GetMemoryAllocationCount() );
+}
+// **************************************************************************************
+// **************************************************************************************
+
 	// Create a player, parse MIDIFile image and setup tracks.
 	result = MIDIFilePlayer_Create( &pFilePlayer_, (int)kMIDI_SamplingFrequency, pInfo->pMidiFileImage, pInfo->imageSize );
-//		if( result < 0 )
-//			printf("Couldn't create a midifileplayer!\n");
+//    if( result < 0 )
+//        printf("CMidiPlayer::StartMidiFile: Couldn't create a midifileplayer!\n");
 	
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CMidiPlayer::StartMidiFile -- setting bFileActive_ to true...\n");	
@@ -309,6 +400,8 @@ tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile -- Couldn't unlock mutex.\n");
+
+// SPMIDI_DeleteOrchestra( orchestra );
 
 	return result;
 }

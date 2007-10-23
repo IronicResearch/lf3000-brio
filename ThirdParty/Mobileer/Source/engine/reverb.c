@@ -1,4 +1,4 @@
-/* $Id: reverb.c,v 1.11 2005/10/26 17:18:11 philjmsl Exp $ */
+/* $Id: reverb.c,v 1.12 2007/10/02 16:14:42 philjmsl Exp $ */
 /**
  *
  * Reverberation based on a single multi-tap delay line.
@@ -7,11 +7,11 @@
  *
  */
 
-#include "fxpmath.h"
-#include "spmidi.h"
-#include "spmidi_synth_util.h"
-#include "spmidi_synth.h"
-#include "spmidi_print.h"
+#include "engine/fxpmath.h"
+#include "include/spmidi.h"
+#include "engine/spmidi_synth_util.h"
+#include "engine/spmidi_synth.h"
+#include "include/spmidi_print.h"
 #include "reverb.h"
 
 #if 0
@@ -144,7 +144,7 @@ void Reverb_Next( Reverb_t *reverb, FXP31 *input, FXP31 *output,
 }
 
 #if 0
-#include "write_wav.h"
+#include "include/write_wav.h"
 
 static Reverb_t REVERB = { 0 };
 

@@ -1,21 +1,21 @@
 /*
- * $Id: xmf_parser.c,v 1.31 2005/12/31 02:16:21 philjmsl Exp $
+ * $Id: xmf_parser.c,v 1.32 2007/10/02 16:14:42 philjmsl Exp $
  * XMF File Parser
  *
  * Author: Robert Marsanyi
  * Copyright 2005 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "memtools.h"  /* for MemTools_Clear */
-#include "streamio.h"
-#include "spmidi.h"
-#include "spmidi_print.h"
-#include "spmidi_load.h"
-#include "spmidi_host.h"
-#include "xmf_parser.h"
+#include "engine/memtools.h"  /* for MemTools_Clear */
+#include "include/streamio.h"
+#include "include/spmidi.h"
+#include "include/spmidi_print.h"
+#include "include/spmidi_load.h"
+#include "engine/spmidi_host.h"
+#include "include/xmf_parser.h"
 
 #include "xmf_parser_internal.h"
-#include "midifile_player.h"  /* for debugging */
+#include "include/midifile_player.h"  /* for debugging */
 
 /* Only compile if supporting ME3000 API */
 #if SPMIDI_ME3000

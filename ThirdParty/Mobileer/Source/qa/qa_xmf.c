@@ -1,4 +1,4 @@
-/* $Id: qa_xmf.c,v 1.17 2006/05/20 00:33:32 philjmsl Exp $ */
+/* $Id: qa_xmf.c,v 1.18 2007/10/02 16:24:50 philjmsl Exp $ */
 /**
  *
  * @file qa_xmf.c
@@ -19,17 +19,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "spmidi.h"
-#include "spmidi_load.h"
-#include "spmidi_util.h"
-#include "spmidi_host.h"
-#include "spmidi_play.h"
-#include "spmidi_print.h"
+#include "spmidi/include/spmidi.h"
+#include "spmidi/include/spmidi_load.h"
+#include "spmidi/include/spmidi_util.h"
+#include "spmidi/engine/spmidi_host.h"
+#include "spmidi/include/spmidi_play.h"
+#include "spmidi/include/spmidi_print.h"
 #include "midifile_names.h"
-#include "xmf_parser.h"
-#include "dls_parser.h"
-#include "song_player.h"
-#include "memtools.h"
+#include "spmidi/include/xmf_parser.h"
+#include "spmidi/include/dls_parser.h"
+#include "spmidi/include/song_player.h"
+#include "spmidi/engine/memtools.h"
 
 #include "qa_common.h"
 

@@ -1,4 +1,4 @@
-/* $Id: spmidi_jukebox.c,v 1.10 2006/02/22 01:04:07 philjmsl Exp $ */
+/* $Id: spmidi_jukebox.c,v 1.11 2007/10/02 17:25:29 philjmsl Exp $ */
 /**
  * High level song queuing and MIDI scheduling.
  * Public routines are documented in spmidi_jukebox.h
@@ -8,20 +8,20 @@
  * @author Phil Burk, Copyright 2004 Mobileer, PROPRIETARY and CONFIDENTIAL
  */
 
-#include "midi.h"
-#include "memtools.h"
-#include "spmidi.h"
-#include "spmidi_util.h"
-#include "spmidi_play.h"
-#include "spmidi_print.h"
-#include "midifile_player.h"
-#include "dbl_list.h"
+#include "include/midi.h"
+#include "engine/memtools.h"
+#include "include/spmidi.h"
+#include "include/spmidi_util.h"
+#include "include/spmidi_play.h"
+#include "include/spmidi_print.h"
+#include "include/midifile_player.h"
+#include "engine/dbl_list.h"
 
-#include "atomic_fifo.h"
-#include "event_buffer.h"
+#include "jukebox/atomic_fifo.h"
+#include "jukebox/event_buffer.h"
+#include "include/spmidi_jukebox.h"
 
-#include "spmidi_jukebox.h"
-
+/** This is included from the "export" folder. */
 #include "spmidi_jukebox_playlist.h"
 
 #ifndef JUKEBOX_FIFO_SIZE
