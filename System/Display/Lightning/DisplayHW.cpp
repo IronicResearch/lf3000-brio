@@ -60,7 +60,7 @@ void CDisplayModule::InitModule()
 	int 			baseAddr, fb_size;
 
 	// open GPIO device
-	gDevGpio = open("/dev/gpio", O_WRONLY|O_SYNC);
+	gDevGpio = open("/dev/gpio", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevGpio >= 0, 
 			"DisplayModule::InitModule: failed to open GPIO device");
 	
@@ -485,6 +485,16 @@ tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 	unsigned long	p = backlight;
 	int 			r;
 
+#ifdef LF1000
+	// Disable backlight altogether in absense of driver PWM control
+	struct outvalue_cmd	c;
+	c.port = PORT_LCD;
+	c.pin  = PIN_BACKLIGHT_ENABLE;
+	c.value = (backlight > 0) ? 1 : 0;
+	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
+	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
+#endif
+
 	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHT, p);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
 }
@@ -515,6 +525,15 @@ S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 	unsigned long	p = 0;
 	int 			r;
 	
+#ifdef LF1000
+	// Query backlight pin in absense of driver PWM control
+	struct invalue_cmd	c;
+	c.port = PORT_LCD;
+	c.pin  = PIN_BACKLIGHT_ENABLE;
+	r = ioctl(gDevGpio, GPIO_IOCXINVAL, &c);
+	return (r < 0) ? 0 : (c.value) ? 100 : 0;
+#endif
+
 	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHT, p);
 	return (r < 0) ? 0 : r;
 }

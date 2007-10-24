@@ -242,6 +242,27 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testBacklight( )
+	{
+		tDisplayHandle 	handle;
+		const U16		WIDTH = 320;
+		const U16		HEIGHT = 240;
+		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
+		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+
+		pDisplayMPI_->SetBacklight(0, 0);
+		usleep(1000);
+		TS_ASSERT( pDisplayMPI_->GetBacklight(0) == 0 );
+		sleep(1);
+		pDisplayMPI_->SetBacklight(0, 100);
+		usleep(1000);
+		TS_ASSERT( pDisplayMPI_->GetBacklight(0) == 100 );
+		
+		pDisplayMPI_->UnRegister(handle, 0);
+		pDisplayMPI_->DestroyHandle(handle, false);
+	}
+	
+	//------------------------------------------------------------------------
 	void testDisplayContext24( )
 	{
 		tDisplayHandle 	handle;
