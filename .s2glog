@@ -9844,3 +9844,23 @@ By Dave Milici (dmilici@leapfrog.com) on 10/23/07 5:45 PM
 4,141 ms. (Cumulative: 2,282,160 ms)
 
 ----------------
+Revision 2,035 from svn://localhost/TRUNK/:
+Revision 2,036 from svn://localhost/TRUNK/:
+Revision 2,037 from svn://localhost/TRUNK/:
+Revision 2,038 from svn://localhost/TRUNK/:
+Revision 2,039 from svn://localhost/TRUNK/:
+Revision 2,040 from svn://localhost/TRUNK/:
+Revision 2,041 from svn://localhost/TRUNK/:
+Revision 2,042 from svn://localhost/TRUNK/:
+Revision 2,043 from svn://localhost/TRUNK/:
+Revision 2,044 from svn://localhost/TRUNK/:
+Revision 2,045 from svn://localhost/TRUNK/:
+Revision 2,046 from svn://localhost/TRUNK/:
+
+Disable 2D layer set externally from Brio. Clear video buffers from showing garbage initially.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/07 1:16 PM
+1 changed, 0 added, 0 deleted.
+4,329 ms. (Cumulative: 2,286,645 ms)
+
+----------------
