@@ -79,6 +79,10 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(gDevLayer >= 0, 
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
 
+	// Disable RGB layer since it is used externally for various firmware bitmaps
+	ioctl(gDevLayer, MLC_IOCTLAYEREN, 0);
+	SetDirtyBit(gDevLayer);
+	
 	// ask for the Frame Buffer base address
 	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr >= 0,
@@ -125,8 +129,7 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gOverlayBuffer);
-	memset(gOverlayBuffer, 0, fb_size/4);
-	memset(gOverlayBuffer + fb_size/4, 0x7F, fb_size/4);
+	memset(gOverlayBuffer, 0, fb_size);
 	
 	// Get access to the overlay planar array buffer in user space
 	fb_size = 4096 * 4096;
@@ -140,6 +143,15 @@ void CDisplayModule::InitModule()
 			baseAddr, fb_size, gPlanarBuffer);
 	gPlanarBase = baseAddr;
 	gPlanarSize = fb_size;
+	
+	// Clear video planar buffers
+	U32 screensize = GetScreenSize();
+	U32 screenwidth = screensize & 0xFFFF;
+	U32 screenheight = screensize >> 16;
+	for (U32 i = 0; i < screenheight; i++)
+		memset(&gPlanarBuffer[i*4096], 0, screenwidth);
+	for (U32 i = screenheight; i < 2*screenheight; i++)
+		memset(&gPlanarBuffer[i*4096], 0x7F, screenwidth);
 }
 
 //----------------------------------------------------------------------------
@@ -472,7 +484,7 @@ tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 {
 	unsigned long	p = backlight;
 	int 			r;
-	
+
 	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHT, p);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
 }
