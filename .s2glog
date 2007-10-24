@@ -9864,3 +9864,23 @@ By Dave Milici (dmilici@leapfrog.com) on 10/24/07 1:16 PM
 4,329 ms. (Cumulative: 2,286,645 ms)
 
 ----------------
+Revision 2,047 from svn://localhost/TRUNK/:
+Revision 2,048 from svn://localhost/TRUNK/:
+Revision 2,049 from svn://localhost/TRUNK/:
+Revision 2,050 from svn://localhost/TRUNK/:
+Revision 2,051 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,109 ms. (Cumulative: 2,290,848 ms)
+
+----------------
+Revision 2,052 from svn://localhost/TRUNK/:
+Revision 2,053 from svn://localhost/TRUNK/:
+
+Add DatasetLoader example to list of exported SDK examples.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/07 3:53 PM
+1 changed, 0 added, 0 deleted.
+3,985 ms. (Cumulative: 2,294,849 ms)
+
+----------------
