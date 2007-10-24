@@ -9826,3 +9826,12 @@ By gklimanis (gklimanis@leapfrog.com) on 10/23/07 4:58 PM
 9,266 ms. (Cumulative: 2,272,378 ms)
 
 ----------------
+Revision 2,033 from svn://localhost/TRUNK/:
+
+Completed external orchestra module reference for both emulation and embedded targets.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/23/07 5:41 PM
+3 changed, 0 added, 0 deleted.
+5,422 ms. (Cumulative: 2,277,941 ms)
+
+----------------
