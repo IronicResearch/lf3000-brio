@@ -43,9 +43,12 @@ LF_USING_BRIO_NAMESPACE()
 #define PIN_LCD_ENABLE			10
 #define PIN_BACKLIGHT_ENABLE	9
 #define PIN_BLUE_LED			29
-#else
+#elif   defined(LF2530)
 #define PIN_LCD_ENABLE			31
 #define PIN_BACKLIGHT_ENABLE	28
+#elif   defined(LF1000)
+#define PORT_LCD				0
+#define PIN_BACKLIGHT_ENABLE	30
 #endif
 
 #define ALPHA_STEP				15

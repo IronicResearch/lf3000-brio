@@ -9884,3 +9884,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/24/07 3:53 PM
 3,985 ms. (Cumulative: 2,294,849 ms)
 
 ----------------
+Revision 2,054 from svn://localhost/TRUNK/:
+
+Added workaround to toggle LF1000 backlight pin in absense of driver PWM control. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/07 4:05 PM
+3 changed, 0 added, 0 deleted.
+4,251 ms. (Cumulative: 2,299,162 ms)
+
+----------------
