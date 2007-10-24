@@ -3,6 +3,35 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.19  (Build 2034 released Oct 23, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries: embedded-svn2028.tar.gz
+* Brio library binaries: basebrio-svn2034.tar.gz
+* NFS root file system: nfsroot-svn2034.tar.gz
+
+LF1000 development boards can be updated with the following script:
+
+	lightning_install.py /dev/ttyS0 -e lightning-boot-0.9.1-2028-ME_LF1000.bin:0 kernel-0.9.1-2028-ME_LF1000.jffs2:200000 erootfs-0.9.1-2028-ME_LF1000.jffs2:400000 kernel-0.9.1-2028-ME_LF1000.jffs2:1200000 erootfs-0.9.1-2028-ME_LF1000.jffs2:1400000 
+
+LF1000 form-factor boards must be updated by LeapFrog manufacturing team.
+
+Enhancements:
+-------------
+* USB support for /Didj NAND partition stabilized.
+  Exposing NAND partition as USB mass storage device requires that /Didj
+  be unmounted. This means Brio apps cannot enable USB while running. 
+* Watchdog timer added to Kernel MPI.
+* OpenGL on embedded target is now shared library (libopengles_lite.so).
+* Audio mixer updates for equalizer and volume settings.
+* MIDI library updated for loading instruments on demand.
+
+
+===========================================
 v0.1.18  (Build 1938 released Oct 15, 2007) 
 ===========================================
 
