@@ -48,10 +48,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 CPath GetAppRsrcFolder( void )
 {
 #ifdef EMULATION
-	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
-	return dir ; //+ "MIDI/";
+	CPath dir = EmulationConfig::Instance().GetModuleSearchPath();
+	return dir;
 #else	
-	return "/Didj/Data/rsrc/"; //MIDI";
+	return "/Didj/Base/Brio/Module/";
 #endif	// EMULATION
 }
 
@@ -272,7 +272,7 @@ tErrType 	CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo* 	pInfo )
     orchestraFileName = "/home/lfu/workspace/Brio2/ThirdParty/Mobileer/Libs/orch_100207.mbis";
 //"/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis"; 
 #else
-    orchestraFileName = GetAppRsrcFolder() /*+ "MIDI/" */ + "orch_100207.mbis";
+    orchestraFileName = GetAppRsrcFolder() + "orchestra.mbis";
 #endif
 //orchestraFileName = "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis"; 
 //orchestraFileName = "/Didj/Base/Brio/rsrc/orch_100207.mbis"; 
