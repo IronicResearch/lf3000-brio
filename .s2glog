@@ -9903,3 +9903,12 @@ By gklimanis (gklimanis@leapfrog.com) on 10/25/07 11:23 AM
 4,048 ms. (Cumulative: 2,303,303 ms)
 
 ----------------
+Revision 2,057 from svn://localhost/TRUNK/:
+
+new sf2brio in hopes of checking in an executable with execute permissions
+
+By gklimanis (gklimanis@leapfrog.com) on 10/25/07 11:24 AM
+1 changed, 0 added, 0 deleted.
+4,137 ms. (Cumulative: 2,307,502 ms)
+
+----------------
