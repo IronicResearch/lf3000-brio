@@ -9973,3 +9973,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/29/07 1:40 PM
 4,282 ms. (Cumulative: 2,329,027 ms)
 
 ----------------
+Revision 2,082 from svn://localhost/TRUNK/:
+
+Added watchdog timer support.
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/29/07 2:11 PM
+2 changed, 0 added, 0 deleted.
+4,299 ms. (Cumulative: 2,333,388 ms)
+
+----------------

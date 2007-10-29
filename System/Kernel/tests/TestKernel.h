@@ -1053,13 +1053,13 @@ public:
  	// Watchdog Timer
  	//==============================================================================
      
-     // minimal start watchdog timer test.  See function exists, but don't start timer
+     // minimal start watchdog timer test.  See function exists, no timer in emulation
      void testStartWatchdog()
      {
     	 ptintf_test_info("testStartWatchdog");
     	 tErrType err;
     	 
-    	 err = KernelMPI->StartWatchdog(0);		// zero keeps watchdog disabled
+    	 err = KernelMPI->StartWatchdog(60);	// no watchdog in emulation
     	 TS_ASSERT_EQUALS( err, (tErrType)0 );
      }
 
