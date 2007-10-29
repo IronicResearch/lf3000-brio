@@ -23,6 +23,8 @@ long appType = kAppType_sf2brio;
 
 long verbose = False;
 
+long headerPadBytes = 0;
+
 // Sound file variables
 SNDFILE	*inSoundFile = NULL;
 SF_INFO	inSoundFileInfo ;
@@ -100,8 +102,8 @@ return (1);
 	void   
 PrintUsage()
 {
-printf("Usage:  %s <infile> <outfile>\n", appName);
-//printf("Usage:  %s [Options] <infile><outfile>\n", appName);
+//printf("Usage:  %s <infile> <outfile>\n", appName);
+printf("Usage:  %s [Options] -i <infile> -o <outfile>\n", appName);
 printf("Options:\n");
 printf("    -outFormat brio, aiff, wav, raw (default: brio)\n");
 printf("                       \n");
@@ -138,6 +140,9 @@ char inFilePath [MAX_FILENAME_LENGTH];
 char outFilePath[MAX_FILENAME_LENGTH];
 long result = 0;
 
+//printf("sizeof(tAudioHeader)=%d\n", sizeof(tAudioHeader));
+//exit(0);
+
 // Determine application type by its name
 appType = kAppType_sf2brio;
 strcpy(appName, argv[0]);
@@ -149,7 +154,7 @@ for (i = 0; i < kMaxChannels; i++)
 inFilePath [0] = '\0';
 outFilePath[0] = '\0';
 
-if (argc < 3)
+if (argc < 2)
    {
     PrintUsage();
     exit(0);
@@ -170,12 +175,17 @@ else if (!Stricmp(s, "-h") || !Stricmp(s, "-help"))
 else if (!Stricmp(s, "-i") || !Stricmp(s, "-infile"))
 	{
 	strcpy(inFilePath , argv[++i]);
-	printf("inFilePath = '%s'\n", inFilePath);
+//	printf("inFilePath = '%s'\n", inFilePath);
 	}
 else if (!Stricmp(s, "-o") || !Stricmp(s, "-outfile"))
 	{
 	strcpy(outFilePath , argv[++i]);
-	printf("outFilePath = '%s'\n", outFilePath);
+//	printf("outFilePath = '%s'\n", outFilePath);
+	}
+else if (!Stricmp(s, "-pad") || !Stricmp(s, "-padHeader"))
+	{
+	headerPadBytes = atoi(argv[++i]);
+	printf("headerPadBytes = %ld\n", headerPadBytes);
 	}
 else if (!Stricmp(s, "-outFormat"))
 	{
@@ -206,13 +216,29 @@ else
 	exit(-1);
 	}
 }  // ---- end argument parsing
-   
+//printf("End of argument parsing\n");
+
+// If no output file specified, print input infor
+if ('\0' == outFilePath[0])
+{
+tAudioHeader d;
+//	printf("No output file specified \n"); 
+int isBrioAudioFile = CheckForBrioAudioHeader(inFilePath, &d );
+if (verbose)
+    {
+    printf("isBrioAudioFile = %d\n", isBrioAudioFile);
+    if (isBrioAudioFile)
+        PrintBrioAudioHeader( &d );
+    }
+
+exit(-1);
+}
 
 if (verbose)
-{
-printf("inFilePath  = '%s'\n", inFilePath);
-printf("outFilePath = '%s'\n", outFilePath);
-}
+    {
+    printf("inFilePath  = '%s'\n", inFilePath);
+    printf("outFilePath = '%s'\n", outFilePath);
+    }
 
 // 
 // -------------------- Convert audio file
@@ -227,6 +253,12 @@ long loopCount, loopRemnants;
 		printf("Unable to open input file '%s'\n", inFilePath);
 		CleanUpAndExit();
 		}
+
+if (verbose)
+    {
+// PrintBrioAudioHeader( tAudioHeader *d );
+
+    }
 
 // Select sampling rate, for which command-line specification overrides the file value
 	inSamplingFrequency  = inSoundFileInfo.samplerate;
@@ -293,18 +325,22 @@ if (kOutFileFormat_Unspecified == outFileFormat)
 	if (kOutFileFormat_Brio == outFileFormat)
 		{
 		tAudioHeader brioFileHeader;
+		tAudioHeader brioFileHeaderPad;  // Keep this here for pad byte experiments
 
-		long sampleSizeInBytes = inSoundFileInfo_wordWidthBits / 8;
+		long sampleSizeInBytes = inSoundFileInfo_wordWidthBits / sizeof(char);
 
 		brioFileHeader.sampleRate   = outSamplingFrequency;
 		brioFileHeader.dataSize     = ((inSoundFileInfo.frames * inSoundFileInfo.channels) * sampleSizeInBytes); 
+
 		brioFileHeader.offsetToData = sizeof(tAudioHeader);
-		brioFileHeader.type         = 0x10001C05;	// Brio raw type
+//		brioFileHeader.type         = 0x10001C05;	// Brio raw type
 		if (1 == inSoundFileInfo.channels)
 			brioFileHeader.flags = 0;  // Mono for Brio
 		else
 			brioFileHeader.flags = 1;  // Stereo for Brio
-		fwrite(&brioFileHeader, sizeof(char), sizeof(tAudioHeader), outH);
+        long bytesToWrite = sizeof(tAudioHeader) + headerPadBytes;
+		long bytesWritten = fwrite(&brioFileHeader, 1, bytesToWrite, outH);
+//printf("sizeof(tAudioHeader) =%d bytesWritten=%d\n", sizeof(tAudioHeader), bytesWritten);
 
         if (verbose)
             {

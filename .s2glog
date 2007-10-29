@@ -9983,3 +9983,19 @@ By Scott Esters (sesters@leapfrog.com) on 10/29/07 2:11 PM
 4,299 ms. (Cumulative: 2,333,388 ms)
 
 ----------------
+Revision 2,083 from svn://localhost/TRUNK/:
+Revision 2,084 from svn://localhost/TRUNK/:
+Revision 2,085 from svn://localhost/TRUNK/:
+Revision 2,086 from svn://localhost/TRUNK/:
+Revision 2,087 from svn://localhost/TRUNK/:
+Revision 2,088 from svn://localhost/TRUNK/:
+Revision 2,089 from svn://localhost/TRUNK/:
+Revision 2,090 from svn://localhost/TRUNK/:
+
+Fix for misaligned RAW header.
+
+By gklimanis (gklimanis@leapfrog.com) on 10/29/07 3:59 PM
+8 changed, 0 added, 60 deleted.
+5,594 ms. (Cumulative: 2,339,092 ms)
+
+----------------
