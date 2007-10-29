@@ -1352,7 +1352,7 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 	
 	// If entire string fits, then draw as is
 	GetStringRect(&str, &rect);
-	if (rect.right - rect.left <= surf.width)
+	if (x + rect.right - rect.left <= surf.width)
 		return DrawString(str, x, y, surf);
 	
 	// Parse string for space breaks to draw incrementally
@@ -1366,9 +1366,10 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 			n = i+1-p;
 			part = str.substr(p, n);
 			p = i+1;
+			n = len-p;
 			// Wrap XY pre-drawing
 			GetStringRect(&part, &rect);
-			if (x + rect.right > surf.width) 
+			if (x + rect.right - rect.left > surf.width) 
 			{
 				x = 0;
 				y += dy;
@@ -1385,6 +1386,12 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 
 	// Draw the last part of the string, or entire string if no space breaks
 	part = str.substr(p, n);
+	GetStringRect(&part, &rect);
+	if (x + rect.right - rect.left > surf.width) 
+	{
+		x = 0;
+		y += dy;
+	}
 	rc = DrawString(part, x, y, surf);
 	
 	return rc;
