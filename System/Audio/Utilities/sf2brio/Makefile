@@ -1,26 +1,30 @@
 # source files.
 SRC = main.cpp sf.cpp
-
 OBJ = $(SRC:.cpp=.o)
+
+# CPU : x86, arm
+CPU = x86
+# Compiler: x86: g++   ARM: arm-linux-gcc
+CCC = g++
 
 OUT = sf2brio
 BRIO=/home/lfu/workspace/Brio2
 BRIO_AUDIO = $(BRIO)/System/Audio
 
 # include directories
-INCLUDES = -I. -I/usr/local/include -I$(BRIO_AUDIO)/LibSndFile -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include -I$(BRIO_AUDIO)/Include 
+INCLUDES = -I. \
+    -I/usr/local/include \
+    -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include \
+    -I$(BRIO)/System/Include \
+    -I$(BRIO_AUDIO)/LibSndFile \
+    -I$(BRIO_AUDIO)/Include 
 
 # C++ compiler flags (-g -O2 -Wall)
 CCFLAGS = -O2
 
-# compiler
-CCC = g++
-
 # library paths
-LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/x86 
-#-L$(BRIO_AUDIO)/DspUtil/x86 
-LIBS = -lsndfile 
-#-ldsputil 
+LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/$(CPU)
+LIBS = -lsndfile -static
 
 # compile flags (-g)
 LDFLAGS = 
@@ -33,9 +37,10 @@ default: dep $(OUT)
 	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
-	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) -static
-	cp $(OUT) ./x86
+	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS)
+	cp $(OUT) ./$(CPU)
 #	echo "Copied to ~/nfsroot"
+	cp $(OUT) $(LEAPFROG_PLUGIN_ROOT)/Tools
 
 depend: dep
 
@@ -44,6 +49,7 @@ dep:
 
 clean:
 	rm -f $(OBJ) $(OUT) Makefile.bak 
+
 
 # DO NOT DELETE
 
