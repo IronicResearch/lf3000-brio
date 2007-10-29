@@ -136,27 +136,28 @@ In order to install application binaries and resources onto the embedded target 
 a designated NAND partition is available for mounting as a USB mass storage device on
 the host development system.
 
-Internally the NAND partition is mounted at bootup as '/Didj'.
+Internally the NAND partition is mounted at bootup as '/Didj'. You can verify this
+by listing all mounted devices and partitions at the target console prompt.
 
-	mount -t vfat -o sync /dev/mtdblock9 /Didj
+	(target) # mount
 	
 To expose the NAND partition to the development system:
 
-	usbctl -d mass_storage -a enable
-	usbctl -d mass_storage -a unlock
+	(target) # usbctl -d mass_storage -a enable
+	(target) # usbctl -d mass_storage -a unlock
 
 Connecting a USB cable to the embedded target board should make the board appear as a
-mounted USB device. On Ubuntu Linux, the mounted device name is '/media/disk'. This
+mounted USB device. On Ubuntu Linux, the mounted device name is '/media/Didj'. This
 name should be set as the root filesystem path for the Lightning SDK.
 
-	export ROOTFS_PATH=/media/disk   
+	(host) $ export ROOTFS_PATH=/media/Didj   
 
 Once mounted, the Brio binaries will need to copied onto the exposed NAND partition.
 This is intended to begin populating the /Didj directory after the board is reflashed.
 On the Ubuntu development system side:
 
-	tar -xzvf basebrio.tar.gz 
-	cp -R Base/* /media/disk/  
+	(host) $ tar -xzvf basebrio.tar.gz 
+	(host) $ cp -R Base/* /media/Didj/  
 
 Embedded target application binaries and resources will then be copied to their
 respective subdirectory locations on the mounted NAND partition. When copying files
@@ -165,20 +166,12 @@ the mounted device on the host side before disabling it from the target.
 
 To remove the NAND partition from the development system:
 	 
-	usbctl -d mass_storage -a lock 
-	usbctl -d mass_storage -a disable
+	(target) # usbctl -d mass_storage -a lock 
+	(target) # usbctl -d mass_storage -a disable
 
-Note that at this stage in the USB device interface's development, some extra steps
-may need to be taken to insure synchronization of the copied files onto the NAND
-flash medium. For the time being you may have to issue explicit sync, or unmount and
-remount commands to see the NAND partition updated at '/Didj'.
-
-	sync 
-	ls /Didj
-	
-	umount /Didj
-	mount -t vfat -o sync /dev/mtdblock9 /Didj
-	ls /Didj
+Note that in order to insure filesystem coherency on the /Didj NAND partition,
+/Didj is always unmounted internally when enabled over USB, and remounted
+automatically when disabled over USB.  
 	
 ======================================================
 Target Preparation : booting to NFS root filesystem 
@@ -193,11 +186,11 @@ NAND root filesystem to NFS mounted root filesystem.
 
 To examine the current root filesystem setting:
 
-	cat /flags/rootfs
+	(target) # cat /flags/rootfs
 
 To set NFS root filesystem booting:
 
-	echo NFS0 > /flags/rootfs
+	(target) # echo NFS0 > /flags/rootfs
 	
 Restarting the embedded target should now complete booting at the NFS mounted location
 at Ethernet IP address 192.168.0.113 as previous releases (described below).
@@ -205,13 +198,13 @@ at Ethernet IP address 192.168.0.113 as previous releases (described below).
 In order to see files copied to the '/Didj' directory at the NFS mounted location,
 you will need to unmount the NAND partition.
 
-	umount /Didj
-	ls /Didj
+	(target) # umount /Didj
+	(target) # ls /Didj
 
 When building SDK apps, be sure ROOTFS_PATH is pointing to the NFS path on the
 development system.
 
-	export ROOTFS_PATH=/home/lfu/nfsroot
+	(host) $ export ROOTFS_PATH=/home/lfu/nfsroot
 
 Embedded target application binaries and resources will then be copied to their
 respective subdirectory locations on the development system's NFS rootfs directory.
@@ -239,8 +232,8 @@ so the SDK build scripts will know where to install application binaries and res
 Target Preparation -- setting up NFS
 ======================================================
 
-Obviouslly, you only need to do these steps if you system hasn't already 
-been configured.
+You only need to do these steps if your development system hasn't already 
+been configured for NFS.
 
 Your development system image will also need to have NFS server installed
 and running, and one network adapter configured at the fixed IP address
@@ -379,7 +372,7 @@ loading its pre-flashed Linux kernel.
 
 At the U-boot prompt, test pinging the development system first.
 
-	ping 192.168.0.113
+	# ping 192.168.0.113
 	
 Then download the updated kernel images from its TFTP location on the
 development system. On Ubuntu Linux, TFTP is typically configured
@@ -390,24 +383,31 @@ some version number 'XXXX', which is something like '0.8.0-1888-ME_LF1000'.
 In this release, all new binaries need to be flashed, and it is advisable
 to erase all flash memory first.
 
-	nand erase
+	# nand erase
 	
+If you are just updating one component like the kernel image, you could
+skip the previous step but will need to erase the corresponding region
+with explicit 'nand erase clean <address> <size>' commands below.
+
 To download and flash the new boot loader:
 
-	tftp 02000000 lightning-boot-XXXX.bin
-	nand write 02000000 0 1800
+	# tftp 02000000 lightning-boot-XXXX.bin
+	# nand erase clean 0 2000
+	# nand write 02000000 0 2000
 	
 To download and flash the new kernel image:
 
-	tftp 02000000 kernel-XXXX.jffs2
-	nand write 02000000 00200000 160000
-	nand write 02000000 01200000 160000
+	# tftp 02000000 kernel-XXXX.jffs2
+	# nand erase clean 00200000 180000
+	# nand erase clean 01200000 180000
+	# nand write 02000000 00200000 180000
+	# nand write 02000000 01200000 180000
 
 To download and flash the new embedded root filesystem image:
 
-	tftp 02000000 erootfs-XXXX.jffs2
-	nand write 02000000 00400000 520000
-	nand write 02000000 01400000 520000
+	# tftp 02000000 erootfs-XXXX.jffs2
+	# nand write 02000000 00400000 680000
+	# nand write 02000000 01400000 680000
 
 Once all components are flashed, reboot the system by pressing the RESET
 button. You should see Linux boot messages on the serial console when
@@ -448,6 +448,18 @@ This script will update all 3 major firmware components, including the boot load
 the Linux kernel image (with U-boot), and the embedded root filesystem. All of these
 components have changed significantly since previous releases, including their names
 and (more importantly) their locations! 
+
+If for some reason you only wish to update one component at a time, the above
+script could be executed in these smaller steps.
+
+	./lightning_install.py /dev/ttyS0 -e lightning-boot-XXXX.bin:0
+	./lightning_install.py /dev/ttyS0 kernel-XXXX.jffs2:200000 
+	./lightning_install.py /dev/ttyS0 erootfs-XXXX.jffs2:400000
+	./lightning_install.py /dev/ttyS0 kernel-XXXX.jffs2:1200000 
+	./lightning_install.py /dev/ttyS0 erootfs-XXXX.jffs2:1400000 
+
+Note that the '-e' option to erase all memory should only be executed in the
+first step in this case.
  
 ======================================================
 Target Preparation -- installing ARM cross-compiler
