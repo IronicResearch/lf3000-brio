@@ -8,7 +8,7 @@ Import('*')
 #-----------------------------------------------------------------------------
 # Populate the "Publish" folder for a public release
 #-----------------------------------------------------------------------------
-if vars['is_publish'] and vars['is_export']:
+if vars['is_publish'] or vars['is_export']:
 	samples = ['Simple', 'BrioCube', 'BrioAudio', 'Button', 'Display', 'BrioVideo', 'Power', 'USBDemo', 'SysAppDemo', 'PlayAudio', 'DatasetLoader']
 	dest_dir = os.path.join(vars['export_root'], 'Samples')
 	for s in samples:
@@ -16,4 +16,5 @@ if vars['is_publish'] and vars['is_export']:
 				Copy("$TARGET", "$SOURCE"))
 	env.Install(vars['export_root'], 'readme.txt')
 	env.Install(vars['export_root'], 'ReleaseNotes.txt')
+	env.Install(vars['export_root'], 'TargetSetup.txt')
 	
