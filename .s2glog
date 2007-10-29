@@ -9912,3 +9912,29 @@ By gklimanis (gklimanis@leapfrog.com) on 10/25/07 11:24 AM
 4,137 ms. (Cumulative: 2,307,502 ms)
 
 ----------------
+Revision 2,058 from svn://localhost/TRUNK/:
+Revision 2,059 from svn://localhost/TRUNK/:
+Revision 2,060 from svn://localhost/TRUNK/:
+Revision 2,061 from svn://localhost/TRUNK/:
+Revision 2,062 from svn://localhost/TRUNK/:
+Revision 2,063 from svn://localhost/TRUNK/:
+Revision 2,064 from svn://localhost/TRUNK/:
+Revision 2,065 from svn://localhost/TRUNK/:
+Revision 2,066 from svn://localhost/TRUNK/:
+Revision 2,067 from svn://localhost/TRUNK/:
+Revision 2,068 from svn://localhost/TRUNK/:
+Revision 2,069 from svn://localhost/TRUNK/:
+Revision 2,070 from svn://localhost/TRUNK/:
+Revision 2,071 from svn://localhost/TRUNK/:
+Revision 2,072 from svn://localhost/TRUNK/:
+Revision 2,073 from svn://localhost/TRUNK/:
+Revision 2,074 from svn://localhost/TRUNK/:
+Revision 2,075 from svn://localhost/TRUNK/:
+
+Fixes for correctly text wrapping last non-spaced word of string. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/29/07 10:53 AM
+1 changed, 0 added, 0 deleted.
+4,156 ms. (Cumulative: 2,311,846 ms)
+
+----------------
