@@ -9964,3 +9964,12 @@ By Rcabrera (Rcabrera@leapfrog.com) on 10/29/07 1:15 PM
 4,204 ms. (Cumulative: 2,324,682 ms)
 
 ----------------
+Revision 2,081 from svn://localhost/TRUNK/:
+
+Split out verbose target setup instructions into separate TargetSetup.txt SDK file.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/29/07 1:40 PM
+2 changed, 1 added, 0 deleted.
+4,282 ms. (Cumulative: 2,329,027 ms)
+
+----------------
