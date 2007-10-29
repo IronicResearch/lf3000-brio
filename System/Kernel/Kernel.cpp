@@ -29,6 +29,7 @@
 #include <sys/ioctl.h>
 #include <time.h>
 #include <mqueue.h>
+#include <linux/watchdog.h>
 
 //#include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -1191,10 +1192,30 @@ tErrType CKernelModule::GetTimerRemainingTime( tTimerHndl hndl, U32* pMs, U32* p
 // Watchdog Timer
 //==============================================================================
 
+int watchdog_fd = 0;	// watchdog timer runs while file is open
+						// write 'V' to device before close
+
 //------------------------------------------------------------------------------
 // Start Watchdog Timer
 tErrType CKernelModule::StartWatchdog( U32 seconds ) const
 {
+#ifndef EMULATION
+	
+	int status;
+
+	if (watchdog_fd)				// file already open?
+		return kPermissionsErr;	// only one open of device allowed
+	watchdog_fd = open("/dev/watchdog", O_WRONLY);
+	if (watchdog_fd < 0) {
+		return kNoImplErr;			// device not found, assume unimplemented
+	}
+	status = ioctl(watchdog_fd, WDIOC_SETTIMEOUT, &seconds);
+	if (status < 0) {				// some ioctl error
+		write(watchdog_fd,"V",1);	// stop watchdog, write close sequence
+		close(watchdog_fd);
+		return kUnspecifiedErr;
+	}
+#endif
 	return kNoErr;
 }
 
@@ -1202,6 +1223,22 @@ tErrType CKernelModule::StartWatchdog( U32 seconds ) const
 // Stop Watchdog Timer
 tErrType CKernelModule::StopWatchdog( void ) const
 {
+#ifndef EMULATION
+	
+	int status;
+	
+	if (!watchdog_fd)				 // file open?
+		return kMPINotConnectedErr; // no
+	
+	status = write(watchdog_fd,"V",1); // stop watchdog, write close sequence
+	if (status < 0) {
+		close(watchdog_fd);			// try futile close of device
+		return kUnspecifiedErr;
+	}
+	status = close(watchdog_fd);
+	if (status < 0)
+		return kUnspecifiedErr;
+#endif
 	return kNoErr;
 }
 
@@ -1209,6 +1246,15 @@ tErrType CKernelModule::StopWatchdog( void ) const
 // KeepAlive request to Watchdog Timer
 tErrType CKernelModule::KeepWatchdogAlive( void ) const
 {
+#ifndef EMULATION
+	
+	int status;
+	int dummy;
+	
+	status = ioctl(watchdog_fd, WDIOC_KEEPALIVE, &dummy);
+	if (status < 0)
+		return kUnspecifiedErr;
+#endif
 	return kNoErr;
 }
 
