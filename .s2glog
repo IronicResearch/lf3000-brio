@@ -9999,3 +9999,18 @@ By gklimanis (gklimanis@leapfrog.com) on 10/29/07 3:59 PM
 5,594 ms. (Cumulative: 2,339,092 ms)
 
 ----------------
+Revision 2,091 from svn://localhost/TRUNK/:
+Revision 2,092 from svn://localhost/TRUNK/:
+Revision 2,093 from svn://localhost/TRUNK/:
+Revision 2,094 from svn://localhost/TRUNK/:
+Revision 2,095 from svn://localhost/TRUNK/:
+Revision 2,096 from svn://localhost/TRUNK/:
+Revision 2,097 from svn://localhost/TRUNK/:
+
+Allow spaces to be excluded from text wrapping calculation.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/30/07 10:44 AM
+1 changed, 0 added, 0 deleted.
+4,110 ms. (Cumulative: 2,343,311 ms)
+
+----------------
