@@ -1363,10 +1363,9 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 		// Parse string for space breaks
 		if (str.at(i) == ' ')
 		{
-			n = i+1-p;
+			// Exclude space from wrap calculation since word may fit without it
+			n = i-p;
 			part = str.substr(p, n);
-			p = i+1;
-			n = len-p;
 			// Wrap XY pre-drawing
 			GetStringRect(&part, &rect);
 			if (x + rect.right - rect.left > surf.width) 
@@ -1374,8 +1373,13 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 				x = 0;
 				y += dy;
 			}
+			// Include space for incremental drawing and string update
+			n = i+1-p;
+			part = str.substr(p, n);
+			p = i+1;
+			n = len-p;
 			rc = DrawString(part, x, y, surf);
-			// Wrap XY post-drawing (in case of long words)
+			// Wrap XY post-drawing (in case of long words or overflow from spaces)
 			if (x > surf.width)
 			{
 				x = 0;
