@@ -16,7 +16,12 @@ the following cables:
 
 	null-modem serial cable (for serial console)
 	cross-over Ethernet cable (for TFTP transfers or NFS booting)
+	USB Ethernet adapter (preferred over builtin host Ethernet)
 	
+It is recommended to use a USB Ethernet adapter for network communications with the
+PC host development system and the Lightning target board. A LinkSys brand USB Ethernet
+adapter is preferred over Belkin brand. (TFTP transfers in U-boot fail with Belkin.)
+
 The PC host development system (Ubuntu Linux) should have the following packages
 installed and running:
 
@@ -213,7 +218,7 @@ launcher". Pick a nice icon, name the launcher "minicom" and use the following f
 This creates an icon that runs minicom in a terminal, with the desired options.
 
 ======================================================
-Target Preparation -- downloading kernel image manually
+Target Preparation -- flashing kernel image manually
 ======================================================
 
 With the network services up and running for the specific development system
@@ -237,6 +242,13 @@ development system. On Ubuntu Linux, TFTP is typically configured
 at the ~/tftpboot directory, so this is where the image files need to
 be copied to. The image files provided in releases will typically have
 some version number 'XXXX', which is something like '0.8.0-1888-ME_LF1000'.
+
+**** Important Note ****:
+Test transferring a file via TFTP. Problems have occurred with Belkin USB Ethernet
+adapters during TFTP transfers. LinkSys adapters are preferred Ethernet devices
+for use in U-boot.
+
+	# tftp 02000000 lightning-boot-XXXX.bin 
 
 In this release, all new binaries need to be flashed, and it is advisable
 to erase all flash memory first.
@@ -270,6 +282,10 @@ To download and flash the new embedded root filesystem image:
 Once all components are flashed, reboot the system by pressing the RESET
 button. You should see Linux boot messages on the serial console when
 flashing was successful.
+
+**** LF1000 Development Board Note ****:
+If you are updating an LF1000 development board from firmware version earlier
+than 0.8.0, make sure that Ethernet jumper J31 is moved to CS2 before rebooting.
 
 ======================================================
 Target Preparation -- flashing kernel image via script
@@ -319,6 +335,10 @@ script could be executed in these smaller steps.
 Note that the '-e' option to erase all memory should only be executed in the
 first step in this case.
  
+**** LF1000 Development Board Note ****:
+If you are updating an LF1000 development board from firmware version earlier
+than 0.8.0, make sure that Ethernet jumper J31 is moved to CS2 before rebooting.
+
 ======================================================
 Target Preparation -- installing ARM cross-compiler
 ======================================================
