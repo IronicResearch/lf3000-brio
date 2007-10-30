@@ -172,6 +172,15 @@ To remove the NAND partition from the development system:
 Note that in order to insure filesystem coherency on the /Didj NAND partition,
 /Didj is always unmounted internally when enabled over USB, and remounted
 automatically when disabled over USB.  
+
+During development it might be convenient to keep the /Didj NAND partition unlocked,
+in which case the /Didj volume will appear mounted on the PC host anytime the USB
+enable command is issued. This is done by setting a flag file 'usb_mass_storage'.
+
+To leave the /Didj NAND partition unlocked:
+
+	(target) # echo UNLOCKED > /flags/usb_mass_storage
+ 
 	
 ======================================================
 Target Preparation : booting to NFS root filesystem 
@@ -207,7 +216,8 @@ development system.
 	(host) $ export ROOTFS_PATH=/home/lfu/nfsroot
 
 Embedded target application binaries and resources will then be copied to their
-respective subdirectory locations on the development system's NFS rootfs directory.
+respective subdirectory locations on the development system's NFS rootfs directory
+during SCons builds.
 
 ======================================================
 Target Preparation : installing nfsroot image

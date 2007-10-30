@@ -2,6 +2,11 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+* Fixed Display module to disable HW 2D layer set externally of Brio.
+* Fixed Font module text wrapping to handle last words in strings.
+* Added Utility library with Dataset Loader functions.
+* Split out target instructions into separate TargetSetup.txt file.  
+ 
 ===========================================
 v0.1.19  (Build 2034 released Oct 23, 2007) 
 ===========================================
