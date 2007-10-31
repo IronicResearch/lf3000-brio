@@ -340,6 +340,102 @@ If you are updating an LF1000 development board from firmware version earlier
 than 0.8.0, make sure that Ethernet jumper J31 is moved to CS2 before rebooting.
 
 ======================================================
+Target Preparation -- flashing kernel via cartridge
+======================================================
+
+Developers who received a manufacturing cartridge from LeapFrog will be able to
+update the firmware on their target boards simply by loading the cartridge.
+
+This is the only method to flash new LF1000 Form-Factor boards. This method can
+also be used to flash LF1000 development boards by changing certain jumpers.  
+
+On the LF1000 Form-Factor units:
+
+	1. Make sure power is off.
+	2. Insert the manufacturing cartridge on top of the unit.
+	3. Turn on power to the form-factor unit.
+	4. Wait for the "OK" bitmap to indicate flashing is complete.
+	5. Turn off the power before removing the cartridge.
+	
+On the LF1000 development boards:
+
+	1. Make sure power is off.
+	2. Insert the manufacturing cartridge on the J15 header pins.
+		The cartridge will be oriented away from the development board
+		when connected properly. Pin 1 is labeled on both boards.
+	3. Change the following jumpers (nearby connector)
+		a. Change jumper J16 (NAND) to CS1.
+		b. Change jumper J13 (LCART) to CS0.
+	4. Turn on power to the form-factor unit.
+	5. Wait for the "OK" bitmap to indicate flashing is complete.
+	6. Turn off the power before removing the cartridge.
+	7. Restore jumpers to their previous settings:
+		a. Change jumper J16 (NAND) to CS0.
+		b. Change jumper J13 (LCART) to CS1.
+	8. Make sure Ethernet jumper J31 (ETHER_CS) is set to CS2.
+	9. Power back on and reboot.
+	
+Repeat the procedure with the manufacturing cartridge for any other LF1000 boards
+which need updating.
+
+Note that a single manufacturing cartridge is pre-programmed for either an LF1000
+form-factor board or development board. The same cartridge cannot be used for both!
+
+======================================================
+Target Preparation -- flashing kernel via backdoor script
+======================================================
+
+In anticipation of future firmware updates to be downloaded over USB by the PC host
+app software, a special backdoor script is now available for flashing firmware
+updates in the LeapFrog .lfp package format.
+
+This script requires that the LF1000 board be able to connect over USB, and then 
+replace the default AppManager program expected to launch on normal bootups.
+
+Connect the USB cable to the LF1000 target board and let it mount /Didj. If the
+device was previously set to be unlocked, /Didj should appear automatically after
+connecting. Otherwise use the following commands to mount /Didj manually.
+
+	(target) # usbctl -d mass_storage -a enable
+	(target) # usbctl -d mass_storage -a unlock
+	
+Copy the following firmware files to the /Didj directory from the host.
+
+	(host) $ cp bootstrap-ME_LF1000-0.10.0.2101.lfp /media/Didj
+	(host) $ cp firmware-ME_LF1000-0.10.0.2101.lfp /media/Didj
+	(host) $ cp bootloader.backdoor /media/Didj
+	(host) $ cp firmware.backdoor /media/Didj
+	(host) $ cp top-secret-backdoor-launcher /media/Didj
+	
+Rename the default AppManager program and replace it with the backdoor launcher
+script.
+
+	(target) # cd /Didj/Base/bin
+	(target) # mv AppManager AppManager.bak
+	(target) # mv /Didj/top-secret-backdoor-launcher AppManager		
+
+Safely unmount (eject) /Didj from the host and unplug the USB cable. This will launch
+the script to update the firmware, and then shutdown the device when completed. This
+might take a few minutes to complete.
+
+Plug the USB cable back in and power the device back on. This should make the /Didj
+drive reappear on the host. The launcher will have left a logfile, 'backdoor.results',
+which can be viewed with a text editor if necessary. Delete this file, and all the 
+backdoor packages files installed above.
+
+	(host) $ rm *.lfp
+	(host) $ rm *.backdoor
+	
+Finally restore the AppManager to its previous location.
+
+	(host) $ cd /Didj/Base/bin
+	(host) $ rm AppManager
+	(host) $ mv AppManager.bak AppManager
+	
+Safely unmount /Didj and disconnect the USB cable again. This should relaunch the
+original AppManager as the default app.
+ 
+======================================================
 Target Preparation -- installing ARM cross-compiler
 ======================================================
 
