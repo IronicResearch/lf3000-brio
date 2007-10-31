@@ -37,6 +37,11 @@ Additional packages which could be helpful:
 
 	Minicom serial terminal (for serial console)
 	Python serial package (for flashing firmware upgrades)
+
+Many of these instructions have been taken from the LeapFrog internal Wiki site, EMMA.
+For latest overview on setting up a target developement system, visit this site:
+
+http://emma.leapfrog.com/display/BRIO/lightning-dev-env-setup
 	
 ======================================================
 Target Preparation -- setting up NFS
@@ -218,6 +223,17 @@ launcher". Pick a nice icon, name the launcher "minicom" and use the following f
 This creates an icon that runs minicom in a terminal, with the desired options.
 
 ======================================================
+Target Preparation -- flashing instructions
+======================================================
+
+There are now several techniques for flashing boards. These techniques are described
+in seprate section below (in historical order).
+
+For the latest info on flashing boards, visit the following LeapFrog Wiki site:
+
+http://emma.leapfrog.com/display/BRIO/Installing+a+LinuxDist+Release
+
+======================================================
 Target Preparation -- flashing kernel image manually
 ======================================================
 
@@ -242,6 +258,13 @@ development system. On Ubuntu Linux, TFTP is typically configured
 at the ~/tftpboot directory, so this is where the image files need to
 be copied to. The image files provided in releases will typically have
 some version number 'XXXX', which is something like '0.8.0-1888-ME_LF1000'.
+
+Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
+in .lfp package files, and no longer contain version numbers in their names.
+To unpack the .lfp files:
+
+	(host) $ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
+	(host) $ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
 
 **** Important Note ****:
 Test transferring a file via TFTP. Problems have occurred with Belkin USB Ethernet
@@ -315,6 +338,13 @@ following script from the development system.
 'XXXX' refers to the version number of the release, such as '0.8.0-1888-ME_LF1000'
 for the LF1000 green development board, or '0.8.0-1888-LF_LF1000' for the LF1000
 form-factor board.
+
+Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
+in .lfp package files, and no longer contain version numbers in their names.
+To unpack the .lfp files:
+
+	(host) $ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
+	(host) $ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
 
 The '-e' option is recommended in this release to erase all flash memory.
 
