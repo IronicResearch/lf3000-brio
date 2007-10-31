@@ -18,11 +18,8 @@ The embedded binary images need to be copied to your TFTP server base directory,
 subsequently downloaded onto the target board via the U-Boot loader. (Refer to image
 flashing instructions in TargetSetup.txt file.)
 
+	cd ~/tftpboot
 	tar -xzvf embedded-svnxxxx.tar.gz
-	cp kernel-xxxx ~/tftpboot
-	cp erootfs-xxxx ~/tftpboot
-	cp lightning-boot-xxxx ~/tftpboot
-	cp lightning_install.py ~/tftpboot
 
 The NFS root image must be unzipped as root user and located off the home user path.
 
@@ -47,7 +44,9 @@ These binaries consist of the following:
 	kernel-xxxx.jffs2		- Linux kernel image (replaces zImage and u-boot)
 	erootfs-xxxx.jffs2		- Embedded root filesystem (alternative to nfsroot)
 
-All 3 binaries need to be flashed into new locations described below. 
+All 3 binaries need to be flashed into new locations described in TargetSetup.txt. 
+Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
+in .lfp package files, and no longer contain version numbers in their names.
 
 The NFS root filesystem may be used for continued development as alternative to
 the embedded root filesystem. You will need to set a flag file after booting the 
@@ -157,8 +156,13 @@ This is intended to begin populating the /Didj directory after the board is refl
 On the Ubuntu development system side:
 
 	(host) $ tar -xzvf basebrio.tar.gz 
-	(host) $ cp -R Base/* /media/Didj/  
+	(host) $ cp -R Base/* /media/Didj/
+	
+The Brio binaries are now also delivered in .lfp package file, which may be unpacked
+on the /Didj NAND partition using the lfpkg tool on the target:
 
+	(target) # lfpkg -a install Brio-xxxx.pkg
+	  
 Embedded target application binaries and resources will then be copied to their
 respective subdirectory locations on the mounted NAND partition. When copying files
 is completed and it is time to disconnect the USB cable, be sure to unmount (eject)
