@@ -2,6 +2,35 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+===========================================
+v0.1.20  (Build 2102 released Oct 30, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.10.0.2101.lfp
+	firmware-ME_LF1000-0.10.0.2101.lfp 
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.10.0.2101.lfp
+	firmware-LF_LF1000-0.10.0.2101.lfp 
+* Brio library binaries: basebrio-svn2102.tar.gz
+* NFS root file system: nfsroot-svn2102.tar.gz
+
+Firmware can now be updated on LF1000 development and form-factor boards using a
+variety of methods: backdoor app transferred over USB, manufacturing cartridge
+provided by LeapFrog, remote serial script, or manual U-boot commands.
+
+Refer to accompanying TargetSetup.txt file for firmware update details. 
+
+Enhancements:
+-------------
+* Firmware now supports auto-update feature via external PC app over USB.
+  Auto-update feature will only be effective *after* the current firmware
+  release is installed onboard.
+* Watchdog timer is now operational.
 * Fixed Display module to disable HW 2D layer set externally of Brio.
 * Fixed Font module text wrapping to handle last words in strings.
 * Added Utility library with Dataset Loader functions.
