@@ -23,6 +23,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <errno.h>
 #include <linux/lf1000/gpio_ioctl.h>
 #include <linux/lf1000/mlc_ioctl.h>
 #include "GLES/libogl.h"
@@ -97,8 +98,11 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 
 	
 	// Get framebuffer address from driver
+	errno=0;
 	gMem1Phys = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
-	dbg_.Assert(gMem1Phys >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
+// FIXED by BK
+	dbg_.Assert(errno == 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
+//	dbg_.Assert(gMem1Phys >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
 
 	// 1st heap size and addresses must be 1 Meg aligned
@@ -263,6 +267,7 @@ void CDisplayModule::WaitForDisplayAddressPatched(void)
 void CDisplayModule::SetOpenGLDisplayAddress(
 		const unsigned int DisplayBufferPhysicalAddress)
 {
+	(void )DisplayBufferPhysicalAddress; /* Prevent unused variable warnings. */ 
 	if(FSAAval) {
 		ioctl(gDevLayerEven, MLC_IOCTFORMAT, 0x4432); /*R5G6B5*/
 		ioctl(gDevLayerOdd , MLC_IOCTFORMAT, 0x4432);

@@ -10104,3 +10104,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/5/07 2:36 PM
 4,141 ms. (Cumulative: 2,369,438 ms)
 
 ----------------
+Revision 2,138 from svn://localhost/TRUNK/:
+
+Files were modified to enable use of the extra option for compilation of embedded target code
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 11/5/07 2:41 PM
+21 changed, 0 added, 0 deleted.
+4,703 ms. (Cumulative: 2,374,204 ms)
+
+----------------

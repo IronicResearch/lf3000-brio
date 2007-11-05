@@ -121,6 +121,7 @@ tErrType CDisplayModule::LockBuffer(tDisplayHandle /*hndl*/)
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::UnlockBuffer(tDisplayHandle hndl, tRect* /*pDirtyRect*/)
 {
+	(void )hndl;	/* Prevent unused variable warnings. */
 	// Nothing to do when no 2D accelerator
 	return kNoErr;
 }
@@ -131,6 +132,7 @@ tErrType CDisplayModule::UnlockBuffer(tDisplayHandle hndl, tRect* /*pDirtyRect*/
 tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                             tDisplayHandle insertAfter, tDisplayScreen screen)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	// Register HW or emulation layer
 	RegisterLayer(hndl, xPos, yPos);
 	
@@ -164,6 +166,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                              tDisplayZOrder initialZOrder,
                              tDisplayScreen screen)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	// Register HW or emulation layer
 	RegisterLayer(hndl, xPos, yPos);
 	
@@ -200,6 +203,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	// UnRegister HW or emulation layer
 	UnRegisterLayer(hndl);
 	
@@ -230,6 +234,8 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
+	(void )screen;		/* Prevent unused variable warnings. */
+	(void)pDirtyRect;	/* Prevent unused variable warnings. */
 	tDisplayContext*	pdc = pdcListHead;
 	tErrType		 	rc = kNoErr;
 

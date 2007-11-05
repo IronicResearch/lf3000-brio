@@ -69,7 +69,7 @@ static int paCallback(const void*						inputBuffer,
 						unsigned long                   framesPerBuffer,
 						const PaStreamCallbackTimeInfo* timeInfo,
 						PaStreamCallbackFlags           statusFlags,
-						void*                           userData)
+						void*                           userData )
 
 {
 //    float *out = (float*)outputBuffer;
@@ -77,7 +77,7 @@ static int paCallback(const void*						inputBuffer,
     (void) timeInfo; /* Prevent unused variable warnings. */
     (void) statusFlags;
     (void) inputBuffer;
-
+    (void ) userData;  /* Prevent unused variable warnings. */ 
 	// Keep count for debugging purposes...
     gCallbackCount++;
 

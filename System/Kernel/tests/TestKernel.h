@@ -60,6 +60,7 @@ namespace
 
 	void myTask_Timer_1(tTimerHndl tHndl)
 	{
+		(void )tHndl;	/* Prevent unused variable warnings. */
 		counterTimer_1--;
 #if 0 // FIXME /BSK
 		printf("\nmyTask_Timer_1 - The timer called me %d tHndl 0x%x\n",
@@ -71,6 +72,7 @@ namespace
 
 	void myTask_Timer_2(tTimerHndl tHndl)
 	{
+		(void )tHndl; 	/* Prevent unused variable warnings. */
 		counterTimer_2--;
 #if 0		// FIXME /BSK
 		printf("myTask_Timer_2 - The timer called me %d tHndl 0x%x\n",
@@ -81,6 +83,7 @@ namespace
 
 	void myTask_Timer_3(tTimerHndl tHndl)
 	{
+		(void )tHndl;		/* Prevent unused variable warnings. */
 		counterTimer_3--;
 #if 0	// FIXME /BSK
 		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n",
@@ -102,6 +105,7 @@ static tMutex     mutex_broadcast = PTHREAD_MUTEX_INITIALIZER;
 
 void *threadfunc_broadcast(void *parm)
 {
+	(void )parm;		/* Prevent unused variable warnings. */
 	tErrType err;
 //	printf("Thread created\n");
 //	fflush( stdout );

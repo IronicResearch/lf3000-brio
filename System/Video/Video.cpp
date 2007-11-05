@@ -99,6 +99,7 @@ inline void PROFILE_BEGIN(void)
 //----------------------------------------------------------------------------
 inline void PROFILE_END(const char* msg)
 {
+	(void )msg;	/* Prevent unused variable warnings. */
 #if USE_PROFILE
 	CKernelMPI	kernel;
 	CDebugMPI	dbg(kGroupVideo);
@@ -122,6 +123,7 @@ static int buffer_data(/* FILE *in, */ ogg_sync_state *oy)
 // Push a page into the steam for packetization
 static int queue_page(ogg_page *page)
 {
+	(void )page;	/* Prevent unused variable warnings. */
 	ogg_stream_pagein(&to,&og);
 	return 0;
 }
@@ -239,6 +241,7 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 {	
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	// Start up Ogg stream synchronization layer
 	ogg_sync_init(&oy);
 	
@@ -351,6 +354,7 @@ Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	pInfo->width	= ti.width;
 	pInfo->height	= ti.height;
 	pInfo->fps		= ti.fps_numerator / ti.fps_denominator;
@@ -360,6 +364,7 @@ Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 //----------------------------------------------------------------------------
 void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 {	
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	// Cleanup decoder stream resources
 	ogg_stream_clear(&to);
 	theora_clear(&td);
@@ -398,6 +403,7 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	// Note theora_granule_time() returns only seconds
 	pTime->frame = theora_granule_frame(&td,td.granulepos);
 	pTime->time  = pTime->frame * 1000 * ti.fps_denominator / ti.fps_numerator;
@@ -414,6 +420,7 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	tVideoTime*	pTime = pCtx;
 	int			bytes;
 
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	// Compute next frame if time-based drop-frame mode selected 
 	if (bDrop)
 		pTime->frame = pTime->time * ti.fps_numerator / (ti.fps_denominator * 1000);
@@ -515,6 +522,7 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	tVideoTime	time;
 	(void)		pCtx;	// unused in original MPI
 	return SyncVideoFrame(hVideo, &time, false);
@@ -526,13 +534,14 @@ inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8
 inline	S16 C(U8 Y)  			{ return (Y - 16); }
 inline 	S16 D(U8 U)  			{ return (U - 128); }
 inline 	S16 E(U8 V)  			{ return (V - 128); }
-inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
+inline 	U8 R(U8 Y,U8 U,U8 V)	{ (void )U; return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
 inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
-inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+inline 	U8 B(U8 Y,U8 U,U8 V)	{ (void )V; return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
 	PROFILE_BEGIN();
@@ -625,6 +634,7 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	if (!gpVidCtx)
 		return false;
 	gpVidCtx->bPaused = true;
@@ -634,6 +644,7 @@ Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	if (!gpVidCtx)
 		return false;
 	gpVidCtx->bPaused = false;
@@ -643,18 +654,21 @@ Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	return (gpVidCtx) ? gpVidCtx->bPaused : false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	return (gpVidCtx) ? gpVidCtx->bPlaying : false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
 {
+	(void )hVideo;	/* Prevent unused variable warnings. */
 	return (gpVidCtx) ? gpVidCtx->bLooped : false;
 }
 
@@ -674,6 +688,7 @@ extern "C"
 	//------------------------------------------------------------------------
 	ICoreModule* CreateInstance(tVersion version)
 	{
+		(void )version;	/* Prevent unused variable warnings. */
 		if( sinst == NULL )
 			sinst = new CVideoModule;
 		return sinst;
@@ -682,6 +697,7 @@ extern "C"
 	//------------------------------------------------------------------------
 	void DestroyInstance(ICoreModule* ptr)
 	{
+		(void )ptr;	/* Prevent unused variable warnings. */
 	//		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;

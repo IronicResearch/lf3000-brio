@@ -457,7 +457,7 @@ tErrType CMidiPlayer::SetEnableTracks( tMidiTrackBitMask trackBitMask )
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::TransposeTracks( tMidiTrackBitMask trackBitMask, S8 transposeAmount )
+tErrType CMidiPlayer::TransposeTracks( /*tMidiTrackBitMask trackBitMask, S8 transposeAmount*/ )
 {
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CMidiPlayer::TransposeTracks -- ...\n");	
@@ -467,7 +467,7 @@ tErrType CMidiPlayer::TransposeTracks( tMidiTrackBitMask trackBitMask, S8 transp
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask trackBitMask, tMidiInstr instr )
+tErrType CMidiPlayer::ChangeProgram(/* tMidiTrackBitMask trackBitMask, tMidiInstr instr */ )
 {
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CMidiPlayer::ChangeProgram -- ...\n");	
@@ -477,7 +477,7 @@ tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask trackBitMask, tMidiInstr 
 
 //==============================================================================
 //==============================================================================
-tErrType CMidiPlayer::ChangeTempo( S8 Tempo )
+tErrType CMidiPlayer::ChangeTempo(/* S8 Tempo */ )
 {
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 		"CMidiPlayer::ChangeTempo -- ...\n");	

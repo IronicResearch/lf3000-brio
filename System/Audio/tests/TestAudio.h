@@ -334,7 +334,7 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		err = pAudioMPI_->AcquireMidiPlayer( /*1, NULL,*/ &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1, pAudioListener_, 0, 0 );
@@ -391,7 +391,7 @@ public:
 	
 		pKernelMPI_->TaskSleep(4000 ); 
 
-		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		err = pAudioMPI_->AcquireMidiPlayer(/* 1, NULL,*/ &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, "Neutr_3_noDrums.mid", 100, 1, pAudioListener_, 0, 0 );
@@ -440,7 +440,7 @@ public:
 
 		pAudioMPI_->StopAudio( id1, false );
 				
-		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &playerID );		
+		err = pAudioMPI_->AcquireMidiPlayer( /*1, NULL,*/ &playerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 		
 	 	/*  MidiNote Params
@@ -450,13 +450,13 @@ public:
 						U8			velocity, 
 						tAudioOptionsFlags	flags)
 		*/
-		pAudioMPI_->MidiNoteOn( playerID, 1, 64, 120, 0 );
+		pAudioMPI_->MidiNoteOn( /*playerID,*/ 1, 64, 120, 0 );
 		pKernelMPI_->TaskSleep( 1000 );
-		pAudioMPI_->MidiNoteOff( playerID, 1, 64, 120, 0 );
+		pAudioMPI_->MidiNoteOff( /*playerID,*/ 1, 64, 120, 0 );
 		pKernelMPI_->TaskSleep( 1000 );
-		pAudioMPI_->MidiNoteOn( playerID, 1, 68, 120, 0 );		
+		pAudioMPI_->MidiNoteOn( /*playerID,*/ 1, 68, 120, 0 );		
 		pKernelMPI_->TaskSleep( 1000 );
-		pAudioMPI_->MidiNoteOff( playerID, 1, 68, 120, 0 );
+		pAudioMPI_->MidiNoteOff( /*playerID,*/ 1, 68, 120, 0 );
 		pKernelMPI_->TaskSleep( 1000 );
 		
 /*

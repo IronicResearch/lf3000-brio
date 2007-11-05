@@ -73,9 +73,9 @@ public:
 
 	tErrType	GetEnableTracks( tMidiTrackBitMask* trackBitMask );
 	tErrType	SetEnableTracks( tMidiTrackBitMask trackBitMask);
-	tErrType	TransposeTracks( tMidiTrackBitMask trackBitMask, S8 transposeAmount );
-	tErrType	ChangeProgram( tMidiTrackBitMask trackBitMask, tMidiInstr instr );
-	tErrType	ChangeTempo( S8 Tempo); 
+	tErrType	TransposeTracks( /* tMidiTrackBitMask trackBitMask, S8 transposeAmount */);
+	tErrType	ChangeProgram( /* tMidiTrackBitMask trackBitMask, tMidiInstr instr */);
+	tErrType	ChangeTempo( /* S8 Tempo */); 
 
 private:
 	CDebugMPI* 				pDebugMPI_;	

@@ -130,6 +130,7 @@ struct tAudioStartMidiFileInfo {
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
 
+/*	
 	tAudioStartMidiFileInfo( tMidiPlayerID	i = 0,
 						U8 *pi = NULL,
 						U32 is = 0,
@@ -139,6 +140,7 @@ struct tAudioStartMidiFileInfo {
 						tAudioOptionsFlags f = 0 )
 		: id(i), path(NULL), pMidiFileImage(pi), priority(p), pListener(l),
 		payload(pl), flags(f) {}
+*/
 };
 
 // kAudioCmdMsgTypeStopMidiFile
