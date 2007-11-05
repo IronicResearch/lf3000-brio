@@ -77,7 +77,7 @@ if (SFM_READ == rwType)
 //printf("OpenSoundFile: gonna load '%s' \n", path);
 	if (!(sndFile = sf_open (path, rwType, sfi)))
 		{	
-		printf ("OpenSoundFile : Not able to open input file '%s'\n", path) ;
+//		printf ("OpenSoundFile : Not able to open input file '%s'\n", path) ;
 		return (NULL);
 		} 
 
@@ -121,8 +121,9 @@ if (SFM_READ == rwType)
 		return (sndFile);
 		}
 
-	printf("OpenSoundFile samplerate=%d frames=%d ch=%d width=%d\n",
-		   sfi->samplerate, (int)sfi->frames, (int) sfi->channels, (int)wordWidthBits) ;
+	printf("OpenSoundFile fs=%d Hz ch=%d bits=%d frames=%d (%.3f Seconds)\n",
+		   sfi->samplerate, (int)sfi->frames, (int) sfi->channels, (int)wordWidthBits,
+            ((float)sfi->frames)/(float) sfi->samplerate);
 	}
 	}   	  
 //
@@ -133,7 +134,7 @@ else if (SFM_WRITE == rwType)
 //printf("OpenSoundFile: gonna open file for writing '%s' \n", path);
 	if (!(sndFile = sf_open (path, rwType, sfi)))
 		{	
-		printf ("OpenSoundFile : Not able to open output file '%s'\n", path) ;
+		printf ("OpenSoundFile : Not able to open for writing '%s'\n", path) ;
 		return (NULL);
 		} 
 //	Print_SF_INFO(sfi);
@@ -172,24 +173,23 @@ return (False);
 //
 //					Return Boolean success
 //==============================================================================
-int RewindSoundFile( SNDFILE **soundFile, SF_INFO *sfi, char *path )
+int RewindSoundFile( SNDFILE *soundFile )
 {	     
 //printf("RewindSoundFile: start 222\n");
 
+#ifdef NEED_TO_USE_REWIND_CRUDE_SEEK
 // Quick hack for initial implementation
-// FIXXXX: use seek()
 CloseSoundFile(soundFile);
-  	 
 *soundFile = OpenSoundFile(path, sfi, SFM_READ);
- if (!*soundFile)
- {
+if (!*soundFile)
+    {
  	printf("RewindSoundFile: unable to reopen '%s'\n", path);
 	return (False);
- }
- 
-//printf("RewindSoundFile: end\n");
+    }
+return (True);
+#endif
 
-	return (True);
+return (sf_seek(soundFile, 0, SEEK_SET) == 0);
 }		// ---- end RewindSoundFile() ----
 
 

@@ -10151,3 +10151,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/5/07 3:00 PM
 4,250 ms. (Cumulative: 2,391,221 ms)
 
 ----------------
+Revision 2,145 from svn://localhost/TRUNK/:
+
+Makefiles build into CPU x8/ and arm/ subdirectories.
+
+By gklimanis (gklimanis@leapfrog.com) on 11/5/07 3:02 PM
+5 changed, 0 added, 1 deleted.
+4,484 ms. (Cumulative: 2,395,768 ms)
+
+----------------
