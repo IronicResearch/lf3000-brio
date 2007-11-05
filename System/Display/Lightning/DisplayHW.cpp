@@ -21,6 +21,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <errno.h>
 #include <linux/lf1000/gpio_ioctl.h>
 #include <linux/lf1000/dpc_ioctl.h>
 #include <linux/lf1000/mlc_ioctl.h>
@@ -98,8 +99,12 @@ void CDisplayModule::InitModule()
 	// get access to the Frame Buffer
 	gFrameBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
 		   						gDevLayer, baseAddr);
+//	dbg_.Assert((void *)gFrameBuffer != MAP_FAILED,
+//			"DisplayModule::InitModule: failed to mmap() frame buffer");
+
 	dbg_.Assert(gFrameBuffer >= 0,
 			"DisplayModule::InitModule: failed to mmap() frame buffer");
+
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gFrameBuffer);
@@ -187,8 +192,11 @@ U32 CDisplayModule::GetScreenSize(void)
 // Returns pixel format of primary RGB layer
 enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 {
+	errno = 0;
 	U32 format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
-	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
+	// FIX by BK
+	dbg_.Assert(errno == 0, "DisplayModule::GetPixelFormat: ioctl failed");
+//	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
 
 	switch(format) {
 		case kLayerPixelFormatRGB4444:
@@ -334,6 +342,7 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
 									   Boolean destroyBuffer)
 {
+	(void )destroyBuffer;	/* Prevent unused variable warnings. */ 
 	UnRegister(hndl, 0);
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
@@ -462,6 +471,7 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = brightness + 128;
 	int 			r;
 	
@@ -472,6 +482,7 @@ tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = (contrast + 128) >> 4;
 	int 			r;
 	
@@ -482,6 +493,7 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = backlight;
 	int 			r;
 
@@ -502,6 +514,7 @@ tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = 0;
 	int 			r;
 	
@@ -512,6 +525,7 @@ S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = 0;
 	int 			r;
 	
@@ -522,6 +536,7 @@ S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 {
+	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = 0;
 	int 			r;
 	

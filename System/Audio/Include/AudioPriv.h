@@ -69,7 +69,7 @@ public:
 
 	VTABLE_EXPORT void 		SetMasterVolume( U8 volume );
 	VTABLE_EXPORT U8		GetMasterVolume( void );
-	VTABLE_EXPORT void 		SetOutputEqualizer( U8 enable );
+	VTABLE_EXPORT void 		SetOutputEqualizer( U8 enable  );
 	VTABLE_EXPORT U8		GetOutputEqualizer( void );
 
 	// Specific to MPIs
@@ -126,16 +126,16 @@ public:
 	VTABLE_EXPORT const IEventListener*	GetDefaultAudioEventListener( U32 mpiID );  // TODO: stub
 	VTABLE_EXPORT void		SetDefaultAudioEventListener( U32 mpiID, const IEventListener *pListener );  // TODO: stub
 
-	VTABLE_EXPORT tErrType 	RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ); // TODO: stub
-	VTABLE_EXPORT tErrType 	RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); // TODO: stub
-	VTABLE_EXPORT tErrType 	ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain );  // TODO: stub
+	VTABLE_EXPORT tErrType 	RegisterAudioEffectsProcessor( /* tRsrcType type,  CAudioEffectsProcessor *pChain */); // TODO: stub
+	VTABLE_EXPORT tErrType 	RegisterGlobalAudioEffectsProcessor(/* CAudioEffectsProcessor *pChain*/ ); // TODO: stub
+	VTABLE_EXPORT tErrType 	ChangeAudioEffectsProcessor( /*tAudioID id, CAudioEffectsProcessor *pChain*/ );  // TODO: stub
 
 	tErrType RegisterGetStereoAudioStreamFcn( /* tRsrcType type, */ tGetStereoAudioStreamFcn pFcn ); // TODO: stub
 
-	VTABLE_EXPORT tErrType	AcquireMidiPlayer( tAudioPriority priority, IEventListener *pHandler, tMidiPlayerID *id );
-	VTABLE_EXPORT tErrType	ReleaseMidiPlayer( tMidiPlayerID id );
+	VTABLE_EXPORT tErrType	AcquireMidiPlayer( /*tAudioPriority priority, IEventListener *pHandler,*/ tMidiPlayerID *id );
+	VTABLE_EXPORT tErrType	ReleaseMidiPlayer( /*tMidiPlayerID id*/ );
 
-	VTABLE_EXPORT tAudioID	GetAudioIDForMidiID( tMidiPlayerID id ); // TODO: stub
+	VTABLE_EXPORT tAudioID	GetAudioIDForMidiID( /*tMidiPlayerID id*/ ); // TODO: stub
 
 	VTABLE_EXPORT tErrType StartMidiFile( U32				mpiID,
 										tMidiPlayerID		id,
@@ -163,9 +163,9 @@ public:
 	VTABLE_EXPORT tErrType ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr );
 	VTABLE_EXPORT tErrType ChangeMidiTempo( tMidiPlayerID id, S8 tempo );
 
-	VTABLE_EXPORT tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	VTABLE_EXPORT tErrType MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	VTABLE_EXPORT tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
+	VTABLE_EXPORT tErrType MidiNoteOn(/* tMidiPlayerID id,*/ U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	VTABLE_EXPORT tErrType MidiNoteOff(/* tMidiPlayerID id,*/ U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	VTABLE_EXPORT tErrType SendMidiCommand( /*tMidiPlayerID id, U8 cmd, U8 data1, U8 data2*/ );
 	
 private:
 	CKernelMPI* 			pKernelMPI_;

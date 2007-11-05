@@ -147,9 +147,9 @@ inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8
 inline	S16 C(U8 Y)  			{ return (Y - 16); }
 inline 	S16 D(U8 U)  			{ return (U - 128); }
 inline 	S16 E(U8 V)  			{ return (V - 128); }
-inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
+inline 	U8 R(U8 Y,U8 U,U8 V)	{ (void )U; return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
 inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
-inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+inline 	U8 B(U8 Y,U8 U,U8 V)	{ (void )V; return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
 
 //----------------------------------------------------------------------------
 // Repack YUV planar format surface into ARGB format surface

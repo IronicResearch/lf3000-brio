@@ -242,7 +242,7 @@ static void DoSetOutputEqualizer( CAudioMsgSetOutputEqualizer* pMsg )
 {
 	U8 x = pMsg->GetData();
 	gContext.outputEqualizerEnabled = x;
-	gContext.pAudioMixer->SetOutputEqualizer( gContext.outputEqualizerEnabled );
+	gContext.pAudioMixer->SetOutputEqualizer( /*gContext.outputEqualizerEnabled*/ );
 }
 
 //==============================================================================
@@ -287,7 +287,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 
 
 	// Find the best channel for the specified priority
-	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->priority );
+	pChannel = gContext.pAudioMixer->FindChannelUsing( /* pAudioInfo->priority */ );
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
 			"AudioTask::DoStartAudio -- Find Best Channel returned:0x%x\n", reinterpret_cast<unsigned int>(pChannel) );
 
@@ -365,7 +365,7 @@ static void DoGetAudioTime( CAudioMsgGetAudioTime* msg ) {
 		static_cast<int>(id));	
 
 	//	find the current time from the vorbis player
-	pChannel = gContext.pAudioMixer->FindChannelUsing( id );
+	pChannel = gContext.pAudioMixer->FindChannelUsing(/* id */ );
 	if (pChannel != NULL) {
 		pPlayer = pChannel->GetPlayer();
 		time = pPlayer->GetAudioTime();
@@ -391,7 +391,7 @@ static void DoGetAudioVolume( CAudioMsgGetAudioVolume* msg ) {
 		static_cast<int>(info.id));	
 
 	//	find the current volume for the channel using audioID
-	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
+	pChannel = gContext.pAudioMixer->FindChannelUsing(/* info.id */);
 	if (pChannel != NULL) {
 		volume = pChannel->GetVolume();
 	}
@@ -555,6 +555,7 @@ static void DoIsAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
 }
 
 static void DoIsAnyAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
+	(void )msg;			/* Prevent unused variable warnings. */	
 	CAudioReturnMessage	retMsg;
 	Boolean				isAudioActive;
 
@@ -572,6 +573,7 @@ static void DoIsAnyAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
 //==============================================================================
 static void DoPauseAudio( CAudioMsgPauseAudio* pMsg ) 
 {
+	(void ) pMsg; 		/* Prevent unused variable warnings. */
 	CChannel*	pChannel = kNull;
 	tAudioID	id = pMsg->GetData();
 
@@ -780,6 +782,7 @@ static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 
 static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
 //	tAudioID  			id = msg->GetData();
+	(void )msg;			/* Prevent unused variable warnings. */
 	CAudioReturnMessage	retMsg;
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
@@ -794,6 +797,7 @@ static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
 
 // If we have more than one MIDI player in the future, this needs to be changed.
 static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
+	(void )msg;		/* Prevent unused variable warnings. */
 	CAudioReturnMessage	retMsg;
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
@@ -808,17 +812,18 @@ static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
 
 static void DoPauseMidiFile( CAudioMsgPauseMidiFile* msg ) {
 //	tMidiPlayerID  	id = msg->GetData();
-
+	(void )msg;		 /* Prevent unused variable warnings. */
 	gContext.pMidiPlayer->PauseMidiFile();
 }
 
 static void DoResumeMidiFile( CAudioMsgResumeMidiFile* msg ) {
 //	tMidiPlayerID  	id = msg->GetData();
-
+	(void )msg;			/* Prevent unused variable warnings. */
 	gContext.pMidiPlayer->ResumeMidiFile();
 }
 
 static void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
+	(void )msg;		/* Prevent unused variable warnings. */
 	tAudioStopMidiFileInfo* 	pInfo = msg->GetData();
 
 	gContext.pMidiPlayer->StopMidiFile( pInfo );
@@ -826,6 +831,7 @@ static void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
 
 static void DoGetEnabledMidiTracks( CAudioMsgMidiFilePlaybackParams* msg ) {
 
+	(void )msg;				/* Prevent unused variable warnings. */
 	tErrType				result;
 	CAudioReturnMessage		retMsg;
 	tMidiTrackBitMask 		trackBitMask;
@@ -862,10 +868,10 @@ static void DoTransposeMidiTracks( CAudioMsgMidiFilePlaybackParams* msg ) {
 	tErrType				result;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
-
+	(void )pParams;			/* Prevent unused variable warnings. */		
 	// pParams->id; for the future
 	
-	result = gContext.pMidiPlayer->TransposeTracks( pParams->trackBitMask, pParams->transposeAmount );
+	result = gContext.pMidiPlayer->TransposeTracks( /* pParams->trackBitMask, pParams->transposeAmount */ );
 	
 	// Send the status back to the caller
 	retMsg.SetAudioErr( result );
@@ -877,10 +883,10 @@ static void DoChangeMidiInstrument( CAudioMsgMidiFilePlaybackParams* msg ) {
 	tErrType				result;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
-
+	(void )pParams;				/* Prevent unused variable warnings. */
 	// pParams->id; for the future
 	
-	result = gContext.pMidiPlayer->ChangeProgram( pParams->trackBitMask, pParams->instrument );
+	result = gContext.pMidiPlayer->ChangeProgram( /* pParams->trackBitMask, pParams->instrument */);
 	
 	// Send the status back to the caller
 	retMsg.SetAudioErr( result );
@@ -892,10 +898,10 @@ static void DoChangeMidiTempo( CAudioMsgMidiFilePlaybackParams* msg ) {
 	tErrType				result;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
-
+	(void )pParams;			/* Prevent unused variable warnings. */
 	// pParams->id; for the future
 	
-	result = gContext.pMidiPlayer->ChangeTempo( pParams->tempo );
+	result = gContext.pMidiPlayer->ChangeTempo( /* pParams->tempo */);
 	
 	// Send the status back to the caller
 	retMsg.SetAudioErr( result );

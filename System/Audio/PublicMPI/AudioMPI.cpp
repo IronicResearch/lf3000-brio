@@ -162,38 +162,38 @@ tErrType CAudioMPI::ResumeAudioSystem()
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ) 
+tErrType CAudioMPI::RegisterAudioEffectsProcessor( /* tRsrcType type, CAudioEffectsProcessor *pChain*/ ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->RegisterAudioEffectsProcessor( /* type, */ pChain );
+	return pModule_->RegisterAudioEffectsProcessor( /* type, pChain*/ );
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ) 
+tErrType CAudioMPI::RegisterGlobalAudioEffectsProcessor( /*CAudioEffectsProcessor *pChain*/ ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->RegisterGlobalAudioEffectsProcessor( pChain );
+	return pModule_->RegisterGlobalAudioEffectsProcessor( /*pChain */);
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ) 
+tErrType CAudioMPI::ChangeAudioEffectsProcessor(/* tAudioID id, CAudioEffectsProcessor *pChain */) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->ChangeAudioEffectsProcessor( id, pChain );
+	return pModule_->ChangeAudioEffectsProcessor(/* id, pChain */);
 }
 
 // ==============================================================================
@@ -229,7 +229,7 @@ Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
 return (pModule_->GetOutputEqualizer());
 }
 
-void CAudioMPI:: SetSpeakerEqualizer(Boolean enable)
+void CAudioMPI:: SetSpeakerEqualizer( Boolean enable )
 {
 //printf("CAudioMPI::SetOutputEqualizer: enable=%d\n", enable);
 	if ( kNull != pModule_ )
@@ -541,26 +541,26 @@ Boolean CAudioMPI::IsAudioPlaying( void )
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *pListener, tMidiPlayerID *midiPlayerID ) 
+tErrType CAudioMPI::AcquireMidiPlayer( /*tAudioPriority priority, IEventListener *pListener, */ tMidiPlayerID *midiPlayerID ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->AcquireMidiPlayer( priority, pListener, midiPlayerID );
+	return pModule_->AcquireMidiPlayer( /*priority, pListener,*/ midiPlayerID );
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::ReleaseMidiPlayer( tMidiPlayerID midiPlayerID ) 
+tErrType CAudioMPI::ReleaseMidiPlayer( /*tMidiPlayerID midiPlayerID*/ ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->ReleaseMidiPlayer( midiPlayerID );
+	return pModule_->ReleaseMidiPlayer( /*midiPlayerID*/ );
 }
 
 tErrType CAudioMPI::StartMidiFile( 	tMidiPlayerID		id,
@@ -710,19 +710,19 @@ tErrType CAudioMPI::ChangeMidiTempo( tMidiPlayerID id, S8 tempo )
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 ) 
+tErrType CAudioMPI::SendMidiCommand(/* tMidiPlayerID id, U8 cmd, U8 data1, U8 data2*/ ) 
 {
 	if ( pModule_ == kNull )
 	{
 		return kNoImplErr;
 	}
 	
-	return pModule_->SendMidiCommand( id, cmd, data1, data2 );
+	return pModule_->SendMidiCommand( /*id, cmd, data1, data2 */);
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::MidiNoteOn( tMidiPlayerID	id,
+tErrType CAudioMPI::MidiNoteOn( /*tMidiPlayerID	id,*/
 									U8 			channel, 
 									U8			noteNum, 
 									U8			velocity, 
@@ -733,12 +733,12 @@ tErrType CAudioMPI::MidiNoteOn( tMidiPlayerID	id,
 		return kNoImplErr;
 	}
 	
-	return pModule_->MidiNoteOn( id, channel, noteNum, velocity, flags );
+	return pModule_->MidiNoteOn( /*id,*/ channel, noteNum, velocity, flags );
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
+tErrType CAudioMPI::MidiNoteOff(/* tMidiPlayerID	id, */
 									U8 			channel, 
 									U8			noteNum, 
 									U8			velocity, 
@@ -749,7 +749,7 @@ tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
 		return kNoImplErr;
 	}
 	
-	return pModule_->MidiNoteOff( id, channel, noteNum, velocity, flags );
+	return pModule_->MidiNoteOff(/* id, */channel, noteNum, velocity, flags );
 }
 
 LF_END_BRIO_NAMESPACE()	

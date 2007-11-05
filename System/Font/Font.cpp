@@ -1518,6 +1518,7 @@ extern "C"
 	//------------------------------------------------------------------------
 	ICoreModule* CreateInstance(tVersion version)
 	{
+		(void )version; /* Prevent unused variable warnings. */
 		if( sinst == NULL )
 			sinst = new CFontModule;
 		return sinst;
@@ -1526,7 +1527,8 @@ extern "C"
 	//------------------------------------------------------------------------
 	void DestroyInstance(ICoreModule* ptr)
 	{
-	//		assert(ptr == sinst);
+		(void )ptr;
+		//		assert(ptr == sinst);
 		delete sinst;
 		sinst = NULL;
 	}

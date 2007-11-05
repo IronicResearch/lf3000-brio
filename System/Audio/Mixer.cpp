@@ -276,7 +276,7 @@ long i;
 //==============================================================================
 // CAudioMixer::FindChannelUsing
 //==============================================================================
-CChannel* CAudioMixer::FindChannelUsing( tAudioPriority priority )
+CChannel* CAudioMixer::FindChannelUsing(/* tAudioPriority priority */ )
 {
 	// For now, just search for a channel not in use
 	for (long i = 0; i < numInChannels_; i++)
@@ -736,7 +736,7 @@ postGaini = FloatToQ15(postGainf);
 // SetOutputEqualizer :  Set output equalizer type.
 //                          For now, just On or Off
 // ==============================================================================
-void CAudioMixer::SetOutputEqualizer(Boolean x)
+void CAudioMixer::SetOutputEqualizer(/* Boolean x */ )
 {
 //printf("CAudioMixer::SetOutputEqualizer: useOutEQ_=%ld->%ld\n", (long)useOutEQ_, (long)x);
 // Careful with reset if DSP is running in a separate thread.
