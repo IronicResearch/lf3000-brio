@@ -10141,3 +10141,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/5/07 2:58 PM
 4,095 ms. (Cumulative: 2,386,893 ms)
 
 ----------------
+Revision 2,143 from svn://localhost/TRUNK/:
+Revision 2,144 from svn://localhost/TRUNK/:
+
+Use these Makefile that build into subdirectories.
+
+By gklimanis (gklimanis@leapfrog.com) on 11/5/07 3:00 PM
+1 changed, 0 added, 1 deleted.
+4,250 ms. (Cumulative: 2,391,221 ms)
+
+----------------
