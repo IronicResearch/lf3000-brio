@@ -10123,3 +10123,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/5/07 2:53 PM
 4,188 ms. (Cumulative: 2,378,501 ms)
 
 ----------------
+Revision 2,141 from svn://localhost/TRUNK/:
+
+just use Makefile.arm
+
+By gklimanis (gklimanis@leapfrog.com) on 11/5/07 2:57 PM
+0 changed, 0 added, 1 deleted.
+4,156 ms. (Cumulative: 2,382,720 ms)
+
+----------------
