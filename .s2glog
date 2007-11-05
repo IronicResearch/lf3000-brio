@@ -10132,3 +10132,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/5/07 2:57 PM
 4,156 ms. (Cumulative: 2,382,720 ms)
 
 ----------------
+Revision 2,142 from svn://localhost/TRUNK/:
+
+Builds sf2brio to x86/ and arm/ subdirectories
+
+By gklimanis (gklimanis@leapfrog.com) on 11/5/07 2:58 PM
+1 changed, 0 added, 0 deleted.
+4,095 ms. (Cumulative: 2,386,893 ms)
+
+----------------
