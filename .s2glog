@@ -10113,3 +10113,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/5/07 2:41 PM
 4,703 ms. (Cumulative: 2,374,204 ms)
 
 ----------------
+Revision 2,139 from svn://localhost/TRUNK/:
+Revision 2,140 from svn://localhost/TRUNK/:
+
+Grab sf2brio from proper CPU subdirectory
+
+By gklimanis (gklimanis@leapfrog.com) on 11/5/07 2:53 PM
+1 changed, 0 added, 0 deleted.
+4,188 ms. (Cumulative: 2,378,501 ms)
+
+----------------
