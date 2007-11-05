@@ -37,10 +37,9 @@ default: dep $(OUT)
 	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
 
 $(OUT): $(OBJ)
-	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS)
-	cp $(OUT) ./$(CPU)
+	$(CCC) -o $(CPU)/$(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS)
 #	echo "Copied to ~/nfsroot"
-	cp $(OUT) $(LEAPFROG_PLUGIN_ROOT)/Tools
+	cp $(CPU)/$(OUT) $(LEAPFROG_PLUGIN_ROOT)/Tools
 
 depend: dep
 
@@ -48,7 +47,7 @@ dep:
 	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
 
 clean:
-	rm -f $(OBJ) $(OUT) Makefile.bak 
+	rm -f $(OBJ) $(CPU)/$(OUT) Makefile.bak 
 
 
 # DO NOT DELETE
