@@ -618,7 +618,7 @@ tFontAttr* CFontModule::GetFontAttr()
 //----------------------------------------------------------------------------
 // Clip source bitmap bounds to destination drawable surface area
 //----------------------------------------------------------------------------
-inline Boolean ClipBounds(int& x, int& y, int& sw, int& sh, int dw, int dh)
+inline Boolean ClipBounds(int& sx, int& sy, int& sw, int& sh, int& x, int& y, int dw, int dh)
 {
 	int dx = 0;
 	int dy = 0;
@@ -635,6 +635,7 @@ inline Boolean ClipBounds(int& x, int& y, int& sw, int& sh, int dw, int dh)
 	// Left edge clipping?
 	if (x < 0) {
 		dx -= x;
+		sx -= x;
 		x = 0;
 	}
 	if (sw < dx)
@@ -648,6 +649,7 @@ inline Boolean ClipBounds(int& x, int& y, int& sw, int& sh, int dw, int dh)
 	// Top edge clipping?
 	if (y < 0) {
 		dy -= y;
+		sy -= y;
 		y = 0;
 	}
 	if (sh < dy)
@@ -670,13 +672,14 @@ void CFontModule::ConvertBitmapToRGB32(FT_Bitmap* source, int x0, int y0, tFontS
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = (source->width+7) / 8;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to mono bitmap mask
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x/8;
 	d = (U32*)(u = surf->buffer + y0 * surf->pitch + x0 * 4);
 	for (y = 0; y < h; y++) 
 	{
@@ -712,13 +715,14 @@ void CFontModule::ConvertBitmapToRGB24(FT_Bitmap* source, int x0, int y0, tFontS
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = (source->width+7) / 8;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to mono bitmap mask
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x/8;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 3;
 	for (y = 0; y < h; y++) 
 	{
@@ -756,13 +760,14 @@ void CFontModule::ConvertBitmapToRGB4444(FT_Bitmap* source, int x0, int y0, tFon
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = (source->width+7) / 8;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to mono bitmap mask
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x/8;
 	d = (U16*)(u = surf->buffer + y0 * surf->pitch + x0 * 2);
 	for (y = 0; y < h; y++) 
 	{
@@ -808,13 +813,14 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = source->width;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to grayscale values
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x;
 	d = (U32*)(u = surf->buffer + y0 * surf->pitch + x0 * 4);
 	for (y = 0; y < h; y++) 
 	{
@@ -861,13 +867,14 @@ void CFontModule::ConvertGraymapToRGB24(FT_Bitmap* source, int x0, int y0, tFont
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = source->width;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to grayscale values
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 3;
 	for (y = 0; y < h; y++) 
 	{
@@ -906,14 +913,15 @@ void CFontModule::ConvertGraymapToRGB4444(FT_Bitmap* source, int x0, int y0, tFo
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = source->width;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to grayscale values
 	// All ARGB components are repacked for GL_RGBA 4444 textures
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 2;
 	for (y = 0; y < h; y++) 
 	{
@@ -958,13 +966,14 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 	tFontSurf	*surf = (tFontSurf*)pCtx;
 
 	// Clip bounds to drawable surface area
+	x = y = 0;
 	w = source->width;
 	h = source->rows;
-	if (ClipBounds(x0, y0, w, h, surf->width, surf->height))
+	if (ClipBounds(x, y, w, h, x0, y0, surf->width, surf->height))
 		return;
 
 	// Pack RGB color into buffer according to grayscale values
-	s = t = source->buffer;
+	s = t = source->buffer + y * source->pitch + x;
 	d = u = surf->buffer + y0 * surf->pitch + x0 * 2;
 	for (y = 0; y < h; y++) 
 	{
