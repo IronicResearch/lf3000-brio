@@ -10183,3 +10183,18 @@ By Dave Milici (dmilici@leapfrog.com) on 11/5/07 6:31 PM
 4,220 ms. (Cumulative: 2,404,470 ms)
 
 ----------------
+Revision 2,153 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,047 ms. (Cumulative: 2,408,580 ms)
+
+----------------
+Revision 2,154 from svn://localhost/TRUNK/:
+
+Added left and top edge clipping compensation to source buffers.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/6/07 9:34 AM
+1 changed, 0 added, 0 deleted.
+4,144 ms. (Cumulative: 2,412,740 ms)
+
+----------------
