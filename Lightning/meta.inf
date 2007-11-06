@@ -1,0 +1,9 @@
+Device="Lightning"
+Type="System"
+Publisher="LeapFrog, Inc."
+Developer="LeapFrog, Inc.  Firmware Team"
+Version="0.1.20.2105"
+ProductID=0xDEADBEEF
+PartNumber="invalid-part-number"
+Depends=
+Icon=
