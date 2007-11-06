@@ -342,10 +342,24 @@ public:
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
 		
+		for (int x = 320; x > -320; x--)
+		{
+			memset(surf.buffer, 0, surf.height * surf.pitch);
+			pFontMPI_->DrawString(&text, x, 0, &surf);
+			pDisplayMPI_->Invalidate(0, NULL);
+		}
+		
 		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		
 		for (int y = 0; y < 240; y++)
+		{
+			memset(surf.buffer, 0, surf.height * surf.pitch);
+			pFontMPI_->DrawString(&text, 0, y, &surf);
+			pDisplayMPI_->Invalidate(0, NULL);
+		}
+		
+		for (int y = 240; y > -240; y--)
 		{
 			memset(surf.buffer, 0, surf.height * surf.pitch);
 			pFontMPI_->DrawString(&text, 0, y, &surf);

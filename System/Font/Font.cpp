@@ -632,11 +632,25 @@ inline Boolean ClipBounds(int& x, int& y, int& sw, int& sh, int dw, int dh)
 		dx = x + sw - dw;
 	if (dx > sw)
 		return true;
+	// Left edge clipping?
+	if (x < 0) {
+		dx -= x;
+		x = 0;
+	}
+	if (sw < dx)
+		return true;
 
 	// Bottom edge clipping?
 	if (y + sh > dh)
 		dy = y + sh - dh;
 	if (dy > sh)
+		return true;
+	// Top edge clipping?
+	if (y < 0) {
+		dy -= y;
+		y = 0;
+	}
+	if (sh < dy)
 		return true;
 
 	sw -= dx;
