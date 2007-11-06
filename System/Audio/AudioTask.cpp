@@ -107,8 +107,10 @@ tErrType InitAudioTask( void )
 		"InitAudioTask() -- Debug and Kernel MPIs created.\n");	
 
 	// Setup debug level.
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	gContext.pDebugMPI->SetDebugLevel( kAudioDebugLevel );
-
+#endif
+	
 	// Hard code the configuration resource
 	gContext.numMixerChannels = 	kAudioNumMixerChannels;
 	gContext.sampleRate =			kAudioSampleRate;
@@ -918,8 +920,10 @@ void* AudioTaskMain( void* /*arg*/ )
 	tMessageQueueHndl 	hQueue;
 	
 	// Set appropriate debug level
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	gContext.pDebugMPI->SetDebugLevel( kAudioDebugLevel );
-
+#endif
+	
     gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
 		"AudioTaskMain() -- Audio task starting to run...\n" );	
 

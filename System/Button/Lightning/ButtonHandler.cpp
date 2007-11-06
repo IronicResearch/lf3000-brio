@@ -62,7 +62,10 @@ void *LightningButtonTask(void*)
 	const int	kBrightMin = -128 + kBrightInc;
 	bool		isBrightening = (brightness < kBrightMax) ? true : false;
 	
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg.SetDebugLevel(kDbgLvlVerbose);
+#endif
+	
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	
 	while(1) {

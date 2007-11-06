@@ -47,8 +47,10 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 	ogg_int64_t			length;
 	const tMutexAttr 	attr = {0};
 	
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-
+#endif
+	
 	// Allocate the player's sample buffer
 	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 

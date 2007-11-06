@@ -51,8 +51,10 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 	if (ret != true)
 		printf("AudioPlayer ctor -- Couldn't create DebugMPI!\n");
 	
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-
+#endif
+	
 	pDebugMPI_->DebugOut( kDbgLvlValuable, 
 		(const char *)"\nDebug and Resource MPIs created by AudioPlayer ctor\n");	
 

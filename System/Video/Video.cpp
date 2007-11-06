@@ -133,7 +133,9 @@ static int queue_page(ogg_page *page)
 //============================================================================
 CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 {
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg_.SetDebugLevel(kVideoDebugLevel);
+#endif
 }
 
 //----------------------------------------------------------------------------

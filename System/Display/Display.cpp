@@ -57,7 +57,10 @@ const CURI* CDisplayModule::GetModuleOrigin() const
 //============================================================================
 CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
+#endif
+	
 	InitModule();	// delegate to platform or emulation initializer
 	pdcListHead = NULL;
 	pdcPrimary_ = reinterpret_cast<tDisplayContext*>
