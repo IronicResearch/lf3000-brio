@@ -2,7 +2,9 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
-* Fixed Font clipping on left and top edges for negative XY coordinates. 
+* Fixed Font clipping on left and top edges for negative XY coordinates.
+* Fixed OpenGL ES embedded library for Vertex Buffer Object indexed arrays.
+* Equivalent compiler warning levels for embedded vs emulation targets.
 
 ===========================================
 v0.1.20  (Build 2105 released Oct 30, 2007) 

@@ -10235,3 +10235,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/6/07 2:16 PM
 4,307 ms. (Cumulative: 2,425,672 ms)
 
 ----------------
+Revision 2,168 from svn://localhost/TRUNK/:
+
+Updated MagicEyes OGLES lib with vertex buffer object indexed array fix.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/6/07 3:23 PM
+2 changed, 0 added, 0 deleted.
+4,407 ms. (Cumulative: 2,430,157 ms)
+
+----------------
