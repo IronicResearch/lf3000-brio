@@ -76,8 +76,10 @@ long i, j, ch;
 	pDSP_.channelCount = numInChannels_;
 	
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
-
+#endif
+	
 //	printf("CAudioMixer::CAudioMixer: printf numInChannels_=%d \n", numInChannels_);
 
 // Allocate audio channels

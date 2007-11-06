@@ -57,8 +57,11 @@ CChannel::CChannel()
 //	pDSP_->postGainDB = 0.0f;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CChannel::CChannel: volume_=%d pan_=%d\n", volume_, pan_);
+#endif
+	
+	//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CChannel::CChannel: volume_=%d pan_=%d\n", volume_, pan_);
 //	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
 }	// ---- end CChannel::CChannel ----
 

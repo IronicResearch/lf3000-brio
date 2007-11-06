@@ -10244,3 +10244,16 @@ By Dave Milici (dmilici@leapfrog.com) on 11/6/07 3:23 PM
 4,407 ms. (Cumulative: 2,430,157 ms)
 
 ----------------
+Revision 2,169 from svn://localhost/TRUNK/:
+Revision 2,170 from svn://localhost/TRUNK/:
+Revision 2,171 from svn://localhost/TRUNK/:
+Revision 2,172 from svn://localhost/TRUNK/:
+Revision 2,173 from svn://localhost/TRUNK/:
+
+Blocked the SetDebugLevel calls in Brio to save the debug MPI level that a game sets and expects it to remain constant (See TestTrackPro #358). Note, when the instance of the CDebugmodule class is created the masterDebugLevel_ member set to kDbgLvlValuable. (Samples and tests have not been changed). This solution may be temporary. Another suggested method if this solution will not be successful is to make the debug level a member variable of the the CDebugMPI object instead of the CDebugModule singleton
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 11/6/07 3:57 PM
+12 changed, 0 added, 0 deleted.
+4,563 ms. (Cumulative: 2,434,829 ms)
+
+----------------

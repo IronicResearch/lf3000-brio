@@ -87,8 +87,10 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor: Couldn't create DebugMPI.\n");
 
 	// Set debug level from a constant
+#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-
+#endif
+	
 	// Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
 	ret = pKernelMPI_->IsValid();
