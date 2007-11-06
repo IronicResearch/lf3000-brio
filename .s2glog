@@ -10160,3 +10160,16 @@ By gklimanis (gklimanis@leapfrog.com) on 11/5/07 3:02 PM
 4,484 ms. (Cumulative: 2,395,768 ms)
 
 ----------------
+Revision 2,146 from svn://localhost/TRUNK/:
+Revision 2,147 from svn://localhost/TRUNK/:
+Revision 2,148 from svn://localhost/TRUNK/:
+Revision 2,149 from svn://localhost/TRUNK/:
+Revision 2,150 from svn://localhost/TRUNK/:
+
+Fixed OpenGL lib name for linking font unit test.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/5/07 5:37 PM
+1 changed, 0 added, 0 deleted.
+4,326 ms. (Cumulative: 2,400,188 ms)
+
+----------------
