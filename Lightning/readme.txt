@@ -4,27 +4,29 @@ Lightning SDK
 
 Lightning SDKs typically consist of these parts:
 
-  LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
-  embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board.
-  basebrio-svnxxxx.tar.gz - Brio binaries to be copied onto target NAND partition via USB. 
-  nfsroot-svnxxxx.tar.gz  - optional nfsroot folder for booting the target board.
+	LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
+	embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board.
+	Brio-xxxx.lfp 			- Brio binaries to be copied onto target NAND partition via USB. 
+	nfsroot-svnxxxx.tar.gz  - optional nfsroot folder for booting the target board.
                             
 The SDK can be unzipped as is and located anywhere.
 
-	tar -xzvf LightningSDK_xxxx.tar.gz
-	export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
+	$ tar -xzvf LightningSDK_xxxx.tar.gz
+	$ export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
 
 The embedded binary images need to be copied to your TFTP server base directory, and 
 subsequently downloaded onto the target board via the U-Boot loader. (Refer to image
 flashing instructions in TargetSetup.txt file.)
 
-	cd ~/tftpboot
-	tar -xzvf embedded-svnxxxx.tar.gz
+	$ cd ~/tftpboot
+	$ tar -xzvf embedded-svnxxxx.tar.gz
+	$ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
+	$ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
 
 The NFS root image must be unzipped as root user and located off the home user path.
 
-	sudo tar -xzvf nfsroot-svnxxx.tar.gz
-	mv nfsroot-svnxxx nfsroot
+	$ sudo tar -xzvf nfsroot-svnxxx.tar.gz
+	$ mv nfsroot-svnxxx nfsroot
 	
 These pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
@@ -40,13 +42,18 @@ NAND flash partitions as USB mounted devices.
 
 These binaries consist of the following:
 
-	lightning-boot-xxxx.bin	- Lightning boot loader (replaces uniboot)
-	kernel-xxxx.jffs2		- Linux kernel image (replaces zImage and u-boot)
-	erootfs-xxxx.jffs2		- Embedded root filesystem (alternative to nfsroot)
+	lightning-boot.bin	- Lightning boot loader (replaces uniboot)
+	kernel.jffs2		- Linux kernel image (replaces zImage and u-boot)
+	erootfs.jffs2		- Embedded root filesystem (alternative to nfsroot)
 
 All 3 binaries need to be flashed into new locations described in TargetSetup.txt. 
 Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
 in .lfp package files, and no longer contain version numbers in their names.
+
+To unpack the .lfp files:
+
+	$ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
+	$ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
 
 The NFS root filesystem may be used for continued development as alternative to
 the embedded root filesystem. You will need to set a flag file after booting the 
@@ -120,12 +127,12 @@ The installation tree will look more or less like this:
 To point the build system to the SDK, set the environment variable LEAPFROG_PLUGIN_ROOT to point 
 to the location of your SDK folder.  At the command line you can type:
 
-	export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
+	$ export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
 
 You may also want to add this to your .bashrc file in the lfu home directory so it will always 
 be setup:
 	
-	export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_<xxxx>
+	$ export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_<xxxx>
 
 ======================================================
 Target Preparation : mounting NAND partition via USB
@@ -153,16 +160,15 @@ name should be set as the root filesystem path for the Lightning SDK.
 
 Once mounted, the Brio binaries will need to copied onto the exposed NAND partition.
 This is intended to begin populating the /Didj directory after the board is reflashed.
-On the Ubuntu development system side:
-
-	(host) $ tar -xzvf basebrio.tar.gz 
-	(host) $ cp -R Base/* /media/Didj/
-	
-The Brio binaries are now also delivered in .lfp package file, which may be unpacked
+The Brio binaries are now delivered in .lfp package file, which may be unpacked
 on the /Didj NAND partition using the lfpkg tool on the target:
 
 	(target) # lfpkg -a install Brio-xxxx.pkg
 	  
+The same lfpkg script may also be executed on host side using an explicit -base path:
+
+	(host) $ lfpkg -a install -b /media/Didj Brio-xxxx.pkg 
+	
 Embedded target application binaries and resources will then be copied to their
 respective subdirectory locations on the mounted NAND partition. When copying files
 is completed and it is time to disconnect the USB cable, be sure to unmount (eject)
@@ -234,13 +240,13 @@ directory that you export via NFS to the target.  This directory is probably
 /home/lfu/nfsroot.  Note that you must be root to successfully untar the
 rootfs!!  The reason is that it must create device nodes.
 
-	sudo tar -xzvf nfsroot-svnxxx.tar.gz
-	mv nfsroot-svnxxx nfsroot
+	$ sudo tar -xzvf nfsroot-svnxxx.tar.gz
+	$ mv nfsroot-svnxxx nfsroot
 
 The environment variable ROOTFS_PATH should be set to point to the nfsroot path
 so the SDK build scripts will know where to install application binaries and resources.
 
-	export ROOTFS_PATH=/home/lfu/nfsroot
+	$ export ROOTFS_PATH=/home/lfu/nfsroot
 
 ======================================================
 Running samples  -- Emulation
