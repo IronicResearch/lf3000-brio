@@ -17,4 +17,5 @@ if vars['is_publish'] or vars['is_export']:
 	env.Install(vars['export_root'], 'readme.txt')
 	env.Install(vars['export_root'], 'ReleaseNotes.txt')
 	env.Install(vars['export_root'], 'TargetSetup.txt')
+	env.Install(os.path.join(vars['rootfs'], 'Base', 'Brio'), 'meta.inf')
 	

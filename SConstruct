@@ -225,6 +225,7 @@ for target in targets:
 				 'cpu_subdir'				: cpu_subdir,
 				 'export_root'				: is_publish and publish_root or export_root,
 				 'target_subdir'			: target_subdir,
+				 'rootfs'					: rootfs,
 			   }
 	
 	
