@@ -172,6 +172,11 @@ firmware developers need to use 'tftpboot' for automated script support.)
 7. Troubleshooting. Check the /var/log/syslog file for tftp error messages.
 
 	$ tail -f /var/log/syslog
+	
+For some scripts, the TFTP_PATH environment variable will need to be set to point 
+to your TFTP file transfer directory.
+
+	$ export TFTP_PATH=/home/lfu/tftpboot 
 
 ======================================================
 Target Preparation -- serial terminal program
@@ -233,6 +238,23 @@ For the latest info on flashing boards, visit the following LeapFrog Wiki site:
 
 http://emma.leapfrog.com/display/BRIO/Installing+a+LinuxDist+Release
 
+Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
+in .lfp package files, and no longer contain version numbers in their names.
+Instead the build version number will be part of the .lfp package file names.
+
+To unpack the .lfp files:
+
+	(host) $ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
+	(host) $ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
+
+'XXXX' refers to the version number of the release, such as '0.10.1-2104-ME_LF1000'
+for the LF1000 green development board, or '0.10.1-2104-LF_LF1000' for the LF1000
+form-factor board.
+
+Note: Be sure to distinguish 'ME_LF1000' binaries for the development board from
+'LF_LF1000' binaries for the form-factor board. The form-factor board uses a smaller
+memory layout and does not include Ethernet support.
+
 ======================================================
 Target Preparation -- flashing kernel image manually
 ======================================================
@@ -256,22 +278,14 @@ At the U-boot prompt, test pinging the development system first.
 Then download the updated kernel images from its TFTP location on the
 development system. On Ubuntu Linux, TFTP is typically configured
 at the ~/tftpboot directory, so this is where the image files need to
-be copied to. The image files provided in releases will typically have
-some version number 'XXXX', which is something like '0.8.0-1888-ME_LF1000'.
-
-Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
-in .lfp package files, and no longer contain version numbers in their names.
-To unpack the .lfp files:
-
-	(host) $ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
-	(host) $ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
+be copied to. 
 
 **** Important Note ****:
 Test transferring a file via TFTP. Problems have occurred with Belkin USB Ethernet
 adapters during TFTP transfers. LinkSys adapters are preferred Ethernet devices
 for use in U-boot.
 
-	# tftp 02000000 lightning-boot-XXXX.bin 
+	# tftp 02000000 lightning-boot.bin 
 
 In this release, all new binaries need to be flashed, and it is advisable
 to erase all flash memory first.
@@ -284,13 +298,13 @@ with explicit 'nand erase clean <address> <size>' commands below.
 
 To download and flash the new boot loader:
 
-	# tftp 02000000 lightning-boot-XXXX.bin
+	# tftp 02000000 lightning-boot.bin
 	# nand erase clean 0 2000
 	# nand write 02000000 0 2000
 	
 To download and flash the new kernel image:
 
-	# tftp 02000000 kernel-XXXX.jffs2
+	# tftp 02000000 kernel.jffs2
 	# nand erase clean 00200000 180000
 	# nand erase clean 01200000 180000
 	# nand write 02000000 00200000 180000
@@ -298,7 +312,7 @@ To download and flash the new kernel image:
 
 To download and flash the new embedded root filesystem image:
 
-	# tftp 02000000 erootfs-XXXX.jffs2
+	# tftp 02000000 erootfs.jffs2
 	# nand write 02000000 00400000 680000
 	# nand write 02000000 01400000 680000
 
@@ -331,20 +345,9 @@ entering the U-boot commands manually, close the serial terminal and run the
 following script from the development system.
 
 	$ cd ~/tftpboot
-	$ ./lightning_install.py /dev/ttyS0 -e lightning-boot-XXXX.bin:0 \ 
-			kernel-XXXX.jffs2:200000 erootfs-XXXX.jffs2:400000 \
-			kernel-XXXX.jffs2:1200000 erootfs-XXXX.jffs2:1400000 
-
-'XXXX' refers to the version number of the release, such as '0.8.0-1888-ME_LF1000'
-for the LF1000 green development board, or '0.8.0-1888-LF_LF1000' for the LF1000
-form-factor board.
-
-Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
-in .lfp package files, and no longer contain version numbers in their names.
-To unpack the .lfp files:
-
-	(host) $ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
-	(host) $ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
+	$ ./lightning_install.py /dev/ttyS0 -e lightning-boot.bin:0 \ 
+			kernel.jffs2:200000 erootfs.jffs2:400000 \
+			kernel.jffs2:1200000 erootfs.jffs2:1400000 
 
 The '-e' option is recommended in this release to erase all flash memory.
 
@@ -356,11 +359,11 @@ and (more importantly) their locations!
 If for some reason you only wish to update one component at a time, the above
 script could be executed in these smaller steps.
 
-	$ ./lightning_install.py /dev/ttyS0 -e lightning-boot-XXXX.bin:0
-	$ ./lightning_install.py /dev/ttyS0 kernel-XXXX.jffs2:200000 
-	$ ./lightning_install.py /dev/ttyS0 erootfs-XXXX.jffs2:400000
-	$ ./lightning_install.py /dev/ttyS0 kernel-XXXX.jffs2:1200000 
-	$ ./lightning_install.py /dev/ttyS0 erootfs-XXXX.jffs2:1400000 
+	$ ./lightning_install.py /dev/ttyS0 -e lightning-boot.bin:0
+	$ ./lightning_install.py /dev/ttyS0 kernel.jffs2:200000 
+	$ ./lightning_install.py /dev/ttyS0 erootfs.jffs2:400000
+	$ ./lightning_install.py /dev/ttyS0 kernel.jffs2:1200000 
+	$ ./lightning_install.py /dev/ttyS0 erootfs.jffs2:1400000 
 
 Note that the '-e' option to erase all memory should only be executed in the
 first step in this case.
@@ -396,7 +399,7 @@ On the LF1000 development boards:
 	3. Change the following jumpers (nearby connector)
 		a. Change jumper J16 (NAND) to CS1.
 		b. Change jumper J13 (LCART) to CS0.
-	4. Turn on power to the form-factor unit.
+	4. Turn on power to the development board.
 	5. Wait for the "OK" bitmap to indicate flashing is complete.
 	6. Turn off the power before removing the cartridge.
 	7. Restore jumpers to their previous settings:
@@ -453,14 +456,14 @@ drive reappear on the host. The launcher will have left a logfile, 'backdoor.res
 which can be viewed with a text editor if necessary. Delete this file, and all the 
 backdoor packages files installed above.
 
-	(host) $ rm *.lfp
-	(host) $ rm *.backdoor
+	(target) $ rm *.lfp
+	(target) $ rm *.backdoor
 	
 Finally restore the AppManager to its previous location.
 
-	(host) $ cd /Didj/Base/bin
-	(host) $ rm AppManager
-	(host) $ mv AppManager.bak AppManager
+	(target) $ cd /Didj/Base/bin
+	(target) $ rm AppManager
+	(target) $ mv AppManager.bak AppManager
 	
 Safely unmount /Didj and disconnect the USB cable again. This should relaunch the
 original AppManager as the default app.
