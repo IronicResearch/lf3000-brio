@@ -10173,3 +10173,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/5/07 5:37 PM
 4,326 ms. (Cumulative: 2,400,188 ms)
 
 ----------------
+Revision 2,151 from svn://localhost/TRUNK/:
+Revision 2,152 from svn://localhost/TRUNK/:
+
+Added clipping cases for left and top edges as negative coordinates.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/5/07 6:31 PM
+2 changed, 0 added, 0 deleted.
+4,220 ms. (Cumulative: 2,404,470 ms)
+
+----------------
