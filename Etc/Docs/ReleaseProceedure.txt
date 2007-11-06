@@ -29,6 +29,20 @@ Building
 11) Repeat step 10 using the contents of the other sample projects
 
 
+=========================
+Building via command line
+=========================
+Brio can be built directly from the command line instead of Eclipse with the
+following commands:
+
+	cd /path/to/Brio2
+	rm -rf Build/
+	rm -rf XBuild/
+	rm -rf System/Temp/
+	scons type=publish
+
+The end result is a fully populated "Brio2/Publish_SVN#" folder.
+
 ===============
 Smoke testing
 ===============
@@ -46,13 +60,25 @@ For now, do this:
 1) Rename the "Publish" folder to be "LightningSDK_<build#>, where build # is the current
    SVN repository #.
 2) Zip up the renamed folder
+	cd /path/to/Brio2
+	tar -czvf LightningSDK_<build#>.tar.gz LightningSDK_<build#>/
 3) Create a folder on S:\Lightning called "LightningSDK_<build#>
-4) Copy the zipped SDK into this folder along with
-5) Use the linux-dist/scripts/brio_install.sh script to install brio into nfsroot.
-6) tar up the nfsroot folder and name it nfsroot-svn>build#>.tar.gz
+4) Copy the zipped SDK into this folder.
+5) Package up the Brio binaries in the nfsroot folder.
+	cp /path/to/Brio2/Lightning/meta.inf ~/nfsroot/Didj/Base/Brio/
+	cd ~/nfsroot/Didj/Base
+	lfpkg -a create Brio
+5) Copy the Brio-<version>.lfp package into the Lightning SDK folder on the S: drive. 
+6) Tar up the nfsroot folder and name it nfsroot-svn<build#>.tar.gz
+	cd ~
+	mv nfsroot nfsroot-svn<build#>
+	tar -czvf nfsroot-svn<build#>.tar.gz nfsroot-svn<build#>/
+	mv nfsroot-svn<build#> nfsroot
 7) Copy the nfsroot archive into the Lightning SDK folder on the S: drive.
-8) Zip up the zImage for the current linux-dist and name it zImage-svn<build#>.tar.gz
-9) Copy the zImage archive into the Lightning SDK folder on the S: drive.
+8) Zip up the binaries for the current LinuxDist and name it embedded-svn<build#>.tar.gz
+	cd /path/to/LinuxDist
+	tar -czvf embedded-svn<build#>.tar.gz packages/ host_tools/lfpkg host_tools/lightning_install.py host_tools/backdoor 	
+9) Copy the embedded binaries archive into the Lightning SDK folder on the S: drive.
 10) Email a notice of the release to the other team members for a quick smoke test
 11) After smoke testing, email notice to the following people: 
 	Lovica Callisti; Chris Fernandes; Dennis O'Brien; Celso Aguiar; Emil Gilliam
