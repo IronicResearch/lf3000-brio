@@ -24,10 +24,13 @@ extern "C" {
 #define kFIR_Type_BandStop	3
 
 // 1/2 Band filters  (fs/4)
-#define kFIR_Type_HalfBand_15	10
-#define kFIR_Type_HalfBand_31	11
-#define kFIR_Type_HalfBand_32dB	12
-#define kFIR_Type_HalfBand_58dB	13
+#define kFIR_Type_HalfBand_15	    10
+#define kFIR_Type_HalfBand_31	    11
+#define kFIR_Type_HalfBand_32dB	    12
+#define kFIR_Type_HalfBand_58dB	    13
+#define kFIR_Type_HalfBand_30dB_15	14
+#define kFIR_Type_HalfBand_50dB_31	15
+#define kFIR_Type_HalfBand_50dB_41	16
 #define kFIR_Type_HalfBand	kFIR_Type_HalfBand_15
 
 // 1/3 band filters (fs/6)
@@ -49,8 +52,8 @@ typedef struct fir {
 
 	float samplingFrequency;
 // Low level data
-#define kFIR_MaxCoeffs 		31
-#define kFIR_MaxDelayElements 	31
+#define kFIR_MaxCoeffs 		    64
+#define kFIR_MaxDelayElements 	64
 	float h [kFIR_MaxCoeffs];
 	short hI[kFIR_MaxCoeffs];
 	short z [kFIR_MaxDelayElements];
@@ -111,6 +114,18 @@ extern float fir_HalfBand_15_Hz[kFIR_HalfBand_15_Hz_Length];
 #define kFIR_HalfBand_31_Hz_Length 31
 extern float fir_HalfBand_31_GainCompensationDB;
 extern float fir_HalfBand_31_Hz[kFIR_HalfBand_31_Hz_Length];
+
+#define kFIR_HalfBand_30dB_15_Hz_Length 15
+extern float fir_HalfBand_30dB_15_GainCompensationDB;
+extern float fir_HalfBand_30dB_15_Hz[kFIR_HalfBand_30dB_15_Hz_Length];
+
+#define kFIR_HalfBand_50dB_31_Hz_Length 31
+extern float fir_HalfBand_50dB_31_GainCompensationDB;
+extern float fir_HalfBand_50dB_31_Hz[kFIR_HalfBand_50dB_31_Hz_Length];
+
+#define kFIR_HalfBand_50dB_41_Hz_Length 41
+extern float fir_HalfBand_50dB_41_GainCompensationDB;
+extern float fir_HalfBand_50dB_41_Hz[kFIR_HalfBand_50dB_41_Hz_Length];
 
 // Third band filters
 #define kFIR_ThirdBand_15_Hz_Length 15

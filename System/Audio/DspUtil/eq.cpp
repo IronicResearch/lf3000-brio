@@ -468,7 +468,7 @@ ComputeEQf2(S16 *x, S16 *y, long length, EQ *d)
 float *h = d->hf;	// Filter transfer function: {b0, b1, b2, a1, a2}
 float *z = d->zf;
 float    k = 0.5f;
-float invK = 1.0f/k;
+//float invK = 1.0f/k;
 
 //printf("ComputeEQf2: here\n");
 

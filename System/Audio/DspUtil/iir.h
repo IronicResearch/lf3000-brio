@@ -18,7 +18,13 @@ extern "C" {
 }
 #endif
 
-#define kIIR_Type_LowPass	0
+#define kIIR_Mode_ByPass	    5
+#define kIIR_Mode_LowPass	    0
+#define kIIR_Mode_HighPass	    1
+#define kIIR_Mode_BandPass	    2
+#define kIIR_Mode_BandStop	    3
+#define kIIR_Mode_Parametric	4
+#define kIIR_Mode_Bypass	    kIIR_Mode_ByPass
 
 #define kIIR1_b0 0
 #define kIIR1_b1 1
@@ -31,7 +37,7 @@ extern "C" {
 #define kIIR2_b1 1
 #define kIIR2_b2 2
 #define kIIR2_a1 3
-#define kIIR3_a2 4
+#define kIIR2_a2 4
 
 #define kIIR2_x1 0
 #define kIIR2_x2 1
@@ -45,6 +51,7 @@ extern float iir1_HalfBand_20_Hz[kIIR1_HalfBand_20_Length];
 
 typedef struct iir {
 // High level data
+    float frequency;
 	float inGainDB;
 	float outGainDB;
     float rippleGainCompensationDB;
@@ -52,15 +59,18 @@ typedef struct iir {
 
     long coeffCount;
     long order;
+    long type;
 
 // Low level data
 #define kIIR_MaxCoeffs 		    31
 #define kIIR_MaxDelayElements 	31
 	float hf32[kIIR_MaxCoeffs];
-	short hq15[kIIR_MaxCoeffs];
+	Q31   hq31[kIIR_MaxCoeffs];
+	Q15   hq15[kIIR_MaxCoeffs];
 
 	float zf32[kIIR_MaxDelayElements];
-	float zq15[kIIR_MaxDelayElements];
+	Q15   zq15[kIIR_MaxDelayElements];
+	Q31   zq31[kIIR_MaxDelayElements];
 
     float inGainf, outGainf;
     float rippleGainCompensationf;
@@ -87,6 +97,8 @@ void RunIIR2_Shortsi(short *in, short *out, long length, IIR *d);
 void RunIIRN_Shortsi(short *in, short *out, long length, IIR *d);
 
 //void RunIIR_Shortsi(short *in, short *out, long length, IIR *d);
+void RunIIR1_Shorts(short *in, short *out, long length, IIR *d);
+void RunIIR2_Shorts(short *in, short *out, long length, IIR *d);
 void RunIIR_Shorts(short *in, short *out, long length, IIR *d);
 
 #endif  //	end __IIR_H__

@@ -36,6 +36,8 @@ extern "C" {
 #define kSRC_FilterVersion_6 6
 #define kSRC_FilterVersion_7 7
 #define kSRC_FilterVersion_8 8
+#define kSRC_FilterVersion_9 9
+#define kSRC_FilterVersion_10 10
 #define kSRC_FilterVersion_Default kSRC_FilterVersion_0
 
 #define kSRC_Linear_MSBits 13
@@ -60,7 +62,7 @@ typedef struct src {
 
 	float inScale, inScaleDB;
 
-#define kSRC_Filter_MaxCoeffs 		64
+#define kSRC_Filter_MaxCoeffs 		    64
 #define kSRC_Filter_MaxDelayElements 	64
 	float *hP;
 	float h [kSRC_Filter_MaxCoeffs];
@@ -79,6 +81,8 @@ void ResetSRC  (SRC *d);
 void PrepareSRC(SRC *d);
 void SRC_SetInSamplingFrequency (SRC *d, float x);
 void SRC_SetOutSamplingFrequency(SRC *d, float x);
+
+char *TranslateSRC_ModeID(int id);
 
 void RunSRC(short *in, short *out, long inLength, long outLength, SRC *d);
 

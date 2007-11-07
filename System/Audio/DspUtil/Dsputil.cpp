@@ -15,7 +15,7 @@
 
 // *************************************************************** 
 // BoundS8:   Force value to specified range
-//              8-bit signed integer version.
+//              8-bit signed integer version
 //          Modify pointer address as well as return the bounded value.
 // ***************************************************************
 	S8 
@@ -28,6 +28,22 @@ else if (*x > hi)
     *x = hi;
 return (*x);
 }	// ---- end BoundS8() ---- 
+
+// *************************************************************** 
+// BoundU8:   Force value to specified range
+//              8-bit unsigned integer version.
+//          Modify pointer address as well as return the bounded value.
+// ***************************************************************
+	U8 
+BoundU8(U8 *x, U8 lo, U8 hi)
+{
+//printf("BoundU8: x=%d  [%d .. %d] \n", *x, lo, hi);
+if      (*x < lo)
+    *x = lo;
+else if (*x > hi)
+    *x = hi;
+return (*x);
+}	// ---- end BoundU8() ---- 
 
 // *************************************************************** 
 // BoundS16:   Force value to specified range
@@ -93,7 +109,6 @@ return (*x);
 //return (y);
 //}	// ---- end VolumeToGain() ---- 
 
-#ifdef NEEDED
 // *************************************************************** 
 // PanValues:   Convert x position in range[-1 .. 1] to constant
 //						power pan values
@@ -109,14 +124,27 @@ x *= (float) (kPi/4.0);
 outs[Left ] = (float) cos(x);
 outs[Right] = (float) sin(x);
 //CosSinf(x, outs);
-// Also, consider L2 Norm (A^2 + B^2)^(1/2)
-// also known as the Euclidean distance, 
-// is often use as a distance measure to extract degrees of 
-// similarity between two vectors in speech compression.
 
 //printf("PanValues: x=%g -> <%g, %g>\n", x, outs[Left], outs[Right]);
 }	// ---- end PanValues() ---- 
-#endif
+
+// *************************************************************** 
+// ConstantPowerValues:   Convert x position in range [0 .. 1] to constant
+//						power "pan" values
+// ***************************************************************
+	void 
+ConstantPowerValues(float x, float *outLeft, float *outRight)
+{
+// Convert from range [0 to 1]  to [0 to Pi/2],
+float xP =  x*(float) (kPi/2.0);
+
+// This is constant power  sin(x)^2 + cos(x)^2 = 1
+*outLeft  = (float) cos(xP);
+*outRight = (float) sin(xP);
+
+//printf("ConstantPowerValues: x=%g -> <%g, %g>\n", x, *outLeft, *outRight);
+}	// ---- end ConstantPowerValues() ---- 
+
 
 // ****************************************************************
 // RandRangeF:	 Return random float value in given Range
@@ -167,25 +195,6 @@ else
 	x = ChangeRangef(x, inLo,  inMid, outLo, outMid); 
 return (x);
 }	// ---- end SegmentChangeRanged() ---- 
-
-// *************************************************************** 
-// ConstantPowerValues:   Convert x position in range [0 .. 1] to constant
-//						power values
-// ***************************************************************
-	void 
-ConstantPowerValues(float x, float *outLeft, float *outRight)
-{
-// Convert from range [0 to 1]  to [0 to Pi/2],
-x *= (float) (kPi/2.0);
-
-// This is constant power  sin(x)^2 + cos(x)^2 = 1
-*outLeft  = (float) cos(x);
-*outRight = (float) sin(x);
-//CosSinf(x, outs);
-// Also, consider L2 Norm (A^2 + B^2)^(1/2)
-
-//printf("ConstantPowerValues: x=%g -> <%g, %g>\n", x, *outLeft, *outRight);
-}	// ---- end ConstantPowerValues() ---- 
 
 // *************************************************************** 
 // SetDoubles:   Fill DOUBLE buffer w/'value'
