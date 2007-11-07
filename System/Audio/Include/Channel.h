@@ -15,7 +15,6 @@
 
 // System includes
 #include <SystemTypes.h>
-//#include <RsrcTypes.h>
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <RawPlayer.h> // fixme/dg: hack for RawPlayer dtor not getting called
