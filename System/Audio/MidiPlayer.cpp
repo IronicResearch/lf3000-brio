@@ -504,7 +504,7 @@ return kNoErr;
 // ==============================================================================
 // TransposeTracks:    NOT IMPLEMENTED
 // ==============================================================================
-tErrType CMidiPlayer::TransposeTracks( tMidiTrackBitMask d, S8 transposeAmount )
+tErrType CMidiPlayer::TransposeTracks( tMidiTrackBitMask /* d */, S8 /* transposeAmount */)
 {
 pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::TransposeTracks -- NOT IMPLEMENTED...\n");	
 printf("CMidiPlayer::TransposeTracks -- NOT IMPLEMENTED...\n");	
@@ -515,7 +515,7 @@ printf("CMidiPlayer::TransposeTracks -- NOT IMPLEMENTED...\n");
 // ==============================================================================
 // ChangeProgram: NOT IMPLEMENTED
 // ==============================================================================
-tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask d, tMidiInstr instr )
+tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask /* d */, tMidiInstr /* instr */ )
 {
 pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ChangeProgram -- NOT IMPLEMENTED...\n");	
 printf("CMidiPlayer::ChangeProgram -- NOT IMPLEMENTED...\n");	
@@ -525,7 +525,7 @@ printf("CMidiPlayer::ChangeProgram -- NOT IMPLEMENTED...\n");
 // ==============================================================================
 // ChangeTempo
 // ==============================================================================
-tErrType CMidiPlayer::ChangeTempo( S8 Tempo )
+tErrType CMidiPlayer::ChangeTempo( S8 /* Tempo */)
 {
 pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ChangeTempo not implemented ...\n");	
 printf("CMidiPlayer::ChangeTempo -- NOT IMPLEMENTED...\n");	
@@ -792,7 +792,7 @@ RecalculateLevels();
 void CMidiPlayer::SetVolume( U8 x )
 {
 //printf("CMidiPlayer::SetVolume :x= %d\n", x);
-volume_ = BoundU8(&x, kVolume_Min, kVolume_Max);
+volume_ = x; //BoundU8(&x, kVolume_Min, kVolume_Max);
 
 // ChangeRangef(x, L1, H1, L2, H2)
 // FIXX: move to decibels, but for now, linear volume

@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.21  (Build 2180 released Nov 6, 2007) 
+v0.1.21  (Build 2182 released Nov 6, 2007) 
 ===========================================
 
 Release for LF1000 development (green) and form-factor target boards.
@@ -17,9 +17,9 @@ Software components for target hardware:
 	bootstrap-LF_LF1000-0.11.0.2178.lfp
 	firmware-LF_LF1000-0.11.0.2178.lfp 
 * Brio library binaries:
-	Brio-0.1.21.2180.lfp
+	Brio-0.1.21.2182.lfp
 * NFS root file system: 
-	nfsroot-svn2180.tar.gz
+	nfsroot-svn2182.tar.gz
 
 Refer to accompanying TargetSetup.txt file for firmware update details. 
 
@@ -28,7 +28,8 @@ Enhancements:
 * Fixed Font clipping on left and top edges for negative XY coordinates.
 * Fixed OpenGL ES embedded library for Vertex Buffer Object indexed arrays.
 * Equivalent compiler warning levels for embedded vs emulation targets.
-
+* Fixed Audio done message flag and MIDI file playing status flags.
+ 
 ===========================================
 v0.1.20  (Build 2105 released Oct 30, 2007) 
 ===========================================

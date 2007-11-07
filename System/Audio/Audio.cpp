@@ -590,21 +590,21 @@ tErrType CAudioModule::ResumeAudioSystem( void )
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::RegisterAudioEffectsProcessor( /* tRsrcType type, */ /*CAudioEffectsProcessor *pChain*/ )
+tErrType CAudioModule::RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor( /*CAudioEffectsProcessor *pChain*/ )
+tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
 }
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ChangeAudioEffectsProcessor( /*tAudioID id, CAudioEffectsProcessor *pChain*/ )
+tErrType CAudioModule::ChangeAudioEffectsProcessor( tAudioID /* id */, CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
 }
@@ -1146,7 +1146,7 @@ void CAudioModule::SetDefaultAudioEventListener( U32 mpiID, const IEventListener
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::AcquireMidiPlayer( /*tAudioPriority priority, IEventListener *pHandler, */ tMidiPlayerID *id )
+tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */, IEventListener * /* pHandler */, tMidiPlayerID *id )
 {
 	CAudioMsgAcquireMidiPlayer msg;
 
@@ -1158,7 +1158,7 @@ tErrType CAudioModule::AcquireMidiPlayer( /*tAudioPriority priority, IEventListe
 }
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::ReleaseMidiPlayer(/* tMidiPlayerID id */)
+tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 {
 	CAudioMsgReleaseMidiPlayer msg;
 
@@ -1168,13 +1168,13 @@ tErrType CAudioModule::ReleaseMidiPlayer(/* tMidiPlayerID id */)
 	return WaitForStatus();
 }
 
-tAudioID	CAudioModule::GetAudioIDForMidiID(/* tMidiPlayerID id*/ ) 
+tAudioID	CAudioModule::GetAudioIDForMidiID( tMidiPlayerID /* id */) 
 {
 	return kNoAudioID;
 }
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::MidiNoteOn( /*tMidiPlayerID id,*/ U8 channel, U8 noteNum, U8 velocity, 
+tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 noteNum, U8 velocity, 
 										tAudioOptionsFlags flags )
 {
 	tAudioMidiNoteInfo info( channel, noteNum, velocity, flags );
@@ -1188,7 +1188,7 @@ tErrType CAudioModule::MidiNoteOn( /*tMidiPlayerID id,*/ U8 channel, U8 noteNum,
 	
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::MidiNoteOff( /*tMidiPlayerID id,*/ U8 channel, U8 noteNum, U8 velocity, 
+tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */, U8 channel, U8 noteNum, U8 velocity, 
 										tAudioOptionsFlags flags )
 {
 	tAudioMidiNoteInfo info( channel, noteNum, velocity, flags );
@@ -1392,7 +1392,7 @@ tErrType CAudioModule::ChangeMidiTempo( tMidiPlayerID id, S8 tempo )
 
 //==============================================================================
 //==============================================================================
-tErrType CAudioModule::SendMidiCommand(/*tMidiPlayerID id, U8 cmd, U8 data1, U8 data2*/ )
+tErrType CAudioModule::SendMidiCommand( tMidiPlayerID /* id */, U8 /* cmd */, U8 /* data1 */, U8 /* data2 */ )
 {
 	return kNoErr;
 }
