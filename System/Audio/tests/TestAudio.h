@@ -36,6 +36,33 @@ inline CPath GetAudioRsrcFolder( void )
 }
 
 //============================================================================
+// BoundS32  :   Add increment to value and bound to range
+//                              Warning :   will fail when values reach limits of
+//                          Signed 32-bit
+//============================================================================
+	long
+BoundS32(long d, long lower, long upper)
+{	     
+if      (d < lower)
+    return (lower);
+else if (d > upper)
+    return (upper);
+
+return (d);
+}	// ---- end BoundS32() ----
+
+//============================================================================
+// IncrementAndBoundS32  :   Add increment to value and bound to range
+//                              Warning :   will fail when values reach limits of
+//                          Signed 32-bit
+//============================================================================
+	long
+IncrementAndBoundS32(long d, long inc, long lower, long upper)
+{	     
+return (BoundS32(d+inc, lower, upper));
+}	// ---- end IncrementAndBoundS32() ----
+
+//============================================================================
 // Audio Listener
 //============================================================================
 const tEventType kMyAudioTypes[] = { kAllAudioEvents };
@@ -112,7 +139,7 @@ static void *myTask(void* arg)
 	tAudioID 				id = 0;
 	U32						time;
 	U8						volume;
-	S8						pan;
+	S32						pan;
 	tAudioPriority 			priority;
 
 	thread_arg_t 			*ptr = (thread_arg_t *)arg; 
@@ -170,13 +197,14 @@ static void *myTask(void* arg)
 		volume = audioMPI.GetAudioVolume( id );
 		priority = audioMPI.GetAudioPriority( id );
 		pan = audioMPI.GetAudioPan( id );
-		printf("==== myTask( thread %d, loop #%i ) -- id = %d, time = %u, vol = %d, priority = %d, pan = %d.\n", 
+		printf("==== myTask( thread%d, loop #%2d ) -- id=%d, time=%u, vol=%3d, pri=%d, pan=%d\n", 
 				threadNum, (int)index, (int)id, (unsigned int)time, (int)volume, (int)priority, (int)pan );
 		
 		kernelMPI.TaskSleep( 125 ); 
 
 		audioMPI.SetAudioVolume( id, volume - (index*2) );
-		audioMPI.SetAudioPan( id, pan - (index*4));
+                
+		audioMPI.SetAudioPan( id, (S8) BoundS32(pan - index*4, -100, 100));
 
 		kernelMPI.TaskSleep( 125 ); 
 	}
@@ -334,7 +362,7 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		err = pAudioMPI_->AcquireMidiPlayer( /*1, NULL,*/ &midiPlayerID );		
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1, pAudioListener_, 0, 0 );
@@ -391,7 +419,7 @@ public:
 	
 		pKernelMPI_->TaskSleep(4000 ); 
 
-		err = pAudioMPI_->AcquireMidiPlayer(/* 1, NULL,*/ &midiPlayerID );		
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
 		id3 = pAudioMPI_->StartMidiFile( midiPlayerID, "Neutr_3_noDrums.mid", 100, 1, pAudioListener_, 0, 0 );
@@ -440,7 +468,7 @@ public:
 
 		pAudioMPI_->StopAudio( id1, false );
 				
-		err = pAudioMPI_->AcquireMidiPlayer( /*1, NULL,*/ &playerID );		
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &playerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 		
 	 	/*  MidiNote Params
@@ -450,13 +478,13 @@ public:
 						U8			velocity, 
 						tAudioOptionsFlags	flags)
 		*/
-		pAudioMPI_->MidiNoteOn( /*playerID,*/ 1, 64, 120, 0 );
+		pAudioMPI_->MidiNoteOn( playerID, 1, 64, 120, 0 );
 		pKernelMPI_->TaskSleep( 1000 );
-		pAudioMPI_->MidiNoteOff( /*playerID,*/ 1, 64, 120, 0 );
+		pAudioMPI_->MidiNoteOff( playerID, 1, 64, 120, 0 );
 		pKernelMPI_->TaskSleep( 1000 );
-		pAudioMPI_->MidiNoteOn( /*playerID,*/ 1, 68, 120, 0 );		
+		pAudioMPI_->MidiNoteOn( playerID, 1, 68, 120, 0 );		
 		pKernelMPI_->TaskSleep( 1000 );
-		pAudioMPI_->MidiNoteOff( /*playerID,*/ 1, 68, 120, 0 );
+		pAudioMPI_->MidiNoteOff( playerID, 1, 68, 120, 0 );
 		pKernelMPI_->TaskSleep( 1000 );
 		
 /*
