@@ -72,7 +72,10 @@ private:
     void PrepareDSP();
     void SetSamplingFrequency( float x );
 
-#define kAudioMixer_MaxInChannels	6	 
+// Didj is hard-limited to 3 audio + 1 MIDI input channels (stereo)
+#define kAudioMixer_MaxInAudioChannels	3    
+#define kAudioMixer_MaxInMIDIChannels	1    
+#define kAudioMixer_MaxInChannels	    (kAudioMixer_MaxInAudioChannels+kAudioMixer_MaxInMIDIChannels)    
 #define kAudioMixer_MaxOutChannels	2
 
 // Channel parameters
