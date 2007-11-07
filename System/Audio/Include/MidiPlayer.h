@@ -10,18 +10,17 @@
 //		MidiPlayer.h
 //
 // Description:
-//		Defines the class to manage the playing of Midi data.
+//		Defines the class to manage the playing of MIDI data.
 //
 //==============================================================================
 
 // System includes
 #include <CoreTypes.h>
 #include <SystemTypes.h>
-//#include <RsrcTypes.h>
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 
-// Midi Engine includes
+// Mobileer Midi Engine includes
 #include <spmidi.h>
 #include <spmidi_util.h>
 #include <midifile_player.h>
@@ -49,8 +48,12 @@ public:
 	~CMidiPlayer();
 
 	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOutput  );
+
 	inline U8	GetVolume()		{ return volume_; }
 	void		SetVolume( U8 x );
+
+	inline S8	GetPan()		{ return pan_; }
+	void		SetPan(S8 x);
 
 	inline bool		IsFileActive() { return bFileActive_; };
 
@@ -61,51 +64,68 @@ public:
 	// Get/Set the class member variables
 	inline tMidiPlayerID		GetID() { return id_; }
 
-	// Control the playing of MIDI data
+	// MIDI channel messages
 	tErrType 	NoteOn(  U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
 
+// MIDI file transport control
 	tErrType 	StartMidiFile( tAudioStartMidiFileInfo* pInfo );
 	tErrType 	PauseMidiFile( void );
 	tErrType 	ResumeMidiFile( void );
 	tErrType 	StopMidiFile( tAudioStopMidiFileInfo* pInfo );
 
-	tErrType	GetEnableTracks( tMidiTrackBitMask* trackBitMask );
-	tErrType	SetEnableTracks( tMidiTrackBitMask trackBitMask);
-	tErrType	TransposeTracks( /* tMidiTrackBitMask trackBitMask, S8 transposeAmount */);
-	tErrType	ChangeProgram( /* tMidiTrackBitMask trackBitMask, tMidiInstr instr */);
-	tErrType	ChangeTempo( /* S8 Tempo */); 
+	tErrType	GetEnableTracks( tMidiTrackBitMask* d );
+	tErrType	SetEnableTracks( tMidiTrackBitMask d);
+	tErrType	TransposeTracks( tMidiTrackBitMask d, S8 transposeAmount );
+	tErrType	ChangeProgram( tMidiTrackBitMask d, tMidiInstr instr );
+	tErrType	ChangeTempo( S8 Tempo); 
 
 private:
 	CDebugMPI* 				pDebugMPI_;	
 	CKernelMPI* 			pKernelMPI_;	
-	SPMIDI_Context*			pContext_;		// Pointer to the Midi context being used
-	MIDIFilePlayer*			pFilePlayer_;	// Pointer to the MidiFile player being used
+
+// Mobileer engine variables
+	SPMIDI_Context*			pContext_;		
+	MIDIFilePlayer*			pFilePlayer_;	
+	SPMIDI_Orchestra        *spmidi_orchestra_;
+
 	const IEventListener*	pListener_;		// pointer to caller's listener for done event
 	tMidiPlayerID			id_;			// player ID 
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of the Midi playing
-	Boolean					loopMidiFile_;
 	S16* 					pMidiRenderBuffer_;
 	tMutex     				render_mutex_;
 
-	U8						volume_;
-    float                   levelf_;
-    Q15                     leveli_;
+// DSP information
+	U8			pan_;
+	U8			volume_;
 
-	U8						bFilePaused_:1;				// Player is paused
-	U8						bFileActive_:1;				// Player has active file associated.
-	U8						bActive_:1;					// Player has been acquired by client.
+#define kAudioMixerChannel_MaxOutChannels 2     
+	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
+	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
+	float		gainf;
+	Q15			gaini;
+    float       levelsf[kAudioMixerChannel_MaxOutChannels]; // gain * panValue
+    Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
 
-	// fixme/dg: make these get set as part of constructor?
-	U32 	numFrames_;
+// Some MIDI state activity flags
+	Boolean		shouldLoop_;
+    S32         loopCount_;
+    S32         loopCounter_;
+
+	U8			bFilePaused_:1;				
+	U8			bFileActive_:1;				// Player has active file association
+	U8			bActive_:1;					// Player has been acquired by client.
+
+// Data configuration
+	U32 	framesPerIteration_;
 	U32 	samplesPerFrame_;
 	U32 	bitsPerSample_;
 
 	void SendDoneMsg( void );
+    void RecalculateLevels();
 };
 
 LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_MIDIPLAYER_H
-
-// EOF	
+	
