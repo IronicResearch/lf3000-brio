@@ -10408,3 +10408,14 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/7/07 9:55 AM
 4,173 ms. (Cumulative: 2,499,634 ms)
 
 ----------------
+Revision 2,195 from svn://localhost/TRUNK/:
+
+Changed hard- limit of mixer channels to 4:
+3 audio (Linear PCM, Ogg)
+1 MIDI
+
+By gklimanis (gklimanis@leapfrog.com) on 11/7/07 10:44 AM
+1 changed, 0 added, 0 deleted.
+4,236 ms. (Cumulative: 2,503,932 ms)
+
+----------------
