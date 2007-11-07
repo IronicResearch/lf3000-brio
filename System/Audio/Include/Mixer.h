@@ -42,23 +42,19 @@ public:
 	CAudioMixer( int numChannels );
 	~CAudioMixer();
 		
-	// Find the best channel to use for audio at a given priority
-	CChannel*		FindChannelUsing( /* tAudioPriority priority */ );
-	
-	// Find a channel based on the ID of the audio its playing.
+	CChannel*		FindChannelUsing( tAudioPriority priority );
 	CChannel*		FindChannelUsing( tAudioID id );
 	
 	// Returns true if any audio playing on a mixer channel.
 	// Note: this doesn't include MIDI.
 	Boolean IsAnyAudioActive( void );
 
-	// Get the MIDI player for the mixer.
-	CMidiPlayer*	GetMidiPlayer( void ) { return pMidiPlayer_; }
+	CMidiPlayer*	GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
 	
 	void 			SetMasterVolume( U8 x ) ; 
 
 	Boolean     GetOutputEqualizer( ) { return ((Boolean)useOutEQ_); }
-	void        SetOutputEqualizer( /* Boolean */ );
+	void        SetOutputEqualizer( Boolean x );
 	
 	// Main routine to handle the processing of data through the audio channels
 	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
