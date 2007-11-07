@@ -69,7 +69,7 @@ static int paCallback(const void*						inputBuffer,
 						unsigned long                   framesPerBuffer,
 						const PaStreamCallbackTimeInfo* timeInfo,
 						PaStreamCallbackFlags           statusFlags,
-						void*                           userData )
+						void*                           userData)
 
 {
 //    float *out = (float*)outputBuffer;
@@ -228,6 +228,9 @@ int StopAudioOutput( void )
 	return err;
 }
 
+//==============================================================================
+// DeInitAudioOutput  
+//==============================================================================
 int DeInitAudioOutput( void )
 {
 	Pa_CloseStream( gPaStream );

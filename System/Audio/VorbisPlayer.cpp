@@ -2,7 +2,7 @@
 // Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
 // All Rights Reserved
 //==============================================================================
-//
+//send
 // File:
 //		VorbisPlayer.cpp
 //
@@ -47,10 +47,8 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 	ogg_int64_t			length;
 	const tMutexAttr 	attr = {0};
 	
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-#endif
-	
+
 	// Allocate the player's sample buffer
 	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
 
@@ -64,19 +62,19 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 	pDebugMPI_->Assert((kNoErr == ret), "CVorbisPlayer::ctor: Couldn't init mutex.\n");
 
 	// Open the ogg file.
-	file_ = fopen( pInfo->path->c_str(), "r" );
-	pDebugMPI_->Assert( file_ > 0, 
+	fileH_ = fopen( pInfo->path->c_str(), "r" );
+	pDebugMPI_->Assert( fileH_ > 0, 
 		"VorbisPlayer::ctor -- Could not open oggvorbis file: %s.\n", pInfo->path->c_str() );
  
     // Find out if the caller has requested looping.
-	if (optionsFlags_ & kAudioOptionsLooped)
-		shouldLoop_ = true;
-	else 
-		shouldLoop_ = false;
-	loopCounter_ = 0;
+	shouldLoop_  = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
+    loopCount_   = payload_;
+    loopCounter_ = 0;
+
+printf("VorbisPlayer::ctor -- bDoneMessage_=%d \n", bDoneMessage_);
 
 	// open the file
-	int ov_ret = ov_open( file_, &vorbisFile_, NULL, 0 );
+	int ov_ret = ov_open( fileH_, &vorbisFile_, NULL, 0 );
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"VorbisPlayer::ctor -- ov_open() returned: %d.\n", static_cast<int>(ov_ret) );
 	pDebugMPI_->AssertNoErr( ov_ret, 
@@ -84,11 +82,9 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 	
 	// Figure out how big the vorbis bitstream actually is.
 	pVorbisInfo = ov_info( &vorbisFile_, -1 );
-	if (pVorbisInfo->channels == 2)
-		hasStereoData_ = true;
-	else
-		hasStereoData_ = false;
-	
+//    hasStereoData_ = (2 == pVorbisInfo->channels);
+	channels_ = pVorbisInfo->channels;
+
 	dataSampleRate_ = pVorbisInfo->rate;
 	
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
@@ -125,7 +121,7 @@ CVorbisPlayer::~CVorbisPlayer()
 
 #if 0	// BUGFIX/dm: Too late here? -- Post done message in RenderBuffer()
 	// If there's anyone listening, let them know we're done.
-	if ((pListener_ != kNull) && bDoneMessage_)
+	if (pListener_ && bDoneMessage_)
 		SendDoneMsg();
 #endif
 	
@@ -170,13 +166,10 @@ void CVorbisPlayer::Rewind()
 
 //==============================================================================
 //==============================================================================
-U32 CVorbisPlayer::GetAudioTime( void )
+U32 CVorbisPlayer::GetAudioTime_mSec( void )
 {
-	ogg_int64_t vorbisTime;
-	U32 timeInMS;
-		
-	vorbisTime = ov_time_tell( &vorbisFile_ );
-	timeInMS = (U32)vorbisTime;
+	ogg_int64_t vorbisTime = ov_time_tell( &vorbisFile_ );
+	U32 timeInMS           = (U32)vorbisTime;
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 		"Vorbis Player::GetAudioTime() -- vorbisTime = %ld; time in ms = %d.\n ",
@@ -196,8 +189,8 @@ void CVorbisPlayer::SendDoneMsg( void )
 	data.payload = payload_;
 	data.count = loopCounter_;
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"Vorbis Player::SendDoneMsg.\n "); 
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, "Vorbis Player::SendDoneMsg.\n "); 
+printf("CVorbisPlayer::SendDoneMsg \n");
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
@@ -232,10 +225,7 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	else
 		pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::RenderBuffer -- Couldn't lock mutex.\n");
 
-	if (hasStereoData_)
-		bytesToRead = numStereoFrames * 2 * 2;	// 16bit stereo
-	else
-		bytesToRead = numStereoFrames * 2;		// 16bit mono
+		bytesToRead = numStereoFrames * sizeof(S16) * channels_;
 	
 #if	PROFILE_DECODE_LOOP
 	pKernelMPI_->GetHRTAsUsec( startTime );
@@ -243,7 +233,8 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	// We may have to read multiple times because vorbis doesn't always
 	// give you what you ask for.
 	bufferPtr = (char*)pPcmBuffer_;
-	while ( bytesToRead > 0 ) {
+long fileEndReached = false;
+	while ( !fileEndReached && bytesToRead > 0 ) {
 //		printf("Vorbis Player::RenderBuffer: about to ov_read() %u bytes.\n ", bytesToRead);
 		
 		bytesRead = ov_read( &vorbisFile_, 
@@ -258,21 +249,35 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 //		printf("Vorbis Player::RenderBuffer: ov_read() got %u bytes.\n ", bytesRead);
 	
 		// at EOF
-		if ( bytesRead == 0 ) {
-			loopCounter_++;
-			if ((pListener_ != kNull) && bDoneMessage_)
-				SendDoneMsg();
-			if (shouldLoop_ && loopCounter_ != payload_)
-				Rewind();
-			else
-				break;
-		}
+//		if ( 0 == bytesRead) 
+//        {
+//			loopCounter_++;
+//			if (pListener_ && bDoneMessage_)
+//				SendDoneMsg();
+//			if (shouldLoop_ && loopCounter_ != payload_)
+//				Rewind();
+//			else
+//				break;
+//		}
+        fileEndReached = (0 == bytesRead);
+		if ( fileEndReached && shouldLoop_)
+            {
+//{static long c=0; printf("CVorbisPlayer::RenderBuffer: Rewind %ld loop%ld/%ld\n", c++, loopCount_, loopCounter_);}
+            if (++loopCounter_ < loopCount_)
+                {
+			    Rewind();
+                fileEndReached = false;
+                }
+		    }
 		
 		// Keep track of where we are...
 		bytesToRead -= bytesRead;
 		totalBytesRead += bytesRead;
 	 	bufferPtr += bytesRead;
 	}
+
+	if (pListener_ && bDoneMessage_ && fileEndReached)
+			SendDoneMsg();
 
 #if	PROFILE_DECODE_LOOP
 	pKernelMPI_->GetHRTAsUsec( endTime );
@@ -300,10 +305,7 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 #endif
 
 	// Convert bytes back into sample frames
-	if (hasStereoData_)
-		framesToProcess = totalBytesRead / 2 / 2;
-	else
-		framesToProcess = totalBytesRead / 2;
+		framesToProcess = totalBytesRead / sizeof(S16) / channels_;
 			
 	// Save total number of frames decoded
 	framesRead = framesToProcess;
@@ -311,13 +313,9 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	// Copy the requested frames from our audioDatPtr to the output buffer.
 	pCurSample = pPcmBuffer_;
 
-	if (hasStereoData_) {
+	if (2 == channels_) {
 		for (index = 0; index < framesToProcess; index++) {			
-			// Copy Left sample
-//				printf("left: %d ", *pCurSample);
 			*pOutBuff++ = *pCurSample++; // fixme/!!
-			// Copy Right sample
-//				printf("right: %d ", *pCurSample);
 			*pOutBuff++ = *pCurSample++;
 		}
 		// Now update the current frame pointer.
@@ -325,7 +323,6 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	} else {
 		for (index = 0; index < framesToProcess; index++) {			
 			// Copy mono sample twice
-//				printf("mono(doubled): %d ", *pCurSample);
 			*pOutBuff++ = *pCurSample;
 			*pOutBuff++ = *pCurSample++;
 		}

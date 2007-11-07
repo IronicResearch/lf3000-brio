@@ -10280,3 +10280,22 @@ By Dave Milici (dmilici@leapfrog.com) on 11/6/07 5:37 PM
 4,126 ms. (Cumulative: 2,443,330 ms)
 
 ----------------
+Revision 2,181 from svn://localhost/TRUNK/:
+Revision 2,182 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,219 ms. (Cumulative: 2,447,611 ms)
+
+----------------
+Revision 2,183 from svn://localhost/TRUNK/:
+
+1) Fixed looping and loop count for MIDI, Raw, Vorbis
+2) Added much needed support for WAV and AIFF files
+3) fixed MIDI crash from PlayAudio
+OTHER STUFF, BUT I HAVE TO MAKE THE TRAIN HOME.
+
+By gklimanis (gklimanis@leapfrog.com) on 11/6/07 6:46 PM
+7 changed, 0 added, 0 deleted.
+4,268 ms. (Cumulative: 2,451,879 ms)
+
+----------------
