@@ -10361,3 +10361,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/6/07 6:53 PM
 4,375 ms. (Cumulative: 2,477,644 ms)
 
 ----------------
+Revision 2,190 from svn://localhost/TRUNK/:
+
+updated test file with new options (WAV, AIFF) for sf2brio.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/6/07 6:53 PM
+1 changed, 0 added, 0 deleted.
+4,265 ms. (Cumulative: 2,481,988 ms)
+
+----------------
