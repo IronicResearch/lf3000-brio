@@ -116,6 +116,25 @@ if 	(2 == iInOutRateRatio || 2 == iOutInRateRatio)
 				d->inScaleDB = fir_HalfBand_31_GainCompensationDB ;
 				firName      = "HalfBand_31";
 			break;
+
+			case kSRC_FilterVersion_6:
+				d->hP        = fir_HalfBand_30dB_15_Hz;
+				d->firLength = kFIR_HalfBand_30dB_15_Hz_Length;
+				d->inScaleDB = fir_HalfBand_30dB_15_GainCompensationDB ;
+				firName      = "HalfBand_30dB_15";
+			break;
+			case kSRC_FilterVersion_7:
+				d->hP        = fir_HalfBand_50dB_31_Hz;
+				d->firLength = kFIR_HalfBand_50dB_31_Hz_Length;
+				d->inScaleDB = fir_HalfBand_50dB_31_GainCompensationDB ;
+				firName      = "HalfBand_50dB_31";
+			break;
+			case kSRC_FilterVersion_8:
+				d->hP        = fir_HalfBand_50dB_41_Hz;
+				d->firLength = kFIR_HalfBand_50dB_41_Hz_Length;
+				d->inScaleDB = fir_HalfBand_50dB_41_GainCompensationDB ;
+				firName      = "HalfBand_50dB_41";
+			break;
 			}
 
 		}
@@ -951,6 +970,31 @@ SRC_SetOutSamplingFrequency(SRC *d, float x)
 d->outSamplingFrequency = x;
 }	// ---- end SRC_SetOutSamplingFrequency() ---- 
 
+// ============================================================================
+// TranslateSRC_ModeID:   Translate ID to English string
+// ============================================================================
+    char * 
+TranslateSRC_ModeID(int id)
+{
+switch (id)
+	{
+	 case kSRC_Interpolation_Type_AddDrop:
+		return ("AddDrop");
+	 case kSRC_Interpolation_Type_Linear:
+		return ("Linear");
+	 case kSRC_Interpolation_Type_FIR:
+		return ("FIR");
+	 case kSRC_Interpolation_Type_IIR:
+		return ("IIR");
+	 case kSRC_Interpolation_Type_Unfiltered:
+		return ("Unfiltered");
+	 case kSRC_Interpolation_Type_Triangle:
+		return ("Triangle");
+	 case kSRC_Interpolation_Type_Box:
+		return ("Box");
+	}
+return ("Bogus");
+}	// ---- end TranslateSRC_ModeID() ---- 
 //============================================================================
 // RunSRC:		Resample, big-mama routine
 //============================================================================
@@ -960,7 +1004,19 @@ RunSRC(short *in, short *out, long inLength, long outLength, SRC *d)
 long oiRatio = outLength/inLength;
 long ioRatio = inLength/outLength;
 
-//{static long c=0; printf("RunSRC %d:   type=%d inLength=%d outLength=%d fixedPoint=%d \n", c++, d->type, inLength, outLength, d->useFixedPoint);}
+#ifdef NEEDED
+if (kSRC_Interpolation_Type_FIR == d->type)
+{
+{static long c=0; printf("RunSRC%d: type=%d '%s' V%d inLength=%d outLength=%d fixedPoint=%d \n", c++, 
+d->type, TranslateSRC_ModeID(d->type), d->filterVersion,
+inLength, outLength, d->useFixedPoint);}
+}
+else
+{
+{static long c=0; printf("RunSRC%d: type=%d '%s' inLength=%d outLength=%d fixedPoint=%d \n", c++, 
+d->type, TranslateSRC_ModeID(d->type), inLength, outLength, d->useFixedPoint);}
+}
+#endif
 
 if (d->useImpulse)
 	{
@@ -990,8 +1046,8 @@ switch (d->type)
 			InterpolateShorts_Linearf(in, out, inLength, outLength, d);
 	break;
 	case kSRC_Interpolation_Type_Triangle:
-// FIXXX:  only impemented for a few cases of upsampling, for now
-		if 	(2 == oiRatio)
+// FIXXX:  only implemented for a few cases of upsampling, for now
+		if 	    (2 == oiRatio)
 			SRCShorts_Triangle2(in, out, inLength, outLength);
 		else if (4 == oiRatio)
 			SRCShorts_Triangle4(in, out, inLength, outLength);
