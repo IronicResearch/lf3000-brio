@@ -1,18 +1,14 @@
-# Source files.
-SRC = main.cpp
+# source files.
+SRC =  	main.cpp
 
 OBJ = $(SRC:.cpp=.o)
-# CPU : x86, arm
-CPU = x86
-# Compiler: x86: g++   ARM: arm-linux-gcc
-CCC = g++
 
 OUT = sfinfo
 BRIO=/home/lfu/workspace/Brio2
-MOBILEER   = $(BRIO)/ThirdParty/Mobileer
+MOBILEER = $(BRIO)/ThirdParty/Mobileer
 BRIO_AUDIO = $(BRIO)/System/Audio
 
-# Include directories
+# include directories
 INCLUDES = -I. \
     -I/usr/local/include \
     -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include \
@@ -27,8 +23,11 @@ INCLUDES = -I. \
 # C++ compiler flags (-g -O2 -Wall)
 CCFLAGS = -g
 
-# Library paths
-LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/$(CPU) -L$(BRIO_AUDIO)/DspUtil/$(CPU) -L$(MOBILEER)/Libs/$(CPU)
+# compiler
+CCC = g++
+
+# library paths
+LIBDIRS = -L../ -L/usr/local/lib -L$(BRIO_AUDIO)/LibSndFile/x86 -L$(BRIO_AUDIO)/DspUtil/x86 -L$(MOBILEER)/Libs/x86
 LIBS = -lsndfile -ldsputil
 
 # compile flags
@@ -43,7 +42,6 @@ default: dep $(OUT)
 
 $(OUT): $(OBJ)
 	$(CCC) -o $(OUT) $(INCLUDES) $(CCFLAGS) $(LDFLAGS) $(LIBDIRS) $(OBJ) $(LIBS) -static
-	cp $(OUT) ./$(CPU)
 
 depend: dep
 
@@ -72,9 +70,6 @@ main.o: /usr/include/_G_config.h /usr/include/wchar.h
 main.o: /usr/include/bits/wchar.h /usr/include/gconv.h
 main.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stdarg.h
 main.o: /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/Dsputil.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/DspUtil/util.h
-main.o: /usr/include/sys/time.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sfconfig.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/config.h
-main.o: /home/lfu/workspace/Brio2/System/Audio/LibSndFile/sndfile.h
+main.o: ../../DspUtil/Dsputil.h ../../DspUtil/util.h /usr/include/sys/time.h
+main.o: ../../LibSndFile/sfconfig.h ../../LibSndFile/config.h
+main.o: ../../LibSndFile/sndfile.h
