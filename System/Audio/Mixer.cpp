@@ -76,10 +76,8 @@ long i, j, ch;
 	pDSP_.channelCount = numInChannels_;
 	
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
-#endif
-	
+
 //	printf("CAudioMixer::CAudioMixer: printf numInChannels_=%d \n", numInChannels_);
 
 // Allocate audio channels
@@ -94,7 +92,7 @@ long i, j, ch;
 
 	// Init midi player ptr
 	pMidiPlayer_   = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
-	
+
 fsRack_[0] = (long)(samplingFrequency_*0.25f); // kAudioSampleRate_Div4;
 fsRack_[1] = (long)(samplingFrequency_*0.5f ); // kAudioSampleRate_Div2;
 fsRack_[2] = (long)(samplingFrequency_);       // kAudioSampleRate_Div1;
@@ -105,15 +103,24 @@ for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		{
+
 		mixBinBufferPtrs_[i][ch] = new S16[2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords];
 
 // Initialize sampling rate converters  
-		DefaultSRC(&src_[i][ch]);
-		src_[i][ch].type = kSRC_Interpolation_Type_Triangle; // Linear, Triangle, FIR
-		SRC_SetInSamplingFrequency (&src_[i][ch], (float)fsRack_[i]);
-		SRC_SetOutSamplingFrequency(&src_[i][ch], samplingFrequency_);
-		UpdateSRC(&src_[i][ch]);
-		ResetSRC(&src_[i][ch]);
+        SRC *src = &src_[i][ch];
+		DefaultSRC(src);
+		src->type = kSRC_Interpolation_Type_Triangle; // Linear, Triangle, FIR, IIR, Box
+
+//        src->type = kSRC_Interpolation_Type_FIR;
+//        src->filterVersion = kSRC_FilterVersion_6; // 30dB_15
+//        src->filterVersion = kSRC_FilterVersion_7; // 50dB_31
+//        src->filterVersion = kSRC_FilterVersion_8; // 50dB_41
+
+		SRC_SetInSamplingFrequency (src, (float)fsRack_[i]);
+		SRC_SetOutSamplingFrequency(src, samplingFrequency_);
+
+		UpdateSRC(src);
+		ResetSRC(src);
 		}
 	mixBinFilled_[i] = False;
 	}
@@ -164,10 +171,13 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
         }
 
 // Configure output "soft" clipper
-    DefaultWaveShaper(&outSoftClipper_[ch]);
-    SetWaveShaper_Parameters(&outSoftClipper_[ch], kWaveShaper_Type_V4, 0.0f, 0.0f);
-    SetWaveShaper_SamplingFrequency(&outSoftClipper_[ch], samplingFrequency_);
-    PrepareWaveShaper(&outSoftClipper_[ch]);
+    {
+    WAVESHAPER *d = &outSoftClipper_[ch];
+    DefaultWaveShaper(d);
+    SetWaveShaper_Parameters(d, kWaveShaper_Type_V4, 0.0f, 0.0f);
+    SetWaveShaper_SamplingFrequency(d, samplingFrequency_);
+    PrepareWaveShaper(d);
+    }
     }
 for (ch = 0; ch < pDSP_.channelCount; ch++)
 	pChannels_[ch].SetMixerChannelDataPtr(&pDSP_.channels[ch]);
@@ -264,21 +274,22 @@ long i;
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
 		{
-		if (mixBinBufferPtrs_[i][0])
-			free(mixBinBufferPtrs_[i][0]);
-		if (mixBinBufferPtrs_[i][1])
-			free(mixBinBufferPtrs_[i][1]);
+        for (long j = 0; j < kAudioMixer_MaxOutChannels; j++)
+            {
+    		if (mixBinBufferPtrs_[i][j])
+    			free(mixBinBufferPtrs_[i][j]);
+            }
 		}
 	
 	if (writeOutSoundFile)
 		CloseSoundFile(&outSoundFile);
 
-}  // ---- end ~CAudioMixer::CAudioMixer() ----
+}  // ---- end ~CAudioMixer() ----
 
 //==============================================================================
-// CAudioMixer::FindChannelUsing
+// FindChannelUsing
 //==============================================================================
-CChannel* CAudioMixer::FindChannelUsing(/* tAudioPriority priority */ )
+CChannel* CAudioMixer::FindChannelUsing( tAudioPriority priority )
 {
 	// For now, just search for a channel not in use
 	for (long i = 0; i < numInChannels_; i++)
@@ -492,13 +503,13 @@ for (ch = 0; ch < numInChannels_; ch++)
 // MIDI player renders to fs/2 output buffer 
 if ( pMidiPlayer_->IsActive() )
 	{
-//{static long c=0; printf("CAudioMixer::RenderBuffer :   MIDI active %ld \n", c++);}
 //	long rateDivisor = 2;
 	long midiFrames  = (numFrames/2);
 	long mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
 	S16 *pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
 
 	playerFramesRendered = pMidiPlayer_->RenderBuffer( pMixBin, midiFrames, mixBinFilled_[mixBinIndex]); 
+//{static long c=0; printf("CAudioMixer::RenderBuffer :   MIDI active %ld midiFrames=%ld\n", c++, midiFrames);}
 	mixBinFilled_[mixBinIndex] = True;
 	}
 }
@@ -569,10 +580,10 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 
 // Compute Output Equalizer
 // NOTE: should have 32-bit data path here for EQ before soft clipper
-//useOutEQ_ = True;
+useOutEQ_ = False;
     if (useOutEQ_)
         {
-//{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
+{static long c=0; printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
         for (long j = 0; j < outEQ_BandCount_; j++)
             {
 //            ComputeEQf(pIn, pOut, numFrames, &outEQ_[ch][j]);
@@ -581,10 +592,10 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
             }
         }
 // Compute Output Soft Clipper
-//useOutSoftClipper_ = True;
+useOutSoftClipper_ = False;
     if (useOutSoftClipper_)
         {
-{static long c=0; printf("ComputeWaveShaper %ld On=%ld: \n", c++, useOutSoftClipper_);}
+{static long c=0; if (!c) printf("ComputeWaveShaper %ld On=%ld: \n", c++, useOutSoftClipper_);}
         ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
         }
     }
@@ -738,7 +749,7 @@ postGaini = FloatToQ15(postGainf);
 // SetOutputEqualizer :  Set output equalizer type.
 //                          For now, just On or Off
 // ==============================================================================
-void CAudioMixer::SetOutputEqualizer(/* Boolean x */ )
+void CAudioMixer::SetOutputEqualizer(Boolean x)
 {
 //printf("CAudioMixer::SetOutputEqualizer: useOutEQ_=%ld->%ld\n", (long)useOutEQ_, (long)x);
 // Careful with reset if DSP is running in a separate thread.
@@ -749,6 +760,4 @@ void CAudioMixer::SetOutputEqualizer(/* Boolean x */ )
 
 } // ---- end CAudioMixer::SetOutputEqualizer() ----
 
-
 LF_END_BRIO_NAMESPACE()
-// EOF	

@@ -20,9 +20,13 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-//==============================================================================
-// Defines
-//==============================================================================
+#define kPan_Default    0
+#define kPan_Min    (-100)
+#define kPan_Max      100
+
+#define kVolume_Default  100
+#define kVolume_Min        0
+#define kVolume_Max      100
 
 //==============================================================================
 // Global variables
@@ -44,8 +48,8 @@ CChannel::CChannel()
 	fReleasing_ = false;
 	
 // Channel Interface parameters
-	volume_ = 0;
-	pan_    = 0;
+	pan_    = kPan_Default;
+	volume_ = kVolume_Default;
 
 // Channel DSP Engine
 	pDSP_ = NULL;
@@ -57,34 +61,31 @@ CChannel::CChannel()
 //	pDSP_->postGainDB = 0.0f;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
-#endif
-	
-	//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CChannel::CChannel: volume_=%d pan_=%d\n", volume_, pan_);
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CChannel::CChannel: volume_=%d pan_=%d\n", volume_, pan_);
 //	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
-}	// ---- end CChannel::CChannel ----
+}	// ---- end CChannel ----
 
 //==============================================================================
-// CChannel::~CChannel
+// ~CChannel
 //==============================================================================
 CChannel::~CChannel()
 {
-{static int c=0; printf("CChannel::~CChannel %d \n", c++);}
+//{static int c=0; printf("CChannel::~CChannel %d \n", c++);}
 	// Free debug MPI
 	if (pDebugMPI_)
 		delete pDebugMPI_;
-}	// ---- end CChannel::~CChannel ----
+}	// ---- end ~CChannel ----
 
 //==============================================================================
-// CChannel::InitChanWithPlayer
+// InitChanWithPlayer
 //==============================================================================
 tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 {
 //{static long c=0; printf("CChannel::InitChanWithPlayer: %ld start \n", c++);}
 
 	// If we're pre-empting, release the active player first.
-	if (pPlayer_ != kNull)
+	if (pPlayer_)
 		Release( false );		// don't suppress done msg if it has been requested
 	
 	pPlayer_ = pPlayer;
@@ -114,10 +115,10 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 //printf("CChannel::InitChanWithPlayer : pan=%d volume=%d \n", pan_, volume_);
 
 	return kNoErr;
-}	// ---- end CChannel::InitChanWithPlayer ----
+}	// ---- end InitChanWithPlayer ----
 
 //==============================================================================
-// CChannel::Release
+// Release
 //==============================================================================
 tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
@@ -139,9 +140,9 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 	fPaused_ = false;
 	fOwnProcessor_ = 0;
 
-// Set DSP player values to arbitrary 0's
-	pan_    = 0;
-	volume_ = 0;
+// Set DSP values
+	pan_    = kPan_Default;
+	volume_ = kVolume_Default;
 	samplingFrequency_ = 0;
 
 	// The player's dtors are protected with a mutex so they are
@@ -155,43 +156,37 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 	fInUse_     = false;
 
 	return kNoErr;
-}	// ---- end CChannel::Release ----
+}	// ---- end Release ----
 
 //==============================================================================
-// CChannel::SetPan :     Channel stereo position   Left .. Center .. Right
+// SetPan :     Channel stereo position   Left .. Center .. Right
 //==============================================================================
 void CChannel::SetPan( S8 x )
 {
-S8 lower = -100;
-S8 upper =  100;
-
-pan_ = BoundS8(&x, lower, upper);
+pan_ = BoundS8(&x, kPan_Min, kPan_Max);
 
 // Convert input range to [-100 .. 100]range [0 .. 1] suitable
 // for the constant power calculation
 // ChangeRangef(x, L1, H1, L2, H2)
-float xf = ChangeRangef((float)pan_, (float) lower, (float)upper, 0.0f, 1.0f);
+float xf = ChangeRangef((float)pan_, (float) kPan_Min, (float)kPan_Max, 0.0f, 1.0f);
 
-//#define kPanValue_FullLeft ( 0.0)
-//#define kPanValue_Center    (0.5)
-//#define kPanValue_FullRight (1.0)
 // PanValues(xf, panValuesf);
 ConstantPowerValues(xf, &panValuesf[kLeft], &panValuesf[kRight]);
 //printf("CChannel::SetPan : printf %d -> <%f , %f> \n", x, panValuesf[kLeft], panValuesf[kRight]);
 RecalculateLevels();
-}	// ---- end CChannel::SetPan ----
+}	// ---- end SetPan ----
 
 //==============================================================================
-// CChannel::SetVolume : Convert range [0 .. 100] to [-100 ..0] dB
+// SetVolume : Convert range [0 .. 100] to [-100 ..0] dB
 //==============================================================================
 void CChannel::SetVolume( U8 x )
 {
 //printf("CChannel::SetVolume : printf  %d\n", x);
-volume_ = x;
-// ChangeRangef(x, L1, H1, L2, H2)
+volume_ = BoundU8(&x, kVolume_Min, kVolume_Max);
 
+// ChangeRangef(x, L1, H1, L2, H2)
 // FIXX: move to decibels, but for now, linear volume
-gainf = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
+gainf = ChangeRangef((float)x, (float) kVolume_Min, (float)kVolume_Max, 0.0f, 1.0f);
 gainf *= kDecibelToLinearf_m3dBf; // DecibelToLinearf(-3.0);
 //gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
 //gainf =  DecibelToLinearf(gainf);
@@ -205,27 +200,27 @@ gainf *= kDecibelToLinearf_m3dBf; // DecibelToLinearf(-3.0);
 //printf("sqrt(2)/2 = %g\n", 0.5f*sqrt(2.0));
 
 RecalculateLevels();
-}	// ---- end CChannel::SetVolume ----
+}	// ---- end SetVolume ----
 
 //==============================================================================
-// CChannel::RecalculateLevels : Recalculate levels when either pan or volume changes
+// RecalculateLevels : Recalculate levels when either pan or volume changes
 //==============================================================================
 void CChannel::RecalculateLevels()
 {
 //printf("CChannel::RecalculateLevels : \n");
 
-levelsf[0] =  panValuesf[0]*gainf;
-levelsf[1] =  panValuesf[1]*gainf;
+levelsf[kLeft ] =  panValuesf[kLeft ]*gainf;
+levelsf[kRight] =  panValuesf[kRight]*gainf;
 
 // Convert 32-bit floating-point to Q15 fractional integer format 
-levelsi[0] = FloatToQ15(levelsf[0]);
-levelsi[1] = FloatToQ15(levelsf[1]);
+levelsi[kLeft ] = FloatToQ15(levelsf[kLeft ]);
+levelsi[kRight] = FloatToQ15(levelsf[kRight]);
 
-//printf("CChannel::RecalculateLevels : levelsf [0]=%g [1]=%g\n", levelsf[0], levelsf[1]);
-}	// ---- end CChannel::RecalculateLevels ----
+//printf("CChannel::RecalculateLevels : levelsf L=%g R=%g\n", levelsf[kLeft], levelsf[kRight]);
+}	// ---- end RecalculateLevels ----
 
 //==============================================================================
-// CChannel::ShouldRender
+// ShouldRender
 //==============================================================================
 Boolean CChannel::ShouldRender( void ) {
 	Boolean result = false;
@@ -235,10 +230,10 @@ Boolean CChannel::ShouldRender( void ) {
 		result = true;
 	
 	return result;
-}	// ---- end CChannel::ShouldRender ----
+}	// ---- end ShouldRender ----
 
 //==============================================================================
-// CChannel::RenderBuffer
+// RenderBuffer
 //==============================================================================
 U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOutputBuffer )
 {
@@ -259,8 +254,8 @@ U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOut
 #endif
 	int playerFramesRendered = pPlayer_->RenderBuffer( pTmp, numFrames );
 
-//printf("levelsf <%f , %f > \n", levelsf[0], levelsf[1]);
-//printf("levelsi <%f , %f > \n", Q15ToFloat(levelsi[0]), Q15ToFloat(levelsi[1]));
+//printf("levelsf <%f , %f > \n", levelsf[kLeft], levelsf[kRight]);
+//printf("levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
 
 // ---- Add rendered output to out buffer
 	if (addToOutputBuffer)
@@ -268,15 +263,15 @@ U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOut
 		for (U32 i = 0; i < numSamples; i += 2)
 			{
 		// Integer scaling for gain control
-//            y = pOut[i] + ((pTmp[i] * volume_)>>7);	        // ORIG rbg			
-//			y = pOut[i] + (S32)(levelsf[0] * (float)pTmp[i]);	// FLOAT			
- 			y = pOut[i] + (S32) MultQ15(levelsi[0], pTmp[i]);	// Q15  1.15 Fixed-point		
+//            y = pOut[i] + ((pTmp[i] * volume_)>>7);	            // ORIG rbg			
+//			y = pOut[i] + (S32)(levelsf[kLeft] * (float)pTmp[i]);	// FLOAT			
+ 			y = pOut[i] + (S32) MultQ15(levelsi[kLeft], pTmp[i]);	// Q15  1.15 Fixed-point		
 		// Saturate to 16-bit range				
 			if      (y > kS16Max) y = kS16Max;
 			else if (y < kS16Min) y = kS16Min;				
 			pOut[i] = (S16)y;
 
- 			y = pOut[i+1] + (S32) MultQ15(levelsi[1], pTmp[i+1]);				
+ 			y = pOut[i+1] + (S32) MultQ15(levelsi[kRight], pTmp[i+1]);				
 		// Saturate to 16-bit range				
 			if      (y > kS16Max) y = kS16Max;
 			else if (y < kS16Min) y = kS16Min;				
@@ -290,14 +285,14 @@ U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOut
 			{
 		// Integer scaling for gain control
 //  		y = ((pTmp[i] * volume_)>>7);		        // ORIG rdg	Darren	
-//			y = (S32)(levelsf[0] * (float)pTmp[i]);		// FLOAT
- 			y = (S32) MultQ15(levelsi[0], pTmp[i]);		// Q15  1.15 Fixed-point	
+//			y = (S32)(levelsf[kLeft] * (float)pTmp[i]);	// FLOAT
+ 			y = (S32) MultQ15(levelsi[kLeft], pTmp[i]);	// Q15  1.15 Fixed-point	
 		// Saturate to 16-bit range				
 			if      (y > kS16Max) y = kS16Max;
 			else if (y < kS16Min) y = kS16Min;				
 			pOut[i] = (S16)y;
 
- 			y = (S32) MultQ15(levelsi[1], pTmp[i+1]);				
+ 			y = (S32) MultQ15(levelsi[kRight], pTmp[i+1]);				
 		// Saturate to 16-bit range				
 			if      (y > kS16Max) y = kS16Max;
 			else if (y < kS16Min) y = kS16Min;				
@@ -306,7 +301,7 @@ U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOut
 		}
 
 	return (playerFramesRendered);
-}	// ---- end CChannel::RenderPlayerToBuffer ----
+}	// ---- end RenderPlayerToBuffer ----
 
 LF_END_BRIO_NAMESPACE()
 // EOF	
