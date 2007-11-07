@@ -45,7 +45,7 @@ public:
 	void	Rewind();
 	
 	// Returns milliseconds since start of audio.
-	U32 GetAudioTime( void );
+	U32 GetAudioTime_mSec( void );
 	
 	// Attempt to fill buffer at pOutBuff with numFrames of data.  
 	// Returns number of frames actually rendered; zero when done.
@@ -61,8 +61,10 @@ private:
 	tMutex     		render_mutex_;		// Need to protect renderbuffer call 
 										// because it's in a different thread.
 	U32				filePos_;			// position in the vorbis byte stream
-	U32				loopCounter_;		// loop counter
-	
+
+    S32             loopCount_;
+    S32             loopCounter_;
+
 #if	PROFILE_DECODE_LOOP
 	S32				totalUsecs_;
 	S32				totalBytes_;

@@ -18,6 +18,7 @@
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <DebugMPI.h>
+
 #include <AudioTypes.h>
 #include <EventListener.h>
 #include <AudioTypesPriv.h>
@@ -43,12 +44,12 @@ public:
 	// Process an audio tick for the class object
 	virtual U32		RenderBuffer( S16 *pOutBuff, U32 numFrames ) = 0;
 
-	// Returns milliseconds since start of audio playback.
-	virtual U32 GetAudioTime( void ) = 0;
+	// Returns Time since start of audio playback.
+	virtual U32 GetAudioTime_mSec( void ) = 0;
 
 	// Return the requested status of the class object 
 	inline U8		SendDoneMessage() { return bDoneMessage_; }
-	inline U8		HasAudioCodec() { return bHasCodec_; }
+	inline U8		HasAudioCodec()   { return bHasAudioCodec_; }
 
 	// Get/Set the class member variables
 	inline tAudioID			GetAudioID() { return id_; }
@@ -68,26 +69,31 @@ public:
 	inline U32				GetSampleRate( void ) { return dataSampleRate_; }
 	
 protected:
-	U8			bPaused_:1;				// Player is paused
+	U8			bPaused_:1;				
 	U8			bComplete_:1;			// Reached the end of the audio// ???
 	U8			bDoneMessage_:1;		// Caller requests done message 
 	U8			bStopping_:1;			// Stop() has been called, but not stopped
-	U8			bHasCodec_:1;			// Has audio codec
-	U8			unused_:3;				// Unused
+	U8			bHasAudioCodec_:1;	
+	U8			unused_:3;				
 
 	CDebugMPI*			pDebugMPI_;		// Debug output access.	
 	tAudioID			id_;			// AudioID of the audio assigned to the player
-	FILE*				file_;			// file struct of open file
+
+	FILE*				fileH_;			// file struct of open file
 	void*				pAudioData_;
-	U32					audioDataSize_;	// bytes I think it should be...
-	bool				hasStereoData_;
-	U32					dataSampleRate_;	// sampling rate of the data associated with the player
-	Boolean				shouldLoop_;		// should the file loop when it reaches the end?
-	U8					volume_;		// Volume of the audio assigned to the player 
-	S8					pan_;			// Pan of the audio assigned to the player 
-	tAudioPriority		priority_;		// Priority of the audio assigned to the player
-	tAudioPayload		payload_;		// User payload of the audio assigned to the player
-	tAudioOptionsFlags	optionsFlags_;	// Options flags of the audio assigned to the player
+	U32					audioDataSize_;	// bytes of audio data
+
+    long                channels_;
+	U32					dataSampleRate_;
+
+	Boolean				shouldLoop_;	// loop file
+
+	S8					pan_;			 
+	U8					volume_;		 
+
+	tAudioPriority		priority_;		
+	tAudioPayload		payload_;		
+	tAudioOptionsFlags	optionsFlags_;	
 	const IEventListener *pListener_;	// Pointer to AudioEventHandler assigned to the player
 };
 
