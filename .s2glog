@@ -10371,3 +10371,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/6/07 6:53 PM
 4,265 ms. (Cumulative: 2,481,988 ms)
 
 ----------------
+Revision 2,191 from svn://localhost/TRUNK/:
+
+Updated makefile with CPU directories.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/6/07 6:55 PM
+2 changed, 2 added, 0 deleted.
+4,359 ms. (Cumulative: 2,486,426 ms)
+
+----------------
