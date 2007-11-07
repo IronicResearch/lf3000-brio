@@ -10390,3 +10390,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/6/07 6:55 PM
 4,298 ms. (Cumulative: 2,490,787 ms)
 
 ----------------
+Revision 2,193 from svn://localhost/TRUNK/:
+
+Fixed unused audio parameters and SDK examples after merge with Gints audio updates. 
+
+By Dave Milici (dmilici@leapfrog.com) on 11/6/07 7:35 PM
+9 changed, 0 added, 0 deleted.
+4,518 ms. (Cumulative: 2,495,383 ms)
+
+----------------

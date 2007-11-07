@@ -147,9 +147,9 @@ public:
 	//********************************
 	// Audio FX functionality
 	//********************************    
-	tErrType RegisterAudioEffectsProcessor( /* tRsrcType type, CAudioEffectsProcessor *pChain*/ ); // TODO: stub
-	tErrType RegisterGlobalAudioEffectsProcessor( /*CAudioEffectsProcessor *pChain*/ ); // TODO: stub
-	tErrType ChangeAudioEffectsProcessor( /*tAudioID id, CAudioEffectsProcessor *pChain*/ ); // TODO: stub
+	tErrType RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ); // TODO: stub
+	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); // TODO: stub
+	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); // TODO: stub
 
 	// Registers function to call to get the next chunk of stereo audio stream data // TODO: stub
 //	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); // TODO: stub
@@ -166,10 +166,10 @@ public:
 	// This function activates the MIDI engine.  Don't do this unless you really need to play
 	// MIDI, there is a MIPS cost to having the player active even if you aren't using it.
 	// Always release it when you are done!
-	tErrType 	AcquireMidiPlayer( /* tAudioPriority priority, IEventListener* pListener, */ tMidiPlayerID* pID );
+	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pListener, tMidiPlayerID* pID );
 
 	// Deactivate the MIDI engine.
-	tErrType 	ReleaseMidiPlayer(/* tMidiPlayerID id */ );
+	tErrType 	ReleaseMidiPlayer( tMidiPlayerID id );
 	
 	// Get the Audio ID associated with a currently playing MidiFile. 
 	// You only need this if you want to change the Volume/Priority/Pan/Listener
@@ -219,13 +219,13 @@ public:
 	// Send MIDI data to a player instance.
 	// Trigger a single MIDI note on event.
 	// WARNING: DON'T DO THIS WHILE A MIDI FILE IS PLAYING, bad things may happen!!!
-    tErrType 	MidiNoteOn(/* tMidiPlayerID id,*/ U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+    tErrType 	MidiNoteOn( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	
 	// Stop the previously trigger MIDI note.
-    tErrType 	MidiNoteOff(/* tMidiPlayerID id,*/ U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+    tErrType 	MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 
     // Send raw MIDI msg to player.
-	tErrType 	SendMidiCommand( /*tMidiPlayerID id, U8 cmd, U8 data1, U8 data2*/ );
+	tErrType 	SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 	// ******** Loadable Instrument Support (NOT IMPLEMENTED YET) ********
 	// Create an empty list of programs and drums. This can be used to keep 

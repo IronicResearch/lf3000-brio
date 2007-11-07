@@ -563,7 +563,7 @@ static void DoIsAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
 	SendMsgToAudioModule( retMsg );
 }
 
-static void DoIsAnyAudioPlaying( CAudioMsgIsAudioPlaying* msg ) {
+static void DoIsAnyAudioPlaying( CAudioMsgIsAudioPlaying* /* msg */) {
 	CAudioReturnMessage	retMsg;
 	Boolean				isAudioActive;
 
@@ -787,7 +787,7 @@ static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
 	SendMsgToAudioModule( retMsg );
 }
 
-static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
+static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* /* msg */) {
 //	tAudioID  			id = msg->GetData();
 	CAudioReturnMessage	retMsg;
 
@@ -802,7 +802,7 @@ static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
 }
 
 // If we have more than one MIDI player in the future, this needs to be changed.
-static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
+static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* /* msg */) {
 	CAudioReturnMessage	retMsg;
 
 	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
@@ -815,13 +815,13 @@ static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* msg ) {
 //	return err;
 }
 
-static void DoPauseMidiFile( CAudioMsgPauseMidiFile* msg ) {
+static void DoPauseMidiFile( CAudioMsgPauseMidiFile* /* msg */) {
 //	tMidiPlayerID  	id = msg->GetData();
 
 	gContext.pMidiPlayer->PauseMidiFile();
 }
 
-static void DoResumeMidiFile( CAudioMsgResumeMidiFile* msg ) {
+static void DoResumeMidiFile( CAudioMsgResumeMidiFile* /* msg */) {
 //	tMidiPlayerID  	id = msg->GetData();
 
 	gContext.pMidiPlayer->ResumeMidiFile();
@@ -833,7 +833,7 @@ static void DoStopMidiFile( CAudioMsgStopMidiFile* msg ) {
 	gContext.pMidiPlayer->StopMidiFile( pInfo );
 }
 
-static void DoGetEnabledMidiTracks( CAudioMsgMidiFilePlaybackParams* msg ) {
+static void DoGetEnabledMidiTracks( CAudioMsgMidiFilePlaybackParams* /* msg */) {
 
 	tErrType				result;
 	CAudioReturnMessage		retMsg;

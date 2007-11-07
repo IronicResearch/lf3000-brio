@@ -182,7 +182,7 @@ RecalculateLevels();
 void CChannel::SetVolume( U8 x )
 {
 //printf("CChannel::SetVolume : printf  %d\n", x);
-volume_ = BoundU8(&x, kVolume_Min, kVolume_Max);
+volume_ = x; //BoundU8(&x, kVolume_Min, kVolume_Max);
 
 // ChangeRangef(x, L1, H1, L2, H2)
 // FIXX: move to decibels, but for now, linear volume
