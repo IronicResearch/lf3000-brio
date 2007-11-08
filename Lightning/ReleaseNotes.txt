@@ -30,6 +30,17 @@ Enhancements:
 * Equivalent compiler warning levels for embedded vs emulation targets.
 * Fixed Audio done message flag and MIDI file playing status flags.
  
+1) Reduced Max Mixer channels to 4:  3 Ogg/Raw/Wav/AIFF and 1 MIDI
+2) Fixed crash exposed at end of MIDI file play
+3) Added support for WAV and AIFF audio files.  A proprietary audio file format
+   such as Brio's RAW just makes for painful development.
+4) All audio file formats loop properly for specified # of iterations
+5) PlayAudio 
+   a. supports WAV/AIFF files
+   b. Multiple files - Can play list of audio files either sequentially or simultaneously
+   c. Each audio file may have indedendent pan and volume (no pan for MIDI as it's stereo)
+
+
 ===========================================
 v0.1.20  (Build 2105 released Oct 30, 2007) 
 ===========================================
