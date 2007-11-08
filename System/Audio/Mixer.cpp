@@ -38,7 +38,6 @@ char *inSoundFileName = "SINE/sine_db00_0500Hz_16k_c1.wav";
 //"SINE/sine_db00_0250Hz_16k_c1.wav";
 //"GoldenTestSet_16k/B_Quigley.wav";
 //"Music/Temptation_16k_st.wav";
-//"SINE/sine_db00_0250Hz_16k_c1.wav";
 // GoldenTestSet_16k
 // B_Quigley.wav
 // B_DOT.wav
@@ -62,14 +61,15 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // CAudioMixer implementation
 //==============================================================================
-CAudioMixer::CAudioMixer( int numInChannels )
+CAudioMixer::CAudioMixer( int inChannels )
 {
 long i, j, ch;
+//	printf("CAudioMixer::CAudioMixer: inChannels=%d Max=%d\n", inChannels, kAudioMixer_MaxInChannels);
 
-	numInChannels_ = numInChannels;
-	pDebugMPI_->Assert((numInChannels <= kAudioMixer_MaxInChannels), "CAudioMixer::CAudioMixer: %d is too many channels!\n", numInChannels );
-if (numInChannels > kAudioMixer_MaxInChannels)
-	printf("CAudioMixer::CAudioMixer: %d too many channels! Max=%d\n", numInChannels, kAudioMixer_MaxInChannels);
+	numInChannels_ = inChannels;
+if (numInChannels_ > kAudioMixer_MaxInChannels)
+	printf("CAudioMixer::CAudioMixer: %d too many channels! Max=%d\n", numInChannels_, kAudioMixer_MaxInChannels);
+	pDebugMPI_->Assert((numInChannels_ <= kAudioMixer_MaxInChannels), "CAudioMixer::CAudioMixer: %d is too many channels!\n", numInChannels_ );
 
     SetMasterVolume(100);
     samplingFrequency_ = kAudioSampleRate;
