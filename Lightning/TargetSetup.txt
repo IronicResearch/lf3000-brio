@@ -467,7 +467,54 @@ Finally restore the AppManager to its previous location.
 	
 Safely unmount /Didj and disconnect the USB cable again. This should relaunch the
 original AppManager as the default app.
- 
+
+======================================================
+Target Preparation -- flashing via automatic updates
+======================================================
+
+When transferred over USB connection from a host PC, the firmware-XXXX.lfp
+package file will automatically be flashed onboard after USB is disconnected.
+This is only applicable on units with at least version 0.10.0-2101 onboard.
+Otherwise the embedded binaries will need to be unpacked from the .lfp file
+and flashed using one of the manual methods described in TargetSetup.txt.
+
+(1) Connect the Didj device via USB cable. A "/Didj" disk device should appear
+on your desktop or file browser.
+
+(2) Copy the firmware-XXXX.lfp package file to the /Didj disk's root directory.
+	firmware-LF_LF1000-0.11.0.2181.lfp is only for Form-Factor units
+	firmware-ME_LF1000-0.11.0.2181.lfp is for LF1000 development boards (green)
+
+(3) After copying is complete, be sure to eject the /Didj disk device. On both
+Windows and Linux desktops, this is done by right-clicking on the /Didj disk icon,
+and selecting 'Eject' command. Then be sure to wait until the disk icon disappears
+and notified it is safe to unplug the device.
+
+(4) Unplugging the USB cable will automatically flash the new firmware onboard
+and reboot the device.
+
+======================================================
+Target Preparation -- installing Brio updates
+======================================================
+
+In order to install Brio update, you could use the lfpkg script from Linux host,
+or unzip the Brio-XXXX.lfp file and copy the unzipped contents over USB. The same
+Brio libraries are used for either LF1000 Form-Factor or development boards.
+
+(1) Connect the Didj device via USB cable. A "/Didj" disk device should appear
+on your desktop or file browser as above.
+
+(2a) On Linux PC host, run the following command:
+	lfpkg -a install -b /media/Didj Brio-0.1.21.2194.lfp
+	
+(2b) On Windows PC host, rename the Brio-XXXX.lfp file with .zip extension and unzip
+its Brio directory contents over the one at /Didj/Base/Brio.
+
+(3) After copying is complete, be sure to eject the /Didj disk device as above.
+Windows and Linux desktops, this is done by right-clicking on the /Didj disk icon,
+and selecting 'Eject' command. Then be sure to wait until the disk icon disappears
+and notified it is safe to unplug the device.
+
 ======================================================
 Target Preparation -- installing ARM cross-compiler
 ======================================================
