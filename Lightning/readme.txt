@@ -6,6 +6,8 @@ Lightning SDKs typically consist of these parts:
 
 	LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
 	embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board.
+	bootstrap-xxxx.lfp		- bootstrap loader binaries in .lfp package.
+	firmware-xxxx.lfp		- kernel and rootfs binaries in .lfp package.
 	Brio-xxxx.lfp 			- Brio binaries to be copied onto target NAND partition via USB. 
 	nfsroot-svnxxxx.tar.gz  - optional nfsroot folder for booting the target board.
                             
@@ -14,14 +16,8 @@ The SDK can be unzipped as is and located anywhere.
 	$ tar -xzvf LightningSDK_xxxx.tar.gz
 	$ export LEAPFROG_PLUGIN_ROOT=/path/to/LightningSDK_<xxxx>
 
-The embedded binary images need to be copied to your TFTP server base directory, and 
-subsequently downloaded onto the target board via the U-Boot loader. (Refer to image
-flashing instructions in TargetSetup.txt file.)
-
-	$ cd ~/tftpboot
-	$ tar -xzvf embedded-svnxxxx.tar.gz
-	$ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
-	$ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
+The embedded binary images are distributed in .lfp package files which can flashed
+onboard by a variety of methods described in the TargetSetup.txt file.
 
 The NFS root image must be unzipped as root user and located off the home user path.
 
@@ -50,7 +46,13 @@ All 3 binaries need to be flashed into new locations described in TargetSetup.tx
 Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
 in .lfp package files, and no longer contain version numbers in their names.
 
-To unpack the .lfp files:
+When transferred over USB connection from a host PC, the firmware-XXXX.lfp
+package file will automatically be flashed onboard after USB is disconnected.
+This is only applicable on units with at least version 0.10.0-2101 onboard.
+Otherwise the embedded binaries will need to be unpacked from the .lfp file
+and flashed using one of the manual methods described in TargetSetup.txt.
+
+To unpack the .lfp files for TFTP uploading:
 
 	$ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
 	$ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
