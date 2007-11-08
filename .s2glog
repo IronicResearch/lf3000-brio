@@ -10435,3 +10435,18 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/07 5:30 PM
 4,213 ms. (Cumulative: 2,512,583 ms)
 
 ----------------
+Revision 2,199 from svn://localhost/TRUNK/:
+Revision 2,200 from svn://localhost/TRUNK/:
+Revision 2,201 from svn://localhost/TRUNK/:
+Revision 2,202 from svn://localhost/TRUNK/:
+Revision 2,203 from svn://localhost/TRUNK/:
+Revision 2,204 from svn://localhost/TRUNK/:
+Revision 2,205 from svn://localhost/TRUNK/:
+
+Fixed logic error in assert for debug execution to avoid exiting when # mixer channels == # of allowed mixer channels
+
+By gklimanis (gklimanis@leapfrog.com) on 11/8/07 11:17 AM
+1 changed, 0 added, 0 deleted.
+4,270 ms. (Cumulative: 2,516,962 ms)
+
+----------------

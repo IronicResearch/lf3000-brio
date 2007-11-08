@@ -29,7 +29,7 @@
 // Debug : info for sound file input/output
 long readInSoundFile   = false;
 long writeOutSoundFile = false;
-long inSoundFileDone = false;
+long inSoundFileDone   = false;
 
 SNDFILE	*inSoundFile;
 SF_INFO	inSoundFileInfo ;
@@ -67,7 +67,9 @@ CAudioMixer::CAudioMixer( int numInChannels )
 long i, j, ch;
 
 	numInChannels_ = numInChannels;
-	pDebugMPI_->Assert((numInChannels < kAudioMixer_MaxInChannels), "CAudioMixer::CAudioMixer: %d is too many channels!\n", numInChannels );
+	pDebugMPI_->Assert((numInChannels <= kAudioMixer_MaxInChannels), "CAudioMixer::CAudioMixer: %d is too many channels!\n", numInChannels );
+if (numInChannels > kAudioMixer_MaxInChannels)
+	printf("CAudioMixer::CAudioMixer: %d too many channels! Max=%d\n", numInChannels, kAudioMixer_MaxInChannels);
 
     SetMasterVolume(100);
     samplingFrequency_ = kAudioSampleRate;
@@ -127,7 +129,7 @@ for (i = 0; i < kAudioMixer_MixBinCount; i++)
 
 // Configure DSP engine
 
-    preGainDB = 0.0f;
+    preGainDB  = 0.0f;
     postGainDB = 0.0f;
 
     useOutEQ_          = False;
