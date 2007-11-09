@@ -99,6 +99,6 @@ if not vars['is_emulation']:
 #-----------------------------------------------------------------------------
 # Export support modules to embedded or emulation target
 #-----------------------------------------------------------------------------
-ext_mod = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'orchestra.mbis'))
+ext_mod = glob.glob(os.path.join('Mobileer', 'Libs', 'orchestra.mbis'))
 env.Install(vars['mod_deploy_dir'], ext_mod)
 	
