@@ -175,7 +175,7 @@ PaError PaUtil_StartThreading( PaUtilThreading *threading, void *(*threadRoutine
 
 	/* 3. set the priority */
     param.sched_priority = 99;
-    printf("PaUtil_StartThreading:pthread_attr_setschedparam -- setting priority to MAX. %d\n ", err);
+//    printf("PaUtil_StartThreading:pthread_attr_setschedparam: setting priority -> %d\n ", param.sched_priority);
 	err = pthread_attr_setschedparam (&tattr, &param);
 //	printf("PaUtil_StartThreading:pthread_attr_setschedparam -- returned %d\n ", err);
 
