@@ -10489,3 +10489,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/9/07 1:29 PM
 4,329 ms. (Cumulative: 2,534,325 ms)
 
 ----------------
+Revision 2,212 from svn://localhost/TRUNK/:
+
+Only need one Mobileer orchestra file for both Arm and x86 .
+
+By gklimanis (gklimanis@leapfrog.com) on 11/9/07 1:39 PM
+1 changed, 1 added, 2 deleted.
+5,000 ms. (Cumulative: 2,539,403 ms)
+
+----------------
