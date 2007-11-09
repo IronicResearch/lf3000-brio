@@ -10480,3 +10480,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/9/07 1:26 PM
 4,284 ms. (Cumulative: 2,529,934 ms)
 
 ----------------
+Revision 2,211 from svn://localhost/TRUNK/:
+
+Disabled "nag" printf for setting thread thread priority to high.
+
+By gklimanis (gklimanis@leapfrog.com) on 11/9/07 1:29 PM
+2 changed, 0 added, 0 deleted.
+4,329 ms. (Cumulative: 2,534,325 ms)
+
+----------------
