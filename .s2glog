@@ -10468,3 +10468,15 @@ By gklimanis (gklimanis@leapfrog.com) on 11/8/07 1:51 PM
 4,204 ms. (Cumulative: 2,525,588 ms)
 
 ----------------
+Revision 2,208 from svn://localhost/TRUNK/:
+Revision 2,209 from svn://localhost/TRUNK/:
+Revision 2,210 from svn://localhost/TRUNK/:
+
+Now uses true Seek for WAV/AIFF file rewind function.
+Also, disabled "nag" printf for OpenSoundFile()
+
+By gklimanis (gklimanis@leapfrog.com) on 11/9/07 1:26 PM
+2 changed, 0 added, 1 deleted.
+4,284 ms. (Cumulative: 2,529,934 ms)
+
+----------------

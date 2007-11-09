@@ -106,7 +106,7 @@ if (SFM_READ == rwType)
 	{
 	long wordWidthBits = 16;
 
-	if 	(SF_FORMAT_PCM_16 == fileFormatMinor)
+	if 	    (SF_FORMAT_PCM_16 == fileFormatMinor)
 		wordWidthBits = 16;
 	else if (SF_FORMAT_PCM_24 == fileFormatMinor)
 		wordWidthBits = 24;
@@ -121,9 +121,9 @@ if (SFM_READ == rwType)
 		return (sndFile);
 		}
 
-	printf("OpenSoundFile fs=%d Hz ch=%d bits=%d frames=%d (%.3f Seconds)\n",
-		   sfi->samplerate, (int)sfi->frames, (int) sfi->channels, (int)wordWidthBits,
-            ((float)sfi->frames)/(float) sfi->samplerate);
+//	printf("OpenSoundFile fs=%d Hz ch=%d bits=%d frames=%d (%.3f Seconds)\n",
+//		   sfi->samplerate, (int)sfi->frames, (int) sfi->channels, (int)wordWidthBits,
+//            ((float)sfi->frames)/(float) sfi->samplerate);
 	}
 	}   	  
 //
@@ -175,8 +175,9 @@ return (False);
 //==============================================================================
 int RewindSoundFile( SNDFILE *soundFile )
 {	     
-//printf("RewindSoundFile: start 222\n");
+//printf("RewindSoundFile: start \n");
 
+//#define NEED_TO_USE_REWIND_CRUDE_SEEK
 #ifdef NEED_TO_USE_REWIND_CRUDE_SEEK
 // Quick hack for initial implementation
 CloseSoundFile(soundFile);
@@ -187,9 +188,9 @@ if (!*soundFile)
 	return (False);
     }
 return (True);
-#endif
-
+#else
 return (sf_seek(soundFile, 0, SEEK_SET) == 0);
+#endif
 }		// ---- end RewindSoundFile() ----
 
 
