@@ -155,7 +155,7 @@ void CUSBDeviceModule::InitModule()
 	data.USBDeviceState = 0;
 
 	/* On lightning, the app can't be running while USB is enabled! */
-	enabled = is_enabled();
+	enabled = (is_enabled() == 1);	// -1 does not count as enabled
 	dbg.Assert(!enabled, "Lightning can't run apps while USB enabled");
 
 	// Check if we're connected
