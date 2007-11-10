@@ -10507,3 +10507,18 @@ By gklimanis (gklimanis@leapfrog.com) on 11/9/07 2:22 PM
 4,907 ms. (Cumulative: 2,544,388 ms)
 
 ----------------
+Revision 2,214 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,095 ms. (Cumulative: 2,548,545 ms)
+
+----------------
+Revision 2,215 from svn://localhost/TRUNK/:
+
+Fixed assert logic for USB device really enabled.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/9/07 6:10 PM
+1 changed, 0 added, 0 deleted.
+4,203 ms. (Cumulative: 2,552,748 ms)
+
+----------------
