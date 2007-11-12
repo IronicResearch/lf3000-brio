@@ -1,9 +1,10 @@
 Device="Lightning"
 Type="System"
+Name="Brio"
 Publisher="LeapFrog, Inc."
 Developer="LeapFrog, Inc.  Firmware Team"
-Version="0.1.21.2194"
-ProductID=0xDEADBEEF
-PartNumber="invalid-part-number"
+Version="0.1.21.2216"
+ProductID=0x00040044
+PartNumber="152-XXXX"
 Depends=
 Icon=
