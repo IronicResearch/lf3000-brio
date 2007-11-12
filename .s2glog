@@ -10522,3 +10522,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/9/07 6:10 PM
 4,203 ms. (Cumulative: 2,552,748 ms)
 
 ----------------
+Revision 2,216 from svn://localhost/TRUNK/:
+
+Temporarily disable watchdog implementation in Brio.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/12/07 10:17 AM
+1 changed, 0 added, 0 deleted.
+4,235 ms. (Cumulative: 2,557,045 ms)
+
+----------------
