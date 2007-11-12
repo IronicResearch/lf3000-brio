@@ -1197,9 +1197,9 @@ int watchdog_fd = 0;	// watchdog timer runs while file is open
 
 //------------------------------------------------------------------------------
 // Start Watchdog Timer
-tErrType CKernelModule::StartWatchdog( U32 seconds ) const
+tErrType CKernelModule::StartWatchdog( U32 /* seconds */ ) const
 {
-#ifndef EMULATION
+#if 0 //ndef EMULATION
 	
 	int status;
 
@@ -1223,7 +1223,7 @@ tErrType CKernelModule::StartWatchdog( U32 seconds ) const
 // Stop Watchdog Timer
 tErrType CKernelModule::StopWatchdog( void ) const
 {
-#ifndef EMULATION
+#if 0 //ndef EMULATION
 	
 	int status;
 	
@@ -1246,7 +1246,7 @@ tErrType CKernelModule::StopWatchdog( void ) const
 // KeepAlive request to Watchdog Timer
 tErrType CKernelModule::KeepWatchdogAlive( void ) const
 {
-#ifndef EMULATION
+#if 0 //ndef EMULATION
 	
 	int status;
 	int dummy;
