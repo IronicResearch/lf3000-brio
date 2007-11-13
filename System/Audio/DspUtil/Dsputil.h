@@ -919,6 +919,9 @@ void Add2_Shortsi(short *inA, short *inB, short *outY, long length);
 void Mix2_Shortsf(short *inA, short *inB, short *outY, long length, float kA, float kB);
 void Mix2_Shortsi(short *inA, short *inB, short *outY, long length, short kA, short kB);
 
+void AccS16toS32(S32 *sumY, S16 *inX, long length, long addToOutput);
+void AccS16toS16(S16 *sumY, S16 *inX, long length, long addToOutput);
+
 void Pan_Shortsf(short *x, short *yLeft, short *yRight, long length, float gainLeft, float gainRight);
 void Pan_Shortsi(short *x, short *yLeft, short *yRight, long length, short gainLeft, short gainRight);
 
