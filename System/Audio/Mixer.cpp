@@ -105,7 +105,6 @@ for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		{
-
 		mixBinBufferPtrs_[i][ch] = new S16[2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords];
 
 // Initialize sampling rate converters  
@@ -186,9 +185,8 @@ for (ch = 0; ch < pDSP_.channelCount; ch++)
 
 for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
-	long bufWords = 2*(kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements);
-	S16 *p = new S16[ bufWords * sizeof(S16)];
-	tmpBufferPtrs_   [i] = p;
+	S16 *p = new S16[ 2*(kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements) ];
+	pTmpBufs_        [i] = p;
 	tmpBufOffsetPtrs_[i] = &p[2*kSRC_Filter_MaxDelayElements];
 	}
 
@@ -270,8 +268,10 @@ long i;
 	// Dellocate buffers 
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 		{
-		if (tmpBufferPtrs_[i])
-			free(tmpBufferPtrs_[i]);
+		if (pTmpBufs_[i])
+			free(pTmpBufs_[i]);
+        pTmpBufs_[i] = NULL;
+        tmpBufOffsetPtrs_[i] = NULL;
 		}
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
@@ -409,12 +409,12 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
 // numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
-U32	i, ch;
+U32 	i, ch;
 U32 	playerFramesRendered;
-long mixBinIndex;
-long channelsPerFrame = kAudioMixer_MaxOutChannels;
+long    mixBinIndex;
+long    channelsPerFrame = kAudioMixer_MaxOutChannels;
 // FIXXXX: mystery.  Offset Ptrs don't work !!!
-short **tPtrs = tmpBufferPtrs_; // pTmpBuffers_, tmpBufOffsetPtrs_
+short **tPtrs = pTmpBufs_; // pTmpBufs_, tmpBufOffsetPtrs_
 
 //{static long c=0; printf("CAudioMixer::RenderBuffer : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channelsPerFrame);}
 
@@ -452,8 +452,8 @@ if (readInSoundFile && !inSoundFileDone)
 // Replicate mono input file to both channels of stereo mix buffer
 	else
 		{
- 		framesRead = sf_readf_short(inSoundFile, tmpBufferPtrs_[0], framesToRead);
-		InterleaveShorts(tmpBufferPtrs_[0], tmpBufferPtrs_[0], mixBinP, framesRead);
+ 		framesRead = sf_readf_short(inSoundFile, pTmpBufs_[0], framesToRead);
+		InterleaveShorts(pTmpBufs_[0], pTmpBufs_[0], mixBinP, framesRead);
 		}
     if (framesRead < framesToRead)
         {
@@ -470,12 +470,8 @@ for (ch = 0; ch < numInChannels_; ch++)
 	{
 	CChannel *pCh = &pChannels_[ch];
 
-// Initialize output buffer to 0 - clears output if the player runs out of data.
-	bzero( tmpBufferPtrs_[0], kAudioOutBufSizeInBytes );
-	bzero( pChannel_OutBuffer_, kAudioOutBufSizeInBytes );
-//printf("CAudioMixer::RenderBuffer :   pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
-
 	// Render if channel is in use and not paused
+//printf("CAudioMixer::RenderBuffer :   pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
 	if (pCh->ShouldRender())
 		{
         long channelSamplingFrequency = pCh->GetSamplingFrequency();
@@ -484,7 +480,7 @@ for (ch = 0; ch < numInChannels_; ch++)
 
 	// Have player render its data into our output buffer.  If the player
 	// contains mono data, it will be rendered out as stereo data.
-       playerFramesRendered = pCh->RenderBuffer( pChannel_OutBuffer_, tmpBufferPtrs_[0], framesToRender, False );
+       playerFramesRendered = pCh->RenderBuffer( pChannel_OutBuffer_, framesToRender );
 
 	// If player has finished, release channel.
 		if ( playerFramesRendered < framesToRender ) 
@@ -494,10 +490,8 @@ for (ch = 0; ch < numInChannels_; ch++)
 		long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
 // FIXXX:  convert fs/4->fs/2 with gentler anti-aliasing filter and let fs/2 mix bin's conversion do fs/2->fs
 		S16* pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
-		if (mixBinFilled_[mixBinIndex])
-			Add2_Shortsi(pChannel_OutBuffer_, pMixBin, pMixBin, framesToRender*channelsPerFrame); 
-		else
-			CopyShorts(pChannel_OutBuffer_, pMixBin, framesToRender*channelsPerFrame);
+        AccS16toS16(pMixBin, pChannel_OutBuffer_, framesToRender*channelsPerFrame, mixBinFilled_[mixBinIndex]);
+
 		mixBinFilled_[mixBinIndex] = True;
 		}
 	}
@@ -505,13 +499,14 @@ for (ch = 0; ch < numInChannels_; ch++)
 // MIDI player renders to fs/2 output buffer 
 if ( pMidiPlayer_->IsActive() )
 	{
-//	long rateDivisor = 2;
-	long midiFrames  = (numFrames/2);
+	long framesToRender  = (numFrames/2);
 	long mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
 	S16 *pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
 
-	playerFramesRendered = pMidiPlayer_->RenderBuffer( pMixBin, midiFrames, mixBinFilled_[mixBinIndex]); 
-//{static long c=0; printf("CAudioMixer::RenderBuffer :   MIDI active %ld midiFrames=%ld\n", c++, midiFrames);}
+	playerFramesRendered = pMidiPlayer_->RenderBuffer( pChannel_OutBuffer_, framesToRender); 
+//{static long c=0; printf("CAudioMixer::RenderBuffer: MIDI active %ld framesToRender=%ld\n", c++, framesToRender);}
+    AccS16toS16(pMixBin, pChannel_OutBuffer_, framesToRender*channelsPerFrame, mixBinFilled_[mixBinIndex]);
+
 	mixBinFilled_[mixBinIndex] = True;
 	}
 }
@@ -521,13 +516,7 @@ if ( pMidiPlayer_->IsActive() )
 //
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv1;
 if (mixBinFilled_[mixBinIndex])
-    {
-//printf("PRE 2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords=%d\n", 2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords);
-//printf("PRE numFrames=%ld channelsPerFrame=%ld\n", numFrames, channelsPerFrame);
-//printf("BEFO: mixBinP[%ld]=%X pOutBuff=%X len=%ld\n", mixBinIndex, (unsigned int) mixBinBufferPtrs_[mixBinIndex][0], (unsigned int) pOutBuff, numFrames*channelsPerFrame);
-CopyShorts(mixBinBufferPtrs_[mixBinIndex][0], pOutBuff, numFrames); //*channelsPerFrame/2); //numFrames*channelsPerFrame);
-//printf("AFTA: \n");
-    }
+    CopyShorts(mixBinBufferPtrs_[mixBinIndex][0], pOutBuff, numFrames); 
 else
 	ClearShorts( pOutBuff, numFrames * channelsPerFrame );
 
@@ -563,11 +552,9 @@ if (mixBinFilled_[mixBinIndex])
 
 // Scale stereo/interleaved buffer by master volume
 /// NOTE: volume here is interpreted as a linear value
-//	ORIG rdg for (i = 0; i < numFrames*channelsPerFrame; i++)
-//		pOutBuff[i] = (S16)((pOutBuff[i] * (int)masterVolume_) >> 7); // fixme; 
 //ScaleShortsf(pOutBuff, pOutBuff, numFrames*channelsPerFrame, masterGainf_[0]);
 ScaleShortsi_Q15(pOutBuff, pOutBuff, numFrames*channelsPerFrame, masterGaini_[0]);
-#endif // end WHOLE_THING
+#endif // end MIX_THE_MIX_BINS
 
 // ---- Output DSP block
 long useOutDSP = False;

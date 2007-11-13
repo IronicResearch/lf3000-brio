@@ -10570,3 +10570,14 @@ By gklimanis (gklimanis@leapfrog.com) on 11/13/07 10:56 AM
 4,297 ms. (Cumulative: 2,574,281 ms)
 
 ----------------
+Revision 2,225 from svn://localhost/TRUNK/:
+
+Fixed the looping/loop count, send done problems in Raw, Vorbis and Midi
+    b. Simplified render in each module (no special additive cases) and combined
+      buffers
+
+By gklimanis (gklimanis@leapfrog.com) on 11/13/07 1:52 PM
+16 changed, 0 added, 0 deleted.
+4,830 ms. (Cumulative: 2,579,189 ms)
+
+----------------

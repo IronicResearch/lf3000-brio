@@ -147,7 +147,7 @@ public:
 	//********************************
 	// Audio FX functionality
 	//********************************    
-	tErrType RegisterAudioEffectsProcessor( /* tRsrcType type, */ CAudioEffectsProcessor *pChain ); // TODO: stub
+	tErrType RegisterAudioEffectsProcessor(  CAudioEffectsProcessor *pChain ); // TODO: stub
 	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); // TODO: stub
 	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); // TODO: stub
 
@@ -213,7 +213,7 @@ public:
 	tErrType 	SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
 	
 	tErrType 	TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount ); // TODO: stub
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiInstr instr ); // TODO: stub
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiPlayerInstrument instr ); // TODO: stub
 	tErrType 	ChangeMidiTempo( tMidiPlayerID id, S8 tempo ); // TODO: stub
 
 	// Send MIDI data to a player instance.

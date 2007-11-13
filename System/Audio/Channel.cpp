@@ -61,7 +61,7 @@ CChannel::CChannel()
 //	pDSP_->postGainDB = 0.0f;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
+	pDebugMPI_->SetDebugLevel( kAudioDebugLevel ); // kDbgLvlVerbose, kAudioDebugLevel
 //	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CChannel::CChannel: volume_=%d pan_=%d\n", volume_, pan_);
 //	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
 }	// ---- end CChannel ----
@@ -98,18 +98,18 @@ tErrType CChannel::InitChanWithPlayer( CAudioPlayer* pPlayer )
 
 	pDSP_->samplingFrequency = (float) samplingFrequency_;
 //printf("CChannel::InitChanWithPlayer: samplingFrequency=%g \n", pDSP_->samplingFrequency);
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-			"CChannel::InitChanWithPlayer - samplingFrequency=%g\n", 
-			static_cast<float>(pDSP_->samplingFrequency) );	
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CChannel::InitChanWithPlayer - samplingFrequency=%g\n", 
+//			static_cast<float>(pDSP_->samplingFrequency) );	
 	MixerChannel_SetSamplingFrequency(pDSP_, samplingFrequency_);
 	UpdateMixerChannel(pDSP_);
 	ResetMixerChannel (pDSP_);
 // FIXX: these buffers will migrate to briomixer.cpp/Mixer.cpp
 //	MixerChannel_SetAllTempBuffers(pDSP_, tmpPs_, kChannel_MaxTempBuffers);
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-			"CChannel::InitChanWithPlayer - setting volume %d\n", 
-			static_cast<int>(volume_) );	
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CChannel::InitChanWithPlayer - setting volume %d\n", 
+//			static_cast<int>(volume_) );	
 
 // Convert high level parameters to values suitable for DSP
 //printf("CChannel::InitChanWithPlayer : pan=%d volume=%d \n", pan_, volume_);
@@ -124,9 +124,8 @@ tErrType CChannel::Release( Boolean suppressPlayerDoneMsg )
 {
 //	pFxChain_ = kNull;
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"CChannel::Release - deleting player 0x%x\n", 
-		(unsigned int)pPlayer_);
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose,
+//		"CChannel::Release - deleting player 0x%x\n", (unsigned int)pPlayer_);
 
 	// we're resetting the channel
 	fReleasing_ = true;
@@ -235,13 +234,13 @@ Boolean CChannel::ShouldRender( void ) {
 //==============================================================================
 // RenderBuffer
 //==============================================================================
-U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOutputBuffer )
+U32 CChannel::RenderBuffer(S16 *pOut, int numFrames )
 {
 	U32 numSamples = numFrames * 2;  // 2 channels
 	S32 y;
 
  //	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
-//{static long c=0; printf("CChannel::RenderBuffer: START %ld addToOutputBuffer=%d\n", c++, addToOutputBuffer); }
+//{static long c=0; printf("CChannel::RenderBuffer: START %ld \n", c++); }
 
 	// decide how to deal with player done i.e. playerFramesRendered comes back 
 	// less than numStereoFrames: does player send done, or channel.
@@ -252,55 +251,31 @@ U32 CChannel::RenderBuffer(S16 *pOut, S16 *pTmp, int numFrames, Boolean addToOut
 	if (pFxChain_ != kNull)
 		pFxChain->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuffer_ );
 #endif
-	int playerFramesRendered = pPlayer_->RenderBuffer( pTmp, numFrames );
+	int playerFramesRendered = pPlayer_->RenderBuffer( pOut, numFrames );
 
 //printf("levelsf <%f , %f > \n", levelsf[kLeft], levelsf[kRight]);
 //printf("levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
 
-// ---- Add rendered output to out buffer
-	if (addToOutputBuffer)
-		{
-		for (U32 i = 0; i < numSamples; i += 2)
-			{
-		// Integer scaling for gain control
-//            y = pOut[i] + ((pTmp[i] * volume_)>>7);	            // ORIG rbg			
-//			y = pOut[i] + (S32)(levelsf[kLeft] * (float)pTmp[i]);	// FLOAT			
- 			y = pOut[i] + (S32) MultQ15(levelsi[kLeft], pTmp[i]);	// Q15  1.15 Fixed-point		
-		// Saturate to 16-bit range				
-			if      (y > kS16Max) y = kS16Max;
-			else if (y < kS16Min) y = kS16Min;				
-			pOut[i] = (S16)y;
-
- 			y = pOut[i+1] + (S32) MultQ15(levelsi[kRight], pTmp[i+1]);				
-		// Saturate to 16-bit range				
-			if      (y > kS16Max) y = kS16Max;
-			else if (y < kS16Min) y = kS16Min;				
-			pOut[i+1] = (S16)y;
-			}
-		}
 // ---- Render to out buffer
-	else
-		{
-		for (U32 i = 0; i < numSamples; i += 2)
-			{
-		// Integer scaling for gain control
-//  		y = ((pTmp[i] * volume_)>>7);		        // ORIG rdg	Darren	
-//			y = (S32)(levelsf[kLeft] * (float)pTmp[i]);	// FLOAT
- 			y = (S32) MultQ15(levelsi[kLeft], pTmp[i]);	// Q15  1.15 Fixed-point	
-		// Saturate to 16-bit range				
-			if      (y > kS16Max) y = kS16Max;
-			else if (y < kS16Min) y = kS16Min;				
-			pOut[i] = (S16)y;
+for (U32 i = 0; i < numSamples; i += 2)
+	{
+// Integer scaling for gain control
+//  		y = ((pOut[i] * volume_)>>7);		        // ORIG rdg	Darren	
+//			y = (S32)(levelsf[kLeft] * (float)pOut[i]);	// FLOAT
+		y = (S32) MultQ15(levelsi[kLeft], pOut[i]);	// Q15  1.15 Fixed-point	
+// Saturate to 16-bit range				
+	if      (y > kS16Max) y = kS16Max;
+	else if (y < kS16Min) y = kS16Min;				
+	pOut[i] = (S16)y;
 
- 			y = (S32) MultQ15(levelsi[kRight], pTmp[i+1]);				
-		// Saturate to 16-bit range				
-			if      (y > kS16Max) y = kS16Max;
-			else if (y < kS16Min) y = kS16Min;				
-			pOut[i+1] = (S16)y;
-			}
-		}
+		y = (S32) MultQ15(levelsi[kRight], pOut[i+1]);				
+// Saturate to 16-bit range				
+	if      (y > kS16Max) y = kS16Max;
+	else if (y < kS16Min) y = kS16Min;				
+	pOut[i+1] = (S16)y;
+	}
 
-	return (playerFramesRendered);
+return (playerFramesRendered);
 }	// ---- end RenderPlayerToBuffer ----
 
 LF_END_BRIO_NAMESPACE()

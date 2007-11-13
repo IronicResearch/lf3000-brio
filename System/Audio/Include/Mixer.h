@@ -56,7 +56,7 @@ public:
 	Boolean     GetOutputEqualizer( ) { return ((Boolean)useOutEQ_); }
 	void        SetOutputEqualizer( Boolean x );
 	
-	// Main routine to handle the processing of data through the audio channels
+	// Main routine 
 	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
 	
 	static int WrapperToCallRenderBuffer( S16* pOutBuff, unsigned long frameCount, void* pToObject  );
@@ -72,7 +72,7 @@ private:
     void PrepareDSP();
     void SetSamplingFrequency( float x );
 
-// Didj is hard-limited to 3 audio + 1 MIDI input channels (stereo)
+// Didj is hard-limited to 4 channels : 3 audio + 1 MIDI input channels (stereo)
 #define kAudioMixer_MaxInAudioChannels	3    
 #define kAudioMixer_MaxInMIDIChannels	1    
 #define kAudioMixer_MaxInChannels	    (kAudioMixer_MaxInAudioChannels+kAudioMixer_MaxInMIDIChannels)    
@@ -105,7 +105,7 @@ private:
     float       masterGainf_[kAudioMixer_MaxOutChannels];
     Q15         masterGaini_[kAudioMixer_MaxOutChannels];
 
-//  EQ parameters
+//  Output EQ parameters
 #define kAudioMixer_MaxEQBands  3
     long        useOutEQ_;
     long        outEQ_BandCount_;
@@ -117,11 +117,13 @@ private:
 
 // MIDI parameters
 	CMidiPlayer*	pMidiPlayer_; // player for doing MIDI
+
+// mIXER BUFFERS
 	S16*			pMixBuffer_;  // Ptr to mixed samples from all active channels
 
 #define kAudioMixer_MaxTempBuffers	8
-	S16*			tmpBufferPtrs_   [kAudioMixer_MaxTempBuffers]; // Ptr to intermediate results
-	S16*			tmpBufOffsetPtrs_[kAudioMixer_MaxTempBuffers]; 
+	S16*	pTmpBufs_        [kAudioMixer_MaxTempBuffers]; 
+	S16*	tmpBufOffsetPtrs_[kAudioMixer_MaxTempBuffers]; 
 
 // Some Debug variables
     float   preGainDB;

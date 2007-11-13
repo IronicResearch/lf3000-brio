@@ -46,7 +46,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 	const tMutexAttr 	attr = {0};
 	
 //printf("CRawPlayer::ctor -- start \n");
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- start...\n");
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- start...\n");
 
 	// Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
@@ -66,13 +66,27 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 
 //printf("CRawPlayer:ctor: payload_=%d optionsFlags=$%X -> shouldLoop=%d \n", 
 //        (int)payload_, (unsigned int) optionsFlags_, shouldLoop_);
-//printf("optionsFlags_ & kAudioOptionsLooped=%X \n", (unsigned int) (optionsFlags_ & kAudioOptionsLooped));
-//printf("optionsFlags_ && kAudioOptionsLooped=%d \n", (unsigned int) (optionsFlags_ && kAudioOptionsLooped));
-printf("CRawPlayer::ctor -- bDoneMessage_=%d \n", bDoneMessage_);
+//#define DEBUG_RAWPLAYER_OPTIONS
+#ifdef DEBUG_RAWPLAYER_OPTIONS
+{
+char s[80];
+s[0] = '\0';
+if (optionsFlags_ & kAudioOptionsLooped)
+    strcat(s, "Loop=On ");
+else
+    strcat(s, "Loop=Off ");
+if (optionsFlags_ & kAudioOptionsDoneMsgAfterComplete)
+    strcat(s, "SendDone=On ");
+else
+    strcat(s, "SendDone=Off ");
 
+printf("CRawPlayer::ctor: listener=%d flags=$%X '%s'\n", (kNull != pListener_), (unsigned int)optionsFlags_, s);
+printf("CRawPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDoneMessage_, shouldLoop_, loopCount_);
+}
+#endif // DEBUG_RAWPLAYER_OPTIONS
 
 	// 
-    // ---- Open the audio file
+    // ---- Open audio file
     //
 //    printf("Will open '%s'\n", pInfo->path->c_str());
     fileType_ = kRawPlayer_FileType_Unknown;
@@ -128,7 +142,7 @@ printf("CRawPlayer::ctor -- bDoneMessage_=%d \n", bDoneMessage_);
 	// Most of the member vars set by superclass; these are RAW specific.
 	framesRemaining_ = totalFrames_;
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor #Frames=%d optionsFlags=%X\n", (int)totalFrames_, (int)optionsFlags_);
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor #Frames=%d optionsFlags=%X\n", (int)totalFrames_, (int)optionsFlags_);
 
 //printf("CRawPlayer::ctor -- end \n");
 } // ---- end CRawPlayer() ----
@@ -145,7 +159,7 @@ CRawPlayer::~CRawPlayer()
 	result = pKernelMPI_->LockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::dtor -- Couldn't lock mutex.\n");
 
-	// If there's anyone listening, let them know we're done.
+	// If anyone is listening, let them know we're done.
 	if (pListener_ && bDoneMessage_)
 		SendDoneMsg();
 
@@ -185,15 +199,14 @@ CRawPlayer::~CRawPlayer()
 //printf("~CRawPlayer: end\n");
 } // ---- end ~CRawPlayer() ----
 
-//==============================================================================
+// ==============================================================================
 // Rewind
-//==============================================================================
+// ==============================================================================
 void CRawPlayer::Rewind()
 {
-	// Point back to start of audio data and reset total.
+// Point back to start of audio data and reset total.
     if (fileH_)
 	    fseek( fileH_, sizeof(tAudioHeader), SEEK_SET);
-// FIXXX: Immediate-term hack here. inside RewindSoundFile, add code to do seek().   
     if (inFile_)
         RewindSoundFile( inFile_);
 
@@ -205,6 +218,7 @@ void CRawPlayer::Rewind()
 //==============================================================================
 U32 CRawPlayer::GetAudioTime_mSec( void ) 
 {
+printf("CRawPlayer::GetAudioTime_mSec: Unimplemented\n");
 	return 0;
 } // ---- end GetAudioTime_mSec() ----
 
@@ -215,11 +229,12 @@ void CRawPlayer::SendDoneMsg( void )
 {
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgAudioCompleted	data;
-	data.audioID = id_;	// dummy
-	data.payload = 101;	// dummy
-	data.count = 1;
 
-printf("CRawPlayer::SendDoneMsg \n");
+	data.audioID = id_;	        
+	data.payload = loopCount_;
+	data.count   = 1;
+
+//printf("CRawPlayer::SendDoneMsg audioID=%d\n", id_);
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
@@ -275,7 +290,7 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
         fileEndReached = ( bytesRead < bytesToRead );
 		if ( fileEndReached && shouldLoop_)
             {
-//{static long c=0; printf("CRawPlayer::RenderBuffer: Rewind %ld loop%ld/%ld\n", c++, loopCount_, loopCounter_);}
+//{static long c=0; printf("CRawPlayer::RenderBuffer: Rewind %ld loop%ld/%ld\n", c++, loopCounter_+1, loopCount_);}
             if (++loopCounter_ < loopCount_)
                 {
 			    Rewind();
@@ -310,6 +325,15 @@ U32 CRawPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 			
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
+
+//#define RAWPLAYER_SENDDONE_IN_RENDERBUFFER
+#ifdef RAWPLAYER_SENDDONE_IN_RENDERBUFFER
+	if (pListener_ && bDoneMessage_ && fileEndReached)
+        {
+//{static long c=0; printf("CRawPlayer::RenderBuffer%ld: bDoneMessage_=%d fileEndReached=%ld\n", c++, bDoneMessage_, fileEndReached);}
+		SendDoneMsg();
+        }
+#endif // RAWPLAYER_SENDDONE_IN_RENDERBUFFER
 
 //{static long c=0; printf("CRawPlayer::RenderBuffer: end %ld framesRead=%ld\n", c++, framesRead);}
 	return (framesRead);

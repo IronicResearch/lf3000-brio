@@ -370,7 +370,7 @@ public:
 	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id );
 	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask );
 	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const S8 transposeAmount );
-	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const tMidiInstr instr );
+	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const tMidiPlayerInstrument instr );
 	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const S8 tempo );
 
 	tAudioMidiFilePlaybackParams*	GetData( void ) { return &data_; }
