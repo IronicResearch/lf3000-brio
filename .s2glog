@@ -10561,3 +10561,12 @@ By gklimanis (gklimanis@leapfrog.com) on 11/13/07 10:55 AM
 4,282 ms. (Cumulative: 2,569,906 ms)
 
 ----------------
+Revision 2,224 from svn://localhost/TRUNK/:
+
+Updated libsndfile to produce arm versions properly from command line.
+
+By gklimanis (gklimanis@leapfrog.com) on 11/13/07 10:56 AM
+2 changed, 0 added, 0 deleted.
+4,297 ms. (Cumulative: 2,574,281 ms)
+
+----------------
