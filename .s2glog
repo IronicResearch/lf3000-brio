@@ -10540,3 +10540,24 @@ By Dave Milici (dmilici@leapfrog.com) on 11/12/07 10:43 AM
 4,156 ms. (Cumulative: 2,561,264 ms)
 
 ----------------
+Revision 2,218 from svn://localhost/TRUNK/:
+Revision 2,219 from svn://localhost/TRUNK/:
+Revision 2,220 from svn://localhost/TRUNK/:
+Revision 2,221 from svn://localhost/TRUNK/:
+Revision 2,222 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,250 ms. (Cumulative: 2,565,608 ms)
+
+----------------
+Revision 2,223 from svn://localhost/TRUNK/:
+
+Added AccS16toS32() and AccS16toS16() , mostly to expand 16x32=32 arithmetic options
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/13/07 10:55 AM
+4 changed, 0 added, 0 deleted.
+4,282 ms. (Cumulative: 2,569,906 ms)
+
+----------------

@@ -825,6 +825,57 @@ for (long i = 0; i < length; i++)
 }	// ---- end Mix2_Shortsi() ---- 
 
 // *************************************************************** 
+// AccS16toS16:	 Add/Copy 16-bit buffer to 16-bit buffer
+//
+//			16+16=16-bit fixed-point implementation
+// ***************************************************************
+    void 
+AccS16toS16(S16 *sumY, S16 *inX, long length, long addToOutput)
+{
+//{static long c=0; printf("AccS16toS16: %d : start addToOutput=%d\n", c++, addToOutput);}
+
+if (addToOutput)
+    {
+    for (long i = 0; i < length; i++) 
+        {
+        S32 y = (S32) inX[i];
+        y    += (S32) sumY[i];
+    	if      (y > kS16_Max) y = kS16_Max;
+    	else if (y < kS16_Min) y = kS16_Min;
+
+     	sumY[i] = (S16) y;
+        }
+    }
+else
+    {
+    for (long i = 0; i < length; i++) 
+     	sumY[i] = (S16) inX[i];
+    }
+}	// ---- end AccS16toS16() ---- 
+
+// *************************************************************** 
+// AccS16toS32:	 Add/Copy 16-bit buffer to 32-bit buffer
+//
+//			16+32=32-bit fixed-point implementation
+// ***************************************************************
+    void 
+AccS16toS32(S32 *sumY, S16 *inX, long length, long addToOutput)
+{
+//{static long c=0; printf("AccS16toS32: %d : start addToOutput=%d\n", c++, addToOutput);}
+
+if (addToOutput)
+    {
+    for (long i = 0; i < length; i++) 
+     	sumY[i] += (S32) inX[i];
+    }
+else
+    {
+    for (long i = 0; i < length; i++) 
+     	sumY[i] = (S32) inX[i];
+    }
+}	// ---- end AccS16toS32() ---- 
+
+// *************************************************************** 
 // Pan_Shortsf:	"Pan"  buffer of 'short'
 //		yRight  = 
 //		32-bit floating-point implementation
