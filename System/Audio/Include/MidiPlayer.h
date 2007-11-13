@@ -47,7 +47,7 @@ public:
 	CMidiPlayer( tMidiPlayerID id );
 	~CMidiPlayer();
 
-	U32			RenderBuffer( S16* pOutBuff, U32 numStereoFrames, long addToOutput  );
+	U32			RenderBuffer( S16* pOut, U32 numStereoFrames  );
 
 	inline U8	GetVolume()		{ return volume_; }
 	void		SetVolume( U8 x );
@@ -78,7 +78,7 @@ public:
 	tErrType	GetEnableTracks( tMidiTrackBitMask* d );
 	tErrType	SetEnableTracks( tMidiTrackBitMask d);
 	tErrType	TransposeTracks( tMidiTrackBitMask d, S8 transposeAmount );
-	tErrType	ChangeProgram( tMidiTrackBitMask d, tMidiInstr instr );
+	tErrType	ChangeProgram( tMidiTrackBitMask d, tMidiPlayerInstrument instr );
 	tErrType	ChangeTempo( S8 Tempo); 
 
 private:
@@ -91,6 +91,9 @@ private:
 	SPMIDI_Orchestra        *spmidi_orchestra_;
 
 	const IEventListener*	pListener_;		// pointer to caller's listener for done event
+	tAudioOptionsFlags	optionsFlags_;	
+	U8			bDoneMessage_:1;		// Caller requests done message 
+
 	tMidiPlayerID			id_;			// player ID 
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of the Midi playing
 	S16* 					pMidiRenderBuffer_;

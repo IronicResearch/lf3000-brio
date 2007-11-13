@@ -38,11 +38,10 @@ public:
 	CChannel();
 	~CChannel();
 
-	// Acquire this channel to play this audio rsrc
 	tErrType	InitChanWithPlayer( CAudioPlayer* pPlayer );
 	tErrType	Release( Boolean suppressPlayerDoneMsg );
 
-	// Set the pause state of the channel
+// Set pause state
 	inline void	Pause()  { if (fInUse_) fPaused_ = true; }
 	inline void	Resume() { if (fInUse_) fPaused_ = false; }
 
@@ -52,7 +51,7 @@ public:
 	// the remainder of the channel's buffer will be zero padded.
 	// The channel also assumes that the mix buffer is stereo 
 	// so mono data is copied to both stereo channel on mix out.
-	U32			RenderBuffer( S16 *pOutP, S16 *pTmp, int numStereoFrames, Boolean addToOutputBuffer );
+	U32			RenderBuffer( S16 *pOutP, int numStereoFrames );
 
 	// Mixer needs to know if the channel is in a state appropriate
 	// for calling RenderBuffer().  Keeps flag state inside of channel.
@@ -81,13 +80,12 @@ public:
 	inline long		GetSamplingFrequency()        { return samplingFrequency_; }
 //	inline void		SetSamplingFrequency(float x) { samplingFrequency_ = x; }
 
-	// Return the requested status of the channel 
+// Return requested status
 	inline Boolean			IsInUse()  { return fInUse_; }
 	inline Boolean			IsPaused() { return fPaused_; }
 	inline Boolean			HasOwnAudioEffectsProcessor() { return fOwnProcessor_; }
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
-//    S16 *outP;   // TEMPORARY.  Used only during rearchitecture
 private:
 	U8			volume_;	
 	S8			pan_;		 
@@ -100,7 +98,7 @@ private:
     float       levelsf[kAudioMixerChannel_MaxOutChannels]; // gain * panValue
     Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
 
-	tAudioPriority	priority_;	// channel priority
+	tAudioPriority	priority_;	
 
 	float		eq_frequency_;
 	float		eq_q_;
@@ -110,13 +108,13 @@ private:
 
 	MIXERCHANNEL	*pDSP_;
 
-//	CAudioEffectsProcessor		*pChain_;		// Pointer to a special effects processor
-	CAudioPlayer				*pPlayer_;		// Pointer to the player assigned to this channel
+//	CAudioEffectsProcessor		*pChain_;		
+	CAudioPlayer				*pPlayer_;		 
 	
 	Boolean fInUse_;		
 	Boolean fPaused_;		
 	Boolean fReleasing_;	// Channel is in the process of being reset
-	Boolean fOwnProcessor_;	// Channel has own audio effects processor
+	Boolean fOwnProcessor_;
 	
 	CDebugMPI	*pDebugMPI_;
 

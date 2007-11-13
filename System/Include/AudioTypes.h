@@ -64,7 +64,8 @@ typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255.
 #define kNoAudioID			kU32Max	// ID returned when the system is unable to
 									// play the audio
 
-#define kAudioDoneMsgBit	0x01
+//#define kAudioOptionsBit_Done	1
+#define kAudioDoneMsgBit 	0x1
 // Audio options flags
 // Bits 0-1 refer to done messages 
 enum {
@@ -80,8 +81,8 @@ typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer);
 //==============================================================================
 // MIDI audio types 
 //==============================================================================
-typedef U8		tMidiPlayerID;		// MidiPlayer ID
-typedef U32		tMidiInstr;			// MidiPlayer intrument
+typedef U8		tMidiPlayerID;		
+typedef U32		tMidiPlayerInstrument;			
 typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
 #define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all Midi tracks
 

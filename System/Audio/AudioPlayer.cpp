@@ -35,9 +35,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 
 CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
-{
-	tErrType ret;
-	
+{	
 	// Initialize instance variables
 	id_ = id;
 
@@ -48,35 +46,44 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 
 	// Get Debug MPI
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-	ret = pDebugMPI_->IsValid();
-	if (ret != true)
-		printf("AudioPlayer ctor -- Couldn't create DebugMPI!\n");
+	if (!pDebugMPI_->IsValid())
+		printf("AudioPlayer ctor: Couldn't create DebugMPI!\n");
 	
 #if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 #endif
 
-	pDebugMPI_->DebugOut( kDbgLvlValuable, 
-		(const char *)"\nDebug and Resource MPIs created by AudioPlayer ctor\n");	
-
+//	pDebugMPI_->DebugOut( kDbgLvlValuable, 
+//		(const char *)"\nAudioPlayer ctor: Debug and Resource MPIs created\n");	
 	
 	// Set all of the audio player class variables from the message
 	pan_    = pAudioInfo->pan;
 	volume_ = pAudioInfo->volume;
 
-	priority_ = pAudioInfo->priority;
-	if (pAudioInfo->pListener) 
-        {
-		pListener_    = pAudioInfo->pListener;
-		bDoneMessage_ = true;
-	    } 
-    else 
-        {
-		pListener_    = kNull;
-		bDoneMessage_ = false;
-	    }
+	priority_     = pAudioInfo->priority;
+	pListener_    = pAudioInfo->pListener;
 	payload_      = pAudioInfo->payload;
 	optionsFlags_ = pAudioInfo->flags;
+	bDoneMessage_ = (kNull != pListener_ && (pAudioInfo->flags & kAudioOptionsDoneMsgAfterComplete));
+
+//#define DEBUG_AUDIOPLAYER_OPTIONS
+#ifdef DEBUG_AUDIOPLAYER_OPTIONS
+{
+char s[80];
+s[0] = '\0';
+if (optionsFlags_ & kAudioOptionsLooped)
+    strcat(s, "Loop=On");
+else
+    strcat(s, "Loop=Off");
+if (optionsFlags_ & kAudioOptionsDoneMsgAfterComplete)
+    strcat(s, "-SendDone=On");
+else
+    strcat(s, "-SendDone=Off");
+
+printf("CAudioPlayer::ctor: listener=%d bDoneMessage_=%d flags=$%X '%s'\n", (kNull != pListener_), bDoneMessage_, (unsigned int)optionsFlags_, s);
+}
+#endif // DEBUG_AUDIOPLAYER_OPTIONS
+
 }
 
 //==============================================================================

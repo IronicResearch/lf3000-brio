@@ -162,13 +162,13 @@ struct tAudioMidiFilePlaybackParams {
 	tMidiPlayerID		id;						// ID of player to change
 	tMidiTrackBitMask 	trackBitMask;
 	S8 					transposeAmount;
-	tMidiInstr 			instrument;
+	tMidiPlayerInstrument instrument;
 	S8 					tempo;
 
 	tAudioMidiFilePlaybackParams( tMidiPlayerID	i = 0,
 						tMidiTrackBitMask tbm = 0,
 						S8 tsp = 0,
-						tMidiInstr mi = 0,
+						tMidiPlayerInstrument mi = 0,
 						S8 t = 0 )
 		: id(i),  trackBitMask(tbm), transposeAmount(tsp), instrument(mi),
 		tempo(t) {}
