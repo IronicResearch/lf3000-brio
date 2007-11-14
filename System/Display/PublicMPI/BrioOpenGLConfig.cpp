@@ -221,11 +221,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// NOTE: 3D layer can only be enabled after MagicEyes lib 
 	// sets up 3D accelerator, but this cannot happen
 	// until GLESOAL_Initalize() callback gets mappings.
-//	PRINTF("eglInitialize post-init layer enable\n");
-//	disp_.EnableOpenGL(&ctx);
 
-	// Store handle for use in Display MPI functions
-	hndlDisplay = ctx.hndlDisplay;
+	// NOTE: LF1000 GLESOAL_Initalize() callback now occurs during 
+	// eglCreateWindowSurface() instead of eglInitialize().
 	
 	/*
 		Step 3 - Specify the required configuration attributes.
@@ -302,6 +300,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 //	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
 //	eglSwapBuffers(eglDisplay, eglSurface);
 //	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
+
+	// Store handle for use in Display MPI functions
+	hndlDisplay = ctx.hndlDisplay;
+	dbg.DebugOut(kDbgLvlVerbose, "display handle = %p\n", hndlDisplay);
 }
 
 //----------------------------------------------------------------------
