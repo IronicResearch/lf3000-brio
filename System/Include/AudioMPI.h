@@ -192,42 +192,27 @@ public:
     							tAudioPayload		payload,
     							tAudioOptionsFlags	flags );
     
-	// Is this MIDI file still playing?
 	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
-	
-	// Is the MIDI system playing anything?
-	Boolean		IsMidiFilePlaying( void );
+	Boolean		IsMidiFilePlaying( void );  // Is MIDI system playing anything?
 
-	// Pause playback of a MIDI file. 
-	void 		PauseMidiFile( tMidiPlayerID id );
-	
-	// Resume playback of a MIDI file.
+	void 		PauseMidiFile(  tMidiPlayerID id );
     void 		ResumeMidiFile( tMidiPlayerID id );
+    void 		StopMidiFile(   tMidiPlayerID id, Boolean supressDoneMessage );
 
-	// Stop playback of a MIDI file and free the MIDI player. Optionally post
-	// an audioDone event via the EventMgr.
-    void 		StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage );
-
-    // Get and set properities of a playing MIDI file.
+// Properties of MIDI file play
     tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-	tErrType 	SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
-	
-	tErrType 	TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount ); // TODO: stub
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiPlayerInstrument instr ); // TODO: stub
-	tErrType 	ChangeMidiTempo( tMidiPlayerID id, S8 tempo ); // TODO: stub
+	tErrType 	SetEnableMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
+	tErrType 	TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount ); 
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiPlayerInstrument instr ); 
+	tErrType 	ChangeMidiTempo(      tMidiPlayerID id, S8 tempo ); 
 
-	// Send MIDI data to a player instance.
-	// Trigger a single MIDI note on event.
+	// Send MIDI data to a player
 	// WARNING: DON'T DO THIS WHILE A MIDI FILE IS PLAYING, bad things may happen!!!
-    tErrType 	MidiNoteOn( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	
-	// Stop the previously trigger MIDI note.
-    tErrType 	MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-
-    // Send raw MIDI msg to player.
+    tErrType 	MidiNoteOn(      tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+    tErrType 	MidiNoteOff(     tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
-	// ******** Loadable Instrument Support (NOT IMPLEMENTED YET) ********
+	// ******** Loadable Instrument Support ********
 	// Create an empty list of programs and drums. This can be used to keep 
 	// track of which resources are needed to play a group of songs.
 	tErrType CreateProgramList( tMidiProgramList **programList );
