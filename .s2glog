@@ -10622,3 +10622,23 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/07 11:26 AM
 4,080 ms. (Cumulative: 2,596,415 ms)
 
 ----------------
+Revision 2,230 from svn://localhost/TRUNK/:
+Revision 2,231 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,313 ms. (Cumulative: 2,600,806 ms)
+
+----------------
+Revision 2,232 from svn://localhost/TRUNK/:
+
+DspUtil
+1) Added MIDI number definitions and conversion routines 
+            in files midi.cpp and midi.h
+            (MIDI Note# -> Notation, Notation -> MIDI Note#)
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/14/07 2:58 PM
+4 changed, 2 added, 0 deleted.
+4,427 ms. (Cumulative: 2,605,248 ms)
+
+----------------
