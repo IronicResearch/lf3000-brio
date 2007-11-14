@@ -42,7 +42,7 @@ public:
 	tErrType	Release( Boolean suppressPlayerDoneMsg );
 
 // Set pause state
-	inline void	Pause()  { if (fInUse_) fPaused_ = true; }
+	inline void	Pause()  { if (fInUse_) fPaused_ = true;  }
 	inline void	Resume() { if (fInUse_) fPaused_ = false; }
 
 	// Ask channel to get data from player and return it to caller's mix buffer.
@@ -53,16 +53,28 @@ public:
 	// so mono data is copied to both stereo channel on mix out.
 	U32			RenderBuffer( S16 *pOutP, int numStereoFrames );
 
+	U8			volume_;	
+	S8			pan_   ;		 
+
+	inline U8	GetVolume()		{ return volume_; }
+	void		SetVolume(U8 x);
+
+	inline S8	GetPan()		    { return pan_; }
+	void		SetPan(S8 x);
+
+
+#define kAudioMixerChannel_MaxOutChannels 2
+	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
+	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
+	float		gainf;
+	Q15			gaini;
+    float       levelsf   [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
+    Q15         levelsi   [kAudioMixerChannel_MaxOutChannels];
+
 	// Mixer needs to know if the channel is in a state appropriate
 	// for calling RenderBuffer().  Keeps flag state inside of channel.
 	Boolean		ShouldRender( void );
 	
-	inline U8	GetVolume()		{ return volume_; }
-	void		SetVolume( U8 x );
-
-	inline S8	GetPan()		{ return pan_; }
-	void		SetPan(S8 x);
-
 	inline tAudioPriority	GetPriority()            				{ return priority_; }
 	inline void				SetPriority( tAudioPriority priority ) 	{ priority_ = priority; }
 
@@ -87,17 +99,6 @@ public:
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 private:
-	U8			volume_;	
-	S8			pan_;		 
-
-#define kAudioMixerChannel_MaxOutChannels 2
-	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
-	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
-	float		gainf;
-	Q15			gaini;
-    float       levelsf[kAudioMixerChannel_MaxOutChannels]; // gain * panValue
-    Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
-
 	tAudioPriority	priority_;	
 
 	float		eq_frequency_;

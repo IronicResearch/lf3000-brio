@@ -239,7 +239,7 @@ U32 CChannel::RenderBuffer(S16 *pOut, int numFrames )
 	U32 numSamples = numFrames * 2;  // 2 channels
 	S32 y;
 
- //	 printf("CChannel::RenderBufferRenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
+ //	 printf("CChannel::RenderBuffer -- chan bufPtr: 0x%x, channel: 0x%x \n", (unsigned int)pOutBuffer_, (unsigned int)this );
 //{static long c=0; printf("CChannel::RenderBuffer: START %ld \n", c++); }
 
 	// decide how to deal with player done i.e. playerFramesRendered comes back 
@@ -253,30 +253,30 @@ U32 CChannel::RenderBuffer(S16 *pOut, int numFrames )
 #endif
 	int playerFramesRendered = pPlayer_->RenderBuffer( pOut, numFrames );
 
-//printf("levelsf <%f , %f > \n", levelsf[kLeft], levelsf[kRight]);
-//printf("levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
+//printf("Channel::RenderBuffer: levelsf <%f , %f > <%f, %f> dB \n", levelsf[kLeft], levelsf[kRight],
+//        LinearToDecibelf(levelsf[kLeft]), LinearToDecibelf(levelsf[kRight]));
+//printf("Channel::RenderBuffer: levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
 
 // ---- Render to out buffer
 for (U32 i = 0; i < numSamples; i += 2)
 	{
 // Integer scaling for gain control
-//  		y = ((pOut[i] * volume_)>>7);		        // ORIG rdg	Darren	
 //			y = (S32)(levelsf[kLeft] * (float)pOut[i]);	// FLOAT
-		y = (S32) MultQ15(levelsi[kLeft], pOut[i]);	// Q15  1.15 Fixed-point	
+	y = (S32) MultQ15(levelsi[kLeft], pOut[i]);	// Q15  1.15 Fixed-point	
 // Saturate to 16-bit range				
-	if      (y > kS16Max) y = kS16Max;
-	else if (y < kS16Min) y = kS16Min;				
+	if      (y > kS16_Max) y = kS16_Max;
+	else if (y < kS16_Min) y = kS16_Min;				
 	pOut[i] = (S16)y;
 
-		y = (S32) MultQ15(levelsi[kRight], pOut[i+1]);				
+	y = (S32) MultQ15(levelsi[kRight], pOut[i+1]);				
 // Saturate to 16-bit range				
-	if      (y > kS16Max) y = kS16Max;
-	else if (y < kS16Min) y = kS16Min;				
+	if      (y > kS16_Max) y = kS16_Max;
+	else if (y < kS16_Min) y = kS16_Min;				
 	pOut[i+1] = (S16)y;
 	}
 
 return (playerFramesRendered);
-}	// ---- end RenderPlayerToBuffer ----
+}	// ---- end RenderBuffer ----
 
 LF_END_BRIO_NAMESPACE()
 // EOF	

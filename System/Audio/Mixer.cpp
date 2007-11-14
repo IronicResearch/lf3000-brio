@@ -47,6 +47,16 @@ SNDFILE	*outSoundFile;
 SF_INFO	outSoundFileInfo ;
 char *outSoundFilePath = "BrioOut.wav";
 
+// Debug input/output stuff
+long inputIsDC = False;
+float inputDCValueDB = -6.02f;
+float inputDCValuef;
+Q15   inputDCValuei;
+
+float outputDCValueDB;
+float outputDCValuef;
+Q15   outputDCValuei;
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -237,6 +247,16 @@ char *inFileName = inSoundFileName;
     	}
     inSoundFileDone = false;
 	}
+
+// Some debug stuff for I/O
+if (inputIsDC)
+    {
+    inputDCValueDB = -6.02f;
+    inputDCValuef = DecibelToLinearf(inputDCValueDB);
+    inputDCValuei = FloatToQ15(inputDCValuef);
+    printf("CAudioMixer::CAudioMixer inDC = %g dB -> %g -> $%X\n", inputDCValueDB, inputDCValuef, inputDCValuei);
+    }
+
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
 //==============================================================================
@@ -288,9 +308,9 @@ long i;
 
 }  // ---- end ~CAudioMixer() ----
 
-//==============================================================================
+// ==============================================================================
 // FindChannelUsing
-//==============================================================================
+// ==============================================================================
 CChannel* CAudioMixer::FindChannelUsing( tAudioPriority /* priority */)
 {
 	// For now, just search for a channel not in use
@@ -301,58 +321,75 @@ CChannel* CAudioMixer::FindChannelUsing( tAudioPriority /* priority */)
 	}
 	
 	// Reaching this point means all channels are currently in use
-	return kNull;
-}  // ---- end CAudioMixer::FindChannelUsing() ----
+	return (kNull);
+}  // ---- end FindChannelUsing() ----
 
-//==============================================================================
-// CAudioMixer::FindChannelUsing
-//==============================================================================
+// ==============================================================================
+// FindChannelUsing
+// ==============================================================================
 CChannel* CAudioMixer::FindChannelUsing( tAudioID id )
 {
-//	U8 				iChan;
-	tAudioID		idFromPlayer;
-	CChannel*		pChan;
-	CAudioPlayer* 	pPlayer;
 	
-	// Loop through mixer channels, look for one that's in use and then
-	// test the player's ID against the requested id.
-	for (long i = 0; i < numInChannels_; i++)
+// Loop through mixer channels, look for one that's in use and then
+// test the player's ID against the requested id.
+for (long i = 0; i < numInChannels_; i++)
 	{
-		pChan = &pChannels_[i];
-		if (pChan->IsInUse()) {
-			pPlayer = pChan->GetPlayer();
-			idFromPlayer = pPlayer->GetAudioID();
-			if ( idFromPlayer == id )
-				return &pChannels_[i];
+	CChannel*pChan = &pChannels_[i];
+	if (pChan->IsInUse()) 
+        {
+		if ( pChan->GetPlayer()->GetAudioID() == id )
+			return (pChan);
 		}
 	}
 	
-	// Reaching this point means all no ID matched.
-	return kNull;
-}  // ---- end CAudioMixer::FindChannelUsing() ----
+// Reaching this point means all no ID matched.
+return ( kNull );
+}  // ---- end FindChannelUsing() ----
 
-//==============================================================================
+// ==============================================================================
+// FindChannelIndex: 
+// ==============================================================================
+    long
+CAudioMixer::FindChannelIndex( tAudioID id )
+{
+// Loop through mixer channels, look for one that's in use and then
+// test the player's ID against the requested id.
+for (long i = 0; i < numInChannels_; i++)
+	{
+//	CChannel*pChan = &pChannels_[i];
+//	if (pChan->IsInUse()) 
+        {
+		if ( pChannels_[i].GetPlayer()->GetAudioID() == id )
+			return (i);
+		}
+	}
+	
+// Unable to find the mixer
+return ( -1 );
+}  // ---- end FindChannelUsin() ----
+
+// ==============================================================================
 // IsAnyAudioActive
-//==============================================================================
+// ==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
 {
 //	Boolean 	result = false;
 //	U32 iChan = 0;
 //	CChannel*	pChan = NULL;
 	
-	// Loop over the number of channels
-	for (long i = 0; i < numInChannels_; i++)
-		{
-		if (pChannels_[i].IsInUse())
-			return (true);
-		}
-	
-	return false;
-}  // ---- end CAudioMixer::IsAnyAudioActive() ----
+// Loop over the number of channels
+for (long i = 0; i < numInChannels_; i++)
+	{
+	if (pChannels_[i].IsInUse())
+		return (true);
+	}
 
-//==============================================================================
+return false;
+}  // ---- end IsAnyAudioActive() ----
+
+// ==============================================================================
 // GetMixBinIndex : determine mix bin index from sampling frequency
-//==============================================================================
+// ==============================================================================
 long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 {
 	long index =  kAudioMixer_MixBin_Index_FsDiv1;
@@ -374,12 +411,12 @@ long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 		}
 	
 	return (index);
-}  // ---- end CAudioMixer::GetMixBinIndex() ----
+}  // ---- end GetMixBinIndex() ----
 
-//==============================================================================
+// ==============================================================================
 // GetSamplingRateDivisor : Determine divisor sampling frequency, which is your operating
 //				sampling frequency
-//==============================================================================
+// ==============================================================================
 long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 {
 	long div =  1;
@@ -401,11 +438,11 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 		}
 	
 	return (div);
-}  // ---- end CAudioMixer::GetSamplingRateDivisor() ----
+}  // ---- end GetSamplingRateDivisor() ----
 
-//==============================================================================
-// CAudioMixer::RenderBuffer
-//==============================================================================
+// ==============================================================================
+// RenderBuffer
+// ==============================================================================
 int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
 // numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
@@ -482,6 +519,9 @@ for (ch = 0; ch < numInChannels_; ch++)
 	// contains mono data, it will be rendered out as stereo data.
        playerFramesRendered = pCh->RenderBuffer( pChannel_OutBuffer_, framesToRender );
 
+        if (inputIsDC)
+            SetShorts(pChannel_OutBuffer_, framesToRender, 0);
+
 	// If player has finished, release channel.
 		if ( playerFramesRendered < framesToRender ) 
 			pCh->Release( false );	// Don't suppress done msg if requested
@@ -550,6 +590,18 @@ if (mixBinFilled_[mixBinIndex])
 //if (numPlaying && (gAudioContext->pAudioEffects != kNull))
 //	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuff );
 
+// Test with DC input
+if (inputIsDC)
+    {
+    outputDCValuei = pOutBuff[0];
+    outputDCValuef = Q15ToFloat(outputDCValuei);
+    outputDCValueDB = LinearToDecibelf(outputDCValuef);
+
+printf("CAudioMixer::CAudioMixer in  DC = %g dB -> %g\n", inputDCValueDB, inputDCValuef);
+printf("CAudioMixer::CAudioMixer out DC = %g dB -> %g\n", outputDCValueDB, outputDCValuef);
+
+    }
+
 // Scale stereo/interleaved buffer by master volume
 /// NOTE: volume here is interpreted as a linear value
 //ScaleShortsf(pOutBuff, pOutBuff, numFrames*channelsPerFrame, masterGainf_[0]);
@@ -581,7 +633,7 @@ useOutEQ_ = False;
             }
         }
 // Compute Output Soft Clipper
-useOutSoftClipper_ = False;
+useOutSoftClipper_ = True;
     if (useOutSoftClipper_)
         {
 {static long c=0; if (!c) printf("ComputeWaveShaper %ld On=%ld: \n", c++, useOutSoftClipper_);}
@@ -607,8 +659,8 @@ printf("Closed outSoundFile\n");
     }
 
 //printf("CAudioMixer::RenderBuffer: END \n");
-	return kNoErr;
-} // ---- end CAudioMixer::RenderBuffer() ----
+	return (kNoErr);
+} // ---- end RenderBuffer() ----
 
 //==============================================================================
 // WrapperToCallRenderBuffer
@@ -619,7 +671,7 @@ int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOut,  unsigned long numStereoF
 	
 	// Call member function to get a buffer full of stereo data
 	return ((CAudioMixer*)pToObject)->RenderBuffer( pOut, numStereoFrames );
-} // ---- end CAudioMixer::WrapperToCallRenderBuffer() ----
+} // ---- end WrapperToCallRenderBuffer() ----
 
 // ==============================================================================
 // SetMasterVolume :  output level for mixer
@@ -639,7 +691,7 @@ masterGaini_[0] = FloatToQ15(masterGainf_[0]);
 masterGaini_[1] = masterGaini_[0];
 
 //printf("CAudioMixer::SetMasterVolume %d -> %f ($%x)\n", masterVolume_ , masterGainf_[0], masterGaini_[0]);
-} // ---- end CAudioMixer::SetMasterVolume() ----
+} // ---- end SetMasterVolume() ----
 
 // ==============================================================================
 // SetSamplingFrequency :  update fs for mixer and all DSP
@@ -668,7 +720,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		SRC_SetOutSamplingFrequency(&src_[i][ch], samplingFrequency_);
         }
     }
-} // ---- end CAudioMixer::SetSamplingFrequency() ----
+} // ---- end SetSamplingFrequency() ----
 
 // ==============================================================================
 // UpdateDSP :  Recalculate DSP parameters
@@ -686,7 +738,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     for (i = 0; i < kAudioMixer_MixBinCount; i++)
     	UpdateSRC(&src_[i][ch]);
     }
-} // ---- end CAudioMixer::UpdateDSP() ----
+} // ---- end UpdateDSP() ----
 
 // ==============================================================================
 // ResetDSP :  Reset DSP state
@@ -708,7 +760,7 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     	mixBinFilled_[i] = False;
     	}
     }
-} // ---- end CAudioMixer::ResetDSP() ----
+} // ---- end ResetDSP() ----
 
 // ==============================================================================
 // PrepareDSP :  Update + Reset DSP state
@@ -717,7 +769,7 @@ void CAudioMixer::PrepareDSP()
 {
 UpdateDSP();
 ResetDSP();
-} // ---- end CAudioMixer::PrepareDSP() ----
+} // ---- end PrepareDSP() ----
 
 // ==============================================================================
 // UpdateDebugGain :  Recalculate debug gain variables
@@ -732,7 +784,7 @@ postGainf = DecibelToLinearf(postGainDB);
 postGaini = FloatToQ15(postGainf);
 //printf("CAudioMixer::UpdateDebugGain: postGainDB %g -> %g (%04X) \n", postGainDB, postGainf, postGaini);
 
-} // ---- end CAudioMixer::UpdateDebugGain() ----
+} // ---- end UpdateDebugGain() ----
 
 // ==============================================================================
 // SetOutputEqualizer :  Set output equalizer type.
@@ -747,6 +799,6 @@ void CAudioMixer::SetOutputEqualizer(Boolean /* x */)
 
 //useOutSoftClipper_ = x;
 
-} // ---- end CAudioMixer::SetOutputEqualizer() ----
+} // ---- end SetOutputEqualizer() ----
 
 LF_END_BRIO_NAMESPACE()

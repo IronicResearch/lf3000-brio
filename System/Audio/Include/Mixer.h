@@ -1,5 +1,5 @@
-#ifndef LF_BRIO_MIXER_H
-#define LF_BRIO_MIXER_H
+#ifndef LF_MIXER_H
+#define LF_MIXER_H
 
 
 //==============================================================================
@@ -44,6 +44,7 @@ public:
 		
 	CChannel*		FindChannelUsing( tAudioPriority priority );
 	CChannel*		FindChannelUsing( tAudioID id );
+	long    		FindChannelIndex( tAudioID id );
 	
 	// Returns true if any audio playing on a mixer channel.
 	// Note: this doesn't include MIDI.
@@ -76,7 +77,7 @@ private:
 #define kAudioMixer_MaxInAudioChannels	3    
 #define kAudioMixer_MaxInMIDIChannels	1    
 #define kAudioMixer_MaxInChannels	    (kAudioMixer_MaxInAudioChannels+kAudioMixer_MaxInMIDIChannels)    
-#define kAudioMixer_MaxOutChannels	2
+#define kAudioMixer_MaxOutChannels	    2
 
 // Channel parameters
 	U8 			numInChannels_;			// input: mono or stereo (for now, allow stereo)
@@ -85,8 +86,9 @@ private:
 	S16 			*channel_tmpPtrs_[kAudioMixer_MaxInChannels];
 	S16 			*pChannel_OutBuffer_;	
 
+
 // Mix Bin Parameters
-#define kAudioMixer_MixBinCount	3	// At present, for sampling rates :  fs, fs/2, fs/4 
+#define kAudioMixer_MixBinCount	        3	// At present, for sampling rates :  fs, fs/2, fs/4 
 #define kAudioMixer_MixBin_Index_FsDiv4 0
 #define kAudioMixer_MixBin_Index_FsDiv2 1
 #define kAudioMixer_MixBin_Index_FsDiv1 2
@@ -95,7 +97,7 @@ private:
 	long			 mixBinFilled_[kAudioMixer_MixBinCount];
     long fsRack_[kAudioMixer_MixBinCount];
 
-	long GetMixBinIndex( long samplingFrequency );
+	long GetMixBinIndex        ( long samplingFrequency );
 	long GetSamplingRateDivisor( long samplingFrequency );
 
 // Sampling rate conversion (SRC) parameters
@@ -116,10 +118,10 @@ private:
     WAVESHAPER  outSoftClipper_[kAudioMixer_MaxOutChannels];
 
 // MIDI parameters
-	CMidiPlayer*	pMidiPlayer_; // player for doing MIDI
+	CMidiPlayer*	pMidiPlayer_;
 
-// mIXER BUFFERS
-	S16*			pMixBuffer_;  // Ptr to mixed samples from all active channels
+// Mixer buffer parameters
+//	S16*			pMixBuffer_;  // Mix of all active channels
 
 #define kAudioMixer_MaxTempBuffers	8
 	S16*	pTmpBufs_        [kAudioMixer_MaxTempBuffers]; 
@@ -135,7 +137,7 @@ private:
     void UpdateDebugGain();
 };
 
-#endif		// LF_BRIO_MIXER_H
+#endif		// LF_MIXER_H
 
 LF_END_BRIO_NAMESPACE()
-// EOF	
+

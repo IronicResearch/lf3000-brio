@@ -41,7 +41,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Description:
 //		Class to manage the playing of MIDI data. 
 //==============================================================================
-//class CMidiPlayer : public CAudioPlayer {
 class CMidiPlayer {
 public:
 	CMidiPlayer( tMidiPlayerID id );
@@ -61,7 +60,7 @@ public:
 	inline void		Activate()   { bActive_ = true; }
 	inline void		DeActivate() { bActive_ = false; }
 
-	// Get/Set the class member variables
+	// Get/Set class member variables
 	inline tMidiPlayerID		GetID() { return id_; }
 
 	// MIDI channel messages
@@ -79,13 +78,13 @@ public:
 	tErrType	SetEnableTracks( tMidiTrackBitMask d);
 	tErrType	TransposeTracks( tMidiTrackBitMask d, S8 transposeAmount );
 	tErrType	ChangeProgram( tMidiTrackBitMask d, tMidiPlayerInstrument instr );
-	tErrType	ChangeTempo( S8 Tempo); 
+	tErrType	ChangeTempo( S8 tempo); 
 
 private:
 	CDebugMPI* 				pDebugMPI_;	
 	CKernelMPI* 			pKernelMPI_;	
 
-// Mobileer engine variables
+// Mobileer MIDIengine variables
 	SPMIDI_Context*			pContext_;		
 	MIDIFilePlayer*			pFilePlayer_;	
 	SPMIDI_Orchestra        *spmidi_orchestra_;

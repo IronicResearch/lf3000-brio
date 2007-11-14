@@ -120,21 +120,23 @@ printf("CRawPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDone
     else
         {
 //		printf("Unable to open as WAV/AIFF file '%s'\n", inFilePath);
-	fileH_ = fopen( inFilePath, "r" );
-	pDebugMPI_->Assert( fileH_ > 0, "CRawPlayer::ctor : Unable to open '%s'\n", inFilePath );
+    	fileH_ = fopen( inFilePath, "r" );
+    	pDebugMPI_->Assert( fileH_ > 0, "CRawPlayer::ctor : Unable to open '%s'\n", inFilePath );
 
-	// Read Brio "Raw" audio header
-    fileType_ = kRawPlayer_FileType_Brio;
+    // Read Brio "Raw" audio header
+        fileType_ = kRawPlayer_FileType_Brio;
 
-	tAudioHeader	brioHeader;		// header data for Brio RAW audio
-	bytesRead = fread( &brioHeader, sizeof(char), sizeof(tAudioHeader), fileH_);
-//printf("Brio Raw Header: dataOffset=%d ch=%d fs=%u Hz dataSize=%ld\n", 
-//		(int)brioHeader_.offsetToData, channels, (unsigned int)brioHeader_.sampleRate, brioHeader_.dataSize);
+    	tAudioHeader	brioHeader;		// header data for Brio "RAW" audio
+    	bytesRead = fread( &brioHeader, 1, sizeof(tAudioHeader), fileH_);
+    //printf("Brio Raw Header: dataOffset=%d ch=%d fs=%u Hz dataSize=%ld\n", 
+    //		(int)brioHeader_.offsetToData, channels, (unsigned int)brioHeader_.sampleRate, brioHeader_.dataSize);
 
-	dataSampleRate_ = brioHeader.sampleRate;
-	audioDataSize_  = brioHeader.dataSize;		
-    channels_       = 1 + (brioHeader.flags & 0x1);
-	totalFrames_ = audioDataSize_ / (kAudioBytesPerMonoFrame*channels_);
+   	    pDebugMPI_->Assert( (16 == brioHeader.offsetToData), "CRawPlayer::ctor : offsetToData=%ld, but isn't 16.  Is this Brio Raw Audio file ?\n", brioHeader.offsetToData );
+            
+    	dataSampleRate_ = brioHeader.sampleRate;
+    	audioDataSize_  = brioHeader.dataSize;		
+        channels_       = 1 + (0 != (brioHeader.flags & kAudioHeader_StereoBit));
+    	totalFrames_    = audioDataSize_ / (kAudioBytesPerMonoFrame*channels_);
 		}
 	
 //printf("AF info: ch=%ld fs=%ld Hz frames=%ld\n", channels_, dataSampleRate_, totalFrames_);

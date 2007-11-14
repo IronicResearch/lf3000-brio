@@ -386,43 +386,51 @@ static void DoGetAudioTime( CAudioMsgGetAudioTime* msg ) {
 	SendMsgToAudioModule( retMsg );
 }
 
-static void DoGetAudioVolume( CAudioMsgGetAudioVolume* msg ) {
-	tAudioVolumeInfo 	info = msg->GetData();
-	CAudioReturnMessage	retMsg;
-	U32					volume = 0;
-	CChannel*			pChannel;
-	
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoGetAudioVolume() -- Get Volume for audioID = %d...\n", 
-		static_cast<int>(info.id));	
+// ==============================================================================
+// DoGetAudioVolume: 
+// ==============================================================================
+static void DoGetAudioVolume( CAudioMsgGetAudioVolume* msg ) 
+{
+tAudioVolumeInfo 	info = msg->GetData();
+CAudioReturnMessage	retMsg;
+U32					volume = 0;
+CChannel*			pChannel;
 
-	//	find the current volume for the channel using audioID
-	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
-	if (pChannel != NULL) {
-		volume = pChannel->GetVolume();
-	}
-	
-	// Send the volume back to the caller
-	retMsg.SetU32Result( (U32)volume );
-	SendMsgToAudioModule( retMsg );
-}
+gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+	"AudioTask::DoGetAudioVolume() -- Get Volume for audioID = %d...\n", 
+	static_cast<int>(info.id));	
 
-static void DoSetAudioVolume( CAudioMsgSetAudioVolume* msg ) {
-	tAudioVolumeInfo 	info = msg->GetData();
-	CAudioReturnMessage	retMsg;
-	CChannel*			pChannel;
-	
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoSetAudioVolume() -- Set Volume for audioID = %d...\n", 
-		static_cast<int>(info.id));	
+// Find current volume for channel using audioID
+pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
+if (pChannel) 
+	volume = pChannel->GetVolume();
 
-	//	Set requested property
-	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
-	if (pChannel != NULL) {
-		pChannel->SetVolume( info.volume );
-	}
-}
+retMsg.SetU32Result( (U32)volume );
+SendMsgToAudioModule( retMsg );
+}  // ---- end DoGetAudioVolume() ----
 
+// ==============================================================================
+// DoSetAudioVolume: 
+// ==============================================================================
+static void DoSetAudioVolume( CAudioMsgSetAudioVolume* msg ) 
+{
+tAudioVolumeInfo 	info = msg->GetData();
+CAudioReturnMessage	retMsg;
+CChannel*			pChannel;
+
+gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+	"AudioTask::DoSetAudioVolume() -- Set Volume for audioID = %d...\n", 
+	static_cast<int>(info.id));	
+
+//	Set requested property
+pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
+if (pChannel) 
+	pChannel->SetVolume( info.volume );
+}  // ---- end DoSetAudioVolume() ----
+
+// ==============================================================================
+// DoGetAudioPriority: 
+// ==============================================================================
 static void DoGetAudioPriority( CAudioMsgGetAudioPriority* msg ) {
 	tAudioPriorityInfo 	info = msg->GetData();
 	CAudioReturnMessage	retMsg;
@@ -435,15 +443,17 @@ static void DoGetAudioPriority( CAudioMsgGetAudioPriority* msg ) {
 
 	//	find the current Priority for the channel using audioID
 	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
-	if (pChannel != NULL) {
+	if (pChannel) 
 		priority = pChannel->GetPriority();
-	}
 	
 	// Send the Priority back to the caller
 	retMsg.SetU32Result( (U32)priority );
 	SendMsgToAudioModule( retMsg );
-}
+}  // ---- end DoGetAudioPriority() ----
 
+// ==============================================================================
+// DoSetAudioPriority: 
+// ==============================================================================
 static void DoSetAudioPriority( CAudioMsgSetAudioPriority* msg ) {
 	tAudioPriorityInfo 	info = msg->GetData();
 	CAudioReturnMessage	retMsg;
@@ -457,44 +467,55 @@ static void DoSetAudioPriority( CAudioMsgSetAudioPriority* msg ) {
 	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
 	if (pChannel) 
 		pChannel->SetPriority( info.priority );
-}
+}  // ---- end DoSetAudioPriority() ----
 
-static void DoGetAudioPan( CAudioMsgGetAudioPan* msg ) {
-	tAudioPanInfo 	info = msg->GetData();
-	CAudioReturnMessage	retMsg;
-	U32					pan = 0;
-	CChannel*			pChannel;
-	
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoGetAudioPan() -- Get Pan for audioID = %d...\n", 
-		static_cast<int>(info.id));	
+// ==============================================================================
+// DoGetAudioPan: 
+// ==============================================================================
+static void DoGetAudioPan( CAudioMsgGetAudioPan* msg ) 
+{
+tAudioPanInfo 	info = msg->GetData();
+CAudioReturnMessage	retMsg;
+U32					pan = 0;
+CChannel*			pChannel;
 
-	//	find the current Pan for the channel using audioID
-	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
-	if (pChannel) 
-		pan = pChannel->GetPan();
-	
-	// Send the Pan back to the caller
-	retMsg.SetU32Result( (U32)pan );
-	SendMsgToAudioModule( retMsg );
-}
+gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+	"AudioTask::DoGetAudioPan() -- Get Pan for audioID = %d...\n", 
+	static_cast<int>(info.id));	
 
-static void DoSetAudioPan( CAudioMsgSetAudioPan* msg ) {
-	tAudioPanInfo 	info = msg->GetData();
-	CAudioReturnMessage	retMsg;
-	CChannel*			pChannel;
-	
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoSetAudioPan() -- Set Pan for audioID = %d...\n", 
-		static_cast<int>(info.id));	
+//Find current Pan for channel using audioID
+pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
+if (pChannel) 
+	pan = pChannel->GetPan();
 
-	//	Set requested property
-	pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
-	if (pChannel) 
-		pChannel->SetPan( info.pan );
-}
+retMsg.SetU32Result( (U32)pan );
+SendMsgToAudioModule( retMsg );
+}  // ---- end DoGetAudioPan() ----
 
-static void DoGetAudioListener( CAudioMsgGetAudioListener* msg ) {
+// ==============================================================================
+// DoSetAudioPan: 
+// ==============================================================================
+static void DoSetAudioPan( CAudioMsgSetAudioPan* msg ) 
+{
+tAudioPanInfo 	info = msg->GetData();
+CAudioReturnMessage	retMsg;
+CChannel*			pChannel;
+
+gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
+	"AudioTask::DoSetAudioPan() -- Set Pan for audioID = %d...\n", 
+	static_cast<int>(info.id));	
+
+//	Set requested property
+pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
+if (pChannel) 
+	pChannel->SetPan( info.pan );
+}  // ---- end DoSetAudioPan() ----
+
+// ==============================================================================
+// DoGetAudioListener: 
+// ==============================================================================
+static void DoGetAudioListener( CAudioMsgGetAudioListener* msg ) 
+{
 	tAudioListenerInfo 		info = msg->GetData();
 	CAudioReturnMessage		retMsg;
 	const IEventListener*	pListener = NULL;
@@ -515,7 +536,7 @@ static void DoGetAudioListener( CAudioMsgGetAudioListener* msg ) {
 	// Send the listener back to the caller
 	retMsg.SetU32Result( (U32)pListener );
 	SendMsgToAudioModule( retMsg );
-}
+}  // ---- end DoGetAudioListener() ----
 
 static void DoSetAudioListener( CAudioMsgSetAudioListener* msg ) {
 	tAudioListenerInfo 	info = msg->GetData();
@@ -1019,13 +1040,13 @@ void* AudioTaskMain( void* /*arg*/ )
 		    msgQueueProperties.oflag = B_O_WRONLY|B_O_CREAT;
 		   	err = gContext.pKernelMPI->OpenMessageQueue( gContext.hSendMsgQueue, msgQueueProperties, NULL );
 		    gContext.pDebugMPI->Assert((kNoErr == err), 
-		    	"AudioTaskMain() -- Trying to create outgoing msg queue after deletion of orphan. err = %d \n", 
+		    	"AudioTaskMain() v Trying to create outgoing msg queue after deletion of orphan. err = %d \n", 
 		    	static_cast<int>(err) );
 
 		} else {
 			// Unknown error, bail out.
 			gContext.pDebugMPI->Assert((kNoErr == err), 
-		    	"AudioTaskMain() -- Trying to create outgoing audio task msg queue. err = %d \n", 
+		    	"AudioTaskMain() Trying to create outgoing audio task msg queue. err = %d \n", 
 		    	static_cast<int>(err) );			
 		}
 	}
@@ -1048,7 +1069,7 @@ void* AudioTaskMain( void* /*arg*/ )
 	    err = gContext.pKernelMPI->ReceiveMessage( gContext.hRecvMsgQueue, 
 								   (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 								   
-		    gContext.pDebugMPI->AssertNoErr( err, "AudioTask::MainLoop -- Could not get cmd message from AudioModule.\n" );
+		    gContext.pDebugMPI->AssertNoErr( err, "AudioTask::MainLoop; Could not get cmd message from AudioModule.\n" );
 	
 	    pAudioMsg = reinterpret_cast<CAudioCmdMsg*>(msgBuf);
 		msgSize = pAudioMsg->GetMessageSize();
@@ -1061,28 +1082,28 @@ void* AudioTaskMain( void* /*arg*/ )
 		switch ( cmdType ) {
 			//*********************************
 			case kAudioCmdMsgTypeSetMasterVolume:
-gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() setting master volume.\n" );	
+gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Setting master volume.\n" );	
 	
 				DoSetMasterVolume( (CAudioMsgSetMasterVolume*)pAudioMsg );				   
 				break;
 	
 			//*********************************
 			case kAudioCmdMsgTypeSetOutputEqualizer:
-gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() adjust output equalizer enable.\n" );	
+gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Adjust output equalizer enable.\n" );	
 	
 				DoSetOutputEqualizer( (CAudioMsgSetOutputEqualizer*)pAudioMsg );				   
 				break;
 
 			//*********************************
 			case kAudioCmdMsgTypePauseAllAudio:
-//gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() pause all audio.\n" );	
+//gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() Pause all audio.\n" );	
 		
 				DoPauseAudioSystem();
 				break;
 	
 			//*********************************
 			case kAudioCmdMsgTypeResumeAllAudio:
-//gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() resume all audio.\n" );	
+//gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Resume all audio.\n" );	
 	
 				DoResumeAudioSystem();
 				break;
@@ -1090,7 +1111,7 @@ gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() adjust output equ
 			//*********************************
 			case kAudioCmdMsgTypeStartAudio:
 //				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-//					"AudioTaskMain() -- kAudioCmdMsgTypeStartAudio : calling DoStartAudio().\n" );	
+//					"AudioTaskMain() -- kAudioCmdMsgTypeStartAudio : Calling DoStartAudio().\n" );	
 		
 				DoStartAudio( (CAudioMsgStartAudio*)pAudioMsg );
 				break;
@@ -1104,96 +1125,84 @@ gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() adjust output equ
 
 			//*********************************
 			case kAudioCmdMsgTypeGetAudioVolume:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Get Volume.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Get Volume.\n" );	
 	
 				DoGetAudioVolume( (CAudioMsgGetAudioVolume*)pAudioMsg );
 				break;
 						
 			//*********************************
 			case kAudioCmdMsgTypeSetAudioVolume:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Set Volume.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Set Volume.\n" );	
 		
 				DoSetAudioVolume( (CAudioMsgSetAudioVolume*)pAudioMsg);
 				break;
 				
 			//*********************************
 			case kAudioCmdMsgTypeGetAudioPriority:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Get Priority.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Get Priority.\n" );	
 	
 				DoGetAudioPriority( (CAudioMsgGetAudioPriority*)pAudioMsg );
 				break;
 						
 			//*********************************
 			case kAudioCmdMsgTypeSetAudioPriority:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Set Priority.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Set Priority.\n" );	
 		
 				DoSetAudioPriority( (CAudioMsgSetAudioPriority*)pAudioMsg);
 				break;
 
 			//*********************************
 			case kAudioCmdMsgTypeGetAudioPan:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Get Pan.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Get Pan.\n" );	
 	
 				DoGetAudioPan( (CAudioMsgGetAudioPan*)pAudioMsg );
 				break;
 						
 			//*********************************
 			case kAudioCmdMsgTypeSetAudioPan:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Set Pan.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Set Pan.\n" );	
 		
 				DoSetAudioPan( (CAudioMsgSetAudioPan*)pAudioMsg);
 				break;
 
 			//*********************************
 			case kAudioCmdMsgTypeGetAudioListener:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Get Listener.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Get Listener.\n" );	
 	
 				DoGetAudioListener( (CAudioMsgGetAudioListener*)pAudioMsg );
 				break;
 						
 			//*********************************
 			case kAudioCmdMsgTypeSetAudioListener:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Set Listener.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Set Listener.\n" );	
 		
 				DoSetAudioListener( (CAudioMsgSetAudioListener*)pAudioMsg);
 				break;
 
 			//*********************************
 			case kAudioCmdMsgTypeIsAnyAudioPlaying:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- Is ANY audio playing?\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Is ANY audio playing?\n" );	
 		
 				DoIsAnyAudioPlaying( (CAudioMsgIsAudioPlaying*)pAudioMsg);
 				break;
 
 				//*********************************
 				case kAudioCmdMsgTypeIsAudioPlaying:
-					gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-						"AudioTaskMain() -- Is ANY audio playing?\n" );	
+					gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Is ANY audio playing?\n" );	
 			
 					DoIsAudioPlaying( (CAudioMsgIsAudioPlaying*)pAudioMsg);
 					break;
 
 			//*********************************
 			case kAudioCmdMsgTypePauseAudio:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- pause audio.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Pause audio.\n" );	
 	
 				DoPauseAudio( (CAudioMsgPauseAudio*)pAudioMsg );
 				break;
 	
 			//*********************************
 			case kAudioCmdMsgTypeResumeAudio:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() Resume audio.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() Resume audio.\n" );	
 	
 				DoResumeAudio( (CAudioMsgResumeAudio*)pAudioMsg );
 				break;
@@ -1235,7 +1244,7 @@ gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() adjust output equ
 	
 			//*********************************
 			case kAudioCmdMsgTypeStartMidiFile:
-//				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() -- Start MIDI file.\n" );	
+//				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Start MIDI file.\n" );	
 				
 				DoStartMidiFile( (CAudioMsgStartMidiFile*)pAudioMsg );
 				break;
@@ -1283,6 +1292,7 @@ gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() adjust output equ
 				break;
 
 			//*********************************
+			case kAudioCmdMsgTypeSetEnableMidiTracks:
 				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Enable MIDI tracks.\n" );	
 				
 				DoSetEnableMidiTracks( (CAudioMsgMidiFilePlaybackParams*)pAudioMsg );
@@ -1290,35 +1300,31 @@ gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() adjust output equ
 
 			//*********************************
 			case kAudioCmdMsgTypeTransposeMidiTracks:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- transpose MIDI tracks.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Transpose MIDI tracks.\n" );	
 				
 				DoTransposeMidiTracks( (CAudioMsgMidiFilePlaybackParams*)pAudioMsg );
 				break;
 
 			//*********************************
 			case kAudioCmdMsgTypeChangeMidiInstrument:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- change MIDI instrument.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Change MIDI instrument.\n" );	
 				
 				DoChangeMidiInstrument( (CAudioMsgMidiFilePlaybackParams*)pAudioMsg );
 				break;
 
 			//*********************************
 			case kAudioCmdMsgTypeChangeMidiTempo:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-					"AudioTaskMain() -- change MIDI tempo.\n" );	
+				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Change MIDI tempo.\n" );	
 				
 				DoChangeMidiTempo( (CAudioMsgMidiFilePlaybackParams*)pAudioMsg );
 				break;
 
 				//*********************************
 				case kAudioCmdMsgExitThread:
-					gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-						"AudioTaskMain() -- exiting Audio Thread.\n" );	
+					gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Exiting Audio Thread.\n" );	
 					
-					gContext.threadRun = false;
-					break;
+				gContext.threadRun = false;
+				break;
 				
 				
 			default:
