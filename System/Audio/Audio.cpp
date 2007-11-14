@@ -1162,25 +1162,25 @@ void CAudioModule::SetDefaultAudioPan( U32 mpiID, S8 pan )
 	mpiState.pan = pan;
 }
 
-//==============================================================================
+// ==============================================================================
 // GetDefaultAudioEventListener
-//==============================================================================
+// ==============================================================================
 const IEventListener* CAudioModule::GetDefaultAudioEventListener( U32 mpiID ) 
 {
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioEvenListener -- mpiID = %d\n", static_cast<int>(mpiID) );	
+		"CAudioModule::GetDefaultAudioEvenListener mpiID = %d\n", static_cast<int>(mpiID) );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	return mpiState.pListener;
 }
 
-//==============================================================================
+// ==============================================================================
 // SetDefaultAudioEventListener
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetDefaultAudioEventListener( U32 mpiID, const IEventListener *pListener ) 
 {
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioEvenListener -- mpiID = %d\n", static_cast<int>(mpiID) );	
+		"CAudioModule::GetDefaultAudioEvenListener mpiID = %d\n", static_cast<int>(mpiID) );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	mpiState.pListener = pListener;
@@ -1199,9 +1199,10 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */, IEventL
  	*id = WaitForMidiID();
  	return kNoErr;
 }
-//==============================================================================
+
+// ==============================================================================
 // ReleaseMidiPlayer
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 {
 	CAudioMsgReleaseMidiPlayer msg;
@@ -1212,13 +1213,18 @@ tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 	return WaitForStatus();
 }
 
+// ==============================================================================
+// GetAudioIDForMidiID
+// ==============================================================================
 tAudioID	CAudioModule::GetAudioIDForMidiID( tMidiPlayerID /* id */) 
 {
+printf("CAudioModule::GetAudioIDForMidiID: NOT IMPLEMENTED \n");
 	return kNoAudioID;
 }
-//==============================================================================
+
+// ==============================================================================
 // MidiNoteOn
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 noteNum, U8 velocity, 
 										tAudioOptionsFlags flags )
 {
@@ -1231,9 +1237,9 @@ tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 noteNu
 	return kNoErr;
 }
 	
-//==============================================================================
+// ==============================================================================
 // MidiNoteOff
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */, U8 channel, U8 noteNum, U8 velocity, 
 										tAudioOptionsFlags flags )
 {
@@ -1246,9 +1252,9 @@ tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */, U8 channel, U8 noteN
 	return kNoErr;
 }
 
-//==============================================================================
+// ==============================================================================
 // StartMidiFile
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::StartMidiFile( 	U32 				mpiID, 
 										tMidiPlayerID		id,
 										const CPath 		&path, 
@@ -1288,10 +1294,9 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 	return WaitForStatus();
 }
 
-//==============================================================================
+// ==============================================================================
 // StartMidiFile
-//==============================================================================
-
+// ==============================================================================
 tErrType CAudioModule::StartMidiFile( 	U32 				mpiID, 
 										tMidiPlayerID		id,
 										const CPath 		&path, 
@@ -1326,9 +1331,9 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 	return WaitForStatus();
 }
 
-//==============================================================================
+// ==============================================================================
 // IsMidiFilePlaying
-//==============================================================================
+// ==============================================================================
 Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 {
 	CAudioMsgIsMidiFilePlaying 	msg( id );
@@ -1338,9 +1343,9 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 	return WaitForBooleanResult();
 }
 
-//==============================================================================
+// ==============================================================================
 // IsMidiFilePlaying
-//==============================================================================
+// ==============================================================================
 Boolean CAudioModule::IsMidiFilePlaying( void )
 {
 	CAudioMsgIsMidiFilePlaying 	msg;
@@ -1350,9 +1355,9 @@ Boolean CAudioModule::IsMidiFilePlaying( void )
 	return WaitForBooleanResult();
 }
 
-//==============================================================================
+// ==============================================================================
 // PauseMidiFile
-//==============================================================================
+// ==============================================================================
 void CAudioModule::PauseMidiFile( tMidiPlayerID id )
 {
 	CAudioMsgPauseMidiFile msg( id );

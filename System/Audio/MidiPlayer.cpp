@@ -143,17 +143,17 @@ CMidiPlayer::~CMidiPlayer()
 	tErrType 				result;
 	tAudioStopMidiFileInfo 	info;
 	
-{static long c=0; printf("CMidiPlayer::~CMidiPlayer: start %ld\n", c++);}
+//{static long c=0; printf("CMidiPlayer::~: start %ld\n", c++);}
 
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::dtor -- Cleaning up.\n");	
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::~ -- Cleaning up.\n");	
 	
 	result = pKernelMPI_->LockMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::dtor -- Couldn't lock mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::~ -- Couldn't lock mutex.\n");
 
-	// If a file is playing (the user didn't call stop first) do it for them.
+	// If a file is playing (the user didn't call stop first) , stop it for them.
 	if (bFileActive_) 
         {
-		pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::dtor: set bFileActive_ to false\n");	
+		pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::~: set bFileActive_ to false\n");	
 		bFileActive_ = false;
 		info.suppressDoneMsg = true;
 	    }
@@ -171,34 +171,34 @@ CMidiPlayer::~CMidiPlayer()
 	SPMIDI_Terminate();
 	
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::dtor Couldn't unlock mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::~ Couldn't unlock mutex.\n");
 	result = pKernelMPI_->DeInitMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::dtor Couldn't deinit mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::~ Couldn't deinit mutex.\n");
 
 	delete pMidiRenderBuffer_;
 
-	// Free debug MPI
-	if (pDebugMPI_)
-		delete pDebugMPI_;
-
-	// Free kernel MPI
-	if (pKernelMPI_)
-		delete pKernelMPI_;
-{static long c=0; printf("CMidiPlayer::~CMidiPlayer: end %ld\n", c++);}
+// Free debug MPIs
+if (pDebugMPI_)
+	delete pDebugMPI_;
+if (pKernelMPI_)
+	delete pKernelMPI_;
+//{static long c=0; printf("CMidiPlayer::~: end %ld\n", c++);}
 }   // ---- end ~CMidiPlayer() ----
 
 // ==============================================================================
 // NoteOn
 // ==============================================================================
-tErrType 	CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
+    tErrType 	
+CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
 {
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-			"CMidiPlayer::NoteOn: chan=%d note=%d vel=%d, flags=$%X\n", 
-                channel, noteNum, velocity, static_cast<int>(flags) );
+char noteS[50];
+MIDINoteToNotation(noteNum, noteS, False);
+printf("CMidiPlayer::NoteOn : channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
+                channel, noteNum, noteS, velocity, (unsigned int) flags );
  
-	SPMUtil_NoteOn( pContext_, (int) channel, (int) noteNum, (int) velocity );
+SPMUtil_NoteOn( pContext_, (int) channel, (int) noteNum, (int) velocity );
 
-	return kNoErr;
+return (kNoErr);
 }   // ---- end NoteOn() ----
 
 // ==============================================================================
@@ -207,13 +207,14 @@ tErrType 	CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOption
     tErrType 	
 CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
 {
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::NoteOff: chan=%d note=%d vel=%d flags=$%X\n", 
-            channel, noteNum, velocity, static_cast<int>(flags) );
+char noteS[50];
+MIDINoteToNotation(noteNum, noteS, False);
+printf("CMidiPlayer::NoteOff: channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
+                channel, noteNum, noteS, velocity, (unsigned int) flags );
  
-	SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
+SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
 
-	return (kNoErr);
+return (kNoErr);
 }   // ---- end NoteOff() ----
 
 // ==============================================================================
@@ -222,11 +223,11 @@ CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags fl
     tErrType 
 CMidiPlayer::SendCommand( U8 cmd, U8 data1, U8 data2 )
 {
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SendCommand cmd=%3d data1=%3d data2=%3d\n", cmd, data1, data2);	
+pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SendCommand cmd=%3d data1=%3d data2=%3d\n", cmd, data1, data2);	
 
-	SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, (int)data2 );
+SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, (int)data2 );
 
-	return (kNoErr);
+return (kNoErr);
 }   // ---- end SendCommand() ----
 
 // ==============================================================================
@@ -241,7 +242,7 @@ CMidiPlayer::SendDoneMsg( void )
 	data.payload = loopCount_;	
 	data.count   = 1;
 
-printf("CMidiPlayer::SendDoneMsg midiPlayerID=%d\n", id_);
+//printf("CMidiPlayer::SendDoneMsg midiPlayerID=%d\n", id_);
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
@@ -286,7 +287,7 @@ if ( pInfo->pListener )
 	shouldLoop_   = (0 < pInfo->payload) && (0 != (pInfo->flags & kAudioOptionsLooped));
     loopCount_    = pInfo->payload;
     loopCounter_  = 0;
-	bDoneMessage_ = (kNull != pListener_ && 0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
+	bDoneMessage_ = ((kNull != pListener_) && (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete)));
 
 // kAudioOptionsLooped
 //printf("CMidiPlayer::StartMidiFile: loopFile_=%d loopCount=%ld flags=$%X kAudioOptionsLooped=$%X\n",
@@ -308,7 +309,7 @@ else
     strcat(s, " SendDone=Off");
 
 printf("CMidiPlayer::ctor: listener=%d flags=$%X '%s'\n", (kNull != pListener_), (unsigned int)optionsFlags_, s);
-printf("CMidiPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDoneMessage_, shouldLoop_, loopCount_);
+printf("CMidiPlayer::ctor: bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDoneMessage_, shouldLoop_, loopCount_);
 }
 #endif // DEBUG_MIDIPLAYER_OPTIONS
 
@@ -365,17 +366,18 @@ printf("CMidiPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDon
 	sio = Stream_OpenFile( (char *)orchestraFileName.c_str(), "rb");
 	if ( NULL == sio )
 		printf("CMidiPlayer::StartMidiFile: Stream_OpenFile failed on '%s'\n", (char *)orchestraFileName.c_str());
-
+    else
+        {
 //	printf( "Num blocks allocated before SPMIDI_LoadOrchestra = %d\n", SPMIDI_GetMemoryAllocationCount() );
 
 	preOrchestraCount = SPMIDI_GetMemoryAllocationCount();
-	// Load just the instruments we need from the orchestra t play the song.
+	// Scan MIDI file and load minimal set of the instruments 
 	if ( SPMIDI_LoadOrchestra( sio, programList, &spmidi_orchestra_ ) < 0 )
 		printf( "CMidiPlayer::StartMidiFile: SPMIDI_LoadOrchestra failed on '%s'\n", (char *)orchestraFileName.c_str());
 	
-	// Close the orchestra stream.
-	if (NULL != sio )
+	// Close orchestra stream
 		Stream_Close( sio );
+        }
 //	free( orchestraImage );  // FIXXXX: Is this a leak ?
 
 //	printf( "Num blocks allocated before SPMIDI_DeleteOrchestra = %d\n", SPMIDI_GetMemoryAllocationCount() );
@@ -403,39 +405,40 @@ printf("CMidiPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDon
 // ==============================================================================
 // PauseMidiFile
 // ==============================================================================
-tErrType 	CMidiPlayer::PauseMidiFile( void ) 
+    tErrType 	
+CMidiPlayer::PauseMidiFile( void ) 
 {
 //	tErrType result = 0;
 	
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::PauseMidiFile -- setting bFilePaused_ to true...\n");	
+pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::PauseMidiFile: setting bFilePaused_ to true.\n");	
 	
-	if (bFileActive_)
-		bFilePaused_ = true;
+if (bFileActive_)
+	bFilePaused_ = true;
 	
-	return 0; //result;
+return (0); //result;
 }   // ---- end PauseMidiFile() ----
 
 // ==============================================================================
 // ResumeMidiFile
 // ==============================================================================
-tErrType 	CMidiPlayer::ResumeMidiFile( void ) 
+    tErrType 	
+CMidiPlayer::ResumeMidiFile( void ) 
 {
 //	tErrType result = 0;
 	
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::ResumeMidiFile -- setting bFilePaused_ to false...\n");	
+pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ResumeMidiFile: Setting bFilePaused_ to false.\n");	
 
-	if (bFileActive_)
-		bFilePaused_ = false; 
-	
-	return 0; //result;
+if (bFileActive_)
+	bFilePaused_ = false; 
+
+return (0); //result;
 }   // ---- end ResumeMidiFile() ----
 
 // ==============================================================================
 // StopMidiFile
 // ==============================================================================
-tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
+    tErrType 	
+CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
 {
 	tErrType result = 0;
 //{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
@@ -479,22 +482,20 @@ tErrType 	CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 // ==============================================================================
 // GetEnableTracks
 // ==============================================================================
-tErrType CMidiPlayer::GetEnableTracks( tMidiTrackBitMask* d ) 
+    tErrType 
+CMidiPlayer::GetEnableTracks( tMidiTrackBitMask *d ) 
 {
-	U32					chan;
 	tMidiTrackBitMask	mask = 0;
-	int					isEnabled;
 	
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::GetEnableTracks -- ...\n");	
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::GetEnableTracks ...\n");	
 
-	// Loop through the channels and set mask
-	for (chan = 0; chan < kMIDI_ChannelCount; chan++) {
-		isEnabled = SPMIDI_GetChannelEnable( pContext_, chan );
-		if (isEnabled){
+	// Loop through channels and set mask
+	for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
+        {
+		if (SPMIDI_GetChannelEnable( pContext_, chan ))
 			mask |= 1 << chan;
-		}
-	}
+	    }
+//printf("CMidiPlayer::GetEnableTracks -- $%X \n", (unsigned int) mask);	
 
 *d = mask;
 
@@ -504,57 +505,71 @@ return kNoErr;
 // ==============================================================================
 // SetEnableTracks: 
 // ==============================================================================
-#define kMIDI_TrackEnable		1
-#define kMIDI_TrackDisable		0
-tErrType CMidiPlayer::SetEnableTracks( tMidiTrackBitMask d )
+    tErrType 
+CMidiPlayer::SetEnableTracks( tMidiTrackBitMask d )
 {
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SetEnableTracks -- PROBABLY DOESN'T WORK ...\n");	
-printf("CMidiPlayer::SetEnableTracks -- PROBABLY DOESN'T WORK ...\n");	
+//pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SetEnableTracks\n");	
+//printf("CMidiPlayer::SetEnableTracks -- $%X \n", (unsigned int) d);	
 
 // Loop through channels and set mask
-// FIXXXXXXXXX: rdg's below code probably doesn't work:  GK NOTE
 for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
-    {
-	tMidiTrackBitMask mask = 1 << chan;		// set bit corresponding to this channel
-	if (d && mask)  // WHAT ?!?
-		SPMIDI_SetChannelEnable( pContext_, chan, kMIDI_TrackEnable );
-	else
-		SPMIDI_SetChannelEnable( pContext_, chan, kMIDI_TrackDisable );
-	}
+    SPMIDI_SetChannelEnable( pContext_, chan, 0 != (d & (1 << chan)) );
 
 return kNoErr;
 }   // ---- end SetEnableTracks() ----
 
 // ==============================================================================
-// TransposeTracks:    NOT IMPLEMENTED
+// TransposeTracks:   
 // ==============================================================================
-tErrType CMidiPlayer::TransposeTracks( tMidiTrackBitMask /* d */, S8 /* transposeAmount */)
+    tErrType 
+CMidiPlayer::TransposeTracks( tMidiTrackBitMask /*d */, S8 /*semitones*/)
 {
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::TransposeTracks -- NOT IMPLEMENTED...\n");	
-printf("CMidiPlayer::TransposeTracks -- NOT IMPLEMENTED...\n");	
+//printf("CMidiPlayer::TransposeTracks semitones=%d \n", semitones);	
+//SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, amountSemitones );
 
-	return kNoErr;
+return (kNoErr);
 }   // ---- end TransposeTracks() ----
 
 // ==============================================================================
-// ChangeProgram: NOT IMPLEMENTED
+// ChangeProgram:       Change program (instrument) on specified MIDI channel
+//
+//              FIXXXX: this API is non-sensical.  Add another call that takes 
+//              channel # as argument.
 // ==============================================================================
-tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask /* d */, tMidiPlayerInstrument /* instr */ )
+    tErrType 
+CMidiPlayer::ChangeProgram( tMidiTrackBitMask d , tMidiPlayerInstrument programChangeNumber )
 {
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ChangeProgram -- NOT IMPLEMENTED...\n");	
-printf("CMidiPlayer::ChangeProgram -- NOT IMPLEMENTED...\n");	
-	return kNoErr;
+printf("CMidiPlayer::ChangeProgram -> programChangeNumber=%d \n", (unsigned int) programChangeNumber);	
+unsigned int shift = 1;
+for (long ch = 0; ch < 16; ch++)    
+    {
+    if (d & shift)
+        {
+    // Send two byte MIDI program change
+        U8 cmd   = 0xA0 | ch;
+        U8 data1 = (U8)(0x7f & programChangeNumber);
+        SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, 0 );
+        }
+    shift <<= 1;
+    }
+    
+// This will need some extra code as minimal instrument set is currently loaded, so you have to
+// those not in memory
+
+return (kNoErr);
 }   // ---- end ChangeProgram() ----
 
 // ==============================================================================
 // ChangeTempo
 // ==============================================================================
-tErrType CMidiPlayer::ChangeTempo( S8 /* Tempo */)
+    tErrType 
+CMidiPlayer::ChangeTempo( S8 tempo )
 {
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ChangeTempo not implemented ...\n");	
-printf("CMidiPlayer::ChangeTempo -- NOT IMPLEMENTED...\n");	
-
-	return kNoErr;
+printf("CMidiPlayer::ChangeTempo tempo=%d NOT IMPLEMENTED \n", tempo);	
+// Map Brio tempo range to 16.16 tempo scaler
+//if (pFilePlayer_)
+//MIDIFilePlayer_SetTempoScaler( pFilePlayer_, int tempoScaler);
+return (kNoErr);
 }   // ---- end ChangeTempo() ----
 
 // ==============================================================================

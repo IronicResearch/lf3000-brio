@@ -149,21 +149,21 @@ public:
 											const CPath 		&path, 
 											tAudioPayload		payload,
 											tAudioOptionsFlags	flags );
-	VTABLE_EXPORT void PauseMidiFile( tMidiPlayerID id );
+	VTABLE_EXPORT void PauseMidiFile(  tMidiPlayerID id );
 	VTABLE_EXPORT void ResumeMidiFile( tMidiPlayerID id );
-	VTABLE_EXPORT void StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage );
+    VTABLE_EXPORT void StopMidiFile(   tMidiPlayerID id, Boolean supressDoneMessage );
 
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( tMidiPlayerID id ); // TODO: stub
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( void ); // TODO: stub
 
 	VTABLE_EXPORT tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-	VTABLE_EXPORT tErrType SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
-	VTABLE_EXPORT tErrType TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask tracktBitMask, S8 transposeAmount );
-	VTABLE_EXPORT tErrType ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiPlayerInstrument instr );
+	VTABLE_EXPORT tErrType SetEnableMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask mask );
+	VTABLE_EXPORT tErrType TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask mask, S8 amount );
+	VTABLE_EXPORT tErrType ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask mask, tMidiPlayerInstrument instr );
 	VTABLE_EXPORT tErrType ChangeMidiTempo( tMidiPlayerID id, S8 tempo );
 
-	VTABLE_EXPORT tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	VTABLE_EXPORT tErrType MidiNoteOff( tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	VTABLE_EXPORT tErrType MidiNoteOn(      tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
+	VTABLE_EXPORT tErrType MidiNoteOff(     tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
 	VTABLE_EXPORT tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 private:

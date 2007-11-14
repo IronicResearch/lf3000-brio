@@ -10642,3 +10642,20 @@ By gklimanis (gklimanis@leapfrog.com) on 11/14/07 2:58 PM
 4,427 ms. (Cumulative: 2,605,248 ms)
 
 ----------------
+Revision 2,233 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,531 ms. (Cumulative: 2,609,857 ms)
+
+----------------
+Revision 2,234 from svn://localhost/TRUNK/:
+
+MIDI API function hook up:  ChangeProgram and Set/Get Enable tracks
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/14/07 3:03 PM
+11 changed, 0 added, 0 deleted.
+4,548 ms. (Cumulative: 2,614,405 ms)
+
+----------------

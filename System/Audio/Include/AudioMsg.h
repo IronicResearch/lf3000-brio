@@ -351,7 +351,6 @@ public:
 	// Is any MIDi file playing?
 	CAudioMsgIsMidiFilePlaying( void );
 	
-	// Is the MIDI file represted by this id playing?
 	CAudioMsgIsMidiFilePlaying( const tMidiPlayerID id );
 
 	tMidiPlayerID	GetData( void ) { return id_; }
