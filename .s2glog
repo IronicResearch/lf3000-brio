@@ -10613,3 +10613,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/07 10:52 AM
 4,254 ms. (Cumulative: 2,592,257 ms)
 
 ----------------
+Revision 2,229 from svn://localhost/TRUNK/:
+
+Relocated OpenGL display handle assignment after HW init callback.  
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/07 11:26 AM
+1 changed, 0 added, 0 deleted.
+4,080 ms. (Cumulative: 2,596,415 ms)
+
+----------------
