@@ -10604,3 +10604,12 @@ By Scott Esters (sesters@leapfrog.com) on 11/13/07 6:25 PM
 4,345 ms. (Cumulative: 2,587,925 ms)
 
 ----------------
+Revision 2,228 from svn://localhost/TRUNK/:
+
+Updated HW Display contexts to support re-assignment of 2D and 3D layers.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/07 10:52 AM
+6 changed, 0 added, 0 deleted.
+4,254 ms. (Cumulative: 2,592,257 ms)
+
+----------------

@@ -54,6 +54,8 @@ struct tDisplayContext {
 	bool 	isAllocated;// allocated by caller?
 	bool 	isOverlay;	// video overlay layer?
 	bool 	isPlanar;	// video overlay planar?
+	bool	isUnderlay;	// layer is on bottom instead of top?
+	int		layer;		// layer device handle
 #ifdef EMULATION
 	Pixmap	pixmap;		// X offscreen pixmap
 	_XImage	*image;		// X pixmap internals
@@ -288,6 +290,8 @@ private:
 	tErrType			Update(tDisplayContext* dc);
 	CDebugMPI			dbg_;
 	tDisplayContext*	pdcPrimary_;
+	bool				isOpenGLEnabled_;
+	bool				isLayerSwapped_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();

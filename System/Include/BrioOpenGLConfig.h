@@ -41,6 +41,7 @@ struct tOpenGLContext
 	U16					width;
 	U16					height;
 	Boolean				bFSAA;			// fullscreen anti-aliasing feature (LF1000 only)
+	tDisplayHandle		hndlDisplay;	// display handle for OpenGL
 };
 
 //==============================================================================
@@ -58,6 +59,9 @@ public:
 	EGLSurface			eglSurface;
 	EGLContext			eglContext;
 	
+	// Display MPI handle
+	tDisplayHandle		hndlDisplay;
+
 private:
 	CDisplayMPI			disp_;	
 };

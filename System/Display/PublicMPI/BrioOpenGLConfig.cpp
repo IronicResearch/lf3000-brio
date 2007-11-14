@@ -224,6 +224,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 //	PRINTF("eglInitialize post-init layer enable\n");
 //	disp_.EnableOpenGL(&ctx);
 
+	// Store handle for use in Display MPI functions
+	hndlDisplay = ctx.hndlDisplay;
+	
 	/*
 		Step 3 - Specify the required configuration attributes.
 		An EGL "configuration" describes the pixel format and type of

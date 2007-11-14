@@ -60,6 +60,9 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 #if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
 #endif
+
+	isOpenGLEnabled_ = false;
+	isLayerSwapped_ = false;
 	
 	InitModule();	// delegate to platform or emulation initializer
 	pdcListHead = NULL;
@@ -136,9 +139,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                             tDisplayHandle insertAfter, tDisplayScreen screen)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
-	// Register HW or emulation layer
-	RegisterLayer(hndl, xPos, yPos);
-	
+
 	// Insert display context at head or tail of linked list
 	tDisplayContext* 	dc = reinterpret_cast<tDisplayContext*>(hndl);
 	tDisplayContext*	pdc = pdcListHead;
@@ -160,6 +161,12 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		}
 		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
+
+	// Default Z order is on top
+	dc->isUnderlay = false;
+	
+	// Register HW or emulation layer
+	RegisterLayer(hndl, xPos, yPos);
 	
 	return kNoErr;
 }
@@ -170,8 +177,6 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
                              tDisplayScreen screen)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
-	// Register HW or emulation layer
-	RegisterLayer(hndl, xPos, yPos);
 	
 	// Insert display context at head or tail of linked list
 	tDisplayContext* 	dc = reinterpret_cast<tDisplayContext*>(hndl);
@@ -182,7 +187,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		pdcListHead = dc;
 		dc->pdc = NULL;
 	}
-	else if (kDisplayOnTop != initialZOrder)
+	else if (kDisplayOnBottom == initialZOrder)
 	{
 		// Replace previous head of list
 		pdcListHead = dc;
@@ -200,6 +205,12 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 	
+	// Default Z order is on top
+	dc->isUnderlay = (kDisplayOnBottom == initialZOrder);
+
+	// Register HW or emulation layer
+	RegisterLayer(hndl, xPos, yPos);
+
 	return kNoErr;
 }
 
