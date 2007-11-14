@@ -471,9 +471,11 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 {
+	// translate logical brightness value range of [-128, 127]
+	// to physical brightness range of (0,255]
 	(void )screen;	/* Prevent unused variable warnings. */
-	unsigned long	p = brightness + 128;
-	int 			r;
+	long	p = brightness + 128;
+	int		r;
 	
 	r = ioctl(gDevDpc, DPC_IOCTBRIGHTNESS, p);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
@@ -493,19 +495,12 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 {
+	// translate logical backlight range of [-128,127] to physical range
+	// of [140,512].  Note physical values less than 140 are unusable
+	
 	(void )screen;	/* Prevent unused variable warnings. */
-	unsigned long	p = backlight;
-	int 			r;
-
-#ifdef LF1000
-	// Disable backlight altogether in absense of driver PWM control
-	struct outvalue_cmd	c;
-	c.port = PORT_LCD;
-	c.pin  = PIN_BACKLIGHT_ENABLE;
-	c.value = (backlight > 0) ? 1 : 0;
-	r = ioctl(gDevGpio, GPIO_IOCSOUTVAL, &c);
-	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
-#endif
+	long	p = ((backlight * 373)/256) + 326;
+	int		r;
 
 	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHT, p);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;

@@ -56,11 +56,29 @@ void *LightningButtonTask(void*)
 	CDebugMPI	dbg(kGroupButton);
 	CKernelMPI	kernel;
 	CDisplayMPI dispmgr;
-	int			brightness = dispmgr.GetBrightness(0);
-	const int	kBrightInc = 8;
-	const int	kBrightMax = 127 - kBrightInc;
-	const int	kBrightMin = -128 + kBrightInc;
-	bool		isBrightening = (brightness < kBrightMax) ? true : false;
+	
+	/*
+	 * 'Brighten' screen by adjusting LCD brightness and LCD backlight.  As
+	 * 'N' levels are desired, then array will have 2N entries, first
+	 * increasing then increasing in value.
+	 */
+	
+	#define	SCREEN_BRIGHT_LEVELS	(2 * 4)	// have 4 distinct levels
+	
+	/* 
+	 * lcdBright and lcdBacklight arrays describe a complete cycle of screen
+	 * adjustment levels, so array index always increments, mod number of
+	 * array entries.  First array entry is the middle of range; this is
+	 * the default setting.
+	 */
+	S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
+			{  52,  62,  72,  62,  52,  42,  32,  42};
+	S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
+			{  38,  82, 127,  82,  38,  -7, -52,  -7};
+	
+	S8 brightness = lcdBright[0];
+	S8 backlight  = lcdBacklight[0];
+	int brightIndex = 1;				// index of next value to retrieve
 	
 #if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg.SetDebugLevel(kDbgLvlVerbose);
@@ -84,19 +102,13 @@ void *LightningButtonTask(void*)
 		// Special internal handling for Brightness button
 		if (data.buttonTransition & data.buttonState & kButtonBrightnessKey)
 		{
-			if (isBrightening)
-			{
-				brightness += kBrightInc;
-				if (brightness >= kBrightMax)
-					isBrightening = false;
-			}
-			else
-			{
-				brightness -= kBrightInc;
-				if (brightness <= kBrightMin)
-					isBrightening = true;
-			}
+			brightness = lcdBright[brightIndex];
+			backlight  = lcdBacklight[brightIndex];
+			// wrap around index at array end
+			brightIndex++;
+			brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS;
 			dispmgr.SetBrightness(0, brightness);
+			dispmgr.SetBacklight(0, backlight);
 		}
 		// Special internal handling for Headphone jack plug/unplug
 //printf("ButtonHandler: buttonState=$%X buttonTransition=%X kHeadphoneJackDetect=$%X \n", 

@@ -10592,3 +10592,15 @@ By gklimanis (gklimanis@leapfrog.com) on 11/13/07 1:53 PM
 4,234 ms. (Cumulative: 2,583,501 ms)
 
 ----------------
+Revision 2,227 from svn://localhost/TRUNK/:
+
+Control screen brightness by adjusting LCD brightness and LCD backlight.
+Implement 4 levels, controlled by brightness button.  Default levels chosen,
+awaiting Dov's input.
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/13/07 6:25 PM
+2 changed, 0 added, 0 deleted.
+4,345 ms. (Cumulative: 2,587,925 ms)
+
+----------------
