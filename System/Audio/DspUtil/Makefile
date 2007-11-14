@@ -1,5 +1,5 @@
 # Source files.
-SRC =  	Dsputil.cpp Dsputil2.cpp briomixer.cpp eq.cpp fir.cpp iir.cpp mix.cpp src.cpp shape.cpp util.cpp
+SRC =  	Dsputil.cpp Dsputil2.cpp briomixer.cpp eq.cpp fir.cpp iir.cpp mix.cpp src.cpp shape.cpp util.cpp midi.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -219,3 +219,13 @@ util.o: /usr/include/alloca.h /usr/include/math.h
 util.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 util.o: /usr/include/bits/mathcalls.h /usr/include/string.h ./util.h
 util.o: /usr/include/sys/time.h
+midi.o: /usr/include/string.h /usr/include/features.h
+midi.o: /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h
+midi.o: /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h
+midi.o: /usr/lib/gcc/i486-linux-gnu/4.1.2/include/stddef.h midi.h ./util.h
+midi.o: /usr/include/math.h /usr/include/bits/huge_val.h
+midi.o: /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h
+midi.o: /usr/include/time.h /usr/include/bits/types.h
+midi.o: /usr/include/bits/typesizes.h /usr/include/sys/time.h
+midi.o: /usr/include/bits/time.h /usr/include/sys/select.h
+midi.o: /usr/include/bits/select.h /usr/include/bits/sigset.h

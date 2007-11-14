@@ -11,7 +11,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "util.h"
+#include "util.h"#include "midi.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
