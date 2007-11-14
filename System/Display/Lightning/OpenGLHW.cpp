@@ -62,6 +62,7 @@ namespace
 	bool					FSAAval = false; // fullscreen anti-aliasing
 	tDisplayScreenStats		screen;
 	tDisplayContext			dc;
+	tDisplayHandle			hdc = &dc;
 }
 
 //----------------------------------------------------------------------------
@@ -78,24 +79,17 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Need 2 layers for LF1000 fullscreen anti-aliasing option
 	FSAAval = pOglCtx->bFSAA;
 
-	// Open device driver for 3D layer
-	if (FSAAval) {
-		// open Even layer
-		gDevLayerEven = open(OGL_LAYER_EVEN_DEV, O_WRONLY);
-		dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver failed");
-		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver opened\n");
-		// open odd layer
-		gDevLayerOdd = open(OGL_LAYER_ODD_DEV, O_WRONLY);
-		dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver failed");
-		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver opened\n");
-		gDevLayer = gDevLayerOdd;
-	}
-	else {
-		gDevLayer = open(OGL_LAYER_DEV, O_WRONLY);
-		dbg_.Assert(gDevLayer >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver failed");
-		dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " driver opened\n");
-	}
+	// open Even layer
+	gDevLayerEven = open(OGL_LAYER_EVEN_DEV, O_WRONLY);
+	dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver failed");
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver opened\n");
+	// open odd layer
+	gDevLayerOdd = open(OGL_LAYER_ODD_DEV, O_WRONLY);
+	dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver failed");
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver opened\n");
 
+	// Select 3D layer based on existing 2D layer usage
+	gDevLayer = (isLayerSwapped_) ? gDevLayerEven : gDevLayerOdd;
 	
 	// Get framebuffer address from driver
 	errno=0;
@@ -142,11 +136,22 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
+	// Query HW to setup display context descriptors
+	const tDisplayScreenStats* pScreen = GetScreenStats(0);
+	screen = *pScreen;
+
+	tDisplayHandle hndl = CreateHandle(screen.height, screen.width, kPixelFormatRGB565, reinterpret_cast<U8*>(gpMem2));
+	tDisplayContext* pdc = reinterpret_cast<tDisplayContext*>(hndl);
+	dc = *pdc;
+	dc.pitch = 4096;
+	dc.layer = gDevLayer;
+	
 	// Pass back essential display context info for OpenGL bindings
-	pOglCtx->width = 320;
-	pOglCtx->height = 240;
+	pOglCtx->width = dc.width; //320;
+	pOglCtx->height = dc.height; //240;
 	pOglCtx->eglDisplay = &screen;
 	pOglCtx->eglWindow = &dc;
+	pOglCtx->hndlDisplay = hdc = &dc; //hndl;
 
 	// Copy the required mappings into the MagicEyes callback init struct
 	pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
@@ -170,16 +175,8 @@ void CDisplayModule::DeinitOpenGL()
 	munmap(gpMem2, gMem2Size);
 	close(gDevMem);
 	close(gDevGa3d);
-	if(FSAAval) {
-		close(gDevLayerEven);
-		close(gDevLayerOdd);
-	}
-	else {
-		close(gDevLayer);
-	}
-	
-	// Release mappings in underlying Display manager too
-//	DeInitModule();
+	close(gDevLayerEven);
+	close(gDevLayerOdd);
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
@@ -192,13 +189,13 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlVerbose, "EnableOpenGLHW: FSAA = %s\n", FSAAval ? "enabled" : "disabled");
 
 	// Enable 3D layer as render target after accelerator enabled
-	int	layer = gDevLayer;
+	int	layer = dc.layer = gDevLayer = (isLayerSwapped_) ? gDevLayerEven : gDevLayerOdd;
     
 	// Position 3D layer
 	union mlc_cmd c;
 	c.position.left = c.position.top = 0;
-	c.position.right = 320;
-	c.position.bottom = 240;
+	c.position.right = dc.width; //320;
+	c.position.bottom = dc.height; //240;
 
 	// Enable 3D layer
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
@@ -216,6 +213,7 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 	}
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 
+	isOpenGLEnabled_ = true;
 }
 
 //----------------------------------------------------------------------------
@@ -243,6 +241,8 @@ void CDisplayModule::DisableOpenGL()
 		ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
 		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 	}
+
+	isOpenGLEnabled_ = false;
 }
 
 #ifdef LF1000
@@ -293,7 +293,7 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
 
 		ioctl(gDevLayer, MLC_IOCTADDRESS, gMem1Phys);
-		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)0);
+		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
 	}
 }
 #endif

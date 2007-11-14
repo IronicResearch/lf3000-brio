@@ -16,6 +16,7 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
+#include <BrioOpenGLConfig.h>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -39,6 +40,7 @@ namespace
 	int			gDevDpc;
 	int			gDevMlc;
 	int			gDevLayer;
+	int			gDevOpenGL;
 	int			gDevOverlay;
 	U8 			*gFrameBuffer;
 	U8			*gOverlayBuffer;
@@ -47,6 +49,7 @@ namespace
 	int			gOverlaySize;
 	int			gPlanarSize;
 	U32			gFrameBase;
+	U32			gOpenGLBase;
 	U32			gOverlayBase;
 	U32			gPlanarBase;
 }
@@ -108,6 +111,17 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gFrameBuffer);
+
+	// Open MLC 3D OpenGL RGB layer device
+	gDevOpenGL = open(OGL_LAYER_DEV, O_RDWR|O_SYNC);
+	dbg_.Assert(gDevLayer >= 0, 
+			"DisplayModule::InitModule: failed to open MLC 3D Layer device");
+
+	// Get 3D OpenGL RGB layer address for future reference 
+	baseAddr = ioctl(gDevOpenGL, MLC_IOCQADDRESS, 0);
+	dbg_.Assert(baseAddr >= 0,
+			"DisplayModule::InitModule: MLC layer ioctl failed");
+	gOpenGLBase = baseAddr;
 
 	// Open MLC 2D YUV layer device
 	gDevOverlay = open(YUV_LAYER_DEV, O_RDWR|O_SYNC);
@@ -171,6 +185,7 @@ void CDisplayModule::DeInitModule()
 	close(gDevDpc);
 	close(gDevMlc);
 	close(gDevLayer);
+	close(gDevOpenGL);
 	close(gDevOverlay);
 
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::DeInitModuleHW: exit\n");
@@ -281,7 +296,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		(GraphicsContext->isOverlay) ? gOverlayBuffer : gFrameBuffer;
 	
 	// apply to device
-	int layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
+	int layer = GraphicsContext->layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
 	ioctl(layer, MLC_IOCTBLEND, 0);
 	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
 	ioctl(layer, MLC_IOCTHSTRIDE, bpp);
@@ -326,7 +341,7 @@ tErrType CDisplayModule::Update(tDisplayContext *dc)
 tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 {
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
-	int 	layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	int 	layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 
 	// Remove layer from visibility on screen
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
@@ -369,8 +384,28 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	c.position.right = xPos + context->width;
 	c.position.bottom = yPos + context->height;
 
+	// Change RGB layer assignments if supposed to be on bottom
+	if (context->isUnderlay) {
+		// Disable 3D layer if already active
+		bool bOpenGLSwap = isOpenGLEnabled_;
+		if (bOpenGLSwap) {
+			DisableOpenGL();
+		}
+		// Swap 3D and 2D layer framebuffer addresses via reloading address registers
+		isLayerSwapped_ = true;
+		ioctl(gDevLayer, MLC_IOCTADDRESS, gOpenGLBase);
+		context->layer = gDevLayer = gDevOpenGL;
+		ioctl(gDevLayer, MLC_IOCTADDRESS, gFrameBase);
+		// Re-Enable 3D layer if previously active
+		if (bOpenGLSwap) {
+			tOpenGLContext ctx;
+			ctx.bFSAA = false;
+			EnableOpenGL(&ctx);
+		}
+	}
+		
 	// Reload format and stride registers for subsequent context references
-	int layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	int layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 	ioctl(layer, MLC_IOCTFORMAT, context->format);
 	ioctl(layer, MLC_IOCTHSTRIDE, context->bpp);
 	ioctl(layer, MLC_IOCTVSTRIDE, context->pitch);
@@ -389,6 +424,12 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		// Reload XY block address for planar video format
 		if (context->isPlanar)
 			ioctl(layer, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
+		
+		// Select video layer order
+		if (context->isUnderlay)
+			ioctl(gDevMlc, MLC_IOCTPRIORITY, 0);
+		else
+			ioctl(gDevMlc, MLC_IOCTPRIORITY, 3);
 	}
 
 	SetDirtyBit(layer);
@@ -432,7 +473,7 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 {
 	int r;
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
-	int 	layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	int 	layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 
 	if (level > 100) 
 		level = 100;
@@ -451,7 +492,7 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 U8 CDisplayModule::GetAlpha(tDisplayHandle hndl) const
 {
 	struct tDisplayContext *context = (struct tDisplayContext *)hndl;
-	int layer = (context->isOverlay) ? gDevOverlay : gDevLayer;
+	int layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 	int alpha = ioctl(layer, MLC_IOCQALPHA, 0);
 	return (alpha < 0) ? 0 : (alpha*100)/ALPHA_STEP;
 }
@@ -475,7 +516,7 @@ tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 	// to physical brightness range of (0,255]
 	(void )screen;	/* Prevent unused variable warnings. */
 	long	p = brightness + 128;
-	int		r;
+	int 			r;
 	
 	r = ioctl(gDevDpc, DPC_IOCTBRIGHTNESS, p);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
@@ -500,7 +541,7 @@ tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 	
 	(void )screen;	/* Prevent unused variable warnings. */
 	long	p = ((backlight * 373)/256) + 326;
-	int		r;
+	int 			r;
 
 	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHT, p);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
@@ -535,15 +576,6 @@ S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 	unsigned long	p = 0;
 	int 			r;
 	
-#ifdef LF1000
-	// Query backlight pin in absense of driver PWM control
-	struct invalue_cmd	c;
-	c.port = PORT_LCD;
-	c.pin  = PIN_BACKLIGHT_ENABLE;
-	r = ioctl(gDevGpio, GPIO_IOCXINVAL, &c);
-	return (r < 0) ? 0 : (c.value) ? 100 : 0;
-#endif
-
 	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHT, p);
 	return (r < 0) ? 0 : r;
 }
