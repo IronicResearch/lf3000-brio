@@ -75,7 +75,7 @@ enum {
 };
 typedef U32 tAudioOptionsFlags; 
 
-// Prototype for the function to call to get the next chunk of stereo audio stream data
+// Prototype for function to get next chunk of stereo audio stream data
 typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer); 
 
 //==============================================================================
@@ -94,12 +94,12 @@ typedef U32		tMidiProgramList;	// TODO: ?
 //==============================================================================
 
 // Standard header for raw Brio audio resources 
+#define kAudioHeader_StereoBit 	0x1
 struct tAudioHeader {
 	U32				offsetToData;		// Offset from the start of the header to
-										// the start of the data (std is 16)
-	U16				flags;				// Bit mask of audio flags
-										// (Bit0: 0=mono, 1=stereo)
-	U16				sampleRate;			// Sample rate in Hz			
+										// the start of the data (std is 16, which is current size of this struct)
+	U16				flags;				// (Bit0: 0=mono, 1=stereo)
+	U16				sampleRate;			// Hz			
 	U32				dataSize;			// Data size in bytes
 };
 
