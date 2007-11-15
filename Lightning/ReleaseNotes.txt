@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.22  (Build 2239 released Nov 14, 2007) 
+v0.1.22  (Build 2242 released Nov 14, 2007) 
 ===========================================
 
 Release for LF1000 development (green) and form-factor target boards.
@@ -17,9 +17,9 @@ Software components for target hardware:
 	bootstrap-LF_LF1000-0.12.0.2230.lfp
 	firmware-LF_LF1000-0.12.0.2230.lfp 
 * Brio library binaries:
-	Brio-0.1.22.2239.lfp
+	Brio-0.1.22.2242.lfp
 * NFS root file system: 
-	nfsroot-svn2239.tar.gz
+	nfsroot-svn2242.tar.gz
 
 Enhancements:
 -------------
