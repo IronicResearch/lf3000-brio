@@ -131,7 +131,7 @@ printf("CRawPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDone
     //printf("Brio Raw Header: dataOffset=%d ch=%d fs=%u Hz dataSize=%ld\n", 
     //		(int)brioHeader_.offsetToData, channels, (unsigned int)brioHeader_.sampleRate, brioHeader_.dataSize);
 
-   	    pDebugMPI_->Assert( (16 == brioHeader.offsetToData), "CRawPlayer::ctor : offsetToData=%ld, but isn't 16.  Is this Brio Raw Audio file ?\n", brioHeader.offsetToData );
+//   	    pDebugMPI_->Assert( (16 == brioHeader.offsetToData), "CRawPlayer::ctor : offsetToData=%ld, but isn't 16.  Is this Brio Raw Audio file ?\n", brioHeader.offsetToData );
             
     	dataSampleRate_ = brioHeader.sampleRate;
     	audioDataSize_  = brioHeader.dataSize;		

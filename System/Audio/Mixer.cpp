@@ -562,7 +562,7 @@ else
 
 #define MIX_THE_MIX_BINS
 #ifdef MIX_THE_MIX_BINS
-// Deinterleave and process each MixBuffer separately
+// Deinterleave and process each Mix Buffer separately to OutBuff
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv4;
 if (mixBinFilled_[mixBinIndex])
 	{
@@ -593,13 +593,12 @@ if (mixBinFilled_[mixBinIndex])
 // Test with DC input
 if (inputIsDC)
     {
-    outputDCValuei = pOutBuff[0];
-    outputDCValuef = Q15ToFloat(outputDCValuei);
+    outputDCValuei  = pOutBuff[0];
+    outputDCValuef  = Q15ToFloat(outputDCValuei);
     outputDCValueDB = LinearToDecibelf(outputDCValuef);
 
-printf("CAudioMixer::CAudioMixer in  DC = %g dB -> %g\n", inputDCValueDB, inputDCValuef);
-printf("CAudioMixer::CAudioMixer out DC = %g dB -> %g\n", outputDCValueDB, outputDCValuef);
-
+printf("CAudioMixer: in DC %g dB -> %g out %g dB -> %g\n", 
+        inputDCValueDB, inputDCValuef, outputDCValueDB, outputDCValuef);
     }
 
 // Scale stereo/interleaved buffer by master volume
@@ -633,7 +632,7 @@ useOutEQ_ = False;
             }
         }
 // Compute Output Soft Clipper
-useOutSoftClipper_ = True;
+useOutSoftClipper_ = False;
     if (useOutSoftClipper_)
         {
 {static long c=0; if (!c) printf("ComputeWaveShaper %ld On=%ld: \n", c++, useOutSoftClipper_);}

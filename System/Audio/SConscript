@@ -24,8 +24,9 @@ mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 myenv		= env.Copy()
 
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Include'])
-myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Source'])
+myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/spmidi/include'])
+myenv.Append(CPPPATH = ['#ThirdParty/Mobileer'])
+#myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Source'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 myenv.Append(CPPPATH = ['#System/Audio/DspUtil'])
 myenv.Append(CPPPATH = ['#System/Audio/LibSndFile'])
