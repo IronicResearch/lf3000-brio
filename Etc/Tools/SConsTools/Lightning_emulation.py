@@ -23,7 +23,8 @@ def PlatformMods(env):
 	gcc_defs 			= env.Split('')
 	emulation_defs		= env.Split('EMULATION')
 	env.Append(CPPDEFINES = gcc_defs + emulation_defs)
-	env.Append(CCFLAGS = '-g -Wextra')
+#	env.Append(CCFLAGS = '-g -Wextra')
+	env.Append(CCFLAGS = '-g' )
 	env.Append(LINKFLAGS = '-g')
 	env.Append(CPPPATH = [	'/usr/include/glib-2.0', 
 						  	'/usr/include/glibmm-2.4',
