@@ -1,0 +1,181 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Instrument Editor Overview</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+<style type="text/css">
+<!--
+.style1 {color: red}
+-->
+</style>
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" --> <b></b>
+<h2>Editor Release Notes</h2>
+<h3>Release 2.30 - October 2, 2007</h3>
+<ul>
+  <li>Add an &quot;Export/Export MBIS&quot; menu item so that we can now export a binary orchestra file.</li>
+</ul>
+<h3>Release 2.28 - September 6, 2007</h3>
+<ul>
+  <li>Fix bug that caused manual pitch setting to be ignored if a wavetable was used multiple times in one WaveSet.</li>
+</ul>
+<h3>Release 2.27 - August 29, 2007</h3>
+<ul>
+  <li>Add support for setting individual volume levels for wavetables. Gain is in decibels relative to normalized level or original level.</li>
+</ul>
+<h3>Release V2.26 - June 15, 2007</h3>
+<ul>
+  <li>Fix bug that caused a wave file of folder that was renamed to get duplicated. This caused a problem when the project was saved and then reloaded. </li>
+</ul>
+<h3>Release V2.25 - June 11, 2007</h3>
+<ul>
+  <li>Allow melodic banks or drum programs to be deleted.</li>
+  <li>Allow separate editing of Bank MSB and LSB to avoid confusion. </li>
+  <li>Redesign melodic bank management in native engine.</li>
+  <li>Allow export of melodic banks and drum programs to 'C' source code.</li>
+  <li>Improve progress dialog. Now shows  stack of progress messages when downloading to the target.</li>
+  <li>Fixed &quot;Cancel&quot; of download when &quot;Hear&quot;ing an instrument in the Orchestra editor. </li>
+</ul>
+<h3>Release V2.24 - May 29, 2007</h3>
+<ul>
+  <li>Fixed bug that prevented adding a newly created WaveTable to a WaveSet.</li>
+  <li>Added Universal Binary support for Intel based Macs.</li>
+</ul>
+<h3>Release V2.23 - May 24, 2007</h3>
+<ul>
+  <li>Add support for adding extra Melodic Banks or Drum Programs to the Orchestra editor using the &quot;Orchestra&quot; menu.</li>
+  <li>Add support for  changing the sample rate of an entire tree in a batch process. Select part of wave tree then select &quot;Change Sample Rate&quot; in File menu of WaveTable tab. </li>
+  <li>Store sustain loop info in original values before sample rate conversion to improve pitch accuracy when not quantizing sample rates.</li>
+  <li>Fixed bug caused by not updating all the instruments that used a WaveSet if the WaveSet changes. </li>
+</ul>
+<h3>Release V2.22 - May 16, 2007</h3>
+<ul>
+  <li>Fixed bug in import when replacing a WaveTable with a different ID. It used to complain the name was not unique. </li>
+</ul>
+<h3> Release V2.21 - May 11, 2007</h3>
+<ul>
+  <li>Added &quot;Import Project&quot; feature that lets you import WaveTables, WaveSets and Instruments from another Project. </li>
+</ul>
+<h3>Release V2.16 - May 7, 2007</h3>
+<ul>
+  <li>Handle Cancel more smoothly when user cannot find the wave repository. </li>
+  <li>Fixed bug that caused instrument editor to not play notes from the keyboard when instrument opened, closed then reopened.</li>
+  <li>Prevent renaming of top level wave repository. Do that outside of this editor. </li>
+</ul>
+<h3>Release V2.15 - internal </h3>
+<ul>
+  <li>Eliminate benign error message related to freeing memory twice. </li>
+  <li>Fixed bug related to above message when trying to connect to remote synth at same time as previewing sounds.</li>
+  <li>Initialize selection range when wavetable editor first opened. Was causing display to go blank if &quot;Fit to Selection&quot; was clicked.</li>
+  <li>Text fields now only accept valid characters. For example a double precision numeric field like the &quot;sample rate&quot; field will only accept 0-9 or '.'. </li>
+  <li>Fixed bug that caused songs to sometimes play at the wrong tempo in the Song Editor.</li>
+  <li>Fixed bug that caused the wavebase to not ask to be saved after finding a wave repository file that had moved.</li>
+  <li>Fixed  bug that caused &quot;waveSet not found&quot; error when using VST or AU plugin.</li>
+</ul>
+<h3>Release V2.12 - April 26, 2007</h3>
+<ul>
+  <li>Fixed bug that caused incorrect loop information to be exported to a WAV file if the wavetable had no loop.</li>
+  <li>Reduce memory usage when exporting WAV files. </li>
+</ul>
+<h3> Release V2.11 April 23, 2007</h3>
+<ul>
+  <li>Added export dialog for SF2 with SetName, AuthorName, Comment, Copyright, etc.</li>
+  <li>Limit pitch range in SF2 to maximum deviation from original pitch.</li>
+  <li> Sped up launch of editor application significantly. </li>
+  <li>Allow pitches in region editor to be entered as either name (FS4 or F#4) or number (54)</li>
+  <li>Fixed improper sequence when creating a New Project and copying orchestra files.</li>
+  <li>Fixed bug that caused MIDI Files with drums out of range to play incorrectly when played from the editor.</li>
+  <li>Handle no-pitch when sorting tables in WaveSet.</li>
+  <li>Allow same table in wavesets at different pitches</li>
+  <li>Allow pitch  region to override pitch in wave table.</li>
+</ul>
+<h3>Release V2.10, April 10, 2007</h3>
+<ul>
+  <li>Export SoundFont2 files of melodic instruments in an orchestra that use WaveTables.</li>
+  <li>Fixed bug that caused a crash if there was a gap in the pitches of regions in a WaveSet and one played a note in the gap. </li>
+  <li>Fixed bug that caused WaveSets to be downloaded without having automatic pitch ranges assigned when playing songs.</li>
+  <li>Use color to show gap or overlap in pitches of regions in a WaveSet.</li>
+  <li>Trap opening wrong XML file, for example an instruments file, instead of project XML file.</li>
+</ul>
+<h3>Release V2.09, April 6, 2007</h3>
+<ul>
+  <li>Write lowPitch, highPitch info to engine so that the keyboard zones can be previewed.</li>
+  <li>Write two samples past end of loop when exporting WAV as guard points. </li>
+</ul>
+<h3>Release V2.08, March 31, 2007</h3>
+<ul>
+  <li>Export WAV files with loop information. </li>
+</ul>
+<h3>Release V2.06, March 22, 2007</h3>
+<ul>
+  <li>Added &quot;Pitch Change&quot; that lets you change the pitch of a sample.</li>
+  <li>Support dynamic changing of measured pitch, pitch change and sample rate change.</li>
+  <li>Show size of potential loops in status bar so user can select optimal number of cycles.</li>
+  <li>Added native audio support to the Macintosh version to eliminate audio artifacts caused by JavaSound when previewing wavetables on Mac. Windows already OK. </li>
+</ul>
+<h3>Release V2.05, March 19, 2007</h3>
+<ul>
+  <li>Load default loop information and default pitch from WAV and AIFF files when creating new WaveTables.</li>
+  <li>Automatically expand the scale when drag selecting and the mouse goes off the left or right of the waveform display.</li>
+  <li>Fix bug where loop was removed when using &quot;Trim After Selection&quot; option.</li>
+</ul>
+<h3>Release V2.04, February 22, 2007</h3>
+<ul>
+  <li>Reduced window sizes for laptops.</li>
+  <li>Add handler for missing directories in wavebase.  </li>
+</ul>
+<h3>Release V2.02, July 20, 2006</h3>
+<ul>
+    <li>Improved support for AU plugins under Logic Express.</li>
+    <li>Project wizard now has &quot;Copy&quot; option that lets you make a copy of an existing orchestra, instrument or wavebase file.</li>
+    <li>Renaming or moving files or folders in Wave Tree editor is now tracked so that changes will not break other projects. </li>
+    <li>Wavetables in WaveSet drag-drop panel now sorted by pitch.</li>
+    <li>Deleting last wavetable in group no longer closes entire tree, just folder.</li>
+    <li>Pitch setting by ENTER key, not button. Now acts like sample rate field.</li>
+    <li>Added a black and white Music Keyboard for previewinig instruments. Covers pitches 0- to 127.</li>
+    <li>Double clicking on a WAV now just opens group of wavetables instead of creating a new wavetable. Added an &quot;Add WaveTable&quot; button to replace functionality of double click.</li>
+    <li>Fixed various refresh problems involving  menus and deleting WaveTables.  </li>
+</ul>
+<h3>Release V2.00, June 27, 2006</h3>
+<ul>
+    <li>Added support for AU <a href="plugin.html">plugins</a> on Macintosh.</li>
+    <li>Added Synth menu for switching between local and remote synthesizers. The remote synthesizer may be a plugin or a synthesizer running on another machine on the network. </li>
+    <li>Added a &quot;Synth&quot; tab in Preferences dialog for selecting a remote synth on the network. </li>
+    <li> Fader values now update on screen while fader being dragged.</li>
+</ul>
+<p>&nbsp;</p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

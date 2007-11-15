@@ -1,0 +1,93 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/EditorDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+<title>Exporting for Production</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+
+
+
+
+
+<!-- InstanceEndEditable -->
+	<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="heading">
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="images/logo_tiny.jpg" width="154" height="97" border="0" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer Instrument Editor </h1>
+    <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-6 Mobileer Inc.</h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+</div>
+<div id="navbar">
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="wave_tut.html">Wave Editor</a> | <a href="orc_editor.html">Orchestra Editor</a> | <a href="ins_tut.html">Instrument Editor</a>&nbsp;&nbsp;|&nbsp;<a href="song_editor.html">Song Editor</a> | 
+</center>
+</div>
+
+<!-- InstanceBeginEditable name="MainContent" --><strong></strong> <b></b>
+<h2>Mobileer Instrument Editor</h2>
+<h3>Exporting Content for Production</h3>
+<p>You can export the audio content from the editor in several ways. If you export it as source code then it can be compiled directly with the MIDI engine. This is the simplest technique and is recommended for embedded systems.</p>
+<p>If you want the option of loading various instrument sets then you can export a binary MBIS file and then load it using SPMIDI_LoadOrchestra().</p>
+<h3>Exporting as a Binary MBIS File</h3>
+<ul>
+  <li>Under the &quot;File&quot; menu, under &quot;Export&quot;, select the &quot;Export MBIS&quot; menu item.</li>
+  <li>Enter copyright and other information.</li>
+  <li>The file will be written to a file called &quot;exported.mbis&quot;.</li>
+</ul>
+<h3>Exporting as Source Code</h3>
+<p>When you have finished creating your instruments you will need to export them for use by the production team. The Mobileer Editor exports the wavetables, instrument definitions and songs as 'C' source code. This places more of a burden on the 'C' compiler and less on the runtime engine. Thus loading of the instruments is very quick and does not require memory allocation.</p>
+<ul>
+    <li><strong>To specify the export directory </strong> select from the File menu, in the &quot;Export&quot; submenu, the &quot;Set Export Directory...&quot; item. All exported items will go into this directory.</li>
+    <li><strong>To export  wavetables</strong> select from the File menu, in the &quot;Wave Tables&quot; submenu, the &quot;Export All Wave Tables&quot; item. They will be written as &quot;{wavetablename}.c&quot; files. </li>
+    <li><strong>To export  instruments</strong> select from the File menu, in the &quot;Orchestra&quot; submenu, the &quot;Export Source As...&quot; item. A typical name for the file would be &quot;spmidi_presets_custom.h&quot;. This will be the header file that defines the instruments and includes all of the wavetable files.</li>
+    <li><strong>To export songs</strong> select from the File menu, in the &quot;Song&quot; submenu, the &quot;Export MIDI to C Source...&quot; item. The song will be written to the &quot;songs&quot; directory in the export directory. </li>
+    <li><strong>To export the entire list of songs</strong> select from the File menu, in the &quot;Song&quot; submenu,  the &quot;Export Playlist to C Source....&quot; item. This will write the songs plus the jukebox files &quot;spmidi_jukebox_playlist.h&quot; and &quot;spmidi_jukebox_song_ids.h&quot;.</li>
+    <li><strong>To export everything at once</strong> select from the File menu, in the &quot;Export&quot; submenu, the &quot;Export All&quot; item. This will export all wavetables, orchestra, and song playlist. </li>
+</ul>
+<p>The export directory can be zip archived and delivered to the engineering team for integration.</p>
+<h3>File Exported for Production</h3>
+<p>This is a guide to the files exported by the editor. It is intended for engineers building the system for production.</p>
+<table width="90%"  border="1">
+  <tr>
+    <td>spmidi_jukebox_song_ids.h</td>
+    <td>Defines the song indexes that must be passed to JukeBox_StartSong(songIndex). This file must be included by the application that calls the JukeBox functions. </td>
+  </tr>
+  <tr>
+    <td>spmidi_presets_custom.h</td>
+    <td>Orchestra and instrument definition included by &quot;engine/spmidi_hybrid.c&quot;. To use this custom orchestra instead of the standard General MIDI Orchestra the compiler variable SPMIDI_PRESETS_CUSTOM must be defined. </td>
+  </tr>
+  <tr>
+    <td>spmidi_jukebox_playlist.h</td>
+    <td>Includes the MIDI song data files and builds the internal data structures used by the JukeBox. </td>
+  </tr>
+  <tr>
+    <td>waves/{wavetable_name}.h</td>
+    <td>Various wavetables stored as preinitialized &quot;static const short&quot; arrays. Only the ones actually used in the Orchestra are included by the file &quot;spmidi_presets_custom.h&quot;.</td>
+  </tr>
+  <tr>
+    <td>songs/song{midi_song_name}.h</td>
+    <td>Various MIDI files stored as preinitialized &quot;static const unsigned char &quot; arrays.</td>
+  </tr>
+</table>
+<div align="left"> </div>
+<p align="center">| <a href="index.html">Top</a> | Previous | Next |</p>
+<meta name="Author" content="Phil Burk">
+<meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>

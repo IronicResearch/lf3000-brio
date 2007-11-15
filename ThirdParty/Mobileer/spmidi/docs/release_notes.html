@@ -1,0 +1,1059 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html><!-- InstanceBegin template="/Templates/BasicDoc.dwt" codeOutsideHTMLIsLocked="false" -->
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceBeginEditable name="doctitle" -->
+   <title>Release Notes for ME1000 and ME2000</title>
+<!-- InstanceEndEditable -->
+<!-- InstanceBeginEditable name="head" -->
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+.style2 {font-family: "Courier New", Courier, monospace}
+-->
+</style>
+<!-- InstanceEndEditable -->
+</head>
+<body>
+&nbsp;
+<center>
+<table WIDTH="100%" cellpadding="2" cellspacing="0" border="2">
+<tr>
+<td width="16%">
+  <img src="logo_tiny.jpg" width="154" height="97" ></td>
+<td width="84%" BGCOLOR="#FFF8DD" ><h1 align="center">Mobileer MIDI Engine Synthesizer</h1>
+  <center>
+    <h3>CONFIDENTIAL and PROPRIETARY - &copy; 2002-5 <a href="http://www.mobileer.com/">Mobileer</a>,
+      All Rights Reserved </h3>
+  </center>
+</td>
+</tr>
+</table>
+</center>
+
+<center>
+|&nbsp;&nbsp;<a href="index.html">Table of Contents </a>&nbsp;&nbsp;|
+&nbsp;<a href="editor/index.html">Instrument_Editor</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="autodocs/html/index.html">Reference Manual</a>&nbsp;&nbsp;|
+&nbsp;&nbsp;<a href="programming_guide.html">Programming Guide</a> &nbsp;&nbsp;| <a href="whitepapers/index.html">White Papers</a> |
+</center>
+
+<!-- InstanceBeginEditable name="MainContent" -->
+
+<h2>Release Notes</h2>
+<p>(The Release Notes for the Mobileer Instrument Editor after V1.94 may be found <a href="editor/releases.html">here</a>.)</p>
+<h3>Release 2.31 10/9/07</h3>
+<ul>
+  <li>Add support for changing the tempo of MIDI file playback on the fly using &quot;<span class="style2">MIDIFilePlayer_SetTempoScaler( player, tempoScaler )</span>&quot;. The default for tempoScaler is MIDIFILEPLAYER_DEFAULT_TEMPO_SCALER.</li>
+  <li>Add support for transposing all MIDI notes by semitones using &quot;<span class="style2">SPMIDI_SetParameter( spmidiContext, SPMIDI_PARAM_TRANSPOSITION, semitones )</span>&quot;.</li>
+  <li>Move WaveManager into the Orchestra structure so that <span class="style2">SPMIDI_DeleteOrchestra()</span> will delete all associated wave data.</li>
+  <li>Fixed bug that caused &quot;<span class="style2">SPMIDI_GetParameter( spmidiContext, SPMIDI_PARAM_RHYTHM_VOLUME, &amp;value)</span>&quot; to return the volume instead of putting it in the pointed to variable.</li>
+</ul>
+<h3>Release 2.30 10/2/07</h3>
+<ul>
+  <li>Changed includes so that they now are relative to the release directory. Thus #include &quot;spmidi.h&quot; has become #include &quot;/spmidi/include/spmidi.h&quot;. So now you only have to specify a single directory on your include path.</li>
+  <li>Add support for loading an orchestra from a .MBIS file. To use this feature you must define the compiler variable -DSPMIDI_SUPPORT_LOADING=1</li>
+  <li>Add SPMIDI_CreateProgramList() and related functions for loading only the instruments needed for a group of songs.</li>
+</ul>
+<h3>Release 2.00 4/?/07</h3>
+<ul>
+  <li>Added support for lowPitch, highPitch, lowVelocity and highVelocity to WaveSetRegion. Requires new format of orchestra exported from Mobileer Editor.  </li>
+</ul>
+<h3>Release 1.94 5/22/06</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Added an example Unix Makefile in &quot;spmidi/build&quot;.</li>
+    <li>Added a &quot;tools/convert_mid_smid.c&quot; that pre-processes and converts a MIDI file to a very simple SMID format. This reduces the run-time overhead and may be useful for low performance or memory limited platforms. See also &quot;include/midistream_player.h&quot;.</li>
+    <li>Added support for ALaw compressed wavetables. This has a 2:1 compression ratio.</li>
+    <li>Add support for using velocity ranges with ME2000 instruments.</li>
+    <li>Use concave response curve for MIDI Controller 7 messages.</li>
+    <li>Provide option to use concave response to MIDI velocity by setting defining SPMIDI_SQUARE_VELOCITY as (1). The default linear response is generally preferred because it offers a natural compression.</li>
+    <li>Fixed bug related to initial settings of the Fine and Coarse Tuning controller. The tuning could be off if the composer only set the Fine control and did not also set the Coarse controller.</li>
+    <li>In DLS files instruments, bit 31, the &quot;Drum Bit&quot;, is now ignored properly when matching instruments.</li>
+</ul>
+<p>Editor</p>
+<ul>
+    <li>Add support for setting velocity ranges to WaveTables.</li>
+    <li>Improved GUI for playing the ASCII keyboard while editing an instrument.</li>
+    <li>Added ability to chop off part of the beginning of a waveform.</li>
+    <li>Added option to support ALaw compressed wavetables.</li>
+    <li>Added more tutorials for instrument editor. </li>
+</ul>
+<h3>Release 1.93 10/25/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Reduce bytes per voice by 60 bytes. </li>
+    <li>Added SPMIDI_GetChannelEnable().</li>
+    <li>The demo program &quot;playmf.c&quot; now disables and enables channels instead of tracks.</li>
+    <li>General size reduction of many structures.</li>
+    <li>Articulations for DLS now allocated in an array instead of linked list nodes.    </li>
+    <li>Corrected pitch calculation for DLS instrument wavetables that had a fineTuning offset.</li>
+    <li>Disabled ramping down of stolen voices because ramp was noticeable in some instruments. </li>
+</ul>
+<h3>Release 1.92 7/24/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Improved support for 8000 Hz.</li>
+    <li>Reduce phase modulation depth for high pitched sounds to reduce aliasing.</li>
+    <li>Switch sawtooth and square oscillators to sine wave at frequencies close to Nyquist rate  to reduce aliasing.</li>
+    <li>Optimize ramping down audio for stolen voices.</li>
+    <li>Improve memory utilization for XMF and DLS loaders. </li>
+</ul>
+<h3>Release 1.91 - 6/16/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Added more error traps to XMF and DLS parser to detect corrupt Mobile XMF files. Prevents  crashes for particular types of corruption. Traps include detecting NULL pointers, parsing past end of articulation chunk, hanging in VLQ reader at end of file, missing regions. </li>
+    <li> Added &quot;qa/qa_xmf_corrupt.c&quot; to test many types of file corruption by munging successive bytes in a file image.</li>
+    <li>Changed XMFParser_Error_WrongVersion to XMFParser_Error_WrongType because it relates to whether the file is of type &quot;Mobile XMF&quot;. </li>
+    <li> Added configuration variable SPMIDI_MAX_NUM_PLAYERS. Can be set to (1) for simple applications that only need to play one song at a time. This will save memory. The default is (SPMIDI_MAX_NUM_CONTEXTS * 2) </li>
+    <li>Added &quot;examples/play_no_io.c&quot; which is mostly useful for measuring RAM usage on target systems.</li>
+    <li>Added &quot;<a href="qa/badxmf.html">qa/Bad_*.mxmf</a>&quot; files for testing corrupt file handling. </li>
+</ul>
+<h3>Release 1.90 - 6/6/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Add SPMIDI_MAX_SAMPLE_RATE to &quot;spmidi_config.h&quot;. Setting this to the highest rate that you expect to use may result in a reduced RAM footprint.</li>
+    <li>Expanded description of QA tests and a Test Plan.</li>
+    <li>Added many new MXMF files for testing. </li>
+</ul>
+<h3>Release 1.89 - 6/2/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Remove static attribute from dynamic variable in dls_parser.c to eliminate RW data from ARM build. </li>
+</ul>
+<h3>Release 1.88 - 6/1/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Fixed bug that caused a program change on a channel to modify the LFO Pitch Mod Depth for any notes already sounding on that channel.</li>
+    <li>Fixed bug that caused DLS WAVE loops with samples after the loop to always be treated as WLOOP_TYPE_RELEASE. This caused some notes to stop prematurely. </li>
+    <li>Added SRC_KEYNUMBER to DEST_PITCH articulation.</li>
+    <li>Added SRC_LFO * SRC_CC1 to DEST_PITCH articulation. (ModWheel) </li>
+    <li>Added SRC_VIBRATO * SRC_CC1 to DEST_PITCH articulation. (ModWheel)</li>
+    <li>Added SRC_LFO * SRC_CHANNELPRESSURE to DEST_PITCH articulation. (AfterTouch) </li>
+    <li>Added SRC_VIBRATO * SRC_CHANNELPRESSURE to DEST_PITCH articulation. (AfterTouch)</li>
+    <li>Added SPMIDI_RELOCATABLE configuration variable. When defined as (1), relocatable code can be produced. When set to (0), ROM code that has no RW data can be produced. </li>
+</ul>
+<h3>Release 1.87 - 5/23/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Dynamically allocate track storage in MIDIFile Player if SPMIDI_SUPPORT_MALLOC is (1)</li>
+    <li>Do not play note if bank and program matches a DLS Instrument but no region matches.</li>
+    <li>  Add function tables for XMF and DLS internals to allow overriding internal functions.</li>
+    <li>Add more documentation for error return codes from Song_Player, DLS and other sections. </li>
+</ul>
+<h3>Release 1.86 - 5/17/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>ME3000 - Support for Mobile XMF added. </li>
+    <li>Code formatterAstyle used to make consistent tabs/spaces, etc.</li>
+    <li>Option to use WAV data in place in DLS if CPU is Little Endian and correct format. This saves memory because sample data does not have to be copied to an allocated buffer.</li>
+    <li>Added Conditional Chunk support in DLS Parser which allows a DLS file to adapt to the synthexizer capabilities.
+        <ul>
+            <li>Include MIDI Manufacturers ID in Conditional DLS chunk Query.</li>
+        </ul>
+    </li>
+    <li>Velocity matching used to select regions.</li>
+    <li>DELAY and HOLD segments for envelopes.</li>
+    <li>Added some articulators:
+        <ul>
+            <li>Mod Env to Pitch</li>
+            <li>Tuning</li>
+            <li>LFO Start Delay</li>
+            <li>Vibrato</li>
+        </ul>
+    </li>
+    <li>Optimized articulation handling.</li>
+    <li>Fixed envelope increment overflow at low sample rates, eg. 8000 Hz. </li>
+    <li>Support for DLS drum sets.</li>
+    <li>Switch melodic channel to drum mode if bank set to 120. Switch drum channel to melodic mode if bank set to 121.</li>
+</ul>
+<h3>Release 1.85 - 5/8/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Optimize various oscillators in &quot;oscillator.c&quot;.</li>
+    <li>Optimize mixer in &quot;spmidi_fast.c&quot;.</li>
+    <li>Add processor specific implementations of FXP31_MULT for Blackfin and ARM946.</li>
+    <li>Add audio implementation that writes a WAV file in &quot;util/spmidi_audio_file.c&quot;. This can be used to test synthesis output from chip simulators.  </li>
+</ul>
+<h3>Release 1.84 - 5/3/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Optimize wavetable oscillator for ARM946. </li>
+</ul>
+<h3>Release 1.83 - 4/27/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Allocate HybridSynth_t statically so that it can be assigned to TCRAM.</li>
+    <li>Fix warnings from ARM compiler.</li>
+    <li>Allocate Compressor delay line dynamically to conserve TCRAM.</li>
+    <li>    Handle MetaData in XMF FolderNodes.</li>
+    <li>Move routines from spmidi_hybrid.c to spmidi_fast.c for placement in TCROM</li>
+</ul>
+<h3>Release 1.82 - 4/12/05</h3>
+<p>Editor</p>
+<ul>
+    <li>Switched to Native Look and Feel for more familiar interface styule.</li>
+    <li>Updated docs to match new Look and Feel</li>
+    <li> Various visual enhancements. </li>
+</ul>
+<h3>Release 1.81 - 4/3/05</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Optimized conversion of sample rate to pitch offset by using fixed-point logarithm base2 table lookup.</li>
+    <li>Add sustainLevel articulation for EG1 and EG2. </li>
+</ul>
+<h3>Release 1.80 - 3/31/05 - First ME3000 Release with Mobile XMF </h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Added support for Mobile XMF and DLS files. Added xmf_parser.h and dls_parser.h APIs. </li>
+    <li>New song_player.h API to detect and play either SMF or XMF ringtones.</li>
+    <li>New play_song.c command line program that uses song_player.c API to play a song file.</li>
+    <li> New internal memory heap for memory allocation with builtin debug support. Heap is turned on by default and controlled using SPMIDI_USE_INTERNAL_MEMHEAP.</li>
+    <li><strong>Important: </strong>SPMIDI_Initialize() must now be called before any other Mobileer calls in order to initialize the Memory Heap.</li>
+    <li>PortAudio support may now be compiled easily for Windows by adding the PortAudioWMME.lib file to a Windows 'C' project. </li>
+    <li>Consolidated all errors into &quot;spmidi_errors.h&quot;. Supported by SPMUtil_GetErrorText(errcode);</li>
+    <li>Add support for ALAW compressed DLS wavetables. </li>
+    <li>Added API Overview to Programming Guide.</li>
+    <li>Added safeguards to memory allocator to detect doubly freed memory and other common errors. </li>
+    <li>Added new functions to memory allocator to support automated testing, for example SPMIDI_GetMemoryBytesAllocated(). </li>
+    <li>SPMIDI_SetMemoryAllocationLimit(numBytes) added to limit amount of memory that SPMIDI can allocate. This is useful to prevent a corrupt file from causing a huge memory allocation. </li>
+    <li>DLS Articulations mapped for envelope.</li>
+    <li>QA tests moved to &quot;spmidi/qa&quot; folder. </li>
+    <li>Added &quot;spmidi/qa/data&quot; folder for files used by QA. </li>
+    <li>Removed unused folders: misc, tests, win32.</li>
+    <li>Moved &quot;tests/render_midifiles.c&quot; to &quot;examples&quot; folder. </li>
+</ul>
+<h3>Release 1.74 - 3/27/05</h3>
+<p>Editor</p>
+<ul>
+    <li>Enhanced wave editing GUI with icons for wave tree, and more icons and menus for wave editor.</li>
+    <li>ExportAll now safe from circular aliasing in ProgramMap.</li>
+    <li>Circular aliases now painted red so user can spot them more easily in ProgramMap editor.</li>
+    <li>Put name of file after final #endif in comments in exported files.</li>
+    <li>Add terminating F7 byte when writing SysEx MIPS messages for better conformance with other tools.</li>
+    <li>Export different jukebox_playlist.h code is zero songs in project.</li>
+    <li>Prevent stuck notes in Program Editor caused by quickly hitting &quot;Hear&quot; and &quot;Stop&quot; button.</li>
+</ul>
+<p>Synthesizer</p>
+<ul>
+    <li>Regenerated Wave and Song files with name after #endif in comments.</li>
+</ul>
+<h3>Release 1.73 - 2/21/05</h3>
+<p>Editor</p>
+<ul>
+    <li>Added &quot;New Project...&quot; Wizard that guides user through creation of a new project. User can use entirely new orchestra, instruments and wavebase or share existing ones with other projects.</li>
+    <li> BugFix: SaveAs... for Orchestra or InstrumentPool now updates the current project and those changes are saved when the Project is saved.</li>
+    <li>General improvements in file management. </li>
+    <li>Sounds and wavetables are cleared from the Synthesizer so we have a fresh start when switching projects.</li>
+    <li>Changed default values for envelope times to more reasonable values. </li>
+</ul>
+<h3>Release 1.72 - 2/2/05</h3>
+<p>Editor</p>
+<ul>
+    <li>Fixed bug in memory footprint calculation that caused wavetables used in multiple instruments to be counted more than once. This caused the reported footprint to be higher than the actual footprint.</li>
+    <li>Reset preset index each time the Orchestra is exported.</li>
+    <li>Display a simple black and white keyboard in the Drum Map Editor to simplify matching drum instruments with notes on the keyboard. </li>
+</ul>
+<h3>Release 1.71 - 1/27/05</h3>
+<p>Editor</p>
+<ul>
+    <li>Added explanatory message and default value when requesting exported source code file or export directory.</li>
+    <li>Only export wave files that are actually used in the Orchestra being exported.</li>
+    <li>Check validity of exported source code file and set null if invalid to prevent errors when exporting.</li>
+    <li>When a saved filename is invalid search up path until a valid directory is found. Use that as starting point to look for missing file. Helps user find missing files.</li>
+    <li>Check for valid instrument file when saving orchestra. Ask for Instrument file name if none specified. Prevents NullPointerException after creating &quot;New Project&quot; from File menu. </li>
+</ul>
+<h3>Release 1.70 - 12/9/04</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Added <a href="jukebox/index.html">JukeBox</a> application layer for queuing songs and scheduling time-stamped MIDI events. See docs for more details. </li>
+    <li>Use new &quot;export/waves&quot; directory for wavetables.</li>
+    <li>Exported WaveTables and Songs are now stored as &quot;.h&quot; files instead of &quot;.c&quot; files. </li>
+</ul>
+<p>Editor</p>
+<ul>
+    <li>Export songs in 'C' source code.</li>
+    <li>Export song playlist for use with JukeBox. </li>
+    <li> Export submenu in File menu allows one to <a href="editor/production.html">export everything</a> to a single directory in one action.</li>
+    <li>Only download  instruments used in a song when playing a song. This speeds up the song listening process.</li>
+    <li> Added scrollbar for WaveTable display.</li>
+    <li> Improved code for opening a new or existing Project</li>
+    <li> Display various files used from new Help menu item.</li>
+    <li> Save playlist of songs between sessions.</li>
+</ul>
+<h3>Release 1.67 - 11/24/04</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Create custom_2 orchestra that is based on the legacy 1.41 orchestra ported to the current codebase. Define SPMIDI_PRESETS_CUSTOM_2 to load that orchestra. Requires optional wave set not part of normal release. </li>
+</ul>
+<h3>Release 1.66 - 11/22/04</h3>
+<p>Editor</p>
+<ul>
+    <li>Fixed bug in relative file naming for XML files.</li>
+    <li>Trap bogus values for number of markers in AIFF files to workaround bug in  third-part sample editor.</li>
+    <li>Update WaveSet size label immediately when table added or removed.</li>
+    <li>Set ADSR values to reasonable defaults when making new instruments.</li>
+    <li>Save XML fiels to byte array before writing to disk to prevent exception from corrupting file.</li>
+    <li>Improve modification tracking so that song play is in sync with instrument changes.</li>
+    <li>Move song playback button to Toolbar so that it can be shared between Orchestra and Song editors.</li>
+    <li>Remove original Song Player in Orchestra Editor.</li>
+    <li>Handle spaces or other odd character in sample file names when building related 'C' source code.</li>
+    <li>Fix problems related to using 8000 Hz samples and not resampling.  </li>
+</ul>
+<h3>Release 1.61 - 11/14/04 - Synthesizer and Editor Release</h3>
+<p>Synthesizer</p>
+<ul>
+    <li>Custom orchestra for client. Use <span class="style1">-DSPMIDI_PRESETS_CUSTOM_1</span> compiler option.</li>
+    <li>Acknowledge receipt of Non-Registered Parameters Numbers to prevent confusion with RPNs. This can prevent unexpected changes to the pitch bend range in songs that use NonRPNs.</li>
+    <li>Reduce size of Piano, Guitar, Clarinet and some other wavetables.</li>
+    <li>Added parameter to control rhythm volume for instrument on channel 10, the &quot;drum channel:, in relation to other melodic instruments. See SPMIDI_PARAM_RHYTHM_VOLUME. See playmf.c as an example. You can enter &quot;64v&quot;, for example, to lower the drum volume to half of normal.</li>
+</ul>
+<p>Editor</p>
+<ul>
+    <li>Added control over pitch scaling so that instruments like SynthDrum can be mapped into a narrow range of pitches in some custom Orchestras.</li>
+    <li>Added Notch Filter to WaveTable editor so that low body resonances can be removed. </li>
+</ul>
+<h3>Release 1.60 - 11/9/04 - Editor Release</h3>
+<ul>
+    <li>New Song Editor added. Allows previewing and setting of SP MIP values for prioritizing instruments when polyphony is limited.</li>
+    <li> Fixed bug that caused the incorrect  pitch to be used for wavetables that were not resampled.</li>
+    <li>Improved WaveSet editor GUI. WaveTables can now be added to a WaveSet using drag and drop.</li>
+    <li>Changes made to WaveTable will now be heard when editing an instrument that uses that WaveTable. </li>
+    <li>Instrument Pool is now part of Orchestra file.</li>
+    <li>Reset PitchBendRange on GeneralMIDI reset so that one song cannot have a lingering effect on the next song.</li>
+    <li>Put WaveTable editors into internal frames so everything is contained in the main Mobileer Editor window. </li>
+</ul>
+<h3>Release 1.59 - 10/27/04 - Editor Release</h3>
+<ul>
+    <li>Improve period measurement so it does not get tripped up by very long waveforms.</li>
+    <li>Pass standard deviation up to caller for period measurement and reject if too high.</li>
+    <li>Report failure to measure period accurately to user and suggest better usage.</li>
+    <li> Fixed bug that caused instruments in preset position zero to be overwritten by the editor. This could cause the wrong instrument to sometimes be heard. </li>
+</ul>
+<h3>Release 1.58 - 10/26/04 - Editor Release</h3>
+<ul>
+    <li>Fixed problem with downloading of new wavetable instruments causing a hang. This was the source of several seemingly unrelated errors. </li>
+    <li>Display progress bar when downloading instrument in instrument editor.</li>
+    <li>Moved preferences file to home directory so that it is easier to keep ones work outside the release folder.</li>
+    <li>Improved handling of modification tracking.</li>
+    <li>Added WaveSet deletion.</li>
+    <li>Refactored dependency handling between models. </li>
+</ul>
+<h3>Release 1.57 - 10/20/04 - Editor Release</h3>
+<ul>
+    <li>Reorganized startup sequence so errors can be reported properly.</li>
+    <li>Added "Repeat Last Note" to Instrument editor that will play a note repeatedly while one is editing a note.
+    This allows you to be constantly previewing the instrument sound while editing.</li>
+    <li>Added Delete to Edit menu for WaveTables. WaveSet dependencies are tracked and reported.</li>
+    <li>Added "Refresh Tree" item to Edit menu in Audio Editor.
+    Use this when you add new samples or folders to the repository.</li>
+    <li>Added "Save WaveDataBase" item in File menu of Audio Editor.</li>
+    <li>Added "Add WaveTree..." item in File menu of Audio Editor. This allows you to add an additional folder
+    full of Wave or AIFF samples that are not in an existing WaveTree.</li>
+    <li>Reorganized File menus, added "New Project" and "Open Project" items.</li>
+</ul>
+<h3>Release 1.56 - 10/10/04 - Synth Release</h3>
+<ul>
+    <li>As of V1.52, engine will now play the release portion of a waveform after the loop if present.</li>
+    <li>Improved voice allocation logic when maxVoice is low. This will have a large impact on 
+    devices with low performance that, for example, are using maxVoices=8.
+    The voice stealing is now much less noticeable and the essential nature of the song is preserved.</li>
+</ul>
+<h3>Release 1.54 - 10/5/04 - Editor Release</h3>
+<ul>
+    <li>Merge all windows into single JFrame.</li>
+    <li>Use Tabbed Pane to navigate between Audio Editor and various Orchestra.</li>
+    <li>Add support for SHIFT-Clicking in WaveTable editor when selecting a range.</li>
+    <li>Allow instrument preview using "Hear" button to be interrupted. Turns to "Stop" button while playing.</li>
+    <li>Sped up scrolling in Orchestra Editor when using a mouse scroll wheel.</li>
+    <li>Added check boxes to "Windows" menu for Orchestra Editor</li>
+    <li>Add close box to Song Player.</li>
+    <li>Added Preferences dialog that offers control over volume when previewing instruments.</li>
+    <li>Added volume fader to Song Player. Both volumes are saved between sessions.</li>
+</ul>
+<h3>Release 1.53 - 10/1/04 - Editor Release</h3>
+<ul>
+    <li>Enable Exception reporting Dialog at very beginning so early exceptions are reported.</li>
+    <li>Disable Oyoaha LookAndFeels if user not running JDK 1.4 or later. </li>
+    <li>Removed unnecessary playmf_me2000.exe from Editor Release.</li>
+    <li>Download Instrument if &quot;Use Phase Modulation&quot; box changed and playing keys.</li>
+    <li>Bug: fixed selection of legal waveforms if Phase Modulation enabled or disabled. </li>
+</ul>
+<h3>Release 1.52 - 9/29/04 - Editor Release</h3>
+<ul>
+    <li>Added WaveTable Editor tutorial to documentation. </li>
+    <li>Added Song Player for previewing songs in the current orchestra.</li>
+    <li>Improved accuracy of Pitch measurement and improved handling of complex timbres. </li>
+    <li>Download entire Orchestra to target. </li>
+    <li>Added memory footprint display to Orchestra Editor Windows</li>
+    <li>Save WaveBase info if modified.</li>
+    <li>Added Clone item to File menu in Orchestra Editor to create a variation of an existing instrument.</li>
+    <li>Plays release portion after wavetable loop, upon noteOff.</li>
+    <li>Better support for relative file names in editor files. </li>
+    <li>Bugs fixed:
+        <ul>
+            <li>Could not add a WaveTable back to a WaveSet in same session once removed.</li>
+            <li>Numerous stability improvements.</li>
+        </ul>
+    </li>
+</ul>
+<h3>Release 1.50 - 9/3/04 - Editor Release</h3>
+<ul>
+    <li>Enhance for external use (not in-house). </li>
+</ul>
+<h3>Release 1.42 - 8/25/04 - Production Release 3 of ME2000</h3>
+<ul>
+    <li>Optimized mixing code and reordered structure elements for a roughly 24% speed increase.</li>
+</ul>
+<h3>Release 1.41 - 8/2/04 - Production Release 2 of ME2000</h3>
+<ul>
+  <li>Increased default attack time in dynamic range compressor to eliminate flutter.</li>
+  <li>Fixed noisy LFO modulation in Overdriven Guitar and Flute.</li>
+  <li>Made SquareLead instrument use just one oscillator for clean "cell phone" sound.</li>
+  <li>Reduced amplitude of Maracas, Cabasa</li>
+  <li>Replaced B Flat Clarinet with new brighter Clarinet2</li>
+</ul>
+<h3>Release 1.40 - 5/19/04 - Production Release 1 of ME2000</h3>
+<ul>
+  <li>Added SPMIDI_Context so that multiple songs can be synthesized simultaneously without interfering. This required an API change! Please note that:
+    <ul>
+      <li> SPMIDI_Start(sampleRate) has been replaced with SPMIDI_CreateContext(&amp;spmidiContext,sampleRate).</li>
+      <li>SPMIDI_Stop() has been replaced with SPMIDI_DeleteContext(spmidiContext).</li>
+      <li> Most other SPM* routines now take a SPMIDI_Context pointer as their first parameter. </li>
+    </ul>
+  </li>
+  <li>Fixed bug in MIDIFilePlayer_GoToFrame(). It used to skip some MIDI control messages. It now &quot;chases&quot; the MIDI properly allowing one to reposition properly in a song.</li>
+  <li>Added support for resampling entire wavetable tree at a new sample rate in wavetable editor.</li>
+  <li>Regenerated wavetables at 16000 Hz sample rate to reduce memory size for wavetables from 500KB to just under 400KB for typical release. </li>
+  <li>Tweaked some loops in guitar, piano and bass to reduce memory requirements. </li>
+  <li>Store loop points internally relative to original sample rate to allow easy resampling.</li>
+  <li>Optimize loop points upong resampling to match nearest zero crossing and exact cycle boundary.</li>
+  <li>Added support for SPMIDI_TEST_BANK that can be used when General MIDI is turned off with a SysEx command. This allow plain synthesis waveforms to be played for testing. See &quot;tests/play_note.c&quot; for an example. </li>
+</ul>
+<h3>Release 1.32 - 5/7/04 - Beta release 3 of ME2000 </h3>
+<ul>
+  <li>Add soft clipping using non-linear (cubic) amplifier. This allows one to crank the volume above the point where clipping will occur and still sound OK. </li>
+  <li>Added "white paper" on loudness optimization to documentation.</li>
+  <li>Made numerous minor modifications to eliminate compiler warnings for ARM.</li>
+  <ul>
+    <li>Added "static const" in front of wavetables declarations.</li>
+    <li>Stubbed out malloc() and free() unless building for desktop editor.</li>
+    <li>Added "#include "spmidi_config.h" in "memtools.h".</li>
+    <li>Change some const casting for wavetables.</li>
+    <li>Added extra brackets around zero when initializing wavetables and wavesets because of nested WaveTracker structure containing DoubleNode.</li>
+  </ul>
+</ul>
+<h3>Release 1.30 - 5/3/04 - Beta release 2 of ME2000 </h3>
+<ul>
+  <li>Editor generates code for run-time initialization of pointers in data structures. This enables the generation of relocatable ARM code. </li>
+  <li>Added new Alto Saxophone wavetable.</li>
+  <li>Improve performance of ME2000 voices by eliminating modulation oscillator and main envelope.</li>
+  <li>Added WaveTable manager to support run-time initialization, downloading from editor for previewing, and dynamic loading of wavetables by applications. </li>
+  <li>Made numerous enhancements to instrument editor including:
+    <ul>
+      <li>Complete generation of instrument library from editor without need for any hand modification of source code. </li>
+      <li>Support for WaveSets to wave editor.</li>
+      <li>Support for selecting a WaveSet in instrument editor.</li>
+      <li>Ability to download wavetables and wavesets to native synthesizer from editor for previewing instruments.</li>
+    </ul>
+  </li>
+</ul>
+<h3>Release 1.20 - 4/16/04 - Beta release 1 of ME2000</h3>
+<ul><li>Added new wavetable implementations for:
+      <ul>
+        <li>Grand Piano</li>
+        <li>Clarinet</li>
+        <li>Trumpet</li>
+        <li>Electric Bass </li>
+        <li>Guitar Distorted (and overdrive)</li>
+        <li>Acoustic Steel Guitar</li>
+        <li>Open HiHat </li>
+        <li>Closed HiHat </li>
+        <li>KickDrum</li>
+      </ul>
+  </li>
+  <li>Improved wavetable implementations for:</li>
+  <ul>
+    <li>Acoustic Snare</li>
+    <li>Conga High Open</li>
+    <li>Violin</li>
+  </ul>
+  <li>Made many enhancement to WaveTableEditor including:
+    <ul>
+      <li>save and load settings from file</li>
+      <li>WaveTreeEditor that loads an entire directory tree of wavetables for editing</li>
+      <li> </li>
+    </ul>
+    improved filter for resampling
+    <ul>
+      <li>improved pitch measurement algorithm that averages multiple results </li>
+      <li> </li>
+    </ul>
+    added sample rate quantization button so that period can be optimized for any desired sample rate
+    <ul>
+      <li></li>
+    </ul>
+    fade out and trim end of sample to reduce size of non-looped percussion instruments
+    <ul>
+      <li> better control over range selection and loop setting </li>
+    </ul>
+  </li>
+  <li>Fixed pop in envelope that occured when an extremely short decay time (1-2 msec) was specified.</li>
+  <li>Fixed pop from wavetable interpolator related to adjacent samples whose delta exceeded signed 16 bit range.</li>
+</ul>
+<h3>Release 1.10 - 3/20/04 - Alpha release of ME2000 </h3>
+<ul>
+  <li>Added definition <a href="setup_config.html">SPMIDI_ME2000</a> to allw compilation for either product.</li>
+  <li>Added support for WaveTable oscillators to runtime engine for ME2000</li>
+  <li>Created temporary &quot;spmidi_hybrid_presets_me2000.h&quot; for editing ME2000 presets by hand. This will be replaced by an automatically generated presets file when the ME2000 Editor is complete. </li>
+  <li>Add WaveTables for: Upright Piano, Violin, Alto Sax, Fretless Bass, Closed HiHat , Conga High Open, Snare Drum, and Crash Cymbal for testing.</li>
+  <li>Added some particularly loud and simple ringtones: LoudHocket, LoudHello, and LoudArpeggio to demonstrate techniques for achieving very loud ringtones on ME1000.</li>
+  <li>Added WaveTableEditor with smart looping tools that include:
+    <ul>
+      <li> Pitch detection so exact real pitch is used in case pitch is offset by musician when playing the note. </li>
+      <li>Resampling to ensure that period of waveform is a multiple of eight for efficient cache utilization.</li>
+      <li>When dragging mouse, left side will jump to nearest zero crossing and right side will jump to nearest cycle boundary. </li>
+      <li>Output in 'C' source format to simplify runtime code. </li>
+    </ul>
+  </li>
+</ul>
+<h3>Release 1.06 - 1/20/04</h3>
+<ul>
+  <li>Fix bug introduced in V1.05 in sine wave oscillator that resulted in some audible distortion.</li>
+  <li>Added SPMUtil_MeasureMaxAmplitude(), which is similar to SPMUtil_GetMaxAmplitude() but does not call SPMIDI_CreateContext().</li>
+  <li>Added -mMacVoices option to playmf.c </li>
+  <li>Ported to  Sharp LH79520 with an ARM720 core. </li>
+</ul>
+<h3>Release 1.05 - 12/9/03</h3>
+<ul>
+<li>
+Optimize sawtooth and triangle oscillators, compressor, and mixer.</li>
+<li>
+Set SS_FRAMES_PER_BLOCK_LOG2 to 4. Bigger blocks are more CPU efficient.</li>
+<li>
+Optimized storage of read-only Sound Library, saving over 4000 bytes.</li>
+<li>
+Added "examples/checksum_player.c" which is handy for benchmarking
+on minimal embedded systems or simulators.</li>
+</ul>
+
+<h3>
+Release 1.04 - 8/5/03</h3>
+
+<ul>
+<li>
+Stifle a voice when the same pitch repeated or an exclusive drum cut off.
+Stifle using new envelope stage that quickly ramps down to zero.
+This prevents pops caused by stealing voices in this situation.</li>
+</ul>
+
+<h3>
+Release 1.03 - 8/1/03</h3>
+
+<ul>
+<li>
+Improved cymbal sounds.</li>
+<li>
+Improved SlapBass 1 & 2, SynthBass 2, Acoustic Bass Drum and Bass Drum 1.</li>
+<li>
+Add newlines at end of some files for GCC.</li>
+</ul>
+
+<h3>
+Release 1.02 - 7/22/03</h3>
+
+<ul>
+<li>
+Add error code and trap for MIDIFile_Error_TooManyTracks.</li>
+<li>
+Increased MIDIFILE_MAX_TRACKS from 32 to 40.</li>
+
+<li>
+Add high pass output option to StateVariableFilter. Add check box to editor. Used for cymbals.</li>
+<li>
+Fixed bug that prevented the Java based Instrument Editor from overwriting an existing
+instrument with another using the SetAlias menu option.</li>
+<li>
+Overhauled all cymbal instruments.</li>
+<li>
+Gave ElectricGuitar more bite. Improved Harp, LeadChiff, Rain, MelodicTom, Tambourine.</li>
+</ul>
+
+<h3>
+Release 1.01 - 7/19/03</h3>
+
+<ul>
+<li>
+Fixed bug in SustainPedal logic that caused a note to be cut off prematurely if
+a pitch was repeated while sustained and then Sustain was turned off.</li>
+<li>
+<b>CodeBreaker!</b> SPMIDI_GetParameter() now takes a pointer for the return value.
+This is to allow us to distinguish negative error code from negative parameter values.</li>
+
+<li>
+Added Velocity EQ feature that allow low notes to be reduced in volume.
+See SPMIDI_PARAM_VEQ_BASS_CUTOFF and SPMIDI_PARAM_VEQ_GAIN_AT_ZERO in "spmidi.h"
+in the reference documentation.
+See "examples/playmf.c" for an example.</li>
+
+<li>
+Changed boostLog2 from unsigned to signed to accomodate negative boost. (Volume reduction).</li>
+
+<li>
+Tweaked pianos for more natural decays.</li>
+<li>
+Muted Cabasa which was too prominent in Bethoven5.mid.</li>
+<li>
+Reduced harshness of harmonica.</li>
+<li>
+Restored brighteness of trumpet.</li>
+</ul>
+
+<h3>
+Release 1.0 - 7/17/03</h3>
+
+<ul>
+<li>
+Wait until end of block before stopping voice so envelopes can finish.</li>
+<li>
+Use mixBuf for mainOsc to save memory.</li>
+<li>
+Allow turning off Compressor when Compressor not supported.</li>
+<li>
+Check for PhaseModulated waveform when PM flag not set to prevent NULL ptr error in editor.</li>
+<li>
+Adjusted levels of boosted instruments to reduce chance of clipping.</li>
+<li>
+Upgraded instrument sounds.</li>
+<li>
+Changed Pianos to not use FM. More natural sound.</li>
+<li>
+Oboe: fixed broken filter settings.</li>
+<li>
+Trumpet and English Horn: reduced FM index for more natural sound.</li>
+<li>
+Church Organ: pushed ModOsc up to 24 semitones for more of a church tone.</li>
+<li>
+SynthBass: use resonant filter.</li>
+<li>
+Clavichord: made funky by increasing FM index.</li>
+<li>
+Reduced level of Triangle and cymbals for better mix.</li>
+</ul>
+
+<h3>
+Release Update 0.91 - 7/3/03</h3>
+
+<ul>
+<li>
+Moved SPMUtil_LoadFileImage() to "spmidi_load.c".
+Include "spmidi_load.h" if you need to call this function.</li>
+
+<li>
+The instrument library structure is now declared const so it can reside in ROM.</li>
+
+<li>
+Added compressor to maximize volume.
+Compressor can be removed from the build by using a
+-DSPMIDI_USE_COMPRESSOR=0 compiler flag.</li>
+
+<li>
+Added new function SPMIDI_SetParameter() which can be used
+to enable or disable the compressor, and to set various compressor parameters.</li>
+
+<li>
+Ignore extra bytes in a track after the EndOfTrack event in a MIDIFile.
+The player used to return a fatal error.</li>
+
+<li>
+Optimized SPMIDI_EstimateMaxAmplitude() by not synthesizing envelopes.
+Just base estimate on noteOn and noteOff and assume rectangular envelope.</li>
+
+<li>
+Fixed overflow in MIDIFile tempo calculation so that very large ticksPerBeat values
+do not cause problems.</li>
+</ul>
+
+<h3>
+Release Update 0.9 - 6/2/03</h3>
+
+<ul>
+<li>
+Add support for many more sample rates on embedded systems.</li>
+
+<li>
+Keyboard scaling is no longer applied to attackTime to prevent clicks.</li>
+
+<li>
+Improved many instruments, particularly bell sounds.</li>
+
+<li>
+Added very small RingRang ringtone.</li>
+</ul>
+
+<h3>
+Release Update 0.8 - 5/28/03</h3>
+
+<ul>
+<li>
+Fixed bug in Bank Control setting. Was resetting LSB when MSB received.
+Vibrator callback should now work even if bank LSB comes before MSB.</li>
+
+<li>
+Added keyboard scaling so that, for example, high piano notes decay faster
+than low notes.</li>
+
+<li>
+Fixed bug in square and sawtooth FM that resulted in occasional excessively
+harsh sound. Affects accordion, harmonica, and other instruments.</li>
+
+<li>
+Numerous instrument modifications.</li>
+
+<li>
+New ringtones include AuldToonOfAyr, RinginReggae_rt, VibratingReggae_rt,
+AnswerMeNow_rt.</li>
+
+<li>
+Alarm sounds for Handspring include alarm_hilo, alarm_beep, alarm_click.</li>
+</ul>
+
+<h3>
+Release Update 0.7 - 5/16/03</h3>
+
+<ul>
+<li>
+Integration mods from Frankie.</li>
+
+<li>
+Add SPMIDI_EstimateMaxAmplitude() and&nbsp; SPMUtil_EstimateMaxAmplitude()
+for quick volume optimization.</li>
+
+<li>
+Boost volume in Editor</li>
+
+<li>
+Improve sound quality for many instruments.</li>
+
+<li>
+New ringtones including EchoEcho_rt, BoneyparteCall_rt, etc.</li>
+</ul>
+
+<h3>
+Release Update 0.6 - 4/28/03</h3>
+
+<ul>
+<li>
+Add SPMIDI_SetMasterVolume() so that ringtone volume can be boosted.</li>
+
+<li>
+Add SPMUtil_GetMaxAmplitude() so that an optimal master volume can be determined.</li>
+
+<li>
+Modify "playmf.c" and "render_midifile.c" to maximize volume.</li>
+</ul>
+
+<h3>
+Release Final 0.5 - 4/15/03</h3>
+
+<ul>
+<li>
+Allocate MIDIFile player from static array unless SPMIDI_MALLOC_PLAYER
+is defined. Eliminates only malloc() in engine.</li>
+
+<li>
+Added RingRang, Bonyparte and HenryCalling tones by Larry Polansky</li>
+
+<li>
+Added "examples/loop_midifile.c" that loops a ringtone seamlessly.</li>
+
+<li>
+Provide millisecond &lt;-> frame calculation with overflow prevention.
+SPMUtil_ConvertFramesToMSec() and SPMUtil_ConvertMSecToFrames in "spmidi_util.h"</li>
+
+<li>
+Convert printfs to PRTMSG()s to eliminate dependance on 'stdio' .</li>
+
+<li>
+Ported engine to ARM processor.</li>
+
+<li>
+Replace memset() with MemTools_Clear() to eliminate dependance on 'stdlib'.</li>
+
+<li>
+Added support for 8 -32 bit sample randering by SPMIDI_ReadFrames().</li>
+
+<li>
+Boosted Banjo &amp; Harpsichord volume.</li>
+
+<li>
+Fix bug that caused Hybrid Voice Editor to always think the Orchestra needed
+saving upon Quit.</li>
+</ul>
+
+<h3>
+Release Beta 0.4 - 3/21/03</h3>
+
+<ul>
+<li>
+report max simultaneous voices at end of song</li>
+
+<li>
+added suite of files for hearing instruments: "testmusic/qamidi/play_programs_*_*.mid"</li>
+
+<li>
+use asynchronous FIFO to pass commands to audio/MIDI thread from Editor</li>
+
+<li>
+fixed MIDI byte stream parser error related to message lengths</li>
+
+<li>
+improved sound of Xylophone, Percussive Organ, Church Organ, Accordian,
+Harmonica, SynthDrum</li>
+
+<li>
+unmute unspecified MIP channel so "sbsp2.mid" plays OK</li>
+
+<li>
+print SysEx events in MIDI File in print_midifile.c</li>
+</ul>
+
+<h3>
+Release Beta 0.3 - 3/14/03</h3>
+
+<ul>
+<li>
+build voice editor using Batch file</li>
+
+<li>
+document voice editor</li>
+
+<li>
+release 14 ringtones</li>
+
+<li>
+changed SPMUtil_Start() to take a WAV fileName</li>
+
+<li>
+add Cuica</li>
+
+<li>
+fixed - qa_vary_max.c fails, in playmf.c setting 5m in suffragettecity
+kills audio</li>
+
+<li>
+use "object" interface to synth with function pointers</li>
+
+<li>
+implement SPMIDI_GetFramesPerBuffer()</li>
+
+<li>
+use shared envelope buffers to save RAM</li>
+
+<li>
+add envPitchModDepth for Bass drum and other stretched membranes, Cuica</li>
+
+<li>
+instrument option to ignore release for Marimba and Glockenspiel, IGNORE_NOTE_OFF</li>
+</ul>
+
+<h3>
+Release Alpha 0.2 - 3/4/03</h3>
+
+<ul>
+<li>
+Source alpha release and demo.</li>
+
+<li>
+Support for Scaleable Polyphony messages.</li>
+
+<li>
+Complete Instrument set.</li>
+
+<li>
+added ring modulation, AM</li>
+
+<li>
+made crossfade proportional to attack time to give drums a better attack
+when stolen</li>
+
+<li>
+improved piano and violin</li>
+
+<li>
+added vibrator callback</li>
+
+<li>
+added reverberation effect</li>
+
+<li>
+factored PortAudio code out of utility file</li>
+
+<li>
+output rendered audio in WAV file format for easy playback</li>
+
+<li>
+use crossfade when voice stolen, latch last level and crossfade to new
+level</li>
+
+<li>
+test fine and course tuning as pitch offsets</li>
+
+<li>
+clip out of range drum pitches</li>
+
+<li>
+mutual exclusion for drums such as hi-hat</li>
+
+<li>
+in playmf.c, turn off all notes when seeking, test by going to zero</li>
+
+<li>
+add AllSoundOff C#120</li>
+
+<li>
+implement SP channel mute</li>
+
+<li>
+reset SP MIP tables when resetting the device</li>
+
+<li>
+implement alternate bank with diagnostic instruments, sine, etc.</li>
+
+<li>
+sustain pedal</li>
+
+<li>
+test AllNotesOff similar to spmidi_steal test</li>
+
+<li>
+reset on GM_On message, GMIDI page 8-4</li>
+
+<li>
+show preset in channel status dump</li>
+
+<li>
+write QA test for filter pitch</li>
+
+<li>
+use GM on/off to enable a mode with test voices: pure sine, filter sine,
+etc.</li>
+
+<li>
+cache Info structures</li>
+
+<li>
+add proper error codes</li>
+
+<li>
+change SP test to send a complete SPMIP sysex message as bytes</li>
+
+<li>
+send SysEx from MIDI file</li>
+
+<li>
+add clip detector</li>
+
+<li>
+modulation depth control</li>
+
+<li>
+playmf.c - print ticks and frames before prompt so we can find glitches
+in files</li>
+
+<li>
+tune drum pitches</li>
+
+<li>
+review pitch calculation, SS_BASE_SAMPLE_RATE</li>
+
+<li>
+click if slow attack, faster decay and mid sustain, switches from linear
+to exponential output!</li>
+
+<li>
+download voice definition from Editor</li>
+
+<li>
+add filter to voice</li>
+
+<li>
+implement odd sounds: helicopter, rain, telephone, bird tweet, applause</li>
+
+<li>
+scan for length of song</li>
+
+<li>
+make SPMIDI_FRAMES_PER_BUFFER = 8*8 for better resolution</li>
+
+<li>
+move external headers to separate folder</li>
+
+<li>
+stereo pan</li>
+
+<li>
+lyric callback in MFPI_PlayFrames</li>
+
+<li>
+new MIDIFile API</li>
+
+<li>
+disable/enable track in MIDI file player</li>
+
+<li>
+fix sporadic click in FM when using sine_interp</li>
+
+<li>
+dynamic voice limiting</li>
+
+<li>
+separate out instrument presets and typedefs</li>
+
+<li>
+expand qa_pitch to test pitch bend</li>
+
+<li>
+save export filename in editor properties</li>
+
+<li>
+disable Alias related menu items based on what is selected, window, instrument...</li>
+
+<li>
+add AllNotesOff from space bar or when downloading updated voice</li>
+
+<li>
+allow math expressions in pitch ratio text fields</li>
+</ul>
+
+<h3>
+Release 0.1 - 12/20/02</h3>
+
+<ul>
+<li>
+Initial alpha release on Windows for API evaluation.</li>
+
+<li>
+Plays General MIDI Lite files using default channel priority.</li>
+
+<li>
+Supports dynamic setting of max voices.</li>
+
+<li>
+Supports volume, pan, expression controllers.</li>
+
+<li>
+Supports Pitch Bend.</li>
+
+<li>
+Supports mono and stereo output of 16 bit samples.</li>
+</ul>
+
+
+   
+   <meta name="Author" content="Phil Burk">
+   <meta name="GENERATOR" content="Mozilla/4.79 [en] (Windows NT 5.0; U) [Netscape]">
+<!-- InstanceEndEditable -->
+
+</body><!-- InstanceEnd --></html>
