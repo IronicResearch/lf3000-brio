@@ -10718,3 +10718,16 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/14/07 7:10 PM
 4,159 ms. (Cumulative: 2,641,238 ms)
 
 ----------------
+Revision 2,243 from svn://localhost/TRUNK/:
+
+Mobileer update.
+ALSO, bigger change is to use Mobileer's delivery file structure, which is quite different from the existing Include and Source currently in the repository
+
+This change will make Mobileer updates easier and less error prone.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/15/07 10:08 AM
+2 changed, 624 added, 932 deleted.
+19,044 ms. (Cumulative: 2,660,344 ms)
+
+----------------
