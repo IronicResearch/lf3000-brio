@@ -410,7 +410,7 @@ CMidiPlayer::PauseMidiFile( void )
 {
 //	tErrType result = 0;
 	
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::PauseMidiFile: setting bFilePaused_ to true.\n");	
+//pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::PauseMidiFile: setting bFilePaused_ to true.\n");	
 	
 if (bFileActive_)
 	bFilePaused_ = true;
@@ -426,7 +426,7 @@ CMidiPlayer::ResumeMidiFile( void )
 {
 //	tErrType result = 0;
 	
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ResumeMidiFile: Setting bFilePaused_ to false.\n");	
+//pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::ResumeMidiFile: Setting bFilePaused_ to false.\n");	
 
 if (bFileActive_)
 	bFilePaused_ = false; 
@@ -443,21 +443,15 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	tErrType result = 0;
 //{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
 	
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::StopMidiFile -- Entering method, about to lock render_mutex...\n");	
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::StopMidiFile: Locking render_mutex...\n");	
 
 	result = pKernelMPI_->LockMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile -- Couldn't lock mutex.\n");
-
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::StopMidiFile: set bFilePaused_ and bFileActive_ to false\n");	
+	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile: Unable to lock mutex.\n");
 
 	bFileActive_ = false;
 	bFilePaused_ = false;
-//printf("CMidiPlayer::StopMidiFile: BEFO SendDoneMsg\n");
 	if (pListener_  && !pInfo->suppressDoneMsg)
 		SendDoneMsg();
-//printf("CMidiPlayer::StopMidiFile: AFTA SendDoneMsg\n");
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
 
@@ -471,7 +465,7 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	pListener_ = kNull;
 	
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile -- Couldn't unlock mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile Unable to unlock mutex.\n");
 
 // SPMIDI_DeleteOrchestra( orchestra );
 
@@ -486,16 +480,14 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 CMidiPlayer::GetEnableTracks( tMidiTrackBitMask *d ) 
 {
 	tMidiTrackBitMask	mask = 0;
-	
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::GetEnableTracks ...\n");	
 
-	// Loop through channels and set mask
+	// Loop through channels and set bits
 	for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
         {
 		if (SPMIDI_GetChannelEnable( pContext_, chan ))
 			mask |= 1 << chan;
 	    }
-//printf("CMidiPlayer::GetEnableTracks -- $%X \n", (unsigned int) mask);	
+//printf("CMidiPlayer::GetEnableTracks $%X \n", (unsigned int) mask);	
 
 *d = mask;
 
@@ -508,7 +500,6 @@ return kNoErr;
     tErrType 
 CMidiPlayer::SetEnableTracks( tMidiTrackBitMask d )
 {
-//pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::SetEnableTracks\n");	
 //printf("CMidiPlayer::SetEnableTracks -- $%X \n", (unsigned int) d);	
 
 // Loop through channels and set mask
@@ -519,13 +510,14 @@ return kNoErr;
 }   // ---- end SetEnableTracks() ----
 
 // ==============================================================================
-// TransposeTracks:   
+// TransposeTracks:   FIXXX: parameter shouldn't be track bit mask ???
+//                  This API is non-sensical
 // ==============================================================================
     tErrType 
-CMidiPlayer::TransposeTracks( tMidiTrackBitMask /*d */, S8 /*semitones*/)
+CMidiPlayer::TransposeTracks( tMidiTrackBitMask /*d */, S8 semitones)
 {
 //printf("CMidiPlayer::TransposeTracks semitones=%d \n", semitones);	
-//SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, amountSemitones );
+SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, semitones );
 
 return (kNoErr);
 }   // ---- end TransposeTracks() ----
@@ -537,30 +529,39 @@ return (kNoErr);
 //              channel # as argument.
 // ==============================================================================
     tErrType 
-CMidiPlayer::ChangeProgram( tMidiTrackBitMask d , tMidiPlayerInstrument programChangeNumber )
+CMidiPlayer::ChangeProgram( tMidiTrackBitMask channel , tMidiPlayerInstrument number )
 {
-printf("CMidiPlayer::ChangeProgram -> programChangeNumber=%d \n", (unsigned int) programChangeNumber);	
+printf("CMidiPlayer::ChangeProgram channel%2d number=%3d \n", (int)channel, (unsigned int) number);
+
+#ifdef OLDE_INCORRECT_CHANGE_PROGRAM
 unsigned int shift = 1;
 for (long ch = 0; ch < 16; ch++)    
     {
     if (d & shift)
         {
     // Send two byte MIDI program change
-        U8 cmd   = 0xA0 | ch;
-        U8 data1 = (U8)(0x7f & programChangeNumber);
+        U8 cmd   = 0xA0 | channel;
+        U8 data1 = (U8)(0x7f & number);
         SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, 0 );
         }
     shift <<= 1;
     }
-    
-// This will need some extra code as minimal instrument set is currently loaded, so you have to
-// those not in memory
+#endif
+
+// Send two byte MIDI program change
+U8 cmd   = 0xA0 | (0xF & channel);
+U8 data1 = (U8)(0x7f & number);
+printf("CMidiPlayer::ChangeProgram: cmd=$%0X data1=$%0X\n", (int) cmd, (int)data1);
+SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, 0 );
+
+// Need extra code as minimal instrument set is currently loaded, so you have to
+// load those not in memory
 
 return (kNoErr);
 }   // ---- end ChangeProgram() ----
 
 // ==============================================================================
-// ChangeTempo
+// ChangeTempo:    Scale rate of MIDI file play with S8 number
 // ==============================================================================
     tErrType 
 CMidiPlayer::ChangeTempo( S8 tempo )
@@ -787,4 +788,5 @@ levelsi[kRight] = FloatToQ15(levelsf[kRight]);
 }	// ---- end RecalculateLevels ----
 
 LF_END_BRIO_NAMESPACE()
+
 

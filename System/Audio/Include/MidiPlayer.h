@@ -20,7 +20,7 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 
-// Mobileer Midi Engine includes
+// Mobileer MIDI Engine
 #include <spmidi.h>
 #include <spmidi_util.h>
 #include <midifile_player.h>
@@ -28,7 +28,7 @@
 #include "program_list.h"
 #include "spmidi_load.h"
 #include "spmidi_print.h"
-#include "engine/spmidi_host.h"
+#include "spmidi/engine/spmidi_host.h"
 
 #include "Dsputil.h"
 
@@ -48,12 +48,6 @@ public:
 
 	U32			RenderBuffer( S16* pOut, U32 numStereoFrames  );
 
-	inline U8	GetVolume()		{ return volume_; }
-	void		SetVolume( U8 x );
-
-	inline S8	GetPan()		{ return pan_; }
-	void		SetPan(S8 x);
-
 	inline bool		IsFileActive() { return bFileActive_; };
 
 	inline bool		IsActive() { return bActive_; };
@@ -62,6 +56,11 @@ public:
 
 	// Get/Set class member variables
 	inline tMidiPlayerID		GetID() { return id_; }
+	inline U8	GetVolume()		{ return volume_; }
+	void		SetVolume( U8 x );
+
+	inline S8	GetPan()		{ return pan_; }
+	void		SetPan(S8 x);
 
 	// MIDI channel messages
 	tErrType 	NoteOn(  U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
@@ -69,15 +68,15 @@ public:
 	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
 
 // MIDI file transport control
-	tErrType 	StartMidiFile( tAudioStartMidiFileInfo* pInfo );
-	tErrType 	PauseMidiFile( void );
+	tErrType 	StartMidiFile( tAudioStartMidiFileInfo *pInfo );
+	tErrType 	StopMidiFile(  tAudioStopMidiFileInfo  *pInfo );
+	tErrType 	PauseMidiFile(  void );
 	tErrType 	ResumeMidiFile( void );
-	tErrType 	StopMidiFile( tAudioStopMidiFileInfo* pInfo );
 
-	tErrType	GetEnableTracks( tMidiTrackBitMask* d );
-	tErrType	SetEnableTracks( tMidiTrackBitMask d);
-	tErrType	TransposeTracks( tMidiTrackBitMask d, S8 transposeAmount );
-	tErrType	ChangeProgram( tMidiTrackBitMask d, tMidiPlayerInstrument instr );
+	tErrType	GetEnableTracks( tMidiTrackBitMask *d );
+	tErrType	SetEnableTracks( tMidiTrackBitMask  d);
+	tErrType	TransposeTracks( tMidiTrackBitMask  d, S8 transposeAmount );
+	tErrType	ChangeProgram(   tMidiTrackBitMask  d, tMidiPlayerInstrument number );
 	tErrType	ChangeTempo( S8 tempo); 
 
 private:
@@ -110,14 +109,14 @@ private:
     float       levelsf[kAudioMixerChannel_MaxOutChannels]; // gain * panValue
     Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
 
-// Some MIDI state activity flags
-	Boolean		shouldLoop_;
+// State activity flags
+	Boolean		shouldLoop_;        // FIXXX: eliminate this variable sometime
     S32         loopCount_;
     S32         loopCounter_;
 
 	U8			bFilePaused_:1;				
-	U8			bFileActive_:1;				// Player has active file association
-	U8			bActive_:1;					// Player has been acquired by client.
+	U8			bFileActive_:1;				
+	U8			bActive_:1;					// Player acquired by client
 
 // Data configuration
 	U32 	framesPerIteration_;
