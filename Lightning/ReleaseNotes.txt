@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.22  (Build 2238 released Nov 14, 2007) 
+v0.1.22  (Build 2239 released Nov 14, 2007) 
 ===========================================
 
 Release for LF1000 development (green) and form-factor target boards.
@@ -17,9 +17,9 @@ Software components for target hardware:
 	bootstrap-LF_LF1000-0.12.0.2230.lfp
 	firmware-LF_LF1000-0.12.0.2230.lfp 
 * Brio library binaries:
-	Brio-0.1.22.2238.lfp
+	Brio-0.1.22.2239.lfp
 * NFS root file system: 
-	nfsroot-svn2238.tar.gz
+	nfsroot-svn2239.tar.gz
 
 Enhancements:
 -------------
@@ -27,6 +27,7 @@ Enhancements:
 * Display contexts for HW layers now support Z order enum kDisplayOnBottom.
 * BrioOpenGLConfig now contains additional display handle member hndlDisplay
   for setting HW layer alpha.
+  
 
 1. PlayAudio
     a. Added option for SendDone message
@@ -37,7 +38,7 @@ Brio:
     a. AUDIO: Fixed the looping/loop count, send done problems in Raw, Vorbis and MIDI
     b. MIDI:  API hookup for ChangeProgram and repaired SetEnableTrackes
  
-
+    Removed -Wextra compiler option
 
 ===========================================
 v0.1.21  (Build 2194 released Nov 6, 2007) 

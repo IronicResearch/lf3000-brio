@@ -10697,3 +10697,15 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/14/07 3:45 PM
 4,084 ms. (Cumulative: 2,632,750 ms)
 
 ----------------
+Revision 2,239 from svn://localhost/TRUNK/:
+Revision 2,240 from svn://localhost/TRUNK/:
+Revision 2,241 from svn://localhost/TRUNK/:
+
+Fixed the version number
+Removed -Wextra compiler option
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 11/14/07 6:39 PM
+4 changed, 0 added, 0 deleted.
+4,183 ms. (Cumulative: 2,637,006 ms)
+
+----------------
