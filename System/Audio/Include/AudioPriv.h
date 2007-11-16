@@ -151,7 +151,7 @@ public:
 											tAudioOptionsFlags	flags );
 	VTABLE_EXPORT void PauseMidiFile(  tMidiPlayerID id );
 	VTABLE_EXPORT void ResumeMidiFile( tMidiPlayerID id );
-    VTABLE_EXPORT void StopMidiFile(   tMidiPlayerID id, Boolean supressDoneMessage );
+    VTABLE_EXPORT void StopMidiFile(   tMidiPlayerID id, Boolean suppressDoneMessage );
 
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( tMidiPlayerID id ); // TODO: stub
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( void ); // TODO: stub
