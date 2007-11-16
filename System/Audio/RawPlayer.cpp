@@ -127,16 +127,19 @@ printf("CRawPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDone
         fileType_ = kRawPlayer_FileType_Brio;
 
     	tAudioHeader	brioHeader;		// header data for Brio "RAW" audio
-    	bytesRead = fread( &brioHeader, 1, sizeof(tAudioHeader), fileH_);
-    //printf("Brio Raw Header: dataOffset=%d ch=%d fs=%u Hz dataSize=%ld\n", 
-    //		(int)brioHeader_.offsetToData, channels, (unsigned int)brioHeader_.sampleRate, brioHeader_.dataSize);
+        tAudioHeader *bH = &brioHeader;
+    	bytesRead = fread( bH, 1, sizeof(tAudioHeader), fileH_);
+pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)), "CRawPlayer::ctor: Unable to read RAW audio header.\n");
 
-//   	    pDebugMPI_->Assert( (16 == brioHeader.offsetToData), "CRawPlayer::ctor : offsetToData=%ld, but isn't 16.  Is this Brio Raw Audio file ?\n", brioHeader.offsetToData );
-            
-    	dataSampleRate_ = brioHeader.sampleRate;
-    	audioDataSize_  = brioHeader.dataSize;		
-        channels_       = 1 + (0 != (brioHeader.flags & kAudioHeader_StereoBit));
-    	totalFrames_    = audioDataSize_ / (kAudioBytesPerMonoFrame*channels_);
+    	dataSampleRate_ = bH->sampleRate;
+    	audioDataSize_  = bH->dataSize;		
+        channels_       = 1 + (0 != (bH->flags & kAudioHeader_StereoBit));
+    	totalFrames_    = audioDataSize_ / (sizeof(S16)*channels_);
+
+printf("Brio Raw Header: sizeof()=%d dataOffset=%d ch=%ld fs=%u Hz dataSize=%ld\n", 
+    sizeof(tAudioHeader), (int)bH->offsetToData, channels_, (unsigned int)bH->sampleRate, bH->dataSize);
+
+pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData), "CRawPlayer::ctor: offsetToData=%ld, but should be %d.  Is this Brio Raw Audio file ?\n", bH->offsetToData , sizeof(tAudioHeader));
 		}
 	
 //printf("AF info: ch=%ld fs=%ld Hz frames=%ld\n", channels_, dataSampleRate_, totalFrames_);
@@ -149,9 +152,9 @@ printf("CRawPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDone
 //printf("CRawPlayer::ctor -- end \n");
 } // ---- end CRawPlayer() ----
 
-//==============================================================================
+// ==============================================================================
 // ~CRawPlayer
-//==============================================================================
+// ==============================================================================
 CRawPlayer::~CRawPlayer()
 {
 //printf("~CRawPlayer: start\n");

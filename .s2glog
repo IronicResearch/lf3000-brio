@@ -10747,3 +10747,45 @@ By gklimanis (gklimanis@leapfrog.com) on 11/15/07 10:40 AM
 4,555 ms. (Cumulative: 2,669,766 ms)
 
 ----------------
+Revision 2,246 from svn://localhost/TRUNK/:
+Revision 2,247 from svn://localhost/TRUNK/:
+Revision 2,248 from svn://localhost/TRUNK/:
+
+Dsputil/midi.h
+  1. Added definitions for MIDI channel voice messages
+
+PlayAudio
+  1. Added definitions and translation function for
+        General MIDI instrument set
+
+  2. Added MIDI Play parameter command line options :
+       -midi_tempochange
+       -midi_transposetracks
+
+  2. Added MIDI Note Tests
+        -midinotetest_All
+        -midinotetest_SomeNotes
+        -midinotetest_ProgramChange
+
+  3. Added MIDI File Tests
+        -midifiletest_All 
+        -midifiletest_TrackEnable
+        -midifiletest_ChangeTempo
+        -midifiletest_Transpose
+
+Brio Audio
+Y  6. MIDI API hookup 
+Y   a. ChangeTempo
+Y   b. ChangeProgram  -> updated
+Y   c. TransposeTracks
+Y   d. SetEnableTracks -> FIXED
+
+Y  10. MIDI API:  Add simplified note on/note off commands (no flags)
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/16/07 2:10 PM
+6 changed, 0 added, 0 deleted.
+4,438 ms. (Cumulative: 2,674,283 ms)
+
+----------------

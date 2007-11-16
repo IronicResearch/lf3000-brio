@@ -352,6 +352,7 @@ static void DoStartAudio( CAudioMsgStartAudio* pMsg )
 	} else {
 		gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
 			"AudioTask::DoStartAudio -- Couldn't Find A Channel!\n");
+printf("AudioTask::DoStartAudio: unable to find a Channel.\n");
 		// Send the audioID back to the caller
 		msg.SetAudioErr( kAudioNoChannelAvailErr );
 	}

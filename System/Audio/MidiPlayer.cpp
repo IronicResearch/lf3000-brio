@@ -67,10 +67,9 @@ CPath GetAppRsrcFolder( void )
 #endif	// EMULATION
 }
 
-//==============================================================================
+// ==============================================================================
 // CMidiPlayer implementation
-//==============================================================================
-
+// ==============================================================================
 CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 {
 //{static long c=0; printf("CMidiPlayer::CMidiPlayer: start %ld\n", c++);}
@@ -135,9 +134,9 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	SPMIDI_SetMaxVoices( pContext_, kMIDI_MaxVoices );
 }   // ---- end CMidiPlayer() ----
 
-//==============================================================================
+// ==============================================================================
 // ~CMidiPlayer
-//==============================================================================
+// ==============================================================================
 CMidiPlayer::~CMidiPlayer()
 {
 	tErrType 				result;
@@ -189,12 +188,12 @@ if (pKernelMPI_)
 // NoteOn
 // ==============================================================================
     tErrType 	
-CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
+CMidiPlayer::NoteOn( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags /*flags*/ )
 {
 char noteS[50];
 MIDINoteToNotation(noteNum, noteS, False);
-printf("CMidiPlayer::NoteOn : channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
-                channel, noteNum, noteS, velocity, (unsigned int) flags );
+//printf("CMidiPlayer::NoteOn : channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
+//                channel, noteNum, noteS, velocity, (unsigned int) flags );
  
 SPMUtil_NoteOn( pContext_, (int) channel, (int) noteNum, (int) velocity );
 
@@ -205,12 +204,12 @@ return (kNoErr);
 // NoteOff
 // ==============================================================================
     tErrType 	
-CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags )
+CMidiPlayer::NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags /*flags*/ )
 {
 char noteS[50];
 MIDINoteToNotation(noteNum, noteS, False);
-printf("CMidiPlayer::NoteOff: channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
-                channel, noteNum, noteS, velocity, (unsigned int) flags );
+//printf("CMidiPlayer::NoteOff: channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
+//                channel, noteNum, noteS, velocity, (unsigned int) flags );
  
 SPMUtil_NoteOff( pContext_, (int) channel, (int) noteNum, (int) velocity );
 
@@ -297,7 +296,7 @@ if ( pInfo->pListener )
 //#define DEBUG_MIDIPLAYER_OPTIONS
 #ifdef DEBUG_MIDIPLAYER_OPTIONS
 {
-char s[80];
+char s[50];
 s[0] = '\0';
 if (optionsFlags_ & kAudioOptionsLooped)
     strcat(s, "Loop=On");
@@ -500,7 +499,7 @@ return kNoErr;
     tErrType 
 CMidiPlayer::SetEnableTracks( tMidiTrackBitMask d )
 {
-//printf("CMidiPlayer::SetEnableTracks -- $%X \n", (unsigned int) d);	
+//printf("CMidiPlayer::SetEnableTracks: $%X \n", (unsigned int) d);	
 
 // Loop through channels and set mask
 for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
@@ -514,7 +513,7 @@ return kNoErr;
 //                  This API is non-sensical
 // ==============================================================================
     tErrType 
-CMidiPlayer::TransposeTracks( tMidiTrackBitMask /*d */, S8 semitones)
+CMidiPlayer::TransposeTracks( tMidiTrackBitMask /* d */, S8 semitones)
 {
 //printf("CMidiPlayer::TransposeTracks semitones=%d \n", semitones);	
 SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, semitones );
@@ -531,7 +530,7 @@ return (kNoErr);
     tErrType 
 CMidiPlayer::ChangeProgram( tMidiTrackBitMask channel , tMidiPlayerInstrument number )
 {
-printf("CMidiPlayer::ChangeProgram channel%2d number=%3d \n", (int)channel, (unsigned int) number);
+//printf("CMidiPlayer::ChangeProgram channel%2d number=%3d \n", (int)channel, (unsigned int) number);
 
 #ifdef OLDE_INCORRECT_CHANGE_PROGRAM
 unsigned int shift = 1;
@@ -549,9 +548,9 @@ for (long ch = 0; ch < 16; ch++)
 #endif
 
 // Send two byte MIDI program change
-U8 cmd   = 0xA0 | (0xF & channel);
+U8 cmd   = kMIDI_CHANNELMESSAGE_PROGRAMCHANGE | (0xF & channel);
 U8 data1 = (U8)(0x7f & number);
-printf("CMidiPlayer::ChangeProgram: cmd=$%0X data1=$%0X\n", (int) cmd, (int)data1);
+//printf("CMidiPlayer::ChangeProgram: cmd=$%X data1=$%X\n", (int) cmd, (int)data1);
 SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, 0 );
 
 // Need extra code as minimal instrument set is currently loaded, so you have to
@@ -562,14 +561,30 @@ return (kNoErr);
 
 // ==============================================================================
 // ChangeTempo:    Scale rate of MIDI file play with S8 number
+//                  Current mapping is [-128 .. 127] to [1/16x .. 16x]
+//      NOTE:  yes, this is not a great mapping of 256 values, but it's easy to
+//      hit the key values of 1/16, 1/8, 1/4, 1/2, 2, 4, 8, 16 x
 // ==============================================================================
     tErrType 
-CMidiPlayer::ChangeTempo( S8 tempo )
+CMidiPlayer::ChangeTempo( S8 tempoScale )
 {
-printf("CMidiPlayer::ChangeTempo tempo=%d NOT IMPLEMENTED \n", tempo);	
+//printf("CMidiPlayer::ChangeTempo tempoScale=%d  \n", tempoScale);	
+if (tempoScale < -127)
+    tempoScale = -127;
+
 // Map Brio tempo range to 16.16 tempo scaler
-//if (pFilePlayer_)
-//MIDIFilePlayer_SetTempoScaler( pFilePlayer_, int tempoScaler);
+// Change Range of [-128 .. 127] to [1/4 .. 4]
+// ChangeRangef(x, L1, H1, L2, H2)
+float xf = ChangeRangef((float)tempoScale, -127.0f, 127.0f, -4.0f, 4.0f);
+float yf = powf(2.0f, xf);
+// Convert to 16.16 range
+U32 scaler_16d16 = (U32)(65536.0f*yf);
+
+//printf("CMidiPlayer::ChangeTempo: tempo=%d : %g -> %g (%X)\n", tempoScale, xf, yf, (unsigned int) scaler_16d16);
+
+if (pFilePlayer_)
+    MIDIFilePlayer_SetTempoScaler( pFilePlayer_, scaler_16d16);
+
 return (kNoErr);
 }   // ---- end ChangeTempo() ----
 
