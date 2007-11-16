@@ -36,7 +36,9 @@ def generate(env):
 	env['LINK']	= compiler
 	
 	# Platform specific settings
-	env['CCFLAGS']		= SCons.Util.CLVar('$CCFLAGS') + '-Wall -fmessage-length=0'
+#	env['CCFLAGS']		= SCons.Util.CLVar('$CCFLAGS') + '-Wall -fmessage-length=0'
+#	FIXME/BSK Removed the 'Wall' warning
+	env['CCFLAGS']		= SCons.Util.CLVar('$CCFLAGS') + '-fmessage-length=0'
 	env['SHCXXFLAGS']	= SCons.Util.CLVar('$CXXFLAGS')	
 	env['RPATHPREFIX']	= '-Wl,-rpath-link='
 

@@ -10829,3 +10829,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/16/07 2:13 PM
 4,235 ms. (Cumulative: 2,678,596 ms)
 
 ----------------
+Revision 2,250 from svn://localhost/TRUNK/:
+
+Fixed the warning levels in emulation and embedded to be identical: 
+-Wextra -Wno-long-long -Werror -pedantic-errors -Wno-variadic-macros -Wformat -Wmissing-format-attribute
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 11/16/07 2:23 PM
+2 changed, 0 added, 0 deleted.
+4,250 ms. (Cumulative: 2,682,924 ms)
+
+----------------
