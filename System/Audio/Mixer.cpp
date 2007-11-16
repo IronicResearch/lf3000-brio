@@ -90,8 +90,6 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
 
-//	printf("CAudioMixer::CAudioMixer: printf numInChannels_=%d \n", numInChannels_);
-
 // Allocate audio channels
 	pChannels_ = new CChannel[ numInChannels_ ];
 	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: Mixer couldn't allocate channels!\n" );
@@ -210,8 +208,8 @@ if (writeOutSoundFile)
 	outSoundFileInfo.samplerate = (long) samplingFrequency_;
 	outSoundFileInfo.channels   = 2;
 	outSoundFileInfo.format     = SF_FORMAT_PCM_16 | SF_FORMAT_WAV;
-	outSoundFileInfo.sections = 1;
-	outSoundFileInfo.seekable = 1;
+	outSoundFileInfo.sections   = 1;
+	outSoundFileInfo.seekable   = 1;
 printf("CAudioMixer::CAudioMixer: opened output file '%s' \n", outSoundFilePath);
 	outSoundFile = OpenSoundFile( outSoundFilePath, &outSoundFileInfo, SFM_WRITE);
 	}
@@ -219,11 +217,10 @@ printf("CAudioMixer::CAudioMixer: opened output file '%s' \n", outSoundFilePath)
 // Open WAV file for input to mixer
 if (readInSoundFile)
 	{
-    char inFilePath[1000];
 #ifdef EMULATION
-   strcpy(inFilePath, "/home/lfu/AudioFiles/");
+    char *inFilePath = "/home/lfu/AudioFiles/";
 #else
-    strcpy(inFilePath, "/AudioFiles/");
+    char *inFilePath = "/AudioFiles/";
 #endif
 
 // SINE/ : sine_db0_1000Hz_32k.wav sine_dbM3_1000Hz_32k sine_dbM6_1000Hz_32k
@@ -311,16 +308,18 @@ long i;
 // ==============================================================================
 // FindChannelUsing
 // ==============================================================================
-CChannel* CAudioMixer::FindChannelUsing( tAudioPriority /* priority */)
+    CChannel * 
+CAudioMixer::FindChannelUsing( tAudioPriority /* priority */)
 {
-	// For now, just search for a channel not in use
-	for (long i = 0; i < numInChannels_; i++)
+// For now, just search for a channel not in use
+for (long i = 0; i < numInChannels_; i++)
 	{
 		if (!pChannels_[i].IsInUse()) 
-			return &pChannels_[i];
+			return (&pChannels_[i]);
 	}
 	
 	// Reaching this point means all channels are currently in use
+printf("CAudioMixer::FindChannelUsing: all %d channels in use.\n", numInChannels_);
 	return (kNull);
 }  // ---- end FindChannelUsing() ----
 

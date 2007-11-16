@@ -91,9 +91,9 @@ printf("VorbisPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDo
 	// Open Ogg-compressed file
 	int ov_ret = ov_open( fileH_, &vorbisFile_, NULL, 0 );
 	pDebugMPI_->DebugOut( kDbgLvlVerbose,
-		"VorbisPlayer::ctor -- ov_open() returned: %d.\n", static_cast<int>(ov_ret) );
+		"VorbisPlayer::ctor: ov_open() returned: %d.\n", static_cast<int>(ov_ret) );
 	pDebugMPI_->AssertNoErr( ov_ret, 
-		"VorbisPlayer::ctor -- Is Ogg file?  '%s'\n", pInfo->path->c_str());
+		"VorbisPlayer::ctor: Is Ogg file? '%s'\n", pInfo->path->c_str());
 	
 	pVorbisInfo     = ov_info( &vorbisFile_, -1 );
 	channels_       = pVorbisInfo->channels;
