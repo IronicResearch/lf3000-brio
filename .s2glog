@@ -10866,3 +10866,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/16/07 4:43 PM
 4,110 ms. (Cumulative: 2,691,659 ms)
 
 ----------------
+Revision 2,258 from svn://localhost/TRUNK/:
+
+API prototype tweak to fix build break.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/16/07 4:44 PM
+1 changed, 0 added, 0 deleted.
+4,255 ms. (Cumulative: 2,695,977 ms)
+
+----------------
