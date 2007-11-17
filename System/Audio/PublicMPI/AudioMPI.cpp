@@ -368,7 +368,7 @@ void CAudioMPI::SetAudioPriority( tAudioID id, tAudioPriority priority )
 //==============================================================================
 S8 CAudioMPI::GetAudioPan( tAudioID id ) const
 {
-	if ( kNull == pModule_ )
+	if ( !pModule_ )
 		return 0;
 	
 	return pModule_->GetAudioPan( id );
@@ -533,7 +533,7 @@ tErrType CAudioMPI::StartMidiFile( tMidiPlayerID		id,
 									tAudioPayload		payload,
 									tAudioOptionsFlags	flags )
 {
-	if ( kNull == pModule_ )
+	if ( !pModule_ )
 		return kNoImplErr;
 
 	return pModule_->StartMidiFile( mpiID_, id, path, payload, flags );
@@ -543,7 +543,7 @@ tErrType CAudioMPI::StartMidiFile( tMidiPlayerID		id,
 //==============================================================================
 Boolean CAudioMPI::IsMidiFilePlaying( tMidiPlayerID id ) 
 {
-	if ( kNull == pModule_ )
+	if ( !pModule_ )
 		return false;
 	
 	return pModule_->IsMidiFilePlaying( id );
@@ -553,7 +553,7 @@ Boolean CAudioMPI::IsMidiFilePlaying( tMidiPlayerID id )
 //==============================================================================
 Boolean CAudioMPI::IsMidiFilePlaying() 
 {
-	if ( kNull == pModule_ )
+	if ( !pModule_ )
 		return false;
 	
 	return pModule_->IsMidiFilePlaying();
@@ -697,13 +697,12 @@ tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
 // ==============================================================================
 tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
 									U8 			channel, 
-									U8			noteNum, 
-									U8			velocity)
+									U8			noteNum)
 {
 	if ( !pModule_ )
 		return kNoImplErr;
 	
-	return pModule_->MidiNoteOff( id, channel, noteNum, velocity, 0 );
+	return pModule_->MidiNoteOff( id, channel, noteNum, 0, 0 );
 }
 
 LF_END_BRIO_NAMESPACE()	
