@@ -51,7 +51,8 @@ enum tPowerState {
 	kPowerExternal   = 1,	/* on external power	*/
 	kPowerBattery    = 2,	/* battery powered		*/
 	kPowerLowBattery = 3,	/* low battery			*/
-	kPowerShutdown   = 4	/* shutdown requested	*/
+	kPowerShutdown   = 4,	/* shutdown requested	*/
+	kPowerCritical   = 5	/* critical battery     */
 };
 
 struct tPowerData {

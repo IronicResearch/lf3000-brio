@@ -10876,3 +10876,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/16/07 4:44 PM
 4,255 ms. (Cumulative: 2,695,977 ms)
 
 ----------------
+Revision 2,259 from svn://localhost/TRUNK/:
+
+Added 'CriticalBattery' define.
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/16/07 4:56 PM
+1 changed, 0 added, 0 deleted.
+4,250 ms. (Cumulative: 2,700,290 ms)
+
+----------------
