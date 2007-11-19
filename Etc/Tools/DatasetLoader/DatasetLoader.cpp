@@ -9,6 +9,7 @@
 #include <boost/shared_array.hpp>	
 
 #include "Wrappers.h"
+#include "DatasetLoader.h"
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -21,12 +22,14 @@ const string kDirSeparatorString("\\");
 
 typedef vector<U32>  PointerOffsets;
 
+/* Defined in the header
 typedef struct tagAppRsrcDataSet {
 		tVersion	fmtVersion;	
 		tVersion 	cntVersion;	
 		U32 		id;
 		void* 	pDataSet;
 }tAppRsrcDataSet;
+*/
 
 /****************************************************************************
  * 																			*
