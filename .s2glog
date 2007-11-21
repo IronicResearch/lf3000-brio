@@ -10922,3 +10922,40 @@ By Rcabrera (Rcabrera@leapfrog.com) on 11/19/07 3:14 PM
 4,344 ms. (Cumulative: 2,717,635 ms)
 
 ----------------
+Revision 2,264 from svn://localhost/TRUNK/:
+Revision 2,265 from svn://localhost/TRUNK/:
+Revision 2,266 from svn://localhost/TRUNK/:
+Revision 2,267 from svn://localhost/TRUNK/:
+Revision 2,268 from svn://localhost/TRUNK/:
+Revision 2,269 from svn://localhost/TRUNK/:
+Revision 2,270 from svn://localhost/TRUNK/:
+Revision 2,271 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,391 ms. (Cumulative: 2,722,151 ms)
+
+----------------
+Revision 2,272 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,063 ms. (Cumulative: 2,726,214 ms)
+
+----------------
+Revision 2,273 from svn://localhost/TRUNK/:
+
+Fix for audio "deadlock" issue, though it was more of a crash due to 
+multi-threading.  This fix required some thread reorganization, so it 
+was more of an audio artchitecture change than a simple fix.  Audio 
+render threads no longer create and delete objects.  Whew.
+
+Testde with PlayAudio and BrioMixer for Wav/Ogg/Raw/MIDI playback, 
+SendDone message, and looping.  Everthing works, although for this 
+check-in , stereo WAV/Raw doesn't work.  Mono WAV/RAW works, though.
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/21/07 10:40 AM
+12 changed, 0 added, 0 deleted.
+4,125 ms. (Cumulative: 2,730,339 ms)
+
+----------------

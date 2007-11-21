@@ -38,12 +38,13 @@ public:
 	CChannel();
 	~CChannel();
 
-	tErrType	InitChanWithPlayer( CAudioPlayer* pPlayer );
+	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
 	tErrType	Release( Boolean suppressPlayerDoneMsg );
 
 // Set pause state
 	inline void	Pause()  { if (fInUse_) fPaused_ = true;  }
 	inline void	Resume() { if (fInUse_) fPaused_ = false; }
+	inline void	SetInUse(Boolean x) { fInUse_ = x; }
 
 	// Ask channel to get data from player and return it to caller's mix buffer.
 	// This will add per-channel fx as well as sample rate convert player
@@ -53,15 +54,17 @@ public:
 	// so mono data is copied to both stereo channel on mix out.
 	U32			RenderBuffer( S16 *pOutP, int numStereoFrames );
 
-	U8			volume_;	
-	S8			pan_   ;		 
-
 	inline U8	GetVolume()		{ return volume_; }
 	void		SetVolume(U8 x);
 
 	inline S8	GetPan()		    { return pan_; }
 	void		SetPan(S8 x);
 
+	inline U32	GetSamplingFrequency()		    { return samplingFrequency_; }
+	void		SetSamplingFrequency(U32 x)     { samplingFrequency_ = x;}
+
+	inline CAudioPlayer *GetPlayerPtr()		    { return pPlayer_; }
+	void		SetPlayer(CAudioPlayer *pPlayer, long releaseExistingPlayer);
 
 #define kAudioMixerChannel_MaxOutChannels 2
 	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
@@ -78,46 +81,50 @@ public:
 	inline tAudioPriority	GetPriority()            				{ return priority_; }
 	inline void				SetPriority( tAudioPriority priority ) 	{ priority_ = priority; }
 
-	inline float	GetEQ_Frequency()   { return eq_frequency_; }
-	inline float	GetEQ_Q()           { return eq_q_; }
-	inline float	GetEQ_GainDB()      { return eq_gainDB_; }
+//	inline float	GetEQ_Frequency()   { return eq_frequency_; }
+//	inline float	GetEQ_Q()           { return eq_q_; }
+//	inline float	GetEQ_GainDB()      { return eq_gainDB_; }
 
-	inline void		SetEQ_Parameters(float frequency, float q, float gainDB) { eq_frequency_ = frequency; eq_q_ = q; eq_gainDB_ = gainDB;}
+//	inline void		SetEQ_Parameters(float frequency, float q, float gainDB) { eq_frequency_ = frequency; eq_q_ = q; eq_gainDB_ = gainDB;}
 
-	inline void		SetMixerChannelDataPtr(MIXERCHANNEL *d) { pDSP_ = d; }
+//	inline void		SetMixerChannelDataPtr(MIXERCHANNEL *d) { pDSP_ = d; }
 
 //	inline long		GetMixBinIndex()       { return mixBinIndex_; }
 //	inline void		SetMixBinIndex(long x) { mixBinIndex_ = x; }
 
-	inline long		GetSamplingFrequency()        { return samplingFrequency_; }
-//	inline void		SetSamplingFrequency(float x) { samplingFrequency_ = x; }
-
 // Return requested status
 	inline Boolean			IsInUse()  { return fInUse_; }
 	inline Boolean			IsPaused() { return fPaused_; }
-	inline Boolean			HasOwnAudioEffectsProcessor() { return fOwnProcessor_; }
+//	inline Boolean			HasOwnAudioEffectsProcessor() { return fOwnProcessor_; }
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
+
+    Boolean isDone_;
+	Boolean fInUse_;		
+    void SendDoneMsg( void );
 
 private:
 	tAudioPriority	priority_;	
 
-	float		eq_frequency_;
-	float		eq_q_;
-	float		eq_gainDB_;
+	U8			volume_;	
+	S8			pan_   ;		 
+
+//	float		eq_frequency_;
+//	float		eq_q_;
+//	float		eq_gainDB_;
 
 	U32			samplingFrequency_;	
 
-	MIXERCHANNEL	*pDSP_;
+//	MIXERCHANNEL	*pDSP_;
 
 //	CAudioEffectsProcessor		*pChain_;		
 	CAudioPlayer				*pPlayer_;		 
 	
-	Boolean fInUse_;		
 	Boolean fPaused_;		
 	Boolean fReleasing_;	// Channel is in the process of being reset
-	Boolean fOwnProcessor_;
+//	Boolean fOwnProcessor_;
 	
 	CDebugMPI	*pDebugMPI_;
+	CKernelMPI  *pKernelMPI_;		
 
     void   RecalculateLevels();
 };

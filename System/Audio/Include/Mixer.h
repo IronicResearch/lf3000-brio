@@ -46,24 +46,29 @@ public:
 	CChannel*		FindChannelUsing( tAudioID id );
 	long    		FindChannelIndex( tAudioID id );
 	
-	// Returns true if any audio playing on a mixer channel.
-	// Note: this doesn't include MIDI.
+	// Is audio (excluding MIDI) playing on a mixer channel.
 	Boolean IsAnyAudioActive( void );
 
 	CMidiPlayer*	GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
-	
+
+	tErrType	    AddPlayer( tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID );
+	CAudioPlayer	*CreatePlayer( tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID );
+
 	void 			SetMasterVolume( U8 x ) ; 
 
 	Boolean     GetOutputEqualizer( ) { return ((Boolean)useOutEQ_); }
 	void        SetOutputEqualizer( Boolean x );
 	
-	// Main routine 
+// Main routine 
 	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
 	
-	static int WrapperToCallRenderBuffer( S16* pOutBuff, unsigned long frameCount, void* pToObject  );
+	static int WrapperToCallRenderBuffer( S16 *pOutBuff, unsigned long frameCount, void *pToObject  );
 											
 private:
 	CDebugMPI 		*pDebugMPI_;
+
+    CAudioPlayer *playerToAdd_;
+    CChannel     *targetChannel_;
 	
 	BRIOMIXER		pDSP_;
     float           samplingFrequency_;
@@ -85,7 +90,6 @@ private:
 //#define kChannel_MaxTempBuffers		2
 	S16 			*channel_tmpPtrs_[kAudioMixer_MaxInChannels];
 	S16 			*pChannel_OutBuffer_;	
-
 
 // Mix Bin Parameters
 #define kAudioMixer_MixBinCount	        3	// At present, for sampling rates :  fs, fs/2, fs/4 

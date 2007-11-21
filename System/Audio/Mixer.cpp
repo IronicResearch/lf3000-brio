@@ -25,6 +25,8 @@
 #include <Mixer.h>
 #include <AudioOutput.h>
 
+#include <RawPlayer.h>
+#include <VorbisPlayer.h>
 
 // Debug : info for sound file input/output
 long readInSoundFile   = false;
@@ -74,12 +76,15 @@ LF_BEGIN_BRIO_NAMESPACE()
 CAudioMixer::CAudioMixer( int inChannels )
 {
 long i, j, ch;
-//	printf("CAudioMixer::CAudioMixer: inChannels=%d Max=%d\n", inChannels, kAudioMixer_MaxInChannels);
+//printf("CAudioMixer::CAudioMixer: inChannels=%d Max=%d\n", inChannels, kAudioMixer_MaxInChannels);
 
 	numInChannels_ = inChannels;
 if (numInChannels_ > kAudioMixer_MaxInChannels)
 	printf("CAudioMixer::CAudioMixer: %d too many channels! Max=%d\n", numInChannels_, kAudioMixer_MaxInChannels);
 	pDebugMPI_->Assert((numInChannels_ <= kAudioMixer_MaxInChannels), "CAudioMixer::CAudioMixer: %d is too many channels!\n", numInChannels_ );
+
+    playerToAdd_ = NULL;
+    targetChannel_= NULL;
 
     SetMasterVolume(100);
     samplingFrequency_ = kAudioSampleRate;
@@ -188,8 +193,8 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     PrepareWaveShaper(d);
     }
     }
-for (ch = 0; ch < pDSP_.channelCount; ch++)
-	pChannels_[ch].SetMixerChannelDataPtr(&pDSP_.channels[ch]);
+//for (ch = 0; ch < pDSP_.channelCount; ch++)
+//	pChannels_[ch].SetMixerChannelDataPtr(&pDSP_.channels[ch]);
 
 for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
@@ -256,15 +261,15 @@ if (inputIsDC)
 
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
-//==============================================================================
-// CAudioMixer::~CAudioMixer ::
-//==============================================================================
+// ==============================================================================
+// ~CAudioMixer :
+// ==============================================================================
 CAudioMixer::~CAudioMixer()
 {
 long i;
 
-	// Deallocate channels
- 	if (pChannels_)
+// Deallocate channels
+ if (pChannels_)
 	{
     for (long ch = 0; ch < numInChannels_; ch++)
         {     	
@@ -311,15 +316,27 @@ long i;
     CChannel * 
 CAudioMixer::FindChannelUsing( tAudioPriority /* priority */)
 {
+long i;
+
+for (i = 0; i < numInChannels_; i++)
+	{
+    CChannel *pCh = &pChannels_[i];
+//printf("CAudioMixer::FindChannelUsing: %ld: IsInUse=%d isDone=%d player=%p\n", i, pCh->IsInUse(), pCh->isDone_, (void*)pCh->GetPlayerPtr());
+    }
+
 // For now, just search for a channel not in use
 for (long i = 0; i < numInChannels_; i++)
 	{
-		if (!pChannels_[i].IsInUse()) 
-			return (&pChannels_[i]);
+    CChannel *pCh = &pChannels_[i];
+		if (!pCh->IsInUse())// && pCh->isDone_) 
+        {
+//printf("CAudioMixer::FindChannelUsing: USING %ld IsInUse=%d isDone=%d Player=%p\n", i, pCh->IsInUse(), pCh->isDone_, (void*)pCh->GetPlayerPtr());
+			return (pCh);
+        }
 	}
 	
 	// Reaching this point means all channels are currently in use
-printf("CAudioMixer::FindChannelUsing: all %d channels in use.\n", numInChannels_);
+//printf("CAudioMixer::FindChannelUsing: all %d channels in use.\n", numInChannels_);
 	return (kNull);
 }  // ---- end FindChannelUsing() ----
 
@@ -328,17 +345,13 @@ printf("CAudioMixer::FindChannelUsing: all %d channels in use.\n", numInChannels
 // ==============================================================================
 CChannel* CAudioMixer::FindChannelUsing( tAudioID id )
 {
-	
 // Loop through mixer channels, look for one that's in use and then
 // test the player's ID against the requested id.
 for (long i = 0; i < numInChannels_; i++)
 	{
-	CChannel*pChan = &pChannels_[i];
-	if (pChan->IsInUse()) 
-        {
-		if ( pChan->GetPlayer()->GetAudioID() == id )
-			return (pChan);
-		}
+    CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
+	if ( pPlayer && (pPlayer->GetAudioID() == id) && pChannels_[i].IsInUse())
+		return (&pChannels_[i]);
 	}
 	
 // Reaching this point means all no ID matched.
@@ -346,37 +359,29 @@ return ( kNull );
 }  // ---- end FindChannelUsing() ----
 
 // ==============================================================================
-// FindChannelIndex: 
+// FindChannelIndex:    Find specified channel by ID.  Must be "in use"
+//                              Return index in channel array
 // ==============================================================================
     long
 CAudioMixer::FindChannelIndex( tAudioID id )
 {
-// Loop through mixer channels, look for one that's in use and then
-// test the player's ID against the requested id.
 for (long i = 0; i < numInChannels_; i++)
 	{
-//	CChannel*pChan = &pChannels_[i];
-//	if (pChan->IsInUse()) 
-        {
-		if ( pChannels_[i].GetPlayer()->GetAudioID() == id )
-			return (i);
-		}
+    CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
+	if ( pPlayer && (pPlayer->GetAudioID() == id) && pChannels_[i].IsInUse())
+		return (i);
 	}
 	
-// Unable to find the mixer
+// Unable to find
 return ( -1 );
-}  // ---- end FindChannelUsin() ----
+}  // ---- end FindChannelIndex() ----
 
 // ==============================================================================
 // IsAnyAudioActive
 // ==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
 {
-//	Boolean 	result = false;
-//	U32 iChan = 0;
-//	CChannel*	pChan = NULL;
-	
-// Loop over the number of channels
+// Search for a channel that is in use
 for (long i = 0; i < numInChannels_; i++)
 	{
 	if (pChannels_[i].IsInUse())
@@ -418,31 +423,102 @@ long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 // ==============================================================================
 long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 {
-	long div =  1;
+long div =  1;
 	
-	// FIXXX: currently matches numbers.  In the future, should assign mix bin
-	// with closest sampling frequency and do conversion
-	switch (samplingFrequency)
-		{
-		default:
-		case kAudioSampleRate :
-			div = 1;
-		break;
-		case kAudioSampleRate_Div2 :
-			div = 2;
-		break;
-		case kAudioSampleRate_Div4 :
-			div = 4;
-		break;
-		}
-	
-	return (div);
+// FIXXX: currently matches numbers.  In the future, should assign mix bin
+// with closest sampling frequency and do conversion
+switch (samplingFrequency)
+	{
+	default:
+	case kAudioSampleRate :
+		div = 1;
+	break;
+	case kAudioSampleRate_Div2 :
+		div = 2;
+	break;
+	case kAudioSampleRate_Div4 :
+		div = 4;
+	break;
+	}
+
+return (div);
 }  // ---- end GetSamplingRateDivisor() ----
+
+// ==============================================================================
+// CreatePlayer:   Allocate player based on file extension argument
+// ==============================================================================
+    CAudioPlayer *
+CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID )
+{
+CAudioPlayer *pPlayer = NULL;
+
+if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")  ||
+    !strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
+    !strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")  ||
+    !strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
+    !strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
+	{
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create RawPlayer\n");
+	pPlayer = new CRawPlayer( pAudioInfo, newID );
+    }
+else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
+         !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
+    {
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create VorbisPlayer\n");
+	pPlayer = new CVorbisPlayer( pAudioInfo, newID );
+    } 
+else
+    {
+	pDebugMPI_->DebugOut( kDbgLvlImportant,
+		"AudioTask::DoStartAudio: Create *NO* Player: unhandled audio type='%s'\n", sExt);
+    }
+
+return (pPlayer);
+}  // ---- end CreatePlayer() ----
+
+// ==============================================================================
+// AddPlayer:
+// ==============================================================================
+    tErrType 
+CAudioMixer::AddPlayer( tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID )
+{
+CChannel *pChannel = FindChannelUsing( pAudioInfo->priority );
+if (!pChannel)
+    {
+    printf("CAudioMixer::AddPlayer: no channel available\n");
+    return (kAudioNoChannelAvailErr);
+    }
+CAudioPlayer *pPlayer = CreatePlayer(pAudioInfo, sExt, newID);
+if (!pPlayer)
+    {
+    printf("CAudioMixer::AddPlayer: failed to create Player with '%s'\n", sExt);
+    return (kAudioNoChannelAvailErr);  // GK FIXXX: add error for failed player allocation
+    }
+
+//#define NEW_ADD_PLAYER
+#define OLD_ADD_PLAYER
+
+#ifdef NEW_ADD_PLAYER
+// Trigger flags to call SetPlayer() in Mixer render loop
+// GK NOTE:  this is crap and can cause a race condition
+targetChannel_ = pChannel;  // Do this one first
+playerToAdd_   = pPlayer;
+//pChannel->SetPlayer(pPlayer, true);
+//pChannel->SetInUse(true);
+#endif // NEW_ADD_PLAYER
+
+#ifdef OLD_ADD_PLAYER
+pChannel->InitWithPlayer( pPlayer );
+#endif // OLD_ADD_PLAYER
+
+return (kNoErr);
+}  // ---- end AddPlayer() ----
 
 // ==============================================================================
 // RenderBuffer
 // ==============================================================================
-int CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
+    int 
+CAudioMixer::RenderBuffer( S16 *pOutBuff, U32 numFrames )
 // numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
 U32 	i, ch;
@@ -453,6 +529,20 @@ long    channelsPerFrame = kAudioMixer_MaxOutChannels;
 short **tPtrs = pTmpBufs_; // pTmpBufs_, tmpBufOffsetPtrs_
 
 //{static long c=0; printf("CAudioMixer::RenderBuffer : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channelsPerFrame);}
+
+// GK FIXXXX: HACK  need to mutex-protect this
+if (playerToAdd_)
+    {
+    CAudioPlayer *pPlayer  = playerToAdd_;
+    CChannel     *pChannel = targetChannel_;
+    playerToAdd_  = NULL;
+    targetChannel_= NULL;
+printf("CAudioMixer::RenderBuffer: Adding player\n");
+    pChannel->SetPlayer(pPlayer, true); 
+    pChannel->SetInUse(true);
+    pChannel->isDone_ = false;
+printf("CAudioMixer::RenderBuffer: Added player\n");
+    }
 
 //	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
 //	pDebugMPI_->Assert( ((numFrames * kAudioBytesPerStereoFrame) == kAudioOutBufSizeInBytes ),
@@ -502,33 +592,42 @@ if (readInSoundFile && !inSoundFileDone)
 	}
 else
 {
+ClearShorts(pChannel_OutBuffer_, numFrames*channelsPerFrame);
 for (ch = 0; ch < numInChannels_; ch++)
 	{
 	CChannel *pCh = &pChannels_[ch];
 
 	// Render if channel is in use and not paused
-//printf("CAudioMixer::RenderBuffer :   pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
+//printf("CAudioMixer::RenderBuffer : pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
 	if (pCh->ShouldRender())
 		{
         long channelSamplingFrequency = pCh->GetSamplingFrequency();
 		U32 framesToRender = (numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
 //printf("ch%ld: framesToRender=%ld for %ld Hz\n", ch, framesToRender, channelSamplingFrequency);
 
-	// Have player render its data into our output buffer.  If the player
-	// contains mono data, it will be rendered out as stereo data.
-       playerFramesRendered = pCh->RenderBuffer( pChannel_OutBuffer_, framesToRender );
+	// Player renders data into channel's stereo output buffer.  
+        playerFramesRendered = pCh->RenderBuffer( pChannel_OutBuffer_, framesToRender );
+	    if ( playerFramesRendered < framesToRender ) 
+//printf("frames %ld/%ld\n", playerFramesRendered, framesToRender);
+//	    if ( 0 == playerFramesRendered ) 
+            {
+//            ClearShorts(pChannel_OutBuffer_, framesToRender);
+//			pCh->Release( true );	// false = Don't suppress done msg 
+ 
+            pCh->isDone_ = true;
+            pCh->fInUse_ = false;
+//printf("Mixer : BEFO SendDoneMsg() player=%p\n", (void*) pCh->GetPlayerPtr());
+            if (pCh->GetPlayerPtr()->ShouldSendDoneMessage())
+                pCh->SendDoneMsg();
+//printf("Mixer : AFTA SendDoneMsg() player=%p\n", (void*) pCh->GetPlayerPtr());
+            }
 
-        if (inputIsDC)
-            SetShorts(pChannel_OutBuffer_, framesToRender, 0);
-
-	// If player has finished, release channel.
-		if ( playerFramesRendered < framesToRender ) 
-			pCh->Release( false );	// Don't suppress done msg if requested
+//        if (inputIsDC) ClearShorts(pChannel_OutBuffer_, framesToRender);
 			
 	// Add output to appropriate Mix "Bin" 
 		long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
 // FIXXX:  convert fs/4->fs/2 with gentler anti-aliasing filter and let fs/2 mix bin's conversion do fs/2->fs
-		S16* pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
+		S16 *pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
         AccS16toS16(pMixBin, pChannel_OutBuffer_, framesToRender*channelsPerFrame, mixBinFilled_[mixBinIndex]);
 
 		mixBinFilled_[mixBinIndex] = True;
@@ -660,9 +759,9 @@ printf("Closed outSoundFile\n");
 	return (kNoErr);
 } // ---- end RenderBuffer() ----
 
-//==============================================================================
+// ==============================================================================
 // WrapperToCallRenderBuffer
-//==============================================================================
+// ==============================================================================
 int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOut,  unsigned long numStereoFrames, void* pToObject  )
 {
 //	CAudioMixer* mySelf = (CAudioMixer*)pToObject;
@@ -672,7 +771,7 @@ int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOut,  unsigned long numStereoF
 } // ---- end WrapperToCallRenderBuffer() ----
 
 // ==============================================================================
-// SetMasterVolume :  output level for mixer
+// SetMasterVolume :  Set master output level for mixer
 // ==============================================================================
 void CAudioMixer::SetMasterVolume( U8 x )
 {

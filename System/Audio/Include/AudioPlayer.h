@@ -38,55 +38,62 @@ public:
 	CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  );
 	virtual ~CAudioPlayer();
 		
-	// Reset internal data pointer back to start of audio data.
 	virtual void	Rewind() = 0;
-
-	// Process an audio tick for the class object
 	virtual U32		RenderBuffer( S16 *pOutBuff, U32 numFrames ) = 0;
+	virtual U32 GetAudioTime_mSec( void ) = 0; // Time since start of audio play
 
-	// Returns Time since start of audio playback.
-	virtual U32 GetAudioTime_mSec( void ) = 0;
-
-	// Return the requested status of the class object 
-	inline U8		SendDoneMessage() { return bDoneMessage_; }
+	// Return status
+	inline U8 ShouldSendDoneMessage() { return bDoneMessage_; }
 	inline U8		HasAudioCodec()   { return bHasAudioCodec_; }
+	inline U8		IsComplete()      { return bComplete_; }
+	inline U8		IsPaused()        { return bPaused_; }
 
-	// Get/Set the class member variables
+	// Get/Set class member variables
 	inline tAudioID			GetAudioID() { return id_; }
-	inline tAudioPriority 	GetPriority() { return priority_; }
-	inline void		 		SetPriority(tAudioPriority priority) { priority_ = priority; }
-	inline tAudioPayload	GetPayload() { return payload_; }
-	inline void		 		SetPayload(tAudioPayload value) { payload_ = value; }
-	inline const IEventListener*	GetEventListener() { return pListener_; }
-	inline void		 		SetEventListener( const IEventListener *pListener) { pListener_ = pListener; }
-	inline U8				GetPan( void ) { return pan_; }
-	inline U8				GetVolume( void ) { return volume_; }
-	inline tAudioOptionsFlags	GetOptionsFlags() { return optionsFlags_; }
-	inline void				SetOptionsFlags(tAudioOptionsFlags optionsFlags) 
-								{ optionsFlags_ = optionsFlags;
-								  bDoneMessage_ = (optionsFlags_ & kAudioDoneMsgBit) ? true : false; }
-	inline void		 		SetSendDoneMessage(Boolean doneMsg) { bDoneMessage_ = doneMsg; }
-	inline U32				GetSampleRate( void ) { return dataSampleRate_; }
+	inline tAudioID			GetID()      { return id_; }
+	inline void		 		ActivateSendDoneMessage(Boolean x) { bDoneMessage_ = x; }
 	
+	void Set_WaitForRender( long x ) {waitForRender_ = x;}
+	long Get_WaitForRender( void   ) {return (waitForRender_);}
+
+	inline tAudioPriority 	GetPriority() { return priority_; }
+	inline void		 		SetPriority(tAudioPriority x) { priority_ = x; }
+
+	inline tAudioPayload	GetPayload() { return payload_; }
+	inline void		 		SetPayload(tAudioPayload x) { payload_ = x; }
+
+	inline const IEventListener*	GetEventListener() { return pListener_; }
+	inline void		 		SetEventListener( const IEventListener *x) { pListener_ = x; }
+
+	inline U8				GetPan(        void ) { return pan_; }
+	inline U8				GetVolume(     void ) { return volume_; }
+	inline U32				GetSampleRate( void ) { return dataSampleRate_; }
+
+
+	inline tAudioOptionsFlags	GetOptionsFlags() { return optionsFlags_; }
+	inline void				SetOptionsFlags(tAudioOptionsFlags x) 
+								{ optionsFlags_ = x;
+								  bDoneMessage_ = ((x & kAudioDoneMsgBit) != 0) ? true : false; }
 protected:
-	U8			bPaused_:1;				
-	U8			bComplete_:1;			// Reached the end of the audio// ???
-	U8			bDoneMessage_:1;		// Caller requests done message 
-	U8			bStopping_:1;			// Stop() has been called, but not stopped
-	U8			bHasAudioCodec_:1;	
-	U8			unused_:3;				
+	U8			bPaused_;				
+	U8			bComplete_;			// Player has completed generating audio
+	U8			bDoneMessage_;		// Caller requests done message 
+	U8			bStopping_;			// Stop() has been called, but not stopped
+	U8			bHasAudioCodec_;	
+//	U8			unused_:3;				
 
 	CDebugMPI*			pDebugMPI_;		// Debug output access.	
-	tAudioID			id_;			// AudioID of the audio assigned to the player
+	tAudioID			id_;			
+    long            waitForRender_;
 
 	FILE*				fileH_;			// file struct of open file
 	void*				pAudioData_;
-	U32					audioDataSize_;	// bytes of audio data
-
+	U32					audioDataBytes_;		
+	
     long                channels_;
 	U32					dataSampleRate_;
 
-	Boolean				shouldLoop_;	// loop file
+	Boolean				shouldLoopFile_;	
 
 	S8					pan_;			 
 	U8					volume_;		 
@@ -94,7 +101,7 @@ protected:
 	tAudioPriority		priority_;		
 	tAudioPayload		payload_;		
 	tAudioOptionsFlags	optionsFlags_;	
-	const IEventListener *pListener_;	// Pointer to AudioEventHandler assigned to the player
+	const IEventListener *pListener_;	// Pointer to AudioEventHandler assigned to player
 };
 
 LF_END_BRIO_NAMESPACE()
