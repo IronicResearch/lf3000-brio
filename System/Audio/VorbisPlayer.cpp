@@ -95,17 +95,16 @@ printf("VorbisPlayer::ctor bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDo
 		"VorbisPlayer::ctor: ov_open() returned: %d.\n", static_cast<int>(ov_ret) );
 	pDebugMPI_->AssertNoErr( ov_ret, 
 		"VorbisPlayer::ctor: Is Ogg file? '%s'\n", pInfo->path->c_str());
-	
-	pVorbisInfo     = ov_info( &vorbisFile_, -1 );
-	channels_       = pVorbisInfo->channels;
-	dataSampleRate_ = pVorbisInfo->rate;
+	  
+	pVorbisInfo        = ov_info( &vorbisFile_, -1 );
+	channels_          = pVorbisInfo->channels;
+	samplingFrequency_ = pVorbisInfo->rate;
 	
 	// Figure out how big the vorbis bitstream actually is.
 //	pDebugMPI_->DebugOut( kDbgLvlVerbose,
 //		"VorbisPlayer::ctor fs=%ld channels=%d samples=%ld (%g Seconds)\n", 
 //           pVorbisInfo->rate, pVorbisInfo->channels,
-//            (long)ov_pcm_total( &vorbisFile_, -1 ),
-//            (float)ov_time_total( &vorbisFile_, -1 ));
+//            (long)ov_pcm_total( &vorbisFile_, -1 ), (float)ov_time_total( &vorbisFile_, -1 ));
 
 //	printf("VorbisPlayer::ctor bitstream length=%ld\n", (long)ov_raw_total( &vorbisFile_, -1 ));
 
@@ -128,8 +127,11 @@ CVorbisPlayer::~CVorbisPlayer()
 	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::dtor -- Couldn't lock mutex.\n");
 
 	// If anyone is listening, let them know we're done.
-	if (pListener_ && bDoneMessage_)
-		SendDoneMsg();
+if (pListener_ && bDoneMessage_)
+    {
+//printf("~CVorbisPlayer: SSSSSSSSS befo SendDoneMsg()\n");
+	SendDoneMsg();
+    }
 	
 	// Free the sample buffer
 	if (pPcmBuffer_)

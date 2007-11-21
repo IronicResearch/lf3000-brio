@@ -10968,3 +10968,14 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/21/07 11:37 AM
 4,187 ms. (Cumulative: 2,734,589 ms)
 
 ----------------
+Revision 2,275 from svn://localhost/TRUNK/:
+
+Fix for broken stereo WAV/AIFF/Raw audio file play.
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 11/21/07 11:46 AM
+4 changed, 0 added, 0 deleted.
+4,203 ms. (Cumulative: 2,738,855 ms)
+
+----------------
