@@ -171,7 +171,7 @@ return (shouldRender);
 // ==============================================================================
 void CChannel::SendDoneMsg( void )
 {
-printf("CChannel::SendDoneMsg: pPlayer_=%p\n", (void*)pPlayer_);
+//printf("CChannel::SendDoneMsg: pPlayer_=%p\n", (void*)pPlayer_);
 if (pPlayer_)
     {
 	const tEventPriority	kPriorityTBD = 0;

@@ -44,7 +44,6 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 	const tMutexAttr 	attr = {0};
 	
 //printf("CRawPlayer::ctor -- start \n");
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor -- start...\n");
 
 // Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
@@ -56,7 +55,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor: Unable to init mutex.\n");
 
 // Allocate player's sample buffer
-//	pPcmBuffer_ = new S16[ kAudioOutBufSizeInWords ];
+//	pPcmBuffer_ = new S16[ 2*kAudioOutBufSizeInWords ];
 
 	shouldLoopFile_  = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
     loopCount_       = payload_;
@@ -104,17 +103,17 @@ printf("CRawPlayer:: listener=%p DoneMessage=%d flags=$%X '%s' loopCount=%ld\n",
 
         if (kRawPlayer_FileType_Unknown != fileType_)
             {
-        	dataSampleRate_ = inFileInfo_.samplerate;
-        	audioDataBytes_ = inFileInfo_.frames*inFileInfo_.channels*sizeof(S16);		
-            channels_       = inFileInfo_.channels;   
+        	samplingFrequency_ = inFileInfo_.samplerate;
+        	audioDataBytes_    = inFileInfo_.frames*inFileInfo_.channels*sizeof(S16);		
+            channels_          = inFileInfo_.channels;   
 //            totalFrames_    = inFileInfo_.frames;
             }
         // For unsupported file type, just zero everything
         else
             {
-        	dataSampleRate_ = 0;
-        	audioDataBytes_ = 0;		
-            channels_       = 0;   
+        	samplingFrequency_ = 0;
+        	audioDataBytes_    = 0;		
+            channels_          = 0;   
 //            totalFrames_    = 0;
             }
         }
@@ -133,10 +132,10 @@ printf("CRawPlayer:: listener=%p DoneMessage=%d flags=$%X '%s' loopCount=%ld\n",
     	int bytesRead = fread( bH, 1, sizeof(tAudioHeader), fileH_);
 pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)), "CRawPlayer::ctor: Unable to read RAW audio header.\n");
 
-    	dataSampleRate_ = bH->sampleRate;
-    	audioDataBytes_ = bH->dataSize;		
-        channels_       = 1 + (0 != (bH->flags & kAudioHeader_StereoBit));
-//    	totalFrames_    = audioDataBytes_ / (sizeof(S16)*channels_);
+    	samplingFrequency_ = bH->sampleRate;
+    	audioDataBytes_    = bH->dataSize;		
+        channels_          = 1 + (0 != (bH->flags & kAudioHeader_StereoBit));
+//long    	totalFrames    = audioDataBytes_ / (sizeof(S16)*channels_);
 
 //printf("Brio Raw Header: sizeof()=%d dataOffset=%d ch=%ld fs=%d Hz dataSize=%ld\n", 
 //    sizeof(tAudioHeader), (int)bH->offsetToData, channels_, (int)bH->sampleRate, bH->dataSize);
@@ -144,11 +143,10 @@ pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)), "CRawPlayer::ctor: Unabl
 pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData), "CRawPlayer::ctor: offsetToData=%ld, but should be %d.  Is this Brio Raw Audio file ?\n", bH->offsetToData , sizeof(tAudioHeader));
 		}
 	
-//printf("AF info: ch=%ld fs=%ld Hz frames=%ld\n", channels_, dataSampleRate_, totalFrames_);
+//long    	totalFrames    = audioDataBytes_ / (sizeof(S16)*channels_);
+//printf("CRawPlayer AF info: ch=%ld fs=%ld Hz frames=%ld\n", channels_, samplingFrequency_, totalFrames);
 // Most of member vars set by superclass; these are RAW specific.
 //framesRemaining_ = totalFrames_;
-
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CRawPlayer::ctor #Frames=%d optionsFlags=%X\n", (int)totalFrames_, (int)optionsFlags_);
 
 //printf("CRawPlayer::ctor -- end \n");
 } // ---- end CRawPlayer() ----
@@ -160,9 +158,7 @@ CRawPlayer::~CRawPlayer()
 {
 //printf("~CRawPlayer: start %p\n", (void *) this);
 
-tErrType result;
-	
-result = pKernelMPI_->LockMutex( render_mutex_ );
+tErrType result = pKernelMPI_->LockMutex( render_mutex_ );
 if (kNoErr != result)
     printf("~CRawPlayer: Couldn't lock render_mutex\n");
 
@@ -239,7 +235,7 @@ tErrType result;
 U32		index;
 U32		framesRead = 0, framesToProcess = 0;
 U32		totalBytesRead = 0, bytesRead = 0;
-U32     bytesToRead = numStereoFrames * sizeof(S16); // * channels_;
+U32     bytesToRead = numStereoFrames * sizeof(S16) * channels_;
 S16* 	bufferPtr  = pPcmBuffer_;
 long    fileEndReached = false;
 

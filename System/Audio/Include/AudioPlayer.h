@@ -67,7 +67,7 @@ public:
 
 	inline U8				GetPan(        void ) { return pan_; }
 	inline U8				GetVolume(     void ) { return volume_; }
-	inline U32				GetSampleRate( void ) { return dataSampleRate_; }
+	inline U32				GetSampleRate( void ) { return samplingFrequency_; }
 
 
 	inline tAudioOptionsFlags	GetOptionsFlags() { return optionsFlags_; }
@@ -91,7 +91,7 @@ protected:
 	U32					audioDataBytes_;		
 	
     long                channels_;
-	U32					dataSampleRate_;
+	U32					samplingFrequency_;
 
 	Boolean				shouldLoopFile_;	
 
