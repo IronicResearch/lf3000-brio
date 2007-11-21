@@ -809,6 +809,7 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 	U32 		*d;
 	U32	 		color = attr_.color;
 	U8 			alpha;
+	U8			A = (color & 0xFF000000) >> 24;
 	U8			R = (color & 0xFF0000) >> 16;
 	U8			G = (color & 0x00FF00) >> 8;
 	U8			B = (color & 0x0000FF) >> 0;
@@ -830,9 +831,13 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 		d = (U32*)u;
 		for (x = 0; x < w; x++) 
 		{
-#if 0		// FIXME/dm: Enable real alpha blending
+#if 0 // defined(LF1000) && !defined(EMULATION)	// FIXME/dm: Enable real alpha blending
 			if ((alpha = *s) != 0)
 				*d = color | (alpha << 24);
+			(void)R;
+			(void)G;
+			(void)B;
+			(void)A;
 #else
 			if ((alpha = *s) != 0) 
 			{
@@ -840,11 +845,13 @@ void CFontModule::ConvertGraymapToRGB32(FT_Bitmap* source, int x0, int y0, tFont
 				U32 r = (bgcolor & 0xFF0000) >> 16;
 				U32 g = (bgcolor & 0x00FF00) >> 8;
 				U32 b = (bgcolor & 0x0000FF) >> 0;
+				U32 a = (bgcolor & 0xFF000000) >> 24;
 				U8  ialpha = 0xFF - alpha;
 				r = (R * alpha + r * ialpha) / 0xFF;
 				g = (G * alpha + g * ialpha) / 0xFF;
-				b = (B * alpha + b * ialpha) / 0xFF; 
-				*d = (alpha << 24) | (r << 16) | (g << 8) | (b << 0);
+				b = (B * alpha + b * ialpha) / 0xFF;
+				a = (A * alpha + a * ialpha) / 0xFF; 
+				*d = (a << 24) | (r << 16) | (g << 8) | (b << 0);
 			}
 #endif
 			d++;
@@ -1062,8 +1069,9 @@ inline void UnderlineBitmap(FT_Bitmap* source, int y, int dy)
 inline void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
 {
 	// Internal glyph cursor is in 16:16 fixed-point
-	x += ( glyph->advance.x + 0x8000 ) >> 16;
-    y += ( glyph->advance.y + 0x8000 ) >> 16;
+	// FIXME/dm: Rounding should be applied to cummulative XY values
+	x += ( glyph->advance.x /* + 0x8000 */) >> 16;
+	y += ( glyph->advance.y /* + 0x8000 */) >> 16;
 }
 
 //----------------------------------------------------------------------------
