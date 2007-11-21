@@ -3,6 +3,18 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.23  (Build 2274 released Nov 21, 2007) 
+===========================================
+Fix for audio "deadlock" issue, though it was more of a crash due to 
+multi-threading.  This fix required some thread reorganization, so it 
+was more of an audio artchitecture change than a simple fix.  Audio 
+render threads no longer create and delete objects.  Whew.
+
+Testde with PlayAudio and BrioMixer for Wav/Ogg/Raw/MIDI playback, 
+SendDone message, and looping.  Everthing works, although for this 
+check-in , stereo WAV/Raw doesn't work.  Mono WAV/RAW works, though.
+
+===========================================
 v0.1.22  (Build 2242 released Nov 14, 2007) 
 ===========================================
 
