@@ -43,6 +43,7 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 	bComplete_      = 0;
 	bStopping_      = 0;
 	bHasAudioCodec_ = 0;
+    waitForRender_  = 0;
 
 	// Get Debug MPI
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
@@ -52,11 +53,8 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 #if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 #endif
-
-//	pDebugMPI_->DebugOut( kDbgLvlValuable, 
-//		(const char *)"\nAudioPlayer ctor: Debug and Resource MPIs created\n");	
 	
-	// Set all of the audio player class variables from the message
+// Set class variables from message
 	pan_    = pAudioInfo->pan;
 	volume_ = pAudioInfo->volume;
 
@@ -64,7 +62,7 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 	pListener_    = pAudioInfo->pListener;
 	payload_      = pAudioInfo->payload;
 	optionsFlags_ = pAudioInfo->flags;
-	bDoneMessage_ = (kNull != pListener_ && (pAudioInfo->flags & kAudioOptionsDoneMsgAfterComplete));
+	bDoneMessage_ = (pAudioInfo->flags & kAudioOptionsDoneMsgAfterComplete);
 
 //#define DEBUG_AUDIOPLAYER_OPTIONS
 #ifdef DEBUG_AUDIOPLAYER_OPTIONS

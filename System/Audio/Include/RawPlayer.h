@@ -36,7 +36,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //		CRawPlayer
 //
 // Description:
-//		Class to manage the playing of raw audioo. 
+//		Class to manage the playing of raw audio. 
 //==============================================================================
 class CRawPlayer : public CAudioPlayer {
 public:
@@ -56,20 +56,22 @@ public:
 
 private:
 	CKernelMPI* 	pKernelMPI_;		// For mutex calls
-	tMutex			render_mutex_;		// Need to protect the renderbuffer call
-										// because it's in a different thread.
+	tMutex			render_mutex_;		// To make renderbuffer() thread-safe
 
-	S16 			*pPcmBuffer_;		// Audio sample buffer
-	U32				totalFrames_;			
-	U32				framesRemaining_;
+//	S16 			*pPcmBuffer_;		// Audio sample buffer
+    S16             pPcmBuffer_[2*kAudioOutBufSizeInWords];
+
+//	U32				totalFrames_;			
+//	U32				framesRemaining_;
     S32             loopCount_;
     S32             loopCounter_;
 
-// Audio file info (WAV, AIFF, Brio "RAW"
+// Audio file info (WAV, AIFF, Brio "RAW")
     U32             fileType_;
     SNDFILE	        *inFile_;
     SF_INFO	        inFileInfo_;  // FIXX: make local variable when Rewind() fixed in sndfileutil.c
-    char           inFilePath[1000]; 
+    char           inFilePath[500]; 
+    
 };
 
 LF_END_BRIO_NAMESPACE()

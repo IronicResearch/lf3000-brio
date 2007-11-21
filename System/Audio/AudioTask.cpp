@@ -245,121 +245,55 @@ static void DoSetOutputEqualizer( CAudioMsgSetOutputEqualizer* pMsg )
 	gContext.pAudioMixer->SetOutputEqualizer( gContext.outputEqualizerEnabled );
 }
 
-//==============================================================================
-//==============================================================================
-static void DoStartAudio( CAudioMsgStartAudio* pMsg ) 
+// ==============================================================================
+// DoStartAudio
+// ==============================================================================
+static void DoStartAudio( CAudioMsgStartAudio *pMsg ) 
 {
-	tAudioTypeInt		rsrcType = kAudioRsrcUndefined;
+//	tAudioTypeInt		rsrcType = kAudioRsrcUndefined;
 	CAudioReturnMessage	msg;
-	tAudioID			newID = kNoAudioID;
-	CChannel*			pChannel = kNull;
-	CAudioPlayer*		pPlayer = kNull;
 	CPath				filename;
-	CPath				fileExtension;
-	int					strIndex;
+	CPath				fileExt;
 
-	// Retrieve the StartAudio message's data.
 	tAudioStartAudioInfo*	pAudioInfo = pMsg->GetData();
+	tAudioStartAudioInfo*	pAi = pAudioInfo;
+	int strIndex = pAudioInfo->path->size(); 
 
-	strIndex = pAudioInfo->path->size(); 
+//printf("AudioTask::DoStartAudio: StartAudioMsg: vol=%d pri=%d pan=%d path='%s' listen=%p payload=%d flags=$%X \n",
+//			(int)pAi->volume, (int)pAudioInfo->priority, (int)pAi->pan, 
+//			pAi->path->c_str(), (void *)pAi->pListener, (int)pAi->payload, (int)pAi->flags );
 
-//	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
-//			"AudioTask::DoStartAudio vol=%d pan=%d pri=%d path='%s' listener=%p payload=%d flags=%d \n",
-//			static_cast<int>(pAudioInfo->volume), 
-//			static_cast<int>(pAudioInfo->pan), 
-//			static_cast<int>(pAudioInfo->priority), 
-//			pAudioInfo->path->c_str(),
-//			(void *)pAudioInfo->pListener,
-//			static_cast<int>(pAudioInfo->payload), 
-//			static_cast<int>(pAudioInfo->flags) );
-//	printf("AudioTask::DoStartAudio -- Start Audio Msg: vol:%d, pri:%d, pan:%d, path:%s, listen:%p, payload:%d, flags:%d \n",
-//			static_cast<int>(pAudioInfo->volume), 
-//			static_cast<int>(pAudioInfo->priority), 
-//			static_cast<int>(pAudioInfo->pan), 
-//			pAudioInfo->path->c_str(),
-//			(void *)pAudioInfo->pListener,
-//			static_cast<int>(pAudioInfo->payload), 
-//			static_cast<int>(pAudioInfo->flags) );
+// Extract filename (including extension).
+	strIndex = pAi->path->rfind('/', pAi->path->size());
+	filename = pAi->path->substr(strIndex + 1, pAi->path->size());
+	strIndex = pAi->path->rfind('.', pAi->path->size());
+	fileExt  = pAi->path->substr(strIndex + 1, strIndex+3);
+    char *sExt = (char *) fileExt.c_str();
+//	printf("AudioTask::DoStartAudio Filename: '%s' Ext='%s'\n", filename.c_str(), fileExtension.c_str());
 
-	// Extract filename (including extension).
-	strIndex = pAudioInfo->path->rfind('/', pAudioInfo->path->size());
-	filename = pAudioInfo->path->substr(strIndex + 1, pAudioInfo->path->size());
-	strIndex = pAudioInfo->path->rfind('.', pAudioInfo->path->size());
-	fileExtension  = pAudioInfo->path->substr(strIndex + 1, strIndex+3);
-//	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
-//		"AudioTask::DoStartAudio Filename: '%s' Ext='%s'\n", filename.c_str(), fileExtension.c_str());
+	msg.SetAudioErr( kAudioNoChannelAvailErr );       
+	msg.SetAudioID( kNoAudioID );
 
+	// Generate audio ID
+	tAudioID newID = gContext.nextAudioID++;
+	if (kNoAudioID == gContext.nextAudioID)
+		gContext.nextAudioID = 0;
 
-	// Find the best channel for the specified priority
-	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->priority );
-//	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose,
-//			"AudioTask::DoStartAudio -- Find Best Channel returned:0x%x\n", reinterpret_cast<unsigned 
-//int>(pChannel) );
-
-	// If we have a channel, play audio, if not return error to caller.
-	if (pChannel) {							   	
-		// Generate audio ID, accounting for wrap around
-		newID = gContext.nextAudioID++;
-		if (gContext.nextAudioID == kNoAudioID)
-			gContext.nextAudioID = 0;
-	
-		// Branch on the type of audio resource to create a new audio player
-        char *sExt = (char *) fileExtension.c_str();
-		if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")  ||
-            !strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
-            !strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")  ||
-            !strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
-            !strcmp(sExt, "wav")  || !strcmp( sExt, "WAV")
-            )
-			rsrcType = kAudioRsrcRaw;  
-		else if (!strcmp( sExt, "ogg") || !strcmp( sExt, "OGG") ||
-                !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
-			rsrcType = kAudioRsrcOggVorbis; 
-
-		switch ( rsrcType )
-		{
-		case kAudioRsrcRaw:
-//	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create RawPlayer\n");
-			pPlayer = new CRawPlayer( pAudioInfo, newID );
-			break;
-	
-		case kAudioRsrcOggVorbis:
-		case kAudioRsrcOggTheora:
-//	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create VorbisPlayer\n");
-			pPlayer = new CVorbisPlayer( pAudioInfo, newID );
-			break;
-		
-		case kAudioRsrcMIDI:
- gContext.pDebugMPI->DebugOut( kDbgLvlImportant,
-				"AudioTask::DoStartAudio -- Faking Create MidiPlayer... DON'T DO THIS! USE MIDI API\n");
-	//		pPlayer = new CMidiPlayer( pAudioInfo->hRsrc, newID );
-			break;
-	
-		default:
-			gContext.pDebugMPI->DebugOut( kDbgLvlImportant,
-				"AudioTask::DoStartAudio -- Create *NO* Player... bad news, unhandled audio type!\n");
-			break;
-	
-		} 
-		
-		// Start channel found above using newly created player.
-		// When the audio is done playing, the player will be destroyed automatically.
-		pChannel->InitChanWithPlayer( pPlayer );
-			 
-		// Send the audioID back to the caller
+//printf("---- AUDIO_PLAYER_ADDITION_V1\n");
+	// Create player based on file extension
+    if (kNoErr == gContext.pAudioMixer->AddPlayer( pAudioInfo, sExt, newID))
+        {
 		msg.SetAudioErr( kNoErr );
 		msg.SetAudioID( newID );
-	} else {
-		gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-			"AudioTask::DoStartAudio -- Couldn't Find A Channel!\n");
-printf("AudioTask::DoStartAudio: unable to find a Channel.\n");
-		// Send the audioID back to the caller
-		msg.SetAudioErr( kAudioNoChannelAvailErr );
-	}
+        }
 
+// Send audioID and error codes back to caller
 	SendMsgToAudioModule( msg );
-}
+}   // ---- end DoStartAudio() ----
 
+// ==============================================================================
+// DoGetAudioTime
+// ==============================================================================
 static void DoGetAudioTime( CAudioMsgGetAudioTime* msg ) {
 	tAudioID  			id = msg->GetData();
 	CAudioReturnMessage	retMsg;
@@ -478,14 +412,11 @@ static void DoGetAudioPan( CAudioMsgGetAudioPan* msg )
 tAudioPanInfo 	info = msg->GetData();
 CAudioReturnMessage	retMsg;
 U32					pan = 0;
-CChannel*			pChannel;
 
-gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-	"AudioTask::DoGetAudioPan() -- Get Pan for audioID = %d...\n", 
-	static_cast<int>(info.id));	
+//gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoGetAudioPan() for audioID=%d\n", static_cast<int>(info.id));	
 
-//Find current Pan for channel using audioID
-pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
+// Find current Pan for channel using audioID
+CChannel *pChannel = gContext.pAudioMixer->FindChannelUsing( info.id );
 if (pChannel) 
 	pan = pChannel->GetPan();
 
@@ -607,40 +538,35 @@ static void DoPauseAudio( CAudioMsgPauseAudio* pMsg )
 		pChannel->Pause();
 }
 
-//==============================================================================
-//==============================================================================
+// ==============================================================================
+// DoResumeAudio
+// ==============================================================================
 static void DoResumeAudio( CAudioMsgResumeAudio* pMsg ) 
 {
-	CChannel*	pChannel = kNull;
-	tAudioID	id = pMsg->GetData();
+tAudioID	id = pMsg->GetData();
 
-	// Find the best channel for the specified priority
-	pChannel = gContext.pAudioMixer->FindChannelUsing( id );
+// Find channel with specified ID
+CChannel *pChannel = gContext.pAudioMixer->FindChannelUsing( id );
 
-	if (pChannel)
-		pChannel->Resume();
+if (pChannel && pChannel->IsPaused())
+	pChannel->Resume();
 }
 
-//==============================================================================
-//==============================================================================
+// ==============================================================================
+// DoStopAudio
+// ==============================================================================
 static void DoStopAudio( CAudioMsgStopAudio* pMsg ) 
 {
-	CChannel*				pChannel = kNull;
-	tAudioStopAudioInfo*	pAudioInfo = pMsg->GetData();
+tAudioStopAudioInfo*	pAudioInfo = pMsg->GetData();
 
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoStopAudio() -- Stopping audio ID = %d...\n", 
-		static_cast<int>(pAudioInfo->id));	
+//printf( "AudioTask::DoStopAudio() Stopping ID = %d\n", (int)pAudioInfo->id);	
 
-	// Find the best channel for the specified priority
-	pChannel = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->id );
-	gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-		"AudioTask::DoStopAudio() -- AudioID %d on channel 0x%x...\n", 
-		static_cast<int>(pAudioInfo->id), 
-		reinterpret_cast<unsigned int>(pChannel));	
+// Find channel with specified ID
+CChannel *pCh = gContext.pAudioMixer->FindChannelUsing( pAudioInfo->id );
+//printf("AudioTask::DoStopAudio() AudioID %d on channel $%p\n", (int)pAudioInfo->id, (void*)pCh);	
 
-	if (pChannel)
-		pChannel->Release( pAudioInfo->suppressDoneMsg );
+	if (pCh && pCh->IsInUse())
+		pCh->Release( true); //pAudioInfo->suppressDoneMsg );
 }
 
 //==============================================================================
@@ -1210,7 +1136,7 @@ gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Adjust output equ
 	
 			//*********************************
 			case kAudioCmdMsgTypeStopAudio:
-				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Stop audio.\n" );	
+//				gContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain() Stop audio.\n" );	
 	
 				DoStopAudio( (CAudioMsgStopAudio*)pAudioMsg );
 				break;

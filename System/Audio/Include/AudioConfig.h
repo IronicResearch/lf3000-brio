@@ -34,8 +34,8 @@
 #define kAudioFramesPerBuffer		512
 #endif
 
-#define kAudioSamplesPerStereoBuffer (kAudioFramesPerBuffer * kAudioNumOutputChannels)
-#define kAudioOutBufSizeInBytes		(kAudioFramesPerBuffer * kAudioBytesPerStereoFrame)
+#define kAudioSamplesPerStereoBuffer (kAudioFramesPerBuffer * kAudioNumOutputChannels  )
+#define kAudioOutBufSizeInBytes		 (kAudioFramesPerBuffer * kAudioBytesPerStereoFrame)
 #define kAudioOutBufSizeInWords		(kAudioOutBufSizeInBytes / kAudioBytesPerSample)
 
 #endif /* LF_BRIO_AUDIOCONFIG_H */

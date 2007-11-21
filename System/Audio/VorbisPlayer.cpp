@@ -66,9 +66,10 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAud
 		"VorbisPlayer::ctor : Unable to open file: '%s'\n", pInfo->path->c_str() );
  
     // Set up looping
-	shouldLoop_  = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
+	shouldLoopFile_  = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
     loopCount_   = payload_;
     loopCounter_ = 0;
+
 //#define DEBUG_VORBISPLAYER_OPTIONS
 #ifdef DEBUG_VORBISPLAYER_OPTIONS
 {
@@ -186,11 +187,10 @@ void CVorbisPlayer::SendDoneMsg( void )
 	const tEventPriority	kPriorityTBD = 0; // lower priority for async post
 	tAudioMsgAudioCompleted	data;
 
+//printf("CVorbisPlayer::SendDoneMsg audioID=%d\n", id_);
 	data.audioID = id_;
 	data.payload = loopCount_;
 	data.count   = 1;
-
-//printf("CVorbisPlayer::SendDoneMsg audioID=%d\n", id_);
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
@@ -206,9 +206,9 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	U32		index;
 	int 	dummy;
 	U32		framesToProcess = 0;
-	U32		totalBytesRead = 0;
-	U32		bytesRead = 0;
-	U32 	bytesToRead= 0;
+	U32		totalBytesRead  = 0;
+	U32		bytesRead   = 0;
+	U32 	bytesToRead = 0;
 	char* 	bufferPtr = kNull;
 	S16*	pCurSample;
 	U32		framesRead = 0;
@@ -224,7 +224,7 @@ U32 CVorbisPlayer::RenderBuffer( S16* pOutBuff, U32 numStereoFrames )
 	if (EBUSY == result)
 		return numStereoFrames;
 	else
-		pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::RenderBuffer -- Couldn't lock mutex.\n");
+		pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::RenderBuffer: Couldn't lock mutex.\n");
 
 		bytesToRead = numStereoFrames * sizeof(S16) * channels_;
 	
@@ -256,7 +256,7 @@ long fileEndReached = false;
 //				SendDoneMsg();
 //		}
         fileEndReached = (0 == bytesRead);
-		if ( fileEndReached && shouldLoop_)
+		if ( fileEndReached && shouldLoopFile_)
             {
 //{static long c=0; printf("CVorbisPlayer::RenderBuffer: Rewind %ld loop%ld/%ld\n", c++, loopCounter_+1, loopCount_);}
             if (++loopCounter_ < loopCount_)
@@ -343,4 +343,4 @@ long fileEndReached = false;
 } // ---- end RenderBuffer() ----
 
 LF_END_BRIO_NAMESPACE()
-// EOF	
+

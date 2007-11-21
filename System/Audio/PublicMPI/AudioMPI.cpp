@@ -492,8 +492,8 @@ Boolean CAudioMPI::IsAudioPlaying( void )
 	return pModule_->IsAudioPlaying();
 }
 
-//==============================================================================
-//==============================================================================
+// ==============================================================================
+// ==============================================================================
 tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *pListener, tMidiPlayerID *midiPlayerID ) 
 {
 	if ( !pModule_ )
@@ -502,8 +502,8 @@ tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *
 	return pModule_->AcquireMidiPlayer( priority, pListener, midiPlayerID );
 }
 
-//==============================================================================
-//==============================================================================
+// ==============================================================================
+// ==============================================================================
 tErrType CAudioMPI::ReleaseMidiPlayer( tMidiPlayerID midiPlayerID ) 
 {
 	if ( !pModule_ )
@@ -512,6 +512,9 @@ tErrType CAudioMPI::ReleaseMidiPlayer( tMidiPlayerID midiPlayerID )
 	return pModule_->ReleaseMidiPlayer( midiPlayerID );
 }
 
+// ==============================================================================
+// StartMidiFile
+// ==============================================================================
 tErrType CAudioMPI::StartMidiFile( 	tMidiPlayerID		id,
 									const CPath 		&path, 
 									U8					volume, 
