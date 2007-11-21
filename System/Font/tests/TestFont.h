@@ -661,6 +661,61 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void testFontMono()
+	{
+		tFontHndl	font1;
+		tFontHndl	font2;
+		tFontSurf	surf;
+		tFontMetrics	mtrx;
+		tDisplayHandle 	disp;
+		S32				x,y,dx,dy;
+		U8*				buffer = new U8[(16*8) * (6*16) * 3];
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(6*16, 16*8, kPixelFormatRGB888, buffer);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		memset(surf.buffer, 0, surf.height * surf.pitch);
+		
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("FreeMono.ttf", 14);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		TS_ASSERT( mtrx.height != 0 );
+		pFontMPI_->SetFontColor(0xFFFFFFFF); // white
+		
+		x = y = 0; 
+		dx = mtrx.advance;
+		dy = mtrx.height;
+		for (gunichar c = 0x20; c < 0x80; c++)
+		{	
+			CString code = CString(1,c);
+			pFontMPI_->DrawString(&code, x, y, &surf);
+			x += dx;
+			if (c % 0x10 == 0x0F) 
+			{
+				x = 0;
+				y += dy;
+			}
+		}
+		pDisplayMPI_->Invalidate(0, NULL);
+		
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pFontMPI_->UnloadFont(font1);
+		pFontMPI_->UnloadFont(font2);
+		delete pDisplayMPI_;
+	}
+	
+	//------------------------------------------------------------------------
 	void testFontOpenGL()
 	{
 		tFontHndl	font1;

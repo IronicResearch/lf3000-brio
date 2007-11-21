@@ -10979,3 +10979,13 @@ By gklimanis (gklimanis@leapfrog.com) on 11/21/07 11:46 AM
 4,203 ms. (Cumulative: 2,738,855 ms)
 
 ----------------
+Revision 2,276 from svn://localhost/TRUNK/:
+Revision 2,277 from svn://localhost/TRUNK/:
+
+Adjustments to anti-alias blending and horizontal advance for improved appearance on embedded target.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/21/07 3:13 PM
+2 changed, 0 added, 0 deleted.
+4,172 ms. (Cumulative: 2,743,090 ms)
+
+----------------
