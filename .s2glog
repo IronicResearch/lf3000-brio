@@ -10989,3 +10989,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/21/07 3:13 PM
 4,172 ms. (Cumulative: 2,743,090 ms)
 
 ----------------
+Revision 2,278 from svn://localhost/TRUNK/:
+Revision 2,279 from svn://localhost/TRUNK/:
+
+Added the new testTicketAgentMutex test to verify that the mutex works OK
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 11/21/07 4:46 PM
+1 changed, 0 added, 0 deleted.
+4,141 ms. (Cumulative: 2,747,309 ms)
+
+----------------

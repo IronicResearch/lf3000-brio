@@ -27,7 +27,9 @@ LF_USING_BRIO_NAMESPACE()
 
 namespace
 {
-#define MS_TO_NS(x) (x*1000000) 	
+	CKernelMPI*		KernelMPI;
+
+	#define MS_TO_NS(x) (x*1000000) 	
 	typedef struct
 	{
 		int numTest;
@@ -118,7 +120,37 @@ void *threadfunc_broadcast(void *parm)
 	return (void *)NULL;
 }
 //------------------------------------------------------------------------------------------
- 
+//	Testing mutex
+//
+// pthread_mutex_t tickets_sold_lock = PTHREAD_MUTEX_INITIALIZER;
+tMutex tickets_sold_lock = PTHREAD_MUTEX_INITIALIZER;
+#define NUM_TICKETS 100 //10000000
+#define NUM_AGENTS 5
+int total_sold = 0;
+
+void* ticket_agent (void* foo)
+{
+	tErrType err = 0;
+	int not_done = 1;
+	
+	while (not_done)
+    {
+ 	   err = KernelMPI->LockMutex( tickets_sold_lock );
+       TS_ASSERT_EQUALS( err, ((tErrType)0) );
+	   if (total_sold < NUM_TICKETS)
+         {
+		   KernelMPI->TaskSleep( 3 );       	
+		   total_sold++;
+         }
+         else
+           not_done = 0;
+       err = KernelMPI->UnlockMutex( tickets_sold_lock );
+       TS_ASSERT_EQUALS( err, ((tErrType)0) );
+    }
+	return NULL;
+}
+
+
 }  // workspace
 
 LF_USING_BRIO_NAMESPACE()
@@ -131,7 +163,7 @@ class TestKernelMPI : public CxxTest::TestSuite, TestSuiteBase
 private:
 
 public:
-	CKernelMPI*		KernelMPI;
+//	CKernelMPI*		KernelMPI;
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
@@ -516,6 +548,11 @@ public:
 		CEventMessage msg;
 		U32 maxMessageSize = sizeof( CEventMessage );
 		
+		msg.SetMessageEventType( 0 );
+		msg.SetMessageSize( 0 ); 
+		msg.SetMessagePriority( 1 );
+		msg.SetMessageReserved( 0 );
+
 		struct timespec now;		// time when it's started waiting
 		struct timespec end;		// time when it's ended waiting
 //		struct timespec timeout;	// timeout value for wait function
@@ -589,9 +626,11 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err_open );							
 
 		CMessage msg;
-		msg.SetMessageSize( sizeof(CMessage) );
-		msg.SetMessagePriority( 1 );
 		
+		msg.SetMessageSize( 0 ); 
+		msg.SetMessagePriority( 1 );
+		msg.SetMessageReserved( 0 );
+
 		struct timespec now;		// time when it's started waiting
 		struct timespec end;		// time when it's ended waiting
 
@@ -602,7 +641,7 @@ public:
 		{	
 			clock_gettime(CLOCK_REALTIME, &now);
 			err_send = KernelMPI->SendMessageOrWait( hndl, 
-													msg, delay);
+													(const CMessage&)msg, delay);
 			{
 				clock_gettime(CLOCK_REALTIME, &end);
 				
@@ -1129,6 +1168,25 @@ public:
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
     }
 	
+    void testTicketAgentMutex()
+    {
+	   ptintf_test_info("testTicketAgentMutex");
+
+	   for(int i = 0; i< 10; i++ )
+   	   {	   
+   		   total_sold = 0;
+    	   pthread_t agents[NUM_AGENTS];
+    	   void* return_val;
+    	   int i;
+    	   for (i = 0; i < NUM_AGENTS; i++)
+    	      pthread_create (&agents[i], NULL, ticket_agent, NULL);
+    	   for (i = 0; i < NUM_AGENTS; i++)
+    	      pthread_join (agents[i], &return_val);
+   		   TS_ASSERT_EQUALS( total_sold, NUM_TICKETS );
+    	   //    	   printf ("%d\n", total_sold);
+   	   }   
+    }
+    
     // Destroys a mutex. It was tested in the 'testInit_DeInit_Mutex'
     void xtestDeInitMutex()
     {
@@ -1426,7 +1484,7 @@ public:
 		}	
 	}
 	
-	void testGetElapsedAsSec()
+	void testGetElapsedAsSec()    // FIXME/BSK
 	{
 		ptintf_test_info("testGetElapsedAsSec. Test takes 10 sec");
 
@@ -1462,7 +1520,7 @@ public:
 
 	}
 
-	void testGetElapsedTimeAsStructure()
+	void testGetElapsedTimeAsStructure()     // FIXME/BSK
 	{
 		ptintf_test_info("testGetElapsedTimeAsStructure. Test takes 10 sec");
 
@@ -1522,6 +1580,7 @@ public:
 		printf("#%3d Test Name = %s\n", testNum++, pName );
 		fflush(stdout);
 	}	
+
 };
 
 
