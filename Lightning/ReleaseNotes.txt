@@ -3,17 +3,44 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.23  (Build 2274 released Nov 21, 2007) 
+v0.1.23  (Build 2282 released Nov 24, 2007) 
 ===========================================
-Fix for audio "deadlock" issue, though it was more of a crash due to 
-multi-threading.  This fix required some thread reorganization, so it 
-was more of an audio artchitecture change than a simple fix.  Audio 
-render threads no longer create and delete objects.  Whew.
 
-Testde with PlayAudio and BrioMixer for Wav/Ogg/Raw/MIDI playback, 
-SendDone message, and looping.  Everthing works, although for this 
-check-in , stereo WAV/Raw doesn't work.  Mono WAV/RAW works, though.
+Release for LF1000 development (green) and form-factor target boards.
 
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.14.0.2280.lfp
+	firmware-ME_LF1000-0.14.0.2280.lfp 
+
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.14.0.2280.lfp
+	firmware-LF_LF1000-0.14.0.2280.lfp 
+
+* Brio library binaries:
+	Brio-0.1.22.2282.lfp
+
+* NFS root file system: 
+	nfsroot-svn2282.tar.gz
+
+Enhancements:
+-------------
+
+* Fix for audio "deadlock" issue, though it was more of a crash due to 
+  multi-threading.  This fix required some thread reorganization, so it 
+  was more of an audio artchitecture change than a simple fix.  Audio 
+  render threads no longer create and delete objects.  Whew.
+
+* Tested with PlayAudio and BrioMixer for Wav/Ogg/Raw/MIDI playback, 
+  SendDone message, and looping.  Everything works.
+
+Known Issuses:
+-------------
+
+* The SendMessageOrWait() and ReceiveMessageOrWait() functions from
+  the KernelMPI inteface can give errors on target
+    
 ===========================================
 v0.1.22  (Build 2242 released Nov 14, 2007) 
 ===========================================
