@@ -664,7 +664,7 @@ public:
 	void testFontMono()
 	{
 		tFontHndl	font1;
-		tFontHndl	font2;
+//		tFontHndl	font2;
 		tFontSurf	surf;
 		tFontMetrics	mtrx;
 		tDisplayHandle 	disp;
@@ -711,7 +711,7 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
-		pFontMPI_->UnloadFont(font2);
+//		pFontMPI_->UnloadFont(font2);
 		delete pDisplayMPI_;
 	}
 	

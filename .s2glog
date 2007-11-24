@@ -10999,3 +10999,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/21/07 4:46 PM
 4,141 ms. (Cumulative: 2,747,309 ms)
 
 ----------------
+Revision 2,280 from svn://localhost/TRUNK/:
+Revision 2,281 from svn://localhost/TRUNK/:
+
+Fixed bug:The UnloadFont was called with undefined parameter font2
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 11/24/07 1:54 PM
+1 changed, 0 added, 0 deleted.
+4,282 ms. (Cumulative: 2,751,669 ms)
+
+----------------
