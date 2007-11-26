@@ -11086,3 +11086,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/26/07 11:06 AM
 3,907 ms. (Cumulative: 2,792,465 ms)
 
 ----------------
+Revision 2,293 from svn://localhost/TRUNK/:
+
+Fine-tune LCD values
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/26/07 1:42 PM
+1 changed, 0 added, 0 deleted.
+3,938 ms. (Cumulative: 2,796,465 ms)
+
+----------------
