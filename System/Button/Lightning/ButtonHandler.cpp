@@ -59,11 +59,11 @@ void *LightningButtonTask(void*)
 	
 	/*
 	 * 'Brighten' screen by adjusting LCD brightness and LCD backlight.  As
-	 * 'N' levels are desired, then array will have 2N entries, first
+	 * 'N' levels are desired, then array will have 2(N-1) entries, first
 	 * increasing then increasing in value.
 	 */
 	
-	#define	SCREEN_BRIGHT_LEVELS	(2 * 4)	// have 4 distinct levels
+	#define	SCREEN_BRIGHT_LEVELS	(2 * 4)	// have 5 distinct levels
 	
 	/* 
 	 * lcdBright and lcdBacklight arrays describe a complete cycle of screen
@@ -72,9 +72,9 @@ void *LightningButtonTask(void*)
 	 * the default setting.
 	 */
 	S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
-			{  52,  62,  72,  62,  52,  42,  32,  42};
+			{   0,   0,   0,   0,   0,   0,   0,   0};
 	S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
-			{  38,  82, 127,  82,  38,  -7, -52,  -7};
+			{ -11,  30,  72,  30, -11, -52, -93, -52};
 	
 	S8 brightness = lcdBright[0];
 	S8 backlight  = lcdBacklight[0];
