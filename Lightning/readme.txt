@@ -293,3 +293,7 @@ Running samples  -- Target
 3) If you are running on the actual hardware, you should just be able to run
    the command "BrioCube" in the serial console.
 
+4) PlayAudio is a command line utility that accepts file names.  Run the program with 
+no arguments to see complete usage.
+5) BrioAudio needs some button input to play sounds.  The A and B buttons play audio
+sample files. The Home/Hint button plays a MIDI file.
