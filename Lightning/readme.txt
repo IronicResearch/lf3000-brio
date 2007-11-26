@@ -116,11 +116,19 @@ The installation tree will look more or less like this:
 |  |
 |  +-Button       (demonstrates button presses on the hardware)
 |  |
+   +-DatasetLoader	(tests XML binary dataset loader utility)
+   |
 |  +-Display      (demonstrates 2D RGB display surface layer and fonts)
 |  |
+   +-PlayAudio    (command line utility to test OGG and MIDI files)
+   |
+   +-Power        (tests Power MPI events)
+   |
 |  +-Simple       (simplest OpenGL application, minimal build system)
 |  |
 |  +-SysAppDemo   (system application demo for handling USB and Power events)
+   |
+   +-USBDemo      (tests USB MPI events)
 |
 +-Tools
    |
@@ -297,3 +305,6 @@ Running samples  -- Target
 no arguments to see complete usage.
 5) BrioAudio needs some button input to play sounds.  The A and B buttons play audio
 sample files. The Home/Hint button plays a MIDI file.
+
+6) DisplayDemo display a pixel pattern. Buttons change brightness, contrast, alpha.
+Pause or Home button exits. 
