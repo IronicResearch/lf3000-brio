@@ -74,7 +74,7 @@ void *LightningButtonTask(void*)
 	S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
 			{   0,   0,   0,   0,   0,   0,   0,   0};
 	S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
-			{ -11,  30,  72,  30, -11, -52, -93, -52};
+			{ -11,  31,  72,  31, -11, -53, -94, -53};
 	
 	S8 brightness = lcdBright[0];
 	S8 backlight  = lcdBacklight[0];
