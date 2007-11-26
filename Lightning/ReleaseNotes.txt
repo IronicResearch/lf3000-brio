@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.23  (Build 2282 released Nov 24, 2007) 
+v0.1.23  (Build 2290 released Nov 26, 2007) 
 ===========================================
 
 Release for LF1000 development (green) and form-factor target boards.
