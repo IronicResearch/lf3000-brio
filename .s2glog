@@ -11039,3 +11039,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/26/07 9:19 AM
 4,095 ms. (Cumulative: 2,768,797 ms)
 
 ----------------
+Revision 2,286 from svn://localhost/TRUNK/:
+
+Added Dov's backlight settings
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/26/07 10:52 AM
+1 changed, 0 added, 0 deleted.
+3,878 ms. (Cumulative: 2,772,722 ms)
+
+----------------
