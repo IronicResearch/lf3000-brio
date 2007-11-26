@@ -19,10 +19,10 @@ Software components for target hardware:
 	firmware-LF_LF1000-0.14.0.2280.lfp 
 
 * Brio library binaries:
-	Brio-0.1.22.2282.lfp
+	Brio-0.1.23.2292.lfp
 
 * NFS root file system: 
-	nfsroot-svn2282.tar.gz
+	nfsroot-SVN2292.tar.gz
 
 Enhancements:
 -------------
