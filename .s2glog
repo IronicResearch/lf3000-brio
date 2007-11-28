@@ -11105,3 +11105,17 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 11/26/07 2:13 PM
 4,031 ms. (Cumulative: 2,800,559 ms)
 
 ----------------
+Revision 2,295 from svn://localhost/TRUNK/:
+Revision 2,296 from svn://localhost/TRUNK/:
+Revision 2,297 from svn://localhost/TRUNK/:
+Revision 2,298 from svn://localhost/TRUNK/:
+Revision 2,299 from svn://localhost/TRUNK/:
+Revision 2,300 from svn://localhost/TRUNK/:
+
+Include GetFileExtension() function definition
+
+By rcabrera (rcabrera@leapfrog.com) on 11/27/07 4:57 PM
+1 changed, 0 added, 0 deleted.
+4,157 ms. (Cumulative: 2,804,810 ms)
+
+----------------

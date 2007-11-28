@@ -65,6 +65,9 @@ string StripTrailing( const string& in, const string& remove);
 size_t FileSize( const string& file );
 
 //----------------------------------------------------------------------------
+string GetFileExtension(const string& file)
+
+//----------------------------------------------------------------------------
 void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets );
 
 //----------------------------------------------------------------------------
