@@ -439,8 +439,8 @@ def SetupTypeConversionMap():
 			  'R'		: 1024 *  1 + 3,		# for ACME
 			  'raw'		: 1024 *  1 + 3,		# for ACME
 			  'avog'    : 1024 *  1 + 4,
-              'txt'		: 1024 *  4 + 1,	# Common Group
-			  'bin'		: 1024 *  4 + 2,
+              'relinkbin'	: 1024 *  4 + 1,	# Common Group
+			  'dsetbin'		: 1024 *  4 + 2,
 			  'json'	: 1024 *  4 + 3,
 			  'so'		: 1024 *  4 + 4,
 			  'xml'		: 1024 *  4 + 5,	# we need .so to be part of package
