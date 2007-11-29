@@ -71,7 +71,7 @@ string GetFileExtension(const string& file);
 void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets );
 
 //----------------------------------------------------------------------------
-tAppRsrcDataSet* LoadDataset(const string binPath, const string relinkPath);
+tAppRsrcDataSet* LoadDataset(const string& binPath, const string& relinkPath);
 
 LF_END_BRIO_NAMESPACE()
 
