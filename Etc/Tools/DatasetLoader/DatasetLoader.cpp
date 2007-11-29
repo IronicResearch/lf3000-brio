@@ -64,6 +64,15 @@ size_t FileSize( const string& file )
 	return 0;
 }
 
+string GetFileExtension(const string& file)
+{
+	size_t nPos = file.rfind('.', file.length());
+	if (nPos != string::npos) {
+		return(file.substr(nPos+1, file.length() - nPos));
+	}
+	return("");
+}
+
 //----------------------------------------------------------------------------
 void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets )
 {
@@ -75,25 +84,32 @@ void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets )
 	}
 }
 
-tAppRsrcDataSet* LoadDataset(const string binPath, const string relinkPath)
+tAppRsrcDataSet* LoadDataset(const string& dsbinPath, const string& rbinPath)
 {
-	if (0==FileSize(binPath) || 0==FileSize(relinkPath))
+	if (0==FileSize(dsbinPath) || 0==FileSize(rbinPath))
 		return NULL;
 	
-	boost::shared_array<U8> buf(new U8[FileSize(binPath)]);
-	EFdWrapper fd(binPath, O_RDONLY | O_BINARY);
-	read(fd, buf.get(), FileSize(binPath));
-		
-	ifstream in(relinkPath.c_str());
-	U32 p;
+	string ext1("dsetBin"), ext2("relinkBin");
+	if ((ext1.compare(GetFileExtension(dsbinPath)) != 0) || (ext2.compare(GetFileExtension(rbinPath)) != 0))
+		return NULL;
+	
+	boost::shared_array<U8> buf(new U8[FileSize(dsbinPath)]);
+	EFdWrapper fd(dsbinPath, O_RDONLY | O_BINARY);
+	read(fd, buf.get(), FileSize(dsbinPath));
+	
 	vector<U32> pointers;
-	while (in >> p)
-	{
-		pointers.push_back(p);
-	}
+	int size = FileSize(rbinPath)/sizeof(U32);
+	U32* p = new U32[size];
+	
+	pointers.resize(size);
+	
+	EFdWrapper in(rbinPath, O_RDONLY, O_BINARY);
+	read(in, p, FileSize(rbinPath));
+	std::copy(p, p+size, pointers.begin());
 	
 	OffsetsToPtrs(buf.get(), pointers);
 	tAppRsrcDataSet* pMD = (tAppRsrcDataSet*)buf.get();
-			
+	
+	delete[] p;
 	return pMD;
 }
