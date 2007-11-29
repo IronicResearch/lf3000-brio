@@ -11164,3 +11164,12 @@ By rcabrera (rcabrera@leapfrog.com) on 11/29/07 3:32 PM
 4,268 ms. (Cumulative: 2,821,954 ms)
 
 ----------------
+Revision 2,314 from svn://localhost/TRUNK/:
+
+change 'txt' type to 'relinkbin' and 'bin' type to dsetbin since the LoadDataset() fcn will now take .dsetBin and .relinkBin files as inputs.
+
+By rcabrera (rcabrera@leapfrog.com) on 11/29/07 3:44 PM
+1 changed, 0 added, 0 deleted.
+4,172 ms. (Cumulative: 2,826,189 ms)
+
+----------------
