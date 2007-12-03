@@ -255,9 +255,9 @@ Note: Be sure to distinguish 'ME_LF1000' binaries for the development board from
 'LF_LF1000' binaries for the form-factor board. The form-factor board uses a smaller
 memory layout and does not include Ethernet support.
 
-======================================================
-Target Preparation -- flashing kernel image manually
-======================================================
+==============================================================
+Target Preparation -- flashing kernel image manually in U-boot
+==============================================================
 
 With the network services up and running for the specific development system
 IP address, you will also be able to use the U-boot loader installed on
@@ -324,9 +324,9 @@ flashing was successful.
 If you are updating an LF1000 development board from firmware version earlier
 than 0.8.0, make sure that Ethernet jumper J31 is moved to CS2 before rebooting.
 
-======================================================
-Target Preparation -- flashing kernel image via script
-======================================================
+================================================================
+Target Preparation -- flashing kernel image in U-boot via script
+================================================================
 
 A Python script is provided for automating the U-boot commands externally from the
 development system side. You will need the Python serial package installed on your
@@ -420,9 +420,9 @@ which need updating.
 Note that a single manufacturing cartridge is pre-programmed for either an LF1000
 form-factor board or development board. The same cartridge cannot be used for both!
 
-======================================================
+=========================================================
 Target Preparation -- flashing kernel via backdoor script
-======================================================
+=========================================================
 
 In anticipation of future firmware updates to be downloaded over USB by the PC host
 app software, a special backdoor script is now available for flashing firmware
@@ -457,8 +457,8 @@ externally via LeapFrog's PC app utility OmegaTerm.
 (2) Copy the following firmware files to the /Didj directory from the host.
 This could be done with the drag-n-drop file manager or command line.  
 
-	(host) $ cp bootstrap-ME_LF1000-0.10.0.2101.lfp /media/Didj
-	(host) $ cp firmware-ME_LF1000-0.10.0.2101.lfp /media/Didj
+	(host) $ cp bootstrap-XXXX.lfp /media/Didj
+	(host) $ cp firmware-XXXX.lfp /media/Didj
 	(host) $ cp bootloader.backdoor /media/Didj
 	(host) $ cp firmware.backdoor /media/Didj
 	(host) $ cp top-secret-backdoor-launcher /media/Didj
@@ -500,14 +500,14 @@ When transferred over USB connection from a host PC, the firmware-XXXX.lfp
 package file will automatically be flashed onboard after USB is disconnected.
 This is only applicable on units with at least version 0.10.0-2101 onboard.
 Otherwise the embedded binaries will need to be unpacked from the .lfp file
-and flashed using one of the manual methods described in TargetSetup.txt.
+and flashed using one of the manual methods described.
 
 (1) Connect the Didj device via USB cable. A "/Didj" disk device should appear
 on your desktop or file browser.
 
 (2) Copy the firmware-XXXX.lfp package file to the /Didj disk's root directory.
-	firmware-LF_LF1000-0.11.0.2181.lfp is only for Form-Factor units
-	firmware-ME_LF1000-0.11.0.2181.lfp is for LF1000 development boards (green)
+	firmware-LF_LF1000-XXXX.lfp is only for Form-Factor units
+	firmware-ME_LF1000-XXXX.lfp is for LF1000 development boards (green)
 
 (3) After copying is complete, be sure to eject the /Didj disk device. On both
 Windows and Linux desktops, this is done by right-clicking on the /Didj disk icon,
@@ -517,6 +517,30 @@ and notified it is safe to unplug the device.
 (4) Unplugging the USB cable will automatically flash the new firmware onboard
 and reboot the device.
 
+======================================================
+Target Preparation -- flashing via command line script
+======================================================
+
+If the USB auto-update method is not an option, or the bootloader must be updated
+in addition to the kernel/rootfs firmware, the following command line scripts are
+available from the target device console.
+
+First copy the firmware-XXXX.lfp and optional bootstrap-XXXX.lfp packages onto the
+target device. The .lfp package files may be copied via USB (as in the auto-update
+method above), or into the nfsroot directory if NFS booting the device.
+
+To update the kernel/rootfs firmware:
+
+	(target) # fwupdate /Didj/firmware-XXXX.lfp
+	
+To update the bootloader:
+
+	(target) # blupdate /Didj/bootstrap-XXXX.lfp
+	
+Be sure to reboot after flashing is complete.
+
+	(target) # reboot
+	
 ======================================================
 Target Preparation -- installing Brio updates
 ======================================================
@@ -529,7 +553,7 @@ Brio libraries are used for either LF1000 Form-Factor or development boards.
 on your desktop or file browser as above.
 
 (2a) On Linux PC host, run the following command:
-	lfpkg -a install -b /media/Didj Brio-0.1.21.2194.lfp
+	lfpkg -a install -b /media/Didj Brio-XXXX.lfp
 	
 (2b) On Windows PC host, rename the Brio-XXXX.lfp file with .zip extension and unzip
 its Brio directory contents over the one at /Didj/Base/Brio.
