@@ -11236,3 +11236,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/3/07 12:37 PM
 4,017 ms. (Cumulative: 2,859,302 ms)
 
 ----------------
+Revision 2,329 from svn://localhost/TRUNK/:
+Revision 2,330 from svn://localhost/TRUNK/:
+
+Added command line firmware instructions. Removed more version number specifics. 
+
+By Dave Milici (dmilici@leapfrog.com) on 12/3/07 1:16 PM
+1 changed, 0 added, 0 deleted.
+3,988 ms. (Cumulative: 2,863,368 ms)
+
+----------------
