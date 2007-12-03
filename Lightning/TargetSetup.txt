@@ -313,8 +313,8 @@ To download and flash the new kernel image:
 To download and flash the new embedded root filesystem image:
 
 	# tftp 02000000 erootfs.jffs2
-	# nand write 02000000 00400000 680000
-	# nand write 02000000 01400000 680000
+	# nand write 02000000 00400000 580000
+	# nand write 02000000 01400000 580000
 
 Once all components are flashed, reboot the system by pressing the RESET
 button. You should see Linux boot messages on the serial console when
@@ -356,6 +356,12 @@ the Linux kernel image (with U-boot), and the embedded root filesystem. All of t
 components have changed significantly since previous releases, including their names
 and (more importantly) their locations! 
 
+If a flash.map file is present in the distribution, it should have the names of these
+binaries and their flash address locations already listed. The script could then been
+run with minimal arguments.
+
+	$ ./lightning_install.py /dev/ttyS0 -e
+ 
 If for some reason you only wish to update one component at a time, the above
 script could be executed in these smaller steps.
 
@@ -367,7 +373,7 @@ script could be executed in these smaller steps.
 
 Note that the '-e' option to erase all memory should only be executed in the
 first step in this case.
- 
+
 **** LF1000 Development Board Note ****:
 If you are updating an LF1000 development board from firmware version earlier
 than 0.8.0, make sure that Ethernet jumper J31 is moved to CS2 before rebooting.
@@ -424,15 +430,32 @@ updates in the LeapFrog .lfp package format.
 
 This script requires that the LF1000 board be able to connect over USB, and then 
 replace the default AppManager program expected to launch on normal bootups.
+It is primarily intended for form-factor units which only have USB access, but
+not serial console access. If no serial interface is available, all operations
+must be performed externally from the host PC side.
 
-Connect the USB cable to the LF1000 target board and let it mount /Didj. If the
+This script also assumes that AppManager is already installed as the default app
+which launches after Didj boots up. Be sure no alternate app is selected at bootup.
+If you have serial console access, you can use these console commands.
+
+	(target) # ls /flags
+	(target) # rm /flags/main_app
+
+Otherwise AppManager should be the default app since it would not likely be overridden
+without serial console access.
+
+(1) Connect the USB cable to the LF1000 target board and let it mount /Didj. If the
 device was previously set to be unlocked, /Didj should appear automatically after
-connecting. Otherwise use the following commands to mount /Didj manually.
+connecting. If console is available use the following commands to mount /Didj manually.
 
 	(target) # usbctl -d mass_storage -a enable
 	(target) # usbctl -d mass_storage -a unlock
 	
-Copy the following firmware files to the /Didj directory from the host.
+If console is not available and the /Didj device is locked, you will need to unlock it
+externally via LeapFrog's PC app utility OmegaTerm.
+	
+(2) Copy the following firmware files to the /Didj directory from the host.
+This could be done with the drag-n-drop file manager or command line.  
 
 	(host) $ cp bootstrap-ME_LF1000-0.10.0.2101.lfp /media/Didj
 	(host) $ cp firmware-ME_LF1000-0.10.0.2101.lfp /media/Didj
@@ -440,32 +463,33 @@ Copy the following firmware files to the /Didj directory from the host.
 	(host) $ cp firmware.backdoor /media/Didj
 	(host) $ cp top-secret-backdoor-launcher /media/Didj
 	
-Rename the default AppManager program and replace it with the backdoor launcher
-script.
+(3) Rename the default AppManager program and replace it with the backdoor launcher
+script. This must be done from the PC host side using file manager or command line. 
 
-	(target) # cd /Didj/Base/bin
-	(target) # mv AppManager AppManager.bak
-	(target) # mv /Didj/top-secret-backdoor-launcher AppManager		
+	(host) $ cd /media/Didj/Base/bin
+	(host) $ mv AppManager AppManager.bak
+	(host) $ mv /media/Didj/top-secret-backdoor-launcher AppManager		
 
-Safely unmount (eject) /Didj from the host and unplug the USB cable. This will launch
+(4) Safely unmount (eject) /Didj from the host and unplug the USB cable. This will launch
 the script to update the firmware, and then shutdown the device when completed. This
 might take a few minutes to complete.
 
-Plug the USB cable back in and power the device back on. This should make the /Didj
+(5) Plug the USB cable back in and power the device back on. This should make the /Didj
 drive reappear on the host. The launcher will have left a logfile, 'backdoor.results',
 which can be viewed with a text editor if necessary. Delete this file, and all the 
 backdoor packages files installed above.
 
-	(target) $ rm *.lfp
-	(target) $ rm *.backdoor
+	(host) $ cd /media/Didj/Base/bin
+	(host) $ rm *.lfp
+	(host) $ rm *.backdoor
 	
-Finally restore the AppManager to its previous location.
+(6) Finally restore the AppManager to its previous location.
 
-	(target) $ cd /Didj/Base/bin
-	(target) $ rm AppManager
-	(target) $ mv AppManager.bak AppManager
+	(host) $ cd /media/Didj/Base/bin
+	(host) $ rm AppManager
+	(host) $ mv AppManager.bak AppManager
 	
-Safely unmount /Didj and disconnect the USB cable again. This should relaunch the
+(7) Safely unmount /Didj and disconnect the USB cable again. This should relaunch the
 original AppManager as the default app.
 
 ======================================================
