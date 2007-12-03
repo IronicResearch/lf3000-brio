@@ -11212,3 +11212,12 @@ By rcabrera (rcabrera@leapfrog.com) on 12/3/07 9:44 AM
 3,954 ms. (Cumulative: 2,847,269 ms)
 
 ----------------
+Revision 2,326 from svn://localhost/TRUNK/:
+
+Change return value of LoadDataset fcn to boost::shared_array<U8>
+
+By rcabrera (rcabrera@leapfrog.com) on 12/3/07 9:45 AM
+1 changed, 0 added, 0 deleted.
+3,969 ms. (Cumulative: 2,851,300 ms)
+
+----------------
