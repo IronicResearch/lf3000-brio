@@ -80,15 +80,15 @@ void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets )
 }
 
 //----------------------------------------------------------------------------
-tAppRsrcDataSet* LoadDataset(const string& dsbinPath, const string& rbinPath)
+//tAppRsrcDataSet* 
+boost::shared_array<U8> LoadDataset(const string& dsbinPath, const string& rbinPath)
 {
-	// TODO: Validate file paths!
 	if (0 == FileSize(dsbinPath) || 0 == FileSize(rbinPath))
-		return NULL;
+		return boost::shared_array<U8>();
 	
 	string ext1("dsetBin"), ext2("relinkBin");
 	if ((ext1.compare(GetFileExtension(dsbinPath)) != 0) || (ext2.compare(GetFileExtension(rbinPath)) != 0))
-				return NULL;
+		return boost::shared_array<U8>();
 		
 	boost::shared_array<U8> buf(new U8[FileSize(dsbinPath)]);
 	EFdWrapper fd(dsbinPath, O_RDONLY | O_BINARY);
@@ -105,10 +105,11 @@ tAppRsrcDataSet* LoadDataset(const string& dsbinPath, const string& rbinPath)
 	std::copy(p, p+size, pointers.begin());
 	
 	OffsetsToPtrs(buf.get(), pointers);
-	tAppRsrcDataSet* pMD = (tAppRsrcDataSet*)buf.get();
+	//tAppRsrcDataSet* pMD = (tAppRsrcDataSet*)buf.get();
 			
 	delete[] p;
-	return pMD;
+	//return pMD;
+	return buf;
 }
 
 LF_END_BRIO_NAMESPACE()
