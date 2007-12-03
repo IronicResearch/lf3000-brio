@@ -11173,3 +11173,42 @@ By rcabrera (rcabrera@leapfrog.com) on 11/29/07 3:44 PM
 4,172 ms. (Cumulative: 2,826,189 ms)
 
 ----------------
+Revision 2,315 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,157 ms. (Cumulative: 2,830,424 ms)
+
+----------------
+Revision 2,316 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,297 ms. (Cumulative: 2,834,721 ms)
+
+----------------
+Revision 2,317 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,313 ms. (Cumulative: 2,839,034 ms)
+
+----------------
+Revision 2,318 from svn://localhost/TRUNK/:
+Revision 2,319 from svn://localhost/TRUNK/:
+Revision 2,320 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,235 ms. (Cumulative: 2,843,284 ms)
+
+----------------
+Revision 2,321 from svn://localhost/TRUNK/:
+Revision 2,322 from svn://localhost/TRUNK/:
+Revision 2,323 from svn://localhost/TRUNK/:
+Revision 2,324 from svn://localhost/TRUNK/:
+Revision 2,325 from svn://localhost/TRUNK/:
+
+Change return value of LoadDataset fcn to boost::shared_array<U8>
+
+By rcabrera (rcabrera@leapfrog.com) on 12/3/07 9:44 AM
+1 changed, 0 added, 0 deleted.
+3,954 ms. (Cumulative: 2,847,269 ms)
+
+----------------
