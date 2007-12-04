@@ -572,7 +572,7 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
 
 	// Reload cached settings
 	handle_.currentFont = pFont;
-	FT_Activate_Size(pFont->size);
+//	FT_Activate_Size(pFont->size);
 #if USE_FONT_CACHE_MGR
     handle_.imageType.face_id = reinterpret_cast<FTC_FaceID>(pFont);
     handle_.imageType.width = pFont->scaler.width;
@@ -1070,8 +1070,9 @@ inline void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
 {
 	// Internal glyph cursor is in 16:16 fixed-point
 	// FIXME/dm: Rounding should be applied to cummulative XY values
-	x += ( glyph->advance.x /* + 0x8000 */) >> 16;
-	y += ( glyph->advance.y /* + 0x8000 */) >> 16;
+
+	x += (( glyph->advance.x + 0x8000 ) >> 16);
+	y += (( glyph->advance.y + 0x8000 ) >> 16);
 }
 
 //----------------------------------------------------------------------------
@@ -1234,10 +1235,11 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	// Add underline to glyph bitmap image
 	if (attr_.useUnderlining)
 	{
-		int du = face->underline_position >> 6;
-		int dt = face->underline_thickness >> 6;
-		int dh = face->height >> 6;
+		int du = std::min(face->underline_position >> 6, 0);
+		int dt = std::min(face->underline_thickness >> 6, 1);
+		int dh = std::max(face->height >> 6, source->rows);
 		int dw = (( glyph->advance.x + 0x8000 ) >> 16) + attr_.spaceExtra;
+			dw = std::max(dw, source->rows);
 		// Expand glyph bitmap width and height to fit underline bits
 		ExpandBitmap(source, &clone, dw, dh);
 		source = &clone;
@@ -1291,7 +1293,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	AdvanceGlyphPosition(glyph, curX_, curY_);
     curX_ += attr_.spaceExtra;
 	curX_ += dk;
-
+	
 	// Release expanded bitmap memory used for underlining
 	if (attr_.useUnderlining)
 		FreeBitmap(&clone);

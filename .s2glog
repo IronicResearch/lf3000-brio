@@ -11246,3 +11246,16 @@ By Dave Milici (dmilici@leapfrog.com) on 12/3/07 1:16 PM
 3,988 ms. (Cumulative: 2,863,368 ms)
 
 ----------------
+Revision 2,331 from svn://localhost/TRUNK/:
+Revision 2,332 from svn://localhost/TRUNK/:
+Revision 2,333 from svn://localhost/TRUNK/:
+Revision 2,334 from svn://localhost/TRUNK/:
+Revision 2,335 from svn://localhost/TRUNK/:
+
+Fixes to avoid crashes from invalid font metrics.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/3/07 7:22 PM
+1 changed, 0 added, 0 deleted.
+3,893 ms. (Cumulative: 2,867,339 ms)
+
+----------------
