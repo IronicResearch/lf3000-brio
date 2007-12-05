@@ -219,8 +219,10 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayModule::UpdateOpenGL()
 {
+#ifndef LF1000	// only used on ME2530 (LF1000 uses SetDisplayAddress) 
 	// 3D layer needs to sync to OGL calls
 	ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -228,7 +230,7 @@ void CDisplayModule::DisableOpenGL()
 {
 	// Disable 3D layer render target before accelerator disabled
 	int layer = gDevLayer;
-	if(FSAAval) {
+	if (FSAAval) {
 		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)0);
 		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)0);
 		ioctl(gDevLayerEven, MLC_IOCTLAYEREN, (void *)0);
@@ -242,6 +244,9 @@ void CDisplayModule::DisableOpenGL()
 		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 	}
 
+	// Restore original physical address for next query (non-XY block address)
+	ioctl(gDevLayer, MLC_IOCTADDRESS, gMem1Phys);
+
 	isOpenGLEnabled_ = false;
 }
 
@@ -250,7 +255,11 @@ void CDisplayModule::DisableOpenGL()
 // (added for LF1000)
 void CDisplayModule::WaitForDisplayAddressPatched(void)
 {
-	if(FSAAval) {
+	// This is called in conjunction with SwapBuffers() display updates.
+	// It is called prior to SetDisplayAddress() callback to make sure dirty
+	// bit is clear before scheduling the next buffer to be displayed, which 
+	// should usually be the case when triple buffering is active.
+	if (FSAAval) {
 		while(ioctl(gDevLayerEven, MLC_IOCQDIRTY, (void *)0)) 
 			usleep(100);
 		while(ioctl(gDevLayerOdd , MLC_IOCQDIRTY, (void *)0)) 
@@ -267,8 +276,10 @@ void CDisplayModule::WaitForDisplayAddressPatched(void)
 void CDisplayModule::SetOpenGLDisplayAddress(
 		const unsigned int DisplayBufferPhysicalAddress)
 {
-	(void )DisplayBufferPhysicalAddress; /* Prevent unused variable warnings. */ 
-	if(FSAAval) {
+	// BUGFIX/dm: DisplayBufferPhysicalAddress must be loaded into MLC address register
+	// for proper display updates in glSwapBuffer() calls. It is in block-addressing mode
+	// (0x20000000 OR'ed in) and is 1 of 3 possible addresses when triple buffering active.
+	if (FSAAval) {
 		ioctl(gDevLayerEven, MLC_IOCTFORMAT, 0x4432); /*R5G6B5*/
 		ioctl(gDevLayerOdd , MLC_IOCTFORMAT, 0x4432);
 
@@ -277,8 +288,8 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayerOdd , MLC_IOCTHSTRIDE, 2);
 		ioctl(gDevLayerOdd , MLC_IOCTVSTRIDE, 8192);
 
-		ioctl(gDevLayerEven, MLC_IOCTADDRESS, gMem1Phys);
-		ioctl(gDevLayerOdd , MLC_IOCTADDRESS, gMem1Phys+4096);
+		ioctl(gDevLayerEven, MLC_IOCTADDRESS, DisplayBufferPhysicalAddress);
+		ioctl(gDevLayerOdd , MLC_IOCTADDRESS, DisplayBufferPhysicalAddress+4096);
 
 		ioctl(gDevLayerOdd, MLC_IOCTBLEND, (void *)1); //enable Alpha
 		ioctl(gDevLayerOdd, MLC_IOCTALPHA, 8); //set to 50%
@@ -292,7 +303,7 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 		ioctl(gDevLayer, MLC_IOCTHSTRIDE, 2);
 		ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
 
-		ioctl(gDevLayer, MLC_IOCTADDRESS, gMem1Phys);
+		ioctl(gDevLayer, MLC_IOCTADDRESS, DisplayBufferPhysicalAddress);
 		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
 	}
 }
