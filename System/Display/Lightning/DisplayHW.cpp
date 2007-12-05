@@ -52,6 +52,7 @@ namespace
 	U32			gOpenGLBase;
 	U32			gOverlayBase;
 	U32			gPlanarBase;
+	bool		bPrimaryLayerEnabled = false;
 }
 
 //============================================================================
@@ -86,6 +87,7 @@ void CDisplayModule::InitModule()
 	// Disable RGB layer since it is used externally for various firmware bitmaps
 	ioctl(gDevLayer, MLC_IOCTLAYEREN, 0);
 	SetDirtyBit(gDevLayer);
+	bPrimaryLayerEnabled = false;
 	
 	// ask for the Frame Buffer base address
 	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
@@ -330,7 +332,8 @@ tErrType CDisplayModule::Update(tDisplayContext *dc)
 		case kPixelFormatYUYV422: 	YUYV2ARGB(dc,pdcPrimary_); break;
 		}
 		// Make sure primary context is enabled
-		RegisterLayer(pdcPrimary_, 0, 0);
+		if (!bPrimaryLayerEnabled)
+			RegisterLayer(pdcPrimary_, 0, 0);
 	}
 	// No hardware settings have actually changed
     return kNoErr;
@@ -345,6 +348,7 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 
 	// Remove layer from visibility on screen
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
+	bPrimaryLayerEnabled = false;
 	// Restore video overlay linear address for subsequent instances
 	if (context->isOverlay && context->isPlanar)
 		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
@@ -411,6 +415,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ioctl(layer, MLC_IOCTVSTRIDE, context->pitch);
 	ioctl(layer, MLC_IOCSPOSITION, &c);
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+	bPrimaryLayerEnabled = true;
 	
 	// Setup scaler registers too for video overlay
 	if (context->isOverlay)
