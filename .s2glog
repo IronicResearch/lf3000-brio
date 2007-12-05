@@ -11290,3 +11290,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/5/07 11:44 AM
 3,876 ms. (Cumulative: 2,875,403 ms)
 
 ----------------
+Revision 2,351 from svn://localhost/TRUNK/:
+
+Added logic to conditionally enable primary layer if/when offscreen display contexts are used.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/07 11:52 AM
+1 changed, 0 added, 0 deleted.
+3,942 ms. (Cumulative: 2,879,407 ms)
+
+----------------
