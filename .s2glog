@@ -11259,3 +11259,19 @@ By Dave Milici (dmilici@leapfrog.com) on 12/3/07 7:22 PM
 3,893 ms. (Cumulative: 2,867,339 ms)
 
 ----------------
+Revision 2,336 from svn://localhost/TRUNK/:
+Revision 2,337 from svn://localhost/TRUNK/:
+Revision 2,338 from svn://localhost/TRUNK/:
+Revision 2,339 from svn://localhost/TRUNK/:
+Revision 2,340 from svn://localhost/TRUNK/:
+Revision 2,341 from svn://localhost/TRUNK/:
+Revision 2,342 from svn://localhost/TRUNK/:
+Revision 2,343 from svn://localhost/TRUNK/:
+
+Change device field to "Didj" for OmegaTerm.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/4/07 4:17 PM
+1 changed, 0 added, 0 deleted.
+3,985 ms. (Cumulative: 2,871,433 ms)
+
+----------------
