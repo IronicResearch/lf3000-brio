@@ -11275,3 +11275,18 @@ By Dave Milici (dmilici@leapfrog.com) on 12/4/07 4:17 PM
 3,985 ms. (Cumulative: 2,871,433 ms)
 
 ----------------
+Revision 2,344 from svn://localhost/TRUNK/:
+Revision 2,345 from svn://localhost/TRUNK/:
+Revision 2,346 from svn://localhost/TRUNK/:
+Revision 2,347 from svn://localhost/TRUNK/:
+Revision 2,348 from svn://localhost/TRUNK/:
+Revision 2,349 from svn://localhost/TRUNK/:
+Revision 2,350 from svn://localhost/TRUNK/:
+
+Updated Brio OpenGL display update callback to load correct framebuffer addresses.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/07 11:44 AM
+1 changed, 0 added, 0 deleted.
+3,876 ms. (Cumulative: 2,875,403 ms)
+
+----------------
