@@ -3,6 +3,42 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.24  (Build 2363 released Dec 05, 2007) 
+===========================================
+
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.14.0.2280.lfp
+	firmware-ME_LF1000-0.14.0.2280.lfp 
+
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.14.0.2280.lfp
+	firmware-LF_LF1000-0.14.0.2280.lfp 
+
+* Brio library binaries:
+	Brio-0.1.23.2292.lfp
+
+* NFS root file system: 
+	nfsroot-SVN2292.tar.gz
+
+Enhancements:
+-------------
+
+* Change in libUtility.so (DatasetLoader):
+  Change the return value of LoadDataset fcn to shared_array<U8>
+
+ Known Issuses:
+-------------
+
+* OpenGL transform functions on embedded target incur a siginificant performance slowdown.
+  This problem has been isolated to the OpenGL ES library, not the target hardware.
+  The library will be updated in the next Brio release.
+ 
+
+===========================================
 v0.1.23  (Build 2292 released Nov 26, 2007) 
 ===========================================
 
