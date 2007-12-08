@@ -540,15 +540,11 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
-{
-	// translate logical backlight range of [-128,127] to physical range
-	// of [140,512].  Note physical values less than 140 are unusable
-	
+{	
 	(void )screen;	/* Prevent unused variable warnings. */
-	long	p = ((backlight * 373)/256) + 326;
 	int 			r;
 
-	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHT, p);
+	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHTVIRT, backlight);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
 }
 
@@ -581,7 +577,7 @@ S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 	unsigned long	p = 0;
 	int 			r;
 	
-	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHT, p);
+	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHTVIRT, p);
 	return (r < 0) ? 0 : r;
 }
 

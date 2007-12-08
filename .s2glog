@@ -11372,3 +11372,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/7/07 6:37 PM
 4,203 ms. (Cumulative: 2,900,472 ms)
 
 ----------------
+Revision 2,388 from svn://localhost/TRUNK/:
+Revision 2,389 from svn://localhost/TRUNK/:
+
+Update BACKLIGHT getter / setter to use EP1 board-aware Linux ioctl calls.
+
+
+By Scott Esters (sesters@leapfrog.com) on 12/7/07 7:07 PM
+1 changed, 0 added, 0 deleted.
+4,187 ms. (Cumulative: 2,904,738 ms)
+
+----------------
