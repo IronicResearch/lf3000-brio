@@ -400,6 +400,9 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 
 	// Set current font for cache manager   
     scaler.face_id = handle_.imageType.face_id = (FTC_FaceID)font;
+
+    // Set font loading flags -- hinting off is key to glyph spacing
+    handle_.imageType.flags = FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
     
     // Set selected font size
     pixelSize = (prop.size * 72 + 36) / 72; 
@@ -577,6 +580,7 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
     handle_.imageType.face_id = reinterpret_cast<FTC_FaceID>(pFont);
     handle_.imageType.width = pFont->scaler.width;
     handle_.imageType.height = pFont->scaler.height;
+    handle_.imageType.flags = FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
 #endif
     return true;
 }
@@ -1142,7 +1146,7 @@ Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph, int* pIndex)
 	}
 
 	// Load indexed glyph into face's internal glyph record slot
-	error = FT_Load_Glyph(font->face, index, FT_LOAD_DEFAULT);
+	error = FT_Load_Glyph(font->face, index, FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING);
 	if (error) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d, error = %d\n", static_cast<unsigned int>(ch), index, error );
@@ -1236,7 +1240,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	if (attr_.useUnderlining)
 	{
 		int du = std::min(face->underline_position >> 6, 0);
-		int dt = std::min(face->underline_thickness >> 6, 1);
+		int dt = std::max(face->underline_thickness >> 6, 1);
 		int dh = std::max(face->height >> 6, source->rows);
 		int dw = (( glyph->advance.x + 0x8000 ) >> 16) + attr_.spaceExtra;
 			dw = std::max(dw, source->rows);
