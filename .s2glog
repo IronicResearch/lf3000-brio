@@ -11344,3 +11344,31 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/6/07 7:47 AM
 4,281 ms. (Cumulative: 2,896,097 ms)
 
 ----------------
+Revision 2,368 from svn://localhost/TRUNK/:
+Revision 2,369 from svn://localhost/TRUNK/:
+Revision 2,370 from svn://localhost/TRUNK/:
+Revision 2,371 from svn://localhost/TRUNK/:
+Revision 2,372 from svn://localhost/TRUNK/:
+Revision 2,373 from svn://localhost/TRUNK/:
+Revision 2,374 from svn://localhost/TRUNK/:
+Revision 2,375 from svn://localhost/TRUNK/:
+Revision 2,376 from svn://localhost/TRUNK/:
+Revision 2,377 from svn://localhost/TRUNK/:
+Revision 2,378 from svn://localhost/TRUNK/:
+Revision 2,379 from svn://localhost/TRUNK/:
+Revision 2,380 from svn://localhost/TRUNK/:
+Revision 2,381 from svn://localhost/TRUNK/:
+Revision 2,382 from svn://localhost/TRUNK/:
+Revision 2,383 from svn://localhost/TRUNK/:
+Revision 2,384 from svn://localhost/TRUNK/:
+Revision 2,385 from svn://localhost/TRUNK/:
+Revision 2,386 from svn://localhost/TRUNK/:
+Revision 2,387 from svn://localhost/TRUNK/:
+
+Added no-hinting flags to correct font glyph metrics and spacing
+
+By Dave Milici (dmilici@leapfrog.com) on 12/7/07 6:37 PM
+1 changed, 0 added, 0 deleted.
+4,203 ms. (Cumulative: 2,900,472 ms)
+
+----------------
