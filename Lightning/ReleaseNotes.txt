@@ -30,8 +30,20 @@ Software components for target hardware:
 Enhancements:
 -------------
 
+* Fixed crashes in Font module triggered by SelectFont() calls or underlining due to invalid font metrics.
+
 * Change in libUtility.so (DatasetLoader):
   Change the return value of LoadDataset fcn to shared_array<U8>
+
+* UNLOCKED and Enabled USB after successful update of FW using
+  automated ATAP cartridge.  Provide updatability of ATAP without OmegaTerm. 
+
+* mkbase.sh creates an automated ATAP cartridge with current FW release (no Brio
+  or Base content).  To update the Brio and Base on this new cartridge, plug into
+  the USB after booting with the ATAP cartridge and put the .lfp packages
+  into the /Packages directory on the MFG_PAYLOAD USB drive. Any future boots with
+  that cartridge will update either the FF Board or LF1000 Dev board to latest
+  releases on that cartridge.
 
  Known Issuses:
 -------------
@@ -40,6 +52,33 @@ Enhancements:
   This problem has been isolated to the OpenGL ES library, not the target hardware.
   The library will be updated in the next Brio release.
  
+---------------------------------------
+Addendum to Lightning SDK release 2292:
+---------------------------------------
+
+The embedded firmware binaries have been updated to release 0.15.1.2309
+to fix 2 significant bugs.
+
+(1) Bootloader uses reduced timings for more reliable bootup.
+(2) Power events correctly detect battery vs external power supply.
+
+The same Brio binaries and nfsroot image may be used with this update.
+Disregard references to firmware and bootstrap version 0.14.0.2280 
+mentioned in ReleaseNotes.txt
+
+* Embedded binaries for LF1000 development board: 
+	bootstrap-ME_LF1000-0.15.1.2309.lfp
+	firmware-ME_LF1000-0.15.1.2309.lfp 
+
+* Embedded binaries for LF1000 form-factor board: 
+	bootstrap-LF_LF1000-0.15.1.2309.lfp
+	firmware-LF_LF1000-0.15.1.2309.lfp 
+
+* Brio library binaries:
+	Brio-0.1.23.2292.lfp
+
+* NFS root file system: 
+	nfsroot-SVN2292.tar.gz
 
 ===========================================
 v0.1.23  (Build 2292 released Nov 26, 2007) 
