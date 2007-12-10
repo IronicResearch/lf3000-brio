@@ -11394,3 +11394,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/10/07 11:29 AM
 4,126 ms. (Cumulative: 2,908,958 ms)
 
 ----------------
+Revision 2,393 from svn://localhost/TRUNK/:
+Revision 2,394 from svn://localhost/TRUNK/:
+
+Updated Backlight range to [-128,127] inclusive
+
+
+By Scott Esters (sesters@leapfrog.com) on 12/10/07 1:27 PM
+1 changed, 0 added, 0 deleted.
+4,219 ms. (Cumulative: 2,913,239 ms)
+
+----------------

@@ -134,7 +134,7 @@ public:
 	/// Sets the contrast of the display output screen (0 = default setting)
 	tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
 	
-	/// Sets the backlight of the display output screen (0..100 range setting)
+	/// Sets the backlight of the display output screen (-128..127 range setting)
 	tErrType			SetBacklight(tDisplayScreen screen, S8 brightness);
 	
 	/// Gets the brightness setting of the display output screen
