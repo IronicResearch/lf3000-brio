@@ -11405,3 +11405,42 @@ By Scott Esters (sesters@leapfrog.com) on 12/10/07 1:27 PM
 4,219 ms. (Cumulative: 2,913,239 ms)
 
 ----------------
+Revision 2,395 from svn://localhost/TRUNK/:
+Revision 2,396 from svn://localhost/TRUNK/:
+Revision 2,397 from svn://localhost/TRUNK/:
+Revision 2,398 from svn://localhost/TRUNK/:
+Revision 2,399 from svn://localhost/TRUNK/:
+Revision 2,400 from svn://localhost/TRUNK/:
+Revision 2,401 from svn://localhost/TRUNK/:
+Revision 2,402 from svn://localhost/TRUNK/:
+Revision 2,403 from svn://localhost/TRUNK/:
+Revision 2,404 from svn://localhost/TRUNK/:
+Revision 2,405 from svn://localhost/TRUNK/:
+Revision 2,406 from svn://localhost/TRUNK/:
+Revision 2,407 from svn://localhost/TRUNK/:
+Revision 2,408 from svn://localhost/TRUNK/:
+Revision 2,409 from svn://localhost/TRUNK/:
+Revision 2,410 from svn://localhost/TRUNK/:
+Revision 2,411 from svn://localhost/TRUNK/:
+Revision 2,412 from svn://localhost/TRUNK/:
+Revision 2,413 from svn://localhost/TRUNK/:
+Revision 2,414 from svn://localhost/TRUNK/:
+Revision 2,415 from svn://localhost/TRUNK/:
+Revision 2,416 from svn://localhost/TRUNK/:
+Revision 2,417 from svn://localhost/TRUNK/:
+Revision 2,418 from svn://localhost/TRUNK/:
+Revision 2,419 from svn://localhost/TRUNK/:
+Revision 2,420 from svn://localhost/TRUNK/:
+Revision 2,421 from svn://localhost/TRUNK/:
+Revision 2,422 from svn://localhost/TRUNK/:
+Revision 2,423 from svn://localhost/TRUNK/:
+Revision 2,424 from svn://localhost/TRUNK/:
+Revision 2,425 from svn://localhost/TRUNK/:
+
+Updates to improve video playback behavior for audio sync and time stamp data.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/13/07 2:55 PM
+3 changed, 0 added, 0 deleted.
+4,376 ms. (Cumulative: 2,917,943 ms)
+
+----------------

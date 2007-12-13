@@ -20,6 +20,7 @@
 #include <VideoTypes.h>
 #include <DebugMPI.h>
 #include <EventListener.h>
+#include <KernelTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -35,6 +36,8 @@ const tDebugLevel		kVideoDebugLevel	= kDbgLvlImportant;
 // Typedefs
 //==============================================================================
 
+#define USE_MUTEX		1
+
 struct tVideoContext {
 	tVideoHndl			hVideo;
 	tAudioID			hAudio;
@@ -46,6 +49,7 @@ struct tVideoContext {
 	Boolean				bPaused;
 	Boolean				bPlaying;
 	U32					uFrameTime;
+	tMutex*				pMutex;
 };
 
 //==============================================================================
@@ -53,7 +57,7 @@ struct tVideoContext {
 //==============================================================================
 
 tErrType InitVideoTask( tVideoContext* pCtx );
-tErrType DeInitVideoTask( void );
+tErrType DeInitVideoTask( tVideoContext* pCtx );
 
 //==============================================================================
 class CVideoModule : public ICoreModule {

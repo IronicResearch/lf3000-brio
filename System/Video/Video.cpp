@@ -73,14 +73,17 @@ namespace
 	theora_state     	td;
 
 	// Video MPI global vars
-	tVideoContext*		gpVidCtx;
+	tVideoContext*		gpVidCtx = NULL;
 	CPath				gpath = "";
 	FILE*				gfile = NULL;
+	tMutex				gVidMutex ; // = PTHREAD_MUTEX_INITIALIZER;
 	
+#if USE_PROFILE
 	// Profile vars
 	U32					usecStart;
 	U32					usecEnd;
 	U32					usecDiff;
+#endif
 }
 
 //============================================================================
@@ -188,6 +191,12 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	bool			nopath = (pathAudio.length() == 0) ? true : false;
 	const CPath		filepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;
 
+#if USE_MUTEX
+	// Init mutex
+	const tMutexAttr	attr = {0};
+	kernel.InitMutex(gVidMutex, attr);
+#endif
+	
 	pVidCtx->hVideo 	= hVideo;
 	pVidCtx->hAudio 	= kNoAudioID; // handled inside video task
 	pVidCtx->pPathAudio = (nopath) ? NULL : &filepath; // pass by pointer
@@ -195,6 +204,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	pVidCtx->pListener 	= pListener;
 	pVidCtx->bLooped 	= bLoop;
 	pVidCtx->uFrameTime = 1000 * ti.fps_denominator / ti.fps_numerator;
+	pVidCtx->pMutex		= &gVidMutex;
 
 	InitVideoTask(pVidCtx);	
 
@@ -350,6 +360,9 @@ Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 	while (ogg_sync_pageout(&oy,&og) > 0)
 		queue_page(&og);
 
+	theora_decode_packetin(&td,&op);
+	theora_granule_frame(&td,td.granulepos);
+	
 	return true;
 }
 
@@ -379,7 +392,8 @@ void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
 	// Kill video task, if running
-	DeInitVideoTask();
+	if (gpVidCtx)
+		DeInitVideoTask(gpVidCtx);
 	
 	// Cleanup decoder stream resources
 	DeInitVideoInt(hVideo);
@@ -397,6 +411,10 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 		CKernelMPI		kernel;
 		kernel.Free(gpVidCtx);
 		gpVidCtx = NULL;
+		
+#if USE_MUTEX
+		kernel.DeInitMutex(gVidMutex);
+#endif
 	}
 
 	return true;
@@ -406,9 +424,23 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
+#if USE_MUTEX
+	if (gpVidCtx != NULL) {
+		CKernelMPI kernel;
+		kernel.LockMutex(*gpVidCtx->pMutex);
+	}
+#endif
 	// Note theora_granule_time() returns only seconds
 	pTime->frame = theora_granule_frame(&td,td.granulepos);
 	pTime->time  = pTime->frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoTime: frame %ld, time %ld ms\n", 
+		static_cast<long>(pTime->frame), static_cast<long>(pTime->time));
+#if USE_MUTEX
+	if (gpVidCtx != NULL) {
+		CKernelMPI kernel;
+		kernel.UnlockMutex(*gpVidCtx->pMutex);
+	}
+#endif
 	return true;	
 }
 
