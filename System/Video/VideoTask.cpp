@@ -60,8 +60,8 @@ void* VideoTaskMain( void* arg )
 	CEventMPI	evntmgr;
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
 	tVideoTime		vtm,vtm0 = {0, 0};
-	tVideoMsgData	data;
 	U32				basetime,marktime,nexttime,lapsetime = pctx->uFrameTime;
+	U32				flags = (pctx->pListener) ? kAudioOptionsDoneMsgAfterComplete : 0;
 	Boolean			bAudio = /* (pctx->pPathAudio != NULL) ? true : */ false;
 	// FIXME: bAudio status is impacting looping logic
 	
@@ -73,7 +73,7 @@ void* VideoTaskMain( void* arg )
 		// Start audio playback and sync each video frame to audio time stamp
 		pctx->bPlaying = true;
 		if (pctx->pPathAudio != NULL)
-			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, 0);
+			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, flags);
 		vtm.time = basetime = marktime = nexttime = 0;
 		if (!bAudio)
 			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
@@ -101,6 +101,11 @@ void* VideoTaskMain( void* arg )
 					kernel.TaskSleep(1);
 				if (pctx->hAudio != kNoAudioID)
 					audmgr.ResumeAudio(pctx->hAudio);
+				if (!bAudio) {
+					nexttime = kernel.GetElapsedTimeAsMSecs();
+					basetime = nexttime - vtm.time;
+					marktime = nexttime + lapsetime;
+				}
 			}
 		}
 		if (pctx->hAudio != kNoAudioID)
@@ -114,11 +119,15 @@ void* VideoTaskMain( void* arg )
 	}
 
 	// Post done message to event listener
-	data.hVideo = pctx->hVideo;
-	data.isDone = true;
-	data.timeStamp = vtm;
-	CVideoEventMessage msg(data);
-	evntmgr.PostEvent(msg, 0, pctx->pListener);
+	if (pctx->pListener) 
+	{
+		tVideoMsgData	data;
+		data.hVideo = pctx->hVideo;
+		data.isDone = true;
+		data.timeStamp = vtm;
+		CVideoEventMessage msg(data);
+		evntmgr.PostEvent(msg, 0, pctx->pListener);
+	}
 
 	return kNull;
 }
@@ -132,7 +141,12 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	tTaskHndl 	hndl;
 	tTaskProperties prop;
 
+#if USE_MUTEX
+	kernel.LockMutex(*pCtx->pMutex);
+#endif
+	
 	// Setup task properties
+	memset(&prop, 0, sizeof(tTaskProperties));
 	prop.TaskMainFcn = (void* (*)(void*))VideoTaskMain;
 	prop.taskMainArgCount = 1;
 	prop.pTaskMainArgValues = pCtx;
@@ -144,11 +158,15 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	while (!bRunning)
 		kernel.TaskSleep(1);
 
+#if USE_MUTEX
+	kernel.UnlockMutex(*pCtx->pMutex);
+#endif
+	
 	return r;
 }
 
 //----------------------------------------------------------------------------
-tErrType DeInitVideoTask( void )
+tErrType DeInitVideoTask( tVideoContext* pCtx )
 {
 	CKernelMPI	kernel;
 
@@ -157,12 +175,19 @@ tErrType DeInitVideoTask( void )
 
 	// TODO: Need real sync protection via mutexes when killing task
 	//		 Letting task exit itself works most times on embedded target
+#if USE_MUTEX
+	kernel.LockMutex(*pCtx->pMutex);
+#endif
 	
 	// Stop running task
 	bRunning = false;
 	kernel.TaskSleep(2);
 //	kernel.CancelTask(hVideoThread);
 	hVideoThread = kNull;
+	
+#if USE_MUTEX
+	kernel.UnlockMutex(*pCtx->pMutex);
+#endif
 	
 	return kNoErr;
 }
