@@ -3,6 +3,55 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.25  (Build 2430 released Dec 13, 2007) 
+===========================================
+Release for LF1000 development (green) and form-factor target boards.
+
+Software components for target hardware:
+
+        bootstrap-ME_LF1000-0.17.1.2428.lfp	= bootstrap loader for LF1000 development board
+	bootstrap-LF_LF1000-0.17.1.2428.lfp	= bootstrap loader for LF1000 form-factor board
+	Brio-0.1.25.2430.lfp			= Brio library firmware for either LF1000 boards
+	firmware-ME_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 development board
+	firmware-LF_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 form-factor board
+	HostTools.tar.gz			= Linux host tools subset for installing firmware
+	LightningSDK_2430.tar.gz		= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2430.tar.gz			= NFS root filesystem for LF1000 development board
+
+Enhancements:
+-------------
+
+* Fonts are loaded with new default settings for improved glyph spacing metrics.
+  (TTPro #561)
+
+* Implement Backlight changes for EP1 	  	
+
+* Video playback state behavior improved for audio sync and time stamps
+
+* Removed extranrous gain from SRC algorithm that was causing clipping in
+  16000 Hz samples only (Audio system)
+
+* Added secret functions (not exposed in header file) to read parts of audio driver for   
+  parameter debugging, messaging, audio metering, enabling soft clipper, output EQ, changing
+  sampling rate conversion algorithm, setting read/write file, etc. (Audio system)
+
+* Added level metering (short time, long time with peak/hold, and run-time max values) and removed
+  floating point ops from meter decay function (Audio system) 
+
+
+Known Issues:
+-------------
+
+* OpenGL transform functions on embedded target incur a siginificant performance slowdown.
+  This problem has been isolated to the OpenGL ES library, not the target hardware.
+  The library will be updated in the next Brio release.
+ 
+* Video player task sometimes blocks calling app process in emulation. (TTP# 726)
+
+* If embedded target Brio app exits without destroying OpenGL context, the app will not be able
+  to create a new OpenGL context when relaunched. (TTP# 565)
+
+===========================================
 v0.1.24  (Build 2367 released Dec 06, 2007) 
 ===========================================
 
