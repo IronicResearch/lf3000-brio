@@ -26,7 +26,8 @@ extern "C" {
 #define kWaveShaper_InGainDB_Default  ( 0.0f)
 #define kWaveShaper_InGainDB_Min      (-96.0f)
 #define kWaveShaper_InGainDB_Max      ( 24.0f)
-#define kWaveShaper_OutGainDB_Default ( 0.0f)
+
+#define kWaveShaper_OutGainDB_Default ( -kWaveShaper_InGainDB_Default)
 #define kWaveShaper_OutGainDB_Min     (-96.0f)
 #define kWaveShaper_OutGainDB_Max     ( 24.0f)
 
@@ -79,6 +80,7 @@ void ComputeWaveShaper_V4f(short *x, short *y, long length, WAVESHAPER *d);
 //void ComputeWaveShaper_V2i(short *x, short *y, long length, WAVESHAPER *d); 
 //void ComputeWaveShaper_V3i(short *x, short *y, long length, WAVESHAPER *d); 
 void ComputeWaveShaper_V4i(short *x, short *y, long length, WAVESHAPER *d); 
+void ComputeWaveShaper_V4d1i(short *x, short *y, long length, WAVESHAPER *d); 
 
 #ifdef __cplusplus
 }

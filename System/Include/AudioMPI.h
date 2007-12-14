@@ -4,11 +4,9 @@
 // Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// File:
-//		AudioMPI.h
+// AudioMPI.h
 //
-// Description:
-//		Defines the Module Public Interface (MPI) for the Audio module. 
+// Defines the Module Public Interface (MPI) for the Audio module. 
 //
 //==============================================================================
 
@@ -16,6 +14,7 @@
 #include <SystemTypes.h>
 #include <StringTypes.h>
 #include <AudioTypes.h>
+
 #include <CoreMPI.h>
 #include <AudioEffectsProcessor.h>
 LF_BEGIN_BRIO_NAMESPACE()
@@ -25,10 +24,10 @@ class IEventListener;
 
 //==============================================================================
 // Class:
-//		CAudioMgrMPI
+//		CAudioMPI
 //
 // Description:
-//		Module Public Interface (MPI) class for the Audio Manager module. 
+//		Module Public Interface (MPI) class for the Audio module. 
 //==============================================================================
 class CAudioMPI : public ICoreMPI {
 public:
@@ -46,32 +45,33 @@ public:
 	// Class-specific functionality
 	//********************************    
 
-	// The default listener is not currently used.
+	// NOTE: Default listener is not currently used.
 	CAudioMPI( const IEventListener* pDefaultListener = NULL );
 	virtual ~CAudioMPI( void );
 
+	// !!!!! LF Internal:  do not release !!!!!!
+	void GetAudioState( void *);
+	void SetAudioState( void *);
+
 	//********************************
-	// Audio output driver control. 
+	// Audio output driver control
 	//********************************    
 
-	// Pauses the output driver, keeping the state of the audio system intact.
-	// While paused, the audio system consumes no CPU.
+	// Pauses audio output driver
+	// While paused, audio system consumes no CPU.
 	tErrType	PauseAudioSystem( void );
-
-	// Resume the audio system from the previously paused state.
 	tErrType	ResumeAudioSystem( void );
 
-	// Set the final output gain of the mixer.  (This includes MIDI.)
+	// Set output gain of mixer (Audio + MIDI)
 	void 		SetMasterVolume( U8 volume );
 	U8			GetMasterVolume( void ) const;
 
-	// Get/Set the speaker hardware equalizer.  The speaker equalizer may be
-	// set or cleared when a kHeadphoneJackDetect message is received
+	// Get/Set speaker equalizer.  Speaker equalizer may be
+	// set/cleared with kHeadphoneJackDetect message
 	Boolean		GetSpeakerEqualizer(void) const;
 	void		SetSpeakerEqualizer( Boolean enable );
 	
-	// Sets/Gets the default location in the file system that the MPI will
-	// use to load/play audio resources.
+	// Set/Get path for audio resource file
 	tErrType		SetAudioResourcePath( const CPath &path );
 	const CPath* 	GetAudioResourcePath( void ) const;
 	
@@ -80,103 +80,84 @@ public:
 	//********************************    
 	
 	// Plays an audio resource.
-	// An audio done event will be posted to the listener if provided.
+	// Audio done event will be posted to listener if provided.
 	// Currently only volume and pListener are interpreted.
+// GK FIXXX: rename to PlayAudio as every comment talks about playing audio !
 	tAudioID 	StartAudio( const CPath &path, 
 					U8					volume, 
 					tAudioPriority		priority,
 					S8					pan, 
-					const IEventListener*	pListener = kNull,
+					const IEventListener*pListener = kNull,
 					tAudioPayload		payload = 0,
-					tAudioOptionsFlags	flags = 0 );
+					tAudioOptionsFlags	flags   = 0 );
 
-	// Same as above, but uses defaults for unspecified params.
+	// Same as above, but uses defaults for unspecified parameters
 	tAudioID 	StartAudio( const CPath &path, 
 					tAudioPayload		payload,
 					tAudioOptionsFlags	flags );
 	
-	// Pause a playing audio resource.
-	void 		PauseAudio( tAudioID id );
-
-	// Resume a playing audio resource from the previously paused position.
+	// Playback controls
+	void 		PauseAudio(  tAudioID id );
 	void 		ResumeAudio( tAudioID id ); 
+	void 		StopAudio(   tAudioID id, Boolean noDoneMessage ); 
 
-	// Stop the audio resource and free its mixer channel.  Optionally post
-	// an audioDone event via the EventMgr.
-	void 		StopAudio( tAudioID id, Boolean surpressDoneMessage ); 
+	Boolean		IsAudioPlaying( tAudioID id );  // Is specific ID playing
+    Boolean		IsAudioPlaying( void );         // Any audio playing?
 
-	// Is this piece of audio still playing?
-	Boolean		IsAudioPlaying( tAudioID id );
+	U32 	GetAudioTime( tAudioID id ) const; // Time (milliSeconds) since creation
 	
-	// Is the audio system playing anything?
-	Boolean		IsAudioPlaying( void );
-
-	//********************************
-	// Get/Set the Volume/Priority/Pan using a given audioID
-	//********************************    
-	// Returns the time in ms since the file started playing.
-	U32 	GetAudioTime( tAudioID id ) const;
-	
+	// Get/Set individual channel Volume/Priority/Pan
 	U8		GetAudioVolume( tAudioID id ) const;
 	void	SetAudioVolume( tAudioID id, U8 volume );
-
-	tAudioPriority	GetAudioPriority( tAudioID id ) const;
-	void	SetAudioPriority( tAudioID id, tAudioPriority priority );
-
 	S8		GetAudioPan( tAudioID id ) const;
 	void	SetAudioPan( tAudioID id, S8 pan );
+
+	tAudioPriority	GetAudioPriority( tAudioID id ) const;
+	void	        SetAudioPriority( tAudioID id, tAudioPriority priority );
+
 
 	const IEventListener*	GetAudioEventListener( tAudioID id ) const;
 	void	SetAudioEventListener( tAudioID id, IEventListener *pListener );
 
-	//********************************
-	// Defaults to use when value is not specified in the Start() call.
-	//********************************    
+// Defaults to use when value is not specified in the Start() call.
 	U8		GetDefaultAudioVolume( void ) const;
 	void	SetDefaultAudioVolume( U8 volume );
-
-	tAudioPriority	GetDefaultAudioPriority( void ) const;
-	void	SetDefaultAudioPriority( tAudioPriority priority );
-
 	S8		GetDefaultAudioPan( void ) const;
 	void	SetDefaultAudioPan( S8 pan );
+// Not important for Didj.  Unimplemented
+	tAudioPriority	GetDefaultAudioPriority( void ) const;
+	void	        SetDefaultAudioPriority( tAudioPriority priority );
 
-	const IEventListener*	GetDefaultAudioEventListener( void ) const;
-	void	SetDefaultAudioEventListener( IEventListener *pListener );
+	const IEventListener *GetDefaultAudioEventListener( void ) const;
+	void	              SetDefaultAudioEventListener( IEventListener *pListener );
 	
 	//********************************
 	// Audio FX functionality
-	//********************************    
-	tErrType RegisterAudioEffectsProcessor(  CAudioEffectsProcessor *pChain ); // TODO: stub
-	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); // TODO: stub
-	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); // TODO: stub
+	//********************************   
+//  GK FIXXXX Not implemented in Didj.  Should Hide.
+	tErrType RegisterAudioEffectsProcessor(  CAudioEffectsProcessor *pChain ); 
+	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); 
+	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); 
 
-	// Registers function to call to get the next chunk of stereo audio stream data // TODO: stub
-//	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); // TODO: stub
+	// Registers function to call to get the next chunk of stereo audio stream data 
+// GK FIXXXX: unimplemented
+//	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); 
+
 
 	//********************************
 	// MIDI functionality
 	//********************************    
+	// NOTE: Currently, only one player
 
-	// NOTE: Currently the MIDI player ID is ignored because only one file can 
-	// be played at a time!  There is only one player.
-	// In the future if we implement multiple MIDI players you would use the ID to
-	// specify which player to direct a msg.
-
-	// This function activates the MIDI engine.  Don't do this unless you really need to play
-	// MIDI, there is a MIPS cost to having the player active even if you aren't using it.
-	// Always release it when you are done!
-	tErrType 	AcquireMidiPlayer( tAudioPriority priority, IEventListener* pListener, tMidiPlayerID* pID );
-
-	// Deactivate the MIDI engine.
-	tErrType 	ReleaseMidiPlayer( tMidiPlayerID id );
+	// Activate/Deactivate MIDI engine GK FIXXX:  Well, then, rename these functions!
+	tErrType AcquireMidiPlayer( tAudioPriority priority, IEventListener* pListener, tMidiPlayerID* pID );
+	tErrType ReleaseMidiPlayer( tMidiPlayerID id ); 
 	
-	// Get the Audio ID associated with a currently playing MidiFile. 
-	// You only need this if you want to change the Volume/Priority/Pan/Listener
-	// using the methods above.
-	tAudioID	GetAudioIDForMidiID( /*tMidiPlayerID id*/ ); // TODO: stub
+	// Get Audio ID associated with a currently playing MidiFile. 
+// GK FIXXXX: unimplemented
+	tAudioID GetAudioIDForMidiID( /*tMidiPlayerID id*/ );
 	
-	// Start playback of a MIDI file.
+	// Start playback of MIDI file.
 	// Currently only the volume and pListener options are used.
     tErrType 	StartMidiFile( tMidiPlayerID	id,
     					const CPath 		&path, 
@@ -197,41 +178,39 @@ public:
 
 	void 		PauseMidiFile(  tMidiPlayerID id );
     void 		ResumeMidiFile( tMidiPlayerID id );
-    void 		StopMidiFile(   tMidiPlayerID id, Boolean suppressDoneMessage );
+    void 		StopMidiFile(   tMidiPlayerID id, Boolean noDoneMessage );
 
 // Properties of MIDI file play
     tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-	tErrType 	SetEnableMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask trackBitMask );
-	tErrType 	TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount ); 
+	tErrType 	SetEnableMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask );
+	tErrType 	TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask, S8 semit ); 
 	tErrType 	ChangeMidiTempo(      tMidiPlayerID id, S8 tempo ); 
 
 	// Send MIDI channel messages
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiPlayerInstrument instr ); 
-    tErrType 	MidiNoteOn(tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-    tErrType 	MidiNoteOn(tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity);
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask bitMask, tMidiPlayerInstrument instr ); 
+    tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
+    tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
+    tErrType MidiNoteOff(tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
+    tErrType MidiNoteOff(tMidiPlayerID id, U8 channel, U8 note);
 
-    tErrType 	MidiNoteOff(tMidiPlayerID id, U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-    tErrType 	MidiNoteOff(tMidiPlayerID id, U8 channel, U8 noteNum);
-
-	tErrType 	SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
+	tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 	// ******** Loadable Instrument Support ********
 	// Create an empty list of programs and drums. This can be used to keep 
 	// track of which resources are needed to play a group of songs.
-	tErrType CreateProgramList( tMidiProgramList **programList );
+	tErrType CreateProgramList( tMidiProgramList **d );
 	
 	// Add a bank/program combination to the list of programs used. If the
 	// bank/program has already been added then this will have no effect.  You can
 	// use this to add sound effects of MIDI notes that are not in a MIDI File.
-	tErrType AddToProgramList( tMidiProgramList *programList, U8 bank, U8 program );
+	tErrType AddToProgramList( tMidiProgramList *d, U8 bank, U8 program );
 
 	// Add a bank/program/pitch combination to the list of drums used.
-	tErrType AddDrumToProgramList( tMidiProgramList *programList, U8 bank, U8 program, int pitch );
-	
-	tErrType DeleteProgramList( tMidiProgramList *programList );
+	tErrType AddDrumToProgramList( tMidiProgramList *d, U8 bank, U8 program, int pitch );
+	tErrType DeleteProgramList(    tMidiProgramList *d );
 
 	// Add all programs and drums used in this song to the list.
-	tErrType ScanForPrograms( tMidiPlayerID id, tMidiProgramList *programList );
+	tErrType ScanForPrograms( tMidiPlayerID id, tMidiProgramList *d );
 	
 	/* Load a set of instruments from a file or an in memory image using a stream.
 	If programList is NULL then all instruments in the set will be loaded.
@@ -241,7 +220,7 @@ public:
 	You can call this multiple times. If there is a conflict with an instrument
 	with the same bank and program number as a previous file then the most
 	recently loaded instrument will be used. */	
-	tErrType LoadInstrumentFile( const CPath &path , tMidiProgramList *programList );
+	tErrType LoadInstrumentFile( const CPath &path , tMidiProgramList *d );
 	
 	// All instruments loaded dynamically by LoadInstrumentFile() will be
 	// unloaded. Instruments that were compiled with the engine will not be affected.	
@@ -251,6 +230,12 @@ private:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;
 };
+
+// Some MIDI definitions (GK FIXXX:   add more !)
+#define kMIDI_ControlChange                     0xB0
+#define kMIDI_Controller_AllSoundOff            120
+#define kMIDI_Controller_ResetAllControllers    121
+#define kMIDI_Controller_AllNotesOff            123
 
 // MIDI note definitions
 #define kMIDI_Cm1	0
@@ -398,13 +383,19 @@ private:
 // MIDI Channel Message
 // Upper Nibble: Message ID  
 // Lower Nibble: Channel # [0..15]
-#define kMIDI_CHANNELMESSAGE_NOTEOFF          0x80
-#define kMIDI_CHANNELMESSAGE_NOTEON           0x90
-#define kMIDI_CHANNELMESSAGE_AFTERTOUCH       0xA0
-#define kMIDI_CHANNELMESSAGE_CONTROLCHANGE    0xB0
-#define kMIDI_CHANNELMESSAGE_PROGRAMCHANGE    0xC0
-#define kMIDI_CHANNELMESSAGE_CHANNELPRESSURE  0xD0
-#define kMIDI_CHANNELMESSAGE_PITCHWHEEL       0xE0
+#define kMIDI_ChannelMessage_NoteOff          0x80
+#define kMIDI_ChannelMessage_NoteOn           0x90
+#define kMIDI_ChannelMessage_Aftertouch       0xA0
+#define kMIDI_ChannelMessage_ControlChange    0xB0
+#define kMIDI_ChannelMessage_ProgramChange    0xC0
+#define kMIDI_ChannelMessage_CHANNELPRESSURE  0xD0
+#define kMIDI_ChannelMessage_PitchWheel       0xE0
+
+#define kMIDI_ChannelMessage_ControlChange 0xB0
+
+#define kMIDI_Controller_AllSoundOff            120
+#define kMIDI_Controller_ResetAllControllers    121
+#define kMIDI_Controller_AllNotesOff            123
 
 LF_END_BRIO_NAMESPACE()	
 #endif /* LF_BRIO_AUDIOMPI_H */

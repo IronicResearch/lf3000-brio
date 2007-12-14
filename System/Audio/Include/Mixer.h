@@ -1,15 +1,12 @@
 #ifndef LF_MIXER_H
 #define LF_MIXER_H
 
-
 //==============================================================================
 // Copyright (c) 2002-2007 LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// File:
-//		Mixer.h
+// Mixer.h
 //
-// Description:
 //		Defines the class to manage the low-level mixing of audio channels.
 //
 //==============================================================================
@@ -31,45 +28,78 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
-// Class:
-//		CAudioMixer
+// Class: CAudioMixer
 //
-// Description:
-//		Class to manage the low-level mixing of audio channels. 
+// Description: manage the low-level mixing of audio channels. 
 //==============================================================================
 class CAudioMixer {
 public:
 	CAudioMixer( int numChannels );
 	~CAudioMixer();
 		
-	CChannel*		FindChannelUsing( tAudioPriority priority );
-	CChannel*		FindChannelUsing( tAudioID id );
-	long    		FindChannelIndex( tAudioID id );
+	CChannel*		FindFreeChannel(      tAudioPriority priority );
+	CChannel*		FindChannel(          tAudioID id );
+	long    		FindFreeChannelIndex( tAudioID id );
 	
 	// Is audio (excluding MIDI) playing on a mixer channel.
 	Boolean IsAnyAudioActive( void );
 
-	CMidiPlayer*	GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
+	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
 
-	tErrType	    AddPlayer( tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID );
-	CAudioPlayer	*CreatePlayer( tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID );
+	tErrType	  AddPlayer(    tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
+	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
 
-	void 			SetMasterVolume( U8 x ) ; 
+	void 		SetMasterVolume( U8 x ) ; 
 
-	Boolean     GetOutputEqualizer( ) { return ((Boolean)useOutEQ_); }
+	Boolean     GetOutputEqualizer( ) { return ((Boolean)audioState_.useOutEQ); }
 	void        SetOutputEqualizer( Boolean x );
 	
 // Main routine 
 	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
 	
-	static int WrapperToCallRenderBuffer( S16 *pOutBuff, unsigned long frameCount, void *pToObject  );
-											
+	static int WrapperToCallRenderBuffer( S16 *pOutBuf, unsigned long frameCount, void *pToObject  );
+										
+    tAudioState audioState_;
+//    DSP_BLOCK   *dspBlock;
+
+// Level Meter data
+    S16 outLevels_ShortTime[2];
+    S16 outLevels_LongTime [2];
+    S16 temp_ShortTime     [2];
+    S32 longTimeHoldCounter;
+    S32 longTimeHoldInterval;
+    S32 shortTimeCounter;
+    S32 shortTimeInterval;
+    float longTimeDecayF;
+    S16   longTimeDecayI;
+
+	void GetAudioState(tAudioState *d );
+	void SetAudioState(tAudioState *d );
+	
+// ---- DEBUG File I/O
+// Debug : info for sound file input/output
+    long readInSoundFile_  ;
+    long writeOutSoundFile_;
+    long inSoundFileDone_  ;
+
+    SNDFILE	*inSoundFile_;
+    SF_INFO	inSoundFileInfo_;
+    char *inSoundFilePath_ ;
+
+    SNDFILE	*outSoundFile_;
+    SF_INFO	outSoundFileInfo_;
+    char *outSoundFilePath_ ;
+
 private:
 	CDebugMPI 		*pDebugMPI_;
 
+//#define NEW_ADD_PLAYER
+#define OLD_ADD_PLAYER
+#ifdef NEW_ADD_PLAYER
     CAudioPlayer *playerToAdd_;
     CChannel     *targetChannel_;
-	
+#endif
+
 	BRIOMIXER		pDSP_;
     float           samplingFrequency_;
 
@@ -113,16 +143,30 @@ private:
 
 //  Output EQ parameters
 #define kAudioMixer_MaxEQBands  3
-    long        useOutEQ_;
+//    long        useOutEQ_;
     long        outEQ_BandCount_;
     EQ          outEQ_[kAudioMixer_MaxOutChannels][kAudioMixer_MaxEQBands];
 
+// Input debug stuff
+    long inputIsDC;
+    float inputDCValueDB;
+    float inputDCValuef;
+    Q15   inputDCValuei;
+
+#ifdef NEED_SAWTOOTH
+    long  inputIsSawtoothWave_;
+    unsigned long z_;
+    unsigned long delta_;
+    float normalFrequency_;
+    float phase_;
+#endif
+
 //  Soft Clipper parameters
-    long        useOutSoftClipper_;
+//    long        useOutSoftClipper_;
     WAVESHAPER  outSoftClipper_[kAudioMixer_MaxOutChannels];
 
-// MIDI parameters
-	CMidiPlayer*	pMidiPlayer_;
+// MIDI parameters - only one player for now
+	CMidiPlayer *pMidiPlayer_;
 
 // Mixer buffer parameters
 //	S16*			pMixBuffer_;  // Mix of all active channels

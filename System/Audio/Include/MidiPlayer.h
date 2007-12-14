@@ -6,11 +6,9 @@
 // All Rights Reserved
 //==============================================================================
 //
-// File:
-//		MidiPlayer.h
+// MidiPlayer.h
 //
-// Description:
-//		Defines the class to manage the playing of MIDI data.
+// Class to manage the playing of MIDI data.
 //
 //==============================================================================
 
@@ -50,16 +48,16 @@ public:
 
 	inline bool		IsFileActive() { return bFileActive_; };
 
-	inline bool		IsActive() { return bActive_; };
+	inline bool		IsActive()   { return bActive_; };
 	inline void		Activate()   { bActive_ = true; }
-	inline void		DeActivate() { bActive_ = false; }
+	inline void		DeActivate() { bActive_ = false; bFileActive_ = false;}
 
 	// Get/Set class member variables
-	inline tMidiPlayerID		GetID() { return id_; }
-	inline U8	GetVolume()		{ return volume_; }
+	inline tMidiPlayerID	GetID() { return id_; }
+	inline U8	GetVolume()	        { return volume_; }
 	void		SetVolume( U8 x );
 
-	inline S8	GetPan()		{ return pan_; }
+	inline S8	GetPan()		    { return pan_; }
 	void		SetPan(S8 x);
 
 	// MIDI channel messages
@@ -81,21 +79,25 @@ public:
 
 private:
 	CDebugMPI* 				pDebugMPI_;	
+
+//#define USE_MIDI_PLAYER_MUTEX
+#ifdef USE_MIDI_PLAYER_MUTEX
 	CKernelMPI* 			pKernelMPI_;	
+	tMutex     				*renderMutex_;
+#endif
 
 // Mobileer MIDIengine variables
 	SPMIDI_Context*			pContext_;		
 	MIDIFilePlayer*			pFilePlayer_;	
-	SPMIDI_Orchestra        *spmidi_orchestra_;
+	SPMIDI_Orchestra        *spMIDI_orchestra_;
 
-	const IEventListener*	pListener_;		// pointer to caller's listener for done event
-	tAudioOptionsFlags	optionsFlags_;	
-	U8			bDoneMessage_:1;		// Caller requests done message 
+	const IEventListener*	pListener_;		// For done event
+	tAudioOptionsFlags	    optionsFlags_;	
+	U8			            bDoneMessage_;		// Caller requests done message 
 
-	tMidiPlayerID			id_;			// player ID 
-	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of the Midi playing
-	S16* 					pMidiRenderBuffer_;
-	tMutex     				render_mutex_;
+	tMidiPlayerID			id_;			 
+	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of active tracks
+	S16* 					pMIDIRenderBuffer_;
 
 // DSP information
 	U8			pan_;
@@ -110,13 +112,13 @@ private:
     Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
 
 // State activity flags
-	Boolean		shouldLoop_;        // FIXXX: eliminate this variable sometime
+	Boolean		shouldLoop_;        // GK FIXX: eliminate this variable sometime
     S32         loopCount_;
     S32         loopCounter_;
 
-	U8			bFilePaused_:1;				
-	U8			bFileActive_:1;				
-	U8			bActive_:1;					// Player acquired by client
+	U8			bFilePaused_;				
+	U8			bFileActive_;				
+	U8			bActive_;					// Player acquired by client
 
 // Data configuration
 	U32 	framesPerIteration_;

@@ -12,7 +12,7 @@
 #include "fir.h"
 
 #define kFIR_Triangle_3_Length 3
-float fir_Triangle_3_GainCompensationDB = -6.0;
+float fir_Triangle_3_GainCompensationDB = 0.0;
 float fir_Triangle_3_Hz[kFIR_Triangle_3_Length] = {
 1.0f/2.0f,
 1.0f/1.0f,
@@ -20,7 +20,7 @@ float fir_Triangle_3_Hz[kFIR_Triangle_3_Length] = {
 };
 
 #define kFIR_Triangle_9_Length 9
-float fir_Triangle_9_GainCompensationDB = -6.0;
+float fir_Triangle_9_GainCompensationDB = 0.0;
 float fir_Triangle_9_Hz[kFIR_Triangle_9_Length] = {
 1.0f/4.0f,
 1.0f/3.0f,

@@ -2,17 +2,17 @@
 // Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 // 
-// File:
-//		Audio.cpp
+// Audio.cpp
 //
-// Description:
 //		Underlying implementation code for the Audio Manager module.
 //
 //==============================================================================
 #include <errno.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
+
 #include <EventMPI.h>
+
 #include <AudioTypes.h>
 #include <AudioPriv.h>
 #include <AudioTask.h>
@@ -46,13 +46,13 @@ CAudioMsgSetMasterVolume::CAudioMsgSetMasterVolume( const U8 x ) {
 	type_ = kAudioCmdMsgTypeSetMasterVolume;
 	messageSize = sizeof(CAudioMsgSetMasterVolume);
 	messagePriority = kAudioMsgDefaultPriority;
-	masterVolume_ = x;
+	d_ = x;
 }
 CAudioMsgSetOutputEqualizer::CAudioMsgSetOutputEqualizer( const U8 x ) {
-	type_ = kAudioCmdMsgTypeSetOutputEqualizer;
-	messageSize = sizeof(CAudioMsgSetOutputEqualizer);
+	type_           = kAudioCmdMsgTypeSetOutputEqualizer;
+	messageSize     = sizeof(CAudioMsgSetOutputEqualizer);
 	messagePriority = kAudioMsgDefaultPriority;
-	outputEqualizerEnabled_ = x;
+	d_ = x;
 }
 
 ///------------------------------------------------------------------------------
@@ -91,6 +91,21 @@ CAudioMsgGetAudioTime::CAudioMsgGetAudioTime( const tAudioID id ) {
 	id_ = id;
 }
 
+// ------------------------------------------------------------------------------
+CAudioMsgGetAudioState::CAudioMsgGetAudioState( void ) {
+	type_           = kAudioCmdMsgTypeGetAudioState;
+	messageSize     = sizeof(CAudioMsgGetAudioState);
+	messagePriority = kAudioMsgDefaultPriority;
+}
+
+CAudioMsgSetAudioState::CAudioMsgSetAudioState( const tAudioState d ) {
+	type_           = kAudioCmdMsgTypeSetAudioState;
+	messageSize     = sizeof(CAudioMsgSetAudioState);
+	messagePriority = kAudioMsgDefaultPriority;
+    d_ = d;
+//printf("CAudioMsgSetAudioState::CAudioMsgSetAudioState d.srcType=%d -> d_.srcType=%d\n", d.srcType, d_.srcType);
+}
+
 //------------------------------------------------------------------------------
 CAudioMsgGetAudioVolume::CAudioMsgGetAudioVolume( const tAudioID id ) {
 	type_ = kAudioCmdMsgTypeGetAudioVolume;
@@ -103,7 +118,7 @@ CAudioMsgSetAudioVolume::CAudioMsgSetAudioVolume( const tAudioVolumeInfo vi ) {
 	type_ = kAudioCmdMsgTypeSetAudioVolume;
 	messageSize = sizeof(CAudioMsgSetAudioVolume);
 	messagePriority = kAudioMsgDefaultPriority;
-	vi_.id = vi.id;
+	vi_.id     = vi.id;
 	vi_.volume = vi.volume;
 }
 
@@ -457,8 +472,8 @@ CAudioModule::CAudioModule( void )
  	err = pKernelMPI_->InitMutex( mpiMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
 
-	masterVolume_           = 100;  // FIXX TODO: hack, should get this from the mixer.
-	outputEqualizerEnabled_ = false;  // FIXX TODO: hack, should get this from the mixer.
+	masterVolume_           = 100;    // GK FIXX TODO: hack, should get this from the mixer.
+	outputEqualizerEnabled_ = false;  // GK FIXX TODO: hack, should get this from the mixer.
 }
 
 //==============================================================================
@@ -508,15 +523,15 @@ const CString* CAudioModule::GetModuleName() const
 const CURI* CAudioModule::GetModuleOrigin() const
 {
 	return &kModuleURI;
-}
+}   // ---- end GetModuleOrigin() ----
 
 //==============================================================================
 // MPI State Functions
 //==============================================================================
 
-//==============================================================================
+// ==============================================================================
 // Register
-//==============================================================================
+// ==============================================================================
 U32 CAudioModule::Register( void )
 {
 	tErrType 	result = kNoErr;
@@ -531,11 +546,11 @@ U32 CAudioModule::Register( void )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register --  Couldn't unlock mutex.\n");
 
 	return sNextIndex;
-}
+}   // ---- end Register() ----
 
-//==============================================================================
+// ==============================================================================
 // Unregister
-//==============================================================================
+// ==============================================================================
 void CAudioModule::Unregister( U32 id )
 {
 	tErrType result = kNoErr;
@@ -551,11 +566,11 @@ void CAudioModule::Unregister( U32 id )
 
 	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Unregister --  Couldn't unlock mutex.\n");
-}
+}   // ---- end Unregister() ----
 
-//==============================================================================
+// ==============================================================================
 // StartAudioSystem
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::StartAudioSystem( void )
 {
     CAudioMsgStartAudio msg;
@@ -563,11 +578,11 @@ tErrType CAudioModule::StartAudioSystem( void )
    	SendCmdMessage( msg ); 
 
 	return WaitForStatus();
-}
+}   // ---- end StartAudioSystem() ----
 
-//==============================================================================
+// ==============================================================================
 // StopAudioSystem
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::StopAudioSystem( void )
 {
     CAudioMsgStopAudio msg;
@@ -575,11 +590,11 @@ tErrType CAudioModule::StopAudioSystem( void )
   	SendCmdMessage( msg ); 
 	
 	return WaitForStatus();
-}
+}   // ---- end StopAudioSystem() ----
 
-//==============================================================================
+// ==============================================================================
 // PauseAudioSystem
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::PauseAudioSystem( void )
 {
     CAudioMsgPauseAudio msg;
@@ -587,11 +602,11 @@ tErrType CAudioModule::PauseAudioSystem( void )
 	SendCmdMessage( msg ); 
 	
 	return WaitForStatus();
-}
+}   // ---- end PauseAudioSystem() ----
 
-//==============================================================================
+// ==============================================================================
 // ResumeAudioSystem
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::ResumeAudioSystem( void )
 {
     CAudioMsgResumeAudio msg;
@@ -599,70 +614,69 @@ tErrType CAudioModule::ResumeAudioSystem( void )
  	SendCmdMessage( msg ); 
 	
 	return WaitForStatus();
-}
+}   // ---- end ResumeAudioSystem() ----
 
-//==============================================================================
+// ==============================================================================
 // RegisterAudioEffectsProcessor
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::RegisterAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
-}
+}   // ---- end RegisterAudioEffectsProcessor() ----
 
-//==============================================================================
+// ==============================================================================
 // RegisterGlobalAudioEffectsProcessor
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
-}
+}   // ---- end RegisterGlobalAudioEffectsProcessor() ----
 
-//==============================================================================
+// ==============================================================================
 // ChangeAudioEffectsProcessor
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::ChangeAudioEffectsProcessor( tAudioID /* id */, CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
-}
+}   // ---- end ChangeAudioEffectsProcessor() ----
 
-//==============================================================================
+// ==============================================================================
 // SetMasterVolume
-//==============================================================================
-void CAudioModule::SetMasterVolume( U8 volume )
+// ==============================================================================
+void CAudioModule::SetMasterVolume( U8 x )
 {
 	tErrType 	result = kNoErr;
+//printf("CAudioModule::SetMasterVolume: volume=%d\n", x);	
 
-	// Keep local copy.
-	masterVolume_ = volume;
+	masterVolume_ = x;
 	
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetMasterVolume -- Couldn't lock mutex.\n");
+pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetMasterVolume: Couldn't lock mutex.\n");
 
 	// Need to inform the audio mixer that the master volume has changed
 	// Generate the command message to send to the audio Mgr task
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetMasterVolume; volume = %d\n", volume );	
 
-	CAudioMsgSetMasterVolume	msg( volume );
+	CAudioMsgSetMasterVolume	msg( x );
 	
-	// Send the message and wait to get the audioID back from the audio Mgr task
+	// Send message and wait to get audioID back from audio task
  	SendCmdMessage( msg ); 
 
  	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
- 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetMasterVolume --  Couldn't unlock mutex.\n");
-}
+pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetMasterVolume: Couldn't unlock mutex.\n");
+}   // ---- end SetMasterVolume() ----
 
-//==============================================================================
-//==============================================================================
+// ==============================================================================
+// GetMasterVolume
+// ==============================================================================
 U8 CAudioModule::GetMasterVolume( void )
 {
 	// TODO: This probably should call through to the mixer...
 	return masterVolume_;
-}
+}   // ---- end GetMasterVolume() ----
 
-//==============================================================================
+// ==============================================================================
 // SetOutputEqualizer
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetOutputEqualizer(U8 x )
 {
 	tErrType 	result = kNoErr;
@@ -685,7 +699,7 @@ void CAudioModule::SetOutputEqualizer(U8 x )
 
  	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
  	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetOutputEqualizer --  Couldn't unlock mutex.\n");
-}
+}   // ---- end SetOutputEqualizer() ----
 
 // ==============================================================================
 // GetOutputEqualizer
@@ -694,7 +708,9 @@ U8 CAudioModule::GetOutputEqualizer( void )
 {
 	// TODO: This probably should call through to the mixer...
 	return outputEqualizerEnabled_;
-}
+
+}   // ---- end GetOutputEqualizer() ----
+
 // ==============================================================================
 // SetAudioResourcePath
 // ==============================================================================
@@ -707,19 +723,18 @@ tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
 	mpiState.path = new CPath( path );
 	
 	return kNoErr;
-}
+}   // ---- end SetAudioResourcePath() ----
+
 // ==============================================================================
 // GetAudioResourcePath
 // ==============================================================================
 const CPath* CAudioModule::GetAudioResourcePath( U32 mpiID )
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioResourcePath -- mpiID = %d\n", static_cast<int>(mpiID) );	
+pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::GetAudioResourcePath:mpiID=%d\n", (int) mpiID);	
 	
-	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
-	return mpiState.path;
-}
-
+MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+return mpiState.path;
+}   // ---- end GetAudioResourcePath() ----
 
 // ==============================================================================
 // StartAudio
@@ -759,11 +774,11 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, U8 volume,
  	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register --  Couldn't unlock mutex.\n");
 
  	return id;
-}
+}   // ---- end StartAudio() ----
 
-//==============================================================================
+// ==============================================================================
 // StartAudio
-//==============================================================================
+// ==============================================================================
 tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload payload, 
 				tAudioOptionsFlags flags)
 {
@@ -799,12 +814,11 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload p
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio --  Couldn't unlock mutex.\n");
 
 	return id;
+}   // ---- end StartAudio() ----
 
-}
-
-//==============================================================================
+// ==============================================================================
 // GetAudioTime
-//==============================================================================
+// ==============================================================================
 U32 CAudioModule::GetAudioTime( tAudioID id )
 {
 	tErrType 				result = kNoErr;
@@ -822,15 +836,14 @@ U32 CAudioModule::GetAudioTime( tAudioID id )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register --  Couldn't unlock mutex.\n");
 
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioTime() -- Stream time = %u...\n", 
-		static_cast<unsigned int>(data));	
+		"CAudioModule::GetAudioTime() Stream time=%u\n", (int)data);	
 
 	return data;
-}
+}   // ---- end GetAudioTime() ----
 
-//==============================================================================
+// ==============================================================================
 // IsAudioPlaying
-//==============================================================================
+// ==============================================================================
 Boolean CAudioModule::IsAudioPlaying( tAudioID id )
 {
 	tErrType 					result = kNoErr;
@@ -848,11 +861,11 @@ Boolean CAudioModule::IsAudioPlaying( tAudioID id )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::IsAudioPlaying --  Couldn't unlock mutex.\n");
 
 	return data;
-}
+}   // ---- end IsAudioPlaying() ----
 
-//==============================================================================
+// ==============================================================================
 // IsAudioPlaying
-//==============================================================================
+// ==============================================================================
 Boolean CAudioModule::IsAudioPlaying()
 {
 	tErrType 					result = kNoErr;
@@ -870,62 +883,94 @@ Boolean CAudioModule::IsAudioPlaying()
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::IsAudioPlaying --  Couldn't unlock mutex.\n");
 	
 	return data; 
-}
+}   // ---- end IsAudioPlaying() ----
 
-//==============================================================================
+// ==============================================================================
 // StopAudio
-//==============================================================================
-void CAudioModule::StopAudio( tAudioID id, Boolean surpressDoneMessage )
+// ==============================================================================
+void CAudioModule::StopAudio( tAudioID id, Boolean noDoneMessage )
 {
 	// Generate the command message to send to the audio Mgr task
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StopAudio -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::StopAudio ID = %d\n", (int)id );	
 
 	tAudioStopAudioInfo msgData;
 	
 	msgData.id = id;
-	msgData.suppressDoneMsg = surpressDoneMessage;
+	msgData.suppressDoneMsg = noDoneMessage;
 
 	
 	CAudioMsgStopAudio	msg( msgData );
 	SendCmdMessage( msg ); 
-}
+}   // ---- end StopAudio() ----
 
-//==============================================================================
+// ==============================================================================
 // PauseAudio
-//==============================================================================
+// ==============================================================================
 void CAudioModule::PauseAudio( tAudioID id )
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::PauseAudio -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::PauseAudio ID = %d\n", (int)id );	
 
 	CAudioMsgPauseAudio	msg( id );
 	SendCmdMessage( msg ); 
-}
+}   // ---- end PauseAudio() ----
 
-//==============================================================================
+// ==============================================================================
 // ResumeAudio
-//==============================================================================
+// ==============================================================================
 void CAudioModule::ResumeAudio( tAudioID id )
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::ResumeAudio -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::ResumeAudio ID = %d\n", (int)id );	
 
 	CAudioMsgResumeAudio	msg( id );
 	SendCmdMessage( msg ); 
-}
+}   // ---- end ResumeAudio() ----
 
-//==============================================================================
+// ==============================================================================
+// GetAudioState
+// ==============================================================================
+U8 CAudioModule::GetAudioState( tAudioState *d ) 
+{
+	tErrType 				result = kNoErr;
+	CAudioMsgGetAudioState	msg;
+	
+//printf("CAudioModule::GetAudioState ID = %d\n", (int)id );	
+
+	result = pKernelMPI_->LockMutex( mpiMutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioState: Can't lock mutex.\n");
+
+	SendCmdMessage( msg );
+
+	*d = WaitForAudioStateResult();
+	
+	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioState: Can't unlock mutex.\n");
+
+	return (66);
+}   // ---- end GetAudioState() ----
+
+// ==============================================================================
+// SetAudioState
+// ==============================================================================
+void CAudioModule::SetAudioState( tAudioState *d ) 
+{
+//printf("CAudioModule::SetAudioState d->srcType=%d \n", d->srcType);	
+
+// bcopy()
+CAudioMsgSetAudioState	msg( *d );
+//printf("SetAudioState: msg.d_.srcType=%d\n", msg.d_.srcType);
+SendCmdMessage( msg );
+}   // ---- end SetAudioState() ----
+
+// ==============================================================================
 // GetAudioVolume
-//==============================================================================
+// ==============================================================================
 U8 CAudioModule::GetAudioVolume( tAudioID id ) 
 {
 	tErrType 						result = kNoErr;
 	U8								volume;
 	CAudioMsgGetAudioVolume			msg( id );
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioVolume -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::GetAudioVolume ID = %d\n", (int)id );	
 
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioVolume -- Couldn't lock mutex.\n");
@@ -938,29 +983,26 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioVolume --  Couldn't unlock mutex.\n");
 
 	return volume;
-}
+}   // ---- end GetAudioVolume() ----
 
-//==============================================================================
+// ==============================================================================
 // SetAudioVolume
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetAudioVolume( tAudioID id, U8 x ) 
 {
-	tAudioVolumeInfo				info;
+//printf("CAudioModule::SetAudioVolume ID = %d volume=%d\n", (int)id, x);	
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetAudioVolume -- ID = %d\n", static_cast<int>(id) );	
+tAudioVolumeInfo	info;
+info.id     = id;
+info.volume = x;
 
-	info.id = id;
-	info.volume = x;
+CAudioMsgSetAudioVolume		msg( info );
+SendCmdMessage( msg );
+}   // ---- end SetAudioVolume() ----
 
-	CAudioMsgSetAudioVolume		msg( info );
-	
-	SendCmdMessage( msg );
-}
-
-//==============================================================================
+// ==============================================================================
 // GetAudioPriority
-//==============================================================================
+// ==============================================================================
 tAudioPriority CAudioModule::GetAudioPriority( tAudioID id ) 
 {
 	tErrType 						result = kNoErr;
@@ -968,8 +1010,7 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
 	tAudioPriorityInfo				info;
 	CAudioMsgGetAudioPriority	 	msg( id );
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioPriority -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::GetAudioPriority: id=%d\n", (int)id );	
 
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPriority -- Couldn't lock mutex.\n");
@@ -982,17 +1023,16 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPriority --  Couldn't unlock mutex.\n");
 
 	return priority;
-}
+}   // ---- end GetAudioPriority() ----
 
-//==============================================================================
+// ==============================================================================
 // SetAudioPriority
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority ) 
 {
 	tAudioPriorityInfo				info;
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetAudioPriority -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::SetAudioPriority: id=%d\n", (int)id );	
 
 	info.id = id;
 	info.priority = priority;
@@ -1000,11 +1040,11 @@ void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority )
 	CAudioMsgSetAudioPriority 	msg( info );
 	
 	SendCmdMessage( msg );
-}
+}   // ---- end SetAudioPriority() ----
 
-//==============================================================================
+// ==============================================================================
 // GetAudioPan
-//==============================================================================
+// ==============================================================================
 S8 CAudioModule::GetAudioPan( tAudioID id ) 
 {
 	tErrType 				result = kNoErr;
@@ -1012,8 +1052,7 @@ S8 CAudioModule::GetAudioPan( tAudioID id )
 	tAudioPanInfo			info;
 	CAudioMsgGetAudioPan	msg( id );
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioPan -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::GetAudioPan: id=%d\n", (int)id );	
 
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPan -- Couldn't lock mutex.\n");
@@ -1026,29 +1065,26 @@ S8 CAudioModule::GetAudioPan( tAudioID id )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPan --  Couldn't unlock mutex.\n");
 
 	return pan;
-}
+}   // ---- end GetAudioPan() ----
 
-//==============================================================================
+// ==============================================================================
 // SetAudioPan
-//==============================================================================
-void CAudioModule::SetAudioPan( tAudioID id, S8 pan ) 
+// ==============================================================================
+void CAudioModule::SetAudioPan( tAudioID id, S8 x ) 
 {
-	tAudioPanInfo			info;
+//printf("CAudioModule::SetAudioPan: id=%d pan=%d\n", (int)id, (int) x );	
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetAudioPan -- ID = %d\n", static_cast<int>(id) );	
+tAudioPanInfo	info;
+info.id  = id;
+info.pan = x;
 
-	info.id = id;
-	info.pan = pan;
+CAudioMsgSetAudioPan 	msg( info );
+SendCmdMessage( msg );
+}   // ---- end SetAudioPan() ----
 
-	CAudioMsgSetAudioPan 	msg( info );
-	
-	SendCmdMessage( msg );
-}
-
-//==============================================================================
+// ==============================================================================
 // GetAudioEventListener
-//==============================================================================
+// ==============================================================================
 const IEventListener* CAudioModule::GetAudioEventListener( tAudioID id ) 
 {
 	tErrType 					result = kNoErr;
@@ -1056,8 +1092,7 @@ const IEventListener* CAudioModule::GetAudioEventListener( tAudioID id )
 	tAudioPanInfo				info;
 	CAudioMsgGetAudioListener	 msg( id );
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioPan -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::GetAudioPan ID =%d\n", (int)id );	
 
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPan -- Couldn't lock mutex.\n");
@@ -1070,17 +1105,16 @@ const IEventListener* CAudioModule::GetAudioEventListener( tAudioID id )
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPan --  Couldn't unlock mutex.\n");
 
 	return pListener;
-}
+}   // ---- end GetAudioEventListener() ----
 
-//==============================================================================
+// ==============================================================================
 // SetAudioEventListener
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetAudioEventListener( tAudioID id, const IEventListener *pListener) 
 {
 	tAudioListenerInfo		info;
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetAudioEventListener -- ID = %d\n", static_cast<int>(id) );	
+//printf("CAudioModule::SetAudioEventListener ID = %d\n", (int)id );	
 
 	info.id = id;
 	info.pListener = pListener;
@@ -1088,103 +1122,95 @@ void CAudioModule::SetAudioEventListener( tAudioID id, const IEventListener *pLi
 	CAudioMsgSetAudioListener 	msg( info );
 	
 	SendCmdMessage( msg );
-}
+}   // ---- end SetAudioEventListener() ----
 
-//==============================================================================
+// ==============================================================================
 // GetDefaultAudioVolume
-//==============================================================================
+// ==============================================================================
 U8 CAudioModule::GetDefaultAudioVolume( U32 mpiID ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioVolume -- mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::GetDefaultAudioVolume -- mpiID = %d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	return mpiState.volume;
-}
+}   // ---- end GetDefaultAudioVolume() ----
 
-//==============================================================================
+// ==============================================================================
 // SetDefaultAudioVolume
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetDefaultAudioVolume( U32 mpiID, U8 x ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetDefaultAudioVolume -- mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::SetDefaultAudioVolume mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	mpiState.volume = x;
-}
+}   // ---- end SetDefaultAudioVolume() ----
 
-//==============================================================================
+// ==============================================================================
 // GetDefaultAudioPriority
-//==============================================================================
+// ==============================================================================
 tAudioPriority CAudioModule::GetDefaultAudioPriority( U32 mpiID ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioPriority -- mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::GetDefaultAudioPriority mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	return mpiState.priority;
-}
+}   // ---- end GetDefaultAudioPriority() ----
 
-//==============================================================================
+// ==============================================================================
 // SetDefaultAudioPriority
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetDefaultAudioPriority( U32 mpiID, tAudioPriority priority ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetDefaultAudioPriority -- mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::SetDefaultAudioPriority: mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	mpiState.pan = priority;
-}
+}   // ---- end SetDefaultAudioPriority() ----
 
-//==============================================================================
+// ==============================================================================
 // GetDefaultAudioPan
-//==============================================================================
+// ==============================================================================
 S8 CAudioModule::GetDefaultAudioPan( U32 mpiID ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioPan -- mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::GetDefaultAudioPan: mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	return mpiState.pan;
-}
+}   // ---- end GetDefaultAudioPan() ----
 
-//==============================================================================
+// ==============================================================================
 // SetDefaultAudioPan
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SetDefaultAudioPan( U32 mpiID, S8 pan ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::SetDefaultAudioPan -- mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::SetDefaultAudioPan: mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	mpiState.pan = pan;
-}
+}   // ---- end SetDefaultAudioPan() ----
 
 // ==============================================================================
 // GetDefaultAudioEventListener
 // ==============================================================================
 const IEventListener* CAudioModule::GetDefaultAudioEventListener( U32 mpiID ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioEvenListener mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::GetDefaultAudioEventListener: mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	return mpiState.pListener;
-}
+}   // ---- end GetDefaultAudioEventListener() ----
 
 // ==============================================================================
 // SetDefaultAudioEventListener
 // ==============================================================================
 void CAudioModule::SetDefaultAudioEventListener( U32 mpiID, const IEventListener *pListener ) 
 {
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetDefaultAudioEvenListener mpiID = %d\n", static_cast<int>(mpiID) );	
+//printf("CAudioModule::SetDefaultAudioEventListener: mpiID=%d\n", (int)mpiID );	
 
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	mpiState.pListener = pListener;
-}
+}   // ---- end SetDefaultAudioEventListener() ----
 
 // ==============================================================================
 // AcquireMidiPlayer
@@ -1198,7 +1224,7 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */, IEventL
 	
  	*id = WaitForMidiID();
  	return kNoErr;
-}
+}   // ---- end AcquireMidiPlayer() ----
 
 // ==============================================================================
 // ReleaseMidiPlayer
@@ -1211,7 +1237,7 @@ tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
  	SendCmdMessage( msg );
  	
 	return WaitForStatus();
-}
+}   // ---- end ReleaseMidiPlayer() ----
 
 // ==============================================================================
 // GetAudioIDForMidiID
@@ -1220,7 +1246,7 @@ tAudioID	CAudioModule::GetAudioIDForMidiID( tMidiPlayerID /* id */)
 {
 printf("CAudioModule::GetAudioIDForMidiID: NOT IMPLEMENTED \n");
 	return kNoAudioID;
-}
+}   // ---- end GetAudioIDForMidiID() ----
 
 // ==============================================================================
 // MidiNoteOn
@@ -1235,7 +1261,7 @@ tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 noteNu
 	SendCmdMessage( msg );
 	
 	return kNoErr;
-}
+}   // ---- end MidiNoteOn() ----
 	
 // ==============================================================================
 // MidiNoteOff
@@ -1250,7 +1276,7 @@ tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */, U8 channel, U8 noteN
 	SendCmdMessage( msg );
 	
 	return kNoErr;
-}
+}   // ---- end MidiNoteOff() ----
 
 // ==============================================================================
 // StartMidiFile
@@ -1275,8 +1301,7 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 			: *mpiState.path + path;
 
 	// Generate the command message to send to the audio Mgr task
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StartMidiFile --  path = %s\n", fullPath.c_str() );	
+//DebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioModule::StartMidiFile path'%s'\n", fullPath.c_str() );	
 
 	info.id = id;
 	info.path = &fullPath;
@@ -1292,7 +1317,7 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 	SendCmdMessage( msg );
 	
 	return WaitForStatus();
-}
+}   // ---- end StartMidiFile() ----
 
 // ==============================================================================
 // StartMidiFile
@@ -1329,7 +1354,7 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 	SendCmdMessage( msg );
 	
 	return WaitForStatus();
-}
+}   // ---- end StartMidiFile() ----
 
 // ==============================================================================
 // IsMidiFilePlaying
@@ -1341,7 +1366,7 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 	SendCmdMessage( msg );
 
 	return WaitForBooleanResult();
-}
+}   // ---- end IsMidiFilePlaying() ----
 
 // ==============================================================================
 // IsMidiFilePlaying
@@ -1353,7 +1378,7 @@ Boolean CAudioModule::IsMidiFilePlaying( void )
 	SendCmdMessage( msg );
 
 	return WaitForBooleanResult();
-}
+}   // ---- end IsMidiFilePlaying() ----
 
 // ==============================================================================
 // PauseMidiFile
@@ -1363,7 +1388,7 @@ void CAudioModule::PauseMidiFile( tMidiPlayerID id )
 	CAudioMsgPauseMidiFile msg( id );
 	
 	SendCmdMessage( msg );
-}
+}   // ---- end PauseMidiFile() ----
 
 //==============================================================================
 // ResumeMidiFile
@@ -1373,11 +1398,11 @@ void CAudioModule::ResumeMidiFile( tMidiPlayerID id )
 	CAudioMsgResumeMidiFile msg( id );
 	
 	SendCmdMessage( msg );
-}
+}   // ---- end ResumeMidiFile() ----
 
-//==============================================================================
+// ==============================================================================
 // StopMidiFile
-//==============================================================================
+// ==============================================================================
 void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage )
 {
 	tAudioStopMidiFileInfo info;
@@ -1388,11 +1413,11 @@ void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage )
 	CAudioMsgStopMidiFile msg( info );
 	
 	SendCmdMessage( msg );
-}
+}   // ---- end StopMidiFile() ----
 
-//==============================================================================
+// ==============================================================================
 // GetEnabledMidiTracks
-//==============================================================================
+// ==============================================================================
 tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID id )
 {
 	tMidiTrackBitMask bm;
@@ -1406,11 +1431,11 @@ tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID id )
 	bm = (tMidiTrackBitMask)temp;
 	
 	return bm;
-}
+}   // ---- end GetEnabledMidiTracks() ----
 
-//==============================================================================
+// ==============================================================================
 // SetEnableMidiTracks
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask )
 {
 	CAudioMsgMidiFilePlaybackParams msg( id, trackBitMask );
@@ -1418,11 +1443,11 @@ tErrType CAudioModule::SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask 
 	SendCmdMessage( msg );
 
 	return WaitForStatus();
-}
+}   // ---- end SetEnableMidiTracks() ----
 
-//==============================================================================
+// ==============================================================================
 // TransposeMidiTracks
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount )
 {
 	CAudioMsgMidiFilePlaybackParams msg( id, trackBitMask, transposeAmount );
@@ -1430,11 +1455,11 @@ tErrType CAudioModule::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask 
 	SendCmdMessage( msg );
 
 	return WaitForStatus();
-}
+}   // ---- end TransposeMidiTracks() ----
 
-//==============================================================================
+// ==============================================================================
 // ChangeMidiInstrument
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, tMidiPlayerInstrument instr )
 {
 	CAudioMsgMidiFilePlaybackParams msg( id, trackBitMask, instr );
@@ -1442,11 +1467,11 @@ tErrType CAudioModule::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask
 	SendCmdMessage( msg );
 
 	return WaitForStatus();
-}
+}   // ---- end ChangeMidiInstrument() ----
 
-//==============================================================================
+// ==============================================================================
 // ChangeMidiTempo
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::ChangeMidiTempo( tMidiPlayerID id, S8 tempo ) 
 {
 	CAudioMsgMidiFilePlaybackParams msg( id, tempo );
@@ -1454,18 +1479,19 @@ tErrType CAudioModule::ChangeMidiTempo( tMidiPlayerID id, S8 tempo )
 	SendCmdMessage( msg );
 
 	return WaitForStatus();
-}
+}   // ---- end ChangeMidiTempo() ----
 
-//==============================================================================
+// ==============================================================================
 // SendMidiCommand
-//==============================================================================
+// ==============================================================================
 tErrType CAudioModule::SendMidiCommand( tMidiPlayerID /* id */, U8 /* cmd */, U8 /* data1 */, U8 /* data2 */ )
 {
 	return kNoErr;
-}
-//==============================================================================
+}   // ---- end SendMidiCommand() ----
+
+// ==============================================================================
 // SendCmdMessage
-//==============================================================================
+// ==============================================================================
 void CAudioModule::SendCmdMessage( CAudioCmdMsg& msg ) 
 {
 	tErrType err;
@@ -1477,7 +1503,7 @@ void CAudioModule::SendCmdMessage( CAudioCmdMsg& msg )
     err = pKernelMPI_->SendMessage( hSendMsgQueue_, msg );
     pDebugMPI_->Assert((kNoErr == err), "CAudioModule::SendCmdMessage -- After call SendMessage err = %d \n", 
     		static_cast<int>(err) );
-}
+}   // ---- end SendCmdMessage() ----
 
 // ==============================================================================
 // WaitForAudioID
@@ -1499,11 +1525,11 @@ tAudioID CAudioModule::WaitForAudioID( void )
 //	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForAudioID Got ID=%d\n", static_cast<int>(msg->GetAudioID()));
 	    	  
 	return msg->GetAudioID();
-}
+}   // ---- end WaitForAudioID() ----
 
-//==============================================================================
+// ==============================================================================
 // WaitForMidiID
-//==============================================================================
+// ==============================================================================
 tMidiPlayerID CAudioModule::WaitForMidiID( void ) 
 {
 	tErrType 				err;
@@ -1520,12 +1546,12 @@ pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForMidiID: Could not get MIDI P
 //	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForMidiID: Got ID=%d\n", msg->GetMidiID() );  
 	    	  
 	return msg->GetMidiID();
-}
+}   // ---- end WaitForMidiID() ----
 
-//==============================================================================
+// ==============================================================================
 // WaitForStatus
-//==============================================================================
-tAudioID CAudioModule::WaitForStatus( void ) 
+// ==============================================================================
+tErrType CAudioModule::WaitForStatus( void ) 
 {
 	tErrType 				err;
 	char 					msgBuf[sizeof(CAudioReturnMessage)];
@@ -1543,11 +1569,11 @@ tAudioID CAudioModule::WaitForStatus( void )
 //	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForStatus -- Got status = %d \n", static_cast<int>(err) );  
 		    	  
 	return err;
-}
+}   // ---- end WaitForStatus() ----
 
-//==============================================================================
+// ==============================================================================
 // WaitForBooleanResult
-//==============================================================================
+// ==============================================================================
 Boolean CAudioModule::WaitForBooleanResult( void ) 
 {
 	tErrType 				err;
@@ -1568,11 +1594,11 @@ Boolean CAudioModule::WaitForBooleanResult( void )
 	    	   static_cast<int>(result) );  
 		    	  
 	return result;
-}
+}   // ---- end WaitForBooleanResult() ----
 
-//==============================================================================
+// ==============================================================================
 // WaitForU32Result
-//==============================================================================
+// ==============================================================================
 U32 CAudioModule::WaitForU32Result( void ) 
 {
 	tErrType 				err;
@@ -1593,8 +1619,34 @@ U32 CAudioModule::WaitForU32Result( void )
 	    	   static_cast<int>(result) );  
 		    	  
 	return result;
-}
+}   // ---- end WaitForU32Result() ----
 
+// ==============================================================================
+// WaitForAudioStateResult
+// ==============================================================================
+    tAudioState 
+CAudioModule::WaitForAudioStateResult( void ) 
+{
+	tErrType 				err;
+	char 					msgBuf[sizeof(CAudioReturnMessage)];
+	CAudioReturnMessage* 	msg;
+	tAudioState				audioState;
+
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CAudioModule::WaitForAudioStateResult: Waiting for message from audio task.\n" );	
+
+//printf("CAudioModule::WaitForAudioStateResult: sizeof(CAudioReturnMessage)=%d\n", sizeof(CAudioReturnMessage));
+
+	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
+	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForAudioStateResult Could not get tAudioState value from Audio Task.\n" );
+	
+	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
+
+	audioState = msg->GetAudioStateResult();
+//	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForAudioStateResultGot %d\n", (int)result );  
+		    	  
+	return (audioState);
+}   // ---- end WaitForAudioStateResult() ----
 
 LF_END_BRIO_NAMESPACE()
 

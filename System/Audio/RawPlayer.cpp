@@ -41,25 +41,27 @@ LF_BEGIN_BRIO_NAMESPACE()
 CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlayer( pInfo, id  )
 {
 	tErrType			result;
-	const tMutexAttr 	attr = {0};
 	
 //printf("CRawPlayer::ctor -- start \n");
 
-// Get Kernel MPI
+#ifdef USE_RAW_PLAYER_MUTEX
+// Setup Mutex object for protecting render calls
 	pKernelMPI_ =  new CKernelMPI();
 	result = pKernelMPI_->IsValid();
 	pDebugMPI_->Assert((true == result), "CRawPlayer::ctor: Unable to create KernelMPI.\n");
 
-// Setup Mutex object for protecting render calls
+	const tMutexAttr 	attr = {0};
 	result = pKernelMPI_->InitMutex( render_mutex_, attr );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor: Unable to init mutex.\n");
+#endif
 
 // Allocate player's sample buffer
 //	pPcmBuffer_ = new S16[ 2*kAudioOutBufSizeInWords ];
 
-	shouldLoopFile_  = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
-    loopCount_       = payload_;
-    loopCounter_     = 0;
+// Set up looping
+	shouldLoopFile_ = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
+    loopCount_      = payload_;
+    loopCounter_    = 0;
 
 //#define DEBUG_RAWPLAYER_OPTIONS
 #ifdef DEBUG_RAWPLAYER_OPTIONS
@@ -77,7 +79,8 @@ else
 
 printf("CRawPlayer:ctor: payload_=%d optionsFlags=$%X -> shouldLoopFile=%d \n", 
         (int)payload_, (unsigned int) optionsFlags_, shouldLoopFile_);
-printf("CRawPlayer:: listener=%p DoneMessage=%d flags=$%X '%s' loopCount=%ld\n", (void *)pListener_, bDoneMessage_, (unsigned int)optionsFlags_, s, loopCount_);
+printf("CRawPlayer:: listener=%p DoneMessage=%d flags=$%X '%s' loopCount=%ld\n", 
+        (void *)pListener_, bDoneMessage_, (unsigned int)optionsFlags_, s, loopCount_);
 }
 #endif // DEBUG_RAWPLAYER_OPTIONS
 
@@ -89,11 +92,12 @@ printf("CRawPlayer:: listener=%p DoneMessage=%d flags=$%X '%s' loopCount=%ld\n",
     fileH_    = NULL;
     strcpy(inFilePath, pInfo->path->c_str()); 
 
-    // Try to open WAV or AIFF File
-    inFile_ = OpenSoundFile(inFilePath, &inFileInfo_, SFM_READ);
+// Try to open WAV or AIFF File
+    SF_INFO	 inFileInfo;  
+    inFile_ = OpenSoundFile(inFilePath, &inFileInfo, SFM_READ);
 	if (inFile_)
 		{
-    	long fileFormatType = (inFileInfo_.format & SF_FORMAT_TYPEMASK);
+    	long fileFormatType = (inFileInfo.format & SF_FORMAT_TYPEMASK);
     	if 	    (SF_FORMAT_AIFF == fileFormatType)
             fileType_ = kRawPlayer_FileType_AIFF; 
     	else if (SF_FORMAT_WAV == fileFormatType)
@@ -103,10 +107,10 @@ printf("CRawPlayer:: listener=%p DoneMessage=%d flags=$%X '%s' loopCount=%ld\n",
 
         if (kRawPlayer_FileType_Unknown != fileType_)
             {
-        	samplingFrequency_ = inFileInfo_.samplerate;
-        	audioDataBytes_    = inFileInfo_.frames*inFileInfo_.channels*sizeof(S16);		
-            channels_          = inFileInfo_.channels;   
-//            totalFrames_    = inFileInfo_.frames;
+        	samplingFrequency_ = inFileInfo.samplerate;
+        	audioDataBytes_    = inFileInfo.frames*inFileInfo.channels*sizeof(S16);		
+            channels_          = inFileInfo.channels;   
+//            totalFrames_    = inFileInfo.frames;
             }
         // For unsupported file type, just zero everything
         else
@@ -158,9 +162,11 @@ CRawPlayer::~CRawPlayer()
 {
 //printf("~CRawPlayer: start %p\n", (void *) this);
 
+#ifdef USE_RAW_PLAYER_MUTEX
 tErrType result = pKernelMPI_->LockMutex( render_mutex_ );
 if (kNoErr != result)
     printf("~CRawPlayer: Couldn't lock render_mutex\n");
+#endif
 
 	// Free sample buffer
 //	if (pPcmBuffer_)
@@ -178,6 +184,7 @@ if (kNoErr != result)
 //        inFile_ = NULL;
         }
 
+#ifdef USE_RAW_PLAYER_MUTEX
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 if (kNoErr != result)
     printf("~CRawPlayer: Couldn't unlock render_mutex\n");
@@ -185,6 +192,12 @@ if (kNoErr != result)
 	result = pKernelMPI_->DeInitMutex( render_mutex_ );
 if (kNoErr != result)
     printf("~CRawPlayer: Couldn't deinit render_mutex\n");
+if (pKernelMPI_)    
+    {
+	delete pKernelMPI_;  
+    pKernelMPI_ = NULL;
+    }
+#endif
 
 // If anyone is listening, let them know we're done.
 if (pListener_ && bDoneMessage_)
@@ -198,11 +211,6 @@ if (pListener_ && bDoneMessage_)
         {
 		delete pDebugMPI_;  
         pDebugMPI_ = NULL;
-        }
-	if (pKernelMPI_)    
-        {
-		delete pKernelMPI_;  
-        pKernelMPI_ = NULL;
         }
 
 //printf("~CRawPlayer: end pListener=%p bDoneMessage=%d\n", (void*)pListener_, bDoneMessage_);
@@ -247,6 +255,7 @@ if (bComplete_)
 	// Don't want to try to render if stop() or dtor() have been entered.
 	// TODO/dg: this is a really ugly hack.  need to figure out what to return
 	// in the case of render being called while stopping/dtor is running.
+#ifdef USE_RAW_PLAYER_MUTEX
 	result = pKernelMPI_->TryLockMutex( render_mutex_ );
 	if (EBUSY == result)
         {
@@ -255,6 +264,7 @@ if (bComplete_)
         }
     if (kNoErr != result)
         printf("CRawPlayer::RenderBuffer: Unable to lock render_mutex.\n");
+#endif
 
 	// Read data from file to output buffer
 	while ( !fileEndReached && bytesToRead > 0) 
@@ -315,10 +325,12 @@ if (bComplete_)
 		    }
 	    }
 			
+#ifdef USE_RAW_PLAYER_MUTEX
 	result = pKernelMPI_->UnlockMutex( render_mutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::RenderBuffer: Unable to unlock render_mutex.\n");
     if (kNoErr != result)   
         printf("CRawPlayer::RenderBuffer: Unable to unlock render_mutex.\n");
+#endif
 
 //#define RAWPLAYER_SENDDONE_IN_RENDERBUFFER
 #ifdef RAWPLAYER_SENDDONE_IN_RENDERBUFFER

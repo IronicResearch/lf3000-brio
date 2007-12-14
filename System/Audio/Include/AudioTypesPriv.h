@@ -4,11 +4,9 @@
 // Copyright (c) LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// File:
-//		AudioTypesPriv.h
+// AudioTypesPriv.h
 //
-// Description:
-//		Defines the private, hidden types used by AudioMgrMPI. 
+//      Defines trivate, hidden types used by AudioMPI
 //
 //==============================================================================
 
@@ -25,7 +23,8 @@ struct tAudioStartAudioInfo {
 	const IEventListener* pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
-	tAudioHeader*		pAudioHeader;		// For Brio Raw types, pointer to header and data, provided by AudioTask, returned from GetPtr()
+	tAudioHeader*		pAudioHeader;		// For Brio Raw audio header 
+
 	
 	tAudioStartAudioInfo( const CPath* pa = NULL,
 						U8 v = 0, 
@@ -38,6 +37,30 @@ struct tAudioStartAudioInfo {
 		: path(pa), volume(v), priority(p), pan(pn), pListener(l),
 		payload(pl), flags(f), pAudioHeader(h) {}
 };
+
+typedef struct taudiostate {
+    U8     useOutDSP;
+    U8     useOutEQ;
+    U8     srcType;
+    U8     srcFilterVersion;
+
+    U8     useOutSoftClipper;
+    S16    softClipperPreGainDB;
+    S16    softClipperPostGainDB;
+
+    S16    outLevels_ShortTime[2];
+    S16    outLevels_LongTime [2];
+    S16    outLevels_Max      [2];
+    S16    outLevels_MaxCount [2];
+    U8     computeLevelMeters;
+
+    U8     readInSoundFile;
+    U8     writeOutSoundFile;
+
+    U8     headroomBits;
+    float  channelGainDB;
+    float  masterGainf[2];
+} tAudioState; 
 
 // kAudioCmdMsgTypeSetAudioVolume
 // kAudioCmdMsgTypeGetAudioVolume
@@ -71,8 +94,8 @@ struct tAudioPanInfo {
 	tAudioID				id;
 	S8				 		pan;
 	
-	tAudioPanInfo(   tAudioID				i = 0,
-						S8 						pn = 0 )
+	tAudioPanInfo(   tAudioID				i  = 0,
+					S8 						pn = 0 )
 		: id(i), pan(pn) 
 		
 		{ }

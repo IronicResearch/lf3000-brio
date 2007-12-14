@@ -11444,3 +11444,44 @@ By Dave Milici (dmilici@leapfrog.com) on 12/13/07 2:55 PM
 4,376 ms. (Cumulative: 2,917,943 ms)
 
 ----------------
+Revision 2,426 from svn://localhost/TRUNK/:
+Revision 2,427 from svn://localhost/TRUNK/:
+
+
+1. System/Include/AudioTypes.h
+    Changed type of audio and MIDI IDs as code would always flag the noAudioID=0xffffffff as too big for type
+
+2. System/Include/AudioMPI.h
+      Updated API comments and added MIDI controller definitions
+
+3. System/Audio/PublicMPI/AudioMPI.cpp
+      Added secret functions (not exposed in header file) to read parts of audio driver for   
+     parameter debugging, messaging, audio metering, enabling soft clipper, output EQ, changing
+    sampling rate conversion algorithm, setting read/write file, etc.
+
+4. AudioMsg.h
+    Added message for Get/Set AudioState()
+
+5. Channel.cpp, Channel.h 
+    Removed clipping loop from here.
+
+6. Mixer.cpp
+    Added interfacing functions to Get/Set AudioState.  Added level metering (short time,
+    long time with peak/hold, and run-time max values).   Removed floating point ops from
+    meter decay function.
+
+Dsputil.cpp :   removed extranrous gain from SRC algorithm that was causing clipping in
+    16000 Hz samples only.
+
+Removed Mutex functions from audio loop to fix dead lock issue.  
+Improved MIDI mutex reliability.
+
+
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 12/13/07 4:35 PM
+28 changed, 0 added, 0 deleted.
+4,891 ms. (Cumulative: 2,922,912 ms)
+
+----------------

@@ -3,11 +3,9 @@
 // All Rights Reserved
 //==============================================================================
 //
-// File:
-//		MidiPlayer.cpp
+// MidiPlayer.cpp
 //
-// Description:
-//		The class to manage the playing of Midi data.
+// Class to manage playing of MIDI data.
 //
 //==============================================================================
 
@@ -77,12 +75,13 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	tErrType			err;
 	S16					midiErr;
 	Boolean				ret;
+#ifdef USE_MIDI_PLAYER_MUTEX
 	const tMutexAttr 	attr = {0};
-	
+#endif	
 	// Setup member vars...
 	id_ = id;
 	
-	pMidiRenderBuffer_ = new S16[kAudioOutBufSizeInWords];
+	pMIDIRenderBuffer_ = new S16[kAudioOutBufSizeInWords];
 
 	framesPerIteration_ = kMIDI_FramesPerIteration;	// FIXXX/rdg: don't hardcode this 
 	samplesPerFrame_    = kMIDI_SamplesPerFrame;
@@ -105,18 +104,15 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	// Set debug level from a constant
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
-	// Get Kernel MPI
+#ifdef USE_MIDI_PLAYER_MUTEX
 	pKernelMPI_ =  new CKernelMPI();
 	ret = pKernelMPI_->IsValid();
 	pDebugMPI_->Assert((true == ret), "CMidiPlayer::ctor: Couldn't create KernelMPI.\n");
-
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::ctor -- Creating new MIDI player.\n");	
-	
 	// Setup Mutex object for protecting render calls
-  	err = pKernelMPI_->InitMutex( render_mutex_, attr );
+  	err = pKernelMPI_->InitMutex( renderMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "CMidiPlayer::ctor: Couldn't init mutex.\n");
-	
+#endif
+
 	// Initialize SPMIDI Library
 	SPMIDI_Initialize();
 
@@ -128,7 +124,7 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	pFilePlayer_ = kNull;
 
 // Mobileer "spmidi" variables
-	spmidi_orchestra_ = NULL;
+	spMIDI_orchestra_ = NULL;
 // FIXXX: should set Mobileer sampling frequency here
 	
 	SPMIDI_SetMaxVoices( pContext_, kMIDI_MaxVoices );
@@ -146,8 +142,10 @@ CMidiPlayer::~CMidiPlayer()
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::~ -- Cleaning up.\n");	
 	
-	result = pKernelMPI_->LockMutex( render_mutex_ );
+#ifdef USE_MIDI_PLAYER_MUTEX
+	result = pKernelMPI_->LockMutex( renderMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::~ -- Couldn't lock mutex.\n");
+#endif
 
 	// If a file is playing (the user didn't call stop first) , stop it for them.
 	if (bFileActive_) 
@@ -169,18 +167,20 @@ CMidiPlayer::~CMidiPlayer()
 	SPMIDI_DeleteContext( pContext_ );
 	SPMIDI_Terminate();
 	
-	result = pKernelMPI_->UnlockMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::~ Couldn't unlock mutex.\n");
-	result = pKernelMPI_->DeInitMutex( render_mutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::~ Couldn't deinit mutex.\n");
-
-	delete pMidiRenderBuffer_;
-
-// Free debug MPIs
-if (pDebugMPI_)
-	delete pDebugMPI_;
+#ifdef USE_MIDI_PLAYER_MUTEX
+	result = pKernelMPI_->UnlockMutex( renderMutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "~CMidiPlayer: Couldn't unlock mutex.\n");
+	result = pKernelMPI_->DeInitMutex( renderMutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "~CMidiPlayer: Couldn't deinit mutex.\n");
 if (pKernelMPI_)
 	delete pKernelMPI_;
+#endif
+
+	delete pMIDIRenderBuffer_;
+
+// Free MPIs
+if (pDebugMPI_)
+	delete pDebugMPI_;
 //{static long c=0; printf("CMidiPlayer::~: end %ld\n", c++);}
 }   // ---- end ~CMidiPlayer() ----
 
@@ -238,19 +238,19 @@ CMidiPlayer::SendDoneMsg( void )
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgMidiCompleted	data;
 	data.midiPlayerID = id_;
-	data.payload = loopCount_;	
-	data.count   = 1;
+	data.payload      = loopCount_;	
+	data.count        = 1;
 
-//printf("CMidiPlayer::SendDoneMsg midiPlayerID=%d\n", id_);
+printf("CMidiPlayer::SendDoneMsg midiPlayerID=%ld\n", id_);
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
 	event.PostEvent(msg, kPriorityTBD, pListener_);
 	
-	// fixme/dg: need to find a better way to do done listeners
-	// support multiple midi files playing at the same time.
+// fixme/dg: need to find a better way to do done listeners
+// support multiple midi files playing at the same time.
 	//pListener_ = kNull;
-printf("CMidiPlayer::SendDoneMsg end\n");
+//printf("CMidiPlayer::SendDoneMsg end\n");
 }   // ---- end SendDoneMsg() ----
 
 // ==============================================================================
@@ -268,8 +268,7 @@ tErrType result = 0;
 // If pre-emption is happening, delete previous player.
 if (pFilePlayer_) 
     {
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-		"CMidiPlayer::StartMidiFile -- deleting active player...\n");	
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::StartMidiFile deleting active player\n");	
 	MIDIFilePlayer_Delete( pFilePlayer_ );
 	pFilePlayer_ = kNull;
     }
@@ -337,7 +336,7 @@ printf("CMidiPlayer::ctor: bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDo
 #endif
 //orchestraFileName = "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis"; 
 //orchestraFileName = "/Didj/Base/Brio/rsrc/orch_100207.mbis"; 
-//printf("orchestraFileName = '%s'\n", orchestraFileName.c_str());
+printf("orchestraFileName = '%s'\n", orchestraFileName.c_str());
 
 // "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orchestra_071002.mbis"; // 358,796 Bytes
 // "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis";
@@ -371,7 +370,7 @@ printf("CMidiPlayer::ctor: bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDo
 
 	preOrchestraCount = SPMIDI_GetMemoryAllocationCount();
 	// Scan MIDI file and load minimal set of the instruments 
-	if ( SPMIDI_LoadOrchestra( sio, programList, &spmidi_orchestra_ ) < 0 )
+	if ( SPMIDI_LoadOrchestra( sio, programList, &spMIDI_orchestra_ ) < 0 )
 		printf( "CMidiPlayer::StartMidiFile: SPMIDI_LoadOrchestra failed on '%s'\n", (char *)orchestraFileName.c_str());
 	
 	// Close orchestra stream
@@ -440,35 +439,40 @@ return (0); //result;
 CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
 {
 	tErrType result = 0;
-//{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
-	
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::StopMidiFile: Locking render_mutex...\n");	
+{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
 
-	result = pKernelMPI_->LockMutex( render_mutex_ );
+#ifdef USE_MIDI_PLAYER_MUTEX
+	printf("CMidiPlayer::StopMidiFile: Locking renderMutex\n");	
+	result = pKernelMPI_->LockMutex( renderMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile: Unable to lock mutex.\n");
+#endif
 
 	bFileActive_ = false;
 	bFilePaused_ = false;
 	if (pListener_  && !pInfo->suppressDoneMsg)
 		SendDoneMsg();
 
-	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
+	printf("CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
 
 	SPMUtil_Reset( pContext_ );
+	printf("CMidiPlayer::StopMidiFile: BEFO delete player\n");	
     if (pFilePlayer_)   
         {
     	MIDIFilePlayer_Delete( pFilePlayer_ );
     	pFilePlayer_ = kNull;
         }
+	printf("CMidiPlayer::StopMidiFile: AFTA delete player\n");	
 
 	pListener_ = kNull;
 	
-	result = pKernelMPI_->UnlockMutex( render_mutex_ );
+#ifdef USE_MIDI_PLAYER_MUTEX
+	result = pKernelMPI_->UnlockMutex( renderMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile Unable to unlock mutex.\n");
+#endif
 
 // SPMIDI_DeleteOrchestra( orchestra );
 
-//{static long c=0; printf("CMidiPlayer::StopMidiFile: end %ld\n", c++);}
+{static long c=0; printf("CMidiPlayer::StopMidiFile: end %ld\n", c++);}
 	return result;
 }   // ---- end StopMidiFile() ----
 
@@ -599,7 +603,7 @@ U32	CMidiPlayer::RenderBuffer( S16* pOut, U32 numStereoFrames )
 tErrType result;
 U32 	i, midiLoopCount;
 int 	mfp_result = 0;
-U32		spmidiFramesPerBuffer;
+U32		spMIDIFramesPerBuffer;
 U32 	framesRead = 0;
 U32 	numStereoSamples = numStereoFrames * 2;
 
@@ -607,54 +611,53 @@ U32 	numStereoSamples = numStereoFrames * 2;
 
 //{static long c=0; printf("CMidiPlayer::RenderBuffer: %ld start numFrames=%ld numSamples=%ld\n", c++, numStereoFrames, numStereoSamples);}
 
+#ifdef USE_MIDI_PLAYER_MUTEX
 	result = pKernelMPI_->TryLockMutex( render_mutex_ );
 	if (EBUSY == result)
 		return 0;
 	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::RenderBuffer -- Couldn't lock mutex.\n");
+#endif
 	
 	// Clear output buffer
 // FIXXXX: move to DSP loop and clear only if needed
-	bzero( pMidiRenderBuffer_, kAudioOutBufSizeInBytes );
+	bzero( pMIDIRenderBuffer_, kAudioOutBufSizeInBytes );
 	
-//	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-//		"CMidiPlayer::RenderBuffer -- numFrames=%d, bFileActive=%u, bFilePaused_=%d\n", 
-//		(int)numFrames, (int)bFileActive_, (int)bFilePaused_);
+//	printf("CMidiPlayer::RenderBuffer -- numFrames=%ld, bFileActive=%u, bFilePaused_=%d\n", 
+//		numFrames, (int)bFileActive_, (int)bFilePaused_);
 
-	S16 *pBuffer = pMidiRenderBuffer_;  // local ptr to buffer for indexing
+	S16 *pBuf = pMIDIRenderBuffer_;  // local ptr to buffer for indexing
 
 	// If there is a midi file player, service it
 	if ( bFileActive_ && !bFilePaused_ ) {
-		// TODO: make this bulletproof.  Right now no check for sizes.
-		// Figure out how many calls to spmidi we need to make to get a full output buffer
-		spmidiFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
-		midiLoopCount = numStereoFrames / spmidiFramesPerBuffer;
-//printf("222 spmidiFramesPerBuffer=%ld midiLoopCount=%ld spmidiFramesPerBuffer=%ld numFrames=%ld\n", 
-//        spmidiFramesPerBuffer, midiLoopCount, spmidiFramesPerBuffer, numFrames);
+// TODO: make this bulletproof.  Right now no check for sizes.
+// Figure out how many calls to spmidi we need to make to get a full output buffer
+		spMIDIFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
+		midiLoopCount = numStereoFrames / spMIDIFramesPerBuffer;
+//printf("222 spmidiFramesPerBuffer=%ld midiLoopCount=%ld spMIDIFramesPerBuffer=%ld numFrames=%ld\n", 
+//        spMIDIFramesPerBuffer, midiLoopCount, spMIDIFramesPerBuffer, numFrames);
 
-//		pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-//			"CMidiPlayer::RenderBuffer -- spmidiFramesPerBuffer = %d, midiLoopCount = %d\n", 
-//			(int)spmidiFramesPerBuffer, (int)midiLoopCount );
+//		printf("CMidiPlayer::RenderBuffer -- spMIDIFramesPerBuffer = %d, midiLoopCount = %d\n", 
+//			(int)spMIDIFramesPerBuffer, (int)midiLoopCount );
 			
         long fileEndReached = False;
 		for (i = 0; i < midiLoopCount && !fileEndReached; i++) {
-//			pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::RenderBuffer: BEFO MIDIFilePlayer_PlayFrames()\n");
+//	printf("CMidiPlayer::RenderBuffer: BEFO MIDIFilePlayer_PlayFrames()\n");
             if (pFilePlayer_)
                 {
-			    mfp_result = MIDIFilePlayer_PlayFrames( pFilePlayer_, pContext_, spmidiFramesPerBuffer );
+			    mfp_result = MIDIFilePlayer_PlayFrames( pFilePlayer_, pContext_, spMIDIFramesPerBuffer );
 			    if (mfp_result < 0)
 				    printf("!!!!! CMidiPlayer::RenderBuffer -- MIDIFilePlayer PlayFrames failed!!!\n");
 
 			// fixme/dg: rationalize numStereoFrames and numFrames_!!
-//			pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-//				"CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames()\n");
-			framesRead = SPMIDI_ReadFrames( pContext_, pBuffer, spmidiFramesPerBuffer,
+//			printf("CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames()\n");
+			framesRead = SPMIDI_ReadFrames( pContext_, pBuf, spMIDIFramesPerBuffer,
 		    		samplesPerFrame_, bitsPerSample_ );
 	
-			pBuffer += framesRead *kMIDI_SamplesPerFrame;
-// 			printf("CMidiPlayer::RenderBuffer -- loop %d, framesRead = %ul, pBuffer = %d\n", i, framesRead, pBuffer);
+			pBuf += framesRead *kMIDI_SamplesPerFrame;
+// 	printf("CMidiPlayer::RenderBuffer loop %d, framesRead=%ul pBuf=%p\n", i, framesRead, (void*)pBuf);
 	            }
 			
-			// Returning a 1 means MIDI file done.
+			// Returning 1 means MIDI file done.
             fileEndReached = (mfp_result > 0);
 			if (fileEndReached)
              {
@@ -666,20 +669,20 @@ U32 	numStereoSamples = numStereoFrames * 2;
                     if (++loopCounter_ < loopCount_)
                         {
         			    MIDIFilePlayer_Rewind( pFilePlayer_ ); 
-                        bFileActive_ = true;
+                        bFileActive_   = true;
                         fileEndReached = false;
                         } 
 				    } 
-// file done, delete player and reset engine              
+// File done, delete player and reset engine              
                 if (!bFileActive_)
                     {
-    				if (pListener_ && bDoneMessage_)
-    					SendDoneMsg();
                     if (pFilePlayer_)
                         {
     				    MIDIFilePlayer_Delete( pFilePlayer_ );
     					pFilePlayer_ = kNull;
                         }
+    				if (pListener_ && bDoneMessage_)
+    					SendDoneMsg();
     				SPMUtil_Reset( pContext_ );
                     }
 			}
@@ -687,19 +690,18 @@ U32 	numStereoSamples = numStereoFrames * 2;
 	} else {
 		// A MIDI file is not playing, but notes might be turned on programatically...
 		// TODO: rationalize numStereoFrames and numFrames_!!
-//		pDebugMPI_->DebugOut(kAudioDebugLevel, 
-//			"CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames(), no file active\n");
+//	printf("CMidiPlayer::RenderBuffer -- About to SPMIDI_ReadFrames(), no file active\n");
 
 		// TODO: make this bulletproof.  Right now no check for sizes.
 		// Figure out how many calls to spmidi we need to make to get a full output buffer
-		spmidiFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
-		midiLoopCount = numStereoFrames / spmidiFramesPerBuffer;
+		spMIDIFramesPerBuffer = SPMIDI_GetFramesPerBuffer();
+		midiLoopCount = numStereoFrames / spMIDIFramesPerBuffer;
 
 		for (i = 0; i < midiLoopCount; i++) 
             {
-			framesRead = SPMIDI_ReadFrames( pContext_, pBuffer, spmidiFramesPerBuffer,
+			framesRead = SPMIDI_ReadFrames( pContext_, pBuf, spMIDIFramesPerBuffer,
 	    		samplesPerFrame_, bitsPerSample_ );
-			pBuffer += framesRead * kMIDI_SamplesPerFrame;
+			pBuf += framesRead * kMIDI_SamplesPerFrame;
 		    }
 	}
 	
@@ -713,22 +715,24 @@ U32 numFrames = numStereoSamples;
 for ( i = 0; i < numFrames; i += 2)
 	{
  // Apply gain and Saturate to 16-bit range
-	S32 y = (S32) MultQ15(levelsi[kLeft], pMidiRenderBuffer_[i]);	// Q15  1.15 Fixed-point		
+	S32 y = (S32) MultQ15(levelsi[kLeft], pMIDIRenderBuffer_[i]);	// Q15  1.15 Fixed-point		
 	if      (y > kS16Max) y = kS16Max;
 	else if (y < kS16Min) y = kS16Min;
 // Convert mono midi render to stereo output  GK: ?
 	pOut[i] = (S16) y;
 
  // Apply gain and Saturate to 16-bit range
-	y = (S32) MultQ15(levelsi[kRight], pMidiRenderBuffer_[i+1]);	// Q15  1.15 Fixed-point		
+	y = (S32) MultQ15(levelsi[kRight], pMIDIRenderBuffer_[i+1]);	// Q15  1.15 Fixed-point		
 	if      (y > kS16Max) y = kS16Max;
 	else if (y < kS16Min) y = kS16Min;
 // Convert mono midi render to stereo output  GK: ?
 	pOut[i+1] = (S16) y;
 	}
 
+#ifdef USE_MIDI_PLAYER_MUTEX
 result = pKernelMPI_->UnlockMutex( render_mutex_ );
 pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::RenderBuffer -- Couldn't unlock mutex.\n");
+#endif
 
 //{static long c=0; printf("CMidiPlayer::RenderBuffer: %ld end\n", c++);}
 	return framesRead;

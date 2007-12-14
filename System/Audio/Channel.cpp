@@ -2,11 +2,9 @@
 // Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// File:
-//		Channel.cpp
+// Channel.cpp
 //
-// Description:
-//		The class to manage the processing of audio data on an audio channel.
+// Description: manages processing of audio data on a mixer channel
 //
 //==============================================================================
 
@@ -57,6 +55,7 @@ tErrType result;
 // Set DSP values
 	pan_    = kPan_Default;
 	volume_ = kVolume_Default;
+
 	samplingFrequency_ = 0;
 
 // Channel DSP Engine
@@ -73,9 +72,9 @@ tErrType result;
 //	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
 
 // Get Kernel MPI
-	pKernelMPI_ =  new CKernelMPI();
-	result = pKernelMPI_->IsValid();
-	pDebugMPI_->Assert((true == result), "CChanel::ctor: Unable to create KernelMPI.\n");
+//	pKernelMPI_ =  new CKernelMPI();
+//	result = pKernelMPI_->IsValid();
+//	pDebugMPI_->Assert((true == result), "CChanel::ctor: Unable to create KernelMPI.\n");
 }	// ---- end CChannel ----
 
 // ==============================================================================
@@ -87,11 +86,11 @@ CChannel::~CChannel()
 	// Free debug MPI
 	if (pDebugMPI_)
 		delete pDebugMPI_;
-	if (pKernelMPI_)    
-        {
-		delete pKernelMPI_;  
-        pKernelMPI_ = NULL;
-        }
+//	if (pKernelMPI_)    
+//       {
+//		delete pKernelMPI_;  
+//        pKernelMPI_ = NULL;
+//        }
 }	// ---- end ~CChannel ----
 
 // ==============================================================================
@@ -117,22 +116,24 @@ RecalculateLevels();
 // ==============================================================================
 void CChannel::SetVolume( U8 x )
 {
-//printf("CChannel::SetVolume : printf  %d\n", x);
+//printf("CChannel::SetVolume :  %d\n", x);
 volume_ = x; //BoundU8(&x, kVolume_Min, kVolume_Max);
 
 // ChangeRangef(x, L1, H1, L2, H2)
 // FIXX: move to decibels, but for now, linear volume
-gainf = ChangeRangef((float)x, (float) kVolume_Min, (float)kVolume_Max, 0.0f, 1.0f);
-gainf *= kDecibelToLinearf_m3dBf; // DecibelToLinearf(-3.0);
+gainf  = ChangeRangef((float)x, (float) kVolume_Min, (float)kVolume_Max, 0.0f, 1.0f);
+gainf *= kChannel_Headroomf; // DecibelToLinearf(-Channel_HeadroomDB);
 //gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
 //gainf =  DecibelToLinearf(gainf);
 
-//pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-//			"CChannel::SetVolume - %d -> %f\n", static_cast<int>(volume_) , static_cast<int>(gainf) );	
 //printf( "CChannel::SetVolume - %d -> %g\n", volume_, gainf );	
 
+//printf("%f dB -> %f \n", -1.505, DecibelToLinearf(-1.505));
 //printf("%f dB -> %f \n", -3.01, DecibelToLinearf(-3.01));
 //printf("%f dB -> %f \n", -6.02, DecibelToLinearf(-6.02));
+//printf("%f dB -> %f \n", 1.505, DecibelToLinearf(1.505));
+//printf("%f dB -> %f \n", 3.01, DecibelToLinearf(3.01));
+//printf("%f dB -> %f \n", 6.02, DecibelToLinearf(6.02));
 //printf("sqrt(2)/2 = %g\n", 0.5f*sqrt(2.0));
 
 RecalculateLevels();
@@ -152,6 +153,8 @@ levelsf[kRight] =  panValuesf[kRight]*gainf;
 levelsi[kLeft ] = FloatToQ15(levelsf[kLeft ]);
 levelsi[kRight] = FloatToQ15(levelsf[kRight]);
 
+//printf("CChannel::RecalculateLevels : gainf=%g Pan <L=%g R=%g>\n", 
+//         gainf, panValuesf[kLeft], panValuesf[kRight]);
 //printf("CChannel::RecalculateLevels : levelsf L=%g R=%g\n", levelsf[kLeft], levelsf[kRight]);
 }	// ---- end RecalculateLevels ----
 
@@ -172,20 +175,20 @@ return (shouldRender);
 void CChannel::SendDoneMsg( void )
 {
 //printf("CChannel::SendDoneMsg: pPlayer_=%p\n", (void*)pPlayer_);
-if (pPlayer_)
-    {
-	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgAudioCompleted	data;
+if (!pPlayer_)
+    return;
+
+const tEventPriority	kPriorityTBD = 0;
+tAudioMsgAudioCompleted	data;
 //printf("CChannel::SendDoneMsg audioID=%ld\n", pPlayer_->GetID());
 
-	data.audioID = pPlayer_->GetID();	        
-	data.payload = 0;
-	data.count   = 1;
+data.audioID = pPlayer_->GetID();	        
+data.payload = 0;
+data.count   = 1;
 
-	CEventMPI	event;
-	CAudioEventMessage	msg(data);
-	event.PostEvent(msg, kPriorityTBD, pPlayer_->GetEventListener());
-    }
+CEventMPI	event;
+CAudioEventMessage	msg(data);
+event.PostEvent(msg, kPriorityTBD, pPlayer_->GetEventListener());
 }   // ---- end SendDoneMsg() ----
 
 // ==============================================================================
@@ -346,7 +349,7 @@ if (numSamples > framesRendered*2)
 //        LinearToDecibelf(levelsf[kLeft]), LinearToDecibelf(levelsf[kRight]));
 //printf("Channel::RenderBuffer: levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
 
-// ---- Render to out buffer
+// ---- Render to out buffer (Assumes all audio player output is two channel)
 numSamples = framesRendered*2;
 for (int i = 0; i < numSamples; i += 2)
 	{

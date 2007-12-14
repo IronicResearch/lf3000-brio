@@ -767,8 +767,14 @@ short Binary16ToShort(char *s);
 //#define LinearToDecibel(x)		(log10((x))*20.0)
 
 // These constants are not very precise
-#define kDecibelToLinearf_m3dBf  0.707131f
-#define kDecibelToLinearf_m6dBf  0.500035f
+#define kDecibelToLinearf_6dBf     1.999862f
+#define kDecibelToLinearf_3dBf     1.414165f
+#define kDecibelToLinearf_1p5dBf   1.189187f
+#define kDecibelToLinearf_0dBf     0.999999f
+#define kDecibelToLinearf_m1p5dBf  0.840911f
+#define kDecibelToLinearf_m3dBf    0.707131f
+#define kDecibelToLinearf_m6dBf    0.500035f
+#define kDecibelToLinearf_m0dBf  kDecibelToLinearf_0dBf
 
 // Careful:  these macros will not work when values at bottom and top
 //				of integer numerical range are compared
@@ -853,6 +859,8 @@ long CompareFloats(float *a, float *b, long length);
 long CompareShorts(short *a, short *b, long length);
 long CompareLongs (long  *a, long  *b, long length);
 
+short MaxAbsShorts(short *a, long length, long stride);
+
 void PrintFloats	  (float *d, long length);
 void PrintFloatsDB	  (float *d, long length);
 char PrintFloatsToFile(float *d, long length, char *path);
@@ -922,6 +930,9 @@ void Mix2_Shortsi(short *inA, short *inB, short *outY, long length, short kA, sh
 
 void AccS16toS32(S32 *sumY, S16 *inX, long length, long addToOutput);
 void AccS16toS16(S16 *sumY, S16 *inX, long length, long addToOutput);
+
+void ShiftLeft_S16 (S16 *inX, S16 *outY, long length, long x);
+void ShiftRight_S16(S16 *inX, S16 *outY, long length, long x);
 
 void Pan_Shortsf(short *x, short *yLeft, short *yRight, long length, float gainLeft, float gainRight);
 void Pan_Shortsi(short *x, short *yLeft, short *yRight, long length, short gainLeft, short gainRight);
