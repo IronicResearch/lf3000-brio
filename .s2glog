@@ -11540,3 +11540,15 @@ By gklimanis (gklimanis@leapfrog.com) on 12/14/07 3:32 PM
 4,173 ms. (Cumulative: 2,944,242 ms)
 
 ----------------
+Revision 2,436 from svn://localhost/TRUNK/:
+Revision 2,437 from svn://localhost/TRUNK/:
+
+updated for audio message queue permissions issue on programs using 
+audio.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 12/14/07 3:44 PM
+1 changed, 0 added, 0 deleted.
+4,282 ms. (Cumulative: 2,948,586 ms)
+
+----------------
