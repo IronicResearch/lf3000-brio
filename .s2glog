@@ -11518,3 +11518,15 @@ By gklimanis (gklimanis@leapfrog.com) on 12/14/07 3:29 PM
 4,188 ms. (Cumulative: 2,935,741 ms)
 
 ----------------
+Revision 2,434 from svn://localhost/TRUNK/:
+
+Fixed crash seen in TestAudio which asks for player time after it has 
+been 
+destroyed by audio internals.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 12/14/07 3:31 PM
+1 changed, 0 added, 0 deleted.
+4,204 ms. (Cumulative: 2,940,007 ms)
+
+----------------
