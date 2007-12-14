@@ -287,28 +287,29 @@ static void DoStartAudio( CAudioMsgStartAudio *pMsg )
 }   // ---- end DoStartAudio() ----
 
 // ==============================================================================
-// DoGetAudioTime
+// DoGetAudioTime   Get current time from audio player
+//
+// GK FIXXX: GetAudioTime() unimplemented
 // ==============================================================================
-static void DoGetAudioTime( CAudioMsgGetAudioTime* msg ) {
-	tAudioID  			id = msg->GetData();
-	CAudioReturnMessage	retMsg;
-	U32					time = 0;
-	CChannel*			pChannel;
-	CAudioPlayer*		pPlayer;
-	
-//Get current time from audio player:   GKFIXXX: GetAudioTime() unimplemented
-	pChannel = gAudioContext.pAudioMixer->FindChannel( id );
-	if (pChannel) 
-        {
-		pPlayer = pChannel->GetPlayer();
-		time    = pPlayer->GetAudioTime_mSec();
-	    }
-	
-//print("AudioTask::DoGetAudioTime() ID=%d time=%d\n", (int) id, (int)time);	
+static void DoGetAudioTime( CAudioMsgGetAudioTime* msg ) 
+{
+tAudioID  			id = msg->GetData();
+CAudioReturnMessage	retMsg;
+U32					time = 0;
+ 
+CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel( id );
+if (pChannel) 
+    {
+	CAudioPlayer *pPlayer = pChannel->GetPlayer();
+    if (pPlayer)
+	    time = pPlayer->GetAudioTime_mSec();
+    }
 
-	// Send time in message back to caller
-	retMsg.SetU32Result( time );
-	SendMsgToAudioModule( retMsg );
+//printf("AudioTask::DoGetAudioTime() UNIMPLEMENTED GetAudioTime_mSec() ID=%ld time=%ld\n", id, time);	
+
+// Send time in message back to caller
+retMsg.SetU32Result( time );
+SendMsgToAudioModule( retMsg );
 }   // ---- end DoGetAudioTime() ----
 
 // ==============================================================================
