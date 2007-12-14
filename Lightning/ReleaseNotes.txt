@@ -20,7 +20,11 @@ Software components for target hardware:
 
 Enhancements:
 -------------
-
+NOTE:  In Emulation, audio programs seem to only run in root.  Embedded doesn't have
+this problem as everything is run as root.
+This unresolved permissions issue popped up in this release.  
+Running as non-root reveals a problem with opening the message queue.
+ 
 * Fonts are loaded with new default settings for improved glyph spacing metrics.
   (TTPro #561)
 
