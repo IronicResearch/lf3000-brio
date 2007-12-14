@@ -4,11 +4,9 @@
 // Copyright (c) 2LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// File:
-//		AudioTypes.h
+// AudioTypes.h
 //
-// Description:
-//		Type definitions for the Brio audio system.
+// Type definitions for the Brio audio system.
 //
 //==============================================================================
 
@@ -55,19 +53,20 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupAudio), AUDIO_ERRORS)
 //==============================================================================
 // Basic audio types
 //==============================================================================
-typedef U8  	tAudioCuePoint;		// Audio cue point 
-typedef U32		tAudioID;			// Unique ID for the audio to allow tracking 
-									// of it through the audio subsystem 
-typedef U32		tAudioPayload;		// User payload to be sent with the done message
-typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255. 
-									// 0 is lowest priority, 255 highest.
-#define kNoAudioID			kU32Max	// ID returned when the system is unable to
-									// play the audio
+typedef U8  	tAudioCuePoint;		// ?? 
+typedef S32		tAudioID;			// Unique ID for audio stream 
+typedef U32		tAudioPayload;		// to be sent with done message
+typedef U8		tAudioPriority;		// Priority of asset [0..255]
+									// 0 = lowest, 255 =highest
+
+//#define kNoAudioID			kU32Max	     // ID returned on failure
+//#define kNoAudioID			(0xffffffff) // ID returned on failure
+//#define kNoAudioID			kS32Max	     // ID returned on failure
+#define kNoAudioID			(-1)	         // ID returned on failure
 
 //#define kAudioOptionsBit_Done	1
 #define kAudioDoneMsgBit 	0x1
 // Audio options flags
-// Bits 0-1 refer to done messages 
 enum {
 	kAudioOptionsNoDoneMsg				= 0x00,	// No done message
 	kAudioOptionsDoneMsgAfterComplete	= 0x01,	// Done message after audio is complete 
@@ -81,7 +80,7 @@ typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer);
 //==============================================================================
 // MIDI audio types 
 //==============================================================================
-typedef U8		tMidiPlayerID;		
+typedef S32		tMidiPlayerID;		
 typedef U32		tMidiPlayerInstrument;			
 typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
 #define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all Midi tracks

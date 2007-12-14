@@ -55,8 +55,11 @@ public:
 	void SendDoneMsg( void );
 
 private:
-	CKernelMPI* 	pKernelMPI_;		// For mutex calls
+//#define USE_RAW_PLAYER_MUTEX
+#ifdef USE_RAW_PLAYER_MUTEX
+	CKernelMPI* 	pKernelMPI_;		
 	tMutex			render_mutex_;		// To make renderbuffer() thread-safe
+#endif
 
 //	S16 			*pPcmBuffer_;		// Audio sample buffer
     S16             pPcmBuffer_[2*kAudioOutBufSizeInWords];
@@ -69,7 +72,6 @@ private:
 // Audio file info (WAV, AIFF, Brio "RAW")
     U32             fileType_;
     SNDFILE	        *inFile_;
-    SF_INFO	        inFileInfo_;  // FIXX: make local variable when Rewind() fixed in sndfileutil.c
     char           inFilePath[500]; 
     
 };

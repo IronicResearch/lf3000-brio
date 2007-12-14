@@ -69,6 +69,10 @@ public:
 #define kAudioMixerChannel_MaxOutChannels 2
 	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
 	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
+// kDecibelToLinearf_0dBf, m3dBf, m6dBf
+#define kChannel_HeadroomDB 0.0f  // GK FIXX Headroom should be positive number
+#define kChannel_Headroomf (kDecibelToLinearf_m0dBf) // DecibelToLinearf(kChannel_HeadroomDB);
+
 	float		gainf;
 	Q15			gaini;
     float       levelsf   [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
@@ -124,7 +128,6 @@ private:
 //	Boolean fOwnProcessor_;
 	
 	CDebugMPI	*pDebugMPI_;
-	CKernelMPI  *pKernelMPI_;		
 
     void   RecalculateLevels();
 };
@@ -132,4 +135,3 @@ private:
 LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_CHANNEL_H
 
-// EOF	

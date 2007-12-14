@@ -281,16 +281,16 @@ ComputeWaveShaper_V4i(S16 *inX, S16 *outY, long length, WAVESHAPER *d)
 {
 Q15 inK  = d->inGaini  ;
 Q15 outK = d->outGaini ;
-Q15 oneThi = FloatToQ15(1.0f/3.0f);
-Q15 twoThi = FloatToQ15(2.0f/3.0f);
+static Q15 oneThi = FloatToQ15(1.0f/3.0f);
+static Q15 twoThi = FloatToQ15(2.0f/3.0f);
 //{static long c=0; printf("ComputeWaveShaper_V4i: START %d\n", c++);}
-Q15 kTwo  = FloatToQ15(2.0f/3.0f);
+static Q15 kTwo  = FloatToQ15(2.0f/3.0f);
 
-short th1i = FloatToQ15(1.0f/3.0f);
-short th2i = FloatToQ15(2.0f/3.0f);
-long q31_2i   = FloatToQ15v2(2.0f);
-long q31_3i   = FloatToQ15v2(3.0f);
-long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
+static short th1i = FloatToQ15(1.0f/3.0f);
+static short th2i = FloatToQ15(2.0f/3.0f);
+static long q31_2i   = FloatToQ15v2(2.0f);
+static long q31_3i   = FloatToQ15v2(3.0f);
+static long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
 
 // f(x)                Range
 // ----            ---------------
@@ -339,7 +339,76 @@ for (long i = 0; i < length; i++)
 //    else
 	    outY[i] = (S16) yi;	 
 	}
+
 }   // ---- end ComputeWaveShaper_V4i() ---- 
+
+// ************************************************************************
+// ComputeWaveShaper_V4d1i:   Soft clipping function  (polynomial, divide-free)
+//                          Innate ~ +6 dB gain
+// ************************************************************************ 
+    void
+ComputeWaveShaper_V4d1i(S16 *inX, S16 *outY, long length, WAVESHAPER *d)
+{
+Q15 inK  = d->inGaini  ;
+Q15 outK = d->outGaini ;
+static Q15 oneThird = FloatToQ15(1.0f/3.0f);
+static Q15 twoThird = FloatToQ15(2.0f/3.0f);
+//{static long c=0; printf("ComputeWaveShaper_V4d1i: START %d\n", c++);}
+static Q15 kTwo  = FloatToQ15(2.0f/3.0f);
+
+static short th1i = FloatToQ15(1.0f/3.0f);
+static short th2i = FloatToQ15(2.0f/3.0f);
+static long q31_2i   = FloatToQ15v2(2.0f);
+static long q31_3i   = FloatToQ15v2(3.0f);
+static long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
+
+// f(x)                Range
+// ----            ---------------
+//  2x             0  <= x <=   th
+//  3-(2-3x)^2     th <= x <= 2*th
+//  ----------
+//      3    
+//  1              2*th <= x <= 1
+// NOTE:  work on this some more to reduce 
+for (long i = 0; i < length; i++)
+	{
+    Q15 xi   = inX[i];
+    Q15 absXi = xi; 
+    long yl;
+    short yi;
+
+	if (xi < 0)
+		absXi = -xi;
+
+	if		(absXi <= th1i)
+		yl = 2*xi;
+	else if (absXi <= th2i)
+		{
+		int shift = 15;
+		long ti = q31_2i - ((q31_3i*absXi)>>15);
+	    yl = q31_3i - ((ti*ti)>>15);
+		if (xi < 0)
+			yl = -yl;
+		yl *= q31_3rdi;
+		yl = (Q15) (yl>>15);
+		}	
+	else
+		{
+		if (xi < 0)
+			yl = kQ15_Min;
+		else
+			yl = kQ15_Max;
+		}
+
+// Convert and bound to S16 range
+    if      (yl >= kS16_Max)
+        outY[i] = kS16_Max;
+    else if (yl <= kS16_Min)
+        outY[i] = kS16_Min;
+    else
+	    outY[i] = (S16) yl;	 
+	}
+}   // ---- end ComputeWaveShaper_V4d1i() ---- 
 
 // ************************************************************************
 // ComputeWaveShaper:   Master call (wrapper of all routines)
@@ -351,12 +420,15 @@ ComputeWaveShaper(S16 *x, S16 *y, long length, WAVESHAPER *d)
 
 if (d->useFixedPoint)
     {
+    ScaleShortsf(x, y, length, d->inGainf);
+{static long c=0; printf("ComputeWaveShaper%d: useFixedPoint  inGainf=%g outGainf=%g \n", c++, d->inGainf, d->outGainf);}
+
     switch (d->type)
         {
         default:
         case kWaveShaper_Type_ByPass:
 //            CopyShorts(x, y, length);
-            ScaleShortsf(x, y, length, d->inGainf*d->outGainf);
+//            ScaleShortsf(x, y, length, d->inGainf*d->outGainf);
 //printf("ComputeWaveShaper: inGainf=%g\n", d->inGainf);
         break;
         case kWaveShaper_Type_V1:
@@ -365,9 +437,11 @@ if (d->useFixedPoint)
 printf("ComputeWaveShaper: useFixedPoint: type=%d not implemented\n", d->type);
         break;
         case kWaveShaper_Type_V4:
-            ComputeWaveShaper_V4i(x, y, length, d);
+//            ComputeWaveShaper_V4i(x, y, length, d);
+            ComputeWaveShaper_V4d1i(x, y, length, d);
         break;
         }
+    ScaleShortsf(x, y, length, d->inGainf);
     }
 else
     {

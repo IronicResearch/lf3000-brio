@@ -57,9 +57,13 @@ private:
 	OggVorbis_File	vorbisFile_;		// codec context data
 	ov_callbacks 	oggCallbacks_;		// set of callbacks to wrap resource mgr functions	
 	S16 			*pPcmBuffer_;		// Pointer to the vorbis decode buffer
-	CKernelMPI* 	pKernelMPI_;		// For mutex
-	tMutex     		render_mutex_;		// Need to protect renderbuffer call 
-										// because it's in a different thread.
+
+//#define USE_VORBIS_PLAYER_MUTEX
+#ifdef USE_VORBIS_PLAYER_MUTEX
+	CKernelMPI* 	pKernelMPI_;		
+	tMutex     		render_mutex_;		// For multi-threaded protection of renderbuffer call 
+#endif // USE_VORBIS_PLAYER_MUTEX
+										
 	U32				filePos_;			// position in the vorbis byte stream
 
     S32             loopCount_;

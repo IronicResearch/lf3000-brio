@@ -59,15 +59,17 @@ typedef struct src {
 	float         xF, xIncF;
 	float inOutRateRatio;
 	float outInRateRatio;	
+    long oiRatio;
+    long ioRatio;
 
-	float inScale, inScaleDB;
+	float inScaleF, inScaleDB;
 
-#define kSRC_Filter_MaxCoeffs 		    64
-#define kSRC_Filter_MaxDelayElements 	64
+#define kSRC_Filter_MaxCoeffs 		    45
+#define kSRC_Filter_MaxDelayElements 	45
 	float *hP;
-	float h [kSRC_Filter_MaxCoeffs];
+	float hF[kSRC_Filter_MaxCoeffs];
 	short hI[kSRC_Filter_MaxCoeffs];
-	short z [kSRC_Filter_MaxDelayElements];
+	short zI[kSRC_Filter_MaxDelayElements];
 	long firLength;
 	long firCoeffCount;
 

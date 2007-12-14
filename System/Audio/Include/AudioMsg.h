@@ -5,13 +5,10 @@
 // Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
 // All Rights Reserved
 //==============================================================================
-// File:
-//		AudioMsg.h
+// AudioMsg.h
 //
-// Description:
-//		Defines the message format of messages accepted by the AudioMgr task
+//		Defines the message format of messages accepted by the Audio task
 //		from the AudioMPI.  The format of the message data are in AudioTypesPriv.h 
-//
 //==============================================================================
 
 // System includes
@@ -50,6 +47,9 @@ enum {
 	
 	kAudioCmdMsgTypeIsAudioPlaying,
 	kAudioCmdMsgTypeIsAnyAudioPlaying,
+
+	kAudioCmdMsgTypeSetAudioState,
+	kAudioCmdMsgTypeGetAudioState,
 
 	kAudioCmdMsgTypeSetAudioVolume,
 	kAudioCmdMsgTypeGetAudioVolume,
@@ -99,25 +99,47 @@ protected:
 // kAudioCmdMsgTypeSetMasterVolume
 class CAudioMsgSetMasterVolume : public CAudioCmdMsg {
 public:    
-	CAudioMsgSetMasterVolume( const U8 masterVolume );
-	U8	GetData( void ) { return masterVolume_; }
+	CAudioMsgSetMasterVolume( const U8 x );
+	U8	GetData( void ) { return d_; }
 	
 private:
-	U8	masterVolume_;
+	U8	d_;
 };
 
 // kAudioCmdMsgTypeSetOutputEqualizer
 class CAudioMsgSetOutputEqualizer : public CAudioCmdMsg {
 public:    
-	CAudioMsgSetOutputEqualizer( const U8 enable );
-	U8	GetData( void ) { return outputEqualizerEnabled_; }
+	CAudioMsgSetOutputEqualizer( const U8 x );
+	U8	GetData( void ) { return d_; }
 	
 private:
-	U8	outputEqualizerEnabled_;
+	U8	d_;
 };
 
-//kAudioCmdMsgTypeSetAudioVolume,
-//kAudioCmdMsgTypeGetAudioVolume,
+// kAudioCmdMsgTypeSetAudioState
+// kAudioCmdMsgTypeGetAudioState
+class CAudioMsgSetAudioState : public CAudioCmdMsg {
+public:    
+	CAudioMsgSetAudioState( const tAudioState d );
+	tAudioState	GetData( void ) { return d_; }
+	
+	tAudioState	d_;
+private:
+//	tAudioState	d_;
+};
+
+class CAudioMsgGetAudioState : public CAudioCmdMsg {
+public:    
+	CAudioMsgGetAudioState( void );
+	tAudioState	GetData( void ) { return d_; }
+	
+	tAudioState	d_;
+private:
+//	tAudioState	d_;
+};
+
+// kAudioCmdMsgTypeSetAudioVolume
+// kAudioCmdMsgTypeGetAudioVolume
 class CAudioMsgSetAudioVolume : public CAudioCmdMsg {
 public:    
 	CAudioMsgSetAudioVolume( const tAudioVolumeInfo vi );
@@ -345,12 +367,10 @@ private:
 };
 
 // kAudioCmdMsgTypeIsMidiFilePlaying
-
 class CAudioMsgIsMidiFilePlaying : public CAudioCmdMsg {
 public:    
-	// Is any MIDi file playing?
-	CAudioMsgIsMidiFilePlaying( void );
 	
+	CAudioMsgIsMidiFilePlaying( void );  // Is any MIDi file playing?
 	CAudioMsgIsMidiFilePlaying( const tMidiPlayerID id );
 
 	tMidiPlayerID	GetData( void ) { return id_; }
@@ -372,7 +392,7 @@ public:
 	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const tMidiTrackBitMask trackBitMask, const tMidiPlayerInstrument instr );
 	CAudioMsgMidiFilePlaybackParams( const tMidiPlayerID id, const S8 tempo );
 
-	tAudioMidiFilePlaybackParams*	GetData( void ) { return &data_; }
+	tAudioMidiFilePlaybackParams *GetData( void ) { return &data_; }
 	
 private:
 	tAudioMidiFilePlaybackParams		data_;
@@ -411,17 +431,19 @@ class CAudioReturnMessage : public CMessage
 public:    	
 	CAudioReturnMessage( void );
 
-	void SetAudioErr( tErrType err ) { err_ = err; };
-	void SetAudioID( tAudioID id ) { audioID_ = id; };
-	void SetMidiID( tMidiPlayerID id ) { midiPlayerID_ = id; };
-	void SetBooleanResult( Boolean val ) { booleanValue_ = val; }
-	void SetU32Result( U32 val ) { u32Value_ = val; }
+	void SetAudioErr( tErrType err )          { err_          = err; }
+	void SetAudioID( tAudioID id )            { audioID_      = id;  }
+	void SetMidiID( tMidiPlayerID id )        { midiPlayerID_ = id;  }
+	void SetBooleanResult( Boolean val )      { booleanValue_ = val; }
+	void SetU32Result( U32 val )              { u32Value_     = val; }
+	void SetAudioStateResult( tAudioState d ) { audioState_   = d;   }
 	
-	tMidiPlayerID GetMidiID( void ) { return midiPlayerID_; }
-	tAudioID GetAudioID( void ) { return audioID_; }
-	tErrType GetAudioErr( void ) { return err_; }
-	Boolean GetBooleanResult( void ) { return booleanValue_; }
-	U32 GetU32Result( void ) { return u32Value_; }
+	tMidiPlayerID GetMidiID(           void ) { return midiPlayerID_; }
+	tAudioID      GetAudioID(          void ) { return audioID_; }
+	tErrType      GetAudioErr(         void ) { return err_; }
+	Boolean       GetBooleanResult(    void ) { return booleanValue_; }
+	U32           GetU32Result(        void ) { return u32Value_; }
+	tAudioState   GetAudioStateResult( void ) { return audioState_; }
 	
 private:
 	tErrType		err_;
@@ -429,11 +451,11 @@ private:
 	tMidiPlayerID	midiPlayerID_;
 	Boolean			booleanValue_;
 	U32				u32Value_;
+	tAudioState		audioState_;
 };
 
-const U32	kAUDIO_MAX_MSG_SIZE	=	256;
+const U32	kAUDIO_MAX_MSG_SIZE	=	512;
 const U32	kAUDIO_MAX_NUM_MSGS	=	8;
-
 
 LF_END_BRIO_NAMESPACE()	
 #endif	// LF_BRIO_AUDIOMSG_H

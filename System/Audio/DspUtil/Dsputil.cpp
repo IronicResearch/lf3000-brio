@@ -349,6 +349,29 @@ return (diff);
 }	// ---- end CompareLongs() ---- 
 
 // *************************************************************** 
+// MaxAbsShorts:    Return max absolute value in buffer
+// ***************************************************************
+    short
+MaxAbsShorts(short *d, long length, long stride)
+{
+short returnValue = 0;	
+short max = 0;
+for (long i = 0; i < length; i += stride) 
+    {
+    short x = d[i];
+    if (x == -32768)
+        x =  32767;  // also take Abs()
+    else if (x < 0)
+        x = 0 - x;
+
+    if (x > max)
+        max = x;
+    }
+
+return (max);
+}	// ---- end MaxAbsShorts() ---- 
+
+// *************************************************************** 
 // PrintFloats:    
 // ***************************************************************
     void 
@@ -874,6 +897,30 @@ else
      	sumY[i] = (S32) inX[i];
     }
 }	// ---- end AccS16toS32() ---- 
+
+// *************************************************************** 
+// ShiftLeft_S16:	 
+// ***************************************************************
+    void 
+ShiftLeft_S16(S16 *inX, S16 *outY, long length, long x)
+{
+//{static long c=0; printf("ShiftLeft_S16: %d : start shiftAmount=%d\n", c++, x);}
+
+for (long i = 0; i < length; i++) 
+    outY[i] = (inX[i]<<x);
+}	// ---- end ShiftLeft_S16() ---- 
+
+// *************************************************************** 
+// ShiftRight_S16:	 
+// ***************************************************************
+    void 
+ShiftRight_S16(S16 *inX, S16 *outY, long length, long x)
+{
+//{static long c=0; printf("ShiftRight_S16: %d : start shiftAmount=%d\n", c++, x);}
+
+for (long i = 0; i < length; i++) 
+    outY[i] = (inX[i]>>x);
+}	// ---- end ShiftRight_S16() ---- 
 
 // *************************************************************** 
 // Pan_Shortsf:	"Pan"  buffer of 'short'
@@ -1637,10 +1684,11 @@ SetUpSampleNHoldOscillator(unsigned long *z, unsigned long *counter,
 SetUpSawtoothOscillator(unsigned long *z, unsigned long *delta, float normalFrequency, float phase)
 // z		ptr to last state
 // delta	counter increment
-// normalFrequency	hertz*samplingPeriod
+// normalFrequency	f/fs
 {
 *delta = mFloatToULong(normalFrequency);
 *z     = mFloatToULong(phase);
+printf("SetUpSawtoothOscillator: f=%g phase=%g z=%ld delta=%ld\n", normalFrequency, phase, *z, *delta);
 }	// ---- end SetUpSawtoothOscillator() ----
 
 // **********************************************************************
