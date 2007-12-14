@@ -287,10 +287,13 @@ longTimeDecayI = FloatToQ15(longTimeDecayF);
 //        shortTimeRateHz, numFramesPerBuffer, shortTimeInterval, longTimeDecayF);
 
 //
-// Keep at end of this routine, Set up Audio State struct (interfaces via AudioMPI)
+// Set up Audio State struct (interfaces via AudioMPI)
+// NOTE : Keep at end of this routine
 //
 {
 tAudioState *d = &audioState_;
+//printf("CAudioMixer: sizeof(tAudioState)=%d\n", sizeof(tAudioState));
+
 d->computeLevelMeters = false;
 d->useOutEQ           = false;
 d->useOutSoftClipper  = false;
@@ -791,13 +794,15 @@ printf("CAudioMixer: in DC %g dB -> %g |out %g dB -> %g (%d)\n",
 if (audioState_.useOutEQ || audioState_.useOutSoftClipper || audioState_.computeLevelMeters)
     audioState_.useOutDSP  = true;
 
-{static long c=0; if (! (c++)) {
+#ifdef NEEDED
+{static long c=0; if (!(c++)) {
 printf("CAudioMixer: useOutDSP=%d computeLevelMeters=%d useOutEQ=%d useOutSoftClipper=%d\n", audioState_.useOutDSP, audioState_.computeLevelMeters, audioState_.useOutEQ , audioState_.useOutSoftClipper); 
 
-printf("CAudioMixer: readInSoundFile  =%ld Path='%s'\n", readInSoundFile_, inSoundFilePath_);
+printf("CAudioMixer: readInSoundFile  =%ld Path='%s'\n", readInSoundFile_  , inSoundFilePath_);
 printf("CAudioMixer: writeOutSoundFile=%ld Path='%s'\n", writeOutSoundFile_, outSoundFilePath_);
 }
 }
+#endif
 
 if (audioState_.useOutDSP)
 {
