@@ -48,9 +48,6 @@ enum {
 	kAudioCmdMsgTypeIsAudioPlaying,
 	kAudioCmdMsgTypeIsAnyAudioPlaying,
 
-	kAudioCmdMsgTypeSetAudioState,
-	kAudioCmdMsgTypeGetAudioState,
-
 	kAudioCmdMsgTypeSetAudioVolume,
 	kAudioCmdMsgTypeGetAudioVolume,
 	kAudioCmdMsgTypeSetAudioPriority,
@@ -80,7 +77,10 @@ enum {
 	kAudioCmdMsgTypeSendMidiCommand,
 	kAudioCmdMsgTypeMidiNoteOn,
 	kAudioCmdMsgTypeMidiNoteOff,
-	kAudioCmdMsgExitThread
+	kAudioCmdMsgExitThread,
+
+	kAudioCmdMsgTypeSetAudioState,
+	kAudioCmdMsgTypeGetAudioState
 };
 typedef U8 tAudioCmdMsgType;
 
@@ -454,7 +454,7 @@ private:
 	tAudioState		audioState_;
 };
 
-const U32	kAUDIO_MAX_MSG_SIZE	=	512;
+const U32	kAUDIO_MAX_MSG_SIZE	=	256;
 const U32	kAUDIO_MAX_NUM_MSGS	=	8;
 
 LF_END_BRIO_NAMESPACE()	
