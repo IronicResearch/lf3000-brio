@@ -11496,3 +11496,15 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/13/07 7:29 PM
 4,251 ms. (Cumulative: 2,927,256 ms)
 
 ----------------
+Revision 2,431 from svn://localhost/TRUNK/:
+Revision 2,432 from svn://localhost/TRUNK/:
+
+Reduced message size from 512 to 256 as the larger size is currently not 
+needed.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 12/14/07 3:28 PM
+1 changed, 0 added, 0 deleted.
+4,157 ms. (Cumulative: 2,931,491 ms)
+
+----------------
