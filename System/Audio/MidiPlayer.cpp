@@ -241,7 +241,7 @@ CMidiPlayer::SendDoneMsg( void )
 	data.payload      = loopCount_;	
 	data.count        = 1;
 
-printf("CMidiPlayer::SendDoneMsg midiPlayerID=%ld\n", id_);
+printf("CMidiPlayer::SendDoneMsg midiPlayerID=%d\n", id_);
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
