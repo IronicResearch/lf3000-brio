@@ -2,26 +2,28 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
-v0.1.26  (Build 2440 released Dec 13, 2007) 
+v0.1.26  (Build 2440 released Dec 14, 2007) 
 ===========================================
 Release for LF1000 development (green) and form-factor target boards.
 
 Software components for target hardware:
 
-	Brio-0.1.25.2430.lfp			= Brio library firmware for either LF1000 boards
+	Brio-0.1.26.2440.lfp			= Brio library firmware for either LF1000 boards
 	firmware-ME_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 development board
 	firmware-LF_LF1000-0.17.1.2428.lfp	= kernel/rootfs firmware for LF1000 form-factor board
-	HostTools.tar.gz			= Linux host tools subset for installing firmware
-	LightningSDK_2430.tar.gz		= Lightning SDK for emulation and embedded development
-	nfsroot_SVN2430.tar.gz			= NFS root filesystem for LF1000 development board
+	HostTools_2440.tar.gz			= Linux host tools subset for installing firmware
+	LightningSDK_2440.tar.gz		= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2440.tar.gz			= NFS root filesystem for LF1000 development board
+
 
 Note:	Build 2440 has two differences from Build 2430:
 
-			1. Found and fixed the audio change which kept Build012 AppManager from launching
-			   by reverting Audio IDs to previous types to maintain MPI compatibility
+	1. Found and fixed the audio change which kept Build012 AppManager from launching
+	   by reverting Audio IDs to previous types to maintain MPI compatibility
 	
-			2. Removed not used the "bootstrap" files 		    
-
+	2. Removed not used the "bootstrap" files
+        
+See other info below for Build 2430:
 
 ===========================================
 v0.1.25  (Build 2430 released Dec 13, 2007) 
