@@ -11562,3 +11562,12 @@ By gklimanis (gklimanis@leapfrog.com) on 12/14/07 4:51 PM
 4,301 ms. (Cumulative: 2,952,949 ms)
 
 ----------------
+Revision 2,439 from svn://localhost/TRUNK/:
+
+fix printf type for reverted id
+
+By Dave Milici (dmilici@leapfrog.com) on 12/14/07 5:09 PM
+1 changed, 0 added, 0 deleted.
+4,252 ms. (Cumulative: 2,957,280 ms)
+
+----------------
