@@ -422,9 +422,7 @@ CAudioModule::CAudioModule( void )
 	pDebugMPI_->Assert((true == ret), "CAudioModule::ctor -- Couldn't create DebugMPI.\n");
 
 	// Set debug level from a constant
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-#endif
 	
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 			"CAudioModule::ctor -- Initalizing Audio Module...");

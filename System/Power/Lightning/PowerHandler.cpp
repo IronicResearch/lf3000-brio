@@ -56,9 +56,7 @@ void *LightningPowerTask(void*)
 	CDebugMPI	dbg(kGroupPower);
 	CKernelMPI	kernel;
 
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg.SetDebugLevel(kDbgLvlVerbose);
-#endif
 	
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	

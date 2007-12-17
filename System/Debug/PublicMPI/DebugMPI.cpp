@@ -68,6 +68,7 @@ CDebugMPI::CDebugMPI( tDebugSignature sig ): pModule_(NULL), sig_(sig)
 	ICoreModule*	pModule;
 	Module::Connect( pModule, kDebugModuleName, kDebugModuleVersion );
 	pModule_ = reinterpret_cast<CDebugModule*>(pModule);
+	masterDebugLevel_ = kDbgLvlValuable;
 }
 
 //----------------------------------------------------------------------------
@@ -153,6 +154,10 @@ namespace
 		//		the helper fcn for this.
 		// NOTE: If for some reason we are so broken that we were unable
 		//		to connect to the underlying module, then print out everything.
+// BSK
+//		printf(" DebugOutIsEnabled=%d",pModule->DebugOutIsEnabled(sig, lvl));
+//		fflush( stdout );
+		
 		if (!pModule || pModule->DebugOutIsEnabled(sig, lvl))
 		{
 			// Ready to output va_list arguments
@@ -179,13 +184,15 @@ namespace
 	}
 
 	//--------------------------------------------------------------------------
-	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig, 
+	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig,
+						 tDebugLevel flagDebugLevel,
 						const char* errString, const char * formatString, 
 						va_list arguments )
-			__attribute__ ((format (printf, 4, 0)));
+			__attribute__ ((format (printf, 5, 0)));
 	
 	//--------------------------------------------------------------------------
 	void AssertPriv( const CDebugModule* pModule, tDebugSignature sig, 
+						tDebugLevel flagDebugLevel,
 						const char* errString, const char * formatString, 
 						va_list arguments )
 	{
@@ -196,7 +203,9 @@ namespace
 		CKernelMPI	kernel;
 		Boolean throwOnAssert = pModule && pModule->ThrowOnAssertIsEnabled();
 		if (!throwOnAssert || 
-			(pModule && (pModule->GetDebugLevel() != kDbgLvlSilent)))
+// BSK / FIXME
+//			(pModule && (pModule->GetDebugLevel() != kDbgLvlSilent)))
+		(pModule && (flagDebugLevel != kDbgLvlSilent)))
 		{
 			kernel.Printf( kAssertTagStr );
 			kernel.Printf( kDebugOutSignatureFmt, sig );
@@ -220,6 +229,11 @@ namespace
 //----------------------------------------------------------------------------
 void CDebugMPI::DebugOut( tDebugLevel lvl, const char * formatString, ... ) const
 {
+// FIXME/BSK
+	if (lvl > masterDebugLevel_)
+	{
+		return;
+	}
 	va_list arguments;
 	va_start( arguments, formatString );
 	DebugOutPriv( pModule_, sig_, lvl, formatString, arguments, kDebugOutFormatNormal );
@@ -308,7 +322,7 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 	{
 		va_list arguments;
 		va_start( arguments, formatString );
-		AssertPriv( pModule_, sig_, NULL, formatString, arguments );
+		AssertPriv( pModule_, sig_, GetDebugLevel(), NULL, formatString, arguments );
 		va_end( arguments );
 	}
 }
@@ -331,7 +345,7 @@ void CDebugMPI::AssertNoErr( tErrType err, const char * formatString, ... ) cons
 			
 		va_list arguments;
 		va_start( arguments, formatString );
-		AssertPriv( pModule_, sig_, errstr, formatString, arguments );
+		AssertPriv( pModule_, sig_, GetDebugLevel(), errstr, formatString, arguments );
 		va_end( arguments );
 	}
 }
@@ -426,6 +440,17 @@ Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level ) c
 
 void CDebugMPI::SetDebugLevel( tDebugLevel newLevel )
 {
+	masterDebugLevel_ = newLevel;
+}
+
+tDebugLevel CDebugMPI::GetDebugLevel() const
+{
+	return masterDebugLevel_;
+}
+
+/* BSK/ FIXME delete
+void CDebugMPI::SetDebugLevel( tDebugLevel newLevel )
+{
 	if (pModule_)
 		pModule_->SetDebugLevel( newLevel );
 }
@@ -441,7 +466,7 @@ tDebugLevel CDebugMPI::GetDebugLevel() const
 	
 	return kDbgLvlVerbose; // get rid of compiler warning
 }
-
+*/
 //==============================================================================
 // Function:
 //		EnableDebugOutTimestamp

@@ -11617,3 +11617,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/17/07 9:04 AM
 4,156 ms. (Cumulative: 2,977,704 ms)
 
 ----------------
+Revision 2,446 from svn://localhost/TRUNK/:
+
+Fixed LitBLT:#358. The master debug level was made the member variable of the CDebugMPI object 
+                    instead of the CDebugModule singleton.    
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 12/17/07 11:41 AM
+12 changed, 0 added, 0 deleted.
+4,516 ms. (Cumulative: 2,982,283 ms)
+
+----------------

@@ -52,7 +52,8 @@ static CDebugModule*	sinst = NULL;
 // Description:
 
 //==============================================================================
-CDebugModule::CDebugModule(void) : masterDebugLevel_(kDbgLvlValuable),
+// BSK / 121107
+CDebugModule::CDebugModule(void) : // masterDebugLevel_(kDbgLvlValuable),
 		timestampDebugOut_(false), throwOnAssert_(false)
 {
 	// initialize the sigDbgBitVecArray_ so that DebugOut for all modules is 
@@ -196,16 +197,15 @@ Boolean CDebugModule::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel lvl ) 
 	// n't take hit when debug switch off on shipping product, so we
 	//  the checks in a very specific orderva_list arguments
 
-	// If we're silencedva_list arguments
+	// If we're silenced va_list arguments
 	// 		va_list argumentsor level is > master level
 	// 		va_list argumentsor signature out of range
 	// 		va_list argumentsor output disabled for signature
 	// 		then debug not enabled.
 	// Else debug enabled for this signature.
-	return ((lvl == kDbgLvlSilent) || 
-			(lvl > masterDebugLevel_) ||
-			 sig > kMaxDebugSig ||
-			 !(sigDbgBitVecArray_[(sig >> 3)] & (1 << (sig & 0x7)))) ? false : true;
+	return !((lvl == kDbgLvlSilent) || 
+			  sig > kMaxDebugSig ||
+			 (sigDbgBitVecArray_[(sig >> 3)] & (1 << (sig & 0x7)))) ? false : true;
 }
 
 //==============================================================================
@@ -222,7 +222,8 @@ Boolean CDebugModule::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel lvl ) 
 // Description:
 //		Gets & sets the master debug level for all DebugOut.   
 //==============================================================================
-
+/*
+BSK/121107
 void CDebugModule::SetDebugLevel( tDebugLevel newLevel )
 {
 	masterDebugLevel_ = newLevel;
@@ -232,7 +233,7 @@ tDebugLevel CDebugModule::GetDebugLevel() const
 {
 	return masterDebugLevel_;
 }
-
+*/
 //==============================================================================
 // Function:
 //		EnableDebugOutTimestamp

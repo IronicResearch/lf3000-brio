@@ -57,9 +57,7 @@ const CURI* CDisplayModule::GetModuleOrigin() const
 //============================================================================
 CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
-#endif
 
 	isOpenGLEnabled_ = false;
 	isLayerSwapped_ = false;

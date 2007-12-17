@@ -169,9 +169,7 @@ OnFaceRequest( FTC_FaceID  faceId,
 //============================================================================
 CFontModule::CFontModule() : dbg_(kGroupFont)
 {
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg_.SetDebugLevel(kFontDebugLevel);
-#endif
 	
 	// Zero out static global struct
 	memset(&handle_, 0, sizeof(handle_));
