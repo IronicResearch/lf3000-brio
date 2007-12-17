@@ -150,7 +150,7 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlVerbose, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			baseAddr, fb_size, gOverlayBuffer);
-	memset(gOverlayBuffer, 0, fb_size);
+//	memset(gOverlayBuffer, 0, fb_size);
 	
 	// Get access to the overlay planar array buffer in user space
 	fb_size = 4096 * 4096;
@@ -165,14 +165,17 @@ void CDisplayModule::InitModule()
 	gPlanarBase = baseAddr;
 	gPlanarSize = fb_size;
 	
-	// Clear video planar buffers
+	// Clear video planar buffers (white pixels preferred to match biilboards)
 	U32 screensize = GetScreenSize();
 	U32 screenwidth = screensize & 0xFFFF;
 	U32 screenheight = screensize >> 16;
+	U32 blocksize = screenwidth * screenheight;
+	memset(gOverlayBuffer, 0xFF, blocksize); // white Y
+ 	memset(&gOverlayBuffer[blocksize], 0x7F, blocksize); // neutral U,V
 	for (U32 i = 0; i < screenheight; i++)
-		memset(&gPlanarBuffer[i*4096], 0, screenwidth);
+		memset(&gPlanarBuffer[i*4096], 0xFF, screenwidth); // white Y
 	for (U32 i = screenheight; i < 2*screenheight; i++)
-		memset(&gPlanarBuffer[i*4096], 0x7F, screenwidth);
+		memset(&gPlanarBuffer[i*4096], 0x7F, screenwidth); // neutral U,V
 }
 
 //----------------------------------------------------------------------------
