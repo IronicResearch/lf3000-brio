@@ -11589,3 +11589,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/14/07 7:33 PM
 3,891 ms. (Cumulative: 2,965,234 ms)
 
 ----------------
+Revision 2,442 from svn://localhost/TRUNK/:
+Revision 2,443 from svn://localhost/TRUNK/:
+
+Video buffers initially cleared to white pixels to match billboards.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/17/07 8:23 AM
+1 changed, 0 added, 0 deleted.
+3,939 ms. (Cumulative: 2,969,235 ms)
+
+----------------
