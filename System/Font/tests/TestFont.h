@@ -77,11 +77,12 @@ public:
 		tFontHndl	font2;
 		tFontHndl	font3;
 		tFontHndl	font4;
+		tFontHndl   fontbogus;
 		tFontProp	prop1 = {1, 12, 0, 0};
 		tFontProp	prop2 = {1, 24, 0, 0};
 		tFontProp	prop3 = {2, 24, kUTF8CharEncoding, true};
 		tFontProp	prop4 = {2, 24, kUTF16CharEncoding, true};
-
+		
 		CPath dir = GetTestRsrcFolder();
 		pFontMPI_->SetFontResourcePath(dir);
 		CPath* path = pFontMPI_->GetFontResourcePath();
@@ -89,12 +90,28 @@ public:
 		
 		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", prop2);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		font3 = pFontMPI_->LoadFont("FreeSans.ttf", prop3);
-		TS_ASSERT( font1 != kInvalidFontHndl );
+		TS_ASSERT( font3 != kInvalidFontHndl );
 		font4 = pFontMPI_->LoadFont("FreeSerif.ttf", prop4);
-		TS_ASSERT( font2 != kInvalidFontHndl );
+		TS_ASSERT( font4 != kInvalidFontHndl );
+		fontbogus = pFontMPI_->LoadFont("NonExistantFont.ttf", prop1);
+		TS_ASSERT( fontbogus  == kInvalidFontHndl );
+		fontbogus = pFontMPI_->LoadFont("", prop1);
+		TS_ASSERT( fontbogus  == kInvalidFontHndl );
+
+		Boolean r;
+		r = pFontMPI_->SelectFont(font1);
+		TS_ASSERT( r != false );
+		r = pFontMPI_->SelectFont(font2);
+		TS_ASSERT( r != false );
+		r = pFontMPI_->SelectFont(font3);
+		TS_ASSERT( r != false );
+		r = pFontMPI_->SelectFont(font4);
+		TS_ASSERT( r != false );
+		r = pFontMPI_->SelectFont(fontbogus);
+		TS_ASSERT( r == false );
 
 		pFontMPI_->UnloadFont(font1);
 		pFontMPI_->UnloadFont(font2);
@@ -155,7 +172,7 @@ public:
 		pFontMPI_->DrawString(&text2, 0, mtrx.height, &surf);
 		TS_ASSERT_DELTA( (rect2.right - rect2.left), pFontMPI_->GetX(), 1 );
 		
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", prop2);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -229,7 +246,7 @@ public:
 			TS_ASSERT_EQUALS(y, pFontMPI_->GetY());
 		}
 		
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -290,7 +307,7 @@ public:
 		TS_ASSERT_EQUALS(x, pFontMPI_->GetX());
 		TS_ASSERT_EQUALS(y, pFontMPI_->GetY());
 		
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pFontMPI_->SetFontColor(0x0000FFFF); // cyan
 
@@ -349,7 +366,7 @@ public:
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
 		
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		
 		for (int y = 0; y < 240; y++)
@@ -413,7 +430,7 @@ public:
 		TS_ASSERT( pFontMPI_->GetFontKerning() == true );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", 48);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", 48);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -474,7 +491,7 @@ public:
 		TS_ASSERT( pFontMPI_->GetFontUnderlining() == false );
 		pFontMPI_->DrawString(&text, 0, y, &surf); y+=dy;
 		
-		font2 = pFontMPI_->LoadFont("Avatar.ttf", 36);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", 36);
 		TS_ASSERT( font2 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -664,7 +681,6 @@ public:
 	void testFontMono()
 	{
 		tFontHndl	font1;
-//		tFontHndl	font2;
 		tFontSurf	surf;
 		tFontMetrics	mtrx;
 		tDisplayHandle 	disp;
@@ -696,8 +712,8 @@ public:
 		for (gunichar c = 0x20; c < 0x80; c++)
 		{	
 			CString code = CString(1,c);
-			pFontMPI_->DrawString(&code, x, y, &surf);
-			x += dx;
+			pFontMPI_->DrawString(code, x, y, surf);
+//			x += dx;
 			if (c % 0x10 == 0x0F) 
 			{
 				x = 0;
@@ -711,7 +727,6 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
-//		pFontMPI_->UnloadFont(font2);
 		delete pDisplayMPI_;
 	}
 	
