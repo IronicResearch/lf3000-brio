@@ -296,6 +296,13 @@ CPath* CFontModule::GetFontResourcePath() const
 //----------------------------------------------------------------------------
 tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize)
 {
+    // Bogus font file name?
+	if (pName == NULL || pName->length() == 0) 
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: invalid filename passed\n");
+		return false;
+	}
+	
 	FT_Face			face;
 	PFont			font;
 	int				error, numcodes = 0;
@@ -312,15 +319,6 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     }
     prop_ = prop;
     
-#if 0
-    // Bogus font file name?
-	if (filename == NULL) 
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: invalid filename passed\n");
-		return false;
-	}
-#endif
-	
 	// Load font file
 	if (pFileImage != NULL)
 		error = FT_New_Memory_Face(handle_.library, (const FT_Byte*)pFileImage, fileSize, 0, &face );
@@ -1125,7 +1123,7 @@ Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph, int* pIndex)
     index = FTC_CMapCache_Lookup( handle_.cmapCache, handle_.imageType.face_id, handle_.currentFont->cmapIndex, ch );
 	if (index == 0) 
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d\n", static_cast<unsigned int>(ch), index );
+		dbg_.DebugOut(kDbgLvlImportant, "FontModule::DrawGlyph: unable to support char = %08X, index = %d\n", static_cast<unsigned int>(ch), index );
 		return false;
 	}
 
@@ -1195,7 +1193,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	rc = GetGlyph(ch, &glyph, &index);
 	if (!rc)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to locate glyph for char = %08X\n", static_cast<unsigned int>(ch) );
+		dbg_.DebugOut(kDbgLvlImportant, "FontModule::DrawGlyph: unable to locate glyph for char = %08X\n", static_cast<unsigned int>(ch) );
 		return false;
 	}
 

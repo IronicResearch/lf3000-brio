@@ -11599,3 +11599,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/17/07 8:23 AM
 3,939 ms. (Cumulative: 2,969,235 ms)
 
 ----------------
+Revision 2,444 from svn://localhost/TRUNK/:
+
+Updated Font unit test with Didj font and bogus filename checks.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/17/07 8:28 AM
+2 changed, 1 added, 0 deleted.
+4,188 ms. (Cumulative: 2,973,485 ms)
+
+----------------
