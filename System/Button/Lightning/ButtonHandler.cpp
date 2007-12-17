@@ -80,9 +80,7 @@ void *LightningButtonTask(void*)
 	S8 backlight  = lcdBacklight[0];
 	int brightIndex = 1;				// index of next value to retrieve
 	
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	dbg.SetDebugLevel(kDbgLvlVerbose);
-#endif
 	
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	

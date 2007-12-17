@@ -84,8 +84,9 @@ public:
 	Boolean		DebugOutIsEnabled(tDebugSignature sig, tDebugLevel atLeastLevel=kDbgLvlCritical) const;
 
 	// accessing the master DebugOut level
-	void		SetDebugLevel(tDebugLevel newLevel);
-	tDebugLevel	GetDebugLevel() const;
+// BSK /121107
+//	void		SetDebugLevel(tDebugLevel newLevel);
+//	tDebugLevel	GetDebugLevel() const;
 
 	//------------------------------------------------------------------------------
 	// Function:	 	EnableDebugOutTimestamp
@@ -106,10 +107,23 @@ public:
 	void 	EnableThrowOnAssert();
 	void 	DisableThrowOnAssert();
 
+	//------------------------------------------------------------------------------
+	// Function:	 	SetDebugLevel
+	//				 	GetDebugLevel
+	//                  
+	// Description:		setter and getter for 
+	//					masterDebugLevel_ 
+	//					They are the friend functions of DebugPriv.h class
+	//------------------------------------------------------------------------------
+	
+	void SetDebugLevel( tDebugLevel newLevel );
+	tDebugLevel GetDebugLevel() const;
+	Boolean DebugOutIsEnabled( tDebugLevel lvl ) const;
+	
 private:
 	class CDebugModule* pModule_;
 	tDebugSignature		sig_;
-
+	tDebugLevel			masterDebugLevel_;
 	// Disable copy semantics
 	CDebugMPI(const CDebugMPI&);
 	CDebugMPI& operator=(const CDebugMPI&);

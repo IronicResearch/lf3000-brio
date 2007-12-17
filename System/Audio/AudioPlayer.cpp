@@ -50,9 +50,7 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 	if (!pDebugMPI_->IsValid())
 		printf("AudioPlayer ctor: Couldn't create DebugMPI!\n");
 	
-#if !defined SET_DEBUG_LEVEL_DISABLE
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-#endif
 	
 // Set class variables from message
 	pan_    = pAudioInfo->pan;

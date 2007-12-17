@@ -57,8 +57,8 @@ public:
 	VTABLE_EXPORT Boolean DebugOutIsEnabled( tDebugSignature sig, 
 											tDebugLevel level ) const;
 
-	VTABLE_EXPORT void SetDebugLevel( tDebugLevel newLevel );
-	VTABLE_EXPORT tDebugLevel GetDebugLevel( ) const;
+//	VTABLE_EXPORT void SetDebugLevel( tDebugLevel newLevel );
+//	VTABLE_EXPORT tDebugLevel GetDebugLevel( ) const;
 	
 	VTABLE_EXPORT void EnableDebugOutTimestamp( );
 	VTABLE_EXPORT void DisableDebugOutTimestamp( );
@@ -71,7 +71,7 @@ public:
 	VTABLE_EXPORT const char* const ErrorToString( tErrType error ) const;
 	
 private:
-	tDebugLevel		masterDebugLevel_;
+//	tDebugLevel		masterDebugLevel_;
 	Boolean			timestampDebugOut_;
 	Boolean			throwOnAssert_;
 	U8				sigDbgBitVecArray_[kSigBitVecArraySize];
