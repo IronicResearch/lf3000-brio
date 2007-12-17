@@ -11608,3 +11608,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/17/07 8:28 AM
 4,188 ms. (Cumulative: 2,973,485 ms)
 
 ----------------
+Revision 2,445 from svn://localhost/TRUNK/:
+
+Use glyph advance instead of bounding box for horizintal string metrics.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/17/07 9:04 AM
+1 changed, 0 added, 0 deleted.
+4,156 ms. (Cumulative: 2,977,704 ms)
+
+----------------

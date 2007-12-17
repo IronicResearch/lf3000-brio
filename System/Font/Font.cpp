@@ -1500,6 +1500,12 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 		if (!GetGlyph(charcode, &glyph, &index))
 			continue;
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
+		// Adjust for glyph spacing (spaces have no bounding box)
+//		bbox.xMax = std::max(glyph->advance.x >> 6, bbox.xMax);
+		bbox.xMax = 0;
+		// Adjust for glyph position
+		AdvanceGlyphPosition(glyph, dx, dy);
+		dx += attr_.spaceExtra;
 		// Adjust for kerning
 		if (attr_.useKerning && prev)
 		{
@@ -1511,9 +1517,6 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 		gbox.yMin = std::min(bbox.yMin+dy, gbox.yMin);
 		gbox.xMax = std::max(bbox.xMax+dx, gbox.xMax);
 		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
-		// Adjust for glyph position
-		AdvanceGlyphPosition(glyph, dx, dy);
-		dx += attr_.spaceExtra;
 		// Save previous glyph index if kerning
 		prev = index;
 	}
