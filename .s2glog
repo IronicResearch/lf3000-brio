@@ -11627,3 +11627,14 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/17/07 11:41 AM
 4,516 ms. (Cumulative: 2,982,283 ms)
 
 ----------------
+Revision 2,447 from svn://localhost/TRUNK/:
+Revision 2,448 from svn://localhost/TRUNK/:
+Revision 2,449 from svn://localhost/TRUNK/:
+
+Disabled setting of 3D layer enable bit which was defeating LF1000 page-flip callbacks.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/07 9:31 AM
+1 changed, 0 added, 0 deleted.
+4,328 ms. (Cumulative: 2,986,705 ms)
+
+----------------

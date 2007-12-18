@@ -202,14 +202,18 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 	ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
 	ioctl(layer, MLC_IOCTFORMAT, 0x4432);
 	ioctl(layer, MLC_IOCTHSTRIDE, 2);
-	if(FSAAval) {
+	if (FSAAval) {
 		ioctl(layer, MLC_IOCTVSTRIDE, 8192);
+#ifndef LF1000	// MP2530 only
 		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)1);
 		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)1);
+#endif
 	}
 	else {
 		ioctl(layer, MLC_IOCTVSTRIDE, 4096);
+#ifndef LF1000	// MP2530 only
 		ioctl(layer, MLC_IOCT3DENB, (void *)1);
+#endif
 	}
 	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 
