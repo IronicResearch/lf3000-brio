@@ -11638,3 +11638,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/07 9:31 AM
 4,328 ms. (Cumulative: 2,986,705 ms)
 
 ----------------
+Revision 2,450 from svn://localhost/TRUNK/:
+Revision 2,451 from svn://localhost/TRUNK/:
+
+Relocated layer config code to EnableOpenGL step for optimum SetDisplayAddress callbacks.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/18/07 10:49 AM
+1 changed, 0 added, 0 deleted.
+4,141 ms. (Cumulative: 2,990,924 ms)
+
+----------------

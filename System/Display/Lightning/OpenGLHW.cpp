@@ -198,24 +198,43 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 	c.position.bottom = dc.height; //240;
 
 	// Enable 3D layer
-	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
-	ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
-	ioctl(layer, MLC_IOCTFORMAT, 0x4432);
-	ioctl(layer, MLC_IOCTHSTRIDE, 2);
 	if (FSAAval) {
-		ioctl(layer, MLC_IOCTVSTRIDE, 8192);
 #ifndef LF1000	// MP2530 only
 		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)1);
 		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)1);
 #endif
+
+		ioctl(gDevLayerEven, MLC_IOCTLAYEREN, (void *)1);
+		ioctl(gDevLayerOdd , MLC_IOCTLAYEREN, (void *)1);
+
+		ioctl(gDevLayerEven, MLC_IOCSPOSITION, (void *)&c);
+		ioctl(gDevLayerOdd , MLC_IOCSPOSITION, (void *)&c);
+
+		ioctl(gDevLayerEven, MLC_IOCTFORMAT, 0x4432); // R5G6B5
+		ioctl(gDevLayerOdd , MLC_IOCTFORMAT, 0x4432);
+
+		ioctl(gDevLayerEven, MLC_IOCTHSTRIDE, 2);
+		ioctl(gDevLayerEven, MLC_IOCTVSTRIDE, 8192);
+		ioctl(gDevLayerOdd , MLC_IOCTHSTRIDE, 2);
+		ioctl(gDevLayerOdd , MLC_IOCTVSTRIDE, 8192);
+
+		ioctl(gDevLayerOdd, MLC_IOCTBLEND, (void *)1); //enable Alpha
+		ioctl(gDevLayerOdd, MLC_IOCTALPHA, 8); //set to 50%
+
+		ioctl(gDevLayerEven, MLC_IOCTDIRTY, (void *)1);
+		ioctl(gDevLayerOdd , MLC_IOCTDIRTY, (void *)1);
 	}
 	else {
-		ioctl(layer, MLC_IOCTVSTRIDE, 4096);
 #ifndef LF1000	// MP2530 only
 		ioctl(layer, MLC_IOCT3DENB, (void *)1);
 #endif
+		ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+		ioctl(layer, MLC_IOCSPOSITION, (void *)&c);
+		ioctl(layer, MLC_IOCTFORMAT, 0x4432);
+		ioctl(layer, MLC_IOCTHSTRIDE, 2);
+		ioctl(layer, MLC_IOCTVSTRIDE, 4096);
+		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 	}
-	ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 
 	isOpenGLEnabled_ = true;
 }
@@ -265,13 +284,13 @@ void CDisplayModule::WaitForDisplayAddressPatched(void)
 	// should usually be the case when triple buffering is active.
 	if (FSAAval) {
 		while(ioctl(gDevLayerEven, MLC_IOCQDIRTY, (void *)0)) 
-			usleep(100);
+			usleep(10);
 		while(ioctl(gDevLayerOdd , MLC_IOCQDIRTY, (void *)0)) 
-			usleep(100);
+			usleep(10);
 	}
 	else {
 		while(ioctl(gDevLayer , MLC_IOCQDIRTY, (void *)0)) 
-			usleep(100);
+			usleep(10);
 	}
 }
 
@@ -283,30 +302,17 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 	// BUGFIX/dm: DisplayBufferPhysicalAddress must be loaded into MLC address register
 	// for proper display updates in glSwapBuffer() calls. It is in block-addressing mode
 	// (0x20000000 OR'ed in) and is 1 of 3 possible addresses when triple buffering active.
+
+	// Relocated layer config code into EnableOpenGL() callback. 
+	// Page-flip register loading only effective when 3DENB unset.
 	if (FSAAval) {
-		ioctl(gDevLayerEven, MLC_IOCTFORMAT, 0x4432); /*R5G6B5*/
-		ioctl(gDevLayerOdd , MLC_IOCTFORMAT, 0x4432);
-
-		ioctl(gDevLayerEven, MLC_IOCTHSTRIDE, 2);
-		ioctl(gDevLayerEven, MLC_IOCTVSTRIDE, 8192);
-		ioctl(gDevLayerOdd , MLC_IOCTHSTRIDE, 2);
-		ioctl(gDevLayerOdd , MLC_IOCTVSTRIDE, 8192);
-
 		ioctl(gDevLayerEven, MLC_IOCTADDRESS, DisplayBufferPhysicalAddress);
 		ioctl(gDevLayerOdd , MLC_IOCTADDRESS, DisplayBufferPhysicalAddress+4096);
-
-		ioctl(gDevLayerOdd, MLC_IOCTBLEND, (void *)1); //enable Alpha
-		ioctl(gDevLayerOdd, MLC_IOCTALPHA, 8); //set to 50%
 
 		ioctl(gDevLayerEven, MLC_IOCTDIRTY, (void *)1);
 		ioctl(gDevLayerOdd , MLC_IOCTDIRTY, (void *)1);
 	}
 	else {
-		ioctl(gDevLayer, MLC_IOCTFORMAT, 0x4432); /*R5G6B5*/
-
-		ioctl(gDevLayer, MLC_IOCTHSTRIDE, 2);
-		ioctl(gDevLayer, MLC_IOCTVSTRIDE, 4096);
-
 		ioctl(gDevLayer, MLC_IOCTADDRESS, DisplayBufferPhysicalAddress);
 		ioctl(gDevLayer, MLC_IOCTDIRTY, (void *)1);
 	}
