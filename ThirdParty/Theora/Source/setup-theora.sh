@@ -32,7 +32,7 @@ fi
 
 # build and copy shared libs to rootfs
 pushd $THEORA_LIB_DIR
-./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/usr/local/lib --enable-shared=yes --disable-float --disable-encode --disable-sdltest --without-sdl --with-ogg=$ROOTFS_PATH/usr/local LDFLAGS="-L$ROOTFS_PATH/usr/local/lib -Wl,--rpath-link -Wl,$ROOTFS_PATH/usr/local/lib"
+./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/Didj/Base/Brio --enable-shared=yes --disable-float --disable-encode --disable-sdltest --without-sdl --with-ogg-includes=$BRIO_PATH/ThirdParty/Theora/Include --with-ogg-libraries=$BRIO_PATH/ThirdParty/Theora/Libs/arm LDFLAGS="-L$ROOTFS_PATH/Didj/Base/Brio/lib -Wl,--rpath-link -Wl,$ROOTFS_PATH/Didj/Base/Brio/lib"
 make
 # cp -a ./lib/.libs/libtheora.so* $ROOTFS_PATH/usr/local/lib/
 # cp -R ./include/theora $ROOTFS_PATH/usr/local/include/
