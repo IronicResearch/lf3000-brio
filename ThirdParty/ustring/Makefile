@@ -23,7 +23,7 @@ LIB = libustring.so
 all: $(LIB)
 
 $(LIB):$(OBJS)
-	$(CC) -shared -Wl,-soname,$@,-export-dynamic -o $@ $^ libs/libcharset.a
+	$(CC) -shared -Wl,-soname,$@,-export-dynamic -o $@ $^ libs/arm/libcharset.a
 
 hello:hello.cc $(LIB)
 	$(CXX) $(CPPFLAGS) -L./libs -o $@ $< -lustring -liconv -lintl

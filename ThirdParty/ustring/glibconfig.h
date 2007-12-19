@@ -8,7 +8,7 @@
 
 #include <glib/gmacros.h>
 
-//#include <limits.h>
+#include <limits.h>
 #include <float.h>
 #define GLIB_HAVE_ALLOCA_H
 #define GLIB_HAVE_SYS_POLL_H
