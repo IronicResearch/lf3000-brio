@@ -54,7 +54,7 @@ bool EmulationConfig::Initialize( const char* pathIn )
 	// For normal (non-unit test) development, the client app needs
 	// to call Initialize() with the root of the installed SDK
 	// C++ development kit.
-	// The module search bath and BaseROM assets path are based off
+	// The module search path and BaseROM assets path are based off
 	// of the C++ development kit root folder.
 	//
 	CPath path = AppendPathSeparator(pathIn);
