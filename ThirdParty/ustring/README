@@ -65,7 +65,8 @@ to this directory as $HERE.
    $ tar -xjf glib-2.4.8.tar.bz2
    $ export CPPFLAGS="-I/path/to/libiconv-1.11/include/ -I/path/to/gettext-0.16/gettext-tools/intl/"
    $ export LDFLAGS="-L/path/to/libiconv-1.11/lib/.libs/ -L/path/to/gettext-0.16/gettext-tools/intl/.libs/"
-   $ patch -p1 < ../../patches/glib-no-fail-crosscompile.patch
+   $ cd glib-2.4.8
+   $ patch -p1 < ../patches/glib-no-fail-crosscompile.patch
    $ ./configure --host=arm-linux glib_cv_uscore=no ac_cv_func_posix_getpwuid_r=yes
    $ make make -C glib/libcharset
    $ cp -a ./glib/libcharset/.libs/libcharset.a $HERE/libs/
