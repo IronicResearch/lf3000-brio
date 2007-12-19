@@ -32,7 +32,7 @@ fi
 
 # build and copy shared libs to rootfs
 pushd $OGG_LIB_DIR
-./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/usr/local --enable-shared=yes
+./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/Didj/Base/Brio/lib --enable-shared=yes
 make
 # make install
 # cp -a ./src/.libs/libogg.so* $ROOTFS_PATH/usr/local/lib/
