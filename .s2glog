@@ -11673,3 +11673,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/18/07 5:16 PM
 4,219 ms. (Cumulative: 2,995,315 ms)
 
 ----------------
+Revision 2,469 from svn://localhost/TRUNK/:
+Revision 2,470 from svn://localhost/TRUNK/:
+
+Fixed type in ARM makefile to allow recompiling
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/07 9:48 AM
+1 changed, 0 added, 0 deleted.
+4,438 ms. (Cumulative: 2,999,816 ms)
+
+----------------

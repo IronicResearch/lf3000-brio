@@ -2,7 +2,7 @@
 # (C) 2006 Mobileer, Inc.
 
 # Use shared file to define object lists.
-include ../build/MakefileVariablessp
+include ../build/MakefileVariables
 
 CC = arm-linux-gcc
 
