@@ -11710,3 +11710,25 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/19/07 10:04 AM
 3,922 ms. (Cumulative: 3,012,332 ms)
 
 ----------------
+Revision 2,474 from svn://localhost/TRUNK/:
+Revision 2,475 from svn://localhost/TRUNK/:
+Revision 2,476 from svn://localhost/TRUNK/:
+Revision 2,477 from svn://localhost/TRUNK/:
+Revision 2,478 from svn://localhost/TRUNK/:
+Revision 2,479 from svn://localhost/TRUNK/:
+Revision 2,480 from svn://localhost/TRUNK/:
+Revision 2,481 from svn://localhost/TRUNK/:
+Revision 2,482 from svn://localhost/TRUNK/:
+Revision 2,483 from svn://localhost/TRUNK/:
+Revision 2,484 from svn://localhost/TRUNK/:
+Revision 2,485 from svn://localhost/TRUNK/:
+
+Reverting various changes to ustring build that broke embedded build.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 12/19/07 1:37 PM
+3 changed, 0 added, 0 deleted.
+3,954 ms. (Cumulative: 3,016,411 ms)
+
+----------------

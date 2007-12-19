@@ -50,37 +50,37 @@ typedef enum {
 GLIB_VAR const guint16 * const g_ascii_table;
 
 #define g_ascii_isalnum(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_ALNUM) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_ALNUM) != 0)
 
 #define g_ascii_isalpha(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_ALPHA) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_ALPHA) != 0)
 
 #define g_ascii_iscntrl(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_CNTRL) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_CNTRL) != 0)
 
 #define g_ascii_isdigit(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_DIGIT) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_DIGIT) != 0)
 
 #define g_ascii_isgraph(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_GRAPH) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_GRAPH) != 0)
 
 #define g_ascii_islower(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_LOWER) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_LOWER) != 0)
 
 #define g_ascii_isprint(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_PRINT) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_PRINT) != 0)
 
 #define g_ascii_ispunct(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_PUNCT) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_PUNCT) != 0)
 
 #define g_ascii_isspace(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_SPACE) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_SPACE) != 0)
 
 #define g_ascii_isupper(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_UPPER) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_UPPER) != 0)
 
 #define g_ascii_isxdigit(c) \
-  ((g_ascii_table[static_cast<guchar> (c)] & G_ASCII_XDIGIT) != 0)
+  ((g_ascii_table[(guchar) (c)] & G_ASCII_XDIGIT) != 0)
 
 gchar                 g_ascii_tolower  (gchar        c) G_GNUC_CONST;
 gchar                 g_ascii_toupper  (gchar        c) G_GNUC_CONST;
