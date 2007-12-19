@@ -11692,3 +11692,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/07 9:51 AM
 4,453 ms. (Cumulative: 3,004,347 ms)
 
 ----------------
+Revision 2,472 from svn://localhost/TRUNK/:
+
+Fixed ommitted step and apparent typo in ustring readme recipe -- check this...
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/07 9:58 AM
+1 changed, 0 added, 0 deleted.
+3,953 ms. (Cumulative: 3,008,363 ms)
+
+----------------
