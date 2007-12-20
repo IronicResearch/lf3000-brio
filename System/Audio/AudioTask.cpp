@@ -131,9 +131,8 @@ tErrType InitAudioTask( void )
 	// Init output driver and register callback.  We have to pass in a pointer
 	// to the mixer object as a bit of "user data" so that when the callback happens,
 	// the C call can get to the mixer's C++ member function for rendering.  
-	// Too complicated!
-	err = InitAudioOutput( &CAudioMixer::WrapperToCallRenderBuffer, (void *)gAudioContext.pAudioMixer );
-	gAudioContext.pDebugMPI->Assert( kNoErr == err, "InitAudioTask() -- Failed to initalize audio output!\n" );
+	err = InitAudioOutput( &CAudioMixer::WrapperToCallRender, (void *)gAudioContext.pAudioMixer );
+	gAudioContext.pDebugMPI->Assert( kNoErr == err, "InitAudioTask() Failed to initalize audio output\n" );
 
 	//pAudioEffects = kNull;
  
@@ -289,7 +288,6 @@ static void DoStartAudio( CAudioMsgStartAudio *pMsg )
 // ==============================================================================
 // DoGetAudioTime   Get current time from audio player
 //
-// GK FIXXX: GetAudioTime() unimplemented
 // ==============================================================================
 static void DoGetAudioTime( CAudioMsgGetAudioTime* msg ) 
 {
@@ -303,9 +301,13 @@ if (pChannel)
 	CAudioPlayer *pPlayer = pChannel->GetPlayer();
     if (pPlayer)
 	    time = pPlayer->GetAudioTime_mSec();
+//    else
+//        printf("DoGetAudioTime: Unable to find player for id=%ld\n", id);
     }
+//else
+//   printf("DoGetAudioTime: Unable to find channel for id=%ld\n", id);
 
-//printf("AudioTask::DoGetAudioTime() UNIMPLEMENTED GetAudioTime_mSec() ID=%ld time=%ld\n", id, time);	
+//printf("AudioTask::DoGetAudioTime(): GetAudioTime_mSec() ID=%ld time=%ld\n", id, time);	
 
 // Send time in message back to caller
 retMsg.SetU32Result( time );
@@ -444,15 +446,15 @@ static void DoSetAudioPan( CAudioMsgSetAudioPan* msg )
 {
 tAudioPanInfo 	info = msg->GetData();
 CAudioReturnMessage	retMsg;
-CChannel*			pChannel;
 
-//gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose, 
-//	"AudioTask::DoSetAudioPan() ID=%d pan=%d\n", (int)info.id, (int) info.pan);	
+//printf("AudioTask::DoSetAudioPan() ID=%d pan=%d\n", (int)info.id, (int) info.pan);	
 
 //	Set requested property
-pChannel = gAudioContext.pAudioMixer->FindChannel( info.id );
+CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel( info.id );
 if (pChannel) 
 	pChannel->SetPan( info.pan );
+//else
+//    printf("DoSetAudioPan: unable to find channel with ID=%3ld\n", info.id);
 }  // ---- end DoSetAudioPan() ----
 
 // ==============================================================================
@@ -694,7 +696,7 @@ static void DoMidiNoteOn( CAudioMsgMidiNoteOn* msg )
 {
 tAudioMidiNoteInfo* d = msg->GetData();
 	
-gAudioContext.pMidiPlayer->NoteOn( d->channel, d->noteNum, d->velocity, d->flags );
+gAudioContext.pMidiPlayer->NoteOn( d->channel, d->note, d->velocity, d->flags );
 	//	d.priority = kAudioDefaultPriority;
 }   // ---- end DoMidiNoteOn() ----
 
@@ -705,8 +707,18 @@ static void DoMidiNoteOff( CAudioMsgMidiNoteOff* msg )
 {
 tAudioMidiNoteInfo* d = msg->GetData();
 
-gAudioContext.pMidiPlayer->NoteOff( d->channel, d->noteNum, d->velocity, d->flags );
+gAudioContext.pMidiPlayer->NoteOff( d->channel, d->note, d->velocity, d->flags );
 	//	d.priority = kAudioDefaultPriority;
+}   // ---- end DoMidiNoteOff() ----
+
+// ==============================================================================
+// DoMidiCommand
+// ==============================================================================
+static void DoMidiCommand( CAudioMsgMidiCommand *msg ) 
+{
+tAudioMidiCommandInfo *d = msg->GetData();
+gAudioContext.pMidiPlayer->SendCommand( d->cmd, d->data1, d->data2 );
+	//	d->priority = kAudioDefaultPriority;
 }   // ---- end DoMidiNoteOff() ----
 
 // ==============================================================================
@@ -957,13 +969,11 @@ void* AudioTaskMain( void* /*arg*/ )
 			msgQueueProperties.oflag = B_O_RDONLY;
 		   	err = gAudioContext.pKernelMPI->OpenMessageQueue( hQueue, msgQueueProperties, NULL );
 		    gAudioContext.pDebugMPI->Assert((kNoErr == err), 
-		    	"AudioTaskMain() -- Trying to open incoming msg queue in preparation for deletion. err = %d \n", 
-		    	static_cast<int>(err) );
+		 "AudioTaskMain() Failed to open incoming msg queue in preparation for deletion. err=%d\n", (int) err);
 	
 		    err = gAudioContext.pKernelMPI->CloseMessageQueue( hQueue, msgQueueProperties );
 		    gAudioContext.pDebugMPI->Assert((kNoErr == err), 
-		    	"AudioTaskMain() -- Trying to close/delete incoming msg queue. err = %d \n", 
-		    	static_cast<int>(err) );
+		    	"AudioTaskMain() Trying to close/delete incoming msg queue. err=%d\n", (int)err );
 		    
 		    hQueue = 0;
 
@@ -975,7 +985,7 @@ void* AudioTaskMain( void* /*arg*/ )
 		    msgQueueProperties.oflag = B_O_RDONLY|B_O_CREAT;
 		   	err = gAudioContext.pKernelMPI->OpenMessageQueue( gAudioContext.hRecvMsgQueue, msgQueueProperties, NULL );
 		    gAudioContext.pDebugMPI->Assert((kNoErr == err), 
-		    	"AudioTaskMain() -- Trying to create incoming msg queue after deletion of orphan. err = %d \n", 
+		    	"AudioTaskMain() Trying to create incoming msg queue after deletion of orphan. err=%d \n", 
 		    	static_cast<int>(err) );
 
 		} else {
@@ -1182,13 +1192,18 @@ gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain: Enable output
 				break;
 	
 			case kAudioCmdMsgTypeMidiNoteOn:
-	gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() MIDI note On.\n" );		
+//	gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() MIDI note On.\n" );		
 				DoMidiNoteOn( (CAudioMsgMidiNoteOn*)pAudioMsg );
 				break;
 	
 			case kAudioCmdMsgTypeMidiNoteOff:
-		gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() MIDI note Off.\n" );	
+//		gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose,  "AudioTaskMain() MIDI note Off.\n" );	
 				DoMidiNoteOff( (CAudioMsgMidiNoteOff*)pAudioMsg );
+				break;
+
+			case kAudioCmdMsgTypeMidiCommand:
+//		printf("AudioTaskMain() MIDI Command .\n" );	
+				DoMidiCommand( (CAudioMsgMidiCommand *) pAudioMsg );
 				break;
 	
 			case kAudioCmdMsgTypeStartMidiFile:

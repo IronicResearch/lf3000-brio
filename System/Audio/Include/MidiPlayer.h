@@ -8,7 +8,7 @@
 //
 // MidiPlayer.h
 //
-// Class to manage the playing of MIDI data.
+//                  Class to manage playing of MIDI data
 //
 //==============================================================================
 
@@ -44,7 +44,7 @@ public:
 	CMidiPlayer( tMidiPlayerID id );
 	~CMidiPlayer();
 
-	U32			RenderBuffer( S16* pOut, U32 numStereoFrames  );
+	U32			Render( S16* pOut, U32 numStereoFrames );
 
 	inline bool		IsFileActive() { return bFileActive_; };
 
@@ -61,8 +61,8 @@ public:
 	void		SetPan(S8 x);
 
 	// MIDI channel messages
-	tErrType 	NoteOn(  U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
-	tErrType 	NoteOff( U8 channel, U8 noteNum, U8 velocity, tAudioOptionsFlags flags );
+	tErrType 	NoteOn(  U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
+	tErrType 	NoteOff( U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
 
 // MIDI file transport control
@@ -97,7 +97,6 @@ private:
 
 	tMidiPlayerID			id_;			 
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of active tracks
-	S16* 					pMIDIRenderBuffer_;
 
 // DSP information
 	U8			pan_;
@@ -122,7 +121,7 @@ private:
 
 // Data configuration
 	U32 	framesPerIteration_;
-	U32 	samplesPerFrame_;
+	U32 	channels_;   // samples per frame
 	U32 	bitsPerSample_;
 
 	void SendDoneMsg( void );

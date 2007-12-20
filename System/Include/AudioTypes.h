@@ -59,7 +59,7 @@ typedef U32		tAudioID;			// Unique ID for the audio to allow tracking
 typedef U32		tAudioPayload;		// User payload to be sent with the done message
 typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255. 
 									// 0 is lowest priority, 255 highest.
-#define kNoAudioID			kU32Max	     // ID returned on failure
+#define kNoAudioID	kU32Max	        // ID returned on failure
 
 //#define kAudioOptionsBit_Done	1
 #define kAudioDoneMsgBit 	0x1
@@ -80,8 +80,9 @@ typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer);
 //==============================================================================
 typedef U8		tMidiPlayerID;		
 typedef U32		tMidiPlayerInstrument;			
-typedef U32		tMidiTrackBitMask;	// A bit map of Midi tracks
-#define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all Midi tracks
+typedef U32		tMidiTrackBitMask;	// A bit map of MIDI tracks
+#define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all MIDI tracks
+#define kNoMidiID	kU8Max	        // ID returned on failure
 
 typedef U32		tMidiProgramList;	// TODO: ?
 

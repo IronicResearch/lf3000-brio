@@ -5,7 +5,7 @@
 // Audio.cpp
 //
 //		Underlying implementation code for the Audio Manager module.
-//
+//retreive
 //==============================================================================
 #include <errno.h>
 #include <SystemTypes.h>
@@ -24,6 +24,8 @@
 #include <set>
 
 LF_BEGIN_BRIO_NAMESPACE()
+	CPath				gpath = "";
+
 
 //==============================================================================
 // Defines
@@ -240,6 +242,13 @@ CAudioMsgMidiNoteOff::CAudioMsgMidiNoteOff( const tAudioMidiNoteInfo& data ) {
 	data_ = data;
 }
 
+CAudioMsgMidiCommand::CAudioMsgMidiCommand( const tAudioMidiCommandInfo& data ) {
+	type_ = kAudioCmdMsgTypeMidiCommand;
+	messageSize = sizeof(CAudioMsgMidiCommand);
+	messagePriority = kAudioMsgDefaultPriority;
+	data_ = data;
+}
+
 CAudioMsgStartMidiFile::CAudioMsgStartMidiFile( const tAudioStartMidiFileInfo& data ) {
 	type_ = kAudioCmdMsgTypeStartMidiFile;
 	messageSize = sizeof(CAudioMsgStartMidiFile);
@@ -411,6 +420,8 @@ CAudioModule::CAudioModule( void )
 	Boolean				ret = false;
 	const tMutexAttr 	attr = {0};
 		
+    gpath = "";
+
 	// Get Kernel MPI
 	pKernelMPI_ =  new CKernelMPI();
 	ret = pKernelMPI_->IsValid();
@@ -569,10 +580,10 @@ void CAudioModule::Unregister( U32 id )
 // ==============================================================================
 // StartAudioSystem
 // ==============================================================================
-tErrType CAudioModule::StartAudioSystem( void )
+    tErrType 
+CAudioModule::StartAudioSystem( void )
 {
     CAudioMsgStartAudio msg;
-
    	SendCmdMessage( msg ); 
 
 	return WaitForStatus();
@@ -581,10 +592,10 @@ tErrType CAudioModule::StartAudioSystem( void )
 // ==============================================================================
 // StopAudioSystem
 // ==============================================================================
-tErrType CAudioModule::StopAudioSystem( void )
+    tErrType 
+CAudioModule::StopAudioSystem( void )
 {
     CAudioMsgStopAudio msg;
-
   	SendCmdMessage( msg ); 
 	
 	return WaitForStatus();
@@ -593,10 +604,10 @@ tErrType CAudioModule::StopAudioSystem( void )
 // ==============================================================================
 // PauseAudioSystem
 // ==============================================================================
-tErrType CAudioModule::PauseAudioSystem( void )
+    tErrType 
+CAudioModule::PauseAudioSystem( void )
 {
     CAudioMsgPauseAudio msg;
-
 	SendCmdMessage( msg ); 
 	
 	return WaitForStatus();
@@ -605,10 +616,10 @@ tErrType CAudioModule::PauseAudioSystem( void )
 // ==============================================================================
 // ResumeAudioSystem
 // ==============================================================================
-tErrType CAudioModule::ResumeAudioSystem( void )
+    tErrType 
+CAudioModule::ResumeAudioSystem( void )
 {
     CAudioMsgResumeAudio msg;
-
  	SendCmdMessage( msg ); 
 	
 	return WaitForStatus();
@@ -617,7 +628,8 @@ tErrType CAudioModule::ResumeAudioSystem( void )
 // ==============================================================================
 // RegisterAudioEffectsProcessor
 // ==============================================================================
-tErrType CAudioModule::RegisterAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
+    tErrType 
+CAudioModule::RegisterAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
 }   // ---- end RegisterAudioEffectsProcessor() ----
@@ -625,7 +637,8 @@ tErrType CAudioModule::RegisterAudioEffectsProcessor( CAudioEffectsProcessor * /
 // ==============================================================================
 // RegisterGlobalAudioEffectsProcessor
 // ==============================================================================
-tErrType CAudioModule::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
+    tErrType 
+CAudioModule::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor * /* pChain */ )
 {
 	return kNoImplErr;
 }   // ---- end RegisterGlobalAudioEffectsProcessor() ----
@@ -641,7 +654,8 @@ tErrType CAudioModule::ChangeAudioEffectsProcessor( tAudioID /* id */, CAudioEff
 // ==============================================================================
 // SetMasterVolume
 // ==============================================================================
-void CAudioModule::SetMasterVolume( U8 x )
+    void 
+CAudioModule::SetMasterVolume( U8 x )
 {
 	tErrType 	result = kNoErr;
 //printf("CAudioModule::SetMasterVolume: volume=%d\n", x);	
@@ -669,13 +683,14 @@ pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetMasterVolume: Couldn't 
 U8 CAudioModule::GetMasterVolume( void )
 {
 	// TODO: This probably should call through to the mixer...
-	return masterVolume_;
+	return (masterVolume_);
 }   // ---- end GetMasterVolume() ----
 
 // ==============================================================================
 // SetOutputEqualizer
 // ==============================================================================
-void CAudioModule::SetOutputEqualizer(U8 x )
+    void 
+CAudioModule::SetOutputEqualizer(U8 x )
 {
 	tErrType 	result = kNoErr;
 
@@ -687,12 +702,11 @@ void CAudioModule::SetOutputEqualizer(U8 x )
 
 	// Need to inform the audio mixer that the master volume has changed
 	// Generate the command message to send to the audio Mgr task
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-//		"CAudioModule::SetOutputEqualizer: outputEqualizerEnabled_ = %d\n", outputEqualizerEnabled_ );	
+//	printf("CAudioModule::SetOutputEqualizer: outputEqualizerEnabled_ = %d\n", outputEqualizerEnabled_ );	
 
 	CAudioMsgSetOutputEqualizer	msg( outputEqualizerEnabled_ );
 	
-	// Send the message and wait to get the audioID back from the audio Mgr task
+	// Send message and wait to get audioID back from audio task
  	SendCmdMessage( msg ); 
 
  	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
@@ -702,114 +716,129 @@ void CAudioModule::SetOutputEqualizer(U8 x )
 // ==============================================================================
 // GetOutputEqualizer
 // ==============================================================================
-U8 CAudioModule::GetOutputEqualizer( void )
+    U8 
+CAudioModule::GetOutputEqualizer( void )
 {
 	// TODO: This probably should call through to the mixer...
-	return outputEqualizerEnabled_;
-
+return outputEqualizerEnabled_;
 }   // ---- end GetOutputEqualizer() ----
 
 // ==============================================================================
 // SetAudioResourcePath
 // ==============================================================================
-tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
+    tErrType 
+CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
 {
 //pDebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioModule::SetAudioResourcePath -- mpiID = %d; path: %s.\n", static_cast<int>(mpiID), path.c_str() );	
 	
-	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+//	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+//	mpiState.path = new CPath( path );
 
-	mpiState.path = new CPath( path );
-	
+	gpath = path;
+	if (gpath.length() > 1 && gpath.at(gpath.length()-1) != '/')
+		gpath += '/';
 	return kNoErr;
 }   // ---- end SetAudioResourcePath() ----
 
 // ==============================================================================
 // GetAudioResourcePath
 // ==============================================================================
-const CPath* CAudioModule::GetAudioResourcePath( U32 mpiID )
+CPath* CAudioModule::GetAudioResourcePath( U32 mpiID )
 {
-pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::GetAudioResourcePath:mpiID=%d\n", (int) mpiID);	
-	
-MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
-return mpiState.path;
+//pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::GetAudioResourcePath:mpiID=%d\n", (int) mpiID);		
+//MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+//return mpiState.path;
+
+	return &gpath;
 }   // ---- end GetAudioResourcePath() ----
 
 // ==============================================================================
 // StartAudio
 // ==============================================================================
-tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, U8 volume,  
+tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath& path, U8 volume,  
 	tAudioPriority priority, S8 pan, const IEventListener *pListener, 
 	tAudioPayload payload, tAudioOptionsFlags flags )
 {
+//printf("CAudioModule::StartAudio1: START path='%s'\n", path.c_str());
+
 	tErrType 	result = kNoErr;
 	tAudioID	id;
 
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register -- Couldn't lock mutex.\n");
 
-	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+//	MPIInstanceState &mpiState = RetrieveMPIState( mpiID );
 
-	// If the path passed to us is a full path, then use it, otherwise
-	// append what was passed to the MPI's default path.
-	CPath fullPath = (path[0] == '/')
-			? path
-			: *mpiState.path + path;
+//.printf("CAudioModule::StartAudio: DOH mpiState=%p\n", (void*) &mpiState);
+//CPath mpiPath = mpiState.path;
+//printf("CAudioModule::StartAudio: mpiState=%p\n", (void*)mpiState);
+//printf("CAudioModule::StartAudio: *mpiState.path='%s'\n", mpiPath.c_str());
+// If path passed to us is a full path, then use it. Otherwise
+// append what was passed to MPI's default path.
+//	CPath fullPath = (path.at(0) == '/')
+//			? path
+//			: *mpiState.path + path;
+//printf("CAudioModule::StartAudio: mpiPath='%s'\n", mpiPath.c_str());
 
-	// Generate the command message to send to the audio Mgr task
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioModule::StartAudio: path='%s'\n", fullPath.c_str());	
+	bool			nopath = (path.length() == 0) ? true : false;
+	const CPath		fullPath = (nopath) ? "" : (path.at(0) == '/') ? path : gpath + path;
+//printf("CAudioModule::StartAudio: POST\n");
+//printf("CAudioModule::StartAudio: fullPath='%s'\n", fullPath.c_str());
 
-	tAudioStartAudioInfo msgData( &fullPath, volume, priority, pan, 
-								pListener, payload, flags );
+// Generate command message to send to audio task
+//	printf("CAudioModule::StartAudio: path='%s'\n", fullPath.c_str());	
 
-	CAudioMsgStartAudio	msg( msgData );
+tAudioStartAudioInfo msgData( &fullPath, volume, priority, pan, pListener, payload, flags );
+CAudioMsgStartAudio	msg( msgData );
 	
-	// Send the message and wait to get the audioID back from the audio Mgr task
+// Send message and wait to get audioID back from audio task
  	SendCmdMessage( msg ); 
-	
  	id = WaitForAudioID();
 
  	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
  	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register --  Couldn't unlock mutex.\n");
 
- 	return id;
+ 	return (id);
 }   // ---- end StartAudio() ----
 
 // ==============================================================================
 // StartAudio
 // ==============================================================================
-tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload payload, 
+    tAudioID 
+CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload payload, 
 				tAudioOptionsFlags flags)
 {
+//	printf("CAudioModule::StartAudio2: START\n" );	
 	tErrType 			result = kNoErr;
 	tAudioID			id;
 	MPIInstanceState&	mpiState = RetrieveMPIState( mpiID );
 	
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio -- Couldn't lock mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio: Couldn't lock mutex.\n");
 
-	// If the path passed to us is a full path, then use it, otherwise
+	// If path passed to us is a full path, then use it, otherwise
 	// append what was passed to the MPI's default path.
-	CPath fullPath = (path[0] == '/')
-			? path
-			: *mpiState.path + path;
+	bool			nopath = (path.length() == 0) ? true : false;
+	const CPath		fullPath = (nopath) ? "" : (path.at(0) == '/') ? path : gpath + path;
+//printf("CAudioModule::StartAudio: POST\n");
+//printf("CAudioModule::StartAudio: fullPath='%s'\n", fullPath.c_str());
 
-	// Generate the command message to send to the audio Mgr task
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::StartAudio --  path = %s\n", fullPath.c_str() );	
-
+	// Generate command message to send to audio task
+//	printf("CAudioModule::StartAudio: AFTA fullPath='%s'\n", fullPath.c_str() );	
 
 	tAudioStartAudioInfo msgData( &fullPath, mpiState.volume, mpiState.priority, mpiState.pan, 
 			mpiState.pListener, payload, flags);
+//	tAudioStartAudioInfo msgData( &fullPath, volume, priority, pan, 
+//			pListener, payload, flags);
 
+// Send message and wait to get audioID back from audio task
 	CAudioMsgStartAudio	msg( msgData );
-	
-	// Send the message and wait to get the audioID back from the audio Mgr task
  	SendCmdMessage( msg ); 
 	
 	id = WaitForAudioID();
 
 	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio --  Couldn't unlock mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio: Couldn't unlock mutex\n");
 
 	return id;
 }   // ---- end StartAudio() ----
@@ -817,7 +846,8 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload p
 // ==============================================================================
 // GetAudioTime
 // ==============================================================================
-U32 CAudioModule::GetAudioTime( tAudioID id )
+    U32 
+CAudioModule::GetAudioTime( tAudioID id )
 {
 	tErrType 				result = kNoErr;
 	U32						data;
@@ -833,8 +863,7 @@ U32 CAudioModule::GetAudioTime( tAudioID id )
 	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register --  Couldn't unlock mutex.\n");
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
-		"CAudioModule::GetAudioTime() Stream time=%u\n", (int)data);	
+//	printf("CAudioModule::GetAudioTime() Stream time=%u\n", (int)data);	
 
 	return data;
 }   // ---- end GetAudioTime() ----
@@ -842,7 +871,8 @@ U32 CAudioModule::GetAudioTime( tAudioID id )
 // ==============================================================================
 // IsAudioPlaying
 // ==============================================================================
-Boolean CAudioModule::IsAudioPlaying( tAudioID id )
+    Boolean 
+CAudioModule::IsAudioPlaying( tAudioID id )
 {
 	tErrType 					result = kNoErr;
 	Boolean						data;
@@ -864,7 +894,8 @@ Boolean CAudioModule::IsAudioPlaying( tAudioID id )
 // ==============================================================================
 // IsAudioPlaying
 // ==============================================================================
-Boolean CAudioModule::IsAudioPlaying()
+    Boolean 
+CAudioModule::IsAudioPlaying()
 {
 	tErrType 					result = kNoErr;
 	CAudioMsgIsAudioPlaying 	msg;
@@ -952,8 +983,6 @@ U8 CAudioModule::GetAudioState( tAudioState *d )
 void CAudioModule::SetAudioState( tAudioState *d ) 
 {
 //printf("CAudioModule::SetAudioState d->srcType=%d \n", d->srcType);	
-
-// bcopy()
 CAudioMsgSetAudioState	msg( *d );
 //printf("SetAudioState: msg.d_.srcType=%d\n", msg.d_.srcType);
 SendCmdMessage( msg );
@@ -1229,9 +1258,8 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */, IEventL
 // ==============================================================================
 tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 {
+// GK FIXX:  MIDI id not used for now as there is only one MIDI player
 	CAudioMsgReleaseMidiPlayer msg;
-
-	// Send the message.
  	SendCmdMessage( msg );
  	
 	return WaitForStatus();
@@ -1249,13 +1277,12 @@ printf("CAudioModule::GetAudioIDForMidiID: NOT IMPLEMENTED \n");
 // ==============================================================================
 // MidiNoteOn
 // ==============================================================================
-tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 noteNum, U8 velocity, 
+tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 note, U8 velocity, 
 										tAudioOptionsFlags flags )
 {
-	tAudioMidiNoteInfo info( channel, noteNum, velocity, flags );
-		
+// GK FIXX:  MIDI id not used for now as there is only one MIDI player
+	tAudioMidiNoteInfo info( channel, note, velocity, flags );		
 	CAudioMsgMidiNoteOn	msg( info );
-	
 	SendCmdMessage( msg );
 	
 	return kNoErr;
@@ -1264,17 +1291,32 @@ tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */, U8 channel, U8 noteNu
 // ==============================================================================
 // MidiNoteOff
 // ==============================================================================
-tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */, U8 channel, U8 noteNum, U8 velocity, 
+tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */, U8 channel, U8 note, U8 velocity, 
 										tAudioOptionsFlags flags )
 {
-	tAudioMidiNoteInfo info( channel, noteNum, velocity, flags );
-	
-	CAudioMsgMidiNoteOff msg( info );
-	
+// GK FIXX:  MIDI id not used for now as there is only one MIDI player
+	tAudioMidiNoteInfo info( channel, note, velocity, flags );	
+	CAudioMsgMidiNoteOff msg( info );	
 	SendCmdMessage( msg );
 	
 	return kNoErr;
 }   // ---- end MidiNoteOff() ----
+
+// ==============================================================================
+// SendMidiCommand
+// ==============================================================================
+    tErrType
+CAudioModule::SendMidiCommand( tMidiPlayerID /* id */, U8 cmd, U8 data1 , U8 data2 )
+{
+// GK FIXX:  MIDI id not used for now as there is only one MIDI player
+//printf("CAudioModule::SendMidiCommand: cmd=$%02X d1=$%02X d2=$%02X\n", cmd, data1, data2);
+
+	tAudioMidiCommandInfo info( cmd, data1, data2 );
+	CAudioMsgMidiCommand msg( info );
+	SendCmdMessage( msg );
+
+	return kNoErr;
+}   // ---- end SendMidiCommand() ----
 
 // ==============================================================================
 // StartMidiFile
@@ -1478,14 +1520,6 @@ tErrType CAudioModule::ChangeMidiTempo( tMidiPlayerID id, S8 tempo )
 
 	return WaitForStatus();
 }   // ---- end ChangeMidiTempo() ----
-
-// ==============================================================================
-// SendMidiCommand
-// ==============================================================================
-tErrType CAudioModule::SendMidiCommand( tMidiPlayerID /* id */, U8 /* cmd */, U8 /* data1 */, U8 /* data2 */ )
-{
-	return kNoErr;
-}   // ---- end SendMidiCommand() ----
 
 // ==============================================================================
 // SendCmdMessage

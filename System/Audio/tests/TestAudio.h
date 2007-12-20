@@ -42,11 +42,11 @@ inline CPath GetAudioRsrcFolder( void )
 #endif	// EMULATION
 }
 
-//============================================================================
+// ============================================================================
 // BoundS32  :   Add increment to value and bound to range
 // 
 //    Warning :   Will fail when values reach limits of signed 32-bit
-//============================================================================
+// ============================================================================
 	long
 BoundS32(long d, long lower, long upper)
 {	     
@@ -58,11 +58,11 @@ else if (d > upper)
 return (d);
 }	// ---- end BoundS32() ----
 
-//============================================================================
+// ============================================================================
 // IncrementAndBoundS32  :   Add increment to value and bound to range
 //                              Warning :   will fail when values reach limits of
 //                          Signed 32-bit
-//============================================================================
+// ============================================================================
 	long
 IncrementAndBoundS32(long d, long inc, long lower, long upper)
 {	     
@@ -204,8 +204,8 @@ static void *myTask(void* arg)
 		volume   = audioMPI.GetAudioVolume(   id );
 		priority = audioMPI.GetAudioPriority( id );
 		pan      = audioMPI.GetAudioPan(      id );
-		printf("==== myTask( thread%d, loop #%2d ) id=%2ld time=%lu vol=%3d pri=%d pan=%ld\n", 
-				threadNum, index, id, time, volume, priority, pan );
+		printf("==== myTask( thread%d loop#%2d) id=%2ld pri=%d time=%5lu vol=%3d pan=%ld\n", 
+				threadNum, index, id, priority, time, volume, pan );
 		
 		kernelMPI.TaskSleep( 125 ); 
 

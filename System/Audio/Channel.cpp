@@ -15,20 +15,13 @@
 #include <AudioTypes.h>
 #include <AudioPriv.h>
 #include <Channel.h>
+
 #include <EventMPI.h>
 
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
-
-#define kPan_Default    0
-#define kPan_Min    (-100)
-#define kPan_Max      100
-
-#define kVolume_Default  100
-#define kVolume_Min        0
-#define kVolume_Max      100
 
 //==============================================================================
 // Global variables
@@ -96,7 +89,8 @@ CChannel::~CChannel()
 // ==============================================================================
 // SetPan :     Channel stereo position   Left .. Center .. Right
 // =============================================================================
-void CChannel::SetPan( S8 x )
+    void 
+CChannel::SetPan( S8 x )
 {
 pan_ = BoundS8(&x, kPan_Min, kPan_Max);
 
@@ -114,14 +108,17 @@ RecalculateLevels();
 // ==============================================================================
 // SetVolume : Convert range [0 .. 100] to [-100 ..0] dB
 // ==============================================================================
-void CChannel::SetVolume( U8 x )
+    void 
+CChannel::SetVolume( U8 x )
 {
 //printf("CChannel::SetVolume :  %d\n", x);
-volume_ = x; //BoundU8(&x, kVolume_Min, kVolume_Max);
+volume_ = BoundU8(&x, kVolume_Min, kVolume_Max);
 
 // ChangeRangef(x, L1, H1, L2, H2)
 // FIXX: move to decibels, but for now, linear volume
 gainf  = ChangeRangef((float)x, (float) kVolume_Min, (float)kVolume_Max, 0.0f, 1.0f);
+// Convert to square curve, which is milder than Decibels
+gainf *= gainf;
 gainf *= kChannel_Headroomf; // DecibelToLinearf(-Channel_HeadroomDB);
 //gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
 //gainf =  DecibelToLinearf(gainf);
@@ -322,14 +319,14 @@ return (kNoErr);
 }	// ---- end InitWithPlayer ----
 
 // ==============================================================================
-// RenderBuffer
+// Render
 // ==============================================================================
     U32 
-CChannel::RenderBuffer(S16 *pOut, int numFrames )
+CChannel::Render(S16 *pOut, int numFrames )
 {
 int numSamples = numFrames * 2;  // 2 channels
 S32 y;
-//{static long c=0; printf("CChannel::RenderBuffer: START %ld \n", c++); }
+//{static long c=0; printf("CChannel::Render: START %ld \n", c++); }
 
 // Decide how to deal with player done i.e. playerFramesRendered comes back 
 // less than numStereoFrames: does player send done, or channel.
@@ -341,13 +338,13 @@ ClearShorts(pOut, numSamples);
 
 int framesRendered = 0;
 if (pPlayer_)
-    framesRendered = pPlayer_->RenderBuffer( pOut, numFrames );
+    framesRendered = pPlayer_->Render( pOut, numFrames );
 if (numSamples > framesRendered*2)
     isDone_ = true;
 
-//printf("Channel::RenderBuffer: levelsf <%f , %f > <%f, %f> dB \n", levelsf[kLeft], levelsf[kRight],
+//printf("Channel::Render: levelsf <%f , %f > <%f, %f> dB \n", levelsf[kLeft], levelsf[kRight],
 //        LinearToDecibelf(levelsf[kLeft]), LinearToDecibelf(levelsf[kRight]));
-//printf("Channel::RenderBuffer: levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
+//printf("Channel::Render: levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
 
 // ---- Render to out buffer (Assumes all audio player output is two channel)
 numSamples = framesRendered*2;
@@ -368,8 +365,9 @@ for (int i = 0; i < numSamples; i += 2)
 	pOut[i+1] = (S16)y;
 	}
 
+//{static long c=0; printf("Channel::Render%ld: END framesRendered=%d\n", c++, framesRendered);}
 return (framesRendered);
-}	// ---- end RenderBuffer ----
+}	// ---- end Render ----
 
 LF_END_BRIO_NAMESPACE()
 // EOF	

@@ -17,10 +17,10 @@
 #include <AudioTypes.h>
 #include <Channel.h>
 #include <MidiPlayer.h>
+
 #include <DebugMPI.h>
 
 #include "sndfile.h"
-#include <briomixer.h>
 #include <eq.h>
 #include <src.h>
 #include <shape.h>
@@ -41,7 +41,7 @@ public:
 	CChannel*		FindChannel(          tAudioID id );
 	long    		FindFreeChannelIndex( tAudioID id );
 	
-	// Is audio (excluding MIDI) playing on a mixer channel.
+	// Is audio (excluding MIDI??) playing on any channel?
 	Boolean IsAnyAudioActive( void );
 
 	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
@@ -55,9 +55,9 @@ public:
 	void        SetOutputEqualizer( Boolean x );
 	
 // Main routine 
-	int RenderBuffer( S16* pOutBuff, unsigned long frameCount );
+	int Render( S16* pOut, U32 frameCount );
 	
-	static int WrapperToCallRenderBuffer( S16 *pOutBuf, unsigned long frameCount, void *pToObject  );
+	static int WrapperToCallRender( S16 *pOut, U32 frameCount, void *pObject );
 										
     tAudioState audioState_;
 //    DSP_BLOCK   *dspBlock;
@@ -78,17 +78,8 @@ public:
 	
 // ---- DEBUG File I/O
 // Debug : info for sound file input/output
-    long readInSoundFile_  ;
-    long writeOutSoundFile_;
-    long inSoundFileDone_  ;
-
-    SNDFILE	*inSoundFile_;
-    SF_INFO	inSoundFileInfo_;
-    char *inSoundFilePath_ ;
-
-    SNDFILE	*outSoundFile_;
-    SF_INFO	outSoundFileInfo_;
-    char *outSoundFilePath_ ;
+    int OpenInSoundFile (char *path);
+    int OpenOutSoundFile(char *path);
 
 private:
 	CDebugMPI 		*pDebugMPI_;
@@ -100,7 +91,7 @@ private:
     CChannel     *targetChannel_;
 #endif
 
-	BRIOMIXER		pDSP_;
+//	BRIOMIXER		pDSP_;
     float           samplingFrequency_;
 
     void UpdateDSP();
@@ -119,7 +110,7 @@ private:
 	CChannel*		pChannels_;			// Array of channels
 //#define kChannel_MaxTempBuffers		2
 	S16 			*channel_tmpPtrs_[kAudioMixer_MaxInChannels];
-	S16 			*pChannel_OutBuffer_;	
+	S16 			*pChannelBuf_;	
 
 // Mix Bin Parameters
 #define kAudioMixer_MixBinCount	        3	// At present, for sampling rates :  fs, fs/2, fs/4 
@@ -127,8 +118,8 @@ private:
 #define kAudioMixer_MixBin_Index_FsDiv2 1
 #define kAudioMixer_MixBin_Index_FsDiv1 2
 #define kAudioMixer_MixBin_Index_Fs     kAudioMixer_MixBin_Index_FsDiv1
-	S16			*mixBinBufferPtrs_[kAudioMixer_MixBinCount][kAudioMixer_MaxOutChannels];
-	long			 mixBinFilled_[kAudioMixer_MixBinCount];
+	S16			*pMixBinBufs_ [kAudioMixer_MixBinCount][kAudioMixer_MaxOutChannels];
+	long	     mixBinFilled_[kAudioMixer_MixBinCount];
     long fsRack_[kAudioMixer_MixBinCount];
 
 	long GetMixBinIndex        ( long samplingFrequency );
@@ -147,8 +138,18 @@ private:
     long        outEQ_BandCount_;
     EQ          outEQ_[kAudioMixer_MaxOutChannels][kAudioMixer_MaxEQBands];
 
+// File I/O debug stuff
+//    long readInSoundFile_  ;
+//    long writeOutSoundFile_;
+    long inSoundFileDone_  ;
+    SNDFILE	*inSoundFile_;
+    SF_INFO	inSoundFileInfo_;
+
+    SNDFILE	*outSoundFile_;
+    SF_INFO	outSoundFileInfo_;
+
 // Input debug stuff
-    long inputIsDC;
+    long  inputIsDC;
     float inputDCValueDB;
     float inputDCValuef;
     Q15   inputDCValuei;
@@ -168,12 +169,9 @@ private:
 // MIDI parameters - only one player for now
 	CMidiPlayer *pMidiPlayer_;
 
-// Mixer buffer parameters
-//	S16*			pMixBuffer_;  // Mix of all active channels
-
 #define kAudioMixer_MaxTempBuffers	8
-	S16*	pTmpBufs_        [kAudioMixer_MaxTempBuffers]; 
-	S16*	tmpBufOffsetPtrs_[kAudioMixer_MaxTempBuffers]; 
+	S16*	pTmpBufs_      [kAudioMixer_MaxTempBuffers]; 
+	S16*	pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
 
 // Some Debug variables
     float   preGainDB;

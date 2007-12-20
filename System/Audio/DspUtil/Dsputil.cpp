@@ -26,6 +26,7 @@ if      (*x < lo)
     *x = lo;
 else if (*x > hi)
     *x = hi;
+
 return (*x);
 }	// ---- end BoundS8() ---- 
 
@@ -237,6 +238,15 @@ SetShorts(short *d, long length, short value)
 for (long i = 0; i < length; i++) 
     d[i] = value;
 }	// ---- end SetShorts() ---- 
+
+// *************************************************************** 
+// ClearBytes:   Fill char buffer with 0
+// ***************************************************************
+    void 
+ClearBytes(void *d, long length)
+{
+bzero( d, length);
+}	// ---- end ClearBytes() ---- 
 
 // *************************************************************** 
 // ClearShorts:   Fill SHORT buffer w/0

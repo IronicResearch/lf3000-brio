@@ -1,5 +1,5 @@
 // ==============================================================================
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
+// Copyright (c) 2002-2008 LeapFrog Enterprises, Inc.
 // All Rights Reserved
 // ==============================================================================
 //
@@ -25,10 +25,6 @@
 
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
-
-#define kVolume_Default  100
-#define kVolume_Min        0
-#define kVolume_Max      100
 
 #define kMixer_HeadroomBits_Default 1
 
@@ -70,8 +66,8 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
     SetMasterVolume(kVolume_Default);
     samplingFrequency_ = kAudioSampleRate;
 
-	DefaultBrioMixer(&pDSP_);
-	pDSP_.channelCount = numInChannels_;
+//	DefaultBrioMixer(&pDSP_);
+//	pDSP_.channelCount = numInChannels_;
 	
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
@@ -79,7 +75,7 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 // Allocate audio channels
 	pChannels_ = new CChannel[ numInChannels_ ];
 	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n" , numInChannels_);
-    pChannel_OutBuffer_ = new S16[ 2*kAudioOutBufSizeInWords ];  // Factor 2 (4?) to allow for 2x upsampling
+    pChannelBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // Factor 2 (4?) to allow for 2x upsampling
     for (ch = 0; ch < numInChannels_; ch++)
         {
     	channel_tmpPtrs_[ch] = new S16[ 2*kAudioOutBufSizeInWords ];	
@@ -99,7 +95,7 @@ for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		{
-		mixBinBufferPtrs_[i][ch] = new S16[2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords];
+		pMixBinBufs_[i][ch] = new S16[2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords];
 
 // Initialize sampling rate converters  
         SRC *src = &src_[i][ch];
@@ -189,71 +185,9 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
 	S16 *p = new S16[ 2*(kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements) ];
-	pTmpBufs_        [i] = p;
-	tmpBufOffsetPtrs_[i] = &p[2*kSRC_Filter_MaxDelayElements];
+	pTmpBufs_      [i] = p;
+	pTmpBufOffsets_[i] = &p[2*kSRC_Filter_MaxDelayElements];  // GK FIXXX factor of 2?
 	}
-
-// DEBUG:  Wav File I/O
-    readInSoundFile_   = false;
-    writeOutSoundFile_ = false;
-    inSoundFileDone_   = false;
-
-    inSoundFilePath_  = "Saw_32k_m3dB_m.wav";
-//"Saw_32k_m0dB_m.wav, Saw_32k_m3dB_m.wav, Saw_32k_m6dB_m.wav";
-
-//"Sine_1kHz_0dB_15Sec_m_32k.wav";
-//"SINE/sine_db00_0500Hz_16k_c1.wav";
-    outSoundFilePath_ = "BrioOut.wav";
-
-    inSoundFile_  = NULL;
-    outSoundFile_ = NULL;
-
-// Open a stereo WAV file to write output of mixer
-if (writeOutSoundFile_)
-	{
-	outSoundFileInfo_.frames     = 0;		
-	outSoundFileInfo_.samplerate = (long) samplingFrequency_;
-	outSoundFileInfo_.channels   = 2;
-	outSoundFileInfo_.format     = SF_FORMAT_PCM_16 | SF_FORMAT_WAV;
-	outSoundFileInfo_.sections   = 1;
-	outSoundFileInfo_.seekable   = 1;
-printf("CAudioMixer::CAudioMixer: opened out file '%s' \n", outSoundFilePath_);
-	outSoundFile_ = OpenSoundFile( outSoundFilePath_, &outSoundFileInfo_, SFM_WRITE);
-	}
-
-// Open WAV file for input to mixer
-if (readInSoundFile_)
-	{
-#ifdef EMULATION
-    char *inFilePath = ".\\"; // /home/lfu/AudioFiles/
-#else
-    char *inFilePath = "/AudioFiles/";
-#endif
-
-// SINE/ : sine_db0_1000Hz_32k.wav sine_dbM3_1000Hz_32k sine_dbM6_1000Hz_32k
-// at db {00, M3, M6} and fs={16k,32k} and f= { 125, 250, 500, 1000, 2000, 4000, 8000 }
-// Representative Audio
-//	char *inFileName = "GoldenTestSet_16k/A_AP.wav";
-char *inFileName = inSoundFilePath_;
-printf("inFileName='%s'\n", inFileName);
-//printf("inFilePath='%s'\n", inFilePath);
-
-//    strcpy(inFilePath, inFileName);
-	inSoundFile_ = OpenSoundFile(inFileName, &inSoundFileInfo_, SFM_READ);	if (!inSoundFile_)
-		{
-		printf("CAudioMixer::CAudioMixer: Unable to open input file '%s'\n", inFileName);
-		readInSoundFile_ = False;
-		}
-	else
-        {
-		printf("CAudioMixer::CAudioMixer: opened input file '%s'\n", inFileName);
-// inSoundFileInfo.samplerate, frames, channels
-//	printf("CAudioMixer::CAudioMixer: opened inFile: fs=%d frames=%ld ch=%d \n", 
-//		inSoundFileInfo.samplerate, inSoundFileInfo.frames, inSoundFileInfo.channels);
-    	}
-    inSoundFileDone_ = false;
-	}
-
 // Set up level meters
 for (ch = kLeft; ch <= kRight; ch++)
     {
@@ -262,19 +196,15 @@ for (ch = kLeft; ch <= kRight; ch++)
     temp_ShortTime     [ch] = 0;
     }
 
-// numFrames = 256 for EMULATION, 128? for embedded ??
+// numFrames = 256 for EMULATION, 512 for embedded
 // DUHHH is this frames or samples ?
-#ifdef EMULATION
-int numFramesPerBuffer = 256;
-#else // EMBEDDED
-int numFramesPerBuffer = 128;
-#endif
+int numFramesPerBuffer = kAudioFramesPerBuffer;
 
-U32 shortTimeRateHz   = 12;
+U32 shortTimeRateHz = 12;
 shortTimeCounter  = 0;
 shortTimeInterval = kAudioSampleRate/(shortTimeRateHz * numFramesPerBuffer);
 
-U32 longTimeRateHz   = 1;
+U32 longTimeRateHz = 1;
 longTimeHoldCounter  = 0;
 longTimeHoldInterval = shortTimeInterval/longTimeRateHz;
 
@@ -293,6 +223,8 @@ longTimeDecayI = FloatToQ15(longTimeDecayF);
 {
 tAudioState *d = &audioState_;
 //printf("CAudioMixer: sizeof(tAudioState)=%d\n", sizeof(tAudioState));
+if (sizeof(tAudioState) >= kAUDIO_MAX_MSG_SIZE)
+    printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n", sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 
 d->computeLevelMeters = false;
 d->useOutEQ           = false;
@@ -302,9 +234,6 @@ if (d->useOutSoftClipper)
     d->headroomBits = 1+kMixer_HeadroomBits_Default;
 else
     d->headroomBits =   kMixer_HeadroomBits_Default;
-
-d->readInSoundFile   = readInSoundFile_;
-d->writeOutSoundFile = writeOutSoundFile_;
 
 d->softClipperPreGainDB  = (S16) preGainDB;
 d->softClipperPostGainDB = (S16) postGainDB;
@@ -321,8 +250,25 @@ for (long ch = kLeft; ch <= kRight; ch++)
     d->outLevels_LongTime [ch] = outLevels_LongTime [ch];
     }
 d->channelGainDB = kChannel_HeadroomDB;
-}
 
+// DEBUG:  Wav File I/O
+d->readInSoundFile   = false;
+d->writeOutSoundFile = false;
+inSoundFileDone_     = false;
+d->outFileBufferCount = 1000;
+
+memset(d->inSoundFilePath, '\0', kAudioState_MaxFileNameLength);
+strcpy(d->inSoundFilePath, "Saw_32k_m3dB_m.wav");
+//"Saw_32k_m0dB_m.wav, Saw_32k_m3dB_m.wav, Saw_32k_m6dB_m.wav";
+
+//"Sine_1kHz_0dB_15Sec_m_32k.wav";
+//"SINE/sine_db00_0500Hz_16k_c1.wav";
+memset(d->outSoundFilePath, '\0', kAudioState_MaxFileNameLength);
+strcpy(d->outSoundFilePath, "BrioOut.wav");
+
+inSoundFile_  = NULL;
+outSoundFile_ = NULL;
+} // end Set up Audio State struct
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
 // ==============================================================================
@@ -348,29 +294,96 @@ long i;
 		delete pMidiPlayer_;
 
 // Dellocate buffers 
-  	if (pChannel_OutBuffer_)
-    		delete pChannel_OutBuffer_;
+  	if (pChannelBuf_)
+    		delete pChannelBuf_;
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 		{
 		if (pTmpBufs_[i])
 			free(pTmpBufs_[i]);
-        pTmpBufs_[i] = NULL;
-        tmpBufOffsetPtrs_[i] = NULL;
+        pTmpBufs_      [i] = NULL;
+        pTmpBufOffsets_[i] = NULL;
 		}
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
 		{
         for (long j = 0; j < kAudioMixer_MaxOutChannels; j++)
             {
-    		if (mixBinBufferPtrs_[i][j])
-    			free(mixBinBufferPtrs_[i][j]);
+    		if (pMixBinBufs_[i][j])
+    			free(pMixBinBufs_[i][j]);
             }
 		}
 	
-if (writeOutSoundFile_)
-	CloseSoundFile(&outSoundFile_);
-
+//if (audioState_.writeOutSoundFile)
+if (outSoundFile_)
+    {
+    CloseSoundFile(&outSoundFile_);
+    outSoundFile_ = NULL;
+    }
 }  // ---- end ~CAudioMixer() ----
+
+// ==============================================================================
+// CAudioMixer::OpenInSoundFile :
+//
+//                              Return Boolean success
+// ==============================================================================   
+    int
+CAudioMixer::OpenInSoundFile(char *path)
+{
+#ifdef EMULATION
+//char *inFilePath = ".\\"; // /home/lfu/AudioFiles/
+#else
+//char *inFilePath = "/AudioFiles/";
+#endif
+
+// SINE/ : sine_db0_1000Hz_32k.wav sine_dbM3_1000Hz_32k sine_dbM6_1000Hz_32k
+// at db {00, M3, M6} and fs={16k,32k} and f= { 125, 250, 500, 1000, 2000, 4000, 8000 }
+// Representative Audio
+//char *inFileName = inSoundFilePath_;
+//printf("inFileName='%s'\n", path);
+
+inSoundFile_ = OpenSoundFile(path, &inSoundFileInfo_, SFM_READ);if (!inSoundFile_)
+	{
+	printf("CAudioMixer::OpenInSoundFile: Unable to open file '%s'\n", path);
+	audioState_.readInSoundFile = False;
+    return (false);
+	}
+strcpy(audioState_.inSoundFilePath, path);
+
+printf("CAudioMixer::OpenInSoundFile: opened file '%s'\n", audioState_.inSoundFilePath);
+// inSoundFileInfo.samplerate, frames, channels
+//	printf("CAudioMixer::OpenInSoundFile: opened inFile: fs=%d frames=%ld ch=%d \n", 
+//		inSoundFileInfo.samplerate, inSoundFileInfo.frames, inSoundFileInfo.channels);
+
+inSoundFileDone_ = false;
+return (true);
+}  // ---- end CAudioMixer::OpenInSoundFile() ----
+
+// ==============================================================================
+// CAudioMixer::OpenOutSoundFile :
+//
+//                              Return Boolean success
+// ==============================================================================
+    int
+CAudioMixer::OpenOutSoundFile(char *path)
+{
+outSoundFileInfo_.frames     = 0;		
+outSoundFileInfo_.samplerate = (long) samplingFrequency_;
+outSoundFileInfo_.channels   = 2;
+outSoundFileInfo_.format     = SF_FORMAT_PCM_16 | SF_FORMAT_WAV;
+outSoundFileInfo_.sections   = 1;
+outSoundFileInfo_.seekable   = 1;
+
+outSoundFile_ = OpenSoundFile(path , &outSoundFileInfo_, SFM_WRITE);
+if (!outSoundFile_)
+    {
+    printf("CAudioMixer::OpenOutSoundFile: unable to open '%s' \n", path);
+    return (false);
+    }
+strcpy(audioState_.outSoundFilePath, path);
+printf("CAudioMixer::OpenOutSoundFile: opened out file '%s'\n", audioState_.outSoundFilePath);
+
+return (true);
+}  // ---- end CAudioMixer::OpenOutSoundFile() ----
 
 // ==============================================================================
 // FindFreeChannel:    Find a free channel using priority -> GKFIXX: add search by priority
@@ -386,7 +399,7 @@ for (long i = 0; i < numInChannels_; i++)
     }
 #endif
 
-// For now, just search for a channel not in use
+// Search for idle channel
 for (long i = 0; i < numInChannels_; i++)
 	{
     CChannel *pCh = &pChannels_[i];
@@ -407,18 +420,19 @@ for (long i = 0; i < numInChannels_; i++)
 // FindChannel:  Look for channel with specified ID
 //                  Return ptr to channel
 // ==============================================================================
-CChannel* CAudioMixer::FindChannel( tAudioID id )
+    CChannel * 
+CAudioMixer::FindChannel( tAudioID id )
 {
 //  Find channel with specified ID
 for (long i = 0; i < numInChannels_; i++)
 	{
     CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
-//    GKGK  Excised IsInUse().  Hot code - check for functionaliy break
-	if ( pPlayer && (pPlayer->GetID() == id)); // && pChannels_[i].IsInUse())
+// GK FIXX CHECK  Excised IsInUse().  Hot code - check for functionality break
+	if ( pPlayer && (pPlayer->GetID() == id)) // && pChannels_[i].IsInUse())
 		return (&pChannels_[i]);
 	}
 	
-// Reaching this point means all no ID matched.
+// Uh oh, no ID matched
 return ( kNull );
 }  // ---- end FindChannel() ----
 
@@ -576,21 +590,23 @@ return (kNoErr);
 }  // ---- end AddPlayer() ----
 
 // ==============================================================================
-// RenderBuffer
+// Render:  Big monster mixer render routine
+//
+//                          Return # of frames rendered.  
+//    (GX FIXXX:  incorrect return value)
 // ==============================================================================
     int 
-CAudioMixer::RenderBuffer( S16 *pOutBuf, U32 numFrames )
-// numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
+CAudioMixer::Render( S16 *pOut, U32 numFrames )
+// Gk CHECK FIXX numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
 U32 	i, ch;
-U32 	playerFramesRendered;
+U32 	framesRendered;
 long    mixBinIndex;
-long    channelsPerFrame = kAudioMixer_MaxOutChannels;
+long    channels = kAudioMixer_MaxOutChannels;
 // FIXXXX: mystery.  Offset Ptrs don't work !!!
-short **tPtrs = pTmpBufs_; // pTmpBufs_, tmpBufOffsetPtrs_
+S16 **tPtrs = pTmpBufs_; // pTmpBufs_, pTmpBufOffsets_
 
-// numFrames = 256 for EMULATION, 128? for embedded ??
-//{static long c=0; printf("CAudioMixer::RenderBuffer : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channelsPerFrame);}
+//{static long c=0; printf("CAudioMixer::Render : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channels);}
 
 // Update parameters from AudioState
 // GK FIXXX:  should wrap this in a Mutex
@@ -607,38 +623,46 @@ if (playerToAdd_)
     CChannel     *pChannel = targetChannel_;
     playerToAdd_  = NULL;
     targetChannel_= NULL;
-printf("CAudioMixer::RenderBuffer: Adding player\n");
+printf("CAudioMixer::Render: Adding player\n");
     pChannel->SetPlayer(pPlayer, true); 
     pChannel->SetInUse(true);
     pChannel->isDone_ = false;
-printf("CAudioMixer::RenderBuffer: Added player\n");
+printf("CAudioMixer::Render: Added player\n");
     }
 #endif // NEW_ADD_PLAYER
 
-//	printf("AudioMixer::RenderBuffer -- bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOutBuff, (int)numStereoFrames );
+//	printf("AudioMixer::Render: bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOut, (int)numStereoFrames );
 //	pDebugMPI_->Assert( ((numFrames * kAudioBytesPerStereoFrame) == kAudioOutBufSizeInBytes ),
-//		"AudioMixer::RenderBuffer -- frameCount doesn't match buffer size!!!\n");
+//		"AudioMixer::Render -- frameCount doesn't match buffer size!!!\n");
 	
 // Clear output and temporary buffers
-//ClearShorts( pOutBuff, numFrames * channelsPerFrame );
+//ClearShorts( pOut, numFrames * channels );
 //for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
-//	ClearShorts( pTmpBuffers_[i], numFrames * channelsPerFrame );
+//	ClearShorts( pTmpBuffers_[i], numFrames * channels );
 
 // Clear stereo mix buffers
 for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
-	ClearShorts( mixBinBufferPtrs_[i][0], numFrames*channelsPerFrame);
-	ClearShorts( mixBinBufferPtrs_[i][1], numFrames*channelsPerFrame);
+	ClearShorts( pMixBinBufs_[i][0], numFrames*channels);
+	ClearShorts( pMixBinBufs_[i][1], numFrames*channels);
 	mixBinFilled_[i] = False;
 	}
+
+// Open WAV file to write output of mixer
+if (audioState_.writeOutSoundFile && !outSoundFile_)
+    OpenOutSoundFile(audioState_.outSoundFilePath);
+
+// Open WAV file for input to mixer
+if (audioState_.readInSoundFile && !inSoundFile_)
+    OpenInSoundFile(audioState_.inSoundFilePath);
 
 //
 // ---- Render each channel to mix buffer with corresponding sampling frequency
 //
-if (readInSoundFile_ && !inSoundFileDone_)
+if (audioState_.readInSoundFile && !inSoundFileDone_)
 	{
     long mixBinIndex  = GetMixBinIndex(inSoundFileInfo_.samplerate);
-	S16 *mixBinP      = (S16 *) mixBinBufferPtrs_[mixBinIndex][0];
+	S16 *mixBinP      = (S16 *) pMixBinBufs_[mixBinIndex][0];
 	long framesToRead = numFrames/GetSamplingRateDivisor(inSoundFileInfo_.samplerate);
 	long framesRead   = 0;
 
@@ -658,31 +682,32 @@ if (readInSoundFile_ && !inSoundFileDone_)
         printf("inSoundFileDone ! %ld/%ld frames read \n", framesRead, framesToRead); 
         }
 	mixBinFilled_[mixBinIndex] = True;
-//printf("AudioMixer::RenderBuffer: read %ld samples from WAV file \n", framesRead);
-//  inSoundFileInfo.samplerate, frames, channels
+printf("AudioMixer::Render: read %ld samples from WAV file \n", framesRead); 
+//inSoundFileInfo.samplerate, frames, channels
 	}
 else
 {
-ClearShorts(pChannel_OutBuffer_, numFrames*channelsPerFrame);
+ClearShorts(pChannelBuf_, numFrames*channels);
 // Render if channel is in use and not paused
 for (ch = 0; ch < numInChannels_; ch++)
 	{
 	CChannel *pCh = &pChannels_[ch];
-//printf("CAudioMixer::RenderBuffer : pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
+//printf("CAudioMixer::Render: pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
 	if (pCh->ShouldRender())
 		{
         long channelSamplingFrequency = pCh->GetSamplingFrequency();
+// GK FIXXX: eliminate divide
 		U32 framesToRender = (numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
-        U32 sampleCount    = framesToRender*channelsPerFrame;
+        U32 sampleCount    = framesToRender*channels;
 //printf("ch%ld: framesToRender=%ld for %ld Hz\n", ch, framesToRender, channelSamplingFrequency);
 
 	// Player renders data into channel's stereo output buffer.  
-        playerFramesRendered = pCh->RenderBuffer( pChannel_OutBuffer_, framesToRender );
-	    if ( playerFramesRendered < framesToRender ) 
-//printf("frames %ld/%ld\n", playerFramesRendered, framesToRender);
-//	    if ( 0 == playerFramesRendered ) 
+        framesRendered = pCh->Render( pChannelBuf_, framesToRender );
+	    if ( framesRendered < framesToRender ) 
+//printf("frames %ld/%ld\n", framesRendered, framesToRender);
+//	    if ( 0 == framesRendered ) 
             {
-//            ClearShorts(pChannel_OutBuffer_, framesToRender);
+//            ClearShorts(pChannelBuf_, framesToRender);
 //			pCh->Release( true );	// false = Don't suppress done msg 
  
             pCh->isDone_ = true;
@@ -692,38 +717,39 @@ for (ch = 0; ch < numInChannels_; ch++)
             }
 
         if (inputIsDC) 
-            SetShorts(pChannel_OutBuffer_, sampleCount, inputDCValuei);
+            SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
 #ifdef NEED_SAWTOOTH
         else if (inputIsSawtoothWave_)
             {
-            SawtoothOscillator_S16(pChannel_OutBuffer_, sampleCount, &z_, delta_);
-printf("Sawtooth z=%ld delta=%ld out[0]=%d\n", z_, delta_, pChannel_OutBuffer_[0]);
-printf("Sawtooth z=$%08X delta=$%08X out[0]=$%04X\n", (unsigned int)z_, (unsigned int)delta_, (unsigned short) pChannel_OutBuffer_[0]);
+            SawtoothOscillator_S16(pChannelBuf_, sampleCount, &z_, delta_);
+printf("Sawtooth z=%ld delta=%ld out[0]=%d\n", z_, delta_, pChannelBuf_[0]);
+printf("Sawtooth z=$%08X delta=$%08X out[0]=$%04X\n", (unsigned int)z_, (unsigned int)delta_, (unsigned short) pChannelBuf_[0]);
             }
 #endif
 	// Add output to appropriate Mix "Bin" 
 		long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
-// FIXXX:  convert fs/4->fs/2 with gentler anti-aliasing filter and let fs/2 mix bin's conversion do fs/2->fs
-		S16 *pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
-        ShiftRight_S16(pChannel_OutBuffer_, pChannel_OutBuffer_, sampleCount, audioState_.headroomBits);
-        AccS16toS16(pMixBin, pChannel_OutBuffer_, sampleCount, mixBinFilled_[mixBinIndex]);
+// FIXXX: convert fs/4->fs/2 with gentler anti-aliasing filter and let fs/2 mix bin's conversion do fs/2->fs
+		S16 *pMixBin = pMixBinBufs_[mixBinIndex][0];
+        ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount, audioState_.headroomBits);
+        AccS16toS16(pMixBin, pChannelBuf_, sampleCount, mixBinFilled_[mixBinIndex]);
 
 		mixBinFilled_[mixBinIndex] = True;
 		}
 	}
 
 // MIDI player renders to fs/2 output buffer 
+//{static long c=0; printf("CAudioMixer::Render%ld: pMidiPlayer_->IsActive=%d\n", c++, pMidiPlayer_->IsActive());}
 if ( pMidiPlayer_->IsActive() )
 	{
 	long mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
-	S16 *pMixBin = mixBinBufferPtrs_[mixBinIndex][0];
-	long framesToRender  = (numFrames/2);
-    U32 sampleCount = framesToRender*channelsPerFrame;
+	S16 *pMixBin = pMixBinBufs_[mixBinIndex][0];
+	long framesToRender = (numFrames/2);  // fs/2
+    U32 sampleCount = framesToRender*channels;
 
-	playerFramesRendered = pMidiPlayer_->RenderBuffer( pChannel_OutBuffer_, framesToRender); 
-//{static long c=0; printf("CAudioMixer::RenderBuffer: MIDI active %ld framesToRender=%ld\n", c++, framesToRender);}
-    ShiftRight_S16(pChannel_OutBuffer_, pChannel_OutBuffer_, sampleCount, audioState_.headroomBits);
-    AccS16toS16(pMixBin, pChannel_OutBuffer_, sampleCount, mixBinFilled_[mixBinIndex]);
+	framesRendered = pMidiPlayer_->Render( pChannelBuf_, framesToRender); 
+//{static long c=0; printf("CAudioMixer::Render%ld: MIDI framesToRender=%ld\n", c++, framesToRender);}
+    ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount, audioState_.headroomBits);
+    AccS16toS16(pMixBin, pChannelBuf_, sampleCount, mixBinFilled_[mixBinIndex]);
 
 	mixBinFilled_[mixBinIndex] = True;
 	}
@@ -734,9 +760,9 @@ if ( pMidiPlayer_->IsActive() )
 //
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv1;
 if (mixBinFilled_[mixBinIndex])
-    CopyShorts(mixBinBufferPtrs_[mixBinIndex][0], pOutBuf, numFrames); 
+    CopyShorts(pMixBinBufs_[mixBinIndex][0], pOut, numFrames); 
 else
-	ClearShorts( pOutBuf, numFrames * channelsPerFrame );
+	ClearShorts( pOut, numFrames * channels );
 
 #define MIX_THE_MIX_BINS
 #ifdef MIX_THE_MIX_BINS
@@ -744,40 +770,40 @@ else
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv4;
 if (mixBinFilled_[mixBinIndex])
 	{
-	DeinterleaveShorts(mixBinBufferPtrs_[mixBinIndex][0], tPtrs[2], tPtrs[3], numFrames/4);
+	DeinterleaveShorts(pMixBinBufs_[mixBinIndex][0], tPtrs[2], tPtrs[3], numFrames/4);
 	RunSRC(tPtrs[2], tPtrs[0], numFrames/4, numFrames, &src_[mixBinIndex][0]);
 	RunSRC(tPtrs[3], tPtrs[1], numFrames/4, numFrames, &src_[mixBinIndex][1]);
-	InterleaveShorts(tPtrs[0], tPtrs[1], tPtrs[6], numFrames);
-	Add2_Shortsi(tPtrs[6], pOutBuf, pOutBuf, numFrames*channelsPerFrame);
-//CopyShorts(tPs[6], pOutBuf, numFrames*channelsPerFrame);
+	InterleaveShorts(tPtrs[0], tPtrs[1], tPtrs[6], numFrames/2);
+	Add2_Shortsi(tPtrs[6], pOut, pOut, (numFrames/2)*channels);
+//CopyShorts(tPs[6], pOut, numFrames*channels);
 	}
 
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
 if (mixBinFilled_[mixBinIndex])
 	{
-	DeinterleaveShorts(mixBinBufferPtrs_[mixBinIndex][0], tPtrs[4], tPtrs[5], numFrames/2);
+	DeinterleaveShorts(pMixBinBufs_[mixBinIndex][0], tPtrs[4], tPtrs[5], numFrames/2);
 	RunSRC(tPtrs[4], tPtrs[0], numFrames/2, numFrames, &src_[mixBinIndex][0]);
 	RunSRC(tPtrs[5], tPtrs[1], numFrames/2, numFrames, &src_[mixBinIndex][1]);
 	InterleaveShorts(tPtrs[0], tPtrs[1], tPtrs[6], numFrames);
-	Add2_Shortsi(tPtrs[6], pOutBuf, pOutBuf, numFrames*channelsPerFrame);
-//CopyShorts(tPs[6], pOutBuf, numFrames*channelsPerFrame);
+	Add2_Shortsi(tPtrs[6], pOut, pOut, numFrames*channels);
+//CopyShorts(tPs[6], pOut, numFrames*channels);
 	}
 		
 // fixme/rdg:  needs CAudioEffectsProcessor
 // If at least one audio channel is playing, Process global audio effects
 //if (numPlaying && (gAudioContext->pAudioEffects != kNull))
-//	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOutBuf );
+//	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOut );
 
 
 // Scale stereo/interleaved buffer by master volume
 /// NOTE: volume here is interpreted as a linear value
-//ScaleShortsf(pOutBuf, pOutBuf, numFrames*channelsPerFrame, masterGainf_[0]);
-ScaleShortsi_Q15(pOutBuf, pOutBuf, numFrames*channelsPerFrame, masterGaini_[0]);
+//ScaleShortsf(pOut, pOut, numFrames*channels, masterGainf_[0]);
+ScaleShortsi_Q15(pOut, pOut, numFrames*channels, masterGaini_[0]);
 
 // Test with DC input
 if (inputIsDC)
     {
-    outputDCValuei  = pOutBuf[0];
+    outputDCValuei  = pOut[0];
     outputDCValuef  = Q15ToFloat(outputDCValuei);
     outputDCValueDB = LinearToDecibelf(outputDCValuef);
 
@@ -795,18 +821,15 @@ if (audioState_.useOutEQ || audioState_.useOutSoftClipper || audioState_.compute
     audioState_.useOutDSP  = true;
 
 #ifdef NEEDED
-{static long c=0; if (!(c++)) {
-printf("CAudioMixer: useOutDSP=%d computeLevelMeters=%d useOutEQ=%d useOutSoftClipper=%d\n", audioState_.useOutDSP, audioState_.computeLevelMeters, audioState_.useOutEQ , audioState_.useOutSoftClipper); 
-
-printf("CAudioMixer: readInSoundFile  =%ld Path='%s'\n", readInSoundFile_  , inSoundFilePath_);
-printf("CAudioMixer: writeOutSoundFile=%ld Path='%s'\n", writeOutSoundFile_, outSoundFilePath_);
-}
+{static long c=0; if (!(c++)) { tAudioState *d = &audioState_;
+printf("CAudioMixer: useOutDSP=%d computeLevelMeters=%d useOutEQ=%d useOutSoftClipper=%d\n", 
+d->useOutDSP, d->computeLevelMeters, d->useOutEQ , d->useOutSoftClipper); }
 }
 #endif
 
 if (audioState_.useOutDSP)
 {
-DeinterleaveShorts(pOutBuf, tPtrs[4], tPtrs[5], numFrames);
+DeinterleaveShorts(pOut, tPtrs[4], tPtrs[5], numFrames);
 
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     {
@@ -834,8 +857,8 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
         ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
         }
     }
-InterleaveShorts(tPtrs[4], tPtrs[5], pOutBuf, numFrames);
-ShiftLeft_S16(pOutBuf, pOutBuf, numFrames*channelsPerFrame, audioState_.headroomBits);
+InterleaveShorts(tPtrs[4], tPtrs[5], pOut, numFrames);
+ShiftLeft_S16(pOut, pOut, numFrames*channels, audioState_.headroomBits);
 
 // Audio level meters
 //  Scan buffer for maximum value
@@ -846,7 +869,7 @@ if (audioState_.computeLevelMeters)
     for (long ch = kLeft; ch <= kRight; ch++)
         {
 //        S16 x = MaxAbsShorts(tPtrs[4+ch], numFrames);
-        S16 x = MaxAbsShorts(&pOutBuf[ch], numFrames, 2);
+        S16 x = MaxAbsShorts(&pOut[ch], numFrames, 2);
         if (x > temp_ShortTime[ch])
             temp_ShortTime[ch] = x;
 
@@ -893,41 +916,41 @@ if (audioState_.computeLevelMeters)
 }  // end if (useOutDSP)
 
 // Debug:  write output of mixer to sound file
-static long outBufferCount = 0; outBufferCount++;
-if (writeOutSoundFile_)
+static long outBufferCounter = 0; 
+if (audioState_.writeOutSoundFile)
     {
-static long totalFramesWritten = 0;
-    long framesWritten = sf_writef_short(outSoundFile_, pOutBuf, numFrames);
-    totalFramesWritten += framesWritten;
-//{static long c=0; printf("CAudioMixer::RenderBuffer %ld: outCount=%ld wrote %ld frames total=%ld\n", c++, outBufferCount, framesWritten, totalFramesWritten);}
-
-//    framesWritten = 0;
-    if (inSoundFileDone_ || outBufferCount >= 1000)
+    if (inSoundFileDone_ || outBufferCounter++ >= audioState_.outFileBufferCount)
         {
-printf("Closing outSoundFile '%s'\n", outSoundFilePath_);
+printf("Closing outSoundFile '%s'\n", audioState_.outSoundFilePath);
     	CloseSoundFile(&outSoundFile_);
         outSoundFile_      = NULL;
-        writeOutSoundFile_ = false;
+        audioState_.writeOutSoundFile = false;
+        }
+    else if (outSoundFile_)
+        {
+static long totalFramesWritten = 0;
+    long framesWritten = sf_writef_short(outSoundFile_, pOut, numFrames);
+    totalFramesWritten += framesWritten;
+//{static long c=0; printf("CAudioMixer::Render %ld: outFile wrote %ld frames total=%ld\n", c++, framesWritten, totalFramesWritten);}
         }
     }
 
-//printf("CAudioMixer::RenderBuffer: END \n");
-	return (kNoErr);
-} // ---- end RenderBuffer() ----
+//{static long c=0; printf("CAudioMixer::Render%ld: END numFrames=%ld\n", c++, numFrames);}
+return (kNoErr);  // GK FIXX: should be # frames rendered
+} // ---- end Render() ----
 
 // ==============================================================================
-// WrapperToCallRenderBuffer
+// WrapperToCallRender: Call member function Render()
+//                              Return # of frames rendered
 // ==============================================================================
-int CAudioMixer::WrapperToCallRenderBuffer( S16 *pOut,  unsigned long numStereoFrames, void* pToObject  )
-{
-//	CAudioMixer* mySelf = (CAudioMixer*)pToObject;
-	
-	// Call member function to get a buffer full of stereo data
-	return ((CAudioMixer*)pToObject)->RenderBuffer( pOut, numStereoFrames );
-} // ---- end WrapperToCallRenderBuffer() ----
+    int 
+CAudioMixer::WrapperToCallRender( S16 *pOut,  unsigned long numStereoFrames, void *pToObject  )
+{	
+return ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
+} // ---- end WrapperToCallRender() ----
 
 // ==============================================================================
-// SetMasterVolume :  Set master output level for mixer
+// SetMasterVolume :  
 // ==============================================================================
 void CAudioMixer::SetMasterVolume( U8 x )
 {
@@ -935,8 +958,11 @@ masterVolume_ = x;
 
 // FIXX: move to decibels, but for now, linear volume
 // ChangeRangef(x, L1, H1, L2, H2)
-masterGainf_[0] = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
+//masterGainf_[0] = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
+masterGainf_[0] = 0.01f*(float)x;
 //masterGainf_[0] = DecibelToLinearf(ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f));
+// Convert to square curve, which is milder than Decibels
+masterGainf_[0] *= masterGainf_[0];
 masterGainf_[1] = masterGainf_[0];
 
 // Convert 32-bit floating-point to Q15 fractional integer format 

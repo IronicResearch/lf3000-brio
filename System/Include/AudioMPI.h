@@ -6,7 +6,7 @@
 //
 // AudioMPI.h
 //
-// Defines the Module Public Interface (MPI) for the Audio module. 
+// Defines Module Public Interface (MPI) for Audio module
 //
 //==============================================================================
 
@@ -27,7 +27,7 @@ class IEventListener;
 //		CAudioMPI
 //
 // Description:
-//		Module Public Interface (MPI) class for the Audio module. 
+//		Module Public Interface (MPI) class for Audio module
 //==============================================================================
 class CAudioMPI : public ICoreMPI {
 public:
@@ -50,8 +50,8 @@ public:
 	virtual ~CAudioMPI( void );
 
 	// !!!!! LF Internal:  do not release !!!!!!
-	void GetAudioState( void *);
-	void SetAudioState( void *);
+	void GAS( void *);
+	void SAS( void *);
 
 	//********************************
 	// Audio output driver control
@@ -106,11 +106,11 @@ public:
 
 	U32 	GetAudioTime( tAudioID id ) const; // Time (milliSeconds) since creation
 	
-	// Get/Set individual channel Volume/Priority/Pan
+// Get/Set channel parameters
 	U8		GetAudioVolume( tAudioID id ) const;
-	void	SetAudioVolume( tAudioID id, U8 volume );
-	S8		GetAudioPan( tAudioID id ) const;
-	void	SetAudioPan( tAudioID id, S8 pan );
+	void	SetAudioVolume( tAudioID id, U8 x );
+	S8		GetAudioPan(    tAudioID id ) const;
+	void	SetAudioPan(    tAudioID id, S8 x );
 
 	tAudioPriority	GetAudioPriority( tAudioID id ) const;
 	void	        SetAudioPriority( tAudioID id, tAudioPriority priority );
@@ -121,9 +121,9 @@ public:
 
 // Defaults to use when value is not specified in the Start() call.
 	U8		GetDefaultAudioVolume( void ) const;
-	void	SetDefaultAudioVolume( U8 volume );
+	void	SetDefaultAudioVolume( U8 x );
 	S8		GetDefaultAudioPan( void ) const;
-	void	SetDefaultAudioPan( S8 pan );
+	void	SetDefaultAudioPan( S8 x );
 // Not important for Didj.  Unimplemented
 	tAudioPriority	GetDefaultAudioPriority( void ) const;
 	void	        SetDefaultAudioPriority( tAudioPriority priority );
@@ -183,7 +183,7 @@ public:
 // Properties of MIDI file play
     tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
 	tErrType 	SetEnableMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask );
-	tErrType 	TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask, S8 semit ); 
+	tErrType 	TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask, S8 semitones ); 
 	tErrType 	ChangeMidiTempo(      tMidiPlayerID id, S8 tempo ); 
 
 	// Send MIDI channel messages

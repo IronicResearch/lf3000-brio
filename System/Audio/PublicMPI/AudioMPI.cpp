@@ -409,22 +409,24 @@ void CAudioMPI::SetAudioEventListener( tAudioID id, IEventListener *pListener )
 }   // ---- end SetAudioEventListener() ----
 
 // ==============================================================================
-// GetAudioState
+// GAS:  Get Audio State LF internal function
 // ==============================================================================
-void CAudioMPI::GetAudioState( void *d ) 
+    void 
+CAudioMPI::GAS( void *d ) 
 {
 if ( pModule_ )	
     pModule_->GetAudioState( (tAudioState *) d );
-}   // ---- end GetAudioState() ----
+}   // ---- end GAS() ----
 
 // ==============================================================================
-// SetAudioState
+// SAS
 // ==============================================================================
-void CAudioMPI::SetAudioState( void *d ) 
+    void 
+CAudioMPI::SAS( void *d ) 
 {
 if ( pModule_ )
 	pModule_->SetAudioState( (tAudioState *) d );
-}   // ---- end SetAudioState() ----
+}   // ---- end SAS() ----
 
 // ==============================================================================
 // GetDefaultAudioVolume
@@ -677,12 +679,12 @@ tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask ch
 // ==============================================================================
 // ChangeMidiTempo
 // ==============================================================================
-tErrType CAudioMPI::ChangeMidiTempo( tMidiPlayerID id, S8 tempo ) 
+tErrType CAudioMPI::ChangeMidiTempo( tMidiPlayerID id, S8 x ) 
 {
 	if ( !pModule_ )
 		return kNoImplErr;
 	
-	return pModule_->ChangeMidiTempo( id, tempo );
+	return pModule_->ChangeMidiTempo( id, x );
 }   // ---- end ChangeMidiTempo() ----
 
 // ==============================================================================
