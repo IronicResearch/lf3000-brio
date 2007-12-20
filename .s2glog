@@ -11743,3 +11743,16 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/07 4:03 PM
 4,110 ms. (Cumulative: 3,020,583 ms)
 
 ----------------
+Revision 2,487 from svn://localhost/TRUNK/:
+Revision 2,488 from svn://localhost/TRUNK/:
+Revision 2,489 from svn://localhost/TRUNK/:
+Revision 2,490 from svn://localhost/TRUNK/:
+Revision 2,491 from svn://localhost/TRUNK/:
+
+Exclude unit test resources from type=publish builds.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/07 5:08 PM
+1 changed, 0 added, 0 deleted.
+3,922 ms. (Cumulative: 3,024,599 ms)
+
+----------------
