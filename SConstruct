@@ -287,7 +287,7 @@ for target in targets:
 	#-------------------------------------------------------------------------
 	# Deploy the unit test data for embedded builds
 	#-------------------------------------------------------------------------
-	if not is_emulation:
+	if not is_emulation and not is_publish:
 		unit_test_data_root = Dir('UnitTestData').abspath
 		root_len = len(unit_test_data_root) + 1
 		rootfs_data = os.path.join(rootfs, 'Base', 'Brio', 'rsrc')
