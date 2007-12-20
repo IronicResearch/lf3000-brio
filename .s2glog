@@ -11766,3 +11766,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/07 7:56 PM
 3,954 ms. (Cumulative: 3,028,615 ms)
 
 ----------------
+Revision 2,494 from svn://localhost/TRUNK/:
+
+Disable audio speaker function since interface is broken
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/07 8:42 PM
+2 changed, 0 added, 0 deleted.
+4,172 ms. (Cumulative: 3,032,849 ms)
+
+----------------

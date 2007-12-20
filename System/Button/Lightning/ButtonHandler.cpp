@@ -109,15 +109,14 @@ void *LightningButtonTask(void*)
 			dispmgr.SetBacklight(0, backlight);
 		}
 		// Special internal handling for Headphone jack plug/unplug
-//printf("ButtonHandler: buttonState=$%X buttonTransition=%X kHeadphoneJackDetect=$%X \n", 
- //   (unsigned int) data.buttonState, (unsigned int) data.buttonTransition, (unsigned int)kHeadphoneJackDetect);
 		if (data.buttonTransition & kHeadphoneJackDetect)
 		{
-        CAudioMPI audioMPI;
-        bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
+		        CAudioMPI audioMPI;
+		        bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
 
-//printf("ButtonHandler: kHeadphoneJackDetect state_SpeakerEnabled = %d\n", state_SpeakerEnabled);
-        audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
+			#if 0 // FIXME: interface broken			
+		        audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
+			#endif
 		}
 	}
 	return NULL;
