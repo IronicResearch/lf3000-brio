@@ -242,7 +242,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testBacklight( )
+	void XXXXtestBacklight( ) // FIXME: backlight range? devboard anomolies?
 	{
 		tDisplayHandle 	handle;
 		const U16		WIDTH = 320;
@@ -257,6 +257,10 @@ public:
 		pDisplayMPI_->SetBacklight(0, 100);
 		usleep(1000);
 		TS_ASSERT( pDisplayMPI_->GetBacklight(0) == 100 );
+		sleep(1);
+		pDisplayMPI_->SetBacklight(0, 0);
+		usleep(1000);
+		TS_ASSERT( pDisplayMPI_->GetBacklight(0) == 0 );
 		
 		pDisplayMPI_->UnRegister(handle, 0);
 		pDisplayMPI_->DestroyHandle(handle, false);
