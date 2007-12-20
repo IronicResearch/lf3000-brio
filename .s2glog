@@ -11806,3 +11806,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/20/07 10:12 AM
 4,222 ms. (Cumulative: 3,046,621 ms)
 
 ----------------
+Revision 2,498 from svn://localhost/TRUNK/:
+
+Fixed error: #include_next is a GCC extension
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 12/20/07 11:13 AM
+1 changed, 0 added, 0 deleted.
+4,298 ms. (Cumulative: 3,050,997 ms)
+
+----------------
