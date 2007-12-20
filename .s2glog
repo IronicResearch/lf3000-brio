@@ -11732,3 +11732,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 12/19/07 1:37 PM
 3,954 ms. (Cumulative: 3,016,411 ms)
 
 ----------------
+Revision 2,486 from svn://localhost/TRUNK/:
+
+Added make scripts for autoconf makefiles for Ogg/Theora/Tremor libs.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/07 4:03 PM
+0 changed, 6 added, 0 deleted.
+4,110 ms. (Cumulative: 3,020,583 ms)
+
+----------------
