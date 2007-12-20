@@ -11786,3 +11786,14 @@ By gklimanis (gklimanis@leapfrog.com) on 12/19/07 11:53 PM
 5,047 ms. (Cumulative: 3,037,975 ms)
 
 ----------------
+Revision 2,496 from svn://localhost/TRUNK/:
+
+Fixed build break at line 445 for warning about comparison between 
+signed and unsigned ints.  Just forced both to U32.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 12/19/07 11:56 PM
+1 changed, 0 added, 0 deleted.
+4,268 ms. (Cumulative: 3,042,337 ms)
+
+----------------

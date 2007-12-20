@@ -442,7 +442,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		// Clear video buffer to white pixels before visible
 		for (U32 i = 0; i < context->height; i++)
 			memset(&gPlanarBuffer[i*4096], 0xFF, context->width); // white Y
-		for (U32 i = context->height; i < 2*context->height; i++)
+		for (U32 i = context->height; i < (U32) 2*context->height; i++)
 			memset(&gPlanarBuffer[i*4096], 0x7F, context->width); // neutral U,V
 	}
 
