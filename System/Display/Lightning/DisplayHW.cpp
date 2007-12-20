@@ -438,6 +438,12 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, 0);
 		else
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, 3);
+		
+		// Clear video buffer to white pixels before visible
+		for (U32 i = 0; i < context->height; i++)
+			memset(&gPlanarBuffer[i*4096], 0xFF, context->width); // white Y
+		for (U32 i = context->height; i < 2*context->height; i++)
+			memset(&gPlanarBuffer[i*4096], 0x7F, context->width); // neutral U,V
 	}
 
 	SetDirtyBit(layer);

@@ -11756,3 +11756,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/07 5:08 PM
 3,922 ms. (Cumulative: 3,024,599 ms)
 
 ----------------
+Revision 2,492 from svn://localhost/TRUNK/:
+Revision 2,493 from svn://localhost/TRUNK/:
+
+Always clear video buffer to white before enabling visibility.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/07 7:56 PM
+1 changed, 0 added, 0 deleted.
+3,954 ms. (Cumulative: 3,028,615 ms)
+
+----------------
