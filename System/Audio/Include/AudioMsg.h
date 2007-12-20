@@ -74,9 +74,10 @@ enum {
 	kAudioCmdMsgTypeChangeMidiInstrument,
 	kAudioCmdMsgTypeChangeMidiTempo,
 	
-	kAudioCmdMsgTypeSendMidiCommand,
 	kAudioCmdMsgTypeMidiNoteOn,
 	kAudioCmdMsgTypeMidiNoteOff,
+	kAudioCmdMsgTypeMidiCommand,
+
 	kAudioCmdMsgExitThread,
 
 	kAudioCmdMsgTypeSetAudioState,
@@ -417,6 +418,17 @@ public:
 private:
 	tAudioMidiNoteInfo			data_;
 };
+
+// kAudioCmdMsgTypeMidiCommand
+class CAudioMsgMidiCommand : public CAudioCmdMsg {
+public:    
+	CAudioMsgMidiCommand( const tAudioMidiCommandInfo& data );
+	tAudioMidiCommandInfo*	GetData( void ) { return &data_; }
+	
+private:
+	tAudioMidiCommandInfo			data_;
+};
+
 
 // kAudioCmdMsgExitThread
 class CAudioCmdMsgExitThread : public CAudioCmdMsg {

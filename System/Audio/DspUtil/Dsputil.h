@@ -844,6 +844,7 @@ void SetShorts  (short  *d, long length, short  value);
 void ClearFloats(float  *d, long length);
 
 //#define ClearShorts( p, l)	(SetShorts( (p), (l), 0   ))
+void ClearBytes (void  *d, long length);
 void ClearShorts(short *d, long length);
 void ClearLongs (long  *d, long length);
 

@@ -36,8 +36,8 @@ public:
 	CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  );
 	virtual ~CAudioPlayer();
 		
-	virtual void	Rewind() = 0;
-	virtual U32		RenderBuffer( S16 *pOutBuff, U32 numFrames ) = 0;
+	virtual void	RewindFile() = 0;
+	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32 GetAudioTime_mSec( void ) = 0; // Time since start of audio play
 
 	// Return status

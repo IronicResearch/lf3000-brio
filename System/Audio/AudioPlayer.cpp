@@ -34,7 +34,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // CAudioPlayer implementation
 //==============================================================================
 
-CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
+CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 {	
 	// Initialize instance variables
 	id_ = id;
@@ -53,14 +53,14 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pAudioInfo, tAudioID id  )
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 	
 // Set class variables from message
-	pan_    = pAudioInfo->pan;
-	volume_ = pAudioInfo->volume;
+	pan_    = pInfo->pan;
+	volume_ = pInfo->volume;
 
-	priority_     = pAudioInfo->priority;
-	pListener_    = pAudioInfo->pListener;
-	payload_      = pAudioInfo->payload;
-	optionsFlags_ = pAudioInfo->flags;
-	bDoneMessage_ = (pAudioInfo->flags & kAudioOptionsDoneMsgAfterComplete);
+	priority_     = pInfo->priority;
+	pListener_    = pInfo->pListener;
+	payload_      = pInfo->payload;
+	optionsFlags_ = pInfo->flags;
+	bDoneMessage_ = (pInfo->flags & kAudioOptionsDoneMsgAfterComplete);
 
 //#define DEBUG_AUDIOPLAYER_OPTIONS
 #ifdef DEBUG_AUDIOPLAYER_OPTIONS

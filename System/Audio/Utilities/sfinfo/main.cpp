@@ -79,7 +79,7 @@ PrintSndFileInfo(SF_INFO *d)
 long fileFormatMinor =  d->format & SF_FORMAT_SUBMASK;
 long wordWidthBits = 16;
 
-if 	(SF_FORMAT_PCM_16 == fileFormatMinor)
+if 	    (SF_FORMAT_PCM_16 == fileFormatMinor)
 	wordWidthBits = 16;
 else if (SF_FORMAT_PCM_24 == fileFormatMinor)
 	wordWidthBits = 24;
@@ -94,11 +94,11 @@ else
 }
 
 printf("PrintSndFileInfo: $%X \n", d);
-printf("    wordWidth  = %d bits\n", wordWidthBits);
-printf("    channels   = %d\n", d->channels);
-printf("    sampleRate = %d Hz\n", d->samplerate);
-float seconds = ((float) d->frames/d->channels)/(float)d->samplerate;
-printf("    frames     = %d (%g seconds)\n", d->frames, seconds);
+printf("    wordWidth = %d bits\n", wordWidthBits);
+printf("    channels  = %d\n", d->channels);
+printf("    fs        = %d Hz\n", d->samplerate);
+float seconds = ((float) d->frames)/(float)d->samplerate;
+printf("    frames    = %d (%g seconds)\n", d->frames, seconds);
 
 } // ---- end PrintSndFileInfo() ----
 

@@ -6,11 +6,9 @@
 // All Rights Reserved
 //==============================================================================
 //
-// File:
-//		VorbisPlayer.h
+// VorbisPlayer.h
 //
-// Description:
-//		Defines the class to manage the playing of Vorbis audio.
+// Defines the class to manage the playing of Vorbis audio.
 //
 //==============================================================================
 
@@ -41,30 +39,27 @@ public:
 	CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	~CVorbisPlayer();
 		
-	// Reset player to start from beginning of sample
-	void	Rewind();
-	
-	// Returns milliseconds since start of audio.
+	void	RewindFile();
 	U32 GetAudioTime_mSec( void );
 	
 	// Attempt to fill buffer at pOutBuff with numFrames of data.  
 	// Returns number of frames actually rendered; zero when done.
-	U32		RenderBuffer( S16 *pOutBuff, U32 numStereoFrames );
+	U32		Render( S16 *pOut, U32 numStereoFrames );
 
 	void SendDoneMsg( void );
 
 private:
 	OggVorbis_File	vorbisFile_;		// codec context data
 	ov_callbacks 	oggCallbacks_;		// set of callbacks to wrap resource mgr functions	
-	S16 			*pPcmBuffer_;		// Pointer to the vorbis decode buffer
+	S16 			*pReadBuf_;		// Vorbis decode buffer
 
 //#define USE_VORBIS_PLAYER_MUTEX
 #ifdef USE_VORBIS_PLAYER_MUTEX
 	CKernelMPI* 	pKernelMPI_;		
-	tMutex     		render_mutex_;		// For multi-threaded protection of renderbuffer call 
+	tMutex     		renderMutex_;		// For multi-threaded protection of renderbuffer call 
 #endif // USE_VORBIS_PLAYER_MUTEX
 										
-	U32				filePos_;			// position in the vorbis byte stream
+	U32				filePosition_;			// position in the vorbis bitstream
 
     S32             loopCount_;
     S32             loopCounter_;

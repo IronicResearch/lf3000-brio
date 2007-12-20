@@ -6,7 +6,7 @@
 //
 // AudioPriv.h
 //
-//      Defines the private, hidden data structures used by AudioMPI. 
+//      Defines private, hidden data structures used by AudioMPI 
 //
 //==============================================================================
 
@@ -24,9 +24,6 @@
 #include <AudioEffectsProcessor.h>
 #include <EventListener.h>
 
-//#include <AudioTypes.h>
-//#include <AudioRsrcs.h>
-//#include <AudioMixer.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -35,16 +32,6 @@ class IEventListener;
 // Constants
 const CString	kAudioModuleName	= "Audio";
 const tVersion	kAudioModuleVersion	= 2;
-
-// Audio internal resource types
-
-//enum tAudioTypeInt {
-//	kAudioRsrcUndefined = 0,
-//	kAudioRsrcMIDI      = 1,
-//	kAudioRsrcOggVorbis = 2,
-//	kAudioRsrcRaw       = 3,
-//	kAudioRsrcOggTheora = 4
-//};
 
 //==============================================================================
 class CAudioModule : public ICoreModule {
@@ -72,7 +59,7 @@ public:
 
 	// Specific to MPIs
 	VTABLE_EXPORT tErrType     SetAudioResourcePath( U32 mpiID, const CPath &path );
-	VTABLE_EXPORT const CPath* GetAudioResourcePath( U32 mpiID );
+	VTABLE_EXPORT CPath* GetAudioResourcePath( U32 mpiID );
 	
 	VTABLE_EXPORT tAudioID StartAudio( U32					mpiID,
 										const CPath 		&path, 
@@ -170,6 +157,8 @@ public:
 	VTABLE_EXPORT tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 private:
+	CPath				gpath;
+
 	CKernelMPI* 			pKernelMPI_;
 	CDebugMPI* 				pDebugMPI_;	
 	tMessageQueueHndl 		hRecvMsgQueue_;

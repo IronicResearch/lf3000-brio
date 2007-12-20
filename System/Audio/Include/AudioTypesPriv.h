@@ -6,13 +6,21 @@
 //
 // AudioTypesPriv.h
 //
-//      Defines trivate, hidden types used by AudioMPI
+//      Defines private types used by AudioMPI
 //
 //==============================================================================
 
 #include <SystemTypes.h>
 #include <AudioTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
+
+#define kAudio_Pan_Max    100
+#define kAudio_Pan_Min  (-100)
+#define kAudio_Pan_Default 0
+
+#define kAudio_Volume_Max    100
+#define kAudio_Volume_Min      0
+#define kAudio_Volume_Default 100
 
 // kAudioCmdMsgTypeStartAudio
 struct tAudioStartAudioInfo { 
@@ -23,7 +31,7 @@ struct tAudioStartAudioInfo {
 	const IEventListener* pListener;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
-	tAudioHeader*		pAudioHeader;		// For Brio Raw audio header 
+	tAudioHeader*		pRawHeader;		// For Brio Raw audio header 
 
 	
 	tAudioStartAudioInfo( const CPath* pa = NULL,
@@ -35,7 +43,7 @@ struct tAudioStartAudioInfo {
 						tAudioOptionsFlags f = 0, 
 						tAudioHeader* h = NULL )
 		: path(pa), volume(v), priority(p), pan(pn), pListener(l),
-		payload(pl), flags(f), pAudioHeader(h) {}
+		payload(pl), flags(f), pRawHeader(h) {}
 };
 
 typedef struct taudiostate {
@@ -56,6 +64,10 @@ typedef struct taudiostate {
 
     U8     readInSoundFile;
     U8     writeOutSoundFile;
+#define kAudioState_MaxFileNameLength 80
+    char   inSoundFilePath [kAudioState_MaxFileNameLength];
+    char   outSoundFilePath[kAudioState_MaxFileNameLength];
+    long   outFileBufferCount;
 
     U8     headroomBits;
     float  channelGainDB;
@@ -124,10 +136,22 @@ struct tAudioStopAudioInfo {
 		: id(i), suppressDoneMsg(s) {}
 };
 
+// kAudioCmdMsgTypeMidiCommand
+struct tAudioMidiCommandInfo {
+	U8					cmd;
+	U8					data1;
+	U8				 	data2;
+
+	tAudioMidiCommandInfo(U8 c  = 0, 
+						  U8 d1 = 0, 
+						  U8 d2 = 0 )
+		: cmd(c), data1(d1), data2(d2) {}
+};
+
 // kAudioCmdMsgTypeMidiNoteOn
 struct tAudioMidiNoteInfo {
 	U8					channel;
-	U8					noteNum;
+	U8					note;
 	U8				 	velocity;
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
@@ -137,7 +161,7 @@ struct tAudioMidiNoteInfo {
 						U8 v = 0, 
 						tAudioPayload pl = 0, 
 						tAudioOptionsFlags f = 0 )
-		: channel(c), noteNum(n), velocity(v), 
+		: channel(c), note(n), velocity(v), 
 		  payload(pl), flags(f) {}
 };
 

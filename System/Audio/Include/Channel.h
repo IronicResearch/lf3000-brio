@@ -2,14 +2,12 @@
 #define LF_BRIO_CHANNEL_H
 
 //==============================================================================
-// Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
+// Copyright (c) 2002-2008 LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// File:
-//		Channel.h
+// Channel.h
 //
-// Description:
-//		Defines the class to manage the processing of audio data on an audio channel.
+// Defines class to manage processing of audio data on an audio channel.
 //
 //==============================================================================
 
@@ -18,6 +16,7 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <RawPlayer.h> // fixme/dg: hack for RawPlayer dtor not getting called
+
 #include <DebugMPI.h>
 
 #include <Dsputil.h>
@@ -52,7 +51,7 @@ public:
 	// the remainder of the channel's buffer will be zero padded.
 	// The channel also assumes that the mix buffer is stereo 
 	// so mono data is copied to both stereo channel on mix out.
-	U32			RenderBuffer( S16 *pOutP, int numStereoFrames );
+	U32			Render( S16 *pOut, int numStereoFrames );
 
 	inline U8	GetVolume()		{ return volume_; }
 	void		SetVolume(U8 x);
@@ -69,9 +68,6 @@ public:
 #define kAudioMixerChannel_MaxOutChannels 2
 	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
 	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
-// kDecibelToLinearf_0dBf, m3dBf, m6dBf
-#define kChannel_HeadroomDB 0.0f  // GK FIXX Headroom should be positive number
-#define kChannel_Headroomf (kDecibelToLinearf_m0dBf) // DecibelToLinearf(kChannel_HeadroomDB);
 
 	float		gainf;
 	Q15			gaini;
@@ -79,7 +75,7 @@ public:
     Q15         levelsi   [kAudioMixerChannel_MaxOutChannels];
 
 	// Mixer needs to know if the channel is in a state appropriate
-	// for calling RenderBuffer().  Keeps flag state inside of channel.
+	// for calling Render().  Keeps flag state inside of channel.
 	Boolean		ShouldRender( void );
 	
 	inline tAudioPriority	GetPriority()            				{ return priority_; }
@@ -124,7 +120,7 @@ private:
 	CAudioPlayer				*pPlayer_;		 
 	
 	Boolean fPaused_;		
-	Boolean fReleasing_;	// Channel is in the process of being reset
+	Boolean fReleasing_;	// Channel is in process of being reset
 //	Boolean fOwnProcessor_;
 	
 	CDebugMPI	*pDebugMPI_;
