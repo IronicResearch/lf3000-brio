@@ -11797,3 +11797,12 @@ By gklimanis (gklimanis@leapfrog.com) on 12/19/07 11:56 PM
 4,268 ms. (Cumulative: 3,042,337 ms)
 
 ----------------
+Revision 2,497 from svn://localhost/TRUNK/:
+
+Disabled broken backlight test
+
+By Dave Milici (dmilici@leapfrog.com) on 12/20/07 10:12 AM
+1 changed, 0 added, 0 deleted.
+4,222 ms. (Cumulative: 3,046,621 ms)
+
+----------------
