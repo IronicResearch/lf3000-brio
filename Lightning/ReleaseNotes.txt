@@ -2,23 +2,24 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
-v0.1.27  (Build 2511 released Dec 20, 2007) 
+v0.1.27  (Build 2512 released Dec 20, 2007) 
 ===========================================
 Release for LF1000 development (green) and form-factor target boards.
 
 Software components for target hardware:
 
-	Brio-0.1.27.2511.lfp			= Brio library firmware for either LF1000 boards
+	Brio-0.1.27.2512.lfp				= Brio library firmware for either LF1000 boards
+    bootstrap-LF_LF1000-0.18.0.2508.lfp = kernel/rootfs firmware for LF1000 form-factor board
+	bootstrap-ME_LF1000-0.18.0.2508.lfp = bootstrap loader for LF1000 development board
 	firmware-ME_LF1000-0.18.0.2508.lfp	= kernel/rootfs firmware for LF1000 development board
 	firmware-LF_LF1000-0.18.0.2508.lfp	= kernel/rootfs firmware for LF1000 form-factor board
-	HostTools_2508.tar.gz			= Linux host tools subset for installing firmware
-	LightningSDK_2511.tar.gz		= Lightning SDK for emulation and embedded development
-	nfsroot_SVN2511.tar.gz			= NFS root filesystem for LF1000 development board
+	HostTools_2508.tar.gz				= Linux host tools subset for installing firmware
+	LightningSDK_2512.tar.gz			= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2512.tar.gz				= NFS root filesystem for LF1000 development board
         
 
 Enhancements:
 -------------
-
 * Font MPI GetStringRect() calculation accounts for glyph advance, including
   space characters. (TTP 612)
  
@@ -42,11 +43,6 @@ Known Issues:
 * OpenGL transform functions on embedded target incur a siginificant performance slowdown.
   This problem has been isolated to the OpenGL ES library, not the target hardware.
   The library will be updated in the next Brio release.
- 
-* Video player task sometimes blocks calling app process in emulation. (TTP# 726)
-
-* If embedded target Brio app exits without destroying OpenGL context, the app will not be able
-  to create a new OpenGL context when relaunched. (TTP# 565)
 
 ===========================================
 v0.1.26  (Build 2440 released Dec 14, 2007) 
