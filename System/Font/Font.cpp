@@ -1298,6 +1298,9 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	if (attr_.useUnderlining)
 		FreeBitmap(&clone);
 	
+	// Release extra bitmap memory from FT_Glyph_To_Bitmap() call
+	FT_Done_Glyph(glyph);
+
 	return true;
 }
 

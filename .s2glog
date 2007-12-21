@@ -11815,3 +11815,29 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/20/07 11:13 AM
 4,298 ms. (Cumulative: 3,050,997 ms)
 
 ----------------
+Revision 2,499 from svn://localhost/TRUNK/:
+Revision 2,500 from svn://localhost/TRUNK/:
+Revision 2,501 from svn://localhost/TRUNK/:
+Revision 2,502 from svn://localhost/TRUNK/:
+Revision 2,503 from svn://localhost/TRUNK/:
+Revision 2,504 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,197 ms. (Cumulative: 3,055,303 ms)
+
+----------------
+Revision 2,505 from svn://localhost/TRUNK/:
+Revision 2,506 from svn://localhost/TRUNK/:
+Revision 2,507 from svn://localhost/TRUNK/:
+Revision 2,508 from svn://localhost/TRUNK/:
+Revision 2,509 from svn://localhost/TRUNK/:
+Revision 2,510 from svn://localhost/TRUNK/:
+
+Fixed memory leak from glyph-to-bitmap calls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/20/07 7:23 PM
+3 changed, 0 added, 0 deleted.
+4,613 ms. (Cumulative: 3,059,963 ms)
+
+----------------
