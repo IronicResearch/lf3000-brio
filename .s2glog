@@ -11859,3 +11859,18 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 12/21/07 7:52 AM
 4,141 ms. (Cumulative: 3,068,558 ms)
 
 ----------------
+Revision 2,513 from svn://localhost/TRUNK/:
+Revision 2,514 from svn://localhost/TRUNK/:
+Revision 2,515 from svn://localhost/TRUNK/:
+Revision 2,516 from svn://localhost/TRUNK/:
+Revision 2,517 from svn://localhost/TRUNK/:
+Revision 2,518 from svn://localhost/TRUNK/:
+
+Completely init video task state vars to avoid unintentional pause.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/28/07 4:19 PM
+1 changed, 0 added, 0 deleted.
+4,187 ms. (Cumulative: 3,072,839 ms)
+
+----------------
