@@ -11915,3 +11915,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/3/08 2:22 PM
 4,297 ms. (Cumulative: 3,087,950 ms)
 
 ----------------
+Revision 2,534 from svn://localhost/TRUNK/:
+
+Updated symlink to point to RR ARM lib.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/3/08 2:41 PM
+1 changed, 0 added, 0 deleted.
+4,516 ms. (Cumulative: 3,092,544 ms)
+
+----------------
