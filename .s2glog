@@ -11874,3 +11874,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/28/07 4:19 PM
 4,187 ms. (Cumulative: 3,072,839 ms)
 
 ----------------
+Revision 2,519 from svn://localhost/TRUNK/:
+
+Specify explicit off_t type to pass correct physical address parameter.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/2/08 6:55 PM
+1 changed, 0 added, 0 deleted.
+4,157 ms. (Cumulative: 3,077,059 ms)
+
+----------------
