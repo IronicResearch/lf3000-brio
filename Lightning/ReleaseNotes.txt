@@ -2,20 +2,20 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 ===========================================
-v0.1.28  (Build 25XX released Jan 3, 2008) 
+v0.1.28  (Build 2533 released Jan 3, 2008) 
 ===========================================
 Release for LF1000 development (green) and form-factor target boards.
 
 Software components for target hardware:
 
-	Brio-0.1.28.25XX.lfp				= Brio library firmware for either LF1000 boards
+	Brio-0.1.28.2533.lfp				= Brio library firmware for either LF1000 boards
     bootstrap-LF_LF1000-0.19.0.2525.lfp = kernel/rootfs firmware for LF1000 form-factor board
 	bootstrap-ME_LF1000-0.19.0.2525.lfp = bootstrap loader for LF1000 development board
 	firmware-ME_LF1000-0.19.0.2525.lfp	= kernel/rootfs firmware for LF1000 development board
 	firmware-LF_LF1000-0.19.0.2525.lfp	= kernel/rootfs firmware for LF1000 form-factor board
 	HostTools_2525.tar.gz				= Linux host tools subset for installing firmware
-	LightningSDK_25XX.tar.gz			= Lightning SDK for emulation and embedded development
-	nfsroot_SVN25XX.tar.gz				= NFS root filesystem for LF1000 development board
+	LightningSDK_2533.tar.gz			= Lightning SDK for emulation and embedded development
+	nfsroot_SVN2533.tar.gz				= NFS root filesystem for LF1000 development board
 	RidgeRun-toolchain-369009.tar.bz2	= RidgeRun cross-compiler for ARM       
 
 Embedded components rebuilt with new cross-compiler for OpenGL performance improvements.
