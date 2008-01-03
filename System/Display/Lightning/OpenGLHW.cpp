@@ -12,6 +12,8 @@
 //
 //==============================================================================
 
+#define _FILE_OFFSET_BITS	64	// for correct off_t type
+
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <DisplayHW.h>
@@ -34,7 +36,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Lightning hardware-specific defines
 //============================================================================
 #define PAGE_3D		2
-#define	REG3D_PHYS	0xc001a000
+#define	REG3D_PHYS	0xc001a000UL
 
 #define	MEM1_SIZE	0x00800000	// 8Meg
 #define	MEM1_VIRT	0xb1000000
@@ -126,7 +128,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Map 3D engine register space
 	gRegSize = PAGE_3D * getpagesize();  
 	gpReg3d = mmap(0, gRegSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevGa3d, REG3D_PHYS);
-	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: %08X mapped to %p\n", REG3D_PHYS, gpReg3d);
+	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %016lX mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
 	gpMem1 = mmap((void*)mem1Virt, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
