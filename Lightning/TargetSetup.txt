@@ -27,7 +27,7 @@ installed and running:
 
 	TFTP server (for TFTP transfers)
 	NFS server (for NFS booting)
-	Scratchbox toolchain (for ARM cross-compiling)
+	RidgeRun toolchain (for ARM cross-compiling)
 	Eclipse IDE with CDT support (for C++ development)
 
 These packages should already be included in the Ubuntu Linux distribution provided
@@ -499,6 +499,10 @@ Target Preparation -- flashing via automatic updates
 When transferred over USB connection from a host PC, the firmware-XXXX.lfp
 package file will automatically be flashed onboard after USB is disconnected.
 This is only applicable on units with at least version 0.10.0-2101 onboard.
+
+Beginning with version 0.17.1-2428, the bootstrap loader will also be
+updated automatically when the bootstrap-XXXX.lfp package is transferred.
+
 Otherwise the embedded binaries will need to be unpacked from the .lfp file
 and flashed using one of the manual methods described.
 
@@ -508,6 +512,9 @@ on your desktop or file browser.
 (2) Copy the firmware-XXXX.lfp package file to the /Didj disk's root directory.
 	firmware-LF_LF1000-XXXX.lfp is only for Form-Factor units
 	firmware-ME_LF1000-XXXX.lfp is for LF1000 development boards (green)
+
+If there is a bootstrap-XXXX.lfp package provided with the firmware update,
+copy that package file too.
 
 (3) After copying is complete, be sure to eject the /Didj disk device. On both
 Windows and Linux desktops, this is done by right-clicking on the /Didj disk icon,
@@ -555,8 +562,11 @@ on your desktop or file browser as above.
 (2a) On Linux PC host, run the following command:
 	lfpkg -a install -b /media/Didj Brio-XXXX.lfp
 	
-(2b) On Windows PC host, rename the Brio-XXXX.lfp file with .zip extension and unzip
-its Brio directory contents over the one at /Didj/Base/Brio.
+(2b) On Windows PC host, use OmegaTerm to install the Brio-XXXX.lfp package
+by dragging it from the left-hand host pane to the right-hand device pane
+after connecting to Didj. If OmegaTerm complains of a package ID mismatch,
+remove the previously installed Brio package by right-clicking on it in the
+right-hand device pane.
 
 (3) After copying is complete, be sure to eject the /Didj disk device as above.
 Windows and Linux desktops, this is done by right-clicking on the /Didj disk icon,
@@ -568,32 +578,24 @@ Target Preparation -- installing ARM cross-compiler
 ======================================================
 
 Your development system image will also need to have the cross-compiler
-installed for building ARM binary targets. The version used to date is
-scratchbox toolchain is based on GCC 4.1 with uclib run-time library. 
+installed for building ARM binary targets. The version used now is
+RidgeRun toolchain based on GCC 4.1 with uclibc run-time library.
+It is not binary compatible with the previous Scratchbox compiler, so you
+must recompile all binaries with it.  
 
-You will need root privileges for this part of the Scratchbox installation.
+To deploy the compiler, untar it from root directory.
 
-   1. Add the line below to the /etc/apt/sources.list file:	    
-   
-		deb http://scratchbox.org/debian ../download/files/sbox-releases/stable/deb
- 
-   		(convenient way to edit file: sudo gedit /etc/apt/sources.list) 
+	$ cd /
+	$ sudo tar -xjvf RidgeRun-toolchain-369009.tar.bz2
+	
+The resulting toolchain with be untarred in /opt/RidgeRun/arm-eabi-uclibc.
 
-   2. Update the package list with command:
+The CC compiler directive in the arm-g++.py script should already be modified
+to use the explicit full path to arm-linux-g++. If you need to invoke the
+cross-compiler for non-Lightning/SCons projects, you will need to update
+your PATH environment variable:
 
-      $ sudo apt-get update
-
-   3. Install packages:
-
-      $ sudo apt-get install scratchbox-core scratchbox-libs
-      $ sudo apt-get install scratchbox-toolchain-arm-gcc4.1-uclibc20061004
-      $ sudo /scratchbox/sbin/sbox_adduser <yourusername>
-
-Note you may need to modify the CC compiler directive in the arm-g++.py
-script to use the explicit full path to arm-linux-g++. Or put this line
-in your .bashrc script:
-
-	export PATH=$PATH:/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/
+	export PATH=$PATH:/opt/RidgeRun/arm-eabi-uclibc/bin
 
 See ReleaseNotes.txt for important information about which versions of other
 software components are required on the target.

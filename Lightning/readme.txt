@@ -2,10 +2,12 @@
 Lightning SDK
 ======================================================
 
+The SDK and all embedded binaries have been rebuilt with a new cross-compiler (RidgeRun).
+You *MUST* rebuild all your embedded binaries with this cross-compiler for subsequent releases.
+
 Lightning SDKs typically consist of these parts:
 
 	LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
-	embedded-svnxxxx.tar.gz - embedded binaries to be flashed onto the target board.
 	bootstrap-xxxx.lfp		- bootstrap loader binaries in .lfp package.
 	firmware-xxxx.lfp		- kernel and rootfs binaries in .lfp package.
 	Brio-xxxx.lfp 			- Brio binaries to be copied onto target NAND partition via USB. 
@@ -24,6 +26,9 @@ The NFS root image must be unzipped as root user and located off the home user p
 	$ sudo tar -xzvf nfsroot-svnxxx.tar.gz
 	$ mv nfsroot-svnxxx nfsroot
 	
+The SDK and all embedded binaries have been rebuilt with a new cross-compiler.
+You *MUST* rebuild all your embedded binaries with this cross-compiler for subsequent releases.
+
 These pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
 release together or you will almost certainly have problems.

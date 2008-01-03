@@ -5,7 +5,7 @@ AR = $(CROSS_COMPILE)ar
 LD = $(CROSS_COMPILE)ld
 INSTALL_PREFIX ?= /home/lfu/nfsroot/
 
-CPPFLAGS = -I./ -I./include-priv -fpic
+CPPFLAGS = -I./ -I./include-priv -fpic 
 
 OBJS = glibmm/ustring.o glib/gutf8.o glibmm/convert.o \
 	glib/guniprop.o glib/gunicollate.o glib/gmem.o glib/gunidecomp.o \
