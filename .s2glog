@@ -11884,3 +11884,21 @@ By Dave Milici (dmilici@leapfrog.com) on 1/2/08 6:55 PM
 4,157 ms. (Cumulative: 3,077,059 ms)
 
 ----------------
+Revision 2,520 from svn://localhost/TRUNK/:
+Revision 2,521 from svn://localhost/TRUNK/:
+Revision 2,522 from svn://localhost/TRUNK/:
+Revision 2,523 from svn://localhost/TRUNK/:
+Revision 2,524 from svn://localhost/TRUNK/:
+Revision 2,525 from svn://localhost/TRUNK/:
+Revision 2,526 from svn://localhost/TRUNK/:
+Revision 2,527 from svn://localhost/TRUNK/:
+Revision 2,528 from svn://localhost/TRUNK/:
+
+External ARM libs rebuilt with RidgeRun compiler.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/3/08 1:19 PM
+40 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 3,083,356 ms)
+
+----------------

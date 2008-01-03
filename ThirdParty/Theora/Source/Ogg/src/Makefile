@@ -97,9 +97,9 @@ AUTOMAKE = ${SHELL} /home/lfu/workspace/Brio2/ThirdParty/Theora/Source/Ogg/missi
 AWK = mawk
 CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O20 -ffast-math -fsigned-char -O4 -mcpu=arm926ej-s 
+CFLAGS = -O20 -ffast-math -fsigned-char -g -O2
 CPP = arm-linux-gcc -E
-CPPFLAGS = 
+CPPFLAGS = -I/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/include -I/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl
 CXX = arm-linux-g++
 CXXCPP = arm-linux-g++ -E
 CXXDEPMODE = depmode=gcc3
@@ -120,7 +120,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = 
+LDFLAGS = -L/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/lib/.libs/ -L/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl/.libs/
 LIBOBJS =  memcmp$U.o
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
@@ -191,7 +191,7 @@ localstatedir = ${prefix}/var
 mandir = ${prefix}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
-prefix = /home/lfu/nfsroot/usr/local
+prefix = /home/lfu/nfsroot/Didj/Base/Brio
 program_transform_name = s,x,x,
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com

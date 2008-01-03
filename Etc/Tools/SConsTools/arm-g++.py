@@ -18,8 +18,7 @@ import SCons.Util
 parent = __import__('SCons.Tool.g++', globals(), locals(), [''])
 
 # FIXME/dm: Should not have to use explicit path to arm-linux-g++ compiler
-compiler = '/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/arm-linux-g++'
-
+compiler = '/opt/RidgeRun/arm-eabi-uclibc/bin/arm-linux-g++'
 
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object
