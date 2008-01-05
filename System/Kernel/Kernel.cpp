@@ -368,7 +368,7 @@ tPtr CKernelModule::Malloc(U32 size)
 {
 	// FIXME/tp: True assertion here if fail to allocate memory, or just warning?
 	tPtr ptr = malloc( size );
-    ASSERT_ERROR(pPtr != 0, kCouldNotAllocateMemory);
+    ASSERT_ERROR(ptr != 0, kCouldNotAllocateMemory);
 	return ptr;
 }
 
