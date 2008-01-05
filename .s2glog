@@ -11966,3 +11966,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/4/08 5:41 PM
 4,204 ms. (Cumulative: 3,105,639 ms)
 
 ----------------
+Revision 2,552 from svn://localhost/TRUNK/:
+
+Reduced default thread stack size to minimum size (16K). 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/5/08 12:18 PM
+1 changed, 0 added, 0 deleted.
+5,141 ms. (Cumulative: 3,110,858 ms)
+
+----------------
