@@ -11976,3 +11976,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/5/08 12:18 PM
 5,141 ms. (Cumulative: 3,110,858 ms)
 
 ----------------
+Revision 2,553 from svn://localhost/TRUNK/:
+Revision 2,554 from svn://localhost/TRUNK/:
+
+Updated Brio verion and release notes for task stack size fix.
+
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/5/08 12:52 PM
+2 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 3,117,171 ms)
+
+----------------
