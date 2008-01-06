@@ -184,7 +184,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	
 	CKernelMPI		kernel;
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
-	memset(pVidCtx, 0, sizeof(tVideoContext));
+//	memset(pVidCtx, 0, sizeof(tVideoContext));
 	
 	// Determine if audio track is available and at what path?
 	bool			nopath = (pathAudio.length() == 0) ? true : false;

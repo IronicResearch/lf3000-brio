@@ -11987,3 +11987,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/5/08 12:52 PM
 6,204 ms. (Cumulative: 3,117,171 ms)
 
 ----------------
+Revision 2,555 from svn://localhost/TRUNK/:
+
+Allow task properties with new default min stack size to be applicable to video task.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/5/08 4:30 PM
+29 changed, 0 added, 0 deleted.
+7,438 ms. (Cumulative: 3,124,703 ms)
+
+----------------

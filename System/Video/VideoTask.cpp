@@ -146,7 +146,7 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 #endif
 	
 	// Setup task properties
-	memset(&prop, 0, sizeof(tTaskProperties));
+//	memset(&prop, 0, sizeof(tTaskProperties));
 	prop.TaskMainFcn = (void* (*)(void*))VideoTaskMain;
 	prop.taskMainArgCount = 1;
 	prop.pTaskMainArgValues = pCtx;

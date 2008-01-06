@@ -36,7 +36,7 @@ const tDebugLevel		kVideoDebugLevel	= kDbgLvlImportant;
 // Typedefs
 //==============================================================================
 
-#define USE_MUTEX		1
+#define USE_MUTEX		0
 
 struct tVideoContext {
 	tVideoHndl			hVideo;

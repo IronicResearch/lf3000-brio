@@ -115,7 +115,7 @@ CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -O2 -D_ARM_ASSEM_ -fsigned-char  -D_REENTRANT -DUSE_MEMORY_H
 CPP = arm-linux-gcc -E
-CPPFLAGS = -I/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/include -I/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl
+CPPFLAGS = 
 CXX = arm-linux-g++
 CXXCPP = arm-linux-g++ -E
 CXXDEPMODE = depmode=gcc3
