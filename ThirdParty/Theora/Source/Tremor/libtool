@@ -44,7 +44,7 @@ available_tags=" CXX"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host lfu-lap:
+# Libtool was configured on host ubuntux:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/bash"
@@ -97,13 +97,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/scratchbox/compilers/arm-gcc4.1-uclibc20061004/arm-linux-uclibc/bin/ld"
+LD="/opt/RidgeRun/arm-eabi-uclibc/arm-linux-uclibcgnueabi/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/arm-linux-nm -B"
+NM="/opt/RidgeRun/arm-eabi-uclibc/bin//arm-linux-nm -B"
 
 # A symbol stripping program
 STRIP="arm-linux-strip"
@@ -325,10 +325,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/ /usr/lib/gcc/arm-linux-uclibc/4.1.1/ /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib/arm-linux-uclibc/4.1.1/ /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib/"
+sys_lib_search_path_spec=" /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /usr/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/X11R6/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7223,7 +7223,7 @@ disable_libs=static
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host lfu-lap:
+# Libtool was configured on host ubuntux:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/bash"
@@ -7276,13 +7276,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/scratchbox/compilers/arm-gcc4.1-uclibc20061004/arm-linux-uclibc/bin/ld"
+LD="/opt/RidgeRun/arm-eabi-uclibc/arm-linux-uclibcgnueabi/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/scratchbox/compilers/arm-gcc4.1-uclibc20061004/bin/arm-linux-nm -B"
+NM="/opt/RidgeRun/arm-eabi-uclibc/bin//arm-linux-nm -B"
 
 # A symbol stripping program
 STRIP="arm-linux-strip"
@@ -7405,11 +7405,11 @@ striplib="arm-linux-strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib/crti.o /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/crtbeginS.o"
+predep_objects="/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/crti.o /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/crtendS.o /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib/crtn.o"
+postdep_objects="/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/crtendS.o /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7421,7 +7421,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1 -L/scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib"
+compiler_lib_search_path="-L/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1 -L/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib"
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7501,10 +7501,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/ /usr/lib/gcc/arm-linux-uclibc/4.1.1/ /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib/arm-linux-uclibc/4.1.1/ /scratchbox/compilers/arm-gcc4.1-uclibc20061004/lib/gcc/arm-linux-uclibc/4.1.1/../../../../arm-linux-uclibc/lib/"
+sys_lib_search_path_spec=" /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /usr/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/X11R6/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
