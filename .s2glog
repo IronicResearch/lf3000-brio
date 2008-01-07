@@ -11997,3 +11997,15 @@ By Dave Milici (dmilici@leapfrog.com) on 1/5/08 4:30 PM
 7,438 ms. (Cumulative: 3,124,703 ms)
 
 ----------------
+Revision 2,556 from svn://localhost/TRUNK/:
+Revision 2,557 from svn://localhost/TRUNK/:
+Revision 2,558 from svn://localhost/TRUNK/:
+
+Delete autoconf-generated intermediate file clutter.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/08 1:16 PM
+0 changed, 0 added, 24 deleted.
+4,854 ms. (Cumulative: 3,129,698 ms)
+
+----------------
