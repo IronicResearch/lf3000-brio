@@ -12080,3 +12080,13 @@ By gklimanis (gklimanis@leapfrog.com) on 1/8/08 12:26 PM
 4,297 ms. (Cumulative: 3,161,086 ms)
 
 ----------------
+Revision 2,567 from svn://localhost/TRUNK/:
+
+Removed Makefile-generated crud.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/8/08 1:00 PM
+1 changed, 0 added, 0 deleted.
+4,313 ms. (Cumulative: 3,165,477 ms)
+
+----------------
