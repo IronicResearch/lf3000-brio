@@ -1,6 +1,26 @@
 ===========================================
 Lightning C++ Development Kit Release Notes
 ===========================================
+
+===========================================
+v0.1.??  (Build ???? released Jan ?, 2008) 
+===========================================
+
+1) MIDI: added definitions for supported MIDI channel messages and controllers to AudioMPI.h
+2) MIDI: fixed CRASH when loading files with local path.  Weird CString issue with same crash
+       in audio and video, though they were fixed in previous release.
+3) MIDI:  2x as loud.  Used to peak at -15dB when other audio files peak at -6dB.  MIDI
+          still need more headroom as multiple notes.  
+4) Audio: reduced memory usage significantly
+5) Audio:  volume raised with soft clipper.  Though, this means that full scale sine wave
+     will now be distorted from -9 to 0 dB by soft clipper on speaker but not headphone.  
+     For general audio content, this is preferable to harder clipping.
+6) Audio:  8000 Hz audio now fully functional
+7) Audio:  Startup pop for 8000/16000 Hz audio and MIDI fixed.  Popped on 2nd play but not on 1st.
+8) Audio: disabled calculation of large floating point test table for faster startup time.
+9) Fix for TTPro #880:  MIDI transpose on single tracks.  Also, fixed issue for MIDI program change.
+10) 
+
 ===========================================
 v0.1.29  (Build 2554 released Jan 5, 2008) 
 ===========================================
@@ -111,6 +131,73 @@ Note:	Build 2440 has two differences from Build 2430:
 	2. Removed not used the "bootstrap" files
         
 See other info below for Build 2430:
+
+===========================================
+v0.1.25  (Build 24?? released Dec 20, 2007) 
+===========================================
+
+Gints's big list of audio defect fixes
+****** FIXED for 12/19/2007 Checkin ******
+  00. Audio: reverted back to -3dB for channel gains
+Y 13. MIDI:  ID issue ?   Add kNoMidiID=U8Max
+Y 18. Audio:  MIDI audio internal render buffers - not needed.
+Y  3. Audio: AudioTypes.h
+//#define kNoAudioID			kU32Max	// ID returned on failure
+   #define kNoAudioID			(0xffffffff)	// ID returned on failure
+    typedef U32		tAudioID
+    ALSO  tMidiPlayerID
+Y 08. Audio:  Set AudioState doesn't work.
+Y 10. Audio:  Level meters short time -> need to average values
+Y 11. Audio:  Add hold time (1 second) for long time level meters
+Y 22. Audio:  WAV file write with file path specified 
+Y 03. Audio: Check SRC gain
+        ChannelGain=-3dB ChannelPan =-3dB  -> -6dB
+    For sine -3dB
+                       fs=32000 fs=16000
+                       -------- --------
+        SRC AddDrop     -9        -9
+        SRC Linear      -9        -9
+		SRC Triangle    -9        -9
+        FIR V6          -9        -2
+        FIR V7          -9        -2
+        FIR V8          -9        -2
+// 6=30dB_15 7=50dB_31 8=50dB_41
+Y 07. Audio:  Check that looping audio file loops seamlessly.  
+                a. RawPlayer -> YES   
+                b. VorbisFile -> YES.  Just ensure file starts with zero crossing and slope
+                   match.  Ogg sampling rate conversion will inject time shift, so don't expect
+                   those to loop.  Just SRC in uncompressed, edit to seamless loop, the Ogg convert               
+
+Y 32. MIDI:  Check that looping MIDI file loops seamlessly.
+                MIDI files loop properly, but there may be a gap at the end.
+            ----> never a problem, just a check
+Y 00. Audio:  Add square curve to (Channel Volume and Master volume) instead of linear, 
+Y 27. Audio: Does Audio Player pad short read with zeros ? (Otherwise a click)
+                a. RawPlayer    -> YES
+                b. VorbisPlayer -> YES, but not totally confirmed
+Y 30. MIDI:  Can't play file and notes at the same time.
+        --> This always worked.  Just didn't have a test to confirm it.  Retested 12/18.
+Y 29. MIDI:  Engine notes linger even with AllNotesOff
+Y 19. Audio:  GetAudioTime() non-functional  --> BUG: lost audio IDs !!!!
+            a. VorbisPlayer  -> yes
+            b. Raw/WAVPlayer -> yes  
+Y 20. Audio:  Major problem with lost audio IDs
+              -> found extra semicolon on conditional line
+Y 09. BrioMixer: Don't handle Audio/MIDI done message properly
+Y 16. BrioMixer: Can toggle A&B buttons and sounds don't turn off as their events are lost
+                ---> was a symptom of lost ID bug
+Y 18. BrioMixer: convert floating point Decibel calculation to larger table
+Y 02. Audio:  Panning only does one channel when two mono sounds are playing.
+                Play A & B at same time and play with panning buttons
+              ----> was a symptom of lost audio ID bug
+Y 11. Audio:  Runs Mixer::Render() even for no audio channels active
+                --> only when a debug output file is specified
+Y 12. Audio: Unify Channel and MIDI volume in single constant in AudioConfig.h
+Y 34. Audio:  StartAudio() crashes with some types of CStrings.
+            Most work from resource paths.  It's local dir file names plus probably some others.
+            WEIRD.  This code was never changed, but it seemed to stop AppManager (013) and     
+            SysAppDemo.
+        --> reworked storage of audio resource path by copying from video module.
 
 ===========================================
 v0.1.25  (Build 2430 released Dec 13, 2007) 
