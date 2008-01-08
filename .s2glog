@@ -12060,3 +12060,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/8/08 10:43 AM
 4,238 ms. (Cumulative: 3,151,929 ms)
 
 ----------------
+Revision 2,565 from svn://localhost/TRUNK/:
+
+Smaller MIDI library, reduced from 6 to 5 MByte
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/8/08 12:09 PM
+1 changed, 0 added, 0 deleted.
+4,734 ms. (Cumulative: 3,156,726 ms)
+
+----------------
