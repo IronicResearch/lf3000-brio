@@ -3,10 +3,8 @@
 // All Rights Reserved
 //==============================================================================
 //
-// File:
-//		AudioPlayer.cpp
+// AudioPlayer.cpp
 //
-// Description:
 //		The base class for all Audio Players.
 //
 //==============================================================================

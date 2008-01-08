@@ -59,7 +59,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 #endif
 
 // Allocate player's sample buffer
-	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];
+	pReadBuf_ = new S16[ kAudioOutBufSizeInWords ];
 
 // Set up looping
 	shouldLoopFile_ = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
@@ -265,19 +265,19 @@ return (bytesRead);
 // Render:        Return framesRead
 // ==============================================================================
     U32 
-CRawPlayer::Render( S16* pOut, U32 numStereoFrames )
+CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 {	
 tErrType result;
 U32		index;
 U32		framesRead = 0, framesToProcess = 0;
 U32		bytesRead = 0;
-U32     bytesToRead = numStereoFrames * sizeof(S16) * channels_;
+U32     bytesToRead = framesToRender * sizeof(S16) * channels_;
 S16     *bufPtr = pReadBuf_;
 long    fileEndReached = false;
 
 //totalBytesRead_ = 0;
 
-//{static long c=0; printf("CRawPlayer::Render: start %ld numStereoFrames=%ld\n", c++, numStereoFrames);}
+//{static long c=0; printf("CRawPlayer::Render: start %ld framesToRender=%ld\n", c++, framesToRender);}
 //printf("CRawPlayer::Render: shouldLoopFile=%d \n", shouldLoopFile_);
 if (bComplete_)
     return (0);

@@ -4,12 +4,13 @@
 //
 //			Written by Gints Klimanis
 // **********************************************************************
+//#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
-#include <util.h>
+//#include <util.h>
 #include <Dsputil.h>
 #include <Dsputil2.h>
 
@@ -731,6 +732,22 @@ for (long i = 0; i < length; i++)
 }	// ---- end ScaleShortsi_Q15() ---- 
 
 // *************************************************************** 
+// ScaleShortsi:	Scale 'short' from in buffer to out buffer
+//				1.15 Fixed point implementation.  
+//				(ok for "in place" operation )
+// ***************************************************************
+    void 
+ScaleShortsi(Q15 *in, Q15 *out, long length, U16 shift, Q15 frac)
+{
+for (long i = 0; i < length; i++)
+    {
+    long x = in[i];
+    x <<= shift;
+//    out[i] = MultQ15(in[i], k);
+    }
+}	// ---- end ScaleShortsi() ---- 
+
+// *************************************************************** 
 // MACShortsi_Q15:	Scale 'short' from 'in' and add to 'out'
 //				1.15 Fixed point implementation.  
 //				 0 <= k < 1
@@ -742,18 +759,6 @@ MACShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k)
 for (long i = 0; i < length; i++)
     out[i] = MacQ15(out[i], in[i], k);
 }	// ---- end MACShortsi_Q15() ---- 
-
-// *************************************************************** 
-// ScaleShortsi:	Scale 'short' from in buffer to out buffer
-//				Fixed point implementation.  
-//				(ok for "in place" operation )
-// ***************************************************************
-    void 
-ScaleShortsi(short *in, short *out, long length, float k)
-{
-for (long i = 0; i < length; i++)
-    out[i] = (short)(k*(float)in[i]);
-}	// ---- end ScaleShortsi() ---- 
 
 // *************************************************************** 
 // ScaleAddShortsf:	Scale and Add in buffer to out buffer
@@ -798,22 +803,29 @@ else
 }	// ---- end AddShorts() ---- 
 
 // *************************************************************** 
-// Add2_Shortsi:	Add two buffers of 'short' with saturation
+// Add2_Shortsi:	Add two buffers of 'short' with optional saturation
 //
 //			16-bit fixed-point implementation
 // ***************************************************************
     void 
-Add2_Shortsi(short *inA, short *inB, short *outY, long length)
+Add2_Shortsi(short *inA, short *inB, short *outY, long length, int saturate)
 {
-//{static long c=0; printf("Add2_Shorts%d : start\n", c++);}
+//{static long c=0; printf("Add2_Shorts%d : start saturate=%d\n", c++, saturate);}
 
-for (long i = 0; i < length; i++) 
-	{
-	long lAcc = ((long) inA[i]) + (long) inB[i];
-	SATURATE_16BIT(lAcc);	// Macro doesn't return a value
-
-	outY[i] = (short) lAcc;
-	}
+if (saturate)
+    {
+    for (long i = 0; i < length; i++) 
+    	{
+    	long lAcc = ((long) inA[i]) + (long) inB[i];
+    	SATURATE_16BIT(lAcc);	// Macro doesn't return a value
+    	outY[i] = (short) lAcc;
+    	}
+    }
+else
+    {
+    for (long i = 0; i < length; i++) 
+    	outY[i] = (short) (inA[i] + inB[i]);
+    }
 }	// ---- end Add2_Shortsi() ---- 
 
 // *************************************************************** 

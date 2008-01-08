@@ -26,7 +26,7 @@
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
 
-#define kMixer_HeadroomBits_Default 1
+#define kMixer_HeadroomBits_Default 2
 
 // Debug input/output stuff
 
@@ -65,54 +65,54 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 
     SetMasterVolume(kVolume_Default);
     samplingFrequency_ = kAudioSampleRate;
+	useOutSpeakerDSP_ = false;
 
-//	DefaultBrioMixer(&pDSP_);
-//	pDSP_.channelCount = numInChannels_;
-	
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
 
 // Allocate audio channels
 	pChannels_ = new CChannel[ numInChannels_ ];
 	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n" , numInChannels_);
-    pChannelBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // Factor 2 (4?) to allow for 2x upsampling
-    for (ch = 0; ch < numInChannels_; ch++)
-        {
-    	channel_tmpPtrs_[ch] = new S16[ 2*kAudioOutBufSizeInWords ];	
-//        pChannels_[ch].outP = channel_tmpPtrs_[ch];
-        }
+    pChannelBuf_ = new S16[ kAudioOutBufSizeInWords ];
+//    for (ch = 0; ch < numInChannels_; ch++) {}
 
-	// Create MIDI player
-	pMidiPlayer_   = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+// Create MIDI player
+	pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
 
-fsRack_[0] = (long)(samplingFrequency_*0.25f); // kAudioSampleRate_Div4;
-fsRack_[1] = (long)(samplingFrequency_*0.5f ); // kAudioSampleRate_Div2;
-fsRack_[2] = (long)(samplingFrequency_);       // kAudioSampleRate_Div1;
-//for (i = 0; i < 3; i++)
-//printf("fsRack_[%ld] = %ld\n", i, fsRack_[i]);
+// Configure sampling frequency conversion
+fsRack_[0] = (long)(samplingFrequency_*0.25f);
+fsRack_[1] = (long)(samplingFrequency_*0.5f );
+fsRack_[2] = (long)(samplingFrequency_);       
 
 for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
+	pMixBinBufs_[i] = new S16[/* 2* */ kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords]; // GK FIXXX: 2x needed ??
+	mixBinFilled_[i] = False;
+	}
+
+for (i = 0; i < kAudioMixer_SRCCount; i++)
+	{
+// All SRC units will be set for 2x interpolation:   fs/4 -> fs/2  , fs/2 -> fs
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		{
-		pMixBinBufs_[i][ch] = new S16[2*kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords];
-
 // Initialize sampling rate converters  
         SRC *src = &src_[i][ch];
 		DefaultSRC(src);
-//		src->type = kSRC_Interpolation_Type_Triangle; // AddDrop, Linear, Triangle, FIR, IIR, Box
-
+// kSRC_Interpolation_Type : {Triangle, AddDrop, Linear, Triangle, FIR, IIR, Box}
         src->type = kSRC_Interpolation_Type_FIR;
+// V6: no go.  Alias on 1000/8000Hz very  audible  
+// V7: ok:     Alias on 1000/8000Hz quite audible
+// V8: good.   Alias on 1000/8000Hz inaudible 
         src->filterVersion = kSRC_FilterVersion_8; // 6=30dB_15 7=50dB_31 8=50dB_41
 
-		SRC_SetInSamplingFrequency (src, (float)fsRack_[i]);
-		SRC_SetOutSamplingFrequency(src, samplingFrequency_);
+//		SRC_SetInSamplingFrequency (src, (float)fsRack_[i]);
+//		SRC_SetOutSamplingFrequency(src, samplingFrequency_);
+//		SRC_SetOutSamplingFrequency (src, (float)(2*fsRack_[i]));  // Don't worry.  Bin0 SRC not used.
 
-		UpdateSRC(src);
-		ResetSRC(src);
+//		UpdateSRC(src);
+//		ResetSRC(src);
 		}
-	mixBinFilled_[i] = False;
-	}
+    }
 
 // Input debug stuff
     inputIsDC      = false;
@@ -128,65 +128,13 @@ for (i = 0; i < kAudioMixer_MixBinCount; i++)
     SetUpSawtoothOscillator(&z_, &delta_, 4000.0f/(float)kAudioSampleRate, 0.0f);
 #endif
 
-// Configure DSP engine
-    preGainDB  = 0.09f;
-    postGainDB = 0.07f;
-
-for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
-	{
-// Configure output Equalizer
-    outEQ_BandCount_ = 1;
-    for (j = 0; j < kAudioMixer_MaxEQBands; j++)
-        DefaultEQ(&outEQ_[ch][j]);
-
-//#define EQ_WITH_LOWPASS_RESPONSE
-//#define EQ_WITH_RESONANT_SPIKES
-#define EQ_WITH_FLAT_RESPONSE
-#ifdef EQ_WITH_LOWPASS_RESPONSE
-    outEQ_BandCount_ = 1;
-    SetEQ_Parameters(&outEQ_[ch][0], 200.0f, 20.0f, 10.0f, kEQ_Mode_LowPass);
-    SetEQ_Parameters(&outEQ_[ch][1], 200.0f, 20.0f, 0.0f, kEQ_Mode_Parametric);
-    SetEQ_Parameters(&outEQ_[ch][2], 400.0f, 20.0f, 0.0f, kEQ_Mode_LowShelf);
-#endif 
-#ifdef EQ_WITH_RESONANT_SPIKES
-    {
-    float q = 20.0f;
-    float gainDB = 10.0f;
-    outEQ_BandCount_ = 3;
-    SetEQ_Parameters(&outEQ_[ch][0], 100.0f, q, gainDB, kEQ_Mode_Parametric);
-    SetEQ_Parameters(&outEQ_[ch][1], 200.0f, q, gainDB, kEQ_Mode_Parametric);
-    SetEQ_Parameters(&outEQ_[ch][2], 400.0f, q, gainDB, kEQ_Mode_Parametric);
-    }
-#endif 
-#ifdef EQ_WITH_FLAT_RESPONSE
-    outEQ_BandCount_ = 3;
-    SetEQ_Parameters(&outEQ_[ch][0], 1000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-    SetEQ_Parameters(&outEQ_[ch][1], 2000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-    SetEQ_Parameters(&outEQ_[ch][2], 4000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-#endif 
-    for (j = 0; j < outEQ_BandCount_; j++)
-        {
-        SetEQ_SamplingFrequency(&outEQ_[ch][j], samplingFrequency_);
-        PrepareEQ(&outEQ_[ch][j]);
-        }
-
-// Configure output "soft" clipper
-    {
-    WAVESHAPER *d = &outSoftClipper_[ch];
-    DefaultWaveShaper(d);
-    SetWaveShaper_Parameters(d, kWaveShaper_Type_V4, preGainDB, postGainDB);
-    SetWaveShaper_SamplingFrequency(d, samplingFrequency_);
-    PrepareWaveShaper(d);
-    }
-    }
-//for (ch = 0; ch < pDSP_.channelCount; ch++)
-//	pChannels_[ch].SetMixerChannelDataPtr(&pDSP_.channels[ch]);
-
 for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
-	S16 *p = new S16[ 2*(kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements) ];
+    int length = kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements;
+	S16 *p = new S16[ /* 2* */ length ];  // GK FIXXX: can probably eliminate 2x
+    ClearShorts(p, length);
 	pTmpBufs_      [i] = p;
-	pTmpBufOffsets_[i] = &p[2*kSRC_Filter_MaxDelayElements];  // GK FIXXX factor of 2?
+	pTmpBufOffsets_[i] = p+kSRC_Filter_MaxDelayElements;  
 	}
 // Set up level meters
 for (ch = kLeft; ch <= kRight; ch++)
@@ -197,20 +145,19 @@ for (ch = kLeft; ch <= kRight; ch++)
     }
 
 // numFrames = 256 for EMULATION, 512 for embedded
-// DUHHH is this frames or samples ?
 int numFramesPerBuffer = kAudioFramesPerBuffer;
+//printf("CAudioMixer::CAudioMixer: numFramesPerBuffer=%d\n", numFramesPerBuffer);
 
 U32 shortTimeRateHz = 12;
-shortTimeCounter  = 0;
-shortTimeInterval = kAudioSampleRate/(shortTimeRateHz * numFramesPerBuffer);
-
-U32 longTimeRateHz = 1;
-longTimeHoldCounter  = 0;
+U32 longTimeRateHz  =  1;
+shortTimeCounter    = 0;
+longTimeHoldCounter = 0;
+shortTimeInterval    = kAudioSampleRate/(shortTimeRateHz * numFramesPerBuffer);
 longTimeHoldInterval = shortTimeInterval/longTimeRateHz;
 
 float rateF = ((float)kAudioSampleRate)/(float)(shortTimeRateHz *numFramesPerBuffer);
 longTimeDecayF = (1.0f - 0.5f/rateF)/(float)shortTimeRateHz; 
-longTimeDecayF *= 6.0;
+longTimeDecayF *= 6.0f;
 longTimeDecayI = FloatToQ15(longTimeDecayF);
 //printf("rateF=%g longTimeDecayF=%g\n", rateF, longTimeDecayF);
 //printf("shortTime: Hz=%ld frames=%d Interval=%ld longTimeDecayF=%g\n", 
@@ -219,7 +166,6 @@ longTimeDecayI = FloatToQ15(longTimeDecayF);
 //
 // Set up Audio State struct (interfaces via AudioMPI)
 // NOTE : Keep at end of this routine
-//
 {
 tAudioState *d = &audioState_;
 //printf("CAudioMixer: sizeof(tAudioState)=%d\n", sizeof(tAudioState));
@@ -230,13 +176,13 @@ d->computeLevelMeters = false;
 d->useOutEQ           = false;
 d->useOutSoftClipper  = false;
 d->useOutDSP          = (d->computeLevelMeters || d->useOutEQ || d->useOutSoftClipper);
-if (d->useOutSoftClipper)
-    d->headroomBits = 1+kMixer_HeadroomBits_Default;
-else
-    d->headroomBits =   kMixer_HeadroomBits_Default;
+//if (d->useOutSoftClipper)
+//    d->headroomBits = kMixer_HeadroomBits_Default;
+//else
+    d->headroomBits = kMixer_HeadroomBits_Default;
 
-d->softClipperPreGainDB  = (S16) preGainDB;
-d->softClipperPostGainDB = (S16) postGainDB;
+d->softClipperPreGainDB  = (S16) 5;
+d->softClipperPostGainDB = (S16) 0;
 
 //kSRC_Interpolation_Type_Triangle; // Linear, Triangle, FIR, IIR, Box
 d->srcType          = src_[0][kLeft].type;
@@ -269,6 +215,31 @@ strcpy(d->outSoundFilePath, "BrioOut.wav");
 inSoundFile_  = NULL;
 outSoundFile_ = NULL;
 } // end Set up Audio State struct
+
+// 
+// ---- Configure DSP engine
+//
+for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
+	{
+// Configure output Equalizer
+    outEQ_BandCount_ = 1;
+    for (j = 0; j < kAudioMixer_MaxEQBands; j++)
+        {
+        DefaultEQ(&outEQ_[ch][j]);
+//    SetEQ_SamplingFrequency(d, samplingFrequency_);
+        }
+
+// Configure output "soft" clipper
+    DefaultWaveShaper(&outSoftClipper_[ch]);
+    outSoftClipper_[ch].useFixedPoint = true;
+//    SetWaveShaper_SamplingFrequency(&outSoftClipper_[ch], samplingFrequency_);
+    }
+SetSamplingFrequency( samplingFrequency_ );
+
+SetDSP();
+UpdateDSP();
+ResetDSP();
+
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
 // ==============================================================================
@@ -283,8 +254,8 @@ long i;
 	{
     for (long ch = 0; ch < numInChannels_; ch++)
         {     	
-		if (channel_tmpPtrs_[ch])
-			free(channel_tmpPtrs_[ch]);	
+//		if (channel_tmpPtrs_[ch])
+//			free(channel_tmpPtrs_[ch]);	
 //        delete pChannels_[ch];
         }
 	}
@@ -295,7 +266,7 @@ long i;
 
 // Dellocate buffers 
   	if (pChannelBuf_)
-    		delete pChannelBuf_;
+    	delete pChannelBuf_;
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 		{
 		if (pTmpBufs_[i])
@@ -306,11 +277,8 @@ long i;
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
 		{
-        for (long j = 0; j < kAudioMixer_MaxOutChannels; j++)
-            {
-    		if (pMixBinBufs_[i][j])
-    			free(pMixBinBufs_[i][j]);
-            }
+		if (pMixBinBufs_[i])
+			free(pMixBinBufs_[i]);
 		}
 	
 //if (audioState_.writeOutSoundFile)
@@ -590,33 +558,34 @@ return (kNoErr);
 }  // ---- end AddPlayer() ----
 
 // ==============================================================================
-// Render:  Big monster mixer render routine
+// Render:  Main mixer render routine
 //
 //                          Return # of frames rendered.  
-//    (GX FIXXX:  incorrect return value)
+//    (GX FIXXX:  incorrect return value.  Could be Max of channel returns values.)
 // ==============================================================================
     int 
 CAudioMixer::Render( S16 *pOut, U32 numFrames )
-// Gk CHECK FIXX numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
+// GK CHECK FIXX numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
 U32 	i, ch;
 U32 	framesRendered;
+U32     numFramesDiv2 = numFrames>>1;
+U32     numFramesDiv4 = numFrames>>2;
 long    mixBinIndex;
 long    channels = kAudioMixer_MaxOutChannels;
-// FIXXXX: mystery.  Offset Ptrs don't work !!!
-S16 **tPtrs = pTmpBufs_; // pTmpBufs_, pTmpBufOffsets_
+S16 **tPtrs = pTmpBufOffsets_; // pTmpBufs_, pTmpBufOffsets_
 
 //{static long c=0; printf("CAudioMixer::Render : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channels);}
 
 // Update parameters from AudioState
-// GK FIXXX:  should wrap this in a Mutex
-if (audioState_.useOutSoftClipper)
-    audioState_.headroomBits = 1+kMixer_HeadroomBits_Default;
-else
+// GK FIXXX:  Mutex-protect this
+//if (audioState_.useOutSoftClipper)
+//    audioState_.headroomBits = kMixer_HeadroomBits_Default;
+//else
     audioState_.headroomBits = kMixer_HeadroomBits_Default;
 
-// GK FIXXXX: HACK  need to mutex-protect this
 #ifdef NEW_ADD_PLAYER
+// GK FIXXXX: HACK  need to mutex-protect this
 if (playerToAdd_)
     {
     CAudioPlayer *pPlayer  = playerToAdd_;
@@ -643,8 +612,7 @@ printf("CAudioMixer::Render: Added player\n");
 // Clear stereo mix buffers
 for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
-	ClearShorts( pMixBinBufs_[i][0], numFrames*channels);
-	ClearShorts( pMixBinBufs_[i][1], numFrames*channels);
+	ClearShorts( pMixBinBufs_[i], numFrames*channels);  // GK NOTE: can optimize to clear less for fs/4 and fs/2
 	mixBinFilled_[i] = False;
 	}
 
@@ -657,12 +625,12 @@ if (audioState_.readInSoundFile && !inSoundFile_)
     OpenInSoundFile(audioState_.inSoundFilePath);
 
 //
-// ---- Render each channel to mix buffer with corresponding sampling frequency
+// ---- Render each channel to mix bin with corresponding sampling frequency
 //
 if (audioState_.readInSoundFile && !inSoundFileDone_)
 	{
     long mixBinIndex  = GetMixBinIndex(inSoundFileInfo_.samplerate);
-	S16 *mixBinP      = (S16 *) pMixBinBufs_[mixBinIndex][0];
+	S16 *mixBinP      = (S16 *) pMixBinBufs_[mixBinIndex];
 	long framesToRead = numFrames/GetSamplingRateDivisor(inSoundFileInfo_.samplerate);
 	long framesRead   = 0;
 
@@ -673,8 +641,8 @@ if (audioState_.readInSoundFile && !inSoundFileDone_)
 // Replicate mono input file to both channels of stereo mix buffer
 	else
 		{
- 		framesRead = sf_readf_short(inSoundFile_, pTmpBufs_[0], framesToRead);
-		InterleaveShorts(pTmpBufs_[0], pTmpBufs_[0], mixBinP, framesRead);
+ 		framesRead = sf_readf_short(inSoundFile_, tPtrs[0], framesToRead);
+		InterleaveShorts(tPtrs[0], tPtrs[0], mixBinP, framesRead);
 		}
     if (framesRead < framesToRead)
         {
@@ -685,31 +653,33 @@ if (audioState_.readInSoundFile && !inSoundFileDone_)
 printf("AudioMixer::Render: read %ld samples from WAV file \n", framesRead); 
 //inSoundFileInfo.samplerate, frames, channels
 	}
+// 
+// ---- Render all active channels (not including MIDI)
+//
 else
 {
-ClearShorts(pChannelBuf_, numFrames*channels);
-// Render if channel is in use and not paused
 for (ch = 0; ch < numInChannels_; ch++)
 	{
 	CChannel *pCh = &pChannels_[ch];
-//printf("CAudioMixer::Render: pCh%ld->ShouldRender=%d \n", ch, pCh->ShouldRender());
+//printf("CAudioMixer::Render: pCh%ld/%ld ->ShouldRender=%d \n", ch, numInChannels_, pCh->ShouldRender());
+// Render if channel is in use and not paused
 	if (pCh->ShouldRender())
 		{
-        long channelSamplingFrequency = pCh->GetSamplingFrequency();
+        ClearShorts(pChannelBuf_, numFrames*channels); // GK FIXXX: may not need this clear or may need keep in loop
+
 // GK FIXXX: eliminate divide
-		U32 framesToRender = (numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
-        U32 sampleCount    = framesToRender*channels;
+        long channelSamplingFrequency = pCh->GetSamplingFrequency();
+		U32  framesToRender = (numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
+        U32  sampleCount    = framesToRender*channels;
 //printf("ch%ld: framesToRender=%ld for %ld Hz\n", ch, framesToRender, channelSamplingFrequency);
 
-	// Player renders data into channel's stereo output buffer.  
+	// Player renders data into channel's stereo output buffer
         framesRendered = pCh->Render( pChannelBuf_, framesToRender );
 	    if ( framesRendered < framesToRender ) 
 //printf("frames %ld/%ld\n", framesRendered, framesToRender);
 //	    if ( 0 == framesRendered ) 
             {
-//            ClearShorts(pChannelBuf_, framesToRender);
 //			pCh->Release( true );	// false = Don't suppress done msg 
- 
             pCh->isDone_ = true;
             pCh->fInUse_ = false;
             if (pCh->GetPlayerPtr()->ShouldSendDoneMessage())
@@ -728,28 +698,30 @@ printf("Sawtooth z=$%08X delta=$%08X out[0]=$%04X\n", (unsigned int)z_, (unsigne
 #endif
 	// Add output to appropriate Mix "Bin" 
 		long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
-// FIXXX: convert fs/4->fs/2 with gentler anti-aliasing filter and let fs/2 mix bin's conversion do fs/2->fs
-		S16 *pMixBin = pMixBinBufs_[mixBinIndex][0];
+// GK FIXX: use fs/4->fs/2 with gentler anti-aliasing filter and let fs/2 mix bin's conversion do fs/2->fs
+		S16 *pMixBin = pMixBinBufs_[mixBinIndex];
         ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount, audioState_.headroomBits);
         AccS16toS16(pMixBin, pChannelBuf_, sampleCount, mixBinFilled_[mixBinIndex]);
 
 		mixBinFilled_[mixBinIndex] = True;
-		}
+		}   // end ---- if (pCh->ShouldRender())
 	}
 
 // MIDI player renders to fs/2 output buffer 
-//{static long c=0; printf("CAudioMixer::Render%ld: pMidiPlayer_->IsActive=%d\n", c++, pMidiPlayer_->IsActive());}
+// Even if fewer frames rendered
+// {static long c=0; printf("CAudioMixer::Render%ld: pMidiPlayer_->IsActive=%d\n", c++, pMidiPlayer_->IsActive());}
 if ( pMidiPlayer_->IsActive() )
 	{
-	long mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
-	S16 *pMixBin = pMixBinBufs_[mixBinIndex][0];
-	long framesToRender = (numFrames/2);  // fs/2
-    U32 sampleCount = framesToRender*channels;
+	U32 mixBinIndex    = kAudioMixer_MixBin_Index_FsDiv2;
+	U32 framesToRender = numFramesDiv2;  // fs/2
+    U32 sampleCount    = framesToRender*channels;
 
+    ClearShorts(pChannelBuf_, framesToRender); // GK FIXXX: may not need this clear or may need keep in loop
 	framesRendered = pMidiPlayer_->Render( pChannelBuf_, framesToRender); 
+// GK FIXXX: need to zero fill MIDI buffer ??
 //{static long c=0; printf("CAudioMixer::Render%ld: MIDI framesToRender=%ld\n", c++, framesToRender);}
     ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount, audioState_.headroomBits);
-    AccS16toS16(pMixBin, pChannelBuf_, sampleCount, mixBinFilled_[mixBinIndex]);
+    AccS16toS16(pMixBinBufs_[mixBinIndex], pChannelBuf_, sampleCount, mixBinFilled_[mixBinIndex]);
 
 	mixBinFilled_[mixBinIndex] = True;
 	}
@@ -760,42 +732,67 @@ if ( pMidiPlayer_->IsActive() )
 //
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv1;
 if (mixBinFilled_[mixBinIndex])
-    CopyShorts(pMixBinBufs_[mixBinIndex][0], pOut, numFrames); 
+    CopyShorts(pMixBinBufs_[mixBinIndex], pOut, numFrames); // GK FIXXXX: CRASH frames vs. channels problem !!
 else
 	ClearShorts( pOut, numFrames * channels );
 
-#define MIX_THE_MIX_BINS
-#ifdef MIX_THE_MIX_BINS
+//
+// Combine Mix bins: sum multi-rate (fs/4, fs/2, fs) buffers with sampling frequency conversion
+//
 // Deinterleave and process each Mix Buffer separately to OutBuf
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv4;
 if (mixBinFilled_[mixBinIndex])
 	{
-	DeinterleaveShorts(pMixBinBufs_[mixBinIndex][0], tPtrs[2], tPtrs[3], numFrames/4);
-	RunSRC(tPtrs[2], tPtrs[0], numFrames/4, numFrames, &src_[mixBinIndex][0]);
-	RunSRC(tPtrs[3], tPtrs[1], numFrames/4, numFrames, &src_[mixBinIndex][1]);
-	InterleaveShorts(tPtrs[0], tPtrs[1], tPtrs[6], numFrames/2);
-	Add2_Shortsi(tPtrs[6], pOut, pOut, (numFrames/2)*channels);
-//CopyShorts(tPs[6], pOut, numFrames*channels);
-	}
+// Need to keep separate tPtrs per SRC to preserve past input values
+	DeinterleaveShorts(pMixBinBufs_[mixBinIndex], tPtrs[2], tPtrs[3], numFramesDiv4);
+	RunSRC(tPtrs[2], tPtrs[0], numFramesDiv4, numFramesDiv2, &src_[mixBinIndex][kLeft ]);
+	RunSRC(tPtrs[3], tPtrs[1], numFramesDiv4, numFramesDiv2, &src_[mixBinIndex][kRight]);
+	InterleaveShorts(tPtrs[0], tPtrs[1], tPtrs[6], numFramesDiv2);
 
+// Add output of fs/4->fs/2 to the fs/2 bin
+// NOTE:  need headroom to avoid overflow in Add2_Shortsi()
+    S16 *pBin_Fs2 = pMixBinBufs_[kAudioMixer_MixBin_Index_FsDiv2];
+    if (mixBinFilled_[kAudioMixer_MixBin_Index_FsDiv2])
+    	Add2_Shortsi(tPtrs[6], pBin_Fs2, pBin_Fs2, (numFramesDiv2)*channels, false);
+    else
+        {
+        CopyShorts(tPtrs[6], pBin_Fs2, numFrames*channels);
+        mixBinFilled_[kAudioMixer_MixBin_Index_FsDiv2] = true;
+        }
+	}
+// Clear portion used for SRC filter delay elements
+// GK FIXX: don't do this every time.  Add "buffer cleared" flag
+else
+    {
+	ClearShorts(&tPtrs[2][-kSRC_Filter_MaxDelayElements], numFramesDiv4);
+	ClearShorts(&tPtrs[3][-kSRC_Filter_MaxDelayElements], numFramesDiv4);
+    }
+
+// Convert fs/2  to fs and add to output bin
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
 if (mixBinFilled_[mixBinIndex])
 	{
-	DeinterleaveShorts(pMixBinBufs_[mixBinIndex][0], tPtrs[4], tPtrs[5], numFrames/2);
-	RunSRC(tPtrs[4], tPtrs[0], numFrames/2, numFrames, &src_[mixBinIndex][0]);
-	RunSRC(tPtrs[5], tPtrs[1], numFrames/2, numFrames, &src_[mixBinIndex][1]);
+	DeinterleaveShorts(pMixBinBufs_[mixBinIndex], tPtrs[4], tPtrs[5], numFramesDiv2);
+	RunSRC(tPtrs[4], tPtrs[0], numFramesDiv2, numFrames, &src_[mixBinIndex][kLeft ]);
+	RunSRC(tPtrs[5], tPtrs[1], numFramesDiv2, numFrames, &src_[mixBinIndex][kRight]);
 	InterleaveShorts(tPtrs[0], tPtrs[1], tPtrs[6], numFrames);
-	Add2_Shortsi(tPtrs[6], pOut, pOut, numFrames*channels);
-//CopyShorts(tPs[6], pOut, numFrames*channels);
+// NOTE:  need headroom to avoid overflow in Add2_Shortsi()
+	Add2_Shortsi(tPtrs[6], pOut, pOut, numFrames*channels, false);
 	}
+// Clear portion used for SRC filter delay elements
+// GK FIXX: don't do this every time.  Add "buffer cleared" flag
+else
+    {
+	ClearShorts(&tPtrs[4][-kSRC_Filter_MaxDelayElements], numFramesDiv2);
+	ClearShorts(&tPtrs[5][-kSRC_Filter_MaxDelayElements], numFramesDiv2);
+    }
 		
-// fixme/rdg:  needs CAudioEffectsProcessor
-// If at least one audio channel is playing, Process global audio effects
-//if (numPlaying && (gAudioContext->pAudioEffects != kNull))
+// Process global audio effects
+//if (numPlaying && gAudioContext->pAudioEffects)
 //	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOut );
 
-
 // Scale stereo/interleaved buffer by master volume
+// GKFIXX: should probably move earlier in signal chain to reduce clipping
 /// NOTE: volume here is interpreted as a linear value
 //ScaleShortsf(pOut, pOut, numFrames*channels, masterGainf_[0]);
 ScaleShortsi_Q15(pOut, pOut, numFrames*channels, masterGaini_[0]);
@@ -810,7 +807,6 @@ if (inputIsDC)
 printf("CAudioMixer: in DC %g dB -> %g |out %g dB -> %g (%d)\n", 
         inputDCValueDB, inputDCValuef, outputDCValueDB, outputDCValuef, outputDCValuei);
     }
-#endif // end MIX_THE_MIX_BINS
 
 // ---- Output DSP block
 
@@ -819,7 +815,6 @@ printf("CAudioMixer: in DC %g dB -> %g |out %g dB -> %g (%d)\n",
 //useOutSoftClipper_      = audioState_.useOutSoftClipper;
 if (audioState_.useOutEQ || audioState_.useOutSoftClipper || audioState_.computeLevelMeters)
     audioState_.useOutDSP  = true;
-
 #ifdef NEEDED
 {static long c=0; if (!(c++)) { tAudioState *d = &audioState_;
 printf("CAudioMixer: useOutDSP=%d computeLevelMeters=%d useOutEQ=%d useOutSoftClipper=%d\n", 
@@ -827,37 +822,39 @@ d->useOutDSP, d->computeLevelMeters, d->useOutEQ , d->useOutSoftClipper); }
 }
 #endif
 
-if (audioState_.useOutDSP)
-{
-DeinterleaveShorts(pOut, tPtrs[4], tPtrs[5], numFrames);
-
-for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
+if (true)  //audioState_.useOutDSP)
     {
-    short *pIn  = tPtrs[4+ch];
-    short *pOut = tPtrs[4+ch];
-
-// Compute Output Equalizer
-// NOTE: should have 32-bit data path here for EQ before soft clipper
-//audioState_.useOutEQ = False;
-    if (audioState_.useOutEQ)
-        {
-//{static long c=0; if (!c) printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
-        for (long j = 0; j < outEQ_BandCount_; j++)
+    #define kTmpIndex 0
+    DeinterleaveShorts(pOut, tPtrs[kTmpIndex], tPtrs[kTmpIndex+1], numFrames);
+    for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
+        { 
+        S16 *pIn  = tPtrs[kTmpIndex+ch];
+        S16 *pOut = tPtrs[kTmpIndex+ch]; 
+    // Compute Output Equalizer
+        if (audioState_.useOutEQ)
             {
-//            ComputeEQf(pIn, pOut, numFrames, &outEQ_[ch][j]);
-            ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
-            pOut = pIn;
+    //{static long c=0; if (!c) printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
+            for (long j = 0; j < outEQ_BandCount_; j++)
+                {
+                ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
+                pOut = pIn;
+                }
+            }
+    // GK FIXXX: test boost for single channel wave
+//        for (U32 ii = 0; ii < numFrames; ii++) pIn[ii] *= 3;
+
+    // Compute Output Soft Clipper
+    //{static long c=0; printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
+        if (audioState_.useOutSoftClipper)
+            {
+//        for (U32 ii = 0; ii < numFrames; ii++) pIn[ii] *= 3;
+            outSoftClipper_[ch].headroomBits = audioState_.headroomBits;  // GK_FIXX: move to setup code
+    //{static long c=0; if (!c) printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
+            ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
             }
         }
-// Compute Output Soft Clipper
-//{static long c=0; printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
-    if (audioState_.useOutSoftClipper)
-        {
-//{static long c=0; if (!c) printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
-        ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
-        }
-    }
-InterleaveShorts(tPtrs[4], tPtrs[5], pOut, numFrames);
+    InterleaveShorts(tPtrs[kTmpIndex], tPtrs[kTmpIndex+1], pOut, numFrames);
+    }  // end if (useOutDSP)
 ShiftLeft_S16(pOut, pOut, numFrames*channels, audioState_.headroomBits);
 
 // Audio level meters
@@ -868,8 +865,7 @@ if (audioState_.computeLevelMeters)
 // Scan output buffer for max values
     for (long ch = kLeft; ch <= kRight; ch++)
         {
-//        S16 x = MaxAbsShorts(tPtrs[4+ch], numFrames);
-        S16 x = MaxAbsShorts(&pOut[ch], numFrames, 2);
+        S16 x = MaxAbsShorts(&pOut[ch], numFrames, 2); // Grab from one channel, so use buffer offset
         if (x > temp_ShortTime[ch])
             temp_ShortTime[ch] = x;
 
@@ -891,7 +887,7 @@ if (audioState_.computeLevelMeters)
             if (x >= outLevels_LongTime[ch])
                 {
                 outLevels_LongTime[ch] = x;
-                longTimeHoldCounter  = 0;
+                longTimeHoldCounter    = 0;
                 }
             else  
                 {
@@ -912,8 +908,6 @@ if (audioState_.computeLevelMeters)
         }
 //printf("Short=%5d Long=%5d \n", outLevels_ShortTime[0], outLevels_LongTime[0]);
     } // end computeLevelMeters
-
-}  // end if (useOutDSP)
 
 // Debug:  write output of mixer to sound file
 static long outBufferCounter = 0; 
@@ -940,7 +934,7 @@ return (kNoErr);  // GK FIXX: should be # frames rendered
 } // ---- end Render() ----
 
 // ==============================================================================
-// WrapperToCallRender: Call member function Render()
+// WrapperToCallRender: Call member function Render() to fit PortAudio callback format
 //                              Return # of frames rendered
 // ==============================================================================
     int 
@@ -976,7 +970,8 @@ masterGaini_[1] = masterGaini_[0];
 // SetSamplingFrequency :  update fs for mixer and all DSP
 //                  Does not reset or recalculate DSP parameters
 // ==============================================================================
-void CAudioMixer::SetSamplingFrequency( float x )
+    void 
+CAudioMixer::SetSamplingFrequency( float x )
 {
 samplingFrequency_ = x;
 // FIXX :  Add bounding code
@@ -993,28 +988,84 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 
     SetWaveShaper_SamplingFrequency(&outSoftClipper_[ch], x);
 
-    for (i = 0; i < kAudioMixer_MixBinCount; i++)
+    for (i = 0; i < kAudioMixer_SRCCount; i++)
         {
-		SRC_SetInSamplingFrequency (&src_[i][ch], (float)fsRack_[i]);
-		SRC_SetOutSamplingFrequency(&src_[i][ch], samplingFrequency_);
+        SRC *d = &src_[i][ch];
+		SRC_SetInSamplingFrequency (d, (float)fsRack_[i]);
+//		SRC_SetOutSamplingFrequency(d, samplingFrequency_);
+		SRC_SetOutSamplingFrequency (d, (float)(2*fsRack_[i]));  // Don't worry.  Bin0 SRC not used.
         }
     }
 } // ---- end SetSamplingFrequency() ----
+
+// ==============================================================================
+// SetDSP :  Transfer high level DSP parameters from audio state to DSP modules
+// ==============================================================================
+    void 
+CAudioMixer::SetDSP()
+{
+tAudioState *d = &audioState_;
+
+U8     srcType;
+U8     srcFilterVersion;
+
+for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
+    {
+    WAVESHAPER *ws = &outSoftClipper_[ch];
+    SetWaveShaper_SamplingFrequency(ws, samplingFrequency_);
+    SetWaveShaper_Parameters(ws, kWaveShaper_Type_V4, (float)d->softClipperPreGainDB, (float)d->softClipperPostGainDB);
+
+    {
+//#define EQ_WITH_LOWPASS_RESPONSE
+//#define EQ_WITH_RESONANT_SPIKES
+#define EQ_WITH_FLAT_RESPONSE
+#ifdef EQ_WITH_LOWPASS_RESPONSE
+    outEQ_BandCount_ = 1;
+    SetEQ_Parameters(&outEQ_[ch][0], 200.0f, 20.0f, 10.0f, kEQ_Mode_LowPass);
+    SetEQ_Parameters(&outEQ_[ch][1], 200.0f, 20.0f,  0.0f, kEQ_Mode_Parametric);
+    SetEQ_Parameters(&outEQ_[ch][2], 400.0f, 20.0f,  0.0f, kEQ_Mode_LowShelf);
+#endif 
+#ifdef EQ_WITH_RESONANT_SPIKES
+    {
+    float q = 20.0f;
+    float gainDB = 10.0f;
+    outEQ_BandCount_ = 3;
+    SetEQ_Parameters(&outEQ_[ch][0], 100.0f, q, gainDB, kEQ_Mode_Parametric);
+    SetEQ_Parameters(&outEQ_[ch][1], 200.0f, q, gainDB, kEQ_Mode_Parametric);
+    SetEQ_Parameters(&outEQ_[ch][2], 400.0f, q, gainDB, kEQ_Mode_Parametric);
+    }
+#endif 
+#ifdef EQ_WITH_FLAT_RESPONSE
+    outEQ_BandCount_ = 3;
+    SetEQ_Parameters(&outEQ_[ch][0], 1000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
+    SetEQ_Parameters(&outEQ_[ch][1], 2000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
+    SetEQ_Parameters(&outEQ_[ch][2], 4000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
+#endif 
+    for (long j = 0; j < outEQ_BandCount_; j++)
+        {
+        SetEQ_SamplingFrequency(&outEQ_[ch][j], samplingFrequency_);
+        PrepareEQ(&outEQ_[ch][j]);    
+        }
+    }
+
+    }
+} // ---- end SetDSP() ----
 
 // ==============================================================================
 // UpdateDSP :  Recalculate DSP parameters
 // ==============================================================================
 void CAudioMixer::UpdateDSP()
 {
+long i;
+//{static long c=0; printf("CAudioMixer::UpdateDSP %ld: START\n", c++);}
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
-    long i;
     for (i = 0; i < outEQ_BandCount_; i++)
         UpdateEQ(&outEQ_[ch][i]);
 
     UpdateWaveShaper(&outSoftClipper_[ch]);
 
-    for (i = 0; i < kAudioMixer_MixBinCount; i++)
+    for (i = 0; i < kAudioMixer_SRCCount; i++)
     	UpdateSRC(&src_[i][ch]);
     }
 } // ---- end UpdateDSP() ----
@@ -1025,7 +1076,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 void CAudioMixer::ResetDSP()
 {
 long ch, i;
-
+//{static long c=0; printf("CAudioMixer::ResetDSP %ld: START\n", c++);}
 for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
     for (i = 0; i < outEQ_BandCount_; i++)
@@ -1034,56 +1085,48 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     ResetWaveShaper(&outSoftClipper_[ch]);
 
     for (i = 0; i < kAudioMixer_MixBinCount; i++)
-    	{
-    	ResetSRC(&src_[i][ch]);
     	mixBinFilled_[i] = False;
-    	}
+ 
+    for (i = 0; i < kAudioMixer_SRCCount; i++)
+    	ResetSRC(&src_[i][ch]);
     }
 } // ---- end ResetDSP() ----
 
 // ==============================================================================
-// PrepareDSP :  Update + Reset DSP state
-// ==============================================================================
-void CAudioMixer::PrepareDSP()
-{
-UpdateDSP();
-ResetDSP();
-} // ---- end PrepareDSP() ----
-
-// ==============================================================================
-// UpdateDebugGain :  Recalculate debug gain variables
-// ==============================================================================
-void CAudioMixer::UpdateDebugGain()
-{
-preGainf = DecibelToLinearf(preGainDB);
-preGaini = FloatToQ15(preGainf);
-//printf("CAudioMixer::UpdateDebugGain: preGainDB %g -> %g (%04X) \n", preGainDB, preGainf, preGaini);
-
-postGainf = DecibelToLinearf(postGainDB);
-postGaini = FloatToQ15(postGainf);
-//printf("CAudioMixer::UpdateDebugGain: postGainDB %g -> %g (%04X) \n", postGainDB, postGainf, postGaini);
-
-} // ---- end UpdateDebugGain() ----
-
-// ==============================================================================
 // SetAudioState :  Set audio state
 // ==============================================================================
-void CAudioMixer::SetAudioState(tAudioState *d)
+    void 
+CAudioMixer::SetAudioState(tAudioState *d)
 {
 //printf("CAudioMixer::SetAudioState: start srcType=%d\n", d->srcType);
 
 bcopy(d, &audioState_, sizeof(tAudioState));
 //printf("CAudioMixer::SetAudioState: audioState_.srcType=%d\n", audioState_.srcType);
+SetDSP();
+UpdateDSP();
+//ResetDSP();
 } // ---- end SetAudioState() ----
 
 // ==============================================================================
 // GetAudioState :  Get audio state
 // ==============================================================================
-void CAudioMixer::GetAudioState(tAudioState *d)
+    void 
+CAudioMixer::GetAudioState(tAudioState *d)
 {
 //printf("CAudioMixer::GetAudioState: start srcType=%d\n", d->srcType);
-
 bcopy(&audioState_, d, sizeof(tAudioState));
 } // ---- end GetAudioState() ----
+
+// ==============================================================================
+// EnableOutputSpeakerDSP :  Setup DSP that is different for Line and Speaker outputs
+// ==============================================================================
+    void 
+CAudioMixer::EnableOutputSpeakerDSP(Boolean x)
+{
+printf("CAudioMixer::EnableOutputSpeakerDSP: enabled=%ld -> %d\n", useOutSpeakerDSP_, x);
+useOutSpeakerDSP_ = x;
+audioState_.useOutEQ = x;
+audioState_.useOutSoftClipper = x;
+} // ---- end EnableOutputSpeakerDSP() ----
 
 LF_END_BRIO_NAMESPACE()

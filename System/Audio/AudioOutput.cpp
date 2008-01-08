@@ -25,20 +25,18 @@
 #include "rt_trace.h"
 LF_BEGIN_BRIO_NAMESPACE()
 
-// this turns on callback to Brio, v.s. sine test output
+// Enables callback to Brio, vs. sine output
 #define USE_REAL_CALLBACK	1
 
 #if USE_REAL_CALLBACK
-#define kSampleFormat	paInt16
+#define kAudioWordType	paInt16
 #else
-#define kSampleFormat	paFloat32
-#endif
+#define kAudioWordType	paFloat32
 
 // For debug out test tone
 #ifndef M_PI
 #define M_PI  (3.14159265)
 #endif
-
 #define TABLE_SIZE   (200)
 typedef struct
 {
@@ -47,6 +45,8 @@ typedef struct
     int right_phase;
 }
 paTestData;
+#endif
+
 
 //==============================================================================
 // Global variables
@@ -57,8 +57,9 @@ static void* gCallbackUserData;
 
 // Debug output
 static U32 gCallbackCount;			
+#ifndef USE_REAL_CALLBACK
 static paTestData gTestData;
-//static unsigned long t1, t2, t3;	// debugging
+#endif
 
 //==============================================================================
 // PortAudio callback (which is faking a DMA-triggered ISR)
@@ -92,7 +93,7 @@ static int paCallback(const void*						inputBuffer,
 
 #if USE_REAL_CALLBACK
 	// fixme/dg: do proper DebugMPI-based output.
-//	printf("OutputDriver PortAudioCallback bufPtr: %x, frameCount: %d \n", outputBuffer, framesPerBuffer );
+//	printf("OutputDriver PortAudioCallback bufPtr=%x, framesPerBuffer:=%d \n", outputBuffer, framesPerBuffer );
  
     // Call audio system callback to fill buffer
 	gAudioRenderCallback( (S16*)outputBuffer, framesPerBuffer, gCallbackUserData );
@@ -111,12 +112,14 @@ static int paCallback(const void*						inputBuffer,
 #else
     for( i=0; i<framesPerBuffer; i++ )
     {
-        *out++ = gTestData.sine[gTestData.left_phase];  // left
-        *out++ = gTestData.sine[gTestData.right_phase];  // right
+        *out++ = gTestData.sine[gTestData.left_phase ];  
+        *out++ = gTestData.sine[gTestData.right_phase];
         gTestData.left_phase += 1;
-        if( gTestData.left_phase >= TABLE_SIZE ) gTestData.left_phase -= TABLE_SIZE;
+        if( gTestData.left_phase >= TABLE_SIZE ) 
+            gTestData.left_phase -= TABLE_SIZE;
         gTestData.right_phase += 3; /* higher pitch so we can distinguish left and right. */
-        if( gTestData.right_phase >= TABLE_SIZE ) gTestData.right_phase -= TABLE_SIZE;
+        if( gTestData.right_phase >= TABLE_SIZE ) 
+            gTestData.right_phase -= TABLE_SIZE;
     }
 #endif
   
@@ -152,8 +155,8 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 		goto error;
 	}
 	
-    outputParameters.channelCount = kAudioNumOutputChannels;                     /* stereo output */
-    outputParameters.sampleFormat = kSampleFormat;             
+    outputParameters.channelCount = kAudioNumOutputChannels;                     // stereo output
+    outputParameters.sampleFormat = kAudioWordType;             
     outputParameters.hostApiSpecificStreamInfo = NULL;
   
     //printf("PaDefaultOutputLatency = %f\n", outputParameters.suggestedLatency);
@@ -166,22 +169,21 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 
     err = Pa_OpenStream( &gPaStream,
                          NULL,              /* No input. */
-                         &outputParameters, /* As above. */
+                         &outputParameters, 
                          kAudioSampleRate,
                          kAudioFramesPerBuffer,
-                         paClipOff,         /* No out of range samples expected. */
+                         paClipOff,         // Clipping disabled, but don't need it as feeding S16 samples to S16 output
                          paCallback,
                          NULL );
  
    if( err != paNoError ) goto error;
 	
+#ifndef USE_REAL_CALLBACK
     // initialise sinusoidal wavetable for debug output
     for( i=0; i<TABLE_SIZE; i++ )
-    {
         gTestData.sine[i] = (float) sin( ((double)i/(double)TABLE_SIZE) * M_PI * 2. );
-    }
     gTestData.left_phase = gTestData.right_phase = 0;
-
+#endif
 	return err;
 
 error:

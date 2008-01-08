@@ -73,7 +73,7 @@ public:
 
 	tErrType	GetEnableTracks( tMidiTrackBitMask *d );
 	tErrType	SetEnableTracks( tMidiTrackBitMask  d);
-	tErrType	TransposeTracks( tMidiTrackBitMask  d, S8 transposeAmount );
+	tErrType	TransposeTracks( tMidiTrackBitMask  d, S8 semitones );
 	tErrType	ChangeProgram(   tMidiTrackBitMask  d, tMidiPlayerInstrument number );
 	tErrType	ChangeTempo( S8 tempo); 
 

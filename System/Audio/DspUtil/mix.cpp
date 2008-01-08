@@ -258,7 +258,7 @@ switch (d->type)
 	case kMixerChannel_Type_In1_Out2:
     {
 	// Apply Gain and Equalization (EQ)
-		ScaleShortsi(inPs[0], tmpPs[0], length, d->inGaini);
+		ScaleShortsi_Q15(inPs[0], tmpPs[0], length, d->inGaini);
 //      if (useEQ)
 //          {
 //          for (i = 0; i < kMixerChannel_EQ_MaxBands; i++)

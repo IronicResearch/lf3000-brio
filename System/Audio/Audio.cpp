@@ -1332,25 +1332,25 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 {
 	tAudioStartMidiFileInfo info;
 	
-	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
-
+//	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
 	// If the path passed to us is a full path, then use it, otherwise
 	// append what was passed to the MPI's default path.
-	CPath fullPath = (path[0] == '/')
-			? path
-			: *mpiState.path + path;
+//	CPath fullPath = (path[0] == '/')
+//			? path
+//			: *mpiState.path + path;
+	bool			nopath = (path.length() == 0) ? true : false;
+	const CPath		fullPath = (nopath) ? "" : (path.at(0) == '/') ? path : gpath + path;
+///printf("CAudioModule::StartMidiFile: fullPath='%s'\n", fullPath.c_str());
 
-	// Generate the command message to send to the audio Mgr task
-//DebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioModule::StartMidiFile path'%s'\n", fullPath.c_str() );	
-
-	info.id = id;
-	info.path = &fullPath;
-	info.volume = volume;
-	info.priority = priority;
+// Generate command message to send to audio Mgr task
+	info.id        = id;
+	info.path      = &fullPath;
+	info.volume    = volume;
+	info.priority  = priority;
 	info.pListener = pListener;
-	info.priority = priority;
-	info.payload = payload;
-	info.flags = flags;
+	info.priority  = priority;
+	info.payload   = payload;
+	info.flags     = flags;
 	
 	CAudioMsgStartMidiFile msg( info );
 	

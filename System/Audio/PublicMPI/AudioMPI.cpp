@@ -411,22 +411,22 @@ void CAudioMPI::SetAudioEventListener( tAudioID id, IEventListener *pListener )
 // ==============================================================================
 // GAS:  Get Audio State LF internal function
 // ==============================================================================
-    void 
-CAudioMPI::GAS( void *d ) 
-{
-if ( pModule_ )	
-    pModule_->GetAudioState( (tAudioState *) d );
-}   // ---- end GAS() ----
+//    void 
+//CAudioMPI::GAS( void *d ) 
+//{
+//if ( pModule_ )	
+//    pModule_->GetAudioState( (tAudioState *) d );
+//}   // ---- end GAS() ----
 
 // ==============================================================================
 // SAS
 // ==============================================================================
-    void 
-CAudioMPI::SAS( void *d ) 
-{
-if ( pModule_ )
-	pModule_->SetAudioState( (tAudioState *) d );
-}   // ---- end SAS() ----
+//    void 
+//CAudioMPI::SAS( void *d ) 
+//{
+//if ( pModule_ )
+//	pModule_->SetAudioState( (tAudioState *) d );
+//}   // ---- end SAS() ----
 
 // ==============================================================================
 // GetDefaultAudioVolume
@@ -646,35 +646,58 @@ tMidiTrackBitMask CAudioMPI::GetEnabledMidiTracks( tMidiPlayerID id )
 // ==============================================================================
 // SetEnableMidiTracks
 // ==============================================================================
-tErrType CAudioMPI::SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask ) 
+tErrType CAudioMPI::SetEnableMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBits ) 
 {
 	if ( !pModule_ )
 		return kNoImplErr;
 	
-	return pModule_->SetEnableMidiTracks( id, trackBitMask );
+	return pModule_->SetEnableMidiTracks( id, trackBits );
 }   // ---- end SetEnableMidiTracks() ----
 
 // ==============================================================================
 // TransposeMidiTracks
 // ==============================================================================
-tErrType CAudioMPI::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBitMask, S8 transposeAmount ) 
+tErrType CAudioMPI::TransposeMidiTracks( tMidiPlayerID id, tMidiTrackBitMask trackBits, S8 semitones ) 
 {
 	if ( !pModule_ )
 		return kNoImplErr;
 	
-	return pModule_->TransposeMidiTracks( id, trackBitMask, transposeAmount );
+	return pModule_->TransposeMidiTracks( id, trackBits, semitones );
 }   // ---- end TransposeMidiTracks() ----
+
+// ==============================================================================
+// TransposeMidiTrack:  this is what the above function *should* have been
+// ==============================================================================
+//tErrType CAudioMPI::TransposeMidiTrack( tMidiPlayerID id, int channel, S8 semitones ) 
+//{
+//	if ( !pModule_ )
+//		return kNoImplErr;
+//	
+//	return pModule_->TransposeMidiTracks( id, 1<<channel, semitones );
+//}   // ---- end TransposeMidiTracks() ----
 
 // ==============================================================================
 // ChangeMidiInstrument
 // ==============================================================================
-tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask channel, tMidiPlayerInstrument programNumber ) 
+tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask trackBits, tMidiPlayerInstrument programNumber ) 
 {
 	if ( !pModule_)
 		return kNoImplErr;
 	
-	return pModule_->ChangeMidiInstrument( id, channel, programNumber );
+	return pModule_->ChangeMidiInstrument( id, trackBits, programNumber );
 }   // ---- end ChangeMidiInstrument() ----
+
+// ==============================================================================
+// ChangeMidiInstrument : this is what the above function *should* have been
+// ==============================================================================
+//tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, int channel, tMidiPlayerInstrument programNumber ) 
+//{
+//	if ( !pModule_)
+//		return kNoImplErr;
+//	
+//	return pModule_->ChangeMidiInstrument( id, 1<<channel, programNumber );
+//}   // ---- end ChangeMidiInstrument() ----
+
 
 // ==============================================================================
 // ChangeMidiTempo

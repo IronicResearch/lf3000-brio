@@ -19,6 +19,7 @@
 #include <AudioPriv.h>
 #include <MidiPlayer.h>
 
+#include <AudioMPI.h>
 #include <EventMPI.h>
 
 #include <EmulationConfig.h>
@@ -110,6 +111,8 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	// Start SP-MIDI synthesis engine using the desired sample rate.
 	midiErr = SPMIDI_CreateContext( &pContext_, kMIDI_SamplingFrequency);  
 	pDebugMPI_->Assert((midiErr == kNoErr), "CMidiPlayer::ctor: SPMIDI_CreateContext() failed.\n");
+// Double MIDI master volume as generally is it too quiet.  This risks clipping for multi-voice play.
+SPMIDI_SetMasterVolume( pContext_, 2*SPMIDI_DEFAULT_MASTER_VOLUME );
 
 	// For now only one MIDI player for whole system!  
 	pFilePlayer_ = kNull;
@@ -494,21 +497,40 @@ CMidiPlayer::SetEnableTracks( tMidiTrackBitMask d )
 //printf("CMidiPlayer::SetEnableTracks: $%X \n", (unsigned int) d);	
 
 // Loop through channels and set mask
-for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
-    SPMIDI_SetChannelEnable( pContext_, chan, 0 != (d & (1 << chan)) );
+for (U32 ch = 0; ch < kMIDI_ChannelCount; ch++) 
+    SPMIDI_SetChannelEnable( pContext_, ch, 0 != (d & (1 << ch)) );
 
 return kNoErr;
 }   // ---- end SetEnableTracks() ----
 
 // ==============================================================================
-// TransposeTracks:   FIXXX: parameter shouldn't be track bit mask ???
-//                  This API is non-sensical
+// TransposeTracks:   
 // ==============================================================================
     tErrType 
-CMidiPlayer::TransposeTracks( tMidiTrackBitMask /* d */, S8 semitones)
+CMidiPlayer::TransposeTracks( tMidiTrackBitMask trackBits, S8 semitones)
 {
-//printf("CMidiPlayer::TransposeTracks semitones=%d \n", semitones);	
-SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, semitones );
+//printf("CMidiPlayer::TransposeTracks: trackBits=$%0X semitones=%d\n", (unsigned int)trackBits, semitones);	
+// Global MIDI transpose: affects all MIDI channels
+//SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, semitones );
+
+// MIDI standard COARSE TUNING RPN = #2 to transpose by semitones by channel
+for (long ch = 0; ch < 16; ch++)
+    {
+    if (trackBits & (1 << ch))
+        {
+//printf("CMidiPlayer::TransposeTracks: track%2ld by %d semitones\n", ch, semitones);
+ SPMUtil_ControlChange(pContext_, ch, kMIDI_Controller_RPN_MSB, 0 ); 
+ SPMUtil_ControlChange(pContext_, ch, kMIDI_Controller_RPN_LSB, kMIDI_RPN_MasterCoarseTuning ); 
+
+// Set coarse tuning in Data Entry MSB, where A440 tuning = 0x40
+//S16 x = 0x40 + semitones;
+ SPMUtil_ControlChange( pContext_, ch, kMIDI_Controller_DataEntry, (semitones + 0x40)&0x7F ); 
+
+//  Fine tuning (Cents) currently ignored by Mobileer engine 
+//  SPMUtil_ControlChange( pContext_, ch,
+//     kMIDI_Controller_DataEntry + kMIDI_Controller_LSBOffset, 0 );
+        }
+    }
 
 return (kNoErr);
 }   // ---- end TransposeTracks() ----
@@ -520,32 +542,23 @@ return (kNoErr);
 //              channel # as argument.
 // ==============================================================================
     tErrType 
-CMidiPlayer::ChangeProgram( tMidiTrackBitMask channel , tMidiPlayerInstrument number )
+CMidiPlayer::ChangeProgram( tMidiTrackBitMask trackBits , tMidiPlayerInstrument number )
 {
-//printf("CMidiPlayer::ChangeProgram channel%2d number=%3d \n", (int)channel, (unsigned int) number);
+//printf("CMidiPlayer::ChangeProgram trackBits=$%X number=%3ld \n", (unsigned int) trackBits, number);
 
-#ifdef OLDE_INCORRECT_CHANGE_PROGRAM
-unsigned int shift = 1;
 for (long ch = 0; ch < 16; ch++)    
     {
-    if (d & shift)
+    if (trackBits & (1 << ch))
         {
+//printf("CMidiPlayer::ChangeProgram sending to ch=%ld \n", ch);
     // Send two byte MIDI program change
-        U8 cmd   = 0xA0 | channel;
+        U8 cmd   = kMIDI_ChannelMessage_ProgramChange | (0x7f & ch);
         U8 data1 = (U8)(0x7f & number);
         SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, 0 );
         }
-    shift <<= 1;
     }
-#endif
 
-// Send two byte MIDI program change
-U8 cmd   = kMIDI_CHANNELMESSAGE_PROGRAMCHANGE | (0xF & channel);
-U8 data1 = (U8)(0x7f & number);
-//printf("CMidiPlayer::ChangeProgram: cmd=$%X data1=$%X\n", (int) cmd, (int)data1);
-SPMIDI_WriteCommand( pContext_, (int)cmd, (int)data1, 0 );
-
-// Need extra code as minimal instrument set is currently loaded, so you have to
+// GK FIXXXX: Need extra code as minimal instrument set is currently loaded, so you have to
 // load those not in memory
 
 return (kNoErr);

@@ -42,6 +42,7 @@ typedef struct waveshaper {
     float   thresholdDB;
 	int		type;
 	int     useFixedPoint;
+    int     headroomBits;
 
 // Low Level data
     float   inGainf;           // linear
@@ -51,10 +52,17 @@ typedef struct waveshaper {
     Q15     outGaini;
     Q15     thresholdi;
 
-    float   oneThf;           
-    float   twoThf;           
-    Q15     oneThi;           
-    Q15     twoThi;           
+    Q15   inWholeI;
+    float inFracF ;
+    Q15   inFracI ;
+
+    float   oneThf, twoThf;           
+    long    oneThi, twoThi;           
+
+    long q31_2    ; // = FloatToQ15v2(2.0f);
+    long q31_3    ; // = FloatToQ15v2(3.0f);
+    long q31_3rd  ; // = FloatToQ15v2(1.0f/3.0f);
+    Q15  q15_2_3rd; // = FloatToQ15v2(2.0f/3.0f);
 
 	int		lowLevelDataBogus;
 	float	samplingFrequency;

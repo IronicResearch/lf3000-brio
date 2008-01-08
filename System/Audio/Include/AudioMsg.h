@@ -451,11 +451,11 @@ public:
 	void SetAudioStateResult( tAudioState d ) { audioState_   = d;   }
 	
 	tMidiPlayerID GetMidiID(           void ) { return midiPlayerID_; }
-	tAudioID      GetAudioID(          void ) { return audioID_; }
-	tErrType      GetAudioErr(         void ) { return err_; }
+	tAudioID      GetAudioID(          void ) { return audioID_;      }
+	tErrType      GetAudioErr(         void ) { return err_;          }
 	Boolean       GetBooleanResult(    void ) { return booleanValue_; }
-	U32           GetU32Result(        void ) { return u32Value_; }
-	tAudioState   GetAudioStateResult( void ) { return audioState_; }
+	U32           GetU32Result(        void ) { return u32Value_;     }
+	tAudioState   GetAudioStateResult( void ) { return audioState_;   }
 	
 private:
 	tErrType		err_;
@@ -466,7 +466,7 @@ private:
 	tAudioState		audioState_;
 };
 
-const U32	kAUDIO_MAX_MSG_SIZE	=	256;
+const U32	kAUDIO_MAX_MSG_SIZE	=	512;
 const U32	kAUDIO_MAX_NUM_MSGS	=	8;
 
 LF_END_BRIO_NAMESPACE()	

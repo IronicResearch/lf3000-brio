@@ -87,7 +87,7 @@ CChannel::~CChannel()
 }	// ---- end ~CChannel ----
 
 // ==============================================================================
-// SetPan :     Channel stereo position   Left .. Center .. Right
+// SetPan :     Channel stereo position   [Left .. Center .. Right]
 // =============================================================================
     void 
 CChannel::SetPan( S8 x )
@@ -167,7 +167,7 @@ return (shouldRender);
 }	// ---- end ShouldRender ----
 
 // ==============================================================================
-// SendDoneMsg
+// SendDoneMsg:  Transmit Done message to listener
 // ==============================================================================
 void CChannel::SendDoneMsg( void )
 {
@@ -322,47 +322,41 @@ return (kNoErr);
 // Render
 // ==============================================================================
     U32 
-CChannel::Render(S16 *pOut, int numFrames )
+CChannel::Render(S16 *pOut, int framesToRender )
+// GK CHECK FIXX numFrames  IS THIS FRAMES OR SAMPLES  !!!!!!!  THIS APPEARS TO BE SAMPLES
 {
-int numSamples = numFrames * 2;  // 2 channels
-S32 y;
-//{static long c=0; printf("CChannel::Render: START %ld \n", c++); }
+int samplesToRender = framesToRender * 2;  // 2 channels
+int samplesRendered = 0;
+int framesRendered  = 0;
 
+//{static long c=0; printf("CChannel::Render: START %ld framesToRender=%d\n", c++, framesToRender); }
 // Decide how to deal with player done i.e. playerFramesRendered comes back 
 // less than numStereoFrames: does player send done, or channel.
 	
-// Compute effects processor
+// Compute channel effects processor
 //	if (pFxChain_)
 //		pFxChain->ProcessAudioEffects( kAudioOutBufSizeInWords, pOut );
-ClearShorts(pOut, numSamples);
+ClearShorts(pOut, samplesToRender);
 
-int framesRendered = 0;
+// Call player to render a stereo buffer
 if (pPlayer_)
-    framesRendered = pPlayer_->Render( pOut, numFrames );
-if (numSamples > framesRendered*2)
-    isDone_ = true;
+    {
+    framesRendered  = pPlayer_->Render( pOut, framesToRender );
+    samplesRendered = framesRendered*2;
+    isDone_ = (framesToRender > framesRendered);
+    }
 
 //printf("Channel::Render: levelsf <%f , %f > <%f, %f> dB \n", levelsf[kLeft], levelsf[kRight],
 //        LinearToDecibelf(levelsf[kLeft]), LinearToDecibelf(levelsf[kRight]));
 //printf("Channel::Render: levelsi <%f , %f > \n", Q15ToFloat(levelsi[kLeft]), Q15ToFloat(levelsi[kRight]));
 
-// ---- Render to out buffer (Assumes all audio player output is two channel)
-numSamples = framesRendered*2;
-for (int i = 0; i < numSamples; i += 2)
+// Scale stereo out buffer (Assumes all audio player output is two channel)
+for (int i = 0; i < samplesRendered; i += 2)
 	{
-// Integer scaling for gain control
+// Integer scaling : gain + stereo pan
 //	y = (S32)(levelsf[kLeft] * (float)pOut[i]);	// FLOAT
-	y = (S32) MultQ15(levelsi[kLeft], pOut[i]);	// Q15  1.15 Fixed-point	
-// Saturate to 16-bit range				
-//	if      (y > kS16_Max) y = kS16_Max;
-//	else if (y < kS16_Min) y = kS16_Min;				
-	pOut[i] = (S16)y;
-
-	y = (S32) MultQ15(levelsi[kRight], pOut[i+1]);				
-// Saturate to 16-bit range				
-//	if      (y > kS16_Max) y = kS16_Max;
-//	else if (y < kS16_Min) y = kS16_Min;				
-	pOut[i+1] = (S16)y;
+	pOut[i  ] = (S16) MultQ15(levelsi[kLeft ], pOut[i  ]);	// Q15  1.15 Fixed-point	
+	pOut[i+1] = (S16) MultQ15(levelsi[kRight], pOut[i+1]);				
 	}
 
 //{static long c=0; printf("Channel::Render%ld: END framesRendered=%d\n", c++, framesRendered);}

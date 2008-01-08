@@ -232,13 +232,14 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 }   // ---- end DoSetMasterVolume() ----
 
 // ==============================================================================
-// DoSetOutputEqualizer
+// DoSetOutputEqualizer:   Well, it does more than just set output equalizer
+//                          for Didj
 // ==============================================================================
 static void DoSetOutputEqualizer( CAudioMsgSetOutputEqualizer* pMsg ) 
 {
 	U8 x = pMsg->GetData();
 	gAudioContext.outputEqualizerEnabled = x;
-	gAudioContext.pAudioMixer->SetOutputEqualizer( gAudioContext.outputEqualizerEnabled );
+	gAudioContext.pAudioMixer->EnableOutputSpeakerDSP( gAudioContext.outputEqualizerEnabled );
 }   // ---- end DoSetOutputEqualizer() ----
 
 // ==============================================================================
