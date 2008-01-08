@@ -15,9 +15,25 @@
 DefaultWaveShaper(WAVESHAPER *d)
 {
 d->type = kWaveShaper_Type_V1;
+
 d->inGainDB    = kWaveShaper_InGainDB_Default;
 d->outGainDB   = kWaveShaper_OutGainDB_Default;
 d->thresholdDB = kWaveShaper_ThresholdDB_Default;
+
+d->headroomBits = 0;
+
+d->oneThf = 1.0f/3.0f;           
+d->twoThf = 2.0f/3.0f;           
+d->oneThi = FloatToQ15(d->oneThf);           
+d->twoThi = FloatToQ15(d->twoThf);  
+
+d->q31_2     = FloatToQ15v2(2.0f);
+d->q31_3     = FloatToQ15v2(3.0f);
+d->q31_3rd   = FloatToQ15v2(1.0f/3.0f);
+d->q15_2_3rd = FloatToQ15v2(2.0f/3.0f);
+
+//printf("DefaultWaveShaper: oneThf %g -> %X\n", d->oneThf, d->oneThi);
+// Initialize some low level data
 
 d->lowLevelDataBogus = True;
 d->samplingFrequency = kBogusSamplingFrequency;
@@ -30,9 +46,16 @@ d->samplingFrequency = kBogusSamplingFrequency;
     void
 UpdateWaveShaper(WAVESHAPER *d)
 {
-d->inGainf = DecibelToLinearf(d->inGainDB);
-d->inGaini = FloatToQ15(d->inGainf);
+//{static long c=0; printf("UpdateWaveShaper%ld: inGainDB %g -> %g\n", c++, d->inGainDB, d->inGainf);}
+
+d->inGainf  = DecibelToLinearf(d->inGainDB);
+d->inWholeI = (long)d->inGainf;
+d->inFracF  = d->inGainf - (float)d->inWholeI;
+d->inFracI  = FloatToQ15(d->inFracF);
+
 //printf("UpdateWaveShaper: inGainDB %g -> %g\n", d->inGainDB, d->inGainf);
+//printf("UpdateWaveShaper: inWholeI=%d inFracF=%g inFracI=$%X\n", 
+//        d->inWholeI, d->inFracF, (unsigned int) d->inFracI);
 
 d->outGainf = DecibelToLinearf(d->outGainDB);
 d->outGaini = FloatToQ15(d->outGainf);
@@ -42,12 +65,7 @@ d->thresholdf = DecibelToLinearf(d->thresholdDB);
 d->thresholdi = FloatToQ15(d->thresholdf);
 //printf("UpdateWaveShaper: thresholdDB %g -> %g\n", d->thresholdDB, d->thresholdf);
 
-d->oneThf = 1.0f/3.0f;           
-d->twoThf = 2.0f*d->oneThf;           
-d->oneThi = FloatToQ15(d->oneThf);           
-d->twoThi = FloatToQ15(d->twoThf);           
-//printf("UpdateWaveShaper: oneThf %g -> %X\n", d->oneThf, d->oneThi);
-
+// Currently doesn't use fs setting
 //if (kBogusSamplingFrequency == d->samplingFrequency)
 //	printf("UpdateWaveShaper: Hey.  SamplingFrequency=%g not set !\n", d->samplingFrequency);
 
@@ -75,11 +93,13 @@ ResetWaveShaper (d);
 }	// ---- end PrepareWaveShaper() ---- 
 
 // ************************************************************************
-// SetWaveShaper_Parameters:	 Default parameter set
+// SetWaveShaper_Parameters:	
 // ************************************************************************ 
     void
 SetWaveShaper_Parameters(WAVESHAPER *d, int type, float inGainDB, float outGainDB)
 {
+//{static long c=0; printf("SetWaveShaper_Parameters%ld: inGainDB=%g outGainDB=%g\n", c++, inGainDB, outGainDB);}
+
 d->type = type;
 
 Boundf(&inGainDB, kWaveShaper_InGainDB_Min, kWaveShaper_InGainDB_Max);
@@ -218,6 +238,7 @@ float inK  = d->inGainf  * (1.0f/32768.0f);
 float outK = d->outGainf * (     32768.0f);
 float oneTh = 1.0f/3.0f;
 float twoTh = 2.0f*oneTh;
+
 float t;
 //{static long c=0; printf("ComputeWaveShaper_V4f: START %d\n", c++);}
 
@@ -279,18 +300,9 @@ for (long i = 0; i < length; i++)
     void
 ComputeWaveShaper_V4i(S16 *inX, S16 *outY, long length, WAVESHAPER *d)
 {
-Q15 inK  = d->inGaini  ;
-Q15 outK = d->outGaini ;
-static Q15 oneThi = FloatToQ15(1.0f/3.0f);
-static Q15 twoThi = FloatToQ15(2.0f/3.0f);
-//{static long c=0; printf("ComputeWaveShaper_V4i: START %d\n", c++);}
-static Q15 kTwo  = FloatToQ15(2.0f/3.0f);
-
-static short th1i = FloatToQ15(1.0f/3.0f);
-static short th2i = FloatToQ15(2.0f/3.0f);
-static long q31_2i   = FloatToQ15v2(2.0f);
-static long q31_3i   = FloatToQ15v2(3.0f);
-static long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
+//Q15 inK  = d->inGaini  ;
+//Q15 outK = d->outGaini ;
+{static long c=0; printf("ComputeWaveShaper_V4i: START %d\n", c++);}
 
 // f(x)                Range
 // ----            ---------------
@@ -302,32 +314,31 @@ static long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
 // NOTE:  work on this some more to reduce 
 for (long i = 0; i < length; i++)
 	{
-    Q15 xi   = inX[i];
+    Q15 xi    = inX[i];
     Q15 absXi = xi; 
-    long yl;
     short yi;
 
 	if (xi < 0)
 		absXi = -xi;
 
-	if		(absXi <= th1i)
+	if		(absXi <= d->oneThi)
 		yi = 2*xi;
-	else if (absXi <= th2i)
+	else if (absXi <= d->twoThi)
 		{
-		int shift = 15;
-		long ti = q31_2i - ((q31_3i*absXi)>>15);
-	    yl = q31_3i - ((ti*ti)>>15);
+//		int shift = 15;
+		long ti = d->q31_2 - ((d->q31_3*absXi)>>15);
+	    long yl = d->q31_3 - ((ti*ti)>>15);
 		if (xi < 0)
 			yl = -yl;
-		yl *= q31_3rdi;
+		yl *= d->q31_3rd;
 		yi = (Q15) (yl>>15);
 		}	
 	else
 		{
 		if (xi < 0)
-			yi = kQ15_Min;
+			yi = kS16_Min;
 		else
-			yi = kQ15_Max;
+			yi = kS16_Max;
 		}
 
 // Convert and bound to S16 range
@@ -344,23 +355,21 @@ for (long i = 0; i < length; i++)
 
 // ************************************************************************
 // ComputeWaveShaper_V4d1i:   Soft clipping function  (polynomial, divide-free)
-//                          Innate ~ +6 dB gain
+//                          Innate ~ +6 dB gain in algorithm
 // ************************************************************************ 
     void
 ComputeWaveShaper_V4d1i(S16 *inX, S16 *outY, long length, WAVESHAPER *d)
 {
-Q15 inK  = d->inGaini  ;
-Q15 outK = d->outGaini ;
-static Q15 oneThird = FloatToQ15(1.0f/3.0f);
-static Q15 twoThird = FloatToQ15(2.0f/3.0f);
-//{static long c=0; printf("ComputeWaveShaper_V4d1i: START %d\n", c++);}
-static Q15 kTwo  = FloatToQ15(2.0f/3.0f);
+//Q15 inK  = d->inGaini  ;
+//Q15 outK = d->outGaini ;
+int bits = d->headroomBits; //2;
+long s16_Min = kS16_Min;//<<bits;
+long s16_Max = kS16_Max;//<<bits;
 
-static short th1i = FloatToQ15(1.0f/3.0f);
-static short th2i = FloatToQ15(2.0f/3.0f);
-static long q31_2i   = FloatToQ15v2(2.0f);
-static long q31_3i   = FloatToQ15v2(3.0f);
-static long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
+//{static long c=0; printf("ComputeWaveShaper_V4d1i: START %d headroomBits=%d\n", c++, d->headroomBits);}
+//{static long c=0; if (!c) printf("ComputeWaveShaper_V4d1i: START %d bits=%d inKf=%g\n", c++, bits, inKf);}
+//ScaleShortsf(inX, inX, length, 2.0f/3.0f);
+ScaleShortsi_Q15(inX, inX, length, d->q15_2_3rd);
 
 // f(x)                Range
 // ----            ---------------
@@ -372,41 +381,45 @@ static long q31_3rdi = FloatToQ15v2(1.0f/3.0f);
 // NOTE:  work on this some more to reduce 
 for (long i = 0; i < length; i++)
 	{
-    Q15 xi   = inX[i];
-    Q15 absXi = xi; 
-    long yl;
-    short yi;
+    long yl, absX;
+    long x = (inX[i]<<bits);
 
-	if (xi < 0)
-		absXi = -xi;
+// Scale by soft clipper preGain
+    x = x*d->inWholeI + ((x*d->inFracI)>>15);
 
-	if		(absXi <= th1i)
-		yl = 2*xi;
-	else if (absXi <= th2i)
+    absX = x; 
+	if (x < 0)
+		absX = -x;
+//printf("IN : inX=%5d -> x=%5d\n", inX[i], x);
+	if		(absX <= d->oneThi)
+        {
+		yl = x+x;  // 2*x
+//printf("1/3 : x=%5d -> yl=%5d (%g)\n", x, yl, ((float)yl)/(float)x);
+        }
+	else if (absX <= d->twoThi)
 		{
-		int shift = 15;
-		long ti = q31_2i - ((q31_3i*absXi)>>15);
-	    yl = q31_3i - ((ti*ti)>>15);
-		if (xi < 0)
+		long ti = d->q31_2 - ((d->q31_3*absX)>>15);
+	    yl = d->q31_3 - ((ti*ti)>>15);
+		if (x < 0)
 			yl = -yl;
-		yl *= q31_3rdi;
-		yl = (Q15) (yl>>15);
+		yl *= d->q31_3rd;
+		yl = (yl>>15);
+//printf("2/3 : x=%5d -> yl=%5d (%g)\n", x, yl, ((float)yl)/(float)x);
 		}	
 	else
 		{
-		if (xi < 0)
-			yl = kQ15_Min;
+//printf("absXi=%5d -> %5d ::: oneThi=%5d twoThi=%5d\n", absX, yl, d->oneThi, d->twoThi);
+		if (inX[i] < 0)
+			yl = s16_Min;
 		else
-			yl = kQ15_Max;
+			yl = s16_Max;
+//printf("3/3 : x=%5d -> yl=%5d  (%g)\n", x, yl, ((float)yl)/(float)x);
 		}
-
-// Convert and bound to S16 range
-    if      (yl >= kS16_Max)
-        outY[i] = kS16_Max;
-    else if (yl <= kS16_Min)
-        outY[i] = kS16_Min;
-    else
-	    outY[i] = (S16) yl;	 
+ 
+//printf("END : %5d -> %5d  >> bits \n", x, yl, yl>>bits);
+    yl >>= bits;
+//printf("--- : %5d -> %5d (OUT) (%g) \n", inX[i], yl, ((float)yl)/(float)inX[i]);
+	outY[i] = (S16) yl;	 
 	}
 }   // ---- end ComputeWaveShaper_V4d1i() ---- 
 
@@ -416,12 +429,14 @@ for (long i = 0; i < length; i++)
     void
 ComputeWaveShaper(S16 *x, S16 *y, long length, WAVESHAPER *d)
 {
-//{static long c=0; printf("ComputeWaveShaper%d: useFixedPoint=%d type=%d \n", c++, d->useFixedPoint, d->type);}
+//{static long c=0; printf("ComputeWaveShaper%d: fixpt=%d type=%d headroomBits=%d\n", c++, d->useFixedPoint, d->type, d->headroomBits);}
 
 if (d->useFixedPoint)
     {
-    ScaleShortsf(x, y, length, d->inGainf);
-{static long c=0; printf("ComputeWaveShaper%d: useFixedPoint  inGainf=%g outGainf=%g \n", c++, d->inGainf, d->outGainf);}
+//    ScaleShortsf(x, x, length, d->inGainf);
+//{static long c=0; printf("ComputeWaveShaper%d: useFixedPoint  inGainf=%g outGainf=%g \n", c++, d->inGainf, d->outGainf);}
+//ShiftLeft_S16(x, x, length, d->headroomBits);  
+//ShiftLeft_S16(x, x, length, 1);  // GK FIXX: 1 is for single channel testing
 
     switch (d->type)
         {
@@ -441,7 +456,9 @@ printf("ComputeWaveShaper: useFixedPoint: type=%d not implemented\n", d->type);
             ComputeWaveShaper_V4d1i(x, y, length, d);
         break;
         }
-    ScaleShortsf(x, y, length, d->inGainf);
+// ScaleShortsf(y, y, length, d->outGainf);
+// ShiftRight_S16(y, y, length, d->headroomBits);
+//ShiftRight_S16(y, y, length, d->headroomBits);
     }
 else
     {

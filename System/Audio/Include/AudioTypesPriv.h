@@ -64,7 +64,7 @@ typedef struct taudiostate {
 
     U8     readInSoundFile;
     U8     writeOutSoundFile;
-#define kAudioState_MaxFileNameLength 80
+#define kAudioState_MaxFileNameLength 100
     char   inSoundFilePath [kAudioState_MaxFileNameLength];
     char   outSoundFilePath[kAudioState_MaxFileNameLength];
     long   outFileBufferCount;

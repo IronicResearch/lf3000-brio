@@ -12090,3 +12090,57 @@ By gklimanis (gklimanis@leapfrog.com) on 1/8/08 1:00 PM
 4,313 ms. (Cumulative: 3,165,477 ms)
 
 ----------------
+Revision 2,568 from svn://localhost/TRUNK/:
+
+****** FIXED for 01/07/2008 Checkin ******
+  05. MIDI:  Added definitions for Channel Status message and Mobileer-supported controllers
+
+  06. Audio:  Plugging headphone jack while playing locks up app on Embedded
+           --> Don't see this anymore.  Code for doing this switch had been removed  - strange.
+
+  31. Audio:  Make pre gain of Soft Clipper programmable 
+
+  12. MIDI:  too quiet -> Double volume and check for clipping
+             a. Set to twice SPMIDI_DEFAULT_MASTER_VOLUME
+            	void SPMIDI_SetMasterVolume( SPMIDI_Context *spmidiContext, int masterVolume );
+
+  12. MIDI:   CRASH when loading files with local path.  Some sort of ustring issue that
+             crept in during other releases.  This was the same problem that plagued AppManager for audio.  WEIRD.
+
+  34: Audio:  Add Mixer:Update()and Set() to recalculate low-level parameters in response to external SetAudio()
+
+  01. Reduced memory foot print of audio mixer (minimized internal buffer count)
+
+  30. Audio:  check playback of 8000 Hz audio -> now works
+(40-42 are probably related)
+
+  40. Audio:  Startup pop on occasion for 16k samples (but not for 32k)
+                a. Raw/WAV -> FIXED
+                b. Vorbis  -> pops
+
+  41. MIDI :  Initial play often starts with a pop, at least for MIDI.  Clear 08k and 16k audio path ?
+
+  42. Audio:  Mixer.cpp : Check SRC temp ptr for use of buffers.  Otherwise, delete.  May be in MixBuf
+                        // FIXXXX: mystery.  Offset Ptrs don't work !!!
+
+  34. Audio MEM: Mixer temp bufs buffer 2x too big. Still need it?  
+            --> Not after fixing the 08/16k click issue.
+
+  17. Audio:  Mixer::Render():  eliminate divisions for fs/4 and fs/2 operations
+
+  18. Audio CPU: STARTUP: disabled calculation of large floating point wave table used for past tests
+
+  33. MIDI:  TTPro880 transpose tracks MPI call isn't supported by Mobileer engine
+           PROBLEM WITH FROZEN MPI
+            Easy solution:  update MPI interface
+            Harder solution:  ask Mobileer to implement according to LF MPI
+        --> Fixed using MIDI RPN control
+
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/8/08 1:14 PM
+23 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 3,170,571 ms)
+
+----------------

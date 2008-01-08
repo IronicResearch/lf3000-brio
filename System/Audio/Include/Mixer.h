@@ -41,8 +41,7 @@ public:
 	CChannel*		FindChannel(          tAudioID id );
 	long    		FindFreeChannelIndex( tAudioID id );
 	
-	// Is audio (excluding MIDI??) playing on any channel?
-	Boolean IsAnyAudioActive( void );
+	Boolean IsAnyAudioActive( void );  // Is audio (excluding MIDI?) playing on any channel?
 
 	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
 
@@ -51,11 +50,10 @@ public:
 
 	void 		SetMasterVolume( U8 x ) ; 
 
-	Boolean     GetOutputEqualizer( ) { return ((Boolean)audioState_.useOutEQ); }
-	void        SetOutputEqualizer( Boolean x );
+	Boolean     GetEnabledOutputSpeakerDSP( ) { return ((Boolean)useOutSpeakerDSP_); }
+	void        EnableOutputSpeakerDSP( Boolean x );
 	
-// Main routine 
-	int Render( S16* pOut, U32 frameCount );
+	int Render( S16 *pOut, U32 frameCount );
 	
 	static int WrapperToCallRender( S16 *pOut, U32 frameCount, void *pObject );
 										
@@ -73,8 +71,8 @@ public:
     float longTimeDecayF;
     S16   longTimeDecayI;
 
-	void GetAudioState(tAudioState *d );
-	void SetAudioState(tAudioState *d );
+	void GetAudioState(tAudioState *d);
+	void SetAudioState(tAudioState *d);
 	
 // ---- DEBUG File I/O
 // Debug : info for sound file input/output
@@ -93,10 +91,11 @@ private:
 
 //	BRIOMIXER		pDSP_;
     float           samplingFrequency_;
+    long            useOutSpeakerDSP_;
 
+    void SetDSP();
     void UpdateDSP();
     void ResetDSP();
-    void PrepareDSP();
     void SetSamplingFrequency( float x );
 
 // Didj is hard-limited to 4 channels : 3 audio + 1 MIDI input channels (stereo)
@@ -109,7 +108,7 @@ private:
 	U8 			numInChannels_;			// input: mono or stereo (for now, allow stereo)
 	CChannel*		pChannels_;			// Array of channels
 //#define kChannel_MaxTempBuffers		2
-	S16 			*channel_tmpPtrs_[kAudioMixer_MaxInChannels];
+//	S16 			*channel_tmpPtrs_[kAudioMixer_MaxInChannels];
 	S16 			*pChannelBuf_;	
 
 // Mix Bin Parameters
@@ -118,7 +117,7 @@ private:
 #define kAudioMixer_MixBin_Index_FsDiv2 1
 #define kAudioMixer_MixBin_Index_FsDiv1 2
 #define kAudioMixer_MixBin_Index_Fs     kAudioMixer_MixBin_Index_FsDiv1
-	S16			*pMixBinBufs_ [kAudioMixer_MixBinCount][kAudioMixer_MaxOutChannels];
+	S16			*pMixBinBufs_ [kAudioMixer_MixBinCount];
 	long	     mixBinFilled_[kAudioMixer_MixBinCount];
     long fsRack_[kAudioMixer_MixBinCount];
 
@@ -126,7 +125,8 @@ private:
 	long GetSamplingRateDivisor( long samplingFrequency );
 
 // Sampling rate conversion (SRC) parameters
-	SRC			src_[kAudioMixer_MixBinCount][kAudioMixer_MaxOutChannels];
+#define kAudioMixer_SRCCount (kAudioMixer_MixBinCount-1)
+	SRC			src_[kAudioMixer_SRCCount][kAudioMixer_MaxOutChannels];
 
 	U8			masterVolume_;			
     float       masterGainf_[kAudioMixer_MaxOutChannels];
@@ -163,24 +163,16 @@ private:
 #endif
 
 //  Soft Clipper parameters
-//    long        useOutSoftClipper_;
     WAVESHAPER  outSoftClipper_[kAudioMixer_MaxOutChannels];
 
 // MIDI parameters - only one player for now
 	CMidiPlayer *pMidiPlayer_;
 
-#define kAudioMixer_MaxTempBuffers	8
+#define kAudioMixer_MaxTempBuffers	7
 	S16*	pTmpBufs_      [kAudioMixer_MaxTempBuffers]; 
 	S16*	pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
 
 // Some Debug variables
-    float   preGainDB;
-    float   postGainDB;
-    float   preGainf;
-    float   postGainf;
-    Q15     preGaini;
-    Q15     postGaini;
-    void UpdateDebugGain();
 };
 
 #endif		// LF_MIXER_H

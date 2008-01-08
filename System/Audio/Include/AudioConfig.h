@@ -14,7 +14,7 @@
 #define kVolume_Max      100
 
 // kDecibelToLinearf_0dBf, m3dBf, m6dBf
-#define kChannel_HeadroomDB -3.0f  // GK FIXX Headroom should be positive number
+#define kChannel_HeadroomDB -3.0f  // Decibels, GK FIXX Headroom should be positive number
 #define kChannel_Headroomf (kDecibelToLinearf_m3dBf) // DecibelToLinearf(kChannel_HeadroomDB);
 
 // Fundamental assumptions

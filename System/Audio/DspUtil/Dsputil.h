@@ -176,6 +176,7 @@ int WriteToFile(char *text, char *path);
 typedef signed char     S8;   
 typedef unsigned char   U8;   
 typedef short           S16;   
+typedef unsigned short  U16;   
 typedef long            S32;   
 typedef unsigned long   U32;   
 
@@ -916,8 +917,8 @@ void Scale	  (float *in, float *out, long length, float k);
 void Ramp     (float *out, long length, float start, float end);
 
 void ScaleShortsf(short *in, short *out, long length, float k);
-void ScaleShortsi(short *in, short *out, long length, float k);
 void ScaleShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k);
+void ScaleShortsi(Q15 *in, Q15 *out, long length, U16 shift, Q15 frac);
 
 void ScaleAddShortsf(short *in, short *out, long length, float k);
 void MACShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k);
@@ -925,7 +926,7 @@ void MACShortsi_Q15(Q15 *in, Q15 *out, long length, Q15 k);
 void AddShorts(short *in, short *out, long length, long saturate);
 
 // Mixer value functions
-void Add2_Shortsi(short *inA, short *inB, short *outY, long length);
+void Add2_Shortsi(short *inA, short *inB, short *outY, long length, int saturate);
 void Mix2_Shortsf(short *inA, short *inB, short *outY, long length, float kA, float kB);
 void Mix2_Shortsi(short *inA, short *inB, short *outY, long length, short kA, short kB);
 
