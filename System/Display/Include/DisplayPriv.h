@@ -69,7 +69,7 @@ inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 {
 	// Repack 16bpp RGB4444 format surface into 32bpp ARGB format surface
 	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer;
+	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
 	int			i,j,m,n;
 	for (i = 0; i < sdc->height; i++) 
 	{
@@ -91,7 +91,7 @@ inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 {
 	// Repack 16bpp RGB565 format surface into 32bpp ARGB format surface
 	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer;
+	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
 	int			i,j,m,n;
 	for (i = 0; i < sdc->height; i++) 
 	{
@@ -113,7 +113,7 @@ inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 {
 	// Repack 24bpp RGB888 format surface into 32bpp ARGB format surface
 	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer;
+	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
 	int			i,j,m,n;
 	for (i = 0; i < sdc->height; i++) 
 	{
@@ -134,7 +134,7 @@ inline void ARGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 {
 	// Copy 32bpp ARGB8888 format surface into 32bpp ARGB format surface
 	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer;
+	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
 	for (int i = 0; i < sdc->height; i++) 
 	{
 		memcpy(d, s, 4 * sdc->width);
@@ -159,7 +159,7 @@ inline void YUV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 {
 	// Repack YUV planar format surface into ARGB format surface
 	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer;
+	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
 	U8*			su = s + sdc->pitch * sdc->height;
 	U8*			sv = s + sdc->pitch * sdc->height*3/2;
 	U8			y,z,u,v;
@@ -197,7 +197,7 @@ inline void YUYV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 {
 	// Repack YUYV format surface into ARGB format surface
 	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer;
+	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
 	U8			y,z,u,v;
 	int			i,j,m,n;
 	for (i = 0; i < sdc->height; i++) 
