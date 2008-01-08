@@ -49,17 +49,13 @@ public:
 	CAudioMPI( const IEventListener* pDefaultListener = NULL );
 	virtual ~CAudioMPI( void );
 
-	// !!!!! LF Internal:  do not release !!!!!!
-	void GAS( void *);
-	void SAS( void *);
-
 	//********************************
 	// Audio output driver control
 	//********************************    
 
 	// Pauses audio output driver
 	// While paused, audio system consumes no CPU.
-	tErrType	PauseAudioSystem( void );
+	tErrType	PauseAudioSystem(  void );
 	tErrType	ResumeAudioSystem( void );
 
 	// Set output gain of mixer (Audio + MIDI)
@@ -139,23 +135,18 @@ public:
 	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); 
 	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); 
 
-	// Registers function to call to get the next chunk of stereo audio stream data 
-// GK FIXXXX: unimplemented
-//	tErrType RegisterGetStereoAudioStreamFcn( tRsrcType type, tGetStereoAudioStreamFcn pFcn ); 
-
 
 	//********************************
 	// MIDI functionality
 	//********************************    
 	// NOTE: Currently, only one player
 
-	// Activate/Deactivate MIDI engine GK FIXXX:  Well, then, rename these functions!
+	// Activate/Deactivate MIDI engine 
 	tErrType AcquireMidiPlayer( tAudioPriority priority, IEventListener* pListener, tMidiPlayerID* pID );
 	tErrType ReleaseMidiPlayer( tMidiPlayerID id ); 
 	
 	// Get Audio ID associated with a currently playing MidiFile. 
-// GK FIXXXX: unimplemented
-	tAudioID GetAudioIDForMidiID( /*tMidiPlayerID id*/ );
+	tAudioID GetAudioIDForMidiID( tMidiPlayerID id );
 	
 	// Start playback of MIDI file.
 	// Currently only the volume and pListener options are used.
@@ -187,7 +178,9 @@ public:
 	tErrType 	ChangeMidiTempo(      tMidiPlayerID id, S8 tempo ); 
 
 	// Send MIDI channel messages
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask bitMask, tMidiPlayerInstrument instr ); 
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, int channel           , tMidiPlayerInstrument instr ); 
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask bits, tMidiPlayerInstrument instr ); 
+
     tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
     tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
     tErrType MidiNoteOff(tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
@@ -230,12 +223,6 @@ private:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;
 };
-
-// Some MIDI definitions (GK FIXXX:   add more !)
-#define kMIDI_ControlChange                     0xB0
-#define kMIDI_Controller_AllSoundOff            120
-#define kMIDI_Controller_ResetAllControllers    121
-#define kMIDI_Controller_AllNotesOff            123
 
 // MIDI note definitions
 #define kMIDI_Cm1	0
@@ -388,14 +375,30 @@ private:
 #define kMIDI_ChannelMessage_Aftertouch       0xA0
 #define kMIDI_ChannelMessage_ControlChange    0xB0
 #define kMIDI_ChannelMessage_ProgramChange    0xC0
-#define kMIDI_ChannelMessage_CHANNELPRESSURE  0xD0
+#define kMIDI_ChannelMessage_ChannelPressure  0xD0
 #define kMIDI_ChannelMessage_PitchWheel       0xE0
 
-#define kMIDI_ChannelMessage_ControlChange 0xB0
+// Supported MIDI Controller list.  Other controllers are ignored
+#define kMIDI_Controller_BankSelect           0x00
+#define kMIDI_Controller_ModulationWheel      0x01
+#define kMIDI_Controller_DataEntry            0x06
+#define kMIDI_Controller_Volume               0x07
+#define kMIDI_Controller_PanPosition          0x0A // # 10
+#define kMIDI_Controller_Expression           0x0B // # 11
+#define kMIDI_Controller_LSBOffset            0x20
+#define kMIDI_Controller_Sustain              0x40 // # 64
+#define kMIDI_Controller_RPN_LSB              0x64 // #100
+#define kMIDI_Controller_RPN_Fine             0x64 // #100
+#define kMIDI_Controller_RPN_MSB              0x65 // #101
+#define kMIDI_Controller_RPN_Coarse           0x65 // #101
 
 #define kMIDI_Controller_AllSoundOff            120
 #define kMIDI_Controller_ResetAllControllers    121
 #define kMIDI_Controller_AllNotesOff            123
+
+#define kMIDI_RPN_PitchBendRange            0x0000
+#define kMIDI_RPN_MasterFineTuning          0x0001
+#define kMIDI_RPN_MasterCoarseTuning        0x0002
 
 LF_END_BRIO_NAMESPACE()	
 #endif /* LF_BRIO_AUDIOMPI_H */

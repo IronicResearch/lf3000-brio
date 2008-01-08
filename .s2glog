@@ -12144,3 +12144,14 @@ By gklimanis (gklimanis@leapfrog.com) on 1/8/08 1:14 PM
 5,016 ms. (Cumulative: 3,170,571 ms)
 
 ----------------
+Revision 2,569 from svn://localhost/TRUNK/:
+Revision 2,570 from svn://localhost/TRUNK/:
+
+Fix for build break due to new MIDI constants.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/8/08 1:41 PM
+1 changed, 0 added, 0 deleted.
+4,313 ms. (Cumulative: 3,174,962 ms)
+
+----------------
