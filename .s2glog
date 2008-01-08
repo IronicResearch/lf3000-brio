@@ -12155,3 +12155,16 @@ By gklimanis (gklimanis@leapfrog.com) on 1/8/08 1:41 PM
 4,313 ms. (Cumulative: 3,174,962 ms)
 
 ----------------
+Revision 2,571 from svn://localhost/TRUNK/:
+
+Just couldn't stand seeing this file with a speling error.  
+
+So, deleting ReleaseProceedure.txt and replacing with 
+ReleaseProcedure.txt
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/8/08 2:28 PM
+0 changed, 1 added, 0 deleted.
+4,204 ms. (Cumulative: 3,179,229 ms)
+
+----------------
