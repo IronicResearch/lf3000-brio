@@ -12070,3 +12070,13 @@ By gklimanis (gklimanis@leapfrog.com) on 1/8/08 12:09 PM
 4,734 ms. (Cumulative: 3,156,726 ms)
 
 ----------------
+Revision 2,566 from svn://localhost/TRUNK/:
+
+Updated binaries with new RidgeRun compiler specified in Makefile.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/8/08 12:26 PM
+2 changed, 0 added, 0 deleted.
+4,297 ms. (Cumulative: 3,161,086 ms)
+
+----------------
