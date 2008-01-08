@@ -12039,3 +12039,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/7/08 4:18 PM
 4,250 ms. (Cumulative: 3,143,314 ms)
 
 ----------------
+Revision 2,562 from svn://localhost/TRUNK/:
+Revision 2,563 from svn://localhost/TRUNK/:
+
+Only use SetAlpha() API function to toggle blending on/off. No format change.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/08 7:36 PM
+1 changed, 0 added, 0 deleted.
+4,237 ms. (Cumulative: 3,147,629 ms)
+
+----------------

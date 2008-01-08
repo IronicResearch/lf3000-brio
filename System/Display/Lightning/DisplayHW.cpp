@@ -255,14 +255,12 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		case kPixelFormatRGB4444:
 		bpp = 2;
 		hwFormat = kLayerPixelFormatRGB4444;
-		blend = 1;
 		break;
 
 		default:
 		case kPixelFormatARGB8888:
 		bpp = 4;
 		hwFormat = kLayerPixelFormatARGB8888;
-		blend = 1;
 		break;
 
 		case kPixelFormatRGB565:
@@ -496,9 +494,6 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 		level = 100;
 	level = (level*ALPHA_STEP)/100;
 	
-	// Distinguish global vs per-pixel alpha for ARGB8888 format (bpp unchanged)
-	if (context->colorDepthFormat == kPixelFormatARGB8888)
-		ioctl(layer, MLC_IOCTFORMAT, context->format = (enable) ? kLayerPixelFormatXRGB8888 : kLayerPixelFormatARGB8888);
 	r = ioctl(layer, MLC_IOCTALPHA, level);
 	r = ioctl(layer, MLC_IOCTBLEND, enable);
 	SetDirtyBit(layer);
