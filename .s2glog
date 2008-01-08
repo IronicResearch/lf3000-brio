@@ -12029,3 +12029,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/7/08 4:16 PM
 4,409 ms. (Cumulative: 3,138,986 ms)
 
 ----------------
+Revision 2,561 from svn://localhost/TRUNK/:
+
+Added XY destination offsets from offscreen display context Register() calls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/08 4:18 PM
+1 changed, 0 added, 0 deleted.
+4,250 ms. (Cumulative: 3,143,314 ms)
+
+----------------
