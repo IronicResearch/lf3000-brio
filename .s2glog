@@ -12019,3 +12019,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/7/08 2:10 PM
 4,723 ms. (Cumulative: 3,134,483 ms)
 
 ----------------
+Revision 2,560 from svn://localhost/TRUNK/:
+
+Enable per-pixel alpha blending based on ARGB format selection.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/08 4:16 PM
+1 changed, 0 added, 0 deleted.
+4,409 ms. (Cumulative: 3,138,986 ms)
+
+----------------

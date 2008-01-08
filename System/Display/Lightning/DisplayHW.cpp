@@ -240,8 +240,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 {
 	U32 hwFormat;
 	tDisplayContext *GraphicsContext = new struct tDisplayContext;
-	U8 bpp;
-
+	U32 bpp;
+	U32 blend = 0;
+	
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepthFormat = colorDepth;
@@ -254,12 +255,14 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		case kPixelFormatRGB4444:
 		bpp = 2;
 		hwFormat = kLayerPixelFormatRGB4444;
+		blend = 1;
 		break;
 
 		default:
 		case kPixelFormatARGB8888:
 		bpp = 4;
 		hwFormat = kLayerPixelFormatARGB8888;
+		blend = 1;
 		break;
 
 		case kPixelFormatRGB565:
@@ -302,7 +305,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	
 	// apply to device
 	int layer = GraphicsContext->layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
-	ioctl(layer, MLC_IOCTBLEND, 0);
+	ioctl(layer, MLC_IOCTBLEND, blend);
 	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
 	ioctl(layer, MLC_IOCTHSTRIDE, bpp);
 	ioctl(layer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
