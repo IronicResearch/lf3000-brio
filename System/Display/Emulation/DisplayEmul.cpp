@@ -255,7 +255,7 @@ tErrType CDisplayModule::Update(tDisplayContext* dc)
 	else
 		pdcDest = dc;
 	
-	XPutImage(x11Display, x11Window, gc, pdcDest->image, 0, 0, dc->rect.left, dc->rect.top, dc->rect.right - dc->rect.left, dc->rect.bottom - dc->rect.top);
+	XPutImage(x11Display, x11Window, gc, pdcDest->image, 0, 0, pdcDest->rect.left, pdcDest->rect.top, pdcDest->rect.right - pdcDest->rect.left, pdcDest->rect.bottom - pdcDest->rect.top);
 	XFlush(x11Display);
 	return kNoErr;
 }

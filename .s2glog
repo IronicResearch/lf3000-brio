@@ -12050,3 +12050,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/7/08 7:36 PM
 4,237 ms. (Cumulative: 3,147,629 ms)
 
 ----------------
+Revision 2,564 from svn://localhost/TRUNK/:
+
+Correct update rectangle for offscreen display contexts in emulation windows.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/8/08 10:43 AM
+1 changed, 0 added, 0 deleted.
+4,238 ms. (Cumulative: 3,151,929 ms)
+
+----------------
