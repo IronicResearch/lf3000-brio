@@ -28,6 +28,9 @@
 
 #define kMixer_HeadroomBits_Default 2
 
+#define kMixer_SoftClipper_PreGainDB   5
+#define kMixer_SoftClipper_PostGainDB  0
+
 // Debug input/output stuff
 
 float outputDCValueDB;
@@ -181,8 +184,8 @@ d->useOutDSP          = (d->computeLevelMeters || d->useOutEQ || d->useOutSoftCl
 //else
     d->headroomBits = kMixer_HeadroomBits_Default;
 
-d->softClipperPreGainDB  = (S16) 5;
-d->softClipperPostGainDB = (S16) 0;
+d->softClipperPreGainDB  = (S16) kMixer_SoftClipper_PreGainDB;
+d->softClipperPostGainDB = (S16) kMixer_SoftClipper_PostGainDB;
 
 //kSRC_Interpolation_Type_Triangle; // Linear, Triangle, FIR, IIR, Box
 d->srcType          = src_[0][kLeft].type;
@@ -423,7 +426,7 @@ return ( -1 );
 }  // ---- end FindFreeChannelIndex() ----
 
 // ==============================================================================
-// IsAnyAudioActive
+// IsAnyAudioActive:  Gk FI
 // ==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
 {
@@ -438,7 +441,7 @@ return (false);
 }  // ---- end IsAnyAudioActive() ----
 
 // ==============================================================================
-// GetMixBinIndex : determine mix bin index from sampling frequency
+// GetMixBinIndex : Determine mix bin index from sampling frequency
 // ==============================================================================
 long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 {
@@ -940,30 +943,62 @@ return (kNoErr);  // GK FIXX: should be # frames rendered
     int 
 CAudioMixer::WrapperToCallRender( S16 *pOut,  unsigned long numStereoFrames, void *pToObject  )
 {	
+//{static long c=0; printf("WrapperToCallRender%ld: IsPaused()=%d\n", c++, ((CAudioMixer*)pToObject)->IsPaused());}
+
+if (((CAudioMixer*)pToObject)->IsPaused())
+    {
+    ClearShorts(pOut, numStereoFrames*kAudioMixer_MaxOutChannels);
+    return (0);
+    }
+
 return ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
 } // ---- end WrapperToCallRender() ----
 
 // ==============================================================================
-// SetMasterVolume :  
+// Pause: Stop all audio processing and I/O but do not alter state
+//
+//          FIXXXX: add code for fade out
 // ==============================================================================
-void CAudioMixer::SetMasterVolume( U8 x )
-{
-masterVolume_ = x;
+    void 
+CAudioMixer::Pause()
+{	
+isPaused_ = true;
+} // ---- end WrapperToCallRender() ----
 
-// FIXX: move to decibels, but for now, linear volume
+// ==============================================================================
+// Resume: Restart all audio processing and I/O from current state
+//
+//          FIXXXX: add code for fade in
+// ==============================================================================
+    void 
+CAudioMixer::Resume()
+{	
+isPaused_ = false;
+} // ---- end Resume() ----
+
+// ==============================================================================
+// SetMasterVolume :  Range [0..100] maps to [0.0 to 1.0]
+// ==============================================================================
+    void 
+CAudioMixer::SetMasterVolume( U8 x )
+{
+S16 x16 = (S16) x;
+BoundS16(&x16, 0, 100);
+masterVolume_ = (U8) x;
+
 // ChangeRangef(x, L1, H1, L2, H2)
 //masterGainf_[0] = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
 masterGainf_[0] = 0.01f*(float)x;
 //masterGainf_[0] = DecibelToLinearf(ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f));
 // Convert to square curve, which is milder than Decibels
 masterGainf_[0] *= masterGainf_[0];
-masterGainf_[1] = masterGainf_[0];
+masterGainf_[1] =  masterGainf_[0];
 
 // Convert 32-bit floating-point to Q15 fractional integer format 
 masterGaini_[0] = FloatToQ15(masterGainf_[0]);
 masterGaini_[1] = masterGaini_[0];
 
-//printf("CAudioMixer::SetMasterVolume %d -> %f ($%x)\n", masterVolume_ , masterGainf_[0], masterGaini_[0]);
+//printf("CAudioMixer::SetMasterVolume %d -> %f $%x\n", masterVolume_ , masterGainf_[0], masterGaini_[0]);
 } // ---- end SetMasterVolume() ----
 
 // ==============================================================================
@@ -1125,7 +1160,7 @@ CAudioMixer::EnableOutputSpeakerDSP(Boolean x)
 {
 printf("CAudioMixer::EnableOutputSpeakerDSP: enabled=%ld -> %d\n", useOutSpeakerDSP_, x);
 useOutSpeakerDSP_ = x;
-audioState_.useOutEQ = x;
+//audioState_.useOutEQ = x;  // Don't use EQ for now
 audioState_.useOutSoftClipper = x;
 } // ---- end EnableOutputSpeakerDSP() ----
 

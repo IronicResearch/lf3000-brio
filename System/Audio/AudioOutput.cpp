@@ -195,39 +195,33 @@ error:
 	return err;
 }
 
-//==============================================================================
-// StartAudioOut  
-//==============================================================================
-int StartAudioOutput( void )
+// ==============================================================================
+// StartAudioOutput  
+// ==============================================================================
+    int 
+StartAudioOutput( void )
 {
-	PaError err;
-	err = Pa_StartStream( gPaStream );
-	if( err != paNoError ) {
-	    fprintf( stderr, "An error occured while attempting to start the portaudio stream\n" );
-	    fprintf( stderr, "Error number: %d\n", err );
-	    fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );		
-	}
+PaError err = Pa_StartStream( gPaStream );
+if ( err != paNoError ) 
+	  printf( "StartAudioOutput: Error%d '%s' occured during Pa_StartStream\n", err , Pa_GetErrorText(err));
 
- 	return err;
+ return err;
  }
 
-//==============================================================================
-// StopAudioOut  
-//==============================================================================
-int StopAudioOutput( void )
+// ==============================================================================
+// StopAudioOutput  
+// ==============================================================================
+    int 
+StopAudioOutput( void )
 {
-	PaError err;
-	err = Pa_StopStream( gPaStream );
-	if( err != paNoError ) {
-	    fprintf( stderr, "An error occured while attempting to stop the portaudio stream\n" );
-	    fprintf( stderr, "Error number: %d\n", err );
-	    fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );		
-	}
+PaError err = Pa_StopStream( gPaStream );
+if ( err != paNoError ) 
+	  printf( "StartAudioOutput: Error%d '%s' occured during Pa_StopStream\n", err , Pa_GetErrorText(err));
 
 //	if (gpAudioOutBuffer)
 //		memset(gpAudioOutBuffer, 0, kAudioOutBufSizeInBytes);
 	
-	return err;
+return err;
 }
 
 //==============================================================================

@@ -12240,3 +12240,16 @@ By gklimanis (gklimanis@leapfrog.com) on 1/9/08 1:22 PM
 4,422 ms. (Cumulative: 3,210,047 ms)
 
 ----------------
+Revision 2,585 from svn://localhost/TRUNK/:
+
+Updated Notes in AudioMPI.h
+
+Fixed PRI1 bug for crash on Embedded system for Audio system pause
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/9/08 1:23 PM
+7 changed, 0 added, 0 deleted.
+4,391 ms. (Cumulative: 3,214,610 ms)
+
+----------------

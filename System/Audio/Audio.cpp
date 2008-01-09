@@ -927,7 +927,6 @@ void CAudioModule::StopAudio( tAudioID id, Boolean noDoneMessage )
 	msgData.id = id;
 	msgData.suppressDoneMsg = noDoneMessage;
 
-	
 	CAudioMsgStopAudio	msg( msgData );
 	SendCmdMessage( msg ); 
 }   // ---- end StopAudio() ----

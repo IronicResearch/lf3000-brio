@@ -501,7 +501,7 @@ if (pChannel)
 }  // ---- end DoSetAudioListener() ----
 
 // ==============================================================================
-// DoIsAudioPlaying:    GKFIXX NOTE:  why are both of these functions here ?
+// DoIsAudioPlaying:    Is audio with specific ID playing ? 
 // ==============================================================================
     static void 
 DoIsAudioPlaying( CAudioMsgIsAudioPlaying* msg ) 
@@ -514,19 +514,15 @@ Boolean				isAudioActive = false;
 //printf("AudioTask::DoIsAudioPlaying() Is ID = %d Playing?\n",  (int)id);	
 
 //	Is audio file is still playing
-isAudioActive = (kNull != gAudioContext.pAudioMixer->FindFreeChannel( id ));
-	
-// Send result back to caller
-retMsg.SetBooleanResult( isAudioActive );
-	
+retMsg.SetBooleanResult( kNull != gAudioContext.pAudioMixer->FindChannel( id ) );
 SendMsgToAudioModule( retMsg );
 }  // ---- end DoIsAudioPlaying() ----
 
 // ==============================================================================
-// DoIsAnyAudioPlaying:    GKFIXX NOTE:  why are both of these functions here ?
+// DoIsAnyAudioPlaying:    
 // ==============================================================================
     static void 
-DoIsAnyAudioPlaying( CAudioMsgIsAudioPlaying* /* msg */) 
+DoIsAnyAudioPlaying( ) 
 {
 CAudioReturnMessage	retMsg;
 
@@ -538,7 +534,7 @@ SendMsgToAudioModule( retMsg );
 }  // ---- end DoIsAnyAudioPlaying() ----
 
 // ==============================================================================
-// DoPauseAudio
+// DoPauseAudio:   Pause audio channel with specified ID
 // ==============================================================================
     static void 
 DoPauseAudio( CAudioMsgPauseAudio* pMsg ) 
@@ -551,7 +547,7 @@ if (pChannel)
 }  // ---- end DoPauseAudio() ----
 
 // ==============================================================================
-// DoResumeAudio
+// DoResumeAudio: Resume audio channel with specified ID
 // ==============================================================================
     static void 
 DoResumeAudio( CAudioMsgResumeAudio* pMsg ) 
@@ -564,7 +560,7 @@ if (pChannel && pChannel->IsPaused())
 }  // ---- end DoResumeAudio() ----
 
 // ==============================================================================
-// DoStopAudio
+// DoStopAudio: Stop audio channel with specified ID
 // ==============================================================================
     static void 
 DoStopAudio( CAudioMsgStopAudio* pMsg ) 
@@ -629,7 +625,9 @@ CAudioReturnMessage	msg;
 if (gAudioContext.audioOutputDriverOn && !gAudioContext.audioOutputDriverPaused) 
     {
 		gAudioContext.audioOutputDriverPaused = true;
-		err = StopAudioOutput();
+// Don't Pause PortAudio system
+//		err = StopAudioOutput();
+    gAudioContext.pAudioMixer->Pause();
 	}
 	
 // Send status back to caller
@@ -650,7 +648,9 @@ static tErrType DoResumeAudioSystem( void )
 if (gAudioContext.audioOutputDriverOn && gAudioContext.audioOutputDriverPaused) 
     {
 		gAudioContext.audioOutputDriverPaused = false;
-		err = StartAudioOutput();
+// Don't Restart PortAudio system
+//		err = StartAudioOutput();
+    gAudioContext.pAudioMixer->Resume();
 	}
 	
 	// Send status back to caller
@@ -1159,7 +1159,7 @@ gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTaskMain: Enable output
 
 			case kAudioCmdMsgTypeIsAnyAudioPlaying:
 	gAudioContext.pDebugMPI->DebugOut(kDbgLvlVerbose, "AudioTaskMain() Is ANY audio playing?\n");	
-				DoIsAnyAudioPlaying( (CAudioMsgIsAudioPlaying*)pAudioMsg);
+				DoIsAnyAudioPlaying();
 				break;
 
 			case kAudioCmdMsgTypeIsAudioPlaying:
