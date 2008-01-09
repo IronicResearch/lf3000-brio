@@ -12188,3 +12188,15 @@ By gklimanis (gklimanis@leapfrog.com) on 1/8/08 2:39 PM
 4,297 ms. (Cumulative: 3,187,902 ms)
 
 ----------------
+Revision 2,574 from svn://localhost/TRUNK/:
+Revision 2,575 from svn://localhost/TRUNK/:
+Revision 2,576 from svn://localhost/TRUNK/:
+Revision 2,577 from svn://localhost/TRUNK/:
+
+Fixed LitBLT:#771. Added the 'emuldebug' parameter that tells the compilier to include the -g switch for emulation build
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/8/08 5:15 PM
+2 changed, 0 added, 0 deleted.
+4,375 ms. (Cumulative: 3,192,355 ms)
+
+----------------

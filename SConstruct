@@ -68,6 +68,8 @@ opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a plat
 opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemulation" export headers, libs & build scripts\n    for external app linkage\n    "checkheaders" uncovers inclusion dependencies\n   ',
 					'embedded', 
 					allowed_values=('checkheaders', 'embedded', 'emulation', 'xembedded', 'xemulation', 'publish')))
+opts.Add('emuldebug', 'Set to 1 to include the -g compiler swich in the emulation build', 0)
+
 
 is_monolithic		= ARGUMENTS.get('monolithic', 0)
 platform			= ARGUMENTS.get('platform', '')
@@ -76,6 +78,7 @@ source_setup		= ARGUMENTS.get('setup', '')
 is_runtests			= ARGUMENTS.get('runtests', 1)
 type				= ARGUMENTS.get('type', 'embedded')
 variant				= ''
+emuldebug			=  ARGUMENTS.get('emuldebug', 0)
 
 if platform != '' and platform_variant != '':
 	print '*** Exiting: Error!  Do not set the "platform" parameter if "platform_variant" is set'
@@ -241,6 +244,10 @@ for target in targets:
 						toolpath = [toolpath1, toolpath2],
 					 )
 
+	if emuldebug == '1'and (type == 'emulation' or type == 'xemulation'):
+		env.Append(CCFLAGS = '-g' )
+		env.Append(LINKFLAGS = '-g')
+	
 	env.Prepend(LIBPATH = [mpi_deploy_dir, priv_mpi_deploy_dir])
 	if variant != '':
 		env.Append(CPPDEFINES = [variant])
@@ -267,7 +274,7 @@ for target in targets:
 	#-------------------------------------------------------------------------
 	# Export environment variables to the SConscript files
 	#-------------------------------------------------------------------------
-	Export('env vars')
+	Export('env vars emuldebug')
 	
 	
 	#-------------------------------------------------------------------------
@@ -282,7 +289,6 @@ for target in targets:
 	SConscript(os.path.join(root_dir, 'ThirdParty', 'SConscript'), duplicate=0)
 	SConscript(os.path.join(root_dir, 'Etc', 'SConscript'), duplicate=0)
 	SConscript(os.path.join(root_dir, platform, 'SConscript'), duplicate=0)
-
 	
 	#-------------------------------------------------------------------------
 	# Deploy the unit test data for embedded builds
