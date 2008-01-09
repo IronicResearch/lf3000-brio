@@ -215,6 +215,8 @@ def SetupOptions():
 					'embedded', 
 					allowed_values=('checkheaders', 'embedded', 'emulation', 'publish')))
 	opts.Add(SCons.Options.BoolOption('resource', 'Default is to process resources, set "resource=f" to disable', 0))
+	opts.Add(SCons.Options.BoolOption('emuldebug', 'Set to 1 to include the -g compiler swich in the emulation build', 0))
+	
 	return opts
 
 
@@ -227,6 +229,7 @@ def RetrieveOptions(args, root_dir):
 	type			= args.get('type', 'embedded')
 	platform		= 'Lightning'
 	variant			= 'LF1000'
+	emuldebug		=  args.get('emuldebug', 0)
 	
 	is_emulation 	= type == 'emulation' or type == 'checkheaders'
 	is_resource		= args.get('resource', 1)	
@@ -264,6 +267,7 @@ def RetrieveOptions(args, root_dir):
 			'bin_deploy_dir'		: bin_deploy_dir,
 			'rootfs'				: rootfs,
 			'is_resource'			: is_resource,
+			'emuldebug'				: emuldebug,
 	}
 	
 	return vars
@@ -305,6 +309,10 @@ def CreateEnvironment(opts, vars):
 	env.Append(CPPPATH = cpppaths)
 	env.Append(LIBPATH = libpaths)
 	env.Append(RPATH = libpaths + [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'PrivMPI')])
+
+	if vars['emuldebug'] == '1'and (vars['type'] == 'emulation' or vars['type'] == 'xemulation'):
+		env.Append(CCFLAGS = '-g' )
+		env.Append(LINKFLAGS = '-g')
 	
 	return env
 

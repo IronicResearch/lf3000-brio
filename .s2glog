@@ -12200,3 +12200,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/8/08 5:15 PM
 4,375 ms. (Cumulative: 3,192,355 ms)
 
 ----------------
+Revision 2,578 from svn://localhost/TRUNK/:
+Revision 2,579 from svn://localhost/TRUNK/:
+
+1. Added the 'emuldebug' parameter that tells the compilier to include the -g switch for emulation build. 2. Added prompt for emuldebug by typing 'scons -h'
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/9/08 10:28 AM
+1 changed, 0 added, 0 deleted.
+4,332 ms. (Cumulative: 3,196,765 ms)
+
+----------------
