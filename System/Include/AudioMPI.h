@@ -51,6 +51,7 @@ public:
 
 	//********************************
 	// Audio output driver control
+
 	//********************************    
 
 	// Pauses audio output driver
@@ -83,16 +84,16 @@ public:
 					U8					volume, 
 					tAudioPriority		priority,
 					S8					pan, 
-					const IEventListener*pListener = kNull,
+					const IEventListener *pListener = kNull,
 					tAudioPayload		payload = 0,
 					tAudioOptionsFlags	flags   = 0 );
 
-	// Same as above, but uses defaults for unspecified parameters
+// Same as above, but uses defaults for unspecified parameters
 	tAudioID 	StartAudio( const CPath &path, 
-					tAudioPayload		payload,
-					tAudioOptionsFlags	flags );
-	
-	// Playback controls
+        					tAudioPayload		payload,
+        					tAudioOptionsFlags	flags );
+
+// Playback controls
 	void 		PauseAudio(  tAudioID id );
 	void 		ResumeAudio( tAudioID id ); 
 	void 		StopAudio(   tAudioID id, Boolean noDoneMessage ); 

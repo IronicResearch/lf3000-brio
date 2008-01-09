@@ -690,14 +690,13 @@ tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask tr
 // ==============================================================================
 // ChangeMidiInstrument : this is what the above function *should* have been
 // ==============================================================================
-//tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, int channel, tMidiPlayerInstrument programNumber ) 
-//{
-//	if ( !pModule_)
-//		return kNoImplErr;
-//	
-//	return pModule_->ChangeMidiInstrument( id, 1<<channel, programNumber );
-//}   // ---- end ChangeMidiInstrument() ----
-
+tErrType CAudioMPI::ChangeMidiInstrument( tMidiPlayerID id, int channel, tMidiPlayerInstrument programNumber ) 
+{
+	if ( !pModule_)
+		return kNoImplErr;
+	
+	return pModule_->ChangeMidiInstrument( id, 1<<channel, programNumber );
+}   // ---- end ChangeMidiInstrument() ----
 
 // ==============================================================================
 // ChangeMidiTempo

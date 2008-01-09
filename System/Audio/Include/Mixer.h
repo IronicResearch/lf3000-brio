@@ -7,7 +7,7 @@
 //
 // Mixer.h
 //
-//		Defines the class to manage the low-level mixing of audio channels.
+//		Defines class to manage low-level mixing of audio channels.
 //
 //==============================================================================
 
@@ -49,6 +49,10 @@ public:
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
 
 	void 		SetMasterVolume( U8 x ) ; 
+
+	void 		Pause ( ); 
+	void 		Resume( ); 
+	Boolean		IsPaused( ) { return isPaused_; }
 
 	Boolean     GetEnabledOutputSpeakerDSP( ) { return ((Boolean)useOutSpeakerDSP_); }
 	void        EnableOutputSpeakerDSP( Boolean x );
@@ -171,6 +175,8 @@ private:
 #define kAudioMixer_MaxTempBuffers	7
 	S16*	pTmpBufs_      [kAudioMixer_MaxTempBuffers]; 
 	S16*	pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
+
+    Boolean     isPaused_;
 
 // Some Debug variables
 };
