@@ -12210,3 +12210,22 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/9/08 10:28 AM
 4,332 ms. (Cumulative: 3,196,765 ms)
 
 ----------------
+Revision 2,580 from svn://localhost/TRUNK/:
+Revision 2,581 from svn://localhost/TRUNK/:
+Revision 2,582 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,297 ms. (Cumulative: 3,201,140 ms)
+
+----------------
+Revision 2,583 from svn://localhost/TRUNK/:
+
+reverted to regular MIDI file play volume as 2x "clipped" too often.  
+MIDI is still too quiet in general for single note files.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/9/08 1:21 PM
+1 changed, 0 added, 0 deleted.
+4,391 ms. (Cumulative: 3,205,531 ms)
+
+----------------

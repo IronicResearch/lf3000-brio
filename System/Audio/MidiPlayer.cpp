@@ -112,7 +112,7 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	midiErr = SPMIDI_CreateContext( &pContext_, kMIDI_SamplingFrequency);  
 	pDebugMPI_->Assert((midiErr == kNoErr), "CMidiPlayer::ctor: SPMIDI_CreateContext() failed.\n");
 // Double MIDI master volume as generally is it too quiet.  This risks clipping for multi-voice play.
-SPMIDI_SetMasterVolume( pContext_, 2*SPMIDI_DEFAULT_MASTER_VOLUME );
+SPMIDI_SetMasterVolume( pContext_, SPMIDI_DEFAULT_MASTER_VOLUME );
 
 	// For now only one MIDI player for whole system!  
 	pFilePlayer_ = kNull;
