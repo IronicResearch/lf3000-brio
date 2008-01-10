@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.??  (Build ???? released Jan ?, 2008) 
+v0.1.30  (Build 2597 released Jan 9, 2008) 
 ===========================================
 
 0) Audio:  Fixed Bug#741: Overall volume of device. 
@@ -23,6 +23,16 @@ v0.1.??  (Build ???? released Jan ?, 2008)
 8) Audio: disabled calculation of large floating point test table for faster startup time.
 9) Fix for TTPro #880:  MIDI transpose on single tracks.  Also, fixed issue for MIDI program change.
 
+
+* Audio MPI PauseAudioSystem() pauses audio streams without crashing in PortAudio driver
+  on embedded target. (TTP 1041)
+ 
+* Per-pixel alpha values for ARGB8888 format are blended under control of Display MPI SetAlpha()
+  enable parameter. (TTP 1043)
+ 
+* Offscreen display contexts are now correctly positioned onscreen at Display MPI Register()
+  X,Y parameters. 
+ 
 
 ===========================================
 v0.1.29  (Build 2554 released Jan 5, 2008) 
