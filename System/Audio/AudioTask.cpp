@@ -514,7 +514,8 @@ Boolean				isAudioActive = false;
 //printf("AudioTask::DoIsAudioPlaying() Is ID = %d Playing?\n",  (int)id);	
 
 //	Is audio file is still playing
-retMsg.SetBooleanResult( kNull != gAudioContext.pAudioMixer->FindChannel( id ) );
+Boolean audioPlaying = (kNull != gAudioContext.pAudioMixer->FindChannel( id ));
+retMsg.SetBooleanResult( audioPlaying );
 SendMsgToAudioModule( retMsg );
 }  // ---- end DoIsAudioPlaying() ----
 

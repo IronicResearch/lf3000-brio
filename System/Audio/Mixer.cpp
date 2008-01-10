@@ -28,7 +28,7 @@
 
 #define kMixer_HeadroomBits_Default 2
 
-#define kMixer_SoftClipper_PreGainDB   5
+#define kMixer_SoftClipper_PreGainDB   3
 #define kMixer_SoftClipper_PostGainDB  0
 
 // Debug input/output stuff
@@ -171,13 +171,12 @@ longTimeDecayI = FloatToQ15(longTimeDecayF);
 // NOTE : Keep at end of this routine
 {
 tAudioState *d = &audioState_;
-//printf("CAudioMixer: sizeof(tAudioState)=%d\n", sizeof(tAudioState));
 if (sizeof(tAudioState) >= kAUDIO_MAX_MSG_SIZE)
     printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n", sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 
 d->computeLevelMeters = false;
 d->useOutEQ           = false;
-d->useOutSoftClipper  = false;
+d->useOutSoftClipper  = true;
 d->useOutDSP          = (d->computeLevelMeters || d->useOutEQ || d->useOutSoftClipper);
 //if (d->useOutSoftClipper)
 //    d->headroomBits = kMixer_HeadroomBits_Default;
@@ -812,10 +811,6 @@ printf("CAudioMixer: in DC %g dB -> %g |out %g dB -> %g (%d)\n",
     }
 
 // ---- Output DSP block
-
-//long computeLevelMeters = audioState_.computeLevelMeters;
-//useOutEQ_               = audioState_.useOutEQ;
-//useOutSoftClipper_      = audioState_.useOutSoftClipper;
 if (audioState_.useOutEQ || audioState_.useOutSoftClipper || audioState_.computeLevelMeters)
     audioState_.useOutDSP  = true;
 #ifdef NEEDED
@@ -825,7 +820,7 @@ d->useOutDSP, d->computeLevelMeters, d->useOutEQ , d->useOutSoftClipper); }
 }
 #endif
 
-if (true)  //audioState_.useOutDSP)
+if (audioState_.useOutDSP)
     {
     #define kTmpIndex 0
     DeinterleaveShorts(pOut, tPtrs[kTmpIndex], tPtrs[kTmpIndex+1], numFrames);
