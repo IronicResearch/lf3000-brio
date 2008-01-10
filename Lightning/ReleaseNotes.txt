@@ -6,6 +6,9 @@ Lightning C++ Development Kit Release Notes
 v0.1.??  (Build ???? released Jan ?, 2008) 
 ===========================================
 
+0) Audio:  Fixed Bug#741: Overall volume of device. 
+        Enabled soft clipper algorithm (innate +3dB gain) with preGain of +3dB, for total gain=+6dB
+1) Audio: Fixed for Bug #1041:   Crashed when audio system paused.
 1) MIDI: added definitions for supported MIDI channel messages and controllers to AudioMPI.h
 2) MIDI: fixed CRASH when loading files with local path.  Weird CString issue with same crash
        in audio and video, though they were fixed in previous release.
@@ -19,7 +22,7 @@ v0.1.??  (Build ???? released Jan ?, 2008)
 7) Audio:  Startup pop for 8000/16000 Hz audio and MIDI fixed.  Popped on 2nd play but not on 1st.
 8) Audio: disabled calculation of large floating point test table for faster startup time.
 9) Fix for TTPro #880:  MIDI transpose on single tracks.  Also, fixed issue for MIDI program change.
-10) 
+
 
 ===========================================
 v0.1.29  (Build 2554 released Jan 5, 2008) 
