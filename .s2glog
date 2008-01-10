@@ -12253,3 +12253,22 @@ By gklimanis (gklimanis@leapfrog.com) on 1/9/08 1:23 PM
 4,391 ms. (Cumulative: 3,214,610 ms)
 
 ----------------
+Revision 2,586 from svn://localhost/TRUNK/:
+Revision 2,587 from svn://localhost/TRUNK/:
+Revision 2,588 from svn://localhost/TRUNK/:
+Revision 2,589 from svn://localhost/TRUNK/:
+Revision 2,590 from svn://localhost/TRUNK/:
+Revision 2,591 from svn://localhost/TRUNK/:
+Revision 2,592 from svn://localhost/TRUNK/:
+
+Enabled soft clipper with preGain = +3 dB for a total of 6 dB system 
+gain. 
+
+This is a "fix" for Bug #714 Overall volume change
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/9/08 4:34 PM
+5 changed, 0 added, 0 deleted.
+4,470 ms. (Cumulative: 3,219,393 ms)
+
+----------------

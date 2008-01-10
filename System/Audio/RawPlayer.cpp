@@ -59,7 +59,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlay
 #endif
 
 // Allocate player's sample buffer
-	pReadBuf_ = new S16[ kAudioOutBufSizeInWords ];
+	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // GK FIXX:  2x needed?
 
 // Set up looping
 	shouldLoopFile_ = (0 < payload_) && (0 != (optionsFlags_ & kAudioOptionsLooped));
