@@ -292,8 +292,9 @@ for target in targets:
 	
 	#-------------------------------------------------------------------------
 	# Deploy the unit test data for embedded builds
+	# FIXME/dm: Wasteful on publish builds except unit test binaries creep in
 	#-------------------------------------------------------------------------
-	if not is_emulation and not is_publish:
+	if not is_emulation:
 		unit_test_data_root = Dir('UnitTestData').abspath
 		root_len = len(unit_test_data_root) + 1
 		rootfs_data = os.path.join(rootfs, 'Base', 'Brio', 'rsrc')
