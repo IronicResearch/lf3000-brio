@@ -2391,6 +2391,7 @@ else
     sprintf(out, "%.15g %s", frequency, s);
 } // ---- end FrequencyInHertz() ---- 
 
+#if 0	// duplicated functions in shared library build
 // **********************************************************************
 // MIDINoteToNotation:	Convert MIDI Note to string
 //					w/musical notation 
@@ -2607,6 +2608,7 @@ if (*s != '\0')
 
 return ((int) MIDINoteNumber);
 }	// ---- end NotationToMIDINote() ---- 
+#endif
 
 // **********************************************************************************
 // HexToLong:	Convert Hexadecimal	string to long value

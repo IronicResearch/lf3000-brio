@@ -12329,3 +12329,15 @@ By Dave Milici (dmilici@leapfrog.com) on 1/10/08 4:49 PM
 4,474 ms. (Cumulative: 3,241,764 ms)
 
 ----------------
+Revision 2,606 from svn://localhost/TRUNK/:
+Revision 2,607 from svn://localhost/TRUNK/:
+Revision 2,608 from svn://localhost/TRUNK/:
+
+Rebuilt audio support libs as .so for embedded.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/10/08 6:15 PM
+2 changed, 2 added, 0 deleted.
+4,532 ms. (Cumulative: 3,246,374 ms)
+
+----------------
