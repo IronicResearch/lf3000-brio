@@ -3,6 +3,15 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.31  (Build 2614 released Jan 10, 2008) 
+===========================================
+
+* Added GetFreeMem() Utility function for free memory snapshots in user space.
+ 
+* Rebuilt 3rd-party Audio support libraries as shared libraries to conserve
+  memory usage. 
+
+===========================================
 v0.1.30  (Build 2597 released Jan 9, 2008) 
 ===========================================
 
