@@ -12374,3 +12374,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/10/08 7:45 PM
 4,298 ms. (Cumulative: 3,261,172 ms)
 
 ----------------
+Revision 2,615 from svn://localhost/TRUNK/:
+
+Bug #771. Removed the 'emuldebug' parameter that told the compilier to include the -g switch for emulation build. According to the revised policy, developers always want debug symbols in emulation, both for Brio and for our content.
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/11/08 11:07 AM
+3 changed, 0 added, 0 deleted.
+4,235 ms. (Cumulative: 3,265,469 ms)
+
+----------------
