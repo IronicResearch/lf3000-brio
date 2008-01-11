@@ -32,7 +32,7 @@ myenv.Append(CPPPATH = ['#System/Audio/DspUtil'])
 myenv.Append(CPPPATH = ['#System/Audio/LibSndFile'])
 
 if vars['is_emulation']:
-	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath)
+	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/Portaudio/Libs/x86').abspath, myenv.Dir('#ThirdParty/Mobileer/Libs/x86').abspath, myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath])
 
 myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/' + vars['cpu_subdir']])
 myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/' + vars['cpu_subdir']])

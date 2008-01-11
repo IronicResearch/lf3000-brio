@@ -64,13 +64,14 @@ pa_unix_util.d
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: libportaudio.a
+all: libportaudio.so
 
 # Tool invocations
-libportaudio.a: $(OBJS) $(USER_OBJS)
+libportaudio.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: GCC Archiver'
-	ar -r "../Libs/x86/libportaudio.a" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: GCC Linker'
+	ld -shared -o libportaudio.so -soname libportaudio.so $(OBJS) $(USER_OBJS) $(LIBS)
+	mv libportaudio.so ../Libs/x86
 	@echo 'Finished building target: $@'
 	@echo ' '
 

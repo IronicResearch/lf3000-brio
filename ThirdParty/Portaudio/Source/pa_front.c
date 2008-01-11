@@ -159,6 +159,7 @@ void PaUtil_SetLastHostErrorInfo( PaHostApiTypeId hostApiType, long errorCode,
 }
 
 
+#if 0
 void PaUtil_DebugPrint( const char *format, ... )
 {
     va_list ap;
@@ -169,6 +170,7 @@ void PaUtil_DebugPrint( const char *format, ... )
 
     fflush( stderr );
 }
+#endif
 
 
 static PaUtilHostApiRepresentation **hostApis_ = 0;

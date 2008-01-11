@@ -43,14 +43,14 @@ DEMO_OBJS = \
 	 spmidi_load.o \
 	 write_wav.o
 	 
-all: libme2000.a
-	@echo "Building libme2000.a"
+all: libme2000.so
+	@echo "Building libme2000.so"
 
-libme2000.a:  $(DEMO_OBJS) $(SPMIDI_OBJS)
+libme2000.so:  $(DEMO_OBJS) $(SPMIDI_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: GCC Archiver'
-	arm-linux-ar -r "libme2000.a" $(DEMO_OBJS) $(SPMIDI_OBJS)
-	mv libme2000.a ../../Libs/arm
+	@echo 'Invoking: GCC Linker'
+	arm-linux-ld -shared -o libme2000.so -soname libme2000.so --strip-all $(DEMO_OBJS) $(SPMIDI_OBJS)
+	mv libme2000.so ../../Libs/arm
 	@echo 'Finished building target: $@'
 	@echo ' '
 

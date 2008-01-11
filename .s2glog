@@ -12308,3 +12308,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/10/08 4:47 PM
 4,266 ms. (Cumulative: 3,232,461 ms)
 
 ----------------
+Revision 2,603 from svn://localhost/TRUNK/:
+
+Rebuilt Portaudio and Mobileer as shared libs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/10/08 4:48 PM
+7 changed, 4 added, 0 deleted.
+4,656 ms. (Cumulative: 3,237,180 ms)
+
+----------------
