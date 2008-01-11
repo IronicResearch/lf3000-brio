@@ -12351,3 +12351,16 @@ By Dave Milici (dmilici@leapfrog.com) on 1/10/08 6:16 PM
 5,579 ms. (Cumulative: 3,252,046 ms)
 
 ----------------
+Revision 2,610 from svn://localhost/TRUNK/:
+Revision 2,611 from svn://localhost/TRUNK/:
+Revision 2,612 from svn://localhost/TRUNK/:
+
+Reshrunk FreeType lib without unused drivers and extras.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/10/08 7:06 PM
+2 changed, 0 added, 0 deleted.
+4,626 ms. (Cumulative: 3,256,781 ms)
+
+----------------
