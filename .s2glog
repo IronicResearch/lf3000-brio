@@ -12294,3 +12294,17 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/9/08 6:05 PM
 4,285 ms. (Cumulative: 3,228,102 ms)
 
 ----------------
+Revision 2,598 from svn://localhost/TRUNK/:
+Revision 2,599 from svn://localhost/TRUNK/:
+Revision 2,600 from svn://localhost/TRUNK/:
+Revision 2,601 from svn://localhost/TRUNK/:
+Revision 2,602 from svn://localhost/TRUNK/:
+
+Added GetFreeMem() utility function based on /proc/meminfo snapshots.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/10/08 4:47 PM
+1 changed, 1 added, 0 deleted.
+4,266 ms. (Cumulative: 3,232,461 ms)
+
+----------------

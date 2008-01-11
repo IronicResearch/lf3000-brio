@@ -74,6 +74,11 @@ void OffsetsToPtrs( U8* pData, const PointerOffsets& ptr_offsets );
 //tAppRsrcDataSet* 
 boost::shared_array<U8> LoadDataset(const string& binPath, const string& relinkPath);
 
+
+//----------------------------------------------------------------------------
+int GetFreeMem(void);
+
+
 LF_END_BRIO_NAMESPACE()
 
 #endif // LF_BRIO_UTILITY_H
