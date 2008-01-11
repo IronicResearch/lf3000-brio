@@ -12383,3 +12383,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/11/08 11:07 AM
 4,235 ms. (Cumulative: 3,265,469 ms)
 
 ----------------
+Revision 2,616 from svn://localhost/TRUNK/:
+
+Fixed scons script to deploy additional audio .so libs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/11/08 11:15 AM
+1 changed, 0 added, 0 deleted.
+4,219 ms. (Cumulative: 3,269,766 ms)
+
+----------------
