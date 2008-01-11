@@ -12318,3 +12318,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/10/08 4:48 PM
 4,656 ms. (Cumulative: 3,237,180 ms)
 
 ----------------
+Revision 2,604 from svn://localhost/TRUNK/:
+Revision 2,605 from svn://localhost/TRUNK/:
+
+RE-instated deploying unit test resources in publish builds since binaries keep creeping in. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/10/08 4:49 PM
+1 changed, 0 added, 0 deleted.
+4,474 ms. (Cumulative: 3,241,764 ms)
+
+----------------
