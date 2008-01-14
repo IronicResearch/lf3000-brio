@@ -33,7 +33,6 @@ int GetFreeMem(void)
 	int	size = 26;
 	char	buf[80];
 	char	stat[80];
-	string	str = "";
 	FILE*	f = NULL;
 
 	f = fopen("/proc/meminfo", "r");
@@ -41,10 +40,8 @@ int GetFreeMem(void)
 		return 0;
 	while (!feof(f)) {
 		fread(buf, 1, size, f);
-		str += buf;
 		if (strncmp("MemFree:", buf, 8) == 0) {
 			sscanf(buf, "%s%d", &stat[0], &freemem); 
-//			printf("%s%d\n", stat, freemem);
 			break;
 		}
 	}

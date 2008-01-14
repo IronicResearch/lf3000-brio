@@ -76,6 +76,8 @@ boost::shared_array<U8> LoadDataset(const string& binPath, const string& relinkP
 
 
 //----------------------------------------------------------------------------
+// Returns free memory snapshot in user space (in Kb)
+//----------------------------------------------------------------------------
 int GetFreeMem(void);
 
 

@@ -12393,3 +12393,22 @@ By Dave Milici (dmilici@leapfrog.com) on 1/11/08 11:15 AM
 4,219 ms. (Cumulative: 3,269,766 ms)
 
 ----------------
+Revision 2,617 from svn://localhost/TRUNK/:
+Revision 2,618 from svn://localhost/TRUNK/:
+Revision 2,619 from svn://localhost/TRUNK/:
+Revision 2,620 from svn://localhost/TRUNK/:
+Revision 2,621 from svn://localhost/TRUNK/:
+Revision 2,622 from svn://localhost/TRUNK/:
+Revision 2,623 from svn://localhost/TRUNK/:
+Revision 2,624 from svn://localhost/TRUNK/:
+Revision 2,625 from svn://localhost/TRUNK/:
+Revision 2,626 from svn://localhost/TRUNK/:
+
+Minor cleanup of GetFreeMem() utility function.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/08 10:21 AM
+2 changed, 0 added, 0 deleted.
+4,469 ms. (Cumulative: 3,274,376 ms)
+
+----------------
