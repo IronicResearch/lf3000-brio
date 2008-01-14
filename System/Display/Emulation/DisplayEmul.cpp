@@ -194,9 +194,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (dc->isAllocated)
 		return reinterpret_cast<tDisplayHandle>(dc);
 
-	// YUV planar format needs double-height surface for U and V buffers
+	// YUV planar format needs double-width surface for U and V buffers
 	if (colorDepth == kPixelFormatYUV420)
-		height *= 2;
+		width *= 2;
 	
 	// Bind X pixmap and image data to display context
 	Pixmap pixmap = XCreatePixmap(x11Display, x11Window, width, height, depth);
@@ -205,7 +205,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	
 	dc->pixmap = pixmap;
 	dc->image = image;
-	if (colorDepth == kPixelFormatARGB8888) {
+	if (colorDepth == kPixelFormatARGB8888 || colorDepth == kPixelFormatYUV420) {
 		dc->bpp = image->bitmap_unit;
 		dc->depth = image->bits_per_pixel;
 		dc->pitch = image->bytes_per_line;
