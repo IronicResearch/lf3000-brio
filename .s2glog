@@ -12428,3 +12428,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/14/08 12:49 PM
 4,360 ms. (Cumulative: 3,278,876 ms)
 
 ----------------
+Revision 2,634 from svn://localhost/TRUNK/:
+Revision 2,635 from svn://localhost/TRUNK/:
+
+Change YUV planar format to store U,V in unused width instead of extra height.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/08 1:40 PM
+4 changed, 0 added, 0 deleted.
+4,334 ms. (Cumulative: 3,283,288 ms)
+
+----------------

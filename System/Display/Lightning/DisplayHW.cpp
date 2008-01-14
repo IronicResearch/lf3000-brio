@@ -249,7 +249,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	// Create mappings to framebuffer at actual context creation (to conserve mappings)
 	if (GraphicsContext->isPlanar) {
 		// Map planar video overlay buffer in user space for actual size
-		gPlanarSize = 2 * GraphicsContext->height * GraphicsContext->pitch;
+		// U,V now reside in extra unused buffer width (instead of extra height)
+		gPlanarSize = GraphicsContext->height * GraphicsContext->pitch;
 		gPlanarBuffer = (U8 *)mmap(0, gPlanarSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			   						gDevOverlay, gPlanarBase);
 		dbg_.Assert(gPlanarBuffer > 0,
@@ -296,8 +297,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	{
 		// Switch video overlay linear address to XY Block address
 		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + width*height));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + width*height*3/2));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + GraphicsContext->width));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + GraphicsContext->width + GraphicsContext->pitch*height/2));
 	}
 	SetDirtyBit(layer);
 
@@ -437,9 +438,10 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		
 		// Clear video buffer to white pixels before visible
 		for (U32 i = 0; i < context->height; i++)
+		{
 			memset(&gPlanarBuffer[i*4096], 0xFF, context->width); // white Y
-		for (U32 i = context->height; i < (U32) 2*context->height; i++)
-			memset(&gPlanarBuffer[i*4096], 0x7F, context->width); // neutral U,V
+			memset(&gPlanarBuffer[i*4096+context->width], 0x7F, context->width); // neutral U,V
+		}
 	}
 
 	SetDirtyBit(layer);
