@@ -100,19 +100,7 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gFrameSize = fb_size;
-
-	// get access to the Frame Buffer
-	gFrameBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
-		   						gDevLayer, baseAddr);
-//	dbg_.Assert((void *)gFrameBuffer != MAP_FAILED,
-//			"DisplayModule::InitModule: failed to mmap() frame buffer");
-
-	dbg_.Assert(gFrameBuffer >= 0,
-			"DisplayModule::InitModule: failed to mmap() frame buffer");
-
-	dbg_.DebugOut(kDbgLvlVerbose, 
-			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
-			baseAddr, fb_size, gFrameBuffer);
+	// We don't map framebuffer regions until onscreen display contexts are created
 
 	// Open MLC 3D OpenGL RGB layer device
 	gDevOpenGL = open(OGL_LAYER_DEV, O_RDWR|O_SYNC);
@@ -135,47 +123,15 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(baseAddr >= 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gOverlayBase = baseAddr;
+	gPlanarBase = baseAddr | 0x20000000;
 	
 	// Get the overlay buffer's size
 	fb_size = ioctl(gDevOverlay, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gOverlaySize = fb_size;
-
-	// Get access to the overlay buffer in user space
-	gOverlayBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
-		   						gDevOverlay, baseAddr);
-	dbg_.Assert(gOverlayBuffer >= 0,
-			"DisplayModule::InitModule: failed to mmap() frame buffer");
-	dbg_.DebugOut(kDbgLvlVerbose, 
-			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
-			baseAddr, fb_size, gOverlayBuffer);
-//	memset(gOverlayBuffer, 0, fb_size);
-	
-	// Get access to the overlay planar array buffer in user space
-	fb_size = 4096 * 4096;
-	baseAddr += 0x20000000;
-	gPlanarBuffer = (U8 *)mmap(0, fb_size, PROT_READ | PROT_WRITE, MAP_SHARED,
-		   						gDevOverlay, baseAddr);
-	dbg_.Assert(gPlanarBuffer >= 0,
-			"DisplayModule::InitModule: failed to mmap() frame buffer");
-	dbg_.DebugOut(kDbgLvlVerbose, 
-			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
-			baseAddr, fb_size, gPlanarBuffer);
-	gPlanarBase = baseAddr;
-	gPlanarSize = fb_size;
-	
-	// Clear video planar buffers (white pixels preferred to match biilboards)
-	U32 screensize = GetScreenSize();
-	U32 screenwidth = screensize & 0xFFFF;
-	U32 screenheight = screensize >> 16;
-	U32 blocksize = screenwidth * screenheight;
-	memset(gOverlayBuffer, 0xFF, blocksize); // white Y
- 	memset(&gOverlayBuffer[blocksize], 0x7F, blocksize); // neutral U,V
-	for (U32 i = 0; i < screenheight; i++)
-		memset(&gPlanarBuffer[i*4096], 0xFF, screenwidth); // white Y
-	for (U32 i = screenheight; i < 2*screenheight; i++)
-		memset(&gPlanarBuffer[i*4096], 0x7F, screenwidth); // neutral U,V
+	gPlanarSize = fb_size * 2;
+	// We don't map framebuffer regions until onscreen display contexts are created
 }
 
 //----------------------------------------------------------------------------
@@ -183,9 +139,6 @@ void CDisplayModule::DeInitModule()
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::DeInitModuleHW: enter\n");
 
-    munmap(gPlanarBuffer, gPlanarSize);
-    munmap(gOverlayBuffer, gOverlaySize);
-    munmap(gFrameBuffer, gFrameSize);
 	close(gDevGpio);
 	close(gDevDpc);
 	close(gDevMlc);
@@ -212,11 +165,8 @@ U32 CDisplayModule::GetScreenSize(void)
 // Returns pixel format of primary RGB layer
 enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 {
-	errno = 0;
-	U32 format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
-	// FIX by BK
-	dbg_.Assert(errno == 0, "DisplayModule::GetPixelFormat: ioctl failed");
-//	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
+	int format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
+	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
 
 	switch(format) {
 		case kLayerPixelFormatRGB4444:
@@ -296,6 +246,41 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (GraphicsContext->isAllocated)
 		return reinterpret_cast<tDisplayHandle>(GraphicsContext);
 		
+	// Create mappings to framebuffer at actual context creation (to conserve mappings)
+	if (GraphicsContext->isPlanar) {
+		// Map planar video overlay buffer in user space for actual size
+		gPlanarSize = 2 * GraphicsContext->height * GraphicsContext->pitch;
+		gPlanarBuffer = (U8 *)mmap(0, gPlanarSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+			   						gDevOverlay, gPlanarBase);
+		dbg_.Assert(gPlanarBuffer > 0,
+				"DisplayModule::InitModule: failed to mmap() frame buffer");
+		dbg_.DebugOut(kDbgLvlVerbose, 
+				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+				(unsigned int)gPlanarBase, gPlanarSize, gPlanarBuffer);
+	}
+	else if (GraphicsContext->isOverlay) {
+		// Map video overlay buffer in user space for actual size
+		gOverlaySize = GraphicsContext->height * GraphicsContext->pitch;
+		gOverlayBuffer = (U8 *)mmap(0, gOverlaySize, PROT_READ | PROT_WRITE, MAP_SHARED,
+			   						gDevOverlay, gOverlayBase);
+		dbg_.Assert(gOverlayBuffer > 0,
+				"DisplayModule::InitModule: failed to mmap() frame buffer");
+		dbg_.DebugOut(kDbgLvlVerbose, 
+				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+				(unsigned int)gOverlayBase, gOverlaySize, gOverlayBuffer);
+	}
+	else {
+		// Map 2D Frame Buffer in user space for actual size
+		gFrameSize = GraphicsContext->height * GraphicsContext->pitch;
+		gFrameBuffer = (U8 *)mmap(0, gFrameSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+			   						gDevLayer, gFrameBase);
+		dbg_.Assert(gFrameBuffer > 0,
+				"DisplayModule::InitModule: failed to mmap() frame buffer");
+		dbg_.DebugOut(kDbgLvlVerbose, 
+				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+				(unsigned int)gFrameBase, gFrameSize, gFrameBuffer);
+	}
+	
 	// Assign mapped framebuffer address if onscreen context
 	GraphicsContext->pBuffer = 
 		(GraphicsContext->isPlanar) ? gPlanarBuffer : 
@@ -366,7 +351,17 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 									   Boolean destroyBuffer)
 {
 	(void )destroyBuffer;	/* Prevent unused variable warnings. */ 
+	if (hndl == NULL)
+		return kNoErr;
 	UnRegister(hndl, 0);
+	// Release mappings to framebuffer memory
+	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
+	if (context->isPlanar)
+		munmap(gPlanarBuffer, gPlanarSize);
+	else if (context->isOverlay)
+		munmap(gOverlayBuffer, gOverlaySize);
+//	else if (!context->isAllocated)
+//		munmap(gFrameBuffer, gFrameSize);
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
 }

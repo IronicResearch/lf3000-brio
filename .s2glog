@@ -12412,3 +12412,19 @@ By Dave Milici (dmilici@leapfrog.com) on 1/14/08 10:21 AM
 4,469 ms. (Cumulative: 3,274,376 ms)
 
 ----------------
+Revision 2,627 from svn://localhost/TRUNK/:
+Revision 2,628 from svn://localhost/TRUNK/:
+Revision 2,629 from svn://localhost/TRUNK/:
+Revision 2,630 from svn://localhost/TRUNK/:
+Revision 2,631 from svn://localhost/TRUNK/:
+Revision 2,632 from svn://localhost/TRUNK/:
+Revision 2,633 from svn://localhost/TRUNK/:
+
+Defer framebuffer mappings until onscreen display contexts actually created. Planar video buffer mappings never used the entire 16Meg XY tiled address block.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/08 12:49 PM
+1 changed, 0 added, 0 deleted.
+4,360 ms. (Cumulative: 3,278,876 ms)
+
+----------------
