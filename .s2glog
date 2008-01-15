@@ -12460,3 +12460,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/14/08 6:57 PM
 4,329 ms. (Cumulative: 3,287,773 ms)
 
 ----------------
+Revision 2,649 from svn://localhost/TRUNK/:
+
+Remove Theora lib intermediate dependency files from SVN.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/08 12:50 PM
+8 changed, 0 added, 39 deleted.
+4,969 ms. (Cumulative: 3,292,804 ms)
+
+----------------
