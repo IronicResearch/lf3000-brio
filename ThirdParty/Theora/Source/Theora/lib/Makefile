@@ -128,7 +128,7 @@ CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -Wall -O3 -fforce-addr -fomit-frame-pointer -finline-functions -funroll-loops 
 CPP = arm-linux-gcc -E
-CPPFLAGS = -I/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/include -I/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl
+CPPFLAGS = 
 CPU_x86_32_FALSE = 
 CPU_x86_32_TRUE = #
 CPU_x86_64_FALSE = 
@@ -164,7 +164,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = -L/home/lfu/nfsroot/Didj/Base/Brio/lib -Wl,--rpath-link -Wl,/home/lfu/nfsroot/Didj/Base/Brio/lib
+LDFLAGS = -Wl,-Map=libtheora.map -L/home/lfu/nfsroot/Didj/Base/Brio/lib -Wl,--rpath-link -Wl,/home/lfu/nfsroot/Didj/Base/Brio/lib
 LIBDIR = @LIBDIR@
 LIBOBJS = 
 LIBS = 

@@ -95,7 +95,7 @@ CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -Wall -O3 -fforce-addr -fomit-frame-pointer -finline-functions -funroll-loops 
 CPP = arm-linux-gcc -E
-CPPFLAGS = -I/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/include -I/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl
+CPPFLAGS = 
 CPU_x86_32_FALSE = 
 CPU_x86_32_TRUE = #
 CPU_x86_64_FALSE = 
