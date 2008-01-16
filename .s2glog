@@ -12482,3 +12482,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/08 4:25 PM
 4,797 ms. (Cumulative: 3,297,711 ms)
 
 ----------------
+Revision 2,653 from svn://localhost/TRUNK/:
+
+Extra libs added to unit tests, not MPI list.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/08 6:25 PM
+1 changed, 0 added, 0 deleted.
+4,409 ms. (Cumulative: 3,302,198 ms)
+
+----------------
