@@ -12492,3 +12492,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/08 6:25 PM
 4,409 ms. (Cumulative: 3,302,198 ms)
 
 ----------------
+Revision 2,654 from svn://localhost/TRUNK/:
+
+Video task thread needs global var for audio filename.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/08 6:26 PM
+1 changed, 0 added, 0 deleted.
+4,219 ms. (Cumulative: 3,306,480 ms)
+
+----------------

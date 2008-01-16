@@ -75,6 +75,7 @@ namespace
 	// Video MPI global vars
 	tVideoContext*		gpVidCtx = NULL;
 	CPath				gpath = "";
+	CPath				gfilepath = "";
 	FILE*				gfile = NULL;
 	tMutex				gVidMutex ; // = PTHREAD_MUTEX_INITIALIZER;
 	
@@ -184,11 +185,11 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	
 	CKernelMPI		kernel;
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
-//	memset(pVidCtx, 0, sizeof(tVideoContext));
+	memset(pVidCtx, 0, sizeof(tVideoContext));
 	
 	// Determine if audio track is available and at what path?
 	bool			nopath = (pathAudio.length() == 0) ? true : false;
-	const CPath		filepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;
+	gfilepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;
 
 #if USE_MUTEX
 	// Init mutex
@@ -198,7 +199,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	
 	pVidCtx->hVideo 	= hVideo;
 	pVidCtx->hAudio 	= kNoAudioID; // handled inside video task
-	pVidCtx->pPathAudio = (nopath) ? NULL : &filepath; // pass by pointer
+	pVidCtx->pPathAudio = (nopath) ? NULL : &gfilepath; // pass by pointer
 	pVidCtx->pSurfVideo = pSurf;
 	pVidCtx->pListener 	= pListener;
 	pVidCtx->bLooped 	= bLoop;
