@@ -15,11 +15,12 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 'me2000',
-				'portaudio', 'vorbisidec', 'dsputil', 'sndfile']
+				'portaudio', 'pthread', 'vorbisidec', 'dsputil', 'sndfile']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
+
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
 

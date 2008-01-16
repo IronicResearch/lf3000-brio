@@ -12470,3 +12470,15 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/08 12:50 PM
 4,969 ms. (Cumulative: 3,292,804 ms)
 
 ----------------
+Revision 2,650 from svn://localhost/TRUNK/:
+Revision 2,651 from svn://localhost/TRUNK/:
+Revision 2,652 from svn://localhost/TRUNK/:
+
+Reorganize Brio modules linking with pthread -- apps using portaudio must always explicitly link with pthread.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/08 4:25 PM
+5 changed, 0 added, 0 deleted.
+4,797 ms. (Cumulative: 3,297,711 ms)
+
+----------------

@@ -52,6 +52,7 @@ pa_unix_hostapis.d \
 pa_unix_oss.d \
 pa_unix_util.d 
 
+LIBS += -lpthread
 
 # Each subdirectory must supply rules for building sources it contributes
 %.o: %.c
