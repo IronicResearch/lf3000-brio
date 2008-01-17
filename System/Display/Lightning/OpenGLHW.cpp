@@ -100,7 +100,8 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
 
 	// Get framebuffer size from driver to divide up the heaps
-	fbsize = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
+	// Since FBSIZE is read-only, default (unswapped) OGL layer must be queried
+	fbsize = ioctl(gDevLayerOdd, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fbsize > 0,	"DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
 	fbsize >>= 20;
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Size = %d, Mem2Size = %d, fbsize = %d\n", pMemInfo->Memory1D_SizeInMbyte, pMemInfo->Memory2D_SizeInMbyte, fbsize);

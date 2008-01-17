@@ -12553,3 +12553,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/08 12:43 PM
 4,078 ms. (Cumulative: 3,323,846 ms)
 
 ----------------
+Revision 2,670 from svn://localhost/TRUNK/:
+
+The OGL FB size is always queried from /dev/layer1 regardless of layer swapping.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 12:58 PM
+1 changed, 0 added, 0 deleted.
+4,125 ms. (Cumulative: 3,328,034 ms)
+
+----------------
