@@ -77,7 +77,8 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
 	unsigned int					mem1Virt = MEM1_VIRT;
 	unsigned int					mem2Virt;
-
+	int								fbsize;
+	
 	// Need 2 layers for LF1000 fullscreen anti-aliasing option
 	FSAAval = pOglCtx->bFSAA;
 
@@ -94,13 +95,21 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gDevLayer = (isLayerSwapped_) ? gDevLayerEven : gDevLayerOdd;
 	
 	// Get framebuffer address from driver
-	errno=0;
 	gMem1Phys = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
-// FIXED by BK
-	dbg_.Assert(errno == 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
-//	dbg_.Assert(gMem1Phys >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
+	dbg_.Assert(gMem1Phys > 0, "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
 
+	// Get framebuffer size from driver to divide up the heaps
+	fbsize = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
+	dbg_.Assert(fbsize > 0,	"DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
+	fbsize >>= 20;
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Size = %d, Mem2Size = %d, fbsize = %d\n", pMemInfo->Memory1D_SizeInMbyte, pMemInfo->Memory2D_SizeInMbyte, fbsize);
+	if (pMemInfo->Memory2D_SizeInMbyte > fbsize)
+		pMemInfo->Memory2D_SizeInMbyte = fbsize - 1;
+	if (pMemInfo->Memory1D_SizeInMbyte + pMemInfo->Memory2D_SizeInMbyte > fbsize)
+		pMemInfo->Memory1D_SizeInMbyte = fbsize - pMemInfo->Memory2D_SizeInMbyte;
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Size = %d, Mem2Size = %d, fbsize = %d\n", pMemInfo->Memory1D_SizeInMbyte, pMemInfo->Memory2D_SizeInMbyte, fbsize);
+	
 	// 1st heap size and addresses must be 1 Meg aligned
 	// 2nd heap size and addresses must be 4 Meg aligned
 	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+1) & ~1) << 20;

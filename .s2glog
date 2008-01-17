@@ -12502,3 +12502,23 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/08 6:26 PM
 4,219 ms. (Cumulative: 3,306,480 ms)
 
 ----------------
+Revision 2,655 from svn://localhost/TRUNK/:
+Revision 2,656 from svn://localhost/TRUNK/:
+Revision 2,657 from svn://localhost/TRUNK/:
+Revision 2,658 from svn://localhost/TRUNK/:
+Revision 2,659 from svn://localhost/TRUNK/:
+Revision 2,660 from svn://localhost/TRUNK/:
+Revision 2,661 from svn://localhost/TRUNK/:
+Revision 2,662 from svn://localhost/TRUNK/:
+Revision 2,663 from svn://localhost/TRUNK/:
+Revision 2,664 from svn://localhost/TRUNK/:
+Revision 2,665 from svn://localhost/TRUNK/:
+
+Use actual FB size for OGL heap calculations.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/16/08 5:00 PM
+1 changed, 0 added, 0 deleted.
+4,376 ms. (Cumulative: 3,310,996 ms)
+
+----------------
