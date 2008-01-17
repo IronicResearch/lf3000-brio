@@ -105,6 +105,10 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	pDebugMPI_->Assert((kNoErr == err), "CMidiPlayer::ctor: Couldn't init mutex.\n");
 #endif
 
+	// Dynamically load the SPMIDI Library (*MUST* be prior to 1st SPMIDI_ call)
+	ret = LoadMidiLibrary();
+	pDebugMPI_->Assert((true == ret), "CMidiPlayer::ctor: Couldn't load MIDI library.\n");
+	
 	// Initialize SPMIDI Library
 	SPMIDI_Initialize();
 
@@ -160,6 +164,7 @@ CMidiPlayer::~CMidiPlayer()
 
 	SPMIDI_DeleteContext( pContext_ );
 	SPMIDI_Terminate();
+	UnloadMidiLibrary();
 	
 #ifdef USE_MIDI_PLAYER_MUTEX
 	result = pKernelMPI_->UnlockMutex( renderMutex_ );

@@ -18,15 +18,7 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 
-// Mobileer MIDI Engine
-#include <spmidi.h>
-#include <spmidi_util.h>
-#include <midifile_player.h>
-
-#include "program_list.h"
-#include "spmidi_load.h"
-#include "spmidi_print.h"
-#include "spmidi/engine/spmidi_host.h"
+#include <MidiLoader.h>
 
 #include "Dsputil.h"
 
