@@ -12533,3 +12533,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/08 10:39 AM
 4,270 ms. (Cumulative: 3,315,344 ms)
 
 ----------------
+Revision 2,668 from svn://localhost/TRUNK/:
+
+Change MIDI constructor to load Mobileer lib dynamically. /Module subdirectory used for uniform load location on emulation and embedded builds.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 12:12 PM
+5 changed, 0 added, 0 deleted.
+4,268 ms. (Cumulative: 3,319,690 ms)
+
+----------------

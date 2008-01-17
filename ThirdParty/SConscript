@@ -53,8 +53,6 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so*'))
 		env.Install(lib_dir, libs)
-		libs = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'libme2000.so'))
-		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
 		env.Install(lib_dir, libs)
 	else:
@@ -95,8 +93,6 @@ if not vars['is_emulation']:
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], 'libopengles_lite.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'libme2000.so'))
-	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
 
@@ -104,5 +100,7 @@ if not vars['is_emulation']:
 # Export support modules to embedded or emulation target
 #-----------------------------------------------------------------------------
 ext_mod = glob.glob(os.path.join('Mobileer', 'Libs', 'orchestra.mbis'))
+env.Install(vars['mod_deploy_dir'], ext_mod)
+ext_mod = glob.glob(os.path.join('Mobileer', 'Libs', vars['cpu_subdir'], 'libme2000.so'))
 env.Install(vars['mod_deploy_dir'], ext_mod)
 	

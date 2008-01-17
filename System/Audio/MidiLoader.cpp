@@ -82,10 +82,10 @@ static CPath GetLibPath( void )
 	int pos = dir.find("Module");
 	int len = dir.length() - pos;
 	dir.erase(pos, len);
-	dir.append("lib/");
+	dir.append("Module/");
 	return dir;
 #else	
-	return "/Didj/Base/Brio/lib/";
+	return "/Didj/Base/Brio/Module/";
 #endif	// EMULATION
 }
 
