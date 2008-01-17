@@ -12543,3 +12543,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/08 12:12 PM
 4,268 ms. (Cumulative: 3,319,690 ms)
 
 ----------------
+Revision 2,669 from svn://localhost/TRUNK/:
+
+Updated ME OGL lib with buffer object recycling fix (TTP 1097).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 12:43 PM
+1 changed, 0 added, 0 deleted.
+4,078 ms. (Cumulative: 3,323,846 ms)
+
+----------------
