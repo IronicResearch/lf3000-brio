@@ -12522,3 +12522,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/16/08 5:00 PM
 4,376 ms. (Cumulative: 3,310,996 ms)
 
 ----------------
+Revision 2,666 from svn://localhost/TRUNK/:
+Revision 2,667 from svn://localhost/TRUNK/:
+
+Added Mobileer library loader for dynamic linking at runtime.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 10:39 AM
+0 changed, 2 added, 0 deleted.
+4,270 ms. (Cumulative: 3,315,344 ms)
+
+----------------
