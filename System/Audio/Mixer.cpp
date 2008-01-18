@@ -49,6 +49,36 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 
+//------------------------------------------------------------------------------
+// Returns speaker status from sysfs audio driver dump (embedded)
+//------------------------------------------------------------------------------
+static bool IsSpeakerOn( void )
+{
+#ifdef EMULATION
+	return true;
+#else
+	bool 	enabled = true;
+	FILE*	f = NULL;
+	char	buf[20];
+	int		i = 0;
+	
+	f = fopen("/sys/devices/platform/lf1000-audio/output", "r");
+	if (f == NULL)
+		return true;
+	while (!feof(f)) {
+		fread(&buf[i++], 1, 1, f);
+		if (i >= sizeof(buf))
+			break;
+	}
+	fclose(f);
+	if (strncmp("speaker", buf, 7) == 0) 
+		enabled = true;
+	else if (strncmp("headphones", buf, 10) == 0) 
+		enabled = false;
+	return enabled;
+#endif	// EMULATION
+}
+
 // ==============================================================================
 // CAudioMixer implementation
 // ==============================================================================
@@ -209,7 +239,9 @@ printf("CAudioMixer: button State=%X Transition=%X\n", (unsigned int) buttonData
 printf("CAudioMixer: enableTheSpeaker=%X\n", (unsigned int) enableTheSpeaker);
 
 #else
-EnableSpeaker(false);
+	bool isSpeaker = IsSpeakerOn();
+	pDebugMPI_->DebugOut( kAudioDebugLevel, "CAudioMixer: Speaker = %d, %s\n", isSpeaker, isSpeaker ? "on" : "off");
+	EnableSpeaker(isSpeaker);
 #endif // CHECK_BUTTON_MPI_ON_STARTUP
 
 //if (d->useOutSoftClipper)
