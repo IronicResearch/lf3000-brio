@@ -70,14 +70,17 @@
 
 	cp 	$TFTP_MAIN/LinuxDist-$LINUXDIST_NUM/packages/* 		$S_DIR 
     	
-        cd  	$ROOTFS_PATH
+    cd  	$ROOTFS_PATH
 	sudo 	chown -R boris:boris Didj
 
 	cd 	$TFTP_MAIN/LinuxDist-$LINUXDIST_NUM/host_tools	
-	tar 	-czvf HostTools_$SVN_NUM.tar.gz backdoor/ \
+	tar 	-czvf HostTools_$REV_NUM.tar.gz backdoor/ \
 					flash.map \
-					lfpkg README
-	mv 	HostTools_$SVN_NUM.tar.gz $S_DIR
+					lfpkg README \
+					lfpkg \
+					lightning_install.py
+					
+	mv 	HostTools_$REV_NUM.tar.gz $S_DIR
 
 #------------------------------------------------------------------ 
 # TO DO:
