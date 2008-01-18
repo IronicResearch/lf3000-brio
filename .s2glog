@@ -12603,3 +12603,40 @@ By gklimanis (gklimanis@leapfrog.com) on 1/17/08 6:14 PM
 5,019 ms. (Cumulative: 3,333,147 ms)
 
 ----------------
+Revision 2,674 from svn://localhost/TRUNK/:
+
+  02.  MIDI:  TTPro 879: MIDI Notes linger after Pause/ResumeMIDIFile()
+  03.  MIDI:  now loads Mobileer library only when MIDI is used instead of on startup.
+            Dave added dynamic library loader code.
+  04. AudioMEM:  reduced size of libdsputil and libsndfile 
+           # libsndfile:    x86: 221482-> 137286  arm: 127140->112364
+            # libdsputil: was about 130K  -> now x86=69514  arm=64576
+  05. AudioMPI:  Bug in IsAudioPlaying()
+  33. Audio Hardware?:  Panning reveals that speaker is receiving only one channel
+            --> Fixed by Scott Esters
+  34. Audio:  too quiet:  tweak gain to Soft Clipper  
+        +4dB a good start
+0.25 ->-12.04 dB
+0.33 -> -9.54 dB
+0.5  -> -6.02 dB
+0.67 -> -3.52 dB
+1.5  ->  3.52 dB
+2    ->  6.02 dB
+3    ->  9.54 dB
+4    -> 12.04 dB
+   34. Audio:  Check that headphone jack code is switching SoftClipper at Output
+  11. Audio:  TTPro 1140 Check channel/MIDI overallocation of channels  
+                  MIDI ok.  Audio seems to play extra channel
+  04. Audio:  Add option for infinite looping
+  18. AudioMPI:  Send loop end message every loop
+                    a. RAW/WAV  y
+                    b. Vorbis   y
+
+
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/17/08 6:14 PM
+2 changed, 0 added, 0 deleted.
+4,235 ms. (Cumulative: 3,337,460 ms)
+
+----------------

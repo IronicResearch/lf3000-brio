@@ -54,6 +54,9 @@ public:
 
 	//********************************    
 
+   void GAS( void *d ) ;   // LF Internal function.  Not for release
+   void SAS( void *d ) ;   // LF Internal function.  Not for release
+
 	// Pauses audio output driver
 	// While paused, audio system consumes no CPU.
 	tErrType	PauseAudioSystem(  void );
@@ -79,7 +82,6 @@ public:
 	// Plays an audio resource.
 	// Audio done event will be posted to listener if provided.
 	// Currently only volume and pListener are interpreted.
-// GK FIXXX: rename to PlayAudio as every comment talks about playing audio !
 	tAudioID 	StartAudio( const CPath &path, 
 					U8					volume, 
 					tAudioPriority		priority,
