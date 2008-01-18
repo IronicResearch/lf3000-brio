@@ -12640,3 +12640,14 @@ By gklimanis (gklimanis@leapfrog.com) on 1/17/08 6:14 PM
 4,235 ms. (Cumulative: 3,337,460 ms)
 
 ----------------
+Revision 2,675 from svn://localhost/TRUNK/:
+Revision 2,676 from svn://localhost/TRUNK/:
+
+Virtual address for 2D heap needs 4Meg alignment to work on reduced framebuffer regions.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 8:20 PM
+1 changed, 0 added, 0 deleted.
+4,314 ms. (Cumulative: 3,341,852 ms)
+
+----------------

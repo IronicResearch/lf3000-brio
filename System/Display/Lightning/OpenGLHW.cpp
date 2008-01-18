@@ -116,6 +116,8 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+1) & ~1) << 20;
 	gMem2Size = ((pMemInfo->Memory2D_SizeInMbyte+3) & ~3) << 20;
 	mem2Virt = mem1Virt + gMem1Size;
+	mem2Virt += (4 * k1Meg - 1);
+	mem2Virt &= ~(4 * k1Meg - 1);
 
 	// Now round down size to accomodate reserved 1Meg for 2D and Video
 	gMem1Size -= k1Meg;
