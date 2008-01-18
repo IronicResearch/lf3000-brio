@@ -47,27 +47,13 @@ public:
 // Returns # frames actually rendered without zero padding
 	U32		Render( S16 *pOut, U32 numStereoFrames );
 
-	void SendDoneMsg( void );
-
 private:
-//#define USE_RAW_PLAYER_MUTEX
-#ifdef USE_RAW_PLAYER_MUTEX
-	CKernelMPI* 	pKernelMPI_;		
-	tMutex			renderMutex_;		// To make renderbuffer() thread-safe
-#endif
-
-    S16             *pReadBuf_;
-
     U32		        totalBytesRead_;
 //	U32				totalFrames_;			
 //	U32				framesRemaining_;
-    S32             loopCount_;
-    S32             loopCounter_;
 
-// Audio file info (WAV, AIFF, Brio "RAW")
-    U32             fileType_;
+    U32             fileType_;  // WAV, AIFF, Brio "RAW"
     SNDFILE	        *inFile_;
-    char           inFilePath[500]; 
 };
 
 LF_END_BRIO_NAMESPACE()

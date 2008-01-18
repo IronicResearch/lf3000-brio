@@ -96,6 +96,8 @@ static CPath GetLibPath( void )
 //------------------------------------------------------------------------------
 bool LoadMidiLibrary(void)
 {
+//{static long c=0; printf("LoadMidiLibrary %ld : START\n", c++);}
+
 	CKernelMPI 	kernel;
 	gLibPath = GetLibPath() + kMidiLibName;
 	hLibMidi = kernel.LoadModule(gLibPath);

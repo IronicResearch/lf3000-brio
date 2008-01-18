@@ -32,8 +32,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 CChannel::CChannel()
 {
-tErrType result;
-// Initialize class variables
 //{static int c=0; printf("CChannel::CChannel %d \n", c++);}
 
 //	mpChain_ = kNull;
@@ -48,8 +46,8 @@ tErrType result;
 // Set DSP values
 	pan_    = kPan_Default;
 	volume_ = kVolume_Default;
-
 	samplingFrequency_ = 0;
+//	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
 
 // Channel DSP Engine
 //	pDSP_ = NULL;
@@ -60,13 +58,12 @@ tErrType result;
 //	pDSP_->pan         = kPanValue_Center;
 //	pDSP_->postGainDB = 0.0f;
 
-	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-	pDebugMPI_->SetDebugLevel( kAudioDebugLevel ); // kDbgLvlVerbose, kAudioDebugLevel
-//	printf("CChannel::CChannel: printf volume_=%d pan_=%d \n", volume_, pan_);
+//	pDebugMPI_ = new CDebugMPI( kGroupAudio );
+//	pDebugMPI_->SetDebugLevel( kAudioDebugLevel ); // kDbgLvlVerbose, kAudioDebugLevel
 
 // Get Kernel MPI
 //	pKernelMPI_ =  new CKernelMPI();
-//	result = pKernelMPI_->IsValid();
+//	tErrType result = pKernelMPI_->IsValid();
 //	pDebugMPI_->Assert((true == result), "CChanel::ctor: Unable to create KernelMPI.\n");
 }	// ---- end CChannel ----
 
@@ -76,9 +73,9 @@ tErrType result;
 CChannel::~CChannel()
 {
 //{static int c=0; printf("CChannel::~CChannel %d \n", c++);}
-	// Free debug MPI
-	if (pDebugMPI_)
-		delete pDebugMPI_;
+
+//	if (pDebugMPI_)
+//		delete pDebugMPI_;
 //	if (pKernelMPI_)    
 //       {
 //		delete pKernelMPI_;  
@@ -106,18 +103,17 @@ RecalculateLevels();
 }	// ---- end SetPan ----
 
 // ==============================================================================
-// SetVolume : Convert range [0 .. 100] to [-100 ..0] dB
+// SetVolume : Convert range [0 .. 127] to [-100 .. +4.15] dB
 // ==============================================================================
     void 
 CChannel::SetVolume( U8 x )
 {
 //printf("CChannel::SetVolume :  %d\n", x);
-volume_ = BoundU8(&x, kVolume_Min, kVolume_Max);
+volume_ = BoundU8(&x, 0, 100); //kVolume_Min, kVolume_Max);
 
 // ChangeRangef(x, L1, H1, L2, H2)
-// FIXX: move to decibels, but for now, linear volume
 gainf  = ChangeRangef((float)x, (float) kVolume_Min, (float)kVolume_Max, 0.0f, 1.0f);
-// Convert to square curve, which is milder than Decibels
+// Convert to squared curve, which is milder than log10
 gainf *= gainf;
 gainf *= kChannel_Headroomf; // DecibelToLinearf(-Channel_HeadroomDB);
 //gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
@@ -125,6 +121,12 @@ gainf *= kChannel_Headroomf; // DecibelToLinearf(-Channel_HeadroomDB);
 
 //printf( "CChannel::SetVolume - %d -> %g\n", volume_, gainf );	
 
+//float xf = 1.27f;
+//printf("%f    -> %f dB\n", xf, LinearToDecibelf(xf));
+//printf("%f    -> %f dB\n", xf*xf, LinearToDecibelf(xf*xf));
+//1.27     = 2.08 dB
+//(1.27)^2 = 4.15 dB
+//printf("%f dB -> %f \n", -1.505, DecibelToLinearf(-1.505));
 //printf("%f dB -> %f \n", -1.505, DecibelToLinearf(-1.505));
 //printf("%f dB -> %f \n", -3.01, DecibelToLinearf(-3.01));
 //printf("%f dB -> %f \n", -6.02, DecibelToLinearf(-6.02));
@@ -192,7 +194,7 @@ event.PostEvent(msg, kPriorityTBD, pPlayer_->GetEventListener());
 // Release:
 // ==============================================================================
     tErrType 
-CChannel::Release( Boolean suppressPlayerDoneMsg )
+CChannel::Release( Boolean noPlayerDoneMsg )
 {
 //printf("CChannel::Release START $%p\n", (void *)pPlayer_);
 	
@@ -203,7 +205,7 @@ fReleasing_ = true;
 fPaused_    = true;
 
 // Deactivate "done" message if specified
-if (suppressPlayerDoneMsg)
+if (noPlayerDoneMsg)
     {
     pPlayer_->SetEventListener(NULL);
     pPlayer_->ActivateSendDoneMessage(false);
@@ -215,7 +217,7 @@ if (suppressPlayerDoneMsg)
 	delete pPlayer_;
 	pPlayer_ = kNull;
 
-// no longer in use
+// No longer in use
 	fReleasing_ = false;
 	fInUse_     = false;
 
@@ -244,15 +246,13 @@ if (pPlayer_)
     oldId           = pPlayer_->GetID();
 
     if (releaseExistingPlayer)
-    	Release( true );		// true = suppress done msg 
+    	Release( true );		// true = no done msg 
 //{static long c=0; printf("CChannel::SetPlayer: %ld AFTA Release \n", c++);}
     }
 
 pPlayer_ = pPlayer;
-SetPan(    pPlayer->GetPan() );
-SetVolume( pPlayer->GetVolume() );
 SetSamplingFrequency(pPlayer->GetSampleRate());
-//printf("CChannel::SetPlayer : pan=%d volume=%d \n", pan_, volume_);
+//printf("CChannel::SetPlayer : samplingFrequency=%d \n", samplingFrequency_);
 
 // Send done message if it was setup 
 if (pOldListener && bOldDoneMessage)
@@ -287,13 +287,11 @@ CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 
 // Release inactive player first
 if (pPlayer_)
-	Release( true );		// true = suppress done msg if requested
+	Release( true );		// true = no done msg if requested
 //{static long c=0; printf("CChannel::InitWithPlayer: %ld AFTA Release \n", c++);}
 	
 // Convert interface parameters to DSP level data and reset channel
     pPlayer_    = pPlayer;
-	SetPan(    pPlayer->GetPan() );
-	SetVolume( pPlayer->GetVolume() );
 	SetSamplingFrequency(pPlayer->GetSampleRate());
 //printf("CChannel::InitWithPlayer : pan=%d volume=%d fs=%ld complete=%d\n", pan_, volume_, samplingFrequency_, pPlayer_->IsComplete());
 

@@ -649,6 +649,7 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
 						}
 					break ;
 
+#ifndef NO_DOUBLE64
 			case 'f' :
 					/* Floats are passed as doubles. Is this always true? */
 					floatdata = (float) va_arg (argptr, double) ;
@@ -669,7 +670,7 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
 					psf->headindex += 8 ;
 					count += 8 ;
 					break ;
-
+#endif
 			case 's' :
 					/* Write a C string (guaranteed to have a zero terminator). */
 					strptr = va_arg (argptr, char *) ;
@@ -783,9 +784,13 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
 #if (SIZEOF_LONG == 4)
 #define	GET_LE_8BYTE(ptr)	( 	((ptr) [3] << 24)	| ((ptr) [2] << 16) |	\
 							 	((ptr) [1] << 8)	| ((ptr) [0]) )
+//#define	GET_LE_8BYTE(ptr)	( 	(((int)(ptr) [3]) << 24)	| (((int)(ptr) [2]) << 16) |	\
+//							 	(((int)(ptr) [1]) <<  8)	| (((int)(ptr) [0])) )
 
-#define	GET_BE_8BYTE(ptr)	( 	((ptr) [4] << 24)	| ((ptr) [5] << 16) |	\
+#define GET_BE_8BYTE(ptr)	( 	((ptr) [4] << 24)	| ((ptr) [5] << 16) |	\
 								((ptr) [6] << 8)	| ((ptr) [7]) )
+//#define	GET_BE_8BYTE(ptr)	( 	(((int)(ptr)[4]) << 24)	| (((int)(ptr)[5]) << 16) |	\
+//								(((int)(ptr)[6]) <<  8)	| (((int)(ptr)[7])) )
 #else
 #define	GET_LE_8BYTE(ptr)	( 	(((ptr) [7] * 1L) << 56) | (((ptr) [6] * 1L) << 48) |	\
 							 	(((ptr) [5] * 1L) << 40) | (((ptr) [4] * 1L) << 32) |	\
@@ -916,7 +921,7 @@ int
 psf_binheader_readf (SF_PRIVATE *psf, char const *format, ...)
 {	va_list			argptr ;
 	sf_count_t		*countptr, countdata ;
-	unsigned char	*ucptr, sixteen_bytes [16] ;
+	unsigned char	*ucptr, sixteen_bytes[16] ;
 	unsigned int 	*intptr, intdata ;
 	unsigned short	*shortptr ;
 	char			*charptr ;
@@ -1002,12 +1007,13 @@ psf_binheader_readf (SF_PRIVATE *psf, char const *format, ...)
 					*countptr = 0 ;
 					byte_count += header_read (psf, sixteen_bytes, 8) ;
 					if (psf->rwf_endian == SF_ENDIAN_BIG)
-						countdata = GET_BE_8BYTE (sixteen_bytes) ;
+						countdata = (sf_count_t) GET_BE_8BYTE (sixteen_bytes) ;
 					else
-						countdata = GET_LE_8BYTE (sixteen_bytes) ;
+						countdata = (sf_count_t) GET_LE_8BYTE (sixteen_bytes) ;
 					*countptr = countdata ;
 					break ;
 
+#ifndef NO_DOUBLE64
 			case 'f' : /* Float conversion */
 					floatptr = va_arg (argptr, float *) ;
 					*floatptr = 0.0 ;
@@ -1017,7 +1023,6 @@ psf_binheader_readf (SF_PRIVATE *psf, char const *format, ...)
 					else
 						*floatptr = float32_le_read ((unsigned char*) floatptr) ;
 					break ;
-
 			case 'd' : /* double conversion */
 					doubleptr = va_arg (argptr, double *) ;
 					*doubleptr = 0.0 ;
@@ -1027,7 +1032,7 @@ psf_binheader_readf (SF_PRIVATE *psf, char const *format, ...)
 					else
 						*doubleptr = double64_le_read ((unsigned char*) doubleptr) ;
 					break ;
-
+#endif
 			case 's' :
 					psf_log_printf (psf, "Format conversion 's' not implemented yet.\n") ;
 					/*

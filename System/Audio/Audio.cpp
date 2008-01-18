@@ -767,27 +767,9 @@ tAudioID CAudioModule::StartAudio( U32 mpiID, const CPath& path, U8 volume,
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::Register -- Couldn't lock mutex.\n");
 
-//	MPIInstanceState &mpiState = RetrieveMPIState( mpiID );
-
-//.printf("CAudioModule::StartAudio: DOH mpiState=%p\n", (void*) &mpiState);
-//CPath mpiPath = mpiState.path;
-//printf("CAudioModule::StartAudio: mpiState=%p\n", (void*)mpiState);
-//printf("CAudioModule::StartAudio: *mpiState.path='%s'\n", mpiPath.c_str());
-// If path passed to us is a full path, then use it. Otherwise
-// append what was passed to MPI's default path.
-//	CPath fullPath = (path.at(0) == '/')
-//			? path
-//			: *mpiState.path + path;
-//printf("CAudioModule::StartAudio: mpiPath='%s'\n", mpiPath.c_str());
-
+// Generate command message to send to audio task
 	bool			nopath = (path.length() == 0) ? true : false;
 	const CPath		fullPath = (nopath) ? "" : (path.at(0) == '/') ? path : gpath + path;
-//printf("CAudioModule::StartAudio: POST\n");
-//printf("CAudioModule::StartAudio: fullPath='%s'\n", fullPath.c_str());
-
-// Generate command message to send to audio task
-//	printf("CAudioModule::StartAudio: path='%s'\n", fullPath.c_str());	
-
 tAudioStartAudioInfo msgData( &fullPath, volume, priority, pan, pListener, payload, flags );
 CAudioMsgStartAudio	msg( msgData );
 	
@@ -808,10 +790,9 @@ CAudioMsgStartAudio	msg( msgData );
 CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload payload, 
 				tAudioOptionsFlags flags)
 {
-//	printf("CAudioModule::StartAudio2: START\n" );	
+//printf("CAudioModule::StartAudio2: START path='%s'\n", path.c_str());
 	tErrType 			result = kNoErr;
 	tAudioID			id;
-	MPIInstanceState&	mpiState = RetrieveMPIState( mpiID );
 	
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::StartAudio: Couldn't lock mutex.\n");
@@ -820,21 +801,25 @@ CAudioModule::StartAudio( U32 mpiID, const CPath &path, tAudioPayload payload,
 	// append what was passed to the MPI's default path.
 	bool			nopath = (path.length() == 0) ? true : false;
 	const CPath		fullPath = (nopath) ? "" : (path.at(0) == '/') ? path : gpath + path;
-//printf("CAudioModule::StartAudio: POST\n");
-//printf("CAudioModule::StartAudio: fullPath='%s'\n", fullPath.c_str());
+//	printf("CAudioModule::StartAudio2: AFTA fullPath='%s'\n", fullPath.c_str() );	
 
-	// Generate command message to send to audio task
-//	printf("CAudioModule::StartAudio: AFTA fullPath='%s'\n", fullPath.c_str() );	
+// Generate command message to send to audio task
+	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
+//	printf("CAudioModule::StartAudio2: MPIState vol=%d pri=%d pan=%d pLis=%p payload=%d flags=%X\n",       
+//        mpiState.volume, mpiState.priority, mpiState.pan, 
+//			mpiState.pListener, (int)payload, (unsigned int) flags);
 
 	tAudioStartAudioInfo msgData( &fullPath, mpiState.volume, mpiState.priority, mpiState.pan, 
 			mpiState.pListener, payload, flags);
 //	tAudioStartAudioInfo msgData( &fullPath, volume, priority, pan, 
 //			pListener, payload, flags);
+//	printf("CAudioModule::StartAudio2: msgData vol=%d pri=%d pan=%d pLis=%p payload=%d flags=%X\n",       
+//        msgData.volume, msgData.priority, msgData.pan, 
+//			msgData.pListener, (int)msgData.payload, (unsigned int) msgData.flags);
 
 // Send message and wait to get audioID back from audio task
 	CAudioMsgStartAudio	msg( msgData );
  	SendCmdMessage( msg ); 
-	
 	id = WaitForAudioID();
 
 	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
@@ -919,13 +904,13 @@ CAudioModule::IsAudioPlaying()
 // ==============================================================================
 void CAudioModule::StopAudio( tAudioID id, Boolean noDoneMessage )
 {
-	// Generate the command message to send to the audio Mgr task
 //printf("CAudioModule::StopAudio ID = %d\n", (int)id );	
 
+// Generate command message to send to audio Mgr task
 	tAudioStopAudioInfo msgData;
 	
 	msgData.id = id;
-	msgData.suppressDoneMsg = noDoneMessage;
+	msgData.noDoneMsg = noDoneMessage;
 
 	CAudioMsgStopAudio	msg( msgData );
 	SendCmdMessage( msg ); 
@@ -1269,8 +1254,7 @@ tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 // ==============================================================================
 tAudioID	CAudioModule::GetAudioIDForMidiID( tMidiPlayerID /* id */) 
 {
-printf("CAudioModule::GetAudioIDForMidiID: NOT IMPLEMENTED \n");
-	return kNoAudioID;
+	return (2); // kNoAudioID;  // GK FIXXXX: quick hack.  Fixed value
 }   // ---- end GetAudioIDForMidiID() ----
 
 // ==============================================================================
@@ -1442,12 +1426,12 @@ void CAudioModule::ResumeMidiFile( tMidiPlayerID id )
 // ==============================================================================
 // StopMidiFile
 // ==============================================================================
-void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean surpressDoneMessage )
+void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 {
 	tAudioStopMidiFileInfo info;
 
 	info.id = id;
-	info.suppressDoneMsg = surpressDoneMessage;
+	info.noDoneMsg = noDoneMessage;
 	
 	CAudioMsgStopMidiFile msg( info );
 	

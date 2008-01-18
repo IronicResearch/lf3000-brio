@@ -993,18 +993,21 @@ sf_command	(SNDFILE *sndfile, int command, void *data, int datasize)
 			if (data == NULL || datasize != SIGNED_SIZEOF (SF_DITHER_INFO))
 				return (psf->error = SFE_BAD_CONTROL_CMD) ;
 			memcpy (&psf->write_dither, data, sizeof (psf->write_dither)) ;
+#ifndef NO_DITHER
 			if (psf->mode == SFM_WRITE || psf->mode == SFM_RDWR)
 				dither_init (psf, SFM_WRITE) ;
+#endif
 			break ;
 
 		case SFC_SET_DITHER_ON_READ :
 			if (data == NULL || datasize != SIGNED_SIZEOF (SF_DITHER_INFO))
 				return (psf->error = SFE_BAD_CONTROL_CMD) ;
 			memcpy (&psf->read_dither, data, sizeof (psf->read_dither)) ;
+#ifndef NO_DITHER
 			if (psf->mode == SFM_READ || psf->mode == SFM_RDWR)
 				dither_init (psf, SFM_READ) ;
+#endif
 			break ;
-
 		case SFC_FILE_TRUNCATE :
 			if (psf->mode != SFM_WRITE && psf->mode != SFM_RDWR)
 				return SF_TRUE ;
@@ -1046,11 +1049,13 @@ sf_command	(SNDFILE *sndfile, int command, void *data, int datasize)
 		/* Lite remove start */
 		case SFC_TEST_IEEE_FLOAT_REPLACE :
 			psf->ieee_replace = (datasize) ? SF_TRUE : SF_FALSE ;
+#ifndef NO_DOUBLE64
 			if ((psf->sf.format & SF_FORMAT_SUBMASK) == SF_FORMAT_FLOAT)
 				float32_init (psf) ;
 			else if ((psf->sf.format & SF_FORMAT_SUBMASK) == SF_FORMAT_DOUBLE)
 				double64_init (psf) ;
 			else
+#endif
 				return (psf->error = SFE_BAD_CONTROL_CMD) ;
 			break ;
 		/* Lite remove end */
@@ -2567,19 +2572,20 @@ psf_open_file (SF_PRIVATE *psf, int mode, SF_INFO *sfinfo)
 				error = aiff_open (psf) ;
 				break ;
 
-#ifdef GK_UNSUPPORTED
+#ifdef FORMAT_ALL
 		case	SF_FORMAT_AU :
 				error = au_open (psf) ;
 				break ;
-
 		case	SF_FORMAT_RAW :
 				error = raw_open (psf) ;
 				break ;
+#endif
 
 		case	SF_FORMAT_W64 :
 				error = w64_open (psf) ;
 				break ;
 
+#ifdef FORMAT_ALL
 		/* Lite remove start */
 		case	SF_FORMAT_PAF :
 				error = paf_open (psf) ;

@@ -198,11 +198,13 @@ wav_open	 (SF_PRIVATE *psf)
 			psf->dataoffset = 0 ;
 			psf->sf.frames = 0 ;
 			} ;
+#ifndef FORMAT_ALL
 
 		if (subformat == SF_FORMAT_IMA_ADPCM || subformat == SF_FORMAT_MS_ADPCM)
 		{	blockalign = wav_w64_srate2blocksize (psf->sf.samplerate * psf->sf.channels) ;
 			framesperblock = -1 ; /* Corrected later. */
 			} ;
+#endif // FORMAT_ALL
 
 		psf->str_flags = SF_STR_ALLOW_START | SF_STR_ALLOW_END ;
 
@@ -228,7 +230,7 @@ wav_open	 (SF_PRIVATE *psf)
 		case SF_FORMAT_PCM_32 :
 					error = pcm_init (psf) ;
 					break ;
-#ifdef GK_UNSUPPORTED
+#ifdef FORMAT_ALL
 		case SF_FORMAT_ULAW :
 					error = ulaw_init (psf) ;
 					break ;
@@ -236,8 +238,10 @@ wav_open	 (SF_PRIVATE *psf)
 		case SF_FORMAT_ALAW :
 					error = alaw_init (psf) ;
 					break ;
+#endif
 
 		/* Lite remove start */
+#ifndef NO_DOUBLE64
 		case SF_FORMAT_FLOAT :
 					error = float32_init (psf) ;
 					break ;
@@ -245,7 +249,9 @@ wav_open	 (SF_PRIVATE *psf)
 		case SF_FORMAT_DOUBLE :
 					error = double64_init (psf) ;
 					break ;
+#endif // NO_DOUBLE64
 
+#ifdef FORMAT_ALL
 		case SF_FORMAT_IMA_ADPCM :
 					error = wav_w64_ima_init (psf, blockalign, framesperblock) ;
 					break ;
@@ -258,13 +264,14 @@ wav_open	 (SF_PRIVATE *psf)
 					error = g72x_init (psf) ;
 					break ;
 		/* Lite remove end */
-
 		case SF_FORMAT_GSM610 :
 					error = gsm610_init (psf) ;
 					break ;
-#endif
+#endif // FORMAT_ALL
 
-		default : 	return SFE_UNIMPLEMENTED ;
+		default : 	
+            return SFE_UNIMPLEMENTED ;
+        break;
 		} ;
 
 	if (psf->mode == SFM_WRITE || (psf->mode == SFM_RDWR && psf->filelength == 0))
@@ -358,7 +365,6 @@ wav_read_header	 (SF_PRIVATE *psf, int *blockalign, int *framesperblock)
 
 					if ((error = wav_w64_read_fmt_chunk (psf, &wav_fmt, dword)))
 						return error ;
-
 					format = wav_fmt.format ;
 					break ;
 
@@ -739,9 +745,8 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
 					psf_binheader_writef (psf, "4", psf->sf.samplerate * psf->bytewidth * psf->sf.channels) ;
 					/*  fmt : blockalign, bitwidth */
 					psf_binheader_writef (psf, "22", psf->bytewidth * psf->sf.channels, psf->bytewidth * 8) ;
-					break ;
-#ifdef GK_UNSUPPORTED
-		case SF_FORMAT_FLOAT :
+					break;
+#ifndef NO_DOUBLE64
 		case SF_FORMAT_DOUBLE :
 					fmt_size = 2 + 2 + 4 + 4 + 2 + 2 ;
 
@@ -754,7 +759,9 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
 
 					add_fact_chunk = SF_TRUE ;
 					break ;
+#endif // NO_DOUBLE64
 
+#ifdef FORMAT_ALL
 		case SF_FORMAT_ULAW :
 					fmt_size = 2 + 2 + 4 + 4 + 2 + 2 ;
 
@@ -780,8 +787,10 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
 
 					add_fact_chunk = SF_TRUE ;
 					break ;
+#endif // FORMAT_ALL
 
 		/* Lite remove start */
+#ifdef FORMAT_ALL
 		case SF_FORMAT_IMA_ADPCM :
 					{	int blockalign, framesperblock, bytespersec ;
 
@@ -868,9 +877,10 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
 
 					add_fact_chunk = SF_TRUE ;
 					break ;
-#endif // GK_UNSUPPORTED
+#endif // FORMAT_ALL
+
 		default : 	return SFE_UNIMPLEMENTED ;
-		} ;
+		} 
 
 	if (add_fact_chunk)
 		psf_binheader_writef (psf, "tm48", fact_MARKER, 4, psf->sf.frames) ;

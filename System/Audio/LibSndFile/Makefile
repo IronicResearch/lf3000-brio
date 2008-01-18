@@ -1,5 +1,7 @@
 # Source files.
-SRC =  	aiff.c common.c double64.c float32.c sndfile.c strings.c wav.c command.c dither.c file_io.c pcm.c snprintf.c sndfileutil.c w64.c wav_w64.c
+SRC =  	aiff.c common.c sndfile.c strings.c wav.c command.c file_io.c snprintf.c sndfileutil.c  wav_w64.c w64.c
+#  double64.c float32.c  dither.c pcm.c 
+# WAS:    x86: 221482-> 137286  arm: 127140->112364
 
 OBJ = $(SRC:.c=.o)
 
@@ -12,20 +14,21 @@ OUT = libsndfile.a
 
 # Include directories
 INCLUDES = -I. \
-        -I../include/ \
-        -I/usr/local/include \
-        -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include \
-        -I/usr/include/sys
+        -I(ROOTFS_PATH)/usr/local/include \
+        -I(ROOTFS_PATH)/usr/include/sys
+#        -I/usr/lib/gcc/i486-linux-gnu/4.1.2/include \
 # -I/usr/include/linux
 
-# C++ compiler flags (-g -O2 -Wall)
-CCFLAGS = -g
+# C++ compiler flags (-g -O2 -Wall) -DREDUCED_FORDIDJ -DNO_DITHER -DFORMAT_ALL
+CCFLAGS = -O2 -DNO_DITHER -DNO_DOUBLE64
+CFLAGS = -O2 -DNO_DITHER -DNO_DOUBLE64
+#-DREDUCED_FORDIDJ
 
 # Library paths
 LIBS = -L../ -L/usr/local/lib -lm
 
 # Compile flags
-LDFLAGS = -g
+LDFLAGS = -O2
 
 .SUFFIXES: .cpp
 
@@ -40,7 +43,7 @@ $(OUT): $(OBJ)
 depend: dep
 
 dep:
-	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
+#	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
 
 clean:
 	rm -f $(OBJ) Makefile.bak 

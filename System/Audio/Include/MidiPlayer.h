@@ -38,6 +38,10 @@ public:
 
 	U32			Render( S16* pOut, U32 numStereoFrames );
 
+// Return status
+	inline U8 ShouldSendDoneMessage()    { return bSendDoneMessage_;   }
+	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
+
 	inline bool		IsFileActive() { return bFileActive_; };
 
 	inline bool		IsActive()   { return bActive_; };
@@ -85,7 +89,8 @@ private:
 
 	const IEventListener*	pListener_;		// For done event
 	tAudioOptionsFlags	    optionsFlags_;	
-	U8			            bDoneMessage_;		// Caller requests done message 
+	U8			            bSendDoneMessage_;		// Caller requests done message 
+	U8			            bSendLoopEndMessage_;// Send each time the end of the loop has been reached
 
 	tMidiPlayerID			id_;			 
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of active tracks
@@ -116,7 +121,9 @@ private:
 	U32 	channels_;   // samples per frame
 	U32 	bitsPerSample_;
 
-	void SendDoneMsg( void );
+    void SendLoopEndMsg( void );
+	void SendDoneMsg(    void );
+
     void RecalculateLevels();
 };
 

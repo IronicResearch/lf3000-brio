@@ -64,7 +64,7 @@ CPath GetAppRsrcFolder( void )
 // ==============================================================================
 CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 {
-//{static long c=0; printf("CMidiPlayer::CMidiPlayer: start %ld\n", c++);}
+//{static long c=0; printf("CMidiPlayer::CMidiPlayer: start %ld  id=%d\n", c++, id);}
 
 	tErrType			err;
 	S16					midiErr;
@@ -73,9 +73,11 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	const tMutexAttr 	attr = {0};
 #endif	
 
+//	printf("CAudioMixer::CMidiPlayer BEFO SPMIDI_GetMemoryAllocationCount= %d\n", SPMIDI_GetMemoryAllocationCount() );
+
 // Setup member variables
 	id_                 = id;
-	framesPerIteration_ = kMIDI_FramesPerIteration;	// FIXXX/rdg: don't hardcode this 
+	framesPerIteration_ = kMIDI_FramesPerIteration;	// FIXXX/rdg: don't hardcode this :  Get from spmidi
 	channels_           = kMIDI_SamplesPerFrame;
 	bitsPerSample_      = kMIDI_BitsPerSample;
 
@@ -126,6 +128,7 @@ SPMIDI_SetMasterVolume( pContext_, SPMIDI_DEFAULT_MASTER_VOLUME );
 // FIXXX: should set Mobileer sampling frequency here
 	
 	SPMIDI_SetMaxVoices( pContext_, kMIDI_MaxVoices );
+//	printf("CAudioMixer::CMidiPlayer AFTA SPMIDI_GetMemoryAllocationCount= %d\n", SPMIDI_GetMemoryAllocationCount() );
 }   // ---- end CMidiPlayer() ----
 
 // ==============================================================================
@@ -150,10 +153,10 @@ CMidiPlayer::~CMidiPlayer()
         {
 		pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::~: set bFileActive_ to false\n");	
 		bFileActive_ = false;
-		info.suppressDoneMsg = true;
+		info.noDoneMsg = true;
 	    }
 	else
- 		info.suppressDoneMsg = !bDoneMessage_;
+ 		info.noDoneMsg = !bSendDoneMessage_;
  	StopMidiFile( &info );
 
 	if (pFilePlayer_)
@@ -187,8 +190,8 @@ if (pDebugMPI_)
     tErrType 	
 CMidiPlayer::NoteOn( U8 channel, U8 note, U8 velocity, tAudioOptionsFlags /*flags*/ )
 {
-char noteS[50];
-MIDINoteToNotation(note, noteS, False);
+//char noteS[50];
+//MIDINoteToNotation(note, noteS, False);
 //printf("CMidiPlayer::NoteOn : channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
 //                channel, note, noteS, velocity, (unsigned int) flags );
  
@@ -203,8 +206,8 @@ return (kNoErr);
     tErrType 	
 CMidiPlayer::NoteOff( U8 channel, U8 note, U8 velocity, tAudioOptionsFlags /*flags*/ )
 {
-char noteS[50];
-MIDINoteToNotation(note, noteS, False);
+//char noteS[50];
+//MIDINoteToNotation(note, noteS, False);
 //printf("CMidiPlayer::NoteOff: channel=%2d note=%3d (%3s) vel=%3d flags=$%X\n", 
 //                channel, note, noteS, velocity, (unsigned int) flags );
  
@@ -231,23 +234,44 @@ return (kNoErr);
     void 
 CMidiPlayer::SendDoneMsg( void ) 
 {
+if (!pListener_)
+    return;
+
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgMidiCompleted	data;
 	data.midiPlayerID = id_;
 	data.payload      = loopCount_;	
 	data.count        = 1;
 
-//printf("CMidiPlayer::SendDoneMsg midiPlayerID=%lu\n", id_);
-
+//printf("CMidiPlayer::SendDoneMsg midiPlayerID=%d\n", id_);
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
 	event.PostEvent(msg, kPriorityTBD, pListener_);
 	
-// fixme/dg: need to find a better way to do done listeners
+// fixme/rdg: need to find a better way to do done listeners
 // support multiple midi files playing at the same time.
-	//pListener_ = kNull;
-//printf("CMidiPlayer::SendDoneMsg end\n");
 }   // ---- end SendDoneMsg() ----
+
+// ==============================================================================
+// SendLoopEndMsg:   Send message to Event listener each time the end of a loop is reached
+// ==============================================================================
+    void 
+CMidiPlayer::SendLoopEndMsg( void )
+{
+if (!pListener_)
+    return;
+
+	const tEventPriority	kPriorityTBD = 0;
+	tAudioMsgLoopEnd	    data;
+printf("CMidiPlayer::SendLoopEndMsg audioID=%d\n", id_);
+	data.audioID = id_;	        
+	data.payload = loopCount_;
+	data.count   = 1;
+
+	CEventMPI	event;
+	CAudioEventMessage	msg(data);
+	event.PostEvent(msg, kPriorityTBD, pListener_);
+}   // ---- end SendLoopEndMsg() ----
 
 // ==============================================================================
 // StartMidiFile
@@ -269,7 +293,7 @@ if (pFilePlayer_)
 	pFilePlayer_ = kNull;
     }
 
-//	pInfo->midiID;			// fixme/dg: midiEngineContext object?
+//	pInfo->midiID;			// fixme/rdg: midiEngineContext object?
 
 SetVolume(pInfo->volume);
 SetPan(0); //pInfo->pan);
@@ -281,29 +305,34 @@ if ( pInfo->pListener )
 	shouldLoop_   = (0 < pInfo->payload) && (0 != (pInfo->flags & kAudioOptionsLooped));
     loopCount_    = pInfo->payload;
     loopCounter_  = 0;
-	bDoneMessage_ = ((kNull != pListener_) && (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete)));
+	bSendDoneMessage_ = ((kNull != pListener_) && (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete)));
+	bSendLoopEndMessage_ = ((kNull != pListener_) && (0 != (pInfo->flags & kAudioOptionsLoopEndMsg)));
 
-// kAudioOptionsLooped
-//printf("CMidiPlayer::StartMidiFile: loopFile_=%d loopCount=%ld flags=$%X kAudioOptionsLooped=$%X\n",
-//        shouldLoop_, loopCount_, (unsigned int)pInfo->flags, (unsigned int)kAudioOptionsLooped);
-//printf("CMidiPlayer:ctor: payload_=%d optionsFlags=$%X -> shouldLoop=%d \n", 
-//        (int)payload_, (unsigned int) optionsFlags_, shouldLoop_);
 //#define DEBUG_MIDIPLAYER_OPTIONS
 #ifdef DEBUG_MIDIPLAYER_OPTIONS
 {
-char s[50];
-s[0] = '\0';
+char sFlags[50];
+sFlags[0] = '\0';
+if (optionsFlags_ & kAudioOptionsLoopEndMsg)
+    strcat(sFlags, "SendLoopEnd=On ");
+else
+    strcat(sFlags, "SendLoopEnd=Off ");
 if (optionsFlags_ & kAudioOptionsLooped)
-    strcat(s, "Loop=On");
+    strcat(sFlags, "Loop=On ");
 else
-    strcat(s, "Loop=Off");
+    strcat(sFlags, "Loop=Off ");
 if (optionsFlags_ & kAudioOptionsDoneMsgAfterComplete)
-    strcat(s, " SendDone=On");
+    strcat(sFlags, "SendDone=On ");
 else
-    strcat(s, " SendDone=Off");
+    strcat(sFlags, "SendDone=Off ");
 
-printf("CMidiPlayer::ctor: listener=%d flags=$%X '%s'\n", (kNull != pListener_), (unsigned int)optionsFlags_, s);
-printf("CMidiPlayer::ctor: bDoneMessage_=%d shouldLoop_=%d loopCount=%ld\n", bDoneMessage_, shouldLoop_, loopCount_);
+printf("CMidiPlayer::ctor: listener=%d bSendDoneMessage_=%d bSendLoopEndMessage_=%d flags=$%X '%s'\n", (kNull != pListener_), bSendDoneMessage_, bSendLoopEndMessage_, (unsigned int)optionsFlags_, sFlags);
+
+printf("    payload=%d optionsFlags=$%X -> shouldLoop=%d\n", 
+        (int)pInfo->payload, (unsigned int) optionsFlags_, shouldLoop_);
+printf("    listener=%p DoneMessage=%d LoopEndMessage=%d flags=$%X '%s' loopCount=%ld ($%X)\n", 
+        (void *)pListener_, bSendDoneMessage_, bSendLoopEndMessage_, (unsigned int)optionsFlags_, sFlags, 
+            loopCount_, (unsigned int) loopCount_);
 }
 #endif // DEBUG_MIDIPLAYER_OPTIONS
 
@@ -407,8 +436,18 @@ CMidiPlayer::PauseMidiFile( void )
 //pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::PauseMidiFile: setting bFilePaused_ to true.\n");	
 	
 if (bFileActive_)
+    {
 	bFilePaused_ = true;
-	
+
+    for (U8 ch = 0; ch < 16; ch++)
+        {
+//#define kMIDI_ChannelMessage_ControlChange    0xB0
+        U8 cmd = 0xB0 | ch;
+        SPMIDI_WriteCommand( pContext_, (int)cmd, (int)kMIDI_Controller_AllSoundOff, (int)0 );
+        SPMIDI_WriteCommand( pContext_, (int)cmd, (int)kMIDI_Controller_AllNotesOff, (int)0 );
+        }
+	}
+
 return (0); //result;
 }   // ---- end PauseMidiFile() ----
 
@@ -445,7 +484,7 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 
 	bFileActive_ = false;
 	bFilePaused_ = false;
-	if (pListener_  && !pInfo->suppressDoneMsg)
+	if (pListener_  && !pInfo->noDoneMsg)
 		SendDoneMsg();
 
 	printf("CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
@@ -680,6 +719,12 @@ S16 *pBuf = pOut;
         			    MIDIFilePlayer_Rewind( pFilePlayer_ ); 
                         bFileActive_   = true;
                         fileEndReached = false;
+                // Send loop end message
+            	        if (bSendLoopEndMessage_)
+                            {
+    //                {static long c=0; printf("CMidiPlayer::Render%ld: bSendLoopEndMessage_=%d fileEndReached=%ld\n", c++, bSendLoopEndMessage_, fileEndReached);}
+                    		SendLoopEndMsg();
+                            }
                         } 
 				    } 
 // File done, delete player and reset engine              
@@ -690,7 +735,7 @@ S16 *pBuf = pOut;
     				    MIDIFilePlayer_Delete( pFilePlayer_ );
     					pFilePlayer_ = kNull;
                         }
-    				if (pListener_ && bDoneMessage_)
+    				if (bSendDoneMessage_)
     					SendDoneMsg();
     				SPMUtil_Reset( pContext_ );
                     }

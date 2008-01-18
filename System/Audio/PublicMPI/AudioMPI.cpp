@@ -61,12 +61,17 @@ CAudioEventMessage::CAudioEventMessage( const tAudioMsgCuePoint& data )
 {
 	audioMsgData.audioCuePoint = data;
 }
+CAudioEventMessage::CAudioEventMessage( const tAudioMsgLoopEnd& data ) 
+	: IEventMessage(kAudioLoopEndEvent)
+{
+	audioMsgData.loopEnd = data;
+}
 
 //------------------------------------------------------------------------------
 U16	CAudioEventMessage::GetSizeInBytes() const
 {
 	return sizeof(CAudioEventMessage);
-}
+}   // ---- end GetSizeInBytes() ----
 
 
 
@@ -89,14 +94,14 @@ CAudioMPI::CAudioMPI( const IEventListener* pListener ) : pModule_(NULL)
 		if (pListener)
 			pModule_->SetDefaultAudioEventListener( mpiID_, pListener );
 	}
-}
+}   // ---- end CAudioMPI() ----
 
 //----------------------------------------------------------------------------
 CAudioMPI::~CAudioMPI()
 {
 	pModule_->Unregister( mpiID_ );
 	Module::Disconnect( pModule_ );
-}
+}   // ---- end ~CAudioMPI() ----
 
 //============================================================================
 // Informational functions
@@ -104,13 +109,13 @@ CAudioMPI::~CAudioMPI()
 Boolean CAudioMPI::IsValid() const
 {
 	return (pModule_ != NULL) ? true : false;
-}
+}   // ---- end IsValid() ----
 
 //----------------------------------------------------------------------------
 const CString* CAudioMPI::GetMPIName() const
 {
 	return &kMPIName;
-}
+}   // ---- end GetMPIName() ----
 
 //----------------------------------------------------------------------------
 tVersion CAudioMPI::GetModuleVersion() const
@@ -118,7 +123,7 @@ tVersion CAudioMPI::GetModuleVersion() const
 	if (!pModule_)
 		return kUndefinedVersion;
 	return pModule_->GetModuleVersion();
-}
+}   // ---- end GetModuleVersion() ----
 
 //----------------------------------------------------------------------------
 const CString* CAudioMPI::GetModuleName() const
@@ -126,7 +131,7 @@ const CString* CAudioMPI::GetModuleName() const
 	if (!pModule_)
 		return &kNullString;
 	return pModule_->GetModuleName();
-}
+}   // ---- end GetModuleName() ----
 
 //----------------------------------------------------------------------------
 const CURI* CAudioMPI::GetModuleOrigin() const
@@ -134,7 +139,7 @@ const CURI* CAudioMPI::GetModuleOrigin() const
 	if (!pModule_)
 		return &kNullURI;
 	return pModule_->GetModuleOrigin();
-}
+}   // ---- end GetModuleOrigin() ----
 
 // ==============================================================================
 // PauseAudioSystem
@@ -145,7 +150,7 @@ tErrType CAudioMPI::PauseAudioSystem()
 		return pModule_->PauseAudioSystem();
 
 	return kMPINotConnectedErr;
-}
+}   // ---- end PauseAudioSystem() ----
 
 // ==============================================================================
 // ResumeAudioSystem
@@ -156,7 +161,7 @@ tErrType CAudioMPI::ResumeAudioSystem()
 		return pModule_->ResumeAudioSystem();
 
 	return kMPINotConnectedErr;
-}
+}   // ---- end ResumeAudioSystem() ----
 
 // ==============================================================================
 // RegisterAudioEffectsProcessor
@@ -167,7 +172,7 @@ tErrType CAudioMPI::RegisterAudioEffectsProcessor(  CAudioEffectsProcessor *pCha
 		return kNoImplErr;
 	
 	return pModule_->RegisterAudioEffectsProcessor( pChain );
-}
+}   // ---- end RegisterAudioEffectsProcessor() ----
 
 // ==============================================================================
 // RegisterGlobalAudioEffectsProcessor
@@ -178,7 +183,7 @@ tErrType CAudioMPI::RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor 
 		return kNoImplErr;
 	
 	return pModule_->RegisterGlobalAudioEffectsProcessor( pChain );
-}
+}   // ---- end RegisterGlobalAudioEffectsProcessor() ----
 
 // ==============================================================================
 // ChangeAudioEffectsProcessor
@@ -189,7 +194,7 @@ tErrType CAudioMPI::ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProce
 		return kNoImplErr;
 	
 	return pModule_->ChangeAudioEffectsProcessor( id, pChain );
-}
+}   // ---- end ChangeAudioEffectsProcessor() ----
 
 // ==============================================================================
 // GetMasterVolume
@@ -200,7 +205,7 @@ U8 CAudioMPI::GetMasterVolume() const
 		return 0;
 	
 	return pModule_->GetMasterVolume();
-}
+}   // ---- end GetMasterVolume() ----
 
 // ==============================================================================
 // SetMasterVolume
@@ -209,7 +214,7 @@ void CAudioMPI::SetMasterVolume( U8 volume )
 {
 	if ( pModule_ )
 		pModule_->SetMasterVolume( volume );
-}
+}   // ---- end SetMasterVolume() ----
 
 // ==============================================================================
 // GetSpeakerEqualizer
@@ -223,7 +228,7 @@ Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
 	if ( !pModule_  )
 		return 0;
 return (pModule_->GetOutputEqualizer());
-}
+}   // ---- end GetSpeakerEqualizer() ----
 
 // ==============================================================================
 // SetSpeakerEqualizer
@@ -233,7 +238,7 @@ void CAudioMPI::SetSpeakerEqualizer(Boolean enable)
 //printf("CAudioMPI::SetOutputEqualizer: enable=%d\n", enable);
 	if ( pModule_ )
 		pModule_->SetOutputEqualizer( enable );
-}
+}   // ---- end SetSpeakerEqualizer() ----
 
 // ==============================================================================
 // SetAudioResourcePath
@@ -244,7 +249,7 @@ tErrType	CAudioMPI::SetAudioResourcePath( const CPath &path )
 		return kNoImplErr;
 
 	return pModule_->SetAudioResourcePath( mpiID_, path );
-}
+}   // ---- end SetAudioResourcePath() ----
 
 //==============================================================================
 // SetAudioResourcePath
@@ -255,7 +260,7 @@ const CPath* 	CAudioMPI::GetAudioResourcePath( void ) const
 		return kNull;
 	
 	return pModule_->GetAudioResourcePath( mpiID_ );
-}
+}   // ---- end SetAudioResourcePath() ----
 
 //==============================================================================
 // StartAudio
@@ -268,14 +273,14 @@ tAudioID CAudioMPI::StartAudio( const CPath			&path,
 								tAudioPayload		payload,
 								tAudioOptionsFlags	flags )
 {
-//printf("AudioMPI:StartAudio start \n");
+//printf("AudioMPI::StartAudio start \n");
 	
 	if ( !pModule_ )
 		return kNoAudioID;
 	
 	// Try to play and will return valid ID if successful
 	return pModule_->StartAudio( mpiID_, path, volume, priority, pan, pListener, payload, flags );
-}
+}   // ---- end StartAudio() ----
 
 // ==============================================================================
 // StartAudio
@@ -411,22 +416,22 @@ void CAudioMPI::SetAudioEventListener( tAudioID id, IEventListener *pListener )
 // ==============================================================================
 // GAS:  Get Audio State LF internal function
 // ==============================================================================
-//    void 
-//CAudioMPI::GAS( void *d ) 
-//{
-//if ( pModule_ )	
-//    pModule_->GetAudioState( (tAudioState *) d );
-//}   // ---- end GAS() ----
+    void 
+CAudioMPI::GAS( void *d ) 
+{
+if ( pModule_ )	
+    pModule_->GetAudioState( (tAudioState *) d );
+}   // ---- end GAS() ----
 
 // ==============================================================================
 // SAS
 // ==============================================================================
-//    void 
-//CAudioMPI::SAS( void *d ) 
-//{
-//if ( pModule_ )
-//	pModule_->SetAudioState( (tAudioState *) d );
-//}   // ---- end SAS() ----
+    void 
+CAudioMPI::SAS( void *d ) 
+{
+if ( pModule_ )
+	pModule_->SetAudioState( (tAudioState *) d );
+}   // ---- end SAS() ----
 
 // ==============================================================================
 // GetDefaultAudioVolume
@@ -497,7 +502,7 @@ const IEventListener* CAudioMPI::GetDefaultAudioEventListener( void ) const
 		return NULL;
 	
 	return pModule_->GetDefaultAudioEventListener( mpiID_ );
-}   // ---- end () ----
+}   // ---- end GetDefaultAudioEventListener() ----
 
 // ==============================================================================
 // SetDefaultAudioEventListener
@@ -506,7 +511,7 @@ void CAudioMPI::SetDefaultAudioEventListener( IEventListener *pListener )
 {
 	if ( pModule_ )
 		pModule_->SetDefaultAudioEventListener( mpiID_, pListener );
-}   // ---- end () ----
+}   // ---- end SetDefaultAudioEventListener() ----
 
 // ==============================================================================
 // IsAudioPlaying
@@ -517,7 +522,7 @@ Boolean CAudioMPI::IsAudioPlaying( tAudioID id )
 		return false;
 	
 	return pModule_->IsAudioPlaying( id );
-}   // ---- end () ----
+}   // ---- end IsAudioPlaying() ----
 
 // ==============================================================================
 // IsAudioPlaying
@@ -528,7 +533,7 @@ Boolean CAudioMPI::IsAudioPlaying( void )
 		return false;
 	
 	return pModule_->IsAudioPlaying();
-}   // ---- end () ----
+}   // ---- end IsAudioPlaying() ----
 
 // ==============================================================================
 // AcquireMidiPlayer
@@ -539,7 +544,7 @@ tErrType CAudioMPI::AcquireMidiPlayer( tAudioPriority priority, IEventListener *
 		return kNoImplErr;
 	
 	return pModule_->AcquireMidiPlayer( priority, pListener, midiPlayerID );
-}   // ---- end () ----
+}   // ---- end AcquireMidiPlayer() ----
 
 // ==============================================================================
 // ReleaseMidiPlayer
@@ -747,7 +752,7 @@ tErrType CAudioMPI::MidiNoteOn( tMidiPlayerID	id,
 		return kNoImplErr;
 	
 	return pModule_->MidiNoteOn( id, channel, noteNum, velocity, 0 );
-}   // ---- end () ----
+}   // ---- end MidiNoteOn() ----
 
 // ==============================================================================
 // MidiNoteOff

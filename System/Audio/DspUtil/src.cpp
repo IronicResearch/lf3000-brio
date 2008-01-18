@@ -61,10 +61,10 @@ d->oiRatio = (long) d->outInRateRatio;
 char *firName = "Dunno";
 
 // Set default filters values to cover initialization, even if they are unused.
-d->hP        = fir_HalfBand_58dB_Hz;
-d->firLength = kFIR_HalfBand_58dB_Hz_Length;
-d->inScaleDB = fir_HalfBand_58dB_GainCompensationDB;
-firName      = "HalfBand_58dB";
+d->hP        = fir_HalfBand_30dB_15_Hz;
+d->firLength = kFIR_HalfBand_30dB_15_Hz_Length;
+d->inScaleDB = fir_HalfBand_30dB_15_GainCompensationDB ;
+firName      = "HalfBand_30dB_15";
 
 // by2 interpolation or decimation
 if 	(2 == d->oiRatio || 2 == d->ioRatio)
@@ -78,6 +78,7 @@ if 	(2 == d->oiRatio || 2 == d->ioRatio)
 		switch (d->filterVersion)
 			{
 			default:
+#ifdef NEEDED
 			case kSRC_FilterVersion_0:
 				d->hP        = fir_HalfBand_58dB_Hz;
 				d->firLength = kFIR_HalfBand_58dB_Hz_Length;
@@ -90,6 +91,7 @@ if 	(2 == d->oiRatio || 2 == d->ioRatio)
 				d->inScaleDB = fir_HalfBand_32dB_GainCompensationDB;
 				firName      = "HalfBand_32dB";
 			break;
+#endif
 
 			case kSRC_FilterVersion_2:
 				d->hP        = fir_Triangle_3_Hz;
@@ -103,7 +105,7 @@ if 	(2 == d->oiRatio || 2 == d->ioRatio)
 				d->inScaleDB = fir_Triangle_9_GainCompensationDB;
 				firName      = "Triangle_9";
 			break;
-
+#ifdef NEEDED
 			case kSRC_FilterVersion_4:
 				d->hP        = fir_HalfBand_15_Hz;
 				d->firLength = kFIR_HalfBand_15_Hz_Length;
@@ -116,7 +118,7 @@ if 	(2 == d->oiRatio || 2 == d->ioRatio)
 				d->inScaleDB = fir_HalfBand_31_GainCompensationDB ;
 				firName      = "HalfBand_31";
 			break;
-
+#endif
 			case kSRC_FilterVersion_6:
 				d->hP        = fir_HalfBand_30dB_15_Hz;
 				d->firLength = kFIR_HalfBand_30dB_15_Hz_Length;
@@ -139,22 +141,24 @@ if 	(2 == d->oiRatio || 2 == d->ioRatio)
 
 		}
 	}
+#ifdef NEEDED
 // by3 interpolation or decimation
-else if (3 == d->ioRatio || 3 == d->oiRatio)
+else //if (3 == d->ioRatio || 3 == d->oiRatio)
 	{
 	d->firLength = kFIR_ThirdBand_31_Hz_Length;
 	d->hP        = fir_ThirdBand_31_Hz;
 	d->inScaleDB = fir_ThirdBand_31_GainCompensationDB;
 	firName      = "ThirdBand_31";
 	}
+#endif
 // Whatever, junk data
-else
-	{
-	d->firLength = kFIR_Notch_Hz_Length;
-	d->hP        = fir_Notch_Hz;
-	d->inScaleDB = fir_Notch_GainCompensationDB;
-	firName      = "fir_Notch";
-	}
+//else
+//	{
+//	d->firLength = kFIR_Notch_Hz_Length;
+//	d->hP        = fir_Notch_Hz;
+//	d->inScaleDB = fir_Notch_GainCompensationDB;
+//	firName      = "fir_Notch";
+//	}
 
 d->xIncF = d->inOutRateRatio;
 d->xIncI = (unsigned long)(d->inOutRateRatio*(double)(kSRC_Linear_Divisor));
