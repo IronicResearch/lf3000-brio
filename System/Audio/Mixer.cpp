@@ -190,7 +190,7 @@ SetMasterVolume(100); //kVolume_Default);
 d->systemSamplingFrequency = (long)samplingFrequency_;
 d->outBufferLength = kAudioFramesPerBuffer;  // Dunno?!? Words? Frames?
 
-#define CHECK_BUTTON_MPI_ON_STARTUP
+#undef CHECK_BUTTON_MPI_ON_STARTUP
 #ifdef CHECK_BUTTON_MPI_ON_STARTUP
 pButtonMPI_ = new CButtonMPI();
 tButtonData buttonData = pButtonMPI_->GetButtonState();

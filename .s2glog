@@ -12651,3 +12651,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/08 8:20 PM
 4,314 ms. (Cumulative: 3,341,852 ms)
 
 ----------------
+Revision 2,677 from svn://localhost/TRUNK/:
+
+Temporarily disable ButtonMPI method of headphone detection to get unit tests building again. Alternate solution to follow shortly...
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 8:53 PM
+2 changed, 0 added, 0 deleted.
+4,298 ms. (Cumulative: 3,346,212 ms)
+
+----------------
