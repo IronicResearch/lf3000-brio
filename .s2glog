@@ -12661,3 +12661,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/08 8:53 PM
 4,298 ms. (Cumulative: 3,346,212 ms)
 
 ----------------
+Revision 2,678 from svn://localhost/TRUNK/:
+Revision 2,679 from svn://localhost/TRUNK/:
+
+Alternate technique to query speaker status via sysfs audio driver dump.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 9:39 PM
+1 changed, 0 added, 0 deleted.
+4,313 ms. (Cumulative: 3,350,603 ms)
+
+----------------
