@@ -3,6 +3,19 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.32  (Build 2681 released Jan 17, 2008) 
+===========================================
+--Translate audio jack event to headphone button press correctly
+ 
+--Updated OpenGL ES driver with buffer object recycling fix. (TTP 1097)
+ 
+--Dynamically load MIDI shared library only on demand to AcquireMidiPlayer() calls. (TTP 1126)
+ 
+--Reduced framebuffer mapping regions to actual size used when onscreen display contexts are created.
+ 
+--Fixed intermittant video player bug where audio track would fail to get started. 
+
+===========================================
 v0.1.31  (Build 2614 released Jan 10, 2008) 
 ===========================================
 
