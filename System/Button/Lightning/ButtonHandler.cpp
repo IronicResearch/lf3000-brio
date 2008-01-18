@@ -114,9 +114,7 @@ void *LightningButtonTask(void*)
 		        CAudioMPI audioMPI;
 		        bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
 
-			#if 0 // FIXME: interface broken			
 		        audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
-			#endif
 		}
 	}
 	return NULL;

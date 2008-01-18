@@ -12672,3 +12672,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/08 9:39 PM
 4,313 ms. (Cumulative: 3,350,603 ms)
 
 ----------------
+Revision 2,680 from svn://localhost/TRUNK/:
+
+Allow headphone jack detect to callback supported audio module function
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/08 10:19 PM
+1 changed, 0 added, 0 deleted.
+4,329 ms. (Cumulative: 3,354,994 ms)
+
+----------------
