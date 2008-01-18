@@ -12691,3 +12691,15 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/17/08 10:44 PM
 4,588 ms. (Cumulative: 3,359,660 ms)
 
 ----------------
+Revision 2,682 from svn://localhost/TRUNK/:
+Revision 2,683 from svn://localhost/TRUNK/:
+Revision 2,684 from svn://localhost/TRUNK/:
+Revision 2,685 from svn://localhost/TRUNK/:
+
+Fixed REV_NUM typo
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/18/08 2:11 PM
+1 changed, 0 added, 0 deleted.
+4,251 ms. (Cumulative: 3,363,989 ms)
+
+----------------
