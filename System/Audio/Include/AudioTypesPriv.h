@@ -47,6 +47,9 @@ struct tAudioStartAudioInfo {
 };
 
 typedef struct taudiostate {
+	U8     masterVolume;			
+
+    U8     speakerEnabled;
     U8     useOutDSP;
     U8     useOutEQ;
     U8     srcType;
@@ -67,7 +70,10 @@ typedef struct taudiostate {
 #define kAudioState_MaxFileNameLength 100
     char   inSoundFilePath [kAudioState_MaxFileNameLength];
     char   outSoundFilePath[kAudioState_MaxFileNameLength];
+
+    long   systemSamplingFrequency;
     long   outFileBufferCount;
+    long   outBufferLength;  // Dunno?!? Words? Frames?
 
     U8     headroomBits;
     float  channelGainDB;
@@ -129,11 +135,11 @@ struct tAudioListenerInfo {
 // kAudioCmdMsgTypeStopAudio
 struct tAudioStopAudioInfo {
 	tAudioID			id;
-	Boolean				suppressDoneMsg;
+	Boolean				noDoneMsg;
 
 	tAudioStopAudioInfo( tAudioID i = -1, 
 						 Boolean s = false )
-		: id(i), suppressDoneMsg(s) {}
+		: id(i), noDoneMsg(s) {}
 };
 
 // kAudioCmdMsgTypeMidiCommand
@@ -193,10 +199,10 @@ struct tAudioStartMidiFileInfo {
 // kAudioCmdMsgTypeStopMidiFile
 struct tAudioStopMidiFileInfo {
 	tMidiPlayerID		id;
-	Boolean				suppressDoneMsg;
+	Boolean				noDoneMsg;
 
 	tAudioStopMidiFileInfo( tMidiPlayerID i = -1, Boolean s = false )
-		: id(i), suppressDoneMsg(s) {}
+		: id(i), noDoneMsg(s) {}
 };
 
 //kAudioCmdMsgTypeGetEnabledMidiTracks

@@ -4,13 +4,12 @@
 //
 //			Written by Gints Klimanis
 // **********************************************************************
-//#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
-//#include <util.h>
+#include <util.h>
 #include <Dsputil.h>
 #include <Dsputil2.h>
 

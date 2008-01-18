@@ -20,7 +20,7 @@
 #include <DebugMPI.h>
 
 #include <Dsputil.h>
-#include <mix.h>
+//#include <mix.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -38,7 +38,7 @@ public:
 	~CChannel();
 
 	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
-	tErrType	Release( Boolean suppressPlayerDoneMsg );
+	tErrType	Release( Boolean noPlayerDoneMsg );
 
 // Set pause state
 	inline void	Pause()  { if (fInUse_) fPaused_ = true;  }
@@ -123,7 +123,7 @@ private:
 	Boolean fReleasing_;	// Channel is in process of being reset
 //	Boolean fOwnProcessor_;
 	
-	CDebugMPI	*pDebugMPI_;
+//	CDebugMPI	*pDebugMPI_;
 
     void   RecalculateLevels();
 };

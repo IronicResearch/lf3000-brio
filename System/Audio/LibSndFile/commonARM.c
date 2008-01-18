@@ -649,6 +649,7 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
 						}
 					break ;
 
+#ifndef NO_DOUBLE64
 			case 'f' :
 					/* Floats are passed as doubles. Is this always true? */
 					floatdata = (float) va_arg (argptr, double) ;
@@ -669,7 +670,7 @@ psf_binheader_writef (SF_PRIVATE *psf, const char *format, ...)
 					psf->headindex += 8 ;
 					count += 8 ;
 					break ;
-
+#endif
 			case 's' :
 					/* Write a C string (guaranteed to have a zero terminator). */
 					strptr = va_arg (argptr, char *) ;
@@ -1008,6 +1009,7 @@ psf_binheader_readf (SF_PRIVATE *psf, char const *format, ...)
 					*countptr = countdata ;
 					break ;
 
+#ifndef NO_DOUBLE64
 			case 'f' : /* Float conversion */
 					floatptr = va_arg (argptr, float *) ;
 					*floatptr = 0.0 ;
@@ -1027,7 +1029,7 @@ psf_binheader_readf (SF_PRIVATE *psf, char const *format, ...)
 					else
 						*doubleptr = double64_le_read ((unsigned char*) doubleptr) ;
 					break ;
-
+#endif
 			case 's' :
 					psf_log_printf (psf, "Format conversion 's' not implemented yet.\n") ;
 					/*

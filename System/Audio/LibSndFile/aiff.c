@@ -271,7 +271,7 @@ aiff_open (SF_PRIVATE *psf)
 		case SF_FORMAT_PCM_32 :
 				error = pcm_init (psf) ;
 				break ;
-#ifdef GK_NOT_SUPPORTED
+#ifdef FORMAT_ALL
 		case SF_FORMAT_ULAW :
 				error = ulaw_init (psf) ;
 				break ;
@@ -279,7 +279,9 @@ aiff_open (SF_PRIVATE *psf)
 		case SF_FORMAT_ALAW :
 				error = alaw_init (psf) ;
 				break ;
+#endif // FORMAT_ALL
 
+#ifndef NO_DOUBLE64
 		/* Lite remove start */
 		case SF_FORMAT_FLOAT :
 				error = float32_init (psf) ;
@@ -288,7 +290,9 @@ aiff_open (SF_PRIVATE *psf)
 		case SF_FORMAT_DOUBLE :
 				error = double64_init (psf) ;
 				break ;
+#endif // NO_DOUBLE64
 
+#ifdef FORMAT_ALL
 		case SF_FORMAT_DWVW_12 :
 				error = dwvw_init (psf, 12) ;
 				break ;
@@ -327,7 +331,7 @@ aiff_open (SF_PRIVATE *psf)
 		case SF_FORMAT_GSM610 :
 				error = gsm610_init (psf) ;
 				break ;
-#endif // GK_NOT_SUPPORTED
+#endif // FORMAT_ALL
 
 		default : return SFE_UNIMPLEMENTED ;
 		} ;

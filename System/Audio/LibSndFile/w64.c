@@ -153,7 +153,7 @@ w64_open	(SF_PRIVATE *psf)
 		case SF_FORMAT_PCM_32 :
 					error = pcm_init (psf) ;
 					break ;
-#ifdef GK_UNSUPPORTED
+#ifdef FORMAT_ALL
 		case SF_FORMAT_ULAW :
 					error = ulaw_init (psf) ;
 					break ;
@@ -161,7 +161,9 @@ w64_open	(SF_PRIVATE *psf)
 		case SF_FORMAT_ALAW :
 					error = alaw_init (psf) ;
 					break ;
+#endif // FORMAT_ALL
 
+#ifndef NO_DOUBLE64
 		/* Lite remove start */
 		case SF_FORMAT_FLOAT :
 					error = float32_init (psf) ;
@@ -170,7 +172,9 @@ w64_open	(SF_PRIVATE *psf)
 		case SF_FORMAT_DOUBLE :
 					error = double64_init (psf) ;
 					break ;
+#endif // NO_DOUBLE64
 
+#ifdef FORMAT_ALL
 		case SF_FORMAT_IMA_ADPCM :
 					error = wav_w64_ima_init (psf, blockalign, framesperblock) ;
 					break ;
@@ -183,7 +187,7 @@ w64_open	(SF_PRIVATE *psf)
 		case SF_FORMAT_GSM610 :
 					error = gsm610_init (psf) ;
 					break ;
-#endif // GK_UNSUPPORTED
+#endif // FORMAT_ALL
 		default : 	return SFE_UNIMPLEMENTED ;
 		} ;
 
@@ -411,7 +415,7 @@ w64_write_header (SF_PRIVATE *psf, int calc_length)
 					psf_binheader_writef (psf, "e22", psf->bytewidth * psf->sf.channels, psf->bytewidth * 8) ;
 					break ;
 
-#ifdef GK_UNSUPPORTED
+#ifndef NO_DOUBLE64
 		case SF_FORMAT_FLOAT :
 		case SF_FORMAT_DOUBLE :
 					fmt_size = 24 + 2 + 2 + 4 + 4 + 2 + 2 ;
@@ -427,7 +431,9 @@ w64_write_header (SF_PRIVATE *psf, int calc_length)
 
 					add_fact_chunk = SF_TRUE ;
 					break ;
+#endif // NO_DOUBLE64
 
+#ifdef FORMAT_ALL
 		case SF_FORMAT_ULAW :
 					fmt_size = 24 + 2 + 2 + 4 + 4 + 2 + 2 ;
 					fmt_pad = (size_t) (8 - (fmt_size & 0x7)) ;
@@ -535,7 +541,7 @@ w64_write_header (SF_PRIVATE *psf, int calc_length)
 
 					add_fact_chunk = SF_TRUE ;
 					break ;
-#endif
+#endif // FORMAT_ALL
 
 		default : 	return SFE_UNIMPLEMENTED ;
 		} ;

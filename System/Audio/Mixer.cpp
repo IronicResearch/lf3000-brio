@@ -28,7 +28,8 @@
 
 #define kMixer_HeadroomBits_Default 2
 
-#define kMixer_SoftClipper_PreGainDB   3
+#define kMixer_Headphone_GainDB        0 
+#define kMixer_SoftClipper_PreGainDB   3 
 #define kMixer_SoftClipper_PostGainDB  0
 
 // Debug input/output stuff
@@ -66,9 +67,7 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
     targetChannel_= NULL;
 #endif
 
-    SetMasterVolume(kVolume_Default);
     samplingFrequency_ = kAudioSampleRate;
-	useOutSpeakerDSP_ = false;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
@@ -76,11 +75,11 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 // Allocate audio channels
 	pChannels_ = new CChannel[ numInChannels_ ];
 	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n" , numInChannels_);
-    pChannelBuf_ = new S16[ kAudioOutBufSizeInWords ];
-//    for (ch = 0; ch < numInChannels_; ch++) {}
+//    pChannelBuf_ = new S16[ kAudioOutBufSizeInWords ];
 
 // Create MIDI player
-	pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+//	pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+    pMidiPlayer_ = NULL;
 
 // Configure sampling frequency conversion
 fsRack_[0] = (long)(samplingFrequency_*0.25f);
@@ -89,7 +88,7 @@ fsRack_[2] = (long)(samplingFrequency_);
 
 for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
-	pMixBinBufs_[i] = new S16[/* 2* */ kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords]; // GK FIXXX: 2x needed ??
+//	pMixBinBufs_[i] = new S16[/* 2* */ kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords]; // GK FIXXX: 2x needed ??
 	mixBinFilled_[i] = False;
 	}
 
@@ -133,11 +132,8 @@ for (i = 0; i < kAudioMixer_SRCCount; i++)
 
 for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
-    int length = kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements;
-	S16 *p = new S16[ /* 2* */ length ];  // GK FIXXX: can probably eliminate 2x
-    ClearShorts(p, length);
-	pTmpBufs_      [i] = p;
-	pTmpBufOffsets_[i] = p+kSRC_Filter_MaxDelayElements;  
+    ClearShorts(pTmpBufs_[i], kAudioMixer_TempBufferWords);
+	pTmpBufOffsets_[i] = &pTmpBufs_[i][kSRC_Filter_MaxDelayElements];  
 	}
 // Set up level meters
 for (ch = kLeft; ch <= kRight; ch++)
@@ -166,11 +162,21 @@ longTimeDecayI = FloatToQ15(longTimeDecayF);
 //printf("shortTime: Hz=%ld frames=%d Interval=%ld longTimeDecayF=%g\n", 
 //        shortTimeRateHz, numFramesPerBuffer, shortTimeInterval, longTimeDecayF);
 
+// Headphone gain
+headphoneGainDB_     = kMixer_Headphone_GainDB;
+headphoneGainF_      = DecibelToLinearf(headphoneGainDB_);
+headphoneGainWholeI_ = (long)headphoneGainFracF_;
+headphoneGainFracF_  = headphoneGainF_ - (float)headphoneGainWholeI_;
+headphoneGainFracI_  = FloatToQ15(headphoneGainFracF_);
+//printf("CAudioMixer::CAudioMixer: headphoneGainDB %g -> %g\n", headphoneGainDB_, headphoneGainF_);
+//printf("CAudioMixer::CAudioMixer: headphoneGain WholeI=%d FracF=%g FracI=$%X\n", 
+//        headphoneGainWholeI_, headphoneGainFracF_, (unsigned int) headphoneGainFracI_);
 //
 // Set up Audio State struct (interfaces via AudioMPI)
 // NOTE : Keep at end of this routine
 {
 tAudioState *d = &audioState_;
+memset(d, 0, sizeof(tAudioState));
 if (sizeof(tAudioState) >= kAUDIO_MAX_MSG_SIZE)
     printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n", sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 
@@ -178,6 +184,34 @@ d->computeLevelMeters = false;
 d->useOutEQ           = false;
 d->useOutSoftClipper  = true;
 d->useOutDSP          = (d->computeLevelMeters || d->useOutEQ || d->useOutSoftClipper);
+
+SetMasterVolume(100); //kVolume_Default);
+
+d->systemSamplingFrequency = (long)samplingFrequency_;
+d->outBufferLength = kAudioFramesPerBuffer;  // Dunno?!? Words? Frames?
+
+#define CHECK_BUTTON_MPI_ON_STARTUP
+#ifdef CHECK_BUTTON_MPI_ON_STARTUP
+pButtonMPI_ = new CButtonMPI();
+tButtonData buttonData = pButtonMPI_->GetButtonState();
+U32 enableTheSpeaker;
+
+//#define HEADPHONE_CHECK_V1
+#ifdef HEADPHONE_CHECK_V1
+char buttonChanged = (buttonData.buttonState & buttonData.buttonTransition) ? '+' : '-';
+enableTheSpeaker = ('-' == buttonChanged);
+#else
+enableTheSpeaker = (0 == (buttonData.buttonState & kHeadphoneJackDetect));
+#endif
+EnableSpeaker(enableTheSpeaker);
+printf("CAudioMixer: kHeadphoneJackDetect=%X\n", (unsigned int) kHeadphoneJackDetect);
+printf("CAudioMixer: button State=%X Transition=%X\n", (unsigned int) buttonData.buttonState, (unsigned int) buttonData.buttonTransition);
+printf("CAudioMixer: enableTheSpeaker=%X\n", (unsigned int) enableTheSpeaker);
+
+#else
+EnableSpeaker(false);
+#endif // CHECK_BUTTON_MPI_ON_STARTUP
+
 //if (d->useOutSoftClipper)
 //    d->headroomBits = kMixer_HeadroomBits_Default;
 //else
@@ -242,6 +276,7 @@ SetDSP();
 UpdateDSP();
 ResetDSP();
 
+//PrintMemoryUsage();
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
 // ==============================================================================
@@ -256,8 +291,6 @@ long i;
 	{
     for (long ch = 0; ch < numInChannels_; ch++)
         {     	
-//		if (channel_tmpPtrs_[ch])
-//			free(channel_tmpPtrs_[ch]);	
 //        delete pChannels_[ch];
         }
 	}
@@ -271,19 +304,22 @@ long i;
     	delete pChannelBuf_;
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 		{
-		if (pTmpBufs_[i])
-			free(pTmpBufs_[i]);
-        pTmpBufs_      [i] = NULL;
+//		if (pTmpBufs_[i])
+//			free(pTmpBufs_[i]);
+//        pTmpBufs_      [i] = NULL;
         pTmpBufOffsets_[i] = NULL;
 		}
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
 		{
-		if (pMixBinBufs_[i])
-			free(pMixBinBufs_[i]);
+//		if (pMixBinBufs_[i])
+//			free(pMixBinBufs_[i]);
 		}
 	
 //if (audioState_.writeOutSoundFile)
+// {
+// }
+
 if (outSoundFile_)
     {
     CloseSoundFile(&outSoundFile_);
@@ -361,18 +397,51 @@ return (true);
     CChannel * 
 CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 {
+CChannel *pCh;
+//{static long c=0; printf("CAudioMixer::FindFreeChannel%d: searching for free channel ... \n", c++);}
+
 #ifdef KEEP_FOR_DEBUGGING
 for (long i = 0; i < numInChannels_; i++)
 	{
-    CChannel *pCh = &pChannels_[i];
+    pCh = &pChannels_[i];
 //printf("CAudioMixer::FindFreeChannel: %ld: IsInUse=%d isDone=%d player=%p\n", i, pCh->IsInUse(), pCh->isDone_, (void*)pCh->GetPlayerPtr());
     }
 #endif
 
+long active = 0;
+long idle   = 0;
+long paused = 0;
+for (long i = 0; i < numInChannels_; i++)
+    {
+    active +=  pChannels_[i].IsInUse(); //(!pChannels_[i]->IsPaused());
+    idle   += (!pChannels_[i].IsInUse());
+    paused +=   pChannels_[i].IsPaused();
+    }
+
+//#define DEBUG_MIXER_FINDFREECHANNEL
+#ifdef DEBUG_MIXER_FINDFREECHANNEL
+{
+for (long i = 0; i < numInChannels_; i++)
+    {
+    pCh = &pChannels_[i];
+printf("CAudioMixer::FindFreeChannel: ch%ld idle=%d paused=%d\n", i, !pCh->IsInUse(), pCh->IsPaused());
+    }
+printf("CAudioMixer::FindFreeChannel: idle=%ld active=%ld paused=%ld total=%d\n", idle, active, paused, numInChannels_);
+}
+#endif // DEBUG_MIXER_FINDFREECHANNEL
+
+// Although more channels are actually available, limit to
+// preset active count
+if (active >= kAudioMixer_MaxActiveAudioChannels)
+    {
+printf("CAudioMixer::FindFreeChannel: all %ld/%d active channels in use\n", active, kAudioMixer_MaxActiveAudioChannels);
+	return (kNull);
+    }
+
 // Search for idle channel
 for (long i = 0; i < numInChannels_; i++)
 	{
-    CChannel *pCh = &pChannels_[i];
+    pCh = &pChannels_[i];
 //    CAudioPlayer *pPlayer =pCh->GetPlayer();
 		if (!pCh->IsInUse())// && pCh->isDone_) 
         {
@@ -381,7 +450,7 @@ for (long i = 0; i < numInChannels_; i++)
         }
 	}
 	
-	// Reaching this point means all channels are currently in use
+// Reaching this point means all channels are currently in use
 //printf("CAudioMixer::FindFreeChannel: all %d channels in use.\n", numInChannels_);
 	return (kNull);
 }  // ---- end FindFreeChannel() ----
@@ -496,7 +565,7 @@ return (div);
 // CreatePlayer:   Allocate player based on file extension argument
 // ==============================================================================
     CAudioPlayer *
-CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID )
+CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID )
 {
 CAudioPlayer *pPlayer = NULL;
 
@@ -507,18 +576,18 @@ if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")  ||
     !strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
 	{
 //	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create RawPlayer\n");
-	pPlayer = new CRawPlayer( pAudioInfo, newID );
+	pPlayer = new CRawPlayer( pInfo, newID );
     }
 else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
          !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
     {
 //	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create VorbisPlayer\n");
-	pPlayer = new CVorbisPlayer( pAudioInfo, newID );
+	pPlayer = new CVorbisPlayer( pInfo, newID );
     } 
 else
     {
 	pDebugMPI_->DebugOut( kDbgLvlImportant,
-		"AudioTask::DoStartAudio: Create *NO* Player: unhandled audio type='%s'\n", sExt);
+		"CAudioMixer::CreatePlayer: Create *NO* Player: invalid file extension ='%s' for file '%s'\n", sExt, (char *) pInfo->path->c_str());
     }
 
 return (pPlayer);
@@ -528,19 +597,19 @@ return (pPlayer);
 // AddPlayer:
 // ==============================================================================
     tErrType 
-CAudioMixer::AddPlayer( tAudioStartAudioInfo *pAudioInfo, char *sExt, tAudioID newID )
+CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID )
 {
-CChannel *pChannel = FindFreeChannel( pAudioInfo->priority );
+CChannel *pChannel = FindFreeChannel( pInfo->priority );
 if (!pChannel)
     {
     printf("CAudioMixer::AddPlayer: no channel available\n");
     return (kAudioNoChannelAvailErr);
     }
-CAudioPlayer *pPlayer = CreatePlayer(pAudioInfo, sExt, newID);
+CAudioPlayer *pPlayer = CreatePlayer(pInfo, sExt, newID);
 if (!pPlayer)
     {
-    printf("CAudioMixer::AddPlayer: failed to create Player with '%s'\n", sExt);
-    return (kAudioNoChannelAvailErr);  // GK FIXXX: add error for failed player allocation
+    printf("CAudioMixer::AddPlayer: failed to create Player with file extension='%s'\n", sExt);
+    return (kAudioPlayerCreateErr);  // GK FIXXX: add error for unsupported file extension
     }
 
 #ifdef NEW_ADD_PLAYER
@@ -555,6 +624,9 @@ playerToAdd_   = pPlayer;
 #ifdef OLD_ADD_PLAYER
 pChannel->InitWithPlayer( pPlayer );
 #endif // OLD_ADD_PLAYER
+
+pChannel->SetPan(    pInfo->pan );
+pChannel->SetVolume( pInfo->volume );
 
 return (kNoErr);
 }  // ---- end AddPlayer() ----
@@ -677,6 +749,7 @@ for (ch = 0; ch < numInChannels_; ch++)
 
 	// Player renders data into channel's stereo output buffer
         framesRendered = pCh->Render( pChannelBuf_, framesToRender );
+    // NOTE: SendDoneMsg() deferred to next buffer when framtesToRender is multiple of total frames
 	    if ( framesRendered < framesToRender ) 
 //printf("frames %ld/%ld\n", framesRendered, framesToRender);
 //	    if ( 0 == framesRendered ) 
@@ -712,7 +785,7 @@ printf("Sawtooth z=$%08X delta=$%08X out[0]=$%04X\n", (unsigned int)z_, (unsigne
 // MIDI player renders to fs/2 output buffer 
 // Even if fewer frames rendered
 // {static long c=0; printf("CAudioMixer::Render%ld: pMidiPlayer_->IsActive=%d\n", c++, pMidiPlayer_->IsActive());}
-if ( pMidiPlayer_->IsActive() )
+if ( pMidiPlayer_ && pMidiPlayer_->IsActive() )
 	{
 	U32 mixBinIndex    = kAudioMixer_MixBin_Index_FsDiv2;
 	U32 framesToRender = numFramesDiv2;  // fs/2
@@ -745,7 +818,7 @@ else
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv4;
 if (mixBinFilled_[mixBinIndex])
 	{
-// Need to keep separate tPtrs per SRC to preserve past input values
+// Preserve tmp buffers between iterations as they hold past state used by SRC
 	DeinterleaveShorts(pMixBinBufs_[mixBinIndex], tPtrs[2], tPtrs[3], numFramesDiv4);
 	RunSRC(tPtrs[2], tPtrs[0], numFramesDiv4, numFramesDiv2, &src_[mixBinIndex][kLeft ]);
 	RunSRC(tPtrs[3], tPtrs[1], numFramesDiv4, numFramesDiv2, &src_[mixBinIndex][kRight]);
@@ -774,6 +847,7 @@ else
 mixBinIndex = kAudioMixer_MixBin_Index_FsDiv2;
 if (mixBinFilled_[mixBinIndex])
 	{
+// Preserve tmp buffers between iterations as they hold past state used by SRC
 	DeinterleaveShorts(pMixBinBufs_[mixBinIndex], tPtrs[4], tPtrs[5], numFramesDiv2);
 	RunSRC(tPtrs[4], tPtrs[0], numFramesDiv2, numFrames, &src_[mixBinIndex][kLeft ]);
 	RunSRC(tPtrs[5], tPtrs[1], numFramesDiv2, numFrames, &src_[mixBinIndex][kRight]);
@@ -794,8 +868,7 @@ else
 //	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOut );
 
 // Scale stereo/interleaved buffer by master volume
-// GKFIXX: should probably move earlier in signal chain to reduce clipping
-/// NOTE: volume here is interpreted as a linear value
+// GKFIXX: should probably move earlier in signal chain to reduce clipping in those stages
 //ScaleShortsf(pOut, pOut, numFrames*channels, masterGainf_[0]);
 ScaleShortsi_Q15(pOut, pOut, numFrames*channels, masterGaini_[0]);
 
@@ -805,7 +878,6 @@ if (inputIsDC)
     outputDCValuei  = pOut[0];
     outputDCValuef  = Q15ToFloat(outputDCValuei);
     outputDCValueDB = LinearToDecibelf(outputDCValuef);
-
 printf("CAudioMixer: in DC %g dB -> %g |out %g dB -> %g (%d)\n", 
         inputDCValueDB, inputDCValuef, outputDCValueDB, outputDCValuef, outputDCValuei);
     }
@@ -838,17 +910,21 @@ if (audioState_.useOutDSP)
                 pOut = pIn;
                 }
             }
-    // GK FIXXX: test boost for single channel wave
+    // test boost for single channel wave
 //        for (U32 ii = 0; ii < numFrames; ii++) pIn[ii] *= 3;
 
     // Compute Output Soft Clipper
-    //{static long c=0; printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
+//    {static long c=0; printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
         if (audioState_.useOutSoftClipper)
             {
 //        for (U32 ii = 0; ii < numFrames; ii++) pIn[ii] *= 3;
             outSoftClipper_[ch].headroomBits = audioState_.headroomBits;  // GK_FIXX: move to setup code
     //{static long c=0; if (!c) printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
             ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
+            }
+// Level control for headphones 
+        else
+            {
             }
         }
     InterleaveShorts(tPtrs[kTmpIndex], tPtrs[kTmpIndex+1], pOut, numFrames);
@@ -904,7 +980,7 @@ if (audioState_.computeLevelMeters)
             }
         shortTimeCounter = 0;
         }
-//printf("Short=%5d Long=%5d \n", outLevels_ShortTime[0], outLevels_LongTime[0]);
+//printf("Mixer::Render Short=%5d Long=%5d \n", outLevels_ShortTime[0], outLevels_LongTime[0]);
     } // end computeLevelMeters
 
 // Debug:  write output of mixer to sound file
@@ -978,22 +1054,24 @@ isPaused_ = false;
 CAudioMixer::SetMasterVolume( U8 x )
 {
 S16 x16 = (S16) x;
-BoundS16(&x16, 0, 100);
-masterVolume_ = (U8) x;
+audioState_.masterVolume = (U8) BoundS16(&x16, 0, 100);
 
 // ChangeRangef(x, L1, H1, L2, H2)
 //masterGainf_[0] = ChangeRangef((float)x, 0.0f, 100.0f, 0.0f, 1.0f);
-masterGainf_[0] = 0.01f*(float)x;
-//masterGainf_[0] = DecibelToLinearf(ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f));
+masterGainf_[kLeft] = 0.01f*(float)x;
+
 // Convert to square curve, which is milder than Decibels
-masterGainf_[0] *= masterGainf_[0];
-masterGainf_[1] =  masterGainf_[0];
+//masterGainf_[0] = DecibelToLinearf(ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f));
+masterGainf_[kLeft ] *= masterGainf_[kLeft];
+masterGainf_[kRight] =  masterGainf_[kLeft];
 
 // Convert 32-bit floating-point to Q15 fractional integer format 
-masterGaini_[0] = FloatToQ15(masterGainf_[0]);
-masterGaini_[1] = masterGaini_[0];
+masterGaini_[kLeft ] = FloatToQ15(masterGainf_[kLeft]);
+masterGaini_[kRight] = masterGaini_[kLeft];
 
-//printf("CAudioMixer::SetMasterVolume %d -> %f $%x\n", masterVolume_ , masterGainf_[0], masterGaini_[0]);
+audioState_.masterGainf[kLeft ] = masterGainf_[kLeft ];
+audioState_.masterGainf[kRight] = masterGainf_[kRight];
+//printf("CAudioMixer::SetMasterVolume %d -> %f ($%0X)\n", audioState_.masterVolume , masterGainf_[0], masterGaini_[0]);
 } // ---- end SetMasterVolume() ----
 
 // ==============================================================================
@@ -1034,10 +1112,13 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     void 
 CAudioMixer::SetDSP()
 {
+//{static long c=0; printf("CAudioMixer::SetDSP %ld: START\n", c++);}
 tAudioState *d = &audioState_;
 
 U8     srcType;
 U8     srcFilterVersion;
+
+EnableSpeaker(d->speakerEnabled);
 
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     {
@@ -1088,6 +1169,7 @@ void CAudioMixer::UpdateDSP()
 {
 long i;
 //{static long c=0; printf("CAudioMixer::UpdateDSP %ld: START\n", c++);}
+
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
     for (i = 0; i < outEQ_BandCount_; i++)
@@ -1123,7 +1205,7 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 } // ---- end ResetDSP() ----
 
 // ==============================================================================
-// SetAudioState :  Set audio state
+// SetAudioState :  Set "secret" interface parameters for Mixer
 // ==============================================================================
     void 
 CAudioMixer::SetAudioState(tAudioState *d)
@@ -1138,7 +1220,7 @@ UpdateDSP();
 } // ---- end SetAudioState() ----
 
 // ==============================================================================
-// GetAudioState :  Get audio state
+// GetAudioState :  Get "secret" interface parameters for Mixer
 // ==============================================================================
     void 
 CAudioMixer::GetAudioState(tAudioState *d)
@@ -1148,15 +1230,79 @@ bcopy(&audioState_, d, sizeof(tAudioState));
 } // ---- end GetAudioState() ----
 
 // ==============================================================================
-// EnableOutputSpeakerDSP :  Setup DSP that is different for Line and Speaker outputs
+// PrintMemoryUsage :  
 // ==============================================================================
     void 
-CAudioMixer::EnableOutputSpeakerDSP(Boolean x)
+CAudioMixer::PrintMemoryUsage()
 {
-printf("CAudioMixer::EnableOutputSpeakerDSP: enabled=%ld -> %d\n", useOutSpeakerDSP_, x);
-useOutSpeakerDSP_ = x;
+long bytes = 0;
+#ifdef EMULATION
+long framesPerBuffer = 256;
+#else
+long framesPerBuffer = 512;
+#endif
+
+bytes += sizeof(CAudioMixer);
+printf("CAudioMixer::PrintMemoryUsage: sizeof(CAudioMixer)=%d\n", sizeof(CAudioMixer));
+
+long channelMemory = numInChannels_*sizeof(CChannel);
+channelMemory += sizeof(pChannelBuf_);	
+printf("CAudioMixer::PrintMemoryUsage: channelMemory=%ld\n", channelMemory);
+bytes += channelMemory;
+
+long mixBinMemory = sizeof(pMixBinBufs_);
+printf("CAudioMixer::PrintMemoryUsage: mixBinMemory=%ld\n", mixBinMemory);
+bytes += mixBinMemory;
+
+long tmpBufMemory = sizeof(pTmpBufs_);
+printf("CAudioMixer::PrintMemoryUsage: tmpBufMemory=%ld\n", tmpBufMemory);
+bytes += tmpBufMemory;
+
+#ifdef EMULATION
+printf("CAudioMixer::PrintMemoryUsage: totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes, 2*bytes);
+#else
+printf("CAudioMixer::PrintMemoryUsage: totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes/2, bytes);
+#endif
+} // ---- end PrintMemoryUsage() ----
+
+// ==============================================================================
+// EnableSpeaker :  Setup DSP that is different for Line and Speaker outputs
+// ==============================================================================
+    void 
+CAudioMixer::EnableSpeaker(Boolean x)
+{
+//{static long c=0; printf("CAudioMixer::EnableSpeaker%ld: enabled=%d -> %d\n", c++, audioState_.speakerEnabled, x);}
 //audioState_.useOutEQ = x;  // Don't use EQ for now
 audioState_.useOutSoftClipper = x;
-} // ---- end EnableOutputSpeakerDSP() ----
+audioState_.speakerEnabled    = x;
+} // ---- end EnableSpeaker() ----
+
+// ==============================================================================
+// CreateMIDIPlayer :  
+// ==============================================================================
+    CMidiPlayer * 
+CAudioMixer::CreateMIDIPlayer()
+{
+//{static long c=0; printf("CAudioMixer::CreateMIDIPlayer%ld: \n", c++);}
+if (pMidiPlayer_)
+	delete pMidiPlayer_;
+
+pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+return (pMidiPlayer_);
+} // ---- end CreateMIDIPlayer() ----
+
+// ==============================================================================
+// DestroyMIDIPlayer :  
+// ==============================================================================
+    void 
+CAudioMixer::DestroyMIDIPlayer()
+{
+//{static long c=0; printf("CAudioMixer::DestroyMIDIPlayer%ld: \n", c++);}
+if (pMidiPlayer_)
+    {
+	delete pMidiPlayer_;
+	pMidiPlayer_ = NULL;
+    }
+} // ---- end DestroyMIDIPlayer() ----
 
 LF_END_BRIO_NAMESPACE()

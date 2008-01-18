@@ -136,7 +136,7 @@ tErrType InitAudioTask( void )
 
 	//pAudioEffects = kNull;
  
-	gAudioContext.nextAudioID = 0;
+	gAudioContext.nextAudioID = 2;   // GK FIXXX: quick hack.  MIDI player is ID #1
 
 	// Get set up to create and run the task thread.
 // 	priority;				// 1	
@@ -224,10 +224,9 @@ static void SendMsgToAudioModule( CAudioReturnMessage msg )
 // ==============================================================================
 // DoSetMasterVolume
 // ==============================================================================
-static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg ) 
+static void DoSetMasterVolume( CAudioMsgSetMasterVolume *pMsg ) 
 {
-	U8 x = pMsg->GetData();
-	gAudioContext.masterVolume = x;
+	gAudioContext.masterVolume = (U8) pMsg->GetData();
 	gAudioContext.pAudioMixer->SetMasterVolume( gAudioContext.masterVolume );
 }   // ---- end DoSetMasterVolume() ----
 
@@ -235,11 +234,10 @@ static void DoSetMasterVolume( CAudioMsgSetMasterVolume* pMsg )
 // DoSetOutputEqualizer:   Well, it does more than just set output equalizer
 //                          for Didj
 // ==============================================================================
-static void DoSetOutputEqualizer( CAudioMsgSetOutputEqualizer* pMsg ) 
+static void DoSetOutputEqualizer( CAudioMsgSetOutputEqualizer *pMsg ) 
 {
-	U8 x = pMsg->GetData();
-	gAudioContext.outputEqualizerEnabled = x;
-	gAudioContext.pAudioMixer->EnableOutputSpeakerDSP( gAudioContext.outputEqualizerEnabled );
+	gAudioContext.outputEqualizerEnabled = (U8) pMsg->GetData();
+	gAudioContext.pAudioMixer->EnableSpeaker( gAudioContext.outputEqualizerEnabled );
 }   // ---- end DoSetOutputEqualizer() ----
 
 // ==============================================================================
@@ -252,35 +250,43 @@ static void DoStartAudio( CAudioMsgStartAudio *pMsg )
 	CPath				fileExt;
 
 	tAudioStartAudioInfo *pAi = pMsg->GetData();
-	int strIndex = pAi->path->size(); 
 
-//printf("AudioTask::DoStartAudio: StartAudioMsg: vol=%d pri=%d pan=%d path='%s' listen=%p payload=%d flags=$%X \n",
-//			(int)pAi->volume, (int)pAudioInfo->priority, (int)pAi->pan, 
+// Determine whether specified file exists
+struct stat	fileStat;
+tErrType err = stat( pAi->path->c_str(), &fileStat );
+//gAudioContext.pDebugMPI->Assert((kNoErr == err), 
+//	"AudioTask::DoStartAudio()  file doesn't exist '%s' \n", pAi->path->c_str() );
+if (kNoErr != err)
+    printf("AudioTask::DoStartAudio: file doesn't exist='%s\n",  pAi->path->c_str());
+
+//printf("AudioTask::DoStartAudio: vol=%d pri=%d pan=%d path='%s' listen=%p payload=%d flags=$%X \n",
+//			(int)pAi->volume, (int)pAi->priority, (int)pAi->pan, 
 //			pAi->path->c_str(), (void *)pAi->pListener, (int)pAi->payload, (int)pAi->flags );
 
-// Extract filename (including extension).
-	strIndex = pAi->path->rfind('/', pAi->path->size());
-	filename = pAi->path->substr(strIndex + 1, pAi->path->size());
+// Extract filename and extension
+int	strIndex = pAi->path->rfind('/', pAi->path->size());
+	filename = pAi->path->substr(strIndex+1, pAi->path->size());
 	strIndex = pAi->path->rfind('.', pAi->path->size());
-	fileExt  = pAi->path->substr(strIndex + 1, strIndex+3);
-    char *sExt = (char *) fileExt.c_str();
-//	printf("AudioTask::DoStartAudio Filename: '%s' Ext='%s'\n", filename.c_str(), fileExtension.c_str());
+	fileExt  = pAi->path->substr(strIndex+1, strIndex+4);
+//	printf("AudioTask::DoStartAudio File='%s' Ext='%s'\n", filename.c_str(), fileExt.c_str());
 
 	msg.SetAudioErr( kAudioNoChannelAvailErr );       
 	msg.SetAudioID( kNoAudioID );
 
-// Generate audio ID
-	tAudioID newID = gAudioContext.nextAudioID++;
-	if (kNoAudioID == gAudioContext.nextAudioID)
-		gAudioContext.nextAudioID = 0;
+    // Generate audio ID
+    	gAudioContext.nextAudioID++;
+    	if (kNoAudioID == gAudioContext.nextAudioID)
+    		gAudioContext.nextAudioID = (2);   // Quick hack:  see nextAudioID in startup above
 
-//printf("---- AUDIO_PLAYER_ADDITION\n");
-	// Create player based on file extension
-    if (kNoErr == gAudioContext.pAudioMixer->AddPlayer( pAi, sExt, newID))
+// Create player based on file extension
+err = gAudioContext.pAudioMixer->AddPlayer( pAi, (char *) fileExt.c_str(), gAudioContext.nextAudioID);
+    if (kNoErr == err)
+ 		msg.SetAudioID( gAudioContext.nextAudioID );
+     else
         {
-		msg.SetAudioErr( kNoErr );
-		msg.SetAudioID( newID );
+	printf("AudioTask::DoStartAudio unable to add File='%s'\n", filename.c_str());
         }
+msg.SetAudioErr( kNoErr );
 
 // Send audioID and error code back to caller
 	SendMsgToAudioModule( msg );
@@ -668,7 +674,11 @@ static void DoAcquireMidiPlayer( void )
 {
 	CAudioReturnMessage	msg;
 	
-	gAudioContext.pMidiPlayer->Activate();
+if (!gAudioContext.pMidiPlayer)
+    gAudioContext.pMidiPlayer = gAudioContext.pAudioMixer->CreateMIDIPlayer();
+
+if (gAudioContext.pMidiPlayer)
+    gAudioContext.pMidiPlayer->Activate();
 	
 	// Send status back to caller
 	msg.SetAudioErr( kNoErr );
@@ -683,7 +693,12 @@ static void DoReleaseMidiPlayer( void )
 {
 CAudioReturnMessage	msg;
 		
-gAudioContext.pMidiPlayer->DeActivate();
+if (gAudioContext.pMidiPlayer)
+    {
+    gAudioContext.pMidiPlayer->DeActivate();
+    gAudioContext.pAudioMixer->DestroyMIDIPlayer();
+    gAudioContext.pMidiPlayer = NULL;
+    }
 
 // Send status back to caller
 msg.SetAudioErr( kNoErr );
@@ -698,8 +713,8 @@ static void DoMidiNoteOn( CAudioMsgMidiNoteOn* msg )
 {
 tAudioMidiNoteInfo* d = msg->GetData();
 	
-gAudioContext.pMidiPlayer->NoteOn( d->channel, d->note, d->velocity, d->flags );
-	//	d.priority = kAudioDefaultPriority;
+if (gAudioContext.pMidiPlayer)
+    gAudioContext.pMidiPlayer->NoteOn( d->channel, d->note, d->velocity, d->flags );
 }   // ---- end DoMidiNoteOn() ----
 
 // ==============================================================================
@@ -709,8 +724,8 @@ static void DoMidiNoteOff( CAudioMsgMidiNoteOff* msg )
 {
 tAudioMidiNoteInfo* d = msg->GetData();
 
-gAudioContext.pMidiPlayer->NoteOff( d->channel, d->note, d->velocity, d->flags );
-	//	d.priority = kAudioDefaultPriority;
+if (gAudioContext.pMidiPlayer)
+    gAudioContext.pMidiPlayer->NoteOff( d->channel, d->note, d->velocity, d->flags );
 }   // ---- end DoMidiNoteOff() ----
 
 // ==============================================================================
@@ -719,43 +734,42 @@ gAudioContext.pMidiPlayer->NoteOff( d->channel, d->note, d->velocity, d->flags )
 static void DoMidiCommand( CAudioMsgMidiCommand *msg ) 
 {
 tAudioMidiCommandInfo *d = msg->GetData();
-gAudioContext.pMidiPlayer->SendCommand( d->cmd, d->data1, d->data2 );
-	//	d->priority = kAudioDefaultPriority;
+if (gAudioContext.pMidiPlayer)
+    gAudioContext.pMidiPlayer->SendCommand( d->cmd, d->data1, d->data2 );
 }   // ---- end DoMidiNoteOff() ----
 
 // ==============================================================================
 // DoStartMidiFile:
 // ==============================================================================
 static void DoStartMidiFile( CAudioMsgStartMidiFile* msg ) {
-tErrType					result;
-int							err;
-int							bytesRead;
 tAudioStartMidiFileInfo* 	pInfo = msg->GetData();
 CAudioReturnMessage			retMsg;
 struct stat					fileStat;
-FILE*						file;
 
 //gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartMidiFile vol=%d pri=%d path='%s' listener=%p payload=%d flags=%X \n", pInfo->volume, pInfo->priority, pInfo->path->c_str(),
 //			(void *)pInfo->pListener, (int)pInfo->payload, (int)pInfo->flags);
 
 // Determine size of MIDI file
-err = stat( pInfo->path->c_str(), &fileStat );
+int err = stat( pInfo->path->c_str(), &fileStat );
 gAudioContext.pDebugMPI->Assert((kNoErr == err), 
 	"AudioTask::DoStartMidiFile()  file doesn't exist '%s' \n", pInfo->path->c_str() );
 
 // Allocate buffer for file image
-pInfo->pMidiFileImage = (U8*)gAudioContext.pKernelMPI->Malloc( fileStat.st_size );
+pInfo->pMidiFileImage = (U8 *) gAudioContext.pKernelMPI->Malloc( fileStat.st_size );
 pInfo->imageSize      = fileStat.st_size;
 
 // Load image
-file = fopen( pInfo->path->c_str(), "r" );
-bytesRead = fread( pInfo->pMidiFileImage, sizeof(char), fileStat.st_size, file );
+FILE *file = fopen( pInfo->path->c_str(), "r" );
+int bytesRead = fread( pInfo->pMidiFileImage, sizeof(char), fileStat.st_size, file );
 err = fclose( file );
 	
-result = gAudioContext.pMidiPlayer->StartMidiFile( pInfo );
-gAudioContext.pDebugMPI->Assert((kNoErr == result), 
-	"AudioTask::DoStartMidiFile(): Failed to start MIDI file. result=%d \n", (int)result );
-
+tErrType result = kAudioMidiErr;
+if (gAudioContext.pMidiPlayer)
+    {
+    result = gAudioContext.pMidiPlayer->StartMidiFile( pInfo );
+    gAudioContext.pDebugMPI->Assert((kNoErr == result), 
+    	"AudioTask::DoStartMidiFile(): Failed to start MIDI file. result=%d \n", (int)result );
+    }
 // Send status back to caller
 retMsg.SetAudioErr( result );
 SendMsgToAudioModule( retMsg );
@@ -772,9 +786,12 @@ static void DoIsMidiFilePlaying( CAudioMsgIsMidiFilePlaying* /* msg */)
 
 	gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoIsMidiFilePlaying() start\n");	
 
-	// figure out if MIDI file is playing and send answer back to Module
+// figure out if MIDI file is playing and send answer back to Module
+if (gAudioContext.pMidiPlayer)
 	retMsg.SetBooleanResult( gAudioContext.pMidiPlayer->IsFileActive() );
-	SendMsgToAudioModule( retMsg );
+else
+	retMsg.SetBooleanResult( false );
+SendMsgToAudioModule( retMsg );
 
 //	return err;
 }   // ---- end DoIsMidiFilePlaying() ----
@@ -790,8 +807,12 @@ static void DoIsAnyMidiFilePlaying( CAudioMsgIsMidiFilePlaying* /* msg */)
 	gAudioContext.pDebugMPI->DebugOut( kDbgLvlVerbose, "AudioTask::DoIsAnyMidiFilePlaying() start\n");	
 
 	// figure out if MIDI file is playing and send answer back to Module
+if (gAudioContext.pMidiPlayer)
 	retMsg.SetBooleanResult( gAudioContext.pMidiPlayer->IsFileActive() );
-	SendMsgToAudioModule( retMsg );
+else
+	retMsg.SetBooleanResult( false );
+
+SendMsgToAudioModule( retMsg );
 
 }   // ---- end DoIsMidiFilePlaying() ----
 
@@ -802,6 +823,7 @@ static void DoPauseMidiFile( CAudioMsgPauseMidiFile* /* msg */)
 {
 //	tMidiPlayerID  	id = msg->GetData();
 
+if (gAudioContext.pMidiPlayer)
 	gAudioContext.pMidiPlayer->PauseMidiFile();
 }   // ---- end DoPauseMidiFile() ----
 
@@ -811,6 +833,7 @@ static void DoPauseMidiFile( CAudioMsgPauseMidiFile* /* msg */)
 static void DoResumeMidiFile( CAudioMsgResumeMidiFile* /* msg */) {
 //	tMidiPlayerID  	id = msg->GetData();
 
+if (gAudioContext.pMidiPlayer)
 	gAudioContext.pMidiPlayer->ResumeMidiFile();
 }   // ---- end DoResumeMidiFile() ----
 
@@ -821,6 +844,7 @@ static void DoStopMidiFile( CAudioMsgStopMidiFile* msg )
 {
 	tAudioStopMidiFileInfo* 	pInfo = msg->GetData();
 
+if (gAudioContext.pMidiPlayer)
 	gAudioContext.pMidiPlayer->StopMidiFile( pInfo );
 }   // ---- end DoStopMidiFile() ----
 
@@ -830,13 +854,14 @@ static void DoStopMidiFile( CAudioMsgStopMidiFile* msg )
 static void DoGetEnabledMidiTracks( CAudioMsgMidiFilePlaybackParams* /* msg */) 
 {
 
-	tErrType				result;
+	tErrType				result = kAudioMidiUnavailable;
 	CAudioReturnMessage		retMsg;
 	tMidiTrackBitMask 		trackBitMask;
 
 //	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
 	// pParams->id;  for the future
 
+if (gAudioContext.pMidiPlayer)
 	result = gAudioContext.pMidiPlayer->GetEnableTracks( &trackBitMask );
 	
 	// Send status back to caller
@@ -853,12 +878,13 @@ static void DoGetEnabledMidiTracks( CAudioMsgMidiFilePlaybackParams* /* msg */)
 // ==============================================================================
 static void DoSetEnableMidiTracks( CAudioMsgMidiFilePlaybackParams* msg ) 
 {
-	tErrType				result;
+	tErrType				result = kAudioMidiUnavailable;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
 	
 	// pParams->id; for the future
 	
+if (gAudioContext.pMidiPlayer)
 	result = gAudioContext.pMidiPlayer->SetEnableTracks( pParams->trackBitMask );
 	
 	// Sendstatus back to caller
@@ -872,12 +898,13 @@ static void DoSetEnableMidiTracks( CAudioMsgMidiFilePlaybackParams* msg )
 // ==============================================================================
 static void DoTransposeMidiTracks( CAudioMsgMidiFilePlaybackParams* msg ) 
 {
-	tErrType				result;
+	tErrType				result = kAudioMidiUnavailable;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
 
 	// pParams->id; for the future
 	
+if (gAudioContext.pMidiPlayer)
 	result = gAudioContext.pMidiPlayer->TransposeTracks( pParams->trackBitMask, pParams->transposeAmount );
 	
 	// Send the status back to the caller
@@ -891,12 +918,13 @@ static void DoTransposeMidiTracks( CAudioMsgMidiFilePlaybackParams* msg )
 // ==============================================================================
 static void DoChangeMidiInstrument( CAudioMsgMidiFilePlaybackParams* msg ) 
 {
-	tErrType				result;
+	tErrType				result = kAudioMidiUnavailable;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
 
 	// pParams->id; for the future
 	
+if (gAudioContext.pMidiPlayer)
 	result = gAudioContext.pMidiPlayer->ChangeProgram( pParams->trackBitMask, pParams->instrument );
 	
 	// Send the status back to the caller
@@ -910,12 +938,13 @@ static void DoChangeMidiInstrument( CAudioMsgMidiFilePlaybackParams* msg )
 // ==============================================================================
 static void DoChangeMidiTempo( CAudioMsgMidiFilePlaybackParams* msg ) 
 {
-	tErrType				result;
+	tErrType				result = kAudioMidiUnavailable;
 	CAudioReturnMessage		retMsg;
 	tAudioMidiFilePlaybackParams* pParams = msg->GetData();
 
 	// pParams->id; for the future
 	
+if (gAudioContext.pMidiPlayer)
 	result = gAudioContext.pMidiPlayer->ChangeTempo( pParams->tempo );
 	
 	// Send the status back to the caller
