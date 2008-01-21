@@ -12703,3 +12703,24 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/18/08 2:11 PM
 4,251 ms. (Cumulative: 3,363,989 ms)
 
 ----------------
+Revision 2,686 from svn://localhost/TRUNK/:
+Revision 2,687 from svn://localhost/TRUNK/:
+Revision 2,688 from svn://localhost/TRUNK/:
+Revision 2,689 from svn://localhost/TRUNK/:
+Revision 2,690 from svn://localhost/TRUNK/:
+Revision 2,691 from svn://localhost/TRUNK/:
+Revision 2,692 from svn://localhost/TRUNK/:
+Revision 2,693 from svn://localhost/TRUNK/:
+Revision 2,694 from svn://localhost/TRUNK/:
+Revision 2,695 from svn://localhost/TRUNK/:
+Revision 2,696 from svn://localhost/TRUNK/:
+Revision 2,697 from svn://localhost/TRUNK/:
+
+Re-instated drop-frame time stamp sync for audio/video playback.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/21/08 12:44 PM
+1 changed, 0 added, 0 deleted.
+4,203 ms. (Cumulative: 3,368,317 ms)
+
+----------------
