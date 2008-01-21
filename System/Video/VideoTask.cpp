@@ -62,8 +62,7 @@ void* VideoTaskMain( void* arg )
 	tVideoTime		vtm,vtm0 = {0, 0};
 	U32				basetime,marktime,nexttime,lapsetime = pctx->uFrameTime;
 	U32				flags = (pctx->pListener) ? kAudioOptionsDoneMsgAfterComplete : 0;
-	Boolean			bAudio = /* (pctx->pPathAudio != NULL) ? true : */ false;
-	// FIXME: bAudio status is impacting looping logic
+	Boolean			bAudio = (pctx->pPathAudio != NULL) ? true : false;
 	
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
@@ -74,6 +73,7 @@ void* VideoTaskMain( void* arg )
 		pctx->bPlaying = true;
 		if (pctx->pPathAudio != NULL)
 			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, flags);
+		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync
 		vtm.time = basetime = marktime = nexttime = 0;
 		if (!bAudio)
 			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
