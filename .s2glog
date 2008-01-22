@@ -12739,3 +12739,23 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/21/08 6:03 PM
 4,313 ms. (Cumulative: 3,372,724 ms)
 
 ----------------
+Revision 2,705 from svn://localhost/TRUNK/:
+Revision 2,706 from svn://localhost/TRUNK/:
+Revision 2,707 from svn://localhost/TRUNK/:
+Revision 2,708 from svn://localhost/TRUNK/:
+Revision 2,709 from svn://localhost/TRUNK/:
+Revision 2,710 from svn://localhost/TRUNK/:
+Revision 2,711 from svn://localhost/TRUNK/:
+Revision 2,712 from svn://localhost/TRUNK/:
+Revision 2,713 from svn://localhost/TRUNK/:
+Revision 2,714 from svn://localhost/TRUNK/:
+Revision 2,715 from svn://localhost/TRUNK/:
+
+Added logic to breakout of timing loop if audio time stamps are frozen at end of audio.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/08 1:12 PM
+1 changed, 0 added, 0 deleted.
+4,204 ms. (Cumulative: 3,377,068 ms)
+
+----------------

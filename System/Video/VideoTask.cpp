@@ -83,16 +83,30 @@ void* VideoTaskMain( void* arg )
 			vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
 			dispmgr.Invalidate(0, NULL);
 			while (bRunning) {
+				static U32 lasttime = 0xFFFFFFFF;
+				static U32 counter = 0;
 				if (bAudio)
 					nexttime = audmgr.GetAudioTime(pctx->hAudio);
 				else
 					nexttime = kernel.GetElapsedTimeAsMSecs();
 				if (nexttime >= marktime)
 					break;
+				// Detect frozen audio time stamps at end of audio
+				if (bAudio) {
+					if (lasttime == nexttime)
+						counter++;
+					else
+						counter = 0;
+					if (counter > lapsetime)
+						break;
+					lasttime = nexttime;
+				}
 				kernel.TaskSleep(1);
 			}
 			// Next target time is relative to current frame time stamp
 			marktime = vtm.time + basetime + lapsetime;
+			if (bAudio)
+				vtm.time = nexttime;
 			if (pctx->bPaused)
 			{
 				if (pctx->hAudio != kNoAudioID)
