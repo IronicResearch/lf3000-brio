@@ -12759,3 +12759,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/08 1:12 PM
 4,204 ms. (Cumulative: 3,377,068 ms)
 
 ----------------
+Revision 2,716 from svn://localhost/TRUNK/:
+Revision 2,717 from svn://localhost/TRUNK/:
+
+Added -g option to CCFLAGS and LINKFLAGS for embedded build
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/22/08 2:37 PM
+1 changed, 0 added, 0 deleted.
+4,204 ms. (Cumulative: 3,381,334 ms)
+
+----------------

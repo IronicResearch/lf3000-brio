@@ -21,9 +21,10 @@ import re
 # compiler
 #-----------------------------------------------------------------------------
 def Lightning_embedded(env):
-	env['CCFLAGS']		+= ''
+	env['CCFLAGS']		+= '-g'
 	env['CPPPATH']		+= []
 	env['LIBPATH']		+= []
+	env['LINKFLAGS']	+= '-g'
 
 def Lightning_emulation(env):
 	env['CCFLAGS']		+= ''
