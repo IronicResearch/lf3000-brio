@@ -160,8 +160,8 @@ inline void YUV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 	// Repack YUV planar format surface into ARGB format surface
 	U8* 		s = sdc->pBuffer;
 	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
-	U8*			su = s + sdc->width; // U,V in double-width buffer
-	U8*			sv = s + sdc->width + sdc->pitch * sdc->height/2;
+	U8*			su = s + sdc->pitch/2; // U,V in double-width buffer
+	U8*			sv = s + sdc->pitch/2 + sdc->pitch * sdc->height/2;
 	U8			y,z,u,v;
 	int			i,j,m,n;
 	for (i = 0; i < sdc->height; i++) 

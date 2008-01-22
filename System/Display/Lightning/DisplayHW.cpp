@@ -297,8 +297,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	{
 		// Switch video overlay linear address to XY Block address
 		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + GraphicsContext->width));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + GraphicsContext->width + GraphicsContext->pitch*height/2));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + GraphicsContext->pitch/2));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + GraphicsContext->pitch/2 + GraphicsContext->pitch*(height/2)));
 	}
 	SetDirtyBit(layer);
 
@@ -415,15 +415,21 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ioctl(layer, MLC_IOCTVSTRIDE, context->pitch);
 	ioctl(layer, MLC_IOCSPOSITION, &c);
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+	SetDirtyBit(layer);
 	bPrimaryLayerEnabled = true;
 	
 	// Setup scaler registers too for video overlay
 	if (context->isOverlay)
 	{
+		// Reset scaler output for fullscreen destination  
+		c.position.right = xPos + 320;
+		c.position.bottom = yPos + 240;
+		ioctl(layer, MLC_IOCSPOSITION, &c);
+
 		c.overlaysize.srcwidth = context->width;
 		c.overlaysize.srcheight = context->height;
-		c.overlaysize.dstwidth = context->width;
-		c.overlaysize.dstheight = context->height;
+		c.overlaysize.dstwidth = 320; //context->width;
+		c.overlaysize.dstheight = 240; //context->height;
 		ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
 
 		// Reload XY block address for planar video format
@@ -440,7 +446,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		for (U32 i = 0; i < context->height; i++)
 		{
 			memset(&gPlanarBuffer[i*4096], 0xFF, context->width); // white Y
-			memset(&gPlanarBuffer[i*4096+context->width], 0x7F, context->width); // neutral U,V
+			memset(&gPlanarBuffer[i*4096+context->pitch/2], 0x7F, context->width/2); // neutral U,V
 		}
 	}
 
