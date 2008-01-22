@@ -3,6 +3,12 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.33  (Build 2702 released Jan 21, 2008) 
+===========================================
+
+--This Release is only created for the new LinuxDist-023.0-2700
+
+===========================================
 v0.1.32  (Build 2681 released Jan 17, 2008) 
 ===========================================
 --Translate audio jack event to headphone button press correctly
