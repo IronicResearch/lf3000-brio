@@ -12769,3 +12769,14 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/22/08 2:37 PM
 4,204 ms. (Cumulative: 3,381,334 ms)
 
 ----------------
+Revision 2,718 from svn://localhost/TRUNK/:
+Revision 2,719 from svn://localhost/TRUNK/:
+
+Re-Align UV buffers on pitch subdivision to work with HW video scaler.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/08 3:52 PM
+3 changed, 0 added, 0 deleted.
+4,501 ms. (Cumulative: 3,385,897 ms)
+
+----------------
