@@ -428,6 +428,13 @@ void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
+	static bool bStopping = false;
+
+	// Already in here?
+	if (bStopping)
+		return true;
+	bStopping = true;
+
 	// Kill video task, if running
 	if (gpVidCtx)
 		DeInitVideoTask(gpVidCtx);
@@ -454,6 +461,7 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 #endif
 	}
 
+	bStopping = false;
 	return true;
 }
 
