@@ -12872,3 +12872,28 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/08 9:12 PM
 4,301 ms. (Cumulative: 3,421,222 ms)
 
 ----------------
+Revision 2,737 from svn://localhost/TRUNK/:
+Revision 2,738 from svn://localhost/TRUNK/:
+Revision 2,739 from svn://localhost/TRUNK/:
+Revision 2,740 from svn://localhost/TRUNK/:
+Revision 2,741 from svn://localhost/TRUNK/:
+Revision 2,742 from svn://localhost/TRUNK/:
+Revision 2,743 from svn://localhost/TRUNK/:
+Revision 2,744 from svn://localhost/TRUNK/:
+Revision 2,745 from svn://localhost/TRUNK/:
+Revision 2,746 from svn://localhost/TRUNK/:
+Revision 2,747 from svn://localhost/TRUNK/:
+Revision 2,748 from svn://localhost/TRUNK/:
+
+don't hard-code keyboard as /dev/input/event0 in Brio so that we can have 
+multiple eventX nodes.  Instead, do a scan (once) for the keyboard that
+matches the model name "LF1000 Keyboard" and use that device node.  Added
+GetKeyboardName() to Utility, this should be used to retrieve the file path
+for use with open() instead of assuming one.  
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 1/23/08 2:19 PM
+5 changed, 1 added, 0 deleted.
+4,673 ms. (Cumulative: 3,426,051 ms)
+
+----------------

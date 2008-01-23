@@ -19,6 +19,7 @@
 #include <KernelMPI.h>
 #include <KernelTypes.h>
 #include <SystemErrors.h>
+#include <Utility.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -39,6 +40,7 @@ namespace
 	//------------------------------------------------------------------------
 	U32					gLastState;
 	int 				button_fd;
+	char				*dev_name;
 	tTaskHndl			handleButtonTask;
 	tButtonData	data;
 }
@@ -227,8 +229,10 @@ void CButtonModule::InitModule()
 	data.buttonTransition = 0;
 
 	// Need valid file descriptor open before starting task thread 
-	button_fd = open( "/dev/input/event0", O_RDONLY);
-	dbg_.Assert(button_fd >= 0, "CButtonModule::InitModule: cannot open /dev/input/event0");
+	dev_name = GetKeyboardName();
+	dbg_.Assert(dev_name != NULL, "CButtonModule::InitModule: no keyboard to use");
+	button_fd = open(dev_name, O_RDONLY);
+	dbg_.Assert(button_fd >= 0, "CButtonModule::InitModule: cannot open %s", dev_name);
 
 	if( kernel.IsValid() )
 	{

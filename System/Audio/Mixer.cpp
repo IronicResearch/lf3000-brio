@@ -25,6 +25,7 @@
 #include <AudioPriv.h>
 #include <Mixer.h>
 #include <AudioOutput.h>
+#include <Utility.h>
 
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
@@ -62,17 +63,23 @@ static bool IsSpeakerOn( void )
 #else
 	int fd;
 	int sw = 0;
+	char *devname = GetKeyboardName();
+
+	if(devname == NULL) {
+		//printf("error: no keyboard device\n");
+		return true;
+	}
 
 	// open the keyboard driver
-	fd = open("/dev/input/event0", O_RDONLY);
+	fd = open(devname, O_RDONLY);
 	if(fd < 0) {
-		//printf("failed to open /dev/input/event0\n");
+		//printf("failed to open keyboard device\n");
 		return true;
 	}
 	
 	// ask for the state of the 'switches'
 	if(ioctl(fd, EVIOCGSW(sizeof(int)), &sw) < 0) {
-		//printf("failed to get switch state\n");
+		//perror("failed to get switch state\n");
 		close(fd);
 		return true;
 	}
