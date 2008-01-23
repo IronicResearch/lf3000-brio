@@ -27,6 +27,12 @@
 #include <ogg/ogg.h>
 #include <theora/theora.h>
 
+#ifndef EMULATION
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/lf1000/mlc_ioctl.h>
+#endif
+
 #define USE_PROFILE			0
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -132,6 +138,29 @@ static int queue_page(ogg_page *page)
 	return 0;
 }
 
+//----------------------------------------------------------------------------
+// Set video scaler (embedded only)
+static void SetScaler(int width, int height)
+{
+#ifndef EMULATION
+	int	layer;
+	union mlc_cmd c;
+
+	layer = open("/dev/layer2", O_RDWR|O_SYNC);
+	if (layer < 0)
+		return;
+
+	c.overlaysize.srcwidth = width;
+	c.overlaysize.srcheight = height;
+	c.overlaysize.dstwidth = 320; 
+	c.overlaysize.dstheight = 240; 
+	ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
+	ioctl(layer, MLC_IOCTDIRTY, 0);
+
+	close(layer);
+#endif
+}
+
 //============================================================================
 // Ctor & dtor
 //============================================================================
@@ -187,6 +216,11 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
 	memset(pVidCtx, 0, sizeof(tVideoContext));
 	
+#ifndef EMULATION
+	// Set HW video scaler for video source width and height
+	SetScaler(ti.width, ti.height);
+#endif
+
 	// Determine if audio track is available and at what path?
 	bool			nopath = (pathAudio.length() == 0) ? true : false;
 	gfilepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;

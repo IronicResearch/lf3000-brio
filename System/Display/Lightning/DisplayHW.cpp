@@ -53,6 +53,8 @@ namespace
 	U32			gOverlayBase;
 	U32			gPlanarBase;
 	bool		bPrimaryLayerEnabled = false;
+	U16			gScreenWidth;
+	U16			gScreenHeight;
 }
 
 //============================================================================
@@ -78,6 +80,9 @@ void CDisplayModule::InitModule()
 	gDevMlc = open("/dev/mlc", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevMlc >= 0, 
 			"DisplayModule::InitModule: failed to open MLC device");
+
+	// Get screen size for future reference
+	GetScreenSize();
 	
 	// open MLC 2D RGB layer device
 	gDevLayer = open(RGB_LAYER_DEV, O_RDWR|O_SYNC);
@@ -157,6 +162,9 @@ U32 CDisplayModule::GetScreenSize(void)
 
 	r = ioctl(gDevMlc, MLC_IOCGSCREENSIZE, &c);
 	dbg_.Assert(r == 0, "DisplayModule::GetScreenSize: ioctl failed");
+
+	gScreenWidth = c.screensize.width;
+	gScreenHeight = c.screensize.height;
 
 	return (U32)(((c.screensize.height)<<16)|(c.screensize.width));
 }
@@ -422,14 +430,14 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	if (context->isOverlay)
 	{
 		// Reset scaler output for fullscreen destination  
-		c.position.right = xPos + 320;
-		c.position.bottom = yPos + 240;
+		c.position.right = xPos + gScreenWidth; //320;
+		c.position.bottom = yPos + gScreenHeight; //240;
 		ioctl(layer, MLC_IOCSPOSITION, &c);
 
 		c.overlaysize.srcwidth = context->width;
 		c.overlaysize.srcheight = context->height;
-		c.overlaysize.dstwidth = 320; //context->width;
-		c.overlaysize.dstheight = 240; //context->height;
+		c.overlaysize.dstwidth = gScreenWidth; //320; //context->width;
+		c.overlaysize.dstheight = gScreenHeight; //240; //context->height;
 		ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
 
 		// Reload XY block address for planar video format
