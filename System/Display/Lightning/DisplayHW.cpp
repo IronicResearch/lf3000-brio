@@ -365,12 +365,18 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 	UnRegister(hndl, 0);
 	// Release mappings to framebuffer memory
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
-	if (context->isPlanar)
+	if (context->isPlanar && gPlanarBuffer != NULL) {
 		munmap(gPlanarBuffer, gPlanarSize);
-	else if (context->isOverlay)
+		gPlanarBuffer = NULL;
+	}
+	else if (context->isOverlay && gOverlayBuffer != NULL) {
 		munmap(gOverlayBuffer, gOverlaySize);
-//	else if (!context->isAllocated)
-//		munmap(gFrameBuffer, gFrameSize);
+		gOverlayBuffer = NULL;
+	}
+	else if (!context->isAllocated && gFrameBuffer != NULL) {
+		munmap(gFrameBuffer, gFrameSize);
+		gFrameBuffer = NULL;
+	}
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
 }

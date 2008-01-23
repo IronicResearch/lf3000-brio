@@ -30,6 +30,7 @@ namespace
 	//------------------------------------------------------------------------
 	tTaskHndl	hVideoThread = kNull;
 	bool		bRunning = false;
+	bool		bStopping = false;
 }
 
 //============================================================================
@@ -143,6 +144,7 @@ void* VideoTaskMain( void* arg )
 		evntmgr.PostEvent(msg, 0, pctx->pListener);
 	}
 
+	bStopping = false;
 	return kNull;
 }
 
@@ -194,8 +196,10 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 #endif
 	
 	// Stop running task
+	bStopping = true;
 	bRunning = false;
-	kernel.TaskSleep(2);
+	while (bStopping)
+		kernel.TaskSleep(2);
 //	kernel.CancelTask(hVideoThread);
 	hVideoThread = kNull;
 	

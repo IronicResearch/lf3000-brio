@@ -12809,3 +12809,17 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/08 5:17 PM
 4,423 ms. (Cumulative: 3,395,023 ms)
 
 ----------------
+Revision 2,726 from svn://localhost/TRUNK/:
+Revision 2,727 from svn://localhost/TRUNK/:
+Revision 2,728 from svn://localhost/TRUNK/:
+Revision 2,729 from svn://localhost/TRUNK/:
+Revision 2,730 from svn://localhost/TRUNK/:
+
+Added protection against duplicate StopVideo and DestroyHandle calls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/08 6:55 PM
+3 changed, 0 added, 0 deleted.
+4,409 ms. (Cumulative: 3,399,526 ms)
+
+----------------
