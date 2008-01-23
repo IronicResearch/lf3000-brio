@@ -208,10 +208,15 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, tVideoSurf* pSurf, Boolea
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
+	static bool		bStarting = false;
+	if (bStarting)
+		return kInvalidVideoHndl;
+
 	tVideoHndl		hVideo = StartVideoInt(path);
 	if (hVideo == kInvalidVideoHndl)
 		return kInvalidVideoHndl;
-	
+	bStarting = true;
+
 	CKernelMPI		kernel;
 	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
 	memset(pVidCtx, 0, sizeof(tVideoContext));
@@ -247,6 +252,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 
 	// TODO: Wrap pVidCtx into handle...
 	gpVidCtx = pVidCtx;
+	bStarting = false;
 	return hVideo;
 }
 

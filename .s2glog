@@ -12862,3 +12862,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/22/08 9:11 PM
 4,219 ms. (Cumulative: 3,416,858 ms)
 
 ----------------
+Revision 2,736 from svn://localhost/TRUNK/:
+
+Added protection against duplicate calls to StartVideo.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/08 9:12 PM
+1 changed, 0 added, 0 deleted.
+4,301 ms. (Cumulative: 3,421,222 ms)
+
+----------------
