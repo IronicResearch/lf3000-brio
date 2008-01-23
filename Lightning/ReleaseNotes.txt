@@ -3,6 +3,25 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.34  (Build 2733 released Jan 22, 2008) 
+===========================================
+
+-- Re-Align UV buffers on pitch subdivision to work with HW video scaler.
+
+-- Replace lf1000 buttons with keyboard (lf1000-keypad) driver:
+	- remove LF1000 Buttons Driver from defconfig
+	- enable generic input, event, and lf1000-keypad in defconfig
+	- have Brio Mixer use 'get switches' ioctl to retrieve intitial headphone jack state
+	- replace the way ButtonHandler handles buttons
+	- update ButtonDemo to report switches (headphone, cartridge) as well
+
+-- Video module reprograms HW video scaler for source video size to fill screen.
+
+-- Added protection against duplicate StopVideo and DestroyHandle calls.
+
+-- Reworked logic for mapping and unmapping framebuffers.
+
+===========================================
 v0.1.33  (Build 2702 released Jan 21, 2008) 
 ===========================================
 
