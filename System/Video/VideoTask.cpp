@@ -29,8 +29,8 @@ namespace
 {
 	//------------------------------------------------------------------------
 	tTaskHndl	hVideoThread = kNull;
-	bool		bRunning = false;
-	bool		bStopping = false;
+	volatile bool		bRunning = false;
+	volatile bool		bStopping = false;
 }
 
 //============================================================================
@@ -171,6 +171,7 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 
 	// Save task handle for cleanup
 	hVideoThread = hndl;
+	bRunning = bStopping = false;
 	while (!bRunning)
 		kernel.TaskSleep(1);
 
@@ -198,8 +199,12 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 	// Stop running task
 	bStopping = true;
 	bRunning = false;
-	while (bStopping)
+	while (bStopping != bRunning) {
+		static int counter = 0;
 		kernel.TaskSleep(2);
+		if (counter++ > 10)
+			break;
+	}
 //	kernel.CancelTask(hVideoThread);
 	hVideoThread = kNull;
 	

@@ -12843,3 +12843,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/22/08 7:55 PM
 4,315 ms. (Cumulative: 3,408,279 ms)
 
 ----------------
+Revision 2,734 from svn://localhost/TRUNK/:
+
+Breakout logic for video thread stopping status. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/08 8:35 PM
+1 changed, 0 added, 0 deleted.
+4,235 ms. (Cumulative: 3,412,577 ms)
+
+----------------
