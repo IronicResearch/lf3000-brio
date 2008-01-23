@@ -12797,3 +12797,15 @@ By ayurovsky (ayurovsky@leapfrog.com) on 1/22/08 4:56 PM
 4,516 ms. (Cumulative: 3,390,506 ms)
 
 ----------------
+Revision 2,723 from svn://localhost/TRUNK/:
+Revision 2,724 from svn://localhost/TRUNK/:
+Revision 2,725 from svn://localhost/TRUNK/:
+
+Video module reprograms HW video scaler for source video size to fill screen.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/08 5:17 PM
+2 changed, 0 added, 0 deleted.
+4,423 ms. (Cumulative: 3,395,023 ms)
+
+----------------
