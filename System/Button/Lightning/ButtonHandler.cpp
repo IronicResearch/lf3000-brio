@@ -24,8 +24,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <linux/input.h>
 
-#include <linux/lf1000/buttons.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -39,12 +39,39 @@ namespace
 	//------------------------------------------------------------------------
 	U32					gLastState;
 	int 				button_fd;
-	struct button_event current_be;
 	tTaskHndl			handleButtonTask;
 	tButtonData	data;
 }
 
+// Linux keyboard to Brio button mapping
+U32 LinuxKeyToBrio(U16 code)
+{
+	switch(code) {
+		case KEY_UP: 		return kButtonUp;
+		case KEY_DOWN:		return kButtonDown;
+		case KEY_RIGHT:		return kButtonRight;
+		case KEY_LEFT:		return kButtonLeft;
+		case KEY_A:			return kButtonA;
+		case KEY_B:			return kButtonB;
+		case KEY_L:			return kButtonLeftShoulder;
+		case KEY_R:			return kButtonRightShoulder;
+		case KEY_M:			return kButtonMenu;
+		case KEY_H:			return kButtonHint;
+		case KEY_P:			return kButtonPause;
+		case KEY_X:			return kButtonBrightness;
+	}
+	return 0;
+}
 
+// Linux keyboard to Brio switches mapping
+U32 LinuxSwitchToBrio(U16 code)
+{
+	switch(code) {
+		case SW_HEADPHONE_INSERT:	return kHeadphoneJackDetect;
+		case SW_TABLET_MODE:		return kCartridgeDetect;
+	}
+	return 0;
+}
 
 //============================================================================
 // Asynchronous notifications
@@ -52,6 +79,7 @@ namespace
 //----------------------------------------------------------------------------
 void *LightningButtonTask(void*)
 {
+	struct input_event ev[1];
 	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupButton);
 	CKernelMPI	kernel;
@@ -79,42 +107,103 @@ void *LightningButtonTask(void*)
 	S8 brightness = lcdBright[0];
 	S8 backlight  = lcdBacklight[0];
 	int brightIndex = 1;				// index of next value to retrieve
+	int sw = 0;
+	U32 button;
 	
 	dbg.SetDebugLevel(kDbgLvlVerbose);
 	
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	
-	while(1) {
 
-		// Pace thread at time intervals relavant for button presses
-		kernel.TaskSleep(1);
+	data.buttonState = 0;
+	data.buttonTransition = 0;
 
-		int size = read(button_fd, &current_be, sizeof(struct button_event));
-		dbg.Assert( size >= 0, "CButtonModule::LightningButtonTask: button read failed" );
-		
-		data.buttonState = current_be.button_state;
-		data.buttonTransition = current_be.button_trans;
+	// get initial state of switches
+	if(ioctl(button_fd, EVIOCGSW(sizeof(int)), &sw) == 0) {
+		if(sw & (1<<SW_HEADPHONE_INSERT)) {
+			data.buttonState |= kHeadphoneJackDetect;
+			data.buttonTransition |= kHeadphoneJackDetect;
+		}
+		if(sw & (1<<SW_TABLET_MODE)) {
+			data.buttonState |= kCartridgeDetect;
+			data.buttonTransition |= kCartridgeDetect;
+		}
 		CButtonMessage msg(data);
 		eventmgr.PostEvent(msg, kButtonEventPriority);
-		
-		// Special internal handling for Brightness button
-		if (data.buttonTransition & data.buttonState & kButtonBrightnessKey)
-		{
-			brightness = lcdBright[brightIndex];
-			backlight  = lcdBacklight[brightIndex];
-			// wrap around index at array end
-			brightIndex++;
-			brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS;
-			dispmgr.SetBrightness(0, brightness);
-			dispmgr.SetBacklight(0, backlight);
-		}
-		// Special internal handling for Headphone jack plug/unplug
-		if (data.buttonTransition & kHeadphoneJackDetect)
-		{
-		        CAudioMPI audioMPI;
-		        bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
+	}
 
-		        audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
+	while(1) {
+
+		// FIXME Pace thread at time intervals relavant for button presses
+		kernel.TaskSleep(1);
+
+		data.buttonTransition = 0;
+
+		int num_events = read(button_fd, &ev, sizeof(ev));
+		dbg.Assert( num_events >= 0, "CButtonModule::LightningButtonTask: button read failed" );
+
+		// ev[n].value describes the transition:
+		//  0 = released
+		//  1 = pushed
+		//  2 = repeat (ie: held down)
+		//  Note: we do not support repeats but a button whose initial state is 2 should be
+		//  treated as 'pushed' in order to not miss it.  This handles the case of a user
+		//  pushing and holding a button before we initialize
+
+		for(int i = 0; i < num_events; i++) {
+			if(ev[i].type == EV_KEY) { // this is a key press
+				button = LinuxKeyToBrio(ev[i].code);
+				if(button == 0) {
+					//dbg.DebugOut(kDbgLvlVerbose, "%s: unknown key code: %d type: %d\n", __FUNCTION__, ev[i].code, ev[i].type);
+					continue;
+				}
+				//repeat of known-pressed button
+				if(ev[i].value == 2 && (data.buttonState & button))
+					continue;
+				// Special internal handling for Brightness button
+				if (data.buttonTransition & data.buttonState & kButtonBrightness)
+				{
+					brightness = lcdBright[brightIndex];
+					backlight  = lcdBacklight[brightIndex];
+					// wrap around index at array end
+					brightIndex++;
+					brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS;
+					dispmgr.SetBrightness(0, brightness);
+					dispmgr.SetBacklight(0, backlight);
+				}
+			}
+			else if(ev[i].type == EV_SW) { // this is a switch change
+				button = LinuxSwitchToBrio(ev[i].code);
+				if(button == 0) {
+					dbg.DebugOut(kDbgLvlVerbose, "%s: unknown switch code\n", __FUNCTION__);
+					continue;
+				}
+				// Special internal handling for Headphone jack plug/unplug
+				if (data.buttonTransition & kHeadphoneJackDetect)
+				{
+						CAudioMPI audioMPI;
+						bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
+
+						audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
+				}
+			}
+			else {
+				continue;
+			}
+
+			if(ev[i].value > 0 && (!(data.buttonState & button))) {
+				data.buttonTransition |= button;
+				data.buttonState |= button;
+			}
+			else if(ev[i].value == 0 && (data.buttonState & button)) {
+				data.buttonTransition |= button;
+				data.buttonState &= ~button;
+			}
+		}
+
+		if(data.buttonTransition != 0) {
+			CButtonMessage msg(data);
+			eventmgr.PostEvent(msg, kButtonEventPriority);
 		}
 	}
 	return NULL;
@@ -138,8 +227,8 @@ void CButtonModule::InitModule()
 	data.buttonTransition = 0;
 
 	// Need valid file descriptor open before starting task thread 
-	button_fd = open( "/dev/buttons", B_O_RDWR);
-	dbg_.Assert(button_fd != -1, "CButtonModule::InitModule: cannot open /dev/buttons");
+	button_fd = open( "/dev/input/event0", O_RDONLY);
+	dbg_.Assert(button_fd >= 0, "CButtonModule::InitModule: cannot open /dev/input/event0");
 
 	if( kernel.IsValid() )
 	{
