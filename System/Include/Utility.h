@@ -80,6 +80,10 @@ boost::shared_array<U8> LoadDataset(const string& binPath, const string& relinkP
 //----------------------------------------------------------------------------
 int GetFreeMem(void);
 
+//----------------------------------------------------------------------------
+// Returns file name descriptor for the keyboard device
+//----------------------------------------------------------------------------
+char *GetKeyboardName(void);
 
 LF_END_BRIO_NAMESPACE()
 
