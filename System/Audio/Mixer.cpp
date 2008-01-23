@@ -9,8 +9,11 @@
 //
 // ==============================================================================
 #include <stdlib.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/ioctl.h>
+#include <linux/input.h>
 
 #include "sndfileutil.h"
 
@@ -57,25 +60,28 @@ static bool IsSpeakerOn( void )
 #ifdef EMULATION
 	return true;
 #else
-	bool 	enabled = true;
-	FILE*	f = NULL;
-	char	buf[20];
-	int		i = 0;
-	
-	f = fopen("/sys/devices/platform/lf1000-audio/output", "r");
-	if (f == NULL)
+	int fd;
+	int sw = 0;
+
+	// open the keyboard driver
+	fd = open("/dev/input/event0", O_RDONLY);
+	if(fd < 0) {
+		//printf("failed to open /dev/input/event0\n");
 		return true;
-	while (!feof(f)) {
-		fread(&buf[i++], 1, 1, f);
-		if (i >= sizeof(buf))
-			break;
 	}
-	fclose(f);
-	if (strncmp("speaker", buf, 7) == 0) 
-		enabled = true;
-	else if (strncmp("headphones", buf, 10) == 0) 
-		enabled = false;
-	return enabled;
+	
+	// ask for the state of the 'switches'
+	if(ioctl(fd, EVIOCGSW(sizeof(int)), &sw) < 0) {
+		//printf("failed to get switch state\n");
+		close(fd);
+		return true;
+	}
+
+	close(fd);
+
+	if(sw & (1<<SW_HEADPHONE_INSERT))
+		return false;
+	return true;
 #endif	// EMULATION
 }
 

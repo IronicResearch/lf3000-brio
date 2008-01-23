@@ -12780,3 +12780,20 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/08 3:52 PM
 4,501 ms. (Cumulative: 3,385,897 ms)
 
 ----------------
+Revision 2,720 from svn://localhost/TRUNK/:
+Revision 2,721 from svn://localhost/TRUNK/:
+Revision 2,722 from svn://localhost/TRUNK/:
+
+replace lf1000 buttons with keyboard (lf1000-keypad) driver:
+- remove LF1000 Buttons Driver from defconfig
+- enable generic input, event, and lf1000-keypad in defconfig
+- have Brio Mixer use 'get switches' ioctl to retrieve intitial headphone jack state
+- replace the way ButtonHandler handles buttons
+- update ButtonDemo to report switches (headphone, cartridge) as well
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 1/22/08 4:56 PM
+2 changed, 0 added, 0 deleted.
+4,516 ms. (Cumulative: 3,390,506 ms)
+
+----------------
