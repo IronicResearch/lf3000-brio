@@ -42,9 +42,9 @@ namespace
 	int			gDevLayer;
 	int			gDevOpenGL;
 	int			gDevOverlay;
-	U8 			*gFrameBuffer;
-	U8			*gOverlayBuffer;
-	U8			*gPlanarBuffer;
+	U8 			*gFrameBuffer = NULL;
+	U8			*gOverlayBuffer = NULL;
+	U8			*gPlanarBuffer = NULL;
 	int			gFrameSize;
 	int			gOverlaySize;
 	int			gPlanarSize;
@@ -255,7 +255,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		return reinterpret_cast<tDisplayHandle>(GraphicsContext);
 		
 	// Create mappings to framebuffer at actual context creation (to conserve mappings)
-	if (GraphicsContext->isPlanar) {
+	if (GraphicsContext->isPlanar && gPlanarBuffer == NULL) {
 		// Map planar video overlay buffer in user space for actual size
 		// U,V now reside in extra unused buffer width (instead of extra height)
 		gPlanarSize = GraphicsContext->height * GraphicsContext->pitch;
@@ -267,7 +267,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 				(unsigned int)gPlanarBase, gPlanarSize, gPlanarBuffer);
 	}
-	else if (GraphicsContext->isOverlay) {
+	else if (GraphicsContext->isOverlay && gOverlayBuffer == NULL) {
 		// Map video overlay buffer in user space for actual size
 		gOverlaySize = GraphicsContext->height * GraphicsContext->pitch;
 		gOverlayBuffer = (U8 *)mmap(0, gOverlaySize, PROT_READ | PROT_WRITE, MAP_SHARED,
@@ -278,7 +278,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 				(unsigned int)gOverlayBase, gOverlaySize, gOverlayBuffer);
 	}
-	else {
+	else if (gFrameBuffer == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
 		gFrameSize = GraphicsContext->height * GraphicsContext->pitch;
 		gFrameBuffer = (U8 *)mmap(0, gFrameSize, PROT_READ | PROT_WRITE, MAP_SHARED,
@@ -373,10 +373,10 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 		munmap(gOverlayBuffer, gOverlaySize);
 		gOverlayBuffer = NULL;
 	}
-	else if (!context->isAllocated && gFrameBuffer != NULL) {
+	else if (context == pdcPrimary_ && gFrameBuffer != NULL) {
 		munmap(gFrameBuffer, gFrameSize);
 		gFrameBuffer = NULL;
-	}
+	}	
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
 }
