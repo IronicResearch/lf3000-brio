@@ -12972,3 +12972,15 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/24/08 8:53 AM
 4,016 ms. (Cumulative: 3,458,899 ms)
 
 ----------------
+Revision 2,762 from svn://localhost/TRUNK/:
+Revision 2,763 from svn://localhost/TRUNK/:
+Revision 2,764 from svn://localhost/TRUNK/:
+
+Additional Display MPI functions for SwapBuffers() support (initially stubbed).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/24/08 12:11 PM
+5 changed, 0 added, 0 deleted.
+4,266 ms. (Cumulative: 3,463,228 ms)
+
+----------------

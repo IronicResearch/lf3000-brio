@@ -279,6 +279,10 @@ public:
 	VTABLE_EXPORT tErrType		SetBacklight(tDisplayScreen screen, S8 backlight);
 	VTABLE_EXPORT S8			GetBacklight(tDisplayScreen screen);
 
+	VTABLE_EXPORT tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync);
+	VTABLE_EXPORT Boolean			IsBufferSwapped(tDisplayHandle hndl);
+
+
 private:
 	void				InitModule( );
 	void				DeInitModule( );

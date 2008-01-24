@@ -237,6 +237,22 @@ tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayMPI::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SwapBuffers(hndl, waitVSync);
+}
+
+//----------------------------------------------------------------------------
+Boolean CDisplayMPI::IsBufferSwapped(tDisplayHandle hndl)
+{
+	if(!pModule_)
+		return false;
+	return pModule_->IsBufferSwapped(hndl);
+}
+
+//----------------------------------------------------------------------------
 tPixelFormat CDisplayMPI::GetPixelFormat(tDisplayHandle hndl) const
 {
 	if(!pModule_)
