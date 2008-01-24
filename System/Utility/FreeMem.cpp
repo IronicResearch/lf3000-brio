@@ -12,13 +12,7 @@
 //
 //============================================================================
 #include <stdio.h>
-#include <vector>	
-#include <string>	
-#include <fstream> 
-#include <fcntl.h>
-#include <SystemTypes.h>
-#include <CoreTypes.h>	
-#include <boost/shared_array.hpp>	
+#include <sys/sysinfo.h>
 
 #include "Utility.h"
 
@@ -26,28 +20,14 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //----------------------------------------------------------------------------
 // Returns free memory snapshot in user space
+// Note: please see "man sysinfo" for details on what else sysinfo() provides
 //----------------------------------------------------------------------------
 int GetFreeMem(void)
 {
-	int 	freemem = 0;
-	int	size = 26;
-	char	buf[80];
-	char	stat[80];
-	FILE*	f = NULL;
+	struct sysinfo info;
 
-	f = fopen("/proc/meminfo", "r");
-	if (f == NULL)
-		return 0;
-	while (!feof(f)) {
-		fread(buf, 1, size, f);
-		if (strncmp("MemFree:", buf, 8) == 0) {
-			sscanf(buf, "%s%d", &stat[0], &freemem); 
-			break;
-		}
-	}
-	fclose(f);
-
-	return freemem;
+	sysinfo(&info); // freeram is in bytes
+	return (int)(info.freeram/1024);
 }
 
 //----------------------------------------------------------------------------

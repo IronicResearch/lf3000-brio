@@ -12897,3 +12897,18 @@ By ayurovsky (ayurovsky@leapfrog.com) on 1/23/08 2:19 PM
 4,673 ms. (Cumulative: 3,426,051 ms)
 
 ----------------
+Revision 2,749 from svn://localhost/TRUNK/:
+Revision 2,750 from svn://localhost/TRUNK/:
+Revision 2,751 from svn://localhost/TRUNK/:
+
+don't parse /proc/meminfo for GetFreeMem, that's available via a call to 
+sysinfo(), which we do instead.  Please see "man sysinfo" for more details,
+perhaps it has other information that you'd like to know (ex: uptime, other 
+memory parameters, etc)
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 1/23/08 4:38 PM
+1 changed, 0 added, 0 deleted.
+4,328 ms. (Cumulative: 3,430,488 ms)
+
+----------------
