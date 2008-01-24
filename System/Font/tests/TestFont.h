@@ -690,7 +690,7 @@ public:
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(6*16, 16*8, kPixelFormatRGB888, buffer);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
-		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+		pDisplayMPI_->Register(disp, (320-16*8)/2, (240-6*16)/2, 0, 0);
 
 		surf.width = pDisplayMPI_->GetWidth(disp);
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
