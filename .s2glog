@@ -12912,3 +12912,31 @@ By ayurovsky (ayurovsky@leapfrog.com) on 1/23/08 4:38 PM
 4,328 ms. (Cumulative: 3,430,488 ms)
 
 ----------------
+Revision 2,752 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,000 ms. (Cumulative: 3,434,551 ms)
+
+----------------
+Revision 2,753 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,001 ms. (Cumulative: 3,438,552 ms)
+
+----------------
+Revision 2,754 from svn://localhost/TRUNK/:
+
+No changes to commit.
+3,954 ms. (Cumulative: 3,442,521 ms)
+
+----------------
+Revision 2,755 from svn://localhost/TRUNK/:
+
+Fix for correct source to destination transfer for offscreen context cases.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/23/08 5:14 PM
+1 changed, 0 added, 0 deleted.
+4,112 ms. (Cumulative: 3,446,633 ms)
+
+----------------
