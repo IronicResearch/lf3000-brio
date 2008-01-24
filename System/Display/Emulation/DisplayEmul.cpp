@@ -282,6 +282,20 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffe
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
+{
+	// No actual buffer swapping done on emulation
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
+{
+	// No actual buffer swapping done on emulation
+	return true;
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
 	Boolean enable)
 {

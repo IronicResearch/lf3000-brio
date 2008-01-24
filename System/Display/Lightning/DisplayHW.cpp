@@ -478,6 +478,20 @@ void CDisplayModule::SetDirtyBit(int layer)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
+{
+	// TODO
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
+{
+	// TODO
+	return true;
+}
+
+//----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pBuffer;

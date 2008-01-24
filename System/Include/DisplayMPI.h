@@ -87,11 +87,19 @@ public:
 	tErrType            DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer);
 	
 	/// Locks the display surface framebuffer memory for exclusive access by the application
+	/// (LF1000 platform does nothing since there is no 2D accelerator to synchronize access)
 	tErrType            LockBuffer(tDisplayHandle hndl);
 	
 	/// Unlocks the display surface framebuffer memory locked by LockBuffer()
+	/// (LF1000 platform does nothing since there is no 2D accelerator to synchronize access)
 	tErrType            UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect = NULL);
 	
+	/// Swaps the display with the selected fullscreen context, optionally waiting for vertical sync
+	tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync = false);
+
+	/// Returns true when the previous context passed to SwapBuffers() has been updated to the display
+	Boolean				IsBufferSwapped(tDisplayHandle hndl);
+
 	/// Sets the alpha transparency value for the display surface layer
 	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
 								Boolean enable=true);
