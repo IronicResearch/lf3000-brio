@@ -238,6 +238,7 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 tErrType CDisplayModule::Update(tDisplayContext* dc)
 {
 	tDisplayContext*	pdcDest = pdcPrimary_;
+	tRect			rect = dc->rect;
 	
 	// Repack YUV format pixmap into ARGB format for X window
 	if (dc->isPlanar)
@@ -254,9 +255,13 @@ tErrType CDisplayModule::Update(tDisplayContext* dc)
 		ARGB2ARGB(dc,pdcDest);
 	else
 		pdcDest = dc;
-	
-	XPutImage(x11Display, x11Window, gc, pdcDest->image, 0, 0, pdcDest->rect.left, pdcDest->rect.top, pdcDest->rect.right - pdcDest->rect.left, pdcDest->rect.bottom - pdcDest->rect.top);
+
+	// Transfer pixmap to registered destination coordinates, or as-is if primary layer pixmap 
+	int sx = (pdcDest == pdcPrimary_) ? rect.left : 0;
+	int sy = (pdcDest == pdcPrimary_) ? rect.top  : 0;
+	XPutImage(x11Display, x11Window, gc, pdcDest->image, sx, sy, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 	XFlush(x11Display);
+	
 	return kNoErr;
 }
 
