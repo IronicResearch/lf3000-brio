@@ -247,14 +247,28 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
 	(void )screen;		/* Prevent unused variable warnings. */
-	(void)pDirtyRect;	/* Prevent unused variable warnings. */
 	tDisplayContext*	pdc = pdcListHead;
 	tErrType		 	rc = kNoErr;
 
 	// Walk list of display contexts to update screen
 	while (pdc != NULL)
 	{
-		rc = Update(pdc);
+		// Calculate active update region parameters based on dirty rect
+		if (pDirtyRect != NULL) {
+			// Destination rect = intersection of context rect with dirty rect
+			int dx = std::max(pdc->rect.left, pDirtyRect->left);
+			int dy = std::max(pdc->rect.top,  pDirtyRect->top);
+			int dx2 = std::min(pdc->rect.right, pDirtyRect->right);
+			int dy2 = std::min(pdc->rect.bottom, pDirtyRect->bottom);
+			int dw = dx2 - dx;
+			int dh = dy2 - dy;
+			// Effective source offset x,y for adjusted destination rect
+			int sx = (dx > pdc->rect.left) ? dx - pdc->rect.left : 0;
+			int sy = (dy > pdc->rect.top)  ? dy - pdc->rect.top  : 0;
+			rc = Update(pdc, sx, sy, dx, dy, dw, dh);
+		}
+		else
+			rc = Update(pdc, 0, 0, pdc->x, pdc->y, pdc->width, pdc->height);
 		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 	return rc;

@@ -314,20 +314,20 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Update(tDisplayContext *dc)
+tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Copy offscreen context to primary display context
 	if (dc->isAllocated)
 	{
 		switch (dc->colorDepthFormat) 
 		{
-		case kPixelFormatRGB4444: 	RGB4444ARGB(dc,pdcPrimary_); break;
-		case kPixelFormatRGB565: 	RGB565ARGB(dc,pdcPrimary_); break;
-		case kPixelFormatRGB888: 	RGB2ARGB(dc,pdcPrimary_); break;
+		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB565: 	RGB565ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB888: 	RGB2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
 		default:
-		case kPixelFormatARGB8888: 	ARGB2ARGB(dc,pdcPrimary_); break;
-		case kPixelFormatYUV420: 	YUV2ARGB(dc,pdcPrimary_); break;
-		case kPixelFormatYUYV422: 	YUYV2ARGB(dc,pdcPrimary_); break;
+		case kPixelFormatARGB8888: 	ARGB2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatYUV420: 	YUV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
 		}
 		// Make sure primary context is enabled
 		if (!bPrimaryLayerEnabled)
@@ -388,8 +388,10 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	struct tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
 	
 	// Nothing to do yet if offscreen context
-	context->x = xPos;
-	context->y = yPos;
+	context->rect.left = context->x = xPos;
+	context->rect.top  = context->y = yPos;
+	context->rect.right = xPos + context->width;
+	context->rect.bottom = yPos + context->height;
 	if (context->isAllocated)
 		return kNoErr;
 	

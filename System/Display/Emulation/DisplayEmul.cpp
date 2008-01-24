@@ -232,34 +232,35 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 {
 	// Nothing to do on emulation target
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Update(tDisplayContext* dc)
+tErrType CDisplayModule::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	tDisplayContext*	pdcDest = pdcPrimary_;
 	tRect			rect = dc->rect;
 	
 	// Repack YUV format pixmap into ARGB format for X window
 	if (dc->isPlanar)
-		YUV2ARGB(dc,pdcDest);
+		YUV2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else if (dc->isOverlay)
-		YUYV2ARGB(dc,pdcDest);
+		YUYV2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else if (dc->colorDepthFormat == kPixelFormatRGB888)
-		RGB2ARGB(dc,pdcDest);
+		RGB2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else if (dc->colorDepthFormat == kPixelFormatRGB565)
-		RGB565ARGB(dc,pdcDest);
+		RGB565ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else if (dc->colorDepthFormat == kPixelFormatRGB4444)
-		RGB4444ARGB(dc,pdcDest);
+		RGB4444ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else if (dc->isAllocated)
-		ARGB2ARGB(dc,pdcDest);
+		ARGB2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else
 		pdcDest = dc;
 
 	// Transfer pixmap to registered destination coordinates, or as-is if primary layer pixmap 
-	int sx = (pdcDest == pdcPrimary_) ? rect.left : 0;
-	int sy = (pdcDest == pdcPrimary_) ? rect.top  : 0;
-	XPutImage(x11Display, x11Window, gc, pdcDest->image, sx, sy, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	sx = (pdcDest == pdcPrimary_) ? dx : 0;
+	sy = (pdcDest == pdcPrimary_) ? dy  : 0;
+	XPutImage(x11Display, x11Window, gc, pdcDest->image, sx, sy, dx, dy, width, height);
 	XFlush(x11Display);
 	
 	return kNoErr;

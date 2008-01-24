@@ -59,21 +59,21 @@ struct tDisplayContext {
 #ifdef EMULATION
 	Pixmap	pixmap;		// X offscreen pixmap
 	_XImage	*image;		// X pixmap internals
-	tRect	rect;		// active rect from Register()
 #endif
+	tRect	rect;		// active rect from Register()
 	void*	pdc;		// next dc in list
 };
 
 //----------------------------------------------------------------------------
-inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack 16bpp RGB4444 format surface into 32bpp ARGB format surface
-	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 2;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
 	int			i,j,m,n;
-	for (i = 0; i < sdc->height; i++) 
+	for (i = 0; i < height; i++) 
 	{
-		for (j = m = n = 0; j < sdc->width; j++, m+=2, n+=4) 
+		for (j = m = n = 0; j < width; j++, m+=2, n+=4) 
 		{
 			U16 color = (s[m+1] << 8) | (s[m]);
 			d[n+0] = ((color & 0x000F) >> 0) << 4;
@@ -87,15 +87,15 @@ inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 }
 
 //----------------------------------------------------------------------------
-inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack 16bpp RGB565 format surface into 32bpp ARGB format surface
-	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 2;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
 	int			i,j,m,n;
-	for (i = 0; i < sdc->height; i++) 
+	for (i = 0; i < height; i++) 
 	{
-		for (j = m = n = 0; j < sdc->width; j++, m+=2, n+=4) 
+		for (j = m = n = 0; j < width; j++, m+=2, n+=4) 
 		{
 			U16 color = (s[m+1] << 8) | (s[m]);
 			d[n+0] = ((color & 0x001F) >> 0) << 3;
@@ -109,15 +109,15 @@ inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 }
 
 //----------------------------------------------------------------------------
-inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack 24bpp RGB888 format surface into 32bpp ARGB format surface
-	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 3;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
 	int			i,j,m,n;
-	for (i = 0; i < sdc->height; i++) 
+	for (i = 0; i < height; i++) 
 	{
-		for (j = m = n = 0; j < sdc->width; j++, m+=3, n+=4) 
+		for (j = m = n = 0; j < width; j++, m+=3, n+=4) 
 		{
 			d[n+0] = s[m+0];
 			d[n+1] = s[m+1];
@@ -130,14 +130,14 @@ inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 }
 
 //----------------------------------------------------------------------------
-inline void ARGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+inline void ARGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Copy 32bpp ARGB8888 format surface into 32bpp ARGB format surface
-	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
-	for (int i = 0; i < sdc->height; i++) 
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
+	for (int i = 0; i < height; i++) 
 	{
-		memcpy(d, s, 4 * sdc->width);
+		memcpy(d, s, 4 * width);
 		s += sdc->pitch;
 		d += ddc->pitch;
 	}
@@ -155,18 +155,18 @@ inline 	U8 B(U8 Y,U8 U,U8 V)	{ (void )V; return clip(( 298 * C(Y) + 516 * D(U)  
 
 //----------------------------------------------------------------------------
 // Repack YUV planar format surface into ARGB format surface
-inline void YUV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+inline void YUV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack YUV planar format surface into ARGB format surface
-	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 1;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
 	U8*			su = s + sdc->pitch/2; // U,V in double-width buffer
 	U8*			sv = s + sdc->pitch/2 + sdc->pitch * sdc->height/2;
 	U8			y,z,u,v;
 	int			i,j,m,n;
-	for (i = 0; i < sdc->height; i++) 
+	for (i = 0; i < height; i++) 
 	{
-		for (j = m = n = 0; m < sdc->width; j++, m+=2, n+=8) 
+		for (j = m = n = 0; m < width; j++, m+=2, n+=8) 
 		{
 			y = s[m+0];
 			z = s[m+1];
@@ -193,16 +193,16 @@ inline void YUV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
 
 //----------------------------------------------------------------------------
 // Repack YUYV format surface into ARGB format surface
-inline void YUYV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc)
+inline void YUYV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack YUYV format surface into ARGB format surface
-	U8* 		s = sdc->pBuffer;
-	U8*			d = ddc->pBuffer + sdc->y * ddc->pitch + sdc->x * 4;
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 2;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
 	U8			y,z,u,v;
 	int			i,j,m,n;
-	for (i = 0; i < sdc->height; i++) 
+	for (i = 0; i < height; i++) 
 	{
-		for (j = m = n = 0; j < sdc->width; j+=2, m+=4, n+=8) 
+		for (j = m = n = 0; j < width; j+=2, m+=4, n+=8) 
 		{
 			y = s[m+0];
 			u = s[m+1];
@@ -287,7 +287,7 @@ private:
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
 	tErrType 			UnRegisterLayer(tDisplayHandle hndl);
 	void				SetDirtyBit(int layer);
-	tErrType			Update(tDisplayContext* dc);
+	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
 	CDebugMPI			dbg_;
 	tDisplayContext*	pdcPrimary_;
 	bool				isOpenGLEnabled_;

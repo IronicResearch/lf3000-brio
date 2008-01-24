@@ -12940,3 +12940,16 @@ By Dave Milici (dmilici@leapfrog.com) on 1/23/08 5:14 PM
 4,112 ms. (Cumulative: 3,446,633 ms)
 
 ----------------
+Revision 2,756 from svn://localhost/TRUNK/:
+Revision 2,757 from svn://localhost/TRUNK/:
+Revision 2,758 from svn://localhost/TRUNK/:
+Revision 2,759 from svn://localhost/TRUNK/:
+
+Re-organized pixel-packing routines to support dirty rect param in Invalidate().
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/23/08 8:40 PM
+4 changed, 0 added, 0 deleted.
+4,048 ms. (Cumulative: 3,450,774 ms)
+
+----------------
