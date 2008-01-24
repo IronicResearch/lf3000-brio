@@ -33,22 +33,22 @@
 #
 	set -e
 #---------------------------------------------------------------------------------------
-	cd 	$PATH_TO_BRIO	
-	svn 	up
+#	cd 	$PATH_TO_BRIO	
+#	svn 	up
 #------------------------------------------------------------------------------------------
 #
-	cd 	$TFTP_MAIN
-	if ! [  -f LinuxDist*.tar.gz  ]; then
-	 	echo 'Copy LinuxDist tarball file ih the /home/lfu from linuxreleases directory' directoty
-		exit 1
-	fi
+#	cd 	$TFTP_MAIN
+#	if ! [  -f LinuxDist*.tar.gz  ]; then
+#	 	echo 'Copy LinuxDist tarball file ih the /home/lfu from linuxreleases directory' directoty
+#		exit 1
+#	fi
 #------------------------------------------------------------------------------------------
 #
 # 	Generation release
 #
-	cd
+#	cd
 #	Create temporary directory to collect files that will be copied on the S: drive
-	mkdir 	-p $S_DIR	
+#	mkdir 	-p $S_DIR	
 
 #	Get the current SVN Revision number  
 #	
@@ -62,11 +62,11 @@
         LINUXDIST_NUM=$(ls LinuxDist-*.tar.gz | cut -c11-21) 
 	echo "The current LinuxDist number=$LINUXDIST_NUM"
 
-	sudo 	tar -xzvf $TFTP_MAIN/LinuxDist-$LINUXDIST_NUM.tar.gz 
-	cd 	$TFTP_MAIN/LinuxDist-$LINUXDIST_NUM/host_tools 
-	./lightning_install.py
+#	sudo 	tar -xzvf $TFTP_MAIN/LinuxDist-$LINUXDIST_NUM.tar.gz 
+#	cd 	$TFTP_MAIN/LinuxDist-$LINUXDIST_NUM/host_tools 
+#	./lightning_install.py
 
-	./unpack_release.sh 
+#	./unpack_release.sh 
 
 	cp 	$TFTP_MAIN/LinuxDist-$LINUXDIST_NUM/packages/* 		$S_DIR 
     	
@@ -97,9 +97,14 @@
 	rm 	-rf System/Temp/
 	scons 	type=publish -c
 	scons 	type=publish runtests=f
-        tar 	-czvf LightningSDK_$REV_NUM.tar.gz 	Publish_$REV_NUM
+	mv  Publish_$REV_NUM  LightningSDK_$REV_NUM  
+    tar 	-czvf LightningSDK_$REV_NUM.tar.gz 	LightningSDK_$REV_NUM
 	mv 	-f    LightningSDK_$REV_NUM.tar.gz 	$S_DIR
-	rm 	-rf   Publish_$REV_NUM 	
+#   
+#	Build tests	
+#
+		
+	rm 	-rf   LightningSDK_$REV_NUM 	
 #==============================================================================
 
 	cd 	$ROOTFS_PATH/Didj/Base	
