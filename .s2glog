@@ -13007,3 +13007,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/08 4:41 PM
 4,453 ms. (Cumulative: 3,467,853 ms)
 
 ----------------
+Revision 2,779 from svn://localhost/TRUNK/:
+
+Remove intermediate dependency files from Ogg build.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/08 4:59 PM
+0 changed, 0 added, 2 deleted.
+4,251 ms. (Cumulative: 3,472,182 ms)
+
+----------------
