@@ -75,7 +75,7 @@ CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -O20 -ffast-math -fsigned-char -g -O2
 CPP = arm-linux-gcc -E
-CPPFLAGS = -I/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/include -I/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl
+CPPFLAGS = 
 CXX = arm-linux-g++
 CXXCPP = arm-linux-g++ -E
 CXXDEPMODE = depmode=gcc3
@@ -96,7 +96,7 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = ${SHELL} $(install_sh) -c -s
-LDFLAGS = -L/home/lfu/workspace/Brio2/ThirdParty/ustring/libiconv-1.11/lib/.libs/ -L/home/lfu/workspace/Brio2/ThirdParty/ustring/gettext-0.16/gettext-tools/intl/.libs/
+LDFLAGS = 
 LIBOBJS =  memcmp$U.o
 LIBS = 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
