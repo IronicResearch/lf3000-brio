@@ -12984,3 +12984,26 @@ By Dave Milici (dmilici@leapfrog.com) on 1/24/08 12:11 PM
 4,266 ms. (Cumulative: 3,463,228 ms)
 
 ----------------
+Revision 2,765 from svn://localhost/TRUNK/:
+Revision 2,766 from svn://localhost/TRUNK/:
+Revision 2,767 from svn://localhost/TRUNK/:
+Revision 2,768 from svn://localhost/TRUNK/:
+Revision 2,769 from svn://localhost/TRUNK/:
+Revision 2,770 from svn://localhost/TRUNK/:
+Revision 2,771 from svn://localhost/TRUNK/:
+Revision 2,772 from svn://localhost/TRUNK/:
+Revision 2,773 from svn://localhost/TRUNK/:
+Revision 2,774 from svn://localhost/TRUNK/:
+Revision 2,775 from svn://localhost/TRUNK/:
+Revision 2,776 from svn://localhost/TRUNK/:
+Revision 2,777 from svn://localhost/TRUNK/:
+Revision 2,778 from svn://localhost/TRUNK/:
+
+Integrated page flipping implementation for minimal impact on existing code. Embedded needs more general framebuffer allocation scheme to support double vs triple buffering. Relocated primary context creation on demand to offscreen contexts (embedded only).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/08 4:41 PM
+5 changed, 0 added, 0 deleted.
+4,453 ms. (Cumulative: 3,467,853 ms)
+
+----------------

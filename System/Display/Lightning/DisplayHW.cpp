@@ -43,12 +43,15 @@ namespace
 	int			gDevOpenGL;
 	int			gDevOverlay;
 	U8 			*gFrameBuffer = NULL;
+	U8 			*gFrameBuffer2 = NULL;
 	U8			*gOverlayBuffer = NULL;
 	U8			*gPlanarBuffer = NULL;
 	int			gFrameSize;
+	int			gFrameSize2;
 	int			gOverlaySize;
 	int			gPlanarSize;
 	U32			gFrameBase;
+	U32			gFrameBase2;
 	U32			gOpenGLBase;
 	U32			gOverlayBase;
 	U32			gPlanarBase;
@@ -205,6 +208,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepthFormat = colorDepth;
 	GraphicsContext->pBuffer = pBuffer;
+	GraphicsContext->offset = 0;
+	GraphicsContext->isPrimary = false;
 	GraphicsContext->isAllocated = (pBuffer != NULL);
 	GraphicsContext->isOverlay = false;
 	GraphicsContext->isPlanar = false;
@@ -288,12 +293,29 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		dbg_.DebugOut(kDbgLvlVerbose, 
 				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 				(unsigned int)gFrameBase, gFrameSize, gFrameBuffer);
+		GraphicsContext->isPrimary = true;
+		GraphicsContext->offset = 0;	
+	}
+	else if (gFrameBuffer2 == NULL) {
+		// Map 2D Frame Buffer in user space for actual size
+		gFrameSize2 = GraphicsContext->height * GraphicsContext->pitch;
+		gFrameBase2 = gOverlayBase;
+		gFrameBuffer2 = (U8 *)mmap(0, gFrameSize2, PROT_READ | PROT_WRITE, MAP_SHARED,
+			   						gDevLayer, gFrameBase2);
+		dbg_.Assert(gFrameBuffer2 > 0,
+				"DisplayModule::InitModule: failed to mmap() frame buffer");
+		dbg_.DebugOut(kDbgLvlVerbose, 
+				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+				(unsigned int)gFrameBase2, gFrameSize2, gFrameBuffer2);
+		GraphicsContext->pBuffer = gFrameBuffer2;
+		GraphicsContext->offset = gFrameBase2 - gFrameBase;
 	}
 	
 	// Assign mapped framebuffer address if onscreen context
 	GraphicsContext->pBuffer = 
 		(GraphicsContext->isPlanar) ? gPlanarBuffer : 
-		(GraphicsContext->isOverlay) ? gOverlayBuffer : gFrameBuffer;
+		(GraphicsContext->isOverlay) ? gOverlayBuffer : 
+		(GraphicsContext->isPrimary) ? gFrameBuffer : gFrameBuffer2;
 	
 	// apply to device
 	int layer = GraphicsContext->layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
@@ -319,6 +341,9 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 	// Copy offscreen context to primary display context
 	if (dc->isAllocated)
 	{
+		// Make sure primary context is enabled
+		if (!bPrimaryLayerEnabled)
+			RegisterLayer(pdcPrimary_, 0, 0);
 		switch (dc->colorDepthFormat) 
 		{
 		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
@@ -329,9 +354,6 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		case kPixelFormatYUV420: 	YUV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
 		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
 		}
-		// Make sure primary context is enabled
-		if (!bPrimaryLayerEnabled)
-			RegisterLayer(pdcPrimary_, 0, 0);
 	}
 	// No hardware settings have actually changed
     return kNoErr;
@@ -350,6 +372,9 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	// Restore video overlay linear address for subsequent instances
 	if (context->isOverlay && context->isPlanar)
 		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
+	// Restore primary layer address for subsequent instances after page flipping
+	if (context->isPrimary)
+		ioctl(gDevLayer, MLC_IOCTADDRESS, gFrameBase);
 	SetDirtyBit(layer);
 	return kNoErr;
 }
@@ -373,9 +398,13 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 		munmap(gOverlayBuffer, gOverlaySize);
 		gOverlayBuffer = NULL;
 	}
-	else if (context == pdcPrimary_ && gFrameBuffer != NULL) {
+	else if (context->isPrimary && gFrameBuffer != NULL) {
 		munmap(gFrameBuffer, gFrameSize);
 		gFrameBuffer = NULL;
+	}	
+	else if (context->pBuffer == gFrameBuffer2 && gFrameBuffer2 != NULL) {
+		munmap(gFrameBuffer2, gFrameSize2);
+		gFrameBuffer2 = NULL;
 	}	
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
@@ -396,7 +425,10 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		return kNoErr;
 	
 	// Assign mapped framebuffer address if onscreen context
-	context->pBuffer = (context->isPlanar) ? gPlanarBuffer : (context->isOverlay) ? gOverlayBuffer : gFrameBuffer;
+	context->pBuffer = 
+		(context->isPlanar) ? gPlanarBuffer : 
+		(context->isOverlay) ? gOverlayBuffer :
+		(context->isPrimary) ? gFrameBuffer : gFrameBuffer2;
 
 	// apply to device
 	c.position.top = yPos;
@@ -478,17 +510,47 @@ void CDisplayModule::SetDirtyBit(int layer)
 }
 
 //----------------------------------------------------------------------------
+inline int GetDirtyBit(int layer)
+{
+	return ioctl(layer, MLC_IOCQDIRTY, 0);
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 {
-	// TODO
+	tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
+	int		layer = context->layer;
+	int		r;
+
+	// Load display address register for selected display context
+	U32 offset = context->offset; //reinterpret_cast<U32>(context->pBuffer) - reinterpret_cast<U32>(gFrameBuffer);
+	U32 physaddr = gFrameBase + offset;
+	r = ioctl(layer, MLC_IOCTADDRESS, physaddr);
+	dbg_.Assert(r >= 0, "DisplayModule::SwapBuffers: failed ioctl physaddr=%08X\n", (unsigned int)physaddr);
+	SetDirtyBit(layer);
+
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::SwapBuffers: virtaddr=%08X, physaddr=%08X\n", (unsigned int)context->pBuffer, (unsigned int)physaddr);
+
+	// Optionally wait for display to update
+	if (waitVSync) {
+		int counter = 0;
+		while (GetDirtyBit(layer) != 0) {
+			usleep(10);
+			if (++counter > 1667) // 16.7 msec max for 60 Hz
+				return kDisplayInvalidScreenErr;
+		}
+	}
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
 {
-	// TODO
-	return true;
+	tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
+
+	// Query context layer dirty bit (cleared == updated)
+	int r = GetDirtyBit(context->layer);
+	return (r < 0) ? false : (r != 0) ? false : true;
 }
 
 //----------------------------------------------------------------------------

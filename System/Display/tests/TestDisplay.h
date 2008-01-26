@@ -371,6 +371,74 @@ public:
 		pDisplayMPI_->DestroyHandle(handle, false);
 	}
 
+	//------------------------------------------------------------------------
+	void testDisplaySwapBuffers( )
+	{
+		tDisplayHandle 	handle[2];
+		tPixelFormat	format;
+		U8* 			buffer[2];
+		U16				width;
+		U16				height;
+		U16				pitch;
+		U16				depth;
+		const U16		WIDTH = 320;
+		const U16		HEIGHT = 240;
+
+		for (int i = 0; i < 2; i++)
+		{
+			handle[i] = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
+			TS_ASSERT( handle[i] != kInvalidDisplayHandle );
+			pDisplayMPI_->Register(handle[i], 0, 0, 0, 0);
+			buffer[i] = pDisplayMPI_->GetBuffer(handle[i]);
+			TS_ASSERT( buffer[0] != kNull );
+			format = pDisplayMPI_->GetPixelFormat(handle[i]);
+			TS_ASSERT( format == kPixelFormatARGB8888 );
+			width = pDisplayMPI_->GetWidth(handle[i]);
+			TS_ASSERT( width == WIDTH );
+			pitch = pDisplayMPI_->GetPitch(handle[i]);
+			TS_ASSERT( pitch == 4 * WIDTH );
+			depth = pDisplayMPI_->GetDepth(handle[i]);
+			TS_ASSERT( depth == 32 );
+			height = pDisplayMPI_->GetHeight(handle[i]);
+			TS_ASSERT( height == HEIGHT );
+		}
+
+		memset(buffer[0], 0x0F, pitch * height);
+		memset(buffer[1], 0xF0, pitch * height);
+
+		for (int i = 0; i < 10; i++)
+		{
+			tErrType	rc;
+			Boolean 	bc;
+			rc = pDisplayMPI_->SwapBuffers(handle[i%2], true);
+			TS_ASSERT( rc == kNoErr );
+			bc = pDisplayMPI_->IsBufferSwapped(handle[i%2]);
+			TS_ASSERT( bc == true );
+		}
+
+		for (int i = 0; i < 10; i++)
+		{
+			tErrType	rc;
+			Boolean 	bc = false;
+			int		counter = 0;
+			rc = pDisplayMPI_->SwapBuffers(handle[i%2], false);
+			TS_ASSERT( rc == kNoErr );
+			while (bc != true) 
+			{
+				bc = pDisplayMPI_->IsBufferSwapped(handle[i%2]);
+				if (++counter > 16)
+					break; // 16.7 msec max for 60 Hz
+				usleep(1000);
+			}
+			TS_ASSERT( bc == true );
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			pDisplayMPI_->UnRegister(handle[i], 0);
+			pDisplayMPI_->DestroyHandle(handle[i], false);
+		}
+	}
 };
 
 // EOF
