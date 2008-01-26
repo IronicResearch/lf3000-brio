@@ -259,7 +259,7 @@ tErrType CDisplayModule::Update(tDisplayContext* dc, int sx, int sy, int dx, int
 
 	// Transfer pixmap to registered destination coordinates, or as-is if primary layer pixmap 
 	sx = (pdcDest == pdcPrimary_) ? dx : 0;
-	sy = (pdcDest == pdcPrimary_) ? dy  : 0;
+	sy = (pdcDest == pdcPrimary_) ? dy : 0;
 	XPutImage(x11Display, x11Window, gc, pdcDest->image, sx, sy, dx, dy, width, height);
 	XFlush(x11Display);
 	
@@ -285,7 +285,11 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffe
 tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 {
 	// No actual buffer swapping done on emulation
-	return kNoErr;
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	tErrType rc = Update(dc, 0, 0, dc->x, dc->y, dc->width, dc->height);
+	if (waitVSync)
+		usleep(16667);
+	return rc;
 }
 
 //----------------------------------------------------------------------------
@@ -354,7 +358,8 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 U32 CDisplayModule::GetScreenSize()
 {
-	return (U32)((WINDOW_WIDTH<<16)|(WINDOW_HEIGHT));
+	// Compatible packed format with embedded target 
+	return (U32)((WINDOW_HEIGHT<<16)|(WINDOW_WIDTH));
 }
 
 //----------------------------------------------------------------------------

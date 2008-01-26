@@ -64,8 +64,15 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 	
 	InitModule();	// delegate to platform or emulation initializer
 	pdcListHead = NULL;
+#ifdef EMULATION
+	// We usually need an X pixmap primary surface for any context
 	pdcPrimary_ = reinterpret_cast<tDisplayContext*>
 		(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
+#else
+	// We only need a primary surface context for offscreen contexts
+	// so we defer creating it on demand to conserve framebuffer mappings 
+	pdcPrimary_ = NULL;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -103,7 +110,7 @@ const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen /*scree
 	U32 size = GetScreenSize();
 	enum tPixelFormat format = GetPixelFormat();
 
-	if(format == kPixelFormatError) //FIXME: is this the right thing to do?
+	if(format == kPixelFormatError)
 		dbg_.DebugOut(kDbgLvlCritical, "unknown PixelFormat returned\n");
 
 	static const tDisplayScreenStats kLightningStats = {
@@ -166,6 +173,13 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	// Register HW or emulation layer
 	RegisterLayer(hndl, xPos, yPos);
 	
+	// Need primary context to support offscreen contexts
+	if (dc->isAllocated && pdcPrimary_ == NULL)
+	{
+		pdcPrimary_ = reinterpret_cast<tDisplayContext*>
+			(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
+	}
+	
 	return kNoErr;
 }
 
@@ -209,6 +223,13 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	// Register HW or emulation layer
 	RegisterLayer(hndl, xPos, yPos);
 
+	// Need primary context to support offscreen contexts
+	if (dc->isAllocated && pdcPrimary_ == NULL)
+	{
+		pdcPrimary_ = reinterpret_cast<tDisplayContext*>
+			(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
+	}
+
 	return kNoErr;
 }
 
@@ -216,6 +237,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
+
 	// UnRegister HW or emulation layer
 	UnRegisterLayer(hndl);
 	
@@ -240,6 +262,15 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 		pdcPrev = pdc;
 		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
+
+	// If list is empty of offscreen contexts, we don't need our own 
+	// primary display context anymore
+	if (pdcListHead == NULL && dc->isAllocated && pdcPrimary_ != NULL)
+	{
+		DestroyHandle(pdcPrimary_, true);
+		pdcPrimary_ = NULL;
+	}
+
 	return kNoErr;
 }
 
