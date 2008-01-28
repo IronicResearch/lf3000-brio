@@ -63,7 +63,7 @@ void* VideoTaskMain( void* arg )
 	tVideoTime		vtm,vtm0 = {0, 0};
 	U32				basetime,marktime,nexttime,lapsetime = pctx->uFrameTime;
 	U32				flags = (pctx->pListener) ? kAudioOptionsDoneMsgAfterComplete : 0;
-	Boolean			bAudio = (pctx->pPathAudio != NULL) ? true : false;
+	Boolean			bAudio = false;
 	
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
@@ -79,7 +79,7 @@ void* VideoTaskMain( void* arg )
 		if (!bAudio)
 			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
 		marktime += lapsetime;
-		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, bAudio))
+		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, false))
 		{	
 			vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
 			dispmgr.Invalidate(0, NULL);
