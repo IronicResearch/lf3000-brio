@@ -296,7 +296,9 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 			// Effective source offset x,y for adjusted destination rect
 			int sx = (dx > pdc->rect.left) ? dx - pdc->rect.left : 0;
 			int sy = (dy > pdc->rect.top)  ? dy - pdc->rect.top  : 0;
-			rc = Update(pdc, sx, sy, dx, dy, dw, dh);
+			// Clip against adjusted destination and source coords
+			if (dw > 0 && dh > 0 && sx < pdc->width && sy < pdc->height)
+				rc = Update(pdc, sx, sy, dx, dy, dw, dh);
 		}
 		else
 			rc = Update(pdc, 0, 0, pdc->x, pdc->y, pdc->width, pdc->height);
