@@ -44,14 +44,17 @@ namespace
 	int			gDevOverlay;
 	U8 			*gFrameBuffer = NULL;
 	U8 			*gFrameBuffer2 = NULL;
+	U8 			*gFrameBuffer3 = NULL;
 	U8			*gOverlayBuffer = NULL;
 	U8			*gPlanarBuffer = NULL;
 	int			gFrameSize;
 	int			gFrameSize2;
+	int			gFrameSize3;
 	int			gOverlaySize;
 	int			gPlanarSize;
 	U32			gFrameBase;
 	U32			gFrameBase2;
+	U32			gFrameBase3;
 	U32			gOpenGLBase;
 	U32			gOverlayBase;
 	U32			gPlanarBase;
@@ -271,6 +274,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		dbg_.DebugOut(kDbgLvlVerbose, 
 				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 				(unsigned int)gPlanarBase, gPlanarSize, gPlanarBuffer);
+		GraphicsContext->pBuffer = gPlanarBuffer;
+		GraphicsContext->offset = gPlanarBase - gFrameBase;	
 	}
 	else if (GraphicsContext->isOverlay && gOverlayBuffer == NULL) {
 		// Map video overlay buffer in user space for actual size
@@ -282,6 +287,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		dbg_.DebugOut(kDbgLvlVerbose, 
 				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 				(unsigned int)gOverlayBase, gOverlaySize, gOverlayBuffer);
+		GraphicsContext->pBuffer = gOverlayBuffer;
+		GraphicsContext->offset = gOverlayBase - gFrameBase;	
 	}
 	else if (gFrameBuffer == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
@@ -293,6 +300,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		dbg_.DebugOut(kDbgLvlVerbose, 
 				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 				(unsigned int)gFrameBase, gFrameSize, gFrameBuffer);
+		GraphicsContext->pBuffer = gFrameBuffer;
 		GraphicsContext->isPrimary = true;
 		GraphicsContext->offset = 0;	
 	}
@@ -310,13 +318,28 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		GraphicsContext->pBuffer = gFrameBuffer2;
 		GraphicsContext->offset = gFrameBase2 - gFrameBase;
 	}
-	
-	// Assign mapped framebuffer address if onscreen context
-	GraphicsContext->pBuffer = 
-		(GraphicsContext->isPlanar) ? gPlanarBuffer : 
-		(GraphicsContext->isOverlay) ? gOverlayBuffer : 
-		(GraphicsContext->isPrimary) ? gFrameBuffer : gFrameBuffer2;
-	
+	else if (gFrameBuffer3 == NULL) {
+		// Map 2D Frame Buffer in user space for actual size
+		gFrameSize3 = GraphicsContext->height * GraphicsContext->pitch;
+		gFrameBase3 = gFrameBase2 + gFrameSize3;
+		gFrameBuffer3 = (U8 *)mmap(0, gFrameSize3, PROT_READ | PROT_WRITE, MAP_SHARED,
+			   						gDevLayer, gFrameBase3);
+		dbg_.Assert(gFrameBuffer3 > 0,
+				"DisplayModule::InitModule: failed to mmap() frame buffer");
+		dbg_.DebugOut(kDbgLvlVerbose, 
+				"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
+				(unsigned int)gFrameBase3, gFrameSize3, gFrameBuffer3);
+		GraphicsContext->pBuffer = gFrameBuffer3;
+		GraphicsContext->offset = gFrameBase3 - gFrameBase;
+	}
+	else {
+		// Assign mapped framebuffer address if onscreen context
+		GraphicsContext->pBuffer =
+			(GraphicsContext->isPlanar) ? gPlanarBuffer :
+			(GraphicsContext->isOverlay) ? gOverlayBuffer : 
+			(GraphicsContext->isPrimary) ? gFrameBuffer : gFrameBuffer2;
+	}
+
 	// apply to device
 	int layer = GraphicsContext->layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
 	ioctl(layer, MLC_IOCTBLEND, blend);
@@ -406,6 +429,10 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 		munmap(gFrameBuffer2, gFrameSize2);
 		gFrameBuffer2 = NULL;
 	}	
+	else if (context->pBuffer == gFrameBuffer3 && gFrameBuffer3 != NULL) {
+		munmap(gFrameBuffer3, gFrameSize3);
+		gFrameBuffer3 = NULL;
+	}	
 	delete (struct tDisplayContext *)hndl;
 	return kNoErr;
 }
@@ -423,12 +450,6 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	context->rect.bottom = yPos + context->height;
 	if (context->isAllocated)
 		return kNoErr;
-	
-	// Assign mapped framebuffer address if onscreen context
-	context->pBuffer = 
-		(context->isPlanar) ? gPlanarBuffer : 
-		(context->isOverlay) ? gOverlayBuffer :
-		(context->isPrimary) ? gFrameBuffer : gFrameBuffer2;
 
 	// apply to device
 	c.position.top = yPos;

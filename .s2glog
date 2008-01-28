@@ -13039,3 +13039,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/08 9:48 AM
 4,469 ms. (Cumulative: 3,481,448 ms)
 
 ----------------
+Revision 2,784 from svn://localhost/TRUNK/:
+
+Added support for triple-buffered page-flipping.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/08 9:59 AM
+1 changed, 0 added, 0 deleted.
+4,299 ms. (Cumulative: 3,485,809 ms)
+
+----------------
