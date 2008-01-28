@@ -121,19 +121,21 @@ The installation tree will look more or less like this:
 |  |
 |  +-Button       (demonstrates button presses on the hardware)
 |  |
-   +-DatasetLoader	(tests XML binary dataset loader utility)
-   |
+|  +-DatasetLoader	(tests XML binary dataset loader utility)
+|  |
 |  +-Display      (demonstrates 2D RGB display surface layer and fonts)
 |  |
-   +-PlayAudio    (command line utility to test OGG and MIDI files)
-   |
-   +-Power        (tests Power MPI events)
-   |
+|  +-PageFlipDemo (demonstrates page flipping with triple or double buffering)
+|  |
+|  +-PlayAudio    (command line utility to test OGG and MIDI files)
+|  |
+|  +-Power        (tests Power MPI events)
+|  |
 |  +-Simple       (simplest OpenGL application, minimal build system)
 |  |
 |  +-SysAppDemo   (system application demo for handling USB and Power events)
-   |
-   +-USBDemo      (tests USB MPI events)
+|  |
+|  +-USBDemo      (tests USB MPI events)
 |
 +-Tools
    |
