@@ -13065,3 +13065,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/08 10:11 AM
 4,440 ms. (Cumulative: 3,494,720 ms)
 
 ----------------
+Revision 2,787 from svn://localhost/TRUNK/:
+
+Disabled drop-frame sync from video playback.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/08 10:32 AM
+1 changed, 0 added, 0 deleted.
+4,019 ms. (Cumulative: 3,498,817 ms)
+
+----------------
