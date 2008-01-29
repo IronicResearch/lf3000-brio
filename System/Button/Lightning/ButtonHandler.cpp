@@ -162,31 +162,12 @@ void *LightningButtonTask(void*)
 				//repeat of known-pressed button
 				if(ev[i].value == 2 && (data.buttonState & button))
 					continue;
-				// Special internal handling for Brightness button
-				if (data.buttonTransition & data.buttonState & kButtonBrightness)
-				{
-					brightness = lcdBright[brightIndex];
-					backlight  = lcdBacklight[brightIndex];
-					// wrap around index at array end
-					brightIndex++;
-					brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS;
-					dispmgr.SetBrightness(0, brightness);
-					dispmgr.SetBacklight(0, backlight);
-				}
 			}
 			else if(ev[i].type == EV_SW) { // this is a switch change
 				button = LinuxSwitchToBrio(ev[i].code);
 				if(button == 0) {
 					dbg.DebugOut(kDbgLvlVerbose, "%s: unknown switch code\n", __FUNCTION__);
 					continue;
-				}
-				// Special internal handling for Headphone jack plug/unplug
-				if (data.buttonTransition & kHeadphoneJackDetect)
-				{
-						CAudioMPI audioMPI;
-						bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
-
-						audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
 				}
 			}
 			else {
@@ -201,6 +182,26 @@ void *LightningButtonTask(void*)
 				data.buttonTransition |= button;
 				data.buttonState &= ~button;
 			}
+		}
+
+		// Special internal handling for Brightness button
+		if (data.buttonTransition & data.buttonState & kButtonBrightness)
+		{
+			brightness = lcdBright[brightIndex];
+			backlight  = lcdBacklight[brightIndex];
+			// wrap around index at array end
+			brightIndex++;
+			brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS;
+			dispmgr.SetBrightness(0, brightness);
+			dispmgr.SetBacklight(0, backlight);
+		}
+		
+		// Special internal handling for Headphone jack plug/unplug
+		if (data.buttonTransition & kHeadphoneJackDetect)
+		{
+			CAudioMPI audioMPI;
+			bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
+			audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
 		}
 
 		if(data.buttonTransition != 0) {
