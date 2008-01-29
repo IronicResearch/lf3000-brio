@@ -3,7 +3,22 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.34  (Build 2733 released Jan 22, 2008) 
+v0.1.35  (Build 2791 released Jan 28, 2008) 
+===========================================
+-- Added for PlayAudio testing.
+
+-- Re-organized pixel-packing routines to support dirty rect param in Invalidate().
+
+-- Fixed the output file name:Publish to Lightning
+
+-- Integrated page flipping implementation for minimal impact on existing code. Embedded
+   needs more general framebuffer allocation scheme to support double vs triple buffering.
+   Relocated primary context creation on demand to offscreen contexts (embedded only).
+
+-- Added PageFlipDemo to Brio SDK examples to show triple buffering.
+
+===========================================
+v0.1.34  (Build 2743 released Jan 23, 2008) 
 ===========================================
 
 -- Re-Align UV buffers on pitch subdivision to work with HW video scaler.
