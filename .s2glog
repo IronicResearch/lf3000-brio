@@ -13123,3 +13123,30 @@ By Dave Milici (dmilici@leapfrog.com) on 1/29/08 12:26 PM
 4,065 ms. (Cumulative: 3,515,432 ms)
 
 ----------------
+Revision 2,801 from svn://localhost/TRUNK/:
+Revision 2,802 from svn://localhost/TRUNK/:
+Revision 2,803 from svn://localhost/TRUNK/:
+Revision 2,804 from svn://localhost/TRUNK/:
+Revision 2,805 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,235 ms. (Cumulative: 3,519,745 ms)
+
+----------------
+Revision 2,806 from svn://localhost/TRUNK/:
+
+No changes to commit.
+4,062 ms. (Cumulative: 3,523,822 ms)
+
+----------------
+Revision 2,807 from svn://localhost/TRUNK/:
+
+convert Brio to use monitord for USB messages (vbus->app shutdown), disable
+'timermon' as monitord handles USB 'timer' now.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 1/29/08 12:58 PM
+3 changed, 1 added, 0 deleted.
+4,245 ms. (Cumulative: 3,528,074 ms)
+
+----------------

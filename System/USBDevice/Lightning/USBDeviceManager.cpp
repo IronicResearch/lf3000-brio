@@ -17,6 +17,7 @@
 #include <KernelTypes.h>
 #include <PowerMPI.h>
 #include <SystemErrors.h>
+#include <Utility.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -25,6 +26,8 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/un.h>
+#include <sys/socket.h>
 #include <errno.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -108,15 +111,27 @@ void *LightningUSBDeviceTask(void*)
 	CDebugMPI	dbg(kGroupUSBDevice);
 	CKernelMPI	kernel;
 	int vbus;
+	int ls, ms;
+	int size;
+	struct sockaddr_un mon;
+	socklen_t s_mon = sizeof(struct sockaddr_un);
+	struct app_message msg;
 
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
-	
+
+	ls = CreateListeningSocket(USB_SOCK);
+	dbg.Assert(ls >= 0, "can't open listening socket");
+
 	while(1) {
-		// Just check the vbus status every so often
-		vbus = get_vbus();
-		if(vbus == -1) {
-			dbg.DebugOut(kDbgLvlVerbose, "USBDevice can't get VBUS state!\n");
-			continue;
+		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
+		if(ms > 0) { /* receiving a message */
+			while(1) {
+				size = recv(ms, &msg, sizeof(msg), 0);
+				if(size == sizeof(msg) && msg.type == APP_MSG_SET_USB)
+					vbus = !!msg.payload;
+				else
+					break;
+			}
 		}
 		
 		// Did the connection state change?
@@ -250,34 +265,45 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 //----------------------------------------------------------------------------
 U32 CUSBDeviceModule::GetUSBDeviceWatchdog(void)
 {
-	FILE *f;
-	unsigned int value;
-	int ret;
+	struct app_message msg, resp;
+	int size;
+	int s = CreateReportSocket(MONITOR_SOCK);
 
-	f = fopen(SYSFS_WD_PATH, "r");
-	if(!f)
-		return kUSBDeviceInvalidWatchdog;
-	
-	ret = fscanf(f, "%u\n", &value);
-	fclose(f);
-	if(ret != 1)
+	if(s < 0)
 		return kUSBDeviceInvalidWatchdog;
 
-	return value;
+	msg.type = APP_MSG_GET_USB;
+	msg.payload = 0;
+
+	if(send(s, &msg, sizeof(msg), 0) < 0) {
+		close(s);
+		return kUSBDeviceInvalidWatchdog;
+	}
+
+	size = recv(s, &resp, sizeof(struct app_message), 0);
+	if(size != sizeof(struct app_message)) {
+		close(s);
+		return kUSBDeviceInvalidWatchdog;
+	}
+
+	close(s);
+	return resp.payload;
 }
 
 //----------------------------------------------------------------------------
 void CUSBDeviceModule::SetUSBDeviceWatchdog(U32 timerSec)
 {
-	FILE *f;
-	int ret;
-
-	f = fopen(SYSFS_WD_PATH, "w");
-	if(!f)
+	struct app_message msg;
+	int s = CreateReportSocket(MONITOR_SOCK);
+	
+	if(s < 0)
 		return;
 
-	ret = fprintf(f, "%u", (unsigned int)timerSec);
-	fclose(f);
+	msg.type = APP_MSG_SET_USB;
+	msg.payload = timerSec*1000;
+
+	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
+	close(s);
 }
 
 LF_END_BRIO_NAMESPACE()
