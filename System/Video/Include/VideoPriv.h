@@ -36,7 +36,7 @@ const tDebugLevel		kVideoDebugLevel	= kDbgLvlImportant;
 // Typedefs
 //==============================================================================
 
-#define USE_MUTEX		0
+#define USE_MUTEX		1
 
 struct tVideoContext {
 	tVideoHndl			hVideo;
@@ -50,6 +50,7 @@ struct tVideoContext {
 	Boolean				bPlaying;
 	U32					uFrameTime;
 	tMutex*				pMutex;
+	tTaskHndl			hVideoThread;
 };
 
 //==============================================================================

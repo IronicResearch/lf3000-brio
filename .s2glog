@@ -13102,3 +13102,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/29/08 9:19 AM
 4,047 ms. (Cumulative: 3,507,239 ms)
 
 ----------------
+Revision 2,798 from svn://localhost/TRUNK/:
+
+Re-organize code to use mutex protection for any data access during MPI function calls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/29/08 10:34 AM
+3 changed, 0 added, 0 deleted.
+3,988 ms. (Cumulative: 3,511,289 ms)
+
+----------------
