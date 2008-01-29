@@ -13075,3 +13075,19 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/08 10:32 AM
 4,019 ms. (Cumulative: 3,498,817 ms)
 
 ----------------
+Revision 2,788 from svn://localhost/TRUNK/:
+Revision 2,789 from svn://localhost/TRUNK/:
+Revision 2,790 from svn://localhost/TRUNK/:
+Revision 2,791 from svn://localhost/TRUNK/:
+Revision 2,792 from svn://localhost/TRUNK/:
+Revision 2,793 from svn://localhost/TRUNK/:
+Revision 2,794 from svn://localhost/TRUNK/:
+
+Fix handling of brightness and headphone button presses, lost during button refactoring in last build.
+
+
+By Scott Esters (sesters@leapfrog.com) on 1/28/08 4:59 PM
+1 changed, 0 added, 0 deleted.
+4,203 ms. (Cumulative: 3,503,114 ms)
+
+----------------
