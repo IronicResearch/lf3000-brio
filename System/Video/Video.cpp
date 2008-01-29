@@ -85,6 +85,7 @@ namespace
 	FILE*				gfile = NULL;
 	tMutex				gVidMutex = PTHREAD_MUTEX_INITIALIZER;
 	Boolean				gbCodecReady = false;
+	Boolean				gbCentered = false;
 	
 #if USE_PROFILE
 	// Profile vars
@@ -141,7 +142,7 @@ static int queue_page(ogg_page *page)
 
 //----------------------------------------------------------------------------
 // Set video scaler (embedded only)
-static void SetScaler(int width, int height)
+static void SetScaler(int width, int height, bool centered)
 {
 #ifndef EMULATION
 	int	layer, r, dw, dh;
@@ -156,6 +157,18 @@ static void SetScaler(int width, int height)
 	r = ioctl(layer, MLC_IOCGPOSITION, &c);
 	dw = (r == 0) ? c.position.right - c.position.left + 1 : 320;
 	dh = (r == 0) ? c.position.bottom - c.position.top + 1 : 240;
+	
+	// Reposition with fullscreen centering instead of scaling
+	if (centered) 
+	{
+		dw = width;
+		dh = height;		
+		c.position.left = (320 - width) / 2;
+		c.position.right = c.position.left + width;
+		c.position.top = (240 - height) / 2;
+		c.position.bottom = c.position.top + height;
+		ioctl(layer, MLC_IOCSPOSITION, &c);
+	}
 	
 	// Set video scaler for video source and screen destination
 	c.overlaysize.srcwidth = width;
@@ -239,7 +252,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	
 #ifndef EMULATION
 	// Set HW video scaler for video source width and height
-	SetScaler(ti.width, ti.height);
+	SetScaler(ti.width, ti.height, gbCentered);
 #endif
 
 	// Determine if audio track is available and at what path?
@@ -418,6 +431,7 @@ Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 		ti.fps_numerator / ti.fps_denominator, 1000 * ti.fps_denominator / ti.fps_numerator);
 
 	// Loop thru Theora header comments for any tags of interest
+	gbCentered = false;
 	if (tc.comments)
 	{
 		char** pstr = tc.user_comments;
@@ -426,6 +440,13 @@ Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 		for (int i = 0; i < tc.comments && pstr != NULL; i++, pstr++)
 		{
 			dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: tag %d: %s\n", i, *pstr);
+			if (strncmp(*pstr, "LOCATION", 8) == 0)
+			{
+				char buf[40];
+				sscanf(*pstr, "LOCATION=%s", buf);
+				if (strncmp(buf, "center", 6) == 0)
+					gbCentered = true;
+			}
 		}
 	}
 

@@ -13112,3 +13112,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/29/08 10:34 AM
 3,988 ms. (Cumulative: 3,511,289 ms)
 
 ----------------
+Revision 2,799 from svn://localhost/TRUNK/:
+Revision 2,800 from svn://localhost/TRUNK/:
+
+Added option for fullscreen centering instead of scaling based on Theora videoheader comments tag "LOCATION=center".
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/29/08 12:26 PM
+1 changed, 0 added, 0 deleted.
+4,065 ms. (Cumulative: 3,515,432 ms)
+
+----------------
