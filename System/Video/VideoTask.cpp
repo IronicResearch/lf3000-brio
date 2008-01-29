@@ -157,12 +157,9 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	tTaskHndl 	hndl;
 	tTaskProperties prop;
 
-#if USE_MUTEX
-	kernel.LockMutex(*pCtx->pMutex);
-#endif
+	// Locked by mutex on entry
 	
 	// Setup task properties
-//	memset(&prop, 0, sizeof(tTaskProperties));
 	prop.TaskMainFcn = (void* (*)(void*))VideoTaskMain;
 	prop.taskMainArgCount = 1;
 	prop.pTaskMainArgValues = pCtx;
@@ -170,15 +167,11 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	dbg.Assert( kNoErr == r, "InitVideoTask: Failed to create VideoTask!\n" );
 
 	// Save task handle for cleanup
-	hVideoThread = hndl;
+	pCtx->hVideoThread = hVideoThread = hndl;
 	bRunning = bStopping = false;
 	while (!bRunning)
 		kernel.TaskSleep(1);
 
-#if USE_MUTEX
-	kernel.UnlockMutex(*pCtx->pMutex);
-#endif
-	
 	return r;
 }
 
@@ -190,27 +183,18 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 	if (hVideoThread == kNull)
 		return kNoErr;
 
-	// TODO: Need real sync protection via mutexes when killing task
-	//		 Letting task exit itself works most times on embedded target
-#if USE_MUTEX
-	kernel.LockMutex(*pCtx->pMutex);
-#endif
+	// Locked by mutex on entry
 	
 	// Stop running task
 	bStopping = true;
 	bRunning = false;
+	int counter = 0;
 	while (bStopping != bRunning) {
-		static int counter = 0;
 		kernel.TaskSleep(2);
 		if (counter++ > 10)
 			break;
 	}
-//	kernel.CancelTask(hVideoThread);
-	hVideoThread = kNull;
-	
-#if USE_MUTEX
-	kernel.UnlockMutex(*pCtx->pMutex);
-#endif
+	pCtx->hVideoThread = hVideoThread = kNull;
 	
 	return kNoErr;
 }

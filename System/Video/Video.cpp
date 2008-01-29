@@ -83,7 +83,8 @@ namespace
 	CPath				gpath = "";
 	CPath				gfilepath = "";
 	FILE*				gfile = NULL;
-	tMutex				gVidMutex ; // = PTHREAD_MUTEX_INITIALIZER;
+	tMutex				gVidMutex = PTHREAD_MUTEX_INITIALIZER;
+	Boolean				gbCodecReady = false;
 	
 #if USE_PROFILE
 	// Profile vars
@@ -143,17 +144,24 @@ static int queue_page(ogg_page *page)
 static void SetScaler(int width, int height)
 {
 #ifndef EMULATION
-	int	layer;
+	int	layer, r, dw, dh;
 	union mlc_cmd c;
 
+	// Open video layer device
 	layer = open("/dev/layer2", O_RDWR|O_SYNC);
 	if (layer < 0)
 		return;
 
+	// Get position info when video context was created
+	r = ioctl(layer, MLC_IOCGPOSITION, &c);
+	dw = (r == 0) ? c.position.right - c.position.left + 1 : 320;
+	dh = (r == 0) ? c.position.bottom - c.position.top + 1 : 240;
+	
+	// Set video scaler for video source and screen destination
 	c.overlaysize.srcwidth = width;
 	c.overlaysize.srcheight = height;
-	c.overlaysize.dstwidth = 320; 
-	c.overlaysize.dstheight = 240; 
+	c.overlaysize.dstwidth = dw; 
+	c.overlaysize.dstheight = dh; 
 	ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
 	ioctl(layer, MLC_IOCTDIRTY, 0);
 
@@ -208,17 +216,25 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, tVideoSurf* pSurf, Boolea
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
-	static bool		bStarting = false;
-	if (bStarting)
-		return kInvalidVideoHndl;
+	CKernelMPI kernel;
+#if USE_MUTEX
+	kernel.LockMutex(gVidMutex);
+#endif
 
-	tVideoHndl		hVideo = StartVideoInt(path);
+	tVideoHndl		hVideo = kInvalidVideoHndl;
+	tVideoContext*	pVidCtx = NULL;
+	bool			nopath = false;
+
+	// We only support one video context active at a time
+	if (gpVidCtx != NULL)
+		goto ExitPt;
+
+	// Start Theora codec for selected video file
+	hVideo = StartVideoInt(path);
 	if (hVideo == kInvalidVideoHndl)
-		return kInvalidVideoHndl;
-	bStarting = true;
+		goto ExitPt;
 
-	CKernelMPI		kernel;
-	tVideoContext*	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
+	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
 	memset(pVidCtx, 0, sizeof(tVideoContext));
 	
 #ifndef EMULATION
@@ -227,15 +243,9 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 #endif
 
 	// Determine if audio track is available and at what path?
-	bool			nopath = (pathAudio.length() == 0) ? true : false;
+	nopath = (pathAudio.length() == 0) ? true : false;
 	gfilepath = (nopath) ? "" : (pathAudio.at(0) == '/') ? pathAudio : gpath + pathAudio;
 
-#if USE_MUTEX
-	// Init mutex
-	const tMutexAttr	attr = {0};
-	kernel.InitMutex(gVidMutex, attr);
-#endif
-	
 	pVidCtx->hVideo 	= hVideo;
 	pVidCtx->hAudio 	= kNoAudioID; // handled inside video task
 	pVidCtx->pPathAudio = (nopath) ? NULL : &gfilepath; // pass by pointer
@@ -252,7 +262,11 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 
 	// TODO: Wrap pVidCtx into handle...
 	gpVidCtx = pVidCtx;
-	bStarting = false;
+
+ExitPt:
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
 	return hVideo;
 }
 
@@ -266,7 +280,6 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path)
 tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
-//	tErrType	r;
 	Boolean		b;
 	CPath		filepath = (path.at(0) == '/') ? path : gpath + path;
 	const char*	filename = filepath.c_str();
@@ -394,10 +407,27 @@ Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 
 	// Start decoder stream
 	theora_decode_init(&td,&ti);
+
 	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: %dx%d, %d:%d aspect, %d:%d fps\n",
 		ti.width, ti.height, ti.aspect_numerator, ti.aspect_denominator, ti.fps_numerator, ti.fps_denominator);
+	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: output %dx%d at %d,%d\n",
+		ti.frame_width, ti.frame_height, ti.offset_x, ti.offset_y);
 	dbg_.Assert(ti.fps_numerator != 0, "VideoModule::StartVideo: bad fps numerator\n");
 	dbg_.Assert(ti.fps_denominator != 0, "VideoModule::StartVideo: bad fps denominator\n");
+	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: %d frames/sec, %d msec/frame\n",
+		ti.fps_numerator / ti.fps_denominator, 1000 * ti.fps_denominator / ti.fps_numerator);
+
+	// Loop thru Theora header comments for any tags of interest
+	if (tc.comments)
+	{
+		char** pstr = tc.user_comments;
+		dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: vendor: %s\n", tc.vendor);
+		dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: comments: %d (tags)\n", tc.comments);
+		for (int i = 0; i < tc.comments && pstr != NULL; i++, pstr++)
+		{
+			dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: tag %d: %s\n", i, *pstr);
+		}
+	}
 
 	// Queue remaining pages that did not contain headers
 	while (ogg_sync_pageout(&oy,&og) > 0)
@@ -405,18 +435,33 @@ Boolean CVideoModule::InitVideoInt(tVideoHndl hVideo)
 
 	theora_decode_packetin(&td,&op);
 	theora_granule_frame(&td,td.granulepos);
-	
-	return true;
+
+	return gbCodecReady = true;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
-	pInfo->width	= ti.width;
-	pInfo->height	= ti.height;
-	pInfo->fps		= ti.fps_numerator / ti.fps_denominator;
-	return true;
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
+	Boolean	state = false;
+	if (gbCodecReady)
+	{
+		pInfo->width	= ti.width;
+		pInfo->height	= ti.height;
+		pInfo->fps		= ti.fps_numerator / ti.fps_denominator;
+		state = true;
+	}
+	
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+
+	return state;
 }
 
 //----------------------------------------------------------------------------
@@ -424,6 +469,7 @@ void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 {	
 	(void )hVideo;	/* Prevent unused variable warnings. */
 	// Cleanup decoder stream resources
+	gbCodecReady = false;
 	ogg_stream_clear(&to);
 	theora_clear(&td);
 	theora_comment_clear(&tc);
@@ -434,15 +480,13 @@ void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
-	static bool bStopping = false;
-
-	// Already in here?
-	if (bStopping)
-		return true;
-	bStopping = true;
+	CKernelMPI kernel;
+#if USE_MUTEX
+	kernel.LockMutex(gVidMutex);
+#endif
 
 	// Kill video task, if running
-	if (gpVidCtx)
+	if (gpVidCtx != NULL && gpVidCtx->hVideoThread != kNull)
 		DeInitVideoTask(gpVidCtx);
 	
 	// Cleanup decoder stream resources
@@ -458,16 +502,14 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	// Free video context created for task thread, if any
 	if (gpVidCtx) 
 	{
-		CKernelMPI		kernel;
 		kernel.Free(gpVidCtx);
 		gpVidCtx = NULL;
-		
-#if USE_MUTEX
-		kernel.DeInitMutex(gVidMutex);
-#endif
 	}
 
-	bStopping = false;
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+
 	return true;
 }
 
@@ -476,21 +518,21 @@ Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	if (gpVidCtx != NULL) {
-		CKernelMPI kernel;
-		kernel.LockMutex(*gpVidCtx->pMutex);
-	}
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
 #endif
+
 	// Note theora_granule_time() returns only seconds
-	pTime->frame = theora_granule_frame(&td,td.granulepos);
-	pTime->time  = pTime->frame * 1000 * ti.fps_denominator / ti.fps_numerator;
-	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoTime: frame %ld, time %ld ms\n", 
-		static_cast<long>(pTime->frame), static_cast<long>(pTime->time));
-#if USE_MUTEX
-	if (gpVidCtx != NULL) {
-		CKernelMPI kernel;
-		kernel.UnlockMutex(*gpVidCtx->pMutex);
+	if (gbCodecReady)
+	{
+		pTime->frame = theora_granule_frame(&td,td.granulepos);
+		pTime->time  = pTime->frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+		dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::GetVideoTime: frame %ld, time %ld ms\n", 
+			static_cast<long>(pTime->frame), static_cast<long>(pTime->time));
 	}
+	
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
 #endif
 	return true;	
 }
@@ -506,6 +548,11 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	int			bytes;
 
 	(void )hVideo;	/* Prevent unused variable warnings. */
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
 	// Compute next frame if time-based drop-frame mode selected 
 	if (bDrop)
 		pTime->frame = pTime->time * ti.fps_numerator / (ti.fps_denominator * 1000);
@@ -553,6 +600,9 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		}
 	}
 	
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
 	return ready;
 }
 
@@ -564,9 +614,13 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	ogg_packet  op;
 	ogg_int64_t frame;
 	int			bytes;
+	CKernelMPI 	kernel;
 	
 	// Compare selected frame time to current frame time
 	GetVideoTime(hVideo, &time);
+#if USE_MUTEX
+	kernel.LockMutex(gVidMutex);
+#endif
 	if (time.frame > pCtx->frame)
 	{	
 		// If we already past seek frame, we need to rewind from start
@@ -601,6 +655,9 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 		}
 	}
 
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
 	return found;
 }
 
@@ -720,41 +777,88 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
-	if (!gpVidCtx)
-		return false;
-	gpVidCtx->bPaused = true;
-	return true;
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
+	Boolean state = (gpVidCtx) ? gpVidCtx->bPaused = true : false;
+		
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+	return state;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
-	if (!gpVidCtx)
-		return false;
-	gpVidCtx->bPaused = false;
-	return true;
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
+	Boolean state = (gpVidCtx) ? gpVidCtx->bPaused = false : false;
+
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+	return state;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 {
+
 	(void )hVideo;	/* Prevent unused variable warnings. */
-	return (gpVidCtx) ? gpVidCtx->bPaused : false;
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
+	Boolean state = (gpVidCtx) ? gpVidCtx->bPaused : false;
+
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+	return state;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
-	return (gpVidCtx) ? gpVidCtx->bPlaying : false;
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
+	Boolean state = (gpVidCtx) ? gpVidCtx->bPlaying : false;
+
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+	return state;
 }
 
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
-	return (gpVidCtx) ? gpVidCtx->bLooped : false;
+
+#if USE_MUTEX
+	CKernelMPI kernel;
+	kernel.LockMutex(gVidMutex);
+#endif
+
+	Boolean state = (gpVidCtx) ? gpVidCtx->bLooped : false;
+
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+
+	return state;
 }
 
 LF_END_BRIO_NAMESPACE()
