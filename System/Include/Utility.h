@@ -46,6 +46,26 @@ typedef struct tagAppRsrcDataSet {
 		void* 	pDataSet;
 }tAppRsrcDataSet;
 
+/* app monitor communication */
+
+/* socket that monitord listens on */
+#define MONITOR_SOCK    "/tmp/monitoring_socket"
+/* socket on which monitord reports USB events */
+#define USB_SOCK        "/tmp/usb_events_socket"
+/* socketn on which monitord reports Power events */
+#define POWER_SOCK      "/tmp/power_events_socket"
+
+#define APP_MSG_GET_USB         0
+#define APP_MSG_SET_USB         1
+#define APP_MSG_GET_POWER       2
+#define APP_MSG_SET_POWER       3
+
+
+struct app_message {
+	unsigned int type;
+	unsigned int payload;
+} __attribute__((__packed__));
+
 /****************************************************************************
  * 																			*
  * Dataset loader functions.												*
@@ -84,6 +104,13 @@ int GetFreeMem(void);
 // Returns file name descriptor for the keyboard device
 //----------------------------------------------------------------------------
 char *GetKeyboardName(void);
+
+//----------------------------------------------------------------------------
+// Returns a listening socket at the specified path
+//----------------------------------------------------------------------------
+int CreateListeningSocket(const char *path);
+
+int CreateReportSocket(const char *path);
 
 LF_END_BRIO_NAMESPACE()
 
