@@ -13150,3 +13150,17 @@ By ayurovsky (ayurovsky@leapfrog.com) on 1/29/08 12:58 PM
 4,245 ms. (Cumulative: 3,528,074 ms)
 
 ----------------
+Revision 2,808 from svn://localhost/TRUNK/:
+Revision 2,809 from svn://localhost/TRUNK/:
+
+implement monitord integration in Brio PowerHandler.  Remove timermon/monitor
+script (monitord handles this), remove calls to power-control and disable that
+package.  Introduce new version of hwmon driver (battery monitoring from
+lf1000_power.c plus input device, elliminating custom char driver).
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 1/29/08 3:40 PM
+2 changed, 0 added, 0 deleted.
+4,194 ms. (Cumulative: 3,532,466 ms)
+
+----------------

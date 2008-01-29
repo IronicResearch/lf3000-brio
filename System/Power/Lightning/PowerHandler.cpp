@@ -17,19 +17,19 @@
 #include <KernelMPI.h>
 #include <KernelTypes.h>
 #include <SystemErrors.h>
+#include <Utility.h>
 
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/un.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <linux/lf1000/power_ioctl.h>
 
 #include <PowerTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
-
-
 
 //============================================================================
 // Local state and utility functions
@@ -44,7 +44,25 @@ namespace
 	struct tPowerData	data;
 }
 
+enum tPowerState GetPowerState(void)
+{
+		CDebugMPI dbg(kGroupPower);
+		char buf[2];
+		int size = read(power_fd, &buf, 2);
+		dbg.Assert(size >= 0, "CPowerModule::LightningPowerTask: read failed");
 
+		switch(buf[0]) {
+			case '1':
+			return kPowerExternal;
+			case '2':
+			return kPowerBattery;
+			case '3':
+			return kPowerLowBattery;
+			case '4':
+			return kPowerCritical;
+		}
+		return kPowerNull;
+}
 
 //============================================================================
 // Asynchronous notifications
@@ -55,19 +73,39 @@ void *LightningPowerTask(void*)
 	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupPower);
 	CKernelMPI	kernel;
-
+	struct sockaddr_un mon;
+	socklen_t s_mon = sizeof(struct sockaddr_un);
+	int ls, ms;
+	int size;
+	struct app_message msg;
+	
 	dbg.SetDebugLevel(kDbgLvlVerbose);
 	
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
-	
+
+	ls = CreateListeningSocket(POWER_SOCK);
+	dbg.Assert(ls >= 0, "can't open listening socket");
+
 	while(1) {
+		// get battery state
+		current_pe.powerState = GetPowerState();
+
+		// overwrite with power down, if one is pending
+		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
+		if(ms > 0) {
+			while(1) {
+				size = recv(ms, &msg, sizeof(msg), 0);
+				if(size == sizeof(msg) && msg.type == APP_MSG_SET_POWER)
+					current_pe.powerState = kPowerShutdown;
+				else
+					break;
+			}
+		}
 
 		// Pace thread at time intervals relavant for power events
-		kernel.TaskSleep(1);
+		kernel.TaskSleep(100);
 
-		int size = read(power_fd, &current_pe, sizeof(struct tPowerData));
-		dbg.Assert( size >= 0, "CPowerModule::LightningPowerTask: power read failed" );
-		
+		// report power state
 		data.powerState = current_pe.powerState;
 		CPowerMessage msg(data);
 		eventmgr.PostEvent(msg, kPowerEventPriority);
@@ -89,14 +127,13 @@ void CPowerModule::InitModule()
 	
 	CEventMPI	eventmgr;
 
-	
 	dbg_.DebugOut(kDbgLvlVerbose, "Power Init\n");
 
 	data.powerState = kPowerNull;
 
 	// Need valid file descriptor open before starting task thread 
-	power_fd = open( "/dev/power", B_O_RDWR);
-	dbg_.Assert(power_fd != -1, "CPowerModule::InitModule: cannot open /dev/power");
+	power_fd = open("/sys/devices/platform/lf1000-power/status", O_RDONLY);
+	dbg_.Assert(power_fd >= 0, "CPowerModule::InitModule: cannot open status");
 
 	if( kernel.IsValid() )
 	{
@@ -146,19 +183,44 @@ int CPowerModule::Shutdown() const
 //----------------------------------------------------------------------------
 int CPowerModule::GetShutdownTimeMS() const
 {
-	CDebugMPI	dbg(kGroupPower);
-	int status = ioctl(power_fd, POWER_IOCQ_SHUTDOWN_TIME_MS, 0);
-	dbg.Assert(status >= 0, "PowerModule::GetShutdownTimeMS: ioctl failed");
-	return status;
+	struct app_message msg, resp;
+	int size;
+	int s = CreateReportSocket(MONITOR_SOCK);
+
+	msg.type = APP_MSG_GET_POWER;
+	msg.payload = 0;
+
+	if(send(s, &msg, sizeof(msg), 0) < 0) {
+		close(s);
+		return -1;
+	}
+
+	size = recv(s, &resp, sizeof(struct app_message), 0);
+	if(size != sizeof(struct app_message)) {
+		close(s);
+		return -1;
+	}
+
+	close(s);
+	return resp.payload*1000;
 }
 
 //----------------------------------------------------------------------------
 int CPowerModule::SetShutdownTimeMS(int iMilliseconds) const
 {
-	CDebugMPI	dbg(kGroupPower);
-	int status = ioctl(power_fd, POWER_IOCT_SHUTDOWN_TIME_MS, iMilliseconds);
-	dbg.Assert(status >= 0, "PowerModule::SetShutdownTimeMS: ioctl failed");
-	return status;
+	struct app_message msg;
+	int s = CreateReportSocket(MONITOR_SOCK);
+
+	msg.type = APP_MSG_SET_POWER;
+	if(iMilliseconds == 0)
+		msg.payload = 0;
+	else
+		msg.payload = iMilliseconds >= 1000 ? iMilliseconds/1000 : 1;
+
+	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
+	close(s);
+
+	return 0;
 }
 
 //----------------------------------------------------------------------------
