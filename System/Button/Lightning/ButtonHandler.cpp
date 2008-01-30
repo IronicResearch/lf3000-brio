@@ -201,7 +201,7 @@ void *LightningButtonTask(void*)
 		{
 			CAudioMPI audioMPI;
 			bool state_SpeakerEnabled = (0 == (data.buttonState & kHeadphoneJackDetect));
-			audioMPI.SetSpeakerEqualizer(state_SpeakerEnabled);
+			audioMPI.EnableSpeakerDSP(state_SpeakerEnabled);
 		}
 
 		if(data.buttonTransition != 0) {
