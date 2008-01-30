@@ -63,7 +63,8 @@ public:
 	void 		SetMasterVolume( U8 volume );
 	U8			GetMasterVolume( void ) const;
 
-	
+	void EnableSpeakerDSP(U8 x);
+
 	// Set/Get path for audio resource file
 	tErrType		SetAudioResourcePath( const CPath &path );
 	const CPath* 	GetAudioResourcePath( void ) const;
