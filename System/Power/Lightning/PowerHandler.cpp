@@ -29,6 +29,10 @@
 
 #include <PowerTypes.h>
 
+/* events we may receive */
+#define EVENT_POWER		1
+#define EVENT_BATTERY 	2
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //============================================================================
@@ -95,10 +99,27 @@ void *LightningPowerTask(void*)
 		if(ms > 0) {
 			while(1) {
 				size = recv(ms, &msg, sizeof(msg), 0);
-				if(size == sizeof(msg) && msg.type == APP_MSG_SET_POWER)
-					current_pe.powerState = kPowerShutdown;
-				else
+				if(size == sizeof(msg) && msg.type == APP_MSG_SET_POWER) {
+						switch(msg.payload) {
+								case EVENT_BATTERY:
+								current_pe.powerState = kPowerCritical;
+								dbg.DebugOut(kDbgLvlVerbose, 
+											 "%s: state = kPowerCritical\n",
+											 __FUNCTION__);
+								break;
+								
+								default:
+								case EVENT_POWER:
+								current_pe.powerState = kPowerShutdown;
+								dbg.DebugOut(kDbgLvlVerbose, 
+											 "%s: state = kPowerShutdown\n",
+											 __FUNCTION__);
+								break;
+						} 
+				} 
+				else {
 					break;
+				}
 			}
 		}
 
