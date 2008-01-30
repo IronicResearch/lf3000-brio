@@ -223,22 +223,22 @@ void CAudioMPI::SetMasterVolume( U8 volume )
 // set or cleared when a kHeadphoneJackDetect message is received
 // This will not work on emulation, Lightning specific.  Need to hook into
 // lf1000-audio driver via ioctl().
-Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
-{
-	if ( !pModule_  )
-		return 0;
-return (pModule_->GetOutputEqualizer());
-}   // ---- end GetSpeakerEqualizer() ----
+//Boolean	CAudioMPI::GetSpeakerEqualizer(void) const
+//{
+//	if ( !pModule_  )
+//		return 0;
+//return (pModule_->GetOutputEqualizer());
+//}   // ---- end GetSpeakerEqualizer() ----
 
 // ==============================================================================
 // SetSpeakerEqualizer
 // ==============================================================================
-void CAudioMPI::SetSpeakerEqualizer(Boolean enable)
-{
+//void CAudioMPI::SetSpeakerEqualizer(Boolean enable)
+//{
 //printf("CAudioMPI::SetOutputEqualizer: enable=%d\n", enable);
-	if ( pModule_ )
-		pModule_->SetOutputEqualizer( enable );
-}   // ---- end SetSpeakerEqualizer() ----
+//	if ( pModule_ )
+//		pModule_->SetOutputEqualizer( enable );
+//}   // ---- end SetSpeakerEqualizer() ----
 
 // ==============================================================================
 // SetAudioResourcePath
@@ -416,22 +416,22 @@ void CAudioMPI::SetAudioEventListener( tAudioID id, IEventListener *pListener )
 // ==============================================================================
 // GAS:  Get Audio State LF internal function
 // ==============================================================================
-    void 
-CAudioMPI::GAS( void *d ) 
-{
-if ( pModule_ )	
-    pModule_->GetAudioState( (tAudioState *) d );
-}   // ---- end GAS() ----
+ //   void 
+//CAudioMPI::GAS( void *d ) 
+//{
+//if ( pModule_ )	
+//    pModule_->GetAudioState( (tAudioState *) d );
+//}   // ---- end GAS() ----
 
 // ==============================================================================
 // SAS
 // ==============================================================================
-    void 
-CAudioMPI::SAS( void *d ) 
-{
-if ( pModule_ )
-	pModule_->SetAudioState( (tAudioState *) d );
-}   // ---- end SAS() ----
+//    void 
+//CAudioMPI::SAS( void *d ) 
+//{
+//if ( pModule_ )
+//	pModule_->SetAudioState( (tAudioState *) d );
+//}   // ---- end SAS() ----
 
 // ==============================================================================
 // GetDefaultAudioVolume

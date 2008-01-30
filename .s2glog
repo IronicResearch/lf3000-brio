@@ -13177,3 +13177,15 @@ By gklimanis (gklimanis@leapfrog.com) on 1/29/08 4:51 PM
 4,153 ms. (Cumulative: 3,536,799 ms)
 
 ----------------
+Revision 2,812 from svn://localhost/TRUNK/:
+
+major audio architecture overhaul.  Check in for Brian C's overhaul of 
+AudioTask.  Some audio functions are not working.  This is known by the 
+group.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/29/08 4:52 PM
+21 changed, 0 added, 0 deleted.
+4,575 ms. (Cumulative: 3,541,526 ms)
+
+----------------

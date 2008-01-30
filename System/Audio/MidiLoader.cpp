@@ -55,6 +55,9 @@ pFnFilePlayerRewind			pMIDIFilePlayer_Rewind = NULL;
 pFnFilePlayerSetTempoScaler	pMIDIFilePlayer_SetTempoScaler = NULL;
 pFnFilePlayerPlayFrames		pMIDIFilePlayer_PlayFrames = NULL;
 pFnFilePlayerDelete			pMIDIFilePlayer_Delete = NULL;
+pFnFilePlayerGetTrackCount	pMIDIFilePlayer_GetTrackCount = NULL;
+pFnFilePlayerGetTrackEnable	pMIDIFilePlayer_GetTrackEnable = NULL;
+pFnFilePlayerSetTrackEnable	pMIDIFilePlayer_SetTrackEnable = NULL;
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -137,6 +140,9 @@ bool LoadMidiLibrary(void)
 	pMIDIFilePlayer_SetTempoScaler = (pFnFilePlayerSetTempoScaler) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_SetTempoScaler"));
 	pMIDIFilePlayer_PlayFrames = (pFnFilePlayerPlayFrames) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_PlayFrames"));
 	pMIDIFilePlayer_Delete = (pFnFilePlayerDelete) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_Delete"));
+	pMIDIFilePlayer_GetTrackCount = (pFnFilePlayerGetTrackCount) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_GetTrackCount"));
+	pMIDIFilePlayer_GetTrackEnable = (pFnFilePlayerGetTrackEnable) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_GetTrackEnable"));
+	pMIDIFilePlayer_SetTrackEnable = (pFnFilePlayerSetTrackEnable) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_SetTrackEnable"));
 
 	//	pSPMIDI_XXXX = (pFnXXXX) (kernel.RetrieveSymbolFromModule(hLibMidi, "SPMIDI_XXXX"));
 
