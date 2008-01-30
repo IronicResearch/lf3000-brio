@@ -31,7 +31,7 @@ enum {
 	kAudioCmdMsgTypeChangeAudioEffectsProcessor,
 
 	kAudioCmdMsgTypeSetMasterVolume,
-	kAudioCmdMsgTypeEnableSpeakerDSP,
+	kAudioCmdMsgTypeSetOutputEqualizer,
 
 	kAudioCmdMsgTypeStartAllAudio,
 	kAudioCmdMsgTypePauseAllAudio,
@@ -107,10 +107,10 @@ private:
 	U8	d_;
 };
 
-// kAudioCmdMsgTypeEnableSpeakerDSP
-class CAudioMsgEnableSpeakerDSP : public CAudioCmdMsg {
+// kAudioCmdMsgTypeSetOutputEqualizer
+class CAudioMsgSetOutputEqualizer : public CAudioCmdMsg {
 public:    
-	CAudioMsgEnableSpeakerDSP( const U8 x );
+	CAudioMsgSetOutputEqualizer( const U8 x );
 	U8	GetData( void ) { return d_; }
 	
 private:
@@ -446,16 +446,14 @@ public:
 	void SetAudioErr( tErrType err )          { err_          = err; }
 	void SetAudioID( tAudioID id )            { audioID_      = id;  }
 	void SetMidiID( tMidiPlayerID id )        { midiPlayerID_ = id;  }
-	void SetBooleanResult( Boolean x )        { booleanValue_ = x; }
-	void SetS32Result( S32 x )                { s32Value_     = x; }
-	void SetU32Result( U32 x )                { u32Value_     = x; }
+	void SetBooleanResult( Boolean val )      { booleanValue_ = val; }
+	void SetU32Result( U32 val )              { u32Value_     = val; }
 	void SetAudioStateResult( tAudioState d ) { audioState_   = d;   }
 	
 	tMidiPlayerID GetMidiID(           void ) { return midiPlayerID_; }
 	tAudioID      GetAudioID(          void ) { return audioID_;      }
 	tErrType      GetAudioErr(         void ) { return err_;          }
 	Boolean       GetBooleanResult(    void ) { return booleanValue_; }
-	S32           GetS32Result(        void ) { return s32Value_;     }
 	U32           GetU32Result(        void ) { return u32Value_;     }
 	tAudioState   GetAudioStateResult( void ) { return audioState_;   }
 	
@@ -464,7 +462,6 @@ private:
 	tAudioID		audioID_;
 	tMidiPlayerID	midiPlayerID_;
 	Boolean			booleanValue_;
-	S32				s32Value_;
 	U32				u32Value_;
 	tAudioState		audioState_;
 };

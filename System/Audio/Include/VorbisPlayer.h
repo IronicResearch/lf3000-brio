@@ -39,15 +39,12 @@ public:
 	CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	~CVorbisPlayer();
 		
-	void	OpenFile(char *path);
-	void	CloseFile();
 	void	RewindFile();
-
-	U32     GetTime_mSec( void );
+	U32     GetAudioTime_mSec( void );
+	
+	// Attempt to fill buffer at pOutBuff with numFrames of data.  
+	// Returns number of frames actually rendered; zero when done.
 	U32		Render( S16 *pOut, U32 numStereoFrames );
-    inline void SetFileReadBuf(void *p)     { pFileReadBuf_ = (S16 *) p;}
-
-	void SetAudioInfo( tAudioStartAudioInfo *pInfo, tAudioID id  );
 
 private:
 	OggVorbis_File	vorbisFile_;		// codec context data

@@ -43,73 +43,20 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) : CAudioPlayer( pInfo, id  )
 {
-//{static long c=0; printf("CRawPlayer::ctor: START%ld id =%d\n", c++, (int)id);}
+	tErrType			result;
+	
+//printf("CRawPlayer::ctor -- start id =%d\n", id);
 
+// 
+// ---- Open audio file
+//
 // printf("CRawPlayer::ctor  Will open '%s'\n", pInfo->path->c_str());
     fileType_ = kRawPlayer_FileType_Unknown;
     fileH_    = NULL;
 
 // Try to open WAV or AIFF File
-    if (pInfo)
-        OpenFile((char *)pInfo->path->c_str());
-	
-totalBytesRead_ = 0;
-
-//printf("CRawPlayer::ctor -- end \n");
-} // ---- end CRawPlayer() ----
-
-// ==============================================================================
-// ~CRawPlayer
-// ==============================================================================
-CRawPlayer::~CRawPlayer()
-{
-//printf("~CRawPlayer: start %p\n", (void *) this);
-
-// Close file
-    if (fileH_)
-        {
-	    fclose( fileH_ );
-        fileH_ = NULL;
-        }
-	if (inFile_)
-        {
-        CloseSoundFile(&inFile_);
-//        inFile_ = NULL;
-        }
-
-// If anyone is listening, let them know we're done.
-if (pListener_ && bSendDoneMessage_)
-    {
-printf("~CRawPlayer: id_=%ld BEFO SendDoneMsg()\n", (long)id_);
-	SendDoneMsg();
-    }
-
-// Free MPIs
-	if (pDebugMPI_)
-        {
-		delete pDebugMPI_;  
-        pDebugMPI_ = NULL;
-        }
-
-//printf("~CRawPlayer: end pListener=%p bDoneMessage=%d\n", (void*)pListener_, bDoneMessage_);
-} // ---- end ~CRawPlayer() ----
-
-// ==============================================================================
-// OpenFile :  Open specified file.  Closed existing file.
-// ==============================================================================
-    void 
-CRawPlayer::OpenFile(char *path)
-{
-//{static long c=0; printf("CRawPlayer::OpenFile %ld: START '%s'\n", c++, path);}
-
-//	tErrType			result;
-if (inFile_)
-    CloseFile();
-
-// Try to open WAV or AIFF File
     SF_INFO	 inFileInfo;  
-//    inFile_ = OpenSoundFile( (char *) pInfo->path->c_str(), &inFileInfo, SFM_READ);
-    inFile_ = OpenSoundFile( path, &inFileInfo, SFM_READ);
+    inFile_ = OpenSoundFile( (char *) pInfo->path->c_str(), &inFileInfo, SFM_READ);
 	if (inFile_)
 		{
     	long fileFormatType = (inFileInfo.format & SF_FORMAT_TYPEMASK);
@@ -126,8 +73,6 @@ if (inFile_)
         	audioDataBytes_    = inFileInfo.frames*inFileInfo.channels*sizeof(S16);		
             channels_          = inFileInfo.channels;   
 //            totalFrames_    = inFileInfo.frames;
-
-//printf("WAV Header: frames=%ld ch=%ld fs=%d Hz \n",  channels_, inFileInfo.frames, (int)samplingFrequency_);
             }
         // For unsupported file type, just zero everything
         else
@@ -141,17 +86,17 @@ if (inFile_)
     // If WAV/AIFF opens failed, try to open as Brio "RAW" file
     else
         {
-		printf("Unable to open as WAV/AIFF file '%s'\n",  path);
-    	fileH_ = fopen(  path, "r" );
+//		printf("Unable to open as WAV/AIFF file '%s'\n",  pInfo->path->c_str());
+    	fileH_ = fopen(  pInfo->path->c_str(), "r" );
         if (!fileH_)
-            printf("CRawPlayer::ctor : Unable to open '%s'\n",  path );
+            printf("CRawPlayer::ctor : Unable to open '%s'\n",  pInfo->path->c_str() );
 
     // Read Brio "Raw" audio header
         fileType_ = kRawPlayer_FileType_Brio;
     	tAudioHeader	brioHeader;		
         tAudioHeader *bH = &brioHeader;
     	int bytesRead = fread( bH, 1, sizeof(tAudioHeader), fileH_);
-pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)), "CRawPlayer::ctor: Unable to read RAW audio header from '%s'\n", path);
+pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)), "CRawPlayer::ctor: Unable to read RAW audio header from '%s'\n", (char *) pInfo->path->c_str());
 
     	samplingFrequency_ = bH->sampleRate;
     	audioDataBytes_    = bH->dataSize;		
@@ -161,81 +106,80 @@ pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)), "CRawPlayer::ctor: Unabl
 //printf("Brio Raw Header: sizeof()=%d dataOffset=%d ch=%ld fs=%d Hz dataSize=%ld\n", 
 //    sizeof(tAudioHeader), (int)bH->offsetToData, channels_, (int)bH->sampleRate, bH->dataSize);
 
-pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData), "CRawPlayer::ctor: offsetToData=%ld, but should be %d.  Is this Brio Raw Audio file ? '%s'\n", bH->offsetToData , sizeof(tAudioHeader), path);
+pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData), "CRawPlayer::ctor: offsetToData=%ld, but should be %d.  Is this Brio Raw Audio file ? '%s'\n", bH->offsetToData , sizeof(tAudioHeader), (char *) pInfo->path->c_str());
 		}
+	
+//long    	totalFrames    = audioDataBytes_ / (sizeof(S16)*channels_);
+//printf("CRawPlayer AF info: ch=%ld fs=%ld Hz frames=%ld\n", channels_, samplingFrequency_, totalFrames);
+// Most of member vars set by superclass; these are RAW specific.
+//framesRemaining_ = totalFrames_;
+totalBytesRead_ = 0;
 
-bComplete_ = false;
-} // ---- end OpenFile() ----
+//printf("CRawPlayer::ctor -- end \n");
+} // ---- end CRawPlayer() ----
 
 // ==============================================================================
-// CloseFile :  
+// ~CRawPlayer
 // ==============================================================================
-    void 
-CRawPlayer::CloseFile()
+CRawPlayer::~CRawPlayer()
 {
-if (fileH_)
-    {
-    fclose( fileH_ );
-    fileH_ = NULL;
-    }
-if (inFile_)
-    {
-    CloseSoundFile(&inFile_);
+//printf("~CRawPlayer: start %p\n", (void *) this);
+#ifdef USE_AUDIO_PLAYER_MUTEX
+tErrType result = pKernelMPI_->LockMutex( renderMutex_ );
+if (kNoErr != result)
+    printf("~CRawPlayer: Couldn't lock render_mutex\n");
+#endif
+
+	if (pReadBuf_)
+		delete pReadBuf_;
+
+	// Close file
+    if (fileH_)
+        {
+	    fclose( fileH_ );
+        fileH_ = NULL;
+        }
+	if (inFile_)
+        {
+        CloseSoundFile(&inFile_);
 //        inFile_ = NULL;
+        }
+
+#ifdef USE_AUDIO_PLAYER_MUTEX
+	result = pKernelMPI_->UnlockMutex( renderMutex_ );
+if (kNoErr != result)
+    printf("~CRawPlayer: Couldn't unlock renderMutex\n");
+
+	result = pKernelMPI_->DeInitMutex( renderMutex_ );
+if (kNoErr != result)
+    printf("~CRawPlayer: Couldn't deinit rendeMutex\n");
+if (pKernelMPI_)    
+    {
+	delete pKernelMPI_;  
+    pKernelMPI_ = NULL;
     }
-} // ---- end CloseFile() ----
+#endif
+
+// If anyone is listening, let them know we're done.
+if (pListener_ && bSendDoneMessage_)
+    {
+//printf("~CRawPlayer: SSSSSSSSS befo SendDoneMsg()\n");
+	SendDoneMsg();
+    }
+
+// Free MPIs
+	if (pDebugMPI_)
+        {
+		delete pDebugMPI_;  
+        pDebugMPI_ = NULL;
+        }
+
+//printf("~CRawPlayer: end pListener=%p bDoneMessage=%d\n", (void*)pListener_, bDoneMessage_);
+} // ---- end ~CRawPlayer() ----
 
 // ==============================================================================
-// SetAudioInfo :  
-// ==============================================================================
-    void 
-CRawPlayer::SetAudioInfo(tAudioStartAudioInfo* pInfo, tAudioID id)
-{
-id_           = id;
-priority_     = pInfo->priority;
-pListener_    = pInfo->pListener;
-payload_      = pInfo->payload;
-optionsFlags_ = pInfo->flags;
-
-bSendDoneMessage_    = (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
-bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
-
-// Set up looping
-loopCount_   = payload_;
-shouldLoop_  = (0 < loopCount_) && (optionsFlags_ & kAudioOptionsLooped);
-loopCounter_ = 0;
-
-//#define DEBUG_RAWPLAYER_OPTIONS
-#ifdef DEBUG_RAWPLAYER_OPTIONS
-{
-char sFlags[50];
-sFlags[0] = '\0';
-if (optionsFlags_ & kAudioOptionsLoopEndMsg)
-    strcat(sFlags, "SendLoopEnd=On");
-else
-    strcat(sFlags, "SendLoopEnd=Off");
-if (optionsFlags_ & kAudioOptionsLooped)
-    strcat(sFlags, "Loop=On ");
-else
-    strcat(sFlags, "Loop=Off ");
-if (optionsFlags_ & kAudioOptionsDoneMsgAfterComplete)
-    strcat(sFlags, "SendDone=On");
-else
-    strcat(sFlags, "SendDone=Off");
-
-printf("CRawPlayer::SetAudioInfo: listener=%d bSendDoneMessage_=%d bSendLoopEndMessage_=%d flags=$%X '%s'\n", (kNull != pListener_), bSendDoneMessage_, bSendLoopEndMessage_, (unsigned int)optionsFlags_, sFlags);
-
-printf("    payload=%d optionsFlags=$%X -> shouldLoop=%d\n", 
-        (int)payload_, (unsigned int) optionsFlags_, shouldLoop_);
-printf("    listener=%p DoneMessage=%d LoopEndMessage=%d flags=$%X '%s' loopCount=%ld ($%X)\n", 
-        (void *)pListener_, bSendDoneMessage_, bSendLoopEndMessage_, (unsigned int)optionsFlags_, sFlags, 
-            loopCount_, (unsigned int) loopCount_);
-}
-#endif // DEBUG_RAWPLAYER_OPTIONS
-} // ---- end SetAudioInfo() ----
-
-// ==============================================================================
-// ReadBytesFromFile :  Bytes actually read
+// ReadBytesFromFile :   
+//                      Return specified bytes read.
 // ==============================================================================
     U32 
 CRawPlayer::ReadBytesFromFile( void *d, U32 bytesToRead)
@@ -267,14 +211,29 @@ U32		index;
 U32		framesRead = 0, framesToProcess = 0;
 U32		bytesRead = 0;
 U32     bytesToRead = framesToRender * sizeof(S16) * channels_;
-S16     *bufPtr = pFileReadBuf_;
+S16     *bufPtr = pReadBuf_;
 long    fileEndReached = false;
 
 //totalBytesRead_ = 0;
-//{static long c=0; printf("CRawPlayer::Render: start %ld pOut=%p pFileReadBuf_=%p framesToRender=%ld\n", c++, (void *) pOut, (void *) pFileReadBuf_, framesToRender);}
+
+//{static long c=0; printf("CRawPlayer::Render: start %ld framesToRender=%ld\n", c++, framesToRender);}
 //printf("CRawPlayer::Render: shouldLoop=%d \n", shouldLoop_);
 if (bComplete_)
     return (0);
+
+	// Don't want to try to render if stop() or dtor() have been entered.
+	// TODO/dg: this is a really ugly hack.  Need to figure out what to return
+	// in the case of render being called while stopping/dtor is running.
+#ifdef USE_AUDIO_PLAYER_MUTEX
+	result = pKernelMPI_->TryLockMutex( renderMutex_ );
+	if (EBUSY == result)
+        {
+        printf("CRawPlayer::Render: EBUSY == renderMutex.\n");
+ 		return (0);
+        }
+    if (kNoErr != result)
+        printf("CRawPlayer::Render: Unable to lock renderMutex.\n");
+#endif
 
 //
 // Read data from file to output buffer
@@ -284,7 +243,6 @@ if (bComplete_)
 	while ( !fileEndReached && bytesToRead > 0) 
         {
         bytesRead = ReadBytesFromFile(bufPtr, bytesToRead);
-//{static long c=0; printf("CRawPlayer::Render%ld: bytesRead=%ld/%ld\n", c++, bytesRead, bytesToRead);}
 
 // Loop audio:  send Done or LoopEnd message, but never both at end of loop
         fileEndReached = ( bytesRead < bytesToRead );
@@ -333,7 +291,7 @@ if (bComplete_)
 	if (2 == channels_) 
         {
 		for (index = 0; index < samplesToProcess; index++) 			
-			pOut[index] = pFileReadBuf_[index];
+			pOut[index] = pReadBuf_[index];
     // Fill remainder with zeros -> Not needed if parent Render() covers this
 //		for (; index < samplesToProcess; index++) 			
 //			pOut[index] = 0;
@@ -343,12 +301,19 @@ if (bComplete_)
         {
 		for (index = 0; index < samplesToProcess; index++, pOut += 2) 
             {	
-            S16 x = pFileReadBuf_[index];
+            S16 x = pReadBuf_[index];
 			pOut[0] = x;
 			pOut[1] = x;
 		    }
 	    }
 			
+#ifdef USE_AUDIO_PLAYER_MUTEX
+	result = pKernelMPI_->UnlockMutex( renderMutex_ );
+	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::Render: Unable to unlock render_mutex.\n");
+    if (kNoErr != result)   
+        printf("CRawPlayer::Render: Unable to unlock renderMutex.\n");
+#endif
+
 //#define RAWPLAYER_SENDDONE_IN_RENDER
 #ifdef RAWPLAYER_SENDDONE_IN_RENDER
 	if (pListener_ && bSendDoneMessage_ && fileEndReached)
@@ -357,6 +322,13 @@ if (bComplete_)
 		SendDoneMsg();
         }
 #endif // RAWPLAYER_SENDDONE_IN_RENDER
+
+//if (1 == waitForRender_)
+//    {
+//printf("RawPlayer::Render: set waitForRender to 1\n");
+//    pKernelMPI_->TaskSleep( 100 );
+//    waitForRender_ = 2;
+//    }
 
 //#define TEST_RAWPLAYER_GETAUDIOTIME_EQUATION
 #ifdef TEST_RAWPLAYER_GETAUDIOTIME_EQUATION
@@ -386,19 +358,19 @@ if (inFile_)
 }   // ---- end RewindFile() ----
 
 // ==============================================================================
-// GetTime_mSec :   Return current position in audio file in milliseconds
+// GetAudioTime_mSec :   Return current position in audio file in milliSeconds
 // ==============================================================================
     U32 
-CRawPlayer::GetTime_mSec( void ) 
+CRawPlayer::GetAudioTime_mSec( void ) 
 {
 U32 totalFramesRead = totalBytesRead_ / (sizeof(S16)*channels_);
 U32 milliSeconds = (1000 * totalFramesRead)/samplingFrequency_;
 
-//printf("CRawPlayer::GetTime_mSec: time=%ld ch=%ld totalFramesRead=%ld -> (fs=%ld)\n", 
+//printf("CRawPlayer::GetAudioTime_mSec: time=%ld ch=%ld totalFramesRead=%ld -> (fs=%ld)\n", 
 //        milliSeconds, channels_, totalFramesRead, samplingFrequency_);
 
 return (milliSeconds);
-}   // ---- end GetTime_mSec() ----
+}   // ---- end GetAudioTime_mSec() ----
 
 
 LF_END_BRIO_NAMESPACE()

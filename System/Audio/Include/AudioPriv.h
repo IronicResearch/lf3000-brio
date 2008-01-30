@@ -54,8 +54,8 @@ public:
 
 	VTABLE_EXPORT void 		SetMasterVolume( U8 volume );
 	VTABLE_EXPORT U8		GetMasterVolume( void );
-	VTABLE_EXPORT void 		EnableSpeakerDSP( U8 enable );
-	VTABLE_EXPORT U8		IsSpeakerDSPEnabled( void );
+	VTABLE_EXPORT void 		SetOutputEqualizer( U8 enable );
+	VTABLE_EXPORT U8		GetOutputEqualizer( void );
 
 	// Specific to MPIs
 	VTABLE_EXPORT tErrType     SetAudioResourcePath( U32 mpiID, const CPath &path );
@@ -164,7 +164,7 @@ private:
 	tMessageQueueHndl 		hRecvMsgQueue_;
 	tMessageQueueHndl 		hSendMsgQueue_;
 	U8						masterVolume_;
-	U8						speakerDSPEnabled_;
+	U8						outputEqualizerEnabled_;
 	tMutex     				mpiMutex_;
 
 	void 			SendCmdMessage( CAudioCmdMsg& msg );
@@ -173,7 +173,6 @@ private:
 	tErrType 		WaitForStatus(  void );
 
 	Boolean 		WaitForBooleanResult(    void ); 
-	S32 			WaitForS32Result(        void ); 
 	U32 			WaitForU32Result(        void ); 
 	tAudioState		WaitForAudioStateResult( void ); 
 	
