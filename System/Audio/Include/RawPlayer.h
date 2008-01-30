@@ -40,15 +40,11 @@ public:
 	CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	~CRawPlayer();
 		
-	void	OpenFile(char *path);
-	void	CloseFile();
 	void	RewindFile();
-
-	void SetAudioInfo( tAudioStartAudioInfo *pInfo, tAudioID id  );
-    inline void SetFileReadBuf(void *p)     { pFileReadBuf_ = (S16 *) p;}
-
-	U32     GetTime_mSec( void );
+	U32     GetAudioTime_mSec( void );
 	U32     ReadBytesFromFile( void *d, U32 bytesToRead);
+
+// Returns # frames actually rendered without zero padding
 	U32		Render( S16 *pOut, U32 numStereoFrames );
 
 private:

@@ -50,9 +50,9 @@ CAudioMsgSetMasterVolume::CAudioMsgSetMasterVolume( const U8 x ) {
 	messagePriority = kAudioMsgDefaultPriority;
 	d_ = x;
 }
-CAudioMsgEnableSpeakerDSP::CAudioMsgEnableSpeakerDSP( const U8 x ) {
-	type_           = kAudioCmdMsgTypeEnableSpeakerDSP;
-	messageSize     = sizeof(CAudioMsgEnableSpeakerDSP);
+CAudioMsgSetOutputEqualizer::CAudioMsgSetOutputEqualizer( const U8 x ) {
+	type_           = kAudioCmdMsgTypeSetOutputEqualizer;
+	messageSize     = sizeof(CAudioMsgSetOutputEqualizer);
 	messagePriority = kAudioMsgDefaultPriority;
 	d_ = x;
 }
@@ -482,7 +482,7 @@ CAudioModule::CAudioModule( void )
 	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
 
 	masterVolume_           = 100;    // GK FIXX TODO: hack, should get this from the mixer.
-	speakerDSPEnabled_ = false;  // GK FIXX TODO: hack, should get this from the mixer.
+	outputEqualizerEnabled_ = false;  // GK FIXX TODO: hack, should get this from the mixer.
 }
 
 //==============================================================================
@@ -492,7 +492,8 @@ CAudioModule::~CAudioModule( void )
 {
 	tErrType result = kNoErr;
 	
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, "CAudioModule::dtor: dtor called\n" );	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"CAudioModule::dtor: dtor called\n" );	
 
 	// Send message to thread to exit main while loop
 	CAudioCmdMsgExitThread msg;
@@ -686,40 +687,41 @@ U8 CAudioModule::GetMasterVolume( void )
 }   // ---- end GetMasterVolume() ----
 
 // ==============================================================================
-// EnableSpeakerDSP
+// SetOutputEqualizer
 // ==============================================================================
     void 
-CAudioModule::EnableSpeakerDSP(U8 x )
+CAudioModule::SetOutputEqualizer(U8 x )
 {
 	tErrType 	result = kNoErr;
 
-	speakerDSPEnabled_ = x;
+	// Keep local copy.
+	outputEqualizerEnabled_ = x;
 	
 	result = pKernelMPI_->LockMutex( mpiMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::EnableSpeakerDSP: Couldn't lock mutex.\n");
+	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetOutputEqualizer -- Couldn't lock mutex.\n");
 
 	// Need to inform the audio mixer that the master volume has changed
 	// Generate the command message to send to the audio Mgr task
-//	printf("CAudioModule::EnableSpeakerDSP: speakerDSPEnabled_ = %d\n", speakerDSPEnabled_ );	
+//	printf("CAudioModule::SetOutputEqualizer: outputEqualizerEnabled_ = %d\n", outputEqualizerEnabled_ );	
 
-	CAudioMsgEnableSpeakerDSP	msg( speakerDSPEnabled_ );
+	CAudioMsgSetOutputEqualizer	msg( outputEqualizerEnabled_ );
 	
 	// Send message and wait to get audioID back from audio task
  	SendCmdMessage( msg ); 
 
  	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
- 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::EnableSpeakerDSP: Couldn't unlock mutex\n");
-}   // ---- end EnableOutputSpeakerDSP() ----
+ 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::SetOutputEqualizer --  Couldn't unlock mutex.\n");
+}   // ---- end SetOutputEqualizer() ----
 
 // ==============================================================================
-// IsSpeakerDSPEnabled
+// GetOutputEqualizer
 // ==============================================================================
     U8 
-CAudioModule::IsSpeakerDSPEnabled( void )
+CAudioModule::GetOutputEqualizer( void )
 {
-	// GK FIXXX: This should call through to the mixer...
-return speakerDSPEnabled_;
-}   // ---- end IsSpeakerDSPEnabled() ----
+	// TODO: This probably should call through to the mixer...
+return outputEqualizerEnabled_;
+}   // ---- end GetOutputEqualizer() ----
 
 // ==============================================================================
 // SetAudioResourcePath
@@ -902,7 +904,7 @@ CAudioModule::IsAudioPlaying()
 // ==============================================================================
 void CAudioModule::StopAudio( tAudioID id, Boolean noDoneMessage )
 {
-printf("CAudioModule::StopAudio ID = %d\n", (int)id );	
+//printf("CAudioModule::StopAudio ID = %d\n", (int)id );	
 
 // Generate command message to send to audio Mgr task
 	tAudioStopAudioInfo msgData;
@@ -1057,7 +1059,7 @@ void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority )
 S8 CAudioModule::GetAudioPan( tAudioID id ) 
 {
 	tErrType 				result = kNoErr;
-	S8						x;
+	S8						pan;
 	tAudioPanInfo			info;
 	CAudioMsgGetAudioPan	msg( id );
 	
@@ -1068,12 +1070,12 @@ S8 CAudioModule::GetAudioPan( tAudioID id )
 
 	SendCmdMessage( msg );
 
-	x = (S8)WaitForS32Result();
+	pan = (S8)WaitForU32Result();
 	
 	result = pKernelMPI_->UnlockMutex( mpiMutex_ );
 	pDebugMPI_->Assert((kNoErr == result), "CAudioModule::GetAudioPan --  Couldn't unlock mutex.\n");
 
-	return (x);
+	return pan;
 }   // ---- end GetAudioPan() ----
 
 // ==============================================================================
@@ -1252,7 +1254,7 @@ tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 // ==============================================================================
 tAudioID	CAudioModule::GetAudioIDForMidiID( tMidiPlayerID /* id */) 
 {
-	return (MIDI_PLAYER_ID); // kNoAudioID;  // GK FIXXXX: quick hack.  Fixed value
+	return (2); // kNoAudioID;  // GK FIXXXX: quick hack.  Fixed value
 }   // ---- end GetAudioIDForMidiID() ----
 
 // ==============================================================================
@@ -1359,7 +1361,8 @@ tErrType CAudioModule::StartMidiFile( 	U32 				mpiID,
 			: *mpiState.path + path;
 
 	// Generate the command message to send to the audio Mgr task
-	printf("CAudioModule::StartMidiFile --  path = %s\n", fullPath.c_str() );	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+		"CAudioModule::StartMidiFile --  path = %s\n", fullPath.c_str() );	
 
 	info.id = id;
 	info.path = &fullPath;
@@ -1440,6 +1443,7 @@ void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 // ==============================================================================
 tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID id )
 {
+	tMidiTrackBitMask bm;
 	U32 temp;
 	CAudioMsgMidiFilePlaybackParams msg( id );
 	
@@ -1447,7 +1451,9 @@ tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID id )
 
 	temp = WaitForU32Result();
 	
-	return ((tMidiTrackBitMask)temp);
+	bm = (tMidiTrackBitMask)temp;
+	
+	return bm;
 }   // ---- end GetEnabledMidiTracks() ----
 
 // ==============================================================================
@@ -1505,7 +1511,8 @@ void CAudioModule::SendCmdMessage( CAudioCmdMsg& msg )
 {
 	tErrType err;
 	
-//	printf("CAudioModule::SendCmdMessage -- Sending message to audio task. size = %d; type = %d\n", 
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//		"CAudioModule::SendCmdMessage -- Sending message to audio task. size = %d; type = %d\n", 
 //							msg.GetMessageSize(), msg.GetCmdType());	
 	
     err = pKernelMPI_->SendMessage( hSendMsgQueue_, msg );
@@ -1522,14 +1529,15 @@ tAudioID CAudioModule::WaitForAudioID( void )
 	char 					msgBuf[sizeof(CAudioReturnMessage)];
 	CAudioReturnMessage* 	msg;
 
-//	printf("CAudioModule::WaitForAudioID -- Waiting for message from audio task.\n" );	
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CAudioModule::WaitForAudioID -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForAudioID -- Could not get audio ID from Audio Task.\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
-//	printf("CAudioModule::WaitForAudioID Got ID=%d\n", (int)msg->GetAudioID());
+//	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForAudioID Got ID=%d\n", static_cast<int>(msg->GetAudioID()));
 	    	  
 	return msg->GetAudioID();
 }   // ---- end WaitForAudioID() ----
@@ -1543,13 +1551,14 @@ tMidiPlayerID CAudioModule::WaitForMidiID( void )
 	char 					msgBuf[sizeof(CAudioReturnMessage)];
 	CAudioReturnMessage* 	msg;
 
-//	printf("CAudioModule::WaitForMidiID -- Waiting for message from audio task.\n" );	
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CAudioModule::WaitForMidiID -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForMidiID: Could not get MIDI Player ID from Audio Task\n" );
 	
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
-//	printf("CAudioModule::WaitForMidiID: Got ID=%d\n", msg->GetMidiID() );  
+//	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForMidiID: Got ID=%d\n", msg->GetMidiID() );  
 	    	  
 	return msg->GetMidiID();
 }   // ---- end WaitForMidiID() ----
@@ -1563,7 +1572,8 @@ tErrType CAudioModule::WaitForStatus( void )
 	char 					msgBuf[sizeof(CAudioReturnMessage)];
 	CAudioReturnMessage* 	msg;
 
-//	printf("CAudioModule::WaitForStatus -- Waiting for message from audio task. MsgSize = %d.\n", sizeof//(CAudioReturnMessage) );fflush(stdout);
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CAudioModule::WaitForStatus -- Waiting for message from audio task. MsgSize = %d.\n", sizeof//(CAudioReturnMessage) );fflush(stdout);
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForStatus -- Could not get status from Audio Task.\n" );
@@ -1571,7 +1581,7 @@ tErrType CAudioModule::WaitForStatus( void )
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
 	err = msg->GetAudioErr();
-//	printf("CAudioModule::WaitForStatus -- Got status = %d \n", (int)err );  
+//	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForStatus -- Got status = %d \n", static_cast<int>(err) );  
 		    	  
 	return err;
 }   // ---- end WaitForStatus() ----
@@ -1586,7 +1596,8 @@ Boolean CAudioModule::WaitForBooleanResult( void )
 	CAudioReturnMessage* 	msg;
 	Boolean					result;
 
-// printf("CAudioModule::WaitForBooleanResult -- Waiting for message from audio task.\n" );	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+			"CAudioModule::WaitForBooleanResult -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForBooleanResult -- Could not get result from Audio Task.\n" );
@@ -1594,33 +1605,11 @@ Boolean CAudioModule::WaitForBooleanResult( void )
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
 	result = msg->GetBooleanResult();
-//	printf("CAudioModule::WaitForBooleanResult -- Boolean = %d \n", (int) result);  
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForBooleanResult -- Boolean = %d \n",
+	    	   static_cast<int>(result) );  
 		    	  
 	return result;
 }   // ---- end WaitForBooleanResult() ----
-
-// ==============================================================================
-// WaitForS32Result
-// ==============================================================================
-S32 CAudioModule::WaitForS32Result( void ) 
-{
-	tErrType 				err;
-	char 					msgBuf[sizeof(CAudioReturnMessage)];
-	CAudioReturnMessage* 	msg;
-	S32						result;
-
-//	printf("CAudioModule::WaitForS32Result -- Waiting for message from audio task.\n" );	
-
-	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
-	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForS32Result -- no message received from Audio Task.\n" );
-	
-	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
-
-	result = msg->GetS32Result();
-//	printf("CAudioModule::WaitForS32Result -- Got U32 = %d \n", static_cast<int>(result) );  
-		    	  
-	return result;
-}   // ---- end WaitForS32Result() ----
 
 // ==============================================================================
 // WaitForU32Result
@@ -1632,7 +1621,8 @@ U32 CAudioModule::WaitForU32Result( void )
 	CAudioReturnMessage* 	msg;
 	U32						result;
 
-//	printf("CAudioModule::WaitForU32Result -- Waiting for message from audio task.\n" );	
+	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+			"CAudioModule::WaitForU32Result -- Waiting for message from audio task.\n" );	
 
 	err = pKernelMPI_->ReceiveMessage( hRecvMsgQueue_,  (CMessage*)msgBuf, kAUDIO_MAX_MSG_SIZE );
 	pDebugMPI_->AssertNoErr( err, "CAudioModule::WaitForU32Result -- Could not get U32 value from Audio Task.\n" );
@@ -1640,7 +1630,8 @@ U32 CAudioModule::WaitForU32Result( void )
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
 	result = msg->GetU32Result();
-//	printf("CAudioModule::WaitForU32Result -- Got U32 = %d \n", (int) result);  
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForU32Result -- Got U32 = %d \n",
+	    	   static_cast<int>(result) );  
 		    	  
 	return result;
 }   // ---- end WaitForU32Result() ----
@@ -1656,7 +1647,8 @@ CAudioModule::WaitForAudioStateResult( void )
 	CAudioReturnMessage* 	msg;
 	tAudioState				audioState;
 
-//	printf("CAudioModule::WaitForAudioStateResult: Waiting for message from audio task.\n" );	
+//	pDebugMPI_->DebugOut( kDbgLvlVerbose, 
+//			"CAudioModule::WaitForAudioStateResult: Waiting for message from audio task.\n" );	
 
 //printf("CAudioModule::WaitForAudioStateResult: sizeof(CAudioReturnMessage)=%d\n", sizeof(CAudioReturnMessage));
 
@@ -1666,7 +1658,7 @@ CAudioModule::WaitForAudioStateResult( void )
 	msg = reinterpret_cast<CAudioReturnMessage*>(msgBuf);
 
 	audioState = msg->GetAudioStateResult();
-//	printf("CAudioModule::WaitForAudioStateResultGot %d\n", (int)result );  
+//	pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioModule::WaitForAudioStateResultGot %d\n", (int)result );  
 		    	  
 	return (audioState);
 }   // ---- end WaitForAudioStateResult() ----

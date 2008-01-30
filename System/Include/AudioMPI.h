@@ -54,6 +54,9 @@ public:
 
 	//********************************    
 
+   void GAS( void *d ) ;   // LF Internal function.  Not for release
+   void SAS( void *d ) ;   // LF Internal function.  Not for release
+
 	// Pauses audio output driver
 	// While paused, audio system consumes no CPU.
 	tErrType	PauseAudioSystem(  void );
@@ -63,8 +66,11 @@ public:
 	void 		SetMasterVolume( U8 volume );
 	U8			GetMasterVolume( void ) const;
 
-	void EnableSpeakerDSP(U8 x);
-
+	// Get/Set speaker equalizer.  Speaker equalizer may be
+	// set/cleared with kHeadphoneJackDetect message
+	Boolean		GetSpeakerEqualizer(void) const;
+	void		SetSpeakerEqualizer( Boolean enable );
+	
 	// Set/Get path for audio resource file
 	tErrType		SetAudioResourcePath( const CPath &path );
 	const CPath* 	GetAudioResourcePath( void ) const;
@@ -76,10 +82,6 @@ public:
 	// Plays an audio resource.
 	// Audio done event will be posted to listener if provided.
 	// Currently only volume and pListener are interpreted.
-    // The 'payload' parameter is now the "repeat count" when the looping flag bit is set.
-    // For no repeat (play file once), payload=0 even when flag bit kAudioOptionsLooped set
-    // For 1..N repeat  (playfile 1+N times), payload=[1..N] 
-    // For infinite repeat  (playfile until stopped), payload=kAudioRepeat_Infinite 
 	tAudioID 	StartAudio( const CPath &path, 
 					U8					volume, 
 					tAudioPriority		priority,
@@ -151,10 +153,6 @@ public:
 	
 	// Start playback of MIDI file.
 	// Currently only the volume and pListener options are used.
-    // The 'payload' parameter is now the "repeat count" when the looping flag bit is set.
-    // For no repeat (play file once), payload=0 even when flag bit kAudioOptionsLooped set
-    // For 1..N repeat  (playfile 1+N times), payload=[1..N] 
-    // For infinite repeat  (playfile until stopped), payload=kAudioRepeat_Infinite 
     tErrType 	StartMidiFile( tMidiPlayerID	id,
     					const CPath 		&path, 
 						U8					volume, 
@@ -228,8 +226,6 @@ private:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;
 };
-
-#define kMIDIMaxTracks 32
 
 // MIDI note definitions
 #define kMIDI_Cm1	0
@@ -403,7 +399,6 @@ private:
 #define kMIDI_Controller_ResetAllControllers    121
 #define kMIDI_Controller_AllNotesOff            123
 
-// Registered parameters
 #define kMIDI_RPN_PitchBendRange            0x0000
 #define kMIDI_RPN_MasterFineTuning          0x0001
 #define kMIDI_RPN_MasterCoarseTuning        0x0002

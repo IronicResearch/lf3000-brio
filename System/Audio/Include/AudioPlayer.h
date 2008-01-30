@@ -19,8 +19,6 @@
 
 #include <AudioTypes.h>
 #include <EventListener.h>
-
-#include <AudioConfig.h>
 #include <AudioTypesPriv.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -38,12 +36,9 @@ public:
 	CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	virtual ~CAudioPlayer();
 		
-//	virtual void	OpenFile(char *path) = 0;
-//	virtual void	CloseFile() = 0;
-//	virtual void	RewindFile() = 0;
-
+	virtual void	RewindFile() = 0;
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
-	virtual U32     GetTime_mSec( void ) = 0; // Time since start of play
+	virtual U32     GetAudioTime_mSec( void ) = 0; // Time since start of play
 
 	virtual void    SendDoneMsg   ( void );
 	virtual void    SendLoopEndMsg( void );
@@ -55,13 +50,9 @@ public:
 	inline U8		IsComplete()         { return bComplete_;      }
 	inline U8		IsPaused()           { return bPaused_;        }
 
-	inline void		SetFileReadBuf(void *p)     { pFileReadBuf_ = (S16 *) p;}
-
 // Get/Set class member variables
-	inline tAudioID		GetAudioID()      { return id_; }   
-	inline tAudioID		GetID()           { return id_; }
-	inline void  		SetID(tAudioID x) { id_ = x; }
-
+	inline tAudioID			GetAudioID() { return id_; }   // GK FIXX:  used for AudioIDFromMIDIID()? 
+	inline tAudioID			GetID()      { return id_; }
 	inline void		 		ActivateSendDoneMessage   (Boolean x) { bSendDoneMessage_    = x; }
 	inline void		 		ActivateSendLoopEndMessage(Boolean x) { bSendLoopEndMessage_ = x; }
 	
@@ -86,8 +77,13 @@ public:
 								  bSendLoopEndMessage_ = ((x & kAudioLoopEndBitMask) != 0) ? true : false; 
                                 }
 protected:
-//    S16             pFileReadBuf_[2*kAudioOutBufSizeInWords];  // GK FIXX:  2x needed?
-    S16             *pFileReadBuf_; 
+//#define USE_AUDIO_PLAYER_MUTEX
+#ifdef USE_AUDIO_PLAYER_MUTEX
+	CKernelMPI* 	pKernelMPI_;		
+	tMutex			renderMutex_;		// To make Render() thread-safe
+#endif
+
+    S16             *pReadBuf_;
 
 	U8			bPaused_;				
 	U8			bComplete_;			 // Player has completed generating audio

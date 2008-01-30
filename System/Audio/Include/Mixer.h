@@ -7,7 +7,7 @@
 //
 // Mixer.h
 //
-//		Defines class to manage mixing of audio channels.
+//		Defines class to manage low-level mixing of audio channels.
 //
 //==============================================================================
 
@@ -41,36 +41,17 @@ public:
 	CChannel*		FindFreeChannel(      tAudioPriority priority );
 	CChannel*		FindChannel(          tAudioID id );
 	long    		FindFreeChannelIndex( tAudioID id );
+	
+	Boolean IsAnyAudioActive( void );  // Is audio (excluding MIDI?) playing on any channel?
 
-	U32    		    GetChannelTime(     tAudioID id );
-	U8    		    GetChannelVolume(   tAudioID id );
-	void   		    SetChannelVolume(  tAudioID id, U8  x );
-
-	S8    		    GetChannelPan(      tAudioID id );
-	void   		    SetChannelPan(     tAudioID id, S8  x );
-
-	U32    		    GetChannelPriority( tAudioID id );
-	void   		    SetChannelPriority(tAudioID id, U32 x );
-
-    IEventListener* GetChannelEventListener(tAudioID id);
-	void            SetChannelEventListener(tAudioID id, IEventListener* p);
-
-	Boolean IsChannelActive(tAudioID id );  // (excluding MIDI?) playing on specified channel?
-	Boolean IsAnyAudioActive( );  // (excluding MIDI?) playing on any channel?
-
-	CMidiPlayer *GetMidiPlayerPtr(      void ) { return pMidiPlayer_; }
-	tAudioID     GetMidiPlayer_AudioID( void ) { return (MIDI_PLAYER_ID ); }
+	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
+	tAudioID     GetMidiPlayer_AudioID( void ) { return (1 /*midiPlayer_AudioID_ */); }
 
 	tErrType	  AddPlayer(    tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
 
-	tAudioID      StartChannel(  tAudioStartAudioInfo *pInfo, char *sExt );
-	tErrType      StopChannel(   tAudioID id );
-	tErrType      PauseChannel(  tAudioID id );
-	tErrType      ResumeChannel( tAudioID id );
-
 	CMidiPlayer *CreateMIDIPlayer();
-	void         DestroyMIDIPlayer();
+	void DestroyMIDIPlayer();
 
 	void 		SetMasterVolume( U8 x ) ; 
 
@@ -78,8 +59,8 @@ public:
 	void 		Resume( ); 
 	Boolean		IsPaused( ) { return isPaused_; }
 
-	Boolean     IsSpeakerDSPEnabled( ) { return ((Boolean) audioState_.speakerDSPEnabled); }
-	void        EnableSpeakerDSP( Boolean x );
+	Boolean     IsSpeakerEnabled( ) { return ((Boolean)audioState_.speakerEnabled); }
+	void        EnableSpeaker( Boolean x );
 	void        PrintMemoryUsage();
 
 	int Render( S16 *pOut, U32 frameCount );
@@ -112,6 +93,14 @@ private:
 	CDebugMPI 		*pDebugMPI_;
 	CButtonMPI 		*pButtonMPI_;
 
+//#define NEW_ADD_PLAYER
+#define OLD_ADD_PLAYER
+#ifdef NEW_ADD_PLAYER
+    CAudioPlayer *playerToAdd_;
+    CChannel     *targetChannel_;
+#endif
+
+//	BRIOMIXER		pDSP_;
     float           samplingFrequency_;
 
     void SetDSP();
@@ -128,7 +117,7 @@ private:
 
 // Channel parameters
 	U8 			numInChannels_;		// for now, all output in stereo (including replicated mono)
-	CChannel	*pChannels_[kAudioMixer_MaxInChannels];			
+	CChannel*	pChannels_;			// Array of channels
 	S16 		pChannelBuf_[kAudioOutBufSizeInWords];	
 
 // Mix Bin Parameters
@@ -137,7 +126,7 @@ private:
 #define kAudioMixer_MixBin_Index_FsDiv2 1
 #define kAudioMixer_MixBin_Index_FsDiv1 2
 #define kAudioMixer_MixBin_Index_Fs     kAudioMixer_MixBin_Index_FsDiv1
-#define kAudioMixer_MixBinBufferLength_Words  (kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements)  // Extra needed for SRC filter state at start of buffer
+#define kAudioMixer_MixBinBufferLength_Words  (kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements)
 	S16			pMixBinBufs_  [kAudioMixer_MixBinCount][kAudioMixer_MixBinBufferLength_Words];
 	long	     mixBinFilled_[kAudioMixer_MixBinCount];
     long fsRack_[kAudioMixer_MixBinCount];
@@ -160,11 +149,9 @@ private:
    Q15   headphoneGainFracI_;
 
 //  Output EQ parameters
-#ifdef EQ_NEEDED
 #define kAudioMixer_MaxEQBands  3
     long        outEQ_BandCount_;
     EQ          outEQ_[kAudioMixer_MaxOutChannels][kAudioMixer_MaxEQBands];
-#endif
 
 // File I/O debug stuff
     long inSoundFileDone_  ;
@@ -186,8 +173,6 @@ private:
 	S16*	pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
 
     Boolean     isPaused_;
-
-    char pFileReadBuf_[ 2*sizeof(S16)*kAudioOutBufSizeInWords];  // GK FIXX:  2x needed?
 
 // Some Debug variables
 // Input debug stuff

@@ -83,17 +83,19 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 
 	pListener_ = kNull;
 
-	SetPan(   kAudio_Pan_Default);
-	SetVolume(kAudio_Volume_Default);
+	SetPan(   kPan_Default);
+	SetVolume(kVolume_Default);
     
 	bFilePaused_ = false;
 	bFileActive_ = false;
 	bActive_     = false;
 
-	// Configure Debug MPI
+	// Get Debug MPI
 	pDebugMPI_ =  new CDebugMPI( kGroupAudio );
 	ret = pDebugMPI_->IsValid();
 	pDebugMPI_->Assert((true == ret), "CMidiPlayer::ctor: Couldn't create DebugMPI.\n");
+
+	// Set debug level from a constant
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
 #ifdef USE_MIDI_PLAYER_MUTEX
@@ -115,7 +117,7 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	// Start SP-MIDI synthesis engine using the desired sample rate.
 	midiErr = SPMIDI_CreateContext( &pContext_, kMIDI_SamplingFrequency);  
 	pDebugMPI_->Assert((midiErr == kNoErr), "CMidiPlayer::ctor: SPMIDI_CreateContext() failed.\n");
-// MIDI master volume is generally is it too low.  1x Good. 2x risks clipping for multi-voice play.
+// Double MIDI master volume as generally is it too quiet.  This risks clipping for multi-voice play.
 SPMIDI_SetMasterVolume( pContext_, SPMIDI_DEFAULT_MASTER_VOLUME );
 
 	// For now only one MIDI player for whole system!  
@@ -281,6 +283,8 @@ CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo )
 
 tErrType result = 0;
 
+//pDebugMPI_->DebugOut(kDbgLvlVerbose, "CMidiPlayer::StartMidiFile: Start...\n");	
+
 // If pre-emption is happening, delete previous player.
 if (pFilePlayer_) 
     {
@@ -294,7 +298,8 @@ if (pFilePlayer_)
 SetVolume(pInfo->volume);
 SetPan(0); //pInfo->pan);
 
-	pListener_ = (IEventListener *) pInfo->pListener;
+if ( pInfo->pListener )
+	pListener_ = pInfo->pListener;
 
     optionsFlags_ = pInfo->flags;
 	shouldLoop_   = (0 < pInfo->payload) && (0 != (pInfo->flags & kAudioOptionsLooped));
@@ -469,7 +474,7 @@ return (0); //result;
 CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
 {
 	tErrType result = 0;
-//{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
+{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
 
 #ifdef USE_MIDI_PLAYER_MUTEX
 	printf("CMidiPlayer::StopMidiFile: Locking renderMutex\n");	
@@ -482,16 +487,16 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	if (pListener_  && !pInfo->noDoneMsg)
 		SendDoneMsg();
 
-//	printf("CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
+	printf("CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
 
 	SPMUtil_Reset( pContext_ );
-//	printf("CMidiPlayer::StopMidiFile: BEFO delete player\n");	
+	printf("CMidiPlayer::StopMidiFile: BEFO delete player\n");	
     if (pFilePlayer_)   
         {
     	MIDIFilePlayer_Delete( pFilePlayer_ );
     	pFilePlayer_ = kNull;
         }
-//	printf("CMidiPlayer::StopMidiFile: AFTA delete player\n");	
+	printf("CMidiPlayer::StopMidiFile: AFTA delete player\n");	
 
 	pListener_ = kNull;
 	
@@ -502,7 +507,7 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 
 // SPMIDI_DeleteOrchestra( orchestra );
 
-//{static long c=0; printf("CMidiPlayer::StopMidiFile: end %ld\n", c++);}
+{static long c=0; printf("CMidiPlayer::StopMidiFile: end %ld\n", c++);}
 	return result;
 }   // ---- end StopMidiFile() ----
 
@@ -512,26 +517,15 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
     tErrType 
 CMidiPlayer::GetEnableTracks( tMidiTrackBitMask *d ) 
 {
-tMidiTrackBitMask	mask = 0;
-if (!pFilePlayer_)
-    return (kAudioMidiPlayerNotCreated);
+	tMidiTrackBitMask	mask = 0;
 
-// Loop through channels and set bits
-//for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
-//    {
-//	if (SPMIDI_GetChannelEnable( pContext_, chan ))
-//		mask |= 1 << chan;
-//    }
+	// Loop through channels and set bits
+	for (U32 chan = 0; chan < kMIDI_ChannelCount; chan++) 
+        {
+		if (SPMIDI_GetChannelEnable( pContext_, chan ))
+			mask |= 1 << chan;
+	    }
 //printf("CMidiPlayer::GetEnableTracks $%X \n", (unsigned int) mask);	
-
-int trackCount = MIDIFilePlayer_GetTrackCount( pFilePlayer_ );
-for (U32 i = 0; i < trackCount && i < kMIDIMaxTracks; i++) 
-    {
-	if (MIDIFilePlayer_GetTrackEnable( pFilePlayer_, i ))
-		mask |= (1 << i);
-    }
-//printf("CMidiPlayer::GetEnableTracks $%X \n", (unsigned int) mask);	
-//	int ( MIDIFilePlayer *player, int trackIndex );
 
 *d = mask;
 
@@ -544,36 +538,23 @@ return kNoErr;
     tErrType 
 CMidiPlayer::SetEnableTracks( tMidiTrackBitMask d )
 {
-printf("CMidiPlayer::SetEnableTracks: $%X \n", (unsigned int) d);	
-if (!pFilePlayer_)
-    return (kAudioMidiPlayerNotCreated);
-
-int trackCount = MIDIFilePlayer_GetTrackCount( pFilePlayer_ );
-printf("CMidiPlayer::SetEnableTracks: trackCount=%d \n", trackCount);	
+//printf("CMidiPlayer::SetEnableTracks: $%X \n", (unsigned int) d);	
 
 // Loop through channels and set mask
-//for (U32 ch = 0; ch < kMIDI_ChannelCount; ch++) 
-//    SPMIDI_SetChannelEnable( pContext_, ch, 0 != (d & (1 << ch)) );
+for (U32 ch = 0; ch < kMIDI_ChannelCount; ch++) 
+    SPMIDI_SetChannelEnable( pContext_, ch, 0 != (d & (1 << ch)) );
 
-for (U32 i = 0; i < trackCount && i < 32; i++) 
-    {
-    if (d & (1 << i))
-	    MIDIFilePlayer_SetTrackEnable(pFilePlayer_, i);
-    }
-
-return (kNoErr);
+return kNoErr;
 }   // ---- end SetEnableTracks() ----
 
 // ==============================================================================
-// TransposeTracks:   Transpose channels
+// TransposeTracks:   
 // ==============================================================================
     tErrType 
 CMidiPlayer::TransposeTracks( tMidiTrackBitMask trackBits, S8 semitones)
 {
-printf("CMidiPlayer::TransposeTracks: trackBits=$%0X semitones=%d\n", (unsigned int)trackBits, semitones);	
-
+//printf("CMidiPlayer::TransposeTracks: trackBits=$%0X semitones=%d\n", (unsigned int)trackBits, semitones);	
 // Global MIDI transpose: affects all MIDI channels
-// Keep this here, even though the Brio Spec wants pre track transposition
 //SPMIDI_SetParameter( pContext_, SPMIDI_PARAM_TRANSPOSITION, semitones );
 
 // MIDI standard COARSE TUNING RPN = #2 to transpose by semitones by channel
@@ -581,7 +562,7 @@ for (long ch = 0; ch < 16; ch++)
     {
     if (trackBits & (1 << ch))
         {
-printf("CMidiPlayer::TransposeTracks: track%2ld by %d semitones\n", ch, semitones);
+//printf("CMidiPlayer::TransposeTracks: track%2ld by %d semitones\n", ch, semitones);
  SPMUtil_ControlChange(pContext_, ch, kMIDI_Controller_RPN_MSB, 0 ); 
  SPMUtil_ControlChange(pContext_, ch, kMIDI_Controller_RPN_LSB, kMIDI_RPN_MasterCoarseTuning ); 
 
@@ -599,7 +580,7 @@ return (kNoErr);
 }   // ---- end TransposeTracks() ----
 
 // ==============================================================================
-// ChangeProgram:       Change program (instrument) on specified MIDI channel(s)
+// ChangeProgram:       Change program (instrument) on specified MIDI channel
 //
 //              FIXXXX: this API is non-sensical.  Add another call that takes 
 //              channel # as argument.
@@ -819,25 +800,25 @@ pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::Render: Couldn't unlock mut
 // ==============================================================================
 void CMidiPlayer::SetPan( S8 x )
 {
-//printf("CMidiPlayer::SetPan: x= %d Range [%d .. %d]\n", x, kAudio_Pan_Min, kAudio_Pan_Max);
-pan_ = BoundS8(&x, kAudio_Pan_Min, kAudio_Pan_Max);
+//printf("CMidiPlayer::SetPan: x= %d\n", x);
+pan_ = BoundS8(&x, kPan_Min, kPan_Max);
 
 // Convert input range range to [0 .. 1] suitable
 // ChangeRangef(x, L1, H1, L2, H2)
-float xf = ChangeRangef((float)pan_, (float) kAudio_Pan_Min, (float)kAudio_Pan_Max, 0.0f, 1.0f);
+float xf = ChangeRangef((float)pan_, (float) kPan_Min, (float)kPan_Max, 0.0f, 1.0f);
 //printf("pan_=%d -> xf=%g\n", pan_, xf);
 
-//#define kPanValue_FullLeft ( 0.0) OR (-1.0)
-//#define kPanValue_Center    (0.5) OR ( 0.0)
-//#define kPanValue_FullRight (1.0) OR ( 1.0)
+//#define kPanValue_FullLeft ( 0.0)
+//#define kPanValue_Center    (0.5)
+//#define kPanValue_FullRight (1.0)
 // PanValues(xf, panValuesf);
 ConstantPowerValues(xf, &panValuesf[kLeft], &panValuesf[kRight]);
-//if (panValuesf[kLeft] > -1e-06 && panValuesf[kLeft] < 1e-06)
-//    panValuesf[kLeft] = 0.0f;
-//if (panValuesf[kRight] > -1e-06 && panValuesf[kRight] < 1e-06)
-//    panValuesf[kRight] = 0.0f;
+if (panValuesf[kLeft] > -1e-06 && panValuesf[kLeft] < 1e-06)
+    panValuesf[kLeft] = 0.0f;
+if (panValuesf[kRight] > -1e-06 && panValuesf[kRight] < 1e-06)
+    panValuesf[kRight] = 0.0f;
 
-//printf("CMidiPlayer::SetPan: %g -> <%f , %f>\n", xf, panValuesf[kLeft], panValuesf[kRight]);
+//printf("CMidiPlayer::SetPan : %d -> <%f , %f> \n", x, panValuesf[kLeft], panValuesf[kRight]);
 RecalculateLevels();
 }	// ---- end SetPan ----
 
@@ -847,22 +828,20 @@ RecalculateLevels();
     void 
 CMidiPlayer::SetVolume( U8 x )
 {
-//printf("CMidiPlayer::SetVolume :x= %d  Range[%d .. %d]\n", x, kAudio_Volume_Min, kAudio_Volume_Max);
-volume_ = BoundU8(&x, kAudio_Volume_Min, kAudio_Volume_Max);
+//printf("CMidiPlayer::SetVolume :x= %d\n", x);
+volume_ = BoundU8(&x, kVolume_Min, kVolume_Max);
 
 // ChangeRangef(x, L1, H1, L2, H2)
-//gainf = ChangeRangef((float)x, (float) kAudio_Volume_Min, (float)kAudio_Volume_Max, 0.0f, 1.0f);
-gainf = 0.01f*(float)x;
-// Convert to square curve, which is milder than Decibels
-gainf *= gainf;
-//printf( "CMidiPlayer::SetVolume PRE  HEADROOM- %d -> %g\n", volume_, gainf );	
-
+// FIXX: move to decibels, but for now, linear volume
+gainf = ChangeRangef((float)x, (float) kVolume_Min, (float)kVolume_Max, 0.0f, 1.0f);
 //gainf *= kDecibelToLinearf_m3dBf; // DecibelToLinearf(-3.0);
 gainf *= kChannel_Headroomf; // DecibelToLinearf(-Channel_HeadroomDB);
 //gainf = ChangeRangef((float)x, 0.0f, 100.0f, -100.0f, 0.0f);
 //gainf =  DecibelToLinearf(gainf);
-//printf( "CMidiPlayer::SetVolume POST HEADROOM- %d -> %g\n", volume_, gainf );	
 
+//printf( "SetVolume::SetVolume - %d -> %g\n", volume_, gainf );	
+
+//printf("%f dB -> %f \n", -3.01, DecibelToLinearf(-3.01));
 //printf("%f dB -> %f \n", -6.02, DecibelToLinearf(-6.02));
 //printf("sqrt(2)/2 = %g\n", 0.5f*sqrt(2.0));
 
@@ -885,14 +864,6 @@ levelsi[kRight] = FloatToQ15(levelsf[kRight]);
 
 //printf("CMidiPlayer::RecalculateLevels : levelsf L=%g R=%g\n", levelsf[kLeft], levelsf[kRight]);
 }	// ---- end RecalculateLevels ----
-
-// ==============================================================================
-// SetEventListener :     
-// ==============================================================================
-//void CMidiPlayer::SetEventListener( S8 x )
-//{
-//pan_ = BoundS8(&x, kAudio_Pan_Min, kAudio_Pan_Max);
-//}	// ---- end SetEventListener ----
 
 LF_END_BRIO_NAMESPACE()
 
