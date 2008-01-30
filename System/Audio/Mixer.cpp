@@ -49,9 +49,22 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 #define	BRIO_MIDI_PLAYER_ID		1	// FIXXX: Hard code player ID for now
 
+#define MIXER_LOCK pDebugMPI_->Assert((kNoErr == pKernelMPI_->LockMutex(mixerMutex_)),\
+                                      "Couldn't lock mixer mutex.\n")
+
+#define MIXER_UNLOCK pDebugMPI_->Assert((kNoErr == pKernelMPI_->UnlockMutex(mixerMutex_)),\
+                                        "Couldn't unlock  mixer mutex.\n")
+
 //==============================================================================
 // Global variables
 //==============================================================================
+
+// These should not be globals.  They should be in the object as they were.  But
+// somebody insisted on having static member functions that pass references to
+// "this."  Hack.
+CDebugMPI *pDebugMPI_;
+CKernelMPI *pKernelMPI_;
+tMutex mixerMutex_;
 
 //------------------------------------------------------------------------------
 // Returns speaker status from sysfs audio driver dump (embedded)
@@ -99,6 +112,7 @@ CAudioMixer::CAudioMixer( int inChannels )
 {
 long i, j, ch;
 //printf("CAudioMixer::CAudioMixer: inChannels=%d Max=%d\n", inChannels, kAudioMixer_MaxInChannels);
+    const tMutexAttr    attr = {0};
 
 	numInChannels_ = inChannels;
 if (numInChannels_ > kAudioMixer_MaxInChannels)
@@ -114,7 +128,13 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
+    
+	pKernelMPI_ = new CKernelMPI();
 
+    // Init mutex for serialization access to internal AudioMPI state.
+    tErrType err = pKernelMPI_->InitMutex( mixerMutex_, attr );
+    pDebugMPI_->Assert((kNoErr == err), "%s: Couldn't init mutex.\n", __FUNCTION__);
+    
 // Allocate audio channels
 	pChannels_ = new CChannel[ numInChannels_ ];
 	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n" , numInChannels_);
@@ -320,7 +340,7 @@ SetSamplingFrequency( samplingFrequency_ );
 SetDSP();
 UpdateDSP();
 ResetDSP();
-
+ 
 //PrintMemoryUsage();
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
@@ -330,6 +350,8 @@ ResetDSP();
 CAudioMixer::~CAudioMixer()
 {
 long i;
+
+ MIXER_LOCK; 
 
 // Deallocate channels
  if (pChannels_)
@@ -370,6 +392,14 @@ if (outSoundFile_)
     CloseSoundFile(&outSoundFile_);
     outSoundFile_ = NULL;
     }
+
+ MIXER_UNLOCK; 
+ pKernelMPI_->DeInitMutex( mixerMutex_ );
+
+ delete pKernelMPI_;
+
+ delete pDebugMPI_;
+
 }  // ---- end ~CAudioMixer() ----
 
 // ==============================================================================
@@ -507,17 +537,21 @@ for (long i = 0; i < numInChannels_; i++)
     CChannel * 
 CAudioMixer::FindChannel( tAudioID id )
 {
+
+    CChannel *pChannel = kNull;
+
+    MIXER_LOCK;
 //  Find channel with specified ID
 for (long i = 0; i < numInChannels_; i++)
 	{
     CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
 // GK FIXX CHECK  Excised IsInUse().  Hot code - check for functionality break
 	if ( pPlayer && (pPlayer->GetID() == id)) // && pChannels_[i].IsInUse())
-		return (&pChannels_[i]);
+		pChannel = &pChannels_[i];
 	}
-	
-// Uh oh, no ID matched
-return ( kNull );
+ 
+    MIXER_UNLOCK; 
+return pChannel;
 }  // ---- end FindChannel() ----
 
 // ==============================================================================
@@ -543,14 +577,17 @@ return ( -1 );
 // ==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
 {
+    Boolean ret = false;
+
+    MIXER_LOCK;
 // Search for a channel that is in use
 for (long i = 0; i < numInChannels_; i++)
 	{
 	if (pChannels_[i].IsInUse())
-		return (true);
+		ret = true;
 	}
-
-return (false);
+    MIXER_UNLOCK; 
+return ret;
 }  // ---- end IsAnyAudioActive() ----
 
 // ==============================================================================
@@ -638,42 +675,61 @@ else
 return (pPlayer);
 }  // ---- end CreatePlayer() ----
 
+void CAudioMixer::DestroyPlayer(CAudioPlayer *pPlayer)
+{
+    delete pPlayer;
+}
+
 // ==============================================================================
 // AddPlayer:
 // ==============================================================================
     tErrType 
 CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID )
 {
-CChannel *pChannel = FindFreeChannel( pInfo->priority );
-if (!pChannel)
-    {
-    printf("CAudioMixer::AddPlayer: no channel available\n");
-    return (kAudioNoChannelAvailErr);
-    }
-CAudioPlayer *pPlayer = CreatePlayer(pInfo, sExt, newID);
-if (!pPlayer)
-    {
-    printf("CAudioMixer::AddPlayer: failed to create Player with file extension='%s'\n", sExt);
-    return (kAudioPlayerCreateErr);  // GK FIXXX: add error for unsupported file extension
-    }
+    tErrType ret = kNoErr;
+    CAudioPlayer *pPlayer = NULL;
+    CChannel *pChannel;
 
+    MIXER_LOCK;
+    
+    pChannel = FindFreeChannel( pInfo->priority );
+    if (!pChannel)
+    {
+        printf("CAudioMixer::AddPlayer: no channel available\n");
+        ret = kAudioNoChannelAvailErr;
+        goto error;
+    }
+    pPlayer = CreatePlayer(pInfo, sExt, newID);
+    if (!pPlayer)
+    {
+        printf("CAudioMixer::AddPlayer: failed to create Player with file extension='%s'\n", sExt);
+        ret = kAudioPlayerCreateErr;  // GK FIXXX: add error for unsupported file extension
+        goto error;
+    }
+    
 #ifdef NEW_ADD_PLAYER
 // Trigger flags to call SetPlayer() in Mixer render loop
 // GK NOTE:  this is crap due to race condition
-targetChannel_ = pChannel;  // Do this one first
-playerToAdd_   = pPlayer;
+    targetChannel_ = pChannel;  // Do this one first
+    playerToAdd_   = pPlayer;
 //pChannel->SetPlayer(pPlayer, true);
 //pChannel->SetInUse(true);
 #endif // NEW_ADD_PLAYER
-
+    
 #ifdef OLD_ADD_PLAYER
-pChannel->InitWithPlayer( pPlayer );
+    pChannel->InitWithPlayer( pPlayer );
 #endif // OLD_ADD_PLAYER
-
-pChannel->SetPan(    pInfo->pan );
-pChannel->SetVolume( pInfo->volume );
-
-return (kNoErr);
+    
+    pChannel->SetPan(    pInfo->pan );
+    pChannel->SetVolume( pInfo->volume );
+    
+    goto success;
+ error:
+    if(pPlayer)
+        DestroyPlayer(pPlayer);
+ success:
+    MIXER_UNLOCK; 
+    return ret;
 }  // ---- end AddPlayer() ----
 
 // ==============================================================================
@@ -800,12 +856,14 @@ for (ch = 0; ch < numInChannels_; ch++)
 //	    if ( 0 == framesRendered ) 
             {
 //			pCh->Release( true );	// false = Don't suppress done msg 
-            pCh->isDone_ = true;
-            pCh->fInUse_ = false;
-            if (pCh->GetPlayerPtr()->ShouldSendDoneMessage())
-                pCh->SendDoneMsg();
+                pCh->isDone_ = true;
+                pCh->fInUse_ = false;
+                if (pCh->GetPlayerPtr()->ShouldSendDoneMessage()) {
+                    MIXER_UNLOCK;
+                    pCh->SendDoneMsg();
+                    MIXER_LOCK;
+                }
             }
-
         if (inputIsDC) 
             SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
 #ifdef NEED_SAWTOOTH
@@ -1060,14 +1118,21 @@ return (kNoErr);  // GK FIXX: should be # frames rendered
 CAudioMixer::WrapperToCallRender( S16 *pOut,  unsigned long numStereoFrames, void *pToObject  )
 {	
 //{static long c=0; printf("WrapperToCallRender%ld: IsPaused()=%d\n", c++, ((CAudioMixer*)pToObject)->IsPaused());}
+    int error = kNoErr;
+    
+    MIXER_LOCK;
 
-if (((CAudioMixer*)pToObject)->IsPaused())
+    if (((CAudioMixer*)pToObject)->IsPaused())
     {
-    ClearShorts(pOut, numStereoFrames*kAudioMixer_MaxOutChannels);
-    return (0);
+        ClearShorts(pOut, numStereoFrames*kAudioMixer_MaxOutChannels);
+        error = kNoErr;
+    } else {
+        error = ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
     }
 
-return ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
+    MIXER_UNLOCK;
+
+    return error;
 } // ---- end WrapperToCallRender() ----
 
 // ==============================================================================
@@ -1078,7 +1143,10 @@ return ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
     void 
 CAudioMixer::Pause()
 {	
-isPaused_ = true;
+    MIXER_LOCK;
+    isPaused_ = true;
+    MIXER_UNLOCK;
+
 } // ---- end WrapperToCallRender() ----
 
 // ==============================================================================
@@ -1089,7 +1157,9 @@ isPaused_ = true;
     void 
 CAudioMixer::Resume()
 {	
-isPaused_ = false;
+    MIXER_LOCK;
+    isPaused_ = false;
+    MIXER_UNLOCK;
 } // ---- end Resume() ----
 
 // ==============================================================================
@@ -1098,6 +1168,7 @@ isPaused_ = false;
     void 
 CAudioMixer::SetMasterVolume( U8 x )
 {
+    MIXER_LOCK;
 S16 x16 = (S16) x;
 audioState_.masterVolume = (U8) BoundS16(&x16, 0, 100);
 
@@ -1117,6 +1188,7 @@ masterGaini_[kRight] = masterGaini_[kLeft];
 audioState_.masterGainf[kLeft ] = masterGainf_[kLeft ];
 audioState_.masterGainf[kRight] = masterGainf_[kRight];
 //printf("CAudioMixer::SetMasterVolume %d -> %f ($%0X)\n", audioState_.masterVolume , masterGainf_[0], masterGaini_[0]);
+ MIXER_UNLOCK; 
 } // ---- end SetMasterVolume() ----
 
 // ==============================================================================
@@ -1126,6 +1198,7 @@ audioState_.masterGainf[kRight] = masterGainf_[kRight];
     void 
 CAudioMixer::SetSamplingFrequency( float x )
 {
+
 samplingFrequency_ = x;
 // FIXX :  Add bounding code
 
@@ -1256,12 +1329,13 @@ for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 CAudioMixer::SetAudioState(tAudioState *d)
 {
 //printf("CAudioMixer::SetAudioState: start srcType=%d\n", d->srcType);
-
+    MIXER_LOCK;
 bcopy(d, &audioState_, sizeof(tAudioState));
 //printf("CAudioMixer::SetAudioState: audioState_.srcType=%d\n", audioState_.srcType);
 SetDSP();
 UpdateDSP();
 //ResetDSP();
+ MIXER_UNLOCK; 
 } // ---- end SetAudioState() ----
 
 // ==============================================================================
@@ -1270,8 +1344,10 @@ UpdateDSP();
     void 
 CAudioMixer::GetAudioState(tAudioState *d)
 {
+    MIXER_LOCK;
 //printf("CAudioMixer::GetAudioState: start srcType=%d\n", d->srcType);
 bcopy(&audioState_, d, sizeof(tAudioState));
+ MIXER_UNLOCK; 
 } // ---- end GetAudioState() ----
 
 // ==============================================================================
@@ -1318,8 +1394,9 @@ CAudioMixer::EnableSpeaker(Boolean x)
 {
 //{static long c=0; printf("CAudioMixer::EnableSpeaker%ld: enabled=%d -> %d\n", c++, audioState_.speakerEnabled, x);}
 //audioState_.useOutEQ = x;  // Don't use EQ for now
-audioState_.useOutSoftClipper = x;
-audioState_.speakerEnabled    = x;
+    // This access should be locked, but the abstraction barrier is MAD broken.
+    audioState_.useOutSoftClipper = x;
+    audioState_.speakerEnabled    = x;
 } // ---- end EnableSpeaker() ----
 
 // ==============================================================================
@@ -1328,11 +1405,13 @@ audioState_.speakerEnabled    = x;
     CMidiPlayer * 
 CAudioMixer::CreateMIDIPlayer()
 {
+    MIXER_LOCK;
 //{static long c=0; printf("CAudioMixer::CreateMIDIPlayer%ld: \n", c++);}
 if (pMidiPlayer_)
 	delete pMidiPlayer_;
 
 pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+ MIXER_UNLOCK; 
 return (pMidiPlayer_);
 } // ---- end CreateMIDIPlayer() ----
 
@@ -1342,12 +1421,14 @@ return (pMidiPlayer_);
     void 
 CAudioMixer::DestroyMIDIPlayer()
 {
+    MIXER_LOCK;
 //{static long c=0; printf("CAudioMixer::DestroyMIDIPlayer%ld: \n", c++);}
 if (pMidiPlayer_)
     {
 	delete pMidiPlayer_;
 	pMidiPlayer_ = NULL;
     }
+ MIXER_UNLOCK; 
 } // ---- end DestroyMIDIPlayer() ----
 
 LF_END_BRIO_NAMESPACE()

@@ -20,6 +20,7 @@
 
 #include <ButtonMPI.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
 
 #include "sndfile.h"
 #include <eq.h>
@@ -38,9 +39,7 @@ public:
 	CAudioMixer( int numChannels );
 	~CAudioMixer();
 		
-	CChannel*		FindFreeChannel(      tAudioPriority priority );
 	CChannel*		FindChannel(          tAudioID id );
-	long    		FindFreeChannelIndex( tAudioID id );
 	
 	Boolean IsAnyAudioActive( void );  // Is audio (excluding MIDI?) playing on any channel?
 
@@ -48,7 +47,6 @@ public:
 	tAudioID     GetMidiPlayer_AudioID( void ) { return (1 /*midiPlayer_AudioID_ */); }
 
 	tErrType	  AddPlayer(    tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
-	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
 
 	CMidiPlayer *CreateMIDIPlayer();
 	void DestroyMIDIPlayer();
@@ -90,8 +88,12 @@ public:
     int OpenOutSoundFile(char *path);
 
 private:
-	CDebugMPI 		*pDebugMPI_;
 	CButtonMPI 		*pButtonMPI_;
+
+    CChannel*		FindFreeChannel(      tAudioPriority priority );
+	long    		FindFreeChannelIndex( tAudioID id );
+	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
+    void DestroyPlayer(CAudioPlayer *pPlayer);
 
 //#define NEW_ADD_PLAYER
 #define OLD_ADD_PLAYER
@@ -188,6 +190,7 @@ private:
     float normalFrequency_;
     float phase_;
 #endif
+
 
 };
 
