@@ -13214,3 +13214,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/30/08 9:59 AM
 4,304 ms. (Cumulative: 3,550,790 ms)
 
 ----------------
+Revision 2,818 from svn://localhost/TRUNK/:
+
+Support CFLAGS in Portaudio source build.  Remove autoconf Makefile from Tremor.
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/30/08 10:09 AM
+1 changed, 0 added, 1 deleted.
+4,594 ms. (Cumulative: 3,555,556 ms)
+
+----------------
