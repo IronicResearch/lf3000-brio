@@ -533,10 +533,13 @@ U32 CAudioModule::GetAudioTime(tAudioID id)
 // ==============================================================================
 Boolean CAudioModule::IsAudioPlaying(tAudioID id)
 {
-    Boolean playing;
-    
+    Boolean playing = false;
+    CChannel *c;
+
     AUDIO_LOCK;
-    playing = (kNull != gAudioContext.pAudioMixer->FindChannel(id));
+    c = gAudioContext.pAudioMixer->FindChannel(id);
+    if(c != kNull)
+        playing = c->IsInUse();
     AUDIO_UNLOCK;
     return playing;
 }
@@ -656,7 +659,7 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
     AUDIO_LOCK;
     CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
     if (pChannel) 
-		priority = pChannel->GetPriority();
+        priority = pChannel->GetPriority();
     AUDIO_UNLOCK;
 
     return priority;
@@ -668,9 +671,9 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
 void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority ) 
 {
     AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel) 
-		pChannel->SetPriority(priority);
+    CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
+    if (pChannel) 
+        pChannel->SetPriority(priority);
     AUDIO_UNLOCK;
 }
 
@@ -716,7 +719,7 @@ const IEventListener* CAudioModule::GetAudioEventListener( tAudioID id )
         CAudioPlayer *pPlayer = pChannel->GetPlayer();
         if (pPlayer)
             pListener = pPlayer->GetEventListener();
-	}    
+    }    
     AUDIO_UNLOCK;
 
     return pListener;
@@ -735,7 +738,7 @@ void CAudioModule::SetAudioEventListener( tAudioID id, const IEventListener *pLi
         CAudioPlayer *pPlayer = pChannel->GetPlayer();
         if(pPlayer)
             pPlayer->SetEventListener(pListener);
-	}
+    }
     AUDIO_UNLOCK;
 }
 
@@ -938,7 +941,7 @@ tErrType CAudioModule::StartMidiFile(   U32                 mpiID,
     info.flags     = flags;
     
     // Determine size of MIDI file
-    struct stat	fileStat;
+    struct stat fileStat;
     int err = stat(fullPath.c_str(), &fileStat);
     pDebugMPI_->Assert((kNoErr == err), 
                        "%s: file doesn't exist '%s' \n",
@@ -960,7 +963,7 @@ tErrType CAudioModule::StartMidiFile(   U32                 mpiID,
                        "%s: failed to read midi file\n",
                        __FUNCTION__);
     fclose(file);
-	
+    
     tErrType result = kAudioMidiErr;
     if(gAudioContext.pMidiPlayer)
     {
@@ -1062,12 +1065,12 @@ void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID /* id */ )
 {
 
-	tMidiTrackBitMask 		trackBitMask = 0;
+    tMidiTrackBitMask       trackBitMask = 0;
 
     AUDIO_LOCK;
     if (gAudioContext.pMidiPlayer)
         gAudioContext.pMidiPlayer->GetEnableTracks(&trackBitMask);
-	AUDIO_UNLOCK;
+    AUDIO_UNLOCK;
 
     return trackBitMask;
 }
@@ -1083,7 +1086,7 @@ tErrType CAudioModule::SetEnableMidiTracks(tMidiPlayerID /* id */,
     AUDIO_LOCK;
     if (gAudioContext.pMidiPlayer)
         result = gAudioContext.pMidiPlayer->SetEnableTracks(trackBitMask);
-	AUDIO_UNLOCK;
+    AUDIO_UNLOCK;
 
     return result;
 }
@@ -1095,7 +1098,7 @@ tErrType CAudioModule::TransposeMidiTracks(tMidiPlayerID /* id */,
                                            tMidiTrackBitMask trackBitMask,
                                            S8 transposeAmount)
 {
-	tErrType result = kAudioMidiUnavailable;
+    tErrType result = kAudioMidiUnavailable;
 
     AUDIO_LOCK;
     if (gAudioContext.pMidiPlayer)
