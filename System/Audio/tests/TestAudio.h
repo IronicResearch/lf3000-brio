@@ -286,7 +286,27 @@ public:
 			TS_ASSERT_EQUALS( *pURI, "/Somewhere/AudioModule" );
 		}
 	}
-	
+
+    void testIsPlaying()
+	{
+		tAudioID 				id;
+		
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									NULL, kPayload, kFlags);
+
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(300);
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == true);
+		pKernelMPI_->TaskSleep(800);
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == false);
+	}
+
 	void xxxtestDumpCoreInfo( )
 	{
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
