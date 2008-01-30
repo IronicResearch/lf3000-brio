@@ -13164,3 +13164,16 @@ By ayurovsky (ayurovsky@leapfrog.com) on 1/29/08 3:40 PM
 4,194 ms. (Cumulative: 3,532,466 ms)
 
 ----------------
+Revision 2,810 from svn://localhost/TRUNK/:
+Revision 2,811 from svn://localhost/TRUNK/:
+
+New architecture for Brian C. AudioTask overhaul.  Untested.  Some audio 
+funcationality does not work.  This is known for this check-in and 
+agreed to by the group.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/29/08 4:51 PM
+2 changed, 0 added, 0 deleted.
+4,153 ms. (Cumulative: 3,536,799 ms)
+
+----------------
