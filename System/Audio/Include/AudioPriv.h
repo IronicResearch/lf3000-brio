@@ -19,7 +19,6 @@
 #include <DebugMPI.h>
 
 #include <AudioConfig.h>
-#include <AudioTask.h>
 #include <AudioMsg.h>
 #include <AudioEffectsProcessor.h>
 #include <EventListener.h>
@@ -157,28 +156,9 @@ public:
 	VTABLE_EXPORT tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 private:
-	CPath				gpath;
-
 	CKernelMPI* 			pKernelMPI_;
 	CDebugMPI* 				pDebugMPI_;	
-	tMessageQueueHndl 		hRecvMsgQueue_;
-	tMessageQueueHndl 		hSendMsgQueue_;
-	U8						masterVolume_;
-	U8						outputEqualizerEnabled_;
 	tMutex     				mpiMutex_;
-
-	void 			SendCmdMessage( CAudioCmdMsg& msg );
-	tAudioID 		WaitForAudioID( void );
-	tMidiPlayerID 	WaitForMidiID(  void );
-	tErrType 		WaitForStatus(  void );
-
-	Boolean 		WaitForBooleanResult(    void ); 
-	U32 			WaitForU32Result(        void ); 
-	tAudioState		WaitForAudioStateResult( void ); 
-	
-	// No public access to start/stop.
-	tErrType	StartAudioSystem( void );
-	tErrType	StopAudioSystem(  void );
 
 	// Limit object creation to the Module Manager interface functions
 	CAudioModule();

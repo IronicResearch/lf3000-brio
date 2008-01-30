@@ -12,6 +12,7 @@
 
 #include <SystemTypes.h>
 #include <AudioTypes.h>
+#include <EventListener.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define kAudio_Pan_Max    100

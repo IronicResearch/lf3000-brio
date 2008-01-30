@@ -13245,3 +13245,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/30/08 11:47 AM
 4,469 ms. (Cumulative: 3,564,994 ms)
 
 ----------------
+Revision 2,823 from svn://localhost/TRUNK/:
+Revision 2,824 from svn://localhost/TRUNK/:
+
+Eliminate AudioTask.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/30/08 12:09 PM
+3 changed, 0 added, 2 deleted.
+4,416 ms. (Cumulative: 3,569,584 ms)
+
+----------------
