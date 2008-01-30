@@ -10,17 +10,17 @@
 //
 //==============================================================================
 
+#include <CoreTypes.h>
+#include <StringTypes.h>
 #include <SystemTypes.h>
+
+#include <EventListener.h>
+
 #include <AudioTypes.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
-#define kAudio_Pan_Max    100
-#define kAudio_Pan_Min  (-100)
-#define kAudio_Pan_Default 0
-
-#define kAudio_Volume_Max    100
-#define kAudio_Volume_Min      0
-#define kAudio_Volume_Default 100
+#define	MIDI_PLAYER_ID		1	// GK FIXXX: Hard code player ID for now
 
 // kAudioCmdMsgTypeStartAudio
 struct tAudioStartAudioInfo { 
@@ -49,7 +49,7 @@ struct tAudioStartAudioInfo {
 typedef struct taudiostate {
 	U8     masterVolume;			
 
-    U8     speakerEnabled;
+    U8     speakerDSPEnabled;
     U8     useOutDSP;
     U8     useOutEQ;
     U8     srcType;

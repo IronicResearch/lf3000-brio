@@ -5,7 +5,7 @@
 //
 // Mixer.cpp
 //
-//          The class to manage summation of several audio channels
+//          The class to manage multi-rate summation of audio and MIDI channels
 //
 // ==============================================================================
 #include <stdlib.h>
@@ -21,7 +21,9 @@
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
+
 #include <AudioTypes.h>
+#include <AudioTypesPriv.h>
 #include <AudioPriv.h>
 #include <Mixer.h>
 #include <AudioOutput.h>
@@ -32,12 +34,11 @@
 
 #define kMixer_HeadroomBits_Default 2
 
-#define kMixer_Headphone_GainDB        0 
+#define kMixer_Headphone_GainDB        0 // GK FIXX: Init Code exists.  Not yet in signal parh
 #define kMixer_SoftClipper_PreGainDB   3 
-#define kMixer_SoftClipper_PostGainDB  0
+#define kMixer_SoftClipper_PostGainDB  0  // TO BE IMPLEMENTED
 
 // Debug input/output stuff
-
 float outputDCValueDB;
 float outputDCValuef;
 Q15   outputDCValuei;
@@ -47,7 +48,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Defines
 //==============================================================================
-#define	BRIO_MIDI_PLAYER_ID		1	// FIXXX: Hard code player ID for now
 
 //==============================================================================
 // Global variables
@@ -105,29 +105,27 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 	printf("CAudioMixer::CAudioMixer: %d too many channels! Max=%d\n", numInChannels_, kAudioMixer_MaxInChannels);
 	pDebugMPI_->Assert((numInChannels_ <= kAudioMixer_MaxInChannels), "CAudioMixer::CAudioMixer: %d is too many channels!\n", numInChannels_ );
 
-#ifdef NEW_ADD_PLAYER
-    playerToAdd_  = NULL;
-    targetChannel_= NULL;
-#endif
-
     samplingFrequency_ = kAudioSampleRate;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
 
 // Allocate audio channels
-	pChannels_ = new CChannel[ numInChannels_ ];
-	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n" , numInChannels_);
-//    pChannelBuf_ = new S16[ kAudioOutBufSizeInWords ];
+//	pDebugMPI_->Assert((pChannels_ != kNull), "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n" , numInChannels_);
+    for (long ch = 0; ch < numInChannels_; ch++)
+        {
+	    pChannels_[ch] = new CChannel(MIDI_PLAYER_ID + 1 + ch);
+//        pChannels_[ch]->SetID(MIDI_PLAYER_ID + 1 + ch);
+        pChannels_[ch]->SetFileReadBuf(pFileReadBuf_);
+        }
 
-// Create MIDI player
-//	pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+// MIDI player created with first MIDI API call
     pMidiPlayer_ = NULL;
 
 // Configure sampling frequency conversion
-fsRack_[0] = (long)(samplingFrequency_*0.25f);
-fsRack_[1] = (long)(samplingFrequency_*0.5f );
 fsRack_[2] = (long)(samplingFrequency_);       
+fsRack_[1] = fsRack_[2]/2;
+fsRack_[0] = fsRack_[2]/4;
 
 for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
@@ -221,44 +219,34 @@ headphoneGainFracI_  = FloatToQ15(headphoneGainFracF_);
 tAudioState *d = &audioState_;
 memset(d, 0, sizeof(tAudioState));
 if (sizeof(tAudioState) >= kAUDIO_MAX_MSG_SIZE)
-    printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n", sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
+    printf("UH OH CAudioMixer: sizeof(tAudioState)=%d > kAUDIO_MAX_MSG_SIZE=%ld\n", sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
+
+if (sizeof(CAudioReturnMessage) >= kAUDIO_MAX_MSG_SIZE)
+    printf("UH OH CAudioMixer: sizeof(CAudioReturnMessage)=%d > kAUDIO_MAX_MSG_SIZE=%ld\n", sizeof(CAudioReturnMessage), kAUDIO_MAX_MSG_SIZE);
 
 d->computeLevelMeters = false;
 d->useOutEQ           = false;
 d->useOutSoftClipper  = true;
 d->useOutDSP          = (d->computeLevelMeters || d->useOutEQ || d->useOutSoftClipper);
 
-SetMasterVolume(100); //kVolume_Default);
+SetMasterVolume(kAudio_Volume_Default);
 
 d->systemSamplingFrequency = (long)samplingFrequency_;
-d->outBufferLength = kAudioFramesPerBuffer;  // Dunno?!? Words? Frames?
+d->outBufferLength = kAudioFramesPerBuffer;  // GK FIXXX Dunno. Really Frames?!?
+//printf("CAudioMixer: fs=%g outBufferLength=%ld timeSlice=%g (Seconds)\n", 
+//   samplingFrequency_, d->outBufferLength, ((float) kAudioFramesPerBuffer)/(float) samplingFrequency_);
 
-#undef CHECK_BUTTON_MPI_ON_STARTUP
+U32 enableTheSpeaker = false;
+#define CHECK_BUTTON_MPI_ON_STARTUP
 #ifdef CHECK_BUTTON_MPI_ON_STARTUP
-pButtonMPI_ = new CButtonMPI();
-tButtonData buttonData = pButtonMPI_->GetButtonState();
-U32 enableTheSpeaker;
-
-//#define HEADPHONE_CHECK_V1
-#ifdef HEADPHONE_CHECK_V1
-char buttonChanged = (buttonData.buttonState & buttonData.buttonTransition) ? '+' : '-';
-enableTheSpeaker = ('-' == buttonChanged);
-#else
-enableTheSpeaker = (0 == (buttonData.buttonState & kHeadphoneJackDetect));
-#endif
-EnableSpeaker(enableTheSpeaker);
-printf("CAudioMixer: kHeadphoneJackDetect=%X\n", (unsigned int) kHeadphoneJackDetect);
-printf("CAudioMixer: button State=%X Transition=%X\n", (unsigned int) buttonData.buttonState, (unsigned int) buttonData.buttonTransition);
-printf("CAudioMixer: enableTheSpeaker=%X\n", (unsigned int) enableTheSpeaker);
-
-#else
-	bool isSpeaker = IsSpeakerOn();
-	pDebugMPI_->DebugOut( kAudioDebugLevel, "CAudioMixer: Speaker = %d, %s\n", isSpeaker, isSpeaker ? "on" : "off");
-	EnableSpeaker(isSpeaker);
+	bool isSpeakerOn = IsSpeakerOn();
+//	printf("CAudioMixer: SpeakerOn = %d\n", isSpeakerOn);
+enableTheSpeaker = isSpeakerOn;
 #endif // CHECK_BUTTON_MPI_ON_STARTUP
+EnableSpeakerDSP(enableTheSpeaker);
 
 //if (d->useOutSoftClipper)
-//    d->headroomBits = kMixer_HeadroomBits_Default;
+//    d->headroomBits = kMixer_HeadroomBits_Default+1;
 //else
     d->headroomBits = kMixer_HeadroomBits_Default;
 
@@ -303,12 +291,14 @@ outSoundFile_ = NULL;
 for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
 // Configure output Equalizer
+#ifdef EQ_NEEDED
     outEQ_BandCount_ = 1;
     for (j = 0; j < kAudioMixer_MaxEQBands; j++)
         {
         DefaultEQ(&outEQ_[ch][j]);
 //    SetEQ_SamplingFrequency(d, samplingFrequency_);
         }
+#endif
 
 // Configure output "soft" clipper
     DefaultWaveShaper(&outSoftClipper_[ch]);
@@ -458,9 +448,9 @@ long idle   = 0;
 long paused = 0;
 for (long i = 0; i < numInChannels_; i++)
     {
-    active +=  pChannels_[i].IsInUse(); //(!pChannels_[i]->IsPaused());
-    idle   += (!pChannels_[i].IsInUse());
-    paused +=   pChannels_[i].IsPaused();
+    active +=  pChannels_[i]->IsInUse(); //(!pChannels_[i]->IsPaused());
+    idle   += (!pChannels_[i]->IsInUse());
+    paused +=   pChannels_[i]->IsPaused();
     }
 
 //#define DEBUG_MIXER_FINDFREECHANNEL
@@ -486,7 +476,7 @@ printf("CAudioMixer::FindFreeChannel: all %ld/%d active channels in use\n", acti
 // Search for idle channel
 for (long i = 0; i < numInChannels_; i++)
 	{
-    pCh = &pChannels_[i];
+    pCh = pChannels_[i];
 //    CAudioPlayer *pPlayer =pCh->GetPlayer();
 		if (!pCh->IsInUse())// && pCh->isDone_) 
         {
@@ -510,10 +500,9 @@ CAudioMixer::FindChannel( tAudioID id )
 //  Find channel with specified ID
 for (long i = 0; i < numInChannels_; i++)
 	{
-    CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
 // GK FIXX CHECK  Excised IsInUse().  Hot code - check for functionality break
-	if ( pPlayer && (pPlayer->GetID() == id)) // && pChannels_[i].IsInUse())
-		return (&pChannels_[i]);
+	if ( pChannels_[i]->GetID() == id) // && pChannels_[i]->IsInUse())
+		return (pChannels_[i]);
 	}
 	
 // Uh oh, no ID matched
@@ -529,8 +518,10 @@ CAudioMixer::FindFreeChannelIndex( tAudioID id )
 {
 for (long i = 0; i < numInChannels_; i++)
 	{
-    CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
-	if ( pPlayer && (pPlayer->GetID() == id) && pChannels_[i].IsInUse())
+//    CAudioPlayer *pPlayer = pChannels_[i]->GetPlayer();
+//	if ( pPlayer && (pPlayer->GetID() == id) && pChannels_[i]->IsInUse())
+//		return (i);
+	if ( pChannels_[i]->GetID() == id && pChannels_[i]->IsInUse())
 		return (i);
 	}
 	
@@ -539,14 +530,259 @@ return ( -1 );
 }  // ---- end FindFreeChannelIndex() ----
 
 // ==============================================================================
-// IsAnyAudioActive:  Gk FI
+// GetChannelTime:    Return "play" time for channel specified by ID
 // ==============================================================================
-Boolean CAudioMixer::IsAnyAudioActive( void )
+    U32
+CAudioMixer::GetChannelTime( tAudioID id )
 {
-// Search for a channel that is in use
+U32 time = 0;
+
+// GK FIXXX: MIDI has time
+//if (MIDI_PLAYER_ID == id)
+//    {
+//    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+//    if (pMidiPlayer)
+//    	time = pMidiPlayer->GetTime_mSec();
+//    }
+//else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	    time = pChannel->GetTime_mSec();
+    }
+//else
+//   printf("CAudioMixer::GetChannelTime: Unable to find channel for id=%ld\n", id);
+
+//printf("CAudioMixer::GetChannelTime: GetTime_mSec() ID=%ld time=%ld\n", id, time);	
+	
+return ( time );
+}  // ---- end GetChannelTime() ----
+
+// ==============================================================================
+// GetChannelVolume:    Return volume for channel specified by ID
+// ==============================================================================
+    U8
+CAudioMixer::GetChannelVolume( tAudioID id )
+{
+U8 x = 0;
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+    if (pMidiPlayer)
+    	x = pMidiPlayer->GetVolume( );
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	x = pChannel->GetVolume();
+    //else
+    //   printf("CAudioMixer::GetChannelVolume: Unable to find channel for id=%ld\n", id);
+    }
+//printf("CAudioMixer::GetChannelVolume(): ID=%ld volume=%ld\n", id, x);	
+	
+return ( x );
+}  // ---- end GetChannelVolume() ----
+
+// ==============================================================================
+// GetChannelPan:    Return pan for channel specified by ID
+// ==============================================================================
+    S8
+CAudioMixer::GetChannelPan( tAudioID id )
+{
+S8 x = 0;
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+    if (pMidiPlayer)
+    	x = pMidiPlayer->GetPan();
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	x = pChannel->GetPan();
+    //    else
+    //        printf("CAudioMixer::GetChannelPan: Unable to find player for id=%ld\n", id);
+     }
+//printf("CAudioMixer::GetChannelPan(): ID=%ld pan=%ld\n", id, x);	
+	
+return ( x );
+}  // ---- end GetChannelPan() ----
+
+// ==============================================================================
+// GetChannelPriority:    Return priority for channel specified by ID
+//
+//  GK FIXXX:       This is unimplemented for Didj release.  Do if time permits
+// ==============================================================================
+    U32
+CAudioMixer::GetChannelPriority( tAudioID id )
+{
+U32 x = 0;
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+//    if (pMidiPlayer)
+//    	x = pMidiPlayer->GetTime_mSec( x );
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+        {
+//    	CAudioPlayer *pPlayer = pChannel->GetPlayer();
+//      if (pPlayer)
+//   	    x = pPlayer->GetPan();
+    //    else
+    //        printf("CAudioMixer::GetChannelPriority: Unable to find player for id=%ld\n", id);
+        }
+    //else
+    //   printf("CAudioMixer::GetChannelPriority: Unable to find channel for id=%ld\n", id);
+    }
+
+//printf("CAudioMixer::GetChannelPriority(): ID=%ld volume=%ld\n", id, x);	
+	
+return ( x );
+}  // ---- end GetChannelPriority() ----
+
+// ==============================================================================
+// SetChannelVolume:  Set volume for channel specified by ID
+// ==============================================================================
+    void
+CAudioMixer::SetChannelVolume(tAudioID id, U8 x )
+{
+//printf("CAudioMixer::SetChannelVolume: audioID=%d volume=%d\n", (int)id, x);	
+// GK FIXXXX: old architecture has MIDI separated.  Move into CChannel class.
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+    if (pMidiPlayer)
+    	pMidiPlayer->SetVolume( x );
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	pChannel->SetVolume( x );
+    }
+}  // ---- end SetChannelVolume() ----
+
+// ==============================================================================
+// GetChannelEventListener:  
+// ==============================================================================
+    IEventListener *
+CAudioMixer::GetChannelEventListener(tAudioID id)
+{
+//	CAudioPlayer*			pPlayer;
+
+//printf("CAudioMixer::GetChannelEventListener: audioID=%d\n", (int)id);	
+// GK FIXXXX: old architecture has MIDI separated.  Move into CChannel class.
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+    if (pMidiPlayer)
+    	return (pMidiPlayer->GetEventListener());
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	return (pChannel->GetEventListener());
+    }
+return (kNull);
+}  // ---- end SetChannelEventListener() ----
+
+// ==============================================================================
+// SetChannelPan:  Set pan for channel specified by ID
+// ==============================================================================
+    void
+CAudioMixer::SetChannelPan(tAudioID id, S8 x )
+{
+//printf("CAudioMixer::SetChannelPan: audioID=%d volume=%d\n", (int)id, x);	
+// GK FIXXXX: old architecture has MIDI separated.  Move into CChannel class.
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+    if (pMidiPlayer)
+    	pMidiPlayer->SetPan( x );
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	pChannel->SetPan( x );
+    }
+}  // ---- end SetChannelPan() ----
+
+// ==============================================================================
+// SetChannelPriority:  Set priority for channel specified by ID
+//
+//  GK FIXXX:       This is unimplemented for Didj release.  Do if time permits
+// ==============================================================================
+    void
+CAudioMixer::SetChannelPriority(tAudioID id, U32 x )
+{
+//printf("CAudioMixer::SetChannelPriority: audioID=%d volume=%d\n", (int)id, x);	
+// GK FIXXXX: old architecture has MIDI separated.  Move into CChannel class.
+//if (MIDI_PLAYER_ID == id)
+//    {
+//    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+//    if (pMidiPlayer)
+//    	pMidiPlayer->SetPriority( x );
+//    }
+//else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	pChannel->SetPriority( x );
+    }
+}  // ---- end SetChannelPriority() ----
+
+// ==============================================================================
+// SetChannelEventListener:  Set event listener ptr for channel specified by ID
+// ==============================================================================
+    void
+CAudioMixer::SetChannelEventListener(tAudioID id, IEventListener* p )
+{
+//printf("CAudioMixer::SetChannelEventListener: audioID=%d p=%d\n", (int)id, p);	
+// GK FIXXXX: old architecture has MIDI separated.  Move into CChannel class.
+if (MIDI_PLAYER_ID == id)
+    {
+    CMidiPlayer *pMidiPlayer = GetMidiPlayerPtr();
+    if (pMidiPlayer)
+    	pMidiPlayer->SetEventListener( p );
+    }
+else
+    {
+    CChannel *pChannel = FindChannel( id );
+    if (pChannel) 
+    	pChannel->SetEventListener( p );
+    }
+}  // ---- end SetChannelEventListener() ----
+
+// ==============================================================================
+// IsChannelActive: 
+// ==============================================================================
+    Boolean 
+CAudioMixer::IsChannelActive( tAudioID id )
+{
+CChannel *pChannel = FindChannel( id );
+if (pChannel) 
+	return (pChannel->IsInUse());
+
+return (false);
+}  // ---- end IsChannelActive() ----
+
+// ==============================================================================
+// IsAnyAudioActive: 
+// ==============================================================================
+    Boolean 
+CAudioMixer::IsAnyAudioActive( void )
+{
+// Search for channel that is in use
 for (long i = 0; i < numInChannels_; i++)
 	{
-	if (pChannels_[i].IsInUse())
+	if (pChannels_[i]->IsInUse())
 		return (true);
 	}
 
@@ -558,10 +794,10 @@ return (false);
 // ==============================================================================
 long CAudioMixer::GetMixBinIndex( long samplingFrequency )
 {
-	long index =  kAudioMixer_MixBin_Index_FsDiv1;
-	
-	// FIXXX: currently matches numbers.  In the future, should assign mix bin
-	// with closest sampling frequency and do conversion
+long index =  kAudioMixer_MixBin_Index_FsDiv1;
+
+// FIXXX: currently matches numbers.  In the future, should assign mix bin
+// with closest sampling frequency and do conversion
 	switch (samplingFrequency)
 		{
 		default:
@@ -614,26 +850,29 @@ CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newI
 {
 CAudioPlayer *pPlayer = NULL;
 
-if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")  ||
+if (!strcmp(sExt, "raw" ) || !strcmp( sExt, "RAW" ) ||
     !strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
-    !strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")  ||
+    !strcmp(sExt, "aif" ) || !strcmp( sExt, "AIF" ) ||
     !strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
-    !strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
+    !strcmp(sExt, "wav" ) || !strcmp( sExt, "WAV" ) )
 	{
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create RawPlayer\n");
 	pPlayer = new CRawPlayer( pInfo, newID );
+// printf("CAudioMixer::CreatePlayer:: sizeof(CRawPlayer)=%d\n", sizeof(CRawPlayer));
     }
 else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
          !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
     {
-//	pDebugMPI_->DebugOut( kDbgLvlVerbose, "AudioTask::DoStartAudio: Create VorbisPlayer\n");
 	pPlayer = new CVorbisPlayer( pInfo, newID );
+//printf("CAudioMixer::CreatePlayer:: sizeof(CVorbisPlayer)=%d\n", sizeof(CVorbisPlayer));
     } 
 else
     {
 	pDebugMPI_->DebugOut( kDbgLvlImportant,
-		"CAudioMixer::CreatePlayer: Create *NO* Player: invalid file extension ='%s' for file '%s'\n", sExt, (char *) pInfo->path->c_str());
+		"CAudioMixer::CreatePlayer: invalid extension ='%s' for '%s'\n", sExt, (char *) pInfo->path->c_str());
     }
+
+if (pPlayer)
+    pPlayer->SetFileReadBuf(pFileReadBuf_);
 
 return (pPlayer);
 }  // ---- end CreatePlayer() ----
@@ -657,24 +896,77 @@ if (!pPlayer)
     return (kAudioPlayerCreateErr);  // GK FIXXX: add error for unsupported file extension
     }
 
-#ifdef NEW_ADD_PLAYER
-// Trigger flags to call SetPlayer() in Mixer render loop
-// GK NOTE:  this is crap due to race condition
-targetChannel_ = pChannel;  // Do this one first
-playerToAdd_   = pPlayer;
-//pChannel->SetPlayer(pPlayer, true);
-//pChannel->SetInUse(true);
-#endif // NEW_ADD_PLAYER
-
-#ifdef OLD_ADD_PLAYER
 pChannel->InitWithPlayer( pPlayer );
-#endif // OLD_ADD_PLAYER
 
 pChannel->SetPan(    pInfo->pan );
 pChannel->SetVolume( pInfo->volume );
 
 return (kNoErr);
 }  // ---- end AddPlayer() ----
+
+// ==============================================================================
+// StartChannel:
+// ==============================================================================
+    tAudioID 
+CAudioMixer::StartChannel( tAudioStartAudioInfo *pInfo, char *sExt )
+{
+{static long c=0; printf("CAudioMixer::StartChannel%ld: START\n", c++);}
+
+CChannel *pChannel = FindFreeChannel( pInfo->priority );
+if (!pChannel)
+    {
+    printf("CAudioMixer::StartChannel: no channel available\n");
+    return (kAudioNoChannelAvailErr);
+    }
+
+//tErrType err = AddPlayer( pInfo, sExt, pChannel->GetID());
+pChannel->StartPlayer(pInfo, sExt);
+{static long c=0; printf("CAudioMixer::StartChannel%ld: id=%d\n", c++, pChannel->GetID());}
+
+return ( pChannel->GetID());
+}  // ---- end StartChannel() ----
+
+// ==============================================================================
+// StopChannel:
+// ==============================================================================
+    tErrType 
+CAudioMixer::StopChannel( tAudioID id )
+{
+printf("CAudioMixer::StopChannel() AudioID=%d\n", (int)id);	
+
+// Find channel with specified ID
+CChannel *pCh = FindChannel( id );
+if (pCh && pCh->IsInUse())
+	pCh->Release( true); //noDoneMsg );
+
+return (kNoErr);  // GK FIXXX:  add one
+}  // ---- end StopChannel() ----
+
+// ==============================================================================
+// PauseChannel:
+// ==============================================================================
+    tErrType 
+CAudioMixer::PauseChannel( tAudioID id )
+{
+// Find channel with specified ID
+CChannel *pChannel = FindChannel( id );
+if (pChannel)
+	pChannel->Pause();
+return (kNoErr);  // GK FIXXX:  add one
+}  // ---- end PauseChannel() ----
+
+// ==============================================================================
+// ResumeChannel:
+// ==============================================================================
+    tErrType 
+CAudioMixer::ResumeChannel( tAudioID id )
+{
+// Find channel with specified ID
+CChannel *pChannel = FindChannel( id );
+if (pChannel)
+	pChannel->Resume();
+return (kNoErr);  // GK FIXXX:  add one
+}  // ---- end ResumeChannel() ----
 
 // ==============================================================================
 // Render:  Main mixer render routine
@@ -702,22 +994,6 @@ S16 **tPtrs = pTmpBufOffsets_; // pTmpBufs_, pTmpBufOffsets_
 //    audioState_.headroomBits = kMixer_HeadroomBits_Default;
 //else
     audioState_.headroomBits = kMixer_HeadroomBits_Default;
-
-#ifdef NEW_ADD_PLAYER
-// GK FIXXXX: HACK  need to mutex-protect this
-if (playerToAdd_)
-    {
-    CAudioPlayer *pPlayer  = playerToAdd_;
-    CChannel     *pChannel = targetChannel_;
-    playerToAdd_  = NULL;
-    targetChannel_= NULL;
-printf("CAudioMixer::Render: Adding player\n");
-    pChannel->SetPlayer(pPlayer, true); 
-    pChannel->SetInUse(true);
-    pChannel->isDone_ = false;
-printf("CAudioMixer::Render: Added player\n");
-    }
-#endif // NEW_ADD_PLAYER
 
 //	printf("AudioMixer::Render: bufPtr: 0x%x, frameCount: %u \n", (unsigned int)pOut, (int)numStereoFrames );
 //	pDebugMPI_->Assert( ((numFrames * kAudioBytesPerStereoFrame) == kAudioOutBufSizeInBytes ),
@@ -779,7 +1055,7 @@ else
 {
 for (ch = 0; ch < numInChannels_; ch++)
 	{
-	CChannel *pCh = &pChannels_[ch];
+	CChannel *pCh = pChannels_[ch];
 //printf("CAudioMixer::Render: pCh%ld/%ld ->ShouldRender=%d \n", ch, numInChannels_, pCh->ShouldRender());
 // Render if channel is in use and not paused
 	if (pCh->ShouldRender())
@@ -794,16 +1070,14 @@ for (ch = 0; ch < numInChannels_; ch++)
 
 	// Player renders data into channel's stereo output buffer
         framesRendered = pCh->Render( pChannelBuf_, framesToRender );
-    // NOTE: SendDoneMsg() deferred to next buffer when framtesToRender is multiple of total frames
-	    if ( framesRendered < framesToRender ) 
+// NOTE: SendDoneMsg() deferred to next buffer when framesToRender is multiple of total frames
 //printf("frames %ld/%ld\n", framesRendered, framesToRender);
-//	    if ( 0 == framesRendered ) 
+	    if ( framesRendered < framesToRender )   // ( 0 == framesRendered ) 
             {
 //			pCh->Release( true );	// false = Don't suppress done msg 
-            pCh->isDone_ = true;
-            pCh->fInUse_ = false;
-            if (pCh->GetPlayerPtr()->ShouldSendDoneMessage())
-                pCh->SendDoneMsg();
+            pCh->SetIsDone( true );
+            pCh->SetInUse( false );
+            pCh->SendDoneMsg( );
             }
 
         if (inputIsDC) 
@@ -908,10 +1182,6 @@ else
 	ClearShorts(&tPtrs[5][-kSRC_Filter_MaxDelayElements], numFramesDiv2);
     }
 		
-// Process global audio effects
-//if (numPlaying && gAudioContext->pAudioEffects)
-//	gAudioContext->pAudioEffects->ProcessAudioEffects( kAudioOutBufSizeInWords, pOut );
-
 // Scale stereo/interleaved buffer by master volume
 // GKFIXX: should probably move earlier in signal chain to reduce clipping in those stages
 //ScaleShortsf(pOut, pOut, numFrames*channels, masterGainf_[0]);
@@ -946,6 +1216,7 @@ if (audioState_.useOutDSP)
         S16 *pIn  = tPtrs[kTmpIndex+ch];
         S16 *pOut = tPtrs[kTmpIndex+ch]; 
     // Compute Output Equalizer
+#ifdef EQ_NEEDED
         if (audioState_.useOutEQ)
             {
     //{static long c=0; if (!c) printf("ComputeEQ %ld : bands=%ld \n", c++, outEQ_BandCount_);}
@@ -955,11 +1226,12 @@ if (audioState_.useOutDSP)
                 pOut = pIn;
                 }
             }
+#endif
     // test boost for single channel wave
 //        for (U32 ii = 0; ii < numFrames; ii++) pIn[ii] *= 3;
 
     // Compute Output Soft Clipper
-//    {static long c=0; printf("ComputeWaveShaper %ld On=%d: \n", c++, audioState_.useOutSoftClipper);}
+//{static long c=0; printf("ComputeWaveShaper%ld On=%d\n", c++, audioState_.useOutSoftClipper);}
         if (audioState_.useOutSoftClipper)
             {
 //        for (U32 ii = 0; ii < numFrames; ii++) pIn[ii] *= 3;
@@ -1136,8 +1408,10 @@ fsRack_[2] = (long)(samplingFrequency_);       // kAudioSampleRate_Div1;
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
     long i;
+#ifdef EQ_NEEDED
     for (i = 0; i < outEQ_BandCount_; i++)
         SetEQ_SamplingFrequency(&outEQ_[ch][i], x);
+#endif
 
     SetWaveShaper_SamplingFrequency(&outSoftClipper_[ch], x);
 
@@ -1163,7 +1437,7 @@ tAudioState *d = &audioState_;
 U8     srcType;
 U8     srcFilterVersion;
 
-EnableSpeaker(d->speakerEnabled);
+EnableSpeakerDSP(d->speakerDSPEnabled);
 
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     {
@@ -1171,6 +1445,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     SetWaveShaper_SamplingFrequency(ws, samplingFrequency_);
     SetWaveShaper_Parameters(ws, kWaveShaper_Type_V4, (float)d->softClipperPreGainDB, (float)d->softClipperPostGainDB);
 
+#ifdef EQ_NEEDED
     {
 //#define EQ_WITH_LOWPASS_RESPONSE
 //#define EQ_WITH_RESONANT_SPIKES
@@ -1203,6 +1478,7 @@ for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
         PrepareEQ(&outEQ_[ch][j]);    
         }
     }
+#endif // EQ_NEEDED
 
     }
 } // ---- end SetDSP() ----
@@ -1217,9 +1493,10 @@ long i;
 
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
+#ifdef EQ_NEEDED
     for (i = 0; i < outEQ_BandCount_; i++)
         UpdateEQ(&outEQ_[ch][i]);
-
+#endif
     UpdateWaveShaper(&outSoftClipper_[ch]);
 
     for (i = 0; i < kAudioMixer_SRCCount; i++)
@@ -1236,9 +1513,10 @@ long ch, i;
 //{static long c=0; printf("CAudioMixer::ResetDSP %ld: START\n", c++);}
 for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
+#ifdef EQ_NEEDED
     for (i = 0; i < outEQ_BandCount_; i++)
         ResetEQ(&outEQ_[ch][i]);
-
+#endif
     ResetWaveShaper(&outSoftClipper_[ch]);
 
     for (i = 0; i < kAudioMixer_MixBinCount; i++)
@@ -1292,35 +1570,40 @@ printf("CAudioMixer::PrintMemoryUsage: sizeof(CAudioMixer)=%d\n", sizeof(CAudioM
 
 long channelMemory = numInChannels_*sizeof(CChannel);
 channelMemory += sizeof(pChannelBuf_);	
-printf("CAudioMixer::PrintMemoryUsage: channelMemory=%ld\n", channelMemory);
+printf("    channelMemory=%ld\n", channelMemory);
 bytes += channelMemory;
 
 long mixBinMemory = sizeof(pMixBinBufs_);
-printf("CAudioMixer::PrintMemoryUsage: mixBinMemory=%ld\n", mixBinMemory);
+printf("    mixBinMemory=%ld\n", mixBinMemory);
 bytes += mixBinMemory;
 
 long tmpBufMemory = sizeof(pTmpBufs_);
-printf("CAudioMixer::PrintMemoryUsage: tmpBufMemory=%ld\n", tmpBufMemory);
+printf("    tmpBufMemory=%ld\n", tmpBufMemory);
 bytes += tmpBufMemory;
 
+long fileReadBuf_Bytes = sizeof(pFileReadBuf_);
+printf("    fileReadBuf_=%ld\n", fileReadBuf_Bytes);
+//    S16 pFileReadBuf_[ 2*kAudioOutBufSizeInWords];  // GK FIXX:  2x needed?
+bytes += fileReadBuf_Bytes;
+
 #ifdef EMULATION
-printf("CAudioMixer::PrintMemoryUsage: totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes, 2*bytes);
+printf("    totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes, 2*bytes);
 #else
-printf("CAudioMixer::PrintMemoryUsage: totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes/2, bytes);
+printf("    totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes/2, bytes);
 #endif
 } // ---- end PrintMemoryUsage() ----
 
 // ==============================================================================
-// EnableSpeaker :  Setup DSP that is different for Line and Speaker outputs
+// EnableSpeakerDSP:  Setup DSP that is different for Line and Speaker outputs
 // ==============================================================================
     void 
-CAudioMixer::EnableSpeaker(Boolean x)
+CAudioMixer::EnableSpeakerDSP(Boolean x)
 {
-//{static long c=0; printf("CAudioMixer::EnableSpeaker%ld: enabled=%d -> %d\n", c++, audioState_.speakerEnabled, x);}
+//{static long c=0; printf("CAudioMixer::EnableSpeakerDSP%ld: enabled=%d -> %d\n", c++, audioState_.speakerEnabled, x);}
 //audioState_.useOutEQ = x;  // Don't use EQ for now
 audioState_.useOutSoftClipper = x;
-audioState_.speakerEnabled    = x;
-} // ---- end EnableSpeaker() ----
+audioState_.speakerDSPEnabled = x;
+} // ---- end EnableSpeakerDSP() ----
 
 // ==============================================================================
 // CreateMIDIPlayer :  
@@ -1328,11 +1611,11 @@ audioState_.speakerEnabled    = x;
     CMidiPlayer * 
 CAudioMixer::CreateMIDIPlayer()
 {
-//{static long c=0; printf("CAudioMixer::CreateMIDIPlayer%ld: \n", c++);}
+//{static long c=0; printf("CAudioMixer::CreateMIDIPlayer%ld: id=%d\n", c++, MIDI_PLAYER_ID);}
 if (pMidiPlayer_)
 	delete pMidiPlayer_;
 
-pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+pMidiPlayer_ = new CMidiPlayer( MIDI_PLAYER_ID );
 return (pMidiPlayer_);
 } // ---- end CreateMIDIPlayer() ----
 

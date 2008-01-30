@@ -40,19 +40,9 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 //{static long c=0; printf("CAudioPlayer::CAudioPlayer: start %ld id=%d\n", c++, (int)id);}
 	id_ = id;
 
-#ifdef USE_AUDIO_PLAYER_MUTEX
-// Setup Mutex object for protecting render calls
-	pKernelMPI_ =  new CKernelMPI();
-	result = pKernelMPI_->IsValid();
-	pDebugMPI_->Assert((true == result), "CRawPlayer::ctor: Unable to create KernelMPI.\n");
-
-	const tMutexAttr 	attr = {0};
-	result = pKernelMPI_->InitMutex( render_mutex_, attr );
-	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor: Unable to init mutex.\n");
-#endif
-
 // Allocate player's sample buffer
-	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // GK FIXX:  2x needed?
+//	pFileReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // GK FIXX:  2x needed?
+    pFileReadBuf_ = NULL; 
 
 	bPaused_        = 0;
 	bComplete_      = 0;
@@ -67,17 +57,30 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 	
 // Set class variables from message
-	priority_     = pInfo->priority;
-	pListener_    = pInfo->pListener;
-	payload_      = pInfo->payload;
-	optionsFlags_ = pInfo->flags;
+    if (pInfo)
+        {
+    	priority_     = pInfo->priority;
+    	pListener_    = pInfo->pListener;
+    	payload_      = pInfo->payload;
+    	optionsFlags_ = pInfo->flags;
 
-	bSendDoneMessage_    = (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
-	bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
+    	bSendDoneMessage_    = (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
+    	bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
+        }
+    else
+        {       
+    	priority_     = 0;
+    	pListener_    = 0;
+    	payload_      = 0;
+    	optionsFlags_ = 0;
+
+    	bSendDoneMessage_    = 0 ;
+    	bSendLoopEndMessage_ = 0 ;
+        }
 
 // Set up looping
-	shouldLoop_  = (0 < payload_) && (optionsFlags_ & kAudioOptionsLooped);
     loopCount_   = payload_;
+	shouldLoop_  = (0 < loopCount_) && (optionsFlags_ & kAudioOptionsLooped);
     loopCounter_ = 0;
 
 //#define DEBUG_AUDIOPLAYER_OPTIONS
@@ -137,7 +140,7 @@ if (!pListener_)
 //printf("CAudioPlayer::SendDoneMsg audioID=%ld\n", id_);
 
 	data.audioID = id_;	        
-	data.payload = loopCount_;
+	data.payload = payload_;
 	data.count   = 1;
 
 	CEventMPI	event;
@@ -159,7 +162,7 @@ if (!pListener_)
 //printf("CAudioPlayer::SendLoopEndMsg audioID=%ld\n", id_);
 
 	data.audioID = id_;	        
-	data.payload = loopCount_;
+	data.payload = payload_;
 	data.count   = 1;
 
 	CEventMPI	event;

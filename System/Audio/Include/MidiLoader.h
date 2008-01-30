@@ -31,37 +31,40 @@
 // Function Typedefs
 //==============================================================================
 
-typedef int (*pFnInitialize)( void );
-typedef int (*pFnTerminate)( void );
-typedef int (*pFnCreateContext)( SPMIDI_Context **, int  );
-typedef int (*pFnDeleteContext)( SPMIDI_Context * );
-typedef int (*pFnSetMaxVoices)( SPMIDI_Context *, int );
-typedef int (*pFnGetMaxVoices)( SPMIDI_Context * );
+typedef int  (*pFnInitialize)( void );
+typedef int  (*pFnTerminate)( void );
+typedef int  (*pFnCreateContext)( SPMIDI_Context **, int  );
+typedef int  (*pFnDeleteContext)( SPMIDI_Context * );
+typedef int  (*pFnSetMaxVoices)( SPMIDI_Context *, int );
+typedef int  (*pFnGetMaxVoices)( SPMIDI_Context * );
 typedef void (*pFnWriteCommand)( SPMIDI_Context *, int, int, int );
-typedef int (*pFnReadFrames)( SPMIDI_Context *, void *, int, int, int );
-typedef int (*pFnGetFramesPerBuffer)( void );
+typedef int  (*pFnReadFrames)( SPMIDI_Context *, void *, int, int, int );
+typedef int  (*pFnGetFramesPerBuffer)( void );
 typedef void (*pFnSetMasterVolume)( SPMIDI_Context *, int );
-typedef int (*pFnGetChannelEnable)( SPMIDI_Context *, int );
-typedef int (*pFnSetChannelEnable)( SPMIDI_Context *, int, int );
-typedef int (*pFnCreateProgramList)( SPMIDI_ProgramList ** );
+typedef int  (*pFnGetChannelEnable)( SPMIDI_Context *, int );
+typedef int  (*pFnSetChannelEnable)( SPMIDI_Context *, int, int );
+typedef int  (*pFnCreateProgramList)( SPMIDI_ProgramList ** );
 typedef void (*pFnDeleteProgramList)( SPMIDI_ProgramList * );
-typedef int (*pFnCreateOrchestra)( SPMIDI_Orchestra **, spmSInt32 );
+typedef int  (*pFnCreateOrchestra)( SPMIDI_Orchestra **, spmSInt32 );
 typedef void (*pFnDeleteOrchestra)( SPMIDI_Orchestra * );
 typedef SPMIDI_Error (*pFnLoadOrchestra)( StreamIO *, SPMIDI_ProgramList *, SPMIDI_Orchestra ** );
-typedef int (*pFnGetMemoryAllocationCount)( void );
+typedef int  (*pFnGetMemoryAllocationCount)( void );
 
 typedef void (*pFnUtilReset)( SPMIDI_Context * );
 typedef void (*pFnUtilNoteOn)( SPMIDI_Context *, int, int, int );
 typedef void (*pFnUtilNoteOff)( SPMIDI_Context *, int, int, int );
 typedef void (*pFnUtilControlChange)( SPMIDI_Context *, int, int, int );
-typedef int (*pFnFileScanForPrograms)( SPMIDI_ProgramList *, unsigned char *, int );
+typedef int  (*pFnFileScanForPrograms)( SPMIDI_ProgramList *, unsigned char *, int );
 typedef StreamIO* (*pFnStreamOpenFile)( char *, char * );
 typedef void (*pFnStreamClose)( StreamIO * );
 typedef SPMIDI_Error (*pFnFilePlayerCreate)( MIDIFilePlayer **, int, const unsigned char *, int );
 typedef SPMIDI_Error (*pFnFilePlayerRewind)( MIDIFilePlayer * );
 typedef SPMIDI_Error (*pFnFilePlayerSetTempoScaler)( MIDIFilePlayer *, int );
-typedef int (*pFnFilePlayerPlayFrames)( MIDIFilePlayer *, SPMIDI_Context *, int );
+typedef int  (*pFnFilePlayerPlayFrames)( MIDIFilePlayer *, SPMIDI_Context *, int );
 typedef void (*pFnFilePlayerDelete)( MIDIFilePlayer * );
+typedef int  (*pFnFilePlayerGetTrackCount)( MIDIFilePlayer * );
+typedef int  (*pFnFilePlayerGetTrackEnable)( MIDIFilePlayer * , int);
+typedef SPMIDI_Error  (*pFnFilePlayerSetTrackEnable)( MIDIFilePlayer * , int);
 
 
 //==============================================================================
@@ -98,6 +101,9 @@ extern pFnFilePlayerRewind			pMIDIFilePlayer_Rewind;
 extern pFnFilePlayerSetTempoScaler	pMIDIFilePlayer_SetTempoScaler;
 extern pFnFilePlayerPlayFrames		pMIDIFilePlayer_PlayFrames;
 extern pFnFilePlayerDelete			pMIDIFilePlayer_Delete;
+extern pFnFilePlayerGetTrackCount	pMIDIFilePlayer_GetTrackCount;
+extern pFnFilePlayerGetTrackEnable	pMIDIFilePlayer_GetTrackEnable;
+extern pFnFilePlayerSetTrackEnable	pMIDIFilePlayer_SetTrackEnable;
 
 #ifndef USE_SPMIDI_EXPORTS
 #define SPMIDI_Initialize			pSPMIDI_Initialize
@@ -130,6 +136,9 @@ extern pFnFilePlayerDelete			pMIDIFilePlayer_Delete;
 #define MIDIFilePlayer_SetTempoScaler	pMIDIFilePlayer_SetTempoScaler	
 #define MIDIFilePlayer_PlayFrames	pMIDIFilePlayer_PlayFrames		
 #define MIDIFilePlayer_Delete		pMIDIFilePlayer_Delete		
+#define MIDIFilePlayer_GetTrackCount pMIDIFilePlayer_GetTrackCount	
+#define MIDIFilePlayer_GetTrackEnable pMIDIFilePlayer_GetTrackEnable
+#define MIDIFilePlayer_SetTrackEnable pMIDIFilePlayer_SetTrackEnable
 
 #endif
 

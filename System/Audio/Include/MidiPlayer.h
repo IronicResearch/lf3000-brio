@@ -56,6 +56,9 @@ public:
 	inline S8	GetPan()		    { return pan_; }
 	void		SetPan(S8 x);
 
+    inline IEventListener* GetEventListener()             { return pListener_; }
+	void        SetEventListener(IEventListener *p) {pListener_ = p;}
+
 	// MIDI channel messages
 	tErrType 	NoteOn(  U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
 	tErrType 	NoteOff( U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
@@ -87,7 +90,7 @@ private:
 	MIDIFilePlayer*			pFilePlayer_;	
 	SPMIDI_Orchestra        *spMIDI_orchestra_;
 
-	const IEventListener*	pListener_;		// For done event
+	IEventListener*	pListener_;		// For done event
 	tAudioOptionsFlags	    optionsFlags_;	
 	U8			            bSendDoneMessage_;		// Caller requests done message 
 	U8			            bSendLoopEndMessage_;// Send each time the end of the loop has been reached
@@ -96,7 +99,7 @@ private:
 	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of active tracks
 
 // DSP information
-	U8			pan_;
+	S8			pan_;
 	U8			volume_;
 
 #define kAudioMixerChannel_MaxOutChannels 2     
