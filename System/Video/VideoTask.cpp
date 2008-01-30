@@ -65,13 +65,16 @@ void* VideoTaskMain( void* arg )
 	U32				flags = (pctx->pListener) ? kAudioOptionsDoneMsgAfterComplete : 0;
 	Boolean			bAudio = false;
 	
-	bRunning = true;
+	bRunning = pctx->bPlaying = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
 
 	while (bRunning)
 	{
+		// Pre-render the 1st video frame prior to audio startup
+		vidmgr.GetVideoFrame(pctx->hVideo, &vtm);
+		vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
+		dispmgr.Invalidate(0, NULL);
 		// Start audio playback and sync each video frame to audio time stamp
-		pctx->bPlaying = true;
 		if (pctx->pPathAudio != NULL)
 			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, flags);
 		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync

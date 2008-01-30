@@ -13203,3 +13203,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/29/08 6:18 PM
 4,266 ms. (Cumulative: 3,546,293 ms)
 
 ----------------
+Revision 2,816 from svn://localhost/TRUNK/:
+Revision 2,817 from svn://localhost/TRUNK/:
+
+Pre-render 1st video frame prior to audio startup to minimize delays.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/30/08 9:59 AM
+1 changed, 0 added, 0 deleted.
+4,304 ms. (Cumulative: 3,550,790 ms)
+
+----------------
