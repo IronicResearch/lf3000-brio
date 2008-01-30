@@ -13,7 +13,6 @@
 // System includes
 #include <SystemTypes.h>
 #include <GroupEnumeration.h>
-//#include <EventListener.h>
 #include <EventMessage.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
@@ -44,6 +43,8 @@ const tEventType kAllAudioEvents = AllEvents(kGroupAudio);
 	(kAudioNullContextErr)		\
 	(kAudioNoChannelAvailErr)	\
 	(kAudioPlayerCreateErr)	    \
+	(kAudioMidiPlayerNotCreated)	\
+	(kAudioFileReadProblemErr)	\
 	(kAudioNoDataAvailErr)		\
 	(kAudioNoMoreDataErr)		\
 	(kAudioInvalid)				\
@@ -97,6 +98,13 @@ typedef U32		tMidiProgramList;	// TODO: ?
 //==============================================================================
 // Defines for audio resources 
 //==============================================================================
+#define kAudio_Pan_Default    0
+#define kAudio_Pan_Min    (-100)
+#define kAudio_Pan_Max      100
+
+#define kAudio_Volume_Default  100
+#define kAudio_Volume_Min        0
+#define kAudio_Volume_Max      100
 
 // Standard header for raw Brio audio resources 
 #define kAudioHeader_StereoBit 	0x1
