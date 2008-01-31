@@ -13352,3 +13352,13 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/30/08 5:19 PM
 4,116 ms. (Cumulative: 3,604,719 ms)
 
 ----------------
+Revision 2,838 from svn://localhost/TRUNK/:
+
+Leave 2D layer enabled with bootup warning screen per SW request .
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/30/08 5:27 PM
+1 changed, 0 added, 0 deleted.
+4,016 ms. (Cumulative: 3,608,844 ms)
+
+----------------
