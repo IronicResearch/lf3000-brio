@@ -100,17 +100,11 @@ void *LightningPowerTask(void*)
 		// get battery state
 		current_pe.powerState = GetPowerState();
 
-		dbg.DebugOut(kDbgLvlVerbose, "%s.%d: state = %d\n",
-			__FUNCTION__, __LINE__, current_pe.powerState);
-
 		// overwrite with power down, if one is pending
 		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
 		if(ms > 0) {
 			while(1) {
 				size = recv(ms, &msg, sizeof(msg), 0);
-				dbg.DebugOut(kDbgLvlVerbose,
-					"%s.%d:msg.type=%d, msg.payload=%d\n",
-					__FUNCTION__, __LINE__, msg.type, msg.payload);
 
 				if(size == sizeof(msg) && msg.type == APP_MSG_SET_POWER) {
 						switch(msg.payload) {
