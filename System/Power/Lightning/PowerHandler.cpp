@@ -42,7 +42,6 @@ namespace
 {
 	//------------------------------------------------------------------------
 	U32					gLastState;
-	int 				power_fd;
 	struct tPowerData   current_pe;
 	tTaskHndl			handlePowerTask;
 	struct tPowerData	data;
@@ -51,18 +50,25 @@ namespace
 enum tPowerState GetPowerState(void)
 {
 		CDebugMPI dbg(kGroupPower);
-		char buf[2];
-		int size = read(power_fd, &buf, 2);
-		dbg.Assert(size >= 0, "CPowerModule::LightningPowerTask: read failed");
+		FILE *power_fd;
+		int ret;
+		unsigned int status;
 
-		switch(buf[0]) {
-			case '1':
+		power_fd = fopen("/sys/devices/platform/lf1000-power/status", "r");
+		dbg.Assert(power_fd != NULL, "CPowerModule::InitModule: cannot open status");
+
+		ret = fscanf(power_fd, "%d\n", &status);
+		fclose(power_fd);
+		dbg.Assert(ret >= 1, "CPowerModule::LightningPowerTask: read failed");
+
+		switch(status) {
+			case 1:
 			return kPowerExternal;
-			case '2':
+			case 2:
 			return kPowerBattery;
-			case '3':
+			case 3:
 			return kPowerLowBattery;
-			case '4':
+			case 4:
 			return kPowerCritical;
 		}
 		return kPowerNull;
@@ -94,26 +100,33 @@ void *LightningPowerTask(void*)
 		// get battery state
 		current_pe.powerState = GetPowerState();
 
+		dbg.DebugOut(kDbgLvlVerbose, "%s.%d: state = %d\n",
+			__FUNCTION__, __LINE__, current_pe.powerState);
+
 		// overwrite with power down, if one is pending
 		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
 		if(ms > 0) {
 			while(1) {
 				size = recv(ms, &msg, sizeof(msg), 0);
+				dbg.DebugOut(kDbgLvlVerbose,
+					"%s.%d:msg.type=%d, msg.payload=%d\n",
+					__FUNCTION__, __LINE__, msg.type, msg.payload);
+
 				if(size == sizeof(msg) && msg.type == APP_MSG_SET_POWER) {
 						switch(msg.payload) {
 								case EVENT_BATTERY:
 								current_pe.powerState = kPowerCritical;
-								dbg.DebugOut(kDbgLvlVerbose, 
-											 "%s: state = kPowerCritical\n",
-											 __FUNCTION__);
+								dbg.DebugOut(kDbgLvlVerbose,
+									"%s.%d: state = kPowerCritical\n",
+									__FUNCTION__, __LINE__);
 								break;
 								
 								default:
 								case EVENT_POWER:
 								current_pe.powerState = kPowerShutdown;
 								dbg.DebugOut(kDbgLvlVerbose, 
-											 "%s: state = kPowerShutdown\n",
-											 __FUNCTION__);
+											 "%s.%d: state = kPowerShutdown\n",
+											 __FUNCTION__, __LINE__);
 								break;
 						} 
 				} 
@@ -152,10 +165,6 @@ void CPowerModule::InitModule()
 
 	data.powerState = kPowerNull;
 
-	// Need valid file descriptor open before starting task thread 
-	power_fd = open("/sys/devices/platform/lf1000-power/status", O_RDONLY);
-	dbg_.Assert(power_fd >= 0, "CPowerModule::InitModule: cannot open status");
-
 	if( kernel.IsValid() )
 	{
 		tTaskProperties	properties;
@@ -177,7 +186,6 @@ void CPowerModule::DeinitModule()
 	// Terminate power handler thread, and wait before closing driver
 	kernel.CancelTask(handlePowerTask);
 	kernel.TaskSleep(1);	
-	close(power_fd);
 }
 
 //============================================================================
@@ -192,10 +200,6 @@ enum tPowerState CPowerModule::GetPowerState() const
 //----------------------------------------------------------------------------
 int CPowerModule::Shutdown() const
 {
-	//CDebugMPI	dbg(kGroupPower);
-	//int status = ioctl(power_fd, POWER_IOCT_SHUTDOWN, 0);
-	//dbg.Assert(status >= 0, "PowerModule::Shutdown: ioctl failed");
-
 	// Embedded version should never get here
 	exit(kKernelExitShutdown);
 	return kKernelExitError;
@@ -247,10 +251,6 @@ int CPowerModule::SetShutdownTimeMS(int iMilliseconds) const
 //----------------------------------------------------------------------------
 int CPowerModule::Reset() const
 {
-	//CDebugMPI	dbg(kGroupPower);
-	//int status = ioctl(power_fd, POWER_IOCT_RESET, 0);
-	//dbg.Assert(status >= 0, "PowerModule::Reset: ioctl failed");
-
 	// Embedded version should never get here
 	exit(kKernelExitReset);
 	return kKernelExitError;
