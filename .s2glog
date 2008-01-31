@@ -13449,3 +13449,12 @@ By Scott Esters (sesters@leapfrog.com) on 1/31/08 12:47 PM
 5,109 ms. (Cumulative: 3,668,789 ms)
 
 ----------------
+Revision 2,851 from svn://localhost/TRUNK/:
+
+Migrate AudioOutput capability from front end to Mixer.
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 1:52 PM
+2 changed, 0 added, 0 deleted.
+5,080 ms. (Cumulative: 3,673,932 ms)
+
+----------------

@@ -387,6 +387,17 @@ SetSamplingFrequency( samplingFrequency_ );
 SetDSP();
 UpdateDSP();
 ResetDSP();
+
+	// Init output driver and register callback.  We have to pass in a pointer
+	// to the mixer object as a bit of "user data" so that when the callback happens,
+	// the C call can get to the mixer's C++ member function for rendering.  
+	err = InitAudioOutput( &CAudioMixer::WrapperToCallRender,
+						   (void *)this);
+	pDebugMPI_->Assert(kNoErr == err,
+					   "Failed to initalize audio output\n" );
+	err = StartAudioOutput();
+	pDebugMPI_->Assert(kNoErr == err,
+					   "Failed to start audio output\n" );
  
 //PrintMemoryUsage();
 }  // ---- end CAudioMixer::CAudioMixer() ----
@@ -399,6 +410,10 @@ CAudioMixer::~CAudioMixer()
 long i;
 
  MIXER_LOCK; 
+
+	StopAudioOutput();
+    
+	DeInitAudioOutput();
 
 // Deallocate channels
  if (pChannels_)

@@ -20,7 +20,6 @@
 #include <AudioTypes.h>
 #include <AudioPriv.h>
 #include <AudioTypesPriv.h>
-#include <AudioOutput.h>
 #include <Mixer.h>
 #include <AudioPlayer.h>
 #include <MidiPlayer.h>
@@ -182,24 +181,13 @@ CAudioModule::CAudioModule( void )
     gAudioContext.outBufferSizeInWords = kAudioOutBufSizeInWords;
     gAudioContext.outBufferSizeInBytes = kAudioOutBufSizeInBytes;
 
+    gAudioContext.nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
+    
     // Allocate global audio mixer
     gAudioContext.pAudioMixer = new CAudioMixer(kAudioNumMixerChannels);
     
     gAudioContext.pMidiPlayer = gAudioContext.pAudioMixer->GetMidiPlayerPtr();
     
-    // Init output driver and register callback.  We have to pass in a pointer
-    // to the mixer object as a bit of "user data" so that when the callback happens,
-    // the C call can get to the mixer's C++ member function for rendering.  
-    err = InitAudioOutput( &CAudioMixer::WrapperToCallRender,
-                           (void *)gAudioContext.pAudioMixer );
-
-    pDebugMPI_->Assert(kNoErr == err,
-                       "Failed to initalize audio output\n" );
-    
-    gAudioContext.nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
-    
-    err = StartAudioOutput();
-
     // GK FIXX TODO: hack, should get this from the mixer.
     gAudioContext.masterVolume = 100;
     gAudioContext.outputEqualizerEnabled = false;
@@ -216,11 +204,7 @@ CAudioModule::~CAudioModule( void )
     
     pDebugMPI_->DebugOut( kDbgLvlVerbose, 
                           "CAudioModule::dtor: dtor called\n" );    
-    
-    StopAudioOutput();
-    
-    DeInitAudioOutput();
-    
+        
     delete gAudioContext.pAudioMixer;
     
     AUDIO_UNLOCK;
