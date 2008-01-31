@@ -13391,3 +13391,12 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 1/31/08 9:05 AM
 19,957 ms. (Cumulative: 3,637,192 ms)
 
 ----------------
+Revision 2,843 from svn://localhost/TRUNK/:
+
+Built the new libiconv lib
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 1/31/08 9:08 AM
+1 changed, 0 added, 0 deleted.
+5,204 ms. (Cumulative: 3,642,568 ms)
+
+----------------
