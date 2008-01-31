@@ -13437,3 +13437,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 12:27 PM
 5,142 ms. (Cumulative: 3,663,602 ms)
 
 ----------------
+Revision 2,850 from svn://localhost/TRUNK/:
+
+Fix power driver to post a message on power status changes.  Stop power
+messages after posting kPowerShutdown message.  This mimics the prior
+driver behavior.
+
+
+By Scott Esters (sesters@leapfrog.com) on 1/31/08 12:47 PM
+1 changed, 0 added, 0 deleted.
+5,109 ms. (Cumulative: 3,668,789 ms)
+
+----------------
