@@ -13409,3 +13409,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 10:48 AM
 5,391 ms. (Cumulative: 3,648,037 ms)
 
 ----------------
+Revision 2,845 from svn://localhost/TRUNK/:
+Revision 2,846 from svn://localhost/TRUNK/:
+Revision 2,847 from svn://localhost/TRUNK/:
+
+Elucidate the Audio structure with some detailed comments.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 12:04 PM
+2 changed, 0 added, 0 deleted.
+5,188 ms. (Cumulative: 3,653,303 ms)
+
+----------------
