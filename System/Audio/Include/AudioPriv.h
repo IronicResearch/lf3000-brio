@@ -32,6 +32,8 @@ class IEventListener;
 const CString	kAudioModuleName	= "Audio";
 const tVersion	kAudioModuleVersion	= 2;
 
+#define BRIO_MIDI_PLAYER_ID 1
+
 //==============================================================================
 class CAudioModule : public ICoreModule {
 public:	

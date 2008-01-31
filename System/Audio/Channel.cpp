@@ -108,6 +108,7 @@ RecalculateLevels();
     void 
 CChannel::SetVolume( U8 x )
 {
+    
 //printf("CChannel::SetVolume :  %d\n", x);
 volume_ = BoundU8(&x, 0, 100); //kVolume_Min, kVolume_Max);
 

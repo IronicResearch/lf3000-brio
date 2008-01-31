@@ -193,7 +193,7 @@ CAudioModule::CAudioModule( void )
     pDebugMPI_->Assert(kNoErr == err,
                        "Failed to initalize audio output\n" );
     
-    gAudioContext.nextAudioID = 2;   // GK FIXXX: quick hack.  MIDI player is ID #1
+    gAudioContext.nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
     
     err = StartAudioOutput();
 
@@ -629,11 +629,18 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
     U8 volume = 0;
  
     AUDIO_LOCK;
-    CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-    if (pChannel)
-        volume = pChannel->GetVolume();
+	if (id == BRIO_MIDI_PLAYER_ID && gAudioContext.pMidiPlayer &&
+        gAudioContext.pMidiPlayer->IsFileActive() ) {
+        volume = gAudioContext.pMidiPlayer->GetVolume();
+    }
+    else
+    {
+        CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
+        if (pChannel)
+            volume = pChannel->GetVolume();
+    }
     AUDIO_UNLOCK;
-    
+        
     return volume;
 }
 
@@ -643,9 +650,14 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 void CAudioModule::SetAudioVolume( tAudioID id, U8 x ) 
 {
     AUDIO_LOCK;
-    CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-    if (pChannel) 
-        pChannel->SetVolume(x);
+	if (id == BRIO_MIDI_PLAYER_ID && gAudioContext.pMidiPlayer &&
+        gAudioContext.pMidiPlayer->IsFileActive() ) {
+        gAudioContext.pMidiPlayer->SetVolume(x);
+    } else {
+        CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
+        if (pChannel) 
+            pChannel->SetVolume(x);
+    }
     AUDIO_UNLOCK;
 }
 
@@ -1015,7 +1027,7 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 // ==============================================================================
 Boolean CAudioModule::IsMidiFilePlaying( void )
 {
-    return IsMidiFilePlaying(1); //id should come from mixer?
+    return IsMidiFilePlaying(BRIO_MIDI_PLAYER_ID); //id should come from mixer?
 }
 
 // ==============================================================================
