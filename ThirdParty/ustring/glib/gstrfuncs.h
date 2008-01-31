@@ -29,6 +29,7 @@
 
 #include <stdarg.h>
 #include <glib/gtypes.h>
+#include <limits.h>
 
 G_BEGIN_DECLS
 
