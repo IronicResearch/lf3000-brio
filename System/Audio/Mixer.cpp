@@ -5,8 +5,55 @@
 //
 // Mixer.cpp
 //
-//          The class to manage summation of several audio channels
+// The following is the basic structure of the audio system:
 //
+// +----------+   +-----------+    +---------+
+// | Player A |---| Channel 1 |--->|         |
+// +----------+   +-----------+    |         |
+//                                 |         |
+// +----------+   +-----------+    |         |                          /|
+// | Player B |---| Channel 2 |--->|         |                         / |
+// +----------+   +-----------+    |         |                      +-+  |
+//                                 |         |     +-----------+    | |  |
+//                +-----------+    |  Mixer  +---->| Audio Out |----| |  |   
+//                | Channel 3 |--->|         |     +-----------+    | |  |  
+//                +-----------+    |         |                      +-+  |
+//                                 |         |                         \ |
+//                   ....          |         |                          \|
+//                                 |         |
+//                +-----------+    |         |
+//                | Channel N |--->|         |
+//                +-----------+    |         |
+//                                 +---------+
+//
+// The Mixer implemented in this file "owns" all of the objects show above.
+// They are all allocated/deleted and otherwise managed right here.  The
+// AudioMPI, which is implemented in Audio.cpp and specified in AudioMPI.h is
+// the front end that controls the mixer.  However, it mostly just makes calls
+// into this mixer to add players, change volume, etc.
+//
+// The Audio Out stage is of particular importance to the entire system.  It's
+// essential component is a "render loop" that feeds the audio hardware.  Each
+// iteration of the render loop populates a buffer whose length is generally
+// about 20-40ms.  To ensure real time operation, the render loop should be free
+// from all unnecessary calculations.  Note that the lowest level render loop is
+// implemented by Port Audio.
+//
+// Generally, the AudioMPI changes the mixer state in some application thread.
+// But the render loop is operating in its own thread.  To prevent the mixer
+// from finding itself in an inconsistent state during a render iteration, the
+// mixer uses a mutex.  This mutex should ONLY be accessed by the mixer.  It
+// must be locked at the top of the render loop and unlocked at the end.  Any
+// external calls that alter the mixer state in a way that affects the render
+// MUST lock the mutex.
+//
+// By design, users of the AudioMPI launch an audio stream with the StartAudio
+// function and get a call back via the Event subsystem when the stream is
+// finished.  This call back MUST be initiated somehow from the render loop.
+// Effort SHOULD be made to make this callback as quick as possible, because the
+// render loop is so time sensitive.  Ultimately, the call backs should be
+// queued and processed outside of the render loop.  This may require the
+// addition of another thread.
 // ==============================================================================
 #include <stdlib.h>
 #include <fcntl.h>

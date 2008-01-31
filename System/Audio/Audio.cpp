@@ -4,8 +4,11 @@
 // 
 // Audio.cpp
 //
-//      Underlying implementation code for the Audio Manager module.
-//retreive
+// This is implementation of the AudioMPI.  It is the front-end of the audio
+// system, and does little more than initialize the system and get and set the
+// state of the mixer.  See Mixer.cpp for all of the gory details about how
+// audio is rendered.
+//
 //==============================================================================
 #include <errno.h>
 #include <sys/stat.h>
