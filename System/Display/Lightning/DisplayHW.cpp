@@ -95,10 +95,12 @@ void CDisplayModule::InitModule()
 	dbg_.Assert(gDevLayer >= 0, 
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
 
+#if 0	// SW wants to leave bootup warning screen on as long as possible
 	// Disable RGB layer since it is used externally for various firmware bitmaps
 	ioctl(gDevLayer, MLC_IOCTLAYEREN, 0);
 	SetDirtyBit(gDevLayer);
 	bPrimaryLayerEnabled = false;
+#endif
 	
 	// ask for the Frame Buffer base address
 	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
