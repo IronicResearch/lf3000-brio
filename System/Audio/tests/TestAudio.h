@@ -359,7 +359,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestVorbisSimple( )
+	void testVorbisSimple( )
 	{
 		tAudioID 				id;
 
@@ -369,20 +369,21 @@ public:
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
 		
-		printf("TestAudio -- testVorbisResources() starting audio driver output\n" );
-
-		id = pAudioMPI_->StartAudio( "Vivaldi.ogg", kVolume, kPriority, kPan, pAudioListener_, kPayload, kFlags);
-
-		pKernelMPI_->TaskSleep( 15000 ); 
+		id = pAudioMPI_->StartAudio("Vivaldi.ogg", kVolume, kPriority, kPan,
+									kNull, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100); 
 	}
 	
 	//------------------------------------------------------------------------
-	void xxxtestMIDISimple( )
+	void testMIDISimple( )
 	{
 		tErrType 		err;
 		tAudioID 		id1;
 		tMidiPlayerID	midiPlayerID;
-		
+		U8 origVolume, volume = 0;
+
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
 				
@@ -392,10 +393,40 @@ public:
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
 
-		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1, pAudioListener_, 0, 0 );
+		id1 = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(id1 != kNoAudioID);
+		//Let the first second go by normal
+		pKernelMPI_->TaskSleep(1000);
+		
+		//Now adjust the volume a bit.  This should be its own unit test, but
+		//the only midi file we have right now is so long.
+		origVolume = pAudioMPI_->GetAudioVolume(id1);
+		while(pAudioMPI_->IsMidiFilePlaying(id1) && volume < 255) {
+			pAudioMPI_->SetAudioVolume(id1, volume);
+			volume += 1;
+			pKernelMPI_->TaskSleep(100);
+		}
+		pAudioMPI_->SetAudioVolume(id1, origVolume);
 
-		// sleep 10 seconds
-		pKernelMPI_->TaskSleep( 15000 ); 
+		//Wait for audio to terminate
+		while(pAudioMPI_->IsMidiFilePlaying(id1)) {
+			pKernelMPI_->TaskSleep(100);
+		}
+	}
+
+	void testAudioVolume()
+	{
+		tAudioID id;
+		U8 volume = 0;
+		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
+									kNull, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while(pAudioMPI_->IsAudioPlaying(id)) {
+			pAudioMPI_->SetMasterVolume(volume);
+			volume += 1;
+			pKernelMPI_->TaskSleep(20);
+		}
 	}
 
 	//------------------------------------------------------------------------

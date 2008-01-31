@@ -13296,3 +13296,21 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/30/08 2:11 PM
 4,299 ms. (Cumulative: 3,583,170 ms)
 
 ----------------
+Revision 2,832 from svn://localhost/TRUNK/:
+Revision 2,833 from svn://localhost/TRUNK/:
+
+Re-enabling a bunch of unit tests for Audio.
+Added an audio unit test for checking volume functionality.
+Added an audio unit test for checking midi volume (which currently fails).
+
+Note that many of these unit tests will appear to pass because the pass/fail
+call is left up to the user.  The only way to automate this would be to add user
+dialog to the unit tests.  Hmmm.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/30/08 4:06 PM
+1 changed, 0 added, 0 deleted.
+4,536 ms. (Cumulative: 3,587,799 ms)
+
+----------------
