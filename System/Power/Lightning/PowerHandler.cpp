@@ -47,7 +47,7 @@ namespace
 	struct tPowerData	data;
 }
 
-enum tPowerState GetPowerState(void)
+enum tPowerState getPowerState(void)
 {
 		CDebugMPI dbg(kGroupPower);
 		FILE *power_fd;
@@ -55,7 +55,7 @@ enum tPowerState GetPowerState(void)
 		unsigned int status;
 
 		power_fd = fopen("/sys/devices/platform/lf1000-power/status", "r");
-		dbg.Assert(power_fd != NULL, "CPowerModule::InitModule: cannot open status");
+		dbg.Assert(power_fd != NULL, "CPowerModule::getPowerState: cannot open status");
 
 		ret = fscanf(power_fd, "%d\n", &status);
 		fclose(power_fd);
@@ -98,7 +98,7 @@ void *LightningPowerTask(void*)
 
 	while(1) {
 		// get battery state
-		current_pe.powerState = GetPowerState();
+		current_pe.powerState = getPowerState();
 
 		// overwrite with power down, if one is pending
 		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
@@ -119,8 +119,8 @@ void *LightningPowerTask(void*)
 								case EVENT_POWER:
 								current_pe.powerState = kPowerShutdown;
 								dbg.DebugOut(kDbgLvlVerbose, 
-											 "%s.%d: state = kPowerShutdown\n",
-											 __FUNCTION__, __LINE__);
+									 "%s.%d: state = kPowerShutdown\n",
+									 __FUNCTION__, __LINE__);
 								break;
 						} 
 				} 
@@ -131,12 +131,15 @@ void *LightningPowerTask(void*)
 		}
 
 		// Pace thread at time intervals relavant for power events
-		kernel.TaskSleep(100);
+		kernel.TaskSleep(250);
 
-		// report power state
-		data.powerState = current_pe.powerState;
-		CPowerMessage msg(data);
-		eventmgr.PostEvent(msg, kPowerEventPriority);
+		// report power state if changed unless kPowerShutdown already sent
+		if (data.powerState != current_pe.powerState &&
+		    data.powerState != kPowerShutdown) {
+			data.powerState = current_pe.powerState;
+			CPowerMessage msg(data);
+			eventmgr.PostEvent(msg, kPowerEventPriority);
+		}
 
 	}
 	return NULL;
@@ -157,7 +160,7 @@ void CPowerModule::InitModule()
 
 	dbg_.DebugOut(kDbgLvlVerbose, "Power Init\n");
 
-	data.powerState = kPowerNull;
+	data.powerState = getPowerState();
 
 	if( kernel.IsValid() )
 	{
