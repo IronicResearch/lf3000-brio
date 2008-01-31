@@ -3,6 +3,32 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.36  (Build 2839 released Jan 28, 2008) 
+===========================================
+
+--Fix handling of brightness and headphone button presses, lost during button refactoring in last build.
+
+--Re-organize code to use mutex protection for any data access during Video MPI function calls.
+
+--Added Video option for fullscreen centering instead of scaling based on Theora videoheader comments tag "LOCATION=center".
+
+--Refactoring of Power and USBDevice handlers.
+
+--Pre-render 1st video frame prior to audio startup to minimize delays.
+
+--Major Audio module overhaul.
+
+--Added locking for Audio mixer context.  This prevents some classes of known bugs when
+buttons are rapidly pressed. TTPro 1153, 1234, 1300, 1312.
+
+--Fixed TTPro #1368: IsAudioPlaying(tAudioID id) always returns true
+
+--Fixed Midi unit test.  It was using the midiID wrong.
+--Fixed TTpro #1253: MIDI: Midi volume should be controllable by SetAudioVolume
+
+--Leave 2D layer enabled with bootup warning screen per SW request.
+
+===========================================
 v0.1.35  (Build 2791 released Jan 28, 2008) 
 ===========================================
 -- Added for PlayAudio testing.
