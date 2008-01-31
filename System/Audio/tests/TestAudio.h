@@ -393,21 +393,9 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, err );
 		TS_ASSERT( midiPlayerID != kNoMidiID );
 
-		err = pAudioMPI_->StartMidiFile( midiPlayerID, "POWMusic.mid", 100, 1,
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "2Sec.mid", 100, 1,
 										 kNull, 0, 0 );
 		TS_ASSERT(err == kNoErr);
-		//Let the first second go by normal
-		pKernelMPI_->TaskSleep(1000);
-		
-		//Now adjust the volume a bit.  This should be its own unit test, but
-		//the only midi file we have right now is so long.
-		origVolume = pAudioMPI_->GetAudioVolume(midiPlayerID);
-		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) && volume < 255) {
-			pAudioMPI_->SetAudioVolume(midiPlayerID, volume);
-			volume += 1;
-			pKernelMPI_->TaskSleep(100);
-		}
-		pAudioMPI_->SetAudioVolume(midiPlayerID, origVolume);
 
 		//Wait for audio to terminate
 		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
@@ -428,6 +416,38 @@ public:
 			pKernelMPI_->TaskSleep(20);
 		}
 	}
+
+    void testMidiVolume()
+    {
+		tErrType 		err;
+		tMidiPlayerID	midiPlayerID;
+		U8 volume = 0;
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "2Sec.mid", volume, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+		
+		//the only midi file we have right now is so long.
+		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) && volume < 100) {
+			volume += 1;
+			pAudioMPI_->SetAudioVolume(midiPlayerID, volume);
+			pKernelMPI_->TaskSleep(10);
+		}
+		//Wait for audio to terminate
+		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
+			pKernelMPI_->TaskSleep(100);
+		}
+    }
 
 	//------------------------------------------------------------------------
 	void xxxtestVorbisLooping( )

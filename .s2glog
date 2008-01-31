@@ -13422,3 +13422,18 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 12:04 PM
 5,188 ms. (Cumulative: 3,653,303 ms)
 
 ----------------
+Revision 2,848 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,064 ms. (Cumulative: 3,658,445 ms)
+
+----------------
+Revision 2,849 from svn://localhost/TRUNK/:
+
+Shortening the midi unit tests
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 12:27 PM
+1 changed, 2 added, 0 deleted.
+5,142 ms. (Cumulative: 3,663,602 ms)
+
+----------------
