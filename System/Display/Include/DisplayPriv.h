@@ -35,7 +35,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString			kDisplayModuleName		= "Display";
 const tVersion			kDisplayModuleVersion	= 2;
 const tEventPriority	kDisplayEventPriority	= 0;
-const tDebugLevel		kDisplayDebugLevel		= kDbgLvlVerbose;
+const tDebugLevel		kDisplayDebugLevel		= kDbgLvlCritical;
 
 //==============================================================================
 // Typedefs
