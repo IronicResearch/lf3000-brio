@@ -1,6 +1,6 @@
 # Source files.
-SRC =  	aiff.c common.c sndfile.c strings.c wav.c command.c file_io.c snprintf.c sndfileutil.c  wav_w64.c w64.c
-#  double64.c float32.c  dither.c pcm.c 
+SRC =  	aiff.c common.c sndfile.c strings.c pcm.c wav.c command.c file_io.c snprintf.c sndfileutil.c  wav_w64.c w64.c
+#  double64.c float32.c  dither.c  
 # WAS:    x86: 221482-> 137286  arm: 127140->112364
 
 OBJ = $(SRC:.c=.o)
@@ -46,6 +46,5 @@ dep:
 #	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
 
 clean:
-	rm -f $(OBJ) Makefile.bak 
-#	rm -f $(OBJ) $(OUT) Makefile.bak 
+	rm -f $(OBJ) Makefile.bak $(CPU)/$(OUT) $(CPU)/*.a
 
