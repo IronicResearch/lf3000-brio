@@ -1,6 +1,6 @@
 # Source files.
-SRC = Dsputil.cpp fir.cpp src.cpp shape.cpp util.cpp midi.cpp
-# eq.cpp Dsputil2.cpp 
+SRC = Dsputil.cpp fir.cpp src.cpp shape.cpp util.cpp midi.cpp \
+eq.cpp Dsputil2.cpp 
 
 OBJ = $(SRC:.cpp=.o)
 
