@@ -13585,3 +13585,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/1/08 2:52 PM
 5,386 ms. (Cumulative: 3,747,029 ms)
 
 ----------------
+Revision 2,876 from svn://localhost/TRUNK/:
+Revision 2,877 from svn://localhost/TRUNK/:
+Revision 2,878 from svn://localhost/TRUNK/:
+
+Same framebuffer start address for RGB and YUV video buffers to avoid bleeding into OGL region with 320x240 video clips.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/1/08 3:25 PM
+1 changed, 0 added, 0 deleted.
+5,414 ms. (Cumulative: 3,752,521 ms)
+
+----------------
