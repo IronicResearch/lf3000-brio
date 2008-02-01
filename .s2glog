@@ -13485,3 +13485,13 @@ By gklimanis (gklimanis@leapfrog.com) on 1/31/08 5:16 PM
 5,236 ms. (Cumulative: 3,684,483 ms)
 
 ----------------
+Revision 2,859 from svn://localhost/TRUNK/:
+
+clean up svn checkin for newer .a files that are smaller.
+
+
+By gklimanis (gklimanis@leapfrog.com) on 1/31/08 5:21 PM
+2 changed, 0 added, 1 deleted.
+5,250 ms. (Cumulative: 3,689,796 ms)
+
+----------------
