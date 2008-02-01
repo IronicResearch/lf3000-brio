@@ -108,13 +108,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 // These should not be globals.  They should be in the object as they were.  But
 // somebody insisted on having static member functions that pass references to
-// "this."  Hack.
+// "this."
 CDebugMPI *pDebugMPI_;
 CKernelMPI *pKernelMPI_;
 tMutex mixerMutex_;
 
 //------------------------------------------------------------------------------
-// Returns speaker status from sysfs audio driver dump (embedded)
+//Returns speaker status from sysfs audio driver dump (embedded)
+// 
+// Not to be confused with IsSpeakerEnabled, which just returns the last known
+// state.
 //------------------------------------------------------------------------------
 static bool IsSpeakerOn( void )
 {
@@ -300,29 +303,10 @@ SetMasterVolume(100); //kVolume_Default);
 d->systemSamplingFrequency = (long)samplingFrequency_;
 d->outBufferLength = kAudioFramesPerBuffer;  // Dunno?!? Words? Frames?
 
-#undef CHECK_BUTTON_MPI_ON_STARTUP
-#ifdef CHECK_BUTTON_MPI_ON_STARTUP
-pButtonMPI_ = new CButtonMPI();
-tButtonData buttonData = pButtonMPI_->GetButtonState();
-U32 enableTheSpeaker;
-
-//#define HEADPHONE_CHECK_V1
-#ifdef HEADPHONE_CHECK_V1
-char buttonChanged = (buttonData.buttonState & buttonData.buttonTransition) ? '+' : '-';
-enableTheSpeaker = ('-' == buttonChanged);
-#else
-enableTheSpeaker = (0 == (buttonData.buttonState & kHeadphoneJackDetect));
-#endif
-EnableSpeaker(enableTheSpeaker);
-printf("CAudioMixer: kHeadphoneJackDetect=%X\n", (unsigned int) kHeadphoneJackDetect);
-printf("CAudioMixer: button State=%X Transition=%X\n", (unsigned int) buttonData.buttonState, (unsigned int) buttonData.buttonTransition);
-printf("CAudioMixer: enableTheSpeaker=%X\n", (unsigned int) enableTheSpeaker);
-
-#else
 	bool isSpeaker = IsSpeakerOn();
-	pDebugMPI_->DebugOut( kAudioDebugLevel, "CAudioMixer: Speaker = %d, %s\n", isSpeaker, isSpeaker ? "on" : "off");
+	pDebugMPI_->DebugOut( kAudioDebugLevel, "CAudioMixer: Speaker = %d, %s\n",
+						  isSpeaker, isSpeaker ? "on" : "off");
 	EnableSpeaker(isSpeaker);
-#endif // CHECK_BUTTON_MPI_ON_STARTUP
 
 //if (d->useOutSoftClipper)
 //    d->headroomBits = kMixer_HeadroomBits_Default;
@@ -1297,8 +1281,6 @@ tAudioState *d = &audioState_;
 
 U8     srcType;
 U8     srcFilterVersion;
-
-EnableSpeaker(d->speakerEnabled);
 
 for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
     {

@@ -13537,3 +13537,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 7:22 PM
 5,650 ms. (Cumulative: 3,724,923 ms)
 
 ----------------
+Revision 2,866 from svn://localhost/TRUNK/:
+
+Eliminate unused variables from Audio state
+Migrate mixer state from audio front end to Mixer
+Enable the speaker once in the Mixer constructor
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 8:00 PM
+3 changed, 0 added, 0 deleted.
+5,501 ms. (Cumulative: 3,730,486 ms)
+
+----------------

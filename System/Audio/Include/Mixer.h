@@ -52,6 +52,7 @@ public:
 	void DestroyMIDIPlayer();
 
 	void 		SetMasterVolume( U8 x ) ; 
+	U8			GetMasterVolume( void ) { return audioState_.masterVolume; }
 
 	void 		Pause ( ); 
 	void 		Resume( ); 

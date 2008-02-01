@@ -33,20 +33,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	struct tAudioContext {
-		
 		CAudioMixer*		pAudioMixer;		
 		CMidiPlayer*		pMidiPlayer;
-		
-		U16					outBufferSizeInBytes;		
-		U16					outBufferSizeInWords;	
 		tAudioID			nextAudioID;	
-		
-		U8					masterVolume;		// GK NOTE: free of the burden of "units"
-		U8					outputEqualizerEnabled;		
-		U8					numMixerChannels;
-		U32					samplingFrequency; // Hertz
-		
-		IEventListener*		pDefaultListener;
 		CPath				gpath;
 	};
 
@@ -172,15 +161,6 @@ CAudioModule::CAudioModule( void )
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 						 "CAudioModule::ctor -- Initalizing Audio Module...");
 
-	// Hard code configuration resource
-	gAudioContext.numMixerChannels	= kAudioNumMixerChannels;
-	gAudioContext.samplingFrequency = kAudioSampleRate;
-
-	// Set output buffer sizes.	 These values are based on
-	// 20ms buffer of stereo samples: see AudioConfig.h
-	gAudioContext.outBufferSizeInWords = kAudioOutBufSizeInWords;
-	gAudioContext.outBufferSizeInBytes = kAudioOutBufSizeInBytes;
-
 	gAudioContext.nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
 	
 	// Allocate global audio mixer
@@ -188,9 +168,6 @@ CAudioModule::CAudioModule( void )
 	
 	gAudioContext.pMidiPlayer = gAudioContext.pAudioMixer->GetMidiPlayerPtr();
 	
-	// GK FIXX TODO: hack, should get this from the mixer.
-	gAudioContext.masterVolume = 100;
-	gAudioContext.outputEqualizerEnabled = false;
 }
 
 //==============================================================================
@@ -336,8 +313,7 @@ CAudioModule::ChangeAudioEffectsProcessor(tAudioID /* id */,
 void CAudioModule::SetMasterVolume(U8 x)
 {
 	AUDIO_LOCK;
-	gAudioContext.masterVolume = x;
-	gAudioContext.pAudioMixer->SetMasterVolume(gAudioContext.masterVolume);
+	gAudioContext.pAudioMixer->SetMasterVolume(x);
 	AUDIO_UNLOCK;
 
 }
@@ -350,8 +326,7 @@ U8 CAudioModule::GetMasterVolume( void )
 	U8 v;
 
 	AUDIO_LOCK;
-	// TODO: This probably should call through to the mixer...
-	v = gAudioContext.masterVolume;
+	v = gAudioContext.pAudioMixer->GetMasterVolume();
 	AUDIO_UNLOCK;
 
 	return v;
@@ -364,8 +339,7 @@ void CAudioModule::SetOutputEqualizer(U8 x)
 {
 	
 	AUDIO_LOCK;
-	gAudioContext.outputEqualizerEnabled = x;
-	gAudioContext.pAudioMixer->EnableSpeaker(gAudioContext.outputEqualizerEnabled);
+	gAudioContext.pAudioMixer->EnableSpeaker(x);
 	AUDIO_UNLOCK;
 }
 
@@ -377,8 +351,7 @@ U8 CAudioModule::GetOutputEqualizer(void)
 	U8 e;
 
 	AUDIO_LOCK;
-	// TODO: This probably should call through to the mixer...
-	e = gAudioContext.outputEqualizerEnabled;
+	e = gAudioContext.pAudioMixer->IsSpeakerEnabled();
 	AUDIO_UNLOCK;
 
 	return e;
