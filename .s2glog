@@ -13528,3 +13528,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/31/08 6:48 PM
 5,751 ms. (Cumulative: 3,719,180 ms)
 
 ----------------
+Revision 2,865 from svn://localhost/TRUNK/:
+
+Eliminating some files in DspUtil lead to unresolved runtime references in audio system.  Relevant changes reverted.
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 7:22 PM
+2 changed, 0 added, 0 deleted.
+5,650 ms. (Cumulative: 3,724,923 ms)
+
+----------------
