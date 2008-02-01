@@ -9,7 +9,7 @@
 #include "eq.h"
 
 // ************************************************************************
-// ComputeEQ_LowPassHz:	Compute coefficiepnts for low pass filter
+// ComputeEQ_LowPassHz:	Compute coefficients for low pass filter
 // ************************************************************************ 
     void
 ComputeEQ_LowPassHz(float *h, float frequency)
