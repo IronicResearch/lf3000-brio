@@ -1,0 +1,98 @@
+#=============================================================================
+# Display: Top level SConstruct file for the SCons build system
+#
+# Quick tour of SCons:
+#
+#	SCons is a build tool that replaces "make" functionality.
+#	It executes as a Python script, which gives you the full power
+#	of the Python scripting language in defining build steps.
+#
+#	You shouldn't ever need to change much more than lines 25-27 in this file.
+#
+#=============================================================================
+import glob
+import os
+import sys
+
+
+#-----------------------------------------------------------------------------
+# Setup your application build.  For most titles, these are the only lines
+# you will need to change.
+# 1) application name
+# 2) source files to build it
+# 3) Brio MPI and other libraries to link against 
+#-----------------------------------------------------------------------------
+app_name	= 'BrioMixer'
+sources		=  glob.glob('*.cpp')
+libs		= ['AudioMPI', 'ButtonMPI', 'DebugMPI', 'DisplayMPI', 'EventMPI', 
+				'FontMPI', 'KernelMPI', 'ModuleMPI']
+
+
+#-----------------------------------------------------------------------------
+# Connect to the Lightning C++ development kit
+#-----------------------------------------------------------------------------
+cdevkit_dir = os.getenv('LEAPFROG_PLUGIN_ROOT')
+if cdevkit_dir == None:
+	cdevkit_dir = '/home/lfu/workspace/Brio2/XBuild'
+
+if not os.path.exists(cdevkit_dir):
+	print '!!! Exiting, could not connect to LEAPFROG_PLUGIN_ROOT', cdevkit_dir
+	Exit(-1) 
+print 'Using LEAPFROG_PLUGIN_ROOT =', cdevkit_dir
+
+
+#-----------------------------------------------------------------------------
+# Setup module search path and include modules from the cdevkit's Tools folder
+#-----------------------------------------------------------------------------
+sys.path.append(cdevkit_dir)
+from Tools.LightningUtils import *
+
+
+#-----------------------------------------------------------------------------
+# Setup help options and get command line arguments (defines "emulation")
+#-----------------------------------------------------------------------------
+opts = SetupOptions()
+
+
+#-----------------------------------------------------------------------------
+# Retrieve command line options, setup intermediate build and deployment 
+# target folder names.  "vars" is a dictorary of all of these variables.
+#-----------------------------------------------------------------------------
+vars = RetrieveOptions(ARGUMENTS, Dir('.').abspath)
+
+
+#-----------------------------------------------------------------------------
+# Setup the environment object
+#-----------------------------------------------------------------------------
+env = CreateEnvironment(opts, vars)
+
+#print env.Dump()
+#myenv = env.Copy()
+#myenv.Append
+
+env.Append(CPPPATH = ['/home/lfu/workspace/Brio2/System/Audio/Include/'])
+
+
+#-----------------------------------------------------------------------------
+# Attach the help to the Environment object
+#-----------------------------------------------------------------------------
+Help(opts.GenerateHelpText(env))
+
+
+#-----------------------------------------------------------------------------
+# Build the application (either embedded or emulation target) and install it
+#-----------------------------------------------------------------------------
+objs = MakeMyApp(env, app_name, sources, libs, vars)
+env.Install(vars['bin_deploy_dir'], glob.glob('*.ttf'))
+Default(vars['bin_deploy_dir'])
+
+
+#-----------------------------------------------------------------------------
+# Function for generating and running unit tests
+#-----------------------------------------------------------------------------
+#RunMyTests(objs, [], libs, env, vars)
+
+if vars['is_resource'] == 1:
+	ProcessResources(env, vars, app_name)
+
+
