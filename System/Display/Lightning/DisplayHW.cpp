@@ -132,7 +132,7 @@ void CDisplayModule::InitModule()
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
 
 	// Get the overlay buffer base address
-	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
+//	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr >= 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gOverlayBase = baseAddr;
@@ -309,7 +309,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	else if (gFrameBuffer2 == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
 		gFrameSize2 = GraphicsContext->height * GraphicsContext->pitch;
-		gFrameBase2 = gOverlayBase;
+		gFrameBase2 = gFrameBase + gFrameSize2; //gOverlayBase;
 		gFrameBuffer2 = (U8 *)mmap(0, gFrameSize2, PROT_READ | PROT_WRITE, MAP_SHARED,
 			   						gDevLayer, gFrameBase2);
 		dbg_.Assert(gFrameBuffer2 > 0,
