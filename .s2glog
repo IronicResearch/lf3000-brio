@@ -13550,3 +13550,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 1/31/08 8:00 PM
 5,501 ms. (Cumulative: 3,730,486 ms)
 
 ----------------
+Revision 2,867 from svn://localhost/TRUNK/:
+Revision 2,868 from svn://localhost/TRUNK/:
+
+Re-located video layer enable until 1st update to minimize dead screen time.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/31/08 8:20 PM
+2 changed, 0 added, 0 deleted.
+5,407 ms. (Cumulative: 3,735,986 ms)
+
+----------------

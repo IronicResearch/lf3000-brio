@@ -132,7 +132,7 @@ void CDisplayModule::InitModule()
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
 
 	// Get the overlay buffer base address
-	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
+//	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr >= 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gOverlayBase = baseAddr;
@@ -380,6 +380,11 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
 		}
 	}
+	// Enable video layer on update calls to minimize dead screen time
+	if (dc->isOverlay) {
+		ioctl(dc->layer, MLC_IOCTLAYEREN, (void *)1);
+		SetDirtyBit(dc->layer);
+	}
 	// No hardware settings have actually changed
     return kNoErr;
 }
@@ -485,9 +490,13 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ioctl(layer, MLC_IOCTHSTRIDE, context->bpp);
 	ioctl(layer, MLC_IOCTVSTRIDE, context->pitch);
 	ioctl(layer, MLC_IOCSPOSITION, &c);
-	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
-	SetDirtyBit(layer);
-	bPrimaryLayerEnabled = true;
+	
+	// Defer enabling video layer until 1st Invalidate() call
+	if (!context->isOverlay) {
+		ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
+		SetDirtyBit(layer);
+		bPrimaryLayerEnabled = true;
+	}
 	
 	// Setup scaler registers too for video overlay
 	if (context->isOverlay)
