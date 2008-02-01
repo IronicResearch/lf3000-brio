@@ -100,6 +100,9 @@ public:
 	/// Returns true when the previous context passed to SwapBuffers() has been updated to the display
 	Boolean				IsBufferSwapped(tDisplayHandle hndl);
 
+	/// Returns the handle for the display context currently visible onscreen
+	tDisplayHandle		GetCurrentDisplayHandle();
+	
 	/// Sets the alpha transparency value for the display surface layer
 	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
 								Boolean enable=true);

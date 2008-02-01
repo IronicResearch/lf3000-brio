@@ -551,7 +551,8 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	r = ioctl(layer, MLC_IOCTADDRESS, physaddr);
 	dbg_.Assert(r >= 0, "DisplayModule::SwapBuffers: failed ioctl physaddr=%08X\n", (unsigned int)physaddr);
 	SetDirtyBit(layer);
-
+	pdcVisible_ = context;
+	
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::SwapBuffers: virtaddr=%08X, physaddr=%08X\n", (unsigned int)context->pBuffer, (unsigned int)physaddr);
 
 	// Optionally wait for display to update
@@ -574,6 +575,12 @@ Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
 	// Query context layer dirty bit (cleared == updated)
 	int r = GetDirtyBit(context->layer);
 	return (r < 0) ? false : (r != 0) ? false : true;
+}
+
+//----------------------------------------------------------------------------
+tDisplayHandle CDisplayModule::GetCurrentDisplayHandle()
+{
+	return reinterpret_cast<tDisplayHandle>(pdcVisible_);
 }
 
 //----------------------------------------------------------------------------
