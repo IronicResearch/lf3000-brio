@@ -253,6 +253,14 @@ Boolean CDisplayMPI::IsBufferSwapped(tDisplayHandle hndl)
 }
 
 //----------------------------------------------------------------------------
+tDisplayHandle CDisplayMPI::GetCurrentDisplayHandle()
+{
+	if(!pModule_)
+		return kInvalidDisplayHandle;
+	return pModule_->GetCurrentDisplayHandle();
+}
+
+//----------------------------------------------------------------------------
 tPixelFormat CDisplayMPI::GetPixelFormat(tDisplayHandle hndl) const
 {
 	if(!pModule_)

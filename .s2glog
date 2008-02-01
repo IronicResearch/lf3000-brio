@@ -13518,3 +13518,13 @@ By gklimanis (gklimanis@leapfrog.com) on 1/31/08 6:34 PM
 5,751 ms. (Cumulative: 3,713,351 ms)
 
 ----------------
+Revision 2,864 from svn://localhost/TRUNK/:
+
+Added GetCurrentDisplayHandle() function to Display MPI to return handle of current visible display context.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/31/08 6:48 PM
+7 changed, 0 added, 0 deleted.
+5,751 ms. (Cumulative: 3,719,180 ms)
+
+----------------

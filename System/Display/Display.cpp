@@ -73,6 +73,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 	// so we defer creating it on demand to conserve framebuffer mappings 
 	pdcPrimary_ = NULL;
 #endif
+	pdcVisible_ = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -158,7 +159,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	else while (pdc != NULL)
 	{
 		// Walk list to insert after selected handle, or at tail
-		if (pdc == pdcAfter || pdc->pdc == NULL)
+		if ((pdc == pdcAfter || pdc->pdc == NULL) && pdc != dc) // no dupe ptrs
 		{
 			dc->pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 			pdc->pdc = reinterpret_cast<tDisplayContext*>(dc);
@@ -180,6 +181,9 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 			(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
 	}
 	
+	// Track current onscreen display context
+	pdcVisible_ = (!dc->isAllocated) ? dc : pdcPrimary_; 
+
 	return kNoErr;
 }
 
@@ -202,13 +206,16 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	else if (kDisplayOnBottom == initialZOrder)
 	{
 		// Replace previous head of list
-		pdcListHead = dc;
-		dc->pdc = pdc;
+		if (pdc != dc) // no dupe ptrs
+		{
+			pdcListHead = dc;
+			dc->pdc = pdc;
+		}
 	}
 	else while (pdc != NULL)
 	{
 		// Walk list to insert at tail
-		if (pdc->pdc == NULL)
+		if (pdc->pdc == NULL && pdc != dc) // no dupe ptrs
 		{
 			pdc->pdc = dc;
 			dc->pdc = NULL;
@@ -229,6 +236,9 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		pdcPrimary_ = reinterpret_cast<tDisplayContext*>
 			(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
 	}
+
+	// Track current onscreen display context
+	pdcVisible_ = (!dc->isAllocated) ? dc : pdcPrimary_; 
 
 	return kNoErr;
 }
@@ -270,6 +280,10 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 		DestroyHandle(pdcPrimary_, true);
 		pdcPrimary_ = NULL;
 	}
+
+	// Track current onscreen display context
+	if (dc == pdcVisible_)
+		pdcVisible_ = NULL; 
 
 	return kNoErr;
 }

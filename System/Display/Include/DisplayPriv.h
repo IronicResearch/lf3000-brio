@@ -283,6 +283,7 @@ public:
 
 	VTABLE_EXPORT tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync);
 	VTABLE_EXPORT Boolean			IsBufferSwapped(tDisplayHandle hndl);
+	VTABLE_EXPORT tDisplayHandle	GetCurrentDisplayHandle();
 
 
 private:
@@ -296,6 +297,7 @@ private:
 	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
 	CDebugMPI			dbg_;
 	tDisplayContext*	pdcPrimary_;
+	tDisplayContext*	pdcVisible_;
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
 

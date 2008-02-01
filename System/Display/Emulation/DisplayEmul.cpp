@@ -289,6 +289,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	tErrType rc = Update(dc, 0, 0, dc->x, dc->y, dc->width, dc->height);
 	if (waitVSync)
 		usleep(16667);
+	pdcVisible_ = dc;
 	return rc;
 }
 
@@ -297,6 +298,12 @@ Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
 {
 	// No actual buffer swapping done on emulation
 	return true;
+}
+
+//----------------------------------------------------------------------------
+tDisplayHandle CDisplayModule::GetCurrentDisplayHandle()
+{
+	return reinterpret_cast<tDisplayHandle>(pdcVisible_);
 }
 
 //----------------------------------------------------------------------------

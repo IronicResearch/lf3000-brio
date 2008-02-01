@@ -68,9 +68,15 @@ public:
 		const U16		WIDTH = 320;
 		const U16		HEIGHT = 240;
 
+		const tDisplayScreenStats* pstats = pDisplayMPI_->GetScreenStats(0);
+		TS_ASSERT( pstats != NULL );
+		TS_ASSERT( pstats->width == WIDTH );
+		TS_ASSERT( pstats->height == HEIGHT );
+		
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+		TS_ASSERT( handle == pDisplayMPI_->GetCurrentDisplayHandle() );
 
 		buffer = pDisplayMPI_->GetBuffer(handle);
 		TS_ASSERT( buffer != kNull );
@@ -242,7 +248,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestBacklight( ) // FIXME: backlight range? devboard anomolies?
+	void testBacklight( )
 	{
 		tDisplayHandle 	handle;
 		const U16		WIDTH = 320;
@@ -261,6 +267,7 @@ public:
 		pDisplayMPI_->SetBacklight(0, 0);
 		usleep(1000);
 		TS_ASSERT( pDisplayMPI_->GetBacklight(0) == 0 );
+		sleep(1);
 		
 		pDisplayMPI_->UnRegister(handle, 0);
 		pDisplayMPI_->DestroyHandle(handle, false);
@@ -282,6 +289,7 @@ public:
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatRGB888, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+		TS_ASSERT( handle == pDisplayMPI_->GetCurrentDisplayHandle() );
 
 		buffer = pDisplayMPI_->GetBuffer(handle);
 		TS_ASSERT( buffer != kNull );
@@ -333,6 +341,7 @@ public:
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatRGB4444, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+		TS_ASSERT( handle == pDisplayMPI_->GetCurrentDisplayHandle() );
 
 		buffer = pDisplayMPI_->GetBuffer(handle);
 		TS_ASSERT( buffer != kNull );
@@ -412,6 +421,7 @@ public:
 			Boolean 	bc;
 			rc = pDisplayMPI_->SwapBuffers(handle[i%2], true);
 			TS_ASSERT( rc == kNoErr );
+			TS_ASSERT( handle[i%2] == pDisplayMPI_->GetCurrentDisplayHandle() );
 			bc = pDisplayMPI_->IsBufferSwapped(handle[i%2]);
 			TS_ASSERT( bc == true );
 		}
@@ -423,6 +433,7 @@ public:
 			int		counter = 0;
 			rc = pDisplayMPI_->SwapBuffers(handle[i%2], false);
 			TS_ASSERT( rc == kNoErr );
+			TS_ASSERT( handle[i%2] == pDisplayMPI_->GetCurrentDisplayHandle() );
 			while (bc != true) 
 			{
 				bc = pDisplayMPI_->IsBufferSwapped(handle[i%2]);
