@@ -13597,3 +13597,18 @@ By Dave Milici (dmilici@leapfrog.com) on 2/1/08 3:25 PM
 5,414 ms. (Cumulative: 3,752,521 ms)
 
 ----------------
+Revision 2,879 from svn://localhost/TRUNK/:
+Revision 2,880 from svn://localhost/TRUNK/:
+Revision 2,881 from svn://localhost/TRUNK/:
+Revision 2,882 from svn://localhost/TRUNK/:
+Revision 2,883 from svn://localhost/TRUNK/:
+
+Fixup GetBacklight() to use updated dpc ioctl call DPC_IOCQBACKLIGHTVIRT.
+Now retrieves negative virtual backlight values.
+
+
+By Scott Esters (sesters@leapfrog.com) on 2/1/08 8:24 PM
+1 changed, 0 added, 0 deleted.
+5,500 ms. (Cumulative: 3,758,115 ms)
+
+----------------

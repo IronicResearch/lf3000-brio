@@ -717,9 +717,9 @@ S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = 0;
 	int 			r;
-	
-	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHTVIRT, p);
-	return (r < 0) ? 0 : r;
+
+	r = ioctl(gDevDpc, DPC_IOCQBACKLIGHTVIRT, &p);
+	return (S8)(p & 0xFF);
 }
 
 LF_END_BRIO_NAMESPACE()
