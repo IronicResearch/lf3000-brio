@@ -3,6 +3,58 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.38  (Build 2881 released Feb 01, 2008) 
+===========================================
+-- RGB and YUV buffers are now shared in common framebuffer region
+   in order to accomdate 320x240 size video clips without bleeding
+   into reserved region for OpenGL. This permits either 2D RGB contexts
+   or Video YUV contexts  to be concurrent with 3D OpenGL contexts.
+   RGB and YUV contexts would not be concurrent with each other.
+ 
+===========================================
+v0.1.37  (Build 2871 released Feb 01, 2008) 
+===========================================
+
+-- Reduced the libiconv library size on ~500K by removing a support 
+   following encodings:
+
+   Semitic languages
+        ISO-8859-{6,8}, CP{1255,1256}, CP862, Mac{Hebrew,Arabic}
+   Japanese
+        EUC-JP, SHIFT_JIS, CP932, ISO-2022-JP, ISO-2022-JP-2,
+   	ISO-2022-JP-1 Chinese
+   	EUC-CN, HZ, GBK, CP936, GB18030, EUC-TW, BIG5, CP950,
+   	BIG5-HKSCS, BIG5-HKSCS:2001, BIG5-HKSCS:1999,   ISO-2022-CN,
+   	ISO-2022-CN-EXT
+   Korean
+        EUC-KR, CP949, ISO-2022-KR, JOHAB
+   Armenian
+        ARMSCII-8
+   Georgian
+        Georgian-Academy, Georgian-PS
+   Tajik
+        KOI8-T
+   Kazakh
+        PT154, RK1048
+   Thai
+        ISO-8859-11, TIS-620, CP874, MacThai
+   Vietnamese
+        VISCII, TCVN, CP1258
+
+-- Update Power Demo to handle shutdown message.
+
+-- Fix power driver to post a message on power status changes.  Stop power
+   messages after posting kPowerShutdown message.  This mimics the prior
+   driver behavior.
+
+-- Migrate AudioOutput capability from front end to Mixer.
+
+-- Added GetCurrentDisplayHandle() function to Display MPI to return handle of current visible display context.
+
+-- Re-located video layer enable until 1st update to minimize dead screen time.
+
+
+===========================================
 v0.1.36  (Build 2839 released Jan 28, 2008) 
 ===========================================
 
