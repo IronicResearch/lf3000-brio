@@ -13612,3 +13612,25 @@ By Scott Esters (sesters@leapfrog.com) on 2/1/08 8:24 PM
 5,500 ms. (Cumulative: 3,758,115 ms)
 
 ----------------
+Revision 2,884 from svn://localhost/TRUNK/:
+Revision 2,885 from svn://localhost/TRUNK/:
+Revision 2,886 from svn://localhost/TRUNK/:
+Revision 2,887 from svn://localhost/TRUNK/:
+Revision 2,888 from svn://localhost/TRUNK/:
+Revision 2,889 from svn://localhost/TRUNK/:
+Revision 2,890 from svn://localhost/TRUNK/:
+Revision 2,891 from svn://localhost/TRUNK/:
+Revision 2,892 from svn://localhost/TRUNK/:
+Revision 2,893 from svn://localhost/TRUNK/:
+Revision 2,894 from svn://localhost/TRUNK/:
+Revision 2,895 from svn://localhost/TRUNK/:
+Revision 2,896 from svn://localhost/TRUNK/:
+
+Revert previous model for non-overlapping YUV and RGB single buffer regions.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/4/08 3:50 PM
+1 changed, 0 added, 0 deleted.
+5,596 ms. (Cumulative: 3,763,883 ms)
+
+----------------
