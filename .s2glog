@@ -13663,3 +13663,14 @@ By ayurovsky (ayurovsky@leapfrog.com) on 2/4/08 6:33 PM
 5,079 ms. (Cumulative: 3,774,561 ms)
 
 ----------------
+Revision 2,902 from svn://localhost/TRUNK/:
+
+Ignore brightness button if at 'Critical Battery' level or if changing
+the brightness causes a 'Critical Battery' message.
+
+
+By Scott Esters (sesters@leapfrog.com) on 2/4/08 6:34 PM
+1 changed, 0 added, 0 deleted.
+5,719 ms. (Cumulative: 3,780,343 ms)
+
+----------------
