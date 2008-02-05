@@ -1013,8 +1013,6 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	err = pthread_mutex_unlock( &mutexValue_2);
 	ASSERT_POSIX_CALL( err );
 
-	free(*p);
-
     return kNoErr; 
 }
 	
