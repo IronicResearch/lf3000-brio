@@ -64,35 +64,18 @@ namespace
 	{
 		(void )tHndl;	/* Prevent unused variable warnings. */
 		counterTimer_1--;
-#if 0 // FIXME /BSK
-		printf("\nmyTask_Timer_1 - The timer called me %d tHndl 0x%x\n",
-			counterTimer_1, (unsigned int )tHndl );
-		fflush(stdout);
-
-#endif
 	}	
 
 	void myTask_Timer_2(tTimerHndl tHndl)
 	{
 		(void )tHndl; 	/* Prevent unused variable warnings. */
 		counterTimer_2--;
-#if 0		// FIXME /BSK
-		printf("myTask_Timer_2 - The timer called me %d tHndl 0x%x\n",
-			counterTimer_2, (unsigned int )tHndl );
-		fflush(stdout);
-#endif
 	}	
 
 	void myTask_Timer_3(tTimerHndl tHndl)
 	{
 		(void )tHndl;		/* Prevent unused variable warnings. */
 		counterTimer_3--;
-#if 0	// FIXME /BSK
-		printf("myTask_Timer_3 - The timer called me %d tHndl 0x%x\n",
-			 counterTimer_3, (unsigned int )tHndl );
-		fflush(stdout);
-#endif
-		pthread_exit((void *)2007);
 	}
 //-----------------------------------------------------------------------------------------
 //		Testing WaitOnCond() function
@@ -692,11 +675,6 @@ public:
 
 		ptintf_test_info("testCreateTimer");
 
-//TS_WARN("TODO: Test Create/Destroy Timer!");
-		
-// NOTE:
-//typedef struct timer_arg{	pfnTimerCallback pfn; tPtr arg;} callbackData;
-//struct tTimerProperties { int type; struct itimerspec timeout; callbackData callback;};
 		const static tTimerProperties props_1 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
@@ -706,7 +684,6 @@ public:
 		const static tTimerProperties props_3 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
-//typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
 		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_1 );
 
@@ -722,12 +699,12 @@ public:
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
 		
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_2 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_2 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_3 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_3 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -858,12 +835,12 @@ public:
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
 		
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_2 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_2 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_3 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_3 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -922,12 +899,12 @@ public:
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
 		
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_2 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_2 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_3 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_3 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -952,13 +929,10 @@ public:
 		const static tTimerProperties props_3 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
-//typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
 		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_1 );
-
 		hndlTimer_2 = KernelMPI->CreateTimer(myTask_Timer_2, props_2, (const char *)0 );
 		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_2 );
-
 		hndlTimer_3 = KernelMPI->CreateTimer(myTask_Timer_3, props_3, (const char *)0 );
 		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_3 );
 
@@ -974,7 +948,7 @@ public:
 
 		err = KernelMPI->PauseTimer( hndlTimer_3, save_3 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		
+
 		err = KernelMPI->ResumeTimer( hndlTimer_1, save_1 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
@@ -983,19 +957,20 @@ public:
 
 		err = KernelMPI->ResumeTimer( hndlTimer_3, save_3 );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
-			
+
 		if( hndlTimer_1 != 0 )
 		{	
 			err = KernelMPI->DestroyTimer( hndlTimer_1 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		
-		if( hndlTimer_1 != 0 )
+
+		if( hndlTimer_2 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_2 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		if( hndlTimer_1 != 0 )
+
+		if( hndlTimer_3 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_3 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -1022,7 +997,6 @@ public:
 		const static tTimerProperties props_3 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
 
-//typedef void (*pfnTimerCallback)(tTimerHndl arg)		
 		hndlTimer_1 = KernelMPI->CreateTimer(myTask_Timer_1, props_1, (const char *)0 );
 		TS_ASSERT_DIFFERS( kInvalidHndl, hndlTimer_1 );
 
@@ -1043,12 +1017,12 @@ public:
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
 		
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_2 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_2 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_3 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_3 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
@@ -1080,12 +1054,12 @@ public:
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
 		
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_2 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_2 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		}
-		if( hndlTimer_1 != 0 )
+		if( hndlTimer_3 != 0 )
 		{
 			err = KernelMPI->DestroyTimer( hndlTimer_3 );
 			TS_ASSERT_EQUALS( err, ((tErrType)0) );
