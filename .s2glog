@@ -13730,3 +13730,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/5/08 1:22 PM
 5,453 ms. (Cumulative: 3,802,252 ms)
 
 ----------------
+Revision 2,921 from svn://localhost/TRUNK/:
+
+oops, fix for the last patch -- actually free the list entry memory correctly 
+before calling 'remove'.  Also moved the other freeing to a destructor so that
+it happens automatically.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 2/5/08 1:53 PM
+1 changed, 0 added, 0 deleted.
+5,423 ms. (Cumulative: 3,807,753 ms)
+
+----------------
