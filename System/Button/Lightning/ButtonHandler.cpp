@@ -17,6 +17,7 @@
 #include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <KernelMPI.h>
+#include <PowerMPI.h>
 #include <KernelTypes.h>
 #include <SystemErrors.h>
 #include <Utility.h>
@@ -26,6 +27,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/input.h>
+#include <linux/lf1000/power.h>
 
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -43,6 +45,24 @@ namespace
 	char				*dev_name;
 	tTaskHndl			handleButtonTask;
 	tButtonData	data;
+}
+
+
+// read requested sysfs device
+int ReadSysfsInt(char *filename, int *val)
+{
+	int ret;
+	FILE *f = fopen(filename, "r");
+
+	if (!f)
+		return -1;
+	
+	ret = fscanf(f, "%d\n", val);
+	if (ret == 0)
+		return -1;
+	
+	fclose(f);
+	return 0;	// success
 }
 
 // Linux keyboard to Brio button mapping
@@ -75,6 +95,77 @@ U32 LinuxSwitchToBrio(U16 code)
 	return 0;
 }
 
+/*
+ * 'Brighten' screen by adjusting LCD brightness and LCD backlight.  As
+ * 'N' levels are desired, then array will have 2(N-1) entries, first
+ * increasing then increasing in value.
+ */
+
+#define	SCREEN_BRIGHT_LEVELS	(2 * 4)	// have 5 distinct levels
+
+/* 
+ * lcdBright and lcdBacklight arrays describe a complete cycle of screen
+ * adjustment levels, so array index always increments, mod number of
+ * array entries.  First array entry is the middle of range; this is
+ * the default setting.
+ */
+S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
+	{   0,   0,   0,   0,   0,   0,   0,   0};
+S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
+	{ -11,  31,  72,  31, -11, -53, -94, -53};
+
+
+/*
+ * Process Brightness button.  Ignore button if battery is 'low' or becomes
+ * low when brightness changes.
+ */
+void setBrightness(void)
+{
+	CDisplayMPI dispmgr;
+	CPowerMPI   pwrmgr;
+	CKernelMPI	kernel;
+	CDebugMPI	dbg(kGroupButton);
+
+	S8 oldBacklight;
+	S8 oldBrightness;
+	int status;
+
+	static int brightIndex = 1;	// index of next value to retrieve
+
+	dbg.SetDebugLevel(kDbgLvlVerbose);
+
+	oldBrightness = dispmgr.GetBrightness(0);
+	oldBacklight  = dispmgr.GetBacklight(0);	
+
+    ReadSysfsInt("/sys/devices/platform/lf1000-power/status", &status);
+
+
+	/* change brightness if power is good */
+	if (status != kPowerCriticalBattery) {
+		dispmgr.SetBrightness(0, lcdBright[brightIndex]);
+		dispmgr.SetBacklight(0, lcdBacklight[brightIndex]);
+		brightIndex++;
+		brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS; // keep ptr in range
+
+		/* if on battery, check that power is still ok after change */
+		if (status == kPowerBattery) {
+   			kernel.TaskSleep(300);			// let battery sample 
+    		ReadSysfsInt("/sys/devices/platform/lf1000-power/status",
+				&status);
+			// backout change if battery went critical
+			if (status == kPowerCriticalBattery) {
+				dispmgr.SetBrightness(0, oldBrightness);
+				dispmgr.SetBacklight(0, oldBacklight);
+				brightIndex--;			// backup index
+				if (brightIndex < 0)	// note: mod (%) may fail neg numbers
+					brightIndex = SCREEN_BRIGHT_LEVELS - 1;
+				dbg.DebugOut(kDbgLvlVerbose, "%s.%d Backed out brightness\n",
+					__FUNCTION__, __LINE__);
+			}
+		}
+	}	
+}
+
 //============================================================================
 // Asynchronous notifications
 //============================================================================
@@ -87,28 +178,6 @@ void *LightningButtonTask(void*)
 	CKernelMPI	kernel;
 	CDisplayMPI dispmgr;
 	
-	/*
-	 * 'Brighten' screen by adjusting LCD brightness and LCD backlight.  As
-	 * 'N' levels are desired, then array will have 2(N-1) entries, first
-	 * increasing then increasing in value.
-	 */
-	
-	#define	SCREEN_BRIGHT_LEVELS	(2 * 4)	// have 5 distinct levels
-	
-	/* 
-	 * lcdBright and lcdBacklight arrays describe a complete cycle of screen
-	 * adjustment levels, so array index always increments, mod number of
-	 * array entries.  First array entry is the middle of range; this is
-	 * the default setting.
-	 */
-	S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
-			{   0,   0,   0,   0,   0,   0,   0,   0};
-	S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
-			{ -11,  31,  72,  31, -11, -53, -94, -53};
-	
-	S8 brightness = lcdBright[0];
-	S8 backlight  = lcdBacklight[0];
-	int brightIndex = 1;				// index of next value to retrieve
 	int sw = 0;
 	U32 button;
 	
@@ -186,15 +255,7 @@ void *LightningButtonTask(void*)
 
 		// Special internal handling for Brightness button
 		if (data.buttonTransition & data.buttonState & kButtonBrightness)
-		{
-			brightness = lcdBright[brightIndex];
-			backlight  = lcdBacklight[brightIndex];
-			// wrap around index at array end
-			brightIndex++;
-			brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS;
-			dispmgr.SetBrightness(0, brightness);
-			dispmgr.SetBacklight(0, backlight);
-		}
+			setBrightness();
 		
 		// Special internal handling for Headphone jack plug/unplug
 		if (data.buttonTransition & kHeadphoneJackDetect)
