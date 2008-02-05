@@ -13716,3 +13716,17 @@ By ayurovsky (ayurovsky@leapfrog.com) on 2/5/08 10:49 AM
 5,313 ms. (Cumulative: 3,796,705 ms)
 
 ----------------
+Revision 2,918 from svn://localhost/TRUNK/:
+Revision 2,919 from svn://localhost/TRUNK/:
+Revision 2,920 from svn://localhost/TRUNK/:
+
+Free items after adding them to a c++ list.  C++ lists store _copies_ of the
+data that you put in the list.  This solves a memory leak.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/5/08 1:22 PM
+1 changed, 0 added, 0 deleted.
+5,453 ms. (Cumulative: 3,802,252 ms)
+
+----------------
