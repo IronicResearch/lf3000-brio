@@ -13643,3 +13643,23 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/4/08 3:58 PM
 5,411 ms. (Cumulative: 3,769,387 ms)
 
 ----------------
+Revision 2,898 from svn://localhost/TRUNK/:
+Revision 2,899 from svn://localhost/TRUNK/:
+Revision 2,900 from svn://localhost/TRUNK/:
+Revision 2,901 from svn://localhost/TRUNK/:
+
+fixing memory leaks in Brio's "kernel timer" implementation.  There were two problems:
+- a malloc for 'timer data' for the sigevent handler, the reference to which is never saved 
+  anywhere and therefore never freed
+- failure to free an iterator after using it
+The solution to the unsaved reference here is to save a reference into ListData.  This is not very
+nice, the reference should probably be saved along with the handle.  Unfortunately at this point
+it's not safe to change the way the handle is defined, so I opted for the (internal) list object
+for now.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 2/4/08 6:33 PM
+1 changed, 0 added, 0 deleted.
+5,079 ms. (Cumulative: 3,774,561 ms)
+
+----------------

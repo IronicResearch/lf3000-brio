@@ -88,8 +88,8 @@ static const char default_rtc[] = "/dev/rtc0";
 class ListData
 {
 	public:
-		ListData(U32 ptr, U32 hndl)
-		: ptr_(ptr), hndl_(hndl)
+		ListData(U32 ptr, U32 hndl, U32 pdata)
+		: ptr_(ptr), hndl_(hndl), pdata_(pdata)
 		{}
 
 U32 getHndl() const
@@ -101,9 +101,16 @@ void setPtr(U32 ptr)
 	ptr_ = ptr;
 }
 
+U32 getPdata() const
+{
+	return pdata_;
+}
+
+
 private:
 	U32 ptr_;
 	U32 hndl_;
+	U32 pdata_;
 };
 
 struct equal_id : public binary_function<ListData*, int, bool>
@@ -968,7 +975,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
  	ptrData->pfn = callback;
 	ptrData->argFunc = hndl;
 	
-	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl);
+	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl, (U32)ptrData);
 
 	err = pthread_mutex_lock( &mutexValue_1);
 	ASSERT_POSIX_CALL( err );
@@ -990,11 +997,6 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	tErrType err = kNoErr;
     errno = 0;
 
-#if 0 // FIXME/BSK
-	printf("DestroyTimer Before Num elements = %d\n", listMemory.size() );
-	fflush(stdout);
-#endif
-
     timer_delete(AsPosixTimerHandle( hndl ));
 	ASSERT_POSIX_CALL( errno );
 
@@ -1002,17 +1004,16 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 	bind2nd(equal_id(), hndl));
 
 	assert((p != listMemory.end()) && ((*p)->getHndl() == hndl));
-	(*p)->setPtr( 0 );
+
+	free((void *)(*p)->getPdata());
+
 	err = pthread_mutex_lock( &mutexValue_2);
 	ASSERT_POSIX_CALL( err );
     listMemory.erase( p ); 
 	err = pthread_mutex_unlock( &mutexValue_2);
 	ASSERT_POSIX_CALL( err );
 
-#if 0 // FIXME/BSK
-	printf("DestroyTimer After Num elements = %d\n", listMemory.size() );
-	fflush(stdout);
-#endif
+	free(*p);
 
     return kNoErr; 
 }
