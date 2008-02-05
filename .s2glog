@@ -13706,3 +13706,13 @@ By ayurovsky (ayurovsky@leapfrog.com) on 2/5/08 10:44 AM
 5,328 ms. (Cumulative: 3,791,329 ms)
 
 ----------------
+Revision 2,917 from svn://localhost/TRUNK/:
+
+make 'kernel' unit test work again (fixed copy-paste errors, removed some 'test code')
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 2/5/08 10:49 AM
+1 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 3,796,705 ms)
+
+----------------
