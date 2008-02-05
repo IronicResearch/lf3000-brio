@@ -92,6 +92,11 @@ class ListData
 		: ptr_(ptr), hndl_(hndl), pdata_(pdata)
 		{}
 
+		~ListData() 
+		{
+				free((void *)pdata_);
+		}
+
 U32 getHndl() const
 {
 	return hndl_;
@@ -100,12 +105,6 @@ void setPtr(U32 ptr)
 {
 	ptr_ = ptr;
 }
-
-U32 getPdata() const
-{
-	return pdata_;
-}
-
 
 private:
 	U32 ptr_;
@@ -981,7 +980,6 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	ASSERT_POSIX_CALL( err );
 
 	listMemory.push_back( ptrList );
-	delete ptrList;
 
 	pthread_mutex_unlock( &mutexValue_1);
 #if 0 // FIXME/BSK
@@ -1007,11 +1005,10 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 
 	assert((p != listMemory.end()) && ((*p)->getHndl() == hndl));
 
-	free((void *)(*p)->getPdata());
-
 	err = pthread_mutex_lock( &mutexValue_2);
 	ASSERT_POSIX_CALL( err );
-    listMemory.erase( p ); 
+	delete *p;
+    listMemory.erase( p );
 	err = pthread_mutex_unlock( &mutexValue_2);
 	ASSERT_POSIX_CALL( err );
 
