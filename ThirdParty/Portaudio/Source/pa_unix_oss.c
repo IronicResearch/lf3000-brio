@@ -1683,7 +1683,25 @@ static void *PaOSS_AudioThreadProc( void *userData )
     pthread_cleanup_pop( 1 );
 
 error:
-    pthread_exit( NULL );
+    //BC: When called from our destructor, this pthread_exit call leads to a
+    //deadlock.  The reason is not known, but appears to be related to uclibc
+    //loader code.  To reproduce the problem, uncomment this call and use the
+    //most trivial port audio demo that you can conjure with the following
+    //properties:
+    //
+    //-- port audio should be wrapped up in a simple c wrapper with an init and
+    //destroy funciton
+    //
+    //-- the wrapper should be compiled as a shared library
+    //
+    //-- a main program should load the shared library using dlopen, and find
+    //the init and destroy funcitons using dlsym.
+    //
+    //-- the main program should call init, sleep for a few seconds, then call
+    //   destroy.  This pthread_exit call will segfault.
+
+    //pthread_exit( NULL );
+    return 0;
 }
 
 /** Close the stream.

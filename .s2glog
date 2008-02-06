@@ -13756,3 +13756,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/6/08 10:07 AM
 5,485 ms. (Cumulative: 3,813,347 ms)
 
 ----------------
+Revision 2,926 from svn://localhost/TRUNK/:
+
+Worked around a port audio crash/deadlock.
+Eliminated deadlock in Mixer destructor.
+Enabling destructors globally from Module manager remains elusive.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/6/08 2:42 PM
+4 changed, 0 added, 0 deleted.
+5,160 ms. (Cumulative: 3,818,585 ms)
+
+----------------
