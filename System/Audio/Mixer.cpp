@@ -304,8 +304,6 @@ d->systemSamplingFrequency = (long)samplingFrequency_;
 d->outBufferLength = kAudioFramesPerBuffer;  // Dunno?!? Words? Frames?
 
 	bool isSpeaker = IsSpeakerOn();
-	pDebugMPI_->DebugOut( kAudioDebugLevel, "CAudioMixer: Speaker = %d, %s\n",
-						  isSpeaker, isSpeaker ? "on" : "off");
 	EnableSpeaker(isSpeaker);
 
 //if (d->useOutSoftClipper)
@@ -412,9 +410,6 @@ long i;
 	if (pMidiPlayer_)
 		delete pMidiPlayer_;
 
-// Dellocate buffers 
-  	if (pChannelBuf_)
-    	delete pChannelBuf_;
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 		{
 //		if (pTmpBufs_[i])

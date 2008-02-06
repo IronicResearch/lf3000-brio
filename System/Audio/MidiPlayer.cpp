@@ -361,7 +361,6 @@ printf("    listener=%p DoneMessage=%d LoopEndMessage=%d flags=$%X '%s' loopCoun
 #endif
 //orchestraFileName = "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis"; 
 //orchestraFileName = "/Didj/Base/Brio/rsrc/orch_100207.mbis"; 
-printf("orchestraFileName = '%s'\n", orchestraFileName.c_str());
 
 // "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orchestra_071002.mbis"; // 358,796 Bytes
 // "/home/lfu/workspace/Brio2/Lightning/Samples/BrioMixer/apprsrc/orch_100207.mbis";
