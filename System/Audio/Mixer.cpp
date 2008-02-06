@@ -391,11 +391,11 @@ CAudioMixer::~CAudioMixer()
 {
 long i;
 
- MIXER_LOCK; 
-
 	StopAudioOutput();
     
 	DeInitAudioOutput();
+
+	MIXER_LOCK; 
 
 // Deallocate channels
  if (pChannels_)
