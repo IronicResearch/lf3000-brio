@@ -13792,3 +13792,12 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/6/08 6:07 PM
 4,972 ms. (Cumulative: 3,828,760 ms)
 
 ----------------
+Revision 2,931 from svn://localhost/TRUNK/:
+
+Way beefier unit tests for Audio.
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/6/08 7:08 PM
+1 changed, 5 added, 0 deleted.
+5,204 ms. (Cumulative: 3,834,026 ms)
+
+----------------
