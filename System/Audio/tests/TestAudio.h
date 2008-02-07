@@ -185,6 +185,9 @@ class TestAudio : public CxxTest::TestSuite, TestSuiteBase, private IEventListen
 private:
 	CAudioMPI*			pAudioMPI_;
 	CKernelMPI*			pKernelMPI_;
+	Boolean				gotAudioCallback;
+	Boolean				gotMidiCallback;
+	U32					numLoopEndEvents;
 
 public:
 	TestAudio():IEventListener(kMyAudioTypes, ArrayCount(kMyAudioTypes))
@@ -199,25 +202,19 @@ public:
 		const CAudioEventMessage& msg = dynamic_cast<const CAudioEventMessage&>(msgIn);
 		if( msg.GetEventType() == kAudioCompletedEvent )
 		{
-			const tAudioMsgAudioCompleted& data = msg.audioMsgData.audioCompleted;
-			// dbg_.DebugOut(kDbgLvlVerbose, 
-			printf("****** Audio done: id=%d, payload=%d\n", 
-					static_cast<int>(data.audioID), static_cast<int>(data.payload));
 			status = kEventStatusOKConsumed;
-
-//			TODO: test for starting audio during Notify() callback.	
-//			audioMPI.StartAudio( handle1, kVolume, kPriority, kPan, kNull, kPayload, kFlags );
-//			printf("TestAudio -- AudioListener:: Notify() back from calling StartAudio()\n" );
-		} 
+			gotAudioCallback = true;
+		}
 		else if( msg.GetEventType() == kMidiCompletedEvent )
 		{
-			const tAudioMsgMidiCompleted& data = msg.audioMsgData.midiCompleted;
-			// dbg_.DebugOut(kDbgLvlVerbose, 
-			printf("****** MIDI File done: player id=%d, payload=%d\n", 
-					static_cast<int>(data.midiPlayerID), static_cast<int>(data.payload));
+			gotMidiCallback = true;
 			status = kEventStatusOKConsumed;
 		}
-
+		else if( msg.GetEventType() == kAudioLoopEndEvent )
+		{
+			numLoopEndEvents++;
+			status = kEventStatusOKConsumed;
+		}
 		return status;
 	}
 
@@ -288,6 +285,92 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+    void testAudioStop()
+	{
+		tAudioID id;
+		gotAudioCallback = false;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									NULL, 0, 0);
+
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopAudio(id, true);
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == false);
+		TS_ASSERT(gotAudioCallback == false);
+	}
+	
+    void testAudioStopWithCallback()
+	{
+		// NOTE! This functionality is BROKEN and should remain so just in case
+		// people are depending on the broken behavior.  Sigh.
+
+		tAudioID id;
+		gotAudioCallback = false;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									NULL, 0, kAudioOptionsDoneMsgAfterComplete);
+
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopAudio(id, false); //false means we SHOULD see done msg
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == false);
+		TS_ASSERT(gotAudioCallback == false); //...but we don't
+	}
+
+    void testPauseResumeAudioSystem()
+	{
+		tAudioID id;
+		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
+									NULL, 0, 0);
+
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(1000);
+		pAudioMPI_->PauseAudioSystem();
+		//NOTE: IsAudioPlaying should return false, but it returns true.  This
+		//is broken functionality.  It will remain broken unless I'm instructed
+		//to fix it on the grounds that developers may be depending on incorrect
+		//functionality.
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying() == true)
+		pKernelMPI_->TaskSleep(500);
+		pAudioMPI_->ResumeAudioSystem();
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+	}
+
+    void testPauseResumeAudio()
+	{
+		tAudioID id;
+		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
+									NULL, 0, 0);
+
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(1000);
+		pAudioMPI_->PauseAudio(id);
+		//NOTE: IsAudioPlaying should return false, but it returns true.  This
+		//is broken functionality.  It will remain broken unless I'm instructed
+		//to fix it on the grounds that developers may be depending on incorrect
+		//functionality.
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == true)
+		pKernelMPI_->TaskSleep(500);
+		pAudioMPI_->ResumeAudio(id);
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+	}
+
+    void testGetAudioTime()
+	{
+		tAudioID id;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									NULL, 0, 0);
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(300);
+		TS_ASSERT(pAudioMPI_->GetAudioTime(id) >= 0);
+		pKernelMPI_->TaskSleep(300);
+		TS_ASSERT(pAudioMPI_->GetAudioTime(id) >= 300);
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+	}
+
+	//------------------------------------------------------------------------
 	void testVorbisSimple( )
 	{
 		tAudioID 				id;
@@ -332,6 +415,78 @@ public:
 		}
 	}
 
+	//------------------------------------------------------------------------
+    void testMIDIStop()
+	{
+		tErrType 		err;
+		tMidiPlayerID	midiPlayerID;
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopMidiFile(midiPlayerID, true);
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
+	}
+	
+    void testMIDIStopWithCallback()
+	{
+		tErrType 		err;
+		tMidiPlayerID	midiPlayerID;
+
+		gotMidiCallback = false;
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, kAudioCompletedEvent);
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopMidiFile(midiPlayerID, false);
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
+
+		//NOTE: This is incorrect functionality.  StopMidiFile should call the
+		//midi callback.  We're not going to fix this unless instructed to do so
+		//on the grounds that developers may be depending on this incorrect
+		//functionality.
+		TS_ASSERT(gotMidiCallback == false);
+	}
+
+    void testPauseResumeMidi()
+	{
+		tErrType 		err;
+		tMidiPlayerID	midiPlayerID;
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->PauseMidiFile(midiPlayerID);
+		//NOTE: This is incorrect functionality.  After calling PauseMidiFile,
+		//IsMidiFilePlaying should return false.  We are not going to fix this
+		//unless we're instructed to do so, however, because devleopers may be
+		//depending on this broken functionality.
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == true);
+		pAudioMPI_->ResumeMidiFile(midiPlayerID);
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == true);
+		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
+			pKernelMPI_->TaskSleep(100);
+		}
+	}
+
 	void testAudioVolume()
 	{
 		tAudioID id;
@@ -343,6 +498,20 @@ public:
 			pAudioMPI_->SetMasterVolume(volume);
 			volume += 1;
 			pKernelMPI_->TaskSleep(20);
+		}
+	}
+
+	void testAudioPan()
+	{
+		tAudioID id;
+		S8 pan = -100;
+		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, pan,
+									kNull, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while(pAudioMPI_->IsAudioPlaying(id)) {
+			pan += 1;
+			pAudioMPI_->SetAudioPan(id, pan);
+			pKernelMPI_->TaskSleep(10);
 		}
 	}
 
@@ -379,85 +548,164 @@ public:
     }
 
 	//------------------------------------------------------------------------
-	void xxxtestVorbisLooping( )
+	void testAudioCallback( )
 	{
-		tAudioID 	id1;
-		U32			seconds = 0;
+		tAudioID 	id;
 
-		TS_ASSERT( pAudioMPI_ != NULL );
-		TS_ASSERT( pAudioMPI_->IsValid() == true );
-				
-		TS_ASSERT( pKernelMPI_ != NULL );
-		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		gotAudioCallback = false;
+
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+									kPan, this, kPayload, kAudioOptionsDoneMsgAfterComplete);
 		
-		printf("TestAudio -- testVorbisLooping() starting, will run for 20 seconds, listen for looping... \n" );
-
-		id1 = pAudioMPI_->StartAudio("Sine_500Hz.ogg", kVolume, kPriority,
-									 kPan, this, kPayload, kAudioOptionsLooped);
-		printf("TestAudio -- testVorbisResources() back from calling StartAudio()\n" );
-
-		// loop sleep 1 second
-		while ( seconds < 20 ) {
-			pKernelMPI_->TaskSleep( 1000 ); 
+		//Wait for audio to terminate
+		while(pAudioMPI_->IsAudioPlaying()) {
+			pKernelMPI_->TaskSleep(100);
 		}
+		TS_ASSERT(gotAudioCallback == true);
 	}
 
 	//------------------------------------------------------------------------
-	void testThreading()
+	void testNoAudioCallback( )
 	{
-		printf("testThreading starting... \n");
+		tAudioID 	id;
 
-		const int 		kDuration = 1 * 3000;
+		gotAudioCallback = false;
 
-		CKernelMPI		kernelMPI;
-
-		tTaskHndl 		hndl_1;
-		tTaskHndl 		hndl_2;
-		tTaskHndl 		hndl_3;
-		tTaskHndl 		hndl_4;
-        thread_arg_t 	threadArg;
- 	    tTaskProperties pProperties;
-        tPtr 			status = NULL;
-
-		threadArg.loopCount = 20;
-
-		pProperties.TaskMainFcn = (void* (*)(void*))myTask;
-		pProperties.pTaskMainArgValues = &threadArg;
-
-		threadArg.threadNum = 1;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+									kPan, this, kPayload, 0);
 		
-		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_1,
-		 	    		 (const tTaskProperties )pProperties, NULL) );
+		//Wait for audio to terminate
+		while(pAudioMPI_->IsAudioPlaying()) {
+			pKernelMPI_->TaskSleep(100);
+		}
+		TS_ASSERT(gotAudioCallback == false);
+	}
 
-		// sleep3 seconds
-		kernelMPI.TaskSleep( kDuration );
+	//------------------------------------------------------------------------
+	void testMidiCallback( )
+	{
+		
+		tErrType err;
+		tMidiPlayerID	midiPlayerID;
 
-		threadArg.threadNum = 2;
-		TS_ASSERT_EQUALS( kNoErr, kernelMPI.CreateTask( hndl_2,
-		 	    		 (const tTaskProperties )pProperties, NULL) );
+		gotMidiCallback = false;
 
-		// sleep3 seconds
-		kernelMPI.TaskSleep( kDuration );
+		err = pAudioMPI_->AcquireMidiPlayer(1, NULL, &midiPlayerID);		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
 
-		threadArg.threadNum = 3;
-		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_3,
-		 	    		 (const tTaskProperties )pProperties, NULL) );
+		err = pAudioMPI_->StartMidiFile(midiPlayerID, "2Sec.mid", kVolume, 1,
+										this, 0, kAudioOptionsDoneMsgAfterComplete);
+		TS_ASSERT(err == kNoErr);
+		
+		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID))
+			pKernelMPI_->TaskSleep(10);
 
-		// sleep3 seconds
-		kernelMPI.TaskSleep( kDuration );
+		TS_ASSERT(gotMidiCallback == true);
+	}
 
-		threadArg.threadNum = 4;
-		TS_ASSERT_EQUALS( kNoErr,kernelMPI.CreateTask( hndl_4,
-		 	    		 (const tTaskProperties )pProperties, NULL) );
+	//------------------------------------------------------------------------
+	void testVorbisLooping( )
+	{
+		tAudioID 	id;
+		
+		numLoopEndEvents = 0;
+		gotAudioCallback = false;
 
-		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_1, status ));
-		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_2, status ));
-		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_3, status ));
-		TS_ASSERT_EQUALS( kNoErr, kernelMPI.JoinTask( hndl_4, status ));
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+									kPan, this, 3,
+									kAudioOptionsLooped |
+									kAudioOptionsDoneMsgAfterComplete);
 
-		// this will exit when all threads exit.
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+		TS_ASSERT(gotAudioCallback == true);
+		TS_ASSERT(numLoopEndEvents == 0);
+	}
+
+	//------------------------------------------------------------------------
+	void testVorbisLoopingCallbacks( )
+	{
+		tAudioID 	id;
+
+		numLoopEndEvents = 0;
+		gotAudioCallback = false;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+									kPan, this, 3,
+									kAudioOptionsLooped |
+									kAudioOptionsLoopEndMsg |
+									kAudioOptionsDoneMsgAfterComplete);
+
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+		TS_ASSERT(numLoopEndEvents == 3);
+		TS_ASSERT(gotAudioCallback == true);
+	}
+
+	//------------------------------------------------------------------------
+	void testMidiLoopingCallbacks( )
+	{
+		tErrType err;
+		tMidiPlayerID	midiPlayerID;
+
+		gotMidiCallback = false;
+		numLoopEndEvents = 0;
+
+		err = pAudioMPI_->AcquireMidiPlayer(1, NULL, &midiPlayerID);
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile(midiPlayerID, "2Sec.mid", kVolume, 1,
+										this, 3,
+										kAudioOptionsLooped |
+										kAudioOptionsLoopEndMsg |
+										kAudioOptionsDoneMsgAfterComplete);
+		TS_ASSERT(err == kNoErr);
+		
+		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID))
+			pKernelMPI_->TaskSleep(10);
+
+		TS_ASSERT(numLoopEndEvents == 3);
+		TS_ASSERT(gotMidiCallback == true);
+	}
+
+	void testThree16kStreams()
+	{
+		tAudioID id1, id2, id3;
+
+		id1 = pAudioMPI_->StartAudio("Voice-3sec.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id1 != kNoAudioID);
+
+		id2 = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id2 != kNoAudioID);
+
+		id3 = pAudioMPI_->StartAudio("VH_16_st-3sec.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id3 != kNoAudioID);
+
+		while(pAudioMPI_->IsAudioPlaying())
+			pKernelMPI_->TaskSleep(100);
+	}
+
+	void testThree32kStreams()
+	{
+		tAudioID id1, id2, id3;
+
+		id1 = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id1 != kNoAudioID);
+
+		id2 = pAudioMPI_->StartAudio("Music-5sec.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id2 != kNoAudioID);
+
+		id3 = pAudioMPI_->StartAudio("Music-3sec.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id3 != kNoAudioID);
+
+		while(pAudioMPI_->IsAudioPlaying())
+			pKernelMPI_->TaskSleep(100);
 	}
 };
-
-
-
