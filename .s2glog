@@ -13830,3 +13830,18 @@ By ayurovsky (ayurovsky@leapfrog.com) on 2/7/08 10:29 AM
 5,032 ms. (Cumulative: 3,839,151 ms)
 
 ----------------
+Revision 2,936 from svn://localhost/TRUNK/:
+
+Added profiling utility called FlatProfiler.  See FlatProfiler.cpp and
+FlatProfiler.h for details.
+
+Added high-level profiling to Audio Mixer.  Note that, because destructors don't
+get called, you can't simply enable it and expect output.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/7/08 12:26 PM
+1 changed, 2 added, 0 deleted.
+5,094 ms. (Cumulative: 3,844,308 ms)
+
+----------------

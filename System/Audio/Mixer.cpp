@@ -77,6 +77,9 @@
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
 
+#define ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 #define kMixer_HeadroomBits_Default 2
 
 #define kMixer_Headphone_GainDB        0 
@@ -380,7 +383,8 @@ ResetDSP();
 	err = StartAudioOutput();
 	pDebugMPI_->Assert(kNoErr == err,
 					   "Failed to start audio output\n" );
- 
+
+	pDebugMPI_->Assert(FlatProfilerInit(0, 0) == 0, "Failed to init profiler.\n");
 //PrintMemoryUsage();
 }  // ---- end CAudioMixer::CAudioMixer() ----
 
@@ -440,6 +444,8 @@ if (outSoundFile_)
  delete pKernelMPI_;
 
  delete pDebugMPI_;
+
+ FlatProfilerDone();
 
 }  // ---- end ~CAudioMixer() ----
 
@@ -791,6 +797,7 @@ long    mixBinIndex;
 long    channels = kAudioMixer_MaxOutChannels;
 S16 **tPtrs = pTmpBufOffsets_; // pTmpBufs_, pTmpBufOffsets_
 
+	TimeStampOn(0);
 //{static long c=0; printf("CAudioMixer::Render : start %ld  numFrames=%ld channels=%ld\n", c++, numFrames, channels);}
 
 // Update parameters from AudioState
@@ -1146,6 +1153,8 @@ static long totalFramesWritten = 0;
 //{static long c=0; printf("CAudioMixer::Render %ld: outFile wrote %ld frames total=%ld\n", c++, framesWritten, totalFramesWritten);}
         }
     }
+
+	TimeStampOff(0);
 
 //{static long c=0; printf("CAudioMixer::Render%ld: END numFrames=%ld\n", c++, numFrames);}
 return (kNoErr);  // GK FIXX: should be # frames rendered
