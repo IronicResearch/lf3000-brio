@@ -263,7 +263,6 @@ if (!pListener_)
 
 	const tEventPriority	kPriorityTBD = 0;
 	tAudioMsgLoopEnd	    data;
-printf("CMidiPlayer::SendLoopEndMsg audioID=%d\n", id_);
 	data.audioID = id_;	        
 	data.payload = loopCount_;
 	data.count   = 1;
@@ -473,7 +472,6 @@ return (0); //result;
 CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
 {
 	tErrType result = 0;
-{static long c=0; printf("CMidiPlayer::StopMidiFile: start %ld\n", c++);}
 
 #ifdef USE_MIDI_PLAYER_MUTEX
 	printf("CMidiPlayer::StopMidiFile: Locking renderMutex\n");	
@@ -486,17 +484,12 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	if (pListener_  && !pInfo->noDoneMsg)
 		SendDoneMsg();
 
-	printf("CMidiPlayer::StopMidiFile: reset engine and delete player\n");	
-
 	SPMUtil_Reset( pContext_ );
-	printf("CMidiPlayer::StopMidiFile: BEFO delete player\n");	
     if (pFilePlayer_)   
         {
     	MIDIFilePlayer_Delete( pFilePlayer_ );
     	pFilePlayer_ = kNull;
         }
-	printf("CMidiPlayer::StopMidiFile: AFTA delete player\n");	
-
 	pListener_ = kNull;
 	
 #ifdef USE_MIDI_PLAYER_MUTEX
@@ -506,7 +499,6 @@ CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 
 // SPMIDI_DeleteOrchestra( orchestra );
 
-{static long c=0; printf("CMidiPlayer::StopMidiFile: end %ld\n", c++);}
 	return result;
 }   // ---- end StopMidiFile() ----
 
