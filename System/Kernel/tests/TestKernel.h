@@ -1418,49 +1418,33 @@ public:
     	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
     }
 
+	// get a time stamp, sleep, and then get another time stamp.  The second
+	// time should be greater than or equal to the first time plus sleep time.
 	void testGetHRTAsUsec()
 	{
 		ptintf_test_info("testGetHRTAsUsec.");
 
-		U32 uSec;
-		U32 uSecPrev;
-		tErrType err;
+		U32 t1, t2;
 		struct timespec sleeptime;
+		tErrType err;
 
 		sleeptime.tv_sec = 0;
-		sleeptime.tv_nsec = 10000;
-		unsigned dt = 10200;
-		
-		err = KernelMPI->GetHRTAsUsec(uSec);
-		TS_ASSERT_EQUALS( err, ((tErrType)0) );
-		uSecPrev = uSec;
+		sleeptime.tv_nsec = 10*1000;
 
-		for(int i = 0; i < 10; i++ )
-		{
-			nanosleep( &sleeptime, NULL ); 
-			err = KernelMPI->GetHRTAsUsec(uSec);
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-			
-			if(uSec <= uSecPrev)
-			{
- 				uSecPrev = uSec;
-				continue;
-			}		
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-            TS_ASSERT_LESS_THAN_EQUALS(	(uSec - uSecPrev), dt);        	
+		err = KernelMPI->GetHRTAsUsec(t1);
+		TS_ASSERT_EQUALS(err, ((tErrType)0));
 
-#if 0 // FIXME/BSK
-			printf("uSec=%u dt=%u\n", (unsigned int)uSec, (unsigned int)(uSec - uSecPrev));
-			fflush(stdout);
-#endif
+		nanosleep(&sleeptime, NULL);	
 
-			uSecPrev = uSec;
-		}	
+		err = KernelMPI->GetHRTAsUsec(t2);
+		TS_ASSERT_EQUALS(err, ((tErrType)0));
+
+		TS_ASSERT_LESS_THAN_EQUALS(t1+10, t2);        	
 	}
 	
-	void testGetElapsedAsSec()    // FIXME/BSK
+	void testGetElapsedAsSec()
 	{
-		ptintf_test_info("testGetElapsedAsSec. Test takes 10 sec");
+		ptintf_test_info("testGetElapsedAsSec. Test takes 5 sec");
 
 		U32 sec;
 		U32 secPrev;
@@ -1469,34 +1453,26 @@ public:
 
 		sleeptime.tv_sec = 1;
 		sleeptime.tv_nsec = 0;
-		float dt = 1.1;
 		
 		err = KernelMPI->GetElapsedAsSec(sec);
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 		secPrev = sec;
 
-		for(int i = 0; i < 10; i++ )
+		for(int i = 0; i < 5; i++)
 		{
-			nanosleep( &sleeptime, NULL ); 
+			nanosleep(&sleeptime, NULL); 
 			err = KernelMPI->GetElapsedAsSec(sec);
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-//		    printf("i=%5d Cur=%u Prev=%u\n", i, (unsigned int)sec, (unsigned int)secPrev);
+			TS_ASSERT_EQUALS(err, ((tErrType)0));
 
-//			if(sec <= secPrev)
-//			{
-// 				secPrev = sec;
-//				continue;
-//			}		
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-            TS_ASSERT_LESS_THAN_EQUALS(	(sec - secPrev), dt);        	
+            TS_ASSERT_LESS_THAN_EQUALS(1, Abs(sec - secPrev));        	
 			secPrev = sec;
 		}	
 
 	}
 
-	void testGetElapsedTimeAsStructure()     // FIXME/BSK
+	void testGetElapsedTimeAsStructure()
 	{
-		ptintf_test_info("testGetElapsedTimeAsStructure. Test takes 10 sec");
+		ptintf_test_info("testGetElapsedTimeAsStructure. Test takes 5 sec");
 
 		tErrType err;
 		Current_Time curTime;
@@ -1510,37 +1486,19 @@ public:
 		sleeptime.tv_sec = 1;
 		sleeptime.tv_nsec = 0;
 
-		for(int i = 0; i < 10; i++ )
+		for(int i = 0; i < 5; i++)
 		{
 			nanosleep( &sleeptime, NULL );
 			err = KernelMPI->GetElapsedTimeAsStructure(curTime);
-			TS_ASSERT_EQUALS( err, ((tErrType)0) );
-#if 0 // FIXME/BSK
-		    printf("i= %4d DT=%u\n", i, (unsigned int)(curTime.sec - curTimePrev.sec));
-#endif
-			if( curTime.sec - curTimePrev.sec < 0 )
-        	{
-				curTimePrev = curTime;
-				continue;		        	
-        	}
-        
-        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.sec -  curTimePrev.sec),1);
-        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.min -  curTimePrev.min),59);
-        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.hour - curTimePrev.hour),23);
-        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.mday - curTimePrev.mday),30);
-        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.mon -  curTimePrev.mon),11);
-        	TS_ASSERT_LESS_THAN_EQUALS(Abs(curTime.year - curTimePrev.year),1);
+			TS_ASSERT_EQUALS(err, ((tErrType)0));
 
+			unsigned int diff = curTime.sec > curTimePrev.sec ? 
+									curTime.sec - curTimePrev.sec :
+									60 - (curTimePrev.sec - curTime.sec);
+
+        	TS_ASSERT_LESS_THAN_EQUALS(1, diff);
 			curTimePrev = curTime;
-
-#if 0 // FIXME/BSK
-			printf("\n\ni=%d.  Current RTC date/time is %d-%d-%d, %02d:%02d:%02d.\n",
-				i, curTime.mday, curTime.mon, curTime.year + 1900,
-					curTime.hour, curTime.min, curTime.sec);
-			fflush(stdout);		
-#endif        
 		}	
-
 	}
 // =========================================================
 	void ptintf_test_info( char *pName )
