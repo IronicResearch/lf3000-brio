@@ -13801,3 +13801,32 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/6/08 7:08 PM
 5,204 ms. (Cumulative: 3,834,026 ms)
 
 ----------------
+Revision 2,932 from svn://localhost/TRUNK/:
+Revision 2,933 from svn://localhost/TRUNK/:
+Revision 2,934 from svn://localhost/TRUNK/:
+Revision 2,935 from svn://localhost/TRUNK/:
+
+Fixing bugs in "Brio kernel timer" implementation and tests.  The following 
+issues are dealt with:
+- removed use of RTC driver in place of gettimeofday() on embedded.  Embedded
+  and emulation do the same thing now.  gettimeofday() is a POSIX function, it
+  works fine.  The attempt at using the RTC was not needed, and had mistakes in
+  its implementation that lead to unreliable high-res. timers.  Removed the 
+  additional mutexes for these 'timers' as well.
+- renamed mutexes.  Names like "mutex_1" are not really helpful.  Fixed the
+  locking/unlocking to use the same mutex.  For whatever reason, the code was
+  using different mutexes for adding to and removing from a list... this makes
+  no sense.
+- got rid of various cruft and fixed API misuse: localtime() is a Linux 
+  function, not POSIX.  Using a "POSIX assert" and assuming that errno gets set
+  won't work.  
+- reimplemented several unit tests.  When you sleep() on a multi-tasking 
+  system, do not assume that you will wake up exactly after time X.  By 
+  sleeping, you've given up the CPU and there are other things running!
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 2/7/08 10:29 AM
+2 changed, 0 added, 0 deleted.
+5,032 ms. (Cumulative: 3,839,151 ms)
+
+----------------
