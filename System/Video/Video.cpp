@@ -18,6 +18,7 @@
 #include <VideoPriv.h>
 #include <AudioMPI.h>
 #include <KernelMPI.h>
+#include <errno.h>
 
 //#define _GNU_SOURCE
 //#define _LARGEFILE_SOURCE
@@ -571,7 +572,8 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
 	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	if (EBUSY == kernel.TryLockMutex(gVidMutex))
+		return false;
 #endif
 
 	// Compute next frame if time-based drop-frame mode selected 
@@ -620,7 +622,7 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 				queue_page(&og);
 		}
 	}
-	
+
 #if USE_MUTEX
 	kernel.UnlockMutex(gVidMutex);
 #endif
@@ -639,9 +641,12 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	
 	// Compare selected frame time to current frame time
 	GetVideoTime(hVideo, &time);
+
 #if USE_MUTEX
-	kernel.LockMutex(gVidMutex);
+	if (EBUSY == kernel.TryLockMutex(gVidMutex))
+		return false;
 #endif
+
 	if (time.frame > pCtx->frame)
 	{	
 		// If we already past seek frame, we need to rewind from start
@@ -705,6 +710,14 @@ inline 	U8 B(U8 Y,U8 U,U8 V)	{ (void )V; return clip(( 298 * C(Y) + 516 * D(U)  
 Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
+	Boolean status = true;
+	
+#if USE_MUTEX
+	CKernelMPI kernel;
+	if (EBUSY == kernel.TryLockMutex(gVidMutex))
+		return false;
+#endif
+
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
 	PROFILE_BEGIN();
@@ -790,8 +803,12 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 		}
 	}
 	else
-		return false;
-	return true;
+		status = false;
+
+#if USE_MUTEX
+	kernel.UnlockMutex(gVidMutex);
+#endif
+	return status;
 }
 
 //----------------------------------------------------------------------------

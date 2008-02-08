@@ -353,7 +353,7 @@ public:
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 	
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
-		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg", &surf, false, NULL);
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg", "Vorbis0_mono16kHz.ogg", &surf, false, NULL);
 		TS_ASSERT( video != kInvalidVideoHndl );
 		TS_ASSERT( true == pVideoMPI_->IsVideoPlaying(video) );
 
