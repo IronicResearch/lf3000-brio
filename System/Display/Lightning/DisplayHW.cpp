@@ -304,7 +304,10 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 				(unsigned int)gFrameBase, gFrameSize, gFrameBuffer);
 		GraphicsContext->pBuffer = gFrameBuffer;
 		GraphicsContext->isPrimary = true;
-		GraphicsContext->offset = 0;	
+		GraphicsContext->offset = 0;
+		// Clear buffer when changing formats (RGB external to ARGB Brio)	
+		if (ioctl(gDevLayer, MLC_IOCQFORMAT, 0) != hwFormat)
+			memset(gFrameBuffer, 0xFF, gFrameSize);
 	}
 	else if (gFrameBuffer2 == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
