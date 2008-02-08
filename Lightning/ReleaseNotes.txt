@@ -3,6 +3,31 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.40  (Build 2940 released Feb 08, 2008) 
+===========================================
+-- Eliminated deadlock in Mixer destructor.
+   Enabling destructors globally from Module manager remains elusive.
+
+-- Removed use of RTC driver in place of gettimeofday() on embedded.
+
+-- Added profiling utility called FlatProfiler.  See FlatProfiler.cpp and
+   FlatProfiler.h for details.
+
+-- Added high-level profiling to Audio Mixer. (Note that, because destructors don't
+   get called, you can't simply enable it and expect output).
+
+===========================================
+v0.1.39  (Build 2923 released Feb 05, 2008) 
+===========================================
+-- Fixup GetBacklight() to use updated dpc ioctl call DPC_IOCQBACKLIGHTVIRT.
+   Now retrieves negative virtual backlight values.
+
+-- Fixed memory leaks in Brio's "kernel timer" implementation.
+
+-- Ignore brightness button if at 'Critical Battery' level or if changing
+   the brightness causes a 'Critical Battery' message.
+
+===========================================
 v0.1.38  (Build 2881 released Feb 01, 2008) 
 ===========================================
 -- RGB and YUV buffers are now shared in common framebuffer region
