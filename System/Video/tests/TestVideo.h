@@ -293,7 +293,7 @@ public:
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg", "Vorbis0_mono16kHz.ogg", &surf, false, &videoListener);
 		TS_ASSERT( video != kInvalidVideoHndl );
-		
+
 		for (int i = 0; i < 100; i++)
 		{
 			Boolean 	r;
@@ -328,9 +328,42 @@ public:
 		pVideoMPI_->StopVideo(video);
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
+		evtmgr->UnregisterEventListener(&videoListener);
+		delete evtmgr;
+		delete kernel;
 		delete pDisplayMPI_;
 	}
 
+	//------------------------------------------------------------------------
+	void testVideoState()
+	{
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+	
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg", &surf, false, NULL);
+		TS_ASSERT( video != kInvalidVideoHndl );
+		TS_ASSERT( true == pVideoMPI_->IsVideoPlaying(video) );
+
+		pVideoMPI_->StopVideo(video);	
+		TS_ASSERT( false == pVideoMPI_->IsVideoPlaying(video) );
+	
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
 };
 
 // EOF
