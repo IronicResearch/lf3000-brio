@@ -13889,3 +13889,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/8/08 1:52 PM
 5,360 ms. (Cumulative: 3,866,154 ms)
 
 ----------------
+Revision 2,945 from svn://localhost/TRUNK/:
+
+Added mutex test to early out of Video MPI functions called by internal thread.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/08 2:47 PM
+2 changed, 0 added, 0 deleted.
+5,453 ms. (Cumulative: 3,871,685 ms)
+
+----------------
