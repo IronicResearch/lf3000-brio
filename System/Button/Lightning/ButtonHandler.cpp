@@ -27,11 +27,17 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/input.h>
-#include <linux/lf1000/power.h>
 
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+
+#define kPowerNull              0
+#define kPowerExternal          1
+#define kPowerBattery           2
+#define kPowerLowBattery        3
+#define kPowerShutdown          4
+#define kPowerCriticalBattery   5
 
 
 //============================================================================

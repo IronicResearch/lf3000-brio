@@ -13899,3 +13899,16 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/08 2:47 PM
 5,453 ms. (Cumulative: 3,871,685 ms)
 
 ----------------
+Revision 2,946 from svn://localhost/TRUNK/:
+Revision 2,947 from svn://localhost/TRUNK/:
+Revision 2,948 from svn://localhost/TRUNK/:
+
+don't depend on Linux includes for Brio-specific power defines.  Don't include
+<sys/ioctl.h> in PowerHandler.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 2/8/08 3:41 PM
+2 changed, 0 added, 0 deleted.
+5,584 ms. (Cumulative: 3,877,363 ms)
+
+----------------

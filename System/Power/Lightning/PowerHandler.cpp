@@ -25,7 +25,6 @@
 #include <sys/stat.h>
 #include <sys/un.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
 
 #include <PowerTypes.h>
 
