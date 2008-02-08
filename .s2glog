@@ -13868,3 +13868,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/08 9:43 AM
 5,423 ms. (Cumulative: 3,855,215 ms)
 
 ----------------
+Revision 2,941 from svn://localhost/TRUNK/:
+
+Added unit test for Video MPI start/stop state.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/08 11:37 AM
+1 changed, 0 added, 0 deleted.
+5,422 ms. (Cumulative: 3,860,700 ms)
+
+----------------
