@@ -769,7 +769,7 @@ public:
 		props.timeout.it_value.tv_sec = 1;
 		props.timeout.it_value.tv_nsec = 0;
 		
-		struct timespec sleeptime;
+		struct timespec sleeptime, remtime;
 		unsigned int dt = 0;
 		sleeptime.tv_sec = 0;
 		sleeptime.tv_nsec = MS_TO_NS(20); // 10 ms
@@ -778,13 +778,13 @@ public:
 		err = KernelMPI->StartTimer( hndlTimer_1, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-#if 1 // FIXME/BSK
 		while( counterTimer_1 )
 		{
-			nanosleep( &sleeptime, NULL );
-			dt += sleeptime.tv_nsec;
+			while(nanosleep(&sleeptime, &remtime)) {
+				dt += sleeptime.tv_nsec;
+				sleeptime.tv_nsec = remtime.tv_nsec;
+			}
 		}
-#endif
 
 		TS_ASSERT_LESS_THAN_EQUALS( (unsigned int )(dt),
 			 (unsigned int )(MS_TO_NS(1000) + (num_interval-1) * MS_TO_NS(500) + MS_TO_NS(20)) );
@@ -806,13 +806,14 @@ public:
 		err = KernelMPI->StartTimer( hndlTimer_2, props );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
 
-#if 1 // FIXME/BSK
 		while( counterTimer_2 )
 		{
-			nanosleep( &sleeptime, NULL );
-			dt += sleeptime.tv_nsec;
+			while(nanosleep(&sleeptime, &remtime)) {
+				dt += sleeptime.tv_nsec;
+				sleeptime.tv_nsec = remtime.tv_nsec;
+			}
 		}
-#endif
+
 		TS_ASSERT_LESS_THAN_EQUALS( (unsigned int )(dt),
 			 (unsigned int )(MS_TO_NS(1000) + MS_TO_NS(20)) );
 
@@ -1434,7 +1435,7 @@ public:
 		err = KernelMPI->GetHRTAsUsec(t1);
 		TS_ASSERT_EQUALS(err, ((tErrType)0));
 
-		nanosleep(&sleeptime, NULL);	
+		while(nanosleep(&sleeptime, &sleeptime));
 
 		err = KernelMPI->GetHRTAsUsec(t2);
 		TS_ASSERT_EQUALS(err, ((tErrType)0));
@@ -1460,7 +1461,7 @@ public:
 
 		for(int i = 0; i < 5; i++)
 		{
-			nanosleep(&sleeptime, NULL); 
+			while(nanosleep(&sleeptime,&sleeptime));
 			err = KernelMPI->GetElapsedAsSec(sec);
 			TS_ASSERT_EQUALS(err, ((tErrType)0));
 
@@ -1488,7 +1489,7 @@ public:
 
 		for(int i = 0; i < 5; i++)
 		{
-			nanosleep( &sleeptime, NULL );
+			while(nanosleep(&sleeptime,&sleeptime));
 			err = KernelMPI->GetElapsedTimeAsStructure(curTime);
 			TS_ASSERT_EQUALS(err, ((tErrType)0));
 

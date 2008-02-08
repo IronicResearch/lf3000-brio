@@ -330,19 +330,18 @@ int CKernelModule::GetTaskSchedulingPolicy(tTaskHndl hndl) const
 	return policy;
 }	
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void CKernelModule::TaskSleep(U32 msec) const
 {
- //   while( msec > 999 )     /* For OpenBSD and IRIX, argument */
- //   {                       /* to usleep must be < 1000000.   */
- //       usleep( 999000 );
- //       msec -= 999;
-//	}
-//    usleep( msec * 1000 ); This function is obsolete. Need to use nanosleep instead.
 	struct timespec sleeptime;
-	sleeptime.tv_sec = msec /1000;
+
+	sleeptime.tv_sec = msec / 1000;
 	sleeptime.tv_nsec = (msec % 1000) * 1000000;
-	nanosleep( &sleeptime, NULL ); 
+	
+	while(nanosleep(&sleeptime, &sleeptime)) {
+		if(errno != EINTR)
+			return;
+	}
 }
 
 //============================================================================
