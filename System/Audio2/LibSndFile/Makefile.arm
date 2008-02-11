@@ -1,0 +1,54 @@
+# source files.
+SRC =  	aiff.c common.c sndfile.c strings.c wav.c command.c file_io.c snprintf.c sndfileutil.c  
+# wav_w64.c double64.c float32.c w64.c dither.c pcm.c 
+# WAS:    x86: 221482-> 137286  arm: 127140->92968
+
+OBJ = $(SRC:.c=.o)
+
+# CPU : x86, arm
+CPU = arm
+# Compiler: x86: g++   ARM: arm-linux-gcc
+CCC = arm-linux-gcc
+LD = arm-linux-ld
+
+OUT = libsndfile.so
+
+BASE = /opt/RidgeRun/arm-eabi-uclibc
+#CCC = $(BASE)/bin/arm-linux-gcc
+
+# Include directories -- only embedded path
+INCLUDES = -I. \
+   -I$(ROOTFS_PATH)/usr/include 
+
+
+# C++ compiler flags (-g -O2 -Wall) -DREDUCED_FORDIDJ -DNO_DITHER -DFORMAT_ALL
+# ARM flags -O2 -D_ARM_ASSEM -fsigned-char 
+CCFLAGS = -O2 -D_ARM_ASSEM -fsigned-char -DHAVE_SNPRINTF -DNO_DITHER -DNO_DOUBLE64
+
+# library paths
+LIBS = -L../ -lm
+
+# compile flags
+LDFLAGS = -g
+
+.SUFFIXES: .c
+
+default: dep $(OUT)
+
+.c.o:
+	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+#	ar rcs $(CPU)/$(OUT) $(OBJ)
+	$(LD) -shared -soname $(OUT) --strip-all -o $(CPU)/$(OUT) $(OBJ) 
+
+depend: dep
+
+dep:
+#	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
+
+clean:
+	rm -f $(OBJ) Makefile.bak $(CPU)/$(OUT) $(CPU)/*.a
+
+
+
