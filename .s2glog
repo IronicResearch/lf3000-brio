@@ -13990,3 +13990,22 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/11/08 2:44 PM
 6,611 ms. (Cumulative: 3,915,466 ms)
 
 ----------------
+Revision 2,966 from svn://localhost/TRUNK/:
+Revision 2,967 from svn://localhost/TRUNK/:
+Revision 2,968 from svn://localhost/TRUNK/:
+
+The initial cartridge event was reported incorrectly, in addition two edge 
+cases (inserting or removing a cart. while Linux is booting) could cause 
+problems.  To resolve this we:
+1) read the "initial state" of the cartridge (as reported by the bootloader and
+   made available via sysfs)
+2) during init, compare that initial state to the present state of the 
+   cartridge.  If the state differs, we must report a transition.  Otherwise
+   we just mark the state and wait for it to actually change later.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 2/11/08 3:47 PM
+1 changed, 0 added, 0 deleted.
+5,438 ms. (Cumulative: 3,921,013 ms)
+
+----------------
