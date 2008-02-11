@@ -13926,3 +13926,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/11/08 8:51 AM
 5,485 ms. (Cumulative: 3,882,957 ms)
 
 ----------------
+Revision 2,955 from svn://localhost/TRUNK/:
+
+Modified Video task start/stop state with condition signal synchronization logic.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/11/08 8:56 AM
+1 changed, 0 added, 0 deleted.
+5,032 ms. (Cumulative: 3,888,051 ms)
+
+----------------
