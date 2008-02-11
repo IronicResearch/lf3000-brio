@@ -1,0 +1,48 @@
+# Source files.
+SRC =  	Dsputil.cpp fir.cpp shape.cpp src.cpp util.cpp midi.cpp Dsputil2.cpp eq.cpp 
+OBJ = $(SRC:.cpp=.o)
+
+# CPU : x86, arm
+CPU = arm
+# Compiler: x86: g++   ARM: arm-linux-gcc
+CCC = arm-linux-gcc
+LD = arm-linux-ld
+
+OUT = libdsputil.so
+BASE = /opt/RidgeRun/arm-eabi-uclibc
+
+# Include directories -- only embedded path
+INCLUDES = -I. \
+    -I$(ROOTFS_PATH)/usr/include
+
+#  ARM 926EJ with ARMv5TEJ instruction set
+# C++ compiler flags (-g -O2 -Wall)
+# ARM flags -O2 -D_ARM_ASSEM -fsigned-char 
+CCFLAGS = -O2 -DUSE_ARM946_DSPEXT
+CFLAGS = -O2 -DUSE_ARM946_DSPEXT
+
+# library paths
+LIBS = -lm
+
+# compile flags
+LDFLAGS = -g
+
+.SUFFIXES: .cpp
+
+default: dep $(OUT)
+
+.cpp.o:
+	$(CCC) $(INCLUDES) $(CCFLAGS) -c $< -o $@
+
+$(OUT): $(OBJ)
+#	ar rcs $(CPU)/$(OUT) $(OBJ)
+	$(LD) -shared -soname $(OUT) --strip-all -o $(CPU)/$(OUT) $(OBJ) 
+
+depend: dep
+
+dep:
+#	makedepend -- $(CFLAGS) -- $(INCLUDES) $(SRC)
+
+clean:
+	rm -f $(OBJ) Makefile.bak $(CPU)/$(OUT) $(CPU)/*.a
+
