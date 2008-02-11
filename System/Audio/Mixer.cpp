@@ -77,7 +77,7 @@
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
 
-#define ENABLE_PROFILING
+#undef ENABLE_PROFILING
 #include <FlatProfiler.h>
 
 #define kMixer_HeadroomBits_Default 2
