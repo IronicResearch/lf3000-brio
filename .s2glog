@@ -13936,3 +13936,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/11/08 8:56 AM
 5,032 ms. (Cumulative: 3,888,051 ms)
 
 ----------------
+Revision 2,956 from svn://localhost/TRUNK/:
+Revision 2,957 from svn://localhost/TRUNK/:
+Revision 2,958 from svn://localhost/TRUNK/:
+
+Added creating the ATAP_SVN package for updating ATAP
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 2/11/08 9:47 AM
+1 changed, 0 added, 0 deleted.
+5,147 ms. (Cumulative: 3,893,276 ms)
+
+----------------
