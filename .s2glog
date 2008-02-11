@@ -13947,3 +13947,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/11/08 9:47 AM
 5,147 ms. (Cumulative: 3,893,276 ms)
 
 ----------------
+Revision 2,959 from svn://localhost/TRUNK/:
+
+Enforce Display MPI CreateHandle() contexts according to available framebuffer regions.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/11/08 10:54 AM
+1 changed, 0 added, 0 deleted.
+5,047 ms. (Cumulative: 3,898,385 ms)
+
+----------------

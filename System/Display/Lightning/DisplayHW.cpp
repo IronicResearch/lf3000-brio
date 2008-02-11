@@ -338,11 +338,10 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		GraphicsContext->offset = gFrameBase3 - gFrameBase;
 	}
 	else {
-		// Assign mapped framebuffer address if onscreen context
-		GraphicsContext->pBuffer =
-			(GraphicsContext->isPlanar) ? gPlanarBuffer :
-			(GraphicsContext->isOverlay) ? gOverlayBuffer : 
-			(GraphicsContext->isPrimary) ? gFrameBuffer : gFrameBuffer2;
+		// No framebuffer allocations left
+		dbg_.DebugOut(kDbgLvlCritical, "DisplayModule::CreateHandle: No framebuffer available\n");
+		delete GraphicsContext;
+		return kInvalidDisplayHandle;
 	}
 
 	// apply to device
