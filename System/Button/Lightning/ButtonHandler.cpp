@@ -172,6 +172,25 @@ void setBrightness(void)
 	}	
 }
 
+static bool CartInitiallyInserted(void)
+{
+	CDebugMPI dbg(kGroupButton);
+	char buf[16];
+	FILE *f = fopen("/sys/devices/platform/lf1000-nand/cartridge", "r");
+
+	dbg.Assert(f != NULL,
+			"CButtonModule::LightningButtonTask: cart read failed");
+
+	dbg.Assert(fscanf(f, "%s\n", buf) >= 1,
+			"CButtonModule::LightningButtonTask: cart read failed");
+
+	fclose(f);
+
+	if(!strncmp(buf, "none", 4)) // no cart inserted
+		return false;
+	return true;
+}
+
 //============================================================================
 // Asynchronous notifications
 //============================================================================
@@ -185,39 +204,46 @@ void *LightningButtonTask(void*)
 	CDisplayMPI dispmgr;
 	
 	int sw = 0;
+	bool CartInitial = CartInitiallyInserted();
 	U32 button;
 	
 	dbg.SetDebugLevel(kDbgLvlVerbose);
 	
 	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 	
-
 	data.buttonState = 0;
 	data.buttonTransition = 0;
 
 	// get initial state of switches
-	if(ioctl(button_fd, EVIOCGSW(sizeof(int)), &sw) == 0) {
-		if(sw & (1<<SW_HEADPHONE_INSERT)) {
-			data.buttonState |= kHeadphoneJackDetect;
-			data.buttonTransition |= kHeadphoneJackDetect;
-		}
-		if(sw & (1<<SW_TABLET_MODE)) {
-			data.buttonState |= kCartridgeDetect;
-			data.buttonTransition |= kCartridgeDetect;
-		}
-		CButtonMessage msg(data);
-		eventmgr.PostEvent(msg, kButtonEventPriority);
+	dbg.Assert(ioctl(button_fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+			"CButtonModule::LightningButtonTask: reading switch state failed");
+	
+	// get and report the current headphone state as a transition
+	if(sw & (1<<SW_HEADPHONE_INSERT)) {
+		data.buttonState |= kHeadphoneJackDetect;
+		data.buttonTransition |= kHeadphoneJackDetect;
 	}
 
-	while(1) {
+	// get the current state of the cartrdige
+	if(sw & (1<<SW_TABLET_MODE))
+		data.buttonState |= kCartridgeDetect;
 
-		// FIXME Pace thread at time intervals relavant for button presses
-		kernel.TaskSleep(1);
+	// if the intial state of the cartridge differs from the current state
+	// of the cartridge 'switch', then we have to report a transition
+	if(CartInitial ^ !!(sw & (1<<SW_TABLET_MODE)))
+		data.buttonTransition |= kCartridgeDetect;
+
+	// inform application of initial switch state
+	CButtonMessage msg(data);
+	eventmgr.PostEvent(msg, kButtonEventPriority);
+
+	while(1) {
 
 		data.buttonTransition = 0;
 
 		int num_events = read(button_fd, &ev, sizeof(ev));
-		dbg.Assert( num_events >= 0, "CButtonModule::LightningButtonTask: button read failed" );
+		dbg.Assert( num_events >= 0, 
+				"CButtonModule::LightningButtonTask: button read failed" );
 
 		// ev[n].value describes the transition:
 		//  0 = released
