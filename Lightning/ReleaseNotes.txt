@@ -3,8 +3,10 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-v0.1.40  (Build 2940 released Feb 08, 2008) 
+v0.1.40  (Build 2948 released Feb 08, 2008) 
 ===========================================
+-- Added mutex test to early out of Video MPI functions called by internal thread
+
 -- Eliminated deadlock in Mixer destructor.
    Enabling destructors globally from Module manager remains elusive.
 
