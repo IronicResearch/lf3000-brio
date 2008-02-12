@@ -570,11 +570,10 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	int			bytes;
 
 	(void )hVideo;	/* Prevent unused variable warnings. */
-#if USE_MUTEX
-	CKernelMPI kernel;
-	if (EBUSY == kernel.TryLockMutex(gVidMutex))
+	
+	// Internal codec state only changes during start/stop
+	if (!gbCodecReady)
 		return false;
-#endif
 
 	// Compute next frame if time-based drop-frame mode selected 
 	if (bDrop)
@@ -623,9 +622,6 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		}
 	}
 
-#if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
-#endif
 	return ready;
 }
 
@@ -639,13 +635,12 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	int			bytes;
 	CKernelMPI 	kernel;
 	
+	// Internal codec state only changes during start/stop
+	if (!gbCodecReady)
+		return false;
+
 	// Compare selected frame time to current frame time
 	GetVideoTime(hVideo, &time);
-
-#if USE_MUTEX
-	if (EBUSY == kernel.TryLockMutex(gVidMutex))
-		return false;
-#endif
 
 	if (time.frame > pCtx->frame)
 	{	
@@ -681,9 +676,6 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 		}
 	}
 
-#if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
-#endif
 	return found;
 }
 
@@ -712,11 +704,9 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	(void )hVideo;	/* Prevent unused variable warnings. */
 	Boolean status = true;
 	
-#if USE_MUTEX
-	CKernelMPI kernel;
-	if (EBUSY == kernel.TryLockMutex(gVidMutex))
+	// Internal codec state only changes during start/stop
+	if (!gbCodecReady)
 		return false;
-#endif
 
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
@@ -805,9 +795,6 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	else
 		status = false;
 
-#if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
-#endif
 	return status;
 }
 
