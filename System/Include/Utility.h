@@ -21,6 +21,7 @@
 #include <math.h>
 #include <SystemTypes.h>
 #include <CoreTypes.h>	
+#include <PowerTypes.h>
 #include <boost/shared_array.hpp>	
 
 #include "Wrappers.h"
@@ -111,6 +112,11 @@ char *GetKeyboardName(void);
 int CreateListeningSocket(const char *path);
 
 int CreateReportSocket(const char *path);
+
+//----------------------------------------------------------------------------
+// Returns the system's power state
+//----------------------------------------------------------------------------
+enum tPowerState GetCurrentPowerState(void);
 
 LF_END_BRIO_NAMESPACE()
 
