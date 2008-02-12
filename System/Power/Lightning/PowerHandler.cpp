@@ -46,33 +46,6 @@ namespace
 	struct tPowerData	data;
 }
 
-enum tPowerState getPowerState(void)
-{
-		CDebugMPI dbg(kGroupPower);
-		FILE *power_fd;
-		int ret;
-		unsigned int status;
-
-		power_fd = fopen("/sys/devices/platform/lf1000-power/status", "r");
-		dbg.Assert(power_fd != NULL, "CPowerModule::getPowerState: cannot open status");
-
-		ret = fscanf(power_fd, "%d\n", &status);
-		fclose(power_fd);
-		dbg.Assert(ret >= 1, "CPowerModule::LightningPowerTask: read failed");
-
-		switch(status) {
-			case 1:
-			return kPowerExternal;
-			case 2:
-			return kPowerBattery;
-			case 3:
-			return kPowerLowBattery;
-			case 4:
-			return kPowerCritical;
-		}
-		return kPowerNull;
-}
-
 //============================================================================
 // Asynchronous notifications
 //============================================================================
@@ -97,7 +70,7 @@ void *LightningPowerTask(void*)
 
 	while(1) {
 		// get battery state
-		current_pe.powerState = getPowerState();
+		current_pe.powerState = GetCurrentPowerState();
 
 		// overwrite with power down, if one is pending
 		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
@@ -159,7 +132,7 @@ void CPowerModule::InitModule()
 
 	dbg_.DebugOut(kDbgLvlVerbose, "Power Init\n");
 
-	data.powerState = getPowerState();
+	data.powerState = GetCurrentPowerState();
 
 	if( kernel.IsValid() )
 	{

@@ -31,15 +31,6 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-
-#define kPowerNull              0
-#define kPowerExternal          1
-#define kPowerBattery           2
-#define kPowerLowBattery        3
-#define kPowerShutdown          4
-#define kPowerCriticalBattery   5
-
-
 //============================================================================
 // Local state and utility functions
 //============================================================================
@@ -134,7 +125,7 @@ void setBrightness(void)
 
 	S8 oldBacklight;
 	S8 oldBrightness;
-	int status;
+	enum tPowerState status = GetCurrentPowerState();
 
 	static int brightIndex = 1;	// index of next value to retrieve
 
@@ -143,11 +134,8 @@ void setBrightness(void)
 	oldBrightness = dispmgr.GetBrightness(0);
 	oldBacklight  = dispmgr.GetBacklight(0);	
 
-    ReadSysfsInt("/sys/devices/platform/lf1000-power/status", &status);
-
-
 	/* change brightness if power is good */
-	if (status != kPowerCriticalBattery) {
+	if (status != kPowerCritical) {
 		dispmgr.SetBrightness(0, lcdBright[brightIndex]);
 		dispmgr.SetBacklight(0, lcdBacklight[brightIndex]);
 		brightIndex++;
@@ -156,10 +144,9 @@ void setBrightness(void)
 		/* if on battery, check that power is still ok after change */
 		if (status == kPowerBattery) {
    			kernel.TaskSleep(300);			// let battery sample 
-    		ReadSysfsInt("/sys/devices/platform/lf1000-power/status",
-				&status);
+			status = GetCurrentPowerState();
 			// backout change if battery went critical
-			if (status == kPowerCriticalBattery) {
+			if (status == kPowerCritical) {
 				dispmgr.SetBrightness(0, oldBrightness);
 				dispmgr.SetBacklight(0, oldBacklight);
 				brightIndex--;			// backup index
