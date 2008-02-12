@@ -8,15 +8,16 @@
 #
 #	Brio-0.1.31.2614.lfp			= Brio library firmware for either LF1000 boards
 #	host-tools-SVN2614.tar.gz		= Linux host tools subset for installing firmware
-#	LightningSDK_2614.tar.gz		    = Lightning SDK for emulation and embedded development
+#	LightningSDK_2614.tar.gz		= Lightning SDK for emulation and embedded development
 #	nfsroot_SVN2614.tar.gz			= NFS root filesystem for LF1000 development board
-#
+#	ATAP_SVN2957.tar.gz				= package for updating ATAP
 #-----------------------------------------------------------------------------------------
 # 	PREREQUISIE
-#	1. To get last LinuxDist
+#	1. Get last LinuxDist
 #	   from http://lightning-release/releases/
 #          in /home/lfu directory 
-#	2. Prepare board for unpack_release.sh script
+#	2. Prepare the development board by running unpack_release.sh and
+#      lightning_install.py scripts
 #
 #------------------------------------------------------------------------------------------
 	TFTP_PATH=/home/lfu/tftpboot
@@ -106,14 +107,14 @@
 
 	cd 		$ROOTFS_PATH/Didj/Base	
     cp 		$PATH_TO_BRIO/Lightning/meta.inf Brio
-	rm 		$ROOTFS_PATH/Didj/Base/*.lfp
+	rm 		-f	$ROOTFS_PATH/Didj/Base/*.lfp
 	
 	$TFTP_MAIN/LinuxDist-$LINUXDIST_NUM/host_tools/lfpkg -a create Brio
 	cp 		*.lfp $S_DIR	
 #==============================================================================
 #	Creating package for updating ATAP
 
-	rm		$TFTP_MAIN//LinuxDist-$LINUXDIST_NUM/mfg-cart/ATAP/Packages/*.lfp
+	rm		-f	$TFTP_MAIN//LinuxDist-$LINUXDIST_NUM/mfg-cart/ATAP/Packages/*.lfp
 	cp		*.lfp	$TFTP_MAIN//LinuxDist-$LINUXDIST_NUM/mfg-cart/ATAP/Packages				
     cd 	 	$TFTP_MAIN//LinuxDist-$LINUXDIST_NUM/mfg-cart
 	tar     -czvf	ATAP_SVN$REV_NUM.tar.gz		ATAP

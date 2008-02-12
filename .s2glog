@@ -14052,3 +14052,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/12/08 12:34 PM
 5,563 ms. (Cumulative: 3,943,734 ms)
 
 ----------------
+Revision 2,975 from svn://localhost/TRUNK/:
+
+Fixed the issue with deleting the old files
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 2/12/08 12:39 PM
+1 changed, 0 added, 0 deleted.
+5,394 ms. (Cumulative: 3,949,190 ms)
+
+----------------
