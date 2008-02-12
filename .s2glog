@@ -14061,3 +14061,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/12/08 12:39 PM
 5,394 ms. (Cumulative: 3,949,190 ms)
 
 ----------------
+Revision 2,976 from svn://localhost/TRUNK/:
+
+Replace mutex locks with codec state checks on internal functions. Codec state only changes on video start/stop calls which are already synchronized.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/12/08 1:14 PM
+1 changed, 0 added, 0 deleted.
+5,487 ms. (Cumulative: 3,954,755 ms)
+
+----------------
