@@ -708,4 +708,36 @@ public:
 		while(pAudioMPI_->IsAudioPlaying())
 			pKernelMPI_->TaskSleep(100);
 	}
+
+	void testPerformanceBaseline()
+	{
+		tAudioID id1, id2, id3;
+		tMidiPlayerID id4;
+        tErrType err;
+
+		err = pAudioMPI_->AcquireMidiPlayer(1, NULL, &id4);
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id4 != kNoMidiID );
+
+		id1 = pAudioMPI_->StartAudio("wool-16kHz-mono.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id1 != kNoAudioID);
+
+		id2 = pAudioMPI_->StartAudio("watermelon-16kHz-st.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id2 != kNoAudioID);
+
+		id3 = pAudioMPI_->StartAudio("passin-16kHz-mono.ogg", kVolume, kPriority,
+									 kPan, kNull, 0, 0);
+		TS_ASSERT(id3 != kNoAudioID);
+
+		err = pAudioMPI_->StartMidiFile(id4, "POWMusic.mid", kVolume, 1,
+										kNull, 0, 0);
+		TS_ASSERT(err == kNoErr);
+		
+        while(pAudioMPI_->IsAudioPlaying() || pAudioMPI_->IsMidiFilePlaying(id4))
+			pKernelMPI_->TaskSleep(100);
+	}
+
+
 };
