@@ -3,6 +3,25 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+v0.1.42  (Build 2969 released Feb 11, 2008) 
+===========================================
+-- Forking Audio to Audio2 to optimize without destabilizing the current.
+
+-- Fixed the bugs related to the initial cartridge event was reported incorrectly and
+   inserting or removing a cart while Linux is booting. 
+
+===========================================
+v0.1.41  (Build 2962 released Feb 11, 2008) 
+===========================================
+-- Modified Video task start/stop state with condition signal synchronization logic.
+
+-- Enforced Display MPI CreateHandle() contexts according to available framebuffer regions.
+
+-- Disabling profiling in Audio system by default.
+
+-- Updated MagicEyes OGL lib with ARM optimization settings.
+
+===========================================
 v0.1.40  (Build 2948 released Feb 08, 2008) 
 ===========================================
 -- Added mutex test to early out of Video MPI functions called by internal thread
