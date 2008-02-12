@@ -14094,3 +14094,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/12/08 1:57 PM
 5,543 ms. (Cumulative: 3,966,049 ms)
 
 ----------------
+Revision 2,980 from svn://localhost/TRUNK/:
+
+Add performance baseline test for Audio2
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/12/08 1:58 PM
+1 changed, 0 added, 0 deleted.
+5,594 ms. (Cumulative: 3,971,706 ms)
+
+----------------
