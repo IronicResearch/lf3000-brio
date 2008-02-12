@@ -68,11 +68,8 @@ void* VideoTaskMain( void* arg )
 	Boolean			bAudio = false;
 	
 	// Sync video thread startup with InitVideoTask()
-	kernel.LockMutex(gThreadMutex);
 	bRunning = pctx->bPlaying = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
-	kernel.SignalCond(gThreadCond);
-	kernel.UnlockMutex(gThreadMutex);
 
 	while (bRunning)
 	{
@@ -154,11 +151,8 @@ void* VideoTaskMain( void* arg )
 	}
 
 	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
-	kernel.LockMutex(gThreadMutex);
 	bStopping = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...\n" );
-	kernel.SignalCond(gThreadCond);
-	kernel.UnlockMutex(gThreadMutex);
 	return kNull;
 }
 
@@ -171,8 +165,7 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	tTaskHndl 	hndl;
 	tTaskProperties prop;
 
-	// Use separate mutex and condition signal to sync with thread startup
-	kernel.LockMutex(gThreadMutex);
+	// Set thread state prior to task creation
 	bRunning = bStopping = false;
 	
 	// Setup task properties
@@ -185,8 +178,7 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	// Save task handle for cleanup
 	pCtx->hVideoThread = hVideoThread = hndl;
 	while (!bRunning)
-		kernel.WaitOnCond(gThreadCond, gThreadMutex);
-	kernel.UnlockMutex(gThreadMutex);
+		kernel.TaskSleep(1);
 
 	return r;
 }
@@ -201,13 +193,9 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 		return kNoErr;
 
 	// Stop running task, if it hasn't already stopped itself
-	kernel.LockMutex(gThreadMutex);
 	bRunning = false;
-	while (!bStopping)
-		kernel.WaitOnCond(gThreadCond, gThreadMutex);
 	kernel.JoinTask(hVideoThread, retval);
 	pCtx->hVideoThread = hVideoThread = kNull;
-	kernel.UnlockMutex(gThreadMutex);
 	
 	return kNoErr;
 }

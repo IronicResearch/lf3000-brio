@@ -14042,3 +14042,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/12/08 10:58 AM
 5,610 ms. (Cumulative: 3,938,108 ms)
 
 ----------------
+Revision 2,974 from svn://localhost/TRUNK/:
+
+Revert video start/stop to simpler locking scheme with single mutex to avoid deadlocks. Non-optimal version -- internal MPI calls should not be locked at all.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/12/08 12:34 PM
+2 changed, 0 added, 0 deleted.
+5,563 ms. (Cumulative: 3,943,734 ms)
+
+----------------
