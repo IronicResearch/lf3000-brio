@@ -44,6 +44,7 @@ else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
 
-RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI'], myenv, vars)
+if not vars['is_publish']:
+	RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI'], myenv, vars)
 
 Return('mymodule', 'mympi')
