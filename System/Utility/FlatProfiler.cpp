@@ -15,7 +15,7 @@ static int numTimeStamps;
 static int numTags;
 static struct timeval *tvCurrent;
 
-#define NUM_TIMESTAMP_BINS 10
+#define NUM_TIMESTAMP_BINS 20
 
 //Initialize the flat profiler.  If numTags (nt) or numTimeStamps (nts) is
 //non-zero, it overrides the FLATPROF_NUM_TAGS and FLATPROF_NUM_TIMESTAMPS
@@ -64,7 +64,7 @@ void FlatProfilerDone(void)
 {
 	unsigned int tag, ts, t, mean, max, min, *myTimeStamps;
 	unsigned int bins[NUM_TIMESTAMP_BINS], b;
-	float binSize;
+	float binSize, acc;
 	printf("Compiling profile results...\n");
 	for(tag=0; tag<numTags; tag++) {
 
@@ -75,7 +75,7 @@ void FlatProfilerDone(void)
 		myTimeStamps = timeStamps + numTimeStamps*tag;
 		max = 0;
 		min = 0xffffffff;
-		mean = 0;
+		acc = 0.0;
 
 		for(ts=0; ts<tsIndex[tag]; ts++) {
 			/* calculate min, mean, and max */
@@ -84,8 +84,10 @@ void FlatProfilerDone(void)
 				max = t;
 			if (t < min)
 				min = t;
-			mean = (mean*ts + t)/(ts + 1);
+			acc += (float)t;
 		}
+		mean = (unsigned int)(acc/tsIndex[tag]);
+
 		/* Print the results */
 		printf("tag %d: max=%dms min=%dms mean=%dms\n", tag, max, min, mean);
 
