@@ -88,7 +88,7 @@ public:
 		CPath* path = pFontMPI_->GetFontResourcePath();
 		TS_ASSERT( dir == *path );
 		
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop2);
 		TS_ASSERT( font2 != kInvalidFontHndl );
@@ -147,7 +147,7 @@ public:
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -210,7 +210,7 @@ public:
 		tDisplayHandle 	disp;
 		CString			text[9] = {CString("The "),CString("Quick "),CString("Brown "),
 							CString("Fox "),CString("Jumps "),CString("Over "), 
-							CString("the "),CString("Lazy "),CString("Dog")};
+							CString("the "),CString("Lazy "),CString("Dog.\n")};
 
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
@@ -225,7 +225,7 @@ public:
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		TS_ASSERT( mtrx.height != 0 );
@@ -282,7 +282,7 @@ public:
 		tFontHndl	font2;
 		tFontSurf	surf;
 		tDisplayHandle 	disp;
-		CString			text = CString("The Quick Brown Fox Jumps Over the Lazy Dog.");
+		CString			text = CString("The Quick Brown Fox Jumps Over the Lazy Dog.\n");
 
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
@@ -297,7 +297,7 @@ public:
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->SetFontColor(0x00FFFF00); // yellow
 		
@@ -348,7 +348,7 @@ public:
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->SetFontColor(0x00FFFFFF); // white
 		
@@ -415,7 +415,7 @@ public:
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", 36);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", 36);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -476,7 +476,7 @@ public:
 		memset(surf.buffer, 0, surf.height * surf.pitch);
 		
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pmtrx = pFontMPI_->GetFontMetrics();
 		TS_ASSERT( pmtrx != kNull );
@@ -746,7 +746,7 @@ public:
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -814,7 +814,7 @@ public:
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -875,7 +875,7 @@ public:
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", 24);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", 24);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
@@ -938,7 +938,7 @@ public:
 		BrioOpenGLConfig* ctx = new BrioOpenGLConfig();
 
 		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
-		font1 = pFontMPI_->LoadFont("Verdana.ttf", prop1);
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 		pFontMPI_->GetFontMetrics(&mtrx);
 		
