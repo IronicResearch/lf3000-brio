@@ -97,9 +97,12 @@ public:
 
 // Playback controls
 	void 		PauseAudio(  tAudioID id );
-	void 		ResumeAudio( tAudioID id ); 
+	void 		ResumeAudio( tAudioID id );
+
+/// StopAudio(), note that the listener call is not implemented
 	void 		StopAudio(   tAudioID id, Boolean noDoneMessage ); 
 
+/// IsAudioPlaying() returns true while audio is playing, even when paused.
 	Boolean		IsAudioPlaying( tAudioID id );  // Is specific ID playing
     Boolean		IsAudioPlaying( void );         // Any audio playing?
 
