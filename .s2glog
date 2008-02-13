@@ -14142,3 +14142,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/12/08 5:52 PM
 5,125 ms. (Cumulative: 3,988,098 ms)
 
 ----------------
+Revision 2,987 from svn://localhost/TRUNK/:
+
+Remove Verdana font from unit tests.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/12/08 6:57 PM
+1 changed, 0 added, 4 deleted.
+5,563 ms. (Cumulative: 3,993,739 ms)
+
+----------------
