@@ -89,6 +89,30 @@ inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int 
 }
 
 //----------------------------------------------------------------------------
+inline void ARGB2RGB4444(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
+{
+	// Repack 32bpp ARGB format surface into 16bpp RGB4444 format surface
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 2;
+	int			i,j,m,n;
+	for (i = 0; i < height; i++) 
+	{
+		for (j = m = n = 0; j < width; j++, m+=4, n+=2) 
+		{
+			U8 b = s[m+0] >> 4;
+			U8 g = s[m+1] >> 4;
+			U8 r = s[m+2] >> 4;
+			U8 a = s[m+3] >> 4;
+			// U16 color = (a << 12) | (r << 8) | (g << 4) | (b << 0);
+			d[n+0] = (g << 4) | b;
+			d[n+1] = (a << 4) | r;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
 inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack 16bpp RGB565 format surface into 32bpp ARGB format surface
@@ -111,6 +135,30 @@ inline void RGB565ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int s
 }
 
 //----------------------------------------------------------------------------
+inline void ARGB2RGB565(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
+{
+	// Repack 32bpp ARGB format surface into 16bpp RGB565 format surface
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 2;
+	int			i,j,m,n;
+	for (i = 0; i < height; i++) 
+	{
+		for (j = m = n = 0; j < width; j++, m+=4, n+=2) 
+		{
+			U8 b = s[m+0] >> 3;
+			U8 g = s[m+1] >> 2;
+			U8 r = s[m+2] >> 3;
+			U8 a = s[m+3];
+			U16 color = (r << 11) | (g << 5) | (b << 0);
+			d[n+0] = color & 0xFF;
+			d[n+1] = color >> 8;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
 inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Repack 24bpp RGB888 format surface into 32bpp ARGB format surface
@@ -125,6 +173,26 @@ inline void RGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy,
 			d[n+1] = s[m+1];
 			d[n+2] = s[m+2];
 			d[n+3] = 0xFF;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+	}
+}
+
+//----------------------------------------------------------------------------
+inline void ARGB2RGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
+{
+	// Repack 32bpp ARGB format surface into 24bpp RGB format surface
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 3;
+	int			i,j,m,n;
+	for (i = 0; i < height; i++) 
+	{
+		for (j = m = n = 0; j < width; j++, m+=4, n+=3) 
+		{
+			d[n+0] = s[m+0];
+			d[n+1] = s[m+1];
+			d[n+2] = s[m+2];
 		}
 		s += sdc->pitch;
 		d += ddc->pitch;

@@ -14132,3 +14132,13 @@ By Scott Esters (sesters@leapfrog.com) on 2/12/08 5:06 PM
 5,345 ms. (Cumulative: 3,982,895 ms)
 
 ----------------
+Revision 2,986 from svn://localhost/TRUNK/:
+
+Added pixel packing functions for ARGB source to RGB888,565,4444 destinations for future reference.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/12/08 5:52 PM
+1 changed, 0 added, 0 deleted.
+5,125 ms. (Cumulative: 3,988,098 ms)
+
+----------------
