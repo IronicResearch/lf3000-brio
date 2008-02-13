@@ -14117,3 +14117,18 @@ By ayurovsky (ayurovsky@leapfrog.com) on 2/12/08 2:05 PM
 5,641 ms. (Cumulative: 3,977,425 ms)
 
 ----------------
+Revision 2,982 from svn://localhost/TRUNK/:
+Revision 2,983 from svn://localhost/TRUNK/:
+Revision 2,984 from svn://localhost/TRUNK/:
+Revision 2,985 from svn://localhost/TRUNK/:
+
+Add Doxygen comments to StopAudio() indicating the listener is not called.
+Add Doxygen comment to IsAudioPlaying noting that is returns 'true' even
+when audio is paused. 
+
+
+By Scott Esters (sesters@leapfrog.com) on 2/12/08 5:06 PM
+1 changed, 0 added, 0 deleted.
+5,345 ms. (Cumulative: 3,982,895 ms)
+
+----------------
