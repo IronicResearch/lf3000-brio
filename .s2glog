@@ -14193,3 +14193,15 @@ By Dave Milici (dmilici@leapfrog.com) on 2/14/08 5:54 PM
 5,360 ms. (Cumulative: 4,010,641 ms)
 
 ----------------
+Revision 3,006 from svn://localhost/TRUNK/:
+Revision 3,007 from svn://localhost/TRUNK/:
+Revision 3,008 from svn://localhost/TRUNK/:
+
+Added color pattern test for RGB565 format display screen (for completeness).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/15/08 12:50 PM
+1 changed, 0 added, 0 deleted.
+5,657 ms. (Cumulative: 4,016,391 ms)
+
+----------------

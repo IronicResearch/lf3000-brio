@@ -381,6 +381,60 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testDisplayContext565( )
+	{
+		tDisplayHandle 	handle;
+		tPixelFormat	format;
+		U8* 			buffer;
+		U16				width;
+		U16				height;
+		U16				pitch;
+		U16				depth;
+		const U16		WIDTH = 320;
+		const U16		HEIGHT = 240;
+
+		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatRGB565, NULL);
+		TS_ASSERT( handle != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+		TS_ASSERT( handle == pDisplayMPI_->GetCurrentDisplayHandle() );
+
+		buffer = pDisplayMPI_->GetBuffer(handle);
+		TS_ASSERT( buffer != kNull );
+		format = pDisplayMPI_->GetPixelFormat(handle);
+		TS_ASSERT( format == kPixelFormatRGB565 );
+		width = pDisplayMPI_->GetWidth(handle);
+		TS_ASSERT( width == WIDTH );
+		pitch = pDisplayMPI_->GetPitch(handle);
+		TS_ASSERT( pitch == 2 * WIDTH );
+		depth = pDisplayMPI_->GetDepth(handle);
+		TS_ASSERT( depth == 16 );
+		height = pDisplayMPI_->GetHeight(handle);
+		TS_ASSERT( height == HEIGHT );
+
+		for (int i = 0; i < height; i++) 
+		{
+			bool blu = (i < HEIGHT/2);
+			bool grn = (i < HEIGHT/4) || (i > HEIGHT/2 && i < 3*HEIGHT/4);
+			bool red = (i < HEIGHT/4) || (i > 3*HEIGHT/4);
+			for (int j = 0, m = i*pitch; j < width; j++, m+=2)
+			{
+				U8   val = j % 0x1F;
+				U16  pix = (blu) ? val : 0;
+				pix  |= (grn) ? (val << 6) : 0; // (0x1F << 1) << 5
+				pix  |= (red) ? (val << 11) : 0;
+				U16* ppix = reinterpret_cast<U16*>(&buffer[m]);
+				*ppix = pix;
+			}
+		}
+		pDisplayMPI_->Invalidate(0, NULL);
+
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(handle, 0);
+		pDisplayMPI_->DestroyHandle(handle, false);
+	}
+	
+	//------------------------------------------------------------------------
 	void testDisplaySwapBuffers( )
 	{
 		tDisplayHandle 	handle[2];
