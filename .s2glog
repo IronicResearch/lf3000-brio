@@ -14183,3 +14183,13 @@ By Scott Esters (sesters@leapfrog.com) on 2/14/08 5:11 PM
 5,626 ms. (Cumulative: 4,005,203 ms)
 
 ----------------
+Revision 3,005 from svn://localhost/TRUNK/:
+
+Default OpenGL heap sizes on embedded: 1Meg for 1D, 12Meg for 2D.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/14/08 5:54 PM
+1 changed, 0 added, 0 deleted.
+5,360 ms. (Cumulative: 4,010,641 ms)
+
+----------------
