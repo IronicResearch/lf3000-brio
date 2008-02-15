@@ -14152,3 +14152,34 @@ By Dave Milici (dmilici@leapfrog.com) on 2/12/08 6:57 PM
 5,563 ms. (Cumulative: 3,993,739 ms)
 
 ----------------
+Revision 2,988 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,651 ms. (Cumulative: 3,999,468 ms)
+
+----------------
+Revision 2,989 from svn://localhost/TRUNK/:
+Revision 2,990 from svn://localhost/TRUNK/:
+Revision 2,991 from svn://localhost/TRUNK/:
+Revision 2,992 from svn://localhost/TRUNK/:
+Revision 2,993 from svn://localhost/TRUNK/:
+Revision 2,994 from svn://localhost/TRUNK/:
+Revision 2,995 from svn://localhost/TRUNK/:
+Revision 2,996 from svn://localhost/TRUNK/:
+Revision 2,997 from svn://localhost/TRUNK/:
+Revision 2,998 from svn://localhost/TRUNK/:
+Revision 2,999 from svn://localhost/TRUNK/:
+Revision 3,000 from svn://localhost/TRUNK/:
+Revision 3,001 from svn://localhost/TRUNK/:
+Revision 3,002 from svn://localhost/TRUNK/:
+Revision 3,003 from svn://localhost/TRUNK/:
+Revision 3,004 from svn://localhost/TRUNK/:
+
+Raise lowest backlight setting from -94 to -85.  Fixes TTPro item #1627.
+
+
+By Scott Esters (sesters@leapfrog.com) on 2/14/08 5:11 PM
+1 changed, 0 added, 0 deleted.
+5,626 ms. (Cumulative: 4,005,203 ms)
+
+----------------

@@ -109,7 +109,7 @@ U32 LinuxSwitchToBrio(U16 code)
 S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
 	{   0,   0,   0,   0,   0,   0,   0,   0};
 S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
-	{ -11,  31,  72,  31, -11, -53, -94, -53};
+	{ -11,  31,  72,  31, -11, -53, -85, -53};
 
 
 /*
