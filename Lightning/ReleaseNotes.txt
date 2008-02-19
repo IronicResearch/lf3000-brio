@@ -2,6 +2,45 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+
+===========================================
+v0.1.46  (Build 3005 released Feb 14, 2008) 
+===========================================
+-- Raise lowest backlight setting from -94 to -85.
+   Fixes TTPro item #1627.
+
+-- Default OpenGL heap sizes on embedded: 1Meg for 1D, 12Meg for 2D.
+
+==========================================
+v0.1.45  (Build 2992 released Feb 13, 2008) 
+===========================================
+-- Remove Verdana font from unit tests.
+
+-- Remove Verdana font from SDK examples and replace with DidjPropBold.
+
+===========================================
+v0.1.44  (Build 2986 released Feb 12, 2008) 
+===========================================
+-- nfsroot directory is not populated by embedded libraries
+   built with the "-g" option, Unit tests and resource files    	 
+
+-- Added pixel packing functions for ARGB source to RGB888,565,4444 destinations
+   for future reference.
+
+===========================================
+v0.1.43  (Build 2981 released Feb 12, 2008) 
+===========================================
+-- Replaced mutex locks with codec state checks on internal functions.
+   Codec state only changes on video start/stop calls which are already synchronized.
+
+-- Increased the number of bins in profiler for more refined histogram
+   Use float to calculate mean for improved accuracy.  Note that this calculation
+   happens at deinit time so does not affect time stamping.
+
+-- Fixed misinterpretation of Power State in ButtonHandler, move "internal" 
+   GetPowerState to Utility library since two tasks use it and we want to be
+   consistent.
+
 ===========================================
 v0.1.42  (Build 2969 released Feb 11, 2008) 
 ===========================================
