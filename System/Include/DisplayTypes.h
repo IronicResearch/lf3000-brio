@@ -7,7 +7,7 @@
 //==============================================================================
 //
 // File:
-//		DisplayMgrTypes.h
+//		DisplayTypes.h
 //
 // Description:
 //		Defines enums and types for DisplayMgr. 
