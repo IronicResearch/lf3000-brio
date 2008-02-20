@@ -4,6 +4,14 @@ Lightning C++ Development Kit Release Notes
 
 
 ===========================================
+v0.1.47  (Build 3011 released Feb 19, 2008) 
+===========================================
+
+-- This release was built to synchronize the Brio with the LinuDist-0.32.0-3011
+
+--	Minor changes 
+
+===========================================
 v0.1.46  (Build 3005 released Feb 14, 2008) 
 ===========================================
 -- Raise lowest backlight setting from -94 to -85.
