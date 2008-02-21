@@ -8,7 +8,7 @@
 //
 // AudioPlayer.h
 //
-// Description:  Defines base class for all Audio Players
+// Description:	 Defines base class for all Audio Players
 //
 //==============================================================================
 
@@ -32,61 +32,63 @@ class CChannel;
 //		The base class for all Audio Players. 
 //==============================================================================
 class CAudioPlayer {
-public:
-	CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
+ public:
+	CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	);
 	virtual ~CAudioPlayer();
 		
 	virtual void	RewindFile() = 0;
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
-	virtual U32     GetAudioTime_mSec( void ) = 0; // Time since start of play
+	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
 
-	virtual void    SendDoneMsg   ( void );
-	virtual void    SendLoopEndMsg( void );
+	virtual void	SendDoneMsg	  ( void );
+	virtual void	SendLoopEndMsg( void );
 
-// Return status
-	inline U8 ShouldSendDoneMessage()    { return bSendDoneMessage_;   }
+	// Return status
+	inline U8 ShouldSendDoneMessage()	 { return bSendDoneMessage_;   }
 	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
-//	inline U8		HasAudioCodec()      { return bHasAudioCodec_; }
-	inline U8		IsComplete()         { return bComplete_;      }
-	inline U8		IsPaused()           { return bPaused_;        }
+	//inline U8		HasAudioCodec()		 { return bHasAudioCodec_; }
+	inline U8		IsComplete()		 { return bComplete_;	   }
+	inline U8		IsPaused()			 { return bPaused_;		   }
 
-// Get/Set class member variables
-	inline tAudioID			GetAudioID() { return id_; }   // GK FIXX:  used for AudioIDFromMIDIID()? 
-	inline tAudioID			GetID()      { return id_; }
-	inline void		 		ActivateSendDoneMessage   (Boolean x) { bSendDoneMessage_    = x; }
-	inline void		 		ActivateSendLoopEndMessage(Boolean x) { bSendLoopEndMessage_ = x; }
+	// Get/Set class member variables
+	// GK FIXX:	used for AudioIDFromMIDIID()? 
+	inline tAudioID			GetAudioID() { return id_; }
+	inline tAudioID			GetID()		 { return id_; }
+	inline void				ActivateSendDoneMessage	  (Boolean x) { bSendDoneMessage_	 = x; }
+	inline void				ActivateSendLoopEndMessage(Boolean x) { bSendLoopEndMessage_ = x; }
 	
-//	void Set_WaitForRender( long x ) {waitForRender_ = x;}
-//	long Get_WaitForRender( void   ) {return (waitForRender_);}
+	//void Set_WaitForRender( long x ) {waitForRender_ = x;}
+	//long Get_WaitForRender( void   ) {return (waitForRender_);}
 
-	inline tAudioPriority 	GetPriority()                 { return priority_; }
-	inline void		 		SetPriority(tAudioPriority x) { priority_ = x; }
+	inline tAudioPriority	GetPriority()				  { return priority_; }
+	inline void				SetPriority(tAudioPriority x) { priority_ = x; }
 
-	inline tAudioPayload	GetPayload()                { return payload_; }
-	inline void		 		SetPayload(tAudioPayload x) { payload_ = x; }
+	inline tAudioPayload	GetPayload()				{ return payload_; }
+	inline void				SetPayload(tAudioPayload x) { payload_ = x; }
 
-	inline const IEventListener *GetEventListener()                    { return pListener_;}
-	inline void		 		SetEventListener( const IEventListener *x) { pListener_ = x;}
+	inline const IEventListener *GetEventListener()					   { return pListener_;}
+	inline void				SetEventListener( const IEventListener *x) { pListener_ = x;}
 
 	inline U32				GetSampleRate( void ) { return samplingFrequency_; }
 
 	inline tAudioOptionsFlags  GetOptionsFlags() { return optionsFlags_; }
 	inline void				   SetOptionsFlags(tAudioOptionsFlags x) 
-								{ optionsFlags_        = x;
-								  bSendDoneMessage_    = ((x & kAudioDoneMsgBitMask) != 0) ? true : false; 
-								  bSendLoopEndMessage_ = ((x & kAudioLoopEndBitMask) != 0) ? true : false; 
-                                }
+	{
+		optionsFlags_        = x;
+		bSendDoneMessage_    = ((x & kAudioDoneMsgBitMask) != 0) ? true : false; 
+		bSendLoopEndMessage_ = ((x & kAudioLoopEndBitMask) != 0) ? true : false; 
+	}
 	inline tAudioMsgData		GetAudioMsgData() 		{ return msgData_; }
 	inline CAudioEventMessage*	GetAudioEventMsg() 		{ return pEvtMsg_; }
-		
+	
 protected:
 //#define USE_AUDIO_PLAYER_MUTEX
 #ifdef USE_AUDIO_PLAYER_MUTEX
-	CKernelMPI* 	pKernelMPI_;		
+	CKernelMPI*		pKernelMPI_;		
 	tMutex			renderMutex_;		// To make Render() thread-safe
 #endif
 
-    S16             *pReadBuf_;
+	S16				*pReadBuf_;
 
 	U8			bPaused_;				
 	U8			bComplete_;			 // Player has completed generating audio
@@ -95,19 +97,19 @@ protected:
 	U8			bSendDoneMessage_;	 // Caller requests done message 
 	U8			bSendLoopEndMessage_;// Send each time the end of the loop has been reached
 
-    S32             loopCount_;
-    S32             loopCounter_;
+	S32				loopCount_;
+	S32				loopCounter_;
 	Boolean			shouldLoop_;	
 
 	CDebugMPI*			pDebugMPI_;			
 	tAudioID			id_;			
-    long                waitForRender_;
+	long				waitForRender_;
 
 	FILE*				fileH_;			// file struct of open file
 	void*				pAudioData_;
 	U32					audioDataBytes_;		
 	
-    long                channels_;
+	long				channels_;
 	U32					samplingFrequency_;
 
 	tAudioPriority		priority_;		

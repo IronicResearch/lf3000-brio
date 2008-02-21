@@ -33,7 +33,7 @@
 
 typedef int (*pFnInitialize)( void );
 typedef int (*pFnTerminate)( void );
-typedef int (*pFnCreateContext)( SPMIDI_Context **, int  );
+typedef int (*pFnCreateContext)( SPMIDI_Context **, int	 );
 typedef int (*pFnDeleteContext)( SPMIDI_Context * );
 typedef int (*pFnSetMaxVoices)( SPMIDI_Context *, int );
 typedef int (*pFnGetMaxVoices)( SPMIDI_Context * );
@@ -73,7 +73,7 @@ extern pFnTerminate					pSPMIDI_Terminate;
 extern pFnCreateContext				pSPMIDI_CreateContext;
 extern pFnDeleteContext				pSPMIDI_DeleteContext;
 extern pFnSetMaxVoices				pSPMIDI_SetMaxVoices;
-extern pFnGetMaxVoices 				pSPMIDI_GetMaxVoices;
+extern pFnGetMaxVoices				pSPMIDI_GetMaxVoices;
 extern pFnWriteCommand				pSPMIDI_WriteCommand;
 extern pFnReadFrames				pSPMIDI_ReadFrames;
 extern pFnGetFramesPerBuffer		pSPMIDI_GetFramesPerBuffer;
@@ -85,7 +85,7 @@ extern pFnDeleteProgramList			pSPMIDI_DeleteProgramList;
 extern pFnCreateOrchestra			pSPMIDI_CreateOrchestra;
 extern pFnDeleteOrchestra			pSPMIDI_DeleteOrchestra;
 extern pFnLoadOrchestra				pSPMIDI_LoadOrchestra;
-extern pFnGetMemoryAllocationCount 	pSPMIDI_GetMemoryAllocationCount;
+extern pFnGetMemoryAllocationCount	pSPMIDI_GetMemoryAllocationCount;
 extern pFnUtilReset					pSPMUtil_Reset;
 extern pFnUtilNoteOn				pSPMUtil_NoteOn;
 extern pFnUtilNoteOff				pSPMUtil_NoteOff;
@@ -105,7 +105,7 @@ extern pFnFilePlayerDelete			pMIDIFilePlayer_Delete;
 #define SPMIDI_CreateContext		pSPMIDI_CreateContext			
 #define SPMIDI_DeleteContext		pSPMIDI_DeleteContext			
 #define SPMIDI_SetMaxVoices			pSPMIDI_SetMaxVoices				
-#define SPMIDI_GetMaxVoices			pSPMIDI_GetMaxVoices 			
+#define SPMIDI_GetMaxVoices			pSPMIDI_GetMaxVoices			
 #define SPMIDI_WriteCommand			pSPMIDI_WriteCommand				
 #define SPMIDI_ReadFrames			pSPMIDI_ReadFrames				
 #define SPMIDI_GetFramesPerBuffer	pSPMIDI_GetFramesPerBuffer		
