@@ -14287,3 +14287,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/21/08 12:49 PM
 4,987 ms. (Cumulative: 4,054,512 ms)
 
 ----------------
+Revision 3,030 from svn://localhost/TRUNK/:
+
+Re-located code to post done messages outside of Render loop. Done message data maintained as persistant player member variables to allow async posts (priority 128).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/21/08 1:07 PM
+3 changed, 0 added, 0 deleted.
+5,125 ms. (Cumulative: 4,059,700 ms)
+
+----------------

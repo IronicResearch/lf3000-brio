@@ -113,6 +113,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // somebody insisted on having static member functions that pass references to
 // "this."
 CDebugMPI *pDebugMPI_;
+CEventMPI  *pEventMPI_;
 CKernelMPI *pKernelMPI_;
 tMutex mixerMutex_;
 
@@ -182,6 +183,8 @@ if (numInChannels_ > kAudioMixer_MaxInChannels)
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
 	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose); //kAudioDebugLevel );
     
+	pEventMPI_ = new CEventMPI();
+
 	pKernelMPI_ = new CKernelMPI();
 
     // Init mutex for serialization access to internal AudioMPI state.
@@ -442,6 +445,8 @@ if (outSoundFile_)
  pKernelMPI_->DeInitMutex( mixerMutex_ );
 
  delete pKernelMPI_;
+
+ delete pEventMPI_;
 
  delete pDebugMPI_;
 
@@ -905,12 +910,14 @@ for (ch = 0; ch < numInChannels_; ch++)
             {
 //			pCh->Release( true );	// false = Don't suppress done msg 
                 pCh->isDone_ = true;
+				#if 0 // Defer done message until Render() returns to caller
                 pCh->fInUse_ = false;
                 if (pCh->GetPlayerPtr()->ShouldSendDoneMessage()) {
                     MIXER_UNLOCK;
                     pCh->SendDoneMsg();
                     MIXER_LOCK;
                 }
+                #endif
             }
         if (inputIsDC) 
             SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
@@ -1150,7 +1157,7 @@ printf("Closing outSoundFile '%s'\n", audioState_.outSoundFilePath);
 static long totalFramesWritten = 0;
     long framesWritten = sf_writef_short(outSoundFile_, pOut, numFrames);
     totalFramesWritten += framesWritten;
-//{static long c=0; printf("CAudioMixer::Render %ld: outFile wrote %ld frames total=%ld\n", c++, framesWritten, totalFramesWritten);}
+//{static long c=0; printf("CAudioMixer::Render %ld: outFile wrote %ld frames total=%ld\n", c++, framesWritten, totalFramesWritten);}	
         }
     }
 
@@ -1170,6 +1177,12 @@ CAudioMixer::WrapperToCallRender( S16 *pOut,  unsigned long numStereoFrames, voi
 //{static long c=0; printf("WrapperToCallRender%ld: IsPaused()=%d\n", c++, ((CAudioMixer*)pToObject)->IsPaused());}
     int error = kNoErr;
     
+	U32 numInChannels = ((CAudioMixer*)pToObject)->numInChannels_;
+	const IEventListener* 	pListeners[numInChannels];
+	CAudioEventMessage* 	pEvtMsgs[numInChannels];
+	memset(pListeners, 0, sizeof(pListeners));
+	memset(pEvtMsgs, 0, sizeof(pEvtMsgs));
+    
     MIXER_LOCK;
 
     if (((CAudioMixer*)pToObject)->IsPaused())
@@ -1180,7 +1193,32 @@ CAudioMixer::WrapperToCallRender( S16 *pOut,  unsigned long numStereoFrames, voi
         error = ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
     }
 
+	// Now that rendering is complete, check for any done messages to be sent
+	for (U32 ch = 0; ch < numInChannels; ch++)
+	{
+		CChannel *pCh = &(((CAudioMixer*)pToObject)->pChannels_)[ch];
+		if (pCh->isDone_ && pCh->fInUse_)
+		{
+			// Cache done messages while mixer is locked
+			CAudioPlayer* pPlayer = pCh->GetPlayerPtr();
+			if (pPlayer && pPlayer->ShouldSendDoneMessage()) 
+			{
+				pListeners[ch] = pPlayer->GetEventListener();
+				pEvtMsgs[ch] = pPlayer->GetAudioEventMsg();
+				pEvtMsgs[ch]->audioMsgData.audioCompleted.count++;
+			}
+			pCh->fInUse_ = false;
+		}
+	}
+    
     MIXER_UNLOCK;
+
+	// Now post any pending done messages which were cached while mixer was locked 
+	for (U32 ch = 0; ch < numInChannels; ch++)
+	{
+		if (pListeners[ch] != kNull)
+			pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
+	}
 
     return error;
 } // ---- end WrapperToCallRender() ----

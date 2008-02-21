@@ -76,6 +76,9 @@ public:
 								  bSendDoneMessage_    = ((x & kAudioDoneMsgBitMask) != 0) ? true : false; 
 								  bSendLoopEndMessage_ = ((x & kAudioLoopEndBitMask) != 0) ? true : false; 
                                 }
+	inline tAudioMsgData		GetAudioMsgData() 		{ return msgData_; }
+	inline CAudioEventMessage*	GetAudioEventMsg() 		{ return pEvtMsg_; }
+		
 protected:
 //#define USE_AUDIO_PLAYER_MUTEX
 #ifdef USE_AUDIO_PLAYER_MUTEX
@@ -111,6 +114,9 @@ protected:
 	tAudioPayload		payload_;		
 	tAudioOptionsFlags	optionsFlags_;	
 	const IEventListener *pListener_;	// Pointer to AudioEventHandler 
+	
+	tAudioMsgData		msgData_;		// union of all audio message types
+	CAudioEventMessage*	pEvtMsg_;		// audio event message to be posted 
 
 #if	PROFILE_DECODE_LOOP
 	S32				totalUsecs_;
