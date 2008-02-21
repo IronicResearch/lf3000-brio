@@ -79,6 +79,12 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	shouldLoop_  = (0 < payload_) && (optionsFlags_ & kAudioOptionsLooped);
     loopCount_   = payload_;
     loopCounter_ = 0;
+    
+    // Setup done event message for posting asynchronously
+    msgData_.audioCompleted.audioID = id_;
+    msgData_.audioCompleted.payload = payload_;
+    msgData_.audioCompleted.count = loopCounter_;
+	pEvtMsg_ = new CAudioEventMessage(msgData_.audioCompleted);
 
 //#define DEBUG_AUDIOPLAYER_OPTIONS
 #ifdef DEBUG_AUDIOPLAYER_OPTIONS
@@ -120,6 +126,8 @@ printf("    listener=%p DoneMessage=%d LoopEndMessage=%d flags=$%X '%s' loopCoun
 //==============================================================================
 CAudioPlayer::~CAudioPlayer()
 {
+	// Free memory used for audio event message
+	delete pEvtMsg_;
 }
 
 // ==============================================================================
