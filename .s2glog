@@ -14268,3 +14268,12 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 12:47 PM
 5,050 ms. (Cumulative: 4,043,102 ms)
 
 ----------------
+Revision 3,028 from svn://localhost/TRUNK/:
+
+Removing Audio2 clone.  We use svn branches now.
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 12:48 PM
+0 changed, 0 added, 80 deleted.
+6,299 ms. (Cumulative: 4,049,463 ms)
+
+----------------
