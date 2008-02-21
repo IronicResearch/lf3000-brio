@@ -14257,3 +14257,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 12:45 PM
 5,081 ms. (Cumulative: 4,037,989 ms)
 
 ----------------
+Revision 3,027 from svn://localhost/TRUNK/:
+
+Migrating audio performance baseline test from Audio2 to Audio.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 12:47 PM
+1 changed, 0 added, 0 deleted.
+5,050 ms. (Cumulative: 4,043,102 ms)
+
+----------------
