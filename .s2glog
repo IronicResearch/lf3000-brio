@@ -14235,3 +14235,25 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 2/19/08 5:10 PM
 5,199 ms. (Cumulative: 4,032,751 ms)
 
 ----------------
+Revision 3,015 from svn://localhost/TRUNK/:
+Revision 3,016 from svn://localhost/TRUNK/:
+Revision 3,017 from svn://localhost/TRUNK/:
+Revision 3,018 from svn://localhost/TRUNK/:
+Revision 3,019 from svn://localhost/TRUNK/:
+Revision 3,020 from svn://localhost/TRUNK/:
+Revision 3,021 from svn://localhost/TRUNK/:
+Revision 3,022 from svn://localhost/TRUNK/:
+Revision 3,023 from svn://localhost/TRUNK/:
+Revision 3,024 from svn://localhost/TRUNK/:
+Revision 3,025 from svn://localhost/TRUNK/:
+Revision 3,026 from svn://localhost/TRUNK/:
+
+Adding a mad amount of documentation to the AudioMPI.h.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 12:45 PM
+1 changed, 0 added, 0 deleted.
+5,081 ms. (Cumulative: 4,037,989 ms)
+
+----------------

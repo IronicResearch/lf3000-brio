@@ -19,213 +19,740 @@
 #include <AudioEffectsProcessor.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+/// \class CAudioMPI
+///
+/// Module Public Interface (MPI) class for Audio module.
+///
+/// The audio system is composed of three basic parts: players, channels, and a
+/// mixer.  When a user calls \ref StartAudio, this creates a player, connects
+/// it to a channel, launches the player's audio stream.  As the audio is
+/// rendered from the player, it is mixed with other channels by the mixer, and
+/// finally output.  When the player's stream ends, an event is posted to the
+/// listener if one has been supplied.  Subsequently, the player is destroyed
+/// and the channel that it was using becomes free for another player.
+///
+/// Players are represented internally by a \ref tAudioID.  The \ref tAudioID is
+/// returned when the player is created with a call to \ref StartAudio.
+/// Whenever the user wishes to operate on a particular player's stream, he will
+/// have to provide its \ref tAudioID.  The \ref tAudioID ceases to be valid
+/// after a kAudioCompletedEvent or a kAudioTerminatedEvent.  If a listener is
+/// provided for these events, that listener should assume that the tAudioID is
+/// not valid in its Notify function.
+///
+/// Calling the various MPI functions with an invalid tAudioID will either
+/// result in no action or an error.
+///
+/// The user can start a player with a given priority.  If no channel is
+/// available, and a lower priority player is playing, that player will be
+/// terminated in order to free up a channel.
+///
+/// Midi is supported.  For legacy reasons, midi players are handled with a
+/// separate set of functions from the audio players.  Midi players have their
+/// own channels and their priority is evaluated independently of the audio
+/// players' channels.  They are also represented by a tMidiPlayerID, which is
+/// analogous to the tAudioID.  In practice, any function that takes a tAudioID
+/// can also operate on a midi channel by passing the tMidiPlayerID.  These
+/// functions include \ref GetAudioTime, \ref IsAudioPlaying, \ref PauseAudio,
+/// \ref ResumeAudio, \ref GetAudioVolume, \ref SetAudioVolume, \ref
+/// GetAudioPriority, \ref SetAudioPriority, \ref SetPan, \ref GetPan, \ref
+/// GetAudioEventListener, \ref SetAudioEventListener.  See \ref
+/// MidiPlayerBasics for more details.
+///
+/// Please see the \ref KnownIssues section for important information about bugs
+/// and unimplemented features.
+
+/// \page KnownIssues Known Issues
+///
+/// \todo IsAudioPlaying on a particular channel returns true even if that channel
+/// is paused.
+///
+/// \todo Priority is not implemented.
+///
+/// \todo Priority and listener args to AcquireMidiPlayer are ignored.
+///
+/// \todo Where applicable, the noDoneMessage arguments are ignored.
+///
+/// \todo AudioEffectsProcessor features are unimplemented.
+///
+/// \todo Ensure that tMidiPlayerIDs can ALWAYS be used as tAudioIDs with no
+/// special action by the user.  Unfortunately, because tMidiPlayerIDs are 8
+/// bits and tAudioIDs are 32 bits the only sensible scheme to acheive this is
+/// to reserve tAudioIDs 0-255 for tMidiPlayerIDs.  Sad.
+///
+/// \todo Ensure that GetAudioTime, IsAudioPlaying, PauseAudio, ResumeAudio,
+/// GetAudioVolume, SetAudioVolume, GetAudioPriority, SetAudioPriority, SetPan,
+/// GetPan, GetAudioEventListener, SetAudioEventListener operate properly on
+/// midi streams.
+///
+/// \todo Low-level midi API is unimplemented.
+///
+/// \todo Ensure that MPI functions fail if kNoAudioID is passed in.
+///
+/// \todo Ensure that MPI functions fail if invalid (i.e., stale) tAudioID is
+/// passed in.
+///
+/// \todo kAudioTerminatedEvent and kMidiTerminatedEvent are not implemented.
+///
+/// \todo Cue points are not implemented and may never be implemented.
+
 class IEventListener;
 
-
-//==============================================================================
-// Class:
-//		CAudioMPI
-//
-// Description:
-//		Module Public Interface (MPI) class for Audio module
-//==============================================================================
 class CAudioMPI : public ICoreMPI {
 public:
 	//********************************
 	// ICoreMPI functionality
 	//********************************
 
+	///Returns true if this instance of the AudioMPI is valid
 	virtual	Boolean			IsValid() const;
+	///Returns the name of this MPI
 	virtual const CString*	GetMPIName() const;		
+	///Returns the version of this MPI
 	virtual tVersion		GetModuleVersion() const;
+	///Returns the name of this module
 	virtual const CString*	GetModuleName() const;	
+	///Returns the origin of this module
 	virtual const CURI*		GetModuleOrigin() const;
-
+	
 	//********************************
 	// Class-specific functionality
 	//********************************    
 
-	// NOTE: Default listener is not currently used.
+	//NOTE: These functions should not be here AT ALL.  They are going away.  Do
+	//not use.
+	void GAS( void *d ) ;   // LF Internal function.  Not for release
+	void SAS( void *d ) ;   // LF Internal function.  Not for release
+	
+	/// The constructor for the CAudioMPI
+	///
+	/// \param pDefaultListener This is the default listener that will be
+	/// notified of all audio events associated with this instance of the
+	/// CAudioMPI. The user can override the default listener by explicitly
+	/// providing a listener when calling StartAudio.  NULL is a valid value for
+	/// the pDefaultListener.
+	///
+	/// The user can get and set the default audio listener by calling the
+	/// functions \ref GetDefaultAudioEventListener and \ref
+	/// SetDefaultAudioEventListener.
 	CAudioMPI( const IEventListener* pDefaultListener = NULL );
 	virtual ~CAudioMPI( void );
+	
+	/// Pause all audio output.
+	///
+	/// After calling this function, all audio output is paused.  IsAudioPlaying
+	/// for any channel will return false.
+	///
+	/// \return This function always returns kNoErr
+	tErrType	PauseAudioSystem( void );
 
-	//********************************
-	// Audio output driver control
-
-	//********************************    
-
-   void GAS( void *d ) ;   // LF Internal function.  Not for release
-   void SAS( void *d ) ;   // LF Internal function.  Not for release
-
-	// Pauses audio output driver
-	// While paused, audio system consumes no CPU.
-	tErrType	PauseAudioSystem(  void );
+	/// Resume all audio output.  Sensibly called after PauseAudioSystem.
+	///
+	/// The streams that were playing before the call to PauseAudioSystem are
+	/// resumed.
+	///
+	/// \return This function always returns kNoErr
 	tErrType	ResumeAudioSystem( void );
 
-	// Set output gain of mixer (Audio + MIDI)
+	/// Set output volume
+	///
+	/// \param volume This parameter ranges from kAudioVolumeMin and
+	/// kAudioVolumeMax.  For legacy reasons, kAudioVolumeMin will always be 0
+	/// and kAudioVolumeMax will always be 100.
 	void 		SetMasterVolume( U8 volume );
+
+	/// Get the current output volume
+	///
+	/// \return the current output volume
 	U8			GetMasterVolume( void ) const;
 
-	// Get/Set speaker equalizer.  Speaker equalizer may be
-	// set/cleared with kHeadphoneJackDetect message
+	/// Get Speaker Equalizer value
+	///
+	/// Some systems require a special output stage depending on whether the
+	/// output is going to a speaker or not.  Applications rarely have to worry
+	/// about this.  Generally, the Brio system will call this function if
+	/// necessary in response to heaphone connect/disconnect events.
+	/// 
+	/// \return true if the speaker equalizer is enabled, false otherwise.
 	Boolean		GetSpeakerEqualizer(void) const;
+
+	/// Enable or disable the speaker equalizer
+	///
+	/// See \ref GetSpeakerEqualizer for an explanation of what the speaker
+	/// equalizer does.
+	///
+	/// \param enable true to enable the speaker equalizer, false to disable.
 	void		SetSpeakerEqualizer( Boolean enable );
 	
-	// Set/Get path for audio resource file
+	/// Set the path where the audio system should look for audio resources.
+	///
+	/// \param path This is the path where the files referenced by calls to
+	/// StartAudio should be.
+	///
+	/// \return Always returns kNoErr
 	tErrType		SetAudioResourcePath( const CPath &path );
+
+	/// Get the path from which audio resources are loaded.
+	/// 
+	/// See \ref SetAudioResourcePath for details
 	const CPath* 	GetAudioResourcePath( void ) const;
 	
 	//********************************
 	// Audio Playback. 
 	//********************************    
 	
-	// Plays an audio resource.
-	// Audio done event will be posted to listener if provided.
-	// Currently only volume and pListener are interpreted.
+	/// Play an audio resource
+	///
+	/// Create a player and add its output stream to the system.  The stream
+	/// will stop under one of the following circumstances:
+	///
+	/// 1. The end of the player's audio resource is reached and the
+	/// kAudioOptionsLooped flag is not specified.  This is a
+	/// kAudioCompletedEvent.
+	///
+	/// 2. The kAudioOptionsLooped option is passed and the stream has been
+	/// repeated as many times as indicated by the payload parameter.  This is
+	/// also a kAudioCompletedEvent.
+	///
+	/// 3. The user calls StopAudio with the player's tAudioID.  This is a
+	/// kAudioTerminatedEvent.
+	///
+	/// 4. The priority policy terminates the player's stream because there are
+	/// no channels available and somebody called StartAudio for a player of
+	/// higher priority.  This is a kAudioTerminatedEvent.
+	///
+	/// 5. The AudioMPI destructor is called.  Any streams that are playing at
+	/// this time will be terminated with a kAudioTerminatedEvent.
+	///
+	/// Numerous parameters affect the behavior of the player.  Specifically:
+	///
+	/// \param path This is the path to the audio resource to be played.  If it
+	/// begins with a / it is considered absolute.  Otherwise, it is relative to
+	/// the path returned by \ref GetAudioResourcePath.
+	///
+	/// \param volume The volume, between kAudioVolumeMin and kAudioVolumeMax at
+	/// which the stream should be played.  This volume can be inspected and
+	/// adjusted later by calling \ref GetAudioVolume and \ref SetAudioVolume
+	/// respectively.
+	///
+	/// \param priority In the event that all channels are busy AND a player of
+	/// lower priority is currently playing, a lower priority player will be
+	/// stopped with a kAudioTerminatedEvent to free a channel.  Similarly, if a
+	/// future call to StartAudio happens with a higher priority, then this
+	/// player may be terminated with a kAudioTerminatedEvent.  priority is an
+	/// unsigned value from 0 to 255 with 255 being the highest priority.
+	///
+	/// \param pan The pan is a signed value between kAudioPanMin and
+	/// kAudioPanMax.  This pan can be inspected and adjusted later by calling
+	/// \ref GetAudioPan and \ref SetAudioPan respectively.
+	///
+	/// \param pListener This is the listener to whom all audio events related
+	/// to this player will be posted.  Passing NULL means that no events will
+	/// ever be posted, even if the default listener is set to a non NULL value
+	/// using SetDefaultAudioEventListener.
+	///
+	/// \param payload The payload parameter is a user-supplied argument that is
+	/// passed to the listener when various events occur.  However, for legacy
+	/// reasons, there is one overloaded use case.  When the kAudioOptionsLooped
+	/// flag is set, the payload parameter represents the number of times the
+	/// audio should be looped.  Pass kAudioRepeat_Infinite to repeat forever.
+	/// In this legacy case, the payload parameter will still be passed to the
+	/// listener.
+	/// 
+	/// \param flags The flags parameter is a collection of OR'd values that
+	/// influence many of the player's behaviors.  See \ref AudioOptions for
+	/// details on which flags are available and how they influence the behavior
+	/// of the player.
+	/// 
+	/// \return This function returns kNoAudioID on failure and a valid tAudioID
+	/// on success.
 	tAudioID 	StartAudio( const CPath &path, 
 					U8					volume, 
 					tAudioPriority		priority,
 					S8					pan, 
 					const IEventListener *pListener = kNull,
 					tAudioPayload		payload = 0,
-					tAudioOptionsFlags	flags   = 0 );
-
-// Same as above, but uses defaults for unspecified parameters
-	tAudioID 	StartAudio( const CPath &path, 
-        					tAudioPayload		payload,
-        					tAudioOptionsFlags	flags );
-
-// Playback controls
-	void 		PauseAudio(  tAudioID id );
-	void 		ResumeAudio( tAudioID id );
-
-/// StopAudio(), note that the listener call is not implemented
-	void 		StopAudio(   tAudioID id, Boolean noDoneMessage ); 
-
-/// IsAudioPlaying() returns true while audio is playing, even when paused.
-	Boolean		IsAudioPlaying( tAudioID id );  // Is specific ID playing
-    Boolean		IsAudioPlaying( void );         // Any audio playing?
-
-	U32 	GetAudioTime( tAudioID id ) const; // Time (milliSeconds) since creation
+					tAudioOptionsFlags	flags	= 0 );
 	
-// Get/Set channel parameters
+	/// Play and audio resource using various defaults
+	///
+	/// This function plays the audio resource at path using the default volume,
+	/// priority, pan, and listener.  See \ref StartAudio for details.
+	tAudioID 	StartAudio( const CPath &path, 
+		  					tAudioPayload		payload,
+		  					tAudioOptionsFlags	flags );
+
+	/// Pause a particular audio player.
+	///
+	/// \param id The tAudioID of the stream to pause
+	///
+	///  This function has no effect if the id is invalid.
+	void 		PauseAudio(  tAudioID id );
+	
+	/// Resume a paused audio player.  Sensibly called after \ref PauseAudio.
+	///
+	/// \param id The tAudioID of the stream to resume.
+	///
+	/// This function has no effect if the id is invalid.
+	void 		ResumeAudio( tAudioID id );
+	
+	/// Stop a player's audio stream.
+	///
+	/// After calling this function, the tAudioID is invalid.  An event may or
+	/// may not be posted depending on the details below.
+	///
+	/// \param id The tAudioID of the player to stop.
+	///
+	/// \param noDoneMessage If this parameter is true, then the
+	/// kAudioTerminatedEvent will not be posted to the listener associated with
+	/// this audio player.  If this parameter is false, AND the player has an
+	/// associated listerner, AND the StartAudio call that launched this player
+	/// had the kAudioOptionsDoneMsgAfterComplete flag set, then the
+	/// kAudioTerminatedEvent will be posted to the listener.
+	///
+	/// This function has no effect if id is invalid.
+	void 		StopAudio(	tAudioID id, Boolean noDoneMessage ); 
+
+	/// Is a given player playing?
+	///
+	/// \param id The tAudioID of the player in question.
+	///
+	/// \returns true if the player is not paused.  Returns false if audio has
+	/// been paused with a call to PauseAudioSystem OR if the player has been
+	/// paused with a call to PauseAudio, OR if the tAudioID is invalid.
+	Boolean		IsAudioPlaying( tAudioID id );
+
+	/// Is any player playing?
+	///
+	/// \returns true if any player is playing.  Returns false if audio has been
+	/// paused with a call to PauseAudioSystem, OR if all players are paused, OR
+	/// if no players exist.
+	Boolean		IsAudioPlaying( void );
+
+	/// Report a player's stream time in milliseconds 
+	///
+	/// \param id tAudioID of the player in question
+	///
+	/// \returns time in milliseconds since player creation.  Note that this
+	/// time halts when the player is paused.  Returns 0 if id is not valid.
+	U32 	GetAudioTime( tAudioID id ) const;
+	
+	/// Get volume of a player
+	///
+	/// \param id tAudioID of the player in question
+	/// 
+	/// \returns volume between kAudioVolumeMax and kAudioVolumeMin.  Returns
+	/// kAudioVolumeMin if id is not valid.
 	U8		GetAudioVolume( tAudioID id ) const;
-	void	SetAudioVolume( tAudioID id, U8 x );
-	S8		GetAudioPan(    tAudioID id ) const;
-	void	SetAudioPan(    tAudioID id, S8 x );
 
+	/// Set volume of a player
+	///
+	/// \param id tAudioID of the player in question
+	/// 
+	/// \param volume between kAudioVolumeMax and kAudioVolumeMin.
+	///
+	/// This function has no affect if id is invalid.  If volume is not within
+	/// the bounds of kAudioVolumeMin and kAudioVolumeMax, it will be rounded to
+	/// the nearest valid volume.
+	void	SetAudioVolume( tAudioID id, U8 volume );
+
+	/// Get pan of a player
+	///
+	/// \param id tAudioID of the player in question
+	/// 
+	/// \returns pan between kAudioPanMax and kAudioPanMin.  Returns
+	/// 0 if id is not valid.
+	S8		GetAudioPan( tAudioID id ) const;
+
+	/// Set pan of a player
+	///
+	/// \param id tAudioID of the player in question
+	/// 
+	/// \param pan between kAudioPanMax and kAudioPanMin.
+	///
+	/// This function has no affect if id is invalid.  If volume is not within
+	/// the bounds of kAudioPanMin and kAudioPanMax, it will be rounded to
+	/// the nearest valid pan.
+	void	SetAudioPan( tAudioID id, S8 pan );
+
+	/// Get the priority of a particular player
+	///
+	/// The priority is used to decide what to do with a player when there are
+	/// no free channels and somebody tries to play one.
+	///
+	/// \param id tAudioID of the player in question.
+	/// 
+	/// \return priority between 0 and 255.  255 is the highest priority.
 	tAudioPriority	GetAudioPriority( tAudioID id ) const;
-	void	        SetAudioPriority( tAudioID id, tAudioPriority priority );
 
+	/// Set the priority of a particular player
+	///
+	/// \param id tAudioID of the player in question
+	/// 
+	/// \param priority between 0 and 255 inclusive.  Note that 0 is the lowest
+	/// priority and 255 is the highest priority.
+	///
+	/// This function has no effect if the id is invalid.
+	void SetAudioPriority( tAudioID id, tAudioPriority priority );
 
+	/// Get the event listener associated with a particular player
+	///
+	/// The event listener's Notify function is called when audio events occur.
+	/// If the event listener is NULL, no events will be posted.
+	///
+	/// \param id tAudioID of the player in question.
+	/// 
+	/// \return a pointer to the current event listener associated with the
+	/// player.  Returns NULL if the tAudioID is invalid.
 	const IEventListener*	GetAudioEventListener( tAudioID id ) const;
+
+	/// Set the event listener associated with of a particular player
+	///
+	/// \param id tAudioID of the player in question
+	/// 
+	/// \param pListener the new listener.
+	///
+	/// This function has no effect if the id is invalid.
 	void	SetAudioEventListener( tAudioID id, IEventListener *pListener );
 
-// Defaults to use when value is not specified in the Start() call.
+	/// Get the default audio volume
+	///
+	/// This is the volume at which players are launched for StartAudio variants
+	/// that do not take a volume argument.
+	///
+	/// \return the volume between kAudioVolumeMax and kAudioVolumeMin
 	U8		GetDefaultAudioVolume( void ) const;
-	void	SetDefaultAudioVolume( U8 x );
-	S8		GetDefaultAudioPan( void ) const;
-	void	SetDefaultAudioPan( S8 x );
-// Not important for Didj.  Unimplemented
-	tAudioPriority	GetDefaultAudioPriority( void ) const;
-	void	        SetDefaultAudioPriority( tAudioPriority priority );
 
-	const IEventListener *GetDefaultAudioEventListener( void ) const;
-	void	              SetDefaultAudioEventListener( IEventListener *pListener );
+	/// Set the default audio volume
+	///
+	/// This is the volume at which players are launched for StartAudio variants
+	/// that do not take a volume argument.
+	///
+	/// \param volume the volume between kAudioVolumeMax and kAudioVolumeMin.
+	/// If a value is outside of this range, it will be rounded to the nearest
+	/// valid value.
+	void	SetDefaultAudioVolume( U8 volume );
+
+	/// Get the default pan
+	///
+	/// This is the pan at which players are launched for StartAudio variants
+	/// that do not take a pan argument.
+	///
+	/// \return the pan between kAudioPanMax and kAudioPanMin
+	S8		GetDefaultAudioPan( void ) const;
+
+	/// Set the default audio pan
+	///
+	/// This is the pan at which players are launched for StartAudio variants
+	/// that do not take a pan argument.
+	///
+	/// \param pan the pan between kAudioPanMax and kAudioPanMin.  If a value is
+	/// outside of this range, it will be rounded to the nearest valid value.
+	void	SetDefaultAudioPan( S8 pan );
+
+	/// Get the default priority
+	///
+	/// This is the priority at which players are launched for StartAudio
+	/// variants that do not take a priority argument.
+	///
+	/// \return the priority between 0 and 255
+	tAudioPriority	GetDefaultAudioPriority( void ) const;
+
+	/// Set the default priority
+	///
+	/// This is the priority at which players are launched for StartAudio
+	/// variants that do not take a priority argument.
+	///
+	/// \param priority the priority between 0 and 255.
+	void			SetDefaultAudioPriority( tAudioPriority priority );
+
+	/// Get the default listener
+	///
+	/// This is the listener with which players are launched for StartAudio
+	/// variants that do not take a listener argument.
+	///
+	/// \return a pointer to the default listener
+	const IEventListener	*GetDefaultAudioEventListener( void ) const;
+
+	/// Set the default listener
+	///
+	/// This is the listener with which players are launched for StartAudio
+	/// variants that do not take a listener argument.
+	///
+	/// \param pListener pointer to the new default listener
+	void			SetDefaultAudioEventListener( IEventListener *pListener );
 	
 	//********************************
 	// Audio FX functionality
-	//********************************   
-//  GK FIXXXX Not implemented in Didj.  Should Hide.
+	//********************************
+
+	/// Audio effects processing is unimplemented.
+	///
+	/// \return this function will return kNoImplErr
 	tErrType RegisterAudioEffectsProcessor(  CAudioEffectsProcessor *pChain ); 
+
+	/// Audio effects processing is unimplemented.
+	///
+	/// \return this function will return kNoImplErr
 	tErrType RegisterGlobalAudioEffectsProcessor( CAudioEffectsProcessor *pChain ); 
+
+	/// Audio effects processing is unimplemented.
+	///
+	/// \return this function will return kNoImplErr
 	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); 
 
 
 	//********************************
 	// MIDI functionality
-	//********************************    
-	// NOTE: Currently, only one player
+	//********************************	 
 
-	// Activate/Deactivate MIDI engine 
-	tErrType AcquireMidiPlayer( tAudioPriority priority, IEventListener* pListener, tMidiPlayerID* pID );
+	/// \page MidiPlayerBasics "Midi Player Basics"
+	///
+	/// The basic midi use case is as follows:
+	///
+	/// 1. Call \ref AcquireMidiPlayer to create the player and retrieve a
+	/// tMidiPlayerID.
+	///
+	/// 2. Call StartMidiFile to launch the midi stream.
+	///
+	/// 3. While the midi stream is playing, it can be manipulated using \ref
+	/// IsMidiFilePlaying, \ref PauseMidiFile, \ref ResumeMidiFile, and \ref
+	/// StopMidiFile.  It can also be manipulated using the Audio functions \ref
+	/// GetAudioTime, \ref IsAudioPlaying, \ref PauseAudio, \ref ResumeAudio,
+	/// \ref GetAudioVolume, \ref SetAudioVolume, \ref GetAudioPriority, \ref
+	/// SetAudioPriority, \ref SetPan, \ref GetPan, \ref GetAudioEventListener,
+	/// \ref SetAudioEventListener.  When using these audio functions, simply
+	/// pass the tMidiPlayerID as the tAudioID.
+	///
+	/// 4. Upon receiving a Notify callback, or when IsMidiFilePlaying returns
+	/// false, or after calling \ref StopMidiFile, destroy the midi player with
+	/// ReleaseMidiPlayer.
+	///
+	/// In addition to the high-level play-pause-resume-stop interface for midi
+	/// players, a low-level midi API exists.  This low-level API can be used
+	/// programatically generate a midi stream.  However, this API is not fully
+	/// specified and not fully implemented.  So, at this time, programatic
+	/// generation of midi is not supported.
+	///
+
+	/// Create midi player
+	///
+	/// \param priority This parameter is the priority of the player.  It can be
+	/// overridden when StartMidiFile is called with the tMidiPlayerID returned
+	/// in pID.
+	///
+	/// \param pListener This parameter is the event listener of the player.  It
+	/// can be overridden when StartMidiFile is called with the tMidiPlayerID
+	/// returned in pID.
+	///
+	/// \param *pID This is a pointer to a tMidiPlayerID.  It will be set by
+	/// this function to either a valid tMidiPlayerID or to kNoMidiID.
+	///
+	/// \return This function unconditionally returns kNoErr.  The caller must
+	/// check the value of the pID argument to know if the call succeeded.
+	///
+	tErrType AcquireMidiPlayer( tAudioPriority priority,
+								IEventListener* pListener,
+								tMidiPlayerID* pID );
+
+
+	/// Delete midi player
+	///
+	/// This function must be called after the midi player is no longer needed.
+	/// After it is called, the tMidiPlayerID should be considered invalid.
+	///
+	/// \param id This is the id of the midi player that is no longer needed.
+	///
+	/// \return This function unconditionally returns kNoErr.
 	tErrType ReleaseMidiPlayer( tMidiPlayerID id ); 
-	
-	// Get Audio ID associated with a currently playing MidiFile. 
+
+	/// Convert a tMidiPlayerID to a tAudioID
+	///
+	/// This function is not actually needed.  The tMidiPlayerID can be passed
+	/// as a tAudioID to all functions that will take it.
 	tAudioID GetAudioIDForMidiID( tMidiPlayerID id );
 	
-	// Start playback of MIDI file.
-	// Currently only the volume and pListener options are used.
-    tErrType 	StartMidiFile( tMidiPlayerID	id,
-    					const CPath 		&path, 
-						U8					volume, 
-						tAudioPriority		priority,
-						IEventListener*		pListener,
-						tAudioPayload		payload,
-						tAudioOptionsFlags	flags );
+	/// Start playback of midi file.
+	///
+	/// This function is analogous to StartAudio.  The only difference is that
+	/// it must be passed a valid tMidiPlayerID.
+	tErrType 	StartMidiFile( tMidiPlayerID		id,
+							   const CPath			&path, 
+							   U8					volume, 
+							   tAudioPriority		priority,
+							   IEventListener*		pListener,
+							   tAudioPayload		payload,
+							   tAudioOptionsFlags	flags );
+	
+	/// Start playback of midi file with various defaults.
+	///
+	/// Uses defaults from MPI for volume, priority, and listener.  See \ref
+	/// StartMidiFile for more details.
+	tErrType 	StartMidiFile( tMidiPlayerID		id,
+							   const CPath			&path, 
+							   tAudioPayload		payload,
+							   tAudioOptionsFlags	flags );
 
-    // Uses defaults from MPI for volume, priority, and listener.
-    tErrType 	StartMidiFile( tMidiPlayerID		id,
-    							const CPath 		&path, 
-    							tAudioPayload		payload,
-    							tAudioOptionsFlags	flags );
-    
+	/// Is a given midi player playing?
+	///
+	/// Returns true if id is playing.  Returns false otherwise.  Note that \ref
+	/// IsAudioPlaying does the exact same thing as this function.
+	///
+	/// \param id the tMidiPlayerID of the midi player in question
+	///
+	/// \return true if id is playing, false otherwise.
 	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
-	Boolean		IsMidiFilePlaying( void );  // Is MIDI system playing anything?
 
-	void 		PauseMidiFile(  tMidiPlayerID id );
-    void 		ResumeMidiFile( tMidiPlayerID id );
-    void 		StopMidiFile(   tMidiPlayerID id, Boolean noDoneMessage );
+	/// Is any midi player playing?
+	///
+	/// Returns true if any midi player is active.
+	///
+	/// \return true if any midi player is active, false if no midi players are
+	/// active.
+	Boolean		IsMidiFilePlaying( void );
 
-// Properties of MIDI file play
-    tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-	tErrType 	SetEnableMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask );
-	tErrType 	TransposeMidiTracks(  tMidiPlayerID id, tMidiTrackBitMask bitMask, S8 semitones ); 
-	tErrType 	ChangeMidiTempo(      tMidiPlayerID id, S8 tempo ); 
+	/// Pause a particular midi player.
+	///
+	/// \param id The tMidiPlayerID of the stream to pause
+	///
+	///  This function has no effect if the id is invalid.  Note that this does
+	///  the same thing as \ref PauseAudio.
+	void 		PauseMidiFile( tMidiPlayerID id );
+	
+	/// Resume a paused midi player.  Sensibly called after \ref PauseAudio or
+	/// \ref PauseMidiFile.
+	///
+	/// \param id The tMidiPlayerID of the stream to resume.
+	///
+	/// This function has no effect if the id is invalid.  Note that this
+	/// function does the same thing as \ref ResumeAudio.
+	void 		ResumeMidiFile( tMidiPlayerID id );
+	
+	/// Stop a midi player's stream.
+	///
+	/// After calling this function, the midi stream will stop.  An event may or
+	/// may not be posted depending on the details below.
+	///
+	/// \param id The tMidiPlayerID of the player to stop.
+	///
+	/// \param noDoneMessage If this parameter is true, then the
+	/// kMidiTerminatedEvent will not be posted to the listener associated with
+	/// this audio player.  If this parameter is false, AND the player has an
+	/// associated listerner, AND the StartMidiFile call that launched this
+	/// player had the kAudioOptionsDoneMsgAfterComplete flag set, then the
+	/// kMidiTerminatedEvent will be posted to the listener.
+	///
+	/// This function has no effect if id is invalid.  After calling this
+	/// function, the user can call \ref ReleaseMidiPlayer.
+	void 		StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage );
+	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
 
-	// Send MIDI channel messages
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, int channel           , tMidiPlayerInstrument instr ); 
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id, tMidiTrackBitMask bits, tMidiPlayerInstrument instr ); 
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType 	SetEnableMidiTracks( tMidiPlayerID id,
+									 tMidiTrackBitMask bitMask );
 
-    tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
-    tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
-    tErrType MidiNoteOff(tMidiPlayerID id, U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
-    tErrType MidiNoteOff(tMidiPlayerID id, U8 channel, U8 note);
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType	TransposeMidiTracks( tMidiPlayerID id,
+									 tMidiTrackBitMask bitMask,
+									 S8 semitones );
 
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType	ChangeMidiTempo( tMidiPlayerID id, S8 tempo ); 
+	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType	ChangeMidiInstrument( tMidiPlayerID id,
+									  int channel,
+									  tMidiPlayerInstrument instr );
+
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType 	ChangeMidiInstrument( tMidiPlayerID id,
+									  tMidiTrackBitMask bits,
+									  tMidiPlayerInstrument instr ); 
+	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType MidiNoteOn( tMidiPlayerID id,
+						 U8 channel,
+						 U8 note,
+						 U8 velocity,
+						 tAudioOptionsFlags flags );
+
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
+
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType MidiNoteOff( tMidiPlayerID id,
+						  U8 channel,
+						  U8 note,
+						  U8 velocity,
+						  tAudioOptionsFlags flags );
+
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType MidiNoteOff(tMidiPlayerID id,
+						 U8 channel,
+						 U8 note);
+	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
-	// ******** Loadable Instrument Support ********
-	// Create an empty list of programs and drums. This can be used to keep 
-	// track of which resources are needed to play a group of songs.
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType CreateProgramList( tMidiProgramList **d );
 	
-	// Add a bank/program combination to the list of programs used. If the
-	// bank/program has already been added then this will have no effect.  You can
-	// use this to add sound effects of MIDI notes that are not in a MIDI File.
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType AddToProgramList( tMidiProgramList *d, U8 bank, U8 program );
-
-	// Add a bank/program/pitch combination to the list of drums used.
+	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType AddDrumToProgramList( tMidiProgramList *d, U8 bank, U8 program, int pitch );
-	tErrType DeleteProgramList(    tMidiProgramList *d );
 
-	// Add all programs and drums used in this song to the list.
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
+	tErrType DeleteProgramList(	 tMidiProgramList *d );
+	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType ScanForPrograms( tMidiPlayerID id, tMidiProgramList *d );
 	
-	/* Load a set of instruments from a file or an in memory image using a stream.
-	If programList is NULL then all instruments in the set will be loaded.
-	Otherwise, only the instruments associated with programs and drums in the
-	list will be loaded.
-
-	You can call this multiple times. If there is a conflict with an instrument
-	with the same bank and program number as a previous file then the most
-	recently loaded instrument will be used. */	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType LoadInstrumentFile( const CPath &path , tMidiProgramList *d );
 	
-	// All instruments loaded dynamically by LoadInstrumentFile() will be
-	// unloaded. Instruments that were compiled with the engine will not be affected.	
+	/// Low-level midi control
+	///
+	/// Use of this function is not currently specified.
 	tErrType UnloadAllInstruments( void );
 	
-private:
+ private:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;
 };
@@ -376,35 +903,35 @@ private:
 // MIDI Channel Message
 // Upper Nibble: Message ID  
 // Lower Nibble: Channel # [0..15]
-#define kMIDI_ChannelMessage_NoteOff          0x80
-#define kMIDI_ChannelMessage_NoteOn           0x90
-#define kMIDI_ChannelMessage_Aftertouch       0xA0
-#define kMIDI_ChannelMessage_ControlChange    0xB0
-#define kMIDI_ChannelMessage_ProgramChange    0xC0
-#define kMIDI_ChannelMessage_ChannelPressure  0xD0
-#define kMIDI_ChannelMessage_PitchWheel       0xE0
+#define kMIDI_ChannelMessage_NoteOff			0x80
+#define kMIDI_ChannelMessage_NoteOn				0x90
+#define kMIDI_ChannelMessage_Aftertouch			0xA0
+#define kMIDI_ChannelMessage_ControlChange		0xB0
+#define kMIDI_ChannelMessage_ProgramChange		0xC0
+#define kMIDI_ChannelMessage_ChannelPressure	0xD0
+#define kMIDI_ChannelMessage_PitchWheel			0xE0
 
 // Supported MIDI Controller list.  Other controllers are ignored
-#define kMIDI_Controller_BankSelect           0x00
-#define kMIDI_Controller_ModulationWheel      0x01
-#define kMIDI_Controller_DataEntry            0x06
-#define kMIDI_Controller_Volume               0x07
-#define kMIDI_Controller_PanPosition          0x0A // # 10
-#define kMIDI_Controller_Expression           0x0B // # 11
-#define kMIDI_Controller_LSBOffset            0x20
-#define kMIDI_Controller_Sustain              0x40 // # 64
-#define kMIDI_Controller_RPN_LSB              0x64 // #100
-#define kMIDI_Controller_RPN_Fine             0x64 // #100
-#define kMIDI_Controller_RPN_MSB              0x65 // #101
-#define kMIDI_Controller_RPN_Coarse           0x65 // #101
+#define kMIDI_Controller_BankSelect				0x00
+#define kMIDI_Controller_ModulationWheel		0x01
+#define kMIDI_Controller_DataEntry				0x06
+#define kMIDI_Controller_Volume					0x07
+#define kMIDI_Controller_PanPosition			0x0A
+#define kMIDI_Controller_Expression				0x0B
+#define kMIDI_Controller_LSBOffset				0x20
+#define kMIDI_Controller_Sustain				0x40
+#define kMIDI_Controller_RPN_LSB				0x64
+#define kMIDI_Controller_RPN_Fine				0x64
+#define kMIDI_Controller_RPN_MSB				0x65
+#define kMIDI_Controller_RPN_Coarse				0x65
 
-#define kMIDI_Controller_AllSoundOff            120
-#define kMIDI_Controller_ResetAllControllers    121
-#define kMIDI_Controller_AllNotesOff            123
+#define kMIDI_Controller_AllSoundOff			120
+#define kMIDI_Controller_ResetAllControllers	121
+#define kMIDI_Controller_AllNotesOff			123
 
-#define kMIDI_RPN_PitchBendRange            0x0000
-#define kMIDI_RPN_MasterFineTuning          0x0001
-#define kMIDI_RPN_MasterCoarseTuning        0x0002
+#define kMIDI_RPN_PitchBendRange				0x0000
+#define kMIDI_RPN_MasterFineTuning				0x0001
+#define kMIDI_RPN_MasterCoarseTuning			0x0002
 
 LF_END_BRIO_NAMESPACE()	
 #endif /* LF_BRIO_AUDIOMPI_H */
