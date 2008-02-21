@@ -8,7 +8,7 @@
 //
 // MidiPlayer.h
 //
-//                  Class to manage playing of MIDI data
+//					Class to manage playing of MIDI data
 //
 //==============================================================================
 
@@ -32,99 +32,108 @@ LF_BEGIN_BRIO_NAMESPACE()
 //		Class to manage the playing of MIDI data. 
 //==============================================================================
 class CMidiPlayer {
-public:
+ public:
 	CMidiPlayer( tMidiPlayerID id );
 	~CMidiPlayer();
 
 	U32			Render( S16* pOut, U32 numStereoFrames );
 
 // Return status
-	inline U8 ShouldSendDoneMessage()    { return bSendDoneMessage_;   }
+	inline U8 ShouldSendDoneMessage()	 { return bSendDoneMessage_;   }
 	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
 
 	inline bool		IsFileActive() { return bFileActive_; };
 
-	inline bool		IsActive()   { return bActive_; };
-	inline void		Activate()   { bActive_ = true; }
+	inline bool		IsActive()	 { return bActive_; };
+	inline void		Activate()	 { bActive_ = true; }
 	inline void		DeActivate() { bActive_ = false; bFileActive_ = false;}
 
 	// Get/Set class member variables
 	inline tMidiPlayerID	GetID() { return id_; }
-	inline U8	GetVolume()	        { return volume_; }
+	inline U8	GetVolume()			{ return volume_; }
 	void		SetVolume( U8 x );
 
-	inline S8	GetPan()		    { return pan_; }
+	inline S8	GetPan()			{ return pan_; }
 	void		SetPan(S8 x);
 
 	// MIDI channel messages
-	tErrType 	NoteOn(  U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
-	tErrType 	NoteOff( U8 channel, U8 note, U8 velocity, tAudioOptionsFlags flags );
-	tErrType 	SendCommand( U8 cmd, U8 data1, U8 data2 );
+	tErrType	NoteOn( U8 channel,
+						U8 note,
+						U8 velocity,
+						tAudioOptionsFlags flags );
 
-// MIDI file transport control
-	tErrType 	StartMidiFile( tAudioStartMidiFileInfo *pInfo );
-	tErrType 	StopMidiFile(  tAudioStopMidiFileInfo  *pInfo );
-	tErrType 	PauseMidiFile(  void );
-	tErrType 	ResumeMidiFile( void );
+	tErrType	NoteOff( U8 channel,
+						 U8 note,
+						 U8 velocity,
+						 tAudioOptionsFlags flags );
+
+	tErrType	SendCommand( U8 cmd, U8 data1, U8 data2 );
+
+	// MIDI file transport control
+	tErrType	StartMidiFile( tAudioStartMidiFileInfo *pInfo );
+	tErrType	StopMidiFile(  tAudioStopMidiFileInfo  *pInfo );
+	tErrType	PauseMidiFile(	void );
+	tErrType	ResumeMidiFile( void );
 
 	tErrType	GetEnableTracks( tMidiTrackBitMask *d );
-	tErrType	SetEnableTracks( tMidiTrackBitMask  d);
-	tErrType	TransposeTracks( tMidiTrackBitMask  d, S8 semitones );
-	tErrType	ChangeProgram(   tMidiTrackBitMask  d, tMidiPlayerInstrument number );
+	tErrType	SetEnableTracks( tMidiTrackBitMask	d);
+	tErrType	TransposeTracks( tMidiTrackBitMask	d, S8 semitones );
+	tErrType	ChangeProgram( tMidiTrackBitMask	d,
+							   tMidiPlayerInstrument number );
 	tErrType	ChangeTempo( S8 tempo); 
-
-private:
-	CDebugMPI* 				pDebugMPI_;	
-
+	
+ private:
+	CDebugMPI*				pDebugMPI_;	
+	
 //#define USE_MIDI_PLAYER_MUTEX
 #ifdef USE_MIDI_PLAYER_MUTEX
-	CKernelMPI* 			pKernelMPI_;	
-	tMutex     				*renderMutex_;
+	CKernelMPI*				pKernelMPI_;	
+	tMutex					*renderMutex_;
 #endif
 
-// Mobileer MIDIengine variables
+	// Mobileer MIDIengine variables
 	SPMIDI_Context*			pContext_;		
 	MIDIFilePlayer*			pFilePlayer_;	
-	SPMIDI_Orchestra        *spMIDI_orchestra_;
+	SPMIDI_Orchestra		*spMIDI_orchestra_;
 
-	const IEventListener*	pListener_;		// For done event
-	tAudioOptionsFlags	    optionsFlags_;	
-	U8			            bSendDoneMessage_;		// Caller requests done message 
-	U8			            bSendLoopEndMessage_;// Send each time the end of the loop has been reached
+	const IEventListener*	pListener_;
+	tAudioOptionsFlags		optionsFlags_;	
+	U8						bSendDoneMessage_;
+	U8						bSendLoopEndMessage_;
 
 	tMidiPlayerID			id_;			 
-	tMidiTrackBitMask		trackBitMask_;	// Track bit mask of active tracks
+	tMidiTrackBitMask		trackBitMask_;
 
-// DSP information
+	// DSP information
 	U8			pan_;
 	U8			volume_;
 
-#define kAudioMixerChannel_MaxOutChannels 2     
+#define kAudioMixerChannel_MaxOutChannels 2		
 	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
 	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
 	float		gainf;
 	Q15			gaini;
-    float       levelsf[kAudioMixerChannel_MaxOutChannels]; // gain * panValue
-    Q15         levelsi[kAudioMixerChannel_MaxOutChannels];
+	float		levelsf[kAudioMixerChannel_MaxOutChannels];
+	Q15			levelsi[kAudioMixerChannel_MaxOutChannels];
 
-// State activity flags
-	Boolean		shouldLoop_;        // GK FIXX: eliminate this variable sometime
-    S32         loopCount_;
-    S32         loopCounter_;
+	// State activity flags
+	Boolean		shouldLoop_;
+	S32			loopCount_;
+	S32			loopCounter_;
 
 	U8			bFilePaused_;				
 	U8			bFileActive_;				
-	U8			bActive_;					// Player acquired by client
+	U8			bActive_;
 
-// Data configuration
-	U32 	framesPerIteration_;
-	U32 	channels_;   // samples per frame
-	U32 	bitsPerSample_;
+	// Data configuration
+	U32		framesPerIteration_;
+	U32		channels_;
+	U32		bitsPerSample_;
 
-    void SendLoopEndMsg( void );
-	void SendDoneMsg(    void );
+	void SendLoopEndMsg( void );
+	void SendDoneMsg(	 void );
 
-    void RecalculateLevels();
+	void RecalculateLevels();
 };
 
 LF_END_BRIO_NAMESPACE()

@@ -24,9 +24,9 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-#define kRawPlayer_FileType_Brio    1
-#define kRawPlayer_FileType_AIFF    2
-#define kRawPlayer_FileType_WAV     3
+#define kRawPlayer_FileType_Brio	1
+#define kRawPlayer_FileType_AIFF	2
+#define kRawPlayer_FileType_WAV		3
 #define kRawPlayer_FileType_Unknown (0)
 
 //==============================================================================
@@ -36,24 +36,24 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Class to manage the playing of raw audio. 
 //==============================================================================
 class CRawPlayer : public CAudioPlayer {
-public:
+ public:
 	CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	~CRawPlayer();
 		
 	void	RewindFile();
-	U32     GetAudioTime_mSec( void );
-	U32     ReadBytesFromFile( void *d, U32 bytesToRead);
+	U32 GetAudioTime_mSec( void );
+	U32 ReadBytesFromFile( void *d, U32 bytesToRead);
 
-// Returns # frames actually rendered without zero padding
-	U32		Render( S16 *pOut, U32 numStereoFrames );
+	// Returns # frames actually rendered without zero padding
+	U32 Render( S16 *pOut, U32 numStereoFrames );
 
-private:
-    U32		        totalBytesRead_;
+ private:
+	U32				totalBytesRead_;
 //	U32				totalFrames_;			
 //	U32				framesRemaining_;
 
-    U32             fileType_;  // WAV, AIFF, Brio "RAW"
-    SNDFILE	        *inFile_;
+	U32				fileType_;	// WAV, AIFF, Brio "RAW"
+	SNDFILE			*inFile_;
 };
 
 LF_END_BRIO_NAMESPACE()

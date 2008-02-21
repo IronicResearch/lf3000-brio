@@ -33,7 +33,7 @@ class CAudioPlayer;
 //		Class to manage the processing of audio data on an audio channel. 
 //==============================================================================
 class CChannel {
-public:
+ public:
 	CChannel();
 	~CChannel();
 
@@ -41,13 +41,13 @@ public:
 	tErrType	Release( Boolean noPlayerDoneMsg );
 
 // Set pause state
-	inline void	Pause()  { if (fInUse_) fPaused_ = true;  }
+	inline void	Pause()	 { if (fInUse_) fPaused_ = true;  }
 	inline void	Resume() { if (fInUse_) fPaused_ = false; }
 	inline void	SetInUse(Boolean x) { fInUse_ = x; }
 
 	// Ask channel to get data from player and return it to caller's mix buffer.
 	// This will add per-channel fx as well as sample rate convert player
-	// data to system rate.  If less than numFrames is available
+	// data to system rate.	 If less than numFrames is available
 	// the remainder of the channel's buffer will be zero padded.
 	// The channel also assumes that the mix buffer is stereo 
 	// so mono data is copied to both stereo channel on mix out.
@@ -56,13 +56,13 @@ public:
 	inline U8	GetVolume()		{ return volume_; }
 	void		SetVolume(U8 x);
 
-	inline S8	GetPan()		    { return pan_; }
+	inline S8	GetPan()			{ return pan_; }
 	void		SetPan(S8 x);
 
-	inline U32	GetSamplingFrequency()		    { return samplingFrequency_; }
-	void		SetSamplingFrequency(U32 x)     { samplingFrequency_ = x;}
+	inline U32	GetSamplingFrequency()			{ return samplingFrequency_; }
+	void		SetSamplingFrequency(U32 x)		{ samplingFrequency_ = x;}
 
-	inline CAudioPlayer *GetPlayerPtr()		    { return pPlayer_; }
+	inline CAudioPlayer *GetPlayerPtr()			{ return pPlayer_; }
 	void		SetPlayer(CAudioPlayer *pPlayer, long releaseExistingPlayer);
 
 #define kAudioMixerChannel_MaxOutChannels 2
@@ -71,25 +71,25 @@ public:
 
 	float		gainf;
 	Q15			gaini;
-    float       levelsf   [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
-    Q15         levelsi   [kAudioMixerChannel_MaxOutChannels];
+	float		levelsf	  [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
+	Q15			levelsi	  [kAudioMixerChannel_MaxOutChannels];
 
 	// Mixer needs to know if the channel is in a state appropriate
 	// for calling Render().  Keeps flag state inside of channel.
 	Boolean		ShouldRender( void );
 	
-	inline tAudioPriority	GetPriority()            				{ return priority_; }
-	inline void				SetPriority( tAudioPriority priority ) 	{ priority_ = priority; }
+	inline tAudioPriority	GetPriority()							{ return priority_; }
+	inline void				SetPriority( tAudioPriority priority )	{ priority_ = priority; }
 
-//	inline float	GetEQ_Frequency()   { return eq_frequency_; }
-//	inline float	GetEQ_Q()           { return eq_q_; }
-//	inline float	GetEQ_GainDB()      { return eq_gainDB_; }
+//	inline float	GetEQ_Frequency()	{ return eq_frequency_; }
+//	inline float	GetEQ_Q()			{ return eq_q_; }
+//	inline float	GetEQ_GainDB()		{ return eq_gainDB_; }
 
 //	inline void		SetEQ_Parameters(float frequency, float q, float gainDB) { eq_frequency_ = frequency; eq_q_ = q; eq_gainDB_ = gainDB;}
 
 //	inline void		SetMixerChannelDataPtr(MIXERCHANNEL *d) { pDSP_ = d; }
 
-//	inline long		GetMixBinIndex()       { return mixBinIndex_; }
+//	inline long		GetMixBinIndex()	   { return mixBinIndex_; }
 //	inline void		SetMixBinIndex(long x) { mixBinIndex_ = x; }
 
 // Return requested status
@@ -98,11 +98,11 @@ public:
 //	inline Boolean			HasOwnAudioEffectsProcessor() { return fOwnProcessor_; }
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
-    Boolean isDone_;
+	Boolean isDone_;
 	Boolean fInUse_;		
-    void SendDoneMsg( void );
+	void SendDoneMsg( void );
 
-private:
+ private:
 	tAudioPriority	priority_;	
 
 	U8			volume_;	
@@ -125,7 +125,7 @@ private:
 	
 //	CDebugMPI	*pDebugMPI_;
 
-    void   RecalculateLevels();
+	void   RecalculateLevels();
 };
 
 LF_END_BRIO_NAMESPACE()
