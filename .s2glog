@@ -14358,3 +14358,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 4:40 PM
 5,547 ms. (Cumulative: 4,087,671 ms)
 
 ----------------
+Revision 3,041 from svn://localhost/TRUNK/:
+
+Removed defunct NEW_ADD_PLAYER that was never implemented and made
+OLD_ADD_PLAYER the only option.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 4:48 PM
+2 changed, 0 added, 0 deleted.
+5,594 ms. (Cumulative: 4,093,328 ms)
+
+----------------
