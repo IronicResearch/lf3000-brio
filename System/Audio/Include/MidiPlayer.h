@@ -85,12 +85,6 @@ class CMidiPlayer {
  private:
 	CDebugMPI*				pDebugMPI_;	
 	
-//#define USE_MIDI_PLAYER_MUTEX
-#ifdef USE_MIDI_PLAYER_MUTEX
-	CKernelMPI*				pKernelMPI_;	
-	tMutex					*renderMutex_;
-#endif
-
 	// Mobileer MIDIengine variables
 	SPMIDI_Context*			pContext_;		
 	MIDIFilePlayer*			pFilePlayer_;	

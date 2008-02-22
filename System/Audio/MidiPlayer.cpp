@@ -66,9 +66,6 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	tErrType			err;
 	S16					midiErr;
 	Boolean				ret;
-#ifdef USE_MIDI_PLAYER_MUTEX
-	const tMutexAttr	attr = {0};
-#endif	
 
 	// Setup member variables
 	id_					= id;
@@ -93,17 +90,6 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 
 	// Set debug level from a constant
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
-
-#ifdef USE_MIDI_PLAYER_MUTEX
-	pKernelMPI_ =  new CKernelMPI();
-	ret = pKernelMPI_->IsValid();
-	pDebugMPI_->Assert((true == ret),
-					   "CMidiPlayer::ctor: Couldn't create KernelMPI.\n");
-	// Setup Mutex object for protecting render calls
-	err = pKernelMPI_->InitMutex( renderMutex_, attr );
-	pDebugMPI_->Assert((kNoErr == err),
-					   "CMidiPlayer::ctor: Couldn't init mutex.\n");
-#endif
 
 	// Dynamically load the SPMIDI Library (*MUST* be prior to 1st SPMIDI_ call)
 	ret = LoadMidiLibrary();
@@ -143,12 +129,6 @@ CMidiPlayer::~CMidiPlayer()
 	
 	pDebugMPI_->DebugOut(kDbgLvlVerbose,
 						 "CMidiPlayer::~ -- Cleaning up.\n");	
-	
-#ifdef USE_MIDI_PLAYER_MUTEX
-	result = pKernelMPI_->LockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "CMidiPlayer::~ -- Couldn't lock mutex.\n");
-#endif
 
 	// If a file is playing (the user didn't call stop first) , stop it for them.
 	if (bFileActive_) 
@@ -172,17 +152,6 @@ CMidiPlayer::~CMidiPlayer()
 	SPMIDI_Terminate();
 	UnloadMidiLibrary();
 	
-#ifdef USE_MIDI_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "~CMidiPlayer: Couldn't unlock mutex.\n");
-	result = pKernelMPI_->DeInitMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "~CMidiPlayer: Couldn't deinit mutex.\n");
-	if (pKernelMPI_)
-		delete pKernelMPI_;
-#endif
-
 	// Free MPIs
 	if (pDebugMPI_)
 		delete pDebugMPI_;
@@ -424,14 +393,7 @@ tErrType CMidiPlayer::ResumeMidiFile( void )
 tErrType CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
 {
 	tErrType result = 0;
-	
-#ifdef USE_MIDI_PLAYER_MUTEX
-	printf("CMidiPlayer::StopMidiFile: Locking renderMutex\n");	
-	result = pKernelMPI_->LockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "CMidiPlayer::StopMidiFile: Unable to lock mutex.\n");
-#endif
-	
+		
 	bFileActive_ = false;
 	bFilePaused_ = false;
 	if (pListener_	&& !pInfo->noDoneMsg)
@@ -445,11 +407,6 @@ tErrType CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 	}
 	pListener_ = kNull;
 	
-#ifdef USE_MIDI_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::StopMidiFile Unable to unlock mutex.\n");
-#endif
-
 	return result;
 }	// ---- end StopMidiFile() ----
 
@@ -576,13 +533,6 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 	U32		framesToRead;
 	U32		framesRead = 0;
 	U32		numStereoSamples = numStereoFrames * 2;
-
-#ifdef USE_MIDI_PLAYER_MUTEX
-	result = pKernelMPI_->TryLockMutex( renderMutex_ );
-	if (EBUSY == result)
-		return 0;
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::Render: Couldn't lock mutex.\n");
-#endif
 	
 	// Clear output buffer
 	// FIXXXX: move to DSP loop and clear only if needed
@@ -689,10 +639,6 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 		pOut[i+1] = (S16) y;
 	}
 
-#ifdef USE_MIDI_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CMidiPlayer::Render: Couldn't unlock mutex.\n");
-#endif
 	return (framesRead);
 }	// ---- end Render() ----
 

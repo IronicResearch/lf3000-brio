@@ -14347,3 +14347,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 4:38 PM
 5,454 ms. (Cumulative: 4,082,062 ms)
 
 ----------------
+Revision 3,040 from svn://localhost/TRUNK/:
+
+Eliminating unused partially implemented MIDI player lock.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 4:40 PM
+2 changed, 0 added, 0 deleted.
+5,547 ms. (Cumulative: 4,087,671 ms)
+
+----------------
