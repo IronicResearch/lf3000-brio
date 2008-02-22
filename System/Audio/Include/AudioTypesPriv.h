@@ -59,12 +59,6 @@ typedef struct taudiostate {
 	S16	   softClipperPreGainDB;
 	S16	   softClipperPostGainDB;
 
-	S16	   outLevels_ShortTime[2];
-	S16	   outLevels_LongTime [2];
-	S16	   outLevels_Max	  [2];
-	S16	   outLevels_MaxCount [2];
-	U8	   computeLevelMeters;
-
 	U8	   readInSoundFile;
 	U8	   writeOutSoundFile;
 #define kAudioState_MaxFileNameLength 100

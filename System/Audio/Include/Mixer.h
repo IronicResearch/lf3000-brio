@@ -71,17 +71,6 @@ class CAudioMixer {
 
 	tAudioState audioState_;
 
-	// Level Meter data
-	S16 outLevels_ShortTime[2];
-	S16 outLevels_LongTime [2];
-	S16 temp_ShortTime	   [2];
-	S32 longTimeHoldCounter;
-	S32 longTimeHoldInterval;
-	S32 shortTimeCounter;
-	S32 shortTimeInterval;
-	float longTimeDecayF;
-	S16	  longTimeDecayI;
-
 	void GetAudioState(tAudioState *d);
 	void SetAudioState(tAudioState *d);
 	

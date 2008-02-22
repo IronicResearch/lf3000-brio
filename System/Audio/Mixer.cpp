@@ -235,29 +235,10 @@ CAudioMixer::CAudioMixer( int inChannels )
 		ClearShorts(pTmpBufs_[i], kAudioMixer_TempBufferWords);
 		pTmpBufOffsets_[i] = &pTmpBufs_[i][kSRC_Filter_MaxDelayElements];  
 	}
-	// Set up level meters
-	for (ch = kLeft; ch <= kRight; ch++)
-	{
-		outLevels_ShortTime[ch] = 0;
-		outLevels_LongTime [ch] = 0;
-		temp_ShortTime	   [ch] = 0;
-	}
 	
 	// numFrames = 256 for EMULATION, 512 for embedded
 	int numFramesPerBuffer = kAudioFramesPerBuffer;
 	
-	U32 shortTimeRateHz = 12;
-	U32 longTimeRateHz	=  1;
-	shortTimeCounter	= 0;
-	longTimeHoldCounter = 0;
-	shortTimeInterval	 = kAudioSampleRate/(shortTimeRateHz * numFramesPerBuffer);
-	longTimeHoldInterval = shortTimeInterval/longTimeRateHz;
-	
-	float rateF = ((float)kAudioSampleRate)/(float)(shortTimeRateHz *numFramesPerBuffer);
-	longTimeDecayF = (1.0f - 0.5f/rateF)/(float)shortTimeRateHz; 
-	longTimeDecayF *= 6.0f;
-	longTimeDecayI = FloatToQ15(longTimeDecayF);
-
 	// Headphone gain
 	headphoneGainDB_	 = kMixer_Headphone_GainDB;
 	headphoneGainF_		 = DecibelToLinearf(headphoneGainDB_);
@@ -274,11 +255,9 @@ CAudioMixer::CAudioMixer( int inChannels )
 			printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n",
 				   sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 		
-		d->computeLevelMeters = false;
 		d->useOutEQ			  = false;
 		d->useOutSoftClipper  = true;
-		d->useOutDSP		  = (d->computeLevelMeters ||
-								 d->useOutEQ ||
+		d->useOutDSP		  = (d->useOutEQ ||
 								 d->useOutSoftClipper);
 		
 		SetMasterVolume(100);
@@ -296,14 +275,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 		
 		d->srcType			= src_[0][kLeft].type;
 		d->srcFilterVersion = src_[0][kLeft].filterVersion;
-		for (long ch = kLeft; ch <= kRight; ch++)
-		{
-			d->outLevels_Max	 [ch] = 0;
-			d->outLevels_MaxCount[ch] = 0;
-			
-			d->outLevels_ShortTime[ch] = outLevels_ShortTime[ch];
-			d->outLevels_LongTime [ch] = outLevels_LongTime [ch];
-		}
 		d->channelGainDB = kChannel_HeadroomDB;
 		
 		// DEBUG:  Wav File I/O
@@ -904,7 +875,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	}
 
 	// ---- Output DSP block
-	if (audioState_.useOutEQ || audioState_.useOutSoftClipper || audioState_.computeLevelMeters)
+	if (audioState_.useOutEQ || audioState_.useOutSoftClipper)
 		audioState_.useOutDSP  = true;
 
 	if (audioState_.useOutDSP)
@@ -938,58 +909,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		InterleaveShorts(tPtrs[0], tPtrs[1], pOut, numFrames);
 	}
 	ShiftLeft_S16(pOut, pOut, numFrames*channels, audioState_.headroomBits);
-
-	// Audio level meters
-	// Scan buffer for maximum value
-	if (audioState_.computeLevelMeters)
-	{
-		tAudioState *as = &audioState_;
-		// Scan output buffer for max values
-		for (long ch = kLeft; ch <= kRight; ch++)
-		{
-			// Grab from one channel, so use buffer offset
-			S16 x = MaxAbsShorts(&pOut[ch], numFrames, 2);
-			if (x > temp_ShortTime[ch])
-				temp_ShortTime[ch] = x;
-			
-			as->outLevels_MaxCount[ch] += (x == as->outLevels_Max[ch]);
-			if (x >= as->outLevels_Max[ch])
-			{
-				if (x > as->outLevels_Max[ch])
-					as->outLevels_MaxCount[ch] = 1;
-				as->outLevels_Max[ch] = x;
-			}
-		}
-		shortTimeCounter++;
-		if (shortTimeCounter >= shortTimeInterval)
-		{
-			for (long ch = kLeft; ch <= kRight; ch++)
-			{ 
-				S16 x = temp_ShortTime[ch];			 
-				outLevels_ShortTime[ch] = x;
-				if (x >= outLevels_LongTime[ch])
-				{
-					outLevels_LongTime[ch] = x;
-					longTimeHoldCounter	   = 0;
-				}
-				else  
-				{
-					if (longTimeHoldCounter >= longTimeHoldInterval)
-					{
-						outLevels_LongTime[ch] = MultQ15(outLevels_LongTime[ch],
-														 longTimeDecayI);
-					}
-					else
-						longTimeHoldCounter++;
-				}
-				
-				as->outLevels_LongTime [ch] = outLevels_LongTime [ch];
-				as->outLevels_ShortTime[ch] = outLevels_ShortTime[ch];
-				temp_ShortTime[ch] = 0;
-			}
-			shortTimeCounter = 0;
-		}
-	} // end computeLevelMeters
 
 	// Debug:  write output of mixer to sound file
 	static long outBufferCounter = 0; 
