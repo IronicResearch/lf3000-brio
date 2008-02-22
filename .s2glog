@@ -14518,3 +14518,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 1:05 PM
 5,109 ms. (Cumulative: 4,163,200 ms)
 
 ----------------
+Revision 3,061 from svn://localhost/TRUNK/:
+
+Migrating tAudioID handling code from Audio.cpp to Mixer.cpp.  The mixer creates
+players and should be responsible for assigning the ids.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 1:41 PM
+4 changed, 1 added, 0 deleted.
+5,156 ms. (Cumulative: 4,168,435 ms)
+
+----------------

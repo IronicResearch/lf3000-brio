@@ -40,142 +40,10 @@ inline CPath GetAudioRsrcFolder( void )
 #endif	// EMULATION
 }
 
-// ============================================================================
-// BoundS32  :   Add increment to value and bound to range
-// 
-//    Warning :   Will fail when values reach limits of signed 32-bit
-// ============================================================================
-	long
-BoundS32(long d, long lower, long upper)
-{	     
-if      (d < lower)
-    return (lower);
-else if (d > upper)
-    return (upper);
-
-return (d);
-}	// ---- end BoundS32() ----
-
-// ============================================================================
-// IncrementAndBoundS32  :   Add increment to value and bound to range
-//                              Warning :   will fail when values reach limits of
-//                          Signed 32-bit
-// ============================================================================
-	long
-IncrementAndBoundS32(long d, long inc, long lower, long upper)
-{	     
-return (BoundS32(d+inc, lower, upper));
-}	// ---- end IncrementAndBoundS32() ----
-
 //============================================================================
 // Audio Listener
 //============================================================================
 const tEventType kMyAudioTypes[] = { kAllAudioEvents };
-
-//----------------------------------------------------------------------------
-// global audio IDs, one for each thread.  This makes sure that the thread doesn't
-// exit until the audio done event has been received by the listener.
-// TODO: kind of a hack.
-tAudioID 				id1, id2, id3, id4;
-
-// Task to test multithreading and multi-MPIs.
-typedef struct
-{
-	int threadNum;
-	int loopCount;
-}thread_arg_t;
-
-static void *myTask(void* arg)
-{
-	CAudioMPI				audioMPI;
-	CKernelMPI				kernelMPI;
-
-	int						index;
-	CPath*					filePath = kNull;
-	tAudioID 				id = 0;
-	U32						time;
-	U8						volume;
-	S32						pan;
-	tAudioPriority 			priority;
-
-	thread_arg_t 			*ptr = (thread_arg_t *)arg; 
-	int						threadNum = ptr->threadNum;
-	int						loopCount = ptr->loopCount;
-
-	printf("==== myTask( thread %d ) -- test task thread starting up.\n", threadNum );
-
-	// Set the default location to search for resources.
-	audioMPI.SetAudioResourcePath( GetAudioRsrcFolder() );
-	
-	// Each thread needs to play a different file so we can tell the difference.
-	switch( threadNum ) {
-		case 1:
-			filePath = new CPath( "Vivaldi.ogg" );
-			printf("myTask( thread %d ) loading Vivaldi, path = %s\n", threadNum, filePath->c_str() );	
-			id = audioMPI.StartAudio( *filePath, kVolume, kPriority, kPan, kNull, kPayload, kFlags );
-			id1 = id;
-			delete filePath;
-			break;
-
-		case 2:
-			filePath = new CPath( "VH_16_mono.ogg" );
-			printf("myTask( thread %d ) found VH_16_mono, path = %s\n", threadNum, filePath->c_str() );	
-			id = audioMPI.StartAudio( *filePath, kVolume, kPriority, kPan, kNull, kPayload, kFlags );
-			id2 = id;
-			delete filePath;
-		break;
-
-		case 3:
-			filePath = new CPath( "SFX.ogg" );
-			printf("myTask( thread %d ) found SFX, path = %s\n", threadNum, filePath->c_str() );	
-			id = audioMPI.StartAudio( *filePath, kVolume, kPriority, kPan, kNull, kPayload, kFlags );
-			id3 = id;
-			delete filePath;
-		break;
-
-		case 4:
-			filePath = new CPath( "Voice.ogg" );
-			printf("myTask( thread %d ) found Voice, path = %s\n", threadNum, filePath->c_str() );	
-			id = audioMPI.StartAudio( *filePath, kVolume, kPriority, kPan, kNull, kPayload, kFlags );
-			id4 = id;
-			delete filePath;
-		break;
-	}
-	
-	printf("===== myTask( thread %d ) back from calling StartAudio(); id = %d\n", threadNum, (int)id );
-
-	// sleep 2 seconds
-	kernelMPI.TaskSleep( 2000 ); 
-
-	// loop sleep 1 second
-	for (index = 0; index < loopCount; index++) {
-		time     = audioMPI.GetAudioTime(     id );
-		volume   = audioMPI.GetAudioVolume(   id );
-		priority = audioMPI.GetAudioPriority( id );
-		pan      = audioMPI.GetAudioPan(      id );
-		printf("==== myTask( thread%d loop#%2d) id=%2ld pri=%d time=%5lu vol=%3d pan=%ld\n", 
-				threadNum, index, id, priority, time, volume, pan );
-		
-		kernelMPI.TaskSleep( 125 ); 
-
-		audioMPI.SetAudioVolume( id, volume - (index*2) );
-                
-		audioMPI.SetAudioPan( id, (S8) BoundS32(pan - index*4, -100, 100));
-
-		kernelMPI.TaskSleep( 125 ); 
-	}
-
-	printf("----------------- myTask( thread %d ) done looping over API tests.()\n", threadNum );
-
-	// Stop audio instead of just bailing out of the thread 
-	// so we can get done msg from player.
-	audioMPI.StopAudio( id, false );
-	printf("==== myTask( thread %d ) back from calling StopAudio()\n", threadNum );
-	
-	printf("+++++++++++ myTask( thread %d ) Exiting... \n" , threadNum );
-
-	return (void *)NULL;
-}	
 
 //============================================================================
 // TestAudioMgr functions
@@ -264,6 +132,26 @@ public:
 		}
 	}
 
+    void testNoSuchFile()
+	{
+		tAudioID 				id;
+				
+		id = pAudioMPI_->StartAudio("nosuchfile.ogg", kVolume, kPriority, kPan,
+									NULL, kPayload, kFlags);
+		
+		TS_ASSERT(id == kNoAudioID);
+	}
+
+    void testUnsupportedExtension()
+	{
+		tAudioID 				id;
+				
+		id = pAudioMPI_->StartAudio("dummy.foo", kVolume, kPriority, kPan,
+									NULL, kPayload, kFlags);
+		
+		TS_ASSERT(id == kNoAudioID);
+	}
+
     void testIsPlaying()
 	{
 		tAudioID 				id;
@@ -299,6 +187,29 @@ public:
 		TS_ASSERT(gotAudioCallback == false);
 	}
 	
+    void testTooManyVorbisFiles()
+	{
+		tAudioID id1, id2, id3, id4;
+		
+		id1 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id1 != kNoAudioID);
+		id2 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id2 != kNoAudioID);
+		id3 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id3 != kNoAudioID);
+		id4 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id4 == kNoAudioID);
+		pAudioMPI_->StopAudio(id1, true);
+		pAudioMPI_->StopAudio(id2, true);
+		pAudioMPI_->StopAudio(id3, true);
+		pAudioMPI_->StopAudio(id4, true);
+
+	}
+
     void testAudioStopWithCallback()
 	{
 		// NOTE! This functionality is BROKEN and should remain so just in case

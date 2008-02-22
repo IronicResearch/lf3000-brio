@@ -281,6 +281,9 @@ CAudioMixer::CAudioMixer( int inChannels )
 	pDebugMPI_->Assert(kNoErr == err,
 					   "Failed to initalize audio output\n" );
 	err = StartAudioOutput();
+
+	nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
+
 	pDebugMPI_->Assert(kNoErr == err,
 					   "Failed to start audio output\n" );
 	
@@ -356,8 +359,6 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 	// count
 	if (active >= kAudioMixer_MaxActiveAudioChannels)
 	{
-		printf("CAudioMixer::FindFreeChannel: all %ld/%d active channels in use\n",
-			   active, kAudioMixer_MaxActiveAudioChannels);
 		return (kNull);
 	}
 
@@ -503,14 +504,6 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	{
 		pPlayer = new CVorbisPlayer( pInfo, newID );
 	} 
-	else
-	{
-		pDebugMPI_->DebugOut( kDbgLvlImportant,
-							  "CAudioMixer::CreatePlayer: Create *NO* Player: "
-							  "invalid file extension ='%s' for file '%s'\n",
-							  sExt,
-							  (char *)pInfo->path->c_str());
-	}
 
 	return (pPlayer);
 }
@@ -523,11 +516,9 @@ void CAudioMixer::DestroyPlayer(CAudioPlayer *pPlayer)
 // ==============================================================================
 // AddPlayer:
 // ==============================================================================
-tErrType CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo,
-								 char *sExt,
-								 tAudioID newID )
+tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 {
-	tErrType ret = kNoErr;
+	tAudioID id = kNoAudioID;
 	CAudioPlayer *pPlayer = NULL;
 	CChannel *pChannel;
 	
@@ -536,19 +527,28 @@ tErrType CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo,
 	pChannel = FindFreeChannel( pInfo->priority );
 	if (!pChannel)
 	{
-		printf("CAudioMixer::AddPlayer: no channel available\n");
-		ret = kAudioNoChannelAvailErr;
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: No channel available\n",
+							 __FUNCTION__);
 		goto error;
 	}
-	pPlayer = CreatePlayer(pInfo, sExt, newID);
+
+	// Generate audio ID
+	nextAudioID++;
+	if (kNoAudioID == nextAudioID) {
+		// Quick hack:	see nextAudioID in startup above
+		nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
+	}
+
+	pPlayer = CreatePlayer(pInfo, sExt, nextAudioID);
 	if (!pPlayer)
 	{
-		printf("CAudioMixer::AddPlayer: failed to create Player with file extension='%s'\n",
-			   sExt);
-		ret = kAudioPlayerCreateErr;
+		pDebugMPI_->DebugOut(kDbgLvlImportant,
+							 "%s: failed to create Player with extension %s\n",
+							 __FUNCTION__, sExt);
 		goto error;
 	}
-	
+	id = nextAudioID;
+
 	pChannel->InitWithPlayer( pPlayer );
 	
 	pChannel->SetPan(	 pInfo->pan );
@@ -560,7 +560,7 @@ tErrType CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo,
 		DestroyPlayer(pPlayer);
  success:
 	MIXER_UNLOCK; 
-	return ret;
+	return id;
 }
 
 // ==============================================================================
