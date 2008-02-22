@@ -80,7 +80,7 @@ class CAudioMixer {
 	CButtonMPI *pButtonMPI_;
 	CChannel* FindFreeChannel( tAudioPriority priority );
 	long FindFreeChannelIndex( tAudioID id );
-	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
+	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
 
 	float			samplingFrequency_;
@@ -89,6 +89,8 @@ class CAudioMixer {
 	void UpdateDSP();
 	void ResetDSP();
 	void SetSamplingFrequency( float x );
+	tAudioID GetNextAudioID(void);
+	tAudioID GetNextMidiID(void);
 
 // Didj is hard-limited to 4 channels : 3 audio + 1 MIDI input channels (stereo)
 #define kAudioMixer_MaxInAudioChannels	4		// 3 active but can have more if others paused	 
@@ -145,6 +147,7 @@ class CAudioMixer {
 	Boolean isPaused_;
 
 	tAudioID nextAudioID;
+	tAudioID nextMidiID;
 };
 
 #endif		// LF_MIXER_H

@@ -89,7 +89,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Defines
 //==============================================================================
-#define	BRIO_MIDI_PLAYER_ID		1	// FIXXX: Hard code player ID for now
 
 #define MIXER_LOCK pDebugMPI_->Assert((kNoErr == pKernelMPI_->LockMutex(mixerMutex_)),\
 									  "Couldn't lock mixer mutex.\n")
@@ -282,7 +281,10 @@ CAudioMixer::CAudioMixer( int inChannels )
 					   "Failed to initalize audio output\n" );
 	err = StartAudioOutput();
 
-	nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
+	// See the documentation for GetNextAudioID and GetNextMidiID to understand
+	// the audio id assignment scheme.
+	nextAudioID = kNoMidiID + 1;
+	nextMidiID = 0;
 
 	pDebugMPI_->Assert(kNoErr == err,
 					   "Failed to start audio output\n" );
@@ -487,23 +489,26 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 // CreatePlayer:   Allocate player based on file extension argument
 // ==============================================================================
 CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
-										char *sExt, tAudioID newID )
+										char *sExt )
 {
 	CAudioPlayer *pPlayer = NULL;
-	
+	tAudioID newID;
+
 	if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
 		!strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")	||
 		!strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
 	{
+		newID = GetNextAudioID();
 		pPlayer = new CRawPlayer( pInfo, newID );
 	}
 	else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
 			 !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
 	{
+		newID = GetNextAudioID();
 		pPlayer = new CVorbisPlayer( pInfo, newID );
-	} 
+	}
 
 	return (pPlayer);
 }
@@ -511,6 +516,37 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 void CAudioMixer::DestroyPlayer(CAudioPlayer *pPlayer)
 {
 	delete pPlayer;
+}
+
+// ==============================================================================
+// And now a word about tAudioIDs.  For legacy reasons, functions that operate
+// on tAudioIDs also must operate on tMidiPlayerIDs.  Unfortunately,
+// tMidiPlayerIDs are 8 bits, and tAudioIDs are 32 bits.  To ensure that we
+// don't get into any trouble, we make the following internal constraint: values
+// tAudioIDs 0-255 are reserved for midi so that they can be casted about from
+// tMidiPlayerIDs to tAudioIDs and vice versa.  All of this muck is constrained
+// to these two functions.
+// ==============================================================================
+tAudioID CAudioMixer::GetNextAudioID(void)
+{
+	tAudioID ret = nextAudioID;
+
+	nextAudioID++;
+	if (kNoAudioID == nextAudioID) {
+		nextAudioID = kNoMidiID + 1;
+	}
+	return ret;
+}
+
+tAudioID CAudioMixer::GetNextMidiID(void)
+{
+	tAudioID ret = nextMidiID;
+
+	nextMidiID++;
+	if (kNoMidiID == nextMidiID) {
+		nextMidiID = 0;
+	}
+	return ret;
 }
 
 // ==============================================================================
@@ -532,22 +568,18 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	}
 
-	// Generate audio ID
-	nextAudioID++;
-	if (kNoAudioID == nextAudioID) {
-		// Quick hack:	see nextAudioID in startup above
-		nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
+	pPlayer = CreatePlayer(pInfo, sExt);
+	if (pPlayer)
+	{
+		id = pPlayer->GetID();
 	}
-
-	pPlayer = CreatePlayer(pInfo, sExt, nextAudioID);
-	if (!pPlayer)
+	else
 	{
 		pDebugMPI_->DebugOut(kDbgLvlImportant,
 							 "%s: failed to create Player with extension %s\n",
 							 __FUNCTION__, sExt);
 		goto error;
-	}
-	id = nextAudioID;
+	} 
 
 	pChannel->InitWithPlayer( pPlayer );
 	
@@ -995,7 +1027,7 @@ CMidiPlayer *CAudioMixer::CreateMIDIPlayer()
 	if (pMidiPlayer_)
 		delete pMidiPlayer_;
 
-	pMidiPlayer_ = new CMidiPlayer( BRIO_MIDI_PLAYER_ID );
+	pMidiPlayer_ = new CMidiPlayer( GetNextMidiID() );
 	MIXER_UNLOCK; 
 	return (pMidiPlayer_);
 }
