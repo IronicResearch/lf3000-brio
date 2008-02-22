@@ -73,43 +73,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	msgData_.audioCompleted.count = loopCounter_;
 	pEvtMsg_ = new CAudioEventMessage(msgData_.audioCompleted);
 
-//#define DEBUG_AUDIOPLAYER_OPTIONS
-#ifdef DEBUG_AUDIOPLAYER_OPTIONS
-	{
-		char sFlags[50];
-		sFlags[0] = '\0';
-		if (optionsFlags_ & kAudioOptionsLoopEndMsg)
-			strcat(sFlags, "SendLoopEnd=On");
-		else
-			strcat(sFlags, "SendLoopEnd=Off");
-		if (optionsFlags_ & kAudioOptionsLooped)
-			strcat(sFlags, "Loop=On ");
-		else
-			strcat(sFlags, "Loop=Off ");
-		if (optionsFlags_ & kAudioOptionsDoneMsgAfterComplete)
-			strcat(sFlags, "SendDone=On");
-		else
-			strcat(sFlags, "SendDone=Off");
-
-		printf("CAudioPlayer::ctor: listener=%d bSendDoneMessage_=%d bSendLoopEndMessage_=%d flags=$%X '%s'\n",
-			   (kNull != pListener_), bSendDoneMessage_, bSendLoopEndMessage_,
-			   (unsigned int)optionsFlags_, sFlags);
-
-		printf("	payload=%d optionsFlags=$%X -> shouldLoop=%d\n", 
-			   (int)payload_, (unsigned int) optionsFlags_, shouldLoop_);
-		printf("	listener=%p DoneMessage=%d LoopEndMessage=%d flags=$%X '%s' loopCount=%ld ($%X)\n", 
-			   (void *)pListener_, bSendDoneMessage_, bSendLoopEndMessage_,
-			   (unsigned int)optionsFlags_, sFlags, 
-			   loopCount_, (unsigned int) loopCount_);
-	}
-#endif // DEBUG_AUDIOPLAYER_OPTIONS
-
-#if PROFILE_DECODE_LOOP
-	totalUsecs_ = 0;
-	minUsecs_	= 1000000;
-	maxUsecs_	= 0;
-	totalBytes_ = 0;
-#endif
 }
 
 //==============================================================================

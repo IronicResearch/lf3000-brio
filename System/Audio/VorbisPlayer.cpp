@@ -143,17 +143,9 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	U32		bytesToRead = 0;
 	char*	bufPtr;
 	U32		framesRead = 0;
-
-#if PROFILE_DECODE_LOOP
-	U32		startTime, endTime, elapsedTime;
-#endif
 	
 	bytesToRead = numStereoFrames * sizeof(S16) * channels_;
 	
-#if	PROFILE_DECODE_LOOP
-	pKernelMPI_->GetHRTAsUsec( startTime );
-#endif	
-
 	// GK FIXX: pad short reads with zeros unless there is looping
 	// GK FIXX: looping is not seamless
 	// Read multiple times because vorbis doesn't always return requested # of
@@ -199,35 +191,6 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 		SendDoneMsg();
 	}
 #endif // VORBISPLAYER_SENDDONE_IN_RENDER
-
-#if	PROFILE_DECODE_LOOP
-	pKernelMPI_->GetHRTAsUsec( endTime );
-
-	if (endTime > startTime) 
-	{
-		elapsedTime = endTime - startTime;
-		if (elapsedTime < minUsecs_)
-			minUsecs_ = elapsedTime;
-		if (elapsedTime > maxUsecs_)
-			maxUsecs_ = elapsedTime;
-		
-		totalUsecs_ += elapsedTime;
-		totalBytes_ += totalBytesRead;
-	}
-	
-	// 1KB of mono 16KHz = 32ms of data
-	if ( totalBytes_ == 1024 ) 
-	{
-		printf("Vorbis Player::Render: Accumulated %lu total bytes.\n\n ",
-			   (long unsigned int)totalBytes_);
-		printf("Vorbis Player::Render: this took %lu usecs.\n\n ",
-			   (long unsigned int)totalUsecs_ );
-		printf("Utilization (assuming 16KHz mono data): %f\n",
-			   (float)(totalUsecs_/(float)32000));	
-		totalUsecs_ = 0;
-		totalBytes_ = 0;
-	}
-#endif
 
 	// Convert bytes back into sample frames
 	framesToProcess = totalBytesRead / sizeof(S16) / channels_;

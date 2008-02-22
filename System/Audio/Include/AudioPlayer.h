@@ -108,12 +108,6 @@ protected:
 	tAudioMsgData		msgData_;		// union of all audio message types
 	CAudioEventMessage*	pEvtMsg_;		// audio event message to be posted 
 
-#if	PROFILE_DECODE_LOOP
-	S32				totalUsecs_;
-	S32				totalBytes_;
-	U32				minUsecs_;
-	U32				maxUsecs_;
-#endif
 };
 
 LF_END_BRIO_NAMESPACE()
