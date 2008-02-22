@@ -23,10 +23,6 @@
 #include "tremor/ivorbisfile.h"
 LF_BEGIN_BRIO_NAMESPACE()
 
-
-// Enable this to generate timing/profiling output for Vorbis decode
-#define PROFILE_DECODE_LOOP		0
-
 //==============================================================================
 // Class:
 //		CVorbisPlayer

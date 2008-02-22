@@ -14370,3 +14370,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 4:48 PM
 5,594 ms. (Cumulative: 4,093,328 ms)
 
 ----------------
+Revision 3,042 from svn://localhost/TRUNK/:
+Revision 3,043 from svn://localhost/TRUNK/:
+
+Eliminating dead profiling and debug features in audio.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 5:03 PM
+4 changed, 0 added, 0 deleted.
+5,266 ms. (Cumulative: 4,098,672 ms)
+
+----------------
