@@ -249,9 +249,7 @@ CAudioMixer::CAudioMixer( int inChannels )
 		
 		bool isSpeaker = IsSpeakerOn();
 		EnableSpeaker(isSpeaker);
-		
-		d->headroomBits = kMixer_HeadroomBits_Default;
-		
+				
 		d->softClipperPreGainDB	 = (S16) kMixer_SoftClipper_PreGainDB;
 		d->softClipperPostGainDB = (S16) kMixer_SoftClipper_PostGainDB;
 		
@@ -344,13 +342,6 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 {
 	CChannel *pCh;
 
-#ifdef KEEP_FOR_DEBUGGING
-	for (long i = 0; i < numInChannels_; i++)
-	{
-		pCh = &pChannels_[i];
-	}
-#endif
-
 	long active = 0;
 	long idle	= 0;
 	long paused = 0;
@@ -360,20 +351,6 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 		idle   += (!pChannels_[i].IsInUse());
 		paused +=	pChannels_[i].IsPaused();
 	}
-
-//#define DEBUG_MIXER_FINDFREECHANNEL
-#ifdef DEBUG_MIXER_FINDFREECHANNEL
-	{
-		for (long i = 0; i < numInChannels_; i++)
-		{
-			pCh = &pChannels_[i];
-			printf("CAudioMixer::FindFreeChannel: ch%ld idle=%d paused=%d\n",
-				   i, !pCh->IsInUse(), pCh->IsPaused());
-		}
-		printf("CAudioMixer::FindFreeChannel: idle=%ld active=%ld paused=%ld total=%d\n",
-			   idle, active, paused, numInChannels_);
-	}
-#endif // DEBUG_MIXER_FINDFREECHANNEL
 
 	// Although more channels are actually available, limit to preset active
 	// count
@@ -388,15 +365,13 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 	for (long i = 0; i < numInChannels_; i++)
 	{
 		pCh = &pChannels_[i];
-		if (!pCh->IsInUse())// && pCh->isDone_) 
+		if (!pCh->IsInUse())
 		{
 			return (pCh);
 		}
 	}
 	
 	// Reaching this point means all channels are currently in use
-	//printf("CAudioMixer::FindFreeChannel: all %d channels in use.\n",
-	//numInChannels_);
 	return (kNull);
 }
 
@@ -608,10 +583,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 
 	TimeStampOn(0);
 
-	// Update parameters from AudioState
-	// GK FIXXX:  Mutex-protect this
-	audioState_.headroomBits = kMixer_HeadroomBits_Default;
-	
 	// Clear stereo mix buffers
 	for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
@@ -645,7 +616,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
 			S16 *pMixBin = pMixBinBufs_[mixBinIndex];
 			ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount,
-						   audioState_.headroomBits);
+						   kMixer_HeadroomBits_Default);
 			AccS16toS16(pMixBin, pChannelBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
 			mixBinFilled_[mixBinIndex] = True;
@@ -663,7 +634,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		ClearShorts(pChannelBuf_, framesToRender);
 		framesRendered = pMidiPlayer_->Render( pChannelBuf_, framesToRender); 
 		ShiftRight_S16(pChannelBuf_, pChannelBuf_,
-					   sampleCount, audioState_.headroomBits);
+					   sampleCount, kMixer_HeadroomBits_Default);
 		AccS16toS16(pMixBinBufs_[mixBinIndex], pChannelBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
 		mixBinFilled_[mixBinIndex] = True;
@@ -742,12 +713,12 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			S16 *pOut = tPtrs[ch]; 
 			
 			// GK_FIXX: move to setup code
-			outSoftClipper_[ch].headroomBits = audioState_.headroomBits;
+			outSoftClipper_[ch].headroomBits = kMixer_HeadroomBits_Default;
 			ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
 		}
 		InterleaveShorts(tPtrs[0], tPtrs[1], pOut, numFrames);
 	}
-	ShiftLeft_S16(pOut, pOut, numFrames*channels, audioState_.headroomBits);
+	ShiftLeft_S16(pOut, pOut, numFrames*channels, kMixer_HeadroomBits_Default);
 	
 	TimeStampOff(0);
 
