@@ -116,11 +116,6 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 // ==============================================================================
 CRawPlayer::~CRawPlayer()
 {
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	tErrType result = pKernelMPI_->LockMutex( renderMutex_ );
-	if (kNoErr != result)
-		printf("~CRawPlayer: Couldn't lock render_mutex\n");
-#endif
 
 	if (pReadBuf_)
 		delete pReadBuf_;
@@ -135,21 +130,6 @@ CRawPlayer::~CRawPlayer()
 	{
 		CloseSoundFile(&inFile_);
 	}
-
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	if (kNoErr != result)
-		printf("~CRawPlayer: Couldn't unlock renderMutex\n");
-
-	result = pKernelMPI_->DeInitMutex( renderMutex_ );
-	if (kNoErr != result)
-		printf("~CRawPlayer: Couldn't deinit rendeMutex\n");
-	if (pKernelMPI_)	
-	{
-		delete pKernelMPI_;	 
-		pKernelMPI_ = NULL;
-	}
-#endif
 
 	// If anyone is listening, let them know we're done.
 	if (pListener_ && bSendDoneMessage_)
@@ -202,20 +182,6 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 
 	if (bComplete_)
 		return (0);
-
-	// Don't want to try to render if stop() or dtor() have been entered.
-	// TODO/dg: this is a really ugly hack.  Need to figure out what to return
-	// in the case of render being called while stopping/dtor is running.
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->TryLockMutex( renderMutex_ );
-	if (EBUSY == result)
-	{
-		printf("CRawPlayer::Render: EBUSY == renderMutex.\n");
-		return (0);
-	}
-	if (kNoErr != result)
-		printf("CRawPlayer::Render: Unable to lock renderMutex.\n");
-#endif
 
 	// Read data from file to output buffer
 	//
@@ -281,14 +247,6 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 			pOut[1] = x;
 		}
 	}
-			
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "CRawPlayer::Render: Unable to unlock render_mutex.\n");
-	if (kNoErr != result)	
-		printf("CRawPlayer::Render: Unable to unlock renderMutex.\n");
-#endif
 
 //#define RAWPLAYER_SENDDONE_IN_RENDER
 #ifdef RAWPLAYER_SENDDONE_IN_RENDER

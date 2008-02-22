@@ -46,20 +46,15 @@ class CAudioPlayer {
 	// Return status
 	inline U8 ShouldSendDoneMessage()	 { return bSendDoneMessage_;   }
 	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
-	//inline U8		HasAudioCodec()		 { return bHasAudioCodec_; }
 	inline U8		IsComplete()		 { return bComplete_;	   }
 	inline U8		IsPaused()			 { return bPaused_;		   }
 
 	// Get/Set class member variables
-	// GK FIXX:	used for AudioIDFromMIDIID()? 
 	inline tAudioID			GetAudioID() { return id_; }
 	inline tAudioID			GetID()		 { return id_; }
 	inline void				ActivateSendDoneMessage	  (Boolean x) { bSendDoneMessage_	 = x; }
 	inline void				ActivateSendLoopEndMessage(Boolean x) { bSendLoopEndMessage_ = x; }
 	
-	//void Set_WaitForRender( long x ) {waitForRender_ = x;}
-	//long Get_WaitForRender( void   ) {return (waitForRender_);}
-
 	inline tAudioPriority	GetPriority()				  { return priority_; }
 	inline void				SetPriority(tAudioPriority x) { priority_ = x; }
 
@@ -82,18 +77,11 @@ class CAudioPlayer {
 	inline CAudioEventMessage*	GetAudioEventMsg() 		{ return pEvtMsg_; }
 	
 protected:
-//#define USE_AUDIO_PLAYER_MUTEX
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	CKernelMPI*		pKernelMPI_;		
-	tMutex			renderMutex_;		// To make Render() thread-safe
-#endif
-
 	S16				*pReadBuf_;
 
 	U8			bPaused_;				
 	U8			bComplete_;			 // Player has completed generating audio
 	U8			bStopping_;			 // Stop() has been called, but not yet stopped
-//	U8			bHasAudioCodec_;	
 	U8			bSendDoneMessage_;	 // Caller requests done message 
 	U8			bSendLoopEndMessage_;// Send each time the end of the loop has been reached
 

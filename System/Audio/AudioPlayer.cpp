@@ -39,17 +39,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 {	
 	id_ = id;
 
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	// Setup Mutex object for protecting render calls
-	pKernelMPI_ =  new CKernelMPI();
-	result = pKernelMPI_->IsValid();
-	pDebugMPI_->Assert((true == result), "CRawPlayer::ctor: Unable to create KernelMPI.\n");
-
-	const tMutexAttr	attr = {0};
-	result = pKernelMPI_->InitMutex( render_mutex_, attr );
-	pDebugMPI_->Assert((kNoErr == result), "CRawPlayer::ctor: Unable to init mutex.\n");
-#endif
-
 	// Allocate player's sample buffer
 	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // GK FIXX:	2x needed?
 

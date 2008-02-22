@@ -88,10 +88,6 @@ CVorbisPlayer::~CVorbisPlayer()
 {
 	tErrType result;
 	
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->LockMutex( render_Mtex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::dtor -- Couldn't lock mutex.\n");
-#endif
 	// If anyone is listening, let them know we're done.
 	if (pListener_ && bSendDoneMessage_)
 	{
@@ -106,16 +102,6 @@ CVorbisPlayer::~CVorbisPlayer()
 	if ( ret < 0)
 		printf("Could not close OggVorbis file.\n");
 
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "CVorbisPlayer::dtor: Couldn't unlock mutex.\n");
-	result = pKernelMPI_->DeInitMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result),
-					   "CVorbisPlayer::dtor: Couldn't deinit mutex.\n");
-	if (pKernelMPI_)
-		delete (pKernelMPI_);
-#endif
 	pDebugMPI_->DebugOut( kDbgLvlVerbose, " CVorbisPlayer::dtor -- vaporizing...\n");
 	
 	// Free MPIs
@@ -162,15 +148,6 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	U32		startTime, endTime, elapsedTime;
 #endif
 	
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->TryLockMutex( renderMutex_ );
-	// TODO/dg: this is a really ugly hack.  need to figure out what to return
-	// in the case of render being called while stopping/dtor is running.
-	if (EBUSY == result)
-		return numStereoFrames;
-	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::Render: Couldn't lock mutex.\n");
-#endif
-
 	bytesToRead = numStereoFrames * sizeof(S16) * channels_;
 	
 #if	PROFILE_DECODE_LOOP
@@ -276,11 +253,6 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 		}
 	}
 	
-#ifdef USE_AUDIO_PLAYER_MUTEX
-	result = pKernelMPI_->UnlockMutex( renderMutex_ );
-	pDebugMPI_->Assert((kNoErr == result), "CVorbisPlayer::Render -- Couldn't unlock mutex.\n");
-#endif
-
 	return (framesRead);  
 }
 
