@@ -566,6 +566,46 @@ tErrType CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo,
 // ==============================================================================
 // Render:	Main mixer render routine
 //
+// Clear all of the mixer bin buffers.  There's one of these for each supported
+// sample rate (i.e., fs, fs/2, and fs/4).
+//
+// For each channel, render into the global temp buffer pChannelBuf_, scale the
+// rendered output down by kMixer_HeadroomBits_Default, add the output from
+// pChannelBuf_ to the appropriate frequency bin.
+//
+// Render midi output to pChannelBuf_, scale the output down by
+// kMixer_HeadroomBits_Default, add the output from pChannelBuf_ to the
+// appropriate frequency bin.
+//
+// Copy samples from the frequency bin corresponding to the hardware's sample
+// rate to the output buffer.
+//
+// Deinterleave the contents of the fs/4 frequency bin, convert the
+// deinterleaved samples from fs/4 to fs/2, re-interleave the samples, and add
+// them to the fs/2 frequency bin.
+//
+// Deinterleave the contents of the fs/2 frequency bin, convert the
+// deinterleaved samples from fs/2 to fs, re-interleave the samples, and add
+// them to the output buffer.
+//
+// Apply master gain to output buffer.  This is a real multiply, not a shift.
+// 
+// Deinterleave the output samples into temp buffers, apply the soft clipper to
+// each channel, then reinterleave.
+//
+// Scale the output back up by kMixer_HeadroomBits_Default.
+//
+// Comments:
+//
+// By using 32 bit samples for the output of the sample rate conversion, the
+// shifts by kMixer_HeadroomBits_Default can be eliminated.  This will improve
+// performance by eliminating several linear passes over the buffers and
+// preserve two bits of precision.
+//
+// Staged sample rate conversion is not saving any performance, but is difficult
+// to maintain and extend.  Frequency bins should each be independently
+// resampled and added to the output buffer.
+//
 //							Return # of frames rendered.  
 //	  (GX FIXXX:  incorrect return value.  Could be Max of channel returns values.)
 // ==============================================================================
