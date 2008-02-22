@@ -133,11 +133,6 @@ class CAudioMixer {
 	float headphoneGainFracF_;
 	Q15 headphoneGainFracI_;
 
-//	Output EQ parameters
-#define kAudioMixer_MaxEQBands	3
-	long outEQ_BandCount_;
-	EQ outEQ_[kAudioMixer_MaxOutChannels][kAudioMixer_MaxEQBands];
-
 	// File I/O debug stuff
 	long inSoundFileDone_;
 	SNDFILE	*inSoundFile_;

@@ -255,10 +255,8 @@ CAudioMixer::CAudioMixer( int inChannels )
 			printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n",
 				   sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 		
-		d->useOutEQ			  = false;
 		d->useOutSoftClipper  = true;
-		d->useOutDSP		  = (d->useOutEQ ||
-								 d->useOutSoftClipper);
+		d->useOutDSP		  = d->useOutSoftClipper;
 		
 		SetMasterVolume(100);
 		
@@ -295,13 +293,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 	// ---- Configure DSP engine
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
-		// Configure output Equalizer
-		outEQ_BandCount_ = 1;
-		for (j = 0; j < kAudioMixer_MaxEQBands; j++)
-		{
-			DefaultEQ(&outEQ_[ch][j]);
-		}
-		
 		// Configure output "soft" clipper
 		DefaultWaveShaper(&outSoftClipper_[ch]);
 		outSoftClipper_[ch].useFixedPoint = true;
@@ -875,7 +866,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	}
 
 	// ---- Output DSP block
-	if (audioState_.useOutEQ || audioState_.useOutSoftClipper)
+	if (audioState_.useOutSoftClipper)
 		audioState_.useOutDSP  = true;
 
 	if (audioState_.useOutDSP)
@@ -885,15 +876,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		{ 
 			S16 *pIn  = tPtrs[ch];
 			S16 *pOut = tPtrs[ch]; 
-			// Compute Output Equalizer
-			if (audioState_.useOutEQ)
-			{
-				for (long j = 0; j < outEQ_BandCount_; j++)
-				{
-					ComputeEQi(pIn, pOut, numFrames, &outEQ_[ch][j]);
-					pOut = pIn;
-				}
-			}
 			
 			// Compute Output Soft Clipper
 			if (audioState_.useOutSoftClipper)
@@ -1056,8 +1038,6 @@ void CAudioMixer::SetSamplingFrequency( float x )
 	for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
 		long i;
-		for (i = 0; i < outEQ_BandCount_; i++)
-			SetEQ_SamplingFrequency(&outEQ_[ch][i], x);
 
 		SetWaveShaper_SamplingFrequency(&outSoftClipper_[ch], x);
 
@@ -1086,22 +1066,7 @@ void CAudioMixer::SetDSP()
 		SetWaveShaper_SamplingFrequency(ws, samplingFrequency_);
 		SetWaveShaper_Parameters(ws, kWaveShaper_Type_V4,
 								 (float)d->softClipperPreGainDB,
-								 (float)d->softClipperPostGainDB);
-		
-		{
-			// Apply equalizer
-			outEQ_BandCount_ = 3;
-			SetEQ_Parameters(&outEQ_[ch][0], 1000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-			SetEQ_Parameters(&outEQ_[ch][1], 2000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-			SetEQ_Parameters(&outEQ_[ch][2], 4000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-			
-			for (long j = 0; j < outEQ_BandCount_; j++)
-			{
-				SetEQ_SamplingFrequency(&outEQ_[ch][j], samplingFrequency_);
-				PrepareEQ(&outEQ_[ch][j]);	  
-			}
-		}
-		
+								 (float)d->softClipperPostGainDB);		
 	}
 }
 
@@ -1114,9 +1079,7 @@ void CAudioMixer::UpdateDSP()
 
 	for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
-		for (i = 0; i < outEQ_BandCount_; i++)
-			UpdateEQ(&outEQ_[ch][i]);
-		
+
 		UpdateWaveShaper(&outSoftClipper_[ch]);
 		
 		for (i = 0; i < kAudioMixer_SRCCount; i++)
@@ -1132,8 +1095,6 @@ void CAudioMixer::ResetDSP()
 	long ch, i;
 	for (ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 	{
-		for (i = 0; i < outEQ_BandCount_; i++)
-			ResetEQ(&outEQ_[ch][i]);
 
 		ResetWaveShaper(&outSoftClipper_[ch]);
 

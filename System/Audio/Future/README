@@ -11,3 +11,4 @@ audio effect once that feature is in place.  That is, it should extend the
 IAudioEffect base class and be added to the processing chain using the suitable
 AudioMPI call, once that feature is supported.
 
+OutputEqualizer.cpp: Same story as LevelMeter.cpp.
