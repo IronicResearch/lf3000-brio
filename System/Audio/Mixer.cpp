@@ -256,7 +256,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 				   sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 		
 		d->useOutSoftClipper  = true;
-		d->useOutDSP		  = d->useOutSoftClipper;
 		
 		SetMasterVolume(100);
 		
@@ -865,11 +864,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			   inputDCValueDB, inputDCValuef, outputDCValueDB, outputDCValuef, outputDCValuei);
 	}
 
-	// ---- Output DSP block
+	// Apply soft clipper
 	if (audioState_.useOutSoftClipper)
-		audioState_.useOutDSP  = true;
-
-	if (audioState_.useOutDSP)
 	{
 		DeinterleaveShorts(pOut, tPtrs[0], tPtrs[1], numFrames);
 		for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
@@ -877,16 +873,9 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			S16 *pIn  = tPtrs[ch];
 			S16 *pOut = tPtrs[ch]; 
 			
-			// Compute Output Soft Clipper
-			if (audioState_.useOutSoftClipper)
-			{
-				// GK_FIXX: move to setup code
-				outSoftClipper_[ch].headroomBits = audioState_.headroomBits;
-				ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
-			}
-			else
-			{
-			}
+			// GK_FIXX: move to setup code
+			outSoftClipper_[ch].headroomBits = audioState_.headroomBits;
+			ComputeWaveShaper(pIn, pOut, numFrames, &outSoftClipper_[ch]);
 		}
 		InterleaveShorts(tPtrs[0], tPtrs[1], pOut, numFrames);
 	}
