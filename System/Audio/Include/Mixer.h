@@ -71,7 +71,6 @@ class CAudioMixer {
 	static int WrapperToCallRender( S16 *pOut, U32 frameCount, void *pObject );
 
 	tAudioState audioState_;
-//	  DSP_BLOCK	  *dspBlock;
 
 	// Level Meter data
 	S16 outLevels_ShortTime[2];
@@ -99,14 +98,6 @@ class CAudioMixer {
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt, tAudioID newID );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
 
-//#define NEW_ADD_PLAYER
-#define OLD_ADD_PLAYER
-#ifdef NEW_ADD_PLAYER
-	CAudioPlayer *playerToAdd_;
-	CChannel	 *targetChannel_;
-#endif
-
-//	BRIOMIXER		pDSP_;
 	float			samplingFrequency_;
 
 	void SetDSP();

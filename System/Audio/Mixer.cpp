@@ -172,11 +172,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 					   "CAudioMixer::CAudioMixer: %d is too many channels!\n",
 					   numInChannels_ );
 	
-#ifdef NEW_ADD_PLAYER
-	playerToAdd_  = NULL;
-	targetChannel_= NULL;
-#endif
-
 	samplingFrequency_ = kAudioSampleRate;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
@@ -707,16 +702,7 @@ tErrType CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo,
 		goto error;
 	}
 	
-#ifdef NEW_ADD_PLAYER
-	// Trigger flags to call SetPlayer() in Mixer render loop
-	// GK NOTE:	 this is crap due to race condition
-	targetChannel_ = pChannel;	// Do this one first
-	playerToAdd_   = pPlayer;
-#endif // NEW_ADD_PLAYER
-	
-#ifdef OLD_ADD_PLAYER
 	pChannel->InitWithPlayer( pPlayer );
-#endif // OLD_ADD_PLAYER
 	
 	pChannel->SetPan(	 pInfo->pan );
 	pChannel->SetVolume( pInfo->volume );
@@ -753,22 +739,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	// Update parameters from AudioState
 	// GK FIXXX:  Mutex-protect this
 	audioState_.headroomBits = kMixer_HeadroomBits_Default;
-
-#ifdef NEW_ADD_PLAYER
-	// GK FIXXXX: HACK	need to mutex-protect this
-	if (playerToAdd_)
-	{
-		CAudioPlayer *pPlayer  = playerToAdd_;
-		CChannel	 *pChannel = targetChannel_;
-		playerToAdd_  = NULL;
-		targetChannel_= NULL;
-		printf("CAudioMixer::Render: Adding player\n");
-		pChannel->SetPlayer(pPlayer, true); 
-		pChannel->SetInUse(true);
-		pChannel->isDone_ = false;
-		printf("CAudioMixer::Render: Added player\n");
-	}
-#endif // NEW_ADD_PLAYER
 	
 	// Clear stereo mix buffers
 	for (i = 0; i < kAudioMixer_MixBinCount; i++)
