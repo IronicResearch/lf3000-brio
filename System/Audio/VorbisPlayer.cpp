@@ -184,14 +184,6 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 		bufPtr		   += bytesRead;
 	}
 	
-//#define VORBISPLAYER_SENDDONE_IN_RENDER
-#ifdef VORBISPLAYER_SENDDONE_IN_RENDER
-	if (pListener_ && bDoneMessage_ && fileEndReached)
-	{
-		SendDoneMsg();
-	}
-#endif // VORBISPLAYER_SENDDONE_IN_RENDER
-
 	// Convert bytes back into sample frames
 	framesToProcess = totalBytesRead / sizeof(S16) / channels_;
 			
