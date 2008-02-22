@@ -14482,3 +14482,12 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 11:23 AM
 5,422 ms. (Cumulative: 4,141,162 ms)
 
 ----------------
+Revision 3,057 from svn://localhost/TRUNK/:
+
+Eliminating unused DC input debug feature.
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 11:28 AM
+1 changed, 0 added, 0 deleted.
+5,456 ms. (Cumulative: 4,146,697 ms)
+
+----------------
