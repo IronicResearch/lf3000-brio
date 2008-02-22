@@ -14418,3 +14418,22 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 5:24 PM
 5,079 ms. (Cumulative: 4,114,063 ms)
 
 ----------------
+Revision 3,047 from svn://localhost/TRUNK/:
+Revision 3,048 from svn://localhost/TRUNK/:
+Revision 3,049 from svn://localhost/TRUNK/:
+Revision 3,050 from svn://localhost/TRUNK/:
+Revision 3,051 from svn://localhost/TRUNK/:
+
+Created Future folder under audio to hold features that have not been integrated
+properly.  See the README in that directory for more details.
+
+Migrated level sensing functionality to Future folder.  It should not be
+integrated into product runtime code.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 10:27 AM
+3 changed, 2 added, 0 deleted.
+5,157 ms. (Cumulative: 4,119,313 ms)
+
+----------------
