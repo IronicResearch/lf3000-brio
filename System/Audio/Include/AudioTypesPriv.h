@@ -59,7 +59,6 @@ typedef struct taudiostate {
 
 	long   systemSamplingFrequency;
 
-	U8	   headroomBits;
 	float  channelGainDB;
 	float  masterGainf[2];
 } tAudioState; 
