@@ -45,9 +45,7 @@ class CAudioMixer {
 	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
 	tAudioID GetMidiPlayer_AudioID( void ) { return (1); }
 
-	tErrType AddPlayer(	tAudioStartAudioInfo *pInfo,
-						char *sExt,
-						tAudioID newID );
+	tAudioID AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 
 	CMidiPlayer *CreateMIDIPlayer();
 	void DestroyMIDIPlayer();
@@ -146,6 +144,7 @@ class CAudioMixer {
 
 	Boolean isPaused_;
 
+	tAudioID nextAudioID;
 };
 
 #endif		// LF_MIXER_H

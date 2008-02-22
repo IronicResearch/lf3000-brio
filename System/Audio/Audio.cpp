@@ -35,7 +35,6 @@ namespace
 	struct tAudioContext {
 		CAudioMixer*		pAudioMixer;		
 		CMidiPlayer*		pMidiPlayer;
-		tAudioID			nextAudioID;	
 		CPath				gpath;
 	};
 
@@ -161,8 +160,6 @@ CAudioModule::CAudioModule( void )
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
 						 "CAudioModule::ctor -- Initalizing Audio Module...");
 
-	gAudioContext.nextAudioID = BRIO_MIDI_PLAYER_ID + 1;
-	
 	// Allocate global audio mixer
 	gAudioContext.pAudioMixer = new CAudioMixer(kAudioNumMixerChannels);
 	
@@ -400,9 +397,8 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 								   tAudioOptionsFlags flags )
 {
 
-	tAudioID id = kNoAudioID;
 	struct stat fileStat;
-	tErrType err;
+	tAudioID id = kNoAudioID;
 	tAudioStartAudioInfo Ai;
 	int strIndex;
 	CPath filename, fileExt;
@@ -413,7 +409,8 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 		(path.at(0) == '/') ? path : gAudioContext.gpath + path;
 	if(stat(fullPath.c_str(), &fileStat) != 0)
 	{
-		printf("%s: file doesn't exist='%s\n", __FUNCTION__, path.c_str());
+		pDebugMPI_->DebugOut(kDbgLvlVerbose, "%s: file doesn't exist='%s\n",
+							 __FUNCTION__, path.c_str());
 		goto error;
 	}
 
@@ -423,13 +420,6 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	strIndex = fullPath.rfind('.', fullPath.size());
 	fileExt	 = fullPath.substr(strIndex + 1, strIndex + 4);
 	
-	// Generate audio ID
-	gAudioContext.nextAudioID++;
-	if (kNoAudioID == gAudioContext.nextAudioID) {
-		// Quick hack:	see nextAudioID in startup above
-		gAudioContext.nextAudioID = (2);
-	}
-	id = gAudioContext.nextAudioID;
 	// Create player based on file extension
 
 	Ai.path = &fullPath;
@@ -439,11 +429,10 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	Ai.pListener = pListener;
 	Ai.payload = payload;
 	Ai.flags = flags;
-	err = gAudioContext.pAudioMixer->AddPlayer(&Ai, (char *)fileExt.c_str(), id);
-	if (kNoErr != err)
+	id = gAudioContext.pAudioMixer->AddPlayer(&Ai, (char *)fileExt.c_str());
+	if (kNoAudioID == id)
 	{
 		printf("%s: unable to add File='%s'\n", __FUNCTION__, filename.c_str());
-		id = kNoAudioID;
 		goto error;
 	}
 
