@@ -268,37 +268,7 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo )
 	bSendLoopEndMessage_ = ((kNull != pListener_) &&
 							(0 != (pInfo->flags & kAudioOptionsLoopEndMsg)));
 
-//#define DEBUG_MIDIPLAYER_OPTIONS
-#ifdef DEBUG_MIDIPLAYER_OPTIONS
-	{
-		char sFlags[50];
-		sFlags[0] = '\0';
-		if (optionsFlags_ & kAudioOptionsLoopEndMsg)
-			strcat(sFlags, "SendLoopEnd=On ");
-		else
-			strcat(sFlags, "SendLoopEnd=Off ");
-		if (optionsFlags_ & kAudioOptionsLooped)
-			strcat(sFlags, "Loop=On ");
-		else
-			strcat(sFlags, "Loop=Off ");
-		if (optionsFlags_ & kAudioOptionsDoneMsgAfterComplete)
-			strcat(sFlags, "SendDone=On ");
-		else
-			strcat(sFlags, "SendDone=Off ");
-
-		printf("CMidiPlayer::ctor: listener=%d bSendDoneMessage_=%d bSendLoopEndMessage_=%d flags=$%X '%s'\n", (kNull != pListener_), bSendDoneMessage_, bSendLoopEndMessage_, (unsigned int)optionsFlags_, sFlags);
-
-		printf("	payload=%d optionsFlags=$%X -> shouldLoop=%d\n", 
-			   (int)pInfo->payload, (unsigned int) optionsFlags_, shouldLoop_);
-		printf("	listener=%p DoneMessage=%d LoopEndMessage=%d flags=$%X '%s' loopCount=%ld ($%X)\n", 
-			   (void *)pListener_, bSendDoneMessage_, bSendLoopEndMessage_, (unsigned int)optionsFlags_, sFlags, 
-			   loopCount_, (unsigned int) loopCount_);
-	}
-#endif // DEBUG_MIDIPLAYER_OPTIONS
-
-	//
 	// ----Selectively load instruments
-	//
 	{
 		int err;
 		int preOrchestraCount = 0;
@@ -308,12 +278,8 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo )
 		SPMIDI_ProgramList *programList =  NULL;
 		CPath orchestraFileName;
 
-//#define GK_ORCHESTRALOAD_TEST
-#ifdef GK_ORCHESTRALOAD_TEST
-		orchestraFileName = "/home/lfu/workspace/Brio2/ThirdParty/Mobileer/Libs/orch_100207.mbis";
-#else
 		orchestraFileName = GetAppRsrcFolder() + "orchestra.mbis";
-#endif
+
 		err = SPMIDI_CreateProgramList( &programList );
 		if( err < 0 ) 
 			printf("CMidiPlayer::StartMidiFile: SPMIDI_CreateProgramList failed\n");
@@ -500,8 +466,7 @@ tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask trackBits,
 //		NOTE:  yes, this is not a great mapping of 256 values, but it's easy to
 //		hit the key values of 1/16, 1/8, 1/4, 1/2, 2, 4, 8, 16 x
 // ==============================================================================
-tErrType 
-CMidiPlayer::ChangeTempo( S8 tempoScale )
+tErrType CMidiPlayer::ChangeTempo( S8 tempoScale )
 {
 	if (tempoScale < -127)
 		tempoScale = -127;
