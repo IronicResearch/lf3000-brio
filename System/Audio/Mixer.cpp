@@ -84,12 +84,6 @@
 #define kMixer_SoftClipper_PreGainDB   3 
 #define kMixer_SoftClipper_PostGainDB  0
 
-// Debug input/output stuff
-
-float outputDCValueDB;
-float outputDCValuef;
-Q15	  outputDCValuei;
-
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -221,12 +215,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 			src->filterVersion = kSRC_FilterVersion_8;
 		}
 	}
-
-	// Input debug stuff
-	inputIsDC	   = false;
-	inputDCValueDB = 0.0f; // 0.0f, -3.01f, -6.02f
-	inputDCValuef  = DecibelToLinearf(inputDCValueDB);
-	inputDCValuei  = FloatToQ15(inputDCValuef);
 
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
@@ -652,8 +640,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 				pCh->isDone_ = true;
 				//Done message is sent later
 			}
-			if (inputIsDC) 
-				SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
+
 			// Add output to appropriate Mix "Bin" 
 			long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
 			S16 *pMixBin = pMixBinBufs_[mixBinIndex];
@@ -744,16 +731,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	// move earlier in signal chain to reduce clipping in those stages
 	// //ScaleShortsf(pOut, pOut, numFrames*channels, masterGainf_[0]);
 	ScaleShortsi_Q15(pOut, pOut, numFrames*channels, masterGaini_[0]);
-
-	// Test with DC input
-	if (inputIsDC)
-	{
-		outputDCValuei	= pOut[0];
-		outputDCValuef	= Q15ToFloat(outputDCValuei);
-		outputDCValueDB = LinearToDecibelf(outputDCValuef);
-		printf("CAudioMixer: in DC %g dB -> %g |out %g dB -> %g (%d)\n", 
-			   inputDCValueDB, inputDCValuef, outputDCValueDB, outputDCValuef, outputDCValuei);
-	}
 
 	// Apply soft clipper
 	if (audioState_.useOutSoftClipper)
