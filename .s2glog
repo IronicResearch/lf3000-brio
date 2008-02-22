@@ -14405,3 +14405,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 5:16 PM
 5,046 ms. (Cumulative: 4,108,906 ms)
 
 ----------------
+Revision 3,046 from svn://localhost/TRUNK/:
+
+Eliminate PrintMemoryUsage function.  It was lying.
+Eliminate dead equalizers.
+Other minor clean up.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/21/08 5:24 PM
+2 changed, 0 added, 0 deleted.
+5,079 ms. (Cumulative: 4,114,063 ms)
+
+----------------

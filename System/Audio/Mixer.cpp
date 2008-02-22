@@ -909,12 +909,11 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 
 	if (audioState_.useOutDSP)
 	{
-#define kTmpIndex 0
-		DeinterleaveShorts(pOut, tPtrs[kTmpIndex], tPtrs[kTmpIndex+1], numFrames);
+		DeinterleaveShorts(pOut, tPtrs[0], tPtrs[1], numFrames);
 		for (long ch = 0; ch < kAudioMixer_MaxOutChannels; ch++)
 		{ 
-			S16 *pIn  = tPtrs[kTmpIndex+ch];
-			S16 *pOut = tPtrs[kTmpIndex+ch]; 
+			S16 *pIn  = tPtrs[ch];
+			S16 *pOut = tPtrs[ch]; 
 			// Compute Output Equalizer
 			if (audioState_.useOutEQ)
 			{
@@ -936,7 +935,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			{
 			}
 		}
-		InterleaveShorts(tPtrs[kTmpIndex], tPtrs[kTmpIndex+1], pOut, numFrames);
+		InterleaveShorts(tPtrs[0], tPtrs[1], pOut, numFrames);
 	}
 	ShiftLeft_S16(pOut, pOut, numFrames*channels, audioState_.headroomBits);
 
@@ -1166,43 +1165,24 @@ void CAudioMixer::SetDSP()
 	{
 		WAVESHAPER *ws = &outSoftClipper_[ch];
 		SetWaveShaper_SamplingFrequency(ws, samplingFrequency_);
-			SetWaveShaper_Parameters(ws, kWaveShaper_Type_V4,
-									 (float)d->softClipperPreGainDB,
-									 (float)d->softClipperPostGainDB);
-
-			{
-//#define EQ_WITH_LOWPASS_RESPONSE
-//#define EQ_WITH_RESONANT_SPIKES
-#define EQ_WITH_FLAT_RESPONSE
-#ifdef EQ_WITH_LOWPASS_RESPONSE
-				outEQ_BandCount_ = 1;
-				SetEQ_Parameters(&outEQ_[ch][0], 200.0f, 20.0f, 10.0f, kEQ_Mode_LowPass);
-				SetEQ_Parameters(&outEQ_[ch][1], 200.0f, 20.0f,	 0.0f, kEQ_Mode_Parametric);
-				SetEQ_Parameters(&outEQ_[ch][2], 400.0f, 20.0f,	 0.0f, kEQ_Mode_LowShelf);
-#endif 
-#ifdef EQ_WITH_RESONANT_SPIKES
-				{
-					float q = 20.0f;
-					float gainDB = 10.0f;
-					outEQ_BandCount_ = 3;
-					SetEQ_Parameters(&outEQ_[ch][0], 100.0f, q, gainDB, kEQ_Mode_Parametric);
-					SetEQ_Parameters(&outEQ_[ch][1], 200.0f, q, gainDB, kEQ_Mode_Parametric);
-					SetEQ_Parameters(&outEQ_[ch][2], 400.0f, q, gainDB, kEQ_Mode_Parametric);
-				}
-#endif 
-#ifdef EQ_WITH_FLAT_RESPONSE
-				outEQ_BandCount_ = 3;
-				SetEQ_Parameters(&outEQ_[ch][0], 1000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-				SetEQ_Parameters(&outEQ_[ch][1], 2000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-				SetEQ_Parameters(&outEQ_[ch][2], 4000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
-#endif 
-				for (long j = 0; j < outEQ_BandCount_; j++)
-				{
-					SetEQ_SamplingFrequency(&outEQ_[ch][j], samplingFrequency_);
-					PrepareEQ(&outEQ_[ch][j]);	  
-				}
-			}
+		SetWaveShaper_Parameters(ws, kWaveShaper_Type_V4,
+								 (float)d->softClipperPreGainDB,
+								 (float)d->softClipperPostGainDB);
+		
+		{
+			// Apply equalizer
+			outEQ_BandCount_ = 3;
+			SetEQ_Parameters(&outEQ_[ch][0], 1000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
+			SetEQ_Parameters(&outEQ_[ch][1], 2000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
+			SetEQ_Parameters(&outEQ_[ch][2], 4000.0f, 1.0f, 0.0f, kEQ_Mode_Parametric);
 			
+			for (long j = 0; j < outEQ_BandCount_; j++)
+			{
+				SetEQ_SamplingFrequency(&outEQ_[ch][j], samplingFrequency_);
+				PrepareEQ(&outEQ_[ch][j]);	  
+			}
+		}
+		
 	}
 }
 
@@ -1266,42 +1246,6 @@ void CAudioMixer::GetAudioState(tAudioState *d)
 	MIXER_LOCK;
 	bcopy(&audioState_, d, sizeof(tAudioState));
 	MIXER_UNLOCK; 
-}
-
-// ==============================================================================
-// PrintMemoryUsage :  
-// ==============================================================================
-void CAudioMixer::PrintMemoryUsage()
-{
-	long bytes = 0;
-#ifdef EMULATION
-	long framesPerBuffer = 256;
-#else
-	long framesPerBuffer = 512;
-#endif
-
-	bytes += sizeof(CAudioMixer);
-	printf("CAudioMixer::PrintMemoryUsage: sizeof(CAudioMixer)=%d\n",
-		   sizeof(CAudioMixer));
-
-	long channelMemory = numInChannels_*sizeof(CChannel);
-	channelMemory += sizeof(pChannelBuf_);	
-	printf("CAudioMixer::PrintMemoryUsage: channelMemory=%ld\n", channelMemory);
-	bytes += channelMemory;
-
-	long mixBinMemory = sizeof(pMixBinBufs_);
-	printf("CAudioMixer::PrintMemoryUsage: mixBinMemory=%ld\n", mixBinMemory);
-	bytes += mixBinMemory;
-
-	long tmpBufMemory = sizeof(pTmpBufs_);
-	printf("CAudioMixer::PrintMemoryUsage: tmpBufMemory=%ld\n", tmpBufMemory);
-	bytes += tmpBufMemory;
-
-#ifdef EMULATION
-	printf("CAudioMixer::PrintMemoryUsage: totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes, 2*bytes);
-#else
-	printf("CAudioMixer::PrintMemoryUsage: totalBytes= EMULATION=%ld EMBEDDED=%ld\n", bytes/2, bytes);
-#endif
 }
 
 // ==============================================================================

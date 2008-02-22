@@ -64,7 +64,6 @@ class CAudioMixer {
 		return ((Boolean)audioState_.speakerEnabled);
 	}
 	void EnableSpeaker( Boolean x );
-	void PrintMemoryUsage();
 
 	int Render( S16 *pOut, U32 frameCount );
 	
