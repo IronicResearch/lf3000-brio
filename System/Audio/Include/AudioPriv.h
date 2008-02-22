@@ -19,12 +19,15 @@
 #include <DebugMPI.h>
 
 #include <AudioConfig.h>
-#include <AudioMsg.h>
+#include <AudioTypesPriv.h>
 #include <AudioEffectsProcessor.h>
 #include <EventListener.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+// Backdoor GAS and SAS functions need this for passing around the tAudioState
+// struct.  This code will be eliminated when those backdoor functions are gone.
+const U32	kAUDIO_MAX_MSG_SIZE	=	512;
 
 class IEventListener;
 
