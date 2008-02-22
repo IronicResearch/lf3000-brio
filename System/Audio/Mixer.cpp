@@ -230,13 +230,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 	inputDCValuef  = DecibelToLinearf(inputDCValueDB);
 	inputDCValuei  = FloatToQ15(inputDCValuef);
 
-#ifdef NEED_SAWTOOTH
-	inputIsSawtoothWave_ = false;
-	z_	   = 0;
-	delta_ = 0;
-	SetUpSawtoothOscillator(&z_, &delta_, 4000.0f/(float)kAudioSampleRate, 0.0f);
-#endif
-
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
 		ClearShorts(pTmpBufs_[i], kAudioMixer_TempBufferWords);
@@ -804,28 +797,10 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 				if ( framesRendered < framesToRender ) 
 				{
 					pCh->isDone_ = true;
-#if 0 // Defer done message until Render() returns to caller
-					pCh->fInUse_ = false;
-					if (pCh->GetPlayerPtr()->ShouldSendDoneMessage()) {
-						MIXER_UNLOCK;
-						pCh->SendDoneMsg();
-						MIXER_LOCK;
-					}
-#endif
+					//Done message is sent later
 				}
 				if (inputIsDC) 
 					SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
-#ifdef NEED_SAWTOOTH
-				else if (inputIsSawtoothWave_)
-				{
-					SawtoothOscillator_S16(pChannelBuf_, sampleCount, &z_, delta_);
-					printf("Sawtooth z=%ld delta=%ld out[0]=%d\n",
-						   z_, delta_, pChannelBuf_[0]);
-					printf("Sawtooth z=$%08X delta=$%08X out[0]=$%04X\n",
-						   (unsigned int)z_, (unsigned int)delta_,
-						   (unsigned short) pChannelBuf_[0]);
-				}
-#endif
 				// Add output to appropriate Mix "Bin" 
 				long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
 				S16 *pMixBin = pMixBinBufs_[mixBinIndex];
@@ -931,12 +906,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	// ---- Output DSP block
 	if (audioState_.useOutEQ || audioState_.useOutSoftClipper || audioState_.computeLevelMeters)
 		audioState_.useOutDSP  = true;
-#ifdef NEEDED
-	{static long c=0; if (!(c++)) { tAudioState *d = &audioState_;
-	printf("CAudioMixer: useOutDSP=%d computeLevelMeters=%d useOutEQ=%d useOutSoftClipper=%d\n", 
-		   d->useOutDSP, d->computeLevelMeters, d->useOutEQ , d->useOutSoftClipper); }
-	}
-#endif
 
 	if (audioState_.useOutDSP)
 	{
