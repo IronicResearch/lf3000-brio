@@ -260,7 +260,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 		SetMasterVolume(100);
 		
 		d->systemSamplingFrequency = (long)samplingFrequency_;
-		d->outBufferLength = kAudioFramesPerBuffer;
 		
 		bool isSpeaker = IsSpeakerOn();
 		EnableSpeaker(isSpeaker);
@@ -276,17 +275,12 @@ CAudioMixer::CAudioMixer( int inChannels )
 		
 		// DEBUG:  Wav File I/O
 		d->readInSoundFile	 = false;
-		d->writeOutSoundFile = false;
 		inSoundFileDone_	 = false;
-		d->outFileBufferCount = 1000;
 		
 		memset(d->inSoundFilePath, '\0', kAudioState_MaxFileNameLength);
 		strcpy(d->inSoundFilePath, "Saw_32k_m3dB_m.wav");
-		memset(d->outSoundFilePath, '\0', kAudioState_MaxFileNameLength);
-		strcpy(d->outSoundFilePath, "BrioOut.wav");
 		
 		inSoundFile_  = NULL;
-		outSoundFile_ = NULL;
 	} // end Set up Audio State struct
 
 	// ---- Configure DSP engine
@@ -352,12 +346,6 @@ CAudioMixer::~CAudioMixer()
 	{
 	}
 	
-	if (outSoundFile_)
-	{
-		CloseSoundFile(&outSoundFile_);
-		outSoundFile_ = NULL;
-	}
-
 	MIXER_UNLOCK; 
 	pKernelMPI_->DeInitMutex( mixerMutex_ );
 
@@ -390,32 +378,6 @@ int CAudioMixer::OpenInSoundFile(char *path)
 	printf("CAudioMixer::OpenInSoundFile: opened file '%s'\n", audioState_.inSoundFilePath);
 
 	inSoundFileDone_ = false;
-	return (true);
-}
-
-// ==============================================================================
-// CAudioMixer::OpenOutSoundFile :
-//
-//								Return Boolean success
-// ==============================================================================
-int CAudioMixer::OpenOutSoundFile(char *path)
-{
-	outSoundFileInfo_.frames	 = 0;		
-	outSoundFileInfo_.samplerate = (long) samplingFrequency_;
-	outSoundFileInfo_.channels	 = 2;
-	outSoundFileInfo_.format	 = SF_FORMAT_PCM_16 | SF_FORMAT_WAV;
-	outSoundFileInfo_.sections	 = 1;
-	outSoundFileInfo_.seekable	 = 1;
-
-	outSoundFile_ = OpenSoundFile(path , &outSoundFileInfo_, SFM_WRITE);
-	if (!outSoundFile_)
-	{
-		printf("CAudioMixer::OpenOutSoundFile: unable to open '%s' \n", path);
-		return (false);
-	}
-	strcpy(audioState_.outSoundFilePath, path);
-	printf("CAudioMixer::OpenOutSoundFile: opened out file '%s'\n",
-		   audioState_.outSoundFilePath);
 	return (true);
 }
 
@@ -701,10 +663,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		mixBinFilled_[i] = False;
 	}
 
-	// Open WAV file to write output of mixer
-	if (audioState_.writeOutSoundFile && !outSoundFile_)
-		OpenOutSoundFile(audioState_.outSoundFilePath);
-	
 	// Open WAV file for input to mixer
 	if (audioState_.readInSoundFile && !inSoundFile_)
 		OpenInSoundFile(audioState_.inSoundFilePath);
@@ -880,25 +838,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		InterleaveShorts(tPtrs[0], tPtrs[1], pOut, numFrames);
 	}
 	ShiftLeft_S16(pOut, pOut, numFrames*channels, audioState_.headroomBits);
-
-	// Debug:  write output of mixer to sound file
-	static long outBufferCounter = 0; 
-	if (audioState_.writeOutSoundFile)
-	{
-		if (inSoundFileDone_ || outBufferCounter++ >= audioState_.outFileBufferCount)
-		{
-			printf("Closing outSoundFile '%s'\n", audioState_.outSoundFilePath);
-			CloseSoundFile(&outSoundFile_);
-			outSoundFile_	   = NULL;
-			audioState_.writeOutSoundFile = false;
-		}
-		else if (outSoundFile_)
-		{
-			static long totalFramesWritten = 0;
-			long framesWritten = sf_writef_short(outSoundFile_, pOut, numFrames);
-			totalFramesWritten += framesWritten;
-		}
-	}
 	
 	TimeStampOff(0);
 

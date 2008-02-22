@@ -58,14 +58,10 @@ typedef struct taudiostate {
 	S16	   softClipperPostGainDB;
 
 	U8	   readInSoundFile;
-	U8	   writeOutSoundFile;
 #define kAudioState_MaxFileNameLength 100
 	char   inSoundFilePath [kAudioState_MaxFileNameLength];
-	char   outSoundFilePath[kAudioState_MaxFileNameLength];
 
 	long   systemSamplingFrequency;
-	long   outFileBufferCount;
-	long   outBufferLength;	 // Dunno?!? Words? Frames?
 
 	U8	   headroomBits;
 	float  channelGainDB;
