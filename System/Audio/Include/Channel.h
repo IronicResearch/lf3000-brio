@@ -15,12 +15,10 @@
 #include <SystemTypes.h>
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
-#include <RawPlayer.h> // fixme/dg: hack for RawPlayer dtor not getting called
 
 #include <DebugMPI.h>
 
 #include <Dsputil.h>
-//#include <mix.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -40,7 +38,7 @@ class CChannel {
 	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
 	tErrType	Release( Boolean noPlayerDoneMsg );
 
-// Set pause state
+	// Set pause state
 	inline void	Pause()	 { if (fInUse_) fPaused_ = true;  }
 	inline void	Resume() { if (fInUse_) fPaused_ = false; }
 	inline void	SetInUse(Boolean x) { fInUse_ = x; }
@@ -81,21 +79,9 @@ class CChannel {
 	inline tAudioPriority	GetPriority()							{ return priority_; }
 	inline void				SetPriority( tAudioPriority priority )	{ priority_ = priority; }
 
-//	inline float	GetEQ_Frequency()	{ return eq_frequency_; }
-//	inline float	GetEQ_Q()			{ return eq_q_; }
-//	inline float	GetEQ_GainDB()		{ return eq_gainDB_; }
-
-//	inline void		SetEQ_Parameters(float frequency, float q, float gainDB) { eq_frequency_ = frequency; eq_q_ = q; eq_gainDB_ = gainDB;}
-
-//	inline void		SetMixerChannelDataPtr(MIXERCHANNEL *d) { pDSP_ = d; }
-
-//	inline long		GetMixBinIndex()	   { return mixBinIndex_; }
-//	inline void		SetMixBinIndex(long x) { mixBinIndex_ = x; }
-
-// Return requested status
+	// Return requested status
 	inline Boolean			IsInUse()  { return fInUse_; }
 	inline Boolean			IsPaused() { return fPaused_; }
-//	inline Boolean			HasOwnAudioEffectsProcessor() { return fOwnProcessor_; }
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 	Boolean isDone_;
@@ -104,27 +90,12 @@ class CChannel {
 
  private:
 	tAudioPriority	priority_;	
-
 	U8			volume_;	
 	S8			pan_   ;		 
-
-//	float		eq_frequency_;
-//	float		eq_q_;
-//	float		eq_gainDB_;
-
 	U32			samplingFrequency_;	
-
-//	MIXERCHANNEL	*pDSP_;
-
-//	CAudioEffectsProcessor		*pChain_;		
 	CAudioPlayer				*pPlayer_;		 
-	
 	Boolean fPaused_;		
 	Boolean fReleasing_;	// Channel is in process of being reset
-//	Boolean fOwnProcessor_;
-	
-//	CDebugMPI	*pDebugMPI_;
-
 	void   RecalculateLevels();
 };
 
