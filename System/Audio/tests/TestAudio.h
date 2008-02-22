@@ -344,7 +344,7 @@ public:
 		pAudioMPI_->StopMidiFile(midiPlayerID, true);
 		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
 	}
-	
+
     void testMIDIStopWithCallback()
 	{
 		tErrType 		err;

@@ -578,7 +578,8 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 	U8 volume = 0;
  
 	AUDIO_LOCK;
-	if (id == BRIO_MIDI_PLAYER_ID && gAudioContext.pMidiPlayer &&
+	if (gAudioContext.pMidiPlayer &&
+		gAudioContext.pMidiPlayer->GetID() == id &&
 		gAudioContext.pMidiPlayer->IsFileActive() ) {
 		volume = gAudioContext.pMidiPlayer->GetVolume();
 	}
@@ -599,7 +600,8 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 void CAudioModule::SetAudioVolume( tAudioID id, U8 x ) 
 {
 	AUDIO_LOCK;
-	if (id == BRIO_MIDI_PLAYER_ID && gAudioContext.pMidiPlayer &&
+	if (gAudioContext.pMidiPlayer &&
+		gAudioContext.pMidiPlayer->GetID() == id &&
 		gAudioContext.pMidiPlayer->IsFileActive() ) {
 		gAudioContext.pMidiPlayer->SetVolume(x);
 	} else {
@@ -819,9 +821,9 @@ tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 // ==============================================================================
 // GetAudioIDForMidiID
 // ==============================================================================
-tAudioID CAudioModule::GetAudioIDForMidiID( tMidiPlayerID /* id */) 
+tAudioID CAudioModule::GetAudioIDForMidiID( tMidiPlayerID id) 
 {
-	return (2);	 // GK FIXXXX: quick hack.	Fixed value
+	return (tAudioID)id;
 }
 
 // ==============================================================================
@@ -964,8 +966,13 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 	Boolean playing = false;
 
 	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		playing = gAudioContext.pMidiPlayer->IsFileActive();
+	if (gAudioContext.pMidiPlayer &&
+		gAudioContext.pMidiPlayer->GetID() == id &&
+		gAudioContext.pMidiPlayer->IsFileActive() ) {
+		
+		playing = true;
+
+	}
 	AUDIO_UNLOCK;
 
 	return playing;
@@ -976,7 +983,19 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 // ==============================================================================
 Boolean CAudioModule::IsMidiFilePlaying( void )
 {
-	return IsMidiFilePlaying(BRIO_MIDI_PLAYER_ID); //id should come from mixer?
+	
+	Boolean playing = false;
+
+	AUDIO_LOCK;
+	if (gAudioContext.pMidiPlayer &&
+		gAudioContext.pMidiPlayer->IsFileActive() ) {
+		
+		playing = true;
+		
+	}
+	AUDIO_UNLOCK;
+
+	return playing;
 }
 
 // ==============================================================================
