@@ -22,7 +22,6 @@
 #include <DebugMPI.h>
 #include <KernelMPI.h>
 
-#include "sndfile.h"
 #include <eq.h>
 #include <src.h>
 #include <shape.h>
@@ -133,14 +132,6 @@ class CAudioMixer {
 	float headphoneGainFracF_;
 	Q15 headphoneGainFracI_;
 
-	// File I/O debug stuff
-	long inSoundFileDone_;
-	SNDFILE	*inSoundFile_;
-	SF_INFO	inSoundFileInfo_;
-
-	SNDFILE	*outSoundFile_;
-	SF_INFO	outSoundFileInfo_;
-
 	//	Soft Clipper parameters
 	WAVESHAPER	outSoftClipper_[kAudioMixer_MaxOutChannels];
 
@@ -154,13 +145,6 @@ class CAudioMixer {
 	S16* pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
 
 	Boolean isPaused_;
-
-	// Some Debug variables
-	// Input debug stuff
-	long inputIsDC;
-	float inputDCValueDB;
-	float inputDCValuef;
-	Q15 inputDCValuei;
 
 };
 
