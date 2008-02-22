@@ -57,10 +57,6 @@ typedef struct taudiostate {
 	S16	   softClipperPreGainDB;
 	S16	   softClipperPostGainDB;
 
-	U8	   readInSoundFile;
-#define kAudioState_MaxFileNameLength 100
-	char   inSoundFilePath [kAudioState_MaxFileNameLength];
-
 	long   systemSamplingFrequency;
 
 	U8	   headroomBits;

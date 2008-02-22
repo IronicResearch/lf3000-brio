@@ -62,8 +62,6 @@
 #include <sys/ioctl.h>
 #include <linux/input.h>
 
-#include "sndfileutil.h"
-
 // System includes
 #include <CoreTypes.h>
 #include <SystemTypes.h>
@@ -273,14 +271,6 @@ CAudioMixer::CAudioMixer( int inChannels )
 		d->srcFilterVersion = src_[0][kLeft].filterVersion;
 		d->channelGainDB = kChannel_HeadroomDB;
 		
-		// DEBUG:  Wav File I/O
-		d->readInSoundFile	 = false;
-		inSoundFileDone_	 = false;
-		
-		memset(d->inSoundFilePath, '\0', kAudioState_MaxFileNameLength);
-		strcpy(d->inSoundFilePath, "Saw_32k_m3dB_m.wav");
-		
-		inSoundFile_  = NULL;
 	} // end Set up Audio State struct
 
 	// ---- Configure DSP engine
@@ -357,28 +347,6 @@ CAudioMixer::~CAudioMixer()
 
 	FlatProfilerDone();
 
-}
-
-// ==============================================================================
-// CAudioMixer::OpenInSoundFile :
-//
-//								Return Boolean success
-// ==============================================================================	
-int CAudioMixer::OpenInSoundFile(char *path)
-{
-
-	inSoundFile_ = OpenSoundFile(path, &inSoundFileInfo_, SFM_READ);if (!inSoundFile_)
-	{
-		printf("CAudioMixer::OpenInSoundFile: Unable to open file '%s'\n", path);
-		audioState_.readInSoundFile = False;
-		return (false);
-	}
-	strcpy(audioState_.inSoundFilePath, path);
-	
-	printf("CAudioMixer::OpenInSoundFile: opened file '%s'\n", audioState_.inSoundFilePath);
-
-	inSoundFileDone_ = false;
-	return (true);
 }
 
 // ==============================================================================
@@ -663,90 +631,55 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		mixBinFilled_[i] = False;
 	}
 
-	// Open WAV file for input to mixer
-	if (audioState_.readInSoundFile && !inSoundFile_)
-		OpenInSoundFile(audioState_.inSoundFilePath);
-	
-	//
-	// ---- Render each channel to mix bin with corresponding sampling frequency
-	//
-	if (audioState_.readInSoundFile && !inSoundFileDone_)
+	// ---- Render all active channels (not including MIDI)
+	for (ch = 0; ch < numInChannels_; ch++)
 	{
-		long mixBinIndex  = GetMixBinIndex(inSoundFileInfo_.samplerate);
-		S16 *mixBinP	  = (S16 *) pMixBinBufs_[mixBinIndex];
-		long framesToRead = numFrames/GetSamplingRateDivisor(inSoundFileInfo_.samplerate);
-		long framesRead	  = 0;
-		
-		ClearShorts(mixBinP, framesToRead*2);
-		// Copy stereo input to stereo mix buffer
-		if (2 == inSoundFileInfo_.channels)
-			framesRead = sf_readf_short(inSoundFile_, mixBinP, framesToRead);
-		else
+		CChannel *pCh = &pChannels_[ch];
+		// Render if channel is in use and not paused
+		if (pCh->ShouldRender())
 		{
-			// Replicate mono input file to both channels of stereo mix buffer
-			framesRead = sf_readf_short(inSoundFile_, tPtrs[0], framesToRead);
-			InterleaveShorts(tPtrs[0], tPtrs[0], mixBinP, framesRead);
-		}
-		if (framesRead < framesToRead)
-		{
-			inSoundFileDone_ = true;
-			printf("inSoundFileDone ! %ld/%ld frames read \n", framesRead, framesToRead); 
-		}
-		mixBinFilled_[mixBinIndex] = True;
-		printf("AudioMixer::Render: read %ld samples from WAV file \n", framesRead); 
-	}
-	else
-	{
-		// ---- Render all active channels (not including MIDI)
-		for (ch = 0; ch < numInChannels_; ch++)
-		{
-			CChannel *pCh = &pChannels_[ch];
-			// Render if channel is in use and not paused
-			if (pCh->ShouldRender())
+			ClearShorts(pChannelBuf_, numFrames*channels);
+			long channelSamplingFrequency = pCh->GetSamplingFrequency();
+			U32	 framesToRender =
+				(numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
+			U32	 sampleCount	= framesToRender*channels;
+			// Player renders data into channel's stereo output buffer
+			framesRendered = pCh->Render( pChannelBuf_, framesToRender );
+			// NOTE: SendDoneMsg() deferred to next buffer when
+			// framtesToRender is multiple of total frames
+			if ( framesRendered < framesToRender ) 
 			{
-				ClearShorts(pChannelBuf_, numFrames*channels);
-				long channelSamplingFrequency = pCh->GetSamplingFrequency();
-				U32	 framesToRender =
-					(numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
-				U32	 sampleCount	= framesToRender*channels;
-				// Player renders data into channel's stereo output buffer
-				framesRendered = pCh->Render( pChannelBuf_, framesToRender );
-				// NOTE: SendDoneMsg() deferred to next buffer when
-				// framtesToRender is multiple of total frames
-				if ( framesRendered < framesToRender ) 
-				{
-					pCh->isDone_ = true;
-					//Done message is sent later
-				}
-				if (inputIsDC) 
-					SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
-				// Add output to appropriate Mix "Bin" 
-				long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
-				S16 *pMixBin = pMixBinBufs_[mixBinIndex];
-				ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount,
-							   audioState_.headroomBits);
-				AccS16toS16(pMixBin, pChannelBuf_, sampleCount,
-							mixBinFilled_[mixBinIndex]);
-				mixBinFilled_[mixBinIndex] = True;
+				pCh->isDone_ = true;
+				//Done message is sent later
 			}
-		}
-
-		// MIDI player renders to fs/2 output buffer Even if fewer frames
-		// rendered
-		if ( pMidiPlayer_ && pMidiPlayer_->IsActive() )
-		{
-			U32 mixBinIndex	   = kAudioMixer_MixBin_Index_FsDiv2;
-			U32 framesToRender = numFramesDiv2;	 // fs/2
-			U32 sampleCount	   = framesToRender*channels;
-			
-			ClearShorts(pChannelBuf_, framesToRender);
-			framesRendered = pMidiPlayer_->Render( pChannelBuf_, framesToRender); 
-			ShiftRight_S16(pChannelBuf_, pChannelBuf_,
-						   sampleCount, audioState_.headroomBits);
-			AccS16toS16(pMixBinBufs_[mixBinIndex], pChannelBuf_, sampleCount,
+			if (inputIsDC) 
+				SetShorts(pChannelBuf_, sampleCount, inputDCValuei);
+			// Add output to appropriate Mix "Bin" 
+			long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
+			S16 *pMixBin = pMixBinBufs_[mixBinIndex];
+			ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount,
+						   audioState_.headroomBits);
+			AccS16toS16(pMixBin, pChannelBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
 			mixBinFilled_[mixBinIndex] = True;
 		}
+	}
+
+	// MIDI player renders to fs/2 output buffer Even if fewer frames
+	// rendered
+	if ( pMidiPlayer_ && pMidiPlayer_->IsActive() )
+	{
+		U32 mixBinIndex	   = kAudioMixer_MixBin_Index_FsDiv2;
+		U32 framesToRender = numFramesDiv2;	 // fs/2
+		U32 sampleCount	   = framesToRender*channels;
+		
+		ClearShorts(pChannelBuf_, framesToRender);
+		framesRendered = pMidiPlayer_->Render( pChannelBuf_, framesToRender); 
+		ShiftRight_S16(pChannelBuf_, pChannelBuf_,
+					   sampleCount, audioState_.headroomBits);
+		AccS16toS16(pMixBinBufs_[mixBinIndex], pChannelBuf_, sampleCount,
+						mixBinFilled_[mixBinIndex]);
+		mixBinFilled_[mixBinIndex] = True;
 	}
 
 	// Combine Mix buffers to output, converting sampling frequency if necessary
