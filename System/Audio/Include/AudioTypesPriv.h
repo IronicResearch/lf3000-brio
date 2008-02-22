@@ -50,8 +50,6 @@ typedef struct taudiostate {
 	U8	   masterVolume;			
 
 	U8	   speakerEnabled;
-	U8	   useOutDSP;
-	U8	   useOutEQ;
 	U8	   srcType;
 	U8	   srcFilterVersion;
 
