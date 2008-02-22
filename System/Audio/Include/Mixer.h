@@ -179,13 +179,6 @@ class CAudioMixer {
 	float inputDCValuef;
 	Q15 inputDCValuei;
 
-#ifdef NEED_SAWTOOTH
-	long inputIsSawtoothWave_;
-	unsigned long z_;
-	unsigned long delta_;
-	float normalFrequency_;
-	float phase_;
-#endif
 };
 
 #endif		// LF_MIXER_H
