@@ -12,6 +12,7 @@
 // System includes
 #include <pthread.h>
 #include <errno.h>
+#include <sys/stat.h>
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -88,6 +89,12 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	pDebugMPI_->Assert((true == ret),
 					   "CMidiPlayer::ctor: Couldn't create DebugMPI.\n");
 
+	// Get Debug MPI
+	pKernelMPI_ = new CKernelMPI();
+	ret = pKernelMPI_->IsValid();
+	pDebugMPI_->Assert((true == ret),
+					   "CMidiPlayer::ctor: Couldn't create KernelMPI.\n");
+
 	// Set debug level from a constant
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
@@ -125,7 +132,6 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 CMidiPlayer::~CMidiPlayer()
 {
 	tErrType				result;
-	tAudioStopMidiFileInfo	info;
 	
 	pDebugMPI_->DebugOut(kDbgLvlVerbose,
 						 "CMidiPlayer::~ -- Cleaning up.\n");	
@@ -137,14 +143,11 @@ CMidiPlayer::~CMidiPlayer()
 		//probably holds the mixer lock and/or the audio MPI lock.  If the
 		//listener tries to operate on the mixer or audio mpi, we'll get a
 		//deadlock!  Move all callback stuff to Mixer.cpp to avoid this.
-		StopMidiFile( &info );
+		StopMidiFile( true );
 		pDebugMPI_->DebugOut(kDbgLvlVerbose,
 							 "CMidiPlayer::~: set bFileActive_ to false\n");	
 		bFileActive_ = false;
-		info.noDoneMsg = true;
 	}
-	else
-		info.noDoneMsg = !bSendDoneMessage_;
 
 	if (pFilePlayer_)
 	{
@@ -159,6 +162,10 @@ CMidiPlayer::~CMidiPlayer()
 	// Free MPIs
 	if (pDebugMPI_)
 		delete pDebugMPI_;
+
+	// Free MPIs
+	if (pKernelMPI_)
+		delete pKernelMPI_;
 
 }	// ---- end ~CMidiPlayer() ----
 
@@ -244,13 +251,44 @@ void CMidiPlayer::SendLoopEndMsg( void )
 // ==============================================================================
 // StartMidiFile
 // ==============================================================================
-tErrType CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo ) 
+tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 {
 	tErrType result = 0;
+	int imageSize, bytesRead;
+	FILE *file = NULL;
+	struct stat fileStat;
 
 	if (pFilePlayer_) 
 	{
 		return kAudioMidiUnavailable;
+	}
+
+	pMidiFileImage = NULL;
+
+	result = stat(pInfo->path->c_str(), &fileStat);
+	if(result != 0) {
+		result = kAudioMidiErr;
+		goto error;
+	}
+	imageSize = fileStat.st_size;
+
+	pMidiFileImage = (U8 *)pKernelMPI_->Malloc(fileStat.st_size);
+	if(pMidiFileImage == 0) {
+		result = kAudioMidiErr;
+		goto error;
+	}
+	
+	// Load image
+	file = fopen(pInfo->path->c_str(), "r" );
+	if(!file) {
+		result = kAudioMidiErr;
+		goto error;
+	}
+
+	bytesRead = fread(pMidiFileImage, sizeof(char), fileStat.st_size, file);
+	if(bytesRead != fileStat.st_size) {
+		result = kAudioMidiErr;
+		goto error;
 	}
 
 	SetVolume(pInfo->volume);
@@ -285,9 +323,7 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo )
 			printf("CMidiPlayer::StartMidiFile: SPMIDI_CreateProgramList failed\n");
 
 		// Scan the MIDIFile to see what instruments we should load.
-		err = MIDIFile_ScanForPrograms( programList,
-										pInfo->pMidiFileImage,
-										pInfo->imageSize );
+		err = MIDIFile_ScanForPrograms( programList, pMidiFileImage, imageSize );
 		if( err < 0 ) 
 			printf("CMidiPlayer::StartMidiFile: MIDIFile_ScanForPrograms failed\n");
 
@@ -313,9 +349,16 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo )
 	// Create a player, parse MIDIFile image and setup tracks.
 	result = MIDIFilePlayer_Create( &pFilePlayer_,
 									(int)kMIDI_SamplingFrequency,
-									pInfo->pMidiFileImage,
-									pInfo->imageSize );
+									pMidiFileImage,
+									imageSize );
 	bFileActive_ = true;
+
+ error:
+	if(file)
+		fclose(file);	
+	if(result) {
+		pKernelMPI_->Free(pMidiFileImage);
+	}
 	
 	return result;
 }	// ---- end StartMidiFile() ----
@@ -356,13 +399,13 @@ tErrType CMidiPlayer::ResumeMidiFile( void )
 // ==============================================================================
 // StopMidiFile
 // ==============================================================================
-tErrType CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo ) 
+tErrType CMidiPlayer::StopMidiFile( Boolean noDoneMsg ) 
 {
 	tErrType result = 0;
 		
 	bFileActive_ = false;
 	bFilePaused_ = false;
-	if (pListener_	&& !pInfo->noDoneMsg)
+	if (pListener_	&& !noDoneMsg)
 		SendDoneMsg();
 
 	SPMUtil_Reset( pContext_ );
@@ -372,7 +415,12 @@ tErrType CMidiPlayer::StopMidiFile( tAudioStopMidiFileInfo* pInfo )
 		pFilePlayer_ = kNull;
 	}
 	pListener_ = kNull;
-	
+
+	if(pMidiFileImage) {
+		pKernelMPI_->Free(pMidiFileImage);
+		pMidiFileImage = NULL;
+	}
+
 	return result;
 }	// ---- end StopMidiFile() ----
 

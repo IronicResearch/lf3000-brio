@@ -893,12 +893,10 @@ tErrType CAudioModule::StartMidiFile(	U32					mpiID,
 {
 
 	AUDIO_LOCK;
-	tAudioStartMidiFileInfo info;
+	tAudioStartAudioInfo info;
 	const CPath fullPath = (path.length() == 0) ? "" : (path.at(0) == '/')
 		? path : gAudioContext.gpath + path;
 
-	// Generate command message to send to audio Mgr task
-	info.id		   = id;
 	info.path	   = &fullPath;
 	info.volume	   = volume;
 	info.priority  = priority;
@@ -906,31 +904,7 @@ tErrType CAudioModule::StartMidiFile(	U32					mpiID,
 	info.priority  = priority;
 	info.payload   = payload;
 	info.flags	   = flags;
-	
-	// Determine size of MIDI file
-	struct stat fileStat;
-	int err = stat(fullPath.c_str(), &fileStat);
-	pDebugMPI_->Assert((kNoErr == err), 
-					   "%s: file doesn't exist '%s' \n",
-					   __FUNCTION__, fullPath.c_str());
-	
-	// Allocate buffer for file image
-	// BC: This memory is never freed!	This malloc should be moved inside the
-	// midi player.
-	info.pMidiFileImage = (U8 *)pKernelMPI_->Malloc(fileStat.st_size);
-	pDebugMPI_->Assert((info.pMidiFileImage != 0),
-					   "%s: failed to allocate midi file buffer\n",
-					   __FUNCTION__);
-	info.imageSize = fileStat.st_size;
-	
-	// Load image
-	FILE *file = fopen(fullPath.c_str(), "r" );
-	int bytesRead = fread(info.pMidiFileImage, sizeof(char), fileStat.st_size, file);
-	pDebugMPI_->Assert((bytesRead == fileStat.st_size),
-					   "%s: failed to read midi file\n",
-					   __FUNCTION__);
-	fclose(file);
-	
+		
 	tErrType result = kAudioMidiErr;
 	if(gAudioContext.pMidiPlayer)
 	{
@@ -1029,13 +1003,10 @@ void CAudioModule::ResumeMidiFile( tMidiPlayerID /* id */)
 // ==============================================================================
 void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 {
-	tAudioStopMidiFileInfo info;
-	info.id = id;
-	info.noDoneMsg = noDoneMessage;
 	
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->StopMidiFile(&info);
+		gAudioContext.pMidiPlayer->StopMidiFile(noDoneMessage);
 	AUDIO_UNLOCK;
 	
 }
