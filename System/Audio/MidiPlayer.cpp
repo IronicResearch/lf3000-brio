@@ -133,6 +133,11 @@ CMidiPlayer::~CMidiPlayer()
 	// If a file is playing (the user didn't call stop first) , stop it for them.
 	if (bFileActive_) 
 	{
+		//Note: StopMidiFile calls the listener.  The caller of this destructor
+		//probably holds the mixer lock and/or the audio MPI lock.  If the
+		//listener tries to operate on the mixer or audio mpi, we'll get a
+		//deadlock!  Move all callback stuff to Mixer.cpp to avoid this.
+		StopMidiFile( &info );
 		pDebugMPI_->DebugOut(kDbgLvlVerbose,
 							 "CMidiPlayer::~: set bFileActive_ to false\n");	
 		bFileActive_ = false;
@@ -140,7 +145,6 @@ CMidiPlayer::~CMidiPlayer()
 	}
 	else
 		info.noDoneMsg = !bSendDoneMessage_;
-	StopMidiFile( &info );
 
 	if (pFilePlayer_)
 	{
@@ -244,13 +248,9 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartMidiFileInfo *pInfo )
 {
 	tErrType result = 0;
 
-	// If pre-emption is happening, delete previous player.
 	if (pFilePlayer_) 
 	{
-		pDebugMPI_->DebugOut(kDbgLvlVerbose,
-							 "CMidiPlayer::StartMidiFile deleting active player\n");	
-		MIDIFilePlayer_Delete( pFilePlayer_ );
-		pFilePlayer_ = kNull;
+		return kAudioMidiUnavailable;
 	}
 
 	SetVolume(pInfo->volume);

@@ -14542,3 +14542,25 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 3:33 PM
 5,141 ms. (Cumulative: 4,173,654 ms)
 
 ----------------
+Revision 3,063 from svn://localhost/TRUNK/:
+
+For Release notes: Midi users should be aware that they are required to call
+ReleaseMidiPlayer if the called AcquireMidiPlayer.  Until this release, this
+requirement was apparent, but not enforced.
+
+Other changes:
+Discovered deadlock condition in MidiPlayer.cpp.  We'll reslove this as we
+migrate the Midi player to act like a regular player.
+
+Added unit tests to check proper failure when trying to run too many midi
+streams.
+
+Added test names to unit tests.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 4:38 PM
+3 changed, 0 added, 0 deleted.
+5,153 ms. (Cumulative: 4,178,886 ms)
+
+----------------
