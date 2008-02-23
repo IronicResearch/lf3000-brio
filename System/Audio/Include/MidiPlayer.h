@@ -70,8 +70,8 @@ class CMidiPlayer {
 	tErrType	SendCommand( U8 cmd, U8 data1, U8 data2 );
 
 	// MIDI file transport control
-	tErrType	StartMidiFile( tAudioStartMidiFileInfo *pInfo );
-	tErrType	StopMidiFile(  tAudioStopMidiFileInfo  *pInfo );
+	tErrType	StartMidiFile( tAudioStartAudioInfo *pInfo );
+	tErrType	StopMidiFile( Boolean noDoneMsg );
 	tErrType	PauseMidiFile(	void );
 	tErrType	ResumeMidiFile( void );
 
@@ -84,6 +84,7 @@ class CMidiPlayer {
 	
  private:
 	CDebugMPI*				pDebugMPI_;	
+	CKernelMPI*				pKernelMPI_;
 	
 	// Mobileer MIDIengine variables
 	SPMIDI_Context*			pContext_;		
@@ -97,6 +98,8 @@ class CMidiPlayer {
 
 	tMidiPlayerID			id_;			 
 	tMidiTrackBitMask		trackBitMask_;
+
+	U8 *pMidiFileImage;
 
 	// DSP information
 	U8			pan_;

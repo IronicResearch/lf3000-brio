@@ -14564,3 +14564,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 4:38 PM
 5,153 ms. (Cumulative: 4,178,886 ms)
 
 ----------------
+Revision 3,064 from svn://localhost/TRUNK/:
+
+Make midi player use same start/stop principles as other players.  We're
+grooming the midi player to extend AudioPlayer class.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/22/08 5:32 PM
+4 changed, 0 added, 0 deleted.
+5,188 ms. (Cumulative: 4,184,136 ms)
+
+----------------

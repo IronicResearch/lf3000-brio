@@ -63,26 +63,5 @@ typedef struct taudiostate {
 	float  masterGainf[2];
 } tAudioState; 
 
-struct tAudioStartMidiFileInfo {
-	tMidiPlayerID		id;
-	const CPath*		path;
-	U8*					pMidiFileImage;		// MIDI file loaded into RAM
-	U32					imageSize;			// Size of MIDI file in RAM
-	U8					volume;
-	tAudioPriority		priority;
-	const IEventListener* pListener;
-	tAudioPayload		payload;
-	tAudioOptionsFlags	flags;
-
-};
-
-struct tAudioStopMidiFileInfo {
-	tMidiPlayerID		id;
-	Boolean				noDoneMsg;
-
-	tAudioStopMidiFileInfo( tMidiPlayerID i = -1, Boolean s = false )
-		: id(i), noDoneMsg(s) {}
-};
-
 LF_END_BRIO_NAMESPACE()
 #endif /*LF_BRIO_AUDIOTYPESPRIV_H_*/
