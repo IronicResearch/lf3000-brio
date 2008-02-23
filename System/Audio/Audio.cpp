@@ -787,13 +787,17 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */,
 {
 
 	AUDIO_LOCK;
+	
+	*id = kNoMidiID;
+
 	if (!gAudioContext.pMidiPlayer)
+	{
 		gAudioContext.pMidiPlayer =
 			gAudioContext.pAudioMixer->CreateMIDIPlayer();
-	*id = kNoMidiID;
-	if (gAudioContext.pMidiPlayer) {
-		gAudioContext.pMidiPlayer->Activate();
-		*id = gAudioContext.pMidiPlayer->GetID();
+		if (gAudioContext.pMidiPlayer) {
+			gAudioContext.pMidiPlayer->Activate();
+			*id = gAudioContext.pMidiPlayer->GetID();
+		}
 	}
 	AUDIO_UNLOCK;
 	
@@ -931,9 +935,6 @@ tErrType CAudioModule::StartMidiFile(	U32					mpiID,
 	if(gAudioContext.pMidiPlayer)
 	{
 		result = gAudioContext.pMidiPlayer->StartMidiFile(&info);
-		pDebugMPI_->Assert((kNoErr == result), 
-						   "%s: Failed to start MIDI file. result=%d \n",
-						   __FUNCTION__, (int)result);
 	}
 
 	AUDIO_UNLOCK;

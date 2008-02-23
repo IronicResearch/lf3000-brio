@@ -18,7 +18,13 @@
 
 
 //  For lots of text output, enable this:
-//#define	LF_BRIO_VERBOSE_TEST_OUTPUT
+#define	LF_BRIO_VERBOSE_TEST_OUTPUT
+
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT
+#define PRINT_TEST_NAME() printf("Running %s\n", __FUNCTION__)
+#else
+#define PRINT_TEST_NAME() {}
+#endif
 
 LF_USING_BRIO_NAMESPACE()
 
@@ -105,6 +111,7 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
 				
@@ -120,6 +127,8 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 		
+		PRINT_TEST_NAME();
+
 		if (pAudioMPI_->IsValid()) {
 			pName = pAudioMPI_->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "AudioMPI" );
@@ -135,6 +144,7 @@ public:
     void testNoSuchFile()
 	{
 		tAudioID 				id;
+		PRINT_TEST_NAME();
 				
 		id = pAudioMPI_->StartAudio("nosuchfile.ogg", kVolume, kPriority, kPan,
 									NULL, kPayload, kFlags);
@@ -145,6 +155,7 @@ public:
     void testUnsupportedExtension()
 	{
 		tAudioID 				id;
+		PRINT_TEST_NAME();
 				
 		id = pAudioMPI_->StartAudio("dummy.foo", kVolume, kPriority, kPan,
 									NULL, kPayload, kFlags);
@@ -155,6 +166,7 @@ public:
     void testIsPlaying()
 	{
 		tAudioID 				id;
+		PRINT_TEST_NAME();
 		
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -176,6 +188,9 @@ public:
     void testAudioStop()
 	{
 		tAudioID id;
+
+		PRINT_TEST_NAME();
+
 		gotAudioCallback = false;
 		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
 									NULL, 0, 0);
@@ -190,6 +205,8 @@ public:
     void testTooManyVorbisFiles()
 	{
 		tAudioID id1, id2, id3, id4;
+
+		PRINT_TEST_NAME();
 		
 		id1 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
 									 NULL, kPayload, kFlags);
@@ -216,6 +233,8 @@ public:
 		// people are depending on the broken behavior.  Sigh.
 
 		tAudioID id;
+		PRINT_TEST_NAME();
+
 		gotAudioCallback = false;
 		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
 									NULL, 0, kAudioOptionsDoneMsgAfterComplete);
@@ -230,6 +249,8 @@ public:
     void testPauseResumeAudioSystem()
 	{
 		tAudioID id;
+		PRINT_TEST_NAME();
+
 		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
 									NULL, 0, 0);
 
@@ -250,6 +271,8 @@ public:
     void testPauseResumeAudio()
 	{
 		tAudioID id;
+		PRINT_TEST_NAME();
+
 		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
 									NULL, 0, 0);
 
@@ -270,6 +293,7 @@ public:
     void testGetAudioTime()
 	{
 		tAudioID id;
+		PRINT_TEST_NAME();
 		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
 									NULL, 0, 0);
 		TS_ASSERT(id != kNoAudioID);
@@ -285,6 +309,7 @@ public:
 	void testVorbisSimple( )
 	{
 		tAudioID 				id;
+		PRINT_TEST_NAME();
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -305,6 +330,7 @@ public:
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
 		U8 origVolume, volume = 0;
+		PRINT_TEST_NAME();
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -324,6 +350,8 @@ public:
 		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
 			pKernelMPI_->TaskSleep(100);
 		}
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
 	}
 
 	//------------------------------------------------------------------------
@@ -331,6 +359,7 @@ public:
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
 
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
@@ -343,12 +372,108 @@ public:
 		pKernelMPI_->TaskSleep(300);
 		pAudioMPI_->StopMidiFile(midiPlayerID, true);
 		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
+	}
+
+
+	void testTooManyMIDI( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	id1, id2;
+		U8 origVolume, volume = 0;
+		PRINT_TEST_NAME();
+		
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &id1 );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id1 != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( id1, "2Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &id2 );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id2 == kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( id2, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err != kNoErr);
+
+		pAudioMPI_->StopMidiFile(id1, true);
+		pAudioMPI_->StopMidiFile(id2, true);
+
+		err = pAudioMPI_->ReleaseMidiPlayer( id1 );
+		TS_ASSERT(err == kNoErr);
+	}
+	
+	void testMIDITwice( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopMidiFile(midiPlayerID, true);
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopMidiFile(midiPlayerID, true);
+
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
+	}
+
+	void testMIDIAcquireFree( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopMidiFile(midiPlayerID, true);
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+
+		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( midiPlayerID, "1Sec.mid", 100, 1,
+										 kNull, 0, 0 );
+		TS_ASSERT(err == kNoErr);
+
+		pKernelMPI_->TaskSleep(300);
+		pAudioMPI_->StopMidiFile(midiPlayerID, true);
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying(midiPlayerID) == false);
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+
 	}
 
     void testMIDIStopWithCallback()
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
 
 		gotMidiCallback = false;
 
@@ -369,12 +494,15 @@ public:
 		//on the grounds that developers may be depending on this incorrect
 		//functionality.
 		TS_ASSERT(gotMidiCallback == false);
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
 	}
 
     void testPauseResumeMidi()
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
 
 		err = pAudioMPI_->AcquireMidiPlayer( 1, NULL, &midiPlayerID );		
 		TS_ASSERT_EQUALS( kNoErr, err );
@@ -396,12 +524,16 @@ public:
 		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
 			pKernelMPI_->TaskSleep(100);
 		}
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
 	}
 
 	void testAudioVolume()
 	{
 		tAudioID id;
 		U8 volume = 0;
+		PRINT_TEST_NAME();
+
 		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
 									kNull, kPayload, kFlags);
 		TS_ASSERT(id != kNoAudioID);
@@ -416,6 +548,8 @@ public:
 	{
 		tAudioID id;
 		S8 pan = -100;
+		PRINT_TEST_NAME();
+
 		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, pan,
 									kNull, kPayload, kFlags);
 		TS_ASSERT(id != kNoAudioID);
@@ -431,6 +565,8 @@ public:
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
 		U8 volume = 0;
+
+		PRINT_TEST_NAME();
 
 		TS_ASSERT( pAudioMPI_ != NULL );
 		TS_ASSERT( pAudioMPI_->IsValid() == true );
@@ -456,12 +592,15 @@ public:
 		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
 			pKernelMPI_->TaskSleep(100);
 		}
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
     }
 
 	//------------------------------------------------------------------------
 	void testAudioCallback( )
 	{
 		tAudioID 	id;
+		PRINT_TEST_NAME();
 
 		gotAudioCallback = false;
 
@@ -479,6 +618,7 @@ public:
 	void testNoAudioCallback( )
 	{
 		tAudioID 	id;
+		PRINT_TEST_NAME();
 
 		gotAudioCallback = false;
 
@@ -498,6 +638,7 @@ public:
 		
 		tErrType err;
 		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
 
 		gotMidiCallback = false;
 
@@ -513,12 +654,15 @@ public:
 			pKernelMPI_->TaskSleep(10);
 
 		TS_ASSERT(gotMidiCallback == true);
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
 	}
 
 	//------------------------------------------------------------------------
 	void testVorbisLooping( )
 	{
 		tAudioID 	id;
+		PRINT_TEST_NAME();
 		
 		numLoopEndEvents = 0;
 		gotAudioCallback = false;
@@ -538,6 +682,7 @@ public:
 	void testVorbisLoopingCallbacks( )
 	{
 		tAudioID 	id;
+		PRINT_TEST_NAME();
 
 		numLoopEndEvents = 0;
 		gotAudioCallback = false;
@@ -558,6 +703,7 @@ public:
 	{
 		tErrType err;
 		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
 
 		gotMidiCallback = false;
 		numLoopEndEvents = 0;
@@ -578,11 +724,15 @@ public:
 
 		TS_ASSERT(numLoopEndEvents == 3);
 		TS_ASSERT(gotMidiCallback == true);
+
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
 	}
 
 	void testThree16kStreams()
 	{
 		tAudioID id1, id2, id3;
+		PRINT_TEST_NAME();
 
 		id1 = pAudioMPI_->StartAudio("Voice-3sec.ogg", kVolume, kPriority,
 									 kPan, kNull, 0, 0);
@@ -603,6 +753,7 @@ public:
 	void testThree32kStreams()
 	{
 		tAudioID id1, id2, id3;
+		PRINT_TEST_NAME();
 
 		id1 = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, kPriority,
 									 kPan, kNull, 0, 0);
@@ -628,6 +779,8 @@ public:
 		tMidiPlayerID id4;
         tErrType err;
 
+		PRINT_TEST_NAME();
+
 		err = pAudioMPI_->AcquireMidiPlayer(1, NULL, &id4);
 		TS_ASSERT_EQUALS( kNoErr, err );
 		TS_ASSERT( id4 != kNoMidiID );
@@ -650,6 +803,10 @@ public:
 		
         while(pAudioMPI_->IsAudioPlaying() || pAudioMPI_->IsMidiFilePlaying(id4))
 			pKernelMPI_->TaskSleep(100);
+		
+		err = pAudioMPI_->ReleaseMidiPlayer( id4 );
+		TS_ASSERT(err == kNoErr);
+
 	}
 
 
