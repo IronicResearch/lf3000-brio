@@ -61,8 +61,13 @@ CPath GetAppRsrcFolder( void )
 
 // ==============================================================================
 // CMidiPlayer implementation
+// 
+// If pInfo is NULL, we simply create the midi player.  Later, we expect
+// somebody will call StartMidiFile with a proper pInfo.  If pInfo is not null,
+// we call StartMidiFile now.
 // ==============================================================================
-CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
+CMidiPlayer::CMidiPlayer( tAudioStartAudioInfo *pInfo, tAudioID id ) :
+	CAudioPlayer( pInfo, id	 )
 {
 	tErrType			err;
 	S16					midiErr;
@@ -124,6 +129,11 @@ CMidiPlayer::CMidiPlayer( tMidiPlayerID id )
 	// FIXXX: should set Mobileer sampling frequency here
 	SPMIDI_SetMaxVoices( pContext_, kMIDI_MaxVoices );
 
+	//Shall we play the file now?
+	if(pInfo != NULL) {
+		// BC: What if this fails?
+		StartMidiFile( pInfo );
+	}
 }	// ---- end CMidiPlayer() ----
 
 // ==============================================================================
@@ -168,6 +178,19 @@ CMidiPlayer::~CMidiPlayer()
 		delete pKernelMPI_;
 
 }	// ---- end ~CMidiPlayer() ----
+
+
+void CMidiPlayer::RewindFile()
+{
+	// Unimplemented
+	return;
+}
+
+U32 CMidiPlayer::GetAudioTime_mSec( void )
+{
+	// Unimplemented
+	return 0;
+}
 
 // ==============================================================================
 // NoteOn

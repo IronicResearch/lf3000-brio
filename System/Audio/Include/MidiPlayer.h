@@ -31,10 +31,15 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Description:
 //		Class to manage the playing of MIDI data. 
 //==============================================================================
-class CMidiPlayer {
+class CMidiPlayer : public CAudioPlayer {
  public:
-	CMidiPlayer( tMidiPlayerID id );
+
+	CMidiPlayer( tAudioStartAudioInfo *pInfo, tAudioID id );
+
 	~CMidiPlayer();
+
+	void	RewindFile();
+	U32		GetAudioTime_mSec( void );
 
 	U32			Render( S16* pOut, U32 numStereoFrames );
 
@@ -49,7 +54,7 @@ class CMidiPlayer {
 	inline void		DeActivate() { bActive_ = false; bFileActive_ = false;}
 
 	// Get/Set class member variables
-	inline tMidiPlayerID	GetID() { return id_; }
+	inline tAudioID	GetID() { return id_; }
 	inline U8	GetVolume()			{ return volume_; }
 	void		SetVolume( U8 x );
 
@@ -91,12 +96,6 @@ class CMidiPlayer {
 	MIDIFilePlayer*			pFilePlayer_;	
 	SPMIDI_Orchestra		*spMIDI_orchestra_;
 
-	const IEventListener*	pListener_;
-	tAudioOptionsFlags		optionsFlags_;	
-	U8						bSendDoneMessage_;
-	U8						bSendLoopEndMessage_;
-
-	tMidiPlayerID			id_;			 
 	tMidiTrackBitMask		trackBitMask_;
 
 	U8 *pMidiFileImage;
