@@ -325,7 +325,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testMIDISimple( )
+	void testMIDISimpleUseCase1( )
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -354,8 +354,23 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
+	void testMidiSimpleUseCase2()
+	{
+		tAudioID 				id;
+		PRINT_TEST_NAME();
+
+		id = pAudioMPI_->StartAudio("1Sec.mid", kVolume, kPriority, kPan,
+									NULL, kPayload, kFlags);
+
+		TS_ASSERT(id != kNoAudioID);
+		//Wait for audio to terminate
+		while(pAudioMPI_->IsAudioPlaying(id)) {
+			pKernelMPI_->TaskSleep(100);
+		}
+	}
+	
 	//------------------------------------------------------------------------
-    void testMIDIStop()
+    void testMIDIStopUseCase1()
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -377,7 +392,7 @@ public:
 	}
 
 
-	void testTooManyMIDI( )
+	void testTooManyMIDIUseCase1( )
 	{
 		tErrType 		err;
 		tMidiPlayerID	id1, id2;
@@ -407,7 +422,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 	
-	void testMIDITwice( )
+	void testMIDITwiceUseCase1( )
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -435,7 +450,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
-	void testMIDIAcquireFree( )
+	void testMIDIAcquireFreeUseCase1( )
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -469,7 +484,7 @@ public:
 
 	}
 
-    void testMIDIStopWithCallback()
+    void testMIDIStopWithCallbackUseCase1()
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -498,7 +513,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
-    void testPauseResumeMidi()
+    void testPauseResumeMidiUseCase1()
 	{
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -560,7 +575,7 @@ public:
 		}
 	}
 
-    void testMidiVolume()
+    void testMidiVolumeUseCase1()
     {
 		tErrType 		err;
 		tMidiPlayerID	midiPlayerID;
@@ -633,7 +648,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testMidiCallback( )
+	void testMidiCallbackUseCase1( )
 	{
 		
 		tErrType err;
@@ -699,7 +714,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testMidiLoopingCallbacks( )
+	void testMidiLoopingCallbacksUseCase1( )
 	{
 		tErrType err;
 		tMidiPlayerID	midiPlayerID;
