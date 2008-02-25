@@ -54,13 +54,22 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 	
 	// Set class variables from message
-	priority_	  = pInfo->priority;
-	pListener_	  = pInfo->pListener;
-	payload_	  = pInfo->payload;
-	optionsFlags_ = pInfo->flags;
+	priority_	  = 0;
+	pListener_	  = NULL;
+	payload_	  = 0;
+	optionsFlags_ = 0;
+	bSendDoneMessage_	 = 0;
+	bSendLoopEndMessage_ = 0;
+	if(pInfo)
+	{
+		priority_	  = pInfo->priority;
+		pListener_	  = pInfo->pListener;
+		payload_	  = pInfo->payload;
+		optionsFlags_ = pInfo->flags;
 
-	bSendDoneMessage_	 = (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
-	bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
+		bSendDoneMessage_	 = (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
+		bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
+	}
 
 	// Set up looping
 	shouldLoop_	 = (0 < payload_) && (optionsFlags_ & kAudioOptionsLooped);

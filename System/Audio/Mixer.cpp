@@ -1027,7 +1027,7 @@ CMidiPlayer *CAudioMixer::CreateMIDIPlayer()
 	if (pMidiPlayer_)
 		delete pMidiPlayer_;
 
-	pMidiPlayer_ = new CMidiPlayer( GetNextMidiID() );
+	pMidiPlayer_ = new CMidiPlayer( NULL, GetNextMidiID() );
 	MIXER_UNLOCK; 
 	return (pMidiPlayer_);
 }
