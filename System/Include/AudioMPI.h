@@ -507,7 +507,9 @@ public:
 
 	/// \page MidiPlayerBasics "Midi Player Basics"
 	///
-	/// The basic midi use case is as follows:
+	/// There are three basic midi use cases:
+	///
+	/// Use Case 1: The Legacy Use Case
 	///
 	/// 1. Call \ref AcquireMidiPlayer to create the player and retrieve a
 	/// tMidiPlayerID.
@@ -526,6 +528,14 @@ public:
 	/// 4. Upon receiving a Notify callback, or when IsMidiFilePlaying returns
 	/// false, or after calling \ref StopMidiFile, destroy the midi player with
 	/// ReleaseMidiPlayer.
+	///
+	/// Use Case 2: Normal Midi File Playback
+	///
+	/// Use the \ref StartAudio interface to launch a player in the same fashion
+	/// that you would play any other audio file.  This use case is currently
+	/// unsupported.
+	///
+	/// Use Case 3: Programatic generation of a midi stream
 	///
 	/// In addition to the high-level play-pause-resume-stop interface for midi
 	/// players, a low-level midi API exists.  This low-level API can be used
