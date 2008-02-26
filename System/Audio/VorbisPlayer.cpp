@@ -47,11 +47,6 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 {
 	tErrType			ret = kNoErr;
 	vorbis_info*		pVorbisInfo;
-
-	// Allocate player's sample buffer
-	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];
-	pDebugMPI_->Assert( pReadBuf_ != 0, 
-						"VorbisPlayer::ctor: Failed to alloc buffer\n" );
 	
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
@@ -92,8 +87,15 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 CVorbisPlayer::~CVorbisPlayer()
 {
 	tErrType result;
-		
-	delete pReadBuf_;
+	
+	// If anyone is listening, let them know we're done.
+	if (pListener_ && bSendDoneMessage_)
+	{
+		SendDoneMsg();
+	}
+	
+	if (pReadBuf_)
+		delete pReadBuf_;
 	
 	// Close vorbis file
 	S32 ret = ov_clear( &vorbisFile_ );

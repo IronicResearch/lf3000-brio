@@ -35,6 +35,7 @@ CChannel::CChannel()
 	pPlayer_ = kNull;
 
 	fInUse_		= false;
+	fPaused_	= false;
 	fReleasing_ = false;
 	isDone_		= false;
 
@@ -103,7 +104,7 @@ void CChannel::RecalculateLevels()
 // ==============================================================================
 Boolean CChannel::ShouldRender( void ) 
 {
-	Boolean shouldRender = (fInUse_ && !fReleasing_ && !isDone_); // && pPlayer_);
+	Boolean shouldRender = (fInUse_ && !fPaused_ && !fReleasing_ && !isDone_); // && pPlayer_);
 	
 	return (shouldRender); 
 }	// ---- end ShouldRender ----
@@ -130,7 +131,6 @@ void CChannel::SendDoneMsg( void )
 
 // ==============================================================================
 // Release:
-// Release the channel.  Caller is responsible for freeing the player, if any.
 // ==============================================================================
 tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 {	
@@ -138,6 +138,7 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 		return (kNoErr);
 
 	fReleasing_ = true;
+	fPaused_	= true;
 
 	// Deactivate "done" message if specified
 	if (noPlayerDoneMsg)
@@ -146,6 +147,7 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 		pPlayer_->ActivateSendDoneMessage(false);
 	}
 
+	delete pPlayer_;
 	pPlayer_ = kNull;
 
 	// No longer in use
@@ -194,6 +196,7 @@ void CChannel::SetPlayer( CAudioPlayer *pPlayer, long releaseExistingPlayer )
 	}
 
 	fInUse_		= true;
+	fPaused_	= false;
 	fReleasing_ = false;
 
 }	// ---- end SetPlayer ----
@@ -212,6 +215,7 @@ tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 	pPlayer_	= pPlayer;
 	SetSamplingFrequency(pPlayer->GetSampleRate());
 
+	fPaused_	= false;
 	fReleasing_ = false;
 	isDone_		= false;
 	// Finally, allow this channel to be added to Mixer

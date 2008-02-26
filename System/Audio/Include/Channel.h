@@ -36,8 +36,11 @@ class CChannel {
 	~CChannel();
 
 	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
-	tErrType        Release( Boolean noPlayerDoneMsg );
+	tErrType	Release( Boolean noPlayerDoneMsg );
 
+	// Set pause state
+	inline void	Pause()	 { if (fInUse_) fPaused_ = true;  }
+	inline void	Resume() { if (fInUse_) fPaused_ = false; }
 	inline void	SetInUse(Boolean x) { fInUse_ = x; }
 
 	// Ask channel to get data from player and return it to caller's mix buffer.
@@ -57,6 +60,7 @@ class CChannel {
 	inline U32	GetSamplingFrequency()			{ return samplingFrequency_; }
 	void		SetSamplingFrequency(U32 x)		{ samplingFrequency_ = x;}
 
+	inline CAudioPlayer *GetPlayerPtr()			{ return pPlayer_; }
 	void		SetPlayer(CAudioPlayer *pPlayer, long releaseExistingPlayer);
 
 #define kAudioMixerChannel_MaxOutChannels 2
@@ -77,6 +81,7 @@ class CChannel {
 
 	// Return requested status
 	inline Boolean			IsInUse()  { return fInUse_; }
+	inline Boolean			IsPaused() { return fPaused_; }
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 	Boolean isDone_;
@@ -89,6 +94,7 @@ class CChannel {
 	S8			pan_   ;		 
 	U32			samplingFrequency_;	
 	CAudioPlayer				*pPlayer_;		 
+	Boolean fPaused_;		
 	Boolean fReleasing_;	// Channel is in process of being reset
 	void   RecalculateLevels();
 };

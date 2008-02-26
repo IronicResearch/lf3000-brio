@@ -48,8 +48,6 @@ class CRawPlayer : public CAudioPlayer {
 	U32 Render( S16 *pOut, U32 numStereoFrames );
 
  private:
-	S16				*pReadBuf_;
-
 	U32				totalBytesRead_;
 //	U32				totalFrames_;			
 //	U32				framesRemaining_;
