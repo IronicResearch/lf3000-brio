@@ -49,10 +49,6 @@ class CMidiPlayer : public CAudioPlayer {
 
 	inline bool		IsFileActive() { return bFileActive_; };
 
-	inline bool		IsActive()	 { return bActive_; };
-	inline void		Activate()	 { bActive_ = true; }
-	inline void		DeActivate() { bActive_ = false; bFileActive_ = false;}
-
 	// Get/Set class member variables
 	inline tAudioID	GetID() { return id_; }
 	inline U8	GetVolume()			{ return volume_; }
