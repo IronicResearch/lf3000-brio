@@ -46,6 +46,11 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 {
 	tErrType result;
 	
+	// Allocate player's sample buffer
+	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];
+	pDebugMPI_->Assert( pReadBuf_ != 0, 
+						"RawPlayer::ctor: Failed to alloc buffer\n" );
+
 	// ---- Open audio file
 	fileType_ = kRawPlayer_FileType_Unknown;
 	fileH_	  = NULL;
@@ -117,8 +122,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 CRawPlayer::~CRawPlayer()
 {
 
-	if (pReadBuf_)
-		delete pReadBuf_;
+	delete pReadBuf_;
 
 	// Close file
 	if (fileH_)
