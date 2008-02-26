@@ -14613,3 +14613,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/25/08 3:47 PM
 5,469 ms. (Cumulative: 4,200,403 ms)
 
 ----------------
+Revision 3,069 from svn://localhost/TRUNK/:
+
+Eliminate senseless isActive flag in midi player.  Its existance indicates that
+it is active.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/25/08 4:16 PM
+3 changed, 0 added, 0 deleted.
+5,297 ms. (Cumulative: 4,205,794 ms)
+
+----------------

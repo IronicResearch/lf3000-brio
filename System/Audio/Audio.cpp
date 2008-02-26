@@ -795,7 +795,6 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */,
 		gAudioContext.pMidiPlayer =
 			gAudioContext.pAudioMixer->CreateMIDIPlayer();
 		if (gAudioContext.pMidiPlayer) {
-			gAudioContext.pMidiPlayer->Activate();
 			*id = gAudioContext.pMidiPlayer->GetID();
 		}
 	}
@@ -813,7 +812,6 @@ tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer)
 	{
-		gAudioContext.pMidiPlayer->DeActivate();
 		gAudioContext.pAudioMixer->DestroyMIDIPlayer();
 		gAudioContext.pMidiPlayer = NULL;
 	}
