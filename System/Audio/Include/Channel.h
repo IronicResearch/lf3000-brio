@@ -36,7 +36,7 @@ class CChannel {
 	~CChannel();
 
 	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
-	tErrType	Release( Boolean noPlayerDoneMsg );
+	tErrType        Release( Boolean noPlayerDoneMsg );
 
 	// Set pause state
 	inline void	Pause()	 { if (fInUse_) fPaused_ = true;  }
@@ -60,7 +60,6 @@ class CChannel {
 	inline U32	GetSamplingFrequency()			{ return samplingFrequency_; }
 	void		SetSamplingFrequency(U32 x)		{ samplingFrequency_ = x;}
 
-	inline CAudioPlayer *GetPlayerPtr()			{ return pPlayer_; }
 	void		SetPlayer(CAudioPlayer *pPlayer, long releaseExistingPlayer);
 
 #define kAudioMixerChannel_MaxOutChannels 2

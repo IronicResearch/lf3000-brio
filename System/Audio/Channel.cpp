@@ -131,6 +131,7 @@ void CChannel::SendDoneMsg( void )
 
 // ==============================================================================
 // Release:
+// Release the channel.  Caller is responsible for freeing the player, if any.
 // ==============================================================================
 tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 {	
@@ -147,7 +148,6 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 		pPlayer_->ActivateSendDoneMessage(false);
 	}
 
-	delete pPlayer_;
 	pPlayer_ = kNull;
 
 	// No longer in use

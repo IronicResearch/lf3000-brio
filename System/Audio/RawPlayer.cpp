@@ -131,12 +131,6 @@ CRawPlayer::~CRawPlayer()
 		CloseSoundFile(&inFile_);
 	}
 
-	// If anyone is listening, let them know we're done.
-	if (pListener_ && bSendDoneMessage_)
-	{
-		SendDoneMsg();
-	}
-
 	// Free MPIs
 	if (pDebugMPI_)
 	{
