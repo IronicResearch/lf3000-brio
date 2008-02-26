@@ -48,6 +48,10 @@ class CAudioMixer {
 	tAudioID AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void RemovePlayer( tAudioID id, Boolean noDoneMessage );
 
+	void PausePlayer(tAudioID id);
+
+	void ResumePlayer(tAudioID id);
+
 	CMidiPlayer *CreateMIDIPlayer();
 	void DestroyMIDIPlayer();
 
@@ -157,6 +161,7 @@ class CAudioMixer {
 
 	tAudioID nextAudioID;
 	tAudioID nextMidiID;
+
 };
 
 #endif		// LF_MIXER_H

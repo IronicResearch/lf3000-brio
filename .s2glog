@@ -14677,3 +14677,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 12:16 PM
 5,623 ms. (Cumulative: 4,222,842 ms)
 
 ----------------
+Revision 3,074 from svn://localhost/TRUNK/:
+
+Per-audioID pause/resume is a per-player operation, not related to the channel
+or the mixer.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 2:36 PM
+6 changed, 0 added, 0 deleted.
+5,188 ms. (Cumulative: 4,228,108 ms)
+
+----------------
