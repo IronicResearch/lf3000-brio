@@ -39,9 +39,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 {	
 	id_ = id;
 
-	// Allocate player's sample buffer
-	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // GK FIXX:	2x needed?
-
 	bPaused_		= 0;
 	bComplete_		= 0;
 	bStopping_		= 0;

@@ -43,6 +43,9 @@ class CVorbisPlayer : public CAudioPlayer {
 	U32		Render( S16 *pOut, U32 numStereoFrames );
 
  private:
+
+	S16				*pReadBuf_;
+
 	OggVorbis_File	vorbisFile_; // codec context data
 	ov_callbacks	oggCallbacks_; // set of callbacks to wrap resource mgr
 								   // functions

@@ -77,7 +77,6 @@ class CAudioPlayer {
 	inline CAudioEventMessage*	GetAudioEventMsg() 		{ return pEvtMsg_; }
 	
 protected:
-	S16				*pReadBuf_;
 
 	U8			bPaused_;				
 	U8			bComplete_;			 // Player has completed generating audio
