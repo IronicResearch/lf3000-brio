@@ -349,10 +349,12 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 
 	long active = 0;
 	long idle	= 0;
+	long paused = 0;
 	for (long i = 0; i < numInChannels_; i++)
 	{
-		active +=  pChannels_[i].IsInUse();
+		active +=  pChannels_[i].IsInUse(); //(!pChannels_[i]->IsPaused());
 		idle   += (!pChannels_[i].IsInUse());
+		paused +=	pChannels_[i].IsPaused();
 	}
 
 	// Although more channels are actually available, limit to preset active
@@ -386,16 +388,6 @@ CChannel *CAudioMixer::FindChannel( tAudioID id )
 	CChannel *pChannel = kNull;
 	
 	MIXER_LOCK;
-	pChannel = FindChannelInternal(id);
-	MIXER_UNLOCK; 
-	return pChannel;
-}
-
-CChannel *CAudioMixer::FindChannelInternal( tAudioID id )
-{
-
-	CChannel *pChannel = kNull;
-	
 	//Find channel with specified ID
 	for (long i = 0; i < numInChannels_; i++)
 	{
@@ -403,6 +395,7 @@ CChannel *CAudioMixer::FindChannelInternal( tAudioID id )
 		if ( pPlayer && (pPlayer->GetID() == id))
 			pChannel = &pChannels_[i];
 	}
+	MIXER_UNLOCK; 
 	return pChannel;
 }
 
@@ -607,47 +600,11 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 // ==============================================================================
 void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 {
-	CChannel *pCh;
-	CAudioPlayer *pPlayer;
-	MIXER_LOCK;
-	pCh = FindChannelInternal(id);
+	CChannel *pCh = FindChannel(id);	   
 	if (pCh && pCh->IsInUse()) {
-		pPlayer = pCh->GetPlayer();
-		// Shouldn't we pass noDoneMessage arg??
+		//perhaps we should pass noDoneMessage?
 		pCh->Release(true);
 	}
-	
-	// This is the proper place to send done messages.
-
-	if(pPlayer)
-		DestroyPlayer(pPlayer);
-	MIXER_UNLOCK; 
-}
-
-// ==============================================================================
-// PausePlayer:
-// ==============================================================================
-void CAudioMixer::PausePlayer(tAudioID id)
-{
-
-	MIXER_LOCK;
-	CChannel *pChannel = FindChannelInternal(id);
-	if (pChannel && pChannel->GetPlayer())
-		pChannel->GetPlayer()->Pause();
-	MIXER_UNLOCK;
-}
-
-// ==============================================================================
-// ResumePlayer:
-// ==============================================================================
-void CAudioMixer::ResumePlayer(tAudioID id)
-{
-
-	MIXER_LOCK;
-	CChannel *pChannel = FindChannelInternal(id);
-	if (pChannel && pChannel->GetPlayer())
-		pChannel->GetPlayer()->Resume();
-	MIXER_UNLOCK;
 }
 
 // ==============================================================================
@@ -721,8 +678,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	for (ch = 0; ch < numInChannels_; ch++)
 	{
 		CChannel *pCh = &pChannels_[ch];
-
-		if (pCh->GetPlayer() && !pCh->GetPlayer()->IsPaused())
+		// Render if channel is in use and not paused
+		if (pCh->ShouldRender())
 		{
 			ClearShorts(pChannelBuf_, numFrames*channels);
 			long channelSamplingFrequency = pCh->GetSamplingFrequency();
@@ -865,10 +822,8 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	U32 numInChannels = ((CAudioMixer*)pToObject)->numInChannels_;
 	const IEventListener*	pListeners[numInChannels];
 	CAudioEventMessage*		pEvtMsgs[numInChannels];
-	CAudioPlayer*			pPlayers[numInChannels];
 	memset(pListeners, 0, sizeof(pListeners));
 	memset(pEvtMsgs, 0, sizeof(pEvtMsgs));
-	memset(pPlayers, 0, sizeof(pPlayers));
 	
 	MIXER_LOCK;
 
@@ -887,15 +842,14 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 		if (pCh->isDone_ && pCh->fInUse_)
 		{
 			// Cache done messages while mixer is locked
-			CAudioPlayer* pPlayer = pCh->GetPlayer();
+			CAudioPlayer* pPlayer = pCh->GetPlayerPtr();
 			if (pPlayer && pPlayer->ShouldSendDoneMessage()) 
 			{
 				pListeners[ch] = pPlayer->GetEventListener();
 				pEvtMsgs[ch] = pPlayer->GetAudioEventMsg();
 				pEvtMsgs[ch]->audioMsgData.audioCompleted.count++;
 			}
-			pCh->Release(false);
-			pPlayers[ch] = pPlayer;
+			pCh->fInUse_ = false;
 		}
 	}
 	
@@ -905,9 +859,7 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	for (U32 ch = 0; ch < numInChannels; ch++)
 	{
 		if (pListeners[ch] != kNull)
-			pEventMPI_->PostEvent(*pEvtMsgs[ch], 0, pListeners[ch]);
-		if (pPlayers[ch])
-			((CAudioMixer*)pToObject)->DestroyPlayer(pPlayers[ch]);
+			pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
 	}
 	
 	return error;

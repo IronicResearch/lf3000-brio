@@ -525,7 +525,9 @@ void CAudioModule::PauseAudio(tAudioID id)
 {
 
 	AUDIO_LOCK;
-	gAudioContext.pAudioMixer->PausePlayer( id );
+	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
+	if (pChannel)
+		pChannel->Pause();
 	AUDIO_UNLOCK;
 }
 
@@ -536,7 +538,9 @@ void CAudioModule::ResumeAudio( tAudioID id )
 {
 
 	AUDIO_LOCK;
-	gAudioContext.pAudioMixer->ResumePlayer( id );
+	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
+	if (pChannel && pChannel->IsPaused())
+		pChannel->Resume();	   
 	AUDIO_UNLOCK;
 }
 
