@@ -131,12 +131,6 @@ CRawPlayer::~CRawPlayer()
 		CloseSoundFile(&inFile_);
 	}
 
-	// If anyone is listening, let them know we're done.
-	if (pListener_ && bSendDoneMessage_)
-	{
-		SendDoneMsg();
-	}
-
 	// Free MPIs
 	if (pDebugMPI_)
 	{
@@ -247,23 +241,6 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 			pOut[1] = x;
 		}
 	}
-
-//#define RAWPLAYER_SENDDONE_IN_RENDER
-#ifdef RAWPLAYER_SENDDONE_IN_RENDER
-	if (pListener_ && bSendDoneMessage_ && fileEndReached)
-	{
-		SendDoneMsg();
-	}
-#endif // RAWPLAYER_SENDDONE_IN_RENDER
-
-//#define TEST_RAWPLAYER_GETAUDIOTIME_EQUATION
-#ifdef TEST_RAWPLAYER_GETAUDIOTIME_EQUATION
-	{
-		U32 totalFramesRead = totalBytesRead_ / (sizeof(S16)*channels_);
-		U32 milliSeconds = (1000 * totalFramesRead)/samplingFrequency_;
-		printf("CRawPlayer::Render() totalFramesRead=%ld -> %ld milliSeconds\n", totalFramesRead, milliSeconds);
-	}
-#endif // TEST_RAWPLAYER_GETAUDIOTIME_EQUATION
 
 	return (framesRead);
 }

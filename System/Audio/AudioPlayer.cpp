@@ -93,27 +93,6 @@ CAudioPlayer::~CAudioPlayer()
 }
 
 // ==============================================================================
-// SendDoneMsg:	  Send message to Event listener when audio job completed, which
-//					includes the last iteration of a loop
-// ==============================================================================
-void CAudioPlayer::SendDoneMsg( void )
-{
-	if (!pListener_)
-		return;
-	
-	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgAudioCompleted	data;
-
-	data.audioID = id_;			
-	data.payload = loopCount_;
-	data.count	 = 1;
-
-	CEventMPI	event;
-	CAudioEventMessage	msg(data);
-	event.PostEvent(msg, kPriorityTBD, pListener_);
-}	// ---- end SendDoneMsg() ----
-
-// ==============================================================================
 // SendLoopEndMsg:	 Send message to Event listener each time the end of a loop is reached
 // ==============================================================================
 void CAudioPlayer::SendLoopEndMsg( void )
