@@ -514,11 +514,7 @@ void CAudioModule::StopAudio( tAudioID id, Boolean noDoneMessage )
 {
 
 	AUDIO_LOCK;
-	CChannel *pCh = gAudioContext.pAudioMixer->FindChannel(id);	   
-	if (pCh && pCh->IsInUse()) {
-		//perhaps we should pass noDoneMessage?
-		pCh->Release(true);
-	}
+	gAudioContext.pAudioMixer->RemovePlayer( id, noDoneMessage );
 	AUDIO_UNLOCK;
 }
 

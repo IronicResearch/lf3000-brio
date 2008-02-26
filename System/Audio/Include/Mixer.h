@@ -46,6 +46,7 @@ class CAudioMixer {
 	tAudioID GetMidiPlayer_AudioID( void ) { return (1); }
 
 	tAudioID AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt );
+	void RemovePlayer( tAudioID id, Boolean noDoneMessage );
 
 	CMidiPlayer *CreateMIDIPlayer();
 	void DestroyMIDIPlayer();

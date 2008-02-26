@@ -596,6 +596,18 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 }
 
 // ==============================================================================
+// RemovePlayer:
+// ==============================================================================
+void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
+{
+	CChannel *pCh = FindChannel(id);	   
+	if (pCh && pCh->IsInUse()) {
+		//perhaps we should pass noDoneMessage?
+		pCh->Release(true);
+	}
+}
+
+// ==============================================================================
 // Render:	Main mixer render routine
 //
 // Clear all of the mixer bin buffers.  There's one of these for each supported
