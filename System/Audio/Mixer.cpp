@@ -349,12 +349,10 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 
 	long active = 0;
 	long idle	= 0;
-	long paused = 0;
 	for (long i = 0; i < numInChannels_; i++)
 	{
-		active +=  pChannels_[i].IsInUse(); //(!pChannels_[i]->IsPaused());
+		active +=  pChannels_[i].IsInUse();
 		idle   += (!pChannels_[i].IsInUse());
-		paused +=	pChannels_[i].IsPaused();
 	}
 
 	// Although more channels are actually available, limit to preset active
@@ -627,6 +625,32 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 }
 
 // ==============================================================================
+// PausePlayer:
+// ==============================================================================
+void CAudioMixer::PausePlayer(tAudioID id)
+{
+
+	MIXER_LOCK;
+	CChannel *pChannel = FindChannelInternal(id);
+	if (pChannel && pChannel->GetPlayer())
+		pChannel->GetPlayer()->Pause();
+	MIXER_UNLOCK;
+}
+
+// ==============================================================================
+// ResumePlayer:
+// ==============================================================================
+void CAudioMixer::ResumePlayer(tAudioID id)
+{
+
+	MIXER_LOCK;
+	CChannel *pChannel = FindChannelInternal(id);
+	if (pChannel && pChannel->GetPlayer())
+		pChannel->GetPlayer()->Resume();
+	MIXER_UNLOCK;
+}
+
+// ==============================================================================
 // Render:	Main mixer render routine
 //
 // Clear all of the mixer bin buffers.  There's one of these for each supported
@@ -697,8 +721,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	for (ch = 0; ch < numInChannels_; ch++)
 	{
 		CChannel *pCh = &pChannels_[ch];
-		// Render if channel is in use and not paused
-		if (pCh->ShouldRender())
+
+		if (pCh->GetPlayer() && !pCh->GetPlayer()->IsPaused())
 		{
 			ClearShorts(pChannelBuf_, numFrames*channels);
 			long channelSamplingFrequency = pCh->GetSamplingFrequency();
