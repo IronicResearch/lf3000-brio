@@ -14625,3 +14625,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/25/08 4:16 PM
 5,297 ms. (Cumulative: 4,205,794 ms)
 
 ----------------
+Revision 3,070 from svn://localhost/TRUNK/:
+
+Migrate channel release action out of the audio MPI front end and into the mixer
+where it belongs.  This will allow us to coherently free players and call the
+callbacks entirely from Mixer.cpp.  Simpler.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/25/08 5:09 PM
+3 changed, 0 added, 0 deleted.
+5,580 ms. (Cumulative: 4,211,452 ms)
+
+----------------
