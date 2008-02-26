@@ -388,6 +388,16 @@ CChannel *CAudioMixer::FindChannel( tAudioID id )
 	CChannel *pChannel = kNull;
 	
 	MIXER_LOCK;
+	pChannel = FindChannelInternal(id);
+	MIXER_UNLOCK; 
+	return pChannel;
+}
+
+CChannel *CAudioMixer::FindChannelInternal( tAudioID id )
+{
+
+	CChannel *pChannel = kNull;
+	
 	//Find channel with specified ID
 	for (long i = 0; i < numInChannels_; i++)
 	{
@@ -395,7 +405,6 @@ CChannel *CAudioMixer::FindChannel( tAudioID id )
 		if ( pPlayer && (pPlayer->GetID() == id))
 			pChannel = &pChannels_[i];
 	}
-	MIXER_UNLOCK; 
 	return pChannel;
 }
 
@@ -600,11 +609,21 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 // ==============================================================================
 void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 {
-	CChannel *pCh = FindChannel(id);	   
+	CChannel *pCh;
+	CAudioPlayer *pPlayer;
+	MIXER_LOCK;
+	pCh = FindChannelInternal(id);
 	if (pCh && pCh->IsInUse()) {
-		//perhaps we should pass noDoneMessage?
+		pPlayer = pCh->GetPlayer();
+		// Shouldn't we pass noDoneMessage arg??
 		pCh->Release(true);
 	}
+	
+	// This is the proper place to send done messages.
+
+	if(pPlayer)
+		DestroyPlayer(pPlayer);
+	MIXER_UNLOCK; 
 }
 
 // ==============================================================================
@@ -822,8 +841,10 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	U32 numInChannels = ((CAudioMixer*)pToObject)->numInChannels_;
 	const IEventListener*	pListeners[numInChannels];
 	CAudioEventMessage*		pEvtMsgs[numInChannels];
+	CAudioPlayer*			pPlayers[numInChannels];
 	memset(pListeners, 0, sizeof(pListeners));
 	memset(pEvtMsgs, 0, sizeof(pEvtMsgs));
+	memset(pPlayers, 0, sizeof(pPlayers));
 	
 	MIXER_LOCK;
 
@@ -842,14 +863,15 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 		if (pCh->isDone_ && pCh->fInUse_)
 		{
 			// Cache done messages while mixer is locked
-			CAudioPlayer* pPlayer = pCh->GetPlayerPtr();
+			CAudioPlayer* pPlayer = pCh->GetPlayer();
 			if (pPlayer && pPlayer->ShouldSendDoneMessage()) 
 			{
 				pListeners[ch] = pPlayer->GetEventListener();
 				pEvtMsgs[ch] = pPlayer->GetAudioEventMsg();
 				pEvtMsgs[ch]->audioMsgData.audioCompleted.count++;
 			}
-			pCh->fInUse_ = false;
+			pCh->Release(false);
+			pPlayers[ch] = pPlayer;
 		}
 	}
 	
@@ -859,7 +881,9 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	for (U32 ch = 0; ch < numInChannels; ch++)
 	{
 		if (pListeners[ch] != kNull)
-			pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
+			pEventMPI_->PostEvent(*pEvtMsgs[ch], 0, pListeners[ch]);
+		if (pPlayers[ch])
+			((CAudioMixer*)pToObject)->DestroyPlayer(pPlayers[ch]);
 	}
 	
 	return error;

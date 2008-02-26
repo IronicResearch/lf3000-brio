@@ -87,13 +87,7 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 CVorbisPlayer::~CVorbisPlayer()
 {
 	tErrType result;
-	
-	// If anyone is listening, let them know we're done.
-	if (pListener_ && bSendDoneMessage_)
-	{
-		SendDoneMsg();
-	}
-	
+		
 	if (pReadBuf_)
 		delete pReadBuf_;
 	

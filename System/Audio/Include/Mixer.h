@@ -39,7 +39,7 @@ class CAudioMixer {
 	~CAudioMixer();
 		
 	CChannel* FindChannel( tAudioID id );
-	
+
 	Boolean IsAnyAudioActive( void );
 
 	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
@@ -80,6 +80,14 @@ class CAudioMixer {
  private:
 	CButtonMPI *pButtonMPI_;
 	CChannel* FindFreeChannel( tAudioPriority priority );
+
+	//This is just an unlocked version of FindChannel.  After we eliminate all
+	//calls to FindChannel in Audio.cpp, we can make FindChannel an internal
+	//function and eliminate this one.  That will be a sign that the Mixer API
+	//finally matches the specified MPI and Audio.cpp is merely a wrapper for
+	//the mixer.
+	CChannel* FindChannelInternal( tAudioID id );
+
 	long FindFreeChannelIndex( tAudioID id );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
