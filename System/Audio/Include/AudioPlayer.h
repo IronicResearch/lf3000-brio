@@ -40,7 +40,6 @@ class CAudioPlayer {
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
 
-	virtual void	SendDoneMsg	  ( void );
 	virtual void	SendLoopEndMsg( void );
 
 	// Return status

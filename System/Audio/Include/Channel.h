@@ -86,7 +86,6 @@ class CChannel {
 
 	Boolean isDone_;
 	Boolean fInUse_;		
-	void SendDoneMsg( void );
 
  private:
 	tAudioPriority	priority_;	

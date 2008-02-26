@@ -110,26 +110,6 @@ Boolean CChannel::ShouldRender( void )
 }	// ---- end ShouldRender ----
 
 // ==============================================================================
-// SendDoneMsg:	 Transmit Done message to listener
-// ==============================================================================
-void CChannel::SendDoneMsg( void )
-{
-	if (!pPlayer_)
-		return;
-
-	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgAudioCompleted	data;
-
-	data.audioID = pPlayer_->GetID();			
-	data.payload = 0;
-	data.count	 = 1;
-
-	CEventMPI	event;
-	CAudioEventMessage	msg(data);
-	event.PostEvent(msg, kPriorityTBD, pPlayer_->GetEventListener());
-}	// ---- end SendDoneMsg() ----
-
-// ==============================================================================
 // Release:
 // ==============================================================================
 tErrType CChannel::Release( Boolean noPlayerDoneMsg )
