@@ -24,6 +24,8 @@
 #include <EventMPI.h>
 #include <EventPriv.h>
 
+#include <string.h>
+
 LF_BEGIN_BRIO_NAMESPACE() 
 
 const CURI	kModuleURI	= "/LF/System/Event";
@@ -142,9 +144,13 @@ private:
 			if ( err != kConnectionTimedOutErr ) {
 		    	debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
+				kernel.Free((void *)msg.pMsg);
 		    }
 		}
 		
+		// Note: Before exiting this thread, we must make sure that all of the
+		// messages that we malloc'd are freed.
+
 		g_threadRunning_ = false;
 		return NULL;
 	}
@@ -307,8 +313,12 @@ public:
 		if (priority < 128)												//*1
 			return PostEventImpl(msg, pResponse);
 
-		// FIXME: copy msg to buffer!
-		CEventDispatchMessage	dmsg(&msg, pResponse);					//*2
+		int size = msg.GetSizeInBytes();
+		IEventMessage *msgCopy = (IEventMessage *)kernel_.Malloc(size);
+		debug_.Assert(msgCopy != 0, "PostEvent -- failed to copy message!\n");
+		memcpy(msgCopy, &msg, size);
+
+		CEventDispatchMessage	dmsg(msgCopy, pResponse);					//*2
 		tErrType err = kernel_.SendMessage(hMsgQueueFG_, dmsg);
 		debug_.AssertNoErr(err, "PostEvent -- SendMessage failed!\n");
 		return err;
