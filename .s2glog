@@ -14877,3 +14877,15 @@ By Dave Milici (dmilici@leapfrog.com) on 2/27/08 2:32 PM
 5,156 ms. (Cumulative: 4,313,678 ms)
 
 ----------------
+Revision 3,099 from svn://localhost/TRUNK/:
+
+Migrate loop end messages out of players and into mixer where they belong.
+Note that loop continuity and infinite looping are still broken.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/27/08 3:41 PM
+8 changed, 0 added, 0 deleted.
+5,610 ms. (Cumulative: 4,319,351 ms)
+
+----------------

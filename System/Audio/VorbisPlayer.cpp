@@ -109,6 +109,7 @@ CVorbisPlayer::~CVorbisPlayer()
 void CVorbisPlayer::RewindFile()
 {
 	ov_time_seek( &vorbisFile_, 0 );
+	bIsDone_ = false;
 }
 
 // ==============================================================================
@@ -143,8 +144,6 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	if(bIsDone_)
 		return 0;
 	
-	// GK FIXX: pad short reads with zeros unless there is looping
-	// GK FIXX: looping is not seamless
 	// Read multiple times because vorbis doesn't always return requested # of
 	// bytes Notes that BytesToRead is decremented
 	bufPtr = (char *) pReadBuf_;
@@ -157,23 +156,11 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 							 &dummy );
 		fileEndReached = (0 == bytesRead);
 		bytesReadThisRender += bytesRead;
-		if ( fileEndReached && shouldLoop_)
+		if ( fileEndReached )
 		{
-			if (loopCounter_++ < loopCount_)
-			{
-				RewindFile();
-				fileEndReached = false;
-				if (bSendLoopEndMessage_)
-				{
-					SendLoopEndMsg();
-				}
-			}
-			else
-			{
-				// Pad with zeros after last legitimate sample
-				ClearBytes(&bufPtr[bytesReadThisRender],
-						   bytesToReadThisRender-bytesReadThisRender);
-			}
+			// Pad with zeros after last legitimate sample
+			ClearBytes(&bufPtr[bytesReadThisRender],
+					   bytesToReadThisRender-bytesReadThisRender);
 		}
 		
 		bytesToRead	   -= bytesRead;

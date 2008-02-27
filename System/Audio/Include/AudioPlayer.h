@@ -44,18 +44,20 @@ class CAudioPlayer {
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
 
-	virtual void	SendLoopEndMsg( void );
-
 	// Return status
-	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
 	inline U8		IsPaused()			 { return bPaused_;		   }
 	inline Boolean	IsDone()			 { return bIsDone_; }
 
 	// Get/Set class member variables
 	inline tAudioID			GetAudioID() { return id_; }
 	inline tAudioID			GetID()		 { return id_; }
-	inline void				ActivateSendLoopEndMessage(Boolean x) { bSendLoopEndMessage_ = x; }
-	
+
+	// Loop state.  The player doesn't use this internally.  It's just
+	// convenient to store this info with the player.
+	inline U32				GetLoopCount() { return loopCounter_; }
+	inline U32				IncLoopCount() { return loopCounter_++; }
+	inline U32				GetNumLoops() { return numLoops_; }
+
 	inline tAudioPriority	GetPriority()				  { return priority_; }
 	inline void				SetPriority(tAudioPriority x) { priority_ = x; }
 
@@ -68,11 +70,7 @@ class CAudioPlayer {
 	inline U32				GetSampleRate( void ) { return samplingFrequency_; }
 
 	inline tAudioOptionsFlags  GetOptionsFlags() { return optionsFlags_; }
-	inline void				   SetOptionsFlags(tAudioOptionsFlags x) 
-	{
-		optionsFlags_        = x;
-		bSendLoopEndMessage_ = ((x & kAudioLoopEndBitMask) != 0) ? true : false; 
-	}
+	inline void				   SetOptionsFlags(tAudioOptionsFlags x) { optionsFlags_ = x;}
 
 	inline void					Pause(void) 		{ bPaused_ = true; }
 	inline void					Resume(void) 		{ bPaused_ = false; }
@@ -83,11 +81,9 @@ protected:
 	U8			bPaused_;				
 	Boolean		bIsDone_;			 // Player has completed generating audio
 	U8			bStopping_;			 // Stop() has been called, but not yet stopped
-	U8			bSendLoopEndMessage_;// Send each time the end of the loop has been reached
 
-	S32				loopCount_;
+	S32				numLoops_;
 	S32				loopCounter_;
-	Boolean			shouldLoop_;	
 
 	CDebugMPI*			pDebugMPI_;			
 	tAudioID			id_;			

@@ -178,39 +178,14 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 		return (0);
 
 	// Read data from file to output buffer
-	//
-	// GK FIXX: pad short reads with zeros unless there is looping
-	// GK FIXX: looping is not seamless as compression shifts the audio and
-	// alters loop points.
 	while ( !fileEndReached && bytesToRead > 0) 
 	{
 		bytesRead = ReadBytesFromFile(bufPtr, bytesToRead);
 		fileEndReached = ( bytesRead < bytesToRead );
 		if ( fileEndReached)
 		{
-			// Short read: rewind file and get remaining bytes from another file
-			// read
-			if (shouldLoop_)
-			{
-				if (loopCounter_++ < loopCount_)
-				{
-					totalBytesRead_ = 0;
-					RewindFile();
-					bytesRead += ReadBytesFromFile(&bufPtr[bytesRead],
-												   bytesToRead-bytesRead);
-					fileEndReached = false;
-					// Send loop end message
-					if (bSendLoopEndMessage_)
-					{
-						SendLoopEndMsg();
-					}
-				}
-			}
-			else
-			{
-				// Pad with zeros after last legitimate sample
-				ClearBytes(&bufPtr[bytesRead], bytesToRead-bytesRead);
-			}
+			// Pad with zeros after last legitimate sample
+			ClearBytes(&bufPtr[bytesRead], bytesToRead-bytesRead);
 		}
 		
 		bytesToRead		-= bytesRead;
@@ -254,6 +229,7 @@ void CRawPlayer::RewindFile()
 		fseek( fileH_, sizeof(tAudioHeader), SEEK_SET);
 	if (inFile_)
 		RewindSoundFile( inFile_);
+	bIsDone_ = false;
 }
 
 // ==============================================================================

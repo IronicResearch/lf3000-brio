@@ -57,7 +57,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	pListener_	  = NULL;
 	payload_	  = 0;
 	optionsFlags_ = 0;
-	bSendLoopEndMessage_ = 0;
 	bIsDone_ = false;
 	if(pInfo)
 	{
@@ -66,12 +65,9 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 		payload_	  = pInfo->payload;
 		optionsFlags_ = pInfo->flags;
 
-		bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
 	}
 
-	// Set up looping
-	shouldLoop_	 = (0 < payload_) && (optionsFlags_ & kAudioOptionsLooped);
-	loopCount_	 = payload_;
+	numLoops_	 = payload_;
 	loopCounter_ = 0;
 
 }
@@ -81,27 +77,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 CAudioPlayer::~CAudioPlayer()
 {
 }
-
-// ==============================================================================
-// SendLoopEndMsg:	 Send message to Event listener each time the end of a loop is reached
-// ==============================================================================
-void CAudioPlayer::SendLoopEndMsg( void )
-{
-	if (!pListener_)
-		return;
-
-	const tEventPriority	kPriorityTBD = 0;
-	tAudioMsgLoopEnd		data;
-
-	data.audioID = id_;			
-	data.payload = loopCount_;
-	data.count	 = 1;
-
-	CEventMPI	event;
-	CAudioEventMessage	msg(data);
-	event.PostEvent(msg, kPriorityTBD, pListener_);
-}	// ---- end SendLoopEndMsg() ----
-
 
 LF_END_BRIO_NAMESPACE()
 // EOF	

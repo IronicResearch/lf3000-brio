@@ -429,12 +429,51 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 		}
 		DestroyPlayer(pPlayer);
 	}
+	else if(type == kAudioLoopEndEvent)
+	{
+		if(listener && (flags & kAudioOptionsLoopEndMsg))
+		{
+			tAudioMsgLoopEnd msg;
+			msg.audioID = pPlayer->GetID();
+			msg.payload = pPlayer->GetNumLoops();
+			msg.count = pPlayer->GetLoopCount();
+			CAudioEventMessage event(msg);
+			pEventMPI_->PostEvent(event, 128, listener);
+		}
+	}
 	else
 	{
 		pDebugMPI_->DebugOut(kDbgLvlImportant,
 							 "%s: Unrecognized audio event 0x%lx\n",
 							 __FUNCTION__, type);
 	}
+}
+
+// ==============================================================================
+// HandlePlayerLooping: This function inspects the player state and decides what
+// to do with respect to looping.  It returns true if all looping is complete
+// and the player can be freed.  It returns false if the player still has loops
+// to play.  pPlayer MUST be non-null.
+// ==============================================================================
+Boolean CAudioMixer::HandlePlayerLooping(CAudioPlayer *pPlayer)
+{
+
+	tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
+
+	if(!pPlayer->IsDone())
+		return false;
+
+	if(!(flags & kAudioOptionsLooped))
+		return true;
+
+	if(pPlayer->GetLoopCount() < pPlayer->GetNumLoops())
+	{
+		pPlayer->IncLoopCount();
+		pPlayer->RewindFile();
+		return false;
+	}
+
+	return true;
 }
 
 // ==============================================================================
@@ -912,9 +951,23 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 		CChannel *pCh = &(((CAudioMixer*)pToObject)->pChannels_)[ch];
 		if (pCh->GetPlayer() && pCh->GetPlayer()->IsDone())
 		{
-			((CAudioMixer*)pToObject)->HandlePlayerEvent(pCh->GetPlayer(),
-														 kAudioCompletedEvent);
-			pCh->Release(true);
+			CAudioPlayer *pPlayer = pCh->GetPlayer();
+			// Now we either play the clip again or free the channel
+			tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
+			Boolean freeChannel = ((CAudioMixer*)pToObject)->HandlePlayerLooping(pPlayer);
+			if(freeChannel)
+			{
+				//If we're freeing the channel, send the done message
+				((CAudioMixer*)pToObject)->HandlePlayerEvent(pPlayer,
+															 kAudioCompletedEvent);
+				pCh->Release(true);
+			}
+			else
+			{
+				//If we're not freeing the channel, we must be looping.
+				((CAudioMixer*)pToObject)->HandlePlayerEvent(pPlayer,
+															 kAudioLoopEndEvent);
+			}
 		}
 	}
 	
