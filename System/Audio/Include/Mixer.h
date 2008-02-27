@@ -85,6 +85,7 @@ class CAudioMixer {
 	CChannel* FindFreeChannel( tAudioPriority priority );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
+	void HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type );
 
 	float			samplingFrequency_;
 
