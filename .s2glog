@@ -14766,3 +14766,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 5:11 PM
 5,657 ms. (Cumulative: 4,259,990 ms)
 
 ----------------
+Revision 3,087 from svn://localhost/TRUNK/:
+
+Release channel instead of depending on lazy unloading.  Pretty soon, we'll
+migrate all of this player end-of-life stuff out of the render loop now that the
+event manager works.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 5:24 PM
+2 changed, 0 added, 0 deleted.
+5,324 ms. (Cumulative: 4,265,376 ms)
+
+----------------

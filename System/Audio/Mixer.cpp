@@ -863,19 +863,14 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 				pListeners[ch] = pPlayer->GetEventListener();
 				pEvtMsgs[ch] = pPlayer->GetAudioEventMsg();
 				pEvtMsgs[ch]->audioMsgData.audioCompleted.count++;
+				if (pListeners[ch] != kNull)
+					pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
 			}
-			pCh->fInUse_ = false;
+			pCh->Release(true);
 		}
 	}
 	
 	MIXER_UNLOCK;
-
-	// Now post any pending done messages which were cached while mixer was locked 
-	for (U32 ch = 0; ch < numInChannels; ch++)
-	{
-		if (pListeners[ch] != kNull)
-			pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
-	}
 	
 	return error;
 }
