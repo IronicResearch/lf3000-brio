@@ -93,6 +93,10 @@ class CAudioMixer {
 	tAudioID GetNextAudioID(void);
 	tAudioID GetNextMidiID(void);
 
+	// This is a version of FindChannel that can be called if you hold the mixer
+	// lock.
+	CChannel* FindChannelInternal( tAudioID id );
+
 // Didj is hard-limited to 4 channels : 3 audio + 1 MIDI input channels (stereo)
 #define kAudioMixer_MaxInAudioChannels	4		// 3 active but can have more if others paused	 
 #define kAudioMixer_MaxActiveAudioChannels	3	 

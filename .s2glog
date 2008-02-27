@@ -14718,3 +14718,18 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 3:51 PM
 5,176 ms. (Cumulative: 4,238,644 ms)
 
 ----------------
+Revision 3,083 from svn://localhost/TRUNK/:
+
+Reintroduced FindChannelInternal for use by internal functions holding mixer
+lock.
+
+Made SetPlayer a simple setter.  Nobody was calling it and it was doing loads
+of inappropriate stuff.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 4:27 PM
+4 changed, 0 added, 0 deleted.
+5,110 ms. (Cumulative: 4,243,817 ms)
+
+----------------
