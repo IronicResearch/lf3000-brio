@@ -120,14 +120,6 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 	fReleasing_ = true;
 	fPaused_	= true;
 
-	// Deactivate "done" message if specified
-	if (noPlayerDoneMsg)
-	{
-		pPlayer_->SetEventListener(NULL);
-		pPlayer_->ActivateSendDoneMessage(false);
-	}
-
-	delete pPlayer_;
 	pPlayer_ = kNull;
 
 	// No longer in use
@@ -138,58 +130,10 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 }	// ---- end Release ----
 
 // ==============================================================================
-// SetPlayer : 
-// ==============================================================================
-void CChannel::SetPlayer( CAudioPlayer *pPlayer, long releaseExistingPlayer )
-{
-	const IEventListener *pOldListener = NULL;
-	U8 bOldDoneMessage				   = false;
-	tAudioID oldId					   = 0;
-
-	// If we're pre-empting, release active player first.
-	if (pPlayer_)
-	{
-		pOldListener	= pPlayer_->GetEventListener();
-		bOldDoneMessage = pPlayer_->ShouldSendDoneMessage();
-		oldId			= pPlayer_->GetID();
-
-		if (releaseExistingPlayer)
-			Release( true );		// true = no done msg 
-	}
-
-	pPlayer_ = pPlayer;
-	SetSamplingFrequency(pPlayer->GetSampleRate());
-
-	// Send done message if it was setup 
-	if (pOldListener && bOldDoneMessage)
-	{
-		const tEventPriority	kPriorityTBD = 0;
-		tAudioMsgAudioCompleted	data;
-
-		data.audioID = oldId;			
-		data.payload = 0;
-		data.count	 = 1;
-
-		CEventMPI	event;
-		CAudioEventMessage	msg(data);
-		event.PostEvent(msg, kPriorityTBD, pOldListener);
-	}
-
-	fInUse_		= true;
-	fPaused_	= false;
-	fReleasing_ = false;
-
-}	// ---- end SetPlayer ----
-
-// ==============================================================================
 // InitWithPlayer
 // ==============================================================================
 tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 {
-
-	// Release inactive player first
-	if (pPlayer_)
-		Release( true );		// true = no done msg if requested
 	
 	// Convert interface parameters to DSP level data and reset channel
 	pPlayer_	= pPlayer;

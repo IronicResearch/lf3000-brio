@@ -382,12 +382,11 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 // FindChannel:	 Look for channel with specified ID
 //					Return ptr to channel
 // ==============================================================================
-CChannel *CAudioMixer::FindChannel( tAudioID id )
+CChannel *CAudioMixer::FindChannelInternal( tAudioID id )
 {
 
 	CChannel *pChannel = kNull;
 	
-	MIXER_LOCK;
 	//Find channel with specified ID
 	for (long i = 0; i < numInChannels_; i++)
 	{
@@ -395,6 +394,19 @@ CChannel *CAudioMixer::FindChannel( tAudioID id )
 		if ( pPlayer && (pPlayer->GetID() == id))
 			pChannel = &pChannels_[i];
 	}
+	return pChannel;
+}
+
+// ==============================================================================
+// FindChannel:	 Look for channel with specified ID
+//					Return ptr to channel
+// ==============================================================================
+CChannel *CAudioMixer::FindChannel( tAudioID id )
+{
+	CChannel *pChannel = kNull;
+	
+	MIXER_LOCK;
+	pChannel = FindChannelInternal(id);
 	MIXER_UNLOCK; 
 	return pChannel;
 }
@@ -600,11 +612,14 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 // ==============================================================================
 void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 {
-	CChannel *pCh = FindChannel(id);	   
+	CChannel *pCh;
+	MIXER_LOCK;
+	pCh = FindChannelInternal(id);
 	if (pCh && pCh->IsInUse()) {
 		//perhaps we should pass noDoneMessage?
 		pCh->Release(true);
 	}
+	MIXER_UNLOCK; 
 }
 
 // ==============================================================================

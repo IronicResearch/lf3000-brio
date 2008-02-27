@@ -61,7 +61,7 @@ class CChannel {
 	void		SetSamplingFrequency(U32 x)		{ samplingFrequency_ = x;}
 
 	inline CAudioPlayer *GetPlayerPtr()			{ return pPlayer_; }
-	void		SetPlayer(CAudioPlayer *pPlayer, long releaseExistingPlayer);
+	void		SetPlayer(CAudioPlayer *pPlayer) { pPlayer_ = pPlayer; }
 
 #define kAudioMixerChannel_MaxOutChannels 2
 	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
