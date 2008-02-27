@@ -769,13 +769,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			U32	 sampleCount	= framesToRender*channels;
 			// Player renders data into channel's stereo output buffer
 			framesRendered = pCh->Render( pChannelBuf_, framesToRender );
-			// NOTE: SendDoneMsg() deferred to next buffer when
-			// framtesToRender is multiple of total frames
-			if ( framesRendered < framesToRender ) 
-			{
-				pCh->isDone_ = true;
-				//Done message is sent later
-			}
+			// NOTE: SendDoneMsg() deferred until after render loop.
 
 			// Add output to appropriate Mix "Bin" 
 			long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
@@ -916,7 +910,7 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	for (U32 ch = 0; ch < numInChannels; ch++)
 	{
 		CChannel *pCh = &(((CAudioMixer*)pToObject)->pChannels_)[ch];
-		if (pCh->isDone_ && pCh->GetPlayer())
+		if (pCh->GetPlayer() && pCh->GetPlayer()->IsDone())
 		{
 			((CAudioMixer*)pToObject)->HandlePlayerEvent(pCh->GetPlayer(),
 														 kAudioCompletedEvent);

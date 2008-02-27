@@ -34,8 +34,6 @@ CChannel::CChannel()
 {
 	pPlayer_ = kNull;
 
-	isDone_		= false;
-
 	// Set DSP values
 	pan_	= kPan_Default;
 	volume_ = kVolume_Default;
@@ -97,16 +95,6 @@ void CChannel::RecalculateLevels()
 }	// ---- end RecalculateLevels ----
 
 // ==============================================================================
-// ShouldRender
-// ==============================================================================
-Boolean CChannel::ShouldRender( void ) 
-{
-	Boolean shouldRender = (!isDone_ && pPlayer_);
-	
-	return (shouldRender); 
-}	// ---- end ShouldRender ----
-
-// ==============================================================================
 // Release:
 // ==============================================================================
 tErrType CChannel::Release( Boolean noPlayerDoneMsg )
@@ -129,8 +117,6 @@ tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 	pPlayer_	= pPlayer;
 	SetSamplingFrequency(pPlayer->GetSampleRate());
 
-	isDone_		= false;
-
 	return (kNoErr);
 }	// ---- end InitWithPlayer ----
 
@@ -152,7 +138,6 @@ U32 CChannel::Render(S16 *pOut, int framesToRender )
 	{
 		framesRendered	= pPlayer_->Render( pOut, framesToRender );
 		samplesRendered = framesRendered*2;
-		isDone_ = (framesToRender > framesRendered);
 	}
 
 	// Scale stereo out buffer (Assumes all audio player output is two channel)
