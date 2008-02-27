@@ -486,9 +486,7 @@ Boolean CAudioModule::IsAudioPlaying(tAudioID id)
 	CChannel *c;
 
 	AUDIO_LOCK;
-	c = gAudioContext.pAudioMixer->FindChannel(id);
-	if(c != kNull)
-		playing = c->IsInUse();
+	playing = gAudioContext.pAudioMixer->IsPlayerPlaying(id);
 	AUDIO_UNLOCK;
 	return playing;
 }

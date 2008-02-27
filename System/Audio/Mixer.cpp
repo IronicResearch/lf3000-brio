@@ -345,35 +345,24 @@ CAudioMixer::~CAudioMixer()
 // ==============================================================================
 CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 {
-	CChannel *pCh;
+	CChannel *pCh = kNull, *pFreeCh = kNull;
+	int active = 0;
 
-	long active = 0;
-	long idle	= 0;
-	for (long i = 0; i < numInChannels_; i++)
-	{
-		active +=  pChannels_[i].IsInUse();
-		idle   += (!pChannels_[i].IsInUse());
-	}
-
-	// Although more channels are actually available, limit to preset active
-	// count
-	if (active >= kAudioMixer_MaxActiveAudioChannels)
-	{
-		return (kNull);
-	}
-
-	// Search for idle channel
+	// Search for idle channel.  This is currently where we apply the
+	// max-number-of-players policy.  It should be moved to CreatePlayer.
 	for (long i = 0; i < numInChannels_; i++)
 	{
 		pCh = &pChannels_[i];
-		if (!pCh->IsInUse())
-		{
-			return (pCh);
-		}
+		if (pCh->GetPlayer())
+			active++;
+		else
+			pFreeCh = pCh;
 	}
 	
-	// Reaching this point means all channels are currently in use
-	return (kNull);
+	if(active >= kAudioMixer_MaxActiveAudioChannels)
+		pFreeCh = kNull;
+	
+	return pFreeCh;
 }
 
 // ==============================================================================
@@ -410,23 +399,6 @@ CChannel *CAudioMixer::FindChannel( tAudioID id )
 }
 
 // ==============================================================================
-// FindFreeChannelIndex:	Find specified channel by ID.  Must be "in use"
-//								Return index in channel array
-// ==============================================================================
-long CAudioMixer::FindFreeChannelIndex( tAudioID id )
-{
-	for (long i = 0; i < numInChannels_; i++)
-	{
-		CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
-		if ( pPlayer && (pPlayer->GetID() == id) && pChannels_[i].IsInUse())
-			return (i);
-	}
-	
-	// Unable to find
-	return ( -1 );
-}
-
-// ==============================================================================
 // IsAnyAudioActive:  Gk FI
 // ==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
@@ -437,7 +409,7 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 	// Search for a channel that is in use
 	for (long i = 0; i < numInChannels_; i++)
 	{
-		if (pChannels_[i].IsInUse())
+		if (pChannels_[i].GetPlayer())
 			ret = true;
 	}
 	MIXER_UNLOCK; 
@@ -615,7 +587,7 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 
 	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
-	if (pCh && pCh->IsInUse()) {
+	if (pCh && pCh->GetPlayer()) {
 		//perhaps we should pass noDoneMessage?
 		pPlayer = pCh->GetPlayer();
 		if(pPlayer)
@@ -655,6 +627,25 @@ void CAudioMixer::ResumePlayer( tAudioID id )
 		pCh->GetPlayer()->Resume();
 	}
 	MIXER_UNLOCK; 
+}
+
+// ==============================================================================
+// IsPlayerPlaying:
+// ==============================================================================
+Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
+{
+	CChannel *pCh;
+	Boolean playing = false;
+
+	MIXER_LOCK;
+	pCh = FindChannelInternal(id);
+	if (pCh && pCh->GetPlayer())
+	{
+		//We need to check pause also
+		playing = true;
+	}
+	MIXER_UNLOCK;
+	return playing;
 }
 
 // ==============================================================================
@@ -889,10 +880,10 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	for (U32 ch = 0; ch < numInChannels; ch++)
 	{
 		CChannel *pCh = &(((CAudioMixer*)pToObject)->pChannels_)[ch];
-		if (pCh->isDone_ && pCh->fInUse_)
+		if (pCh->isDone_ && pCh->GetPlayer())
 		{
 			// Cache done messages while mixer is locked
-			CAudioPlayer* pPlayer = pCh->GetPlayerPtr();
+			CAudioPlayer* pPlayer = pCh->GetPlayer();
 			if (pPlayer && pPlayer->ShouldSendDoneMessage()) 
 			{
 				pListeners[ch] = pPlayer->GetEventListener();

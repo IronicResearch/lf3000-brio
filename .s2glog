@@ -14820,3 +14820,14 @@ By Scott Esters (sesters@leapfrog.com) on 2/27/08 10:03 AM
 5,409 ms. (Cumulative: 4,287,630 ms)
 
 ----------------
+Revision 3,092 from svn://localhost/TRUNK/:
+
+Removing uneeded under-specified state variables in channel class.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/27/08 10:47 AM
+6 changed, 0 added, 0 deleted.
+5,125 ms. (Cumulative: 4,292,818 ms)
+
+----------------

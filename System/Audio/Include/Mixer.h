@@ -49,6 +49,7 @@ class CAudioMixer {
 	void RemovePlayer( tAudioID id, Boolean noDoneMessage );
 	void PausePlayer( tAudioID id );
 	void ResumePlayer( tAudioID id );
+	Boolean IsPlayerPlaying( tAudioID id );
 
 	CMidiPlayer *CreateMIDIPlayer();
 	void DestroyMIDIPlayer();
@@ -82,7 +83,6 @@ class CAudioMixer {
  private:
 	CButtonMPI *pButtonMPI_;
 	CChannel* FindFreeChannel( tAudioPriority priority );
-	long FindFreeChannelIndex( tAudioID id );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
 
