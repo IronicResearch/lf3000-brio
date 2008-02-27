@@ -14889,3 +14889,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/27/08 3:41 PM
 5,610 ms. (Cumulative: 4,319,351 ms)
 
 ----------------
+Revision 3,100 from svn://localhost/TRUNK/:
+
+Migrate finshed player code higher in render to facilitate closing the gaps in
+the looping.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/27/08 3:50 PM
+1 changed, 0 added, 0 deleted.
+5,617 ms. (Cumulative: 4,325,046 ms)
+
+----------------
