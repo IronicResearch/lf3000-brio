@@ -19,6 +19,7 @@
 #include <EventTypes.h>
 #include <FontTypes.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
 #include <DisplayTypes.h> 
 #if      USE_RSRC_MGR
 #include <ResourceTypes.h>
@@ -138,7 +139,8 @@ public:
 
 private:
 	CDebugMPI			dbg_;
-	
+	CKernelMPI			kernel_;
+		
 	// FreeType-specific functionality
 	tFontInt			handle_;
 	tFontProp			prop_;
@@ -157,6 +159,8 @@ private:
     void				ConvertGraymapToRGB4444(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
     void				ConvertGraymapToRGB565(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
 	tFontHndl			LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize);
+	void 				ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, int height);
+	void 				FreeBitmap(FT_Bitmap* dest);
 
 	// Limit object creation to the Module Manager interface functions
 	CFontModule();

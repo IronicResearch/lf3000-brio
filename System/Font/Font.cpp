@@ -240,8 +240,6 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 //----------------------------------------------------------------------------
 CFontModule::~CFontModule()
 {
-	CKernelMPI	kernel;
-	
 	if (!handle_.library)
 		return;
 
@@ -251,11 +249,11 @@ CFontModule::~CFontModule()
 		if (handle_.fonts[i])
 		{
 			if (handle_.fonts[i]->filepathname)
-				kernel.Free((char*)(handle_.fonts[i]->filepathname));
-			kernel.Free(handle_.fonts[i]);
+				kernel_.Free((char*)(handle_.fonts[i]->filepathname));
+			kernel_.Free(handle_.fonts[i]);
 		}
 	}
-	kernel.Free(handle_.fonts);
+	kernel_.Free(handle_.fonts);
 
 #if USE_FONT_CACHE_MGR
 	// Unload FreeType font cache manager
@@ -307,7 +305,6 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	CPath			filepath = (pName->at(0) == '/') ? *pName : gpath + *pName;
 	const char*		filename = filepath.c_str();
 	FT_Size      	size;
-    CKernelMPI		kernel;
 	
     // Font instance property versioning
     if (prop.version == 1)
@@ -345,10 +342,10 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 		FT_HAS_HORIZONTAL(face) ? "yes" : "no",	FT_HAS_VERTICAL(face) ? "yes" : "no", FT_HAS_KERNING(face) ? "yes" : "no");
 
 	// Allocate mem for font face
-	font = static_cast<PFont>(kernel.Malloc( sizeof ( TFont ) ) );
+	font = static_cast<PFont>(kernel_.Malloc( sizeof ( TFont ) ) );
 	dbg_.Assert(font != NULL, "CFontModule::LoadFont: font struct could not be allocated\n");
 	memset(font, 0, sizeof(TFont));
-	font->filepathname = static_cast<char*>(kernel.Malloc( strlen( filename ) + 1 ) );
+	font->filepathname = static_cast<char*>(kernel_.Malloc( strlen( filename ) + 1 ) );
 	dbg_.Assert(font->filepathname != NULL, "CFontModule::LoadFont: font filepathname could not be allocated\n");
 	strcpy( (char*)font->filepathname, filename );
 	font->fileAddress = pFileImage;
@@ -370,7 +367,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     if ( handle_.maxFonts == 0 ) 
     {
 		handle_.maxFonts = 16;
-		handle_.fonts     = static_cast<PFont*>(kernel.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
+		handle_.fonts     = static_cast<PFont*>(kernel_.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
 		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be allocated\n");
 		memset( &handle_.fonts[0], 0, handle_.maxFonts * sizeof ( PFont ) );
     }
@@ -378,11 +375,11 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     {
     	PFont* 	oldlist = handle_.fonts;
 		handle_.maxFonts *= 2;
-		handle_.fonts      = static_cast<PFont*>(kernel.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
+		handle_.fonts      = static_cast<PFont*>(kernel_.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
 		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be reallocated\n");
 		memcpy( &handle_.fonts[0], oldlist, handle_.numFonts * sizeof ( PFont ) );
 		memset( &handle_.fonts[handle_.numFonts], 0, ( handle_.maxFonts - handle_.numFonts ) * sizeof ( PFont ) );
-		kernel.Free(oldlist);
+		kernel_.Free(oldlist);
     }
 
 	// Add this font to our list of fonts
@@ -1014,13 +1011,12 @@ void CFontModule::ConvertGraymapToRGB565(FT_Bitmap* source, int x0, int y0, tFon
 //----------------------------------------------------------------------------
 // Expand glyph bitmap to new width and height
 //----------------------------------------------------------------------------
-inline void ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, int height)
+void CFontModule::ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, int height)
 {
-	CKernelMPI	kernel;
 	int			w = source->pitch;
 	int			h = source->rows;
 	U8* 		s = source->buffer;
-	U8* 		d = dest->buffer = static_cast<U8*>(kernel.Malloc(width * height));
+	U8* 		d = dest->buffer = static_cast<U8*>(kernel_.Malloc(width * height));
 
 	// Effectively use pitch for full bitmap width
 	dest->pitch = dest->width = width;
@@ -1039,10 +1035,9 @@ inline void ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, int heig
 //----------------------------------------------------------------------------
 // Free expanded glyph bitmap memory 
 //----------------------------------------------------------------------------
-inline void FreeBitmap(FT_Bitmap* dest)
+void CFontModule::FreeBitmap(FT_Bitmap* dest)
 {
-	CKernelMPI	kernel;
-	kernel.Free(dest->buffer);
+	kernel_.Free(dest->buffer);
 }
 
 //----------------------------------------------------------------------------
