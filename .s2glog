@@ -14867,3 +14867,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/27/08 2:26 PM
 5,109 ms. (Cumulative: 4,308,444 ms)
 
 ----------------
+Revision 3,098 from svn://localhost/TRUNK/:
+
+Disable tracking of useless list of font instance pointers, and free font handles resources directly. Avoids memory leaks from persistant font instance handles.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/27/08 2:32 PM
+2 changed, 0 added, 0 deleted.
+5,156 ms. (Cumulative: 4,313,678 ms)
+
+----------------
