@@ -243,6 +243,7 @@ CFontModule::~CFontModule()
 	if (!handle_.library)
 		return;
 
+#if 0	// useless list
 	// Release memory used by fonts and font list
 	for (int i = 0; i < handle_.numFonts; i++) 
 	{
@@ -254,6 +255,7 @@ CFontModule::~CFontModule()
 		}
 	}
 	kernel_.Free(handle_.fonts);
+#endif
 
 #if USE_FONT_CACHE_MGR
 	// Unload FreeType font cache manager
@@ -363,6 +365,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     handle_.face = font->face = face;
 #endif
 
+#if 0 // useless list (holdover from FreeType example)
 	// Allocate space to load this font in our font list to date
     if ( handle_.maxFonts == 0 ) 
     {
@@ -385,6 +388,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	// Add this font to our list of fonts
     handle_.fonts[handle_.numFonts] = font;
     handle_.curFont = handle_.numFonts++;
+#endif
     handle_.currentFont = font;
     
 #if USE_FONT_CACHE_MGR
@@ -553,6 +557,11 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 			pFont->face = NULL;
 		}
 #endif
+
+		// Release resources associated with font handle
+		if (pFont->filepathname)
+			kernel_.Free((char*)(pFont->filepathname));
+		kernel_.Free(pFont);
 	}
 
 	return true;

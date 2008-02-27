@@ -728,6 +728,7 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		pFontMPI_->UnloadFont(font1);
 		delete pDisplayMPI_;
+		delete buffer;
 	}
 	
 	//------------------------------------------------------------------------
