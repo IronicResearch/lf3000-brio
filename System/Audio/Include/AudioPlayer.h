@@ -37,6 +37,10 @@ class CAudioPlayer {
 	virtual ~CAudioPlayer();
 		
 	virtual void	RewindFile() = 0;
+
+	// Render is the heart of the player.  When called, it renders the next
+	// numFrames to pOut.  Note that it is the caller's responsibility to only
+	// check if the player is paused prior to calling Render.
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
 
@@ -74,6 +78,9 @@ class CAudioPlayer {
 	}
 	inline tAudioMsgData		GetAudioMsgData() 		{ return msgData_; }
 	inline CAudioEventMessage*	GetAudioEventMsg() 		{ return pEvtMsg_; }
+
+	inline void					Pause(void) 		{ bPaused_ = true; }
+	inline void					Resume(void) 		{ bPaused_ = false; }
 	
 protected:
 	S16				*pReadBuf_;

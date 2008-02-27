@@ -35,7 +35,6 @@ CChannel::CChannel()
 	pPlayer_ = kNull;
 
 	fInUse_		= false;
-	fPaused_	= false;
 	fReleasing_ = false;
 	isDone_		= false;
 
@@ -104,7 +103,7 @@ void CChannel::RecalculateLevels()
 // ==============================================================================
 Boolean CChannel::ShouldRender( void ) 
 {
-	Boolean shouldRender = (fInUse_ && !fPaused_ && !fReleasing_ && !isDone_); // && pPlayer_);
+	Boolean shouldRender = (fInUse_ && !fReleasing_ && !isDone_); // && pPlayer_);
 	
 	return (shouldRender); 
 }	// ---- end ShouldRender ----
@@ -118,7 +117,6 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 		return (kNoErr);
 
 	fReleasing_ = true;
-	fPaused_	= true;
 
 	pPlayer_ = kNull;
 
@@ -139,7 +137,6 @@ tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 	pPlayer_	= pPlayer;
 	SetSamplingFrequency(pPlayer->GetSampleRate());
 
-	fPaused_	= false;
 	fReleasing_ = false;
 	isDone_		= false;
 	// Finally, allow this channel to be added to Mixer
