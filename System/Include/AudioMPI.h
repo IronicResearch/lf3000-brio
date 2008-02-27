@@ -94,6 +94,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// \todo kAudioTerminatedEvent and kMidiTerminatedEvent are not implemented.
 ///
 /// \todo Cue points are not implemented and may never be implemented.
+///
+/// \todo raw player (.raw .brio .aif .aiff and .wav) is implemented but not
+/// thoroughly tested.
+
 
 class IEventListener;
 

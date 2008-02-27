@@ -128,6 +128,7 @@ class CMidiPlayer : public CAudioPlayer {
 	void RecalculateLevels();
 
 	Boolean bSendDoneMessage_;
+	Boolean bSendLoopEndMessage_;
 };
 
 LF_END_BRIO_NAMESPACE()

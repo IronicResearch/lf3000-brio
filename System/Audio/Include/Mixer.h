@@ -86,6 +86,7 @@ class CAudioMixer {
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
 	void HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type );
+	Boolean HandlePlayerLooping(CAudioPlayer *pPlayer);
 
 	float			samplingFrequency_;
 
