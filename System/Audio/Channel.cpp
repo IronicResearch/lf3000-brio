@@ -120,7 +120,6 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 	fReleasing_ = true;
 	fPaused_	= true;
 
-	delete pPlayer_;
 	pPlayer_ = kNull;
 
 	// No longer in use
@@ -136,10 +135,6 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 {
 
-	// Release inactive player first
-	if (pPlayer_)
-		Release( true );		// true = no done msg if requested
-	
 	// Convert interface parameters to DSP level data and reset channel
 	pPlayer_	= pPlayer;
 	SetSamplingFrequency(pPlayer->GetSampleRate());
