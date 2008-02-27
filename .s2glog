@@ -14788,3 +14788,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 5:31 PM
 5,391 ms. (Cumulative: 4,270,830 ms)
 
 ----------------
+Revision 3,089 from svn://localhost/TRUNK/:
+
+Players are now freed in the mixer.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 5:38 PM
+2 changed, 0 added, 0 deleted.
+5,407 ms. (Cumulative: 4,276,299 ms)
+
+----------------

@@ -613,10 +613,15 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 {
 	CChannel *pCh;
+	CAudioPlayer *pPlayer;
+
 	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
 	if (pCh && pCh->IsInUse()) {
 		//perhaps we should pass noDoneMessage?
+		pPlayer = pCh->GetPlayer();
+		if(pPlayer)
+			delete pPlayer;
 		pCh->Release(true);
 	}
 	MIXER_UNLOCK; 
@@ -865,6 +870,7 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 				pEvtMsgs[ch]->audioMsgData.audioCompleted.count++;
 				if (pListeners[ch] != kNull)
 					pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
+				delete pPlayer;
 			}
 			pCh->Release(true);
 		}
