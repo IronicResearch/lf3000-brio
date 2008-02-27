@@ -300,7 +300,7 @@ void CUSBDeviceModule::SetUSBDeviceWatchdog(U32 timerSec)
 		return;
 
 	msg.type = APP_MSG_SET_USB;
-	msg.payload = timerSec*1000;
+	msg.payload = timerSec;
 
 	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
 	close(s);
