@@ -14744,3 +14744,14 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 4:29 PM
 5,047 ms. (Cumulative: 4,248,942 ms)
 
 ----------------
+Revision 3,085 from svn://localhost/TRUNK/:
+
+Whoops.  I didn't mean to eliminate the lazy freeing of players yet.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/26/08 4:35 PM
+1 changed, 0 added, 0 deleted.
+5,266 ms. (Cumulative: 4,254,270 ms)
+
+----------------
