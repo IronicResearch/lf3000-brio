@@ -818,6 +818,28 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			AccS16toS16(pMixBin, pChannelBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
 			mixBinFilled_[mixBinIndex] = True;
+
+			// Now that rendering is complete, send done messages and delete
+			// players.  Note that this is going to be migrated to a Notify
+			// function to off-load the render loop.
+			CAudioPlayer *pPlayer = pCh->GetPlayer();
+			if (pPlayer->IsDone())
+			{
+				// Now we either play the clip again or free the channel
+				tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
+				Boolean freeChannel = HandlePlayerLooping(pPlayer);
+				if(freeChannel)
+				{
+					//If we're freeing the channel, send the done message
+					HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
+					pCh->Release(true);
+				}
+				else
+				{
+					//If we're not freeing the channel, we must be looping.
+					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
+				}
+			}
 		}
 	}
 
@@ -932,9 +954,7 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 									  void *pToObject  )
 {	
 	int error = kNoErr;
-	
-	U32 numInChannels = ((CAudioMixer*)pToObject)->numInChannels_;
-	
+		
 	MIXER_LOCK;
 
 	if (((CAudioMixer*)pToObject)->IsPaused())
@@ -945,32 +965,6 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 		error = ((CAudioMixer*)pToObject)->Render( pOut, numStereoFrames );
 	}
 
-	// Now that rendering is complete, check for any done messages to be sent
-	for (U32 ch = 0; ch < numInChannels; ch++)
-	{
-		CChannel *pCh = &(((CAudioMixer*)pToObject)->pChannels_)[ch];
-		if (pCh->GetPlayer() && pCh->GetPlayer()->IsDone())
-		{
-			CAudioPlayer *pPlayer = pCh->GetPlayer();
-			// Now we either play the clip again or free the channel
-			tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
-			Boolean freeChannel = ((CAudioMixer*)pToObject)->HandlePlayerLooping(pPlayer);
-			if(freeChannel)
-			{
-				//If we're freeing the channel, send the done message
-				((CAudioMixer*)pToObject)->HandlePlayerEvent(pPlayer,
-															 kAudioCompletedEvent);
-				pCh->Release(true);
-			}
-			else
-			{
-				//If we're not freeing the channel, we must be looping.
-				((CAudioMixer*)pToObject)->HandlePlayerEvent(pPlayer,
-															 kAudioLoopEndEvent);
-			}
-		}
-	}
-	
 	MIXER_UNLOCK;
 	
 	return error;
