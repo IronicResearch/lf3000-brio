@@ -58,7 +58,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	pListener_	  = NULL;
 	payload_	  = 0;
 	optionsFlags_ = 0;
-	bSendDoneMessage_	 = 0;
 	bSendLoopEndMessage_ = 0;
 	if(pInfo)
 	{
@@ -67,7 +66,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 		payload_	  = pInfo->payload;
 		optionsFlags_ = pInfo->flags;
 
-		bSendDoneMessage_	 = (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete));
 		bSendLoopEndMessage_ = (0 != (pInfo->flags & kAudioOptionsLoopEndMsg));
 	}
 
@@ -76,20 +74,12 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	loopCount_	 = payload_;
 	loopCounter_ = 0;
 	
-	// Setup done event message for posting asynchronously
-	msgData_.audioCompleted.audioID = id_;
-	msgData_.audioCompleted.payload = payload_;
-	msgData_.audioCompleted.count = loopCounter_;
-	pEvtMsg_ = new CAudioEventMessage(msgData_.audioCompleted);
-
 }
 
 //==============================================================================
 //==============================================================================
 CAudioPlayer::~CAudioPlayer()
 {
-	// Free memory used for audio event message
-	delete pEvtMsg_;
 }
 
 // ==============================================================================

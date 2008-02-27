@@ -399,6 +399,45 @@ CChannel *CAudioMixer::FindChannel( tAudioID id )
 }
 
 // ==============================================================================
+// HandlePlayerEvent: This function decides what to do with the player at
+// certain events.  In response to some events, the player will be deleted.  It
+// is the caller's responsibility to ensure that the player is not bound to a
+// channel under these circumstances.
+// ==============================================================================
+void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
+{
+	const IEventListener *listener;
+	tAudioOptionsFlags flags;
+
+	if(!pPlayer)
+		return;
+
+	flags = pPlayer->GetOptionsFlags();
+	listener = pPlayer->GetEventListener();
+
+	if(type == kAudioCompletedEvent)
+	{
+		// In this case, we delete the player because the player is all done.
+		if(listener && (flags & kAudioOptionsDoneMsgAfterComplete))
+		{
+			tAudioMsgAudioCompleted msg;
+			msg.audioID = pPlayer->GetID();
+			msg.payload = pPlayer->GetPayload();
+			msg.count = 1;
+			CAudioEventMessage event(msg);
+			pEventMPI_->PostEvent(event, 128, listener);
+		}
+		DestroyPlayer(pPlayer);
+	}
+	else
+	{
+		pDebugMPI_->DebugOut(kDbgLvlImportant,
+							 "%s: Unrecognized audio event 0x%lx\n",
+							 __FUNCTION__, type);
+	}
+}
+
+// ==============================================================================
 // IsAnyAudioActive:  Gk FI
 // ==============================================================================
 Boolean CAudioMixer::IsAnyAudioActive( void )
@@ -588,10 +627,11 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
 	if (pCh && pCh->GetPlayer()) {
-		//perhaps we should pass noDoneMessage?
 		pPlayer = pCh->GetPlayer();
-		if(pPlayer)
-			delete pPlayer;
+		if(noDoneMessage)
+			DestroyPlayer(pPlayer);
+		else
+			HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
 		pCh->Release(true);
 	}
 	MIXER_UNLOCK; 
@@ -861,10 +901,6 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	int error = kNoErr;
 	
 	U32 numInChannels = ((CAudioMixer*)pToObject)->numInChannels_;
-	const IEventListener*	pListeners[numInChannels];
-	CAudioEventMessage*		pEvtMsgs[numInChannels];
-	memset(pListeners, 0, sizeof(pListeners));
-	memset(pEvtMsgs, 0, sizeof(pEvtMsgs));
 	
 	MIXER_LOCK;
 
@@ -882,17 +918,8 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 		CChannel *pCh = &(((CAudioMixer*)pToObject)->pChannels_)[ch];
 		if (pCh->isDone_ && pCh->GetPlayer())
 		{
-			// Cache done messages while mixer is locked
-			CAudioPlayer* pPlayer = pCh->GetPlayer();
-			if (pPlayer && pPlayer->ShouldSendDoneMessage()) 
-			{
-				pListeners[ch] = pPlayer->GetEventListener();
-				pEvtMsgs[ch] = pPlayer->GetAudioEventMsg();
-				pEvtMsgs[ch]->audioMsgData.audioCompleted.count++;
-				if (pListeners[ch] != kNull)
-					pEventMPI_->PostEvent(*pEvtMsgs[ch], 128, pListeners[ch]);
-				delete pPlayer;
-			}
+			((CAudioMixer*)pToObject)->HandlePlayerEvent(pCh->GetPlayer(),
+														 kAudioCompletedEvent);
 			pCh->Release(true);
 		}
 	}

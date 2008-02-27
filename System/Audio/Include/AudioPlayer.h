@@ -47,7 +47,6 @@ class CAudioPlayer {
 	virtual void	SendLoopEndMsg( void );
 
 	// Return status
-	inline U8 ShouldSendDoneMessage()	 { return bSendDoneMessage_;   }
 	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
 	inline U8		IsComplete()		 { return bComplete_;	   }
 	inline U8		IsPaused()			 { return bPaused_;		   }
@@ -55,7 +54,6 @@ class CAudioPlayer {
 	// Get/Set class member variables
 	inline tAudioID			GetAudioID() { return id_; }
 	inline tAudioID			GetID()		 { return id_; }
-	inline void				ActivateSendDoneMessage	  (Boolean x) { bSendDoneMessage_	 = x; }
 	inline void				ActivateSendLoopEndMessage(Boolean x) { bSendLoopEndMessage_ = x; }
 	
 	inline tAudioPriority	GetPriority()				  { return priority_; }
@@ -73,11 +71,8 @@ class CAudioPlayer {
 	inline void				   SetOptionsFlags(tAudioOptionsFlags x) 
 	{
 		optionsFlags_        = x;
-		bSendDoneMessage_    = ((x & kAudioDoneMsgBitMask) != 0) ? true : false; 
 		bSendLoopEndMessage_ = ((x & kAudioLoopEndBitMask) != 0) ? true : false; 
 	}
-	inline tAudioMsgData		GetAudioMsgData() 		{ return msgData_; }
-	inline CAudioEventMessage*	GetAudioEventMsg() 		{ return pEvtMsg_; }
 
 	inline void					Pause(void) 		{ bPaused_ = true; }
 	inline void					Resume(void) 		{ bPaused_ = false; }
@@ -88,7 +83,6 @@ protected:
 	U8			bPaused_;				
 	U8			bComplete_;			 // Player has completed generating audio
 	U8			bStopping_;			 // Stop() has been called, but not yet stopped
-	U8			bSendDoneMessage_;	 // Caller requests done message 
 	U8			bSendLoopEndMessage_;// Send each time the end of the loop has been reached
 
 	S32				loopCount_;
