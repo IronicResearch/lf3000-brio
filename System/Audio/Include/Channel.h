@@ -65,10 +65,6 @@ class CChannel {
 	Q15			gaini;
 	float		levelsf	  [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
 	Q15			levelsi	  [kAudioMixerChannel_MaxOutChannels];
-
-	// Mixer needs to know if the channel is in a state appropriate
-	// for calling Render().  Keeps flag state inside of channel.
-	Boolean		ShouldRender( void );
 	
 	inline tAudioPriority	GetPriority()							{ return priority_; }
 	inline void				SetPriority( tAudioPriority priority )	{ priority_ = priority; }

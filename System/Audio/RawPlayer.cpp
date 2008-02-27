@@ -174,7 +174,7 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 	S16		*bufPtr = pReadBuf_;
 	long	fileEndReached = false;
 
-	if (bComplete_)
+	if (bIsDone_)
 		return (0);
 
 	// Read data from file to output buffer
@@ -219,7 +219,7 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 	}
 		
 	// Copy to output buffer
-	bComplete_ = fileEndReached;
+	bIsDone_ = fileEndReached;
 		
 	framesRead		= bytesRead / (sizeof(S16) * channels_);
 	framesToProcess = framesRead;

@@ -139,6 +139,9 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	U32		framesRead = 0;
 	
 	bytesToRead = numStereoFrames * sizeof(S16) * channels_;
+
+	if(bIsDone_)
+		return 0;
 	
 	// GK FIXX: pad short reads with zeros unless there is looping
 	// GK FIXX: looping is not seamless
@@ -202,6 +205,8 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 		}
 	}
 	
+	bIsDone_ = (numStereoFrames > framesRead);
+
 	return (framesRead);  
 }
 

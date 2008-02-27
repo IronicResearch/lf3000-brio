@@ -43,7 +43,6 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	pReadBuf_ = new S16[ 2*kAudioOutBufSizeInWords ];  // GK FIXX:	2x needed?
 
 	bPaused_		= 0;
-	bComplete_		= 0;
 	bStopping_		= 0;
 	waitForRender_	= 0;
 
@@ -59,6 +58,7 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	payload_	  = 0;
 	optionsFlags_ = 0;
 	bSendLoopEndMessage_ = 0;
+	bIsDone_ = false;
 	if(pInfo)
 	{
 		priority_	  = pInfo->priority;
@@ -73,7 +73,7 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	shouldLoop_	 = (0 < payload_) && (optionsFlags_ & kAudioOptionsLooped);
 	loopCount_	 = payload_;
 	loopCounter_ = 0;
-	
+
 }
 
 //==============================================================================

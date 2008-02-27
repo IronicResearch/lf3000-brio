@@ -48,8 +48,8 @@ class CAudioPlayer {
 
 	// Return status
 	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
-	inline U8		IsComplete()		 { return bComplete_;	   }
 	inline U8		IsPaused()			 { return bPaused_;		   }
+	inline Boolean	IsDone()			 { return bIsDone_; }
 
 	// Get/Set class member variables
 	inline tAudioID			GetAudioID() { return id_; }
@@ -81,7 +81,7 @@ protected:
 	S16				*pReadBuf_;
 
 	U8			bPaused_;				
-	U8			bComplete_;			 // Player has completed generating audio
+	Boolean		bIsDone_;			 // Player has completed generating audio
 	U8			bStopping_;			 // Stop() has been called, but not yet stopped
 	U8			bSendLoopEndMessage_;// Send each time the end of the loop has been reached
 
