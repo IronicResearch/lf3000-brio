@@ -611,8 +611,8 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
 
 	AUDIO_LOCK;
 	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel) 
-		priority = pChannel->GetPriority();
+	if (pChannel && pChannel->GetPlayer()) 
+		priority = pChannel->GetPlayer()->GetPriority();
 	AUDIO_UNLOCK;
 
 	return priority;
@@ -625,8 +625,8 @@ void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority )
 {
 	AUDIO_LOCK;
 	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel) 
-		pChannel->SetPriority(priority);
+	if (pChannel && pChannel->GetPlayer()) 
+		pChannel->GetPlayer()->SetPriority(priority);
 	AUDIO_UNLOCK;
 }
 

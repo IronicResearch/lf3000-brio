@@ -75,6 +75,8 @@
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
 
+#include <list>
+
 #undef ENABLE_PROFILING
 #include <FlatProfiler.h>
 
@@ -286,6 +288,8 @@ CAudioMixer::CAudioMixer( int inChannels ):
 	// the audio id assignment scheme.
 	nextAudioID = kNoMidiID + 1;
 	nextMidiID = 0;
+
+	currentPolicy = kAudioPriorityPolicyNone;
 
 	pDebugMPI_->Assert(kNoErr == err,
 					   "Failed to start audio output\n" );
@@ -573,12 +577,53 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 
 // ==============================================================================
 // FindKillableChannel: When all players of a certain type are playing, or all
-// channels are full, find a channel that you can kill given your priority.
+// channels are full, this function can be called to return a channel with a
+// player that can be halted, given the priority and the current priority
+// policy.  The caller can optionally supply a condition that the player must
+// meet to further filter the results.
 // ==============================================================================
+
+// But first, a helper function for the list sort.
+bool comparePriority(CChannel *c1, CChannel *c2)
+{
+	tAudioPriority p1 = c1->GetPlayer()->GetPriority();
+	tAudioPriority p2 = c2->GetPlayer()->GetPriority();
+	if(p1 < p2)
+		return true;
+	return false;
+}
+
 CChannel *CAudioMixer::FindKillableChannel(ConditionFunction *cond,
 										   tAudioPriority priority)
 {
-	return 0;
+	CChannel *pCh = NULL;
+
+	if(currentPolicy == kAudioPriorityPolicySimple)
+	{
+		list<CChannel *> sortList;
+		//Probably should have used a list for the channels from the beginning
+		//so we wouldn't have to populate it manually.
+		for(U32 i=0; i<numInChannels_; i++)
+		{
+			pCh = &pChannels_[i];
+			CAudioPlayer *pPlayer = pCh->GetPlayer();
+			if(pPlayer)
+				// Only add non-null players that meet the condition, if there
+				// is a condition.
+				if((!cond) ||
+				   (cond && cond(pPlayer)) )
+					sortList.push_front(pCh);
+		}
+		sortList.sort(comparePriority);
+		// Now the list is in increasing order of priority.  Step through it
+		// until we find one of lesser or equal priority to kill
+		pCh=NULL;
+		list<CChannel *>::iterator it;
+		for (it = sortList.begin(); it != sortList.end(); it++)
+			if((*it)->GetPlayer()->GetPriority() <= priority)
+				pCh = *it;
+	}
+	return pCh;
 }
 
 tPriorityPolicy CAudioMixer::GetPriorityPolicy(void)
@@ -594,9 +639,10 @@ tErrType CAudioMixer::SetPriorityPolicy(tPriorityPolicy policy)
 {
 	tErrType ret = kNoImplErr;
 	MIXER_LOCK;
-	if(policy == kAudioPriorityPolicyNone)
+	if((policy == kAudioPriorityPolicyNone) ||
+	   (policy == kAudioPriorityPolicySimple))
 	{
-		currentPolicy = kAudioPriorityPolicyNone;
+		currentPolicy = policy;
 		ret = kNoErr;
 	}
 	MIXER_UNLOCK;
@@ -719,7 +765,6 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	CChannel *pChannel;
 	
 	MIXER_LOCK;
-	
 	pChannel = FindFreeChannel( pInfo->priority );
 	if (!pChannel)
 	{
