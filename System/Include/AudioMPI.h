@@ -70,7 +70,11 @@ LF_BEGIN_BRIO_NAMESPACE()
 ///
 /// \todo Priority and listener args to AcquireMidiPlayer are ignored.
 ///
-/// \todo Where applicable, the noDoneMessage arguments are ignored.
+/// \todo Where applicable, the noDoneMessage arguments are ignored.  As of 28
+/// Feb 08, fixing this functionality now actually breaks the AppManager
+/// (sequencer?).  Specifically, when scrolling fast through the first wheel
+/// after selecting a name, the audio from the previous icon is not pre-empted.
+/// I'm not sure why.
 ///
 /// \todo AudioEffectsProcessor features are unimplemented.
 ///
