@@ -33,7 +33,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 //
 // Description: manage the low-level mixing of audio channels. 
 //==============================================================================
-class CAudioMixer {
+const tEventType kMixerTypes[] = { kAudioCompletedEvent };
+
+class CAudioMixer : private IEventListener
+{
  public:
 	CAudioMixer( int numChannels );
 	~CAudioMixer();
@@ -87,6 +90,7 @@ class CAudioMixer {
 	void DestroyPlayer(CAudioPlayer *pPlayer);
 	void HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type );
 	Boolean HandlePlayerLooping(CAudioPlayer *pPlayer);
+	tEventStatus Notify( const IEventMessage &msgIn );
 
 	float			samplingFrequency_;
 
@@ -157,6 +161,24 @@ class CAudioMixer {
 
 	tAudioID nextAudioID;
 	tAudioID nextMidiID;
+
+	class CMixerMessage : public IEventMessage 
+	{
+	public:
+		CMixerMessage(CAudioPlayer *pPlayer, tEventType type):
+			IEventMessage(type)
+		{
+			pPlayer_ = pPlayer;
+		}
+
+		virtual U16	GetSizeInBytes() const
+		{
+			return sizeof(CMixerMessage);
+		}
+		
+		CAudioPlayer *pPlayer_;
+	};
+
 };
 
 #endif		// LF_MIXER_H
