@@ -581,6 +581,28 @@ CChannel *CAudioMixer::FindKillableChannel(ConditionFunction *cond,
 	return 0;
 }
 
+tPriorityPolicy CAudioMixer::GetPriorityPolicy(void)
+{
+	tPriorityPolicy policy;
+	MIXER_LOCK;
+	policy = currentPolicy;
+	MIXER_UNLOCK;
+	return policy;
+}
+
+tErrType CAudioMixer::SetPriorityPolicy(tPriorityPolicy policy)
+{
+	tErrType ret = kNoImplErr;
+	MIXER_LOCK;
+	if(policy == kAudioPriorityPolicyNone)
+	{
+		currentPolicy = kAudioPriorityPolicyNone;
+		ret = kNoErr;
+	}
+	MIXER_UNLOCK;
+	return ret;
+}
+
 // ==============================================================================
 // CreatePlayer:   Allocate player based on file extension argument.  This
 // function is rife with player-specific code that could be generalized.
