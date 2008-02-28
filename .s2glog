@@ -14981,3 +14981,18 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/28/08 11:36 AM
 5,219 ms. (Cumulative: 4,364,493 ms)
 
 ----------------
+Revision 3,108 from svn://localhost/TRUNK/:
+
+Whoops.  I forgot to finish my last commit message.  The AppManager and/or
+Sequencer are getting confused when they receive audio done messages in response
+to StopAudio calls.  It is conceivalbe that these apps are not using the
+noDoneMessage flag correctly considering that it has been ignored for so long.
+We're just going to have to leave this functionality broken.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/28/08 11:40 AM
+1 changed, 0 added, 0 deleted.
+5,391 ms. (Cumulative: 4,369,946 ms)
+
+----------------

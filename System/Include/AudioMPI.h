@@ -76,6 +76,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// after selecting a name, the audio from the previous icon is not pre-empted.
 /// I'm not sure why.
 ///
+///
 /// \todo AudioEffectsProcessor features are unimplemented.
 ///
 /// \todo Ensure that tMidiPlayerIDs can ALWAYS be used as tAudioIDs with no
