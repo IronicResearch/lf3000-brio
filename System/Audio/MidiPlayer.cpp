@@ -84,7 +84,6 @@ CMidiPlayer::CMidiPlayer( tAudioStartAudioInfo *pInfo, tAudioID id ) :
 	SetPan(	  kPan_Default);
 	SetVolume(kVolume_Default);
 	
-	bFilePaused_ = false;
 	bFileActive_ = false;
 	bActive_	 = false;
 
@@ -387,13 +386,13 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 }	// ---- end StartMidiFile() ----
 
 // ==============================================================================
-// PauseMidiFile
+// Pause
 // ==============================================================================
-tErrType CMidiPlayer::PauseMidiFile( void )
+void CMidiPlayer::Pause( void )
 {
 	if (bFileActive_)
 	{
-		bFilePaused_ = true;
+		bPaused_ = true;
 		
 		for (U8 ch = 0; ch < 16; ch++)
 		{
@@ -404,20 +403,16 @@ tErrType CMidiPlayer::PauseMidiFile( void )
 								 (int)kMIDI_Controller_AllNotesOff, (int)0 );
 		}
 	}
-	
-	return (0);
-}	// ---- end PauseMidiFile() ----
+}
 
 // ==============================================================================
-// ResumeMidiFile
+// Resume
 // ==============================================================================
-tErrType CMidiPlayer::ResumeMidiFile( void ) 
+void CMidiPlayer::Resume( void ) 
 {
 	if (bFileActive_)
-		bFilePaused_ = false; 
-
-	return (0); //result;
-}	// ---- end ResumeMidiFile() ----
+		bPaused_ = false;
+}
 
 // ==============================================================================
 // StopMidiFile
@@ -427,7 +422,6 @@ tErrType CMidiPlayer::StopMidiFile( Boolean noDoneMsg )
 	tErrType result = 0;
 		
 	bFileActive_ = false;
-	bFilePaused_ = false;
 	if (pListener_	&& !noDoneMsg)
 		SendDoneMsg();
 
@@ -578,7 +572,7 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 	// -------- Render MIDI file
 	//
 	S16 *pBuf = pOut;
-	if ( bFileActive_ && !bFilePaused_ ) 
+	if ( bFileActive_ )
 	{
 		// TODO: make this bulletproof.  Right now no check for sizes.  Figure
 		// out how many calls to spmidi we need to make to get a full output

@@ -884,7 +884,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 
 	// MIDI player renders to fs/2 output buffer Even if fewer frames
 	// rendered
-	if ( pMidiPlayer_ )
+	if ( pMidiPlayer_ && !pMidiPlayer_->IsPaused())
 	{
 		U32 mixBinIndex	   = kAudioMixer_MixBin_Index_FsDiv2;
 		U32 framesToRender = numFramesDiv2;	 // fs/2

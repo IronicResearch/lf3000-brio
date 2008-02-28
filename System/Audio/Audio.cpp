@@ -969,7 +969,7 @@ void CAudioModule::PauseMidiFile( tMidiPlayerID /* id */ )
 	
 	AUDIO_LOCK;
 	if(gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->PauseMidiFile();
+		gAudioContext.pMidiPlayer->Pause();
 	AUDIO_UNLOCK;
 
 }
@@ -981,7 +981,7 @@ void CAudioModule::ResumeMidiFile( tMidiPlayerID /* id */)
 {
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->ResumeMidiFile();
+		gAudioContext.pMidiPlayer->Resume();
 	AUDIO_UNLOCK;
 	
 }
