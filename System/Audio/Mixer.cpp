@@ -150,7 +150,8 @@ static bool IsSpeakerOn( void )
 // ==============================================================================
 // CAudioMixer implementation
 // ==============================================================================
-CAudioMixer::CAudioMixer( int inChannels )
+CAudioMixer::CAudioMixer( int inChannels ):
+	IEventListener(kMixerTypes, ArrayCount(kMixerTypes))
 {
 	long i, j, ch;
 	const tMutexAttr	attr = {0};
@@ -340,6 +341,19 @@ CAudioMixer::~CAudioMixer()
 
 }
 
+tEventStatus CAudioMixer::Notify( const IEventMessage &msgIn )
+{
+	tEventStatus status = kEventStatusOK;
+	
+	const CMixerMessage& msg = dynamic_cast<const CMixerMessage&>(msgIn);
+	if( msg.GetEventType() == kAudioCompletedEvent )
+	{
+		status = kEventStatusOKConsumed;
+		DestroyPlayer(msg.pPlayer_);
+	}
+	return status;
+}
+
 // ==============================================================================
 // FindFreeChannel:	   Find a free channel using priority -> GKFIXX: add search by priority
 // ==============================================================================
@@ -427,7 +441,9 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 			CAudioEventMessage event(msg);
 			pEventMPI_->PostEvent(event, 128, listener);
 		}
-		DestroyPlayer(pPlayer);
+		// Defer player destruction.
+		CMixerMessage event(pPlayer, kAudioCompletedEvent);
+		pEventMPI_->PostEvent(event, 128, this);
 	}
 	else if(type == kAudioLoopEndEvent)
 	{

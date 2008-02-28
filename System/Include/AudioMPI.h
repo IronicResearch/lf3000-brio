@@ -97,7 +97,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 ///
 /// \todo raw player (.raw .brio .aif .aiff and .wav) is implemented but not
 /// thoroughly tested.
-
+///
+/// \todo infinite looping is not implemented.
+///
+/// \todo looping clicks.  It should be 100% continuous.
 
 class IEventListener;
 
