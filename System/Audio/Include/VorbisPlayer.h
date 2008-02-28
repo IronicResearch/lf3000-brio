@@ -34,7 +34,10 @@ class CVorbisPlayer : public CAudioPlayer {
  public:
 	CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	 );
 	~CVorbisPlayer();
-		
+
+	static U32 GetNumPlayers(void);
+	static U32 GetMaxPlayers(void);
+
 	void	RewindFile();
 	U32		GetAudioTime_mSec( void );
 	

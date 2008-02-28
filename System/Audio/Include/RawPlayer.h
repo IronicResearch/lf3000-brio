@@ -40,6 +40,9 @@ class CRawPlayer : public CAudioPlayer {
 	CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  );
 	~CRawPlayer();
 		
+	static U32 GetNumPlayers(void);
+	static U32 GetMaxPlayers(void);
+
 	void	RewindFile();
 	U32 GetAudioTime_mSec( void );
 	U32 ReadBytesFromFile( void *d, U32 bytesToRead);

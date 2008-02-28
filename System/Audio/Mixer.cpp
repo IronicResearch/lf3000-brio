@@ -359,24 +359,17 @@ tEventStatus CAudioMixer::Notify( const IEventMessage &msgIn )
 // ==============================================================================
 CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 {
-	CChannel *pCh = kNull, *pFreeCh = kNull;
-	int active = 0;
+	CChannel *pCh = kNull;
 
-	// Search for idle channel.  This is currently where we apply the
-	// max-number-of-players policy.  It should be moved to CreatePlayer.
+	// Search for idle channel.
 	for (long i = 0; i < numInChannels_; i++)
 	{
 		pCh = &pChannels_[i];
-		if (pCh->GetPlayer())
-			active++;
-		else
-			pFreeCh = pCh;
+		if (!pCh->GetPlayer())
+			return pCh;
 	}
 	
-	if(active >= kAudioMixer_MaxActiveAudioChannels)
-		pFreeCh = kNull;
-	
-	return pFreeCh;
+	return pCh;
 }
 
 // ==============================================================================
@@ -576,16 +569,34 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		!strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
 	{
-		newID = GetNextAudioID();
-		pPlayer = new CRawPlayer( pInfo, newID );
+		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
+		{
+			newID = GetNextAudioID();
+			pPlayer = new CRawPlayer( pInfo, newID );
+		}
+		else
+		{
+			pDebugMPI_->DebugOut(kDbgLvlImportant,
+								 "%s: Max number of raw players exceeded.\n",
+								 __FUNCTION__);
+		}
 	}
 	else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
 			 !strcmp( sExt, "aogg") || !strcmp( sExt, "AOGG"))
 	{
-		newID = GetNextAudioID();
-		pPlayer = new CVorbisPlayer( pInfo, newID );
+		if(CVorbisPlayer::GetNumPlayers() < CVorbisPlayer::GetMaxPlayers())
+		{
+			newID = GetNextAudioID();
+			pPlayer = new CVorbisPlayer( pInfo, newID );
+		}
+		else
+		{
+			pDebugMPI_->DebugOut(kDbgLvlImportant,
+								 "%s: Max number of vorbis players exceeded.\n",
+								 __FUNCTION__);
+		}
 	}
-
+	
 	return (pPlayer);
 }
 

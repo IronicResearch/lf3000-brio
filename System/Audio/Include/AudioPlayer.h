@@ -48,6 +48,16 @@ class CAudioPlayer {
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
 
+	// These functions are used to implement per-player policy.  They are
+	// implemented as static class functions by convention.  A c++ programmer
+	// wiser than I could probably do this in a much classier fashion, so to
+	// speak.  Any class of players must maintain a static count of the number
+	// of players, and a constant that is the max number of players allowed.  It
+	// is up to the developer who creates the player to set this maximum.
+	//static U32		GetNumPlayers(void);
+	//static U32		GetMaxPlayers(void);
+
+
 	// Return status
 	inline U8		IsPaused()			 { return bPaused_;		   }
 	inline Boolean	IsDone()			 { return bIsDone_; }
