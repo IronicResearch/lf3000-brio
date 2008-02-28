@@ -682,7 +682,7 @@ public:
 		numLoopEndEvents = 0;
 		gotAudioCallback = false;
 
-		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+		id = pAudioMPI_->StartAudio("LoopContinuity.ogg", kVolume, kPriority,
 									kPan, this, 3,
 									kAudioOptionsLooped |
 									kAudioOptionsDoneMsgAfterComplete);
@@ -701,7 +701,7 @@ public:
 
 		numLoopEndEvents = 0;
 		gotAudioCallback = false;
-		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+		id = pAudioMPI_->StartAudio("LoopContinuity.ogg", kVolume, kPriority,
 									kPan, this, 3,
 									kAudioOptionsLooped |
 									kAudioOptionsLoopEndMsg |

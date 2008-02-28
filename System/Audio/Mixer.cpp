@@ -808,7 +808,40 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			U32	 sampleCount	= framesToRender*channels;
 			// Player renders data into channel's stereo output buffer
 			framesRendered = pCh->Render( pChannelBuf_, framesToRender );
-			// NOTE: SendDoneMsg() deferred until after render loop.
+			
+			// Now that rendering is complete, send done messages and delete
+			// players.  Note that this is going to be migrated to a Notify
+			// function to off-load the render loop.
+			CAudioPlayer *pPlayer = pCh->GetPlayer();
+			if (pPlayer->IsDone())
+			{
+				// find the number of samples that the player did not render
+				U32 zeroSamples = (framesToRender - framesRendered)*channels;
+				U32 zeroOffset = framesRendered*channels;
+				// Now we either play the clip again or free the channel
+				tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
+				Boolean freeChannel = HandlePlayerLooping(pPlayer);
+				
+				if(freeChannel)
+				{
+					//If we're freeing the channel, pad the output and send the
+					//done message
+					memset(pChannelBuf_ + zeroOffset, 0, zeroSamples*sizeof(S16));
+					HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
+					pCh->Release(true);
+				}
+				else
+				{
+					//If we're not freeing the channel, we must be looping.  To
+					//ensure continuity, we need to fill in the rest of the
+					//channel buffer by rendering again
+					if(zeroSamples)
+					{
+						pCh->Render(pChannelBuf_, zeroSamples/channels);
+					}
+					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
+				}
+			}
 
 			// Add output to appropriate Mix "Bin" 
 			long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
@@ -819,27 +852,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 						mixBinFilled_[mixBinIndex]);
 			mixBinFilled_[mixBinIndex] = True;
 
-			// Now that rendering is complete, send done messages and delete
-			// players.  Note that this is going to be migrated to a Notify
-			// function to off-load the render loop.
-			CAudioPlayer *pPlayer = pCh->GetPlayer();
-			if (pPlayer->IsDone())
-			{
-				// Now we either play the clip again or free the channel
-				tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
-				Boolean freeChannel = HandlePlayerLooping(pPlayer);
-				if(freeChannel)
-				{
-					//If we're freeing the channel, send the done message
-					HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
-					pCh->Release(true);
-				}
-				else
-				{
-					//If we're not freeing the channel, we must be looping.
-					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
-				}
-			}
 		}
 	}
 

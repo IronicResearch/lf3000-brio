@@ -39,7 +39,11 @@ class CAudioPlayer {
 	virtual void	RewindFile() = 0;
 
 	// Render is the heart of the player.  When called, it renders the next
-	// numFrames to pOut.  Note that it is the caller's responsibility to only
+	// numFrames to pOut.  The Render function returns the number of frames
+	// rendered.  If the number of frames rendered is less than numFrames, this
+	// implies that the player is done.  In this case, the player MUST set its
+	// bIsDone_ flag to true before returning from Render.  The player should
+	// not pad the output.  Note that it is the caller's responsibility to only
 	// check if the player is paused prior to calling Render.
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
