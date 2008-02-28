@@ -154,6 +154,15 @@ U32 CRawPlayer::GetMaxPlayers(void)
 	return maxNumRawPlayers;
 }
 
+Boolean CRawPlayer::IsRawPlayer(CAudioPlayer *pPlayer)
+{
+	CRawPlayer *p;
+	if (p = dynamic_cast<CRawPlayer *>(pPlayer))
+		return true;
+	else
+		return false;
+}
+
 // ==============================================================================
 // ReadBytesFromFile :	 
 //						Return specified bytes read.

@@ -572,7 +572,19 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 }
 
 // ==============================================================================
-// CreatePlayer:   Allocate player based on file extension argument
+// FindKillableChannel: When all players of a certain type are playing, or all
+// channels are full, find a channel that you can kill given your priority.
+// ==============================================================================
+CChannel *CAudioMixer::FindKillableChannel(ConditionFunction *cond,
+										   tAudioPriority priority)
+{
+	return 0;
+}
+
+// ==============================================================================
+// CreatePlayer:   Allocate player based on file extension argument.  This
+// function is rife with player-specific code that could be generalized.
+// Somebody with fancier C++ skills than I will have to do it.
 // ==============================================================================
 CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 										char *sExt )
@@ -593,9 +605,20 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		}
 		else
 		{
-			pDebugMPI_->DebugOut(kDbgLvlImportant,
-								 "%s: Max number of raw players exceeded.\n",
-								 __FUNCTION__);
+			//We must decide whether to stop and destroy a player depending on
+			//priority.
+			CChannel *ch = FindKillableChannel(CRawPlayer::IsRawPlayer,
+											   pInfo->priority);
+			if(ch)
+			{
+				RemovePlayerInternal(ch->GetPlayer()->GetID(), false);
+				newID = GetNextAudioID();
+				pPlayer = new CRawPlayer( pInfo, newID );
+			} else {
+				pDebugMPI_->DebugOut(kDbgLvlImportant,
+									 "%s: Max number of raw players exceeded.\n",
+									 __FUNCTION__);
+			}
 		}
 	}
 	else if (!strcmp( sExt, "ogg" ) || !strcmp( sExt, "OGG") ||
@@ -608,9 +631,20 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		}
 		else
 		{
-			pDebugMPI_->DebugOut(kDbgLvlImportant,
-								 "%s: Max number of vorbis players exceeded.\n",
-								 __FUNCTION__);
+			//We must decide whether to stop and destroy a player depending on
+			//priority.
+			CChannel *ch = FindKillableChannel(CVorbisPlayer::IsVorbisPlayer,
+											   pInfo->priority);
+			if(ch)
+			{
+				RemovePlayerInternal(ch->GetPlayer()->GetID(), false);
+				newID = GetNextAudioID();
+				pPlayer = new CVorbisPlayer( pInfo, newID );
+			} else {
+				pDebugMPI_->DebugOut(kDbgLvlImportant,
+									 "%s: Max number of vorbis players exceeded.\n",
+									 __FUNCTION__);
+			}
 		}
 	}
 	
@@ -700,14 +734,12 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 }
 
 // ==============================================================================
-// RemovePlayer:
+// RemovePlayerInternal:
 // ==============================================================================
-void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
+void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 {
 	CChannel *pCh;
 	CAudioPlayer *pPlayer;
-
-	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
 	if (pCh && pCh->GetPlayer()) {
 		pPlayer = pCh->GetPlayer();
@@ -717,6 +749,16 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 			HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
 		pCh->Release(true);
 	}
+}
+
+// ==============================================================================
+// RemovePlayer:
+// ==============================================================================
+void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
+{
+
+	MIXER_LOCK;
+	RemovePlayerInternal(id, noDoneMessage);
 	MIXER_UNLOCK; 
 }
 
