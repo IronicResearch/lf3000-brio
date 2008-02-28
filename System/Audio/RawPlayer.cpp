@@ -172,29 +172,25 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 	U32		bytesRead = 0;
 	U32		bytesToRead = framesToRender * sizeof(S16) * channels_;
 	S16		*bufPtr = pReadBuf_;
-	long	fileEndReached = false;
 
 	if (bIsDone_)
 		return (0);
 
 	// Read data from file to output buffer
-	while ( !fileEndReached && bytesToRead > 0) 
+	while ( bytesToRead > 0) 
 	{
 		bytesRead = ReadBytesFromFile(bufPtr, bytesToRead);
-		fileEndReached = ( bytesRead < bytesToRead );
-		if ( fileEndReached)
-		{
-			// Pad with zeros after last legitimate sample
-			ClearBytes(&bufPtr[bytesRead], bytesToRead-bytesRead);
-		}
-		
 		bytesToRead		-= bytesRead;
 		bufPtr			+= bytesRead;
 		totalBytesRead_ += bytesRead;
-	}
+
+		if ( bytesRead < bytesToRead );
+		{
+			bIsDone_ = true;
+			break;
+		}
 		
-	// Copy to output buffer
-	bIsDone_ = fileEndReached;
+	}
 		
 	framesRead		= bytesRead / (sizeof(S16) * channels_);
 	framesToProcess = framesRead;

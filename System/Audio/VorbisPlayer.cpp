@@ -147,22 +147,17 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	// Read multiple times because vorbis doesn't always return requested # of
 	// bytes Notes that BytesToRead is decremented
 	bufPtr = (char *) pReadBuf_;
-	long fileEndReached = false;
 	long bytesReadThisRender   = 0;
 	long bytesToReadThisRender = bytesToRead;
-	while ( !fileEndReached && bytesToRead > 0 ) 
+	while ( bytesToRead > 0 ) 
 	{
 		bytesRead = ov_read( &vorbisFile_, bufPtr, bytesToRead, 
 							 &dummy );
-		fileEndReached = (0 == bytesRead);
-		bytesReadThisRender += bytesRead;
-		if ( fileEndReached )
-		{
-			// Pad with zeros after last legitimate sample
-			ClearBytes(&bufPtr[bytesReadThisRender],
-					   bytesToReadThisRender-bytesReadThisRender);
-		}
-		
+
+		if ( bytesRead == 0)
+			break;
+
+		bytesReadThisRender += bytesRead;		
 		bytesToRead	   -= bytesRead;
 		totalBytesRead += bytesRead;
 		bufPtr		   += bytesRead;
