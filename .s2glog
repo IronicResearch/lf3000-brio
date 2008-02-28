@@ -14996,3 +14996,16 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/28/08 11:40 AM
 5,391 ms. (Cumulative: 4,369,946 ms)
 
 ----------------
+Revision 3,109 from svn://localhost/TRUNK/:
+
+Stubbing out Set/GetPriorityPolicy for audio and adding a unit test for it.
+Also confirmed that this MPI change did not mess up existing AppManager and
+POW.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/28/08 12:41 PM
+8 changed, 0 added, 0 deleted.
+5,656 ms. (Cumulative: 4,375,681 ms)
+
+----------------

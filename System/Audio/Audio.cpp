@@ -1081,6 +1081,30 @@ tErrType CAudioModule::ChangeMidiTempo(tMidiPlayerID /* id */, S8 tempo)
 	return result;
 }
 
+// ==============================================================================
+// SetPriorityPolicy
+// ==============================================================================
+tErrType CAudioModule::SetPriorityPolicy(tPriorityPolicy policy)
+{
+	tErrType result;
+	AUDIO_LOCK;
+	result = gAudioContext.pAudioMixer->SetPriorityPolicy(policy);
+	AUDIO_UNLOCK;
+	return result;
+}
+
+// ==============================================================================
+// GetPriorityPolicy
+// ==============================================================================
+tPriorityPolicy CAudioModule::GetPriorityPolicy(void)
+{
+	tPriorityPolicy policy;
+	AUDIO_LOCK;
+	policy = gAudioContext.pAudioMixer->GetPriorityPolicy();
+	AUDIO_UNLOCK;
+	return policy;
+}
+
 LF_END_BRIO_NAMESPACE()
 
 

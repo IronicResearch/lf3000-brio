@@ -773,7 +773,21 @@ public:
 	///
 	/// Use of this function is not currently specified.
 	tErrType UnloadAllInstruments( void );
+
+	/// Set the current priority policy
+	///
+	/// \param policy The desired priority policy.  See \ref PriorityPolicies
+	/// for details regarding the options for this argument.
+	///
+	/// \returns kNoErr on success and kNoImplErr for unsupported policies.
+	tErrType SetPriorityPolicy(tPriorityPolicy policy);
 	
+	/// Get the current priority policy
+	///
+	/// \returns the current priority policy.  See \ref PriorityPolicies for
+	/// details on what the possible return values are.
+	tPriorityPolicy GetPriorityPolicy(void);
+
  private:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;

@@ -83,6 +83,9 @@ class CAudioMixer : private IEventListener
 	int OpenInSoundFile (char *path);
 	int OpenOutSoundFile(char *path);
 
+	tPriorityPolicy GetPriorityPolicy(void);
+	tErrType SetPriorityPolicy(tPriorityPolicy policy);
+
  private:
 	CButtonMPI *pButtonMPI_;
 	CChannel* FindFreeChannel( tAudioPriority priority );
@@ -186,6 +189,8 @@ class CAudioMixer : private IEventListener
 		
 		CAudioPlayer *pPlayer_;
 	};
+	
+	tPriorityPolicy currentPolicy;
 
 };
 

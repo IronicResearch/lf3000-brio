@@ -109,6 +109,56 @@ struct tAudioHeader {
 };
 
 //==============================================================================
+// Audio priority policies
+//==============================================================================
+
+/// \page PriorityPolicies "About Priority Policies"
+///
+/// Channels and players are limited resources.  When all channels are full, or
+/// the maximum number of players are active, calls to StartAudio will fail
+/// unless suitable resources can be freed.  Some programmers may wish to set
+/// priorities such that some audio can be halted to free resources for a new
+/// audio.  The policy of when a player can be stopped to make room for a new
+/// player is called the priority policy.  The priority policy can be changed on
+/// the fly by calling \ref SetPriorityPolicy.  The policies are described
+/// below:
+///
+/// kAudioPriorityPolicyNone: This is the default priority policy that is used
+/// if no call is made to SetPriorityPolicy.  It means that priority is totally
+/// ignored.  Under this policy, if a user calls StartAudio and all channels are
+/// full or the maximum number of players are in use, StartAudio will fail.
+///
+/// kAudioPriorityPolicySimple: This priority policy operates in the following
+/// way:
+///
+/// Case 0: The system has a free channel and the max number of players of the
+/// desired type has not been exceeded.  In this case, a call to StartAudio
+/// succeeds and no players are halted.
+///
+/// Case 1: The system has a free channel, but the maximum number of players are
+/// active.  In this case, the players will be ordered in a list by priority.
+/// The system will search the list from lowest to highest priority.  The first
+/// player that it encounters whose priority is LESS THAN OR EQUAL TO the new
+/// player's be halted and the call to StartAudio will succeed.  If no player
+/// has such a priority, StartAudio will fail.
+///
+/// Case 2: The system does not have a free channel, and the maximum number of
+/// players of the desired type has not been exceeded.  In this case, the
+/// players connected to the channels will be ordered in a list by priority.
+/// The system will search the list from lowest to highest priority.  The first
+/// player that it encounters whose priority is LESS THAN OR EQUAL TO the new
+/// player's will be halted and the call to StartAudio will succeed.  If no
+/// player has such a priority, StartAudio will fail.
+/// 
+/// Case 3: The system does not have a free channel, and the maximum number of
+/// players of the desired type are active.  In this case, the priority will be
+/// evaluated FIRST for the player as described in Case 1, then for the channel
+/// as described in Case 2.
+typedef U32 tPriorityPolicy;
+#define kAudioPriorityPolicyNone 0
+#define kAudioPriorityPolicySimple 1
+
+//==============================================================================
 // Audio message data payload types
 //==============================================================================
 struct tAudioMsgAudioCompleted {

@@ -842,5 +842,46 @@ public:
 
 	}
 
+	void testPriorityGetSet()
+	{
+        tErrType err;
+		tPriorityPolicy policy;
+
+		PRINT_TEST_NAME();
+		policy = pAudioMPI_->GetPriorityPolicy();
+		TS_ASSERT(policy == kAudioPriorityPolicyNone);
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicyNone);
+		TS_ASSERT(err == kNoErr);
+
+		err = pAudioMPI_->SetPriorityPolicy(100);
+		TS_ASSERT(err == kNoImplErr);
+		policy = pAudioMPI_->GetPriorityPolicy();
+		TS_ASSERT(policy == kAudioPriorityPolicyNone);
+	}
+
+    void testSimplePriorityWithVorbisFiles()
+	{
+		tAudioID id1, id2, id3, id4;
+
+		PRINT_TEST_NAME();
+		
+		id1 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id1 != kNoAudioID);
+		id2 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id2 != kNoAudioID);
+		id3 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id3 != kNoAudioID);
+		id4 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+									 NULL, kPayload, kFlags);
+		TS_ASSERT(id4 == kNoAudioID);
+		pAudioMPI_->StopAudio(id1, true);
+		pAudioMPI_->StopAudio(id2, true);
+		pAudioMPI_->StopAudio(id3, true);
+		pAudioMPI_->StopAudio(id4, true);
+
+	}
 
 };

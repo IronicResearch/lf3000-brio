@@ -782,5 +782,27 @@ tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
 	return pModule_->MidiNoteOff( id, channel, noteNum, 0, 0 );
 }   // ---- end MidiNoteOff() ----
 
+// ==============================================================================
+// SetPriorityPolicy
+// ==============================================================================
+tErrType CAudioMPI::SetPriorityPolicy( tPriorityPolicy policy ) 
+{
+	if ( !pModule_ )
+		return kNoImplErr;
+	
+	return pModule_->SetPriorityPolicy(policy);
+}
+
+// ==============================================================================
+// GetPriorityPolicy
+// ==============================================================================
+tPriorityPolicy CAudioMPI::GetPriorityPolicy(void) 
+{
+	if ( !pModule_ )
+		return kNoImplErr;
+	
+	return pModule_->GetPriorityPolicy();
+}
+
 LF_END_BRIO_NAMESPACE()	
 // EOF	

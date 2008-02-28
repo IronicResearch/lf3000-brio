@@ -188,6 +188,11 @@ class CAudioModule : public ICoreModule {
 											U8 cmd,
 											U8 data1,
 											U8 data2 );
+
+	VTABLE_EXPORT tErrType SetPriorityPolicy(tPriorityPolicy policy);
+
+	VTABLE_EXPORT tPriorityPolicy GetPriorityPolicy(void);
+
 	
  private:
 	CKernelMPI*				pKernelMPI_;
