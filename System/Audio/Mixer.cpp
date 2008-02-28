@@ -427,12 +427,29 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 		// In this case, we delete the player because the player is all done.
 		if(listener && (flags & kAudioOptionsDoneMsgAfterComplete))
 		{
-			tAudioMsgAudioCompleted msg;
-			msg.audioID = pPlayer->GetID();
-			msg.payload = pPlayer->GetPayload();
-			msg.count = 1;
-			CAudioEventMessage event(msg);
-			pEventMPI_->PostEvent(event, 128, listener);
+			// Unfortunately, the MPI implies that midi players are somehow
+			// different than other players, even if we're just playing back a file.
+			// Specifically, we have to send different done messages than for other
+			// players (of course the option flag is the same).
+			CMidiPlayer *midiPlayer = kNull;
+			if (midiPlayer = dynamic_cast<CMidiPlayer *>(pPlayer))
+			{
+				tAudioMsgMidiCompleted	msg;
+				msg.midiPlayerID = pPlayer->GetID();
+				msg.payload = pPlayer->GetPayload();
+				msg.count = 1;
+				CAudioEventMessage event(msg);
+				pEventMPI_->PostEvent(event, 128, listener);
+			}
+			else 
+			{
+				tAudioMsgAudioCompleted msg;
+				msg.audioID = pPlayer->GetID();
+				msg.payload = pPlayer->GetPayload();
+				msg.count = 1;
+				CAudioEventMessage event(msg);
+				pEventMPI_->PostEvent(event, 128, listener);
+			}
 		}
 		// Defer player destruction.
 		CMixerMessage event(pPlayer, kAudioCompletedEvent);

@@ -47,8 +47,6 @@ class CMidiPlayer : public CAudioPlayer {
 	inline U8 ShouldSendDoneMessage()	 { return bSendDoneMessage_;   }
 	inline U8 ShouldSendLoopEndMessage() { return bSendLoopEndMessage_;}
 
-	inline bool		IsFileActive() { return bFileActive_; };
-
 	// Get/Set class member variables
 	inline tAudioID	GetID() { return id_; }
 	inline U8	GetVolume()			{ return volume_; }
@@ -78,6 +76,7 @@ class CMidiPlayer : public CAudioPlayer {
 	// eliminate these declarations.
 	void		Pause(	void );
 	void		Resume( void );
+	Boolean		IsDone() { return bIsDone_; };
 
 	tErrType	GetEnableTracks( tMidiTrackBitMask *d );
 	tErrType	SetEnableTracks( tMidiTrackBitMask	d);
@@ -115,10 +114,6 @@ class CMidiPlayer : public CAudioPlayer {
 	Boolean		shouldLoop_;
 	S32			loopCount_;
 	S32			loopCounter_;
-
-	U8			bFilePaused_;				
-	U8			bFileActive_;				
-	U8			bActive_;
 
 	// Data configuration
 	U32		framesPerIteration_;

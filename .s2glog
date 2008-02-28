@@ -14947,3 +14947,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/27/08 7:48 PM
 5,625 ms. (Cumulative: 4,348,459 ms)
 
 ----------------
+Revision 3,105 from svn://localhost/TRUNK/:
+
+Enabling performance baseline test for more midi coverage
+Midi player uses same IsDone semantics as other players.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/27/08 8:35 PM
+5 changed, 0 added, 0 deleted.
+5,455 ms. (Cumulative: 4,353,992 ms)
+
+----------------

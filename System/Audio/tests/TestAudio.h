@@ -806,7 +806,7 @@ public:
 
     // This test can generally be disabled.  It is not used to test
     // functionality and prevent regression, but to test performance.
-	void xxxtestPerformanceBaseline()
+	void testPerformanceBaseline()
 	{
 		tAudioID id1, id2, id3;
 		tMidiPlayerID id4;

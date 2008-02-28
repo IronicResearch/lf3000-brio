@@ -79,14 +79,9 @@ CMidiPlayer::CMidiPlayer( tAudioStartAudioInfo *pInfo, tAudioID id ) :
 	channels_			= kMIDI_SamplesPerFrame;
 	bitsPerSample_		= kMIDI_BitsPerSample;
 
-	pListener_ = kNull;
-
 	SetPan(	  kPan_Default);
 	SetVolume(kVolume_Default);
 	
-	bFileActive_ = false;
-	bActive_	 = false;
-
 	// Get Debug MPI
 	pDebugMPI_ =  new CDebugMPI( kGroupAudio );
 	ret = pDebugMPI_->IsValid();
@@ -146,16 +141,14 @@ CMidiPlayer::~CMidiPlayer()
 						 "CMidiPlayer::~ -- Cleaning up.\n");	
 
 	// If a file is playing (the user didn't call stop first) , stop it for them.
-	if (bFileActive_) 
+	if (!bIsDone_) 
 	{
 		//Note: StopMidiFile calls the listener.  The caller of this destructor
 		//probably holds the mixer lock and/or the audio MPI lock.  If the
 		//listener tries to operate on the mixer or audio mpi, we'll get a
 		//deadlock!  Move all callback stuff to Mixer.cpp to avoid this.
 		StopMidiFile( true );
-		pDebugMPI_->DebugOut(kDbgLvlVerbose,
-							 "CMidiPlayer::~: set bFileActive_ to false\n");	
-		bFileActive_ = false;
+		bIsDone_ = true;
 	}
 
 	if (pFilePlayer_)
@@ -316,8 +309,7 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 	SetVolume(pInfo->volume);
 	SetPan(0);
 
-	if ( pInfo->pListener )
-		pListener_ = pInfo->pListener;
+	pListener_ = pInfo->pListener;
 
 	optionsFlags_ = pInfo->flags;
 	shouldLoop_	  = (0 < pInfo->payload) && (0 != (pInfo->flags & kAudioOptionsLooped));
@@ -373,7 +365,7 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 									(int)kMIDI_SamplingFrequency,
 									pMidiFileImage,
 									imageSize );
-	bFileActive_ = true;
+	bIsDone_ = false;
 
  error:
 	if(file)
@@ -389,20 +381,16 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 // Pause
 // ==============================================================================
 void CMidiPlayer::Pause( void )
-{
-	if (bFileActive_)
+{	
+	for (U8 ch = 0; ch < 16; ch++)
 	{
-		bPaused_ = true;
-		
-		for (U8 ch = 0; ch < 16; ch++)
-		{
-			U8 cmd = 0xB0 | ch;
-			SPMIDI_WriteCommand( pContext_, (int)cmd,
-								 (int)kMIDI_Controller_AllSoundOff, (int)0 );
-			SPMIDI_WriteCommand( pContext_, (int)cmd,
-								 (int)kMIDI_Controller_AllNotesOff, (int)0 );
-		}
+		U8 cmd = 0xB0 | ch;
+		SPMIDI_WriteCommand( pContext_, (int)cmd,
+							 (int)kMIDI_Controller_AllSoundOff, (int)0 );
+		SPMIDI_WriteCommand( pContext_, (int)cmd,
+							 (int)kMIDI_Controller_AllNotesOff, (int)0 );
 	}
+	bPaused_ = true;
 }
 
 // ==============================================================================
@@ -410,8 +398,7 @@ void CMidiPlayer::Pause( void )
 // ==============================================================================
 void CMidiPlayer::Resume( void ) 
 {
-	if (bFileActive_)
-		bPaused_ = false;
+	bPaused_ = false;
 }
 
 // ==============================================================================
@@ -421,7 +408,6 @@ tErrType CMidiPlayer::StopMidiFile( Boolean noDoneMsg )
 {
 	tErrType result = 0;
 		
-	bFileActive_ = false;
 	if (pListener_	&& !noDoneMsg)
 		SendDoneMsg();
 
@@ -437,6 +423,8 @@ tErrType CMidiPlayer::StopMidiFile( Boolean noDoneMsg )
 		pKernelMPI_->Free(pMidiFileImage);
 		pMidiFileImage = NULL;
 	}
+	
+	bIsDone_ = true;
 
 	return result;
 }	// ---- end StopMidiFile() ----
@@ -572,7 +560,7 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 	// -------- Render MIDI file
 	//
 	S16 *pBuf = pOut;
-	if ( bFileActive_ )
+	if ( !bIsDone_ )
 	{
 		// TODO: make this bulletproof.  Right now no check for sizes.  Figure
 		// out how many calls to spmidi we need to make to get a full output
@@ -604,13 +592,13 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 			fileEndReached = (mfp_result > 0);
 			if (fileEndReached)
 			{
-				bFileActive_ = false;
+				bIsDone_ = true;
 				if (shouldLoop_) 
 				{
 					if (loopCounter_++ < loopCount_)
 					{
 						MIDIFilePlayer_Rewind( pFilePlayer_ ); 
-						bFileActive_   = true;
+						bIsDone_ = false;
 						fileEndReached = false;
 						// Send loop end message
 						if (bSendLoopEndMessage_)
@@ -618,9 +606,9 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 							SendLoopEndMsg();
 						}
 					} 
-				} 
+				}
 				// File done, delete player and reset engine			  
-				if (!bFileActive_)
+				if (bIsDone_)
 				{
 					if (pFilePlayer_)
 					{
