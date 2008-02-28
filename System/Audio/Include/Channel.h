@@ -66,9 +66,6 @@ class CChannel {
 	float		levelsf	  [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
 	Q15			levelsi	  [kAudioMixerChannel_MaxOutChannels];
 	
-	inline tAudioPriority	GetPriority()							{ return priority_; }
-	inline void				SetPriority( tAudioPriority priority )	{ priority_ = priority; }
-
 	// Return requested status
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 

@@ -15009,3 +15009,15 @@ By bcavagnolo (bcavagnolo@leapfrog.com) on 2/28/08 12:41 PM
 5,656 ms. (Cumulative: 4,375,681 ms)
 
 ----------------
+Revision 3,110 from svn://localhost/TRUNK/:
+Revision 3,111 from svn://localhost/TRUNK/:
+
+Added priority policy implementation for kAudioPriorityPolicySimple.
+
+
+
+By bcavagnolo (bcavagnolo@leapfrog.com) on 2/28/08 3:09 PM
+4 changed, 0 added, 0 deleted.
+5,611 ms. (Cumulative: 4,381,386 ms)
+
+----------------

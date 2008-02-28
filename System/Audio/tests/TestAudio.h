@@ -372,21 +372,6 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
-	void testMidiSimpleUseCase2()
-	{
-		tAudioID 				id;
-		PRINT_TEST_NAME();
-
-		id = pAudioMPI_->StartAudio("1Sec.mid", kVolume, kPriority, kPan,
-									NULL, kPayload, kFlags);
-
-		TS_ASSERT(id != kNoAudioID);
-		//Wait for audio to terminate
-		while(pAudioMPI_->IsAudioPlaying(id)) {
-			pKernelMPI_->TaskSleep(100);
-		}
-	}
-	
 	//------------------------------------------------------------------------
     void testMIDIStopUseCase1()
 	{
@@ -842,7 +827,7 @@ public:
 
 	}
 
-	void testPriorityGetSet()
+	void testPriorityPolicyGetSet()
 	{
         tErrType err;
 		tPriorityPolicy policy;
@@ -859,28 +844,143 @@ public:
 		TS_ASSERT(policy == kAudioPriorityPolicyNone);
 	}
 
-    void testSimplePriorityWithVorbisFiles()
+    void testSimplePriorityAllPriorityEqual()
 	{
-		tAudioID id1, id2, id3, id4;
+		tErrType err;
+		tAudioID id;
+		int i;
 
 		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
 		
-		id1 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id1 != kNoAudioID);
-		id2 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id2 != kNoAudioID);
-		id3 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id3 != kNoAudioID);
-		id4 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id4 == kNoAudioID);
-		pAudioMPI_->StopAudio(id1, true);
-		pAudioMPI_->StopAudio(id2, true);
-		pAudioMPI_->StopAudio(id3, true);
-		pAudioMPI_->StopAudio(id4, true);
+		for( i=0; i<10; i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+										NULL, kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(200);
+		}
+		while(pAudioMPI_->IsAudioPlaying() == true)
+			pKernelMPI_->TaskSleep(200);
+	}
+
+    void testSimplePriorityIncreasing()
+	{
+		tErrType err;
+		tAudioID id;
+		int i;
+		tAudioPriority priority = 0;
+
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
+		
+		for( i=0; i<10; i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority,
+										kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(200);
+			priority++;
+		}
+		while(pAudioMPI_->IsAudioPlaying() == true)
+			pKernelMPI_->TaskSleep(200);
+	}
+
+    void testSimplePriorityDecreasing()
+	{
+		tErrType err;
+		tAudioID id;
+		int i;
+		tAudioPriority priority = 255;
+
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
+
+		// Launch 4 players
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
+									kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(100);
+
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
+									kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(100);
+
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
+									kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(100);
+
+		
+		for( i=0; i<7; i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
+										kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id == kNoAudioID);
+			pKernelMPI_->TaskSleep(100);
+		}
+		while(pAudioMPI_->IsAudioPlaying() == true)
+			pKernelMPI_->TaskSleep(200);
+	}
+
+    void testSimplePriorityTypical()
+	{
+		tErrType err;
+		tAudioID bg, incidental, dialog;
+		int i;
+	
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
+
+		//Launch background music.  It should never be interrupted
+		bg = pAudioMPI_->StartAudio("watermelon-16kHz-st.ogg", kVolume, 255,
+									kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(bg != kNoAudioID);
+		pKernelMPI_->TaskSleep(100);
+
+		//Launch a bunch of incidentals.  They should pre-empt eachother, but
+		//not the background music.
+		for( i=0; i<7; i++)
+		{
+			incidental = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, 0,
+												kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(incidental != kNoAudioID);
+			pKernelMPI_->TaskSleep(1000);
+		}
+		
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(bg) == true);
+
+		//This would be like dialog.  It should pre-empt one of the incidentals
+		dialog = pAudioMPI_->StartAudio("Voice-3sec.ogg", kVolume, 100,
+										kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(dialog != kNoAudioID);
+
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(bg) == true);
+
+		// keep generating incidentals.  Only one at a time will be able to
+		// play.
+		while(pAudioMPI_->IsAudioPlaying(dialog))
+		{
+			incidental = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, 0,
+												kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(incidental != kNoAudioID);
+			pKernelMPI_->TaskSleep(1000);
+		}	
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(bg) == true);
+		  
+		while(pAudioMPI_->IsAudioPlaying(incidental))
+			pKernelMPI_->TaskSleep(200);
+
+		pAudioMPI_->StopAudio(bg, true);
 
 	}
 
