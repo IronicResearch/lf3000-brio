@@ -37,6 +37,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Global variables
 //==============================================================================
+static U32 numVorbisPlayers = 0;
+static U32 maxNumVorbisPlayers = 3;
 
 //==============================================================================
 // CVorbisPlayer implementation
@@ -79,6 +81,8 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 		   pVorbisInfo->bitrate_nominal);
 #endif
 
+	numVorbisPlayers++;
+
 }
 
 //==============================================================================
@@ -101,7 +105,20 @@ CVorbisPlayer::~CVorbisPlayer()
 	// Free MPIs
 	if (pDebugMPI_)
 		delete (pDebugMPI_);
+
+	numVorbisPlayers--;
 }
+
+U32 CVorbisPlayer::GetNumPlayers(void)
+{
+	return numVorbisPlayers;
+}
+
+U32 CVorbisPlayer::GetMaxPlayers(void)
+{
+	return maxNumVorbisPlayers;
+}
+
 
 // ==============================================================================
 // RewindFile: Seek to beginning of file

@@ -227,6 +227,24 @@ public:
 
 	}
 
+    void testVorbisStartStop()
+	{
+		tAudioID id;
+		int i;
+
+		PRINT_TEST_NAME();
+		
+		for( i=0; i<10; i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
+										NULL, kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(100);		
+			pAudioMPI_->StopAudio(id, true);
+		}
+
+	}
+
     void testAudioStopWithCallback()
 	{
 		// NOTE! This functionality is BROKEN and should remain so just in case

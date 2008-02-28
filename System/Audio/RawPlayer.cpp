@@ -36,6 +36,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Global variables
 //==============================================================================
+static U32 numRawPlayers = 0;
+static U32 maxNumRawPlayers = 5;
 
 //==============================================================================
 // CRawPlayer implementation
@@ -109,6 +111,8 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	
 	totalBytesRead_ = 0;
 
+	numRawPlayers++;
+
 }
 
 // ==============================================================================
@@ -137,6 +141,17 @@ CRawPlayer::~CRawPlayer()
 		delete pDebugMPI_;	
 		pDebugMPI_ = NULL;
 	}
+	numRawPlayers--;
+}
+
+U32 CRawPlayer::GetNumPlayers(void)
+{
+	return numRawPlayers;
+}
+
+U32 CRawPlayer::GetMaxPlayers(void)
+{
+	return maxNumRawPlayers;
 }
 
 // ==============================================================================
