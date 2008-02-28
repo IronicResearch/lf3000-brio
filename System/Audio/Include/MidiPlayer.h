@@ -73,8 +73,11 @@ class CMidiPlayer : public CAudioPlayer {
 	// MIDI file transport control
 	tErrType	StartMidiFile( tAudioStartAudioInfo *pInfo );
 	tErrType	StopMidiFile( Boolean noDoneMsg );
-	tErrType	PauseMidiFile(	void );
-	tErrType	ResumeMidiFile( void );
+	
+	// As soon as we eliminate direct calls to this class from the MPI, we can
+	// eliminate these declarations.
+	void		Pause(	void );
+	void		Resume( void );
 
 	tErrType	GetEnableTracks( tMidiTrackBitMask *d );
 	tErrType	SetEnableTracks( tMidiTrackBitMask	d);
