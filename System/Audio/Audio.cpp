@@ -570,7 +570,7 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer &&
 		gAudioContext.pMidiPlayer->GetID() == id &&
-		gAudioContext.pMidiPlayer->IsFileActive() ) {
+		!gAudioContext.pMidiPlayer->IsDone() ) {
 		volume = gAudioContext.pMidiPlayer->GetVolume();
 	}
 	else
@@ -592,7 +592,7 @@ void CAudioModule::SetAudioVolume( tAudioID id, U8 x )
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer &&
 		gAudioContext.pMidiPlayer->GetID() == id &&
-		gAudioContext.pMidiPlayer->IsFileActive() ) {
+		!gAudioContext.pMidiPlayer->IsDone() ) {
 		gAudioContext.pMidiPlayer->SetVolume(x);
 	} else {
 		CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
@@ -931,7 +931,7 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer &&
 		gAudioContext.pMidiPlayer->GetID() == id &&
-		gAudioContext.pMidiPlayer->IsFileActive() ) {
+		!gAudioContext.pMidiPlayer->IsDone() ) {
 		
 		playing = true;
 
@@ -951,7 +951,7 @@ Boolean CAudioModule::IsMidiFilePlaying( void )
 
 	AUDIO_LOCK;
 	if (gAudioContext.pMidiPlayer &&
-		gAudioContext.pMidiPlayer->IsFileActive() ) {
+		!gAudioContext.pMidiPlayer->IsDone() ) {
 		
 		playing = true;
 		
