@@ -742,11 +742,13 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 	CAudioPlayer *pPlayer;
 	pCh = FindChannelInternal(id);
 	if (pCh && pCh->GetPlayer()) {
+		//Q: perhaps we should pass noDoneMessage?  A: Actually, this will break
+		//the app manager and perhaps other apps.  Because this flag has been
+		//ignored for so long, people have not consistently set it.
+		//Unfortunately, it's a bit late to fix.
 		pPlayer = pCh->GetPlayer();
-		if(noDoneMessage)
-			DestroyPlayer(pPlayer);
-		else
-			HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
+		if(pPlayer)
+			delete pPlayer;
 		pCh->Release(true);
 	}
 }
