@@ -42,6 +42,7 @@ class CRawPlayer : public CAudioPlayer {
 		
 	static U32 GetNumPlayers(void);
 	static U32 GetMaxPlayers(void);
+	static Boolean IsRawPlayer(CAudioPlayer *pPlayer);
 
 	void	RewindFile();
 	U32 GetAudioTime_mSec( void );

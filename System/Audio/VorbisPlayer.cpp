@@ -119,6 +119,14 @@ U32 CVorbisPlayer::GetMaxPlayers(void)
 	return maxNumVorbisPlayers;
 }
 
+Boolean CVorbisPlayer::IsVorbisPlayer(CAudioPlayer *pPlayer)
+{
+	CVorbisPlayer *p;
+	if (p = dynamic_cast<CVorbisPlayer *>(pPlayer))
+		return true;
+	else
+		return false;
+}
 
 // ==============================================================================
 // RewindFile: Seek to beginning of file

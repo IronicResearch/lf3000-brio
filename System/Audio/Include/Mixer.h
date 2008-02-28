@@ -101,9 +101,10 @@ class CAudioMixer : private IEventListener
 	tAudioID GetNextAudioID(void);
 	tAudioID GetNextMidiID(void);
 
-	// This is a version of FindChannel that can be called if you hold the mixer
-	// lock.
+	// These are versions of Mixer functions that can be called if you already
+	// hold the mixer lock.
 	CChannel* FindChannelInternal( tAudioID id );
+	void RemovePlayerInternal( tAudioID id, Boolean noDoneMessage );
 
 // Didj is hard-limited to 4 channels : 3 audio + 1 MIDI input channels (stereo)
 #define kAudioMixer_MaxInAudioChannels	4		// 3 active but can have more if others paused	 
@@ -111,6 +112,13 @@ class CAudioMixer : private IEventListener
 #define kAudioMixer_MaxInMIDIChannels	1	 
 #define kAudioMixer_MaxInChannels		(kAudioMixer_MaxInAudioChannels)	
 #define kAudioMixer_MaxOutChannels		2
+
+	// Priority Support Features
+	typedef Boolean ConditionFunction(CAudioPlayer *pPlayer);
+	// Find a channel that can be halted in order to play a player of priority
+	// priority, subject to the approval of ConditionFunction.
+	CChannel *FindKillableChannel(ConditionFunction *cond,
+								  tAudioPriority priority);
 
 	// Channel parameters
 	U8			numInChannels_; // for now, all output in stereo (including replicated mono)
