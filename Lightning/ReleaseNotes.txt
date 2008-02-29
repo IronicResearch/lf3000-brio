@@ -2,6 +2,27 @@
 Lightning C++ Development Kit Release Notes
 ===========================================
 
+===========================================
+Brio v1.0.0.3114 release (Feb 29, 2008)
+===========================================
+
+* Asynchronous event posting now works.   In prior versions, if anybody
+was posting events with priority > 128, there was a high chance of bad
+pointer dereference in the event manager.
+
+* Added much documentation on AudioMPI.  Please take note of the known
+issues described in AudioMPI.h.
+
+* Audio priority has been implemented.  However, the default behavior
+has remained the same (i.e., priority is ignored).  Developers who
+wish to use non-default priority behavior must set the priority policy
+using SetPriorityPolicy in the AudioMPI.  See the ample comments in
+AudioMPI.h and AudioTypes.h for details on how the priority behaves.
+
+* Fixed leak in Font MPI where unloaded font handles were retained in
+list for no useful reason instead of being released.
+
+* Fix USB watchdog to take seconds instead of milliseconds, TTPro #1658.
 
 ===========================================
 v0.1.47  (Build 3011 released Feb 19, 2008) 
