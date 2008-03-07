@@ -15043,3 +15043,33 @@ By Dave Milici (dmilici@leapfrog.com) on 2/29/08 12:26 PM
 5,751 ms. (Cumulative: 4,392,794 ms)
 
 ----------------
+Revision 3,120 from svn://localhost/TRUNK/:
+Revision 3,121 from svn://localhost/TRUNK/:
+Revision 3,122 from svn://localhost/TRUNK/:
+Revision 3,123 from svn://localhost/TRUNK/:
+Revision 3,124 from svn://localhost/TRUNK/:
+Revision 3,125 from svn://localhost/TRUNK/:
+Revision 3,126 from svn://localhost/TRUNK/:
+Revision 3,127 from svn://localhost/TRUNK/:
+Revision 3,128 from svn://localhost/TRUNK/:
+Revision 3,129 from svn://localhost/TRUNK/:
+Revision 3,130 from svn://localhost/TRUNK/:
+Revision 3,131 from svn://localhost/TRUNK/:
+Revision 3,132 from svn://localhost/TRUNK/:
+Revision 3,133 from svn://localhost/TRUNK/:
+Revision 3,134 from svn://localhost/TRUNK/:
+Revision 3,135 from svn://localhost/TRUNK/:
+Revision 3,136 from svn://localhost/TRUNK/:
+Revision 3,137 from svn://localhost/TRUNK/:
+Revision 3,138 from svn://localhost/TRUNK/:
+Revision 3,139 from svn://localhost/TRUNK/:
+Revision 3,140 from svn://localhost/TRUNK/:
+
+Correct HW display address when more than one 2D RGB buffer is registered. (TTP 1695)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/6/08 6:12 PM
+1 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 4,398,732 ms)
+
+----------------

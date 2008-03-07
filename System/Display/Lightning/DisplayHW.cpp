@@ -405,7 +405,7 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	if (context->isOverlay && context->isPlanar)
 		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
 	// Restore primary layer address for subsequent instances after page flipping
-	if (context->isPrimary)
+	else // if (context->isPrimary)
 		ioctl(gDevLayer, MLC_IOCTADDRESS, gFrameBase);
 	SetDirtyBit(layer);
 	return kNoErr;
@@ -495,6 +495,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	
 	// Defer enabling video layer until 1st Invalidate() call
 	if (!context->isOverlay) {
+		ioctl(layer, MLC_IOCTADDRESS, gFrameBase + context->offset);
 		ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 		SetDirtyBit(layer);
 		bPrimaryLayerEnabled = true;
