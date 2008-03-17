@@ -15088,3 +15088,19 @@ By Dave Milici (dmilici@leapfrog.com) on 3/14/08 1:36 PM
 5,083 ms. (Cumulative: 4,403,956 ms)
 
 ----------------
+Revision 3,147 from svn://localhost/TRUNK/:
+Revision 3,148 from svn://localhost/TRUNK/:
+Revision 3,149 from svn://localhost/TRUNK/:
+Revision 3,150 from svn://localhost/TRUNK/:
+Revision 3,151 from svn://localhost/TRUNK/:
+Revision 3,152 from svn://localhost/TRUNK/:
+Revision 3,153 from svn://localhost/TRUNK/:
+
+Updated Brio meta.inf with PackageID field.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/17/08 10:42 AM
+1 changed, 0 added, 0 deleted.
+5,081 ms. (Cumulative: 4,409,130 ms)
+
+----------------
