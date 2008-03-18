@@ -157,15 +157,15 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	tDisplayHandle hndl = CreateHandle(screen.height, screen.width, kPixelFormatRGB565, reinterpret_cast<U8*>(gpMem2));
 	tDisplayContext* pdc = reinterpret_cast<tDisplayContext*>(hndl);
 	dc = *pdc;
-	dc.pitch = 4096;
-	dc.layer = gDevLayer;
+	dc.pitch = pdc->pitch = 4096;
+	dc.layer = pdc->layer = gDevLayer;
 	
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width = dc.width; //320;
 	pOglCtx->height = dc.height; //240;
 	pOglCtx->eglDisplay = &screen;
 	pOglCtx->eglWindow = &dc;
-	pOglCtx->hndlDisplay = hdc = &dc; //hndl;
+	pOglCtx->hndlDisplay = hdc = hndl;
 
 	// Copy the required mappings into the MagicEyes callback init struct
 	pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
@@ -184,6 +184,9 @@ void CDisplayModule::DeinitOpenGL()
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: enter\n");
 
+	// Delete handle returned by CreateHandle() 
+	DestroyHandle(hdc, false);
+	
 	munmap(gpReg3d, gRegSize);
 	munmap(gpMem1, gMem1Size);
 	munmap(gpMem2, gMem2Size);
