@@ -230,9 +230,8 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, tVideoSurf* pSurf, Boolea
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf, Boolean bLoop, IEventListener* pListener)
 {
-	CKernelMPI kernel;
 #if USE_MUTEX
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	tVideoHndl		hVideo = kInvalidVideoHndl;
@@ -248,7 +247,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	if (hVideo == kInvalidVideoHndl)
 		goto ExitPt;
 
-	pVidCtx = static_cast<tVideoContext*>(kernel.Malloc(sizeof(tVideoContext)));
+	pVidCtx = static_cast<tVideoContext*>(kernel_.Malloc(sizeof(tVideoContext)));
 	memset(pVidCtx, 0, sizeof(tVideoContext));
 	
 #ifndef EMULATION
@@ -279,7 +278,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 
 ExitPt:
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return hVideo;
 }
@@ -466,8 +465,7 @@ Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	Boolean	state = false;
@@ -480,7 +478,7 @@ Boolean CVideoModule::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 	}
 	
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 
 	return state;
@@ -502,9 +500,8 @@ void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
-	CKernelMPI kernel;
 #if USE_MUTEX
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	// Kill video task, if running
@@ -524,12 +521,12 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	// Free video context created for task thread, if any
 	if (gpVidCtx) 
 	{
-		kernel.Free(gpVidCtx);
+		kernel_.Free(gpVidCtx);
 		gpVidCtx = NULL;
 	}
 
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 
 	return true;
@@ -540,8 +537,7 @@ Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	// Note theora_granule_time() returns only seconds
@@ -554,7 +550,7 @@ Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 	}
 	
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return true;	
 }
@@ -633,7 +629,6 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	ogg_packet  op;
 	ogg_int64_t frame;
 	int			bytes;
-	CKernelMPI 	kernel;
 	
 	// Internal codec state only changes during start/stop
 	if (!gbCodecReady)
@@ -803,14 +798,13 @@ Boolean CVideoModule::PauseVideo(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	Boolean state = (gpVidCtx) ? gpVidCtx->bPaused = true : false;
 		
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return state;
 }
@@ -820,14 +814,13 @@ Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	Boolean state = (gpVidCtx) ? gpVidCtx->bPaused = false : false;
 
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return state;
 }
@@ -838,14 +831,13 @@ Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	Boolean state = (gpVidCtx) ? gpVidCtx->bPaused : false;
 
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return state;
 }
@@ -855,14 +847,13 @@ Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 {
 	(void )hVideo;	/* Prevent unused variable warnings. */
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	Boolean state = (gpVidCtx) ? gpVidCtx->bPlaying : false;
 
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return state;
 }
@@ -873,14 +864,13 @@ Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
 	(void )hVideo;	/* Prevent unused variable warnings. */
 
 #if USE_MUTEX
-	CKernelMPI kernel;
-	kernel.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	Boolean state = (gpVidCtx) ? gpVidCtx->bLooped : false;
 
 #if USE_MUTEX
-	kernel.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 
 	return state;

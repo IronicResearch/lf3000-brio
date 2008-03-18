@@ -15104,3 +15104,19 @@ By Dave Milici (dmilici@leapfrog.com) on 3/17/08 10:42 AM
 5,081 ms. (Cumulative: 4,409,130 ms)
 
 ----------------
+Revision 3,154 from svn://localhost/TRUNK/:
+Revision 3,155 from svn://localhost/TRUNK/:
+Revision 3,156 from svn://localhost/TRUNK/:
+Revision 3,157 from svn://localhost/TRUNK/:
+Revision 3,158 from svn://localhost/TRUNK/:
+Revision 3,159 from svn://localhost/TRUNK/:
+Revision 3,160 from svn://localhost/TRUNK/:
+
+Use persistent Kernel MPI object during Video module lifetime to minimize loads/unloads when module manager reference counting is effective.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/08 1:00 PM
+2 changed, 0 added, 0 deleted.
+5,094 ms. (Cumulative: 4,414,333 ms)
+
+----------------
