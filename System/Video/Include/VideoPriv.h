@@ -19,6 +19,7 @@
 #include <EventTypes.h>
 #include <VideoTypes.h>
 #include <DebugMPI.h>
+#include <KernelMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
 
@@ -90,6 +91,7 @@ public:
 
 private:
 	CDebugMPI			dbg_;
+	CKernelMPI			kernel_;
 
 	// Limit object creation to the Module Manager interface functions
 	CVideoModule();
