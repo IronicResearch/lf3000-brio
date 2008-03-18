@@ -15120,3 +15120,15 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/08 1:00 PM
 5,094 ms. (Cumulative: 4,414,333 ms)
 
 ----------------
+Revision 3,161 from svn://localhost/TRUNK/:
+Revision 3,162 from svn://localhost/TRUNK/:
+Revision 3,163 from svn://localhost/TRUNK/:
+
+Delete context handle used to wrap OGL context data instead of copying to reserved variable.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/08 3:00 PM
+1 changed, 0 added, 0 deleted.
+5,095 ms. (Cumulative: 4,419,522 ms)
+
+----------------
