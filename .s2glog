@@ -15132,3 +15132,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/08 3:00 PM
 5,095 ms. (Cumulative: 4,419,522 ms)
 
 ----------------
+Revision 3,164 from svn://localhost/TRUNK/:
+
+Remove dead code from FreeType example, Resource manager.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/08 3:40 PM
+2 changed, 0 added, 0 deleted.
+5,202 ms. (Cumulative: 4,424,818 ms)
+
+----------------

@@ -17,9 +17,6 @@
 #include <FontTypes.h>
 #include <FontPriv.h>
 #include <KernelMPI.h>
-#if USE_RSRC_MGR
-#include <ResourceMPI.h>
-#endif
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -243,20 +240,6 @@ CFontModule::~CFontModule()
 	if (!handle_.library)
 		return;
 
-#if 0	// useless list
-	// Release memory used by fonts and font list
-	for (int i = 0; i < handle_.numFonts; i++) 
-	{
-		if (handle_.fonts[i])
-		{
-			if (handle_.fonts[i]->filepathname)
-				kernel_.Free((char*)(handle_.fonts[i]->filepathname));
-			kernel_.Free(handle_.fonts[i]);
-		}
-	}
-	kernel_.Free(handle_.fonts);
-#endif
-
 #if USE_FONT_CACHE_MGR
 	// Unload FreeType font cache manager
 	FTC_Manager_Done( handle_.cacheManager );
@@ -365,30 +348,6 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     handle_.face = font->face = face;
 #endif
 
-#if 0 // useless list (holdover from FreeType example)
-	// Allocate space to load this font in our font list to date
-    if ( handle_.maxFonts == 0 ) 
-    {
-		handle_.maxFonts = 16;
-		handle_.fonts     = static_cast<PFont*>(kernel_.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
-		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be allocated\n");
-		memset( &handle_.fonts[0], 0, handle_.maxFonts * sizeof ( PFont ) );
-    }
-    else if ( handle_.numFonts >= handle_.maxFonts ) 
-    {
-    	PFont* 	oldlist = handle_.fonts;
-		handle_.maxFonts *= 2;
-		handle_.fonts      = static_cast<PFont*>(kernel_.Malloc( handle_.maxFonts * sizeof ( PFont ) ) );
-		dbg_.Assert(handle_.fonts != NULL, "CFontModule::LoadFont: fonts list could not be reallocated\n");
-		memcpy( &handle_.fonts[0], oldlist, handle_.numFonts * sizeof ( PFont ) );
-		memset( &handle_.fonts[handle_.numFonts], 0, ( handle_.maxFonts - handle_.numFonts ) * sizeof ( PFont ) );
-		kernel_.Free(oldlist);
-    }
-
-	// Add this font to our list of fonts
-    handle_.fonts[handle_.numFonts] = font;
-    handle_.curFont = handle_.numFonts++;
-#endif
     handle_.currentFont = font;
     
 #if USE_FONT_CACHE_MGR
@@ -469,69 +428,6 @@ tFontHndl CFontModule::LoadFont(const CPath& name, U8 size, U32 encoding)
 	return LoadFontInt(&name, prop_, NULL, 0);
 }
 
-#if USE_RSRC_MGR
-//----------------------------------------------------------------------------
-tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, tFontProp prop)
-{
-	CResourceMPI		rsrcmgr;
-	const CString*		fontname;
-	tPtr				fileimage;
-	U32					filesize; 
-	tErrType			r;
-	tFontHndl			hFont;
-	PFont				pFont;
-		
-	if (hRsrc == kInvalidRsrcHndl)
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "FontModule::LoadFont: invalid resource handle passed\n");
-		return kInvalidFontHndl;
-	}
-	
-	// Load font via resource manager
-	r = rsrcmgr.LoadRsrc(hRsrc, kOpenRsrcOptionRead, NULL);
-	if (r != kNoErr) 
-	{
-		dbg_.DebugOutErr(kDbgLvlCritical, r, "FontModule::LoadFont: LoadRsrc failed for %0X\n", 
-				static_cast<unsigned int>(hRsrc));
-		return kInvalidFontHndl;
-	}
-	 
-	// Use file image loaded in memory by resource manager
-	fontname = rsrcmgr.GetPath(hRsrc);
-	filesize = rsrcmgr.GetUnpackedSize(hRsrc);
-	fileimage = rsrcmgr.GetPtr(hRsrc);
-	dbg_.DebugOut(kDbgLvlVerbose, "FontModule::LoadFont: resource font name = %s, file size = %d\n", 
-				fontname->c_str(), static_cast<int>(filesize));
-	
-	hFont = LoadFontInt(fontname, prop, fileimage, filesize);
-
-	if (hFont == kInvalidFontHndl)
-		return kInvalidFontHndl;
-
-	// Save resource handle for unloading
-	pFont = (PFont)hFont;		
-	pFont->hRsrcFont = hRsrc;
-	return hFont;
-}
-
-//----------------------------------------------------------------------------
-tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size)
-{
-	prop_.size = size;
-	prop_.encoding = 0;
-	return LoadFont(hRsrc, prop_);
-}
-
-//----------------------------------------------------------------------------
-tFontHndl CFontModule::LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding)
-{
-	prop_.version = 2;
-	prop_.size = size;
-	prop_.encoding = encoding;
-	return LoadFont(hRsrc, prop_);
-}
-#endif // USE_RSRC_MGR
-
 //----------------------------------------------------------------------------
 Boolean CFontModule::UnloadFont(tFontHndl hFont)
 {
@@ -540,15 +436,6 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 	// Unload font if loaded via resource manager 
 	if (pFont)
 	{
-#if USE_RSRC_MGR
-		if (pFont->hRsrcFont != kInvalidRsrcHndl)
-		{
-			CResourceMPI	rsrcmgr;
-			rsrcmgr.UnloadRsrc(pFont->hRsrcFont);
-			pFont->hRsrcFont = kInvalidRsrcHndl;
-		}
-#endif
-		
 #if !USE_FONT_CACHE_MGR
 		// Release FreeType font face instance (no cache manager)
 		if (pFont->face != NULL)

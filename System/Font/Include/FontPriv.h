@@ -13,7 +13,6 @@
 //		Defines the interface for the private underlying Font manager module. 
 //
 //==============================================================================
-#define  USE_RSRC_MGR			0   
 #include <SystemTypes.h>
 #include <CoreModule.h>
 #include <EventTypes.h>
@@ -21,9 +20,6 @@
 #include <DebugMPI.h>
 #include <KernelMPI.h>
 #include <DisplayTypes.h> 
-#if      USE_RSRC_MGR
-#include <ResourceTypes.h>
-#endif
 
 #include <ft2build.h>		// FreeType auto-conf settings
 #include <freetype.h>
@@ -68,20 +64,12 @@ typedef struct  TFont_
 	int				ascent;			// baseline location
 	int				descent;		// remainder below baseline
 	int				advance;		// max advance width
-#if USE_RSRC_MGR
-	tRsrcHndl		hRsrcFont;		// resource handle used for loading font	    
-#endif
 } TFont, *PFont;
 
 // Font library internal management
 struct tFontInt {
 	FT_Library		library;		// FreeType library instance
 	FT_Face			face;			// font face instance
-    PFont*          fonts;          // list of installed fonts
-    int             numFonts;		// number of fonts so far
-    int             maxFonts;		// alloc'ed space for font list
-    int				curFont;		// current font index
-    
 #if USE_FONT_CACHE_MGR
 	FTC_Manager     	cacheManager;      // the cache manager               
     FTC_ImageCache  	imageCache;        // the glyph image cache           
@@ -109,11 +97,6 @@ public:
     VTABLE_EXPORT tFontHndl		LoadFont(const CPath& name, tFontProp prop);
     VTABLE_EXPORT tFontHndl		LoadFont(const CPath& name, U8 size);
     VTABLE_EXPORT tFontHndl		LoadFont(const CPath& name, U8 size, U32 encoding);
-#if USE_RSRC_MGR
-    VTABLE_EXPORT tFontHndl		LoadFont(tRsrcHndl hRsrc, tFontProp prop);
-    VTABLE_EXPORT tFontHndl   	LoadFont(tRsrcHndl hRsrc, U8 size);
-    VTABLE_EXPORT tFontHndl   	LoadFont(tRsrcHndl hRsrc, U8 size, U32 encoding);
-#endif
     VTABLE_EXPORT Boolean     	UnloadFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean     	SelectFont(tFontHndl hFont);
     VTABLE_EXPORT Boolean		SetFontAttr(tFontAttr attr);
