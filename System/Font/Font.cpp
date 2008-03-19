@@ -346,6 +346,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	font->faceIndex = 0;
 	font->cmapIndex = face->charmap ? FT_Get_Charmap_Index( face->charmap ) : 0;
     font->numIndices = (numcodes) ? numcodes : face->num_glyphs;
+    font->encoding = prop_.encoding;
 
 #if USE_FONT_CACHE_MGR
 	// Don't need any more font face info after this point
@@ -366,7 +367,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     scaler.face_id = handle_.imageType.face_id = (FTC_FaceID)font;
 
     // Set font loading flags -- hinting off is key to glyph spacing
-    handle_.imageType.flags = prop_.loadFlags;
+    handle_.imageType.flags = font->loadFlags = prop_.loadFlags;
     
     // Set selected font size
     pixelSize = (prop_.size * 72 + 36) / 72; 
@@ -477,7 +478,7 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
     handle_.imageType.face_id = reinterpret_cast<FTC_FaceID>(pFont);
     handle_.imageType.width = pFont->scaler.width;
     handle_.imageType.height = pFont->scaler.height;
-    handle_.imageType.flags = prop_.loadFlags;
+    handle_.imageType.flags = pFont->loadFlags;
 #endif
     return true;
 }
@@ -1041,7 +1042,7 @@ Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph, int* pIndex)
 	}
 
 	// Load indexed glyph into face's internal glyph record slot
-	error = FT_Load_Glyph(font->face, index, prop_.loadFlags);
+	error = FT_Load_Glyph(font->face, index, font->loadFlags);
 	if (error) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d, error = %d\n", static_cast<unsigned int>(ch), index, error );
@@ -1258,7 +1259,7 @@ Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 	for (i = 0; i < len; i++) 
 	{
 		tWChar charcode = pStr->at(i);
-		if (prop_.encoding == kUTF8CharEncoding)
+		if (handle_.currentFont->encoding == kUTF8CharEncoding)
 			UnpackUnicode(&charcode, pStr, &i);
 		rc = DrawGlyph(charcode, curX_, curY_, pCtx, i==0);
 	}
@@ -1395,7 +1396,7 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 	for (int i = 0; i < len; i++)
 	{
 		tWChar charcode = pStr->at(i);
-		if (prop_.encoding == kUTF8CharEncoding)
+		if (font->encoding == kUTF8CharEncoding)
 			UnpackUnicode(&charcode, pStr, &i);
 		if (!GetGlyph(charcode, &glyph, &index))
 			continue;

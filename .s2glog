@@ -15152,3 +15152,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/08 6:03 PM
 5,135 ms. (Cumulative: 4,430,027 ms)
 
 ----------------
+Revision 3,166 from svn://localhost/TRUNK/:
+
+Cache font properties for encoding and load flags in font instance where they'll remain persistantly.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/08 6:21 PM
+2 changed, 0 added, 0 deleted.
+5,324 ms. (Cumulative: 4,435,426 ms)
+
+----------------

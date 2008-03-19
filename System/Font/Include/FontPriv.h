@@ -64,6 +64,8 @@ typedef struct  TFont_
 	int				ascent;			// baseline location
 	int				descent;		// remainder below baseline
 	int				advance;		// max advance width
+	U32				encoding;		// encoding property
+	U32				loadFlags;		// load flags property
 } TFont, *PFont;
 
 // Font library internal management
