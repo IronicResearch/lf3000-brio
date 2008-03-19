@@ -172,10 +172,11 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 	memset(&handle_, 0, sizeof(handle_));
 
 	// Default font properties and drawing attributes
-	prop_.version = 2;
+	prop_.version = 3;
 	prop_.size = 12;
 	prop_.encoding = 0;
 	prop_.useEncoding = false;
+	prop_.loadFlags =  FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
 	attr_.version = 2;
 	attr_.color = 0xFFFFFFFF;
 	attr_.direction = false;
@@ -292,12 +293,19 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	FT_Size      	size;
 	
     // Font instance property versioning
-    if (prop.version == 1)
+    if (prop.version >= 1)
     {
-    	prop.encoding = 0;
-    	prop.useEncoding = false;
+    	prop_.size = prop.size;
     }
-    prop_ = prop;
+    if (prop.version >= 2)
+    {
+    	prop_.encoding = prop.encoding;
+    	prop_.useEncoding = prop.useEncoding;
+    }
+    if (prop.version >= 3)
+    {
+   		prop_.loadFlags = prop.loadFlags;
+    }
     
 	// Load font file
 	if (pFileImage != NULL)
@@ -312,13 +320,13 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	}
 		
 	// Handle character encoding cases
-	if (prop.encoding)
+	if (prop_.encoding)
 	{
-		error = FindEncoding(face, prop.encoding, &numcodes);
+		error = FindEncoding(face, prop_.encoding, &numcodes);
 		if (error)
 		{
 			FT_Done_Face(face);
-			dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FindEncoding for %d (%s) failed, error = %d\n", static_cast<int>(prop.encoding), filename, error);
+			dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FindEncoding for %d (%s) failed, error = %d\n", static_cast<int>(prop_.encoding), filename, error);
 			return false;
 		}
 	}
@@ -358,10 +366,10 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     scaler.face_id = handle_.imageType.face_id = (FTC_FaceID)font;
 
     // Set font loading flags -- hinting off is key to glyph spacing
-    handle_.imageType.flags = FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
+    handle_.imageType.flags = prop_.loadFlags;
     
     // Set selected font size
-    pixelSize = (prop.size * 72 + 36) / 72; 
+    pixelSize = (prop_.size * 72 + 36) / 72; 
     scaler.width   = handle_.imageType.width  = (FT_UShort)pixelSize;
     scaler.height  = handle_.imageType.height = (FT_UShort)pixelSize;
     scaler.pixel   = 1;
@@ -369,17 +377,17 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     error = FTC_Manager_LookupSize( handle_.cacheManager, &scaler, &size );
     if ( error ) 
     {
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FTC_Manager_LookupSize failed for font size = %d, pixels = %d, error = %d\n", prop.size, pixelSize, error);
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FTC_Manager_LookupSize failed for font size = %d, pixels = %d, error = %d\n", prop_.size, pixelSize, error);
 		return false;
     }
     font->size = size;
     font->scaler = scaler;
 #else
 	// Select font size explicitly
-	error = FT_Set_Char_Size(face, prop.size << 6, prop.size << 6, 72, 72);
+	error = FT_Set_Char_Size(face, prop_.size << 6, prop_.size << 6, 72, 72);
     if ( error ) 
     {
-		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FT_Set_Char_Size failed for font size = %d, error = %d\n", prop.size, error);
+		dbg_.DebugOut(kDbgLvlCritical, "CFontModule::LoadFont: FT_Set_Char_Size failed for font size = %d, error = %d\n", prop_.size, error);
 		return false;
     }
 	font->size = size = face->size;
@@ -390,7 +398,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
 	font->ascent = size->metrics.ascender >> 6;
 	font->descent = size->metrics.descender >> 6;
 	font->advance = size->metrics.max_advance >> 6;
-	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, height = %d, ascent = %d, descent = %d\n", prop.size, font->height, font->ascent, font->descent);
+	dbg_.DebugOut(kDbgLvlVerbose, "CFontModule::LoadFont: font size = %d, height = %d, ascent = %d, descent = %d\n", prop_.size, font->height, font->ascent, font->descent);
 		
 	return reinterpret_cast<tFontHndl>(font);
 }
@@ -412,7 +420,7 @@ tFontHndl CFontModule::LoadFont(const CPath& name, tFontProp prop)
 tFontHndl CFontModule::LoadFont(const CPath& name, U8 size)
 {
 //	CString path = CString(name);
-	prop_.version = 2;
+	prop_.version = 3;
 	prop_.size = size;
 	prop_.encoding = 0;
 	return LoadFontInt(&name, prop_, NULL, 0);
@@ -422,7 +430,7 @@ tFontHndl CFontModule::LoadFont(const CPath& name, U8 size)
 tFontHndl CFontModule::LoadFont(const CPath& name, U8 size, U32 encoding)
 {
 //	CString path = CString(name);
-	prop_.version = 2;
+	prop_.version = 3;
 	prop_.size = size;
 	prop_.encoding = encoding;
 	return LoadFontInt(&name, prop_, NULL, 0);
@@ -469,7 +477,7 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
     handle_.imageType.face_id = reinterpret_cast<FTC_FaceID>(pFont);
     handle_.imageType.width = pFont->scaler.width;
     handle_.imageType.height = pFont->scaler.height;
-    handle_.imageType.flags = FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
+    handle_.imageType.flags = prop_.loadFlags;
 #endif
     return true;
 }
@@ -1033,7 +1041,7 @@ Boolean CFontModule::GetGlyph(tWChar ch, FT_Glyph* pGlyph, int* pIndex)
 	}
 
 	// Load indexed glyph into face's internal glyph record slot
-	error = FT_Load_Glyph(font->face, index, FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING);
+	error = FT_Load_Glyph(font->face, index, prop_.loadFlags);
 	if (error) 
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "FontModule::DrawGlyph: unable to support char = %08X, index = %d, error = %d\n", static_cast<unsigned int>(ch), index, error );
