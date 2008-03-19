@@ -8,6 +8,9 @@
 #include <BrioOpenGLConfig.h>
 #include <UnitTestUtils.h>
 
+#include <ft2build.h>		// FreeType auto-conf settings
+#include <freetype.h>
+
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
@@ -990,6 +993,66 @@ public:
 		free(surf.buffer);
 		pFontMPI_->UnloadFont(font1);
 		delete ctx;
+	}
+
+	//------------------------------------------------------------------------
+	void testFontLoadFlags()
+	{
+		tFontHndl	font1;
+		tFontHndl	font2;
+		tFontHndl	font3;
+		tFontHndl	font4;
+		tFontProp	prop1 = {3, 24, 0, 0, FT_LOAD_NO_HINTING | FT_LOAD_TARGET_NORMAL};
+		tFontProp	prop2 = {3, 24, 0, 0, FT_LOAD_NO_HINTING | FT_LOAD_TARGET_LIGHT};
+		tFontProp	prop3 = {3, 24, 0, 0, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL};
+		tFontProp	prop4 = {3, 24, 0, 0, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT};
+		tFontSurf	surf;
+		CString		text1 = CString("The Quick Brown Fox\n");
+		CString		text2 = CString("Jumps Over the Lazy Dog\n");
+		S32			x,y;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		tDisplayHandle disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		memset(surf.buffer, 0, surf.height * surf.pitch);
+		
+		CPath dir = GetTestRsrcFolder();
+		pFontMPI_->SetFontResourcePath(dir);
+		CPath* path = pFontMPI_->GetFontResourcePath();
+		TS_ASSERT( dir == *path );
+		
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->SetFontColor(0xFFFFFFFF); // white
+		pFontMPI_->DrawString(text1, x = 0, y = 0, surf);
+		font2 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop2);
+		TS_ASSERT( font2 != kInvalidFontHndl );
+		pFontMPI_->DrawString(text1, x = 0, y, surf);
+		font3 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop3);
+		TS_ASSERT( font3 != kInvalidFontHndl );
+		pFontMPI_->DrawString(text1, x = 0, y, surf);
+		font4 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop4);
+		TS_ASSERT( font4 != kInvalidFontHndl );
+		pFontMPI_->DrawString(text1, x = 0, y, surf);
+
+		sleep(1);
+
+		pFontMPI_->UnloadFont(font1);
+		pFontMPI_->UnloadFont(font2);
+		pFontMPI_->UnloadFont(font3);
+		pFontMPI_->UnloadFont(font4);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+
 	}
 
 };

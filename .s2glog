@@ -15142,3 +15142,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/08 3:40 PM
 5,202 ms. (Cumulative: 4,424,818 ms)
 
 ----------------
+Revision 3,165 from svn://localhost/TRUNK/:
+
+Updated font properties to version 3 to accomodate FreeType FT_LOAD flags. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/08 6:03 PM
+3 changed, 0 added, 0 deleted.
+5,135 ms. (Cumulative: 4,430,027 ms)
+
+----------------
