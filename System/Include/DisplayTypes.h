@@ -32,6 +32,18 @@ const tEventType kAllDisplayEvents = AllEvents(kGroupDisplay);
 
 
 //==============================================================================	   
+// Backlight levels
+//==============================================================================
+
+#define BACKLIGHT_LEVEL_1	(  -46 )
+#define BACKLIGHT_LEVEL_2	(  -11 )
+#define BACKLIGHT_LEVEL_3	(   31 )
+#define BACKLIGHT_LEVEL_4	(   72 )
+
+#define BACKLIGHT_LEVEL_MIN	BACKLIGHT_LEVEL_1
+#define BACKLIGHT_LEVEL_MAX	BACKLIGHT_LEVEL_4
+
+//==============================================================================	   
 // Display errors
 //==============================================================================
 #define DISPLAY_ERRORS				\

@@ -93,23 +93,21 @@ U32 LinuxSwitchToBrio(U16 code)
 }
 
 /*
- * 'Brighten' screen by adjusting LCD brightness and LCD backlight.  As
- * 'N' levels are desired, then array will have 2(N-1) entries, first
- * increasing then increasing in value.
+ * 'Brighten' screen by adjusting LCD backlight.  As 'N' levels are desired,
+ * the array will have 2(N-1) entries, first increasing then increasing in
+ * value.
  */
 
-#define	SCREEN_BRIGHT_LEVELS	(2 * 4)	// have 5 distinct levels
+#define	SCREEN_BRIGHT_LEVELS	(2 * 3)	// have 4 distinct levels
 
 /* 
- * lcdBright and lcdBacklight arrays describe a complete cycle of screen
- * adjustment levels, so array index always increments, mod number of
- * array entries.  First array entry is the middle of range; this is
- * the default setting.
+ * lcdBacklight array describes a complete cycle of screen adjustment
+ * levels, so array index always increments, mod number of array entries.
+ * First array entry is the default setting.
  */
-S8 lcdBright[SCREEN_BRIGHT_LEVELS]    =
-	{   0,   0,   0,   0,   0,   0,   0,   0};
 S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
-	{ -11,  31,  72,  31, -11, -53, -85, -53};
+	{ BACKLIGHT_LEVEL_2, BACKLIGHT_LEVEL_3, BACKLIGHT_LEVEL_4,
+	  BACKLIGHT_LEVEL_3, BACKLIGHT_LEVEL_2, BACKLIGHT_LEVEL_1 };
 
 
 /*
@@ -124,19 +122,16 @@ void setBrightness(void)
 	CDebugMPI	dbg(kGroupButton);
 
 	S8 oldBacklight;
-	S8 oldBrightness;
 	enum tPowerState status = GetCurrentPowerState();
 
 	static int brightIndex = 1;	// index of next value to retrieve
 
 	dbg.SetDebugLevel(kDbgLvlVerbose);
 
-	oldBrightness = dispmgr.GetBrightness(0);
 	oldBacklight  = dispmgr.GetBacklight(0);	
 
 	/* change brightness if power is good */
 	if (status != kPowerCritical) {
-		dispmgr.SetBrightness(0, lcdBright[brightIndex]);
 		dispmgr.SetBacklight(0, lcdBacklight[brightIndex]);
 		brightIndex++;
 		brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS; // keep ptr in range
@@ -147,7 +142,6 @@ void setBrightness(void)
 			status = GetCurrentPowerState();
 			// backout change if battery went critical
 			if (status == kPowerCritical) {
-				dispmgr.SetBrightness(0, oldBrightness);
 				dispmgr.SetBacklight(0, oldBacklight);
 				brightIndex--;			// backup index
 				if (brightIndex < 0)	// note: mod (%) may fail neg numbers

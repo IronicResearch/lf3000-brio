@@ -15162,3 +15162,18 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/08 6:21 PM
 5,324 ms. (Cumulative: 4,435,426 ms)
 
 ----------------
+Revision 3,167 from svn://localhost/TRUNK/:
+Revision 3,168 from svn://localhost/TRUNK/:
+Revision 3,169 from svn://localhost/TRUNK/:
+Revision 3,170 from svn://localhost/TRUNK/:
+
+Fix TTPro #1822, lowest screen setting too dim.  New low backlight setting is
+-46.  Removed lowest setting, now have 4 levels.  Removed adjustment of
+LCD brightness.  Added #defines for backlight levels.
+
+
+By Scott Esters (sesters@leapfrog.com) on 3/19/08 2:45 PM
+2 changed, 0 added, 0 deleted.
+5,320 ms. (Cumulative: 4,440,844 ms)
+
+----------------
