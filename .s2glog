@@ -15196,3 +15196,15 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/19/08 7:57 PM
 5,389 ms. (Cumulative: 4,452,084 ms)
 
 ----------------
+Revision 3,177 from svn://localhost/TRUNK/:
+Revision 3,178 from svn://localhost/TRUNK/:
+Revision 3,179 from svn://localhost/TRUNK/:
+
+Automatic minimal patch-set .lfp maker, that diffs MD5SUM's from GM Brio.lfp
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 3/20/08 3:51 PM
+0 changed, 2 added, 0 deleted.
+5,766 ms. (Cumulative: 4,457,944 ms)
+
+----------------
