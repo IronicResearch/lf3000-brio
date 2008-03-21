@@ -60,7 +60,7 @@
 #----------------------------------------------------------------------------------
 #	
 	cd 		$TFTP_MAIN
-    LINUXDIST_NUM=$(ls LinuxDist-*.tar.gz | cut -c11-21) 
+    LINUXDIST_NUM=$(ls LinuxDist-*.tar.gz | cut -c11-20) 
 	echo "The current LinuxDist number=$LINUXDIST_NUM"
 
 #	sudo 	tar -xzvf $TFTP_MAIN/LinuxDist-$LINUXDIST_NUM.tar.gz 
