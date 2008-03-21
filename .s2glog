@@ -15218,3 +15218,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/20/08 5:51 PM
 5,703 ms. (Cumulative: 4,463,725 ms)
 
 ----------------
+Revision 3,181 from svn://localhost/TRUNK/:
+
+Power MPI thread shutdown sync via join task.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/20/08 5:53 PM
+1 changed, 0 added, 0 deleted.
+5,348 ms. (Cumulative: 4,469,136 ms)
+
+----------------
