@@ -15208,3 +15208,13 @@ By Rob Dowling (rdowling@leapfrog.com) on 3/20/08 3:51 PM
 5,766 ms. (Cumulative: 4,457,944 ms)
 
 ----------------
+Revision 3,180 from svn://localhost/TRUNK/:
+
+Remove extraneous mutex deinit in USBDevice destructor caught by reference counted module manager. Thread shutdown sync via join task.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/20/08 5:51 PM
+1 changed, 0 added, 0 deleted.
+5,703 ms. (Cumulative: 4,463,725 ms)
+
+----------------

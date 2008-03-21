@@ -199,15 +199,13 @@ void CUSBDeviceModule::InitModule()
 void CUSBDeviceModule::DeinitModule()
 {
 	CKernelMPI	kernel;
+	void* 		retval;
 
 	pDbg_->DebugOut(kDbgLvlVerbose, "USBDeviceModule::DeinitModule\n");
 
 	// Terminate handler thread, and wait before closing driver
 	kernel.CancelTask(USBDeviceTask);
-	kernel.TaskSleep(1);
-
-	kernel.LockMutex(dataMutex);
-	kernel.DeInitMutex(dataMutex);
+	kernel.JoinTask(USBDeviceTask, retval);
 }
 
 //----------------------------------------------------------------------------
