@@ -149,12 +149,13 @@ void CPowerModule::InitModule()
 void CPowerModule::DeinitModule()
 {
 	CKernelMPI	kernel;
+	void* 		retval;
 
 	dbg_.DebugOut(kDbgLvlVerbose, "PowerModule::DeinitModule: Power Deinit\n");
 
 	// Terminate power handler thread, and wait before closing driver
 	kernel.CancelTask(handlePowerTask);
-	kernel.TaskSleep(1);	
+	kernel.JoinTask(handlePowerTask, retval);
 }
 
 //============================================================================
