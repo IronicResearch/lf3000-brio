@@ -3,11 +3,18 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.0.3.3188 release (Mar 21, 2008)
+===========================================
+-- Automatic minimal patch-set .lfp maker, that diffs MD5SUM's from GM Brio.lfp
+
+-- Remove extraneous mutex deinit in USBDevice destructor caught by reference
+    counted module manager. Thread shutdown sync via join task.
+
+===========================================
 Brio v1.0.2.3174 release (Mar 19, 2008)
 ===========================================
 
 -- Corrected HW display address when more than one 2D RGB buffer is registered. (TTP 1695)
-
 
 -- Useed persistent Kernel MPI object during Video module lifetime to minimize loads/unloads
    when module manager reference counting is effective.
