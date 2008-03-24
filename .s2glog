@@ -15253,3 +15253,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/21/08 6:18 PM
 5,205 ms. (Cumulative: 4,479,640 ms)
 
 ----------------
+Revision 3,191 from svn://localhost/TRUNK/:
+
+Mods to Button manager when reference-counted module manager is active. Add persistant Event MPI reference per object lifetime. Remove unused MPI object references. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/08 10:58 AM
+2 changed, 0 added, 0 deleted.
+5,140 ms. (Cumulative: 4,484,842 ms)
+
+----------------

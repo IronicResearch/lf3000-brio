@@ -18,6 +18,7 @@
 #include <EventTypes.h>
 #include <ButtonTypes.h>
 #include <DebugMPI.h>
+#include <EventMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -45,6 +46,7 @@ private:
 	void				InitModule( );
 	void				DeinitModule();
 	CDebugMPI			dbg_;
+	CEventMPI			evtmgr_;
 
 	// Limit object creation to the Module Manager interface functions
 	CButtonModule();

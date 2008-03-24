@@ -117,7 +117,7 @@ S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] =
 void setBrightness(void)
 {
 	CDisplayMPI dispmgr;
-	CPowerMPI   pwrmgr;
+//	CPowerMPI   pwrmgr;
 	CKernelMPI	kernel;
 	CDebugMPI	dbg(kGroupButton);
 
@@ -182,7 +182,7 @@ void *LightningButtonTask(void*)
 	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupButton);
 	CKernelMPI	kernel;
-	CDisplayMPI dispmgr;
+//	CDisplayMPI dispmgr;
 	
 	int sw = 0;
 	bool CartInitial = CartInitiallyInserted();
@@ -324,12 +324,13 @@ void CButtonModule::InitModule()
 void CButtonModule::DeinitModule()
 {
 	CKernelMPI	kernel;
+	void* 		retval;
 
 	dbg_.DebugOut(kDbgLvlVerbose, "ButtonModule::DeinitModule: Button Deinit\n");
 
 	// Terminate button handler thread, and wait before closing driver
 	kernel.CancelTask(handleButtonTask);
-	kernel.TaskSleep(1);	
+	kernel.JoinTask(handleButtonTask, retval);	
 	close(button_fd);
 }
 
