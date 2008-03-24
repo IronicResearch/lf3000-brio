@@ -15263,3 +15263,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/08 10:58 AM
 5,140 ms. (Cumulative: 4,484,842 ms)
 
 ----------------
+Revision 3,192 from svn://localhost/TRUNK/:
+
+Add persistent Event MPI reference per Power object lifetime when reference-counted module manager active.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/08 11:01 AM
+1 changed, 0 added, 0 deleted.
+5,063 ms. (Cumulative: 4,489,983 ms)
+
+----------------
