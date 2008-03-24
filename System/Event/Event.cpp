@@ -207,12 +207,16 @@ public:
 	{
 		CDebugMPI	debug(kGroupEvent);
 		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::dtor: Event Manager going away...\n");
+		void* 		retval;
 
-		delete ppListeners_;
+		// Terminate thread normally and dispose of listener list afterwards
 		g_threadRun_ = false;
-		while ( g_threadRunning_ ) {
-			kernel_.TaskSleep(10);
-		}
+		kernel_.CancelTask(g_hThread_);
+		kernel_.JoinTask(g_hThread_, retval);
+#if 0	// FIXME/dm: segfaults during module manager destruction -- corrupt ptr/list? 
+		if (ppListeners_)
+			free(ppListeners_);
+#endif
 	}
 	
 	//------------------------------------------------------------------------

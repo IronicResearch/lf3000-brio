@@ -15273,3 +15273,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/08 11:01 AM
 5,063 ms. (Cumulative: 4,489,983 ms)
 
 ----------------
+Revision 3,193 from svn://localhost/TRUNK/:
+
+Correct Event thread termination when reference-counted module manager active. Module manager destruction remains disabled by default, since all module destructors need to exit cleanly during all unit tests.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/08 12:10 PM
+1 changed, 0 added, 0 deleted.
+5,114 ms. (Cumulative: 4,495,176 ms)
+
+----------------
