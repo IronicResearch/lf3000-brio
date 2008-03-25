@@ -32,7 +32,7 @@ for n in $NEWDIR/*; do
 	p=${p1/-/Patch-}
 	echo "n=$n g=$g p=$p"
 	# Make a copy of package in patch directory
-	cp -v $g $p
+	cp -v $n $p
 	# Extract the packagefiles.md5 from g and n packages
 	tg=`mktemp`; unzip -p $g */packagefiles.md5 > $tg
 	tn=`mktemp`; unzip -p $n */packagefiles.md5 > $tn
@@ -49,6 +49,6 @@ for n in $NEWDIR/*; do
 			echo $gm5 != $nm5 $i
 		fi
 	done
-	rm $tg $tp
+	rm -f $tg $tn
 done
 exit 0;
