@@ -33,6 +33,7 @@ const CURI	kModuleURI	= "/LF/System/Font";
 namespace
 {
 	CPath				gpath = "";
+	U32					loadFlags;
 }
 
 //============================================================================
@@ -172,11 +173,11 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 	memset(&handle_, 0, sizeof(handle_));
 
 	// Default font properties and drawing attributes
-	prop_.version = 3;
+	prop_.version = 2;
 	prop_.size = 12;
 	prop_.encoding = 0;
 	prop_.useEncoding = false;
-	prop_.loadFlags =  FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
+	/* prop_. */ loadFlags =  FT_LOAD_DEFAULT | FT_LOAD_IGNORE_GLOBAL_ADVANCE_WIDTH | FT_LOAD_NO_HINTING;
 	attr_.version = 2;
 	attr_.color = 0xFFFFFFFF;
 	attr_.direction = false;
@@ -302,10 +303,12 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     	prop_.encoding = prop.encoding;
     	prop_.useEncoding = prop.useEncoding;
     }
+#if 0  // extra field removed for backwards compatibility
     if (prop.version >= 3)
     {
    		prop_.loadFlags = prop.loadFlags;
     }
+#endif
     
 	// Load font file
 	if (pFileImage != NULL)
@@ -367,7 +370,7 @@ tFontHndl CFontModule::LoadFontInt(const CString* pName, tFontProp prop, void* p
     scaler.face_id = handle_.imageType.face_id = (FTC_FaceID)font;
 
     // Set font loading flags -- hinting off is key to glyph spacing
-    handle_.imageType.flags = font->loadFlags = prop_.loadFlags;
+    handle_.imageType.flags = font->loadFlags = /* prop_. */ loadFlags;
     
     // Set selected font size
     pixelSize = (prop_.size * 72 + 36) / 72; 
@@ -421,7 +424,7 @@ tFontHndl CFontModule::LoadFont(const CPath& name, tFontProp prop)
 tFontHndl CFontModule::LoadFont(const CPath& name, U8 size)
 {
 //	CString path = CString(name);
-	prop_.version = 3;
+	prop_.version = 2;
 	prop_.size = size;
 	prop_.encoding = 0;
 	return LoadFontInt(&name, prop_, NULL, 0);
@@ -431,7 +434,7 @@ tFontHndl CFontModule::LoadFont(const CPath& name, U8 size)
 tFontHndl CFontModule::LoadFont(const CPath& name, U8 size, U32 encoding)
 {
 //	CString path = CString(name);
-	prop_.version = 3;
+	prop_.version = 2;
 	prop_.size = size;
 	prop_.encoding = encoding;
 	return LoadFontInt(&name, prop_, NULL, 0);

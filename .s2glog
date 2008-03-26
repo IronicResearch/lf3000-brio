@@ -15314,3 +15314,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/25/08 7:52 PM
 5,377 ms. (Cumulative: 4,511,087 ms)
 
 ----------------
+Revision 3,197 from svn://localhost/TRUNK/:
+
+Reverted version 3 tFontProp field for backwards compatibility.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/26/08 3:40 PM
+3 changed, 0 added, 0 deleted.
+5,531 ms. (Cumulative: 4,516,696 ms)
+
+----------------
