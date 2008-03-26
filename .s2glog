@@ -15304,3 +15304,13 @@ By Rob Dowling (rdowling@leapfrog.com) on 3/25/08 10:51 AM
 5,110 ms. (Cumulative: 4,505,632 ms)
 
 ----------------
+Revision 3,196 from svn://localhost/TRUNK/:
+
+Added UTF8 example strings for Spanish, French, German to font unit test. UTF8 codes are already unpacked by ustring class.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/25/08 7:52 PM
+2 changed, 0 added, 0 deleted.
+5,377 ms. (Cumulative: 4,511,087 ms)
+
+----------------
