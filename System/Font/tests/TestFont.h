@@ -578,6 +578,65 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void testFontUnicodeUTF8()
+	{
+		tFontHndl	font1;
+		tFontHndl	font2;
+		tFontSurf	surf;
+		tFontMetrics	mtrx;
+		tDisplayHandle 	disp;
+		S32				x,y,dy;
+		
+		// UTF8 text copied from http://www.columbia.edu/~kermit/utf8.html
+		CString text1 = CString("Spanish: El pingüino Wenceslao hizo kilómetros bajo exhaustiva lluvia y frío, añoraba a su querido cachorro. ");
+		CString text2 = CString("French: Les naïfs ægithales hâtifs pondant à Noël où il gèle sont sûrs d'être déçus et de voir leurs drôles d'œufs abîmés. ");
+		CString text3 = CString("German: Falsches Üben von Xylophonmusik quält jeden größeren Zwerg. ");
+		CString text4 = CString("Swedish: Flygande bäckasiner söka strax hwila på mjuka tuvor.\n");
+
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		memset(surf.buffer, 0, surf.height * surf.pitch);
+		
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("FreeSans.ttf", 18, kUTF8CharEncoding);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+		pFontMPI_->GetFontMetrics(&mtrx);
+		TS_ASSERT( mtrx.height != 0 );
+		pFontMPI_->SetFontColor(0xFFFFFFFF); // white
+		
+		x = y = 0; dy = mtrx.height;
+		pFontMPI_->DrawString(text1, x, y, surf, true);
+		pFontMPI_->DrawString(text2, x, y, surf, true);
+		pFontMPI_->DrawString(text3, x, y, surf, true);
+		pFontMPI_->DrawString(text4, x, y, surf, true);
+		
+		font2 = pFontMPI_->LoadFont("FreeSerif.ttf", 18, kUTF8CharEncoding);
+		TS_ASSERT( font2 != kInvalidFontHndl );
+		
+		pFontMPI_->DrawString(text1, x, y, surf, true);
+		pFontMPI_->DrawString(text2, x, y, surf, true);
+		pFontMPI_->DrawString(text3, x, y, surf, true);
+		pFontMPI_->DrawString(text4, x, y, surf, true);
+		
+		pDisplayMPI_->Invalidate(0, NULL);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pFontMPI_->UnloadFont(font1);
+		pFontMPI_->UnloadFont(font2);
+		delete pDisplayMPI_;
+	}
+	
+	//------------------------------------------------------------------------
 	void testFontUnicode16()
 	{
 		tFontHndl	font1;

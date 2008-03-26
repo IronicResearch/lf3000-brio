@@ -1211,6 +1211,7 @@ inline void UnpackUnicode(tWChar* charcode, CString* pStr, int* i)
 {
 	// NOTE: Looks like glib::ustring is already parsed into 16-bit codes
 	
+#if 0	// UTF8 already unpacked
 	// Scan for UTF8 multi-byte sequences for 1, 2, or 3 additional bytes
 	if ( *charcode >= 0xC0 )
 	{
@@ -1237,6 +1238,7 @@ inline void UnpackUnicode(tWChar* charcode, CString* pStr, int* i)
 			*charcode |= nextchar & 0x3F;
 		}
 	}
+#endif
 }
 
 //----------------------------------------------------------------------------
