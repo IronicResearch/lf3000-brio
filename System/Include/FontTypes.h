@@ -43,8 +43,6 @@ struct tFontProp {
 	// version 2 properties
 	U32		encoding;		// kSystemCharEncoding* enum
 	Boolean useEncoding;	// redundant
-	// version 3 properties
-	U32		loadFlags;		// FT_LOAD* flags
 };
 
 // Font rendering attributes

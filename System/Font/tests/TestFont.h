@@ -1055,16 +1055,16 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testFontLoadFlags()
+	void XXXXtestFontLoadFlags()
 	{
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontHndl	font3;
 		tFontHndl	font4;
-		tFontProp	prop1 = {3, 24, 0, 0, FT_LOAD_NO_HINTING | FT_LOAD_TARGET_NORMAL};
-		tFontProp	prop2 = {3, 24, 0, 0, FT_LOAD_NO_HINTING | FT_LOAD_TARGET_LIGHT};
-		tFontProp	prop3 = {3, 24, 0, 0, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL};
-		tFontProp	prop4 = {3, 24, 0, 0, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT};
+		tFontProp	prop1 = {3, 24, 0, 0 /*, FT_LOAD_NO_HINTING | FT_LOAD_TARGET_NORMAL */ };
+		tFontProp	prop2 = {3, 24, 0, 0 /*, FT_LOAD_NO_HINTING | FT_LOAD_TARGET_LIGHT */ };
+		tFontProp	prop3 = {3, 24, 0, 0 /*, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_NORMAL */ };
+		tFontProp	prop4 = {3, 24, 0, 0 /*, FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT */ };
 		tFontSurf	surf;
 		CString		text1 = CString("The Quick Brown Fox\n");
 		CString		text2 = CString("Jumps Over the Lazy Dog\n");
