@@ -19,7 +19,7 @@
 #	2. Prepare the development board by running two scripts
 #      unpack_release.sh and
 #      lightning_install.py scripts
-#
+#   3. Create ~/sdrive directory for target files
 #------------------------------------------------------------------------------------------
 	TFTP_PATH=/home/lfu/tftpboot
 	TFTP_MAIN=/home/lfu
