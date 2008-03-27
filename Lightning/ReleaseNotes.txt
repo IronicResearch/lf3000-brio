@@ -3,6 +3,30 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.29.0.3197 release (Mar 26, 2008)
+===========================================
+-- Mods to Button manager when reference-counted module manager is active.
+   Add persistant Event MPI reference per object lifetime. Remove unused MPI
+   object references. 
+
+-- Added persistent Event MPI reference per Power object lifetime when
+   reference-counted module manager active.
+
+-- Correct Event thread termination when reference-counted module manager active.
+   Module manager destruction remains disabled by default, since all module
+   destructors need to exit cleanly during all unit tests.
+
+-- Make a general patch-set creator, not just for Brio
+
+-- Patch was going in wrong direction!  Used "gm" as patch, not "new"
+   Also fixed bug in removing temp files
+
+-- Added UTF8 example strings for Spanish, French, German to font unit test.
+   UTF8 codes are already unpacked by ustring class.
+
+-- Reverted version 3 tFontProp field for backwards compatibility.
+
+===========================================
 Brio v1.0.3.3188 release (Mar 21, 2008)
 ===========================================
 -- Automatic minimal patch-set .lfp maker, that diffs MD5SUM's from GM Brio.lfp
