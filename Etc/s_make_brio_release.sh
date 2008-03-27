@@ -16,7 +16,8 @@
 #	1. Get last LinuxDist
 #	   from http://lightning-release/releases/
 #          in /home/lfu directory 
-#	2. Prepare the development board by running unpack_release.sh and
+#	2. Prepare the development board by running two scripts
+#      unpack_release.sh and
 #      lightning_install.py scripts
 #
 #------------------------------------------------------------------------------------------
@@ -54,13 +55,19 @@
 #	Get the current SVN Revision number  
 #	
 	cd 		$PATH_TO_BRIO
+	svn up
 	REV_NUM=$(svn info | grep Revision | cut -c11-14)
 	echo "The current SVN Revision number=$REV_NUM"
 
 #----------------------------------------------------------------------------------
 #	
 	cd 		$TFTP_MAIN
-    LINUXDIST_NUM=$(ls LinuxDist-*.tar.gz | cut -c11-20) 
+    LINUXDIST_NUM=$(ls Lin* | grep "^LinuxDist-.*:$" | sed 's/://' | sed 's/LinuxDist-//') 
+# check some variables
+	if [ "X$LINUXDIST_NUM" == "X" ]; then
+	echo "Error: LinuxDist-N directory was not found in /home/lfu"
+	exit 1;
+	fi
 	echo "The current LinuxDist number=$LINUXDIST_NUM"
 
 #	sudo 	tar -xzvf $TFTP_MAIN/LinuxDist-$LINUXDIST_NUM.tar.gz 

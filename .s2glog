@@ -15333,3 +15333,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/27/08 8:49 AM
 5,391 ms. (Cumulative: 4,522,165 ms)
 
 ----------------
+Revision 3,199 from svn://localhost/TRUNK/:
+Revision 3,200 from svn://localhost/TRUNK/:
+
+Fixed script to adapt to the variable length of the LinuxDist number
+
+By BKuznetsov (BKuznetsov@leapfrog.com) on 3/27/08 11:41 AM
+1 changed, 0 added, 0 deleted.
+5,438 ms. (Cumulative: 4,527,681 ms)
+
+----------------
