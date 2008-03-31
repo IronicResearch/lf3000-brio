@@ -3,6 +3,16 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.29.1.3203 release (Mar 31, 2008)
+===========================================
+-- Reverted Audio MPI optimization where player objects were deleted after playback
+   is done. Player objects are now deleted prior to new ones being created at next
+   channel assignment step (pre-SVN 3087). Note that since player objects are now being
+   retained longer, additional logic conditionals for player IsDone() are
+   necessary (similar to old IsInUse flag). This reversion is necessary for Nicktoons
+   game title to work with post-GM Brio (TTP# 1860).
+
+===========================================
 Brio v1.29.0.3197 release (Mar 26, 2008)
 ===========================================
 -- Mods to Button manager when reference-counted module manager is active.
