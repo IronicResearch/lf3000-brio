@@ -15352,3 +15352,13 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/27/08 11:46 AM
 5,470 ms. (Cumulative: 4,533,229 ms)
 
 ----------------
+Revision 3,202 from svn://localhost/TRUNK/:
+
+Revert Audio MPI optimization where player objects were deleted after playback is done. Player objects are now deleted prior to new ones being created at next channel assignment step (pre-SVN 3087). Note that since player objects are now being retained longer, additional logic conditionals for player IsDone() are necessary (similar to old IsInUse flag). This reversion is necessary for Nicktoons game title to work with post-GM Brio (TTP# 1860).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/31/08 1:46 PM
+1 changed, 0 added, 0 deleted.
+5,531 ms. (Cumulative: 4,538,822 ms)
+
+----------------
