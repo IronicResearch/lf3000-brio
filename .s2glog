@@ -15362,3 +15362,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/31/08 1:46 PM
 5,531 ms. (Cumulative: 4,538,822 ms)
 
 ----------------
+Revision 3,203 from svn://localhost/TRUNK/:
+
+Relax remaining number of players to test in testSimplePriorityDecreasing().
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/31/08 2:20 PM
+1 changed, 0 added, 0 deleted.
+5,423 ms. (Cumulative: 4,544,323 ms)
+
+----------------
