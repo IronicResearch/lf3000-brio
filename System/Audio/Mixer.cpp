@@ -371,6 +371,9 @@ CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
 		pCh = &pChannels_[i];
 		if (!pCh->GetPlayer())
 			return pCh;
+		// Channel may contain player which is yet to be destroyed
+		if (pCh->GetPlayer()->IsDone())
+			return pCh;
 	}
 	
 	return pCh;
@@ -455,9 +458,11 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 				pEventMPI_->PostEvent(event, 128, listener);
 			}
 		}
+#if 0	// FIXME/dm: Player destruction at this point breaks Nicktoons functionality with GM Brio 3011
 		// Defer player destruction.
 		CMixerMessage event(pPlayer, kAudioCompletedEvent);
 		pEventMPI_->PostEvent(event, 128, this);
+#endif
 	}
 	else if(type == kAudioLoopEndEvent)
 	{
@@ -517,7 +522,7 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 	// Search for a channel that is in use
 	for (long i = 0; i < numInChannels_; i++)
 	{
-		if (pChannels_[i].GetPlayer())
+		if (pChannels_[i].GetPlayer() && !pChannels_[i].GetPlayer()->IsDone())
 			ret = true;
 	}
 	MIXER_UNLOCK; 
@@ -607,6 +612,9 @@ CChannel *CAudioMixer::FindKillableChannel(ConditionFunction *cond,
 		{
 			pCh = &pChannels_[i];
 			CAudioPlayer *pPlayer = pCh->GetPlayer();
+			// 1st candidate for killable channel is dead player
+			if (pPlayer && pPlayer->IsDone())
+				return pCh;
 			if(pPlayer)
 				// Only add non-null players that meet the condition, if there
 				// is a condition.
@@ -773,6 +781,9 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	}
 
+	if (pChannel->GetPlayer())
+		RemovePlayerInternal(pChannel->GetPlayer()->GetID(), false);
+
 	pPlayer = CreatePlayer(pInfo, sExt);
 	if (pPlayer)
 	{
@@ -840,7 +851,7 @@ void CAudioMixer::PausePlayer( tAudioID id )
 
 	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer())
+	if (pCh && pCh->GetPlayer() && !pCh->GetPlayer()->IsDone())
 	{
 		pCh->GetPlayer()->Pause();
 	}
@@ -856,7 +867,7 @@ void CAudioMixer::ResumePlayer( tAudioID id )
 
 	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer())
+	if (pCh && pCh->GetPlayer() && !pCh->GetPlayer()->IsDone())
 	{
 		pCh->GetPlayer()->Resume();
 	}
@@ -873,7 +884,7 @@ Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 
 	MIXER_LOCK;
 	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer())
+	if (pCh && pCh->GetPlayer() && !pCh->GetPlayer()->IsDone())
 	{
 		//We need to check pause also
 		playing = true;
@@ -954,7 +965,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	{
 		CChannel *pCh = &pChannels_[ch];
 		// Render if channel is in use and not paused
-		if (pCh->GetPlayer() && !pCh->GetPlayer()->IsPaused())
+		if (pCh->GetPlayer() && !pCh->GetPlayer()->IsPaused() && !pCh->GetPlayer()->IsDone())
 		{
 			ClearShorts(pChannelBuf_, numFrames*channels);
 			long channelSamplingFrequency = pCh->GetSamplingFrequency();
@@ -983,7 +994,9 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 					//done message
 					memset(pChannelBuf_ + zeroOffset, 0, zeroSamples*sizeof(S16));
 					HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
+#if 0 				// FIXME/dm: Channel cannot be released because player is not destroyed above
 					pCh->Release(true);
+#endif
 				}
 				else
 				{
