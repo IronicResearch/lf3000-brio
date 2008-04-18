@@ -3,6 +3,14 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.30.0.3222 release (Apr 17, 2008)
+===========================================
+
+-- Added missing call to invalidate font handle from FreeType's cache when handle is disposed.
+   Fixes intermittant font selection glitches (TTP# 1854). 
+
+
+===========================================
 Brio v1.29.1.3203 release (Mar 31, 2008)
 ===========================================
 -- Reverted Audio MPI optimization where player objects were deleted after playback
