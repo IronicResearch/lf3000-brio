@@ -455,6 +455,9 @@ Boolean CFontModule::UnloadFont(tFontHndl hFont)
 			FT_Done_Face(pFont->face);
 			pFont->face = NULL;
 		}
+#else
+		// Must notify FT cache manager to invalidate the ID for this font handle
+		FTC_Manager_RemoveFaceID(handle_.cacheManager, reinterpret_cast<FTC_FaceID>(pFont));
 #endif
 
 		// Release resources associated with font handle

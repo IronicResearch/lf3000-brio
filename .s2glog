@@ -15381,3 +15381,29 @@ By BKuznetsov (BKuznetsov@leapfrog.com) on 3/31/08 4:54 PM
 5,141 ms. (Cumulative: 4,549,526 ms)
 
 ----------------
+Revision 3,205 from svn://localhost/TRUNK/:
+Revision 3,206 from svn://localhost/TRUNK/:
+Revision 3,207 from svn://localhost/TRUNK/:
+Revision 3,208 from svn://localhost/TRUNK/:
+Revision 3,209 from svn://localhost/TRUNK/:
+Revision 3,210 from svn://localhost/TRUNK/:
+Revision 3,211 from svn://localhost/TRUNK/:
+Revision 3,212 from svn://localhost/TRUNK/:
+Revision 3,213 from svn://localhost/TRUNK/:
+Revision 3,214 from svn://localhost/TRUNK/:
+Revision 3,215 from svn://localhost/TRUNK/:
+Revision 3,216 from svn://localhost/TRUNK/:
+Revision 3,217 from svn://localhost/TRUNK/:
+Revision 3,218 from svn://localhost/TRUNK/:
+Revision 3,219 from svn://localhost/TRUNK/:
+Revision 3,220 from svn://localhost/TRUNK/:
+Revision 3,221 from svn://localhost/TRUNK/:
+
+Added missing call to invalidate font handle from FreeType's cache when handle is disposed. Fixes intermittant font selection glitches (TTP# 1854). 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/17/08 7:30 PM
+1 changed, 0 added, 0 deleted.
+5,094 ms. (Cumulative: 4,554,792 ms)
+
+----------------
