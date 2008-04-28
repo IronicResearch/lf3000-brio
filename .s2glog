@@ -15417,3 +15417,34 @@ By Dave Milici (dmilici@leapfrog.com) on 4/17/08 8:14 PM
 5,235 ms. (Cumulative: 4,560,105 ms)
 
 ----------------
+Revision 3,223 from svn://localhost/TRUNK/:
+Revision 3,224 from svn://localhost/TRUNK/:
+Revision 3,225 from svn://localhost/TRUNK/:
+Revision 3,226 from svn://localhost/TRUNK/:
+Revision 3,227 from svn://localhost/TRUNK/:
+Revision 3,228 from svn://localhost/TRUNK/:
+Revision 3,229 from svn://localhost/TRUNK/:
+Revision 3,230 from svn://localhost/TRUNK/:
+Revision 3,231 from svn://localhost/TRUNK/:
+Revision 3,232 from svn://localhost/TRUNK/:
+Revision 3,233 from svn://localhost/TRUNK/:
+Revision 3,234 from svn://localhost/TRUNK/:
+Revision 3,235 from svn://localhost/TRUNK/:
+Revision 3,236 from svn://localhost/TRUNK/:
+Revision 3,237 from svn://localhost/TRUNK/:
+Revision 3,238 from svn://localhost/TRUNK/:
+Revision 3,239 from svn://localhost/TRUNK/:
+Revision 3,240 from svn://localhost/TRUNK/:
+Revision 3,241 from svn://localhost/TRUNK/:
+Revision 3,242 from svn://localhost/TRUNK/:
+Revision 3,243 from svn://localhost/TRUNK/:
+Revision 3,244 from svn://localhost/TRUNK/:
+
+Added break to priority loop logic to match comment on priority decision. The 1st player of lesser-or-equal priority should have been chosen, not the last one.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/28/08 12:31 PM
+1 changed, 0 added, 0 deleted.
+5,144 ms. (Cumulative: 4,565,577 ms)
+
+----------------
