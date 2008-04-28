@@ -627,9 +627,12 @@ CChannel *CAudioMixer::FindKillableChannel(ConditionFunction *cond,
 		// until we find one of lesser or equal priority to kill
 		pCh=NULL;
 		list<CChannel *>::iterator it;
-		for (it = sortList.begin(); it != sortList.end(); it++)
-			if((*it)->GetPlayer()->GetPriority() <= priority)
+		for (it = sortList.begin(); it != sortList.end(); it++) {
+			if((*it)->GetPlayer()->GetPriority() <= priority) {
 				pCh = *it;
+				break;
+			}
+		}
 	}
 	return pCh;
 }
