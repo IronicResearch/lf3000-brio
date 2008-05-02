@@ -15497,3 +15497,13 @@ By Scott Esters (sesters@leapfrog.com) on 5/1/08 5:41 PM
 6,563 ms. (Cumulative: 4,614,114 ms)
 
 ----------------
+Revision 3,266 from svn://localhost/TRUNK/:
+
+Oops.  Checking in files moved during Audio refactoring.
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/1/08 5:53 PM
+0 changed, 14 added, 1,010 deleted.
+17,579 ms. (Cumulative: 4,631,787 ms)
+
+----------------
