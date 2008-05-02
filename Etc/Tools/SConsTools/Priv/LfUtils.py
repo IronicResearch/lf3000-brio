@@ -247,6 +247,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 					os.path.join(root_dir, 'ThirdParty/ustring/libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/MagicEyes/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/FreeType/Libs', vars['cpu_subdir']),
+					os.path.join(root_dir, 'ThirdParty/LibSndFile/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Theora/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Portaudio/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Mobileer/Libs', vars['cpu_subdir']),

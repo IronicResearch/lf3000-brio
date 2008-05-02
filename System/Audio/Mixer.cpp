@@ -195,7 +195,7 @@ CAudioMixer::CAudioMixer( int inChannels ):
 
 	for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
-		mixBinFilled_[i] = False;
+		mixBinFilled_[i] = false;
 	}
 
 	for (i = 0; i < kAudioMixer_SRCCount; i++)
@@ -960,7 +960,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 	for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
 		ClearShorts( pMixBinBufs_[i], numFrames*channels);
-		mixBinFilled_[i] = False;
+		mixBinFilled_[i] = false;
 	}
 
 	// ---- Render all active channels (not including MIDI)
@@ -1021,7 +1021,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 						   kMixer_HeadroomBits_Default);
 			AccS16toS16(pMixBin, pChannelBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
-			mixBinFilled_[mixBinIndex] = True;
+			mixBinFilled_[mixBinIndex] = true;
 
 		}
 	}
@@ -1040,7 +1040,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 					   sampleCount, kMixer_HeadroomBits_Default);
 		AccS16toS16(pMixBinBufs_[mixBinIndex], pChannelBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
-		mixBinFilled_[mixBinIndex] = True;
+		mixBinFilled_[mixBinIndex] = true;
 	}
 
 	// Combine Mix buffers to output, converting sampling frequency if necessary
@@ -1280,7 +1280,7 @@ void CAudioMixer::ResetDSP()
 		ResetWaveShaper(&outSoftClipper_[ch]);
 
 		for (i = 0; i < kAudioMixer_MixBinCount; i++)
-			mixBinFilled_[i] = False;
+			mixBinFilled_[i] = false;
  
 		for (i = 0; i < kAudioMixer_SRCCount; i++)
 			ResetSRC(&src_[i][ch]);
@@ -1347,3 +1347,4 @@ void CAudioMixer::DestroyMIDIPlayer()
 }
 
 LF_END_BRIO_NAMESPACE()
+

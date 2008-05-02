@@ -37,7 +37,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 static U32 numRawPlayers = 0;
-static U32 maxNumRawPlayers = 5;
+static U32 maxNumRawPlayers = 3;
+//static U32 maxNumRawPlayers = 5;
 
 //==============================================================================
 // CRawPlayer implementation
@@ -54,8 +55,11 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 
 	// Try to open WAV or AIFF File
 	SF_INFO	 inFileInfo;
+	inFileInfo.format = 0;
+
 	inFile_ = OpenSoundFile( (char *) pInfo->path->c_str(), &inFileInfo,
 							 SFM_READ);
+	printf("%s.%d: inFile_ = %p\n", __FUNCTION__, __LINE__, inFile_);
 	if (inFile_)
 	{
 		long fileFormatType = (inFileInfo.format & SF_FORMAT_TYPEMASK);
@@ -63,6 +67,8 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 			fileType_ = kRawPlayer_FileType_AIFF; 
 		else if (SF_FORMAT_WAV == fileFormatType)
 			fileType_ = kRawPlayer_FileType_WAV;
+		else if (SF_FORMAT_IMA_ADPCM == fileFormatType)
+			fileType_ = kRawPlayer_FileType_IMA_ADPCM;
 		else
 			printf("CRawPlayer::ctor: unsupported file type=%ld\n",
 				   fileFormatType);
@@ -108,16 +114,15 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 							bH->offsetToData , sizeof(tAudioHeader),
 							(char *) pInfo->path->c_str());
 	}
-	
 	totalBytesRead_ = 0;
-
+	
 	numRawPlayers++;
 
 }
 
-// ==============================================================================
+// =============================================================================
 // ~CRawPlayer
-// ==============================================================================
+// =============================================================================
 CRawPlayer::~CRawPlayer()
 {
 
@@ -182,20 +187,23 @@ U32 CRawPlayer::ReadBytesFromFile( void *d, U32 bytesToRead)
 			framesRead = sf_readf_short(inFile_, (short*) d, framesToRead);
 		bytesRead = framesRead * sizeof(S16) * channels_;
 	}
+
 	return (bytesRead);
 }
 
-// ==============================================================================
+// =============================================================================
 // Render:		  Return framesRead
-// ==============================================================================
-U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
+// =============================================================================
+U32 CRawPlayer::Render( S16 *pOut, U32 numStereoFrames)
 {	
 	tErrType result;
 	U32		index;
-	U32		framesRead = 0, framesToProcess = 0;
+	U32		framesToProcess = 0;
+	U32		framesRead = 0;
 	U32		bytesRead = 0;
-	U32		bytesToRead = framesToRender * sizeof(S16) * channels_;
-	S16		*bufPtr = pReadBuf_;
+	U32		bytesReadThisRender = 0;
+	U32		bytesToRead = numStereoFrames * sizeof(S16) * channels_;
+	char*	bufPtr = (char *)pReadBuf_;
 
 	if (bIsDone_)
 		return (0);
@@ -204,32 +212,30 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 	while ( bytesToRead > 0) 
 	{
 		bytesRead = ReadBytesFromFile(bufPtr, bytesToRead);
-		bytesToRead		-= bytesRead;
-		bufPtr			+= bytesRead;
-		totalBytesRead_ += bytesRead;
-
-		if ( bytesRead < bytesToRead );
-		{
-			bIsDone_ = true;
-			break;
-		}
 		
+		if (bytesRead == 0)
+			break;
+
+		bytesToRead			-= bytesRead;
+		bufPtr				+= bytesRead;
+		totalBytesRead_		+= bytesRead;
+		bytesReadThisRender += bytesRead;
 	}
 		
-	framesRead		= bytesRead / (sizeof(S16) * channels_);
+	framesRead		= bytesReadThisRender / (sizeof(S16) * channels_);
 	framesToProcess = framesRead;
-	U32 samplesToProcess = channels_*framesToProcess;
-
+	
 	// Copy Stereo data to stereo output buffer
 	if (2 == channels_) 
 	{
+		U32 samplesToProcess = channels_*framesToProcess;
 		for (index = 0; index < samplesToProcess; index++)			
 			pOut[index] = pReadBuf_[index];
 	} 
 	else 
 	{
 		// Fan out mono data to stereo output buffer
-		for (index = 0; index < samplesToProcess; index++, pOut += 2) 
+		for (index = 0; index < framesToProcess; index++, pOut += 2) 
 		{	
 			S16 x = pReadBuf_[index];
 			pOut[0] = x;
@@ -237,12 +243,14 @@ U32 CRawPlayer::Render( S16 *pOut, U32 framesToRender )
 		}
 	}
 
+	bIsDone_ = (numStereoFrames > framesRead);
+
 	return (framesRead);
 }
 
-// ==============================================================================
+// =============================================================================
 // RewindFile:	  Set file ptr to start of file
-// ==============================================================================
+// =============================================================================
 void CRawPlayer::RewindFile()
 {
 	if (fileH_)
@@ -252,9 +260,9 @@ void CRawPlayer::RewindFile()
 	bIsDone_ = false;
 }
 
-// ==============================================================================
+// =============================================================================
 // GetAudioTime_mSec :	 Return current position in audio file in milliSeconds
-// ==============================================================================
+// =============================================================================
 U32 CRawPlayer::GetAudioTime_mSec( void ) 
 {
 	U32 totalFramesRead = totalBytesRead_ / (sizeof(S16)*channels_);

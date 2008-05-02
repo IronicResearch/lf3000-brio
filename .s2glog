@@ -15477,3 +15477,23 @@ By Scott Esters (sesters@leapfrog.com) on 5/1/08 5:07 PM
 12,274 ms. (Cumulative: 4,578,038 ms)
 
 ----------------
+Revision 3,264 from svn://localhost/TRUNK/:
+
+No changes to commit.
+29,372 ms. (Cumulative: 4,607,535 ms)
+
+----------------
+Revision 3,265 from svn://localhost/TRUNK/:
+
+Initial check-in of IMA ADPCM code.  It's a large block, as the service pack 1
+release was pending.
+So, this contains the IMA ADPCM code, plus refactored libAudio code.
+Merged dsputil library into code base.  Moved libsndfile to ThirdParty.
+Moved briomixer code to samples directory.
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/1/08 5:41 PM
+10 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 4,614,114 ms)
+
+----------------

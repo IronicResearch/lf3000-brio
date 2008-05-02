@@ -22,7 +22,7 @@
 #include <AudioOutput.h>
 
 #include "portaudio.h"
-#include "rt_trace.h"
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 // Enables callback to Brio, vs. sine output
