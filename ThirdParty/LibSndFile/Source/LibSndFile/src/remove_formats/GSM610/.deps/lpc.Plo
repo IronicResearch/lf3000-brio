@@ -1,0 +1,57 @@
+lpc.lo lpc.o: lpc.c \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/stdio.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/features.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/uClibc_config.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/uClibc_arch_features.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/sys/cdefs.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/include/stddef.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/types.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/wordsize.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/kernel_types.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/typesizes.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/pthreadtypes.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/uClibc_stdio.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/wchar.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/wchar.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/include/stdarg.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/stdio_lim.h \
+  /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/assert.h \
+  gsm610_priv.h gsm.h
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/stdio.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/features.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/uClibc_config.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/uClibc_arch_features.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/sys/cdefs.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/include/stddef.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/types.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/wordsize.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/kernel_types.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/typesizes.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/pthreadtypes.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/uClibc_stdio.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/wchar.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/wchar.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/include/stdarg.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/bits/stdio_lim.h:
+
+/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/sys-include/assert.h:
+
+gsm610_priv.h:
+
+gsm.h:

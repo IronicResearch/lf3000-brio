@@ -1,0 +1,11 @@
+prefix=/media/Didj/Didj/Base/Brio/lib
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: sndfile
+Description: A library for reading and writing audio files
+Requires: 
+Version: 1.0.17
+Libs: -L${libdir} -lsndfile
+Cflags: -I${includedir} 

@@ -15448,3 +15448,32 @@ By Dave Milici (dmilici@leapfrog.com) on 4/28/08 12:31 PM
 5,144 ms. (Cumulative: 4,565,577 ms)
 
 ----------------
+Revision 3,245 from svn://localhost/TRUNK/:
+Revision 3,246 from svn://localhost/TRUNK/:
+Revision 3,247 from svn://localhost/TRUNK/:
+Revision 3,248 from svn://localhost/TRUNK/:
+Revision 3,249 from svn://localhost/TRUNK/:
+Revision 3,250 from svn://localhost/TRUNK/:
+Revision 3,251 from svn://localhost/TRUNK/:
+Revision 3,252 from svn://localhost/TRUNK/:
+Revision 3,253 from svn://localhost/TRUNK/:
+Revision 3,254 from svn://localhost/TRUNK/:
+Revision 3,255 from svn://localhost/TRUNK/:
+Revision 3,256 from svn://localhost/TRUNK/:
+Revision 3,257 from svn://localhost/TRUNK/:
+Revision 3,258 from svn://localhost/TRUNK/:
+Revision 3,259 from svn://localhost/TRUNK/:
+Revision 3,260 from svn://localhost/TRUNK/:
+Revision 3,261 from svn://localhost/TRUNK/:
+Revision 3,262 from svn://localhost/TRUNK/:
+Revision 3,263 from svn://localhost/TRUNK/:
+
+Rebuild LibSndFile from source, install in ThirdParty.
+First pass at removing unneeded formats, left IMA ADPCM.
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/1/08 5:07 PM
+0 changed, 398 added, 0 deleted.
+12,274 ms. (Cumulative: 4,578,038 ms)
+
+----------------
