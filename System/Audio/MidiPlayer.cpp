@@ -567,7 +567,7 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 		// buffer
 		framesToRead = SPMIDI_GetFramesPerBuffer();
 		midiLoopCount = numStereoFrames / framesToRead;			
-		long fileEndReached = False;
+		long fileEndReached = false;
 		for (i = 0; i < midiLoopCount && !fileEndReached; i++) 
 		{
 			if (pFilePlayer_)

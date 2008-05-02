@@ -22,7 +22,6 @@
 #include <DebugMPI.h>
 #include <KernelMPI.h>
 
-#include <eq.h>
 #include <src.h>
 #include <shape.h>
 

@@ -15,7 +15,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 
-				'portaudio', 'pthread', 'vorbisidec', 'dsputil', 'sndfile', 'Utility']
+				'portaudio', 'pthread', 'vorbisidec', 'sndfile', 'Utility']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
@@ -29,8 +29,8 @@ myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/spmidi/include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Mobileer'])
 #myenv.Append(CPPPATH = ['#ThirdParty/Mobileer/Source'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
-myenv.Append(CPPPATH = ['#System/Audio/DspUtil'])
-myenv.Append(CPPPATH = ['#System/Audio/LibSndFile'])
+#myenv.Append(CPPPATH = ['#System/Audio/DspUtil'])
+myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
 
 if vars['is_emulation']:
 	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/Portaudio/Libs/x86').abspath, myenv.Dir('#ThirdParty/Mobileer/Libs/x86').abspath, myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath])
@@ -38,8 +38,8 @@ if vars['is_emulation']:
 myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/' + vars['cpu_subdir']])
 myenv.Append(LIBPATH = ['#ThirdParty/Mobileer/Libs/' + vars['cpu_subdir']])
 myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + vars['cpu_subdir']])
-myenv.Append(LIBPATH = ['#System/Audio/DspUtil/' + vars['cpu_subdir']])
-myenv.Append(LIBPATH = ['#System/Audio/LibSndFile/' + vars['cpu_subdir']])
+#myenv.Append(LIBPATH = ['#System/Audio/DspUtil/' + vars['cpu_subdir']])
+myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + vars['cpu_subdir']])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)

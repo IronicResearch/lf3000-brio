@@ -27,6 +27,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define kRawPlayer_FileType_Brio	1
 #define kRawPlayer_FileType_AIFF	2
 #define kRawPlayer_FileType_WAV		3
+#define kRawPlayer_FileType_IMA_ADPCM	12
 #define kRawPlayer_FileType_Unknown (0)
 
 //==============================================================================
