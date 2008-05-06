@@ -17,9 +17,15 @@
 #define kChannel_HeadroomDB -3.0f  // Decibels, GK FIXX Headroom should be positive number
 #define kChannel_Headroomf (kDecibelToLinearf_m3dBf) // DecibelToLinearf(kChannel_HeadroomDB);
 
-// Fundamental assumptions
-#define	kAudioNumMixerChannels		4		// Number of mixer channels max.
+// Input streams.  Note each stream contains a left and right channel
+#define kAudioMaxMidiStreams	1
+#define	kAudioMaxVorbisStreams	3
+#define	kAudioMaxRawStreams		16
+#define kAudioMaxMixerStreams	( kAudioMaxMidiStreams   + \
+								  kAudioMaxVorbisStreams + \
+								  kAudioMaxRawStreams )
 
+// Output Channels, note each channel is monophonic to match portaudio terms
 #define kAudioNumOutputChannels		2		// stereo output
 #define kAudioBytesPerSample		(sizeof(short))	// 16 bit
 

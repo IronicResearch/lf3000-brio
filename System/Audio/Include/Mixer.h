@@ -7,7 +7,7 @@
 //
 // Mixer.h
 //
-//		Defines class to manage low-level mixing of audio channels.
+//		Defines class to manage low-level mixing of audio streams.
 //
 //==============================================================================
 
@@ -15,7 +15,7 @@
 #include <CoreTypes.h>
 #include <SystemTypes.h>
 #include <AudioTypes.h>
-#include <Channel.h>
+#include <Stream.h>
 #include <MidiPlayer.h>
 
 #include <ButtonMPI.h>
@@ -30,17 +30,17 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Class: CAudioMixer
 //
-// Description: manage the low-level mixing of audio channels. 
+// Description: manage the low-level mixing of audio streams. 
 //==============================================================================
 const tEventType kMixerTypes[] = { kAudioCompletedEvent };
 
 class CAudioMixer : private IEventListener
 {
  public:
-	CAudioMixer( int numChannels );
+	CAudioMixer( int numStreams );
 	~CAudioMixer();
 		
-	CChannel* FindChannel( tAudioID id );
+	CStream* FindStream( tAudioID id );
 	
 	Boolean IsAnyAudioActive( void );
 
@@ -87,7 +87,7 @@ class CAudioMixer : private IEventListener
 
  private:
 	CButtonMPI *pButtonMPI_;
-	CChannel* FindFreeChannel( tAudioPriority priority );
+	CStream* FindFreeStream( tAudioPriority priority );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
 	void HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type );
@@ -105,27 +105,22 @@ class CAudioMixer : private IEventListener
 
 	// These are versions of Mixer functions that can be called if you already
 	// hold the mixer lock.
-	CChannel* FindChannelInternal( tAudioID id );
+	CStream* FindStreamInternal( tAudioID id );
 	void RemovePlayerInternal( tAudioID id, Boolean noDoneMessage );
 
-// Didj is hard-limited to 4 channels : 3 audio + 1 MIDI input channels (stereo)
-#define kAudioMixer_MaxInAudioChannels	4		// 3 active but can have more if others paused	 
-#define kAudioMixer_MaxActiveAudioChannels	3	 
-#define kAudioMixer_MaxInMIDIChannels	1	 
-#define kAudioMixer_MaxInChannels		(kAudioMixer_MaxInAudioChannels)	
 #define kAudioMixer_MaxOutChannels		2
 
 	// Priority Support Features
 	typedef Boolean ConditionFunction(CAudioPlayer *pPlayer);
-	// Find a channel that can be halted in order to play a player of priority
+	// Find a stream that can be halted in order to play a player of priority
 	// priority, subject to the approval of ConditionFunction.
-	CChannel *FindKillableChannel(ConditionFunction *cond,
+	CStream *FindKillableStream(ConditionFunction *cond,
 								  tAudioPriority priority);
 
-	// Channel parameters
-	U8			numInChannels_; // for now, all output in stereo (including replicated mono)
-	CChannel*	pChannels_;			// Array of channels
-	S16			pChannelBuf_[kAudioOutBufSizeInWords];	
+	// Stream parameters
+	U8			numInStreams_; // for now, all input in stereo (including replicated mono)
+	CStream*	pStreams_;			// Array of streams
+	S16			pStreamBuf_[kAudioOutBufSizeInWords];	
 
 // Mix Bin Parameters
 #define kAudioMixer_MixBinCount			3	// At present, for sampling rates :	 fs, fs/2, fs/4 

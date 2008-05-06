@@ -8,21 +8,21 @@
 // The following is the basic structure of the audio system:
 //
 // +----------+   +-----------+    +---------+
-// | Player A |---| Channel 1 |--->|         |
+// | Player A |---| Stream 1  |--->|         |
 // +----------+   +-----------+    |         |
 //                                 |         |
 // +----------+   +-----------+    |         |                          /|
-// | Player B |---| Channel 2 |--->|         |                         / |
+// | Player B |---| Stream 2  |--->|         |                         / |
 // +----------+   +-----------+    |         |                      +-+  |
 //                                 |         |     +-----------+    | |  |
 //                +-----------+    |  Mixer  +---->| Audio Out |----| |  |   
-//                | Channel 3 |--->|         |     +-----------+    | |  |  
+//                | Stream 3  |--->|         |     +-----------+    | |  |  
 //                +-----------+    |         |                      +-+  |
 //                                 |         |                         \ |
 //                   ....          |         |                          \|
 //                                 |         |
 //                +-----------+    |         |
-//                | Channel N |--->|         |
+//                | Stream N  |--->|         |
 //                +-----------+    |         |
 //                                 +---------+
 //
@@ -152,19 +152,19 @@ static bool IsSpeakerOn( void )
 // ==============================================================================
 // CAudioMixer implementation
 // ==============================================================================
-CAudioMixer::CAudioMixer( int inChannels ):
+CAudioMixer::CAudioMixer( int inStreams ):
 	IEventListener(kMixerTypes, ArrayCount(kMixerTypes))
 {
 	long i, j, ch;
 	const tMutexAttr	attr = {0};
 
-	numInChannels_ = inChannels;
-	if (numInChannels_ > kAudioMixer_MaxInChannels)
-		printf("CAudioMixer::CAudioMixer: %d too many channels! Max=%d\n",
-			   numInChannels_, kAudioMixer_MaxInChannels);
-	pDebugMPI_->Assert((numInChannels_ <= kAudioMixer_MaxInChannels),
-					   "CAudioMixer::CAudioMixer: %d is too many channels!\n",
-					   numInChannels_ );
+	numInStreams_ = inStreams;
+	if (numInStreams_ > kAudioMaxMixerStreams)
+		printf("CAudioMixer::CAudioMixer: %d too many streams! Max=%d\n",
+			   numInStreams_, kAudioMaxMixerStreams);
+	pDebugMPI_->Assert((numInStreams_ <= kAudioMaxMixerStreams),
+					   "CAudioMixer::CAudioMixer: %d is too many streams!\n",
+					   numInStreams_ );
 	
 	samplingFrequency_ = kAudioSampleRate;
 
@@ -179,11 +179,11 @@ CAudioMixer::CAudioMixer( int inChannels ):
 	tErrType err = pKernelMPI_->InitMutex( mixerMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "%s: Couldn't init mutex.\n", __FUNCTION__);
 	
-	// Allocate audio channels
-	pChannels_ = new CChannel[ numInChannels_ ];
-	pDebugMPI_->Assert((pChannels_ != kNull),
-					   "CAudioMixer::CAudioMixer: couldn't allocate %d channels!\n",
-					   numInChannels_);
+	// Allocate audio streams
+	pStreams_ = new CStream[ numInStreams_ ];
+	pDebugMPI_->Assert((pStreams_ != kNull),
+					   "CAudioMixer::CAudioMixer: couldn't allocate %d streams!\n",
+					   numInStreams_);
 
 	// Create MIDI player
 	pMidiPlayer_ = NULL;
@@ -310,12 +310,12 @@ CAudioMixer::~CAudioMixer()
 	
 	MIXER_LOCK; 
 	
-	// Deallocate channels
-	if (pChannels_)
+	// Deallocate input streams
+	if (pStreams_)
 	{
-		for (long ch = 0; ch < numInChannels_; ch++)
+		for (long ch = 0; ch < numInStreams_; ch++)
 		{
-			//delete pChannels_[ch];
+			//delete pStreams_[ch];
 		}
 	}
 	
@@ -359,64 +359,64 @@ tEventStatus CAudioMixer::Notify( const IEventMessage &msgIn )
 }
 
 // ==============================================================================
-// FindFreeChannel:	   Find a free channel using priority -> GKFIXX: add search by priority
+// FindFreeStream: Find a free Stream using priority
 // ==============================================================================
-CChannel *CAudioMixer::FindFreeChannel( tAudioPriority /* priority */)
+CStream *CAudioMixer::FindFreeStream( tAudioPriority /* priority */)
 {
-	CChannel *pCh = kNull;
+	CStream *pStream = kNull;
 
-	// Search for idle channel.
-	for (long i = 0; i < numInChannels_; i++)
+	// Search for idle stream.
+	for (long i = 0; i < numInStreams_; i++)
 	{
-		pCh = &pChannels_[i];
-		if (!pCh->GetPlayer())
-			return pCh;
-		// Channel may contain player which is yet to be destroyed
-		if (pCh->GetPlayer()->IsDone())
-			return pCh;
+		pStream = &pStreams_[i];
+		if (!pStream->GetPlayer())
+			return pStream;
+		// Stream may contain player which is yet to be destroyed
+		if (pStream->GetPlayer()->IsDone())
+			return pStream;
 	}
 	
-	return pCh;
+	return pStream;
 }
 
 // ==============================================================================
-// FindChannel:	 Look for channel with specified ID
-//					Return ptr to channel
+// FindStream:	Look for stream with specified ID
+//				Return ptr to stream
 // ==============================================================================
-CChannel *CAudioMixer::FindChannelInternal( tAudioID id )
+CStream *CAudioMixer::FindStreamInternal( tAudioID id )
 {
 
-	CChannel *pChannel = kNull;
+	CStream *pStream = kNull;
 	
-	//Find channel with specified ID
-	for (long i = 0; i < numInChannels_; i++)
+	//Find stream with specified ID
+	for (long i = 0; i < numInStreams_; i++)
 	{
-		CAudioPlayer *pPlayer = pChannels_[i].GetPlayer();
+		CAudioPlayer *pPlayer = pStreams_[i].GetPlayer();
 		if ( pPlayer && (pPlayer->GetID() == id))
-			pChannel = &pChannels_[i];
+			pStream = &pStreams_[i];
 	}
-	return pChannel;
+	return pStream;
 }
 
 // ==============================================================================
-// FindChannel:	 Look for channel with specified ID
-//					Return ptr to channel
+// FindStream:	Look for stream with specified ID
+//				Return ptr to stream
 // ==============================================================================
-CChannel *CAudioMixer::FindChannel( tAudioID id )
+CStream *CAudioMixer::FindStream( tAudioID id )
 {
-	CChannel *pChannel = kNull;
+	CStream *pStream = kNull;
 	
 	MIXER_LOCK;
-	pChannel = FindChannelInternal(id);
+	pStream = FindStreamInternal(id);
 	MIXER_UNLOCK; 
-	return pChannel;
+	return pStream;
 }
 
 // ==============================================================================
 // HandlePlayerEvent: This function decides what to do with the player at
 // certain events.  In response to some events, the player will be deleted.  It
 // is the caller's responsibility to ensure that the player is not bound to a
-// channel under these circumstances.
+// stream under these circumstances.
 // ==============================================================================
 void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 {
@@ -519,10 +519,10 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 	Boolean ret = false;
 
 	MIXER_LOCK;
-	// Search for a channel that is in use
-	for (long i = 0; i < numInChannels_; i++)
+	// Search for a stream that is in use
+	for (long i = 0; i < numInStreams_; i++)
 	{
-		if (pChannels_[i].GetPlayer() && !pChannels_[i].GetPlayer()->IsDone())
+		if (pStreams_[i].GetPlayer() && !pStreams_[i].GetPlayer()->IsDone())
 			ret = true;
 	}
 	MIXER_UNLOCK; 
@@ -581,15 +581,15 @@ long CAudioMixer::GetSamplingRateDivisor( long samplingFrequency )
 }
 
 // ==============================================================================
-// FindKillableChannel: When all players of a certain type are playing, or all
-// channels are full, this function can be called to return a channel with a
+// FindKillableStream: When all players of a certain type are playing, or all
+// streams are full, this function can be called to return a stream with a
 // player that can be halted, given the priority and the current priority
 // policy.  The caller can optionally supply a condition that the player must
 // meet to further filter the results.
 // ==============================================================================
 
 // But first, a helper function for the list sort.
-bool comparePriority(CChannel *c1, CChannel *c2)
+bool comparePriority(CStream *c1, CStream *c2)
 {
 	tAudioPriority p1 = c1->GetPlayer()->GetPriority();
 	tAudioPriority p2 = c2->GetPlayer()->GetPriority();
@@ -598,43 +598,43 @@ bool comparePriority(CChannel *c1, CChannel *c2)
 	return false;
 }
 
-CChannel *CAudioMixer::FindKillableChannel(ConditionFunction *cond,
+CStream *CAudioMixer::FindKillableStream(ConditionFunction *cond,
 										   tAudioPriority priority)
 {
-	CChannel *pCh = NULL;
+	CStream *pStream = NULL;
 
 	if(currentPolicy == kAudioPriorityPolicySimple)
 	{
-		list<CChannel *> sortList;
-		//Probably should have used a list for the channels from the beginning
+		list<CStream *> sortList;
+		//Probably should have used a list for the streams from the beginning
 		//so we wouldn't have to populate it manually.
-		for(U32 i=0; i<numInChannels_; i++)
+		for(U32 i=0; i<numInStreams_; i++)
 		{
-			pCh = &pChannels_[i];
-			CAudioPlayer *pPlayer = pCh->GetPlayer();
-			// 1st candidate for killable channel is dead player
+			pStream = &pStreams_[i];
+			CAudioPlayer *pPlayer = pStream->GetPlayer();
+			// 1st candidate for killable stream is dead player
 			if (pPlayer && pPlayer->IsDone())
-				return pCh;
+				return pStream;
 			if(pPlayer)
 				// Only add non-null players that meet the condition, if there
 				// is a condition.
 				if((!cond) ||
 				   (cond && cond(pPlayer)) )
-					sortList.push_front(pCh);
+					sortList.push_front(pStream);
 		}
 		sortList.sort(comparePriority);
 		// Now the list is in increasing order of priority.  Step through it
 		// until we find one of lesser or equal priority to kill
-		pCh=NULL;
-		list<CChannel *>::iterator it;
+		pStream=NULL;
+		list<CStream *>::iterator it;
 		for (it = sortList.begin(); it != sortList.end(); it++) {
 			if((*it)->GetPlayer()->GetPriority() <= priority) {
-				pCh = *it;
+				pStream = *it;
 				break;
 			}
 		}
 	}
-	return pCh;
+	return pStream;
 }
 
 tPriorityPolicy CAudioMixer::GetPriorityPolicy(void)
@@ -686,8 +686,8 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		{
 			//We must decide whether to stop and destroy a player depending on
 			//priority.
-			CChannel *ch = FindKillableChannel(CRawPlayer::IsRawPlayer,
-											   pInfo->priority);
+			CStream *ch = FindKillableStream(CRawPlayer::IsRawPlayer,
+											 pInfo->priority);
 			if(ch)
 			{
 				RemovePlayerInternal(ch->GetPlayer()->GetID(), false);
@@ -712,7 +712,7 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		{
 			//We must decide whether to stop and destroy a player depending on
 			//priority.
-			CChannel *ch = FindKillableChannel(CVorbisPlayer::IsVorbisPlayer,
+			CStream *ch = FindKillableStream(CVorbisPlayer::IsVorbisPlayer,
 											   pInfo->priority);
 			if(ch)
 			{
@@ -773,19 +773,19 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 {
 	tAudioID id = kNoAudioID;
 	CAudioPlayer *pPlayer = NULL;
-	CChannel *pChannel;
+	CStream *pStream;
 	
 	MIXER_LOCK;
-	pChannel = FindFreeChannel( pInfo->priority );
-	if (!pChannel)
+	pStream = FindFreeStream( pInfo->priority );
+	if (!pStream)
 	{
-		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: No channel available\n",
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: No stream available\n",
 							 __FUNCTION__);
 		goto error;
 	}
 
-	if (pChannel->GetPlayer())
-		RemovePlayerInternal(pChannel->GetPlayer()->GetID(), false);
+	if (pStream->GetPlayer())
+		RemovePlayerInternal(pStream->GetPlayer()->GetID(), false);
 
 	pPlayer = CreatePlayer(pInfo, sExt);
 	if (pPlayer)
@@ -800,10 +800,10 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	} 
 
-	pChannel->InitWithPlayer( pPlayer );
+	pStream->InitWithPlayer( pPlayer );
 	
-	pChannel->SetPan(	 pInfo->pan );
-	pChannel->SetVolume( pInfo->volume );
+	pStream->SetPan(	 pInfo->pan );
+	pStream->SetVolume( pInfo->volume );
 	
 	goto success;
  error:
@@ -819,18 +819,18 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 // ==============================================================================
 void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 {
-	CChannel *pCh;
+	CStream *pStream;
 	CAudioPlayer *pPlayer;
-	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer()) {
+	pStream = FindStreamInternal(id);
+	if (pStream && pStream->GetPlayer()) {
 		//Q: perhaps we should pass noDoneMessage?  A: Actually, this will break
 		//the app manager and perhaps other apps.  Because this flag has been
 		//ignored for so long, people have not consistently set it.
 		//Unfortunately, it's a bit late to fix.
-		pPlayer = pCh->GetPlayer();
+		pPlayer = pStream->GetPlayer();
 		if(pPlayer)
 			delete pPlayer;
-		pCh->Release(true);
+		pStream->Release(true);
 	}
 }
 
@@ -850,13 +850,13 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 // ==============================================================================
 void CAudioMixer::PausePlayer( tAudioID id )
 {
-	CChannel *pCh;
+	CStream *pStream;
 
 	MIXER_LOCK;
-	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer() && !pCh->GetPlayer()->IsDone())
+	pStream = FindStreamInternal(id);
+	if (pStream && pStream->GetPlayer() && !pStream->GetPlayer()->IsDone())
 	{
-		pCh->GetPlayer()->Pause();
+		pStream->GetPlayer()->Pause();
 	}
 	MIXER_UNLOCK; 
 }
@@ -866,13 +866,13 @@ void CAudioMixer::PausePlayer( tAudioID id )
 // ==============================================================================
 void CAudioMixer::ResumePlayer( tAudioID id )
 {
-	CChannel *pCh;
+	CStream *pStream;
 
 	MIXER_LOCK;
-	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer() && !pCh->GetPlayer()->IsDone())
+	pStream = FindStreamInternal(id);
+	if (pStream && pStream->GetPlayer() && !pStream->GetPlayer()->IsDone())
 	{
-		pCh->GetPlayer()->Resume();
+		pStream->GetPlayer()->Resume();
 	}
 	MIXER_UNLOCK; 
 }
@@ -882,12 +882,12 @@ void CAudioMixer::ResumePlayer( tAudioID id )
 // ==============================================================================
 Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 {
-	CChannel *pCh;
+	CStream *pStream;
 	Boolean playing = false;
 
 	MIXER_LOCK;
-	pCh = FindChannelInternal(id);
-	if (pCh && pCh->GetPlayer() && !pCh->GetPlayer()->IsDone())
+	pStream = FindStreamInternal(id);
+	if (pStream && pStream->GetPlayer() && !pStream->GetPlayer()->IsDone())
 	{
 		//We need to check pause also
 		playing = true;
@@ -902,12 +902,12 @@ Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 // Clear all of the mixer bin buffers.  There's one of these for each supported
 // sample rate (i.e., fs, fs/2, and fs/4).
 //
-// For each channel, render into the global temp buffer pChannelBuf_, scale the
+// For each input stream, render into the global temp buffer pStreamBuf_, scale the
 // rendered output down by kMixer_HeadroomBits_Default, add the output from
-// pChannelBuf_ to the appropriate frequency bin.
+// pStreamBuf_ to the appropriate frequency bin.
 //
-// Render midi output to pChannelBuf_, scale the output down by
-// kMixer_HeadroomBits_Default, add the output from pChannelBuf_ to the
+// Render midi output to pStreamBuf_, scale the output down by
+// kMixer_HeadroomBits_Default, add the output from pStreamBuf_ to the
 // appropriate frequency bin.
 //
 // Copy samples from the frequency bin corresponding to the hardware's sample
@@ -940,12 +940,10 @@ Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 // resampled and added to the output buffer.
 //
 //							Return # of frames rendered.  
-//	  (GX FIXXX:  incorrect return value.  Could be Max of channel returns values.)
+//	  (GX FIXXX:  incorrect return value.  Could be Max of stream returns values.)
 // ==============================================================================
 int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 {
-	// GK CHECK FIXX numFrames IS THIS FRAMES OR SAMPLES !!!!!!! THIS APPEARS TO
-	// BE SAMPLES
 	U32		i, ch;
 	U32		framesRendered;
 	U32		numFramesDiv2 = numFrames>>1;
@@ -963,63 +961,65 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		mixBinFilled_[i] = false;
 	}
 
-	// ---- Render all active channels (not including MIDI)
-	for (ch = 0; ch < numInChannels_; ch++)
+	// ---- Render all active streams (not including MIDI)
+	for (ch = 0; ch < numInStreams_; ch++)
 	{
-		CChannel *pCh = &pChannels_[ch];
-		// Render if channel is in use and not paused
-		if (pCh->GetPlayer() && !pCh->GetPlayer()->IsPaused() && !pCh->GetPlayer()->IsDone())
+		CStream *pStream = &pStreams_[ch];
+		// Render if stream is in use and not paused
+		if ( pStream->GetPlayer() &&
+		    !pStream->GetPlayer()->IsPaused() &&
+			!pStream->GetPlayer()->IsDone())
 		{
-			ClearShorts(pChannelBuf_, numFrames*channels);
-			long channelSamplingFrequency = pCh->GetSamplingFrequency();
+			ClearShorts(pStreamBuf_, numFrames*channels);
+			long streamSamplingFrequency = pStream->GetSamplingFrequency();
 			U32	 framesToRender =
-				(numFrames*channelSamplingFrequency)/(long)samplingFrequency_;
+				(numFrames*streamSamplingFrequency)/(long)samplingFrequency_;
 			U32	 sampleCount	= framesToRender*channels;
-			// Player renders data into channel's stereo output buffer
-			framesRendered = pCh->Render( pChannelBuf_, framesToRender );
+			// Player renders data into stream's stereo output buffer
+			framesRendered = pStream->Render( pStreamBuf_, framesToRender );
 			
 			// Now that rendering is complete, send done messages and delete
 			// players.  Note that this is going to be migrated to a Notify
 			// function to off-load the render loop.
-			CAudioPlayer *pPlayer = pCh->GetPlayer();
+			CAudioPlayer *pPlayer = pStream->GetPlayer();
 			if (pPlayer->IsDone())
 			{
 				// find the number of samples that the player did not render
 				U32 zeroSamples = (framesToRender - framesRendered)*channels;
 				U32 zeroOffset = framesRendered*channels;
-				// Now we either play the clip again or free the channel
+				// Now we either play the clip again or free the stream
 				tAudioOptionsFlags flags = pPlayer->GetOptionsFlags();
-				Boolean freeChannel = HandlePlayerLooping(pPlayer);
+				Boolean freeStream = HandlePlayerLooping(pPlayer);
 				
-				if(freeChannel)
+				if(freeStream)
 				{
-					//If we're freeing the channel, pad the output and send the
+					//If we're freeing the stream, pad the output and send the
 					//done message
-					memset(pChannelBuf_ + zeroOffset, 0, zeroSamples*sizeof(S16));
+					memset(pStreamBuf_ + zeroOffset, 0, zeroSamples*sizeof(S16));
 					HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
-#if 0 				// FIXME/dm: Channel cannot be released because player is not destroyed above
-					pCh->Release(true);
+#if 0 				// FIXME/dm: Stream cannot be released because player is not destroyed above
+					pStream->Release(true);
 #endif
 				}
 				else
 				{
-					//If we're not freeing the channel, we must be looping.  To
+					//If we're not freeing the stream, we must be looping.  To
 					//ensure continuity, we need to fill in the rest of the
-					//channel buffer by rendering again
+					//stream buffer by rendering again
 					if(zeroSamples)
 					{
-						pCh->Render(pChannelBuf_, zeroSamples/channels);
+						pStream->Render(pStreamBuf_, zeroSamples/channels);
 					}
 					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
 				}
 			}
 
 			// Add output to appropriate Mix "Bin" 
-			long mixBinIndex = GetMixBinIndex(channelSamplingFrequency);
+			long mixBinIndex = GetMixBinIndex(streamSamplingFrequency);
 			S16 *pMixBin = pMixBinBufs_[mixBinIndex];
-			ShiftRight_S16(pChannelBuf_, pChannelBuf_, sampleCount,
+			ShiftRight_S16(pStreamBuf_, pStreamBuf_, sampleCount,
 						   kMixer_HeadroomBits_Default);
-			AccS16toS16(pMixBin, pChannelBuf_, sampleCount,
+			AccS16toS16(pMixBin, pStreamBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
 			mixBinFilled_[mixBinIndex] = true;
 
@@ -1034,11 +1034,11 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		U32 framesToRender = numFramesDiv2;	 // fs/2
 		U32 sampleCount	   = framesToRender*channels;
 		
-		ClearShorts(pChannelBuf_, framesToRender);
-		framesRendered = pMidiPlayer_->Render( pChannelBuf_, framesToRender); 
-		ShiftRight_S16(pChannelBuf_, pChannelBuf_,
+		ClearShorts(pStreamBuf_, framesToRender);
+		framesRendered = pMidiPlayer_->Render( pStreamBuf_, framesToRender); 
+		ShiftRight_S16(pStreamBuf_, pStreamBuf_,
 					   sampleCount, kMixer_HeadroomBits_Default);
-		AccS16toS16(pMixBinBufs_[mixBinIndex], pChannelBuf_, sampleCount,
+		AccS16toS16(pMixBinBufs_[mixBinIndex], pStreamBuf_, sampleCount,
 						mixBinFilled_[mixBinIndex]);
 		mixBinFilled_[mixBinIndex] = true;
 	}

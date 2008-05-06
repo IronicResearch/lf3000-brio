@@ -161,7 +161,7 @@ CAudioModule::CAudioModule( void )
 						 "CAudioModule::ctor -- Initalizing Audio Module...");
 
 	// Allocate global audio mixer
-	gAudioContext.pAudioMixer = new CAudioMixer(kAudioNumMixerChannels);
+	gAudioContext.pAudioMixer = new CAudioMixer(kAudioMaxMixerStreams);
 	
 	gAudioContext.pMidiPlayer = gAudioContext.pAudioMixer->GetMidiPlayerPtr();
 	
@@ -465,10 +465,10 @@ U32 CAudioModule::GetAudioTime(tAudioID id)
 	U32 time = 0;
 	
 	AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel)
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if (pStream)
 	{
-		CAudioPlayer *pPlayer = pChannel->GetPlayer();
+		CAudioPlayer *pPlayer = pStream->GetPlayer();
 		if (pPlayer)
 			time = pPlayer->GetAudioTime_mSec();
 	}	 
@@ -483,7 +483,6 @@ U32 CAudioModule::GetAudioTime(tAudioID id)
 Boolean CAudioModule::IsAudioPlaying(tAudioID id)
 {
 	Boolean playing = false;
-	CChannel *c;
 
 	AUDIO_LOCK;
 	playing = gAudioContext.pAudioMixer->IsPlayerPlaying(id);
@@ -575,9 +574,9 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 	}
 	else
 	{
-		CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-		if (pChannel)
-			volume = pChannel->GetVolume();
+		CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+		if (pStream)
+			volume = pStream->GetVolume();
 	}
 	AUDIO_UNLOCK;
 		
@@ -595,9 +594,9 @@ void CAudioModule::SetAudioVolume( tAudioID id, U8 x )
 		!gAudioContext.pMidiPlayer->IsDone() ) {
 		gAudioContext.pMidiPlayer->SetVolume(x);
 	} else {
-		CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-		if (pChannel) 
-			pChannel->SetVolume(x);
+		CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+		if (pStream) 
+			pStream->SetVolume(x);
 	}
 	AUDIO_UNLOCK;
 }
@@ -610,9 +609,9 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
 	tAudioPriority priority = 0;
 
 	AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel && pChannel->GetPlayer()) 
-		priority = pChannel->GetPlayer()->GetPriority();
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if (pStream && pStream->GetPlayer()) 
+		priority = pStream->GetPlayer()->GetPriority();
 	AUDIO_UNLOCK;
 
 	return priority;
@@ -624,9 +623,9 @@ tAudioPriority CAudioModule::GetAudioPriority( tAudioID id )
 void CAudioModule::SetAudioPriority( tAudioID id, tAudioPriority priority ) 
 {
 	AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel && pChannel->GetPlayer()) 
-		pChannel->GetPlayer()->SetPriority(priority);
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if (pStream && pStream->GetPlayer()) 
+		pStream->GetPlayer()->SetPriority(priority);
 	AUDIO_UNLOCK;
 }
 
@@ -638,9 +637,9 @@ S8 CAudioModule::GetAudioPan( tAudioID id )
 	S8 pan = 0;
 
 	AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel) 
-		pan = pChannel->GetPan();
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if (pStream) 
+		pan = pStream->GetPan();
 	AUDIO_UNLOCK;
 
 	return pan;
@@ -652,9 +651,9 @@ S8 CAudioModule::GetAudioPan( tAudioID id )
 void CAudioModule::SetAudioPan( tAudioID id, S8 x ) 
 {
 	AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel) 
-		pChannel->SetPan(x);
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if (pStream) 
+		pStream->SetPan(x);
 	AUDIO_UNLOCK;
 }	// ---- end SetAudioPan() ----
 
@@ -666,10 +665,10 @@ const IEventListener* CAudioModule::GetAudioEventListener( tAudioID id )
 	const IEventListener*		pListener = NULL;
 
 	AUDIO_LOCK;
-	CChannel*pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if (pChannel)
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if (pStream)
 	{
-		CAudioPlayer *pPlayer = pChannel->GetPlayer();
+		CAudioPlayer *pPlayer = pStream->GetPlayer();
 		if (pPlayer)
 			pListener = pPlayer->GetEventListener();
 	}	 
@@ -685,10 +684,10 @@ void CAudioModule::SetAudioEventListener( tAudioID id, const IEventListener *pLi
 {
 
 	AUDIO_LOCK;
-	CChannel *pChannel = gAudioContext.pAudioMixer->FindChannel(id);
-	if(pChannel)
+	CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
+	if(pStream)
 	{
-		CAudioPlayer *pPlayer = pChannel->GetPlayer();
+		CAudioPlayer *pPlayer = pStream->GetPlayer();
 		if(pPlayer)
 			pPlayer->SetEventListener(pListener);
 	}

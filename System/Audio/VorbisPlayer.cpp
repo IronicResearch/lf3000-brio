@@ -38,7 +38,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 static U32 numVorbisPlayers = 0;
-static U32 maxNumVorbisPlayers = 3;
+static U32 maxNumVorbisPlayers = kAudioMaxVorbisStreams;
 
 //==============================================================================
 // CVorbisPlayer implementation
