@@ -15517,3 +15517,31 @@ By Scott Esters (sesters@leapfrog.com) on 5/1/08 6:35 PM
 6,798 ms. (Cumulative: 4,638,663 ms)
 
 ----------------
+Revision 3,268 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,016 ms. (Cumulative: 4,644,757 ms)
+
+----------------
+Revision 3,269 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,840 ms. (Cumulative: 4,650,613 ms)
+
+----------------
+Revision 3,270 from svn://localhost/TRUNK/:
+Revision 3,271 from svn://localhost/TRUNK/:
+Revision 3,272 from svn://localhost/TRUNK/:
+Revision 3,273 from svn://localhost/TRUNK/:
+Revision 3,274 from svn://localhost/TRUNK/:
+Revision 3,275 from svn://localhost/TRUNK/:
+
+Converted Channel names to Stream, per portaudio.  A player emits a stream,
+where a stream typically contains a left channel and a right channel.
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/6/08 2:49 PM
+0 changed, 2 added, 2 deleted.
+5,969 ms. (Cumulative: 4,656,629 ms)
+
+----------------
