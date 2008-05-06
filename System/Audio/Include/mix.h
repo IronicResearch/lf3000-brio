@@ -75,9 +75,11 @@ void MixerChannel_SetAllTempBuffers(MIXERCHANNEL *d, short **bufs, long count);
 void RunMixerChannelf(short **ins, short **outs, long length, MIXERCHANNEL *d);
 void RunMixerChanneli(Q15   **ins, Q15   **outs, long length, MIXERCHANNEL *d);
 
-typedef struct mixer {
-#define kMixer_MaxInChannels  6
+#define kMixer_MaxInChannels  (19 * 2)	// maximum number of channels into mixer
 #define kMixer_MaxOutChannels 2
+#define kMixer_OutEQ_MaxBands 3
+
+typedef struct mixer {
 // High Level parameters
     long channelCount;
     MIXERCHANNEL  channels[kMixer_MaxInChannels];
@@ -86,7 +88,6 @@ typedef struct mixer {
 	float   outGainDB;
 
 	long    useOutEQ;
-#define kMixer_OutEQ_MaxBands 3
 	EQ	    outEQ[kMixer_MaxOutChannels][kMixer_OutEQ_MaxBands];
 
 	long    useOutSoftClipper;

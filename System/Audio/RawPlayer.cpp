@@ -37,8 +37,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 static U32 numRawPlayers = 0;
-static U32 maxNumRawPlayers = 3;
-//static U32 maxNumRawPlayers = 5;
+static U32 maxNumRawPlayers = kAudioMaxRawStreams;
 
 //==============================================================================
 // CRawPlayer implementation
