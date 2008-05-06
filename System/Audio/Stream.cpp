@@ -2,9 +2,9 @@
 // Copyright (c) 2002-2006 LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// Channel.cpp
+// Stream.cpp
 //
-// Description: manages processing of audio data on a mixer channel
+// Description: manages processing of audio data on a mixer stream 
 //
 //==============================================================================
 
@@ -14,7 +14,7 @@
 #include <SystemErrors.h>
 #include <AudioTypes.h>
 #include <AudioPriv.h>
-#include <Channel.h>
+#include <Stream.h>
 
 #include <EventMPI.h>
 
@@ -28,9 +28,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 
 //==============================================================================
-// CChannel implementation
+// CStream implementation
 //==============================================================================
-CChannel::CChannel()
+CStream::CStream()
 {
 	pPlayer_ = kNull;
 
@@ -39,19 +39,19 @@ CChannel::CChannel()
 	volume_ = kVolume_Default;
 	samplingFrequency_ = 0;
 
-}	// ---- end CChannel ----
+}	// ---- end CStream ----
 
 // ==============================================================================
-// ~CChannel
+// ~CStream
 // ==============================================================================
-CChannel::~CChannel()
+CStream::~CStream()
 {
-}	// ---- end ~CChannel ----
+}	// ---- end ~CStream ----
 
 // ============================================================================
-// SetPan :		Channel stereo position	  [Left .. Center .. Right]
+// SetPan :		CStream stereo position	  [Left .. Center .. Right]
 // ============================================================================
-void CChannel::SetPan( S8 x )
+void CStream::SetPan( S8 x )
 {
 	pan_ = BoundS8(&x, kPan_Min, kPan_Max);
 
@@ -66,7 +66,7 @@ void CChannel::SetPan( S8 x )
 // ============================================================================
 // SetVolume : Convert range [0 .. 127] to [-100 .. +4.15] dB
 // ============================================================================
-void CChannel::SetVolume( U8 x )
+void CStream::SetVolume( U8 x )
 {
 	
 	volume_ = BoundU8(&x, 0, 100);
@@ -82,7 +82,7 @@ void CChannel::SetVolume( U8 x )
 // ==============================================================================
 // RecalculateLevels : Recalculate levels when either pan or volume changes
 // ==============================================================================
-void CChannel::RecalculateLevels()
+void CStream::RecalculateLevels()
 {
 
 	levelsf[kLeft ] =  panValuesf[kLeft ]*gainf;
@@ -97,7 +97,7 @@ void CChannel::RecalculateLevels()
 // ==============================================================================
 // Release:
 // ==============================================================================
-tErrType CChannel::Release( Boolean noPlayerDoneMsg )
+tErrType CStream::Release( Boolean noPlayerDoneMsg )
 {	
 	if (!pPlayer_)
 		return (kNoErr);
@@ -110,7 +110,7 @@ tErrType CChannel::Release( Boolean noPlayerDoneMsg )
 // ==============================================================================
 // InitWithPlayer
 // ==============================================================================
-tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
+tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 {
 
 	// Convert interface parameters to DSP level data and reset channel
@@ -123,10 +123,8 @@ tErrType CChannel::InitWithPlayer( CAudioPlayer* pPlayer )
 // ==============================================================================
 // Render
 // ==============================================================================
-U32 CChannel::Render(S16 *pOut, int framesToRender )
+U32 CStream::Render(S16 *pOut, int framesToRender )
 {
-	// GK CHECK FIXX numFrames IS THIS FRAMES OR SAMPLES !!!!!!! THIS APPEARS TO
-	// BE SAMPLES
 	int samplesToRender = framesToRender * 2;  // 2 channels
 	int samplesRendered = 0;
 	int framesRendered	= 0;

@@ -1,13 +1,13 @@
-#ifndef LF_BRIO_CHANNEL_H
-#define LF_BRIO_CHANNEL_H
+#ifndef LF_BRIO_STREAM_H
+#define LF_BRIO_STREAM_H
 
 //==============================================================================
 // Copyright (c) 2002-2008 LeapFrog Enterprises, Inc.
 //==============================================================================
 //
-// Channel.h
+// Stream.h
 //
-// Defines class to manage processing of audio data on an audio channel.
+// Defines class to manage processing of audio data on an audio stream.
 //
 //==============================================================================
 
@@ -25,25 +25,25 @@ LF_BEGIN_BRIO_NAMESPACE()
 class CAudioPlayer;
 //==============================================================================
 // Class:
-//		CChannel
+//		CStream
 //
 // Description:
-//		Class to manage the processing of audio data on an audio channel. 
+//		Class to manage the processing of audio data on an audio stream.
 //==============================================================================
-class CChannel {
+class CStream {
  public:
-	CChannel();
-	~CChannel();
+	CStream();
+	~CStream();
 
 	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
 	tErrType	Release( Boolean noPlayerDoneMsg );
 
-	// Ask channel to get data from player and return it to caller's mix buffer.
-	// This will add per-channel fx as well as sample rate convert player
+	// Ask stream to get data from player and return it to caller's mix buffer.
+	// This will add per-stream fx as well as sample rate convert player
 	// data to system rate.	 If less than numFrames is available
-	// the remainder of the channel's buffer will be zero padded.
-	// The channel also assumes that the mix buffer is stereo 
-	// so mono data is copied to both stereo channel on mix out.
+	// the remainder of the stream's buffer will be zero padded.
+	// The stream also assumes that the mix buffer is stereo 
+	// so mono data is copied to both audio channels on mix out.
 	U32			Render( S16 *pOut, int numStereoFrames );
 
 	inline U8	GetVolume()		{ return volume_; }
@@ -57,14 +57,13 @@ class CChannel {
 
 	void		SetPlayer(CAudioPlayer *pPlayer) { pPlayer_ = pPlayer; }
 
-#define kAudioMixerChannel_MaxOutChannels 2
-	float		panValuesf[kAudioMixerChannel_MaxOutChannels];
-	Q15			panValuesi[kAudioMixerChannel_MaxOutChannels];
+	float		panValuesf[kAudioNumOutputChannels];
+	Q15			panValuesi[kAudioNumOutputChannels];
 
 	float		gainf;
 	Q15			gaini;
-	float		levelsf	  [kAudioMixerChannel_MaxOutChannels]; // gain * panValue
-	Q15			levelsi	  [kAudioMixerChannel_MaxOutChannels];
+	float		levelsf	  [kAudioNumOutputChannels]; // gain * panValue
+	Q15			levelsi	  [kAudioNumOutputChannels];
 	
 	// Return requested status
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
@@ -73,13 +72,13 @@ class CChannel {
 
  private:
 	tAudioPriority	priority_;	
-	U8			volume_;	
-	S8			pan_   ;		 
-	U32			samplingFrequency_;	
-	CAudioPlayer				*pPlayer_;		 
-	void   RecalculateLevels();
+	U8				volume_;	
+	S8				pan_   ;		 
+	U32				samplingFrequency_;	
+	CAudioPlayer	*pPlayer_;		 
+	void			RecalculateLevels();
 };
 
 LF_END_BRIO_NAMESPACE()
-#endif		// LF_BRIO_CHANNEL_H
+#endif		// LF_BRIO_STREAM_H
 
