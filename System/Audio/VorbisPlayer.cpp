@@ -68,19 +68,6 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	channels_		   = pVorbisInfo->channels;
 	samplingFrequency_ = pVorbisInfo->rate;
 	
-//#define PRINT_FILE_INFO
-#ifdef PRINT_FILE_INFO
-	printf( "VorbisPlayer::ctor fs=%ld channels=%ld samples=%ld (%g Seconds)\n", 
-			samplingFrequency_, channels_,
-			(long)ov_pcm_total( &vorbisFile_, -1 ),
-			0.001f*(float)ov_time_total( &vorbisFile_, -1 ));
-	printf("VorbisPlayer::ctor bitstream length=%ld\n",
-		   (long)ov_raw_total( &vorbisFile_, -1 ));
-	printf("VorbisPlayer::ctor bitrate lower=%ld upper=%ld nominal=%ld\n",
-		   pVorbisInfo->bitrate_lower, pVorbisInfo->bitrate_upper,
-		   pVorbisInfo->bitrate_nominal);
-#endif
-
 	numVorbisPlayers++;
 
 }
@@ -97,11 +84,10 @@ CVorbisPlayer::~CVorbisPlayer()
 	
 	// Close vorbis file
 	S32 ret = ov_clear( &vorbisFile_ );
-	if ( ret < 0)
-		printf("Could not close OggVorbis file.\n");
+	pDebugMPI_->Assert(ret >= 0,
+		"%s.%d: Could not close OggVorbis file.\n",
+		__FUNCTION__, __LINE__);
 
-	pDebugMPI_->DebugOut( kDbgLvlVerbose, " CVorbisPlayer::dtor -- vaporizing...\n");
-	
 	// Free MPIs
 	if (pDebugMPI_)
 		delete (pDebugMPI_);

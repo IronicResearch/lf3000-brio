@@ -20,7 +20,7 @@
 #include <AudioPlayer.h>
 #include <AudioTypesPriv.h>
 
-#include "sndfileutil.h"
+#include <sndfile.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 

@@ -159,12 +159,6 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	const tMutexAttr	attr = {0};
 
 	numInStreams_ = inStreams;
-	if (numInStreams_ > kAudioMaxMixerStreams)
-		printf("CAudioMixer::CAudioMixer: %d too many streams! Max=%d\n",
-			   numInStreams_, kAudioMaxMixerStreams);
-	pDebugMPI_->Assert((numInStreams_ <= kAudioMaxMixerStreams),
-					   "CAudioMixer::CAudioMixer: %d is too many streams!\n",
-					   numInStreams_ );
 	
 	samplingFrequency_ = kAudioSampleRate;
 
@@ -175,6 +169,10 @@ CAudioMixer::CAudioMixer( int inStreams ):
 
 	pKernelMPI_ = new CKernelMPI();
 
+	pDebugMPI_->Assert((numInStreams_ <= kAudioMaxMixerStreams),
+					   "CAudioMixer::CAudioMixer: %d is too many streams!\n",
+					   numInStreams_ );
+	
 	// Init mutex for serialization access to internal AudioMPI state.
 	tErrType err = pKernelMPI_->InitMutex( mixerMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "%s: Couldn't init mutex.\n", __FUNCTION__);
@@ -239,9 +237,9 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	{
 		tAudioState *d = &audioState_;
 		memset(d, 0, sizeof(tAudioState));
-		if (sizeof(tAudioState) >= kAUDIO_MAX_MSG_SIZE)
-			printf("UH OH CAudioMixer: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n",
-				   sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
+		pDebugMPI_->Assert((sizeof(tAudioState) < kAUDIO_MAX_MSG_SIZE),
+			"%s.%d: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n",
+			__FUNCTION__, __LINE__, sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 		
 		d->useOutSoftClipper  = true;
 		
