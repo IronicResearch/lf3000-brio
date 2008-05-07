@@ -15654,3 +15654,15 @@ By Scott Esters (sesters@leapfrog.com) on 5/7/08 11:55 AM
 5,953 ms. (Cumulative: 4,724,550 ms)
 
 ----------------
+Revision 3,290 from svn://localhost/TRUNK/:
+
+fixup xembedded build, removing references to Audio/DspUtil and
+Audio/LibSndFile.  Note that LibSndFile has been moved to the ThirdParty
+directory and DspUtil has been absorbed into the Audio subdirectory
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/7/08 2:53 PM
+1 changed, 0 added, 0 deleted.
+5,734 ms. (Cumulative: 4,730,363 ms)
+
+----------------
