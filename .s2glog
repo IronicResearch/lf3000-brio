@@ -15565,3 +15565,13 @@ By Scott Esters (sesters@leapfrog.com) on 5/6/08 5:42 PM
 5,861 ms. (Cumulative: 4,668,663 ms)
 
 ----------------
+Revision 3,278 from svn://localhost/TRUNK/:
+
+Move sndfileutil functions into RawPlayer.  Converted 'printf' statements to use DebugMPI()
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/6/08 7:37 PM
+3 changed, 0 added, 2 deleted.
+6,096 ms. (Cumulative: 4,674,837 ms)
+
+----------------
