@@ -15644,3 +15644,13 @@ By Scott Esters (sesters@leapfrog.com) on 5/7/08 11:42 AM
 5,563 ms. (Cumulative: 4,718,519 ms)
 
 ----------------
+Revision 3,289 from svn://localhost/TRUNK/:
+
+Add additional ADPCM tests, including priority tests.
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/7/08 11:55 AM
+1 changed, 0 added, 0 deleted.
+5,953 ms. (Cumulative: 4,724,550 ms)
+
+----------------

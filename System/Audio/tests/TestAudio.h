@@ -14,7 +14,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
- 
 
 
 //  For lots of text output, enable this:
@@ -31,6 +30,10 @@ LF_USING_BRIO_NAMESPACE()
 #define kPan        0
 #define kVolume   100
 #define kPriority   1
+
+// These limits should really be available to all Brio Apps
+#define myAudioMaxRawStreams	16
+#define myAudioMaxVorbisStreams	3
 
 #define kPayload 0
 #define kFlags   0 // kAudioOptionsDoneMsgAfterComplete | kAudioOptionsLooped
@@ -106,7 +109,6 @@ public:
 		delete pKernelMPI_; 
 		delete pAudioMPI_; 
 	}
-	
 
 	//------------------------------------------------------------------------
 	void testWasCreated( )
@@ -141,6 +143,7 @@ public:
 		}
 	}
 
+	//------------------------------------------------------------------------
     void testNoSuchFile()
 	{
 		tAudioID 				id;
@@ -152,6 +155,7 @@ public:
 		TS_ASSERT(id == kNoAudioID);
 	}
 
+	//------------------------------------------------------------------------
     void testUnsupportedExtension()
 	{
 		tAudioID 				id;
@@ -163,6 +167,7 @@ public:
 		TS_ASSERT(id == kNoAudioID);
 	}
 
+	//------------------------------------------------------------------------
     void testIsPlaying()
 	{
 		tAudioID 				id;
@@ -202,31 +207,53 @@ public:
 		TS_ASSERT(gotAudioCallback == false);
 	}
 	
+	//------------------------------------------------------------------------
     void testTooManyVorbisFiles()
 	{
-		tAudioID id1, id2, id3, id4;
+		tAudioID id[myAudioMaxVorbisStreams + 1];
+		int		 i;
 
 		PRINT_TEST_NAME();
-		
-		id1 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id1 != kNoAudioID);
-		id2 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id2 != kNoAudioID);
-		id3 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id3 != kNoAudioID);
-		id4 = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority, kPan,
-									 NULL, kPayload, kFlags);
-		TS_ASSERT(id4 == kNoAudioID);
-		pAudioMPI_->StopAudio(id1, true);
-		pAudioMPI_->StopAudio(id2, true);
-		pAudioMPI_->StopAudio(id3, true);
-		pAudioMPI_->StopAudio(id4, true);
+	
+		for (i=0; i < myAudioMaxVorbisStreams; i++)	{
+			id[i] = pAudioMPI_->StartAudio("one-second.ogg",
+				kVolume, kPriority, kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id[i] != kNoAudioID);
+		}
 
+		id[myAudioMaxVorbisStreams] = pAudioMPI_->StartAudio("one-second.ogg",
+			kVolume, kPriority, kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(id[myAudioMaxVorbisStreams] == kNoAudioID);
+
+		for (i=0; i <= myAudioMaxVorbisStreams; i++) {
+			pAudioMPI_->StopAudio(id[i], true);
+		}
 	}
 
+	//------------------------------------------------------------------------
+    void testTooManyAdpcmFiles()
+	{
+		tAudioID id[myAudioMaxRawStreams + 1];
+		int		 i;
+
+		PRINT_TEST_NAME();
+	
+		for (i=0; i < myAudioMaxRawStreams; i++)	{
+			id[i] = pAudioMPI_->StartAudio("two-second.wav",
+				kVolume, kPriority, kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id[i] != kNoAudioID);
+		}
+
+		id[myAudioMaxRawStreams] = pAudioMPI_->StartAudio("two-second.wav",
+			kVolume, kPriority, kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(id[myAudioMaxRawStreams] == kNoAudioID);
+
+		for (i=0; i <= myAudioMaxRawStreams; i++) {
+			pAudioMPI_->StopAudio(id[i], true);
+		}
+	}
+
+	//------------------------------------------------------------------------
     void testVorbisStartStop()
 	{
 		tAudioID id;
@@ -245,6 +272,7 @@ public:
 
 	}
 
+	//------------------------------------------------------------------------
     void testAudioStopWithCallback()
 	{
 		// NOTE! This functionality is BROKEN and should remain so just in case
@@ -264,6 +292,7 @@ public:
 		TS_ASSERT(gotAudioCallback == false); //...but we don't
 	}
 
+	//------------------------------------------------------------------------
     void testPauseResumeAudioSystem()
 	{
 		tAudioID id;
@@ -286,6 +315,7 @@ public:
 			pKernelMPI_->TaskSleep(100);
 	}
 
+	//------------------------------------------------------------------------
     void testPauseResumeAudio()
 	{
 		tAudioID id;
@@ -308,6 +338,7 @@ public:
 			pKernelMPI_->TaskSleep(100);
 	}
 
+	//------------------------------------------------------------------------
     void testGetAudioTime()
 	{
 		tAudioID id;
@@ -334,8 +365,7 @@ public:
 				
 		TS_ASSERT( pKernelMPI_ != NULL );
 		TS_ASSERT( pKernelMPI_->IsValid() == true );
-		
-		id = pAudioMPI_->StartAudio("Vivaldi.ogg", kVolume, kPriority, kPan,
+		id = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, kPriority, kPan,
 									kNull, kPayload, kFlags);
 		TS_ASSERT(id != kNoAudioID);
 		while(pAudioMPI_->IsAudioPlaying(id))
@@ -414,6 +444,7 @@ public:
 	}
 
 
+	//------------------------------------------------------------------------
 	void testTooManyMIDIUseCase1( )
 	{
 		tErrType 		err;
@@ -444,6 +475,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 	
+	//------------------------------------------------------------------------
 	void testMIDITwiceUseCase1( )
 	{
 		tErrType 		err;
@@ -472,6 +504,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
+	//------------------------------------------------------------------------
 	void testMIDIAcquireFreeUseCase1( )
 	{
 		tErrType 		err;
@@ -506,6 +539,7 @@ public:
 
 	}
 
+	//------------------------------------------------------------------------
     void testMIDIStopWithCallbackUseCase1()
 	{
 		tErrType 		err;
@@ -535,6 +569,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
+	//------------------------------------------------------------------------
     void testPauseResumeMidiUseCase1()
 	{
 		tErrType 		err;
@@ -565,6 +600,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
+	//------------------------------------------------------------------------
 	void testAudioVolume()
 	{
 		tAudioID id;
@@ -581,6 +617,7 @@ public:
 		}
 	}
 
+	//------------------------------------------------------------------------
 	void testAudioPan()
 	{
 		tAudioID id;
@@ -597,6 +634,7 @@ public:
 		}
 	}
 
+	//------------------------------------------------------------------------
     void testMidiVolumeUseCase1()
     {
 		tErrType 		err;
@@ -766,6 +804,7 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
+	//------------------------------------------------------------------------
 	void testThree16kStreams()
 	{
 		tAudioID id1, id2, id3;
@@ -787,6 +826,7 @@ public:
 			pKernelMPI_->TaskSleep(100);
 	}
 
+	//------------------------------------------------------------------------
 	void testThree32kStreams()
 	{
 		tAudioID id1, id2, id3;
@@ -808,6 +848,7 @@ public:
 			pKernelMPI_->TaskSleep(100);
 	}
 
+	//------------------------------------------------------------------------
     // This test can generally be disabled.  It is not used to test
     // functionality and prevent regression, but to test performance.
 	void testPerformanceBaseline()
@@ -846,6 +887,7 @@ public:
 
 	}
 
+	//------------------------------------------------------------------------
 	void testPriorityPolicyGetSet()
 	{
         tErrType err;
@@ -863,6 +905,7 @@ public:
 		TS_ASSERT(policy == kAudioPriorityPolicyNone);
 	}
 
+	//------------------------------------------------------------------------
     void testSimplePriorityAllPriorityEqual()
 	{
 		tErrType err;
@@ -885,7 +928,8 @@ public:
 			pKernelMPI_->TaskSleep(200);
 	}
 
-    void testSimplePriorityIncreasing()
+	//------------------------------------------------------------------------
+    void testSimpleVorbisPriorityIncreasing()
 	{
 		tErrType err;
 		tAudioID id;
@@ -909,7 +953,8 @@ public:
 			pKernelMPI_->TaskSleep(200);
 	}
 
-    void testSimplePriorityDecreasing()
+	//------------------------------------------------------------------------
+    void testSimpleVorbisPriorityDecreasing()
 	{
 		tErrType err;
 		tAudioID id;
@@ -949,7 +994,8 @@ public:
 			pKernelMPI_->TaskSleep(200);
 	}
 
-    void testSimplePriorityTypical()
+	//------------------------------------------------------------------------
+    void testSimpleVorbisPriorityTypical()
 	{
 		tErrType err;
 		tAudioID bg, incidental, dialog;
@@ -990,6 +1036,120 @@ public:
 		while(pAudioMPI_->IsAudioPlaying(dialog))
 		{
 			incidental = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, 0,
+												kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(incidental != kNoAudioID);
+			pKernelMPI_->TaskSleep(1000);
+		}	
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(bg) == true);
+		  
+		while(pAudioMPI_->IsAudioPlaying(incidental))
+			pKernelMPI_->TaskSleep(200);
+
+		pAudioMPI_->StopAudio(bg, true);
+
+	}
+	
+	//------------------------------------------------------------------------
+    void testSimpleAdpcmPriorityIncreasing()
+	{
+		tErrType err;
+		tAudioID id;
+		int i;
+		tAudioPriority priority = 0;
+
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
+		
+		for( i=0; i < (myAudioMaxRawStreams * 2); i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.wav", kVolume, priority,
+										kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(200);
+			priority++;
+		}
+		while(pAudioMPI_->IsAudioPlaying() == true)
+			pKernelMPI_->TaskSleep(200);
+	}
+
+	//------------------------------------------------------------------------
+    void testSimpleAdpcmPriorityDecreasing()
+	{
+		tErrType err;
+		tAudioID id;
+		int i;
+		tAudioPriority priority = 255;
+
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
+
+		// Launch max players
+		for (i=0; i < myAudioMaxRawStreams; i++) {
+			id = pAudioMPI_->StartAudio("two-second.wav", kVolume, priority--,
+									kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(50);
+		}
+
+		// Try to launch more players before the 1st batch finish playing 
+		for( i=0; i<myAudioMaxRawStreams; i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.wav", kVolume, priority--,
+										kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id == kNoAudioID);
+			pKernelMPI_->TaskSleep(50);
+		}
+		while(pAudioMPI_->IsAudioPlaying() == true)
+			pKernelMPI_->TaskSleep(100);
+	}
+
+	//------------------------------------------------------------------------
+    void testSimpleAdpcmPriorityTypical()
+	{
+		tErrType err;
+		tAudioID bg, incidental, dialog;
+		int i;
+	
+		PRINT_TEST_NAME();
+
+		err = pAudioMPI_->SetPriorityPolicy(kAudioPriorityPolicySimple);
+		TS_ASSERT(err == kNoErr);
+
+		// Launch background music on different player.
+		// It should never be interrupted
+		bg = pAudioMPI_->StartAudio("watermelon-16kHz-st.ogg", kVolume, 0,
+									kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(bg != kNoAudioID);
+		pKernelMPI_->TaskSleep(100);
+
+		//Launch a bunch of incidentals.  They should pre-empt eachother, but
+		//not the background music.
+		for (i=0; i < myAudioMaxRawStreams + 5; i++)
+		{
+			incidental = pAudioMPI_->StartAudio("Vivaldi.wav", kVolume, 0,
+												kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(incidental != kNoAudioID);
+			pKernelMPI_->TaskSleep(500);
+		}
+		
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(bg) == true);
+
+		//This would be like dialog.  It should pre-empt one of the incidentals
+		dialog = pAudioMPI_->StartAudio("Voice-3sec.wav", kVolume, 100,
+										kPan, NULL, kPayload, kFlags);
+		TS_ASSERT(dialog != kNoAudioID);
+
+		TS_ASSERT(pAudioMPI_->IsAudioPlaying(bg) == true);
+
+		// keep generating incidentals.  Only one at a time will be able to
+		// play.
+		while(pAudioMPI_->IsAudioPlaying(dialog))
+		{
+			incidental = pAudioMPI_->StartAudio("Vivaldi.wav", kVolume, 0,
 												kPan, NULL, kPayload, kFlags);
 			TS_ASSERT(incidental != kNoAudioID);
 			pKernelMPI_->TaskSleep(1000);
