@@ -24,8 +24,9 @@
 #include <AudioPriv.h>
 #include <AudioTypesPriv.h>
 #include <RawPlayer.h>
-
 #include <Dsputil.h>
+
+#include <RawPlayer.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -54,23 +55,25 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 
 	// Try to open WAV or AIFF File
 	SF_INFO	 inFileInfo;
-	inFileInfo.format = 0;
 
-	inFile_ = OpenSoundFile( (char *) pInfo->path->c_str(), &inFileInfo,
-							 SFM_READ);
-	printf("%s.%d: inFile_ = %p\n", __FUNCTION__, __LINE__, inFile_);
+	memset (&inFileInfo, 0, sizeof(SF_INFO));
+	inFile_ = sf_open((char *)pInfo->path->c_str(), SFM_READ, &inFileInfo);
+
 	if (inFile_)
 	{
-		long fileFormatType = (inFileInfo.format & SF_FORMAT_TYPEMASK);
+		int fileFormatType = (inFileInfo.format & SF_FORMAT_TYPEMASK);
 		if		(SF_FORMAT_AIFF == fileFormatType)
 			fileType_ = kRawPlayer_FileType_AIFF; 
 		else if (SF_FORMAT_WAV == fileFormatType)
 			fileType_ = kRawPlayer_FileType_WAV;
-		else if (SF_FORMAT_IMA_ADPCM == fileFormatType)
-			fileType_ = kRawPlayer_FileType_IMA_ADPCM;
-		else
-			printf("CRawPlayer::ctor: unsupported file type=%ld\n",
-				   fileFormatType);
+		else {
+			pDebugMPI_->DebugOut(kDbgLvlCritical,
+								 "%s.%d: Unable to open '%s'\n",
+				   				 __FUNCTION__, __LINE__, pInfo->path->c_str() );
+			pDebugMPI_->DebugOut(kDbgLvlCritical,
+								 "%s.%d: unsupported file type=0x%08X\n",
+				   				 __FUNCTION__, __LINE__, fileFormatType);
+		}
 
 		if (kRawPlayer_FileType_Unknown != fileType_)
 		{
@@ -90,9 +93,9 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	{
 		// If WAV/AIFF opens failed, try to open as Brio "RAW" file
 		fileH_ = fopen(	 pInfo->path->c_str(), "r" );
-		if (!fileH_)
-			printf("CRawPlayer::ctor : Unable to open '%s'\n",
-				   pInfo->path->c_str() );
+		pDebugMPI_->Assert((fileH_ != NULL),
+						"%s.%d: Unable to open '%s'\n",
+				   		__FUNCTION__, __LINE__, pInfo->path->c_str() );
 
 		// Read Brio "Raw" audio header
 		fileType_ = kRawPlayer_FileType_Brio;
@@ -100,16 +103,16 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 		tAudioHeader *bH = &brioHeader;
 		int bytesRead = fread( bH, 1, sizeof(tAudioHeader), fileH_);
 		pDebugMPI_->Assert((bytesRead == sizeof(tAudioHeader)),
-						   "CRawPlayer::ctor: Unable to read "
-						   "RAW audio header from '%s'\n",
-						   (char *) pInfo->path->c_str());
+						   "%s.%d: Unable to read RAW audio header from '%s'\n",
+						   __FUNCTION__, __LINE__, (char *) pInfo->path->c_str());
 		samplingFrequency_ = bH->sampleRate;
 		audioDataBytes_	   = bH->dataSize;		
 		channels_		   = 1 + (0 != (bH->flags & kAudioHeader_StereoBit));
 
 		pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData),
-							"CRawPlayer::ctor: offsetToData=%ld, but should be %d.  "
+							"%s.%d: offsetToData=%ld, but should be %d.  "
 							"Is this Brio Raw Audio file ? '%s'\n",
+							__FUNCTION__, __LINE__,
 							bH->offsetToData , sizeof(tAudioHeader),
 							(char *) pInfo->path->c_str());
 	}
@@ -135,9 +138,8 @@ CRawPlayer::~CRawPlayer()
 		fileH_ = NULL;
 	}
 	if (inFile_)
-	{
-		CloseSoundFile(&inFile_);
-	}
+		sf_close(inFile_);
+		//CloseSoundFile(&inFile_);
 
 	// Free MPIs
 	if (pDebugMPI_)
@@ -255,7 +257,8 @@ void CRawPlayer::RewindFile()
 	if (fileH_)
 		fseek( fileH_, sizeof(tAudioHeader), SEEK_SET);
 	if (inFile_)
-		RewindSoundFile( inFile_);
+		sf_seek(inFile_, 0, SEEK_SET);
+		//RewindSoundFile( inFile_);
 	bIsDone_ = false;
 }
 
