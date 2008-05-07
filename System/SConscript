@@ -39,17 +39,3 @@ if vars['is_export']:
 	env.Install(vars['hdr_deploy_dir'], headers)
 	
 	dest_dir = os.path.join(vars['export_root'], 'Tools')
-	sf2brio = os.path.join('Audio', 'Utilities', 'sf2brio', vars['cpu_subdir'], 'sf2brio')
-	env.Install(dest_dir, sf2brio)
-
-#-----------------------------------------------------------------------------
-# Export shared libs to embedded target
-#-----------------------------------------------------------------------------
-if not vars['is_emulation']:
-	#libs = glob.glob(os.path.join('Audio', 'DspUtil', vars['cpu_subdir'], 'libdsputil.so'))
-	#env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Audio', 'LibSndFile', vars['cpu_subdir'], 'libsndfile.so.1'))
-	env.Install(vars['lib_deploy_dir'], libs)
-
-
-	
