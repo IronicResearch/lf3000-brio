@@ -343,6 +343,25 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void testAdpcmSimple( )
+	{
+		tAudioID 				id;
+		PRINT_TEST_NAME();
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		TS_ASSERT( pKernelMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_->IsValid() == true );
+		
+		id = pAudioMPI_->StartAudio("Vivaldi-3sec.wav", kVolume, kPriority, kPan,
+									kNull, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100); 
+	}
+	
+	//------------------------------------------------------------------------
 	void testMIDISimpleUseCase1( )
 	{
 		tErrType 		err;
