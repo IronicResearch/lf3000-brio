@@ -250,9 +250,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 					os.path.join(root_dir, 'ThirdParty/LibSndFile/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Theora/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/Portaudio/Libs', vars['cpu_subdir']),
-					os.path.join(root_dir, 'ThirdParty/Mobileer/Libs', vars['cpu_subdir']),
-					os.path.join(root_dir, 'System/Audio/DspUtil', vars['cpu_subdir']),
-					os.path.join(root_dir, 'System/Audio/LibSndFile', vars['cpu_subdir'])]
+					os.path.join(root_dir, 'ThirdParty/Mobileer/Libs', vars['cpu_subdir'])]
 		testenv.Append(LIBPATH = libpaths)
 		testenv.Append(RPATH = vars['lib_deploy_dir'])
 		fulllibs += testenv.Split('''ModuleMPI 
