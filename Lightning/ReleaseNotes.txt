@@ -3,6 +3,14 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.30.0.3337 release (May 16, 2008)
+===========================================
+
+-- Add Audio support for IMA ADPCM wav files.
+
+-- Allow module manager to unload Audio and Video modules only when reference count zeroed. This allows Audio module to be destroyed properly avoiding segfaults at app exit. Video is unloaded too since it is transient on-demand module.
+
+===========================================
 Brio v1.30.0.3222 release (Apr 17, 2008)
 ===========================================
 
