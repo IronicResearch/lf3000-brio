@@ -300,9 +300,10 @@ namespace
 			if( pModule )
 			{
 				--pModule->connect_count;
-				if( pModule->connect_count == 0 )
+				if( pModule->connect_count == 0 
+					&& (pModule->name == "Video" || pModule->name == "Audio") )
 				{
-#if 0	// FIXME/dm: Not ready to release on embedded target with Event manager active
+#if 1	// FIXME/dm: Unload only Audio and Video modules (not all of them) 
 					DestroyModuleInstance(pModule);
 					RemoveCachedModule(pModule);
 #endif

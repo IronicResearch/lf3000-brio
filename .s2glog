@@ -15676,3 +15676,56 @@ By Scott Esters (sesters@leapfrog.com) on 5/7/08 2:55 PM
 5,985 ms. (Cumulative: 4,736,411 ms)
 
 ----------------
+Revision 3,292 from svn://localhost/TRUNK/:
+Revision 3,293 from svn://localhost/TRUNK/:
+Revision 3,294 from svn://localhost/TRUNK/:
+Revision 3,295 from svn://localhost/TRUNK/:
+Revision 3,296 from svn://localhost/TRUNK/:
+Revision 3,297 from svn://localhost/TRUNK/:
+Revision 3,298 from svn://localhost/TRUNK/:
+Revision 3,299 from svn://localhost/TRUNK/:
+Revision 3,300 from svn://localhost/TRUNK/:
+Revision 3,301 from svn://localhost/TRUNK/:
+Revision 3,302 from svn://localhost/TRUNK/:
+Revision 3,303 from svn://localhost/TRUNK/:
+Revision 3,304 from svn://localhost/TRUNK/:
+Revision 3,305 from svn://localhost/TRUNK/:
+Revision 3,306 from svn://localhost/TRUNK/:
+Revision 3,307 from svn://localhost/TRUNK/:
+Revision 3,308 from svn://localhost/TRUNK/:
+Revision 3,309 from svn://localhost/TRUNK/:
+Revision 3,310 from svn://localhost/TRUNK/:
+Revision 3,311 from svn://localhost/TRUNK/:
+Revision 3,312 from svn://localhost/TRUNK/:
+Revision 3,313 from svn://localhost/TRUNK/:
+Revision 3,314 from svn://localhost/TRUNK/:
+Revision 3,315 from svn://localhost/TRUNK/:
+Revision 3,316 from svn://localhost/TRUNK/:
+Revision 3,317 from svn://localhost/TRUNK/:
+Revision 3,318 from svn://localhost/TRUNK/:
+Revision 3,319 from svn://localhost/TRUNK/:
+Revision 3,320 from svn://localhost/TRUNK/:
+Revision 3,321 from svn://localhost/TRUNK/:
+Revision 3,322 from svn://localhost/TRUNK/:
+Revision 3,323 from svn://localhost/TRUNK/:
+Revision 3,324 from svn://localhost/TRUNK/:
+Revision 3,325 from svn://localhost/TRUNK/:
+Revision 3,326 from svn://localhost/TRUNK/:
+Revision 3,327 from svn://localhost/TRUNK/:
+Revision 3,328 from svn://localhost/TRUNK/:
+Revision 3,329 from svn://localhost/TRUNK/:
+Revision 3,330 from svn://localhost/TRUNK/:
+Revision 3,331 from svn://localhost/TRUNK/:
+Revision 3,332 from svn://localhost/TRUNK/:
+Revision 3,333 from svn://localhost/TRUNK/:
+Revision 3,334 from svn://localhost/TRUNK/:
+Revision 3,335 from svn://localhost/TRUNK/:
+
+Allow module manager to unload Audio and Video modules only when reference countzeroed. This allows Audio module to be destroyed properly avoiding segfaults at app exit. Video is unloaded too since it is transient on-demand module.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/16/08 10:26 AM
+1 changed, 0 added, 0 deleted.
+6,200 ms. (Cumulative: 4,743,033 ms)
+
+----------------
