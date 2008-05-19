@@ -58,7 +58,7 @@ d->outInRateRatio = 1.0f/d->inOutRateRatio;
 d->ioRatio = (long) d->inOutRateRatio;
 d->oiRatio = (long) d->outInRateRatio;
 	
-char *firName = "Dunno";
+const char *firName = "Dunno";
 
 // Set default filters values to cover initialization, even if they are unused.
 d->hP        = fir_HalfBand_30dB_15_Hz;
@@ -978,7 +978,7 @@ d->outSamplingFrequency = x;
 // ============================================================================
 // TranslateSRC_ModeID:   Translate ID to English string
 // ============================================================================
-    char * 
+  const  char * 
 TranslateSRC_ModeID(int id)
 {
 switch (id)

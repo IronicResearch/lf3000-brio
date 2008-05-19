@@ -84,7 +84,7 @@ void PrepareSRC(SRC *d);
 void SRC_SetInSamplingFrequency (SRC *d, float x);
 void SRC_SetOutSamplingFrequency(SRC *d, float x);
 
-char *TranslateSRC_ModeID(int id);
+const char *TranslateSRC_ModeID(int id);
 
 void RunSRC(short *in, short *out, long inLength, long outLength, SRC *d);
 
