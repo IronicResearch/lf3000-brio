@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.30.0.3337 release (May 16, 2008)
+Brio v1.30.0.3339 release (May 19, 2008)
 ===========================================
 
 -- Add Audio support for IMA ADPCM wav files.
