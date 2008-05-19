@@ -15740,3 +15740,14 @@ By Scott Esters (sesters@leapfrog.com) on 5/16/08 3:22 PM
 6,329 ms. (Cumulative: 4,749,455 ms)
 
 ----------------
+Revision 3,338 from svn://localhost/TRUNK/:
+
+changed TranslateSRC_ModeID() function prototype from 'char *' to 'const char *' to quiet 
+compiler warnings.
+
+
+By Scott Esters (sesters@leapfrog.com) on 5/19/08 10:36 AM
+2 changed, 0 added, 0 deleted.
+6,720 ms. (Cumulative: 4,756,253 ms)
+
+----------------
