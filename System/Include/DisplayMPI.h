@@ -40,74 +40,175 @@ public:
 	U16							GetNumberOfScreens() const;
 	
 	/// Returns screen info for the selected output device (width, height, pixel format, description)
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return 		Returns pointer to display screen struct filled in.
 	const tDisplayScreenStats*	GetScreenStats(tDisplayScreen screen) const;
 	
 	/// Updates the display output, either selected rectangular region or entire screen
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \param pDirtyRect 	The destination rectangle to be updated if non-NULL,
+	/// or NULL for the entire screen.
+	///
+	/// \return 		Returns kNoErr on success. 
 	tErrType					Invalidate(tDisplayScreen screen, tRect *pDirtyRect = NULL);
 
 	// Graphics contexts (through tDisplayHandle)
 	//===========================================
 	
 	/// Creates a display surface context for access by the application
+	/// 
+	/// \param height 	The height in pixels of the display context
+	///
+	/// \param width 	The width in pixels of the display context
+	///
+	/// \param colorDepth 	The pixel format enum of the display context
+	///
+	/// \param pBuffer 	The pointer to an offscreen buffer created by the caller,
+	/// or NULL for an onscreen buffer to be created by the driver.
+	///
+	/// \return 		Returns valid display context handle on success, 
+	/// or kInvalidDisplayHndl on failure.
 	tDisplayHandle      CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, 
 									U8 *pBuffer = NULL);
 
 	/// Returns the buffer address in user memory space of the display surface
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
 	U8*                 GetBuffer(tDisplayHandle hndl) const;
 
 	/// Returns the pixel format enum of the display surface
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
 	tPixelFormat		GetPixelFormat(tDisplayHandle hndl) const;
 	
 	/// Returns the bytes per scanline pitch (stride) of the display surface
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
 	U16                 GetPitch(tDisplayHandle hndl) const;
 	
 	/// Returns the bits per pixel depth of the display surface
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
 	U16                 GetDepth(tDisplayHandle hndl) const;
 
 	/// Returns the height of the display surface
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
 	U16                 GetHeight(tDisplayHandle hndl) const;
 	
 	/// Returns the width of the display surface
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
 	U16                 GetWidth(tDisplayHandle hndl) const;
 	
-	/// Positions the display surface on the screen	
+	/// Positions the display surface on the screen
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \param xPos		The X destination position
+	///
+	/// \param yPos		The Y destination position
+	///
+	/// \param insertAfter	The display handle previously registered to insert after 
+	/// in the linked list, or the end of the list if kNull.
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return 		Returns kNoErr on success. 
 	tErrType            Register(tDisplayHandle hndl, S16 xPos = 0, S16 yPos = 0, 
 								 tDisplayHandle insertAfter = 0, 
 								 tDisplayScreen screen = kDisplayScreenAllScreens);
 
 	/// Positions the display surface on the screen	
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \param xPos		The X destination position
+	///
+	/// \param yPos		The Y destination position
+	///
+	/// \param initialZOrder	The Z order to insert in the linked list.
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return 		Returns kNoErr on success. 
 	tErrType            Register(tDisplayHandle hndl, S16 xPos = 0, S16 yPos = 0, 
 								 tDisplayZOrder initialZOrder = kDisplayOnTop, 
 	                             tDisplayScreen screen = kDisplayScreenAllScreens);
 
 	/// Removes the display surface from the screen
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return 		Returns kNoErr on success. 
 	tErrType            UnRegister(tDisplayHandle hndl, tDisplayScreen screen);
 	
 	/// Destroys the display surface context created by CreateHandle()
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \param destroyBuffer	(ignored)
+	///
+	/// \return			Returns kNoErr on success.
 	tErrType            DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer);
 	
 	/// Locks the display surface framebuffer memory for exclusive access by the application
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
 	/// (LF1000 platform does nothing since there is no 2D accelerator to synchronize access)
 	tErrType            LockBuffer(tDisplayHandle hndl);
 	
 	/// Unlocks the display surface framebuffer memory locked by LockBuffer()
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
 	/// (LF1000 platform does nothing since there is no 2D accelerator to synchronize access)
 	tErrType            UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect = NULL);
 	
 	/// Swaps the display with the selected fullscreen context, optionally waiting for vertical sync
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \return			Returns kNoErr on success.
 	tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync = false);
 
 	/// Returns true when the previous context passed to SwapBuffers() has been updated to the display
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \return			Returns true if the buffer has been updated, false if still pending.
 	Boolean				IsBufferSwapped(tDisplayHandle hndl);
 
 	/// Returns the handle for the display context currently visible onscreen
 	tDisplayHandle		GetCurrentDisplayHandle();
 	
 	/// Sets the alpha transparency value for the display surface layer
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \param level	The global alpha value for the display context (0 to 100)
+	///
+	/// \param enable	Enable alpha blending for the display context
+	///
+	/// \return			Returns kNoErr on success.
+	///
+	/// LF1000: Global alpha value overides per-pixel alpha values, if ARGB format.
+	/// Has no effect on emulation.
 	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
 								Boolean enable=true);
 
 	/// Returns the alpha transparency value of the display surface layer
+	/// 
+	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \return			Returns the global alpha value set via SetAlpha().
 	U8                  GetAlpha(tDisplayHandle hndl) const;
 
 	// OpenGL context interface (internal Brio use only)
@@ -140,21 +241,51 @@ public:
 	//=================================
 
 	/// Sets the brightness of the display output screen (0 = default setting)
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \param brightness	The brightness value in range -128 to 127
+	///
+	/// \return			Returns kNoErr on success.
 	tErrType			SetBrightness(tDisplayScreen screen, S8 brightness);
 	
 	/// Sets the contrast of the display output screen (0 = default setting)
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \param contrast	The contrast value in range -128 to 127
+	///
+	/// \return			Returns kNoErr on success.
 	tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
 	
 	/// Sets the backlight of the display output screen (-128..127 range setting)
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \param brightness	The backlight value in range -128 to 127
+	///
+	/// \return			Returns kNoErr on success.
 	tErrType			SetBacklight(tDisplayScreen screen, S8 brightness);
 	
 	/// Gets the brightness setting of the display output screen
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return			Returns the brightness value set via SetBrightness().
 	S8					GetBrightness(tDisplayScreen screen);
 	
 	/// Gets the contrast setting of the display output screen
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return			Returns the contrast value set via SetContrast().
 	S8					GetContrast(tDisplayScreen screen);
 	
 	/// Gets the backlight setting of the display output screen
+	///
+	/// \param screen 	The selected output screen
+	///
+	/// \return			Returns the backlight value set via SetBacklight().
 	S8					GetBacklight(tDisplayScreen screen);
 	
 private:
