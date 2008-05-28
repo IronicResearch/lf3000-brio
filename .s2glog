@@ -15779,3 +15779,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/28/08 11:15 AM
 5,536 ms. (Cumulative: 4,767,523 ms)
 
 ----------------
+Revision 3,350 from svn://localhost/TRUNK/:
+
+Added Doxygen file for Brio2 Eclipse project (modeled after LightningCore version). 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/28/08 12:01 PM
+0 changed, 1 added, 0 deleted.
+5,470 ms. (Cumulative: 4,773,072 ms)
+
+----------------
