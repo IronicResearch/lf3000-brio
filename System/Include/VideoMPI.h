@@ -21,6 +21,40 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+/// \class CVideoMPI
+///
+/// The Brio Video MPI is the interface for video playback functionality. It consists of 
+/// low-level functions for handling individual video frames, high-level functions for 
+/// playing video automatically in its own task thread, and state query functions. The 
+/// current Video MPI implementation supports videos in the Ogg container format with 
+/// the Theora video codec.
+/// 
+/// The low-level Video MPI functions manage videos on individual frame basis. A video 
+/// resource is opened and initialized by StartVideo(). Each video frame is indexed by  
+/// GetVideoFrame(), or alternately by time stamp with SyncVideoFrame(). The video frame 
+/// is decoded into YUV format by PutVideoFrame() into a display surface created by 
+/// the Display MPI. The display surface buffer address and dimensions are specified 
+/// using a video surface descriptor. The application would then use an event loop to 
+/// control video playback by outputting each frame at at time such as video splash 
+/// screen animation, or in sync at selected time stamp intervals with a playing audio 
+/// track. After all video frames are output, the video resource is closed with StopVideo().
+///
+/// High-level Video MPI functions are provided as counterpart to the Audio MPI. This 
+/// variation of the StartVideo() MPI method will start a seprate task thread to play the 
+/// video automatically, performing the all the low-level frame-based tasks internally. 
+/// An optional looping parameter is available for looping video playback. An optional 
+/// event listener parameter is available for posting state messages like when the video 
+/// is done playing in a non-looping case. Playback can be paused with PauseVideo(), and 
+/// resumed with ResumeVideo(), or stopped by StopVideo() which will terminate the task 
+/// thread. Playback state info can be queried by IsVideoPaused(), IsvideoPlaying(), and 
+/// IsVideoLooped() methods.
+///
+/// General video property info such as width, height, and FPS rate can be obtained in 
+/// GetVideoInfo() method. Time stamp and frame index data can be queried for the current 
+/// video frame with the GetVideoTime() method, which is applicable for either the 
+/// low-level frame-based methods or the high-level running task thread.
+///
+
 //==============================================================================
 class CVideoMPI : public ICoreMPI {
 public:	

@@ -18,6 +18,49 @@
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+/// \class CDisplayMPI
+///
+/// The Display manager module is intended to provide services to acesss framebuffer
+/// regions, select RGB, ARGB, or YUV display formats, and adjust display specific
+/// features like LCD brightness, contrast, and backlight levels.
+/// 
+/// The Display MPI manages framebuffer regions as display contexts which are intended
+/// for use by other functional modules such as OpenGL, Video, or Font renderers.
+/// The original Display MPI abstraction model expected to create display contexts
+/// in a particular size and pixel format via CreateHandle(), and then register them in
+/// their Z order for updating the display. All registered display contexts would
+/// then be composited to the display via Invalidate() calls. 
+/// 
+/// Although the LF1000 hardware has no 2D acclerator for blitting framebuffer regions, 
+/// it does contain a multi-layer controller for compositing framebuffer regions in
+/// layered RGB or YUV formats. The Register() function will attempt to assign the 
+/// Z order of such onscreen contexts accordingly and make them visible on the display,
+/// and UnRegister() will remove them from being displayed.
+///
+/// Additional Display MPI functions SwapBuffers(), IsBufferSwapped(), and 
+/// GetCurrentDisplayHandle() are provided for page-flipping support. With page-flipping 
+/// functionality, the Brio application has the option for rendering a 2D buffer offscreen 
+/// and then have it displayed onscreen at the next VSync update without visible tearing or 
+/// flickering.
+///
+/// On the LF1000 platform, up to 3 RGB buffers of the same fullscreen format may be 
+/// allocated to support triple-buffered page-flipping. 2 RGB buffers may be allocated 
+/// for double-buffered page-flipping if that is simpler to manage. When either 2 or 3 
+/// RGB buffers are allocated via CreateHandle(), then framebuffer memory used for YUV 
+/// video will be unavailable in that case. Once all available framebuffer regions are 
+/// allocated, CreateHandle() will return an invalid handle (NULL) until these contexts 
+/// are released via corresponding calls to DestroyHandle().
+/// 
+/// Whenever rendering to one of these buffers is completed, SwapBuffers() can be called 
+/// to update it onscreen at the next VSync interval. SwapBuffers() can optionally wait 
+/// until the VSync occurs before returning, which would be preferable for double-buffering 
+/// case. IsBufferSwapped() can also be optionally called prior to the next update, which 
+/// would be more typical of triple-buffering case.
+/// 
+/// The current visible onscreen display context can be queried via GetCurrentDisplayHandle(). 
+/// This corresponds to the most recent context passed to SwapBuffers() when page-flipping 
+/// is used, or the topmost onscreen context passed to Register() otherwise.
+///
 
 //==============================================================================
 class CDisplayMPI : public ICoreMPI {
@@ -153,7 +196,7 @@ public:
 	/// 
 	/// \param hndl		The display handle returned by CreateHandle()
 	///
-	/// \param destroyBuffer	(ignored)
+	/// \param destroyBuffer	(not used)
 	///
 	/// \return			Returns kNoErr on success.
 	tErrType            DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer);
@@ -169,12 +212,16 @@ public:
 	/// 
 	/// \param hndl		The display handle returned by CreateHandle()
 	///
+	/// \param pDirtyRect	(not used)
+	///
 	/// (LF1000 platform does nothing since there is no 2D accelerator to synchronize access)
 	tErrType            UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect = NULL);
 	
 	/// Swaps the display with the selected fullscreen context, optionally waiting for vertical sync
 	/// 
 	/// \param hndl		The display handle returned by CreateHandle()
+	///
+	/// \param waitVSync	Option to wait for VSync before returning
 	///
 	/// \return			Returns kNoErr on success.
 	tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync = false);
