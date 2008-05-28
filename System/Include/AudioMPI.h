@@ -54,7 +54,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// can also operate on a midi channel by passing the tMidiPlayerID.  These
 /// functions include \ref GetAudioTime, \ref IsAudioPlaying, \ref PauseAudio,
 /// \ref ResumeAudio, \ref GetAudioVolume, \ref SetAudioVolume, \ref
-/// GetAudioPriority, \ref SetAudioPriority, \ref SetPan, \ref GetPan, \ref
+/// GetAudioPriority, \ref SetAudioPriority, \ref SetAudioPan, \ref GetAudioPan, \ref
 /// GetAudioEventListener, \ref SetAudioEventListener.  See \ref
 /// MidiPlayerBasics for more details.
 ///
@@ -85,8 +85,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// to reserve tAudioIDs 0-255 for tMidiPlayerIDs.  Sad.
 ///
 /// \todo Ensure that GetAudioTime, IsAudioPlaying, PauseAudio, ResumeAudio,
-/// GetAudioVolume, SetAudioVolume, GetAudioPriority, SetAudioPriority, SetPan,
-/// GetPan, GetAudioEventListener, SetAudioEventListener operate properly on
+/// GetAudioVolume, SetAudioVolume, GetAudioPriority, SetAudioPriority, SetAudioPan,
+/// GetAudioPan, GetAudioEventListener, SetAudioEventListener operate properly on
 /// midi streams.
 ///
 /// \todo Low-level midi API is unimplemented.
@@ -271,7 +271,7 @@ public:
 	/// listener.
 	/// 
 	/// \param flags The flags parameter is a collection of OR'd values that
-	/// influence many of the player's behaviors.  See \ref AudioOptions for
+	/// influence many of the player's behaviors.  See \ref tAudioOptionsFlags for
 	/// details on which flags are available and how they influence the behavior
 	/// of the player.
 	/// 
@@ -533,7 +533,7 @@ public:
 	/// StopMidiFile.  It can also be manipulated using the Audio functions \ref
 	/// GetAudioTime, \ref IsAudioPlaying, \ref PauseAudio, \ref ResumeAudio,
 	/// \ref GetAudioVolume, \ref SetAudioVolume, \ref GetAudioPriority, \ref
-	/// SetAudioPriority, \ref SetPan, \ref GetPan, \ref GetAudioEventListener,
+	/// SetAudioPriority, \ref SetAudioPan, \ref GetAudioPan, \ref GetAudioEventListener,
 	/// \ref SetAudioEventListener.  When using these audio functions, simply
 	/// pass the tMidiPlayerID as the tAudioID.
 	///
@@ -784,7 +784,7 @@ public:
 	
 	/// Get the current priority policy
 	///
-	/// \returns the current priority policy.  See \ref PriorityPolicies for
+	/// \returns	 the current priority policy.  See \ref PriorityPolicies for
 	/// details on what the possible return values are.
 	tPriorityPolicy GetPriorityPolicy(void);
 

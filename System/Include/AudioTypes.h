@@ -120,7 +120,7 @@ struct tAudioHeader {
 /// priorities such that some audio can be halted to free resources for a new
 /// audio.  The policy of when a player can be stopped to make room for a new
 /// player is called the priority policy.  The priority policy can be changed on
-/// the fly by calling \ref SetPriorityPolicy.  The policies are described
+/// the fly by calling SetPriorityPolicy.  The policies are described
 /// below:
 ///
 /// kAudioPriorityPolicyNone: This is the default priority policy that is used
