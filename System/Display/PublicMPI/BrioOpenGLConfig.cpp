@@ -18,6 +18,7 @@
 #include <BrioOpenGLConfig.h>
 #include <DebugMPI.h>
 #include <EmulationConfig.h>
+#include <DisplayPriv.h>
 
 #ifndef  EMULATION
 #include "GLES/libogl.h"
@@ -171,8 +172,16 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
 	CDebugMPI				dbg(kGroupDisplay);
+	dbg.SetDebugLevel(kDisplayDebugLevel);
 	dispmgr = &disp_;
 
+	// Make sure only one OGL context is active at a time
+	if (isEnabled) {
+		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() detected previous OGL context active\n");
+		eglTerminate(ctx.eglDisplay);
+		dbg.DebugOut(kDbgLvlVerbose, "eglTerminate()\n");
+	}
+	
 #ifndef EMULATION
 	// Init OpenGL hardware callback struct
 	meminfo.Memory1D_SizeInMbyte = size1D;
@@ -218,6 +227,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
 	
+
 	// NOTE: 3D layer can only be enabled after MagicEyes lib 
 	// sets up 3D accelerator, but this cannot happen
 	// until GLESOAL_Initalize() callback gets mappings.
@@ -269,7 +279,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "eglCreateWindowSurface()\n");
 	eglSurface = eglCreateWindowSurface(eglDisplay, eglConfig, ctx.eglWindow, NULL);
 	AbortIfEGLError("eglCreateWindowSurface");
-
+	
 	/*
 		Step 6 - Create a context.
 		EGL has to create a context for OpenGL ES. Our OpenGL ES resources

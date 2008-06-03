@@ -15826,3 +15826,12 @@ By Scott Esters (sesters@leapfrog.com) on 5/30/08 12:24 PM
 5,485 ms. (Cumulative: 4,795,514 ms)
 
 ----------------
+Revision 3,359 from svn://localhost/TRUNK/:
+
+Added check for previous OGL context active and destroy it before creating new context. This will only be effective for a currently running process, not for 3D engine left running from a previous process.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/2/08 5:00 PM
+1 changed, 0 added, 0 deleted.
+5,578 ms. (Cumulative: 4,801,155 ms)
+
+----------------
