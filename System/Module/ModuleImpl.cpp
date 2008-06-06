@@ -300,10 +300,9 @@ namespace
 			if( pModule )
 			{
 				--pModule->connect_count;
-				if( pModule->connect_count == 0 
-					&& (pModule->name == "Video" || pModule->name == "Audio") )
+				if( pModule->connect_count == 0 )
 				{
-#if 1	// FIXME/dm: Unload only Audio and Video modules (not all of them) 
+#if 1	// BUGFIX/dm: Unload Brio module as intended
 					DestroyModuleInstance(pModule);
 					RemoveCachedModule(pModule);
 #endif

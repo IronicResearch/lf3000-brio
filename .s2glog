@@ -15848,3 +15848,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/6/08 2:08 PM
 5,547 ms. (Cumulative: 4,806,812 ms)
 
 ----------------
+Revision 3,365 from svn://localhost/TRUNK/:
+
+Allow module manager to unload modules when reference count zeroed, as originally intended. AppManager should maintain persistent Brio module instances for max backwards compatibility.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/6/08 2:17 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 4,812,844 ms)
+
+----------------
