@@ -3,7 +3,20 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.30.0.3339 release (May 19, 2008)
+Brio v1.32.1.3366 release (Jun 6, 2008)
+===========================================
+
+-- Updated DisplayMPI, FontMPI, VideoMPI headers with more Doxygen info.
+Added Doxygen file for Brio2 Eclipse project (modeled after LightningCore version). 
+
+-- Added check for previous OGL context active and destroy it before creating new context. This will only be effective for a currently running process, not for 3D engine left running from a previous process.
+
+-- Re-init mixer SW volume on Audio module creation.  
+
+-- Allow module manager to unload modules when reference count zeroed, as originally intended. AppManager should maintain persistent Brio module instances for max backwards compatibility.
+
+===========================================
+Brio v1.32.0.3339 release (May 19, 2008)
 ===========================================
 
 -- Add Audio support for IMA ADPCM wav files.
