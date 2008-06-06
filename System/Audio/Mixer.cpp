@@ -293,6 +293,9 @@ CAudioMixer::CAudioMixer( int inStreams ):
 					   "Failed to start audio output\n" );
 	
 	pDebugMPI_->Assert(FlatProfilerInit(0, 0) == 0, "Failed to init profiler.\n");
+
+	// Folklore item about once-in-blue-moon silence during Brio/AppManager session
+	SetMasterVolume(100);
 }
 
 // ==============================================================================
@@ -313,8 +316,8 @@ CAudioMixer::~CAudioMixer()
 	{
 		for (long ch = 0; ch < numInStreams_; ch++)
 		{
-			//delete pStreams_[ch];
 		}
+		delete[] pStreams_;
 	}
 	
 	// Deallocate MIDI player

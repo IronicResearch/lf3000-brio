@@ -15835,3 +15835,16 @@ By Dave Milici (dmilici@leapfrog.com) on 6/2/08 5:00 PM
 5,578 ms. (Cumulative: 4,801,155 ms)
 
 ----------------
+Revision 3,360 from svn://localhost/TRUNK/:
+Revision 3,361 from svn://localhost/TRUNK/:
+Revision 3,362 from svn://localhost/TRUNK/:
+Revision 3,363 from svn://localhost/TRUNK/:
+Revision 3,364 from svn://localhost/TRUNK/:
+
+Re-init mixer SW volume on Audio module creation.  
+
+By Dave Milici (dmilici@leapfrog.com) on 6/6/08 2:08 PM
+1 changed, 0 added, 0 deleted.
+5,547 ms. (Cumulative: 4,806,812 ms)
+
+----------------
