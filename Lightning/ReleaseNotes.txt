@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.32.1.3366 release (Jun 6, 2008)
+Brio v1.32.1.3370 release (Jun 6, 2008)
 ===========================================
 
 -- Updated DisplayMPI, FontMPI, VideoMPI headers with more Doxygen info.
