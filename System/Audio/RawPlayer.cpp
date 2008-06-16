@@ -127,7 +127,7 @@ CRawPlayer::~CRawPlayer()
 {
 
 	if (pReadBuf_)
-		delete pReadBuf_;
+		delete[] pReadBuf_;
 
 	// Close file
 	if (fileH_)
