@@ -48,6 +48,7 @@ class TestBtnMgr : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CButtonMPI*				btnmgr_;
+	CEventMPI				evtmgr_;
 	MyBtnEventListener		handler_;
 public:
 	//------------------------------------------------------------------------
@@ -62,6 +63,7 @@ public:
 	void tearDown( )
 	{
 		delete btnmgr_; 
+		sleep(1);
 	}
 	
 	//------------------------------------------------------------------------

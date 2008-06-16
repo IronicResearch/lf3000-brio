@@ -65,7 +65,8 @@ private:
 	Boolean				gotAudioCallback;
 	Boolean				gotMidiCallback;
 	U32					numLoopEndEvents;
-
+	CEventMPI			evtmgr_;
+	
 public:
 	TestAudio():IEventListener(kMyAudioTypes, ArrayCount(kMyAudioTypes))
 	{
@@ -108,6 +109,7 @@ public:
 	{
 		delete pKernelMPI_; 
 		delete pAudioMPI_; 
+		sleep(1);
 	}
 
 	//------------------------------------------------------------------------

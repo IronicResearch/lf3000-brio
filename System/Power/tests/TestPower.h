@@ -49,6 +49,7 @@ class TestPwrMgr : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CPowerMPI*				pwrmgr_;
+	CEventMPI				evtmgr_;
 	MyPwrEventListener		handler_;
 public:
 	//------------------------------------------------------------------------
@@ -62,6 +63,7 @@ public:
 	void tearDown( )
 	{
 		delete pwrmgr_; 
+		sleep(1);
 	}
 	
 	//------------------------------------------------------------------------

@@ -15913,3 +15913,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/08 9:51 AM
 6,091 ms. (Cumulative: 4,837,139 ms)
 
 ----------------
+Revision 3,388 from svn://localhost/TRUNK/:
+
+Add persistent Event MPI instance for static listener, plus sleep is teardown method for per-test module destruction.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/08 10:16 AM
+3 changed, 0 added, 0 deleted.
+5,907 ms. (Cumulative: 4,843,124 ms)
+
+----------------
