@@ -15922,3 +15922,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/08 10:16 AM
 5,907 ms. (Cumulative: 4,843,124 ms)
 
 ----------------
+Revision 3,389 from svn://localhost/TRUNK/:
+
+Modified button unit test to match preceding test for new module instance. (TTP 1973)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/08 10:29 AM
+1 changed, 0 added, 0 deleted.
+5,540 ms. (Cumulative: 4,848,742 ms)
+
+----------------
