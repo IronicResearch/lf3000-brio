@@ -15900,3 +15900,16 @@ By Dave Milici (dmilici@leapfrog.com) on 6/10/08 6:19 PM
 5,828 ms. (Cumulative: 4,830,954 ms)
 
 ----------------
+Revision 3,383 from svn://localhost/TRUNK/:
+Revision 3,384 from svn://localhost/TRUNK/:
+Revision 3,385 from svn://localhost/TRUNK/:
+Revision 3,386 from svn://localhost/TRUNK/:
+Revision 3,387 from svn://localhost/TRUNK/:
+
+Correct delete[] operator, detected by Valgrind warning (not memory leak).
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/08 9:51 AM
+2 changed, 0 added, 0 deleted.
+6,091 ms. (Cumulative: 4,837,139 ms)
+
+----------------

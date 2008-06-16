@@ -80,7 +80,7 @@ CVorbisPlayer::~CVorbisPlayer()
 	tErrType result;
 		
 	if (pReadBuf_)
-		delete pReadBuf_;
+		delete[] pReadBuf_;
 	
 	// Close vorbis file
 	S32 ret = ov_clear( &vorbisFile_ );
