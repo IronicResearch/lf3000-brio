@@ -15931,3 +15931,17 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/08 10:29 AM
 5,540 ms. (Cumulative: 4,848,742 ms)
 
 ----------------
+Revision 3,390 from svn://localhost/TRUNK/:
+Revision 3,391 from svn://localhost/TRUNK/:
+Revision 3,392 from svn://localhost/TRUNK/:
+Revision 3,393 from svn://localhost/TRUNK/:
+Revision 3,394 from svn://localhost/TRUNK/:
+Revision 3,395 from svn://localhost/TRUNK/:
+
+Added atexit handler to module manager to destroy remaining connected modules on process exit. Debugging revealed that some names in the connected module list are corrupted at exit time, and that the found module list was being unnecessarily constructed more than once.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/08 3:46 PM
+1 changed, 0 added, 0 deleted.
+5,504 ms. (Cumulative: 4,854,339 ms)
+
+----------------

@@ -42,6 +42,9 @@ namespace
 	};
 
 	//--------------------------------------------------------------------------   
+	extern "C" void ExitModuleManagerLib(void);
+	
+	//--------------------------------------------------------------------------   
 	class CModuleMgrImpl
 	{
 	private:
@@ -141,6 +144,7 @@ namespace
 		//----------------------------------------------------------------------
 		CModuleMgrImpl()
 		{
+			atexit(ExitModuleManagerLib);
 		}
 		
 		//----------------------------------------------------------------------
@@ -155,10 +159,14 @@ namespace
 			CPath path = GetModuleLibraryLocation();
 			paths[0] = path.c_str();
 						
-			CBootSafeKernelMPI	kernel;
+			// Only need to populate the found module list once
+			if (mFoundModulesList.size() > 0)
+				return kNoErr;
+			
+			// CBootSafeKernelMPI	kernel;
 			for (size_t ii = 0; ii < ArrayCount(paths); ++ii)
 			{
-				std::vector<CPath> files = kernel.GetFilesInDirectory(paths[ii]);
+				std::vector<CPath> files = kernel_.GetFilesInDirectory(paths[ii]);
 				for (size_t jj = 0; jj < files.size(); ++jj)
 					AddValidModule(files[jj]);
 			}
@@ -311,6 +319,18 @@ namespace
 			return kNoErr;
 		}
 		
+		//----------------------------------------------------------------------
+		void DestroyAllModules(void)
+		{
+			// Destroy all modules remaining in connected list.
+			// Called at process exit time via atexit() handler.
+			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
+			{
+				DestroyModuleInstance(&mConnectedModulesList[ii]);
+			}
+			mConnectedModulesList.clear();
+		}
+
 		// TODO: unresolved issues:
 		//   what to do if two modules with same name and version are found
 	private:
@@ -351,6 +371,12 @@ extern "C" tErrType Connect(void** pModule, const char* name, tVersion version)
 extern "C" tErrType Disconnect(const ICoreModule* ptr)
 {
 	return g_impl.Disconnect(ptr);
+}
+
+//--------------------------------------------------------------------------   
+extern "C" void ExitModuleManagerLib(void)
+{
+	g_impl.DestroyAllModules();
 }
 
 // NOTE: For LF_MONOLITHIC_DEBUG builds, the Module.cpp file never loads this
