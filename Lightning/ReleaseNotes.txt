@@ -3,6 +3,12 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.32.2.3396 release (Jun 17, 2008)
+===========================================
+
+-- Added atexit handler to module manager to destroy remaining connected modules on process exit. 
+
+===========================================
 Brio v1.32.1.3370 release (Jun 6, 2008)
 ===========================================
 
