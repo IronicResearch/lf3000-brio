@@ -15955,3 +15955,15 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/08 6:26 PM
 5,532 ms. (Cumulative: 4,859,933 ms)
 
 ----------------
+Revision 3,397 from svn://localhost/TRUNK/:
+Revision 3,398 from svn://localhost/TRUNK/:
+Revision 3,399 from svn://localhost/TRUNK/:
+Revision 3,400 from svn://localhost/TRUNK/:
+
+Module manager cleanup routine checks and fixes module list for mangled module names. (TTP# 1987)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/18/08 5:10 PM
+1 changed, 0 added, 0 deleted.
+5,500 ms. (Cumulative: 4,865,527 ms)
+
+----------------

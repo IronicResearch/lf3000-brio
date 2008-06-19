@@ -71,6 +71,15 @@ namespace
 		std::vector<ConnectedModule>	mConnectedModulesList;
 		
 		//----------------------------------------------------------------------
+		void GetModuleName( const CPath& path, CString& modname )
+		{
+			size_t idx = path.rfind('/');
+			CPath name = path.substr(idx+1);
+			size_t len = name.size();
+			modname = name.substr(3, len-6);
+		}
+
+		//----------------------------------------------------------------------
 		void AddValidModule( const CPath& path )
 		{
 			// TODO: Either parse version from file name or load and
@@ -286,8 +295,8 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
-		//	printf("DestroyModuleInstance:: destroying ptr: 0x%x; name: %s)\n",
-		//			(unsigned int)pModule->ptr, pModule->name.c_str() );
+//			printf("DestroyModuleInstance:: destroying ptr: 0x%x; name: %s)\n",
+//					(unsigned int)pModule->ptr, pModule->name.c_str() );
 
 					ObjPtrToFunPtrConverter fp;
 		    fp.voidptr = kernel_.RetrieveSymbolFromModule(pModule->handle, kDestroyInstanceFnName);
@@ -324,6 +333,12 @@ namespace
 		{
 			// Destroy all modules remaining in connected list.
 			// Called at process exit time via atexit() handler.
+			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
+			{
+				// Walk each list item in case module name needs fixup.
+				if (!strstr(mConnectedModulesList[ii].sopath.c_str(), mConnectedModulesList[ii].name.c_str()))
+					GetModuleName(mConnectedModulesList[ii].sopath, mConnectedModulesList[ii].name);
+			}
 			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
 				DestroyModuleInstance(&mConnectedModulesList[ii]);
