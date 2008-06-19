@@ -3,6 +3,12 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.32.3.3401 release (Jun 18, 2008)
+===========================================
+
+-- Module manager cleanup routine checks and fixes module list for mangled module names. (TTP# 1987)
+
+===========================================
 Brio v1.32.2.3396 release (Jun 17, 2008)
 ===========================================
 
