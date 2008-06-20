@@ -40,6 +40,7 @@ namespace
 	U32			gLastState;
 	Display*	gXDisplay = NULL;
 	bool		gDone = false;
+	tTaskHndl		handleButtonTask;
 
 	//------------------------------------------------------------------------
 	U32 KeySymToButton( KeySym keysym )
@@ -157,6 +158,7 @@ void CButtonModule::InitModule()
 			properties.pTaskMainArgValues = NULL;
 			properties.TaskMainFcn = EmulationButtonTask;
 			status = kernel.CreateTask(handle, properties);
+			handleButtonTask = handle;
 		}
 		dbg_.Assert( status == kNoErr, 
 					"CButtonModule::InitModule(): Button Emulation InitModule: background task creation failed" );
@@ -168,6 +170,11 @@ void CButtonModule::DeinitModule()
 {
 	gDone = true;
 	XAutoRepeatOn(gXDisplay);
+
+	void* 		retval;
+	// Terminate button handler thread, and wait before closing driver
+	kernel_.CancelTask(handleButtonTask);
+	kernel_.JoinTask(handleButtonTask, retval);	
 }
 
 //============================================================================

@@ -16010,3 +16010,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/19/08 7:23 PM
 5,548 ms. (Cumulative: 4,887,860 ms)
 
 ----------------
+Revision 3,410 from svn://localhost/TRUNK/:
+
+Avoid local Kernel object instance in Button destructor to prevent Connect module list corruption. Match Button thread startup/teardown in emulation version.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/19/08 7:32 PM
+4 changed, 0 added, 0 deleted.
+5,547 ms. (Cumulative: 4,893,469 ms)
+
+----------------

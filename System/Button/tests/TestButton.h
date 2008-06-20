@@ -111,9 +111,8 @@ public:
 		boost::scoped_ptr<CEventMPI> eventmgr(new CEventMPI());
 		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
 		usleep(100);
-		// BUGFIX/dm: This condition should be just like the previous test 
-		TS_ASSERT_DIFFERS( handler_.data_.buttonState, kBadButtonState );
-		TS_ASSERT_DIFFERS( handler_.data_.buttonTransition, kBadButtonState );
+		TS_ASSERT_EQUALS( handler_.data_.buttonState, kBadButtonState );
+		TS_ASSERT_EQUALS( handler_.data_.buttonTransition, kBadButtonState );
 	}
 
 };

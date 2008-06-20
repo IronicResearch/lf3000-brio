@@ -42,6 +42,7 @@ namespace
 	char				*dev_name;
 	tTaskHndl			handleButtonTask;
 	tButtonData	data;
+	volatile bool		bRunning = false;
 }
 
 
@@ -218,7 +219,8 @@ void *LightningButtonTask(void*)
 	CButtonMessage msg(data);
 	eventmgr.PostEvent(msg, kButtonEventPriority);
 
-	while(1) {
+	bRunning = true;
+	while(bRunning) {
 
 		data.buttonTransition = 0;
 
@@ -309,6 +311,7 @@ void CButtonModule::InitModule()
 	button_fd = open(dev_name, O_RDONLY);
 	dbg_.Assert(button_fd >= 0, "CButtonModule::InitModule: cannot open %s", dev_name);
 
+	bRunning = false;
 	if( kernel.IsValid() )
 	{
 		tTaskProperties	properties;
@@ -318,19 +321,22 @@ void CButtonModule::InitModule()
 	}
 	dbg_.Assert( status == kNoErr, 
 				"CButtonModule::InitModule: background task creation failed" );
+	while (!bRunning)
+		kernel.TaskSleep(1);
 }
 
 //----------------------------------------------------------------------------
 void CButtonModule::DeinitModule()
 {
-	CKernelMPI	kernel;
+//	CKernelMPI	kernel;
 	void* 		retval;
 
 	dbg_.DebugOut(kDbgLvlVerbose, "ButtonModule::DeinitModule: Button Deinit\n");
 
 	// Terminate button handler thread, and wait before closing driver
-	kernel.CancelTask(handleButtonTask);
-	kernel.JoinTask(handleButtonTask, retval);	
+	bRunning = false;
+	kernel_.CancelTask(handleButtonTask);
+	kernel_.JoinTask(handleButtonTask, retval);	
 	close(button_fd);
 }
 
