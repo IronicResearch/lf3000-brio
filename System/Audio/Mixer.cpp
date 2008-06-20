@@ -631,7 +631,9 @@ CStream *CAudioMixer::FindKillableStream(ConditionFunction *cond,
 		for (it = sortList.begin(); it != sortList.end(); it++) {
 			if((*it)->GetPlayer()->GetPriority() <= priority) {
 				pStream = *it;
+#if 0			// FIXME/dm: Revert least preferable choice for GM-ed games
 				break;
+#endif
 			}
 		}
 	}
