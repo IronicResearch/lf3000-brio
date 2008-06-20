@@ -205,8 +205,8 @@ public:
 	//------------------------------------------------------------------------
 	~CEventManagerImpl() 
 	{
-		CDebugMPI	debug(kGroupEvent);
-		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::dtor: Event Manager going away...\n");
+//		CDebugMPI	debug(kGroupEvent);
+//		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::dtor: Event Manager going away...\n");
 		void* 		retval;
 
 		// Terminate thread normally and dispose of listener list afterwards
