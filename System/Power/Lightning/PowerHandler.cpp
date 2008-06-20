@@ -44,6 +44,7 @@ namespace
 	struct tPowerData   current_pe;
 	tTaskHndl			handlePowerTask;
 	struct tPowerData	data;
+	volatile bool		bRunning = false;	
 }
 
 //============================================================================
@@ -52,9 +53,9 @@ namespace
 //----------------------------------------------------------------------------
 void *LightningPowerTask(void*)
 {
-	CEventMPI 	eventmgr;
 	CDebugMPI	dbg(kGroupPower);
 	CKernelMPI	kernel;
+	CEventMPI 	eventmgr;
 	struct sockaddr_un mon;
 	socklen_t s_mon = sizeof(struct sockaddr_un);
 	int ls, ms;
@@ -68,7 +69,8 @@ void *LightningPowerTask(void*)
 	ls = CreateListeningSocket(POWER_SOCK);
 	dbg.Assert(ls >= 0, "can't open listening socket");
 
-	while(1) {
+	bRunning = true;
+	while(bRunning) {
 		// get battery state
 		current_pe.powerState = GetCurrentPowerState();
 
@@ -134,6 +136,8 @@ void CPowerModule::InitModule()
 
 	data.powerState = GetCurrentPowerState();
 
+	bRunning = false;
+	
 	if( kernel.IsValid() )
 	{
 		tTaskProperties	properties;
@@ -143,19 +147,23 @@ void CPowerModule::InitModule()
 	}
 	dbg_.Assert( status == kNoErr, 
 				"CPowerModule::InitModule: background task creation failed" );
+
+	while (!bRunning)
+		kernel.TaskSleep(1);
 }
 
 //----------------------------------------------------------------------------
 void CPowerModule::DeinitModule()
 {
-	CKernelMPI	kernel;
+//	CKernelMPI	kernel;
 	void* 		retval;
 
 	dbg_.DebugOut(kDbgLvlVerbose, "PowerModule::DeinitModule: Power Deinit\n");
 
 	// Terminate power handler thread, and wait before closing driver
-	kernel.CancelTask(handlePowerTask);
-	kernel.JoinTask(handlePowerTask, retval);
+	bRunning = false;
+	kernel_.CancelTask(handlePowerTask);
+	kernel_.JoinTask(handlePowerTask, retval);
 }
 
 //============================================================================
