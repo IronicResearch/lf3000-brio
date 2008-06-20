@@ -16001,3 +16001,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/19/08 7:20 PM
 5,485 ms. (Cumulative: 4,882,234 ms)
 
 ----------------
+Revision 3,409 from svn://localhost/TRUNK/:
+
+Disable local Debug object instance in Event destructor to prevent Connect module list corruption.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/19/08 7:23 PM
+1 changed, 0 added, 0 deleted.
+5,548 ms. (Cumulative: 4,887,860 ms)
+
+----------------
