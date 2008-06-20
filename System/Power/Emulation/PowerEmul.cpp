@@ -40,6 +40,7 @@ namespace
 	U32			gLastState;
 	Display*	gXDisplay = NULL;
 	bool		gDone = false;
+	tTaskHndl	hPowerTask = kNull;
 
 	//------------------------------------------------------------------------
 	U32 KeySymToPower( KeySym keysym )
@@ -117,6 +118,7 @@ void CPowerModule::InitModule()
 			properties.pTaskMainArgValues = NULL;
 			properties.TaskMainFcn = EmulationPowerTask;
 			status = kernel.CreateTask(handle, properties);
+			hPowerTask = handle;
 		}
 		dbg_.Assert( status == kNoErr, 
 					"CPowerModule::InitModule(): Power Emulation InitModule: background task creation failed" );
@@ -128,6 +130,12 @@ void CPowerModule::DeinitModule()
 {
 	gDone = true;
 	XAutoRepeatOn(gXDisplay);
+
+	// Terminate power handler thread and wait 
+	void* 		retval;
+	kernel_.CancelTask(hPowerTask);
+	kernel_.JoinTask(hPowerTask, retval);	
+
 }
 
 //============================================================================
