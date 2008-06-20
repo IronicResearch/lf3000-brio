@@ -36,6 +36,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define SYSFS_LUN1_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun1/enabled"
 #define SYSFS_VBUS_PATH "/sys/devices/platform/lf1000-usbgadget/vbus"
 #define SYSFS_WD_PATH "/sys/devices/platform/lf1000-usbgadget/watchdog_seconds"
+#define FLAGS_VBUS_PATH "/flags/vbus"
+
 
 //============================================================================
 // Local state and utility functions
@@ -45,7 +47,8 @@ namespace
 	//------------------------------------------------------------------------
 	tTaskHndl		USBDeviceTask;
 	tUSBDeviceData	data;
-	int mtd_num;
+	int				mtd_num;
+	CDebugMPI		*pDebugMPI_;
 	tMutex dataMutex = PTHREAD_MUTEX_INITIALIZER;
 	// Please don't access data without this mutex
 }
@@ -54,7 +57,21 @@ static int get_vbus(void)
 {
 	FILE *f;
 	int ret, vbus;
+	char *env_vbus;
+	char *end_ptr;
 
+	/* use /flags/vbus setting if present */
+	f = fopen(FLAGS_VBUS_PATH, "r");
+	if (f) {	/* found file */
+		ret = fscanf(f, "%d\n", &vbus);
+		fclose(f);
+		if (ret != 1)
+			return -1;
+		pDebugMPI_->DebugOut(kDbgLvlVerbose,
+				"%s: %s=%d\n", __FUNCTION__, FLAGS_VBUS_PATH, vbus);
+		return(vbus);
+	}
+			
 	f = fopen(SYSFS_VBUS_PATH, "r");
 	if(!f)
 		return -1;
@@ -108,7 +125,6 @@ static int is_enabled()
 void *LightningUSBDeviceTask(void*)
 {
 	CEventMPI	eventmgr;
-	CDebugMPI	dbg(kGroupUSBDevice);
 	CKernelMPI	kernel;
 	int vbus;
 	int ls, ms;
@@ -117,10 +133,10 @@ void *LightningUSBDeviceTask(void*)
 	socklen_t s_mon = sizeof(struct sockaddr_un);
 	struct app_message msg;
 
-	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
 
 	ls = CreateListeningSocket(USB_SOCK);
-	dbg.Assert(ls >= 0, "can't open listening socket");
+	pDebugMPI_->Assert(ls >= 0, "can't open listening socket");
 
 	while(1) {
 		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
@@ -160,10 +176,12 @@ void CUSBDeviceModule::InitModule()
 	tErrType	status = kModuleLoadFail;
 	CKernelMPI	kernel;
 	CEventMPI	eventmgr;
-	CDebugMPI	dbg(kGroupUSBDevice);
 	int vbus, enabled;
 
-	pDbg_->DebugOut(kDbgLvlVerbose, "USBDevice Init\n");
+	pDebugMPI_ = new CDebugMPI(kGroupUSBDevice);
+	pDebugMPI_->SetDebugLevel(kDbgLvlVerbose);	
+
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "USBDevice Init\n");
 
 	data.USBDeviceSupports = kUSBDeviceIsMassStorage;
 	data.USBDeviceDriver = 0;
@@ -171,13 +189,13 @@ void CUSBDeviceModule::InitModule()
 
 	/* On lightning, the app can't be running while USB is enabled! */
 	enabled = (is_enabled() == 1);	// -1 does not count as enabled
-	dbg.Assert(!enabled, "Lightning can't run apps while USB enabled");
+	pDebugMPI_->Assert(!enabled, "Lightning can't run apps while USB enabled");
 
 	// Check if we're connected
 	vbus = get_vbus();
 	if(vbus == -1) {
 		// Perhaps the low level USB driver's not loaded?
-		pDbg_->DebugOut(kDbgLvlVerbose, "USBDevice initialization failed.\n");	  
+		pDebugMPI_->DebugOut(kDbgLvlVerbose, "USBDevice initialization failed.\n");	  
 		return;
 	}
 	if(vbus == 1)
@@ -191,7 +209,7 @@ void CUSBDeviceModule::InitModule()
 		status = kernel.CreateTask(USBDeviceTask, properties);
 
 	}
-	pDbg_->Assert( status == kNoErr, 
+	pDebugMPI_->Assert( status == kNoErr, 
 				"CUSBDeviceModule::InitModule: background task creation failed" );
 }
 
@@ -201,11 +219,12 @@ void CUSBDeviceModule::DeinitModule()
 	CKernelMPI	kernel;
 	void* 		retval;
 
-	pDbg_->DebugOut(kDbgLvlVerbose, "USBDeviceModule::DeinitModule\n");
+	pDebugMPI_->DebugOut(kDbgLvlVerbose, "USBDeviceModule::DeinitModule\n");
 
 	// Terminate handler thread, and wait before closing driver
 	kernel.CancelTask(USBDeviceTask);
 	kernel.JoinTask(USBDeviceTask, retval);
+	delete pDebugMPI_;
 }
 
 //----------------------------------------------------------------------------
@@ -239,7 +258,6 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 {
 	int enabled;
 	int ret = kNoErr;
-	CDebugMPI	dbg(kGroupUSBDevice);
 
 	if(drivers & ~kUSBDeviceIsMassStorage)
 		return kUSBDeviceUnsupportedDriver;
@@ -249,7 +267,7 @@ tErrType CUSBDeviceModule::DisableUSBDeviceDrivers(U32 drivers)
 		return kUSBDeviceFailure;
 		
 	/* On lightning, the app can't be running while USB is enabled! */
-	dbg.Assert(!enabled, "Lightning can't run apps while USB enabled");
+	pDebugMPI_->Assert(!enabled, "Lightning can't run apps while USB enabled");
 
 	if(ret == kNoErr) {
 		data.USBDeviceDriver = 0;

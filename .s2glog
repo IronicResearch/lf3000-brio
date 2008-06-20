@@ -15977,3 +15977,18 @@ By Dave Milici (dmilici@leapfrog.com) on 6/18/08 6:29 PM
 5,531 ms. (Cumulative: 4,871,136 ms)
 
 ----------------
+Revision 3,403 from svn://localhost/TRUNK/:
+Revision 3,404 from svn://localhost/TRUNK/:
+Revision 3,405 from svn://localhost/TRUNK/:
+Revision 3,406 from svn://localhost/TRUNK/:
+Revision 3,407 from svn://localhost/TRUNK/:
+
+Ethernet over USB change: use /flags/vbus file instead of VBUS environment
+variable.  Now matches Linux /usr/bin/launch_main script.
+
+
+By Scott Esters (sesters@leapfrog.com) on 6/19/08 6:40 PM
+1 changed, 0 added, 0 deleted.
+5,458 ms. (Cumulative: 4,876,687 ms)
+
+----------------
