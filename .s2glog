@@ -16028,3 +16028,17 @@ By Dave Milici (dmilici@leapfrog.com) on 6/19/08 7:32 PM
 5,531 ms. (Cumulative: 4,899,079 ms)
 
 ----------------
+Revision 3,412 from svn://localhost/TRUNK/:
+Revision 3,413 from svn://localhost/TRUNK/:
+Revision 3,414 from svn://localhost/TRUNK/:
+Revision 3,415 from svn://localhost/TRUNK/:
+Revision 3,416 from svn://localhost/TRUNK/:
+Revision 3,417 from svn://localhost/TRUNK/:
+
+Revert Audio mixer priority logic fix from Brio SVN 3244 to choose least preferable player to bump. This prevents broken functionality of GM-ed games expecting the original priority behavior. (TTP# 1999, 2008)  
+
+By Dave Milici (dmilici@leapfrog.com) on 6/20/08 2:56 PM
+1 changed, 0 added, 0 deleted.
+6,125 ms. (Cumulative: 4,905,314 ms)
+
+----------------
