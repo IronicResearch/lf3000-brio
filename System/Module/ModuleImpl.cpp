@@ -391,7 +391,9 @@ extern "C" tErrType Disconnect(const ICoreModule* ptr)
 //--------------------------------------------------------------------------   
 extern "C" void ExitModuleManagerLib(void)
 {
+#ifndef EMULATION
 	g_impl.DestroyAllModules();
+#endif
 }
 
 // NOTE: For LF_MONOLITHIC_DEBUG builds, the Module.cpp file never loads this

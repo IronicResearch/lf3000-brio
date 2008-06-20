@@ -15992,3 +15992,12 @@ By Scott Esters (sesters@leapfrog.com) on 6/19/08 6:40 PM
 5,458 ms. (Cumulative: 4,876,687 ms)
 
 ----------------
+Revision 3,408 from svn://localhost/TRUNK/:
+
+Disable module manager atexit cleanup in emulation 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/19/08 7:20 PM
+1 changed, 0 added, 0 deleted.
+5,485 ms. (Cumulative: 4,882,234 ms)
+
+----------------
