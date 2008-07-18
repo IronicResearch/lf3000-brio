@@ -16042,3 +16042,59 @@ By Dave Milici (dmilici@leapfrog.com) on 6/20/08 2:56 PM
 6,125 ms. (Cumulative: 4,905,314 ms)
 
 ----------------
+Revision 3,418 from svn://localhost/TRUNK/:
+Revision 3,419 from svn://localhost/TRUNK/:
+Revision 3,420 from svn://localhost/TRUNK/:
+Revision 3,421 from svn://localhost/TRUNK/:
+Revision 3,422 from svn://localhost/TRUNK/:
+Revision 3,423 from svn://localhost/TRUNK/:
+Revision 3,424 from svn://localhost/TRUNK/:
+Revision 3,425 from svn://localhost/TRUNK/:
+Revision 3,426 from svn://localhost/TRUNK/:
+Revision 3,427 from svn://localhost/TRUNK/:
+Revision 3,428 from svn://localhost/TRUNK/:
+Revision 3,429 from svn://localhost/TRUNK/:
+Revision 3,430 from svn://localhost/TRUNK/:
+Revision 3,431 from svn://localhost/TRUNK/:
+Revision 3,432 from svn://localhost/TRUNK/:
+Revision 3,433 from svn://localhost/TRUNK/:
+Revision 3,434 from svn://localhost/TRUNK/:
+Revision 3,435 from svn://localhost/TRUNK/:
+Revision 3,436 from svn://localhost/TRUNK/:
+Revision 3,437 from svn://localhost/TRUNK/:
+Revision 3,438 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,219 ms. (Cumulative: 4,911,752 ms)
+
+----------------
+Revision 3,439 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,642 ms. (Cumulative: 4,918,410 ms)
+
+----------------
+Revision 3,440 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,172 ms. (Cumulative: 4,924,598 ms)
+
+----------------
+Revision 3,441 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,580 ms. (Cumulative: 4,931,178 ms)
+
+----------------
+Revision 3,442 from svn://localhost/TRUNK/:
+Revision 3,443 from svn://localhost/TRUNK/:
+Revision 3,444 from svn://localhost/TRUNK/:
+Revision 3,445 from svn://localhost/TRUNK/:
+
+Updated AudioMPI.h header to document low-level MIDI functions which are currently implemented. Also removed outdated TODO items. Documentation change only.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/18/08 1:53 PM
+1 changed, 0 added, 0 deleted.
+7,329 ms. (Cumulative: 4,938,538 ms)
+
+----------------

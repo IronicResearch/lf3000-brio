@@ -66,8 +66,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// \todo IsAudioPlaying on a particular channel returns true even if that channel
 /// is paused.
 ///
-/// \todo Priority is not implemented.
-///
 /// \todo Priority and listener args to AcquireMidiPlayer are ignored.
 ///
 /// \todo Where applicable, the noDoneMessage arguments are ignored.  As of 28
@@ -75,7 +73,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// (sequencer?).  Specifically, when scrolling fast through the first wheel
 /// after selecting a name, the audio from the previous icon is not pre-empted.
 /// I'm not sure why.
-///
 ///
 /// \todo AudioEffectsProcessor features are unimplemented.
 ///
@@ -89,7 +86,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// GetAudioPan, GetAudioEventListener, SetAudioEventListener operate properly on
 /// midi streams.
 ///
-/// \todo Low-level midi API is unimplemented.
+/// \todo Low-level MIDI functions for managing program lists are unimplemented.
 ///
 /// \todo Ensure that MPI functions fail if kNoAudioID is passed in.
 ///
@@ -99,9 +96,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// \todo kAudioTerminatedEvent and kMidiTerminatedEvent are not implemented.
 ///
 /// \todo Cue points are not implemented and may never be implemented.
-///
-/// \todo raw player (.raw .brio .aif .aiff and .wav) is implemented but not
-/// thoroughly tested.
 ///
 /// \todo infinite looping is not implemented.
 ///
@@ -551,9 +545,10 @@ public:
 	///
 	/// In addition to the high-level play-pause-resume-stop interface for midi
 	/// players, a low-level midi API exists.  This low-level API can be used
-	/// programatically generate a midi stream.  However, this API is not fully
-	/// specified and not fully implemented.  So, at this time, programatic
-	/// generation of midi is not supported.
+	/// programatically generate a midi stream. Currently implemented low-level
+	/// functions include \ref GetEnabledMidiTracks, \ref SetEnableMidiTracks,
+	/// \ref TransposeMidiTracks, \ref ChangeMidiTempo, \ref ChangeMidiInstrument
+	/// \ref MidiNoteOn, \ref MidiNoteOff, and \ref SendMidiCommand.
 	///
 
 	/// Create midi player
@@ -593,10 +588,30 @@ public:
 	/// as a tAudioID to all functions that will take it.
 	tAudioID GetAudioIDForMidiID( tMidiPlayerID id );
 	
-	/// Start playback of midi file.
+	/// Start playback of MIDI file.
 	///
-	/// This function is analogous to StartAudio.  The only difference is that
-	/// it must be passed a valid tMidiPlayerID.
+	/// \param id	The tMidiPlayerID of the acquired MIDI player object
+	///
+	/// \param path	The CPath resource location of the MIDI file to play
+	///
+	/// \param volume	The volume setting when the MIDI file starts playing
+	///
+	/// \param priority	(unused)
+	///
+	/// \param pListener	The pointer to the IEventListener callback object
+	/// to be used for event notifications
+	///
+	/// \param payload	The user-defined tAudioPayload parameter to be used in 
+	/// event notification messages
+	///
+	/// \param flags	The tAudioOptionsFlags for options like done messages
+	///
+	/// \return			Returns kNoErr on success, or kAudioMidiErr on internal MIDI
+	/// file errors, or kAudioMidiUnavailable if MIDI file is already playing.
+	///
+	/// This function is analogous to \ref StartAudio.  The only difference is that
+	/// it must be passed a valid tMidiPlayerID. The priority parameter is ignored
+	/// because only one single MIDI file can be played at a time.
 	tErrType 	StartMidiFile( tMidiPlayerID		id,
 							   const CPath			&path, 
 							   U8					volume, 
@@ -667,111 +682,183 @@ public:
 	/// function, the user can call \ref ReleaseMidiPlayer.
 	void 		StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage );
 	
-	/// Low-level midi control
+	/// Returns the Midi player's currently enabled tracks.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \return		The tMidiTrackBitMask of enabled tracks, 16 tracks max
 	tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
 
-	/// Low-level midi control
+	/// Sets the Midi player's currently enabled tracks.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param bitMask		The tMidiTrackBitMask of enabled tracks, 16 tracks max
+	///
+	/// \return		kNoErr on success
 	tErrType 	SetEnableMidiTracks( tMidiPlayerID id,
 									 tMidiTrackBitMask bitMask );
 
-	/// Low-level midi control
+	/// Changes the pitch of selected Midi player's tracks.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param bitMask		The tMidiTrackBitMask of selected tracks, 16 tracks max
+	///
+	/// \param semitones	The number of semitones (half-steps) to adjust the pitch 
+	/// from its current value, positive for higher pitch, negative for lower pitch
+	///
+	/// \return		kNoErr on success
 	tErrType	TransposeMidiTracks( tMidiPlayerID id,
 									 tMidiTrackBitMask bitMask,
 									 S8 semitones );
 
-	/// Low-level midi control
+	/// Changes the tempo of the selected Midi player, all tracks.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param tempo	The tempo scaler to change from its current value, 
+	/// ranging from 1/16 slower to 16x faster, (-127..127)
+	///
+	/// \return		kNoErr on success
 	tErrType	ChangeMidiTempo( tMidiPlayerID id, S8 tempo ); 
 	
-	/// Low-level midi control
+	/// Changes the instrument of the selected Midi player track.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param channel	The selected track to change, 0..15
+	///
+	/// \param instr	The tMidiPlayerInstrument instrument number to change. 
+	///
+	/// \return		kNoErr on success
 	tErrType	ChangeMidiInstrument( tMidiPlayerID id,
 									  int channel,
 									  tMidiPlayerInstrument instr );
 
-	/// Low-level midi control
+	/// Changes the instrument of the selected Midi player tracks.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param bits		The tMidiTrackBitMask of selected tracks, 16 tracks max
+	///
+	/// \param instr	The tMidiPlayerInstrument instrument number to change 
+	///
+	/// \return		kNoErr on success
 	tErrType 	ChangeMidiInstrument( tMidiPlayerID id,
 									  tMidiTrackBitMask bits,
 									  tMidiPlayerInstrument instr ); 
 	
-	/// Low-level midi control
+	/// Low-level Midi function to play a note.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param channel	The selected track to play, 0..15
+	///
+	/// \param note		The number of the note to play, 60 = middle C
+	///
+	/// \param velocity	The loudness of the note to play, 64 = normal
+	///
+	/// \param flags	(unused)
+	///
+	/// \return		kNoErr on success
 	tErrType MidiNoteOn( tMidiPlayerID id,
 						 U8 channel,
 						 U8 note,
 						 U8 velocity,
 						 tAudioOptionsFlags flags );
 
-	/// Low-level midi control
+	/// Low-level Midi function to play a note.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param channel	The selected track to play, 0..15
+	///
+	/// \param note		The number of the note to play, 60 = middle C
+	///
+	/// \param velocity	The loudness of the note to play, 64 = normal
+	///
+	/// \return		kNoErr on success
 	tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
 
-	/// Low-level midi control
+	/// Low-level Midi function to stop playing a note.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param channel	The selected track, 0..15
+	///
+	/// \param note		The number of the note to stop, 60 = middle C
+	///
+	/// \param velocity	The loudness of the note to stop, 64 = normal
+	///
+	/// \param flags	(unused)
+	///
+	/// \return		kNoErr on success
 	tErrType MidiNoteOff( tMidiPlayerID id,
 						  U8 channel,
 						  U8 note,
 						  U8 velocity,
 						  tAudioOptionsFlags flags );
 
-	/// Low-level midi control
+	/// Low-level Midi function to stop playing a note.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param channel	The selected track, 0..15
+	///
+	/// \param note		The number of the note to stop, 60 = middle C
+	///
+	/// \return		kNoErr on success
 	tErrType MidiNoteOff(tMidiPlayerID id,
 						 U8 channel,
 						 U8 note);
 	
-	/// Low-level midi control
+	/// Low-level Midi function to send a MIDI command to the player.
 	///
-	/// Use of this function is not currently specified.
+	/// \param id	The tMidiPlayerID of the selected player
+	///
+	/// \param cmd	The MIDI command byte, channel packed in lower nibble
+	///
+	/// \param data1	The 1st MIDI data byte
+	///
+	/// \param data2	The 2nd MIDI data byte, optional
+	///
+	/// \return		kNoErr on success
 	tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType CreateProgramList( tMidiProgramList **d );
 	
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType AddToProgramList( tMidiProgramList *d, U8 bank, U8 program );
 	
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType AddDrumToProgramList( tMidiProgramList *d, U8 bank, U8 program, int pitch );
 
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType DeleteProgramList(	 tMidiProgramList *d );
 	
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType ScanForPrograms( tMidiPlayerID id, tMidiProgramList *d );
 	
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType LoadInstrumentFile( const CPath &path , tMidiProgramList *d );
 	
 	/// Low-level midi control
 	///
-	/// Use of this function is not currently specified.
+	/// This function is not currently implemented.
 	tErrType UnloadAllInstruments( void );
 
 	/// Set the current priority policy
