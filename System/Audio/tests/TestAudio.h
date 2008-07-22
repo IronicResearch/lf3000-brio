@@ -419,6 +419,7 @@ public:
 		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID)) {
 			pKernelMPI_->TaskSleep(100);
 		}
+		TS_ASSERT(pAudioMPI_->IsMidiFilePlaying() == false);
 		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
 		TS_ASSERT(err == kNoErr);
 	}
@@ -602,6 +603,97 @@ public:
 		TS_ASSERT(err == kNoErr);
 	}
 
+	//------------------------------------------------------------------------
+	void testMIDIEnableTracks( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	id;
+		tMidiTrackBitMask	mask = 0x01;
+		PRINT_TEST_NAME();
+		
+		err = pAudioMPI_->AcquireMidiPlayer( kPriority, NULL, &id );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( id, "Neutr_3_noDrums.mid", kVolume, kPriority,
+										 kNull, kPayload, kFlags );
+		TS_ASSERT(err == kNoErr);
+		
+		for (int i = 0; i < 8; i++) {
+			pAudioMPI_->SetEnableMidiTracks(id, mask);
+			TS_ASSERT( pAudioMPI_->GetEnabledMidiTracks(id) == mask );
+			pKernelMPI_->TaskSleep(500);
+			mask <<= 1;
+		}
+
+		pAudioMPI_->StopMidiFile(id, true);
+
+		err = pAudioMPI_->ReleaseMidiPlayer( id );
+		TS_ASSERT(err == kNoErr);
+	}
+	
+	//------------------------------------------------------------------------
+	void testMIDITransposeTracks( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	id;
+		tMidiTrackBitMask	mask = 0x01;
+		PRINT_TEST_NAME();
+		
+		err = pAudioMPI_->AcquireMidiPlayer( kPriority, NULL, &id );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( id, "Neutr_3_noDrums.mid", kVolume, kPriority,
+										 kNull, kPayload, kFlags );
+		TS_ASSERT(err == kNoErr);
+		
+		for (int i = 0; i < 16; i++) {
+			pAudioMPI_->TransposeMidiTracks(id, mask, i);
+			pKernelMPI_->TaskSleep(500);
+			mask |= (mask << 1);
+		}
+		for (int i = 0; i < 16; i++) {
+			pAudioMPI_->TransposeMidiTracks(id, mask, -i);
+			pKernelMPI_->TaskSleep(500);
+		}
+
+		pAudioMPI_->StopMidiFile(id, true);
+
+		err = pAudioMPI_->ReleaseMidiPlayer( id );
+		TS_ASSERT(err == kNoErr);
+	}
+	
+	//------------------------------------------------------------------------
+	void testMIDIChangeTempo( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	id;
+		PRINT_TEST_NAME();
+		
+		err = pAudioMPI_->AcquireMidiPlayer( kPriority, NULL, &id );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile( id, "Neutr_3_noDrums.mid", kVolume, kPriority,
+										 kNull, kPayload, kFlags );
+		TS_ASSERT(err == kNoErr);
+		
+		for (int i = 0; i < 16; i++) {
+			pAudioMPI_->ChangeMidiTempo(id, i);
+			pKernelMPI_->TaskSleep(500);
+		}
+		for (int i = 0; i < 16; i++) {
+			pAudioMPI_->ChangeMidiTempo(id, -i);
+			pKernelMPI_->TaskSleep(500);
+		}
+
+		pAudioMPI_->StopMidiFile(id, true);
+
+		err = pAudioMPI_->ReleaseMidiPlayer( id );
+		TS_ASSERT(err == kNoErr);
+	}
+	
 	//------------------------------------------------------------------------
 	void testAudioVolume()
 	{
