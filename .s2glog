@@ -16098,3 +16098,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/18/08 1:53 PM
 7,329 ms. (Cumulative: 4,938,538 ms)
 
 ----------------
+Revision 3,446 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,454 ms. (Cumulative: 4,945,086 ms)
+
+----------------
+Revision 3,447 from svn://localhost/TRUNK/:
+
+Added Audio MPI unit tests for Get/SetEnabledMidiTracks(), TransposeMidiTracks(), ChangeMidiTempo().
+
+By Dave Milici (dmilici@leapfrog.com) on 7/21/08 5:06 PM
+1 changed, 1 added, 0 deleted.
+5,596 ms. (Cumulative: 4,950,682 ms)
+
+----------------
