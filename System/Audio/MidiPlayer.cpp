@@ -372,6 +372,7 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 		fclose(file);	
 	if(result) {
 		pKernelMPI_->Free(pMidiFileImage);
+		pMidiFileImage = NULL;
 	}
 	
 	return result;
@@ -509,7 +510,7 @@ tErrType CMidiPlayer::ChangeProgram( tMidiTrackBitMask trackBits,
 
 	// GK FIXXXX: Need extra code as minimal instrument set is currently loaded,
 	// so you have to load those not in memory
-
+	
 	return (kNoErr);
 }	// ---- end ChangeProgram() ----
 
@@ -560,7 +561,7 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 	// -------- Render MIDI file
 	//
 	S16 *pBuf = pOut;
-	if ( !bIsDone_ )
+	if ( pFilePlayer_ && !bIsDone_ )
 	{
 		// TODO: make this bulletproof.  Right now no check for sizes.  Figure
 		// out how many calls to spmidi we need to make to get a full output
@@ -626,7 +627,10 @@ U32 CMidiPlayer::Render( S16* pOut, U32 numStereoFrames )
 #ifdef INCLUDE_PROGRAMMATIC_MIDI
 	// 
 	// Add MIDI output from programmatic interface to output
-	//	GK FIXXXX: note currently not added but mutually exclusive
+	//
+	// BUGFIX for programmatic synthesis working in GM Brio 3011:
+	// File-based rendering is only effective when pFilePlayer_ object present,
+	// otherwise fallback to default Mobileer rendering for programmatic cases.
 	else 
 	{
 		// Calculate # of calls to get full output buffer
