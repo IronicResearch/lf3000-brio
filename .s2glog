@@ -16113,3 +16113,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/21/08 5:06 PM
 5,596 ms. (Cumulative: 4,950,682 ms)
 
 ----------------
+Revision 3,448 from svn://localhost/TRUNK/:
+
+Added conditional for MIDI file object to MIDI Render() code logic in order to re-instate programmatic MIDI output. Working in GM Brio 3011, broken after mixer rework for Brio 3114. (TTP #2059)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/22/08 12:44 PM
+1 changed, 0 added, 0 deleted.
+5,783 ms. (Cumulative: 4,956,543 ms)
+
+----------------
