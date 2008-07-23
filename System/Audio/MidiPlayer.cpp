@@ -116,6 +116,7 @@ CMidiPlayer::CMidiPlayer( tAudioStartAudioInfo *pInfo, tAudioID id ) :
 
 	// For now only one MIDI player for whole system!  
 	pFilePlayer_ = kNull;
+	pMidiFileImage = NULL;
 
 	// Mobileer "spmidi" variables
 	spMIDI_orchestra_ = NULL;
@@ -141,7 +142,7 @@ CMidiPlayer::~CMidiPlayer()
 						 "CMidiPlayer::~ -- Cleaning up.\n");	
 
 	// If a file is playing (the user didn't call stop first) , stop it for them.
-	if (!bIsDone_) 
+	if (pFilePlayer_ && !bIsDone_) 
 	{
 		//Note: StopMidiFile calls the listener.  The caller of this destructor
 		//probably holds the mixer lock and/or the audio MPI lock.  If the
