@@ -695,6 +695,66 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
+	void testMIDINoteOnOff( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	id;
+		U8				program[3] = {1, 24, 40}; // piano, guitar, violin
+		U8 				channel  = 0;
+		U8 				note     = kMIDI_C4;
+		U8 				velocity = 127;
+		PRINT_TEST_NAME();
+		
+		err = pAudioMPI_->AcquireMidiPlayer( kPriority, NULL, &id );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id != kNoMidiID );
+
+		for (int j = 0; j < 3; j++)
+		{
+			err = pAudioMPI_->ChangeMidiInstrument(id, channel, program[j]);
+			TS_ASSERT_EQUALS( kNoErr, err );
+	
+			for (int i = 0; i < 12; i++) {
+				pAudioMPI_->MidiNoteOn(id, channel, note + i, velocity);
+				pKernelMPI_->TaskSleep(100);
+				pAudioMPI_->MidiNoteOff(id, channel, note + i);
+				pKernelMPI_->TaskSleep(50);
+			}
+		}
+		
+		err = pAudioMPI_->ReleaseMidiPlayer( id );
+		TS_ASSERT(err == kNoErr);
+	}
+	
+	//------------------------------------------------------------------------
+	void testMIDICommand( )
+	{
+		tErrType 		err;
+		tMidiPlayerID	id;
+		U8				program  = 26; // guitar
+		U8 				channel  = 0;
+		U8 				note     = kMIDI_C4;
+		U8 				velocity = 127;
+		PRINT_TEST_NAME();
+		
+		err = pAudioMPI_->AcquireMidiPlayer( kPriority, NULL, &id );		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( id != kNoMidiID );
+
+		pAudioMPI_->SendMidiCommand(id, kMIDI_ChannelMessage_ProgramChange | channel, program, 0);
+
+		for (int i = 0; i < 12; i++) {
+			pAudioMPI_->SendMidiCommand(id, kMIDI_ChannelMessage_NoteOn | channel, note - i, velocity);
+			pKernelMPI_->TaskSleep(100);
+			pAudioMPI_->SendMidiCommand(id, kMIDI_ChannelMessage_NoteOff | channel, note - i, 0);
+			pKernelMPI_->TaskSleep(50);
+		}
+		
+		err = pAudioMPI_->ReleaseMidiPlayer( id );
+		TS_ASSERT(err == kNoErr);
+	}
+	
+	//------------------------------------------------------------------------
 	void testAudioVolume()
 	{
 		tAudioID id;
