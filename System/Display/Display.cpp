@@ -79,6 +79,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 //----------------------------------------------------------------------------
 CDisplayModule::~CDisplayModule()
 {
+#if 0	// Skip removing display contexts for cleaner appearance on exits (TTP #2010)
 	tDisplayContext*	pdc = pdcListHead;
 	while (pdc != NULL)
 	{
@@ -87,6 +88,7 @@ CDisplayModule::~CDisplayModule()
 	}
 	if (pdcPrimary_)
 		DestroyHandle(pdcPrimary_, true);
+#endif
 	DeInitModule(); // delegate to platform or emulation cleanup
 }
 

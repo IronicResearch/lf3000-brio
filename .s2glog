@@ -16141,3 +16141,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/24/08 7:18 PM
 5,783 ms. (Cumulative: 4,968,405 ms)
 
 ----------------
+Revision 3,452 from svn://localhost/TRUNK/:
+
+Skip removing display contexts in Display module destructor, for cleaner appearance when AppManager exits. (TTP #2010)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/25/08 11:27 AM
+1 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 4,974,171 ms)
+
+----------------
