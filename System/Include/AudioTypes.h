@@ -27,7 +27,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 	(kAudioCompletedEvent)				\
 	(kMidiCompletedEvent)				\
 	(kAudioCuePointEvent)               \
-	(kAudioLoopEndEvent)		    
+	(kAudioLoopEndEvent)				\
+	(kAudioMidiEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupAudio), AUDIO_EVENTS)
 
@@ -64,6 +65,14 @@ typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255.
 									// 0 is lowest priority, 255 highest.
 #define kNoAudioID	kU32Max	        // ID returned on failure
 
+#define kAudioPanDefault		0	// pan center left/right
+#define kAudioPanMin		  (-100)
+#define kAudioPanMax			100
+
+#define kAudioVolumeDefault		100
+#define kAudioVolumeMin			0
+#define kAudioVolumeMax			100
+
 #define kAudioDoneMsgBit 	    0x1 // Legacy definition.  KEEP.
 #define kAudioDoneMsgBitMask 	0x1
 #define kAudioLoopedBitMask 	0x2
@@ -73,7 +82,8 @@ enum {
 	kAudioOptionsNoDoneMsg				= 0x00,	// No audio options specified
 	kAudioOptionsDoneMsgAfterComplete	= 0x01,	// Send after job (play + looping) is complete 
 	kAudioOptionsLooped					= 0x02,	// Repeat # times, specified in payload parameter
-	kAudioOptionsLoopEndMsg         	= 0x04	// Send LoopEnd message at end of each loop  
+	kAudioOptionsLoopEndMsg         	= 0x04,	// Send LoopEnd message at end of each loop  
+	kAudioOptionsMidiEvent				= 0x08	// Send MidiEvent message upon MIDI file meta events
 };
 #define kAudioOptionsNone 	0x0  // No options specified
 typedef U32 tAudioOptionsFlags; 
@@ -185,11 +195,22 @@ struct tAudioMsgCuePoint {
 	tAudioCuePoint		cuePoint;
 };
 
+struct tAudioMsgMidiEvent {
+	tMidiPlayerID		midiPlayerID;
+	tAudioPayload		payload;
+	U8					trackIndex;
+	U8					metaEventType;
+	const char*			addrFileImage;
+	int					numChars;
+	void*				userData;
+};
+
 union tAudioMsgData {
 	tAudioMsgAudioCompleted		audioCompleted;
 	tAudioMsgMidiCompleted		midiCompleted;
 	tAudioMsgCuePoint			audioCuePoint;
 	tAudioMsgLoopEnd            loopEnd;
+	tAudioMsgMidiEvent			midiEvent;
 };
 
 //==============================================================================
@@ -206,6 +227,7 @@ public:
 	CAudioEventMessage( const tAudioMsgMidiCompleted&  data );
 	CAudioEventMessage( const tAudioMsgCuePoint&       data );
 	CAudioEventMessage( const tAudioMsgLoopEnd&        data );
+	CAudioEventMessage( const tAudioMsgMidiEvent&      data );
 
 	virtual U16	GetSizeInBytes() const;
 

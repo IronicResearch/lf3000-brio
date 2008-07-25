@@ -62,6 +62,8 @@ typedef SPMIDI_Error (*pFnFilePlayerRewind)( MIDIFilePlayer * );
 typedef SPMIDI_Error (*pFnFilePlayerSetTempoScaler)( MIDIFilePlayer *, int );
 typedef int (*pFnFilePlayerPlayFrames)( MIDIFilePlayer *, SPMIDI_Context *, int );
 typedef void (*pFnFilePlayerDelete)( MIDIFilePlayer * );
+typedef void (*pFnFilePlayerSetTextCallback)( MIDIFilePlayer *, MIDIFilePlayer_TextCallback *, void * );
+typedef int (*pFnFilePlayerGetFrameTime)( MIDIFilePlayer * );
 
 
 //==============================================================================
@@ -98,6 +100,8 @@ extern pFnFilePlayerRewind			pMIDIFilePlayer_Rewind;
 extern pFnFilePlayerSetTempoScaler	pMIDIFilePlayer_SetTempoScaler;
 extern pFnFilePlayerPlayFrames		pMIDIFilePlayer_PlayFrames;
 extern pFnFilePlayerDelete			pMIDIFilePlayer_Delete;
+extern pFnFilePlayerSetTextCallback	pMIDIFilePlayer_SetTextCallback;
+extern pFnFilePlayerGetFrameTime	pMIDIFilePlayer_GetFrameTime;
 
 #ifndef USE_SPMIDI_EXPORTS
 #define SPMIDI_Initialize			pSPMIDI_Initialize
@@ -130,7 +134,8 @@ extern pFnFilePlayerDelete			pMIDIFilePlayer_Delete;
 #define MIDIFilePlayer_SetTempoScaler	pMIDIFilePlayer_SetTempoScaler	
 #define MIDIFilePlayer_PlayFrames	pMIDIFilePlayer_PlayFrames		
 #define MIDIFilePlayer_Delete		pMIDIFilePlayer_Delete		
-
+#define MIDIFilePlayer_SetTextCallback	pMIDIFilePlayer_SetTextCallback
+#define MIDIFilePlayer_GetFrameTime		pMIDIFilePlayer_GetFrameTime
 #endif
 
 //==============================================================================
