@@ -40,9 +40,29 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define kMIDI_SamplingFrequency		(kAudioSampleRate/kMIDI_SamplingFrequencyDivisor)
 #define kMIDI_FramesPerIteration	256
 
+#define kMIDI_EventPriority			128			// asynchronous
+
 //==============================================================================
 // Global variables
 //==============================================================================
+
+//==============================================================================
+// Local functions
+//==============================================================================
+
+namespace
+{
+	// Local Mobileer callback function to avoid C++ namespace warnings
+	void  LocalMetaEventMsg( int trackIndex, 
+								int metaEventType, 
+								const char* addr,
+								int numChars,
+								void* userData )
+	{
+		CMidiPlayer*			pMidiPlayer = reinterpret_cast<CMidiPlayer*>(userData);
+		pMidiPlayer->SendMetaEventMsg(trackIndex, metaEventType, addr, numChars, userData);
+	}
+}
 
 //============================================================================
 // Emulation setup
@@ -172,17 +192,31 @@ CMidiPlayer::~CMidiPlayer()
 
 }	// ---- end ~CMidiPlayer() ----
 
-
+// ==============================================================================
+// RewindFile: Seek to beginning of file
+// ==============================================================================
 void CMidiPlayer::RewindFile()
 {
-	// Unimplemented
-	return;
+	if (pFilePlayer_)
+	{
+		MIDIFilePlayer_Rewind( pFilePlayer_ ); 
+		bIsDone_ = false;
+	}
 }
 
+// ==============================================================================
+// GetAudioTime_mSec:	Return file position in time (milliSeconds)
+// ==============================================================================
 U32 CMidiPlayer::GetAudioTime_mSec( void )
 {
-	// Unimplemented
-	return 0;
+	U32	time = 0;
+	
+	if (pFilePlayer_)
+	{
+		U32 frames = MIDIFilePlayer_GetFrameTime( pFilePlayer_ );
+		time = 1000 * frames / kMIDI_SamplingFrequency;
+	}
+	return time;
 }
 
 // ==============================================================================
@@ -231,7 +265,7 @@ void CMidiPlayer::SendDoneMsg( void )
 	if (!pListener_)
 		return;
 
-	const tEventPriority	kPriorityTBD = 0;
+	const tEventPriority	kPriorityTBD = kMIDI_EventPriority;
 	tAudioMsgMidiCompleted	data;
 	data.midiPlayerID = id_;
 	data.payload	  = loopCount_;	
@@ -253,16 +287,42 @@ void CMidiPlayer::SendLoopEndMsg( void )
 	if (!pListener_)
 		return;
 
-	const tEventPriority	kPriorityTBD = 0;
+	const tEventPriority	kPriorityTBD = kMIDI_EventPriority;
 	tAudioMsgLoopEnd		data;
 	data.audioID = id_;			
 	data.payload = loopCount_;
-	data.count	 = 1;
+	data.count	 = loopCounter_;
 
 	CEventMPI	event;
 	CAudioEventMessage	msg(data);
 	event.PostEvent(msg, kPriorityTBD, pListener_);
 }	// ---- end SendLoopEndMsg() ----
+
+// ==============================================================================
+// SendMetaEventMsg: Send message to Event listener on MIDI file meta events
+// ==============================================================================
+void CMidiPlayer::SendMetaEventMsg( int trackIndex, 
+									int metaEventType, 
+									const char* addr,
+									int numChars,
+									void* userData )
+{
+	if (!pListener_)
+		return;
+
+	tAudioMsgMidiEvent	data;
+	data.midiPlayerID	= id_;			
+	data.payload 		= payload_;
+	data.trackIndex		= (U8)trackIndex;
+	data.metaEventType	= (U8)metaEventType;
+	data.addrFileImage	= addr;
+	data.numChars		= numChars;
+	data.userData		= userData;
+
+	CEventMPI			event;
+	CAudioEventMessage	msg(data);
+	event.PostEvent(msg, kMIDI_EventPriority, pListener_);
+}
 
 // ==============================================================================
 // StartMidiFile
@@ -320,6 +380,8 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 						 (0 != (pInfo->flags & kAudioOptionsDoneMsgAfterComplete)));
 	bSendLoopEndMessage_ = ((kNull != pListener_) &&
 							(0 != (pInfo->flags & kAudioOptionsLoopEndMsg)));
+	bSendMetaEventMessage_ = ((kNull != pListener_) &&
+							(0 != (pInfo->flags & kAudioOptionsMidiEvent)));
 
 	// ----Selectively load instruments
 	{
@@ -367,6 +429,15 @@ tErrType CMidiPlayer::StartMidiFile( tAudioStartAudioInfo *pInfo )
 									pMidiFileImage,
 									imageSize );
 	bIsDone_ = false;
+	
+	// Register callback function for MIDI file meta events, if selected
+	if (bSendMetaEventMessage_) 
+	{
+		// Register local callback function to avoid C++ namespace warnings
+		MIDIFilePlayer_SetTextCallback( pFilePlayer_, 
+				&LocalMetaEventMsg, 
+				this );
+	}
 
  error:
 	if(file)

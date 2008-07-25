@@ -65,6 +65,7 @@ private:
 	Boolean				gotAudioCallback;
 	Boolean				gotMidiCallback;
 	U32					numLoopEndEvents;
+	U32					numMidiEvents;
 	CEventMPI			evtmgr_;
 	
 public:
@@ -91,6 +92,11 @@ public:
 		else if( msg.GetEventType() == kAudioLoopEndEvent )
 		{
 			numLoopEndEvents++;
+			status = kEventStatusOKConsumed;
+		}
+		else if( msg.GetEventType() == kAudioMidiEvent )
+		{
+			numMidiEvents++;
 			status = kEventStatusOKConsumed;
 		}
 		return status;
@@ -864,7 +870,6 @@ public:
 	//------------------------------------------------------------------------
 	void testMidiCallbackUseCase1( )
 	{
-		
 		tErrType err;
 		tMidiPlayerID	midiPlayerID;
 		PRINT_TEST_NAME();
@@ -883,6 +888,32 @@ public:
 			pKernelMPI_->TaskSleep(10);
 
 		TS_ASSERT(gotMidiCallback == true);
+		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
+		TS_ASSERT(err == kNoErr);
+	}
+
+	//------------------------------------------------------------------------
+	void testMidiCallbackUseCase2( )
+	{
+		tErrType err;
+		tMidiPlayerID	midiPlayerID;
+		PRINT_TEST_NAME();
+
+		numMidiEvents = 0;
+
+		err = pAudioMPI_->AcquireMidiPlayer(1, NULL, &midiPlayerID);		
+		TS_ASSERT_EQUALS( kNoErr, err );
+		TS_ASSERT( midiPlayerID != kNoMidiID );
+
+		err = pAudioMPI_->StartMidiFile(midiPlayerID, "2Sec.mid", kVolume, 1,
+										this, 0, kAudioOptionsMidiEvent);
+		TS_ASSERT(err == kNoErr);
+		
+		while(pAudioMPI_->IsMidiFilePlaying(midiPlayerID))
+			pKernelMPI_->TaskSleep(10);
+
+		TS_ASSERT(numMidiEvents > 0);
+
 		err = pAudioMPI_->ReleaseMidiPlayer( midiPlayerID );
 		TS_ASSERT(err == kNoErr);
 	}

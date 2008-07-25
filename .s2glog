@@ -16131,3 +16131,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/22/08 5:00 PM
 5,907 ms. (Cumulative: 4,962,544 ms)
 
 ----------------
+Revision 3,450 from svn://localhost/TRUNK/:
+Revision 3,451 from svn://localhost/TRUNK/:
+
+Added support for MIDI file meta events, using additional kAudioOptionsMidiEvent flag and tAudioMsgMidiEvent message type. (TTP #1927 feature request)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/24/08 7:18 PM
+7 changed, 0 added, 0 deleted.
+5,783 ms. (Cumulative: 4,968,405 ms)
+
+----------------

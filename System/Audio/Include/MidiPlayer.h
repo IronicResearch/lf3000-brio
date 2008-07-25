@@ -127,6 +127,14 @@ class CMidiPlayer : public CAudioPlayer {
 
 	Boolean bSendDoneMessage_;
 	Boolean bSendLoopEndMessage_;
+	Boolean bSendMetaEventMessage_;
+
+public:
+	void SendMetaEventMsg( 	int trackIndex, 
+							int metaEventType, 
+							const char* addr,
+							int numChars,
+							void* userData );
 };
 
 LF_END_BRIO_NAMESPACE()

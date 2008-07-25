@@ -55,6 +55,8 @@ pFnFilePlayerRewind			pMIDIFilePlayer_Rewind = NULL;
 pFnFilePlayerSetTempoScaler	pMIDIFilePlayer_SetTempoScaler = NULL;
 pFnFilePlayerPlayFrames		pMIDIFilePlayer_PlayFrames = NULL;
 pFnFilePlayerDelete			pMIDIFilePlayer_Delete = NULL;
+pFnFilePlayerSetTextCallback	pMIDIFilePlayer_SetTextCallback = NULL;
+pFnFilePlayerGetFrameTime	pMIDIFilePlayer_GetFrameTime = NULL;
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -96,13 +98,12 @@ static CPath GetLibPath( void )
 //------------------------------------------------------------------------------
 bool LoadMidiLibrary(void)
 {
-//{static long c=0; printf("LoadMidiLibrary %ld : START\n", c++);}
-
 	CKernelMPI 	kernel;
 	gLibPath = GetLibPath() + kMidiLibName;
 	hLibMidi = kernel.LoadModule(gLibPath);
 	if (hLibMidi == kInvalidHndl)
 		return false;
+
 	pSPMIDI_Initialize = (pFnInitialize) (kernel.RetrieveSymbolFromModule(hLibMidi, "SPMIDI_Initialize"));
 	pSPMIDI_Terminate = (pFnTerminate) (kernel.RetrieveSymbolFromModule(hLibMidi, "SPMIDI_Terminate"));
 	pSPMIDI_CreateContext = (pFnCreateContext) (kernel.RetrieveSymbolFromModule(hLibMidi, "SPMIDI_CreateContext"));
@@ -137,6 +138,8 @@ bool LoadMidiLibrary(void)
 	pMIDIFilePlayer_SetTempoScaler = (pFnFilePlayerSetTempoScaler) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_SetTempoScaler"));
 	pMIDIFilePlayer_PlayFrames = (pFnFilePlayerPlayFrames) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_PlayFrames"));
 	pMIDIFilePlayer_Delete = (pFnFilePlayerDelete) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_Delete"));
+	pMIDIFilePlayer_SetTextCallback = (pFnFilePlayerSetTextCallback) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_SetTextCallback"));
+	pMIDIFilePlayer_GetFrameTime = (pFnFilePlayerGetFrameTime) (kernel.RetrieveSymbolFromModule(hLibMidi, "MIDIFilePlayer_GetFrameTime"));
 
 	//	pSPMIDI_XXXX = (pFnXXXX) (kernel.RetrieveSymbolFromModule(hLibMidi, "SPMIDI_XXXX"));
 
