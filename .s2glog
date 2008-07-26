@@ -16150,3 +16150,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/25/08 11:27 AM
 5,688 ms. (Cumulative: 4,974,171 ms)
 
 ----------------
+Revision 3,453 from svn://localhost/TRUNK/:
+
+Defer video scaler setup to Video MPI, and revert Display MPI to handle video display context dimensions as specified. (TTP #2073)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/25/08 5:40 PM
+2 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 4,980,188 ms)
+
+----------------
