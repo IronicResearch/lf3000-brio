@@ -504,15 +504,12 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Setup scaler registers too for video overlay
 	if (context->isOverlay)
 	{
-		// Reset scaler output for fullscreen destination  
-		c.position.right = xPos + gScreenWidth; //320;
-		c.position.bottom = yPos + gScreenHeight; //240;
-		ioctl(layer, MLC_IOCSPOSITION, &c);
-
+		// Reset scaler output for display context destination
+		// Video MPI will handle special scaler cases (TTP #2073)
 		c.overlaysize.srcwidth = context->width;
 		c.overlaysize.srcheight = context->height;
-		c.overlaysize.dstwidth = gScreenWidth; //320; //context->width;
-		c.overlaysize.dstheight = gScreenHeight; //240; //context->height;
+		c.overlaysize.dstwidth = context->width;
+		c.overlaysize.dstheight = context->height;
 		ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
 
 		// Reload XY block address for planar video format

@@ -156,8 +156,8 @@ static void SetScaler(int width, int height, bool centered)
 
 	// Get position info when video context was created
 	r = ioctl(layer, MLC_IOCGPOSITION, &c);
-	dw = (r == 0) ? c.position.right - c.position.left + 1 : 320;
-	dh = (r == 0) ? c.position.bottom - c.position.top + 1 : 240;
+	dw = (r == 0) ? c.position.right - c.position.left + 0 : 320;
+	dh = (r == 0) ? c.position.bottom - c.position.top + 0 : 240;
 	
 	// Reposition with fullscreen centering instead of scaling
 	if (centered) 
@@ -170,7 +170,17 @@ static void SetScaler(int width, int height, bool centered)
 		c.position.bottom = c.position.top + height;
 		ioctl(layer, MLC_IOCSPOSITION, &c);
 	}
-	
+	// Special case handling for 320x176 scaling (non-letterbox)
+	else if (176 == height && 320 == width) 
+	{
+		dw = 320;
+		dh = 240;
+		c.position.left = c.position.top = 0;
+		c.position.right = c.position.left + dw;
+		c.position.bottom = c.position.top + dh;
+		ioctl(layer, MLC_IOCSPOSITION, &c);
+	}
+
 	// Set video scaler for video source and screen destination
 	c.overlaysize.srcwidth = width;
 	c.overlaysize.srcheight = height;
