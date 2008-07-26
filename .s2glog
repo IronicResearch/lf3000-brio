@@ -16159,3 +16159,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/25/08 5:40 PM
 5,954 ms. (Cumulative: 4,980,188 ms)
 
 ----------------
+Revision 3,454 from svn://localhost/TRUNK/:
+
+Reinstate audio priority logic to pick most preferable player to bump, ie, lowest priority. (TTP #1958) 
+
+By Dave Milici (dmilici@leapfrog.com) on 7/25/08 6:03 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 4,986,236 ms)
+
+----------------
