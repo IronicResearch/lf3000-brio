@@ -420,8 +420,17 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	strIndex = fullPath.rfind('.', fullPath.size());
 	fileExt	 = fullPath.substr(strIndex + 1, strIndex + 4);
 	
+	// BUGHACK/dm: Handle swapped priority/volume params in buggy GM'ed apps (TTP #1999)
+	if (volume > kAudioVolumeMax && priority <= kAudioVolumeMax)
+	{
+		U8 tmp = priority;
+		priority = volume;
+		volume = tmp;
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: priority=%d, volume=%d swapped\n",
+				 __FUNCTION__, (int)priority, (int)volume);
+	}
+	
 	// Create player based on file extension
-
 	Ai.path = &fullPath;
 	Ai.volume = volume;
 	Ai.priority = priority;
