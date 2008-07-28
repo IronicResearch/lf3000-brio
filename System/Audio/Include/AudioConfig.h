@@ -2,7 +2,7 @@
 #define LF_BRIO_AUDIOCONFIG_H
 
 // Debug output level
-#define kAudioDebugLevel		kDbgLvlCritical
+#define kAudioDebugLevel		kDbgLvlImportant
 //kDbgLvl Silent,Critical,Important, Valuable, Noteable,Verbose,
 
 #define kPan_Default    0
