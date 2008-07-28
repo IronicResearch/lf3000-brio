@@ -421,7 +421,8 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	fileExt	 = fullPath.substr(strIndex + 1, strIndex + 4);
 	
 	// BUGHACK/dm: Handle swapped priority/volume params in buggy GM'ed apps (TTP #1999)
-	if (volume > kAudioVolumeMax && priority <= kAudioVolumeMax)
+	if (kAudioPriorityPolicySimple == gAudioContext.pAudioMixer->GetPriorityPolicy() 
+			&& volume > kAudioVolumeMax && priority <= kAudioVolumeMax)
 	{
 		U8 tmp = priority;
 		priority = volume;

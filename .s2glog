@@ -16177,3 +16177,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/28/08 1:18 PM
 5,954 ms. (Cumulative: 4,992,252 ms)
 
 ----------------
+Revision 3,456 from svn://localhost/TRUNK/:
+
+Added conditional for priority scheme enabled to volume/priority swap logic.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/28/08 4:45 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 4,998,284 ms)
+
+----------------
