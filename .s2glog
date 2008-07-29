@@ -16186,3 +16186,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/28/08 4:45 PM
 5,954 ms. (Cumulative: 4,998,284 ms)
 
 ----------------
+Revision 3,457 from svn://localhost/TRUNK/:
+
+Added unit test to start audio prior to playing state test. 
+
+By Dave Milici (dmilici@leapfrog.com) on 7/28/08 6:53 PM
+1 changed, 0 added, 0 deleted.
+6,206 ms. (Cumulative: 5,004,568 ms)
+
+----------------
