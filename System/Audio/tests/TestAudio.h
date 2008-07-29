@@ -176,6 +176,21 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+    void testAudioStart()
+	{
+		tAudioID 				id;
+		PRINT_TEST_NAME();
+		
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pAudioMPI_->IsValid() == true );
+				
+		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
+									NULL, kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		pAudioMPI_->StopAudio(id, false);
+	}
+	
+	//------------------------------------------------------------------------
     void testIsPlaying()
 	{
 		tAudioID 				id;
@@ -193,7 +208,7 @@ public:
 		TS_ASSERT(id != kNoAudioID);
 		pKernelMPI_->TaskSleep(300);
 		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == true);
-		pKernelMPI_->TaskSleep(800);
+		pKernelMPI_->TaskSleep(900);
 		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == false);
 	}
 	
