@@ -3,6 +3,46 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.32.6.3458 release (Jul 29, 2008)
+===========================================
+
+-- Updated AudioMPI.h header to document low-level MIDI functions which are currently implemented. Also removed outdated TODO items. Documentation change only.
+
+-- Added Audio MPI unit tests for Get/SetEnabledMidiTracks(), TransposeMidiTracks(), ChangeMidiTempo(), ChangeMidiInstrument(), MidiNoteOn(), MidiNoteOff(), and SendMidiCommand().
+
+-- Added conditional for MIDI file object to MIDI Render() code logic in order to re-instate programmatic MIDI output. Working in GM Brio 3011, broken after mixer rework for Brio 3114. (TTP #2059)
+
+-- Added support for MIDI file meta events, using additional kAudioOptionsMidiEvent flag and tAudioMsgMidiEvent message type. (TTP #1927 feature request)
+
+-- Skip removing display contexts in Display module destructor, for cleaner appearance when AppManager exits. (TTP #2010)
+
+-- Defer video scaler setup to Video MPI, and revert Display MPI to handle video display context dimensions as specified. (TTP #2073)
+
+-- Reinstate audio priority logic to pick most preferable player to bump, ie, lowest priority. (TTP #1958) 
+
+-- Added bug workaround for handling swapped priority and volume params, as found in NLG. (TTP #1999)
+
+===========================================
+Brio v1.32.4.3424 release (Jun 20, 2008)
+===========================================
+
+-- Ethernet over USB change: use /flags/vbus file instead of VBUS environment
+   variable.  Now matches Linux /usr/bin/launch_main script.
+
+-- Disable module manager atexit cleanup in emulation 
+
+
+-- Disable local Debug object instance in Event destructor to prevent Connect module list corruption.
+
+-- Avoid local Kernel object instance in Button destructor to prevent Connect
+   module list corruption. Match Button thread startup/teardown in emulation
+   version.
+
+-- Revert Audio mixer priority logic fix from Brio SVN 3244 to choose least
+   preferable player to bump. This prevents broken functionality of GM-ed
+   games expecting the original priority behavior. (TTP# 1999, 2008)
+
+===========================================
 Brio v1.32.3.3401 release (Jun 18, 2008)
 ===========================================
 
