@@ -25,4 +25,12 @@ if vars['is_export']:
 	env.Install(dest_dir, 'Tools/libgsm.so.1')
 	env.Install(dest_dir, 'Tools/libraw1394.so.8')
 	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
-	
+
+	#-----------------------------------------------------------------------------
+	# Populate the "Publish" folder with Doxygen output (publish builds only)
+	#-----------------------------------------------------------------------------
+	if vars['is_publish']:
+		dest_dir = os.path.join(vars['export_root'], 'Docs')
+		src_file = os.path.join(Dir('#').abspath, 'Brio2.doxyfile')
+		env.Command('Docs/html', src_file, "doxygen " + src_file)
+		env.Install(dest_dir, 'Docs/html')
