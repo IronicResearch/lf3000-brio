@@ -16205,3 +16205,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/29/08 3:02 PM
 6,002 ms. (Cumulative: 5,010,632 ms)
 
 ----------------
+Revision 3,459 from svn://localhost/TRUNK/:
+Revision 3,460 from svn://localhost/TRUNK/:
+
+Added SCons step to build and install Doxygen'ed HTML docs into Brio Publish folder for type=publish builds.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/08 7:17 PM
+1 changed, 0 added, 0 deleted.
+5,563 ms. (Cumulative: 5,016,273 ms)
+
+----------------
