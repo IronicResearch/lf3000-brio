@@ -24,7 +24,7 @@ using namespace std;
 LF_BEGIN_BRIO_NAMESPACE()
 
 
-#define kTimerEventPriority 21	// FIXME/tp: specify all event priorities and adjust
+#define kTimerEventPriority 128	// asynchronous event message for min impact
 
 
 //==============================================================================	   
@@ -128,25 +128,16 @@ public:
 		return err;
 	}
 	
-// TPprivate:
 	//--------------------------------------------------------------------------
 private:
 
+	// Callback method declared static to avoid C++ namespace warnings 
 	static void TimerCallback(tTimerHndl hndl) // 
 	{
-		CEventMPI	event;
+		// Event MPI object needs to be persistent, however this method is static
+		static CEventMPI	event;
 		CTimerMessage	msg(hndl);
 		event.PostEvent(msg, kTimerEventPriority );
-#if 0 // FIXME/BSK
-//		printf("TimerCallback function was called Timer tTimerHndl=0x%x \n", hndl);  		
-		timeval timePrint;
-		gettimeofday( &timePrint, NULL );
-		printf("Timer.h file ****TimerCallback**** %d.%d\n",
-					 (int )timePrint.tv_sec, (int )timePrint.tv_usec / 1000 );
-		fflush(stdout);
-#endif
-//tErrType PostEvent(const IEventMessage &msg,
-// 				tEventPriority priority, const IEventListener *pResponse)
 	}
 	
 	//--------------------------------------------------------------------------
