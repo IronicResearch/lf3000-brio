@@ -16215,3 +16215,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/30/08 7:17 PM
 5,563 ms. (Cumulative: 5,016,273 ms)
 
 ----------------
+Revision 3,461 from svn://localhost/TRUNK/:
+Revision 3,462 from svn://localhost/TRUNK/:
+
+Modify COneShotTimer callback method for safer operation, using persistent Event MPI object and asynchronous message priority. Avoids deadlocks seen in MathFacts tutorials pauses using Sequencer timeouts. (TTP #2008, 2013)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/5/08 12:33 PM
+1 changed, 0 added, 0 deleted.
+5,594 ms. (Cumulative: 5,021,945 ms)
+
+----------------
