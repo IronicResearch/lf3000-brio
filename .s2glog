@@ -16225,3 +16225,19 @@ By Dave Milici (dmilici@leapfrog.com) on 8/5/08 12:33 PM
 5,594 ms. (Cumulative: 5,021,945 ms)
 
 ----------------
+Revision 3,463 from svn://localhost/TRUNK/:
+Revision 3,464 from svn://localhost/TRUNK/:
+Revision 3,465 from svn://localhost/TRUNK/:
+Revision 3,466 from svn://localhost/TRUNK/:
+Revision 3,467 from svn://localhost/TRUNK/:
+Revision 3,468 from svn://localhost/TRUNK/:
+Revision 3,469 from svn://localhost/TRUNK/:
+Revision 3,470 from svn://localhost/TRUNK/:
+
+Removing the extra power check for ButtonHandler.  Stops the "bouncing" brightness button.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/20/08 11:58 AM
+1 changed, 0 added, 0 deleted.
+5,578 ms. (Cumulative: 5,027,664 ms)
+
+----------------

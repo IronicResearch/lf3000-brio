@@ -138,7 +138,7 @@ void setBrightness(void)
 		brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS; // keep ptr in range
 
 		/* if on battery, check that power is still ok after change */
-		if (status == kPowerBattery) {
+		/*if (status == kPowerBattery) {
    			kernel.TaskSleep(300);			// let battery sample 
 			status = GetCurrentPowerState();
 			// backout change if battery went critical
@@ -150,7 +150,7 @@ void setBrightness(void)
 				dbg.DebugOut(kDbgLvlVerbose, "%s.%d Backed out brightness\n",
 					__FUNCTION__, __LINE__);
 			}
-		}
+		}*/
 	}	
 }
 
