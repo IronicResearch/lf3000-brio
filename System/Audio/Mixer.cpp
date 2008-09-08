@@ -1317,7 +1317,8 @@ void CAudioMixer::GetAudioState(tAudioState *d)
 // ==============================================================================
 void CAudioMixer::EnableSpeaker(Boolean x)
 {
-	audioState_.useOutSoftClipper = x;
+	// soft clipper always on, per TTPro #1977
+	// audioState_.useOutSoftClipper = x;
 	audioState_.speakerEnabled	  = x;
 }
 
