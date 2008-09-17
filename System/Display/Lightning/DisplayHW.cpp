@@ -295,6 +295,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	else if (gFrameBuffer == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
 		gFrameSize = GraphicsContext->height * GraphicsContext->pitch;
+		gFrameSize += 0xFFF;
+		gFrameSize &= ~0xFFF; // 4K align
 		gFrameBuffer = (U8 *)mmap(0, gFrameSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			   						gDevLayer, gFrameBase);
 		dbg_.Assert(gFrameBuffer > 0,
@@ -312,6 +314,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	else if (gFrameBuffer2 == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
 		gFrameSize2 = GraphicsContext->height * GraphicsContext->pitch;
+		gFrameSize2 += 0xFFF;
+		gFrameSize2 &= ~0xFFF; // 4K align
 		gFrameBase2 = gFrameBase + gFrameSize2; //gOverlayBase;
 		gFrameBuffer2 = (U8 *)mmap(0, gFrameSize2, PROT_READ | PROT_WRITE, MAP_SHARED,
 			   						gDevLayer, gFrameBase2);
@@ -326,6 +330,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	else if (gFrameBuffer3 == NULL) {
 		// Map 2D Frame Buffer in user space for actual size
 		gFrameSize3 = GraphicsContext->height * GraphicsContext->pitch;
+		gFrameSize3 += 0xFFF;
+		gFrameSize3 &= ~0xFFF; // 4K align
 		gFrameBase3 = gFrameBase2 + gFrameSize3;
 		gFrameBuffer3 = (U8 *)mmap(0, gFrameSize3, PROT_READ | PROT_WRITE, MAP_SHARED,
 			   						gDevLayer, gFrameBase3);

@@ -16323,3 +16323,18 @@ By Scott Esters (sesters@leapfrog.com) on 9/8/08 4:32 PM
 6,001 ms. (Cumulative: 5,062,328 ms)
 
 ----------------
+Revision 3,499 from svn://localhost/TRUNK/:
+Revision 3,500 from svn://localhost/TRUNK/:
+Revision 3,501 from svn://localhost/TRUNK/:
+Revision 3,502 from svn://localhost/TRUNK/:
+Revision 3,503 from svn://localhost/TRUNK/:
+Revision 3,504 from svn://localhost/TRUNK/:
+Revision 3,505 from svn://localhost/TRUNK/:
+
+Added 4K page alignments to RGB triple buffer allocations and mappings in order to support 16bpp formats in page-flipped modes. (TTP #2095)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/16/08 7:03 PM
+2 changed, 0 added, 0 deleted.
+5,611 ms. (Cumulative: 5,068,048 ms)
+
+----------------

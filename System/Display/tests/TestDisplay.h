@@ -504,6 +504,50 @@ public:
 			pDisplayMPI_->DestroyHandle(handle[i], false);
 		}
 	}
+
+	//------------------------------------------------------------------------
+	void testDisplayTripleBuffers( )
+	{
+		tDisplayHandle 	handle[3];
+		tPixelFormat	format;
+		U8* 			buffer[3];
+		U16				width;
+		U16				height;
+		U16				pitch;
+		U16				depth;
+		const U16		WIDTH = 320;
+		const U16		HEIGHT = 240;
+		const U16		DEPTHS[4] = {16, 16, 24, 32};
+		const tPixelFormat	FORMATS[4] = {kPixelFormatRGB4444, kPixelFormatRGB565, kPixelFormatRGB888, kPixelFormatARGB8888};
+		
+		for (int j = 0; j < 4; j++)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				handle[i] = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, FORMATS[j], NULL);
+				TS_ASSERT( handle[i] != kInvalidDisplayHandle );
+				buffer[i] = pDisplayMPI_->GetBuffer(handle[i]);
+				TS_ASSERT( buffer[0] != kNull );
+				format = pDisplayMPI_->GetPixelFormat(handle[i]);
+				TS_ASSERT( format == FORMATS[j] );
+				width = pDisplayMPI_->GetWidth(handle[i]);
+				TS_ASSERT( width == WIDTH );
+				pitch = pDisplayMPI_->GetPitch(handle[i]);
+				TS_ASSERT( pitch == (DEPTHS[j]/8) * WIDTH )
+				depth = pDisplayMPI_->GetDepth(handle[i]);
+				TS_ASSERT( depth == DEPTHS[j] );
+				height = pDisplayMPI_->GetHeight(handle[i]);
+				TS_ASSERT( height == HEIGHT );
+				memset(buffer[i], 0x55, pitch * height);
+				pDisplayMPI_->Register(handle[i], 0, 0, 0, 0);
+			}
+			for (int i = 0; i < 3; i++)
+			{
+				pDisplayMPI_->UnRegister(handle[i], 0);
+				pDisplayMPI_->DestroyHandle(handle[i], false);
+			}
+		}
+	}
 };
 
 // EOF
