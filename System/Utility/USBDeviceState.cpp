@@ -32,7 +32,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		if(usb_device_fd == NULL)
 			return data;
 
-		ret = fscanf(usb_device_fd, "%ld\n", data.USBDeviceState);
+		ret = fscanf(usb_device_fd, "%ld\n", &data.USBDeviceState);
 		fclose(usb_device_fd);
 		return data;
 }
