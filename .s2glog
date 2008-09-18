@@ -16338,3 +16338,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/16/08 7:03 PM
 5,611 ms. (Cumulative: 5,068,048 ms)
 
 ----------------
+Revision 3,506 from svn://localhost/TRUNK/:
+Revision 3,507 from svn://localhost/TRUNK/:
+Revision 3,508 from svn://localhost/TRUNK/:
+Revision 3,509 from svn://localhost/TRUNK/:
+Revision 3,510 from svn://localhost/TRUNK/:
+
+New Utility function for querying USB Device State.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/18/08 4:16 PM
+1 changed, 1 added, 0 deleted.
+5,625 ms. (Cumulative: 5,073,767 ms)
+
+----------------
