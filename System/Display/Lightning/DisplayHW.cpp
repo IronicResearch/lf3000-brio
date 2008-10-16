@@ -36,7 +36,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 namespace
 {
-	const tEventType DisplayButtonEvents[] = {kButtonBrightness};
+	const tEventType DisplayButtonEvents[] = {kAllButtonEvents};
 	
 	#define	SCREEN_BRIGHT_LEVELS	(2 * 3)	// have 4 distinct levels
 	/* 
