@@ -3,6 +3,30 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.33.3.3576 release (Oct 14, 2008)
+===========================================
+
+-- Updated MagicEyes OGLES library with fixes post performance optimizations.
+Fixes all StarWars 3D title problems (per Oct 8 email).
+
+===========================================
+Brio v1.33.0.3537 release (Sep 24, 2008)
+===========================================
+
+-- Cummulative changes from Brio trunk in addition to items branched for
+   PatchD and SP3 releases, including the following items:
+
+-- Removing the extra power check for ButtonHandler.  Stops the "bouncing" brightness button.
+
+-- Leave soft clipper always enabled, per TTPro #1977
+
+-- Added 4K page alignments to RGB triple buffer allocations and mappings in order to support 16bpp formats in page-flipped modes. (TTP #2095)
+
+-- Updated MagicEyes OGL lib, with glWeightPointerOES() fix for fixed-point, plus cummulative optimizations and bug fixes. (TTP #2119)
+
+-- Consolidated Button, Power, USB threads in Event manager.
+
+===========================================
 Brio v1.32.6.3458 release (Jul 29, 2008)
 ===========================================
 

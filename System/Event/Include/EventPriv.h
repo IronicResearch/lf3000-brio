@@ -24,6 +24,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString	kEventModuleName	= "Event";
 const tVersion	kEventModuleVersion	= 2;
 
+// Function prototypes
+void* ButtonPowerUSBTask( void* arg );
+
 //==============================================================================
 class CEventModule : public ICoreModule {
 public:	
@@ -56,7 +59,6 @@ private:
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 };
-
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_EVENTMGRMODULEPRIV_H

@@ -24,12 +24,9 @@
 #include <EventMPI.h>
 #include <EventPriv.h>
 
-#include <string.h>
-
 LF_BEGIN_BRIO_NAMESPACE() 
 
 const CURI	kModuleURI	= "/LF/System/Event";
-
 
 //============================================================================
 // Informational functions
@@ -74,7 +71,7 @@ namespace
 	
 	char*	g_msgQueueName = "/eventDispatchQueue";
 }	
-	
+
 //============================================================================
 // Module internal state
 //============================================================================
@@ -100,6 +97,7 @@ private:
 	static bool 				g_threadRun_;
 	static bool					g_threadRunning_;
 	static tTaskHndl			g_hThread_;
+	static tTaskHndl			g_hBPUThread_;
 	
 	//============================================================================
 	// Event dispatching task
@@ -112,7 +110,7 @@ private:
 		CEventManagerImpl*	pThis = reinterpret_cast<CEventManagerImpl*>(arg);
 		CKernelMPI	kernel;
 		CDebugMPI	debug(kGroupEvent);
-	
+		
 		tMessageQueuePropertiesPosix props = 								//*1
 		{
 		    0,                          // msgProperties.blockingPolicy;  
@@ -129,18 +127,12 @@ private:
 		debug.AssertNoErr(err, "EventDispatchTask(): Failed to create msg queue!\n" );
 		debug.DebugOut(kDbgLvlVerbose, "EventDispatchTask() Message queue created %d\n", 
 						static_cast<int>(g_hMsgQueueBG_));
-	
 		CEventDispatchMessage	msg;										//*2
 
 		g_threadRunning_ = true;
 		while (g_threadRun_)
 		{
-#if 0	// FIXME/dm: Not ready to timeout message queue on embedded target
-			// Wake up every 250ms to see if we need to exit, otherwise wake up on msg and process it.
-			err = kernel.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 250);
-#else
 			err = kernel.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
-#endif
 			if ( err != kConnectionTimedOutErr ) {
 		    	debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
@@ -168,7 +160,7 @@ public:
 		//
 		CDebugMPI	debug(kGroupEvent);
 		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Initializing Event Manager\n");
-
+		
 		tMessageQueuePropertiesPosix props = 							//*1
 		{
 		    0,                          	// msgProperties.blockingPolicy;  
@@ -183,7 +175,6 @@ public:
 		};
 		
 		tErrType err = kernel_.OpenMessageQueue(hMsgQueueFG_, props, NULL);
-
 		debug.AssertNoErr(err, "CEventManagerImpl::ctor: Failed to create message queue!\n");
 		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Message queue created %d\n", 
 						static_cast<int>(hMsgQueueFG_));
@@ -193,24 +184,39 @@ public:
 		properties.TaskMainFcn = CEventManagerImpl::EventDispatchTask;
 		properties.pTaskMainArgValues = this;
 		err = kernel_.CreateTask(g_hThread_, properties, NULL);
-
+		
 		debug.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create EventDispatchTask!\n" );
 
 		// Wait for thread to start up...
 		while ( !g_threadRunning_ ) {
 			kernel_.TaskSleep(10);
 		}
-}
+		
+#ifndef EMULATION		
+		// Create additional Button/Power/USB driver polling thread
+		properties.TaskMainFcn = ButtonPowerUSBTask;
+		properties.pTaskMainArgValues = this;
+		g_hBPUThread_ = kInvalidTaskHndl;
+		err = kernel_.CreateTask(g_hBPUThread_, properties, NULL);
+		debug.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create ButtonPowerUSBTask!\n" );
+#endif
+	}
 	
 	//------------------------------------------------------------------------
 	~CEventManagerImpl() 
 	{
-//		CDebugMPI	debug(kGroupEvent);
-//		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::dtor: Event Manager going away...\n");
 		void* 		retval;
 
+#ifndef EMULATION
+		// Terminate Button/Power/USB driver polling thread first
+		if (g_hBPUThread_ != kInvalidTaskHndl) {
+			kernel_.CancelTask(g_hBPUThread_);
+			kernel_.JoinTask(g_hBPUThread_, retval);
+		}
+#endif
 		// Terminate thread normally and dispose of listener list afterwards
 		g_threadRun_ = false;
+		g_threadRunning_ = false;
 		kernel_.CancelTask(g_hThread_);
 		kernel_.JoinTask(g_hThread_, retval);
 #if 0	// FIXME/dm: segfaults during module manager destruction -- corrupt ptr/list? 
@@ -334,6 +340,7 @@ tMessageQueueHndl	CEventManagerImpl::g_hMsgQueueBG_ = kInvalidMessageQueueHndl;
 bool 				CEventManagerImpl::g_threadRun_   = true;
 bool 				CEventManagerImpl::g_threadRunning_  = false;
 tTaskHndl			CEventManagerImpl::g_hThread_	  = kInvalidTaskHndl;
+tTaskHndl			CEventManagerImpl::g_hBPUThread_	  = kInvalidTaskHndl;
 	
 namespace
 {

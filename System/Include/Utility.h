@@ -23,6 +23,7 @@
 #include <CoreTypes.h>	
 #include <PowerTypes.h>
 #include <USBDeviceTypes.h>
+#include <ButtonTypes.h>
 #include <boost/shared_array.hpp>	
 
 #include "Wrappers.h"
@@ -123,6 +124,16 @@ enum tPowerState GetCurrentPowerState(void);
 // Returns the system's USB device state
 //----------------------------------------------------------------------------
 tUSBDeviceData GetCurrentUSBDeviceState(void);
+
+//----------------------------------------------------------------------------
+// Returns the system's button state
+//----------------------------------------------------------------------------
+tButtonData		GetButtonState(void);
+
+//----------------------------------------------------------------------------
+// Sets the system's button state
+//----------------------------------------------------------------------------
+void SetButtonState(tButtonData button_data);
 
 LF_END_BRIO_NAMESPACE()
 
