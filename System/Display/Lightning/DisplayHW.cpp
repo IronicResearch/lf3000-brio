@@ -17,6 +17,7 @@
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
 #include <BrioOpenGLConfig.h>
+#include <ButtonTypes.h>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -29,6 +30,52 @@
 #include "GLES/libogl.h"
 
 LF_BEGIN_BRIO_NAMESPACE()
+
+//============================================================================
+// Local event listener
+//============================================================================
+namespace
+{
+	const tEventType DisplayButtonEvents[] = {kButtonBrightness};
+	
+	#define	SCREEN_BRIGHT_LEVELS	(2 * 3)	// have 4 distinct levels
+	/* 
+	 * lcdBacklight array describes a complete cycle of screen adjustment
+	 * levels, so array index always increments, mod number of array entries.
+	 * First array entry is the default setting.
+	 */
+	S8 lcdBacklight[SCREEN_BRIGHT_LEVELS] = 
+		{ BACKLIGHT_LEVEL_2, BACKLIGHT_LEVEL_3, BACKLIGHT_LEVEL_4,
+		  BACKLIGHT_LEVEL_3, BACKLIGHT_LEVEL_2, BACKLIGHT_LEVEL_1 };
+	
+	
+	class BrightnessListener : public IEventListener
+	{
+	public:
+		BrightnessListener():
+			IEventListener(DisplayButtonEvents, ArrayCount(DisplayButtonEvents)){}
+		
+		tEventStatus Notify(const IEventMessage& msg)
+		{
+			tEventType event_type = msg.GetEventType();
+			if (event_type == kButtonStateChanged)
+			{
+				const CButtonMessage& buttonmsg = dynamic_cast<const CButtonMessage&>(msg);
+				tButtonData data = buttonmsg.GetButtonState();
+				U32 buttonPressed = data.buttonTransition & data.buttonState;
+				
+				if (kButtonBrightness & buttonPressed)
+				{
+					static int brightIndex = 1;
+					static CDisplayMPI displayMPI;
+					displayMPI.SetBacklight(0, lcdBacklight[brightIndex]);
+					brightIndex++;
+					brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS; // keep ptr in range
+				}
+			}
+		}
+	};
+}
 
 //============================================================================
 // Local device driver handles
@@ -61,6 +108,7 @@ namespace
 	bool		bPrimaryLayerEnabled = false;
 	U16			gScreenWidth;
 	U16			gScreenHeight;
+	BrightnessListener* gpBrightnessListener = NULL;
 }
 
 //============================================================================
@@ -145,6 +193,10 @@ void CDisplayModule::InitModule()
 	gOverlaySize = fb_size;
 	gPlanarSize = fb_size * 2;
 	// We don't map framebuffer regions until onscreen display contexts are created
+
+	// Register our button listener to handle brightness button changes
+	gpBrightnessListener = new BrightnessListener();
+	eventmgr_.RegisterEventListener(gpBrightnessListener);
 }
 
 //----------------------------------------------------------------------------
@@ -152,6 +204,10 @@ void CDisplayModule::DeInitModule()
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::DeInitModuleHW: enter\n");
 
+	eventmgr_.UnregisterEventListener(gpBrightnessListener);
+	delete gpBrightnessListener;
+	gpBrightnessListener = NULL;
+	
 	close(gDevGpio);
 	close(gDevDpc);
 	close(gDevMlc);

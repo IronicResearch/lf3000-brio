@@ -27,6 +27,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		FILE *usb_device_fd;
 		int ret;
 		tUSBDeviceData data;
+		data.USBDeviceSupports = kUSBDeviceIsMassStorage;
 		
 		usb_device_fd = fopen("/sys/devices/platform/lf1000-usbgadget/vbus", "r");
 		if(usb_device_fd == NULL)

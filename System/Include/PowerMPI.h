@@ -35,31 +35,31 @@ public:
 	CPowerMPI();
 	virtual ~CPowerMPI();
 
-	// register handler
+	/// Register handler
 	tErrType RegisterEventListener(const IEventListener *pListener);
 	
-	// unregister handler
+	/// Unregister handler
 	tErrType UnregisterEventListener(const IEventListener *pListener);
 	
-	// Get current power state which is the same as the last message passing
-	// through the event manager
+	/// Get current power state which is the same as the last message passing
+	/// through the event manager
 	enum tPowerState GetPowerState() const;
 	
-	// Complete system shutdown.  This is the application's response to the kPowerShutdown
-	// message.  The application calls Shutdown() to indicate data has been saved and
-	// system shutdown can proceed immediately, overriding the shutdown watchdog timer.
-	// Negative number indicates error.
+	/// Complete system shutdown.  This is the application's response to the kPowerShutdown
+	/// message.  The application calls Shutdown() to indicate data has been saved and
+	/// system shutdown can proceed immediately, overriding the shutdown watchdog timer.
+	/// Negative number indicates error.
 	int		Shutdown() const;
 	
-	// get shutdown time in milliseconds.  This sets the watchdog timer.  Negative number
-	// indicates error.
+	/// Get shutdown time in milliseconds.  This sets the watchdog timer.  Negative number
+	/// indicates error.
 	int		GetShutdownTimeMS() const;
 	
-	// set shutdown time in milliseconds.  Returns actual watchdog time in milliseconds.
-	// Negative number indicates error.
+	/// Set shutdown time in milliseconds.  Returns actual watchdog time in milliseconds.
+	/// Negative number indicates error.
 	int		SetShutdownTimeMS(int) const;
 	
-	// Reset system
+	/// Reset system
 	int		Reset() const;
 	
 private:

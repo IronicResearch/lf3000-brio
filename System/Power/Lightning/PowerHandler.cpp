@@ -26,144 +26,22 @@
 #include <sys/un.h>
 #include <fcntl.h>
 
-#include <PowerTypes.h>
-
-/* events we may receive */
-#define EVENT_POWER		1
-#define EVENT_BATTERY 	2
-
 LF_BEGIN_BRIO_NAMESPACE()
 
 //============================================================================
-// Local state and utility functions
+// Platform-specific delegate functions
 //============================================================================
-namespace
-{
-	//------------------------------------------------------------------------
-	U32					gLastState;
-	struct tPowerData   current_pe;
-	tTaskHndl			handlePowerTask;
-	struct tPowerData	data;
-	volatile bool		bRunning = false;	
-}
-
-//============================================================================
-// Asynchronous notifications
-//============================================================================
-//----------------------------------------------------------------------------
-void *LightningPowerTask(void*)
-{
-	CDebugMPI	dbg(kGroupPower);
-	CKernelMPI	kernel;
-	CEventMPI 	eventmgr;
-	struct sockaddr_un mon;
-	socklen_t s_mon = sizeof(struct sockaddr_un);
-	int ls, ms;
-	int size;
-	struct app_message msg;
-	
-	dbg.SetDebugLevel(kDbgLvlVerbose);
-	
-	dbg.DebugOut(kDbgLvlVerbose, "%s: Started\n", __FUNCTION__);
-
-	ls = CreateListeningSocket(POWER_SOCK);
-	dbg.Assert(ls >= 0, "can't open listening socket");
-
-	bRunning = true;
-	while(bRunning) {
-		// get battery state
-		current_pe.powerState = GetCurrentPowerState();
-
-		// overwrite with power down, if one is pending
-		ms = accept(ls, (struct sockaddr *)&mon, &s_mon);
-		if(ms > 0) {
-			while(1) {
-				size = recv(ms, &msg, sizeof(msg), 0);
-
-				if(size == sizeof(msg) && msg.type == APP_MSG_SET_POWER) {
-						switch(msg.payload) {
-								case EVENT_BATTERY:
-								current_pe.powerState = kPowerCritical;
-								dbg.DebugOut(kDbgLvlVerbose,
-									"%s.%d: state = kPowerCritical\n",
-									__FUNCTION__, __LINE__);
-								break;
-								
-								default:
-								case EVENT_POWER:
-								current_pe.powerState = kPowerShutdown;
-								dbg.DebugOut(kDbgLvlVerbose, 
-									 "%s.%d: state = kPowerShutdown\n",
-									 __FUNCTION__, __LINE__);
-								break;
-						} 
-				} 
-				else {
-					break;
-				}
-			}
-		}
-
-		// Pace thread at time intervals relavant for power events
-		kernel.TaskSleep(250);
-
-		// report power state if changed unless kPowerShutdown already sent
-		if (data.powerState != current_pe.powerState &&
-		    data.powerState != kPowerShutdown) {
-			data.powerState = current_pe.powerState;
-			CPowerMessage msg(data);
-			eventmgr.PostEvent(msg, kPowerEventPriority);
-		}
-
-	}
-	return NULL;
-}
 
 //----------------------------------------------------------------------------
 
 void CPowerModule::InitModule()
 {
-	tErrType	status = kModuleLoadFail;
-	CKernelMPI	kernel;
-
-	// instantiate event manager, needed to resolve symbol
-	// '_ZN8LeapFrog4Brio63_GLOBAL__N__ZNK8LeapFrog4Brio12CEventModule16
-	// GetModuleVersionEv5pinstE'
-	
-	CEventMPI	eventmgr;
-
-	dbg_.DebugOut(kDbgLvlVerbose, "Power Init\n");
-
-	data.powerState = GetCurrentPowerState();
-
-	bRunning = false;
-	
-	if( kernel.IsValid() )
-	{
-		tTaskProperties	properties;
-		properties.pTaskMainArgValues = NULL;
-		properties.TaskMainFcn = LightningPowerTask;
-		status = kernel.CreateTask(handlePowerTask, properties);
-	}
-	dbg_.Assert( status == kNoErr, 
-				"CPowerModule::InitModule: background task creation failed" );
-
-	while (!bRunning)
-		kernel.TaskSleep(1);
+	// Power thread consolidated into Event manager
 }
 
 //----------------------------------------------------------------------------
 void CPowerModule::DeinitModule()
 {
-//	CKernelMPI	kernel;
-	void* 		retval;
-
-	dbg_.DebugOut(kDbgLvlVerbose, "PowerModule::DeinitModule: Power Deinit\n");
-
-	// Terminate power handler thread, and wait before closing driver
-	bRunning = false;
-	kernel_.CancelTask(handlePowerTask);
-	kernel_.JoinTask(handlePowerTask, retval);
 }
 
 //============================================================================
@@ -172,7 +50,7 @@ void CPowerModule::DeinitModule()
 //----------------------------------------------------------------------------
 enum tPowerState CPowerModule::GetPowerState() const
 {
-	return data.powerState;
+	return GetCurrentPowerState();
 }
 
 //----------------------------------------------------------------------------
@@ -222,7 +100,6 @@ int CPowerModule::SetShutdownTimeMS(int iMilliseconds) const
 
 	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
 	close(s);
-
 	return 0;
 }
 
