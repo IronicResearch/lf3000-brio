@@ -16450,3 +16450,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/15/08 5:10 PM
 6,845 ms. (Cumulative: 5,093,394 ms)
 
 ----------------
+Revision 3,584 from svn://localhost/TRUNK/:
+
+Correct event mask for Display MPI brightness button listener.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/15/08 6:16 PM
+1 changed, 0 added, 0 deleted.
+6,065 ms. (Cumulative: 5,099,568 ms)
+
+----------------
