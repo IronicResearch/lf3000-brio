@@ -149,6 +149,8 @@ namespace
 			case KEY_H:			return kButtonHint;
 			case KEY_P:			return kButtonPause;
 			case KEY_X:			return kButtonBrightness;
+			case KEY_VOLUMEDOWN: return kButtonVolumeDown;
+			case KEY_VOLUMEUP:	return kButtonVolumeUp;
 		}
 		return 0;
 	}
