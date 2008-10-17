@@ -16476,3 +16476,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/16/08 6:22 PM
 6,157 ms. (Cumulative: 5,105,834 ms)
 
 ----------------
+Revision 3,592 from svn://localhost/TRUNK/:
+Revision 3,593 from svn://localhost/TRUNK/:
+
+Added support for Volume UP / Volume DOWN key events.
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/17/08 1:20 PM
+2 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 5,112,475 ms)
+
+----------------

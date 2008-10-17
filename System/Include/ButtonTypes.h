@@ -64,6 +64,8 @@ const U32 kButtonPause			= (1 << 10);
 const U32 kButtonBrightness		= (1 << 11);
 const U32 kHeadphoneJackDetect  = (1 << 12);
 const U32 kCartridgeDetect      = (1 << 13);
+const U32 kButtonVolumeDown		= (1 << 14);
+const U32 kButtonVolumeUp		= (1 << 15);
 
 
 //------------------------------------------------------------------------------
