@@ -16487,3 +16487,38 @@ By Scott Esters (sesters@leapfrog.com) on 10/17/08 1:20 PM
 6,563 ms. (Cumulative: 5,112,475 ms)
 
 ----------------
+Revision 3,594 from svn://localhost/TRUNK/:
+Revision 3,595 from svn://localhost/TRUNK/:
+Revision 3,596 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,001 ms. (Cumulative: 5,118,726 ms)
+
+----------------
+Revision 3,597 from svn://localhost/TRUNK/:
+Revision 3,598 from svn://localhost/TRUNK/:
+Revision 3,599 from svn://localhost/TRUNK/:
+Revision 3,600 from svn://localhost/TRUNK/:
+Revision 3,601 from svn://localhost/TRUNK/:
+Revision 3,602 from svn://localhost/TRUNK/:
+Revision 3,603 from svn://localhost/TRUNK/:
+Revision 3,604 from svn://localhost/TRUNK/:
+Revision 3,605 from svn://localhost/TRUNK/:
+Revision 3,606 from svn://localhost/TRUNK/:
+Revision 3,607 from svn://localhost/TRUNK/:
+Revision 3,608 from svn://localhost/TRUNK/:
+Revision 3,609 from svn://localhost/TRUNK/:
+Revision 3,610 from svn://localhost/TRUNK/:
+Revision 3,611 from svn://localhost/TRUNK/:
+Revision 3,612 from svn://localhost/TRUNK/:
+Revision 3,613 from svn://localhost/TRUNK/:
+
+Merged Brio-Didj09 branch mods -r3591:HEAD for removing MIDI support.
+Includes updated Audio MPI and SDK examples without MIDI implementation. Excludes deployment of Mobileer library and orchestra file. Emulates Foster's FaceOff level MIDI music with Ogg file deployed on Base. (TTP # 2137)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/22/08 1:27 PM
+9 changed, 6 added, 6 deleted.
+6,660 ms. (Cumulative: 5,125,479 ms)
+
+----------------

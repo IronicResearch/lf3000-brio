@@ -70,6 +70,8 @@ embedded target to switch booting back to the NFS root filesystem.
 Installation
 ======================================================
 
+NOTE: MIDI is no longer supported by Brio Audio MPI.
+
 Unarchive this file to create a distribution folder.
 Use any target folder to which you have user access on your system.
 
@@ -127,7 +129,7 @@ The installation tree will look more or less like this:
 |  |
 |  +-PageFlipDemo (demonstrates page flipping with triple or double buffering)
 |  |
-|  +-PlayAudio    (command line utility to test OGG and MIDI files)
+|  +-PlayAudio    (command line utility to test OGG files)
 |  |
 |  +-Power        (tests Power MPI events)
 |  |
@@ -310,8 +312,9 @@ Running samples  -- Target
 
 4) PlayAudio is a command line utility that accepts file names.  Run the program with 
 no arguments to see complete usage.
+
 5) BrioAudio needs some button input to play sounds.  The A and B buttons play audio
-sample files. The Home/Hint button plays a MIDI file.
+sample files. 
 
 6) DisplayDemo display a pixel pattern. Buttons change brightness, contrast, alpha.
 Pause or Home button exits. 

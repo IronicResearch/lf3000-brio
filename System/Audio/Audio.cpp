@@ -22,7 +22,6 @@
 #include <AudioTypesPriv.h>
 #include <Mixer.h>
 #include <AudioPlayer.h>
-#include <MidiPlayer.h>
 
 #include <algorithm>
 #include <map>
@@ -33,8 +32,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	struct tAudioContext {
-		CAudioMixer*		pAudioMixer;		
-		CMidiPlayer*		pMidiPlayer;
+		CAudioMixer*		pAudioMixer;
+		bool				bMidiPlayer;
+		tAudioID			gMidiAudioID;
 		CPath				gpath;
 	};
 
@@ -57,6 +57,9 @@ tAudioContext gAudioContext;
 //==============================================================================
 
 const CURI	kModuleURI = "/Somewhere/AudioModule";
+
+const char	kFostersMidiName[] = "FaceOff";
+const CPath kFostersMidiOgg  = "/Didj/Base/UniversalAudio/FaceOff.ogg";
 
 // single instance of module object.
 static CAudioModule* sinst = NULL;
@@ -163,8 +166,9 @@ CAudioModule::CAudioModule( void )
 	// Allocate global audio mixer
 	gAudioContext.pAudioMixer = new CAudioMixer(kAudioMaxMixerStreams);
 	
-	gAudioContext.pMidiPlayer = gAudioContext.pAudioMixer->GetMidiPlayerPtr();
-	
+	// MIDI player impersonator
+	gAudioContext.bMidiPlayer = false;
+	gAudioContext.gMidiAudioID = kNoAudioID;
 }
 
 //==============================================================================
@@ -577,12 +581,6 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 	U8 volume = 0;
  
 	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer &&
-		gAudioContext.pMidiPlayer->GetID() == id &&
-		!gAudioContext.pMidiPlayer->IsDone() ) {
-		volume = gAudioContext.pMidiPlayer->GetVolume();
-	}
-	else
 	{
 		CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
 		if (pStream)
@@ -599,11 +597,7 @@ U8 CAudioModule::GetAudioVolume( tAudioID id )
 void CAudioModule::SetAudioVolume( tAudioID id, U8 x ) 
 {
 	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer &&
-		gAudioContext.pMidiPlayer->GetID() == id &&
-		!gAudioContext.pMidiPlayer->IsDone() ) {
-		gAudioContext.pMidiPlayer->SetVolume(x);
-	} else {
+	{
 		CStream *pStream = gAudioContext.pAudioMixer->FindStream(id);
 		if (pStream) 
 			pStream->SetVolume(x);
@@ -784,22 +778,8 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */,
 										  IEventListener * /* pHandler */,
 										  tMidiPlayerID *id )
 {
-
-	AUDIO_LOCK;
-	
-	*id = kNoMidiID;
-
-	if (!gAudioContext.pMidiPlayer)
-	{
-		gAudioContext.pMidiPlayer =
-			gAudioContext.pAudioMixer->CreateMIDIPlayer();
-		if (gAudioContext.pMidiPlayer) {
-			*id = gAudioContext.pMidiPlayer->GetID();
-		}
-	}
-	AUDIO_UNLOCK;
-	
-	return kNoErr;
+	*id = gAudioContext.pAudioMixer->GetMidiID(); //kNoMidiID;
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -807,24 +787,15 @@ tErrType CAudioModule::AcquireMidiPlayer( tAudioPriority /* priority */,
 // ==============================================================================
 tErrType CAudioModule::ReleaseMidiPlayer( tMidiPlayerID /* id */)
 {
-	// GK FIXX:	 MIDI id not used for now as there is only one MIDI player
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-	{
-		gAudioContext.pAudioMixer->DestroyMIDIPlayer();
-		gAudioContext.pMidiPlayer = NULL;
-	}
-	AUDIO_UNLOCK;
-
-	return kNoErr;
-}	// ---- end ReleaseMidiPlayer() ----
+	return kNoImplErr;
+}
 
 // ==============================================================================
 // GetAudioIDForMidiID
 // ==============================================================================
 tAudioID CAudioModule::GetAudioIDForMidiID( tMidiPlayerID id) 
 {
-	return (tAudioID)id;
+	return gAudioContext.gMidiAudioID; //(tAudioID)id;
 }
 
 // ==============================================================================
@@ -836,12 +807,8 @@ tErrType CAudioModule::MidiNoteOn( tMidiPlayerID /* id */,
 								   U8 velocity,
 								   tAudioOptionsFlags flags )
 {
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->NoteOn(channel, note, velocity, flags);
-	AUDIO_UNLOCK;
-	
-	return kNoErr;
+	(void)channel, note, velocity, flags;
+	return kNoImplErr;
 }
 	
 // ==============================================================================
@@ -853,12 +820,8 @@ tErrType CAudioModule::MidiNoteOff( tMidiPlayerID /* id */,
 									U8 velocity,
 									tAudioOptionsFlags flags )
 {
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-	   gAudioContext.pMidiPlayer->NoteOff(channel, note, velocity, flags);
-	AUDIO_UNLOCK;
-	return kNoErr;
+	(void)channel, note, velocity, flags;
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -869,11 +832,8 @@ tErrType CAudioModule::SendMidiCommand( tMidiPlayerID /* id */,
 										U8 data1,
 										U8 data2 )
 {
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->SendCommand(cmd, data1, data2);
-	AUDIO_UNLOCK;
-	return kNoErr;
+	(void)cmd, data1, data2;
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -888,29 +848,23 @@ tErrType CAudioModule::StartMidiFile(	U32					mpiID,
 										tAudioPayload		payload,
 										tAudioOptionsFlags	flags )
 {
-
-	AUDIO_LOCK;
-	tAudioStartAudioInfo info;
-	const CPath fullPath = (path.length() == 0) ? "" : (path.at(0) == '/')
-		? path : gAudioContext.gpath + path;
-
-	info.path	   = &fullPath;
-	info.volume	   = volume;
-	info.priority  = priority;
-	info.pListener = pListener;
-	info.priority  = priority;
-	info.payload   = payload;
-	info.flags	   = flags;
-		
-	tErrType result = kAudioMidiErr;
-	if(gAudioContext.pMidiPlayer)
-	{
-		result = gAudioContext.pMidiPlayer->StartMidiFile(&info);
+	// Impersonate MIDI file with Ogg file for Foster's game
+	if (strstr(path.c_str(), kFostersMidiName) != NULL) {
+		tAudioID rc;
+		MPIInstanceState& mpiState = RetrieveMPIState(mpiID);
+		rc = StartAudio(mpiID, kFostersMidiOgg, volume,
+				(priority) ? priority : 255,
+				kAudioPanDefault, 
+				(pListener) ? pListener : mpiState.pListener, 
+				(payload) ? payload : 3,  
+				flags | kAudioOptionsLooped);
+		gAudioContext.bMidiPlayer = (rc != kNoAudioID) ? true : false;
+		gAudioContext.gMidiAudioID = rc;
+		gAudioContext.pAudioMixer->SetMidiAudioID(id, rc);
+		return kNoErr;
 	}
-
-	AUDIO_UNLOCK;
-	return result;
-
+	
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -935,19 +889,8 @@ tErrType CAudioModule::StartMidiFile(	U32					mpiID,
 // ==============================================================================
 Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 {
-	Boolean playing = false;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer &&
-		gAudioContext.pMidiPlayer->GetID() == id &&
-		!gAudioContext.pMidiPlayer->IsDone() ) {
-		
-		playing = true;
-
-	}
-	AUDIO_UNLOCK;
-
-	return playing;
+	(void)id;
+	return IsAudioPlaying(gAudioContext.gMidiAudioID);
 }
 
 // ==============================================================================
@@ -955,19 +898,7 @@ Boolean CAudioModule::IsMidiFilePlaying( tMidiPlayerID id )
 // ==============================================================================
 Boolean CAudioModule::IsMidiFilePlaying( void )
 {
-	
-	Boolean playing = false;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer &&
-		!gAudioContext.pMidiPlayer->IsDone() ) {
-		
-		playing = true;
-		
-	}
-	AUDIO_UNLOCK;
-
-	return playing;
+	return IsAudioPlaying(gAudioContext.gMidiAudioID);
 }
 
 // ==============================================================================
@@ -975,12 +906,8 @@ Boolean CAudioModule::IsMidiFilePlaying( void )
 // ==============================================================================
 void CAudioModule::PauseMidiFile( tMidiPlayerID /* id */ )
 {
-	
-	AUDIO_LOCK;
-	if(gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->Pause();
-	AUDIO_UNLOCK;
-
+	if (gAudioContext.bMidiPlayer)
+		PauseAudio(gAudioContext.gMidiAudioID);
 }
 
 //==============================================================================
@@ -988,11 +915,8 @@ void CAudioModule::PauseMidiFile( tMidiPlayerID /* id */ )
 //==============================================================================
 void CAudioModule::ResumeMidiFile( tMidiPlayerID /* id */)
 {
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->Resume();
-	AUDIO_UNLOCK;
-	
+	if (gAudioContext.bMidiPlayer)
+		ResumeAudio(gAudioContext.gMidiAudioID);
 }
 
 // ==============================================================================
@@ -1000,12 +924,11 @@ void CAudioModule::ResumeMidiFile( tMidiPlayerID /* id */)
 // ==============================================================================
 void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 {
-	
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->StopMidiFile(noDoneMessage);
-	AUDIO_UNLOCK;
-	
+	if (gAudioContext.bMidiPlayer) {
+		StopAudio(gAudioContext.gMidiAudioID, noDoneMessage);
+		gAudioContext.gMidiAudioID = kNoAudioID;
+		gAudioContext.bMidiPlayer = false;
+	}
 }
 
 // ==============================================================================
@@ -1013,15 +936,7 @@ void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 // ==============================================================================
 tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID /* id */ )
 {
-
-	tMidiTrackBitMask		trackBitMask = 0;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		gAudioContext.pMidiPlayer->GetEnableTracks(&trackBitMask);
-	AUDIO_UNLOCK;
-
-	return trackBitMask;
+	return 0;
 }
 
 // ==============================================================================
@@ -1030,14 +945,8 @@ tMidiTrackBitMask CAudioModule::GetEnabledMidiTracks( tMidiPlayerID /* id */ )
 tErrType CAudioModule::SetEnableMidiTracks(tMidiPlayerID /* id */,
 										   tMidiTrackBitMask trackBitMask)
 {
-	tErrType result = kAudioMidiUnavailable;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		result = gAudioContext.pMidiPlayer->SetEnableTracks(trackBitMask);
-	AUDIO_UNLOCK;
-
-	return result;
+	(void)trackBitMask;
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -1047,15 +956,8 @@ tErrType CAudioModule::TransposeMidiTracks(tMidiPlayerID /* id */,
 										   tMidiTrackBitMask trackBitMask,
 										   S8 transposeAmount)
 {
-	tErrType result = kAudioMidiUnavailable;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		result = gAudioContext.pMidiPlayer->TransposeTracks(trackBitMask,
-															transposeAmount);
-	AUDIO_UNLOCK;
-
-	return result;
+	(void)trackBitMask, transposeAmount;
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -1065,14 +967,8 @@ tErrType CAudioModule::ChangeMidiInstrument(tMidiPlayerID /* id */,
 											tMidiTrackBitMask trackBitMask,
 											tMidiPlayerInstrument instr)
 {
-	tErrType result = kAudioMidiUnavailable;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		result = gAudioContext.pMidiPlayer->ChangeProgram(trackBitMask, instr);
-	AUDIO_UNLOCK;
-
-	return result;
+	(void)trackBitMask, instr;
+	return kNoImplErr;
 }
 
 // ==============================================================================
@@ -1080,14 +976,8 @@ tErrType CAudioModule::ChangeMidiInstrument(tMidiPlayerID /* id */,
 // ==============================================================================
 tErrType CAudioModule::ChangeMidiTempo(tMidiPlayerID /* id */, S8 tempo)
 {
-	tErrType result = kAudioMidiUnavailable;
-
-	AUDIO_LOCK;
-	if (gAudioContext.pMidiPlayer)
-		result = gAudioContext.pMidiPlayer->ChangeTempo(tempo);
-	AUDIO_UNLOCK;
-
-	return result;
+	(void)tempo;
+	return kNoImplErr;
 }
 
 // ==============================================================================

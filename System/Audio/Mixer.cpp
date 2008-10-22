@@ -183,9 +183,6 @@ CAudioMixer::CAudioMixer( int inStreams ):
 					   "CAudioMixer::CAudioMixer: couldn't allocate %d streams!\n",
 					   numInStreams_);
 
-	// Create MIDI player
-	pMidiPlayer_ = NULL;
-
 	// Configure sampling frequency conversion
 	fsRack_[0] = (long)(samplingFrequency_*0.25f);
 	fsRack_[1] = (long)(samplingFrequency_*0.5f );
@@ -286,6 +283,8 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	// the audio id assignment scheme.
 	nextAudioID = kNoMidiID + 1;
 	nextMidiID = 0;
+	curMidiId_ = kNoMidiID;
+	curMidiAudioId_ = kNoAudioID;
 
 	currentPolicy = kAudioPriorityPolicyNone;
 
@@ -319,10 +318,6 @@ CAudioMixer::~CAudioMixer()
 		}
 		delete[] pStreams_;
 	}
-	
-	// Deallocate MIDI player
-	if (pMidiPlayer_)
-		delete pMidiPlayer_;
 	
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
@@ -439,17 +434,16 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 			// different than other players, even if we're just playing back a file.
 			// Specifically, we have to send different done messages than for other
 			// players (of course the option flag is the same).
-			CMidiPlayer *midiPlayer = kNull;
-			if (midiPlayer = dynamic_cast<CMidiPlayer *>(pPlayer))
+			if (pPlayer->GetID() == curMidiAudioId_)
 			{
 				tAudioMsgMidiCompleted	msg;
-				msg.midiPlayerID = pPlayer->GetID();
+				msg.midiPlayerID = curMidiId_; //pPlayer->GetID();
 				msg.payload = pPlayer->GetPayload();
 				msg.count = 1;
 				CAudioEventMessage event(msg);
 				pEventMPI_->PostEvent(event, 128, listener);
 			}
-			else 
+			else
 			{
 				tAudioMsgAudioCompleted msg;
 				msg.audioID = pPlayer->GetID();
@@ -1029,23 +1023,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		}
 	}
 
-	// MIDI player renders to fs/2 output buffer Even if fewer frames
-	// rendered
-	if ( pMidiPlayer_ && !pMidiPlayer_->IsPaused())
-	{
-		U32 mixBinIndex	   = kAudioMixer_MixBin_Index_FsDiv2;
-		U32 framesToRender = numFramesDiv2;	 // fs/2
-		U32 sampleCount	   = framesToRender*channels;
-		
-		ClearShorts(pStreamBuf_, framesToRender);
-		framesRendered = pMidiPlayer_->Render( pStreamBuf_, framesToRender); 
-		ShiftRight_S16(pStreamBuf_, pStreamBuf_,
-					   sampleCount, kMixer_HeadroomBits_Default);
-		AccS16toS16(pMixBinBufs_[mixBinIndex], pStreamBuf_, sampleCount,
-						mixBinFilled_[mixBinIndex]);
-		mixBinFilled_[mixBinIndex] = true;
-	}
-
 	// Combine Mix buffers to output, converting sampling frequency if necessary
 	mixBinIndex = kAudioMixer_MixBin_Index_FsDiv1;
 	if (mixBinFilled_[mixBinIndex])
@@ -1323,31 +1300,21 @@ void CAudioMixer::EnableSpeaker(Boolean x)
 }
 
 // ==============================================================================
-// CreateMIDIPlayer :  
+// GetMidiID :	Get next MIDI player ID
 // ==============================================================================
-CMidiPlayer *CAudioMixer::CreateMIDIPlayer()
+tMidiPlayerID CAudioMixer::GetMidiID(void)
 {
-	MIXER_LOCK;
-	if (pMidiPlayer_)
-		delete pMidiPlayer_;
-
-	pMidiPlayer_ = new CMidiPlayer( NULL, GetNextMidiID() );
-	MIXER_UNLOCK; 
-	return (pMidiPlayer_);
+	curMidiId_ = (tMidiPlayerID)GetNextMidiID();
+	return curMidiId_;
 }
 
 // ==============================================================================
-// DestroyMIDIPlayer :	
+// SetMidiID :	Set MIDI audio player ID
 // ==============================================================================
-void CAudioMixer::DestroyMIDIPlayer()
+void CAudioMixer::SetMidiAudioID(tMidiPlayerID midiId, tAudioID audioId)
 {
-	MIXER_LOCK;
-	if (pMidiPlayer_)
-	{
-		delete pMidiPlayer_;
-		pMidiPlayer_ = NULL;
-	}
-	MIXER_UNLOCK; 
+	curMidiId_ = midiId;
+	curMidiAudioId_ = audioId;
 }
 
 LF_END_BRIO_NAMESPACE()

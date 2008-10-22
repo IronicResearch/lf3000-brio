@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #include "util.h"
-#include "midi.h"
+//#include "midi.h"
 
 #ifdef __cplusplus
 extern "C" {

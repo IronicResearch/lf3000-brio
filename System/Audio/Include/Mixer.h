@@ -16,7 +16,6 @@
 #include <SystemTypes.h>
 #include <AudioTypes.h>
 #include <Stream.h>
-#include <MidiPlayer.h>
 
 #include <ButtonMPI.h>
 #include <DebugMPI.h>
@@ -44,17 +43,11 @@ class CAudioMixer : private IEventListener
 	
 	Boolean IsAnyAudioActive( void );
 
-	CMidiPlayer *GetMidiPlayerPtr( void ) { return pMidiPlayer_; }
-	tAudioID GetMidiPlayer_AudioID( void ) { return (1); }
-
 	tAudioID AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void RemovePlayer( tAudioID id, Boolean noDoneMessage );
 	void PausePlayer( tAudioID id );
 	void ResumePlayer( tAudioID id );
 	Boolean IsPlayerPlaying( tAudioID id );
-
-	CMidiPlayer *CreateMIDIPlayer();
-	void DestroyMIDIPlayer();
 
 	void SetMasterVolume( U8 x ) ; 
 	U8 GetMasterVolume( void ) { return audioState_.masterVolume; }
@@ -84,9 +77,11 @@ class CAudioMixer : private IEventListener
 
 	tPriorityPolicy GetPriorityPolicy(void);
 	tErrType SetPriorityPolicy(tPriorityPolicy policy);
+	
+	tMidiPlayerID GetMidiID(void);
+	void SetMidiAudioID(tMidiPlayerID midiId, tAudioID audioId);
 
  private:
-	CButtonMPI *pButtonMPI_;
 	CStream* FindFreeStream( tAudioPriority priority );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void DestroyPlayer(CAudioPlayer *pPlayer);
@@ -153,9 +148,6 @@ class CAudioMixer : private IEventListener
 	//	Soft Clipper parameters
 	WAVESHAPER	outSoftClipper_[kAudioMixer_MaxOutChannels];
 
-	// MIDI parameters - only one player for now
-	CMidiPlayer *pMidiPlayer_;
-
 #define kAudioMixer_MaxTempBuffers	7
 #define kAudioMixer_TempBufferWords \
 	(kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords)
@@ -166,6 +158,8 @@ class CAudioMixer : private IEventListener
 
 	tAudioID nextAudioID;
 	tAudioID nextMidiID;
+	tMidiPlayerID 	curMidiId_;
+	tAudioID 		curMidiAudioId_;
 
 	class CMixerMessage : public IEventMessage 
 	{
