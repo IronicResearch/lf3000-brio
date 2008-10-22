@@ -46,17 +46,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// available, and a lower priority player is playing, that player will be
 /// terminated in order to free up a channel.
 ///
-/// Midi is supported.  For legacy reasons, midi players are handled with a
-/// separate set of functions from the audio players.  Midi players have their
-/// own channels and their priority is evaluated independently of the audio
-/// players' channels.  They are also represented by a tMidiPlayerID, which is
-/// analogous to the tAudioID.  In practice, any function that takes a tAudioID
-/// can also operate on a midi channel by passing the tMidiPlayerID.  These
-/// functions include \ref GetAudioTime, \ref IsAudioPlaying, \ref PauseAudio,
-/// \ref ResumeAudio, \ref GetAudioVolume, \ref SetAudioVolume, \ref
-/// GetAudioPriority, \ref SetAudioPriority, \ref SetAudioPan, \ref GetAudioPan, \ref
-/// GetAudioEventListener, \ref SetAudioEventListener.  See \ref
-/// MidiPlayerBasics for more details.
+/// MIDI functions are no longer implemented.
 ///
 /// Please see the \ref KnownIssues section for important information about bugs
 /// and unimplemented features.
@@ -66,8 +56,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// \todo IsAudioPlaying on a particular channel returns true even if that channel
 /// is paused.
 ///
-/// \todo Priority and listener args to AcquireMidiPlayer are ignored.
-///
 /// \todo Where applicable, the noDoneMessage arguments are ignored.  As of 28
 /// Feb 08, fixing this functionality now actually breaks the AppManager
 /// (sequencer?).  Specifically, when scrolling fast through the first wheel
@@ -75,18 +63,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// I'm not sure why.
 ///
 /// \todo AudioEffectsProcessor features are unimplemented.
-///
-/// \todo Ensure that tMidiPlayerIDs can ALWAYS be used as tAudioIDs with no
-/// special action by the user.  Unfortunately, because tMidiPlayerIDs are 8
-/// bits and tAudioIDs are 32 bits the only sensible scheme to acheive this is
-/// to reserve tAudioIDs 0-255 for tMidiPlayerIDs.  Sad.
-///
-/// \todo Ensure that GetAudioTime, IsAudioPlaying, PauseAudio, ResumeAudio,
-/// GetAudioVolume, SetAudioVolume, GetAudioPriority, SetAudioPriority, SetAudioPan,
-/// GetAudioPan, GetAudioEventListener, SetAudioEventListener operate properly on
-/// midi streams.
-///
-/// \todo Low-level MIDI functions for managing program lists are unimplemented.
 ///
 /// \todo Ensure that MPI functions fail if kNoAudioID is passed in.
 ///
@@ -511,107 +487,27 @@ public:
 	// MIDI functionality
 	//********************************	 
 
-	/// \page MidiPlayerBasics "Midi Player Basics"
+	/// MIDI functions are no longer implemented.
 	///
-	/// There are three basic midi use cases:
-	///
-	/// Use Case 1: The Legacy Use Case
-	///
-	/// 1. Call \ref AcquireMidiPlayer to create the player and retrieve a
-	/// tMidiPlayerID.
-	///
-	/// 2. Call StartMidiFile to launch the midi stream.
-	///
-	/// 3. While the midi stream is playing, it can be manipulated using \ref
-	/// IsMidiFilePlaying, \ref PauseMidiFile, \ref ResumeMidiFile, and \ref
-	/// StopMidiFile.  It can also be manipulated using the Audio functions \ref
-	/// GetAudioTime, \ref IsAudioPlaying, \ref PauseAudio, \ref ResumeAudio,
-	/// \ref GetAudioVolume, \ref SetAudioVolume, \ref GetAudioPriority, \ref
-	/// SetAudioPriority, \ref SetAudioPan, \ref GetAudioPan, \ref GetAudioEventListener,
-	/// \ref SetAudioEventListener.  When using these audio functions, simply
-	/// pass the tMidiPlayerID as the tAudioID.
-	///
-	/// 4. Upon receiving a Notify callback, or when IsMidiFilePlaying returns
-	/// false, or after calling \ref StopMidiFile, destroy the midi player with
-	/// ReleaseMidiPlayer.
-	///
-	/// Use Case 2: Normal Midi File Playback
-	///
-	/// Use the \ref StartAudio interface to launch a player in the same fashion
-	/// that you would play any other audio file.  This use case is currently
-	/// unsupported.
-	///
-	/// Use Case 3: Programatic generation of a midi stream
-	///
-	/// In addition to the high-level play-pause-resume-stop interface for midi
-	/// players, a low-level midi API exists.  This low-level API can be used
-	/// programatically generate a midi stream. Currently implemented low-level
-	/// functions include \ref GetEnabledMidiTracks, \ref SetEnableMidiTracks,
-	/// \ref TransposeMidiTracks, \ref ChangeMidiTempo, \ref ChangeMidiInstrument
-	/// \ref MidiNoteOn, \ref MidiNoteOff, and \ref SendMidiCommand.
-	///
-
-	/// Create midi player
-	///
-	/// \param priority This parameter is the priority of the player.  It can be
-	/// overridden when StartMidiFile is called with the tMidiPlayerID returned
-	/// in pID.
-	///
-	/// \param pListener This parameter is the event listener of the player.  It
-	/// can be overridden when StartMidiFile is called with the tMidiPlayerID
-	/// returned in pID.
-	///
-	/// \param *pID This is a pointer to a tMidiPlayerID.  It will be set by
-	/// this function to either a valid tMidiPlayerID or to kNoMidiID.
-	///
-	/// \return This function unconditionally returns kNoErr.  The caller must
-	/// check the value of the pID argument to know if the call succeeded.
-	///
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType AcquireMidiPlayer( tAudioPriority priority,
 								IEventListener* pListener,
 								tMidiPlayerID* pID );
 
 
-	/// Delete midi player
+	/// MIDI functions are no longer implemented.
 	///
-	/// This function must be called after the midi player is no longer needed.
-	/// After it is called, the tMidiPlayerID should be considered invalid.
-	///
-	/// \param id This is the id of the midi player that is no longer needed.
-	///
-	/// \return This function unconditionally returns kNoErr.
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType ReleaseMidiPlayer( tMidiPlayerID id ); 
 
-	/// Convert a tMidiPlayerID to a tAudioID
+	/// MIDI functions are no longer implemented.
 	///
-	/// This function is not actually needed.  The tMidiPlayerID can be passed
-	/// as a tAudioID to all functions that will take it.
+	/// \return kNoAudioID -- This function is no longer implemented.
 	tAudioID GetAudioIDForMidiID( tMidiPlayerID id );
 	
-	/// Start playback of MIDI file.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the acquired MIDI player object
-	///
-	/// \param path	The CPath resource location of the MIDI file to play
-	///
-	/// \param volume	The volume setting when the MIDI file starts playing
-	///
-	/// \param priority	(unused)
-	///
-	/// \param pListener	The pointer to the IEventListener callback object
-	/// to be used for event notifications
-	///
-	/// \param payload	The user-defined tAudioPayload parameter to be used in 
-	/// event notification messages
-	///
-	/// \param flags	The tAudioOptionsFlags for options like done messages
-	///
-	/// \return			Returns kNoErr on success, or kAudioMidiErr on internal MIDI
-	/// file errors, or kAudioMidiUnavailable if MIDI file is already playing.
-	///
-	/// This function is analogous to \ref StartAudio.  The only difference is that
-	/// it must be passed a valid tMidiPlayerID. The priority parameter is ignored
-	/// because only one single MIDI file can be played at a time.
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType 	StartMidiFile( tMidiPlayerID		id,
 							   const CPath			&path, 
 							   U8					volume, 
@@ -620,210 +516,106 @@ public:
 							   tAudioPayload		payload,
 							   tAudioOptionsFlags	flags );
 	
-	/// Start playback of midi file with various defaults.
+	/// MIDI functions are no longer implemented.
 	///
-	/// Uses defaults from MPI for volume, priority, and listener.  See \ref
-	/// StartMidiFile for more details.
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType 	StartMidiFile( tMidiPlayerID		id,
 							   const CPath			&path, 
 							   tAudioPayload		payload,
 							   tAudioOptionsFlags	flags );
 
-	/// Is a given midi player playing?
+	/// MIDI functions are no longer implemented.
 	///
-	/// Returns true if id is playing.  Returns false otherwise.  Note that \ref
-	/// IsAudioPlaying does the exact same thing as this function.
-	///
-	/// \param id the tMidiPlayerID of the midi player in question
-	///
-	/// \return true if id is playing, false otherwise.
+	/// \return false -- This function is no longer implemented.
 	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
 
-	/// Is any midi player playing?
+	/// MIDI functions are no longer implemented.
 	///
-	/// Returns true if any midi player is active.
-	///
-	/// \return true if any midi player is active, false if no midi players are
-	/// active.
+	/// \return false -- This function is no longer implemented.
 	Boolean		IsMidiFilePlaying( void );
 
-	/// Pause a particular midi player.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id The tMidiPlayerID of the stream to pause
-	///
-	///  This function has no effect if the id is invalid.  Note that this does
-	///  the same thing as \ref PauseAudio.
 	void 		PauseMidiFile( tMidiPlayerID id );
 	
-	/// Resume a paused midi player.  Sensibly called after \ref PauseAudio or
-	/// \ref PauseMidiFile.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id The tMidiPlayerID of the stream to resume.
-	///
-	/// This function has no effect if the id is invalid.  Note that this
-	/// function does the same thing as \ref ResumeAudio.
 	void 		ResumeMidiFile( tMidiPlayerID id );
 	
-	/// Stop a midi player's stream.
+	/// MIDI functions are no longer implemented.
 	///
-	/// After calling this function, the midi stream will stop.  An event may or
-	/// may not be posted depending on the details below.
-	///
-	/// \param id The tMidiPlayerID of the player to stop.
-	///
-	/// \param noDoneMessage If this parameter is true, then the
-	/// kMidiTerminatedEvent will not be posted to the listener associated with
-	/// this audio player.  If this parameter is false, AND the player has an
-	/// associated listerner, AND the StartMidiFile call that launched this
-	/// player had the kAudioOptionsDoneMsgAfterComplete flag set, then the
-	/// kMidiTerminatedEvent will be posted to the listener.
-	///
-	/// This function has no effect if id is invalid.  After calling this
-	/// function, the user can call \ref ReleaseMidiPlayer.
 	void 		StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage );
 	
-	/// Returns the Midi player's currently enabled tracks.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \return		The tMidiTrackBitMask of enabled tracks, 16 tracks max
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
 
-	/// Sets the Midi player's currently enabled tracks.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param bitMask		The tMidiTrackBitMask of enabled tracks, 16 tracks max
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType 	SetEnableMidiTracks( tMidiPlayerID id,
 									 tMidiTrackBitMask bitMask );
 
-	/// Changes the pitch of selected Midi player's tracks.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param bitMask		The tMidiTrackBitMask of selected tracks, 16 tracks max
-	///
-	/// \param semitones	The number of semitones (half-steps) to adjust the pitch 
-	/// from its current value, positive for higher pitch, negative for lower pitch
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType	TransposeMidiTracks( tMidiPlayerID id,
 									 tMidiTrackBitMask bitMask,
 									 S8 semitones );
 
-	/// Changes the tempo of the selected Midi player, all tracks.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param tempo	The tempo scaler to change from its current value, 
-	/// ranging from 1/16 slower to 16x faster, (-127..127)
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType	ChangeMidiTempo( tMidiPlayerID id, S8 tempo ); 
 	
-	/// Changes the instrument of the selected Midi player track.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param channel	The selected track to change, 0..15
-	///
-	/// \param instr	The tMidiPlayerInstrument instrument number to change. 
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType	ChangeMidiInstrument( tMidiPlayerID id,
 									  int channel,
 									  tMidiPlayerInstrument instr );
 
-	/// Changes the instrument of the selected Midi player tracks.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param bits		The tMidiTrackBitMask of selected tracks, 16 tracks max
-	///
-	/// \param instr	The tMidiPlayerInstrument instrument number to change 
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType 	ChangeMidiInstrument( tMidiPlayerID id,
 									  tMidiTrackBitMask bits,
 									  tMidiPlayerInstrument instr ); 
 	
-	/// Low-level Midi function to play a note.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param channel	The selected track to play, 0..15
-	///
-	/// \param note		The number of the note to play, 60 = middle C
-	///
-	/// \param velocity	The loudness of the note to play, 64 = normal
-	///
-	/// \param flags	(unused)
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType MidiNoteOn( tMidiPlayerID id,
 						 U8 channel,
 						 U8 note,
 						 U8 velocity,
 						 tAudioOptionsFlags flags );
 
-	/// Low-level Midi function to play a note.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param channel	The selected track to play, 0..15
-	///
-	/// \param note		The number of the note to play, 60 = middle C
-	///
-	/// \param velocity	The loudness of the note to play, 64 = normal
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
 
-	/// Low-level Midi function to stop playing a note.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param channel	The selected track, 0..15
-	///
-	/// \param note		The number of the note to stop, 60 = middle C
-	///
-	/// \param velocity	The loudness of the note to stop, 64 = normal
-	///
-	/// \param flags	(unused)
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType MidiNoteOff( tMidiPlayerID id,
 						  U8 channel,
 						  U8 note,
 						  U8 velocity,
 						  tAudioOptionsFlags flags );
 
-	/// Low-level Midi function to stop playing a note.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param channel	The selected track, 0..15
-	///
-	/// \param note		The number of the note to stop, 60 = middle C
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType MidiNoteOff(tMidiPlayerID id,
 						 U8 channel,
 						 U8 note);
 	
-	/// Low-level Midi function to send a MIDI command to the player.
+	/// MIDI functions are no longer implemented.
 	///
-	/// \param id	The tMidiPlayerID of the selected player
-	///
-	/// \param cmd	The MIDI command byte, channel packed in lower nibble
-	///
-	/// \param data1	The 1st MIDI data byte
-	///
-	/// \param data2	The 2nd MIDI data byte, optional
-	///
-	/// \return		kNoErr on success
+	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
 	
 	/// Low-level midi control
@@ -879,182 +671,6 @@ public:
 	class CAudioModule*	pModule_;
 	U32					mpiID_;
 };
-
-// MIDI note definitions
-#define kMIDI_Cm1	0
-#define kMIDI_Dbm1	1
-#define kMIDI_Dm1	2
-#define kMIDI_Ebm1	3
-#define kMIDI_Em1	4
-#define kMIDI_Fm1	5
-#define kMIDI_Gbm1	6
-#define kMIDI_Gm1	7
-#define kMIDI_Abm1	8
-#define kMIDI_Am1	9
-#define kMIDI_Bbm1	10
-#define kMIDI_Bm1	11
-#define kMIDI_C0	12
-#define kMIDI_Db0	13
-#define kMIDI_D0	14
-#define kMIDI_Eb0	15
-#define kMIDI_E0	16
-#define kMIDI_F0	17
-#define kMIDI_Gb0	18
-#define kMIDI_G0	19
-#define kMIDI_Ab0	20
-#define kMIDI_A0	21
-#define kMIDI_Bb0	22
-#define kMIDI_B0	23
-#define kMIDI_C1	24
-#define kMIDI_Db1	25
-#define kMIDI_D1	26
-#define kMIDI_Eb1	27
-#define kMIDI_E1	28
-#define kMIDI_F1	29
-#define kMIDI_Gb1	30
-#define kMIDI_G1	31
-#define kMIDI_Ab1	32
-#define kMIDI_A1	33
-#define kMIDI_Bb1	34
-#define kMIDI_B1	35
-#define kMIDI_C2	36
-#define kMIDI_Db2	37
-#define kMIDI_D2	38
-#define kMIDI_Eb2	39
-#define kMIDI_E2	40
-#define kMIDI_F2	41
-#define kMIDI_Gb2	42
-#define kMIDI_G2	43
-#define kMIDI_Ab2	44
-#define kMIDI_A2	45
-#define kMIDI_Bb2	46
-#define kMIDI_B2	47
-#define kMIDI_C3	48
-#define kMIDI_Db3	49
-#define kMIDI_D3	50
-#define kMIDI_Eb3	51
-#define kMIDI_E3	52
-#define kMIDI_F3	53
-#define kMIDI_Gb3	54
-#define kMIDI_G3	55
-#define kMIDI_Ab3	56
-#define kMIDI_A3	57
-#define kMIDI_Bb3	58
-#define kMIDI_B3	59
-#define kMIDI_C4	60
-#define kMIDI_Db4	61
-#define kMIDI_D4	62
-#define kMIDI_Eb4	63
-#define kMIDI_E4	64
-#define kMIDI_F4	65
-#define kMIDI_Gb4	66
-#define kMIDI_G4	67
-#define kMIDI_Ab4	68
-#define kMIDI_A4	69
-#define kMIDI_Bb4	70
-#define kMIDI_B4	71
-#define kMIDI_C5	72
-#define kMIDI_Db5	73
-#define kMIDI_D5	74
-#define kMIDI_Eb5	75
-#define kMIDI_E5	76
-#define kMIDI_F5	77
-#define kMIDI_Gb5	78
-#define kMIDI_G5	79
-#define kMIDI_Ab5	80
-#define kMIDI_A5	81
-#define kMIDI_Bb5	82
-#define kMIDI_B5	83
-#define kMIDI_C6	84
-#define kMIDI_Db6	85
-#define kMIDI_D6	86
-#define kMIDI_Eb6	87
-#define kMIDI_E6	88
-#define kMIDI_F6	89
-#define kMIDI_Gb6	90
-#define kMIDI_G6	91
-#define kMIDI_Ab6	92
-#define kMIDI_A6	93
-#define kMIDI_Bb6	94
-#define kMIDI_B6	95
-#define kMIDI_C7	96
-#define kMIDI_Db7	97
-#define kMIDI_D7	98
-#define kMIDI_Eb7	99
-#define kMIDI_E7	100
-#define kMIDI_F7	101
-#define kMIDI_Gb7	102
-#define kMIDI_G7	103
-#define kMIDI_Ab7	104
-#define kMIDI_A7	105
-#define kMIDI_Bb7	106
-#define kMIDI_B7	107
-#define kMIDI_C8	108
-#define kMIDI_Db8	109
-#define kMIDI_D8	110
-#define kMIDI_Eb8	111
-#define kMIDI_E8	112
-#define kMIDI_F8	113
-#define kMIDI_Gb8	114
-#define kMIDI_G8	115
-#define kMIDI_Ab8	116
-#define kMIDI_A8	117
-#define kMIDI_Bb8	118
-#define kMIDI_B8	119
-#define kMIDI_C9	120
-#define kMIDI_Db9	121
-#define kMIDI_D9	122
-#define kMIDI_Eb9	123
-#define kMIDI_E9	124
-#define kMIDI_F9	125
-#define kMIDI_Gb9	126
-#define kMIDI_G9	127
-// Above MIDI range 
-#define kMIDI_Ab9	128
-#define kMIDI_A9	129
-#define kMIDI_Bb9	130
-#define kMIDI_B9	131
-#define kMIDI_C10	132
-#define kMIDI_Db10	133
-#define kMIDI_D10	134
-#define kMIDI_Eb10	135
-#define kMIDI_E10	136
-#define kMIDI_F10	137
-#define kMIDI_Gb10	138
-#define kMIDI_G10	139
-
-// MIDI Channel Message
-// Upper Nibble: Message ID  
-// Lower Nibble: Channel # [0..15]
-#define kMIDI_ChannelMessage_NoteOff			0x80
-#define kMIDI_ChannelMessage_NoteOn				0x90
-#define kMIDI_ChannelMessage_Aftertouch			0xA0
-#define kMIDI_ChannelMessage_ControlChange		0xB0
-#define kMIDI_ChannelMessage_ProgramChange		0xC0
-#define kMIDI_ChannelMessage_ChannelPressure	0xD0
-#define kMIDI_ChannelMessage_PitchWheel			0xE0
-
-// Supported MIDI Controller list.  Other controllers are ignored
-#define kMIDI_Controller_BankSelect				0x00
-#define kMIDI_Controller_ModulationWheel		0x01
-#define kMIDI_Controller_DataEntry				0x06
-#define kMIDI_Controller_Volume					0x07
-#define kMIDI_Controller_PanPosition			0x0A
-#define kMIDI_Controller_Expression				0x0B
-#define kMIDI_Controller_LSBOffset				0x20
-#define kMIDI_Controller_Sustain				0x40
-#define kMIDI_Controller_RPN_LSB				0x64
-#define kMIDI_Controller_RPN_Fine				0x64
-#define kMIDI_Controller_RPN_MSB				0x65
-#define kMIDI_Controller_RPN_Coarse				0x65
-
-#define kMIDI_Controller_AllSoundOff			120
-#define kMIDI_Controller_ResetAllControllers	121
-#define kMIDI_Controller_AllNotesOff			123
-
-#define kMIDI_RPN_PitchBendRange				0x0000
-#define kMIDI_RPN_MasterFineTuning				0x0001
-#define kMIDI_RPN_MasterCoarseTuning			0x0002
 
 LF_END_BRIO_NAMESPACE()	
 #endif /* LF_BRIO_AUDIOMPI_H */
