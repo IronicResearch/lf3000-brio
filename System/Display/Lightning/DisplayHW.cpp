@@ -152,7 +152,7 @@ void CDisplayModule::InitModule()
 	
 	// ask for the Frame Buffer base address
 	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
-	dbg_.Assert(baseAddr >= 0,
+	dbg_.Assert(baseAddr != -EFAULT,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gFrameBase = baseAddr;
 
@@ -170,7 +170,7 @@ void CDisplayModule::InitModule()
 
 	// Get 3D OpenGL RGB layer address for future reference 
 	baseAddr = ioctl(gDevOpenGL, MLC_IOCQADDRESS, 0);
-	dbg_.Assert(baseAddr >= 0,
+	dbg_.Assert(baseAddr != -EFAULT,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gOpenGLBase = baseAddr;
 
@@ -181,7 +181,7 @@ void CDisplayModule::InitModule()
 
 	// Get the overlay buffer base address
 	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
-	dbg_.Assert(baseAddr >= 0,
+	dbg_.Assert(baseAddr != -EFAULT,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
 	gOverlayBase = baseAddr;
 	gPlanarBase = baseAddr | 0x20000000;
