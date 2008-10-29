@@ -16522,3 +16522,35 @@ By Dave Milici (dmilici@leapfrog.com) on 10/22/08 1:27 PM
 6,660 ms. (Cumulative: 5,125,479 ms)
 
 ----------------
+Revision 3,614 from svn://localhost/TRUNK/:
+Revision 3,615 from svn://localhost/TRUNK/:
+Revision 3,616 from svn://localhost/TRUNK/:
+Revision 3,617 from svn://localhost/TRUNK/:
+Revision 3,618 from svn://localhost/TRUNK/:
+Revision 3,619 from svn://localhost/TRUNK/:
+Revision 3,620 from svn://localhost/TRUNK/:
+Revision 3,621 from svn://localhost/TRUNK/:
+Revision 3,622 from svn://localhost/TRUNK/:
+Revision 3,623 from svn://localhost/TRUNK/:
+Revision 3,624 from svn://localhost/TRUNK/:
+Revision 3,625 from svn://localhost/TRUNK/:
+Revision 3,626 from svn://localhost/TRUNK/:
+Revision 3,627 from svn://localhost/TRUNK/:
+Revision 3,628 from svn://localhost/TRUNK/:
+Revision 3,629 from svn://localhost/TRUNK/:
+Revision 3,630 from svn://localhost/TRUNK/:
+Revision 3,631 from svn://localhost/TRUNK/:
+Revision 3,632 from svn://localhost/TRUNK/:
+Revision 3,633 from svn://localhost/TRUNK/:
+
+Change MLC_IOCQADDRESS Assert to check for -EFAULT only.  Previously the
+Assert() checked for the address < 0.  This check failed on Didj09 when
+the SDRAM address is 0x80000000 or greater and is interpeted as a signed
+integer.
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/29/08 4:28 PM
+2 changed, 0 added, 0 deleted.
+6,003 ms. (Cumulative: 5,131,717 ms)
+
+----------------
