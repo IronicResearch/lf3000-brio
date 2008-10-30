@@ -237,8 +237,9 @@ void* ButtonPowerUSBTask( void* arg )
 	g_threadRunning2_ = true;
 	while (g_threadRun2_)
 	{
-		ret = poll(tri_fd, 3, -1);
-		if(ret > 0) {
+		// block on driver state changes, or timeout after 1 sec
+		ret = poll(tri_fd, 3, 1000);
+		if(ret >= 0) {
 			// button driver event?
 			if(tri_fd[0].revents & POLLIN) {
 				button_data.buttonTransition = 0;
@@ -284,6 +285,7 @@ void* ButtonPowerUSBTask( void* arg )
 			}
 			
 			// power driver event ?
+			current_pe.powerState = GetCurrentPowerState();
 			if(tri_fd[1].revents & POLLIN) {
 				size = read(tri_fd[1].fd, &ev, sizeof(ev));
 				switch(ev.code)
@@ -292,21 +294,20 @@ void* ButtonPowerUSBTask( void* arg )
 					current_pe.powerState = kPowerCritical;
 					break;
 									
-				default:
 				case KEY_POWER:
 					current_pe.powerState = kPowerShutdown;
 					break;
 				}
-					
-				if (power_data.powerState != current_pe.powerState &&
+			}
+			// power state changed? (polled for low-battery)
+			if (power_data.powerState != current_pe.powerState &&
 						power_data.powerState != kPowerShutdown) {
 					power_data.powerState = current_pe.powerState;
 					CPowerMessage power_msg(power_data);
 					CEventMPI eventmgr;
 					eventmgr.PostEvent(power_msg, kPowerEventPriority, 0);
-				}
 			}
-			
+		
 			// USB driver event ?
 			if(tri_fd[2].revents & POLLIN) {
 				size = read(tri_fd[2].fd, &ev, sizeof(ev));

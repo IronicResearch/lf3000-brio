@@ -16554,3 +16554,23 @@ By Scott Esters (sesters@leapfrog.com) on 10/29/08 4:28 PM
 6,003 ms. (Cumulative: 5,131,717 ms)
 
 ----------------
+Revision 3,634 from svn://localhost/TRUNK/:
+Revision 3,635 from svn://localhost/TRUNK/:
+Revision 3,636 from svn://localhost/TRUNK/:
+Revision 3,637 from svn://localhost/TRUNK/:
+Revision 3,638 from svn://localhost/TRUNK/:
+Revision 3,639 from svn://localhost/TRUNK/:
+Revision 3,640 from svn://localhost/TRUNK/:
+Revision 3,641 from svn://localhost/TRUNK/:
+Revision 3,642 from svn://localhost/TRUNK/:
+Revision 3,643 from svn://localhost/TRUNK/:
+Revision 3,644 from svn://localhost/TRUNK/:
+
+Merged Brio-SP4 updates into Brio trunk, including low-battery power event fix.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/30/08 2:48 PM
+3 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 5,137,920 ms)
+
+----------------
