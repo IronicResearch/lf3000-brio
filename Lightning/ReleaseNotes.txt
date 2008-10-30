@@ -3,6 +3,19 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.33.4.3631 release (Oct 28, 2008)
+===========================================
+
+-- Reinstate periodic polling of power state to detect low-battery event.
+
+===========================================
+Brio v1.33.4.3625 release (Oct 27, 2008)
+===========================================
+
+-- MIDI support deprecated from Audio MPI. (TTP #2137)
+Mobileer MIDI library and orchestra file removed from deployment.
+
+===========================================
 Brio v1.33.3.3585 release (Oct 16, 2008)
 ===========================================
 
