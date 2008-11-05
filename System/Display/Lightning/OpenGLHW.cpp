@@ -95,15 +95,9 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gDevLayer = (isLayerSwapped_) ? gDevLayerEven : gDevLayerOdd;
 	
 	// Get framebuffer address from driver
-<<<<<<< .mine
 	gMem1Phys = (U32)ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(gMem1Phys != -EFAULT , "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
 	dbg_.DebugOut(kDbgLvlCritical, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
-=======
-	gMem1Phys = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
-	dbg_.Assert(gMem1Phys != -EFAULT , "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
-	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
->>>>>>> .r3651
 
 	// Get framebuffer size from driver to divide up the heaps
 	// Since FBSIZE is read-only, default (unswapped) OGL layer must be queried
