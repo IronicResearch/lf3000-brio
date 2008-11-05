@@ -16594,3 +16594,13 @@ By Scott Esters (sesters@leapfrog.com) on 11/4/08 6:51 PM
 5,985 ms. (Cumulative: 5,144,061 ms)
 
 ----------------
+Revision 3,656 from svn://localhost/TRUNK/:
+
+Removed conflict.  New code handles Frame Buffer addresses above 0x80000000.
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/4/08 7:11 PM
+1 changed, 0 added, 0 deleted.
+6,114 ms. (Cumulative: 5,150,269 ms)
+
+----------------
