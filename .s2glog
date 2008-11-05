@@ -16574,3 +16574,23 @@ By Dave Milici (dmilici@leapfrog.com) on 10/30/08 2:48 PM
 6,063 ms. (Cumulative: 5,137,920 ms)
 
 ----------------
+Revision 3,645 from svn://localhost/TRUNK/:
+Revision 3,646 from svn://localhost/TRUNK/:
+Revision 3,647 from svn://localhost/TRUNK/:
+Revision 3,648 from svn://localhost/TRUNK/:
+Revision 3,649 from svn://localhost/TRUNK/:
+Revision 3,650 from svn://localhost/TRUNK/:
+Revision 3,651 from svn://localhost/TRUNK/:
+Revision 3,652 from svn://localhost/TRUNK/:
+Revision 3,653 from svn://localhost/TRUNK/:
+Revision 3,654 from svn://localhost/TRUNK/:
+Revision 3,655 from svn://localhost/TRUNK/:
+
+Add "#define _FILE_OFFSET_BITS" so mmap works with addresses above 0x80000000
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/4/08 6:51 PM
+2 changed, 0 added, 0 deleted.
+5,985 ms. (Cumulative: 5,144,061 ms)
+
+----------------
