@@ -12,6 +12,8 @@
 //
 //==============================================================================
 
+#define _FILE_OFFSET_BITS       64      // for correct off_t type
+
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
