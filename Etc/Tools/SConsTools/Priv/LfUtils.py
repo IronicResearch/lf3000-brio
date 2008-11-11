@@ -186,6 +186,8 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 		priv_incs = (ptype == kBuildModule and 'Include' or os.path.join('..', 'Include'))
 		bldenv.Append(CPPPATH  = [os.path.join(source_dir, priv_incs)])
 		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
+		if vars['is_debug']:
+			bldenv.Append(CCFLAGS = '-g')
 		if vars['is_monolithic']:
 			mylib = bldenv.StaticLibrary(ptarget, psources, LIBS = linklibs)
 		else:
@@ -224,6 +226,8 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		return
 		
 	testenv = penv.Copy()
+	if vars['is_debug']:
+		testenv.Append(CCFLAGS = '-g')
 	testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
 	testenv.Append(CPPDEFINES = 'UNIT_TESTING')
 	testenv.Append(RPATH = [vars['mpi_deploy_dir'], vars['priv_mpi_deploy_dir']])

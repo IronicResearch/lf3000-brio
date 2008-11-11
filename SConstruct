@@ -76,6 +76,7 @@ source_setup		= ARGUMENTS.get('setup', '')
 runtests			= ARGUMENTS.get('runtests', 1)
 type				= ARGUMENTS.get('type', 'embedded')
 variant				= ''
+debug				= ARGUMENTS.get('debug', 0)
 
 if platform != '' and platform_variant != '':
 	print '*** Exiting: Error!  Do not set the "platform" parameter if "platform_variant" is set'
@@ -122,6 +123,7 @@ is_checkheaders		= type == 'checkheaders'
 is_publish			= type == 'publish'
 is_export			= is_publish or type == 'xembedded' or type == 'xemulation'
 is_runtests			= runtests == 't' or runtests == '1'
+is_debug			= debug == 't' or debug == '1'
 publish_root		= ''
 if is_publish:
 	version = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
@@ -226,6 +228,7 @@ for target in targets:
 				 'export_root'				: is_publish and publish_root or export_root,
 				 'target_subdir'			: target_subdir,
 				 'rootfs'					: rootfs,
+				 'is_debug'					: is_debug,
 			   }
 	
 	

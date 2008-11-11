@@ -16631,3 +16631,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/08 10:31 AM
 6,016 ms. (Cumulative: 5,156,504 ms)
 
 ----------------
+Revision 3,675 from svn://localhost/TRUNK/:
+
+Added "debug=t" option to Brio scons scripts to allow debug symbol builds.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/08 11:18 AM
+2 changed, 0 added, 0 deleted.
+5,719 ms. (Cumulative: 5,162,301 ms)
+
+----------------
