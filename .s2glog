@@ -16604,3 +16604,30 @@ By Scott Esters (sesters@leapfrog.com) on 11/4/08 7:11 PM
 6,114 ms. (Cumulative: 5,150,269 ms)
 
 ----------------
+Revision 3,657 from svn://localhost/TRUNK/:
+Revision 3,658 from svn://localhost/TRUNK/:
+Revision 3,659 from svn://localhost/TRUNK/:
+Revision 3,660 from svn://localhost/TRUNK/:
+Revision 3,661 from svn://localhost/TRUNK/:
+Revision 3,662 from svn://localhost/TRUNK/:
+Revision 3,663 from svn://localhost/TRUNK/:
+Revision 3,664 from svn://localhost/TRUNK/:
+Revision 3,665 from svn://localhost/TRUNK/:
+Revision 3,666 from svn://localhost/TRUNK/:
+Revision 3,667 from svn://localhost/TRUNK/:
+Revision 3,668 from svn://localhost/TRUNK/:
+Revision 3,669 from svn://localhost/TRUNK/:
+Revision 3,670 from svn://localhost/TRUNK/:
+Revision 3,671 from svn://localhost/TRUNK/:
+Revision 3,672 from svn://localhost/TRUNK/:
+Revision 3,673 from svn://localhost/TRUNK/:
+Revision 3,674 from svn://localhost/TRUNK/:
+
+Fixed Brio scons scripts' propogation of buggy "is_runtests" boolean option. Unit tests binaries and resources are not deployed unless "runtests=t" explicitly passed.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/08 10:31 AM
+2 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 5,156,504 ms)
+
+----------------

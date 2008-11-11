@@ -73,7 +73,7 @@ is_monolithic		= ARGUMENTS.get('monolithic', 0)
 platform			= ARGUMENTS.get('platform', '')
 platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF1000')
 source_setup		= ARGUMENTS.get('setup', '')
-is_runtests			= ARGUMENTS.get('runtests', 1)
+runtests			= ARGUMENTS.get('runtests', 1)
 type				= ARGUMENTS.get('type', 'embedded')
 variant				= ''
 
@@ -121,7 +121,7 @@ if not is_nandrootfs:
 is_checkheaders		= type == 'checkheaders'
 is_publish			= type == 'publish'
 is_export			= is_publish or type == 'xembedded' or type == 'xemulation'
-is_runtests         = (is_runtests == 1) and (type == 'emulation' or is_publish)
+is_runtests			= runtests == 't' or runtests == '1'
 publish_root		= ''
 if is_publish:
 	version = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
@@ -285,9 +285,9 @@ for target in targets:
 	
 	#-------------------------------------------------------------------------
 	# Deploy the unit test data for embedded builds
-	# FIXME/dm: Wasteful on publish builds except unit test binaries creep in
+	# Conditional on "runtests=t" to avoid Brio bloat on published builds 
 	#-------------------------------------------------------------------------
-	if not is_emulation and not is_publish:
+	if is_runtests and not is_emulation and not is_publish:
 		unit_test_data_root = Dir('UnitTestData').abspath
 		root_len = len(unit_test_data_root) + 1
 		rootfs_data = os.path.join(rootfs, 'Base', 'Brio', 'rsrc')
