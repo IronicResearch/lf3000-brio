@@ -213,9 +213,9 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 #-----------------------------------------------------------------------------
 def RunMyTests(ptarget, psources, plibs, penv, vars):
 
-	if vars['is_checkheaders'] or vars['is_export'] and not vars['is_publish']:
+	if vars['is_checkheaders'] or vars['is_export'] or not vars['is_runtests']:
 		return
-		
+
 	srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
 	tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
 	subdir = (vars['is_emulation'] and 'Emulation' or vars['platform']) 
@@ -267,7 +267,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 			fulllibs +=  ['X11']
 	temp = testenv.Program([mytest] + psources, LIBS = fulllibs + platformlibs)
 	mytestexe = testenv.Install(vars['bin_deploy_dir'], temp)
-	if vars['is_runtests']:
+	if vars['is_runtests'] and vars['is_emulation']:
 		testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
 
 
