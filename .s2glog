@@ -16641,3 +16641,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/08 11:18 AM
 5,719 ms. (Cumulative: 5,162,301 ms)
 
 ----------------
+Revision 3,676 from svn://localhost/TRUNK/:
+Revision 3,677 from svn://localhost/TRUNK/:
+
+Leave video layer in XY block addressing mode for cleaner appearance when disabling.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/12/08 5:56 PM
+1 changed, 0 added, 0 deleted.
+5,636 ms. (Cumulative: 5,168,015 ms)
+
+----------------
