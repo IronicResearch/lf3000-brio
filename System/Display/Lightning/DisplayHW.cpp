@@ -185,7 +185,7 @@ void CDisplayModule::InitModule()
 	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr != -EFAULT,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
-	gOverlayBase = baseAddr;
+	gOverlayBase = baseAddr &= ~0x20000000;
 	gPlanarBase = baseAddr | 0x20000000;
 	
 	// Get the overlay buffer's size
@@ -467,7 +467,7 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	bPrimaryLayerEnabled = false;
 	// Restore video overlay linear address for subsequent instances
 	if (context->isOverlay && context->isPlanar)
-		ioctl(layer, MLC_IOCTADDRESS, gOverlayBase);
+		ioctl(layer, MLC_IOCTADDRESS, gPlanarBase);
 	// Restore primary layer address for subsequent instances after page flipping
 	else // if (context->isPrimary)
 		ioctl(gDevLayer, MLC_IOCTADDRESS, gFrameBase);
