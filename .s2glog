@@ -16652,3 +16652,25 @@ By Dave Milici (dmilici@leapfrog.com) on 11/12/08 5:56 PM
 5,636 ms. (Cumulative: 5,168,015 ms)
 
 ----------------
+Revision 3,678 from svn://localhost/TRUNK/:
+Revision 3,679 from svn://localhost/TRUNK/:
+Revision 3,680 from svn://localhost/TRUNK/:
+Revision 3,681 from svn://localhost/TRUNK/:
+Revision 3,682 from svn://localhost/TRUNK/:
+Revision 3,683 from svn://localhost/TRUNK/:
+Revision 3,684 from svn://localhost/TRUNK/:
+Revision 3,685 from svn://localhost/TRUNK/:
+Revision 3,686 from svn://localhost/TRUNK/:
+Revision 3,687 from svn://localhost/TRUNK/:
+Revision 3,688 from svn://localhost/TRUNK/:
+Revision 3,689 from svn://localhost/TRUNK/:
+Revision 3,690 from svn://localhost/TRUNK/:
+
+Modify PortAudio lib to not query audio driver capabilities as work-around to avoid driver thrashing audio amp enable/disable during open/close. (TTP #2005)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/08 11:58 AM
+2 changed, 0 added, 0 deleted.
+5,641 ms. (Cumulative: 5,173,812 ms)
+
+----------------

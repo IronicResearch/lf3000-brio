@@ -315,6 +315,7 @@ static PaError QueryDirection( const char *deviceName, StreamMode mode, double *
         double *defaultLowLatency, double *defaultHighLatency )
 {
     PaError result = paNoError;
+#if 0 // BUGHACK/dm: Skip device query to avoid thrashing driver	
     int numChannels, maxNumChannels;
     int busy = 0;
     int devHandle = -1;
@@ -415,6 +416,12 @@ static PaError QueryDirection( const char *deviceName, StreamMode mode, double *
 error:
     if( devHandle >= 0 )
         close( devHandle );
+#else
+    *maxChannelCount = 2;
+    *defaultSampleRate = 32000;
+    *defaultLowLatency = 512. / *defaultSampleRate;
+    *defaultHighLatency = 2048. / *defaultSampleRate;
+#endif
 
     return result;
 }
