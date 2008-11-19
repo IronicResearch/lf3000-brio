@@ -16674,3 +16674,26 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/08 11:58 AM
 5,641 ms. (Cumulative: 5,173,812 ms)
 
 ----------------
+Revision 3,691 from svn://localhost/TRUNK/:
+Revision 3,692 from svn://localhost/TRUNK/:
+Revision 3,693 from svn://localhost/TRUNK/:
+Revision 3,694 from svn://localhost/TRUNK/:
+Revision 3,695 from svn://localhost/TRUNK/:
+Revision 3,696 from svn://localhost/TRUNK/:
+Revision 3,697 from svn://localhost/TRUNK/:
+Revision 3,698 from svn://localhost/TRUNK/:
+Revision 3,699 from svn://localhost/TRUNK/:
+Revision 3,700 from svn://localhost/TRUNK/:
+Revision 3,701 from svn://localhost/TRUNK/:
+Revision 3,702 from svn://localhost/TRUNK/:
+Revision 3,703 from svn://localhost/TRUNK/:
+Revision 3,704 from svn://localhost/TRUNK/:
+
+Add support for /flags/vbus flag, allowing developers to debug applications with USB connected.
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/19/08 3:56 PM
+1 changed, 0 added, 0 deleted.
+5,532 ms. (Cumulative: 5,179,516 ms)
+
+----------------
