@@ -16711,3 +16711,22 @@ By Scott Esters (sesters@leapfrog.com) on 11/20/08 4:15 PM
 5,642 ms. (Cumulative: 5,185,251 ms)
 
 ----------------
+Revision 3,710 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,605 ms. (Cumulative: 5,190,934 ms)
+
+----------------
+Revision 3,711 from svn://localhost/TRUNK/:
+Revision 3,712 from svn://localhost/TRUNK/:
+Revision 3,713 from svn://localhost/TRUNK/:
+
+Backed out addition of timestamp fields to tButtonData, as these changes
+broke AppManager
+
+
+By Scott Esters (sesters@leapfrog.com) on 11/21/08 12:14 PM
+2 changed, 0 added, 0 deleted.
+5,703 ms. (Cumulative: 5,196,653 ms)
+
+----------------
