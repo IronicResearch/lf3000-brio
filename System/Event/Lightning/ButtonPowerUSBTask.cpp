@@ -278,6 +278,8 @@ void* ButtonPowerUSBTask( void* arg )
 
 				if(button_data.buttonTransition != 0) {
 					SetButtonState(button_data);
+					button_data.time.seconds      = ev.time.tv_sec;
+					button_data.time.microSeconds = ev.time.tv_usec;
 					CButtonMessage button_msg(button_data);
 					CEventMPI	eventmgr;
 					eventmgr.PostEvent(button_msg, kButtonEventPriority, 0);

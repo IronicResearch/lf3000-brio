@@ -48,6 +48,10 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupButton), BUTTON_ERRORS)
 struct tButtonData {
 	U32	buttonState;
 	U32	buttonTransition;
+	struct timeVal {
+		S32	seconds;
+		S32	microSeconds;
+	} time;
 };
 
 const U32 kButtonUp				= (1 << 0);
