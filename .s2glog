@@ -16730,3 +16730,28 @@ By Scott Esters (sesters@leapfrog.com) on 11/21/08 12:14 PM
 5,703 ms. (Cumulative: 5,196,653 ms)
 
 ----------------
+Revision 3,714 from svn://localhost/TRUNK/:
+Revision 3,715 from svn://localhost/TRUNK/:
+Revision 3,716 from svn://localhost/TRUNK/:
+Revision 3,717 from svn://localhost/TRUNK/:
+Revision 3,718 from svn://localhost/TRUNK/:
+Revision 3,719 from svn://localhost/TRUNK/:
+Revision 3,720 from svn://localhost/TRUNK/:
+Revision 3,721 from svn://localhost/TRUNK/:
+Revision 3,722 from svn://localhost/TRUNK/:
+Revision 3,723 from svn://localhost/TRUNK/:
+Revision 3,724 from svn://localhost/TRUNK/:
+Revision 3,725 from svn://localhost/TRUNK/:
+Revision 3,726 from svn://localhost/TRUNK/:
+Revision 3,727 from svn://localhost/TRUNK/:
+Revision 3,728 from svn://localhost/TRUNK/:
+Revision 3,729 from svn://localhost/TRUNK/:
+
+Propogated scons debug=t option into LightningUtils.py for Brio SDK examples.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/25/08 10:59 AM
+1 changed, 0 added, 0 deleted.
+5,641 ms. (Cumulative: 5,202,450 ms)
+
+----------------

@@ -231,6 +231,7 @@ def RetrieveOptions(args, root_dir):
 	
 	is_emulation 	= type == 'emulation' or type == 'checkheaders'
 	is_resource		= args.get('resource', 1)	
+	is_debug		= args.get('debug', 0)
 	target_subdir			= platform + (is_emulation and '_emulation' or '')
 	intermediate_build_dir	= os.path.join(root_dir, 'Temp', target_subdir)
 	
@@ -265,6 +266,7 @@ def RetrieveOptions(args, root_dir):
 			'bin_deploy_dir'		: bin_deploy_dir,
 			'rootfs'				: rootfs,
 			'is_resource'			: is_resource,
+			'is_debug'				: is_debug,
 	}
 	
 	return vars
@@ -306,6 +308,9 @@ def CreateEnvironment(opts, vars):
 	env.Append(CPPPATH = cpppaths)
 	env.Append(LIBPATH = libpaths)
 	env.Append(RPATH = libpaths + [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'PrivMPI')])
+
+	if vars['is_debug']:
+		env.Append(CCFLAGS = '-g')
 
 	return env
 
