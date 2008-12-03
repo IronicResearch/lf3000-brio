@@ -16755,3 +16755,19 @@ By Dave Milici (dmilici@leapfrog.com) on 11/25/08 10:59 AM
 5,641 ms. (Cumulative: 5,202,450 ms)
 
 ----------------
+Revision 3,730 from svn://localhost/TRUNK/:
+Revision 3,731 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,907 ms. (Cumulative: 5,208,436 ms)
+
+----------------
+Revision 3,732 from svn://localhost/TRUNK/:
+
+Added --strip-all linker directive for Brio modules release builds to minimize .so run-time sizes
+
+By Dave Milici (dmilici@leapfrog.com) on 12/3/08 3:54 PM
+1 changed, 0 added, 0 deleted.
+5,940 ms. (Cumulative: 5,214,392 ms)
+
+----------------
