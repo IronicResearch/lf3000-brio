@@ -10,6 +10,8 @@
 //==============================================================================
 
 // System includes
+#include <fcntl.h>
+#include <sys/mman.h>
 #include <pthread.h>
 #include <errno.h>
 #include <CoreTypes.h>
@@ -34,11 +36,83 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define VORBIS_16BIT_WORD		2
 #define VORBIS_SIGNED_DATA		1
 
+#undef USE_MMAP_FILE_IO
+
+typedef struct {
+	void*	pmap;
+	int		fd;
+	size_t	length;
+	size_t	cursor;
+} tFileMapping;
+
 //==============================================================================
 // Global variables
 //==============================================================================
 static U32 numVorbisPlayers = 0;
 static U32 maxNumVorbisPlayers = kAudioMaxVorbisStreams;
+
+#ifdef USE_MMAP_FILE_IO
+//==============================================================================
+// File IO callback implementation
+//==============================================================================
+size_t mm_read_func(void *ptr, size_t size, size_t nmemb, void *datasource)
+{
+	tFileMapping*	pfm = (tFileMapping*)datasource;
+	size_t			length = size * nmemb;
+	void*			psrc;
+	
+	if (length + pfm->cursor > pfm->length)
+		length = pfm->length - pfm->cursor;
+	psrc = (void*)((unsigned)pfm->pmap + pfm->cursor);
+	memcpy(ptr, psrc, length);
+	pfm->cursor += length;
+	return length;
+}
+
+//==============================================================================
+// File IO callback implementation
+//==============================================================================
+int mm_seek_func(void *datasource, ogg_int64_t offset, int whence)
+{
+	tFileMapping*	pfm = (tFileMapping*)datasource;
+
+	switch (whence) {
+		case SEEK_SET: pfm->cursor = offset; break;
+		case SEEK_CUR: pfm->cursor += offset; break;
+		case SEEK_END: pfm->cursor = pfm->length - offset; break;
+	}
+	if (pfm->cursor > pfm->length)
+		pfm->cursor = pfm->length;
+	else if (pfm->cursor < 0)
+		pfm->cursor = 0;
+	return 0;
+}
+
+//==============================================================================
+// File IO callback implementation
+//==============================================================================
+long mm_tell_func(void *datasource)
+{
+	tFileMapping*	pfm = (tFileMapping*)datasource;
+	return pfm->cursor;
+}
+
+//==============================================================================
+// File IO callback implementation
+//==============================================================================
+int mm_close_func(void *datasource)
+{
+	tFileMapping*	pfm = (tFileMapping*)datasource;
+
+	if (pfm->fd > -1) {
+		munmap(pfm->pmap, pfm->length);
+		close(pfm->fd);
+		pfm->pmap = NULL;
+		pfm->fd = -1;
+	}
+	return 0;
+}
+#endif // USE_MMAP_FILE_IO
 
 //==============================================================================
 // CVorbisPlayer implementation
@@ -52,6 +126,38 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
+#ifdef USE_MMAP_FILE_IO	
+	// Open file
+	fd_ = open( pInfo->path->c_str(), O_RDONLY );
+	pDebugMPI_->Assert( fd_ > 0, 
+						"VorbisPlayer::ctor : Unable to open file: '%s'\n",
+						pInfo->path->c_str() );
+	struct stat sbuf;
+	fstat(fd_, &sbuf);
+	
+	// Map file
+	tFileMapping* fmap = new tFileMapping;
+	dataSource_ = fmap;
+	fmap->fd = fd_;
+	fmap->length = sbuf.st_size; 
+	fmap->cursor = 0;
+	fmap->pmap = mmap(0, fmap->length, PROT_READ, MAP_SHARED, fd_, 0);
+	pDebugMPI_->Assert( fmap->pmap != NULL, 
+						"VorbisPlayer::ctor : Unable to map file: '%s'\n",
+						pInfo->path->c_str() );
+	
+	// Setup file callbacks
+	oggCallbacks_.read_func = mm_read_func;
+	oggCallbacks_.seek_func = mm_seek_func;
+	oggCallbacks_.tell_func = mm_tell_func;
+	oggCallbacks_.close_func = mm_close_func;
+	
+	// Open Ogg-compressed file
+	int ov_ret = ov_open_callbacks( dataSource_, &vorbisFile_, NULL, 0, oggCallbacks_ );
+	pDebugMPI_->AssertNoErr( ov_ret, 
+							 "VorbisPlayer::ctor: Is Ogg file? '%s', ov_ret=%d\n",
+							 pInfo->path->c_str(), ov_ret);
+#else	
 	// Open file
 	fileH_ = fopen( pInfo->path->c_str(), "r" );
 	pDebugMPI_->Assert( fileH_ > 0, 
@@ -63,7 +169,8 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	pDebugMPI_->AssertNoErr( ov_ret, 
 							 "VorbisPlayer::ctor: Is Ogg file? '%s'\n",
 							 pInfo->path->c_str());
-
+#endif
+	
 	pVorbisInfo		   = ov_info( &vorbisFile_, -1 );
 	channels_		   = pVorbisInfo->channels;
 	samplingFrequency_ = pVorbisInfo->rate;
@@ -78,7 +185,7 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 CVorbisPlayer::~CVorbisPlayer()
 {
 	tErrType result;
-		
+
 	if (pReadBuf_)
 		delete[] pReadBuf_;
 	
@@ -88,6 +195,12 @@ CVorbisPlayer::~CVorbisPlayer()
 		"%s.%d: Could not close OggVorbis file.\n",
 		__FUNCTION__, __LINE__);
 
+#ifdef USE_MMAP_FILE_IO
+	// Release file map struct after ov_clear() calls close() callback
+	if (dataSource_)
+		delete (tFileMapping*)dataSource_;
+#endif
+	
 	// Free MPIs
 	if (pDebugMPI_)
 		delete (pDebugMPI_);

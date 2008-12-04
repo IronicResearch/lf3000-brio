@@ -16771,3 +16771,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/3/08 3:54 PM
 5,940 ms. (Cumulative: 5,214,392 ms)
 
 ----------------
+Revision 3,733 from svn://localhost/TRUNK/:
+
+Added support for mem-mapped file IO via Vorbis callbacks. Disabled as compile option by default pending test results.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/3/08 4:19 PM
+2 changed, 0 added, 0 deleted.
+6,815 ms. (Cumulative: 5,221,285 ms)
+
+----------------
