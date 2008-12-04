@@ -51,6 +51,9 @@ class CVorbisPlayer : public CAudioPlayer {
 	ov_callbacks	oggCallbacks_; // set of callbacks to wrap resource mgr
 								   // functions
 	U32				filePosition_; // Position in vorbis bitstream
+	
+	int				fd_;			// file descriptor
+	void*			dataSource_;	// data source for Vorbis callbacks
 };
 
 LF_END_BRIO_NAMESPACE()
