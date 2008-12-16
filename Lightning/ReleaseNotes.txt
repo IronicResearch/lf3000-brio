@@ -3,6 +3,81 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.34.0.3777 (Dec 16, 2008)
+===========================================
+
+-- First M1 Brio release for L3X.  Edited SVN notes since -r3631 follow:
+
+........................................................................
+r3633 | sesters | 2008-10-29 16:28:53 -0700 (Wed, 29 Oct 2008) | 5 lines
+Change MLC_IOCQADDRESS Assert to check for -EFAULT only.  Previously the
+Assert() checked for the address < 0.  This check failed on Didj09 when
+the SDRAM address is 0x80000000 or greater and is interpeted as a signed
+integer.
+
+........................................................................
+r3644 | dmilici | 2008-10-30 14:48:07 -0700 (Thu, 30 Oct 2008) | 2 lines
+Merged Brio-SP4 updates into Brio trunk, including low-battery power 
+event fix.
+
+........................................................................
+r3655 | sesters | 2008-11-04 18:51:11 -0800 (Tue, 04 Nov 2008) | 2 lines
+Add "#define _FILE_OFFSET_BITS" so mmap works with addresses above 
+0x80000000
+
+........................................................................
+r3656 | sesters | 2008-11-04 19:11:04 -0800 (Tue, 04 Nov 2008) | 2 lines
+Removed conflict.  New code handles Frame Buffer addresses above 
+0x80000000.
+
+........................................................................
+r3674 | dmilici | 2008-11-11 10:31:09 -0800 (Tue, 11 Nov 2008) | 2 lines
+Fixed Brio scons scripts' propogation of buggy "is_runtests" boolean 
+option. Unit tests binaries and resources are not deployed unless 
+"runtests=t" explicitly passed.
+
+........................................................................
+r3675 | dmilici | 2008-11-11 11:18:25 -0800 (Tue, 11 Nov 2008) | 2 lines
+Added "debug=t" option to Brio scons scripts to allow debug symbol builds.
+
+........................................................................
+r3677 | dmilici | 2008-11-12 17:56:38 -0800 (Wed, 12 Nov 2008) | 2 lines
+Leave video layer in XY block addressing mode for cleaner appearance when 
+disabling.
+
+........................................................................
+r3690 | dmilici | 2008-11-14 11:58:02 -0800 (Fri, 14 Nov 2008) | 2 lines
+Modify PortAudio lib to not query audio driver capabilities as 
+work-around to avoid driver thrashing audio amp enable/disable during 
+open/close. (TTP #2005)
+
+........................................................................
+r3704 | sesters | 2008-11-19 15:56:44 -0800 (Wed, 19 Nov 2008) | 2 lines
+Add support for /flags/vbus flag, allowing developers to debug 
+applications with USB connected.
+
+........................................................................
+r3729 | dmilici | 2008-11-25 10:59:41 -0800 (Tue, 25 Nov 2008) | 2 lines
+Propogated scons debug=t option into LightningUtils.py for Brio SDK 
+examples.
+
+........................................................................
+r3732 | dmilici | 2008-12-03 15:54:41 -0800 (Wed, 03 Dec 2008) | 1 line
+Added ..strip-all linker directive for Brio modules release builds to 
+minimize .so run-time sizes
+
+........................................................................
+r3733 | dmilici | 2008-12-03 16:19:40 -0800 (Wed, 03 Dec 2008) | 2 lines
+Added support for mem-mapped file IO via Vorbis callbacks. Disabled as 
+compile option by default pending test results.
+
+........................................................................
+r3767 | gstanfield | 2008-12-15 10:45:12 -0800 (Mon, 15 Dec 2008) | 1 line
+Upped version number to 34.0.3766 for the L3X build
+
+........................................................................
+
+===========================================
 Brio v1.33.4.3631 release (Oct 28, 2008)
 ===========================================
 
