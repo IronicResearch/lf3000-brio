@@ -16823,3 +16823,25 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/15/08 10:45 AM
 5,954 ms. (Cumulative: 5,227,568 ms)
 
 ----------------
+Revision 3,768 from svn://localhost/TRUNK/:
+Revision 3,769 from svn://localhost/TRUNK/:
+Revision 3,770 from svn://localhost/TRUNK/:
+Revision 3,771 from svn://localhost/TRUNK/:
+Revision 3,772 from svn://localhost/TRUNK/:
+Revision 3,773 from svn://localhost/TRUNK/:
+Revision 3,774 from svn://localhost/TRUNK/:
+Revision 3,775 from svn://localhost/TRUNK/:
+Revision 3,776 from svn://localhost/TRUNK/:
+Revision 3,777 from svn://localhost/TRUNK/:
+
+Updated version string including build # for M1 release.
+Updated release notes since last release.
+Added my email to buildbot email list.
+
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 12/16/08 1:16 PM
+3 changed, 0 added, 0 deleted.
+6,197 ms. (Cumulative: 5,233,906 ms)
+
+----------------
