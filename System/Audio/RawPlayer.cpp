@@ -26,6 +26,9 @@
 #include <RawPlayer.h>
 #include <Dsputil.h>
 
+#undef ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -46,6 +49,8 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	CAudioPlayer( pInfo, id  )
 {
 	tErrType result;
+	
+	TimeStampOn(3);
 	
 	// ---- Open audio file
 	fileType_ = kRawPlayer_FileType_Unknown;
@@ -118,6 +123,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	
 	numRawPlayers++;
 
+	TimeStampOff(3);
 }
 
 // =============================================================================

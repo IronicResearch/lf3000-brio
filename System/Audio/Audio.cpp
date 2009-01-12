@@ -27,6 +27,9 @@
 #include <map>
 #include <set>
 
+#undef ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 namespace
@@ -408,6 +411,9 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	CPath filename, fileExt;
 	
 	AUDIO_LOCK;
+	
+	TimeStampOn(4);
+	
 	// Determine whether specified file exists
 	CPath fullPath = (path.length() == 0) ? "" :
 		(path.at(0) == '/') ? path : gAudioContext.gpath + path;
@@ -451,6 +457,8 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	}
 
  error:
+	TimeStampOff(4);
+	
 	AUDIO_UNLOCK;
 
 	return id;

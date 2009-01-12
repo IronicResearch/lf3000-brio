@@ -16845,3 +16845,53 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/16/08 1:16 PM
 6,197 ms. (Cumulative: 5,233,906 ms)
 
 ----------------
+Revision 3,778 from svn://localhost/TRUNK/:
+Revision 3,779 from svn://localhost/TRUNK/:
+Revision 3,780 from svn://localhost/TRUNK/:
+Revision 3,781 from svn://localhost/TRUNK/:
+Revision 3,782 from svn://localhost/TRUNK/:
+Revision 3,783 from svn://localhost/TRUNK/:
+Revision 3,784 from svn://localhost/TRUNK/:
+Revision 3,785 from svn://localhost/TRUNK/:
+Revision 3,786 from svn://localhost/TRUNK/:
+Revision 3,787 from svn://localhost/TRUNK/:
+Revision 3,788 from svn://localhost/TRUNK/:
+Revision 3,789 from svn://localhost/TRUNK/:
+Revision 3,790 from svn://localhost/TRUNK/:
+Revision 3,791 from svn://localhost/TRUNK/:
+Revision 3,792 from svn://localhost/TRUNK/:
+Revision 3,793 from svn://localhost/TRUNK/:
+Revision 3,794 from svn://localhost/TRUNK/:
+Revision 3,795 from svn://localhost/TRUNK/:
+Revision 3,796 from svn://localhost/TRUNK/:
+Revision 3,797 from svn://localhost/TRUNK/:
+Revision 3,798 from svn://localhost/TRUNK/:
+Revision 3,799 from svn://localhost/TRUNK/:
+Revision 3,800 from svn://localhost/TRUNK/:
+Revision 3,801 from svn://localhost/TRUNK/:
+Revision 3,802 from svn://localhost/TRUNK/:
+Revision 3,803 from svn://localhost/TRUNK/:
+Revision 3,804 from svn://localhost/TRUNK/:
+Revision 3,805 from svn://localhost/TRUNK/:
+Revision 3,806 from svn://localhost/TRUNK/:
+Revision 3,807 from svn://localhost/TRUNK/:
+Revision 3,808 from svn://localhost/TRUNK/:
+Revision 3,809 from svn://localhost/TRUNK/:
+Revision 3,810 from svn://localhost/TRUNK/:
+Revision 3,811 from svn://localhost/TRUNK/:
+Revision 3,812 from svn://localhost/TRUNK/:
+Revision 3,813 from svn://localhost/TRUNK/:
+Revision 3,814 from svn://localhost/TRUNK/:
+Revision 3,815 from svn://localhost/TRUNK/:
+Revision 3,816 from svn://localhost/TRUNK/:
+Revision 3,817 from svn://localhost/TRUNK/:
+Revision 3,818 from svn://localhost/TRUNK/:
+Revision 3,819 from svn://localhost/TRUNK/:
+
+Additional time stamp profiling for raw player and Vorbis player startup and StartAudio() call. Profiling disabled unless ENABLE_PROFILING defined. (TTP #2143)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/12/09 2:31 PM
+3 changed, 0 added, 0 deleted.
+6,034 ms. (Cumulative: 5,240,330 ms)
+
+----------------
