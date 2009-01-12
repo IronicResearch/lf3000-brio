@@ -26,6 +26,9 @@
 
 #include <Dsputil.h>
 
+#undef ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -126,6 +129,8 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	
 	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 
+	TimeStampOn(1);
+
 #ifdef USE_MMAP_FILE_IO	
 	// Open file
 	fd_ = open( pInfo->path->c_str(), O_RDONLY );
@@ -171,6 +176,8 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 							 pInfo->path->c_str());
 #endif
 	
+	TimeStampOff(1);
+
 	pVorbisInfo		   = ov_info( &vorbisFile_, -1 );
 	channels_		   = pVorbisInfo->channels;
 	samplingFrequency_ = pVorbisInfo->rate;
@@ -275,8 +282,12 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	long bytesToReadThisRender = bytesToRead;
 	while ( bytesToRead > 0 ) 
 	{
+		// TimeStampOn(2);
+
 		bytesRead = ov_read( &vorbisFile_, bufPtr, bytesToRead, 
 							 &dummy );
+
+		// TimeStampOff(2);
 
 		if ( bytesRead == 0)
 			break;
