@@ -3,6 +3,24 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.34.1.3839 (Jan 14, 2009)
+===========================================
+
+Second M1 Brio release for L3X.  "Build 0.2 - Functionality"
+
+Changes:
+
+1)
+
+r3819 | dmilici | 2009-01-12 14:31:08 -0800 (Mon, 12 Jan 2009)
+
+Additional time stamp profiling for raw player and Vorbis player startup 
+and StartAudio() call. 
+Profiling disabled unless ENABLE_PROFILING defined. (TTP #2143)
+
+(end of notes for v1.34.1)
+
+===========================================
 Brio v1.34.0.3777 (Dec 16, 2008)
 ===========================================
 
