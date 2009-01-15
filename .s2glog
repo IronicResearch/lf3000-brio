@@ -16933,3 +16933,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/14/09 1:20 PM
 5,641 ms. (Cumulative: 5,251,847 ms)
 
 ----------------
+Revision 3,840 from svn://localhost/TRUNK/:
+Revision 3,841 from svn://localhost/TRUNK/:
+
+Added signal handler for segfaults and aborts to BrioOpenGLConfig in order to destroy OGL context and avoid LF1000 3D engine lockups.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/09 11:31 AM
+1 changed, 0 added, 0 deleted.
+5,531 ms. (Cumulative: 5,257,456 ms)
+
+----------------

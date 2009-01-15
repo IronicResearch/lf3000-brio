@@ -22,6 +22,7 @@
 
 #ifndef  EMULATION
 #include "GLES/libogl.h"
+#include <signal.h>
 #endif
 
 #ifdef  EMULATION
@@ -56,6 +57,17 @@ namespace
 	NativeDisplayType	display;
 	NativeWindowType	hwnd;
 	bool				isEnabled = false;
+	
+#ifndef EMULATION
+	//--------------------------------------------------------------------------
+	void SignalHandler(int signum)
+	{
+		// Make sure OGL context is destroyed to avoid 3D engine lockups
+		printf("BrioOpenGLConfig() caught signal %d\n", signum);
+		eglTerminate(ctx.eglDisplay);
+		_exit(signum + 128);
+	}
+#endif
 	
 	//--------------------------------------------------------------------------
 	void AbortIfEGLError(char* pszLocation)
@@ -174,7 +186,14 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
 	dispmgr = &disp_;
-
+	
+#ifndef EMULATION
+	// Install signal handlers for segfaults and aborts
+	signal(SIGSEGV, SignalHandler);
+	signal(SIGABRT, SignalHandler);
+	signal(SIGINT, SignalHandler);
+#endif
+	
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {
 		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() detected previous OGL context active\n");
