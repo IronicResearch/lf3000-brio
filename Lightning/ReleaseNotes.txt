@@ -3,6 +3,16 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.34.2.3846 (Jan 19, 2009)
+===========================================
+
+Third M1 Brio release for L3X.  "Build 0.2 - Functionality"
+
+No changes to Brio, except version string update.
+
+(end of notes for v1.34.1)
+
+===========================================
 Brio v1.34.1.3839 (Jan 14, 2009)
 ===========================================
 

@@ -16943,3 +16943,18 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/09 11:31 AM
 5,531 ms. (Cumulative: 5,257,456 ms)
 
 ----------------
+Revision 3,842 from svn://localhost/TRUNK/:
+Revision 3,843 from svn://localhost/TRUNK/:
+Revision 3,844 from svn://localhost/TRUNK/:
+Revision 3,845 from svn://localhost/TRUNK/:
+
+Updated version string for 1.34.2 build
+Updated release notes to reflect this change.
+
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 1/19/09 3:46 PM
+2 changed, 0 added, 0 deleted.
+5,642 ms. (Cumulative: 5,263,192 ms)
+
+----------------
