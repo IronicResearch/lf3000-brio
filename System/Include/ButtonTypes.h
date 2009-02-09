@@ -48,13 +48,15 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupButton), BUTTON_ERRORS)
 struct tButtonData {
 	U32	buttonState;
 	U32	buttonTransition;
-// add time to end of button structure
-#if 0
+};
+
+struct tButtonData2 {
+	U32	buttonState;
+	U32	buttonTransition;
 	struct timeVal {
 		S32	seconds;
 		S32	microSeconds;
 	} time;
-#endif
 };
 
 const U32 kButtonUp				= (1 << 0);
@@ -78,11 +80,12 @@ const U32 kButtonVolumeUp		= (1 << 15);
 //------------------------------------------------------------------------------
 class CButtonMessage : public IEventMessage {
 public:
-	CButtonMessage( const tButtonData& data );
+	CButtonMessage( const tButtonData2& data );
 	virtual U16	GetSizeInBytes() const;
 	tButtonData GetButtonState() const;
+	tButtonData2 GetButtonState2() const;
 private:
-	tButtonData	mData;
+	tButtonData2	mData;
 };
 
 

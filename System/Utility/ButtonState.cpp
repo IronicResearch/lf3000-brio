@@ -2,14 +2,20 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-static tButtonData gButtonData;
+static tButtonData2 gButtonData;
 
-tButtonData		GetButtonState(void)
+tButtonData GetButtonState(void)
+{
+	tButtonData data = {gButtonData.buttonState, gButtonData.buttonTransition};
+	return data;
+}
+
+tButtonData2 GetButtonState2(void)
 {
 	return gButtonData;
 }
 
-void SetButtonState(tButtonData button_data)
+void SetButtonState(tButtonData2 button_data)
 {
 	gButtonData = button_data;
 }

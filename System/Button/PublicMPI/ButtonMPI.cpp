@@ -20,6 +20,7 @@
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <TouchTypes.h>
+#include <Utility.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -30,7 +31,7 @@ const CString	kMPIName = "ButtonMPI";
 // CButtonMessage
 //============================================================================
 //------------------------------------------------------------------------------
-CButtonMessage::CButtonMessage( const tButtonData& data ) 
+CButtonMessage::CButtonMessage( const tButtonData2& data ) 
 	: IEventMessage(kButtonStateChanged), mData(data)
 {
 }
@@ -43,6 +44,11 @@ U16	CButtonMessage::GetSizeInBytes() const
 
 //------------------------------------------------------------------------------
 tButtonData CButtonMessage::GetButtonState() const
+{
+	tButtonData data = {mData.buttonState, mData.buttonTransition};
+	return data;
+}
+tButtonData2 CButtonMessage::GetButtonState2() const
 {
 	return mData;
 }
@@ -73,21 +79,17 @@ tTouchData CTouchMessage::GetTouchState() const
 //----------------------------------------------------------------------------
 CButtonMPI::CButtonMPI() : pModule_(NULL)
 {
-	ICoreModule*	pModule;
-	Module::Connect(pModule, kButtonModuleName, kButtonModuleVersion);
-	pModule_ = reinterpret_cast<CButtonModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CButtonMPI::~CButtonMPI()
 {
-	Module::Disconnect(pModule_);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CButtonMPI::IsValid() const
 {
-	return (pModule_ != NULL) ? true : false;
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -99,25 +101,19 @@ const CString* CButtonMPI::GetMPIName() const
 //----------------------------------------------------------------------------
 tVersion CButtonMPI::GetModuleVersion() const
 {
-	if(!pModule_)
-		return kUndefinedVersion;
-	return pModule_->GetModuleVersion();
+	return kButtonModuleVersion;
 }
 
 //----------------------------------------------------------------------------
 const CString* CButtonMPI::GetModuleName() const
 {
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetModuleName();
+	return &kButtonModuleName;
 }
 
 //----------------------------------------------------------------------------
 const CURI* CButtonMPI::GetModuleOrigin() const
 {
-	if(!pModule_)
-		return &kNullURI;
-	return pModule_->GetModuleOrigin();
+	return &kModuleURI;
 }
 
 
@@ -139,14 +135,13 @@ tErrType CButtonMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tButtonData CButtonMPI::GetButtonState() const
 {
-	if(!pModule_)
-	{
-		tButtonData	data = { 0, 0 };
-		return data;
-	}
-	return pModule_->GetButtonState();
+	return LeapFrog::Brio::GetButtonState();
 }
 
+tButtonData2 CButtonMPI::GetButtonState2() const
+{
+	return LeapFrog::Brio::GetButtonState2();
+}
 
 LF_END_BRIO_NAMESPACE()
 // EOF

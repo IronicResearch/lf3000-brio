@@ -182,7 +182,7 @@ void* ButtonPowerUSBTask( void* arg )
 	struct pollfd	quad_fd[4];
 	int size;
 
-	tButtonData	button_data;
+	tButtonData2 button_data;
 	struct input_event ev;
 	int sw = 0;
 	bool CartInitial = CartInitiallyInserted();
@@ -284,12 +284,9 @@ void* ButtonPowerUSBTask( void* arg )
 				}
 
 				if(button_data.buttonTransition != 0) {
-					SetButtonState(button_data);
-// save event time in button structure
-#if 0
 					button_data.time.seconds      = ev.time.tv_sec;
 					button_data.time.microSeconds = ev.time.tv_usec;
-#endif
+					SetButtonState(button_data);
 					CButtonMessage button_msg(button_data);
 					CEventMPI	eventmgr;
 					eventmgr.PostEvent(button_msg, kButtonEventPriority, 0);
