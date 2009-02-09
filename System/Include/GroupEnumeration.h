@@ -36,7 +36,8 @@ enum eGroupEnum {
 	kGroupPower,
 	kGroupPlatform,
 	kGroupUSBDevice,
-	kGroupMfgTest
+	kGroupMfgTest,
+	kGroupTouch
 
 	// Brio v1.1
 		 
