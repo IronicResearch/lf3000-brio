@@ -42,6 +42,7 @@ public:
 	
 	// Get button state
 	tButtonData		GetButtonState() const;
+	tButtonData2	GetButtonState2() const;
 
 private:
 	class CButtonModule*	pModule_;

@@ -129,11 +129,12 @@ tUSBDeviceData GetCurrentUSBDeviceState(void);
 // Returns the system's button state
 //----------------------------------------------------------------------------
 tButtonData		GetButtonState(void);
+tButtonData2	GetButtonState2(void);
 
 //----------------------------------------------------------------------------
 // Sets the system's button state
 //----------------------------------------------------------------------------
-void SetButtonState(tButtonData button_data);
+void SetButtonState(tButtonData2 button_data);
 
 LF_END_BRIO_NAMESPACE()
 

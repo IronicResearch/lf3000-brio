@@ -17070,3 +17070,17 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/9/09 10:57 AM
 5,703 ms. (Cumulative: 5,280,802 ms)
 
 ----------------
+Revision 3,932 from svn://localhost/TRUNK/:
+Revision 3,933 from svn://localhost/TRUNK/:
+Revision 3,934 from svn://localhost/TRUNK/:
+
+New ButtonData2 (now with timestamps) added.  This preserves backward compatibility.
+Applications can now use GetButtonState2 if they want the timestamps with their button events.
+Also removed ButtonModule, there really was no work left for it to do.
+Any functionality left in ButtonModule was moved to ButtonMPI.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/9/09 2:03 PM
+8 changed, 0 added, 2 deleted.
+5,876 ms. (Cumulative: 5,286,772 ms)
+
+----------------
