@@ -19,6 +19,7 @@
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <TouchTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -46,7 +47,26 @@ tButtonData CButtonMessage::GetButtonState() const
 	return mData;
 }
 
+//============================================================================
+// CTouchMessage
+//============================================================================
+//------------------------------------------------------------------------------
+CTouchMessage::CTouchMessage( const tTouchData& data ) 
+	: IEventMessage(kTouchStateChanged), mData(data)
+{
+}
 
+//------------------------------------------------------------------------------
+U16	CTouchMessage::GetSizeInBytes() const
+{
+	return sizeof(CTouchMessage);
+}
+
+//------------------------------------------------------------------------------
+tTouchData CTouchMessage::GetTouchState() const
+{
+	return mData;
+}
 //============================================================================
 // CButtonMPI
 //============================================================================
