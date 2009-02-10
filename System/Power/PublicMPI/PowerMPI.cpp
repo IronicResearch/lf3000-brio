@@ -16,9 +16,13 @@
 #include <PowerMPI.h>
 #include <PowerPriv.h>
 #include <EventMPI.h>
-#include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <KernelTypes.h>
+#include <Utility.h>
+
+#include <sys/socket.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -53,21 +57,17 @@ enum tPowerState CPowerMessage::GetPowerState() const
 //----------------------------------------------------------------------------
 CPowerMPI::CPowerMPI() : pModule_(NULL)
 {
-	ICoreModule*	pModule;
-	Module::Connect(pModule, kPowerModuleName, kPowerModuleVersion);
-	pModule_ = reinterpret_cast<CPowerModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CPowerMPI::~CPowerMPI()
 {
-	Module::Disconnect(pModule_);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CPowerMPI::IsValid() const
 {
-	return (pModule_ != NULL) ? true : false;
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -79,25 +79,19 @@ const CString* CPowerMPI::GetMPIName() const
 //----------------------------------------------------------------------------
 tVersion CPowerMPI::GetModuleVersion() const
 {
-	if(!pModule_)
-		return kUndefinedVersion;
-	return pModule_->GetModuleVersion();
+	return kPowerModuleVersion;
 }
 
 //----------------------------------------------------------------------------
 const CString* CPowerMPI::GetModuleName() const
 {
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetModuleName();
+	return &kPowerModuleName;
 }
 
 //----------------------------------------------------------------------------
 const CURI* CPowerMPI::GetModuleOrigin() const
 {
-	if(!pModule_)
-		return &kNullURI;
-	return pModule_->GetModuleOrigin();
+	return &kModuleURI;
 }
 
 
@@ -119,51 +113,71 @@ tErrType CPowerMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 enum tPowerState CPowerMPI::GetPowerState() const
 {
-	if(!pModule_)
-	{
-		return kPowerNull;
-	}
-	return pModule_->GetPowerState();
+	return GetCurrentPowerState();;
 }
 
 //----------------------------------------------------------------------------
 int CPowerMPI::Shutdown() const
 {
-	if(!pModule_)
-	{
-		return kPowerNull;
-	}
-	return pModule_->Shutdown();
+	// Embedded version should never get here
+	exit(kKernelExitShutdown);
+	return kKernelExitError;
 }
 
 //----------------------------------------------------------------------------
 int CPowerMPI::GetShutdownTimeMS() const
 {
-	if(!pModule_)
-	{
-		return kPowerNull;
+#ifndef EMULATION
+	struct app_message msg, resp;
+	int size;
+	int s = CreateReportSocket(MONITOR_SOCK);
+
+	msg.type = APP_MSG_GET_POWER;
+	msg.payload = 0;
+
+	if(send(s, &msg, sizeof(msg), 0) < 0) {
+		close(s);
+		return -1;
 	}
-	return pModule_->GetShutdownTimeMS();
+
+	size = recv(s, &resp, sizeof(struct app_message), 0);
+	if(size != sizeof(struct app_message)) {
+		close(s);
+		return -1;
+	}
+
+	close(s);
+	return resp.payload*1000;
+#else
+	return 0;
+#endif
 }
 
 //----------------------------------------------------------------------------
 int CPowerMPI::SetShutdownTimeMS(int iMilliseconds) const
 {
-	if(!pModule_)
-	{
-		return kPowerNull;
-	}
-	return pModule_->SetShutdownTimeMS(iMilliseconds);
+#ifndef EMULATION
+	struct app_message msg;
+	int s = CreateReportSocket(MONITOR_SOCK);
+
+	msg.type = APP_MSG_SET_POWER;
+	if(iMilliseconds == 0)
+		msg.payload = 0;
+	else
+		msg.payload = iMilliseconds >= 1000 ? iMilliseconds/1000 : 1;
+
+	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
+	close(s);
+#endif
+	return 0;
 }
 
 //----------------------------------------------------------------------------
 int CPowerMPI::Reset() const
 {
-	if(!pModule_)
-	{
-		return kPowerNull;
-	}
-	return pModule_->Reset();
+	// Embedded version should never get here
+	exit(kKernelExitReset);
+	return kKernelExitError;
 }
 
 LF_END_BRIO_NAMESPACE()

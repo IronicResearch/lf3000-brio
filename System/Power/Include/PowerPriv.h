@@ -14,12 +14,8 @@
 //
 //==============================================================================
 #include <SystemTypes.h>
-#include <CoreModule.h>
 #include <EventTypes.h>
 #include <PowerTypes.h>
-#include <DebugMPI.h>
-#include <EventMPI.h>
-#include <KernelMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -27,41 +23,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Constants
 //==============================================================================
 const CString			kPowerModuleName	= "Power";
-const tVersion			kPowerModuleVersion	= 2;
+const CURI				kModuleURI			= "/LF/System/Power";
+const tVersion			kPowerModuleVersion	= 3;
 const tEventPriority	kPowerEventPriority	= 0;	//TBD/tp: make replacable?
-
-
-//==============================================================================
-class CPowerModule : public ICoreModule {
-public:	
-	// ICoreModule functionality
-	virtual Boolean			IsValid() const;
-	virtual tVersion		GetModuleVersion() const;
-	virtual const CString*	GetModuleName() const;	
-	virtual const CURI*		GetModuleOrigin() const;
-
-	// class-specific functionality
-	VTABLE_EXPORT enum tPowerState GetPowerState() const;
-	VTABLE_EXPORT int		Shutdown() const;
-	VTABLE_EXPORT int		GetShutdownTimeMS() const;
-	VTABLE_EXPORT int		SetShutdownTimeMS(int) const;
-	VTABLE_EXPORT int		Reset() const;
-
-private:
-	void				InitModule( );
-	void				DeinitModule();
-	CDebugMPI			dbg_;
-	CKernelMPI			kernel_;
-	CEventMPI			evtmgr_;
-
-	// Limit object creation to the Module Manager interface functions
-	CPowerModule();
-	virtual ~CPowerModule();
-	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
-						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
-	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
-};
-
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_POWERPRIV_H
