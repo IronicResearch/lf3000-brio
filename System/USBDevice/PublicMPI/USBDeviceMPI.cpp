@@ -19,6 +19,10 @@
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <KernelTypes.h>
+#include <Utility.h>
+
+#include <sys/socket.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -53,21 +57,17 @@ tUSBDeviceData CUSBDeviceMessage::GetUSBDeviceState() const
 //----------------------------------------------------------------------------
 CUSBDeviceMPI::CUSBDeviceMPI() : pModule_(NULL)
 {
-	ICoreModule*	pModule;
-	Module::Connect(pModule, kUSBDeviceModuleName, kUSBDeviceModuleVersion);
-	pModule_ = reinterpret_cast<CUSBDeviceModule*>(pModule);
 }
 
 //----------------------------------------------------------------------------
 CUSBDeviceMPI::~CUSBDeviceMPI()
 {
-	Module::Disconnect(pModule_);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CUSBDeviceMPI::IsValid() const
 {
-	return (pModule_ != NULL) ? true : false;
+	return true;
 }
 
 //----------------------------------------------------------------------------
@@ -79,25 +79,19 @@ const CString* CUSBDeviceMPI::GetMPIName() const
 //----------------------------------------------------------------------------
 tVersion CUSBDeviceMPI::GetModuleVersion() const
 {
-	if(!pModule_)
-		return kUndefinedVersion;
-	return pModule_->GetModuleVersion();
+	return kUSBDeviceModuleVersion;
 }
 
 //----------------------------------------------------------------------------
 const CString* CUSBDeviceMPI::GetModuleName() const
 {
-	if(!pModule_)
-		return &kNullString;
-	return pModule_->GetModuleName();
+	return &kUSBDeviceModuleName;
 }
 
 //----------------------------------------------------------------------------
 const CURI* CUSBDeviceMPI::GetModuleOrigin() const
 {
-	if(!pModule_)
-		return &kNullURI;
-	return pModule_->GetModuleOrigin();
+	return &kModuleURI;
 }
 
 
@@ -119,54 +113,71 @@ tErrType CUSBDeviceMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tUSBDeviceData CUSBDeviceMPI::GetUSBDeviceState() const
 {
-	if(!pModule_)
-	{
-		tUSBDeviceData	data = { 0, 0, 0 };
-		return data;
-	}
-	return pModule_->GetUSBDeviceState();
+	return GetCurrentUSBDeviceState();
 }
 
 //----------------------------------------------------------------------------
 tErrType CUSBDeviceMPI::EnableUSBDeviceDrivers(U32 drivers)
 {
-	if(!pModule_)
-	{
-		if(drivers)
-			return kUSBDeviceTooManyDrivers;
-		return kNoErr;
-	}
-	return pModule_->EnableUSBDeviceDrivers(drivers);
+	// Not possible to enable USB mass storage device while Brio app running
+	return kFunctionNotImplementedErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CUSBDeviceMPI::DisableUSBDeviceDrivers(U32 drivers)
 {
-	if(!pModule_)
-	{
-		return kNoErr;
-	}
-	return pModule_->DisableUSBDeviceDrivers(drivers);
+	// Not possible to disable USB mass storage while Brio app running
+	return kFunctionNotImplementedErr;
 }
 
 //----------------------------------------------------------------------------
 U32 CUSBDeviceMPI::GetUSBDeviceWatchdog(void)
 {
-	if(!pModule_)
-	{
+#ifndef EMULATION
+	struct app_message msg, resp;
+	int size;
+	int s = CreateReportSocket(MONITOR_SOCK);
+
+	if(s < 0)
+		return kUSBDeviceInvalidWatchdog;
+
+	msg.type = APP_MSG_GET_USB;
+	msg.payload = 0;
+
+	if(send(s, &msg, sizeof(msg), 0) < 0) {
+		close(s);
 		return kUSBDeviceInvalidWatchdog;
 	}
-	return pModule_->GetUSBDeviceWatchdog();
+
+	size = recv(s, &resp, sizeof(struct app_message), 0);
+	if(size != sizeof(struct app_message)) {
+		close(s);
+		return kUSBDeviceInvalidWatchdog;
+	}
+
+	close(s);
+	return resp.payload;
+#else
+	return 0;
+#endif
 }
 
 //----------------------------------------------------------------------------
 void CUSBDeviceMPI::SetUSBDeviceWatchdog(U32 timerSec)
 {
-	if(!pModule_)
-	{
+#ifndef EMULATION
+	struct app_message msg;
+	int s = CreateReportSocket(MONITOR_SOCK);
+	
+	if(s < 0)
 		return;
-	}
-	pModule_->SetUSBDeviceWatchdog(timerSec);
+
+	msg.type = APP_MSG_SET_USB;
+	msg.payload = timerSec;
+
+	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
+	close(s);
+#endif
 }
 
 LF_END_BRIO_NAMESPACE()
