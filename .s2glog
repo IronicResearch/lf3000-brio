@@ -17084,3 +17084,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/9/09 2:03 PM
 5,876 ms. (Cumulative: 5,286,772 ms)
 
 ----------------
+Revision 3,935 from svn://localhost/TRUNK/:
+
+Factoring out PowerModule.  All true functions in it were moved to PowerMPI.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/10/09 11:19 AM
+3 changed, 0 added, 2 deleted.
+5,719 ms. (Cumulative: 5,292,569 ms)
+
+----------------
