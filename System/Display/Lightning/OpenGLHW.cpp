@@ -55,9 +55,11 @@ namespace
 	int			gDevMem = -1;
 	void*		gpMem1 = NULL;
 	void*		gpMem2 = NULL;
+	void*		gpMem2d = NULL;	// linear framebuffer access
 	void*		gpReg3d = NULL;
 	unsigned int gMem1Phys = 0; //MEM1_PHYS;
 	unsigned int gMem2Phys = 0; //MEM2_PHYS;
+	unsigned int gMem2dPhys = 0;
 	unsigned int gMem1Size = 0; //MEM1_SIZE;
 	unsigned int gMem2Size = 0; //MEM2_SIZE;
 	unsigned int gRegSize = PAGE_3D * 0x1000;
@@ -150,11 +152,16 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
+	// Map memory block for linear framebuffer access at start of 2D heap
+	gMem2dPhys = gMem2Phys | 0x20000000;
+	gpMem2d = mmap(NULL, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevMem, gMem2dPhys);
+	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2dPhys, gpMem2d, gMem2Size);
+
 	// Query HW to setup display context descriptors
 	const tDisplayScreenStats* pScreen = GetScreenStats(0);
 	screen = *pScreen;
 
-	tDisplayHandle hndl = CreateHandle(screen.height, screen.width, kPixelFormatRGB565, reinterpret_cast<U8*>(gpMem2));
+	tDisplayHandle hndl = CreateHandle(screen.height, screen.width, kPixelFormatRGB565, reinterpret_cast<U8*>(gpMem2d));
 	tDisplayContext* pdc = reinterpret_cast<tDisplayContext*>(hndl);
 	dc = *pdc;
 	dc.pitch = pdc->pitch = 4096;
@@ -175,7 +182,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_VirtualAddress	= (unsigned int)gpMem2;
 	pMemInfo->Memory2D_PhysicalAddress	= gMem2Phys;
 	pMemInfo->Memory2D_SizeInMbyte		= gMem2Size >> 20;
- 
+
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: exit\n");
 }
 
@@ -190,6 +197,7 @@ void CDisplayModule::DeinitOpenGL()
 	munmap(gpReg3d, gRegSize);
 	munmap(gpMem1, gMem1Size);
 	munmap(gpMem2, gMem2Size);
+	munmap(gpMem2d, gMem2Size);
 	close(gDevMem);
 	close(gDevGa3d);
 	close(gDevLayerEven);
@@ -319,7 +327,7 @@ void CDisplayModule::SetOpenGLDisplayAddress(
 	// BUGFIX/dm: DisplayBufferPhysicalAddress must be loaded into MLC address register
 	// for proper display updates in glSwapBuffer() calls. It is in block-addressing mode
 	// (0x20000000 OR'ed in) and is 1 of 3 possible addresses when triple buffering active.
-
+	
 	// Relocated layer config code into EnableOpenGL() callback. 
 	// Page-flip register loading only effective when 3DENB unset.
 	if (FSAAval) {
