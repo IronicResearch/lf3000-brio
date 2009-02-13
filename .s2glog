@@ -17104,3 +17104,20 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/10/09 2:39 PM
 6,110 ms. (Cumulative: 5,298,757 ms)
 
 ----------------
+Revision 3,939 from svn://localhost/TRUNK/:
+Revision 3,940 from svn://localhost/TRUNK/:
+Revision 3,941 from svn://localhost/TRUNK/:
+Revision 3,942 from svn://localhost/TRUNK/:
+Revision 3,943 from svn://localhost/TRUNK/:
+Revision 3,944 from svn://localhost/TRUNK/:
+Revision 3,945 from svn://localhost/TRUNK/:
+Revision 3,946 from svn://localhost/TRUNK/:
+Revision 3,947 from svn://localhost/TRUNK/:
+
+Additional mapping for linear framebuffer region access at start of OGL 2D heap.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/13/09 1:46 PM
+1 changed, 0 added, 0 deleted.
+5,940 ms. (Cumulative: 5,304,838 ms)
+
+----------------
