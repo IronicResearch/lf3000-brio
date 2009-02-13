@@ -17121,3 +17121,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/13/09 1:46 PM
 5,940 ms. (Cumulative: 5,304,838 ms)
 
 ----------------
+Revision 3,948 from svn://localhost/TRUNK/:
+Revision 3,949 from svn://localhost/TRUNK/:
+Revision 3,950 from svn://localhost/TRUNK/:
+
+Reinstate initial SwapBuffers() clear in Brio OGL context to sync active OGL buffer at start of 2D heap. Used for synchronizing with linear framebuffer access region for interleaved SW + HW rendering.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/13/09 2:13 PM
+1 changed, 0 added, 0 deleted.
+5,927 ms. (Cumulative: 5,310,858 ms)
+
+----------------

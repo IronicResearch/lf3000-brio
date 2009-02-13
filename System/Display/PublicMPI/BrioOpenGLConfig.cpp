@@ -324,11 +324,11 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	AbortIfEGLError("eglMakeCurrent");
 
 	// Clear garbage pixels from previous OpenGL context (embedded target)
-//	glClearColorx(0, 0, 0, 0);
-//	glClear(GL_COLOR_BUFFER_BIT);
-//	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
-//	eglSwapBuffers(eglDisplay, eglSurface);
-//	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
+	glClearColorx(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT);
+	dbg.DebugOut(kDbgLvlVerbose, "eglSwapBuffers()\n");
+	eglSwapBuffers(eglDisplay, eglSurface);
+	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
 
 	// Store handle for use in Display MPI functions
 	hndlDisplay = ctx.hndlDisplay;
