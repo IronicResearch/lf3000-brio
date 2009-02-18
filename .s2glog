@@ -17132,3 +17132,22 @@ By Dave Milici (dmilici@leapfrog.com) on 2/13/09 2:13 PM
 5,927 ms. (Cumulative: 5,310,858 ms)
 
 ----------------
+Revision 3,951 from svn://localhost/TRUNK/:
+Revision 3,952 from svn://localhost/TRUNK/:
+Revision 3,953 from svn://localhost/TRUNK/:
+Revision 3,954 from svn://localhost/TRUNK/:
+Revision 3,955 from svn://localhost/TRUNK/:
+Revision 3,956 from svn://localhost/TRUNK/:
+Revision 3,957 from svn://localhost/TRUNK/:
+Revision 3,958 from svn://localhost/TRUNK/:
+Revision 3,959 from svn://localhost/TRUNK/:
+Revision 3,960 from svn://localhost/TRUNK/:
+
+Correct destination display context for updating offscreen contexts, as found in Flash rendering test case. Includes additional accounting for different pixel formats. 
+Managing offscreen contexts would be simplified if Display MPI never attempted to create its own implicit display context, as found during volume bar test cases.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/17/09 6:13 PM
+2 changed, 0 added, 0 deleted.
+6,034 ms. (Cumulative: 5,317,032 ms)
+
+----------------
