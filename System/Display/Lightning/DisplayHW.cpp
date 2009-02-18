@@ -432,18 +432,30 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 	// Copy offscreen context to primary display context
 	if (dc->isAllocated)
 	{
+		// FIXME: destination should be pdcVisible_, not necessarily pdcPrimary_
+		// FIXME: onscreen display context is not necessarily ARGB8888 format
+		if (pdcVisible_ == NULL)
+			return kDisplayDisplayNotInListErr;
 		// Make sure primary context is enabled
 		if (!bPrimaryLayerEnabled)
-			RegisterLayer(pdcPrimary_, 0, 0);
+			RegisterLayer(pdcVisible_, 0, 0);
 		switch (dc->colorDepthFormat) 
 		{
-		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatRGB565: 	RGB565ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatRGB888: 	RGB2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB565: 	RGB565ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB888: 	RGB2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
 		default:
-		case kPixelFormatARGB8888: 	ARGB2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatYUV420: 	YUV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcPrimary_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatARGB8888: 	
+			switch (pdcVisible_->colorDepthFormat)
+			{
+			case kPixelFormatRGB4444: 	ARGB2RGB4444(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatRGB565: 	ARGB2RGB565(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatRGB888: 	ARGB2RGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			default:
+			case kPixelFormatARGB8888: 	ARGB2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			} break;
+		case kPixelFormatYUV420: 	YUV2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
 		}
 	}
 	// Enable video layer on update calls to minimize dead screen time
@@ -563,6 +575,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 		SetDirtyBit(layer);
 		bPrimaryLayerEnabled = true;
+		pdcVisible_ = context;
 	}
 	
 	// Setup scaler registers too for video overlay
