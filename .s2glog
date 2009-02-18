@@ -17160,3 +17160,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/18/09 12:55 PM
 6,236 ms. (Cumulative: 5,323,346 ms)
 
 ----------------
+Revision 3,962 from svn://localhost/TRUNK/:
+
+Rebuilt FreeType ARM lib with default config, for compatibility with Flash fontconfig requirements. (TTP Emerald #19)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/18/09 1:03 PM
+2 changed, 0 added, 0 deleted.
+5,994 ms. (Cumulative: 5,329,421 ms)
+
+----------------
