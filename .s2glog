@@ -17170,3 +17170,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/18/09 1:03 PM
 5,994 ms. (Cumulative: 5,329,421 ms)
 
 ----------------
+Revision 3,963 from svn://localhost/TRUNK/:
+Revision 3,964 from svn://localhost/TRUNK/:
+
+Bumping version for release 34.3.3964.
+Added ReleasesNotes.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/19/09 5:29 PM
+2 changed, 0 added, 0 deleted.
+5,647 ms. (Cumulative: 5,335,148 ms)
+
+----------------
