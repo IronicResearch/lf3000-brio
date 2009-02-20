@@ -3,6 +3,36 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.34.3.3964 (Feb 19, 2009)
+===========================================
+
+First M2 Brio release for Emearld.  "Build 0.3 - Stability"
+
+Added Touch Events.  TouchTypes.h has definition of TouchMessage.  Event Module
+now also listens to Touch events during combined Button, Power, and USB thread.
+Touch does not have an MPI.  The only thing to do with Touch is to recieve
+the events.
+
+Added ButtonData2 type which includes timestamps.  All events now use new
+ButtonData2.  For backward campatiblity GetButtonState still returns old
+struct, new function GetButtonState returns new struct.
+
+Removal of USBDevice, Power, and Button Modules.  Last remaining functions
+in them are now done by respective MPI directly.
+
+FreeType now being built with default configuration.
+Now Flash doesn't need it's own seperate FreeType.
+
+Additional mapping of linear framebuffer region access at the start of
+OGL 2D heap.  Used for synchronizing linear framebuffer access region
+for interleaved SW + HW rendering.
+
+Corrected destination display context when updating offscreen contexts.
+
+Addition of ButtonEventQueue and TouchEventQueue.
+This simplifies polling for these events in particular.
+
+===========================================
 Brio v1.34.2.3846 (Jan 19, 2009)
 ===========================================
 
