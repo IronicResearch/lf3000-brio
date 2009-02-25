@@ -47,7 +47,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupTouch), TOUCH_ERRORS)
 //------------------------------------------------------------------------------
 struct tTouchData {
 	U16 touchState;// Boolean really: 0=no touch, 1=touch
-	U16 touchX, touchY;// Position in screen coords
+	S16 touchX, touchY;// Position in screen coords
 	struct timeVal {
 		S32 seconds;
 		S32 microSeconds;

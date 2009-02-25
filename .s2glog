@@ -17181,3 +17181,42 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/19/09 5:29 PM
 5,647 ms. (Cumulative: 5,335,148 ms)
 
 ----------------
+Revision 3,965 from svn://localhost/TRUNK/:
+Revision 3,966 from svn://localhost/TRUNK/:
+Revision 3,967 from svn://localhost/TRUNK/:
+Revision 3,968 from svn://localhost/TRUNK/:
+Revision 3,969 from svn://localhost/TRUNK/:
+Revision 3,970 from svn://localhost/TRUNK/:
+Revision 3,971 from svn://localhost/TRUNK/:
+Revision 3,972 from svn://localhost/TRUNK/:
+Revision 3,973 from svn://localhost/TRUNK/:
+Revision 3,974 from svn://localhost/TRUNK/:
+Revision 3,975 from svn://localhost/TRUNK/:
+Revision 3,976 from svn://localhost/TRUNK/:
+Revision 3,977 from svn://localhost/TRUNK/:
+Revision 3,978 from svn://localhost/TRUNK/:
+Revision 3,979 from svn://localhost/TRUNK/:
+Revision 3,980 from svn://localhost/TRUNK/:
+Revision 3,981 from svn://localhost/TRUNK/:
+Revision 3,982 from svn://localhost/TRUNK/:
+Revision 3,983 from svn://localhost/TRUNK/:
+Revision 3,984 from svn://localhost/TRUNK/:
+Revision 3,985 from svn://localhost/TRUNK/:
+Revision 3,986 from svn://localhost/TRUNK/:
+Revision 3,987 from svn://localhost/TRUNK/:
+Revision 3,988 from svn://localhost/TRUNK/:
+Revision 3,989 from svn://localhost/TRUNK/:
+Revision 3,990 from svn://localhost/TRUNK/:
+Revision 3,991 from svn://localhost/TRUNK/:
+Revision 3,992 from svn://localhost/TRUNK/:
+Revision 3,993 from svn://localhost/TRUNK/:
+Revision 3,994 from svn://localhost/TRUNK/:
+Revision 3,995 from svn://localhost/TRUNK/:
+
+Changing TouchState to use signed integers for X and Y instead of unsigned.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/25/09 11:24 AM
+1 changed, 0 added, 0 deleted.
+5,605 ms. (Cumulative: 5,341,026 ms)
+
+----------------
