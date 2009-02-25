@@ -15,9 +15,9 @@ CButtonEventQueue::~CButtonEventQueue()
 	kernel_.DeInitMutex(mutex_);
 }
 
-std::queue<CButtonMessage> CButtonEventQueue::popQueue()
+std::queue<tButtonData2> CButtonEventQueue::popQueue()
 {
-	std::queue<CButtonMessage> r_queue;
+	std::queue<tButtonData2> r_queue;
 	kernel_.LockMutex(mutex_);
 	swap(r_queue, eventQueue_);
 	kernel_.UnlockMutex(mutex_);
@@ -30,7 +30,7 @@ LeapFrog::Brio::tEventStatus CButtonEventQueue::Notify(const LeapFrog::Brio::IEv
 	if(event_type == kButtonStateChanged)
 	{
 		kernel_.LockMutex(mutex_);
-		eventQueue_.push((const CButtonMessage&)msgIn);
+		eventQueue_.push(((const CButtonMessage&)msgIn).GetButtonState2());
 		kernel_.UnlockMutex(mutex_); 
 	}
 	return kEventStatusOK;

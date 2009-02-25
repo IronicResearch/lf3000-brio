@@ -17220,3 +17220,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/25/09 11:24 AM
 5,605 ms. (Cumulative: 5,341,026 ms)
 
 ----------------
+Revision 3,996 from svn://localhost/TRUNK/:
+
+Changing ButtonEventQueue and TouchEventQueue to use respective data structs instead of respective messages.
+This reduces one step of code that use these classes to get the actual data they want.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/25/09 2:19 PM
+4 changed, 0 added, 0 deleted.
+5,681 ms. (Cumulative: 5,346,777 ms)
+
+----------------

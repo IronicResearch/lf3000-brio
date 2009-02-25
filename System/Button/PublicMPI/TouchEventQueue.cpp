@@ -15,9 +15,9 @@ CTouchEventQueue::~CTouchEventQueue()
 	kernel_.DeInitMutex(mutex_);
 }
 
-std::queue<CTouchMessage> CTouchEventQueue::popQueue()
+std::queue<tTouchData> CTouchEventQueue::popQueue()
 {
-	std::queue<CTouchMessage> r_queue;
+	std::queue<tTouchData> r_queue;
 	kernel_.LockMutex(mutex_);
 	swap(r_queue, eventQueue_);
 	kernel_.UnlockMutex(mutex_);
@@ -30,7 +30,7 @@ LeapFrog::Brio::tEventStatus CTouchEventQueue::Notify(const IEventMessage &msgIn
 	if(event_type == kTouchStateChanged)
 	{
 		kernel_.LockMutex(mutex_);
-		eventQueue_.push((const CTouchMessage&)msgIn);
+		eventQueue_.push(((const CTouchMessage&)msgIn).GetTouchState());
 		kernel_.UnlockMutex(mutex_); 
 	}
 	return kEventStatusOK;
