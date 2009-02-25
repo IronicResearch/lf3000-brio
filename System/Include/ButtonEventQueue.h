@@ -31,13 +31,13 @@ public:
 	CButtonEventQueue();
 	~CButtonEventQueue();
 	
-	std::queue<CButtonMessage> popQueue();
+	std::queue<tButtonData2> popQueue();
 	
 private:
 	tEventStatus Notify(const IEventMessage &msgIn);
 	CKernelMPI kernel_;
 	tMutex mutex_;
-	std::queue<CButtonMessage> eventQueue_;
+	std::queue<tButtonData2> eventQueue_;
 };
 
 LF_END_BRIO_NAMESPACE()	

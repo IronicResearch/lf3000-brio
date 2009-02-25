@@ -31,13 +31,13 @@ public:
 	CTouchEventQueue();
 	~CTouchEventQueue();
 	
-	std::queue<CTouchMessage> popQueue();
+	std::queue<tTouchData> popQueue();
 	
 private:
 	tEventStatus Notify(const IEventMessage &msgIn);
 	CKernelMPI kernel_;
 	tMutex mutex_;
-	std::queue<CTouchMessage> eventQueue_;
+	std::queue<tTouchData> eventQueue_;
 };
 
 LF_END_BRIO_NAMESPACE()
