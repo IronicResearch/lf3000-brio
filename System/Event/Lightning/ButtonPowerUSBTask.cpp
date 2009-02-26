@@ -40,6 +40,9 @@
 #include <TouchTypes.h> 
 LF_BEGIN_BRIO_NAMESPACE() 
 
+//Maximum number of input drivers to discover
+#define NUM_INPUTS 4
+
 namespace
 {
 	//============================================================================
@@ -179,78 +182,109 @@ void* ButtonPowerUSBTask( void* arg )
 	CDebugMPI	debug(kGroupEvent);
 	struct app_message app_msg;		
 	
-	struct pollfd	quad_fd[4];
+	struct pollfd	event_fd[NUM_INPUTS];
+	int last_fd = 0;
 	int size;
 
+	int button_index = -1;
 	tButtonData2 button_data;
-	struct input_event ev;
-	int sw = 0;
-	bool CartInitial = CartInitiallyInserted();
-	U32 button;
-	
-	struct tPowerData   current_pe;
-	struct tPowerData	power_data;
-
-	int vbus, enabled;
-	tUSBDeviceData	usb_data;
-
 	// init button driver and state
 	button_data.buttonState = 0;
 	button_data.buttonTransition = 0;
-	
-	quad_fd[0].fd = open_input_device("LF1000 Keyboard");
-	quad_fd[0].events = POLLIN;
-	debug.Assert(quad_fd[0].fd >= 0, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
-	
-	// get initial state of switches
-	debug.Assert(ioctl(quad_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
-			"CEventModule::ButtonPowerUSBTask: reading switch state failed");
-	// get and report the current headphone state as a transition
-	if(sw & (1<<SW_HEADPHONE_INSERT)) {
-		button_data.buttonState |= kHeadphoneJackDetect;
-		button_data.buttonTransition |= kHeadphoneJackDetect;
+		
+	event_fd[last_fd].fd = open_input_device("LF1000 Keyboard");
+	event_fd[last_fd].events = POLLIN;
+	if(event_fd[last_fd].fd >= 0)
+	{
+		button_index = last_fd++;
+
+		int sw = 0;
+		
+		// get initial state of switches
+		debug.Assert(ioctl(event_fd[button_index].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+				"CEventModule::ButtonPowerUSBTask: reading switch state failed");
+		// get and report the current headphone state as a transition
+		if(sw & (1<<SW_HEADPHONE_INSERT)) {
+			button_data.buttonState |= kHeadphoneJackDetect;
+			button_data.buttonTransition |= kHeadphoneJackDetect;
+		}
+		// get the current state of the cartrdige
+		if(sw & (1<<SW_TABLET_MODE))
+			button_data.buttonState |= kCartridgeDetect;
+
+		bool CartInitial = CartInitiallyInserted();
+		if(CartInitial ^ !!(sw & (1<<SW_TABLET_MODE)))
+			button_data.buttonTransition |= kCartridgeDetect;
 	}
-	
-	// get the current state of the cartrdige
-	if(sw & (1<<SW_TABLET_MODE))
-		button_data.buttonState |= kCartridgeDetect;
-	
-	if(CartInitial ^ !!(sw & (1<<SW_TABLET_MODE)))
-		button_data.buttonTransition |= kCartridgeDetect;
-	
+	else
+	{
+		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
+	}
 	SetButtonState(button_data);
 	
+	int power_index = -1;
+	struct tPowerData   current_pe;
+	struct tPowerData	power_data;
+
 	// init power driver and state
 	power_data.powerState = GetCurrentPowerState();
-	quad_fd[1].fd = open_input_device("Power Button");
-	quad_fd[1].events = POLLIN;
-	debug.Assert(quad_fd[1].fd >= 0, "CEventModule::ButtonPowerUSBTask: cannot open Power Button\n");
+	event_fd[last_fd].fd = open_input_device("Power Button");
+	event_fd[last_fd].events = POLLIN;
+	if(event_fd[last_fd].fd >= 0)
+	{
+		power_index = last_fd++;
+	}
+	else
+	{
+		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open Power Button\n");
+	}
 	
+	int usb_index = -1;
+	int vbus;
+	tUSBDeviceData	usb_data;	
 	// init USB driver and state
 	usb_data = GetCurrentUSBDeviceState();
-	
 	vbus = usb_data.USBDeviceState;
-	quad_fd[2].fd = open_input_device("LF1000 USB");
-	quad_fd[2].events = POLLIN;
-	debug.Assert(quad_fd[2].fd >= 0, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
 	
+	event_fd[last_fd].fd = open_input_device("LF1000 USB");
+	event_fd[last_fd].events = POLLIN;
+	if(event_fd[last_fd].fd >= 0)
+	{
+		usb_index = last_fd++;
+	}
+	else
+	{
+		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
+	}
+	
+	int touch_index = -1;
 	tTouchData touch_data;
-	quad_fd[3].fd = open_input_device("LF1000 touchscreen interface");
-	quad_fd[3].events = POLLIN;
-	debug.Assert(quad_fd[3].fd >= 0, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 touchscreen interface\n");
 	
+	event_fd[last_fd].fd = open_input_device("LF1000 touchscreen interface");
+	event_fd[last_fd].events = POLLIN;
+	if(event_fd[last_fd].fd >= 0)
+	{
+		touch_index = last_fd++;
+	}
+	else
+	{
+		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 touchscreen interface\n");
+	}
+	
+	struct input_event ev;
+	U32 button;
 	int ret;
 	g_threadRunning2_ = true;
 	while (g_threadRun2_)
 	{
 		// block on driver state changes, or timeout after 1 sec
-		ret = poll(quad_fd, 4, 1000);
+		ret = poll(event_fd, last_fd, 1000);
 		
 		if(ret >= 0) {
 			// button driver event?
-			if(quad_fd[0].revents & POLLIN) {
+			if(button_index >= 0 && event_fd[button_index].revents & POLLIN) {
 				button_data.buttonTransition = 0;
-				size = read(quad_fd[0].fd, &ev, sizeof(ev));
+				size = read(event_fd[button_index].fd, &ev, sizeof(ev));
 				for(int i = 0; i < size; i++) {
 					if(ev.type == EV_KEY) { // this is a key press
 						button = LinuxKeyToBrio(ev.code);
@@ -295,8 +329,8 @@ void* ButtonPowerUSBTask( void* arg )
 			
 			// power driver event ?
 			current_pe.powerState = GetCurrentPowerState();
-			if(quad_fd[1].revents & POLLIN) {
-				size = read(quad_fd[1].fd, &ev, sizeof(ev));
+			if(power_index >= 0 && event_fd[power_index].revents & POLLIN) {
+				size = read(event_fd[power_index].fd, &ev, sizeof(ev));
 				switch(ev.code)
 				{
 				case KEY_BATTERY:
@@ -318,8 +352,8 @@ void* ButtonPowerUSBTask( void* arg )
 			}
 		
 			// USB driver event ?
-			if(quad_fd[2].revents & POLLIN) {
-				size = read(quad_fd[2].fd, &ev, sizeof(ev));
+			if(usb_index >= 0 && event_fd[usb_index].revents & POLLIN) {
+				size = read(event_fd[usb_index].fd, &ev, sizeof(ev));
 				if(ev.type == EV_SW && ev.code == SW_LID)
 				{
 					vbus = !!ev.value;
@@ -338,8 +372,8 @@ void* ButtonPowerUSBTask( void* arg )
 			}
 			
 			// Touch driver event ?
-			if(quad_fd[3].revents & POLLIN) {
-				size = read(quad_fd[3].fd, &ev, sizeof(ev));
+			if(touch_index >= 0 && event_fd[touch_index].revents & POLLIN) {
+				size = read(event_fd[touch_index].fd, &ev, sizeof(ev));
 				switch(ev.type)
 				{
 				case EV_SYN:
@@ -372,10 +406,8 @@ void* ButtonPowerUSBTask( void* arg )
 		}
 	}
 	
-	close(quad_fd[0].fd);
-	close(quad_fd[1].fd);
-	close(quad_fd[2].fd);
-	close(quad_fd[3].fd);
+	for(; last_fd >=0; --last_fd)
+		close(event_fd[0].fd);
 	g_threadRunning2_ = false;
 }
 	
