@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.34.4.4005 (Feb 26, 2009)
+Brio v1.34.4.4011 (Feb 26, 2009)
 ===========================================
 
 Changed TouchState to use signed integers for X and Y positions.  This makes
