@@ -17252,3 +17252,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/26/09 11:58 AM
 5,626 ms. (Cumulative: 5,358,220 ms)
 
 ----------------
+Revision 4,003 from svn://localhost/TRUNK/:
+Revision 4,004 from svn://localhost/TRUNK/:
+
+New detecting input drivers for combined input threads.  Now it won't assert if one of them is missing.
+Flexible if any particular item is missing.  Makes it much easier to add new hardware without breaking campatibility with old hardware.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/26/09 12:58 PM
+1 changed, 0 added, 0 deleted.
+5,611 ms. (Cumulative: 5,363,909 ms)
+
+----------------
