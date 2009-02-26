@@ -294,7 +294,8 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	pDebugMPI_->Assert(FlatProfilerInit(0, 0) == 0, "Failed to init profiler.\n");
 
 	// Folklore item about once-in-blue-moon silence during Brio/AppManager session
-	SetMasterVolume(100);
+	// ... is just a story to tell the grandkids now ...
+	isPaused_ = false;
 }
 
 // ==============================================================================

@@ -17230,3 +17230,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/25/09 2:19 PM
 5,681 ms. (Cumulative: 5,346,777 ms)
 
 ----------------
+Revision 3,997 from svn://localhost/TRUNK/:
+
+Fixed long outstanding bug with Audio module playing "siliently" when re-instantiated. The mixer isPaused_ state member var was never initialized. (TTP Emerald #50)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/25/09 5:09 PM
+1 changed, 0 added, 0 deleted.
+5,651 ms. (Cumulative: 5,352,500 ms)
+
+----------------
