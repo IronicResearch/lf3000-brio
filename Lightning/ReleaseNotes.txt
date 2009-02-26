@@ -3,6 +3,25 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.34.4.4005 (Feb 26, 2009)
+===========================================
+
+Changed TouchState to use signed integers for X and Y positions.  This makes
+it easier to clamp values in the appropriate direction.
+
+Changed ButtonEventQueue and TouchEventQueue to use ButtonData2 and TouchData
+instead of message.  This casts off the message wrapper.
+
+Fixed long outstanding bug with Audio module playing "silently" when re-instiated.
+
+Changed 1D/2D BrioOpenGLConfig heap defaults 2/14 for 16MB framebuffer in 64MB firmware.
+
+Flexible input drivers detection added to Event Module.  Now won't assert if Button, Power,
+USB, or Touch aren't found.  It's still possible to call all functions for retrieving these
+states and register listeners for these events.  If the input isn't found, the retrieve states
+will never change, and no events will ever be generated.
+
+===========================================
 Brio v1.34.3.3964 (Feb 19, 2009)
 ===========================================
 
