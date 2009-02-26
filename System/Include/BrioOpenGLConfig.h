@@ -27,8 +27,9 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 // Default heap allocation for OEM OpenGL library
-const U32	kHeap1DMeg = 1;	// 1D heap size in Megs for vertex buffers
-const U32	kHeap2DMeg = 12;// 2D heap size in Megs for color/depth buffers, textures 		
+// Default OpenGL framebuffer region increased to 16Megs on 64Meg Didj/Emerald units
+const U32	kHeap1DMeg = 2;	// 1D heap size in Megs for vertex buffers
+const U32	kHeap2DMeg = 14;// 2D heap size in Megs for color/depth buffers, textures 		
 
 //==============================================================================
 // OpenGL Hardware/Emulation context

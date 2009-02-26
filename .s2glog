@@ -17239,3 +17239,16 @@ By Dave Milici (dmilici@leapfrog.com) on 2/25/09 5:09 PM
 5,651 ms. (Cumulative: 5,352,500 ms)
 
 ----------------
+Revision 3,998 from svn://localhost/TRUNK/:
+Revision 3,999 from svn://localhost/TRUNK/:
+Revision 4,000 from svn://localhost/TRUNK/:
+Revision 4,001 from svn://localhost/TRUNK/:
+Revision 4,002 from svn://localhost/TRUNK/:
+
+Changed 1D/2D BrioOpenGLConfig heap defaults to 2/14 Megs for 16Meg OGL framebuffer in 64Meg FW. Existing logic already clamps heap config to available OGL framebuffer memory on FW with only 13Meg OGL region. (Emerald TTP #67)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/26/09 11:58 AM
+1 changed, 0 added, 0 deleted.
+5,626 ms. (Cumulative: 5,358,220 ms)
+
+----------------
