@@ -69,6 +69,7 @@ namespace
 		//----------------------------------------------------------------------
 		std::vector<FoundModule>		mFoundModulesList;
 		std::vector<ConnectedModule>	mConnectedModulesList;
+		bool							bIsExiting_;
 		
 		//----------------------------------------------------------------------
 		void GetModuleName( const CPath& path, CString& modname )
@@ -153,6 +154,7 @@ namespace
 		//----------------------------------------------------------------------
 		CModuleMgrImpl()
 		{
+			bIsExiting_ = false;
 			atexit(ExitModuleManagerLib);
 		}
 		
@@ -295,8 +297,8 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
-//			printf("DestroyModuleInstance:: destroying ptr: 0x%x; name: %s)\n",
-//					(unsigned int)pModule->ptr, pModule->name.c_str() );
+			printf("DestroyModuleInstance:: destroying ptr: 0x%x; name: %s)\n",
+					(unsigned int)pModule->ptr, pModule->name.c_str() );
 
 					ObjPtrToFunPtrConverter fp;
 		    fp.voidptr = kernel_.RetrieveSymbolFromModule(pModule->handle, kDestroyInstanceFnName);
@@ -313,6 +315,8 @@ namespace
 		//----------------------------------------------------------------------
 		tErrType Disconnect(const ICoreModule* ptr)
 		{
+			if (bIsExiting_)
+				return kNoErr;
 			ConnectedModule* pModule = FindCachedModule(ptr);
 			if( pModule )
 			{
@@ -331,6 +335,8 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyAllModules(void)
 		{
+			// Prevent any further transient module unloading via Disconnect()
+			bIsExiting_ = true;
 			// Destroy all modules remaining in connected list.
 			// Called at process exit time via atexit() handler.
 			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
