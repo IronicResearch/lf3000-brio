@@ -17287,3 +17287,25 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/26/09 3:19 PM
 5,811 ms. (Cumulative: 5,375,500 ms)
 
 ----------------
+Revision 4,012 from svn://localhost/TRUNK/:
+Revision 4,013 from svn://localhost/TRUNK/:
+Revision 4,014 from svn://localhost/TRUNK/:
+Revision 4,015 from svn://localhost/TRUNK/:
+Revision 4,016 from svn://localhost/TRUNK/:
+Revision 4,017 from svn://localhost/TRUNK/:
+Revision 4,018 from svn://localhost/TRUNK/:
+Revision 4,019 from svn://localhost/TRUNK/:
+Revision 4,020 from svn://localhost/TRUNK/:
+Revision 4,021 from svn://localhost/TRUNK/:
+Revision 4,022 from svn://localhost/TRUNK/:
+Revision 4,023 from svn://localhost/TRUNK/:
+Revision 4,024 from svn://localhost/TRUNK/:
+
+Protect module unloading routine from transient Disconnect() calls during exits. (TTP #83)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/09 6:34 PM
+1 changed, 0 added, 0 deleted.
+5,642 ms. (Cumulative: 5,381,283 ms)
+
+----------------
