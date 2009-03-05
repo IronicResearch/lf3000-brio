@@ -17309,3 +17309,25 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/09 6:34 PM
 5,642 ms. (Cumulative: 5,381,283 ms)
 
 ----------------
+Revision 4,025 from svn://localhost/TRUNK/:
+Revision 4,026 from svn://localhost/TRUNK/:
+Revision 4,027 from svn://localhost/TRUNK/:
+Revision 4,028 from svn://localhost/TRUNK/:
+Revision 4,029 from svn://localhost/TRUNK/:
+Revision 4,030 from svn://localhost/TRUNK/:
+Revision 4,031 from svn://localhost/TRUNK/:
+Revision 4,032 from svn://localhost/TRUNK/:
+Revision 4,033 from svn://localhost/TRUNK/:
+Revision 4,034 from svn://localhost/TRUNK/:
+Revision 4,035 from svn://localhost/TRUNK/:
+Revision 4,036 from svn://localhost/TRUNK/:
+Revision 4,037 from svn://localhost/TRUNK/:
+
+Bumping version in meta.inf.  Also change from .3.4 to .
+
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/5/09 10:29 AM
+1 changed, 0 added, 0 deleted.
+6,098 ms. (Cumulative: 5,387,554 ms)
+
+----------------
