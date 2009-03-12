@@ -17331,3 +17331,57 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/5/09 10:29 AM
 6,098 ms. (Cumulative: 5,387,554 ms)
 
 ----------------
+Revision 4,038 from svn://localhost/TRUNK/:
+Revision 4,039 from svn://localhost/TRUNK/:
+Revision 4,040 from svn://localhost/TRUNK/:
+Revision 4,041 from svn://localhost/TRUNK/:
+Revision 4,042 from svn://localhost/TRUNK/:
+Revision 4,043 from svn://localhost/TRUNK/:
+Revision 4,044 from svn://localhost/TRUNK/:
+Revision 4,045 from svn://localhost/TRUNK/:
+Revision 4,046 from svn://localhost/TRUNK/:
+Revision 4,047 from svn://localhost/TRUNK/:
+Revision 4,048 from svn://localhost/TRUNK/:
+Revision 4,049 from svn://localhost/TRUNK/:
+Revision 4,050 from svn://localhost/TRUNK/:
+Revision 4,051 from svn://localhost/TRUNK/:
+Revision 4,052 from svn://localhost/TRUNK/:
+Revision 4,053 from svn://localhost/TRUNK/:
+Revision 4,054 from svn://localhost/TRUNK/:
+Revision 4,055 from svn://localhost/TRUNK/:
+Revision 4,056 from svn://localhost/TRUNK/:
+Revision 4,057 from svn://localhost/TRUNK/:
+Revision 4,058 from svn://localhost/TRUNK/:
+Revision 4,059 from svn://localhost/TRUNK/:
+Revision 4,060 from svn://localhost/TRUNK/:
+Revision 4,061 from svn://localhost/TRUNK/:
+Revision 4,062 from svn://localhost/TRUNK/:
+Revision 4,063 from svn://localhost/TRUNK/:
+Revision 4,064 from svn://localhost/TRUNK/:
+Revision 4,065 from svn://localhost/TRUNK/:
+Revision 4,066 from svn://localhost/TRUNK/:
+Revision 4,067 from svn://localhost/TRUNK/:
+Revision 4,068 from svn://localhost/TRUNK/:
+Revision 4,069 from svn://localhost/TRUNK/:
+Revision 4,070 from svn://localhost/TRUNK/:
+Revision 4,071 from svn://localhost/TRUNK/:
+Revision 4,072 from svn://localhost/TRUNK/:
+Revision 4,073 from svn://localhost/TRUNK/:
+Revision 4,074 from svn://localhost/TRUNK/:
+Revision 4,075 from svn://localhost/TRUNK/:
+Revision 4,076 from svn://localhost/TRUNK/:
+Revision 4,077 from svn://localhost/TRUNK/:
+Revision 4,078 from svn://localhost/TRUNK/:
+Revision 4,079 from svn://localhost/TRUNK/:
+Revision 4,080 from svn://localhost/TRUNK/:
+
+Fixed Brio meta.inf to maintain 1.2.3.SVN version numbering. The extra 
+subminor field should not have been inserted before the trailing SVN 
+number.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/09 4:45 PM
+1 changed, 0 added, 0 deleted.
+6,002 ms. (Cumulative: 5,393,931 ms)
+
+----------------
