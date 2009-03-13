@@ -40,6 +40,8 @@ if vars['is_export'] or vars['is_publish']:
 					Dir('boost/boost').abspath, '.hpp')				
 	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'ustring'), 
 					Dir('ustring').abspath, '.h')
+	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'freetype'), 
+					Dir('FreeType/Include').abspath, '.h')
 					
 	if vars['is_emulation']:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
@@ -70,6 +72,9 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, lib)
 		# Need ustring libs for SDK apps linking platform libs
 		libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], '*.so'))
+		env.Install(vars['mpi_deploy_dir'], libs)
+		# Need FreeType headers (above) and libs for FlashLite fontconfig compilation
+		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so'))
 		env.Install(vars['mpi_deploy_dir'], libs)
 
 #-----------------------------------------------------------------------------

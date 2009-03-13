@@ -17385,3 +17385,15 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/09 4:45 PM
 6,002 ms. (Cumulative: 5,393,931 ms)
 
 ----------------
+Revision 4,081 from svn://localhost/TRUNK/:
+Revision 4,082 from svn://localhost/TRUNK/:
+Revision 4,083 from svn://localhost/TRUNK/:
+Revision 4,084 from svn://localhost/TRUNK/:
+
+Deploy FreeType headers and libs to SDK to support compatible FlashLite compilation. (Emerald TTP #80) 
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/09 7:43 PM
+1 changed, 0 added, 0 deleted.
+6,096 ms. (Cumulative: 5,400,120 ms)
+
+----------------
