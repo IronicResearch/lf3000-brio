@@ -17397,3 +17397,16 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/09 7:43 PM
 6,096 ms. (Cumulative: 5,400,120 ms)
 
 ----------------
+Revision 4,085 from svn://localhost/TRUNK/:
+Revision 4,086 from svn://localhost/TRUNK/:
+Revision 4,087 from svn://localhost/TRUNK/:
+Revision 4,088 from svn://localhost/TRUNK/:
+Revision 4,089 from svn://localhost/TRUNK/:
+
+Fixed C++ deprecated char* conversion warnings treated as errors in gcc 4.2.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/09 7:16 PM
+4 changed, 0 added, 0 deleted.
+6,019 ms. (Cumulative: 5,406,248 ms)
+
+----------------

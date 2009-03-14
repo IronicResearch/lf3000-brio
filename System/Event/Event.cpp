@@ -69,7 +69,7 @@ namespace
 	};
 	const U32 kEventDispatchMessageSize = sizeof(CEventDispatchMessage);
 	
-	char*	g_msgQueueName = "/eventDispatchQueue";
+	const char*	g_msgQueueName = "/eventDispatchQueue";
 }	
 
 //============================================================================

@@ -41,7 +41,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 struct ValueToString
 {
 	tErrType	value;
-	char* 		string;
+	const char* string;
 };
 
 //------------------------------------------------------------------------------

@@ -70,7 +70,7 @@ namespace
 #endif
 	
 	//--------------------------------------------------------------------------
-	void AbortIfEGLError(char* pszLocation)
+	void AbortIfEGLError(const char* pszLocation)
 	{
 		/*
 			eglGetError returns the last error that has happened using egl,
