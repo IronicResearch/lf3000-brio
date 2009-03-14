@@ -430,7 +430,7 @@ struct tMessageQueuePropertiesPosix{
                                         // 0 - A sending message sleeps
                                         // NONBLOCK - the mq_send function returns 
                                         //  immediately with an error status
-    char*   nameQueue;
+    const char*   nameQueue;
     mode_t  mode;
     long    oflag;
     U32     priority;
