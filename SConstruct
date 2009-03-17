@@ -53,6 +53,7 @@ import os
 import fnmatch
 import SCons.Defaults
 import Etc.Tools.SConsTools.Priv.LfUtils	# LeapFrog utility functions
+import Etc.Tools.SConsTools.Priv.UpdateMetaInf	# meta.inf utility
 
 
 #-----------------------------------------------------------------------------
@@ -125,8 +126,8 @@ is_export			= is_publish or type == 'xembedded' or type == 'xemulation'
 is_runtests			= runtests == 't' or runtests == '1'
 is_debug			= debug == 't' or debug == '1'
 publish_root		= ''
+version 			= Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
 if is_publish:
-	version = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(platform, branch)
 	publish_root			= Dir('#Publish_' + version).abspath
 
 targets = ['emulation']
@@ -310,6 +311,15 @@ for target in targets:
 
 		os.path.walk(unit_test_data_root, callback, None)
 		Default(rootfs_data)
+		
+	#-------------------------------------------------------------------------
+	# Deploy meta.inf file for embedded builds
+	#-------------------------------------------------------------------------
+	if not is_emulation:
+		templatePath = os.path.join(platform, 'meta.inf')
+		metaInfPath = os.path.join(rootfs, 'Base', 'Brio', 'meta.inf')
+		Etc.Tools.SConsTools.Priv.UpdateMetaInf.createMetaInf(templatePath, metaInfPath, version)
+			
 			
 # END OF VARIANT LOOP
 

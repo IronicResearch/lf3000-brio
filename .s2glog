@@ -17410,3 +17410,26 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/09 7:16 PM
 6,019 ms. (Cumulative: 5,406,248 ms)
 
 ----------------
+Revision 4,090 from svn://localhost/TRUNK/:
+Revision 4,091 from svn://localhost/TRUNK/:
+Revision 4,092 from svn://localhost/TRUNK/:
+Revision 4,093 from svn://localhost/TRUNK/:
+Revision 4,094 from svn://localhost/TRUNK/:
+Revision 4,095 from svn://localhost/TRUNK/:
+Revision 4,096 from svn://localhost/TRUNK/:
+Revision 4,097 from svn://localhost/TRUNK/:
+Revision 4,098 from svn://localhost/TRUNK/:
+Revision 4,099 from svn://localhost/TRUNK/:
+Revision 4,100 from svn://localhost/TRUNK/:
+Revision 4,101 from svn://localhost/TRUNK/:
+Revision 4,102 from svn://localhost/TRUNK/:
+Revision 4,103 from svn://localhost/TRUNK/:
+
+Change Brio package ID to Emerald product assignment (for sync with Emerald 0.3.5 release which is not meant to be OmegaTerm compatible).
+Meta.inf file now has SVN revision number appended to version field at build time.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/17/09 3:45 PM
+3 changed, 1 added, 0 deleted.
+6,175 ms. (Cumulative: 5,412,626 ms)
+
+----------------
