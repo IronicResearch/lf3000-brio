@@ -3,6 +3,35 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.3.6.4126 (Mar 25, 2009)
+===========================================
+
+Emerald 0.3.6 release -- significant changes since 0.3.5:
+
+r4080 | dmilici | 2009-03-12 16:45:34 -0700 (Thu, 12 Mar 2009) | 4 lines
+
+Fixed Brio meta.inf to maintain 1.2.3.SVN version numbering. The extra 
+subminor field should not have been inserted before the trailing SVN 
+number.
+
+------------------------------------------------------------------------
+r4103 | dmilici | 2009-03-17 15:45:19 -0700 (Tue, 17 Mar 2009) | 2 lines
+
+Change Brio package ID to Emerald product assignment (for sync with 
+Emerald 0.3.5 release which is not meant to be OmegaTerm compatible).
+
+Meta.inf file now has SVN revision number appended to version field at 
+build time.
+
+------------------------------------------------------------------------
+r4123 | dmilici | 2009-03-25 10:50:44 -0700 (Wed, 25 Mar 2009) | 1 line
+Changed paths:
+   M /TRUNK/Lightning/meta.inf
+
+Bump Brio version to 0.3.6 for Emerald build.
+========================================================================
+========================================================================
+===========================================
 Brio v1.34.4.4011 (Feb 26, 2009)
 ===========================================
 
