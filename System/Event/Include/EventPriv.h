@@ -16,7 +16,9 @@
 
 #include <SystemTypes.h>
 #include <CoreModule.h>
+#include <DebugMPI.h>
 #include "EventMPI.h"	// for tEventRegistrationFlags
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -25,7 +27,6 @@ const CString	kEventModuleName	= "Event";
 const tVersion	kEventModuleVersion	= 2;
 
 // Function prototypes
-void* ButtonPowerUSBTask( void* arg );
 
 //==============================================================================
 class CEventModule : public ICoreModule {
@@ -58,6 +59,10 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+public:
+	static void* 		ButtonPowerUSBTask( void* arg );
+	CDebugMPI			debug_;
 };
 
 LF_END_BRIO_NAMESPACE()	

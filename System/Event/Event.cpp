@@ -108,8 +108,6 @@ private:
 		// 2) Task loop, receive and dispatch messages
 		//
 		CEventManagerImpl*	pThis = reinterpret_cast<CEventManagerImpl*>(arg);
-		CKernelMPI	kernel;
-		CDebugMPI	debug(kGroupEvent);
 		
 		tMessageQueuePropertiesPosix props = 								//*1
 		{
@@ -123,20 +121,20 @@ private:
 		    kEventDispatchMessageSize, 	// msgProperties.mq_msgsize
 		    0                           // msgProperties.mq_curmsgs
 		};
-		tErrType err = kernel.OpenMessageQueue(g_hMsgQueueBG_, props, NULL);
-		debug.AssertNoErr(err, "EventDispatchTask(): Failed to create msg queue!\n" );
-		debug.DebugOut(kDbgLvlVerbose, "EventDispatchTask() Message queue created %d\n", 
+		tErrType err = pThis->kernel_.OpenMessageQueue(g_hMsgQueueBG_, props, NULL);
+		pThis->debug_.AssertNoErr(err, "EventDispatchTask(): Failed to create msg queue!\n" );
+		pThis->debug_.DebugOut(kDbgLvlVerbose, "EventDispatchTask() Message queue created %d\n", 
 						static_cast<int>(g_hMsgQueueBG_));
 		CEventDispatchMessage	msg;										//*2
 
 		g_threadRunning_ = true;
 		while (g_threadRun_)
 		{
-			err = kernel.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
+			err = pThis->kernel_.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
 			if ( err != kConnectionTimedOutErr ) {
-		    	debug.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
+		    	pThis->debug_.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
-				kernel.Free((void *)msg.pMsg);
+				pThis->kernel_.Free((void *)msg.pMsg);
 		    }
 		}
 		
@@ -148,6 +146,8 @@ private:
 	}
 
 public:
+	static CEventModule*			pEventModule_;
+	
 	//------------------------------------------------------------------------
 	CEventManagerImpl() 
 		: ppListeners_(NULL), numListeners_(0), listSize_(0), 
@@ -158,8 +158,7 @@ public:
 		//    background dispatching thread
 		// 2) Create the background event dispatching thread
 		//
-		CDebugMPI	debug(kGroupEvent);
-		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Initializing Event Manager\n");
+		debug_.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Initializing Event Manager\n");
 		
 		tMessageQueuePropertiesPosix props = 							//*1
 		{
@@ -175,8 +174,8 @@ public:
 		};
 		
 		tErrType err = kernel_.OpenMessageQueue(hMsgQueueFG_, props, NULL);
-		debug.AssertNoErr(err, "CEventManagerImpl::ctor: Failed to create message queue!\n");
-		debug.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Message queue created %d\n", 
+		debug_.AssertNoErr(err, "CEventManagerImpl::ctor: Failed to create message queue!\n");
+		debug_.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Message queue created %d\n", 
 						static_cast<int>(hMsgQueueFG_));
 
 		tTaskProperties properties;										//*2
@@ -185,7 +184,7 @@ public:
 		properties.pTaskMainArgValues = this;
 		err = kernel_.CreateTask(g_hThread_, properties, NULL);
 		
-		debug.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create EventDispatchTask!\n" );
+		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create EventDispatchTask!\n" );
 
 		// Wait for thread to start up...
 		while ( !g_threadRunning_ ) {
@@ -194,11 +193,11 @@ public:
 		
 #ifndef EMULATION		
 		// Create additional Button/Power/USB driver polling thread
-		properties.TaskMainFcn = ButtonPowerUSBTask;
-		properties.pTaskMainArgValues = this;
+		properties.TaskMainFcn = CEventModule::ButtonPowerUSBTask;
+		properties.pTaskMainArgValues = pEventModule_;
 		g_hBPUThread_ = kInvalidTaskHndl;
 		err = kernel_.CreateTask(g_hBPUThread_, properties, NULL);
-		debug.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create ButtonPowerUSBTask!\n" );
+		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create ButtonPowerUSBTask!\n" );
 #endif
 	}
 	
@@ -341,6 +340,7 @@ bool 				CEventManagerImpl::g_threadRun_   = true;
 bool 				CEventManagerImpl::g_threadRunning_  = false;
 tTaskHndl			CEventManagerImpl::g_hThread_	  = kInvalidTaskHndl;
 tTaskHndl			CEventManagerImpl::g_hBPUThread_	  = kInvalidTaskHndl;
+CEventModule*		CEventManagerImpl::pEventModule_ = NULL;
 	
 namespace
 {
@@ -354,7 +354,9 @@ namespace
 //============================================================================
 //----------------------------------------------------------------------------
 CEventModule::CEventModule()
+: debug_(kGroupEvent)
 {
+	CEventManagerImpl::pEventModule_ = this;
 	if (pinst == NULL)
 		pinst = new CEventManagerImpl;
 }

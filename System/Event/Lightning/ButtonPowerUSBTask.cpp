@@ -177,9 +177,9 @@ namespace
 //============================================================================
 // Button Power USB task
 //============================================================================
-void* ButtonPowerUSBTask( void* arg )
+/* static */ void* CEventModule::ButtonPowerUSBTask( void* arg )
 {
-	CDebugMPI	debug(kGroupEvent);
+	CEventModule*	pThis = reinterpret_cast<CEventModule*>(arg);
 	struct app_message app_msg;		
 	
 	struct pollfd	event_fd[NUM_INPUTS];
@@ -201,7 +201,7 @@ void* ButtonPowerUSBTask( void* arg )
 		int sw = 0;
 		
 		// get initial state of switches
-		debug.Assert(ioctl(event_fd[button_index].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+		pThis->debug_.Assert(ioctl(event_fd[button_index].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
 				"CEventModule::ButtonPowerUSBTask: reading switch state failed");
 		// get and report the current headphone state as a transition
 		if(sw & (1<<SW_HEADPHONE_INSERT)) {
@@ -218,7 +218,7 @@ void* ButtonPowerUSBTask( void* arg )
 	}
 	else
 	{
-		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
 	}
 	SetButtonState(button_data);
 	
@@ -236,7 +236,7 @@ void* ButtonPowerUSBTask( void* arg )
 	}
 	else
 	{
-		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open Power Button\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open Power Button\n");
 	}
 	
 	int usb_index = -1;
@@ -254,7 +254,7 @@ void* ButtonPowerUSBTask( void* arg )
 	}
 	else
 	{
-		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
 	}
 	
 	int touch_index = -1;
@@ -268,7 +268,7 @@ void* ButtonPowerUSBTask( void* arg )
 	}
 	else
 	{
-		debug.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 touchscreen interface\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 touchscreen interface\n");
 	}
 	
 	struct input_event ev;
@@ -289,7 +289,7 @@ void* ButtonPowerUSBTask( void* arg )
 					if(ev.type == EV_KEY) { // this is a key press
 						button = LinuxKeyToBrio(ev.code);
 						if(button == 0) {
-							debug.DebugOut(kDbgLvlVerbose, "%s: unknown key code: %d type: %d\n", __FUNCTION__, ev.code, ev.type);
+							pThis->debug_.DebugOut(kDbgLvlVerbose, "%s: unknown key code: %d type: %d\n", __FUNCTION__, ev.code, ev.type);
 							continue;
 						}
 						//repeat of known-pressed button
@@ -299,7 +299,7 @@ void* ButtonPowerUSBTask( void* arg )
 					else if(ev.type == EV_SW) { // this is a switch change
 						button = LinuxSwitchToBrio(ev.code);
 						if(button == 0) {
-							debug.DebugOut(kDbgLvlVerbose, "%s: unknown switch code\n", __FUNCTION__);
+							pThis->debug_.DebugOut(kDbgLvlVerbose, "%s: unknown switch code\n", __FUNCTION__);
 							continue;
 						}
 					}
@@ -322,8 +322,7 @@ void* ButtonPowerUSBTask( void* arg )
 					button_data.time.microSeconds = ev.time.tv_usec;
 					SetButtonState(button_data);
 					CButtonMessage button_msg(button_data);
-					CEventMPI	eventmgr;
-					eventmgr.PostEvent(button_msg, kButtonEventPriority, 0);
+					pThis->PostEvent(button_msg, kButtonEventPriority, 0);
 				}
 			}
 			
@@ -347,8 +346,7 @@ void* ButtonPowerUSBTask( void* arg )
 						power_data.powerState != kPowerShutdown) {
 					power_data.powerState = current_pe.powerState;
 					CPowerMessage power_msg(power_data);
-					CEventMPI eventmgr;
-					eventmgr.PostEvent(power_msg, kPowerEventPriority, 0);
+					pThis->PostEvent(power_msg, kPowerEventPriority, 0);
 			}
 		
 			// USB driver event ?
@@ -360,13 +358,11 @@ void* ButtonPowerUSBTask( void* arg )
 					if((vbus == 1) && !(usb_data.USBDeviceState & kUSBDeviceConnected)) {
 						usb_data.USBDeviceState |= kUSBDeviceConnected;
 						CUSBDeviceMessage usb_msg(usb_data);
-						CEventMPI eventmgr;
-						eventmgr.PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
+						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
 					} else if((vbus == 0) && (usb_data.USBDeviceState & kUSBDeviceConnected)) {
 						usb_data.USBDeviceState &= ~(kUSBDeviceConnected);
 						CUSBDeviceMessage usb_msg(usb_data);
-						CEventMPI eventmgr;
-						eventmgr.PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
+						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
 					}
 				}
 			}
@@ -380,9 +376,8 @@ void* ButtonPowerUSBTask( void* arg )
 					touch_data.time.seconds      = ev.time.tv_sec;
 					touch_data.time.microSeconds = ev.time.tv_usec;
 					{
-						CEventMPI eventmgr;
 						CTouchMessage touch_msg(touch_data);
-						eventmgr.PostEvent(touch_msg, kTouchEventPriority, 0);
+						pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
 					}
 					break;
 					
@@ -407,7 +402,7 @@ void* ButtonPowerUSBTask( void* arg )
 	}
 	
 	for(; last_fd >=0; --last_fd)
-		close(event_fd[0].fd);
+		close(event_fd[last_fd].fd);
 	g_threadRunning2_ = false;
 }
 	
