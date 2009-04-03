@@ -17488,3 +17488,45 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/27/09 9:52 AM
 5,563 ms. (Cumulative: 5,430,192 ms)
 
 ----------------
+Revision 4,132 from svn://localhost/TRUNK/:
+Revision 4,133 from svn://localhost/TRUNK/:
+Revision 4,134 from svn://localhost/TRUNK/:
+Revision 4,135 from svn://localhost/TRUNK/:
+Revision 4,136 from svn://localhost/TRUNK/:
+Revision 4,137 from svn://localhost/TRUNK/:
+Revision 4,138 from svn://localhost/TRUNK/:
+Revision 4,139 from svn://localhost/TRUNK/:
+Revision 4,140 from svn://localhost/TRUNK/:
+Revision 4,141 from svn://localhost/TRUNK/:
+Revision 4,142 from svn://localhost/TRUNK/:
+Revision 4,143 from svn://localhost/TRUNK/:
+Revision 4,144 from svn://localhost/TRUNK/:
+Revision 4,145 from svn://localhost/TRUNK/:
+Revision 4,146 from svn://localhost/TRUNK/:
+Revision 4,147 from svn://localhost/TRUNK/:
+Revision 4,148 from svn://localhost/TRUNK/:
+Revision 4,149 from svn://localhost/TRUNK/:
+Revision 4,150 from svn://localhost/TRUNK/:
+Revision 4,151 from svn://localhost/TRUNK/:
+Revision 4,152 from svn://localhost/TRUNK/:
+Revision 4,153 from svn://localhost/TRUNK/:
+Revision 4,154 from svn://localhost/TRUNK/:
+Revision 4,155 from svn://localhost/TRUNK/:
+Revision 4,156 from svn://localhost/TRUNK/:
+Revision 4,157 from svn://localhost/TRUNK/:
+Revision 4,158 from svn://localhost/TRUNK/:
+Revision 4,159 from svn://localhost/TRUNK/:
+Revision 4,160 from svn://localhost/TRUNK/:
+Revision 4,161 from svn://localhost/TRUNK/:
+Revision 4,162 from svn://localhost/TRUNK/:
+Revision 4,163 from svn://localhost/TRUNK/:
+Revision 4,164 from svn://localhost/TRUNK/:
+Revision 4,165 from svn://localhost/TRUNK/:
+
+Modified Event manager internal functions and threads to use common Debug and Kernel MPI objects, otherwise these objects remain loaded until exit time. (Emerald TTP #132)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/2/09 7:06 PM
+4 changed, 0 added, 0 deleted.
+5,669 ms. (Cumulative: 5,436,158 ms)
+
+----------------
