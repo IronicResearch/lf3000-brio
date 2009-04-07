@@ -3,6 +3,21 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+
+Emerald 0.4.0 release -- significant changes since 0.3.6:
+
+Modified Event manager internal functions and threads 
+to use common Debug and Kernel MPI objects, otherwise 
+these objects remain loaded until exit time. 
+(Emerald TTP #132) (-r4165)
+
+===========================================
+end of Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+
+===========================================
 Brio v0.3.6.4131 (Mar 27, 2009)
 ===========================================
 
