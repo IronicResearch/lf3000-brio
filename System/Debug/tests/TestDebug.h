@@ -11,7 +11,7 @@
 
 // For lots of text output, enable this:
 // BSK/FIXME
-//#define	LF_BRIO_VERBOSE_TEST_OUTPUT
+#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
 LF_USING_BRIO_NAMESPACE()
 
@@ -125,6 +125,10 @@ public:
 			printf("\nDefault debug level: %d\n", DebugMPI->GetDebugLevel());
 			printf("\n Should be: %d\n", kDbgLvlValuable);
 
+			DebugMPI->DebugOutErr(kDbgLvlValuable,0, "YTu DebugOutErr(...) test 1\n");
+
+			DebugMPI->DebugOutErr(kDbgLvlValuable, kAudioCreateTaskErr, "YTu DebugOutErr(...) test 2\n");			
+			
 			TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
 			
 			DebugMPI->SetDebugLevel( kDbgLvlCritical );
@@ -212,40 +216,18 @@ public:
 #endif
 	}
 	
-	//------------------------------------------------------------------------
-	void testAsserts( )
-	{
-		
-#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
-		tDebugLevel level;
-		ptintf_test_info( "testAsserts" );
-
-		if ( DebugMPI->IsValid() ) {
-		    printf("\nHello, world Assert Tests!\n");
-		
-			printf("Testing assertions, you shouldn't see this: ");
-			DebugMPI->Assert(true, "I'm not supposed to print!\n");
-	
-			printf("\n");
-	
-			DebugMPI->Assert(true, "I'm not supposed to print!\n");
-	
-			printf("You should see:  1 green, 2 electric, 3 spoon: ");
-			DebugMPI->Assert(false, "Here they are: %d %s, %d %s, %d %s.\n", 
-							1, "green", 2, "electric", 3, "spoon");
-	
-			printf("Exiting Assert Tests \n");
-		}
-#endif
-	}	
 	
 	void testSetGetDebugLevel()
 	{
 		 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 		 CDebugMPI dbgMPI1(kMyApp);
 		 CDebugMPI dbgMPI2(kMyApp);
-// FIXME/BSK remove verbose print
-//		ptintf_test_info( "testSetGetDebugLevel" );
+		
+		ptintf_test_info( "testSetGetDebugLevel" );
+		
+		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", kMyApp, kDbgLvlCritical, dbgMPI1.DebugOutIsEnabled(kMyApp, kDbgLvlCritical));
+		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", 0x9ff, kDbgLvlCritical, dbgMPI1.DebugOutIsEnabled(0x9FF, kDbgLvlCritical));
+		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", 0x9ff, kDbgLvlVerbose, dbgMPI1.DebugOutIsEnabled(0x9FF, kDbgLvlVerbose));		
 
 //		 printf("Original DebugLevel first instance %d\n", dbgMPI1.GetDebugLevel());
 //		 printf("Original DebugLevel second instance %d\n", dbgMPI2.GetDebugLevel());
@@ -269,6 +251,32 @@ public:
 	}
 
 
+	//------------------------------------------------------------------------
+	void testAsserts( )
+	{
+		
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
+		tDebugLevel level;
+		ptintf_test_info( "testAsserts" );
+
+		if ( DebugMPI->IsValid() ) {
+		    printf("\nHello, world Assert Tests!\n");
+		
+			DebugMPI->Assert(true, "I'm not supposed to print!\n");
+	
+			printf("\n");
+	
+			DebugMPI->Assert(true, "I'm not supposed to print!\n");
+	
+			printf("You should see:  1 green, 2 electric, 3 spoon: ");
+			DebugMPI->Assert(false, "Here they are: %d %s, %d %s, %d %s.\n", 
+							1, "green", 2, "electric", 3, "spoon");
+	
+			printf("Exiting Assert Tests \n");
+		}
+#endif
+	}	
+	
 	// =========================================================
 		void ptintf_test_info( char *pName )
 		{
