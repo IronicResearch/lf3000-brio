@@ -13,6 +13,7 @@
 //
 //==============================================================================
 
+#include <DebugMPI.h>
 #include <SystemTypes.h>
 #include <KernelTypes.h>
 #include <CoreModule.h>
@@ -158,33 +159,6 @@ inline tErrType AsBrioErr(int err)
 	}
 }
 
-// Defines  
-// FIXME/tp: "VALIDATE" rather than "ASSERT"?  We are not aborting execution here.
-// FIXME/tp: Use Kernel::Printf for consistency
-#define ASSERT_POSIX_CALL(err) \
-if(err) \
-{ \
-	int errsave = err; \
-	printf("\n***** POSIX function fails with error # (%d). File (%s), Line (%d)\n", \
-	(int)err, __FILE__, __LINE__); \
-	printf("Error string: %s\n", strerror(errsave)); \
-	fflush(stdout); \
-	return(AsBrioErr(errsave)); \
-}
-                                                           
-#define ASSERT_ERROR(expression,value) 
-/*
-\
-if(!expression) \
-{ \
-    int ret = ErrorBrio::lookupBrioErrType(value); \
-    printf("***** Error (%d). File (%s), Line (%d)\n", \
-        ret, __FILE__, __LINE__); \
-        fflush(stdout); \
-        return(ret); \
-}
-
-*/
 // Constants
 const CURI kKernelModuleName = "Kernel";
 const tVersion kKernelModuleVersion = 2;
@@ -354,6 +328,7 @@ public:
 
 private:
 	// Limit object creation to the Module Manager interface functions
+	LeapFrog::Brio::CDebugMPI mDebugMPI;
 	CKernelModule();
 	virtual ~CKernelModule();
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
