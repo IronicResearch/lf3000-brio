@@ -84,9 +84,8 @@ public:
 	Boolean		DebugOutIsEnabled(tDebugSignature sig, tDebugLevel atLeastLevel=kDbgLvlCritical) const;
 
 	// accessing the master DebugOut level
-// BSK /121107
-//	void		SetDebugLevel(tDebugLevel newLevel);
-//	tDebugLevel	GetDebugLevel() const;
+	void		SetMasterDebugLevel(tDebugLevel newLevel);
+	tDebugLevel	GetMasterDebugLevel() const;
 
 	//------------------------------------------------------------------------------
 	// Function:	 	EnableDebugOutTimestamp
@@ -123,7 +122,8 @@ public:
 private:
 	class CDebugModule* pModule_;
 	tDebugSignature		sig_;
-	tDebugLevel			masterDebugLevel_;
+	tDebugLevel			localDebugLevel_;
+
 	// Disable copy semantics
 	CDebugMPI(const CDebugMPI&);
 	CDebugMPI& operator=(const CDebugMPI&);

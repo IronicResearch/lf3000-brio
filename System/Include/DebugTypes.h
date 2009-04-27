@@ -15,6 +15,8 @@
 
 #include <SystemTypes.h>
 #include <exception>
+#include <syslog.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -58,8 +60,8 @@ typedef U16	tDebugSignature;
 #define kProductDebugSigGroup			0x0100		// product-specific DebugSigs
 #define kProductSharedDebugSigGroup		0x0180		// product DebugSigs defined for multiple products
 													//	 (e.g. shared applications, like a game engine)
-//#define kReserved2DebugSigGroup		0x0200
-//#define kReserved3DebugSigGroup		0x0280
+#define kFlashLiteDebugSigGroup			0x0200
+#define kAppManagerDebugSigGroup		0x0280
 //#define kReserved4DebugSigGroup		0x0300
 //#define kReserved5DebugSigGroup		0x0380
 
@@ -104,12 +106,12 @@ typedef U16	tDebugSignature;
 //==============================================================================
 enum tDebugLevel
 {
-	kDbgLvlSilent = 0,
-	kDbgLvlCritical = 1,
-	kDbgLvlImportant,
-	kDbgLvlValuable,
-	kDbgLvlNoteable,
-	kDbgLvlVerbose,
+	kDbgLvlSilent = -1,
+	kDbgLvlCritical = LOG_EMERG,
+	kDbgLvlImportant = LOG_CRIT,
+	kDbgLvlValuable = LOG_NOTICE,
+	kDbgLvlNoteable = LOG_INFO,
+	kDbgLvlVerbose = LOG_DEBUG,
 
 	kMaxDebugLevel = kDbgLvlVerbose
 } ;
