@@ -17698,3 +17698,12 @@ By ytu (ytu@leapfrog.com) on 4/27/09 4:57 PM
 6,095 ms. (Cumulative: 5,495,710 ms)
 
 ----------------
+Revision 4,252 from svn://localhost/TRUNK/:
+
+FR logging using DebugMPI
+
+By ytu (ytu@leapfrog.com) on 4/27/09 4:58 PM
+1 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 5,501,804 ms)
+
+----------------
