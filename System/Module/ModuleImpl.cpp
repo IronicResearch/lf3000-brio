@@ -297,8 +297,10 @@ namespace
 		//----------------------------------------------------------------------
 		void DestroyModuleInstance(ConnectedModule* pModule)
 		{
+			#if 0  //ytu comment
 			printf("DestroyModuleInstance:: destroying ptr: 0x%x; name: %s)\n",
 					(unsigned int)pModule->ptr, pModule->name.c_str() );
+			#endif
 
 					ObjPtrToFunPtrConverter fp;
 		    fp.voidptr = kernel_.RetrieveSymbolFromModule(pModule->handle, kDestroyInstanceFnName);
