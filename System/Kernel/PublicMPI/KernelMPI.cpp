@@ -17,6 +17,7 @@
 #include <dlfcn.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <syslog.h>
 
 //#include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -73,10 +74,11 @@ namespace
 	//--------------------------------------------------------------------------
 	void PowerDown_Impl()
 	{
-		Printf_Impl("\n\n");
 		fflush(stdout);
 		fflush(stderr);
-		Printf_Impl("PowerDown/Assert exit!\n\n");
+		
+		openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
+		syslog(LOG_EMERG, "PowerDown (Assert) exit !!");		
 		exit(kKernelExitAssert);
 	}
 	
@@ -86,6 +88,10 @@ namespace
 		tPtr ptr = malloc( size );
 		if (!ptr)
 		{
+		
+			openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
+			syslog(LOG_EMERG, "Memory allocation error, shutting down (allocation size was 0x%x\n", 
+						static_cast<unsigned int>(size));
 			Printf_Impl("BRIO FATAL: Memory allocation error, shutting down (allocation size was 0x%x\n", 
 						static_cast<unsigned int>(size));
 			PowerDown_Impl();
@@ -141,6 +147,9 @@ namespace
 		if (pLib == NULL)
 		{
 			const char *err = dlerror();
+			
+			openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
+			syslog(LOG_EMERG, "Unable to open module '%s', %s\n", dir.c_str(), err);		
 			Printf_Impl("BRIO WARNING: unable to open module '%s', %s\n", dir.c_str(), err);
 		}
 		return reinterpret_cast<tHndl>(pLib);
@@ -157,6 +166,8 @@ namespace
 		if (ptr == NULL)
 		{
 			const char *err = dlerror();
+			openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
+			syslog(LOG_EMERG, "Unable to retrieve symbol '%s', %s\n",symbol.c_str(), err);
 			Printf_Impl("BRIO WARNING: unable to retrieve symbol '%s', %s\n", 
 					symbol.c_str(), err);
 		}
