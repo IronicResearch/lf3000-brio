@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <time.h>
 #include <mqueue.h>
+#include <syslog.h>
 
 #include <SystemErrors.h>
 #include <KernelMPI.h>
@@ -40,6 +41,21 @@ extern "C"
 }
 
 LF_BEGIN_BRIO_NAMESPACE()
+
+#define ASSERT_POSIX_CALL(err) \
+{ \
+	mDebugMPI.Assert(!err , "***** POSIX function fails with error # (%d) Error string (%s) File (%s), Line (%d)\n", \
+		 (int)err, strerror(err), __FILE__, __LINE__); \
+	fflush(stdout); \
+}
+
+// ASSERT_ERROR(ptr != 0, kCouldNotAllocateMemory); 
+#define   ASSERT_ERROR(a_cond, b_string) \
+{ \
+	mDebugMPI.Assert((a_cond), "***** Error: %s in File (%s), Line (%d)\n", \
+		 (b_string), __FILE__, __LINE__); \
+	fflush(stdout); \
+}
 
 //==============================================================================
 // Defines
@@ -63,40 +79,40 @@ namespace
 	int pthreadTimer = 0; 
 	pthread_mutex_t timers_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-class ListData
-{
-	public:
-		ListData(U32 ptr, U32 hndl, U32 pdata)
-		: ptr_(ptr), hndl_(hndl), pdata_(pdata)
-		{}
+	class ListData
+	{
+		public:
+			ListData(U32 ptr, U32 hndl, U32 pdata)
+			: ptr_(ptr), hndl_(hndl), pdata_(pdata)
+			{}
 
-		~ListData() 
+			~ListData() 
+			{
+					free((void *)pdata_);
+			}
+
+		U32 getHndl() const
 		{
-				free((void *)pdata_);
+			return hndl_;
+		}
+		void setPtr(U32 ptr)
+		{
+			ptr_ = ptr;
 		}
 
-U32 getHndl() const
-{
-	return hndl_;
-}
-void setPtr(U32 ptr)
-{
-	ptr_ = ptr;
-}
+	private:
+		U32 ptr_;
+		U32 hndl_;
+		U32 pdata_;
+	};
 
-private:
-	U32 ptr_;
-	U32 hndl_;
-	U32 pdata_;
-};
-
-struct equal_id : public binary_function<ListData*, int, bool>
-{
-	bool operator()(const ListData* pp, U32 i) const
-{
-	return pp->getHndl() == i;
-}
-};
+	struct equal_id : public binary_function<ListData*, int, bool>
+	{
+		bool operator()(const ListData* pp, U32 i) const
+	{
+		return pp->getHndl() == i;
+	}
+	};
 
 	static list<ListData *> listMemory;
 
@@ -118,7 +134,7 @@ inline timer_t AsPosixTimerHandle(tTimerHndl hndlIn)
 
 
 //==============================================================================
-CKernelModule::CKernelModule()
+CKernelModule::CKernelModule() : mDebugMPI(kGroupKernel)
 {
 }
 
@@ -351,7 +367,7 @@ tPtr CKernelModule::Malloc(U32 size)
 {
 	// FIXME/tp: True assertion here if fail to allocate memory, or just warning?
 	tPtr ptr = malloc( size );
-    ASSERT_ERROR(ptr != 0, kCouldNotAllocateMemory);
+	ASSERT_ERROR(ptr != 0, "Can't allocate memory");
 	return ptr;
 }
 
@@ -547,7 +563,7 @@ tErrType CKernelModule::SendMessageOrWait(tMessageQueueHndl hndl,
 {
     struct timespec tp;
 
-    ASSERT_ERROR(timeoutMs<999,kInvalidFunctionArgument);  
+    ASSERT_ERROR(timeoutMs<999, "Invalid Argument (timeoutMs)");  
 
     errno =0;
     
@@ -616,7 +632,7 @@ tErrType CKernelModule::ReceiveMessage( tMessageQueueHndl hndl,
                                   &msg_prio);
  
     if (ret_receive == -1) {
-     	printf("mq_receive returned an error!  errno = %d, errstr = %s\n", errno, strerror(errno));
+     	mDebugMPI.DebugOut(kDbgLvlCritical, "mq_receive returned an error!  errno = %d, errstr = %s\n", errno, strerror(errno));
      	return AsBrioErr(errno);
     }	
     assert(msg_prio == msg_ptr->GetMessagePriority());
@@ -644,7 +660,7 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
 #endif // BSK
    struct timespec tp;
 
-   ASSERT_ERROR(timeoutMs<999,kInvalidFunctionArgument);  
+   ASSERT_ERROR(timeoutMs<999, "Invalid Argument (timeoutMs)");  
 
    errno =0;
    if(clock_gettime(CLOCK_REALTIME, &tp) == -1)
