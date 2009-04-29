@@ -297,7 +297,7 @@ void CDebugMPI::DebugOutErr( tDebugLevel lvl, tErrType err,
 		return;
 	}
 	
-	vsnprintf(errstr, MAX_MSG_LEN, "%s: ", (void *)pModule_->ErrorToString(err));
+	vsnprintf(errstr, MAX_MSG_LEN, "%s: ", (char *)pModule_->ErrorToString(err));
 	
 	va_list arguments;
 	va_start( arguments, formatString );
