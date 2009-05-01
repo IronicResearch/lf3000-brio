@@ -73,6 +73,7 @@
 #include <Utility.h>
 
 #include <RawPlayer.h>
+#include <MemPlayer.h>
 #include <VorbisPlayer.h>
 
 #include <list>
@@ -669,7 +670,20 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	CAudioPlayer *pPlayer = NULL;
 	tAudioID newID;
 
-	if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
+	if (sExt == NULL)
+	{
+		if (CMemPlayer::GetNumPlayers() < CMemPlayer::GetMaxPlayers())
+		{
+			newID = GetNextAudioID();
+			pPlayer = new CMemPlayer( pInfo, newID );
+		}
+		else
+		{
+			pDebugMPI_->DebugOut(kDbgLvlImportant,
+				"%s: Max number of mem players exceeded.\n", __FUNCTION__);
+		}
+	}
+	else if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
 		!strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")	||
 		!strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
