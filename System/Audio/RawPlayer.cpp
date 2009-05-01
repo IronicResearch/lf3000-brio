@@ -111,7 +111,9 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 		samplingFrequency_ = bH->sampleRate;
 		audioDataBytes_	   = bH->dataSize;		
 		channels_		   = 1 + (0 != (bH->flags & kAudioHeader_StereoBit));
-
+		// FIXME: sf2brio bug calculates dataSize incorrectly!
+		// Ignored by reading up to EOF in ReadBytesFromFile().
+		
 		pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData),
 							"%s.%d: offsetToData=%ld, but should be %d.  "
 							"Is this Brio Raw Audio file ? '%s'\n",

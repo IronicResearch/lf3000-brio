@@ -17733,3 +17733,19 @@ By ytu (ytu@leapfrog.com) on 4/29/09 2:39 PM
 5,598 ms. (Cumulative: 5,513,231 ms)
 
 ----------------
+Revision 4,263 from svn://localhost/TRUNK/:
+Revision 4,264 from svn://localhost/TRUNK/:
+Revision 4,265 from svn://localhost/TRUNK/:
+Revision 4,266 from svn://localhost/TRUNK/:
+Revision 4,267 from svn://localhost/TRUNK/:
+Revision 4,268 from svn://localhost/TRUNK/:
+Revision 4,269 from svn://localhost/TRUNK/:
+Revision 4,270 from svn://localhost/TRUNK/:
+
+Added new MemPlayer object for playback of uncompressed audio from memory buffer. (Not exported via Audio MPI yet, but tested as .brio file memory image.)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/1/09 10:37 AM
+2 changed, 2 added, 0 deleted.
+5,782 ms. (Cumulative: 5,519,154 ms)
+
+----------------
