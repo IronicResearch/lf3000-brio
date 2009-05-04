@@ -17749,3 +17749,24 @@ By Dave Milici (dmilici@leapfrog.com) on 5/1/09 10:37 AM
 5,782 ms. (Cumulative: 5,519,154 ms)
 
 ----------------
+Revision 4,271 from svn://localhost/TRUNK/:
+Revision 4,272 from svn://localhost/TRUNK/:
+Revision 4,273 from svn://localhost/TRUNK/:
+Revision 4,274 from svn://localhost/TRUNK/:
+Revision 4,275 from svn://localhost/TRUNK/:
+Revision 4,276 from svn://localhost/TRUNK/:
+Revision 4,277 from svn://localhost/TRUNK/:
+Revision 4,278 from svn://localhost/TRUNK/:
+Revision 4,279 from svn://localhost/TRUNK/:
+Revision 4,280 from svn://localhost/TRUNK/:
+Revision 4,281 from svn://localhost/TRUNK/:
+Revision 4,282 from svn://localhost/TRUNK/:
+Revision 4,283 from svn://localhost/TRUNK/:
+
+Added new StartAudio() method to Audio MPI for exposing support for MemPlayer object, including optional callback function.  
+
+By Dave Milici (dmilici@leapfrog.com) on 5/4/09 1:29 PM
+7 changed, 0 added, 0 deleted.
+5,813 ms. (Cumulative: 5,525,123 ms)
+
+----------------

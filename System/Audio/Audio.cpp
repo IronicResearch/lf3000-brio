@@ -164,7 +164,7 @@ CAudioModule::CAudioModule( void )
 	pDebugMPI_->Assert((kNoErr == err), "CAudioModule::ctor: Couldn't init mutex.\n");
 
 	pDebugMPI_->DebugOut(kDbgLvlVerbose, 
-						 "CAudioModule::ctor -- Initalizing Audio Module...");
+						 "CAudioModule::ctor -- Initalizing Audio Module...\n");
 
 	// Allocate global audio mixer
 	gAudioContext.pAudioMixer = new CAudioMixer(kAudioMaxMixerStreams);
@@ -403,7 +403,6 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 								   tAudioPayload payload,
 								   tAudioOptionsFlags flags )
 {
-
 	struct stat fileStat;
 	tAudioID id = kNoAudioID;
 	tAudioStartAudioInfo Ai;
@@ -452,7 +451,7 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	id = gAudioContext.pAudioMixer->AddPlayer(&Ai, (char *)fileExt.c_str());
 	if (kNoAudioID == id)
 	{
-		printf("%s: unable to add File='%s'\n", __FUNCTION__, filename.c_str());
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: unable to add File='%s'\n", __FUNCTION__, filename.c_str());
 		goto error;
 	}
 
@@ -477,6 +476,47 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 
 	return StartAudio(mpiID, path, mpiState.volume, mpiState.priority,
 					  mpiState.pan, mpiState.pListener, payload, flags);
+}
+
+// ==============================================================================
+// StartAudio
+// ==============================================================================
+tAudioID CAudioModule::StartAudio( U32 mpiID,
+									tAudioHeader		&header,
+									S16*				pBuffer,
+									tGetStereoAudioStreamFcn pCallback,
+									U8					volume, 
+									tAudioPriority		priority,
+									S8					pan, 
+									const IEventListener *pListener,
+									tAudioPayload		payload,
+									tAudioOptionsFlags	flags)
+{
+	tAudioID id = kNoAudioID;
+	tAudioStartAudioInfo Ai;
+	
+	AUDIO_LOCK;
+	
+	// Create player for memory buffer
+	Ai.path = NULL;
+	Ai.volume = volume;
+	Ai.priority = priority;
+	Ai.pan = pan;
+	Ai.pListener = pListener;
+	Ai.payload = payload;
+	Ai.flags = flags;
+	Ai.pRawHeader = &header;
+	Ai.pBuffer = pBuffer;
+	Ai.pCallback = pCallback;
+	id = gAudioContext.pAudioMixer->AddPlayer(&Ai, NULL);
+	if (kNoAudioID == id)
+	{
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: unable to add player\n", __FUNCTION__);
+	}
+	
+	AUDIO_UNLOCK;
+	
+	return id;
 }
 
 // ==============================================================================

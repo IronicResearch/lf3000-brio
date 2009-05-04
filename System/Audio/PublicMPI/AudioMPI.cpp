@@ -281,8 +281,6 @@ tAudioID CAudioMPI::StartAudio( const CPath			&path,
 								tAudioPayload		payload,
 								tAudioOptionsFlags	flags )
 {
-//printf("AudioMPI::StartAudio start \n");
-	
 	if ( !pModule_ )
 		return kNoAudioID;
 	
@@ -302,6 +300,26 @@ tAudioID CAudioMPI::StartAudio( const CPath 		&path,
 	
 	return pModule_->StartAudio( mpiID_, path, payload, flags );
 }   // ---- end StartAudio() ----
+
+// ==============================================================================
+// StartAudio
+// ==============================================================================
+tAudioID CAudioMPI::StartAudio( tAudioHeader		&header,
+								S16*				pBuffer,
+								tGetStereoAudioStreamFcn pCallback,
+								U8					volume, 
+								tAudioPriority		priority,
+								S8					pan, 
+								const IEventListener *pListener,
+								tAudioPayload		payload,
+								tAudioOptionsFlags	flags)
+{
+	if ( !pModule_ )
+		return kNoAudioID;
+	
+	return pModule_->StartAudio( mpiID_, header, pBuffer, pCallback, 
+			volume, priority, pan, pListener, payload, flags );
+}
 
 // ==============================================================================
 // GetAudioTime

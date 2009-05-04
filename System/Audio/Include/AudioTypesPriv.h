@@ -32,7 +32,8 @@ struct tAudioStartAudioInfo {
 	tAudioPayload		payload;
 	tAudioOptionsFlags	flags;
 	tAudioHeader*		pRawHeader;		// For Brio Raw audio header 
-
+	S16*				pBuffer;
+	tGetStereoAudioStreamFcn pCallback;
 	
 	tAudioStartAudioInfo( const CPath* pa = NULL,
 						  U8 v = 0, 
@@ -41,9 +42,11 @@ struct tAudioStartAudioInfo {
 						  const IEventListener* l = NULL, 
 						  tAudioPayload pl = 0, 
 						  tAudioOptionsFlags f = 0, 
-						  tAudioHeader* h = NULL )
+						  tAudioHeader* h = NULL,
+						  S16* b = NULL,
+						  tGetStereoAudioStreamFcn c = NULL)
 		: path(pa), volume(v), priority(p), pan(pn), pListener(l),
-	payload(pl), flags(f), pRawHeader(h) {}
+	payload(pl), flags(f), pRawHeader(h), pBuffer(b), pCallback(c) {}
 };
 
 typedef struct taudiostate {

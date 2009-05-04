@@ -46,6 +46,7 @@ class CMemPlayer : public CAudioPlayer {
  private:
 	U32				totalBytesRead_;
 	void*			pReadData_;
+	tGetStereoAudioStreamFcn	pRenderCallback_;
 };
 
 LF_END_BRIO_NAMESPACE()

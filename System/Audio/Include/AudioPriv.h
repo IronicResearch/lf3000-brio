@@ -78,6 +78,17 @@ class CAudioModule : public ICoreModule {
 									   tAudioPayload payload,
 									   tAudioOptionsFlags flags );
 	
+	VTABLE_EXPORT tAudioID StartAudio( 	U32 mpiID,
+										tAudioHeader		&header,
+										S16*				pBuffer,
+										tGetStereoAudioStreamFcn pCallback,
+										U8					volume, 
+										tAudioPriority		priority,
+										S8					pan, 
+										const IEventListener *pListener,
+										tAudioPayload		payload,
+										tAudioOptionsFlags	flags);
+	
 	VTABLE_EXPORT void PauseAudio( tAudioID id );
 	VTABLE_EXPORT void ResumeAudio( tAudioID id ); 
 	VTABLE_EXPORT void StopAudio( tAudioID id, Boolean noDoneMessage ); 

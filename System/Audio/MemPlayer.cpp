@@ -44,7 +44,7 @@ CMemPlayer::CMemPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 		samplingFrequency_	= phdr->sampleRate;
 		audioDataBytes_		= phdr->dataSize;		
 		channels_			= (phdr->flags & kAudioHeader_StereoBit) ? 2 : 1;
-		pAudioData_			= phdr + phdr->offsetToData; 
+		pAudioData_			= pInfo->pBuffer;
 		pDebugMPI_->DebugOut(kDbgLvlVerbose, "%s: %d Hz, %d ch, %d bytes @ %p\n",
 			__FUNCTION__,  (int)samplingFrequency_, (int)channels_, 
 			(int)audioDataBytes_, pAudioData_ );
@@ -60,6 +60,7 @@ CMemPlayer::CMemPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 
 	totalBytesRead_ = 0;
 	pReadData_		= pAudioData_;
+	pRenderCallback_= pInfo->pCallback;
 	
 	numMemPlayers++;
 }
@@ -118,7 +119,7 @@ U32 CMemPlayer::ReadBytesFromFile( void *d, U32 bytesToRead)
 	if (bytesToRead > 0)
 		memcpy(d, pReadData_, bytesToRead);
 	bytesRead = bytesToRead;
-	pReadData_ = (char*)pReadData_ + bytesRead;
+	pReadData_ = (U8*)pReadData_ + bytesRead;
 	
 	return (bytesRead);
 }
@@ -134,8 +135,20 @@ U32 CMemPlayer::Render( S16 *pOut, U32 numStereoFrames)
 	U32		bytesRead = 0;
 	U32		bytesReadThisRender = 0;
 	U32		bytesToRead = numStereoFrames * sizeof(S16) * channels_;
-	char*	bufPtr = (char *)pReadBuf_;
+	U8 *	bufPtr = (U8 *)pReadBuf_;
 
+	// Caller supplied Render callback function?
+	if (pRenderCallback_)
+	{
+		Boolean rc = (*pRenderCallback_)(numStereoFrames, pOut);
+		if (rc)
+			framesRead = numStereoFrames;
+		else
+			bIsDone_ = true;
+		return framesRead;
+	}
+	
+	// Typical file-based Render() routine follows
 	if (bIsDone_)
 		return (0);
 
