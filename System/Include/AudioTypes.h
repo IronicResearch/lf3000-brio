@@ -112,7 +112,7 @@ typedef U32		tMidiProgramList;	// TODO: ?
 #define kAudioHeader_StereoBit 	0x1
 struct tAudioHeader {
 	U32				offsetToData;		// Offset from start of header to
-										// start of data (16, which is size of this struct)
+										// start of data (12, which is size of this struct)
 	U16				flags;				// (Bit0: 0=mono, 1=stereo)
 	U16				sampleRate;			// Hz			
 	U32				dataSize;			// Bytes

@@ -17779,3 +17779,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/4/09 1:39 PM
 5,731 ms. (Cumulative: 5,530,932 ms)
 
 ----------------
+Revision 4,285 from svn://localhost/TRUNK/:
+
+Fixed up .raw audio test files with 12-byte header per tAudioHeader.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/4/09 3:38 PM
+3 changed, 0 added, 0 deleted.
+5,766 ms. (Cumulative: 5,536,776 ms)
+
+----------------
