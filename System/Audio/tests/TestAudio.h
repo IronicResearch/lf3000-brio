@@ -14,7 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
-
+#include <Utility.h>
 
 //  For lots of text output, enable this:
 #define	LF_BRIO_VERBOSE_TEST_OUTPUT
@@ -869,6 +869,44 @@ public:
 
 		pAudioMPI_->StopAudio(bg, true);
 
+	}
+
+    //------------------------------------------------------------------------
+    void testAudioMemPlayer()
+	{
+		tAudioID 				id;
+		tAudioHeader			hdr;
+		size_t					len;
+		void*					praw;
+		FILE*					fp;
+		S16*					pmem;
+		CPath					path = GetAudioRsrcFolder() + "LeftRightCenter.raw"; 
+		
+		PRINT_TEST_NAME();
+		
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_ != NULL );
+
+		len = FileSize(path.c_str());
+		TS_ASSERT( len != 0 );
+		praw = pKernelMPI_->Malloc(len);
+		TS_ASSERT( praw != NULL );
+		
+		fp = fopen(path.c_str(), "r");
+		TS_ASSERT( fp != NULL );
+		fread(praw, 1, len, fp);
+		fclose(fp);
+	
+		memcpy(&hdr, praw, sizeof(tAudioHeader));
+		pmem = (S16*)((U8*)praw + hdr.offsetToData);
+		
+		id = pAudioMPI_->StartAudio(hdr, pmem, NULL, kVolume, kPriority, kPan);
+		TS_ASSERT(id != kNoAudioID);
+		while (pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+
+		pAudioMPI_->StopAudio(id, false);
+		pKernelMPI_->Free(praw);
 	}
 
 };
