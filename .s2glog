@@ -17770,3 +17770,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/4/09 1:29 PM
 5,813 ms. (Cumulative: 5,525,123 ms)
 
 ----------------
+Revision 4,284 from svn://localhost/TRUNK/:
+
+Added AudioMPI unit test for MemPlayer object based on .brio raw audio file image. 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/4/09 1:39 PM
+2 changed, 1 added, 0 deleted.
+5,731 ms. (Cumulative: 5,530,932 ms)
+
+----------------
