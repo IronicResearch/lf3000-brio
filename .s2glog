@@ -17788,3 +17788,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/4/09 3:38 PM
 5,766 ms. (Cumulative: 5,536,776 ms)
 
 ----------------
+Revision 4,286 from svn://localhost/TRUNK/:
+
+Added AudioMPI unit test for MemPlayer callback function option.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/4/09 4:28 PM
+1 changed, 0 added, 0 deleted.
+5,720 ms. (Cumulative: 5,542,574 ms)
+
+----------------

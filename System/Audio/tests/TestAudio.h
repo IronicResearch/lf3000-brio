@@ -38,6 +38,8 @@ LF_USING_BRIO_NAMESPACE()
 #define kPayload 0
 #define kFlags   0 // kAudioOptionsDoneMsgAfterComplete | kAudioOptionsLooped
 
+#define kAudioBytesPerStereoFrame	(2 * sizeof(S16))
+
 //----------------------------------------------------------------------------
 inline CPath GetAudioRsrcFolder( void )
 {
@@ -47,6 +49,24 @@ inline CPath GetAudioRsrcFolder( void )
 #else	// EMULATION
 	return "/Didj/Base/Brio/rsrc/Audio/";
 #endif	// EMULATION
+}
+
+//============================================================================
+// Audio Callback Function
+//============================================================================
+FILE* pTestFile = NULL;
+
+Boolean RenderCallback(U16 numSamples, S16 *pStereoBuffer)
+{
+	if (pTestFile != NULL) 
+	{
+		size_t num;
+		num = fread(pStereoBuffer, kAudioBytesPerStereoFrame, numSamples, pTestFile);
+		if (num == numSamples)
+			return true;
+		return false;
+	}
+	return false;
 }
 
 //============================================================================
@@ -907,6 +927,39 @@ public:
 
 		pAudioMPI_->StopAudio(id, false);
 		pKernelMPI_->Free(praw);
+	}
+
+    //------------------------------------------------------------------------
+    void testAudioMemPlayerCallback()
+	{
+		tAudioID 				id;
+		tAudioHeader			hdr;
+		size_t					len;
+		FILE*					fp;
+		CPath					path = GetAudioRsrcFolder() + "LeftRightCenter.raw"; 
+		
+		PRINT_TEST_NAME();
+		
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_ != NULL );
+
+		len = FileSize(path.c_str());
+		TS_ASSERT( len != 0 );
+		TS_ASSERT( len > sizeof(tAudioHeader) );
+		
+		fp = fopen(path.c_str(), "r");
+		TS_ASSERT( fp != NULL );
+		fread(&hdr, 1, sizeof(tAudioHeader), fp);
+		
+		pTestFile = fp;
+		id = pAudioMPI_->StartAudio(hdr, NULL, RenderCallback, kVolume, kPriority, kPan);
+		TS_ASSERT(id != kNoAudioID);
+		while (pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+
+		pAudioMPI_->StopAudio(id, false);
+		pTestFile = NULL;
+		fclose(fp);
 	}
 
 };
