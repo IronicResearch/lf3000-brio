@@ -263,6 +263,32 @@ public:
 		  					tAudioPayload		payload,
 		  					tAudioOptionsFlags	flags );
 
+	/// Play raw audio sample from memory buffer.
+	///
+	/// \param header The tAudioHeader describing the audio sample buffer size, 
+	/// sample rate, and mono/stereo format. 
+	///
+	/// \param pBuffer The pointer to the audio sample data. The memory buffer
+	/// must to fit the entire audio sample, as specified in the tAudioHeader.
+	///
+	/// \param pCallback Optional tGetStereoAudioStreamFcn rendering callback
+	/// function if the caller intends to do its own audio streaming. 
+	///
+	/// This function plays a raw audio sample from a memory buffer with a valid 
+	/// tAudioHeader signature. The audio sample data must be in an uncompressed 
+	/// PCM format supported by the Brio Audio Mixer. (16-bit little-endian, 
+	/// mono/stereo, 8/16/32 KHz sample rate.) Compatible with .brio raw audio
+	/// file images, except the data can be located separately from the header.
+	tAudioID 	StartAudio( tAudioHeader		&header,
+							S16*				pBuffer,
+							tGetStereoAudioStreamFcn pCallback,
+							U8					volume, 
+							tAudioPriority		priority,
+							S8					pan, 
+							const IEventListener *pListener = kNull,
+							tAudioPayload		payload = 0,
+							tAudioOptionsFlags	flags	= 0 );
+
 	/// Pause a particular audio player.
 	///
 	/// \param id The tAudioID of the stream to pause
