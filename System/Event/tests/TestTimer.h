@@ -65,7 +65,7 @@ public:
 	CDebugMPI	dbg_;
 };
 
-	void ptintf_test_info( char *pName );
+	void ptintf_test_info( const char *pName );
 
 //============================================================================
 // TestEvent functions
@@ -244,7 +244,7 @@ public:
 		
 	}
 // =========================================================
-	void ptintf_test_info( char *pName )
+	void ptintf_test_info( const char *pName )
 	{
 		static int testNum = 1;
 		if( testNum == 1 )

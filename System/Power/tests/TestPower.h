@@ -83,7 +83,7 @@ public:
 		pName = pwrmgr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "PowerMPI" );
 		version = pwrmgr_->GetModuleVersion();
-		TS_ASSERT_EQUALS( version, 2 );
+		TS_ASSERT_EQUALS( version, 3 );
 		pName = pwrmgr_->GetModuleName();
 		TS_ASSERT_EQUALS( *pName, "Power" );
 		pURI = pwrmgr_->GetModuleOrigin();

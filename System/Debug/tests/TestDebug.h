@@ -15,7 +15,7 @@
 
 LF_USING_BRIO_NAMESPACE()
 
-void ptintf_test_info( char *pName );
+void ptintf_test_info( const char *pName );
 
 //#define LF_BRIO_VERBOSE_TEST_OUTPUT
 //============================================================================
@@ -278,7 +278,7 @@ public:
 	}	
 	
 	// =========================================================
-		void ptintf_test_info( char *pName )
+		void ptintf_test_info( const char *pName )
 		{
 			static int testNum = 1;
 			if( testNum == 1 )

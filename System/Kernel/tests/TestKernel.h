@@ -36,7 +36,7 @@ namespace
 		char testDescription[128];
 	}thread_arg_t;
 
-	char *message[3] =  { 	"Properties are default",
+	const char *message[3] =  { 	"Properties are default",
 	 						"Properties are set - Test 2",
 	 						"Properties are set - Test 3"
 	};						 
@@ -48,7 +48,7 @@ namespace
 		sleep(1);
 		return (void *)NULL;
 	}	
-	void ptintf_test_info( char *pName );
+	void ptintf_test_info( const char *pName );
 //---------------------------------------------------------
 // Timer testing fuctions
 //----------------------------------------------------------
@@ -1502,7 +1502,7 @@ public:
 		}	
 	}
 // =========================================================
-	void ptintf_test_info( char *pName )
+	void ptintf_test_info( const char *pName )
 	{
 		static int testNum = 1;
 		if( testNum == 1 )
