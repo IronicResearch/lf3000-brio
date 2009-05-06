@@ -17816,3 +17816,32 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/6/09 10:24 AM
 5,735 ms. (Cumulative: 5,548,449 ms)
 
 ----------------
+Revision 4,298 from svn://localhost/TRUNK/:
+Revision 4,299 from svn://localhost/TRUNK/:
+Revision 4,300 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,719 ms. (Cumulative: 5,554,246 ms)
+
+----------------
+Revision 4,301 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,641 ms. (Cumulative: 5,559,903 ms)
+
+----------------
+Revision 4,302 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,031 ms. (Cumulative: 5,565,934 ms)
+
+----------------
+Revision 4,303 from svn://localhost/TRUNK/:
+
+Revert AudioMPI default priority from Verbose to Important.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/6/09 3:39 PM
+1 changed, 0 added, 0 deleted.
+5,969 ms. (Cumulative: 5,571,919 ms)
+
+----------------
