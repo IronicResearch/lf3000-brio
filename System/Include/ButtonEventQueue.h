@@ -20,7 +20,7 @@
 
 #include <EventListener.h>
 #include <KernelMPI.h>
-#include <queue>
+#include <vector>
 #include <ButtonTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -31,13 +31,16 @@ public:
 	CButtonEventQueue();
 	~CButtonEventQueue();
 	
-	std::queue<tButtonData2> popQueue();
+	//Returns the address of the front buffer
+	//DO NOT CALL DELETE on this pointer
+	std::vector<tButtonData2> *GetQueue();
 	
 private:
 	tEventStatus Notify(const IEventMessage &msgIn);
 	CKernelMPI kernel_;
 	tMutex mutex_;
-	std::queue<tButtonData2> eventQueue_;
+	std::vector<tButtonData2> eventVector_[2];
+	int front_;
 };
 
 LF_END_BRIO_NAMESPACE()	

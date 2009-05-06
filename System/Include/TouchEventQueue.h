@@ -20,7 +20,7 @@
 
 #include <EventListener.h>
 #include <KernelMPI.h>
-#include <queue>
+#include <vector>
 #include <TouchTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -31,13 +31,16 @@ public:
 	CTouchEventQueue();
 	~CTouchEventQueue();
 	
-	std::queue<tTouchData> popQueue();
+	//Returns the address of the front buffer
+	//DO NOT CALL DELETE on this pointer
+	std::vector<tTouchData> *GetQueue();
 	
 private:
 	tEventStatus Notify(const IEventMessage &msgIn);
 	CKernelMPI kernel_;
 	tMutex mutex_;
-	std::queue<tTouchData> eventQueue_;
+	std::vector<tTouchData> eventVector_[2];
+	int front_;
 };
 
 LF_END_BRIO_NAMESPACE()

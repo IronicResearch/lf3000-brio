@@ -3,7 +3,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 CButtonEventQueue::CButtonEventQueue()
-	:IEventListener(&kAllButtonEvents, 1)
+	:IEventListener(&kAllButtonEvents, 1),front_(0)
 {
 	LeapFrog::Brio::tMutexAttr mutexAttr;
 	kernel_.InitMutexAttributeObject(mutexAttr);
@@ -15,11 +15,12 @@ CButtonEventQueue::~CButtonEventQueue()
 	kernel_.DeInitMutex(mutex_);
 }
 
-std::queue<tButtonData2> CButtonEventQueue::popQueue()
+std::vector<tButtonData2> *CButtonEventQueue::GetQueue()
 {
-	std::queue<tButtonData2> r_queue;
 	kernel_.LockMutex(mutex_);
-	swap(r_queue, eventQueue_);
+	std::vector<tButtonData2> *r_queue = &eventVector_[front_];
+	front_ ^= 0x1;
+	eventVector_[front_].clear();
 	kernel_.UnlockMutex(mutex_);
 	return r_queue;
 }
@@ -30,7 +31,7 @@ LeapFrog::Brio::tEventStatus CButtonEventQueue::Notify(const LeapFrog::Brio::IEv
 	if(event_type == kButtonStateChanged)
 	{
 		kernel_.LockMutex(mutex_);
-		eventQueue_.push(((const CButtonMessage&)msgIn).GetButtonState2());
+		eventVector_[front_].push_back(((const CButtonMessage&)msgIn).GetButtonState2());
 		kernel_.UnlockMutex(mutex_); 
 	}
 	return kEventStatusOK;
