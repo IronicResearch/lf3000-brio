@@ -83,7 +83,7 @@ public:
 		pName = btnmgr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "ButtonMPI" );
 		version = btnmgr_->GetModuleVersion();
-		TS_ASSERT_EQUALS( version, 2 );
+		TS_ASSERT_EQUALS( version, 3 );
 		pName = btnmgr_->GetModuleName();
 		TS_ASSERT_EQUALS( *pName, "Button" );
 		pURI = btnmgr_->GetModuleOrigin();

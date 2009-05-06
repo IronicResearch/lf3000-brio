@@ -17845,3 +17845,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/6/09 3:39 PM
 5,969 ms. (Cumulative: 5,571,919 ms)
 
 ----------------
+Revision 4,304 from svn://localhost/TRUNK/:
+
+Update unit tests for emulation build with gcc 4.2 compiler.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/6/09 4:00 PM
+5 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 5,578,045 ms)
+
+----------------
