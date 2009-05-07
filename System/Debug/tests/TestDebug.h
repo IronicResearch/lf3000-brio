@@ -9,15 +9,13 @@
 #include <KernelTypes.h>
 //#include <ResourceTypes.h>
 
-// For lots of text output, enable this:
-// BSK/FIXME
-#define	LF_BRIO_VERBOSE_TEST_OUTPUT
 
 LF_USING_BRIO_NAMESPACE()
 
 void ptintf_test_info( const char *pName );
 
-//#define LF_BRIO_VERBOSE_TEST_OUTPUT
+#define LF_BRIO_VERBOSE_TEST_OUTPUT
+
 //============================================================================
 // TestDebugMPI functions
 //============================================================================
@@ -26,6 +24,7 @@ class TestDebug : public CxxTest::TestSuite, TestSuiteBase
 private:
 public:
 	CDebugMPI*		DebugMPI;
+
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
@@ -65,13 +64,19 @@ public:
 	}
 	
 	void testDumpCoreInfo( )
-{
+	{
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		ptintf_test_info( "testDumpCoreInfo" );
 		tVersion version;
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
+		CDebugMPI dbg(kTestSuiteDebugSig);
 
+		printf("size of CDebugMPI object is %d\n", sizeof(CDebugMPI));
+//		printf("member variable pModule_ offset is %d\n", (unsigned int)&dbg.pModule_ - (unsigned int)&dbg);		
+//		printf("member variable sig_ offset is %d\n", (unsigned int)&dbg.sig_ - (unsigned int)&dbg);		
+
+		
 		if ( DebugMPI->IsValid() ) {
 			pName = DebugMPI->GetMPIName();
 			printf("MPI name is: %s\n", pName->c_str());
@@ -86,21 +91,6 @@ public:
 			printf("Module Origin name is: %s\n", pURI->c_str());
 		}		
 #endif
-	}
-	
-	//------------------------------------------------------------------------
-	void testDebugOut2( )
-	{
-//		ptintf_test_info( "testDebugOut2" );
-		// NOTE/tp: disabled first test because we initialize debug output
-		// to silent in unit tests.
-//		TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
-		DebugMPI->SetDebugLevel( kDbgLvlCritical );
-		TS_ASSERT_EQUALS( kDbgLvlCritical, DebugMPI->GetDebugLevel() );
-		DebugMPI->SetDebugLevel( kDbgLvlNoteable );
-		TS_ASSERT_EQUALS( kDbgLvlNoteable, DebugMPI->GetDebugLevel() );
-		DebugMPI->SetDebugLevel( kDbgLvlValuable );
-		TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
 	}
 	
 	//------------------------------------------------------------------------
@@ -125,18 +115,13 @@ public:
 			printf("\nDefault debug level: %d\n", DebugMPI->GetDebugLevel());
 			printf("\n Should be: %d\n", kDbgLvlValuable);
 
-			DebugMPI->DebugOutErr(kDbgLvlValuable,0, "YTu DebugOutErr(...) test 1\n");
-
-			DebugMPI->DebugOutErr(kDbgLvlValuable, kAudioCreateTaskErr, "YTu DebugOutErr(...) test 2\n");			
-			
 			TS_ASSERT_EQUALS( kDbgLvlValuable, DebugMPI->GetDebugLevel() );
 			
 			DebugMPI->SetDebugLevel( kDbgLvlCritical );
 			TS_ASSERT_EQUALS( kDbgLvlCritical, DebugMPI->GetDebugLevel() );
 			printf("\nNew debug level: %d\n", DebugMPI->GetDebugLevel());
 			
-			printf("\nYou shouldn't see anything here: ");
-			DebugMPI->DebugOut(kDbgLvlNoteable, "\nThis is a msg from DebugOut() at level kDbgLvlNoteable=%d\n", kDbgLvlNoteable);
+			DebugMPI->DebugOut(kDbgLvlNoteable, "\nThis msg should not be displayed ! since DebugOut() at level kDbgLvlNoteable=%d\n", kDbgLvlNoteable);
 		
 			printf("\n");
 			
@@ -144,8 +129,6 @@ public:
 			TS_ASSERT_EQUALS( kDbgLvlNoteable, DebugMPI->GetDebugLevel() );
 			printf("\nNew debug level kDbgLvlNoteable: %d\n", DebugMPI->GetDebugLevel());
 		
-			printf("But you should see something here: ");
-
 			DebugMPI->DebugOut(kDbgLvlValuable, "This is a msg from DebugOut() at level kDbgLvlValuable=%d\n", kDbgLvlValuable);
 		
 			printf("\n");
@@ -154,17 +137,10 @@ public:
 			TS_ASSERT_EQUALS( kDbgLvlSilent, DebugMPI->GetDebugLevel() );
 			printf("New debug level kDbgLvlSilent: %d\n", DebugMPI->GetDebugLevel());
 	
-			printf("and not here: ");
-			DebugMPI->DebugOut(kDbgLvlCritical, "This is a msg from DebugOut() at level %d\n", kDbgLvlCritical);
+			DebugMPI->DebugOut(kDbgLvlCritical, "This msg should not be displayed !, since DebugOut() at level kDbgLvlCritical=%d\n", kDbgLvlCritical);
 	
 			printf("\n");
 	
-			DebugMPI->SetDebugLevel( kDbgLvlNoteable );
-			TS_ASSERT_EQUALS( kDbgLvlNoteable, DebugMPI->GetDebugLevel() );
-			printf("New debug level kDbgLvlNoteable: %d\n", DebugMPI->GetDebugLevel());
-			printf("But you should see something here: ");
-			DebugMPI->DebugOut(kDbgLvlCritical, "This is a msg from DebugOut() at level %d\n", kDbgLvlCritical);
-			
 			printf("\nExiting Debug Out Test \n");
 		}
 #endif
@@ -173,13 +149,12 @@ public:
 		//------------------------------------------------------------------------
 	void testTimestamps( )
 	{
-		
+
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tDebugLevel level;
 
 		ptintf_test_info( "testTimestamps" );
 		if ( DebugMPI->IsValid() ) {
-		    printf("\nHello, world Timestamp Tests!\n");
 		
 			DebugMPI->EnableDebugOutTimestamp();
 			
@@ -192,7 +167,6 @@ public:
 			DebugMPI->EnableDebugOutTimestamp();
 			
 			DebugMPI->DebugOut(kDbgLvlCritical, "This is a another timestamped msg from DebugOut() at level %d\n", kDbgLvlCritical);
-			DebugMPI->DebugOutLiteral(kDbgLvlCritical, "No timestamp for DebugOutLiteral()\n");
 	
 			DebugMPI->DisableDebugOutTimestamp();
 
@@ -226,26 +200,13 @@ public:
 		ptintf_test_info( "testSetGetDebugLevel" );
 		
 		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", kMyApp, kDbgLvlCritical, dbgMPI1.DebugOutIsEnabled(kMyApp, kDbgLvlCritical));
-		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", 0x9ff, kDbgLvlCritical, dbgMPI1.DebugOutIsEnabled(0x9FF, kDbgLvlCritical));
-		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", 0x9ff, kDbgLvlVerbose, dbgMPI1.DebugOutIsEnabled(0x9FF, kDbgLvlVerbose));		
-
-//		 printf("Original DebugLevel first instance %d\n", dbgMPI1.GetDebugLevel());
-//		 printf("Original DebugLevel second instance %d\n", dbgMPI2.GetDebugLevel());
 
 		 dbgMPI1.SetDebugLevel(kDbgLvlCritical);
 		 dbgMPI2.SetDebugLevel(kDbgLvlCritical);
 
-// FIXME/BSK remove verbose print
-//		 printf("Afrer first change DebugLevel first instance %d\n", dbgMPI1.GetDebugLevel());
-//		 printf("Afrer first change DebugLevel second instance %d\n", dbgMPI2.GetDebugLevel());
-		 
 		 TS_ASSERT_EQUALS( dbgMPI1.GetDebugLevel(), dbgMPI2.GetDebugLevel() );
 		 dbgMPI1.SetDebugLevel(kDbgLvlImportant);
 		 
-// FIXME/BSK remove verbose print
-//		 printf("Afrer second change DebugLevel first instance %d\n", dbgMPI1.GetDebugLevel());
-//		 printf("Afrer second change DebugLevel second instance %d\n", dbgMPI2.GetDebugLevel());
-
 		 TS_ASSERT(dbgMPI1.GetDebugLevel()!=dbgMPI2.GetDebugLevel());
 		 dbgMPI1.Assert(dbgMPI1.GetDebugLevel()!=dbgMPI2.GetDebugLevel(), "The debug levels are the same!");
 	}
@@ -257,18 +218,21 @@ public:
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tDebugLevel level;
+		CDebugMPI dbg(kTestSuiteDebugSig);
+		
 		ptintf_test_info( "testAsserts" );
 
 		if ( DebugMPI->IsValid() ) {
-		    printf("\nHello, world Assert Tests!\n");
 		
 			DebugMPI->Assert(true, "I'm not supposed to print!\n");
 	
 			printf("\n");
 	
 			DebugMPI->Assert(true, "I'm not supposed to print!\n");
+			
+			dbgAssertNoErr(kAudioCreateTaskErr, "AssertNoErr(...) test\n");
 	
-			printf("You should see:  1 green, 2 electric, 3 spoon: ");
+			printf("You should see:  1 green, 2 electric, 3 spoon: \n");
 			DebugMPI->Assert(false, "Here they are: %d %s, %d %s, %d %s.\n", 
 							1, "green", 2, "electric", 3, "spoon");
 	
@@ -278,16 +242,16 @@ public:
 	}	
 	
 	// =========================================================
-		void ptintf_test_info( const char *pName )
+	void ptintf_test_info( const char *pName )
+	{
+		static int testNum = 1;
+		if( testNum == 1 )
 		{
-			static int testNum = 1;
-			if( testNum == 1 )
-			{
-				printf("\n\n");
-				printf(".");
-			}
-			printf("-----------------#%3d Test Name = %s--------------------------\n", testNum++, pName );
-			fflush(stdout);
+			printf("\n\n");
+			printf(".");
 		}
+		printf("-----------------#%3d Test Name = %s--------------------------\n", testNum++, pName );
+		fflush(stdout);
+	}
 
 };
