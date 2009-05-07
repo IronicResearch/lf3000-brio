@@ -19,6 +19,7 @@
 #include <StringTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+#define MAX_LOGGING_MSG_LEN	 256
 
 class CKernelMPI : public ICoreMPI
 {

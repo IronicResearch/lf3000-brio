@@ -9,7 +9,7 @@
 //		DebugMPI.h
 //
 // Description:
-//		Defines the Module Public Interface (MPI) for the System Debug module. 
+//		Defines the Module Public Interface (MPI) for debugging and logging.
 //
 //==============================================================================
 
@@ -18,118 +18,199 @@
 #include <StringTypes.h>
 #include <DebugTypes.h>
 #include <CoreMPI.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
+const char* const ErrToStr( tErrType error );
 
+/// \class CDebugMPI
+///
+/// The debug interface is designed to provide services to access console output and "Flight Recorder".
+///  Any module or application should go through these interfaces for logging into "Flight Recorder"
+///  However, it is not recommended to use the debug interface to print out high frequent messages.
+///
+///  Each instance of the debug interface has a debug level, which can be set through
+///		SetDebugLevel( tDebugLevel newLevel );
+///  In addition, the master debug level can also be set through
+///		SetMasterDebugLevel(tDebugLevel newLevel);
+///  However, any individual module should NOT try to set the master debug level. 
+///
+///   Each module that wishes to use the debug interface should identify itself with an unique "signature"
+///   The signature allows the module message to be easily distinguishable in "Flight Recorder"
+///   The signature is passed in through constructor
+///
 //==============================================================================
-// Class:
-//		CDebugMPI
-//
-// Description:
-//		Defines the Module Public Interface (MPI) for the System Debug module.
-//==============================================================================
-class CDebugMPI : public ICoreMPI {
+class CDebugMPI  : public ICoreMPI{
 public:
-	// ICoreMPI functionality
+	// ICoreMPI functionality, retain only for binary compatible with Didj Game
+
+	/// Description: This function is obsolete, it is provided for compatibility
+	///  with legacy C++ Games
 	virtual	Boolean			IsValid() const;
-	virtual const CString*	GetMPIName() const;		
+	/// Description: This function is obsolete, it is provided for compatibility
+	///  with legacy C++ Games
+	virtual const CString*	GetMPIName() const;
+	/// Description: This function is obsolete, it is provided for compatibility
+	///  with legacy C++ Games
 	virtual tVersion		GetModuleVersion() const;
-	virtual const CString*	GetModuleName() const;	
+	/// Description: This function is obsolete, it is provided for compatibility
+	///  with legacy C++ Games
+	virtual const CString*	GetModuleName() const;
+	/// Description: This function is obsolete, it is provided for compatibility
+	///  with legacy C++ Games
 	virtual const CURI*		GetModuleOrigin() const;
-	
-	explicit CDebugMPI(tDebugSignature sig);  
+
+	explicit CDebugMPI(tDebugSignature sig);
 	virtual ~CDebugMPI();
-	
-	// printf-like serial output (suppressible based on tDebugSignature). The signature
-	// value is prepended in the output to allow easy debug identification.  These are
-	// the primary calls to use for output.
-	// Example: "This is my text output" -> [3] This is my text output 
-	void 	DebugOut(tDebugLevel lvl, const char * formatString, ...) const
+
+	/// Description: printf-like debug output. The signature value is prepended in the output to allow easy
+	/// debug identification.
+	/// \param level		the debug level associated with this output.
+	/// \param formatString	format string used like printf
+	/// \param  ... 	variable arguments
+	/// \return: none
+	void 	DebugOut(tDebugLevel level, const char * formatString, ...) const
 				__attribute__ ((format (printf, 3, 4)));
-	void	VDebugOut(tDebugLevel lvl, const char * formatString, va_list arguments) const
+	/// Description: vprintf-like debug output. The signature value is prepended in the output to allow easy
+	/// debug identification.
+	/// \param level		the debug level associated with this output.
+	/// \param formatString	format string used like printf
+	/// \param  arguments 	variable arguments obtained through va_start(...)
+	/// \return: none
+	void		VDebugOut(tDebugLevel level, const char * formatString, va_list arguments) const
 				__attribute__ ((format (printf, 3, 0)));
-	void 	DebugOutErr(tDebugLevel lvl, tErrType err, const char * formatString, ...) const
+	/// Description: printf-like debug output. This is used to output error messages.
+	/// \param level		the debug level associated with this output.
+	/// \param formatString	format string used like printf
+	/// \param  ...		 	variable arguments
+	/// \return: none
+	void 	DebugOutErr(tDebugLevel level, tErrType err, const char * formatString, ...) const
 				__attribute__ ((format (printf, 4, 5)));
 
-	// same as above, but without anything prepended or postfixed in the output.  This is useful
-	// when printing a sequence of output that needs to be cleanly formatted (tables, etc).
-	// Example:  "This is my text output" -> This is my text output
+	/// Description: This interface is provided for backward compatibility only.
+	/// Use DebugOut(...) interface instead.
 	void	DebugOutLiteral(tDebugLevel lvl, const char * formatString, ...) const
 				__attribute__ ((format (printf, 3, 4)));
+	/// Description: This interface is provided for backward compatibility only.
+	/// Use VDebugOut(...) interface instead.
 	void	VDebugOutLiteral(tDebugLevel lvl, const char * formatString, va_list arguments) const
 				__attribute__ ((format (printf, 3, 0)));
 
-	// issue a warning that a critical, but recoverable, error occurred.  This
-	// is just one step below Asserting.  The warning message is printed
-	// on the screen, &/or out the serial port, and could be accompanied by
-	// an audio alert to indicate a critical error occurred.
-	// (suppressible based on tDebugSignature)
-	void	Warn(const char * formatString, ...) const
+	/// Description: issue a warning that a critical, but recoverable, error occurred.
+	/// \param formatString	format string used like printf
+	/// \param  ... 	variable arguments
+	/// \return: none
+	void		Warn(const char * formatString, ...) const
 				__attribute__ ((format (printf, 2, 3)));
 
-	// Assert
+	/// Description: Assert is the most critical message.  In Emerald, this interface does NOT
+	/// cause application to exit.
+	/// \param formatString	format string used like printf
+	/// \param  ... 	variable arguments
+	/// \return: none
 	void 	Assert(int testResult, const char * formatString, ...) const
 				__attribute__ ((format (printf, 3, 4)));
+	/// Description: Assert is the most critical message.  In Emerald, this interface does NOT
+	/// cause application to exit.
+	/// \param err	system error which will be translated to a string during output
+	/// \param formatString	format string used like printf
+	/// \param  ... 	variable arguments
+	/// \return: none
 	void 	AssertNoErr(tErrType err, const char * formatString, ...) const
 				__attribute__ ((format (printf, 3, 4)));
-							
-	// turning on & off debug-out on a debug-signature basis
-	void 	DisableDebugOut(tDebugSignature sig);
- 	void 	EnableDebugOut(tDebugSignature sig);
- 
-	// checks if debug out is enabled for a specific signature & level.  Helpful for
-	// checking in advance if anything will go out the serial port before issuing a
-	// series of DebugOuts.  'atLeastLevel' indicates output enabled for levels
-	// >= that specified--default checks if any output enabled for the 'sig'.
-	Boolean		DebugOutIsEnabled(tDebugSignature sig, tDebugLevel atLeastLevel=kDbgLvlCritical) const;
 
-	// accessing the master DebugOut level
+	/// Description: This function is obsolete and does nothing, it is provide for compatibility
+	///  with legacy C++ Games. 
+	void 	DisableDebugOut(tDebugSignature sig);
+	/// Description: This function is obsolete and does nothing, it is provide for compatibility
+	///  with legacy C++ Games. 
+ 	void 	EnableDebugOut(tDebugSignature sig);
+
+	/// Description: checks if debug out is enabled for a specific signature & level.  Helpful for
+	/// checking in advance if anything will go out to console or "Flight Recorder"
+	/// \param sig	signature for the debug module
+	/// \param atLeastLevel	debug level to check
+	/// \return: Boolean true (enabled), false(disabled)
+	Boolean	DebugOutIsEnabled(tDebugSignature sig, tDebugLevel atLeastLevel=kDbgLvlCritical) const;
+
+	/// Description: set master debug level which impact all the debug interface instances.
+	/// Individual module should not use this function, this function is used by some system tools.
+	/// \param newLevel	the new debug level
+	/// \return: none
 	void		SetMasterDebugLevel(tDebugLevel newLevel);
+	
+	/// Description: set master debug level which impact all the debug interface instances.
+	/// \param none
+	/// \return: tDebugLevel
 	tDebugLevel	GetMasterDebugLevel() const;
 
-	//------------------------------------------------------------------------------
-	// Function:	 	EnableDebugOutTimestamp
-	//					DisableDebugOutTimestamp
-	// Description:		if enabled, adds a timestamp to all debug output.  Time
-	//					shown is elapsed time since system boot.
-	//------------------------------------------------------------------------------
+	/// Description: adds a timestamp to all debug output. time shown is elapsed time since system boot.
+	/// \param none
+	/// \return: none
 	void 	EnableDebugOutTimestamp();
+	/// Description: disable timestamp to all debug output. time shown is elapsed time since system boot.
+	/// \param none
+	/// \return: none
 	void 	DisableDebugOutTimestamp();
+	/// Description: check if timestamp is enabled in debug output
+	/// \param none
+	/// \return: none
+	Boolean   TimestampIsEnabled() const;
 
 	//------------------------------------------------------------------------------
 	// Function:	 	EnableThrowOnAssert
 	//				 	DisableThrowOnAssert
 	// Description:		if enabled, Assert() calls throw a UnitTestAssertException
-	//					object instead of performing an assert() and halting the 
+	//					object instead of performing an assert() and halting the
 	//					system.  Useful for unit testing.
 	//------------------------------------------------------------------------------
 	void 	EnableThrowOnAssert();
 	void 	DisableThrowOnAssert();
+	Boolean 	ThrowOnAssertIsEnabled() const;
 
-	//------------------------------------------------------------------------------
-	// Function:	 	SetDebugLevel
-	//				 	GetDebugLevel
-	//                  
-	// Description:		setter and getter for 
-	//					masterDebugLevel_ 
-	//					They are the friend functions of DebugPriv.h class
-	//------------------------------------------------------------------------------
-	
-	void SetDebugLevel( tDebugLevel newLevel );
+	/// Description: set debug level for the instance object.
+	/// \param newLevel:	the new debug level
+	/// \return: none
+	void 	SetDebugLevel( tDebugLevel newLevel );
+
+	/// Description: get debug level for the instance object.
+	/// \param none
+	/// \return: tDebugLevel
 	tDebugLevel GetDebugLevel() const;
-	Boolean DebugOutIsEnabled( tDebugLevel lvl ) const;
-	
+
 private:
 	class CDebugModule* pModule_;
 	tDebugSignature		sig_;
 	tDebugLevel			localDebugLevel_;
 
+	static  tDebugLevel		masterDebugLevel_ ;
+	static  Boolean		timestampDebugOut_;
+	static  Boolean		throwOnAssert_ ;
+
 	// Disable copy semantics
 	CDebugMPI(const CDebugMPI&);
 	CDebugMPI& operator=(const CDebugMPI&);
 };
-		   
-LF_END_BRIO_NAMESPACE()	
+
+#define EmeraldAssert__(dbg, cond, des) \
+do{ \
+	dbg.Assert(cond, "assert: %s @ line %d (" #cond ") %s \n", __FILE__, __LINE__, des); \
+}while(0)
+
+
+#define EmeraldAssert(SIG, cond, des ) \
+do{ \
+	CDebugMPI dbg(SIG); \
+	EmeraldAssert__(dbg, cond, des); \
+}while(0)
+
+#define EmeraldFlashAssert( cond )  \
+do { \
+	LeapFrog::Brio::CDebugMPI dbg(kFlashLiteDebugSig); \
+	dbg.Assert((int)cond, "assert: %s @ line %d (" #cond ") \n", __FILE__, __LINE__); \
+ }while(0)
+
+LF_END_BRIO_NAMESPACE()
 #endif // LF_BRIO_DEBUGMPI_H
 
 // EOF
