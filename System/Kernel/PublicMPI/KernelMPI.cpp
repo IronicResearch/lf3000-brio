@@ -71,14 +71,29 @@ namespace
 		va_end(arguments);
 	}
 
+	void VLogging_Impl( const char * ident, int priority, const char * formatString, va_list arguments )
+				__attribute__ ((format (printf, 3, 0)));
+	void VLogging_Impl( const char * ident, int priority, const char * formatString, va_list arguments )	
+	{
+		char outstr[MAX_LOGGING_MSG_LEN];
+		
+		vsprintf(outstr, formatString, arguments);
+
+		printf(outstr);
+		openlog(ident, LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
+		syslog(DebugLevel2LogLevel[priority], outstr);
+	}
+	
 	//--------------------------------------------------------------------------
 	void PowerDown_Impl()
 	{
+		CBootSafeKernelMPI safeKernel;
+		
 		fflush(stdout);
 		fflush(stderr);
-		
-		openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
-		syslog(LOG_EMERG, "PowerDown (Assert) exit !!");		
+
+		safeKernel.Logging("Emerald Base", kDbgLvlCritical, "PowerDown (Assert) exit !!");
+
 		exit(kKernelExitAssert);
 	}
 	
@@ -88,12 +103,9 @@ namespace
 		tPtr ptr = malloc( size );
 		if (!ptr)
 		{
-		
-			openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
-			syslog(LOG_EMERG, "Memory allocation error, shutting down (allocation size was 0x%x\n", 
-						static_cast<unsigned int>(size));
-			Printf_Impl("BRIO FATAL: Memory allocation error, shutting down (allocation size was 0x%x\n", 
-						static_cast<unsigned int>(size));
+			CBootSafeKernelMPI safeKernel;
+			safeKernel.Logging("Emerald Base", kDbgLvlCritical, "Memory allocation error, shutting down (allocation size was 0x%x\n", 
+				static_cast<unsigned int>(size));
 			PowerDown_Impl();
 		}
 		return ptr;
@@ -146,11 +158,10 @@ namespace
 		void* pLib = dlopen(dir.c_str(), RTLD_LAZY);
 		if (pLib == NULL)
 		{
+			CBootSafeKernelMPI safeKernel;
 			const char *err = dlerror();
-			
-			openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
-			syslog(LOG_EMERG, "Unable to open module '%s', %s\n", dir.c_str(), err);		
-			Printf_Impl("BRIO WARNING: unable to open module '%s', %s\n", dir.c_str(), err);
+			safeKernel.Logging("Emerald Base", kDbgLvlCritical, "Unable to open module '%s', %s\n",
+					dir.c_str(), err);
 		}
 		return reinterpret_cast<tHndl>(pLib);
 	}
@@ -165,10 +176,9 @@ namespace
 		void* ptr = dlsym(pLib, symbol.c_str());
 		if (ptr == NULL)
 		{
+			CBootSafeKernelMPI safeKernel;
 			const char *err = dlerror();
-			openlog("Emerald Base", LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
-			syslog(LOG_EMERG, "Unable to retrieve symbol '%s', %s\n",symbol.c_str(), err);
-			Printf_Impl("BRIO WARNING: unable to retrieve symbol '%s', %s\n", 
+			safeKernel.Logging("Emerald Base", kDbgLvlCritical, "Unable to retrieve symbol '%s', %s\n",
 					symbol.c_str(), err);
 		}
 		return ptr;
@@ -812,14 +822,29 @@ void CBootSafeKernelMPI::Printf( const char * formatString, ... ) const
 {
 	va_list arguments;
 	va_start(arguments, formatString);
-	VPrintf_Impl(formatString, arguments);
+	VLogging("Emerald Base", kDbgLvlCritical, formatString, arguments);	
 	va_end(arguments);
 }
 
 //----------------------------------------------------------------------------
 void CBootSafeKernelMPI::VPrintf( const char * formatString, va_list arguments ) const
 {
-	VPrintf_Impl(formatString, arguments);
+	VLogging("Emerald Base", kDbgLvlCritical, formatString, arguments);
+}
+
+// Logging functions
+void	CBootSafeKernelMPI::Logging( const char * ident, int priority, const char * formatString, ... ) const
+{
+	va_list arguments;
+	va_start(arguments, formatString);
+	VLogging_Impl(ident, priority, formatString, arguments);
+	va_end(arguments);
+}
+			
+
+void	CBootSafeKernelMPI::VLogging( const char * ident, int priority, const char * formatString, va_list arguments ) const
+{
+	VLogging_Impl(ident, priority, formatString, arguments);
 }
 
 //----------------------------------------------------------------------------
