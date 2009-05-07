@@ -24,11 +24,11 @@ class CBootSafeKernelMPI : public ICoreMPI
 {
 public:
 	// ICoreMPI functionality
-	virtual	Boolean			IsValid() const;
+	virtual	Boolean		IsValid() const;
 	virtual const CString*	GetMPIName() const;
 	virtual tVersion		GetModuleVersion() const;
 	virtual const CString*	GetModuleName() const;
-	virtual const CURI*		GetModuleOrigin() const;
+	virtual const CURI*	GetModuleOrigin() const;
     
 	// class-specific functionality
 	CBootSafeKernelMPI();
@@ -63,33 +63,39 @@ public:
 	//==============================================================================
 	// I/O Functions
 	//==============================================================================
-     // Standard printf syntax to output a string through the serial port
-    void	Printf( const char * formatString, ... ) const
+	// Standard printf syntax to output a string through the serial port
+	void	Printf( const char * formatString, ... ) const
 						__attribute__ ((format (printf, 2, 3)));
 
-    // Standard vprintf syntax to output a string through the serial port
-    void	VPrintf( const char * formatString, va_list arguments ) const
+	// Standard vprintf syntax to output a string through the serial port
+	void	VPrintf( const char * formatString, va_list arguments ) const
 						__attribute__ ((format (printf, 2, 0)));
    
-    
+	// Logging functions
+	void	Logging( const char * ident, int priority, const char * formatString, ... ) const
+						__attribute__ ((format (printf, 4, 5)));
+
+	void	VLogging( const char * ident, int priority, const char * formatString, va_list arguments ) const
+						__attribute__ ((format (printf, 4, 0)));
+
 	//==============================================================================
 	// Power Control Functions
 	//==============================================================================
-    void	PowerDown() const;
+	void	PowerDown() const;
     
 	//==============================================================================
 	// File System Functions
 	//==============================================================================
-    std::vector<CPath>	GetFilesInDirectory( const CPath& dir ) const;
+	std::vector<CPath>		GetFilesInDirectory( const CPath& dir ) const;
     
-    Boolean				IsDirectory( const CPath& dir ) const;
+	Boolean				IsDirectory( const CPath& dir ) const;
     
 	//==============================================================================
 	// Code Module Functions
 	//==============================================================================
-    tHndl	LoadModule( const CPath& dir ) const;
-    void*	RetrieveSymbolFromModule( tHndl obj, const CString& symbol ) const;
-    void	UnloadModule( tHndl obj ) const;
+	tHndl	LoadModule( const CPath& dir ) const;
+	void*	RetrieveSymbolFromModule( tHndl obj, const CString& symbol ) const;
+	void		UnloadModule( tHndl obj ) const;
 };
 
 
