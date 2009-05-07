@@ -85,13 +85,14 @@ namespace
 	extern "C" int  GLESOAL_Initalize(___OAL_MEMORY_INFORMATION__* pMemoryInfo ) 
 #endif
 	{
+		CDebugMPI	dbg(kGroupDisplay);
 #ifdef LF1000
 		// OGL needs 2 layers for fullscreen anti-aliasing option
 		ctx.bFSAA = FSAAEnb;
 #endif
 		dispmgr->InitOpenGL(&ctx);
 		*pMemoryInfo = meminfo;
-	    PRINTF("GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
+		dbg.DebugOut(kDbgLvlVerbose, "GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
 		    pMemoryInfo->VirtualAddressOf3DCore, \
 		    pMemoryInfo->Memory1D_VirtualAddress, \
 		    pMemoryInfo->Memory1D_PhysicalAddress, \
@@ -107,8 +108,11 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_Finalize( void ) 
 	{
+		CDebugMPI	dbg(kGroupDisplay);
+		
 		// 3D layer must be disabled before this callback returns
-		PRINTF("GLESOAL_Finalize\n");
+		dbg.DebugOut(kDbgLvlVerbose,"GLESOAL_Finalize\n");
+		
 		dispmgr->DisableOpenGL();
 		dispmgr->DeinitOpenGL();
 		isEnabled = false;
@@ -117,7 +121,9 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SwapBufferCallback( void ) 
 	{ 
-		PRINTF("GLESOAL_SwapBufferCallback\n");
+		CDebugMPI	dbg(kGroupDisplay);
+		
+		dbg.DebugOut(kDbgLvlVerbose,"GLESOAL_SwapBufferCallback\n");
 
 		// Enable 3D layer on 1st update
 		if (!isEnabled) 
