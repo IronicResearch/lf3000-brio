@@ -4,6 +4,7 @@
 #include <SystemErrors.h>
 #include <StringTypes.h>
 #include <DisplayMPI.h>
+#include <KernelMPI.h>
 #include <UnitTestUtils.h>
 #include <BrioOpenGLConfig.h>
 
@@ -16,10 +17,12 @@ class TestDisplay : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CDisplayMPI*	pDisplayMPI_;
+	CKernelMPI*		pKernelMPI_;
 public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
+		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
 	}
 
@@ -27,6 +30,7 @@ public:
 	void tearDown( )
 	{
 		delete pDisplayMPI_; 
+		delete pKernelMPI_;
 	}
 
 	//------------------------------------------------------------------------

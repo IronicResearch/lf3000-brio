@@ -17854,3 +17854,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/6/09 4:00 PM
 6,063 ms. (Cumulative: 5,578,045 ms)
 
 ----------------
+Revision 4,305 from svn://localhost/TRUNK/:
+Revision 4,306 from svn://localhost/TRUNK/:
+Revision 4,307 from svn://localhost/TRUNK/:
+
+hack to run display unit test on emulation
+
+By Dave Milici (dmilici@leapfrog.com) on 5/6/09 5:16 PM
+1 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 5,584,217 ms)
+
+----------------
