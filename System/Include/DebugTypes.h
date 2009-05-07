@@ -62,8 +62,8 @@ typedef U16	tDebugSignature;
 													//	 (e.g. shared applications, like a game engine)
 #define kFlashLiteDebugSigGroup			0x0200
 #define kAppManagerDebugSigGroup		0x0280
-//#define kReserved4DebugSigGroup		0x0300
-//#define kReserved5DebugSigGroup		0x0380
+#define kLightningCoreDebugSigGroup		0x0300
+#define kTestSuiteDebugSigGroup			0x0380
 
 #define kCartridge1DebugSigGroup		0x0400
 #define kCartridge2DebugSigGroup		0x0480
@@ -89,6 +89,9 @@ typedef U16	tDebugSignature;
 #define kFirstCartridge7DebugSig		(kCartridge7DebugSigGroup 		| kFirstDebugSig)
 #define kFirstCartridge8DebugSig		(kCartridge8DebugSigGroup 		| kFirstDebugSig)
 
+#define kFlashLiteDebugSig			(kFlashLiteDebugSigGroup 		| kFirstDebugSig)
+#define kAppManagerDebugSig 		(kAppManagerDebugSigGroup         | kFirstDebugSig)
+#define kTestSuiteDebugSig			(kTestSuiteDebugSigGroup               |kFirstDebugSig)
 
 //==============================================================================
 // System-defined Debug Signatures
@@ -106,15 +109,17 @@ typedef U16	tDebugSignature;
 //==============================================================================
 enum tDebugLevel
 {
-	kDbgLvlSilent = -1,
-	kDbgLvlCritical = LOG_EMERG,
-	kDbgLvlImportant = LOG_CRIT,
-	kDbgLvlValuable = LOG_NOTICE,
-	kDbgLvlNoteable = LOG_INFO,
-	kDbgLvlVerbose = LOG_DEBUG,
+	kDbgLvlSilent,
+	kDbgLvlCritical,
+	kDbgLvlImportant,
+	kDbgLvlValuable,
+	kDbgLvlNoteable,
+	kDbgLvlVerbose,
 
 	kMaxDebugLevel = kDbgLvlVerbose
 } ;
+
+const int DebugLevel2LogLevel [ ] = {LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_NOTICE, LOG_INFO, LOG_DEBUG};
 
 //------------------------------------------------------------------------------
 // tLogPlayerLoadTypeOffset
