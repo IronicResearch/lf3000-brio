@@ -17956,3 +17956,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/7/09 6:48 PM
 5,688 ms. (Cumulative: 5,636,950 ms)
 
 ----------------
+Revision 4,327 from svn://localhost/TRUNK/:
+
+Remove BrioAudio with its 50Meg payload from published SDK Sampleswq
+
+By Dave Milici (dmilici@leapfrog.com) on 5/7/09 7:27 PM
+1 changed, 0 added, 0 deleted.
+5,578 ms. (Cumulative: 5,642,591 ms)
+
+----------------
