@@ -230,7 +230,7 @@ public:
 	
 			DebugMPI->Assert(true, "I'm not supposed to print!\n");
 			
-			dbgAssertNoErr(kAudioCreateTaskErr, "AssertNoErr(...) test\n");
+			dbg.AssertNoErr(kAudioCreateTaskErr, "AssertNoErr(...) test\n");
 	
 			printf("You should see:  1 green, 2 electric, 3 spoon: \n");
 			DebugMPI->Assert(false, "Here they are: %d %s, %d %s, %d %s.\n", 
