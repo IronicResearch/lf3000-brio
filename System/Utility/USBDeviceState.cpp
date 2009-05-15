@@ -29,8 +29,17 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		U32 usbState;
 		tUSBDeviceData data;
 
+		// TODO: Hmm, Emerald is Ethernet device type
 		data.USBDeviceSupports = kUSBDeviceIsMassStorage;
 		usbState = 0;
+		
+		// Interim check for DOOM sentinel file since it is permissible 
+		// for AppManager to keep running while USB connected on Emerald
+		struct stat buf;
+		if (stat("/Didj/doom", &buf) == 0) {
+			data.USBDeviceState = kUSBDeviceConnected;
+			return data;
+		}
 
 		/* check /flags/vbus development flag, if present */
 		usb_device_fd = fopen("/flags/vbus","r");
