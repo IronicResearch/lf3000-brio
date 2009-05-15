@@ -29,8 +29,8 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		U32 usbState;
 		tUSBDeviceData data;
 
-		// TODO: Hmm, Emerald is Ethernet device type
-		data.USBDeviceSupports = kUSBDeviceIsMassStorage;
+		// Emerald is Ethernet device type
+		data.USBDeviceSupports = kUSBDeviceIsEthernet;
 		usbState = 0;
 		
 		// Interim check for DOOM sentinel file since it is permissible 
