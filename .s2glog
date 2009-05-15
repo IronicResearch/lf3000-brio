@@ -18001,3 +18001,17 @@ By Dave Milici (dmilici@leapfrog.com) on 5/14/09 3:32 PM
 5,688 ms. (Cumulative: 5,648,514 ms)
 
 ----------------
+Revision 4,355 from svn://localhost/TRUNK/:
+Revision 4,356 from svn://localhost/TRUNK/:
+Revision 4,357 from svn://localhost/TRUNK/:
+Revision 4,358 from svn://localhost/TRUNK/:
+Revision 4,359 from svn://localhost/TRUNK/:
+
+Remove one-shot logic for poweroff events at Brio level. (Emerald #196)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/15/09 10:28 AM
+1 changed, 0 added, 0 deleted.
+5,610 ms. (Cumulative: 5,654,217 ms)
+
+----------------

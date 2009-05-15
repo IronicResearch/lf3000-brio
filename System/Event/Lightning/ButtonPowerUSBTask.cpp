@@ -342,8 +342,7 @@ namespace
 				}
 			}
 			// power state changed? (polled for low-battery)
-			if (power_data.powerState != current_pe.powerState &&
-						power_data.powerState != kPowerShutdown) {
+			if (power_data.powerState != current_pe.powerState) {
 					power_data.powerState = current_pe.powerState;
 					CPowerMessage power_msg(power_data);
 					pThis->PostEvent(power_msg, kPowerEventPriority, 0);
