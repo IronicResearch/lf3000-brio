@@ -18026,3 +18026,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/15/09 12:00 PM
 5,704 ms. (Cumulative: 5,659,999 ms)
 
 ----------------
+Revision 4,362 from svn://localhost/TRUNK/:
+
+Added Brio USB device type for Ethernet device for informational purposes.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/15/09 12:12 PM
+2 changed, 0 added, 0 deleted.
+5,704 ms. (Cumulative: 5,665,765 ms)
+
+----------------

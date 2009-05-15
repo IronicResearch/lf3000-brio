@@ -49,6 +49,7 @@ const U32 kUSBDeviceEnabled		= (1 << 1);
 // Bit definitions for USBDeviceDriver abd USBDeviceSupports
 const U32 kUSBDeviceIsHID			= (1 << 0);
 const U32 kUSBDeviceIsMassStorage	= (1 << 1);
+const U32 kUSBDeviceIsEthernet		= (1 << 2);
 
 class CUSBDeviceMessage : public IEventMessage {
  public:
