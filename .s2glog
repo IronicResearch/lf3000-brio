@@ -18015,3 +18015,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/15/09 10:28 AM
 5,610 ms. (Cumulative: 5,654,217 ms)
 
 ----------------
+Revision 4,360 from svn://localhost/TRUNK/:
+Revision 4,361 from svn://localhost/TRUNK/:
+
+Added interim check for PCApp doom file to use for Brio USB status, since USB Ethernet connection is normal on Emerald. (Emerald #171)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/15/09 12:00 PM
+1 changed, 0 added, 0 deleted.
+5,704 ms. (Cumulative: 5,659,999 ms)
+
+----------------
