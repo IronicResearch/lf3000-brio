@@ -18,6 +18,7 @@
 #include <CoreModule.h>
 #include <DebugMPI.h>
 #include "EventMPI.h"	// for tEventRegistrationFlags
+#include <KernelMPI.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -63,6 +64,7 @@ private:
 public:
 	static void* 		ButtonPowerUSBTask( void* arg );
 	CDebugMPI			debug_;
+	CKernelMPI			kernel_;
 };
 
 LF_END_BRIO_NAMESPACE()	
