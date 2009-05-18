@@ -18036,3 +18036,23 @@ By Dave Milici (dmilici@leapfrog.com) on 5/15/09 12:12 PM
 5,704 ms. (Cumulative: 5,665,765 ms)
 
 ----------------
+Revision 4,363 from svn://localhost/TRUNK/:
+Revision 4,364 from svn://localhost/TRUNK/:
+Revision 4,365 from svn://localhost/TRUNK/:
+Revision 4,366 from svn://localhost/TRUNK/:
+Revision 4,367 from svn://localhost/TRUNK/:
+Revision 4,368 from svn://localhost/TRUNK/:
+Revision 4,369 from svn://localhost/TRUNK/:
+Revision 4,370 from svn://localhost/TRUNK/:
+Revision 4,371 from svn://localhost/TRUNK/:
+Revision 4,372 from svn://localhost/TRUNK/:
+Revision 4,373 from svn://localhost/TRUNK/:
+Revision 4,374 from svn://localhost/TRUNK/:
+
+Added poweroff timeout to event manager for powerdown events. Removed monitord socket for get/set power timeouts. Timeout is managed internally to Brio app, so AppManager can timeout without monitord support.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/09 2:56 PM
+3 changed, 0 added, 0 deleted.
+6,237 ms. (Cumulative: 5,672,175 ms)
+
+----------------

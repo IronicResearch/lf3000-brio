@@ -28,6 +28,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kMPIName = "PowerMPI";
 
+static int		gTimeoutMSec = 5000;
 
 //============================================================================
 // CPowerMessage
@@ -119,6 +120,9 @@ enum tPowerState CPowerMPI::GetPowerState() const
 //----------------------------------------------------------------------------
 int CPowerMPI::Shutdown() const
 {
+#ifndef EMULATION
+	system("poweroff &");
+#endif
 	// Embedded version should never get here
 	exit(kKernelExitShutdown);
 	return kKernelExitError;
@@ -127,54 +131,22 @@ int CPowerMPI::Shutdown() const
 //----------------------------------------------------------------------------
 int CPowerMPI::GetShutdownTimeMS() const
 {
-#ifndef EMULATION
-	struct app_message msg, resp;
-	int size;
-	int s = CreateReportSocket(MONITOR_SOCK);
-
-	msg.type = APP_MSG_GET_POWER;
-	msg.payload = 0;
-
-	if(send(s, &msg, sizeof(msg), 0) < 0) {
-		close(s);
-		return -1;
-	}
-
-	size = recv(s, &resp, sizeof(struct app_message), 0);
-	if(size != sizeof(struct app_message)) {
-		close(s);
-		return -1;
-	}
-
-	close(s);
-	return resp.payload*1000;
-#else
-	return 0;
-#endif
+	return gTimeoutMSec;
 }
 
 //----------------------------------------------------------------------------
 int CPowerMPI::SetShutdownTimeMS(int iMilliseconds) const
 {
-#ifndef EMULATION
-	struct app_message msg;
-	int s = CreateReportSocket(MONITOR_SOCK);
-
-	msg.type = APP_MSG_SET_POWER;
-	if(iMilliseconds == 0)
-		msg.payload = 0;
-	else
-		msg.payload = iMilliseconds >= 1000 ? iMilliseconds/1000 : 1;
-
-	send(s, &msg, sizeof(msg), MSG_NOSIGNAL);
-	close(s);
-#endif
+	gTimeoutMSec = iMilliseconds;
 	return 0;
 }
 
 //----------------------------------------------------------------------------
 int CPowerMPI::Reset() const
 {
+#ifndef EMULATION
+	system("reboot &");
+#endif
 	// Embedded version should never get here
 	exit(kKernelExitReset);
 	return kKernelExitError;

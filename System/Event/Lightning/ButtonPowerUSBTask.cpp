@@ -23,6 +23,7 @@
 #include <EventMessage.h>
 #include <EventMPI.h>
 #include <EventPriv.h>
+#include <PowerMPI.h>
 
 #include <string.h>
 
@@ -169,6 +170,18 @@ namespace
 			case SW_TABLET_MODE:		return kCartridgeDetect;
 		}
 		return 0;
+	}
+
+	//----------------------------------------------------------------------------
+	// Emergency exit for poweroff timeouts
+	//----------------------------------------------------------------------------
+	void PoweroffTimer(tTimerHndl hndl)
+	{
+		CPowerMPI power;
+		CDebugMPI debug(kGroupEvent);
+		debug.DebugOut(kDbgLvlCritical, "%s: timeout!\n", __FUNCTION__);
+		power.Shutdown();
+		exit(kKernelExitShutdown);
 	}
 }
 
@@ -346,6 +359,16 @@ namespace
 					power_data.powerState = current_pe.powerState;
 					CPowerMessage power_msg(power_data);
 					pThis->PostEvent(power_msg, kPowerEventPriority, 0);
+					if (current_pe.powerState == kPowerShutdown) {
+						// Arm poweroff timer on powerdown event
+						CPowerMPI power;
+						tTimerProperties props = {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
+						tTimerHndl timer = pThis->kernel_.CreateTimer(PoweroffTimer, props, NULL);
+						int msec = power.GetShutdownTimeMS();
+						props.timeout.it_value.tv_sec = msec / 1000;
+						props.timeout.it_value.tv_nsec = (msec % 1000) * 1000000;
+						pThis->kernel_.StartTimer(timer, props);
+					}
 			}
 		
 			// USB driver event ?
