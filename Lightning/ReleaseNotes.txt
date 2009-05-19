@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.5.0.4325 (May 7, 2009)
+Brio v0.5.0.4386 (May 19, 2009)
 ===========================================
 
 -- DebugMPI additions to support flight recorder.
@@ -12,6 +12,34 @@ Brio v0.5.0.4325 (May 7, 2009)
 
 -- ButtonEventQueue and TouchEventQueue changes for improved performance.
 
+===========================================
+Brio v0.4.2.4311 (May 7, 2009)
+===========================================
+
+Changes in Brio since 0.4.1:
+
+1) Flight recorder logging using DebugMPI (-r4244:4262)
+
+===========================================
+Brio v0.4.1.4204 (April 16, 2009)
+===========================================
+
+No significant changes in Brio since 0.4.0.
+
+===========================================
+Brio v0.4.0.4175 (April 7, 2009)
+===========================================
+
+Emerald 0.4.0 release -- significant changes since 0.3.6:
+
+Modified Event manager internal functions and threads 
+to use common Debug and Kernel MPI objects, otherwise 
+these objects remain loaded until exit time. 
+(Emerald TTP #132) (-r4165)
+
+===========================================
+end of Brio v0.4.0.4175 (April 7, 2009)
+===========================================
 ===========================================
 Brio v0.4.1.4204 (April 16, 2009)
 ===========================================
