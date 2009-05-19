@@ -18056,3 +18056,16 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/09 2:56 PM
 6,237 ms. (Cumulative: 5,672,175 ms)
 
 ----------------
+Revision 4,375 from svn://localhost/TRUNK/:
+Revision 4,376 from svn://localhost/TRUNK/:
+Revision 4,377 from svn://localhost/TRUNK/:
+Revision 4,378 from svn://localhost/TRUNK/:
+Revision 4,379 from svn://localhost/TRUNK/:
+
+Additional sysfs check for shutdown state to help distinguish poweroff commands.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/09 6:14 PM
+2 changed, 0 added, 0 deleted.
+6,005 ms. (Cumulative: 5,678,289 ms)
+
+----------------

@@ -124,7 +124,7 @@ int CPowerMPI::Shutdown() const
 	system("poweroff &");
 #endif
 	// Embedded version should never get here
-	exit(kKernelExitShutdown);
+	_exit(kKernelExitShutdown);
 	return kKernelExitError;
 }
 
