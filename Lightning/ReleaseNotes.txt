@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.5.0.4386 (May 19, 2009)
+Brio v0.5.0.4405 (May 20, 2009)
 ===========================================
 
 -- DebugMPI additions to support flight recorder.
