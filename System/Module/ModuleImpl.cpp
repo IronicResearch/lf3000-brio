@@ -42,6 +42,9 @@ namespace
 	};
 
 	//--------------------------------------------------------------------------   
+	tMutex					gListMutex = PTHREAD_MUTEX_INITIALIZER;
+
+	//--------------------------------------------------------------------------   
 	extern "C" void ExitModuleManagerLib(void);
 	
 	//--------------------------------------------------------------------------   
@@ -120,15 +123,19 @@ namespace
 		//----------------------------------------------------------------------
 		ConnectedModule* FindCachedModule( const CString& name, tVersion /*version*/ )
 		{
+			ConnectedModule* pModule = NULL;
+			pthread_mutex_lock(&gListMutex);
 			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
 				if( mConnectedModulesList[ii].name == name )
 				{
 					// TODO: Make sure we have a version match
-					return &mConnectedModulesList[ii];
+					pModule = &mConnectedModulesList[ii];
+					break;
 				}
 			}
-			return NULL;
+			pthread_mutex_unlock(&gListMutex);
+			return pModule;
 		}
 
 		//----------------------------------------------------------------------
@@ -137,6 +144,8 @@ namespace
 //			printf("FindCachedModule:: size of connected modules list: %d\n",
 //					( int)mConnectedModulesList.size());
 			
+			ConnectedModule* pModule = NULL;
+			pthread_mutex_lock(&gListMutex);
 			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
 //				printf("FindCachedModule:: looking for ptr: 0x%x, comparing with: 0x%x (module name: %s)\n",
@@ -144,10 +153,12 @@ namespace
 				if( mConnectedModulesList[ii].ptr == ptr )
 				{
 					// TODO: Make sure we have a version match
-					return &mConnectedModulesList[ii];
+					pModule = &mConnectedModulesList[ii];
+					break;
 				}
 			}
-			return NULL;
+			pthread_mutex_unlock(&gListMutex);
+			return pModule;
 		}
 		
 	public:
@@ -262,7 +273,9 @@ namespace
 			module.sopath = pFound->sopath;
 			module.connect_count = 1;
 			module.ptr = ptr;
+			pthread_mutex_lock(&gListMutex);
 			mConnectedModulesList.push_back(module);
+			pthread_mutex_unlock(&gListMutex);
 
 			return kNoErr;
 		}
@@ -275,6 +288,7 @@ namespace
 //			printf("RemoveCachedModule:: size of connected modules list: %d\n",
 //					(int)mConnectedModulesList.size());
 
+			pthread_mutex_lock(&gListMutex);
 			tempIterator = mConnectedModulesList.begin(); 
 			while ( tempIterator != mConnectedModulesList.end() )
 				{
@@ -292,6 +306,7 @@ namespace
 					}
 					tempIterator++;
 				}
+			pthread_mutex_unlock(&gListMutex);
 		}
 
 		//----------------------------------------------------------------------
@@ -341,17 +356,13 @@ namespace
 			bIsExiting_ = true;
 			// Destroy all modules remaining in connected list.
 			// Called at process exit time via atexit() handler.
-			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
-			{
-				// Walk each list item in case module name needs fixup.
-				if (!strstr(mConnectedModulesList[ii].sopath.c_str(), mConnectedModulesList[ii].name.c_str()))
-					GetModuleName(mConnectedModulesList[ii].sopath, mConnectedModulesList[ii].name);
-			}
+			pthread_mutex_lock(&gListMutex);
 			for( int ii = mConnectedModulesList.size() - 1; ii >= 0; --ii )
 			{
 				DestroyModuleInstance(&mConnectedModulesList[ii]);
 			}
 			mConnectedModulesList.clear();
+			pthread_mutex_unlock(&gListMutex);
 		}
 
 		// TODO: unresolved issues:
