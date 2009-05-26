@@ -18113,3 +18113,19 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/20/09 10:27 AM
 6,000 ms. (Cumulative: 5,690,508 ms)
 
 ----------------
+Revision 4,406 from svn://localhost/TRUNK/:
+Revision 4,407 from svn://localhost/TRUNK/:
+Revision 4,408 from svn://localhost/TRUNK/:
+Revision 4,409 from svn://localhost/TRUNK/:
+Revision 4,410 from svn://localhost/TRUNK/:
+Revision 4,411 from svn://localhost/TRUNK/:
+Revision 4,412 from svn://localhost/TRUNK/:
+Revision 4,413 from svn://localhost/TRUNK/:
+
+Added mutex protection to connected modules list to avoid corruption on exits.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/26/09 2:48 PM
+1 changed, 0 added, 0 deleted.
+6,331 ms. (Cumulative: 5,696,949 ms)
+
+----------------
