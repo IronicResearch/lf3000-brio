@@ -25,6 +25,7 @@ if vars['is_export']:
 	env.Install(dest_dir, 'Tools/libgsm.so.1')
 	env.Install(dest_dir, 'Tools/libraw1394.so.8')
 	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
+	env.Install(dest_dir, 'Tools/sf2brio')
 
 	#-----------------------------------------------------------------------------
 	# Populate the "Publish" folder with Doxygen output (publish builds only)
