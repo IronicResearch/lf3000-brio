@@ -136,6 +136,11 @@ tButtonData2	GetButtonState2(void);
 //----------------------------------------------------------------------------
 void SetButtonState(tButtonData2 button_data);
 
+//----------------------------------------------------------------------------
+// Prints uptime to console in uniform manner
+//----------------------------------------------------------------------------
+void PrintUptime(const char *tag);
+
 LF_END_BRIO_NAMESPACE()
 
 #endif // LF_BRIO_UTILITY_H
