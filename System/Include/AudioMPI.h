@@ -53,9 +53,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 /// \page KnownIssues Known Issues
 ///
-/// \todo IsAudioPlaying on a particular channel returns true even if that channel
-/// is paused.
-///
 /// \todo Where applicable, the noDoneMessage arguments are ignored.  As of 28
 /// Feb 08, fixing this functionality now actually breaks the AppManager
 /// (sequencer?).  Specifically, when scrolling fast through the first wheel
@@ -122,7 +119,7 @@ public:
 	/// Pause all audio output.
 	///
 	/// After calling this function, all audio output is paused.  IsAudioPlaying
-	/// for any channel will return false.
+	/// for any audio that was paused will still return true for legacy reasons.
 	///
 	/// \return This function always returns kNoErr
 	tErrType	PauseAudioSystem( void );
@@ -324,16 +321,16 @@ public:
 	///
 	/// \param id The tAudioID of the player in question.
 	///
-	/// \returns true if the player is not paused.  Returns false if audio has
-	/// been paused with a call to PauseAudioSystem OR if the player has been
-	/// paused with a call to PauseAudio, OR if the tAudioID is invalid.
+	/// \returns true if the player is in use (playing or paused).  Returns false
+	/// if audio has been stopped, or the audio has already completed, or if
+	/// tAudioID is invalid.  While this is not intuitive for the function name
+	/// IsAudioPlaying, this behavior must be kept for legacy reasons.
 	Boolean		IsAudioPlaying( tAudioID id );
 
 	/// Is any player playing?
 	///
-	/// \returns true if any player is playing.  Returns false if audio has been
-	/// paused with a call to PauseAudioSystem, OR if all players are paused, OR
-	/// if no players exist.
+	/// \returns true if any player is playing or paused.  Paused audio counted
+	/// as playing is behavior being retained for legacy reasons.
 	Boolean		IsAudioPlaying( void );
 
 	/// Report a player's stream time in milliseconds 

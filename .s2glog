@@ -18140,3 +18140,15 @@ By Dave Milici (dmilici@leapfrog.com) on 5/27/09 10:53 AM
 6,172 ms. (Cumulative: 5,703,215 ms)
 
 ----------------
+Revision 4,417 from svn://localhost/TRUNK/:
+Revision 4,418 from svn://localhost/TRUNK/:
+Revision 4,419 from svn://localhost/TRUNK/:
+Revision 4,420 from svn://localhost/TRUNK/:
+
+Doxygen fix comments for AudioMPI (IsAudioPlaying).  Added doxygen comments for ButtonEventQueue and TouchEventQueue.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/27/09 5:31 PM
+3 changed, 0 added, 0 deleted.
+5,782 ms. (Cumulative: 5,709,090 ms)
+
+----------------
