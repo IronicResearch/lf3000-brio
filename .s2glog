@@ -18152,3 +18152,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/27/09 5:31 PM
 5,782 ms. (Cumulative: 5,709,090 ms)
 
 ----------------
+Revision 4,421 from svn://localhost/TRUNK/:
+Revision 4,422 from svn://localhost/TRUNK/:
+
+Added PrintUptime() function to Utility lib for uniform uptime tracers.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/27/09 7:02 PM
+1 changed, 1 added, 0 deleted.
+5,626 ms. (Cumulative: 5,714,794 ms)
+
+----------------
