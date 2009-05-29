@@ -188,8 +188,8 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
 		if vars['is_debug']:
 			bldenv.Append(CCFLAGS = '-g')
-		else:
-			bldenv.Append(LINKFLAGS = '-Wl')
+#		else:
+#			bldenv.Append(LINKFLAGS = '-Wl,--strip-all')
 		if vars['is_monolithic']:
 			mylib = bldenv.StaticLibrary(ptarget, psources, LIBS = linklibs)
 		else:
