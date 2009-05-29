@@ -18210,3 +18210,17 @@ By Dave Milici (dmilici@leapfrog.com) on 5/28/09 7:45 PM
 5,704 ms. (Cumulative: 5,743,593 ms)
 
 ----------------
+Revision 4,434 from svn://localhost/TRUNK/:
+Revision 4,435 from svn://localhost/TRUNK/:
+Revision 4,436 from svn://localhost/TRUNK/:
+Revision 4,437 from svn://localhost/TRUNK/:
+Revision 4,438 from svn://localhost/TRUNK/:
+Revision 4,439 from svn://localhost/TRUNK/:
+
+Update AudioMPI.h header to correct and remove outdated comments.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/29/09 1:21 PM
+1 changed, 0 added, 0 deleted.
+5,641 ms. (Cumulative: 5,749,328 ms)
+
+----------------
