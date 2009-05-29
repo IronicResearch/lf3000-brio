@@ -18201,3 +18201,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/28/09 7:23 PM
 5,672 ms. (Cumulative: 5,737,827 ms)
 
 ----------------
+Revision 4,433 from svn://localhost/TRUNK/:
+
+Added oggenc support lib missing on Ubuntu8.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/28/09 7:45 PM
+1 changed, 1 added, 0 deleted.
+5,704 ms. (Cumulative: 5,743,593 ms)
+
+----------------
