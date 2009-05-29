@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.5.1.4440 (May 29, 2009)
+Brio v0.5.1.4443 (May 29, 2009)
 ===========================================
 
 -- Doxygen comments
@@ -22,6 +22,7 @@ Fixup Brio SDK examples to enable debug message output with new DebugMPI.
 Added mutex protection to connected modules list to avoid corruption on exits.
 set masterDebuglevel to Verbose by default.
 Preserve symbol for release build.
+Change embedded target optimizations based on Flash player anomolies.
 
 ===========================================
 Brio v0.5.0.4405 (May 20, 2009)

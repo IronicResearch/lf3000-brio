@@ -18252,3 +18252,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/29/09 3:17 PM
 6,006 ms. (Cumulative: 5,767,708 ms)
 
 ----------------
+Revision 4,443 from svn://localhost/TRUNK/:
+
+Added embeded target optimization change to 0.5.1 SDK build.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/29/09 3:21 PM
+1 changed, 0 added, 0 deleted.
+5,924 ms. (Cumulative: 5,773,710 ms)
+
+----------------
