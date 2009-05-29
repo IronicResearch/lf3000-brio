@@ -3,6 +3,27 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.5.1.4440 (May 29, 2009)
+===========================================
+
+-- Doxygen comments
+Doxygen fix comments for AudioMPI (IsAudioPlaying).  
+Added doxygen comments for ButtonEventQueue and TouchEventQueue.
+Modified EventMPI and ButtonMPI comments to Doxygen format.
+Update AudioMPI.h header to correct and remove outdated comments.
+
+-- SDK utilities
+Reinstate sf2brio utility for prepending .brio header to raw audio files.
+Added oggenc support lib missing on Ubuntu8.
+Added PrintUptime() function to Utility lib for uniform uptime tracers.
+Fixup Brio SDK examples to enable debug message output with new DebugMPI.
+
+-- Module updates
+Added mutex protection to connected modules list to avoid corruption on exits.
+set masterDebuglevel to Verbose by default.
+Preserve symbol for release build.
+
+===========================================
 Brio v0.5.0.4405 (May 20, 2009)
 ===========================================
 
