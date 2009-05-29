@@ -18183,3 +18183,12 @@ By ytu (ytu@leapfrog.com) on 5/28/09 6:23 PM
 5,609 ms. (Cumulative: 5,726,310 ms)
 
 ----------------
+Revision 4,431 from svn://localhost/TRUNK/:
+
+Preserve symbol for release build
+
+By ytu (ytu@leapfrog.com) on 5/28/09 6:26 PM
+1 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 5,732,076 ms)
+
+----------------
