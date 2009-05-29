@@ -35,7 +35,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// returned when the player is created with a call to \ref StartAudio.
 /// Whenever the user wishes to operate on a particular player's stream, he will
 /// have to provide its \ref tAudioID.  The \ref tAudioID ceases to be valid
-/// after a kAudioCompletedEvent or a kAudioTerminatedEvent.  If a listener is
+/// after a kAudioCompletedEvent or a call to \ref StopAudio.  If a listener is
 /// provided for these events, that listener should assume that the tAudioID is
 /// not valid in its Notify function.
 ///
@@ -48,31 +48,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 ///
 /// MIDI functions are no longer implemented.
 ///
-/// Please see the \ref KnownIssues section for important information about bugs
-/// and unimplemented features.
-
-/// \page KnownIssues Known Issues
+/// AudioEffectsProcessor features are not implemented.
 ///
-/// \todo Where applicable, the noDoneMessage arguments are ignored.  As of 28
-/// Feb 08, fixing this functionality now actually breaks the AppManager
-/// (sequencer?).  Specifically, when scrolling fast through the first wheel
-/// after selecting a name, the audio from the previous icon is not pre-empted.
-/// I'm not sure why.
-///
-/// \todo AudioEffectsProcessor features are unimplemented.
-///
-/// \todo Ensure that MPI functions fail if kNoAudioID is passed in.
-///
-/// \todo Ensure that MPI functions fail if invalid (i.e., stale) tAudioID is
-/// passed in.
-///
-/// \todo kAudioTerminatedEvent and kMidiTerminatedEvent are not implemented.
-///
-/// \todo Cue points are not implemented and may never be implemented.
-///
-/// \todo infinite looping is not implemented.
-///
-/// \todo looping clicks.  It should be 100% continuous.
 
 class IEventListener;
 
@@ -192,15 +169,14 @@ public:
 	/// repeated as many times as indicated by the payload parameter.  This is
 	/// also a kAudioCompletedEvent.
 	///
-	/// 3. The user calls StopAudio with the player's tAudioID.  This is a
-	/// kAudioTerminatedEvent.
+	/// 3. The user calls StopAudio with the player's tAudioID.
 	///
 	/// 4. The priority policy terminates the player's stream because there are
 	/// no channels available and somebody called StartAudio for a player of
-	/// higher priority.  This is a kAudioTerminatedEvent.
+	/// higher priority.
 	///
 	/// 5. The AudioMPI destructor is called.  Any streams that are playing at
-	/// this time will be terminated with a kAudioTerminatedEvent.
+	/// this time will be terminated.
 	///
 	/// Numerous parameters affect the behavior of the player.  Specifically:
 	///
@@ -215,9 +191,9 @@ public:
 	///
 	/// \param priority In the event that all channels are busy AND a player of
 	/// lower priority is currently playing, a lower priority player will be
-	/// stopped with a kAudioTerminatedEvent to free a channel.  Similarly, if a
+	/// stopped to free a channel.  Similarly, if a
 	/// future call to StartAudio happens with a higher priority, then this
-	/// player may be terminated with a kAudioTerminatedEvent.  priority is an
+	/// player may be terminated.  priority is an
 	/// unsigned value from 0 to 255 with 255 being the highest priority.
 	///
 	/// \param pan The pan is a signed value between kAudioPanMin and
@@ -307,12 +283,7 @@ public:
 	///
 	/// \param id The tAudioID of the player to stop.
 	///
-	/// \param noDoneMessage If this parameter is true, then the
-	/// kAudioTerminatedEvent will not be posted to the listener associated with
-	/// this audio player.  If this parameter is false, AND the player has an
-	/// associated listerner, AND the StartAudio call that launched this player
-	/// had the kAudioOptionsDoneMsgAfterComplete flag set, then the
-	/// kAudioTerminatedEvent will be posted to the listener.
+	/// \param noDoneMessage (not used)
 	///
 	/// This function has no effect if id is invalid.
 	void 		StopAudio(	tAudioID id, Boolean noDoneMessage ); 
