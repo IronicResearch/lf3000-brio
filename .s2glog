@@ -18233,3 +18233,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/29/09 1:35 PM
 6,014 ms. (Cumulative: 5,755,404 ms)
 
 ----------------
+Revision 4,441 from svn://localhost/TRUNK/:
+
+Commenting out the LINKFLAGS section altogether.  The flag -Wl does not mean anything by itself, it just passes the flag on to the linker.
+
+By Dennis OBrian (dobrien@leapfrog.com) on 5/29/09 1:37 PM
+1 changed, 0 added, 0 deleted.
+6,158 ms. (Cumulative: 5,761,640 ms)
+
+----------------
