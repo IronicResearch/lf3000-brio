@@ -18162,3 +18162,24 @@ By Dave Milici (dmilici@leapfrog.com) on 5/27/09 7:02 PM
 5,626 ms. (Cumulative: 5,714,794 ms)
 
 ----------------
+Revision 4,423 from svn://localhost/TRUNK/:
+Revision 4,424 from svn://localhost/TRUNK/:
+Revision 4,425 from svn://localhost/TRUNK/:
+Revision 4,426 from svn://localhost/TRUNK/:
+Revision 4,427 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,797 ms. (Cumulative: 5,720,685 ms)
+
+----------------
+Revision 4,428 from svn://localhost/TRUNK/:
+Revision 4,429 from svn://localhost/TRUNK/:
+Revision 4,430 from svn://localhost/TRUNK/:
+
+set masterDebuglevel to Verbose by default.
+
+By ytu (ytu@leapfrog.com) on 5/28/09 6:23 PM
+1 changed, 0 added, 0 deleted.
+5,609 ms. (Cumulative: 5,726,310 ms)
+
+----------------
