@@ -23,6 +23,13 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 class CButtonMPI : public ICoreMPI {
+	/// \class CButtonMPI
+	///
+	/// Button manager class for posting CButtonMessage events on button 
+	/// presses or releases to registered listeners of kGroupButton type. 
+	/// Button on/off states and transitions are bitwise encoded in 
+	/// tButtonData fields, with time-stamp info logged to additional 
+	/// tButtonData2 fields.
 public:	
 	// ICoreMPI functionality
 	virtual	Boolean			IsValid() const;
@@ -35,12 +42,12 @@ public:
 	CButtonMPI();
 	virtual ~CButtonMPI();
 	
-	// register handler
+	/// register handler
 	tErrType RegisterEventListener(const IEventListener *pListener);
-	// unregister handler
+	/// unregister handler
 	tErrType UnregisterEventListener(const IEventListener *pListener);
 	
-	// Get button state
+	/// Get button state
 	tButtonData		GetButtonState() const;
 	tButtonData2	GetButtonState2() const;
 

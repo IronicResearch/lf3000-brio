@@ -24,6 +24,14 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
 class CEventMPI : public ICoreMPI {
+	/// \class CEventMPI
+	///
+	/// Event manager class for posting event messages to registered listeners.
+	/// IEventListener objects declared to be a certain enumerated type
+	/// are registered with the Event manager for receiving event messages
+	/// of the same enumerated type. Event messages may be posted synchronously
+	/// (immediately) for high-priority events, or asynchronously (deferred by
+	/// event manager thread) for low-priority events.
 public:	
 	// ICoreMPI functionality
 	virtual	Boolean			IsValid() const;
@@ -36,12 +44,12 @@ public:
 	CEventMPI();
 	virtual ~CEventMPI();
 
-	// Register & unregister listener chains
+	/// Register & unregister listener chains
 	tErrType	RegisterEventListener(const IEventListener *pListener,
 										tEventRegistrationFlags flags = 0);
 	tErrType	UnregisterEventListener(const IEventListener *pListener);
 	
-	// Generate an event
+	/// Generate an event
 	tErrType	PostEvent(const IEventMessage &msg, 
 						tEventPriority priority,
 						const IEventListener *pResponseListener = NULL) const;
