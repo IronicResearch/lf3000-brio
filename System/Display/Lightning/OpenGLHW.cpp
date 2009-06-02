@@ -141,20 +141,20 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 
 	// Map 3D engine register space
 	gRegSize = PAGE_3D * getpagesize();  
-	gpReg3d = mmap(0, gRegSize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevGa3d, REG3D_PHYS);
+	gpReg3d = mmap(0, gRegSize, PROT_READ | PROT_WRITE, MAP_SHARED, gDevGa3d, REG3D_PHYS);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %016lX mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-	gpMem1 = mmap((void*)mem1Virt, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem1Phys);
+	gpMem1 = mmap((void*)mem1Virt, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevMem, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
-	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED | MAP_POPULATE, gDevMem, gMem2Phys);
+	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevMem, gMem2Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
 	// Map memory block for linear framebuffer access at start of 2D heap
 	gMem2dPhys = gMem2Phys | 0x20000000;
-	gpMem2d = mmap(NULL, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevMem, gMem2dPhys);
+	gpMem2d = mmap(NULL, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem2dPhys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2dPhys, gpMem2d, gMem2Size);
 
 	// Query HW to setup display context descriptors
