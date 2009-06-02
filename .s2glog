@@ -18261,3 +18261,19 @@ By Dave Milici (dmilici@leapfrog.com) on 5/29/09 3:21 PM
 5,924 ms. (Cumulative: 5,773,710 ms)
 
 ----------------
+Revision 4,444 from svn://localhost/TRUNK/:
+Revision 4,445 from svn://localhost/TRUNK/:
+Revision 4,446 from svn://localhost/TRUNK/:
+Revision 4,447 from svn://localhost/TRUNK/:
+Revision 4,448 from svn://localhost/TRUNK/:
+Revision 4,449 from svn://localhost/TRUNK/:
+Revision 4,450 from svn://localhost/TRUNK/:
+Revision 4,451 from svn://localhost/TRUNK/:
+
+Relax mmap() flags used for OGL framebuffer mappings. /dev/mem must be used instead of /dev/layer1 to satisfy virtual address requests needed for OGL lib. (Emerald #246)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/2/09 10:26 AM
+1 changed, 0 added, 0 deleted.
+6,170 ms. (Cumulative: 5,780,005 ms)
+
+----------------
