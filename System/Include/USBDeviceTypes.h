@@ -45,6 +45,9 @@ struct tUSBDeviceData {
 // Bit definitions for USBDeviceState
 const U32 kUSBDeviceConnected	= (1 << 0);
 const U32 kUSBDeviceEnabled		= (1 << 1);
+const U32 kUSBDeviceTransfer	= (1 << 2);
+const U32 kUSBDeviceError		= (1 << 3);
+const U32 kUSBDeviceReset		= (1 << 4);
 
 // Bit definitions for USBDeviceDriver abd USBDeviceSupports
 const U32 kUSBDeviceIsHID			= (1 << 0);

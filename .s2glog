@@ -18296,3 +18296,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/3/09 9:30 AM
 6,160 ms. (Cumulative: 5,786,321 ms)
 
 ----------------
+Revision 4,463 from svn://localhost/TRUNK/:
+Revision 4,464 from svn://localhost/TRUNK/:
+
+Additional USB state flags for transfers in progress, errors, and pending resets.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/3/09 11:04 AM
+1 changed, 0 added, 0 deleted.
+5,657 ms. (Cumulative: 5,792,056 ms)
+
+----------------
