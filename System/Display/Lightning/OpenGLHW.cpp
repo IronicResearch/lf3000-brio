@@ -85,11 +85,11 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	FSAAval = pOglCtx->bFSAA;
 
 	// open Even layer
-	gDevLayerEven = open(OGL_LAYER_EVEN_DEV, O_WRONLY);
+	gDevLayerEven = open(OGL_LAYER_EVEN_DEV, O_RDWR);
 	dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver failed");
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_EVEN_DEV " driver opened\n");
 	// open odd layer
-	gDevLayerOdd = open(OGL_LAYER_ODD_DEV, O_WRONLY);
+	gDevLayerOdd = open(OGL_LAYER_ODD_DEV, O_RDWR);
 	dbg_.Assert(gDevLayerEven >= 0, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver failed");
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: " OGL_LAYER_ODD_DEV " driver opened\n");
 
@@ -136,8 +136,8 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.Assert(gDevGa3d >= 0, "DisplayModule::InitModule: /dev/ga3d driver failed");
 
 	// Open memory driver for mapping register space and framebuffer
-	gDevMem = open("/dev/mem", O_RDWR|O_SYNC);
-	dbg_.Assert(gDevMem >= 0, "DisplayModule::InitModule: /dev/mem driver failed");
+//	gDevMem = open("/dev/mem", O_RDWR|O_SYNC);
+//	dbg_.Assert(gDevMem >= 0, "DisplayModule::InitModule: /dev/mem driver failed");
 
 	// Map 3D engine register space
 	gRegSize = PAGE_3D * getpagesize();  
@@ -145,11 +145,11 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %016lX mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-	gpMem1 = mmap((void*)mem1Virt, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevMem, gMem1Phys);
+	gpMem1 = mmap((void*)gMem1Phys, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
-	gpMem2 = mmap((void*)mem2Virt, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevMem, gMem2Phys);
+	gpMem2 = mmap((void*)gMem2Phys, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem2Phys);
 	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
 	// Map memory block for linear framebuffer access at start of 2D heap
@@ -198,7 +198,7 @@ void CDisplayModule::DeinitOpenGL()
 	munmap(gpMem1, gMem1Size);
 	munmap(gpMem2, gMem2Size);
 	munmap(gpMem2d, gMem2Size);
-	close(gDevMem);
+//	close(gDevMem);
 	close(gDevGa3d);
 	close(gDevLayerEven);
 	close(gDevLayerOdd);

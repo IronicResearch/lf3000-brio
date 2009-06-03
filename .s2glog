@@ -18277,3 +18277,22 @@ By Dave Milici (dmilici@leapfrog.com) on 6/2/09 10:26 AM
 6,170 ms. (Cumulative: 5,780,005 ms)
 
 ----------------
+Revision 4,452 from svn://localhost/TRUNK/:
+Revision 4,453 from svn://localhost/TRUNK/:
+Revision 4,454 from svn://localhost/TRUNK/:
+Revision 4,455 from svn://localhost/TRUNK/:
+Revision 4,456 from svn://localhost/TRUNK/:
+Revision 4,457 from svn://localhost/TRUNK/:
+Revision 4,458 from svn://localhost/TRUNK/:
+Revision 4,459 from svn://localhost/TRUNK/:
+Revision 4,460 from svn://localhost/TRUNK/:
+Revision 4,461 from svn://localhost/TRUNK/:
+Revision 4,462 from svn://localhost/TRUNK/:
+
+Change OGL framebuffer mappings for /dev/layer to avoid /dev/mem dependency. (Emerald #246)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/3/09 9:30 AM
+1 changed, 0 added, 0 deleted.
+6,160 ms. (Cumulative: 5,786,321 ms)
+
+----------------
