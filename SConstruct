@@ -113,7 +113,7 @@ if rootfs == None:
 	rootfs = Dir('#../../nfsroot').abspath
 is_nandrootfs 		= rootfs.startswith('/media')
 if not is_nandrootfs:
-	rootfs			= os.path.join(rootfs, 'Didj')
+	rootfs			= os.path.join(rootfs, 'LF')
 	if not os.path.exists(rootfs):
 		os.mkdir(rootfs)
 

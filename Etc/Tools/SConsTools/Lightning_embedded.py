@@ -31,7 +31,7 @@ def PlatformMods(env):
 		rootfs = os.path.normpath(os.path.join(__file__, '../../../../../../nfsroot'))
 	if not rootfs.startswith('/media'):
 		env.Append(CPPPATH = [os.path.join(rootfs, 'usr', 'include')])
-		rootfs = os.path.join(rootfs, 'Didj')
+		rootfs = os.path.join(rootfs, 'LF')
 	env.Append(LIBPATH = [os.path.join(rootfs, 'Base', 'Brio', 'lib')])
 
 	extinc = os.getenv('EXTRA_LINUX_HEADER_DIR')

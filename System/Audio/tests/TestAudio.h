@@ -47,7 +47,7 @@ inline CPath GetAudioRsrcFolder( void )
 	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
 	return dir + "Audio/";
 #else	// EMULATION
-	return "/Didj/Base/Brio/rsrc/Audio/";
+	return "/LF/Base/Brio/rsrc/Audio/";
 #endif	// EMULATION
 }
 

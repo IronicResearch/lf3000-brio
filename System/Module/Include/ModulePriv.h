@@ -23,7 +23,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 	inline CPath GetModuleLibraryLocation()
 	{
-		return "/Didj/Base/Brio/Module/";
+		return "/LF/Base/Brio/Module/";
 	}
 	
 #else // !EMULATION

@@ -18306,3 +18306,29 @@ By Dave Milici (dmilici@leapfrog.com) on 6/3/09 11:04 AM
 5,657 ms. (Cumulative: 5,792,056 ms)
 
 ----------------
+Revision 4,465 from svn://localhost/TRUNK/:
+Revision 4,466 from svn://localhost/TRUNK/:
+Revision 4,467 from svn://localhost/TRUNK/:
+Revision 4,468 from svn://localhost/TRUNK/:
+Revision 4,469 from svn://localhost/TRUNK/:
+Revision 4,470 from svn://localhost/TRUNK/:
+Revision 4,471 from svn://localhost/TRUNK/:
+Revision 4,472 from svn://localhost/TRUNK/:
+Revision 4,473 from svn://localhost/TRUNK/:
+Revision 4,474 from svn://localhost/TRUNK/:
+Revision 4,475 from svn://localhost/TRUNK/:
+Revision 4,476 from svn://localhost/TRUNK/:
+Revision 4,477 from svn://localhost/TRUNK/:
+Revision 4,478 from svn://localhost/TRUNK/:
+Revision 4,479 from svn://localhost/TRUNK/:
+Revision 4,480 from svn://localhost/TRUNK/:
+Revision 4,481 from svn://localhost/TRUNK/:
+
+Change Brio root device directory from /Didj to /LF for massive directory reorganization on Emerald 0.5.1 build.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/5/09 1:41 PM
+8 changed, 0 added, 0 deleted.
+5,907 ms. (Cumulative: 5,798,119 ms)
+
+----------------
