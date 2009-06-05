@@ -36,7 +36,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 		// Interim check for DOOM sentinel file since it is permissible 
 		// for AppManager to keep running while USB connected on Emerald
 		struct stat buf;
-		if (stat("/Didj/doom", &buf) == 0) {
+		if (stat("/LF/doom", &buf) == 0) {
 			data.USBDeviceState = kUSBDeviceConnected;
 			return data;
 		}

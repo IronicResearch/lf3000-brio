@@ -22,7 +22,7 @@ inline CPath GetTestRsrcFolder( )
 	CPath dir = EmulationConfig::Instance().GetCartResourceSearchPath();
 	return dir + "Font/";
 #else	// EMULATION
-	return "/Didj/Base/Brio/rsrc/Font/";
+	return "/LF/Base/Brio/rsrc/Font/";
 #endif	// EMULATION
 }
 

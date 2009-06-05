@@ -62,7 +62,7 @@ tAudioContext gAudioContext;
 const CURI	kModuleURI = "/Somewhere/AudioModule";
 
 const char	kFostersMidiName[] = "FaceOff";
-const CPath kFostersMidiOgg  = "/Didj/Base/UniversalAudio/FaceOff.ogg";
+const CPath kFostersMidiOgg  = "/LF/Base/UniversalAudio/FaceOff.ogg";
 
 // single instance of module object.
 static CAudioModule* sinst = NULL;
