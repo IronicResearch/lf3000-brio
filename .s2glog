@@ -18332,3 +18332,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/5/09 1:41 PM
 5,907 ms. (Cumulative: 5,798,119 ms)
 
 ----------------
+Revision 4,482 from svn://localhost/TRUNK/:
+
+Modify Brio SDK examples and build scripts to use new Emerald 0.5.1 folder structure.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/5/09 3:18 PM
+2 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 5,804,135 ms)
+
+----------------

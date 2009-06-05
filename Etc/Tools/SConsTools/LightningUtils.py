@@ -237,20 +237,20 @@ def RetrieveOptions(args, root_dir):
 	
 	#FIXME/tp: Is this the best mechanism for allowing alternate nfsroot locations?
 	# Target rootfs path may be USB device mount point instead of NFS path 
-	# USB mount point for NAND partition contains implicit /Didj root path
-	# NFS mount point needs explicit /Didj root path prepended
+	# USB mount point for NAND partition contains implicit /LF root path
+	# NFS mount point needs explicit /LF device root path prepended
 	rootfs = os.getenv('ROOTFS_PATH')
 	if rootfs == None:
 		rootfs = os.path.normpath(os.path.join(root_dir, '..', '..', 'nfsroot'))
 	is_nandrootfs 		= rootfs.startswith('/media')
 	if not is_nandrootfs:
-		rootfs			= os.path.join(rootfs, 'Didj')
+		rootfs			= os.path.join(rootfs, 'LF')
 
 	#FIXME/tp: add mods for type == 'publish' here
 	if is_emulation:
 		bin_deploy_dir	= os.path.join(root_dir, 'Build', target_subdir)
 	else:
-		bin_deploy_dir	= os.path.join(rootfs, 'Base', 'Brio', 'bin')
+		bin_deploy_dir	= os.path.join(rootfs, 'Bulk', 'ProgramFiles')
 		SCons.Script.Default(bin_deploy_dir)
 		
 	if type == 'publish':
@@ -323,7 +323,7 @@ def CopyResources(penv, vars, psubfolder):
 		return
 	data_root = penv.Dir('#Build/rsrc').abspath
 	root_len = len(data_root) + 1
-	rootfs_data = os.path.join(vars['rootfs'], 'Data')
+	rootfs_data = os.path.join(vars['rootfs'], 'Bulk', 'ProgramFiles')
 	if not os.path.exists(rootfs_data):
 		os.mkdir(rootfs_data)	
 	rootfs_data = os.path.join(rootfs_data, psubfolder)
@@ -373,7 +373,7 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	else:
 		ogl	= vars['variant'] == 'LF1000' and ['opengles_lite'] or ['ogl']
 		platformlibs = ['dl', 'pthread', 'ustring', 'iconv', 'intl', 'sigc-2.0']
-		#RC CopyResources(penv, vars, psubfolder)
+		CopyResources(penv, vars, ptarget)
 	
 	# Set up targets
 	exe		= os.path.join(vars['intermediate_build_dir'], ptarget)
@@ -388,7 +388,8 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	objs  = bldenv.Object(srcs)
 	myapp = bldenv.Program(exe, objs, LIBS = plibs + platformlibs)
 	targets = vars['is_emulation'] and [myapp, mapfile] or [myapp]
-	penv.Install(vars['bin_deploy_dir'], targets)
+	binpath = os.path.join(vars['bin_deploy_dir'], ptarget)
+	penv.Install(binpath, targets)
 	
 	return objs
 
