@@ -18354,3 +18354,14 @@ By ytu (ytu@leapfrog.com) on 6/8/09 10:34 AM
 5,641 ms. (Cumulative: 5,809,870 ms)
 
 ----------------
+Revision 4,487 from svn://localhost/TRUNK/:
+
+loglevel change
+1) LocalDebugLevel_ controls only print to console.
+2) masterDebugLevel_ controls logging into Flight Recorder, localDebuglevel_ has no control over logging into Flight Recorder.
+
+By ytu (ytu@leapfrog.com) on 6/8/09 10:37 AM
+1 changed, 0 added, 0 deleted.
+5,610 ms. (Cumulative: 5,815,558 ms)
+
+----------------

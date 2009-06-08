@@ -32,7 +32,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 #define LF_LOG(ident, level, des) \
 do { \
-	printf(des); \
 	openlog(ident, LOG_CONS | LOG_NDELAY, LOG_LOCAL4); \
 	syslog(DebugLevel2LogLevel[level], des); \
 }while(0)
@@ -68,8 +67,14 @@ enum  {
 	kDebugOutFormatErr		= 0x0004
 };
 
+enum  {
+	kOutputNone	= 0x0000,
+	kOutputConsole = 0x0001,
+	kOutputSyslog	 = 0x0002,
+};
 
-tDebugLevel	CDebugMPI::masterDebugLevel_ = kDbgLvlVerbose;
+
+tDebugLevel	CDebugMPI::masterDebugLevel_ = kDbgLvlValuable;
 Boolean		CDebugMPI::timestampDebugOut_ = false;
 Boolean		CDebugMPI::throwOnAssert_ = false;
 
@@ -150,13 +155,13 @@ namespace
 	//		Calls the Kernel module's printf.  
 	//==========================================================================
 	//--------------------------------------------------------------------------
-	void DebugOutPriv( tDebugSignature sig, tDebugLevel lvl,
+	void DebugOutPriv(int outFlag, tDebugSignature sig, tDebugLevel lvl,
 					const char* errString, Boolean timestampEnable,
 					const char * formatString, va_list arguments)
-			__attribute__ ((format (printf, 5, 0)));
+			__attribute__ ((format (printf, 6, 0)));
 	
 	//--------------------------------------------------------------------------
-	void DebugOutPriv( tDebugSignature sig, tDebugLevel lvl,
+	void DebugOutPriv(int outFlag, tDebugSignature sig, tDebugLevel lvl,
 					const char* errString, Boolean timestampEnable,
 					const char * formatString, va_list arguments )
 	{
@@ -188,19 +193,23 @@ namespace
 		// va_list argumentsnow output the requested data.
 		vsnprintf(&outstr[nc], MAX_LOGGING_MSG_LEN-nc, formatString, arguments);
 		
-		LF_LOG("Emerald App", lvl, outstr);
+		if(outFlag & kOutputConsole) {
+			printf(outstr);
+		}
+		
+		if(outFlag & kOutputSyslog) {
+			LF_LOG("Emerald App", lvl, outstr);
+		}
 	}
 
 	//--------------------------------------------------------------------------
-	void AssertPriv(tDebugSignature sig,
-						 tDebugLevel flagDebugLevel,
+	void AssertPriv(int outFlag, tDebugSignature sig,
 						const char* errString, const char * formatString, 
 						va_list arguments )
 			__attribute__ ((format (printf, 4, 0)));
 	
 	//--------------------------------------------------------------------------
-	void AssertPriv( tDebugSignature sig, 
-						tDebugLevel flagDebugLevel,
+	void AssertPriv( int outFlag, tDebugSignature sig, 
 						const char* errString, const char * formatString, 
 						va_list arguments )
 	{
@@ -224,8 +233,14 @@ namespace
 		
 		n = vsnprintf(&outstr[nc], MAX_LOGGING_MSG_LEN-nc, formatString, arguments );
 
-		LF_LOG("Emerald App", kDbgLvlCritical, outstr);
-
+		if(outFlag & kOutputConsole) {
+			printf(outstr);
+		}
+		
+		if(outFlag & kOutputSyslog) {
+			LF_LOG("Emerald App", kDbgLvlCritical, outstr);
+		}
+		
 		// In Emerald, Application doesn't power down the device
 		// kernel.PowerDown();
 	}
@@ -236,58 +251,109 @@ namespace
 // DebugOut functions
 //==============================================================================
 //----------------------------------------------------------------------------
-void CDebugMPI::DebugOut( tDebugLevel lvl, const char * formatString, ... ) const
+void CDebugMPI::DebugOut( tDebugLevel level, const char * formatString, ... ) const
 {
-	// check both local debug level, master debug level, signature
-	if (DebugOutIsEnabled(sig_, lvl)) {
-		
+	int flag = kOutputNone;
+	
+	// check local debug level affect console output
+	if (level <= localDebugLevel_) {
+		flag |= kOutputConsole;
+	}
+	
+	// check master debug level, affect syslog
+	if(level <= masterDebugLevel_) {
+		flag |= kOutputSyslog;
+	}
+	
+	if(flag != kOutputNone) {
 		va_list arguments;
 		va_start( arguments, formatString );
-		DebugOutPriv( sig_, lvl, NULL, TimestampIsEnabled(), formatString, arguments );
-		va_end( arguments );
+		DebugOutPriv(flag, sig_, level, NULL, TimestampIsEnabled(), formatString, arguments);
+		va_end( arguments );		
 	}
 }
 
 //----------------------------------------------------------------------------
-void CDebugMPI::VDebugOut( tDebugLevel lvl, const char * formatString, 
+void CDebugMPI::VDebugOut( tDebugLevel level, const char * formatString, 
 							va_list arguments ) const
 {
-	if (DebugOutIsEnabled(sig_, lvl)) {
-		DebugOutPriv( sig_, lvl, NULL, TimestampIsEnabled(), formatString, arguments );
+	int flag = kOutputNone;
+	
+	// check local debug level affect console output
+	if (level <= localDebugLevel_) {
+		flag |= kOutputConsole;
+	}
+	
+	// check master debug level, affect syslog
+	if(level <= masterDebugLevel_) {
+		flag |= kOutputSyslog;
+	}
+	
+	if(flag != kOutputNone) {
+		DebugOutPriv(flag, sig_, level, NULL, TimestampIsEnabled(), formatString, arguments );
 	}
 }
 
 //----------------------------------------------------------------------------
-void CDebugMPI::DebugOutErr( tDebugLevel lvl, tErrType err, 
+void CDebugMPI::DebugOutErr( tDebugLevel level, tErrType err, 
 							const char * formatString, ... ) const
 {
-	const char *errstr;
+	int flag;
 
+	const char *errstr;
 	errstr = ErrToStr(err);
+	
+	flag = kOutputConsole | kOutputSyslog;	
 	
 	va_list arguments;
 	va_start( arguments, formatString );
-	DebugOutPriv( sig_, kDbgLvlCritical, errstr, TimestampIsEnabled(), formatString, arguments );
+	DebugOutPriv(flag, sig_, kDbgLvlCritical, errstr, TimestampIsEnabled(), formatString, arguments );
 	va_end( arguments );
 }
-//----------------------------------------------------------------------------
-void CDebugMPI::DebugOutLiteral( tDebugLevel lvl, const char * formatString, 
+
+//----------------This function is the same as DebugOut, provided for backward compatibility
+void CDebugMPI::DebugOutLiteral( tDebugLevel level, const char * formatString, 
 								... ) const
 {
-	if (DebugOutIsEnabled(sig_, lvl)) {	
+	int flag = kOutputNone;
+	
+	// check local debug level affect console output
+	if (level <= localDebugLevel_) {
+		flag |= kOutputConsole;
+	}
+	
+	// check master debug level, affect syslog
+	if(level <= masterDebugLevel_) {
+		flag |= kOutputSyslog;
+	}
+
+	if(flag != kOutputNone) {
 		va_list arguments;
 		va_start( arguments, formatString );
-		DebugOutPriv( sig_, lvl, NULL, TimestampIsEnabled(), formatString, arguments );
-		va_end( arguments );
+		DebugOutPriv(flag, sig_, level, NULL, TimestampIsEnabled(), formatString, arguments);
+		va_end( arguments );		
 	}
+	
 }
 
-//----------------------------------------------------------------------------
-void CDebugMPI::VDebugOutLiteral( tDebugLevel lvl, const char * formatString, 
+//----------------This function is the same as VDebugOut, provided for backward compatibility
+void CDebugMPI::VDebugOutLiteral( tDebugLevel level, const char * formatString, 
 									va_list arguments ) const
 {
-	if (DebugOutIsEnabled(sig_, lvl)) {
-		DebugOutPriv( sig_, lvl, NULL, TimestampIsEnabled(), formatString, arguments );
+	int flag = kOutputNone;
+	
+	// check local debug level affect console output
+	if (level <= localDebugLevel_) {
+		flag |= kOutputConsole;
+	}
+	
+	// check master debug level, affect syslog
+	if(level <= masterDebugLevel_) {
+		flag |= kOutputSyslog;
+	}
+	
+	if(flag != kOutputNone) {
+		DebugOutPriv(flag, sig_, level, NULL, TimestampIsEnabled(), formatString, arguments );
 	}
 }
 
@@ -315,15 +381,19 @@ void CDebugMPI::VDebugOutLiteral( tDebugLevel lvl, const char * formatString,
 //----------------------------------------------------------------------------
 void CDebugMPI::Warn( const char * formatString, ... ) const
 {
+	int flag = kOutputConsole | kOutputSyslog;
+
 	va_list arguments;
 	va_start( arguments, formatString );
-	DebugOutPriv(sig_, kDbgLvlImportant, NULL, TimestampIsEnabled(), formatString, arguments);
+	DebugOutPriv(flag, sig_, kDbgLvlImportant, NULL, TimestampIsEnabled(), formatString, arguments);
 	va_end( arguments );
 }
 
 //----------------------------------------------------------------------------
 void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 {
+	int flag = kOutputConsole | kOutputSyslog;
+	
 	if (!testResult)
 	{
 		if(ThrowOnAssertIsEnabled()) {
@@ -332,10 +402,9 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 		} else {
 			va_list arguments;
 			va_start( arguments, formatString );
-			AssertPriv(sig_, kDbgLvlCritical, NULL, formatString, arguments );
+			AssertPriv(flag, sig_, NULL, formatString, arguments );
 			va_end( arguments );
 		}
-		
 	}
 }
 
@@ -343,6 +412,8 @@ void CDebugMPI::Assert( int testResult, const char * formatString, ... ) const
 //----------------------------------------------------------------------------
 void CDebugMPI::AssertNoErr( tErrType err, const char * formatString, ... ) const
 {
+	int flag = kOutputConsole | kOutputSyslog;
+	
 	if (err != kNoErr)
 	{
 		if(ThrowOnAssertIsEnabled()) {
@@ -355,7 +426,7 @@ void CDebugMPI::AssertNoErr( tErrType err, const char * formatString, ... ) cons
 			
 			va_list arguments;
 			va_start( arguments, formatString );
-			AssertPriv(sig_, kDbgLvlCritical, errstr, formatString, arguments );
+			AssertPriv(flag, sig_, errstr, formatString, arguments );
 			va_end( arguments );
 		}
 			
@@ -380,7 +451,7 @@ void CDebugMPI::EnableDebugOut( tDebugSignature sig )
 
 Boolean CDebugMPI::DebugOutIsEnabled( tDebugSignature sig, tDebugLevel level ) const
 {
-	if ((level > masterDebugLevel_ ) || (level > localDebugLevel_))
+	if (level > localDebugLevel_)
 		return false;
 	else
 		return true;
