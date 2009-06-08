@@ -25,16 +25,12 @@ const char* const ErrToStr( tErrType error );
 
 /// \class CDebugMPI
 ///
-///   The debug interface is designed to provide unified interfaces for accessing console output and
-///   "Flight Recorder". 
+///   The CDebugMPI interface is designed to provide unified interfaces for accessing console output and
+///   "Flight Recorder".  The debug interface will generate both console output and "Flight Recorder"
+///   logging when debug level is properly set. Any module or application should go through these interfaces
+///   for accessing console output and logging into "Flight Recorder"
 ///
-///   The debug interface will generate both console output and "Flight Recorder" logging when debug level
-///   is set properly.
-/// 
-///   Any module or application should go through these interfaces for accessing console output and 
-///   logging into "Flight Recorder"
-///
-///  "Console output" is a the result of printf statement.
+///   "Console output" is the result of printf statement.
 ///
 ///   The level of "console output" can be controlled through
 ///		SetDebugLevel( tDebugLevel newLevel );
@@ -42,31 +38,34 @@ const char* const ErrToStr( tErrType error );
 ///   of the CDebugMPI object remains unchanged.
 ///
 ///   The default level for "console output" is
-///			 kDbgLvlValuable
-///   Please note: console output level has no impact on "Flight Recorder"
+///              - kDbgLvlValuable
+///
+///   \note Console output level has no impact on "Flight Recorder"
 ///
 ///
 ///   "Flight Recorder" is a persistent storage facility for logging important events, warnings, and errors.
 ///   The following are examples that should log into "Flight Recorder"
-///		* File open errors
-///		* Profile creation and deletion
-/// 		* Running out of memeory
-/// 		* Low battery events.
+///		- File open errors
+///		- Profile creation and deletion
+/// 		- Running out of memeory
+/// 		- Low battery events.
+///   
 ///   The Flight Recorder logging level is controlled through:
 ///		SetMasterDebugLevel(tDebugLevel newLevel);
 ///   The API is meant for "system monitor deamon" to control the overall Flight Recorder level, any individual
 ///   module or game should NOT try to set the master debug level.
 ///
 ///   The default level for Flight Recorder is
-///			 kDbgLvlValuable
+///               - kDbgLvlValuable
 ///
 ///   Each module that wishes to use the debug interface should identify itself with an unique "signature"
 ///   The signature allows the module message to be easily distinguishable in "Flight Recorder"
 ///   The signature is passed in through constructor
 ///
-///   It is not recommended to use the debug interface to print out high frequent messages.
-///   If you have to log repeatitive messages, try to use the level of kDbgLvlVerbose.
+///   \note It is not recommended to use the debug interface to print out high frequent messages.
+///   If you have to log repeatitive messages, set the message level to kDbgLvlVerbose.
 ///
+///   \sa Debugtypes.h for available level
 ///
 //==============================================================================
 class CDebugMPI  : public ICoreMPI{
