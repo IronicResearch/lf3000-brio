@@ -18383,3 +18383,16 @@ By ytu (ytu@leapfrog.com) on 6/8/09 3:35 PM
 5,641 ms. (Cumulative: 5,827,059 ms)
 
 ----------------
+Revision 4,490 from svn://localhost/TRUNK/:
+Revision 4,491 from svn://localhost/TRUNK/:
+Revision 4,492 from svn://localhost/TRUNK/:
+Revision 4,493 from svn://localhost/TRUNK/:
+Revision 4,494 from svn://localhost/TRUNK/:
+
+Modify SDK utils script to locate emulation apps in original local build directory.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/8/09 7:24 PM
+1 changed, 0 added, 0 deleted.
+6,021 ms. (Cumulative: 5,833,174 ms)
+
+----------------
