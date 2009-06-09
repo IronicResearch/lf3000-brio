@@ -388,7 +388,10 @@ def MakeMyApp(penv, ptarget, psources, plibs, vars):
 	objs  = bldenv.Object(srcs)
 	myapp = bldenv.Program(exe, objs, LIBS = plibs + platformlibs)
 	targets = vars['is_emulation'] and [myapp, mapfile] or [myapp]
-	binpath = os.path.join(vars['bin_deploy_dir'], ptarget)
+	if vars['is_emulation']:
+		binpath = vars['bin_deploy_dir']
+	else:
+		binpath = os.path.join(vars['bin_deploy_dir'], ptarget)
 	penv.Install(binpath, targets)
 	
 	return objs
