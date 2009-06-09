@@ -18406,3 +18406,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/9/09 9:36 AM
 6,188 ms. (Cumulative: 5,839,441 ms)
 
 ----------------
+Revision 4,497 from svn://localhost/TRUNK/:
+Revision 4,498 from svn://localhost/TRUNK/:
+
+Add internal object reference counting for more practical button emulation support.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/9/09 10:05 AM
+1 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 5,845,597 ms)
+
+----------------
