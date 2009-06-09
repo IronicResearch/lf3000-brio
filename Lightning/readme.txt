@@ -2,16 +2,20 @@
 Lightning SDK
 ======================================================
 
-The SDK and all embedded binaries have been rebuilt with a new cross-compiler (RidgeRun).
-You *MUST* rebuild all your embedded binaries with this cross-compiler for subsequent releases.
+The Emerald SDK is based on Lightning platform SDK for C++ development.
+The following noteable differences between Emerald and Didj devices are:
 
+-- The Emerald device connects USB as Ethernet device, not mass storage.
+Telnet and FTP network sessions are used to communicate with the device. 
+-- There is new internal filesytem and volume structure which is not
+immediately compatible with Didj.
+-- The NFS root image is not used for booting the Emerald device.
+NFS mounting directories is still useful for development purposes.
+  
 Lightning SDKs typically consist of these parts:
 
 	LightningSDK_xxxx.tar.gz -Brio SDK components necessary for development.
-	bootstrap-xxxx.lfp		- bootstrap loader binaries in .lfp package.
-	firmware-xxxx.lfp		- kernel and rootfs binaries in .lfp package.
-	Brio-xxxx.lfp 			- Brio binaries to be copied onto target NAND partition via USB. 
-	nfsroot-svnxxxx.tar.gz  - optional nfsroot folder for booting the target board.
+	nfsroot-xxxx.tar.gz  	- optional nfsroot image folder for development.
                             
 The SDK can be unzipped as is and located anywhere.
 
@@ -23,49 +27,13 @@ onboard by a variety of methods described in the TargetSetup.txt file.
 
 The NFS root image must be unzipped as root user and located off the home user path.
 
-	$ sudo tar -xzvf nfsroot-svnxxx.tar.gz
-	$ mv nfsroot-svnxxx nfsroot
+	$ sudo tar -xzvf nfsroot-xxxx.tar.gz
+	$ mv nfsroot-xxxx nfsroot
 	
-The SDK and all embedded binaries have been rebuilt with a new cross-compiler.
-You *MUST* rebuild all your embedded binaries with this cross-compiler for subsequent releases.
-
 These pieces MUST be used together!  The <xxxx> numbers for a release will generally be
 the same for all three pieces.  Either way, make sure that you use only the pieces from a single 
 release together or you will almost certainly have problems.
 
-======================================================
-*** IMPORTANT NOTE ***: 
-======================================================
-
-The embedded target binaries are significantly different from previous releases. 
-This release now uses a fully embedded filesystem, with the option to expose
-NAND flash partitions as USB mounted devices.
-
-These binaries consist of the following:
-
-	lightning-boot.bin	- Lightning boot loader (replaces uniboot)
-	kernel.jffs2		- Linux kernel image (replaces zImage and u-boot)
-	erootfs.jffs2		- Embedded root filesystem (alternative to nfsroot)
-
-All 3 binaries need to be flashed into new locations described in TargetSetup.txt. 
-Beginning with LinuxDist release 0.10.0-2101, the binaries are delivered
-in .lfp package files, and no longer contain version numbers in their names.
-
-When transferred over USB connection from a host PC, the firmware-XXXX.lfp
-package file will automatically be flashed onboard after USB is disconnected.
-This is only applicable on units with at least version 0.10.0-2101 onboard.
-Otherwise the embedded binaries will need to be unpacked from the .lfp file
-and flashed using one of the manual methods described in TargetSetup.txt.
-
-To unpack the .lfp files for TFTP uploading:
-
-	$ lfpkg -a install -b ~/tftpboot -d . bootstrap-XXXX.lfp
-	$ lfpkg -a install -b ~/tftpboot -d . firmware-XXXX.lfp
-
-The NFS root filesystem may be used for continued development as alternative to
-the embedded root filesystem. You will need to set a flag file after booting the 
-embedded target to switch booting back to the NFS root filesystem.
-	
 ======================================================
 Installation
 ======================================================
@@ -154,99 +122,39 @@ be setup:
 	$ export LEAPFROG_PLUGIN_ROOT=/home/lfu/LightningSDK_<xxxx>
 
 ======================================================
-Target Preparation : mounting NAND partition via USB
+Target Preparation : networking to the device
 ======================================================
 
-In order to install application binaries and resources onto the embedded target board,
-a designated NAND partition is available for mounting as a USB mass storage device on
-the host development system.
+The Emerald device supports networking connectivity via Ethernet over USB.
+The device uses pre-assigned IP address at 192.168.0.111.
+The PC host should assign an IP address at 192.168.0.113.
 
-Internally the NAND partition is mounted at bootup as '/Didj'. You can verify this
-by listing all mounted devices and partitions at the target console prompt.
-
-	(target) # mount
+	$ sudo ifconfig eth1 192.168.0.113
 	
-To expose the NAND partition to the development system:
+When properly configured you should be able to ping the device.
 
-	(target) # usbctl -d mass_storage -a enable
-	(target) # usbctl -d mass_storage -a unlock
-
-Connecting a USB cable to the embedded target board should make the board appear as a
-mounted USB device. On Ubuntu Linux, the mounted device name is '/media/Didj'. This
-name should be set as the root filesystem path for the Lightning SDK.
-
-	(host) $ export ROOTFS_PATH=/media/Didj   
-
-Once mounted, the Brio binaries will need to copied onto the exposed NAND partition.
-This is intended to begin populating the /Didj directory after the board is reflashed.
-The Brio binaries are now delivered in .lfp package file, which may be unpacked
-on the /Didj NAND partition using the lfpkg tool on the target:
-
-	(target) # lfpkg -a install Brio-xxxx.pkg
-	  
-The same lfpkg script may also be executed on host side using an explicit -base path:
-
-	(host) $ lfpkg -a install -b /media/Didj Brio-xxxx.pkg 
+	$ ping 192.168.0.111	
 	
-Embedded target application binaries and resources will then be copied to their
-respective subdirectory locations on the mounted NAND partition. When copying files
-is completed and it is time to disconnect the USB cable, be sure to unmount (eject)
-the mounted device on the host side before disabling it from the target.  
+Telnet and FTP daemons are running on the device.
+To open a Telnet console session on the device:
 
-To remove the NAND partition from the development system:
-	 
-	(target) # usbctl -d mass_storage -a lock 
-	(target) # usbctl -d mass_storage -a disable
-
-Note that in order to insure filesystem coherency on the /Didj NAND partition,
-/Didj is always unmounted internally when enabled over USB, and remounted
-automatically when disabled over USB.  
-
-During development it might be convenient to keep the /Didj NAND partition unlocked,
-in which case the /Didj volume will appear mounted on the PC host anytime the USB
-enable command is issued. This is done by setting a flag file 'usb_mass_storage'.
-
-To leave the /Didj NAND partition unlocked:
-
-	(target) # echo UNLOCKED > /flags/usb_mass_storage
- 
+	$ telnet 192.168.0.113
 	
-======================================================
-Target Preparation : booting to NFS root filesystem 
-======================================================
+Once your Telnet session is active on the device, you should be able to
+execute commands from the device shell like:
 
-In situations it might be desirable to revert to booting the root filesystem over NFS
-instead of from NAND. Use of debugger and profiling tools which cannot fit into NAND
-partition would be examples.
+	# ls
+	# mount
+	# ping 192.168.0.113
 
-You would need to set a flag file on the embedded target to switch between booting from
-NAND root filesystem to NFS mounted root filesystem. 
+During a console session you can also copy files to the device via FTP:
 
-To examine the current root filesystem setting:
+	# ftpget -u lfu -p lfuser 192.168.0.113 Brio.lfp /home/lfu/payload/Brio-xxxx.lfp
 
-	(target) # cat /flags/rootfs
-
-To set NFS root filesystem booting:
-
-	(target) # echo NFS0 > /flags/rootfs
-	
-Restarting the embedded target should now complete booting at the NFS mounted location
-at Ethernet IP address 192.168.0.113 as previous releases (described below).
-
-In order to see files copied to the '/Didj' directory at the NFS mounted location,
-you will need to unmount the NAND partition.
-
-	(target) # umount /Didj
-	(target) # ls /Didj
-
-When building SDK apps, be sure ROOTFS_PATH is pointing to the NFS path on the
-development system.
-
-	(host) $ export ROOTFS_PATH=/home/lfu/nfsroot
-
-Embedded target application binaries and resources will then be copied to their
-respective subdirectory locations on the development system's NFS rootfs directory
-during SCons builds.
+The FTP server must be properly configured on your PC host, so subsequent
+FTP commands can refer to the logged in user ('lfu') and payload directory
+on the host (/home/lfu/payload). Note this 'payload' directory is commonly
+used in other device utility scripts. 
 
 ======================================================
 Target Preparation : installing nfsroot image
@@ -254,18 +162,47 @@ Target Preparation : installing nfsroot image
 
 If you are running on actual target hardware, you should probably have received
 an updated root file system with this code drop.  It should have been called
-something like nfsroot-svnxxx.tar.gz.  To install it, extract it to the
+something like nfsroot-xxxx.tar.gz.  To install it, extract it to the
 directory that you export via NFS to the target.  This directory is probably
 /home/lfu/nfsroot.  Note that you must be root to successfully untar the
 rootfs!!  The reason is that it must create device nodes.
 
-	$ sudo tar -xzvf nfsroot-svnxxx.tar.gz
-	$ mv nfsroot-svnxxx nfsroot
+	$ sudo tar -xzvf nfsroot-xxxx.tar.gz
+	$ mv nfsroot-xxxx nfsroot
 
 The environment variable ROOTFS_PATH should be set to point to the nfsroot path
 so the SDK build scripts will know where to install application binaries and resources.
 
 	$ export ROOTFS_PATH=/home/lfu/nfsroot
+
+Note the nfsroot image is no longer used for booting the device. However
+it does contain an image of the device which may be useful for development
+purposes.
+
+======================================================
+Target Preparation : NFS mounting 
+======================================================
+
+For development it might be convenient to NFS mount directories on your
+Linux PC host. Such NFS mounted directories would supercede those already
+embedded on the device for the duration of the NFS mount session. 
+
+To NFS mount the /LF root directory:
+
+	# mount -t nfs -o nolock 192.168.0.113:/home/lfu/nfsroot/LF /LF
+	
+To remove this NFS mount:
+
+	# umount /LF
+	
+To view the currently mounted volumes on the device:
+
+	# mount
+	
+The NFS shares can also be useful for remote debugging binaries which can remain
+on the host PC along with their source. For remote debugging SDK example:
+
+	# gdbserver 192.168.0.113:10000 /LF/Bulk/ProgramFiles/BrioCube/BrioCube
 
 ======================================================
 Running samples  -- Emulation

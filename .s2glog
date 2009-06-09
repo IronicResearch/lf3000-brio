@@ -18416,3 +18416,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/9/09 10:05 AM
 6,063 ms. (Cumulative: 5,845,597 ms)
 
 ----------------
+Revision 4,499 from svn://localhost/TRUNK/:
+Revision 4,500 from svn://localhost/TRUNK/:
+
+Updated SDK readme and setup notes for Emerald devices, removing outdated info from Didj devices and devboards. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/9/09 12:32 PM
+2 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 5,851,785 ms)
+
+----------------
