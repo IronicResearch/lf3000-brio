@@ -20,6 +20,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 
 static CButtonModule*	sinst = NULL;
+static int				refcnt = 0;
 
 //============================================================================
 // Ctor & dtor
@@ -30,13 +31,14 @@ CButtonModule::CButtonModule(void)
 		sinst = this;
 		InitModule();
 	}
+	refcnt++;
 }
 
 CButtonModule::~CButtonModule(void)
 {
-	if (sinst == this) {
+	refcnt--;
+	if (refcnt == 0) {
 		DeinitModule();
-		sinst = NULL;
 	}
 }
 
