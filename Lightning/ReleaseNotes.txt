@@ -3,6 +3,14 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.5.1.4500 (June 9, 2009)
+===========================================
+
+-- Fixes for SDK emulation support.
+
+-- DebugMPI separate levels for console and syslog messages.
+
+===========================================
 Brio v0.5.1.4482 (June 5, 2009)
 ===========================================
 
