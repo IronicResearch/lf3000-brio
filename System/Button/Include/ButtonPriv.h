@@ -14,6 +14,7 @@
 //
 //==============================================================================
 #include <SystemTypes.h>
+#include <StringTypes.h>
 #include <EventTypes.h>
 #include <ButtonTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
@@ -26,6 +27,16 @@ const CString			kButtonModuleName		= "Button";
 const CURI				kModuleURI				= "/LF/System/Button";
 const tVersion			kButtonModuleVersion	= 3;
 const tEventPriority	kButtonEventPriority	= 0;	//TBD/tp: make replacable?
+
+class CButtonModule
+{
+public:
+	CButtonModule(void);
+	~CButtonModule(void);
+	void InitModule(void);
+	void DeinitModule(void);
+	tButtonData GetButtonState() const;
+};
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_BUTTONPRIV_H

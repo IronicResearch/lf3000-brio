@@ -14,6 +14,8 @@ emulibs		= vars['is_emulation'] and ['X11'] or []
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 mpilibs		= ['Utility']
+if vars['is_emulation']:
+	mpisrcs = mpisrcs + modsrcs
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
