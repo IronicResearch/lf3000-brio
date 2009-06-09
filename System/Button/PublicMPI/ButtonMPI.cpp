@@ -79,11 +79,17 @@ tTouchData CTouchMessage::GetTouchState() const
 //----------------------------------------------------------------------------
 CButtonMPI::CButtonMPI() : pModule_(NULL)
 {
+#ifdef EMULATION	
+	pModule_ = new CButtonModule();
+#endif
 }
 
 //----------------------------------------------------------------------------
 CButtonMPI::~CButtonMPI()
 {
+#ifdef EMULATION	
+	delete pModule_;
+#endif
 }
 
 //----------------------------------------------------------------------------

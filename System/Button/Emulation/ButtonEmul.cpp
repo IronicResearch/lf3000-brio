@@ -20,6 +20,8 @@
 
 #include <ButtonPriv.h>
 #include <EmulationConfig.h>
+#include <CoreModule.h>
+#include <DebugMPI.h>
 #include <EventMPI.h>
 #include <KernelMPI.h>
 #include <KernelTypes.h>
@@ -103,7 +105,7 @@ void* EmulationButtonTask(void*)
 	dbg.DebugOut(kDbgLvlVerbose, "EmulationButtonTask: Started\n");
 
 	CEventMPI		eventmgr;
-	tButtonData		data;
+	tButtonData2		data;
  	data.buttonState = data.buttonTransition = 0;
 
 	U32 dw = EmulationConfig::Instance().GetLcdDisplayWindow();
@@ -144,6 +146,7 @@ void CButtonModule::InitModule()
 {
 	if( !kInUnitTest ) 
 	{
+		CDebugMPI	dbg_(kGroupButton);
 		gXDisplay = XOpenDisplay(kDefaultDisplay);
 		if (gXDisplay == NULL)
 			dbg_.DebugOut(kDbgLvlCritical, "CButtonModule::InitModule(): Emulation XOpenDisplay() failed, buttons disabled!\n");
@@ -173,6 +176,7 @@ void CButtonModule::DeinitModule()
 
 	void* 		retval;
 	// Terminate button handler thread, and wait before closing driver
+	CKernelMPI kernel_;
 	kernel_.CancelTask(handleButtonTask);
 	kernel_.JoinTask(handleButtonTask, retval);	
 }

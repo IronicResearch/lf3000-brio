@@ -18396,3 +18396,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/8/09 7:24 PM
 6,021 ms. (Cumulative: 5,833,174 ms)
 
 ----------------
+Revision 4,495 from svn://localhost/TRUNK/:
+Revision 4,496 from svn://localhost/TRUNK/:
+
+Reinstated ButtonMPI emulation via X keybd events using lightweight ButtonModule object (not based on CoreModule). Needed for SDK emulation support.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/9/09 9:36 AM
+4 changed, 1 added, 0 deleted.
+6,188 ms. (Cumulative: 5,839,441 ms)
+
+----------------
