@@ -138,7 +138,7 @@ When properly configured you should be able to ping the device.
 Telnet and FTP daemons are running on the device.
 To open a Telnet console session on the device:
 
-	$ telnet 192.168.0.113
+	$ telnet 192.168.0.111
 	
 Once your Telnet session is active on the device, you should be able to
 execute commands from the device shell like:
@@ -203,6 +203,13 @@ The NFS shares can also be useful for remote debugging binaries which can remain
 on the host PC along with their source. For remote debugging SDK example:
 
 	# gdbserver 192.168.0.113:10000 /LF/Bulk/ProgramFiles/BrioCube/BrioCube
+
+With /LF mounted as NFS share, the host PC would effectively be debugging at its
+local path: '/home/lfu/nfsroot/LF/Bulk/ProgramFiles/...'
+
+Reference Wiki for Remote Debugging with Eclipse:
+
+http://emma.leapfrog.com/display/BRIO/Remote+debugging+with+gdbserver+and+Eclipse 
 
 ======================================================
 Running samples  -- Emulation
