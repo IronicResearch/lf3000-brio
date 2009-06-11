@@ -3,10 +3,18 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.5.1.4522 (June 11, 2009)
+===========================================
+
+-- SDK notes updated.  
+
+-- Final 0.5.1 build candidate.
+
+===========================================
 Brio v0.5.1.4500 (June 9, 2009)
 ===========================================
 
--- Fixes for SDK emulation support.
+-- Fixes for SDK emulation support, including ButtonMPI emulation.
 
 -- DebugMPI separate levels for console and syslog messages.
 
@@ -15,6 +23,14 @@ Brio v0.5.1.4482 (June 5, 2009)
 ===========================================
 
 -- New Emerald 0.5.1 folder structure rooted at /LF device path.
+
+-- Relax mmap() flags used for OGL framebuffer mappings. /dev/mem 
+must be used instead of /dev/layer1 to satisfy virtual address 
+requests needed for OGL lib. Change OGL framebuffer mappings for 
+/dev/layer to avoid /dev/mem dependency. (Emerald #246)
+
+-- Additional USB state flags for transfers in progress, errors,
+and pending resets.
 
 ===========================================
 Brio v0.5.1.4443 (May 29, 2009)
