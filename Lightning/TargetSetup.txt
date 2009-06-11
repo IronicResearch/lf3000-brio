@@ -203,6 +203,13 @@ Target Preparation -- flashing instructions
 Flashing is performed differently on Emerald from Didj, and requires booting a special
 recovery kernel image which is available via ATAP cartridge or device hot-key sequence.
 
+A dedicated ATAP cartridge would be the simplest method to flash the device with
+all necessary payload packages onboard. 
+
+A universal ATAP cartridge makes it possible to grab payload packages from a payload
+directory on the host PC. This method requires that a valid 'lfu' user and
+'payload' directory be present for FTP transfers.
+
 http://emma.leapfrog.com/display/BRIO/Universal+ATAP
 
 ======================================================
