@@ -79,17 +79,13 @@ tTouchData CTouchMessage::GetTouchState() const
 //----------------------------------------------------------------------------
 CButtonMPI::CButtonMPI() : pModule_(NULL)
 {
-#ifdef EMULATION	
 	pModule_ = new CButtonModule();
-#endif
 }
 
 //----------------------------------------------------------------------------
 CButtonMPI::~CButtonMPI()
 {
-#ifdef EMULATION	
 	delete pModule_;
-#endif
 }
 
 //----------------------------------------------------------------------------
@@ -127,15 +123,13 @@ const CURI* CButtonMPI::GetModuleOrigin() const
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::RegisterEventListener(const IEventListener *pListener)
 {
-	CEventMPI eventmgr;
-	return eventmgr.RegisterEventListener(pListener);
+	return pModule_->eventmgr_.RegisterEventListener(pListener);
 }
 
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::UnregisterEventListener(const IEventListener *pListener)
 {
-	CEventMPI eventmgr;
-	return eventmgr.UnregisterEventListener(pListener);
+	return pModule_->eventmgr_.UnregisterEventListener(pListener);
 }
 
 //----------------------------------------------------------------------------
