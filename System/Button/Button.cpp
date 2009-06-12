@@ -25,11 +25,13 @@ static int				refcnt = 0;
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CButtonModule::CButtonModule(void)
+CButtonModule::CButtonModule(void) : dbg_(kGroupButton)
 {
 	if (sinst == NULL) {
 		sinst = this;
+#ifdef EMULATION
 		InitModule();
+#endif
 	}
 	refcnt++;
 }
@@ -38,7 +40,10 @@ CButtonModule::~CButtonModule(void)
 {
 	refcnt--;
 	if (refcnt == 0) {
+#ifdef EMULATION
 		DeinitModule();
+#endif
+		sinst = NULL;
 	}
 }
 

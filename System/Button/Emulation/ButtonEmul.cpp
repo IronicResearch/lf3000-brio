@@ -26,6 +26,7 @@
 #include <KernelMPI.h>
 #include <KernelTypes.h>
 #include <SystemErrors.h>
+#include <Utility.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -133,6 +134,7 @@ void* EmulationButtonTask(void*)
 			else
 				data.buttonState &= ~mask;
 			gLastState = data.buttonState;
+			SetButtonState(data);
 			CButtonMessage	msg(data);
 			eventmgr.PostEvent(msg, kButtonEventPriority);
 		}
@@ -146,21 +148,19 @@ void CButtonModule::InitModule()
 {
 	if( !kInUnitTest ) 
 	{
-		CDebugMPI	dbg_(kGroupButton);
 		gXDisplay = XOpenDisplay(kDefaultDisplay);
 		if (gXDisplay == NULL)
 			dbg_.DebugOut(kDbgLvlCritical, "CButtonModule::InitModule(): Emulation XOpenDisplay() failed, buttons disabled!\n");
 		XAutoRepeatOff(gXDisplay);
 		tErrType	status = kModuleLoadFail;
-		CKernelMPI	kernel;
 	
-		if( kernel.IsValid() )
+		if( kernel_.IsValid() )
 		{
 			tTaskHndl		handle;
 			tTaskProperties	properties;
 			properties.pTaskMainArgValues = NULL;
 			properties.TaskMainFcn = EmulationButtonTask;
-			status = kernel.CreateTask(handle, properties);
+			status = kernel_.CreateTask(handle, properties);
 			handleButtonTask = handle;
 		}
 		dbg_.Assert( status == kNoErr, 
@@ -176,7 +176,6 @@ void CButtonModule::DeinitModule()
 
 	void* 		retval;
 	// Terminate button handler thread, and wait before closing driver
-	CKernelMPI kernel_;
 	kernel_.CancelTask(handleButtonTask);
 	kernel_.JoinTask(handleButtonTask, retval);	
 }

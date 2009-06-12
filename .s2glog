@@ -18475,3 +18475,23 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 6/11/09 11:39 AM
 5,564 ms. (Cumulative: 5,870,179 ms)
 
 ----------------
+Revision 4,525 from svn://localhost/TRUNK/:
+Revision 4,526 from svn://localhost/TRUNK/:
+Revision 4,527 from svn://localhost/TRUNK/:
+Revision 4,528 from svn://localhost/TRUNK/:
+Revision 4,529 from svn://localhost/TRUNK/:
+Revision 4,530 from svn://localhost/TRUNK/:
+Revision 4,531 from svn://localhost/TRUNK/:
+Revision 4,532 from svn://localhost/TRUNK/:
+Revision 4,533 from svn://localhost/TRUNK/:
+Revision 4,534 from svn://localhost/TRUNK/:
+Revision 4,535 from svn://localhost/TRUNK/:
+Revision 4,536 from svn://localhost/TRUNK/:
+
+Enabled lightweight ButtonModule object to instantiate EventMPI during lifetime. On embedded target, this will activate the Event manager thread so that polling GetButtonData() will always return valid button states. (Emerald TTP #253)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/12/09 9:52 AM
+5 changed, 0 added, 0 deleted.
+5,692 ms. (Cumulative: 5,876,012 ms)
+
+----------------

@@ -17,6 +17,9 @@
 #include <StringTypes.h>
 #include <EventTypes.h>
 #include <ButtonTypes.h>
+#include <DebugMPI.h>
+#include <EventMPI.h>
+#include <KernelMPI.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -36,6 +39,11 @@ public:
 	void InitModule(void);
 	void DeinitModule(void);
 	tButtonData GetButtonState() const;
+private:
+	CDebugMPI			dbg_;
+	CKernelMPI			kernel_;
+public:
+	CEventMPI			eventmgr_;
 };
 
 LF_END_BRIO_NAMESPACE()	
