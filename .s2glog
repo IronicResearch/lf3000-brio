@@ -18536,3 +18536,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/15/09 12:32 PM
 5,673 ms. (Cumulative: 5,898,984 ms)
 
 ----------------
+Revision 4,545 from svn://localhost/TRUNK/:
+
+Need KernelMPI object during DisplayMPI module lifetime to avoid segfaults when object is destroyed. (Emerald #247)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/15/09 1:27 PM
+2 changed, 0 added, 0 deleted.
+5,642 ms. (Cumulative: 5,904,688 ms)
+
+----------------
