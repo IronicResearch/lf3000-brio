@@ -19,6 +19,7 @@
 #include <DisplayTypes.h>
 #include <DebugMPI.h>
 #include <EventMPI.h>
+#include <KernelMPI.h>
 
 #ifdef EMULATION
 #include <X11/Xlib.h>
@@ -365,6 +366,7 @@ private:
 	void				SetDirtyBit(int layer);
 	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
 	CDebugMPI			dbg_;
+	CKernelMPI			kernel_;
 	CEventMPI			eventmgr_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
