@@ -18518,3 +18518,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/15/09 9:59 AM
 5,642 ms. (Cumulative: 5,887,561 ms)
 
 ----------------
+Revision 4,543 from svn://localhost/TRUNK/:
+
+Added clean options to doxygen build step in order to regenerate fresh html docs.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/15/09 11:56 AM
+1 changed, 0 added, 0 deleted.
+5,625 ms. (Cumulative: 5,893,249 ms)
+
+----------------
