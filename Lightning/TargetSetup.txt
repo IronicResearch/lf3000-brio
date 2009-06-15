@@ -6,24 +6,16 @@ Emerald devices used for development are all form-factor devices which use
 Ethernet-over-USB connectivity for communications. (There is no separate
 development board used for Emerald development, so ignore any outdated references.)
 
-The following target setup instructions were previously included in the SDK Readme.txt
-file. They have been split off into this separate file for sake of clarity. Many of
-these instructions need only be done once the first time a developer receives a
-Lightning board with the SDK. 
-
 ======================================================
-Lightning Target Board Requirements
+Emerald Development Environment Requirements
 ======================================================
 
-The Lightning board needs to be connected to the PC host development system with
+The Emerald device needs to be connected to the PC host development system with
 the following cables:
 
-	USB Ethernet adapter (preferred over builtin host Ethernet)
+	USB device cable (gadget connector supplied for normal use)
+	serial cable with LeapFrog RS232 interface board (optional) 
 	
-It is recommended to use a USB Ethernet adapter for network communications with the
-PC host development system and the Lightning target board. A LinkSys brand USB Ethernet
-adapter is preferred over Belkin brand. 
-
 The PC host development system (Ubuntu Linux) should have the following packages
 installed and running:
 
@@ -79,9 +71,21 @@ Once connected, set IP address on ubuntu (Emerald takes care of itself correctly
 
       $ sudo ifconfig `ifconfig | grep -i 00:dc:c8:f7:75:05 | awk '{{ print $1 }}'` 192.168.0.113
 
-* Note the FTP commands in these HOWTO notes assume you are running as user 'lfu' on PC host, as typically done on VMWare image.
-      If you are running as another user, you'll need to create user 'lfu', and place all payload files in /home/lfu path in order to use the FTP scripts as-is.
+Since a typical host PC will already have its onboard Ethernet adaptor assigned to
+host device 'eth0', connecting a USB cable from the PC to the Emerald device will
+usually show up as device 'eth1'. This means the preceding command would typically
+be simplified to:
 
+      $ sudo ifconfig eth1 192.168.0.113
+      
+To test the connection is working:
+
+      $ ping 192.168.0.111
+
+Note the FTP commands in these HOWTO notes assume you are running as user 'lfu' on 
+PC host, as typically done on VMWare image. If you are running as another user, 
+you'll need to create user 'lfu', and place all payload files in '/home/lfu/payload'
+path in order to use Emerald's FTP scripts as-is.
 
 ======================================================
 Target Preparation -- setting up NFS
@@ -94,10 +98,8 @@ You only need to do these steps if your development system hasn't already
 been configured for NFS.
 
 **** VMWare Note ****:
-It is recommended to use a USB Ethernet adapter for network communications with the
-target board when running Linux under VMWare emulation. You only need to have
-network communications while Linux is running. It is highly recommended that
-VMWare and its Windows host *not* be aware the network adapter is even installed
+It is highly recommended that you connect to Emerald while in the VMWare session.
+VMWare's Windows host should *not* be aware the network connection is even active
 in order to avoid IP address configuration problems.
 
 Your development system image will need to have an NFS server installed
@@ -109,16 +111,10 @@ and running, and one network adapter configured at the fixed IP address
 	
 	$ sudo ifconfig eth1 192.168.0.113 up
 
-The network IP address configuration should be put in a startup script. 
-Note the development system used with Lightning testboard used 'xinetd' 
-instead of 'inetd'.
-
 	$ sudo apt-get install xinetd
 	$ sudo /etc/init.d/xinetd start
 
-The Lightning test board will be flashed with a Linux kernel image which 
-will attempt to NFS mount its root filesystem at this IP address. The test 
-board will be configured to use IP address 192.168.0.111, so this may need 
+Emerald will be configured to use IP address 192.168.0.111, so this may need 
 to be added to list of allowable addresses in /etc/hosts.allow if firewall
 iptables service is running.
 
