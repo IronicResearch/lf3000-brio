@@ -187,7 +187,7 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 		bldenv.Append(CPPPATH  = [os.path.join(source_dir, priv_incs)])
 		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile)
 		if vars['is_debug']:
-			bldenv.Append(CCFLAGS = '-g')
+			bldenv.Append(CCFLAGS = '-g -O0')
 #		else:
 #			bldenv.Append(LINKFLAGS = '-Wl,--strip-all')
 		if vars['is_monolithic']:

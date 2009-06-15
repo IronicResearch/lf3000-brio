@@ -310,7 +310,7 @@ def CreateEnvironment(opts, vars):
 	env.Append(RPATH = libpaths + [os.path.join(cdevkit_dir, 'Libs', target_subdir, 'PrivMPI')])
 
 	if vars['is_debug']:
-		env.Append(CCFLAGS = '-g')
+		env.Append(CCFLAGS = '-g -O0')
 
 	return env
 
