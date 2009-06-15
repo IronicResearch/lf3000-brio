@@ -18527,3 +18527,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/15/09 11:56 AM
 5,625 ms. (Cumulative: 5,893,249 ms)
 
 ----------------
+Revision 4,544 from svn://localhost/TRUNK/:
+
+Remove temporary doom file check and vbus flag overide to return actual USB connected state. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/15/09 12:32 PM
+1 changed, 0 added, 0 deleted.
+5,673 ms. (Cumulative: 5,898,984 ms)
+
+----------------
