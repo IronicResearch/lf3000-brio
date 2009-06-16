@@ -42,7 +42,7 @@
 LF_BEGIN_BRIO_NAMESPACE() 
 
 //Maximum number of input drivers to discover
-#define NUM_INPUTS 4
+#define NUM_INPUTS	5
 
 namespace
 {
@@ -201,10 +201,10 @@ namespace
 
 	int button_index = -1;
 	tButtonData2 button_data;
+
 	// init button driver and state
 	button_data.buttonState = 0;
 	button_data.buttonTransition = 0;
-		
 	event_fd[last_fd].fd = open_input_device("LF1000 Keyboard");
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
@@ -255,10 +255,10 @@ namespace
 	int usb_index = -1;
 	int vbus;
 	tUSBDeviceData	usb_data;	
+
 	// init USB driver and state
 	usb_data = GetCurrentUSBDeviceState();
 	vbus = usb_data.USBDeviceState;
-	
 	event_fd[last_fd].fd = open_input_device("LF1000 USB");
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
@@ -270,6 +270,20 @@ namespace
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
 	}
 	
+	// init USB socket
+	int socket_index = -1;
+	event_fd[last_fd].fd = CreateListeningSocket(USB_SOCK);
+	event_fd[last_fd].events = POLLIN;
+	if(event_fd[last_fd].fd >= 0)
+	{
+		socket_index = last_fd++;
+	}
+	else
+	{
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open socket %s\n", USB_SOCK);
+	}
+	
+	// init touchscreen driver
 	int touch_index = -1;
 	tTouchData touch_data;
 	
@@ -386,6 +400,22 @@ namespace
 						CUSBDeviceMessage usb_msg(usb_data);
 						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
 					}
+				}
+			}
+
+			// USB socket event ?
+			if (socket_index >= 0 && event_fd[socket_index].revents & POLLIN) {
+				struct sockaddr addr;
+				socklen_t size = sizeof(struct sockaddr);
+				int fdsock = accept(event_fd[socket_index].fd, &addr, &size);
+				if (fdsock >= 0) {
+					int r = recv(fdsock, &app_msg, sizeof(app_message), 0);
+					if (r == sizeof(app_message)) {
+						usb_data.USBDeviceState |= app_msg.payload;
+						CUSBDeviceMessage usb_msg(usb_data);
+						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
+					}
+					close(fdsock);
 				}
 			}
 			
