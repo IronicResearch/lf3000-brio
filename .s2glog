@@ -18545,3 +18545,30 @@ By Dave Milici (dmilici@leapfrog.com) on 6/15/09 1:27 PM
 5,642 ms. (Cumulative: 5,904,688 ms)
 
 ----------------
+Revision 4,546 from svn://localhost/TRUNK/:
+Revision 4,547 from svn://localhost/TRUNK/:
+Revision 4,548 from svn://localhost/TRUNK/:
+Revision 4,549 from svn://localhost/TRUNK/:
+Revision 4,550 from svn://localhost/TRUNK/:
+Revision 4,551 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,688 ms. (Cumulative: 5,910,485 ms)
+
+----------------
+Revision 4,552 from svn://localhost/TRUNK/:
+Revision 4,553 from svn://localhost/TRUNK/:
+Revision 4,554 from svn://localhost/TRUNK/:
+Revision 4,555 from svn://localhost/TRUNK/:
+Revision 4,556 from svn://localhost/TRUNK/:
+Revision 4,557 from svn://localhost/TRUNK/:
+Revision 4,558 from svn://localhost/TRUNK/:
+Revision 4,559 from svn://localhost/TRUNK/:
+
+Added USB socket listener to event-posting drivers in EventMPI thread. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/09 4:19 PM
+1 changed, 0 added, 0 deleted.
+5,672 ms. (Cumulative: 5,916,204 ms)
+
+----------------
