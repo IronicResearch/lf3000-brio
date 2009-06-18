@@ -18605,3 +18605,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/09 6:46 PM
 5,766 ms. (Cumulative: 5,927,783 ms)
 
 ----------------
+Revision 4,580 from svn://localhost/TRUNK/:
+Revision 4,581 from svn://localhost/TRUNK/:
+
+Allow USB physical disconnect state to be independent of cached USB state.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/18/09 9:54 AM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 5,934,003 ms)
+
+----------------

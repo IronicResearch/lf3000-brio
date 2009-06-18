@@ -49,7 +49,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 			fclose(usb_device_fd);
 		}
 		data.USBDeviceState = (usbState != 0) ? kUSBDeviceConnected : 0;
-		data.USBDeviceState |= gUSBState.USBDeviceState;
+		data.USBDeviceState |= (gUSBState.USBDeviceState & ~kUSBDeviceConnected);
 		return data;
 }
 
