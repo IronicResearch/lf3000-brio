@@ -18572,3 +18572,36 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/09 4:19 PM
 5,672 ms. (Cumulative: 5,916,204 ms)
 
 ----------------
+Revision 4,560 from svn://localhost/TRUNK/:
+Revision 4,561 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,626 ms. (Cumulative: 5,921,908 ms)
+
+----------------
+Revision 4,562 from svn://localhost/TRUNK/:
+Revision 4,563 from svn://localhost/TRUNK/:
+Revision 4,564 from svn://localhost/TRUNK/:
+Revision 4,565 from svn://localhost/TRUNK/:
+Revision 4,566 from svn://localhost/TRUNK/:
+Revision 4,567 from svn://localhost/TRUNK/:
+Revision 4,568 from svn://localhost/TRUNK/:
+Revision 4,569 from svn://localhost/TRUNK/:
+Revision 4,570 from svn://localhost/TRUNK/:
+Revision 4,571 from svn://localhost/TRUNK/:
+Revision 4,572 from svn://localhost/TRUNK/:
+Revision 4,573 from svn://localhost/TRUNK/:
+Revision 4,574 from svn://localhost/TRUNK/:
+Revision 4,575 from svn://localhost/TRUNK/:
+Revision 4,576 from svn://localhost/TRUNK/:
+Revision 4,577 from svn://localhost/TRUNK/:
+Revision 4,578 from svn://localhost/TRUNK/:
+Revision 4,579 from svn://localhost/TRUNK/:
+
+Reorganize USB socket event handling to empty pending messages, and post cached copies for polling compatibility.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/09 6:46 PM
+3 changed, 0 added, 0 deleted.
+5,766 ms. (Cumulative: 5,927,783 ms)
+
+----------------

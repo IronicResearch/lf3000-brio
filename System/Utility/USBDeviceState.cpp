@@ -19,8 +19,16 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+static tUSBDeviceData gUSBState = {0, 0, 0};
+
 //----------------------------------------------------------------------------
-// Returns the system's power state
+void SetCachedUSBDeviceState(tUSBDeviceData state)
+{
+	gUSBState = state;
+}
+
+//----------------------------------------------------------------------------
+// Returns the system's USB state
 //----------------------------------------------------------------------------
 tUSBDeviceData GetCurrentUSBDeviceState(void)
 {
@@ -31,6 +39,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 
 		// Emerald is Ethernet device type
 		data.USBDeviceSupports = kUSBDeviceIsEthernet;
+		data.USBDeviceDriver   = kUSBDeviceIsEthernet;
 		usbState = 0;
 
 		usb_device_fd =
@@ -40,6 +49,7 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 			fclose(usb_device_fd);
 		}
 		data.USBDeviceState = (usbState != 0) ? kUSBDeviceConnected : 0;
+		data.USBDeviceState |= gUSBState.USBDeviceState;
 		return data;
 }
 

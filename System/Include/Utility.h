@@ -124,6 +124,7 @@ enum tPowerState GetCurrentPowerState(void);
 // Returns the system's USB device state
 //----------------------------------------------------------------------------
 tUSBDeviceData GetCurrentUSBDeviceState(void);
+void SetCachedUSBDeviceState(tUSBDeviceData);
 
 //----------------------------------------------------------------------------
 // Returns the system's button state
