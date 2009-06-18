@@ -409,12 +409,17 @@ namespace
 				socklen_t size = sizeof(struct sockaddr);
 				int fdsock = accept(event_fd[socket_index].fd, &addr, &size);
 				if (fdsock >= 0) {
-					int r = recv(fdsock, &app_msg, sizeof(app_message), 0);
-					if (r == sizeof(app_message)) {
-						usb_data.USBDeviceState |= app_msg.payload;
-						CUSBDeviceMessage usb_msg(usb_data);
-						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
+					int r;
+					do {
+						r = recv(fdsock, &app_msg, sizeof(app_message), 0);
+						if (r == sizeof(app_message)) {
+							usb_data.USBDeviceState = app_msg.payload;
+							CUSBDeviceMessage usb_msg(usb_data);
+							pThis->PostEvent(usb_msg, 128, 0);
+							SetCachedUSBDeviceState(usb_data);
+						}
 					}
+					while (r > 0);
 					close(fdsock);
 				}
 			}
