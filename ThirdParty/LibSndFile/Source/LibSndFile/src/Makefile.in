@@ -67,7 +67,7 @@ am__DEPENDENCIES_1 =
 libsndfile_la_DEPENDENCIES = \
 	$(am__DEPENDENCIES_1)
 am__objects_1 = sndfile.lo common.lo file_io.lo command.lo \
-	float32.lo double64.lo ima_adpcm.lo \
+	pcm.lo float32.lo double64.lo ima_adpcm.lo \
 	interleave.lo \
 	strings.lo dither.lo broadcast.lo
 am__objects_2 = \
