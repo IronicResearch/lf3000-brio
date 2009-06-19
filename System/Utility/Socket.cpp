@@ -74,7 +74,7 @@ int CreateListeningSocket(const char *path)
 		return ret;
 	}
 
-	ret = listen(ls, 20);
+	ret = listen(ls, 256);
 	if(ret < 0) {
 		close(ls);
 		return ret;

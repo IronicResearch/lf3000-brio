@@ -18640,3 +18640,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/18/09 6:37 PM
 7,299 ms. (Cumulative: 5,941,474 ms)
 
 ----------------
+Revision 4,598 from svn://localhost/TRUNK/:
+Revision 4,599 from svn://localhost/TRUNK/:
+
+Mods to USB socket handling uncovered during testing with MW code.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/19/09 11:34 AM
+2 changed, 0 added, 0 deleted.
+6,082 ms. (Cumulative: 5,947,650 ms)
+
+----------------
