@@ -72,6 +72,7 @@ namespace
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kPowerEventPriority	= 0;
 	const tEventPriority	kUSBDeviceEventPriority	= 0;
+	const tEventPriority	kUSBSocketEventPriority	= 128;
 	const tEventPriority	kTouchEventPriority	= 0;
 	
 	volatile bool 			g_threadRun2_ = true;
@@ -405,9 +406,9 @@ namespace
 
 			// USB socket event ?
 			if (socket_index >= 0 && event_fd[socket_index].revents & POLLIN) {
-				struct sockaddr addr;
-				socklen_t size = sizeof(struct sockaddr);
-				int fdsock = accept(event_fd[socket_index].fd, &addr, &size);
+				struct sockaddr_un addr;
+				socklen_t size = sizeof(struct sockaddr_un);
+				int fdsock = accept(event_fd[socket_index].fd, (struct sockaddr *)&addr, &size);
 				if (fdsock >= 0) {
 					int r;
 					do {
@@ -415,7 +416,7 @@ namespace
 						if (r == sizeof(app_message)) {
 							usb_data.USBDeviceState = app_msg.payload;
 							CUSBDeviceMessage usb_msg(usb_data);
-							pThis->PostEvent(usb_msg, 128, 0);
+							pThis->PostEvent(usb_msg, kUSBSocketEventPriority, 0);
 							SetCachedUSBDeviceState(usb_data);
 						}
 					}
