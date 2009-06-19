@@ -222,7 +222,6 @@ wav_open	 (SF_PRIVATE *psf)
 
 	switch (subformat)
 	{
-#if 0
 		case SF_FORMAT_PCM_U8 :
 		case SF_FORMAT_PCM_16 :
 		case SF_FORMAT_PCM_24 :
@@ -230,6 +229,7 @@ wav_open	 (SF_PRIVATE *psf)
 					error = pcm_init (psf) ;
 					break ;
 
+#if 0
 		case SF_FORMAT_ULAW :
 					error = ulaw_init (psf) ;
 					break ;
@@ -636,11 +636,13 @@ wav_read_header	 (SF_PRIVATE *psf, int *blockalign, int *framesperblock)
 				*framesperblock = wav_fmt.msadpcm.samplesperblock ;
 				} ;
 			break ;
+#endif
 
 		case WAVE_FORMAT_PCM :
 					psf->sf.format = SF_FORMAT_WAV | u_bitwidth_to_subformat (psf->bytewidth * 8) ;
 					break ;
 
+#if 0
 		case WAVE_FORMAT_MULAW :
 		case IBM_FORMAT_MULAW :
 					psf->sf.format = (SF_FORMAT_WAV | SF_FORMAT_ULAW) ;
@@ -731,7 +733,6 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
 
 	switch (subformat)
 	{
-#if 0
 		case SF_FORMAT_PCM_U8 :
 		case SF_FORMAT_PCM_16 :
 		case SF_FORMAT_PCM_24 :
@@ -746,6 +747,7 @@ wav_write_header (SF_PRIVATE *psf, int calc_length)
 					psf_binheader_writef (psf, "22", psf->bytewidth * psf->sf.channels, psf->bytewidth * 8) ;
 					break ;
 
+#if 0
 		case SF_FORMAT_FLOAT :
 		case SF_FORMAT_DOUBLE :
 					fmt_size = 2 + 2 + 4 + 4 + 2 + 2 ;

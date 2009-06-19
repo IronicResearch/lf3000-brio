@@ -32,7 +32,7 @@ fi
 
 # build and copy shared libs to rootfs
 pushd $LIBSNDFILE_LIB_DIR
-./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/Didj/Base/Brio/lib --enable-shared=yes
+./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/LF/Base/Brio/lib --enable-shared=yes
 make
 popd
 

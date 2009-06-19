@@ -18615,3 +18615,28 @@ By Dave Milici (dmilici@leapfrog.com) on 6/18/09 9:54 AM
 6,126 ms. (Cumulative: 5,934,003 ms)
 
 ----------------
+Revision 4,582 from svn://localhost/TRUNK/:
+Revision 4,583 from svn://localhost/TRUNK/:
+Revision 4,584 from svn://localhost/TRUNK/:
+Revision 4,585 from svn://localhost/TRUNK/:
+Revision 4,586 from svn://localhost/TRUNK/:
+Revision 4,587 from svn://localhost/TRUNK/:
+Revision 4,588 from svn://localhost/TRUNK/:
+Revision 4,589 from svn://localhost/TRUNK/:
+Revision 4,590 from svn://localhost/TRUNK/:
+Revision 4,591 from svn://localhost/TRUNK/:
+Revision 4,592 from svn://localhost/TRUNK/:
+Revision 4,593 from svn://localhost/TRUNK/:
+Revision 4,594 from svn://localhost/TRUNK/:
+Revision 4,595 from svn://localhost/TRUNK/:
+Revision 4,596 from svn://localhost/TRUNK/:
+Revision 4,597 from svn://localhost/TRUNK/:
+
+Rebuilt libsndfile with .wav file pcm support re-enabled.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/18/09 6:37 PM
+7 changed, 1 added, 46 deleted.
+7,299 ms. (Cumulative: 5,941,474 ms)
+
+----------------
