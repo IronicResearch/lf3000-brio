@@ -18702,3 +18702,13 @@ By ytu (ytu@leapfrog.com) on 6/22/09 5:58 PM
 5,938 ms. (Cumulative: 5,967,327 ms)
 
 ----------------
+Revision 4,625 from svn://localhost/TRUNK/:
+
+Change __import__ to imp for Python 2.6.2.  Note that __import__ can no longer take a filename.
+
+
+By Scott Esters (sesters@leapfrog.com) on 6/22/09 7:11 PM
+1 changed, 0 added, 0 deleted.
+5,610 ms. (Cumulative: 5,973,015 ms)
+
+----------------

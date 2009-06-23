@@ -7,6 +7,7 @@ import os
 import glob
 import SCons.Util
 #import pysvn
+import imp
 
 root_dir = os.path.normpath(os.path.join(__file__, '../../../../..'))
 
@@ -111,7 +112,7 @@ def SourceDirFromBuildDir(target, base):
 # Get the repository version from a SVN repository
 #-----------------------------------------------------------------------------
 def GetRepositoryVersion(platform, branch):
-	common = __import__(os.path.join('Etc/Tools/SConsTools', platform + '_common'), globals(), locals(), [''])
+	common = imp.load_source(platform + '_common', os.path.join('Etc/Tools/SConsTools', platform + '_common.py'))
 	mappings = common.GetRepositoryMappings()
 	path = ''
 	revision = 'XXXX'
