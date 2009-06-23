@@ -18712,3 +18712,13 @@ By Scott Esters (sesters@leapfrog.com) on 6/22/09 7:11 PM
 5,610 ms. (Cumulative: 5,973,015 ms)
 
 ----------------
+Revision 4,626 from svn://localhost/TRUNK/:
+
+Define __u64 by including <asm-generic/int-ll64.h>
+
+
+By Scott Esters (sesters@leapfrog.com) on 6/22/09 7:11 PM
+3 changed, 0 added, 0 deleted.
+5,813 ms. (Cumulative: 5,978,906 ms)
+
+----------------
