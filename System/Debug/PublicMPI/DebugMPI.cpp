@@ -241,8 +241,10 @@ namespace
 			LF_LOG("Emerald App", kDbgLvlCritical, outstr);
 		}
 		
-		// In Emerald, Application doesn't power down the device
-		// kernel.PowerDown();
+		// In Emerald, Application doesn't power down the device, only in debug build.
+		#ifdef DEBUG
+		kernel.PowerDown();
+		#endif
 	}
 }
 

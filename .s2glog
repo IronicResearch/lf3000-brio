@@ -18691,3 +18691,14 @@ By ytu (ytu@leapfrog.com) on 6/22/09 5:55 PM
 7,142 ms. (Cumulative: 5,961,311 ms)
 
 ----------------
+Revision 4,624 from svn://localhost/TRUNK/:
+
+In debug mode, Assert shutdown the device. This is consistent with
+1) Didj behavior
+2) C assert behavior
+
+By ytu (ytu@leapfrog.com) on 6/22/09 5:58 PM
+1 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 5,967,327 ms)
+
+----------------
