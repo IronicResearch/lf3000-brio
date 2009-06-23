@@ -3,6 +3,36 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.6.0.4618 (June 22, 2009)
+===========================================
+
+-- Enabled lightweight ButtonModule object to instantiate EventMPI during lifetime. 
+On embedded target, this will activate the Event manager thread so that polling 
+GetButtonData() will always return valid button states. (Emerald TTP #253)
+
+-- Disable optimizations in debug builds to aid single-step debugging.
+
+
+-- Added clean options to doxygen build step in order to regenerate fresh html docs.
+
+-- Remove temporary doom file check and vbus flag overide to return actual USB connected state. 
+
+-- Need KernelMPI object during DisplayMPI module lifetime to avoid segfaults when 
+object is destroyed. (Emerald #247)
+
+-- Modified SDK SysAppDemo for handling USB ethernet connect/disconnect states with 
+billboard screens prototyping device state machine behavior.
+
+-- Added USB socket listener to event-posting drivers in EventMPI thread.  Modify USB 
+demo with test option for posting fake socket messages.  Reorganize USB socket event 
+handling to empty pending messages, and post cached copies for polling compatibility.  
+Allow USB physical disconnect state to be independent of cached USB state.
+
+-- Rebuilt libsndfile with .wav file pcm support re-enabled.
+
+-- Mods to USB socket handling uncovered during testing with MW code.
+
+===========================================
 Brio v0.5.1.4522 (June 11, 2009)
 ===========================================
 
