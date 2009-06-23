@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+
+#include <asm-generic/int-ll64.h>
 #include <linux/input.h>
 
 #include "Utility.h"

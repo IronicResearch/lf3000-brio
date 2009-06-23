@@ -60,6 +60,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <asm-generic/int-ll64.h>
 #include <linux/input.h>
 
 // System includes

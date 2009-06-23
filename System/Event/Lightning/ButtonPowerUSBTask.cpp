@@ -27,6 +27,7 @@
 
 #include <string.h>
 
+#include <asm-generic/int-ll64.h>
 #include <linux/input.h>
 #include <ButtonTypes.h>
 #include <unistd.h>
