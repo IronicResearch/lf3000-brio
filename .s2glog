@@ -18722,3 +18722,18 @@ By Scott Esters (sesters@leapfrog.com) on 6/22/09 7:11 PM
 5,813 ms. (Cumulative: 5,978,906 ms)
 
 ----------------
+Revision 4,627 from svn://localhost/TRUNK/:
+Revision 4,628 from svn://localhost/TRUNK/:
+Revision 4,629 from svn://localhost/TRUNK/:
+Revision 4,630 from svn://localhost/TRUNK/:
+Revision 4,631 from svn://localhost/TRUNK/:
+Revision 4,632 from svn://localhost/TRUNK/:
+Revision 4,633 from svn://localhost/TRUNK/:
+
+Another method to handle missing __u64 defs in linux/input.h header. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/23/09 2:11 PM
+3 changed, 0 added, 0 deleted.
+5,844 ms. (Cumulative: 5,984,860 ms)
+
+----------------
