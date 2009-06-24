@@ -18775,3 +18775,15 @@ By Dave Milici (dmilici@leapfrog.com) on 6/24/09 2:10 PM
 7,407 ms. (Cumulative: 5,998,158 ms)
 
 ----------------
+Revision 4,655 from svn://localhost/TRUNK/:
+Revision 4,656 from svn://localhost/TRUNK/:
+Revision 4,657 from svn://localhost/TRUNK/:
+
+Updated Ogg, Theora, Vorbis libs from reference releases.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/24/09 4:04 PM
+31 changed, 4 added, 3 deleted.
+7,203 ms. (Cumulative: 6,005,455 ms)
+
+----------------

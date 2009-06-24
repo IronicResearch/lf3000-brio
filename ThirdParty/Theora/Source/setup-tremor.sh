@@ -26,12 +26,12 @@ fi
 
 # build and copy shared libs to rootfs
 pushd $TREMOR_LIB_DIR
-./autogen.sh --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/Didj/Base/Brio --enable-shared=yes LDFLAGS="-Wl,--rpath-link -Wl,$ROOTFS_PATH/Didj/Base/Brio/lib" 
-./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/Didj/Base/Brio --enable-shared=yes LDFLAGS="-Wl,--rpath-link -Wl,$ROOTFS_PATH/Didj/Base/Brio/lib"  
+./autogen.sh --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/usr/local --enable-shared=yes 
+./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/usr/local --enable-shared=yes  
 make
-# make install
-# cp -a ./.libs/libvorbisidec.so* $ROOTFS_PATH/usr/local/lib/
-# cp    ./*.h $ROOTFS_PATH/usr/local/include/tremor/
+make install
+cp -a ./.libs/libvorbisidec.so* ../../Libs/arm/ 
+cp    ./*.h ../../Include/tremor/
 popd
 
 popd
