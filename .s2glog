@@ -18787,3 +18787,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/24/09 4:04 PM
 7,203 ms. (Cumulative: 6,005,455 ms)
 
 ----------------
+Revision 4,658 from svn://localhost/TRUNK/:
+
+fix ogg lib symlinks in svn
+
+By Dave Milici (dmilici@leapfrog.com) on 6/24/09 4:16 PM
+2 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 6,011,612 ms)
+
+----------------
