@@ -1,0 +1,13 @@
+--- theora/lib/Makefile	2009-06-24 13:35:09.000000000 -0700
++++ Theora/lib/Makefile	2009-06-24 13:31:38.000000000 -0700
+@@ -221,8 +221,8 @@
+ OBJEXT = o
+ OC_X86ASM_FALSE = #
+ OC_X86ASM_TRUE = 
+-OGG_CFLAGS = -I/usr/local/include  
+-OGG_LIBS = -L/usr/local/lib -logg  
++OGG_CFLAGS = -I${ROOTFS_PATH}/usr/local/include  
++OGG_LIBS = -L${ROOTFS_PATH}/usr/local/lib -logg  
+ PACKAGE = libtheora
+ PACKAGE_BUGREPORT = 
+ PACKAGE_NAME = libtheora

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Build ogg libs from source
-OGG_LIB_VER=libogg-1.1.3
-OGG_LIB_SRC=libogg-1.1.3.tar.gz
+OGG_LIB_VER=libogg-1.1.4
+OGG_LIB_SRC=$OGG_LIB_VER.tar.gz
 OGG_LIB_DIR=Ogg
 
 set -e
@@ -32,11 +32,11 @@ fi
 
 # build and copy shared libs to rootfs
 pushd $OGG_LIB_DIR
-./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/Didj/Base/Brio/lib --enable-shared=yes
+./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/usr/local --enable-shared=yes
 make
-# make install
-# cp -a ./src/.libs/libogg.so* $ROOTFS_PATH/usr/local/lib/
-# cp -R ./include/ogg $ROOTFS_PATH/usr/local/include/
+make install
+cp -a ./src/.libs/libogg.so* ../../Libs/arm/ 
+cp -R ./include/ogg/*.h ../../Include/ogg/
 popd
 
 popd

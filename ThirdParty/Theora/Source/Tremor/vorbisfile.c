@@ -797,7 +797,7 @@ int ov_test(FILE *f,OggVorbis_File *vf,char *initial,long ibytes){
 }
   
 int ov_test_open(OggVorbis_File *vf){
-  if(vf->ready_state<PARTOPEN)return(OV_EINVAL);
+  if(vf->ready_state!=PARTOPEN)return(OV_EINVAL);
   return _ov_open2(vf);
 }
 
@@ -1564,13 +1564,8 @@ long ov_read(OggVorbis_File *vf,char *buffer,int bytes_req,int *bitstream){
     
     long channels=ov_info(vf,-1)->channels;
 
-    if(channels==1){
-      if(samples>(bytes_req/2))
-        samples=bytes_req/2;      
-    }else{
-      if(samples>(bytes_req/4))
-        samples=bytes_req/4;
-    }
+    if(samples>(bytes_req/(2*channels)))
+      samples=bytes_req/(2*channels);      
     
     for(i=0;i<channels;i++) { /* It's faster in this order */
       ogg_int32_t *src=pcm[i];
