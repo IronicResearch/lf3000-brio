@@ -18796,3 +18796,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/24/09 4:16 PM
 6,047 ms. (Cumulative: 6,011,612 ms)
 
 ----------------
+Revision 4,659 from svn://localhost/TRUNK/:
+
+fix x86 ogg lib updates
+
+By Dave Milici (dmilici@leapfrog.com) on 6/24/09 4:26 PM
+2 changed, 1 added, 1 deleted.
+6,110 ms. (Cumulative: 6,017,800 ms)
+
+----------------
