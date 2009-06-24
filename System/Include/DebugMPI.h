@@ -108,7 +108,8 @@ public:
 	void		VDebugOut(tDebugLevel level, const char * formatString, va_list arguments) const
 				__attribute__ ((format (printf, 3, 0)));
 	/// Description: printf-like debug output. This is used to output error messages.
-	/// \param level		the debug level associated with this output.
+	/// \param level		the debug level associated with this output
+	/// \param err		type of error
 	/// \param formatString	format string used like printf
 	/// \param  ...		 	variable arguments
 	/// \return: none
@@ -133,6 +134,7 @@ public:
 
 	/// Description: Assert is the most critical message.  In Emerald, this interface does NOT
 	/// cause application to exit.
+	/// \param testResult	boolean test results for assertion
 	/// \param formatString	format string used like printf
 	/// \param  ... 	variable arguments
 	/// \return: none
@@ -168,21 +170,17 @@ public:
 	void		SetMasterDebugLevel(tDebugLevel newLevel);
 	
 	/// Description: set master debug level which impact all the debug interface instances.
-	/// \param none
 	/// \return: tDebugLevel
 	tDebugLevel	GetMasterDebugLevel() const;
 
 	/// Description: adds a timestamp to all debug output. time shown is elapsed time since system boot.
-	/// \param none
 	/// \return: none
 	void 	EnableDebugOutTimestamp();
 	/// Description: disable timestamp to all debug output. time shown is elapsed time since system boot.
-	/// \param none
 	/// \return: none
 	void 	DisableDebugOutTimestamp();
 	/// Description: check if timestamp is enabled in debug output
-	/// \param none
-	/// \return: none
+	/// \return: Boolean 
 	Boolean   TimestampIsEnabled() const;
 
 	//------------------------------------------------------------------------------
@@ -202,7 +200,6 @@ public:
 	void 	SetDebugLevel( tDebugLevel newLevel );
 
 	/// Description: get debug level for the instance object.
-	/// \param none
 	/// \return: tDebugLevel
 	tDebugLevel GetDebugLevel() const;
 
