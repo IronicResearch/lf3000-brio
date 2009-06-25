@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.0.4618 (June 22, 2009)
+Brio v0.6.0.4670 June 25, 2009)
 ===========================================
 
 -- Enabled lightweight ButtonModule object to instantiate EventMPI during lifetime. 
@@ -31,6 +31,15 @@ Allow USB physical disconnect state to be independent of cached USB state.
 -- Rebuilt libsndfile with .wav file pcm support re-enabled.
 
 -- Mods to USB socket handling uncovered during testing with MW code.
+
+-- Flight recorder improvements.
+
+-- Fixed build problems related to types and switch to new Linux 30.
+
+-- Deleted old theora source tree.  Updated Ogg, Theora, Vorbis libs from reference releases.
+
+-- Removed low battery polling, as Linux now posts multiple LOW_BATTERY messages via the 
+Input Event system.
 
 ===========================================
 Brio v0.5.1.4522 (June 11, 2009)
