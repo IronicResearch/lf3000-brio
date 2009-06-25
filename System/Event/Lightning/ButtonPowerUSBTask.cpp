@@ -238,7 +238,6 @@ namespace
 	SetButtonState(button_data);
 	
 	int power_index = -1;
-	struct tPowerData   current_pe;
 	struct tPowerData	power_data;
 
 	// init power driver and state
@@ -356,37 +355,29 @@ namespace
 			}
 			
 			// power driver event ?
-			current_pe.powerState = GetCurrentPowerState();
 			if(power_index >= 0 && event_fd[power_index].revents & POLLIN) {
 				size = read(event_fd[power_index].fd, &ev, sizeof(ev));
 				switch(ev.code)
-				{
-				case KEY_BATTERY:
-					current_pe.powerState = kPowerCritical;
-					break;
-									
-				case KEY_POWER:
-					current_pe.powerState = kPowerShutdown;
-					break;
+				{	/* map Linux Keys to Brio Messages */
+				case KEY_BATTERY:  power_data.powerState = kPowerCritical;    break;
+				case KEY_POWER:    power_data.powerState = kPowerShutdown;    break;
+				case KEY_MINUS:    power_data.powerState = kPowerLowBattery;  break;
+				}
+				// power state changed?
+				CPowerMessage power_msg(power_data);
+				pThis->PostEvent(power_msg, kPowerEventPriority, 0);
+				if (power_data.powerState == kPowerShutdown) {
+					// Arm poweroff timer on powerdown event
+					CPowerMPI power;
+					tTimerProperties props = {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
+					tTimerHndl timer = pThis->kernel_.CreateTimer(PoweroffTimer, props, NULL);
+					int msec = power.GetShutdownTimeMS();
+					props.timeout.it_value.tv_sec = msec / 1000;
+					props.timeout.it_value.tv_nsec = (msec % 1000) * 1000000;
+					pThis->kernel_.StartTimer(timer, props);
 				}
 			}
-			// power state changed? (polled for low-battery)
-			if (power_data.powerState != current_pe.powerState) {
-					power_data.powerState = current_pe.powerState;
-					CPowerMessage power_msg(power_data);
-					pThis->PostEvent(power_msg, kPowerEventPriority, 0);
-					if (current_pe.powerState == kPowerShutdown) {
-						// Arm poweroff timer on powerdown event
-						CPowerMPI power;
-						tTimerProperties props = {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
-						tTimerHndl timer = pThis->kernel_.CreateTimer(PoweroffTimer, props, NULL);
-						int msec = power.GetShutdownTimeMS();
-						props.timeout.it_value.tv_sec = msec / 1000;
-						props.timeout.it_value.tv_nsec = (msec % 1000) * 1000000;
-						pThis->kernel_.StartTimer(timer, props);
-					}
-			}
-		
+
 			// USB driver event ?
 			if(usb_index >= 0 && event_fd[usb_index].revents & POLLIN) {
 				size = read(event_fd[usb_index].fd, &ev, sizeof(ev));

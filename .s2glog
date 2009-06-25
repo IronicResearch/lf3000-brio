@@ -18805,3 +18805,20 @@ By Dave Milici (dmilici@leapfrog.com) on 6/24/09 4:26 PM
 6,110 ms. (Cumulative: 6,017,800 ms)
 
 ----------------
+Revision 4,660 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,109 ms. (Cumulative: 6,023,972 ms)
+
+----------------
+Revision 4,661 from svn://localhost/TRUNK/:
+
+Removed low battery polling, as Linux now posts multiple LOW_BATTERY
+messages via the Input Event system.
+
+
+By Scott Esters (sesters@leapfrog.com) on 6/24/09 5:03 PM
+1 changed, 0 added, 0 deleted.
+5,933 ms. (Cumulative: 6,029,921 ms)
+
+----------------
