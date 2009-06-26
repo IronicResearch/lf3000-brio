@@ -18876,3 +18876,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/25/09 7:46 PM
 6,093 ms. (Cumulative: 6,054,344 ms)
 
 ----------------
+Revision 4,683 from svn://localhost/TRUNK/:
+
+Re-enable previous Vorbis Tremor libs for Vorbis player support.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/25/09 8:13 PM
+1 changed, 0 added, 0 deleted.
+6,688 ms. (Cumulative: 6,061,141 ms)
+
+----------------
