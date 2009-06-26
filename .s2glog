@@ -18885,3 +18885,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/25/09 8:13 PM
 6,688 ms. (Cumulative: 6,061,141 ms)
 
 ----------------
+Revision 4,684 from svn://localhost/TRUNK/:
+
+Tweak DebugMPI message levels in DisplayMPI appropriate for FR logging.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/26/09 10:22 AM
+2 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 6,067,330 ms)
+
+----------------

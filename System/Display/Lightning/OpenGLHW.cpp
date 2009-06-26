@@ -99,7 +99,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Get framebuffer address from driver
 	gMem1Phys = (U32)ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(gMem1Phys != -EFAULT , "DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
-	dbg_.DebugOut(kDbgLvlCritical, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
+	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X\n", gMem1Phys);
 
 	// Get framebuffer size from driver to divide up the heaps
 	// Since FBSIZE is read-only, default (unswapped) OGL layer must be queried
@@ -142,20 +142,20 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Map 3D engine register space
 	gRegSize = PAGE_3D * getpagesize();  
 	gpReg3d = mmap(0, gRegSize, PROT_READ | PROT_WRITE, MAP_SHARED, gDevGa3d, REG3D_PHYS);
-	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %016lX mapped to %p\n", REG3D_PHYS, gpReg3d);
+	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %016lX mapped to %p\n", REG3D_PHYS, gpReg3d);
 
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
 	gpMem1 = mmap((void*)gMem1Phys, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem1Phys);
-	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
+	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
 	gpMem2 = mmap((void*)gMem2Phys, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem2Phys);
-	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
+	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
 
 	// Map memory block for linear framebuffer access at start of 2D heap
 	gMem2dPhys = gMem2Phys | 0x20000000;
 	gpMem2d = mmap(NULL, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem2dPhys);
-	dbg_.DebugOut(kDbgLvlImportant, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2dPhys, gpMem2d, gMem2Size);
+	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2dPhys, gpMem2d, gMem2Size);
 
 	// Query HW to setup display context descriptors
 	const tDisplayScreenStats* pScreen = GetScreenStats(0);
