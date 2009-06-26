@@ -18903,3 +18903,22 @@ By Dave Milici (dmilici@leapfrog.com) on 6/26/09 10:25 AM
 6,125 ms. (Cumulative: 6,073,549 ms)
 
 ----------------
+Revision 4,686 from svn://localhost/TRUNK/:
+Revision 4,687 from svn://localhost/TRUNK/:
+Revision 4,688 from svn://localhost/TRUNK/:
+Revision 4,689 from svn://localhost/TRUNK/:
+Revision 4,690 from svn://localhost/TRUNK/:
+Revision 4,691 from svn://localhost/TRUNK/:
+Revision 4,692 from svn://localhost/TRUNK/:
+Revision 4,693 from svn://localhost/TRUNK/:
+Revision 4,694 from svn://localhost/TRUNK/:
+
+Interim merge of Vorbis 1.2.0 code into local Tremor tree. (Development will not impact Brio builds until final binaries are checked in once they are working.) 
+
+Most noteworthy finding is that Tremor code was using old Ogg packet structures and functions internally instead of referencing Ogg headers and libs externally. The merge will be successfully completed when able to parse any mixed-mode Ogg packets like Theora instead of handing only Vorbis packets. The fixed-point decoding and quantization routines are isolated in separate code modules and should not need to be updated. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/26/09 4:33 PM
+6 changed, 1 added, 3 deleted.
+6,268 ms. (Cumulative: 6,079,958 ms)
+
+----------------
