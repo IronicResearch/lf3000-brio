@@ -248,8 +248,13 @@ void CVorbisPlayer::RewindFile()
 // ==============================================================================
 U32 CVorbisPlayer::GetAudioTime_mSec( void )
 {
+#ifdef USE_VORBIS
+	ogg_int64_t vorbisTime = (ogg_int64_t)(ov_time_tell( &vorbisFile_ ) * 1000);
+	U32 timeInMS		   = (U32) vorbisTime;
+#else
 	ogg_int64_t vorbisTime = ov_time_tell( &vorbisFile_ );
 	U32 timeInMS		   = (U32) vorbisTime;
+#endif
 
 	// GK FIXXX: should probably protect this with mutex
 	return (timeInMS);
@@ -282,12 +287,17 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	long bytesToReadThisRender = bytesToRead;
 	while ( bytesToRead > 0 ) 
 	{
-		// TimeStampOn(2);
+		TimeStampOn(2);
 
-		bytesRead = ov_read( &vorbisFile_, bufPtr, bytesToRead, 
+		bytesRead = ov_read( &vorbisFile_, bufPtr, bytesToRead,
+					#ifdef USE_VORBIS
+							VORBIS_LITTLE_ENDIAN,
+							VORBIS_16BIT_WORD,
+							VORBIS_SIGNED_DATA,
+					#endif
 							 &dummy );
 
-		// TimeStampOff(2);
+		TimeStampOff(2);
 
 		if ( bytesRead == 0)
 			break;

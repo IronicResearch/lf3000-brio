@@ -19,8 +19,12 @@
 #include <AudioTypes.h>
 #include <AudioPlayer.h>
 #include <AudioTypesPriv.h>
+#ifdef USE_VORBIS
+#include "vorbis/vorbisfile.h"
+#else
 #include "tremor/ivorbiscodec.h"
 #include "tremor/ivorbisfile.h"
+#endif
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================

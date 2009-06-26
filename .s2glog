@@ -18858,3 +18858,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/25/09 6:04 PM
 5,548 ms. (Cumulative: 6,041,860 ms)
 
 ----------------
+Revision 4,681 from svn://localhost/TRUNK/:
+
+Modified Vorbis player to use Vorbis release libs for testing Ogg Theora multi-stream compatibility. (Emerald #216)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/25/09 7:21 PM
+3 changed, 4 added, 0 deleted.
+6,219 ms. (Cumulative: 6,048,157 ms)
+
+----------------
