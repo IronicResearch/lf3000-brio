@@ -79,9 +79,6 @@
 
 #include <list>
 
-#undef ENABLE_PROFILING
-#include <FlatProfiler.h>
-
 #define kMixer_HeadroomBits_Default 2
 
 #define kMixer_Headphone_GainDB		   0 

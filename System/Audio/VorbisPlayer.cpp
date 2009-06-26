@@ -26,9 +26,6 @@
 
 #include <Dsputil.h>
 
-#undef ENABLE_PROFILING
-#include <FlatProfiler.h>
-
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
