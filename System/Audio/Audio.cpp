@@ -415,7 +415,7 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 		(path.at(0) == '/') ? path : gAudioContext.gpath + path;
 	if(stat(fullPath.c_str(), &fileStat) != 0)
 	{
-		pDebugMPI_->DebugOut(kDbgLvlVerbose, "%s: file doesn't exist='%s\n",
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: file doesn't exist='%s\n",
 							 __FUNCTION__, path.c_str());
 		goto error;
 	}
