@@ -107,7 +107,7 @@ namespace
 #endif
 		dispmgr->InitOpenGL(&ctx);
 		*pMemoryInfo = meminfo;
-		dbg.DebugOut(kDbgLvlValuable, "GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
+		dbg.DebugOut(kDbgLvlVerbose, "GLESOAL_Initalize: %08X, %08X, %08X,%08X, %08X, %08X, %08X\n", \
 		    pMemoryInfo->VirtualAddressOf3DCore, \
 		    pMemoryInfo->Memory1D_VirtualAddress, \
 		    pMemoryInfo->Memory1D_PhysicalAddress, \
@@ -133,9 +133,11 @@ namespace
 
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SwapBufferCallback( void ) 
-	{ 
+	{
+#ifdef DEBUG		
 		CDebugMPI	dbg(kGroupDisplay);
-		dbg.DebugOut(kDbgLvlVerbose, "GLESOAL_SwapBufferCallback\n");		
+		dbg.DebugOut(kDbgLvlVerbose, "GLESOAL_SwapBufferCallback\n");
+#endif
 
 		// Enable 3D layer on 1st update
 		if (!isEnabled) 
