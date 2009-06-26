@@ -27,9 +27,6 @@
 #include <map>
 #include <set>
 
-#undef ENABLE_PROFILING
-#include <FlatProfiler.h>
-
 LF_BEGIN_BRIO_NAMESPACE()
 
 namespace

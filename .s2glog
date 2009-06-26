@@ -18867,3 +18867,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/25/09 7:21 PM
 6,219 ms. (Cumulative: 6,048,157 ms)
 
 ----------------
+Revision 4,682 from svn://localhost/TRUNK/:
+
+Move flat profiler #define into common AudioMPI header for convenience.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/25/09 7:46 PM
+5 changed, 0 added, 0 deleted.
+6,093 ms. (Cumulative: 6,054,344 ms)
+
+----------------

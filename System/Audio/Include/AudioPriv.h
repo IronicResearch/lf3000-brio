@@ -23,6 +23,9 @@
 #include <AudioEffectsProcessor.h>
 #include <EventListener.h>
 
+#undef ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 // Backdoor GAS and SAS functions need this for passing around the tAudioState
