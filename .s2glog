@@ -18840,3 +18840,21 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 6/25/09 1:00 PM
 6,110 ms. (Cumulative: 6,036,172 ms)
 
 ----------------
+Revision 4,671 from svn://localhost/TRUNK/:
+Revision 4,672 from svn://localhost/TRUNK/:
+Revision 4,673 from svn://localhost/TRUNK/:
+Revision 4,674 from svn://localhost/TRUNK/:
+Revision 4,675 from svn://localhost/TRUNK/:
+Revision 4,676 from svn://localhost/TRUNK/:
+Revision 4,677 from svn://localhost/TRUNK/:
+Revision 4,678 from svn://localhost/TRUNK/:
+Revision 4,679 from svn://localhost/TRUNK/:
+Revision 4,680 from svn://localhost/TRUNK/:
+
+Fix KernelMPI object missing in debug builds.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/25/09 6:04 PM
+1 changed, 0 added, 0 deleted.
+5,548 ms. (Cumulative: 6,041,860 ms)
+
+----------------
