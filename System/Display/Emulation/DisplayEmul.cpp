@@ -71,9 +71,8 @@ void CDisplayModule::InitModule()
     sWA.colormap = x11Colormap;
 	sWA.background_pixel = WhitePixel(x11Display, x11Screen);
 	
-    // Add to these for handling other events
-    sWA.event_mask = StructureNotifyMask | ExposureMask | ButtonPressMask | ButtonReleaseMask | KeyPressMask | KeyReleaseMask;
-    ui32Mask = CWBackPixel | CWBorderPixel | CWEventMask | CWColormap;
+	// Specify event mask via XSelectInput(), not window attributes
+	ui32Mask = CWBackPixel | CWColormap;
 	
 	// Creates the X11 window
     x11Window = XCreateWindow( x11Display, RootWindow(x11Display, x11Screen), 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
