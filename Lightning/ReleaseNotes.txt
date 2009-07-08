@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.0.4670 June 25, 2009)
+Brio v0.6.0.4699 (July 8, 2009)
 ===========================================
 
 -- Enabled lightweight ButtonModule object to instantiate EventMPI during lifetime. 
@@ -40,6 +40,29 @@ Allow USB physical disconnect state to be independent of cached USB state.
 
 -- Removed low battery polling, as Linux now posts multiple LOW_BATTERY messages via the 
 Input Event system.
+
+-- Fixed  KernelMPI object missing in debug builds.
+
+--  Modified Vorbis player to use Vorbis release libs for testing Ogg Theora 
+multi-stream compatibility. (Emerald #216)
+ 
+-- Moved flat profiler #define into common AudioMPI header for convenience.
+
+-- Re-enable previous Vorbis Tremor libs for Vorbis player support.
+
+-- Tweak DebugMPI message levels in DisplayMPI appropriate for FR logging.
+
+-- Tweak DebugMPI message levels in AudioMPI appropriate for FR logging.
+
+-- Interim merge of Vorbis 1.2.0 code into local Tremor tree. (Development will 
+not impact Brio builds until final binaries are checked in once they are working.) 
+
+Most noteworthy finding is that Tremor code was using old Ogg packet structures and 
+functions internally instead of referencing Ogg headers and libs externally. The 
+merge will be successfully completed when able to parse any mixed-mode Ogg packets 
+like Theora instead of handing only Vorbis packets. The fixed-point decoding and 
+quantization routines are isolated in separate code modules and should not 
+need to be updated. 
 
 ===========================================
 Brio v0.5.1.4522 (June 11, 2009)
