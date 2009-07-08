@@ -27,6 +27,7 @@
 #include <KernelTypes.h>
 #include <SystemErrors.h>
 #include <Utility.h>
+#include <TouchTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -118,17 +119,18 @@ void* EmulationButtonTask(void*)
 		return NULL;
 	}
 	Window win = static_cast<Window>(dw);
-	
-	XSelectInput(gXDisplay, win, KeyPress | KeyRelease | ClientMessage);
+
+	// Specify event mask here, not XSetWindowAttributes()
+	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask);
 	while( !gDone )
 	{
 		XEvent	event;
 		XNextEvent(gXDisplay, &event);
-		KeySym keysym = XLookupKeysym(reinterpret_cast<XKeyEvent *>(&event), 0);
-		U32 mask = KeySymToButton(keysym);
-		data.buttonTransition = mask;
-		if( mask != 0 )
+		if (event.type == KeyPress || event.type == KeyRelease)
 		{
+			KeySym keysym = XLookupKeysym(reinterpret_cast<XKeyEvent *>(&event), 0);
+			U32 mask = KeySymToButton(keysym);
+			data.buttonTransition = mask;
 			if( event.type == KeyPress )
 				data.buttonState |= mask;
 			else
@@ -136,6 +138,15 @@ void* EmulationButtonTask(void*)
 			gLastState = data.buttonState;
 			SetButtonState(data);
 			CButtonMessage	msg(data);
+			eventmgr.PostEvent(msg, kButtonEventPriority);
+		}
+		if (event.type == ButtonPress || event.type == ButtonRelease)
+		{
+			tTouchData		td;
+			td.touchState	= (event.type == ButtonPress) ? 1 : 0;
+			td.touchX		= event.xbutton.x;
+			td.touchY		= event.xbutton.y;
+			CTouchMessage	msg(td);
 			eventmgr.PostEvent(msg, kButtonEventPriority);
 		}
 	}

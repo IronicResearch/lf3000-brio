@@ -18937,3 +18937,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/8/09 9:45 AM
 5,860 ms. (Cumulative: 6,085,928 ms)
 
 ----------------
+Revision 4,701 from svn://localhost/TRUNK/:
+Revision 4,702 from svn://localhost/TRUNK/:
+
+Added X mouse button events for emulation support of touchscreen events. (Emerald #337, 338)  
+
+By Dave Milici (dmilici@leapfrog.com) on 7/8/09 3:59 PM
+2 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 6,092,069 ms)
+
+----------------
