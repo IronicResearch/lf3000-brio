@@ -121,7 +121,7 @@ void* EmulationButtonTask(void*)
 	Window win = static_cast<Window>(dw);
 
 	// Specify event mask here, not XSetWindowAttributes()
-	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask);
+	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask);
 	while( !gDone )
 	{
 		XEvent	event;
@@ -140,10 +140,10 @@ void* EmulationButtonTask(void*)
 			CButtonMessage	msg(data);
 			eventmgr.PostEvent(msg, kButtonEventPriority);
 		}
-		if (event.type == ButtonPress || event.type == ButtonRelease)
+		if (event.type == ButtonPress || event.type == ButtonRelease || event.type == MotionNotify)
 		{
 			tTouchData		td;
-			td.touchState	= (event.type == ButtonPress) ? 1 : 0;
+			td.touchState	= (event.type != ButtonRelease) ? 1 : 0;
 			td.touchX		= event.xbutton.x;
 			td.touchY		= event.xbutton.y;
 			CTouchMessage	msg(td);
