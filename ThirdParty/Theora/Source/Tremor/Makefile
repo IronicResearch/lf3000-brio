@@ -62,7 +62,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libvorbisidec_la_LIBADD =
 am_libvorbisidec_la_OBJECTS = mdct.lo block.lo window.lo synthesis.lo \
 	info.lo floor1.lo floor0.lo vorbisfile.lo res012.lo \
-	mapping0.lo registry.lo codebook.lo sharedbook.lo 
+	mapping0.lo registry.lo codebook.lo sharedbook.lo
 libvorbisidec_la_OBJECTS = $(am_libvorbisidec_la_OBJECTS)
 libvorbisidec_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \

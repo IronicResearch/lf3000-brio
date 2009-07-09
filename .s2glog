@@ -18973,3 +18973,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/9/09 8:07 AM
 6,126 ms. (Cumulative: 6,110,219 ms)
 
 ----------------
+Revision 4,707 from svn://localhost/TRUNK/:
+Revision 4,708 from svn://localhost/TRUNK/:
+Revision 4,709 from svn://localhost/TRUNK/:
+
+Merge Vorbis Tremor code which works for general Ogg format streams, including Theora interleaved and Vorbis-only packets. Merge localizes porting changes to main vorbisfile.c file with more flexible Vorbis 1.2 packet parsing logic. Everything else is retained for Tremor fixed-point codec support.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/9/09 1:21 PM
+7 changed, 0 added, 0 deleted.
+6,220 ms. (Cumulative: 6,116,533 ms)
+
+----------------
