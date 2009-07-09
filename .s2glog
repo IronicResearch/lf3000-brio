@@ -18947,3 +18947,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/8/09 3:59 PM
 6,063 ms. (Cumulative: 6,092,069 ms)
 
 ----------------
+Revision 4,703 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,953 ms. (Cumulative: 6,098,100 ms)
+
+----------------
+Revision 4,704 from svn://localhost/TRUNK/:
+
+Updated touch event emulation support to include X mouse dragging events. (Emerald #337, 338)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/8/09 6:32 PM
+1 changed, 0 added, 0 deleted.
+5,884 ms. (Cumulative: 6,104,000 ms)
+
+----------------
