@@ -340,9 +340,9 @@ static int _fetch_headers(OggVorbis_File *vf,vorbis_info *vi,vorbis_comment *vc,
 	goto bail_header;
 
       i=0;
-      while(i<3){ /* get a page loop */
+      while(i<2){ /* get a page loop */
 	
-	while(i<3){ /* get a packet loop */
+	while(i<2){ /* get a packet loop */
 
 	  int result=ogg_stream_packetout(&vf->os,&op);
 	  if(result==0)break;
@@ -357,7 +357,7 @@ static int _fetch_headers(OggVorbis_File *vf,vorbis_info *vi,vorbis_comment *vc,
 	  i++;
 	}
 
-	while(i<3){
+	while(i<2){
 	  if(_get_next_page(vf,og_ptr,CHUNKSIZE)<0){
 	    ret=OV_EBADHEADER;
 	    goto bail_header;
@@ -626,7 +626,7 @@ static int _fetch_and_process_packet(OggVorbis_File *vf,
 	if(result>0){
 	  /* got a packet.  process it */
 	  granulepos=op_ptr->granulepos;
-	  if(!vorbis_synthesis(&vf->vb,op_ptr)){ /* lazy check for lazy
+	  if(!vorbis_synthesis(&vf->vb,op_ptr,1)){ /* lazy check for lazy
 						    header handling.  The
 						    header packets aren't
 						    audio, so if/when we
@@ -1455,7 +1455,7 @@ int ov_pcm_seek(OggVorbis_File *vf,ogg_int64_t pos){
       
       /* remove the packet from packet queue and track its granulepos */
       ogg_stream_packetout(&vf->os,NULL);
-      vorbis_synthesis_trackonly(&vf->vb,&op);  /* set up a vb with
+      vorbis_synthesis(&vf->vb,&op,0);  /* set up a vb with
                                                    only tracking, no
                                                    pcm_decode */
       vorbis_synthesis_blockin(&vf->vd,&vf->vb); 
