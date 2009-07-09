@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.0.4699 (July 8, 2009)
+Brio v0.6.0.4706 (July 9, 2009)
 ===========================================
 
 -- Enabled lightweight ButtonModule object to instantiate EventMPI during lifetime. 
@@ -63,6 +63,12 @@ merge will be successfully completed when able to parse any mixed-mode Ogg packe
 like Theora instead of handing only Vorbis packets. The fixed-point decoding and 
 quantization routines are isolated in separate code modules and should not 
 need to be updated. 
+
+-- Added X mouse button events for emulation support of touchscreen events. (Emerald #337, 338)  
+
+-- Updated SDK ButtonDemo example for detecting touch events in addition to button events.
+
+-- Updated touch event emulation support to include X mouse dragging events. (Emerald #337, 338)
 
 ===========================================
 Brio v0.5.1.4522 (June 11, 2009)
