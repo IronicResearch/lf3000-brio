@@ -62,8 +62,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libvorbisidec_la_LIBADD =
 am_libvorbisidec_la_OBJECTS = mdct.lo block.lo window.lo synthesis.lo \
 	info.lo floor1.lo floor0.lo vorbisfile.lo res012.lo \
-	mapping0.lo registry.lo codebook.lo sharedbook.lo framing.lo \
-	bitwise.lo
+	mapping0.lo registry.lo codebook.lo sharedbook.lo
 libvorbisidec_la_OBJECTS = $(am_libvorbisidec_la_OBJECTS)
 libvorbisidec_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -105,7 +104,7 @@ GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Tremor/missing --run aclocal-1.10
-ALLOCA = 
+ALLOCA = ${LIBOBJDIR}alloca.o
 AMTAR = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Tremor/missing --run tar
 AR = arm-linux-ar
 AUTOCONF = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Tremor/missing --run autoconf
@@ -142,7 +141,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS =   -Wl,--version-script=Version_script
 LIBOBJS =  ${LIBOBJDIR}memcmp$U.o
-LIBS = 
+LIBS = -logg -L../../Libs/arm
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTLIBOBJS =  ${LIBOBJDIR}memcmp$U.lo
@@ -223,17 +222,17 @@ target_vendor = unknown
 top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign
-INCLUDES = -I./
+INCLUDES = -I./ -I../../Include -I../../Include/ogg
 lib_LTLIBRARIES = libvorbisidec.la
 libvorbisidec_la_SOURCES = mdct.c block.c window.c \
                         synthesis.c info.c \
                         floor1.c floor0.c vorbisfile.c \
                         res012.c mapping0.c registry.c codebook.c \
-			sharedbook.c framing.c bitwise.c \
+			sharedbook.c \
                         codebook.h misc.h mdct_lookup.h\
                         os.h mdct.h block.h ivorbisfile.h lsp_lookup.h\
                         registry.h window.h window_lookup.h\
-                        codec_internal.h backends.h ogg.h \
+                        codec_internal.h backends.h \
 			asm_arm.h ivorbiscodec.h
 
 libvorbisidec_la_LDFLAGS = -version-info 1:2:0
@@ -241,7 +240,7 @@ CLEANFILES = $(EXTRA_PROGRAMS) $(lib_LTLIBRARIES)
 ivorbisfile_example_SOURCES = ivorbisfile_example.c
 ivorbisfile_example_LDFLAGS = -static 
 ivorbisfile_example_LDADD = libvorbisidec.la
-include_HEADERS = ivorbiscodec.h ivorbisfile.h ogg.h os_types.h config_types.h
+include_HEADERS = ivorbiscodec.h ivorbisfile.h os_types.h config_types.h
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -338,12 +337,10 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/bitwise.Plo
 include ./$(DEPDIR)/block.Plo
 include ./$(DEPDIR)/codebook.Plo
 include ./$(DEPDIR)/floor0.Plo
 include ./$(DEPDIR)/floor1.Plo
-include ./$(DEPDIR)/framing.Plo
 include ./$(DEPDIR)/info.Plo
 include ./$(DEPDIR)/ivorbisfile_example.Po
 include ./$(DEPDIR)/mapping0.Plo

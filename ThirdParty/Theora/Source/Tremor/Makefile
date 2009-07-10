@@ -104,7 +104,7 @@ GZIP_ENV = --best
 distuninstallcheck_listfiles = find . -type f -print
 distcleancheck_listfiles = find . -type f -print
 ACLOCAL = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Tremor/missing --run aclocal-1.10
-ALLOCA = 
+ALLOCA = ${LIBOBJDIR}alloca.o
 AMTAR = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Tremor/missing --run tar
 AR = arm-linux-ar
 AUTOCONF = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Tremor/missing --run autoconf
@@ -141,7 +141,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS =   -Wl,--version-script=Version_script
 LIBOBJS =  ${LIBOBJDIR}memcmp$U.o
-LIBS = -logg -L../../Libs/arm
+LIBS = -logg -L../../Libs/$(TARGET_CPU)
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTLIBOBJS =  ${LIBOBJDIR}memcmp$U.lo
