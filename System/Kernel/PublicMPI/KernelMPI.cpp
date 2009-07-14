@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <syslog.h>
+#include <signal.h>
 
 //#include <SystemTypes.h>
 #include <SystemErrors.h>
@@ -94,7 +95,12 @@ namespace
 
 		safeKernel.Logging("Emerald Base", kDbgLvlCritical, "PowerDown (Assert) exit !!");
 
+		#ifdef DEBUG
+		kill(getpid(), SIGTERM);
+		#else
 		exit(kKernelExitAssert);
+		#endif
+		
 	}
 	
 	//--------------------------------------------------------------------------

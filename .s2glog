@@ -18995,3 +18995,33 @@ By Dave Milici (dmilici@leapfrog.com) on 7/9/09 5:54 PM
 6,080 ms. (Cumulative: 6,122,707 ms)
 
 ----------------
+Revision 4,712 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,543 ms. (Cumulative: 6,128,328 ms)
+
+----------------
+Revision 4,713 from svn://localhost/TRUNK/:
+
+No changes to commit.
+5,907 ms. (Cumulative: 6,134,235 ms)
+
+----------------
+Revision 4,714 from svn://localhost/TRUNK/:
+Revision 4,715 from svn://localhost/TRUNK/:
+Revision 4,716 from svn://localhost/TRUNK/:
+Revision 4,717 from svn://localhost/TRUNK/:
+Revision 4,718 from svn://localhost/TRUNK/:
+Revision 4,719 from svn://localhost/TRUNK/:
+Revision 4,720 from svn://localhost/TRUNK/:
+Revision 4,721 from svn://localhost/TRUNK/:
+Revision 4,722 from svn://localhost/TRUNK/:
+Revision 4,723 from svn://localhost/TRUNK/:
+
+Fix the issue Dave reported: in debug mode, when DidjAssert(...) happens, gdb take control.
+
+By ytu (ytu@leapfrog.com) on 7/14/09 10:14 AM
+1 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 6,140,235 ms)
+
+----------------
