@@ -19025,3 +19025,20 @@ By ytu (ytu@leapfrog.com) on 7/14/09 10:14 AM
 5,938 ms. (Cumulative: 6,140,235 ms)
 
 ----------------
+Revision 4,724 from svn://localhost/TRUNK/:
+Revision 4,725 from svn://localhost/TRUNK/:
+Revision 4,726 from svn://localhost/TRUNK/:
+Revision 4,727 from svn://localhost/TRUNK/:
+Revision 4,728 from svn://localhost/TRUNK/:
+Revision 4,729 from svn://localhost/TRUNK/:
+Revision 4,730 from svn://localhost/TRUNK/:
+Revision 4,731 from svn://localhost/TRUNK/:
+Revision 4,732 from svn://localhost/TRUNK/:
+
+Added SIGILL and SIGFPE signals to Brio OGL signal handler to prevent freezes on new OGL contexts. (Emerald #341)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/15/09 4:56 PM
+1 changed, 0 added, 0 deleted.
+6,096 ms. (Cumulative: 6,146,488 ms)
+
+----------------
