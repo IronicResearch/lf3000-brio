@@ -199,6 +199,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	signal(SIGSEGV, SignalHandler);
 	signal(SIGABRT, SignalHandler);
 	signal(SIGINT, SignalHandler);
+	signal(SIGILL, SignalHandler);
+	signal(SIGFPE, SignalHandler);
 #endif
 	
 	// Make sure only one OGL context is active at a time
