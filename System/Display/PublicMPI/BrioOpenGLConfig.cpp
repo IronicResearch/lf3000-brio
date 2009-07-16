@@ -68,6 +68,7 @@ namespace
 		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() caught signal %d\n", signum);		
 		eglTerminate(ctx.eglDisplay);
 		signal(signum, SIG_DFL);
+		raise(signum);
 	}
 #endif
 	

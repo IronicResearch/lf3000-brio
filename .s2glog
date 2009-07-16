@@ -19063,3 +19063,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/15/09 6:57 PM
 6,045 ms. (Cumulative: 6,158,723 ms)
 
 ----------------
+Revision 4,737 from svn://localhost/TRUNK/:
+
+Chain Brio OGL signal handler to default handler in order to generate core dumps. (Emerald #341)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/16/09 10:22 AM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 6,164,911 ms)
+
+----------------
