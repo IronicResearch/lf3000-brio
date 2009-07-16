@@ -3,6 +3,26 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.6.1.4736 (July 15, 2009)
+===========================================
+
+-- Merge Vorbis Tremor code which works for general Ogg format streams, including 
+Theora interleaved and Vorbis-only packets. Merge localizes porting changes to 
+main vorbisfile.c file with more flexible Vorbis 1.2 packet parsing logic. 
+Everything else is retained for Tremor fixed-point codec support.  
+
+-- Updated Vorbis Tremor codecs with multi-stream Ogg packet handling. Updated 
+Brio SDK video examples to use same Ogg file for audio and video tracks. (Emerald #216)
+	
+-- Remove DebugMPI.SetMasterDebugLevel() calls from SDK examples.
+
+-- Fix the issue Dave reported: in debug mode, when DidjAssert(...) happens, gdb take control.
+
+-  Added SIGILL and SIGFPE signals to Brio OGL signal handler to prevent freezes on new 
+OGL contexts.  Chain Brio OGL signal handler to default handler in order to 
+generate core dumps. (Emerald #341)
+
+===========================================
 Brio v0.6.0.4706 (July 9, 2009)
 ===========================================
 
