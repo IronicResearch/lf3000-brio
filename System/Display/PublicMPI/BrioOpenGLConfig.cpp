@@ -67,7 +67,7 @@ namespace
 		// Make sure OGL context is destroyed to avoid 3D engine lockups
 		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() caught signal %d\n", signum);		
 		eglTerminate(ctx.eglDisplay);
-		_exit(signum + 128);
+		signal(signum, SIG_DFL);
 	}
 #endif
 	
