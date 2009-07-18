@@ -19072,3 +19072,38 @@ By Dave Milici (dmilici@leapfrog.com) on 7/16/09 10:22 AM
 6,126 ms. (Cumulative: 6,164,911 ms)
 
 ----------------
+Revision 4,738 from svn://localhost/TRUNK/:
+Revision 4,739 from svn://localhost/TRUNK/:
+Revision 4,740 from svn://localhost/TRUNK/:
+Revision 4,741 from svn://localhost/TRUNK/:
+Revision 4,742 from svn://localhost/TRUNK/:
+Revision 4,743 from svn://localhost/TRUNK/:
+Revision 4,744 from svn://localhost/TRUNK/:
+Revision 4,745 from svn://localhost/TRUNK/:
+Revision 4,746 from svn://localhost/TRUNK/:
+Revision 4,747 from svn://localhost/TRUNK/:
+Revision 4,748 from svn://localhost/TRUNK/:
+Revision 4,749 from svn://localhost/TRUNK/:
+Revision 4,750 from svn://localhost/TRUNK/:
+Revision 4,751 from svn://localhost/TRUNK/:
+Revision 4,752 from svn://localhost/TRUNK/:
+Revision 4,753 from svn://localhost/TRUNK/:
+Revision 4,754 from svn://localhost/TRUNK/:
+Revision 4,755 from svn://localhost/TRUNK/:
+Revision 4,756 from svn://localhost/TRUNK/:
+Revision 4,757 from svn://localhost/TRUNK/:
+Revision 4,758 from svn://localhost/TRUNK/:
+Revision 4,759 from svn://localhost/TRUNK/:
+Revision 4,760 from svn://localhost/TRUNK/:
+Revision 4,761 from svn://localhost/TRUNK/:
+Revision 4,762 from svn://localhost/TRUNK/:
+Revision 4,763 from svn://localhost/TRUNK/:
+Revision 4,764 from svn://localhost/TRUNK/:
+
+Initial pass to reorganize framebuffer allocations for DisplayMPI contexts. Framebuffer regions mapped for each layer like Didj, but mapped all at once and sub-allocated more systematically to avoid RGB vs YUV buffer contention. (Emerald TTP #68)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/17/09 5:40 PM
+1 changed, 0 added, 0 deleted.
+5,672 ms. (Cumulative: 6,170,833 ms)
+
+----------------
