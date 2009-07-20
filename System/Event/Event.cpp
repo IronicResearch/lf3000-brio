@@ -191,14 +191,12 @@ public:
 			kernel_.TaskSleep(10);
 		}
 		
-#ifndef EMULATION		
 		// Create additional Button/Power/USB driver polling thread
 		properties.TaskMainFcn = CEventModule::ButtonPowerUSBTask;
 		properties.pTaskMainArgValues = pEventModule_;
 		g_hBPUThread_ = kInvalidTaskHndl;
 		err = kernel_.CreateTask(g_hBPUThread_, properties, NULL);
 		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create ButtonPowerUSBTask!\n" );
-#endif
 	}
 	
 	//------------------------------------------------------------------------
@@ -206,13 +204,11 @@ public:
 	{
 		void* 		retval;
 
-#ifndef EMULATION
 		// Terminate Button/Power/USB driver polling thread first
 		if (g_hBPUThread_ != kInvalidTaskHndl) {
 			kernel_.CancelTask(g_hBPUThread_);
 			kernel_.JoinTask(g_hBPUThread_, retval);
 		}
-#endif
 		// Terminate thread normally and dispose of listener list afterwards
 		g_threadRun_ = false;
 		g_threadRunning_ = false;
