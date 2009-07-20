@@ -19107,3 +19107,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/17/09 5:40 PM
 5,672 ms. (Cumulative: 6,170,833 ms)
 
 ----------------
+Revision 4,765 from svn://localhost/TRUNK/:
+
+Brio buttons now working with FlashPlayer.
+
+By Msaelock (Msaelock@leapfrog.com) on 7/20/09 4:13 PM
+2 changed, 1 added, 1 deleted.
+5,625 ms. (Cumulative: 6,176,536 ms)
+
+----------------

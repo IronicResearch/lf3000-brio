@@ -18,7 +18,7 @@
 #define XK_LATIN1
 #include <X11/keysymdef.h>
 
-#include <ButtonPriv.h>
+#include <EventPriv.h>
 #include <EmulationConfig.h>
 #include <CoreModule.h>
 #include <DebugMPI.h>
@@ -43,8 +43,12 @@ namespace
 	const char* kDefaultDisplay = ":0";
 	U32			gLastState;
 	Display*	gXDisplay = NULL;
-	bool		gDone = false;
-	tTaskHndl		handleButtonTask;
+	
+	const tEventPriority	kButtonEventPriority	= 0;
+	const tEventPriority	kTouchEventPriority	= 0;
+	
+	volatile bool 			g_threadRun2_ = true;
+	volatile bool 			g_threadRunning2_ = false;
 
 	//------------------------------------------------------------------------
 	U32 KeySymToButton( KeySym keysym )
@@ -98,31 +102,33 @@ namespace
 // Asynchronous notifications
 //============================================================================
 //----------------------------------------------------------------------------
-void* EmulationButtonTask(void*)
+void* CEventModule::ButtonPowerUSBTask(void*)
 {
-	if( gXDisplay == NULL )
-		return NULL;
-
 	CDebugMPI	dbg(kGroupButton);
-	dbg.DebugOut(kDbgLvlVerbose, "EmulationButtonTask: Started\n");
+	CKernelMPI	kernel;
+	
+	gXDisplay = XOpenDisplay(kDefaultDisplay);
+	if (gXDisplay == NULL)
+		dbg.Assert(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask(): Emulation XOpenDisplay() failed, buttons disabled!\n");
+	XAutoRepeatOff(gXDisplay);
+
 
 	CEventMPI		eventmgr;
 	tButtonData2		data;
  	data.buttonState = data.buttonTransition = 0;
 
 	U32 dw = EmulationConfig::Instance().GetLcdDisplayWindow();
-	if (dw == 0)
+	while(!dw)
 	{
-		dbg.DebugOut(kDbgLvlImportant, 
-				"EmulationButtonTask: no display window created, disabling buttons\n");
-		XAutoRepeatOn(gXDisplay);
-		return NULL;
+		kernel.TaskSleep(10);
+		dw = EmulationConfig::Instance().GetLcdDisplayWindow();
 	}
 	Window win = static_cast<Window>(dw);
 
 	// Specify event mask here, not XSetWindowAttributes()
 	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask);
-	while( !gDone )
+	g_threadRunning2_ = true;
+	while (g_threadRun2_)
 	{
 		XEvent	event;
 		XNextEvent(gXDisplay, &event);
@@ -147,76 +153,11 @@ void* EmulationButtonTask(void*)
 			td.touchX		= event.xbutton.x;
 			td.touchY		= event.xbutton.y;
 			CTouchMessage	msg(td);
-			eventmgr.PostEvent(msg, kButtonEventPriority);
 		}
 	}
 	XAutoRepeatOn(gXDisplay);
+	g_threadRunning2_ = false;
 	return NULL;
-}
-
-//----------------------------------------------------------------------------
-void CButtonModule::InitModule()
-{
-	if( !kInUnitTest ) 
-	{
-		gXDisplay = XOpenDisplay(kDefaultDisplay);
-		if (gXDisplay == NULL)
-			dbg_.DebugOut(kDbgLvlCritical, "CButtonModule::InitModule(): Emulation XOpenDisplay() failed, buttons disabled!\n");
-		XAutoRepeatOff(gXDisplay);
-		tErrType	status = kModuleLoadFail;
-	
-		if( kernel_.IsValid() )
-		{
-			tTaskHndl		handle;
-			tTaskProperties	properties;
-			properties.pTaskMainArgValues = NULL;
-			properties.TaskMainFcn = EmulationButtonTask;
-			status = kernel_.CreateTask(handle, properties);
-			handleButtonTask = handle;
-		}
-		dbg_.Assert( status == kNoErr, 
-					"CButtonModule::InitModule(): Button Emulation InitModule: background task creation failed" );
-	}
-}
-
-//----------------------------------------------------------------------------
-void CButtonModule::DeinitModule()
-{
-	gDone = true;
-	XAutoRepeatOn(gXDisplay);
-
-	void* 		retval;
-	// Terminate button handler thread, and wait before closing driver
-	kernel_.CancelTask(handleButtonTask);
-	kernel_.JoinTask(handleButtonTask, retval);	
-}
-
-//============================================================================
-// Button state
-//============================================================================
-//----------------------------------------------------------------------------
-tButtonData CButtonModule::GetButtonState() const
-{
-	tButtonData	data = { 0, 0 };
-
-	if( gXDisplay != NULL )
-	{
-		char keys[32];
-		XQueryKeymap(gXDisplay, keys);
-		
-		for (int i=0; i<32*8; i++)
-		{
-	    	if (BIT(keys, i))
-			{
-		     	KeySym keysym = XKeycodeToKeysym(gXDisplay, i, 0);
-		     	if( keysym )
-		    	 	data.buttonState |= KeySymToButton(keysym);
-			}
-		}
-		data.buttonTransition = data.buttonState ^ gLastState;
-		gLastState = data.buttonState;
-	}
-	return data;
 }
 
 LF_END_BRIO_NAMESPACE()

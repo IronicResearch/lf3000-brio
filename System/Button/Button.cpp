@@ -30,7 +30,7 @@ CButtonModule::CButtonModule(void) : dbg_(kGroupButton)
 	if (sinst == NULL) {
 		sinst = this;
 #ifdef EMULATION
-		InitModule();
+		//InitModule();
 #endif
 	}
 	refcnt++;
@@ -41,7 +41,7 @@ CButtonModule::~CButtonModule(void)
 	refcnt--;
 	if (refcnt == 0) {
 #ifdef EMULATION
-		DeinitModule();
+		//DeinitModule();
 #endif
 		sinst = NULL;
 	}
