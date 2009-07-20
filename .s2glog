@@ -19116,3 +19116,12 @@ By Msaelock (Msaelock@leapfrog.com) on 7/20/09 4:13 PM
 5,625 ms. (Cumulative: 6,176,536 ms)
 
 ----------------
+Revision 4,766 from svn://localhost/TRUNK/:
+
+Added Brio USB event state for RTC setting, to be posted from DFTP daemon to AppManager. (Emerald TTP #379)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/20/09 4:51 PM
+1 changed, 0 added, 0 deleted.
+5,569 ms. (Cumulative: 6,182,184 ms)
+
+----------------
