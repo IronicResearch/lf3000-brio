@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.1.4736 (July 15, 2009)
+Brio v0.6.1.4771 (July 22, 2009)
 ===========================================
 
 -- Merge Vorbis Tremor code which works for general Ogg format streams, including 
@@ -21,6 +21,22 @@ Brio SDK video examples to use same Ogg file for audio and video tracks. (Emeral
 -  Added SIGILL and SIGFPE signals to Brio OGL signal handler to prevent freezes on new 
 OGL contexts.  Chain Brio OGL signal handler to default handler in order to 
 generate core dumps. (Emerald #341)
+
+-- Chain Brio OGL signal handler to default handler in order to generate core 
+dumps. (Emerald #341)
+
+-- Initial pass to reorganize framebuffer allocations for DisplayMPI contexts. 
+Framebuffer regions mapped for each layer like Didj, but mapped all at once and 
+sub-allocated more systematically to avoid RGB vs YUV buffer contention. (Emerald TTP #68)
+
+-- Brio buttons now working with FlashPlayer.
+
+-- Added Brio USB event state for RTC setting, to be posted from DFTP daemon to AppManager. 
+(Emerald TTP #379)
+
+-- Touch now works in Emulation Flash.
+
+-- Adding range to boost headers for use with foreach.
 
 ===========================================
 Brio v0.6.0.4706 (July 9, 2009)
