@@ -153,6 +153,7 @@ void* CEventModule::ButtonPowerUSBTask(void*)
 			td.touchX		= event.xbutton.x;
 			td.touchY		= event.xbutton.y;
 			CTouchMessage	msg(td);
+			eventmgr.PostEvent(msg, kTouchEventPriority);
 		}
 	}
 	XAutoRepeatOn(gXDisplay);
