@@ -19125,3 +19125,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/20/09 4:51 PM
 5,569 ms. (Cumulative: 6,182,184 ms)
 
 ----------------
+Revision 4,767 from svn://localhost/TRUNK/:
+
+Somehow missed the post message line during code merge, now Touch works in Emulation Flash.
+
+By Msaelock (Msaelock@leapfrog.com) on 7/20/09 5:33 PM
+1 changed, 0 added, 0 deleted.
+5,625 ms. (Cumulative: 6,187,887 ms)
+
+----------------
