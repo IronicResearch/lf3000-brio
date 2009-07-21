@@ -19134,3 +19134,12 @@ By Msaelock (Msaelock@leapfrog.com) on 7/20/09 5:33 PM
 5,625 ms. (Cumulative: 6,187,887 ms)
 
 ----------------
+Revision 4,768 from svn://localhost/TRUNK/:
+
+Adding range to boost headers for use with foreach.
+
+By Msaelock (Msaelock@leapfrog.com) on 7/20/09 6:09 PM
+0 changed, 21 added, 0 deleted.
+5,875 ms. (Cumulative: 6,193,825 ms)
+
+----------------
