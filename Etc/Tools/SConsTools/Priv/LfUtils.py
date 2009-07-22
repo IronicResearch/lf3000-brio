@@ -262,11 +262,11 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		testenv.Append(LIBPATH = libpaths)
 		testenv.Append(RPATH = vars['lib_deploy_dir'])
 		fulllibs += testenv.Split('''ModuleMPI 
-									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
+									AudioMPI ButtonMPI CartridgeMPI DebugMPI DisplayMPI EventMPI 
 									FontMPI KernelMPI PowerMPI USBDeviceMPI VideoMPI 
 									Audio Button Debug Display Event Font 
 									Kernel Module Power USBDevice Video 
-									AudioMPI ButtonMPI DebugMPI DisplayMPI EventMPI 
+									AudioMPI ButtonMPI CartridgeMPI DebugMPI DisplayMPI EventMPI 
 									FontMPI KernelMPI PowerMPI USBDeviceMPI VideoMPI 
 									portaudio me2000 vorbisidec dsputil sndfile
 									ogg theora freetype
