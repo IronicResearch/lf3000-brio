@@ -25,7 +25,14 @@
 #include <EventPriv.h>
 #include <PowerMPI.h>
 
+#include <dirent.h>
 #include <string.h>
+#include <errno.h>
+#include <limits.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <sys/types.h>
 
 #undef __STRICT_ANSI__
 #include <linux/input.h>
@@ -40,6 +47,9 @@
 #include <USBDeviceTypes.h>
 #include <Utility.h>
 #include <TouchTypes.h> 
+
+
+
 LF_BEGIN_BRIO_NAMESPACE() 
 
 //Maximum number of input drivers to discover
@@ -75,6 +85,7 @@ namespace
 	const tEventPriority	kUSBDeviceEventPriority	= 0;
 	const tEventPriority	kUSBSocketEventPriority	= 128;
 	const tEventPriority	kTouchEventPriority	= 0;
+	const tEventPriority	kCartridgeEventPriority	= 0;	
 	
 	volatile bool 			g_threadRun2_ = true;
 	volatile bool 			g_threadRunning2_ = false;
@@ -102,7 +113,7 @@ namespace
 			return false;
 		return true;
 	}
-	
+
 	#define MAX_DEVNODES	8
 	
 	//----------------------------------------------------------------------------
@@ -185,7 +196,396 @@ namespace
 		power.Shutdown();
 		exit(kKernelExitShutdown);
 	}
+	
+	//----------------------------------------------------------------------------
+	// Check NAND driver status
+	//----------------------------------------------------------------------------
+	#define SYSFS_HOTSWAP  "/sys/devices/platform/lf1000-nand/cart_hotswap"	
+	int CheckCartDriverStatus()
+	{
+		FILE *fp;
+		int status;
+		CDebugMPI debug(kGroupEvent);
+		
+		fp = fopen(SYSFS_HOTSWAP, "r");
+		if(fp == NULL) {
+			debug.DebugOut(kDbgLvlCritical, "can't open %s !\n", SYSFS_HOTSWAP);
+			return -9;
+		}
+		
+		if(fscanf(fp, "%d", &status) != 1) {
+			debug.DebugOut(kDbgLvlCritical, "Wrong data format in %s !\n", SYSFS_HOTSWAP);
+			fclose(fp);
+			return -9;
+		}
+		fclose(fp);
+		return status;
+	}
+	
+	#define MTABFILE  "/etc/mtab"
+	#define MTABFILE_LINEMAX   256
+	int CheckCartFSStatus()
+	{
+		FILE *fp;
+		int status = 0;
+		CDebugMPI debug(kGroupEvent);
+		char line[MTABFILE_LINEMAX];
+		
+		fp = fopen(MTABFILE, "r");
+		if(fp == NULL) {
+			debug.DebugOut(kDbgLvlCritical, "can't open %s !\n", MTABFILE);
+			return -9;
+		}
+		
+		while (fgets(line, MTABFILE_LINEMAX, fp) != NULL) {
+			if(strstr(line, "/Cart vfat")) {
+				status = 1;
+				break;
+			}
+		}
+		fclose(fp);
+		return status;
+	}
+	
+	#define BRIO_PATH_MAX 256
+	int ScanCloseCartridgeFile(void) 
+	{
+		char linkpath[BRIO_PATH_MAX];
+		char fpath[BRIO_PATH_MAX];
+		char dirpath[64];
+		struct stat stat_buf;
+		DIR *dirp;
+		struct dirent *ep;
+		int ret, count=0;
+		CDebugMPI debug(kGroupEvent);		
+
+		#ifdef DEBUG
+		sprintf(dirpath, "/proc/%d/fd", getpid());
+		printf("dir path = %s\n", dirpath);
+		#endif
+
+		dirp = opendir(dirpath);
+
+		while (dirp) {
+		    errno = 0;
+		    if ((ep = readdir(dirp)) != NULL) {
+			
+			sprintf(fpath, "%s/%s", dirpath, ep->d_name);
+			// printf("file name %s, ino = %d\n", fpath, (int)ep->d_ino);
+			    
+			if(stat(fpath, &stat_buf) != 0) {
+				printf("stat(%s) error, errno = %s\n", ep->d_name, strerror(errno));
+			}
+			
+			if(S_IFLNK & stat_buf.st_mode) {
+				
+				memset(linkpath, 0, BRIO_PATH_MAX);
+				if(readlink(fpath, linkpath, BRIO_PATH_MAX) == -1) {
+					printf("read link error: %s\n", strerror(errno));
+				} else {
+					if (strncmp(linkpath, "/Cart/", 6) == 0) {
+						printf("%s -> %s will be forced to close\n", ep->d_name, linkpath);
+						ret = close(atoi(ep->d_name));
+						if(ret != 0) {
+							printf("Error closing file, %s\n", strerror(errno));
+						}
+					}
+				}
+			}
+		    } else {
+			if (errno == 0) {
+			    closedir(dirp);
+			    return 0;
+			}
+			printf("error reading directory %s: %s\n", dirpath, strerror(errno)); 
+			closedir(dirp);
+			return -1;
+		    }
+		}
+
+		return -1;
+	}
+	
+	int WaitForCartEvent(struct pollfd *event_fd) 
+	{
+		int event;
+		struct input_event ev;
+		int ret, size;
+		U32 button;
+		
+		
+		// block on driver state changes, or timeout after 1 sec
+		ret = poll(event_fd, 1, 1000);
+		
+		if((ret >= 0)  && (event_fd[0].revents & POLLIN)) {
+
+			size = read(event_fd[0].fd, &ev, sizeof(ev));
+			for(int i = 0; i < size; i++) {
+				if(ev.type == EV_SW) { // this is a switch change
+					button = LinuxSwitchToBrio(ev.code);
+					
+					// only handle cartridge insertion here
+					if(button != kCartridgeDetect) {
+						continue;
+					}
+				}
+				else {
+					continue;
+				}
+
+				if(ev.value > 0) {
+					event = CARTRIDGE_EVENT_INSERT;
+				}
+				else if(ev.value == 0) {
+					event = CARTRIDGE_EVENT_REMOVE;					
+				}
+			}
+		} else {
+			event = CARTRIDGE_EVENT_NONE;
+		}
+		
+		return event;
+	}
+
 }
+
+
+//============================================================================
+// Button Power USB task
+//============================================================================
+void* CEventModule::CartridgeTask( void* arg )
+{
+	bool cart_inserted;
+	int cart_status, sys_ret;
+	CEventModule* pThis = reinterpret_cast<CEventModule*>(arg);
+	CDebugMPI debug(kGroupEvent);	
+	struct pollfd	event_fd[1];
+	tCartridgeData data;
+	int event;
+
+	event_fd[0].fd = open_input_device("LF1000 Keyboard");
+	event_fd[0].events = POLLIN;
+	if(event_fd[0].fd >= 0)
+	{
+		int sw = 0;
+		
+		// get initial state of switches
+		pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+				"CEventModule::CartridgeTask: reading switch state failed");
+
+		cart_inserted = !!(sw & (1<<SW_TABLET_MODE));
+		
+		if(cart_inserted) {
+			data.cartridgeState = CARTRIDGE_STATE_INSERTED;
+		} else {
+			data.cartridgeState = CARTRIDGE_STATE_CLEAN;
+		}
+
+		// check cart status from driver
+		cart_status = CheckCartDriverStatus();		
+		if(cart_status == 1) {
+			/* driver initialized successfully*/
+			data.cartridgeState = CARTRIDGE_STATE_DRIVER_READY;
+		} else if(cart_status == -1) {
+			/* driver didn't initialize successfully*/
+			data.cartridgeState = CARTRIDGE_STATE_REINSERT;			
+		}
+		
+		// check cart status from file system
+		if(CheckCartFSStatus() == 1) {
+			data.cartridgeState = CARTRIDGE_STATE_READY;
+		}
+
+	}
+	else
+	{
+		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Fatal Error, cannot open LF1000 Keyboard !!\n");
+		return (void *)-1;
+	}
+	
+	while (1)
+	{
+		SetCartridgeState(data);
+
+		switch(data.cartridgeState) {
+			case CARTRIDGE_STATE_INSERTED: {
+			
+				debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge inserted !!\n");
+				
+				// NAND driver request
+				sys_ret = system("echo 1 > /sys/devices/platform/lf1000-nand/cart_hotswap");
+				
+				// check driver status 
+				cart_status = CheckCartDriverStatus();
+				if(cart_status == 1) {
+					data.cartridgeState = CARTRIDGE_STATE_DRIVER_READY;
+				} else if (cart_status == -1) {
+					debug.DebugOut(kDbgLvlValuable, "Cartridge task: Can't read cart, please reinsert cart !\n");
+					CCartridgeMessage cartridge_msg(data);
+					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+					data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+				} else {
+					int sw = 0;
+					debug.DebugOut(kDbgLvlValuable, "Cartridge task: cartridge insertion can't be confirmed !\n");
+					
+					// get cartridge switche state again
+					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+							"CEventModule::CartridgeTask: reading switch state failed");
+					
+					if(!(sw & (1<<SW_TABLET_MODE))) {
+						// cartridge is removed somehow
+						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
+					} else {
+						//cartridge is still inserted
+						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
+					}
+					
+				}
+				break;
+			}
+			
+			case CARTRIDGE_STATE_DRIVER_READY: {
+
+				// UBI attach, and cart mount
+				sys_ret = system("/etc/init.d/cartridge start") >> 8;
+				
+				// check return status here
+				printf("cartridge scripts return code %d\n", sys_ret);
+				if(sys_ret == 11) {
+					int sw = 0;
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't attach ubi !\n");
+					
+					// get cartridge switche state again
+					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+							"CEventModule::CartridgeTask: reading switch state failed");
+					
+					if(!(sw & (1<<SW_TABLET_MODE))) {
+						// cartridge is removed somehow
+						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
+					} else {
+						//cartridge is still inserted
+						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
+					}
+					
+				} else if (sys_ret == 21) {
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't mount cartridge FS !\n");
+				} else if(sys_ret == 0) {
+					// send CARTRIDGE_STATE_READY message
+					data.cartridgeState = CARTRIDGE_STATE_READY;
+					CCartridgeMessage cartridge_msg(data);
+					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+					pThis->debug_.DebugOut(kDbgLvlValuable, "CEventModule::CartridgeTask: CARTRIDGE_STATE_READY\n");
+					debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge ready !!\n");					
+				}
+				break;	
+			}
+			
+			case CARTRIDGE_STATE_READY: {
+
+				event = WaitForCartEvent(event_fd);
+				if(event == CARTRIDGE_EVENT_REMOVE) {
+					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
+					CCartridgeMessage cartridge_msg(data);
+					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+					
+				} else if (event == CARTRIDGE_EVENT_INSERT){
+					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state ready, received insert event\n");
+				}
+				break;
+			}
+			
+			case CARTRIDGE_STATE_REMOVED: {
+				
+				debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge removed, close all open cart files\n");
+				ScanCloseCartridgeFile();
+				
+				// wait a bit, while appManager release resouces, find out more here !!!!
+				sleep(1);
+				sys_ret = system("/etc/init.d/cartridge stop") >> 8;
+				
+				// check return status here
+				if(sys_ret == 11) {
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't detach ubi !\n");
+					
+					//what to do? pretend normal.
+					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+				} else if (sys_ret == 12) {
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: no dev/ubi2, can't detach !\n");
+					
+					//what to do? pretend normal.
+					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+					
+				}else if (sys_ret == 21) {
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't unmount cartridge FS !\n");
+					
+					sys_ret = system("/etc/init.d/cartridge fstop") >> 8;
+										
+					// what to do?  pretend normal
+					if(sys_ret != 0) {
+						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+					} else {
+						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+					}
+					
+				} else if(sys_ret == 0) {
+					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+				}
+				break;
+			}
+
+			case CARTRIDGE_STATE_FS_CLEAN: {
+				// NAND driver request
+				sys_ret = system("echo 0 > /sys/devices/platform/lf1000-nand/cart_hotswap");
+
+				// send CARTRIDGE_STATE_REINSERT message
+				data.cartridgeState = CARTRIDGE_STATE_CLEAN;
+				CCartridgeMessage cartridge_msg(data);
+				pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+				debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_CLEAN\n");					
+				break;
+			}
+			
+			case CARTRIDGE_STATE_CLEAN: {
+				event = WaitForCartEvent(event_fd);
+				if(event == CARTRIDGE_EVENT_INSERT) {
+					data.cartridgeState = CARTRIDGE_STATE_INSERTED;
+				} else if(event == CARTRIDGE_EVENT_REMOVE) {
+					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine warning: current state clean, received remove event\n");
+				}
+				break;
+			}
+			
+			case CARTRIDGE_STATE_REINSERT: {
+				event = WaitForCartEvent(event_fd);
+				if(event == CARTRIDGE_EVENT_REMOVE) {
+					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
+				} else if (event == CARTRIDGE_EVENT_INSERT){
+					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state ready, received insert event\n");
+				}
+				break;
+			}
+			
+			case CARTRIDGE_STATE_UNKOWN: {
+				break;
+			}
+			
+			default: {
+				pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: unknown state\n");				
+				break;
+			}
+		}
+	}
+				
+
+	close(event_fd[0].fd);
+	
+	return 0;
+}
+
 
 //----------------------------------------------------------------------------
 
@@ -223,17 +623,10 @@ namespace
 			button_data.buttonState |= kHeadphoneJackDetect;
 			button_data.buttonTransition |= kHeadphoneJackDetect;
 		}
-		// get the current state of the cartrdige
-		if(sw & (1<<SW_TABLET_MODE))
-			button_data.buttonState |= kCartridgeDetect;
-
-		bool CartInitial = CartInitiallyInserted();
-		if(CartInitial ^ !!(sw & (1<<SW_TABLET_MODE)))
-			button_data.buttonTransition |= kCartridgeDetect;
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
+		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
 	}
 	SetButtonState(button_data);
 	
@@ -317,7 +710,7 @@ namespace
 					if(ev.type == EV_KEY) { // this is a key press
 						button = LinuxKeyToBrio(ev.code);
 						if(button == 0) {
-							pThis->debug_.DebugOut(kDbgLvlVerbose, "%s: unknown key code: %d type: %d\n", __FUNCTION__, ev.code, ev.type);
+							pThis->debug_.DebugOut(kDbgLvlValuable, "%s: unknown key code: %d type: %d\n", __FUNCTION__, ev.code, ev.type);
 							continue;
 						}
 						//repeat of known-pressed button
@@ -326,8 +719,12 @@ namespace
 					}
 					else if(ev.type == EV_SW) { // this is a switch change
 						button = LinuxSwitchToBrio(ev.code);
-						if(button == 0) {
-							pThis->debug_.DebugOut(kDbgLvlVerbose, "%s: unknown switch code\n", __FUNCTION__);
+						
+						// only handle headphone JackDetect here
+						if(button != kHeadphoneJackDetect) {
+							if(button == 0) {
+								pThis->debug_.DebugOut(kDbgLvlValuable, "%s: unknown switch code\n", __FUNCTION__);
+							}
 							continue;
 						}
 					}
