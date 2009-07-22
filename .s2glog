@@ -19163,3 +19163,37 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/21/09 10:23 AM
 5,889 ms. (Cumulative: 6,206,011 ms)
 
 ----------------
+Revision 4,772 from svn://localhost/TRUNK/:
+Revision 4,773 from svn://localhost/TRUNK/:
+Revision 4,774 from svn://localhost/TRUNK/:
+Revision 4,775 from svn://localhost/TRUNK/:
+Revision 4,776 from svn://localhost/TRUNK/:
+Revision 4,777 from svn://localhost/TRUNK/:
+Revision 4,778 from svn://localhost/TRUNK/:
+Revision 4,779 from svn://localhost/TRUNK/:
+Revision 4,780 from svn://localhost/TRUNK/:
+Revision 4,781 from svn://localhost/TRUNK/:
+Revision 4,782 from svn://localhost/TRUNK/:
+Revision 4,783 from svn://localhost/TRUNK/:
+Revision 4,784 from svn://localhost/TRUNK/:
+Revision 4,785 from svn://localhost/TRUNK/:
+Revision 4,786 from svn://localhost/TRUNK/:
+Revision 4,787 from svn://localhost/TRUNK/:
+Revision 4,788 from svn://localhost/TRUNK/:
+Revision 4,789 from svn://localhost/TRUNK/:
+Revision 4,790 from svn://localhost/TRUNK/:
+Revision 4,791 from svn://localhost/TRUNK/:
+Revision 4,792 from svn://localhost/TRUNK/:
+Revision 4,793 from svn://localhost/TRUNK/:
+Revision 4,794 from svn://localhost/TRUNK/:
+Revision 4,795 from svn://localhost/TRUNK/:
+Revision 4,796 from svn://localhost/TRUNK/:
+Revision 4,797 from svn://localhost/TRUNK/:
+
+Added cartridge task to support hot swap cartridge
+
+By ytu (ytu@leapfrog.com) on 7/22/09 10:47 AM
+1 changed, 0 added, 0 deleted.
+5,892 ms. (Cumulative: 6,212,122 ms)
+
+----------------

@@ -197,6 +197,15 @@ public:
 		g_hBPUThread_ = kInvalidTaskHndl;
 		err = kernel_.CreateTask(g_hBPUThread_, properties, NULL);
 		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create ButtonPowerUSBTask!\n" );
+		debug_.DebugOut(kDbgLvlValuable, "Start ButtonPowerUSB Task ... !\n");
+
+		// Create Cartridge thread for handling cart hotswap
+		properties.TaskMainFcn = CEventModule::CartridgeTask;
+		properties.pTaskMainArgValues = pEventModule_;
+		g_hBPUThread_ = kInvalidTaskHndl;
+		err = kernel_.CreateTask(g_hBPUThread_, properties, NULL);
+		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create CartridgeTask!\n" );
+		debug_.DebugOut(kDbgLvlValuable, "Start Cartridge task ...!\n");
 	}
 	
 	//------------------------------------------------------------------------
