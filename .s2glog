@@ -19215,3 +19215,12 @@ By ytu (ytu@leapfrog.com) on 7/22/09 10:48 AM
 6,224 ms. (Cumulative: 6,224,488 ms)
 
 ----------------
+Revision 4,800 from svn://localhost/TRUNK/:
+
+Initial checkin for cartridge hot swap
+
+By ytu (ytu@leapfrog.com) on 7/22/09 10:50 AM
+2 changed, 2 added, 0 deleted.
+6,001 ms. (Cumulative: 6,230,572 ms)
+
+----------------

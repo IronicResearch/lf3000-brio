@@ -24,6 +24,7 @@
 #include <PowerTypes.h>
 #include <USBDeviceTypes.h>
 #include <ButtonTypes.h>
+#include <CartridgeTypes.h>
 #include <boost/shared_array.hpp>	
 
 #include "Wrappers.h"
@@ -136,6 +137,17 @@ tButtonData2	GetButtonState2(void);
 // Sets the system's button state
 //----------------------------------------------------------------------------
 void SetButtonState(tButtonData2 button_data);
+
+
+//----------------------------------------------------------------------------
+// Returns the system's cartridge state
+//----------------------------------------------------------------------------
+tCartridgeData		GetCartridgeState(void);
+
+//----------------------------------------------------------------------------
+// Sets the system's cartridge state
+//----------------------------------------------------------------------------
+void SetCartridgeState(tCartridgeData cartridge_data);
 
 //----------------------------------------------------------------------------
 // Prints uptime to console in uniform manner

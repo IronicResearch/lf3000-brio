@@ -37,8 +37,8 @@ enum eGroupEnum {
 	kGroupPlatform,
 	kGroupUSBDevice,
 	kGroupMfgTest,
-	kGroupTouch
-
+	kGroupTouch,
+	kGroupCartridge
 	// Brio v1.1
 		 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
