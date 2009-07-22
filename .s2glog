@@ -19197,3 +19197,12 @@ By ytu (ytu@leapfrog.com) on 7/22/09 10:47 AM
 5,892 ms. (Cumulative: 6,212,122 ms)
 
 ----------------
+Revision 4,798 from svn://localhost/TRUNK/:
+
+Added cartridge task to support hot swap cartridge
+
+By ytu (ytu@leapfrog.com) on 7/22/09 10:48 AM
+1 changed, 0 added, 0 deleted.
+5,986 ms. (Cumulative: 6,218,186 ms)
+
+----------------

@@ -63,6 +63,7 @@ private:
 
 public:
 	static void* 		ButtonPowerUSBTask( void* arg );
+	static void* 		CartridgeTask( void* arg );
 	CDebugMPI			debug_;
 	CKernelMPI			kernel_;
 };
