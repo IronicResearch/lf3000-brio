@@ -110,7 +110,7 @@ tErrType CCartridgeMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tCartridgeData CCartridgeMPI::GetCartridgeState() const
 {
-	return GetCartridgeState();
+	return LeapFrog::Brio::GetCartridgeState();
 }
 
 
