@@ -894,7 +894,7 @@ tErrType CAudioModule::StartMidiFile(	U32					mpiID,
 										tAudioOptionsFlags	flags )
 {
 	// Impersonate MIDI file with Ogg file for Foster's game
-	if (strstr(path.c_str(), kFostersMidiName) != NULL) {
+	if (path.find(kFostersMidiName) != path.npos) {
 		tAudioID rc;
 		MPIInstanceState& mpiState = RetrieveMPIState(mpiID);
 		rc = StartAudio(mpiID, kFostersMidiOgg, volume,
