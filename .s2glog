@@ -19260,3 +19260,30 @@ By ytu (ytu@leapfrog.com) on 7/22/09 10:53 AM
 5,566 ms. (Cumulative: 6,253,341 ms)
 
 ----------------
+Revision 4,805 from svn://localhost/TRUNK/:
+Revision 4,806 from svn://localhost/TRUNK/:
+Revision 4,807 from svn://localhost/TRUNK/:
+Revision 4,808 from svn://localhost/TRUNK/:
+Revision 4,809 from svn://localhost/TRUNK/:
+Revision 4,810 from svn://localhost/TRUNK/:
+Revision 4,811 from svn://localhost/TRUNK/:
+Revision 4,812 from svn://localhost/TRUNK/:
+Revision 4,813 from svn://localhost/TRUNK/:
+Revision 4,814 from svn://localhost/TRUNK/:
+Revision 4,815 from svn://localhost/TRUNK/:
+Revision 4,816 from svn://localhost/TRUNK/:
+Revision 4,817 from svn://localhost/TRUNK/:
+Revision 4,818 from svn://localhost/TRUNK/:
+Revision 4,819 from svn://localhost/TRUNK/:
+Revision 4,820 from svn://localhost/TRUNK/:
+Revision 4,821 from svn://localhost/TRUNK/:
+Revision 4,822 from svn://localhost/TRUNK/:
+Revision 4,823 from svn://localhost/TRUNK/:
+
+Convert C strstr() call to C++ string::find() call to unblock missing header problem on emulation.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/22/09 6:55 PM
+1 changed, 0 added, 0 deleted.
+5,626 ms. (Cumulative: 6,259,154 ms)
+
+----------------
