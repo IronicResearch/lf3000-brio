@@ -19287,3 +19287,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/22/09 6:55 PM
 5,626 ms. (Cumulative: 6,259,154 ms)
 
 ----------------
+Revision 4,824 from svn://localhost/TRUNK/:
+
+Fully qualifying the function CartridgeMPI calls.  Instead of calling itself, it now calls the Utility function.
+
+By Msaelock (Msaelock@leapfrog.com) on 7/22/09 6:58 PM
+1 changed, 0 added, 0 deleted.
+5,641 ms. (Cumulative: 6,264,857 ms)
+
+----------------
