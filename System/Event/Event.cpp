@@ -99,6 +99,7 @@ private:
 	static bool					g_threadRunning_;
 	static tTaskHndl			g_hThread_;
 	static tTaskHndl			g_hBPUThread_;
+	static tTaskHndl			g_hCartThread_;
 	
 	//============================================================================
 	// Event dispatching task
@@ -182,6 +183,7 @@ public:
 		tTaskProperties properties;										//*2
 
 		properties.TaskMainFcn = CEventManagerImpl::EventDispatchTask;
+		properties.taskMainArgCount = 1;
 		properties.pTaskMainArgValues = this;
 		err = kernel_.CreateTask(g_hThread_, properties, NULL);
 		
@@ -203,8 +205,8 @@ public:
 		// Create Cartridge thread for handling cart hotswap
 		properties.TaskMainFcn = CEventModule::CartridgeTask;
 		properties.pTaskMainArgValues = pEventModule_;
-		g_hBPUThread_ = kInvalidTaskHndl;
-		err = kernel_.CreateTask(g_hBPUThread_, properties, NULL);
+		g_hCartThread_ = kInvalidTaskHndl;
+		err = kernel_.CreateTask(g_hCartThread_, properties, NULL);
 		debug_.Assert( kNoErr == err, "CEventManagerImpl::ctor: Failed to create CartridgeTask!\n" );
 		debug_.DebugOut(kDbgLvlValuable, "Start Cartridge task ...!\n");
 	}
@@ -215,6 +217,10 @@ public:
 		void* 		retval;
 
 		// Terminate Button/Power/USB driver polling thread first
+		if (g_hCartThread_ != kInvalidTaskHndl) {
+			kernel_.CancelTask(g_hCartThread_);
+			kernel_.JoinTask(g_hCartThread_, retval);
+		}
 		if (g_hBPUThread_ != kInvalidTaskHndl) {
 			kernel_.CancelTask(g_hBPUThread_);
 			kernel_.JoinTask(g_hBPUThread_, retval);
@@ -346,6 +352,7 @@ bool 				CEventManagerImpl::g_threadRun_   = true;
 bool 				CEventManagerImpl::g_threadRunning_  = false;
 tTaskHndl			CEventManagerImpl::g_hThread_	  = kInvalidTaskHndl;
 tTaskHndl			CEventManagerImpl::g_hBPUThread_	  = kInvalidTaskHndl;
+tTaskHndl			CEventManagerImpl::g_hCartThread_	  = kInvalidTaskHndl;
 CEventModule*		CEventManagerImpl::pEventModule_ = NULL;
 	
 namespace

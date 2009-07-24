@@ -98,6 +98,10 @@ namespace
 
 void* CEventModule::CartridgeTask( void* arg )
 {
+	CKernelMPI	kernel;
+	while (g_threadRun2_)
+		kernel.TaskSleep(10);
+	return NULL;
 }
 
 //============================================================================

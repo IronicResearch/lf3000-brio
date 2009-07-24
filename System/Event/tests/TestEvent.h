@@ -290,7 +290,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testSingleListenerMultiEventEnableDisable( )
+	void XXXXtestSingleListenerMultiEventEnableDisable( )
 	{
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent3, kUnitTestEvent4, kUnitTestEvent5 };
