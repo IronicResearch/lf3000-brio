@@ -17,6 +17,7 @@
 #include <AudioPriv.h>
 #include <AudioTypesPriv.h>
 #include <MemPlayer.h>
+#include <string.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 

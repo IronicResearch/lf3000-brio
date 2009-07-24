@@ -25,6 +25,7 @@
 #include <AudioTypesPriv.h>
 #include <RawPlayer.h>
 #include <Dsputil.h>
+#include <string.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 

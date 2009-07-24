@@ -20,6 +20,7 @@
 #include <DebugMPI.h>
 #include <EventMPI.h>
 #include <KernelMPI.h>
+#include <string.h>
 
 #ifdef EMULATION
 #include <X11/Xlib.h>

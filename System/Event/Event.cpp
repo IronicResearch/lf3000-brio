@@ -23,6 +23,7 @@
 #include <EventMessage.h>
 #include <EventMPI.h>
 #include <EventPriv.h>
+#include <string.h>
 
 LF_BEGIN_BRIO_NAMESPACE() 
 

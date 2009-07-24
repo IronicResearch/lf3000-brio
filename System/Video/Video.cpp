@@ -19,6 +19,7 @@
 #include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <errno.h>
+#include <string.h>
 
 //#define _GNU_SOURCE
 //#define _LARGEFILE_SOURCE

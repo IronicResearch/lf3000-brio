@@ -17,6 +17,7 @@
 #include <EmulationConfig.h>
 #include <unistd.h>
 #include <boost/scoped_array.hpp>
+#include <string.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
