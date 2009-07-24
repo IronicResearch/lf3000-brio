@@ -19326,3 +19326,12 @@ By Msaelock (Msaelock@leapfrog.com) on 7/23/09 7:44 PM
 5,641 ms. (Cumulative: 6,270,717 ms)
 
 ----------------
+Revision 4,847 from svn://localhost/TRUNK/:
+
+Ignore .pyc files in tools folder.  Ignore .cproject.
+
+By Dennis OBrian (dobrien@leapfrog.com) on 7/23/09 9:27 PM
+1 changed, 0 added, 0 deleted.
+5,800 ms. (Cumulative: 6,276,595 ms)
+
+----------------
