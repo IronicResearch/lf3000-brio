@@ -33,7 +33,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define LF_LOG(ident, level, des) \
 do { \
 	openlog(ident, LOG_CONS | LOG_NDELAY, LOG_LOCAL4); \
-	syslog(DebugLevel2LogLevel[level], des); \
+	syslog(DebugLevel2LogLevel[level], "%s", des); \
 }while(0)
 
 
@@ -194,7 +194,7 @@ namespace
 		vsnprintf(&outstr[nc], MAX_LOGGING_MSG_LEN-nc, formatString, arguments);
 		
 		if(outFlag & kOutputConsole) {
-			printf(outstr);
+			printf("%s", outstr);
 		}
 		
 		if(outFlag & kOutputSyslog) {
@@ -221,7 +221,7 @@ namespace
 		char outstr[MAX_LOGGING_MSG_LEN];
 		int nc=0, n;
 
-		nc = sprintf(outstr, kAssertTagStr);
+		nc = sprintf(outstr, "%s", kAssertTagStr);
 		n = sprintf(&outstr[nc], kDebugOutSignatureFmt, sig);
 		nc += n;
 					
@@ -234,7 +234,7 @@ namespace
 		n = vsnprintf(&outstr[nc], MAX_LOGGING_MSG_LEN-nc, formatString, arguments );
 
 		if(outFlag & kOutputConsole) {
-			printf(outstr);
+			printf("%s", outstr);
 		}
 		
 		if(outFlag & kOutputSyslog) {
