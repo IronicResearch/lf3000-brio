@@ -19335,3 +19335,14 @@ By Dennis OBrian (dobrien@leapfrog.com) on 7/23/09 9:27 PM
 5,800 ms. (Cumulative: 6,276,595 ms)
 
 ----------------
+Revision 4,848 from svn://localhost/TRUNK/:
+Revision 4,849 from svn://localhost/TRUNK/:
+Revision 4,850 from svn://localhost/TRUNK/:
+
+Adding format strings to a few *printf functions to make gcc 4.3 compile and for a bit of safety.
+
+By Dennis OBrian (dobrien@leapfrog.com) on 7/24/09 2:30 PM
+2 changed, 0 added, 0 deleted.
+6,041 ms. (Cumulative: 6,282,714 ms)
+
+----------------

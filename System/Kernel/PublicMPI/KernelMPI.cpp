@@ -80,9 +80,9 @@ namespace
 		
 		vsprintf(outstr, formatString, arguments);
 
-		printf(outstr);
+		printf("%s", outstr);
 		openlog(ident, LOG_CONS | LOG_NDELAY, LOG_LOCAL4);
-		syslog(DebugLevel2LogLevel[priority], outstr);
+		syslog(DebugLevel2LogLevel[priority], "%s", outstr);
 	}
 	
 	//--------------------------------------------------------------------------
