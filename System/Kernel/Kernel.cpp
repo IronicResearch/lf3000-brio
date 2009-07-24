@@ -16,6 +16,7 @@
 #include <pthread.h>
 #include <sched.h>
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 #include <sys/time.h>	// for gettimeofday()
 #include <unistd.h>

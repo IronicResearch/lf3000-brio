@@ -19,6 +19,8 @@
 #include <EventPriv.h>
 #include <SystemErrors.h>
 #include <KernelMPI.h>
+#include <string.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
