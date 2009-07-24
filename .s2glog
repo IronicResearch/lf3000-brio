@@ -19357,3 +19357,12 @@ By Dennis OBrian (dobrien@leapfrog.com) on 7/24/09 2:32 PM
 6,267 ms. (Cumulative: 6,289,075 ms)
 
 ----------------
+Revision 4,852 from svn://localhost/TRUNK/:
+
+Need to link CartridgeMPI for CartridgeMessage import.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/24/09 3:24 PM
+1 changed, 0 added, 0 deleted.
+6,031 ms. (Cumulative: 6,295,200 ms)
+
+----------------
