@@ -96,7 +96,9 @@ namespace
 	}
 }
 
-
+void* CEventModule::CartridgeTask( void* arg )
+{
+}
 
 //============================================================================
 // Asynchronous notifications
