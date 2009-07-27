@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.1.4771 (July 22, 2009)
+Brio v0.6.1.4856 (July 27, 2009)
 ===========================================
 
 -- Merge Vorbis Tremor code which works for general Ogg format streams, including 
@@ -37,6 +37,27 @@ sub-allocated more systematically to avoid RGB vs YUV buffer contention. (Emeral
 -- Touch now works in Emulation Flash.
 
 -- Adding range to boost headers for use with foreach.
+
+-- Added cartridge task to support hot swap cartridge
+
+-- Convert C strstr() call to C++ string::find() call to unblock missing 
+header problem on emulation.
+
+-- Fully qualifying the function CartridgeMPI calls.  Instead of calling itself, 
+it now calls the Utility function.
+
+-- Fake cartridge task in Emulation.  Might be better if we didn't create a cartridge 
+task at all in Emulation.
+
+-- Adding format strings to a few *printf functions to make gcc 4.3 compile and 
+for a bit of safety.
+
+-- Adding #include <string.h> in several files that use memcpy and memset.  gcc 4.3 removed 
+some of the headers including other headers
+
+-- Need to link CartridgeMPI for CartridgeMessage import.
+
+-- Fix support for additional cart event thread setup/teardown inside Event manager.
 
 ===========================================
 Brio v0.6.0.4706 (July 9, 2009)
