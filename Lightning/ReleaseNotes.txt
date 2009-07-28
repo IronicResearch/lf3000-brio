@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.1.4856 (July 27, 2009)
+Brio v0.6.1.48i63 (July 28, 2009)
 ===========================================
 
 -- Merge Vorbis Tremor code which works for general Ogg format streams, including 
