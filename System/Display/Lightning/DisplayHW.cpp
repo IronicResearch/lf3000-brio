@@ -30,6 +30,7 @@
 #include <linux/lf1000/dpc_ioctl.h>
 #include <linux/lf1000/mlc_ioctl.h>
 #include "GLES/libogl.h"
+#include <list>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -110,8 +111,14 @@ namespace
 	U16			gScreenHeight = 240;
 	BrightnessListener* gpBrightnessListener = NULL;
 
+	std::list<tBuffer>	gBufListUsed;			// list of allocated buffers
+	std::list<tBuffer>	gBufListFree;			// list of freed buffers
+	U32					gMarkBufStart = 0;		// framebuffer start marker
+	U32					gMarkBufEnd = 0;		// framebuffer end marker
+}
+
 	//----------------------------------------------------------------------------
-	bool AllocBuffer(tDisplayContext* pdc)
+	bool CDisplayModule::AllocBuffer(tDisplayContext* pdc)
 	{
 		U32 bufsize = pdc->pitch * pdc->height;
 		if (pdc->isOverlay) {
@@ -119,28 +126,66 @@ namespace
 			pdc->offset = gPlanarBuffer - gFrameBuffer;
 		}
 		else {
-			if (gFrameSizeTotal + bufsize > gFrameSize)
+			tBuffer buf;
+			std::list<tBuffer>::iterator it;
+			
+			// Look on for available buffer on free list first
+			for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
+				buf = *it;
+				// Move from free list to allocated list if we find one that fits
+				if (buf.length <= bufsize) {
+					gBufListFree.erase(it);
+					pdc->offset = buf.offset;
+					pdc->pBuffer = gFrameBuffer + pdc->offset;
+					gBufListUsed.push_back(buf);
+					dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: recycle offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+					return true;
+				}
+			}
+
+			// Allocate another buffer at top of heap if there's room
+			if (gMarkBufStart + bufsize > gMarkBufEnd)
 				return false;
-			pdc->pBuffer = gFrameBuffer + gFrameSizeTotal;
-			pdc->offset = pdc->pBuffer - gFrameBuffer;
+			pdc->offset = gMarkBufStart;
+			pdc->pBuffer = gFrameBuffer + gMarkBufStart;
 			pdc->isPrimary = (pdc->offset == 0) ? true : false;
-			gFrameSizeTotal += bufsize;
+			gMarkBufStart += bufsize;
+
+			// Add buffer to allocated list
+			buf.length = bufsize;
+			buf.offset = pdc->offset;
+			gBufListUsed.push_back(buf);
+			dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: new buf offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
 		}
 		return true;
 	}
 	
 	//----------------------------------------------------------------------------
-	bool DeAllocBuffer(tDisplayContext* pdc)
+	bool CDisplayModule::DeAllocBuffer(tDisplayContext* pdc)
 	{
-		U32 bufsize = pdc->pitch * pdc->height;
 		if (!pdc->isOverlay) {
-			gFrameSizeTotal -= bufsize;
-			if (gFrameSizeTotal < 0)
-				gFrameSizeTotal = 0;
+			tBuffer buf;
+			std::list<tBuffer>::iterator it;
+
+			// Find allocated buffer for this display context
+			for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
+				buf = *it;
+				if (pdc->offset == buf.offset) {
+					dbg_.DebugOut(kDbgLvlVerbose, "DeAllocBuffer: remove offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+					gBufListUsed.erase(it);
+					break;
+				}
+			}
+
+			// Reduce heap if at top location, otherwise update free list
+			if (buf.offset + buf.length == gMarkBufStart)
+				gMarkBufStart -= buf.length;
+			else
+				gBufListFree.push_back(buf);
+			
 		}
 		return true;
 	}
-}
 
 //============================================================================
 // CDisplayModule: Implementation of hardware-specific functions
@@ -224,6 +269,15 @@ void CDisplayModule::InitModule()
 	gOverlaySize = fb_size;
 	gPlanarSize = fb_size;
 
+	// Calculate total framebuffer memory available for sub-allocation
+	gFrameSizeTotal = gFrameSize; // + gOverlaySize + gOpenGLSize;
+	
+	// Setup buffer lists and markers
+	gBufListUsed.clear();
+	gBufListFree.clear();
+	gMarkBufStart = 0;
+	gMarkBufEnd   = gFrameSizeTotal; 
+
 	// Map all framebuffer regions and sub-allocate per display context
 	gFrameBuffer = (U8 *)mmap(0, gFrameSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			gDevLayer, gFrameBase);
@@ -248,7 +302,7 @@ void CDisplayModule::InitModule()
 	dbg_.DebugOut(kDbgLvlValuable, 
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			(unsigned int)gPlanarBase, gPlanarSize, gPlanarBuffer);
-
+	
 	// Register our button listener to handle brightness button changes
 	gpBrightnessListener = new BrightnessListener(this);
 	eventmgr_.RegisterEventListener(gpBrightnessListener);
@@ -572,8 +626,8 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		// Clear video buffer to white pixels before visible
 		for (U32 i = 0; i < context->height; i++)
 		{
-			memset(&gPlanarBuffer[i*4096], 0xFF, context->width); // white Y
-			memset(&gPlanarBuffer[i*4096+context->pitch/2], 0x7F, context->width/2); // neutral U,V
+			memset(&context->pBuffer[i*4096], 0xFF, context->width); // white Y
+			memset(&context->pBuffer[i*4096+context->pitch/2], 0x7F, context->width/2); // neutral U,V
 		}
 	}
 

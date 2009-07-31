@@ -69,6 +69,11 @@ struct tDisplayContext {
 	void*	pdc;		// next dc in list
 };
 
+struct tBuffer {
+	U32		length;		// size of buffer aligned
+	U32		offset;		// offset of buffer from start
+};
+
 //----------------------------------------------------------------------------
 inline void RGB4444ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
 {
@@ -380,6 +385,11 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+#ifndef EMULATION	
+	bool				AllocBuffer(tDisplayContext* pdc);
+	bool				DeAllocBuffer(tDisplayContext* pdc);
+#endif
 };
 
 
