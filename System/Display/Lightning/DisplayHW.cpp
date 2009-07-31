@@ -53,9 +53,12 @@ namespace
 	
 	class BrightnessListener : public IEventListener
 	{
+		CDisplayModule*	mpDisplayMPI;
 	public:
-		BrightnessListener():
-			IEventListener(DisplayButtonEvents, ArrayCount(DisplayButtonEvents)){}
+		BrightnessListener(CDisplayModule* pModule):
+			IEventListener(DisplayButtonEvents, ArrayCount(DisplayButtonEvents)),
+			mpDisplayMPI(pModule)
+			{}
 		
 		tEventStatus Notify(const IEventMessage& msg)
 		{
@@ -69,8 +72,7 @@ namespace
 				if (kButtonBrightness & buttonPressed)
 				{
 					static int brightIndex = 1;
-					static CDisplayMPI displayMPI;
-					displayMPI.SetBacklight(0, lcdBacklight[brightIndex]);
+					mpDisplayMPI->SetBacklight(0, lcdBacklight[brightIndex]);
 					brightIndex++;
 					brightIndex = brightIndex % SCREEN_BRIGHT_LEVELS; // keep ptr in range
 				}
@@ -248,7 +250,7 @@ void CDisplayModule::InitModule()
 			(unsigned int)gPlanarBase, gPlanarSize, gPlanarBuffer);
 
 	// Register our button listener to handle brightness button changes
-	gpBrightnessListener = new BrightnessListener();
+	gpBrightnessListener = new BrightnessListener(this);
 	eventmgr_.RegisterEventListener(gpBrightnessListener);
 }
 
