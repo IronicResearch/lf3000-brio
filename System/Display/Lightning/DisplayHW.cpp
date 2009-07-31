@@ -287,14 +287,6 @@ void CDisplayModule::InitModule()
 			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
 			(unsigned int)gFrameBase, gFrameSize, gFrameBuffer);
 
-	gOpenGLBuffer = (U8 *)mmap(0, gOpenGLSize, PROT_READ | PROT_WRITE, MAP_SHARED,
-			gDevOpenGL, gOpenGLBase);
-	dbg_.Assert(gOpenGLBuffer != MAP_FAILED,
-			"DisplayModule::InitModule: failed to mmap() %s framebuffer", OGL_LAYER_DEV);
-	dbg_.DebugOut(kDbgLvlValuable, 
-			"DisplayModule::InitModule: mapped base %08X, size %08X to %p\n", 
-			(unsigned int)gOpenGLBase, gOpenGLSize, gOpenGLBuffer);
-	
 	gPlanarBuffer = (U8 *)mmap(0, gPlanarSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			gDevOverlay, gPlanarBase);
 	dbg_.Assert(gPlanarBuffer != MAP_FAILED,
@@ -318,7 +310,6 @@ void CDisplayModule::DeInitModule()
 	gpBrightnessListener = NULL;
 
 	munmap(gFrameBuffer, gFrameSize);
-	munmap(gOpenGLBuffer, gOpenGLSize);
 	munmap(gPlanarBuffer, gPlanarSize);
 
 	ioctl(gDevLayer, MLC_IOCTADDRESS, gFrameBase);
@@ -439,6 +430,9 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	// Allocate framebuffer region for onscreen display context	
 	if (AllocBuffer(GraphicsContext)) {
 		dbg_.DebugOut(kDbgLvlValuable, "DisplayModule::CreateHandle: %p\n", GraphicsContext->pBuffer);
+		// Clear framebuffer memory if pixel format change pending
+		if (ioctl(gDevLayer, MLC_IOCQFORMAT, 0) != hwFormat)
+			memset(GraphicsContext->pBuffer, 0xFF, GraphicsContext->pitch * GraphicsContext->height);
 	}
 	else {
 		// No framebuffer allocations left
