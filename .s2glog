@@ -19469,3 +19469,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/31/09 3:17 PM
 5,922 ms. (Cumulative: 6,343,019 ms)
 
 ----------------
+Revision 4,889 from svn://localhost/TRUNK/:
+Revision 4,890 from svn://localhost/TRUNK/:
+Revision 4,891 from svn://localhost/TRUNK/:
+Revision 4,892 from svn://localhost/TRUNK/:
+Revision 4,893 from svn://localhost/TRUNK/:
+Revision 4,894 from svn://localhost/TRUNK/:
+Revision 4,895 from svn://localhost/TRUNK/:
+
+Reinstate clearing buffers to white pixels on pending pixel format changes to eliminate color flashes in Racing scene changes.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/09 4:40 PM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 6,349,176 ms)
+
+----------------
