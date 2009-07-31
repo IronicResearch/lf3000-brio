@@ -19438,3 +19438,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/30/09 5:32 PM
 5,641 ms. (Cumulative: 6,325,596 ms)
 
 ----------------
+Revision 4,882 from svn://localhost/TRUNK/:
+Revision 4,883 from svn://localhost/TRUNK/:
+
+Renamed CartridgeMPI unit test to allow rest of Brio unit tests to build. *Needs to be fixed.*
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/09 11:20 AM
+0 changed, 1 added, 1 deleted.
+5,656 ms. (Cumulative: 6,331,331 ms)
+
+----------------
