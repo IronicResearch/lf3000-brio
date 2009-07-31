@@ -781,11 +781,11 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(ev.type == EV_SW && ev.code == SW_LID)
 				{
 					vbus = !!ev.value;
-					if((vbus == 1) && !(usb_data.USBDeviceState & kUSBDeviceConnected)) {
+					if((vbus == 1)) {
 						usb_data.USBDeviceState |= kUSBDeviceConnected;
 						CUSBDeviceMessage usb_msg(usb_data);
 						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
-					} else if((vbus == 0) && (usb_data.USBDeviceState & kUSBDeviceConnected)) {
+					} else if((vbus == 0)) {
 						usb_data.USBDeviceState &= ~(kUSBDeviceConnected);
 						CUSBDeviceMessage usb_msg(usb_data);
 						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
@@ -803,7 +803,10 @@ void* CEventModule::CartridgeTask( void* arg )
 					do {
 						r = recv(fdsock, &app_msg, sizeof(app_message), 0);
 						if (r == sizeof(app_message)) {
-							usb_data.USBDeviceState = app_msg.payload;
+							usb_data.USBDeviceState &= kUSBDeviceConnected;
+							usb_data.USBDeviceState |= app_msg.payload;
+							if (app_msg.payload == 0)
+								usb_data.USBDeviceState = 0;
 							CUSBDeviceMessage usb_msg(usb_data);
 							pThis->PostEvent(usb_msg, kUSBSocketEventPriority, 0);
 							SetCachedUSBDeviceState(usb_data);
