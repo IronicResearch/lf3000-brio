@@ -19422,3 +19422,19 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/29/09 1:02 PM
 5,797 ms. (Cumulative: 6,319,846 ms)
 
 ----------------
+Revision 4,874 from svn://localhost/TRUNK/:
+Revision 4,875 from svn://localhost/TRUNK/:
+Revision 4,876 from svn://localhost/TRUNK/:
+Revision 4,877 from svn://localhost/TRUNK/:
+Revision 4,878 from svn://localhost/TRUNK/:
+Revision 4,879 from svn://localhost/TRUNK/:
+Revision 4,880 from svn://localhost/TRUNK/:
+Revision 4,881 from svn://localhost/TRUNK/:
+
+Allow USB physical connect/disconnect states to be maintained independently of DFTP event states.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/09 5:32 PM
+1 changed, 0 added, 0 deleted.
+5,641 ms. (Cumulative: 6,325,596 ms)
+
+----------------
