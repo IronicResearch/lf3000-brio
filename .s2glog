@@ -19448,3 +19448,15 @@ By Dave Milici (dmilici@leapfrog.com) on 7/31/09 11:20 AM
 5,656 ms. (Cumulative: 6,331,331 ms)
 
 ----------------
+Revision 4,884 from svn://localhost/TRUNK/:
+Revision 4,885 from svn://localhost/TRUNK/:
+Revision 4,886 from svn://localhost/TRUNK/:
+Revision 4,887 from svn://localhost/TRUNK/:
+
+Minor change in Display module brightness handler for more direct access to internal functions.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/09 2:00 PM
+1 changed, 0 added, 0 deleted.
+5,594 ms. (Cumulative: 6,337,019 ms)
+
+----------------
