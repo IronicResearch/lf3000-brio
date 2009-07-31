@@ -19460,3 +19460,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/31/09 2:00 PM
 5,594 ms. (Cumulative: 6,337,019 ms)
 
 ----------------
+Revision 4,888 from svn://localhost/TRUNK/:
+
+Manage framebuffer allocations to use linked lists of used vs free buffer regions like a heap. Framebuffer memory is tracked in a used list when buffers are allocated,  and reclaimed back by the heap when deallocated if possible, or saved to a free list for recycling. (Emerald #68)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/31/09 3:17 PM
+2 changed, 0 added, 0 deleted.
+5,922 ms. (Cumulative: 6,343,019 ms)
+
+----------------
