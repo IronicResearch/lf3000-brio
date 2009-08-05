@@ -19511,3 +19511,12 @@ By ytu (ytu@leapfrog.com) on 8/5/09 10:11 AM
 6,063 ms. (Cumulative: 6,355,426 ms)
 
 ----------------
+Revision 4,915 from svn://localhost/TRUNK/:
+
+Move signal handler to AppManager
+
+By ytu (ytu@leapfrog.com) on 8/5/09 10:11 AM
+1 changed, 0 added, 0 deleted.
+6,103 ms. (Cumulative: 6,361,592 ms)
+
+----------------
