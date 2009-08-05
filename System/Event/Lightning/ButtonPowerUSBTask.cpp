@@ -472,7 +472,24 @@ void* CEventModule::CartridgeTask( void* arg )
 					}
 					
 				} else if (sys_ret == 21) {
+					
+					int sw = 0;
 					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't mount cartridge FS !\n");
+					
+					// get cartridge switche state again
+					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+							"CEventModule::CartridgeTask: reading switch state failed");
+					
+					if(!(sw & (1<<SW_TABLET_MODE))) {
+						// cartridge is removed somehow
+						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
+					} else {
+						//cartridge is still inserted
+						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
+					}
+					
 				} else if(sys_ret == 0) {
 					// send CARTRIDGE_STATE_READY message
 					data.cartridgeState = CARTRIDGE_STATE_READY;
@@ -533,6 +550,9 @@ void* CEventModule::CartridgeTask( void* arg )
 					
 				} else if(sys_ret == 0) {
 					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+				} else {
+					debug.DebugOut(kDbgLvlCritical, "Unknown sys_ret = %d  !\n", sys_ret);
+					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
 				}
 				break;
 			}
@@ -570,6 +590,12 @@ void* CEventModule::CartridgeTask( void* arg )
 			}
 			
 			case CARTRIDGE_STATE_UNKOWN: {
+				event = WaitForCartEvent(event_fd);
+				if(event == CARTRIDGE_EVENT_REMOVE) {
+					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
+				} else if (event == CARTRIDGE_EVENT_INSERT){
+					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state ready, received insert event\n");
+				}
 				break;
 			}
 			
