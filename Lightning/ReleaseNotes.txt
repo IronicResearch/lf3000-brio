@@ -3,6 +3,30 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.6.2.4920 (August 5, 2009)
+===========================================
+
+-- Allow USB physical connect/disconnect states to be maintained independently of 
+`DFTP event states.
+
+-- Renamed CartridgeMPI unit test to allow rest of Brio unit tests to build. 
+
+-- Minor change in Display module brightness handler for more direct access to 
+internal functions.
+
+-- Manage framebuffer allocations to use linked lists of used vs free buffer 
+regions like a heap. Framebuffer memory is tracked in a used list when buffers are 
+allocated,  and reclaimed back by the heap when deallocated if possible, or saved to a 
+free list for recycling. (Emerald #68)
+
+-- Reinstate clearing buffers to white pixels on pending pixel format changes to 
+eliminate color flashes in Racing scene changes.
+
+-- Make sure there is clean exit from any unknown situation (ButtonPowerUSBTask)
+
+-- Move signal handler to AppManager
+
+===========================================
 Brio v0.6.1.4873 (July 29, 2009)
 ===========================================
 
