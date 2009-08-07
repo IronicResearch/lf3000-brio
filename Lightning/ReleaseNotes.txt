@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.2.4920 (August 5, 2009)
+Brio v0.6.2.4943 (August 6, 2009)
 ===========================================
 
 -- Allow USB physical connect/disconnect states to be maintained independently of 
@@ -25,6 +25,8 @@ eliminate color flashes in Racing scene changes.
 -- Make sure there is clean exit from any unknown situation (ButtonPowerUSBTask)
 
 -- Move signal handler to AppManager
+
+-- make sure all open files are closed... (in ButtonPowerUSBTask.cpp)
 
 ===========================================
 Brio v0.6.1.4873 (July 29, 2009)
