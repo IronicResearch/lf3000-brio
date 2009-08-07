@@ -54,7 +54,7 @@ enum eCartridgeState_ {
 	CARTRIDGE_STATE_FS_CLEAN,		/* Internal state: File system is fully unmounted */
 	CARTRIDGE_STATE_CLEAN,
 	CARTRIDGE_STATE_REINSERT,
-	CARTRIDGE_STATE_UNKOWN
+	CARTRIDGE_STATE_UNKNOWN
 }; 
 
 
