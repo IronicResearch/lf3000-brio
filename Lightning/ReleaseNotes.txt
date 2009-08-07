@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.2.4943 (August 6, 2009)
+Brio v0.6.2.4948 (August 7, 2009)
 ===========================================
 
 -- Allow USB physical connect/disconnect states to be maintained independently of 
