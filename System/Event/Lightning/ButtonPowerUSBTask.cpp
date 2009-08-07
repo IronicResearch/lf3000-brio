@@ -259,11 +259,10 @@ namespace
 		int ret, count=0;
 		CDebugMPI debug(kGroupEvent);		
 
-		#ifdef DEBUG
 		sprintf(dirpath, "/proc/%d/fd", getpid());
-		printf("dir path = %s\n", dirpath);
-		#endif
 
+		debug.DebugOut(kDbgLvlVerbose, "dir path = %s\n", dirpath);
+		
 		dirp = opendir(dirpath);
 
 		while (dirp) {
@@ -271,23 +270,23 @@ namespace
 		    if ((ep = readdir(dirp)) != NULL) {
 			
 			sprintf(fpath, "%s/%s", dirpath, ep->d_name);
-			// printf("file name %s, ino = %d\n", fpath, (int)ep->d_ino);
 			    
 			if(stat(fpath, &stat_buf) != 0) {
-				printf("stat(%s) error, errno = %s\n", ep->d_name, strerror(errno));
+				debug.DebugOut(kDbgLvlCritical, "stat(%s) error, errno = %s\n", ep->d_name, strerror(errno));
 			}
 			
 			if(S_IFLNK & stat_buf.st_mode) {
 				
 				memset(linkpath, 0, BRIO_PATH_MAX);
 				if(readlink(fpath, linkpath, BRIO_PATH_MAX) == -1) {
-					printf("read link error: %s\n", strerror(errno));
+					debug.DebugOut(kDbgLvlCritical, "read link error: %s\n", strerror(errno));
 				} else {
-					if (strncmp(linkpath, "/Cart/", 6) == 0) {
-						printf("%s -> %s will be forced to close\n", ep->d_name, linkpath);
+					printf("link name %s\n", linkpath);
+					if (strncmp(linkpath, "/LF/Cart/", 9) == 0) {
+						debug.DebugOut(kDbgLvlValuable, "%s -> %s will be forced to close\n", ep->d_name, linkpath);
 						ret = close(atoi(ep->d_name));
 						if(ret != 0) {
-							printf("Error closing file, %s\n", strerror(errno));
+							debug.DebugOut(kDbgLvlCritical, "Error closing file, %s\n", strerror(errno));
 						}
 					}
 				}
@@ -377,25 +376,38 @@ void* CEventModule::CartridgeTask( void* arg )
 		
 		if(cart_inserted) {
 			data.cartridgeState = CARTRIDGE_STATE_INSERTED;
+
+			// check cart status from driver
+			cart_status = CheckCartDriverStatus();
+			if(cart_status == 1) {
+				/* driver initialized successfully*/
+				data.cartridgeState = CARTRIDGE_STATE_DRIVER_READY;
+			} else if(cart_status == -1) {
+				/* driver didn't initialize successfully*/
+				data.cartridgeState = CARTRIDGE_STATE_REINSERT;			
+			}
+			
+			// check cart status from file system
+			if(CheckCartFSStatus() == 1) {
+				data.cartridgeState = CARTRIDGE_STATE_READY;
+			}
+			
 		} else {
 			data.cartridgeState = CARTRIDGE_STATE_CLEAN;
+			
+			// check cart status from driver
+			cart_status = CheckCartDriverStatus();		
+			if(cart_status == 1) {
+				/* driver initialized, this is due to AppManager crash*/
+				data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+			}
+			
+			// file system still mounted, force to go through a file system clean cycle
+			if(CheckCartFSStatus() == 1) {
+				data.cartridgeState = CARTRIDGE_STATE_REMOVED;
+			}
+			
 		}
-
-		// check cart status from driver
-		cart_status = CheckCartDriverStatus();		
-		if(cart_status == 1) {
-			/* driver initialized successfully*/
-			data.cartridgeState = CARTRIDGE_STATE_DRIVER_READY;
-		} else if(cart_status == -1) {
-			/* driver didn't initialize successfully*/
-			data.cartridgeState = CARTRIDGE_STATE_REINSERT;			
-		}
-		
-		// check cart status from file system
-		if(CheckCartFSStatus() == 1) {
-			data.cartridgeState = CARTRIDGE_STATE_READY;
-		}
-
 	}
 	else
 	{
@@ -521,9 +533,10 @@ void* CEventModule::CartridgeTask( void* arg )
 				ScanCloseCartridgeFile();
 				
 				// wait a bit, while appManager release resouces, find out more here !!!!
-				sleep(1);
+				// sleep(1);
 				sys_ret = system("/etc/init.d/cartridge stop") >> 8;
 				
+				#if 1
 				// check return status here
 				if(sys_ret == 11) {
 					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't detach ubi !\n");
@@ -554,6 +567,10 @@ void* CEventModule::CartridgeTask( void* arg )
 					debug.DebugOut(kDbgLvlCritical, "Unknown sys_ret = %d  !\n", sys_ret);
 					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
 				}
+				#else
+					data.cartridgeState = CARTRIDGE_STATE_UNKNOWN;
+				#endif
+				
 				break;
 			}
 
@@ -589,20 +606,17 @@ void* CEventModule::CartridgeTask( void* arg )
 				break;
 			}
 			
-			case CARTRIDGE_STATE_UNKOWN: {
+			case CARTRIDGE_STATE_UNKNOWN:
+			default: 	{
 				event = WaitForCartEvent(event_fd);
 				if(event == CARTRIDGE_EVENT_REMOVE) {
 					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 				} else if (event == CARTRIDGE_EVENT_INSERT){
-					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state ready, received insert event\n");
+					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state unknown, received insert event\n");
 				}
 				break;
 			}
 			
-			default: {
-				pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: unknown state\n");				
-				break;
-			}
 		}
 	}
 				
