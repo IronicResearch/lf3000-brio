@@ -98,9 +98,9 @@ namespace
 
 void* CEventModule::CartridgeTask( void* arg )
 {
-	CKernelMPI	kernel;
+	CEventModule*	pThis = reinterpret_cast<CEventModule*>(arg);
 	while (g_threadRun2_)
-		kernel.TaskSleep(10);
+		pThis->kernel_.TaskSleep(10);
 	return NULL;
 }
 
@@ -108,25 +108,22 @@ void* CEventModule::CartridgeTask( void* arg )
 // Asynchronous notifications
 //============================================================================
 //----------------------------------------------------------------------------
-void* CEventModule::ButtonPowerUSBTask(void*)
+void* CEventModule::ButtonPowerUSBTask(void* arg)
 {
-	CDebugMPI	dbg(kGroupButton);
-	CKernelMPI	kernel;
-	
+	CEventModule*	pThis = reinterpret_cast<CEventModule*>(arg);
+
 	gXDisplay = XOpenDisplay(kDefaultDisplay);
 	if (gXDisplay == NULL)
-		dbg.Assert(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask(): Emulation XOpenDisplay() failed, buttons disabled!\n");
+		pThis->debug_.Assert(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask(): Emulation XOpenDisplay() failed, buttons disabled!\n");
 	XAutoRepeatOff(gXDisplay);
 
-
-	CEventMPI		eventmgr;
 	tButtonData2		data;
  	data.buttonState = data.buttonTransition = 0;
 
 	U32 dw = EmulationConfig::Instance().GetLcdDisplayWindow();
 	while(!dw)
 	{
-		kernel.TaskSleep(10);
+		pThis->kernel_.TaskSleep(10);
 		dw = EmulationConfig::Instance().GetLcdDisplayWindow();
 	}
 	Window win = static_cast<Window>(dw);
@@ -150,7 +147,7 @@ void* CEventModule::ButtonPowerUSBTask(void*)
 			gLastState = data.buttonState;
 			SetButtonState(data);
 			CButtonMessage	msg(data);
-			eventmgr.PostEvent(msg, kButtonEventPriority);
+			pThis->PostEvent(msg, kButtonEventPriority, 0);
 		}
 		if (event.type == ButtonPress || event.type == ButtonRelease || event.type == MotionNotify)
 		{
@@ -159,7 +156,7 @@ void* CEventModule::ButtonPowerUSBTask(void*)
 			td.touchX		= event.xbutton.x;
 			td.touchY		= event.xbutton.y;
 			CTouchMessage	msg(td);
-			eventmgr.PostEvent(msg, kTouchEventPriority);
+			pThis->PostEvent(msg, kTouchEventPriority, 0);
 		}
 	}
 	XAutoRepeatOn(gXDisplay);

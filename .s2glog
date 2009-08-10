@@ -19598,3 +19598,20 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/7/09 3:00 PM
 5,720 ms. (Cumulative: 6,391,807 ms)
 
 ----------------
+Revision 4,951 from svn://localhost/TRUNK/:
+Revision 4,952 from svn://localhost/TRUNK/:
+Revision 4,953 from svn://localhost/TRUNK/:
+Revision 4,954 from svn://localhost/TRUNK/:
+Revision 4,955 from svn://localhost/TRUNK/:
+Revision 4,956 from svn://localhost/TRUNK/:
+Revision 4,957 from svn://localhost/TRUNK/:
+Revision 4,958 from svn://localhost/TRUNK/:
+Revision 4,959 from svn://localhost/TRUNK/:
+
+Fixed emulation problem in Brio event manager where additional EventMPI object was being created inside event module thread. (Probably introduced when X event handling code was moved from Button module to Event module.) Seen as emulation race condition when running AppManager on VMWare Linux platform (TTP #524).
+
+By Dave Milici (dmilici@leapfrog.com) on 8/10/09 12:03 PM
+2 changed, 0 added, 0 deleted.
+5,736 ms. (Cumulative: 6,397,668 ms)
+
+----------------
