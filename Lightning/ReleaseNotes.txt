@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.2.4948 (August 7, 2009)
+Brio v0.6.2.4962 (August 10, 2009)
 ===========================================
 
 -- Allow USB physical connect/disconnect states to be maintained independently of 
@@ -27,6 +27,11 @@ eliminate color flashes in Racing scene changes.
 -- Move signal handler to AppManager
 
 -- make sure all open files are closed... (in ButtonPowerUSBTask.cpp)
+
+-- Fixed emulation problem in Brio event manager where additional EventMPI object 
+was being created inside event module thread. (Probably introduced when X event 
+handling code was moved from Button module to Event module.) Seen as emulation 
+race condition when running AppManager on VMWare Linux platform (TTP #524). 
 
 ===========================================
 Brio v0.6.1.4873 (July 29, 2009)
