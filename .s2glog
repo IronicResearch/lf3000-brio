@@ -19684,3 +19684,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/14/09 4:51 PM
 5,750 ms. (Cumulative: 6,426,754 ms)
 
 ----------------
+Revision 4,986 from svn://localhost/TRUNK/:
+
+PowerMPI.Reset() function needs immediate exit to bypass module cleanup problems. (TTP #564)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/14/09 4:57 PM
+1 changed, 0 added, 0 deleted.
+6,096 ms. (Cumulative: 6,432,928 ms)
+
+----------------
