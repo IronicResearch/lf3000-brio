@@ -35,7 +35,7 @@ if vars['is_export']:
 		dest_dir = os.path.join(vars['export_root'], 'Docs')
 		src_file = os.path.join(Dir('#').abspath, 'Brio2.doxyfile')
 		env.Clean('Docs', os.path.join('Docs', 'html'))
-		env.Command(os.path.join('Docs', 'html'), src_file, "doxygen " + src_file)
+		#env.Command(os.path.join('Docs', 'html'), src_file, "doxygen " + src_file)
 		env.Clean(dest_dir, os.path.join(dest_dir, 'html'))
 		env.Install(dest_dir, os.path.join('Docs', 'html'))
 		

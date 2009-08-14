@@ -19640,3 +19640,27 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/11/09 10:52 AM
 5,721 ms. (Cumulative: 6,409,251 ms)
 
 ----------------
+Revision 4,967 from svn://localhost/TRUNK/:
+Revision 4,968 from svn://localhost/TRUNK/:
+Revision 4,969 from svn://localhost/TRUNK/:
+Revision 4,970 from svn://localhost/TRUNK/:
+Revision 4,971 from svn://localhost/TRUNK/:
+Revision 4,972 from svn://localhost/TRUNK/:
+Revision 4,973 from svn://localhost/TRUNK/:
+Revision 4,974 from svn://localhost/TRUNK/:
+Revision 4,975 from svn://localhost/TRUNK/:
+Revision 4,976 from svn://localhost/TRUNK/:
+Revision 4,977 from svn://localhost/TRUNK/:
+Revision 4,978 from svn://localhost/TRUNK/:
+Revision 4,979 from svn://localhost/TRUNK/:
+Revision 4,980 from svn://localhost/TRUNK/:
+Revision 4,981 from svn://localhost/TRUNK/:
+Revision 4,982 from svn://localhost/TRUNK/:
+
+Commenting out Doxygen making.  This will now be done from LightningCore.
+
+By Msaelock (Msaelock@leapfrog.com) on 8/14/09 12:10 PM
+1 changed, 0 added, 0 deleted.
+5,658 ms. (Cumulative: 6,415,079 ms)
+
+----------------
