@@ -54,7 +54,9 @@ struct tDisplayContext {
 	U8 		*pBuffer;
 	S16 	x;			// from Register()
 	S16 	y;
-	U32	offset;		// offset bytes
+	U32		offset;		// offset bytes
+	U32		basephys;	// base physical address
+	U32		baselinear;	// base linear address
 	bool	isPrimary;	// primary visible surface?
 	bool 	isAllocated;// allocated by caller?
 	bool 	isOverlay;	// video overlay layer?

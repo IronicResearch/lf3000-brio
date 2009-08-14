@@ -121,14 +121,28 @@ namespace
 	bool CDisplayModule::AllocBuffer(tDisplayContext* pdc)
 	{
 		U32 bufsize = pdc->pitch * pdc->height;
+		if (pdc->isPlanar) {
+			bufsize += (k1Meg-1);
+			bufsize &= ~(k1Meg-1);
+		}
+#define UNIFIED
+#ifndef UNIFIED		
 		if (pdc->isOverlay) {
 			pdc->pBuffer = gPlanarBuffer;
-			pdc->offset = gPlanarBuffer - gFrameBuffer;
+			pdc->offset = 0;
+			pdc->basephys = gOverlayBase; 
+			pdc->baselinear = gPlanarBase;
+			return true;
 		}
-		else {
+#endif
+		{
 			tBuffer buf;
 			std::list<tBuffer>::iterator it;
-			
+
+			// All display contexts now reference common base address
+			pdc->basephys = gFrameBase;
+			pdc->baselinear = gPlanarBase;
+
 			// Look on for available buffer on free list first
 			for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
 				buf = *it;
@@ -136,7 +150,8 @@ namespace
 				if (buf.length <= bufsize) {
 					gBufListFree.erase(it);
 					pdc->offset = buf.offset;
-					pdc->pBuffer = gFrameBuffer + pdc->offset;
+					pdc->pBuffer = (pdc->isPlanar) ? gPlanarBuffer : gFrameBuffer;
+					pdc->pBuffer += pdc->offset;
 					gBufListUsed.push_back(buf);
 					dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: recycle offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
 					return true;
@@ -147,7 +162,8 @@ namespace
 			if (gMarkBufStart + bufsize > gMarkBufEnd)
 				return false;
 			pdc->offset = gMarkBufStart;
-			pdc->pBuffer = gFrameBuffer + gMarkBufStart;
+			pdc->pBuffer = (pdc->isPlanar) ? gPlanarBuffer : gFrameBuffer;
+			pdc->pBuffer += pdc->offset;
 			pdc->isPrimary = (pdc->offset == 0) ? true : false;
 			gMarkBufStart += bufsize;
 
@@ -163,7 +179,10 @@ namespace
 	//----------------------------------------------------------------------------
 	bool CDisplayModule::DeAllocBuffer(tDisplayContext* pdc)
 	{
-		if (!pdc->isOverlay) {
+#ifndef UNIFIED		
+		if (!pdc->isOverlay)
+#endif
+		{
 			tBuffer buf;
 			std::list<tBuffer>::iterator it;
 
@@ -270,7 +289,13 @@ void CDisplayModule::InitModule()
 	gPlanarSize = fb_size;
 
 	// Calculate total framebuffer memory available for sub-allocation
+#ifdef UNIFIED
+	gFrameSizeTotal = gFrameSize + gOverlaySize ; // + gOpenGLSize;
+	gPlanarSize = gFrameSize = gFrameSizeTotal;
+	gPlanarBase = gFrameBase | 0x20000000;
+#else
 	gFrameSizeTotal = gFrameSize; // + gOverlaySize + gOpenGLSize;
+#endif
 	
 	// Setup buffer lists and markers
 	gBufListUsed.clear();
@@ -431,7 +456,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (AllocBuffer(GraphicsContext)) {
 		dbg_.DebugOut(kDbgLvlValuable, "DisplayModule::CreateHandle: %p\n", GraphicsContext->pBuffer);
 		// Clear framebuffer memory if pixel format change pending
-		if (ioctl(gDevLayer, MLC_IOCQFORMAT, 0) != hwFormat)
+		if (!GraphicsContext->isOverlay && ioctl(gDevLayer, MLC_IOCQFORMAT, 0) != hwFormat)
 			memset(GraphicsContext->pBuffer, 0xFF, GraphicsContext->pitch * GraphicsContext->height);
 	}
 	else {
@@ -450,9 +475,10 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (GraphicsContext->isPlanar)
 	{
 		// Switch video overlay linear address to XY Block address
-		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(gOverlayBase + GraphicsContext->pitch/2));
-		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(gOverlayBase + GraphicsContext->pitch/2 + GraphicsContext->pitch*(height/2)));
+		U32 addr = GraphicsContext->basephys + GraphicsContext->offset;
+		ioctl(gDevOverlay, MLC_IOCTADDRESS, LIN2XY(addr));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCB, LIN2XY(addr + GraphicsContext->pitch/2));
+		ioctl(gDevOverlay, MLC_IOCTADDRESSCR, LIN2XY(addr + GraphicsContext->pitch/2 + GraphicsContext->pitch*(height/2)));
 	}
 	SetDirtyBit(layer);
 
@@ -511,12 +537,6 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	// Remove layer from visibility on screen
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
 	bPrimaryLayerEnabled = false;
-	// Restore video overlay linear address for subsequent instances
-	if (context->isOverlay && context->isPlanar)
-		ioctl(layer, MLC_IOCTADDRESS, gPlanarBase);
-	// Restore primary layer address for subsequent instances after page flipping
-	else if (context->isPrimary)
-		ioctl(layer, MLC_IOCTADDRESS, gFrameBase);
 	SetDirtyBit(layer);
 	return kNoErr;
 }
@@ -589,7 +609,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	
 	// Defer enabling video layer until 1st Invalidate() call
 	if (!context->isOverlay) {
-		ioctl(layer, MLC_IOCTADDRESS, gFrameBase + context->offset);
+		ioctl(layer, MLC_IOCTADDRESS, context->basephys + context->offset);
 		ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 		SetDirtyBit(layer);
 		bPrimaryLayerEnabled = true;
@@ -608,9 +628,13 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
 
 		// Reload XY block address for planar video format
-		if (context->isPlanar)
-			ioctl(layer, MLC_IOCTADDRESS, LIN2XY(gOverlayBase));
-		
+		if (context->isPlanar) 
+		{
+			U32 addr = context->basephys + context->offset;
+			ioctl(layer, MLC_IOCTADDRESS, LIN2XY(addr));
+			ioctl(layer, MLC_IOCTADDRESSCB, LIN2XY(addr + context->pitch/2));
+			ioctl(layer, MLC_IOCTADDRESSCR, LIN2XY(addr + context->pitch/2 + context->pitch*(context->height/2)));
+		}
 		// Select video layer order
 		if (context->isUnderlay)
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, 0);
@@ -650,8 +674,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	int		r;
 
 	// Load display address register for selected display context
-	U32 offset = context->offset; //reinterpret_cast<U32>(context->pBuffer) - reinterpret_cast<U32>(gFrameBuffer);
-	U32 physaddr = gFrameBase + offset;
+	U32 physaddr = context->basephys + context->offset;
 	r = ioctl(layer, MLC_IOCTADDRESS, physaddr);
 	dbg_.Assert(r >= 0, "DisplayModule::SwapBuffers: failed ioctl physaddr=%08X\n", (unsigned int)physaddr);
 	SetDirtyBit(layer);

@@ -19675,3 +19675,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/14/09 12:59 PM
 5,784 ms. (Cumulative: 6,420,941 ms)
 
 ----------------
+Revision 4,985 from svn://localhost/TRUNK/:
+
+Unify framebuffer allocations using common addresses and offsets shared among RGB and YUV layers. (TTP #68)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/14/09 4:51 PM
+2 changed, 0 added, 0 deleted.
+5,750 ms. (Cumulative: 6,426,754 ms)
+
+----------------
