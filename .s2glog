@@ -19693,3 +19693,14 @@ By Dave Milici (dmilici@leapfrog.com) on 8/14/09 4:57 PM
 6,096 ms. (Cumulative: 6,432,928 ms)
 
 ----------------
+Revision 4,987 from svn://localhost/TRUNK/:
+Revision 4,988 from svn://localhost/TRUNK/:
+
+Commented out all doxygen lines, not just one.
+
+
+By Msaelock (Msaelock@leapfrog.com) on 8/14/09 6:11 PM
+1 changed, 0 added, 0 deleted.
+6,034 ms. (Cumulative: 6,439,040 ms)
+
+----------------
