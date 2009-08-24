@@ -74,6 +74,7 @@ struct tDisplayContext {
 struct tBuffer {
 	U32		length;		// size of buffer aligned
 	U32		offset;		// offset of buffer from start
+	U32		aligned;	// aligned to block boundary
 };
 
 //----------------------------------------------------------------------------
@@ -389,7 +390,7 @@ private:
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 
 #ifndef EMULATION	
-	bool				AllocBuffer(tDisplayContext* pdc);
+	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
 	bool				DeAllocBuffer(tDisplayContext* pdc);
 #endif
 };

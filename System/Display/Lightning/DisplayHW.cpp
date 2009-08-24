@@ -118,13 +118,9 @@ namespace
 }
 
 	//----------------------------------------------------------------------------
-	bool CDisplayModule::AllocBuffer(tDisplayContext* pdc)
+	bool CDisplayModule::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	{
-		U32 bufsize = pdc->pitch * pdc->height;
-		if (pdc->isPlanar) {
-			bufsize += (k1Meg-1);
-			bufsize &= ~(k1Meg-1);
-		}
+		U32 bufsize = (aligned) ? aligned : pdc->pitch * pdc->height;
 #define UNIFIED
 #ifndef UNIFIED		
 		if (pdc->isOverlay) {
@@ -142,15 +138,15 @@ namespace
 			// All display contexts now reference common base address
 			pdc->basephys = gFrameBase;
 			pdc->baselinear = gPlanarBase;
+			pdc->pBuffer = (pdc->isPlanar) ? gPlanarBuffer : gFrameBuffer;
 
 			// Look on for available buffer on free list first
 			for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
 				buf = *it;
 				// Move from free list to allocated list if we find one that fits
-				if (buf.length <= bufsize) {
+				if (buf.length == bufsize) {
 					gBufListFree.erase(it);
 					pdc->offset = buf.offset;
-					pdc->pBuffer = (pdc->isPlanar) ? gPlanarBuffer : gFrameBuffer;
 					pdc->pBuffer += pdc->offset;
 					gBufListUsed.push_back(buf);
 					dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: recycle offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
@@ -158,18 +154,29 @@ namespace
 				}
 			}
 
-			// Allocate another buffer at top of heap if there's room
-			if (gMarkBufStart + bufsize > gMarkBufEnd)
-				return false;
-			pdc->offset = gMarkBufStart;
-			pdc->pBuffer = (pdc->isPlanar) ? gPlanarBuffer : gFrameBuffer;
-			pdc->pBuffer += pdc->offset;
-			pdc->isPrimary = (pdc->offset == 0) ? true : false;
-			gMarkBufStart += bufsize;
+			// Allocate another buffer from the heap
+			if (aligned) {
+				// Allocate aligned buffer from end of heap (OGL, YUV)
+				if (gMarkBufEnd - bufsize < gMarkBufStart)
+					return false;
+				pdc->offset = gMarkBufEnd - bufsize;
+				pdc->pBuffer += pdc->offset;
+				gMarkBufEnd -= bufsize;
+			}
+			else {
+				// Allocate unaligned buffer at top of heap if there's room
+				if (gMarkBufStart + bufsize > gMarkBufEnd)
+					return false;
+				pdc->offset = gMarkBufStart;
+				pdc->pBuffer += pdc->offset;
+				pdc->isPrimary = (pdc->offset == 0) ? true : false;
+				gMarkBufStart += bufsize;
+			}
 
 			// Add buffer to allocated list
 			buf.length = bufsize;
 			buf.offset = pdc->offset;
+			buf.aligned = aligned;
 			gBufListUsed.push_back(buf);
 			dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: new buf offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
 		}
@@ -197,7 +204,9 @@ namespace
 			}
 
 			// Reduce heap if at top location, otherwise update free list
-			if (buf.offset + buf.length == gMarkBufStart)
+			if (buf.aligned && buf.offset == gMarkBufEnd)
+				gMarkBufEnd += buf.length;
+			else if (buf.offset + buf.length == gMarkBufStart)
 				gMarkBufStart -= buf.length;
 			else
 				gBufListFree.push_back(buf);
@@ -290,7 +299,7 @@ void CDisplayModule::InitModule()
 
 	// Calculate total framebuffer memory available for sub-allocation
 #ifdef UNIFIED
-	gFrameSizeTotal = gFrameSize + gOverlaySize ; // + gOpenGLSize;
+	gFrameSizeTotal = gFrameSize + gOverlaySize + gOpenGLSize;
 	gPlanarSize = gFrameSize = gFrameSizeTotal;
 	gPlanarBase = gFrameBase | 0x20000000;
 #else
@@ -304,7 +313,7 @@ void CDisplayModule::InitModule()
 	gMarkBufEnd   = gFrameSizeTotal; 
 
 	// Map all framebuffer regions and sub-allocate per display context
-	gFrameBuffer = (U8 *)mmap(0, gFrameSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+	gFrameBuffer = (U8 *)mmap((void*)gFrameBase, gFrameSize, PROT_READ | PROT_WRITE, MAP_SHARED,
 			gDevLayer, gFrameBase);
 	dbg_.Assert(gFrameBuffer != MAP_FAILED,
 			"DisplayModule::InitModule: failed to mmap() %s framebuffer", RGB_LAYER_DEV);
@@ -396,7 +405,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	tDisplayContext *GraphicsContext = new struct tDisplayContext;
 	U32 bpp;
 	U32 blend = 0;
-	
+	U32 aligned = 0;
+
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepthFormat = colorDepth;
@@ -432,6 +442,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 		case kPixelFormatYUV420:
 		bpp = 1;
 		width = 4096; // for YUV planar format pitch
+		aligned = ALIGN(4096 * height, k1Meg);
 		hwFormat = kLayerPixelFormatYUV420;
 		GraphicsContext->isOverlay = true;
 		GraphicsContext->isPlanar = true;
@@ -452,8 +463,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (GraphicsContext->isAllocated)
 		return reinterpret_cast<tDisplayHandle>(GraphicsContext);
 
-	// Allocate framebuffer region for onscreen display context	
-	if (AllocBuffer(GraphicsContext)) {
+	// Allocate framebuffer region for onscreen display context
+	if (AllocBuffer(GraphicsContext, aligned)) {
 		dbg_.DebugOut(kDbgLvlValuable, "DisplayModule::CreateHandle: %p\n", GraphicsContext->pBuffer);
 		// Clear framebuffer memory if pixel format change pending
 		if (!GraphicsContext->isOverlay && ioctl(gDevLayer, MLC_IOCQFORMAT, 0) != hwFormat)

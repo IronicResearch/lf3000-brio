@@ -67,6 +67,8 @@ namespace
 	tDisplayScreenStats		screen;
 	tDisplayContext			dc;
 	tDisplayHandle			hdc = &dc;
+	tDisplayContext			hdcmem1;		// memory block context for 1D heap
+	tDisplayContext			hdcmem2;		// memory block context for 2D heap
 }
 
 //----------------------------------------------------------------------------
@@ -77,8 +79,6 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Dereference OpenGL context for MagicEyes memory size overides
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
-	unsigned int					mem1Virt = MEM1_VIRT;
-	unsigned int					mem2Virt;
 	int								fbsize;
 	
 	// Need 2 layers for LF1000 fullscreen anti-aliasing option
@@ -107,19 +107,18 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dbg_.Assert(fbsize > 0,	"DisplayModule::InitOpenGL: " OGL_LAYER_DEV " ioctl failed");
 	fbsize >>= 20;
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Size = %d, Mem2Size = %d, fbsize = %d\n", pMemInfo->Memory1D_SizeInMbyte, pMemInfo->Memory2D_SizeInMbyte, fbsize);
-	if (pMemInfo->Memory2D_SizeInMbyte > fbsize)
+	if (pMemInfo->Memory2D_SizeInMbyte > fbsize - 1)
 		pMemInfo->Memory2D_SizeInMbyte = fbsize - 1;
 	if (pMemInfo->Memory1D_SizeInMbyte + pMemInfo->Memory2D_SizeInMbyte > fbsize)
 		pMemInfo->Memory1D_SizeInMbyte = fbsize - pMemInfo->Memory2D_SizeInMbyte;
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Size = %d, Mem2Size = %d, fbsize = %d\n", pMemInfo->Memory1D_SizeInMbyte, pMemInfo->Memory2D_SizeInMbyte, fbsize);
-	
+
+#define UNIFIED
+#ifndef UNIFIED
 	// 1st heap size and addresses must be 1 Meg aligned
 	// 2nd heap size and addresses must be 4 Meg aligned
 	gMem1Size = ((pMemInfo->Memory1D_SizeInMbyte+1) & ~1) << 20;
 	gMem2Size = ((pMemInfo->Memory2D_SizeInMbyte+3) & ~3) << 20;
-	mem2Virt = mem1Virt + gMem1Size;
-	mem2Virt += (4 * k1Meg - 1);
-	mem2Virt &= ~(4 * k1Meg - 1);
 
 	// Now round down size to accomodate reserved 1Meg for 2D and Video
 	gMem1Size -= k1Meg;
@@ -130,20 +129,59 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gMem2Phys &= ~(4 * k1Meg - 1);
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem1Phys = %08X, Mem1Size = %08X\n", gMem1Phys, gMem1Size);
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::InitOpenGL: Mem2Phys = %08X, Mem2Size = %08X\n", gMem2Phys, gMem2Size);
-	
+#endif
+
+#ifdef UNIFIED
+	gMem1Size = pMemInfo->Memory1D_SizeInMbyte << 20;
+	gMem2Size = pMemInfo->Memory2D_SizeInMbyte << 20;
+	U32 align = ALIGN(gMem2Size, k4Meg);
+	U32 delta = align - gMem2Size;
+
+	// Allocate 4Meg aligned buffer for 2D heap
+	tDisplayContext* pdb = &hdcmem2;
+	for (U32 mem2size = align; mem2size >= k4Meg; mem2size -= k4Meg) {
+		if (AllocBuffer(pdb, mem2size)) {
+			gMem2Size = mem2size;
+			gMem2Phys = pdb->basephys + pdb->offset;
+			gpMem2 = pdb->pBuffer;
+			gpMem2d = reinterpret_cast<U8*>(pdb->baselinear + pdb->offset);
+			break;
+		}
+	}
+	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2Phys, gpMem2, gMem2Size);
+
+	// Check if 1Meg buffer can fit into 4Meg buffer alignment margin
+	if (delta >= gMem1Size) {
+		gMem2Size -= delta;
+		gMem1Size = delta;
+		gMem1Phys = gMem2Phys + gMem2Size;
+		gpMem1 = pdb->pBuffer + gMem2Size;
+	}
+	else {
+		// Allocate 1Meg aligned buffer for 1D heap
+		pdb = &hdcmem1;
+		for (U32 mem1size = gMem1Size; mem1size >= k1Meg; mem1size -= k1Meg) {
+			if (AllocBuffer(pdb, mem1size)) {
+				gMem1Size = mem1size;
+				gMem1Phys = pdb->basephys + pdb->offset;
+				gpMem1 = pdb->pBuffer;
+				break;
+			}
+		}
+	}
+	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
+#endif
+
 	// Open device driver for 3D accelerator registers
 	gDevGa3d = open("/dev/ga3d", O_RDWR|O_SYNC);
 	dbg_.Assert(gDevGa3d >= 0, "DisplayModule::InitModule: /dev/ga3d driver failed");
-
-	// Open memory driver for mapping register space and framebuffer
-//	gDevMem = open("/dev/mem", O_RDWR|O_SYNC);
-//	dbg_.Assert(gDevMem >= 0, "DisplayModule::InitModule: /dev/mem driver failed");
 
 	// Map 3D engine register space
 	gRegSize = PAGE_3D * getpagesize();  
 	gpReg3d = mmap(0, gRegSize, PROT_READ | PROT_WRITE, MAP_SHARED, gDevGa3d, REG3D_PHYS);
 	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %016lX mapped to %p\n", REG3D_PHYS, gpReg3d);
 
+#ifndef UNIFIED
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
 	gpMem1 = mmap((void*)gMem1Phys, gMem1Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem1Phys);
 	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem1Phys, gpMem1, gMem1Size);
@@ -156,6 +194,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	gMem2dPhys = gMem2Phys | 0x20000000;
 	gpMem2d = mmap(NULL, gMem2Size, PROT_READ | PROT_WRITE, MAP_SHARED, gDevLayer, gMem2dPhys);
 	dbg_.DebugOut(kDbgLvlValuable, "InitOpenGLHW: %08X mapped to %p, size = %08X\n", gMem2dPhys, gpMem2d, gMem2Size);
+#endif
 
 	// Query HW to setup display context descriptors
 	const tDisplayScreenStats* pScreen = GetScreenStats(0);
@@ -193,12 +232,17 @@ void CDisplayModule::DeinitOpenGL()
 
 	// Delete handle returned by CreateHandle() 
 	DestroyHandle(hdc, false);
-	
+#ifdef UNIFIED
+	DeAllocBuffer(&hdcmem1);
+	DeAllocBuffer(&hdcmem2);
+#endif
+
 	munmap(gpReg3d, gRegSize);
+#ifndef UNIFIED
 	munmap(gpMem1, gMem1Size);
 	munmap(gpMem2, gMem2Size);
 	munmap(gpMem2d, gMem2Size);
-//	close(gDevMem);
+#endif
 	close(gDevGa3d);
 	close(gDevLayerEven);
 	close(gDevLayerOdd);
@@ -279,15 +323,19 @@ void CDisplayModule::DisableOpenGL()
 	// Disable 3D layer render target before accelerator disabled
 	int layer = gDevLayer;
 	if (FSAAval) {
+#ifndef LF1000	// MP2530 only
 		ioctl(gDevLayerEven, MLC_IOCT3DENB, (void *)0);
 		ioctl(gDevLayerOdd, MLC_IOCT3DENB, (void *)0);
+#endif
 		ioctl(gDevLayerEven, MLC_IOCTLAYEREN, (void *)0);
 		ioctl(gDevLayerEven, MLC_IOCTDIRTY, (void *)1);
 		ioctl(gDevLayerOdd, MLC_IOCTLAYEREN, (void *)0);
 		ioctl(gDevLayerOdd, MLC_IOCTDIRTY, (void *)1);
 	}
 	else {
+#ifndef LF1000	// MP2530 only
 		ioctl(layer, MLC_IOCT3DENB, (void *)0);
+#endif
 		ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
 		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 	}

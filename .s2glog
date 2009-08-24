@@ -19704,3 +19704,13 @@ By Msaelock (Msaelock@leapfrog.com) on 8/14/09 6:11 PM
 6,034 ms. (Cumulative: 6,439,040 ms)
 
 ----------------
+Revision 4,989 from svn://localhost/TRUNK/:
+Revision 4,990 from svn://localhost/TRUNK/:
+
+Integrate OGL buffers with framebuffer allocation scheme. 4Meg and 1Meg aligned blocks are allocated top-down from the end of the heap, while variable size buffers are allocated bottom-up from the start of heap. (TTP #68) 
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/09 10:37 AM
+4 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 6,445,181 ms)
+
+----------------
