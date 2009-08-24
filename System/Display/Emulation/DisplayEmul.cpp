@@ -419,5 +419,12 @@ S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 	return backlight_;
 }
 
+//----------------------------------------------------------------------------
+U32	CDisplayModule::GetDisplayMem(tDisplayMem memtype)
+{
+	// Nothing to do on emulation target
+	return 0;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

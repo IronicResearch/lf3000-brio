@@ -19723,3 +19723,15 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/09 10:48 AM
 6,110 ms. (Cumulative: 6,451,369 ms)
 
 ----------------
+Revision 4,992 from svn://localhost/TRUNK/:
+Revision 4,993 from svn://localhost/TRUNK/:
+Revision 4,994 from svn://localhost/TRUNK/:
+Revision 4,995 from svn://localhost/TRUNK/:
+
+Added DisplayMPI.GetDisplayMem() function for tracking framebuffer allocations. (TTP #68)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/09 4:35 PM
+5 changed, 0 added, 0 deleted.
+6,627 ms. (Cumulative: 6,458,105 ms)
+
+----------------

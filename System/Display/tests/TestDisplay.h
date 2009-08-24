@@ -549,6 +549,66 @@ public:
 			}
 		}
 	}
+
+	//------------------------------------------------------------------------
+	void testDisplayAllocations( )
+	{
+		tDisplayHandle 		handle[3];
+		BrioOpenGLConfig*	oglctx;
+		U32					totalmem;
+		U32					freemem;
+		U32					usedmem;
+		
+		totalmem = pDisplayMPI_->GetDisplayMem(kDisplayMemTotal);
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem == totalmem );
+		TS_ASSERT( usedmem == 0 );
+		
+		oglctx = new BrioOpenGLConfig();
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem + usedmem == totalmem );
+		TS_ASSERT( usedmem != 0 );
+		delete oglctx;
+
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem == totalmem );
+		TS_ASSERT( usedmem == 0 );
+		
+		for (int i = 0; i < 3; i++)
+			handle[i] = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem + usedmem == totalmem );
+		TS_ASSERT( usedmem != 0 );
+		for (int i = 0; i < 3; i++)
+			pDisplayMPI_->DestroyHandle(handle[i], false);
+
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem == totalmem );
+		TS_ASSERT( usedmem == 0 );
+
+		oglctx = new BrioOpenGLConfig();
+		handle[0] = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		handle[1] = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		handle[2] = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem + usedmem == totalmem );
+		TS_ASSERT( usedmem != 0 );
+		delete oglctx;
+		for (int i = 0; i < 3; i++)
+			pDisplayMPI_->DestroyHandle(handle[i], false);
+		
+		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
+		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
+		TS_ASSERT( freemem == totalmem );
+		TS_ASSERT( usedmem == 0 );
+	}
+	
 };
 
 // EOF
