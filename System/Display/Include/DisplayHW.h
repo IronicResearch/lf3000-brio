@@ -63,6 +63,7 @@ const U32	kLayerPixelFormatYUV420		= 0x0000; //YUV planar
 const U32	kLayerPixelFormatYUYV422	= 0x0002; //YUYV packed
 
 const U32	k1Meg  = 1024 * 1024;
+const U32	k4Meg  = 4096 * 1024;
 const U32 	k16Meg = 4096 * 4096;
 
 //----------------------------------------------------------------------------
@@ -74,6 +75,15 @@ inline U32 LIN2XY(U32 addr)
 	U32 y = offset / 4096;
 	U32 x = offset % 4096;
 	return 0x20000000 | (segment << 24) | (y << 12) | (x << 0);
+}
+
+//----------------------------------------------------------------------------
+// Align address up to nearest alignment boundary
+inline U32 ALIGN(U32 addr, U32 align)
+{
+	addr += (align-1);
+	addr &= ~(align-1);
+	return addr;
 }
 
 #endif // LF_DISPLAYHW_H
