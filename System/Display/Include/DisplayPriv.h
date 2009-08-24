@@ -363,7 +363,7 @@ public:
 	VTABLE_EXPORT tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync);
 	VTABLE_EXPORT Boolean			IsBufferSwapped(tDisplayHandle hndl);
 	VTABLE_EXPORT tDisplayHandle	GetCurrentDisplayHandle();
-
+	VTABLE_EXPORT U32				GetDisplayMem(tDisplayMem memtype);
 
 private:
 	void				InitModule( );

@@ -118,6 +118,33 @@ namespace
 }
 
 	//----------------------------------------------------------------------------
+	U32	CDisplayModule::GetDisplayMem(tDisplayMem memtype)
+	{
+		U32 mem = 0;
+		std::list<tBuffer>::iterator it;
+	
+		switch (memtype) {
+		case kDisplayMemTotal:
+			return gFrameSizeTotal;
+		case kDisplayMemFree:
+			return gMarkBufEnd - gMarkBufStart;
+		case kDisplayMemUsed:
+			for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++)
+				mem += (*it).length;
+			return mem;
+		case kDisplayMemAligned:
+			for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++)
+				mem += (*it).aligned;
+			return mem;
+		case kDisplayMemFragmented:
+			for (it = gBufListFree.begin(); it != gBufListFree.end(); it++)
+				mem += (*it).length;
+			return mem;
+		}
+		return 0;
+	}
+	
+	//----------------------------------------------------------------------------
 	bool CDisplayModule::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	{
 		U32 bufsize = (aligned) ? aligned : pdc->pitch * pdc->height;

@@ -357,5 +357,13 @@ void CDisplayMPI::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysic
 }
 #endif
 
+//----------------------------------------------------------------------------
+U32	CDisplayMPI::GetDisplayMem(tDisplayMem memtype)
+{
+	if (!pModule_)
+		return 0;
+	pModule_->GetDisplayMem(memtype);
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
