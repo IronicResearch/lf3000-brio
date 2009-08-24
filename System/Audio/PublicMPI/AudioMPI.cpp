@@ -68,11 +68,16 @@ CAudioEventMessage::CAudioEventMessage( const tAudioMsgLoopEnd& data )
 	audioMsgData.loopEnd = data;
 }
 
-
 CAudioEventMessage::CAudioEventMessage( const tAudioMsgMidiEvent& data ) 
 	: IEventMessage(kAudioMidiEvent)
 {
 	audioMsgData.midiEvent = data;
+}
+
+CAudioEventMessage::CAudioEventMessage( const tAudioMsgTimeEvent& data ) 
+	: IEventMessage(kAudioTimeEvent)
+{
+	audioMsgData.timeEvent = data;
 }
 
 //------------------------------------------------------------------------------

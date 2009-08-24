@@ -19714,3 +19714,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/09 10:37 AM
 6,063 ms. (Cumulative: 6,445,181 ms)
 
 ----------------
+Revision 4,991 from svn://localhost/TRUNK/:
+
+Added AudioMPI time event to assist with VideoMPI sync and general timing analysis.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/09 10:48 AM
+2 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 6,451,369 ms)
+
+----------------

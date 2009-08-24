@@ -28,7 +28,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 	(kMidiCompletedEvent)				\
 	(kAudioCuePointEvent)               \
 	(kAudioLoopEndEvent)				\
-	(kAudioMidiEvent)
+	(kAudioMidiEvent)					\
+	(kAudioTimeEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupAudio), AUDIO_EVENTS)
 
@@ -82,8 +83,9 @@ enum {
 	kAudioOptionsNoDoneMsg				= 0x00,	// No audio options specified
 	kAudioOptionsDoneMsgAfterComplete	= 0x01,	// Send after job (play + looping) is complete 
 	kAudioOptionsLooped					= 0x02,	// Repeat # times, specified in payload parameter
-	kAudioOptionsLoopEndMsg         	= 0x04,	// Send LoopEnd message at end of each loop  
-	kAudioOptionsMidiEvent				= 0x08	// Send MidiEvent message upon MIDI file meta events
+	kAudioOptionsLoopEndMsg         	= 0x04,	// Send LoopEnd message at end of each loop
+	kAudioOptionsMidiEvent				= 0x08,	// Send MidiEvent message upon MIDI file meta events
+	kAudioOptionsTimeEvent				= 0x10, // Send TimeEvent messages at periodic 'payload' intervals
 };
 #define kAudioOptionsNone 	0x0  // No options specified
 typedef U32 tAudioOptionsFlags; 
@@ -205,12 +207,20 @@ struct tAudioMsgMidiEvent {
 	void*				userData;
 };
 
+struct tAudioMsgTimeEvent {
+	tAudioID			audioID;
+	tAudioPayload		payload;
+	U32					playtime;
+	U32					realtime;
+};
+
 union tAudioMsgData {
 	tAudioMsgAudioCompleted		audioCompleted;
 	tAudioMsgMidiCompleted		midiCompleted;
 	tAudioMsgCuePoint			audioCuePoint;
 	tAudioMsgLoopEnd            loopEnd;
 	tAudioMsgMidiEvent			midiEvent;
+	tAudioMsgTimeEvent			timeEvent;
 };
 
 //==============================================================================
@@ -228,6 +238,7 @@ public:
 	CAudioEventMessage( const tAudioMsgCuePoint&       data );
 	CAudioEventMessage( const tAudioMsgLoopEnd&        data );
 	CAudioEventMessage( const tAudioMsgMidiEvent&      data );
+	CAudioEventMessage( const tAudioMsgTimeEvent&      data );
 
 	virtual U16	GetSizeInBytes() const;
 
