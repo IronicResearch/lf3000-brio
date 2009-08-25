@@ -334,6 +334,13 @@ public:
 	///
 	/// \return			Returns the backlight value set via SetBacklight().
 	S8					GetBacklight(tDisplayScreen screen);
+
+	/// Gets available display memory allocation info.
+	///
+	/// \param memtype	tDisplayMem type of memory allocation requested
+	///
+	/// \return			Returns the requested display memory allocation info.
+	U32					GetDisplayMem(tDisplayMem memtype);
 	
 private:
 	class CDisplayModule*	pModule_;

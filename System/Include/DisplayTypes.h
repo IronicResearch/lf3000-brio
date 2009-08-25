@@ -100,6 +100,14 @@ typedef	U32	tDisplayScreen;
 const tDisplayScreen kDisplayScreenAllScreens	= static_cast<tDisplayScreen>(-1);
 const tDisplayScreen kDisplayScreenNoScreens	= static_cast<tDisplayScreen>(0);
 
+// tDisplayMem type argument for GetDisplayMem()
+enum tDisplayMem {
+	kDisplayMemTotal,
+	kDisplayMemFree,
+	kDisplayMemUsed,
+	kDisplayMemAligned,
+	kDisplayMemFragmented,
+};
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_DISPLAYTYPES_H
