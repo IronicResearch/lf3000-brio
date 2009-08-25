@@ -156,6 +156,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 		gMem1Size = delta;
 		gMem1Phys = gMem2Phys + gMem2Size;
 		gpMem1 = pdb->pBuffer + gMem2Size;
+		hdcmem1.pBuffer = NULL;
 	}
 	else {
 		// Allocate 1Meg aligned buffer for 1D heap
@@ -233,6 +234,7 @@ void CDisplayModule::DeinitOpenGL()
 	// Delete handle returned by CreateHandle() 
 	DestroyHandle(hdc, false);
 #ifdef UNIFIED
+	if (hdcmem1.pBuffer)
 	DeAllocBuffer(&hdcmem1);
 	DeAllocBuffer(&hdcmem2);
 #endif
