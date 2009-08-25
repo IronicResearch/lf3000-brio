@@ -219,7 +219,9 @@ namespace
 		{
 			tBuffer buf;
 			std::list<tBuffer>::iterator it;
-
+			U32 markStart = gMarkBufStart;
+			U32 markEnd   = gMarkBufEnd;
+			
 			// Find allocated buffer for this display context
 			for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
 				buf = *it;
@@ -237,7 +239,25 @@ namespace
 				gMarkBufStart -= buf.length;
 			else
 				gBufListFree.push_back(buf);
-			
+
+			// Compact free list buffers back to heap when possible
+			while (markStart != gMarkBufStart || markEnd != gMarkBufEnd) {
+				markStart = gMarkBufStart;
+				markEnd   = gMarkBufEnd;
+				for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
+					buf = *it;
+					if (buf.aligned && buf.offset == gMarkBufEnd) {
+						gMarkBufEnd += buf.length;
+						gBufListFree.erase(it);
+						break;
+					}
+					if (!buf.aligned && buf.offset + buf.length == gMarkBufStart) {
+						gMarkBufStart -= buf.length;
+						gBufListFree.erase(it);
+						break;
+					}
+				}
+			}
 		}
 		return true;
 	}

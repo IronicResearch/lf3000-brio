@@ -19744,3 +19744,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/09 5:02 PM
 6,230 ms. (Cumulative: 6,464,429 ms)
 
 ----------------
+Revision 4,997 from svn://localhost/TRUNK/:
+
+Compact free list buffers back to heap when possible after framebuffer deallocations. (TTP #68)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/24/09 6:28 PM
+1 changed, 0 added, 0 deleted.
+5,891 ms. (Cumulative: 6,470,414 ms)
+
+----------------
