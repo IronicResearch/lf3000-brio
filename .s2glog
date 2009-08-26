@@ -19762,3 +19762,25 @@ By Dave Milici (dmilici@leapfrog.com) on 8/24/09 7:44 PM
 5,750 ms. (Cumulative: 6,476,242 ms)
 
 ----------------
+Revision 4,999 from svn://localhost/TRUNK/:
+Revision 5,000 from svn://localhost/TRUNK/:
+Revision 5,001 from svn://localhost/TRUNK/:
+Revision 5,002 from svn://localhost/TRUNK/:
+Revision 5,003 from svn://localhost/TRUNK/:
+Revision 5,004 from svn://localhost/TRUNK/:
+Revision 5,005 from svn://localhost/TRUNK/:
+Revision 5,006 from svn://localhost/TRUNK/:
+Revision 5,007 from svn://localhost/TRUNK/:
+Revision 5,008 from svn://localhost/TRUNK/:
+Revision 5,009 from svn://localhost/TRUNK/:
+Revision 5,010 from svn://localhost/TRUNK/:
+Revision 5,011 from svn://localhost/TRUNK/:
+Revision 5,012 from svn://localhost/TRUNK/:
+
+Emulation unit tests needed to clear cached X window var to avoid X event race problems.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/25/09 5:12 PM
+3 changed, 0 added, 0 deleted.
+5,845 ms. (Cumulative: 6,482,259 ms)
+
+----------------
