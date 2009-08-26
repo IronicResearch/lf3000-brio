@@ -3,6 +3,27 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.6.3.5017 (August 26, 2009)
+===========================================
+-- Unify framebuffer allocations using common addresses and offsets shared among RGB and YUV layers. (TTP #68)
+
+-- PowerMPI.Reset() function needs immediate exit to bypass module cleanup problems. (TTP #564)
+
+-- Integrate OGL buffers with framebuffer allocation scheme. 4Meg and 1Meg aligned blocks are allocated 
+top-down from the end of the heap, while variable size buffers are allocated bottom-up from the 
+start of heap. (TTP #68) 
+
+-- Added AudioMPI time event to assist with VideoMPI sync and general timing analysis.
+
+-- Added DisplayMPI.GetDisplayMem() function for tracking framebuffer allocations. (TTP #68)
+
+-- Compact free list buffers back to heap when possible after framebuffer deallocations. (TTP #68)
+
+-- Avoid duplicate deallocation problem seen in unit test with single OGL memory block context. (TTP #68)
+
+-- Emulation unit tests needed to clear cached X window var to avoid X event race problems.
+
+===========================================
 Brio v0.6.2.4964 (August 11, 2009)
 ===========================================
 
