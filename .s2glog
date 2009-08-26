@@ -19799,3 +19799,27 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/26/09 10:58 AM
 5,766 ms. (Cumulative: 6,488,134 ms)
 
 ----------------
+Revision 5,019 from svn://localhost/TRUNK/:
+Revision 5,020 from svn://localhost/TRUNK/:
+Revision 5,021 from svn://localhost/TRUNK/:
+Revision 5,022 from svn://localhost/TRUNK/:
+Revision 5,023 from svn://localhost/TRUNK/:
+Revision 5,024 from svn://localhost/TRUNK/:
+Revision 5,025 from svn://localhost/TRUNK/:
+Revision 5,026 from svn://localhost/TRUNK/:
+Revision 5,027 from svn://localhost/TRUNK/:
+Revision 5,028 from svn://localhost/TRUNK/:
+Revision 5,029 from svn://localhost/TRUNK/:
+Revision 5,030 from svn://localhost/TRUNK/:
+Revision 5,031 from svn://localhost/TRUNK/:
+Revision 5,032 from svn://localhost/TRUNK/:
+Revision 5,033 from svn://localhost/TRUNK/:
+Revision 5,034 from svn://localhost/TRUNK/:
+
+Fix KernelMPI unit test for GetSourceFile() with known /usr/lib file, since /usr/include path is no longer present on erootfs. (TTP #555)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/09 4:59 PM
+1 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 6,493,994 ms)
+
+----------------
