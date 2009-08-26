@@ -193,7 +193,7 @@ public:
     CPath GetSourceFile()
     {
 #ifndef EMULATION
-    	return "/usr/include/stdio.h";
+    	return "/usr/lib/libz.so";
 #else
     	CPath curFile = __FILE__;
 		if (curFile[0] == '.')
