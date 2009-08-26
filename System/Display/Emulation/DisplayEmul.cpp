@@ -82,13 +82,17 @@ void CDisplayModule::InitModule()
 	
 	// Create X graphics context for any drawing we need to do
 	gc = XCreateGC(x11Display, x11Window, 0, NULL);
-	
+
+	// Cache X window needed for XSelectInput() in EmulationConfig object
 	EmulationConfig::Instance().SetLcdDisplayWindow(static_cast<U32>(x11Window));
 }
 
 //----------------------------------------------------------------------------
 void CDisplayModule::DeInitModule()
 {
+	// Clear X window cached in EmulationConfig object
+	EmulationConfig::Instance().SetLcdDisplayWindow(0);
+	
 	// Release the X window and its resources 
 	if (gc)
 		XFreeGC(x11Display, gc);

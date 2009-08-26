@@ -31,7 +31,7 @@ namespace
 	CPath	gModuleSearchPath;
 	CPath	gBaseResourceSearchPath;
 	CPath	gCartResourceSearchPath;
-	U32		gWindow;
+	U32		gWindow = 0;
 }
 
 

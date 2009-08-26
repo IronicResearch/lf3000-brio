@@ -564,7 +564,8 @@ public:
 		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
 		TS_ASSERT( freemem == totalmem );
 		TS_ASSERT( usedmem == 0 );
-		
+
+#ifndef EMULATION
 		oglctx = new BrioOpenGLConfig();
 		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
 		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
@@ -607,6 +608,7 @@ public:
 		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
 		TS_ASSERT( freemem == totalmem );
 		TS_ASSERT( usedmem == 0 );
+#endif	// !EMULATION
 	}
 	
 };
