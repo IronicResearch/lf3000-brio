@@ -47,13 +47,18 @@
 #include <USBDeviceTypes.h>
 #include <Utility.h>
 #include <TouchTypes.h> 
+#include <errno.h>
 
 
 
 LF_BEGIN_BRIO_NAMESPACE() 
 
+// Maximum cartridge x icons allowed before exiting AppManager
+#define MAX_CART_X_ICONS	3
+
 //Maximum number of input drivers to discover
 #define NUM_INPUTS	5
+
 
 namespace
 {
@@ -204,7 +209,7 @@ namespace
 	int CheckCartDriverStatus()
 	{
 		FILE *fp;
-		int status;
+		int status = 0;
 		CDebugMPI debug(kGroupEvent);
 		
 		fp = fopen(SYSFS_HOTSWAP, "r");
@@ -221,6 +226,27 @@ namespace
 		fclose(fp);
 		return status;
 	}
+
+	int StartStopCartDriver(int bStart)
+	{
+		FILE *fp;
+		CDebugMPI debug(kGroupEvent);
+		
+		fp = fopen(SYSFS_HOTSWAP, "w");
+		if(fp == NULL) {
+			debug.DebugOut(kDbgLvlCritical, "bStart = %d, can't open %s !\n", bStart, SYSFS_HOTSWAP);
+			return -9;
+		}
+		
+		if(fprintf(fp, "%d\n", bStart) < 0) {
+			debug.DebugOut(kDbgLvlCritical, "bStart = %d, Can't write to file at %s !\n", bStart, SYSFS_HOTSWAP);
+			fclose(fp);
+			return -9;
+		}
+		fclose(fp);
+		return 0;
+	}
+	
 	
 	#define MTABFILE  "/etc/mtab"
 	#define MTABFILE_LINEMAX   256
@@ -281,7 +307,7 @@ namespace
 				if(readlink(fpath, linkpath, BRIO_PATH_MAX) == -1) {
 					debug.DebugOut(kDbgLvlCritical, "read link error: %s\n", strerror(errno));
 				} else {
-					printf("link name %s\n", linkpath);
+					// printf("link name %s\n", linkpath);
 					if (strncmp(linkpath, "/LF/Cart/", 9) == 0) {
 						debug.DebugOut(kDbgLvlValuable, "%s -> %s will be forced to close\n", ep->d_name, linkpath);
 						ret = close(atoi(ep->d_name));
@@ -296,7 +322,7 @@ namespace
 			    closedir(dirp);
 			    return 0;
 			}
-			printf("error reading directory %s: %s\n", dirpath, strerror(errno)); 
+			debug.DebugOut(kDbgLvlCritical, "error reading directory %s: %s\n", dirpath, strerror(errno)); 
 			closedir(dirp);
 			return -1;
 		    }
@@ -311,38 +337,48 @@ namespace
 		struct input_event ev;
 		int ret, size;
 		U32 button;
+		CDebugMPI debug(kGroupEvent);				
 		
+		event = CARTRIDGE_EVENT_NONE;
 		
 		// block on driver state changes, or timeout after 1 sec
-		ret = poll(event_fd, 1, 1000);
+		//ret = poll(event_fd, 1, 1000);
+		ret = poll(event_fd, 1, -1);
 		
 		if((ret >= 0)  && (event_fd[0].revents & POLLIN)) {
 
-			size = read(event_fd[0].fd, &ev, sizeof(ev));
-			for(int i = 0; i < size; i++) {
-				if(ev.type == EV_SW) { // this is a switch change
-					button = LinuxSwitchToBrio(ev.code);
-					
-					// only handle cartridge insertion here
-					if(button != kCartridgeDetect) {
-						continue;
+			do {
+				size = read(event_fd[0].fd, &ev, sizeof(ev));
+				printf("sizeof(ev)=%d, size=%d\n", sizeof(ev), size);
+				if(size == sizeof(ev)) {
+					if(ev.type == EV_SW) { // this is a switch change
+						button = LinuxSwitchToBrio(ev.code);
+						
+						printf("button=%d, kCartridgeDetect=%d, ev.value = %d\n", (int)button, (int)kCartridgeDetect, ev.value);
+						
+						// only handle cartridge insertion here
+						if(button == kCartridgeDetect) {
+							if(ev.value > 0) {
+								event = CARTRIDGE_EVENT_INSERT;
+							} else if(ev.value == 0) {
+								event = CARTRIDGE_EVENT_REMOVE;					
+							}
+							printf("event = %d\n", event);
+						} else {
+							printf("button != kCartridgeDetect\n");
+						}
 					}
 				}
-				else {
-					continue;
-				}
-
-				if(ev.value > 0) {
-					event = CARTRIDGE_EVENT_INSERT;
-				}
-				else if(ev.value == 0) {
-					event = CARTRIDGE_EVENT_REMOVE;					
-				}
-			}
+			} while (size == sizeof(ev));
+		} else if(ret == 0){
+			event = CARTRIDGE_EVENT_NONE;
+			debug.DebugOut(kDbgLvlCritical, "Poll cartridge event error, file desciptor not ready\n");
 		} else {
 			event = CARTRIDGE_EVENT_NONE;
+			debug.DebugOut(kDbgLvlCritical, "Poll cartridge event error, %s\n", strerror(errno));
 		}
 		
+		printf("return event = %d\n", event);
 		return event;
 	}
 
@@ -354,22 +390,25 @@ namespace
 //============================================================================
 void* CEventModule::CartridgeTask( void* arg )
 {
+	CEventModule*	pThis = reinterpret_cast<CEventModule*>(arg);	
 	bool cart_inserted;
-	int cart_status, sys_ret;
-	CEventModule* pThis = reinterpret_cast<CEventModule*>(arg);
+	int cart_status, sys_ret, ret;
 	CDebugMPI debug(kGroupEvent);	
 	struct pollfd	event_fd[1];
 	tCartridgeData data;
 	int event;
+	int cartXcounter=0;
 
 	event_fd[0].fd = open_input_device("LF1000 Keyboard");
+	fcntl(event_fd[0].fd, F_SETFL, O_NONBLOCK);
+	
 	event_fd[0].events = POLLIN;
 	if(event_fd[0].fd >= 0)
 	{
 		int sw = 0;
 		
 		// get initial state of switches
-		pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+		debug.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
 				"CEventModule::CartridgeTask: reading switch state failed");
 
 		cart_inserted = !!(sw & (1<<SW_TABLET_MODE));
@@ -411,7 +450,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Fatal Error, cannot open LF1000 Keyboard !!\n");
+		debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Fatal Error, cannot open LF1000 Keyboard !!\n");
 		return (void *)-1;
 	}
 	
@@ -425,7 +464,17 @@ void* CEventModule::CartridgeTask( void* arg )
 				debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge inserted !!\n");
 				
 				// NAND driver request
+				#if 0
 				sys_ret = system("echo 1 > /sys/devices/platform/lf1000-nand/cart_hotswap");
+				if(sys_ret == -1) {
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: System(...) failed, errno = %d (%s) !\n", errno, strerror(errno));
+				}
+				#else
+				if( 0 != StartStopCartDriver(1) ) {
+					data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+					break;
+				}
+				#endif
 				
 				// check driver status 
 				cart_status = CheckCartDriverStatus();
@@ -464,7 +513,6 @@ void* CEventModule::CartridgeTask( void* arg )
 				sys_ret = system("/etc/init.d/cartridge start") >> 8;
 				
 				// check return status here
-				printf("cartridge scripts return code %d\n", sys_ret);
 				if(sys_ret == 11) {
 					int sw = 0;
 					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't attach ubi !\n");
@@ -509,12 +557,45 @@ void* CEventModule::CartridgeTask( void* arg )
 					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
 					pThis->debug_.DebugOut(kDbgLvlValuable, "CEventModule::CartridgeTask: CARTRIDGE_STATE_READY\n");
 					debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge ready !!\n");					
+				} else if(sys_ret == 31) {
+					
+					int sw = 0;
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't mount cartridge, no cartridge partition present !\n");
+					
+					// get cartridge switche state again
+					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
+							"CEventModule::CartridgeTask: reading switch state failed");
+					
+					if(!(sw & (1<<SW_TABLET_MODE))) {
+						// cartridge is removed somehow
+						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
+					} else {
+						//cartridge is still inserted
+						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
+					}
+
+				} else {
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: System(...) return code %d, errno = %d (%s), at line %d !\n", sys_ret, errno, strerror(errno), __LINE__);
+					if(errno == ENOMEM) {
+						/* quit appManager */
+						debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Request AppManager restart !\n");
+						data.cartridgeState = CARTRIDGE_STATE_RESTART_APPMANAGER;
+						CCartridgeMessage cartridge_msg(data);
+						pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+						sleep(10);
+						
+					} else {	
+						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
+						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
+					}
 				}
 				break;	
 			}
 			
 			case CARTRIDGE_STATE_READY: {
-
+				cartXcounter = 0;
 				event = WaitForCartEvent(event_fd);
 				if(event == CARTRIDGE_EVENT_REMOVE) {
 					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
@@ -532,11 +613,8 @@ void* CEventModule::CartridgeTask( void* arg )
 				debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge removed, close all open cart files\n");
 				ScanCloseCartridgeFile();
 				
-				// wait a bit, while appManager release resouces, find out more here !!!!
-				// sleep(1);
 				sys_ret = system("/etc/init.d/cartridge stop") >> 8;
 				
-				#if 1
 				// check return status here
 				if(sys_ret == 11) {
 					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Can't detach ubi !\n");
@@ -564,19 +642,16 @@ void* CEventModule::CartridgeTask( void* arg )
 				} else if(sys_ret == 0) {
 					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
 				} else {
-					debug.DebugOut(kDbgLvlCritical, "Unknown sys_ret = %d  !\n", sys_ret);
+					debug.DebugOut(kDbgLvlCritical, "Cartridge task: Unknown System(...) return code %d, errno = %d (%s) !\n", sys_ret, errno, strerror(errno));
 					data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
 				}
-				#else
-					data.cartridgeState = CARTRIDGE_STATE_UNKNOWN;
-				#endif
-				
 				break;
 			}
 
 			case CARTRIDGE_STATE_FS_CLEAN: {
 				// NAND driver request
-				sys_ret = system("echo 0 > /sys/devices/platform/lf1000-nand/cart_hotswap");
+				// sys_ret = system("echo 0 > /sys/devices/platform/lf1000-nand/cart_hotswap");
+				StartStopCartDriver(0);
 
 				// send CARTRIDGE_STATE_REINSERT message
 				data.cartridgeState = CARTRIDGE_STATE_CLEAN;
@@ -591,17 +666,27 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(event == CARTRIDGE_EVENT_INSERT) {
 					data.cartridgeState = CARTRIDGE_STATE_INSERTED;
 				} else if(event == CARTRIDGE_EVENT_REMOVE) {
-					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine warning: current state clean, received remove event\n");
+					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine warning: current state clean, received remove event\n");
 				}
 				break;
 			}
 			
 			case CARTRIDGE_STATE_REINSERT: {
+				cartXcounter++;        /* increment x icon counter */
+				if(cartXcounter > MAX_CART_X_ICONS) {
+					/* quit appManager */
+					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Request AppManager restart due to failed cartridge mount (%d failure in a row) !\n", MAX_CART_X_ICONS);
+					data.cartridgeState = CARTRIDGE_STATE_RESTART_APPMANAGER;
+					CCartridgeMessage cartridge_msg(data);
+					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+					break;
+				}
+				
 				event = WaitForCartEvent(event_fd);
 				if(event == CARTRIDGE_EVENT_REMOVE) {
 					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 				} else if (event == CARTRIDGE_EVENT_INSERT){
-					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state ready, received insert event\n");
+					data.cartridgeState = CARTRIDGE_STATE_INSERTED;
 				}
 				break;
 			}
@@ -612,7 +697,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(event == CARTRIDGE_EVENT_REMOVE) {
 					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 				} else if (event == CARTRIDGE_EVENT_INSERT){
-					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state unknown, received insert event\n");
+					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state unknown, received insert event\n");
 				}
 				break;
 			}
