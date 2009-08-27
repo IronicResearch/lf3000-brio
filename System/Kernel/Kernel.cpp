@@ -39,6 +39,7 @@ using namespace std;
 extern "C"
 {
 	void sig_handler(int signal, siginfo_t *psigInfo, void *pFunc);
+	void thread_handler(union sigval);
 }
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -828,7 +829,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-
+#if 0	// BUGFIX/dm: use thread-based callback instead of signal
     // Initialize the sigaction structure for handler 
    	// Setup signal to repond to handler
    	struct sigaction act;
@@ -836,13 +837,20 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
    	act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
    	act.sa_sigaction = sig_handler;
    	sigaction( signum, &act, NULL ); 
-    
+#endif
+   	
 	// Set up timer
     struct sigevent se;
-    memset(&se, 0, sizeof(se)); 
+    memset(&se, 0, sizeof(se));
+#if 0
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
 	se.sigev_value.sival_int = 0;
+#else
+    se.sigev_notify = SIGEV_THREAD;
+    se.sigev_notify_function = thread_handler;
+    se.sigev_notify_attributes = NULL;
+#endif
 	
 	callbackData *ptrData = 
 		(callbackData *)(malloc(sizeof(callbackData)));
@@ -1412,6 +1420,12 @@ extern "C"
 			((ta->pfn))((tTimerHndl )ta->argFunc);
 	}
 
+	//------------------------------------------------------------------------
+	void thread_handler (union sigval sigarg)
+	{
+		callbackData *ta = (callbackData *)sigarg.sival_ptr;
+		((ta->pfn))((tTimerHndl )ta->argFunc);
+	}
 } // extern "C"
 
 // EOF
