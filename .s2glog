@@ -19823,3 +19823,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/26/09 4:59 PM
 5,688 ms. (Cumulative: 6,493,994 ms)
 
 ----------------
+Revision 5,035 from svn://localhost/TRUNK/:
+Revision 5,036 from svn://localhost/TRUNK/:
+
+Bug fix, FR log enhancement, and other optimization
+
+By ytu (ytu@leapfrog.com) on 8/26/09 7:07 PM
+1 changed, 0 added, 0 deleted.
+5,735 ms. (Cumulative: 6,499,823 ms)
+
+----------------
