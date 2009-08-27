@@ -19851,3 +19851,12 @@ By ytu (ytu@leapfrog.com) on 8/26/09 7:09 PM
 6,004 ms. (Cumulative: 6,512,062 ms)
 
 ----------------
+Revision 5,039 from svn://localhost/TRUNK/:
+
+Use thread-based callbacks for KernelMPI timers instead of signal interrupts which were vulnerable to deadlocks. This feature was not available on the earlier uclibc runtime libs, but the newer libs deadlocked immediately during unit tests. (TTP #543)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/26/09 8:21 PM
+1 changed, 0 added, 0 deleted.
+5,939 ms. (Cumulative: 6,518,079 ms)
+
+----------------
