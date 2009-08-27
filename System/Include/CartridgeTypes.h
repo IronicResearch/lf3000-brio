@@ -44,7 +44,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupCartridge), CARTRIDGE_ERRO
 //==============================================================================	   
 // Cartridge types
 //==============================================================================
-
+/* match constants in CartridgeState.cpp */
 enum eCartridgeState_ {
 	CARTRIDGE_STATE_NONE,
 	CARTRIDGE_STATE_INSERTED,
@@ -54,9 +54,10 @@ enum eCartridgeState_ {
 	CARTRIDGE_STATE_FS_CLEAN,		/* Internal state: File system is fully unmounted */
 	CARTRIDGE_STATE_CLEAN,
 	CARTRIDGE_STATE_REINSERT,
-	CARTRIDGE_STATE_UNKNOWN
+	CARTRIDGE_STATE_RESTART_APPMANAGER,
+	CARTRIDGE_STATE_REBOOT,
+	CARTRIDGE_STATE_UNKNOWN	
 }; 
-
 
 enum eCartridgeEvent_ {
 	CARTRIDGE_EVENT_NONE,

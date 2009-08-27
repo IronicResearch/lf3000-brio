@@ -185,6 +185,7 @@ const int	kKernelExitError 	= 1;	// general error
 const int	kKernelExitShutdown	= 0;	// Brio shutdown condition
 const int	kKernelExitReset 	= 3;	// Brio reset condition
 const int	kKernelExitAssert 	= 4;	// Brio assert condition
+const int	kKernelExitCartX      = 5;  // Cart x icon shows up a few times in a row
 
 //------------------------------------------------------------------------------
 // Task scheduling & blocking
