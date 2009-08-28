@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.3.5017 (August 26, 2009)
+Brio v0.6.3.5041 (August 27, 2009)
 ===========================================
 -- Unify framebuffer allocations using common addresses and offsets shared among RGB and YUV layers. (TTP #68)
 
@@ -22,6 +22,20 @@ start of heap. (TTP #68)
 -- Avoid duplicate deallocation problem seen in unit test with single OGL memory block context. (TTP #68)
 
 -- Emulation unit tests needed to clear cached X window var to avoid X event race problems.
+
+-- Fix KernelMPI unit test for GetSourceFile() with known /usr/lib file, 
+since /usr/include path is no longer present on erootfs. (TTP #555)
+
+-- Bug fix, FR log enhancement, and other optimization
+
+-- 3 cart x icons will restart AppManager
+
+-- Store Brio cartridge task Cartridge state.
+
+-- Use thread-based callbacks for KernelMPI timers instead of signal 
+interrupts which were vulnerable to deadlocks. This feature was not 
+available on the earlier uclibc runtime libs, but the newer libs 
+deadlocked immediately during unit tests. (TTP #543)
 
 ===========================================
 Brio v0.6.2.4964 (August 11, 2009)
