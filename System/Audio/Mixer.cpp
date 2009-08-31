@@ -472,6 +472,19 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 			pEventMPI_->PostEvent(event, 128, listener);
 		}
 	}
+	else if(type == kAudioTimeEvent)
+	{
+		if(listener && (flags & kAudioOptionsTimeEvent))
+		{
+			tAudioMsgTimeEvent msg;
+			msg.audioID = pPlayer->GetID();
+			msg.payload = pPlayer->GetPayload();
+			msg.playtime = pPlayer->GetAudioTime_mSec();
+			msg.realtime = pKernelMPI_->GetElapsedTimeAsMSecs();
+			CAudioEventMessage event(msg);
+			pEventMPI_->PostEvent(event, 128, listener);
+		}
+	}
 	else
 	{
 		pDebugMPI_->DebugOut(kDbgLvlImportant,
@@ -1023,6 +1036,12 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 					}
 					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
 				}
+			}
+			else if (pPlayer->IsTimeEvent())
+			{
+				// Handle time event callback at elapsed time intervals
+				if (pPlayer->IsTimeElapsed())
+					HandlePlayerEvent(pPlayer, kAudioTimeEvent);
 			}
 
 			// Add output to appropriate Mix "Bin" 

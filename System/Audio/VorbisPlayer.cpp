@@ -179,6 +179,14 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	channels_		   = pVorbisInfo->channels;
 	samplingFrequency_ = pVorbisInfo->rate;
 	
+	// Time lapse delta needs to be multiple of playback quantum (16 msec)
+	if (optionsFlags_ & kAudioOptionsTimeEvent) {
+		bIsTimeEvent_ = true;
+		timeDelta_	= payload_;
+		timeDelta_ 	/= kAudioFramesPerMS;
+		timeDelta_	*= kAudioFramesPerMS;
+	}
+
 	numVorbisPlayers++;
 
 }
@@ -311,6 +319,12 @@ U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )
 	// Save total number of frames decoded
 	framesRead = framesToProcess;
 
+	// Track elapsed playback intervals for time events
+	if (bIsTimeEvent_) {
+		timeLapsed_		+= framesRead / kAudioFramesPerMS;
+		bIsTimeElapsed_	= (timeLapsed_ % timeDelta_ == 0) ? true : false;
+	}
+	
 	// Copy to output buffer
 	if (2 == channels_) 
 	{

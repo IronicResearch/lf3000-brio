@@ -121,6 +121,14 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	}
 	totalBytesRead_ = 0;
 	
+	// Time lapse delta needs to be multiple of playback quantum (16 msec)
+	if (optionsFlags_ & kAudioOptionsTimeEvent) {
+		bIsTimeEvent_ = true;
+		timeDelta_	= payload_;
+		timeDelta_ 	/= kAudioFramesPerMS;
+		timeDelta_	*= kAudioFramesPerMS;
+	}
+
 	numRawPlayers++;
 
 	TimeStampOff(3);
@@ -229,6 +237,12 @@ U32 CRawPlayer::Render( S16 *pOut, U32 numStereoFrames)
 		
 	framesRead		= bytesReadThisRender / (sizeof(S16) * channels_);
 	framesToProcess = framesRead;
+	
+	// Track elapsed playback intervals for time events
+	if (bIsTimeEvent_) {
+		timeLapsed_		+= framesRead / kAudioFramesPerMS;
+		bIsTimeElapsed_	= (timeLapsed_ % timeDelta_ == 0) ? true : false;
+	}
 	
 	// Copy Stereo data to stereo output buffer
 	if (2 == channels_) 

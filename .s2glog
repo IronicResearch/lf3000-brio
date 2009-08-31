@@ -19872,3 +19872,18 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/27/09 6:57 PM
 5,985 ms. (Cumulative: 6,524,173 ms)
 
 ----------------
+Revision 5,043 from svn://localhost/TRUNK/:
+Revision 5,044 from svn://localhost/TRUNK/:
+Revision 5,045 from svn://localhost/TRUNK/:
+Revision 5,046 from svn://localhost/TRUNK/:
+Revision 5,047 from svn://localhost/TRUNK/:
+Revision 5,048 from svn://localhost/TRUNK/:
+Revision 5,049 from svn://localhost/TRUNK/:
+
+Added time event callback option to all AudioMPI player objects. Time lapse intervals must be multiples of mixer render time quantum (16 msec) to trigger callbacks. (TTP #230)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/31/09 11:14 AM
+7 changed, 0 added, 0 deleted.
+6,220 ms. (Cumulative: 6,530,502 ms)
+
+----------------

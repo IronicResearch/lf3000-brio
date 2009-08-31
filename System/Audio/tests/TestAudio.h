@@ -86,6 +86,7 @@ private:
 	Boolean				gotMidiCallback;
 	U32					numLoopEndEvents;
 	U32					numMidiEvents;
+	U32					numTimeEvents;
 	CEventMPI			evtmgr_;
 	
 public:
@@ -117,6 +118,11 @@ public:
 		else if( msg.GetEventType() == kAudioMidiEvent )
 		{
 			numMidiEvents++;
+			status = kEventStatusOKConsumed;
+		}
+		else if( msg.GetEventType() == kAudioTimeEvent )
+		{
+			numTimeEvents++;
 			status = kEventStatusOKConsumed;
 		}
 		return status;
@@ -542,6 +548,32 @@ public:
 			pKernelMPI_->TaskSleep(100);
 		TS_ASSERT(numLoopEndEvents == 3);
 		TS_ASSERT(gotAudioCallback == true);
+	}
+
+	//------------------------------------------------------------------------
+	void testAudioTimeCallback( )
+	{
+		tAudioID 		id;
+		tAudioPayload	payload = 256; // msec
+		PRINT_TEST_NAME();
+
+		numTimeEvents = 0;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+				kPan, this, payload, kAudioOptionsTimeEvent);
+		
+		// Wait for audio to terminate
+		while(pAudioMPI_->IsAudioPlaying())
+			pKernelMPI_->TaskSleep(100);
+		TS_ASSERT_EQUALS( 3, numTimeEvents );
+
+		numTimeEvents = 0;
+		id = pAudioMPI_->StartAudio("two-second.wav", kVolume, kPriority,
+				kPan, this, payload, kAudioOptionsTimeEvent);
+		
+		// Wait for audio to terminate
+		while(pAudioMPI_->IsAudioPlaying())
+			pKernelMPI_->TaskSleep(100);
+		TS_ASSERT_EQUALS( 7, numTimeEvents );
 	}
 
 	//------------------------------------------------------------------------
