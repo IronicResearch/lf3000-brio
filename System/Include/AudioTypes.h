@@ -58,15 +58,15 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupAudio), AUDIO_ERRORS)
 //==============================================================================
 // Basic audio types
 //==============================================================================
-typedef U8  	tAudioCuePoint;		// Audio cue point 
-typedef U32		tAudioID;			// Unique ID for the audio to allow tracking 
-									// of it through the audio subsystem 
-typedef U32		tAudioPayload;		// User payload to be sent with the done message
-typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255. 
-									// 0 is lowest priority, 255 highest.
-#define kNoAudioID	kU32Max	        // ID returned on failure
+typedef U8  	tAudioCuePoint;		///< Audio cue point (deprecated)
+typedef U32		tAudioID;			///< Unique ID for the audio to allow tracking 
+									///< of it through the audio subsystem 
+typedef U32		tAudioPayload;		///< User payload to be sent with the done message
+typedef U8		tAudioPriority;		///< Priority of the audio asset, 0-255. 
+									///< 0 is lowest priority, 255 highest.
+#define kNoAudioID	kU32Max	        ///< ID returned on failure
 
-#define kAudioPanDefault		0	// pan center left/right
+#define kAudioPanDefault		0	///< pan center left/right
 #define kAudioPanMin		  (-100)
 #define kAudioPanMax			100
 
@@ -78,21 +78,21 @@ typedef U8		tAudioPriority;		// Priority of the audio asset, 0-255.
 #define kAudioDoneMsgBitMask 	0x1
 #define kAudioLoopedBitMask 	0x2
 #define kAudioLoopEndBitMask 	0x4
-// Audio options flags used for StartAudio and StartMidiFile
+/// Audio options flags used for StartAudio and StartMidiFile
 enum {
-	kAudioOptionsNoDoneMsg				= 0x00,	// No audio options specified
-	kAudioOptionsDoneMsgAfterComplete	= 0x01,	// Send after job (play + looping) is complete 
-	kAudioOptionsLooped					= 0x02,	// Repeat # times, specified in payload parameter
-	kAudioOptionsLoopEndMsg         	= 0x04,	// Send LoopEnd message at end of each loop
-	kAudioOptionsMidiEvent				= 0x08,	// Send MidiEvent message upon MIDI file meta events
-	kAudioOptionsTimeEvent				= 0x10, // Send TimeEvent messages at periodic 'payload' intervals
+	kAudioOptionsNoDoneMsg				= 0x00,	///< No audio options specified
+	kAudioOptionsDoneMsgAfterComplete	= 0x01,	///< Send after job (play + looping) is complete 
+	kAudioOptionsLooped					= 0x02,	///< Repeat # times, specified in payload parameter
+	kAudioOptionsLoopEndMsg         	= 0x04,	///< Send LoopEnd message at end of each loop
+	kAudioOptionsMidiEvent				= 0x08,	///< Send MidiEvent message upon MIDI file meta events
+	kAudioOptionsTimeEvent				= 0x10, ///< Send TimeEvent messages at periodic 'payload' intervals
 };
-#define kAudioOptionsNone 	0x0  // No options specified
+#define kAudioOptionsNone 	0x0  ///< No options specified
 typedef U32 tAudioOptionsFlags; 
 
-#define kAudioRepeat_Infinite 	0x40000000  // Repeat forever.  Use for the payload parameter.
+#define kAudioRepeat_Infinite 	0x40000000  ///< Repeat forever.  Use for the payload parameter.
 
-// Prototype for function to get next chunk of stereo audio stream data
+/// Prototype for function to get next chunk of stereo audio stream data
 typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer); 
 
 //==============================================================================
@@ -100,24 +100,24 @@ typedef Boolean (*tGetStereoAudioStreamFcn)(U16 numSamples, S16 *pStereoBuffer);
 //==============================================================================
 typedef U8		tMidiPlayerID;		
 typedef U32		tMidiPlayerInstrument;			
-typedef U32		tMidiTrackBitMask;	// A bit map of MIDI tracks
-#define kAllTracksOfMIDI	(~0)	// Indicates a "1" for all MIDI tracks
-#define kNoMidiID	kU8Max	        // ID returned on failure
+typedef U32		tMidiTrackBitMask;	///< A bit map of MIDI tracks (deprecated)
+#define kAllTracksOfMIDI	(~0)	///< Indicates a "1" for all MIDI tracks
+#define kNoMidiID	kU8Max	        ///< ID returned on failure
 
-typedef U32		tMidiProgramList;	// TODO: ?
+typedef U32		tMidiProgramList;	///< (deprecated)
 
 //==============================================================================
 // Defines for audio resources 
 //==============================================================================
 
-// Standard header for raw Brio audio resources 
+/// Standard header for raw Brio audio resources 
 #define kAudioHeader_StereoBit 	0x1
 struct tAudioHeader {
-	U32				offsetToData;		// Offset from start of header to
-										// start of data (12, which is size of this struct)
-	U16				flags;				// (Bit0: 0=mono, 1=stereo)
-	U16				sampleRate;			// Hz			
-	U32				dataSize;			// Bytes
+	U32				offsetToData;		///< Offset from start of header to
+										///< start of data (12, which is size of this struct)
+	U16				flags;				///< (Bit0: 0=mono, 1=stereo)
+	U16				sampleRate;			///< Hz			
+	U32				dataSize;			///< Bytes
 };
 
 //==============================================================================
@@ -173,30 +173,35 @@ typedef U32 tPriorityPolicy;
 //==============================================================================
 // Audio message data payload types
 //==============================================================================
+/// Audio message posted for kAudioOptionsDoneMsgAfterComplete flag
 struct tAudioMsgAudioCompleted {
-	tAudioID			audioID;
-	tAudioPayload		payload;
-	U8					count;
+	tAudioID			audioID;	///< player ID
+	tAudioPayload		payload;	///< payload option
+	U8					count;		///< playback count
 };
 
+/// Audio message posted for kAudioOptionsLooped flag
 struct tAudioMsgLoopEnd {
-	tAudioID			audioID;
-	tAudioPayload		payload;
-	U8					count;
+	tAudioID			audioID;	///< player ID
+	tAudioPayload		payload;	///< loop count option
+	U8					count;		///< playback count
 };
 
+/// \deprecated
 struct tAudioMsgMidiCompleted {
 	tMidiPlayerID		midiPlayerID;
 	tAudioPayload		payload;
 	U8					count;
 };
 
+/// \deprecated
 struct tAudioMsgCuePoint {
 	tAudioID			audioID;
 	tAudioPayload		payload;
 	tAudioCuePoint		cuePoint;
 };
 
+/// \deprecated
 struct tAudioMsgMidiEvent {
 	tMidiPlayerID		midiPlayerID;
 	tAudioPayload		payload;
@@ -207,20 +212,22 @@ struct tAudioMsgMidiEvent {
 	void*				userData;
 };
 
+/// Audio message posted for kAudioOptionsTimeEvent flag
 struct tAudioMsgTimeEvent {
-	tAudioID			audioID;
-	tAudioPayload		payload;
-	U32					playtime;
-	U32					realtime;
+	tAudioID			audioID;		///< player ID
+	tAudioPayload		payload;		///< time interval (msec)
+	U32					playtime;		///< playback time (msec)
+	U32					realtime;		///< system time (msec)
 };
 
+/// Union of all possible Audio message types
 union tAudioMsgData {
-	tAudioMsgAudioCompleted		audioCompleted;
-	tAudioMsgMidiCompleted		midiCompleted;
-	tAudioMsgCuePoint			audioCuePoint;
-	tAudioMsgLoopEnd            loopEnd;
-	tAudioMsgMidiEvent			midiEvent;
-	tAudioMsgTimeEvent			timeEvent;
+	tAudioMsgAudioCompleted		audioCompleted;	///< kAudioOptionsDoneMsgAfterComplete message
+	tAudioMsgMidiCompleted		midiCompleted;	///< (deprecated)
+	tAudioMsgCuePoint			audioCuePoint;	///< (deprecated)
+	tAudioMsgLoopEnd            loopEnd;		///< kAudioOptionsLooped message
+	tAudioMsgMidiEvent			midiEvent;		///< (deprecated)
+	tAudioMsgTimeEvent			timeEvent;		///< kAudioOptionsTimeEvent message
 };
 
 //==============================================================================

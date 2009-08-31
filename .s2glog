@@ -19898,3 +19898,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/31/09 12:13 PM
 6,110 ms. (Cumulative: 6,536,705 ms)
 
 ----------------
+Revision 5,052 from svn://localhost/TRUNK/:
+Revision 5,053 from svn://localhost/TRUNK/:
+
+Remove instrument-based MIDI functions from AudioMPI which are no longer supported. File-based MIDI functions need to remain in AudioMPI class declaration for Foster's game legacy use, but these are now Doxygen-tagged as deprecated in headers. (TTP #582)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/31/09 1:54 PM
+5 changed, 0 added, 0 deleted.
+5,888 ms. (Cumulative: 6,542,671 ms)
+
+----------------

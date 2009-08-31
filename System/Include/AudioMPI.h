@@ -247,6 +247,14 @@ public:
 	/// \param pCallback Optional tGetStereoAudioStreamFcn rendering callback
 	/// function if the caller intends to do its own audio streaming. 
 	///
+	/// \param volume	Same as \ref StartAudio
+	/// \param priority	Same as \ref StartAudio
+	/// \param pan		Same as \ref StartAudio
+	/// \param pListener Same as \ref StartAudio
+	/// \param payload	Same as \ref StartAudio
+	/// \param flags	Same as \ref StartAudio
+	/// \return			Same as \ref StartAudio
+	///
 	/// This function plays a raw audio sample from a memory buffer with a valid 
 	/// tAudioHeader signature. The audio sample data must be in an uncompressed 
 	/// PCM format supported by the Brio Audio Mixer. (16-bit little-endian, 
@@ -481,7 +489,7 @@ public:
 	// MIDI functionality
 	//********************************	 
 
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType AcquireMidiPlayer( tAudioPriority priority,
@@ -489,17 +497,17 @@ public:
 								tMidiPlayerID* pID );
 
 
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType ReleaseMidiPlayer( tMidiPlayerID id ); 
 
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return kNoAudioID -- This function is no longer implemented.
 	tAudioID GetAudioIDForMidiID( tMidiPlayerID id );
 	
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType 	StartMidiFile( tMidiPlayerID		id,
@@ -510,7 +518,7 @@ public:
 							   tAudioPayload		payload,
 							   tAudioOptionsFlags	flags );
 	
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return kNoImplErr -- This function is no longer implemented.
 	tErrType 	StartMidiFile( tMidiPlayerID		id,
@@ -518,135 +526,25 @@ public:
 							   tAudioPayload		payload,
 							   tAudioOptionsFlags	flags );
 
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return false -- This function is no longer implemented.
 	Boolean		IsMidiFilePlaying( tMidiPlayerID id );
 
-	/// MIDI functions are no longer implemented.
+	/// \deprecated MIDI functions are no longer implemented.
 	///
 	/// \return false -- This function is no longer implemented.
 	Boolean		IsMidiFilePlaying( void );
 
-	/// MIDI functions are no longer implemented.
-	///
+	/// \deprecated MIDI functions are no longer implemented.
 	void 		PauseMidiFile( tMidiPlayerID id );
 	
-	/// MIDI functions are no longer implemented.
-	///
+	/// \deprecated MIDI functions are no longer implemented.
 	void 		ResumeMidiFile( tMidiPlayerID id );
 	
-	/// MIDI functions are no longer implemented.
-	///
+	/// \deprecated MIDI functions are no longer implemented.
 	void 		StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage );
 	
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType 	SetEnableMidiTracks( tMidiPlayerID id,
-									 tMidiTrackBitMask bitMask );
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType	TransposeMidiTracks( tMidiPlayerID id,
-									 tMidiTrackBitMask bitMask,
-									 S8 semitones );
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType	ChangeMidiTempo( tMidiPlayerID id, S8 tempo ); 
-	
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType	ChangeMidiInstrument( tMidiPlayerID id,
-									  int channel,
-									  tMidiPlayerInstrument instr );
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType 	ChangeMidiInstrument( tMidiPlayerID id,
-									  tMidiTrackBitMask bits,
-									  tMidiPlayerInstrument instr ); 
-	
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType MidiNoteOn( tMidiPlayerID id,
-						 U8 channel,
-						 U8 note,
-						 U8 velocity,
-						 tAudioOptionsFlags flags );
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType MidiNoteOn( tMidiPlayerID id, U8 channel, U8 note, U8 velocity);
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType MidiNoteOff( tMidiPlayerID id,
-						  U8 channel,
-						  U8 note,
-						  U8 velocity,
-						  tAudioOptionsFlags flags );
-
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType MidiNoteOff(tMidiPlayerID id,
-						 U8 channel,
-						 U8 note);
-	
-	/// MIDI functions are no longer implemented.
-	///
-	/// \return kNoImplErr -- This function is no longer implemented.
-	tErrType SendMidiCommand( tMidiPlayerID id, U8 cmd, U8 data1, U8 data2 );
-	
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType CreateProgramList( tMidiProgramList **d );
-	
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType AddToProgramList( tMidiProgramList *d, U8 bank, U8 program );
-	
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType AddDrumToProgramList( tMidiProgramList *d, U8 bank, U8 program, int pitch );
-
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType DeleteProgramList(	 tMidiProgramList *d );
-	
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType ScanForPrograms( tMidiPlayerID id, tMidiProgramList *d );
-	
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType LoadInstrumentFile( const CPath &path , tMidiProgramList *d );
-	
-	/// Low-level midi control
-	///
-	/// This function is not currently implemented.
-	tErrType UnloadAllInstruments( void );
-
 	/// Set the current priority policy
 	///
 	/// \param policy The desired priority policy.  See \ref PriorityPolicies

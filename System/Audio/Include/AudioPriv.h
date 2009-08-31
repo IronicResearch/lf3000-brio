@@ -171,6 +171,7 @@ class CAudioModule : public ICoreModule {
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( tMidiPlayerID id );
 	VTABLE_EXPORT Boolean IsMidiFilePlaying( void );
 
+#if 0
 	VTABLE_EXPORT tMidiTrackBitMask GetEnabledMidiTracks( tMidiPlayerID id );
 
 	VTABLE_EXPORT tErrType SetEnableMidiTracks( tMidiPlayerID id,
@@ -202,7 +203,7 @@ class CAudioModule : public ICoreModule {
 											U8 cmd,
 											U8 data1,
 											U8 data2 );
-
+#endif
 	VTABLE_EXPORT tErrType SetPriorityPolicy(tPriorityPolicy policy);
 
 	VTABLE_EXPORT tPriorityPolicy GetPriorityPolicy(void);
