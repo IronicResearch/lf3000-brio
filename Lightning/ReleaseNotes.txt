@@ -3,8 +3,9 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.3.5041 (August 27, 2009)
+Brio v0.6.3.5050 (August 31, 2009)
 ===========================================
+
 -- Unify framebuffer allocations using common addresses and offsets shared among RGB and YUV layers. (TTP #68)
 
 -- PowerMPI.Reset() function needs immediate exit to bypass module cleanup problems. (TTP #564)
@@ -36,6 +37,9 @@ since /usr/include path is no longer present on erootfs. (TTP #555)
 interrupts which were vulnerable to deadlocks. This feature was not 
 available on the earlier uclibc runtime libs, but the newer libs 
 deadlocked immediately during unit tests. (TTP #543)
+
+-- Added time event callback option to all AudioMPI player objects. Time lapse 
+intervals must be multiples of mixer render time quantum (16 msec) to trigger callbacks. (TTP #230)
 
 ===========================================
 Brio v0.6.2.4964 (August 11, 2009)
