@@ -843,6 +843,7 @@ tAudioID CAudioModule::GetAudioIDForMidiID( tMidiPlayerID id)
 	return gAudioContext.gMidiAudioID; //(tAudioID)id;
 }
 
+#if 0
 // ==============================================================================
 // MidiNoteOn
 // ==============================================================================
@@ -880,6 +881,7 @@ tErrType CAudioModule::SendMidiCommand( tMidiPlayerID /* id */,
 	(void)cmd, data1, data2;
 	return kNoImplErr;
 }
+#endif
 
 // ==============================================================================
 // StartMidiFile
@@ -976,6 +978,7 @@ void CAudioModule::StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage )
 	}
 }
 
+#if 0
 // ==============================================================================
 // GetEnabledMidiTracks
 // ==============================================================================
@@ -1024,6 +1027,7 @@ tErrType CAudioModule::ChangeMidiTempo(tMidiPlayerID /* id */, S8 tempo)
 	(void)tempo;
 	return kNoImplErr;
 }
+#endif
 
 // ==============================================================================
 // SetPriorityPolicy

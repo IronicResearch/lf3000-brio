@@ -668,6 +668,7 @@ void CAudioMPI::StopMidiFile( tMidiPlayerID id, Boolean suppressDoneMessage )
 		pModule_->StopMidiFile( id, suppressDoneMessage );
 }   // ---- end StopMidiFile() ----
 
+#if 0
 // ==============================================================================
 // GetEnabledMidiTracks
 // ==============================================================================
@@ -812,6 +813,7 @@ tErrType CAudioMPI::MidiNoteOff( tMidiPlayerID	id,
 	
 	return pModule_->MidiNoteOff( id, channel, noteNum, 0, 0 );
 }   // ---- end MidiNoteOff() ----
+#endif
 
 // ==============================================================================
 // SetPriorityPolicy
