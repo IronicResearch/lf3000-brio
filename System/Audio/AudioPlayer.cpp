@@ -70,6 +70,11 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	numLoops_	 = payload_;
 	loopCounter_ = 0;
 
+	// Track elapsed playback time intervals for time events
+	bIsTimeEvent_	= false;
+	bIsTimeElapsed_	= false;
+	timeDelta_		= 0;
+	timeLapsed_		= 0;
 }
 
 //==============================================================================

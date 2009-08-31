@@ -63,6 +63,14 @@ CMemPlayer::CMemPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	pReadData_		= pAudioData_;
 	pRenderCallback_= pInfo->pCallback;
 	
+	// Time lapse delta needs to be multiple of playback quantum (16 msec)
+	if (optionsFlags_ & kAudioOptionsTimeEvent) {
+		bIsTimeEvent_ = true;
+		timeDelta_	= payload_;
+		timeDelta_ 	/= kAudioFramesPerMS;
+		timeDelta_	*= kAudioFramesPerMS;
+	}
+
 	numMemPlayers++;
 }
 
@@ -169,6 +177,12 @@ U32 CMemPlayer::Render( S16 *pOut, U32 numStereoFrames)
 		
 	framesRead		= bytesReadThisRender / (sizeof(S16) * channels_);
 	framesToProcess = framesRead;
+	
+	// Track elapsed playback intervals for time events
+	if (bIsTimeEvent_) {
+		timeLapsed_		+= framesRead / kAudioFramesPerMS;
+		bIsTimeElapsed_	= (timeLapsed_ % timeDelta_ == 0) ? true : false;
+	}
 	
 	// Copy Stereo data to stereo output buffer
 	if (2 == channels_) 

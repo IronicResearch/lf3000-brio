@@ -88,6 +88,9 @@ class CAudioPlayer {
 
 	inline void					Pause(void) 		{ bPaused_ = true; }
 	inline void					Resume(void) 		{ bPaused_ = false; }
+
+	inline Boolean			IsTimeEvent()	{ return bIsTimeEvent_; }
+	inline Boolean			IsTimeElapsed()	{ return bIsTimeElapsed_; }
 	
 protected:
 	S16				*pReadBuf_;
@@ -118,6 +121,10 @@ protected:
 	tAudioMsgData		msgData_;		// union of all audio message types
 	CAudioEventMessage*	pEvtMsg_;		// audio event message to be posted 
 
+	Boolean				bIsTimeEvent_;	// time event callback?
+	Boolean				bIsTimeElapsed_;// time elapsed event?
+	U32					timeDelta_;		// lapse time delta for time events
+	U32					timeLapsed_;	// elapsed time during playback
 };
 
 LF_END_BRIO_NAMESPACE()
