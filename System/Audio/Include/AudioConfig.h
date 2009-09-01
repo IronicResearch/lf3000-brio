@@ -19,7 +19,8 @@
 
 // Input streams.  Note each stream contains a left and right channel
 #define kAudioMaxMidiStreams	1
-#define	kAudioMaxVorbisStreams	3
+#define	kAudioMinVorbisStreams	3
+#define	kAudioMaxVorbisStreams	5
 #define	kAudioMaxRawStreams		16
 #define kAudioMaxMixerStreams	( kAudioMaxMidiStreams   + \
 								  kAudioMaxVorbisStreams + \

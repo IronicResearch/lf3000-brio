@@ -19920,3 +19920,14 @@ By ytu (ytu@leapfrog.com) on 8/31/09 5:56 PM
 5,813 ms. (Cumulative: 6,548,562 ms)
 
 ----------------
+Revision 5,057 from svn://localhost/TRUNK/:
+Revision 5,058 from svn://localhost/TRUNK/:
+Revision 5,059 from svn://localhost/TRUNK/:
+
+Bump max number of Vorbis channels available to 5, with contingency for reverting back to 3 via /flags/vorbis setting. (TTP #209)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/1/09 11:46 AM
+3 changed, 0 added, 0 deleted.
+5,719 ms. (Cumulative: 6,554,359 ms)
+
+----------------
