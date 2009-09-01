@@ -19908,3 +19908,15 @@ By Dave Milici (dmilici@leapfrog.com) on 8/31/09 1:54 PM
 5,888 ms. (Cumulative: 6,542,671 ms)
 
 ----------------
+Revision 5,054 from svn://localhost/TRUNK/:
+Revision 5,055 from svn://localhost/TRUNK/:
+Revision 5,056 from svn://localhost/TRUNK/:
+
+1) Use vfork(...) instead of fork() to execute system(...) function.
+2) Fix issues related test_Event utility. At this point, the USB task may still cause stuck once in a while.
+
+By ytu (ytu@leapfrog.com) on 8/31/09 5:56 PM
+1 changed, 0 added, 0 deleted.
+5,813 ms. (Cumulative: 6,548,562 ms)
+
+----------------

@@ -42,6 +42,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <poll.h>
 #include <PowerTypes.h>
 #include <USBDeviceTypes.h>
@@ -58,7 +59,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //Maximum number of input drivers to discover
 #define NUM_INPUTS	5
-
 
 namespace
 {
@@ -91,9 +91,10 @@ namespace
 	const tEventPriority	kUSBSocketEventPriority	= 128;
 	const tEventPriority	kTouchEventPriority	= 0;
 	const tEventPriority	kCartridgeEventPriority	= 0;	
-	
+
 	volatile bool 			g_threadRun2_ = true;
 	volatile bool 			g_threadRunning2_ = false;
+
 
 	//============================================================================
 	// Local state and utility functions
@@ -330,58 +331,106 @@ namespace
 
 		return -1;
 	}
-	
+
+	#define N_EVENTS_MAX  8
 	int WaitForCartEvent(struct pollfd *event_fd) 
 	{
-		int event;
-		struct input_event ev;
+		int event, i;
+		struct input_event ev[N_EVENTS_MAX];
 		int ret, size;
 		U32 button;
-		CDebugMPI debug(kGroupEvent);				
-		
-		event = CARTRIDGE_EVENT_NONE;
+		struct stat fbuf;
+		CDebugMPI debug(kGroupEvent);		
 		
 		// block on driver state changes, or timeout after 1 sec
-		//ret = poll(event_fd, 1, 1000);
-		ret = poll(event_fd, 1, -1);
+		ret = poll(event_fd, 1, 1000);
 		
 		if((ret >= 0)  && (event_fd[0].revents & POLLIN)) {
-
-			do {
-				size = read(event_fd[0].fd, &ev, sizeof(ev));
-				printf("sizeof(ev)=%d, size=%d\n", sizeof(ev), size);
-				if(size == sizeof(ev)) {
-					if(ev.type == EV_SW) { // this is a switch change
-						button = LinuxSwitchToBrio(ev.code);
-						
-						printf("button=%d, kCartridgeDetect=%d, ev.value = %d\n", (int)button, (int)kCartridgeDetect, ev.value);
-						
-						// only handle cartridge insertion here
-						if(button == kCartridgeDetect) {
-							if(ev.value > 0) {
-								event = CARTRIDGE_EVENT_INSERT;
-							} else if(ev.value == 0) {
-								event = CARTRIDGE_EVENT_REMOVE;					
-							}
-							printf("event = %d\n", event);
-						} else {
-							printf("button != kCartridgeDetect\n");
-						}
+			size = read(event_fd[0].fd, ev, sizeof(struct input_event) * N_EVENTS_MAX);
+			
+			if(size < sizeof(struct input_event)) {
+				event = CARTRIDGE_EVENT_NONE;
+				debug.DebugOut(kDbgLvlCritical, "size = %d, cartridge read error (%s) at %d\n", size, strerror(errno), __LINE__);
+				return event;
+			}
+			
+			for(i=0; i<size/sizeof(struct input_event); i++) {
+				if(ev[i].type == EV_SW) { // this is a switch change
+					button = LinuxSwitchToBrio(ev[i].code);
+					
+					// only handle cartridge insertion here
+					if(button != kCartridgeDetect) {
+						continue;
 					}
 				}
-			} while (size == sizeof(ev));
-		} else if(ret == 0){
-			event = CARTRIDGE_EVENT_NONE;
-			debug.DebugOut(kDbgLvlCritical, "Poll cartridge event error, file desciptor not ready\n");
+				else {
+					continue;
+				}
+
+				if(ev[i].value > 0) {
+					event = CARTRIDGE_EVENT_INSERT;
+				}
+				else if(ev[i].value == 0) {
+					event = CARTRIDGE_EVENT_REMOVE;					
+				}
+			}
 		} else {
 			event = CARTRIDGE_EVENT_NONE;
-			debug.DebugOut(kDbgLvlCritical, "Poll cartridge event error, %s\n", strerror(errno));
+			if(ret == -1){
+				debug.DebugOut(kDbgLvlCritical, "Poll cartridge event error, %s\n", strerror(errno));
+			}
 		}
 		
-		printf("return event = %d\n", event);
 		return event;
 	}
 
+	int vsystem( const char *cmdstring)
+	{
+		pid_t pid;
+		int status;
+		struct sigaction ignore, saveintr, savequit;
+		sigset_t chldmask, savemask;
+		
+		if(cmdstring == NULL) 
+			return (1);
+		
+		ignore.sa_handler = SIG_IGN;
+		sigemptyset(&ignore.sa_mask);
+		ignore.sa_flags = 0;
+		
+		if(sigaction(SIGINT, &ignore, &saveintr) < 0)
+			return (-1);
+		if(sigaction(SIGQUIT, &ignore, &savequit) <0)
+			return (-1);
+		
+		sigemptyset(&chldmask);
+		sigaddset(&chldmask, SIGCHLD);
+		if(sigprocmask(SIG_BLOCK, &chldmask, &savemask) < 0)
+			return (-1);
+		
+		if( (pid = vfork()) < 0) {
+			status = -1;
+		} else if (pid == 0) {  /* child */
+			execl("/bin/sh", "sh", "-c", cmdstring, (char *) 0);
+			_exit(127);     /*execl error */
+		} else {
+			while (waitpid(pid, &status, 0) < 0)
+				if( errno != EINTR) {
+					status = -1;  /* error other than EINTR from waitpid() */
+					break;
+				}
+		}
+		
+		/* restore previous signal actions & reset signal mask */
+		if(sigaction(SIGINT, &saveintr, NULL) < 0)
+			return (-1);
+		if(sigaction(SIGQUIT, &savequit, NULL) < 0)
+			return (-1);
+		if(sigprocmask(SIG_SETMASK, &savemask, NULL) < 0)
+			return (-1);
+		
+		return (status);
+	}
 }
 
 
@@ -464,17 +513,11 @@ void* CEventModule::CartridgeTask( void* arg )
 				debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge inserted !!\n");
 				
 				// NAND driver request
-				#if 0
-				sys_ret = system("echo 1 > /sys/devices/platform/lf1000-nand/cart_hotswap");
-				if(sys_ret == -1) {
-					debug.DebugOut(kDbgLvlCritical, "Cartridge task: System(...) failed, errno = %d (%s) !\n", errno, strerror(errno));
-				}
-				#else
 				if( 0 != StartStopCartDriver(1) ) {
+					cartXcounter++;
 					data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 					break;
 				}
-				#endif
 				
 				// check driver status 
 				cart_status = CheckCartDriverStatus();
@@ -484,6 +527,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					debug.DebugOut(kDbgLvlValuable, "Cartridge task: Can't read cart, please reinsert cart !\n");
 					CCartridgeMessage cartridge_msg(data);
 					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+					cartXcounter++;
 					data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 				} else {
 					int sw = 0;
@@ -499,6 +543,7 @@ void* CEventModule::CartridgeTask( void* arg )
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
 					} else {
 						//cartridge is still inserted
+						cartXcounter++;
 						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
 					}
@@ -510,7 +555,8 @@ void* CEventModule::CartridgeTask( void* arg )
 			case CARTRIDGE_STATE_DRIVER_READY: {
 
 				// UBI attach, and cart mount
-				sys_ret = system("/etc/init.d/cartridge start") >> 8;
+				//sys_ret = system("/etc/init.d/cartridge start") >> 8;
+				sys_ret = vsystem("/etc/init.d/cartridge start") >> 8;
 				
 				// check return status here
 				if(sys_ret == 11) {
@@ -527,6 +573,7 @@ void* CEventModule::CartridgeTask( void* arg )
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
 					} else {
 						//cartridge is still inserted
+						cartXcounter++;
 						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
 					}
@@ -546,6 +593,7 @@ void* CEventModule::CartridgeTask( void* arg )
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
 					} else {
 						//cartridge is still inserted
+						cartXcounter++;
 						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
 					}
@@ -572,6 +620,7 @@ void* CEventModule::CartridgeTask( void* arg )
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
 					} else {
 						//cartridge is still inserted
+						cartXcounter++;
 						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
 					}
@@ -587,6 +636,7 @@ void* CEventModule::CartridgeTask( void* arg )
 						sleep(10);
 						
 					} else {	
+						cartXcounter++;
 						data.cartridgeState = CARTRIDGE_STATE_REINSERT;
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_REINSERT !\n");
 					}
@@ -613,7 +663,8 @@ void* CEventModule::CartridgeTask( void* arg )
 				debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge removed, close all open cart files\n");
 				ScanCloseCartridgeFile();
 				
-				sys_ret = system("/etc/init.d/cartridge stop") >> 8;
+				//sys_ret = system("/etc/init.d/cartridge stop") >> 8;
+				sys_ret = vsystem("/etc/init.d/cartridge stop") >> 8;
 				
 				// check return status here
 				if(sys_ret == 11) {
@@ -672,7 +723,6 @@ void* CEventModule::CartridgeTask( void* arg )
 			}
 			
 			case CARTRIDGE_STATE_REINSERT: {
-				cartXcounter++;        /* increment x icon counter */
 				if(cartXcounter > MAX_CART_X_ICONS) {
 					/* quit appManager */
 					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Request AppManager restart due to failed cartridge mount (%d failure in a row) !\n", MAX_CART_X_ICONS);
