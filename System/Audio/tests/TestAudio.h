@@ -33,7 +33,7 @@ LF_USING_BRIO_NAMESPACE()
 
 // These limits should really be available to all Brio Apps
 #define myAudioMaxRawStreams	16
-#define myAudioMaxVorbisStreams	3
+#define myAudioMaxVorbisStreams	5 // 3
 
 #define kPayload 0
 #define kFlags   0 // kAudioOptionsDoneMsgAfterComplete | kAudioOptionsLooped
@@ -727,23 +727,16 @@ public:
 		TS_ASSERT(err == kNoErr);
 
 		// Launch 3 players
-		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
-									kPan, NULL, kPayload, kFlags);
-		TS_ASSERT(id != kNoAudioID);
-		pKernelMPI_->TaskSleep(100);
-
-		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
-									kPan, NULL, kPayload, kFlags);
-		TS_ASSERT(id != kNoAudioID);
-		pKernelMPI_->TaskSleep(100);
-
-		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
-									kPan, NULL, kPayload, kFlags);
-		TS_ASSERT(id != kNoAudioID);
-		pKernelMPI_->TaskSleep(100);
-
+		for( i=0; i<myAudioMaxVorbisStreams; i++)
+		{
+			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
+										kPan, NULL, kPayload, kFlags);
+			TS_ASSERT(id != kNoAudioID);
+			pKernelMPI_->TaskSleep(100);
+		}
+		
 		// Try to launch N more players before the 1st 3 finish playing 
-		for( i=0; i<6; i++)
+		for( i=myAudioMaxVorbisStreams+1; i<10; i++)
 		{
 			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
 										kPan, NULL, kPayload, kFlags);

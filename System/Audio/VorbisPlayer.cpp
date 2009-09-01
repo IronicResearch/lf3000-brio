@@ -25,6 +25,7 @@
 #include <VorbisPlayer.h>
 
 #include <Dsputil.h>
+#include <Utility.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -227,6 +228,9 @@ U32 CVorbisPlayer::GetNumPlayers(void)
 
 U32 CVorbisPlayer::GetMaxPlayers(void)
 {
+	// Contingency for reverting max Vorbis channels for Didj titles
+	if (FileSize("/flags/vorbis"))
+		return kAudioMinVorbisStreams;
 	return maxNumVorbisPlayers;
 }
 
