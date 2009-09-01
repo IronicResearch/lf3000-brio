@@ -23,6 +23,10 @@
 
 #include "portaudio.h"
 
+#include <DebugMPI.h>
+#include <DebugTypes.h>
+#include <GroupEnumeration.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 // Enables callback to Brio, vs. sine output
@@ -112,6 +116,7 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 	int i;
 	PaError err;
 	PaStreamParameters outputParameters;
+	CDebugMPI          dbg(kGroupAudio);
 	
 	gCallbackCount = 0;
 	gAudioRenderCallback = callback;
@@ -160,9 +165,9 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 
  error:
 	Pa_Terminate();
-	fprintf( stderr, "An error occured while attempting to initalize the portaudio stream\n" );
-	fprintf( stderr, "Error number: %d\n", err );
-	fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
+	dbg.DebugOut( kDbgLvlCritical, "An error occured while attempting to initalize the portaudio stream\n" );
+	dbg.DebugOut( kDbgLvlCritical, "Error number: %d\n", err );
+	dbg.DebugOut( kDbgLvlCritical, "Error message: %s\n", Pa_GetErrorText( err ) );
 
 	return err;
 }
@@ -172,9 +177,10 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 // ==============================================================================
 int StartAudioOutput( void )
 {
+	CDebugMPI dbg(kGroupAudio);
 	PaError err = Pa_StartStream( gPaStream );
 	if ( err != paNoError ) 
-		printf( "StartAudioOutput: Error%d '%s' occured during Pa_StartStream\n",
+		dbg.DebugOut( kDbgLvlCritical, "StartAudioOutput: Error%d '%s' occured during Pa_StartStream\n",
 				err , Pa_GetErrorText(err));
 	return err;
 }
@@ -184,9 +190,10 @@ int StartAudioOutput( void )
 // ==============================================================================
 int StopAudioOutput( void )
 {
+	CDebugMPI dbg(kGroupAudio);
 	PaError err = Pa_StopStream( gPaStream );
 	if ( err != paNoError ) 
-		printf( "StartAudioOutput: Error%d '%s' occured during Pa_StopStream\n",
+		dbg.DebugOut( kDbgLvlCritical, "StopAudioOutput: Error%d '%s' occured during Pa_StopStream\n",
 				err , Pa_GetErrorText(err));	
 	return err;
 }

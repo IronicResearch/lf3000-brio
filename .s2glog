@@ -19931,3 +19931,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/1/09 11:46 AM
 5,719 ms. (Cumulative: 6,554,359 ms)
 
 ----------------
+Revision 5,060 from svn://localhost/TRUNK/:
+Revision 5,061 from svn://localhost/TRUNK/:
+Revision 5,062 from svn://localhost/TRUNK/:
+Revision 5,063 from svn://localhost/TRUNK/:
+
+Added AudioMPI helper thread to re-try enabling PortAudio output in case /dev/dsp is still in use. (TTP #589)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/1/09 1:31 PM
+2 changed, 0 added, 0 deleted.
+5,719 ms. (Cumulative: 6,560,172 ms)
+
+----------------

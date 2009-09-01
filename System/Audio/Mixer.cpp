@@ -111,6 +111,27 @@ CKernelMPI *pKernelMPI_;
 tMutex mixerMutex_;
 
 //------------------------------------------------------------------------------
+// Helper thread to re-try enabling PortAudio output
+//------------------------------------------------------------------------------
+bool		bIsOutputEnabled_ = false;	// PortAudio output stream enabled?
+
+static void* HelperThread(void* pctx)
+{
+	while (true)
+	{
+		// Re-try enabling PortAudio output
+		if (kNoErr == InitAudioOutput( &CAudioMixer::WrapperToCallRender, pctx) )
+		{
+			StartAudioOutput();
+			bIsOutputEnabled_ = true;
+			break;
+		}
+		pKernelMPI_->TaskSleep(100);
+	}
+	return NULL;
+}
+
+//------------------------------------------------------------------------------
 //Returns speaker status from sysfs audio driver dump (embedded)
 // 
 // Not to be confused with IsSpeakerEnabled, which just returns the last known
@@ -275,9 +296,21 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	// rendering.
 	err = InitAudioOutput( &CAudioMixer::WrapperToCallRender,
 							   (void *)this);
-	pDebugMPI_->Assert(kNoErr == err,
+	pDebugMPI_->Assert(bIsOutputEnabled_ = (kNoErr == err),
 					   "Failed to initalize audio output\n" );
-	err = StartAudioOutput();
+	// Thanks to the miracle of NOP asserts, we can keep trying to
+	// enable PortAudio output in case /dev/dsp is in use.
+	if (!bIsOutputEnabled_)
+	{
+		tTaskHndl hndl;
+		tTaskProperties props;
+		props.TaskMainFcn = &HelperThread;
+		props.taskMainArgCount = 1;
+		props.pTaskMainArgValues = this;
+		pKernelMPI_->CreateTask(hndl, props, NULL);
+	}
+	else
+		StartAudioOutput();
 
 	// See the documentation for GetNextAudioID and GetNextMidiID to understand
 	// the audio id assignment scheme.
