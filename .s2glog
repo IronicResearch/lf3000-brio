@@ -19943,3 +19943,19 @@ By Dave Milici (dmilici@leapfrog.com) on 9/1/09 1:31 PM
 5,719 ms. (Cumulative: 6,560,172 ms)
 
 ----------------
+Revision 5,064 from svn://localhost/TRUNK/:
+Revision 5,065 from svn://localhost/TRUNK/:
+Revision 5,066 from svn://localhost/TRUNK/:
+Revision 5,067 from svn://localhost/TRUNK/:
+Revision 5,068 from svn://localhost/TRUNK/:
+Revision 5,069 from svn://localhost/TRUNK/:
+Revision 5,070 from svn://localhost/TRUNK/:
+Revision 5,071 from svn://localhost/TRUNK/:
+
+Modified VideoMPI playback thread to use audio time events for sync. Need to resolve cummulative time frame lag, so disabled for interim reference.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/1/09 6:52 PM
+1 changed, 0 added, 0 deleted.
+5,735 ms. (Cumulative: 6,566,017 ms)
+
+----------------

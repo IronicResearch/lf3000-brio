@@ -33,6 +33,45 @@ namespace
 	volatile bool		bStopping = false;
 	tMutex				gThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 	tCond				gThreadCond  = PTHREAD_COND_INITIALIZER;
+	class VideoListener*	pVideoListener = NULL;
+	volatile U32			gAudioTime = 0;
+	volatile bool			gAudioDone = false;
+}
+
+//============================================================================
+// Local event listener
+//============================================================================
+namespace
+{
+	const tEventType LocalVideoEvents[] = {kAllAudioEvents};
+	
+	class VideoListener : public IEventListener
+	{
+		tVideoContext*	mpVidCtx;
+	public:
+		VideoListener(tVideoContext* pCtx):
+			IEventListener(LocalVideoEvents, ArrayCount(LocalVideoEvents)),
+			mpVidCtx(pCtx)
+			{}
+		
+		tEventStatus Notify(const IEventMessage& msg)
+		{
+			tEventType event_type = msg.GetEventType();
+			if (event_type == kAudioTimeEvent)
+			{
+				const CAudioEventMessage& audmsg = dynamic_cast<const CAudioEventMessage&>(msg);
+				const tAudioMsgTimeEvent& data = audmsg.audioMsgData.timeEvent;
+				gAudioTime = data.playtime;
+			}
+			else if (event_type == kAudioCompletedEvent)
+			{
+				const CAudioEventMessage& audmsg = dynamic_cast<const CAudioEventMessage&>(msg);
+				const tAudioMsgAudioCompleted& data = audmsg.audioMsgData.audioCompleted;
+				gAudioDone = data.count;
+			}
+			return kEventStatusOK;
+		}
+	};
 }
 
 //============================================================================
@@ -66,11 +105,23 @@ void* VideoTaskMain( void* arg )
 	U32				basetime,marktime,nexttime,lapsetime = pctx->uFrameTime;
 	U32				flags = (pctx->pListener) ? kAudioOptionsDoneMsgAfterComplete : 0;
 	Boolean			bAudio = false;
+	Boolean			bListener = false; //pctx->pPathAudio != NULL;
+	IEventListener*	pListener = pctx->pListener;
+	tAudioPayload	payload = 0;
 	
 	// Sync video thread startup with InitVideoTask()
 	bRunning = pctx->bPlaying = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
 
+	// Register our local listener to handle audio time events
+	if (bListener) {
+		pVideoListener = new VideoListener(pctx);
+		evntmgr.RegisterEventListener(pVideoListener);
+		flags |= kAudioOptionsTimeEvent | kAudioOptionsDoneMsgAfterComplete;
+		payload = lapsetime;
+		pListener = pVideoListener;
+	}
+	
 	while (bRunning)
 	{
 		// Pre-render the 1st video frame prior to audio startup
@@ -79,9 +130,9 @@ void* VideoTaskMain( void* arg )
 		dispmgr.Invalidate(0, NULL);
 		// Start audio playback and sync each video frame to audio time stamp
 		if (pctx->pPathAudio != NULL)
-			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pctx->pListener, 0, flags);
+			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pListener, payload, flags);
 		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync
-		vtm.time = basetime = marktime = nexttime = 0;
+		vtm.time = basetime = marktime = nexttime = gAudioTime = 0;
 		if (!bAudio)
 			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
 		marktime += lapsetime;
@@ -92,7 +143,9 @@ void* VideoTaskMain( void* arg )
 			while (bRunning) {
 				static U32 lasttime = 0xFFFFFFFF;
 				static U32 counter = 0;
-				if (bAudio)
+				if (pVideoListener)
+					nexttime = gAudioTime;
+				else if (bAudio)
 					nexttime = audmgr.GetAudioTime(pctx->hAudio);
 				else
 					nexttime = kernel.GetElapsedTimeAsMSecs();
@@ -148,6 +201,13 @@ void* VideoTaskMain( void* arg )
 		data.timeStamp = vtm;
 		CVideoEventMessage msg(data);
 		evntmgr.PostEvent(msg, 0, pctx->pListener);
+	}
+
+	// Unregister our local listener
+	if (pVideoListener) {
+		evntmgr.UnregisterEventListener(pVideoListener);
+		delete pVideoListener;
+		pVideoListener = NULL;
 	}
 
 	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
