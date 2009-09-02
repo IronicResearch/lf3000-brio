@@ -18,6 +18,7 @@
 #include <ButtonTypes.h>
 #include <EventMPI.h>
 #include <SystemTypes.h>
+#include <TouchTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -50,6 +51,11 @@ public:
 	/// Get button state
 	tButtonData		GetButtonState() const;
 	tButtonData2	GetButtonState2() const;
+
+	/// Get touch sample rate (Hz)
+	U32				GetTouchRate() const;
+	/// Set touch sample rate (Hz)
+	tErrType		SetTouchRate(U32 rate);
 
 private:
 	class CButtonModule*	pModule_;

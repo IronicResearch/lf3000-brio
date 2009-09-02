@@ -115,4 +115,25 @@ public:
 		TS_ASSERT_EQUALS( handler_.data_.buttonTransition, kBadButtonState );
 	}
 
+	//------------------------------------------------------------------------
+	void testTouchRate( )
+	{
+#ifndef EMULATION
+		U32	rate;
+		rate = btnmgr_->GetTouchRate();
+		TS_ASSERT_DIFFERS( 0, rate );
+		rate = kTouchRateMin;
+		TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchRate(rate) );
+		rate = btnmgr_->GetTouchRate();
+		TS_ASSERT_EQUALS( kTouchRateMin, rate );
+		rate = kTouchRateMax;
+		TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchRate(rate) );
+		rate = btnmgr_->GetTouchRate();
+		TS_ASSERT_EQUALS( kTouchRateMax, rate );
+		rate = kTouchRateDefault;
+		TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchRate(rate) );
+		rate = btnmgr_->GetTouchRate();
+		TS_ASSERT_EQUALS( kTouchRateDefault, rate );
+#endif
+	}
 };

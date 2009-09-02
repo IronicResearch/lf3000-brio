@@ -138,9 +138,42 @@ tButtonData CButtonMPI::GetButtonState() const
 	return LeapFrog::Brio::GetButtonState();
 }
 
+//----------------------------------------------------------------------------
 tButtonData2 CButtonMPI::GetButtonState2() const
 {
 	return LeapFrog::Brio::GetButtonState2();
+}
+
+//----------------------------------------------------------------------------
+U32	CButtonMPI::GetTouchRate() const
+{
+#ifndef EMULATION
+	U32 	rate = 0;
+	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz", "r");
+	if (fd != NULL) {
+		fscanf(fd, "%u\n", (unsigned int*)&rate);
+		fclose(fd);
+	}
+	return rate;
+#else
+	return 0;	// not implemented
+#endif
+}
+
+//----------------------------------------------------------------------------
+tErrType CButtonMPI::SetTouchRate(U32 rate)
+{
+#ifndef EMULATION
+	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", (unsigned int)rate);
+		fclose(fd);
+		return kNoErr;
+	}
+	return kNoImplErr;
+#else
+	return kNoImplErr;	// not implemented
+#endif
 }
 
 LF_END_BRIO_NAMESPACE()
