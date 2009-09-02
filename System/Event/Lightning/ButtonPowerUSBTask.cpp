@@ -458,7 +458,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		
 		// get initial state of switches
 		debug.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
-				"CEventModule::CartridgeTask: reading switch state failed");
+				"CartridgeTask: reading switch state failed");
 
 		cart_inserted = !!(sw & (1<<SW_TABLET_MODE));
 		
@@ -499,7 +499,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Fatal Error, cannot open LF1000 Keyboard !!\n");
+		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: Fatal Error, cannot open LF1000 Keyboard !!\n");
 		return (void *)-1;
 	}
 	
@@ -535,7 +535,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					
 					// get cartridge switche state again
 					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
-							"CEventModule::CartridgeTask: reading switch state failed");
+							"CartridgeTask: reading switch state failed");
 					
 					if(!(sw & (1<<SW_TABLET_MODE))) {
 						// cartridge is removed somehow
@@ -565,7 +565,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					
 					// get cartridge switche state again
 					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
-							"CEventModule::CartridgeTask: reading switch state failed");
+							"CartridgeTask: reading switch state failed");
 					
 					if(!(sw & (1<<SW_TABLET_MODE))) {
 						// cartridge is removed somehow
@@ -585,11 +585,11 @@ void* CEventModule::CartridgeTask( void* arg )
 					
 					// get cartridge switche state again
 					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
-							"CEventModule::CartridgeTask: reading switch state failed");
+							"CartridgeTask: reading switch state failed");
 					
 					if(!(sw & (1<<SW_TABLET_MODE))) {
 						// cartridge is removed somehow
-						data.cartridgeState = CARTRIDGE_STATE_FS_CLEAN;
+						data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 						debug.DebugOut(kDbgLvlValuable, "Cartridge task: CARTRIDGE_STATE_FS_CLEAN !\n");
 					} else {
 						//cartridge is still inserted
@@ -603,7 +603,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					data.cartridgeState = CARTRIDGE_STATE_READY;
 					CCartridgeMessage cartridge_msg(data);
 					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
-					pThis->debug_.DebugOut(kDbgLvlValuable, "CEventModule::CartridgeTask: CARTRIDGE_STATE_READY\n");
+					pThis->debug_.DebugOut(kDbgLvlValuable, "CartridgeTask: CARTRIDGE_STATE_READY\n");
 					debug.DebugOut(kDbgLvlValuable, "Cartridge task: Cartridge ready !!\n");					
 				} else if(sys_ret == 31) {
 					
@@ -612,7 +612,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					
 					// get cartridge switche state again
 					pThis->debug_.Assert(ioctl(event_fd[0].fd, EVIOCGSW(sizeof(int)), &sw) >= 0,
-							"CEventModule::CartridgeTask: reading switch state failed");
+							"CartridgeTask: reading switch state failed");
 					
 					if(!(sw & (1<<SW_TABLET_MODE))) {
 						// cartridge is removed somehow
@@ -629,7 +629,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					debug.DebugOut(kDbgLvlCritical, "Cartridge task: System(...) return code %d, errno = %d (%s), at line %d !\n", sys_ret, errno, strerror(errno), __LINE__);
 					if(errno == ENOMEM) {
 						/* quit appManager */
-						debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Request AppManager restart !\n");
+						debug.DebugOut(kDbgLvlCritical, "CartridgeTask: Request AppManager restart !\n");
 						data.cartridgeState = CARTRIDGE_STATE_RESTART_APPMANAGER;
 						CCartridgeMessage cartridge_msg(data);
 						pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
@@ -653,7 +653,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
 					
 				} else if (event == CARTRIDGE_EVENT_INSERT){
-					pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state ready, received insert event\n");
+					pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: State machine error: current state ready, received insert event\n");
 				}
 				break;
 			}
@@ -717,7 +717,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(event == CARTRIDGE_EVENT_INSERT) {
 					data.cartridgeState = CARTRIDGE_STATE_INSERTED;
 				} else if(event == CARTRIDGE_EVENT_REMOVE) {
-					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine warning: current state clean, received remove event\n");
+					debug.DebugOut(kDbgLvlCritical, "CartridgeTask: State machine warning: current state clean, received remove event\n");
 				}
 				break;
 			}
@@ -725,7 +725,7 @@ void* CEventModule::CartridgeTask( void* arg )
 			case CARTRIDGE_STATE_REINSERT: {
 				if(cartXcounter > MAX_CART_X_ICONS) {
 					/* quit appManager */
-					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: Request AppManager restart due to failed cartridge mount (%d failure in a row) !\n", MAX_CART_X_ICONS);
+					debug.DebugOut(kDbgLvlCritical, "CartridgeTask: Request AppManager restart due to failed cartridge mount (%d failure in a row) !\n", MAX_CART_X_ICONS);
 					data.cartridgeState = CARTRIDGE_STATE_RESTART_APPMANAGER;
 					CCartridgeMessage cartridge_msg(data);
 					pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
@@ -736,7 +736,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(event == CARTRIDGE_EVENT_REMOVE) {
 					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 				} else if (event == CARTRIDGE_EVENT_INSERT){
-					data.cartridgeState = CARTRIDGE_STATE_INSERTED;
+					debug.DebugOut(kDbgLvlValuable, "CartridgeTask: State machine warning: current state reinsert, need remove state first !\n");					
 				}
 				break;
 			}
@@ -747,7 +747,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(event == CARTRIDGE_EVENT_REMOVE) {
 					data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 				} else if (event == CARTRIDGE_EVENT_INSERT){
-					debug.DebugOut(kDbgLvlCritical, "CEventModule::CartridgeTask: State machine error: current state unknown, received insert event\n");
+					debug.DebugOut(kDbgLvlCritical, "CartridgeTask: State machine error: current state unknown, received insert event\n");
 				}
 				break;
 			}
