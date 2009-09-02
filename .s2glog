@@ -19959,3 +19959,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/1/09 6:52 PM
 5,735 ms. (Cumulative: 6,566,017 ms)
 
 ----------------
+Revision 5,072 from svn://localhost/TRUNK/:
+Revision 5,073 from svn://localhost/TRUNK/:
+Revision 5,074 from svn://localhost/TRUNK/:
+Revision 5,075 from svn://localhost/TRUNK/:
+
+Attempt to resolve bug #609 "Base crash after ~5 minutes continuous cart insertion and removal"
+ #611 "Base no longer recognizes cart insertion after repid insertion or removal of cart"
+
+By ytu (ytu@leapfrog.com) on 9/2/09 10:11 AM
+1 changed, 0 added, 0 deleted.
+5,750 ms. (Cumulative: 6,571,845 ms)
+
+----------------
