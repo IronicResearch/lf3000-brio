@@ -88,6 +88,7 @@ public:
 	VTABLE_EXPORT Boolean 		IsVideoPaused(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		IsVideoPlaying(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		IsVideoLooped(tVideoHndl hVideo);
+	VTABLE_EXPORT tVideoHndl	GetCurrentVideoHandle();
 
 private:
 	CDebugMPI			dbg_;

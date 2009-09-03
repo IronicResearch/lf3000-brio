@@ -19997,3 +19997,14 @@ By Dave Milici (dmilici@leapfrog.com) on 9/2/09 7:44 PM
 6,193 ms. (Cumulative: 6,584,242 ms)
 
 ----------------
+Revision 5,085 from svn://localhost/TRUNK/:
+Revision 5,086 from svn://localhost/TRUNK/:
+Revision 5,087 from svn://localhost/TRUNK/:
+
+Added VideoMPI.GetCurrentVideoHandle() function for tracking currently playing video. Needed to pause, resume, or stop videos during AppManager Pause, LowBattery, and USB states. (TTP #624)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/3/09 10:54 AM
+5 changed, 0 added, 0 deleted.
+6,158 ms. (Cumulative: 6,590,494 ms)
+
+----------------
