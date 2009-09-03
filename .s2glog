@@ -19983,3 +19983,17 @@ By Dave Milici (dmilici@leapfrog.com) on 9/2/09 1:35 PM
 6,001 ms. (Cumulative: 6,577,940 ms)
 
 ----------------
+Revision 5,079 from svn://localhost/TRUNK/:
+Revision 5,080 from svn://localhost/TRUNK/:
+Revision 5,081 from svn://localhost/TRUNK/:
+Revision 5,082 from svn://localhost/TRUNK/:
+Revision 5,083 from svn://localhost/TRUNK/:
+Revision 5,084 from svn://localhost/TRUNK/:
+
+Need better linked list management for display contexts. (TTP #84, 563)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/2/09 7:44 PM
+1 changed, 0 added, 0 deleted.
+6,193 ms. (Cumulative: 6,584,242 ms)
+
+----------------

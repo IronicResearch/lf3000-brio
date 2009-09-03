@@ -273,6 +273,8 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	tDisplayContext* pdcPrev = pdcListHead;
 	tDisplayContext* pdcNext;
 
+	// TODO: use real linked list
+	
 	// Remove display context from linked list
 	while (pdc != NULL)
 	{
@@ -282,14 +284,14 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 			pdcNext = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 			pdcPrev->pdc = reinterpret_cast<tDisplayContext*>(pdcNext);
 			// List is empty again?
-			if (pdcPrev == pdcListHead)
-			pdcListHead = NULL;
+			if (pdcPrev == pdcListHead && pdcNext == NULL)
+				pdcListHead = NULL;
 			break;
 		}
 		pdcPrev = pdc;
 		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
-
+	
 	// If list is empty of offscreen contexts, we don't need our own 
 	// primary display context anymore
 	if (pdcListHead == NULL && dc->isAllocated && pdcPrimary_ != NULL)
