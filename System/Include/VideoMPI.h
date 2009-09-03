@@ -218,6 +218,11 @@ public:
 	/// \return	Returns true if video playback thread is looping.
 	Boolean 	IsVideoLooped(tVideoHndl hVideo);
 
+	/// Get video handle of currently playing video
+	///
+	/// \return	Handle to video returned by StartVideo() if active
+	tVideoHndl 	GetCurrentVideoHandle(void);
+
 private:
 	class CVideoModule*	pModule_;
 	U32					id_;

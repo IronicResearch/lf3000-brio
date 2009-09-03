@@ -118,8 +118,10 @@ public:
 		
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
+		TS_ASSERT_EQUALS( video, pVideoMPI_->GetCurrentVideoHandle() );
 
 		pVideoMPI_->StopVideo(video);
+		TS_ASSERT_EQUALS( kInvalidVideoHndl, pVideoMPI_->GetCurrentVideoHandle() );
 	}
 
 	//------------------------------------------------------------------------

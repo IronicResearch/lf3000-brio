@@ -248,5 +248,13 @@ Boolean CVideoMPI::IsVideoLooped(tVideoHndl hVideo)
 	return pModule_->IsVideoLooped(hVideo);
 }
 
+//----------------------------------------------------------------------------
+tVideoHndl 	CVideoMPI::GetCurrentVideoHandle(void)
+{
+	if (!pModule_)
+		return kInvalidVideoHndl;
+	return pModule_->GetCurrentVideoHandle();
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

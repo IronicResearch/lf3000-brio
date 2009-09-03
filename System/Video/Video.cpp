@@ -88,6 +88,7 @@ namespace
 	tMutex				gVidMutex = PTHREAD_MUTEX_INITIALIZER;
 	Boolean				gbCodecReady = false;
 	Boolean				gbCentered = false;
+	tVideoHndl			ghVideoHndl = kInvalidVideoHndl;
 	
 #if USE_PROFILE
 	// Profile vars
@@ -217,6 +218,13 @@ Boolean	CVideoModule::IsValid() const
 // Video-specific Implementation
 //============================================================================
 
+//----------------------------------------------------------------------------
+tVideoHndl CVideoModule::GetCurrentVideoHandle()
+{
+	return ghVideoHndl;
+}
+
+//----------------------------------------------------------------------------
 tErrType CVideoModule::SetVideoResourcePath(const CPath &path)
 {
 	gpath = path;
@@ -327,7 +335,7 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 		return kInvalidVideoHndl;
 	}
 	
-	return hVideo;
+	return ghVideoHndl = hVideo;
 }	
 	
 //----------------------------------------------------------------------------
@@ -536,6 +544,8 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 		gpVidCtx = NULL;
 	}
 
+	ghVideoHndl = kInvalidVideoHndl;
+	
 #if USE_MUTEX
 	kernel_.UnlockMutex(gVidMutex);
 #endif
