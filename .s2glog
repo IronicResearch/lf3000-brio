@@ -20008,3 +20008,22 @@ By Dave Milici (dmilici@leapfrog.com) on 9/3/09 10:54 AM
 6,158 ms. (Cumulative: 6,590,494 ms)
 
 ----------------
+Revision 5,088 from svn://localhost/TRUNK/:
+Revision 5,089 from svn://localhost/TRUNK/:
+Revision 5,090 from svn://localhost/TRUNK/:
+Revision 5,091 from svn://localhost/TRUNK/:
+Revision 5,092 from svn://localhost/TRUNK/:
+Revision 5,093 from svn://localhost/TRUNK/:
+Revision 5,094 from svn://localhost/TRUNK/:
+Revision 5,095 from svn://localhost/TRUNK/:
+Revision 5,096 from svn://localhost/TRUNK/:
+Revision 5,097 from svn://localhost/TRUNK/:
+Revision 5,098 from svn://localhost/TRUNK/:
+
+Replaced old custom linked list code for display context management with std::list based version. Tracking of visible display contexts more consistent to match. Better compatibility with AppManager's volume bar overlay rendering now, though that code needs more work. 
+
+By Dave Milici (dmilici@leapfrog.com) on 9/3/09 6:53 PM
+2 changed, 0 added, 0 deleted.
+6,095 ms. (Cumulative: 6,596,745 ms)
+
+----------------

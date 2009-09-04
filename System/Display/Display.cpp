@@ -15,6 +15,7 @@
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
+#include <list>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -28,7 +29,7 @@ const CURI kModuleURI = "/LF/System/Display";
 //============================================================================
 namespace
 {
-	tDisplayContext* pdcListHead = NULL;
+	std::list<tDisplayContext*>	gDisplayList;	// list of display contexts
 }
 
 //============================================================================
@@ -63,7 +64,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 	isLayerSwapped_ = false;
 
 	InitModule(); // delegate to platform or emulation initializer
-	pdcListHead = NULL;
+	gDisplayList.clear();
 #ifdef EMULATION
 	// We usually need an X pixmap primary surface for any context
 	pdcPrimary_ = reinterpret_cast<tDisplayContext*>
@@ -149,25 +150,21 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 
 	// Insert display context at head or tail of linked list
 	tDisplayContext* dc = reinterpret_cast<tDisplayContext*>(hndl);
-	tDisplayContext* pdc = pdcListHead;
+	tDisplayContext* pdc = NULL;
 	tDisplayContext* pdcAfter = reinterpret_cast<tDisplayContext*>(insertAfter);
-	if (pdcListHead == NULL)
+
+	// Walk list to insert after selected handle, or at tail
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
-		// Start from empty list
-		pdcListHead = dc;
-		dc->pdc = NULL;
-	}
-	else while (pdc != NULL)
-	{
-		// Walk list to insert after selected handle, or at tail
-		if ((pdc == pdcAfter || pdc->pdc == NULL) && pdc != dc) // no dupe ptrs
+		if (pdc == pdcAfter)
 		{
-			dc->pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-			pdc->pdc = reinterpret_cast<tDisplayContext*>(dc);
+			gDisplayList.insert(++it, dc);
 			break;
 		}
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
+	if (pdc == NULL)
+		gDisplayList.push_back(dc);
 
 	// Default Z order is on top
 	dc->isUnderlay = false;
@@ -182,15 +179,11 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 			(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
 	}
 
-	// FIXME: enable visibility for top layer in list
-
 	// Track current onscreen display context
-	//	pdcVisible_ = (!dc->isAllocated) ? dc : pdcPrimary_; 
-	pdc = pdcListHead;
-	while (pdc != NULL)
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		pdcVisible_ = (!pdc->isAllocated) ? pdc : pdcPrimary_;
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 
 	return kNoErr;
@@ -205,33 +198,12 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 
 	// Insert display context at head or tail of linked list
 	tDisplayContext* dc = reinterpret_cast<tDisplayContext*>(hndl);
-	tDisplayContext* pdc = pdcListHead;
-	if (pdcListHead == NULL)
-	{
-		// Start from empty list
-		pdcListHead = dc;
-		dc->pdc = NULL;
-	}
-	else if (kDisplayOnBottom == initialZOrder)
-	{
-		// Replace previous head of list
-		if (pdc != dc) // no dupe ptrs
-		{
-			pdcListHead = dc;
-			dc->pdc = pdc;
-		}
-	}
-	else while (pdc != NULL)
-	{
-		// Walk list to insert at tail
-		if (pdc->pdc == NULL && pdc != dc) // no dupe ptrs
-		{
-			pdc->pdc = dc;
-			dc->pdc = NULL;
-			break;
-		}
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-	}
+	tDisplayContext* pdc = NULL;
+
+	if (kDisplayOnBottom == initialZOrder)
+		gDisplayList.push_front(dc);
+	else
+		gDisplayList.push_back(dc);
 
 	// Default Z order is on top
 	dc->isUnderlay = (kDisplayOnBottom == initialZOrder);
@@ -246,15 +218,12 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 			(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
 	}
 
-	// FIXME: enable visibility for top layer in list
-
 	// Track current onscreen display context
-	// 	pdcVisible_ = (!dc->isAllocated) ? dc : pdcPrimary_;
-	pdc = pdcListHead;
-	while (pdc != NULL)
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		pdcVisible_ = (!pdc->isAllocated) ? pdc : pdcPrimary_;
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 
 	return kNoErr;
@@ -269,48 +238,38 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	UnRegisterLayer(hndl);
 
 	tDisplayContext* dc = reinterpret_cast<tDisplayContext*>(hndl);
-	tDisplayContext* pdc = pdcListHead;
-	tDisplayContext* pdcPrev = pdcListHead;
-	tDisplayContext* pdcNext;
+	tDisplayContext* pdc = NULL;
 
-	// TODO: use real linked list
-	
 	// Remove display context from linked list
-	while (pdc != NULL)
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		if (pdc == dc)
 		{
-			// Link next context pointer to previous context
-			pdcNext = reinterpret_cast<tDisplayContext*>(pdc->pdc);
-			pdcPrev->pdc = reinterpret_cast<tDisplayContext*>(pdcNext);
-			// List is empty again?
-			if (pdcPrev == pdcListHead && pdcNext == NULL)
-				pdcListHead = NULL;
+			gDisplayList.erase(it);
 			break;
 		}
-		pdcPrev = pdc;
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
-	
+	// display handle was never registered in list
+	if (pdc == NULL)
+		return kDisplayDisplayNotInListErr;
+
 	// If list is empty of offscreen contexts, we don't need our own 
 	// primary display context anymore
-	if (pdcListHead == NULL && dc->isAllocated && pdcPrimary_ != NULL)
+	if (gDisplayList.empty() && pdcPrimary_ != NULL)
 	{
+		// Note this calls Unregister() internally which won't be in list
 		DestroyHandle(pdcPrimary_, true);
 		pdcPrimary_ = NULL;
 	}
 
-	// FIXME: pdcVisible_ must always refer to top layer in list
-	
-	// Track current onscreen display context
-	//	if (dc == pdcVisible_)
-	//		pdcVisible_ = NULL;
+	// pdcVisible_ must always refer to top layer in list
 	pdcVisible_ = NULL;
-	pdc = pdcListHead;
-	while (pdc != NULL)
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		pdcVisible_ = (!pdc->isAllocated) ? pdc : pdcPrimary_;
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 
 	return kNoErr;
@@ -320,12 +279,14 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 {
 	(void )screen; /* Prevent unused variable warnings. */
-	tDisplayContext* pdc = pdcListHead;
+	tDisplayContext* pdc = NULL;
 	tErrType rc = kNoErr;
 
 	// Walk list of display contexts to update screen
-	while (pdc != NULL)
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		// Calculate active update region parameters based on dirty rect
 		if (pDirtyRect != NULL) {
 			// Destination rect = intersection of context rect with dirty rect
@@ -344,7 +305,6 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 		}
 		else
 			rc = Update(pdc, 0, 0, pdc->x, pdc->y, pdc->width, pdc->height);
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 	return rc;
 }

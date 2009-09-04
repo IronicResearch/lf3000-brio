@@ -553,9 +553,6 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		// FIXME: onscreen display context is not necessarily ARGB8888 format
 		if (pdcVisible_ == NULL)
 			return kDisplayDisplayNotInListErr;
-		// Make sure primary context is enabled
-		if (!bPrimaryLayerEnabled)
-			RegisterLayer(pdcVisible_, 0, 0);
 		switch (dc->colorDepthFormat) 
 		{
 		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
@@ -576,10 +573,15 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
 		}
 	}
-	// Enable video layer on update calls to minimize dead screen time
-	if (dc->isOverlay) {
-		ioctl(dc->layer, MLC_IOCTLAYEREN, (void *)1);
-		SetDirtyBit(dc->layer);
+	// Make sure primary display context is enabled
+	if (!bPrimaryLayerEnabled) {
+		U32 addr = pdcVisible_->basephys + pdcVisible_->offset;
+		if (pdcVisible_->isPlanar) 
+			addr = LIN2XY(addr);
+		ioctl(pdcVisible_->layer, MLC_IOCTADDRESS, addr);
+		ioctl(pdcVisible_->layer, MLC_IOCTLAYEREN, (void *)1);
+		SetDirtyBit(pdcVisible_->layer);
+		bPrimaryLayerEnabled = true;
 	}
 	// No hardware settings have actually changed
     return kNoErr;
@@ -735,6 +737,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	U32 physaddr = context->basephys + context->offset;
 	r = ioctl(layer, MLC_IOCTADDRESS, physaddr);
 	dbg_.Assert(r >= 0, "DisplayModule::SwapBuffers: failed ioctl physaddr=%08X\n", (unsigned int)physaddr);
+	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
 	pdcVisible_ = context;
 	
