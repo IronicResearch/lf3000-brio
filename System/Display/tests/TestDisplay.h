@@ -610,7 +610,74 @@ public:
 		TS_ASSERT( usedmem == 0 );
 #endif	// !EMULATION
 	}
-	
+
+	//------------------------------------------------------------------------
+	void testDisplayContextYUV( )
+	{
+		tDisplayHandle 	handle;
+		tDisplayHandle 	offscreen;
+		tPixelFormat	format;
+		U8* 			buffer;
+		U16				width;
+		U16				height;
+		U16				pitch;
+		U16				depth;
+		const U16		WIDTH = 320;
+		const U16		HEIGHT = 240;
+
+		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420, NULL);
+		TS_ASSERT( handle != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+		TS_ASSERT( handle == pDisplayMPI_->GetCurrentDisplayHandle() );
+
+		buffer = pDisplayMPI_->GetBuffer(handle);
+		TS_ASSERT( buffer != kNull );
+		format = pDisplayMPI_->GetPixelFormat(handle);
+		TS_ASSERT( format == kPixelFormatYUV420 );
+		width = pDisplayMPI_->GetWidth(handle);
+		TS_ASSERT( width == WIDTH );
+		pitch = pDisplayMPI_->GetPitch(handle);
+		TS_ASSERT( pitch >= 2*WIDTH );
+		depth = pDisplayMPI_->GetDepth(handle);
+		TS_ASSERT( depth == 8 );
+		height = pDisplayMPI_->GetHeight(handle);
+		TS_ASSERT( height == HEIGHT );
+
+		memset(buffer, 0xFF, pitch * height); // 0 = dim green, 255 = bright magenta
+		pDisplayMPI_->Invalidate(0, NULL);
+		sleep(1);
+
+		U8* membuffer = new U8[HEIGHT*WIDTH*4];
+		TS_ASSERT( membuffer != NULL );
+		offscreen = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, membuffer);
+		TS_ASSERT( offscreen != NULL );
+		for (int i = 0; i < HEIGHT; i++) 
+		{
+			bool blu = (i < HEIGHT/2);
+			bool grn = (i < HEIGHT/4) || (i > HEIGHT/2 && i < 3*HEIGHT/4);
+			bool red = (i < HEIGHT/4) || (i > 3*HEIGHT/4);
+			for (int j = 0, m = i*WIDTH*4; j < WIDTH; j++, m+=4)
+			{
+				U8   val = j % 0xFF;
+				membuffer[m+0] = (blu) ? val : 0;
+				membuffer[m+1] = (grn) ? val : 0;
+				membuffer[m+2] = (red) ? val : 0;
+				membuffer[m+3] = 0xFF;
+			}
+		}
+		pDisplayMPI_->Register(offscreen, 0, 0, kDisplayOnTop, 0);
+		pDisplayMPI_->Invalidate(0, NULL);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(offscreen, 0);
+		pDisplayMPI_->DestroyHandle(offscreen, false);
+
+		pDisplayMPI_->UnRegister(handle, 0);
+		pDisplayMPI_->DestroyHandle(handle, false);
+	}
+
+	//------------------------------------------------------------------------
+
 };
 
 // EOF

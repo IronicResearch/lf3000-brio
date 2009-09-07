@@ -20027,3 +20027,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/3/09 6:53 PM
 6,095 ms. (Cumulative: 6,596,745 ms)
 
 ----------------
+Revision 5,099 from svn://localhost/TRUNK/:
+Revision 5,100 from svn://localhost/TRUNK/:
+Revision 5,101 from svn://localhost/TRUNK/:
+Revision 5,102 from svn://localhost/TRUNK/:
+
+Added RGB-to-YUV conversion routine to support offscreen rendering of RGB bitmaps onto YUV video surfaces, like AppManager volume bars.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/7/09 10:15 AM
+3 changed, 0 added, 0 deleted.
+6,302 ms. (Cumulative: 6,603,125 ms)
+
+----------------

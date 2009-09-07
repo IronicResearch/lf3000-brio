@@ -567,6 +567,7 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 			case kPixelFormatRGB888: 	ARGB2RGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
 			default:
 			case kPixelFormatARGB8888:	ARGB2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatYUV420: 	RGB2YUV(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
 			}
 			break;
 		case kPixelFormatYUV420: 	YUV2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
