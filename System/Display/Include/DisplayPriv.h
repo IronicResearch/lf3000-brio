@@ -344,6 +344,40 @@ inline void YUYV2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy
 	}
 }
 
+//----------------------------------------------------------------------------
+// Repack YUYV packed format surface into YUV planar format surface
+inline void YUYV2YUV(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
+{
+	// Repack YUYV packed format surface into YUV planar format surface
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 2;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 1;
+	U8*			du = d + ddc->pitch/2; // U,V in double-width buffer
+	U8*			dv = d + ddc->pitch/2 + ddc->pitch * ddc->height/2;
+	U8			y,z,u,v;
+	int			i,j,m,n;
+	for (i = 0; i < height; i++) 
+	{
+		for (j = m = n = 0; j < width; j+=2, m+=4, n++) 
+		{
+			y = s[m+0];
+			u = s[m+1];
+			z = s[m+2];
+			v = s[m+3];
+			d[j+0] = y;
+			d[j+1] = z;
+			du[n] = u;
+			dv[n] = v;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+		if (i % 2)
+		{
+			du += ddc->pitch;
+			dv += ddc->pitch;
+		}
+	}
+}
+
 //==============================================================================
 class CDisplayModule : public ICoreModule {
 public:	

@@ -20048,3 +20048,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/7/09 10:16 AM
 6,188 ms. (Cumulative: 6,609,406 ms)
 
 ----------------
+Revision 5,104 from svn://localhost/TRUNK/:
+
+Added pixel packing function for YUYV packed to YUV planar format.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/7/09 12:22 PM
+1 changed, 0 added, 0 deleted.
+5,734 ms. (Cumulative: 6,615,219 ms)
+
+----------------
