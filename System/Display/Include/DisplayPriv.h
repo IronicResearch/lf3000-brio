@@ -230,9 +230,50 @@ inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8
 inline	S16 C(U8 Y)  			{ return (Y - 16); }
 inline 	S16 D(U8 U)  			{ return (U - 128); }
 inline 	S16 E(U8 V)  			{ return (V - 128); }
-inline 	U8 R(U8 Y,U8 U,U8 V)	{ (void )U; return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
+inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
 inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
-inline 	U8 B(U8 Y,U8 U,U8 V)	{ (void )V; return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+
+// RGB to YUV color conversion:  <http://en.wikipedia.org/wiki/YUV>
+inline	U8 scale(S16 x)			{ return static_cast<U8>((x + 128) >> 8); }
+inline	U8 Y(U8 R,U8 G,U8 B)	{ return scale( 66 * R + 129 * G +  25 * B) +  16; }
+inline	U8 U(U8 R,U8 G,U8 B)	{ return scale(-38 * R -  74 * G + 112 * B) + 128; }
+inline	U8 V(U8 R,U8 G,U8 B)	{ return scale(112 * R -  94 * G -  18 * B) + 128; }
+
+//----------------------------------------------------------------------------
+// Repack RGB format surface into YUV planar format surface
+inline void RGB2YUV(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, int dx, int dy, int width, int height)
+{
+	// Repack RGB format surface into YUV planar format surface
+	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
+	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 1;
+	U8*			du = d + ddc->pitch/2; // U,V in double-width buffer
+	U8*			dv = d + ddc->pitch/2 + ddc->pitch * ddc->height/2;
+	U8			r,g,b,a;
+	int			i,j,m,n;
+	for (i = 0; i < height; i++) 
+	{
+		for (j = m = n = 0; j < width; j++, m+=4) 
+		{
+			b = s[m+0];
+			g = s[m+1];
+			r = s[m+2];
+			a = s[m+3];
+			d[j] = Y(r,g,b);
+			du[n] = U(r,g,b);
+			dv[n] = V(r,g,b);
+			if (j % 2)
+				n++;
+		}
+		s += sdc->pitch;
+		d += ddc->pitch;
+		if (i % 2)
+		{
+			du += ddc->pitch;
+			dv += ddc->pitch;
+		}
+	}
+}
 
 //----------------------------------------------------------------------------
 // Repack YUV planar format surface into ARGB format surface
