@@ -157,11 +157,13 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		if (pdc == pdcAfter)
 		{
 			gDisplayList.insert(++it, dc);
 			break;
 		}
+		pdc = NULL;
 	}
 	if (pdc == NULL)
 		gDisplayList.push_back(dc);
@@ -183,7 +185,10 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
-		pdcVisible_ = (!pdc->isAllocated) ? pdc : pdcPrimary_;
+		if (!pdc->isAllocated)
+			pdcVisible_ = pdc;
+		else if (pdcPrimary_ != NULL)
+			pdcVisible_ = pdcPrimary_;
 	}
 
 	return kNoErr;
@@ -223,7 +228,10 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
-		pdcVisible_ = (!pdc->isAllocated) ? pdc : pdcPrimary_;
+		if (!pdc->isAllocated)
+			pdcVisible_ = pdc;
+		else if (pdcPrimary_ != NULL)
+			pdcVisible_ = pdcPrimary_;
 	}
 
 	return kNoErr;
@@ -269,7 +277,10 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
-		pdcVisible_ = (!pdc->isAllocated) ? pdc : pdcPrimary_;
+		if (!pdc->isAllocated)
+			pdcVisible_ = pdc;
+		else if (pdcPrimary_ != NULL)
+			pdcVisible_ = pdcPrimary_;
 	}
 
 	return kNoErr;
