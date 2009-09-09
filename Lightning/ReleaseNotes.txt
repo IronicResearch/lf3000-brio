@@ -3,7 +3,11 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.6.3.5050 (August 31, 2009)
+Brio v0.7.0.5107 (September 10, 2009)
+===========================================
+
+===========================================
+Brio v0.6.3.5106 (September 8, 2009)
 ===========================================
 
 -- Unify framebuffer allocations using common addresses and offsets shared among RGB and YUV layers. (TTP #68)
@@ -40,6 +44,50 @@ deadlocked immediately during unit tests. (TTP #543)
 
 -- Added time event callback option to all AudioMPI player objects. Time lapse 
 intervals must be multiples of mixer render time quantum (16 msec) to trigger callbacks. (TTP #230)
+
+-- Remove instrument-based MIDI functions from AudioMPI which are no longer supported. 
+File-based MIDI functions need to remain in AudioMPI class declaration for 
+Foster's game legacy use, but these are now Doxygen-tagged as deprecated in 
+headers. (TTP #582)
+
+-- Use vfork(...) instead of fork() to execute system(...) function.
+
+-- Fix issues related test_Event utility. At this point, the USB task may 
+still cause stuck once in a while.
+
+-- Bump max number of Vorbis channels available to 5, with contingency for 
+reverting back to 3 via /flags/vorbis setting. (TTP #209)
+
+-- Added AudioMPI helper thread to re-try enabling PortAudio output in 
+case /dev/dsp is still in use. (TTP #589)
+
+-- Modified VideoMPI playback thread to use audio time events for sync. 
+Need to resolve cummulative time frame lag, so disabled for interim reference.
+
+-- Attempt to resolve bug #609 "Base crash after ~5 minutes continuous cart 
+insertion and removal" #611 "Base no longer recognizes cart insertion 
+after repid insertion or removal of cart"
+
+-- Added GetTouchRate() / SetTouchRate() functions to ButtonMPI, with 
+defines for min, max, and default Hz. (TTP #255)
+
+-- Need better linked list management for display contexts. (TTP #84, 563)
+
+-- Added VideoMPI.GetCurrentVideoHandle() function for tracking currently 
+playing video. Needed to pause, resume, or stop videos during AppManager 
+Pause, LowBattery, and USB states. (TTP #624)
+
+-- Replaced old custom linked list code for display context management 
+with std::list based version. Tracking of visible display contexts 
+more consistent to match. Better compatibility with AppManager's 
+volume bar overlay rendering now, though that code needs more work. 
+
+-- Added RGB-to-YUV conversion routine to support offscreen rendering of RGB 
+bitmaps onto YUV video surfaces, like AppManager volume bars.
+
+-- Fixes to display context tracking of topmost visible surface.
+
+-- Added pixel packing function for YUYV packed to YUV planar format.
 
 ===========================================
 Brio v0.6.2.4964 (August 11, 2009)
