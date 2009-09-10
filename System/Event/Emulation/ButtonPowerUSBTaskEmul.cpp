@@ -46,6 +46,7 @@ namespace
 	
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kTouchEventPriority	= 0;
+	const tEventPriority	kPowerEventPriority	= 0;
 	
 	volatile bool 			g_threadRun2_ = true;
 	volatile bool 			g_threadRunning2_ = false;
@@ -127,39 +128,72 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 		dw = EmulationConfig::Instance().GetLcdDisplayWindow();
 	}
 	Window win = static_cast<Window>(dw);
+	
+	struct tPowerData	power_data;
+	power_data.powerState = GetCurrentPowerState();
 
 	// Specify event mask here, not XSetWindowAttributes()
-	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask);
+	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | StructureNotifyMask );
 	g_threadRunning2_ = true;
 	while (g_threadRun2_)
 	{
 		XEvent	event;
 		XNextEvent(gXDisplay, &event);
-		if (event.type == KeyPress || event.type == KeyRelease)
+		switch(event.type)
 		{
-			KeySym keysym = XLookupKeysym(reinterpret_cast<XKeyEvent *>(&event), 0);
-			U32 mask = KeySymToButton(keysym);
-			data.buttonTransition = mask;
-			if( event.type == KeyPress )
-				data.buttonState |= mask;
-			else
-				data.buttonState &= ~mask;
-			gLastState = data.buttonState;
-			SetButtonState(data);
-			CButtonMessage	msg(data);
-			pThis->PostEvent(msg, kButtonEventPriority, 0);
-		}
-		if (event.type == ButtonPress || event.type == ButtonRelease || event.type == MotionNotify)
-		{
-			tTouchData		td;
-			td.touchState	= (event.type != ButtonRelease) ? 1 : 0;
-			td.touchX		= event.xbutton.x;
-			td.touchY		= event.xbutton.y;
-			CTouchMessage	msg(td);
-			pThis->PostEvent(msg, kTouchEventPriority, 0);
+		case KeyPress:
+		case KeyRelease:
+			{
+				KeySym keysym = XLookupKeysym(reinterpret_cast<XKeyEvent *>(&event), 0);
+				if(keysym == XK_Escape)
+				{
+					power_data.powerState = kPowerShutdown;
+					CPowerMessage power_msg(power_data);
+					pThis->PostEvent(power_msg, kPowerEventPriority, 0);
+					g_threadRun2_ = false;
+				}
+				U32 mask = KeySymToButton(keysym);
+				data.buttonTransition = mask;
+				if( event.type == KeyPress )
+					data.buttonState |= mask;
+				else
+					data.buttonState &= ~mask;
+				gLastState = data.buttonState;
+				SetButtonState(data);
+				CButtonMessage	msg(data);
+				pThis->PostEvent(msg, kButtonEventPriority, 0);
+			}
+			break;
+		case ButtonPress:
+		case ButtonRelease:
+		case MotionNotify:
+			{
+				tTouchData		td;
+				td.touchState	= (event.type != ButtonRelease) ? 1 : 0;
+				td.touchX		= event.xbutton.x;
+				td.touchY		= event.xbutton.y;
+				CTouchMessage	msg(td);
+				pThis->PostEvent(msg, kTouchEventPriority, 0);
+			}
+			break;
+			
+		case DestroyNotify:
+			{
+				//printf("DestroyNotify Event %d\n", event.type);
+				power_data.powerState = kPowerShutdown;
+				CPowerMessage power_msg(power_data);
+				pThis->PostEvent(power_msg, kPowerEventPriority, 0);
+				g_threadRun2_ = false;
+			}
+			break;
+			
+		//default:
+		//	printf("Unknown Event %d\n", event.type);
 		}
 	}
 	XAutoRepeatOn(gXDisplay);
+	XCloseDisplay(gXDisplay);
+	
 	g_threadRunning2_ = false;
 	return NULL;
 }
