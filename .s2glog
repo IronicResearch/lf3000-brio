@@ -20069,3 +20069,27 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/9/09 10:29 AM
 5,703 ms. (Cumulative: 6,621,001 ms)
 
 ----------------
+Revision 5,108 from svn://localhost/TRUNK/:
+Revision 5,109 from svn://localhost/TRUNK/:
+Revision 5,110 from svn://localhost/TRUNK/:
+Revision 5,111 from svn://localhost/TRUNK/:
+Revision 5,112 from svn://localhost/TRUNK/:
+Revision 5,113 from svn://localhost/TRUNK/:
+Revision 5,114 from svn://localhost/TRUNK/:
+Revision 5,115 from svn://localhost/TRUNK/:
+Revision 5,116 from svn://localhost/TRUNK/:
+Revision 5,117 from svn://localhost/TRUNK/:
+Revision 5,118 from svn://localhost/TRUNK/:
+Revision 5,119 from svn://localhost/TRUNK/:
+Revision 5,120 from svn://localhost/TRUNK/:
+Revision 5,121 from svn://localhost/TRUNK/:
+Revision 5,122 from svn://localhost/TRUNK/:
+Revision 5,123 from svn://localhost/TRUNK/:
+
+Added for Emulation, Escape key sends a PowerShutdown event through event manager.  Using escape now allows you to keep key repeat.  Catching clicking on the X button too, but crashes in X server prevents key repeat from being restored.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/10/09 4:25 PM
+1 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 6,626,830 ms)
+
+----------------
