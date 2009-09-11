@@ -3,8 +3,12 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.0.5107 (September 10, 2009)
+Brio v0.7.0.5127 (September 10, 2009)
 ===========================================
+
+-- Added for Emulation, Escape key sends a PowerShutdown event through event manager.  
+Using escape now allows you to keep key repeat.  Catching clicking on the X 
+button too, but crashes in X server prevents key repeat from being restored.
 
 ===========================================
 Brio v0.6.3.5106 (September 8, 2009)
