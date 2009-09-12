@@ -708,6 +708,9 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 			memset(&context->pBuffer[i*4096], 0xFF, context->width); // white Y
 			memset(&context->pBuffer[i*4096+context->pitch/2], 0x7F, context->width/2); // neutral U,V
 		}
+
+		// Defer enabling video layer until 1st Invalidate() call
+		bPrimaryLayerEnabled = false;
 	}
 
 	SetDirtyBit(layer);
