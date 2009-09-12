@@ -247,8 +247,9 @@ inline void RGB2YUV(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy, 
 	// Repack RGB format surface into YUV planar format surface
 	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
 	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 1;
-	U8*			du = d + ddc->pitch/2; // U,V in double-width buffer
-	U8*			dv = d + ddc->pitch/2 + ddc->pitch * ddc->height/2;
+	U8*			duv = ddc->pBuffer + dy/2 * ddc->pitch + dx/2;
+	U8*			du = duv + ddc->pitch/2; // U,V in double-width buffer
+	U8*			dv = duv + ddc->pitch/2 + ddc->pitch * ddc->height/2;
 	U8			r,g,b,a;
 	int			i,j,m,n;
 	for (i = 0; i < height; i++) 
