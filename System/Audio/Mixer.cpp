@@ -792,6 +792,7 @@ void CAudioMixer::DestroyPlayer(CAudioPlayer *pPlayer)
 	delete pPlayer;
 }
 
+
 // ==============================================================================
 // And now a word about tAudioIDs.  For legacy reasons, functions that operate
 // on tAudioIDs also must operate on tMidiPlayerIDs.  Unfortunately,
@@ -901,6 +902,26 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 	RemovePlayerInternal(id, noDoneMessage);
 	MIXER_UNLOCK; 
 }
+
+// ==============================================================================
+// RemoveAllPlayer: 
+// ==============================================================================
+void CAudioMixer::RemoveAllPlayer( void )
+{
+	Boolean ret = false;
+
+	MIXER_LOCK;
+	// Search for a stream that is in use
+	for (long i = 0; i < numInStreams_; i++)
+	{
+		CAudioPlayer *pPlayer = pStreams_[i].GetPlayer();
+		if ( pPlayer && !pPlayer->IsDone())
+			delete pPlayer;
+		pStreams_[i].Release(true);
+	}
+	MIXER_UNLOCK; 
+}
+
 
 // ==============================================================================
 // PausePlayer:

@@ -575,6 +575,18 @@ void CAudioModule::StopAudio( tAudioID id, Boolean noDoneMessage )
 }
 
 // ==============================================================================
+// StopAudio
+// ==============================================================================
+void CAudioModule::StopAllAudio()
+{
+
+	AUDIO_LOCK;
+	gAudioContext.pAudioMixer->RemoveAllPlayer();
+	AUDIO_UNLOCK;
+}
+
+
+// ==============================================================================
 // PauseAudio
 // ==============================================================================
 void CAudioModule::PauseAudio(tAudioID id)
