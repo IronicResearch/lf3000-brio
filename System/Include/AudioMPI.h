@@ -296,6 +296,14 @@ public:
 	/// This function has no effect if id is invalid.
 	void 		StopAudio(	tAudioID id, Boolean noDoneMessage ); 
 
+	/// Stop all player's audio stream.
+	///
+	/// After calling this function, all audio player will stop.
+	/// This function is mainly used by system functions rather than any 
+	///  individual game.
+	///
+	void 		StopAllAudio(void);
+
 	/// Is a given player playing?
 	///
 	/// \param id The tAudioID of the player in question.
