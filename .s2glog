@@ -20136,3 +20136,22 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/14/09 2:59 PM
 5,704 ms. (Cumulative: 6,644,222 ms)
 
 ----------------
+Revision 5,141 from svn://localhost/TRUNK/:
+Revision 5,142 from svn://localhost/TRUNK/:
+Revision 5,143 from svn://localhost/TRUNK/:
+Revision 5,144 from svn://localhost/TRUNK/:
+Revision 5,145 from svn://localhost/TRUNK/:
+Revision 5,146 from svn://localhost/TRUNK/:
+Revision 5,147 from svn://localhost/TRUNK/:
+Revision 5,148 from svn://localhost/TRUNK/:
+Revision 5,149 from svn://localhost/TRUNK/:
+Revision 5,150 from svn://localhost/TRUNK/:
+Revision 5,151 from svn://localhost/TRUNK/:
+
+Added an API to stop all audio
+
+By ytu (ytu@leapfrog.com) on 9/15/09 3:11 PM
+2 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 6,650,457 ms)
+
+----------------
