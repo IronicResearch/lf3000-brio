@@ -95,6 +95,7 @@ class CAudioModule : public ICoreModule {
 	VTABLE_EXPORT void PauseAudio( tAudioID id );
 	VTABLE_EXPORT void ResumeAudio( tAudioID id ); 
 	VTABLE_EXPORT void StopAudio( tAudioID id, Boolean noDoneMessage ); 
+	VTABLE_EXPORT void StopAllAudio( void ); 	
 
 	VTABLE_EXPORT Boolean IsAudioPlaying( tAudioID id );
 	VTABLE_EXPORT Boolean IsAudioPlaying( void );

@@ -45,6 +45,8 @@ class CAudioMixer : private IEventListener
 
 	tAudioID AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void RemovePlayer( tAudioID id, Boolean noDoneMessage );
+	void RemoveAllPlayer(void);
+ 
 	void PausePlayer( tAudioID id );
 	void ResumePlayer( tAudioID id );
 	Boolean IsPlayerPlaying( tAudioID id );
