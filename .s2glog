@@ -20164,3 +20164,12 @@ By ytu (ytu@leapfrog.com) on 9/15/09 3:11 PM
 6,829 ms. (Cumulative: 6,657,364 ms)
 
 ----------------
+Revision 5,153 from svn://localhost/TRUNK/:
+
+Added an API to stop all audio
+
+By ytu (ytu@leapfrog.com) on 9/15/09 3:11 PM
+1 changed, 0 added, 0 deleted.
+6,001 ms. (Cumulative: 6,663,427 ms)
+
+----------------
