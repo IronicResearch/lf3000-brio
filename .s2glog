@@ -20220,3 +20220,21 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/17/09 2:30 PM
 6,128 ms. (Cumulative: 6,675,964 ms)
 
 ----------------
+Revision 5,183 from svn://localhost/TRUNK/:
+Revision 5,184 from svn://localhost/TRUNK/:
+Revision 5,185 from svn://localhost/TRUNK/:
+Revision 5,186 from svn://localhost/TRUNK/:
+Revision 5,187 from svn://localhost/TRUNK/:
+Revision 5,188 from svn://localhost/TRUNK/:
+Revision 5,189 from svn://localhost/TRUNK/:
+Revision 5,190 from svn://localhost/TRUNK/:
+Revision 5,191 from svn://localhost/TRUNK/:
+Revision 5,192 from svn://localhost/TRUNK/:
+
+Added an API to stop all audio
+
+By ytu (ytu@leapfrog.com) on 9/18/09 2:29 PM
+1 changed, 0 added, 0 deleted.
+6,266 ms. (Cumulative: 6,682,386 ms)
+
+----------------

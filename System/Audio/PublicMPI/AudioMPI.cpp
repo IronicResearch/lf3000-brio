@@ -347,6 +347,16 @@ void CAudioMPI::StopAudio( tAudioID id, Boolean noDoneMessage )
 }   // ---- end StopAudio() ----
 
 // ==============================================================================
+// StopAllAudio
+// ==============================================================================
+void CAudioMPI::StopAllAudio(void) 
+{
+	if ( pModule_ )
+		pModule_->StopAllAudio();
+}   // ---- end StopAllAudio() ----
+
+
+// ==============================================================================
 // PauseAudio
 // ==============================================================================
 void CAudioMPI::PauseAudio( tAudioID id ) 
