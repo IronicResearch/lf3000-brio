@@ -3,6 +3,15 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.7.2.5204 (September 21, 2009)
+===========================================
+
+-- Added an API to stop all audio
+
+-- Locate emulation paths via AppManager emuroot path to avoid SDK path 
+dependencies in libs. (TTP #743)
+
+===========================================
 Brio v0.7.1.5183 (September 17, 2009)
 ===========================================
 
