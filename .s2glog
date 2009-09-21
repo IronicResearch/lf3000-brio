@@ -20238,3 +20238,22 @@ By ytu (ytu@leapfrog.com) on 9/18/09 2:29 PM
 6,266 ms. (Cumulative: 6,682,386 ms)
 
 ----------------
+Revision 5,193 from svn://localhost/TRUNK/:
+Revision 5,194 from svn://localhost/TRUNK/:
+Revision 5,195 from svn://localhost/TRUNK/:
+Revision 5,196 from svn://localhost/TRUNK/:
+Revision 5,197 from svn://localhost/TRUNK/:
+Revision 5,198 from svn://localhost/TRUNK/:
+Revision 5,199 from svn://localhost/TRUNK/:
+Revision 5,200 from svn://localhost/TRUNK/:
+Revision 5,201 from svn://localhost/TRUNK/:
+Revision 5,202 from svn://localhost/TRUNK/:
+Revision 5,203 from svn://localhost/TRUNK/:
+
+Locate emulation paths via AppManager emuroot path to avoid SDK path dependencies in libs. (TTP #743)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/09 10:43 AM
+1 changed, 0 added, 0 deleted.
+5,766 ms. (Cumulative: 6,688,277 ms)
+
+----------------
