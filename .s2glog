@@ -20269,3 +20269,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/21/09 11:00 AM
 5,676 ms. (Cumulative: 6,694,031 ms)
 
 ----------------
+Revision 5,207 from svn://localhost/TRUNK/:
+Revision 5,208 from svn://localhost/TRUNK/:
+Revision 5,209 from svn://localhost/TRUNK/:
+
+Relocated all internal RPATH linker directives to be applicable only for intended Brio unit tests. (TTP #743)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/09 11:09 AM
+4 changed, 0 added, 0 deleted.
+5,751 ms. (Cumulative: 6,699,875 ms)
+
+----------------

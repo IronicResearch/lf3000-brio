@@ -23,8 +23,6 @@ myenv.Append(CPPPATH = ['#ThirdParty/FreeType/Include',
 						'#ThirdParty/FreeType/Include/freetype'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/' + vars['cpu_subdir']])
-if vars['is_emulation']:
-	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/FreeType/Libs/x86').abspath)
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
@@ -39,6 +37,7 @@ if vars['is_emulation']:
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'#ThirdParty/PowerVR/Include/LinuxPC'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
+	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/FreeType/Libs/x86').abspath)
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
