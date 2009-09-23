@@ -20378,3 +20378,14 @@ By Dave Milici (dmilici@leapfrog.com) on 9/23/09 3:11 PM
 6,250 ms. (Cumulative: 6,748,162 ms)
 
 ----------------
+Revision 5,238 from svn://localhost/TRUNK/:
+Revision 5,239 from svn://localhost/TRUNK/:
+Revision 5,240 from svn://localhost/TRUNK/:
+
+Inexpensive sanity checks for NULL display handles which were never expected to be dereferenced. (TTP #694, 765)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/23/09 3:47 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 6,754,413 ms)
+
+----------------
