@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.2.5242(September 23, 2009)
+Brio v0.7.2.5244 (September 23, 2009)
 ===========================================
 
 -- Added an API to stop all audio
@@ -19,6 +19,9 @@ AppManager restarts under default runtime behavior. (TTP #742)
 
 -- Inexpensive sanity checks for NULL display handles which were never 
 expected to be dereferenced. (TTP #694, 765)
+
+-- Update missing Current_Time fields for 
+KernelMPI.GetElapsedTimeAsStruct(). (TTP #878)
 
 ===========================================
 Brio v0.7.1.5183 (September 17, 2009)
