@@ -148,7 +148,7 @@ int CPowerMPI::Reset() const
 	system("reboot &");
 #endif
 	// Embedded version should never get here
-	_exit(kKernelExitReset);
+	_exit(kKernelExitShutdown);
 	return kKernelExitError;
 }
 

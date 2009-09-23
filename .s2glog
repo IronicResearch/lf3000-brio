@@ -20369,3 +20369,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/23/09 2:54 PM
 6,047 ms. (Cumulative: 6,741,849 ms)
 
 ----------------
+Revision 5,237 from svn://localhost/TRUNK/:
+
+Modify PowerMPI.Reset() to exit with return code 0 to prevent AppManager restarts under default runtime behavior. (TTP #742)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/23/09 3:11 PM
+1 changed, 0 added, 0 deleted.
+6,250 ms. (Cumulative: 6,748,162 ms)
+
+----------------
