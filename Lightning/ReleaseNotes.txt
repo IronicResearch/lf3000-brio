@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.2.5237 (September 23, 2009)
+Brio v0.7.2.5242(September 23, 2009)
 ===========================================
 
 -- Added an API to stop all audio
@@ -13,6 +13,12 @@ dependencies in libs. (TTP #743)
 
 -- Relocated all internal RPATH linker directives to be applicable only 
 for intended Brio unit tests. (TTP #743)
+
+-- Modify PowerMPI.Reset() to exit with return code 0 to prevent 
+AppManager restarts under default runtime behavior. (TTP #742)
+
+-- Inexpensive sanity checks for NULL display handles which were never 
+expected to be dereferenced. (TTP #694, 765)
 
 ===========================================
 Brio v0.7.1.5183 (September 17, 2009)
