@@ -156,7 +156,7 @@ S8	CDisplayMPI::GetBacklight(tDisplayScreen screen)
 tDisplayHandle CDisplayMPI::CreateHandle(U16 height, U16 width, 
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
-	if(!pModule_)
+	if(!pModule_ || !height || !width || !colorDepth)
 		return kInvalidDisplayHandle;
 	return pModule_->CreateHandle(height, width, colorDepth, pBuffer);
 }
@@ -164,7 +164,7 @@ tDisplayHandle CDisplayMPI::CreateHandle(U16 height, U16 width,
 //----------------------------------------------------------------------------
 U8* CDisplayMPI::GetBuffer(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return NULL;
 	return pModule_->GetBuffer(hndl);
 }
@@ -172,7 +172,7 @@ U8* CDisplayMPI::GetBuffer(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 U16 CDisplayMPI::GetHeight(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return 0;
 	return pModule_->GetHeight(hndl);
 }
@@ -180,7 +180,7 @@ U16 CDisplayMPI::GetHeight(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 U16 CDisplayMPI::GetWidth(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return 0;
 	return pModule_->GetWidth(hndl);
 }
@@ -191,6 +191,8 @@ tErrType CDisplayMPI::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->Register(hndl, xPos, yPos, insertAfter, screen);
 }
 
@@ -201,6 +203,8 @@ tErrType CDisplayMPI::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->Register(hndl, xPos, yPos, initialZOrder, screen);
 }
 
@@ -209,6 +213,8 @@ tErrType CDisplayMPI::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->UnRegister(hndl, screen);
 }
 
@@ -217,6 +223,8 @@ tErrType CDisplayMPI::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->DestroyHandle(hndl, destroyBuffer);
 }
 
@@ -225,6 +233,8 @@ tErrType CDisplayMPI::LockBuffer(tDisplayHandle hndl)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->LockBuffer(hndl);
 }
 
@@ -233,6 +243,8 @@ tErrType CDisplayMPI::UnlockBuffer(tDisplayHandle hndl, tRect *pDirtyRect)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->UnlockBuffer(hndl, pDirtyRect);
 }
 
@@ -241,13 +253,15 @@ tErrType CDisplayMPI::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->SwapBuffers(hndl, waitVSync);
 }
 
 //----------------------------------------------------------------------------
 Boolean CDisplayMPI::IsBufferSwapped(tDisplayHandle hndl)
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return false;
 	return pModule_->IsBufferSwapped(hndl);
 }
@@ -263,7 +277,7 @@ tDisplayHandle CDisplayMPI::GetCurrentDisplayHandle()
 //----------------------------------------------------------------------------
 tPixelFormat CDisplayMPI::GetPixelFormat(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return kPixelFormatError;
 	return pModule_->GetPixelFormat(hndl);
 }
@@ -271,7 +285,7 @@ tPixelFormat CDisplayMPI::GetPixelFormat(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 U16 CDisplayMPI::GetPitch(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return 0;
 	return pModule_->GetPitch(hndl);
 }
@@ -279,7 +293,7 @@ U16 CDisplayMPI::GetPitch(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 U16 CDisplayMPI::GetDepth(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return 0;
 	return pModule_->GetDepth(hndl);
 }
@@ -289,13 +303,15 @@ tErrType CDisplayMPI::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
 	return pModule_->SetAlpha(hndl, level, enable);
 }
 
 //----------------------------------------------------------------------------
 U8 CDisplayMPI::GetAlpha(tDisplayHandle hndl) const
 {
-	if(!pModule_)
+	if(!pModule_ || !hndl)
 		return 0;
 	return pModule_->GetAlpha(hndl);
 }
