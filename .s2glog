@@ -20389,3 +20389,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/23/09 3:47 PM
 6,141 ms. (Cumulative: 6,754,413 ms)
 
 ----------------
+Revision 5,241 from svn://localhost/TRUNK/:
+
+Update missing Current_Time fields for KernelMPI.GetElapsedTimeAsStruct(). (TTP #878)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/23/09 4:00 PM
+1 changed, 0 added, 0 deleted.
+5,704 ms. (Cumulative: 6,760,179 ms)
+
+----------------

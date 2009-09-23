@@ -785,6 +785,9 @@ tErrType CKernelModule::GetElapsedTimeAsStructure(Current_Time &curTime) const
 	curTime.mday = tmstruct->tm_mday;
 	curTime.mon  = tmstruct->tm_mon;
 	curTime.year = tmstruct->tm_year;
+	curTime.wday = tmstruct->tm_wday;
+	curTime.yday = tmstruct->tm_yday;
+    curTime.isdst = tmstruct->tm_isdst;
 
 	return err;
 }	
