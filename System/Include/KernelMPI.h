@@ -124,24 +124,22 @@ public:
 	///==============================================================================
 	/// Time & Date
 	///==============================================================================
-	/// Elapsed time since System startup in milliscond since the Epoch.
-	/// Only for debugging. It will be called the gettimeofday() function  
+
+	/// Elapsed time in milliseconds since the Epoch (1970). (32-bit wrap-around) 
 	U32 	GetElapsedTimeAsMSecs() const; 
 
-	/// Elapsed time since System startup in microsecond since the Epoch.
-	/// Only for debugging. It will be called the gettimeofday() function
+	/// Elapsed time in microseconds since the Epoch.
 	U64		GetElapsedTimeAsUSecs() const;	 
 
 	/// Get time as microseconds from High Resolution Timer (HRT)
 	tErrType 	GetHRTAsUsec(U32 &uSec) const; 
 
-	/// Get Elapsed time since System startup in seconds from HRT
+	/// Get Elapsed time in seconds.
 	tErrType	GetElapsedAsSec(U32 &sec) const;	 
 
-	/// Get Elapsed time since System startup as structure from HRT
+	/// Get Elapsed time as \ref Current_Time structure.
 	tErrType	GetElapsedTimeAsStructure(Current_Time &curTime) const;
 
-// fixme/BSK
 	///======================================================
 	/// Timer
 	///======================================================
