@@ -20418,3 +20418,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/23/09 4:03 PM
 5,674 ms. (Cumulative: 6,771,717 ms)
 
 ----------------
+Revision 5,244 from svn://localhost/TRUNK/:
+Revision 5,245 from svn://localhost/TRUNK/:
+Revision 5,246 from svn://localhost/TRUNK/:
+Revision 5,247 from svn://localhost/TRUNK/:
+
+Fixup KernelMPI annotations for GetElapsedTime*() functions.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/24/09 11:27 AM
+2 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 6,777,483 ms)
+
+----------------

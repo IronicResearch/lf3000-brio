@@ -479,17 +479,18 @@ struct tTimerProperties {
   								*/		
   };
 
+/// Current_Time struct used by KernelMPI::GetElapsedTimeAsStructure()
 typedef struct current_time
 {
-        int sec;
-        int min;
-        int hour;
-        int mday;
-        int mon;
-        int year;
-        int wday;
-        int yday;
-        int isdst;
+        int sec;	///< seconds (0..59)
+        int min;	///< minutes (0..59)
+        int hour;	///< hour (0..23)
+        int mday;	///< day of month (1..31)
+        int mon;	///< month (0..11)
+        int year;	///< year (0 = 1900)
+        int wday;	///< day of week (0 = Sunday)
+        int yday;	///< day of year (0..365)
+        int isdst;	///< is daylight savings?
 } Current_Time;
 
 typedef struct itimerspec saveTimerSettings; 
