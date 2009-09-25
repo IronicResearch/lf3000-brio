@@ -20469,3 +20469,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/24/09 11:49 PM
 5,922 ms. (Cumulative: 6,795,050 ms)
 
 ----------------
+Revision 5,260 from svn://localhost/TRUNK/:
+
+Fix Battery State reporting, TTPro #902
+
+
+By Scott Esters (sesters@leapfrog.com) on 9/25/09 4:14 PM
+1 changed, 0 added, 0 deleted.
+5,950 ms. (Cumulative: 6,801,063 ms)
+
+----------------

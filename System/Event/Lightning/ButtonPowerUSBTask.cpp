@@ -933,9 +933,26 @@ void* CEventModule::CartridgeTask( void* arg )
 				size = read(event_fd[power_index].fd, &ev, sizeof(ev));
 				switch(ev.code)
 				{	/* map Linux Keys to Brio Messages */
-				case KEY_BATTERY:  power_data.powerState = kPowerCritical;    break;
-				case KEY_POWER:    power_data.powerState = kPowerShutdown;    break;
-				case KEY_MINUS:    power_data.powerState = kPowerLowBattery;  break;
+				/* Critical Low Battery */
+				case KEY_BATTERY:
+					power_data.powerState = kPowerCritical;
+					break;
+				/* Low Battery */
+				case KEY_MINUS:
+					power_data.powerState = kPowerLowBattery;
+					break;
+				/* Battery */
+				case KEY_EQUAL:
+					power_data.powerState = kPowerBattery;
+					break;
+				/* Battery */
+				case KEY_UP:
+					power_data.powerState = kPowerExternal;
+					break;
+				/* External Power */
+				case KEY_POWER:
+					power_data.powerState = kPowerShutdown;
+					break;
 				}
 				// power state changed?
 				CPowerMessage power_msg(power_data);
