@@ -20532,3 +20532,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 9/30/09 7:09 PM
 6,048 ms. (Cumulative: 6,813,439 ms)
 
 ----------------
+Revision 5,296 from svn://localhost/TRUNK/:
+Revision 5,297 from svn://localhost/TRUNK/:
+
+Added checks for registering duplicate display handles and adjust list accordingly. Looks like FlashDidj object is re-registering the same onscreen display handle multiple times during init and resume states. (TTP #804)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/1/09 10:57 AM
+1 changed, 0 added, 0 deleted.
+6,156 ms. (Cumulative: 6,819,673 ms)
+
+----------------

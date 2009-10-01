@@ -153,8 +153,20 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	tDisplayContext* pdc = NULL;
 	tDisplayContext* pdcAfter = reinterpret_cast<tDisplayContext*>(insertAfter);
 
-	// Walk list to insert after selected handle, or at tail
+	// Check for duplicate display handle and remove it first
 	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		pdc = *it;
+		if (pdc == dc)
+		{
+			gDisplayList.erase(it);
+			break;
+		}
+	}
+	
+	// Walk list to insert after selected handle, or at tail
+	pdc = NULL;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
@@ -204,7 +216,19 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	// Insert display context at head or tail of linked list
 	tDisplayContext* dc = reinterpret_cast<tDisplayContext*>(hndl);
 	tDisplayContext* pdc = NULL;
-
+	
+	// Check for duplicate display handle and remove it first
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		pdc = *it;
+		if (pdc == dc)
+		{
+			gDisplayList.erase(it);
+			break;
+		}
+	}
+	
 	if (kDisplayOnBottom == initialZOrder)
 		gDisplayList.push_front(dc);
 	else
@@ -224,7 +248,6 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	}
 
 	// Track current onscreen display context
-	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
