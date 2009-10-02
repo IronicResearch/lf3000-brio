@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.4.5308 (October 2, 2009)
+Brio v0.7.4.5310 (October 2, 2009)
 ===========================================
 
 -- Fix Battery State reporting, TTPro #902
