@@ -101,26 +101,6 @@ namespace
 	// Local state and utility functions
 	//============================================================================
 	
-	//----------------------------------------------------------------------------
-	static bool CartInitiallyInserted(void)
-	{
-		CDebugMPI dbg(kGroupButton);
-		char buf[16];
-		FILE *f = fopen("/sys/devices/platform/lf1000-nand/cartridge", "r");
-	
-		dbg.Assert(f != NULL,
-				"CButtonModule::LightningButtonTask: cart read failed");
-	
-		dbg.Assert(fscanf(f, "%s\n", buf) >= 1,
-				"CButtonModule::LightningButtonTask: cart read failed");
-	
-		fclose(f);
-	
-		if(!strncmp(buf, "none", 4)) // no cart inserted
-			return false;
-		return true;
-	}
-
 	#define MAX_DEVNODES	8
 	
 	//----------------------------------------------------------------------------
@@ -385,7 +365,74 @@ namespace
 		return event;
 	}
 
-	int vsystem( const char *cmdstring)
+	#define BRIO_PATH_MAX 256
+	#define CMDLINE_PATH_MAX 1024
+
+	int read_to_buf(const char *filename, void *buf)
+	{
+		ssize_t n;	
+
+		int fd = open(filename, O_RDONLY);
+		if (fd < 0)
+			return fd;
+
+		do {
+			n = read(fd, buf, CMDLINE_PATH_MAX-1);
+		} while (n < 0 && errno == EINTR);
+		
+		((char *)buf)[n > 0 ? n : 0] = '\0';
+
+		close(fd);
+		
+		return n;
+	}
+
+	int is_proc_entry(char *pname)
+	{
+		int i;
+		for(i=0; i<strlen(pname); i++)
+		{
+			if(!isdigit(pname[i]))
+				return 0;
+		}
+		return 1;
+	}
+
+	int checkscripts(char *name2check)
+	{
+		char namebuf[CMDLINE_PATH_MAX];
+		char fpath[BRIO_PATH_MAX];
+		char dirpath[64];
+		DIR *dirp;
+		struct dirent *ep;
+		int ret, n;
+
+		strcpy(dirpath, "/proc");
+		dirp = opendir(dirpath);
+		while ((ep = readdir(dirp))) {
+			if(is_proc_entry(ep->d_name)) {
+				sprintf(fpath, "%s/%s/cmdline", dirpath, ep->d_name);
+				//printf("%s\n", fpath);
+				n = read_to_buf(fpath, namebuf);
+				if(n < 0) {
+					printf("read(%s) error, errno = %s\n", fpath, strerror(errno));
+				} else if(n >0){
+					do {
+						n--;
+						if ((unsigned char)(namebuf[n]) < ' ')
+							namebuf[n] = ' ';
+					} while (n);
+					
+					//printf("%s\n", namebuf);
+					if(strstr(namebuf, name2check))
+						return 1;
+				}
+			}
+		}
+		return 0;
+	}
+
+	int vsystem(const char *cmdstring, const char *cmdstring1)
 	{
 		pid_t pid;
 		int status;
@@ -412,7 +459,8 @@ namespace
 		if( (pid = vfork()) < 0) {
 			status = -1;
 		} else if (pid == 0) {  /* child */
-			execl("/bin/sh", "sh", "-c", cmdstring, (char *) 0);
+			// execl("/bin/sh", "sh", cmdstring, (char *) 0);
+			execl("/bin/sh", "sh", cmdstring, cmdstring1, (char *) 0);
 			_exit(127);     /*execl error */
 		} else {
 			while (waitpid(pid, &status, 0) < 0)
@@ -449,6 +497,12 @@ void* CEventModule::CartridgeTask( void* arg )
 	int event;
 	int cartXcounter=0;
 
+	
+	while(checkscripts("/etc/init.d/cartridge")) {
+		debug.DebugOut(kDbgLvlValuable, "Previous scripts still running, wait ...\n");
+		sleep(1);
+	}
+	
 	prctl(PR_SET_NAME, (unsigned long)"Cartridge Task", 0, 0, 0);
 	event_fd[0].fd = open_input_device("LF1000 Keyboard");
 	fcntl(event_fd[0].fd, F_SETFL, O_NONBLOCK);
@@ -558,7 +612,8 @@ void* CEventModule::CartridgeTask( void* arg )
 
 				// UBI attach, and cart mount
 				//sys_ret = system("/etc/init.d/cartridge start") >> 8;
-				sys_ret = vsystem("/etc/init.d/cartridge start") >> 8;
+				//sys_ret = vsystem("/etc/init.d/cartridge start") >> 8;
+				sys_ret = vsystem("/etc/init.d/cartridge", "start") >> 8;
 				
 				// check return status here
 				if(sys_ret == 11) {
@@ -666,7 +721,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				ScanCloseCartridgeFile();
 				
 				//sys_ret = system("/etc/init.d/cartridge stop") >> 8;
-				sys_ret = vsystem("/etc/init.d/cartridge stop") >> 8;
+				sys_ret = vsystem("/etc/init.d/cartridge", "stop") >> 8;
 				
 				// check return status here
 				if(sys_ret == 11) {
