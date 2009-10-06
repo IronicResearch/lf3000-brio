@@ -20642,3 +20642,17 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/09 7:01 PM
 6,188 ms. (Cumulative: 6,866,796 ms)
 
 ----------------
+Revision 5,328 from svn://localhost/TRUNK/:
+Revision 5,329 from svn://localhost/TRUNK/:
+Revision 5,330 from svn://localhost/TRUNK/:
+Revision 5,331 from svn://localhost/TRUNK/:
+Revision 5,332 from svn://localhost/TRUNK/:
+Revision 5,333 from svn://localhost/TRUNK/:
+
+Fix bug #917
+
+By ytu (ytu@leapfrog.com) on 10/6/09 2:54 PM
+1 changed, 0 added, 0 deleted.
+6,048 ms. (Cumulative: 6,872,985 ms)
+
+----------------
