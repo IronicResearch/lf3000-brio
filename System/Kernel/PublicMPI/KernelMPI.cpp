@@ -95,12 +95,8 @@ namespace
 
 		safeKernel.Logging("Emerald Base", kDbgLvlCritical, "PowerDown (Assert) exit !!");
 
-		#ifdef DEBUG
 		kill(getpid(), SIGTERM);
-		#else
-		exit(kKernelExitAssert);
-		#endif
-		
+		_exit(kKernelExitAssert);
 	}
 	
 	//--------------------------------------------------------------------------

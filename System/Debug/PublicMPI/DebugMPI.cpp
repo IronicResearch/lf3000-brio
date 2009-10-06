@@ -242,10 +242,8 @@ namespace
 		}
 		
 		// In Emerald, Application doesn't power down the device, only in debug build.
-		#ifdef DEBUG
 		CKernelMPI	kernel;
 		kernel.PowerDown();
-		#endif
 	}
 }
 
