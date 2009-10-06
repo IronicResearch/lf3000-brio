@@ -20620,3 +20620,25 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 10/4/09 2:04 PM
 5,692 ms. (Cumulative: 6,860,452 ms)
 
 ----------------
+Revision 5,314 from svn://localhost/TRUNK/:
+Revision 5,315 from svn://localhost/TRUNK/:
+Revision 5,316 from svn://localhost/TRUNK/:
+Revision 5,317 from svn://localhost/TRUNK/:
+Revision 5,318 from svn://localhost/TRUNK/:
+Revision 5,319 from svn://localhost/TRUNK/:
+Revision 5,320 from svn://localhost/TRUNK/:
+Revision 5,321 from svn://localhost/TRUNK/:
+Revision 5,322 from svn://localhost/TRUNK/:
+Revision 5,323 from svn://localhost/TRUNK/:
+Revision 5,324 from svn://localhost/TRUNK/:
+Revision 5,325 from svn://localhost/TRUNK/:
+Revision 5,326 from svn://localhost/TRUNK/:
+Revision 5,327 from svn://localhost/TRUNK/:
+
+Reinstate original DebugMPI Assert() behavior per developer expectations. (TTP #344) 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/09 7:01 PM
+2 changed, 0 added, 0 deleted.
+6,188 ms. (Cumulative: 6,866,796 ms)
+
+----------------
