@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.5.5352 (October 8, 2009)
+Brio v0.7.5.5355 (October 8, 2009)
 ===========================================
 
 -- Reinstate original DebugMPI Assert() behavior per developer expectations. (TTP #344) 
