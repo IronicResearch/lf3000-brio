@@ -20761,3 +20761,19 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 10/9/09 1:32 PM
 5,688 ms. (Cumulative: 6,915,068 ms)
 
 ----------------
+Revision 5,376 from svn://localhost/TRUNK/:
+Revision 5,377 from svn://localhost/TRUNK/:
+Revision 5,378 from svn://localhost/TRUNK/:
+Revision 5,379 from svn://localhost/TRUNK/:
+Revision 5,380 from svn://localhost/TRUNK/:
+Revision 5,381 from svn://localhost/TRUNK/:
+Revision 5,382 from svn://localhost/TRUNK/:
+Revision 5,383 from svn://localhost/TRUNK/:
+
+Reinstated exit handlers in BrioOpenGLConfig to destroy OGL context if still enabled, independent of handlers moved into AppManager. (TTP #1063)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/12/09 3:50 PM
+1 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 6,920,866 ms)
+
+----------------
