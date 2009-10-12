@@ -514,8 +514,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	if (AllocBuffer(GraphicsContext, aligned)) {
 		dbg_.DebugOut(kDbgLvlValuable, "DisplayModule::CreateHandle: %p\n", GraphicsContext->pBuffer);
 		// Clear framebuffer memory if pixel format change pending
-		if (!GraphicsContext->isOverlay && ioctl(gDevLayer, MLC_IOCQFORMAT, 0) != hwFormat)
-			memset(GraphicsContext->pBuffer, 0xFF, GraphicsContext->pitch * GraphicsContext->height);
+		memset(GraphicsContext->pBuffer, 0x00, GraphicsContext->pitch * GraphicsContext->height);
 	}
 	else {
 		// No framebuffer allocations left
@@ -702,13 +701,6 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		else
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, 3);
 		
-		// Clear video buffer to white pixels before visible
-		for (U32 i = 0; i < context->height; i++)
-		{
-			memset(&context->pBuffer[i*4096], 0xFF, context->width); // white Y
-			memset(&context->pBuffer[i*4096+context->pitch/2], 0x7F, context->width/2); // neutral U,V
-		}
-
 		// Defer enabling video layer until 1st Invalidate() call
 		bPrimaryLayerEnabled = false;
 	}

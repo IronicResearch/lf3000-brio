@@ -20777,3 +20777,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/12/09 3:50 PM
 5,688 ms. (Cumulative: 6,920,866 ms)
 
 ----------------
+Revision 5,384 from svn://localhost/TRUNK/:
+
+Clear framebuffer memory per display buffer allocation for cleaner appearance when enabling visibility prematurely. (TTP #697, 841, 844?)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/12/09 4:55 PM
+2 changed, 0 added, 0 deleted.
+5,828 ms. (Cumulative: 6,926,772 ms)
+
+----------------
