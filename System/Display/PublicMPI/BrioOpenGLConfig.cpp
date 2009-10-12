@@ -57,7 +57,30 @@ namespace
 	NativeDisplayType	display;
 	NativeWindowType	hwnd;
 	bool				isEnabled = false;
+	bool				isHandled = false;
 	
+	//--------------------------------------------------------------------------
+	void BOGLExitHandler(void)
+	{
+		if (isEnabled)
+		{
+			CDebugMPI	dbg(kGroupDisplay);
+			dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() context active on exit\n");
+			eglTerminate(ctx.eglDisplay);
+		}
+	}
+	
+	//--------------------------------------------------------------------------
+	void BOGLSignalHandler(int signum)
+	{
+		if (isEnabled)
+		{
+			CDebugMPI	dbg(kGroupDisplay);
+			dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() context active on signal %d\n", signum);
+			eglTerminate(ctx.eglDisplay);
+		}
+		_exit(128 + signum);
+	}
 	
 	//--------------------------------------------------------------------------
 	void AbortIfEGLError(const char* pszLocation)
@@ -181,7 +204,19 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
 	dispmgr = &disp_;
-	
+
+#ifndef  EMULATION
+	// Setup exit handlers to disable OGL context
+	if (!isHandled) {
+		struct sigaction sa;
+		atexit(BOGLExitHandler);
+		sa.sa_handler = BOGLSignalHandler;
+		sa.sa_flags = SA_RESTART;
+		sigfillset(&sa.sa_mask);
+		sigaction(SIGTERM, &sa, NULL);
+		isHandled = true;
+	}
+#endif
 	
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {
