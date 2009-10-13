@@ -20786,3 +20786,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/12/09 4:55 PM
 5,828 ms. (Cumulative: 6,926,772 ms)
 
 ----------------
+Revision 5,385 from svn://localhost/TRUNK/:
+Revision 5,386 from svn://localhost/TRUNK/:
+
+Increase audio buffer size for 4K handoff to /dev/dsp for single Brio mixer callback per write. (TTP 597, 860)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/12/09 6:35 PM
+1 changed, 0 added, 0 deleted.
+6,017 ms. (Cumulative: 6,932,868 ms)
+
+----------------
