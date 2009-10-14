@@ -3,8 +3,17 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.6.5375 (October 9, 2009)
+Brio v0.7.6.5400 (October 14, 2009)
 ===========================================
+
+-- Reinstated exit handlers in BrioOpenGLConfig to destroy OGL context if 
+still enabled, independent of handlers moved into AppManager. (TTP #1063)
+
+-- Clear framebuffer memory per display buffer allocation for cleaner 
+appearance when enabling visibility prematurely. (TTP #697, 841, 844?)
+
+-- Increase audio buffer size for 4K handoff to /dev/dsp for single Brio 
+mixer callback per write. (TTP 597, 860)
 
 ===========================================
 Brio v0.7.5.5373 (October 8, 2009)
