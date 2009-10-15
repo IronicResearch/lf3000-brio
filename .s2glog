@@ -20857,3 +20857,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/14/09 6:18 PM
 5,940 ms. (Cumulative: 6,945,277 ms)
 
 ----------------
+Revision 5,431 from svn://localhost/TRUNK/:
+Revision 5,432 from svn://localhost/TRUNK/:
+
+Added logging to PowerMPI Reset and Shutdown commands. (TTP #742)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/14/09 6:34 PM
+2 changed, 0 added, 0 deleted.
+6,083 ms. (Cumulative: 6,951,438 ms)
+
+----------------
