@@ -20818,3 +20818,42 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 10/14/09 12:10 AM
 6,032 ms. (Cumulative: 6,939,056 ms)
 
 ----------------
+Revision 5,400 from svn://localhost/TRUNK/:
+Revision 5,401 from svn://localhost/TRUNK/:
+Revision 5,402 from svn://localhost/TRUNK/:
+Revision 5,403 from svn://localhost/TRUNK/:
+Revision 5,404 from svn://localhost/TRUNK/:
+Revision 5,405 from svn://localhost/TRUNK/:
+Revision 5,406 from svn://localhost/TRUNK/:
+Revision 5,407 from svn://localhost/TRUNK/:
+Revision 5,408 from svn://localhost/TRUNK/:
+Revision 5,409 from svn://localhost/TRUNK/:
+Revision 5,410 from svn://localhost/TRUNK/:
+Revision 5,411 from svn://localhost/TRUNK/:
+Revision 5,412 from svn://localhost/TRUNK/:
+Revision 5,413 from svn://localhost/TRUNK/:
+Revision 5,414 from svn://localhost/TRUNK/:
+Revision 5,415 from svn://localhost/TRUNK/:
+Revision 5,416 from svn://localhost/TRUNK/:
+Revision 5,417 from svn://localhost/TRUNK/:
+Revision 5,418 from svn://localhost/TRUNK/:
+Revision 5,419 from svn://localhost/TRUNK/:
+Revision 5,420 from svn://localhost/TRUNK/:
+Revision 5,421 from svn://localhost/TRUNK/:
+Revision 5,422 from svn://localhost/TRUNK/:
+Revision 5,423 from svn://localhost/TRUNK/:
+Revision 5,424 from svn://localhost/TRUNK/:
+Revision 5,425 from svn://localhost/TRUNK/:
+Revision 5,426 from svn://localhost/TRUNK/:
+Revision 5,427 from svn://localhost/TRUNK/:
+Revision 5,428 from svn://localhost/TRUNK/:
+Revision 5,429 from svn://localhost/TRUNK/:
+Revision 5,430 from svn://localhost/TRUNK/:
+
+Allow system commands to be executed as non-root user for PowerMPI tests via AppManager. (TTP #742)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/14/09 6:18 PM
+1 changed, 0 added, 0 deleted.
+5,940 ms. (Cumulative: 6,945,277 ms)
+
+----------------
