@@ -12,7 +12,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 emulibs		= vars['is_emulation'] and ['X11'] or []
 mpisrcs		= FindMPISources(Dir('.'), vars)
-mpilibs		= ['Utility']
+mpilibs		= ['Utility', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module

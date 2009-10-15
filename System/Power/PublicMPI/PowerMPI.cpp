@@ -20,6 +20,7 @@
 #include <SystemEvents.h>
 #include <KernelTypes.h>
 #include <Utility.h>
+#include <DebugMPI.h>
 
 #include <sys/socket.h>
 
@@ -121,6 +122,8 @@ enum tPowerState CPowerMPI::GetPowerState() const
 int CPowerMPI::Shutdown() const
 {
 #ifndef EMULATION
+	CDebugMPI debug(kGroupPower);
+	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Shutdown poweroff\n");
 	system("sudo /sbin/poweroff &");
 #endif
 	// Embedded version should never get here
@@ -145,6 +148,8 @@ int CPowerMPI::SetShutdownTimeMS(int iMilliseconds) const
 int CPowerMPI::Reset() const
 {
 #ifndef EMULATION
+	CDebugMPI debug(kGroupPower);
+	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Reset reboot\n");
 	system("sudo /sbin/reboot -f");
 #endif
 	// Embedded version should never get here
