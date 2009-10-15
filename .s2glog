@@ -20867,3 +20867,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/14/09 6:34 PM
 6,083 ms. (Cumulative: 6,951,438 ms)
 
 ----------------
+Revision 5,433 from svn://localhost/TRUNK/:
+Revision 5,434 from svn://localhost/TRUNK/:
+Revision 5,435 from svn://localhost/TRUNK/:
+
+Replaced execl() for system commands without shell overhead. (TTP #742)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/15/09 10:51 AM
+1 changed, 0 added, 0 deleted.
+6,875 ms. (Cumulative: 6,958,407 ms)
+
+----------------
