@@ -124,7 +124,8 @@ int CPowerMPI::Shutdown() const
 #ifndef EMULATION
 	CDebugMPI debug(kGroupPower);
 	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Shutdown poweroff\n");
-	system("sudo /sbin/poweroff &");
+	// system("sudo /sbin/poweroff &");
+	execl("/usr/bin/sudo", "sudo", "/sbin/poweroff", NULL);
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
@@ -150,7 +151,8 @@ int CPowerMPI::Reset() const
 #ifndef EMULATION
 	CDebugMPI debug(kGroupPower);
 	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Reset reboot\n");
-	system("sudo /sbin/reboot -f");
+	// system("sudo /sbin/reboot -f");
+	execl("/usr/bin/sudo", "sudo", "/sbin/reboot", "-f", NULL);
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
