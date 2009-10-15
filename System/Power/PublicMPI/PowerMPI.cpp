@@ -121,7 +121,7 @@ enum tPowerState CPowerMPI::GetPowerState() const
 int CPowerMPI::Shutdown() const
 {
 #ifndef EMULATION
-	system("poweroff &");
+	system("sudo /sbin/poweroff &");
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
@@ -145,7 +145,7 @@ int CPowerMPI::SetShutdownTimeMS(int iMilliseconds) const
 int CPowerMPI::Reset() const
 {
 #ifndef EMULATION
-	system("reboot &");
+	system("sudo /sbin/reboot -f");
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
