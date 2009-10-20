@@ -20989,3 +20989,45 @@ By Rob Dowling (rdowling@leapfrog.com) on 10/19/09 10:32 AM
 5,680 ms. (Cumulative: 6,981,955 ms)
 
 ----------------
+Revision 5,511 from svn://localhost/TRUNK/:
+Revision 5,512 from svn://localhost/TRUNK/:
+Revision 5,513 from svn://localhost/TRUNK/:
+Revision 5,514 from svn://localhost/TRUNK/:
+Revision 5,515 from svn://localhost/TRUNK/:
+Revision 5,516 from svn://localhost/TRUNK/:
+Revision 5,517 from svn://localhost/TRUNK/:
+Revision 5,518 from svn://localhost/TRUNK/:
+Revision 5,519 from svn://localhost/TRUNK/:
+Revision 5,520 from svn://localhost/TRUNK/:
+Revision 5,521 from svn://localhost/TRUNK/:
+Revision 5,522 from svn://localhost/TRUNK/:
+Revision 5,523 from svn://localhost/TRUNK/:
+Revision 5,524 from svn://localhost/TRUNK/:
+Revision 5,525 from svn://localhost/TRUNK/:
+Revision 5,526 from svn://localhost/TRUNK/:
+Revision 5,527 from svn://localhost/TRUNK/:
+Revision 5,528 from svn://localhost/TRUNK/:
+Revision 5,529 from svn://localhost/TRUNK/:
+Revision 5,530 from svn://localhost/TRUNK/:
+Revision 5,531 from svn://localhost/TRUNK/:
+Revision 5,532 from svn://localhost/TRUNK/:
+Revision 5,533 from svn://localhost/TRUNK/:
+Revision 5,534 from svn://localhost/TRUNK/:
+Revision 5,535 from svn://localhost/TRUNK/:
+Revision 5,536 from svn://localhost/TRUNK/:
+Revision 5,537 from svn://localhost/TRUNK/:
+Revision 5,538 from svn://localhost/TRUNK/:
+Revision 5,539 from svn://localhost/TRUNK/:
+Revision 5,540 from svn://localhost/TRUNK/:
+Revision 5,541 from svn://localhost/TRUNK/:
+Revision 5,542 from svn://localhost/TRUNK/:
+Revision 5,543 from svn://localhost/TRUNK/:
+
+Removed 'brightness' button listener; now handled in Linux DPC driver.
+
+
+By Scott Esters (sesters@leapfrog.com) on 10/20/09 3:57 PM
+1 changed, 0 added, 0 deleted.
+5,681 ms. (Cumulative: 6,987,918 ms)
+
+----------------
