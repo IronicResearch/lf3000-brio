@@ -538,6 +538,10 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int 	layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 
+	// Offscreen contexts do not affect screen
+	if (context->isAllocated)
+		return kNoErr;
+	
 	// Remove layer from visibility on screen
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)0);
 	bPrimaryLayerEnabled = false;
