@@ -21031,3 +21031,18 @@ By Scott Esters (sesters@leapfrog.com) on 10/20/09 3:57 PM
 5,681 ms. (Cumulative: 6,987,918 ms)
 
 ----------------
+Revision 5,544 from svn://localhost/TRUNK/:
+Revision 5,545 from svn://localhost/TRUNK/:
+Revision 5,546 from svn://localhost/TRUNK/:
+Revision 5,547 from svn://localhost/TRUNK/:
+Revision 5,548 from svn://localhost/TRUNK/:
+Revision 5,549 from svn://localhost/TRUNK/:
+Revision 5,550 from svn://localhost/TRUNK/:
+
+Offscreen display contexts are not supposed to affect layer visibility. (TTP #1203)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/20/09 5:41 PM
+1 changed, 0 added, 0 deleted.
+5,720 ms. (Cumulative: 6,993,747 ms)
+
+----------------
