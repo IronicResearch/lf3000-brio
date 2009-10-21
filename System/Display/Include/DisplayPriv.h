@@ -452,7 +452,6 @@ private:
 	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
-	CEventMPI			eventmgr_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
 	bool				isOpenGLEnabled_;

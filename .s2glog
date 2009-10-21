@@ -21046,3 +21046,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/20/09 5:41 PM
 5,720 ms. (Cumulative: 6,993,747 ms)
 
 ----------------
+Revision 5,551 from svn://localhost/TRUNK/:
+Revision 5,552 from svn://localhost/TRUNK/:
+Revision 5,553 from svn://localhost/TRUNK/:
+
+Remove EventMPI dependency from DisplayMPI since button listener is gone. Need to determine what is wrong with Set/GetBrightness() and Set/GetContrast() support in unit test. (TTP #1221)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/21/09 10:59 AM
+2 changed, 0 added, 0 deleted.
+5,641 ms. (Cumulative: 6,999,481 ms)
+
+----------------

@@ -15,7 +15,7 @@ hwlibs		= vars['variant'] == 'LF1000' and ['opengles_lite'] or ['ogl']
 ogllibs		= vars['is_emulation'] and ['gles_cl'] or hwlibs
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
-modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI', 'ButtonMPI'] + emulibs
+modlibs		= ['DebugMPI', 'KernelMPI'] + emulibs
 mpilibs		= ['ModuleMPI'] + ogllibs					
 						
 #-----------------------------------------------------------------------------
