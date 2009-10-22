@@ -21057,3 +21057,34 @@ By Dave Milici (dmilici@leapfrog.com) on 10/21/09 10:59 AM
 5,641 ms. (Cumulative: 6,999,481 ms)
 
 ----------------
+Revision 5,554 from svn://localhost/TRUNK/:
+Revision 5,555 from svn://localhost/TRUNK/:
+Revision 5,556 from svn://localhost/TRUNK/:
+Revision 5,557 from svn://localhost/TRUNK/:
+Revision 5,558 from svn://localhost/TRUNK/:
+Revision 5,559 from svn://localhost/TRUNK/:
+Revision 5,560 from svn://localhost/TRUNK/:
+Revision 5,561 from svn://localhost/TRUNK/:
+Revision 5,562 from svn://localhost/TRUNK/:
+Revision 5,563 from svn://localhost/TRUNK/:
+Revision 5,564 from svn://localhost/TRUNK/:
+Revision 5,565 from svn://localhost/TRUNK/:
+Revision 5,566 from svn://localhost/TRUNK/:
+Revision 5,567 from svn://localhost/TRUNK/:
+Revision 5,568 from svn://localhost/TRUNK/:
+Revision 5,569 from svn://localhost/TRUNK/:
+Revision 5,570 from svn://localhost/TRUNK/:
+Revision 5,571 from svn://localhost/TRUNK/:
+Revision 5,572 from svn://localhost/TRUNK/:
+Revision 5,573 from svn://localhost/TRUNK/:
+Revision 5,574 from svn://localhost/TRUNK/:
+Revision 5,575 from svn://localhost/TRUNK/:
+Revision 5,576 from svn://localhost/TRUNK/:
+
+Use same OSS buffer sizes and config for correct Flash audio playback on emulation target.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/21/09 5:43 PM
+2 changed, 0 added, 0 deleted.
+5,656 ms. (Cumulative: 7,005,341 ms)
+
+----------------
