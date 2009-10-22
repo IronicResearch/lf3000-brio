@@ -47,7 +47,7 @@
 
 // Emulation on Linux desktop likes smaller buffers or it glitches
 // The ARM target likes larger buffers for some reason.
-#ifdef EMULATION
+#if 0 //def EMULATION
 #define kAudioFramesPerBuffer		256
 #else
 #define kAudioFramesPerBuffer		1024
