@@ -497,13 +497,14 @@ void* CEventModule::CartridgeTask( void* arg )
 	int event;
 	int cartXcounter=0;
 
+	sleep(3);
 	
 	while(checkscripts("/etc/init.d/cartridge")) {
 		debug.DebugOut(kDbgLvlValuable, "Previous scripts still running, wait ...\n");
 		sleep(1);
 	}
 	
-	prctl(PR_SET_NAME, (unsigned long)"Cartridge Task", 0, 0, 0);
+	prctl(PR_SET_NAME, (unsigned long)"CartridgeT", 0, 0, 0);
 	event_fd[0].fd = open_input_device("LF1000 Keyboard");
 	fcntl(event_fd[0].fd, F_SETFL, O_NONBLOCK);
 	
@@ -558,7 +559,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: Fatal Error, cannot open LF1000 Keyboard !!\n");
 		return (void *)-1;
 	}
-
+	
 	while (1)
 	{
 		SetCartridgeState(data);
