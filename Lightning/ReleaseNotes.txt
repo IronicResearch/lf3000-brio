@@ -3,19 +3,24 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.8.xxxx (October 22, 2009)
+Brio v0.7.7.5615 (October 22, 2009)
 ===========================================
 
--- not updated yet
+-- Atomic Writes: First pass; no support for append yet
+
+-- Removed 'brightness' button listener; now handled in Linux DPC driver.
+
+-- Offscreen display contexts are not supposed to affect layer visibility. (TTP #1203)
+
+-- Remove EventMPI dependency from DisplayMPI since button listener is gone. 
+Need to determine what is wrong with Set/GetBrightness() and Set/GetContrast() support i
+in unit test. (TTP #1221)
+
+-- Merge change -c5576 from Brio trunk for emulation audio compatibility. Fixes 
+Flash audio support for emulation/SDK. (TTP #1252)
 
 ===========================================
-Brio v0.7.7.5466 (October 15, 2009)
-===========================================
-
--- Not updated from branch yet
-
-===========================================
-Brio v0.7.6.5400 (October 14, 2009)
+Brio v0.7.6.5475 (October 16, 2009)
 ===========================================
 
 -- Reinstated exit handlers in BrioOpenGLConfig to destroy OGL context if 
