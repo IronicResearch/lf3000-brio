@@ -21275,3 +21275,20 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 10/30/09 1:02 PM
 6,321 ms. (Cumulative: 7,037,145 ms)
 
 ----------------
+Revision 5,720 from svn://localhost/TRUNK/:
+Revision 5,721 from svn://localhost/TRUNK/:
+Revision 5,722 from svn://localhost/TRUNK/:
+Revision 5,723 from svn://localhost/TRUNK/:
+Revision 5,724 from svn://localhost/TRUNK/:
+Revision 5,725 from svn://localhost/TRUNK/:
+Revision 5,726 from svn://localhost/TRUNK/:
+Revision 5,727 from svn://localhost/TRUNK/:
+Revision 5,728 from svn://localhost/TRUNK/:
+
+Added DisplayMPI workaround to re-align framebuffer base address if mis-alignment detected after crash from cart hot swap (TTP 1195) or tutorial interruption (TTP 437).
+
+By Dave Milici (dmilici@leapfrog.com) on 10/30/09 3:43 PM
+1 changed, 0 added, 0 deleted.
+6,342 ms. (Cumulative: 7,043,627 ms)
+
+----------------
