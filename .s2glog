@@ -21292,3 +21292,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/30/09 3:43 PM
 6,342 ms. (Cumulative: 7,043,627 ms)
 
 ----------------
+Revision 5,729 from svn://localhost/TRUNK/:
+
+Added DisplayMPI doxygen comments about framebuffer allocations for RGB, YUV, and OGL buffers. (TTP 1208)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/30/09 4:10 PM
+1 changed, 0 added, 0 deleted.
+5,719 ms. (Cumulative: 7,049,424 ms)
+
+----------------
