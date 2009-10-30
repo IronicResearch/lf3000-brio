@@ -61,6 +61,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// This corresponds to the most recent context passed to SwapBuffers() when page-flipping 
 /// is used, or the topmost onscreen context passed to Register() otherwise.
 ///
+/// On Emerald LF1000 platform, framebuffer memory is now managed as a heap,
+/// so RGB, YUV, and OGL buffers can be more flexibly allocated as needed.
+/// Framebuffer used and free memory can be tracked via GetDisplayMem() API.
+/// 
+/// RGB and YUV buffers are allocated directly via CreateHandle() API.
+/// OGL buffers are allocated internally via BrioOpenGLConfig() object, whose
+/// constructor allows configuring 1D/2D heap sizes for the OpenGL ES library.
+///
+/// The LF1000 hardware has requirements on OGL and YUV buffers to be multiples
+/// of 1Meg blocks with 4K pitch, so buffer allocations will be aligned accordingly.
 
 //==============================================================================
 class CDisplayMPI : public ICoreMPI {
