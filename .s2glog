@@ -21301,3 +21301,20 @@ By Dave Milici (dmilici@leapfrog.com) on 10/30/09 4:10 PM
 5,719 ms. (Cumulative: 7,049,424 ms)
 
 ----------------
+Revision 5,730 from svn://localhost/TRUNK/:
+Revision 5,731 from svn://localhost/TRUNK/:
+Revision 5,732 from svn://localhost/TRUNK/:
+Revision 5,733 from svn://localhost/TRUNK/:
+Revision 5,734 from svn://localhost/TRUNK/:
+Revision 5,735 from svn://localhost/TRUNK/:
+Revision 5,736 from svn://localhost/TRUNK/:
+Revision 5,737 from svn://localhost/TRUNK/:
+Revision 5,738 from svn://localhost/TRUNK/:
+
+Added DisplayMPI queries for new read-only framebuffer address/size ioctls, to avoid re-alignment issues with read-write layer register ioctls. (TTP 1195)
+
+By Dave Milici (dmilici@leapfrog.com) on 11/2/09 5:39 PM
+1 changed, 0 added, 0 deleted.
+5,642 ms. (Cumulative: 7,055,176 ms)
+
+----------------
