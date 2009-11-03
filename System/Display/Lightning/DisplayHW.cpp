@@ -247,20 +247,28 @@ void CDisplayModule::InitModule()
 	bPrimaryLayerEnabled = false;
 #endif
 
-	// TODO: Implement /dev/mlc ioctl to query framebuffer base and size
+	// Implement /dev/mlc ioctl to query framebuffer base and size
 	// independent of last loaded layer address. Workaround is to check for
 	// 1 Meg alignment on /dev/layer0 and re-align as necessary.
+	baseAddr = ioctl(gDevMlc, MLC_IOCQADDRESS, 0);
+	if (baseAddr != -ENOTTY) {
+		fb_size = ioctl(gDevMlc, MLC_IOCQFBSIZE, 0);
+		dbg_.DebugOut(kDbgLvlValuable, "DisplayModule::InitModule: /dev/mlc base = %08X, size = %08X\n", baseAddr, fb_size);
+		gFrameBase = baseAddr;
+		gFrameSize = fb_size;
+	}
 	
 	// ask for the Frame Buffer base address
 	baseAddr = ioctl(gDevLayer, MLC_IOCQADDRESS, 0);
 	dbg_.Assert(baseAddr != -EFAULT,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
-	// FIXME: Check layer address for 1 Meg alignment
+	// Check layer address for 1 Meg alignment
 	if (baseAddr & (k1Meg-1)) {
 		dbg_.DebugOut(kDbgLvlImportant, "DisplayModule::InitModule: addr %08X re-aligned for %s\n", baseAddr, RGB_LAYER_DEV);
 		baseAddr &= ~(k1Meg-1);
 	}
-	gFrameBase = baseAddr;
+	if (baseAddr != gFrameBase)
+		gFrameBase = baseAddr;
 
 	// get the frame buffer's size
 	fb_size = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
