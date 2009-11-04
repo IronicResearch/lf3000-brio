@@ -845,7 +845,12 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	if (pStream->GetPlayer())
 		RemovePlayerInternal(pStream->GetPlayer()->GetID(), false);
 
+	// Turns out, CreatePlayer is very slow (at least for ogg)
+	// and does not need the mixer lock, so we release it.
+	MIXER_UNLOCK;
 	pPlayer = CreatePlayer(pInfo, sExt);
+	MIXER_LOCK;
+
 	if (pPlayer)
 	{
 		id = pPlayer->GetID();
