@@ -21388,3 +21388,16 @@ By ytu (ytu@leapfrog.com) on 11/3/09 5:42 PM
 6,078 ms. (Cumulative: 7,089,990 ms)
 
 ----------------
+Revision 5,753 from svn://localhost/TRUNK/:
+Revision 5,754 from svn://localhost/TRUNK/:
+Revision 5,755 from svn://localhost/TRUNK/:
+Revision 5,756 from svn://localhost/TRUNK/:
+
+Reduce audio buffer size back to 2K to match /dev/dsp audio driver change for lower latency (TTP 230).
+Also avoids playback glitch from bad sample rate files (TTP 1232). 
+
+By Dave Milici (dmilici@leapfrog.com) on 11/3/09 6:25 PM
+1 changed, 0 added, 0 deleted.
+6,084 ms. (Cumulative: 7,096,153 ms)
+
+----------------
