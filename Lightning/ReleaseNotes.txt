@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.9.5757 (November 4, 2009)
+Brio v0.7.9.5760 (November 4, 2009)
 ===========================================
 
 -- Added DisplayMPI workaround to re-align framebuffer base address 
