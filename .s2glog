@@ -21379,3 +21379,12 @@ By ytu (ytu@leapfrog.com) on 11/3/09 5:42 PM
 5,673 ms. (Cumulative: 7,083,834 ms)
 
 ----------------
+Revision 5,752 from svn://localhost/TRUNK/:
+
+Cart handling moved to CartManager process, Cart thread here only handles message from CartManager
+
+By ytu (ytu@leapfrog.com) on 11/3/09 5:42 PM
+1 changed, 0 added, 0 deleted.
+6,078 ms. (Cumulative: 7,089,990 ms)
+
+----------------
