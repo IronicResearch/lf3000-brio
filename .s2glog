@@ -21354,3 +21354,18 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/3/09 1:16 PM
 5,657 ms. (Cumulative: 7,072,380 ms)
 
 ----------------
+Revision 5,748 from svn://localhost/TRUNK/:
+Revision 5,749 from svn://localhost/TRUNK/:
+
+Unlock mixer around slow CreatePlayer call.  This has the benefit of
+allowing the mixer to render while the slow call is running, rather
+than being held off.  Overall, this reduces underrun cases and gives
+us the freedom to shrink the number of audio buffers in the driver,
+ultimately reducing audio latency.
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 11/3/09 5:09 PM
+1 changed, 0 added, 0 deleted.
+5,625 ms. (Cumulative: 7,078,083 ms)
+
+----------------
