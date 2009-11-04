@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.7.9.5744 (November 3, 2009)
+Brio v0.7.9.5757 (November 4, 2009)
 ===========================================
 
 -- Added DisplayMPI workaround to re-align framebuffer base address 
@@ -16,6 +16,19 @@ for RGB, YUV, and OGL buffers. (TTP 1208)
 -- Added DisplayMPI queries for new read-only framebuffer address/size 
 ioctls, to avoid re-alignment issues with read-write layer register 
 ioctls. (TTP 1195)
+
+-- Unlock mixer around slow CreatePlayer call.  This has the benefit of
+allowing the mixer to render while the slow call is running, rather
+than being held off.  Overall, this reduces underrun cases and gives
+us the freedom to shrink the number of audio buffers in the driver,
+ultimately reducing audio latency.
+
+-- Cart handling moved to CartManager process, Cart thread here only 
+handles message from CartManager
+
+-- Reduce audio buffer size back to 2K to match /dev/dsp audio driver 
+change for lower latency (TTP 230).
+Also avoids playback glitch from bad sample rate files (TTP 1232). 
 
 ===========================================
 Brio v0.7.8.5726 (October 30, 2009)
