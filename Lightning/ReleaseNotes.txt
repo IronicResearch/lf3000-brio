@@ -3,11 +3,11 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.8.0.5765 (November 4, 2009)
+Brio v0.8.0.5788 (November 8, 2009)
 ===========================================
 
 ===========================================
-Brio v0.7.9.5760 (November 4, 2009)
+Brio v0.7.9.5778 (November 5, 2009)
 ===========================================
 
 -- Added DisplayMPI workaround to re-align framebuffer base address 
@@ -30,9 +30,7 @@ ultimately reducing audio latency.
 -- Cart handling moved to CartManager process, Cart thread here only 
 handles message from CartManager
 
--- Reduce audio buffer size back to 2K to match /dev/dsp audio driver 
-change for lower latency (TTP 230).
-Also avoids playback glitch from bad sample rate files (TTP 1232). 
+-- Reverting -r5756 from TRUNK to get prior audio behavior in release 0.7.9
 
 ===========================================
 Brio v0.7.8.5726 (October 30, 2009)
