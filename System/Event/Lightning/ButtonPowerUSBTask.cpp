@@ -228,6 +228,12 @@ void* CEventModule::CartridgeTask( void* arg )
 							data.cartridgeState = CARTRIDGE_STATE_REMOVED;
 							CCartridgeMessage cartridge_msg(data);
 							pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+						} else if(app_msg.payload==CARTRIDGE_STATE_RESTART_APPMANAGER) {
+							debug.DebugOut(kDbgLvlValuable, "CartridgeTask: CARTRIDGE_STATE_RESTART_APPMANAGER message received from socket !!\n");
+							
+							data.cartridgeState = CARTRIDGE_STATE_RESTART_APPMANAGER;
+							CCartridgeMessage cartridge_msg(data);
+							pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
 						}
 					}
 				}while (r > 0);
