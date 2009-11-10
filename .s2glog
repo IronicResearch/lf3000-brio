@@ -21478,3 +21478,15 @@ By ytu (ytu@leapfrog.com) on 11/9/09 10:04 AM
 5,797 ms. (Cumulative: 7,126,992 ms)
 
 ----------------
+Revision 5,790 from svn://localhost/TRUNK/:
+Revision 5,791 from svn://localhost/TRUNK/:
+Revision 5,792 from svn://localhost/TRUNK/:
+Revision 5,793 from svn://localhost/TRUNK/:
+
+Revert audio buffer size back to 4K for interim (TTP 230).
+
+By Dave Milici (dmilici@leapfrog.com) on 11/10/09 11:16 AM
+1 changed, 0 added, 0 deleted.
+5,603 ms. (Cumulative: 7,132,688 ms)
+
+----------------
