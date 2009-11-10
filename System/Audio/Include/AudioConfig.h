@@ -50,7 +50,7 @@
 #if 0 //def EMULATION
 #define kAudioFramesPerBuffer		256
 #else
-#define kAudioFramesPerBuffer		512
+#define kAudioFramesPerBuffer		1024
 #endif
 
 #define kAudioSamplesPerStereoBuffer (kAudioFramesPerBuffer * kAudioNumOutputChannels  )
