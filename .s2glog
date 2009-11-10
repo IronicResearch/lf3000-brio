@@ -21490,3 +21490,15 @@ By Dave Milici (dmilici@leapfrog.com) on 11/10/09 11:16 AM
 5,603 ms. (Cumulative: 7,132,688 ms)
 
 ----------------
+Revision 5,794 from svn://localhost/TRUNK/:
+Revision 5,795 from svn://localhost/TRUNK/:
+Revision 5,796 from svn://localhost/TRUNK/:
+Revision 5,797 from svn://localhost/TRUNK/:
+
+Relax InitAudioOutput assert to critical warning since re-tries are now possible.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/10/09 3:02 PM
+1 changed, 0 added, 0 deleted.
+5,676 ms. (Cumulative: 7,138,452 ms)
+
+----------------

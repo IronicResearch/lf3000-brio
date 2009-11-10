@@ -296,8 +296,10 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	// rendering.
 	err = InitAudioOutput( &CAudioMixer::WrapperToCallRender,
 							   (void *)this);
-	pDebugMPI_->Assert(bIsOutputEnabled_ = (kNoErr == err),
-					   "Failed to initalize audio output\n" );
+	// Relax assert to critical warning since re-tries are now possible.
+	bIsOutputEnabled_ = (kNoErr == err);
+	if (!bIsOutputEnabled_)
+		pDebugMPI_->DebugOut(kDbgLvlCritical, "%s: Failed to initalize audio output\n", __FUNCTION__ );
 	// Thanks to the miracle of NOP asserts, we can keep trying to
 	// enable PortAudio output in case /dev/dsp is in use.
 	if (!bIsOutputEnabled_)
@@ -321,9 +323,6 @@ CAudioMixer::CAudioMixer( int inStreams ):
 
 	currentPolicy = kAudioPriorityPolicyNone;
 
-	pDebugMPI_->Assert(kNoErr == err,
-					   "Failed to start audio output\n" );
-	
 	pDebugMPI_->Assert(FlatProfilerInit(0, 0) == 0, "Failed to init profiler.\n");
 
 	// Folklore item about once-in-blue-moon silence during Brio/AppManager session
