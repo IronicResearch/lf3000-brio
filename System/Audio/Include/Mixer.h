@@ -152,7 +152,7 @@ class CAudioMixer : private IEventListener
 
 #define kAudioMixer_MaxTempBuffers	7
 #define kAudioMixer_TempBufferWords \
-	(kAudioMixer_MaxOutChannels*kAudioOutBufSizeInWords)
+	(kAudioMixer_MaxOutChannels*kAudioMixer_MixBinBufferLength_Words)
 	S16 pTmpBufs_[kAudioMixer_MaxTempBuffers][kAudioMixer_TempBufferWords];
 	S16* pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
 
