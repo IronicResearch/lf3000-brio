@@ -729,8 +729,8 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	}
 	else if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
-		!strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")	||
-		!strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
+//		!strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")	||
+//		!strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
@@ -863,6 +863,13 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	} 
 
 	pStream->InitWithPlayer( pPlayer );
+
+	// Warn if player sample rate was clamped to fit Brio mixer stream
+	if (pStream->GetSamplingFrequency() != pPlayer->GetSampleRate()) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant,
+				"%s: player %d sample rate clamped from %d to %d\n",
+				__FUNCTION__, (int)id, (int)pPlayer->GetSampleRate(), (int)pStream->GetSamplingFrequency());
+	}
 	
 	pStream->SetPan(	 pInfo->pan );
 	pStream->SetVolume( pInfo->volume );
