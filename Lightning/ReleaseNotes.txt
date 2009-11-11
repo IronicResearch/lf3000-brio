@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.8.0.5803 (November 10, 2009)
+Brio v0.8.0.5809 (November 11, 2009)
 ===========================================
 
 -- Process AppManager restart message
@@ -11,6 +11,15 @@ Brio v0.8.0.5803 (November 10, 2009)
 -- Revert audio buffer size back to 4K for interim (TTP 230).
 
 -- Relax InitAudioOutput assert to critical warning since re-tries are now possible.
+
+-- Insure enough space available for mixer buffers used for sample rate conversion. 
+Prevents memory buffer overuns seen with mis-encoded 44KHz OggVorbis samples in 
+NiHao game. (TTP 1232) 
+
+-- Clamp audio player sample rates to fit Brio mixer stream params to prevent 
+buffer overflow problems at outset. (TTP 1232) 
+
+-- AIFF is not supported audio format -- disabled from libSndFile a long time ago.
 
 ===========================================
 Brio v0.7.9.5778 (November 5, 2009)
