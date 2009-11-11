@@ -21545,3 +21545,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/09 10:45 AM
 6,016 ms. (Cumulative: 7,161,700 ms)
 
 ----------------
+Revision 5,807 from svn://localhost/TRUNK/:
+
+AIFF is not supported audio format -- disabled from libSndFile a long time ago.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/09 10:51 AM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 7,167,810 ms)
+
+----------------
