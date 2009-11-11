@@ -21525,3 +21525,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/10/09 6:01 PM
 5,604 ms. (Cumulative: 7,149,855 ms)
 
 ----------------
+Revision 5,803 from svn://localhost/TRUNK/:
+Revision 5,804 from svn://localhost/TRUNK/:
+
+Insure enough space available for mixer buffers used for sample rate conversion. Prevents memory buffer overuns seen with mis-encoded 44KHz OggVorbis samples in NiHao game. (TTP 1232) 
+
+By Dave Milici (dmilici@leapfrog.com) on 11/10/09 7:01 PM
+2 changed, 0 added, 0 deleted.
+5,673 ms. (Cumulative: 7,155,606 ms)
+
+----------------

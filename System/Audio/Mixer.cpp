@@ -1054,6 +1054,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		{
 			ClearShorts(pStreamBuf_, numFrames*channels);
 			long streamSamplingFrequency = pStream->GetSamplingFrequency();
+			if (streamSamplingFrequency > kAudioSampleRate)
+				streamSamplingFrequency = kAudioSampleRate;
 			U32	 framesToRender =
 				(numFrames*streamSamplingFrequency)/(long)samplingFrequency_;
 			U32	 sampleCount	= framesToRender*channels;
