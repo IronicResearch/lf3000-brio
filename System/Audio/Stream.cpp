@@ -115,7 +115,19 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 
 	// Convert interface parameters to DSP level data and reset channel
 	pPlayer_	= pPlayer;
-	SetSamplingFrequency(pPlayer->GetSampleRate());
+
+	// Check sample rate of player to fit Brio mixer params
+	U32 rate = pPlayer->GetSampleRate();
+	if (rate > kAudioSampleRate) {
+		rate = kAudioSampleRate;
+	}
+	else if (rate > kAudioSampleRate_Div2 && rate < kAudioSampleRate) {
+		rate = kAudioSampleRate_Div2;
+	}
+	else if (rate < kAudioSampleRate_Div2) {
+		rate = kAudioSampleRate_Div4;
+	}
+	SetSamplingFrequency(rate);
 
 	return (kNoErr);
 }	// ---- end InitWithPlayer ----

@@ -21535,3 +21535,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/10/09 7:01 PM
 5,673 ms. (Cumulative: 7,155,606 ms)
 
 ----------------
+Revision 5,805 from svn://localhost/TRUNK/:
+Revision 5,806 from svn://localhost/TRUNK/:
+
+Clamp audio player sample rates to fit Brio mixer stream params to prevent buffer overflow problems at outset. (TTP 1232) 
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/09 10:45 AM
+2 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 7,161,700 ms)
+
+----------------
