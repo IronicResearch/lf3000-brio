@@ -3,8 +3,14 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.8.0.5788 (November 8, 2009)
+Brio v0.8.0.5799 (November 10, 2009)
 ===========================================
+
+-- Process AppManager restart message
+
+-- Revert audio buffer size back to 4K for interim (TTP 230).
+
+-- Relax InitAudioOutput assert to critical warning since re-tries are now possible.
 
 ===========================================
 Brio v0.7.9.5778 (November 5, 2009)
