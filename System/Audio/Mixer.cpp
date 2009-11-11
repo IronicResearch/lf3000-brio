@@ -729,8 +729,6 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	}
 	else if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
-//		!strcmp(sExt, "aif")  || !strcmp( sExt, "AIF")	||
-//		!strcmp(sExt, "aiff") || !strcmp( sExt, "AIFF") ||
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
