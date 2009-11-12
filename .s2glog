@@ -21592,3 +21592,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/12/09 10:21 AM
 6,110 ms. (Cumulative: 7,186,413 ms)
 
 ----------------
+Revision 5,820 from svn://localhost/TRUNK/:
+
+Added VideoMPI unit test for SeekVideoFrame().
+
+By Dave Milici (dmilici@leapfrog.com) on 11/12/09 11:02 AM
+1 changed, 2 added, 0 deleted.
+6,361 ms. (Cumulative: 7,192,852 ms)
+
+----------------
