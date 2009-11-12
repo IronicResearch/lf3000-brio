@@ -658,12 +658,14 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	// Compare selected frame time to current frame time
 	GetVideoTime(hVideo, &time);
 
+	// TODO: Implement smarter bisection seek scheme.
+	// Current seek scheme only seeks forward linearly.
 	if (time.frame > pCtx->frame)
 	{	
 		// If we already past seek frame, we need to rewind from start
-		DeInitVideoInt(hVideo);
+		ogg_int64_t granpos = 0;
+		theora_control(&td, TH_DECCTL_SET_GRANPOS, &granpos, sizeof(granpos));
 		fseek(gfile, 0, SEEK_SET);
-		InitVideoInt(hVideo);
 	}
 	
 	// Loop until we find the selected frame or end of file
