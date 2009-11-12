@@ -21581,3 +21581,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/11/09 4:49 PM
 6,234 ms. (Cumulative: 7,180,225 ms)
 
 ----------------
+Revision 5,817 from svn://localhost/TRUNK/:
+Revision 5,818 from svn://localhost/TRUNK/:
+Revision 5,819 from svn://localhost/TRUNK/:
+
+Fix VideoMPI rewind seek op to support looping option.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/12/09 10:21 AM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 7,186,413 ms)
+
+----------------
