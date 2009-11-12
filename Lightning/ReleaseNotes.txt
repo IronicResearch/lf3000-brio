@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.8.0.5817 (November 11, 2009)
+Brio v0.8.0.5822 (November 12, 2009)
 ===========================================
 
 -- Process AppManager restart message
@@ -20,6 +20,10 @@ NiHao game. (TTP 1232)
 buffer overflow problems at outset. (TTP 1232) 
 
 -- AIFF is not supported audio format -- disabled from libSndFile a long time ago.
+
+-- Fix VideoMPI rewind seek op to support looping option.
+
+-- Added VideoMPI unit test for SeekVideoFrame().
 
 ===========================================
 Brio v0.7.9.5778 (November 5, 2009)
