@@ -254,6 +254,7 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 
 	// Stop running task, if it hasn't already stopped itself
 	bRunning = false;
+	kernel.CancelTask(hVideoThread);
 	kernel.JoinTask(hVideoThread, retval);
 	pCtx->hVideoThread = hVideoThread = kNull;
 	
