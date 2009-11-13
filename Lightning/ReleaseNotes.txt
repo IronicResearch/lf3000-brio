@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.8.0.5822 (November 12, 2009)
+Brio v0.8.0.5826 (November 12, 2009)
 ===========================================
 
 -- Process AppManager restart message
