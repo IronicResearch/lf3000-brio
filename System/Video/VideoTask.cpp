@@ -185,7 +185,7 @@ void* VideoTaskMain( void* arg )
 		if (pctx->hAudio != kNoAudioID)
 			audmgr.StopAudio(pctx->hAudio, false);
 		// Reloop from 1st video frame if selected, or exit thread
-		if (pctx->bLooped)
+		if (bRunning && pctx->bLooped)
 			pctx->bPlaying = vidmgr.SeekVideoFrame(pctx->hVideo, &vtm0);
 		else
 			pctx->bPlaying = false;
@@ -254,7 +254,10 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 
 	// Stop running task, if it hasn't already stopped itself
 	bRunning = false;
-	kernel.CancelTask(hVideoThread);
+	if (!bStopping)
+		kernel.TaskSleep(10);
+	if (!bStopping)
+		kernel.CancelTask(hVideoThread);
 	kernel.JoinTask(hVideoThread, retval);
 	pCtx->hVideoThread = hVideoThread = kNull;
 	
