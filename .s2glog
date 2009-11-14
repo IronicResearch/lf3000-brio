@@ -21667,3 +21667,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/14/09 7:37 AM
 5,660 ms. (Cumulative: 7,222,112 ms)
 
 ----------------
+Revision 5,843 from svn://localhost/TRUNK/:
+
+Allow video thread to exit itself gracefully before killing it.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/09 12:38 PM
+1 changed, 0 added, 0 deleted.
+5,609 ms. (Cumulative: 7,227,783 ms)
+
+----------------
