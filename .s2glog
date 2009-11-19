@@ -21676,3 +21676,52 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/09 12:38 PM
 5,609 ms. (Cumulative: 7,227,783 ms)
 
 ----------------
+Revision 5,844 from svn://localhost/TRUNK/:
+Revision 5,845 from svn://localhost/TRUNK/:
+Revision 5,846 from svn://localhost/TRUNK/:
+Revision 5,847 from svn://localhost/TRUNK/:
+Revision 5,848 from svn://localhost/TRUNK/:
+Revision 5,849 from svn://localhost/TRUNK/:
+Revision 5,850 from svn://localhost/TRUNK/:
+Revision 5,851 from svn://localhost/TRUNK/:
+Revision 5,852 from svn://localhost/TRUNK/:
+Revision 5,853 from svn://localhost/TRUNK/:
+Revision 5,854 from svn://localhost/TRUNK/:
+Revision 5,855 from svn://localhost/TRUNK/:
+Revision 5,856 from svn://localhost/TRUNK/:
+Revision 5,857 from svn://localhost/TRUNK/:
+Revision 5,858 from svn://localhost/TRUNK/:
+Revision 5,859 from svn://localhost/TRUNK/:
+Revision 5,860 from svn://localhost/TRUNK/:
+Revision 5,861 from svn://localhost/TRUNK/:
+Revision 5,862 from svn://localhost/TRUNK/:
+Revision 5,863 from svn://localhost/TRUNK/:
+Revision 5,864 from svn://localhost/TRUNK/:
+Revision 5,865 from svn://localhost/TRUNK/:
+Revision 5,866 from svn://localhost/TRUNK/:
+Revision 5,867 from svn://localhost/TRUNK/:
+Revision 5,868 from svn://localhost/TRUNK/:
+Revision 5,869 from svn://localhost/TRUNK/:
+Revision 5,870 from svn://localhost/TRUNK/:
+Revision 5,871 from svn://localhost/TRUNK/:
+Revision 5,872 from svn://localhost/TRUNK/:
+Revision 5,873 from svn://localhost/TRUNK/:
+Revision 5,874 from svn://localhost/TRUNK/:
+Revision 5,875 from svn://localhost/TRUNK/:
+Revision 5,876 from svn://localhost/TRUNK/:
+Revision 5,877 from svn://localhost/TRUNK/:
+Revision 5,878 from svn://localhost/TRUNK/:
+Revision 5,879 from svn://localhost/TRUNK/:
+Revision 5,880 from svn://localhost/TRUNK/:
+Revision 5,881 from svn://localhost/TRUNK/:
+Revision 5,882 from svn://localhost/TRUNK/:
+Revision 5,883 from svn://localhost/TRUNK/:
+Revision 5,884 from svn://localhost/TRUNK/:
+
+Wait for VideoMPI thread to run to completion when stopping video playback. (TTP #1489)
+
+By Dave Milici (dmilici@leapfrog.com) on 11/19/09 10:26 AM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 7,234,237 ms)
+
+----------------
