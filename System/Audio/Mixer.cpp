@@ -1071,6 +1071,9 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			// players.  Note that this is going to be migrated to a Notify
 			// function to off-load the render loop.
 			CAudioPlayer *pPlayer = pStream->GetPlayer();
+			// Incomplete Render callback?
+			if (framesRendered < framesToRender && !pPlayer->IsDone())
+				return kAudioNoDataAvailErr;
 			if (pPlayer->IsDone())
 			{
 				// find the number of samples that the player did not render
