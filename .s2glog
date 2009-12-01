@@ -21797,3 +21797,21 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/24/09 11:47 AM
 6,204 ms. (Cumulative: 7,265,388 ms)
 
 ----------------
+Revision 5,912 from svn://localhost/TRUNK/:
+Revision 5,913 from svn://localhost/TRUNK/:
+Revision 5,914 from svn://localhost/TRUNK/:
+Revision 5,915 from svn://localhost/TRUNK/:
+Revision 5,916 from svn://localhost/TRUNK/:
+Revision 5,917 from svn://localhost/TRUNK/:
+Revision 5,918 from svn://localhost/TRUNK/:
+Revision 5,919 from svn://localhost/TRUNK/:
+Revision 5,920 from svn://localhost/TRUNK/:
+Revision 5,921 from svn://localhost/TRUNK/:
+
+Detect incomplete Render callback from MemPlayer stream in order to allow retry attempts. Compensates for unrendered Flash audio packets which would otherwise be output as silence/breakups. (TTP #860)
+
+By Dave Milici (dmilici@leapfrog.com) on 11/30/09 7:02 PM
+3 changed, 0 added, 0 deleted.
+5,788 ms. (Cumulative: 7,271,301 ms)
+
+----------------

@@ -26,6 +26,7 @@
 #include <DebugMPI.h>
 #include <DebugTypes.h>
 #include <GroupEnumeration.h>
+#include <KernelMPI.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -85,10 +86,14 @@ static int paCallback(const void* inputBuffer,
 	gCallbackCount++;
 
 #if USE_REAL_CALLBACK
-	// fixme/dg: do proper DebugMPI-based output.
- 
+	int ret = kNoErr;
+	CKernelMPI kernel;
 	// Call audio system callback to fill buffer
-	gAudioRenderCallback( (S16*)outputBuffer, framesPerBuffer, gCallbackUserData );
+	do {
+		ret = gAudioRenderCallback( (S16*)outputBuffer, framesPerBuffer, gCallbackUserData );
+		if (ret != kNoErr)
+			kernel.TaskSleep(10);
+	} while (ret != kNoErr);
 #else
 	for( i=0; i<framesPerBuffer; i++ )
 	{

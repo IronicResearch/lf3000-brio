@@ -150,9 +150,10 @@ U32 CMemPlayer::Render( S16 *pOut, U32 numStereoFrames)
 	if (pRenderCallback_)
 	{
 		Boolean rc = (*pRenderCallback_)(numStereoFrames, pOut);
-		if (rc)
+		// Distinguish 3rd state for incomplete Render callback
+		if (rc == true)
 			framesRead = numStereoFrames;
-		else
+		else if (rc == false)
 			bIsDone_ = true;
 		return framesRead;
 	}
