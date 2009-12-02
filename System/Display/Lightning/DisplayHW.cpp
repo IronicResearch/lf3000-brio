@@ -255,7 +255,7 @@ void CDisplayModule::InitModule()
 		fb_size = ioctl(gDevMlc, MLC_IOCQFBSIZE, 0);
 		dbg_.DebugOut(kDbgLvlValuable, "DisplayModule::InitModule: /dev/mlc base = %08X, size = %08X\n", baseAddr, fb_size);
 		gFrameBase = baseAddr;
-		gFrameSize = fb_size;
+		gFrameSize = gFrameSizeTotal = fb_size;
 	}
 	
 	// ask for the Frame Buffer base address
@@ -267,14 +267,15 @@ void CDisplayModule::InitModule()
 		dbg_.DebugOut(kDbgLvlImportant, "DisplayModule::InitModule: addr %08X re-aligned for %s\n", baseAddr, RGB_LAYER_DEV);
 		baseAddr &= ~(k1Meg-1);
 	}
-	if (baseAddr != gFrameBase)
+	if (gFrameBase == 0)
 		gFrameBase = baseAddr;
 
 	// get the frame buffer's size
 	fb_size = ioctl(gDevLayer, MLC_IOCQFBSIZE, 0);
 	dbg_.Assert(fb_size > 0,
 			"DisplayModule::InitModule: MLC layer ioctl failed");
-	gFrameSize = fb_size;
+	if (gFrameSize == 0)
+		gFrameSize = fb_size;
 
 	// Open MLC 3D OpenGL RGB layer device
 	gDevOpenGL = open(OGL_LAYER_DEV, O_RDWR|O_SYNC);
@@ -314,7 +315,8 @@ void CDisplayModule::InitModule()
 
 	// Calculate total framebuffer memory available for sub-allocation
 #ifdef UNIFIED
-	gFrameSizeTotal = gFrameSize + gOverlaySize + gOpenGLSize;
+	if (gFrameSizeTotal == 0)
+		gFrameSizeTotal = gFrameSize + gOverlaySize + gOpenGLSize;
 	gPlanarSize = gFrameSize = gFrameSizeTotal;
 	gPlanarBase = gFrameBase | 0x20000000;
 #else
