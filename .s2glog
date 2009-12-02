@@ -21861,3 +21861,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/1/09 7:40 PM
 6,047 ms. (Cumulative: 7,295,369 ms)
 
 ----------------
+Revision 5,932 from svn://localhost/TRUNK/:
+Revision 5,933 from svn://localhost/TRUNK/:
+
+Modify framebuffer size queries to defer to read-only /dev/mlc config values, in order to support non-standard reserve in custom kernels. (Layer-specific sizes seem to be hard-coded.)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/09 9:54 AM
+1 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 7,301,463 ms)
+
+----------------
