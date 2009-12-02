@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.1.5938 (December 2, 2009)
+Brio v0.9.1.5941 (December 2, 2009)
 ===========================================
 
 -- Audio: Detect incomplete Render callback from MemPlayer stream 
