@@ -3,13 +3,17 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.1.5932 (December 1, 2009)
+Brio v0.9.1.5938 (December 2, 2009)
 ===========================================
 
 -- Audio: Detect incomplete Render callback from MemPlayer stream 
 in order to allow retry attempts. Compensates for unrendered Flash 
 audio packets which would otherwise be output as silence/breakups. 
 (TTP #860)
+
+-- Modify framebuffer size queries to defer to read-only /dev/mlc config values, 
+in order to support non-standard reserve in custom kernels. (Layer-specific sizes 
+seem to be hard-coded.)
 
 ===========================================
 Brio v0.9.0.5890 (November 19, 2009)
