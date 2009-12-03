@@ -87,12 +87,13 @@ static int paCallback(const void* inputBuffer,
 
 #if USE_REAL_CALLBACK
 	int ret = kNoErr;
-	CKernelMPI kernel;
+	extern CKernelMPI *pKernelMPI_;
+
 	// Call audio system callback to fill buffer
 	do {
 		ret = gAudioRenderCallback( (S16*)outputBuffer, framesPerBuffer, gCallbackUserData );
 		if (ret != kNoErr)
-			kernel.TaskSleep(10);
+			pKernelMPI_->TaskSleep(10);
 	} while (ret != kNoErr);
 #else
 	for( i=0; i<framesPerBuffer; i++ )
