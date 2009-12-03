@@ -21896,3 +21896,16 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/2/09 1:47 PM
 6,095 ms. (Cumulative: 7,313,931 ms)
 
 ----------------
+Revision 5,941 from svn://localhost/TRUNK/:
+Revision 5,942 from svn://localhost/TRUNK/:
+Revision 5,943 from svn://localhost/TRUNK/:
+Revision 5,944 from svn://localhost/TRUNK/:
+Revision 5,945 from svn://localhost/TRUNK/:
+
+Use persistent KernelMPI instance in PortAudio callback to allow thread to terminate properly.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/09 4:59 PM
+1 changed, 0 added, 0 deleted.
+5,797 ms. (Cumulative: 7,319,822 ms)
+
+----------------
