@@ -21919,3 +21919,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/2/09 6:48 PM
 5,719 ms. (Cumulative: 7,325,604 ms)
 
 ----------------
+Revision 5,947 from svn://localhost/TRUNK/:
+Revision 5,948 from svn://localhost/TRUNK/:
+
+Workaround to skip module cleanup to avoid aborts on bad handles.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/09 6:56 PM
+1 changed, 0 added, 0 deleted.
+5,645 ms. (Cumulative: 7,331,327 ms)
+
+----------------

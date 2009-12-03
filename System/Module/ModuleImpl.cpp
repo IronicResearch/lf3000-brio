@@ -410,7 +410,7 @@ extern "C" tErrType Disconnect(const ICoreModule* ptr)
 //--------------------------------------------------------------------------   
 extern "C" void ExitModuleManagerLib(void)
 {
-#ifndef EMULATION
+#if 0 //ndef EMULATION
 	g_impl.DestroyAllModules();
 #endif
 }
