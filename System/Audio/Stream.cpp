@@ -38,6 +38,10 @@ CStream::CStream()
 	pan_	= kPan_Default;
 	volume_ = kVolume_Default;
 	samplingFrequency_ = 0;
+	// FIXME: valgrind suspect(s)
+	gainf	= 1.0;
+	panValuesf[kLeft ] = 0.707;
+	panValuesf[kRight] = 0.707;
 
 }	// ---- end CStream ----
 
@@ -58,7 +62,8 @@ void CStream::SetPan( S8 x )
 	// Convert input range to [-100 .. 100]range [0 .. 1] suitable for the
 	// constant power calculation
 	float xf = ChangeRangef((float)pan_, (float) kPan_Min, (float)kPan_Max, 0.0f, 1.0f);
-	
+
+	// FIXME: float sin/cos routine...
 	ConstantPowerValues(xf, &panValuesf[kLeft], &panValuesf[kRight]);
 	RecalculateLevels();
 }	// ---- end SetPan ----
@@ -84,7 +89,7 @@ void CStream::SetVolume( U8 x )
 // ==============================================================================
 void CStream::RecalculateLevels()
 {
-
+	// FIXME: SetPan() vs SetVolume() dependency
 	levelsf[kLeft ] =  panValuesf[kLeft ]*gainf;
 	levelsf[kRight] =  panValuesf[kRight]*gainf;
 

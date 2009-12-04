@@ -21929,3 +21929,21 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/09 6:56 PM
 5,645 ms. (Cumulative: 7,331,327 ms)
 
 ----------------
+Revision 5,949 from svn://localhost/TRUNK/:
+Revision 5,950 from svn://localhost/TRUNK/:
+Revision 5,951 from svn://localhost/TRUNK/:
+Revision 5,952 from svn://localhost/TRUNK/:
+Revision 5,953 from svn://localhost/TRUNK/:
+Revision 5,954 from svn://localhost/TRUNK/:
+Revision 5,955 from svn://localhost/TRUNK/:
+Revision 5,956 from svn://localhost/TRUNK/:
+Revision 5,957 from svn://localhost/TRUNK/:
+Revision 5,958 from svn://localhost/TRUNK/:
+
+Minor AudioMPI mixer fixes for valgrind uninitialized variable warnings. No real effect in execution.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/4/09 1:26 PM
+2 changed, 0 added, 0 deleted.
+5,745 ms. (Cumulative: 7,337,182 ms)
+
+----------------
