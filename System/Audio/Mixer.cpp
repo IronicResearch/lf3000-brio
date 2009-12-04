@@ -243,10 +243,10 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	// numFrames = 256 for EMULATION, 512 for embedded
 	int numFramesPerBuffer = kAudioFramesPerBuffer;
 	
-	// Headphone gain
+	// Headphone gain	// FIXME: dead code?
 	headphoneGainDB_	 = kMixer_Headphone_GainDB;
 	headphoneGainF_		 = DecibelToLinearf(headphoneGainDB_);
-	headphoneGainWholeI_ = (long)headphoneGainFracF_;
+	headphoneGainWholeI_ = (long)headphoneGainF_; // valgrind suspect
 	headphoneGainFracF_	 = headphoneGainF_ - (float)headphoneGainWholeI_;
 	headphoneGainFracI_	 = FloatToQ15(headphoneGainFracF_);
 
