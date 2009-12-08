@@ -22,15 +22,14 @@
 #include <malloc.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <Utility.h>
+#include <DebugMPI.h>
 
 #include "AtomicFile.h"
 
 #define MAX_ATOMIC	1
 #define	ATOMIC_EXT	".atomic"
 #define ATOMIC_UNUSED	{ -1 }
-
-#define ATOMIC_ERR(x)		fprintf (stderr, x);
-#define ATOMIC_ERR1(x,y)	fprintf (stderr, x, y);
 
 // The information we need to maintain for atomic access
 // Keep original FILE* around to support 2nd
@@ -42,6 +41,19 @@ static struct atomic_info
 	char *workName;
 } atomicOpen = ATOMIC_UNUSED;
 
+#if 0
+// No BRIO
+#define ATOMIC_ERR(x)		fprintf (stderr, x)
+#define ATOMIC_ERR1(x,y)	fprintf (stderr, x, y)
+#define ATOMIC_ERR2(x,y,z)	fprintf (stderr, x, y, z)
+#else
+// Yes BRIO: make errors go to DebugOut
+#define ATOMIC_ERR(x)		debug.DebugOut(kDbgLvlImportant, x)
+#define ATOMIC_ERR1(x,y)	debug.DebugOut(kDbgLvlImportant, x, y)
+#define ATOMIC_ERR2(x,y,z)	debug.DebugOut(kDbgLvlImportant, x, y, z)
+#endif
+
+LF_USING_BRIO_NAMESPACE()
 
 // Used to close an atomic update file, discarding any changes.
 // Use this when you discover and error after calling fopenAtomic, and don't
@@ -49,6 +61,8 @@ static struct atomic_info
 // Return 0 for OK, -1 for failure
 int fabortAtomic (FILE *fp)
 {
+	CDebugMPI debug(kGroupPlatform);
+
 	int fd = fileno (fp);
 	if (atomicOpen.fd != fd && atomicOpen.fd >= 0)
 	{
@@ -72,6 +86,7 @@ int fabortAtomic (FILE *fp)
 	}
 	// Regardless, reset to unused state
 	atomicOpen = (struct atomic_info)ATOMIC_UNUSED;
+	ATOMIC_ERR1 ("fabortAtomic(0x%08x) returning 0", (unsigned) fp);
 	return 0;
 }
 
@@ -80,13 +95,15 @@ int fabortAtomic (FILE *fp)
 // Actually opens file with derivative name.
 FILE *fopenAtomic(const char *path, const char *mode)
 {
+	CDebugMPI debug(kGroupPlatform);
+
 	// Make sure there is only writing requested
 	const char *s;
 	for (s=mode; *s; s++)
 	{
 		if (tolower(*s) == 'a' || tolower(*s) == 'r')
 		{
-			ATOMIC_ERR ("fopenAtomic: Can't use with append or read modes!\n");
+			ATOMIC_ERR1 ("fopenAtomic(%s): Can't use with append or read modes!\n", path);
 			return NULL;
 		}
 	}
@@ -94,7 +111,7 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	// Make sure there is room in atomicOpen structure
 	if (atomicOpen.fd != -1)
 	{
-		ATOMIC_ERR ("fopenAtomic: Ran out of atomic file handles!\n");
+		ATOMIC_ERR1 ("fopenAtomic(%s): Ran out of atomic file handles!\n", path);
 		return NULL;
 	}
 
@@ -114,16 +131,18 @@ FILE *fopenAtomic(const char *path, const char *mode)
 		free (atomicOpen.realName);
 		free (atomicOpen.workName);
 		atomicOpen.realName = atomicOpen.workName = NULL;
+		ATOMIC_ERR1 ("fopenAtomic(%s): fopen failed!\n", path);
 		return fout;
 	}
 
-	// We fd also for fsync call later
+	// We need fd also for fsync call later
 	int fd = fileno (fout);
 
 	// Save in opens list
 	atomicOpen.fd = fd;
 	atomicOpen.file = fout;
 
+	ATOMIC_ERR2 ("fopenAtomic(%s) returning 0x%08x", path, (unsigned) fout);
 	return fout;
 }
 
@@ -132,6 +151,8 @@ FILE *fopenAtomic(const char *path, const char *mode)
 // alone.  Use like fclose
 int fcloseAtomic(FILE *fp)
 {
+	CDebugMPI debug(kGroupPlatform);
+
 	// Make sure it was fopenAtomic'd
 	int fd = fileno (fp);
 	if (atomicOpen.fd != fd)
@@ -149,10 +170,16 @@ int fcloseAtomic(FILE *fp)
 	// Do atomic dance
 	int res = fdatasync (fd);
 	if (res)
+	{
+		ATOMIC_ERR1 ("fcloseAtomic fdatasync failed; returning %d", res);
 		return res;
+	}
 	res = fclose (fp);
 	if (res)
+	{
+		ATOMIC_ERR1 ("fcloseAtomic fclose failed; returning %d", res);
 		return res;
+	}
 	sync (); // Gotta be exactly here to work.  Otherwise 1% failure rate
 	// POSIX atomic magic
 	res = rename (atomicOpen.workName, atomicOpen.realName);
@@ -162,5 +189,6 @@ int fcloseAtomic(FILE *fp)
 	free (atomicOpen.workName);
 	atomicOpen = (struct atomic_info)ATOMIC_UNUSED;
 
+	ATOMIC_ERR1 ("fcloseAtomic returning %d", res);
 	return res;
 }
