@@ -21947,3 +21947,20 @@ By Dave Milici (dmilici@leapfrog.com) on 12/4/09 1:26 PM
 5,745 ms. (Cumulative: 7,337,182 ms)
 
 ----------------
+Revision 5,959 from svn://localhost/TRUNK/:
+Revision 5,960 from svn://localhost/TRUNK/:
+Revision 5,961 from svn://localhost/TRUNK/:
+Revision 5,962 from svn://localhost/TRUNK/:
+Revision 5,963 from svn://localhost/TRUNK/:
+Revision 5,964 from svn://localhost/TRUNK/:
+Revision 5,965 from svn://localhost/TRUNK/:
+
+TTPro1616: Add DebugOut logging to Atomic file I/O.
+Note: We assume now that we have Brio and can use DebugOut!
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 12/7/09 5:58 PM
+1 changed, 0 added, 0 deleted.
+5,703 ms. (Cumulative: 7,343,010 ms)
+
+----------------
