@@ -65,6 +65,12 @@ enum eCartridgeEvent_ {
 	CARTRIDGE_EVENT_REMOVE,
 }; 
 
+enum eCartridgeType_ {
+	CARTRIDGE_TYPE_UNKNOWN,
+	CARTRIDGE_TYPE_DIDJ,
+	CARTRIDGE_TYPE_EMERALD,
+}; 
+
 
 //------------------------------------------------------------------------------
 struct tCartridgeData {
@@ -72,7 +78,10 @@ struct tCartridgeData {
 };
 
 
-
+/// \class CCartridgeMessage
+///
+///    The CCartridgeMessage is for Leapfrog internal use only!
+///
 //------------------------------------------------------------------------------
 class CCartridgeMessage : public IEventMessage {
 public:
