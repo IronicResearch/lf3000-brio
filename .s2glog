@@ -21977,3 +21977,12 @@ By ytu (ytu@leapfrog.com) on 12/8/09 4:55 PM
 5,740 ms. (Cumulative: 7,348,844 ms)
 
 ----------------
+Revision 5,971 from svn://localhost/TRUNK/:
+
+added an interface GetCartridgeType(..), not used for now.
+
+By ytu (ytu@leapfrog.com) on 12/8/09 4:56 PM
+1 changed, 0 added, 0 deleted.
+5,703 ms. (Cumulative: 7,354,625 ms)
+
+----------------
