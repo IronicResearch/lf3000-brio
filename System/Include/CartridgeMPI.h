@@ -20,7 +20,12 @@
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
-
+/// \class CCartridgeMPI
+///
+///    The CCartridgeMPI is for Leapfrog internal use only !
+///
+///   The CCartridgeMPI interface is designed to provide interfaces for accessing OTP cartridge
+///
 //==============================================================================
 class CCartridgeMPI : public ICoreMPI {
 public:	
@@ -41,10 +46,12 @@ public:
 	/// Unregister handler
 	tErrType UnregisterEventListener(const IEventListener *pListener);
 	
-	/// Get current power state which is the same as the last message passing
-	/// through the event manager
+	/// Get current cartridge state
 	tCartridgeData GetCartridgeState() const;
-	
+
+	/// Get current cartridge type
+	enum eCartridgeType_ GetCartridgeType() const;
+
 private:
 	class CCartridgeModule*		pModule_;
 };
