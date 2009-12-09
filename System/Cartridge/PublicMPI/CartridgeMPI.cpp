@@ -14,6 +14,7 @@
 //============================================================================
 
 #include <CartridgeMPI.h>
+#include <DebugMPI.h>
 #include <CartridgePriv.h>
 #include <EventMPI.h>
 #include <SystemErrors.h>
@@ -113,6 +114,41 @@ tCartridgeData CCartridgeMPI::GetCartridgeState() const
 	return LeapFrog::Brio::GetCartridgeState();
 }
 
+
+//----------------------------------------------------------------------------
+// The Emerald OTP cart ID is 3 verus Didj OTP ID 7
+#define CART_TYPE_INFO  "/sys/devices/platform/lf1000-nand/cart_hotswap"	
+enum eCartridgeType_ CCartridgeMPI::GetCartridgeType() const
+{
+	FILE *fp;
+	CDebugMPI debug(kGroupCartridge);
+	int ret, ready, option;
+	enum eCartridgeType_	type = CARTRIDGE_TYPE_UNKNOWN;
+	
+	fp = fopen(CART_TYPE_INFO, "r");
+	if(fp == NULL) {
+		debug.DebugOut(kDbgLvlCritical, "Error: can't open %s for read !\n", CART_TYPE_INFO);
+		return CARTRIDGE_TYPE_UNKNOWN;
+	}
+
+	ret = fscanf(fp, "%d %d", &ready, &option);
+	if((ret == 0) || (ret == EOF)) {
+		debug.DebugOut(kDbgLvlCritical, "Error: data at %s: Format Wrong \n", CART_TYPE_INFO);
+	} 
+	fclose(fp);
+	
+	if(ready == 1) {
+		if(option==1) {
+			type = CARTRIDGE_TYPE_DIDJ;
+		}else if(option==0) {
+			type = CARTRIDGE_TYPE_EMERALD;
+		}
+	} else {
+		type = CARTRIDGE_TYPE_UNKNOWN;		
+	}
+	
+	return type;
+}
 
 LF_END_BRIO_NAMESPACE()
 
