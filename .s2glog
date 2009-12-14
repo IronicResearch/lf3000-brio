@@ -22010,3 +22010,25 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/10/09 7:04 PM
 6,044 ms. (Cumulative: 7,360,826 ms)
 
 ----------------
+Revision 5,987 from svn://localhost/TRUNK/:
+Revision 5,988 from svn://localhost/TRUNK/:
+Revision 5,989 from svn://localhost/TRUNK/:
+Revision 5,990 from svn://localhost/TRUNK/:
+Revision 5,991 from svn://localhost/TRUNK/:
+Revision 5,992 from svn://localhost/TRUNK/:
+Revision 5,993 from svn://localhost/TRUNK/:
+Revision 5,994 from svn://localhost/TRUNK/:
+Revision 5,995 from svn://localhost/TRUNK/:
+Revision 5,996 from svn://localhost/TRUNK/:
+Revision 5,997 from svn://localhost/TRUNK/:
+Revision 5,998 from svn://localhost/TRUNK/:
+Revision 5,999 from svn://localhost/TRUNK/:
+Revision 6,000 from svn://localhost/TRUNK/:
+
+Added breakout counter to video task stop logic to avoid hanging seen in USB looping video. (TTP #1518)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/14/09 10:52 AM
+1 changed, 0 added, 0 deleted.
+6,048 ms. (Cumulative: 7,367,046 ms)
+
+----------------
