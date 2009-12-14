@@ -22032,3 +22032,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/14/09 10:52 AM
 6,048 ms. (Cumulative: 7,367,046 ms)
 
 ----------------
+Revision 6,001 from svn://localhost/TRUNK/:
+Revision 6,002 from svn://localhost/TRUNK/:
+Revision 6,003 from svn://localhost/TRUNK/:
+
+Modify kTouchRateDefault to 100 to reflect new driver default. (TTP #1680)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/14/09 3:28 PM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 7,373,187 ms)
+
+----------------
