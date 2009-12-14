@@ -248,13 +248,14 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 {
 	CKernelMPI	kernel;
 	void* 		retval;
+	int			count = 10;
 
 	if (hVideoThread == kNull)
 		return kNoErr;
 
 	// Stop running task, if it hasn't already stopped itself
 	bRunning = false;
-	while (!bStopping)
+	while (!bStopping && --count)
 		kernel.TaskSleep(10);
 	if (!bStopping)
 		kernel.CancelTask(hVideoThread);
