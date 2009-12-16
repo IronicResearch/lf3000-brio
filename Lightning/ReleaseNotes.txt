@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.3.6015 (December 16, 2009)
+Brio v0.9.3.6019 (December 16, 2009)
 ===========================================
 
 -- Added breakout counter to video task stop logic to avoid 
