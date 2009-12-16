@@ -108,31 +108,39 @@ namespace
 	//----------------------------------------------------------------------------
 	int open_input_device(char *input_name)
 	{
+		struct dirent *dp;
 		char dev[20];
 		char name[32];
+		DIR *dir;
 		int fd, i;
+
+		dir = opendir("/dev/input/");
+		if (!dir)
+			return -1;
 	
-		for(i = 0; i < MAX_DEVNODES; i++) {
-			sprintf(dev, "/dev/input/event%d", i);
-			fd = open(dev, O_RDONLY);
-			if(fd < 0) {
-				return 1;
-			}
-	
-			if(ioctl(fd, EVIOCGNAME(32), name) < 0) {
-				close(fd);
-				return 1;
-			}
-	
-			if(!strcmp(name, input_name)) {
-				return fd;
-			}
-			else { /* not what we want, check another */
-				close(fd);
-				fd = -1;
+		while ((dp = readdir(dir)) != NULL) {
+			if (dp->d_name && !strncmp(dp->d_name, "event", 5)) {
+				sprintf(dev, "/dev/input/%s", dp->d_name);
+				fd = open(dev, O_RDONLY);
+				if (fd == -1)
+					continue;
+		
+				if (ioctl(fd, EVIOCGNAME(32), name) < 0) {
+					close(fd);
+					continue;
+				}
+		
+				if (!strcmp(name, input_name)) {
+					closedir(dir);
+					return fd;
+				} else { /* not what we want, check another */
+					close(fd);
+					fd = -1;
+				}
 			}
 		}
 		
+		closedir(dir);
 		return -1;
 	}
 	

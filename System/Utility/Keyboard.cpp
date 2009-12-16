@@ -15,6 +15,7 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include <sys/ioctl.h>
 
 #undef __STRICT_ANSI__
@@ -25,7 +26,6 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define KEYBOARD_NAME	"LF1000 Keyboard"
-#define MAX_DEVNODES	8
 
 bool	scanned = false;
 char	dev[20];
@@ -35,33 +35,47 @@ char	dev[20];
 //----------------------------------------------------------------------------
 char *GetKeyboardName(void)
 {
+	struct dirent *dp;
+	DIR *dir;
 	int fd;
 	char name[32];
 
 	if(scanned)
 		return dev;
 
-	for(int i = 0; i < MAX_DEVNODES; i++) {
-		sprintf(dev, "/dev/input/event%d", i);
-		fd = open(dev, O_RDONLY);
-		if(fd < 0) {
-			perror("can't open device\n");
-			return NULL;
-		}
+	dir = opendir("/dev/input/");
+	if (!dir) {
+		perror("can't open /dev/input directory\n");
+		return NULL;
+	}
 
-		if(ioctl(fd, EVIOCGNAME(32), name) < 0) {
-			perror("can't get keyboard name\n");
-			close(fd);
-			return NULL;
-		}
+	/* scan all /dev/input/eventN files until a match is found, in which
+	 * case we return the path to the first event file which matched. */
+	while ((dp = readdir(dir)) != NULL) {
+		if (dp->d_name && !strncmp(dp->d_name, "event", 5)) {
+			sprintf(dev, "/dev/input/%s", dp->d_name);
+			fd = open(dev, O_RDONLY);
+			if(fd == -1) {
+				perror("can't open device\n");
+				continue;
+			}
 
-		if(!strcmp(name, KEYBOARD_NAME)) { // found
-			close(fd);
-			scanned = true;
-			return dev;
+			if(ioctl(fd, EVIOCGNAME(32), name) < 0) {
+				perror("can't get keyboard name\n");
+				close(fd);
+				continue;
+			}
+
+			if(!strcmp(name, KEYBOARD_NAME)) { // found
+				close(fd);
+				closedir(dir);
+				scanned = true;
+				return dev;
+			}
 		}
 	}
 
+	closedir(dir);
 	return NULL;
 }
 
