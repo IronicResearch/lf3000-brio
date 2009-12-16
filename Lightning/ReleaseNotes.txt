@@ -3,14 +3,32 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.3.59xx (December 10, 2009)
+Brio v0.9.3.6015 (December 16, 2009)
 ===========================================
 
+-- Added breakout counter to video task stop logic to avoid 
+hanging seen in USB looping video. (TTP #1518)
+
+-- Modify kTouchRateDefault to 100 to reflect new driver default. (TTP #1680)
+
 ===========================================
-Brio v0.9.2.5947 (December 2, 2009)
+Brio v0.9.2.6005 (December 15, 2009)
 ===========================================
 
--- to do
+-- Use persistent KernelMPI instance in PortAudio callback to 
+allow thread to terminate properly.
+
+-- Workaround to skip module cleanup to avoid aborts on bad handles.
+
+-- Minor AudioMPI mixer fixes for valgrind uninitialized variable warnings. 
+No real effect in execution.
+
+-- TTPro1616: Add DebugOut logging to Atomic file I/O.
+Note: We assume now that we have Brio and can use DebugOut!
+
+-- Cleanup doxygen comment, add an interface, not used for now.
+
+-- added an interface GetCartridgeType(..), not used for now.
 
 ===========================================
 Brio v0.9.1.5941 (December 2, 2009)
