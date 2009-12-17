@@ -3,6 +3,26 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v0.9.3.6026 (December 16, 2009)
+===========================================
+
+-- This patch addressed TTPro 1693: Brio looks through /dev/input looking for
+eventN files and we had an arbitrary upper limit of 8 files.  Change Brio to
+just "ls" the directory and look at every eventN file rather than having the
+arbitrary limit.  This should not affect existing code/configs, however it
+enables the AppManager to find its devices (touchscreen, for example) in cases
+where those devices are found after additional HID devices like a USB
+keyboard.
+
+On the Linux side, we need more /dev/input/eventN files (device nodes)!  This
+will be addressed separately.  The correct fix is to use hotplug+mdev however
+at this time we'll likely just increase the number of statically-created nodes
+to cover having more devices.  Brio2 however will now be robust enough to
+handle additional nodes, either way.
+
+Reviewed by Dave M.
+
+===========================================
 Brio v0.9.3.6019 (December 16, 2009)
 ===========================================
 
