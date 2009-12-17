@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.3.6026 (December 16, 2009)
+Brio v0.9.4.6027 (December 16, 2009)
 ===========================================
 
 -- This patch addressed TTPro 1693: Brio looks through /dev/input looking for
