@@ -22125,3 +22125,35 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/16/09 5:57 PM
 5,641 ms. (Cumulative: 7,403,648 ms)
 
 ----------------
+Revision 6,027 from svn://localhost/TRUNK/:
+Revision 6,028 from svn://localhost/TRUNK/:
+Revision 6,029 from svn://localhost/TRUNK/:
+Revision 6,030 from svn://localhost/TRUNK/:
+Revision 6,031 from svn://localhost/TRUNK/:
+Revision 6,032 from svn://localhost/TRUNK/:
+Revision 6,033 from svn://localhost/TRUNK/:
+Revision 6,034 from svn://localhost/TRUNK/:
+Revision 6,035 from svn://localhost/TRUNK/:
+Revision 6,036 from svn://localhost/TRUNK/:
+Revision 6,037 from svn://localhost/TRUNK/:
+Revision 6,038 from svn://localhost/TRUNK/:
+Revision 6,039 from svn://localhost/TRUNK/:
+Revision 6,040 from svn://localhost/TRUNK/:
+Revision 6,041 from svn://localhost/TRUNK/:
+Revision 6,042 from svn://localhost/TRUNK/:
+Revision 6,043 from svn://localhost/TRUNK/:
+Revision 6,044 from svn://localhost/TRUNK/:
+Revision 6,045 from svn://localhost/TRUNK/:
+Revision 6,046 from svn://localhost/TRUNK/:
+Revision 6,047 from svn://localhost/TRUNK/:
+Revision 6,048 from svn://localhost/TRUNK/:
+Revision 6,049 from svn://localhost/TRUNK/:
+
+Optimized with Daniel's fflush before fdatasync instead of sync after fclose
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 12/18/09 4:53 PM
+1 changed, 0 added, 0 deleted.
+5,704 ms. (Cumulative: 7,409,571 ms)
+
+----------------

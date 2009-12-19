@@ -168,7 +168,13 @@ int fcloseAtomic(FILE *fp)
 	}
 
 	// Do atomic dance
-	int res = fdatasync (fd);
+	int res = fflush (fp);
+	if (res)
+	{
+		ATOMIC_ERR1 ("fcloseAtomic fflush failed; returning %d", res);
+		return res;
+	}
+	res = fdatasync (fd);
 	if (res)
 	{
 		ATOMIC_ERR1 ("fcloseAtomic fdatasync failed; returning %d", res);
@@ -180,7 +186,6 @@ int fcloseAtomic(FILE *fp)
 		ATOMIC_ERR1 ("fcloseAtomic fclose failed; returning %d", res);
 		return res;
 	}
-	sync (); // Gotta be exactly here to work.  Otherwise 1% failure rate
 	// POSIX atomic magic
 	res = rename (atomicOpen.workName, atomicOpen.realName);
 
