@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.4.6027 (December 16, 2009)
+Brio v0.9.4.6053 (December 19, 2009)
 ===========================================
 
 -- This patch addressed TTPro 1693: Brio looks through /dev/input looking for
@@ -20,10 +20,10 @@ at this time we'll likely just increase the number of statically-created nodes
 to cover having more devices.  Brio2 however will now be robust enough to
 handle additional nodes, either way.
 
-Reviewed by Dave M.
+-- AtomicFile: Optimized with Daniel's fflush before fdatasync instead of sync after fclose
 
 ===========================================
-Brio v0.9.3.6019 (December 16, 2009)
+Brio v0.9.3.6044 (December 17, 2009)
 ===========================================
 
 -- Added breakout counter to video task stop logic to avoid 
