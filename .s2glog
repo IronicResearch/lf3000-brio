@@ -22214,3 +22214,15 @@ By Dave Milici (dmilici@leapfrog.com) on 12/21/09 7:11 PM
 6,302 ms. (Cumulative: 7,433,832 ms)
 
 ----------------
+Revision 6,073 from svn://localhost/TRUNK/:
+Revision 6,074 from svn://localhost/TRUNK/:
+Revision 6,075 from svn://localhost/TRUNK/:
+Revision 6,076 from svn://localhost/TRUNK/:
+
+Added mutex protection to display context list, to avoid crash seen during volume bars settings. (may affect TTP 1460)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/22/09 11:17 AM
+1 changed, 0 added, 0 deleted.
+6,210 ms. (Cumulative: 7,440,151 ms)
+
+----------------

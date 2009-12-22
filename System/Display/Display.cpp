@@ -30,6 +30,7 @@ const CURI kModuleURI = "/LF/System/Display";
 namespace
 {
 	std::list<tDisplayContext*>	gDisplayList;	// list of display contexts
+	tMutex gListMutex = PTHREAD_MUTEX_INITIALIZER; // list mutex
 }
 
 //============================================================================
@@ -154,6 +155,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	tDisplayContext* pdcAfter = reinterpret_cast<tDisplayContext*>(insertAfter);
 
 	// Check for duplicate display handle and remove it first
+	kernel_.LockMutex(gListMutex);
 	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
@@ -179,6 +181,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	}
 	if (pdc == NULL)
 		gDisplayList.push_back(dc);
+	kernel_.UnlockMutex(gListMutex);
 
 	// Default Z order is on top
 	dc->isUnderlay = false;
@@ -194,6 +197,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	}
 
 	// Track current onscreen display context
+	kernel_.LockMutex(gListMutex);
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
@@ -202,6 +206,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		else if (pdcPrimary_ != NULL)
 			pdcVisible_ = pdcPrimary_;
 	}
+	kernel_.UnlockMutex(gListMutex);
 
 	return kNoErr;
 }
@@ -218,6 +223,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	tDisplayContext* pdc = NULL;
 	
 	// Check for duplicate display handle and remove it first
+	kernel_.LockMutex(gListMutex);
 	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
@@ -233,6 +239,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		gDisplayList.push_front(dc);
 	else
 		gDisplayList.push_back(dc);
+	kernel_.UnlockMutex(gListMutex);
 
 	// Default Z order is on top
 	dc->isUnderlay = (kDisplayOnBottom == initialZOrder);
@@ -248,6 +255,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	}
 
 	// Track current onscreen display context
+	kernel_.LockMutex(gListMutex);
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		pdc = *it;
@@ -256,6 +264,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 		else if (pdcPrimary_ != NULL)
 			pdcVisible_ = pdcPrimary_;
 	}
+	kernel_.UnlockMutex(gListMutex);
 
 	return kNoErr;
 }
@@ -272,6 +281,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	tDisplayContext* pdc = NULL;
 
 	// Remove display context from linked list
+	kernel_.LockMutex(gListMutex);
 	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
@@ -282,6 +292,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 			break;
 		}
 	}
+	kernel_.UnlockMutex(gListMutex);
 	// display handle was never registered in list
 	if (pdc == NULL)
 		return kDisplayDisplayNotInListErr;
@@ -296,6 +307,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	}
 
 	// pdcVisible_ must always refer to top layer in list
+	kernel_.LockMutex(gListMutex);
 	pdcVisible_ = NULL;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
@@ -305,6 +317,7 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 		else if (pdcPrimary_ != NULL)
 			pdcVisible_ = pdcPrimary_;
 	}
+	kernel_.UnlockMutex(gListMutex);
 
 	return kNoErr;
 }
@@ -317,6 +330,7 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 	tErrType rc = kNoErr;
 
 	// Walk list of display contexts to update screen
+	kernel_.LockMutex(gListMutex);
 	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
@@ -340,6 +354,7 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 		else
 			rc = Update(pdc, 0, 0, pdc->x, pdc->y, pdc->width, pdc->height);
 	}
+	kernel_.UnlockMutex(gListMutex);
 	return rc;
 }
 
