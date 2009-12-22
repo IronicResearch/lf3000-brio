@@ -135,6 +135,23 @@ outs[Right] = (float) sin(x);
 	void 
 ConstantPowerValues(float x, float *outLeft, float *outRight)
 {
+	// short-circuit for most common pan values
+	if (x == 0.5f) {
+		*outLeft = *outRight = 0.70710677f;
+		return;
+	}
+	else if (x == 0.0f) {
+		*outLeft = 1.0f; 
+		*outRight = 0.0f;
+		return;
+	}
+	else if (x == 1.0f) {
+		*outLeft = 0.0f; 
+		*outRight = 1.0f;
+		return;
+	}
+// FIXME: mimic pan calc without float ops
+
 // Convert from range [0 to 1]  to [0 to Pi/2],
 float xP =  x*(float) (kPi/2.0);
 
