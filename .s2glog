@@ -22205,3 +22205,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/21/09 7:05 PM
 6,159 ms. (Cumulative: 7,427,452 ms)
 
 ----------------
+Revision 6,072 from svn://localhost/TRUNK/:
+
+Rebuilt Vorbis libs from v1.2.3 sources.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/21/09 7:11 PM
+3 changed, 0 added, 0 deleted.
+6,302 ms. (Cumulative: 7,433,832 ms)
+
+----------------
