@@ -22195,3 +22195,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/21/09 6:17 PM
 5,626 ms. (Cumulative: 7,421,214 ms)
 
 ----------------
+Revision 6,070 from svn://localhost/TRUNK/:
+Revision 6,071 from svn://localhost/TRUNK/:
+
+Merged in Vorbis v1.2.3 source changes to Tremor.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/21/09 7:05 PM
+2 changed, 1 added, 0 deleted.
+6,159 ms. (Cumulative: 7,427,452 ms)
+
+----------------
