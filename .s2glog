@@ -22226,3 +22226,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/22/09 11:17 AM
 6,210 ms. (Cumulative: 7,440,151 ms)
 
 ----------------
+Revision 6,077 from svn://localhost/TRUNK/:
+Revision 6,078 from svn://localhost/TRUNK/:
+
+Small precheck optimization to avoid float calculation on most common pan values.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/22/09 1:18 PM
+1 changed, 0 added, 0 deleted.
+6,200 ms. (Cumulative: 7,446,429 ms)
+
+----------------
