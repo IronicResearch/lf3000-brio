@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.4.6070 (December 21, 2009)
+Brio v0.9.4.6086 (December 22, 2009)
 ===========================================
 
 -- This patch addressed TTPro 1693: Brio looks through /dev/input looking for
@@ -21,6 +21,16 @@ to cover having more devices.  Brio2 however will now be robust enough to
 handle additional nodes, either way.
 
 -- AtomicFile: Optimized with Daniel's fflush before fdatasync instead of sync after fclose
+
+-- Merged in Vorbis v1.2.3 source changes to Tremor.
+
+-- Rebuilt Vorbis libs from v1.2.3 sources.
+
+-- Added mutex protection to display context list, to avoid 
+crash seen during volume bars settings. (may affect TTP 1460)
+
+-- Small precheck optimization to avoid float calculation on 
+most common pan values.
 
 ===========================================
 Brio v0.9.3.6044 (December 17, 2009)
