@@ -51,7 +51,7 @@ const char kAssertTagStr[] 				= "<ASSERT>: ";
 const char kWarnTagStr[] 				= "<WARNING>: ";
 const char kErrorTagStr[] 				= "<ERROR>: ";
 const char kDebugOutSignatureFmt[] 		= "[0x%x] ";
-const char kDebugOutTimestampFmt[]		= "<@%dms> ";
+const char kDebugOutTimestampFmt[]		= "<@%ums> ";
 
 //------------------------------------------------------------------------------
 // tDebugOutFormats
