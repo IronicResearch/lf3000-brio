@@ -22291,3 +22291,15 @@ By Dave Milici (dmilici@leapfrog.com) on 12/28/09 4:48 PM
 5,698 ms. (Cumulative: 7,470,647 ms)
 
 ----------------
+Revision 6,100 from svn://localhost/TRUNK/:
+Revision 6,101 from svn://localhost/TRUNK/:
+Revision 6,102 from svn://localhost/TRUNK/:
+Revision 6,103 from svn://localhost/TRUNK/:
+
+Add mutex synchronization to EventMPI event listener list. Frequent listener changes observed in NiHao game transitions. (TTP #1666, 1677)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/28/09 7:48 PM
+1 changed, 0 added, 0 deleted.
+5,797 ms. (Cumulative: 7,476,538 ms)
+
+----------------

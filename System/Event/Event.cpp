@@ -100,6 +100,7 @@ private:
 	static tTaskHndl			g_hThread_;
 	static tTaskHndl			g_hBPUThread_;
 	static tTaskHndl			g_hCartThread_;
+	static tMutex				g_mutexEventList_;
 	
 	//============================================================================
 	// Event dispatching task
@@ -239,6 +240,7 @@ public:
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener)
 	{
+		kernel_.LockMutex(g_mutexEventList_);
 		if( numListeners_ >= listSize_ )
 		{
 			listSize_ += kGrowBySize;
@@ -255,6 +257,7 @@ public:
 		const IEventListener** next = ppListeners_ + numListeners_;
 		*next = pListener;
 		++numListeners_;
+		kernel_.UnlockMutex(g_mutexEventList_);
 	}
 	//------------------------------------------------------------------------
 	tErrType RemoveListener(const IEventListener* pListener)
@@ -263,6 +266,7 @@ public:
 		// reclaiming memory?  Unlikely, but you can add some profiling info.
 		// If we find the listener in the list, shift other listeners down
 		// down to keep the list contiguous and decrement the listeners count.
+		kernel_.LockMutex(g_mutexEventList_);
 		if (ppListeners_) {	
 			const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);		
 			for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
@@ -272,11 +276,13 @@ public:
 					for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
 						*ptr = *(ptr + 1);
 					--numListeners_;
+					kernel_.UnlockMutex(g_mutexEventList_);
 					return kNoErr;
 				}
 			}
 		}
 		
+		kernel_.UnlockMutex(g_mutexEventList_);
 		return kEventListenerNotRegisteredErr;
 	}
 	//------------------------------------------------------------------------
@@ -309,6 +315,7 @@ public:
 		// TODO/tp: Speed could be optimized by keeping a multimap of event types to
 		// listeners, but only consider it if profiling indicates a need.
 		//
+		kernel_.LockMutex(g_mutexEventList_);
 		if (pResponse)
 			PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
 		else
@@ -317,6 +324,7 @@ public:
 			for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
 				PostEventToChain(const_cast<IEventListener*>(*ptr), msg);
 		}
+		kernel_.UnlockMutex(g_mutexEventList_);
 		// TODO: copy and modify the "else" clause immediately above to call
 		// all global event "monitors".
 		return kNoErr;
@@ -353,6 +361,7 @@ bool 				CEventManagerImpl::g_threadRunning_  = false;
 tTaskHndl			CEventManagerImpl::g_hThread_	  = kInvalidTaskHndl;
 tTaskHndl			CEventManagerImpl::g_hBPUThread_	  = kInvalidTaskHndl;
 tTaskHndl			CEventManagerImpl::g_hCartThread_	  = kInvalidTaskHndl;
+tMutex				CEventManagerImpl::g_mutexEventList_ = PTHREAD_MUTEX_INITIALIZER;
 CEventModule*		CEventManagerImpl::pEventModule_ = NULL;
 	
 namespace
