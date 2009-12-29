@@ -138,8 +138,9 @@ static void* HelperThread(void* pctx)
 // state.
 //------------------------------------------------------------------------------
 static bool IsSpeakerOn( void )
-{
-#ifdef EMULATION
+{	
+#if 1 // #ifdef EMULATION
+	// no interest in speaker state -- no effect on mixer state
 	return true;
 #else
 	int fd;

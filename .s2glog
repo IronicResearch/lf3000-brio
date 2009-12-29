@@ -22281,3 +22281,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/28/09 1:17 PM
 5,675 ms. (Cumulative: 7,464,871 ms)
 
 ----------------
+Revision 6,098 from svn://localhost/TRUNK/:
+Revision 6,099 from svn://localhost/TRUNK/:
+
+No interest in speaker state since it has no effect on mixer state. Avoids keyboard enumeration overhead and annoying "no such device" error messages.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/28/09 4:48 PM
+1 changed, 0 added, 0 deleted.
+5,698 ms. (Cumulative: 7,470,647 ms)
+
+----------------
