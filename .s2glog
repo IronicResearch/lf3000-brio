@@ -22315,3 +22315,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/30/09 9:19 AM
 5,657 ms. (Cumulative: 7,482,289 ms)
 
 ----------------
+Revision 6,108 from svn://localhost/TRUNK/:
+
+Remove timeout from driver blocking call which was no longer needed when low-battery status event was fixed (svn -r4661). 
+
+By Dave Milici (dmilici@leapfrog.com) on 12/30/09 9:28 AM
+1 changed, 0 added, 0 deleted.
+5,782 ms. (Cumulative: 7,488,133 ms)
+
+----------------
