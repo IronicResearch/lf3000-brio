@@ -232,6 +232,10 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayModule::DeinitOpenGL()
 {
+	// Early out if already disabled from extra eglTerminate() call
+	if (gDevLayer < 0)
+		return;
+	
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: enter\n");
 
 	// Delete handle returned by CreateHandle() 
@@ -251,6 +255,8 @@ void CDisplayModule::DeinitOpenGL()
 	close(gDevGa3d);
 	close(gDevLayerEven);
 	close(gDevLayerOdd);
+	
+	gDevGa3d = gDevLayer = gDevLayerOdd = gDevLayerEven = -1;
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
@@ -325,6 +331,10 @@ void CDisplayModule::UpdateOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayModule::DisableOpenGL()
 {
+	// Early out if already disabled from extra eglTerminate() call
+	if (gDevLayer < 0)
+		return;
+	
 	// Disable 3D layer render target before accelerator disabled
 	int layer = gDevLayer;
 	if (FSAAval) {
@@ -345,9 +355,11 @@ void CDisplayModule::DisableOpenGL()
 		ioctl(layer, MLC_IOCTDIRTY, (void *)1);
 	}
 
+#ifndef UNIFIED
 	// Restore original physical address for next query (non-XY block address)
 	ioctl(gDevLayer, MLC_IOCTADDRESS, gMem1Phys);
-
+#endif
+	
 	isOpenGLEnabled_ = false;
 }
 

@@ -22303,3 +22303,15 @@ By Dave Milici (dmilici@leapfrog.com) on 12/28/09 7:48 PM
 5,797 ms. (Cumulative: 7,476,538 ms)
 
 ----------------
+Revision 6,104 from svn://localhost/TRUNK/:
+Revision 6,105 from svn://localhost/TRUNK/:
+Revision 6,106 from svn://localhost/TRUNK/:
+Revision 6,107 from svn://localhost/TRUNK/:
+
+Guard against duplicate OGL driver disable calls in case eglTerminate called multiple times during cleanup.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/30/09 9:19 AM
+1 changed, 0 added, 0 deleted.
+5,657 ms. (Cumulative: 7,482,289 ms)
+
+----------------
