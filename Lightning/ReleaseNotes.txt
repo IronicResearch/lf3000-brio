@@ -3,10 +3,22 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.5.6093 (December 23, 2009)
+Brio v0.9.5.6110 (December 30, 2009)
 ===========================================
 
--- Nothing new yet.
+-- Correct DebugMPI timestamp option to display in unsigned format. (TTP #1757) 
+
+-- No interest in speaker state since it has no effect on mixer state. 
+Avoids keyboard enumeration overhead and annoying "no such device" error messages.
+
+-- Add mutex synchronization to EventMPI event listener list. Frequent listener 
+changes observed in NiHao game transitions. (TTP #1666, 1677)
+
+-- Guard against duplicate OGL driver disable calls in case eglTerminate 
+called multiple times during cleanup.
+
+-- Remove timeout from driver blocking call which was no longer needed 
+when low-battery status event was fixed (svn -r4661). 
 
 ===========================================
 Brio v0.9.4.6088 (December 22, 2009)
