@@ -3,7 +3,13 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.5.6113 (December 31, 2009)
+Brio v0.9.6.6121 (January 4, 2010)
+===========================================
+
+-- Nothing yet.
+
+===========================================
+Brio v0.9.5.6119 (December 31, 2009)
 ===========================================
 
 -- Correct DebugMPI timestamp option to display in unsigned format. (TTP #1757) 
