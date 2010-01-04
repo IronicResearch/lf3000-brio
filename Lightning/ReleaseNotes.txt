@@ -3,10 +3,18 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.6.6121 (January 4, 2010)
+Brio v0.9.6.6124 (January 4, 2010)
 ===========================================
 
--- Nothing yet.
+-- Added option for separate rendering thread to decouple audio rendering 
+from mixer callback function. Rendered samples are queued into ring buffer 
+per player stream object for extraction by mixer. Enabled via #define 
+USE_RENDER_THREAD switch. (TTP #860)
+
+Required addition of new Stream.IsDone() state distinct from Player.IsDone() 
+state in order for stream to play to completion after player has rendered 
+all samples.  Fixed looping playback option too to splice player samples 
+properly over loop transition in stream buffer.
 
 ===========================================
 Brio v0.9.5.6119 (December 31, 2009)
