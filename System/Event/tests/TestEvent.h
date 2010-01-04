@@ -122,7 +122,6 @@ public:
 	//------------------------------------------------------------------------
 	virtual tEventStatus Notify( const IEventMessage& /*msg*/ )
 	{
-		CKernelMPI	kernel;
 		id_ = kernel.GetCurrentTask();
 		kernel.TaskSleep(kSlowDelay);
 		return kEventStatusOKConsumed;
@@ -130,6 +129,7 @@ public:
 	
 	//------------------------------------------------------------------------
 	tTaskHndl	id_;
+	CKernelMPI	kernel;
 };
 
 
@@ -290,7 +290,7 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void XXXXtestSingleListenerMultiEventEnableDisable( )
+	void testSingleListenerMultiEventEnableDisable( )
 	{
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent3, kUnitTestEvent4, kUnitTestEvent5 };

@@ -219,19 +219,25 @@ public:
 
 		// Terminate Button/Power/USB driver polling thread first
 		if (g_hCartThread_ != kInvalidTaskHndl) {
+			debug_.DebugOut(kDbgLvlValuable, "%s: Terminating cart thread\n", __FUNCTION__);
 			kernel_.CancelTask(g_hCartThread_);
+			kernel_.TaskSleep(1);
 			kernel_.JoinTask(g_hCartThread_, retval);
 		}
 		if (g_hBPUThread_ != kInvalidTaskHndl) {
+			debug_.DebugOut(kDbgLvlValuable, "%s: Terminating button thread\n", __FUNCTION__);
 			kernel_.CancelTask(g_hBPUThread_);
+			kernel_.TaskSleep(1);
 			kernel_.JoinTask(g_hBPUThread_, retval);
 		}
 		// Terminate thread normally and dispose of listener list afterwards
 		g_threadRun_ = false;
 		g_threadRunning_ = false;
+		debug_.DebugOut(kDbgLvlValuable, "%s: Terminating message thread\n", __FUNCTION__);
 		kernel_.CancelTask(g_hThread_);
+		kernel_.TaskSleep(1);
 		kernel_.JoinTask(g_hThread_, retval);
-#if 0	// FIXME/dm: segfaults during module manager destruction -- corrupt ptr/list? 
+#if 1	// FIXME/dm: segfaults during module manager destruction -- corrupt ptr/list? 
 		if (ppListeners_)
 			free(ppListeners_);
 #endif

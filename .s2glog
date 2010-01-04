@@ -22386,3 +22386,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/4/10 9:36 AM
 6,158 ms. (Cumulative: 7,518,904 ms)
 
 ----------------
+Revision 6,124 from svn://localhost/TRUNK/:
+Revision 6,125 from svn://localhost/TRUNK/:
+Revision 6,126 from svn://localhost/TRUNK/:
+
+Added intervening sleep between thread cancel and join steps in order to allow thread switch to be effective. Problem with pthread_join() hanging seen to occur when waiting on button thread to exit. (TTP #1729)
+EventMPI unit test modified to support correct module exit.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/4/10 12:51 PM
+3 changed, 0 added, 0 deleted.
+6,971 ms. (Cumulative: 7,525,969 ms)
+
+----------------
