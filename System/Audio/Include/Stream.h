@@ -22,6 +22,10 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+// Support for separate rendering thread ring buffer
+#define USE_RENDER_THREAD	1
+#define kNumRingBufs		8
+
 class CAudioPlayer;
 //==============================================================================
 // Class:
@@ -69,14 +73,38 @@ class CStream {
 	inline CAudioPlayer*	GetPlayer() { return pPlayer_; }
 
 	Boolean isDone_;
-
+	
+#ifdef USE_RENDER_THREAD
+	inline Boolean IsDone() { return isDone_ && nStreamIdx_ == nRenderIdx_; }
+#else
+	inline Boolean IsDone() { return isDone_; }
+#endif
+	
+	inline U32	GetFramesToRender()	{ return framesToRender_; }
+	
+#ifdef USE_RENDER_THREAD
+	inline S16*	GetRenderBuf()	{ return pRingBuf_[nRenderIdx_ % kNumRingBufs]; }
+	inline S16* GetStreamBuf()	{ return pRingBuf_[nStreamIdx_ % kNumRingBufs]; }
+	
+	U32			PreRender(S16* pOut, U32 numStereoFrames);
+	U32			PostRender(S16* pOut, U32 numStereoFrames);
+#endif
+	
  private:
 	tAudioPriority	priority_;	
 	U8				volume_;	
 	S8				pan_   ;		 
-	U32				samplingFrequency_;	
+	U32				samplingFrequency_;
+	U32				framesToRender_;			// effective frames per sample rate
 	CAudioPlayer	*pPlayer_;		 
 	void			RecalculateLevels();
+
+#ifdef USE_RENDER_THREAD
+	S16*			pRingBuf_[kNumRingBufs];	// ring buffer for pre-rendering
+	int				nRenderIdx_;				// buffer index for render input
+	int				nStreamIdx_;				// buffer index for stream output
+	U32				nFrames_[kNumRingBufs]; 	// matching array of frames rendered
+#endif
 };
 
 LF_END_BRIO_NAMESPACE()

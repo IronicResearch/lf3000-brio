@@ -315,6 +315,15 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	else
 		StartAudioOutput();
 
+#ifdef USE_RENDER_THREAD	
+	// Create separate thread for rendering
+	tTaskProperties props;
+	props.TaskMainFcn = &CAudioMixer::RenderThread;
+	props.taskMainArgCount = 1;
+	props.pTaskMainArgValues = this;
+	pKernelMPI_->CreateTask(hRenderThread_, props, NULL);
+#endif
+	
 	// See the documentation for GetNextAudioID and GetNextMidiID to understand
 	// the audio id assignment scheme.
 	nextAudioID = kNoMidiID + 1;
@@ -343,6 +352,13 @@ CAudioMixer::~CAudioMixer()
 	DeInitAudioOutput();
 	
 	MIXER_LOCK; 
+	
+#ifdef USE_RENDER_THREAD
+	// Terminate rendering thread
+	void* retval;
+	pKernelMPI_->CancelTask(hRenderThread_);
+	pKernelMPI_->JoinTask(hRenderThread_, retval);
+#endif
 	
 	// Deallocate input streams
 	if (pStreams_)
@@ -565,7 +581,9 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 	for (long i = 0; i < numInStreams_; i++)
 	{
 		if (pStreams_[i].GetPlayer() && !pStreams_[i].GetPlayer()->IsDone())
-			ret = true;
+			// Additionally qualify stream state
+			if (!pStreams_[i].IsDone())
+				ret = true;
 	}
 	MIXER_UNLOCK; 
 	return ret;
@@ -977,8 +995,9 @@ Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 	pStream = FindStreamInternal(id);
 	if (pStream && pStream->GetPlayer() && !pStream->GetPlayer()->IsDone())
 	{
-		//We need to check pause also
-		playing = true;
+		// Additionally qualify stream state
+		if (!pStream->IsDone())
+			playing = true;
 	}
 	MIXER_UNLOCK;
 	return playing;
@@ -1056,18 +1075,20 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		// Render if stream is in use and not paused
 		if ( pStream->GetPlayer() &&
 		    !pStream->GetPlayer()->IsPaused() &&
-			!pStream->GetPlayer()->IsDone())
+//		    !pStream->GetPlayer()->IsDone() &&
+			!pStream->IsDone())
 		{
 			ClearShorts(pStreamBuf_, numFrames*channels);
 			long streamSamplingFrequency = pStream->GetSamplingFrequency();
-			if (streamSamplingFrequency > kAudioSampleRate)
-				streamSamplingFrequency = kAudioSampleRate;
-			U32	 framesToRender =
-				(numFrames*streamSamplingFrequency)/(long)samplingFrequency_;
+			U32	 framesToRender = pStream->GetFramesToRender();
 			U32	 sampleCount	= framesToRender*channels;
+
 			// Player renders data into stream's stereo output buffer
+#ifdef USE_RENDER_THREAD
+			framesRendered = pStream->PostRender( pStreamBuf_, framesToRender );
+#else
 			framesRendered = pStream->Render( pStreamBuf_, framesToRender );
-			
+#endif
 			// Now that rendering is complete, send done messages and delete
 			// players.  Note that this is going to be migrated to a Notify
 			// function to off-load the render loop.
@@ -1101,7 +1122,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 					//stream buffer by rendering again
 					if(zeroSamples)
 					{
-						pStream->Render(pStreamBuf_, zeroSamples/channels);
+						// FIXME: remainder at pStreamBuf_[framesRendered]
+						pStream->Render(pStreamBuf_ + framesRendered, framesToRender - framesRendered);
 					}
 					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
 				}
@@ -1234,6 +1256,42 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	
 	return error;
 }
+
+// ==============================================================================
+// RenderThread: Does rendering in separate thread from mixer callback
+// ==============================================================================
+#ifdef USE_RENDER_THREAD
+void* CAudioMixer::RenderThread(void* pCtx)
+{
+	CAudioMixer*	pMixer = (CAudioMixer*)pCtx;
+	
+	while (true)
+	{
+		MIXER_LOCK;
+		// Render all active streams to buffers
+		for (int ch = 0; ch < pMixer->numInStreams_; ch++)
+		{
+			CStream*		pStream = &pMixer->pStreams_[ch];
+			CAudioPlayer*	pPlayer = pStream->GetPlayer();
+			// Render if stream is in use and not paused
+			if ( pPlayer &&
+			    !pPlayer->IsPaused() &&
+				!pPlayer->IsDone())
+			{
+				// Rendering is buffered into ring buffer 
+				// to be extracted via PostRender()
+				S16* pBuf = pStream->GetRenderBuf();
+				U32 frames = pStream->GetFramesToRender();
+				U32 rendered = pStream->PreRender(pBuf, frames);
+			}
+		}
+		MIXER_UNLOCK;
+		pKernelMPI_->TaskSleep(10);
+	}
+	
+	return NULL;
+}
+#endif
 
 // ==============================================================================
 // Pause: Stop all audio processing and I/O but do not alter state

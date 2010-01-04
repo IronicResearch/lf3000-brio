@@ -67,6 +67,8 @@ class CAudioMixer : private IEventListener
 	
 	static int WrapperToCallRender( S16 *pOut, U32 frameCount, void *pObject );
 
+	static void* RenderThread(void* pCtx);
+
 	tAudioState audioState_;
 
 	void GetAudioState(tAudioState *d);
@@ -182,6 +184,7 @@ class CAudioMixer : private IEventListener
 	
 	tPriorityPolicy currentPolicy;
 
+	tTaskHndl		hRenderThread_;		// separate rendering thread handle
 };
 
 #endif		// LF_MIXER_H
