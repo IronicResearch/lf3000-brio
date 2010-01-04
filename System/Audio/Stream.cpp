@@ -38,11 +38,19 @@ CStream::CStream()
 	pan_	= kPan_Default;
 	volume_ = kVolume_Default;
 	samplingFrequency_ = 0;
+	framesToRender_ = 0;
+	isDone_ = false;
 	// FIXME: valgrind suspect(s)
 	gainf	= 1.0;
 	panValuesf[kLeft ] = 0.707;
 	panValuesf[kRight] = 0.707;
 
+#ifdef USE_RENDER_THREAD
+	// Rendering bufs
+	for (int i = 0; i < kNumRingBufs; i++)
+		pRingBuf_[i] = new S16[kAudioOutBufSizeInWords];
+	nRenderIdx_ = nStreamIdx_ = 0;
+#endif
 }	// ---- end CStream ----
 
 // ==============================================================================
@@ -50,6 +58,10 @@ CStream::CStream()
 // ==============================================================================
 CStream::~CStream()
 {
+#ifdef USE_RENDER_THREAD
+	for (int i = kNumRingBufs-1; i >= 0; i--)
+		delete[] pRingBuf_[i];
+#endif
 }	// ---- end ~CStream ----
 
 // ============================================================================
@@ -134,8 +146,51 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 	}
 	SetSamplingFrequency(rate);
 
+	// Calculate effective frames to render for player sample rate
+	framesToRender_ = kAudioFramesPerBuffer * rate / kAudioSampleRate;
+	isDone_ = false;
+	
+#ifdef USE_RENDER_THREAD
+	// Reset ring buffer indexes for new player
+	nRenderIdx_ = nStreamIdx_ = 0;
+	memset(pRingBuf_[0], 0, kAudioOutBufSizeInBytes);
+#endif
+	
 	return (kNoErr);
 }	// ---- end InitWithPlayer ----
+
+#ifdef USE_RENDER_THREAD
+// ==============================================================================
+// PreRender -- Renders samples into ring buffer
+// ==============================================================================
+U32 CStream::PreRender(S16* /* pOut */, U32 framesToRender)
+{
+	// Render buffer index can only exceed Stream index up to ring depth
+	if (nRenderIdx_ > nStreamIdx_ + kNumRingBufs-1)
+		return 0;
+	S16* pOut = GetRenderBuf();
+	U32* pFrames = &nFrames_[nRenderIdx_ % kNumRingBufs]; 
+	*pFrames = Render(pOut, framesToRender);
+	if (*pFrames == 0)
+		return 0;
+	nRenderIdx_++;
+	return *pFrames;
+}
+
+// ==============================================================================
+// PostRender -- Copies rendered samples from ring buffer
+// ==============================================================================
+U32 CStream::PostRender(S16* pOut, U32 framesToRender)
+{
+	// Stream buffer index always lags Render index unless done
+	S16* pBuf = GetStreamBuf();
+	U32* pFrames = &nFrames_[nStreamIdx_ % kNumRingBufs]; 
+	memcpy(pOut, pBuf, *pFrames * kAudioBytesPerStereoFrame);
+	if (nStreamIdx_ < nRenderIdx_)
+		nStreamIdx_++;
+	return *pFrames;
+}
+#endif
 
 // ==============================================================================
 // Render
@@ -153,6 +208,7 @@ U32 CStream::Render(S16 *pOut, int framesToRender )
 	{
 		framesRendered	= pPlayer_->Render( pOut, framesToRender );
 		samplesRendered = framesRendered*2;
+		isDone_ = pPlayer_->IsDone();
 	}
 
 	// Scale stereo out buffer (Assumes all audio player output is two channel)

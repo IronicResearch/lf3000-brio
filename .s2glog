@@ -22363,3 +22363,16 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/4/10 8:53 AM
 6,078 ms. (Cumulative: 7,506,384 ms)
 
 ----------------
+Revision 6,121 from svn://localhost/TRUNK/:
+Revision 6,122 from svn://localhost/TRUNK/:
+
+Added option for separate rendering thread to decouple audio rendering from mixer callback function. Rendered samples are queued into ring buffer per player stream object for extraction by mixer. Enabled via #define USE_RENDER_THREAD switch. (TTP #860)
+
+Required addition of new Stream.IsDone() state distinct from Player.IsDone() state in order for stream to play to completion after player has rendered all samples.
+Fixed looping playback option too to splice player samples properly over loop transition in stream buffer.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/4/10 9:10 AM
+4 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 7,512,668 ms)
+
+----------------
