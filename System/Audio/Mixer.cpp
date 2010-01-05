@@ -580,10 +580,9 @@ Boolean CAudioMixer::IsAnyAudioActive( void )
 	// Search for a stream that is in use
 	for (long i = 0; i < numInStreams_; i++)
 	{
-		if (pStreams_[i].GetPlayer() && !pStreams_[i].GetPlayer()->IsDone())
+		if (pStreams_[i].GetPlayer() && !pStreams_[i].IsDone())
 			// Additionally qualify stream state
-			if (!pStreams_[i].IsDone())
-				ret = true;
+			ret = true;
 	}
 	MIXER_UNLOCK; 
 	return ret;
@@ -993,11 +992,10 @@ Boolean CAudioMixer::IsPlayerPlaying( tAudioID id )
 
 	MIXER_LOCK;
 	pStream = FindStreamInternal(id);
-	if (pStream && pStream->GetPlayer() && !pStream->GetPlayer()->IsDone())
+	if (pStream && pStream->GetPlayer() && !pStream->IsDone())
 	{
 		// Additionally qualify stream state
-		if (!pStream->IsDone())
-			playing = true;
+		playing = true;
 	}
 	MIXER_UNLOCK;
 	return playing;
@@ -1075,7 +1073,6 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 		// Render if stream is in use and not paused
 		if ( pStream->GetPlayer() &&
 		    !pStream->GetPlayer()->IsPaused() &&
-//		    !pStream->GetPlayer()->IsDone() &&
 			!pStream->IsDone())
 		{
 			ClearShorts(pStreamBuf_, numFrames*channels);

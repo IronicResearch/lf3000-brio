@@ -49,7 +49,7 @@ CStream::CStream()
 	// Rendering bufs
 	for (int i = 0; i < kNumRingBufs; i++)
 		pRingBuf_[i] = new S16[kAudioOutBufSizeInWords];
-	nRenderIdx_ = nStreamIdx_ = 0;
+	nRenderIdx_ = nStreamIdx_ = nDoneIdx_ = 0;
 #endif
 }	// ---- end CStream ----
 
@@ -120,6 +120,7 @@ tErrType CStream::Release( Boolean noPlayerDoneMsg )
 		return (kNoErr);
 
 	pPlayer_ = kNull;
+	isDone_ = false;
 
 	return (kNoErr);
 }	// ---- end Release ----
@@ -152,7 +153,7 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 	
 #ifdef USE_RENDER_THREAD
 	// Reset ring buffer indexes for new player
-	nRenderIdx_ = nStreamIdx_ = 0;
+	nRenderIdx_ = nStreamIdx_ = nDoneIdx_ = 0;
 	memset(pRingBuf_[0], 0, kAudioOutBufSizeInBytes);
 #endif
 	
@@ -173,6 +174,8 @@ U32 CStream::PreRender(S16* /* pOut */, U32 framesToRender)
 	*pFrames = Render(pOut, framesToRender);
 	if (*pFrames == 0)
 		return 0;
+	if (isDone_)
+		nDoneIdx_ = nRenderIdx_;
 	nRenderIdx_++;
 	return *pFrames;
 }

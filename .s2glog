@@ -22409,3 +22409,16 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/4/10 4:15 PM
 6,173 ms. (Cumulative: 7,532,235 ms)
 
 ----------------
+Revision 6,129 from svn://localhost/TRUNK/:
+Revision 6,130 from svn://localhost/TRUNK/:
+Revision 6,131 from svn://localhost/TRUNK/:
+Revision 6,132 from svn://localhost/TRUNK/:
+Revision 6,133 from svn://localhost/TRUNK/:
+
+Reworked Stream.IsDone() logic based on last rendered buffer index.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/4/10 8:00 PM
+3 changed, 0 added, 0 deleted.
+5,750 ms. (Cumulative: 7,538,063 ms)
+
+----------------
