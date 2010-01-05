@@ -357,6 +357,7 @@ CAudioMixer::~CAudioMixer()
 	// Terminate rendering thread
 	void* retval;
 	pKernelMPI_->CancelTask(hRenderThread_);
+	pKernelMPI_->TaskSleep(10);
 	pKernelMPI_->JoinTask(hRenderThread_, retval);
 #endif
 	
@@ -418,7 +419,7 @@ CStream *CAudioMixer::FindFreeStream( tAudioPriority /* priority */)
 		if (!pStream->GetPlayer())
 			return pStream;
 		// Stream may contain player which is yet to be destroyed
-		if (pStream->GetPlayer()->IsDone())
+		if (pStream->IsDone())
 			return pStream;
 	}
 	
@@ -1093,7 +1094,7 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 			// Incomplete Render callback?
 			if (framesRendered < framesToRender && !pPlayer->IsDone())
 				return kAudioNoDataAvailErr;
-			if (pPlayer->IsDone())
+			if (pStream->IsDone())
 			{
 				// find the number of samples that the player did not render
 				U32 zeroSamples = (framesToRender - framesRendered)*channels;
