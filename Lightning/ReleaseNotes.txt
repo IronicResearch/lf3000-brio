@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.6.6124 (January 4, 2010)
+Brio v0.9.6.6129 (January 4, 2010)
 ===========================================
 
 -- Added option for separate rendering thread to decouple audio rendering 
@@ -15,6 +15,11 @@ Required addition of new Stream.IsDone() state distinct from Player.IsDone()
 state in order for stream to play to completion after player has rendered 
 all samples.  Fixed looping playback option too to splice player samples 
 properly over loop transition in stream buffer.
+
+-- Added intervening sleep between thread cancel and join steps in 
+order to allow thread switch to be effective. Problem with pthread_join() 
+hanging seen to occur when waiting on button thread to exit. (TTP #1729)
+EventMPI unit test modified to support correct module exit.
 
 ===========================================
 Brio v0.9.5.6119 (December 31, 2009)
