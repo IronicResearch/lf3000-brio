@@ -75,9 +75,9 @@ class CStream {
 	Boolean isDone_;
 	
 #ifdef USE_RENDER_THREAD
-	inline Boolean IsDone() { return isDone_ && nStreamIdx_ == nDoneIdx_; }
+	inline Boolean IsDone() { return pPlayer_ && pPlayer_->IsDone() && nStreamIdx_ == nDoneIdx_; }
 #else
-	inline Boolean IsDone() { return isDone_; }
+	inline Boolean IsDone() { return pPlayer_ && pPlayer_->IsDone(); }
 #endif
 	
 	inline U32	GetFramesToRender()	{ return framesToRender_; }

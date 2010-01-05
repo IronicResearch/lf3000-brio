@@ -172,11 +172,10 @@ U32 CStream::PreRender(S16* /* pOut */, U32 framesToRender)
 	S16* pOut = GetRenderBuf();
 	U32* pFrames = &nFrames_[nRenderIdx_ % kNumRingBufs]; 
 	*pFrames = Render(pOut, framesToRender);
-	if (*pFrames == 0)
-		return 0;
 	if (isDone_)
 		nDoneIdx_ = nRenderIdx_;
-	nRenderIdx_++;
+	else
+		nRenderIdx_++;
 	return *pFrames;
 }
 
