@@ -75,7 +75,7 @@ class CStream {
 	Boolean isDone_;
 	
 #ifdef USE_RENDER_THREAD
-	inline Boolean IsDone() { return isDone_ && nStreamIdx_ == nRenderIdx_; }
+	inline Boolean IsDone() { return isDone_ && nStreamIdx_ == nDoneIdx_; }
 #else
 	inline Boolean IsDone() { return isDone_; }
 #endif
@@ -104,6 +104,7 @@ class CStream {
 	int				nRenderIdx_;				// buffer index for render input
 	int				nStreamIdx_;				// buffer index for stream output
 	U32				nFrames_[kNumRingBufs]; 	// matching array of frames rendered
+	int				nDoneIdx_;					// buffer index when done rendering
 #endif
 };
 
