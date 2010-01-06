@@ -153,7 +153,8 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 	
 #ifdef USE_RENDER_THREAD
 	// Reset ring buffer indexes for new player
-	nRenderIdx_ = nStreamIdx_ = nDoneIdx_ = 0;
+	nRenderIdx_ = nStreamIdx_ = 0;
+	nDoneIdx_ = -1;
 	memset(pRingBuf_[0], 0, kAudioOutBufSizeInBytes);
 #endif
 	
