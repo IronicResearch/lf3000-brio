@@ -22431,3 +22431,17 @@ By Dave Milici (dmilici@leapfrog.com) on 1/5/10 8:40 AM
 5,720 ms. (Cumulative: 7,543,861 ms)
 
 ----------------
+Revision 6,135 from svn://localhost/TRUNK/:
+Revision 6,136 from svn://localhost/TRUNK/:
+Revision 6,137 from svn://localhost/TRUNK/:
+Revision 6,138 from svn://localhost/TRUNK/:
+Revision 6,139 from svn://localhost/TRUNK/:
+Revision 6,140 from svn://localhost/TRUNK/:
+
+Init done index to invalid value in order to handle single-buffer short samples.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/6/10 9:23 AM
+1 changed, 0 added, 0 deleted.
+5,678 ms. (Cumulative: 7,549,664 ms)
+
+----------------
