@@ -22483,3 +22483,21 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/6/10 1:46 PM
 6,110 ms. (Cumulative: 7,567,893 ms)
 
 ----------------
+Revision 6,152 from svn://localhost/TRUNK/:
+Revision 6,153 from svn://localhost/TRUNK/:
+Revision 6,154 from svn://localhost/TRUNK/:
+Revision 6,155 from svn://localhost/TRUNK/:
+Revision 6,156 from svn://localhost/TRUNK/:
+Revision 6,157 from svn://localhost/TRUNK/:
+Revision 6,158 from svn://localhost/TRUNK/:
+Revision 6,159 from svn://localhost/TRUNK/:
+Revision 6,160 from svn://localhost/TRUNK/:
+
+Audio rendering thread throttles itself when more rendering buffers to fill.
+Positive effect on UI narration problems reported in TTP #1815.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/6/10 4:21 PM
+1 changed, 0 added, 0 deleted.
+6,074 ms. (Cumulative: 7,574,108 ms)
+
+----------------
