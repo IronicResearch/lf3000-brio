@@ -23,7 +23,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 // Support for separate rendering thread ring buffer
-#define USE_RENDER_THREAD	1
+#undef USE_RENDER_THREAD	
 #define kNumRingBufs		8
 
 class CAudioPlayer;
