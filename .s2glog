@@ -22533,3 +22533,17 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/6/10 11:15 PM
 6,032 ms. (Cumulative: 7,592,964 ms)
 
 ----------------
+Revision 6,166 from svn://localhost/TRUNK/:
+Revision 6,167 from svn://localhost/TRUNK/:
+Revision 6,168 from svn://localhost/TRUNK/:
+Revision 6,169 from svn://localhost/TRUNK/:
+Revision 6,170 from svn://localhost/TRUNK/:
+Revision 6,171 from svn://localhost/TRUNK/:
+
+Disable audio rendering thread option to revert previous mixer functionality, pending additional development.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/10 11:27 AM
+1 changed, 0 added, 0 deleted.
+5,814 ms. (Cumulative: 7,598,887 ms)
+
+----------------
