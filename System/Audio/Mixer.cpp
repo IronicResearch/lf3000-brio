@@ -1265,6 +1265,7 @@ void* CAudioMixer::RenderThread(void* pCtx)
 	
 	while (true)
 	{
+		bool busy = false;
 		MIXER_LOCK;
 		// Render all active streams to buffers
 		for (int ch = 0; ch < pMixer->numInStreams_; ch++)
@@ -1281,10 +1282,13 @@ void* CAudioMixer::RenderThread(void* pCtx)
 				S16* pBuf = pStream->GetRenderBuf();
 				U32 frames = pStream->GetFramesToRender();
 				U32 rendered = pStream->PreRender(pBuf, frames);
+				if (rendered == frames)
+					busy = true;
 			}
 		}
 		MIXER_UNLOCK;
-		pKernelMPI_->TaskSleep(10);
+		if (!busy)
+			pKernelMPI_->TaskSleep(10);
 	}
 	
 	return NULL;
