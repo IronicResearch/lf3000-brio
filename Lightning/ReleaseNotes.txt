@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.6.6152 (January 6, 2010)
+Brio v0.9.6.6162 (January 6, 2010)
 ===========================================
 
 Audio:
@@ -28,6 +28,9 @@ EventMPI unit test modified to support correct module exit.
 
 -- Init done index to invalid value in order to handle single-buffer 
 short samples.
+
+-- Audio rendering thread throttles itself when more rendering buffers to fill.
+Positive effect on UI narration problems reported in TTP #1815.
 
 ===========================================
 Brio v0.9.5.6119 (December 31, 2009)
