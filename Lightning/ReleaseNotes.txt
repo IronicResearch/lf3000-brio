@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.6.6166 (January 6, 2010)
+Brio v0.9.7.61i75 (January 7, 2010)
 ===========================================
 
 Audio:
@@ -31,6 +31,8 @@ short samples.
 
 -- Audio rendering thread throttles itself when more rendering buffers to fill.
 Positive effect on UI narration problems reported in TTP #1815.
+
+-- Disable audio rendering thread option to revert previous mixer functionality, pending additional development.
 
 ===========================================
 Brio v0.9.5.6119 (December 31, 2009)
