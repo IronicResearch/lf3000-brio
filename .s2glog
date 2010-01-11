@@ -22599,3 +22599,24 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/8/10 2:31 PM
 5,735 ms. (Cumulative: 7,616,536 ms)
 
 ----------------
+Revision 6,198 from svn://localhost/TRUNK/:
+Revision 6,199 from svn://localhost/TRUNK/:
+Revision 6,200 from svn://localhost/TRUNK/:
+Revision 6,201 from svn://localhost/TRUNK/:
+Revision 6,202 from svn://localhost/TRUNK/:
+Revision 6,203 from svn://localhost/TRUNK/:
+Revision 6,204 from svn://localhost/TRUNK/:
+Revision 6,205 from svn://localhost/TRUNK/:
+Revision 6,206 from svn://localhost/TRUNK/:
+Revision 6,207 from svn://localhost/TRUNK/:
+Revision 6,208 from svn://localhost/TRUNK/:
+Revision 6,209 from svn://localhost/TRUNK/:
+
+Unused EventMessage members flagged by valgrind.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/11/10 8:34 AM
+1 changed, 0 added, 0 deleted.
+6,102 ms. (Cumulative: 7,622,779 ms)
+
+----------------
