@@ -22620,3 +22620,18 @@ By Dave Milici (dmilici@leapfrog.com) on 1/11/10 8:34 AM
 6,102 ms. (Cumulative: 7,622,779 ms)
 
 ----------------
+Revision 6,210 from svn://localhost/TRUNK/:
+Revision 6,211 from svn://localhost/TRUNK/:
+Revision 6,212 from svn://localhost/TRUNK/:
+Revision 6,213 from svn://localhost/TRUNK/:
+Revision 6,214 from svn://localhost/TRUNK/:
+Revision 6,215 from svn://localhost/TRUNK/:
+Revision 6,216 from svn://localhost/TRUNK/:
+
+Initial checkin of camera widget support.  Building disabled.
+
+By jeno (jeno@leapfrog.com) on 1/11/10 1:31 PM
+0 changed, 8 added, 0 deleted.
+6,235 ms. (Cumulative: 7,629,139 ms)
+
+----------------
