@@ -64,6 +64,8 @@ namespace
 		: pMsg(m), pResponse(r)
 		{
 			messageSize = sizeof(CEventDispatchMessage);
+			messagePriority = 0;
+			messageReserved = 0;
 		}
 		const IEventMessage*	pMsg;
 		const IEventListener*	pResponse;
