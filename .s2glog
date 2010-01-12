@@ -22665,3 +22665,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/11/10 9:58 PM
 6,391 ms. (Cumulative: 7,652,988 ms)
 
 ----------------
+Revision 6,222 from svn://localhost/TRUNK/:
+Revision 6,223 from svn://localhost/TRUNK/:
+
+Disable YUV layer visibility on DisplayMPI startups for video left behind on prior instances.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/12/10 12:13 PM
+1 changed, 0 added, 0 deleted.
+6,143 ms. (Cumulative: 7,659,209 ms)
+
+----------------
