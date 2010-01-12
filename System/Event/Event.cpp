@@ -163,6 +163,9 @@ public:
 		//    background dispatching thread
 		// 2) Create the background event dispatching thread
 		//
+#ifdef DEBUG
+		debug_.SetDebugLevel(kDbgLvlVerbose);
+#endif
 		debug_.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Initializing Event Manager\n");
 		
 		tMessageQueuePropertiesPosix props = 							//*1
@@ -265,6 +268,7 @@ public:
 		const IEventListener** next = ppListeners_ + numListeners_;
 		*next = pListener;
 		++numListeners_;
+		debug_.DebugOut(kDbgLvlValuable, "%s: added listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 		kernel_.UnlockMutex(g_mutexEventList_);
 	}
 	//------------------------------------------------------------------------
@@ -284,12 +288,14 @@ public:
 					for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
 						*ptr = *(ptr + 1);
 					--numListeners_;
+					debug_.DebugOut(kDbgLvlValuable, "%s: removed listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 					kernel_.UnlockMutex(g_mutexEventList_);
 					return kNoErr;
 				}
 			}
 		}
 		
+		debug_.DebugOut(kDbgLvlValuable, "%s: could not remove listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 		kernel_.UnlockMutex(g_mutexEventList_);
 		return kEventListenerNotRegisteredErr;
 	}
@@ -299,9 +305,15 @@ public:
 	{
 		while( pListener )
 		{
-			if( pListener->pimpl_->HandlesEvent(msg.GetEventType())
-					&& pListener->Notify(msg) == kEventStatusOKConsumed )
-				break;
+			if( pListener->pimpl_->HandlesEvent(msg.GetEventType()) )
+			{
+				int ret = pListener->Notify(msg);
+#ifdef DEBUG				
+				debug_.DebugOut(kDbgLvlVerbose, "%s: posted to listener %p, type %08X, ret %d\n", __FUNCTION__, pListener, (unsigned)msg.GetEventType(), ret);
+#endif
+				if (ret == kEventStatusOKConsumed )
+					break;
+			}
 			pListener = const_cast<IEventListener*>
 								(pListener->pimpl_->GetNextListener());
 		}

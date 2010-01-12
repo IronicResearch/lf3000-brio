@@ -22675,3 +22675,16 @@ By Dave Milici (dmilici@leapfrog.com) on 1/12/10 12:13 PM
 6,143 ms. (Cumulative: 7,659,209 ms)
 
 ----------------
+Revision 6,224 from svn://localhost/TRUNK/:
+Revision 6,225 from svn://localhost/TRUNK/:
+Revision 6,226 from svn://localhost/TRUNK/:
+Revision 6,227 from svn://localhost/TRUNK/:
+Revision 6,228 from svn://localhost/TRUNK/:
+
+Keeping event listener trace messages for debugging purposes, with most verbose conditional on DEBUG builds.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/12/10 3:26 PM
+1 changed, 0 added, 0 deleted.
+6,329 ms. (Cumulative: 7,665,819 ms)
+
+----------------
