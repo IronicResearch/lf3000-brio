@@ -298,6 +298,8 @@ void CDisplayModule::InitModule()
 	gDevOverlay = open(YUV_LAYER_DEV, O_RDWR|O_SYNC);
 	dbg_.Assert(gDevOverlay >= 0, 
 			"DisplayModule::InitModule: failed to open MLC 2D Layer device");
+	ioctl(gDevOverlay, MLC_IOCTLAYEREN, 0);
+	SetDirtyBit(gDevOverlay);
 
 	// Get the overlay buffer base address
 	baseAddr = ioctl(gDevOverlay, MLC_IOCQADDRESS, 0);
