@@ -22635,3 +22635,13 @@ By jeno (jeno@leapfrog.com) on 1/11/10 1:31 PM
 6,235 ms. (Cumulative: 7,629,139 ms)
 
 ----------------
+Revision 6,217 from svn://localhost/TRUNK/:
+Revision 6,218 from svn://localhost/TRUNK/:
+
+Adding libjpeg support for camera.  Does not build/install yet.
+
+By jeno (jeno@leapfrog.com) on 1/11/10 4:10 PM
+0 changed, 189 added, 0 deleted.
+10,490 ms. (Cumulative: 7,639,894 ms)
+
+----------------
