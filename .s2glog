@@ -22645,3 +22645,13 @@ By jeno (jeno@leapfrog.com) on 1/11/10 4:10 PM
 10,490 ms. (Cumulative: 7,639,894 ms)
 
 ----------------
+Revision 6,219 from svn://localhost/TRUNK/:
+Revision 6,220 from svn://localhost/TRUNK/:
+
+libjpeg support for building CameraMPI
+
+By jeno (jeno@leapfrog.com) on 1/11/10 5:43 PM
+1 changed, 0 added, 0 deleted.
+6,345 ms. (Cumulative: 7,646,332 ms)
+
+----------------

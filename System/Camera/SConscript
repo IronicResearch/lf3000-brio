@@ -21,6 +21,10 @@ mpilibs		= ['ModuleMPI']
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
 
+myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
+
+myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + vars['cpu_subdir']])
+
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
 Depends(mympi, mymodule)
