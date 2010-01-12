@@ -3,7 +3,24 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.7.6176 (January 7, 2010)
+Brio v0.9.7.6222 (January 11, 2010)
+===========================================
+
+-- Disable audio rendering thread option to revert previous mixer functionality, 
+pending additional development.
+
+-- Changing Brio's meta.inf Device to "LeapsterExplorer".
+
+-- Unused EventMessage members flagged by valgrind.
+
+-- Initial checkin of camera widget support.  Building disabled.
+
+-- Adding libjpeg support for camera.  Does not build/install yet.
+
+-- libjpeg support for building CameraMPI
+
+===========================================
+Brio v0.9.6.6208 (January 10, 2010)
 ===========================================
 
 Audio:
@@ -32,7 +49,8 @@ short samples.
 -- Audio rendering thread throttles itself when more rendering buffers to fill.
 Positive effect on UI narration problems reported in TTP #1815.
 
--- Disable audio rendering thread option to revert previous mixer functionality, pending additional development.
+-- Merge -c6171:  Disable audio rendering thread option to revert 
+previous mixer functionality, pending additional development.
 
 ===========================================
 Brio v0.9.5.6119 (December 31, 2009)
