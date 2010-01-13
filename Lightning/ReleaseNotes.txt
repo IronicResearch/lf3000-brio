@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.7.6222 (January 11, 2010)
+Brio v0.9.7.6233 (January 12, 2010)
 ===========================================
 
 -- Disable audio rendering thread option to revert previous mixer functionality, 
@@ -18,6 +18,12 @@ pending additional development.
 -- Adding libjpeg support for camera.  Does not build/install yet.
 
 -- libjpeg support for building CameraMPI
+
+-- Disable YUV layer visibility on DisplayMPI startups for video left 
+behind on prior instances.
+
+-- Keeping event listener trace messages for debugging purposes, with 
+most verbose conditional on DEBUG builds.
 
 ===========================================
 Brio v0.9.6.6208 (January 10, 2010)
