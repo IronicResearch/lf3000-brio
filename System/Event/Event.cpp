@@ -251,7 +251,6 @@ public:
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener)
 	{
-		kernel_.LockMutex(g_mutexEventList_);
 		if( numListeners_ >= listSize_ )
 		{
 			listSize_ += kGrowBySize;
@@ -269,7 +268,6 @@ public:
 		*next = pListener;
 		++numListeners_;
 		debug_.DebugOut(kDbgLvlValuable, "%s: added listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
-		kernel_.UnlockMutex(g_mutexEventList_);
 	}
 	//------------------------------------------------------------------------
 	tErrType RemoveListener(const IEventListener* pListener)
@@ -278,7 +276,6 @@ public:
 		// reclaiming memory?  Unlikely, but you can add some profiling info.
 		// If we find the listener in the list, shift other listeners down
 		// down to keep the list contiguous and decrement the listeners count.
-		kernel_.LockMutex(g_mutexEventList_);
 		if (ppListeners_) {	
 			const IEventListener** ptr = ppListeners_ + (numListeners_ - 1);		
 			for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
@@ -289,14 +286,12 @@ public:
 						*ptr = *(ptr + 1);
 					--numListeners_;
 					debug_.DebugOut(kDbgLvlValuable, "%s: removed listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
-					kernel_.UnlockMutex(g_mutexEventList_);
 					return kNoErr;
 				}
 			}
 		}
 		
 		debug_.DebugOut(kDbgLvlValuable, "%s: could not remove listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
-		kernel_.UnlockMutex(g_mutexEventList_);
 		return kEventListenerNotRegisteredErr;
 	}
 	//------------------------------------------------------------------------
@@ -335,7 +330,6 @@ public:
 		// TODO/tp: Speed could be optimized by keeping a multimap of event types to
 		// listeners, but only consider it if profiling indicates a need.
 		//
-		kernel_.LockMutex(g_mutexEventList_);
 		if (pResponse)
 			PostEventToChain(const_cast<IEventListener*>(pResponse), msg);	//*1
 		else
@@ -344,7 +338,6 @@ public:
 			for( U32 ii = numListeners_; ii > 0; --ii, --ptr )
 				PostEventToChain(const_cast<IEventListener*>(*ptr), msg);
 		}
-		kernel_.UnlockMutex(g_mutexEventList_);
 		// TODO: copy and modify the "else" clause immediately above to call
 		// all global event "monitors".
 		return kNoErr;
