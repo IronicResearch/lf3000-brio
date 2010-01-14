@@ -22766,3 +22766,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/14/10 9:50 AM
 6,047 ms. (Cumulative: 7,704,143 ms)
 
 ----------------
+Revision 6,253 from svn://localhost/TRUNK/:
+
+Remove mutex protection from event listener list, to reduce mutex load in Brio.
+Valgrind helgrind tool could not distinguish any benefit with vs without it, and listeners are not normally expected to be removed during event callbacks.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/10 9:58 AM
+1 changed, 0 added, 0 deleted.
+6,125 ms. (Cumulative: 7,710,534 ms)
+
+----------------
