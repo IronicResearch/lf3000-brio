@@ -22754,3 +22754,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/13/10 4:24 PM
 6,145 ms. (Cumulative: 7,698,002 ms)
 
 ----------------
+Revision 6,250 from svn://localhost/TRUNK/:
+Revision 6,251 from svn://localhost/TRUNK/:
+Revision 6,252 from svn://localhost/TRUNK/:
+
+Block signals across mutex locks to avoid pthread_mutex_lock failures seen with OE uclibc pthread lib. 
+Experimental workaround for uclibc bug which may have performance impact. (TTP #1830)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/10 9:50 AM
+1 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 7,704,143 ms)
+
+----------------
