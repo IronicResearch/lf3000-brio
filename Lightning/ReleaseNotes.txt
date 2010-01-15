@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.7.6250 (January 13, 2010)
+Brio v0.9.7.6262 (January 14, 2010)
 ===========================================
 
 -- Disable audio rendering thread option to revert previous mixer functionality, 
@@ -24,6 +24,14 @@ behind on prior instances.
 
 -- Keeping event listener trace messages for debugging purposes, with 
 most verbose conditional on DEBUG builds.
+
+-- Block signals across mutex locks to avoid pthread_mutex_lock 
+failures seen with OE uclibc pthread lib. 
+Experimental workaround for uclibc bug which may have performance impact. (TTP #1830)
+
+-- Remove mutex protection from event listener list, to reduce mutex load in Brio.
+Valgrind helgrind tool could not distinguish any benefit with vs without it, 
+and listeners are not normally expected to be removed during event callbacks.
 
 ===========================================
 Brio v0.9.6.6208 (January 10, 2010)
