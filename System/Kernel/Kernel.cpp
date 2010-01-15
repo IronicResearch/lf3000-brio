@@ -1224,15 +1224,9 @@ tErrType CKernelModule::LockMutex( tMutex& mutex )
 {
     tErrType err = kNoErr;
     
-    sigset_t flags, oldflags;
-    sigfillset(&flags);
-    pthread_sigmask(SIG_SETMASK, &flags, &oldflags);
-    
     err = pthread_mutex_lock(&mutex);
     ASSERT_POSIX_CALL( err );
     
-    pthread_sigmask(SIG_SETMASK, &oldflags, NULL);
-
     return kNoErr;
 }
 
@@ -1252,15 +1246,9 @@ tErrType CKernelModule::UnlockMutex( tMutex& mutex )
 {
     tErrType err = kNoErr;
     
-    sigset_t flags, oldflags;
-    sigfillset(&flags);
-    pthread_sigmask(SIG_SETMASK, &flags, &oldflags);
-    
     err = pthread_mutex_unlock(&mutex);
     ASSERT_POSIX_CALL( err );
     
-    pthread_sigmask(SIG_SETMASK, &oldflags, NULL);
-
     return kNoErr;
 }
 
