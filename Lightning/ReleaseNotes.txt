@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.7.6262 (January 14, 2010)
+Brio v0.9.8.6264 (January 14, 2010)
 ===========================================
 
 -- Disable audio rendering thread option to revert previous mixer functionality, 
