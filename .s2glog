@@ -22804,3 +22804,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/14/10 5:54 PM
 6,470 ms. (Cumulative: 7,723,723 ms)
 
 ----------------
+Revision 6,264 from svn://localhost/TRUNK/:
+Revision 6,265 from svn://localhost/TRUNK/:
+
+Revert KernelMPI pthread_mutex_lock hack for performance reasons.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/14/10 6:18 PM
+1 changed, 0 added, 0 deleted.
+6,345 ms. (Cumulative: 7,730,161 ms)
+
+----------------
