@@ -22826,3 +22826,30 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/14/10 6:30 PM
 6,110 ms. (Cumulative: 7,736,505 ms)
 
 ----------------
+Revision 6,268 from svn://localhost/TRUNK/:
+Revision 6,269 from svn://localhost/TRUNK/:
+Revision 6,270 from svn://localhost/TRUNK/:
+Revision 6,271 from svn://localhost/TRUNK/:
+Revision 6,272 from svn://localhost/TRUNK/:
+Revision 6,273 from svn://localhost/TRUNK/:
+Revision 6,274 from svn://localhost/TRUNK/:
+Revision 6,275 from svn://localhost/TRUNK/:
+Revision 6,276 from svn://localhost/TRUNK/:
+Revision 6,277 from svn://localhost/TRUNK/:
+Revision 6,278 from svn://localhost/TRUNK/:
+Revision 6,279 from svn://localhost/TRUNK/:
+Revision 6,280 from svn://localhost/TRUNK/:
+Revision 6,281 from svn://localhost/TRUNK/:
+Revision 6,282 from svn://localhost/TRUNK/:
+Revision 6,283 from svn://localhost/TRUNK/:
+Revision 6,284 from svn://localhost/TRUNK/:
+Revision 6,285 from svn://localhost/TRUNK/:
+Revision 6,286 from svn://localhost/TRUNK/:
+
+Changed dispmgr pointer behavior, now works like a Singleton.  BrioOpenGLConfig will allocate it if needed on construction and delete it on destruction.  By not pointing it at BrioOpenGLConfig's personal DisplayMPI, it's possible to destroy OpenGL if someone forgot to delete BrioOpenGLConfig, but somehow it left scope (unloading game plugin)
+
+By Minh Saelock (msaelock@leapfrog.com) on 1/15/10 6:34 PM
+1 changed, 0 added, 0 deleted.
+6,260 ms. (Cumulative: 7,742,984 ms)
+
+----------------
