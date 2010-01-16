@@ -53,7 +53,7 @@ namespace
 {
 	//--------------------------------------------------------------------------
 	tOpenGLContext		ctx;
-	CDisplayMPI*		dispmgr;
+	CDisplayMPI*		dispmgr = 0;
 	NativeDisplayType	display;
 	NativeWindowType	hwnd;
 	bool				isEnabled = false;
@@ -203,7 +203,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 {
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
-	dispmgr = &disp_;
+	if(!dispmgr)
+		dispmgr = new CDisplayMPI();
 
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
@@ -385,6 +386,12 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 
 	// Exit OpenGL hardware
 //	disp_.DeinitOpenGL(); 
+	
+	if(dispmgr)
+	{
+		delete dispmgr;
+		dispmgr = 0;
+	}
 }
 
 LF_END_BRIO_NAMESPACE()
