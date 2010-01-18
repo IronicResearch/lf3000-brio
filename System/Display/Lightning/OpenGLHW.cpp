@@ -217,6 +217,9 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	// Clear framebuffer memory visible region
 	memset(gpMem2, 0, dc.height * dc.pitch);
 	
+	// Reset framebuffer start address to match
+	ioctl(gDevLayer, MLC_IOCTADDRESS, gMem2Phys);
+	
 	// Copy the required mappings into the MagicEyes callback init struct
 	pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
 	pMemInfo->Memory1D_VirtualAddress	= (unsigned int)gpMem1;
