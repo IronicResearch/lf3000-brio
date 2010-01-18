@@ -22853,3 +22853,22 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/15/10 6:34 PM
 6,260 ms. (Cumulative: 7,742,984 ms)
 
 ----------------
+Revision 6,287 from svn://localhost/TRUNK/:
+Revision 6,288 from svn://localhost/TRUNK/:
+Revision 6,289 from svn://localhost/TRUNK/:
+Revision 6,290 from svn://localhost/TRUNK/:
+Revision 6,291 from svn://localhost/TRUNK/:
+Revision 6,292 from svn://localhost/TRUNK/:
+Revision 6,293 from svn://localhost/TRUNK/:
+Revision 6,294 from svn://localhost/TRUNK/:
+Revision 6,295 from svn://localhost/TRUNK/:
+Revision 6,296 from svn://localhost/TRUNK/:
+Revision 6,297 from svn://localhost/TRUNK/:
+
+Reset framebuffer start address loaded in HW each new OGL context. Should eliminate remnants of previously displayed OGL framebuffer contents left by OGL triple buffering. (TTP #1896)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/18/10 3:33 PM
+1 changed, 0 added, 0 deleted.
+6,266 ms. (Cumulative: 7,749,578 ms)
+
+----------------
