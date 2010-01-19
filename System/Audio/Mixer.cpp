@@ -943,7 +943,7 @@ void CAudioMixer::RemoveAllPlayer( void )
 	for (long i = 0; i < numInStreams_; i++)
 	{
 		CAudioPlayer *pPlayer = pStreams_[i].GetPlayer();
-		if ( pPlayer && !pPlayer->IsDone())
+		if ( pPlayer )
 			delete pPlayer;
 		pStreams_[i].Release(true);
 	}
