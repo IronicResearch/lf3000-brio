@@ -22893,3 +22893,19 @@ By Dave Milici (dmilici@leapfrog.com) on 1/19/10 1:01 PM
 6,173 ms. (Cumulative: 7,756,110 ms)
 
 ----------------
+Revision 6,310 from svn://localhost/TRUNK/:
+Revision 6,311 from svn://localhost/TRUNK/:
+Revision 6,312 from svn://localhost/TRUNK/:
+Revision 6,313 from svn://localhost/TRUNK/:
+Revision 6,314 from svn://localhost/TRUNK/:
+Revision 6,315 from svn://localhost/TRUNK/:
+Revision 6,316 from svn://localhost/TRUNK/:
+
+1.) Added RenderFrame() function to decompress a captured jpeg to raw bitmap
+2.) Enhanced testCamera to stream 4 seconds of captured video to the video layer
+
+By jeno (jeno@leapfrog.com) on 1/19/10 4:20 PM
+6 changed, 0 added, 0 deleted.
+6,470 ms. (Cumulative: 7,762,705 ms)
+
+----------------

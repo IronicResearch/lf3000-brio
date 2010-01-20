@@ -170,6 +170,16 @@ public:
 	/// \return Returns true on success.
 	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 
+	/// RenderFrame() convert retrieved frame from camera format to a format suitable for
+	/// rendering on the display.
+	///
+	/// \param frame	Image data returned from camera
+	///
+	/// \param image	Render target
+	///
+	/// \return Returns true on success.
+	Boolean		RenderFrame(tFrameInfo *frame, tBitmapInfo *image);
+
 	/// PutFrame() mark retrieved frame as processed and return it to the pool.
 	///
 	/// \param	hndl	Video capture handle returned by StartVideoCapture()

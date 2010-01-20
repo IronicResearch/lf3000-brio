@@ -25,10 +25,15 @@
 //============================================================================
 // This Brio implementation is a layer above the V4L2 Linux kernel API:
 // http://www.linuxtv.org/downloads/video4linux/API/V4L2_API/spec/index.html
+//
+// It also utilizes libjpeg for image processing:
+// http://www.ijg.org/
 //============================================================================
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+
+#include <jpeglib.h>
 
 #define USE_PROFILE			0
 
@@ -726,6 +731,84 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	frame->size		= camCtx_.buf.bytesused;
 
 	CAMERA_UNLOCK;
+	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tBitmapInfo *bitmap)
+{
+	struct jpeg_decompress_struct	cinfo;
+	struct jpeg_error_mgr			err;
+	JSAMPARRAY						buffer = NULL;
+	int 							row = 0;
+	int								row_stride;
+
+	/*
+	 * libjpeg expects an array of pointers to bitmap output rows.
+	 * The user supplies one contiguous array for bitmap output, so construct
+	 * a JSAMPARRAY pointing to each row.
+	 */
+	buffer = static_cast<U8**>(kernel_.Malloc(bitmap->height * sizeof(U8*)));
+
+	row_stride = bitmap->width;
+	if(bitmap->format == kBitmapFormatYCbCr888 || bitmap->format == kBitmapFormatRGB888)
+	{
+		row_stride *= 3;
+	}
+
+	for(int i = 0; i < bitmap->height; i++)
+	{
+		buffer[i] = &bitmap->data[i*row_stride];
+	}
+
+	cinfo.err = jpeg_std_error(&err);
+
+	jpeg_create_decompress(&cinfo);
+
+	jpeg_mem_src(&cinfo, (U8*)frame->data, frame->size);
+
+	(void) jpeg_read_header(&cinfo, TRUE);
+
+	switch(bitmap->format)
+	{
+	case kBitmapFormatYCbCr888:
+		cinfo.out_color_space = JCS_YCbCr;
+		break;
+	case kBitmapFormatRGB888:
+		cinfo.out_color_space = JCS_RGB;
+		break;
+	case kBitmapFormatGrayscale8:
+		break;
+	case kBitmapFormatError:
+		/* fall through */
+	default:
+		;
+	}
+
+	/*
+	 * libjpeg natively supports 1/1, 1/2, 1/4, and 1/8 scaling.
+	 */
+	cinfo.scale_num = 1;
+	cinfo.scale_denom = frame->height / bitmap->height;
+
+	(void) jpeg_start_decompress(&cinfo);
+
+	row_stride = cinfo.output_width * cinfo.output_components;
+
+	while (cinfo.output_scanline < cinfo.output_height) {
+	    /* jpeg_read_scanlines expects an array of pointers to scanlines.
+	     * Here the array is only one element long, but you could ask for
+	     * more than one scanline at a time if that's more convenient.
+	     */
+	    row += jpeg_read_scanlines(&cinfo, &buffer[row], cinfo.output_height);
+	}
+
+	(void) jpeg_finish_decompress(&cinfo);
+
+	jpeg_destroy_decompress(&cinfo);
+
+	kernel_.Free(buffer);
+
 	return true;
 }
 

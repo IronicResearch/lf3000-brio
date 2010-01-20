@@ -109,6 +109,7 @@ public:
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture();
 	VTABLE_EXPORT Boolean		PollFrame(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	VTABLE_EXPORT Boolean		RenderFrame(tFrameInfo *frame, tBitmapInfo *image);
 	VTABLE_EXPORT Boolean		PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect* rect);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
