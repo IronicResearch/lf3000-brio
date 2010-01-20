@@ -3,13 +3,30 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.8.6268  (January 14, 2010)
+Brio v0.9.9.6327 (January 20, 2010)
 ===========================================
 
 -- Revert KernelMPI pthread_mutex_lock hack for performance reasons.
 
+-- Changed dispmgr pointer behavior, now works like a Singleton.  
+BrioOpenGLConfig will allocate it if needed on construction and 
+delete it on destruction.  By not pointing it at BrioOpenGLConfig's 
+personal DisplayMPI, it's possible to destroy OpenGL if someone forgot to 
+delete BrioOpenGLConfig, but somehow it left scope (unloading game plugin)
+
+-- Reset framebuffer start address loaded in HW each new OGL context. 
+Should eliminate remnants of previously displayed OGL framebuffer 
+contents left by OGL triple buffering. (TTP #1896)
+
+-- Delete all players remaining in mixer streams for StopAllAudio() call, 
+including zombie players. (TTP #1931)
+
+-- Camera changes
+1.) Added RenderFrame() function to decompress a captured jpeg to raw bitmap
+2.) Enhanced testCamera to stream 4 seconds of captured video to the video layer
+
 ===========================================
-Brio v0.9.7.6260  (January 14, 2010)
+Brio v0.9.7.6293 (January 16, 2010)
 ===========================================
 
 -- Disable audio rendering thread option to revert previous mixer functionality, 
@@ -31,13 +48,13 @@ behind on prior instances.
 -- Keeping event listener trace messages for debugging purposes, with 
 most verbose conditional on DEBUG builds.
 
--- Block signals across mutex locks to avoid pthread_mutex_lock 
-failures seen with OE uclibc pthread lib. 
-Experimental workaround for uclibc bug which may have performance impact. (TTP #1830)
+-- Merged -c6265:  Revert KernelMPI pthread_mutex_lock hack for performance reasons. 
 
--- Remove mutex protection from event listener list, to reduce mutex load in Brio.
-Valgrind helgrind tool could not distinguish any benefit with vs without it, 
-and listeners are not normally expected to be removed during event callbacks.
+-- Merged -c6286:  Changed dispmgr pointer behavior, now works like a 
+Singleton. BrioOpenGLConfig will allocate it if needed on construction and 
+delete it on destruction. By not pointing it at BrioOpenGLConfig's personal 
+DisplayMPI, it's possible to destroy OpenGL if someone forgot to delete BrioOpenGLConfig, 
+but somehow it left scope (unloading game plugin)
 
 ===========================================
 Brio v0.9.6.6208 (January 10, 2010)
