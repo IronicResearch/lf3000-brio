@@ -151,6 +151,14 @@ Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 }
 
 //----------------------------------------------------------------------------
+Boolean	CCameraMPI::RenderFrame(tFrameInfo *frame, tBitmapInfo *image)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->RenderFrame(frame, image);
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraMPI::PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 {
 	if (!pModule_)

@@ -69,6 +69,22 @@ struct tFrameInfo {
 	U32				size;
 };
 
+enum tBitmapFormat {
+	kBitmapFormatError = 0,
+	kBitmapFormatGrayscale8,
+	kBitmapFormatRGB888,
+	kBitmapFormatYCbCr888,
+};
+
+// Bitmap image (processed frame) info
+struct tBitmapInfo {
+	tBitmapFormat	format;
+	U16				width;
+	U16				height;
+	U8 *			data;
+	U32				size;
+};
+
 LF_END_BRIO_NAMESPACE()
 
 #endif	// LF_BRIO_CAMERATYPES_H
