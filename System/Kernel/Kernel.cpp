@@ -832,7 +832,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-#if 0	// BUGFIX/dm: use thread-based callback instead of signal
+#if 1	// BUGFIX/dm: use thread-based callback instead of signal
     // Initialize the sigaction structure for handler 
    	// Setup signal to repond to handler
    	struct sigaction act;
@@ -845,7 +845,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	// Set up timer
     struct sigevent se;
     memset(&se, 0, sizeof(se));
-#if 0
+#if 1 // RidgeRun uclibc
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
 	se.sigev_value.sival_int = 0;

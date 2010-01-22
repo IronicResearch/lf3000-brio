@@ -23003,3 +23003,19 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/10 8:19 AM
 5,781 ms. (Cumulative: 7,793,093 ms)
 
 ----------------
+Revision 6,367 from svn://localhost/TRUNK/:
+Revision 6,368 from svn://localhost/TRUNK/:
+Revision 6,369 from svn://localhost/TRUNK/:
+Revision 6,370 from svn://localhost/TRUNK/:
+Revision 6,371 from svn://localhost/TRUNK/:
+Revision 6,372 from svn://localhost/TRUNK/:
+Revision 6,373 from svn://localhost/TRUNK/:
+
+Revert thread-based timer callbacks to signal type due to lack of support in RidgeRun runtime libs.
+Needed for powerdown timeout event. TODO: Runtime check?
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/10 11:48 AM
+1 changed, 0 added, 0 deleted.
+5,854 ms. (Cumulative: 7,799,057 ms)
+
+----------------
