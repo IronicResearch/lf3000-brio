@@ -56,12 +56,12 @@ paTestData;
 //==============================================================================
 // Global variables
 //==============================================================================
-static PaStream* gPaStream;
-static BrioAudioRenderCallback* gAudioRenderCallback;
-static void* gCallbackUserData;
+static PaStream* gPaStream = NULL;
+static BrioAudioRenderCallback* gAudioRenderCallback = NULL;
+static void* gCallbackUserData = NULL;
 
 // Debug output
-static U32 gCallbackCount;			
+static U32 gCallbackCount = 0;			
 #ifndef USE_REAL_CALLBACK
 static paTestData gTestData;
 #endif

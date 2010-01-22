@@ -22970,3 +22970,36 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/20/10 5:46 PM
 5,891 ms. (Cumulative: 7,787,076 ms)
 
 ----------------
+Revision 6,342 from svn://localhost/TRUNK/:
+Revision 6,343 from svn://localhost/TRUNK/:
+Revision 6,344 from svn://localhost/TRUNK/:
+Revision 6,345 from svn://localhost/TRUNK/:
+Revision 6,346 from svn://localhost/TRUNK/:
+Revision 6,347 from svn://localhost/TRUNK/:
+Revision 6,348 from svn://localhost/TRUNK/:
+Revision 6,349 from svn://localhost/TRUNK/:
+Revision 6,350 from svn://localhost/TRUNK/:
+Revision 6,351 from svn://localhost/TRUNK/:
+Revision 6,352 from svn://localhost/TRUNK/:
+Revision 6,353 from svn://localhost/TRUNK/:
+Revision 6,354 from svn://localhost/TRUNK/:
+Revision 6,355 from svn://localhost/TRUNK/:
+Revision 6,356 from svn://localhost/TRUNK/:
+Revision 6,357 from svn://localhost/TRUNK/:
+Revision 6,358 from svn://localhost/TRUNK/:
+Revision 6,359 from svn://localhost/TRUNK/:
+Revision 6,360 from svn://localhost/TRUNK/:
+Revision 6,361 from svn://localhost/TRUNK/:
+Revision 6,362 from svn://localhost/TRUNK/:
+Revision 6,363 from svn://localhost/TRUNK/:
+Revision 6,364 from svn://localhost/TRUNK/:
+Revision 6,365 from svn://localhost/TRUNK/:
+Revision 6,366 from svn://localhost/TRUNK/:
+
+Mixer init coverage for valgrind traces thru PortAudio path. (TTP 1435 assist)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/10 8:19 AM
+2 changed, 0 added, 0 deleted.
+5,781 ms. (Cumulative: 7,793,093 ms)
+
+----------------

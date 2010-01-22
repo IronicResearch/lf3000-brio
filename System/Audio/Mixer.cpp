@@ -105,10 +105,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 // These should not be globals.	 They should be in the object as they were.	 But
 // somebody insisted on having static member functions that pass references to
 // "this."
-CDebugMPI *pDebugMPI_;
-CEventMPI  *pEventMPI_;
-CKernelMPI *pKernelMPI_;
-tMutex mixerMutex_;
+CDebugMPI *pDebugMPI_ = NULL;
+CEventMPI  *pEventMPI_ = NULL;
+CKernelMPI *pKernelMPI_ = NULL;
+tMutex mixerMutex_ = {0}; // real init via KernelMPI.InitMutex()
 
 //------------------------------------------------------------------------------
 // Helper thread to re-try enabling PortAudio output
@@ -291,6 +291,9 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	UpdateDSP();
 	ResetDSP();
 	
+	// Init mixer state vars prior to 1st PortAudio callback (valgrind)
+	isPaused_ = false;
+
 	// Init output driver and register callback.  We have to pass in a pointer
 	// to the mixer object as a bit of "user data" so that when the callback
 	// happens, the C call can get to the mixer's C++ member function for
@@ -334,10 +337,6 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	currentPolicy = kAudioPriorityPolicyNone;
 
 	pDebugMPI_->Assert(FlatProfilerInit(0, 0) == 0, "Failed to init profiler.\n");
-
-	// Folklore item about once-in-blue-moon silence during Brio/AppManager session
-	// ... is just a story to tell the grandkids now ...
-	isPaused_ = false;
 }
 
 // ==============================================================================
