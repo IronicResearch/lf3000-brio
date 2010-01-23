@@ -3,22 +3,23 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.10.6342 (January 20, 2010)
+Brio v0.9.10.6379 (January 22, 2010)
 ===========================================
 
--- Nothing new yet.
+-- Mixer init coverage for valgrind traces thru PortAudio path. (TTP 1435 assist)
+
+-- Revert thread-based timer callbacks to signal type due to lack of support in 
+RidgeRun runtime libs.  Needed for powerdown timeout event. TODO: Runtime check?
 
 ===========================================
-Brio v0.9.9.6327 (January 20, 2010)
+Brio v0.9.9.6369 (January 22, 2010)
 ===========================================
 
--- Revert KernelMPI pthread_mutex_lock hack for performance reasons.
+-- No changes for patch build except SVN advancing.
 
--- Changed dispmgr pointer behavior, now works like a Singleton.  
-BrioOpenGLConfig will allocate it if needed on construction and 
-delete it on destruction.  By not pointing it at BrioOpenGLConfig's 
-personal DisplayMPI, it's possible to destroy OpenGL if someone forgot to 
-delete BrioOpenGLConfig, but somehow it left scope (unloading game plugin)
+===========================================
+Brio v0.9.9.6362 (January 21, 2010)
+===========================================
 
 -- Reset framebuffer start address loaded in HW each new OGL context. 
 Should eliminate remnants of previously displayed OGL framebuffer 
