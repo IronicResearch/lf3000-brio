@@ -23033,3 +23033,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/22/10 6:53 PM
 6,126 ms. (Cumulative: 7,805,292 ms)
 
 ----------------
+Revision 6,379 from svn://localhost/TRUNK/:
+Revision 6,380 from svn://localhost/TRUNK/:
+
+Added pthread_testcancel points to EventMPI and VideoMPI threads for proper termination. (TTP #1873)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/10 7:43 PM
+3 changed, 0 added, 0 deleted.
+6,313 ms. (Cumulative: 7,811,683 ms)
+
+----------------

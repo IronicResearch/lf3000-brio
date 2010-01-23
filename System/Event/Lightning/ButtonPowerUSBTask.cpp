@@ -217,8 +217,9 @@ void* CEventModule::CartridgeTask( void* arg )
 	while (1)
 	{
 		// block on driver state changes, or timeout after 1 sec
-		// FIXME: is timeout intentional? or just copied from ButtonPowerUSBTask?
-		ret = poll(event_fd, 1, -1);
+		// use timeout for cancellation point
+        pthread_testcancel();
+		ret = poll(event_fd, 1, 1000);
 		if((ret >= 0)  && (event_fd[0].revents & POLLIN)) {
 			struct sockaddr_un addr;
 			socklen_t size;
@@ -369,8 +370,10 @@ void* CEventModule::CartridgeTask( void* arg )
 	g_threadRunning2_ = true;
 	while (g_threadRun2_)
 	{
-		// block on driver state changes only, no timeout
-		ret = poll(event_fd, last_fd, -1);
+		// block on driver state changes only
+		// use timeout for cancellation point
+        pthread_testcancel();
+		ret = poll(event_fd, last_fd, 1000);
 		
 		if(ret >= 0) {
 			// button driver event?

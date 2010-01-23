@@ -143,6 +143,7 @@ void* VideoTaskMain( void* arg )
 			while (bRunning) {
 				static U32 lasttime = 0xFFFFFFFF;
 				static U32 counter = 0;
+				pthread_testcancel();
 				if (pVideoListener)
 					nexttime = gAudioTime;
 				else if (bAudio)
