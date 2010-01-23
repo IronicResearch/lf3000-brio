@@ -135,7 +135,9 @@ private:
 		g_threadRunning_ = true;
 		while (g_threadRun_)
 		{
-			err = pThis->kernel_.ReceiveMessage(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize);
+			// use timeout for cancellation point
+	        pthread_testcancel();
+			err = pThis->kernel_.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 100);
 			if ( err != kConnectionTimedOutErr ) {
 		    	pThis->debug_.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
@@ -226,21 +228,17 @@ public:
 		if (g_hCartThread_ != kInvalidTaskHndl) {
 			debug_.DebugOut(kDbgLvlValuable, "%s: Terminating cart thread\n", __FUNCTION__);
 			kernel_.CancelTask(g_hCartThread_);
-			kernel_.TaskSleep(1);
 			kernel_.JoinTask(g_hCartThread_, retval);
 		}
 		if (g_hBPUThread_ != kInvalidTaskHndl) {
 			debug_.DebugOut(kDbgLvlValuable, "%s: Terminating button thread\n", __FUNCTION__);
 			kernel_.CancelTask(g_hBPUThread_);
-			kernel_.TaskSleep(1);
 			kernel_.JoinTask(g_hBPUThread_, retval);
 		}
 		// Terminate thread normally and dispose of listener list afterwards
-		g_threadRun_ = false;
 		g_threadRunning_ = false;
 		debug_.DebugOut(kDbgLvlValuable, "%s: Terminating message thread\n", __FUNCTION__);
 		kernel_.CancelTask(g_hThread_);
-		kernel_.TaskSleep(1);
 		kernel_.JoinTask(g_hThread_, retval);
 #if 1	// FIXME/dm: segfaults during module manager destruction -- corrupt ptr/list? 
 		if (ppListeners_)
