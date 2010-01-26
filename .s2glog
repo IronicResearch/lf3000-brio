@@ -23131,3 +23131,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/10 7:46 PM
 6,391 ms. (Cumulative: 7,837,651 ms)
 
 ----------------
+Revision 6,433 from svn://localhost/TRUNK/:
+
+Remove remaining display contexts in emulation destructor to assist valgrind profiling. (TTP 1435)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/10 7:50 PM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 7,843,761 ms)
+
+----------------
