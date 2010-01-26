@@ -23149,3 +23149,18 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/10 7:51 PM
 5,907 ms. (Cumulative: 7,849,746 ms)
 
 ----------------
+Revision 6,435 from svn://localhost/TRUNK/:
+Revision 6,436 from svn://localhost/TRUNK/:
+Revision 6,437 from svn://localhost/TRUNK/:
+Revision 6,438 from svn://localhost/TRUNK/:
+Revision 6,439 from svn://localhost/TRUNK/:
+Revision 6,440 from svn://localhost/TRUNK/:
+Revision 6,441 from svn://localhost/TRUNK/:
+
+Added missing mktemp export needed by libpthread-0.9.29.so. (TTP 2018)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/26/10 2:58 PM
+0 changed, 1 added, 0 deleted.
+5,862 ms. (Cumulative: 7,855,717 ms)
+
+----------------
