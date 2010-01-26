@@ -23095,3 +23095,39 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/24/10 1:53 AM
 6,469 ms. (Cumulative: 7,830,916 ms)
 
 ----------------
+Revision 6,405 from svn://localhost/TRUNK/:
+Revision 6,406 from svn://localhost/TRUNK/:
+Revision 6,407 from svn://localhost/TRUNK/:
+Revision 6,408 from svn://localhost/TRUNK/:
+Revision 6,409 from svn://localhost/TRUNK/:
+Revision 6,410 from svn://localhost/TRUNK/:
+Revision 6,411 from svn://localhost/TRUNK/:
+Revision 6,412 from svn://localhost/TRUNK/:
+Revision 6,413 from svn://localhost/TRUNK/:
+Revision 6,414 from svn://localhost/TRUNK/:
+Revision 6,415 from svn://localhost/TRUNK/:
+Revision 6,416 from svn://localhost/TRUNK/:
+Revision 6,417 from svn://localhost/TRUNK/:
+Revision 6,418 from svn://localhost/TRUNK/:
+Revision 6,419 from svn://localhost/TRUNK/:
+Revision 6,420 from svn://localhost/TRUNK/:
+Revision 6,421 from svn://localhost/TRUNK/:
+Revision 6,422 from svn://localhost/TRUNK/:
+Revision 6,423 from svn://localhost/TRUNK/:
+Revision 6,424 from svn://localhost/TRUNK/:
+Revision 6,425 from svn://localhost/TRUNK/:
+Revision 6,426 from svn://localhost/TRUNK/:
+Revision 6,427 from svn://localhost/TRUNK/:
+Revision 6,428 from svn://localhost/TRUNK/:
+Revision 6,429 from svn://localhost/TRUNK/:
+Revision 6,430 from svn://localhost/TRUNK/:
+Revision 6,431 from svn://localhost/TRUNK/:
+Revision 6,432 from svn://localhost/TRUNK/:
+
+DisplayMPI CreateHandle/DestroyHandle heap buffers access protected by mutex too. (TTP 1952)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/10 7:46 PM
+1 changed, 0 added, 0 deleted.
+6,391 ms. (Cumulative: 7,837,651 ms)
+
+----------------

@@ -66,6 +66,7 @@ namespace
 	std::list<tBuffer>	gBufListFree;			// list of freed buffers
 	U32					gMarkBufStart = 0;		// framebuffer start marker
 	U32					gMarkBufEnd = 0;		// framebuffer end marker
+	tMutex 		gListMutex = PTHREAD_MUTEX_INITIALIZER;	// list mutex
 }
 
 	//----------------------------------------------------------------------------
@@ -112,7 +113,8 @@ namespace
 		{
 			tBuffer buf;
 			std::list<tBuffer>::iterator it;
-
+			kernel_.LockMutex(gListMutex);
+			
 			// All display contexts now reference common base address
 			pdc->basephys = gFrameBase;
 			pdc->baselinear = gPlanarBase;
@@ -128,6 +130,7 @@ namespace
 					pdc->pBuffer += pdc->offset;
 					gBufListUsed.push_back(buf);
 					dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: recycle offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+					kernel_.UnlockMutex(gListMutex);
 					return true;
 				}
 			}
@@ -136,7 +139,9 @@ namespace
 			if (aligned) {
 				// Allocate aligned buffer from end of heap (OGL, YUV)
 				if (gMarkBufEnd - bufsize < gMarkBufStart)
+				{	kernel_.UnlockMutex(gListMutex);
 					return false;
+				}
 				pdc->offset = gMarkBufEnd - bufsize;
 				pdc->pBuffer += pdc->offset;
 				gMarkBufEnd -= bufsize;
@@ -144,7 +149,9 @@ namespace
 			else {
 				// Allocate unaligned buffer at top of heap if there's room
 				if (gMarkBufStart + bufsize > gMarkBufEnd)
+				{	kernel_.UnlockMutex(gListMutex);
 					return false;
+				}
 				pdc->offset = gMarkBufStart;
 				pdc->pBuffer += pdc->offset;
 				pdc->isPrimary = (pdc->offset == 0) ? true : false;
@@ -158,6 +165,7 @@ namespace
 			gBufListUsed.push_back(buf);
 			dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: new buf offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
 		}
+		kernel_.UnlockMutex(gListMutex);
 		return true;
 	}
 	
@@ -170,6 +178,7 @@ namespace
 		{
 			tBuffer buf;
 			std::list<tBuffer>::iterator it;
+			kernel_.LockMutex(gListMutex);
 			U32 markStart = gMarkBufStart;
 			U32 markEnd   = gMarkBufEnd;
 			
@@ -210,6 +219,7 @@ namespace
 				}
 			}
 		}
+		kernel_.UnlockMutex(gListMutex);
 		return true;
 	}
 
