@@ -81,12 +81,13 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 //----------------------------------------------------------------------------
 CDisplayModule::~CDisplayModule()
 {
-#if 0	// Skip removing display contexts for cleaner appearance on exits (TTP #2010)
-	tDisplayContext* pdc = pdcListHead;
-	while (pdc != NULL)
+#ifdef EMULATION	// Skip removing display contexts for cleaner appearance on exits (TTP #2010)
+	tDisplayContext* pdc = NULL;
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
+		pdc = *it;
 		DestroyHandle(pdc, true);
-		pdc = reinterpret_cast<tDisplayContext*>(pdc->pdc);
 	}
 	if (pdcPrimary_)
 	DestroyHandle(pdcPrimary_, true);
