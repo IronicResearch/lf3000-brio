@@ -23140,3 +23140,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/10 7:50 PM
 6,032 ms. (Cumulative: 7,843,761 ms)
 
 ----------------
+Revision 6,434 from svn://localhost/TRUNK/:
+
+Remove remaining audio players in destructor to assist valgrind profiling. (TTP 1435)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/10 7:51 PM
+1 changed, 0 added, 0 deleted.
+5,907 ms. (Cumulative: 7,849,746 ms)
+
+----------------

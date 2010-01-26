@@ -365,6 +365,10 @@ CAudioMixer::~CAudioMixer()
 	{
 		for (long ch = 0; ch < numInStreams_; ch++)
 		{
+			CAudioPlayer *pPlayer = pStreams_[ch].GetPlayer();
+			if ( pPlayer )
+				delete pPlayer;
+			pStreams_[ch].Release(true);
 		}
 		delete[] pStreams_;
 	}
