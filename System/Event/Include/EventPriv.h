@@ -66,6 +66,7 @@ public:
 	static void* 		CartridgeTask( void* arg );
 	CDebugMPI			debug_;
 	CKernelMPI			kernel_;
+	bool				bThreadRun_;
 };
 
 LF_END_BRIO_NAMESPACE()	
