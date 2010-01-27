@@ -732,6 +732,8 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 		return false;
 	}
 
+    memcpy(&camCtx_.fmt, &fmt, sizeof(struct v4l2_format));
+
     /* framerate */
     memset(&fps, 0, sizeof(struct v4l2_streamparm));
     fps.type									= V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -753,13 +755,64 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::GetCameraControls(tCameraControls &controls)
 {
-	return false;
+	CAMERA_LOCK;
+
+	controls = *(camCtx_.controls);
+
+	CAMERA_UNLOCK;
+
+	return true;
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::SetCameraControl(const tControlInfo* control)
+Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 value)
 {
-	return false;
+	v4l2_control	ctrl;
+	Boolean			bRet = true;
+
+	CAMERA_LOCK;
+
+	switch(control->type)
+	{
+	case kControlTypeBrightness:
+		ctrl.id = V4L2_CID_BRIGHTNESS;
+		break;
+	case kControlTypeContrast:
+		ctrl.id = V4L2_CID_CONTRAST;
+		break;
+	case kControlTypeSaturation:
+		ctrl.id = V4L2_CID_SATURATION;
+		break;
+	case kControlTypeHue:
+		ctrl.id = V4L2_CID_HUE;
+		break;
+	case kControlTypeGamma:
+		ctrl.id = V4L2_CID_GAMMA;
+		break;
+	case kControlPowerLineFreq:
+		ctrl.id = V4L2_CID_POWER_LINE_FREQUENCY;
+		break;
+	case kControlTypeSharpness:
+		ctrl.id = V4L2_CID_SHARPNESS;
+		break;
+	case kControlTypeBacklightComp:
+		ctrl.id = V4L2_CID_BACKLIGHT_COMPENSATION;
+		break;
+	default:
+		bRet = false;
+		;
+	}
+
+	ctrl.value = value;
+
+	if(0 != ioctl(camCtx_.fd, VIDIOC_S_CTRL, &ctrl))
+	{
+		bRet = false;
+	}
+
+	CAMERA_UNLOCK;
+
+	return bRet;
 }
 
 //----------------------------------------------------------------------------
@@ -882,6 +935,8 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	frame->index	= camCtx_.buf.index;
 	frame->data		= camCtx_.bufs[camCtx_.buf.index];
 	frame->size		= camCtx_.buf.bytesused;
+	frame->width	= camCtx_.fmt.fmt.pix.width;
+	frame->height	= camCtx_.fmt.fmt.pix.height;
 
 	CAMERA_UNLOCK;
 	return true;
@@ -1110,13 +1165,14 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
     }
 
+	CAMERA_UNLOCK;
+
 	if(THREAD_HANDLE(hndl))
 	{
 		DeInitCameraTask(&camCtx_);
 	}
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
-	CAMERA_UNLOCK;
 	return true;
 }
 

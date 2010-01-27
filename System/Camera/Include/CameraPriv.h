@@ -68,6 +68,8 @@ struct tCameraContext {
 
 	tVidCapHndl					hndl;
 
+	struct v4l2_format 			fmt;		// to track the currently selected format
+
 	struct v4l2_capability		cap;
 	tCaptureModes				*modes;
 	tCaptureMode				mode;
@@ -78,7 +80,7 @@ struct tCameraContext {
 	U32							numBufs;
 	void						**bufs;
 
-	CPath						&path;
+	CPath						path;
 	Boolean						audio;
 	tVideoSurf					*surf;
 	tRect						*rect;
@@ -114,7 +116,7 @@ public:
 	VTABLE_EXPORT Boolean		GetCameraModes(tCaptureModes &modes);
 	VTABLE_EXPORT Boolean		SetCameraMode(const tCaptureMode* mode);
 	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
-	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control);
+	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
 	VTABLE_EXPORT Boolean		SetBuffers(const U32 numBuffers);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture();
 	VTABLE_EXPORT Boolean		PollFrame(const tVidCapHndl hndl);

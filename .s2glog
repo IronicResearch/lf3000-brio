@@ -23219,3 +23219,16 @@ By Dave Milici (dmilici@leapfrog.com) on 1/27/10 3:02 PM
 5,969 ms. (Cumulative: 7,874,127 ms)
 
 ----------------
+Revision 6,468 from svn://localhost/TRUNK/:
+Revision 6,469 from svn://localhost/TRUNK/:
+
+Camera updates:
+-Implemented camera control selection
+-Activated test for threaded capture
+-Added test for control selection
+
+By jeno (jeno@leapfrog.com) on 1/27/10 3:31 PM
+6 changed, 0 added, 0 deleted.
+6,577 ms. (Cumulative: 7,880,782 ms)
+
+----------------

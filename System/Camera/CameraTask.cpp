@@ -16,7 +16,7 @@
 #include <CameraMPI.h>
 //#include <AudioMPI.h>
 #include <KernelMPI.h>
-//#include <DisplayMPI.h>
+#include <DisplayMPI.h>
 //#include <EventMPI.h>
 #include <CameraPriv.h>
 
@@ -57,6 +57,7 @@ void* CameraTaskMain(void* arg)
 {
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
+	CDisplayMPI			display;
 	CCameraMPI			cammgr;
 
 	tCameraContext		*pCtx 	= static_cast<tCameraContext*>(arg);
@@ -105,6 +106,7 @@ void* CameraTaskMain(void* arg)
 		if(bScreen)
 		{
 			bRet = cammgr.RenderFrame(&frame, pCtx->surf, &image);
+			display.Invalidate(0);
 		}
 
 		bRet = cammgr.ReturnFrame(pCtx->hndl, &frame);
