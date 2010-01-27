@@ -14,10 +14,10 @@
 
 #include <DebugMPI.h>
 #include <CameraMPI.h>
-#include <AudioMPI.h>
+//#include <AudioMPI.h>
 #include <KernelMPI.h>
-#include <DisplayMPI.h>
-#include <EventMPI.h>
+//#include <DisplayMPI.h>
+//#include <EventMPI.h>
 #include <CameraPriv.h>
 
 #include <jpeglib.h>
@@ -30,14 +30,14 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//------------------------------------------------------------------------
-	tTaskHndl hCameraThread		= kNull;
-	volatile bool		bRunning = false;
-	volatile bool		bStopping = false;
-	tMutex				gThreadMutex = PTHREAD_MUTEX_INITIALIZER;
-	tCond				gThreadCond  = PTHREAD_COND_INITIALIZER;
-	class VideoListener*	pVideoListener = NULL;
-	volatile U32			gAudioTime = 0;
-	volatile bool			gAudioDone = false;
+	tTaskHndl		hCameraThread	= kNull;
+	volatile bool	bRunning		= false;
+	volatile bool	bStopping		= false;
+//	tMutex			gThreadMutex = PTHREAD_MUTEX_INITIALIZER;
+//	tCond			gThreadCond  = PTHREAD_COND_INITIALIZER;
+//	class VideoListener*	pVideoListener = NULL;
+//	volatile U32			gAudioTime = 0;
+//	volatile bool			gAudioDone = false;
 }
 
 //============================================================================
@@ -55,58 +55,92 @@ namespace
 //----------------------------------------------------------------------------
 void* CameraTaskMain(void* arg)
 {
-	CCameraMPI cammgr;
-	tCameraContext* pCtx	= static_cast<tCameraContext*>(arg);
-	tFrameInfo frame;
-	FILE *stream 			= NULL;
+	CDebugMPI			dbg(kGroupCamera);
+	CKernelMPI			kernel;
+	CCameraMPI			cammgr;
 
-	JSAMPLE **buf			= &pCtx->surf->buffer;
-	struct jpeg_decompress_struct cinfo;
-	struct jpeg_error_mgr jerr;
+	tCameraContext		*pCtx 	= static_cast<tCameraContext*>(arg);
+	tFrameInfo			frame;
+	tBitmapInfo			image	= {kBitmapFormatError, 0, 0, 0, NULL, 0 };
 
-//	bRunning = true;
+	Boolean				bRet, bFile, bScreen;
 
-	cinfo.err = jpeg_std_error(&jerr);
-	jpeg_create_decompress(&cinfo);
-
-	cammgr.GetFrame(pCtx->hndl, &frame);
-
-	stream = fmemopen(frame.data, frame.size, "rb");
-	jpeg_stdio_src(&cinfo, stream);
-
-	jpeg_read_header(&cinfo, TRUE);
-
-	jpeg_start_decompress(&cinfo);
-bRunning = true;
-	while(cinfo.output_scanline < cinfo.output_height)
+	// set up save-to-file
+	if(/*pCtx->path &&*/ pCtx->path.length())
 	{
-		jpeg_read_scanlines(&cinfo, buf, cinfo.output_height);
-	    /* Assume put_scanline_someplace wants a pointer and sample count. */
-	    //put_scanline_someplace(buffer[0], row_stride);
+		bFile = true;
 	}
 
-	jpeg_destroy_decompress(&cinfo);
+	// set up render-to-screen
+	if(pCtx->surf)
+	{
+		bScreen			= true;
 
-	cammgr.PutFrame(pCtx->hndl, &frame);
+		image.width		= pCtx->surf->width;
+		image.height	= pCtx->surf->height;
+
+		dbg.Assert((pCtx->surf->format == kPixelFormatYUV420), "CameraTask: Can only render to YUV layer!\n");
+		image.format	= kBitmapFormatYCbCr888;
+		image.depth		= 3;
+
+		image.size		= (image.width * image.height * image.depth * sizeof(U8));
+		image.data		= static_cast<U8*>(kernel.Malloc(image.size));
+	}
+
+	bRunning = pCtx->bStreaming = true;
+	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
+
+	while(bRunning)
+	{
+		dbg.DebugOut( kDbgLvlImportant, "CameraTask running...\n" );
+
+
+		bRet = cammgr.GetFrame(pCtx->hndl, &frame);
+
+		if(bFile)
+		{
+
+		}
+
+		if(bScreen)
+		{
+			bRet = cammgr.RenderFrame(&frame, pCtx->surf, &image);
+		}
+
+		bRet = cammgr.ReturnFrame(pCtx->hndl, &frame);
+
+		bRunning = pCtx->bStreaming;
+	}
+
+	if(image.data)
+	{
+		kernel.Free(image.data);
+		image.data = NULL;
+	}
+
+	bStopping = true;
+	dbg.DebugOut( kDbgLvlImportant, "CameraTask Stopping...\n" );
+
 	return kNull;
 }
 
 //----------------------------------------------------------------------------
 tErrType InitCameraTask(tCameraContext* pCtx)
 {
-	CDebugMPI	dbg(kGroupCamera);
-	CKernelMPI	kernel;
-	tErrType	r;
-	tTaskHndl 	hndl;
-	tTaskProperties prop;
+	CDebugMPI		dbg(kGroupCamera);
+	CKernelMPI		kernel;
+	tErrType		r;
+	tTaskHndl 		hndl;
+	tTaskProperties	prop;
 
 	// Set thread state prior to task creation
 	bRunning = bStopping = false;
 
 	// Setup task properties
-	prop.TaskMainFcn = (void* (*)(void*))CameraTaskMain;
-	prop.taskMainArgCount = 1;
-	prop.pTaskMainArgValues = pCtx;
+	prop.TaskMainFcn			= (void* (*)(void*))CameraTaskMain;
+	prop.taskMainArgCount		= 1;
+	prop.pTaskMainArgValues		= pCtx;
+
 	r = kernel.CreateTask( hndl, prop, NULL );
 	dbg.Assert( kNoErr == r, "InitCameraTask: Failed to create CameraTask!\n" );
 
@@ -128,7 +162,7 @@ tErrType DeInitCameraTask(tCameraContext* pCtx)
 		return kNoErr;
 
 	// Stop running task, if it hasn't already stopped itself
-	bRunning = false;
+	bRunning = pCtx->bStreaming = false;
 	while (!bStopping)
 		kernel.TaskSleep(10);
 	if (!bStopping)

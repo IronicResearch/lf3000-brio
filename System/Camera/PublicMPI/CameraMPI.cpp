@@ -119,6 +119,22 @@ Boolean CCameraMPI::SetCameraMode(const tCaptureMode* mode)
 }
 
 //----------------------------------------------------------------------------
+Boolean CCameraMPI::GetCameraControls(tCameraControls &controls)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetCameraControls(controls);
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraMPI::SetCameraControl(const tControlInfo* control)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SetCameraControl(control);
+}
+
+//----------------------------------------------------------------------------
 Boolean CCameraMPI::SetBuffers(const U32 numBuffers)
 {
 	if (!pModule_)
@@ -151,19 +167,19 @@ Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraMPI::RenderFrame(tFrameInfo *frame, tBitmapInfo *image)
+Boolean	CCameraMPI::RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->RenderFrame(frame, image);
+	return pModule_->RenderFrame(frame, pSurf, image);
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraMPI::PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
+Boolean	CCameraMPI::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->PutFrame(hndl, frame);
+	return pModule_->ReturnFrame(hndl, frame);
 }
 
 //----------------------------------------------------------------------------

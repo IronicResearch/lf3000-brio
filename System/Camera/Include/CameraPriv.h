@@ -63,7 +63,7 @@ const tVidCapHndl		kStreamingFrame			= 0x20000000;	// frame-by-frame, i.e., no t
 //==============================================================================
 
 struct tCameraContext {
-	const char *				file;		// e.g., "/dev/video0"
+	const char					*file;		// e.g., "/dev/video0"
 	int							fd;			// file descriptor
 
 	tVidCapHndl					hndl;
@@ -72,14 +72,21 @@ struct tCameraContext {
 	tCaptureModes				*modes;
 	tCaptureMode				mode;
 
+	tCameraControls				*controls;
+
 	struct v4l2_buffer			buf;
 	U32							numBufs;
-	void **						bufs;
+	void						**bufs;
 
-	tVideoSurf*					surf;
-	tRect*						rect;
+	CPath						&path;
+	Boolean						audio;
+	tVideoSurf					*surf;
+	tRect						*rect;
 
 	tTaskHndl					hCameraThread;
+
+	Boolean						bPaused;
+	Boolean						bStreaming;
 };
 
 struct tCaptureContext {
@@ -90,6 +97,7 @@ struct tCaptureContext {
 // External function prototypes
 //==============================================================================
 tErrType InitCameraTask(tCameraContext* pCtx);
+tErrType DeInitCameraTask(tCameraContext* pCtx);
 
 //==============================================================================
 class CCameraModule : public ICoreModule {
@@ -105,12 +113,14 @@ public:
 	VTABLE_EXPORT CPath*		GetCameraResourcePath();
 	VTABLE_EXPORT Boolean		GetCameraModes(tCaptureModes &modes);
 	VTABLE_EXPORT Boolean		SetCameraMode(const tCaptureMode* mode);
+	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
+	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control);
 	VTABLE_EXPORT Boolean		SetBuffers(const U32 numBuffers);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture();
 	VTABLE_EXPORT Boolean		PollFrame(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
-	VTABLE_EXPORT Boolean		RenderFrame(tFrameInfo *frame, tBitmapInfo *image);
-	VTABLE_EXPORT Boolean		PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
+	VTABLE_EXPORT Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image);
+	VTABLE_EXPORT Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect* rect);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 

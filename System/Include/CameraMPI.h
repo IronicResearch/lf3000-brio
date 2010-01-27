@@ -120,10 +120,9 @@ public:
 	///	-Contrast			(0 to 50; 5 default)
 	///	-Saturation			(0 to 200; 195 default)
 	///	-Hue				(-180 to 180; 0 default)
-	///	-Brightness			(0 to 255; 138 default)
 	///	-Gamma				(20 to 100; 75 default)
 	///	-Backlight Compensation		(0 to 5, 0 default)
-	///	-Power Line Frequency		(Disabled, 50 Hz, 60 Hz; 60 Hz default)
+	///	-Power Line Frequency		(0 (Disabled), 1( 50 Hz), 2 (60 Hz); 2 default)
 	///	-Sharpness			(0 to 10, 6 default)
 	/// </pre>
 
@@ -132,10 +131,10 @@ public:
 	/// \return true on success.
 	Boolean		GetCameraControls(tCameraControls &controls);
 
-	/// Requests camera to apply the specified resolution, format, framerate, etc.
+	/// Requests camera to apply the specified brightness, contrast, etc.
 	///
 	/// \return true on success.
-	Boolean		SetCameraControls(const tControlInfo* control);
+	Boolean		SetCameraControl(const tControlInfo* control);
 
 	/// Allocates buffers for passing between the application and camera.  Must be called
 	/// before StartVideoCapture()
@@ -175,19 +174,22 @@ public:
 	///
 	/// \param frame	Image data returned from camera
 	///
-	/// \param image	Render target
+	/// \param pSurf	Display surface to render upon.  If NULL, the display will not be updated.
+	///
+	/// \param image	Raw render target.  If NULL, pSurf should be valid.  A non-NULL parameter
+	/// will be filled with bitmap data which can be modified by the caller.
 	///
 	/// \return Returns true on success.
-	Boolean		RenderFrame(tFrameInfo *frame, tBitmapInfo *image);
+	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf = NULL, tBitmapInfo *image = NULL);
 
-	/// PutFrame() mark retrieved frame as processed and return it to the pool.
+	/// ReturnFrame() mark retrieved frame as processed and return it to the pool.
 	///
 	/// \param	hndl	Video capture handle returned by StartVideoCapture()
 	///
 	/// \param frame	Frame returned by GetFrame()
 	///
 	/// \return Returns true on success.
-	Boolean		PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
+	Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 
 
 	/// StartVideoCapture() variation which spawns a thread for capture.

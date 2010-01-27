@@ -52,12 +52,28 @@ struct tCaptureMode {
 
 typedef std::vector<tCaptureMode *> tCaptureModes;
 
-// Controls info
-struct tControlInfo {
-
+enum tControlType {
+	kControlTypeError = 0,
+	kControlTypeBrightness,
+	kControlTypeContrast,
+	kControlTypeSaturation,
+	kControlTypeHue,
+	kControlTypeGamma,
+	kControlPowerLineFreq,
+	kControlTypeSharpness,
+	kControlTypeBacklightComp,
 };
 
-typedef std::vector<tControlInfo> tCameraControls;
+// Controls info
+struct tControlInfo {
+	tControlType	type;
+	S32				min;
+	S32				max;
+	S32				preset;
+	S32				current;
+};
+
+typedef std::vector<tControlInfo*> tCameraControls;
 
 // Frame info
 struct tFrameInfo {
@@ -81,6 +97,7 @@ struct tBitmapInfo {
 	tBitmapFormat	format;
 	U16				width;
 	U16				height;
+	U16				depth;
 	U8 *			data;
 	U32				size;
 };
