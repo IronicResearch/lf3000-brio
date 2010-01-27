@@ -127,11 +127,11 @@ Boolean CCameraMPI::GetCameraControls(tCameraControls &controls)
 }
 
 //----------------------------------------------------------------------------
-Boolean CCameraMPI::SetCameraControl(const tControlInfo* control)
+Boolean CCameraMPI::SetCameraControl(const tControlInfo* control, const S32 value)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->SetCameraControl(control);
+	return pModule_->SetCameraControl(control, value);
 }
 
 //----------------------------------------------------------------------------

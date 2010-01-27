@@ -133,8 +133,13 @@ public:
 
 	/// Requests camera to apply the specified brightness, contrast, etc.
 	///
+	/// \param control		Control structure.  Id field must be valid as returned
+	/// by GetCameraControls()
+	///
+	/// \param value		New value to apply
+	///
 	/// \return true on success.
-	Boolean		SetCameraControl(const tControlInfo* control);
+	Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
 
 	/// Allocates buffers for passing between the application and camera.  Must be called
 	/// before StartVideoCapture()
