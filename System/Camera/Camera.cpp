@@ -137,7 +137,8 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	camCtx_.surf			= NULL;
 	camCtx_.rect			= NULL;
 
-	camCtx_.modes = new tCaptureModes;
+	camCtx_.modes			= new tCaptureModes;
+	camCtx_.controls		= new tCameraControls;
 
 	err = kernel_.InitMutex( mutex_, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
@@ -152,6 +153,7 @@ CCameraModule::~CCameraModule()
 
 	kernel_.DeInitMutex(mutex_);
 
+	delete camCtx_.controls;
 	delete camCtx_.modes;
 }
 
@@ -238,6 +240,21 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 	pCamCtx->bufs = NULL;
 
 	pCamCtx->numBufs = 0;
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
+static Boolean DeinitCameraControlsInt(tCameraContext *pCamCtx)
+{
+	tCameraControls::iterator	ctrl_it;
+
+	for( ctrl_it = pCamCtx->controls->begin() ; ctrl_it < pCamCtx->controls->end(); ctrl_it++ )
+	{
+		delete *ctrl_it;
+	}
+
+	pCamCtx->controls->clear();
 
 	return true;
 }
@@ -473,6 +490,72 @@ static Boolean InitCameraFormatInt(tCameraContext *pCamCtx)
 }
 
 //----------------------------------------------------------------------------
+static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
+{
+	tControlInfo	*control = NULL;
+	int				ret, idx = 0;
+	Boolean			bRet = true;
+	v4l2_queryctrl	query;
+	v4l2_control	ctrl;
+
+	memset(&query, 0, sizeof (v4l2_queryctrl));
+	memset(&ctrl, 0, sizeof(v4l2_control));
+
+	for(query.id = V4L2_CID_BASE; query.id < V4L2_CID_LASTP1; query.id++)
+	{
+		ret = ioctl(pCamCtx->fd, VIDIOC_QUERYCTRL, &query);
+		if((ret != 0) || (query.flags & V4L2_CTRL_FLAG_DISABLED))
+		{
+			continue;
+		}
+
+		ctrl.id = query.id;
+
+		ioctl(pCamCtx->fd, VIDIOC_G_CTRL, &ctrl);
+
+		control				= new tControlInfo;
+		control->max		= query.maximum;
+		control->min		= query.minimum;
+		control->preset		= query.default_value;
+		control->current	= ctrl.value;
+
+		switch(query.id)
+		{
+		case V4L2_CID_BRIGHTNESS:
+			control->type = kControlTypeBrightness;
+			break;
+		case V4L2_CID_CONTRAST:
+			control->type = kControlTypeContrast;
+			break;
+		case V4L2_CID_SATURATION:
+			control->type = kControlTypeSaturation;
+			break;
+		case V4L2_CID_HUE:
+			control->type = kControlTypeHue;
+			break;
+		case V4L2_CID_GAMMA:
+			control->type = kControlTypeGamma;
+			break;
+		case V4L2_CID_POWER_LINE_FREQUENCY:
+			control->type = kControlPowerLineFreq;
+			break;
+		case V4L2_CID_SHARPNESS:
+			control->type = kControlTypeSharpness;
+			break;
+		case V4L2_CID_BACKLIGHT_COMPENSATION:
+			control->type = kControlTypeBacklightComp;
+			break;
+		default:
+			control->type = kControlTypeError;
+		}
+
+		pCamCtx->controls->push_back(control);
+	}
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
 static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 {
 	struct v4l2_requestbuffers rb;
@@ -550,6 +633,64 @@ static Boolean InitCameraStartInt(tCameraContext *pCamCtx)
 }
 
 //----------------------------------------------------------------------------
+static Boolean DrawFrame(tVideoSurf *surf, tBitmapInfo *image)
+{
+	U8*	ps = image->data;
+	U8*	pd = surf->buffer;
+
+	if(surf->format == kPixelFormatYUV420)
+	{
+		U8*		du = pd + surf->pitch/2; // U,V in double-width buffer
+		U8*		dv = pd + surf->pitch/2 + surf->pitch * surf->height/2;
+		U8		y,cb,cr;
+		int		i,j,m,n;
+
+		for (i = 0; i < surf->height; i++)
+		{
+			for (j = m = n = 0; n < surf->width; m+=3, n++)
+			{
+				y		= ps[m+0];
+				cb		= ps[m+1];
+				cr		= ps[m+2];
+
+				pd[n]	= y;
+				if(!(i % 2) && !(n % 2))
+				{
+					du[j]	= cb;
+					dv[j++]	= cr;
+				}
+			}
+			ps += m;
+			pd += surf->pitch;
+			if (i % 2)
+			{
+				du += surf->pitch;
+				dv += surf->pitch;
+			}
+		}
+	}
+	else if(surf->format == kPixelFormatRGB888)
+	{
+		int			i,j,n;
+
+		for (i = 0; i < surf->height; i++)
+		{
+			for (j = n = 0; j < surf->width; j++, n+=3)
+			{
+				// TODO: why is the source BGR?
+				pd[n+0]	= ps[n+2];
+				pd[n+1]	= ps[n+1];
+				pd[n+2]	= ps[n+0];
+			}
+			ps += n;
+			pd += n;
+		}
+	}
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
 Boolean CCameraModule::GetCameraModes(tCaptureModes &modes)
 {
 	CAMERA_LOCK;
@@ -607,6 +748,18 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
     CAMERA_UNLOCK;
 
 	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::GetCameraControls(tCameraControls &controls)
+{
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::SetCameraControl(const tControlInfo* control)
+{
+	return false;
 }
 
 //----------------------------------------------------------------------------
@@ -735,13 +888,40 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 }
 
 //----------------------------------------------------------------------------
-Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tBitmapInfo *bitmap)
+Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap)
 {
 	struct jpeg_decompress_struct	cinfo;
 	struct jpeg_error_mgr			err;
 	JSAMPARRAY						buffer = NULL;
 	int 							row = 0;
 	int								row_stride;
+	Boolean							bRet = true, bAlloc = false;
+
+	// TODO: don't allocate this on every render
+	if(bitmap == NULL)
+	{
+		dbg_.Assert((surf != NULL), "CameraModule::RenderFrame: no render target!\n" );
+		bitmap			= new tBitmapInfo;
+		bitmap->width	= surf->width;
+		bitmap->height	= surf->height;
+		switch(surf->format)
+		{
+		case kPixelFormatYUV420:
+			bitmap->format	= kBitmapFormatYCbCr888;
+			bitmap->depth	= 3;
+			break;
+		case kPixelFormatRGB888:
+			bitmap->format	= kBitmapFormatRGB888;
+			bitmap->depth	= 3;
+			break;
+		}
+
+		bitmap->size	= bitmap->width * bitmap->height * bitmap->depth;
+
+		bitmap->data	= static_cast<U8*>( kernel_.Malloc(bitmap->size) );
+
+		bAlloc = true;
+	}
 
 	/*
 	 * libjpeg expects an array of pointers to bitmap output rows.
@@ -778,6 +958,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tBitmapInfo *bitmap)
 		cinfo.out_color_space = JCS_RGB;
 		break;
 	case kBitmapFormatGrayscale8:
+		cinfo.out_color_space = JCS_GRAYSCALE;
 		break;
 	case kBitmapFormatError:
 		/* fall through */
@@ -796,11 +977,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tBitmapInfo *bitmap)
 	row_stride = cinfo.output_width * cinfo.output_components;
 
 	while (cinfo.output_scanline < cinfo.output_height) {
-	    /* jpeg_read_scanlines expects an array of pointers to scanlines.
-	     * Here the array is only one element long, but you could ask for
-	     * more than one scanline at a time if that's more convenient.
-	     */
-	    row += jpeg_read_scanlines(&cinfo, &buffer[row], cinfo.output_height);
+		row += jpeg_read_scanlines(&cinfo, &buffer[row], cinfo.output_height);
 	}
 
 	(void) jpeg_finish_decompress(&cinfo);
@@ -809,11 +986,23 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tBitmapInfo *bitmap)
 
 	kernel_.Free(buffer);
 
-	return true;
+	// draw to screen
+	if(surf != NULL)
+	{
+		bRet = DrawFrame(surf, bitmap);
+	}
+
+	if(bAlloc)
+	{
+		kernel_.Free(bitmap->data);
+		delete bitmap;
+	}
+
+	return bRet;
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
+Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 {
 	if(!STREAMING_HANDLE(hndl) || !FRAME_HANDLE(hndl))
 	{
@@ -840,10 +1029,10 @@ Boolean	CCameraModule::PutFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 //----------------------------------------------------------------------------
 tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect *rect)
 {
-	CDisplayMPI dispmgr;
-	U32 row;
-	int pix = 0xFF;
-	U8* buf = pSurf->buffer;
+	CDisplayMPI		dispmgr;
+	U32				row;
+	int				pix = 0xFF;
+	U8				*buf = pSurf->buffer;
 
 	CAMERA_LOCK;
 
@@ -855,42 +1044,34 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 
 	dbg_.Assert((audio == false), "Audio recording not implemented!.\n");
 
+	camCtx_.path	= path;
+	camCtx_.audio	= audio;
 	camCtx_.surf	= pSurf;
 	camCtx_.rect	= rect;
 
-	if(camCtx_.fd == -1)
+	if(!DeinitCameraBufferInt(&camCtx_))
 	{
-		InitCameraInt();
-		DeinitCameraInt();
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer unmapping failed for %s\n", camCtx_.file);
+		CAMERA_UNLOCK;
+		return false;
+	}
+
+	camCtx_.numBufs = NUM_BUFS;
+	if(!InitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);
+		CAMERA_UNLOCK;
+		return false;
+	}
+
+	if(!InitCameraStartInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: streaming failed for %s\n", camCtx_.file);
+		CAMERA_UNLOCK;
+		return kInvalidVidCapHndl;
 	}
 
 	InitCameraTask(&camCtx_);
-
-//	for(row = 0; row < pSurf->height; row++)
-//	{
-//		memset(buf, /*rand()*/pix--, pSurf->pitch);
-//		buf += pSurf->pitch;
-//		if(pix < 0)
-//		{
-//			pix = 0xFF;
-//		}
-//	}
-
-//	dispmgr.Invalidate(0, rect);
-
-#if 0
-	// save-to-file requested
-	if(path != NULL /* && path exists */)
-	{
-
-	}
-#endif
-	// render-to-display requested
-	if(pSurf)
-	{
-
-	}
-
 
 #if 0
 	int	layer, r, dw, dh;
@@ -929,6 +1110,10 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
     }
 
+	if(THREAD_HANDLE(hndl))
+	{
+		DeInitCameraTask(&camCtx_);
+	}
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
 	CAMERA_UNLOCK;
@@ -949,6 +1134,12 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
+	if(!InitCameraControlsInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: controls probing failed for %s\n", camCtx_.file);
+		return false;
+	}
+
 	return true;
 }
 
@@ -956,6 +1147,11 @@ Boolean	CCameraModule::InitCameraInt()
 Boolean	CCameraModule::DeinitCameraInt()
 {
 	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		return false;
+	}
+
+	if(!DeinitCameraControlsInt(&camCtx_))
 	{
 		return false;
 	}
