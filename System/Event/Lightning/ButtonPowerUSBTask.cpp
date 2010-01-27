@@ -214,12 +214,12 @@ void* CEventModule::CartridgeTask( void* arg )
 		return (void *)-1;
 	}
 	
-	while (1)
+	while (pThis->bThreadRun_)
 	{
 		// block on driver state changes, or timeout after 1 sec
 		// use timeout for cancellation point
+ 		ret = poll(event_fd, 1, 1000);
         pthread_testcancel();
-		ret = poll(event_fd, 1, 1000);
 		if((ret >= 0)  && (event_fd[0].revents & POLLIN)) {
 			struct sockaddr_un addr;
 			socklen_t size;
@@ -368,12 +368,12 @@ void* CEventModule::CartridgeTask( void* arg )
 	U32 button;
 	int ret;
 	g_threadRunning2_ = true;
-	while (g_threadRun2_)
+	while (pThis->bThreadRun_)
 	{
 		// block on driver state changes only
 		// use timeout for cancellation point
-        pthread_testcancel();
 		ret = poll(event_fd, last_fd, 1000);
+        pthread_testcancel();
 		
 		if(ret >= 0) {
 			// button driver event?

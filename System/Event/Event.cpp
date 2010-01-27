@@ -136,8 +136,8 @@ private:
 		while (g_threadRun_)
 		{
 			// use timeout for cancellation point
-	        pthread_testcancel();
 			err = pThis->kernel_.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 100);
+	        pthread_testcancel();
 			if ( err != kConnectionTimedOutErr ) {
 		    	pThis->debug_.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
@@ -225,6 +225,7 @@ public:
 		void* 		retval;
 
 		// Terminate Button/Power/USB driver polling thread first
+		pEventModule_->bThreadRun_ = false;
 		if (g_hCartThread_ != kInvalidTaskHndl) {
 			debug_.DebugOut(kDbgLvlValuable, "%s: Terminating cart thread\n", __FUNCTION__);
 			kernel_.CancelTask(g_hCartThread_);
@@ -236,7 +237,7 @@ public:
 			kernel_.JoinTask(g_hBPUThread_, retval);
 		}
 		// Terminate thread normally and dispose of listener list afterwards
-		g_threadRunning_ = false;
+		g_threadRun_ = false;
 		debug_.DebugOut(kDbgLvlValuable, "%s: Terminating message thread\n", __FUNCTION__);
 		kernel_.CancelTask(g_hThread_);
 		kernel_.JoinTask(g_hThread_, retval);
@@ -387,7 +388,7 @@ namespace
 //============================================================================
 //----------------------------------------------------------------------------
 CEventModule::CEventModule()
-: debug_(kGroupEvent)
+: debug_(kGroupEvent), bThreadRun_(true)
 {
 	CEventManagerImpl::pEventModule_ = this;
 	if (pinst == NULL)
