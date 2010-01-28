@@ -103,26 +103,35 @@ void* CameraTaskMain(void* arg)
 
 	while(bRunning)
 	{
+		dbg.Assert((kNoErr == kernel.LockMutex(pCtx->mThread)),\
+											  "Couldn't lock mutex.\n");
+
 		if(!cammgr.PollFrame(pCtx->hndl))
 		{
+			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
+													  "Couldn't unlock mutex.\n");
+			kernel.TaskSleep(1);
 			bRunning = pCtx->bStreaming;
 			continue;
 		}
 
 		bRet = cammgr.GetFrame(pCtx->hndl, &frame);
 
-		if(bFile)
+		if(bFile  && !pCtx->bPaused)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
 
-		if(bScreen)
+		if(bScreen && !pCtx->bPaused)
 		{
 			bRet = cammgr.RenderFrame(&frame, pCtx->surf, &image);
 			display.Invalidate(0);
 		}
 
 		bRet = cammgr.ReturnFrame(pCtx->hndl, &frame);
+
+		dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
+											  "Couldn't unlock mutex.\n");
 
 		bRunning = pCtx->bStreaming;
 	}

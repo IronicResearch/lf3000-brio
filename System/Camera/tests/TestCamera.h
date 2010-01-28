@@ -66,7 +66,7 @@ public:
 	//------------------------------------------------------------------------
 	void testBasicCaptureYUV()
 	{
-#if 1
+#if 0
 		tVidCapHndl				capture;
 		Boolean					bRet;
 
@@ -152,7 +152,7 @@ public:
 	//------------------------------------------------------------------------
 	void testBasicCaptureRGB()
 	{
-#if 1
+#if 0
 		tVidCapHndl				capture;
 		Boolean					bRet;
 
@@ -238,7 +238,7 @@ public:
 	//------------------------------------------------------------------------
 	void testCaptureThread()
 	{
-#if 1
+#if 0
 		tVidCapHndl					capture;
 		Boolean						bRet;
 
@@ -288,7 +288,7 @@ public:
 	//------------------------------------------------------------------------
 	void testControlsThreaded()
 	{
-#if 1
+#if 0
 		tVidCapHndl					capture;
 		Boolean						bRet;
 
@@ -348,6 +348,70 @@ public:
 			TS_ASSERT_EQUALS( bRet, true );
 
 			pCameraMPI_->SetCameraControl(*it, (*it)->preset);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+#endif
+	}
+
+	//------------------------------------------------------------------------
+	void testPauseThreaded()
+	{
+#if 1
+		tVidCapHndl					capture;
+		Boolean						bRet;
+
+		tCaptureMode				qqvga = {kCaptureFormatMJPEG, 160, 120, 1, 30};
+
+		// For displaying captured data
+		tVideoSurf				surf;
+		tDisplayHandle			disp;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			bRet = pCameraMPI_->SetCameraMode(&qqvga);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			capture = pCameraMPI_->StartVideoCapture("", false, &surf, NULL);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			int step = 0;
+			while(step++ < 4)
+			{
+				pKernelMPI_->TaskSleep(2000);
+
+				bRet = pCameraMPI_->PauseVideoCapture(capture);
+				TS_ASSERT_EQUALS( bRet, true );
+
+				bRet = pCameraMPI_->IsCapturePaused(capture);
+				TS_ASSERT_EQUALS( bRet, true );
+
+				pKernelMPI_->TaskSleep(2000);
+
+				bRet = pCameraMPI_->ResumeVideoCapture(capture);
+				TS_ASSERT_EQUALS( bRet, true );
+
+				bRet = pCameraMPI_->IsCapturePaused(capture);
+				TS_ASSERT_EQUALS( bRet, false );
+			}
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 		}
 
