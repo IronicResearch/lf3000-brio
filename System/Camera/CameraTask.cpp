@@ -20,7 +20,7 @@
 //#include <EventMPI.h>
 #include <CameraPriv.h>
 
-#include <jpeglib.h>
+#include <avilib.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -60,16 +60,24 @@ void* CameraTaskMain(void* arg)
 	CDisplayMPI			display;
 	CCameraMPI			cammgr;
 
+	avi_t				*avi		= NULL;
+	int					keyframe	= 0;
+	U32					start, end;
+
 	tCameraContext		*pCtx 	= static_cast<tCameraContext*>(arg);
 	tFrameInfo			frame;
 	tBitmapInfo			image	= {kBitmapFormatError, 0, 0, 0, NULL, 0 };
 
-	Boolean				bRet, bFile, bScreen;
+	Boolean				bRet, bFile = false, bScreen = false;
 
 	// set up save-to-file
-	if(/*pCtx->path &&*/ pCtx->path.length())
+	if(pCtx->path.length())
 	{
-		bFile = true;
+		bFile	= true;
+
+		avi		= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()));
+		// fps will be reset upon completion
+		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, "MJPG");
 	}
 
 	// set up render-to-screen
@@ -91,16 +99,21 @@ void* CameraTaskMain(void* arg)
 	bRunning = pCtx->bStreaming = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
 
+	start = kernel.GetElapsedTimeAsMSecs();
+
 	while(bRunning)
 	{
-		dbg.DebugOut( kDbgLvlImportant, "CameraTask running...\n" );
-
+		if(!cammgr.PollFrame(pCtx->hndl))
+		{
+			bRunning = pCtx->bStreaming;
+			continue;
+		}
 
 		bRet = cammgr.GetFrame(pCtx->hndl, &frame);
 
 		if(bFile)
 		{
-
+			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
 
 		if(bScreen)
@@ -114,10 +127,27 @@ void* CameraTaskMain(void* arg)
 		bRunning = pCtx->bStreaming;
 	}
 
+	end = kernel.GetElapsedTimeAsMSecs();
+	if(end > start)
+	{
+		end -= start;
+	}
+	else
+	{
+		end += (kU32Max - start);
+	}
+
 	if(image.data)
 	{
 		kernel.Free(image.data);
 		image.data = NULL;
+	}
+
+	if(bFile)
+	{
+		float fps = keyframe / (end / 1000);
+		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
+		AVI_close(avi);
 	}
 
 	bStopping = true;

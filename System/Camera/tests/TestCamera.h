@@ -242,7 +242,7 @@ public:
 		tVidCapHndl					capture;
 		Boolean						bRet;
 
-		tCaptureMode				qqvga = {kCaptureFormatMJPEG, 160, 120, 1, 30};
+		tCaptureMode				qqvga = {kCaptureFormatMJPEG, 320, 240, 1, 30};
 
 		// For displaying captured data
 		tVideoSurf				surf;
@@ -252,7 +252,7 @@ public:
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
-		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		surf.width = pDisplayMPI_->GetWidth(disp);
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
@@ -266,7 +266,7 @@ public:
 			bRet = pCameraMPI_->SetCameraMode(&qqvga);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			capture = pCameraMPI_->StartVideoCapture("", false, &surf, NULL);
+			capture = pCameraMPI_->StartVideoCapture("/LF/Base/L3B_Video/test.avi", false, &surf, NULL);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			int step = 0;

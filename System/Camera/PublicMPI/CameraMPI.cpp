@@ -192,6 +192,38 @@ tVidCapHndl CCameraMPI::StartVideoCapture(const CPath& path, const Boolean audio
 }
 
 //----------------------------------------------------------------------------
+Boolean	CCameraMPI::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->GrabFrame(hndl, frame);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::PauseVideoCapture(const tVidCapHndl hndl)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->PauseVideoCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::ResumeVideoCapture(const tVidCapHndl hndl)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->ResumeVideoCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::IsCapturePaused(const tVidCapHndl hndl)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->IsCapturePaused(hndl);
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraMPI::StopVideoCapture(const tVidCapHndl hndl)
 {
 	if (!pModule_)
