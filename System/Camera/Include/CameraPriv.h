@@ -90,6 +90,7 @@ struct tCameraContext {
 
 	Boolean						bPaused;
 	Boolean						bStreaming;
+	tMutex						mThread;
 };
 
 struct tCaptureContext {

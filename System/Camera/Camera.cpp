@@ -143,6 +143,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	err = kernel_.InitMutex( mutex_, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
+	err = kernel_.InitMutex( camCtx_.mThread, attr );
+	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
+
 	valid = InitCameraInt();
 }
 
@@ -151,6 +154,7 @@ CCameraModule::~CCameraModule()
 {
 	valid = DeinitCameraInt();
 
+	kernel_.DeInitMutex(camCtx_.mThread);
 	kernel_.DeInitMutex(mutex_);
 
 	delete camCtx_.controls;
@@ -1161,19 +1165,13 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl)
 		return false;
 	}
 
-	CAMERA_LOCK;
+	dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
+												  "Couldn't lock mutex.\n");
 
-	if(ioctl(camCtx_.fd, VIDIOC_STREAMOFF, &type) < 0)
-	{
-		bRet = false;
-    }
-	else
-	{
-		camCtx_.bPaused = true;
-	}
+	camCtx_.bPaused = true;
 
-	CAMERA_UNLOCK;
-
+	dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
+												  "Couldn't unlock mutex.\n");
 
 	return bRet;
 }
@@ -1189,18 +1187,13 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 		return false;
 	}
 
-	CAMERA_LOCK;
+	dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
+												  "Couldn't lock mutex.\n");
 
-	if(ioctl(camCtx_.fd, VIDIOC_STREAMON, &type) < 0)
-	{
-		bRet = false;
-    }
-	else
-	{
-		camCtx_.bPaused = false;
-	}
+	camCtx_.bPaused = false;
 
-	CAMERA_UNLOCK;
+	dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
+												  "Couldn't unlock mutex.\n");
 
 	return bRet;
 }

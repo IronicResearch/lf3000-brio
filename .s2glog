@@ -23259,3 +23259,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/28/10 2:40 PM
 6,328 ms. (Cumulative: 7,894,017 ms)
 
 ----------------
+Revision 6,478 from svn://localhost/TRUNK/:
+Revision 6,479 from svn://localhost/TRUNK/:
+
+Camera updates:
+-Better pause mechanism (VIDIOC_STREAMOFF requires buffers to be requeued - too heavy for 'pause')
+-Pause/resume test
+
+By jeno (jeno@leapfrog.com) on 1/28/10 3:37 PM
+4 changed, 0 added, 0 deleted.
+6,407 ms. (Cumulative: 7,900,518 ms)
+
+----------------
