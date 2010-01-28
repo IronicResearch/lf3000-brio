@@ -628,6 +628,7 @@ static Boolean InitCameraStartInt(tCameraContext *pCamCtx)
 	{
 		return false;
     }
+	pCamCtx->bPaused = false;
 
 	return true;
 }
@@ -746,6 +747,8 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 		CAMERA_UNLOCK;
 		return false;
 	}
+
+    camCtx_.fps = mode->fps_numerator / mode->fps_denominator;
 
     CAMERA_UNLOCK;
 
@@ -872,7 +875,7 @@ tVidCapHndl	CCameraModule::StartVideoCapture()
 	}
 
 	// TODO: multiple handles?
-	camCtx_.hndl = (kStreamingActive | kStreamingFrame | 1);
+	camCtx_.hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
 
 	CAMERA_UNLOCK;
 	return camCtx_.hndl;
@@ -883,13 +886,12 @@ Boolean	CCameraModule::PollFrame(const tVidCapHndl hndl)
 {
 	int i = 0;
 
-	CAMERA_LOCK;
-
-	if(!STREAMING_HANDLE(hndl) || !FRAME_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl))
 	{
-		CAMERA_UNLOCK;
 		return false;
 	}
+
+	CAMERA_LOCK;
 
 	for(i = 0; i < camCtx_.numBufs; i++)
 	{
@@ -915,7 +917,7 @@ Boolean	CCameraModule::PollFrame(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 {
-	if(!STREAMING_HANDLE(hndl) || !FRAME_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl))
 	{
 		return false;
 	}
@@ -1059,7 +1061,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 {
-	if(!STREAMING_HANDLE(hndl) || !FRAME_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl))
 	{
 		return false;
 	}
@@ -1084,10 +1086,6 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 //----------------------------------------------------------------------------
 tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect *rect)
 {
-	CDisplayMPI		dispmgr;
-	U32				row;
-	int				pix = 0xFF;
-	U8				*buf = pSurf->buffer;
 
 	CAMERA_LOCK;
 
@@ -1141,9 +1139,84 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 	r = ioctl(layer, MLC_IOCGPOSITION, &c);
 #endif
 
-	camCtx_.hndl = (kStreamingActive | kStreamingThread | 1);
+	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 	CAMERA_UNLOCK;
 	return camCtx_.hndl;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
+{
+	return false;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl)
+{
+	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	Boolean	bRet	= true;
+
+	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	{
+		return false;
+	}
+
+	CAMERA_LOCK;
+
+	if(ioctl(camCtx_.fd, VIDIOC_STREAMOFF, &type) < 0)
+	{
+		bRet = false;
+    }
+	else
+	{
+		camCtx_.bPaused = true;
+	}
+
+	CAMERA_UNLOCK;
+
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
+{
+	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	Boolean	bRet	= true;
+
+	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	{
+		return false;
+	}
+
+	CAMERA_LOCK;
+
+	if(ioctl(camCtx_.fd, VIDIOC_STREAMON, &type) < 0)
+	{
+		bRet = false;
+    }
+	else
+	{
+		camCtx_.bPaused = false;
+	}
+
+	CAMERA_UNLOCK;
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::IsCapturePaused(const tVidCapHndl hndl)
+{
+	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	Boolean	bRet	= true;
+
+	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	{
+		return false;
+	}
+
+	return camCtx_.bPaused;
 }
 
 //----------------------------------------------------------------------------
@@ -1151,7 +1224,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
 	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-	if(!STREAMING_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl))
 	{
 		return false;
 	}
@@ -1167,7 +1240,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	CAMERA_UNLOCK;
 
-	if(THREAD_HANDLE(hndl))
+	if(IS_THREAD_HANDLE(hndl))
 	{
 		DeInitCameraTask(&camCtx_);
 	}

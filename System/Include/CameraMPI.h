@@ -162,10 +162,7 @@ public:
 	/// \return Returns true if a frame is ready.
 	Boolean		PollFrame(const tVidCapHndl hndl);
 
-	/// GetFrame() retrieve next frame from capture stream. Also used to retrieve a snapshot
-	/// from stream being captured in a separate thread via
-	/// StartVideoCapture(const CPath&, const Boolean, tVideoSurf*, tRect *).
-	/// This snapshot does not have to be returned with PutFrame().
+	/// GetFrame() retrieve next frame from capture stream.
 	///
 	/// \param	hndl	Video capture handle returned by StartVideoCapture()
 	///
@@ -213,6 +210,19 @@ public:
 	/// \param	rect	Display rectangle to be re-drawn (should correspond to
 	/// the CDisplayMPI used to initialize pSurf)
 	tVidCapHndl	StartVideoCapture(const CPath& path, const Boolean audio, tVideoSurf* pSurf, tRect *rect);
+
+	/// GrabFrame() takes a snapshot from the stream being captured in a separate
+	/// thread via StartVideoCapture(const CPath&, const Boolean, tVideoSurf*, tRect *).
+	/// This snapshot does not have to be returned, and will fail if the thread is
+	/// recording video.
+	///
+	/// \param	hndl	Video capture handle returned by StartVideoCapture()
+	///
+	/// \param frame	As an input, used to request snapshot resolution (this can
+	/// differ from the video stream).  As an output, used to return image data from camera
+	///
+	/// \return Returns true on success.
+	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 
 	/// PauseVideoCapture() pause an active capture.
 	///

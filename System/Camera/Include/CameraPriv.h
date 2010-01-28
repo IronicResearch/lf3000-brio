@@ -69,6 +69,7 @@ struct tCameraContext {
 	tVidCapHndl					hndl;
 
 	struct v4l2_format 			fmt;		// to track the currently selected format
+	double						fps;
 
 	struct v4l2_capability		cap;
 	tCaptureModes				*modes;
@@ -124,6 +125,10 @@ public:
 	VTABLE_EXPORT Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image);
 	VTABLE_EXPORT Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect* rect);
+	VTABLE_EXPORT Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean		IsCapturePaused(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 
 private:

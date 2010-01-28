@@ -23232,3 +23232,19 @@ By jeno (jeno@leapfrog.com) on 1/27/10 3:31 PM
 6,577 ms. (Cumulative: 7,880,782 ms)
 
 ----------------
+Revision 6,470 from svn://localhost/TRUNK/:
+Revision 6,471 from svn://localhost/TRUNK/:
+Revision 6,472 from svn://localhost/TRUNK/:
+Revision 6,473 from svn://localhost/TRUNK/:
+Revision 6,474 from svn://localhost/TRUNK/:
+Revision 6,475 from svn://localhost/TRUNK/:
+
+Camera updates:
+-added avilib for video file creation (to be moved to ThirdParty and/or rewritten)
+-added pause/resume feature
+
+By jeno (jeno@leapfrog.com) on 1/28/10 12:39 PM
+6 changed, 2 added, 0 deleted.
+6,688 ms. (Cumulative: 7,887,595 ms)
+
+----------------
