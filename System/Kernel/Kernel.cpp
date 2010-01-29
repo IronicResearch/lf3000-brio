@@ -84,8 +84,8 @@ namespace
 	class ListData
 	{
 		public:
-			ListData(U32 ptr, U32 hndl, U32 pdata)
-			: ptr_(ptr), hndl_(hndl), pdata_(pdata)
+			ListData(U32 ptr, U32 hndl, U32 pdata, int signo, struct sigaction sigact)
+			: ptr_(ptr), hndl_(hndl), pdata_(pdata), signo_(signo), sigact_(sigact)
 			{}
 
 			~ListData() 
@@ -101,11 +101,25 @@ namespace
 		{
 			ptr_ = ptr;
 		}
+		U32 getData()
+		{
+			return pdata_;
+		}
+		int getSigno()
+		{
+			return signo_;
+		}
+		struct sigaction* getSigact()
+		{
+			return &sigact_;
+		}
 
 	private:
 		U32 ptr_;
 		U32 hndl_;
 		U32 pdata_;
+		int signo_;
+		struct sigaction sigact_;
 	};
 
 	struct equal_id : public binary_function<ListData*, int, bool>
@@ -126,12 +140,12 @@ namespace
 //==============================================================================
 inline tTimerHndl AsBrioTimerHandle(timer_t hndlIn)
 {
-	return reinterpret_cast<tTimerHndl>(hndlIn) + 1;
+	return reinterpret_cast<tTimerHndl>(hndlIn);
 }
 
 inline timer_t AsPosixTimerHandle(tTimerHndl hndlIn)
 {
-	return reinterpret_cast<timer_t>(hndlIn - 1);
+	return reinterpret_cast<timer_t>(hndlIn);
 }
 
 
@@ -832,15 +846,26 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-#if 1	// BUGFIX/dm: use thread-based callback instead of signal
+	// Find unused SIGRT handler
+	for (int i = SIGRTMIN; i <= SIGRTMAX; i++) {
+    	struct sigaction sa;
+		memset(&sa, 0, sizeof(sa));
+		sigaction(i, NULL, &sa);
+		if (sa.sa_handler == NULL && sa.sa_sigaction == NULL) {
+			signum = i;
+			break;
+		}
+	}
+	
     // Initialize the sigaction structure for handler 
    	// Setup signal to repond to handler
    	struct sigaction act;
-   	sigfillset( &act.sa_mask );
-   	act.sa_flags = SA_SIGINFO; //SA_RESTART| // 
+    struct sigaction oldact;
+    memset(&act, 0, sizeof(act));
+   	sigemptyset( &act.sa_mask );
+   	act.sa_flags = SA_SIGINFO; 
    	act.sa_sigaction = sig_handler;
-   	sigaction( signum, &act, NULL ); 
-#endif
+   	sigaction( signum, &act, &oldact ); 
    	
 	// Set up timer
     struct sigevent se;
@@ -870,7 +895,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
  	ptrData->pfn = callback;
 	ptrData->argFunc = hndl;
 	
-	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl, (U32)ptrData);
+	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl, (U32)ptrData, signum, oldact);
 
 	err = pthread_mutex_lock( &timers_mutex);
 	ASSERT_POSIX_CALL( err );
@@ -878,11 +903,8 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	listMemory.push_back( ptrList );
 
 	pthread_mutex_unlock( &timers_mutex);
-#if 0 // FIXME/BSK
-		printf("CreateTimer tTimerHndl=0x%x callback=0x%x \n",
-		           (unsigned int )hndl, (unsigned int )callback);
-		fflush(stdout);  		
-#endif
+	mDebugMPI.DebugOut(kDbgLvlValuable, "CreateTimer tTimerHndl=0x%x callback=0x%x SIGRT%d\n",
+		           (unsigned int )hndl, (unsigned int )callback, signum);
 	
     return hndl;
 }
@@ -903,6 +925,7 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 
 	err = pthread_mutex_lock(&timers_mutex);
 	ASSERT_POSIX_CALL( err );
+	sigaction((*p)->getSigno(), (*p)->getSigact(), NULL);
 	delete *p;
     listMemory.erase( p );
 	err = pthread_mutex_unlock(&timers_mutex);
@@ -1411,15 +1434,30 @@ LF_USING_BRIO_NAMESPACE()
 extern "C"
 {
 	//------------------------------------------------------------------------
-	void sig_handler( int /*signal*/, siginfo_t *psigInfo, void * /*pFunc*/)
+	void sig_handler( int signo, siginfo_t *psigInfo, void * /*pFunc*/)
 	{
-			callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
-	
+		callbackData *ta = (callbackData *)psigInfo->si_value.sival_ptr;
+
+		// FIXME: sival_ptr is not pointing to our callback ptr
+		ta = NULL;	
+		list<ListData*>::iterator p;
+		for (p = listMemory.begin(); p != listMemory.end(); p++) {
+			if ((*p)->getSigno() == signo) {
+				ta = (callbackData *)(*p)->getData();
+				break;
+			}
+		}
+		if (ta == NULL)
+			return;
+
+			
 	#if 0 // FIXME/BSK
 		printf("*********  HANDLER CALLBACK = 0x%x, ARG =0x%x\n",
 		(unsigned int )( *(ta->pfn)), (unsigned int )((tTimerHndl )ta->argFunc));
 		fflush(stdout);
 	#endif
+		
+		if (signo >= SIGRTMIN && signo <= SIGRTMAX && ta && ta->pfn)
 			((ta->pfn))((tTimerHndl )ta->argFunc);
 	}
 

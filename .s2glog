@@ -23271,3 +23271,21 @@ By jeno (jeno@leapfrog.com) on 1/28/10 3:37 PM
 6,407 ms. (Cumulative: 7,900,518 ms)
 
 ----------------
+Revision 6,480 from svn://localhost/TRUNK/:
+Revision 6,481 from svn://localhost/TRUNK/:
+Revision 6,482 from svn://localhost/TRUNK/:
+Revision 6,483 from svn://localhost/TRUNK/:
+Revision 6,484 from svn://localhost/TRUNK/:
+Revision 6,485 from svn://localhost/TRUNK/:
+Revision 6,486 from svn://localhost/TRUNK/:
+Revision 6,487 from svn://localhost/TRUNK/:
+Revision 6,488 from svn://localhost/TRUNK/:
+Revision 6,489 from svn://localhost/TRUNK/:
+
+Modified KernelMPI timer support to look for available SIGRT handlers instead of using the same one for every timer. Timer callback function does additional checking for correct callback path. (TTP 2054) 
+
+By Dave Milici (dmilici@leapfrog.com) on 1/29/10 10:45 AM
+1 changed, 0 added, 0 deleted.
+6,407 ms. (Cumulative: 7,907,050 ms)
+
+----------------
