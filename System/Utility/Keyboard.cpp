@@ -56,12 +56,10 @@ char *GetKeyboardName(void)
 			sprintf(dev, "/dev/input/%s", dp->d_name);
 			fd = open(dev, O_RDONLY);
 			if(fd == -1) {
-				perror("can't open device\n");
 				continue;
 			}
 
 			if(ioctl(fd, EVIOCGNAME(32), name) < 0) {
-				perror("can't get keyboard name\n");
 				close(fd);
 				continue;
 			}
