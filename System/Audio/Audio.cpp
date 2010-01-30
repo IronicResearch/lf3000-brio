@@ -86,14 +86,14 @@ namespace
 		// CAudioMPI instance.
 		//--------------------------------------------------------------------
 		MPIInstanceState( void )
-						: path(NULL),
+						: path(""),
 						pListener(NULL),
 						volume(100),
 						pan(0),
 						priority(0)
 		{ }
 						
-		const CPath*			path;
+		CPath					path;
 		const IEventListener*	pListener;
 		U8						volume;
 		S8						pan;
@@ -368,7 +368,9 @@ tErrType CAudioModule::SetAudioResourcePath( U32 mpiID, const CPath &path )
 	AUDIO_LOCK;
 	if (newPath.length() > 1 && newPath.at(newPath.length()-1) != '/')
 		newPath += '/';
-	gAudioContext.gpath = newPath;	  
+	MPIInstanceState& mpiState = RetrieveMPIState(mpiID);
+	mpiState.path = newPath;
+	pDebugMPI_->DebugOut(kDbgLvlValuable, "%s: %s\n", __FUNCTION__, newPath.c_str());
 	AUDIO_UNLOCK;
 
 	return kNoErr;
@@ -382,7 +384,8 @@ CPath* CAudioModule::GetAudioResourcePath( U32 mpiID )
 	CPath *p;
 
 	AUDIO_LOCK;
-	p = &gAudioContext.gpath;
+	MPIInstanceState& mpiState = RetrieveMPIState(mpiID);
+	p = &mpiState.path;
 	AUDIO_UNLOCK;
 
 	return p;
@@ -411,12 +414,13 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	TimeStampOn(4);
 	
 	// Determine whether specified file exists
+	MPIInstanceState& mpiState = RetrieveMPIState(mpiID);
 	CPath fullPath = (path.length() == 0) ? "" :
-		(path.at(0) == '/') ? path : gAudioContext.gpath + path;
+		(path.at(0) == '/') ? path : mpiState.path + path;
 	if(stat(fullPath.c_str(), &fileStat) != 0)
 	{
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: file doesn't exist='%s\n",
-							 __FUNCTION__, path.c_str());
+							 __FUNCTION__, fullPath.c_str());
 		goto error;
 	}
 
