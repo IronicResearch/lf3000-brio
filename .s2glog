@@ -23300,3 +23300,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/29/10 5:10 PM
 6,047 ms. (Cumulative: 7,913,206 ms)
 
 ----------------
+Revision 6,493 from svn://localhost/TRUNK/:
+
+Revert soft clipper state based on speaker state -- on for speaker, off for headphones. AppManager Button event listener will have to call AudioMPI.SetSpeakerEqualizer() on headphone jack state changes. (TTP 1532)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/29/10 5:48 PM
+1 changed, 0 added, 0 deleted.
+5,922 ms. (Cumulative: 7,919,191 ms)
+
+----------------
