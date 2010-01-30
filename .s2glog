@@ -23289,3 +23289,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/29/10 10:45 AM
 6,407 ms. (Cumulative: 7,907,050 ms)
 
 ----------------
+Revision 6,490 from svn://localhost/TRUNK/:
+Revision 6,491 from svn://localhost/TRUNK/:
+Revision 6,492 from svn://localhost/TRUNK/:
+
+Used MPI-instance state var to track audio resource path instead of module-wide state var. (TTP 1987)  
+
+By Dave Milici (dmilici@leapfrog.com) on 1/29/10 5:10 PM
+1 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 7,913,206 ms)
+
+----------------
