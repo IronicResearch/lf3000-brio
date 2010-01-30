@@ -23309,3 +23309,17 @@ By Dave Milici (dmilici@leapfrog.com) on 1/29/10 5:48 PM
 5,922 ms. (Cumulative: 7,919,191 ms)
 
 ----------------
+Revision 6,494 from svn://localhost/TRUNK/:
+Revision 6,495 from svn://localhost/TRUNK/:
+Revision 6,496 from svn://localhost/TRUNK/:
+Revision 6,497 from svn://localhost/TRUNK/:
+Revision 6,498 from svn://localhost/TRUNK/:
+
+Not-integrated code used for profiling audio latency.  Matching changes in LinuxDist_Emerald_1000
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 1/30/10 11:05 AM
+0 changed, 1 added, 0 deleted.
+5,797 ms. (Cumulative: 7,925,082 ms)
+
+----------------
