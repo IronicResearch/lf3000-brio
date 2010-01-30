@@ -138,9 +138,8 @@ static void* HelperThread(void* pctx)
 // state.
 //------------------------------------------------------------------------------
 static bool IsSpeakerOn( void )
-{	
-#if 1 // #ifdef EMULATION
-	// no interest in speaker state -- no effect on mixer state
+{
+#ifdef EMULATION
 	return true;
 #else
 	int fd;
@@ -1459,8 +1458,8 @@ void CAudioMixer::GetAudioState(tAudioState *d)
 // ==============================================================================
 void CAudioMixer::EnableSpeaker(Boolean x)
 {
-	// soft clipper always on, per TTPro #1977
-	// audioState_.useOutSoftClipper = x;
+	// soft clipper on for speaker, off for headphones (TTP #1532)
+	audioState_.useOutSoftClipper = x;
 	audioState_.speakerEnabled	  = x;
 }
 
