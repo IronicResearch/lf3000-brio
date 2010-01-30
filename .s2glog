@@ -23323,3 +23323,13 @@ By Rob Dowling (rdowling@leapfrog.com) on 1/30/10 11:05 AM
 5,797 ms. (Cumulative: 7,925,082 ms)
 
 ----------------
+Revision 6,499 from svn://localhost/TRUNK/:
+Revision 6,500 from svn://localhost/TRUNK/:
+
+Remove perror messages complaining about devnodes for nonexistant drivers. 
+
+By Dave Milici (dmilici@leapfrog.com) on 1/30/10 11:37 AM
+1 changed, 0 added, 0 deleted.
+5,829 ms. (Cumulative: 7,930,989 ms)
+
+----------------
