@@ -23348,3 +23348,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 2/1/10 9:45 AM
 5,835 ms. (Cumulative: 7,936,933 ms)
 
 ----------------
+Revision 6,507 from svn://localhost/TRUNK/:
+
+Camera updates:
+-Added GrabFrame() to save a snapshot from the viewfinder thread
+
+By jeno (jeno@leapfrog.com) on 2/1/10 10:16 AM
+4 changed, 0 added, 0 deleted.
+6,033 ms. (Cumulative: 7,943,028 ms)
+
+----------------

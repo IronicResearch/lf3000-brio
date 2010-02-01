@@ -11,6 +11,8 @@
 #include <AudioTypes.h>
 #include <UnitTestUtils.h>
 
+#include <stdio.h>
+
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
@@ -74,10 +76,11 @@ public:
 		tCaptureModes			modes;
 		tCaptureModes::iterator	it;
 		tCaptureMode			qqvga = {kCaptureFormatMJPEG, 160, 120, 1, 30};
+tCaptureMode			qvga = {kCaptureFormatMJPEG, 320, 240, 1, 30};
 
 		// For working with captured data
 		tFrameInfo				frame = { kCaptureFormatMJPEG, 160, 120 };
-		tBitmapInfo				bitmap = { kBitmapFormatYCbCr888, 160, 120, NULL, 0 };
+//		tBitmapInfo				bitmap = { kBitmapFormatYCbCr888, 160, 120, NULL, 0 };
 
 		// For displaying captured data
 		tVideoSurf				surf;
@@ -85,9 +88,11 @@ public:
 		int						count = 120;
 
 		pDisplayMPI_ = new CDisplayMPI;
-		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+//		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
-		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+//		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		surf.width = pDisplayMPI_->GetWidth(disp);
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
@@ -119,16 +124,30 @@ public:
 			capture = pCameraMPI_->StartVideoCapture();
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			bitmap.data = static_cast<U8*>(kernel->Malloc( 120 * 160 * 3 * sizeof(U8) ));
+//			bitmap.data = static_cast<U8*>(kernel->Malloc( 120 * 160 * 3 * sizeof(U8) ));
 
+			int flag = 0;
 			do {
 				bRet = pCameraMPI_->GetFrame(capture, &frame);
 				TS_ASSERT_EQUALS( bRet, true );
 
-				bRet = pCameraMPI_->RenderFrame(&frame, &surf, &bitmap);
+				bRet = pCameraMPI_->RenderFrame(&frame, &surf, NULL/*&bitmap*/);
 				TS_ASSERT_EQUALS( bRet, true );
 
 				pDisplayMPI_->Invalidate(0);
+
+				if(flag == 0)
+				{
+					bRet = pCameraMPI_->SetCameraMode(&qvga);
+					TS_ASSERT_EQUALS( bRet, true );
+					flag = 1;
+				}
+				else
+				{
+					bRet = pCameraMPI_->SetCameraMode(&qqvga);
+					TS_ASSERT_EQUALS( bRet, true );
+					flag = 0;
+				}
 
 				bRet = pCameraMPI_->ReturnFrame(capture, &frame);
 				TS_ASSERT_EQUALS( bRet, true );
@@ -138,8 +157,8 @@ public:
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			kernel->Free(bitmap.data);
-			bitmap.data = NULL;
+//			kernel->Free(bitmap.data);
+//			bitmap.data = NULL;
 
 			delete kernel;
 		}
@@ -360,7 +379,7 @@ public:
 	//------------------------------------------------------------------------
 	void testPauseThreaded()
 	{
-#if 1
+#if 0
 		tVidCapHndl					capture;
 		Boolean						bRet;
 
@@ -409,6 +428,70 @@ public:
 
 				bRet = pCameraMPI_->IsCapturePaused(capture);
 				TS_ASSERT_EQUALS( bRet, false );
+			}
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+#endif
+	}
+	//------------------------------------------------------------------------
+	void testGrab()
+	{
+#if 1
+		tVidCapHndl				capture;
+		Boolean					bRet;
+
+		tCaptureMode			qqvga = {kCaptureFormatMJPEG, 160, 120, 1, 30};
+
+		tFrameInfo				frame = {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
+
+		// For displaying captured data
+		tVideoSurf				surf;
+		tDisplayHandle			disp;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			bRet = pCameraMPI_->SetCameraMode(&qqvga);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			capture = pCameraMPI_->StartVideoCapture("", false, &surf, NULL);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			int step = 0;
+			while(step++ < 50)
+			{
+				pKernelMPI_->TaskSleep(100);
+
+
+				if(step == 10)
+				{
+				bRet = pCameraMPI_->GrabFrame(capture, &frame);
+				TS_ASSERT_EQUALS( bRet, true );
+				pKernelMPI_->TaskSleep(1);
+				FILE *f = fopen("/LF/Base/L3B_Video/test.jpg", "wb");
+				fwrite(frame.data, sizeof(U8), frame.size, f);
+				fclose(f);
+				pKernelMPI_->Free(frame.data);
+				}
+
 			}
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
