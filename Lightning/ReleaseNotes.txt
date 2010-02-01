@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.0.1.6506 (February 1, 2010)
+Brio v1.0.1.6510 (February 1, 2010)
 ===========================================
 
 -- Camera Updates:
@@ -45,6 +45,9 @@ AudioMPI.SetSpeakerEqualizer() on headphone jack state changes. (TTP 1532)
 Matching changes in LinuxDist_Emerald_1000
 
 -- Remove perror messages complaining about devnodes for nonexistant drivers. 
+
+-- Camera updates:
+-Added GrabFrame() to save a snapshot from the viewfinder thread
 
 ===========================================
 Brio v1.0.0.6455  (January 26, 2010)
