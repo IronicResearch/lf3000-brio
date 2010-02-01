@@ -54,6 +54,12 @@ const U32 NUM_BUFS		= 16;
 #define CAMERA_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(mutex_)),\
 										"Couldn't unlock mutex.\n");
 
+#define THREAD_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
+									  "Couldn't lock mutex.\n")
+
+#define THREAD_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
+										"Couldn't unlock mutex.\n");
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -710,9 +716,8 @@ Boolean CCameraModule::GetCameraModes(tCaptureModes &modes)
 //----------------------------------------------------------------------------
 Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 {
-	struct v4l2_format fmt;
-    struct v4l2_streamparm fps;
-
+	struct v4l2_format		fmt;
+	struct v4l2_streamparm	fps;
 
 	/* format and resolution */
 	memset(&fmt, 0, sizeof(struct v4l2_format));
@@ -737,7 +742,8 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 		return false;
 	}
 
-    memcpy(&camCtx_.fmt, &fmt, sizeof(struct v4l2_format));
+    camCtx_.mode	= *mode;
+    camCtx_.fmt		= fmt;
 
     /* framerate */
     memset(&fps, 0, sizeof(struct v4l2_streamparm));
@@ -745,7 +751,7 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
     fps.parm.capture.timeperframe.numerator		= mode->fps_numerator;
     fps.parm.capture.timeperframe.denominator	= mode->fps_denominator;
 
-    if(ioctl(camCtx_.fd, VIDIOC_S_PARM, &fps) < 0)
+	if(ioctl(camCtx_.fd, VIDIOC_S_PARM, &fps) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: fps selection failed for %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
@@ -918,6 +924,19 @@ Boolean	CCameraModule::PollFrame(const tVidCapHndl hndl)
 	return false;
 }
 
+static Boolean GetFrameInt(tCameraContext *pCtx)
+{
+	memset(&pCtx->buf, 0, sizeof(struct v4l2_buffer));
+	pCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	pCtx->buf.memory = V4L2_MEMORY_MMAP;
+	if( ioctl(pCtx->fd, VIDIOC_DQBUF, &pCtx->buf) < 0)
+	{
+		return false;
+    }
+
+	return true;
+}
+
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 {
@@ -928,10 +947,7 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	CAMERA_LOCK;
 
-	memset(&camCtx_.buf, 0, sizeof(struct v4l2_buffer));
-	camCtx_.buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	camCtx_.buf.memory = V4L2_MEMORY_MMAP;
-	if( ioctl(camCtx_.fd, VIDIOC_DQBUF, &camCtx_.buf) < 0)
+	if( !GetFrameInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
@@ -1062,6 +1078,21 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	return bRet;
 }
 
+static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
+{
+	memset(&pCtx->buf, 0, sizeof(struct v4l2_buffer));
+	pCtx->buf.type  	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	pCtx->buf.memory	= V4L2_MEMORY_MMAP;
+	pCtx->buf.index		= index;
+
+	if(ioctl(pCtx->fd, VIDIOC_QBUF, &pCtx->buf) < 0)
+	{
+		return false;
+    }
+
+	return true;
+}
+
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
 {
@@ -1072,11 +1103,7 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 
 	CAMERA_LOCK;
 
-	memset(&camCtx_.buf, 0, sizeof(struct v4l2_buffer));
-	camCtx_.buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	camCtx_.buf.memory = V4L2_MEMORY_MMAP;
-	camCtx_.buf.index = frame->index;
-	if(ioctl(camCtx_.fd, VIDIOC_QBUF, &camCtx_.buf) < 0)
+	if(!ReturnFrameInt(&camCtx_, frame->index))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::PutFrame: failed to return frame %lu to %s\n", frame->index, camCtx_.file);
 		CAMERA_UNLOCK;
@@ -1149,9 +1176,177 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 }
 
 //----------------------------------------------------------------------------
+static Boolean StopVideoCaptureInt(int fd)
+{
+	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+	if(ioctl(fd, VIDIOC_STREAMOFF, &type) < 0)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
+{
+
+	if(!IS_STREAMING_HANDLE(hndl))
+	{
+		return false;
+	}
+
+	CAMERA_LOCK;
+
+	if(!StopVideoCaptureInt(camCtx_.fd))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt streaming from %s\n", camCtx_.file);
+		CAMERA_UNLOCK;
+		return false;
+    }
+
+	CAMERA_UNLOCK;
+
+	if(IS_THREAD_HANDLE(hndl))
+	{
+		DeInitCameraTask(&camCtx_);
+	}
+	camCtx_.hndl 	= kInvalidVidCapHndl;
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 {
+	Boolean			bRet	= false;
+	tCaptureMode	oldmode, newmode;
+	U32				oldbufs	= camCtx_.numBufs;
+	tFrameInfo		frm;
+
+	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	{
+		return false;
+	}
+
+	oldmode = newmode = camCtx_.mode;
+
+	newmode.width	= frame->width;
+	newmode.height	= frame->height;
+
+	// don't let the viewfinder run while we muck with the camera settings
+	THREAD_LOCK;
+
+	/*
+	 * Changing resolutions requires that the camera be off.  This implies unmapping all of the buffers
+	 * and restarting everything from scratch.
+	 *
+	 * TODO: optimize same-resolution case
+	 */
+
+	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+		goto bail_out;
+
+	}
+
+	if(!StopVideoCaptureInt(camCtx_.fd))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
+		goto bail_out;
+    }
+
+	if(!SetCameraMode(&newmode))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
+		goto bail_out;
+	}
+
+	// just one buffer needed for the snapshot
+	camCtx_.numBufs = 1;
+
+	if(!InitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to acquire buffers for %s\n", camCtx_.file);
+		goto bail_out;
+	}
+
+	if(!InitCameraStartInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: streaming failed for %s\n", camCtx_.file);
+		goto bail_out;
+	}
+
+	// acquire the snapshot
+	if( !GetFrameInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s\n", camCtx_.file);
+		goto bail_out;
+    }
+
+	//RenderFrame (scaled)
+
+	//copy data
+	frame->index	= camCtx_.buf.index;
+	frame->size		= camCtx_.buf.bytesused;
+	frame->width	= camCtx_.fmt.fmt.pix.width;
+	frame->height	= camCtx_.fmt.fmt.pix.height;
+	frame->data		= kernel_.Malloc(frame->size);
+	memcpy(frame->data, camCtx_.bufs[camCtx_.buf.index], frame->size);
+
+	if(!ReturnFrameInt(&camCtx_, frame->index))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to requeue frame to %s\n", camCtx_.file);
+		goto frame_out;
+	}
+
+	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+		goto frame_out;
+	}
+
+	if(!StopVideoCaptureInt(camCtx_.fd))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
+		goto frame_out;
+    }
+
+	if(!SetCameraMode(&oldmode))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
+		goto frame_out;
+	}
+
+	camCtx_.numBufs = oldbufs;
+
+	if(!InitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to restore buffers for %s\n", camCtx_.file);
+		goto frame_out;
+	}
+
+	if(!InitCameraStartInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: streaming failed for %s\n", camCtx_.file);
+		goto frame_out;
+	}
+
+	THREAD_UNLOCK;
+
+	return true;
+
+frame_out:
+	kernel_.Free(frame->data);
+	frame->data	= NULL;
+	frame->size	= 0;
+
+bail_out:
+	THREAD_UNLOCK;
 	return false;
+
 }
 
 //----------------------------------------------------------------------------
@@ -1213,35 +1408,6 @@ Boolean	CCameraModule::IsCapturePaused(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
-{
-	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-	if(!IS_STREAMING_HANDLE(hndl))
-	{
-		return false;
-	}
-
-	CAMERA_LOCK;
-
-	if(ioctl(camCtx_.fd, VIDIOC_STREAMOFF, &type) < 0)
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt streaming from %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
-		return false;
-    }
-
-	CAMERA_UNLOCK;
-
-	if(IS_THREAD_HANDLE(hndl))
-	{
-		DeInitCameraTask(&camCtx_);
-	}
-	camCtx_.hndl 	= kInvalidVidCapHndl;
-
-	return true;
-}
-
 Boolean	CCameraModule::InitCameraInt()
 {
 	if(!InitCameraHWInt(&camCtx_))

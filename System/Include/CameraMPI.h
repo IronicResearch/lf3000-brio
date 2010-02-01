@@ -219,7 +219,8 @@ public:
 	/// \param	hndl	Video capture handle returned by StartVideoCapture()
 	///
 	/// \param frame	As an input, used to request snapshot resolution (this can
-	/// differ from the video stream).  As an output, used to return image data from camera
+	/// differ from the video stream).  As an output, used to return image data from camera.
+	/// Note that frame->data MUST be KernelMPI.Free()'d by the caller after use.
 	///
 	/// \return Returns true on success.
 	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);

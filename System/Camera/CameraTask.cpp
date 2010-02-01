@@ -117,7 +117,7 @@ void* CameraTaskMain(void* arg)
 
 		bRet = cammgr.GetFrame(pCtx->hndl, &frame);
 
-		if(bFile  && !pCtx->bPaused)
+		if(bFile && !pCtx->bPaused)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
