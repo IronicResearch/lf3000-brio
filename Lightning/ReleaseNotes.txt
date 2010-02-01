@@ -3,22 +3,71 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v0.9.10.6404 (January 24, 2010)
+Brio v1.0.1.6506 (February 1, 2010)
 ===========================================
 
--- nothing new.
+-- Camera Updates:
+-Added camera control initialization
+-skeleton camera task implementation
+-renamed PutFrame to ReturnFrame
+-RenderFrame now optionally updates the display
+-camera test using RGB decoding/display layer
+
+-- Relocate pthread cancel test points after timeouts, plus 
+breakouts at loop iterations. (TTP 1729, 2086)
+
+-- Camera updates:
+-Implemented camera control selection
+-Activated test for threaded capture
+-Added test for control selection
+
+-- Camera updates:
+-added avilib for video file creation (to be moved to ThirdParty and/or rewritten)
+-added pause/resume feature
+
+-- Camera updates:
+-Better pause mechanism (VIDIOC_STREAMOFF requires buffers 
+to be requeued - too heavy for 'pause')
+-Pause/resume test
+
+-- Modified KernelMPI timer support to look for available SIGRT 
+handlers instead of using the same one for every timer. Timer 
+callback function does additional checking for correct callback path. (TTP 2054) 
+
+-- Used MPI-instance state var to track audio resource path 
+instead of module-wide state var. (TTP 1987)  
+
+-- Revert soft clipper state based on speaker state -- on for speaker, 
+off for headphones. AppManager Button event listener will have to call 
+AudioMPI.SetSpeakerEqualizer() on headphone jack state changes. (TTP 1532)
+
+-- Not-integrated code used for profiling audio latency.  
+Matching changes in LinuxDist_Emerald_1000
+
+-- Remove perror messages complaining about devnodes for nonexistant drivers. 
 
 ===========================================
-Brio v0.9.10.6387 (January 23, 2010)
+Brio v1.0.0.6455  (January 26, 2010)
 ===========================================
 
--- Mixer init coverage for valgrind traces thru PortAudio path. (TTP 1435 assist)
+-- merged -c6441: Added missing mktemp export needed by 
+libpthread-0.9.29.so. (TTP 2018)
 
--- Revert thread-based timer callbacks to signal type due to lack of support in 
-RidgeRun runtime libs.  Needed for powerdown timeout event. TODO: Runtime check?
+-- Rolled 0.9.12 to 1.0.0, per Hamid.
 
--- Added pthread_testcancel points to EventMPI and VideoMPI threads for 
-proper termination. (TTP #1873)
+===========================================
+Brio v0.9.10.6397 (January 24, 2010)
+===========================================
+
+-- Clean build from branch 0910.
+
+===========================================
+Brio v0.9.10.6397 (January 23, 2010)
+===========================================
+
+-- Merge -c6380 from Brio trunk for pthread_testcancel support.
+
+-- Rolled version to 0.9.10 in this branch
 
 ===========================================
 Brio v0.9.9.6369 (January 22, 2010)
