@@ -87,19 +87,35 @@ const CURI* CCameraMPI::GetModuleOrigin() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tErrType CCameraMPI::SetCameraResourcePath(const CPath& path)
+tErrType CCameraMPI::SetCameraVideoPath(const CPath& path)
 {
 	if (!pModule_)
 		return kMPINotConnectedErr;
-	return pModule_->SetCameraResourcePath(path);
+	return pModule_->SetCameraVideoPath(path);
 }
 
 //----------------------------------------------------------------------------
-CPath* CCameraMPI::GetCameraResourcePath()
+CPath* CCameraMPI::GetCameraVideoPath()
 {
 	if (!pModule_)
 		return kNull;
-	return pModule_->GetCameraResourcePath();
+	return pModule_->GetCameraVideoPath();
+}
+
+//----------------------------------------------------------------------------
+tErrType CCameraMPI::SetCameraStillPath(const CPath& path)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetCameraStillPath(path);
+}
+
+//----------------------------------------------------------------------------
+CPath* CCameraMPI::GetCameraStillPath()
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetCameraStillPath();
 }
 
 //----------------------------------------------------------------------------
@@ -197,6 +213,22 @@ Boolean	CCameraMPI::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	if (!pModule_)
 		return kInvalidVidCapHndl;
 	return pModule_->GrabFrame(hndl, frame);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::SaveFrame(const CPath &path, const tFrameInfo *frame)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->SaveFrame(path, frame);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::OpenFrame(const CPath &path, tFrameInfo *frame)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->OpenFrame(path, frame);
 }
 
 //----------------------------------------------------------------------------

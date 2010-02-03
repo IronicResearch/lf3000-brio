@@ -113,8 +113,10 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
-	VTABLE_EXPORT tErrType		SetCameraResourcePath(const CPath& path);
-	VTABLE_EXPORT CPath*		GetCameraResourcePath();
+	VTABLE_EXPORT tErrType		SetCameraVideoPath(const CPath& path);
+	VTABLE_EXPORT CPath*		GetCameraVideoPath();
+	VTABLE_EXPORT tErrType		SetCameraStillPath(const CPath& path);
+	VTABLE_EXPORT CPath*		GetCameraStillPath();
 	VTABLE_EXPORT Boolean		GetCameraModes(tCaptureModes &modes);
 	VTABLE_EXPORT Boolean		SetCameraMode(const tCaptureMode* mode);
 	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
@@ -127,6 +129,8 @@ public:
 	VTABLE_EXPORT Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect* rect);
 	VTABLE_EXPORT Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	VTABLE_EXPORT Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
+	VTABLE_EXPORT Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		IsCapturePaused(const tVidCapHndl hndl);

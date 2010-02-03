@@ -23442,3 +23442,16 @@ By jeno (jeno@leapfrog.com) on 2/3/10 9:41 AM
 5,985 ms. (Cumulative: 7,987,385 ms)
 
 ----------------
+Revision 6,530 from svn://localhost/TRUNK/:
+Revision 6,531 from svn://localhost/TRUNK/:
+Revision 6,532 from svn://localhost/TRUNK/:
+
+Camera updates:
+-Separate paths for Video and Still Image resources
+-Added SaveFrame() and OpenFrame() for still image management
+
+By jeno (jeno@leapfrog.com) on 2/3/10 2:26 PM
+5 changed, 0 added, 0 deleted.
+6,069 ms. (Cumulative: 7,993,548 ms)
+
+----------------

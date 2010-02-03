@@ -11,8 +11,6 @@
 #include <AudioTypes.h>
 #include <UnitTestUtils.h>
 
-#include <stdio.h>
-
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
@@ -258,9 +256,10 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 	//------------------------------------------------------------------------
 	void testCaptureThread()
 	{
-#if 1
+#if 0
 		tVidCapHndl					capture;
 		Boolean						bRet;
+		tErrType					err;
 
 		tCaptureMode				qqvga = {kCaptureFormatMJPEG, 320, 240, 1, 30};
 
@@ -286,7 +285,10 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 			bRet = pCameraMPI_->SetCameraMode(&qqvga);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			capture = pCameraMPI_->StartVideoCapture("/LF/Base/L3B_Video/test.avi", false, &surf, NULL);
+			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			capture = pCameraMPI_->StartVideoCapture("test.avi", false, &surf, NULL);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			int step = 0;
@@ -443,9 +445,10 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 	//------------------------------------------------------------------------
 	void testGrab()
 	{
-#if 0
+#if 1
 		tVidCapHndl				capture;
 		Boolean					bRet;
+		tErrType				err;
 
 		tCaptureMode			qqvga = {kCaptureFormatMJPEG, 160, 120, 1, 30};
 
@@ -457,9 +460,9 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
-		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
-		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		surf.width = pDisplayMPI_->GetWidth(disp);
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
@@ -473,6 +476,12 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 			bRet = pCameraMPI_->SetCameraMode(&qqvga);
 			TS_ASSERT_EQUALS( bRet, true );
 
+			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			err = pCameraMPI_->SetCameraStillPath("/LF/Base/L3B_Video");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
 			capture = pCameraMPI_->StartVideoCapture("", false, &surf, NULL);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
@@ -481,15 +490,14 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 			{
 				pKernelMPI_->TaskSleep(100);
 
-
 				if(step == 10)
 				{
 				bRet = pCameraMPI_->GrabFrame(capture, &frame);
 				TS_ASSERT_EQUALS( bRet, true );
-				pKernelMPI_->TaskSleep(1);
-				FILE *f = fopen("/LF/Base/L3B_Video/test.jpg", "wb");
-				fwrite(frame.data, sizeof(U8), frame.size, f);
-				fclose(f);
+
+				bRet = pCameraMPI_->SaveFrame("test.jpg", &frame);
+				TS_ASSERT_EQUALS( bRet, true );
+
 				pKernelMPI_->Free(frame.data);
 				}
 
@@ -497,6 +505,22 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->OpenFrame("test.jpg", &frame);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->RenderFrame(&frame, &surf);
+			TS_ASSERT_EQUALS( bRet, true );
+
+//			pDisplayMPI_->Invalidate(0);
+
+			pKernelMPI_->Free(frame.data);
+
+			step = 0;
+			while(step++ < 50)
+			{
+				pKernelMPI_->TaskSleep(100);
+			}
 		}
 
 		pDisplayMPI_->UnRegister(disp, 0);

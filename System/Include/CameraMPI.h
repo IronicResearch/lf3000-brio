@@ -73,15 +73,25 @@ public:
 
 	// MPI-specific functionality
 
-	/// Sets the default resource path for subsequent StartVideoCapture() calls
+	/// Sets the default video path for subsequent StartVideoCapture() calls
 	///
 	/// \param path	Base path for files referenced by calls to StartVideoCapture()
 	///
 	/// \return Returns kNoErr on success.
-	tErrType	SetCameraResourcePath(const CPath& path);
+	tErrType	SetCameraVideoPath(const CPath& path);
 
-	/// Returns the base path set by SetCameraResourcePath().
-	CPath*		GetCameraResourcePath();
+	/// Returns the base path set by SetCameraVideoPath().
+	CPath*		GetCameraVideoPath();
+
+	/// Sets the default still image path for subsequent SaveFrame() calls
+	///
+	/// \param path	Base path for files referenced by calls to SaveFrame()
+	///
+	/// \return Returns kNoErr on success.
+	tErrType	SetCameraStillPath(const CPath& path);
+
+	/// Returns the base path set by SetCameraStillPath().
+	CPath*		GetCameraStillPath();
 
 	/// Queries camera for supported resolution, format, and framerate.
 	/// <pre>
@@ -196,7 +206,7 @@ public:
 
 	/// StartVideoCapture() variation which spawns a thread for capture.
 	///
-	/// \param	path	Video save file name relative to SetCameraResourcePath(),
+	/// \param	path	Video save file name relative to SetCameraVideoPath(),
 	/// or full absolute path name if leading slash.  NULL parameter means
 	/// don't save the capture to a file.
 	///
@@ -224,6 +234,29 @@ public:
 	///
 	/// \return Returns true on success.
 	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+
+	/// SaveFrame() saves a grabbed snapshot to the file system.
+	///
+	/// \param	path	JPEG save file name relative to SetCameraStillPath(),
+	/// or full absolute path name if leading slash.
+	///
+	/// \param frame	Input: frame acquired by GrabFrame()
+	///
+	/// \return Returns true on success.
+	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
+
+	/// OpenFrame() retrieves a snapshot saved to the file system by SaveFrame()
+	///
+	/// \param	path	JPEG save file name relative to SetCameraStillPath(),
+	/// or full absolute path name if leading slash.
+	///
+	/// \param frame	Output: JPEG image frame stored by SaveFrame().  On success,
+	/// frame's fields are populated (width, height, size, and data).  Data is
+	/// allocated on the stack by KernelMPI::Malloc(), and must be KernelMPI::Free()'d
+	/// by the caller.
+	///
+	/// \return Returns true on success.
+	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 
 	/// PauseVideoCapture() pause an active capture.
 	///

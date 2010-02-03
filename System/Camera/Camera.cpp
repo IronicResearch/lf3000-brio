@@ -34,6 +34,11 @@
 #include <sys/mman.h>
 
 #include <jpeglib.h>
+#include <stdio.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #define USE_PROFILE			0
 
@@ -52,6 +57,12 @@ const U32 NUM_BUFS		= 2;
 									  "Couldn't lock mutex.\n")
 
 #define CAMERA_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(mutex_)),\
+										"Couldn't unlock mutex.\n");
+
+#define DATA_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(dlock)),\
+									  "Couldn't lock mutex.\n")
+
+#define DATA_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(dlock)),\
 										"Couldn't unlock mutex.\n");
 
 #define THREAD_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
@@ -86,7 +97,9 @@ const CURI* CCameraModule::GetModuleOrigin() const
 //============================================================================
 namespace
 {
-	CPath				gpath = "";
+	CPath				vpath = "";
+	CPath				spath = "";
+	tMutex				dlock;
 
 	// Camera MPI global vars
 	tCameraContext*		gpCamCtx = NULL;
@@ -146,6 +159,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	camCtx_.modes			= new tCaptureModes;
 	camCtx_.controls		= new tCameraControls;
 
+	err = kernel_.InitMutex( dlock, attr );
+	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
+
 	err = kernel_.InitMutex( mutex_, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
@@ -162,6 +178,7 @@ CCameraModule::~CCameraModule()
 
 	kernel_.DeInitMutex(camCtx_.mThread);
 	kernel_.DeInitMutex(mutex_);
+	kernel_.DeInitMutex(dlock);
 
 	delete camCtx_.controls;
 	delete camCtx_.modes;
@@ -178,29 +195,57 @@ Boolean	CCameraModule::IsValid() const
 //============================================================================
 
 //----------------------------------------------------------------------------
-tErrType CCameraModule::SetCameraResourcePath(const CPath &path)
+tErrType CCameraModule::SetCameraVideoPath(const CPath &path)
 {
-	CAMERA_LOCK;
+	DATA_LOCK;
 
-	gpath = path;
-	if (gpath.length() > 1 && gpath.at(gpath.length()-1) != '/')
-		gpath += '/';
+	vpath = path;
+	if (vpath.length() > 1 && vpath.at(vpath.length()-1) != '/')
+		vpath += '/';
 
-	CAMERA_UNLOCK;
+	DATA_UNLOCK;
 
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
-CPath* CCameraModule::GetCameraResourcePath()
+CPath* CCameraModule::GetCameraVideoPath()
 {
 	CPath *path;
 
-	CAMERA_LOCK;
+	DATA_LOCK;
 
-	path = &gpath;
+	path = &vpath;
 
-	CAMERA_UNLOCK;
+	DATA_UNLOCK;
+
+	return path;
+}
+
+//----------------------------------------------------------------------------
+tErrType CCameraModule::SetCameraStillPath(const CPath &path)
+{
+	DATA_LOCK;
+
+	spath = path;
+	if (spath.length() > 1 && spath.at(spath.length()-1) != '/')
+		spath += '/';
+
+	DATA_UNLOCK;
+
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+CPath* CCameraModule::GetCameraStillPath()
+{
+	CPath *path;
+
+	DATA_LOCK;
+
+	path = &spath;
+
+	DATA_UNLOCK;
 
 	return path;
 }
@@ -1232,7 +1277,20 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 
 	dbg_.Assert((audio == false), "Audio recording not implemented!.\n");
 
-	camCtx_.path	= path;
+	if(path.length() > 0)
+	{
+		if(path.at(0) == '/')
+		{
+			camCtx_.path	= path;
+		}
+		else
+		{
+			DATA_LOCK;
+			camCtx_.path	= vpath + path;
+			DATA_UNLOCK;
+		}
+	}
+
 	camCtx_.audio	= audio;
 	camCtx_.surf	= pSurf;
 	camCtx_.rect	= rect;
@@ -1263,20 +1321,6 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 	{
 		hndl = camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 	}
-
-#if 0
-	int	layer, r, dw, dh;
-	union mlc_cmd c;
-
-	// Open video layer device
-	layer = open("/dev/layer2", O_RDWR|O_SYNC);
-	if (layer < 0)
-		return;
-
-	// Get position info when video context was created
-	r = ioctl(layer, MLC_IOCGPOSITION, &c);
-#endif
-
 
 	CAMERA_UNLOCK;
 	return hndl;
@@ -1454,6 +1498,97 @@ bail_out:
 	THREAD_UNLOCK;
 	return false;
 
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::SaveFrame(const CPath &path, const tFrameInfo *frame)
+{
+	Boolean bRet = false;
+
+	// TODO: protect spath with DATA_LOCK
+	CPath		filepath = (path.at(0) == '/') ? path : spath + path;
+	const char*	filename = filepath.c_str();
+
+	FILE *f = fopen(filename, "wb");
+	if(f != NULL)
+	{
+		if(frame->size == fwrite(frame->data, sizeof(U8), frame->size, f))
+		{
+			bRet = true;
+		}
+		fclose(f);
+	}
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::OpenFrame(const CPath &path, tFrameInfo *frame)
+{
+	Boolean bRet = false;
+	struct stat buf;
+
+	struct jpeg_decompress_struct	cinfo;
+	struct jpeg_error_mgr			err;
+
+	// TODO: protect spath with DATA_LOCK
+	CPath		filepath = (path.at(0) == '/') ? path : spath + path;
+	const char*	filename = filepath.c_str();
+
+	if(0 != stat(filename, &buf))
+	{
+		return bRet;
+	}
+
+	cinfo.err = jpeg_std_error(&err);
+
+	jpeg_create_decompress(&cinfo);
+
+	FILE *f = fopen(filename, "rb");
+	if(f != NULL)
+	{
+		size_t 	done = 0, left = 0;
+		U8*		dest;
+
+		left = frame->size = buf.st_size;
+
+		frame->data = kernel_.Malloc(frame->size);
+
+		jpeg_stdio_src(&cinfo, f);
+
+		(void) jpeg_read_header(&cinfo, TRUE);
+
+		fseek(f, 0, SEEK_SET);
+
+		frame->width	= cinfo.image_width;
+		frame->height	= cinfo.image_height;
+
+		dest = (reinterpret_cast<U8*>(frame->data));
+
+
+		do
+		{
+			dest += done;
+			done = fread(dest, sizeof(U8), left, f);
+			left -= done;
+		} while( done );
+
+		if((left == 0) && !ferror(f))
+		{
+			bRet = true;
+		}
+		else
+		{
+			frame->size = 0;
+			kernel_.Free(frame->data);
+			frame->data = NULL;
+		}
+		fclose(f);
+	}
+
+	jpeg_destroy_decompress(&cinfo);
+
+	return bRet;
 }
 
 //----------------------------------------------------------------------------
