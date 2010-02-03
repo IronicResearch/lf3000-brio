@@ -195,6 +195,8 @@ void* VideoTaskMain( void* arg )
 			pctx->bPlaying = vidmgr.SeekVideoFrame(pctx->hVideo, &vtm0);
 		else
 			pctx->bPlaying = false;
+		if (!bRunning)
+			break;
 		bRunning = pctx->bPlaying;
 	}
 
