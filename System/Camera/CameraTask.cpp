@@ -88,8 +88,15 @@ void* CameraTaskMain(void* arg)
 		image.width		= pCtx->surf->width;
 		image.height	= pCtx->surf->height;
 
-		dbg.Assert((pCtx->surf->format == kPixelFormatYUV420), "CameraTask: Can only render to YUV layer!\n");
-		image.format	= kBitmapFormatYCbCr888;
+		switch(pCtx->surf->format)
+		{
+		case kPixelFormatYUV420:
+			image.format	= kBitmapFormatYCbCr888;
+			break;
+		case kPixelFormatRGB888:
+			image.format	= kBitmapFormatRGB888;
+			break;
+		}
 		image.depth		= 3;
 
 		image.size		= (image.width * image.height * image.depth * sizeof(U8));
@@ -110,7 +117,7 @@ void* CameraTaskMain(void* arg)
 		{
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													  "Couldn't unlock mutex.\n");
-			kernel.TaskSleep(1);
+			//kernel.TaskSleep(1);
 			bRunning = pCtx->bStreaming;
 			continue;
 		}

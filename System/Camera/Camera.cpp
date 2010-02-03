@@ -43,7 +43,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
-const U32 NUM_BUFS		= 16;
+const U32 NUM_BUFS		= 2;
 
 //==============================================================================
 // Defines
@@ -646,6 +646,7 @@ static Boolean InitCameraStartInt(tCameraContext *pCamCtx)
 //----------------------------------------------------------------------------
 static Boolean DrawFrame(tVideoSurf *surf, tBitmapInfo *image)
 {
+
 	U8*	ps = image->data;
 	U8*	pd = surf->buffer;
 
@@ -653,11 +654,19 @@ static Boolean DrawFrame(tVideoSurf *surf, tBitmapInfo *image)
 	{
 		U8*		du = pd + surf->pitch/2; // U,V in double-width buffer
 		U8*		dv = pd + surf->pitch/2 + surf->pitch * surf->height/2;
-		U8		y,cb,cr;
 		int		i,j,m,n;
+#if 0
+		/*
+		 * This algorithm naively copies each packed pixel component (Y, Cb, Cr) from the
+		 * decompressed JPEG to the appropriate planar buffers of the video layer.
+		 * It is valuable for demonstrating how the image is painted, but it is not
+		 * very efficient.  Therefore, it is disabled in favor of the unrolled version below.
+		 */
+		U8		y,cb,cr;
 
 		for (i = 0; i < surf->height; i++)
 		{
+
 			for (j = m = n = 0; n < surf->width; m+=3, n++)
 			{
 				y		= ps[m+0];
@@ -679,23 +688,103 @@ static Boolean DrawFrame(tVideoSurf *surf, tBitmapInfo *image)
 				dv += surf->pitch;
 			}
 		}
+#else
+		/*
+		 * This algorithm copies each packed pixel component (Y, Cb, Cr) from the
+		 * decompressed JPEG to the appropriate planar buffers of the video layer.
+		 * The LF1000's ARM926EJ has a 16 kB data cache with 32 byte (8 word) Cache lines.
+		 * The six words read below (w1...w6) constitute 24 bytes, but since they are
+		 * read from contiguous memory, w2...w6 are very cheap to access.  Similarly,
+		 * writing 1 word (32 bits) at a time is more efficient than writing a byte at a time.
+		 * This unrolling yields a ~50% speedup from the algorithm above.
+		 */
+
+		U32		*ps32, *pd32, *pu32, *pv32;
+
+		for (i = 0; i < surf->height; i++)
+		{
+			ps32 = reinterpret_cast<U32*>(ps);
+			pd32 = reinterpret_cast<U32*>(pd);
+			pu32 = reinterpret_cast<U32*>(du);
+			pv32 = reinterpret_cast<U32*>(dv);
+
+			for (j = m  = 0; j < surf->width; j+=8, m+=24)
+			{
+				register U32 w1, w2, w3, w4, w5, w6;
+
+				w1 = *ps32++;
+				w2 = *ps32++;
+				w3 = *ps32++;
+				w4 = *ps32++;
+				w5 = *ps32++;
+				w6 = *ps32++;
+
+				// w1 =	Y2	Cr1	Cb1	Y1		//Y1	Cb1	Cr1	Y2
+				// w2 = Cb3	Y3	Cr2	Cb2		//Cb2	Cr2	Y3	Cb3
+				// w3 =	Cr4	Cb4	Y4	Cr3		//Cr3	Y4	Cb4	Cr4
+				// w4 = Y6	Cr5	Cb5	Y5		//Y5	Cb5	Cr5	Y6
+				// w5 = Cb7	Y7	Cr6	Cb6		//Cb6	Cr6	Y7	Cb7
+				// w6 = Cr8	Cb8	Y8	Cr7		//Cr7	Y8	Cb8	Cr8
+
+				// Y = 	Y4	Y3	Y2	Y1		// Y1	Y2	Y3	Y4
+                *pd32++ = (w1 & 0x000000FF)
+                            | ((w1 >> 16)  & 0x0000FF00)
+                            | ((w2) & 0x00FF0000)
+                            | ((w3 << 16)  & 0xFF000000);
+
+                // Y = Y8	Y7	Y6	Y5		// Y5	Y6	Y7	Y8
+                *pd32++ = (w4 & 0x000000FF)
+                            | ((w4 >> 16)  & 0x0000FF00)
+                            | ((w5) & 0x00FF0000)
+                            | ((w6 << 16)  & 0xFF000000);
+
+                // U = 	Cb7	Cb5	Cb3	Cb1		// Cb1	Cb3	Cb5	Cb7
+                // V =	Cr7	Cr5	Cr3	Cr1		// Cr1	Cr3	Cr5	Cr7
+                if (!(i % 2)) {
+                   *pu32++ = ((w1 >> 8)  & 0x000000FF)
+                               |  ((w2 >> 16)  & 0x0000FF00)
+                               | ((w4 << 8)   & 0x00FF0000)
+                               | ((w5) & 0xFF000000);
+                    *pv32++ = (  (w1 >> 16) & 0x000000FF)
+                               | ((w3 << 8) & 0x0000FF00)
+                               | ((w4)  & 0x00FF0000)
+                               |  ((w6 << 24)       & 0xFF000000);
+                }
+
+			}
+			ps += m;
+			pd += surf->pitch;
+			if (i % 2)
+			{
+				du += surf->pitch;
+				dv += surf->pitch;
+			}
+		}
+#endif
 	}
 	else if(surf->format == kPixelFormatRGB888)
 	{
 		int			i,j,n;
-
+#if 1
 		for (i = 0; i < surf->height; i++)
 		{
-			for (j = n = 0; j < surf->width; j++, n+=3)
+			for (j = n = 0; j < surf->width; j++, n+=6)
 			{
 				// TODO: why is the source BGR?
 				pd[n+0]	= ps[n+2];
 				pd[n+1]	= ps[n+1];
 				pd[n+2]	= ps[n+0];
+
+				pd[n+3] = ps[n+5];
+				pd[n+4] = ps[n+4];
+				pd[n+5] = ps[n+3];
 			}
 			ps += n;
 			pd += n;
 		}
+#else
+		memcpy(pd, ps, image->size);
+#endif
 	}
 
 	return true;
@@ -831,64 +920,67 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 //----------------------------------------------------------------------------
 Boolean CCameraModule::SetBuffers(const U32 numBuffers)
 {
+	Boolean	bRet = false;
+	U32		oldBufs;
+
 	CAMERA_LOCK;
 
 	if(camCtx_.hndl != kInvalidVidCapHndl)
 	{
-		CAMERA_UNLOCK;
-		return false;
+		goto out;
 	}
 
 	if(camCtx_.numBufs == numBuffers)
 	{
-		CAMERA_UNLOCK;
-		return true;
+		goto out;
 	}
 
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetBuffers: buffer unmapping failed for %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
-		return false;
+		goto out;
 	}
 
+	oldBufs = camCtx_.numBufs;
 	camCtx_.numBufs = numBuffers;
 	if(!InitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetBuffers: buffer mapping failed for %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
-		return false;
+		camCtx_.numBufs = oldBufs;
+		goto out;
 	}
 
+	bRet = true;
+
+out:
 	CAMERA_UNLOCK;
-	return true;
+	return bRet;
 }
 
 //----------------------------------------------------------------------------
 tVidCapHndl	CCameraModule::StartVideoCapture()
 {
-	int i;
+	tVidCapHndl	hndl = kInvalidVidCapHndl;
 
  	CAMERA_LOCK;
 
 	if(camCtx_.hndl != kInvalidVidCapHndl)
 	{
-		CAMERA_UNLOCK;
-		return kInvalidVidCapHndl;
+		goto out;
 	}
 
 	if(!InitCameraStartInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: streaming failed for %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
-		return kInvalidVidCapHndl;
+		goto out;
 	}
 
 	// TODO: multiple handles?
-	camCtx_.hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
+	hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
 
+out:
 	CAMERA_UNLOCK;
-	return camCtx_.hndl;
+	return hndl;
 }
 
 //----------------------------------------------------------------------------
@@ -1040,14 +1132,25 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	case kBitmapFormatError:
 		/* fall through */
 	default:
+		bRet = false;
 		;
 	}
 
 	/*
-	 * libjpeg natively supports 1/1, 1/2, 1/4, and 1/8 scaling.
+	 * libjpeg natively supports M/8, where M is 1..16.
 	 */
-	cinfo.scale_num = 1;
-	cinfo.scale_denom = frame->height / bitmap->height;
+
+	//scale up
+	if( frame->height > bitmap->height)
+	{
+		cinfo.scale_num		= (8 * bitmap->height) / frame->height;
+	}
+	else
+	{
+		cinfo.scale_num		= (8 * (bitmap->height / frame->height));
+	}
+
+	//cinfo.dct_method	= JDCT_IFAST;//JDCT_IHW;
 
 	(void) jpeg_start_decompress(&cinfo);
 
@@ -1117,13 +1220,14 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 //----------------------------------------------------------------------------
 tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect *rect)
 {
+	tVidCapHndl hndl = kInvalidVidCapHndl;
 
 	CAMERA_LOCK;
 
 	if(camCtx_.hndl != kInvalidVidCapHndl)
 	{
 		CAMERA_UNLOCK;
-		return kInvalidVidCapHndl;
+		return hndl;
 	}
 
 	dbg_.Assert((audio == false), "Audio recording not implemented!.\n");
@@ -1137,7 +1241,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer unmapping failed for %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
-		return false;
+		return hndl;
 	}
 
 	camCtx_.numBufs = NUM_BUFS;
@@ -1145,17 +1249,20 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
-		return false;
+		return hndl;
 	}
 
 	if(!InitCameraStartInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: streaming failed for %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
-		return kInvalidVidCapHndl;
+		return hndl;
 	}
 
-	InitCameraTask(&camCtx_);
+	if(kNoErr == InitCameraTask(&camCtx_))
+	{
+		hndl = camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
+	}
 
 #if 0
 	int	layer, r, dw, dh;
@@ -1170,9 +1277,9 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 	r = ioctl(layer, MLC_IOCGPOSITION, &c);
 #endif
 
-	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
+
 	CAMERA_UNLOCK;
-	return camCtx_.hndl;
+	return hndl;
 }
 
 //----------------------------------------------------------------------------

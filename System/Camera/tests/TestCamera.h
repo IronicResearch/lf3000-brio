@@ -80,7 +80,7 @@ tCaptureMode			qvga = {kCaptureFormatMJPEG, 320, 240, 1, 30};
 
 		// For working with captured data
 		tFrameInfo				frame = { kCaptureFormatMJPEG, 160, 120 };
-//		tBitmapInfo				bitmap = { kBitmapFormatYCbCr888, 160, 120, NULL, 0 };
+//		tBitmapInfo				bitmap = { kBitmapFormatYCbCr888, 160, 120, 3, NULL, 0 };
 
 		// For displaying captured data
 		tVideoSurf				surf;
@@ -182,7 +182,7 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		// For working with captured data
 		tFrameInfo				frame = { kCaptureFormatMJPEG, 160, 120 };
-		tBitmapInfo				bitmap = { kBitmapFormatRGB888, 160, 120, NULL, 0 };
+		tBitmapInfo				bitmap = { kBitmapFormatRGB888, 160, 120, 3, NULL, 0 };
 
 		// For displaying captured data
 		tVideoSurf				surf;
@@ -218,13 +218,14 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 			TS_ASSERT_EQUALS( bRet, true );
 
 
-			bRet = pCameraMPI_->SetBuffers(4);
+			bRet = pCameraMPI_->SetBuffers(2);
 			TS_ASSERT_EQUALS( bRet, true );
 
 			capture = pCameraMPI_->StartVideoCapture();
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			bitmap.data = static_cast<U8*>(kernel->Malloc( 120 * 160 * 3 * sizeof(U8) ));
+			bitmap.size = bitmap.width * bitmap.height * bitmap.depth;
+			bitmap.data = static_cast<U8*>(kernel->Malloc( bitmap.size * sizeof(U8) ));
 
 			do {
 				bRet = pCameraMPI_->GetFrame(capture, &frame);
@@ -257,7 +258,7 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 	//------------------------------------------------------------------------
 	void testCaptureThread()
 	{
-#if 0
+#if 1
 		tVidCapHndl					capture;
 		Boolean						bRet;
 
@@ -269,7 +270,7 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
-		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
@@ -442,7 +443,7 @@ pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 	//------------------------------------------------------------------------
 	void testGrab()
 	{
-#if 1
+#if 0
 		tVidCapHndl				capture;
 		Boolean					bRet;
 
