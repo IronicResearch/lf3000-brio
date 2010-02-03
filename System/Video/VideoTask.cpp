@@ -162,6 +162,11 @@ void* VideoTaskMain( void* arg )
 						break;
 					lasttime = nexttime;
 				}
+				else if (abs(nexttime - marktime) > 60000) {
+					nexttime = kernel.GetElapsedTimeAsMSecs();
+					basetime = nexttime - vtm.time;
+					marktime = nexttime + lapsetime;
+				}
 				kernel.TaskSleep(1);
 			}
 			// Next target time is relative to current frame time stamp
