@@ -23409,3 +23409,16 @@ By Dave Milici (dmilici@leapfrog.com) on 2/2/10 4:05 PM
 6,157 ms. (Cumulative: 7,968,319 ms)
 
 ----------------
+Revision 6,523 from svn://localhost/TRUNK/:
+Revision 6,524 from svn://localhost/TRUNK/:
+Revision 6,525 from svn://localhost/TRUNK/:
+Revision 6,526 from svn://localhost/TRUNK/:
+Revision 6,527 from svn://localhost/TRUNK/:
+
+Additional video state check prior to update in looping cases. (TTP #1626) 
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/10 7:03 PM
+1 changed, 0 added, 0 deleted.
+6,393 ms. (Cumulative: 7,974,821 ms)
+
+----------------
