@@ -23422,3 +23422,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/2/10 7:03 PM
 6,393 ms. (Cumulative: 7,974,821 ms)
 
 ----------------
+Revision 6,528 from svn://localhost/TRUNK/:
+
+Disable Brightness & Contrast support in DisplayMPI and mark corresponding functions as deprecated in Doxygen headers. (TTP #2128)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/10 7:26 PM
+3 changed, 0 added, 0 deleted.
+6,422 ms. (Cumulative: 7,981,322 ms)
+
+----------------
