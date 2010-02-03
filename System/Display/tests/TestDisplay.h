@@ -156,7 +156,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testBrightnessContrast( )
+	void XXXXtestBrightnessContrast( ) // Brightness/Contrast support No longer implemented
 	{
 		tDisplayHandle 	handle;
 		U8* 			buffer;

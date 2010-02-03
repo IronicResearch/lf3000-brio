@@ -297,22 +297,14 @@ public:
 	// Brightness and contrast controls
 	//=================================
 
-	/// Sets the brightness of the display output screen (0 = default setting)
+	/// \deprecated		Brightness/Contrast support No longer implemented
 	///
-	/// \param screen 	The selected output screen
-	///
-	/// \param brightness	The brightness value in range -128 to 127
-	///
-	/// \return			Returns kNoErr on success.
+	/// \return			Returns kNoImplErr
 	tErrType			SetBrightness(tDisplayScreen screen, S8 brightness);
 	
-	/// Sets the contrast of the display output screen (0 = default setting)
+	/// \deprecated		Brightness/Contrast support No longer implemented
 	///
-	/// \param screen 	The selected output screen
-	///
-	/// \param contrast	The contrast value in range -128 to 127
-	///
-	/// \return			Returns kNoErr on success.
+	/// \return			Returns kNoImplErr
 	tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
 	
 	/// Sets the backlight of the display output screen (-128..127 range setting)
@@ -324,18 +316,14 @@ public:
 	/// \return			Returns kNoErr on success.
 	tErrType			SetBacklight(tDisplayScreen screen, S8 brightness);
 	
-	/// Gets the brightness setting of the display output screen
+	/// \deprecated		Brightness/Contrast support No longer implemented
 	///
-	/// \param screen 	The selected output screen
-	///
-	/// \return			Returns the brightness value set via SetBrightness().
+	/// \return			Returns 0
 	S8					GetBrightness(tDisplayScreen screen);
 	
-	/// Gets the contrast setting of the display output screen
+	/// \deprecated		Brightness/Contrast support No longer implemented
 	///
-	/// \param screen 	The selected output screen
-	///
-	/// \return			Returns the contrast value set via SetContrast().
+	/// \return			Returns 0
 	S8					GetContrast(tDisplayScreen screen);
 	
 	/// Gets the backlight setting of the display output screen

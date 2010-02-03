@@ -812,25 +812,17 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
 {
-	// translate logical brightness value range of [-128, 127]
-	// to physical brightness range of (0,255]
 	(void )screen;	/* Prevent unused variable warnings. */
-	long	p = brightness + 128;
-	int 			r;
-	
-	r = ioctl(gDevDpc, DPC_IOCTBRIGHTNESS, p);
-	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
+	(void)brightness;
+	return kNoImplErr; // not implemented
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
-	unsigned long	p = (contrast + 128) >> 4;
-	int 			r;
-	
-	r = ioctl(gDevDpc, DPC_IOCTCONTRAST, p);
-	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
+	(void)contrast;
+	return kNoImplErr; // not implemented
 }
 
 //----------------------------------------------------------------------------
@@ -847,22 +839,14 @@ tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
-	unsigned long	p = 0;
-	int 			r;
-	
-	r = ioctl(gDevDpc, DPC_IOCQBRIGHTNESS, p);
-	return (r < 0) ? 0 : (r & 0xFF) - 128;
+	return 0; // not implemented
 }
 
 //----------------------------------------------------------------------------
 S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
-	unsigned long	p = 0;
-	int 			r;
-	
-	r = ioctl(gDevDpc, DPC_IOCQCONTRAST, p);
-	return (r < 0) ? 0 : ((r & 0xFF) << 4) - 128;
+	return 0; // not implemented
 }
 
 //----------------------------------------------------------------------------
