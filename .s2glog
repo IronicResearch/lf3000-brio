@@ -23397,3 +23397,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 2/1/10 11:34 PM
 6,226 ms. (Cumulative: 7,962,068 ms)
 
 ----------------
+Revision 6,520 from svn://localhost/TRUNK/:
+Revision 6,521 from svn://localhost/TRUNK/:
+Revision 6,522 from svn://localhost/TRUNK/:
+
+Detect and compensate for quantum jumps in elapsed time in case someone (DFTP) changes the RTC while video is playing (transfer-in-progress video). (TTP #2129)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/10 4:05 PM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 7,968,319 ms)
+
+----------------
