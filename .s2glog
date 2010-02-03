@@ -23431,3 +23431,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/2/10 7:26 PM
 6,422 ms. (Cumulative: 7,981,322 ms)
 
 ----------------
+Revision 6,529 from svn://localhost/TRUNK/:
+
+Camera updates:
+-Unrolled loop for painting video layer for ~50% speed boost
+-Reduced number of camera buffers allocated to reduce viewfinder lag
+
+By jeno (jeno@leapfrog.com) on 2/3/10 9:41 AM
+3 changed, 0 added, 0 deleted.
+5,985 ms. (Cumulative: 7,987,385 ms)
+
+----------------
