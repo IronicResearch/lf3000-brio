@@ -23455,3 +23455,16 @@ By jeno (jeno@leapfrog.com) on 2/3/10 2:26 PM
 6,069 ms. (Cumulative: 7,993,548 ms)
 
 ----------------
+Revision 6,533 from svn://localhost/TRUNK/:
+Revision 6,534 from svn://localhost/TRUNK/:
+Revision 6,535 from svn://localhost/TRUNK/:
+Revision 6,536 from svn://localhost/TRUNK/:
+Revision 6,537 from svn://localhost/TRUNK/:
+
+Handling of USB VBUS physical disconnect event clears all cached state leftover from DFTP. (TTP #1626)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/4/10 9:43 AM
+1 changed, 0 added, 0 deleted.
+5,844 ms. (Cumulative: 7,999,501 ms)
+
+----------------
