@@ -472,12 +472,13 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(ev.type == EV_SW && ev.code == SW_LID)
 				{
 					vbus = !!ev.value;
+					pThis->debug_.DebugOut(kDbgLvlValuable, "%s: vbus=%d\n", __FUNCTION__, vbus);
 					if((vbus == 1)) {
 						usb_data.USBDeviceState |= kUSBDeviceConnected;
 						CUSBDeviceMessage usb_msg(usb_data);
 						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
 					} else if((vbus == 0)) {
-						usb_data.USBDeviceState &= ~(kUSBDeviceConnected);
+						usb_data.USBDeviceState = 0; // clear all cached state
 						CUSBDeviceMessage usb_msg(usb_data);
 						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
 					}
