@@ -1461,6 +1461,7 @@ void CAudioMixer::EnableSpeaker(Boolean x)
 	// soft clipper on for speaker, off for headphones (TTP #1532)
 	audioState_.useOutSoftClipper = x;
 	audioState_.speakerEnabled	  = x;
+	pDebugMPI_->DebugOut(kDbgLvlValuable, "%s: %d\n", __FUNCTION__, (int)x);
 }
 
 // ==============================================================================

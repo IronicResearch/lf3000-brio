@@ -23468,3 +23468,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/4/10 9:43 AM
 5,844 ms. (Cumulative: 7,999,501 ms)
 
 ----------------
+Revision 6,538 from svn://localhost/TRUNK/:
+Revision 6,539 from svn://localhost/TRUNK/:
+
+Added AudioMPI trace message for speaker / soft-clipper state. (TTP 1532)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/4/10 5:39 PM
+1 changed, 0 added, 0 deleted.
+5,906 ms. (Cumulative: 8,005,517 ms)
+
+----------------
