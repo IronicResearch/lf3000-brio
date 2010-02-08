@@ -23503,3 +23503,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/10 12:12 PM
 6,308 ms. (Cumulative: 8,018,076 ms)
 
 ----------------
+Revision 6,548 from svn://localhost/TRUNK/:
+
+Revert v1.2.0 Vorbis libs from -r4711. (TTP 1969)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/10 1:06 PM
+2 changed, 0 added, 0 deleted.
+6,276 ms. (Cumulative: 8,024,430 ms)
+
+----------------
