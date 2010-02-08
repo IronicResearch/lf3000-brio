@@ -23491,3 +23491,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 2/8/10 10:38 AM
 6,063 ms. (Cumulative: 8,011,674 ms)
 
 ----------------
+Revision 6,544 from svn://localhost/TRUNK/:
+Revision 6,545 from svn://localhost/TRUNK/:
+Revision 6,546 from svn://localhost/TRUNK/:
+Revision 6,547 from svn://localhost/TRUNK/:
+
+Allow EventMPI threads to exit on logic conditionals only, without pthread_cancel() assistance. Cancellation calls may not always be safe. (TTP 2141)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/10 12:12 PM
+1 changed, 0 added, 0 deleted.
+6,308 ms. (Cumulative: 8,018,076 ms)
+
+----------------
