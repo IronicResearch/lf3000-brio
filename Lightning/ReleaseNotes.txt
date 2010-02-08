@@ -3,7 +3,35 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.0.1.6514 (February 1, 2010)
+Brio v1.0.2.6544 (February 8, 2010)
+===========================================
+
+-- Detect and compensate for quantum jumps in elapsed time in case someone 
+(DFTP) changes the RTC while video is playing (transfer-in-progress 
+video). (TTP #2129)
+
+-- Additional video state check prior to update in looping cases. (TTP 
+#1626) 
+
+-- Disable Brightness & Contrast support in DisplayMPI and mark 
+corresponding functions as deprecated in Doxygen headers. (TTP #2128)
+
+-- Camera updates:
+-Unrolled loop for painting video layer for ~50% speed boost
+-Reduced number of camera buffers allocated to reduce viewfinder lag
+
+-- Camera updates:
+-Separate paths for Video and Still Image resources
+-Added SaveFrame() and OpenFrame() for still image management
+
+-- Handling of USB VBUS physical disconnect event clears all cached state 
+leftover from DFTP. (TTP #1626)
+
+-- Added AudioMPI trace message for speaker / soft-clipper state. (TTP 
+1532)
+
+===========================================
+Brio v1.0.1.6526 (February 2, 2010)
 ===========================================
 
 -- Camera Updates:
