@@ -225,6 +225,13 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	U32  cntl32 = preg32[0];
 	U32  stat32 = preg32[0x0014>>2]; // idle status=05BF8E41
 	U32  clok32 = preg32[0x1FC0>>2]; // disabled clock=00000000
+	if (clok32 != 0 || (stat32 & 0x00BF0000) != 0x00BF0000) {
+		FILE* fp = fopen("/tmp/3dlockup", "w"); 
+		if (fp) {
+			fprintf(fp, "status=%08X\n", (unsigned)stat32);
+			fclose(fp);
+		}
+	}
 	dbg_.Assert(clok32 == 0, "%s: Reg3D control=%08X, status=%08X, clock=%08X\n", 
 			__FUNCTION__, (unsigned)cntl32, (unsigned)stat32, (unsigned)clok32);
 	

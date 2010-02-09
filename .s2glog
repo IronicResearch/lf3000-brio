@@ -23527,3 +23527,22 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/10 7:00 PM
 6,121 ms. (Cumulative: 8,030,660 ms)
 
 ----------------
+Revision 6,555 from svn://localhost/TRUNK/:
+Revision 6,556 from svn://localhost/TRUNK/:
+Revision 6,557 from svn://localhost/TRUNK/:
+Revision 6,558 from svn://localhost/TRUNK/:
+Revision 6,559 from svn://localhost/TRUNK/:
+Revision 6,560 from svn://localhost/TRUNK/:
+Revision 6,561 from svn://localhost/TRUNK/:
+Revision 6,562 from svn://localhost/TRUNK/:
+Revision 6,563 from svn://localhost/TRUNK/:
+Revision 6,564 from svn://localhost/TRUNK/:
+
+Save /tmp/3dlockup as runtime flag for 3D engine lockup condition prior to assert.
+(TTP #2139, 2159)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/9/10 3:24 PM
+1 changed, 0 added, 0 deleted.
+6,150 ms. (Cumulative: 8,036,940 ms)
+
+----------------
