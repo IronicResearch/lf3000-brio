@@ -23512,3 +23512,18 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/10 1:06 PM
 6,276 ms. (Cumulative: 8,024,430 ms)
 
 ----------------
+Revision 6,549 from svn://localhost/TRUNK/:
+Revision 6,550 from svn://localhost/TRUNK/:
+Revision 6,551 from svn://localhost/TRUNK/:
+Revision 6,552 from svn://localhost/TRUNK/:
+Revision 6,553 from svn://localhost/TRUNK/:
+Revision 6,554 from svn://localhost/TRUNK/:
+
+Check 3D engine running status to avoid hanging in OGL init callback. All Reg3D status idle bits should be set and clock bits cleared after HW reset or eglTerminate() calls. If 3D engine left running from crashed process without OGL cleanup, clock bits will be set and command reader idle bit 21 will be busy.
+(TTP #2139, 2159)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/10 7:00 PM
+1 changed, 0 added, 0 deleted.
+6,121 ms. (Cumulative: 8,030,660 ms)
+
+----------------

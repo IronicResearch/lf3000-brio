@@ -219,6 +219,14 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	
 	// Reset framebuffer start address to match
 	ioctl(gDevLayer, MLC_IOCTADDRESS, gMem2Phys);
+
+	// Check 3D engine running status to avoid hanging in OGL init callback
+	U32* preg32 = (U32*)gpReg3d;
+	U32  cntl32 = preg32[0];
+	U32  stat32 = preg32[0x0014>>2]; // idle status=05BF8E41
+	U32  clok32 = preg32[0x1FC0>>2]; // disabled clock=00000000
+	dbg_.Assert(clok32 == 0, "%s: Reg3D control=%08X, status=%08X, clock=%08X\n", 
+			__FUNCTION__, (unsigned)cntl32, (unsigned)stat32, (unsigned)clok32);
 	
 	// Copy the required mappings into the MagicEyes callback init struct
 	pMemInfo->VirtualAddressOf3DCore	= (unsigned int)gpReg3d;
