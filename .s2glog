@@ -23625,3 +23625,14 @@ By Rob Dowling (rdowling@leapfrog.com) on 2/10/10 1:20 PM
 5,913 ms. (Cumulative: 8,073,232 ms)
 
 ----------------
+Revision 6,575 from svn://localhost/TRUNK/:
+Revision 6,576 from svn://localhost/TRUNK/:
+
+TTPro 2208: Add fabortAllAtomic for new AppManager cleanup
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 2/10/10 2:45 PM
+1 changed, 0 added, 0 deleted.
+5,829 ms. (Cumulative: 8,079,139 ms)
+
+----------------
