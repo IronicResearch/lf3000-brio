@@ -4,7 +4,7 @@ Adjust compiler in Makefile for emerald device or ubuntu target
 
 t1 is a stand alone, can be run on ubuntu or emerald (as game user,
 not root).  It will return "# successful tests" or a failure message
-as last line of output.
+as last line of output. (14 as of Feb 10, 2010).
 
 t2 is a test designed to be run on emeraldunder a modified /etc/init.d/rcS:
   x=/LF/Bulk/safe-file
