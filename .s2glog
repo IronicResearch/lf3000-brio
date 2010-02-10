@@ -23646,3 +23646,14 @@ By Rob Dowling (rdowling@leapfrog.com) on 2/10/10 3:13 PM
 6,098 ms. (Cumulative: 8,085,311 ms)
 
 ----------------
+Revision 6,578 from svn://localhost/TRUNK/:
+Revision 6,579 from svn://localhost/TRUNK/:
+
+TTPro 2208: Missing debug object in Brio build
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 2/10/10 3:22 PM
+1 changed, 0 added, 0 deleted.
+5,879 ms. (Cumulative: 8,091,268 ms)
+
+----------------

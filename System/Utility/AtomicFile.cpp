@@ -121,6 +121,9 @@ void show_atomics ()
 
 static int fabortGuts (struct atomic_info *atomicOpen)
 {
+#ifndef NOBRIO
+	CDebugMPI debug(kGroupPlatform);
+#endif
 	if (!atomicOpen)
 	{
 		ATOMIC_ERR ("fabortGuts: NULL atomicOpen\n");
@@ -196,7 +199,7 @@ int fabortAllAtomic ()
 	{
 		struct atomic_info *atomicOpen = *p;
 		ATOMIC_ERR2 ("fabortAllAtomic: aborting i=%d realName=%s\n", i++, (*p)->realName ? (*p)->realName : "NULL");
-		ATOMIC_ERR2 ("fabortAllAtomic:          workName=%s fp=0x%08x\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
+		ATOMIC_ERR2 ("fabortAllAtomic:          workName=%s fp=0x%08x\n", (*p)->workName ? (*p)->workName : "NULL", (int) (*p)->file);
 		if (!atomicOpen)
 		{
 			ATOMIC_ERR ("fabortAllAtomic: impossible condition: NULL entry in atomicList\n");
@@ -224,6 +227,9 @@ int fabortAllAtomic ()
 // Helper
 static int copy_file(const char *srcPath, const char *dstPath)
 {
+#ifndef NOBRIO
+	CDebugMPI debug(kGroupPlatform);
+#endif
 	int ret = 0; // Assume success
 	int fin, fout;
 	fin = open (srcPath, O_RDONLY);
