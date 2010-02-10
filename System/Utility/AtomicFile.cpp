@@ -111,7 +111,7 @@ void show_atomics ()
 	for (p=atomicList.begin(); p!= atomicList.end(); p++)
 	{
 		printf ("i=%d realName=%s", i, (*p)->realName ? (*p)->realName : "NULL");
-		printf ("workName=%s fp=%x\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
+		printf ("workName=%s fp=0x%08x\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
 		i++;
 	}
 }
@@ -137,7 +137,7 @@ static int fabortGuts (struct atomic_info *atomicOpen)
 
 	if (fclose (fp))
 	{
-		ATOMIC_ERR1 ("fabortGuts: fclose failed for fp=%x!\n", (int) fp);
+		ATOMIC_ERR1 ("fabortGuts: fclose failed for fp=0x%08x!\n", (int) fp);
 		return -1;
 	}
 	if (atomicOpen->workName)
@@ -191,9 +191,12 @@ int fabortAllAtomic ()
 #endif
 	show_atomics ();
 	list<struct atomic_info *>::iterator p, q;
+	int i = 0;
 	for (p=atomicList.begin(); p!= atomicList.end(); p=q)
 	{
 		struct atomic_info *atomicOpen = *p;
+		ATOMIC_ERR2 ("fabortAllAtomic: aborting i=%d realName=%s\n", i++, (*p)->realName ? (*p)->realName : "NULL");
+		ATOMIC_ERR2 ("fabortAllAtomic:          workName=%s fp=0x%08x\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
 		if (!atomicOpen)
 		{
 			ATOMIC_ERR ("fabortAllAtomic: impossible condition: NULL entry in atomicList\n");
@@ -213,6 +216,7 @@ int fabortAllAtomic ()
 		q++;
 		atomicList.erase (p);
 	}
+	ATOMIC_ERR1 ("fabortAllAtomic: aborted %d files\n", i);
 	show_atomics ();
 	return 0;
 }
