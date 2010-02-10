@@ -23546,3 +23546,16 @@ By Dave Milici (dmilici@leapfrog.com) on 2/9/10 3:24 PM
 6,150 ms. (Cumulative: 8,036,940 ms)
 
 ----------------
+Revision 6,565 from svn://localhost/TRUNK/:
+Revision 6,566 from svn://localhost/TRUNK/:
+Revision 6,567 from svn://localhost/TRUNK/:
+
+ME source archive for reference. Makefile needs to be fixed up for 
+gcc cross-compile and LF1000 chipset selection.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/10/10 8:32 AM
+0 changed, 1 added, 0 deleted.
+6,470 ms. (Cumulative: 8,043,507 ms)
+
+----------------
