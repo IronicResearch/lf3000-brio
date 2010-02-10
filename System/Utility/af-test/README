@@ -1,0 +1,18 @@
+Atomic I/O unit tests
+
+Adjust compiler in Makefile for emerald device or ubuntu target
+
+t1 is a stand alone, can be run on ubuntu or emerald.  It will return
+"# successful tests" or a failure message last.
+
+t2 is a test designed to be run on emerald under a modified /etc/init.d/rcS:
+  x=/LF/Bulk/safe-file
+  echo "$x:" `cat $x`
+  x=/LF/Bulk/risky-file
+  echo "$x:" `cat $x`
+  /LF/t2 &
+  sleep 1;
+  reboot -f
+
+You will see risky-file's count reset to 0, while safe-file should
+keep on counting
