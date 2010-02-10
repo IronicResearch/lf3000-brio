@@ -23601,3 +23601,27 @@ By Rob Dowling (rdowling@leapfrog.com) on 2/10/10 1:13 PM
 5,813 ms. (Cumulative: 8,067,241 ms)
 
 ----------------
+Revision 6,574 from svn://localhost/TRUNK/:
+
+TTPro 2208, the original implementation has proven woefully inadequate.
+Cases of a game exiting without closing file prevents other games from
+doing any atomic I/O.  We must have a list of open handles.
+
+Brings up new failure condition: what if an already fopenAtomic file
+is fopenAtomic'd again?  In this case, we choose to fail (return 0)
+instead of be smart.  Otherwise, as many files as we have RAM are
+supported now.
+
+Add new feature to abort all known atomic files, so that we can do
+clean up from AppManager on game exit, in case games misbehave.
+ 
+Also add support for append mode, and guaranteed new shadow file names
+using mktemp.
+
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 2/10/10 1:20 PM
+2 changed, 0 added, 0 deleted.
+5,913 ms. (Cumulative: 8,073,232 ms)
+
+----------------
