@@ -1,7 +1,8 @@
 all: t1 t2 install
 
+# arm-linux-g++ is for the embedded device; regular g++ is for Ubuntu desktop
 CXX=arm-linux-g++ -DNOBRIO
-# CXX=g++ -DNOBRIO
+#CXX=g++ -DNOBRIO
 
 t1: t1.cpp AtomicFile.h AtomicFile.o
 
