@@ -147,9 +147,11 @@ private:
 		
 		// Note: Before exiting this thread, we must make sure that all of the
 		// messages that we malloc'd are freed.
+		pThis->debug_.DebugOut(kDbgLvlValuable, "EventDispatchTask() exiting %p\n", pThis);
+		pThis->kernel_.CloseMessageQueue(g_hMsgQueueBG_, props);
 
 		g_threadRunning_ = false;
-		return NULL;
+		return pThis;
 	}
 
 public:
@@ -222,8 +224,9 @@ public:
 	//------------------------------------------------------------------------
 	~CEventManagerImpl() 
 	{
-		void* 		retval;
-
+		void* 		retval = NULL;
+		int			counter = 10;
+		
 		// Terminate Button/Power/USB driver polling thread first
 		pEventModule_->bThreadRun_ = false;
 		if (g_hCartThread_ != kInvalidTaskHndl) {
@@ -237,11 +240,13 @@ public:
 		// Terminate thread normally and dispose of listener list afterwards
 		g_threadRun_ = false;
 		debug_.DebugOut(kDbgLvlValuable, "%s: Terminating message thread\n", __FUNCTION__);
+		while (g_threadRunning_ && --counter > 0)
+			kernel_.TaskSleep(10);
 		kernel_.JoinTask(g_hThread_, retval);
-#if 1	// FIXME/dm: segfaults during module manager destruction -- corrupt ptr/list? 
+		debug_.DebugOut(kDbgLvlValuable, "%s: counter=%d, retval=%p\n", __FUNCTION__, counter, retval);
+
 		if (ppListeners_)
 			free(ppListeners_);
-#endif
 	}
 	
 	//------------------------------------------------------------------------
