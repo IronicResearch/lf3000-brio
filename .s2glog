@@ -23680,3 +23680,22 @@ By Dave Milici (dmilici@leapfrog.com) on 2/10/10 6:28 PM
 5,903 ms. (Cumulative: 8,103,234 ms)
 
 ----------------
+Revision 6,586 from svn://localhost/TRUNK/:
+Revision 6,587 from svn://localhost/TRUNK/:
+Revision 6,588 from svn://localhost/TRUNK/:
+Revision 6,589 from svn://localhost/TRUNK/:
+Revision 6,590 from svn://localhost/TRUNK/:
+Revision 6,591 from svn://localhost/TRUNK/:
+Revision 6,592 from svn://localhost/TRUNK/:
+Revision 6,593 from svn://localhost/TRUNK/:
+Revision 6,594 from svn://localhost/TRUNK/:
+Revision 6,595 from svn://localhost/TRUNK/:
+
+Removing dependencies from base packages (ttpro#95); meta.inf cleanup
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 2/13/10 12:06 PM
+1 changed, 0 added, 0 deleted.
+6,063 ms. (Cumulative: 8,109,422 ms)
+
+----------------
