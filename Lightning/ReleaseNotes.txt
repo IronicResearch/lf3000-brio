@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.0.2.6544 (February 8, 2010)
+Brio v1.0.2.6599 (February 13, 2010)
 ===========================================
 
 -- Detect and compensate for quantum jumps in elapsed time in case someone 
