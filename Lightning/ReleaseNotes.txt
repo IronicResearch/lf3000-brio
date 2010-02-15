@@ -3,7 +3,7 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.0.3.6602 (February 15, 2010)
+Brio v1.0.3.6604 (February 15, 2010)
 ===========================================
 
 -- Allow EventMPI threads to exit on logic conditionals only, without 
