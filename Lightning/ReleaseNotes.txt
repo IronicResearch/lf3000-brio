@@ -3,7 +3,29 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.0.2.6599 (February 13, 2010)
+Brio v1.0.3.6602 (February 15, 2010)
+===========================================
+
+-- Allow EventMPI threads to exit on logic conditionals only, without 
+pthread_cancel() assistance. Cancellation calls may not always be safe. 
+(TTP 2141)
+
+-- Check 3D engine running status to avoid hanging in OGL init callback. 
+All Reg3D status idle bits should be set and clock bits cleared after 
+HW reset or eglTerminate() calls. If 3D engine left running from 
+crashed process without OGL cleanup, clock bits will be set and command 
+reader idle bit 21 will be busy.
+(TTP #2139, 2159)
+
+-- ME source archive for reference. Makefile needs to be fixed up for 
+gcc cross-compile and LF1000 chipset selection.
+
+-- Directory for AtomicI/O unit tests
+
+-- Removing dependencies from base packages (ttpro#95); meta.inf cleanup
+
+===========================================
+Brio v1.0.2.6589 (February 10, 2010)
 ===========================================
 
 -- Detect and compensate for quantum jumps in elapsed time in case someone 
@@ -29,6 +51,36 @@ leftover from DFTP. (TTP #1626)
 
 -- Added AudioMPI trace message for speaker / soft-clipper state. (TTP 
 1532)
+
+-- Merged -c6549: Allow EventMPI threads to exit on logic conditionals 
+only, without pthread_cancel() assistance. Cancellation calls may not 
+always be safe. (TTP 2141)
+
+-- Merged -c6548: Revert v1.2.0 Vorbis libs from -r4711. (TTP 1969)
+
+-- Merged -c6564:  Save /tmp/3dlockup as runtime flag for 3D engine lockup 
+condition prior to assert. (TTP #2139, 2159)
+
+-- Merged -c6574, 6576, 6577, 6579:
+ TTPro 2208, the original implementation has proven woefully 
+inadequate. Cases of a game exiting without closing file prevents other 
+games from doing any atomic I/O. We must have a list of open handles. 
+Brings up new failure condition: what if an already fopenAtomic file is 
+fopenAtomic'd again? In this case, we choose to fail (return 0) instead 
+of be smart. Otherwise, as many files as we have RAM are supported now. 
+Add new feature to abort all known atomic files, so that we can do 
+clean up from AppManager on game exit, in case games misbehave. Also 
+add support for append mode, and guaranteed new shadow file names using 
+mktemp. 
+
+ TTPro 2208: Add fabortAllAtomic for new AppManager cleanup 
+
+ TTPro 2208: Better messaging in FR log 
+
+ TTPro 2208: Missing debug object in Brio build 
+
+-- Merged -c6585: Added handshake tracers to EventMPI message thread exit 
+sequence. (TTP 1729)
 
 ===========================================
 Brio v1.0.1.6526 (February 2, 2010)
