@@ -23732,3 +23732,22 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 2/15/10 8:53 AM
 6,221 ms. (Cumulative: 8,128,020 ms)
 
 ----------------
+Revision 6,602 from svn://localhost/TRUNK/:
+Revision 6,603 from svn://localhost/TRUNK/:
+Revision 6,604 from svn://localhost/TRUNK/:
+Revision 6,605 from svn://localhost/TRUNK/:
+Revision 6,606 from svn://localhost/TRUNK/:
+Revision 6,607 from svn://localhost/TRUNK/:
+Revision 6,608 from svn://localhost/TRUNK/:
+Revision 6,609 from svn://localhost/TRUNK/:
+Revision 6,610 from svn://localhost/TRUNK/:
+Revision 6,611 from svn://localhost/TRUNK/:
+Revision 6,612 from svn://localhost/TRUNK/:
+
+libjpeg placeholder changes to use LF1000 IDCT block.
+
+By jeno (jeno@leapfrog.com) on 2/17/10 2:02 PM
+8 changed, 1 added, 0 deleted.
+6,549 ms. (Cumulative: 8,134,694 ms)
+
+----------------

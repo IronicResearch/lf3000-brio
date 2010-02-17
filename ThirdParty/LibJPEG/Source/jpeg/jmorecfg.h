@@ -270,6 +270,7 @@ typedef int boolean;
 #define DCT_ISLOW_SUPPORTED	/* slow but accurate integer algorithm */
 #define DCT_IFAST_SUPPORTED	/* faster, less accurate integer method */
 #define DCT_FLOAT_SUPPORTED	/* floating-point: accurate, fast on fast HW */
+#define DCT_HW_SUPPORTED	/* LF1000 IDCT decoder block */
 
 /* Encoder capability options: */
 

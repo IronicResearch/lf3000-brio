@@ -64,6 +64,9 @@ typedef union {
 #ifdef DCT_FLOAT_SUPPORTED
   FLOAT_MULT_TYPE float_array[DCTSIZE2];
 #endif
+#ifdef DCT_HW_SUPPORTED
+  /* TODO: ??? */
+#endif
 } multiplier_table;
 
 
@@ -243,6 +246,12 @@ start_pass (j_decompress_ptr cinfo)
       case JDCT_FLOAT:
 	method_ptr = jpeg_idct_float;
 	method = JDCT_FLOAT;
+	break;
+#endif
+#ifdef DCT_HW_SUPPORTED
+      case JDCT_HW:
+	method_ptr = jpeg_idct_hw;
+	method = JDCT_HW;
 	break;
 #endif
       default:

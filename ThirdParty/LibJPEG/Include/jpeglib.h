@@ -224,7 +224,8 @@ typedef enum {
 typedef enum {
 	JDCT_ISLOW,		/* slow but accurate integer algorithm */
 	JDCT_IFAST,		/* faster, less accurate integer method */
-	JDCT_FLOAT		/* floating-point: accurate, fast on fast HW */
+	JDCT_FLOAT,		/* floating-point: accurate, fast on fast HW */
+	JDCT_HW			/* LF1000 IDCT decoder block */
 } J_DCT_METHOD;
 
 #ifndef JDCT_DEFAULT		/* may be overridden in jconfig.h */
