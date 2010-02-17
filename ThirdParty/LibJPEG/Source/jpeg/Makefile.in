@@ -97,8 +97,8 @@ am__objects_1 = jaricom$U.lo jcapimin$U.lo jcapistd$U.lo jcarith$U.lo \
 	jdmarker$U.lo jdmaster$U.lo jdmerge$U.lo jdpostct$U.lo \
 	jdsample$U.lo jdtrans$U.lo jerror$U.lo jfdctflt$U.lo \
 	jfdctfst$U.lo jfdctint$U.lo jidctflt$U.lo jidctfst$U.lo \
-	jidctint$U.lo jquant1$U.lo jquant2$U.lo jutils$U.lo \
-	jmemmgr$U.lo @MEMORYMGR@$U.lo
+	jidctint$U.lo jidcthw$U.lo jquant1$U.lo jquant2$U.lo \
+	jutils$U.lo jmemmgr$U.lo @MEMORYMGR@$U.lo
 am_libjpeg_la_OBJECTS = $(am__objects_1)
 libjpeg_la_OBJECTS = $(am_libjpeg_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
@@ -292,8 +292,8 @@ LIBSOURCES = jaricom.c jcapimin.c jcapistd.c jcarith.c jccoefct.c jccolor.c \
         jdapistd.c jdarith.c jdatadst.c jdatasrc.c jdcoefct.c jdcolor.c \
         jddctmgr.c jdhuff.c jdinput.c jdmainct.c jdmarker.c jdmaster.c \
         jdmerge.c jdpostct.c jdsample.c jdtrans.c jerror.c jfdctflt.c \
-        jfdctfst.c jfdctint.c jidctflt.c jidctfst.c jidctint.c jquant1.c \
-        jquant2.c jutils.c jmemmgr.c @MEMORYMGR@.c
+        jfdctfst.c jfdctint.c jidctflt.c jidctfst.c jidctint.c jidcthw.c \
+        jquant1.c jquant2.c jutils.c jmemmgr.c @MEMORYMGR@.c
 
 
 # System dependent sources
@@ -596,6 +596,7 @@ mostlyclean-kr:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jfdctint$U.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jidctflt$U.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jidctfst$U.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jidcthw$U.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jidctint$U.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jmemmgr$U.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jpegtran$U.Po@am__quote@
@@ -729,6 +730,8 @@ jidctflt_.c: jidctflt.c $(ANSI2KNR)
 	$(CPP) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) `if test -f $(srcdir)/jidctflt.c; then echo $(srcdir)/jidctflt.c; else echo jidctflt.c; fi` | sed 's/^# \([0-9]\)/#line \1/' | $(ANSI2KNR) > $@ || rm -f $@
 jidctfst_.c: jidctfst.c $(ANSI2KNR)
 	$(CPP) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) `if test -f $(srcdir)/jidctfst.c; then echo $(srcdir)/jidctfst.c; else echo jidctfst.c; fi` | sed 's/^# \([0-9]\)/#line \1/' | $(ANSI2KNR) > $@ || rm -f $@
+jidcthw_.c: jidcthw.c $(ANSI2KNR)
+	$(CPP) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) `if test -f $(srcdir)/jidcthw.c; then echo $(srcdir)/jidcthw.c; else echo jidcthw.c; fi` | sed 's/^# \([0-9]\)/#line \1/' | $(ANSI2KNR) > $@ || rm -f $@
 jidctint_.c: jidctint.c $(ANSI2KNR)
 	$(CPP) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) `if test -f $(srcdir)/jidctint.c; then echo $(srcdir)/jidctint.c; else echo jidctint.c; fi` | sed 's/^# \([0-9]\)/#line \1/' | $(ANSI2KNR) > $@ || rm -f $@
 jmemmgr_.c: jmemmgr.c $(ANSI2KNR)
@@ -793,17 +796,18 @@ jdsample_.$(OBJEXT) jdsample_.lo jdtrans_.$(OBJEXT) jdtrans_.lo \
 jerror_.$(OBJEXT) jerror_.lo jfdctflt_.$(OBJEXT) jfdctflt_.lo \
 jfdctfst_.$(OBJEXT) jfdctfst_.lo jfdctint_.$(OBJEXT) jfdctint_.lo \
 jidctflt_.$(OBJEXT) jidctflt_.lo jidctfst_.$(OBJEXT) jidctfst_.lo \
-jidctint_.$(OBJEXT) jidctint_.lo jmemmgr_.$(OBJEXT) jmemmgr_.lo \
-jpegtran_.$(OBJEXT) jpegtran_.lo jquant1_.$(OBJEXT) jquant1_.lo \
-jquant2_.$(OBJEXT) jquant2_.lo jutils_.$(OBJEXT) jutils_.lo \
-rdbmp_.$(OBJEXT) rdbmp_.lo rdcolmap_.$(OBJEXT) rdcolmap_.lo \
-rdgif_.$(OBJEXT) rdgif_.lo rdjpgcom_.$(OBJEXT) rdjpgcom_.lo \
-rdppm_.$(OBJEXT) rdppm_.lo rdrle_.$(OBJEXT) rdrle_.lo \
-rdswitch_.$(OBJEXT) rdswitch_.lo rdtarga_.$(OBJEXT) rdtarga_.lo \
-transupp_.$(OBJEXT) transupp_.lo wrbmp_.$(OBJEXT) wrbmp_.lo \
-wrgif_.$(OBJEXT) wrgif_.lo wrjpgcom_.$(OBJEXT) wrjpgcom_.lo \
-wrppm_.$(OBJEXT) wrppm_.lo wrrle_.$(OBJEXT) wrrle_.lo \
-wrtarga_.$(OBJEXT) wrtarga_.lo : $(ANSI2KNR)
+jidcthw_.$(OBJEXT) jidcthw_.lo jidctint_.$(OBJEXT) jidctint_.lo \
+jmemmgr_.$(OBJEXT) jmemmgr_.lo jpegtran_.$(OBJEXT) jpegtran_.lo \
+jquant1_.$(OBJEXT) jquant1_.lo jquant2_.$(OBJEXT) jquant2_.lo \
+jutils_.$(OBJEXT) jutils_.lo rdbmp_.$(OBJEXT) rdbmp_.lo \
+rdcolmap_.$(OBJEXT) rdcolmap_.lo rdgif_.$(OBJEXT) rdgif_.lo \
+rdjpgcom_.$(OBJEXT) rdjpgcom_.lo rdppm_.$(OBJEXT) rdppm_.lo \
+rdrle_.$(OBJEXT) rdrle_.lo rdswitch_.$(OBJEXT) rdswitch_.lo \
+rdtarga_.$(OBJEXT) rdtarga_.lo transupp_.$(OBJEXT) transupp_.lo \
+wrbmp_.$(OBJEXT) wrbmp_.lo wrgif_.$(OBJEXT) wrgif_.lo \
+wrjpgcom_.$(OBJEXT) wrjpgcom_.lo wrppm_.$(OBJEXT) wrppm_.lo \
+wrrle_.$(OBJEXT) wrrle_.lo wrtarga_.$(OBJEXT) wrtarga_.lo : \
+$(ANSI2KNR)
 
 mostlyclean-libtool:
 	-rm -f *.lo
