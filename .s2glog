@@ -23751,3 +23751,18 @@ By jeno (jeno@leapfrog.com) on 2/17/10 2:02 PM
 6,549 ms. (Cumulative: 8,134,694 ms)
 
 ----------------
+Revision 6,613 from svn://localhost/TRUNK/:
+Revision 6,614 from svn://localhost/TRUNK/:
+Revision 6,615 from svn://localhost/TRUNK/:
+Revision 6,616 from svn://localhost/TRUNK/:
+Revision 6,617 from svn://localhost/TRUNK/:
+
+Added MagicEyes snapshot archive from Nov 2008, as closer match to most recent LF1000 release library.
+Added patch for gcc makefile to use default cross-compiler instead of scratchbox, and use g++ for linking instead of ld to avoid unresolved __dso_handle references.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/17/10 5:49 PM
+0 changed, 2 added, 0 deleted.
+6,454 ms. (Cumulative: 8,141,257 ms)
+
+----------------
