@@ -23883,3 +23883,18 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 2/27/10 12:13 AM
 5,891 ms. (Cumulative: 8,172,229 ms)
 
 ----------------
+Revision 6,690 from svn://localhost/TRUNK/:
+Revision 6,691 from svn://localhost/TRUNK/:
+Revision 6,692 from svn://localhost/TRUNK/:
+Revision 6,693 from svn://localhost/TRUNK/:
+Revision 6,694 from svn://localhost/TRUNK/:
+
+Checked in LF1000 HW IDCT support for future reference, with Makefile patch. Does not affect ARM binary release.
+Theora macro block data must be scaled down by factor of 4 due to HW IDCT range limitation, otherwise video rendering appears blocky. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/2/10 12:13 PM
+0 changed, 3 added, 0 deleted.
+6,322 ms. (Cumulative: 8,178,645 ms)
+
+----------------

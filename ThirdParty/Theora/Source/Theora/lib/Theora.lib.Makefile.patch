@@ -1,0 +1,97 @@
+--- Theora.orig/lib/Makefile	2010-03-02 10:49:57.000000000 -0800
++++ Theora.patched/lib/Makefile	2010-03-02 12:01:39.000000000 -0800
+@@ -66,6 +66,7 @@
+ 	dec/bitpack.c dec/decapiwrapper.c dec/decinfo.c dec/decode.c \
+ 	dec/dequant.c dec/fragment.c dec/huffdec.c dec/idct.c \
+ 	dec/info.c dec/internal.c dec/quant.c dec/state.c \
++	dec/arm/idct_lf1000.c dec/arm/state_lf1000.c \
+ 	$(enc_arch_dir)/dct_decode_mmx.c $(enc_arch_dir)/dsp_mmx.c \
+ 	$(enc_arch_dir)/dsp_mmxext.c $(enc_arch_dir)/recon_mmx.c \
+ 	$(enc_arch_dir)/idct_mmx.c $(enc_arch_dir)/fdct_mmx.c \
+@@ -80,7 +81,8 @@
+ #am__objects_2 = $(am__objects_1)
+ am__objects_3 = apiwrapper.lo bitpack.lo decapiwrapper.lo decinfo.lo \
+ 	decode.lo dequant.lo fragment.lo huffdec.lo idct.lo info.lo \
+-	internal.lo quant.lo state.lo
++	internal.lo quant.lo ####state.lo
++am__objects_2 =	idct_lf1000.lo state_lf1000.lo
+ ##am__objects_4 = dct_decode_mmx.lo \
+ ##	dsp_mmx.lo \
+ ##	dsp_mmxext.lo \
+@@ -193,11 +195,11 @@
+ FFLAGS = 
+ GETOPT_OBJS = 
+ GREP = /bin/grep
+-HAVE_BIBTEX = yes
++HAVE_BIBTEX = 
+ HAVE_DOXYGEN = true
+ HAVE_DOXYGEN_FALSE = #
+ HAVE_DOXYGEN_TRUE = 
+-HAVE_PDFLATEX = yes
++HAVE_PDFLATEX = 
+ HAVE_PKG_CONFIG = yes
+ HAVE_TRANSFIG = 
+ HAVE_VALGRIND = 
+@@ -221,8 +223,8 @@
+ OBJEXT = o
+ OC_X86ASM_FALSE = #
+ OC_X86ASM_TRUE = 
+-OGG_CFLAGS = -I${ROOTFS_PATH}/usr/local/include  
+-OGG_LIBS = -L${ROOTFS_PATH}/usr/local/lib -logg  
++OGG_CFLAGS = -I${ROOTFS_PATH}/usr/local/include
++OGG_LIBS = -L${ROOTFS_PATH}/usr/local/lib -logg
+ PACKAGE = libtheora
+ PACKAGE_BUGREPORT = 
+ PACKAGE_NAME = libtheora
+@@ -239,7 +241,7 @@
+ SDL_CONFIG = no
+ SDL_LIBS = 
+ SET_MAKE = 
+-SHELL = /bin/sh
++SHELL = /bin/bash
+ STRIP = arm-linux-strip
+ THDEC_LIB_AGE = 0
+ THDEC_LIB_CURRENT = 1
+@@ -405,9 +407,14 @@
+ 	dec/x86/mmxstate.c \
+ 	dec/x86/x86state.c
+ 
++decoder_arm_sources = \
++	dec/arm/idct_lf1000.c \
++	dec/arm/state_lf1000.c
++
+ decoder_arch_sources = 
+ #decoder_arch_sources = $(decoder_x86_sources)
+ #decoder_arch_sources = $(decoder_x86_sources)
++decoder_arch_sources = $(decoder_arm_sources) 
+ noinst_HEADERS = \
+ 	cpu.h \
+ 	internal.h \
+@@ -690,6 +697,13 @@
+ #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+ #	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o idct.lo `test -f 'dec/idct.c' || echo '$(srcdir)/'`dec/idct.c
+ 
++idct_lf1000.lo: dec/arm/idct_lf1000.c
++	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT idct_lf1000.lo -MD -MP -MF "$(DEPDIR)/idct_lf1000.Tpo" -c -o idct_lf1000.lo `test -f 'dec/arm/idct_lf1000.c' || echo '$(srcdir)/'`dec/arm/idct_lf1000.c; \
++	then mv -f "$(DEPDIR)/idct_lf1000.Tpo" "$(DEPDIR)/idct_lf1000.Plo"; else rm -f "$(DEPDIR)/idct_lf1000.Tpo"; exit 1; fi
++#	source='dec/idct_lf1000.c' object='idct_lf1000.lo' libtool=yes \
++#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
++#	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o idct_lf1000.lo `test -f 'dec/idct_lf1000.c' || echo '$(srcdir)/'`dec/idct_lf1000.c
++
+ info.lo: dec/info.c
+ 	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT info.lo -MD -MP -MF "$(DEPDIR)/info.Tpo" -c -o info.lo `test -f 'dec/info.c' || echo '$(srcdir)/'`dec/info.c; \
+ 	then mv -f "$(DEPDIR)/info.Tpo" "$(DEPDIR)/info.Plo"; else rm -f "$(DEPDIR)/info.Tpo"; exit 1; fi
+@@ -718,6 +732,13 @@
+ #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+ #	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o state.lo `test -f 'dec/state.c' || echo '$(srcdir)/'`dec/state.c
+ 
++state_lf1000.lo: dec/arm/state_lf1000.c
++	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT state_lf1000.lo -MD -MP -MF "$(DEPDIR)/state_lf1000.Tpo" -c -o state_lf1000.lo `test -f 'dec/arm/state_lf1000.c' || echo '$(srcdir)/'`dec/arm/state_lf1000.c; \
++	then mv -f "$(DEPDIR)/state_lf1000.Tpo" "$(DEPDIR)/state_lf1000.Plo"; else rm -f "$(DEPDIR)/state_lf1000.Tpo"; exit 1; fi
++#	source='dec/arm/state_lf1000.c' object='state_lf1000.lo' libtool=yes \
++#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
++#	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o state_lf1000.lo `test -f 'dec/arm/state_lf1000.c' || echo '$(srcdir)/'`dec/arm/state_lf1000.c
++
+ dct_decode_mmx.lo: $(enc_arch_dir)/dct_decode_mmx.c
+ 	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dct_decode_mmx.lo -MD -MP -MF "$(DEPDIR)/dct_decode_mmx.Tpo" -c -o dct_decode_mmx.lo `test -f '$(enc_arch_dir)/dct_decode_mmx.c' || echo '$(srcdir)/'`$(enc_arch_dir)/dct_decode_mmx.c; \
+ 	then mv -f "$(DEPDIR)/dct_decode_mmx.Tpo" "$(DEPDIR)/dct_decode_mmx.Plo"; else rm -f "$(DEPDIR)/dct_decode_mmx.Tpo"; exit 1; fi
