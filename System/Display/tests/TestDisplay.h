@@ -677,6 +677,66 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testDisplayContextOrder( )
+	{
+		tDisplayHandle 	handle1;
+		tDisplayHandle 	handle2;
+		tPixelFormat	format;
+		U8* 			buffer;
+		U16				height;
+		U16				pitch;
+		const U16		WIDTH = 240;
+		const U16		HEIGHT = 180;
+
+		handle1 = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( handle1 != kInvalidDisplayHandle );
+		buffer = pDisplayMPI_->GetBuffer(handle1);
+		TS_ASSERT( buffer != kNull );
+		pitch = pDisplayMPI_->GetPitch(handle1);
+		TS_ASSERT( pitch > WIDTH );
+		height = pDisplayMPI_->GetHeight(handle1);
+		TS_ASSERT( height == HEIGHT );
+		memset(buffer, 0xFF, pitch * height); // RGB white
+
+		handle2 = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420, NULL);
+		TS_ASSERT( handle2 != kInvalidDisplayHandle );
+		buffer = pDisplayMPI_->GetBuffer(handle2);
+		TS_ASSERT( buffer != kNull );
+		pitch = pDisplayMPI_->GetPitch(handle2);
+		TS_ASSERT( pitch > WIDTH );
+		height = pDisplayMPI_->GetHeight(handle2);
+		TS_ASSERT( height == HEIGHT );
+		memset(buffer, 0xFF, pitch * height); // YUV magenta
+
+		pDisplayMPI_->Register(handle1, 0, 0, kDisplayOnTop);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT( handle1 == pDisplayMPI_->GetCurrentDisplayHandle() );
+		sleep(1);
+
+		pDisplayMPI_->Register(handle2, 0, 0, kDisplayOnTop);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT( handle2 == pDisplayMPI_->GetCurrentDisplayHandle() );
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(handle2, 0);
+		pDisplayMPI_->Register(handle2, 80, 60, kDisplayOnBottom);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT( handle2 != pDisplayMPI_->GetCurrentDisplayHandle() );
+		TS_ASSERT( handle1 == pDisplayMPI_->GetCurrentDisplayHandle() );
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(handle2, 0);
+		pDisplayMPI_->Register(handle2, 80, 60, kDisplayOnTop);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT( handle2 == pDisplayMPI_->GetCurrentDisplayHandle() );
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(handle2, 0);
+		pDisplayMPI_->DestroyHandle(handle2, false);
+		
+		pDisplayMPI_->UnRegister(handle1, 0);
+		pDisplayMPI_->DestroyHandle(handle1, false);
+	}
 
 };
 

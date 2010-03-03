@@ -620,7 +620,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	c.position.bottom = yPos + context->height;
 
 	// Change RGB layer assignments if supposed to be on bottom
-	if (context->isUnderlay) {
+	if (context->isUnderlay && !context->isOverlay) {
 		// Disable 3D layer if already active
 		bool bOpenGLSwap = isOpenGLEnabled_;
 		if (bOpenGLSwap) {
@@ -675,10 +675,13 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 			ioctl(layer, MLC_IOCTADDRESSCR, LIN2XY(addr + context->pitch/2 + context->pitch*(context->height/2)));
 		}
 		// Select video layer order
-		if (context->isUnderlay)
-			ioctl(gDevMlc, MLC_IOCTPRIORITY, 0);
-		else
-			ioctl(gDevMlc, MLC_IOCTPRIORITY, 3);
+		int order = (context->isUnderlay) ? 2 : 0;
+		int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
+		if (order != prior) {
+			ioctl(layer, MLC_IOCTLAYEREN, 1);
+			ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
+			ioctl(gDevMlc, MLC_IOCTTOPDIRTY, 0);
+		}
 		
 		// Defer enabling video layer until 1st Invalidate() call
 		bPrimaryLayerEnabled = false;

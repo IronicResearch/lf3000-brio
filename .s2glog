@@ -23898,3 +23898,19 @@ By Dave Milici (dmilici@leapfrog.com) on 3/2/10 12:13 PM
 6,322 ms. (Cumulative: 8,178,645 ms)
 
 ----------------
+Revision 6,695 from svn://localhost/TRUNK/:
+Revision 6,696 from svn://localhost/TRUNK/:
+Revision 6,697 from svn://localhost/TRUNK/:
+Revision 6,698 from svn://localhost/TRUNK/:
+Revision 6,699 from svn://localhost/TRUNK/:
+Revision 6,700 from svn://localhost/TRUNK/:
+Revision 6,701 from svn://localhost/TRUNK/:
+Revision 6,702 from svn://localhost/TRUNK/:
+
+Fixed YUV Video layer order option, with unit test. (TTP 2326)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/10 3:39 PM
+2 changed, 0 added, 0 deleted.
+6,294 ms. (Cumulative: 8,185,079 ms)
+
+----------------
