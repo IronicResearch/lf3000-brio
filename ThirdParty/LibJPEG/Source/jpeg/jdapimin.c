@@ -390,6 +390,14 @@ jpeg_finish_decompress (j_decompress_ptr cinfo)
   }
   /* Do final cleanup */
   (*cinfo->src->term_source) (cinfo);
+#ifdef DCT_HW_SUPPORTED
+  EXTERN(void) deinit_idct_hw JPP((j_decompress_ptr cinfo));
+  if(cinfo->dct_method == JDCT_HW)
+  {
+	  deinit_idct_hw(cinfo);
+  }
+#endif /* DCT_HW_SUPPORTED */
+
   /* We can use jpeg_abort to release memory and reset global_state */
   jpeg_abort((j_common_ptr) cinfo);
   return TRUE;
