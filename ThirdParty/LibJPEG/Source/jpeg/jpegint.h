@@ -225,6 +225,12 @@ struct jpeg_inverse_dct {
   JMETHOD(void, start_pass, (j_decompress_ptr cinfo));
   /* It is useful to allow each component to have a separate IDCT method. */
   inverse_DCT_method_ptr inverse_DCT[MAX_COMPONENTS];
+#ifdef DCT_HW_SUPPORTED
+  int dev_idct;
+  void* reg_idct;
+  volatile unsigned char* reg_idct_8;
+  volatile unsigned int* reg_idct_32;
+#endif
 };
 
 /* Upsampling (note that upsampler must also call color converter) */

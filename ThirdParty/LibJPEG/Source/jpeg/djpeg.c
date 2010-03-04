@@ -142,6 +142,10 @@ usage (void)
   fprintf(stderr, "  -dct float     Use floating-point DCT method%s\n",
 	  (JDCT_DEFAULT == JDCT_FLOAT ? " (default)" : ""));
 #endif
+#ifdef DCT_HW_SUPPORTED
+  fprintf(stderr, "  -dct hw        Use LF1000 HW DCT method%s\n",
+	  (JDCT_DEFAULT == JDCT_HW ? " (default)" : ""));
+#endif
   fprintf(stderr, "  -dither fs     Use F-S dithering (default)\n");
   fprintf(stderr, "  -dither none   Don't use dithering in quantization\n");
   fprintf(stderr, "  -dither ordered  Use ordered dither (medium speed, quality)\n");
@@ -219,6 +223,8 @@ parse_switches (j_decompress_ptr cinfo, int argc, char **argv,
 	cinfo->dct_method = JDCT_IFAST;
       } else if (keymatch(argv[argn], "float", 2)) {
 	cinfo->dct_method = JDCT_FLOAT;
+      } else if (keymatch(argv[argn], "hw", 2)) {
+	cinfo->dct_method = JDCT_HW;
       } else
 	usage();
 

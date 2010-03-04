@@ -281,6 +281,7 @@ start_pass (j_decompress_ptr cinfo)
     switch (method) {
 #ifdef PROVIDE_ISLOW_TABLES
     case JDCT_ISLOW:
+    case JDCT_HW:
       {
 	/* For LL&M IDCT method, multipliers are equal to raw quantization
 	 * coefficients, but are stored as ints to ensure access efficiency.
@@ -388,4 +389,11 @@ jinit_inverse_dct (j_decompress_ptr cinfo)
     /* Mark multiplier table not yet set up for any method */
     idct->cur_method[ci] = -1;
   }
+
+#ifdef DCT_HW_SUPPORTED
+  if(cinfo->dct_method == JDCT_HW)
+  {
+	  init_idct_hw(cinfo);
+  }
+#endif
 }

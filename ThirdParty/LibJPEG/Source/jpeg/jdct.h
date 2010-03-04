@@ -243,6 +243,8 @@ EXTERN(void) jpeg_idct_float
 EXTERN(void) jpeg_idct_hw
     JPP((j_decompress_ptr cinfo, jpeg_component_info * compptr,
 	 JCOEFPTR coef_block, JSAMPARRAY output_buf, JDIMENSION output_col));
+EXTERN(void) init_idct_hw
+    JPP((j_decompress_ptr cinfo));
 EXTERN(void) jpeg_idct_7x7
     JPP((j_decompress_ptr cinfo, jpeg_component_info * compptr,
 	 JCOEFPTR coef_block, JSAMPARRAY output_buf, JDIMENSION output_col));

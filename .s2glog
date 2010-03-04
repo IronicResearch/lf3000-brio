@@ -23914,3 +23914,15 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/10 3:39 PM
 6,294 ms. (Cumulative: 8,185,079 ms)
 
 ----------------
+Revision 6,703 from svn://localhost/TRUNK/:
+Revision 6,704 from svn://localhost/TRUNK/:
+Revision 6,705 from svn://localhost/TRUNK/:
+Revision 6,706 from svn://localhost/TRUNK/:
+
+Camera updates:libjpeg and djpeg modifications to use LF1000 IDCT block for JPEG decompression.  Initiali implementation is crude, but functional.
+
+By jeno (jeno@leapfrog.com) on 3/4/10 11:58 AM
+11 changed, 0 added, 0 deleted.
+7,001 ms. (Cumulative: 8,192,174 ms)
+
+----------------
