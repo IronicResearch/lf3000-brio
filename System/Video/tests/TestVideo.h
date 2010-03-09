@@ -401,7 +401,21 @@ public:
 			pVideoMPI_->PutVideoFrame(video, &surf);
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
+		for (int i = 10; i >= 0; i--)
+		{
+			time.frame = i * info.fps;
+			pVideoMPI_->SeekVideoFrame(video, &time);
+			pVideoMPI_->PutVideoFrame(video, &surf);
+			pDisplayMPI_->Invalidate(0, NULL);
+		}
 		for (int i = 0; i < 100; i++)
+		{
+			time.frame = i;
+			pVideoMPI_->SeekVideoFrame(video, &time);
+			pVideoMPI_->PutVideoFrame(video, &surf);
+			pDisplayMPI_->Invalidate(0, NULL);
+		}
+		for (int i = 100; i >= 0; i--)
 		{
 			time.frame = i;
 			pVideoMPI_->SeekVideoFrame(video, &time);
