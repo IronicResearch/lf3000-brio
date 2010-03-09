@@ -35,7 +35,8 @@
 #include <linux/lf1000/mlc_ioctl.h>
 #endif
 
-#define USE_PROFILE			0
+//#define ENABLE_PROFILING
+#include <FlatProfiler.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
@@ -139,8 +140,7 @@ static int buffer_data(/* FILE *in, */ ogg_sync_state *oy)
 static int queue_page(ogg_page *page)
 {
 	(void )page;	/* Prevent unused variable warnings. */
-	ogg_stream_pagein(&to,&og);
-	return 0;
+	return ogg_stream_pagein(&to,&og);
 }
 
 //----------------------------------------------------------------------------
@@ -201,11 +201,13 @@ static void SetScaler(int width, int height, bool centered)
 CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 {
 	dbg_.SetDebugLevel(kVideoDebugLevel);
+	FlatProfilerInit(1, FLATPROF_NUM_TIMESTAMPS);
 }
 
 //----------------------------------------------------------------------------
 CVideoModule::~CVideoModule()
 {
+	FlatProfilerDone();
 }
 
 //----------------------------------------------------------------------------
@@ -643,42 +645,315 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 }
 
 //----------------------------------------------------------------------------
+//Does a binary search for the a frame.  The framepos of the very first frame is 1.
+//Modifies left_pos and right_pos as it goes, to help narrow future searches.
+//
+//Returns the Theora granulepos found (bounded by first and last frame).
+ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, long int &right_pos)
+{
+	ogg_int64_t granulepos;
+	int			bytes;
+	ogg_packet	op;
+	CDebugMPI dbg_(kGroupVideo);
+	
+	long int mid_pos = left_pos + (right_pos - left_pos) / 2;
+	fseek(gfile, mid_pos, SEEK_SET);
+	ogg_sync_reset(&oy);
+	ogg_stream_reset(&to);
+	
+	int theora_keyframe_shift = theora_granule_shift(&ti);
+	ogg_int64_t first_frame_granulepos = 1 << theora_keyframe_shift;
+	ogg_int64_t offset_mask = first_frame_granulepos - 1;
+	ogg_int64_t left_page_granulepos = 0;
+	
+	//If we're looking for a frame before the first frame,
+	//pretend we're looking for the first frame
+	if(target_framepos < 1)
+		target_framepos = 1;
+	
+	dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Looking for target_framepos=%lld\n", target_framepos);
+	//Find the page left of frame
+	bool page_found = false;
+	while(!page_found)
+	{
+		int pageout_status = ogg_sync_pageout(&oy,&og);
+		switch(pageout_status)
+		{
+		case -1:
+			//not yet synced, try another page
+			break;
+		case 0:
+			//Need more data to get a page
+			bytes = buffer_data(&oy);
+			if(bytes == 0)
+			{
+				page_found = true;//No more data, last page
+				//why didn't Last Page B catch this?
+				dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Last Page A Should not happen\n");
+			}
+			break;
+		
+		case 1:
+			//We got a page, queue it up!
+			if(!queue_page(&og))
+			{
+				//Grab the granulepos of the page, which is also the last packet in this page
+				ogg_int64_t page_granulepos = ogg_page_granulepos(&og);
+				
+				//Negative granulepos mean that no packets finish in this page.
+				if(page_granulepos > 0)
+				{
+					ogg_int64_t page_framepos;
+					
+					if(page_granulepos < first_frame_granulepos)
+						page_framepos = 0;
+					else
+						page_framepos = (page_granulepos >> theora_keyframe_shift) + (page_granulepos & offset_mask);
+				
+					if(page_framepos == target_framepos)
+					{
+						//Got lucky, the frame is the last packet in this page
+						dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page A found page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+						left_page_granulepos = page_granulepos;
+						page_found = true;
+					}
+					else if(page_framepos < target_framepos)
+					{
+						//Frame we're looking for is right of this page
+						if(ogg_page_eos(&og))
+						{
+							//Last page, frame we're looking for doesn't exist, past the end
+							//Pretend the frame we're looking for is the last frame instead.
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Last Page B\n");
+							left_page_granulepos = page_granulepos;
+							target_framepos = page_framepos;
+							page_found = true;
+						}
+						else if(left_page_granulepos < page_granulepos)
+						{
+							//look to the right some more
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Right page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+							left_page_granulepos = page_granulepos;
+							left_pos = mid_pos;
+							mid_pos = left_pos + (right_pos - left_pos) / 2;
+							fseek(gfile, mid_pos, SEEK_SET);
+							ogg_sync_reset(&oy);
+							ogg_stream_reset(&to);
+						}
+						else
+						{
+							//We were previously on this page, looked to the right and came back looking to the left.
+							//This page is the page left of the target_framepos
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page B found page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+							page_found = true;
+						}
+					}
+					else if(target_framepos < page_framepos)
+					{
+						//Frame we're looking for is left of this page (or might be in this page
+						if(left_page_granulepos < page_granulepos)
+						{
+							if(left_pos == mid_pos)
+							{
+								//There isn't anything farther left to look
+								//Just call this the page we're looking for, and hope for the best
+								//Highly likely that the this is the first page, and the frame is inside this page.
+								//If it's not the fist page, the current page isn't left_page_granulepos, what should happen?
+								dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page C found page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+								page_found = true;
+							}
+							else
+							{
+								//look to the left some more
+								dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Left page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+								right_pos = mid_pos;
+								mid_pos = left_pos + (right_pos - left_pos) / 2;
+								fseek(gfile, mid_pos, SEEK_SET);
+								ogg_sync_reset(&oy);
+								ogg_stream_reset(&to);
+							}
+						}
+						else
+						{
+							//How did we end up this with the frame left of left_page_granulepos?
+							dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Page D found, should not happen, page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+							page_found = true;
+						}
+					}
+				}
+			}
+			break;
+		}
+	}
+
+	granulepos = left_page_granulepos;
+	ogg_int64_t framepos = (granulepos >> theora_keyframe_shift) + (granulepos & offset_mask);
+	
+	if(!left_page_granulepos)
+	{
+		//It was in the first page, there is no page left of target frame
+		//We should already be in the first page, look for the first frame
+		//Grab Theora packets
+		while (ogg_stream_packetout(&to,&op) > 0)
+		{
+			//Discard headers
+			if(!theora_packet_isheader(&op))
+			{
+				//Found the first frame
+				dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Frame First found\n");
+				granulepos = first_frame_granulepos;
+				framepos = 1;
+				page_found = true;
+				break;
+			}
+		}
+	}
+	else
+	{
+		//Page left of frame found, now find the frame
+		//Skip to last packet of the page
+		//Since we're not seeking anymore, have to make sure the stream is properly synchronized
+		while(ogg_stream_packetout(&to,&op) != 0);
+	}
+	
+	
+	bool frame_found = false;
+	if( framepos == target_framepos)
+	{
+		//By coincidence, this is frame we're looking for, early out
+		dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Frame A found framepos=%llx, granulepos=%llx\n", framepos, granulepos);
+		op.granulepos = granulepos;
+		frame_found = true;
+		if(theora_packet_iskeyframe(&op))
+		{
+			//Decode if the frame in question is a keyframe
+			dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Decode A granulepos=%llx\n", granulepos);
+			theora_control(&td, TH_DECCTL_SET_GRANPOS, &granulepos, sizeof(granulepos));
+			theora_decode_packetin(&td,&op);
+		}
+	}
+	
+	//Edge case of frame is in first page, which is already read in at this point
+	//We're reading in a second page for no reason.
+	//Doesn't hurt, ogg_sync_state handles multiple pages fine
+	//If we're going to continue playing from here, we would have read in this page later anyways.
+	//If we're seeking again immediately, we read extra data for no reason
+	while(!frame_found)
+	{
+		int pageout_status = ogg_sync_pageout(&oy,&og);
+		switch(pageout_status)
+		{
+		case -1:
+			//not yet synced, try another page
+			break;
+		case 0:
+			//Need more data to get a page
+			bytes = buffer_data(&oy);
+			if(bytes == 0)
+			{
+				frame_found = true;//No more data, last page
+				//How did we wind up at this point looking for a frame past the end?
+				//Didn't we cap it at Last Page B?
+				dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Last Page D, should not happen\n");
+			}
+			break;
+		
+		case 1:
+			//We got a page, queue it up!
+			if(!queue_page(&og))
+			{
+				//Grab Theora packets
+				while (ogg_stream_packetout(&to,&op) > 0)
+				{
+					//Manual counting of framepos, to avoid unneeded theora_decode_packetin
+					++framepos;
+					
+					//Calculate proper granulepos
+					if(theora_packet_iskeyframe(&op))
+						granulepos = framepos << theora_keyframe_shift;
+					else
+						++granulepos;
+					
+					if(framepos == target_framepos)
+					{
+						dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Frame B found framepos=%llx, granulepos=%llx\n", framepos, granulepos);
+						frame_found = true;
+						if(theora_packet_iskeyframe(&op))
+						{
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Decode B granulepos=%llx\n", granulepos);
+							op.granulepos = granulepos;
+							theora_control(&td, TH_DECCTL_SET_GRANPOS, &granulepos, sizeof(granulepos));
+							theora_decode_packetin(&td,&op);
+						}
+						break;
+					}
+				}
+			}
+			break;
+		}
+	}
+	
+	return granulepos;
+}
+
 Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 {
 	tVideoTime	time;
 	Boolean		found = false;
-	ogg_packet  op;
-	ogg_int64_t frame;
+	ogg_int64_t	frame;
+	ogg_packet	op;
 	int			bytes;
 	
-	// Internal codec state only changes during start/stop
 	if (!gbCodecReady)
 		return false;
 
+	TimeStampOn(0);
+	
 	// Compare selected frame time to current frame time
 	GetVideoTime(hVideo, &time);
-
-	// TODO: Implement smarter bisection seek scheme.
-	// Current seek scheme only seeks forward linearly.
-	if (time.frame > pCtx->frame)
-	{	
-		// If we already past seek frame, we need to rewind from start
-		ogg_int64_t granpos = 0;
-		theora_control(&td, TH_DECCTL_SET_GRANPOS, &granpos, sizeof(granpos));
-		fseek(gfile, 0, SEEK_SET);
+	
+	//If time.frame is -1, we haven't decoded a frame yet, do full file search
+	//If the frame we're looking for is in the future, do a full file search
+	//If neither is the case, it's ok to stop looking at the current file position.
+	if(time.frame == -1 || time.frame < pCtx->frame)
+		fseek(gfile, 0, SEEK_END);
+	long int right_pos = ftell(gfile);
+	
+	//It is not safe to search with left_pos at any value other than 0.
+	//Even if the the frame we're looking for is in the future, it's page may have started previous to the current time
+	long int left_pos = 0;
+	
+	ogg_int64_t target_framepos = pCtx->frame + 1;
+	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame looking for target_framepos=%llx\n", target_framepos);
+	ogg_int64_t target_granulepos = BinarySeekFrame(target_framepos, left_pos, right_pos);
+	
+	int theora_keyframe_shift = theora_granule_shift(&ti);
+	ogg_int64_t target_keyframepos = target_granulepos >> theora_keyframe_shift;
+	//Do we need to look for a keyframe?
+	if(target_keyframepos != target_framepos)
+	{
+		//Do another binary search for keyframe
+		dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame looking for target_keyframepos=%llx\n", target_keyframepos);
+		left_pos = 0;
+		target_granulepos = BinarySeekFrame(target_keyframepos, left_pos, right_pos);
+	}
+	else
+	{
+		found = true;
 	}
 	
-	// Loop until we find the selected frame or end of file
-	while (!found)
+	frame = theora_granule_frame(&td,td.granulepos);
+	
+	//We have the KeyFrame before target frame, decode till we reach the target frame
+	while(frame < pCtx->frame)
 	{
-		// Get Theora packet from Ogg input stream
 		if (ogg_stream_packetout(&to,&op) > 0)
 		{
-			// Find Theora packet at selected time frame
 			theora_decode_packetin(&td,&op);
 			frame = theora_granule_frame(&td,td.granulepos);
 			if (frame == pCtx->frame)
 			{
+				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame Found frame=%lld  td.granulepos=%lld\n", frame, td.granulepos);
 				found = true;
 				break;
 			}
@@ -688,12 +963,16 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 			// Get more packet data from Ogg input stream
 			bytes = buffer_data(&oy);
 			if (bytes == 0)
+			{
+				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame No more frames, exiting at last frame\n");
 				break;
+			}
 			while (ogg_sync_pageout(&oy,&og) > 0)
 				queue_page(&og);
 		}
 	}
-
+	
+	TimeStampOff(0);
 	return found;
 }
 

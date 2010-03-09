@@ -23926,3 +23926,56 @@ By jeno (jeno@leapfrog.com) on 3/4/10 11:58 AM
 7,001 ms. (Cumulative: 8,192,174 ms)
 
 ----------------
+Revision 6,707 from svn://localhost/TRUNK/:
+Revision 6,708 from svn://localhost/TRUNK/:
+Revision 6,709 from svn://localhost/TRUNK/:
+Revision 6,710 from svn://localhost/TRUNK/:
+Revision 6,711 from svn://localhost/TRUNK/:
+Revision 6,712 from svn://localhost/TRUNK/:
+Revision 6,713 from svn://localhost/TRUNK/:
+Revision 6,714 from svn://localhost/TRUNK/:
+Revision 6,715 from svn://localhost/TRUNK/:
+Revision 6,716 from svn://localhost/TRUNK/:
+Revision 6,717 from svn://localhost/TRUNK/:
+Revision 6,718 from svn://localhost/TRUNK/:
+Revision 6,719 from svn://localhost/TRUNK/:
+Revision 6,720 from svn://localhost/TRUNK/:
+Revision 6,721 from svn://localhost/TRUNK/:
+Revision 6,722 from svn://localhost/TRUNK/:
+Revision 6,723 from svn://localhost/TRUNK/:
+Revision 6,724 from svn://localhost/TRUNK/:
+Revision 6,725 from svn://localhost/TRUNK/:
+Revision 6,726 from svn://localhost/TRUNK/:
+Revision 6,727 from svn://localhost/TRUNK/:
+Revision 6,728 from svn://localhost/TRUNK/:
+Revision 6,729 from svn://localhost/TRUNK/:
+Revision 6,730 from svn://localhost/TRUNK/:
+Revision 6,731 from svn://localhost/TRUNK/:
+Revision 6,732 from svn://localhost/TRUNK/:
+Revision 6,733 from svn://localhost/TRUNK/:
+Revision 6,734 from svn://localhost/TRUNK/:
+Revision 6,735 from svn://localhost/TRUNK/:
+Revision 6,736 from svn://localhost/TRUNK/:
+Revision 6,737 from svn://localhost/TRUNK/:
+Revision 6,738 from svn://localhost/TRUNK/:
+Revision 6,739 from svn://localhost/TRUNK/:
+Revision 6,740 from svn://localhost/TRUNK/:
+Revision 6,741 from svn://localhost/TRUNK/:
+Revision 6,742 from svn://localhost/TRUNK/:
+Revision 6,743 from svn://localhost/TRUNK/:
+
+Big new update to SeekVideoFrame.
+
+Changed queue_page to return error code from calling ogg_sync_pageout.
+
+Created a helper function call BinarySeekFrame, this function uses a binary search to find the frame specified, and if it's a key frame decodes it.  BinarySeekFrame returns the granulepos of the frame it found.
+
+SeekVideoFrame calls BinarySeekFrame for the frame being searched for.  If it's not a keyframe, a second BinarySeekFrame is called to find the keyframe.  Then it keeps decoding till it reaches the target frame.
+
+Also updated UnitTest to seek backwards as a part of it's test.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/9/10 11:05 AM
+2 changed, 0 added, 0 deleted.
+6,251 ms. (Cumulative: 8,198,737 ms)
+
+----------------
