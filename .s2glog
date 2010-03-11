@@ -23979,3 +23979,39 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/9/10 11:05 AM
 6,251 ms. (Cumulative: 8,198,737 ms)
 
 ----------------
+Revision 6,744 from svn://localhost/TRUNK/:
+Revision 6,745 from svn://localhost/TRUNK/:
+Revision 6,746 from svn://localhost/TRUNK/:
+Revision 6,747 from svn://localhost/TRUNK/:
+Revision 6,748 from svn://localhost/TRUNK/:
+Revision 6,749 from svn://localhost/TRUNK/:
+Revision 6,750 from svn://localhost/TRUNK/:
+Revision 6,751 from svn://localhost/TRUNK/:
+Revision 6,752 from svn://localhost/TRUNK/:
+Revision 6,753 from svn://localhost/TRUNK/:
+Revision 6,754 from svn://localhost/TRUNK/:
+Revision 6,755 from svn://localhost/TRUNK/:
+Revision 6,756 from svn://localhost/TRUNK/:
+Revision 6,757 from svn://localhost/TRUNK/:
+Revision 6,758 from svn://localhost/TRUNK/:
+Revision 6,759 from svn://localhost/TRUNK/:
+Revision 6,760 from svn://localhost/TRUNK/:
+Revision 6,761 from svn://localhost/TRUNK/:
+Revision 6,762 from svn://localhost/TRUNK/:
+Revision 6,763 from svn://localhost/TRUNK/:
+Revision 6,764 from svn://localhost/TRUNK/:
+Revision 6,765 from svn://localhost/TRUNK/:
+Revision 6,766 from svn://localhost/TRUNK/:
+Revision 6,767 from svn://localhost/TRUNK/:
+Revision 6,768 from svn://localhost/TRUNK/:
+Revision 6,769 from svn://localhost/TRUNK/:
+
+Corrected BinarySeekFrame to handle packets which span multiple pages.  For the first stage of the search, we're not looking for the framepos but the page with the highest framepos that is still less than the target_framepos.  We later march forward from there.
+
+Also added some logic with left_pageno and right_pageno.  It's purpose is to prevent re-reading pages when we already know we need to look farther left.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/11/10 1:43 PM
+1 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 8,205,487 ms)
+
+----------------
