@@ -201,7 +201,7 @@ static void SetScaler(int width, int height, bool centered)
 CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 {
 	dbg_.SetDebugLevel(kVideoDebugLevel);
-	FlatProfilerInit(1, FLATPROF_NUM_TIMESTAMPS);
+	FlatProfilerInit(2, FLATPROF_NUM_TIMESTAMPS);
 }
 
 //----------------------------------------------------------------------------
@@ -666,12 +666,15 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 	ogg_int64_t offset_mask = first_frame_granulepos - 1;
 	ogg_int64_t left_page_granulepos = 0;
 	
+	long right_pageno = 0x7fffffff;
+	long left_pageno = 0x7fffffff;
+	
 	//If we're looking for a frame before the first frame,
 	//pretend we're looking for the first frame
 	if(target_framepos < 1)
 		target_framepos = 1;
 	
-	dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Looking for target_framepos=%lld\n", target_framepos);
+	dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Looking for target_framepos=%llx\n", target_framepos);
 	//Find the page left of frame
 	bool page_found = false;
 	while(!page_found)
@@ -699,6 +702,7 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 			{
 				//Grab the granulepos of the page, which is also the last packet in this page
 				ogg_int64_t page_granulepos = ogg_page_granulepos(&og);
+				long pageno = ogg_page_pageno(&og);
 				
 				//Negative granulepos mean that no packets finish in this page.
 				if(page_granulepos > 0)
@@ -709,30 +713,25 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 						page_framepos = 0;
 					else
 						page_framepos = (page_granulepos >> theora_keyframe_shift) + (page_granulepos & offset_mask);
-				
-					if(page_framepos == target_framepos)
+					
+					if(ogg_page_eos(&og) && page_framepos < target_framepos)
 					{
-						//Got lucky, the frame is the last packet in this page
-						dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page A found page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
-						left_page_granulepos = page_granulepos;
-						page_found = true;
+						//Last page, frame we're looking for doesn't exist, past the end
+						//Pretend the frame we're looking for is the last frame instead.
+						dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Last Page B, look left\n");
+						target_framepos = page_framepos;
 					}
-					else if(page_framepos < target_framepos)
+				
+					if(page_framepos < target_framepos)
 					{
 						//Frame we're looking for is right of this page
-						if(ogg_page_eos(&og))
+						if(left_page_granulepos < page_granulepos)
 						{
-							//Last page, frame we're looking for doesn't exist, past the end
-							//Pretend the frame we're looking for is the last frame instead.
-							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Last Page B\n");
-							left_page_granulepos = page_granulepos;
-							target_framepos = page_framepos;
-							page_found = true;
-						}
-						else if(left_page_granulepos < page_granulepos)
-						{
+							
 							//look to the right some more
-							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Right page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Right A page_framepos=%llx, page_granulepos=%llx, pageno=%lx\n", page_framepos, page_granulepos, pageno);
+							left_pageno = right_pageno = 0x7fffffff;
+							
 							left_page_granulepos = page_granulepos;
 							left_pos = mid_pos;
 							mid_pos = left_pos + (right_pos - left_pos) / 2;
@@ -743,29 +742,33 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 						else
 						{
 							//We were previously on this page, looked to the right and came back looking to the left.
-							//This page is the page left of the target_framepos
-							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page B found page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+							//This is the latest page that finishes a frame before target_framepos
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Found A page_framepos=%llx, page_granulepos=%llx, pageno=%lx\n", page_framepos, page_granulepos, pageno);
 							page_found = true;
 						}
 					}
-					else if(target_framepos < page_framepos)
+					else if(target_framepos <= page_framepos)
 					{
-						//Frame we're looking for is left of this page (or might be in this page
+						//Frame we're looking for is left of this page, or finishes on this page
 						if(left_page_granulepos < page_granulepos)
 						{
+							//Look farther left
 							if(left_pos == mid_pos)
 							{
 								//There isn't anything farther left to look
 								//Just call this the page we're looking for, and hope for the best
-								//Highly likely that the this is the first page, and the frame is inside this page.
-								//If it's not the fist page, the current page isn't left_page_granulepos, what should happen?
-								dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page C found page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+								//It's unlikely this will happen with the new check for left_pageno and rightpageno
+								dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Found B page_framepos=%llx, page_granulepos=%llx, pageno=%lx\n", page_framepos, page_granulepos, pageno);
 								page_found = true;
 							}
 							else
 							{
 								//look to the left some more
-								dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Left page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+								dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Left A page_framepos=%llx, page_granulepos=%llx, pageno=%lx\n", page_framepos, page_granulepos, pageno);
+								if(left_pageno < pageno)
+									right_pageno = left_pageno - 1;
+								else
+									right_pageno = pageno - 1;
 								right_pos = mid_pos;
 								mid_pos = left_pos + (right_pos - left_pos) / 2;
 								fseek(gfile, mid_pos, SEEK_SET);
@@ -776,8 +779,50 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 						else
 						{
 							//How did we end up this with the frame left of left_page_granulepos?
-							dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Page D found, should not happen, page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
+							dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Page Found C should not happen, page_framepos=%llx, page_granulepos=%llx\n", page_framepos, page_granulepos);
 							page_found = true;
+						}
+					}
+				}
+				else
+				{
+					//Try to exit early string of pages that lead to packet we want to look left from
+					//right_pageno is the highest page number that could possibly come before the last look to the left.
+					//It starts at pageno - 1 when we first found a granulepos and looked left.
+					//left_pageno should be the start of the no finished packet zone
+					//if we manage to reach right_pageno, then this string of pages eventually ends with packet we want to look left from
+					//Reset right_pageno to left_pageno -1, so that if we reached the previous start of this known string
+					//of pages, then we should look left some more.
+					if(left_pos != mid_pos)
+					{
+						if(pageno == right_pageno)
+						{
+							//If the current pageno is the right_pageno, and we still haven't gotten to a page
+							//that finishes a packet, then the next packet to finish will be the same one we started
+							//looking left from
+							//Try reading farther left
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Left B pageno=%lx\n", pageno);
+							
+							//The latest page that could possibly finish a page now is the page before
+							//the start of the current chain of pages
+							right_pageno = left_pageno - 1;
+							right_pos = mid_pos;
+							mid_pos = left_pos + (right_pos - left_pos) / 2;
+							fseek(gfile, mid_pos, SEEK_SET);
+							ogg_sync_reset(&oy);
+							ogg_stream_reset(&to);
+						}
+						else if(pageno < left_pageno)
+						{
+							//We're reading from earlier than before
+							//We might eventually wind up back at right_pageno, save the left_pageno just in case
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Right B pageno=%lx\n", pageno);
+							left_pageno = pageno;
+						}
+						else
+						{
+							//Yet another page that still doesn't finish a packet
+							dbg_.DebugOut(kDbgLvlVerbose, "BinarySeekFrame Page Right C pageno=%lx\n", pageno);
 						}
 					}
 				}
@@ -854,7 +899,7 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 				frame_found = true;//No more data, last page
 				//How did we wind up at this point looking for a frame past the end?
 				//Didn't we cap it at Last Page B?
-				dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Last Page D, should not happen\n");
+				dbg_.DebugOut(kDbgLvlImportant, "BinarySeekFrame Last Page E, should not happen\n");
 			}
 			break;
 		
@@ -907,8 +952,6 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	if (!gbCodecReady)
 		return false;
 
-	TimeStampOn(0);
-	
 	// Compare selected frame time to current frame time
 	GetVideoTime(hVideo, &time);
 	
@@ -925,6 +968,7 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	
 	ogg_int64_t target_framepos = pCtx->frame + 1;
 	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame looking for target_framepos=%llx\n", target_framepos);
+	TimeStampOn(0);
 	ogg_int64_t target_granulepos = BinarySeekFrame(target_framepos, left_pos, right_pos);
 	
 	int theora_keyframe_shift = theora_granule_shift(&ti);
@@ -941,9 +985,11 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	{
 		found = true;
 	}
+	TimeStampOff(0);
 	
 	frame = theora_granule_frame(&td,td.granulepos);
 	
+	TimeStampOn(1);
 	//We have the KeyFrame before target frame, decode till we reach the target frame
 	while(frame < pCtx->frame)
 	{
@@ -953,7 +999,7 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 			frame = theora_granule_frame(&td,td.granulepos);
 			if (frame == pCtx->frame)
 			{
-				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame Found frame=%lld  td.granulepos=%lld\n", frame, td.granulepos);
+				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame Found frame=%llx  td.granulepos=%llx\n", frame, td.granulepos);
 				found = true;
 				break;
 			}
@@ -972,7 +1018,7 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 		}
 	}
 	
-	TimeStampOff(0);
+	TimeStampOff(1);
 	return found;
 }
 
