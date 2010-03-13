@@ -24015,3 +24015,27 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/11/10 1:43 PM
 6,485 ms. (Cumulative: 8,205,487 ms)
 
 ----------------
+Revision 6,770 from svn://localhost/TRUNK/:
+Revision 6,771 from svn://localhost/TRUNK/:
+Revision 6,772 from svn://localhost/TRUNK/:
+Revision 6,773 from svn://localhost/TRUNK/:
+Revision 6,774 from svn://localhost/TRUNK/:
+Revision 6,775 from svn://localhost/TRUNK/:
+Revision 6,776 from svn://localhost/TRUNK/:
+Revision 6,777 from svn://localhost/TRUNK/:
+Revision 6,778 from svn://localhost/TRUNK/:
+Revision 6,779 from svn://localhost/TRUNK/:
+Revision 6,780 from svn://localhost/TRUNK/:
+Revision 6,781 from svn://localhost/TRUNK/:
+Revision 6,782 from svn://localhost/TRUNK/:
+Revision 6,783 from svn://localhost/TRUNK/:
+Revision 6,784 from svn://localhost/TRUNK/:
+Revision 6,785 from svn://localhost/TRUNK/:
+
+Add USB state bit definition for hot-plug events from the host adapter. Uses existing USB messaging scheme to notify AppManager of camera or wifi widget connection. (TTP 2369) 
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/10 4:11 PM
+1 changed, 0 added, 0 deleted.
+6,203 ms. (Cumulative: 8,211,878 ms)
+
+----------------
