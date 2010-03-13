@@ -49,8 +49,10 @@ const U32 kUSBDeviceTransfer	= (1 << 2);
 const U32 kUSBDeviceError		= (1 << 3);
 const U32 kUSBDeviceReset		= (1 << 4);
 const U32 kUSBDeviceRTC			= (1 << 5);
+const U32 kUSBDeviceHotPlug		= (1 << 6);
 
-// Bit definitions for USBDeviceDriver abd USBDeviceSupports
+
+// Bit definitions for USBDeviceDriver and USBDeviceSupports
 const U32 kUSBDeviceIsHID			= (1 << 0);
 const U32 kUSBDeviceIsMassStorage	= (1 << 1);
 const U32 kUSBDeviceIsEthernet		= (1 << 2);
