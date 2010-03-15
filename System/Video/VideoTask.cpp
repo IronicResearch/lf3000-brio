@@ -187,6 +187,11 @@ void* VideoTaskMain( void* arg )
 					marktime = nexttime + lapsetime;
 				}
 			}
+			if(pctx->bSeeked)
+			{
+				pctx->bSeeked = false;
+				vidmgr.GetVideoTime(pctx->hVideo, &vtm);
+			}
 		}
 		if (pctx->hAudio != kNoAudioID)
 			audmgr.StopAudio(pctx->hAudio, false);

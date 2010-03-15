@@ -181,7 +181,15 @@ Boolean CVideoMPI::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->SeekVideoFrame(hVideo, pCtx);
+	return pModule_->SeekVideoFrame(hVideo, pCtx, true);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::SeekVideoKeyFrame(tVideoHndl hVideo, tVideoTime* pCtx)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SeekVideoFrame(hVideo, pCtx, false);
 }
 
 //----------------------------------------------------------------------------

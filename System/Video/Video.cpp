@@ -291,6 +291,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	pVidCtx->bPlaying	= true;
 	pVidCtx->uFrameTime = 1000 * ti.fps_denominator / ti.fps_numerator;
 	pVidCtx->pMutex		= &gVidMutex;
+	pVidCtx->bSeeked	= false;
 
 	InitVideoTask(pVidCtx);	
 
@@ -581,6 +582,9 @@ Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
+#if USE_MUTEX
+	kernel_.LockMutex(gVidMutex);
+#endif
 	Boolean		ready = false;
 	ogg_packet  op;
 	ogg_int64_t frame;
@@ -640,7 +644,9 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 				queue_page(&og);
 		}
 	}
-
+#if USE_MUTEX
+	kernel_.UnlockMutex(gVidMutex);
+#endif
 	return ready;
 }
 
@@ -941,8 +947,11 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 	return granulepos;
 }
 
-Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
+Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
 {
+#if USE_MUTEX
+	kernel_.LockMutex(gVidMutex);
+#endif
 	tVideoTime	time;
 	Boolean		found = false;
 	ogg_int64_t	frame;
@@ -953,7 +962,9 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 		return false;
 
 	// Compare selected frame time to current frame time
-	GetVideoTime(hVideo, &time);
+	//GetVideoTime(hVideo, &time);
+	time.frame = theora_granule_frame(&td,td.granulepos);
+	time.time  = time.frame * 1000 * ti.fps_denominator / ti.fps_numerator;
 	
 	//If time.frame is -1, we haven't decoded a frame yet, do full file search
 	//If the frame we're looking for is in the future, do a full file search
@@ -989,36 +1000,51 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
 	
 	frame = theora_granule_frame(&td,td.granulepos);
 	
-	TimeStampOn(1);
-	//We have the KeyFrame before target frame, decode till we reach the target frame
-	while(frame < pCtx->frame)
+	if(bExact)
 	{
-		if (ogg_stream_packetout(&to,&op) > 0)
+		TimeStampOn(1);
+		//We have the KeyFrame before target frame, decode till we reach the target frame
+		while(frame < pCtx->frame)
 		{
-			theora_decode_packetin(&td,&op);
-			frame = theora_granule_frame(&td,td.granulepos);
-			if (frame == pCtx->frame)
+			if (ogg_stream_packetout(&to,&op) > 0)
 			{
-				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame Found frame=%llx  td.granulepos=%llx\n", frame, td.granulepos);
-				found = true;
-				break;
+				theora_decode_packetin(&td,&op);
+				frame = theora_granule_frame(&td,td.granulepos);
+				if (frame == pCtx->frame)
+				{
+					dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame Found frame=%llx  td.granulepos=%llx\n", frame, td.granulepos);
+					found = true;
+					break;
+				}
+			}
+			else
+			{
+				// Get more packet data from Ogg input stream
+				bytes = buffer_data(&oy);
+				if (bytes == 0)
+				{
+					dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame No more frames, exiting at last frame\n");
+					break;
+				}
+				while (ogg_sync_pageout(&oy,&og) > 0)
+					queue_page(&og);
 			}
 		}
-		else
-		{
-			// Get more packet data from Ogg input stream
-			bytes = buffer_data(&oy);
-			if (bytes == 0)
-			{
-				dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame No more frames, exiting at last frame\n");
-				break;
-			}
-			while (ogg_sync_pageout(&oy,&og) > 0)
-				queue_page(&og);
-		}
+		TimeStampOff(1);
 	}
-	
-	TimeStampOff(1);
+	/*if(gpVidCtx->hAudio != kNoAudioID)
+	{
+		U32 timeMilliSeconds  = frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+		CAudioMPI audio_mpi;
+		audio_mpi.Seek( gpVidCtx->hAudio, timeMilliSeconds);
+	}
+	time.frame = frame;
+	time.time  = time.frame * 1000 * ti.fps_denominator / ti.fps_numerator;
+	*/
+	gpVidCtx->bSeeked = true;
+#if USE_MUTEX
+	kernel_.UnlockMutex(gVidMutex);
+#endif
 	return found;
 }
 

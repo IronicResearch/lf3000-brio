@@ -24039,3 +24039,19 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/10 4:11 PM
 6,203 ms. (Cumulative: 8,211,878 ms)
 
 ----------------
+Revision 6,786 from svn://localhost/TRUNK/:
+Revision 6,787 from svn://localhost/TRUNK/:
+Revision 6,788 from svn://localhost/TRUNK/:
+Revision 6,789 from svn://localhost/TRUNK/:
+
+Added Mutex to SeekVideoFrame and SynchVideoFrame.  Also added new bSeeked flag.  Modified VideoTask to check for bSeeked flag, and if true will reset it's time to the new current time.
+
+WARNING: Possible race condition.  SeekVideoFrame for an earlier frame might be called after the check for the bSeeked flag and before the call to SynchVideoFrame.  Doing so will cause the player to "fast forward" in a manner that makes it look like the seek did not occur.
+
+Also added in SeekVideoKeyFrame to VideoMPI and a bool flag to SeekVideoFrame in VideoModule.  Whether you call the MPI's SeekVideoFrame SeekVideoKeyFrame determines if tru or false is passed in.  True makes it search for the exact frame asked for, false makes it stop when it finds the keyframe for the target frame.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/15/10 10:40 AM
+5 changed, 0 added, 0 deleted.
+6,526 ms. (Cumulative: 8,218,670 ms)
+
+----------------
