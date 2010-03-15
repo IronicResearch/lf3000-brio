@@ -248,11 +248,11 @@ Boolean	CCameraMPI::ResumeVideoCapture(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraMPI::IsCapturePaused(const tVidCapHndl hndl)
+Boolean	CCameraMPI::IsVideoCapturePaused(const tVidCapHndl hndl)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->IsCapturePaused(hndl);
+	return pModule_->IsVideoCapturePaused(hndl);
 }
 
 //----------------------------------------------------------------------------

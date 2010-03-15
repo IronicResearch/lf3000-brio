@@ -591,6 +591,11 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 		case V4L2_CID_GAMMA:
 			control->type = kControlTypeGamma;
 			break;
+/*
+ * These three controls were added some time between 2.6.24 and 2.6.31.
+ * The emulator builds against 2.6.24.
+ */
+#if defined V4L2_CID_POWER_LINE_FREQUENCY
 		case V4L2_CID_POWER_LINE_FREQUENCY:
 			control->type = kControlPowerLineFreq;
 			break;
@@ -600,6 +605,7 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 		case V4L2_CID_BACKLIGHT_COMPENSATION:
 			control->type = kControlTypeBacklightComp;
 			break;
+#endif /* V4L2_CID_POWER_LINE_FREQUENCY */
 		default:
 			control->type = kControlTypeError;
 		}
@@ -936,6 +942,12 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	case kControlTypeGamma:
 		ctrl.id = V4L2_CID_GAMMA;
 		break;
+
+	/*
+	 * These three controls were added some time between 2.6.24 and 2.6.31.
+	 * The emulator builds against 2.6.24.
+	 */
+#if defined V4L2_CID_POWER_LINE_FREQUENCY
 	case kControlPowerLineFreq:
 		ctrl.id = V4L2_CID_POWER_LINE_FREQUENCY;
 		break;
@@ -945,6 +957,7 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	case kControlTypeBacklightComp:
 		ctrl.id = V4L2_CID_BACKLIGHT_COMPENSATION;
 		break;
+#endif /* V4L2_CID_POWER_LINE_FREQUENCY */
 	default:
 		bRet = false;
 		;
@@ -1101,6 +1114,13 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	return true;
 }
 
+#if 0
+static inline void xform(JBLOCK *block)
+{
+
+}
+#endif
+
 //----------------------------------------------------------------------------
 Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap)
 {
@@ -1180,7 +1200,29 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bRet = false;
 		;
 	}
+#if 0
+	/*
+	 * TODO: Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then
+	 * paint video layer directly.  This has the potential to have better
+	 * performance than the current line-by-line method.
+	 */
+	jvirt_barray_ptr	*coefs	= jpeg_read_coefficients(&cinfo);
 
+	int comp;
+	for(comp = 0; comp < cinfo.num_components; comp++)
+	{
+		JBLOCKARRAY		blocks	= cinfo.mem->access_virt_barray(reinterpret_cast<jpeg_common_struct*>(&cinfo), coefs[comp], 0, 1, 1);
+
+		int row, col;
+		for(row = 0; row < cinfo.comp_info[comp].height_in_blocks; row++ )
+		{
+			for(col = 0; col < cinfo.comp_info[comp].width_in_blocks; col++ )
+			{
+				xform(&blocks[row][col]);
+			}
+		}
+	}
+#endif
 	/*
 	 * libjpeg natively supports M/8, where M is 1..16.
 	 */
@@ -1195,7 +1237,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		cinfo.scale_num		= (8 * (bitmap->height / frame->height));
 	}
 
-	//cinfo.dct_method	= JDCT_IFAST;//JDCT_IHW;
+	cinfo.dct_method	= /*JDCT_HW;*/JDCT_IFAST;
 
 	(void) jpeg_start_decompress(&cinfo);
 
@@ -1302,7 +1344,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 		return hndl;
 	}
 
-	camCtx_.numBufs = NUM_BUFS;
+	camCtx_.numBufs = 2;//NUM_BUFS;
 	if(!InitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);
@@ -1560,11 +1602,11 @@ Boolean	CCameraModule::OpenFrame(const CPath &path, tFrameInfo *frame)
 
 		fseek(f, 0, SEEK_SET);
 
-		frame->width	= cinfo.image_width;
-		frame->height	= cinfo.image_height;
+		frame->width		= cinfo.image_width;
+		frame->height		= cinfo.image_height;
+		frame->pixelformat	= kCaptureFormatMJPEG;
 
 		dest = (reinterpret_cast<U8*>(frame->data));
-
 
 		do
 		{
@@ -1636,7 +1678,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::IsCapturePaused(const tVidCapHndl hndl)
+Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 {
 	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	Boolean	bRet	= true;

@@ -29,8 +29,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 // Video capture handle
 typedef tHndl 		tVidCapHndl;
+typedef tHndl 		tAudCapHndl;
 
 const tVidCapHndl	kInvalidVidCapHndl = static_cast<tVidCapHndl>(0);
+const tVidCapHndl	kInvalidAudCapHndl = static_cast<tAudCapHndl>(0);
 
 // Image capture format.  Uncompressed formats are possible - these would be equivalent to
 // DisplayTypes:tPixelFormat.  Since JPEG is compressed, it's not a pixel format in the
