@@ -133,7 +133,7 @@ public:
 	VTABLE_EXPORT Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
-	VTABLE_EXPORT Boolean		IsCapturePaused(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean		IsVideoCapturePaused(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 
 private:
