@@ -101,6 +101,12 @@ void* CameraTaskMain(void* arg)
 
 		image.size		= (image.width * image.height * image.depth * sizeof(U8));
 		image.data		= static_cast<U8*>(kernel.Malloc(image.size));
+
+		image.buffer	= static_cast<U8**>(kernel.Malloc(image.height * sizeof(U8*)));
+		for(int i = 0; i < image.height; i++)
+		{
+			image.buffer[i] = &image.data[i* image.width * image.depth];
+		}
 	}
 
 	bRunning = pCtx->bStreaming = true;
@@ -124,12 +130,12 @@ void* CameraTaskMain(void* arg)
 
 		bRet = pCtx->module->GetFrame(pCtx->hndl, &frame);
 
-		if(bFile && !pCtx->bPaused)
+		if(bFile && !pCtx->bPaused && bRet)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
 
-		if(bScreen && !pCtx->bPaused)
+		if(bScreen && !pCtx->bPaused && bRet)
 		{
 			bRet = pCtx->module->RenderFrame(&frame, pCtx->surf, &image);
 			display.Invalidate(0);
@@ -157,6 +163,11 @@ void* CameraTaskMain(void* arg)
 	{
 		kernel.Free(image.data);
 		image.data = NULL;
+	}
+	if(image.buffer)
+	{
+		kernel.Free(image.buffer);
+		image.buffer = NULL;
 	}
 
 	if(bFile)
