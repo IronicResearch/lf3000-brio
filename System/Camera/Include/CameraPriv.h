@@ -25,6 +25,7 @@
 #include <KernelTypes.h>
 
 #include <linux/videodev2.h>
+#include <jpeglib.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -108,6 +109,7 @@ struct tBitmapInfo {
 	U16				depth;
 	U8 *			data;
 	U32				size;
+	JSAMPARRAY		buffer;		//row pointers
 };
 
 struct tCameraContext {

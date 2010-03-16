@@ -51,7 +51,9 @@ CCameraMPI::~CCameraMPI()
 //----------------------------------------------------------------------------
 Boolean	CCameraMPI::IsValid() const
 {
-	return (pModule_ != NULL) ? true : false;
+	if(!pModule_)
+		return false;
+	return pModule_->IsValid();
 }
 
 //----------------------------------------------------------------------------

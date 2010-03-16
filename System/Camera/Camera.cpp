@@ -1123,15 +1123,26 @@ static inline void xform(JBLOCK *block)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 {
+	Boolean ret = false;
 	tFrameInfo frame;
 
-	OpenFrame(path, &frame);
+	ret = OpenFrame(path, &frame);
+	if(!ret)
+	{
+		goto out;
+	}
 
-	RenderFrame(&frame, pSurf, NULL);
+	ret = RenderFrame(&frame, pSurf, NULL);
 
+out:
 	kernel_.Free(frame.data);
 
-	return true;
+	return ret;
+}
+
+static void silence_warning(j_common_ptr cinfo, int msg_level)
+{
+
 }
 
 //----------------------------------------------------------------------------
@@ -1167,28 +1178,37 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 
 		bitmap->data	= static_cast<U8*>( kernel_.Malloc(bitmap->size) );
 
+		/*
+		 * libjpeg expects an array of pointers to bitmap output rows.
+		 * The user supplies one contiguous array for bitmap output, so construct
+		 * a JSAMPARRAY pointing to each row.
+		 */
+		bitmap->buffer = static_cast<U8**>(kernel_.Malloc(bitmap->height * sizeof(U8*)));
+
+		row_stride = bitmap->width;
+		if(bitmap->format == kBitmapFormatYCbCr888 || bitmap->format == kBitmapFormatRGB888)
+		{
+			row_stride *= 3;
+		}
+
+		for(int i = 0; i < bitmap->height; i++)
+		{
+			bitmap->buffer[i] = &bitmap->data[i*row_stride];
+		}
+
 		bAlloc = true;
 	}
 
-	/*
-	 * libjpeg expects an array of pointers to bitmap output rows.
-	 * The user supplies one contiguous array for bitmap output, so construct
-	 * a JSAMPARRAY pointing to each row.
-	 */
-	buffer = static_cast<U8**>(kernel_.Malloc(bitmap->height * sizeof(U8*)));
-
-	row_stride = bitmap->width;
-	if(bitmap->format == kBitmapFormatYCbCr888 || bitmap->format == kBitmapFormatRGB888)
-	{
-		row_stride *= 3;
-	}
-
-	for(int i = 0; i < bitmap->height; i++)
-	{
-		buffer[i] = &bitmap->data[i*row_stride];
-	}
 
 	cinfo.err = jpeg_std_error(&err);
+
+	/*
+	 * The PixArt camera produces JPEGs which libjpeg complains about:
+	 *   "Corrupt JPEG data: 1 extraneous bytes before marker 0xd9"
+	 * These appear visually fine, but the warnings on stderr are distracting,
+	 * so stifle them.
+	 */
+	cinfo.err->emit_message = silence_warning;
 
 	jpeg_create_decompress(&cinfo);
 
@@ -1257,14 +1277,12 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	row_stride = cinfo.output_width * cinfo.output_components;
 
 	while (cinfo.output_scanline < cinfo.output_height) {
-		row += jpeg_read_scanlines(&cinfo, &buffer[row], cinfo.output_height);
+		row += jpeg_read_scanlines(&cinfo, &bitmap->buffer[row], cinfo.output_height);
 	}
 
 	(void) jpeg_finish_decompress(&cinfo);
 
 	jpeg_destroy_decompress(&cinfo);
-
-	kernel_.Free(buffer);
 
 	// draw to screen
 	if(surf != NULL)
@@ -1275,6 +1293,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	if(bAlloc)
 	{
 		kernel_.Free(bitmap->data);
+		kernel_.Free(bitmap->buffer);
 		delete bitmap;
 	}
 
@@ -1424,15 +1443,21 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
+	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
 
-	GrabFrame(hndl, &frame);
+	ret = GrabFrame(hndl, &frame);
+	if(!ret)
+	{
+		goto out;
+	}
 
-	SaveFrame(path, &frame);
+	ret = SaveFrame(path, &frame);
 
+out:
 	kernel_.Free(frame.data);
 
-	return true;
+	return ret;
 }
 
 //----------------------------------------------------------------------------
