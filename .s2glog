@@ -24074,3 +24074,14 @@ By jeno (jeno@leapfrog.com) on 3/15/10 11:36 AM
 6,360 ms. (Cumulative: 8,231,502 ms)
 
 ----------------
+Revision 6,793 from svn://localhost/TRUNK/:
+Revision 6,794 from svn://localhost/TRUNK/:
+Revision 6,795 from svn://localhost/TRUNK/:
+
+Camera updates: simplified/restricted API.  Video fixed @ 30 fps QVGA MJPEG.  Stills fixed @ VGA JPEG.
+
+By jeno (jeno@leapfrog.com) on 3/16/10 10:27 AM
+7 changed, 0 added, 0 deleted.
+6,589 ms. (Cumulative: 8,238,185 ms)
+
+----------------

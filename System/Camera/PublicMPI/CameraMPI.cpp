@@ -119,22 +119,6 @@ CPath* CCameraMPI::GetCameraStillPath()
 }
 
 //----------------------------------------------------------------------------
-Boolean CCameraMPI::GetCameraModes(tCaptureModes &modes)
-{
-	if (!pModule_)
-		return false;
-	return pModule_->GetCameraModes(modes);
-}
-
-//----------------------------------------------------------------------------
-Boolean CCameraMPI::SetCameraMode(const tCaptureMode* mode)
-{
-	if (!pModule_)
-		return false;
-	return pModule_->SetCameraMode(mode);
-}
-
-//----------------------------------------------------------------------------
 Boolean CCameraMPI::GetCameraControls(tCameraControls &controls)
 {
 	if (!pModule_)
@@ -151,84 +135,28 @@ Boolean CCameraMPI::SetCameraControl(const tControlInfo* control, const S32 valu
 }
 
 //----------------------------------------------------------------------------
-Boolean CCameraMPI::SetBuffers(const U32 numBuffers)
+tVidCapHndl CCameraMPI::StartVideoCapture(const CPath& path, tVideoSurf* pSurf)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->SetBuffers(numBuffers);
+
+	return pModule_->StartVideoCapture(path, pSurf);
 }
 
 //----------------------------------------------------------------------------
-tVidCapHndl CCameraMPI::StartVideoCapture()
+Boolean	CCameraMPI::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->StartVideoCapture();
+	return pModule_->SnapFrame(hndl, path);
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraMPI::PollFrame(const tVidCapHndl hndl)
+Boolean	CCameraMPI::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->PollFrame(hndl);
-}
-
-//----------------------------------------------------------------------------
-Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-	return pModule_->GetFrame(hndl, frame);
-}
-
-//----------------------------------------------------------------------------
-Boolean	CCameraMPI::RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-	return pModule_->RenderFrame(frame, pSurf, image);
-}
-
-//----------------------------------------------------------------------------
-Boolean	CCameraMPI::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-	return pModule_->ReturnFrame(hndl, frame);
-}
-
-//----------------------------------------------------------------------------
-tVidCapHndl CCameraMPI::StartVideoCapture(const CPath& path, const Boolean audio, tVideoSurf* pSurf, tRect* rect)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-
-	return pModule_->StartVideoCapture(path, audio, pSurf, rect);
-}
-
-//----------------------------------------------------------------------------
-Boolean	CCameraMPI::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-	return pModule_->GrabFrame(hndl, frame);
-}
-
-//----------------------------------------------------------------------------
-Boolean	CCameraMPI::SaveFrame(const CPath &path, const tFrameInfo *frame)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-	return pModule_->SaveFrame(path, frame);
-}
-
-//----------------------------------------------------------------------------
-Boolean	CCameraMPI::OpenFrame(const CPath &path, tFrameInfo *frame)
-{
-	if (!pModule_)
-		return kInvalidVidCapHndl;
-	return pModule_->OpenFrame(path, frame);
+	return pModule_->RenderFrame(path, pSurf);
 }
 
 //----------------------------------------------------------------------------
