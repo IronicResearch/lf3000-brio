@@ -62,6 +62,54 @@ const tVidCapHndl		kStreamingFrame			= 0x20000000;	// frame-by-frame, i.e., no t
 // Typedefs
 //==============================================================================
 
+// Image capture format.  Uncompressed formats are possible - these would be equivalent to
+// DisplayTypes:tPixelFormat.  Since JPEG is compressed, it's not a pixel format in the
+// proper sense
+enum tCaptureFormat {
+	kCaptureFormatError = 0,
+	kCaptureFormatMJPEG,
+	kCaptureFormatRAWYUYV,
+};
+
+// Three components: image format, image resolution, and video frame rate, determine
+// the camera's capture mode
+struct tCaptureMode {
+	tCaptureFormat	pixelformat;
+	U16				width;
+	U16				height;
+	U32				fps_numerator;
+	U32				fps_denominator;
+};
+
+typedef std::vector<tCaptureMode *> tCaptureModes;
+
+// Frame info
+struct tFrameInfo {
+	tCaptureFormat	pixelformat;
+	U16				width;
+	U16				height;
+	U32				index;
+	void *			data;
+	U32				size;
+};
+
+enum tBitmapFormat {
+	kBitmapFormatError = 0,
+	kBitmapFormatGrayscale8,
+	kBitmapFormatRGB888,
+	kBitmapFormatYCbCr888,
+};
+
+// Bitmap image (processed frame) info
+struct tBitmapInfo {
+	tBitmapFormat	format;
+	U16				width;
+	U16				height;
+	U16				depth;
+	U8 *			data;
+	U32				size;
+};
+
 struct tCameraContext {
 	const char					*file;		// e.g., "/dev/video0"
 	int							fd;			// file descriptor
@@ -82,15 +130,15 @@ struct tCameraContext {
 	void						**bufs;
 
 	CPath						path;
-	Boolean						audio;
 	tVideoSurf					*surf;
-	tRect						*rect;
 
 	tTaskHndl					hCameraThread;
 
 	Boolean						bPaused;
 	Boolean						bStreaming;
 	tMutex						mThread;
+
+	class CCameraModule			*module;
 };
 
 struct tCaptureContext {
@@ -117,20 +165,11 @@ public:
 	VTABLE_EXPORT CPath*		GetCameraVideoPath();
 	VTABLE_EXPORT tErrType		SetCameraStillPath(const CPath& path);
 	VTABLE_EXPORT CPath*		GetCameraStillPath();
-	VTABLE_EXPORT Boolean		GetCameraModes(tCaptureModes &modes);
-	VTABLE_EXPORT Boolean		SetCameraMode(const tCaptureMode* mode);
 	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
 	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
-	VTABLE_EXPORT Boolean		SetBuffers(const U32 numBuffers);
-	VTABLE_EXPORT tVidCapHndl	StartVideoCapture();
-	VTABLE_EXPORT Boolean		PollFrame(const tVidCapHndl hndl);
-	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
-	VTABLE_EXPORT Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image);
-	VTABLE_EXPORT Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
-	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect* rect);
-	VTABLE_EXPORT Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
-	VTABLE_EXPORT Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
-	VTABLE_EXPORT Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
+	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf);
+	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath& path);
+	VTABLE_EXPORT Boolean		RenderFrame(const CPath &path, tVideoSurf *pSurf);
 	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		IsVideoCapturePaused(const tVidCapHndl hndl);
@@ -149,10 +188,22 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+	friend void* CameraTaskMain(void* arg);
 
 	// Implementation-specific functionality
-	Boolean				InitCameraInt();
-	Boolean				DeinitCameraInt();
+	Boolean		InitCameraInt();
+	Boolean		DeinitCameraInt();
+	Boolean		GetCameraModes(tCaptureModes &modes);
+	Boolean		SetCameraMode(const tCaptureMode* mode);
+	Boolean		SetBuffers(const U32 numBuffers);
+	tVidCapHndl	StartVideoCapture();
+	Boolean		PollFrame(const tVidCapHndl hndl);
+	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image);
+	Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
+	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
+	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
+	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 };
 
 LF_END_BRIO_NAMESPACE()

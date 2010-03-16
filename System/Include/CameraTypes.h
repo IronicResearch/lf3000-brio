@@ -34,25 +34,6 @@ typedef tHndl 		tAudCapHndl;
 const tVidCapHndl	kInvalidVidCapHndl = static_cast<tVidCapHndl>(0);
 const tVidCapHndl	kInvalidAudCapHndl = static_cast<tAudCapHndl>(0);
 
-// Image capture format.  Uncompressed formats are possible - these would be equivalent to
-// DisplayTypes:tPixelFormat.  Since JPEG is compressed, it's not a pixel format in the
-// proper sense
-enum tCaptureFormat {
-	kCaptureFormatError = 0,
-	kCaptureFormatMJPEG
-};
-
-// Three components: image format, image resolution, and video frame rate, determine
-// the camera's capture mode
-struct tCaptureMode {
-	tCaptureFormat	pixelformat;
-	U16				width;
-	U16				height;
-	U32				fps_numerator;
-	U32				fps_denominator;
-};
-
-typedef std::vector<tCaptureMode *> tCaptureModes;
 
 enum tControlType {
 	kControlTypeError = 0,
@@ -76,33 +57,6 @@ struct tControlInfo {
 };
 
 typedef std::vector<tControlInfo*> tCameraControls;
-
-// Frame info
-struct tFrameInfo {
-	tCaptureFormat	pixelformat;
-	U16				width;
-	U16				height;
-	U32				index;
-	void *			data;
-	U32				size;
-};
-
-enum tBitmapFormat {
-	kBitmapFormatError = 0,
-	kBitmapFormatGrayscale8,
-	kBitmapFormatRGB888,
-	kBitmapFormatYCbCr888,
-};
-
-// Bitmap image (processed frame) info
-struct tBitmapInfo {
-	tBitmapFormat	format;
-	U16				width;
-	U16				height;
-	U16				depth;
-	U8 *			data;
-	U32				size;
-};
 
 LF_END_BRIO_NAMESPACE()
 

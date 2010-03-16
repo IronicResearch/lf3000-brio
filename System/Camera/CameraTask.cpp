@@ -113,7 +113,7 @@ void* CameraTaskMain(void* arg)
 		dbg.Assert((kNoErr == kernel.LockMutex(pCtx->mThread)),\
 											  "Couldn't lock mutex.\n");
 
-		if(!cammgr.PollFrame(pCtx->hndl))
+		if(!pCtx->module->PollFrame(pCtx->hndl))
 		{
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													  "Couldn't unlock mutex.\n");
@@ -122,7 +122,7 @@ void* CameraTaskMain(void* arg)
 			continue;
 		}
 
-		bRet = cammgr.GetFrame(pCtx->hndl, &frame);
+		bRet = pCtx->module->GetFrame(pCtx->hndl, &frame);
 
 		if(bFile && !pCtx->bPaused)
 		{
@@ -131,11 +131,11 @@ void* CameraTaskMain(void* arg)
 
 		if(bScreen && !pCtx->bPaused)
 		{
-			bRet = cammgr.RenderFrame(&frame, pCtx->surf, &image);
+			bRet = pCtx->module->RenderFrame(&frame, pCtx->surf, &image);
 			display.Invalidate(0);
 		}
 
-		bRet = cammgr.ReturnFrame(pCtx->hndl, &frame);
+		bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
 
 		dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 											  "Couldn't unlock mutex.\n");

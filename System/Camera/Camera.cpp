@@ -154,7 +154,6 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	camCtx_.hCameraThread	= kNull;
 
 	camCtx_.surf			= NULL;
-	camCtx_.rect			= NULL;
 
 	camCtx_.modes			= new tCaptureModes;
 	camCtx_.controls		= new tCameraControls;
@@ -819,7 +818,7 @@ static Boolean DrawFrame(tVideoSurf *surf, tBitmapInfo *image)
 #if 1
 		for (i = 0; i < surf->height; i++)
 		{
-			for (j = n = 0; j < surf->width; j++, n+=6)
+			for (j = n = 0; j < surf->width; j+=2, n+=6)
 			{
 				// TODO: why is the source BGR?
 				pd[n+0]	= ps[n+2];
@@ -1122,6 +1121,20 @@ static inline void xform(JBLOCK *block)
 #endif
 
 //----------------------------------------------------------------------------
+Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
+{
+	tFrameInfo frame;
+
+	OpenFrame(path, &frame);
+
+	RenderFrame(&frame, pSurf, NULL);
+
+	kernel_.Free(frame.data);
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
 Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap)
 {
 	struct jpeg_decompress_struct	cinfo;
@@ -1305,7 +1318,7 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 }
 
 //----------------------------------------------------------------------------
-tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, tVideoSurf* pSurf, tRect *rect)
+tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf)
 {
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 
@@ -1316,8 +1329,6 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 		CAMERA_UNLOCK;
 		return hndl;
 	}
-
-	dbg_.Assert((audio == false), "Audio recording not implemented!.\n");
 
 	if(path.length() > 0)
 	{
@@ -1333,9 +1344,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 		}
 	}
 
-	camCtx_.audio	= audio;
 	camCtx_.surf	= pSurf;
-	camCtx_.rect	= rect;
 
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
@@ -1358,6 +1367,8 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, Boolean audio, t
 		CAMERA_UNLOCK;
 		return hndl;
 	}
+
+	camCtx_.module = this;
 
 	if(kNoErr == InitCameraTask(&camCtx_))
 	{
@@ -1406,6 +1417,20 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		DeInitCameraTask(&camCtx_);
 	}
 	camCtx_.hndl 	= kInvalidVidCapHndl;
+
+	return true;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
+{
+	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
+
+	GrabFrame(hndl, &frame);
+
+	SaveFrame(path, &frame);
+
+	kernel_.Free(frame.data);
 
 	return true;
 }
@@ -1694,6 +1719,8 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::InitCameraInt()
 {
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 30, 1};
+
 	if(!InitCameraHWInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: hardware initialization failed for %s\n", camCtx_.file);
@@ -1703,6 +1730,12 @@ Boolean	CCameraModule::InitCameraInt()
 	if(!InitCameraFormatInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: format probing failed for %s\n", camCtx_.file);
+		return false;
+	}
+
+	if(!SetCameraMode(&QVGA))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: failed to set resolution %s\n", camCtx_.file);
 		return false;
 	}
 
