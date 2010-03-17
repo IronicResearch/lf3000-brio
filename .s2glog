@@ -24096,3 +24096,19 @@ By jeno (jeno@leapfrog.com) on 3/16/10 1:53 PM
 6,434 ms. (Cumulative: 8,244,744 ms)
 
 ----------------
+Revision 6,799 from svn://localhost/TRUNK/:
+Revision 6,800 from svn://localhost/TRUNK/:
+Revision 6,801 from svn://localhost/TRUNK/:
+Revision 6,802 from svn://localhost/TRUNK/:
+Revision 6,803 from svn://localhost/TRUNK/:
+Revision 6,804 from svn://localhost/TRUNK/:
+Revision 6,805 from svn://localhost/TRUNK/:
+Revision 6,806 from svn://localhost/TRUNK/:
+
+Camera updates: modify temporary avilib to silence compiler warnings
+
+By jeno (jeno@leapfrog.com) on 3/17/10 11:34 AM
+2 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 8,251,026 ms)
+
+----------------
