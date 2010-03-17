@@ -287,7 +287,7 @@ avi_t* AVI_open_output_file(char * filename)
    return AVI;
 }
 
-void AVI_set_video(avi_t *AVI, int width, int height, double fps, char *compressor)
+void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *compressor)
 {
    /* may only be called if file is open for writing */
 
@@ -1864,7 +1864,7 @@ int AVI_read_data(avi_t *AVI, char *vidbuf, long max_vidbuf,
 
 /* AVI_print_error: Print most recent error (similar to perror) */
 
-char *(avi_errors[]) =
+const char *(avi_errors[]) =
 {
   /*  0 */ "avilib - No Error",
   /*  1 */ "avilib - AVI file size limit reached",
@@ -1882,7 +1882,7 @@ char *(avi_errors[]) =
   /* 13 */ "avilib - operation needs an index",
   /* 14 */ "avilib - Unkown Error"
 };
-static int num_avi_errors = sizeof(avi_errors)/sizeof(char*);
+static int num_avi_errors = sizeof(avi_errors)/sizeof(const char*);
 
 static char error_string[4096];
 
@@ -1906,7 +1906,7 @@ void AVI_print_error(char *str)
    }
 }
 
-char *AVI_strerror()
+const char *AVI_strerror()
 {
    int aerrno;
 
