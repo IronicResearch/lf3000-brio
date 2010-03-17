@@ -104,6 +104,8 @@ if not vars['is_emulation']:
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], 'libjpeg.so.8'))
+	env.Install(vars['lib_deploy_dir'], libs)
 
 #-----------------------------------------------------------------------------
 # Export support modules to embedded or emulation target
