@@ -24112,3 +24112,16 @@ By jeno (jeno@leapfrog.com) on 3/17/10 11:34 AM
 6,141 ms. (Cumulative: 8,251,026 ms)
 
 ----------------
+Revision 6,807 from svn://localhost/TRUNK/:
+Revision 6,808 from svn://localhost/TRUNK/:
+Revision 6,809 from svn://localhost/TRUNK/:
+Revision 6,810 from svn://localhost/TRUNK/:
+Revision 6,811 from svn://localhost/TRUNK/:
+
+Camera updates: enabling CameraMPI build and libjpeg install.
+
+By jeno (jeno@leapfrog.com) on 3/17/10 1:49 PM
+3 changed, 0 added, 0 deleted.
+5,844 ms. (Cumulative: 8,256,964 ms)
+
+----------------
