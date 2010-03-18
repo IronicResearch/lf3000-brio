@@ -24125,3 +24125,12 @@ By jeno (jeno@leapfrog.com) on 3/17/10 1:49 PM
 5,844 ms. (Cumulative: 8,256,964 ms)
 
 ----------------
+Revision 6,812 from svn://localhost/TRUNK/:
+
+adding camera widget-compatible patest_record
+
+By jeno (jeno@leapfrog.com) on 3/17/10 5:16 PM
+2 changed, 1 added, 0 deleted.
+5,860 ms. (Cumulative: 8,262,902 ms)
+
+----------------

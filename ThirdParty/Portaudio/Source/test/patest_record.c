@@ -46,10 +46,11 @@
 #include "portaudio.h"
 
 /* #define SAMPLE_RATE  (17932) // Test failure to open with this value. */
-#define SAMPLE_RATE  (44100)
+#define SAMPLE_RATE  (48000) // Microphone-fixed, Output-supported
 #define FRAMES_PER_BUFFER (1024)
 #define NUM_SECONDS     (5)
-#define NUM_CHANNELS    (2)
+#define NUM_CHANNELS    (2) // Output-fixed
+#define REC_CHANNELS    (1) // Microphone-fixed, duplicate data into L+R for output
 /* #define DITHER_FLAG     (paDitherOff) */
 #define DITHER_FLAG     (0) /**/
 
@@ -130,8 +131,19 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
     {
         for( i=0; i<framesToCalc; i++ )
         {
-            *wptr++ = *rptr++;  /* left */
-            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;  /* right */
+        	*wptr++ = *rptr;  /* left */
+            if( NUM_CHANNELS == 2 )
+            {
+                if( REC_CHANNELS == 1 )
+                    *wptr++ = *rptr++;  /* duplicated right */
+                else
+                {
+                    rptr++;
+                    *wptr++ = *rptr++;  /* unique right */
+                }
+            }
+            else
+                rptr++;
         }
     }
     data->frameIndex += framesToCalc;
@@ -223,7 +235,7 @@ int main(void)
     if( err != paNoError ) goto done;
 
     inputParameters.device = Pa_GetDefaultInputDevice(); /* default input device */
-    inputParameters.channelCount = 2;                    /* stereo input */
+    inputParameters.channelCount = 1;                    /* mono input */
     inputParameters.sampleFormat = PA_SAMPLE_TYPE;
     inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;

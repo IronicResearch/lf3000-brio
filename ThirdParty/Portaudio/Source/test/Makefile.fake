@@ -1,2 +1,7 @@
 arm-linux-gcc -g -o patest_sine patest_sine.c -I../../Include/ -L ../../Libs/arm/ -lportaudio -lm -lpthread
 
+arm-linux-gcc -g -o patest_record patest_record.c -I../../Include -L ../../Libs/arm/ -L /opt/RidgeRun/arm-eabi-uclibc/lib -lportaudio -lm -lgcc_s -lpthread
+-or-
+arm-linux-gcc -shared-libgcc -g -o patest_record patest_record.c -I../../Include -L ../../Libs/arm/ -lportaudio -lm -lpthread
+-or-
+arm-linux-g++ -g -o patest_record patest_record.c -I../../Include -L ../../Libs/arm/ -lportaudio -lpthread
