@@ -24,6 +24,20 @@
 #include <EventListener.h>
 #include <KernelTypes.h>
 
+/*
+ * This is a workaround for the old (broken) headers installed on lightning-release
+ * and the stale nfsroot on emplhwbuild01.leapfrog.com.
+ */
+#ifdef __STRICT_ANSI__
+#undef __STRICT_ANSI__
+#define FOO__STRICT_ANSI__
+#endif
+#include <asm/types.h>
+#ifdef FOO__STRICT_ANSI__
+#define __STRICT_ANSI__
+#undef FOO__STRICT_ANSI__
+#endif
+
 #include <linux/videodev2.h>
 #include <jpeglib.h>
 
