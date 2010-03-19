@@ -24134,3 +24134,19 @@ By jeno (jeno@leapfrog.com) on 3/17/10 5:16 PM
 5,860 ms. (Cumulative: 8,262,902 ms)
 
 ----------------
+Revision 6,813 from svn://localhost/TRUNK/:
+Revision 6,814 from svn://localhost/TRUNK/:
+Revision 6,815 from svn://localhost/TRUNK/:
+Revision 6,816 from svn://localhost/TRUNK/:
+Revision 6,817 from svn://localhost/TRUNK/:
+Revision 6,818 from svn://localhost/TRUNK/:
+Revision 6,819 from svn://localhost/TRUNK/:
+Revision 6,820 from svn://localhost/TRUNK/:
+
+Camera update: workaround for bad headers on buildbot hosts.
+
+By jeno (jeno@leapfrog.com) on 3/19/10 3:27 PM
+1 changed, 0 added, 0 deleted.
+6,351 ms. (Cumulative: 8,269,378 ms)
+
+----------------
