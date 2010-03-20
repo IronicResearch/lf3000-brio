@@ -24150,3 +24150,12 @@ By jeno (jeno@leapfrog.com) on 3/19/10 3:27 PM
 6,351 ms. (Cumulative: 8,269,378 ms)
 
 ----------------
+Revision 6,821 from svn://localhost/TRUNK/:
+
+Update vorbis with patch that makes it seek properly for interleaved files.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/19/10 5:14 PM
+4 changed, 0 added, 0 deleted.
+6,391 ms. (Cumulative: 8,275,848 ms)
+
+----------------
