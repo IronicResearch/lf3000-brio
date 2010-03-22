@@ -1032,15 +1032,7 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		}
 		TimeStampOff(1);
 	}
-	/*if(gpVidCtx->hAudio != kNoAudioID)
-	{
-		U32 timeMilliSeconds  = frame * 1000 * ti.fps_denominator / ti.fps_numerator;
-		CAudioMPI audio_mpi;
-		audio_mpi.Seek( gpVidCtx->hAudio, timeMilliSeconds);
-	}
-	time.frame = frame;
-	time.time  = time.frame * 1000 * ti.fps_denominator / ti.fps_numerator;
-	*/
+	
 	gpVidCtx->bSeeked = true;
 #if USE_MUTEX
 	kernel_.UnlockMutex(gVidMutex);

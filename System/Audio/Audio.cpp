@@ -541,6 +541,19 @@ U32 CAudioModule::GetAudioTime(tAudioID id)
 }
 
 // ==============================================================================
+// SeekAudioTime
+// ==============================================================================
+Boolean CAudioModule::SeekAudioTime(tAudioID id, U32 timeMilliSeconds)
+{
+	Boolean found = false;
+	
+	AUDIO_LOCK;
+	found = gAudioContext.pAudioMixer->SeekAudioTime(id, timeMilliSeconds);
+	AUDIO_UNLOCK;
+	return found;
+}
+
+// ==============================================================================
 // IsAudioPlaying
 // ==============================================================================
 Boolean CAudioModule::IsAudioPlaying(tAudioID id)

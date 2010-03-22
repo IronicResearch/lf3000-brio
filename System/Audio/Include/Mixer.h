@@ -84,6 +84,8 @@ class CAudioMixer : private IEventListener
 	
 	tMidiPlayerID GetMidiID(void);
 	void SetMidiAudioID(tMidiPlayerID midiId, tAudioID audioId);
+	
+	Boolean SeekAudioTime(tAudioID id, U32 timeMilliSeconds);
 
  private:
 	CStream* FindFreeStream( tAudioPriority priority );

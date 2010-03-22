@@ -169,6 +169,15 @@ void* VideoTaskMain( void* arg )
 				}
 				kernel.TaskSleep(1);
 			}
+			
+			//Seeking Audio here in conjunction with video before update of marktime
+			if(pctx->bSeeked)
+			{
+				pctx->bSeeked = false;
+				vidmgr.GetVideoTime(pctx->hVideo, &vtm);
+				if(pctx->hAudio != kNoAudioID)
+					audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
+			}
 			// Next target time is relative to current frame time stamp
 			marktime = vtm.time + basetime + lapsetime;
 			if (bAudio)
@@ -186,11 +195,6 @@ void* VideoTaskMain( void* arg )
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
 				}
-			}
-			if(pctx->bSeeked)
-			{
-				pctx->bSeeked = false;
-				vidmgr.GetVideoTime(pctx->hVideo, &vtm);
 			}
 		}
 		if (pctx->hAudio != kNoAudioID)

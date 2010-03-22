@@ -291,4 +291,21 @@ U32 CRawPlayer::GetAudioTime_mSec( void )
 	return (milliSeconds);
 }
 
+// =============================================================================
+// Seek :	
+// =============================================================================
+Boolean CRawPlayer::SeekAudioTime(U32 timeMilliSeconds)
+{
+	U32 target_frame = timeMilliSeconds * samplingFrequency_ / 1000;
+	totalBytesRead_ = target_frame * sizeof(S16) * channels_;
+	
+	if (fileH_)
+		fseek( fileH_, sizeof(tAudioHeader) + totalBytesRead_, SEEK_SET);
+	if (inFile_)
+		sf_seek(inFile_, totalBytesRead_, SEEK_SET);
+	
+	//bSeeked = true;
+	return true;
+}
+
 LF_END_BRIO_NAMESPACE()

@@ -338,6 +338,17 @@ U32 CAudioMPI::GetAudioTime( tAudioID id ) const
 }   // ---- end GetAudioTime() ----
 
 // ==============================================================================
+// SeekAudioTime
+// ==============================================================================
+Boolean CAudioMPI::SeekAudioTime(tAudioID id, U32 timeMilliSeconds)
+{
+	if ( !pModule_ )
+		return false;
+	
+	return pModule_->SeekAudioTime( id, timeMilliSeconds );
+}
+
+// ==============================================================================
 // StopAudio
 // ==============================================================================
 void CAudioMPI::StopAudio( tAudioID id, Boolean noDoneMessage ) 

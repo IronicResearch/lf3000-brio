@@ -24159,3 +24159,16 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/19/10 5:14 PM
 6,391 ms. (Cumulative: 8,275,848 ms)
 
 ----------------
+Revision 6,822 from svn://localhost/TRUNK/:
+
+Added in working AudioSeeking (only tested with Vorbis).
+
+AudioMPI now has new function, SeekAudioTime.  All players have their own implementation of SeekAudioTime.  VideoTask is responsible for seeking the audio if the video has been seeked.
+
+Calls to SeekAudioTime go through the Mixer in order to protect access to VorbisFile.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/22/10 11:19 AM
+15 changed, 0 added, 0 deleted.
+6,610 ms. (Cumulative: 8,282,551 ms)
+
+----------------
