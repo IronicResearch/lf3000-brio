@@ -111,7 +111,7 @@ void show_atomics ()
 	for (p=atomicList.begin(); p!= atomicList.end(); p++)
 	{
 		printf ("i=%d realName=%s", i, (*p)->realName ? (*p)->realName : "NULL");
-		printf ("workName=%s fp=0x%08x\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
+		printf ("workName=%s fp=%p\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
 		i++;
 	}
 }
