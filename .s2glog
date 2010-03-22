@@ -24172,3 +24172,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/22/10 11:19 AM
 6,610 ms. (Cumulative: 8,282,551 ms)
 
 ----------------
+Revision 6,823 from svn://localhost/TRUNK/:
+Revision 6,824 from svn://localhost/TRUNK/:
+
+Changing a printf to use %p for a pointer instead of %x.  Code now builds in Debug.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/22/10 11:42 AM
+1 changed, 0 added, 0 deleted.
+6,282 ms. (Cumulative: 8,288,943 ms)
+
+----------------
