@@ -270,6 +270,20 @@ U32 CVorbisPlayer::GetAudioTime_mSec( void )
 }
 
 // ==============================================================================
+// Seek
+// ==============================================================================
+Boolean CVorbisPlayer::SeekAudioTime(U32 timeMilliSeconds)
+{
+#ifdef USE_VORBIS
+	int error = ov_time_seek(&vorbisFile_, timeMilliSeconds / 1000.0);
+#else
+	int error = ov_time_seek(&vorbisFile_, timeMilliSeconds);
+#endif
+	//bSeeked = true;
+	return error == 0;
+}
+
+// ==============================================================================
 // Render		 Convert Ogg stream to linear PCM data
 // ==============================================================================
 U32 CVorbisPlayer::Render( S16* pOut, U32 numStereoFrames )

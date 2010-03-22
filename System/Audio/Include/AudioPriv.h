@@ -101,6 +101,7 @@ class CAudioModule : public ICoreModule {
 	VTABLE_EXPORT Boolean IsAudioPlaying( void );
 
 	VTABLE_EXPORT U32 GetAudioTime( tAudioID id );
+	VTABLE_EXPORT Boolean SeekAudioTime( tAudioID id, U32 timeMilliSeconds );
 
 	VTABLE_EXPORT U8 GetAudioVolume( tAudioID id );
 	VTABLE_EXPORT void SetAudioVolume( tAudioID id, U8 volume );

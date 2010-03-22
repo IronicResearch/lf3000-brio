@@ -328,6 +328,13 @@ public:
 	/// time halts when the player is paused.  Returns 0 if id is not valid.
 	U32 	GetAudioTime( tAudioID id ) const;
 	
+	/// Moves audio stream to designated time in milliseconds
+	///
+	/// \param id tAudioID of the player to seek with
+	//. \param timeMilliSeconds number of milliseconds into audio to seek to
+	/// \returns whether seeking was successful
+	Boolean SeekAudioTime(tAudioID id, U32 timeMilliSeconds);
+	
 	/// Get volume of a player
 	///
 	/// \param id tAudioID of the player in question

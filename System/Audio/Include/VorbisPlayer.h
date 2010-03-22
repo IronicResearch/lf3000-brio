@@ -45,6 +45,7 @@ class CVorbisPlayer : public CAudioPlayer {
 
 	void	RewindFile();
 	U32		GetAudioTime_mSec( void );
+	Boolean	SeekAudioTime(U32 timeMilliSeconds);
 	
 	// Attempt to fill buffer at pOutBuff with numFrames of data.  Returns
 	// number of frames actually rendered; zero when done.
@@ -58,6 +59,8 @@ class CVorbisPlayer : public CAudioPlayer {
 	
 	int				fd_;			// file descriptor
 	void*			dataSource_;	// data source for Vorbis callbacks
+	CKernelMPI		kernel;
+	tMutex			vorbisFileMutex;
 };
 
 LF_END_BRIO_NAMESPACE()

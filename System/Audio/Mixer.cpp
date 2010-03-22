@@ -1482,5 +1482,23 @@ void CAudioMixer::SetMidiAudioID(tMidiPlayerID midiId, tAudioID audioId)
 	curMidiAudioId_ = audioId;
 }
 
+// ==============================================================================
+// SeekAudioTime :
+// ==============================================================================
+Boolean CAudioMixer::SeekAudioTime(tAudioID id, U32 timeMilliSeconds)
+{
+	Boolean found = false;
+	MIXER_LOCK;
+	CStream *pStream = FindStreamInternal(id);
+	if (pStream)
+	{
+		CAudioPlayer *pPlayer = pStream->GetPlayer();
+		if (pPlayer)
+			found = pPlayer->SeekAudioTime( timeMilliSeconds );
+	}
+	MIXER_UNLOCK;
+	return found;
+}
+
 LF_END_BRIO_NAMESPACE()
 

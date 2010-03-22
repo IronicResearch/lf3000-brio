@@ -231,4 +231,17 @@ U32 CMemPlayer::GetAudioTime_mSec( void )
 	return (milliSeconds);
 }
 
+// =============================================================================
+// Seek : 
+// =============================================================================
+Boolean CMemPlayer::SeekAudioTime(U32 timeMilliSeconds)
+{
+	U32 target_frame = timeMilliSeconds * samplingFrequency_ / 1000;
+	
+	totalBytesRead_ = target_frame * sizeof(S16) * channels_;
+	pReadData_ = (U8 *)pAudioData_ + totalBytesRead_;
+	//bSeeked = true;
+	return true;
+}
+
 LF_END_BRIO_NAMESPACE()

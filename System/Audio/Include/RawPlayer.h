@@ -47,6 +47,7 @@ class CRawPlayer : public CAudioPlayer {
 
 	void	RewindFile();
 	U32 GetAudioTime_mSec( void );
+	Boolean	SeekAudioTime(U32 timeMilliSeconds);
 	U32 ReadBytesFromFile( void *d, U32 bytesToRead);
 
 	// Returns # frames actually rendered without zero padding

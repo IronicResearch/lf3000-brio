@@ -47,7 +47,8 @@ class CAudioPlayer {
 	// check if the player is paused prior to calling Render.
 	virtual U32		Render( S16 *pOut, U32 numFrames ) = 0;
 	virtual U32		GetAudioTime_mSec( void ) = 0; // Time since start of play
-
+	virtual Boolean	SeekAudioTime(U32 timeMilliSeconds) = 0;
+	
 	// These functions are used to implement per-player policy.  They are
 	// implemented as static class functions by convention.  A c++ programmer
 	// wiser than I could probably do this in a much classier fashion, so to
@@ -125,6 +126,8 @@ protected:
 	Boolean				bIsTimeElapsed_;// time elapsed event?
 	U32					timeDelta_;		// lapse time delta for time events
 	U32					timeLapsed_;	// elapsed time during playback
+	
+	Boolean				bSeeked;
 };
 
 LF_END_BRIO_NAMESPACE()
