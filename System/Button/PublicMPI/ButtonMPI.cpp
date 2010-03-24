@@ -176,5 +176,53 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 #endif
 }
 
+//----------------------------------------------------------------------------
+tTouchMode CButtonMPI::GetTouchMode() const
+{
+#ifndef EMULATION
+	U32 	debounce = 0;
+	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/debounce_in_samples", "r");
+	if (fd != NULL) {
+		fscanf(fd, "%u\n", (unsigned int*)&debounce);
+		fclose(fd);
+	}
+	switch (debounce) {
+	case 4:
+		return kTouchModeDrawing;
+	case 1:
+	default:
+		return kTouchModeDefault;
+	}
+#else
+	return 0;	// not implemented
+#endif
+}
+
+//----------------------------------------------------------------------------
+tErrType CButtonMPI::SetTouchMode(tTouchMode mode)
+{
+#ifndef EMULATION
+	U32 	debounce = 0;
+	switch (mode) {
+	case kTouchModeDrawing:
+		debounce = 4;
+		break;
+	case kTouchModeDefault:
+	default:
+		debounce = 1;
+		break;
+	}
+	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/debounce_in_samples", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", (unsigned int)debounce);
+		fclose(fd);
+		return kNoErr;
+	}
+	return kNoImplErr;
+#else
+	return kNoImplErr;	// not implemented
+#endif
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

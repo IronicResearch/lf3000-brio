@@ -48,6 +48,10 @@ const U32	kTouchRateMin		= 1;	///< minimum touch rate (Hz)
 const U32	kTouchRateMax		= 100;	///< maximum touch rate (Hz)
 const U32	kTouchRateDefault	= 100;	///< default touch rate (Hz)
 
+enum tTouchMode {
+	kTouchModeDefault,					///< default touch mode
+	kTouchModeDrawing					///< drawing touch mode
+};
 
 //==============================================================================	   
 // Touch types
