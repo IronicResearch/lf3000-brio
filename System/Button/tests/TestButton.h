@@ -136,4 +136,22 @@ public:
 		TS_ASSERT_EQUALS( kTouchRateDefault, rate );
 #endif
 	}
+
+	//------------------------------------------------------------------------
+	void testTouchMode( )
+	{
+#ifndef EMULATION
+		tTouchMode mode;
+		mode = btnmgr_->GetTouchMode();
+		TS_ASSERT_EQUALS( kTouchModeDefault, mode );
+		mode = kTouchModeDrawing;
+		TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchMode(mode) );
+		mode = btnmgr_->GetTouchMode();
+		TS_ASSERT_EQUALS( kTouchModeDrawing, mode );
+		mode = kTouchModeDefault;
+		TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchMode(mode) );
+		mode = btnmgr_->GetTouchMode();
+		TS_ASSERT_EQUALS( kTouchModeDefault, mode );
+#endif
+	}
 };

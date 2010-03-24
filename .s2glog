@@ -24182,3 +24182,55 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/22/10 11:42 AM
 6,282 ms. (Cumulative: 8,288,943 ms)
 
 ----------------
+Revision 6,825 from svn://localhost/TRUNK/:
+Revision 6,826 from svn://localhost/TRUNK/:
+Revision 6,827 from svn://localhost/TRUNK/:
+Revision 6,828 from svn://localhost/TRUNK/:
+Revision 6,829 from svn://localhost/TRUNK/:
+Revision 6,830 from svn://localhost/TRUNK/:
+Revision 6,831 from svn://localhost/TRUNK/:
+Revision 6,832 from svn://localhost/TRUNK/:
+Revision 6,833 from svn://localhost/TRUNK/:
+Revision 6,834 from svn://localhost/TRUNK/:
+Revision 6,835 from svn://localhost/TRUNK/:
+Revision 6,836 from svn://localhost/TRUNK/:
+Revision 6,837 from svn://localhost/TRUNK/:
+Revision 6,838 from svn://localhost/TRUNK/:
+Revision 6,839 from svn://localhost/TRUNK/:
+Revision 6,840 from svn://localhost/TRUNK/:
+Revision 6,841 from svn://localhost/TRUNK/:
+Revision 6,842 from svn://localhost/TRUNK/:
+Revision 6,843 from svn://localhost/TRUNK/:
+Revision 6,844 from svn://localhost/TRUNK/:
+Revision 6,845 from svn://localhost/TRUNK/:
+Revision 6,846 from svn://localhost/TRUNK/:
+Revision 6,847 from svn://localhost/TRUNK/:
+Revision 6,848 from svn://localhost/TRUNK/:
+Revision 6,849 from svn://localhost/TRUNK/:
+Revision 6,850 from svn://localhost/TRUNK/:
+Revision 6,851 from svn://localhost/TRUNK/:
+Revision 6,852 from svn://localhost/TRUNK/:
+Revision 6,853 from svn://localhost/TRUNK/:
+Revision 6,854 from svn://localhost/TRUNK/:
+Revision 6,855 from svn://localhost/TRUNK/:
+Revision 6,856 from svn://localhost/TRUNK/:
+Revision 6,857 from svn://localhost/TRUNK/:
+Revision 6,858 from svn://localhost/TRUNK/:
+Revision 6,859 from svn://localhost/TRUNK/:
+Revision 6,860 from svn://localhost/TRUNK/:
+Revision 6,861 from svn://localhost/TRUNK/:
+Revision 6,862 from svn://localhost/TRUNK/:
+Revision 6,863 from svn://localhost/TRUNK/:
+Revision 6,864 from svn://localhost/TRUNK/:
+Revision 6,865 from svn://localhost/TRUNK/:
+Revision 6,866 from svn://localhost/TRUNK/:
+Revision 6,867 from svn://localhost/TRUNK/:
+Revision 6,868 from svn://localhost/TRUNK/:
+
+Add new ButtonMPI functions for SetTouchMode/GetTouchMode to use only enumerated values for drawing vs default modes, hiding sysfs implementation details from the caller app. (TTP #2419)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/10 4:56 PM
+4 changed, 0 added, 0 deleted.
+6,518 ms. (Cumulative: 8,295,851 ms)
+
+----------------

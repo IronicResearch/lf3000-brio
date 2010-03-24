@@ -61,6 +61,12 @@ public:
 	/// [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 20, 25, 33, 50, 100]
 	tErrType		SetTouchRate(U32 rate);
 
+	/// Get touch mode (enum tTouchMode)
+	tTouchMode		GetTouchMode() const;
+
+	/// Set touch mode (enum tTouchMode)
+	tErrType		SetTouchMode(tTouchMode mode);
+	
 private:
 	class CButtonModule*	pModule_;
 };
