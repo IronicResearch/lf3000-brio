@@ -67,6 +67,12 @@ public:
 	/// Set touch mode (enum tTouchMode)
 	tErrType		SetTouchMode(tTouchMode mode);
 	
+	/// Get touch parameter value (enum tTouchParam)
+	U32				GetTouchParam(tTouchParam param) const;
+
+	/// Set touch parameter value (enum tTouchParam)
+	tErrType		SetTouchParam(tTouchParam param, U32 value);
+	
 private:
 	class CButtonModule*	pModule_;
 };

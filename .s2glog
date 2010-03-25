@@ -24257,3 +24257,17 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/10 6:05 PM
 5,878 ms. (Cumulative: 8,308,147 ms)
 
 ----------------
+Revision 6,876 from svn://localhost/TRUNK/:
+Revision 6,877 from svn://localhost/TRUNK/:
+Revision 6,878 from svn://localhost/TRUNK/:
+Revision 6,879 from svn://localhost/TRUNK/:
+Revision 6,880 from svn://localhost/TRUNK/:
+Revision 6,881 from svn://localhost/TRUNK/:
+
+Add more new ButtonMPI functions for SetTouchParam/GetTouchParam to allow low-level setting of touch parameters (debounce down/up, sample rate). API uses paired enum/value arguments to support future settings. (TTP #2419)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/25/10 1:14 PM
+3 changed, 0 added, 0 deleted.
+5,922 ms. (Cumulative: 8,314,178 ms)
+
+----------------

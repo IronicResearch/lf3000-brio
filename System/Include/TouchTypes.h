@@ -48,9 +48,32 @@ const U32	kTouchRateMin		= 1;	///< minimum touch rate (Hz)
 const U32	kTouchRateMax		= 100;	///< maximum touch rate (Hz)
 const U32	kTouchRateDefault	= 100;	///< default touch rate (Hz)
 
+/// Enumerated type for SetTouchMode()/GetTouchMode()
 enum tTouchMode {
 	kTouchModeDefault,					///< default touch mode
-	kTouchModeDrawing					///< drawing touch mode
+	kTouchModeDrawing,					///< drawing touch mode
+	kTouchModeCustom					///< custom touch mode
+};
+
+/// Enumerated type for SetTouchParam()/GetTouchParam()
+enum tTouchParam {
+	kTouchParamSampleRate,				///< sample rate (Hz)
+	kTouchParamDebounceDown,			///< debounce stylus down (samples)
+	kTouchParamDebounceUp				///< debounce stylus up (samples)
+};
+
+// Table of tTouchParam parameters for Default touch mode
+const U32	kTouchTableDefault[] = {
+	100,								// sample rate (Hz)
+	4,									// debounce stylus down (samples)
+	1									// debounce stylus up (samples)
+};
+
+// Table of tTouchParam parameters for Drawing touch mode
+const U32	kTouchTableDrawing[] = {
+	100,								// sample rate (Hz)
+	4,									// debounce stylus down (samples)
+	5									// debounce stylus up (samples)
 };
 
 //==============================================================================	   
