@@ -72,8 +72,8 @@ const U32	kTouchTableDefault[] = {
 // Table of tTouchParam parameters for Drawing touch mode
 const U32	kTouchTableDrawing[] = {
 	100,								// sample rate (Hz)
-	4,									// debounce stylus down (samples)
-	5									// debounce stylus up (samples)
+	8,									// debounce stylus down (samples)
+	8									// debounce stylus up (samples)
 };
 
 //==============================================================================	   

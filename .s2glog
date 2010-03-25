@@ -24280,3 +24280,23 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/25/10 1:50 PM
 5,955 ms. (Cumulative: 8,320,211 ms)
 
 ----------------
+Revision 6,883 from svn://localhost/TRUNK/:
+Revision 6,884 from svn://localhost/TRUNK/:
+Revision 6,885 from svn://localhost/TRUNK/:
+Revision 6,886 from svn://localhost/TRUNK/:
+Revision 6,887 from svn://localhost/TRUNK/:
+Revision 6,888 from svn://localhost/TRUNK/:
+Revision 6,889 from svn://localhost/TRUNK/:
+Revision 6,890 from svn://localhost/TRUNK/:
+Revision 6,891 from svn://localhost/TRUNK/:
+Revision 6,892 from svn://localhost/TRUNK/:
+Revision 6,893 from svn://localhost/TRUNK/:
+Revision 6,894 from svn://localhost/TRUNK/:
+
+Touch parameters for drawing mode updated, per Content MrPencil testing. (TTP 2352, 2419)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/25/10 4:45 PM
+1 changed, 0 added, 0 deleted.
+5,856 ms. (Cumulative: 8,326,223 ms)
+
+----------------
