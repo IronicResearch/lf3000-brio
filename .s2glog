@@ -24243,3 +24243,17 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/10 5:00 PM
 6,231 ms. (Cumulative: 8,302,160 ms)
 
 ----------------
+Revision 6,870 from svn://localhost/TRUNK/:
+Revision 6,871 from svn://localhost/TRUNK/:
+Revision 6,872 from svn://localhost/TRUNK/:
+Revision 6,873 from svn://localhost/TRUNK/:
+Revision 6,874 from svn://localhost/TRUNK/:
+Revision 6,875 from svn://localhost/TRUNK/:
+
+Correct touch type for emulation. (TTP 2419)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/10 6:05 PM
+1 changed, 0 added, 0 deleted.
+5,878 ms. (Cumulative: 8,308,147 ms)
+
+----------------
