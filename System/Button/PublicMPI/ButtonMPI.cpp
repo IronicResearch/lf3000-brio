@@ -194,7 +194,7 @@ tTouchMode CButtonMPI::GetTouchMode() const
 		return kTouchModeDefault;
 	}
 #else
-	return 0;	// not implemented
+	return kTouchModeDefault;	// not implemented
 #endif
 }
 
