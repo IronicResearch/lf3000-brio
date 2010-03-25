@@ -116,7 +116,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testTouchRate( )
+	void XXXXtestTouchRate( )
 	{
 #ifndef EMULATION
 		U32	rate;
