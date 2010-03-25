@@ -24271,3 +24271,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/25/10 1:14 PM
 5,922 ms. (Cumulative: 8,314,178 ms)
 
 ----------------
+Revision 6,882 from svn://localhost/TRUNK/:
+
+After some tests, it looks like the changes to vorbisfile was not actually needed.  Reverting the changes I made to it.  Made some other changes to the setup and make scripts so that it's easier to build.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/25/10 1:50 PM
+5 changed, 0 added, 0 deleted.
+5,955 ms. (Cumulative: 8,320,211 ms)
+
+----------------

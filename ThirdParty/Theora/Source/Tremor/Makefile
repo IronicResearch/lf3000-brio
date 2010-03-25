@@ -141,7 +141,7 @@ INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS =   -Wl,--version-script=Version_script
 LIBOBJS =  ${LIBOBJDIR}memcmp$U.o
-LIBS = -logg -L../../Libs/$(TARGET_CPU)
+LIBS = -L../../Libs/$(host_cpu) -logg
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LN_S = ln -s
 LTLIBOBJS =  ${LIBOBJDIR}memcmp$U.lo
