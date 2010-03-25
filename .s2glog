@@ -24234,3 +24234,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/10 4:56 PM
 6,518 ms. (Cumulative: 8,295,851 ms)
 
 ----------------
+Revision 6,869 from svn://localhost/TRUNK/:
+
+Disable ButtonMPI SetTouchRate() function, keeping default touch rate unchanged by apps. (TTP #2419)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/10 5:00 PM
+2 changed, 0 added, 0 deleted.
+6,231 ms. (Cumulative: 8,302,160 ms)
+
+----------------
