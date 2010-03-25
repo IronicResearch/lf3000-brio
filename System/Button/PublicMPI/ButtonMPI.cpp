@@ -179,49 +179,90 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 //----------------------------------------------------------------------------
 tTouchMode CButtonMPI::GetTouchMode() const
 {
-#ifndef EMULATION
-	U32 	debounce = 0;
-	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/debounce_in_samples", "r");
-	if (fd != NULL) {
-		fscanf(fd, "%u\n", (unsigned int*)&debounce);
-		fclose(fd);
-	}
-	switch (debounce) {
-	case 4:
-		return kTouchModeDrawing;
-	case 1:
-	default:
-		return kTouchModeDefault;
-	}
-#else
-	return kTouchModeDefault;	// not implemented
-#endif
+	U32 a = GetTouchParam(kTouchParamSampleRate);
+	U32 b = GetTouchParam(kTouchParamDebounceDown);
+	U32 c = GetTouchParam(kTouchParamDebounceUp);
+	if (a == kTouchTableDrawing[kTouchParamSampleRate]
+		&& b == kTouchTableDrawing[kTouchParamDebounceDown]
+		&& c == kTouchTableDrawing[kTouchParamDebounceUp])
+			return kTouchModeDrawing;
+	if (a == kTouchTableDefault[kTouchParamSampleRate]
+		&& b == kTouchTableDefault[kTouchParamDebounceDown]
+		&& c == kTouchTableDefault[kTouchParamDebounceUp])
+			return kTouchModeDefault;
+	return kTouchModeCustom;
 }
 
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::SetTouchMode(tTouchMode mode)
 {
-#ifndef EMULATION
-	U32 	debounce = 0;
+	tErrType r = kNoErr; // 0
 	switch (mode) {
 	case kTouchModeDrawing:
-		debounce = 4;
+		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDrawing[kTouchParamSampleRate]);
+		r |= SetTouchParam(kTouchParamDebounceDown, kTouchTableDrawing[kTouchParamDebounceDown]);
+		r |= SetTouchParam(kTouchParamDebounceUp, 	kTouchTableDrawing[kTouchParamDebounceUp]);
 		break;
 	case kTouchModeDefault:
 	default:
-		debounce = 1;
+		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDefault[kTouchParamSampleRate]);
+		r |= SetTouchParam(kTouchParamDebounceDown, kTouchTableDefault[kTouchParamDebounceDown]);
+		r |= SetTouchParam(kTouchParamDebounceUp, 	kTouchTableDefault[kTouchParamDebounceUp]);
 		break;
 	}
-	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/debounce_in_samples", "w");
+	return r;
+}
+
+//----------------------------------------------------------------------------
+U32	CButtonMPI::GetTouchParam(tTouchParam param) const
+{
+	U32 value = 0;
+	CPath sysfspath;
+	switch (param) {
+	case kTouchParamSampleRate:
+		sysfspath = "/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz";
+		break;
+	case kTouchParamDebounceDown:
+		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_down";
+		break;
+	case kTouchParamDebounceUp:
+		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_up";
+		break;
+	default:
+		return 0;
+	}
+	FILE* fd = fopen(sysfspath.c_str(), "r");
 	if (fd != NULL) {
-		fprintf(fd, "%u\n", (unsigned int)debounce);
+		fscanf(fd, "%u\n", (unsigned int*)&value);
+		fclose(fd);
+	}
+	return value;
+}
+
+//----------------------------------------------------------------------------
+tErrType CButtonMPI::SetTouchParam(tTouchParam param, U32 value)
+{
+	CPath sysfspath;
+	switch (param) {
+	case kTouchParamSampleRate:
+		sysfspath = "/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz";
+		break;
+	case kTouchParamDebounceDown:
+		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_down";
+		break;
+	case kTouchParamDebounceUp:
+		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_up";
+		break;
+	default:
+		return kNoImplErr;
+	}
+	FILE* fd = fopen(sysfspath.c_str(), "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", (unsigned int)value);
 		fclose(fd);
 		return kNoErr;
 	}
 	return kNoImplErr;
-#else
-	return kNoImplErr;	// not implemented
-#endif
 }
 
 LF_END_BRIO_NAMESPACE()
