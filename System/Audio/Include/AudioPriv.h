@@ -210,6 +210,8 @@ class CAudioModule : public ICoreModule {
 
 	VTABLE_EXPORT tPriorityPolicy GetPriorityPolicy(void);
 
+	VTABLE_EXPORT void PauseAllAudio( void ); 	
+	VTABLE_EXPORT void ResumeAllAudio( void ); 	
 	
  private:
 	CKernelMPI*				pKernelMPI_;

@@ -353,10 +353,7 @@ public:
 		TS_ASSERT(id != kNoAudioID);
 		pKernelMPI_->TaskSleep(1000);
 		pAudioMPI_->PauseAudioSystem();
-		//NOTE: IsAudioPlaying should return false, but it returns true.  This
-		//is broken functionality.  It will remain broken unless I'm instructed
-		//to fix it on the grounds that developers may be depending on incorrect
-		//functionality.
+		//NOTE: IsAudioPlaying returns true as long as player is not stopped.
 		TS_ASSERT(pAudioMPI_->IsAudioPlaying() == true)
 		pKernelMPI_->TaskSleep(500);
 		pAudioMPI_->ResumeAudioSystem();
@@ -376,14 +373,32 @@ public:
 		TS_ASSERT(id != kNoAudioID);
 		pKernelMPI_->TaskSleep(1000);
 		pAudioMPI_->PauseAudio(id);
-		//NOTE: IsAudioPlaying should return false, but it returns true.  This
-		//is broken functionality.  It will remain broken unless I'm instructed
-		//to fix it on the grounds that developers may be depending on incorrect
-		//functionality.
+		//NOTE: IsAudioPlaying returns true as long as player is not stopped.
 		TS_ASSERT(pAudioMPI_->IsAudioPlaying(id) == true)
 		pKernelMPI_->TaskSleep(500);
 		pAudioMPI_->ResumeAudio(id);
 		while(pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+	}
+
+	//------------------------------------------------------------------------
+    void testPauseResumeAllAudio()
+	{
+		tAudioID id;
+		PRINT_TEST_NAME();
+
+		id = pAudioMPI_->StartAudio("two-second.ogg", kVolume, kPriority, kPan,
+									NULL, 0, 0);
+		TS_ASSERT(id != kNoAudioID);
+		pKernelMPI_->TaskSleep(1000);
+		pAudioMPI_->PauseAllAudio();
+		//NOTE: IsAudioPlaying returns true as long as player is not stopped.
+		for (int i = 0; i < 5; i++) {
+			TS_ASSERT(pAudioMPI_->IsAudioPlaying() == true)
+			pKernelMPI_->TaskSleep(100);
+		}
+		pAudioMPI_->ResumeAllAudio();
+		while(pAudioMPI_->IsAudioPlaying())
 			pKernelMPI_->TaskSleep(100);
 	}
 
@@ -574,6 +589,36 @@ public:
 		while(pAudioMPI_->IsAudioPlaying())
 			pKernelMPI_->TaskSleep(100);
 		TS_ASSERT_EQUALS( 7, numTimeEvents );
+	}
+
+	//------------------------------------------------------------------------
+	void testPauseResumeCallback( )
+	{
+		tAudioID 		id;
+		tAudioPayload	payload = 32; // msec
+		PRINT_TEST_NAME();
+
+		numTimeEvents = 0;
+		id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, kPriority,
+				kPan, this, payload, kAudioOptionsTimeEvent);
+		id = pAudioMPI_->StartAudio("two-second.wav", kVolume, kPriority,
+				kPan, this, payload, kAudioOptionsTimeEvent);
+
+		pKernelMPI_->TaskSleep(500);
+		TS_ASSERT( numTimeEvents > 0 );
+
+		// No event callbacks should occur while players are paused
+		pAudioMPI_->PauseAllAudio();
+		numTimeEvents = 0;
+		for (int i = 0; i < 5; i++) {
+			pKernelMPI_->TaskSleep(100);
+			TS_ASSERT( numTimeEvents == 0 );
+		}
+		
+		pAudioMPI_->ResumeAllAudio();
+		while(pAudioMPI_->IsAudioPlaying())
+			pKernelMPI_->TaskSleep(100);
+		TS_ASSERT( numTimeEvents > 0 );
 	}
 
 	//------------------------------------------------------------------------

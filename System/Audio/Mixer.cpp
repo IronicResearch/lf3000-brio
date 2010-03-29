@@ -952,6 +952,37 @@ void CAudioMixer::RemoveAllPlayer( void )
 	MIXER_UNLOCK; 
 }
 
+// ==============================================================================
+// PauseAllPlayer: 
+// ==============================================================================
+void CAudioMixer::PauseAllPlayer( void )
+{
+	MIXER_LOCK;
+	// Pause all active player streams
+	for (long i = 0; i < numInStreams_; i++)
+	{
+		CAudioPlayer *pPlayer = pStreams_[i].GetPlayer();
+		if ( pPlayer && !pPlayer->IsDone() )
+			pPlayer->Pause();
+	}
+	MIXER_UNLOCK; 
+}
+
+// ==============================================================================
+// ResumeAllPlayer: 
+// ==============================================================================
+void CAudioMixer::ResumeAllPlayer( void )
+{
+	MIXER_LOCK;
+	// Resume all active paused player streams
+	for (long i = 0; i < numInStreams_; i++)
+	{
+		CAudioPlayer *pPlayer = pStreams_[i].GetPlayer();
+		if ( pPlayer && !pPlayer->IsDone() && pPlayer->IsPaused() )
+			pPlayer->Resume();
+	}
+	MIXER_UNLOCK; 
+}
 
 // ==============================================================================
 // PausePlayer:

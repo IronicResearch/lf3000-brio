@@ -615,6 +615,17 @@ void CAudioModule::PauseAudio(tAudioID id)
 }
 
 // ==============================================================================
+// PauseAllAudio
+// ==============================================================================
+void CAudioModule::PauseAllAudio()
+{
+
+	AUDIO_LOCK;
+	gAudioContext.pAudioMixer->PauseAllPlayer();
+	AUDIO_UNLOCK;
+}
+
+// ==============================================================================
 // ResumeAudio
 // ==============================================================================
 void CAudioModule::ResumeAudio( tAudioID id )
@@ -622,6 +633,17 @@ void CAudioModule::ResumeAudio( tAudioID id )
 
 	AUDIO_LOCK;
 	gAudioContext.pAudioMixer->ResumePlayer( id );
+	AUDIO_UNLOCK;
+}
+
+// ==============================================================================
+// ResumeAllAudio
+// ==============================================================================
+void CAudioModule::ResumeAllAudio()
+{
+
+	AUDIO_LOCK;
+	gAudioContext.pAudioMixer->ResumeAllPlayer();
 	AUDIO_UNLOCK;
 }
 
