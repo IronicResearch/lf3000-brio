@@ -87,6 +87,9 @@ class CAudioMixer : private IEventListener
 	
 	Boolean SeekAudioTime(tAudioID id, U32 timeMilliSeconds);
 
+	void PauseAllPlayer(void);
+	void ResumeAllPlayer(void);
+
  private:
 	CStream* FindFreeStream( tAudioPriority priority );
 	CAudioPlayer *CreatePlayer( tAudioStartAudioInfo *pInfo, char *sExt );

@@ -377,6 +377,15 @@ void CAudioMPI::PauseAudio( tAudioID id )
 }   // ---- end PauseAudio() ----
 
 // ==============================================================================
+// PauseAllAudio
+// ==============================================================================
+void CAudioMPI::PauseAllAudio(void) 
+{
+	if ( pModule_ )
+		pModule_->PauseAllAudio();
+} 
+
+// ==============================================================================
 // ResumeAudio
 // ==============================================================================
 void CAudioMPI::ResumeAudio( tAudioID id ) 
@@ -384,6 +393,15 @@ void CAudioMPI::ResumeAudio( tAudioID id )
 	if ( pModule_ )
 		pModule_->ResumeAudio( id );
 }   // ---- end ResumeAudio() ----
+
+// ==============================================================================
+// ResumeAllAudio
+// ==============================================================================
+void CAudioMPI::ResumeAllAudio(void) 
+{
+	if ( pModule_ )
+		pModule_->ResumeAllAudio();
+} 
 
 // ==============================================================================
 // GetAudioVolume
