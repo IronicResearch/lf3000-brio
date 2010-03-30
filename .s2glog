@@ -24333,3 +24333,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/29/10 7:35 PM
 6,344 ms. (Cumulative: 8,339,193 ms)
 
 ----------------
+Revision 6,912 from svn://localhost/TRUNK/:
+
+Camera updates: v4l2 occasionally returns garbage which causes libjpeg to crash.  Temporarily skip over this condition until it can be root caused.
+
+By jeno (jeno@leapfrog.com) on 3/30/10 10:17 AM
+2 changed, 0 added, 0 deleted.
+6,329 ms. (Cumulative: 8,345,616 ms)
+
+----------------

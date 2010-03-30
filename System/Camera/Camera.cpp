@@ -1372,7 +1372,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	camCtx_.numBufs = 2;//NUM_BUFS;
+	camCtx_.numBufs = NUM_BUFS;
 	if(!InitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);

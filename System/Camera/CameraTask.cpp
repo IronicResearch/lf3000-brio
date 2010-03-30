@@ -114,7 +114,8 @@ void* CameraTaskMain(void* arg)
 
 	start = kernel.GetElapsedTimeAsMSecs();
 
-	while(bRunning)
+	/* This is intentionally an assignment, not a comparison */
+	while(bRunning = pCtx->bStreaming)
 	{
 		dbg.Assert((kNoErr == kernel.LockMutex(pCtx->mThread)),\
 											  "Couldn't lock mutex.\n");
@@ -123,19 +124,34 @@ void* CameraTaskMain(void* arg)
 		{
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													  "Couldn't unlock mutex.\n");
-			//kernel.TaskSleep(1);
-			bRunning = pCtx->bStreaming;
 			continue;
 		}
 
-		bRet = pCtx->module->GetFrame(pCtx->hndl, &frame);
+		if(!pCtx->module->GetFrame(pCtx->hndl, &frame))
+		{
+			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
+													"Couldn't unlock mutex.\n");
+			continue;
+		}
 
-		if(bFile && !pCtx->bPaused && bRet)
+		/*
+		 * TODO: !!! Figure out why v4l2 returns garbage!
+		 */
+		if(((char*)frame.data)[0] != 0xFF || ((char*)frame.data)[1] != 0xD8)
+		{
+			pCtx->module->ReturnFrame(pCtx->hndl, &frame);
+
+			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
+												  "Couldn't unlock mutex.\n");
+			continue;
+		}
+
+		if(bFile && !pCtx->bPaused)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
 
-		if(bScreen && !pCtx->bPaused && bRet)
+		if(bScreen && !pCtx->bPaused)
 		{
 			bRet = pCtx->module->RenderFrame(&frame, pCtx->surf, &image);
 			display.Invalidate(0);
@@ -145,8 +161,6 @@ void* CameraTaskMain(void* arg)
 
 		dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 											  "Couldn't unlock mutex.\n");
-
-		bRunning = pCtx->bStreaming;
 	}
 
 	end = kernel.GetElapsedTimeAsMSecs();
