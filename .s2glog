@@ -24320,3 +24320,16 @@ By Dave Milici (dmilici@leapfrog.com) on 3/29/10 1:25 PM
 6,360 ms. (Cumulative: 8,332,724 ms)
 
 ----------------
+Revision 6,907 from svn://localhost/TRUNK/:
+Revision 6,908 from svn://localhost/TRUNK/:
+Revision 6,909 from svn://localhost/TRUNK/:
+Revision 6,910 from svn://localhost/TRUNK/:
+Revision 6,911 from svn://localhost/TRUNK/:
+
+Additional CButtonEventQueue2 and CTouchEventQueue2 declarations for event queue listeners which consume events instead of propagting them. (TTP 2442)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/29/10 7:35 PM
+2 changed, 0 added, 0 deleted.
+6,344 ms. (Cumulative: 8,339,193 ms)
+
+----------------

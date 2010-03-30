@@ -61,13 +61,23 @@ public:
 	///
 	/// \warning DO NOT CALL DELETE on this pointer
 	std::vector<tButtonData2> *GetQueue();
-	
-private:
+
 	tEventStatus Notify(const IEventMessage &msgIn);
+private:
 	CKernelMPI kernel_;
 	tMutex mutex_;
 	std::vector<tButtonData2> eventVector_[2];
 	int front_;
+};
+
+/// Alternate constructor for queue which consumes input events,
+/// instead of propagating its events to other listeners.
+class CButtonEventQueue2 : public CButtonEventQueue
+{
+	tEventStatus Notify(const IEventMessage &msgIn) {
+		CButtonEventQueue::Notify(msgIn);
+		return kEventStatusOKConsumed;
+	}
 };
 
 LF_END_BRIO_NAMESPACE()	
