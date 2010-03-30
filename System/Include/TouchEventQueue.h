@@ -29,19 +29,19 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// Helper class for polling touch events.
 ///
 /// This class exists as a simplified way to poll for touch, release, and move
-/// have to worry about missing anything.
+/// events in a queue without missing anything.
 ///
 /// Create an instance of this class either on the stack or the heap.
 /// Register it as a listener.
 ///
-/// When it's time to check for button presses, call GetQueue().  Process the
-/// button events in the queue.  Most often there will only be one event in
-/// the queue, but if you're update loop is slow there will be more.  If you
-/// need to know the timing of the button presses, the timestamps are included.
+/// When it's time to check for touch events, call GetQueue().  Process the
+/// touch events in the queue.  Most often there will only be one event in
+/// the queue, but if your update loop is slow there will be more.  If you
+/// need to know the timing of the touch events, the timestamps are included.
 ///
 /// When you're done, unregister the listener.
 ///
-/// Make sure if you're not listening to button events to unregister the listener
+/// Make sure if you're not listening to touch events to unregister the listener
 /// temporarily (eg when paused).  Or else the buttons pressed during pause will
 /// show up in the list.  Even if you do an extra GetQueue(), the vector growth
 /// will stay.
@@ -62,12 +62,22 @@ public:
 	/// \warning DO NOT CALL DELETE on this pointer
 	std::vector<tTouchData> *GetQueue();
 	
-private:
 	tEventStatus Notify(const IEventMessage &msgIn);
+private:
 	CKernelMPI kernel_;
 	tMutex mutex_;
 	std::vector<tTouchData> eventVector_[2];
 	int front_;
+};
+
+/// Alternate constructor for queue which consumes input events,
+/// instead of propagating its events to other listeners.
+class CTouchEventQueue2 : public CTouchEventQueue
+{
+	tEventStatus Notify(const IEventMessage &msgIn) {
+		CTouchEventQueue::Notify(msgIn);
+		return kEventStatusOKConsumed;
+	}
 };
 
 LF_END_BRIO_NAMESPACE()
