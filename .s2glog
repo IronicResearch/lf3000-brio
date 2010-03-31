@@ -24342,3 +24342,18 @@ By jeno (jeno@leapfrog.com) on 3/30/10 10:17 AM
 6,329 ms. (Cumulative: 8,345,616 ms)
 
 ----------------
+Revision 6,913 from svn://localhost/TRUNK/:
+Revision 6,914 from svn://localhost/TRUNK/:
+Revision 6,915 from svn://localhost/TRUNK/:
+Revision 6,916 from svn://localhost/TRUNK/:
+Revision 6,917 from svn://localhost/TRUNK/:
+Revision 6,918 from svn://localhost/TRUNK/:
+Revision 6,919 from svn://localhost/TRUNK/:
+
+Relocate video mutex and context vars for VideoMPI unit tests to run again.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/30/10 5:00 PM
+1 changed, 0 added, 0 deleted.
+6,282 ms. (Cumulative: 8,352,023 ms)
+
+----------------

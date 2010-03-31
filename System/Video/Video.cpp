@@ -582,9 +582,6 @@ Boolean CVideoModule::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
-#if USE_MUTEX
-	kernel_.LockMutex(gVidMutex);
-#endif
 	Boolean		ready = false;
 	ogg_packet  op;
 	ogg_int64_t frame;
@@ -597,6 +594,10 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	// Internal codec state only changes during start/stop
 	if (!gbCodecReady)
 		return false;
+
+#if USE_MUTEX
+//	kernel_.LockMutex(gVidMutex);
+#endif
 
 	// Compute next frame if time-based drop-frame mode selected 
 	if (bDrop)
@@ -645,7 +646,7 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		}
 	}
 #if USE_MUTEX
-	kernel_.UnlockMutex(gVidMutex);
+//	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return ready;
 }
@@ -949,9 +950,6 @@ ogg_int64_t BinarySeekFrame(ogg_int64_t target_framepos, long int &left_pos, lon
 
 Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
 {
-#if USE_MUTEX
-	kernel_.LockMutex(gVidMutex);
-#endif
 	tVideoTime	time;
 	Boolean		found = false;
 	ogg_int64_t	frame;
@@ -960,6 +958,10 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	
 	if (!gbCodecReady)
 		return false;
+
+#if USE_MUTEX
+	kernel_.LockMutex(gVidMutex);
+#endif
 
 	// Compare selected frame time to current frame time
 	//GetVideoTime(hVideo, &time);
@@ -1033,7 +1035,9 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		TimeStampOff(1);
 	}
 	
-	gpVidCtx->bSeeked = true;
+	if (gpVidCtx) 
+		gpVidCtx->bSeeked = true;
+	
 #if USE_MUTEX
 	kernel_.UnlockMutex(gVidMutex);
 #endif
