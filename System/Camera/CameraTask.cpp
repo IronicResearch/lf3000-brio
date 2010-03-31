@@ -30,9 +30,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//------------------------------------------------------------------------
-	tTaskHndl		hCameraThread	= kNull;
-	volatile bool	bRunning		= false;
-	volatile bool	bStopping		= false;
+	tTaskHndl				hCameraThread	= kNull;
+	volatile bool			bRunning		= false;
+	volatile bool			bStopping		= false;
+	tVidCapHndl				hndl			= kInvalidVidCapHndl;
+	class CCameraModule*	cam				= NULL;
+	volatile bool			timeout			= false;
 //	tMutex			gThreadMutex = PTHREAD_MUTEX_INITIALIZER;
 //	tCond			gThreadCond  = PTHREAD_COND_INITIALIZER;
 //	class VideoListener*	pVideoListener = NULL;
@@ -53,12 +56,19 @@ namespace
 //============================================================================
 
 //----------------------------------------------------------------------------
+static void TimerCallback(tTimerHndl arg)
+{
+	timeout = true;
+	cam->StopVideoCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
 void* CameraTaskMain(void* arg)
 {
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
-	CCameraMPI			cammgr;
+//	CEventMPI			evntmgr;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
@@ -69,6 +79,14 @@ void* CameraTaskMain(void* arg)
 	tBitmapInfo			image	= {kBitmapFormatError, 0, 0, 0, NULL, 0 };
 
 	Boolean				bRet, bFile = false, bScreen = false;
+
+	tTimerProperties	props	= {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
+	tTimerHndl 			timer 	= kInvalidTimerHndl;
+
+	// these are needed to stop the recording asynchronously
+	// globals are not ideal, but the timer callback doesn't take a custom parameter
+	cam 	= pCtx->module;
+	hndl	= pCtx->hndl;
 
 	// set up save-to-file
 	if(pCtx->path.length())
@@ -114,7 +132,15 @@ void* CameraTaskMain(void* arg)
 
 	start = kernel.GetElapsedTimeAsMSecs();
 
-	/* This is intentionally an assignment, not a comparison */
+//	timer = kernel.CreateTimer(TimerCallback, props, NULL);
+//	props.timeout.it_value.tv_sec = pCtx->maxLength;
+//	props.timeout.it_value.tv_nsec = 0;
+//	kernel.StartTimer(timer, props);
+
+	/*
+	 * This is intentionally an assignment, not a comparison.
+	 * End loop when bRunning is false.
+	 */
 	while(bRunning = pCtx->bStreaming)
 	{
 		dbg.Assert((kNoErr == kernel.LockMutex(pCtx->mThread)),\
@@ -137,7 +163,7 @@ void* CameraTaskMain(void* arg)
 		/*
 		 * TODO: !!! Figure out why v4l2 returns garbage!
 		 */
-		if(((char*)frame.data)[0] != 0xFF || ((char*)frame.data)[1] != 0xD8)
+		if(((U8*)frame.data)[0] != 0xFF || ((U8*)frame.data)[1] != 0xD8)
 		{
 			pCtx->module->ReturnFrame(pCtx->hndl, &frame);
 
@@ -151,7 +177,7 @@ void* CameraTaskMain(void* arg)
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
 
-		if(bScreen && !pCtx->bPaused)
+		if(bScreen && !pCtx->bVPaused)
 		{
 			bRet = pCtx->module->RenderFrame(&frame, pCtx->surf, &image);
 			display.Invalidate(0);
@@ -163,6 +189,9 @@ void* CameraTaskMain(void* arg)
 											  "Couldn't unlock mutex.\n");
 	}
 
+//	kernel.StopTimer(timer);
+//	kernel.DestroyTimer(timer);
+
 	end = kernel.GetElapsedTimeAsMSecs();
 	if(end > start)
 	{
@@ -171,6 +200,42 @@ void* CameraTaskMain(void* arg)
 	else
 	{
 		end += (kU32Max - start);
+	}
+
+	// Post done message to event listener
+	if(pCtx->pListener)
+	{
+#if 0
+		CCameraEventMessage *msg;
+
+		if(!timeout)								// manually stopped by StopVideoCapture()
+		{
+			tCaptureStoppedMsg		data;
+			data.vhndl				= pCtx->hndl;
+			data.saved				= true;
+			data.length 			= end;
+			msg = new CCameraEventMessage(data);
+		}
+		else if(pCtx->reqLength <= pCtx->maxLength)	// normal timeout
+		{
+			tCaptureTimeoutMsg		data;
+			data.vhndl				= pCtx->hndl;
+			data.saved				= true;
+			data.length 			= end;
+			msg = new CCameraEventMessage(data);
+		}
+		else										// FS capacity timeout
+		{
+			tCaptureQuotaHitMsg		data;
+			data.vhndl				= pCtx->hndl;
+			data.saved				= true;
+			data.length 			= end;
+			msg = new CCameraEventMessage(data);
+		}
+
+		evntmgr.PostEvent(*msg, 0, pCtx->pListener);
+		delete msg;
+#endif
 	}
 
 	if(image.data)
@@ -238,6 +303,7 @@ tErrType DeInitCameraTask(tCameraContext* pCtx)
 	bRunning = pCtx->bStreaming = false;
 	while (!bStopping)
 		kernel.TaskSleep(10);
+
 	if (!bStopping)
 		kernel.CancelTask(hCameraThread);
 	kernel.JoinTask(hCameraThread, retval);

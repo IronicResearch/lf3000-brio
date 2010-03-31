@@ -29,7 +29,29 @@ const CString	kMPIName = "CameraMPI";
 // CCameraEventMessage
 //============================================================================
 //------------------------------------------------------------------------------
+CCameraEventMessage::CCameraEventMessage( const tCaptureTimeoutMsg& data )
+	: IEventMessage(kCaptureTimeOutEvent)
+{
+	this->data.timeOut = data;
+}
 
+CCameraEventMessage::CCameraEventMessage( const tCaptureQuotaHitMsg& data )
+	: IEventMessage(kCaptureQuotaHitEvent)
+{
+	this->data.quotaHit = data;
+}
+
+CCameraEventMessage::CCameraEventMessage( const tCaptureStoppedMsg& data )
+	: IEventMessage(kCaptureStoppedEvent)
+{
+	this->data.stopped = data;
+}
+
+//------------------------------------------------------------------------------
+U16	CCameraEventMessage::GetSizeInBytes() const
+{
+	return sizeof(CCameraEventMessage);
+}   // ---- end GetSizeInBytes() ----
 
 //============================================================================
 // CCameraMPI
@@ -137,12 +159,13 @@ Boolean CCameraMPI::SetCameraControl(const tControlInfo* control, const S32 valu
 }
 
 //----------------------------------------------------------------------------
-tVidCapHndl CCameraMPI::StartVideoCapture(const CPath& path, tVideoSurf* pSurf)
+tVidCapHndl	CCameraMPI::StartVideoCapture(tVideoSurf* pSurf, IEventListener * pListener,
+		const CPath& path, const U32 maxLength)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
 
-	return pModule_->StartVideoCapture(path, pSurf);
+	return pModule_->StartVideoCapture(path, pSurf, pListener, maxLength);
 }
 
 //----------------------------------------------------------------------------
@@ -162,11 +185,11 @@ Boolean	CCameraMPI::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraMPI::PauseVideoCapture(const tVidCapHndl hndl)
+Boolean	CCameraMPI::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->PauseVideoCapture(hndl);
+	return pModule_->PauseVideoCapture(hndl, display);
 }
 
 //----------------------------------------------------------------------------

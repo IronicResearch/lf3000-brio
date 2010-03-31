@@ -40,14 +40,14 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// essentially video playback, with the video frames originating from a camera instead of
 /// a file.
 ///
-/// The Camera MPI functions are provided as counterpart to the Video and Audio MPIs.
+/// The Camera MPI functions are provided as counterparts to the Video and Audio MPIs.
 /// The StartVideoCapture() MPI method starts a separate task thread to capture video
 /// automatically, performing the all the low-level frame-based tasks internally.
 /// StartVideoCapture(), despite its name, does not necessarily preserve a video stream
 /// to the file system.  It can also be used to instantiate a "viewfinder" which simply
 /// renders to the display to be use in conjunction with still image capture.  Capture can
 /// be paused with PauseVideoCapture(), and resumed with ResumeVideoCapture(),
-/// or stopped by StopVideoCapture() which will terminate the task thread. Captures must be
+/// or stopped by StopVideoCapture() which will terminate the task thread. Recordings must be
 /// stopped prior to application exit. Capture state info can be queried with the
 /// IsVideoCapturePaused() method.  For audio recordings, the API provides audio-only
 /// equivalents to all of these methods.
@@ -141,17 +141,26 @@ public:
 	/// is not recording video and wants to use the camera only as a viewfinder
 	/// to capture still images.
 	///
-	/// \param	path	AVI save file name relative to SetCameraVideoPath(),
-	/// or full absolute path name if a leading slash is present.  Blank
-	/// parameter means don't save the capture to a file.
-	///
 	/// \param	pSurf	Pointer to video surface descriptor for rendering.
 	/// NULL parameter means don't render the capture.  pSurf should reference
 	/// a tDisplayHandle created with CDisplayMPI::CreateHandle() using
 	/// kPixelFormatYUV420.
 	///
+	/// \param	pListener	Pointer to Event listener for callbacks from the
+	/// video capture subsystem.  Callbacks will occur when recording is asynchronously
+	/// stopped if the file system is full or the maximum record length has been reached.
+	///
+	/// \param	path	AVI save file name relative to SetCameraVideoPath(),
+	/// or full absolute path name if a leading slash is present.  Blank
+	/// parameter "" means don't save the capture to a file.  Blank, "",
+	/// is the default parameter.
+	///
+	/// \param	maxLength	Maximum length in seconds to record.  A value of 0 means
+	/// unlimited recording.
+	///
 	/// \return kInvalidVidCapHndl on failure.
-	tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf);
+	tVidCapHndl	StartVideoCapture(tVideoSurf* pSurf, IEventListener * pListener = NULL,
+			const CPath& path = "", const U32 maxLength = 0);
 
 	/// SnapFrame() takes a snapshot from the stream being captured in a separate
 	/// thread via StartVideoCapture().
@@ -182,14 +191,17 @@ public:
 	/// PauseVideoCapture() pause an active capture.
 	/// Pausing a capture is different from stopping a capture
 	/// since a paused capture is still active, albeit on standby.
-	/// All captures, paused or running, must be stopped to ensure
-	/// a proper recording on the filesystem.
+	/// All recordings, paused or running, must be stopped to ensure
+	/// proper video file creation on the filesystem.
 	///
 	/// \param	hndl	Video capture handle returned by
 	/// StartVideoCapture()
 	///
+	/// \param display	Pause updates to the video surface registered
+	/// with StartVideoCapture().  Recording to AVI is paused unconditionally.
+	///
 	/// \return true if successful.
-	Boolean		PauseVideoCapture(const tVidCapHndl hndl);
+	Boolean		PauseVideoCapture(const tVidCapHndl hndl, const Boolean display=true);
 
 	/// ResumeVideoCapture() a paused capture.
 	///
@@ -206,9 +218,13 @@ public:
 	/// \return true if capture is currently paused.
 	Boolean		IsVideoCapturePaused(const tVidCapHndl hndl);
 
-	/// StopVideoCapture() stop an active capture.    If StopVideoCapture()
-	/// is not called prior to the application exiting (either normally
-	/// or abnormally), the recording will not be saved.
+	/// StopVideoCapture() stop an active capture.  Recordings must be stopped
+	/// prior to application exit (either normal or abnormal).  The application
+	/// can stop recording by calling StopVideoCapture(), or Brio will stop
+	/// recording when either the maximum length specified in StartVideoCapture()
+	/// is reached, or the recording consumes all available space in the
+	/// file system.  If the recording is not stopped by either the application
+	/// or Brio, it will not be saved.
 	///
 	/// \param	hndl	Video capture handle returned by StartVideoCapture()
 	///
@@ -222,14 +238,21 @@ public:
 	/// \param	path	WAV save file name relative to SetCameraAudioPath(),
 	/// or full absolute path name if leading slash.
 	///
+	/// \param	pListener	Pointer to Event listener for callbacks from the
+	/// audio capture subsystem.  Callbacks will be issued when recording is
+	/// stopped asynchronously because the file system is full.
+	///
+	/// \param	maxLength	Maximum length in seconds to record.  A value of 0
+	/// means unlimited recording.
+	///
 	/// \return kInvalidAudCapHndl on failure.
-	tAudCapHndl	StartAudioCapture(const CPath& path);
+	tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength = 0);
 
 	/// PauseAudioCapture() pause an active capture.
 	/// Pausing a recording is different from stopping a recording
 	/// since a paused capture is still active, albeit on standby.
-	/// All captures, paused or running, must be stopped to ensure
-	/// a proper recording.
+	/// All recordings, paused or running, must be stopped to ensure
+	/// proper audio file creation.
 	///
 	/// \param	hndl	Audio capture handle returned by
 	/// StartAudioCapture()
@@ -253,9 +276,13 @@ public:
 	/// \return true if capture is currently paused.
 	Boolean		IsAudioCapturePaused(const tAudCapHndl hndl);
 
-	/// StopAudioCapture() stop an active capture.  If StopAudioCapture()
-	/// is not called prior to the application exiting (either normally
-	/// or abnormally), the recording will not be saved.
+	/// StopAudioCapture() stop an active capture.  Recordings must be stopped
+	/// prior to application exit (either normal or abnormal).  The application
+	/// can stop recording by calling StopAudioCapture(), or Brio will stop
+	/// recording when either the maximum length specified in StartAudioCapture()
+	/// is reached, or the recording consumes all available space in the
+	/// file system.  If the recording is not stopped by either the application
+	/// or Brio, it will not be saved.
 	///
 	/// \param	hndl	Audio capture handle returned by StartAudioCapture()
 	///
