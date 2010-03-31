@@ -151,10 +151,14 @@ struct tCameraContext {
 	tTaskHndl					hCameraThread;
 
 	Boolean						bPaused;
+	Boolean						bVPaused;
 	Boolean						bStreaming;
 	tMutex						mThread;
+	U32							reqLength;		// length in seconds requested by app
+	U32							maxLength;		// length in seconds available on FS
 
 	class CCameraModule			*module;
+	IEventListener				*pListener;
 };
 
 struct tCaptureContext {
@@ -183,10 +187,11 @@ public:
 	VTABLE_EXPORT CPath*		GetCameraStillPath();
 	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
 	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
-	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf);
+	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
+													IEventListener * pListener, const U32 maxLength);
 	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath& path);
 	VTABLE_EXPORT Boolean		RenderFrame(const CPath &path, tVideoSurf *pSurf);
-	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl, const Boolean display);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		IsVideoCapturePaused(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);

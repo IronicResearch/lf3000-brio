@@ -40,6 +40,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <sys/statvfs.h>
+
 #define USE_PROFILE			0
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -48,7 +50,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
-const U32 NUM_BUFS		= 2;
+const U32	NUM_BUFS	= 2;
+const U64	MIN_FREE	= 10*1024*1024;		/* TODO: find a real value */
+const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 
 //==============================================================================
 // Defines
@@ -157,6 +161,8 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 
 	camCtx_.modes			= new tCaptureModes;
 	camCtx_.controls		= new tCameraControls;
+
+	camCtx_.module			= this;
 
 	err = kernel_.InitMutex( dlock, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
@@ -688,7 +694,7 @@ static Boolean InitCameraStartInt(tCameraContext *pCamCtx)
 	{
 		return false;
     }
-	pCamCtx->bPaused = false;
+	pCamCtx->bVPaused = pCamCtx->bPaused = false;
 
 	return true;
 }
@@ -1337,9 +1343,19 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 }
 
 //----------------------------------------------------------------------------
-tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf)
+tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
+		IEventListener * pListener, const U32 maxLength)
 {
 	tVidCapHndl hndl = kInvalidVidCapHndl;
+	struct statvfs buf;
+	U64 length;
+
+	if(statvfs("/", &buf) || ((buf.f_bsize * buf.f_bavail) < MIN_FREE))
+	{
+		return hndl;
+	}
+
+	length = buf.f_bsize * buf.f_bavail / VID_BITRATE;	/* How many seconds can we afford? */
 
 	CAMERA_LOCK;
 
@@ -1348,6 +1364,10 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		CAMERA_UNLOCK;
 		return hndl;
 	}
+
+	camCtx_.reqLength = maxLength;
+	camCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
+	camCtx_.pListener = pListener;
 
 	if(path.length() > 0)
 	{
@@ -1387,11 +1407,16 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	camCtx_.module = this;
+	//hndl must be set before thread starts.  It is used in thread initialization.
+	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
 	if(kNoErr == InitCameraTask(&camCtx_))
 	{
-		hndl = camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
+		hndl = camCtx_.hndl;
+	}
+	else
+	{
+		camCtx_.hndl = hndl;
 	}
 
 	CAMERA_UNLOCK;
@@ -1684,7 +1709,7 @@ Boolean	CCameraModule::OpenFrame(const CPath &path, tFrameInfo *frame)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl)
+Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
 	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	Boolean	bRet	= true;
@@ -1698,6 +1723,7 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl)
 												  "Couldn't lock mutex.\n");
 
 	camCtx_.bPaused = true;
+	camCtx_.bVPaused = display;
 
 	dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
 												  "Couldn't unlock mutex.\n");
@@ -1720,6 +1746,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 												  "Couldn't lock mutex.\n");
 
 	camCtx_.bPaused = false;
+	camCtx_.bVPaused = false;
 
 	dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
 												  "Couldn't unlock mutex.\n");

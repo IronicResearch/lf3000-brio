@@ -14,6 +14,7 @@
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
+const tEventType LocalCameraEvents[] = {kAllCameraEvents};
 
 //============================================================================
 // TestCameraMPI functions
@@ -24,6 +25,50 @@ private:
 	CCameraMPI*		pCameraMPI_;
 	CDisplayMPI*	pDisplayMPI_;
 	CKernelMPI*		pKernelMPI_;
+	tEventType		reason;
+#if 0
+	//============================================================================
+	// Local event listener
+	//============================================================================
+	class CameraListener : public IEventListener
+	{
+	private:
+		tEventType	reason;
+	public:
+		CameraListener():
+			IEventListener(LocalCameraEvents, ArrayCount(LocalCameraEvents))
+			{reason = kUndefinedEventType;}
+
+		tEventStatus Notify(const IEventMessage& msg)
+		{
+			reason = msg.GetEventType();
+			if(reason == kCaptureTimeOutEvent)
+			{
+printf("timeout\n");
+			}
+			else if(reason == kCaptureQuotaHitEvent)
+			{
+printf("quota\n");
+			}
+			else if(reason == kCaptureStoppedEvent)
+			{
+printf("fstop\n");
+			}
+
+			return kEventStatusOK;
+		}
+
+		tEventStatus Reset()
+		{
+			reason = kUndefinedEventType;
+		}
+
+		tEventType GetReason()
+		{
+			return reason;
+		}
+	};
+#endif
 public:
 	//------------------------------------------------------------------------
 	void setUp( )
@@ -92,7 +137,7 @@ public:
 			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pCameraMPI_->StartVideoCapture("testYUV.avi", &surf);
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "testYUV.avi");
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			int step = 0;
@@ -139,7 +184,7 @@ public:
 			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pCameraMPI_->StartVideoCapture("testRGB.avi", &surf);
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "testRGB.avi");
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			int step = 0;
@@ -155,6 +200,65 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testCaptureEvent()
+	{
+#if 0
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		// For displaying captured data
+		tVideoSurf				surf;
+		tDisplayHandle			disp;
+
+		CameraListener			listener;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			capture = pCameraMPI_->StartVideoCapture(&surf, &listener, "", 2);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			//Capture will stop after 2 seconds
+			pKernelMPI_->TaskSleep(2500);
+			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureTimeOutEvent );
+
+			//Reset listener
+			listener.Reset();
+
+			capture = pCameraMPI_->StartVideoCapture(&surf, &listener, "");
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			//Unlimited recording
+			pKernelMPI_->TaskSleep(2500);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureStoppedEvent );
+		}
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+#endif
 	}
 
 	//------------------------------------------------------------------------
@@ -188,7 +292,7 @@ public:
 			bRet = pCameraMPI_->GetCameraControls(controls);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			capture = pCameraMPI_->StartVideoCapture("", &surf);
+			capture = pCameraMPI_->StartVideoCapture(&surf);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			for(it = controls.begin(); it < controls.end(); it++)
@@ -247,11 +351,11 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			capture = pCameraMPI_->StartVideoCapture("", &surf);
+			capture = pCameraMPI_->StartVideoCapture(&surf);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			int step = 0;
-			while(step++ < 4)
+			while(step++ < 3)
 			{
 				pKernelMPI_->TaskSleep(2000);
 
@@ -308,7 +412,7 @@ public:
 			err = pCameraMPI_->SetCameraStillPath("/LF/Base/L3B_Video");
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pCameraMPI_->StartVideoCapture("", &surf);
+			capture = pCameraMPI_->StartVideoCapture(&surf);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			int step = 0;
@@ -341,6 +445,7 @@ public:
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
 	}
+
 };
 
 // EOF

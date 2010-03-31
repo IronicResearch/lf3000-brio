@@ -24357,3 +24357,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/30/10 5:00 PM
 6,282 ms. (Cumulative: 8,352,023 ms)
 
 ----------------
+Revision 6,920 from svn://localhost/TRUNK/:
+
+Camera updates: Modified API incorporating feedback from content team. API modifications are not yet fully implemented, but they are being published early to prevent churn on the public-facing interface.
+
+By jeno (jeno@leapfrog.com) on 3/30/10 5:09 PM
+7 changed, 0 added, 0 deleted.
+6,828 ms. (Cumulative: 8,358,944 ms)
+
+----------------
