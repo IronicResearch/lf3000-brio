@@ -42,6 +42,9 @@
 
 #include <sys/statvfs.h>
 
+/* For libjpeg error handling.  TODO: get rid of this somehow? */
+#include <setjmp.h>
+
 #define USE_PROFILE			0
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -1146,16 +1149,38 @@ out:
 	return ret;
 }
 
+
+
+typedef struct my_error_mgr
+{
+	struct jpeg_error_mgr pub;	/* "public" fields */
+
+	jmp_buf setjmp_buffer;	/* for return to caller */
+} *my_error_ptr;
+
 static void silence_warning(j_common_ptr cinfo, int msg_level)
 {
 
+}
+
+static void my_error_exit (j_common_ptr cinfo)
+{
+	/* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
+	my_error_ptr myerr = (my_error_ptr) cinfo->err;
+
+	/* Always display the message. */
+	/* We could postpone this until after returning, if we chose. */
+	(*cinfo->err->output_message) (cinfo);
+
+	/* Return control to the setjmp point */
+	longjmp(myerr->setjmp_buffer, 1);
 }
 
 //----------------------------------------------------------------------------
 Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap)
 {
 	struct jpeg_decompress_struct	cinfo;
-	struct jpeg_error_mgr			err;
+	struct my_error_mgr				jerr;
 	JSAMPARRAY						buffer = NULL;
 	int 							row = 0;
 	int								row_stride;
@@ -1205,8 +1230,9 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bAlloc = true;
 	}
 
-
-	cinfo.err = jpeg_std_error(&err);
+	/* We set up the normal JPEG error routines, then override error_exit
+	 * and emit_message. */
+	cinfo.err = jpeg_std_error(&jerr.pub);
 
 	/*
 	 * The PixArt camera produces JPEGs which libjpeg complains about:
@@ -1214,7 +1240,23 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	 * These appear visually fine, but the warnings on stderr are distracting,
 	 * so stifle them.
 	 */
-	cinfo.err->emit_message = silence_warning;
+	jerr.pub.emit_message	= silence_warning;
+	/*
+	 * v4l2 sometimes produces totally invalid JPEGs which cause libjpeg to exit.
+	 * TODO: root cause why so this stop-gap isn't needed.
+	 */
+	jerr.pub.error_exit		= my_error_exit;
+
+	/* Establish the setjmp return context for my_error_exit to use. */
+	if (setjmp(jerr.setjmp_buffer))
+	{
+		/* If we get here, the JPEG code has signaled an error.
+		 * We need to clean up the JPEG object, close the input file, and return.
+		 */
+		jpeg_destroy_decompress(&cinfo);
+		bRet = false;
+		goto out;
+	}
 
 	jpeg_create_decompress(&cinfo);
 
@@ -1296,6 +1338,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bRet = DrawFrame(surf, bitmap);
 	}
 
+out:
 	if(bAlloc)
 	{
 		kernel_.Free(bitmap->data);
