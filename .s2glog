@@ -24366,3 +24366,12 @@ By jeno (jeno@leapfrog.com) on 3/30/10 5:09 PM
 6,828 ms. (Cumulative: 8,358,944 ms)
 
 ----------------
+Revision 6,921 from svn://localhost/TRUNK/:
+
+Camera updates: better workaround for garbled JPEGs from v4l2.  Handles "Bad huffman tables", etc.  Error handling copied from libjpeg's example.c.
+
+By jeno (jeno@leapfrog.com) on 3/30/10 6:00 PM
+2 changed, 0 added, 0 deleted.
+6,345 ms. (Cumulative: 8,365,367 ms)
+
+----------------

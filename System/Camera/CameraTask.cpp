@@ -153,34 +153,28 @@ void* CameraTaskMain(void* arg)
 			continue;
 		}
 
-		if(!pCtx->module->GetFrame(pCtx->hndl, &frame))
+		if(!(bRet = pCtx->module->GetFrame(pCtx->hndl, &frame)))
 		{
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													"Couldn't unlock mutex.\n");
 			continue;
 		}
 
-		/*
-		 * TODO: !!! Figure out why v4l2 returns garbage!
-		 */
-		if(((U8*)frame.data)[0] != 0xFF || ((U8*)frame.data)[1] != 0xD8)
-		{
-			pCtx->module->ReturnFrame(pCtx->hndl, &frame);
-
-			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
-												  "Couldn't unlock mutex.\n");
-			continue;
-		}
-
-		if(bFile && !pCtx->bPaused)
-		{
-			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
-		}
-
 		if(bScreen && !pCtx->bVPaused)
 		{
 			bRet = pCtx->module->RenderFrame(&frame, pCtx->surf, &image);
-			display.Invalidate(0);
+			if(bRet)
+			{
+				display.Invalidate(0);
+			}
+		}
+
+		/*
+		 * Write the AVI frame only if it rendered correctly.
+		 */
+		if(bFile && !pCtx->bPaused && bRet)
+		{
+			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 		}
 
 		bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
