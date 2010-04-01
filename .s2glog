@@ -24375,3 +24375,23 @@ By jeno (jeno@leapfrog.com) on 3/30/10 6:00 PM
 6,345 ms. (Cumulative: 8,365,367 ms)
 
 ----------------
+Revision 6,922 from svn://localhost/TRUNK/:
+Revision 6,923 from svn://localhost/TRUNK/:
+Revision 6,924 from svn://localhost/TRUNK/:
+Revision 6,925 from svn://localhost/TRUNK/:
+Revision 6,926 from svn://localhost/TRUNK/:
+Revision 6,927 from svn://localhost/TRUNK/:
+Revision 6,928 from svn://localhost/TRUNK/:
+Revision 6,929 from svn://localhost/TRUNK/:
+Revision 6,930 from svn://localhost/TRUNK/:
+Revision 6,931 from svn://localhost/TRUNK/:
+Revision 6,932 from svn://localhost/TRUNK/:
+Revision 6,933 from svn://localhost/TRUNK/:
+
+Support double buffering in YUV video context during video playback thread to avoid tearing. This only works for LF1000 YUV420 planar format 1Meg block regions with 4K stride scanlines. (TTP 2417)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/31/10 6:36 PM
+2 changed, 0 added, 0 deleted.
+5,875 ms. (Cumulative: 8,371,398 ms)
+
+----------------
