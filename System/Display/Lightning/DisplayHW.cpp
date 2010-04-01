@@ -429,6 +429,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	U32 blend = 0;
 	U32 aligned = 0;
 
+	memset(GraphicsContext, 0, sizeof(tDisplayContext));
 	GraphicsContext->height = height;
 	GraphicsContext->width = width;
 	GraphicsContext->colorDepthFormat = colorDepth;
@@ -719,6 +720,10 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 				&& (U32)context->pBuffer <= (U32)gPlanarBuffer + gPlanarSize) {
 			U32 offset = (U32)context->pBuffer - (U32)gPlanarBuffer;
 			physaddr = gPlanarBase + offset;
+			layer = gDevOverlay;
+			// Update invalidated regions before page flip
+			pdcVisible_ = context;
+			Invalidate(0, NULL);
 		}
 		else 
 			return kDisplayDisplayNotInListErr;

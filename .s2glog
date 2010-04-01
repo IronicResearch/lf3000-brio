@@ -24404,3 +24404,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/31/10 6:39 PM
 5,875 ms. (Cumulative: 8,377,383 ms)
 
 ----------------
+Revision 6,935 from svn://localhost/TRUNK/:
+Revision 6,936 from svn://localhost/TRUNK/:
+
+Update invalidated regions prior to video page flips to avoid tearing seen in offscreen contexts. (TTP 2417)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/1/10 12:08 PM
+1 changed, 0 added, 0 deleted.
+5,847 ms. (Cumulative: 8,383,324 ms)
+
+----------------
