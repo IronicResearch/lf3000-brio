@@ -108,6 +108,11 @@ void* VideoTaskMain( void* arg )
 	Boolean			bListener = false; //pctx->pPathAudio != NULL;
 	IEventListener*	pListener = pctx->pListener;
 	tAudioPayload	payload = 0;
+	tVideoSurf*		pSurf = pctx->pSurfVideo;
+	tVideoSurf		aSurf[2];
+	tDisplayHandle	aHndl[2];
+	int				ibuf = 0;
+	bool			bDoubleBuffered = false;
 	
 	// Sync video thread startup with InitVideoTask()
 	bRunning = pctx->bPlaying = true;
@@ -120,6 +125,15 @@ void* VideoTaskMain( void* arg )
 		flags |= kAudioOptionsTimeEvent | kAudioOptionsDoneMsgAfterComplete;
 		payload = lapsetime;
 		pListener = pVideoListener;
+	}
+
+	// Support double buffering by replicating YUV planar video contexts
+	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096) {
+		aSurf[0] = aSurf[1] = *pSurf;
+		aSurf[1].buffer += 1024;
+		aHndl[0] = dispmgr.CreateHandle(aSurf[0].height, aSurf[0].width, aSurf[0].format, aSurf[0].buffer);
+		aHndl[1] = dispmgr.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
+		bDoubleBuffered = true;
 	}
 	
 	while (bRunning)
@@ -138,8 +152,16 @@ void* VideoTaskMain( void* arg )
 		marktime += lapsetime;
 		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, false))
 		{	
-			vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
-			dispmgr.Invalidate(0, NULL);
+			vidmgr.PutVideoFrame(pctx->hVideo, pSurf);
+			if (bDoubleBuffered) {
+				// Update double buffered YUV video contexts
+				dispmgr.SwapBuffers(aHndl[ibuf], false);
+				ibuf ^= 1;
+				pSurf = &aSurf[ibuf];
+			}
+			else
+				dispmgr.Invalidate(0, NULL);
+
 			while (bRunning) {
 				static U32 lasttime = 0xFFFFFFFF;
 				static U32 counter = 0;
@@ -227,6 +249,12 @@ void* VideoTaskMain( void* arg )
 		pVideoListener = NULL;
 	}
 
+	// Release double buffered contexts, if any
+	if (bDoubleBuffered) {
+		dispmgr.DestroyHandle(aHndl[0], true);
+		dispmgr.DestroyHandle(aHndl[1], true);
+	}
+	
 	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
 	bStopping = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...\n" );

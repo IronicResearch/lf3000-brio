@@ -710,11 +710,26 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
 	int		layer = context->layer;
 	int		r;
+	U32 	physaddr = context->basephys + context->offset;
 
+	// Support for replicated YUV video context in planar memory block
+	if (context->basephys == 0) {
+		if (context->isPlanar 
+				&& (U32)context->pBuffer >= (U32)gPlanarBuffer
+				&& (U32)context->pBuffer <= (U32)gPlanarBuffer + gPlanarSize) {
+			U32 offset = (U32)context->pBuffer - (U32)gPlanarBuffer;
+			physaddr = gPlanarBase + offset;
+		}
+		else 
+			return kDisplayDisplayNotInListErr;
+	}
+	
 	// Load display address register for selected display context
-	U32 physaddr = context->basephys + context->offset;
 	r = ioctl(layer, MLC_IOCTADDRESS, physaddr);
-	dbg_.Assert(r >= 0, "DisplayModule::SwapBuffers: failed ioctl physaddr=%08X\n", (unsigned int)physaddr);
+	if (context->isOverlay) {
+		ioctl(layer, MLC_IOCTADDRESSCB, physaddr + context->pitch/2);
+		ioctl(layer, MLC_IOCTADDRESSCR, physaddr + context->pitch/2 + context->pitch*(context->height/2));
+	}
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
 	pdcVisible_ = context;
