@@ -24395,3 +24395,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/31/10 6:36 PM
 5,875 ms. (Cumulative: 8,371,398 ms)
 
 ----------------
+Revision 6,934 from svn://localhost/TRUNK/:
+
+Use same interleaved ogg file for audio track in video unit tests now that Vorbis supports it.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/31/10 6:39 PM
+1 changed, 0 added, 0 deleted.
+5,875 ms. (Cumulative: 8,377,383 ms)
+
+----------------
