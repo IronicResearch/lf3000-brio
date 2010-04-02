@@ -454,6 +454,7 @@ private:
 	CKernelMPI			kernel_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
+	tDisplayContext*	pdcFlipped_;
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
 

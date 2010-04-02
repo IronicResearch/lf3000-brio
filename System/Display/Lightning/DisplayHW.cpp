@@ -570,6 +570,11 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int 	layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 
+	if (context == pdcVisible_)
+		pdcVisible_ = NULL;
+	if (context == pdcFlipped_)
+		pdcFlipped_ = NULL;
+	
 	// Offscreen contexts do not affect screen
 	if (context->isAllocated)
 		return kNoErr;
@@ -738,6 +743,8 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
 	pdcVisible_ = context;
+	pdcFlipped_ = context;
+	bPrimaryLayerEnabled = true;
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::SwapBuffers: virtaddr=%08X, physaddr=%08X\n", (unsigned int)context->pBuffer, (unsigned int)physaddr);
 
