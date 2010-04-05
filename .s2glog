@@ -24429,3 +24429,31 @@ By Dave Milici (dmilici@leapfrog.com) on 4/1/10 6:32 PM
 5,907 ms. (Cumulative: 8,389,356 ms)
 
 ----------------
+Revision 6,944 from svn://localhost/TRUNK/:
+Revision 6,945 from svn://localhost/TRUNK/:
+Revision 6,946 from svn://localhost/TRUNK/:
+Revision 6,947 from svn://localhost/TRUNK/:
+Revision 6,948 from svn://localhost/TRUNK/:
+Revision 6,949 from svn://localhost/TRUNK/:
+Revision 6,950 from svn://localhost/TRUNK/:
+Revision 6,951 from svn://localhost/TRUNK/:
+Revision 6,952 from svn://localhost/TRUNK/:
+Revision 6,953 from svn://localhost/TRUNK/:
+Revision 6,954 from svn://localhost/TRUNK/:
+Revision 6,955 from svn://localhost/TRUNK/:
+Revision 6,956 from svn://localhost/TRUNK/:
+Revision 6,957 from svn://localhost/TRUNK/:
+Revision 6,958 from svn://localhost/TRUNK/:
+Revision 6,959 from svn://localhost/TRUNK/:
+Revision 6,960 from svn://localhost/TRUNK/:
+Revision 6,961 from svn://localhost/TRUNK/:
+Revision 6,962 from svn://localhost/TRUNK/:
+
+Disable handling of kPowerShutdown event from poweroff switch for POP demo.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/5/10 3:45 PM
+1 changed, 0 added, 0 deleted.
+5,875 ms. (Cumulative: 8,395,435 ms)
+
+----------------

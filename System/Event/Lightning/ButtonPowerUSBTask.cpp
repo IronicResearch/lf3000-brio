@@ -447,9 +447,11 @@ void* CEventModule::CartridgeTask( void* arg )
 					power_data.powerState = kPowerExternal;
 					break;
 				/* External Power */
+#if 0 // POP disabled
 				case KEY_POWER:
 					power_data.powerState = kPowerShutdown;
 					break;
+#endif
 				}
 				// power state changed?
 				CPowerMessage power_msg(power_data);
