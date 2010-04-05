@@ -24457,3 +24457,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/5/10 3:45 PM
 5,875 ms. (Cumulative: 8,395,435 ms)
 
 ----------------
+Revision 6,963 from svn://localhost/TRUNK/:
+Revision 6,964 from svn://localhost/TRUNK/:
+
+Revert kPowerShutdown handling intended for POP branch.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/5/10 4:02 PM
+1 changed, 0 added, 0 deleted.
+5,956 ms. (Cumulative: 8,401,469 ms)
+
+----------------
