@@ -206,6 +206,9 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dc = *pdc;
 	dc.pitch = pdc->pitch = 4096;
 	dc.layer = pdc->layer = gDevLayer;
+	dc.isAllocated = pdc->isAllocated = false;
+	dc.basephys    = pdc->basephys = gMem2Phys;
+	dc.baselinear  = pdc->baselinear = (U32)gpMem2d;
 	
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width = dc.width; //320;

@@ -24467,3 +24467,27 @@ By Dave Milici (dmilici@leapfrog.com) on 4/5/10 4:02 PM
 5,956 ms. (Cumulative: 8,401,469 ms)
 
 ----------------
+Revision 6,965 from svn://localhost/TRUNK/:
+Revision 6,966 from svn://localhost/TRUNK/:
+Revision 6,967 from svn://localhost/TRUNK/:
+Revision 6,968 from svn://localhost/TRUNK/:
+Revision 6,969 from svn://localhost/TRUNK/:
+Revision 6,970 from svn://localhost/TRUNK/:
+Revision 6,971 from svn://localhost/TRUNK/:
+Revision 6,972 from svn://localhost/TRUNK/:
+Revision 6,973 from svn://localhost/TRUNK/:
+Revision 6,974 from svn://localhost/TRUNK/:
+Revision 6,975 from svn://localhost/TRUNK/:
+Revision 6,976 from svn://localhost/TRUNK/:
+Revision 6,977 from svn://localhost/TRUNK/:
+Revision 6,978 from svn://localhost/TRUNK/:
+Revision 6,979 from svn://localhost/TRUNK/:
+Revision 6,980 from svn://localhost/TRUNK/:
+
+Fill in more display context info for OGL handle to be useful for repositioning via Register() call. (TTP 2457)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/6/10 12:51 PM
+1 changed, 0 added, 0 deleted.
+5,833 ms. (Cumulative: 8,407,489 ms)
+
+----------------
