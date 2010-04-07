@@ -17,7 +17,7 @@
 //#include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <DisplayMPI.h>
-//#include <EventMPI.h>
+#include <EventMPI.h>
 #include <CameraPriv.h>
 
 #include <avilib.h>
@@ -36,11 +36,6 @@ namespace
 	tVidCapHndl				hndl			= kInvalidVidCapHndl;
 	class CCameraModule*	cam				= NULL;
 	volatile bool			timeout			= false;
-//	tMutex			gThreadMutex = PTHREAD_MUTEX_INITIALIZER;
-//	tCond			gThreadCond  = PTHREAD_COND_INITIALIZER;
-//	class VideoListener*	pVideoListener = NULL;
-//	volatile U32			gAudioTime = 0;
-//	volatile bool			gAudioDone = false;
 }
 
 //============================================================================
@@ -68,7 +63,6 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
-//	CEventMPI			evntmgr;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
@@ -132,10 +126,11 @@ void* CameraTaskMain(void* arg)
 
 	start = kernel.GetElapsedTimeAsMSecs();
 
-//	timer = kernel.CreateTimer(TimerCallback, props, NULL);
-//	props.timeout.it_value.tv_sec = pCtx->maxLength;
-//	props.timeout.it_value.tv_nsec = 0;
-//	kernel.StartTimer(timer, props);
+	timeout = false;
+	timer = kernel.CreateTimer(TimerCallback, props, NULL);
+	props.timeout.it_value.tv_sec = pCtx->maxLength;
+	props.timeout.it_value.tv_nsec = 0;
+	kernel.StartTimer(timer, props);
 
 	/*
 	 * This is intentionally an assignment, not a comparison.
@@ -183,8 +178,7 @@ void* CameraTaskMain(void* arg)
 											  "Couldn't unlock mutex.\n");
 	}
 
-//	kernel.StopTimer(timer);
-//	kernel.DestroyTimer(timer);
+	kernel.DestroyTimer(timer);
 
 	end = kernel.GetElapsedTimeAsMSecs();
 	if(end > start)
@@ -199,7 +193,7 @@ void* CameraTaskMain(void* arg)
 	// Post done message to event listener
 	if(pCtx->pListener)
 	{
-#if 0
+		CEventMPI			evntmgr;
 		CCameraEventMessage *msg;
 
 		if(!timeout)								// manually stopped by StopVideoCapture()
@@ -218,7 +212,7 @@ void* CameraTaskMain(void* arg)
 			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
-		else										// FS capacity timeout
+		else										// file system capacity timeout
 		{
 			tCaptureQuotaHitMsg		data;
 			data.vhndl				= pCtx->hndl;
@@ -229,7 +223,6 @@ void* CameraTaskMain(void* arg)
 
 		evntmgr.PostEvent(*msg, 0, pCtx->pListener);
 		delete msg;
-#endif
 	}
 
 	if(image.data)
