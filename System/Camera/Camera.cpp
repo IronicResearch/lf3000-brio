@@ -182,6 +182,8 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 //----------------------------------------------------------------------------
 CCameraModule::~CCameraModule()
 {
+	StopVideoCapture(camCtx_.hndl);
+
 	valid = DeinitCameraInt();
 
 	kernel_.DeInitMutex(camCtx_.mThread);
@@ -1404,7 +1406,6 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	}
 
 	camCtx_.reqLength = maxLength;
-	camCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
 	camCtx_.pListener = pListener;
 
 	if(path.length() > 0)
@@ -1419,6 +1420,11 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 			camCtx_.path	= vpath + path;
 			DATA_UNLOCK;
 		}
+		camCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
+	}
+	else
+	{
+		camCtx_.maxLength = maxLength;
 	}
 
 	camCtx_.surf	= pSurf;

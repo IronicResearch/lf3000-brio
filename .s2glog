@@ -24518,3 +24518,14 @@ By jeno (jeno@leapfrog.com) on 4/7/10 12:00 PM
 6,330 ms. (Cumulative: 8,420,050 ms)
 
 ----------------
+Revision 6,992 from svn://localhost/TRUNK/:
+
+Camera updates:
+-allow non-recording viewfinder to run indefinitely
+-stop capture upon destruction
+
+By jeno (jeno@leapfrog.com) on 4/7/10 12:58 PM
+1 changed, 0 added, 0 deleted.
+6,224 ms. (Cumulative: 8,426,336 ms)
+
+----------------
