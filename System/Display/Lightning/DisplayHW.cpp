@@ -699,6 +699,33 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	int	layer = dc->layer;
+	union mlc_cmd c;
+	c.position.left = dc->rect.left = dc->x = x;
+	c.position.top = dc->rect.top  = dc->y = y;
+	c.position.right = dc->rect.right = dc->rect.left + std::min(dc->width, width);
+	c.position.bottom = dc->rect.bottom = dc->rect.top + std::min(dc->height, height);
+	ioctl(layer, MLC_IOCSPOSITION, &c);
+	ioctl(layer, MLC_IOCTLAYEREN, visible);
+	SetDirtyBit(layer);
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible)
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	x = dc->rect.left;
+	y = dc->rect.top;
+	width = dc->rect.right - dc->rect.left;
+	height = dc->rect.bottom - dc->rect.top;
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
 void CDisplayModule::SetDirtyBit(int layer)
 {
 	ioctl(layer, MLC_IOCTDIRTY, 0);

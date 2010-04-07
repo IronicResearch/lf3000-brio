@@ -24491,3 +24491,20 @@ By Dave Milici (dmilici@leapfrog.com) on 4/6/10 12:51 PM
 5,833 ms. (Cumulative: 8,407,489 ms)
 
 ----------------
+Revision 6,981 from svn://localhost/TRUNK/:
+Revision 6,982 from svn://localhost/TRUNK/:
+Revision 6,983 from svn://localhost/TRUNK/:
+Revision 6,984 from svn://localhost/TRUNK/:
+Revision 6,985 from svn://localhost/TRUNK/:
+Revision 6,986 from svn://localhost/TRUNK/:
+Revision 6,987 from svn://localhost/TRUNK/:
+Revision 6,988 from svn://localhost/TRUNK/:
+Revision 6,989 from svn://localhost/TRUNK/:
+
+Add DisplayMPI function SetWindowPosition() for modifying default window size and position determined by CreateHandle() and Register(). (TTP 2456)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/6/10 6:31 PM
+5 changed, 0 added, 0 deleted.
+5,996 ms. (Cumulative: 8,413,626 ms)
+
+----------------

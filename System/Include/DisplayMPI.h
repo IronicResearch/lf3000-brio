@@ -339,7 +339,31 @@ public:
 	///
 	/// \return			Returns the requested display memory allocation info.
 	U32					GetDisplayMem(tDisplayMem memtype);
-	
+
+	/// Sets the window position and size for selected display handle.
+	///
+	/// \param hndl		Display handle for onscreen context
+	/// \param x		Window position X
+	/// \param y		Window position Y
+	/// \param width	Window width relative to X
+	/// \param height	Window height relative to Y
+	///
+	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
+	///
+	/// Overides default window size and position determined by CreateHandle() and Register().
+	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible);
+
+	/// Gets the window position and size for selected display handle.
+	///
+	/// \param hndl		Display handle for onscreen context
+	/// \param x		Window position X
+	/// \param y		Window position Y 
+	/// \param width	Window width relative to X
+	/// \param height	Window height relative to Y
+	///
+	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
+	tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);
+
 private:
 	class CDisplayModule*	pModule_;
 };

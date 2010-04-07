@@ -441,6 +441,9 @@ public:
 	VTABLE_EXPORT tDisplayHandle	GetCurrentDisplayHandle();
 	VTABLE_EXPORT U32				GetDisplayMem(tDisplayMem memtype);
 
+	VTABLE_EXPORT tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible);
+	VTABLE_EXPORT tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);
+	
 private:
 	void				InitModule( );
 	void				DeInitModule( );

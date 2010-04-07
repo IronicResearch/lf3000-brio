@@ -317,6 +317,26 @@ U8 CDisplayMPI::GetAlpha(tDisplayHandle hndl) const
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->SetWindowPosition(hndl, x, y, width, height, visible);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->GetWindowPosition(hndl, x, y, width, height, visible);
+}
+
+//----------------------------------------------------------------------------
 void CDisplayMPI::InitOpenGL(void* pCtx)
 {
 	if (!pModule_)

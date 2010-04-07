@@ -232,6 +232,28 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	dc->rect.left = dc->x = x;
+	dc->rect.top  = dc->y = y;
+	dc->rect.right = dc->rect.left + std::min(dc->width, width);
+	dc->rect.bottom = dc->rect.top + std::min(dc->height, height);
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible)
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	x = dc->rect.left;
+	y = dc->rect.top;
+	width = dc->rect.right - dc->rect.left;
+	height = dc->rect.bottom - dc->rect.top;
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 {
 	// Nothing to do on emulation target
