@@ -526,6 +526,9 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	kernel_.LockMutex(gVidMutex);
 #endif
 
+	// Avoid subsequent locks while stopping
+	gbCodecReady = false;
+
 	// Kill video task, if running
 	if (gpVidCtx != NULL && gpVidCtx->hVideoThread != kNull)
 		DeInitVideoTask(gpVidCtx);
@@ -596,7 +599,7 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		return false;
 
 #if USE_MUTEX
-//	kernel_.LockMutex(gVidMutex);
+	kernel_.LockMutex(gVidMutex);
 #endif
 
 	// Compute next frame if time-based drop-frame mode selected 
@@ -646,7 +649,7 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 		}
 	}
 #if USE_MUTEX
-//	kernel_.UnlockMutex(gVidMutex);
+	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return ready;
 }
