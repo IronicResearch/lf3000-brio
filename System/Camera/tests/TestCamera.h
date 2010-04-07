@@ -26,7 +26,7 @@ private:
 	CDisplayMPI*	pDisplayMPI_;
 	CKernelMPI*		pKernelMPI_;
 	tEventType		reason;
-#if 0
+
 	//============================================================================
 	// Local event listener
 	//============================================================================
@@ -42,18 +42,6 @@ private:
 		tEventStatus Notify(const IEventMessage& msg)
 		{
 			reason = msg.GetEventType();
-			if(reason == kCaptureTimeOutEvent)
-			{
-printf("timeout\n");
-			}
-			else if(reason == kCaptureQuotaHitEvent)
-			{
-printf("quota\n");
-			}
-			else if(reason == kCaptureStoppedEvent)
-			{
-printf("fstop\n");
-			}
 
 			return kEventStatusOK;
 		}
@@ -68,7 +56,7 @@ printf("fstop\n");
 			return reason;
 		}
 	};
-#endif
+
 public:
 	//------------------------------------------------------------------------
 	void setUp( )
@@ -205,7 +193,6 @@ public:
 	//------------------------------------------------------------------------
 	void testCaptureEvent()
 	{
-#if 0
 		tVidCapHndl					capture;
 		Boolean						bRet;
 		tErrType					err;
@@ -234,20 +221,20 @@ public:
 			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
 			TS_ASSERT_EQUALS( err, kNoErr );
 
+			//Capture will automatically stop after 2 seconds
 			capture = pCameraMPI_->StartVideoCapture(&surf, &listener, "", 2);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			//Capture will stop after 2 seconds
+			//Sleeping for 2.5 seconds will result in a timeout
 			pKernelMPI_->TaskSleep(2500);
 			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureTimeOutEvent );
 
-			//Reset listener
 			listener.Reset();
 
+			//Unlimited recording
 			capture = pCameraMPI_->StartVideoCapture(&surf, &listener, "");
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			//Unlimited recording
 			pKernelMPI_->TaskSleep(2500);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
@@ -258,7 +245,6 @@ public:
 		pDisplayMPI_->UnRegister(disp, 0);
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
-#endif
 	}
 
 	//------------------------------------------------------------------------

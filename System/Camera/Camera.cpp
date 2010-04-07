@@ -881,12 +881,9 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 		break;
 	}
 
-	CAMERA_LOCK;
-
     if(ioctl(camCtx_.fd, VIDIOC_S_FMT, &fmt) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: mode selection failed for %s, %d\n", camCtx_.file, errno);
-		CAMERA_UNLOCK;
 		return false;
 	}
 
@@ -902,13 +899,10 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 	if(ioctl(camCtx_.fd, VIDIOC_S_PARM, &fps) < 0)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::SetCameraMode: fps selection failed for %s\n", camCtx_.file);
-		CAMERA_UNLOCK;
 		return false;
 	}
 
     camCtx_.fps = mode->fps_numerator / mode->fps_denominator;
-
-    CAMERA_UNLOCK;
 
 	return true;
 }
@@ -1389,6 +1383,7 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength)
 {
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 30, 1};
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 	struct statvfs buf;
 	U64 length;
@@ -1431,6 +1426,13 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer unmapping failed for %s\n", camCtx_.file);
+		CAMERA_UNLOCK;
+		return hndl;
+	}
+
+	if(!SetCameraMode(&QVGA))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: mode setting failed for %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
 		return hndl;
 	}
@@ -1488,6 +1490,12 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
 	}
 
+	if(IS_THREAD_HANDLE(hndl))
+	{
+		/* The camera thread must be halted before issuing VIDIOC_STREAMOFF */
+		DeInitCameraTask(&camCtx_);
+	}
+
 	CAMERA_LOCK;
 
 	if(!StopVideoCaptureInt(camCtx_.fd))
@@ -1499,10 +1507,6 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	CAMERA_UNLOCK;
 
-	if(IS_THREAD_HANDLE(hndl))
-	{
-		DeInitCameraTask(&camCtx_);
-	}
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
 	return true;
@@ -1548,6 +1552,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	// don't let the viewfinder run while we muck with the camera settings
 	THREAD_LOCK;
+	CAMERA_LOCK;
 
 	/*
 	 * Changing resolutions requires that the camera be off.  This implies unmapping all of the buffers
@@ -1645,6 +1650,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto frame_out;
 	}
 
+	CAMERA_UNLOCK;
 	THREAD_UNLOCK;
 
 	return true;
@@ -1655,6 +1661,7 @@ frame_out:
 	frame->size	= 0;
 
 bail_out:
+	CAMERA_UNLOCK;
 	THREAD_UNLOCK;
 	return false;
 
