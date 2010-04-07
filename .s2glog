@@ -24529,3 +24529,12 @@ By jeno (jeno@leapfrog.com) on 4/7/10 12:58 PM
 6,224 ms. (Cumulative: 8,426,336 ms)
 
 ----------------
+Revision 6,993 from svn://localhost/TRUNK/:
+
+Reinstate locks added to SyncVideoFrame() to support live seeking while video playback thread is running. Adjust state var reset in StopVideo() to avoid further locking while stopping.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/7/10 2:23 PM
+1 changed, 0 added, 0 deleted.
+6,203 ms. (Cumulative: 8,432,617 ms)
+
+----------------
