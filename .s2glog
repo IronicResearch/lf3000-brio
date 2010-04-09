@@ -24538,3 +24538,39 @@ By Dave Milici (dmilici@leapfrog.com) on 4/7/10 2:23 PM
 6,203 ms. (Cumulative: 8,432,617 ms)
 
 ----------------
+Revision 6,994 from svn://localhost/TRUNK/:
+Revision 6,995 from svn://localhost/TRUNK/:
+Revision 6,996 from svn://localhost/TRUNK/:
+Revision 6,997 from svn://localhost/TRUNK/:
+Revision 6,998 from svn://localhost/TRUNK/:
+Revision 6,999 from svn://localhost/TRUNK/:
+Revision 7,000 from svn://localhost/TRUNK/:
+Revision 7,001 from svn://localhost/TRUNK/:
+Revision 7,002 from svn://localhost/TRUNK/:
+Revision 7,003 from svn://localhost/TRUNK/:
+Revision 7,004 from svn://localhost/TRUNK/:
+Revision 7,005 from svn://localhost/TRUNK/:
+Revision 7,006 from svn://localhost/TRUNK/:
+Revision 7,007 from svn://localhost/TRUNK/:
+Revision 7,008 from svn://localhost/TRUNK/:
+Revision 7,009 from svn://localhost/TRUNK/:
+Revision 7,010 from svn://localhost/TRUNK/:
+Revision 7,011 from svn://localhost/TRUNK/:
+Revision 7,012 from svn://localhost/TRUNK/:
+Revision 7,013 from svn://localhost/TRUNK/:
+Revision 7,014 from svn://localhost/TRUNK/:
+Revision 7,015 from svn://localhost/TRUNK/:
+Revision 7,016 from svn://localhost/TRUNK/:
+Revision 7,017 from svn://localhost/TRUNK/:
+Revision 7,018 from svn://localhost/TRUNK/:
+Revision 7,019 from svn://localhost/TRUNK/:
+Revision 7,020 from svn://localhost/TRUNK/:
+Revision 7,021 from svn://localhost/TRUNK/:
+
+Added tests to Set/Get Paths and try all possible settings of every camera control. Also did general test code cleanup.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/9/10 11:14 AM
+1 changed, 0 added, 0 deleted.
+6,329 ms. (Cumulative: 8,439,212 ms)
+
+----------------
