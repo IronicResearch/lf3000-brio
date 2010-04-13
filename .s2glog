@@ -24603,3 +24603,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/10 5:06 PM
 6,438 ms. (Cumulative: 8,445,884 ms)
 
 ----------------
+Revision 7,043 from svn://localhost/TRUNK/:
+Revision 7,044 from svn://localhost/TRUNK/:
+
+Add double-buffered display updates to camera video streaming thread, similar to video playback thread. Effective only for LF1000 YUV420 HW format with its 1Meg alignment / 4K stride requirement.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/10 5:37 PM
+1 changed, 0 added, 0 deleted.
+6,251 ms. (Cumulative: 8,452,229 ms)
+
+----------------
