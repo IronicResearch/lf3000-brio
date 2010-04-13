@@ -11,6 +11,9 @@
 #include <AudioTypes.h>
 #include <UnitTestUtils.h>
 
+//For strcmp
+#include <string.h>
+
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
@@ -103,7 +106,7 @@ public:
 	{
 		PRINT_TEST_NAME();
 		//Set and then get each path
-		char* test_path = "/LF/Base/L3B_Video/";
+		const char* test_path = "/LF/Base/L3B_Video/";
 		
 		//Video Path
 		tErrType err = pCameraMPI_->SetCameraVideoPath(test_path);

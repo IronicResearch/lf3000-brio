@@ -24622,3 +24622,12 @@ By dlazzari (dlazzari@leapfrog.com) on 4/13/10 9:20 AM
 6,298 ms. (Cumulative: 8,458,589 ms)
 
 ----------------
+Revision 7,046 from svn://localhost/TRUNK/:
+
+Minor unit test changes to allow emulation builds to compile
+
+By dlazzari (dlazzari@leapfrog.com) on 4/13/10 9:53 AM
+5 changed, 0 added, 0 deleted.
+5,953 ms. (Cumulative: 8,464,667 ms)
+
+----------------

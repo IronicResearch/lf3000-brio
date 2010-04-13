@@ -8,6 +8,7 @@
 #include <StringTypes.h>
 #include <UnitTestUtils.h>
 #include <KernelMPI.h>
+#include <string.h>
 
 LF_USING_BRIO_NAMESPACE()
 				
