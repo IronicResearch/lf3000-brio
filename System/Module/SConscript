@@ -19,7 +19,7 @@ mpilibs		= emulib
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
-myenv		= env.Copy()
+myenv		= env.Clone()
 if vars['is_monolithic']:
 	myenv.Append(CPPPATH = ['#System', 
 							'#System/Audio/Include',

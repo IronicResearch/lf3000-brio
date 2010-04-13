@@ -24631,3 +24631,20 @@ By dlazzari (dlazzari@leapfrog.com) on 4/13/10 9:53 AM
 5,953 ms. (Cumulative: 8,464,667 ms)
 
 ----------------
+Revision 7,047 from svn://localhost/TRUNK/:
+Revision 7,048 from svn://localhost/TRUNK/:
+Revision 7,049 from svn://localhost/TRUNK/:
+Revision 7,050 from svn://localhost/TRUNK/:
+Revision 7,051 from svn://localhost/TRUNK/:
+Revision 7,052 from svn://localhost/TRUNK/:
+
+- Changes to build scripts to run with scons 1.2.0
+- Minor improvements in running unit tests in emulation
+- Added unit test run path for embedded testing. If an embedded build is run with runtests=t and a unit is connected in developer mode, the unit tests will run.
+- All unit test results are now placed in the Build/Lightning/test_results/ or Build/Lightning_emulation/test_results/ directories depending on the build type.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/13/10 12:07 PM
+19 changed, 2 added, 0 deleted.
+6,476 ms. (Cumulative: 8,471,284 ms)
+
+----------------
