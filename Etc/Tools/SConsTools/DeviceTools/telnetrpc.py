@@ -61,7 +61,7 @@ class TelnetRPC:
 		self.session.write(cmd + "\n")
 		try:
 			result = self.session.expect(self.prompt, timeout=600)
-		except Exception as (err):
+		except Exception, err:
 			print("Telnet RPC Error: " + str(err))
 			raise
 		
