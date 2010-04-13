@@ -79,6 +79,12 @@ void* CameraTaskMain(void* arg)
 	tTimerProperties	props	= {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
 	tTimerHndl 			timer 	= kInvalidTimerHndl;
 
+	tVideoSurf*			pSurf = pCtx->surf;
+	tVideoSurf			aSurf[2];
+	tDisplayHandle		aHndl[2];
+	int					ibuf = 0;
+	bool				bDoubleBuffered = false;
+	
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
 	cam 	= pCtx->module;
@@ -123,6 +129,16 @@ void* CameraTaskMain(void* arg)
 		}
 	}
 
+	// Support double buffering by replicating YUV planar video contexts
+	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096) 
+	{
+		aSurf[0] = aSurf[1] = *pSurf;
+		aSurf[1].buffer += 1024;
+		aHndl[0] = display.CreateHandle(aSurf[0].height, aSurf[0].width, aSurf[0].format, aSurf[0].buffer);
+		aHndl[1] = display.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
+		bDoubleBuffered = true;
+	}
+	
 	bRunning = pCtx->bStreaming = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
 
@@ -163,10 +179,17 @@ void* CameraTaskMain(void* arg)
 
 		if(bScreen && !pCtx->bVPaused)
 		{
-			bRet = pCtx->module->RenderFrame(&frame, pCtx->surf, &image);
+			bRet = pCtx->module->RenderFrame(&frame, pSurf, &image);
 			if(bRet)
 			{
-				display.Invalidate(0);
+				if (bDoubleBuffered) {
+					// Update double buffered YUV video contexts
+					display.SwapBuffers(aHndl[ibuf], false);
+					ibuf ^= 1;
+					pSurf = &aSurf[ibuf];
+				}
+				else
+					display.Invalidate(0);
 			}
 		}
 
@@ -252,6 +275,12 @@ void* CameraTaskMain(void* arg)
 		AVI_close(avi);
 	}
 
+	if (bDoubleBuffered)
+	{
+		display.DestroyHandle(aHndl[1], false);
+		display.DestroyHandle(aHndl[0], false);
+	}
+	
 	bStopping = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Stopping...\n" );
 
