@@ -50,6 +50,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( pFontMPI_ != NULL );
 		TS_ASSERT( pFontMPI_->IsValid() == true );
 	}
@@ -57,6 +59,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -76,6 +80,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontResources()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontHndl	font3;
@@ -125,6 +131,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontDisplay()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontProp	prop1 = {1, 18, 0, 0};
@@ -206,6 +214,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontMetrics()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -281,6 +291,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontTextWrapping()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -331,6 +343,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontClipping()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -397,6 +411,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontKerning()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -458,6 +474,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontUnderlining()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -520,6 +538,8 @@ public:
 	//------------------------------------------------------------------------
 	void XXXXtestFontUnicode()	// FIXME/dm: find a font which supports these glyphs
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -580,6 +600,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontUnicodeUTF8()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -639,6 +661,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontUnicode16()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontSurf	surf;
@@ -742,6 +766,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontMono()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontSurf	surf;
 		tFontMetrics	mtrx;
@@ -796,6 +822,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontOpenGL()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
 		tFontAttr	attr;
@@ -865,6 +893,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontOpenGL24bpp()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
 		tFontSurf	surf;
@@ -927,6 +957,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontOpenGL16bppARGB()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontSurf	surf;
 		tFontMetrics mtrx;
@@ -988,6 +1020,8 @@ public:
 	//------------------------------------------------------------------------
 	void testFontOpenGL16bppRGB()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontProp	prop1 = {1, 24, 0, 0};
 		tFontAttr	attr;
@@ -1057,6 +1091,8 @@ public:
 	//------------------------------------------------------------------------
 	void XXXXtestFontLoadFlags()
 	{
+		PRINT_TEST_NAME();
+		
 		tFontHndl	font1;
 		tFontHndl	font2;
 		tFontHndl	font3;

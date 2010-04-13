@@ -14,6 +14,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include <Utility.h>
 
 //  For lots of text output, enable this:

@@ -24613,3 +24613,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/10 5:37 PM
 6,251 ms. (Cumulative: 8,452,229 ms)
 
 ----------------
+Revision 7,045 from svn://localhost/TRUNK/:
+
+Unified test name reporting and did minor code cleanup on unit tests
+
+By dlazzari (dlazzari@leapfrog.com) on 4/13/10 9:20 AM
+13 changed, 0 added, 0 deleted.
+6,298 ms. (Cumulative: 8,458,589 ms)
+
+----------------

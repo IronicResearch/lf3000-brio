@@ -48,6 +48,8 @@ public:
 
 	void testDummy( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT(1);
 	}
 	

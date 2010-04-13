@@ -33,6 +33,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( pDisplayMPI_ != NULL );
 		TS_ASSERT( pDisplayMPI_->IsValid() == true );
 	}
@@ -40,6 +42,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -59,6 +63,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayContext( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		tPixelFormat	format;
 		U8* 			buffer;
@@ -117,6 +123,8 @@ public:
 	//------------------------------------------------------------------------
 	void testOpenGLContext( )
 	{
+		PRINT_TEST_NAME();
+		
 		BrioOpenGLConfig*	oglctx = new BrioOpenGLConfig();
 		
 		TS_ASSERT( oglctx != NULL );
@@ -158,6 +166,8 @@ public:
 	//------------------------------------------------------------------------
 	void XXXXtestBrightnessContrast( ) // Brightness/Contrast support No longer implemented
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		U8* 			buffer;
 		U16				width;
@@ -251,6 +261,8 @@ public:
 	//------------------------------------------------------------------------
 	void testBacklight( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		const U16		WIDTH = 320;
 		const U16		HEIGHT = 240;
@@ -277,6 +289,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayContext24( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		tPixelFormat	format;
 		U8* 			buffer;
@@ -329,6 +343,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayContext16( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		tPixelFormat	format;
 		U8* 			buffer;
@@ -384,6 +400,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayContext565( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		tPixelFormat	format;
 		U8* 			buffer;
@@ -438,6 +456,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplaySwapBuffers( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle[2];
 		tPixelFormat	format;
 		U8* 			buffer[2];
@@ -509,6 +529,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayTripleBuffers( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle[3];
 		tPixelFormat	format;
 		U8* 			buffer[3];
@@ -553,6 +575,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayAllocations( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 		handle[3];
 		BrioOpenGLConfig*	oglctx;
 		U32					totalmem;
@@ -599,6 +623,7 @@ public:
 		freemem = pDisplayMPI_->GetDisplayMem(kDisplayMemFree);
 		usedmem = pDisplayMPI_->GetDisplayMem(kDisplayMemUsed);
 		TS_ASSERT( freemem + usedmem == totalmem );
+		printf("Free: %u Used: %u Total: %u\n", (unsigned int)freemem, (unsigned int)usedmem, (unsigned int)totalmem);
 		TS_ASSERT( usedmem != 0 );
 		delete oglctx;
 		for (int i = 0; i < 3; i++)
@@ -614,6 +639,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayContextYUV( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle;
 		tDisplayHandle 	offscreen;
 		tPixelFormat	format;
@@ -679,6 +706,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayContextOrder( )
 	{
+		PRINT_TEST_NAME();
+		
 		tDisplayHandle 	handle1;
 		tDisplayHandle 	handle2;
 		tPixelFormat	format;

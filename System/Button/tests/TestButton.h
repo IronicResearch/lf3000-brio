@@ -9,6 +9,9 @@
 #include <SystemEvents.h>
 #include <UnitTestUtils.h>
 
+//For memcpy
+#include <string.h>
+
 LF_USING_BRIO_NAMESPACE()
 
 const U32 kBadButtonState = 0xBAADF00D;
@@ -69,6 +72,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( btnmgr_ != NULL );
 		TS_ASSERT( btnmgr_->IsValid() == true );
 	}
@@ -76,6 +81,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -93,6 +100,8 @@ public:
 	//------------------------------------------------------------------------
 	void testPollForState( )
 	{
+		PRINT_TEST_NAME();
+		
 		tButtonData	data;
 		data.buttonState		= kBadButtonState;
 		data.buttonTransition	= kBadButtonState;
@@ -108,6 +117,8 @@ public:
 		// setup the handler succeed.  So long as the EventMPI gets
 		// unit tested, we shouldn't need to do much more here.
 		//
+		PRINT_TEST_NAME();
+		
 		boost::scoped_ptr<CEventMPI> eventmgr(new CEventMPI());
 		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
 		usleep(100);
@@ -140,6 +151,8 @@ public:
 	//------------------------------------------------------------------------
 	void testTouchMode( )
 	{
+		PRINT_TEST_NAME();
+		
 #ifndef EMULATION
 		tTouchMode mode;
 		mode = btnmgr_->GetTouchMode();

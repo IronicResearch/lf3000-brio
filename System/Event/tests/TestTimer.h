@@ -65,8 +65,6 @@ public:
 	CDebugMPI	dbg_;
 };
 
-	void ptintf_test_info( const char *pName );
-
 //============================================================================
 // TestEvent functions
 //============================================================================
@@ -97,10 +95,11 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerNotFired( )
 	{
+		PRINT_TEST_NAME();
+		
 		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                     };
-		ptintf_test_info("testTimerNotFired");
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		kernel_->TaskSleep(200);
@@ -111,10 +110,11 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerFires( )
 	{
+		PRINT_TEST_NAME();
+		
 		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                    };
-		ptintf_test_info("testTimerFires");
 //		TS_ASSERT_EQUALS( kNoErr, event_->RegisterEventListener(listener_) );
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
@@ -150,10 +150,11 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerPauseResume( )
 	{
+		PRINT_TEST_NAME();
+		
 		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                    };
-		ptintf_test_info("testTimerPauseResume");
 		saveTimerSettings saveValue;
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
@@ -172,10 +173,11 @@ public:
 	//------------------------------------------------------------------------
 	void testTimerRestart( )
 	{
+		PRINT_TEST_NAME();
+		
 		static const  tTimerProperties props = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 100000000}},
 			                                     };
-		ptintf_test_info("testTimerRestart");
 		TS_ASSERT( listener_->IsReset() );
 		COneShotTimer	timer(props);
 		for (int ii = 0; ii < 3; ++ii )
@@ -193,6 +195,8 @@ public:
 
 	void testTimerElapsedTime( )
 	{
+		PRINT_TEST_NAME();
+		
 		#define MS_TO_NS(x) (x*1000000)  // convert millisecond in nanosecond
 		const int t_timer_0 = 10;  // Millisecond
 		const int t_timer_exp = 100;  // Millisecond
@@ -201,7 +205,6 @@ public:
 												 {{0, MS_TO_NS(t_timer_exp)},  // Interval
 												  {0, MS_TO_NS(t_timer_0)}}, // Initial expiration
    		                                       };
-		ptintf_test_info("testTimerElapsedTime");
 		const U32 kSleepInterval = 10; // Millisecond
 		const U32 kDelta = 25;		   // Millisecond
 		const U32 nIter = 20;
@@ -242,18 +245,6 @@ public:
 		TS_ASSERT( !listener_->IsReset() );
 		TS_ASSERT_EQUALS( timer.GetTimerHndl(), listener_->id_ );
 		
-	}
-// =========================================================
-	void ptintf_test_info( const char *pName )
-	{
-		static int testNum = 1;
-		if( testNum == 1 )
-		{
-			printf("\n\n");
-			printf(".");
-		}
-		printf("#%3d Test Name = %s\n", testNum++, pName );
-		fflush(stdout);
 	}	
 
 };

@@ -12,8 +12,6 @@
 
 LF_USING_BRIO_NAMESPACE()
 
-void ptintf_test_info( const char *pName );
-
 #define LF_BRIO_VERBOSE_TEST_OUTPUT
 
 //============================================================================
@@ -40,6 +38,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( DebugMPI != NULL );
 		TS_ASSERT( DebugMPI->IsValid() == true );
 	}
@@ -47,6 +47,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -65,8 +67,9 @@ public:
 	
 	void testDumpCoreInfo( )
 	{
-#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
-		ptintf_test_info( "testDumpCoreInfo" );
+		PRINT_TEST_NAME();
+		
+#ifdef LF_BRIO_VERBOSE_TEST_OUTPUT
 		tVersion version;
 		ConstPtrCString pName;
 		ConstPtrCURI pURI;
@@ -96,11 +99,11 @@ public:
 	//------------------------------------------------------------------------
 	void testDebugOut( )
 	{
+		PRINT_TEST_NAME();
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tDebugLevel level;
 
-		ptintf_test_info( "testDebugOut" );
 		if ( DebugMPI->IsValid() ) {
 		    printf("\nHello, world Debug Out Tests!\n");
 		
@@ -149,11 +152,11 @@ public:
 		//------------------------------------------------------------------------
 	void testTimestamps( )
 	{
-
+		PRINT_TEST_NAME();
+		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tDebugLevel level;
 
-		ptintf_test_info( "testTimestamps" );
 		if ( DebugMPI->IsValid() ) {
 		
 			DebugMPI->EnableDebugOutTimestamp();
@@ -178,8 +181,9 @@ public:
 	//------------------------------------------------------------------------
 	void testErrors( )
 	{
+		PRINT_TEST_NAME();
+		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
-		ptintf_test_info( "testErrors" );
 		if ( DebugMPI->IsValid() ) {
 			DebugMPI->DebugOutErr(kDbgLvlCritical, kAudioCreateTaskErr, 
 					"in CreateTask()\n");
@@ -193,11 +197,11 @@ public:
 	
 	void testSetGetDebugLevel()
 	{
+		PRINT_TEST_NAME();
+		
 		 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 		 CDebugMPI dbgMPI1(kMyApp);
 		 CDebugMPI dbgMPI2(kMyApp);
-		
-		ptintf_test_info( "testSetGetDebugLevel" );
 		
 		printf("YTU SIG: 0x%x, Level = %d, DebugOutIsEnabled: %d\n", kMyApp, kDbgLvlCritical, dbgMPI1.DebugOutIsEnabled(kMyApp, kDbgLvlCritical));
 
@@ -215,12 +219,11 @@ public:
 	//------------------------------------------------------------------------
 	void testAsserts( )
 	{
+		PRINT_TEST_NAME();
 		
 #ifdef LF_BRIO_VERBOSE_TEST_OUTPUT			
 		tDebugLevel level;
 		CDebugMPI dbg(kTestSuiteDebugSig);
-		
-		ptintf_test_info( "testAsserts" );
 
 		if ( DebugMPI->IsValid() ) {
 		
@@ -240,18 +243,5 @@ public:
 		}
 #endif
 	}	
-	
-	// =========================================================
-	void ptintf_test_info( const char *pName )
-	{
-		static int testNum = 1;
-		if( testNum == 1 )
-		{
-			printf("\n\n");
-			printf(".");
-		}
-		printf("-----------------#%3d Test Name = %s--------------------------\n", testNum++, pName );
-		fflush(stdout);
-	}
 
 };
