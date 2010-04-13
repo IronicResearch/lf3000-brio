@@ -86,7 +86,7 @@ namespace
 	CPath				gpath = "";
 	CPath				gfilepath = "";
 	FILE*				gfile = NULL;
-	tMutex				gVidMutex = PTHREAD_MUTEX_INITIALIZER;
+	tMutex				gVidMutex;
 	Boolean				gbCodecReady = false;
 	Boolean				gbCentered = false;
 	tVideoHndl			ghVideoHndl = kInvalidVideoHndl;
@@ -200,6 +200,12 @@ static void SetScaler(int width, int height, bool centered)
 //============================================================================
 CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 {
+#if USE_MUTEX
+	tMutexAttr attr;
+	kernel_.InitMutexAttributeObject(attr);
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK); 
+	kernel_.InitMutex(gVidMutex, attr);
+#endif
 	dbg_.SetDebugLevel(kVideoDebugLevel);
 	FlatProfilerInit(2, FLATPROF_NUM_TIMESTAMPS);
 }
@@ -208,6 +214,9 @@ CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 CVideoModule::~CVideoModule()
 {
 	FlatProfilerDone();
+#if USE_MUTEX
+	kernel_.DeInitMutex(gVidMutex);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -523,7 +532,9 @@ void CVideoModule::DeInitVideoInt(tVideoHndl hVideo)
 Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
 #if USE_MUTEX
-	kernel_.LockMutex(gVidMutex);
+	do { 
+		kernel_.TaskSleep(10);
+	} while (kernel_.TryLockMutex(gVidMutex) == EBUSY);
 #endif
 
 	// Avoid subsequent locks while stopping

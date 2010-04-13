@@ -24687,3 +24687,13 @@ By Scott Esters (sesters@leapfrog.com) on 4/13/10 3:44 PM
 6,299 ms. (Cumulative: 8,491,006 ms)
 
 ----------------
+Revision 7,067 from svn://localhost/TRUNK/:
+Revision 7,068 from svn://localhost/TRUNK/:
+
+Allow StopVideo() to yield before acquiring lock. Needed for short Start/Sync/Stop sequence in unit test.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/13/10 3:55 PM
+1 changed, 0 added, 0 deleted.
+6,584 ms. (Cumulative: 8,497,669 ms)
+
+----------------
