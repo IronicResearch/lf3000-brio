@@ -8,6 +8,7 @@
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <UnitTestUtils.h>
+#include <string.h>
 
 LF_USING_BRIO_NAMESPACE()
 

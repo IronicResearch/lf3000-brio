@@ -8,6 +8,9 @@
 #include <UnitTestUtils.h>
 #include <BrioOpenGLConfig.h>
 
+//For memset
+#include <string.h>
+
 LF_USING_BRIO_NAMESPACE()
 
 //============================================================================

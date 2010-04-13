@@ -20,6 +20,7 @@
 #include <CoreTypes.h> 
 #include <EventMPI.h>
 #include <errno.h>
+#include <string.h>
 
 using namespace std;
 LF_USING_BRIO_NAMESPACE()
