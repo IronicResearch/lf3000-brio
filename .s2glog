@@ -24663,3 +24663,14 @@ By dlazzari (dlazzari@leapfrog.com) on 4/13/10 2:06 PM
 6,876 ms. (Cumulative: 8,478,332 ms)
 
 ----------------
+Revision 7,060 from svn://localhost/TRUNK/:
+Revision 7,061 from svn://localhost/TRUNK/:
+Revision 7,062 from svn://localhost/TRUNK/:
+
+Fixed an exception handler that uses Python 2.6 syntax (incompatible with Python 2.5)
+
+By dlazzari (dlazzari@leapfrog.com) on 4/13/10 2:45 PM
+1 changed, 0 added, 0 deleted.
+6,188 ms. (Cumulative: 8,484,613 ms)
+
+----------------
