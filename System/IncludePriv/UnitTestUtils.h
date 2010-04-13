@@ -72,6 +72,8 @@ private:
 
 };
 
+#define PRINT_TEST_NAME() printf("Running %s\n", __FUNCTION__)
+
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_UNITTESTUTILS_H
 

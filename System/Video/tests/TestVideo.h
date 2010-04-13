@@ -83,6 +83,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( pVideoMPI_ != NULL );
 		TS_ASSERT( pVideoMPI_->IsValid() == true );
 	}
@@ -90,6 +92,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -109,6 +113,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoResources()
 	{
+		PRINT_TEST_NAME();
+		
 		tVideoHndl	video;
 		
 		CPath dir = GetTestRsrcFolder();
@@ -127,7 +133,10 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoDisplay()
 	{
+		PRINT_TEST_NAME();
+		
 #if defined(EMULATION) || !defined(LF1000) // YUYV422 not supported on LF1000
+		
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -176,6 +185,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoDisplayRGB()
 	{
+		PRINT_TEST_NAME();
+		
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -224,6 +235,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoDisplayYUV()
 	{
+		PRINT_TEST_NAME();
+		
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -272,6 +285,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoAudio()
 	{
+		PRINT_TEST_NAME();
+		
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -339,6 +354,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoState()
 	{
+		PRINT_TEST_NAME();
+		
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -370,6 +387,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVideoSeek()
 	{
+		PRINT_TEST_NAME();
+		
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tVideoInfo	info;

@@ -175,6 +175,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( eventmgr_ != NULL );
 		TS_ASSERT( eventmgr_->IsValid() == true );
 	}
@@ -182,6 +184,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -199,6 +203,8 @@ public:
 	//------------------------------------------------------------------------
 	void testNoListeners( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Create a listener but don't register it, then fire event
 		// and make sure listener was not notified.
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
@@ -212,6 +218,8 @@ public:
 	//------------------------------------------------------------------------
 	void testRegisterUnregisterScope( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Verify that we can register and unregister listeners, and that
 		// going out of scope causes a listener to unregister itself.
 		MyUnitTestListener* pListener = NULL;
@@ -230,6 +238,8 @@ public:
 	//------------------------------------------------------------------------
 	void testSingleListenerSingleEventWrongMsg( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -245,6 +255,8 @@ public:
 	//------------------------------------------------------------------------
 	void testSingleListenerSingleEvent( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -270,6 +282,8 @@ public:
 	//------------------------------------------------------------------------
 	void testDisableReenableTypes( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Try disabling & reenabling
 		const tEventType kHandledTypes[] = { kUnitTestEvent3, kUnitTestEvent4, kUnitTestEvent5 };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -292,6 +306,8 @@ public:
 	//------------------------------------------------------------------------
 	void testSingleListenerMultiEventEnableDisable( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup to listen for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent3, kUnitTestEvent4, kUnitTestEvent5 };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -393,6 +409,8 @@ public:
 	//------------------------------------------------------------------------
 	void testSingleListenerAllEvents( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup to listen for all events and verify all trigger notifications
 		const tEventType kHandledTypes[] = { kAllUnitTestEvents };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -435,6 +453,8 @@ public:
 	//------------------------------------------------------------------------
 	void testSingleListenerAllEventsDisableSome( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup to listen for all events and verify all trigger notifications
 		const tEventType kHandledTypes[] = { kAllUnitTestEvents };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -493,6 +513,8 @@ public:
 	//------------------------------------------------------------------------
 	void testMultipleListeners( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup 3 listeners for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
 		MyUnitTestListener listener1(kHandledTypes, ArrayCount(kHandledTypes));
@@ -533,6 +555,8 @@ public:
 	//------------------------------------------------------------------------
 	void testOverrideListener( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup override listener for event1
 		const tEventType kHandledTypes[] = { kUnitTestEvent1 };
 		MyUnitTestListener listener(kHandledTypes, ArrayCount(kHandledTypes));
@@ -551,6 +575,8 @@ public:
 	//------------------------------------------------------------------------
 	void testListenerChainErrors( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Chain 3 listners and verify correct one fires.
 		// Then add "All" listener to head and verify it grabs all events.
 		// Setup override listener for event1
@@ -566,6 +592,8 @@ public:
 	//------------------------------------------------------------------------
 	void testListenerChains( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Chain 3 listners and verify correct one fires.
 		const tEventType kHandledTypes1[] = { kUnitTestEvent1 };
 		const tEventType kHandledTypes2[] = { kUnitTestEvent2 };
@@ -627,6 +655,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCriticalDispatchBlocksInSameThread( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup listener that delays and records the thread id
 		MySlowTestListener listener;
 		MyUnitTestMsg	msg1(kUnitTestEvent1, kPayload1);
@@ -643,6 +673,8 @@ public:
 	//------------------------------------------------------------------------
 	void testNonPriorityDispatchesSwitchThreads( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Setup listener that delays and records the thread id
 		MySlowTestListener listener;
 		MyUnitTestMsg	msg1(kUnitTestEvent1, kPayload1);

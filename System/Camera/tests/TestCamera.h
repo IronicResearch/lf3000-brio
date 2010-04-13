@@ -13,8 +13,6 @@
 
 LF_USING_BRIO_NAMESPACE()
 
-#define PRINT_TEST_NAME() printf("Running %s\n", __FUNCTION__)
-
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
 const tEventType LocalCameraEvents[] = {kAllCameraEvents};
 

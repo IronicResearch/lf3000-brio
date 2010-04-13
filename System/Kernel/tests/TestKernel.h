@@ -48,7 +48,7 @@ namespace
 		sleep(1);
 		return (void *)NULL;
 	}	
-	void ptintf_test_info( const char *pName );
+
 //---------------------------------------------------------
 // Timer testing fuctions
 //----------------------------------------------------------
@@ -160,7 +160,7 @@ public:
 
  	void testWasCreated( )
 	{
-		ptintf_test_info("testWasCreated");
+		PRINT_TEST_NAME();
 
 		TS_ASSERT( KernelMPI != NULL );
 		TS_ASSERT( KernelMPI->IsValid() == true );
@@ -169,7 +169,7 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
-		ptintf_test_info("testCoreMPI");
+		PRINT_TEST_NAME();
 
 		tVersion		version;
 		const CString*	pName;
@@ -220,8 +220,8 @@ public:
 	//------------------------------------------------------------------------------
     void testIsDirectory()
     {
-		ptintf_test_info("testIsDirectory");
-
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory(""), false);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/"), true);
 		TS_ASSERT_EQUALS(KernelMPI->IsDirectory("/usr"), true);
@@ -234,7 +234,7 @@ public:
 	//------------------------------------------------------------------------------
     void testFilesInDirectory()
     {
-		ptintf_test_info("testFilesInDirectory");
+		PRINT_TEST_NAME();
 
     	std::vector<CPath>	files;
     	size_t kZero = 0;
@@ -264,7 +264,7 @@ public:
     
     void testGetElapsedTime()
 	{
-		ptintf_test_info("testGetElapsedTime");
+		PRINT_TEST_NAME();
 
 //		tErrType err;
 //		U32 pUs;
@@ -284,8 +284,8 @@ public:
 	
 	void testCreateTask()
 	{
-		ptintf_test_info("testCreateTask");
-
+		PRINT_TEST_NAME();
+		
 //		const CURI *pTaskURI = NULL;
 		tTaskHndl pHndl_1;
 		tTaskHndl pHndl_2;
@@ -395,8 +395,8 @@ public:
 
 	void testTaskSleep()
 	{
-		ptintf_test_info("testTaskSleep");
-
+		PRINT_TEST_NAME();
+		
 		U32 msec = 50;
 		U32 threshold = 10;
 		struct timespec t1, t2;
@@ -414,9 +414,9 @@ public:
 	
 	void testMemory()
 	{
-		ptintf_test_info("testMemory");
-
-        U32 size = 0x5000;
+		PRINT_TEST_NAME();
+		
+		U32 size = 0x5000;
         tPtr pPtr = NULL;
         
 //        TS_WARN("TODO: Test Memory!");
@@ -430,8 +430,8 @@ public:
 		
 	void TestCreateMessageQueue_1() 
 	{
-		ptintf_test_info("TestCreateMessageQueue_1");
-
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		tMessageQueueHndl hndl;
 		
@@ -464,8 +464,8 @@ public:
 			
 	void TestCreateMessageQueue_2() 
 	{
-		ptintf_test_info("TestCreateMessageQueue_2");
-
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		tMessageQueueHndl hndl;
 		
@@ -503,7 +503,8 @@ public:
 	void TestReceiveMessageOrWait() 
 	{
 		
-		ptintf_test_info("TestReceiveMessageOrWait");
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		tErrType err_open;
 		tErrType err_receive;
@@ -582,8 +583,8 @@ public:
 //------------------------------	
 	void TestSendMessageOrWait() 
 	{
+		PRINT_TEST_NAME();
 		
-		ptintf_test_info("TestSendMessageOrWait");
 		tErrType err;
 		tErrType err_open;
 		tErrType err_send;
@@ -667,13 +668,13 @@ public:
 	
 	void testCreateTimer()
 	{
+		PRINT_TEST_NAME();
+		
 		tTimerHndl hndlTimer_1;
 		tTimerHndl hndlTimer_2;
 		tTimerHndl hndlTimer_3;
 
 		tErrType err;
-
-		ptintf_test_info("testCreateTimer");
 
 		const static tTimerProperties props_1 = {TIMER_RELATIVE_SET,
 												 	{{0, 0}, {0, 0}},};
@@ -717,8 +718,8 @@ public:
 
 	void testStartStopTimer()
 	{
-		ptintf_test_info("testStartStopTimer");
-
+		PRINT_TEST_NAME();
+		
 		tTimerHndl hndlTimer_1;
 		tTimerHndl hndlTimer_2;
 		tTimerHndl hndlTimer_3;
@@ -850,7 +851,8 @@ public:
 	}		
 	void testResetTimerRelative()
 	{
-		ptintf_test_info("testResetTimerRelative");
+		PRINT_TEST_NAME();
+		
 		tTimerHndl hndlTimer_1;
 		tTimerHndl hndlTimer_2;
 		tTimerHndl hndlTimer_3;
@@ -914,7 +916,8 @@ public:
 
 	void testPauseResumeTimer()
 	{
-		ptintf_test_info("testPauseResumeTimer");
+		PRINT_TEST_NAME();
+		
 		tTimerHndl hndlTimer_1;
 		tTimerHndl hndlTimer_2;
 		tTimerHndl hndlTimer_3;
@@ -980,8 +983,8 @@ public:
 		
    void testGetTimerElapsed_OR_Remaining_Time()
     {
-		ptintf_test_info("testGetTimerElapsed_OR_Remaining_Time");
-
+		PRINT_TEST_NAME();
+		
 		tTimerHndl hndlTimer_1;
 		tTimerHndl hndlTimer_2;
 		tTimerHndl hndlTimer_3;
@@ -1041,7 +1044,8 @@ public:
 
      void xtestDestroyTimer()
     {
-		ptintf_test_info("testDestroyTimer");
+		PRINT_TEST_NAME();
+		
 //		sleep(2);
 //        TS_WARN("TODO: Test Destroy Timer!");
 		tTimerHndl hndlTimer_1;
@@ -1074,9 +1078,9 @@ public:
      // minimal start watchdog timer test.  See function exists, no timer in emulation
      void testStartWatchdog()
      {
-    	 ptintf_test_info("testStartWatchdog");
-    	 tErrType err;
-    	 
+    	PRINT_TEST_NAME();
+		
+	tErrType err;
     	 err = KernelMPI->StartWatchdog(60);	// no watchdog in emulation
     	 TS_ASSERT_EQUALS( err, (tErrType)0 );
      }
@@ -1084,7 +1088,8 @@ public:
      // minimal stop watchdog timer test.  See function exists
      void testStopWatchdog()
      {
-    	 ptintf_test_info("testStopWatchdog");
+    	 PRINT_TEST_NAME();
+	
     	 tErrType err;
     	 
     	 err = KernelMPI->StopWatchdog();		// zero keeps watchdog disabled
@@ -1094,7 +1099,8 @@ public:
      // minimal start watchdog timer test.  See function exists, but don't start timer
      void testKeepWatchdogAlive()
      {
-    	 ptintf_test_info("testKeepWatchdogAlive");
+    	 PRINT_TEST_NAME();
+	
     	 tErrType err;
     	 
     	 err = KernelMPI->KeepWatchdogAlive();		// zero keeps watchdog disabled
@@ -1107,8 +1113,8 @@ public:
     // Initializes a mutex with the attributes specified in the specified mutex attribute object
     void testInit_DeInit_Mutex()
     {
-		ptintf_test_info("testInit_DeInit_Mutex");
-
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		//Note: typedef pthread_mutexattr_t tMutexAttr
 		//Note: typedef pthread_mutex_t     tMutex;
@@ -1145,9 +1151,9 @@ public:
 	
     void testTicketAgentMutex()
     {
-	   ptintf_test_info("testTicketAgentMutex");
-
-	   for(int i = 0; i< 10; i++ )
+		PRINT_TEST_NAME();
+		
+	for(int i = 0; i< 10; i++ )
    	   {	   
    		   total_sold = 0;
     	   pthread_t agents[NUM_AGENTS];
@@ -1165,12 +1171,12 @@ public:
     // Destroys a mutex. It was tested in the 'testInit_DeInit_Mutex'
     void xtestDeInitMutex()
     {
-		ptintf_test_info("xtestDeInitMutex");
-
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		tMutex mutex;
         
-        err = KernelMPI->DeInitMutex( mutex );
+		err = KernelMPI->DeInitMutex( mutex );
 		TS_ASSERT_EQUALS( err, ((tErrType)0) );
     }
 	
@@ -1178,7 +1184,7 @@ public:
     // This function will not be used on the borad 
     void xtestGetMutexPriorityCeiling()
 	{
-		ptintf_test_info("xtestGetMutexPriorityCeiling");
+		PRINT_TEST_NAME();
 
 		//tErrType err;
         //err = KernelMPI->GetMutexPriorityCeiling( const tMutex& mutex );
@@ -1188,7 +1194,7 @@ public:
     // This function will not be used on the borad 
     void xtestSetMutexPriorityCeiling()
     {
-		ptintf_test_info("xtestSetMutexPriorityCeiling");
+		PRINT_TEST_NAME();
 
 		//tErrType err;
  		//err = KernelMPI->SetMutexPriorityCeiling( tMutex& mutex, S32 prioCeiling, S32* pOldPriority = NULL );
@@ -1197,7 +1203,7 @@ public:
      // Locks an unlocked mutex
     void testLockMutex()
     {
-		ptintf_test_info("testLockMutex");
+		PRINT_TEST_NAME();
 
 		tErrType err;
 
@@ -1216,8 +1222,8 @@ public:
     	// Tries to lock a not xtested
 	void testTryLockMutex_1()
     {
-		ptintf_test_info("testTryLockMutex_1");
-
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		tMutex mutex;
 		const tMutexAttr attr = {0};
@@ -1239,7 +1245,8 @@ public:
     // Unlocks a mutex. It was tested
     void xtestUnlockMutex()
     {
-		ptintf_test_info("xtestUnlockMutex");
+		PRINT_TEST_NAME();
+
      	// err = KernelMPI->UnlockMutex( tMutex& mutex );
     }
 
@@ -1255,9 +1262,9 @@ public:
     // specified condition variable attribute object
         void testInitCond()
         {
-			ptintf_test_info("testInitCond");
-
-			tErrType err;
+		PRINT_TEST_NAME();
+		
+		tErrType err;
         	tCond cond;
         	const tCondAttr attr = {0};
         	
@@ -1270,14 +1277,16 @@ public:
     // Destroys a condition variable attribute object. Tested above 
     void xtestDestroyCond()
     {
-		ptintf_test_info("xtestDestroyCond");
+		PRINT_TEST_NAME();
+		
     	// err = KernelMPI->DestroyCond( tCond& cond );
     }
 
 // Initializes a condition variable attribute object    
     void testInitCondAttr()
     {
-		ptintf_test_info("testInitCondAttr");
+		PRINT_TEST_NAME();
+		
 		tErrType err;
     	tCondAttr attr;
 
@@ -1292,15 +1301,17 @@ public:
 // Destroys a condition variable Tested
     void xtestDestroyCondAttr()
     {
-		ptintf_test_info("xtestDestroyCondAttr");
+		PRINT_TEST_NAME();
+		
     	// err = KernelMPI->DestroyCondAttr( tCondAttr& attr );
     }
 
 // Unblocks all threads that are waiting on a condition variable
         void testBroadcastCond()
         {
-			ptintf_test_info("testBroadcastCond");
-			tErrType err;
+		PRINT_TEST_NAME();
+		
+		tErrType err;
         	static tCond cond = PTHREAD_COND_INITIALIZER;        	
         	
         	err = KernelMPI->BroadcastCond( cond );
@@ -1314,8 +1325,9 @@ public:
     // Unblocks at least one thread waiting on a condition variable
         void testSignalCond()
         {
-			ptintf_test_info("testSignalCond");
-			tErrType err;
+		PRINT_TEST_NAME();
+		
+		tErrType err;
         	tCond cond = PTHREAD_COND_INITIALIZER;        	
         	
         	err = KernelMPI->SignalCond( cond );
@@ -1331,7 +1343,8 @@ public:
 // FIXME: pAbstime var
     void testTimedWaitOnCond()
     {
-		ptintf_test_info("testTimedWaitOnCond");
+		PRINT_TEST_NAME();
+		
 		tErrType err;
     	static tCond cond = PTHREAD_COND_INITIALIZER;  
 		static tMutex mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -1366,7 +1379,8 @@ public:
 // Automatically unlocks the specified mutex, and places the calling thread into a wait state
     void testWaitOnCond()
     {
-		ptintf_test_info("testWaitOnCond");
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 
 //  			int                   rc=0;
@@ -1406,7 +1420,8 @@ public:
     // Obtains the process-shared setting of a condition variable attribute object
     void xtestGetCondAttrPShared()
     {
-		ptintf_test_info("xtestGetCondAttrPShared");
+		PRINT_TEST_NAME();
+		
     	// err = KernelMPI->GetCondAttrPShared( const tCondAttr& attr, int* pShared );
     }
 
@@ -1415,7 +1430,8 @@ public:
 // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
     void xtestSetCondAttrPShared()
     {
-		ptintf_test_info("xtestSetCondAttrPShared");
+		PRINT_TEST_NAME();
+		
     	// err = KernelMPI->SetCondAttrPShared( tCondAttr* pAttr, int shared );
     }
 
@@ -1423,8 +1439,8 @@ public:
 	// time should be greater than or equal to the first time plus sleep time.
 	void testGetHRTAsUsec()
 	{
-		ptintf_test_info("testGetHRTAsUsec.");
-
+		PRINT_TEST_NAME();
+		
 		U32 t1, t2;
 		struct timespec sleeptime;
 		tErrType err;
@@ -1445,8 +1461,8 @@ public:
 	
 	void testGetElapsedAsSec()
 	{
-		ptintf_test_info("testGetElapsedAsSec. Test takes 5 sec");
-
+		PRINT_TEST_NAME();
+		
 		U32 sec;
 		U32 secPrev;
 		tErrType err;
@@ -1473,8 +1489,8 @@ public:
 
 	void testGetElapsedTimeAsStructure()
 	{
-		ptintf_test_info("testGetElapsedTimeAsStructure. Test takes 5 sec");
-
+		PRINT_TEST_NAME();
+		
 		tErrType err;
 		Current_Time curTime;
 		Current_Time curTimePrev;
@@ -1501,18 +1517,6 @@ public:
 			curTimePrev = curTime;
 		}	
 	}
-// =========================================================
-	void ptintf_test_info( const char *pName )
-	{
-		static int testNum = 1;
-		if( testNum == 1 )
-		{
-			printf("\n");
-			printf(".");
-		}
-		printf("#%3d Test Name = %s\n", testNum++, pName );
-		fflush(stdout);
-	}	
 
 };
 

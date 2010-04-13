@@ -69,6 +69,8 @@ public:
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
+		PRINT_TEST_NAME();
+		
 		TS_ASSERT( pwrmgr_ != NULL );
 		TS_ASSERT( pwrmgr_->IsValid() == true );
 	}
@@ -76,6 +78,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
+		PRINT_TEST_NAME();
+		
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
@@ -93,6 +97,8 @@ public:
 	//------------------------------------------------------------------------
 	void testPollForState( )
 	{
+		PRINT_TEST_NAME();
+		
 		tPowerData	data;
 		data.powerState	= kBadPowerState;
 		data.powerState = pwrmgr_->GetPowerState();
@@ -102,6 +108,8 @@ public:
 	//------------------------------------------------------------------------
 	void testSetupCallback( )
 	{
+		PRINT_TEST_NAME();
+		
 		// Doesn't really test much, just that making the calls to
 		// setup the handler succeed.  So long as the EventMPI gets
 		// unit tested, we shouldn't need to do much more here.
