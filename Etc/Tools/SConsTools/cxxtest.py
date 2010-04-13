@@ -7,7 +7,7 @@
 import SCons.Builder
 
 #FIXME/tp: Add a CXXTEST_EXE construction variable
-cxxtestgen = ['#ThirdParty/cxxtest/cxxtestgen.py']
+cxxtestgen = '#ThirdParty/cxxtest/cxxtestgen.py'
 
 
 #-----------------------------------------------------------------------------

@@ -176,7 +176,7 @@ def FindMPISources(pdir, vars):
 #-----------------------------------------------------------------------------
 def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 	if len(psources) != 0:
-		bldenv = penv.Copy()
+		bldenv = penv.Clone()
 		source_dir = SourceDirFromBuildDir(os.path.dirname(psources[0]), root_dir)
 		linklibs = plibs
 		# TODO/tp: put all map files in a single folder, or keep hierarchy?
@@ -229,7 +229,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 	if len(tests) == 0:
 		return
 		
-	testenv = penv.Copy()
+	testenv = penv.Clone()
 	if vars['is_debug']:
 		testenv.Append(CCFLAGS = '-g')
 	testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
@@ -240,7 +240,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 
 	platformlibs = ['DebugMPI']
 	if vars['is_emulation']:
-		platformlibs += ['glibmm-2.4', 'glib-2.0']
+		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread']
 	else:
 		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
 	fulllibs = plibs + [ptarget + 'MPI']
@@ -273,10 +273,18 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 									''')
 		if vars['is_emulation']:
 			fulllibs +=  ['X11']
-	temp = testenv.Program([mytest] + psources, LIBS = fulllibs + platformlibs)
+
+	temp = testenv.Program(mytest + psources, LIBS = fulllibs + platformlibs)
 	mytestexe = testenv.Install(vars['bin_deploy_dir'], temp)
-	if vars['is_runtests'] and vars['is_emulation']:
-		testenv.RunTest(str(mytestexe[0]) + '_passed', mytestexe)
+	if vars['is_runtests']:
+		#Build test results list which will serve as our RunTest targets
+		results = []
+		for test in mytestexe:
+			test_name = os.path.basename( str(test) )
+			results.append( os.path.join( vars['test_results_dir'], test_name ) )
+		
+		test_result = testenv.RunTest(results, mytestexe)
+		testenv.AlwaysBuild(test_result)
 
 
 #-----------------------------------------------------------------------------

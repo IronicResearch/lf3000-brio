@@ -19,7 +19,7 @@ mpilibs		= ['ModuleMPI']
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
-myenv		= env.Copy()
+myenv		= env.Clone()
 
 myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
 

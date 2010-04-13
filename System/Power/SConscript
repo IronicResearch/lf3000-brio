@@ -17,7 +17,7 @@ mpilibs		= ['Utility', 'DebugMPI']
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
-myenv		= env.Copy()
+myenv		= env.Clone()
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
 
 #-----------------------------------------------------------------------------
