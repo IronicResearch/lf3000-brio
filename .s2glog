@@ -24648,3 +24648,18 @@ By dlazzari (dlazzari@leapfrog.com) on 4/13/10 12:07 PM
 6,476 ms. (Cumulative: 8,471,284 ms)
 
 ----------------
+Revision 7,053 from svn://localhost/TRUNK/:
+Revision 7,054 from svn://localhost/TRUNK/:
+Revision 7,055 from svn://localhost/TRUNK/:
+Revision 7,056 from svn://localhost/TRUNK/:
+Revision 7,057 from svn://localhost/TRUNK/:
+Revision 7,058 from svn://localhost/TRUNK/:
+Revision 7,059 from svn://localhost/TRUNK/:
+
+Reverting changes to make scripts run with scons 1.2.0
+
+By dlazzari (dlazzari@leapfrog.com) on 4/13/10 2:06 PM
+17 changed, 0 added, 0 deleted.
+6,876 ms. (Cumulative: 8,478,332 ms)
+
+----------------

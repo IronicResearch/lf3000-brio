@@ -176,7 +176,7 @@ def FindMPISources(pdir, vars):
 #-----------------------------------------------------------------------------
 def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 	if len(psources) != 0:
-		bldenv = penv.Clone()
+		bldenv = penv.Copy()
 		source_dir = SourceDirFromBuildDir(os.path.dirname(psources[0]), root_dir)
 		linklibs = plibs
 		# TODO/tp: put all map files in a single folder, or keep hierarchy?
@@ -229,7 +229,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 	if len(tests) == 0:
 		return
 		
-	testenv = penv.Clone()
+	testenv = penv.Copy()
 	if vars['is_debug']:
 		testenv.Append(CCFLAGS = '-g')
 	testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])

@@ -22,7 +22,7 @@ mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 # Modify the build environment and build the module
 
 #-----------------------------------------------------------------------------
-myenv		= env.Clone()
+myenv		= env.Copy()
 
 ## myenv.Append(CPPDEFINES = ['USE_VORBIS'])
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
