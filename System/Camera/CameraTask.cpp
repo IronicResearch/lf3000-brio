@@ -14,7 +14,7 @@
 
 #include <DebugMPI.h>
 #include <CameraMPI.h>
-//#include <AudioMPI.h>
+#include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <DisplayMPI.h>
 #include <EventMPI.h>
@@ -63,6 +63,8 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
+	CAudioMPI			audiomgr;
+	Boolean				bSpeakerState = true;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
@@ -132,6 +134,10 @@ void* CameraTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	kernel.StartTimer(timer, props);
 
+	// Hack to reduce audio streaming interference with video streaming
+	bSpeakerState = audiomgr.GetSpeakerEqualizer();
+	audiomgr.SetSpeakerEqualizer(false);
+	
 	/*
 	 * This is intentionally an assignment, not a comparison.
 	 * End loop when bRunning is false.
@@ -189,6 +195,9 @@ void* CameraTaskMain(void* arg)
 	{
 		end += (kU32Max - start);
 	}
+
+	// Restore speaker equalizer state prior to video streaming
+	audiomgr.SetSpeakerEqualizer(bSpeakerState);
 
 	// Post done message to event listener
 	if(pCtx->pListener)

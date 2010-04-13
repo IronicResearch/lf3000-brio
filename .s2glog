@@ -24574,3 +24574,32 @@ By dlazzari (dlazzari@leapfrog.com) on 4/9/10 11:14 AM
 6,329 ms. (Cumulative: 8,439,212 ms)
 
 ----------------
+Revision 7,022 from svn://localhost/TRUNK/:
+Revision 7,023 from svn://localhost/TRUNK/:
+Revision 7,024 from svn://localhost/TRUNK/:
+Revision 7,025 from svn://localhost/TRUNK/:
+Revision 7,026 from svn://localhost/TRUNK/:
+Revision 7,027 from svn://localhost/TRUNK/:
+Revision 7,028 from svn://localhost/TRUNK/:
+Revision 7,029 from svn://localhost/TRUNK/:
+Revision 7,030 from svn://localhost/TRUNK/:
+Revision 7,031 from svn://localhost/TRUNK/:
+Revision 7,032 from svn://localhost/TRUNK/:
+Revision 7,033 from svn://localhost/TRUNK/:
+Revision 7,034 from svn://localhost/TRUNK/:
+Revision 7,035 from svn://localhost/TRUNK/:
+Revision 7,036 from svn://localhost/TRUNK/:
+Revision 7,037 from svn://localhost/TRUNK/:
+Revision 7,038 from svn://localhost/TRUNK/:
+Revision 7,039 from svn://localhost/TRUNK/:
+Revision 7,040 from svn://localhost/TRUNK/:
+Revision 7,041 from svn://localhost/TRUNK/:
+Revision 7,042 from svn://localhost/TRUNK/:
+
+Added Hack to reduce audio streaming interference with video streaming. Effectively disables AudioMPI soft-clipper while video capture streaming is active, which is subtler than pausing audio streaming. (TTP #2465)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/10 5:06 PM
+1 changed, 0 added, 0 deleted.
+6,438 ms. (Cumulative: 8,445,884 ms)
+
+----------------
