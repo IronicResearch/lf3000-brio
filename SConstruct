@@ -59,14 +59,14 @@ import Etc.Tools.SConsTools.Priv.UpdateMetaInf	# meta.inf utility
 #-----------------------------------------------------------------------------
 # Setup help options and get command line arguments
 #-----------------------------------------------------------------------------
-opts = Variables('CmdLine.py')
+opts = Options('CmdLine.py')
 opts.Add('platform', 'Set platform to use', 'Lightning')
-opts.Add(BoolVariable('monolithic', 'Set "monolithic=t" to link EXEs against .a files rather than .so files', 0))
-opts.Add(EnumVariable('platform_variant', 'Use in the place of "platform" to specify a bring-up board\n   ', 'Lightning_LF2530BLUE', 
+opts.Add(BoolOption('monolithic', 'Set "monolithic=t" to link EXEs against .a files rather than .so files', 0))
+opts.Add(EnumOption('platform_variant', 'Use in the place of "platform" to specify a bring-up board\n   ', 'Lightning_LF2530BLUE', 
 						allowed_values=('Lightning_LF2530RED', 'Lightning_LF2530BLUE', 'Lightning_LF1000')))
-opts.Add(BoolVariable('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
+opts.Add(BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
-opts.Add(EnumVariable('type', '"publish" creates an RC\n    "xembedded" and "xemulation" export headers, libs & build scripts\n    for external app linkage\n    "checkheaders" uncovers inclusion dependencies\n   ',
+opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemulation" export headers, libs & build scripts\n    for external app linkage\n    "checkheaders" uncovers inclusion dependencies\n   ',
 					'embedded', 
 					allowed_values=('checkheaders', 'embedded', 'emulation', 'xembedded', 'xemulation', 'publish')))
 
