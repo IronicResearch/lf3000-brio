@@ -1,0 +1,54 @@
+#!/bin/bash
+
+if [  -z `which avahi-browse` ]; then
+	echo -n "Error: avahi-browse not installed, "
+	echo "run 'apt-get install avahi-utils' then try again."
+	exit 1	
+fi
+
+if [ -z `which avahi-resolve-host-name` ]; then
+	echo -n "Error: avahi-resolve-host-name not installed, "
+	echo "run 'apt-get install avahi-utils' then try again."
+	exit 1	
+fi
+
+# Dynamic discovery of Eternet Explorer device using Avahi
+
+# Get the interface name
+dev=""
+while [ -z $dev ]; do
+	dev=`ifconfig | grep -i "00:dc:c8:f7:75:05\|80:38:fd:..:..:.." | grep -v avahi | awk '{{ print $1 }}'` 
+ 	echo "Waiting for ifconfig..." >&2
+ 	sleep 1;
+done
+echo "our Explorer ethernet device is $dev" >&2 # like eth12
+
+# Helper: Search for IP using avahi
+get_ip ()
+{
+NAME=`avahi-browse -a -l -t | fgrep 80:38:fd | fgrep Explorer | cut -d ' ' -f 4`
+if [ -n "$NAME" ]; then
+	echo `avahi-resolve-host-name -4 -n $NAME.local | cut -f 2`
+	exit 0
+fi
+}
+
+# check if it is already up
+if ifconfig $dev | fgrep "inet addr" > /dev/null; then
+	echo "Explorer ethernet device $dev is already up" >&2
+	get_ip
+fi
+
+# Enable that interface as 169.254 address so that 
+# avahi-browse will work for that range of
+try=1;
+while true; do
+	echo "Try $try setting Explorer ethernet device $dev to 169.254.0.113" >&2
+	sudo ifconfig $dev 169.254.0.113
+	get_ip
+	# That didn't work, so try 192,168
+	echo "Try $try setting Explorer ethernet device $dev to 192.168.0.113" >&2
+	sudo ifconfig $dev 192.168.0.113
+	get_ip
+	try=$((try++))
+done

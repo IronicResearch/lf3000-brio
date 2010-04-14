@@ -24697,3 +24697,27 @@ By Dave Milici (dmilici@leapfrog.com) on 4/13/10 3:55 PM
 6,584 ms. (Cumulative: 8,497,669 ms)
 
 ----------------
+Revision 7,069 from svn://localhost/TRUNK/:
+Revision 7,070 from svn://localhost/TRUNK/:
+Revision 7,071 from svn://localhost/TRUNK/:
+Revision 7,072 from svn://localhost/TRUNK/:
+Revision 7,073 from svn://localhost/TRUNK/:
+Revision 7,074 from svn://localhost/TRUNK/:
+Revision 7,075 from svn://localhost/TRUNK/:
+Revision 7,076 from svn://localhost/TRUNK/:
+Revision 7,077 from svn://localhost/TRUNK/:
+Revision 7,078 from svn://localhost/TRUNK/:
+Revision 7,079 from svn://localhost/TRUNK/:
+Revision 7,080 from svn://localhost/TRUNK/:
+Revision 7,081 from svn://localhost/TRUNK/:
+
+- Changed module build scripts to defer checking the is_runtests flag to the RunMyTests function for easier maintenance.
+- Added a 5 minute watchdog timer to emulation unit tests to stop them if they hang
+- Changed type=publish builds to default to building and running embedded unit tests, to run emulation unit tests as well, use runtests=t with type=publish
+- If embedded unit tests are set to run, reboot any connected device before building and testing
+
+By dlazzari (dlazzari@leapfrog.com) on 4/14/10 2:48 PM
+16 changed, 1 added, 0 deleted.
+6,892 ms. (Cumulative: 8,504,749 ms)
+
+----------------
