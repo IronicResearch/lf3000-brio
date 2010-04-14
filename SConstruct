@@ -54,6 +54,7 @@ import fnmatch
 import SCons.Defaults
 import Etc.Tools.SConsTools.Priv.LfUtils	# LeapFrog utility functions
 import Etc.Tools.SConsTools.Priv.UpdateMetaInf	# meta.inf utility
+import Etc.Tools.SConsTools.DeviceTools.telnetrpc
 
 
 #-----------------------------------------------------------------------------
@@ -200,8 +201,17 @@ for target in targets:
 	#-------------------------------------------------------------------------
 	if targets.index(target) > 0:
 		is_export = 0
+	
+	#For publish builds, we always want to run embedded unit tests
 	if is_publish and not is_emulation:
-		is_runtests = 0;
+		is_runtests = True;
+		
+	#-------------------------------------------------------------------------
+	# If we are going to be running embedded unit test on this pass,
+	# the device will need to be rebooted
+	#-------------------------------------------------------------------------
+	if is_runtests and not is_emulation:
+		Etc.Tools.SConsTools.DeviceTools.telnetrpc.RebootDevice()
 
 	#-------------------------------------------------------------------------
 	# Set up and Python dictionary variables that map generic names

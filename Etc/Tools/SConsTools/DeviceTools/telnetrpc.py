@@ -5,6 +5,8 @@ Run remote calls on the device via a telnet connection.
 
 import telnetlib
 import re
+import os
+import time
 
 class TelnetRPC:
 	prompt = ''
@@ -48,7 +50,7 @@ class TelnetRPC:
 		
 		self.session.expect(self.prompt)
 
-	def command(self, cmd, verbose=False):
+	def command(self, cmd, timeout=300, verbose=False):
 		"""Run the command on the remote connection.  Return the result as a string."""
 		if not self.session:
 			print "Not Connected"
@@ -60,7 +62,7 @@ class TelnetRPC:
 		
 		self.session.write(cmd + "\n")
 		try:
-			result = self.session.expect(self.prompt, timeout=600)
+			result = self.session.expect(self.prompt, timeout=timeout)
 		except Exception, err:
 			print("Telnet RPC Error: " + str(err))
 			raise
@@ -76,3 +78,22 @@ class TelnetRPC:
 		if self.session != None:
 			self.session.close()
 			self.session = None
+
+#------------------------------------------------------------------------
+# Useful functions that can be achieved through telnetrpc
+# These functions all return a simple boolean of whether they succeeded or failed
+#------------------------------------------------------------------------
+def RebootDevice(host = "192.168.0.111", username="root", password = ""):
+	try:
+		connection = TelnetRPC(host, username, password)
+		
+	except Exception, err:
+		print( str( err ) )
+		return False
+	
+	connection.command("reboot")
+	
+	#sleep to allow for device to finish booting
+	time.sleep(10)
+	os.system( os.path.join( os.path.dirname(__file__), "get-ip" ) )
+	return True

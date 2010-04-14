@@ -219,7 +219,7 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype, vars):
 #-----------------------------------------------------------------------------
 def RunMyTests(ptarget, psources, plibs, penv, vars):
 
-	if vars['is_checkheaders'] or vars['is_export'] or not vars['is_runtests']:
+	if vars['is_checkheaders'] or not vars['is_runtests']:
 		return
 
 	srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
