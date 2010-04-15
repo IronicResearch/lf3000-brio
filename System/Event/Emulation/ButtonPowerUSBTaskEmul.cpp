@@ -100,7 +100,7 @@ namespace
 void* CEventModule::CartridgeTask( void* arg )
 {
 	CEventModule*	pThis = reinterpret_cast<CEventModule*>(arg);
-	while (g_threadRun2_)
+	while (pThis->bThreadRun_)
 		pThis->kernel_.TaskSleep(10);
 	return NULL;
 }
@@ -122,7 +122,7 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
  	data.buttonState = data.buttonTransition = 0;
 
 	U32 dw = EmulationConfig::Instance().GetLcdDisplayWindow();
-	while(!dw)
+	while(!dw && pThis->bThreadRun_)
 	{
 		pThis->kernel_.TaskSleep(10);
 		dw = EmulationConfig::Instance().GetLcdDisplayWindow();
@@ -133,9 +133,10 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 	power_data.powerState = GetCurrentPowerState();
 
 	// Specify event mask here, not XSetWindowAttributes()
-	XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | StructureNotifyMask );
+	if (win)
+		XSelectInput(gXDisplay, win, KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | StructureNotifyMask );
 	g_threadRunning2_ = true;
-	while (g_threadRun2_)
+	while (pThis->bThreadRun_)
 	{
 		XEvent	event;
 		XNextEvent(gXDisplay, &event);
