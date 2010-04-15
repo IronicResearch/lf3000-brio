@@ -24721,3 +24721,19 @@ By dlazzari (dlazzari@leapfrog.com) on 4/14/10 2:48 PM
 6,892 ms. (Cumulative: 8,504,749 ms)
 
 ----------------
+Revision 7,082 from svn://localhost/TRUNK/:
+Revision 7,083 from svn://localhost/TRUNK/:
+Revision 7,084 from svn://localhost/TRUNK/:
+Revision 7,085 from svn://localhost/TRUNK/:
+Revision 7,086 from svn://localhost/TRUNK/:
+Revision 7,087 from svn://localhost/TRUNK/:
+Revision 7,088 from svn://localhost/TRUNK/:
+Revision 7,089 from svn://localhost/TRUNK/:
+
+Modernize emulation event handler to use context state vars for exiting event threads.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/15/10 11:07 AM
+2 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 8,510,968 ms)
+
+----------------
