@@ -24764,3 +24764,19 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/15/10 2:48 PM
 5,876 ms. (Cumulative: 8,522,926 ms)
 
 ----------------
+Revision 7,099 from svn://localhost/TRUNK/:
+Revision 7,100 from svn://localhost/TRUNK/:
+Revision 7,101 from svn://localhost/TRUNK/:
+Revision 7,102 from svn://localhost/TRUNK/:
+Revision 7,103 from svn://localhost/TRUNK/:
+Revision 7,104 from svn://localhost/TRUNK/:
+
+Output audio stream to OSS driver directly without using PortAudio library. (TTP #2465)
+Accounts for Brio/4K vs OSS/2K buffer size differences on embedded target, but not emulation target.
+Removal of PortAudio layer would help future migration from OSS to ALSA audio output.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/15/10 3:23 PM
+1 changed, 0 added, 0 deleted.
+5,832 ms. (Cumulative: 8,528,868 ms)
+
+----------------

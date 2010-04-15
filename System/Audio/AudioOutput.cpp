@@ -28,7 +28,22 @@
 #include <GroupEnumeration.h>
 #include <KernelMPI.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <poll.h>
+#include <linux/soundcard.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
+
+// Enables direct callback vs PortAudio (embedded only)
+#ifndef EMULATION
+#define USE_DIRECT_CALLBACK	1
+#else
+#define USE_DIRECT_CALLBACK	0
+#endif
 
 // Enables callback to Brio, vs. sine output
 #define USE_REAL_CALLBACK	1
@@ -65,6 +80,160 @@ static U32 gCallbackCount = 0;
 #ifndef USE_REAL_CALLBACK
 static paTestData gTestData;
 #endif
+
+
+#if USE_DIRECT_CALLBACK
+
+//==============================================================================
+// Callback variables	
+//==============================================================================
+extern CKernelMPI*	pKernelMPI_;
+volatile bool 		bRunning = true;
+volatile bool 		bRendering = false;
+int 				fddsp = -1;
+tTaskHndl 			hndlThread = 0;
+S16*				pOutputBuffer = NULL;
+U32					nFramesPerBuffer = kAudioFramesPerBuffer;
+int					nBytesPerBuffer = kAudioOutBufSizeInBytes; // Brio (4K)
+int					nBytesPerOutput = kAudioOutBufSizeInBytes; // OSS  (2K)
+
+//==============================================================================
+// Callback thread	
+//==============================================================================
+static void* CallbackThread(void* pCtx)
+{
+	int r = 0;
+	struct pollfd fdlist[1];
+	memset(fdlist, 0, sizeof(fdlist));
+	fdlist[0].fd = fddsp;
+	fdlist[0].events = POLLOUT;
+	
+	while (bRunning)
+	{
+		if (bRendering)
+		{
+			// Brio render callback 
+			do { 
+				r = gAudioRenderCallback(pOutputBuffer, nFramesPerBuffer, pCtx);
+				if (r != kNoErr)
+					pKernelMPI_->TaskSleep(10);
+			}
+			while (r != kNoErr);
+
+			// Output Brio render buffer (4K) to OSS output buffer (2K)
+			U8* pOut = (U8*)pOutputBuffer;
+			for (int i = 0; i < nBytesPerBuffer; i += nBytesPerOutput, pOut += nBytesPerOutput)
+			{
+				r = poll(fdlist, 1, -1);
+	
+				if ((r > 0) && (fdlist[0].revents & POLLOUT)) 
+				{
+					write(fddsp, pOut, nBytesPerOutput);
+				}
+			}
+		}
+		else
+		{
+			pKernelMPI_->TaskSleep(10);
+		}
+	}
+}
+ 
+//==============================================================================
+// InitAudioOutput	
+//==============================================================================
+int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
+{	
+	gAudioRenderCallback = callback;
+	gCallbackUserData = pUserData;
+
+	// Open audio driver
+	fddsp = open("/dev/dsp", O_WRONLY);
+	if (fddsp < 0)
+		return fddsp;
+	
+	int temp = AFMT_S16_LE; // 0x10;
+    int r = ioctl( fddsp, SNDCTL_DSP_SETFMT, &temp );
+    if (r < 0)
+    	return r;
+    
+    temp = kAudioNumOutputChannels;
+    r = ioctl( fddsp, SNDCTL_DSP_CHANNELS, &temp );
+    if (r < 0)
+    	return r;
+    
+    temp = kAudioSampleRate;
+    r = ioctl( fddsp, SNDCTL_DSP_SPEED, &temp );
+    if (r < 0)
+    	return r;
+
+    temp = 0;
+	r = ioctl( fddsp, SNDCTL_DSP_GETBLKSIZE, &temp );
+	if (r < 0)
+		return r;
+	
+	// Allocate output buffer for render callbacks
+	// NOTE: OSS buffer size (2K) does not equal Brio buffer size (4K)
+	nBytesPerOutput = temp; // != kAudioOutBufSizeInBytes
+	nBytesPerBuffer = kAudioOutBufSizeInBytes;
+	pOutputBuffer = (S16*)pKernelMPI_->Malloc(nBytesPerBuffer);
+	if (!pOutputBuffer)
+		return -1;
+
+	// Create callback thread
+	tTaskProperties props;
+	props.TaskMainFcn = &CallbackThread;
+	props.taskMainArgCount = 1;
+	props.pTaskMainArgValues = pUserData;
+	r = pKernelMPI_->CreateTask(hndlThread, props, NULL);
+	if (r != kNoErr)
+		return r;
+	
+	return kNoErr; // 0
+}
+
+// ==============================================================================
+// StartAudioOutput	 
+// ==============================================================================
+int StartAudioOutput( void )
+{
+	// Enable rendering callbacks for output
+	bRendering = true;
+	return 0;
+}
+
+// ==============================================================================
+// StopAudioOutput	
+// ==============================================================================
+int StopAudioOutput( void )
+{
+	// Disable rendering callbacks for output
+	bRendering = false;
+	return 0;
+}
+
+//==============================================================================
+// DeInitAudioOutput  
+//==============================================================================
+int DeInitAudioOutput( void )
+{
+	// Kill callback thread
+	void* retval;
+	bRunning = false;
+	pKernelMPI_->JoinTask(hndlThread, retval);
+
+	// Release resources
+	pKernelMPI_->Free(pOutputBuffer);
+	pOutputBuffer = NULL;
+	
+	// Close audio driver
+	close(fddsp);
+	fddsp = -1;
+	
+	return 0;
+}
+
+#else // USE_PORT_AUDIO
 
 //==============================================================================
 // PortAudio callback (which is faking a DMA-triggered ISR)
@@ -214,5 +383,8 @@ int DeInitAudioOutput( void )
 	
 	return 0;
 }
+
+#endif // USE_PORT_AUDIO
+
 LF_END_BRIO_NAMESPACE()
 // EOF
