@@ -11,6 +11,8 @@
 #include <AudioTypes.h>
 #include <UnitTestUtils.h>
 
+#include <sstream>
+
 //For strcmp
 #include <string.h>
 
@@ -18,6 +20,32 @@ LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
 const tEventType LocalCameraEvents[] = {kAllCameraEvents};
+
+char* GetControlString(tControlType control)
+{
+	switch(control)
+	{
+		case kControlTypeBrightness:
+			return "Brightness";
+		case kControlTypeContrast:
+			return "Contrast";
+		case kControlTypeSaturation:
+			return "Saturation";
+		case kControlTypeHue:
+			return "Hue";
+		case kControlTypeGamma:
+			return "Gamma";
+		case kControlPowerLineFreq:
+			return "PowerLineFreq";
+		case kControlTypeSharpness:
+			return "Sharpness";
+		case kControlTypeBacklightComp:
+			return "BacklightComp";
+	}
+	return "Mising Setting String";
+}
+
+const char* capture_path = "/LF/Base/L3B_Video";
 
 //============================================================================
 // TestCameraMPI functions
@@ -106,22 +134,23 @@ public:
 	{
 		PRINT_TEST_NAME();
 		//Set and then get each path
-		const char* test_path = "/LF/Base/L3B_Video/";
 		
 		//Video Path
-		tErrType err = pCameraMPI_->SetCameraVideoPath(test_path);
+		tErrType err = pCameraMPI_->SetCameraVideoPath(capture_path);
 		TS_ASSERT_EQUALS(err, kNoErr);
-		TSM_ASSERT_EQUALS(pCameraMPI_->GetCameraVideoPath()->c_str(), strcmp(pCameraMPI_->GetCameraVideoPath()->c_str(), test_path), 0);
+		const char* retrieved_video_path = pCameraMPI_->GetCameraVideoPath()->c_str();
+		TSM_ASSERT_EQUALS(retrieved_video_path, strcmp(retrieved_video_path, capture_path), 0);
 		
 		//Still Image Path
-		err = pCameraMPI_->SetCameraStillPath(test_path);
+		err = pCameraMPI_->SetCameraStillPath(capture_path);
 		TS_ASSERT_EQUALS(err, kNoErr);
-		TSM_ASSERT_EQUALS(pCameraMPI_->GetCameraStillPath()->c_str(), strcmp(pCameraMPI_->GetCameraStillPath()->c_str(), test_path), 0);
+		const char* retrieved_still_path = pCameraMPI_->GetCameraStillPath()->c_str();
+		TSM_ASSERT_EQUALS(retrieved_still_path, strcmp(retrieved_still_path, capture_path), 0);
 		
 		//TODO: Audio is scheduled for later, re-enable tests when that happens
-		//~ err = pCameraMPI_->SetCameraAudioPath(test_path);
+		//~ err = pCameraMPI_->SetCameraAudioPath(capture_path);
 		//~ TS_ASSERT_EQUALS(err, kNoErr);
-		//~ TSM_ASSERT_EQUALS(pCameraMPI_->GetCameraAudioPath()->c_str(), strcmp(pCameraMPI_->GetCameraAudioPath()->c_str(), test_path), 0);
+		//~ TSM_ASSERT_EQUALS(pCameraMPI_->GetCameraAudioPath()->c_str(), strcmp(pCameraMPI_->GetCameraAudioPath()->c_str(), capture_path), 0);
 		
 	}
 	
@@ -158,7 +187,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
+			err = pCameraMPI_->SetCameraVideoPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "testYUV.avi");
@@ -210,7 +239,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraVideoPath("/");
+			err = pCameraMPI_->SetCameraVideoPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "testRGB.avi");
@@ -264,7 +293,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraVideoPath("/LF/Base/L3B_Video");
+			err = pCameraMPI_->SetCameraVideoPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			//Capture will automatically stop after 2 seconds
@@ -379,8 +408,11 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testControls()
+	void testVisualizeControlSettings()
 	{
+		//This is a test meant to be seen during execution
+		//It will change different controls and give time for the tester to make a visual confirmation
+		//It will also take snapshots at different control settings for later confirmation
 		tVidCapHndl					capture;
 		Boolean						bRet;
 
@@ -393,9 +425,9 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
-		disp = pDisplayMPI_->CreateHandle(120, 160, kPixelFormatYUV420, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
-		pDisplayMPI_->Register(disp, 80, 60, kDisplayOnTop, 0);
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
 		surf.width = pDisplayMPI_->GetWidth(disp);
 		surf.pitch = pDisplayMPI_->GetPitch(disp);
@@ -406,36 +438,50 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
+			//Set path for taking snapshots
+			tErrType err = pCameraMPI_->SetCameraStillPath(capture_path);
+			TS_ASSERT_EQUALS( err, kNoErr );
+			
 			bRet = pCameraMPI_->GetCameraControls(controls);
 			TS_ASSERT_EQUALS( bRet, true );
 
 			capture = pCameraMPI_->StartVideoCapture(&surf);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
+			//Take a reference image at default settings
+			bRet = pCameraMPI_->SnapFrame(capture, "Defaults.jpg" );
+			TS_ASSERT_EQUALS( bRet, true );
+			
+			//Set/Get each control setting
 			for(it = controls.begin(); it < controls.end(); it++)
 			{
-				if((*it)->type == kControlTypeBrightness)
+				//Save current value so we can restore it later
+				S32 backup_value = (*it)->current;
+				S32 step = MAX( ( ( (*it)->max - (*it)->min ) / 20), 1);
+				for(S32 new_value = (*it)->min; new_value <= (*it)->max; new_value += step)
 				{
-					break;
+					//Set new value
+					bRet = pCameraMPI_->SetCameraControl(*it, new_value);
+					TS_ASSERT_EQUALS( bRet, true );
+					
+					//Show for quarter of a second
+					pKernelMPI_->TaskSleep(250);
+					
+					//Take snapshot
+					std::stringstream filename;
+					filename<<GetControlString( (*it)->type)<<"_"<<(int)new_value<<".jpg";
+					printf("%s\n", filename.str().c_str());
+					bRet = pCameraMPI_->SnapFrame(capture, filename.str().c_str() );
+					TS_ASSERT_EQUALS( bRet, true );
+					
+					//Show for another quarter of a second
+					pKernelMPI_->TaskSleep(250);
 				}
-			}
-
-			int bright 	= (*it)->min;
-			int step	= MAX( ((*it)->max - (*it)->min) / 50, 1);
-			while(bright < (*it)->max)
-			{
-				bRet = pCameraMPI_->SetCameraControl(*it, bright);
+				
+				//Restore old value
+				bRet = pCameraMPI_->SetCameraControl( *it, backup_value );
 				TS_ASSERT_EQUALS( bRet, true );
-
-				bright += step;
-				pKernelMPI_->TaskSleep(100);
 			}
-
-			bRet = pCameraMPI_->StopVideoCapture(capture);
-			TS_ASSERT_EQUALS( bRet, true );
-
-			pCameraMPI_->SetCameraControl(*it, (*it)->preset);
-			TS_ASSERT_EQUALS( bRet, true );
 		}
 
 		pDisplayMPI_->UnRegister(disp, 0);
@@ -534,7 +580,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraStillPath("/LF/Base/L3B_Video");
+			err = pCameraMPI_->SetCameraStillPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			capture = pCameraMPI_->StartVideoCapture(&surf);
