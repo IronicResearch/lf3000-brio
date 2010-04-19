@@ -63,7 +63,7 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
-	CAudioMPI			audiomgr;
+//	CAudioMPI			audiomgr;
 	Boolean				bSpeakerState = true;
 
 	avi_t				*avi		= NULL;
@@ -84,7 +84,7 @@ void* CameraTaskMain(void* arg)
 	tDisplayHandle		aHndl[2];
 	int					ibuf = 0;
 	bool				bDoubleBuffered = false;
-	
+
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
 	cam 	= pCtx->module;
@@ -130,7 +130,7 @@ void* CameraTaskMain(void* arg)
 	}
 
 	// Support double buffering by replicating YUV planar video contexts
-	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096) 
+	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096)
 	{
 		aSurf[0] = aSurf[1] = *pSurf;
 		aSurf[1].buffer += 1024;
@@ -138,7 +138,7 @@ void* CameraTaskMain(void* arg)
 		aHndl[1] = display.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
 		bDoubleBuffered = true;
 	}
-	
+
 	bRunning = pCtx->bStreaming = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
 
@@ -151,9 +151,9 @@ void* CameraTaskMain(void* arg)
 	kernel.StartTimer(timer, props);
 
 	// Hack to reduce audio streaming interference with video streaming
-	bSpeakerState = audiomgr.GetSpeakerEqualizer();
-	audiomgr.SetSpeakerEqualizer(false);
-	
+//	bSpeakerState = audiomgr.GetSpeakerEqualizer();
+//	audiomgr.SetSpeakerEqualizer(false);
+
 	/*
 	 * This is intentionally an assignment, not a comparison.
 	 * End loop when bRunning is false.
@@ -220,7 +220,7 @@ void* CameraTaskMain(void* arg)
 	}
 
 	// Restore speaker equalizer state prior to video streaming
-	audiomgr.SetSpeakerEqualizer(bSpeakerState);
+//	audiomgr.SetSpeakerEqualizer(bSpeakerState);
 
 	// Post done message to event listener
 	if(pCtx->pListener)
@@ -280,7 +280,7 @@ void* CameraTaskMain(void* arg)
 		display.DestroyHandle(aHndl[1], false);
 		display.DestroyHandle(aHndl[0], false);
 	}
-	
+
 	bStopping = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Stopping...\n" );
 
