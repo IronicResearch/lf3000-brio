@@ -178,7 +178,7 @@ public:
 	///
 	/// \param	hVideo	Handle to video returned by StartVideo()
 	///
-	/// \param	pTime	Pointer to video time stamp struct for frame seeking.
+	/// \param	pTime	Pointer to video time stamp struct for frame seeking.  Only the frame is used, the time is ignored.
 	///
 	/// \return	Returns true on success.
 	Boolean 	SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pTime);
@@ -187,7 +187,7 @@ public:
 	///
 	/// \param	hVideo	Handle to video returned by StartVideo()
 	///
-	/// \param	pTime	Pointer to video time stamp struct for frame seeking.
+	/// \param	pTime	Pointer to video time stamp struct for frame seeking.  Only the frame is used, the time is ignored.
 	///
 	/// \return	Returns true on success.
 	Boolean 	SeekVideoKeyFrame(tVideoHndl hVideo, tVideoTime* pTime);

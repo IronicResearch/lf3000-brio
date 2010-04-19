@@ -24810,3 +24810,12 @@ By dlazzari (dlazzari@leapfrog.com) on 4/19/10 10:30 AM
 5,923 ms. (Cumulative: 8,534,994 ms)
 
 ----------------
+Revision 7,127 from svn://localhost/TRUNK/:
+
+TTPro 2360.  Added comment about how the frame and time of the pTime is used.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/19/10 11:36 AM
+1 changed, 0 added, 0 deleted.
+5,864 ms. (Cumulative: 8,540,936 ms)
+
+----------------
