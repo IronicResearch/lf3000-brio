@@ -24833,3 +24833,14 @@ By jeno (jeno@leapfrog.com) on 4/19/10 1:46 PM
 6,282 ms. (Cumulative: 8,547,296 ms)
 
 ----------------
+Revision 7,130 from svn://localhost/TRUNK/:
+Revision 7,131 from svn://localhost/TRUNK/:
+Revision 7,132 from svn://localhost/TRUNK/:
+
+Add DeviceTools to export build to allow Brio samples to build
+
+By dlazzari (dlazzari@leapfrog.com) on 4/19/10 4:23 PM
+1 changed, 0 added, 0 deleted.
+6,271 ms. (Cumulative: 8,553,661 ms)
+
+----------------
