@@ -24844,3 +24844,12 @@ By dlazzari (dlazzari@leapfrog.com) on 4/19/10 4:23 PM
 6,271 ms. (Cumulative: 8,553,661 ms)
 
 ----------------
+Revision 7,133 from svn://localhost/TRUNK/:
+
+Add a buildtests option that builds unit tests but does not run them. This can be useful when the entire suite doesn't need to be run.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/19/10 4:25 PM
+2 changed, 0 added, 0 deleted.
+6,344 ms. (Cumulative: 8,560,099 ms)
+
+----------------
