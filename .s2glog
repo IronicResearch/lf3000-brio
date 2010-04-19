@@ -24819,3 +24819,17 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/19/10 11:36 AM
 5,864 ms. (Cumulative: 8,540,936 ms)
 
 ----------------
+Revision 7,128 from svn://localhost/TRUNK/:
+Revision 7,129 from svn://localhost/TRUNK/:
+
+CameraMPI:  Temporarily disabling svn 7042.  Instantiating CAudioMPI within the CameraTask thread causes
+the camera unit tests to crash.  For a yet-undetermined reason, adding the CAudioMPI instance causes file
+descriptor 0 (STDIN) to be returned by open(2), both for calls against /dev/video0 and assorted shared
+libraries.  This behavior manifests on the second unit test in the series, i.e, testCaptureYUV() passes,
+but testCaptureRGB() hits this condition.
+
+By jeno (jeno@leapfrog.com) on 4/19/10 1:46 PM
+1 changed, 0 added, 0 deleted.
+6,282 ms. (Cumulative: 8,547,296 ms)
+
+----------------
