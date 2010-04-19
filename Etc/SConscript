@@ -27,6 +27,7 @@ if vars['is_export']:
 	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
 	env.Install(dest_dir, 'Tools/libFLAC.so.7')
 	env.Install(dest_dir, 'Tools/sf2brio')
+	env.Install( os.path.join(dest_dir, 'DeviceTools'), glob.glob('Tools/SConsTools/DeviceTools/*.py') )
 
 	#-----------------------------------------------------------------------------
 	# Populate the "Publish" folder with Doxygen output (publish builds only)
