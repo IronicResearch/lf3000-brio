@@ -24780,3 +24780,33 @@ By Dave Milici (dmilici@leapfrog.com) on 4/15/10 3:23 PM
 5,832 ms. (Cumulative: 8,528,868 ms)
 
 ----------------
+Revision 7,105 from svn://localhost/TRUNK/:
+Revision 7,106 from svn://localhost/TRUNK/:
+Revision 7,107 from svn://localhost/TRUNK/:
+Revision 7,108 from svn://localhost/TRUNK/:
+Revision 7,109 from svn://localhost/TRUNK/:
+Revision 7,110 from svn://localhost/TRUNK/:
+Revision 7,111 from svn://localhost/TRUNK/:
+Revision 7,112 from svn://localhost/TRUNK/:
+Revision 7,113 from svn://localhost/TRUNK/:
+Revision 7,114 from svn://localhost/TRUNK/:
+Revision 7,115 from svn://localhost/TRUNK/:
+Revision 7,116 from svn://localhost/TRUNK/:
+Revision 7,117 from svn://localhost/TRUNK/:
+Revision 7,118 from svn://localhost/TRUNK/:
+Revision 7,119 from svn://localhost/TRUNK/:
+Revision 7,120 from svn://localhost/TRUNK/:
+Revision 7,121 from svn://localhost/TRUNK/:
+Revision 7,122 from svn://localhost/TRUNK/:
+Revision 7,123 from svn://localhost/TRUNK/:
+Revision 7,124 from svn://localhost/TRUNK/:
+Revision 7,125 from svn://localhost/TRUNK/:
+Revision 7,126 from svn://localhost/TRUNK/:
+
+Added visual control settings test so that a tester can visually verify the effects of different control settings. Test also takes pictures at each setting for later verification.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/19/10 10:30 AM
+1 changed, 0 added, 0 deleted.
+5,923 ms. (Cumulative: 8,534,994 ms)
+
+----------------
