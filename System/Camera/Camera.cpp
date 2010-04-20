@@ -1511,6 +1511,16 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
     }
 
+	if(camCtx_.path.length())
+	{
+		if(!StopAudio())
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt audio streaming\n");
+			CAMERA_UNLOCK;
+			return false;
+		}
+	}
+
 	CAMERA_UNLOCK;
 
 	camCtx_.hndl 	= kInvalidVidCapHndl;
@@ -1853,12 +1863,23 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
+	if(kNoErr != InitMicInt())
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: microphone init failed\n");
+		return false;
+	}
+
 	return true;
 }
 
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::DeinitCameraInt()
 {
+	if(kNoErr != DeinitMicInt())
+	{
+		return false;
+	}
+
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
 		return false;
