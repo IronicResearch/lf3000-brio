@@ -15,7 +15,6 @@
 //==============================================================================
 #include <SystemTypes.h>
 #include <CoreModule.h>
-#include <AudioTypes.h>
 #include <EventTypes.h>
 #include <CameraTypes.h>
 #include <VideoTypes.h>
@@ -40,6 +39,9 @@
 
 #include <linux/videodev2.h>
 #include <jpeglib.h>
+
+#include <alsa/asoundlib.h>
+#include <avilib.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -165,6 +167,18 @@ struct tCaptureContext {
 	tVideoSurf*			pSurf;
 };
 
+struct tMicrophoneContext {
+	snd_pcm_t *				pcm_handle;
+	snd_async_handler_t *	ahandler;
+	snd_pcm_hw_params_t	*	hwparams;
+	snd_pcm_sw_params_t *	swparams;
+	snd_pcm_uframes_t 		buffer_size;
+	snd_pcm_uframes_t 		period_size;
+
+	int						fd[2];		/* pipe for ALSA callback->file output*/
+	unsigned short *		poll_buf;	/* to transfer from pipe to file */
+};
+
 //==============================================================================
 // External function prototypes
 //==============================================================================
@@ -200,6 +214,7 @@ private:
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
 	tCameraContext		camCtx_;
+	tMicrophoneContext	micCtx_;
 	Boolean				valid;
 	tMutex				mutex_;
 
@@ -225,6 +240,12 @@ private:
 	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
+
+	tErrType	InitMicInt();
+	tErrType	DeinitMicInt();
+	Boolean		StartAudio();
+	Boolean		WriteAudio(avi_t *avi);
+	Boolean		StopAudio();
 };
 
 LF_END_BRIO_NAMESPACE()

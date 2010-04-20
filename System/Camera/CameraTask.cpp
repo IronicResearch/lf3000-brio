@@ -98,6 +98,7 @@ void* CameraTaskMain(void* arg)
 		avi		= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()));
 		// fps will be reset upon completion
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, "MJPG");
+		AVI_set_audio(avi, 1, 48000, 16, WAVE_FORMAT_PCM, 48000 * 16 / 1000);
 	}
 
 	// set up render-to-screen
@@ -150,6 +151,11 @@ void* CameraTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	kernel.StartTimer(timer, props);
 
+	if(bFile)
+	{
+		pCtx->module->StartAudio();
+	}
+
 	// Hack to reduce audio streaming interference with video streaming
 //	bSpeakerState = audiomgr.GetSpeakerEqualizer();
 //	audiomgr.SetSpeakerEqualizer(false);
@@ -160,6 +166,11 @@ void* CameraTaskMain(void* arg)
 	 */
 	while(bRunning = pCtx->bStreaming)
 	{
+		if(bFile && !pCtx->bPaused)
+		{
+			pCtx->module->WriteAudio(avi);
+		}
+
 		dbg.Assert((kNoErr == kernel.LockMutex(pCtx->mThread)),\
 											  "Couldn't lock mutex.\n");
 

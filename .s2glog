@@ -24853,3 +24853,19 @@ By dlazzari (dlazzari@leapfrog.com) on 4/19/10 4:25 PM
 6,344 ms. (Cumulative: 8,560,099 ms)
 
 ----------------
+Revision 7,134 from svn://localhost/TRUNK/:
+Revision 7,135 from svn://localhost/TRUNK/:
+
+CameraMPI:  Add audio recording to video capture.  Audio capture runs at
+the microphone's native 48KHz, mono, signed 16-bit little endian.
+
+NOTE:  This checkin makes Brio dependent on alsa-lib (libasound), which
+is not present in Brio/ThirdParty, but rather on the nfsroot via a LinuxDist
+package.  This means that Brio is no longer self-contained, and there
+might be some build-related heartburn associated with this transition.
+
+By jeno (jeno@leapfrog.com) on 4/19/10 5:23 PM
+4 changed, 1 added, 0 deleted.
+6,281 ms. (Cumulative: 8,566,474 ms)
+
+----------------
