@@ -23,13 +23,42 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
-static const unsigned int BUF_DUR_USEC = 500000;	/* Ring buffer size */
-static const unsigned int PER_DUR_USEC = 100000;	/* Callback period */
-	/* 100000 uS = 100 mS = 4800 samples @ 48 KHz */
+static const unsigned int MIC_RATE		= 16000;	/* desired sampling rate */
+static const unsigned int MIC_CHANS		= 1;		/* desired channels */
+static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format */
+
+static const char *cap_name = "plughw:1,0";
+/* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
+ * automatic conversion.  Opening plughw:1,0 uses the alsa plug plugin to open hw:1,0
+ * as a slave device, but allows rate/channel/format conversion.
+ *
+ * hw:* is defined in /usr/share/alsa/alsa.conf under pcm.hw, and likewise for plughw
+ * under pcm.plughw.  These are standard alsa devices supplied by the default alsa.conf.
+ *
+ * alsa.conf could be modified to include an entry like this:
+ * >pcm.ratehw {
+ * >	... (args collection, same as plughw)
+ * >	type rate
+ * >	slave.pcm {
+ * >		type hw
+ * >		card $CARD
+ * >		device $DEV
+ * >		subdevice $SUBDEV
+ * >	}
+ * >}
+ * which would provide only rate conversion, and raw access to the hardware's native
+ * channels and format.  The camera widget supplies 16-bit, mono audio at 48KHz, and
+ * the camera API supplies 16-bit, mono audio at 16KHz.  This means the rate plugin
+ * would be sufficient, and the functionality provided by the plug plugin is
+ * superfluous.  However, this implementation uses the plug plugin so as not to deviate
+ * from the standard alsa.conf.
+ *
+ * See also:
+ * http://www.alsa-project.org/main/index.php/ALSAresampler
+ * http://article.gmane.org/gmane.linux.alsa.user/25063
+ */
 
 static const U32 DRAIN_SIZE = 32768;	/* 1 second of 16-bit, 16 KHz mono */
-
-static const char *cap_name = "hw:1,0";
 
 static void RecordCallback(snd_async_handler_t *ahandler);
 
@@ -233,7 +262,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 
 	avail = snd_pcm_avail_update(handle);
 
-	frames = pCtx->period_size;
+	frames = avail;//pCtx->period_size;
 	err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);
 
 	samples	= (((unsigned char *)my_area->addr) + (my_area->first / 8));
@@ -269,33 +298,43 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 			continue;
 		}
 
-		val = BUF_DUR_USEC;
+		/* sample rate conversion */
 		err = 0;
-		if((err = snd_pcm_hw_params_set_buffer_time_near(handle, params, &val, &err)) < 0)
+		pCtx->rate = MIC_RATE;
+		if((err = snd_pcm_hw_params_set_rate_near(handle, params, &pCtx->rate, &err)) < 0)
 		{
+			pCtx->rate = 0;
 			continue;
 		}
 
-		if((err = snd_pcm_hw_params_get_buffer_size(params, &pCtx->buffer_size)) < 0)
-		{
-			pCtx->buffer_size = 0;
-			continue;
-		}
-
-		val = PER_DUR_USEC;
+		/*
+		 * See the note above about plughw.  The plug plugin does not assume any of the
+		 * default settings of its slave pcm (hw) device.  Attempting to get() channels
+		 * or format will return -EINVAL if they are not set() beforehand.
+		 */
 		err = 0;
-		if((err = snd_pcm_hw_params_set_period_time_near(handle, params, &val, &err)) < 0)
+		pCtx->channels = MIC_CHANS;
+		if((err = snd_pcm_hw_params_set_channels_near(handle, params, &pCtx->channels)) < 0)
 		{
+			pCtx->channels = 0;
 			continue;
 		}
 
-		err = 0;
-		if((err = snd_pcm_hw_params_get_period_size(params, &pCtx->period_size, &err)) < 0)
+		pCtx->format = MIC_FMT;
+		if((err = snd_pcm_hw_params_set_format(handle, params, pCtx->format)) < 0)
 		{
+			pCtx->format = SND_PCM_FORMAT_UNKNOWN;
 			continue;
 		}
 
-		/* commit changes (buffer size requests) */
+		if((err = snd_pcm_hw_params_get_sbits(params)) < 0)
+		{
+			pCtx->sbits = 0;
+			continue;
+		}
+		pCtx->sbits = err;
+
+		/* commit changes */
 		if((err = snd_pcm_hw_params(handle, params)) < 0)
 		{
 			continue;
@@ -303,6 +342,41 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 	} while (0);
 
 	return err;
+}
+
+//----------------------------------------------------------------------------
+int CCameraModule::XlateAudioFormat(snd_pcm_format_t fmt)
+{
+	int ret = WAVE_FORMAT_UNKNOWN;
+
+	if(fmt == SND_PCM_FORMAT_UNKNOWN)
+	{
+		ret = WAVE_FORMAT_UNKNOWN;
+	}
+	else if(fmt <= SND_PCM_FORMAT_FLOAT64_BE)
+	{
+		ret = WAVE_FORMAT_PCM;
+	}
+	else
+	{
+		switch(fmt)
+		{
+		case (SND_PCM_FORMAT_A_LAW):
+			ret = WAVE_FORMAT_ALAW;
+			break;
+		case (SND_PCM_FORMAT_MU_LAW):
+			ret = WAVE_FORMAT_MULAW;
+			break;
+		case (SND_PCM_FORMAT_IMA_ADPCM):
+			ret = WAVE_FORMAT_DVI_ADPCM;
+			break;
+		case (SND_PCM_FORMAT_GSM):
+			ret = WAVE_FORMAT_GSM610;
+			break;
+		}
+	}
+
+	return ret;
 }
 
 //----------------------------------------------------------------------------

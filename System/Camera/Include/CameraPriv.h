@@ -177,6 +177,11 @@ struct tMicrophoneContext {
 
 	int						fd[2];		/* pipe for ALSA callback->file output*/
 	unsigned short *		poll_buf;	/* to transfer from pipe to file */
+
+	unsigned int			rate;		/* sampling rate from alsa-lib, not HW */
+	unsigned int			channels;	/* sampling rate from alsa-lib, not HW */
+	snd_pcm_format_t		format;
+	int						sbits;		/* sample width (significant bits) */
 };
 
 //==============================================================================
@@ -243,6 +248,7 @@ private:
 
 	tErrType	InitMicInt();
 	tErrType	DeinitMicInt();
+	int			XlateAudioFormat(snd_pcm_format_t fmt);
 	Boolean		StartAudio();
 	Boolean		WriteAudio(avi_t *avi);
 	Boolean		StopAudio();
