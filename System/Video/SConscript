@@ -20,6 +20,7 @@ mpilibs		= ['ModuleMPI']
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Copy()
+myenv.Append(CPPPATH = ['#System/Display/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + vars['cpu_subdir']])
 						
