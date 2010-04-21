@@ -70,6 +70,11 @@ void* CameraTaskMain(void* arg)
 	int					keyframe	= 0;
 	U32					start, end;
 
+	unsigned int		audio_rate	= 0;
+	unsigned int		audio_chans	= 0;
+	int					audio_width = 0;
+	int					audio_fmt;
+
 	tCameraContext		*pCtx 	= static_cast<tCameraContext*>(arg);
 	tFrameInfo			frame;
 	tBitmapInfo			image	= {kBitmapFormatError, 0, 0, 0, NULL, 0 };
@@ -95,10 +100,16 @@ void* CameraTaskMain(void* arg)
 	{
 		bFile	= true;
 
-		avi		= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()));
+		audio_rate	= cam->micCtx_.rate;
+		audio_chans	= cam->micCtx_.channels;
+		audio_width	= cam->micCtx_.sbits;
+		audio_fmt	= cam->XlateAudioFormat(cam->micCtx_.format);
+
+		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()));
+
 		// fps will be reset upon completion
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, "MJPG");
-		AVI_set_audio(avi, 1, 48000, 16, WAVE_FORMAT_PCM, 48000 * 16 / 1000);
+		AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
 	}
 
 	// set up render-to-screen

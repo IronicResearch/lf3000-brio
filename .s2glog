@@ -24869,3 +24869,31 @@ By jeno (jeno@leapfrog.com) on 4/19/10 5:23 PM
 6,281 ms. (Cumulative: 8,566,474 ms)
 
 ----------------
+Revision 7,136 from svn://localhost/TRUNK/:
+Revision 7,137 from svn://localhost/TRUNK/:
+Revision 7,138 from svn://localhost/TRUNK/:
+Revision 7,139 from svn://localhost/TRUNK/:
+Revision 7,140 from svn://localhost/TRUNK/:
+Revision 7,141 from svn://localhost/TRUNK/:
+Revision 7,142 from svn://localhost/TRUNK/:
+Revision 7,143 from svn://localhost/TRUNK/:
+Revision 7,144 from svn://localhost/TRUNK/:
+Revision 7,145 from svn://localhost/TRUNK/:
+Revision 7,146 from svn://localhost/TRUNK/:
+Revision 7,147 from svn://localhost/TRUNK/:
+Revision 7,148 from svn://localhost/TRUNK/:
+
+CameraMPI: use alsa-lib to automatically sample-rate-convert the
+microphone's output from 48KHz to 16KHz.  AVI files are properly
+marked with whatever audio format/sample rate/channel count alsa
+actually delivers.
+
+Note: This checkin relies on an updated alsa-lib (libasound.so).
+It will build fine, but won't run unless the target root file
+system includes an updated alsa package from LinuxDist (svn 7147).
+
+By jeno (jeno@leapfrog.com) on 4/21/10 11:18 AM
+3 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 8,573,209 ms)
+
+----------------
