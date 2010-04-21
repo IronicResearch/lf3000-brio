@@ -22,6 +22,7 @@
 #include <KernelMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
+#include <VideoPlayer.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -53,6 +54,12 @@ struct tVideoContext {
 	tMutex*				pMutex;
 	tTaskHndl			hVideoThread;
 	Boolean				bSeeked;
+	Boolean				bCentered;
+	Boolean				bCodecReady;
+	const CPath*		pPathVideo;
+	FILE*				pFileVideo;
+	tVideoInfo			info;
+	CVideoPlayer*		pPlayer;
 };
 
 //==============================================================================

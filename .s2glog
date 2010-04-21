@@ -24897,3 +24897,12 @@ By jeno (jeno@leapfrog.com) on 4/21/10 11:18 AM
 6,563 ms. (Cumulative: 8,573,209 ms)
 
 ----------------
+Revision 7,149 from svn://localhost/TRUNK/:
+
+Refactor Theora video player code into separate VideoPlayer derived class, to accomodate AVI video player option.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/10 11:57 AM
+3 changed, 6 added, 0 deleted.
+6,917 ms. (Cumulative: 8,580,204 ms)
+
+----------------
