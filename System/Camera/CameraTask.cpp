@@ -103,7 +103,7 @@ void* CameraTaskMain(void* arg)
 		audio_rate	= cam->micCtx_.rate;
 		audio_chans	= cam->micCtx_.channels;
 		audio_width	= cam->micCtx_.sbits;
-		audio_fmt	= cam->XlateAudioFormat(cam->micCtx_.format);
+		audio_fmt	= cam->XlateAudioFormatAVI(cam->micCtx_.format);
 
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()));
 

@@ -42,6 +42,7 @@
 
 #include <alsa/asoundlib.h>
 #include <avilib.h>
+#include <sndfile.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -172,8 +173,6 @@ struct tMicrophoneContext {
 	snd_async_handler_t *	ahandler;
 	snd_pcm_hw_params_t	*	hwparams;
 	snd_pcm_sw_params_t *	swparams;
-	snd_pcm_uframes_t 		buffer_size;
-	snd_pcm_uframes_t 		period_size;
 
 	int						fd[2];		/* pipe for ALSA callback->file output*/
 	unsigned short *		poll_buf;	/* to transfer from pipe to file */
@@ -182,6 +181,17 @@ struct tMicrophoneContext {
 	unsigned int			channels;	/* sampling rate from alsa-lib, not HW */
 	snd_pcm_format_t		format;
 	int						sbits;		/* sample width (significant bits) */
+
+	tAudCapHndl				hndl;
+
+	tTaskHndl				hMicThread;
+
+	CPath					path;
+	Boolean					bPaused;
+	Boolean					bStreaming;
+	U32						reqLength;		// length in seconds requested by app
+
+	IEventListener			*pListener;
 };
 
 //==============================================================================
@@ -204,6 +214,8 @@ public:
 	VTABLE_EXPORT CPath*		GetCameraVideoPath();
 	VTABLE_EXPORT tErrType		SetCameraStillPath(const CPath& path);
 	VTABLE_EXPORT CPath*		GetCameraStillPath();
+	VTABLE_EXPORT tErrType		SetCameraAudioPath(const CPath& path);
+	VTABLE_EXPORT CPath*		GetCameraAudioPath();
 	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
 	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
@@ -215,6 +227,12 @@ public:
 	VTABLE_EXPORT Boolean		IsVideoCapturePaused(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 
+	VTABLE_EXPORT tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener,\
+								                    const U32 maxLength);
+	VTABLE_EXPORT Boolean		PauseAudioCapture(const tAudCapHndl hndl);
+	VTABLE_EXPORT Boolean		ResumeAudioCapture(const tAudCapHndl hndl);
+	VTABLE_EXPORT Boolean		IsAudioCapturePaused(const tAudCapHndl hndl);
+	VTABLE_EXPORT Boolean		StopAudioCapture(const tAudCapHndl hndl);
 private:
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
@@ -248,10 +266,16 @@ private:
 
 	tErrType	InitMicInt();
 	tErrType	DeinitMicInt();
-	int			XlateAudioFormat(snd_pcm_format_t fmt);
+	int			XlateAudioFormatAVI(snd_pcm_format_t fmt);
+	int			XlateAudioFormatSF(snd_pcm_format_t fmt);
 	Boolean		StartAudio();
 	Boolean		WriteAudio(avi_t *avi);
+	Boolean		WriteAudio(SNDFILE *wav);
 	Boolean		StopAudio();
+
+	friend void* MicTaskMain(void* arg);
+	friend tErrType InitMicTask(CCameraModule* module);
+	friend tErrType DeInitMicTask(CCameraModule* module);
 };
 
 LF_END_BRIO_NAMESPACE()

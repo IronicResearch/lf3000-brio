@@ -143,6 +143,22 @@ CPath* CCameraMPI::GetCameraStillPath()
 }
 
 //----------------------------------------------------------------------------
+tErrType CCameraMPI::SetCameraAudioPath(const CPath& path)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetCameraAudioPath(path);
+}
+
+//----------------------------------------------------------------------------
+CPath* CCameraMPI::GetCameraAudioPath()
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetCameraAudioPath();
+}
+
+//----------------------------------------------------------------------------
 Boolean CCameraMPI::GetCameraControls(tCameraControls &controls)
 {
 	if (!pModule_)
@@ -214,6 +230,46 @@ Boolean	CCameraMPI::StopVideoCapture(const tVidCapHndl hndl)
 	if (!pModule_)
 		return kInvalidVidCapHndl;
 	return pModule_->StopVideoCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
+tAudCapHndl	CCameraMPI::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength)
+{
+	if (!pModule_)
+		return kInvalidAudCapHndl;
+	return pModule_->StartAudioCapture(path, pListener, maxLength);
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraMPI::PauseAudioCapture(const tAudCapHndl hndl)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->PauseAudioCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraMPI::ResumeAudioCapture(const tAudCapHndl hndl)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->ResumeAudioCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraMPI::IsAudioCapturePaused(const tAudCapHndl hndl)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->IsAudioCapturePaused(hndl);
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraMPI::StopAudioCapture(const tAudCapHndl hndl)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->StopAudioCapture(hndl);
 }
 
 LF_END_BRIO_NAMESPACE()

@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI', 
-					 'DebugMPI', 'jpeg', 'asound']
+					 'DebugMPI', 'jpeg', 'asound', 'sndfile']
 mpilibs		= ['ModuleMPI']
 
 #-----------------------------------------------------------------------------
@@ -23,8 +23,10 @@ mpilibs		= ['ModuleMPI']
 myenv		= env.Copy()
 
 myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + vars['cpu_subdir']])
+myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + vars['cpu_subdir']])
 
 rootfs = os.getenv('ROOTFS_PATH')
 myenv.Append(LIBPATH = [os.path.join(rootfs, 'usr', 'lib')])

@@ -167,6 +167,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 
 	camCtx_.module			= this;
 
+	micCtx_.hndl			= kInvalidAudCapHndl;
+	micCtx_.hMicThread		= kNull;
+
 	err = kernel_.InitMutex( dlock, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
