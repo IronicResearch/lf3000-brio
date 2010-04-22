@@ -24906,3 +24906,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/21/10 11:57 AM
 6,917 ms. (Cumulative: 8,580,204 ms)
 
 ----------------
+Revision 7,150 from svn://localhost/TRUNK/:
+Revision 7,151 from svn://localhost/TRUNK/:
+
+CameraMPI:  Implemented AudioCapture() routines for saving audio from
+a microphone to a WAV file.
+
+By jeno (jeno@leapfrog.com) on 4/21/10 5:39 PM
+7 changed, 1 added, 0 deleted.
+6,223 ms. (Cumulative: 8,586,505 ms)
+
+----------------

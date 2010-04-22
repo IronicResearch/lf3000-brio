@@ -65,6 +65,54 @@ static void RecordCallback(snd_async_handler_t *ahandler);
 static int set_hw_params(struct tMicrophoneContext *pCtx);
 static int set_sw_params(struct tMicrophoneContext *pCtx);
 
+//==============================================================================
+// Defines
+//==============================================================================
+#define DATA_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(dlock)),\
+									  "Couldn't lock mutex.\n")
+
+#define DATA_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(dlock)),\
+										"Couldn't unlock mutex.\n");
+
+//============================================================================
+// Local variables
+//============================================================================
+namespace
+{
+	CPath				apath = "";
+	tMutex				dlock;
+#if USE_PROFILE
+	// Profile vars
+#endif
+}
+
+//----------------------------------------------------------------------------
+tErrType CCameraModule::SetCameraAudioPath(const CPath &path)
+{
+	DATA_LOCK;
+
+	apath = path;
+	if (apath.length() > 1 && apath.at(apath.length()-1) != '/')
+		apath += '/';
+
+	DATA_UNLOCK;
+
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+CPath* CCameraModule::GetCameraAudioPath()
+{
+	CPath *path;
+
+	DATA_LOCK;
+
+	path = &apath;
+
+	DATA_UNLOCK;
+
+	return path;
+}
 
 //----------------------------------------------------------------------------
 tErrType CCameraModule::InitMicInt()
@@ -185,7 +233,12 @@ tErrType	CCameraModule::DeinitMicInt()
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::StartAudio()
 {
-	int err = snd_pcm_start(micCtx_.pcm_handle);
+	int err = snd_pcm_prepare(micCtx_.pcm_handle);
+
+	if(err == 0)
+	{
+		err = snd_pcm_start(micCtx_.pcm_handle);
+	}
 
 	return (err == 0) ? true : false;
 }
@@ -193,9 +246,43 @@ Boolean	CCameraModule::StartAudio()
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::StopAudio()
 {
-	int err = snd_pcm_drop(micCtx_.pcm_handle);
+	Boolean bRet = false;;
+	int err, bytes;
+	ssize_t len;
+	fd_set rfds;
+	struct timeval tv = {0,0};	/* immediate timeout */
 
-	return (err == 0) ? true : false;
+	err = snd_pcm_drop(micCtx_.pcm_handle);
+
+	/* purge pipe */
+	FD_ZERO(&rfds);
+	FD_SET(micCtx_.fd[0], &rfds);
+
+	err = select(micCtx_.fd[0]+1, &rfds, NULL, NULL, &tv);
+
+	if(err == 0)	/* no data */
+	{
+		bRet = true;
+	}
+	else if(err > 0)
+	{
+		/* This is a blocking read and the source has stopped, so don't attempt
+		 * to read more than the pipe contains.
+		 */
+		err = ioctl(micCtx_.fd[0], FIONREAD, &bytes);
+		if(err != -1)
+		{
+			bRet = true;
+
+			do
+			{
+				len = read(micCtx_.fd[0], micCtx_.poll_buf, MIN(DRAIN_SIZE, bytes));
+				bytes -= len;
+			} while(bytes);
+		}
+	}
+
+	return bRet;
 }
 
 //----------------------------------------------------------------------------
@@ -243,6 +330,44 @@ Boolean	CCameraModule::WriteAudio(avi_t *avi)
 }
 
 //----------------------------------------------------------------------------
+Boolean	CCameraModule::WriteAudio(SNDFILE *wav)
+{
+	Boolean ret = false;
+	int err;
+	fd_set rfds;
+	struct timeval tv = {0,0};	/* immediate timeout */
+
+	ssize_t len;
+	sf_count_t wrote;
+
+	FD_ZERO(&rfds);
+	FD_SET(micCtx_.fd[0], &rfds);
+
+	err = select(micCtx_.fd[0]+1, &rfds, NULL, NULL, &tv);
+
+	if(err < 0)
+	{
+		ret = false;
+	}
+	else if(err == 0)	/* no data */
+	{
+		ret = true;
+	}
+	else
+	{
+		len = read(micCtx_.fd[0], micCtx_.poll_buf, DRAIN_SIZE);
+		if(len > 0)
+		{
+			wrote = len;
+			wrote = sf_write_raw(wav, micCtx_.poll_buf, wrote);
+		}
+		ret = true;
+	}
+
+	return ret;
+}
+
+//----------------------------------------------------------------------------
 static void RecordCallback(snd_async_handler_t *ahandler)
 {
 	snd_pcm_t *handle = snd_async_handler_get_pcm(ahandler);
@@ -274,6 +399,109 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 	commitres = snd_pcm_mmap_commit(handle, offset, res / 2);
 }
 
+//----------------------------------------------------------------------------
+tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength)
+{
+	tAudCapHndl hndl = kInvalidAudCapHndl;
+
+	if(micCtx_.hndl != kInvalidAudCapHndl)
+	{
+		return hndl;
+	}
+
+	micCtx_.reqLength = maxLength;
+	micCtx_.pListener = pListener;
+
+	if(path.at(0) == '/')
+	{
+		micCtx_.path	= path;
+	}
+	else
+	{
+		DATA_LOCK;
+		micCtx_.path	= apath + path;
+		DATA_UNLOCK;
+	}
+
+
+	//hndl must be set before thread starts.  It is used in thread initialization.
+	micCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
+
+	if(kNoErr == InitMicTask(this))
+	{
+		hndl = micCtx_.hndl;
+	}
+	else
+	{
+		micCtx_.hndl = hndl;
+	}
+
+	return hndl;
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraModule::PauseAudioCapture(const tAudCapHndl hndl)
+{
+	if(micCtx_.hndl == kInvalidAudCapHndl || micCtx_.bPaused)
+	{
+		return false;
+	}
+
+	micCtx_.bPaused = StopAudio();
+
+	return micCtx_.bPaused;
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraModule::ResumeAudioCapture(const tAudCapHndl hndl)
+{
+	Boolean bRet;
+
+	if(micCtx_.hndl == kInvalidAudCapHndl || !micCtx_.bPaused)
+	{
+		return false;
+	}
+
+	bRet = StartAudio();
+
+	if(bRet == true)
+	{
+		micCtx_.bPaused = false;
+	}
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraModule::IsAudioCapturePaused(const tAudCapHndl hndl)
+{
+	if(micCtx_.hndl == kInvalidAudCapHndl)
+	{
+		return false;
+	}
+
+	return micCtx_.bPaused;
+}
+
+//----------------------------------------------------------------------------
+Boolean CCameraModule::StopAudioCapture(const tAudCapHndl hndl)
+{
+	int err;
+
+	if(micCtx_.hndl == kInvalidAudCapHndl)
+	{
+		return false;
+	}
+
+	if(IS_THREAD_HANDLE(hndl))
+	{
+		DeInitMicTask(this);
+	}
+
+	micCtx_.hndl = kInvalidAudCapHndl;
+
+	return true;
+}
 //----------------------------------------------------------------------------
 static int set_hw_params(struct tMicrophoneContext *pCtx)
 {
@@ -345,7 +573,7 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 }
 
 //----------------------------------------------------------------------------
-int CCameraModule::XlateAudioFormat(snd_pcm_format_t fmt)
+int CCameraModule::XlateAudioFormatAVI(snd_pcm_format_t fmt)
 {
 	int ret = WAVE_FORMAT_UNKNOWN;
 
@@ -380,11 +608,76 @@ int CCameraModule::XlateAudioFormat(snd_pcm_format_t fmt)
 }
 
 //----------------------------------------------------------------------------
+int CCameraModule::XlateAudioFormatSF(snd_pcm_format_t fmt)
+{
+	int ret = 0;
+
+	switch(fmt)
+	{
+	case (SND_PCM_FORMAT_S8):
+		ret = SF_FORMAT_PCM_S8;
+		break;
+
+	case (SND_PCM_FORMAT_U8):
+		ret = SF_FORMAT_PCM_U8;
+		break;
+
+	case (SND_PCM_FORMAT_S16_LE):
+	case (SND_PCM_FORMAT_S16_BE):
+	case (SND_PCM_FORMAT_U16_LE):
+	case (SND_PCM_FORMAT_U16_BE):
+		ret = SF_FORMAT_PCM_16;
+		break;
+
+	case (SND_PCM_FORMAT_S24_LE):
+	case (SND_PCM_FORMAT_S24_BE):
+	case (SND_PCM_FORMAT_U24_LE):
+	case (SND_PCM_FORMAT_U24_BE):
+		ret = SF_FORMAT_PCM_24;
+		break;
+
+	case (SND_PCM_FORMAT_S32_LE):
+	case (SND_PCM_FORMAT_S32_BE):
+	case (SND_PCM_FORMAT_U32_LE):
+	case (SND_PCM_FORMAT_U32_BE):
+		ret = SF_FORMAT_PCM_32;
+		break;
+
+	case (SND_PCM_FORMAT_FLOAT_LE):
+	case (SND_PCM_FORMAT_FLOAT_BE):
+		ret = SF_FORMAT_FLOAT;
+		break;
+
+	case (SND_PCM_FORMAT_FLOAT64_LE):
+	case (SND_PCM_FORMAT_FLOAT64_BE):
+		ret = SF_FORMAT_DOUBLE;
+			break;
+
+	case (SND_PCM_FORMAT_A_LAW):
+		ret = SF_FORMAT_ALAW;
+		break;
+
+	case (SND_PCM_FORMAT_MU_LAW):
+		ret = SF_FORMAT_ULAW;
+		break;
+
+	case (SND_PCM_FORMAT_IMA_ADPCM):
+		ret = SF_FORMAT_IMA_ADPCM;
+		break;
+
+	case (SND_PCM_FORMAT_GSM):
+		ret = SF_FORMAT_GSM610;
+		break;
+	}
+
+	return ret;
+}
+
+//----------------------------------------------------------------------------
 static int set_sw_params(struct tMicrophoneContext *pCtx)
 {
 	snd_pcm_t*				handle		= pCtx->pcm_handle;
 	snd_pcm_sw_params_t*	swparams	= pCtx->swparams;
-	snd_pcm_uframes_t 		period_size = pCtx->period_size;
 	int						err;
 
 	do

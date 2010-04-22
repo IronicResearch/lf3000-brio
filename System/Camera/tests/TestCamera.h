@@ -153,6 +153,119 @@ public:
 		//~ TSM_ASSERT_EQUALS(pCameraMPI_->GetCameraAudioPath()->c_str(), strcmp(pCameraMPI_->GetCameraAudioPath()->c_str(), capture_path), 0);
 		
 	}
+
+	//------------------------------------------------------------------------
+	void testCaptureWAV()
+	{
+		tAudCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		pKernelMPI_ = new CKernelMPI;
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraAudioPath("/LF/Base/L3B_Audio");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			capture = pCameraMPI_->StartAudioCapture("test.wav", NULL);
+			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testCaptureWAVEvent()
+	{
+		tAudCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		CameraListener			listener;
+
+		pKernelMPI_ = new CKernelMPI;
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraAudioPath("/LF/Base/L3B_Audio");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			capture = pCameraMPI_->StartAudioCapture("testEvent.wav", &listener, 3);
+			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
+
+			pKernelMPI_->TaskSleep(7000);
+			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureTimeOutEvent );
+
+			listener.Reset();
+
+			bRet = pCameraMPI_->StopAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, false );
+
+			capture = pCameraMPI_->StartAudioCapture("testEvent2.wav", &listener, 3);
+			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
+
+			pKernelMPI_->TaskSleep(1000);
+
+			bRet = pCameraMPI_->StopAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureStoppedEvent );
+		}
+
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testCaptureWAVPause()
+	{
+		tAudCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		CameraListener			listener;
+
+		pKernelMPI_ = new CKernelMPI;
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraAudioPath("/LF/Base/L3B_Audio");
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			capture = pCameraMPI_->StartAudioCapture("testPause.wav", NULL);
+			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
+
+			pKernelMPI_->TaskSleep(2000);
+
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
+			TS_ASSERT_EQUALS( bRet, false );
+
+			bRet = pCameraMPI_->PauseAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			pKernelMPI_->TaskSleep(2000);
+
+			bRet = pCameraMPI_->ResumeAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
+			TS_ASSERT_EQUALS( bRet, false );
+
+			pKernelMPI_->TaskSleep(2000);
+
+			bRet = pCameraMPI_->StopAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+
+		delete pKernelMPI_;
+	}
 	
 	//------------------------------------------------------------------------
 	void testCaptureYUV()
