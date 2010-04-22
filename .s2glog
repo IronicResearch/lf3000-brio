@@ -24917,3 +24917,12 @@ By jeno (jeno@leapfrog.com) on 4/21/10 5:39 PM
 6,223 ms. (Cumulative: 8,586,505 ms)
 
 ----------------
+Revision 7,152 from svn://localhost/TRUNK/:
+
+Modfiy Brio Module manager to search for valid Module path at runtime via leading LD_LIBRARY_PATH setting before defaulting to hard-coded Module path. Needed to support alternate Brio library installations in cart or download patches. (TTP 2485)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/10 8:45 PM
+1 changed, 0 added, 0 deleted.
+5,860 ms. (Cumulative: 8,592,458 ms)
+
+----------------

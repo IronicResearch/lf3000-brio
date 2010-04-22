@@ -15,6 +15,7 @@
 //==============================================================================
 #include <SystemTypes.h>
 #include <EmulationConfig.h>
+#include <sys/stat.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -23,6 +24,11 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 	inline CPath GetModuleLibraryLocation()
 	{
+		CPath libpath = getenv("LD_LIBRARY_PATH");
+		CPath modpath = libpath.substr(0, libpath.find(":")) + "/Module/";
+		struct stat s;
+		if (0 == stat(modpath.c_str(), &s) && S_ISDIR(s.st_mode))
+			return modpath;
 		return "/LF/Base/Brio/Module/";
 	}
 	
