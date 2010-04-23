@@ -24964,3 +24964,16 @@ By jeno (jeno@leapfrog.com) on 4/23/10 11:33 AM
 5,944 ms. (Cumulative: 8,604,622 ms)
 
 ----------------
+Revision 7,174 from svn://localhost/TRUNK/:
+Revision 7,175 from svn://localhost/TRUNK/:
+Revision 7,176 from svn://localhost/TRUNK/:
+
+Camera module: Fix bug in quota check.
+Camera test: Relocate generated test files to bulk file system;
+base has limited capacity and fails the quota check.
+
+By jeno (jeno@leapfrog.com) on 4/23/10 1:23 PM
+2 changed, 0 added, 0 deleted.
+5,955 ms. (Cumulative: 8,610,655 ms)
+
+----------------

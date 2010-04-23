@@ -1417,12 +1417,14 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 			DATA_UNLOCK;
 		}
 
-		err = statvfs(fpath.c_str(), &buf);
+		/* statvfs path must exist, so use the parent directory */
+		err = statvfs(fpath.substr(0, fpath.rfind('/')).c_str(), &buf);
 
 		length =  buf.f_bsize * buf.f_bavail;
 
 		if((err < 0) || (length < MIN_FREE))
 		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: not enough disk space, %lld required, %lld available\n", MIN_FREE, length);
 			CAMERA_UNLOCK;
 			return hndl;
 		}
