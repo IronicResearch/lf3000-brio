@@ -45,7 +45,7 @@ char* GetControlString(tControlType control)
 	return "Mising Setting String";
 }
 
-const char* capture_path = "/LF/Base/L3B_Video";
+const char* capture_path = "/LF/Bulk/Data/Local/All/";
 
 //============================================================================
 // TestCameraMPI functions
@@ -165,7 +165,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraAudioPath("/LF/Base/L3B_Audio");
+			err = pCameraMPI_->SetCameraAudioPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			capture = pCameraMPI_->StartAudioCapture("test.wav", NULL);
@@ -193,7 +193,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraAudioPath("/LF/Base/L3B_Audio");
+			err = pCameraMPI_->SetCameraAudioPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			capture = pCameraMPI_->StartAudioCapture("testEvent.wav", &listener, 3);
@@ -233,7 +233,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			err = pCameraMPI_->SetCameraAudioPath("/LF/Base/L3B_Audio");
+			err = pCameraMPI_->SetCameraAudioPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
 			capture = pCameraMPI_->StartAudioCapture("testPause.wav", NULL);
@@ -313,7 +313,7 @@ public:
 			
 			//Check to make sure new video file exists
 			struct stat file_status;
-			TS_ASSERT(! stat("/LF/Base/L3B_Video/testYUV.avi", &file_status) );
+			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/testYUV.avi", &file_status) );
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");
@@ -365,7 +365,7 @@ public:
 			
 			//Check to make sure new video file exists
 			struct stat file_status;
-			TS_ASSERT(! stat("/LF/Base/L3B_Video/testRGB.avi", &file_status) );
+			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/testRGB.avi", &file_status) );
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");
@@ -708,7 +708,7 @@ public:
 			
 			//Check to make sure new picture file exists
 			struct stat file_status;
-			TS_ASSERT(! stat("/LF/Base/L3B_Video/test.jpg", &file_status) );
+			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/test.jpg", &file_status) );
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
