@@ -76,17 +76,8 @@ const CURI* CVideoModule::GetModuleOrigin() const
 namespace
 {
 	//------------------------------------------------------------------------
-	// Theora global state vars
-//	ogg_sync_state   	oy;
-//	ogg_page         	og;
-//	ogg_stream_state 	vo;
-//	ogg_stream_state 	to;
-//	theora_info      	ti;
-//	theora_comment   	tc;
-//	theora_state     	td;
-
 	// Video MPI global vars
-//	tVideoContext*		gpVidCtx = NULL;
+	tVideoContext*		gpVidCtx = NULL;
 	CPath				gpath = "";
 	CPath				gfilepath = "";
 //	FILE*				gfile = NULL;
@@ -361,7 +352,7 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
 
-	if (!pVidCtx)
+	if (!pVidCtx || pVidCtx == gpVidCtx)
 		return false;
 	
 #if USE_MUTEX
@@ -397,6 +388,7 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	// Free video context created for task thread, if any
 	if (pVidCtx) 
 	{
+		gpVidCtx = pVidCtx;
 		kernel_.Free(pVidCtx);
 		pVidCtx = NULL;
 	}
