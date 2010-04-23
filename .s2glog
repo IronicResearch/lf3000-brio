@@ -24951,3 +24951,16 @@ By Dave Milici (dmilici@leapfrog.com) on 4/22/10 5:18 PM
 5,938 ms. (Cumulative: 8,598,584 ms)
 
 ----------------
+Revision 7,170 from svn://localhost/TRUNK/:
+Revision 7,171 from svn://localhost/TRUNK/:
+Revision 7,172 from svn://localhost/TRUNK/:
+Revision 7,173 from svn://localhost/TRUNK/:
+
+Camera module: Change quota check to use target filesystem instead of root.
+Also, add proper locking for microphone data.
+
+By jeno (jeno@leapfrog.com) on 4/23/10 11:33 AM
+3 changed, 0 added, 0 deleted.
+5,944 ms. (Cumulative: 8,604,622 ms)
+
+----------------

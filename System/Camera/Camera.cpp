@@ -170,6 +170,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	micCtx_.hndl			= kInvalidAudCapHndl;
 	micCtx_.hMicThread		= kNull;
 
+	err = kernel_.InitMutex( micCtx_.dlock, attr );
+	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mic mutex.\n");
+
 	err = kernel_.InitMutex( dlock, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
@@ -192,6 +195,8 @@ CCameraModule::~CCameraModule()
 	kernel_.DeInitMutex(camCtx_.mThread);
 	kernel_.DeInitMutex(mutex_);
 	kernel_.DeInitMutex(dlock);
+
+	kernel_.DeInitMutex(micCtx_.dlock);
 
 	delete camCtx_.controls;
 	delete camCtx_.modes;
@@ -1388,17 +1393,12 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength)
 {
+	CPath fpath = path;
 	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 30, 1};
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 	struct statvfs buf;
 	U64 length;
-
-	if(statvfs("/", &buf) || ((buf.f_bsize * buf.f_bavail) < MIN_FREE))
-	{
-		return hndl;
-	}
-
-	length = buf.f_bsize * buf.f_bavail / VID_BITRATE;	/* How many seconds can we afford? */
+	int err;
 
 	CAMERA_LOCK;
 
@@ -1408,27 +1408,42 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	camCtx_.reqLength = maxLength;
-	camCtx_.pListener = pListener;
-
-	if(path.length() > 0)
+	if(fpath.length() > 0)
 	{
-		if(path.at(0) == '/')
-		{
-			camCtx_.path	= path;
-		}
-		else
+		if(fpath.at(0) != '/')
 		{
 			DATA_LOCK;
-			camCtx_.path	= vpath + path;
+			fpath	= vpath + path;
 			DATA_UNLOCK;
 		}
+
+		err = statvfs(fpath.c_str(), &buf);
+
+		length =  buf.f_bsize * buf.f_bavail;
+
+		if((err < 0) || (length < MIN_FREE))
+		{
+			CAMERA_UNLOCK;
+			return hndl;
+		}
+
+		DATA_LOCK;
+		camCtx_.path	= fpath;
+		DATA_UNLOCK;
+
+		length /= VID_BITRATE;	/* How many seconds can we afford? */
+
 		camCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
 	}
 	else
 	{
 		camCtx_.maxLength = maxLength;
 	}
+
+
+
+	camCtx_.reqLength = maxLength;
+	camCtx_.pListener = pListener;
 
 	camCtx_.surf	= pSurf;
 

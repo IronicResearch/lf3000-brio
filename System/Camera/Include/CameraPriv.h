@@ -192,6 +192,8 @@ struct tMicrophoneContext {
 	U32						reqLength;		// length in seconds requested by app
 
 	IEventListener			*pListener;
+
+	tMutex					dlock;
 };
 
 //==============================================================================
