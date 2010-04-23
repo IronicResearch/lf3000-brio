@@ -24926,3 +24926,28 @@ By Dave Milici (dmilici@leapfrog.com) on 4/21/10 8:45 PM
 5,860 ms. (Cumulative: 8,592,458 ms)
 
 ----------------
+Revision 7,153 from svn://localhost/TRUNK/:
+Revision 7,154 from svn://localhost/TRUNK/:
+Revision 7,155 from svn://localhost/TRUNK/:
+Revision 7,156 from svn://localhost/TRUNK/:
+Revision 7,157 from svn://localhost/TRUNK/:
+Revision 7,158 from svn://localhost/TRUNK/:
+Revision 7,159 from svn://localhost/TRUNK/:
+Revision 7,160 from svn://localhost/TRUNK/:
+Revision 7,161 from svn://localhost/TRUNK/:
+Revision 7,162 from svn://localhost/TRUNK/:
+Revision 7,163 from svn://localhost/TRUNK/:
+Revision 7,164 from svn://localhost/TRUNK/:
+Revision 7,165 from svn://localhost/TRUNK/:
+Revision 7,166 from svn://localhost/TRUNK/:
+Revision 7,167 from svn://localhost/TRUNK/:
+Revision 7,168 from svn://localhost/TRUNK/:
+Revision 7,169 from svn://localhost/TRUNK/:
+
+Guard against stale video handles in refactored VideoMPI.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/22/10 5:18 PM
+1 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 8,598,584 ms)
+
+----------------
