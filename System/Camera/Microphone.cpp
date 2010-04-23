@@ -68,10 +68,10 @@ static int set_sw_params(struct tMicrophoneContext *pCtx);
 //==============================================================================
 // Defines
 //==============================================================================
-#define DATA_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(dlock)),\
+#define DATA_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(micCtx_.dlock)),\
 									  "Couldn't lock mutex.\n")
 
-#define DATA_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(dlock)),\
+#define DATA_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(micCtx_.dlock)),\
 										"Couldn't unlock mutex.\n");
 
 //============================================================================
@@ -80,7 +80,7 @@ static int set_sw_params(struct tMicrophoneContext *pCtx);
 namespace
 {
 	CPath				apath = "";
-	tMutex				dlock;
+
 #if USE_PROFILE
 	// Profile vars
 #endif
