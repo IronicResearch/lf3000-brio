@@ -59,6 +59,8 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
 		env.Install(lib_dir, libs)
+		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
+		env.Install(lib_dir, libs)
 	else:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
