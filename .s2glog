@@ -24977,3 +24977,16 @@ By jeno (jeno@leapfrog.com) on 4/23/10 1:23 PM
 5,955 ms. (Cumulative: 8,610,655 ms)
 
 ----------------
+Revision 7,177 from svn://localhost/TRUNK/:
+Revision 7,178 from svn://localhost/TRUNK/:
+Revision 7,179 from svn://localhost/TRUNK/:
+Revision 7,180 from svn://localhost/TRUNK/:
+Revision 7,181 from svn://localhost/TRUNK/:
+
+Deploy libjpeg on emulation build.  L3B TTPro 2487
+
+By jeno (jeno@leapfrog.com) on 4/23/10 5:17 PM
+1 changed, 0 added, 0 deleted.
+5,891 ms. (Cumulative: 8,616,640 ms)
+
+----------------
