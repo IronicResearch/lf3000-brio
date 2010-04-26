@@ -25018,3 +25018,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 11:10 AM
 6,544 ms. (Cumulative: 8,638,123 ms)
 
 ----------------
+Revision 7,186 from svn://localhost/TRUNK/:
+Revision 7,187 from svn://localhost/TRUNK/:
+Revision 7,188 from svn://localhost/TRUNK/:
+
+Correct unpacking of YUV422 planar formats into YUV420 surface.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 12:04 PM
+1 changed, 0 added, 0 deleted.
+6,423 ms. (Cumulative: 8,644,655 ms)
+
+----------------
