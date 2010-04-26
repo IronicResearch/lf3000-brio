@@ -56,7 +56,7 @@ struct tVideoContext {
 	Boolean				bSeeked;
 	Boolean				bCentered;
 	Boolean				bCodecReady;
-	const CPath*		pPathVideo;
+	CPath*				pPathVideo;
 	FILE*				pFileVideo;
 	tVideoInfo			info;
 	CVideoPlayer*		pPlayer;

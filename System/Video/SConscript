@@ -2,6 +2,7 @@
 # Brio/System/Video
 #-----------------------------------------------------------------------------
 from Etc.Tools.SConsTools.Priv.LfUtils import *
+import os
 Import('*')
 
 module_name	= 'Video'
@@ -13,7 +14,8 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI', 
-					 'DebugMPI', 'ogg', 'theora']
+					 'DebugMPI', 'ogg', 'theora', 
+					 'avformat', 'avcodec', 'avutil', 'avdevice']
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
@@ -23,6 +25,13 @@ myenv		= env.Copy()
 myenv.Append(CPPPATH = ['#System/Display/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + vars['cpu_subdir']])
+
+nfsroot		= os.getenv('ROOTFS_PATH')
+#myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'local', 'include')])
+#myenv.Append(LIBPATH = [os.path.join(nfsroot, 'usr', 'local', 'lib')])
+
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + vars['cpu_subdir']])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
@@ -33,6 +42,7 @@ Depends(mympi, mymodule)
 #-----------------------------------------------------------------------------
 if vars['is_emulation']:
 	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath, myenv.Dir('#ThirdParty/Portaudio/Libs/x86').abspath])
+	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/LibAVFormat/Libs/x86').abspath])
 RunMyTests(module_name, [], mpilibs +  ['DisplayMPI', 'EventMPI', 'AudioMPI', 'KernelMPI'], myenv, vars)
 
 Return('mymodule', 'mympi')

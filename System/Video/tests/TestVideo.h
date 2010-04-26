@@ -283,6 +283,56 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testVideoAVI()
+	{
+		PRINT_TEST_NAME();
+		
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+		
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("testYUV.avi");
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		for (int i = 0; i < 10; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+
+			r = pVideoMPI_->GetVideoFrame(video, NULL);
+			TS_ASSERT( r == true );
+			r = pVideoMPI_->PutVideoFrame(video, &surf);
+			TS_ASSERT( r == true );
+			pDisplayMPI_->Invalidate(0, NULL);
+			
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.frame == i );
+			TS_ASSERT( vt.time >= 0 );
+		}
+
+		pVideoMPI_->StopVideo(video);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
 	void testVideoAudio()
 	{
 		PRINT_TEST_NAME();
