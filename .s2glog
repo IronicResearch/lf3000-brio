@@ -25029,3 +25029,24 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 12:04 PM
 6,423 ms. (Cumulative: 8,644,655 ms)
 
 ----------------
+Revision 7,189 from svn://localhost/TRUNK/:
+Revision 7,190 from svn://localhost/TRUNK/:
+Revision 7,191 from svn://localhost/TRUNK/:
+Revision 7,192 from svn://localhost/TRUNK/:
+Revision 7,193 from svn://localhost/TRUNK/:
+Revision 7,194 from svn://localhost/TRUNK/:
+Revision 7,195 from svn://localhost/TRUNK/:
+Revision 7,196 from svn://localhost/TRUNK/:
+Revision 7,197 from svn://localhost/TRUNK/:
+Revision 7,198 from svn://localhost/TRUNK/:
+Revision 7,199 from svn://localhost/TRUNK/:
+Revision 7,200 from svn://localhost/TRUNK/:
+Revision 7,201 from svn://localhost/TRUNK/:
+
+Add support for AVI rendering of RGB formats.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 4:47 PM
+2 changed, 3 added, 0 deleted.
+7,079 ms. (Cumulative: 8,651,921 ms)
+
+----------------
