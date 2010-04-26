@@ -24990,3 +24990,12 @@ By jeno (jeno@leapfrog.com) on 4/23/10 5:17 PM
 5,891 ms. (Cumulative: 8,616,640 ms)
 
 ----------------
+Revision 7,182 from svn://localhost/TRUNK/:
+
+Initial checkin of libavformat/libavcodec libs from ffmpeg package with default build options. Localized in Brio tree for building both emulation and embedded versions of VideoMPI AVIPlayer. 
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 9:58 AM
+0 changed, 40 added, 0 deleted.
+8,282 ms. (Cumulative: 8,625,000 ms)
+
+----------------
