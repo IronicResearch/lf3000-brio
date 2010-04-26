@@ -24999,3 +24999,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 9:58 AM
 8,282 ms. (Cumulative: 8,625,000 ms)
 
 ----------------
+Revision 7,183 from svn://localhost/TRUNK/:
+
+Updated deployment script and symlinks from Localized Brio tree for building both emulation and embedded versions of VideoMPI AVIPLayer.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 10:42 AM
+1 changed, 8 added, 0 deleted.
+6,407 ms. (Cumulative: 8,631,501 ms)
+
+----------------

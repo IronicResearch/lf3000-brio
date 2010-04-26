@@ -61,6 +61,8 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
 		env.Install(lib_dir, libs)
+		libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], '*.so*'))
+		env.Install(lib_dir, libs)
 	else:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
@@ -107,6 +109,14 @@ if not vars['is_emulation']:
 	libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], 'libjpeg.so.8'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavcodec.so.52'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavdevice.so.52'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavformat.so.52'))
+	env.Install(vars['lib_deploy_dir'], libs)
+	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavutil.so.49'))
 	env.Install(vars['lib_deploy_dir'], libs)
 
 #-----------------------------------------------------------------------------
