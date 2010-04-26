@@ -22,7 +22,6 @@ extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libavutil/avutil.h>
-//#include <libswscale/avswscale.h>
 }
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -400,33 +399,6 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 			}
 			return false;
 		}
-#if 0	// SW scaler option
-		// Setup destination context for SW scaler conversion
-        int dst_pix_fmt = PIX_FMT_YUV420P;
-	    AVPicture pict;
-        pict.data[0] = pCtx->buffer;
-        pict.data[1] = pict.data[0] + pCtx->pitch/2;
-        pict.data[2] = pict.data[1] + pCtx->pitch * pCtx->height/2;
-        pict.linesize[0] = 
-        pict.linesize[1] = 
-        pict.linesize[2] = pCtx->pitch;
-
-        // Convert via SW scaler context
-        static struct SwsContext *img_convert_ctx;
-        int sws_flags = av_get_int(sws_opts, "sws_flags", NULL);
-        img_convert_ctx = sws_getCachedContext(img_convert_ctx,
-            pCodecCtx->width, pCodecCtx->height,
-            pCodecCtx->pix_fmt,
-            pCodecCtx->width, pCodecCtx->height,
-            dst_pix_fmt, sws_flags, NULL, NULL, NULL);
-        if (img_convert_ctx == NULL) {
-            fprintf(stderr, "Cannot initialize the conversion context\n");
-            return false;
-        }
-        sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize,
-                  0, pCodecCtx->height, pict.data, pict.linesize);
-		return true;
-#endif
 	}
 	return false;
 }

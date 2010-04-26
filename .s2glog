@@ -25050,3 +25050,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 4:47 PM
 7,079 ms. (Cumulative: 8,651,921 ms)
 
 ----------------
+Revision 7,202 from svn://localhost/TRUNK/:
+
+Remove unused SW scaler support since it is not built by default (GPL option), and all required pixel format conversions are trivial.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 4:58 PM
+1 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 8,658,031 ms)
+
+----------------
