@@ -333,6 +333,56 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testVideoAVIRGB()
+	{
+		PRINT_TEST_NAME();
+		
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatRGB888 );
+		
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("UncompressedRGB.avi");
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		for (int i = 0; i < 10; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+
+			r = pVideoMPI_->GetVideoFrame(video, NULL);
+			TS_ASSERT( r == true );
+			r = pVideoMPI_->PutVideoFrame(video, &surf);
+			TS_ASSERT( r == true );
+			pDisplayMPI_->Invalidate(0, NULL);
+			
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.frame == i );
+			TS_ASSERT( vt.time >= 0 );
+		}
+
+		pVideoMPI_->StopVideo(video);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
 	void testVideoAudio()
 	{
 		PRINT_TEST_NAME();
@@ -477,14 +527,14 @@ public:
 			pVideoMPI_->PutVideoFrame(video, &surf);
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
-		for (int i = 0; i < 100; i++)
+		for (int i = 0; i < 30; i++)
 		{
 			time.frame = i;
 			pVideoMPI_->SeekVideoFrame(video, &time);
 			pVideoMPI_->PutVideoFrame(video, &surf);
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
-		for (int i = 100; i >= 0; i--)
+		for (int i = 30; i >= 0; i--)
 		{
 			time.frame = i;
 			pVideoMPI_->SeekVideoFrame(video, &time);

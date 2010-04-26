@@ -15,6 +15,7 @@
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
 #include <VideoPriv.h>
+#include <DisplayPriv.h>
 #include <AVIPlayer.h>
 
 extern "C" {
@@ -234,19 +235,19 @@ Boolean CAVIPlayer::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	if (pCodecCtx && pFrame) {
+		tVideoSurf*	surf = pCtx;
 		// YUV420 planar format supported as is
 		if (pCodecCtx->pix_fmt == PIX_FMT_YUV420P 
 			|| pCodecCtx->pix_fmt == PIX_FMT_YUV422P
 			|| pCodecCtx->pix_fmt == PIX_FMT_YUVJ420P 
 			|| pCodecCtx->pix_fmt == PIX_FMT_YUVJ422P) 
 		{
-			tVideoSurf*	surf = pCtx;
 			U8* 		sy = pFrame->data[0];
 			U8*			su = pFrame->data[1];
 			U8*			sv = pFrame->data[2];
 			U8*			dy = surf->buffer; // + (y * surf->pitch) + (x * 2);
-			U8*			du = surf->buffer + surf->pitch/2; // U,V in double-width buffer
-			U8*			dv = surf->buffer + surf->pitch/2 + surf->pitch * (surf->height/2);
+			U8*			du = dy + surf->pitch/2; // U,V in double-width buffer
+			U8*			dv = du + surf->pitch * (surf->height/2);
 			int			i,j,k,m;
 			bool		is422 = pCodecCtx->pix_fmt == PIX_FMT_YUVJ422P || pCodecCtx->pix_fmt == PIX_FMT_YUV422P;
 			// Pack into separate YUV planar surface regions
@@ -272,8 +273,132 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 						sv += pFrame->linesize[2];
 					}
 				}
+				return true;
 			}
-			return true;
+			else if (surf->format == kPixelFormatARGB8888)
+			{
+				// Convert YUV to RGB format surface
+				for (i = 0; i < pCodecCtx->height; i++) 
+				{
+					for (j = k = m = 0; k < pCodecCtx->width; j++, k+=2, m+=8) 
+					{
+						U8 y0 = sy[k];
+						U8 y1 = sy[k+1];
+						U8 u0 = su[j];
+						U8 v0 = sv[j];
+						dy[m+0] = B(y0,u0,v0);
+						dy[m+1] = G(y0,u0,v0);
+						dy[m+2] = R(y0,u0,v0);
+						dy[m+3] = 0xFF;
+						dy[m+4] = B(y1,u0,v0);
+						dy[m+5] = G(y1,u0,v0);
+						dy[m+6] = R(y1,u0,v0);
+						dy[m+7] = 0xFF;
+					}
+					sy += pFrame->linesize[0];
+					dy += surf->pitch;
+					if (i % 2 || is422) 
+					{
+						su += pFrame->linesize[1];
+						sv += pFrame->linesize[2];
+					}
+				}
+				return true;
+			}
+			else if (surf->format == kPixelFormatRGB888)
+			{
+				// Convert YUV to RGB format surface
+				for (i = 0; i < pCodecCtx->height; i++) 
+				{
+					for (j = k = m = 0; k < pCodecCtx->width; j++, k+=2, m+=6) 
+					{
+						U8 y0 = sy[k];
+						U8 y1 = sy[k+1];
+						U8 u0 = su[j];
+						U8 v0 = sv[j];
+						dy[m+0] = B(y0,u0,v0);
+						dy[m+1] = G(y0,u0,v0);
+						dy[m+2] = R(y0,u0,v0);
+						dy[m+3] = B(y1,u0,v0);
+						dy[m+4] = G(y1,u0,v0);
+						dy[m+5] = R(y1,u0,v0);
+					}
+					sy += pFrame->linesize[0];
+					dy += surf->pitch;
+					if (i % 2 || is422) 
+					{
+						su += pFrame->linesize[1];
+						sv += pFrame->linesize[2];
+					}
+				}
+				return true;
+			}
+			return false;
+		}
+		// RGB888 format support
+		if (pCodecCtx->pix_fmt == PIX_FMT_RGB24 
+			|| pCodecCtx->pix_fmt == PIX_FMT_BGR24)
+		{
+			U8* 		s = pFrame->data[0];
+			U8*			d = surf->buffer;
+			U8*			du = d  + surf->pitch/2; // U,V in double-width buffer
+			U8*			dv = du + surf->pitch * (surf->height/2);
+			int			i,j,m,n;
+			if (surf->format == kPixelFormatRGB888)
+			{
+				// Copy RGB triplets as is
+				n = 3 * pCodecCtx->width; 
+				for (i = 0; i < pCodecCtx->height; i++)
+				{
+					memcpy(d, s, n);
+					s += pFrame->linesize[0];
+					d += surf->pitch;
+				}
+				return true;
+			}
+			else if (surf->format == kPixelFormatARGB8888)
+			{
+				// Repack RGB triplets into ARGB surface
+				for (i = 0; i < pCodecCtx->height; i++) 
+				{
+					for (j = m = n = 0; j < pCodecCtx->width; j++, m+=4, n+=3) 
+					{
+						d[n+0] = s[m+0];
+						d[n+1] = s[m+1];
+						d[n+2] = s[m+2];
+					}
+					s += pFrame->linesize[0];
+					d += surf->pitch;
+				}
+				return true;
+			}
+			else if (surf->format == kPixelFormatYUV420)
+			{
+				// Convert RGB triplets to YUV format surface
+				for (i = 0; i < pCodecCtx->height; i++) 
+				{
+					for (j = m = n = 0; j < pCodecCtx->width; j++, m+=4) 
+					{
+						U8 b = s[m+0];
+						U8 g = s[m+1];
+						U8 r = s[m+2];
+						d [j] = Y(r,g,b);
+						du[n] = U(r,g,b);
+						dv[n] = V(r,g,b);
+						if (j % 2)
+							n++;
+					}
+					s += pFrame->linesize[0];
+					d += surf->pitch;
+					if (i % 2)
+					{
+						du += surf->pitch;
+						dv += surf->pitch;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 #if 0	// SW scaler option
 		// Setup destination context for SW scaler conversion
