@@ -25008,3 +25008,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 10:42 AM
 6,407 ms. (Cumulative: 8,631,501 ms)
 
 ----------------
+Revision 7,184 from svn://localhost/TRUNK/:
+Revision 7,185 from svn://localhost/TRUNK/:
+
+Initial implementation of VideoMPI AVIPlayer with support for YUV420 format. Captured video clips appear to be saved as either YUV422 planar format or RGB format from JPEG processing.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 11:10 AM
+5 changed, 0 added, 0 deleted.
+6,544 ms. (Cumulative: 8,638,123 ms)
+
+----------------

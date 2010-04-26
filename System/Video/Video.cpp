@@ -285,18 +285,26 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 	memset(pVidCtx, 0, sizeof(tVideoContext));
 	hVideo = reinterpret_cast<tVideoHndl>(pVidCtx);
 	pVidCtx->pFileVideo = file;
+	pVidCtx->pPathVideo = new CPath(filepath);
 
-	// Create Theora video player object
-	CTheoraPlayer* 	pPlayer = new CTheoraPlayer();
-	pVidCtx->pPlayer = pPlayer;
+	if (filepath.rfind(".ogg") != std::string::npos) {
+		// Create Theora video player object
+		CTheoraPlayer* 	pPlayer = new CTheoraPlayer();
+		pVidCtx->pPlayer = pPlayer;
+	}
+	else if (filepath.rfind(".avi") != std::string::npos) {
+		// Create AVI video player object
+		CAVIPlayer* 	pPlayer = new CAVIPlayer();
+		pVidCtx->pPlayer = pPlayer;
+	}
 	
 	// Init Theora video codec for Ogg file
 	b = InitVideoInt(hVideo);
 	if (!b)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: InitVideoInt failed to init codec for %s\n", filename);
+		delete pVidCtx->pPlayer;
 		kernel_.Free(pVidCtx);
-		delete pPlayer;
 		fclose(file);
 		return kInvalidVideoHndl;
 	}
@@ -384,7 +392,12 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 		fclose(pVidCtx->pFileVideo);
 		pVidCtx->pFileVideo = NULL;
 	}
-
+	if (pVidCtx->pPathVideo != NULL)
+	{
+		delete pVidCtx->pPathVideo;
+		pVidCtx->pPathVideo = NULL;
+	}
+	
 	// Free video context created for task thread, if any
 	if (pVidCtx) 
 	{
