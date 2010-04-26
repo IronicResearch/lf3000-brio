@@ -235,7 +235,11 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
 	if (pCodecCtx && pFrame) {
 		// YUV420 planar format supported as is
-		if (pCodecCtx->pix_fmt == PIX_FMT_YUV420P || pCodecCtx->pix_fmt == PIX_FMT_YUVJ422P) {
+		if (pCodecCtx->pix_fmt == PIX_FMT_YUV420P 
+			|| pCodecCtx->pix_fmt == PIX_FMT_YUV422P
+			|| pCodecCtx->pix_fmt == PIX_FMT_YUVJ420P 
+			|| pCodecCtx->pix_fmt == PIX_FMT_YUVJ422P) 
+		{
 			tVideoSurf*	surf = pCtx;
 			U8* 		sy = pFrame->data[0];
 			U8*			su = pFrame->data[1];
@@ -244,6 +248,7 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 			U8*			du = surf->buffer + surf->pitch/2; // U,V in double-width buffer
 			U8*			dv = surf->buffer + surf->pitch/2 + surf->pitch * (surf->height/2);
 			int			i,j,k,m;
+			bool		is422 = pCodecCtx->pix_fmt == PIX_FMT_YUVJ422P || pCodecCtx->pix_fmt == PIX_FMT_YUV422P;
 			// Pack into separate YUV planar surface regions
 			if (surf->format == kPixelFormatYUV420)
 			{
@@ -260,6 +265,11 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 						sv += pFrame->linesize[2];
 						du += surf->pitch;
 						dv += surf->pitch;
+					}
+					else if (is422)
+					{
+						su += pFrame->linesize[1];
+						sv += pFrame->linesize[2];
 					}
 				}
 			}
@@ -313,7 +323,7 @@ Boolean CAVIPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
 	if (pCodecCtx) {
-		pTime->frame 	= pCodecCtx->frame_number;
+		pTime->frame 	= pCodecCtx->frame_number - 1;	// not 0-based
 		pTime->time		= pTime->frame * pVidCtx->uFrameTime;
 		return true;
 	}
@@ -331,6 +341,7 @@ Boolean CAVIPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 //----------------------------------------------------------------------------
 Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
 {
+	// TODO
 	return false;
 }
 
