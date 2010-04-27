@@ -59,8 +59,9 @@ if vars['is_export'] or vars['is_publish']:
 		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
 		env.Install(lib_dir, libs)
-		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(lib_dir, libs)
+#		Flash includes its own libjpeg and fails to link with this one		
+#		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
+#		env.Install(lib_dir, libs)
 		libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], '*.so*'))
 		env.Install(lib_dir, libs)
 	else:
