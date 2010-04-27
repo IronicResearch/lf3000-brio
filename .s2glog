@@ -25075,3 +25075,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 6:24 PM
 5,954 ms. (Cumulative: 8,664,094 ms)
 
 ----------------
+Revision 7,211 from svn://localhost/TRUNK/:
+
+Correct RGB triplet indexing in AVI RGB formats. (Not much usefulness since CameraMPI saves AVIs in MJPEG YUV format.)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/27/10 10:45 AM
+1 changed, 0 added, 0 deleted.
+5,936 ms. (Cumulative: 8,670,092 ms)
+
+----------------
