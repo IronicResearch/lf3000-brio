@@ -360,11 +360,12 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 				// Repack RGB triplets into ARGB surface
 				for (i = 0; i < pCodecCtx->height; i++) 
 				{
-					for (j = m = n = 0; j < pCodecCtx->width; j++, m+=4, n+=3) 
+					for (j = m = n = 0; j < pCodecCtx->width; j++, m+=3, n+=4) 
 					{
 						d[n+0] = s[m+0];
 						d[n+1] = s[m+1];
 						d[n+2] = s[m+2];
+						d[n+3] = 0xFF;
 					}
 					s += pFrame->linesize[0];
 					d += surf->pitch;
@@ -376,7 +377,7 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 				// Convert RGB triplets to YUV format surface
 				for (i = 0; i < pCodecCtx->height; i++) 
 				{
-					for (j = m = n = 0; j < pCodecCtx->width; j++, m+=4) 
+					for (j = m = n = 0; j < pCodecCtx->width; j++, m+=3) 
 					{
 						U8 b = s[m+0];
 						U8 g = s[m+1];
