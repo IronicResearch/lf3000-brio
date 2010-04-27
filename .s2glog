@@ -25095,3 +25095,12 @@ By jeno (jeno@leapfrog.com) on 4/27/10 11:08 AM
 6,252 ms. (Cumulative: 8,676,422 ms)
 
 ----------------
+Revision 7,213 from svn://localhost/TRUNK/:
+
+Disable libjpeg for emulation - conflict with building Flash
+
+By jeno (jeno@leapfrog.com) on 4/27/10 4:16 PM
+1 changed, 0 added, 0 deleted.
+6,238 ms. (Cumulative: 8,682,738 ms)
+
+----------------
