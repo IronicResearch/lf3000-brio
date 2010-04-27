@@ -25059,3 +25059,19 @@ By Dave Milici (dmilici@leapfrog.com) on 4/26/10 4:58 PM
 6,016 ms. (Cumulative: 8,658,031 ms)
 
 ----------------
+Revision 7,203 from svn://localhost/TRUNK/:
+Revision 7,204 from svn://localhost/TRUNK/:
+Revision 7,205 from svn://localhost/TRUNK/:
+Revision 7,206 from svn://localhost/TRUNK/:
+Revision 7,207 from svn://localhost/TRUNK/:
+Revision 7,208 from svn://localhost/TRUNK/:
+Revision 7,209 from svn://localhost/TRUNK/:
+Revision 7,210 from svn://localhost/TRUNK/:
+
+Add seek support to AVI player.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/26/10 6:24 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 8,664,094 ms)
+
+----------------
