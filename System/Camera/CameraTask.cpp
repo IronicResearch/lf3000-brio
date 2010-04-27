@@ -63,7 +63,7 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
-//	CAudioMPI			audiomgr;
+	CAudioMPI			audiomgr;
 	Boolean				bSpeakerState = true;
 
 	avi_t				*avi		= NULL;
@@ -168,8 +168,8 @@ void* CameraTaskMain(void* arg)
 	}
 
 	// Hack to reduce audio streaming interference with video streaming
-//	bSpeakerState = audiomgr.GetSpeakerEqualizer();
-//	audiomgr.SetSpeakerEqualizer(false);
+	bSpeakerState = audiomgr.GetSpeakerEqualizer();
+	audiomgr.SetSpeakerEqualizer(false);
 
 	/*
 	 * This is intentionally an assignment, not a comparison.
@@ -242,7 +242,7 @@ void* CameraTaskMain(void* arg)
 	}
 
 	// Restore speaker equalizer state prior to video streaming
-//	audiomgr.SetSpeakerEqualizer(bSpeakerState);
+	audiomgr.SetSpeakerEqualizer(bSpeakerState);
 
 	// Post done message to event listener
 	if(pCtx->pListener)

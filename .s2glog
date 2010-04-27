@@ -25084,3 +25084,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/27/10 10:45 AM
 5,936 ms. (Cumulative: 8,670,092 ms)
 
 ----------------
+Revision 7,212 from svn://localhost/TRUNK/:
+
+Camera module: restore hack to disable audio streaming during capture.  The
+previously induced unit test crashes were caused by a seprate bug in Brio, which
+is now fixed as well.  Related to L3B TTPro 2465.
+
+By jeno (jeno@leapfrog.com) on 4/27/10 11:08 AM
+2 changed, 0 added, 0 deleted.
+6,252 ms. (Cumulative: 8,676,422 ms)
+
+----------------

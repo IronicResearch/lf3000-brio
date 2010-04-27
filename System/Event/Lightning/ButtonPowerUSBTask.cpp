@@ -543,7 +543,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		}
 	}
 	
-	for(; last_fd >=0; --last_fd)
+	for(last_fd--; last_fd >=0; --last_fd)
 		close(event_fd[last_fd].fd);
 	g_threadRunning2_ = false;
 }
