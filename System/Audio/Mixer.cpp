@@ -77,6 +77,7 @@
 #include <RawPlayer.h>
 #include <MemPlayer.h>
 #include <VorbisPlayer.h>
+#include <AVIPlayer.h>
 
 #include <list>
 
@@ -750,12 +751,16 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	}
 	else if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
-		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") )
+		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") || 
+		!strcmp(sExt, "avi"))
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
-			pPlayer = new CRawPlayer( pInfo, newID );
+			if (!strcmp(sExt, "avi"))
+				pPlayer = new CAVIPlayer( pInfo, newID );
+			else
+				pPlayer = new CRawPlayer( pInfo, newID );
 		}
 		else
 		{
