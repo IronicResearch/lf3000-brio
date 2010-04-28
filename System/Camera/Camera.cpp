@@ -1569,12 +1569,41 @@ out:
 }
 
 //----------------------------------------------------------------------------
+Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels)
+{
+	int i, row_stride;
+	Boolean ret;
+	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
+	tBitmapInfo bmp 	= {kBitmapFormatRGB888, 640, 480, 3, pixels, 921600, NULL};
+
+	ret = GrabFrame(hndl, &frame);
+	if(ret)
+	{
+		bmp.buffer = static_cast<U8**>(kernel_.Malloc(bmp.height * sizeof(U8*)));
+
+		row_stride = bmp.width * bmp.depth;
+		for(i = 0; i < bmp.height; i++)
+		{
+			bmp.buffer[i] = &bmp.data[i*row_stride];
+		}
+
+		ret = RenderFrame(&frame, NULL, &bmp);
+
+		kernel_.Free(frame.data);	/* alloced by GrabFrame */
+		kernel_.Free(bmp.buffer);
+	}
+
+	return ret;
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 {
 	Boolean			bRet	= false;
 	tCaptureMode	oldmode, newmode;
 	U32				oldbufs	= camCtx_.numBufs;
 	tFrameInfo		frm;
+	Boolean			bPause, vPause;
 
 	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
 	{
@@ -1589,6 +1618,9 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	// don't let the viewfinder run while we muck with the camera settings
 	THREAD_LOCK;
 	CAMERA_LOCK;
+
+	bPause	= camCtx_.bPaused;
+	vPause	= camCtx_.bVPaused;
 
 	/*
 	 * Changing resolutions requires that the camera be off.  This implies unmapping all of the buffers
@@ -1686,6 +1718,9 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto frame_out;
 	}
 
+	camCtx_.bPaused = bPause;
+	camCtx_.bVPaused = vPause;
+
 	CAMERA_UNLOCK;
 	THREAD_UNLOCK;
 
@@ -1697,6 +1732,10 @@ frame_out:
 	frame->size	= 0;
 
 bail_out:
+
+	bPause	= camCtx_.bPaused;
+	vPause	= camCtx_.bVPaused;
+
 	CAMERA_UNLOCK;
 	THREAD_UNLOCK;
 	return false;

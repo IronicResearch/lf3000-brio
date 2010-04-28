@@ -193,6 +193,14 @@ Boolean	CCameraMPI::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 }
 
 //----------------------------------------------------------------------------
+Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, U8 *pixels)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->GetFrame(hndl, pixels);
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraMPI::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 {
 	if (!pModule_)

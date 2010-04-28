@@ -666,6 +666,112 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testGetFrame()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+		U8							*pixels, *src, *dest, R, G, B;
+		const U16					ROWS = 480, COLS = 640;
+		int							row, col;
+
+		// For displaying captured data
+		tVideoSurf				surf;
+		tDisplayHandle			disp;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			pixels = static_cast<U8*>(pKernelMPI_->Malloc(ROWS*COLS*3));
+
+			capture = pCameraMPI_->StartVideoCapture(&surf);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(3000);
+
+			bRet = pCameraMPI_->PauseVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			pKernelMPI_->TaskSleep(2000);
+
+			bRet = pCameraMPI_->GetFrame(capture, pixels);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			/* plot a + through the bitmap */
+			for(row = 0; row < ROWS; row++)
+			{
+				for(col = 0; col < COLS; col++)
+				{
+					if((row >= 230 && row <= 250) || (col >= 310 && col <= 330))
+					{
+						pixels[(row*COLS*3)+(col*3)+0] = 0xFF;	/* Red component */
+						pixels[(row*COLS*3)+(col*3)+1] = 0xFF;	/* Green component */
+						pixels[(row*COLS*3)+(col*3)+2] = 0xFF;	/* Blue component */
+					}
+				}
+			}
+
+			/* crudely shrink bitmap from VGA to QVGA in place */
+			src = dest = pixels;
+
+			for(row = 0; row < ROWS; row+=2)
+			{
+				for(col = 0; col < COLS; col+=2)
+				{
+					*dest++ = *src++;	/* Red */
+					*dest++ = *src++;	/* Green */
+					*dest++ = *src++;	/* Blue */
+
+					/* skip every other pixel */
+					src++;
+					src++;
+					src++;
+				}
+
+				/* skip every other row */
+				src += COLS*3;
+			}
+
+			/* draw shrunken image to screen */
+			pDisplayMPI_->UnRegister(disp, 0);
+			pDisplayMPI_->DestroyHandle(disp, true);
+
+			disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, pixels);
+			pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+			pDisplayMPI_->Invalidate(0);
+			pKernelMPI_->TaskSleep(3000);
+
+			pKernelMPI_->Free(pixels);
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
 	void testSnap()
 	{
 		PRINT_TEST_NAME();

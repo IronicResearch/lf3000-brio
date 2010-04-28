@@ -223,6 +223,7 @@ public:
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
 													IEventListener * pListener, const U32 maxLength);
 	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath& path);
+	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, U8* pixels);
 	VTABLE_EXPORT Boolean		RenderFrame(const CPath &path, tVideoSurf *pSurf);
 	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl, const Boolean display);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
