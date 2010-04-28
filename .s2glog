@@ -25114,3 +25114,26 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/27/10 5:12 PM
 6,423 ms. (Cumulative: 8,689,239 ms)
 
 ----------------
+Revision 7,215 from svn://localhost/TRUNK/:
+Revision 7,216 from svn://localhost/TRUNK/:
+Revision 7,217 from svn://localhost/TRUNK/:
+Revision 7,218 from svn://localhost/TRUNK/:
+Revision 7,219 from svn://localhost/TRUNK/:
+Revision 7,220 from svn://localhost/TRUNK/:
+Revision 7,221 from svn://localhost/TRUNK/:
+Revision 7,222 from svn://localhost/TRUNK/:
+Revision 7,223 from svn://localhost/TRUNK/:
+Revision 7,224 from svn://localhost/TRUNK/:
+Revision 7,225 from svn://localhost/TRUNK/:
+Revision 7,226 from svn://localhost/TRUNK/:
+Revision 7,227 from svn://localhost/TRUNK/:
+
+CameraMPI: Publish simplified GetFrame() method for taking a snapshot using a
+buffer rather than the file system.  Also, maintain pause status during calls to
+SnapFrame()/GetFrame().
+
+By jeno (jeno@leapfrog.com) on 4/28/10 2:18 PM
+5 changed, 0 added, 0 deleted.
+6,493 ms. (Cumulative: 8,695,904 ms)
+
+----------------

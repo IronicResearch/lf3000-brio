@@ -176,6 +176,26 @@ public:
 	/// \return true on success.
 	Boolean		SnapFrame(const tVidCapHndl hndl, const CPath &path);
 
+	/// GetFrame() takes a snapshot from the stream being captured in a separate
+	/// thread via StartVideoCapture().
+	/// This snapshot is automatically automatically decompressed from JPEG
+	/// to an RGB bitmap and saved to the memory location provided by the caller.
+	/// GetFrame() can be called while video capturing (the viewfinder) is paused.
+	///
+	/// \param	hndl	Video capture handle returned by StartVideoCapture()
+	///
+	/// \param	pixels	Buffer to hold the captured frame.  The buffer must be
+	/// large enough to hold a 24-bpp VGA image, i.e., 640*480*3 bytes.  The format
+	/// of the buffer as populated by GetFrame() is a typical left-to-right,
+	/// top-to-bottom raster scan, and the pixels themselves are simply R-G-B.
+	/// - Inter-pixel order [row,column]:
+	/// 	- [0,0] [0,1] [0,2] ... [0, 639] [1, 0] [1,1] ... [479,638] [479,639]
+	/// - Intra-pixel order (Byte 1, Byte 2, Byte 3):
+	/// 	- RRRRRRRR GGGGGGGG BBBBBBBB
+	///
+	/// \return true on success.
+	Boolean		GetFrame(const tVidCapHndl hndl, U8 *pixels);
+
 	/// RenderFrame() render an image saved with SnapFrame() to the host device's display.
 	///
 	/// \param	path	JPEG save file name relative to SetCameraStillPath(),
