@@ -25137,3 +25137,13 @@ By jeno (jeno@leapfrog.com) on 4/28/10 2:18 PM
 6,493 ms. (Cumulative: 8,695,904 ms)
 
 ----------------
+Revision 7,228 from svn://localhost/TRUNK/:
+Revision 7,229 from svn://localhost/TRUNK/:
+
+Added AVIPlayer object to AudioMPI for handling AVI audio playback via libAVFormat, since libSndFile only supports audio-only files. Initial port not complete yet.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/28/10 4:44 PM
+2 changed, 2 added, 0 deleted.
+6,864 ms. (Cumulative: 8,702,862 ms)
+
+----------------

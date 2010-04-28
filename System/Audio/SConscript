@@ -15,7 +15,8 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 
-				'portaudio', 'pthread', 'vorbisidec', 'ogg', 'sndfile', 'Utility']
+				'portaudio', 'pthread', 'vorbisidec', 'ogg', 'sndfile', 'Utility',
+				'avcodec', 'avformat', 'avutil']
 mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 						
 #-----------------------------------------------------------------------------
@@ -28,10 +29,12 @@ myenv		= env.Copy()
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/Portaudio/Libs/' + vars['cpu_subdir']])
 myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + vars['cpu_subdir']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + vars['cpu_subdir']])
+myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + vars['cpu_subdir']])
 
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
