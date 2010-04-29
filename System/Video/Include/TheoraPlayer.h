@@ -17,6 +17,9 @@
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
 
+#include <ogg/ogg.h>
+#include <theora/theora.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -40,6 +43,18 @@ public:
 	Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
 	Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
 	Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact);
+	
+private:
+	// Theora global state vars
+	ogg_sync_state   	oy;
+	ogg_page         	og;
+	ogg_stream_state 	vo;
+	ogg_stream_state 	to;
+	theora_info      	ti;
+	theora_comment   	tc;
+	theora_state     	td;
+	
+	ogg_int64_t BinarySeekFrame(FILE* file, ogg_int64_t target_framepos, long int &left_pos, long int &right_pos);
 };
 
 LF_END_BRIO_NAMESPACE()	

@@ -43,25 +43,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 namespace
 {
-	//------------------------------------------------------------------------
-	// Theora global state vars
-	ogg_sync_state   	oy;
-	ogg_page         	og;
-	ogg_stream_state 	vo;
-	ogg_stream_state 	to;
-	theora_info      	ti;
-	theora_comment   	tc;
-	theora_state     	td;
-
-	// Video MPI global vars
-//	tVideoContext*		gpVidCtx = NULL;
-//	CPath				gpath = "";
-//	CPath				gfilepath = "";
-//	FILE*				gfile = NULL;
-//	tMutex				gVidMutex;
-//	Boolean				gbCodecReady = false;
-//	Boolean				gbCentered = false;
-//	tVideoHndl			ghVideoHndl = kInvalidVideoHndl;
 }
 
 //==============================================================================
@@ -90,10 +71,9 @@ static int buffer_data(FILE *file, ogg_sync_state *oy)
 
 //----------------------------------------------------------------------------
 // Push a page into the stream for packetization
-static int queue_page(ogg_page *page)
+static int queue_page(ogg_stream_state *to, ogg_page *og)
 {
-	(void )page;	/* Prevent unused variable warnings. */
-	return ogg_stream_pagein(&to,&og);
+	return ogg_stream_pagein(to, og);
 }
 
 //----------------------------------------------------------------------------
@@ -101,7 +81,7 @@ static int queue_page(ogg_page *page)
 //Modifies left_pos and right_pos as it goes, to help narrow future searches.
 //
 //Returns the Theora granulepos found (bounded by first and last frame).
-ogg_int64_t BinarySeekFrame( FILE* file, ogg_int64_t target_framepos, long int &left_pos, long int &right_pos)
+ogg_int64_t CTheoraPlayer::BinarySeekFrame( FILE* file, ogg_int64_t target_framepos, long int &left_pos, long int &right_pos)
 {
 	ogg_int64_t granulepos;
 	int			bytes;
@@ -150,7 +130,7 @@ ogg_int64_t BinarySeekFrame( FILE* file, ogg_int64_t target_framepos, long int &
 		
 		case 1:
 			//We got a page, queue it up!
-			if(!queue_page(&og))
+			if(!queue_page(&to,&og))
 			{
 				//Grab the granulepos of the page, which is also the last packet in this page
 				ogg_int64_t page_granulepos = ogg_page_granulepos(&og);
@@ -357,7 +337,7 @@ ogg_int64_t BinarySeekFrame( FILE* file, ogg_int64_t target_framepos, long int &
 		
 		case 1:
 			//We got a page, queue it up!
-			if(!queue_page(&og))
+			if(!queue_page(&to,&og))
 			{
 				//Grab Theora packets
 				while (ogg_stream_packetout(&to,&op) > 0)
@@ -441,7 +421,7 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 			{
 				// don't leak the page; get it into the appropriate stream
     			if (theorapkts)
-    				queue_page(&og);
+    				queue_page(&to,&og);
     			stateflag = 1;
 				break;
   			}
@@ -487,7 +467,7 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 		if (ogg_sync_pageout(&oy,&og)>0)
 		{
 			// demux into the stream state
-			queue_page(&og); 
+			queue_page(&to,&og); 
 		}
 		else
 		{
@@ -547,7 +527,7 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 
 	// Queue remaining pages that did not contain headers
 	while (ogg_sync_pageout(&oy,&og) > 0)
-		queue_page(&og);
+		queue_page(&to,&og);
 
 	theora_decode_packetin(&td,&op);
 	theora_granule_frame(&td,td.granulepos);
@@ -773,7 +753,7 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 			if (bytes == 0)
 				break;
 			while (ogg_sync_pageout(&oy,&og) > 0)
-				queue_page(&og);
+				queue_page(&to,&og);
 		}
 	}
 	return ready;
@@ -859,7 +839,7 @@ Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 					break;
 				}
 				while (ogg_sync_pageout(&oy,&og) > 0)
-					queue_page(&og);
+					queue_page(&to,&og);
 			}
 		}
 		TimeStampOff(1);
