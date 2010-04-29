@@ -54,17 +54,17 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
 {
     static AVPacket packet;
     static int      bytesRemaining=0;
-    static uint8_t  *rawData;
-    static bool     fFirstTime=true;
+    static uint8_t  *pRawData = NULL;
+    static bool     bFirstTime = true;
     int             bytesDecoded;
     int             frameFinished;
 
     // First time we're called, set packet.data to NULL to indicate it
     // doesn't have to be freed
-    if (fFirstTime)
+    if (bFirstTime)
     {
-        fFirstTime=false;
-        packet.data=NULL;
+        bFirstTime = false;
+        packet.data = NULL;
     }
 
     // Decode packets until we have decoded a complete frame
@@ -75,17 +75,17 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
         {
             // Decode the next chunk of data
             bytesDecoded = avcodec_decode_video(pCodecCtx, pFrame,
-                &frameFinished, rawData, bytesRemaining);
+                &frameFinished, pRawData, bytesRemaining);
 
             // Was there an error?
             if (bytesDecoded < 0)
             {
-                fprintf(stderr, "Error while decoding frame\n");
-                return false;
+            	bytesRemaining = 0;
+            	break;
             }
 
             bytesRemaining -= bytesDecoded;
-            rawData += bytesDecoded;
+            pRawData       += bytesDecoded;
 
             // Did we finish the current frame? Then we can return
             if (frameFinished)
@@ -101,19 +101,19 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
                 av_free_packet(&packet);
 
             // Read new packet
-            if (av_read_packet(pFormatCtx, &packet) < 0)
+            if (av_read_frame(pFormatCtx, &packet) < 0)
                 goto loop_exit;
         } while(packet.stream_index != iVideoStream);
 
         bytesRemaining = packet.size;
-        rawData = packet.data;
+        pRawData = packet.data;
     }
 
 loop_exit:
 
     // Decode the rest of the last frame
     bytesDecoded = avcodec_decode_video(pCodecCtx, pFrame, &frameFinished, 
-        rawData, bytesRemaining);
+        pRawData, bytesRemaining);
 
     // Free last packet
     if (packet.data != NULL)

@@ -25187,3 +25187,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/10 2:27 PM
 5,916 ms. (Cumulative: 8,727,358 ms)
 
 ----------------
+Revision 7,237 from svn://localhost/TRUNK/:
+Revision 7,238 from svn://localhost/TRUNK/:
+
+Merge minor AVI audio player changes into AVI video player for consistancy.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/10 2:35 PM
+1 changed, 0 added, 0 deleted.
+5,970 ms. (Cumulative: 8,733,406 ms)
+
+----------------
