@@ -25147,3 +25147,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/28/10 4:44 PM
 6,864 ms. (Cumulative: 8,702,862 ms)
 
 ----------------
+Revision 7,230 from svn://localhost/TRUNK/:
+Revision 7,231 from svn://localhost/TRUNK/:
+
+TTPro 2487.  Reimplemented Justin's build of libjpeg.  Flash is no longer building libjpeg so there should no longer be conflicts (I hope).  Also added in exporting the libjpeg headers.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/28/10 5:53 PM
+1 changed, 0 added, 0 deleted.
+6,360 ms. (Cumulative: 8,709,316 ms)
+
+----------------
