@@ -39,11 +39,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 namespace
 {
-	AVFormatContext*	pFormatCtx = NULL;
-	AVCodecContext*		pCodecCtx = NULL;
-	AVCodec*			pCodec = NULL;
-    AVFrame*			pFrame = NULL;
-    int					iVideoStream = -1;
 }
 
 //==============================================================================
@@ -129,6 +124,11 @@ loop_exit:
 //----------------------------------------------------------------------------
 CAVIPlayer::CAVIPlayer()
 {
+	pFormatCtx = NULL;
+	pCodecCtx = NULL;
+	pCodec = NULL;
+    pFrame = NULL;
+    iVideoStream = -1;
 }
 
 //----------------------------------------------------------------------------
