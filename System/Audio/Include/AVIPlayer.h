@@ -19,6 +19,12 @@
 #include <AudioPlayer.h>
 #include <AudioTypesPriv.h>
 
+extern "C" {
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/avutil.h>
+}
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -46,6 +52,12 @@ class CAVIPlayer : public CAudioPlayer {
 
 private:
     U32				totalBytesRead_;
+    
+	AVFormatContext*	pFormatCtx;			// container context
+	AVCodecContext*		pCodecCtx;			// codec context
+	AVCodec*			pCodec;				// audio codec
+	int16_t*			pFrame;				// audio frame buffer
+    int					iAudioStream;		// index of audio stream
 };
 
 LF_END_BRIO_NAMESPACE()

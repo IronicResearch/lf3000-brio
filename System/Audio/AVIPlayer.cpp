@@ -37,15 +37,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 static U32 numAviPlayers = 0;
 static U32 maxNumAviPlayers = kAudioMaxRawStreams;
 
-namespace
-{
-	AVFormatContext*	pFormatCtx = NULL;
-	AVCodecContext*		pCodecCtx = NULL;
-	AVCodec*			pCodec = NULL;
-	int16_t*			pFrame = NULL;
-    int					iAudioStream = -1;
-}
-
 //==============================================================================
 // Local Functions
 //==============================================================================
@@ -134,6 +125,13 @@ loop_exit:
 CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	CAudioPlayer( pInfo, id  )
 {
+	// Init player-specific vars
+	pFormatCtx = NULL;
+	pCodecCtx = NULL;
+	pCodec = NULL;
+	pFrame = NULL;
+    iAudioStream = -1;
+	
     // Register all formats and codecs
     av_register_all();
 
@@ -204,6 +202,13 @@ CAVIPlayer::~CAVIPlayer()
     // Close the audio file
     av_close_input_file(pFormatCtx);
     pFormatCtx = NULL;
+    
+    // Cleanup base vars (no base destructor)
+	if (pReadBuf_)
+		delete[] pReadBuf_;
+
+	if (pDebugMPI_)
+		delete (pDebugMPI_);
 }
 
 // =============================================================================
