@@ -25157,3 +25157,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/28/10 5:53 PM
 6,360 ms. (Cumulative: 8,709,316 ms)
 
 ----------------
+Revision 7,232 from svn://localhost/TRUNK/:
+
+Add seek support to AVI player.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/28/10 6:30 PM
+1 changed, 0 added, 0 deleted.
+5,953 ms. (Cumulative: 8,715,347 ms)
+
+----------------

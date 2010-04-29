@@ -313,8 +313,11 @@ U32 CAVIPlayer::Render( S16 *pOut, U32 numStereoFrames)
 // =============================================================================
 void CAVIPlayer::RewindFile()
 {
-	// TODO
+	int flags = AVSEEK_FLAG_BYTE | AVSEEK_FLAG_BACKWARD;
+	av_seek_frame(pFormatCtx, iAudioStream, 0, flags);
+
 	bIsDone_ = false;
+	totalBytesRead_ = 0;
 }
 
 // =============================================================================
@@ -322,9 +325,8 @@ void CAVIPlayer::RewindFile()
 // =============================================================================
 U32 CAVIPlayer::GetAudioTime_mSec( void ) 
 {
-	U32 milliSeconds = 0;
-
-	// TODO
+	U32 totalFramesRead = totalBytesRead_ / (sizeof(S16) * channels_);
+	U32 milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
 	return (milliSeconds);
 }
 
@@ -333,7 +335,11 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 // =============================================================================
 Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 {
-	// TODO
+	int flags = AVSEEK_FLAG_ANY;
+	if (timeMilliSeconds < GetAudioTime_mSec())
+		flags |= AVSEEK_FLAG_BACKWARD;
+	int64_t timestamp = timeMilliSeconds;
+	av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
 	return true;
 }
 
