@@ -25166,3 +25166,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/28/10 6:30 PM
 5,953 ms. (Cumulative: 8,715,347 ms)
 
 ----------------
+Revision 7,233 from svn://localhost/TRUNK/:
+Revision 7,234 from svn://localhost/TRUNK/:
+
+Working audio playback for general AVI cases including CameraMPI generated files, not just audio-only AVIs. Account for audio frame buffer holding more decoded bytes than requested per render callback.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/10 12:28 PM
+1 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 8,721,363 ms)
+
+----------------

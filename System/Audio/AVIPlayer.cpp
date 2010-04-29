@@ -92,10 +92,9 @@ int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
             
             if (frameSize <= 0)
                 continue; // ffplay.c
-            
-            // Enough bytes decoded?
-            if (bytesTotal <= bytesExpected)
-            	return bytesTotal;
+
+            // Audio frame buffer may contain more bytes than requested
+          	return bytesTotal;
         }
 
         // Read the next packet, skipping all packets that aren't for this stream
@@ -236,11 +235,32 @@ Boolean CAVIPlayer::IsAVIPlayer(CAudioPlayer *pPlayer)
 // ==============================================================================
 U32 CAVIPlayer::ReadBytesFromFile( void *d, U32 bytesToRead)
 {
-	U32 bytesRead = 0;
+	static U32 bytesRead = 0;
+	static U32 bytesCached = 0;
+	static U8* pCachedData = NULL;
+	
+	// Account for audio frame buffer caching more data than requested
+	if (bytesCached > 0) {
+		bytesRead = std::min(bytesToRead, bytesCached);
+		memcpy(d, pCachedData, bytesRead);
+		bytesCached -= bytesRead;
+		pCachedData += bytesRead;
+		if (bytesCached < 0)
+			bytesCached = 0;
+		return bytesRead;
+	}
 
 	// Decode audio frames from file packet(s)
-	bytesRead = GetNextFrame(pFormatCtx, pCodecCtx, iAudioStream, pFrame, AVCODEC_MAX_AUDIO_FRAME_SIZE, bytesToRead);
+	bytesCached = GetNextFrame(pFormatCtx, pCodecCtx, iAudioStream, pFrame, AVCODEC_MAX_AUDIO_FRAME_SIZE, bytesToRead);
+	pCachedData = (U8*)pFrame;
+	bytesRead = std::min(bytesToRead, bytesCached);
 	memcpy(d, pFrame, bytesRead);
+	if (bytesCached > bytesRead) {
+		bytesCached -= bytesRead;
+		pCachedData += bytesRead;
+	}
+	else
+		bytesCached = 0;
 	
 	return bytesRead;
 }
