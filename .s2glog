@@ -25215,3 +25215,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/10 2:59 PM
 5,984 ms. (Cumulative: 8,745,500 ms)
 
 ----------------
+Revision 7,241 from svn://localhost/TRUNK/:
+Revision 7,242 from svn://localhost/TRUNK/:
+
+Adding libjpeg to libs of publish build for embedded.  This is needed for Flash, as it no longer includes libjpeg, it needs to link to Brio's for an embedded build.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/29/10 3:48 PM
+1 changed, 0 added, 0 deleted.
+5,906 ms. (Cumulative: 8,751,485 ms)
+
+----------------

@@ -83,6 +83,8 @@ if vars['is_export'] or vars['is_publish']:
 		# Need FreeType headers (above) and libs for FlashLite fontconfig compilation
 		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so'))
 		env.Install(vars['mpi_deploy_dir'], libs)
+		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
+		env.Install(vars['mpi_deploy_dir'], libs)
 
 #-----------------------------------------------------------------------------
 # Export shared libs to embedded target
