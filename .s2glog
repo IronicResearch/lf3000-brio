@@ -25206,3 +25206,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/29/10 2:47 PM
 5,953 ms. (Cumulative: 8,739,437 ms)
 
 ----------------
+Revision 7,240 from svn://localhost/TRUNK/:
+
+Make video context vars player-specific instead of global.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/29/10 2:59 PM
+2 changed, 0 added, 0 deleted.
+5,984 ms. (Cumulative: 8,745,500 ms)
+
+----------------
