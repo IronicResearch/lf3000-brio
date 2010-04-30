@@ -25225,3 +25225,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/29/10 3:48 PM
 5,906 ms. (Cumulative: 8,751,485 ms)
 
 ----------------
+Revision 7,243 from svn://localhost/TRUNK/:
+Revision 7,244 from svn://localhost/TRUNK/:
+Revision 7,245 from svn://localhost/TRUNK/:
+Revision 7,246 from svn://localhost/TRUNK/:
+
+Do not build or run unit tests during publish as that causes them to bleed over into erootfs. They'll be added later as a seperate step in the overall build cycle.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/29/10 5:17 PM
+1 changed, 0 added, 0 deleted.
+5,923 ms. (Cumulative: 8,757,501 ms)
+
+----------------
