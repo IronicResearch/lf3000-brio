@@ -203,10 +203,6 @@ for target in targets:
 	#-------------------------------------------------------------------------
 	if targets.index(target) > 0:
 		is_export = 0
-	
-	#For publish builds, we always want to run embedded unit tests
-	if is_publish and not is_emulation:
-		is_runtests = True;
 		
 	#-------------------------------------------------------------------------
 	# If we are going to be running embedded unit test on this pass,
