@@ -25253,3 +25253,16 @@ By dlazzari (dlazzari@leapfrog.com) on 5/3/10 2:17 PM
 6,423 ms. (Cumulative: 8,764,033 ms)
 
 ----------------
+Revision 7,253 from svn://localhost/TRUNK/:
+Revision 7,254 from svn://localhost/TRUNK/:
+Revision 7,255 from svn://localhost/TRUNK/:
+Revision 7,256 from svn://localhost/TRUNK/:
+Revision 7,257 from svn://localhost/TRUNK/:
+
+Rebuilt libavformat/libavcodec libs with customized config for AVI, MJPEG, PCM from LinuxDist svn -r7253
+
+By Dave Milici (dmilici@leapfrog.com) on 5/3/10 3:28 PM
+7 changed, 0 added, 0 deleted.
+6,803 ms. (Cumulative: 8,770,929 ms)
+
+----------------
