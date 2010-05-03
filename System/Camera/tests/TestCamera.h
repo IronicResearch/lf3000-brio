@@ -147,16 +147,18 @@ public:
 		const char* retrieved_still_path = pCameraMPI_->GetCameraStillPath()->c_str();
 		TSM_ASSERT_EQUALS(retrieved_still_path, strcmp(retrieved_still_path, capture_path), 0);
 		
-		//TODO: Audio is scheduled for later, re-enable tests when that happens
-		//~ err = pCameraMPI_->SetCameraAudioPath(capture_path);
-		//~ TS_ASSERT_EQUALS(err, kNoErr);
-		//~ TSM_ASSERT_EQUALS(pCameraMPI_->GetCameraAudioPath()->c_str(), strcmp(pCameraMPI_->GetCameraAudioPath()->c_str(), capture_path), 0);
-		
+		//Audio Path
+		err = pCameraMPI_->SetCameraAudioPath(capture_path);
+		TS_ASSERT_EQUALS(err, kNoErr);
+		const char* retrieved_audio_path = pCameraMPI_->GetCameraAudioPath()->c_str();
+		TSM_ASSERT_EQUALS(retrieved_audio_path, strcmp(retrieved_audio_path, capture_path), 0);		
 	}
 
 	//------------------------------------------------------------------------
 	void testCaptureWAV()
 	{
+		PRINT_TEST_NAME();
+		
 		tAudCapHndl					capture;
 		Boolean						bRet;
 		tErrType					err;
@@ -183,6 +185,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCaptureWAVEvent()
 	{
+		PRINT_TEST_NAME();
+		
 		tAudCapHndl					capture;
 		Boolean						bRet;
 		tErrType					err;
@@ -223,6 +227,8 @@ public:
 	//------------------------------------------------------------------------
 	void testCaptureWAVPause()
 	{
+		PRINT_TEST_NAME();
+		
 		tAudCapHndl					capture;
 		Boolean						bRet;
 		tErrType					err;
@@ -377,6 +383,40 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testCaptureNoPreview()
+	{
+		PRINT_TEST_NAME();
+		
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		pKernelMPI_ = new CKernelMPI;
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraVideoPath(capture_path);
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			capture = pCameraMPI_->StartVideoCapture(NULL, NULL, "testNoPreview.avi");
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+			
+			//Check to make sure new video file exists
+			struct stat file_status;
+			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/testNoPreview.avi", &file_status) );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		delete pKernelMPI_;
+
+	}
+	//------------------------------------------------------------------------
 	void testCaptureEvent()
 	{
 		PRINT_TEST_NAME();
@@ -523,6 +563,8 @@ public:
 	//------------------------------------------------------------------------
 	void testVisualizeControlSettings()
 	{
+		PRINT_TEST_NAME();
+		
 		//This is a test meant to be seen during execution
 		//It will change different controls and give time for the tester to make a visual confirmation
 		//It will also take snapshots at different control settings for later confirmation
@@ -697,7 +739,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			pixels = static_cast<U8*>(pKernelMPI_->Malloc(ROWS*COLS*3));
+			pixels = (U8*)(pKernelMPI_->Malloc(ROWS*COLS*3));
 
 			capture = pCameraMPI_->StartVideoCapture(&surf);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );

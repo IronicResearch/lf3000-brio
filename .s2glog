@@ -25237,3 +25237,19 @@ By dlazzari (dlazzari@leapfrog.com) on 4/29/10 5:17 PM
 5,923 ms. (Cumulative: 8,757,501 ms)
 
 ----------------
+Revision 7,247 from svn://localhost/TRUNK/:
+Revision 7,248 from svn://localhost/TRUNK/:
+Revision 7,249 from svn://localhost/TRUNK/:
+Revision 7,250 from svn://localhost/TRUNK/:
+Revision 7,251 from svn://localhost/TRUNK/:
+Revision 7,252 from svn://localhost/TRUNK/:
+
+- Re-enabled audio path test
+- Added test for capturing video without a preview
+- Cleaned up test code
+
+By dlazzari (dlazzari@leapfrog.com) on 5/3/10 2:17 PM
+1 changed, 0 added, 0 deleted.
+6,423 ms. (Cumulative: 8,764,033 ms)
+
+----------------
