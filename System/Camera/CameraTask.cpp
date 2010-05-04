@@ -139,16 +139,16 @@ void* CameraTaskMain(void* arg)
 		{
 			image.buffer[i] = &image.data[i* image.width * image.depth];
 		}
-	}
 
-	// Support double buffering by replicating YUV planar video contexts
-	if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096)
-	{
-		aSurf[0] = aSurf[1] = *pSurf;
-		aSurf[1].buffer += 1024;
-		aHndl[0] = display.CreateHandle(aSurf[0].height, aSurf[0].width, aSurf[0].format, aSurf[0].buffer);
-		aHndl[1] = display.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
-		bDoubleBuffered = true;
+		// Support double buffering by replicating YUV planar video contexts
+		if (pSurf->format == kPixelFormatYUV420 && pSurf->pitch == 4096)
+		{
+			aSurf[0] = aSurf[1] = *pSurf;
+			aSurf[1].buffer += 1024;
+			aHndl[0] = display.CreateHandle(aSurf[0].height, aSurf[0].width, aSurf[0].format, aSurf[0].buffer);
+			aHndl[1] = display.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
+			bDoubleBuffered = true;
+		}
 	}
 
 	bRunning = pCtx->bStreaming = true;
