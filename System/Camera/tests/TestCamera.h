@@ -7,6 +7,7 @@
 #include <DisplayMPI.h>
 #include <KernelMPI.h>
 #include <EventMPI.h>
+#include <VideoMPI.h>
 #include <EventListener.h>
 #include <AudioTypes.h>
 #include <UnitTestUtils.h>
@@ -54,8 +55,9 @@ class TestCamera : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CCameraMPI*		pCameraMPI_;
-	CDisplayMPI*	pDisplayMPI_;
+	CDisplayMPI*		pDisplayMPI_;
 	CKernelMPI*		pKernelMPI_;
+	CVideoMPI*		pVideoMPI_;
 	tEventType		reason;
 
 	//============================================================================
@@ -288,6 +290,7 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
+		pVideoMPI_ = new CVideoMPI;
 		
 		//Sleep for 5 seconds to allow for hotplug testing if the tester desires
 		printf("Sleeping for 5 seconds to give a chance to connect/disconnect camera\n");
@@ -317,15 +320,27 @@ public:
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 			
-			//Check to make sure new video file exists
-			struct stat file_status;
-			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/testYUV.avi", &file_status) );
+			//Try to play back video file using VideoMPI
+			//NOTE: This sleep is neccessary between ending video capture and
+			//starting playback, but it's not documented
+			pKernelMPI_->TaskSleep(500);
+			
+			pVideoMPI_->SetVideoResourcePath(capture_path);
+			tVideoHndl playback = pVideoMPI_->StartVideo("testYUV.avi", "testYUV.avi", &surf);
+			TS_ASSERT( playback != kInvalidVideoHndl);
+			
+			//Wait for video to play for a few seconds
+			pKernelMPI_->TaskSleep(3000);
+			
+			//Stop video playback
+			TS_ASSERT(pVideoMPI_->StopVideo(playback) == kNoErr);
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pVideoMPI_;
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
 	}
@@ -345,6 +360,7 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
+		pVideoMPI_ = new CVideoMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
@@ -369,15 +385,28 @@ public:
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 			
-			//Check to make sure new video file exists
-			struct stat file_status;
-			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/testRGB.avi", &file_status) );
+			//Try to play back video file using VideoMPI
+			//NOTE: This sleep is neccessary between ending video capture and
+			//starting playback, but it's not documented
+			pKernelMPI_->TaskSleep(100);
+			
+			pVideoMPI_->SetVideoResourcePath(capture_path);
+			tVideoHndl playback = pVideoMPI_->StartVideo("testRGB.avi", "testRGB.avi", &surf);
+			TS_ASSERT( playback != kInvalidVideoHndl);
+			
+			//Wait for video to play for a few seconds
+			pKernelMPI_->TaskSleep(3000);
+			
+			//Stop video playback
+			TS_ASSERT(pVideoMPI_->StopVideo(playback) == kNoErr);
+			
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pVideoMPI_;
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
 	}

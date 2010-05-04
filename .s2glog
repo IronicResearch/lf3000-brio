@@ -25303,3 +25303,20 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/4/10 4:01 PM
 6,766 ms. (Cumulative: 8,790,675 ms)
 
 ----------------
+Revision 7,273 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,172 ms. (Cumulative: 8,796,925 ms)
+
+----------------
+Revision 7,274 from svn://localhost/TRUNK/:
+Revision 7,275 from svn://localhost/TRUNK/:
+Revision 7,276 from svn://localhost/TRUNK/:
+
+Add playback of recently created video to video recording tests.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/4/10 4:42 PM
+2 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 8,802,895 ms)
+
+----------------
