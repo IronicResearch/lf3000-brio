@@ -25320,3 +25320,15 @@ By dlazzari (dlazzari@leapfrog.com) on 5/4/10 4:42 PM
 5,954 ms. (Cumulative: 8,802,895 ms)
 
 ----------------
+Revision 7,277 from svn://localhost/TRUNK/:
+
+These /4s are wrong (at least for our application).  Captuing a AVI
+with 16-bit mono audio yielded incorrect values in the strh as well
+as WAVEFORMATEX.  Older versions of avilib (from Rainer Johanni,
+not modified by Thomas Österreicher) don't have this division.
+
+By jeno (jeno@leapfrog.com) on 5/4/10 5:28 PM
+1 changed, 0 added, 0 deleted.
+5,939 ms. (Cumulative: 8,808,912 ms)
+
+----------------

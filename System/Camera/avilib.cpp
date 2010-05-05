@@ -131,7 +131,7 @@ static int avi_sampsize(avi_t *AVI, int j)
    int s;
    s = ((AVI->track[j].a_bits+7)/8)*AVI->track[j].a_chans;
    //   if(s==0) s=1; /* avoid possible zero divisions */
-   if(s<4) s=4; /* avoid possible zero divisions */ 
+//   if(s<4) s=4; /* avoid possible zero divisions */ 
    return s;
 }
 
@@ -499,7 +499,7 @@ int avi_update_header(avi_t *AVI)
        OUTLONG(0);             /* InitialFrames */
        
        // ThOe /4
-       OUTLONG(sampsize/4);      /* Scale */
+       OUTLONG(sampsize);      /* Scale */
        OUTLONG(1000*AVI->track[j].mp3rate/8);
        OUTLONG(0);             /* Start */
        OUTLONG(4*AVI->track[j].audio_bytes/sampsize);   /* Length */
@@ -507,7 +507,7 @@ int avi_update_header(avi_t *AVI)
        OUTLONG(-1);            /* Quality */
        
        // ThOe /4
-       OUTLONG(sampsize/4);    /* SampleSize */
+       OUTLONG(sampsize);    /* SampleSize */
        
        OUTLONG(0);             /* Frame */
        OUTLONG(0);             /* Frame */
@@ -525,7 +525,7 @@ int avi_update_header(avi_t *AVI)
        OUTLONG(1000*AVI->track[j].mp3rate/8);
        //ThOe (/4)
        
-       OUTSHRT(sampsize/4);           /* BlockAlign */
+       OUTSHRT(sampsize);           /* BlockAlign */
        
        
        OUTSHRT(AVI->track[j].a_bits);          /* BitsPerSample */
@@ -773,7 +773,7 @@ static int avi_close_output_file(avi_t *AVI)
 	 OUTLONG(0);             /* InitialFrames */
 	   
 	 // ThOe /4
-	 OUTLONG(sampsize/4);      /* Scale */
+	 OUTLONG(sampsize);      /* Scale */
 	 OUTLONG(1000*AVI->track[j].mp3rate/8);
 	 OUTLONG(0);             /* Start */
 	 OUTLONG(4*AVI->track[j].audio_bytes/sampsize);   /* Length */
@@ -781,7 +781,7 @@ static int avi_close_output_file(avi_t *AVI)
 	 OUTLONG(-1);            /* Quality */
 	   
 	 // ThOe /4
-	 OUTLONG(sampsize/4);    /* SampleSize */
+	 OUTLONG(sampsize);    /* SampleSize */
 	   
 	 OUTLONG(0);             /* Frame */
 	 OUTLONG(0);             /* Frame */
@@ -799,7 +799,7 @@ static int avi_close_output_file(avi_t *AVI)
 	 OUTLONG(1000*AVI->track[j].mp3rate/8);
 	 //ThOe (/4)
 	 
-	 OUTSHRT(sampsize/4);           /* BlockAlign */
+	 OUTSHRT(sampsize);           /* BlockAlign */
 	 
 	 
 	 OUTSHRT(AVI->track[j].a_bits);          /* BitsPerSample */
