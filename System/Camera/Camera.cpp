@@ -934,6 +934,7 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 {
 	v4l2_control	ctrl;
 	Boolean			bRet = true;
+	tCameraControls::iterator	it;
 
 	CAMERA_LOCK;
 
@@ -980,6 +981,16 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	if(0 != ioctl(camCtx_.fd, VIDIOC_S_CTRL, &ctrl))
 	{
 		bRet = false;
+	}
+
+	/* save updated value */
+	for(it = camCtx_.controls->begin(); it < camCtx_.controls->end(); it++)
+	{
+		if( control->type == (*it)->type )
+		{
+			(*it)->current = value;
+			break;
+		}
 	}
 
 	CAMERA_UNLOCK;
