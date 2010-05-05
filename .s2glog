@@ -25342,3 +25342,16 @@ By jeno (jeno@leapfrog.com) on 5/5/10 9:38 AM
 5,938 ms. (Cumulative: 8,814,928 ms)
 
 ----------------
+Revision 7,280 from svn://localhost/TRUNK/:
+Revision 7,281 from svn://localhost/TRUNK/:
+Revision 7,282 from svn://localhost/TRUNK/:
+Revision 7,283 from svn://localhost/TRUNK/:
+Revision 7,284 from svn://localhost/TRUNK/:
+
+Pseudo-install jpeg shared libraries (need to be rebuilt on build system due to glibc conflict)
+
+By jeno (jeno@leapfrog.com) on 5/5/10 12:02 PM
+1 changed, 0 added, 0 deleted.
+5,969 ms. (Cumulative: 8,821,007 ms)
+
+----------------
