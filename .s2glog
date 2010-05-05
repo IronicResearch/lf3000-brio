@@ -25332,3 +25332,13 @@ By jeno (jeno@leapfrog.com) on 5/4/10 5:28 PM
 5,939 ms. (Cumulative: 8,808,912 ms)
 
 ----------------
+Revision 7,278 from svn://localhost/TRUNK/:
+Revision 7,279 from svn://localhost/TRUNK/:
+
+Camera: TTPro 2498.  Persist updated control setting.
+
+By jeno (jeno@leapfrog.com) on 5/5/10 9:38 AM
+1 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 8,814,928 ms)
+
+----------------
