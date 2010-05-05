@@ -33,7 +33,13 @@ fi
 # build and copy shared libs to rootfs
 pushd $LIBJPEG_LIB_DIR
 ./configure --host=arm-linux --build=x86-linux --prefix=$ROOTFS_PATH/LF/Base/Brio/lib --enable-shared=yes
+make clean
 make
+cp -a .libs/*.so* ../../Libs/arm
+./configure --prefix=$ROOTFS_PATH/LF/Base/Brio/lib --enable-shared=yes
+make clean
+make
+cp -a .libs/*.so* ../../Libs/x86
 popd
 
 popd
