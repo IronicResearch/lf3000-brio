@@ -25365,3 +25365,19 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/5/10 1:03 PM
 6,188 ms. (Cumulative: 8,827,273 ms)
 
 ----------------
+Revision 7,286 from svn://localhost/TRUNK/:
+Revision 7,287 from svn://localhost/TRUNK/:
+Revision 7,288 from svn://localhost/TRUNK/:
+Revision 7,289 from svn://localhost/TRUNK/:
+Revision 7,290 from svn://localhost/TRUNK/:
+Revision 7,291 from svn://localhost/TRUNK/:
+Revision 7,292 from svn://localhost/TRUNK/:
+Revision 7,293 from svn://localhost/TRUNK/:
+
+Camera: bug - running viewfinder after recording a video causes video to be overwritten with viewfinder stream.
+
+By jeno (jeno@leapfrog.com) on 5/6/10 1:32 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 8,833,352 ms)
+
+----------------

@@ -1440,10 +1440,6 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 			return hndl;
 		}
 
-		DATA_LOCK;
-		camCtx_.path	= fpath;
-		DATA_UNLOCK;
-
 		length /= VID_BITRATE;	/* How many seconds can we afford? */
 
 		camCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
@@ -1453,7 +1449,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		camCtx_.maxLength = maxLength;
 	}
 
-
+	camCtx_.path	= fpath;
 
 	camCtx_.reqLength = maxLength;
 	camCtx_.pListener = pListener;
