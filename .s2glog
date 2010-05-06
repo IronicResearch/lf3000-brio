@@ -25393,3 +25393,13 @@ By jeno (jeno@leapfrog.com) on 5/6/10 3:57 PM
 5,939 ms. (Cumulative: 8,839,447 ms)
 
 ----------------
+Revision 7,298 from svn://localhost/TRUNK/:
+Revision 7,299 from svn://localhost/TRUNK/:
+
+Rebuilt libavcodec binaries with disabled optimization settings from LinuxDist svn -r7298.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/6/10 4:24 PM
+4 changed, 0 added, 0 deleted.
+6,257 ms. (Cumulative: 8,845,782 ms)
+
+----------------
