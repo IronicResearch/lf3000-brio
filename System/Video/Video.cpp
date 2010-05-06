@@ -218,7 +218,16 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 
 	// We only support one video context active at a time
 	if (ghVideoHndl != kInvalidVideoHndl)
-		goto ExitPt;
+	{
+		pVidCtx = reinterpret_cast<tVideoContext*>(ghVideoHndl);
+
+		if(pVidCtx->bPlaying)
+		{
+			goto ExitPt;
+		}
+		// Else it's a dead thread, StartVideoInt will reset the handle
+	}
+
 
 	// Start Theora codec for selected video file
 	hVideo = StartVideoInt(path);
