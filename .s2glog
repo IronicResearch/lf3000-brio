@@ -25381,3 +25381,15 @@ By jeno (jeno@leapfrog.com) on 5/6/10 1:32 PM
 5,954 ms. (Cumulative: 8,833,352 ms)
 
 ----------------
+Revision 7,294 from svn://localhost/TRUNK/:
+Revision 7,295 from svn://localhost/TRUNK/:
+Revision 7,296 from svn://localhost/TRUNK/:
+Revision 7,297 from svn://localhost/TRUNK/:
+
+Video module: allow StartVideo() to succeed even if the caller didn't clean up their previously expired player.  Does not affect the case where the video pthread is cancelled asynchronously.
+
+By jeno (jeno@leapfrog.com) on 5/6/10 3:57 PM
+1 changed, 0 added, 0 deleted.
+5,939 ms. (Cumulative: 8,839,447 ms)
+
+----------------
