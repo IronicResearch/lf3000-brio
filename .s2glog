@@ -25423,3 +25423,17 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/7/10 11:28 AM
 5,877 ms. (Cumulative: 8,857,692 ms)
 
 ----------------
+Revision 7,303 from svn://localhost/TRUNK/:
+Revision 7,304 from svn://localhost/TRUNK/:
+Revision 7,305 from svn://localhost/TRUNK/:
+Revision 7,306 from svn://localhost/TRUNK/:
+Revision 7,307 from svn://localhost/TRUNK/:
+Revision 7,308 from svn://localhost/TRUNK/:
+
+microphone: Attempt to handle ALSA XRUN.  Still potential sync issues.
+
+By jeno (jeno@leapfrog.com) on 5/7/10 2:43 PM
+1 changed, 0 added, 0 deleted.
+6,003 ms. (Cumulative: 8,863,805 ms)
+
+----------------
