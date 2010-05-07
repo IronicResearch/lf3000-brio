@@ -384,7 +384,30 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 	ssize_t res;
 
 	state = snd_pcm_state(handle);
-	/* TODO: handle XRUN */
+	if(state != SND_PCM_STATE_RUNNING)
+	{
+		switch(state) {
+		case SND_PCM_STATE_SUSPENDED:
+			while ((err = snd_pcm_resume(handle)) == -EAGAIN)
+			{
+				sleep(1);
+			}
+			if(err >= 0)
+				break;
+		case SND_PCM_STATE_XRUN:
+			err = snd_pcm_prepare(handle);
+			break;
+		}
+
+		if(err < 0)
+		{
+			/* TODO: could not recover - abort recording?*/
+		}
+		else
+		{
+			snd_pcm_start(handle);
+		}
+	}
 
 	avail = snd_pcm_avail_update(handle);
 
