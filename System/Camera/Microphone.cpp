@@ -224,7 +224,8 @@ tErrType	CCameraModule::DeinitMicInt()
 	micCtx_.fd[0]		= -1;
 	micCtx_.fd[1]		= -1;
 
-	snd_pcm_close(micCtx_.pcm_handle);
+	if (micCtx_.pcm_handle)
+		snd_pcm_close(micCtx_.pcm_handle);
 	micCtx_.pcm_handle = NULL;
 
     return kErr;

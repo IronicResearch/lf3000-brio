@@ -25403,3 +25403,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/6/10 4:24 PM
 6,257 ms. (Cumulative: 8,845,782 ms)
 
 ----------------
+Revision 7,300 from svn://localhost/TRUNK/:
+
+Conditionally close mic handle, otherwise cleanup call asserts when non-root user.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/6/10 5:20 PM
+1 changed, 0 added, 0 deleted.
+5,861 ms. (Cumulative: 8,851,721 ms)
+
+----------------
