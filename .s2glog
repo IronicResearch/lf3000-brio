@@ -25437,3 +25437,13 @@ By jeno (jeno@leapfrog.com) on 5/7/10 2:43 PM
 6,003 ms. (Cumulative: 8,863,805 ms)
 
 ----------------
+Revision 7,309 from svn://localhost/TRUNK/:
+Revision 7,310 from svn://localhost/TRUNK/:
+
+Modify VideoMPI playback to use system time with audio tracks instead of audio timestamps. Allows video playback to be more continuous on AVIs with mismatched or truncated audio tracks (TTP 2507).
+
+By Dave Milici (dmilici@leapfrog.com) on 5/7/10 5:36 PM
+1 changed, 0 added, 0 deleted.
+5,912 ms. (Cumulative: 8,869,795 ms)
+
+----------------
