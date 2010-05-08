@@ -145,7 +145,7 @@ void* VideoTaskMain( void* arg )
 		// Start audio playback and sync each video frame to audio time stamp
 		if (pctx->pPathAudio != NULL)
 			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pListener, payload, flags);
-		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync
+//		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync
 		vtm.time = basetime = marktime = nexttime = gAudioTime = 0;
 		if (!bAudio)
 			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
