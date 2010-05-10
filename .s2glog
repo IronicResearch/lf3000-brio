@@ -25447,3 +25447,18 @@ By Dave Milici (dmilici@leapfrog.com) on 5/7/10 5:36 PM
 5,912 ms. (Cumulative: 8,869,795 ms)
 
 ----------------
+Revision 7,311 from svn://localhost/TRUNK/:
+Revision 7,312 from svn://localhost/TRUNK/:
+Revision 7,313 from svn://localhost/TRUNK/:
+Revision 7,314 from svn://localhost/TRUNK/:
+Revision 7,315 from svn://localhost/TRUNK/:
+Revision 7,316 from svn://localhost/TRUNK/:
+Revision 7,317 from svn://localhost/TRUNK/:
+
+Replace previous avilib support with AVI wrapper-compatible functions for libavformat/libavcodec support. Includes support for rewriting AVI header with actual FPS rate like previous implementation.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/10/10 12:35 PM
+3 changed, 2 added, 2 deleted.
+6,437 ms. (Cumulative: 8,876,357 ms)
+
+----------------

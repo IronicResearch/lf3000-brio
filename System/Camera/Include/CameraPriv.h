@@ -41,7 +41,7 @@
 #include <jpeglib.h>
 
 #include <alsa/asoundlib.h>
-#include <avilib.h>
+#include <AVIWrapper.h>
 #include <sndfile.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
