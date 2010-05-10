@@ -20,7 +20,7 @@
 #include <EventMPI.h>
 #include <CameraPriv.h>
 
-#include <avilib.h>
+#include <AVIWrapper.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
