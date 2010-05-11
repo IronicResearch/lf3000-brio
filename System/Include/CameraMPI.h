@@ -268,8 +268,13 @@ public:
 	/// \param	maxLength	Maximum length in seconds to record.  A value of 0
 	/// means unlimited recording.
 	///
+	/// \param	paused		Start audio capture in paused state. If set true,
+	/// the application *must* call \ref ResumeAudioCapture() to begin recording 
+	/// audio when ready. Otherwise recording begins immediately.
+	///
 	/// \return kInvalidAudCapHndl on failure.
-	tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength = 0);
+	tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength = 0, 
+			const Boolean paused = false);
 
 	/// PauseAudioCapture() pause an active capture.
 	/// Pausing a recording is different from stopping a recording

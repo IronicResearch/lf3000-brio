@@ -25481,3 +25481,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/11/10 11:33 AM
 6,470 ms. (Cumulative: 8,882,983 ms)
 
 ----------------
+Revision 7,329 from svn://localhost/TRUNK/:
+
+CameraMPI.StartAudioCapture() addition of optional parameter for starting in paused state. This option allows the app to delay audio recording until ready, when ResumeAudioCapture() must be called as noted in Doxygen comments. Defaults to false for previous capture behavior to record immediately.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/11/10 1:05 PM
+6 changed, 0 added, 0 deleted.
+6,829 ms. (Cumulative: 8,889,905 ms)
+
+----------------

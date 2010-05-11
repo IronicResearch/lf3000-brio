@@ -70,7 +70,8 @@ void* MicTaskMain(void* arg)
 
 	sndfile = sf_open(const_cast<char*>(pCtx->path.c_str()), SFM_WRITE, &sf_info);
 
-	pCtx->bPaused = false;
+	// Paused state set by StartAudioCapture() API now
+	// pCtx->bPaused = false;
 
 	bRunning = pCtx->bStreaming = true;
 	cam->dbg_.DebugOut( kDbgLvlImportant, "MicrophoneTask Started...\n" );
@@ -81,7 +82,8 @@ void* MicTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	cam->kernel_.StartTimer(timer, props);
 
-	cam->StartAudio();
+	if (!pCtx->bPaused)
+		cam->StartAudio();
 
 	/*
 	 * This is intentionally an assignment, not a comparison.

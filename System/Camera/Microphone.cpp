@@ -424,7 +424,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 }
 
 //----------------------------------------------------------------------------
-tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength)
+tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength, const Boolean paused)
 {
 	tAudCapHndl hndl = kInvalidAudCapHndl;
 
@@ -435,6 +435,7 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 
 	micCtx_.reqLength = maxLength;
 	micCtx_.pListener = pListener;
+	micCtx_.bPaused   = paused;
 
 	if(path.at(0) == '/')
 	{
