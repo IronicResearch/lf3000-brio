@@ -158,9 +158,12 @@ public:
 	/// \param	maxLength	Maximum length in seconds to record.  A value of 0 means
 	/// unlimited recording.
 	///
+	/// \param	audio	Option to capture video with audio (true) or video only (false).
+	/// Default = true.
+	///
 	/// \return kInvalidVidCapHndl on failure.
 	tVidCapHndl	StartVideoCapture(tVideoSurf* pSurf, IEventListener * pListener = NULL,
-			const CPath& path = "", const U32 maxLength = 0);
+			const CPath& path = "", const U32 maxLength = 0, const Boolean audio = true);
 
 	/// SnapFrame() takes a snapshot from the stream being captured in a separate
 	/// thread via StartVideoCapture().

@@ -25462,3 +25462,22 @@ By Dave Milici (dmilici@leapfrog.com) on 5/10/10 12:35 PM
 6,437 ms. (Cumulative: 8,876,357 ms)
 
 ----------------
+Revision 7,318 from svn://localhost/TRUNK/:
+Revision 7,319 from svn://localhost/TRUNK/:
+Revision 7,320 from svn://localhost/TRUNK/:
+Revision 7,321 from svn://localhost/TRUNK/:
+Revision 7,322 from svn://localhost/TRUNK/:
+Revision 7,323 from svn://localhost/TRUNK/:
+Revision 7,324 from svn://localhost/TRUNK/:
+Revision 7,325 from svn://localhost/TRUNK/:
+Revision 7,326 from svn://localhost/TRUNK/:
+Revision 7,327 from svn://localhost/TRUNK/:
+Revision 7,328 from svn://localhost/TRUNK/:
+
+CameraMPI.StartVideoCapture() addition of optional parameter for capturing audio with video. Defaults to true for previous capture behavior. Toggling false captures video only. 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/11/10 11:33 AM
+6 changed, 0 added, 0 deleted.
+6,470 ms. (Cumulative: 8,882,983 ms)
+
+----------------

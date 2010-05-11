@@ -176,12 +176,12 @@ Boolean CCameraMPI::SetCameraControl(const tControlInfo* control, const S32 valu
 
 //----------------------------------------------------------------------------
 tVidCapHndl	CCameraMPI::StartVideoCapture(tVideoSurf* pSurf, IEventListener * pListener,
-		const CPath& path, const U32 maxLength)
+		const CPath& path, const U32 maxLength, const Boolean audio)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
 
-	return pModule_->StartVideoCapture(path, pSurf, pListener, maxLength);
+	return pModule_->StartVideoCapture(path, pSurf, pListener, maxLength, audio);
 }
 
 //----------------------------------------------------------------------------

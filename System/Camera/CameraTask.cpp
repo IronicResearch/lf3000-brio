@@ -162,7 +162,7 @@ void* CameraTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	kernel.StartTimer(timer, props);
 
-	if(bFile)
+	if(bFile && pCtx->bAudio)
 	{
 		pCtx->module->StartAudio();
 	}
@@ -177,7 +177,7 @@ void* CameraTaskMain(void* arg)
 	 */
 	while(bRunning = pCtx->bStreaming)
 	{
-		if(bFile && !pCtx->bPaused)
+		if(bFile && pCtx->bAudio && !pCtx->bPaused)
 		{
 			pCtx->module->WriteAudio(avi);
 		}
