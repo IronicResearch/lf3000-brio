@@ -343,7 +343,7 @@ public:
 			//Try to play back video file using VideoMPI
 			//NOTE: This sleep is neccessary between ending video capture and
 			//starting playback, but it's not documented
-			pKernelMPI_->TaskSleep(500);
+			//pKernelMPI_->TaskSleep(500);
 			
 			pVideoMPI_->SetVideoResourcePath(capture_path);
 			tVideoHndl playback = pVideoMPI_->StartVideo("testYUV.avi", &surf);
@@ -353,7 +353,7 @@ public:
 			pKernelMPI_->TaskSleep(3000);
 			
 			//Stop video playback
-			TS_ASSERT(pVideoMPI_->StopVideo(playback) == kNoErr);
+			TS_ASSERT(pVideoMPI_->StopVideo(playback) == true);
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");
@@ -408,7 +408,7 @@ public:
 			//Try to play back video file using VideoMPI
 			//NOTE: This sleep is neccessary between ending video capture and
 			//starting playback, but it's not documented
-			pKernelMPI_->TaskSleep(100);
+			//pKernelMPI_->TaskSleep(100);
 			
 			pVideoMPI_->SetVideoResourcePath(capture_path);
 			tVideoHndl playback = pVideoMPI_->StartVideo("testRGB.avi", "testRGB.avi", &surf);
@@ -418,8 +418,7 @@ public:
 			pKernelMPI_->TaskSleep(3000);
 			
 			//Stop video playback
-			TS_ASSERT(pVideoMPI_->StopVideo(playback) == kNoErr);
-			
+			TS_ASSERT(pVideoMPI_->StopVideo(playback) == true);
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");

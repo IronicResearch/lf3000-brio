@@ -25490,3 +25490,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/11/10 1:05 PM
 6,829 ms. (Cumulative: 8,889,905 ms)
 
 ----------------
+Revision 7,330 from svn://localhost/TRUNK/:
+
+CameraMPI unit test was checking incorrect return code from VideoMPI.StopVideo() call.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/11/10 1:18 PM
+1 changed, 0 added, 0 deleted.
+6,301 ms. (Cumulative: 8,896,331 ms)
+
+----------------
