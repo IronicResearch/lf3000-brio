@@ -241,11 +241,11 @@ Boolean	CCameraMPI::StopVideoCapture(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-tAudCapHndl	CCameraMPI::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength)
+tAudCapHndl	CCameraMPI::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength, const Boolean paused)
 {
 	if (!pModule_)
 		return kInvalidAudCapHndl;
-	return pModule_->StartAudioCapture(path, pListener, maxLength);
+	return pModule_->StartAudioCapture(path, pListener, maxLength, paused);
 }
 
 //----------------------------------------------------------------------------

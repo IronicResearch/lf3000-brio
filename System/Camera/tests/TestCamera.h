@@ -270,6 +270,26 @@ public:
 
 			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
+			
+			capture = pCameraMPI_->StartAudioCapture("testPause2.wav", NULL, 0, true);
+			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
+
+			pKernelMPI_->TaskSleep(2000);
+
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->ResumeAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
+			TS_ASSERT_EQUALS( bRet, false );
+
+			pKernelMPI_->TaskSleep(2000);
+
+			bRet = pCameraMPI_->StopAudioCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+			
 		}
 
 		delete pKernelMPI_;

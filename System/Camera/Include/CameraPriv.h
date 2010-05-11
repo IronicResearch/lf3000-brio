@@ -233,7 +233,7 @@ public:
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 
 	VTABLE_EXPORT tAudCapHndl	StartAudioCapture(const CPath& path, IEventListener * pListener,\
-								                    const U32 maxLength);
+								                    const U32 maxLength, const Boolean paused);
 	VTABLE_EXPORT Boolean		PauseAudioCapture(const tAudCapHndl hndl);
 	VTABLE_EXPORT Boolean		ResumeAudioCapture(const tAudCapHndl hndl);
 	VTABLE_EXPORT Boolean		IsAudioCapturePaused(const tAudCapHndl hndl);
