@@ -1402,7 +1402,7 @@ Boolean	CCameraModule::ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *fra
 
 //----------------------------------------------------------------------------
 tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
-		IEventListener * pListener, const U32 maxLength)
+		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 	CPath fpath = path;
 	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 30, 1};
@@ -1450,6 +1450,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	}
 
 	camCtx_.path	= fpath;
+	camCtx_.bAudio	= bAudio;
 
 	camCtx_.reqLength = maxLength;
 	camCtx_.pListener = pListener;
@@ -1538,7 +1539,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
     }
 
-	if(camCtx_.path.length())
+	if(camCtx_.path.length() && camCtx_.bAudio)
 	{
 		if(!StopAudio())
 		{

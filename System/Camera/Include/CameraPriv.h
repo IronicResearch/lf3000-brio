@@ -162,6 +162,8 @@ struct tCameraContext {
 
 	class CCameraModule			*module;
 	IEventListener				*pListener;
+	
+	Boolean						bAudio;			// capture audio option
 };
 
 struct tCaptureContext {
@@ -221,7 +223,7 @@ public:
 	VTABLE_EXPORT Boolean		GetCameraControls(tCameraControls &controls);
 	VTABLE_EXPORT Boolean		SetCameraControl(const tControlInfo* control, const S32 value);
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
-													IEventListener * pListener, const U32 maxLength);
+													IEventListener * pListener, const U32 maxLength, const Boolean audio);
 	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath& path);
 	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, U8* pixels);
 	VTABLE_EXPORT Boolean		RenderFrame(const CPath &path, tVideoSurf *pSurf);

@@ -312,7 +312,7 @@ public:
 			err = pCameraMPI_->SetCameraVideoPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "testYUV.avi");
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "testYUV.avi", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			pKernelMPI_->TaskSleep(5000);
@@ -326,7 +326,7 @@ public:
 			pKernelMPI_->TaskSleep(500);
 			
 			pVideoMPI_->SetVideoResourcePath(capture_path);
-			tVideoHndl playback = pVideoMPI_->StartVideo("testYUV.avi", "testYUV.avi", &surf);
+			tVideoHndl playback = pVideoMPI_->StartVideo("testYUV.avi", &surf);
 			TS_ASSERT( playback != kInvalidVideoHndl);
 			
 			//Wait for video to play for a few seconds
