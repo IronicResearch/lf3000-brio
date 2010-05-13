@@ -25531,3 +25531,23 @@ By Dave Milici (dmilici@leapfrog.com) on 5/13/10 1:09 PM
 6,423 ms. (Cumulative: 8,909,536 ms)
 
 ----------------
+Revision 7,350 from svn://localhost/TRUNK/:
+Revision 7,351 from svn://localhost/TRUNK/:
+
+microphone: fix input overrun handling
+
+The Alsa documentation says that we should call snd_pcm_recover() when an
+overrun occurs.  Note that a pcm_read would return -22 (-EPIPE) and we will
+tell Alsa that this is the error we got.  Please see:
+
+
+This seems to resolve the audio stutters problem with the microphone caused
+by doing a pcm_resume in System/Camera/Microphone.cpp RecordCallback() when
+the XRUN state is detected.
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 5/13/10 3:27 PM
+1 changed, 0 added, 0 deleted.
+5,969 ms. (Cumulative: 8,915,583 ms)
+
+----------------
