@@ -395,7 +395,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			if(err >= 0)
 				break;
 		case SND_PCM_STATE_XRUN:
-			err = snd_pcm_prepare(handle);
+			snd_pcm_recover(handle, -EPIPE, 0);
 			break;
 		}
 
