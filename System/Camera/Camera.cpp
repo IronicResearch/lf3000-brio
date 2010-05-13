@@ -45,6 +45,9 @@
 /* For libjpeg error handling.  TODO: get rid of this somehow? */
 #include <setjmp.h>
 
+// PNG wrapper function for saving file
+bool PNG_save(const char* file, int width, int height, int pitch, char* data);
+
 #define USE_PROFILE			0
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -1562,6 +1565,19 @@ Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
 
+	if (path.rfind(".png") != std::string::npos) 
+	{
+		// Grab frame to local RGB buffer instead and save as PNG
+		U8* rgbbuf = new U8[640 * 480 * 3];
+
+		ret = GetFrame(hndl, rgbbuf);
+
+		PNG_save(path.c_str(), 640, 480, 640*3, (char*)rgbbuf);
+		
+		delete[] rgbbuf;
+		return ret;
+	}
+	
 	ret = GrabFrame(hndl, &frame);
 	if(!ret)
 	{

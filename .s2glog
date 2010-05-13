@@ -25499,3 +25499,35 @@ By Dave Milici (dmilici@leapfrog.com) on 5/11/10 1:18 PM
 6,301 ms. (Cumulative: 8,896,331 ms)
 
 ----------------
+Revision 7,331 from svn://localhost/TRUNK/:
+Revision 7,332 from svn://localhost/TRUNK/:
+Revision 7,333 from svn://localhost/TRUNK/:
+Revision 7,334 from svn://localhost/TRUNK/:
+Revision 7,335 from svn://localhost/TRUNK/:
+Revision 7,336 from svn://localhost/TRUNK/:
+Revision 7,337 from svn://localhost/TRUNK/:
+Revision 7,338 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,531 ms. (Cumulative: 8,903,019 ms)
+
+----------------
+Revision 7,339 from svn://localhost/TRUNK/:
+Revision 7,340 from svn://localhost/TRUNK/:
+Revision 7,341 from svn://localhost/TRUNK/:
+Revision 7,342 from svn://localhost/TRUNK/:
+Revision 7,343 from svn://localhost/TRUNK/:
+Revision 7,344 from svn://localhost/TRUNK/:
+Revision 7,345 from svn://localhost/TRUNK/:
+Revision 7,346 from svn://localhost/TRUNK/:
+Revision 7,347 from svn://localhost/TRUNK/:
+Revision 7,348 from svn://localhost/TRUNK/:
+Revision 7,349 from svn://localhost/TRUNK/:
+
+CameraMPI addition of PNG file save option for SnapFrame() using RGB decode buffer. Interim stopgap feature until more general image file saving/loading routines added to LightningCore.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/13/10 1:09 PM
+2 changed, 1 added, 0 deleted.
+6,423 ms. (Cumulative: 8,909,536 ms)
+
+----------------
