@@ -15,7 +15,7 @@ modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
 modlibs		= ['AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI', 
 					 'DebugMPI', 'jpeg', 'asound', 'sndfile',
-					 'avformat', 'avcodec', 'avutil']
+					 'avformat', 'avcodec', 'avutil', 'png', 'z']
 mpilibs		= ['ModuleMPI']
 
 #-----------------------------------------------------------------------------
