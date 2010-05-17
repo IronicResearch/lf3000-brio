@@ -59,6 +59,25 @@ avi_t* AVI_open_output_file(char * filename)
 }
 
 //----------------------------------------------------------------------------
+void fixup_header(avi_t *avi)
+{
+	// Fixup AVI header with actual FPS rate manually.
+	// Only AVI header fields at offset 32 (avih[0]) and 132 (strh[28]) seem significant:
+	// http://www.fastgraph.com/help/avi_header_format.html
+	uint32_t rate = avi->pVideoCodecCtx->time_base.den / avi->pVideoCodecCtx->time_base.num;
+	uint32_t time = 1000000 * avi->pVideoCodecCtx->time_base.num / avi->pVideoCodecCtx->time_base.den;
+	FILE* fp = fopen(avi->pFormatCtx->filename, "r+");
+	fseek(fp, 0, SEEK_END);
+	long eof = ftell(fp);
+	fseek(fp, 32, SEEK_SET);					// AVIMainHeader.dwMicroSecPerFrame
+	fwrite(&time, sizeof(uint32_t), 1, fp);
+	fseek(fp, 132, SEEK_SET);					// AVIStreamHeader.dwRate
+	fwrite(&rate, sizeof(uint32_t), 1, fp);
+	fseek(fp, eof, SEEK_SET);
+	fclose(fp);
+}
+
+//----------------------------------------------------------------------------
 void write_header(avi_t *avi, bool rewrite)
 {
 	int64_t	filepos = url_ftell(avi->pFormatCtx->pb);
@@ -83,7 +102,7 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *co
 	// Rewrite AVI header with actual FPS rate if previously set
 	if (AVI->bVideoConfig && AVI->bAudioConfig) {
 		AVI->pVideoCodecCtx->time_base = av_d2q(1.0/fps, 1000);
-		write_header(AVI, true);
+//		write_header(AVI, true);
 		return;
 	}
 	
@@ -205,6 +224,9 @@ int  AVI_close(avi_t *AVI)
 	// Close AVI file
 	av_write_trailer(AVI->pFormatCtx);
 	url_fclose(AVI->pFormatCtx->pb);
+	
+	// Fixup AVI header for FPS rate manually
+	fixup_header(AVI);
 	
 	// Close codecs
 	avcodec_close(AVI->pAudioCodecCtx);

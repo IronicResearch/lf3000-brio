@@ -25573,3 +25573,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/14/10 2:47 PM
 6,063 ms. (Cumulative: 8,921,787 ms)
 
 ----------------
+Revision 7,365 from svn://localhost/TRUNK/:
+Revision 7,366 from svn://localhost/TRUNK/:
+
+Fixup AVI header fields manually with actual FPS rate info. Rewriting AVI header via libavformat call works OK for playback using same codec libs, but zeroes out video header fields significant to desktop AVI players.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/17/10 1:16 PM
+1 changed, 0 added, 0 deleted.
+5,934 ms. (Cumulative: 8,927,801 ms)
+
+----------------
