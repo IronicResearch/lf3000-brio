@@ -40,7 +40,7 @@ public:
 	virtual Boolean 		GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo);
 	virtual Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
 	virtual Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
-	virtual Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact);
+	virtual Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
 
 protected:
 	CDebugMPI			dbg_;

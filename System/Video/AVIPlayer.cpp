@@ -439,7 +439,7 @@ Boolean CAVIPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 }
 
 //----------------------------------------------------------------------------
-Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
+Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay)
 {
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
 	if (pCodecCtx) {
@@ -448,6 +448,8 @@ Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 			flags |= AVSEEK_FLAG_BACKWARD;
 		int64_t timestamp = pCtx->frame * pVidCtx->uFrameTime;
 		av_seek_frame(pFormatCtx, iVideoStream, timestamp, flags);
+		if(bUpdateVideoDisplay)
+			pVidCtx->bUpdateVideoDisplay = true;
 		return true;
 	}
 	return false;

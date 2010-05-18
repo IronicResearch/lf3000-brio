@@ -161,6 +161,7 @@ void* VideoTaskMain( void* arg )
 			}
 			else
 				dispmgr.Invalidate(0, NULL);
+			pctx->bUpdateVideoDisplay = false;
 
 			while (bRunning) {
 				static U32 lasttime = 0xFFFFFFFF;
@@ -209,7 +210,36 @@ void* VideoTaskMain( void* arg )
 				if (pctx->hAudio != kNoAudioID)
 					audmgr.PauseAudio(pctx->hAudio);
 				while (bRunning && pctx->bPaused)
+				{
 					kernel.TaskSleep(1);
+					if(pctx->bUpdateVideoDisplay)
+					{
+						vidmgr.PutVideoFrame(pctx->hVideo, pSurf);
+						if (bDoubleBuffered) {
+							// Update double buffered YUV video contexts
+							dispmgr.SwapBuffers(aHndl[ibuf], true);
+							ibuf ^= 1;
+							pSurf = &aSurf[ibuf];
+						}
+						else
+							dispmgr.Invalidate(0, NULL);
+						pctx->bUpdateVideoDisplay = false;
+					}
+				}
+				
+				//Double check for seek during pause
+				if(pctx->bSeeked)
+				{
+					pctx->bSeeked = false;
+					vidmgr.GetVideoTime(pctx->hVideo, &vtm);
+					if(pctx->hAudio != kNoAudioID)
+						audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
+				}
+				// Next target time is relative to current frame time stamp
+				marktime = vtm.time + basetime + lapsetime;
+				if (bAudio)
+					vtm.time = nexttime;
+				
 				if (pctx->hAudio != kNoAudioID)
 					audmgr.ResumeAudio(pctx->hAudio);
 				if (!bAudio) {

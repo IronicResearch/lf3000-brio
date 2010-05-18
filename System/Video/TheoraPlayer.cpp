@@ -760,7 +760,7 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 }
 
 //----------------------------------------------------------------------------
-Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
+Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay)
 {
 	tVideoTime	time;
 	Boolean		found = false;
@@ -845,8 +845,12 @@ Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 		TimeStampOff(1);
 	}
 	
-	if (pVidCtx) 
+	if (pVidCtx)
+	{
 		pVidCtx->bSeeked = true;
+		if(bUpdateVideoDisplay)
+			pVidCtx->bUpdateVideoDisplay = true;
+	}
 	
 	return found;
 }

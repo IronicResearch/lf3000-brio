@@ -42,7 +42,7 @@ public:
 	Boolean 		GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo);
 	Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
 	Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
-	Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact);
+	Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
 	
 private:
 	// Theora global state vars

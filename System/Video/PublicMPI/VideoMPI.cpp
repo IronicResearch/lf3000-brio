@@ -177,19 +177,25 @@ Boolean CVideoMPI::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean b
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoMPI::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx)
+Boolean CVideoMPI::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pTime)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->SeekVideoFrame(hVideo, pCtx, true);
+	return pModule_->SeekVideoFrame(hVideo, pTime, true, false);
 }
-
 //----------------------------------------------------------------------------
-Boolean CVideoMPI::SeekVideoKeyFrame(tVideoHndl hVideo, tVideoTime* pCtx)
+Boolean CVideoMPI::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pTime, Boolean bUpdateVideoFrame)
 {
 	if (!pModule_)
 		return false;
-	return pModule_->SeekVideoFrame(hVideo, pCtx, false);
+	return pModule_->SeekVideoFrame(hVideo, pTime, true, bUpdateVideoFrame);
+}
+//----------------------------------------------------------------------------
+Boolean CVideoMPI::SeekVideoKeyFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bUpdateVideoFrame)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SeekVideoFrame(hVideo, pCtx, false, bUpdateVideoFrame);
 }
 
 //----------------------------------------------------------------------------
