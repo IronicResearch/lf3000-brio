@@ -25612,3 +25612,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/10 2:09 PM
 6,010 ms. (Cumulative: 8,939,926 ms)
 
 ----------------
+Revision 7,380 from svn://localhost/TRUNK/:
+Revision 7,381 from svn://localhost/TRUNK/:
+Revision 7,382 from svn://localhost/TRUNK/:
+
+Relocate PNG save option into separate code routine for clarity.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/10 2:27 PM
+2 changed, 0 added, 0 deleted.
+5,984 ms. (Cumulative: 8,946,001 ms)
+
+----------------

@@ -268,6 +268,7 @@ private:
 	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
+	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
 
 	tErrType	InitMicInt();
 	tErrType	DeinitMicInt();
