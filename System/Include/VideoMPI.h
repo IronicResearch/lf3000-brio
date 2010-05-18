@@ -27,7 +27,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// low-level functions for handling individual video frames, high-level functions for 
 /// playing video automatically in its own task thread, and state query functions. The 
 /// current Video MPI implementation supports videos in the Ogg container format with 
-/// the Theora video codec.
+/// the Theora video codec, and the AVI container format with the MJPEG codec for
+/// compatibility with the new CameraMPI.
 /// 
 /// The low-level Video MPI functions manage videos on individual frame basis. A video 
 /// resource is opened and initialized by StartVideo(). Each video frame is indexed by  
@@ -107,10 +108,12 @@ public:
 	/// StartVideo() variation which creates a thread for playing video with audio
 	///
 	/// \param	path	Video file name relative to SetVideoResourcePath(),
-	/// or full absolute path name if leading slash
+	/// or full absolute path name if leading slash. Ogg, AVI extensions supported.
 	///
 	/// \param	pathAudio	Audio file name relative to SetVideoResourcePath(),
-	/// or full absolute path name if leading slash
+	/// or full absolute path name if leading slash. The audio file may be the
+	/// same as the video file parameter for interleaved format videos, or may
+	/// be a separate audio file track. Ogg, AVI, WAV extensions supported. 
 	///
 	/// \param	pSurf	Pointer to video surface descriptor for rendering
 	///
