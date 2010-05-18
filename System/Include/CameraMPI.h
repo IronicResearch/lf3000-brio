@@ -174,7 +174,8 @@ public:
 	/// \param	hndl	Video capture handle returned by StartVideoCapture()
 	///
 	/// \param	path	JPEG save file name relative to SetCameraStillPath(),
-	/// or full absolute path name if leading slash.
+	/// or full absolute path name if leading slash. If '.png' extension is used,
+	/// the image will be converted to RGB and saved as PNG file instead of JPEG.
 	///
 	/// \return true on success.
 	Boolean		SnapFrame(const tVidCapHndl hndl, const CPath &path);

@@ -913,6 +913,12 @@ public:
 			TS_ASSERT_EQUALS( bRet, true );
 
 			pKernelMPI_->TaskSleep(5000);
+			
+			bRet = pCameraMPI_->SnapFrame(capture, "test.png");
+			TS_ASSERT_EQUALS( bRet, true );
+			
+			pKernelMPI_->TaskSleep(1000);
+			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/test.png", &file_status) );
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");

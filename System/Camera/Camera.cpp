@@ -1572,7 +1572,8 @@ Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 
 		ret = GetFrame(hndl, rgbbuf);
 
-		PNG_save(path.c_str(), 640, 480, 640*3, (char*)rgbbuf);
+		CPath filepath = (path.at(0) == '/') ? path : spath + path;
+		PNG_save(filepath.c_str(), 640, 480, 640*3, (char*)rgbbuf);
 		
 		delete[] rgbbuf;
 		return ret;
