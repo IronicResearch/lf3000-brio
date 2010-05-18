@@ -60,6 +60,7 @@ struct tVideoContext {
 	FILE*				pFileVideo;
 	tVideoInfo			info;
 	CVideoPlayer*		pPlayer;
+	Boolean				bUpdateVideoDisplay;
 };
 
 //==============================================================================
@@ -90,7 +91,7 @@ public:
 	VTABLE_EXPORT Boolean 		GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo);
 	VTABLE_EXPORT Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
 	VTABLE_EXPORT Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
-	VTABLE_EXPORT Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact);
+	VTABLE_EXPORT Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
 	VTABLE_EXPORT Boolean 		PauseVideo(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		ResumeVideo(tVideoHndl hVideo);
 	VTABLE_EXPORT Boolean 		IsVideoPaused(tVideoHndl hVideo);

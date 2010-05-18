@@ -468,7 +468,7 @@ Boolean CVideoModule::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
+Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay)
 {
 	Boolean		found = false;
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
@@ -480,7 +480,7 @@ Boolean CVideoModule::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	kernel_.LockMutex(gVidMutex);
 #endif
 
-	found = pVidCtx->pPlayer->SeekVideoFrame(hVideo, pCtx, bExact);
+	found = pVidCtx->pPlayer->SeekVideoFrame(hVideo, pCtx, bExact, bUpdateVideoDisplay);
 	
 #if USE_MUTEX
 	kernel_.UnlockMutex(gVidMutex);
@@ -510,8 +510,16 @@ Boolean CVideoModule::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	if (!pVidCtx || !pVidCtx->bCodecReady)
 		return false;
 
+#if USE_MUTEX
+	kernel_.LockMutex(gVidMutex);
+#endif
+	
 	status = pVidCtx->pPlayer->PutVideoFrame(hVideo, pCtx);
 
+#if USE_MUTEX
+	kernel_.UnlockMutex(gVidMutex);
+#endif
+	
 	return status;
 }
 

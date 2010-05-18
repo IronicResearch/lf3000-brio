@@ -77,7 +77,7 @@ Boolean CVideoPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 }
 
 //----------------------------------------------------------------------------
-Boolean CVideoPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact)
+Boolean CVideoPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay)
 {
 	return false;
 }
