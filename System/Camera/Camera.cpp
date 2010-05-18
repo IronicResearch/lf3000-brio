@@ -172,6 +172,10 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 
 	micCtx_.hndl			= kInvalidAudCapHndl;
 	micCtx_.hMicThread		= kNull;
+	micCtx_.poll_buf		= NULL;
+	micCtx_.pcm_handle		= NULL;
+	micCtx_.fd[0]			= -1;
+	micCtx_.fd[1]			= -1;
 
 	err = kernel_.InitMutex( micCtx_.dlock, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mic mutex.\n");
@@ -193,7 +197,8 @@ CCameraModule::~CCameraModule()
 {
 	StopVideoCapture(camCtx_.hndl);
 
-	valid = DeinitCameraInt();
+	valid = false;
+	DeinitCameraInt();
 
 	kernel_.DeInitMutex(camCtx_.mThread);
 	kernel_.DeInitMutex(mutex_);
