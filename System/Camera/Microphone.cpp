@@ -216,11 +216,14 @@ tErrType	CCameraModule::DeinitMicInt()
 {
 	tErrType			kErr	= kNoErr;
 
-	kernel_.Free(micCtx_.poll_buf);
+	if (micCtx_.poll_buf)
+		kernel_.Free(micCtx_.poll_buf);
 	micCtx_.poll_buf	= NULL;
 
-	close(micCtx_.fd[0]);
-	close(micCtx_.fd[1]);
+	if (micCtx_.fd[0] != -1)
+		close(micCtx_.fd[0]);
+	if (micCtx_.fd[1] != -1)
+		close(micCtx_.fd[1]);
 	micCtx_.fd[0]		= -1;
 	micCtx_.fd[1]		= -1;
 
