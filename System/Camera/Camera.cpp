@@ -1560,24 +1560,31 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
+Boolean	CCameraModule::SnapFrameRGB(const tVidCapHndl hndl, const CPath &path)
+{
+	// Grab frame to local RGB buffer instead and save as PNG
+	U8* rgbbuf = new U8[640 * 480 * 3];
+
+	Boolean ret = GetFrame(hndl, rgbbuf);
+
+	if (ret)
+	{
+		CPath filepath = (path.at(0) == '/') ? path : spath + path;
+		PNG_save(filepath.c_str(), 640, 480, 640*3, (char*)rgbbuf);
+	}
+	
+	delete[] rgbbuf;
+	return ret;
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
 
 	if (path.rfind(".png") != std::string::npos) 
-	{
-		// Grab frame to local RGB buffer instead and save as PNG
-		U8* rgbbuf = new U8[640 * 480 * 3];
-
-		ret = GetFrame(hndl, rgbbuf);
-
-		CPath filepath = (path.at(0) == '/') ? path : spath + path;
-		PNG_save(filepath.c_str(), 640, 480, 640*3, (char*)rgbbuf);
-		
-		delete[] rgbbuf;
-		return ret;
-	}
+		return SnapFrameRGB(hndl, path);
 	
 	ret = GrabFrame(hndl, &frame);
 	if(!ret)
