@@ -25623,3 +25623,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/10 2:27 PM
 5,984 ms. (Cumulative: 8,946,001 ms)
 
 ----------------
+Revision 7,383 from svn://localhost/TRUNK/:
+Revision 7,384 from svn://localhost/TRUNK/:
+Revision 7,385 from svn://localhost/TRUNK/:
+
+Conditionally release temp buffers during cleanup in cases when RenderFrame() fails due to non-existant JPEG files. (TTP #2534)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/10 3:07 PM
+2 changed, 0 added, 0 deleted.
+5,960 ms. (Cumulative: 8,952,052 ms)
+
+----------------
