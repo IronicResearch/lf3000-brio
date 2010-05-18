@@ -25602,3 +25602,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/10 1:40 PM
 5,882 ms. (Cumulative: 8,933,826 ms)
 
 ----------------
+Revision 7,378 from svn://localhost/TRUNK/:
+Revision 7,379 from svn://localhost/TRUNK/:
+
+Updated CameraMPI Doxygen comments and unit tests for SnapFrame() PNG option with full path support.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/10 2:09 PM
+3 changed, 0 added, 0 deleted.
+6,010 ms. (Cumulative: 8,939,926 ms)
+
+----------------
