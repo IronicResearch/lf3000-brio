@@ -912,6 +912,9 @@ public:
 			bRet = pCameraMPI_->RenderFrame("test.jpg", &surf);
 			TS_ASSERT_EQUALS( bRet, true );
 
+			bRet = pCameraMPI_->RenderFrame("nonexistant.jpg", &surf);
+			TS_ASSERT_EQUALS( bRet, false );
+			
 			pKernelMPI_->TaskSleep(5000);
 			
 			bRet = pCameraMPI_->SnapFrame(capture, "test.png");

@@ -1162,7 +1162,8 @@ Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 	ret = RenderFrame(&frame, pSurf, NULL);
 
 out:
-	kernel_.Free(frame.data);
+	if (frame.data)
+		kernel_.Free(frame.data);
 
 	return ret;
 }
@@ -1809,6 +1810,9 @@ Boolean	CCameraModule::OpenFrame(const CPath &path, tFrameInfo *frame)
 	CPath		filepath = (path.at(0) == '/') ? path : spath + path;
 	const char*	filename = filepath.c_str();
 
+	frame->size = 0;
+	frame->data = NULL;
+	
 	if(0 != stat(filename, &buf))
 	{
 		return bRet;
