@@ -354,7 +354,7 @@ public:
 		TS_ASSERT( surf.format == kPixelFormatRGB888 );
 		
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
-		video = pVideoMPI_->StartVideo("UncompressedRGB.avi");
+		video = pVideoMPI_->StartVideo("testRGB.avi");
 		TS_ASSERT( video != kInvalidVideoHndl );
 
 		for (int i = 0; i < 10; i++)
@@ -376,6 +376,53 @@ public:
 
 		pVideoMPI_->StopVideo(video);
 		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testVideoAVIPlay()
+	{
+		PRINT_TEST_NAME();
+		
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatRGB888 );
+		
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("UncompressedRGB.avi", &surf);
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		CKernelMPI*	kernel = new CKernelMPI();
+		for (int i = 0; i < 10; i++)
+		{
+			Boolean 	r;
+			tVideoTime	vt;
+
+			kernel->TaskSleep(500);
+			r = pVideoMPI_->GetVideoTime(video, &vt);
+			TS_ASSERT( r == true );
+			TS_ASSERT( vt.frame >= i );
+			TS_ASSERT( vt.time >= 0 );
+			kernel->TaskSleep(500);
+		}
+		delete kernel;
+		
+		pVideoMPI_->StopVideo(video);
 
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
