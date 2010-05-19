@@ -97,15 +97,18 @@ def generate(env):
 					result = rpc.command(device_test_path)
 					failed_cases = rpc.command("echo $?")
 				except Exception:
-					results_log.write("BLOCKED\n\nError in connection to device")
+					results_log.write("BLOCKED\nFailed to connect to device\n\n")
 					results_log.close()
 					continue
 					
 				#Check fail/pass
-				if failed_cases[0] == "0":
+				return_code = int(failed_cases[0])
+				if return_code == 0:
 					results_log.write("PASSED\n\n")
+				elif return_code > 128:
+					results_log.write("BROKEN\nTest caught signal "+str(return_code - 128) + "\n\n")
 				else:
-					results_log.write("FAILED " + failed_cases[0] + " cases\n\n")
+					results_log.write("FAILED " + return_code + " cases\n\n")
 				results_log.write("Detailed Log:\n")
 				for line in result:
 					results_log.write(line + "\n")
