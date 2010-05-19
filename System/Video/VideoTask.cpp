@@ -162,7 +162,6 @@ void* VideoTaskMain( void* arg )
 			else
 				dispmgr.Invalidate(0, NULL);
 			pctx->bUpdateVideoDisplay = false;
-
 			while (bRunning) {
 				static U32 lasttime = 0xFFFFFFFF;
 				static U32 counter = 0;
@@ -174,6 +173,8 @@ void* VideoTaskMain( void* arg )
 				else
 					nexttime = kernel.GetElapsedTimeAsMSecs();
 				if (nexttime >= marktime)
+					break;
+				if(pctx->bSeeked)
 					break;
 				// Detect frozen audio time stamps at end of audio
 				if (bAudio) {
@@ -200,9 +201,18 @@ void* VideoTaskMain( void* arg )
 				vidmgr.GetVideoTime(pctx->hVideo, &vtm);
 				if(pctx->hAudio != kNoAudioID)
 					audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
+				if (!bAudio) {
+					nexttime = kernel.GetElapsedTimeAsMSecs();
+					basetime = nexttime - vtm.time;
+					marktime = nexttime + lapsetime;
+				}
 			}
-			// Next target time is relative to current frame time stamp
-			marktime = vtm.time + basetime + lapsetime;
+			else
+			{
+				// Next target time is relative to current frame time stamp
+				marktime = vtm.time + basetime + lapsetime;
+			}
+			
 			if (bAudio)
 				vtm.time = nexttime;
 			if (pctx->bPaused)
@@ -235,13 +245,13 @@ void* VideoTaskMain( void* arg )
 					if(pctx->hAudio != kNoAudioID)
 						audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
 				}
-				// Next target time is relative to current frame time stamp
-				marktime = vtm.time + basetime + lapsetime;
+				
 				if (bAudio)
 					vtm.time = nexttime;
 				
 				if (pctx->hAudio != kNoAudioID)
 					audmgr.ResumeAudio(pctx->hAudio);
+				
 				if (!bAudio) {
 					nexttime = kernel.GetElapsedTimeAsMSecs();
 					basetime = nexttime - vtm.time;
