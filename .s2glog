@@ -25672,3 +25672,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/19/10 10:09 AM
 6,345 ms. (Cumulative: 8,971,609 ms)
 
 ----------------
+Revision 7,396 from svn://localhost/TRUNK/:
+
+Report when signals are caught during automated unit tests.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/19/10 10:11 AM
+1 changed, 0 added, 0 deleted.
+6,393 ms. (Cumulative: 8,978,096 ms)
+
+----------------
