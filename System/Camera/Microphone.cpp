@@ -371,6 +371,29 @@ Boolean	CCameraModule::WriteAudio(SNDFILE *wav)
 	return ret;
 }
 
+static int xrun_recovery(snd_pcm_t *handle, int err)
+{
+	if (err == -EPIPE) {    /* under-run */
+		err = snd_pcm_prepare(handle);
+		if (err < 0)
+			printf("Can't recover from xrun, prepare failed: %s\n",
+					snd_strerror(err));
+		return 0;
+	} else if (err == -ESTRPIPE) {
+		while ((err = snd_pcm_resume(handle)) == -EAGAIN)
+			sleep(1);       /* wait until the suspend flag is released */
+		if (err < 0) {
+			err = snd_pcm_prepare(handle);
+			if (err < 0)
+				printf("Can't recover from suspend, prepare failed: %s\n",
+						snd_strerror(err));
+		}
+		return 0;
+	}
+	return err;
+}
+
+
 //----------------------------------------------------------------------------
 static void RecordCallback(snd_async_handler_t *ahandler)
 {
@@ -383,47 +406,73 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 
 	unsigned char *samples;
 	int step, err;
+	int first = 0;
 
 	ssize_t res;
 
-	state = snd_pcm_state(handle);
-	if(state != SND_PCM_STATE_RUNNING)
-	{
-		switch(state) {
-		case SND_PCM_STATE_SUSPENDED:
-			while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-			{
-				sleep(1);
-			}
-			if(err >= 0)
+	while (1) {
+		state = snd_pcm_state(handle);
+		if (state == SND_PCM_STATE_XRUN) {
+			err = xrun_recovery(handle, -EPIPE);
+			if(err < 0) {
 				break;
-		case SND_PCM_STATE_XRUN:
-			snd_pcm_recover(handle, -EPIPE, 0);
-			break;
+			}
+			first = 1;
+		} else if (state == SND_PCM_STATE_SUSPENDED) {
+			err = xrun_recovery(handle, -ESTRPIPE);
+			if(err < 0) {
+				break;
+			}
 		}
 
-		if(err < 0)
-		{
-			/* TODO: could not recover - abort recording?*/
+		avail = snd_pcm_avail_update(handle);
+		if (avail < 0)
+			continue;
+
+		if (avail < pCtx->period_size) {
+			if (first) {
+				first = 0;
+				err = snd_pcm_start(handle);
+				if (err < 0) {
+					/* FIXME */
+					//printf("Start error: %s\n", snd_strerror(err));
+					break;
+				}
+			} else {
+				break;
+			}
+			continue;
 		}
-		else
-		{
-			snd_pcm_start(handle);
+
+		size = pCtx->period_size;
+		while (size > 0) {
+			frames = size;
+			err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);
+			if (err < 0) {
+				if ((err = xrun_recovery(handle, err)) < 0) {
+					printf("mmap begin avail error: %s\n", snd_strerror(err));
+					break;
+				}
+				first = 1;
+			}
+			samples	= (((unsigned char *)my_area->addr) + (my_area->first / 8));
+			step	= my_area->step / 8;
+			samples += offset * step;
+
+			res = write(pCtx->fd[1], samples, frames * 2);
+
+			commitres = snd_pcm_mmap_commit(handle, offset, res/2);
+			if (commitres < 0 || (snd_pcm_uframes_t)commitres != res/2) {
+				if ((err = xrun_recovery(handle,
+								commitres >= 0 ? -EPIPE : commitres)) < 0) {
+					printf("mmap commit error: %s\n", snd_strerror(err));
+					break;
+				}
+				first = 1;
+			}
+			size -= frames;
 		}
 	}
-
-	avail = snd_pcm_avail_update(handle);
-
-	frames = avail;//pCtx->period_size;
-	err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);
-
-	samples	= (((unsigned char *)my_area->addr) + (my_area->first / 8));
-	step	= my_area->step / 8;
-	samples += offset * step;
-
-	res = write(pCtx->fd[1], samples, frames * 2);
-
-	commitres = snd_pcm_mmap_commit(handle, offset, res / 2);
 }
 
 //----------------------------------------------------------------------------
@@ -537,6 +586,8 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 	snd_pcm_hw_params_t*	params	= pCtx->hwparams;
 	unsigned int 			val		= 0;
 	int						err;
+	int dir = 0;
+	snd_pcm_uframes_t size;
 
 	do
 	{
@@ -589,6 +640,9 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 			continue;
 		}
 		pCtx->sbits = err;
+
+		/* FIXME */
+		pCtx->period_size = 4000;
 
 		/* commit changes */
 		if((err = snd_pcm_hw_params(handle, params)) < 0)
