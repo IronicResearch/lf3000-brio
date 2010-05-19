@@ -25692,3 +25692,33 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/19/10 12:15 PM
 6,737 ms. (Cumulative: 8,984,927 ms)
 
 ----------------
+Revision 7,400 from svn://localhost/TRUNK/:
+
+Camera: clean up microphone error handling (ttpro 2511)
+
+The number of available frames wasn't checked and it can be < 0 on errors (that
+is, an underrun), in which case you should wait for more frames.  Instead, we
+were just grabbing that many (ex: -32 interpreted as an unsigned, so quite a
+lot), causing stutter.
+
+There are still a few issues here:
+1) we need to know a period_length which matches up to the output size.  We
+   make assumptions here based on the size of an AVI frame (4000 bytes) but
+   that depends on whether we're capturing audio+video or just audio.  What
+   is the right thing to do here?  Presumably we're OK since we use this to
+   detect underruns only, and we'll just wait for more data then.
+2) we have a recovery condition where we snd_pcm_start() the audio again and
+   this errors out due to the FD being already open.  However in some cases we
+   do need to snd_pcm_start() here or the audio recording stops.  We need to
+   investigate further and decide what to really do.  For now you'll just see
+   error messages while we continue.
+
+This rework is modeled after:
+http://www.alsa-project.org/alsa-doc/alsa-lib/_2test_2pcm_8c-example.html#a52
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 5/19/10 12:28 PM
+2 changed, 0 added, 0 deleted.
+6,298 ms. (Cumulative: 8,991,318 ms)
+
+----------------

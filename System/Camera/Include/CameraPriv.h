@@ -196,6 +196,8 @@ struct tMicrophoneContext {
 	IEventListener			*pListener;
 
 	tMutex					dlock;
+
+	 snd_pcm_uframes_t		period_size;
 };
 
 //==============================================================================
