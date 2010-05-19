@@ -180,6 +180,8 @@ public:
 			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 		}
+		else
+			TS_FAIL("MPI was deemed invalid");
 
 		delete pKernelMPI_;
 	}
@@ -222,6 +224,8 @@ public:
 			TS_ASSERT_EQUALS( bRet, true );
 			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureStoppedEvent );
 		}
+		else
+			TS_FAIL("MPI was deemed invalid");
 
 		delete pKernelMPI_;
 	}
@@ -291,6 +295,8 @@ public:
 			TS_ASSERT_EQUALS( bRet, true );
 			
 		}
+		else
+			TS_FAIL("MPI was deemed invalid");
 
 		delete pKernelMPI_;
 	}
