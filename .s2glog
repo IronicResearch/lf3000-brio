@@ -25659,3 +25659,16 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/10 4:29 PM
 6,357 ms. (Cumulative: 8,965,155 ms)
 
 ----------------
+Revision 7,391 from svn://localhost/TRUNK/:
+Revision 7,392 from svn://localhost/TRUNK/:
+Revision 7,393 from svn://localhost/TRUNK/:
+Revision 7,394 from svn://localhost/TRUNK/:
+Revision 7,395 from svn://localhost/TRUNK/:
+
+Report invalid CameraMPI instances in all tests.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/19/10 10:09 AM
+1 changed, 0 added, 0 deleted.
+6,345 ms. (Cumulative: 8,971,609 ms)
+
+----------------
