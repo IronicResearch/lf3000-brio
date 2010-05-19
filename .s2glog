@@ -25681,3 +25681,14 @@ By dlazzari (dlazzari@leapfrog.com) on 5/19/10 10:11 AM
 6,393 ms. (Cumulative: 8,978,096 ms)
 
 ----------------
+Revision 7,397 from svn://localhost/TRUNK/:
+Revision 7,398 from svn://localhost/TRUNK/:
+Revision 7,399 from svn://localhost/TRUNK/:
+
+TTPro 2536.  Updating VideoTask with more stable seeking.  Hopefully, will no longer get tripped up by  rapid seeks, pause, and unpause interaction.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/19/10 12:15 PM
+1 changed, 0 added, 0 deleted.
+6,737 ms. (Cumulative: 8,984,927 ms)
+
+----------------
