@@ -25734,3 +25734,21 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/19/10 9:51 PM
 5,971 ms. (Cumulative: 8,997,383 ms)
 
 ----------------
+Revision 7,404 from svn://localhost/TRUNK/:
+Revision 7,405 from svn://localhost/TRUNK/:
+Revision 7,406 from svn://localhost/TRUNK/:
+Revision 7,407 from svn://localhost/TRUNK/:
+Revision 7,408 from svn://localhost/TRUNK/:
+Revision 7,409 from svn://localhost/TRUNK/:
+Revision 7,410 from svn://localhost/TRUNK/:
+Revision 7,411 from svn://localhost/TRUNK/:
+Revision 7,412 from svn://localhost/TRUNK/:
+Revision 7,413 from svn://localhost/TRUNK/:
+
+CameraMPI: Query period size after setting (requesting?) period time (per ALSA example). TODO: Need to understand how/why this works.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/20/10 12:43 PM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 9,003,649 ms)
+
+----------------

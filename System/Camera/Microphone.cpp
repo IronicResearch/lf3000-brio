@@ -641,9 +641,22 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 		}
 		pCtx->sbits = err;
 
-		/* FIXME */
-		pCtx->period_size = 4000;
-
+		// Query period size after setting (requesting?) period time (per ALSA example)
+		// TODO: why/how does this work?
+		pCtx->period_size = 1024;
+		unsigned int period_time = 100000; // usec
+        if ((err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir)) < 0)
+        {
+        	pCtx->period_size = 0;
+        	continue;
+        }
+        
+		if ((err = snd_pcm_hw_params_get_period_size(params, &pCtx->period_size, &dir)) < 0)
+        {
+        	pCtx->period_size = 0;
+        	continue;
+        }
+		
 		/* commit changes */
 		if((err = snd_pcm_hw_params(handle, params)) < 0)
 		{
