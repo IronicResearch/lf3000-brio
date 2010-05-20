@@ -3,16 +3,251 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.1.2.xxxx (April 27, 2010)
+Brio v1.1.10.7315 (May 9, 2010)
 ===========================================
 
--- To be updated
+-- TTPro 2487.  Reimplemented Justin's build of libjpeg.  Flash is no 
+longer building libjpeg so there should no longer be conflicts (I 
+hope).  Also added in exporting the libjpeg headers.
+
+-- Add seek support to AVI player.
+
+-- Working audio playback for general AVI cases including CameraMPI 
+generated files, not just audio-only AVIs. Account for audio frame 
+buffer holding more decoded bytes than requested per render callback.
+
+-- Make audio context vars player-specific instead of global.
+
+-- Merge minor AVI audio player changes into AVI video player for 
+consistancy.
+
+-- Adding libjpeg to libs of publish build for embedded.  This is needed 
+for Flash, as it no longer includes libjpeg, it needs to link to Brio's 
+for an embedded build.
+
+-- TestCamera:
+- Re-enabled audio path test
+- Added test for capturing video without a preview
+- Cleaned up test code
+
+-- Rebuilt libavformat/libavcodec libs with customized config for AVI, 
+MJPEG, PCM from LinuxDist svn -r7253
+
+-- Camera module: L3B TTPro 2497
+
+-- Add .avi file playback option to PlayAudio SDK example.
+
+-- Add command line overide option for video playback file in VideoDemo 
+SDK example.
+
+-- Add playback of recently created video to video recording tests.
+
+-- These /4s are wrong (at least for our application).  Captuing a AVI
+with 16-bit mono audio yielded incorrect values in the strh as well
+as WAVEFORMATEX.  Older versions of avilib (from Rainer Johanni,
+not modified by Thomas Österreicher) don't have this division.
+
+-- Camera: TTPro 2498.  Persist updated control setting.
+
+-- Pseudo-install jpeg shared libraries (need to be rebuilt on build 
+system due to glibc conflict)
+
+-- Camera: bug - running viewfinder after recording a video causes video 
+to be overwritten with viewfinder stream.
+
+-- Video module: allow StartVideo() to succeed even if the caller didn't 
+clean up their previously expired player.  Does not affect the case 
+where the video pthread is cancelled asynchronously.
+
+-- Rebuilt libavcodec binaries with disabled optimization settings from 
+LinuxDist svn -r7298.
+
+-- Conditionally close mic handle, otherwise cleanup call asserts when 
+non-root user.
+
+-- microphone: Attempt to handle ALSA XRUN.  Still potential sync issues.
+
+-- Modify VideoMPI playback to use system time with audio tracks instead 
+of audio timestamps. Allows video playback to be more continuous on 
+AVIs with mismatched or truncated audio tracks (TTP 2507).
 
 ===========================================
-Brio v1.0.4.6632 (February 21, 2010)
+Brio v1.0.9.7230 (April 28, 2010)
 ===========================================
 
--- BRANCH CREATION for 1.0.4
+-- Rolled version string to 1.0.9
+
+-- Merged -r6702: 
+Fixed YUV Video layer order option, with unit test. (TTP 2326)
+(TTP 726 also)
+
+-- Merged -c6743, 6769,6789:
+
+-- 6734: Created a helper function call BinarySeekFrame, this function 
+uses a binary search to find the frame specified, and if it's a key 
+frame decodes it.  BinarySeekFrame returns the granulepos of the frame 
+it found.  SeekVideoFrame calls BinarySeekFrame for the frame being 
+searched for.  If it's not a keyframe, a second BinarySeekFrame is 
+called to find the keyframe.  Then it keeps decoding till it reaches 
+the target frame.  Also updated UnitTest to seek backwards as a part of 
+it's test.
+
+-- 6769: Corrected BinarySeekFrame to handle packets which span 
+multiple pages.  For the first stage of the search, we're not looking 
+for the framepos but the page with the highest framepos that is still 
+less than the target_framepos.  We later march forward from there.
+
+Also added some logic with left_pageno and right_pageno.  It's purpose 
+is to prevent re-reading pages when we already know we need to look 
+farther left.
+
+-- 6789: Added Mutex to SeekVideoFrame and SynchVideoFrame.  Also added 
+new bSeeked flag.  Modified VideoTask to check for bSeeked flag, and if 
+true will reset it's time to the new current time.
+
+WARNING: Possible race condition.  SeekVideoFrame for an earlier frame 
+might be called after the check f or the bSeeked flag and before the 
+call to SynchVideoFrame.  Doing so will cause the player to "fast 
+forward" in a manner that makes it look like the seek did not occur.
+
+Also added in SeekVideoKeyFrame to VideoMPI and a bool flag to 
+SeekVideoFrame in VideoModule.  Whether you call the MPI's 
+SeekVideoFrame SeekVideoKeyFrame determines if tru or false is passed 
+in.  True makes
+it search for the exact frame asked for, false makes it stop when it 
+finds the keyframe for the target frame.
+
+-- Merged -c6821, 6882:
+
+Update vorbis with patch that makes it seek properly for interleaved 
+files.
+After some tests, it looks like the changes to vorbisfile was not 
+actually needed.  Reverting the change
+s I made to it.  Made some other changes to the setup and make scripts 
+so that it's easier to build.
+
+(TTPRO #2371)
+
+-- Merged -c6906: Add AudioMPI functions for PauseAllAudio() and 
+ResumeAllAudio() with unit tests, for pausing all active audio players 
+without knowing their audio IDs. (TTP #2439)
+
+-- Merged -c6933, 6936: Update invalidated regions prior to video page 
+flips to avoid tearing seen in offscreen contexts. (TTP 2417)
+
+Support double buffering in YUV video context during video playback 
+thread to avoid tearing. This only works for LF1000 YUV420 planar 
+format 1Meg block regions with 4K stride scanlines. (TTP 2417)
+
+-- Merged -c6943, 6980, 6989:
+Account for page-flipped display contexts to determine current 
+visibility during unregistration. Otherwi
+se page-flip contexts could get mistakenly reset after overlay contexts 
+are removed. (TTP 2294)
+
+Fill in more display context info for OGL handle to be useful for 
+repositioning via Register() call. (TT
+P 2457)
+
+Add DisplayMPI function SetWindowPosition() for modifying default 
+window size and position determined by
+ CreateHandle() and Register(). (TTP 2456)
+
+-- Merged -c6911: 
+Additional CButtonEventQueue2 and CTouchEventQueue2 declarations for 
+event queue listeners which consume events instead of propagating them. 
+(TTPRO #2442)
+
+-- Merged -r7127: TTPro 2360.  Added comment about how the frame and time 
+of the pTime is used.
+
+-- Merged -c7152: Modify Brio Module manager to search for valid Module 
+path at runtime via leading LD_LIBRARY_PATH setting before defaulting 
+to hard-coded Module path. Needed to support alternate Brio library 
+installations in cart or download patches. (TTP 2485)
+
+-- Merged -c6822, 6919, 6993,7068 from trunk for videolib. DETAILS:
+
+--c6822: Added in working AudioSeeking (only tested with Vorbis).
+
+AudioMPI now has new function, SeekAudioTime.  All players have their 
+own implementation of SeekAudioTime.  VideoTask is responsible for 
+seeking the audio if the video has been seeked.
+
+Calls to SeekAudioTime go through the Mixer in order to protect access 
+to VorbisFile.
+
+--c6919: Relocate video mutex and context vars for VideoMPI unit tests 
+to run again.
+
+--c6993: Reinstate locks added to SyncVideoFrame() to support live 
+seeking while video playback thread is running. Adjust state var reset 
+in StopVideo() to avoid further locking while stopping.
+
+--c7068: Allow StopVideo() to yield before acquiring lock. Needed for 
+short Start/Sync/Stop sequence in unit test.
+
+===========================================
+Brio v1.0.8.6905 (March 26, 2010)
+===========================================
+
+-- Merged -c6785: TTPro #2369: Add USB state bit definition for hot-plug 
+events from the host adapter. Uses existing USB messaging scheme to 
+notify AppManager of camera or wifi widget connection. 
+
+-- Merged -c6868: Add new ButtonMPI functions for 
+SetTouchMode/GetTouchMode to use only enumerated values for drawing vs 
+default modes, hiding sysfs implementation details from the caller app. 
+(TTP #2419)
+
+-- Merged -c6869: Disable ButtonMPI SetTouchRate() function, keeping 
+default touch rate unchanged by apps. (TTP #2419)
+
+-- Merged -c6875:  Correct touch type for emulation. (TTP 2419)
+
+-- Merged -c6881:  Add more new ButtonMPI functions for 
+SetTouchParam/GetTouchParam to allow low-level setting of touch 
+parameters (debounce down/up, sample rate). API uses paired enum/value 
+arguments to support future settings. (TTP #2419)
+
+-- Merged -c6894:  Touch parameters for drawing mode updated, per Content 
+MrPencil testing. (TTP 2352, 2419)
+
+===========================================
+Brio v1.0.7.6804 (March 16, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.7.6783 (March 12, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.7.6778 (March 12, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.6.6766 (March 10, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.5.6735 (March 8, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
+
+===========================================
+Brio v1.0.4.6686 (February 26, 2010)
+===========================================
+
+-- No significant changes since 1.0.3.
 
 ===========================================
 Brio v1.0.3.6616 (February 17, 2010)
