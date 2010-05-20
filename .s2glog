@@ -25752,3 +25752,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/20/10 12:43 PM
 6,126 ms. (Cumulative: 9,003,649 ms)
 
 ----------------
+Revision 7,414 from svn://localhost/TRUNK/:
+Revision 7,415 from svn://localhost/TRUNK/:
+
+Separate unit test binaries to allow for more targeted unit testing.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/20/10 3:54 PM
+1 changed, 0 added, 0 deleted.
+5,985 ms. (Cumulative: 9,009,728 ms)
+
+----------------

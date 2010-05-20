@@ -223,10 +223,10 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		return
 
 	srcdir = SourceDirFromBuildDir(os.path.dirname(ptarget), root_dir)
-	tests = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
+	test_files = glob.glob(os.path.join(srcdir, 'tests', '*.h'))
 	subdir = (vars['is_emulation'] and 'Emulation' or vars['platform']) 
-	tests += glob.glob(os.path.join(srcdir, 'tests', subdir, '*.h'))
-	if len(tests) == 0:
+	test_files += glob.glob(os.path.join(srcdir, 'tests', subdir, '*.h'))
+	if len(test_files) == 0:
 		return
 		
 	testenv = penv.Copy()
@@ -235,8 +235,19 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 	testenv.Append(CPPPATH  = ['#ThirdParty/cxxtest', root_dir])
 	testenv.Append(CPPDEFINES = 'UNIT_TESTING')
 	testenv.Append(RPATH = [vars['mpi_deploy_dir'], vars['priv_mpi_deploy_dir']])
-	unit = 'test_' + ptarget + '.cpp'
-	mytest = testenv.CxxTest(unit, tests)
+	
+	#Make individual tests, if multiple files share the same test name, group them together
+	tests = {}
+	for t in test_files:
+		test_name = os.path.basename(t)[len('Test'):-len(os.path.splitext(t)[1])]
+		if test_name in tests:
+			tests[test_name].append(t)
+		else:
+			tests[test_name] = [t]
+	
+	for name, files in tests.iteritems():
+		unit = 'test_' + name + '.cpp'
+		mytest = testenv.CxxTest(unit, files)
 
 	platformlibs = ['DebugMPI']
 	if vars['is_emulation']:
