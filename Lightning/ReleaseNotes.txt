@@ -3,6 +3,104 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.1.15.7407 (May 20, 2010)
+===========================================
+
+-- Replace previous avilib support with AVI wrapper-compatible functions 
+for libavformat/libavcodec support. Includes support for rewriting AVI 
+header with actual FPS rate like previous implementation.
+
+-- CameraMPI.StartVideoCapture() addition of optional parameter for 
+capturing audio with video. Defaults to true for previous capture 
+behavior. Toggling false captures video only. 
+
+-- CameraMPI.StartAudioCapture() addition of optional parameter for 
+starting in paused state. This option allows the app to delay audio 
+recording until ready, when ResumeAudioCapture() must be called as 
+noted in Doxygen comments. Defaults to false for previous capture 
+behavior to record immediately.
+
+-- CameraMPI unit test was checking incorrect return code from 
+VideoMPI.StopVideo() call.
+
+-- Simple CameraMPI SDK example.
+
+-- CameraMPI addition of PNG file save option for SnapFrame() using RGB 
+decode buffer. Interim stopgap feature until more general image file 
+saving/loading routines added to LightningCore.
+
+-- microphone: fix input overrun handling
+
+The Alsa documentation says that we should call snd_pcm_recover() when an
+overrun occurs.  Note that a pcm_read would return -22 (-EPIPE) and we will
+tell Alsa that this is the error we got.  Please see:
+
+This seems to resolve the audio stutters problem with the microphone caused
+by doing a pcm_resume in System/Camera/Microphone.cpp RecordCallback() when
+the XRUN state is detected.
+
+-- Fixup AVI header fields manually with actual FPS rate info. Rewriting 
+AVI header via libavformat call works OK for playback using same codec 
+libs, but zeroes out video header fields significant to desktop AVI 
+players.
+
+-- Updated VideoMPI Doxygen comments and unit tests.
+
+-- Updated CameraMPI Doxygen comments and unit tests for SnapFrame() PNG 
+option with full path support.
+
+-- Relocate PNG save option into separate code routine for clarity.
+
+-- Conditionally release temp buffers during cleanup in cases when 
+RenderFrame() fails due to non-existant JPEG files. (TTP #2534)
+
+-- TTPro 2536.  Adding boolean option to SeekVideoFrame and 
+SeekVideoKeyFrame, bUpdateVideoDisplay.  If set to true, the screen 
+will be updated to the newly seeked position.
+
+This is to get around XMV's need to unpause, seek, and then repause to 
+get screen to update.  The VideoTask was getting confused by the rapid 
+change in state.
+
+Also protecting PutVideoFrame with Mutex, this prevents occasional 
+crashes caused when seek is done while VideoTask is decoding.
+
+-- Init CameraMPI context vars so destructors succeed when no camera 
+widget is present. (TTP #2521)
+
+-- Report invalid CameraMPI instances in all tests.
+
+-- Report when signals are caught during automated unit tests.
+
+-- TTPro 2536.  Updating VideoTask with more stable seeking.  Hopefully, 
+will no longer get tripped up by  rapid seeks, pause, and unpause 
+interaction.
+
+-- Camera: clean up microphone error handling (ttpro 2511)
+
+The number of available frames wasn't checked and it can be < 0 on errors (that
+is, an underrun), in which case you should wait for more frames.  Instead, we
+were just grabbing that many (ex: -32 interpreted as an unsigned, so quite a
+lot), causing stutter.
+
+There are still a few issues here:
+
+1) we need to know a period_length which matches up to the output size.  We
+   make assumptions here based on the size of an AVI frame (4000 bytes) but
+   that depends on whether we're capturing audio+video or just audio.  What
+   is the right thing to do here?  Presumably we're OK since we use this to
+   detect underruns only, and we'll just wait for more data then.
+
+2) we have a recovery condition where we snd_pcm_start() the audio again and
+   this errors out due to the FD being already open.  However in some cases we
+   do need to snd_pcm_start() here or the audio recording stops.  We need to
+   investigate further and decide what to really do.  For now you'll just see
+   error messages while we continue.
+
+This rework is modeled after:
+http://www.alsa-project.org/alsa-doc/alsa-lib/_2test_2pcm_8c-example.html#a52
+
+===========================================
 Brio v1.1.10.7315 (May 9, 2010)
 ===========================================
 
