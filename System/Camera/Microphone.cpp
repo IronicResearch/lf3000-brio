@@ -27,6 +27,12 @@ static const unsigned int MIC_RATE		= 16000;	/* desired sampling rate */
 static const unsigned int MIC_CHANS		= 1;		/* desired channels */
 static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format */
 
+// Period time interval determines callback rate for grabbing input data
+// 10 FPS nominal: 100000 usec
+// 15 FPS nominal:  66666 usec
+// 20 FPS nominal:  50000 usec
+static const unsigned int MIC_PERIOD	= 66666;	// usec
+
 static const char *cap_name = "plughw:1,0";
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
  * automatic conversion.  Opening plughw:1,0 uses the alsa plug plugin to open hw:1,0
@@ -642,9 +648,7 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 		pCtx->sbits = err;
 
 		// Query period size after setting (requesting?) period time (per ALSA example)
-		// TODO: why/how does this work?
-		pCtx->period_size = 1024;
-		unsigned int period_time = 100000; // usec
+		unsigned int period_time = MIC_PERIOD; // usec
         if ((err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir)) < 0)
         {
         	pCtx->period_size = 0;

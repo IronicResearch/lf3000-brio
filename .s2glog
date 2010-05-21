@@ -25771,3 +25771,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/20/10 3:54 PM
 5,975 ms. (Cumulative: 9,015,781 ms)
 
 ----------------
+Revision 7,417 from svn://localhost/TRUNK/:
+
+CameraMPI: Period time interval determines callback rate for grabbing input data. 15 FPS rate seems to have best throughput for our typical audio+video AVI recording sessions.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/20/10 6:28 PM
+1 changed, 0 added, 0 deleted.
+6,001 ms. (Cumulative: 9,021,860 ms)
+
+----------------
