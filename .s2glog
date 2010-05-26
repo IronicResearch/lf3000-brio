@@ -25869,3 +25869,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/26/10 11:46 AM
 9,188 ms. (Cumulative: 9,043,605 ms)
 
 ----------------
+Revision 7,481 from svn://localhost/TRUNK/:
+
+theora: rework setup script, give option for IDCT support
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 5/26/10 12:39 PM
+1 changed, 3 added, 154 deleted.
+9,422 ms. (Cumulative: 9,053,152 ms)
+
+----------------
