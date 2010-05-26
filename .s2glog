@@ -25895,3 +25895,13 @@ By jeno (jeno@leapfrog.com) on 5/26/10 2:37 PM
 6,934 ms. (Cumulative: 9,060,180 ms)
 
 ----------------
+Revision 7,485 from svn://localhost/TRUNK/:
+Revision 7,486 from svn://localhost/TRUNK/:
+
+Fixed a bug that prevented separated unit test binaries from compiling properly.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/26/10 4:40 PM
+1 changed, 0 added, 0 deleted.
+6,583 ms. (Cumulative: 9,066,857 ms)
+
+----------------
