@@ -245,9 +245,10 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		else:
 			tests[test_name] = [t]
 	
+	mytests = []
 	for name, files in tests.iteritems():
 		unit = 'test_' + name + '.cpp'
-		mytest = testenv.CxxTest(unit, files)
+		mytests += testenv.CxxTest(unit, files)
 
 	platformlibs = ['DebugMPI']
 	if vars['is_emulation']:
@@ -285,8 +286,10 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		if vars['is_emulation']:
 			fulllibs +=  ['X11']
 
-	temp = testenv.Program(mytest + psources, LIBS = fulllibs + platformlibs)
-	mytestexe = testenv.Install(vars['bin_deploy_dir'], temp)
+	mytestexe = []
+	for test in mytests:
+		temp = testenv.Program([test] + psources, LIBS = fulllibs + platformlibs)
+		mytestexe += testenv.Install(vars['bin_deploy_dir'], temp)
 	if vars['is_runtests']:
 		#Build test results list which will serve as our RunTest targets
 		results = []
