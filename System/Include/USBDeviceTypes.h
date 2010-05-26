@@ -78,7 +78,15 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupUSBDevice), USBDEVICE_ERRO
 
 const U32 kUSBDeviceInvalidWatchdog = 0xffffffff;
 
-LF_END_BRIO_NAMESPACE()	
+//==============================================================================
+// USB widget Vendor/Product IDs
+// These match the IDs returned by FindDevice()
+//==============================================================================
+#define USB_HUB_ID					0x1D6B0001		// Linux USB host hub
+#define USB_CAM_ID					0x093A2801		// PixArt Imaging
+#define USB_WIFI_ID					0x1286203C		// Marvell Semiconductor
+
+LF_END_BRIO_NAMESPACE() 
 #endif // LF_BRIO_USBDEVICETYPES_H
 
 // eof

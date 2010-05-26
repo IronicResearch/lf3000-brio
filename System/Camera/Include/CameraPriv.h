@@ -20,6 +20,7 @@
 #include <VideoTypes.h>
 #include <DebugMPI.h>
 #include <KernelMPI.h>
+#include <EventMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
 
@@ -208,6 +209,14 @@ tErrType DeInitCameraTask(tCameraContext* pCtx);
 
 //==============================================================================
 class CCameraModule : public ICoreModule {
+	// internal listener for hotplug events
+	class CameraListener : public IEventListener
+	{
+		CCameraModule*	pMod;
+	public:
+		CameraListener(CCameraModule* ctx);
+		tEventStatus Notify(const IEventMessage& msg);
+	};
 public:
 	// ICoreModule functionality
 	virtual Boolean			IsValid() const;
@@ -241,8 +250,11 @@ public:
 	VTABLE_EXPORT Boolean		IsAudioCapturePaused(const tAudCapHndl hndl);
 	VTABLE_EXPORT Boolean		StopAudioCapture(const tAudCapHndl hndl);
 private:
+	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
+	CameraListener		*listener_;
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
+	CEventMPI			event_;
 	tCameraContext		camCtx_;
 	tMicrophoneContext	micCtx_;
 	Boolean				valid;
@@ -255,6 +267,7 @@ private:
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 	friend void* CameraTaskMain(void* arg);
+	friend Boolean EnumCameraCallback(const CPath& path, void* pctx);
 
 	// Implementation-specific functionality
 	Boolean		InitCameraInt();
