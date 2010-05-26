@@ -33,7 +33,9 @@ fi
 # build and copy shared libs to rootfs
 pushd $THEORA_LIB_DIR
 ./configure --host=arm-linux --build=x86-linux --prefix=${ROOTFS_PATH}/usr/local --exec-prefix=${ROOTFS_PATH}/usr/local --enable-shared=yes --disable-float --disable-encode --disable-examples --disable-oggtest --disable-vorbistest --disable-sdltest --with-ogg=${ROOTFS_PATH}/usr/local --with-ogg-includes=${ROOTFS_PATH}/usr/local/include --with-ogg-libraries=${ROOTFS_PATH}/usr/local/lib 
-patch -p1 <../Theora-Makefile.patch
+set +e
+patch -N -p1 <../Theora-Makefile.patch
+set -e
 make
 make install
 cp -a ./lib/.libs/libtheora.so* ../../Libs/arm/ 
