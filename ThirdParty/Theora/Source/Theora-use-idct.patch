@@ -1,5 +1,5 @@
---- Theora.orig/lib/Makefile	2010-03-02 10:49:57.000000000 -0800
-+++ Theora.patched/lib/Makefile	2010-03-02 12:01:39.000000000 -0800
+--- libtheora-1.0/lib/Makefile.orig	2010-05-26 12:08:58.255686989 -0700
++++ libtheora-1.0/lib/Makefile	2010-05-26 12:12:46.467686569 -0700
 @@ -66,6 +66,7 @@
  	dec/bitpack.c dec/decapiwrapper.c dec/decinfo.c dec/decode.c \
  	dec/dequant.c dec/fragment.c dec/huffdec.c dec/idct.c \
@@ -13,45 +13,11 @@
  am__objects_3 = apiwrapper.lo bitpack.lo decapiwrapper.lo decinfo.lo \
  	decode.lo dequant.lo fragment.lo huffdec.lo idct.lo info.lo \
 -	internal.lo quant.lo state.lo
-+	internal.lo quant.lo ####state.lo
-+am__objects_2 =	idct_lf1000.lo state_lf1000.lo
++	internal.lo quant.lo
++am__objects_2 = idct_lf1000.lo state_lf1000.lo
  ##am__objects_4 = dct_decode_mmx.lo \
  ##	dsp_mmx.lo \
  ##	dsp_mmxext.lo \
-@@ -193,11 +195,11 @@
- FFLAGS = 
- GETOPT_OBJS = 
- GREP = /bin/grep
--HAVE_BIBTEX = yes
-+HAVE_BIBTEX = 
- HAVE_DOXYGEN = true
- HAVE_DOXYGEN_FALSE = #
- HAVE_DOXYGEN_TRUE = 
--HAVE_PDFLATEX = yes
-+HAVE_PDFLATEX = 
- HAVE_PKG_CONFIG = yes
- HAVE_TRANSFIG = 
- HAVE_VALGRIND = 
-@@ -221,8 +223,8 @@
- OBJEXT = o
- OC_X86ASM_FALSE = #
- OC_X86ASM_TRUE = 
--OGG_CFLAGS = -I${ROOTFS_PATH}/usr/local/include  
--OGG_LIBS = -L${ROOTFS_PATH}/usr/local/lib -logg  
-+OGG_CFLAGS = -I${ROOTFS_PATH}/usr/local/include
-+OGG_LIBS = -L${ROOTFS_PATH}/usr/local/lib -logg
- PACKAGE = libtheora
- PACKAGE_BUGREPORT = 
- PACKAGE_NAME = libtheora
-@@ -239,7 +241,7 @@
- SDL_CONFIG = no
- SDL_LIBS = 
- SET_MAKE = 
--SHELL = /bin/sh
-+SHELL = /bin/bash
- STRIP = arm-linux-strip
- THDEC_LIB_AGE = 0
- THDEC_LIB_CURRENT = 1
 @@ -405,9 +407,14 @@
  	dec/x86/mmxstate.c \
  	dec/x86/x86state.c
@@ -63,7 +29,7 @@
  decoder_arch_sources = 
  #decoder_arch_sources = $(decoder_x86_sources)
  #decoder_arch_sources = $(decoder_x86_sources)
-+decoder_arch_sources = $(decoder_arm_sources) 
++decoder_arch_sources = $(decoder_arm_sources)
  noinst_HEADERS = \
  	cpu.h \
  	internal.h \
