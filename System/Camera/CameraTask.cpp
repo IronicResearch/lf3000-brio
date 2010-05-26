@@ -247,10 +247,17 @@ void* CameraTaskMain(void* arg)
 	// Post done message to event listener
 	if(pCtx->pListener)
 	{
-		CEventMPI			evntmgr;
 		CCameraEventMessage *msg;
 
-		if(!timeout)								// manually stopped by StopVideoCapture()
+		if(!pCtx->module->valid)					// camera hot-unplugged
+		{
+			tCameraRemovedMsg		data;
+			data.vhndl				= pCtx->hndl;
+			data.saved				= true;
+			data.length 			= end;
+			msg = new CCameraEventMessage(data);
+		}
+		else if(!timeout)							// manually stopped by StopVideoCapture()
 		{
 			tCaptureStoppedMsg		data;
 			data.vhndl				= pCtx->hndl;
@@ -275,7 +282,7 @@ void* CameraTaskMain(void* arg)
 			msg = new CCameraEventMessage(data);
 		}
 
-		evntmgr.PostEvent(*msg, 0, pCtx->pListener);
+		pCtx->module->event_.PostEvent(*msg, 0, pCtx->pListener);
 		delete msg;
 	}
 

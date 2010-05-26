@@ -16,9 +16,10 @@
 #include <SystemErrors.h>
 #include <CameraTypes.h>
 #include <CameraPriv.h>
-//#include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <DisplayMPI.h>
+#include <Utility.h>
+#include <USBDeviceMPI.h>
 #include <errno.h>
 #include <string.h>
 
@@ -63,6 +64,8 @@ const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 //==============================================================================
 // Defines
 //==============================================================================
+#define USB_DEV_ROOT				"/sys/class/usb_device/"
+
 #define CAMERA_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(mutex_)),\
 									  "Couldn't lock mutex.\n")
 
@@ -147,15 +150,84 @@ inline void PROFILE_END(const char* msg)
 //----------------------------------------------------------------------------
 
 //============================================================================
+// Local event listener
+//============================================================================
+const tEventType LocalCameraEvents[] = {kAllUSBDeviceEvents};
+
+Boolean EnumCameraCallback(const CPath& path, void* pctx)
+{
+	CCameraModule* pObj	= (CCameraModule*)pctx;
+	U32 id				= FindDevice(path);
+
+	if (id == USB_CAM_ID) {
+		pObj->sysfs = path;
+		return false; // stop
+	}
+	return true; // continue
+}
+
+CCameraModule::CameraListener::CameraListener(CCameraModule* mod):
+			IEventListener(LocalCameraEvents, ArrayCount(LocalCameraEvents)),
+			pMod(mod)
+			{}
+
+tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
+{
+	tEventType event_type = msg.GetEventType();
+	if(event_type == kUSBDeviceStateChange)
+	{
+		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
+		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
+
+		/* a device was inserted or removed */
+		if(usbData.USBDeviceState & kUSBDeviceHotPlug)
+		{
+			/* enumerate sysfs to see if camera entry exists */
+			pMod->sysfs.clear();
+			EnumFolder(USB_DEV_ROOT, EnumCameraCallback, kFoldersOnly, pMod);
+
+			if(!pMod->sysfs.empty())
+			{
+				/* camera present or added */
+				pMod->valid = pMod->InitCameraInt();
+			}
+			else
+			{
+				if(pMod->valid)
+				{
+					/* camera removed */
+
+					/* set this to inform capture threads */
+					pMod->valid = false;
+					pMod->StopVideoCapture(pMod->camCtx_.hndl);
+					pMod->StopAudioCapture(pMod->micCtx_.hndl);
+
+					/* must uninitialize camera HW to allow 'modprobe -r' */
+					pMod->DeinitCameraInt();
+				}
+				else
+				{
+					/* camera absent upon initialization*/
+				}
+
+			}
+		}
+	}
+	return kEventStatusOK;
+}
+
+//============================================================================
 // Ctor & dtor
 //============================================================================
 CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 {
 	tErrType			err = kNoErr;
 	const tMutexAttr	attr = {0};
+	tUSBDeviceData		usb_data;
 
 	dbg_.SetDebugLevel(kCameraDebugLevel);
 
+	sysfs.clear();
 	camCtx_.file 			= gCamFile;
 	camCtx_.numBufs 		= 0;
 	camCtx_.bufs 			= NULL;
@@ -189,7 +261,21 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	err = kernel_.InitMutex( camCtx_.mThread, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
-	valid = InitCameraInt();
+	/* hotplug subsystem calls this handler upon device insertion/removal */
+	listener_ = new CameraListener(this);
+	event_.RegisterEventListener(listener_);
+
+	/* spoof a hotplug event to force enumerate sysfs and see if camera is present */
+	usb_data = GetCurrentUSBDeviceState();
+	usb_data.USBDeviceState &= kUSBDeviceConnected;
+	usb_data.USBDeviceState |= kUSBDeviceHotPlug;
+
+	CUSBDeviceMessage usb_msg(usb_data);
+	/* Event is synchronous and handled in-thread */
+	valid = false;
+	event_.PostEvent(usb_msg, 0, listener_);
+
+	/* local listener handles hardware initialization as appropriate */
 }
 
 //----------------------------------------------------------------------------
@@ -208,6 +294,9 @@ CCameraModule::~CCameraModule()
 
 	delete camCtx_.controls;
 	delete camCtx_.modes;
+
+	event_.UnregisterEventListener(listener_);
+	delete listener_;
 }
 
 //----------------------------------------------------------------------------

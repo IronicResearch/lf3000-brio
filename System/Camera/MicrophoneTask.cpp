@@ -109,7 +109,15 @@ void* MicTaskMain(void* arg)
 		CEventMPI			evntmgr;
 		CCameraEventMessage *msg;
 
-		if(!timeout)								// manually stopped by StopVideoCapture()
+		if(!cam->valid)								// camera hot-unplugged
+		{
+			tCameraRemovedMsg		data;
+			data.vhndl				= pCtx->hndl;
+			data.saved				= true;
+			data.length 			= 0;
+			msg = new CCameraEventMessage(data);
+		}
+		else if(!timeout)							// manually stopped by StopVideoCapture()
 		{
 			tCaptureStoppedMsg		data;
 			data.vhndl				= pCtx->hndl;

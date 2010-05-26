@@ -64,7 +64,8 @@ typedef std::vector<tControlInfo*> tCameraControls;
 #define CAMERA_EVENTS					\
 	(kCaptureTimeOutEvent)				\
 	(kCaptureQuotaHitEvent)				\
-	(kCaptureStoppedEvent)
+	(kCaptureStoppedEvent)				\
+	(kCameraRemovedEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupCamera), CAMERA_EVENTS)
 
@@ -99,10 +100,20 @@ struct tCaptureStoppedMsg {
 	U32			length;
 };
 
+struct tCameraRemovedMsg {
+	union {
+		tVidCapHndl		vhndl;
+		tAudCapHndl		ahndl;
+	};
+	Boolean		saved;
+	U32			length;
+};
+
 union tCaptureMsg {
 	tCaptureTimeoutMsg		timeOut;
 	tCaptureQuotaHitMsg		quotaHit;
 	tCaptureStoppedMsg		stopped;
+	tCameraRemovedMsg		removed;
 };
 
 //------------------------------------------------------------------------------
@@ -111,6 +122,7 @@ public:
 	CCameraEventMessage( const tCaptureTimeoutMsg& data );
 	CCameraEventMessage( const tCaptureQuotaHitMsg& data );
 	CCameraEventMessage( const tCaptureStoppedMsg& data );
+	CCameraEventMessage( const tCameraRemovedMsg& data );
 	virtual U16	GetSizeInBytes() const;
 
 	tCaptureMsg	data;

@@ -25879,3 +25879,19 @@ By ayurovsky (ayurovsky@leapfrog.com) on 5/26/10 12:39 PM
 9,422 ms. (Cumulative: 9,053,152 ms)
 
 ----------------
+Revision 7,482 from svn://localhost/TRUNK/:
+Revision 7,483 from svn://localhost/TRUNK/:
+Revision 7,484 from svn://localhost/TRUNK/:
+
+TTPro L3B 2555:  Make CameraMPI hotplug-aware.  The implementation now registers an internal listener
+which responds appropriately to hotplug events.  Active recordings are terminated upon camera removal,
+and calling applications are notified via their registered event listener.
+
+Note: The newly-added utility functions "EnumFolders" and "FindDevice" were copied from LightningCore.
+They should be removed from LightningCore once this checkin has propagated to the SDK.
+
+By jeno (jeno@leapfrog.com) on 5/26/10 2:37 PM
+10 changed, 1 added, 0 deleted.
+6,934 ms. (Cumulative: 9,060,180 ms)
+
+----------------

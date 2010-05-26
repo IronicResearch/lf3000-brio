@@ -47,6 +47,12 @@ CCameraEventMessage::CCameraEventMessage( const tCaptureStoppedMsg& data )
 	this->data.stopped = data;
 }
 
+CCameraEventMessage::CCameraEventMessage( const tCameraRemovedMsg& data )
+	: IEventMessage(kCameraRemovedEvent)
+{
+	this->data.removed = data;
+}
+
 //------------------------------------------------------------------------------
 U16	CCameraEventMessage::GetSizeInBytes() const
 {

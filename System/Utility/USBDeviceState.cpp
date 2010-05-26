@@ -54,6 +54,26 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 }
 
 //----------------------------------------------------------------------------
+// Returns the USB product & vendor ID from the given sysfs path, e.g.,
+// "/sys/class/usb_device/usbdev1.1"
+//----------------------------------------------------------------------------
+U32 FindDevice(LeapFrog::Brio::CPath path)
+{
+	unsigned int vid = 0, pid = 0;
+	CPath file = path + "/device/idVendor";
+	FILE* fp = fopen(file.c_str(), "r");
+	if (fp) {
+		fscanf(fp, "%x", &vid);
+		fclose(fp);
+	}
+	file = path + "/device/idProduct";
+	fp = fopen(file.c_str(), "r");
+	if (fp) {
+		fscanf(fp, "%x", &pid);
+		fclose(fp);
+	}
+	return (vid << 16) | pid;
+}
 
 LF_END_BRIO_NAMESPACE()
 

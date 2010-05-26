@@ -25,6 +25,7 @@
 #include <USBDeviceTypes.h>
 #include <ButtonTypes.h>
 #include <CartridgeTypes.h>
+#include <StringTypes.h>
 #include <boost/shared_array.hpp>	
 
 #include "Wrappers.h"
@@ -153,6 +154,35 @@ void SetCartridgeState(tCartridgeData cartridge_data);
 // Prints uptime to console in uniform manner
 //----------------------------------------------------------------------------
 void PrintUptime(const char *tag);
+
+/****************************************************************************
+ * EnumFolder - Enumerates (non-recursively) files and dirs under a certain
+ * folder path. Eliminates '.' and '..' from enumerations. Does not eliminate
+ * hidden files/folders or files starting w/ '.' (eg: '.svn/').
+ * Returns false if folder does not exist.
+ * dirIn - the path of the folder to enumerate
+ * f - the callback function which gets called for each new item enumerated.
+ *     If return from f is false, EnumFolder stops enumerating. 'path' returned
+ *     does not include a final '/' (if folder).
+ * type - if kFoldersOnly, kFilesOnly, or kFilesAndFolders
+ * userData - User data.
+ ****************************************************************************/
+typedef Boolean (*tFuncEnumFolder)(const CPath& path, void* userData);
+
+enum tFileSelect {
+	kFoldersOnly = 0,
+	kFilesOnly,
+	kFilesAndFolders,
+	kFoldersNone
+};
+
+Boolean EnumFolder( const CPath& dirIn, tFuncEnumFolder f, tFileSelect type, void* userData);
+
+//----------------------------------------------------------------------------
+// Returns the USB device id of the gadget at a given sysfs path,
+// e.g., "/sys/class/usb_device/usbdev1.2"
+//----------------------------------------------------------------------------
+U32 FindDevice(CPath path);
 
 LF_END_BRIO_NAMESPACE()
 
