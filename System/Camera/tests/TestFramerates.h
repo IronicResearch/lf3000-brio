@@ -71,7 +71,7 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "YUV_WithAudio.avi", 0, true);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			pKernelMPI_->TaskSleep(10000);
+			pKernelMPI_->TaskSleep(60000);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
@@ -108,7 +108,7 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "YUV_WithoutAudio.avi", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			pKernelMPI_->TaskSleep(10000);
+			pKernelMPI_->TaskSleep(60000);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
@@ -145,7 +145,7 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "RGB_WithAudio.avi", 0, true);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			pKernelMPI_->TaskSleep(10000);
+			pKernelMPI_->TaskSleep(60000);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
@@ -182,7 +182,7 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "RGB_WithoutAudio.avi", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			pKernelMPI_->TaskSleep(10000);
+			pKernelMPI_->TaskSleep(60000);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
@@ -207,7 +207,7 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(NULL, NULL, "None_WithAudio.avi", 0, true);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			pKernelMPI_->TaskSleep(10000);
+			pKernelMPI_->TaskSleep(60000);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
@@ -229,7 +229,7 @@ public:
 			capture = pCameraMPI_->StartVideoCapture(NULL, NULL, "None_WithoutAudio.avi", 0, false);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
-			pKernelMPI_->TaskSleep(10000);
+			pKernelMPI_->TaskSleep(60000);
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );

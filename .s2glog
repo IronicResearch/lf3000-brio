@@ -25905,3 +25905,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/26/10 4:40 PM
 6,583 ms. (Cumulative: 9,066,857 ms)
 
 ----------------
+Revision 7,487 from svn://localhost/TRUNK/:
+
+Increased camera framerate test capture times and added 2 "interactive" unit tests for hotplug events.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/26/10 4:41 PM
+2 changed, 1 added, 0 deleted.
+6,318 ms. (Cumulative: 9,073,268 ms)
+
+----------------
