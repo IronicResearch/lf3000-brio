@@ -256,7 +256,8 @@ public:
 	///
 	/// \return			Returns kNoErr on success.
 	///
-	/// LF1000: Global alpha value overides per-pixel alpha values, if ARGB format.
+	/// LF1000: Global alpha value effective for RGB, YUV pixel formats only, not ARGB.
+	/// Per-pixel alpha values effective instead when enabled for ARGB display contexts.
 	/// Has no effect on emulation.
 	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
 								Boolean enable=true);

@@ -25924,3 +25924,19 @@ By Dave Milici (dmilici@leapfrog.com) on 5/26/10 6:39 PM
 6,610 ms. (Cumulative: 9,079,972 ms)
 
 ----------------
+Revision 7,490 from svn://localhost/TRUNK/:
+Revision 7,491 from svn://localhost/TRUNK/:
+Revision 7,492 from svn://localhost/TRUNK/:
+Revision 7,493 from svn://localhost/TRUNK/:
+Revision 7,494 from svn://localhost/TRUNK/:
+Revision 7,495 from svn://localhost/TRUNK/:
+Revision 7,496 from svn://localhost/TRUNK/:
+Revision 7,497 from svn://localhost/TRUNK/:
+
+Corrected DisplayMPI SetAlpha() doxygen comments about RGB vs ARGB formats. 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/27/10 12:45 PM
+1 changed, 0 added, 0 deleted.
+6,437 ms. (Cumulative: 9,086,534 ms)
+
+----------------
