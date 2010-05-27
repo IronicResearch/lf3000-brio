@@ -229,6 +229,11 @@ void* CameraTaskMain(void* arg)
 											  "Couldn't unlock mutex.\n");
 	}
 
+	if (bFile && pCtx->bAudio)
+	{
+		pCtx->module->StopAudio();
+	}
+	
 	kernel.DestroyTimer(timer);
 
 	end = kernel.GetElapsedTimeAsMSecs();
@@ -299,7 +304,9 @@ void* CameraTaskMain(void* arg)
 
 	if(bFile)
 	{
-		float fps = keyframe / (end / 1000);
+		float fps = (float)keyframe / ((float)end / 1000);
+		if (pCtx->bAudio)
+			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
 		AVI_close(avi);
 	}
