@@ -62,15 +62,25 @@ avi_t* AVI_open_output_file(char * filename)
 void fixup_header(avi_t *avi)
 {
 	// Fixup AVI header with actual FPS rate manually.
+
 	// Only AVI header fields at offset 32 (avih[0]) and 132 (strh[28]) seem significant:
 	// http://www.fastgraph.com/help/avi_header_format.html
-	uint32_t rate = avi->pVideoCodecCtx->time_base.den / avi->pVideoCodecCtx->time_base.num;
+
+	// Fractional FPS rate saved as dwRate:dwScale strh[] fields:
+	// http://msdn.microsoft.com/en-us/library/aa451198.aspx
+	// http://www.virtualdub.org/blog/pivot/entry.php?id=27
+	
+	uint32_t scale = avi->pVideoCodecCtx->time_base.num;
+	uint32_t rate = avi->pVideoCodecCtx->time_base.den;
 	uint32_t time = 1000000 * avi->pVideoCodecCtx->time_base.num / avi->pVideoCodecCtx->time_base.den;
+	
 	FILE* fp = fopen(avi->pFormatCtx->filename, "r+");
 	fseek(fp, 0, SEEK_END);
 	long eof = ftell(fp);
 	fseek(fp, 32, SEEK_SET);					// AVIMainHeader.dwMicroSecPerFrame
 	fwrite(&time, sizeof(uint32_t), 1, fp);
+	fseek(fp, 128, SEEK_SET);					// AVIStreamHeader.dwScale
+	fwrite(&scale, sizeof(uint32_t), 1, fp);
 	fseek(fp, 132, SEEK_SET);					// AVIStreamHeader.dwRate
 	fwrite(&rate, sizeof(uint32_t), 1, fp);
 	fseek(fp, eof, SEEK_SET);

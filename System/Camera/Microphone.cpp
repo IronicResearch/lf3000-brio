@@ -249,6 +249,10 @@ Boolean	CCameraModule::StartAudio()
 	{
 		err = snd_pcm_start(micCtx_.pcm_handle);
 	}
+	
+	micCtx_.bytesRead 		= 0;
+	micCtx_.bytesWritten 	= 0;
+	micCtx_.counter 		= 0;
 
 	return (err == 0) ? true : false;
 }
@@ -324,6 +328,9 @@ Boolean	CCameraModule::WriteAudio(avi_t *avi)
 		if(len > 0)
 		{
 			AVI_write_audio(avi, reinterpret_cast<char*>(micCtx_.poll_buf), len);
+			micCtx_.bytesRead = len;
+			micCtx_.bytesWritten += len;
+			micCtx_.counter++;
 //		while(len == DRAIN_SIZE)
 //		{
 //			len = read(micCtx_.fd[0], micCtx_.poll_buf, DRAIN_SIZE);

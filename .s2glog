@@ -25914,3 +25914,13 @@ By dlazzari (dlazzari@leapfrog.com) on 5/26/10 4:41 PM
 6,318 ms. (Cumulative: 9,073,268 ms)
 
 ----------------
+Revision 7,488 from svn://localhost/TRUNK/:
+Revision 7,489 from svn://localhost/TRUNK/:
+
+CameraMPI: Calculate effective FPS rate based on audio samples duration when present, then Save FPS rate as fractional values in AVI header fixup. (TTP 2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/26/10 6:39 PM
+4 changed, 0 added, 0 deleted.
+6,610 ms. (Cumulative: 9,079,972 ms)
+
+----------------
