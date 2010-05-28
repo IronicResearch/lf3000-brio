@@ -1037,7 +1037,8 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 		return false;
 	}
 
-    camCtx_.fps = mode->fps_numerator / mode->fps_denominator;
+	// NOTE: "fps" vars are misnamed since Video4Linux expects time per frame
+    camCtx_.fps = fps.parm.capture.timeperframe.denominator / fps.parm.capture.timeperframe.numerator;
 
 	return true;
 }
@@ -1531,7 +1532,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 	CPath fpath = path;
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 30, 1};
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};  // "fps" fields misnamed
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 	struct statvfs buf;
 	U64 length;
