@@ -25962,3 +25962,13 @@ By jeno (jeno@leapfrog.com) on 5/27/10 5:21 PM
 6,766 ms. (Cumulative: 9,093,410 ms)
 
 ----------------
+Revision 7,503 from svn://localhost/TRUNK/:
+Revision 7,504 from svn://localhost/TRUNK/:
+
+CameraMPI: Correct framerate request to Video4Linux, default at 15 FPS now. Some internal "fps" vars were misnamed and really meant to represent inverse-fps values, ie, time per frame. Apparently this was not significant until Pixart camera widget FW reinstated support for multiple framerate selections.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/27/10 6:25 PM
+1 changed, 0 added, 0 deleted.
+6,759 ms. (Cumulative: 9,100,263 ms)
+
+----------------
