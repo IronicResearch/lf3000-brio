@@ -35,7 +35,7 @@ class TestHotplug : public CxxTest::TestSuite, TestSuiteBase
 				{
 					printf("Event Detected\n");
 					//Check for USBDeviceStateChange message (For Camera Inserts)
-					if(msg.GetEventType() & kUSBDeviceStateChange)
+					if(msg.GetEventType() == kUSBDeviceStateChange)
 					{
 						const CUSBDeviceMessage& usb_msg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 						if(usb_msg.GetUSBDeviceState().USBDeviceState & kUSBDeviceHotPlug)

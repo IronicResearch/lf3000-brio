@@ -30,6 +30,7 @@ namespace
 	tTaskHndl				hMicThread		= kNull;
 	volatile bool			bRunning		= false;
 	volatile bool			bStopping		= false;
+	volatile bool			bInited			= false;
 	tAudCapHndl				hndl			= kInvalidAudCapHndl;
 	class CCameraModule*	cam				= NULL;
 	volatile bool			timeout			= false;
@@ -73,7 +74,7 @@ void* MicTaskMain(void* arg)
 	// Paused state set by StartAudioCapture() API now
 	// pCtx->bPaused = false;
 
-	bRunning = pCtx->bStreaming = true;
+	bRunning = true;
 	cam->dbg_.DebugOut( kDbgLvlImportant, "MicrophoneTask Started...\n" );
 
 	timeout = false;
@@ -85,11 +86,7 @@ void* MicTaskMain(void* arg)
 	if (!pCtx->bPaused)
 		cam->StartAudio();
 
-	/*
-	 * This is intentionally an assignment, not a comparison.
-	 * End loop when bRunning is false.
-	 */
-	while(bRunning = pCtx->bStreaming)
+	while(bRunning)
 	{
 		if(!pCtx->bPaused)
 		{
@@ -106,7 +103,6 @@ void* MicTaskMain(void* arg)
 	// Post done message to event listener
 	if(pCtx->pListener)
 	{
-		CEventMPI			evntmgr;
 		CCameraEventMessage *msg;
 
 		if(!cam->valid)								// camera hot-unplugged
@@ -142,7 +138,7 @@ void* MicTaskMain(void* arg)
 			msg = new CCameraEventMessage(data);
 		}
 
-		evntmgr.PostEvent(*msg, 0, pCtx->pListener);
+		cam->event_.PostEvent(*msg, 0, pCtx->pListener);
 		delete msg;
 	}
 
@@ -177,6 +173,7 @@ tErrType InitMicTask(CCameraModule* module)
 	while (!bRunning)
 		kernel.TaskSleep(1);
 
+	bInited = true;
 	return r;
 }
 
@@ -189,8 +186,11 @@ tErrType DeInitMicTask(CCameraModule* module)
 	if (hMicThread == kNull)
 		return kNoErr;
 
+	while (!bInited)
+		kernel.TaskSleep(1);
+
 	// Stop running task, if it hasn't already stopped itself
-	bRunning = module->micCtx_.bStreaming = false;
+	bRunning = false;
 	while (!bStopping)
 		kernel.TaskSleep(10);
 
@@ -198,6 +198,8 @@ tErrType DeInitMicTask(CCameraModule* module)
 		kernel.CancelTask(hMicThread);
 	kernel.JoinTask(hMicThread, retval);
 	module->micCtx_.hMicThread = hMicThread = kNull;
+
+	bInited = false;
 
 	return kNoErr;
 }

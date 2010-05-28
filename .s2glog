@@ -25940,3 +25940,25 @@ By Dave Milici (dmilici@leapfrog.com) on 5/27/10 12:45 PM
 6,437 ms. (Cumulative: 9,086,534 ms)
 
 ----------------
+Revision 7,498 from svn://localhost/TRUNK/:
+Revision 7,499 from svn://localhost/TRUNK/:
+Revision 7,500 from svn://localhost/TRUNK/:
+Revision 7,501 from svn://localhost/TRUNK/:
+Revision 7,502 from svn://localhost/TRUNK/:
+
+Camera: Resolve race conditions present in hotplug handling (L3B TTPro 2555).
+This is accomplished with a new event type, kUSBDevicePriorityStateChange,
+which should only be used internally by Brio within device modules, and
+never by applications.
+
+Also, break camera unit tests into separate tests for:
+-Camera
+-Microphone
+-Frame rates
+-Hotplug
+
+By jeno (jeno@leapfrog.com) on 5/27/10 5:21 PM
+11 changed, 1 added, 0 deleted.
+6,766 ms. (Cumulative: 9,093,410 ms)
+
+----------------

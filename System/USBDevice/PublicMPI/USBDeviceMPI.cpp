@@ -39,6 +39,12 @@ CUSBDeviceMessage::CUSBDeviceMessage( const tUSBDeviceData& data )
 }
 
 //------------------------------------------------------------------------------
+CUSBDeviceMessage::CUSBDeviceMessage( const tUSBDeviceData& data, tEventType type )
+	: IEventMessage(type), mData(data)
+{
+}
+
+//------------------------------------------------------------------------------
 U16	CUSBDeviceMessage::GetSizeInBytes() const
 {
 	return sizeof(CUSBDeviceMessage);

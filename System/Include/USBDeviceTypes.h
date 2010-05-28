@@ -22,8 +22,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================	   
 // USBDevice Manager events
-//==============================================================================	   
-#define USBDEVICE_EVENTS		\
+//==============================================================================
+#define USBDEVICE_EVENTS				\
+	(kUSBDevicePriorityStateChange)		\
 	(kUSBDeviceStateChange)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupUSBDevice), USBDEVICE_EVENTS)
@@ -60,6 +61,7 @@ const U32 kUSBDeviceIsEthernet		= (1 << 2);
 class CUSBDeviceMessage : public IEventMessage {
  public:
 	CUSBDeviceMessage( const tUSBDeviceData& data );
+	CUSBDeviceMessage( const tUSBDeviceData& data, tEventType type );
 	virtual U16	GetSizeInBytes() const;
 	tUSBDeviceData GetUSBDeviceState() const;
  private:
