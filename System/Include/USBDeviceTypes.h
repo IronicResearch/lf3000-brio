@@ -24,8 +24,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 // USBDevice Manager events
 //==============================================================================
 #define USBDEVICE_EVENTS				\
-	(kUSBDevicePriorityStateChange)		\
-	(kUSBDeviceStateChange)
+	(kUSBDeviceStateChange)				\
+	(kUSBDevicePriorityStateChange)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupUSBDevice), USBDEVICE_EVENTS)
 
