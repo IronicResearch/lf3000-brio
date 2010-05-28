@@ -33,6 +33,7 @@ namespace
 	tTaskHndl				hCameraThread	= kNull;
 	volatile bool			bRunning		= false;
 	volatile bool			bStopping		= false;
+	volatile bool			bInited			= false;
 	tVidCapHndl				hndl			= kInvalidVidCapHndl;
 	class CCameraModule*	cam				= NULL;
 	volatile bool			timeout			= false;
@@ -151,7 +152,7 @@ void* CameraTaskMain(void* arg)
 		}
 	}
 
-	bRunning = pCtx->bStreaming = true;
+	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
 
 	start = kernel.GetElapsedTimeAsMSecs();
@@ -171,19 +172,17 @@ void* CameraTaskMain(void* arg)
 	bSpeakerState = audiomgr.GetSpeakerEqualizer();
 	audiomgr.SetSpeakerEqualizer(false);
 
-	/*
-	 * This is intentionally an assignment, not a comparison.
-	 * End loop when bRunning is false.
-	 */
-	while(bRunning = pCtx->bStreaming)
+	while(bRunning)
 	{
+		if(0 != kernel.TryLockMutex(pCtx->mThread))
+		{
+			continue;
+		}
+
 		if(bFile && pCtx->bAudio && !pCtx->bPaused)
 		{
 			pCtx->module->WriteAudio(avi);
 		}
-
-		dbg.Assert((kNoErr == kernel.LockMutex(pCtx->mThread)),\
-											  "Couldn't lock mutex.\n");
 
 		if(!pCtx->module->PollFrame(pCtx->hndl))
 		{
@@ -233,7 +232,7 @@ void* CameraTaskMain(void* arg)
 	{
 		pCtx->module->StopAudio();
 	}
-	
+
 	kernel.DestroyTimer(timer);
 
 	end = kernel.GetElapsedTimeAsMSecs();
@@ -348,6 +347,7 @@ tErrType InitCameraTask(tCameraContext* pCtx)
 	while (!bRunning)
 		kernel.TaskSleep(1);
 
+	bInited = true;
 	return r;
 }
 
@@ -360,8 +360,11 @@ tErrType DeInitCameraTask(tCameraContext* pCtx)
 	if (hCameraThread == kNull)
 		return kNoErr;
 
+	while (!bInited)
+		kernel.TaskSleep(1);
+
 	// Stop running task, if it hasn't already stopped itself
-	bRunning = pCtx->bStreaming = false;
+	bRunning = false;
 	while (!bStopping)
 		kernel.TaskSleep(10);
 
@@ -369,6 +372,8 @@ tErrType DeInitCameraTask(tCameraContext* pCtx)
 		kernel.CancelTask(hCameraThread);
 	kernel.JoinTask(hCameraThread, retval);
 	pCtx->hCameraThread = hCameraThread = kNull;
+
+	bInited = false;
 
 	return kNoErr;
 }

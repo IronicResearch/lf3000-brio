@@ -15,7 +15,7 @@ using namespace LeapFrog::Brio;
 
 const char* capture_path = "/LF/Bulk/Data/Local/All/";
 
-class TestCamera : public CxxTest::TestSuite, TestSuiteBase
+class TestFramerates : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
 	CCameraMPI*		pCameraMPI_;

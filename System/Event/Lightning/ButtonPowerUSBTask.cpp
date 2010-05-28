@@ -500,6 +500,8 @@ void* CEventModule::CartridgeTask( void* arg )
 							if (app_msg.payload == 0)
 								usb_data.USBDeviceState = 0;
 							CUSBDeviceMessage usb_msg(usb_data);
+							CUSBDeviceMessage usb_priority_msg(usb_data, kUSBDevicePriorityStateChange);
+							pThis->PostEvent(usb_priority_msg, kUSBDeviceEventPriority, 0);
 							pThis->PostEvent(usb_msg, kUSBSocketEventPriority, 0);
 							SetCachedUSBDeviceState(usb_data);
 						}

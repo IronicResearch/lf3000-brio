@@ -493,8 +493,11 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 {
 	tAudCapHndl hndl = kInvalidAudCapHndl;
 
-	if(micCtx_.hndl != kInvalidAudCapHndl)
+	DATA_LOCK;
+
+	if(micCtx_.hndl != kInvalidAudCapHndl || !valid)
 	{
+		DATA_UNLOCK;
 		return hndl;
 	}
 
@@ -508,9 +511,7 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 	}
 	else
 	{
-		DATA_LOCK;
 		micCtx_.path	= apath + path;
-		DATA_UNLOCK;
 	}
 
 
@@ -526,19 +527,25 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 		micCtx_.hndl = hndl;
 	}
 
+	DATA_UNLOCK;
+
 	return hndl;
 }
 
 //----------------------------------------------------------------------------
 Boolean CCameraModule::PauseAudioCapture(const tAudCapHndl hndl)
 {
+	DATA_LOCK;
+
 	if(micCtx_.hndl == kInvalidAudCapHndl || micCtx_.bPaused)
 	{
+		DATA_UNLOCK;
 		return false;
 	}
 
 	micCtx_.bPaused = StopAudio();
 
+	DATA_UNLOCK;
 	return micCtx_.bPaused;
 }
 
@@ -547,8 +554,11 @@ Boolean CCameraModule::ResumeAudioCapture(const tAudCapHndl hndl)
 {
 	Boolean bRet;
 
+	DATA_LOCK;
+
 	if(micCtx_.hndl == kInvalidAudCapHndl || !micCtx_.bPaused)
 	{
+		DATA_UNLOCK;
 		return false;
 	}
 
@@ -559,17 +569,21 @@ Boolean CCameraModule::ResumeAudioCapture(const tAudCapHndl hndl)
 		micCtx_.bPaused = false;
 	}
 
+	DATA_UNLOCK;
 	return bRet;
 }
 
 //----------------------------------------------------------------------------
 Boolean CCameraModule::IsAudioCapturePaused(const tAudCapHndl hndl)
 {
+	DATA_LOCK;
 	if(micCtx_.hndl == kInvalidAudCapHndl)
 	{
+		DATA_UNLOCK;
 		return false;
 	}
 
+	DATA_UNLOCK;
 	return micCtx_.bPaused;
 }
 
@@ -578,8 +592,11 @@ Boolean CCameraModule::StopAudioCapture(const tAudCapHndl hndl)
 {
 	int err;
 
+	DATA_LOCK;
+
 	if(micCtx_.hndl == kInvalidAudCapHndl)
 	{
+		DATA_UNLOCK;
 		return false;
 	}
 
@@ -589,6 +606,8 @@ Boolean CCameraModule::StopAudioCapture(const tAudCapHndl hndl)
 	}
 
 	micCtx_.hndl = kInvalidAudCapHndl;
+
+	DATA_UNLOCK;
 
 	return true;
 }

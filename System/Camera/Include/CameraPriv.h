@@ -156,14 +156,13 @@ struct tCameraContext {
 
 	Boolean						bPaused;
 	Boolean						bVPaused;
-	Boolean						bStreaming;
 	tMutex						mThread;
 	U32							reqLength;		// length in seconds requested by app
 	U32							maxLength;		// length in seconds available on FS
 
 	class CCameraModule			*module;
 	IEventListener				*pListener;
-	
+
 	Boolean						bAudio;			// capture audio option
 };
 
@@ -191,7 +190,6 @@ struct tMicrophoneContext {
 
 	CPath					path;
 	Boolean					bPaused;
-	Boolean					bStreaming;
 	U32						reqLength;		// length in seconds requested by app
 
 	IEventListener			*pListener;
@@ -199,7 +197,7 @@ struct tMicrophoneContext {
 	tMutex					dlock;
 
 	snd_pcm_uframes_t		period_size;
-	 
+
 	unsigned int			bytesRead;		// bytes read per callback
 	unsigned int			bytesWritten;	// bytes written total
 	unsigned int			counter;		// block counter
@@ -217,8 +215,10 @@ class CCameraModule : public ICoreModule {
 	class CameraListener : public IEventListener
 	{
 		CCameraModule*	pMod;
+		Boolean			running;
 	public:
 		CameraListener(CCameraModule* ctx);
+		~CameraListener();
 		tEventStatus Notify(const IEventMessage& msg);
 	};
 public:

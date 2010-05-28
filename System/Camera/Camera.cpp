@@ -168,13 +168,31 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 
 CCameraModule::CameraListener::CameraListener(CCameraModule* mod):
 			IEventListener(LocalCameraEvents, ArrayCount(LocalCameraEvents)),
-			pMod(mod)
+			pMod(mod), running(false)
 			{}
+
+CCameraModule::CameraListener::~CameraListener()
+{
+	/*
+	 * There is a potential race here if a CameraModule object is deleted just
+	 * as the Notify() method is invoked by the either the EventDispatch thread or
+	 * ButtonPowerUSB thread.  The proper fix would be to delay destruction until
+	 * these threads have join()ed, but that is not possible, because:
+	 *  a.) those threads are join()ed only when there are no outstanding clients
+	 *  b.) this listener object itself counts as an outstanding client
+	 *
+	 *  This hack seems to make the race unlikely.
+	 */
+	while(running)
+		pMod->kernel_.TaskSleep(1);
+}
 
 tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 {
+	running = true;
+
 	tEventType event_type = msg.GetEventType();
-	if(event_type == kUSBDeviceStateChange)
+	if(event_type == kUSBDevicePriorityStateChange)
 	{
 		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
 		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
@@ -189,7 +207,9 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			if(!pMod->sysfs.empty())
 			{
 				/* camera present or added */
+				pMod->kernel_.LockMutex(pMod->mutex_);
 				pMod->valid = pMod->InitCameraInt();
+				pMod->kernel_.UnlockMutex(pMod->mutex_);
 			}
 			else
 			{
@@ -203,7 +223,9 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 					pMod->StopAudioCapture(pMod->micCtx_.hndl);
 
 					/* must uninitialize camera HW to allow 'modprobe -r' */
+					pMod->kernel_.LockMutex(pMod->mutex_);
 					pMod->DeinitCameraInt();
+					pMod->kernel_.UnlockMutex(pMod->mutex_);
 				}
 				else
 				{
@@ -213,6 +235,7 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			}
 		}
 	}
+	running = false;
 	return kEventStatusOK;
 }
 
@@ -270,7 +293,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	usb_data.USBDeviceState &= kUSBDeviceConnected;
 	usb_data.USBDeviceState |= kUSBDeviceHotPlug;
 
-	CUSBDeviceMessage usb_msg(usb_data);
+	CUSBDeviceMessage usb_msg(usb_data, kUSBDevicePriorityStateChange);
 	/* Event is synchronous and handled in-thread */
 	valid = false;
 	event_.PostEvent(usb_msg, 0, listener_);
@@ -281,10 +304,16 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 //----------------------------------------------------------------------------
 CCameraModule::~CCameraModule()
 {
+	event_.UnregisterEventListener(listener_);
+	delete listener_;
+
 	StopVideoCapture(camCtx_.hndl);
+	StopAudioCapture(micCtx_.hndl);
 
 	valid = false;
+	CAMERA_LOCK;
 	DeinitCameraInt();
+	CAMERA_UNLOCK;
 
 	kernel_.DeInitMutex(camCtx_.mThread);
 	kernel_.DeInitMutex(mutex_);
@@ -295,8 +324,6 @@ CCameraModule::~CCameraModule()
 	delete camCtx_.controls;
 	delete camCtx_.modes;
 
-	event_.UnregisterEventListener(listener_);
-	delete listener_;
 }
 
 //----------------------------------------------------------------------------
@@ -447,7 +474,8 @@ static Boolean DeinitCameraFormatInt(tCameraContext *pCamCtx)
 //----------------------------------------------------------------------------
 static Boolean DeinitCameraHWInt(tCameraContext *pCamCtx)
 {
-	close(pCamCtx->fd);
+	if(pCamCtx->fd != -1)
+		close(pCamCtx->fd);
 	pCamCtx->fd = -1;
 
 	return true;
@@ -1511,7 +1539,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 
 	CAMERA_LOCK;
 
-	if(camCtx_.hndl != kInvalidVidCapHndl)
+	if(camCtx_.hndl != kInvalidVidCapHndl || !valid)
 	{
 		CAMERA_UNLOCK;
 		return hndl;
@@ -1616,9 +1644,13 @@ static Boolean StopVideoCaptureInt(int fd)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
+	THREAD_LOCK;
+	CAMERA_LOCK;
 
 	if(!IS_STREAMING_HANDLE(hndl))
 	{
+		CAMERA_UNLOCK;
+		THREAD_UNLOCK;
 		return false;
 	}
 
@@ -1628,12 +1660,11 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		DeInitCameraTask(&camCtx_);
 	}
 
-	CAMERA_LOCK;
-
 	if(!StopVideoCaptureInt(camCtx_.fd))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt streaming from %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
+		THREAD_UNLOCK;
 		return false;
     }
 
@@ -1643,13 +1674,15 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		{
 			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt audio streaming\n");
 			CAMERA_UNLOCK;
+			THREAD_UNLOCK;
 			return false;
 		}
 	}
 
-	CAMERA_UNLOCK;
-
 	camCtx_.hndl 	= kInvalidVidCapHndl;
+
+	CAMERA_UNLOCK;
+	THREAD_UNLOCK;
 
 	return true;
 }
