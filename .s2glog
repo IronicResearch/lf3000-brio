@@ -25972,3 +25972,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/27/10 6:25 PM
 6,759 ms. (Cumulative: 9,100,263 ms)
 
 ----------------
+Revision 7,505 from svn://localhost/TRUNK/:
+
+Re-order USB event enums to preserve backwards compatibility. New enum added in svn -r7502 should have been appended after previously defined enums.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/27/10 6:47 PM
+1 changed, 0 added, 0 deleted.
+6,642 ms. (Cumulative: 9,106,983 ms)
+
+----------------
