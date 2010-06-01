@@ -26003,3 +26003,16 @@ By jeno (jeno@leapfrog.com) on 6/1/10 1:26 PM
 6,595 ms. (Cumulative: 9,120,359 ms)
 
 ----------------
+Revision 7,512 from svn://localhost/TRUNK/:
+Revision 7,513 from svn://localhost/TRUNK/:
+Revision 7,514 from svn://localhost/TRUNK/:
+Revision 7,515 from svn://localhost/TRUNK/:
+Revision 7,516 from svn://localhost/TRUNK/:
+
+CameraMPI: Add YUV video layer HW scaler support. Effective for surfaces created at 320x240 fullscreen, but rendered at other sizes, like 160x120 quarter-size. Quarter-size rendering during capture recording sessions result in higher throughput / FPS rates. (TTP #2569)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/1/10 4:10 PM
+1 changed, 0 added, 0 deleted.
+6,353 ms. (Cumulative: 9,126,821 ms)
+
+----------------
