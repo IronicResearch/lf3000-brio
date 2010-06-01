@@ -25981,3 +25981,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/27/10 6:47 PM
 6,642 ms. (Cumulative: 9,106,983 ms)
 
 ----------------
+Revision 7,506 from svn://localhost/TRUNK/:
+Revision 7,507 from svn://localhost/TRUNK/:
+Revision 7,508 from svn://localhost/TRUNK/:
+
+VideoMPI: Correct video playback frametime propagated from FPS rational values calculated in respective Theora or AVI players. Otherwise inverse FPS calculations were re-introducing FPS truncation errors, seen as slightly longer frametime intervals during AVI playback. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/1/10 9:45 AM
+1 changed, 0 added, 0 deleted.
+6,595 ms. (Cumulative: 9,113,671 ms)
+
+----------------
