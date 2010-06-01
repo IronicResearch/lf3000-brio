@@ -10,6 +10,7 @@
 #include <CameraMPI.h>
 #include <DisplayMPI.h>
 #include <KernelMPI.h>
+#include <EventMPI.h>
 
 using namespace LeapFrog::Brio;
 
@@ -21,6 +22,7 @@ private:
 	CCameraMPI*		pCameraMPI_;
 	CDisplayMPI*		pDisplayMPI_;
 	CKernelMPI*		pKernelMPI_;
+	CEventMPI*		pEventMPI_;	/* workaround for L3B TTPro 2580 */
 
 	tVidCapHndl					capture;
 	Boolean						bRet;
@@ -37,6 +39,7 @@ public:
 		pCameraMPI_ = new CCameraMPI;
 		pDisplayMPI_ = new CDisplayMPI;
 		pKernelMPI_ = new CKernelMPI;
+		pEventMPI_ = new CEventMPI;
 	}
 
 	//------------------------------------------------------------------------
@@ -45,6 +48,7 @@ public:
 		delete pCameraMPI_;
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
+		delete pEventMPI_;
 	}
 	
 	void testYUV_WithAudio()
