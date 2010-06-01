@@ -254,7 +254,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	pVidCtx->bDropFramed	= false;
 	pVidCtx->bPaused	= false;
 	pVidCtx->bPlaying	= true;
-	pVidCtx->uFrameTime = 1000 / pVidCtx->info.fps; // handled inside init
+//	pVidCtx->uFrameTime = 1000 / pVidCtx->info.fps; // handled inside init
 	pVidCtx->pMutex		= &gVidMutex;
 	pVidCtx->bSeeked	= false;
 
