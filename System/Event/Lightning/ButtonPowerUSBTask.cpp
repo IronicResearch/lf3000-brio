@@ -318,23 +318,12 @@ void* CEventModule::CartridgeTask( void* arg )
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open Power Button\n");
 	}
 	
-	int usb_index = -1;
 	int vbus;
 	tUSBDeviceData	usb_data;	
 
 	// init USB driver and state
 	usb_data = GetCurrentUSBDeviceState();
 	vbus = usb_data.USBDeviceState;
-	event_fd[last_fd].fd = open_input_device("LF1000 USB");
-	event_fd[last_fd].events = POLLIN;
-	if(event_fd[last_fd].fd >= 0)
-	{
-		usb_index = last_fd++;
-	}
-	else
-	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
-	}
 	
 	// init USB socket
 	int socket_index = -1;
@@ -466,25 +455,6 @@ void* CEventModule::CartridgeTask( void* arg )
 				}
 			}
 
-			// USB driver event ?
-			if(usb_index >= 0 && event_fd[usb_index].revents & POLLIN) {
-				size = read(event_fd[usb_index].fd, &ev, sizeof(ev));
-				if(ev.type == EV_SW && ev.code == SW_LID)
-				{
-					vbus = !!ev.value;
-					pThis->debug_.DebugOut(kDbgLvlValuable, "%s: vbus=%d\n", __FUNCTION__, vbus);
-					if((vbus == 1)) {
-						usb_data.USBDeviceState |= kUSBDeviceConnected;
-						CUSBDeviceMessage usb_msg(usb_data);
-						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
-					} else if((vbus == 0)) {
-						usb_data.USBDeviceState = 0; // clear all cached state
-						CUSBDeviceMessage usb_msg(usb_data);
-						pThis->PostEvent(usb_msg, kUSBDeviceEventPriority, 0);
-					}
-				}
-			}
-
 			// USB socket event ?
 			if (socket_index >= 0 && event_fd[socket_index].revents & POLLIN) {
 				struct sockaddr_un addr;
@@ -495,10 +465,7 @@ void* CEventModule::CartridgeTask( void* arg )
 					do {
 						r = recv(fdsock, &app_msg, sizeof(app_message), 0);
 						if (r == sizeof(app_message)) {
-							usb_data.USBDeviceState &= kUSBDeviceConnected;
-							usb_data.USBDeviceState |= app_msg.payload;
-							if (app_msg.payload == 0)
-								usb_data.USBDeviceState = 0;
+							usb_data.USBDeviceState = app_msg.payload;
 							CUSBDeviceMessage usb_msg(usb_data);
 							CUSBDeviceMessage usb_priority_msg(usb_data, kUSBDevicePriorityStateChange);
 							pThis->PostEvent(usb_priority_msg, kUSBDeviceEventPriority, 0);

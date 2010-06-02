@@ -26026,3 +26026,28 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 6/2/10 11:13 AM
 6,533 ms. (Cumulative: 9,133,433 ms)
 
 ----------------
+Revision 7,518 from svn://localhost/TRUNK/:
+Revision 7,519 from svn://localhost/TRUNK/:
+Revision 7,520 from svn://localhost/TRUNK/:
+Revision 7,521 from svn://localhost/TRUNK/:
+Revision 7,522 from svn://localhost/TRUNK/:
+Revision 7,523 from svn://localhost/TRUNK/:
+Revision 7,524 from svn://localhost/TRUNK/:
+Revision 7,525 from svn://localhost/TRUNK/:
+Revision 7,526 from svn://localhost/TRUNK/:
+Revision 7,527 from svn://localhost/TRUNK/:
+Revision 7,528 from svn://localhost/TRUNK/:
+Revision 7,529 from svn://localhost/TRUNK/:
+Revision 7,530 from svn://localhost/TRUNK/:
+Revision 7,531 from svn://localhost/TRUNK/:
+Revision 7,532 from svn://localhost/TRUNK/:
+Revision 7,533 from svn://localhost/TRUNK/:
+
+Brio: don't use "LF1000 USB" keyboard, expect unotify to tell us about both vbus and USB devices
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 6/2/10 3:39 PM
+1 changed, 0 added, 0 deleted.
+6,767 ms. (Cumulative: 9,140,403 ms)
+
+----------------
