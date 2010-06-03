@@ -47,6 +47,11 @@ enum tControlType {
 	kControlTypeBacklightComp,
 };
 
+enum tColorOrder {
+	kOpenGlRgb,
+	kDisplayRgb
+};
+
 // Controls info
 struct tControlInfo {
 	tControlType	type;

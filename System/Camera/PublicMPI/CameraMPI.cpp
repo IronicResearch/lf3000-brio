@@ -199,11 +199,11 @@ Boolean	CCameraMPI::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, U8 *pixels)
+Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order)
 {
 	if (!pModule_)
 		return kInvalidVidCapHndl;
-	return pModule_->GetFrame(hndl, pixels);
+	return pModule_->GetFrame(hndl, pixels, color_order);
 }
 
 //----------------------------------------------------------------------------

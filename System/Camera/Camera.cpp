@@ -1753,7 +1753,7 @@ Boolean	CCameraModule::SnapFrameRGB(const tVidCapHndl hndl, const CPath &path)
 	// Grab frame to local RGB buffer instead and save as PNG
 	U8* rgbbuf = new U8[640 * 480 * 3];
 
-	Boolean ret = GetFrame(hndl, rgbbuf);
+	Boolean ret = GetFrame(hndl, rgbbuf, kOpenGlRgb);
 
 	if (ret)
 	{
@@ -1789,7 +1789,7 @@ out:
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels)
+Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order)
 {
 	int i, row_stride;
 	Boolean ret;
@@ -1808,6 +1808,20 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels)
 		}
 
 		ret = RenderFrame(&frame, NULL, &bmp);
+		
+		if(color_order == kDisplayRgb)
+		{
+			for(i = 0; i < bmp.height; ++i)
+			{
+				int i_stride = i * row_stride;
+				for(int j = 0; j < bmp.width * 3; j += 3)
+				{
+					U8 temp = pixels[i_stride + j];
+					pixels[i_stride + j] = pixels[i_stride + j + 2];
+					pixels[i_stride + j + 2] = temp;
+				}
+			}
+		}
 
 		kernel_.Free(frame.data);	/* alloced by GrabFrame */
 		kernel_.Free(bmp.buffer);

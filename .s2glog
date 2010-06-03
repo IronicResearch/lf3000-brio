@@ -26051,3 +26051,22 @@ By ayurovsky (ayurovsky@leapfrog.com) on 6/2/10 3:39 PM
 6,767 ms. (Cumulative: 9,140,403 ms)
 
 ----------------
+Revision 7,534 from svn://localhost/TRUNK/:
+Revision 7,535 from svn://localhost/TRUNK/:
+Revision 7,536 from svn://localhost/TRUNK/:
+Revision 7,537 from svn://localhost/TRUNK/:
+Revision 7,538 from svn://localhost/TRUNK/:
+Revision 7,539 from svn://localhost/TRUNK/:
+Revision 7,540 from svn://localhost/TRUNK/:
+Revision 7,541 from svn://localhost/TRUNK/:
+Revision 7,542 from svn://localhost/TRUNK/:
+
+TTPro 2550.  Added new optional argument to GetFrame, color_order.  This will optionally swizzle the red and blue bytes, making it more useful for people manually putting up frames to a display handle.
+
+WARNING:  This change breaks backward compatiblity.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/3/10 2:49 PM
+6 changed, 0 added, 0 deleted.
+6,623 ms. (Cumulative: 9,147,167 ms)
+
+----------------

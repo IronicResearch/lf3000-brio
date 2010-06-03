@@ -194,11 +194,16 @@ public:
 	/// top-to-bottom raster scan, and the pixels themselves are simply R-G-B.
 	/// - Inter-pixel order [row,column]:
 	/// 	- [0,0] [0,1] [0,2] ... [0, 639] [1, 0] [1,1] ... [479,638] [479,639]
-	/// - Intra-pixel order (Byte 1, Byte 2, Byte 3):
-	/// 	- RRRRRRRR GGGGGGGG BBBBBBBB
+	///
+	/// \param color_order	Chooses whether OpenGL order is respected (good if you're making a OpenGL texture of frame, also slightly faster)
+	///						- Intra-pixel order (Byte 1, Byte 2, Byte 3):
+	/// 					- RRRRRRRR GGGGGGGG BBBBBBBB
+	///						order is Display order is respected (good if you're manually putting this on screen with a display handle or BlitBuffer)
+	///						- Intra-pixel order (Byte 1, Byte 2, Byte 3):
+	/// 					- BBBBBBBB GGGGGGGG RRRRRRRR 
 	///
 	/// \return true on success.
-	Boolean		GetFrame(const tVidCapHndl hndl, U8 *pixels);
+	Boolean		GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order = kOpenGlRgb);
 
 	/// RenderFrame() render an image saved with SnapFrame() to the host device's display.
 	///

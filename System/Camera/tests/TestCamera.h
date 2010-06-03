@@ -660,7 +660,7 @@ public:
 
 			pKernelMPI_->TaskSleep(2000);
 
-			bRet = pCameraMPI_->GetFrame(capture, pixels);
+			bRet = pCameraMPI_->GetFrame(capture, pixels, kDisplayRgb);
 			TS_ASSERT_EQUALS( bRet, true );
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
