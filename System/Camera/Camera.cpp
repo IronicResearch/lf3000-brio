@@ -63,7 +63,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
-const U32	NUM_BUFS	= 2;
+const U32	NUM_BUFS	= 3;
 const U64	MIN_FREE	= 10*1024*1024;		/* TODO: find a real value */
 const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 
@@ -545,7 +545,7 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 	int cam;
 	struct v4l2_capability *cap =  &pCamCtx->cap;
 
-	if((cam = open(pCamCtx->file, O_RDWR)) == -1)
+	if((cam = open(pCamCtx->file, O_RDWR | O_NONBLOCK)) == -1)
 	{
 		return false;
 	}
@@ -852,7 +852,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
 		}
 
-		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ, MAP_SHARED, cam, pCamCtx->buf.m.offset);
+		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
         	// TODO: munmap()
@@ -1281,11 +1281,12 @@ Boolean	CCameraModule::PollFrame(const tVidCapHndl hndl)
 	return false;
 }
 
-static Boolean GetFrameInt(tCameraContext *pCtx)
+static Boolean GetFrameInt(tCameraContext *pCtx, int index)
 {
 	memset(&pCtx->buf, 0, sizeof(struct v4l2_buffer));
 	pCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	pCtx->buf.memory = V4L2_MEMORY_MMAP;
+	pCtx->buf.index  = index;
 	if( ioctl(pCtx->fd, VIDIOC_DQBUF, &pCtx->buf) < 0)
 	{
 		return false;
@@ -1304,7 +1305,7 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	CAMERA_LOCK;
 
-	if( !GetFrameInt(&camCtx_))
+	if( !GetFrameInt(&camCtx_, camCtx_.buf.index))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s\n", camCtx_.file);
 		CAMERA_UNLOCK;
@@ -1898,7 +1899,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	}
 
 	// acquire the snapshot
-	if( !GetFrameInt(&camCtx_))
+	if( !GetFrameInt(&camCtx_, 0))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s\n", camCtx_.file);
 		goto bail_out;
