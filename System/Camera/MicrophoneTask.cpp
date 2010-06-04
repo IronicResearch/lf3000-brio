@@ -90,7 +90,9 @@ void* MicTaskMain(void* arg)
 	{
 		if(!pCtx->bPaused)
 		{
-			cam->WriteAudio(sndfile);
+			bRet = cam->WriteAudio(sndfile);
+			if (!bRet)
+				cam->kernel_.TaskSleep(10);
 		}
 	}
 

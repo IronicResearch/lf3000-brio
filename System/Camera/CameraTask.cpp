@@ -179,15 +179,19 @@ void* CameraTaskMain(void* arg)
 			continue;
 		}
 
+		bRet = false;
 		if(bFile && pCtx->bAudio && !pCtx->bPaused)
 		{
-			pCtx->module->WriteAudio(avi);
+			bRet = pCtx->module->WriteAudio(avi);
 		}
 
 		if(!pCtx->module->PollFrame(pCtx->hndl))
 		{
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													  "Couldn't unlock mutex.\n");
+			// Yield timeslice if neither audio nor video input ready 
+			if (!bRet)
+				kernel.TaskSleep(10);
 			continue;
 		}
 
@@ -195,6 +199,9 @@ void* CameraTaskMain(void* arg)
 		{
 			dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 													"Couldn't unlock mutex.\n");
+			// Yield timeslice if neither audio nor video input ready 
+			if (!bRet)
+				kernel.TaskSleep(10);
 			continue;
 		}
 
