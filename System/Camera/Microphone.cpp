@@ -19,7 +19,7 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <alsa/asoundlib.h>
-
+#include <sys/statvfs.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -65,6 +65,8 @@ static const char *cap_name = "plughw:1,0";
  */
 
 static const U32 DRAIN_SIZE = 32768;	/* 1 second of 16-bit, 16 KHz mono */
+
+static const U32 AUD_BITRATE = 2*16000;
 
 static void RecordCallback(snd_async_handler_t *ahandler);
 
@@ -492,6 +494,9 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener * pListener, const U32 maxLength, const Boolean paused)
 {
 	tAudCapHndl hndl = kInvalidAudCapHndl;
+	int err;
+	struct statvfs buf;
+	U64 length;
 
 	DATA_LOCK;
 
@@ -514,6 +519,21 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 		micCtx_.path	= apath + path;
 	}
 
+	/* statvfs path must exist, so use the parent directory */
+	err = statvfs(micCtx_.path.substr(0, micCtx_.path.rfind('/')).c_str(), &buf);
+
+	length =  buf.f_bsize * buf.f_bavail;
+
+	if((err < 0) || (length < MIN_FREE))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: not enough disk space, %lld required, %lld available\n", MIN_FREE, length);
+		DATA_UNLOCK;
+		return hndl;
+	}
+
+	length /= AUD_BITRATE;	/* How many seconds can we afford? */
+
+	micCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
 
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	micCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));

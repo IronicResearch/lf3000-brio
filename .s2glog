@@ -26160,3 +26160,19 @@ By jeno (jeno@leapfrog.com) on 6/4/10 2:43 PM
 6,511 ms. (Cumulative: 9,190,315 ms)
 
 ----------------
+Revision 7,575 from svn://localhost/TRUNK/:
+Revision 7,576 from svn://localhost/TRUNK/:
+Revision 7,577 from svn://localhost/TRUNK/:
+Revision 7,578 from svn://localhost/TRUNK/:
+
+L3B TTPro 2527: Set minimum free space to maintain to 1 MB.  UBIFS is
+internally padded, so applications are not responsible for maintaining
+free space, and Brio's restriction simply serves as a safeguard.
+
+Also, enforce recording quota in microphone MPI.
+
+By jeno (jeno@leapfrog.com) on 6/4/10 4:41 PM
+4 changed, 0 added, 0 deleted.
+6,610 ms. (Cumulative: 9,197,018 ms)
+
+----------------
