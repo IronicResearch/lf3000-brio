@@ -52,6 +52,7 @@ void* MicTaskMain(void* arg)
 {
 	struct SF_INFO		sf_info;
 	SNDFILE*			sndfile;
+	U32					start, end;
 
 	cam					=	static_cast<CCameraModule*>(arg);
 	tMicrophoneContext	*pCtx 	= &cam->micCtx_;
@@ -83,6 +84,8 @@ void* MicTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	cam->kernel_.StartTimer(timer, props);
 
+	start = cam->kernel_.GetElapsedTimeAsMSecs();
+
 	if (!pCtx->bPaused)
 		cam->StartAudio();
 
@@ -98,6 +101,16 @@ void* MicTaskMain(void* arg)
 
 	cam->kernel_.DestroyTimer(timer);
 
+	end = cam->kernel_.GetElapsedTimeAsMSecs();
+	if(end > start)
+	{
+		end -= start;
+	}
+	else
+	{
+		end += (kU32Max - start);
+	}
+
 	cam->StopAudio();
 
 	sf_close(sndfile);
@@ -112,7 +125,7 @@ void* MicTaskMain(void* arg)
 			tCameraRemovedMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= 0;
+			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
 		else if(!timeout)							// manually stopped by StopVideoCapture()
@@ -120,15 +133,15 @@ void* MicTaskMain(void* arg)
 			tCaptureStoppedMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= 0;
+			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
-		else if(pCtx->reqLength <= pCtx->reqLength)	// normal timeout
+		else if(pCtx->reqLength <= pCtx->maxLength)	// normal timeout
 		{
 			tCaptureTimeoutMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= 0;
+			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
 		else										// file system capacity timeout
@@ -136,7 +149,7 @@ void* MicTaskMain(void* arg)
 			tCaptureQuotaHitMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= 0;
+			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
 

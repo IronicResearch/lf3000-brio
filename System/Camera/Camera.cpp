@@ -65,7 +65,6 @@ const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
 const char*	gIDCTFile	= "/dev/idct";
 const U32	NUM_BUFS	= 3;
-const U64	MIN_FREE	= 10*1024*1024;		/* TODO: find a real value */
 const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 
 //==============================================================================
