@@ -852,7 +852,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
 		}
 
-		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_LOCKED, cam, pCamCtx->buf.m.offset);
+		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
         	// TODO: munmap()
