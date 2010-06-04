@@ -26116,3 +26116,16 @@ By dlazzari (dlazzari@leapfrog.com) on 6/4/10 11:00 AM
 6,000 ms. (Cumulative: 9,171,506 ms)
 
 ----------------
+Revision 7,557 from svn://localhost/TRUNK/:
+Revision 7,558 from svn://localhost/TRUNK/:
+Revision 7,559 from svn://localhost/TRUNK/:
+Revision 7,560 from svn://localhost/TRUNK/:
+
+Brio: revert USB Gadget handling improvements until things are fixed
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 6/4/10 12:36 PM
+1 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 9,177,632 ms)
+
+----------------
