@@ -26088,3 +26088,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/3/10 6:50 PM
 5,953 ms. (Cumulative: 9,153,261 ms)
 
 ----------------
+Revision 7,553 from svn://localhost/TRUNK/:
+
+CameraMPI: Add conditional thread sleeps to yield timeslice when neither audio nor video input data ready. Improves CPU usage with little impact on effective FPS rates, especially when triple buffering active.  
+
+By Dave Milici (dmilici@leapfrog.com) on 6/3/10 7:01 PM
+2 changed, 0 added, 0 deleted.
+6,041 ms. (Cumulative: 9,159,380 ms)
+
+----------------
