@@ -26106,3 +26106,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/3/10 7:24 PM
 5,970 ms. (Cumulative: 9,165,428 ms)
 
 ----------------
+Revision 7,555 from svn://localhost/TRUNK/:
+Revision 7,556 from svn://localhost/TRUNK/:
+
+Change control string to const to satisfy emulation compiler.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/4/10 11:00 AM
+1 changed, 0 added, 0 deleted.
+6,000 ms. (Cumulative: 9,171,506 ms)
+
+----------------

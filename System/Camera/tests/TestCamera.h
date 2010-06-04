@@ -22,7 +22,7 @@ LF_USING_BRIO_NAMESPACE()
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
 const tEventType LocalCameraEvents[] = {kAllCameraEvents};
 
-char* GetControlString(tControlType control)
+const char* GetControlString(tControlType control)
 {
 	switch(control)
 	{
@@ -205,7 +205,7 @@ public:
 			//NOTE: This sleep is neccessary between ending video capture and
 			//starting playback, but it's not documented
 			//pKernelMPI_->TaskSleep(500);
-			
+			printf("Playing back video\n");
 			pVideoMPI_->SetVideoResourcePath(capture_path);
 			tVideoHndl playback = pVideoMPI_->StartVideo("testYUV.avi", &surf);
 			TS_ASSERT( playback != kInvalidVideoHndl);
