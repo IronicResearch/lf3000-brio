@@ -26097,3 +26097,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/3/10 7:01 PM
 6,041 ms. (Cumulative: 9,159,380 ms)
 
 ----------------
+Revision 7,554 from svn://localhost/TRUNK/:
+
+Relax mmap flags to run as non-root user.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/3/10 7:24 PM
+1 changed, 0 added, 0 deleted.
+5,970 ms. (Cumulative: 9,165,428 ms)
+
+----------------
