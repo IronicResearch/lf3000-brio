@@ -26148,3 +26148,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 6/4/10 1:13 PM
 5,953 ms. (Cumulative: 9,183,710 ms)
 
 ----------------
+Revision 7,571 from svn://localhost/TRUNK/:
+Revision 7,572 from svn://localhost/TRUNK/:
+Revision 7,573 from svn://localhost/TRUNK/:
+Revision 7,574 from svn://localhost/TRUNK/:
+
+Camera module: L3B TTPro 2556.  This change bypasses some of libjpeg and uses the LF1000's IDCT block for JPEG decoding.  Cursory unit tests show that it provides about a 5 fps improvement, from ~15 to ~20 fps when using a YUV viewfinder and capturing audio.  Disabled for now because it does not yet support scaling or RGB conversion.
+
+By jeno (jeno@leapfrog.com) on 6/4/10 2:43 PM
+2 changed, 1 added, 0 deleted.
+6,511 ms. (Cumulative: 9,190,315 ms)
+
+----------------
