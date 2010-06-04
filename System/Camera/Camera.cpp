@@ -63,6 +63,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
+const char*	gIDCTFile	= "/dev/idct";
 const U32	NUM_BUFS	= 3;
 const U64	MIN_FREE	= 10*1024*1024;		/* TODO: find a real value */
 const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
@@ -329,6 +330,10 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	micCtx_.pcm_handle		= NULL;
 	micCtx_.fd[0]			= -1;
 	micCtx_.fd[1]			= -1;
+
+	idctCtx_.file			= gIDCTFile;
+	idctCtx_.fd				= -1;
+	idctCtx_.reg			= MAP_FAILED;
 
 	err = kernel_.InitMutex( micCtx_.dlock, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mic mutex.\n");
@@ -1322,13 +1327,6 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	return true;
 }
 
-#if 0
-static inline void xform(JBLOCK *block)
-{
-
-}
-#endif
-
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 {
@@ -1377,12 +1375,71 @@ static void my_error_exit (j_common_ptr cinfo)
 	longjmp(myerr->setjmp_buffer, 1);
 }
 
+static inline void Dequantize(JCOEFPTR ptr, JQUANT_TBL * quantptr, S16 *out)
+{
+	int i,j;
+
+	/* De-quantize coefficients.  Too bad we don't have NEON. */
+	for(i = j = 0; i < DCTSIZE; i++, j+= 8)
+	{
+		out[j] = ptr[j] * quantptr->quantval[j];
+		out[j+1] = ptr[j+1] * quantptr->quantval[j+1];
+		out[j+2] = ptr[j+2] * quantptr->quantval[j+2];
+		out[j+3] = ptr[j+3] * quantptr->quantval[j+3];
+		out[j+4] = ptr[j+4] * quantptr->quantval[j+4];
+		out[j+5] = ptr[j+5] * quantptr->quantval[j+5];
+		out[j+6] = ptr[j+6] * quantptr->quantval[j+6];
+		out[j+7] = ptr[j+7] * quantptr->quantval[j+7];
+	}
+}
+
+static inline void NormalizeAndPaint(U8 *buf, JCOEFPTR ptr, int ci, int stride)
+{
+	int i, j;
+	S8 tmp[DCTSIZE2];
+
+	/* Scale back from 9 bits to 8 bits, and level-shift samples */
+	for(i = j = 0; i < DCTSIZE; i++, j+= 8)
+	{
+		tmp[j] = (ptr[j] / 2) + 128;
+		tmp[j+1] = (ptr[j+1] / 2) + 128;
+		tmp[j+2] = (ptr[j+2] / 2) + 128;
+		tmp[j+3] = (ptr[j+3] / 2) + 128;
+		tmp[j+4] = (ptr[j+4] / 2) + 128;
+		tmp[j+5] = (ptr[j+5] / 2) + 128;
+		tmp[j+6] = (ptr[j+6] / 2) + 128;
+		tmp[j+7] = (ptr[j+7] / 2) + 128;
+	}
+
+	/*
+	 * Paint planar YUV420 components.  This requires skipping
+	 * every other row of U & V data since the JPEG is packed
+	 * YUV 4:2:2 (YUYV-encoded).
+	 */
+	for(i = j = 0; i < DCTSIZE; i++)
+	{
+		if(!ci || !(i % 2))
+		{
+			buf[0] = tmp[j];
+			buf[1] = tmp[j+1];
+			buf[2] = tmp[j+2];
+			buf[3] = tmp[j+3];
+			buf[4] = tmp[j+4];
+			buf[5] = tmp[j+5];
+			buf[6] = tmp[j+6];
+			buf[7] = tmp[j+7];
+
+			buf += stride;
+		}
+		j += 8;
+	}
+}
+
 //----------------------------------------------------------------------------
 Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap)
 {
 	struct jpeg_decompress_struct	cinfo;
 	struct my_error_mgr				jerr;
-	JSAMPARRAY						buffer = NULL;
 	int 							row = 0;
 	int								row_stride;
 	Boolean							bRet = true, bAlloc = false;
@@ -1482,29 +1539,130 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bRet = false;
 		;
 	}
-#if 0
+#if IDCT
 	/*
-	 * TODO: Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then
-	 * paint video layer directly.  This has the potential to have better
-	 * performance than the current line-by-line method.
+	 * TODO: Un-ifdef to decode JPEG using jpeg_read_coefficients() and LF1000
+	 * IDCT, then paint video layer directly (Must also disable call to
+	 * DrawFrame() below).  This has about 5 fps better performance than the
+	 * jpeg_read_scanlines() version below.
+	 *
+	 * Still outstanding:
+	 * -don't assume both camera and display are QVGA - run IDCT at camera size
+	 *  and use hardware scaler to match display resolution
+	 *
+	 * -use hardware color space converter to support RGB
+	 *
+	 * -determine why colors look somewhat muted
+	 *
+	 * -verify IDCT resolution
+	 *
+	 * Coefficient access code based on:
+	 * http://svn.assembla.com/svn/FIUBA7506/Codigo/Imagen/JPG.cpp
 	 */
-	jvirt_barray_ptr	*coefs	= jpeg_read_coefficients(&cinfo);
+	jvirt_barray_ptr* src_coef_arrays;
+	src_coef_arrays = jpeg_read_coefficients(&cinfo);
 
-	int comp;
-	for(comp = 0; comp < cinfo.num_components; comp++)
+	JDIMENSION MCU_cols, comp_width, blk_x, blk_y;
+	int ci, k, offset_y, i, j;
+	JBLOCKARRAY buffer;
+	JCOEFPTR ptr, ptr1;
+	JQUANT_TBL * quantptr;
+	jpeg_component_info *compptr;
+
+
+	MCU_cols = cinfo.image_width / (cinfo.max_h_samp_factor * DCTSIZE);
+
+	U8 *buf, *fb, *yuv[3];
+	S16 tmp[2][DCTSIZE2];	/* tmp[0] is for IDCT input, tmp[1] output */
+
+	yuv[0] = surf->buffer;											// Y
+	yuv[1] = yuv[0] + surf->pitch/2;								// U
+	yuv[2] = yuv[0] + surf->pitch/2 + surf->pitch * surf->height/2;	// V
+
+	for(ci = 0; ci < cinfo.num_components; ci++)
 	{
-		JBLOCKARRAY		blocks	= cinfo.mem->access_virt_barray(reinterpret_cast<jpeg_common_struct*>(&cinfo), coefs[comp], 0, 1, 1);
+    	buf = fb = yuv[ci];
 
-		int row, col;
-		for(row = 0; row < cinfo.comp_info[comp].height_in_blocks; row++ )
-		{
-			for(col = 0; col < cinfo.comp_info[comp].width_in_blocks; col++ )
-			{
-				xform(&blocks[row][col]);
-			}
-		}
-	}
-#endif
+    	compptr = cinfo.comp_info + ci;
+    	quantptr = compptr->quant_table;
+
+    	comp_width = MCU_cols * compptr->h_samp_factor;
+    	for(blk_y = 0; blk_y < compptr->height_in_blocks; blk_y += compptr->v_samp_factor)
+    	{
+    		buffer = (*cinfo.mem->access_virt_barray)
+						((j_common_ptr) &cinfo, src_coef_arrays[ci],
+						blk_y,
+						(JDIMENSION) compptr->v_samp_factor,
+						FALSE);
+
+    		for (offset_y = 0; offset_y < compptr->v_samp_factor; offset_y++)
+    		{
+    			for (blk_x = 0; blk_x < comp_width; blk_x++)
+    			{
+    				ptr = buffer[offset_y][blk_x];
+
+    				/*
+    				 * De-quantize coefficients of first block in row.  The
+    				 * other blocks are done in parallel with IDCT.
+    				 */
+    				if(!blk_x)
+    				{
+    					Dequantize(ptr, quantptr, tmp[0]);
+    				}
+
+    				/* initiate IDCT */
+    				StartIDCT(tmp[0]);
+
+    				/*
+    				 * IDCT is busy.  To extract some parallelism:
+    				 * 1.) De-quantize next block's coefficients
+    				 * 2.) Normalize and paint previous block
+    				 */
+    				if(blk_x != comp_width-1)
+    				{
+    					/* next block in the row */
+    					ptr1 = buffer[offset_y][blk_x+1];
+    					Dequantize(ptr1, quantptr, tmp[0]);
+    				}
+    				if(blk_x)
+    				{
+    					/* previous block in the row */
+
+    					NormalizeAndPaint(buf, tmp[1], ci, surf->pitch);
+
+    					/* next block in framebuffer row (next block column) */
+    					buf += 8;
+
+    				}
+
+    				/* fetch IDCT result */
+    				RetrieveIDCT(tmp[1]);
+
+    				/* last block has to paint itself */
+    				if(blk_x == comp_width-1)
+    				{
+    					NormalizeAndPaint(buf, tmp[1], ci, surf->pitch);
+
+    					/* next block in framebuffer row (next block column) */
+    					buf += 8;
+    				}
+    			}
+    		}
+    		if(!ci)
+    		{
+    			/* next block in framebuffer column (next block row) */
+    			fb += 8*surf->pitch;
+
+    		}
+    		else
+    		{
+    			fb += 4*surf->pitch;
+    		}
+    		buf = fb;
+    	}
+    }
+
+#else
 	/*
 	 * libjpeg natively supports M/8, where M is 1..16.
 	 */
@@ -1528,7 +1686,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	while (cinfo.output_scanline < cinfo.output_height) {
 		row += jpeg_read_scanlines(&cinfo, &bitmap->buffer[row], cinfo.output_height);
 	}
-
+#endif
 	(void) jpeg_finish_decompress(&cinfo);
 
 	jpeg_destroy_decompress(&cinfo);
@@ -2134,7 +2292,7 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::InitCameraInt()
 {
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 30, 1};
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
 
 	if(!InitCameraHWInt(&camCtx_))
 	{
@@ -2166,12 +2324,27 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
+#if IDCT
+	if(kNoErr != InitIDCTInt())
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: idct init failed\n");
+		return false;
+	}
+#endif
+
 	return true;
 }
 
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::DeinitCameraInt()
 {
+#if IDCT
+	if(kNoErr != DeinitIDCTInt())
+	{
+		return false;
+	}
+#endif
+
 	if(kNoErr != DeinitMicInt())
 	{
 		return false;

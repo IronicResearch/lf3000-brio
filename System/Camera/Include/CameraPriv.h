@@ -50,6 +50,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Constants
 //==============================================================================
+#define IDCT 0
+
 const CString			kCameraModuleName		= "Camera";
 const tVersion			kCameraModuleVersion	= 2;
 const tEventPriority	kCameraEventPriority	= 0;
@@ -203,6 +205,13 @@ struct tMicrophoneContext {
 	unsigned int			counter;		// block counter
 };
 
+struct tIDCTContext {
+	const char					*file;		// e.g., "/dev/idct"
+	int							fd;			// file descriptor
+	void						*reg;		// mmaped area
+	volatile U32				*reg32;		// register access
+};
+
 //==============================================================================
 // External function prototypes
 //==============================================================================
@@ -261,6 +270,8 @@ private:
 	CEventMPI			event_;
 	tCameraContext		camCtx_;
 	tMicrophoneContext	micCtx_;
+	tIDCTContext		idctCtx_;
+
 	Boolean				valid;
 	tMutex				mutex_;
 
@@ -301,6 +312,11 @@ private:
 	friend void* MicTaskMain(void* arg);
 	friend tErrType InitMicTask(CCameraModule* module);
 	friend tErrType DeInitMicTask(CCameraModule* module);
+
+	tErrType	InitIDCTInt();
+	tErrType	DeinitIDCTInt();
+	tErrType	StartIDCT(S16 *ptr);
+	tErrType	RetrieveIDCT(S16 *ptr);
 };
 
 LF_END_BRIO_NAMESPACE()
