@@ -26070,3 +26070,21 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/3/10 2:49 PM
 6,623 ms. (Cumulative: 9,147,167 ms)
 
 ----------------
+Revision 7,543 from svn://localhost/TRUNK/:
+Revision 7,544 from svn://localhost/TRUNK/:
+Revision 7,545 from svn://localhost/TRUNK/:
+Revision 7,546 from svn://localhost/TRUNK/:
+Revision 7,547 from svn://localhost/TRUNK/:
+Revision 7,548 from svn://localhost/TRUNK/:
+Revision 7,549 from svn://localhost/TRUNK/:
+Revision 7,550 from svn://localhost/TRUNK/:
+Revision 7,551 from svn://localhost/TRUNK/:
+Revision 7,552 from svn://localhost/TRUNK/:
+
+CameraMPI: Change Video4Linux protocol to use triple buffering in order to prevent input corruption. (TTP 2508) Misc other mmap tweaks per Video4Linux docs may not be significant.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/3/10 6:50 PM
+1 changed, 0 added, 0 deleted.
+5,953 ms. (Cumulative: 9,153,261 ms)
+
+----------------
