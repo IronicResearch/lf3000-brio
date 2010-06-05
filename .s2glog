@@ -26176,3 +26176,13 @@ By jeno (jeno@leapfrog.com) on 6/4/10 4:41 PM
 6,610 ms. (Cumulative: 9,197,018 ms)
 
 ----------------
+Revision 7,579 from svn://localhost/TRUNK/:
+Revision 7,580 from svn://localhost/TRUNK/:
+
+Revert non-blocking flag since it breaks still snapshot modes.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/4/10 5:33 PM
+1 changed, 0 added, 0 deleted.
+6,500 ms. (Cumulative: 9,203,612 ms)
+
+----------------
