@@ -276,7 +276,7 @@ void* CameraTaskMain(void* arg)
 			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
-		else if(pCtx->reqLength <= pCtx->maxLength)	// normal timeout
+		else if(pCtx->reqLength && pCtx->reqLength <= pCtx->maxLength)	// normal timeout
 		{
 			tCaptureTimeoutMsg		data;
 			data.vhndl				= pCtx->hndl;
