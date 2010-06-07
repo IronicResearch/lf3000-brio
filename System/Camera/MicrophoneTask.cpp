@@ -80,7 +80,7 @@ void* MicTaskMain(void* arg)
 
 	timeout = false;
 	timer = cam->kernel_.CreateTimer(TimerCallback, props, NULL);
-	props.timeout.it_value.tv_sec = pCtx->reqLength;
+	props.timeout.it_value.tv_sec = pCtx->maxLength;
 	props.timeout.it_value.tv_nsec = 0;
 	cam->kernel_.StartTimer(timer, props);
 
@@ -136,7 +136,7 @@ void* MicTaskMain(void* arg)
 			data.length 			= end;
 			msg = new CCameraEventMessage(data);
 		}
-		else if(pCtx->reqLength <= pCtx->maxLength)	// normal timeout
+		else if(pCtx->reqLength && pCtx->reqLength <= pCtx->maxLength)	// normal timeout
 		{
 			tCaptureTimeoutMsg		data;
 			data.vhndl				= pCtx->hndl;

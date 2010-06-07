@@ -26186,3 +26186,20 @@ By Dave Milici (dmilici@leapfrog.com) on 6/4/10 5:33 PM
 6,500 ms. (Cumulative: 9,203,612 ms)
 
 ----------------
+Revision 7,581 from svn://localhost/TRUNK/:
+Revision 7,582 from svn://localhost/TRUNK/:
+Revision 7,583 from svn://localhost/TRUNK/:
+Revision 7,584 from svn://localhost/TRUNK/:
+Revision 7,585 from svn://localhost/TRUNK/:
+Revision 7,586 from svn://localhost/TRUNK/:
+Revision 7,587 from svn://localhost/TRUNK/:
+Revision 7,588 from svn://localhost/TRUNK/:
+Revision 7,589 from svn://localhost/TRUNK/:
+
+L3B TTPro 2527: Correction to svn 7578.  Normal timeout/quota timeout are now reported correctly.
+
+By jeno (jeno@leapfrog.com) on 6/7/10 12:52 PM
+2 changed, 0 added, 0 deleted.
+6,469 ms. (Cumulative: 9,210,222 ms)
+
+----------------
