@@ -81,6 +81,7 @@ echo "removing unneeded files and directories..."
 rm -rf $NAME/MagicEyes
 rm -rf $NAME/Mobileer
 rm -rf $NAME/PowerVR
+rm $NAME/SConscript
 
 echo "making archive..."
 tar -czf $NAME.tar.gz ./$NAME
