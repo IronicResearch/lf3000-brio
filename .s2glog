@@ -26239,3 +26239,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/9/10 12:46 PM
 6,019 ms. (Cumulative: 9,229,539 ms)
 
 ----------------
+Revision 7,600 from svn://localhost/TRUNK/:
+Revision 7,601 from svn://localhost/TRUNK/:
+
+Changing Emulation button, power, and usb task thread to use non-blocking polling model.
+
+This thread now properly ends even without a keypreass, so emulation AppManager now properly exits from idle timeout.  Restoring auto-repeat on the keyboard.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/9/10 5:25 PM
+1 changed, 0 added, 0 deleted.
+5,969 ms. (Cumulative: 9,235,602 ms)
+
+----------------
