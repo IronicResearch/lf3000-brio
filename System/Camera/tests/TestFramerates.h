@@ -116,6 +116,84 @@ public:
 
 			bRet = pCameraMPI_->StopVideoCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
+
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+	}
+
+	void testYUV_WithAudio_QQVGAViewfider()
+	{
+		PRINT_TEST_NAME();
+
+		//Setup viewfinder surface
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraVideoPath(capture_path);
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			surf.width /= 2;
+			surf.height /= 2;
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "YUV_WithAudioQQ.avi", 0, true);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(60000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+	}
+
+	void testYUV_WithoutAudio_QQVGAViewfider()
+	{
+		PRINT_TEST_NAME();
+
+		//Setup viewfinder surface
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			err = pCameraMPI_->SetCameraVideoPath(capture_path);
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			surf.width /= 2;
+			surf.height /= 2;
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "YUV_WithoutAudioQQ.avi", 0, false);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(60000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
 			
 		}
 		else

@@ -26251,3 +26251,29 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/9/10 5:25 PM
 5,969 ms. (Cumulative: 9,235,602 ms)
 
 ----------------
+Revision 7,602 from svn://localhost/TRUNK/:
+Revision 7,603 from svn://localhost/TRUNK/:
+Revision 7,604 from svn://localhost/TRUNK/:
+Revision 7,605 from svn://localhost/TRUNK/:
+Revision 7,606 from svn://localhost/TRUNK/:
+
+L3B TTPro 2556: Improve frame rate by using HW IDCT for JPEG decoding.
+This checkin activates svn 7574 for non-scaled viewfinders.  Also, add
+a frame rate unit test for scaled-viewfinder measurement.
+
+This rendering pipeline:
+Camera QVGA->libjpeg QQVGA->HW scaler QVGA->viewfinder
+
+has better performance that this one:
+Camera QVGA->HW IDCT QVGA->viewfinder
+
+so it is used for recording.  First attempts at this pipeline:
+Camera QVGA->HW IDCT QQVGA->HW scaler QVGA->viewfinder
+
+yielded a slight performance increase, but the drop in quality was severe.
+
+By jeno (jeno@leapfrog.com) on 6/11/10 10:43 AM
+5 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 9,241,915 ms)
+
+----------------
