@@ -54,13 +54,14 @@ typedef struct
     int					iAudioStream;		// index of audio stream
     bool				bVideoConfig;		// video config set?
     bool				bAudioConfig;		// audio config set?
+    bool				bAudioPresent;		// contains audio track?
 } avi_t;
 
 
 //==============================================================================
 // Functions for compatibility with avilib
 //==============================================================================
-avi_t* AVI_open_output_file(char * filename);
+avi_t* AVI_open_output_file(char * filename, bool audio);
 void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *compressor);
 void AVI_set_audio(avi_t *AVI, int channels, long rate, int bits, int format, long mp3rate);
 int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe);
