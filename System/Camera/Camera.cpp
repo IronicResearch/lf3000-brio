@@ -1338,7 +1338,7 @@ Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 		goto out;
 	}
 
-	ret = RenderFrame(&frame, pSurf, NULL);
+	ret = RenderFrame(&frame, pSurf, NULL, JPEG_SLOW);
 
 out:
 	if (frame.data)
@@ -1374,7 +1374,7 @@ static void my_error_exit (j_common_ptr cinfo)
 	longjmp(myerr->setjmp_buffer, 1);
 }
 
-static inline void Dequantize(JCOEFPTR ptr, JQUANT_TBL * quantptr, S16 *out)
+__attribute__((always_inline)) static inline void Dequantize(JCOEFPTR ptr, JQUANT_TBL * quantptr, S16 *out)
 {
 	int i,j;
 
@@ -1392,22 +1392,40 @@ static inline void Dequantize(JCOEFPTR ptr, JQUANT_TBL * quantptr, S16 *out)
 	}
 }
 
-static inline void NormalizeAndPaint(U8 *buf, JCOEFPTR ptr, int ci, int stride)
+__attribute__((always_inline)) static inline void NormalizeAndPaint(U8 *buf, JCOEFPTR ptr, int ci, int stride)
 {
 	int i, j;
 	S8 tmp[DCTSIZE2];
 
 	/* Scale back from 9 bits to 8 bits, and level-shift samples */
-	for(i = j = 0; i < DCTSIZE; i++, j+= 8)
+	/* Don't bother computing U & V samples that aren't used */
+	if(!ci)
 	{
-		tmp[j] = (ptr[j] / 2) + 128;
-		tmp[j+1] = (ptr[j+1] / 2) + 128;
-		tmp[j+2] = (ptr[j+2] / 2) + 128;
-		tmp[j+3] = (ptr[j+3] / 2) + 128;
-		tmp[j+4] = (ptr[j+4] / 2) + 128;
-		tmp[j+5] = (ptr[j+5] / 2) + 128;
-		tmp[j+6] = (ptr[j+6] / 2) + 128;
-		tmp[j+7] = (ptr[j+7] / 2) + 128;
+		for(i = j = 0; i < DCTSIZE; i++, j+= 8)
+		{
+			tmp[j] = (ptr[j] / 2) + 128;
+			tmp[j+1] = (ptr[j+1] / 2) + 128;
+			tmp[j+2] = (ptr[j+2] / 2) + 128;
+			tmp[j+3] = (ptr[j+3] / 2) + 128;
+			tmp[j+4] = (ptr[j+4] / 2) + 128;
+			tmp[j+5] = (ptr[j+5] / 2) + 128;
+			tmp[j+6] = (ptr[j+6] / 2) + 128;
+			tmp[j+7] = (ptr[j+7] / 2) + 128;
+		}
+	}
+	else
+	{
+		for(i = j = 0; i < DCTSIZE; i+=2, j+=16)
+		{
+			tmp[j] = (ptr[j] / 2) + 128;
+			tmp[j+1] = (ptr[j+1] / 2) + 128;
+			tmp[j+2] = (ptr[j+2] / 2) + 128;
+			tmp[j+3] = (ptr[j+3] / 2) + 128;
+			tmp[j+4] = (ptr[j+4] / 2) + 128;
+			tmp[j+5] = (ptr[j+5] / 2) + 128;
+			tmp[j+6] = (ptr[j+6] / 2) + 128;
+			tmp[j+7] = (ptr[j+7] / 2) + 128;
+		}
 	}
 
 	/*
@@ -1415,9 +1433,9 @@ static inline void NormalizeAndPaint(U8 *buf, JCOEFPTR ptr, int ci, int stride)
 	 * every other row of U & V data since the JPEG is packed
 	 * YUV 4:2:2 (YUYV-encoded).
 	 */
-	for(i = j = 0; i < DCTSIZE; i++)
+	if(!ci)
 	{
-		if(!ci || !(i % 2))
+		for(i = j = 0; i < DCTSIZE; i++)
 		{
 			buf[0] = tmp[j];
 			buf[1] = tmp[j+1];
@@ -1429,13 +1447,139 @@ static inline void NormalizeAndPaint(U8 *buf, JCOEFPTR ptr, int ci, int stride)
 			buf[7] = tmp[j+7];
 
 			buf += stride;
+			j += 8;
 		}
-		j += 8;
+	}
+	else
+	{
+		for(i = j = 0; i < DCTSIZE; i+=2)
+		{
+			buf[0] = tmp[j];
+			buf[1] = tmp[j+1];
+			buf[2] = tmp[j+2];
+			buf[3] = tmp[j+3];
+			buf[4] = tmp[j+4];
+			buf[5] = tmp[j+5];
+			buf[6] = tmp[j+6];
+			buf[7] = tmp[j+7];
+
+			buf += stride;
+			j += 16;
+		}
 	}
 }
 
+/*
+* JPEG coefficient access code based on:
+* http://svn.assembla.com/svn/FIUBA7506/Codigo/Imagen/JPG.cpp
+*/
+__attribute__((always_inline)) inline void CCameraModule::DecompressAndPaint(struct jpeg_decompress_struct *cinfo, tVideoSurf *surf)
+
+{
+	jvirt_barray_ptr* src_coef_arrays = jpeg_read_coefficients(cinfo);
+
+	JDIMENSION MCU_cols, comp_width, blk_x, blk_y;
+	int ci, k, offset_y, i, j;
+	JBLOCKARRAY buffer;
+	JCOEFPTR ptr, ptr1;
+	JQUANT_TBL * quantptr;
+	jpeg_component_info *compptr;
+
+	U8 *buf, *fb, *yuv[3];
+	S16 tmp[2][DCTSIZE2];	/* tmp[0] is for IDCT input, tmp[1] output */
+
+	MCU_cols = cinfo->image_width / (cinfo->max_h_samp_factor * DCTSIZE);
+
+
+	yuv[0] = surf->buffer;											// Y
+	yuv[1] = yuv[0] + surf->pitch/2;								// U
+	yuv[2] = yuv[0] + surf->pitch/2 + surf->pitch * surf->height/2;	// V
+
+	for(ci = 0; ci < cinfo->num_components; ci++)
+	{
+    	buf = fb = yuv[ci];
+
+    	compptr = cinfo->comp_info + ci;
+    	quantptr = compptr->quant_table;
+
+    	comp_width = MCU_cols * compptr->h_samp_factor;
+    	for(blk_y = 0; blk_y < compptr->height_in_blocks; blk_y += compptr->v_samp_factor)
+    	{
+    		buffer = (*cinfo->mem->access_virt_barray)
+						((j_common_ptr) cinfo, src_coef_arrays[ci],
+						blk_y,
+						(JDIMENSION) compptr->v_samp_factor,
+						FALSE);
+
+    		for (offset_y = 0; offset_y < compptr->v_samp_factor; offset_y++)
+    		{
+    			for (blk_x = 0; blk_x < comp_width; blk_x++)
+    			{
+    				ptr = buffer[offset_y][blk_x];
+
+    				/*
+    				 * De-quantize coefficients of first block in row.  The
+    				 * other blocks are done in parallel with IDCT.
+    				 */
+    				if(!blk_x)
+    				{
+    					Dequantize(ptr, quantptr, tmp[0]);
+    				}
+
+    				/* initiate IDCT */
+    				StartIDCT(tmp[0]);
+
+    				/*
+    				 * IDCT is busy.  To extract some parallelism:
+    				 * 1.) De-quantize next block's coefficients
+    				 * 2.) Normalize and paint previous block
+    				 */
+    				if(blk_x != comp_width-1)
+    				{
+    					/* next block in the row */
+    					ptr1 = buffer[offset_y][blk_x+1];
+    					Dequantize(ptr1, quantptr, tmp[0]);
+    				}
+    				if(blk_x)
+    				{
+    					/* previous block in the row */
+
+    					NormalizeAndPaint(buf, tmp[1], ci, surf->pitch);
+
+    					/* next block in framebuffer row (next block column) */
+    					buf += 8;
+    				}
+
+    				/* fetch IDCT result */
+    				RetrieveIDCT(tmp[1]);
+
+    				/* last block has to paint itself */
+    				if(blk_x == comp_width-1)
+    				{
+    					NormalizeAndPaint(buf, tmp[1], ci, surf->pitch);
+
+    					/* next block in framebuffer row (next block column) */
+    					buf += 8;
+    				}
+    			}
+    		}
+    		if(!ci)
+    		{
+    			/* next block in framebuffer column (next block row) */
+    			fb += 8*surf->pitch;
+    		}
+    		else
+    		{
+    			fb += 4*surf->pitch;
+    		}
+    		buf = fb;
+    	}
+    }
+
+}
+
 //----------------------------------------------------------------------------
-Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap)
+Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapInfo *bitmap, const JPEG_METHOD method)
 {
 	struct jpeg_decompress_struct	cinfo;
 	struct my_error_mgr				jerr;
@@ -1538,130 +1682,35 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bRet = false;
 		;
 	}
-#if IDCT
+#ifndef EMULATION
 	/*
-	 * TODO: Un-ifdef to decode JPEG using jpeg_read_coefficients() and LF1000
-	 * IDCT, then paint video layer directly (Must also disable call to
-	 * DrawFrame() below).  This has about 5 fps better performance than the
+	 * Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then paint
+	 * video layer directly.  This has about 5 fps better performance than the
 	 * jpeg_read_scanlines() version below.
 	 *
-	 * Still outstanding:
-	 * -don't assume both camera and display are QVGA - run IDCT at camera size
-	 *  and use hardware scaler to match display resolution
+	 * TODO: Still outstanding:
+	 * -better integration with scaler (internal tVideoSurf to match camera size?)
 	 *
-	 * -use hardware color space converter to support RGB
+	 * -Implement QVGA->QQVGA rendering that doesn't look terrible
+	 *
+	 * -IDCT independent?: HW scaler produces a few rows of green pixels at
+	 *  bottom edge of screen (lack U & V?) when scaling up
+	 *
+	 * -use hardware color space converter to support RGB textures
 	 *
 	 * -determine why colors look somewhat muted
 	 *
 	 * -verify IDCT resolution
-	 *
-	 * Coefficient access code based on:
-	 * http://svn.assembla.com/svn/FIUBA7506/Codigo/Imagen/JPG.cpp
 	 */
-	jvirt_barray_ptr* src_coef_arrays;
-	src_coef_arrays = jpeg_read_coefficients(&cinfo);
-
-	JDIMENSION MCU_cols, comp_width, blk_x, blk_y;
-	int ci, k, offset_y, i, j;
-	JBLOCKARRAY buffer;
-	JCOEFPTR ptr, ptr1;
-	JQUANT_TBL * quantptr;
-	jpeg_component_info *compptr;
-
-
-	MCU_cols = cinfo.image_width / (cinfo.max_h_samp_factor * DCTSIZE);
-
-	U8 *buf, *fb, *yuv[3];
-	S16 tmp[2][DCTSIZE2];	/* tmp[0] is for IDCT input, tmp[1] output */
-
-	yuv[0] = surf->buffer;											// Y
-	yuv[1] = yuv[0] + surf->pitch/2;								// U
-	yuv[2] = yuv[0] + surf->pitch/2 + surf->pitch * surf->height/2;	// V
-
-	for(ci = 0; ci < cinfo.num_components; ci++)
+	if(method == JPEG_HW2)
 	{
-    	buf = fb = yuv[ci];
-
-    	compptr = cinfo.comp_info + ci;
-    	quantptr = compptr->quant_table;
-
-    	comp_width = MCU_cols * compptr->h_samp_factor;
-    	for(blk_y = 0; blk_y < compptr->height_in_blocks; blk_y += compptr->v_samp_factor)
-    	{
-    		buffer = (*cinfo.mem->access_virt_barray)
-						((j_common_ptr) &cinfo, src_coef_arrays[ci],
-						blk_y,
-						(JDIMENSION) compptr->v_samp_factor,
-						FALSE);
-
-    		for (offset_y = 0; offset_y < compptr->v_samp_factor; offset_y++)
-    		{
-    			for (blk_x = 0; blk_x < comp_width; blk_x++)
-    			{
-    				ptr = buffer[offset_y][blk_x];
-
-    				/*
-    				 * De-quantize coefficients of first block in row.  The
-    				 * other blocks are done in parallel with IDCT.
-    				 */
-    				if(!blk_x)
-    				{
-    					Dequantize(ptr, quantptr, tmp[0]);
-    				}
-
-    				/* initiate IDCT */
-    				StartIDCT(tmp[0]);
-
-    				/*
-    				 * IDCT is busy.  To extract some parallelism:
-    				 * 1.) De-quantize next block's coefficients
-    				 * 2.) Normalize and paint previous block
-    				 */
-    				if(blk_x != comp_width-1)
-    				{
-    					/* next block in the row */
-    					ptr1 = buffer[offset_y][blk_x+1];
-    					Dequantize(ptr1, quantptr, tmp[0]);
-    				}
-    				if(blk_x)
-    				{
-    					/* previous block in the row */
-
-    					NormalizeAndPaint(buf, tmp[1], ci, surf->pitch);
-
-    					/* next block in framebuffer row (next block column) */
-    					buf += 8;
-
-    				}
-
-    				/* fetch IDCT result */
-    				RetrieveIDCT(tmp[1]);
-
-    				/* last block has to paint itself */
-    				if(blk_x == comp_width-1)
-    				{
-    					NormalizeAndPaint(buf, tmp[1], ci, surf->pitch);
-
-    					/* next block in framebuffer row (next block column) */
-    					buf += 8;
-    				}
-    			}
-    		}
-    		if(!ci)
-    		{
-    			/* next block in framebuffer column (next block row) */
-    			fb += 8*surf->pitch;
-
-    		}
-    		else
-    		{
-    			fb += 4*surf->pitch;
-    		}
-    		buf = fb;
-    	}
-    }
-
-#else
+		DecompressAndPaint(&cinfo, surf);
+		/* JPEG has been rendered, prevent re-draw below */
+		surf = NULL;
+	}
+	else
+#endif
+	{
 	/*
 	 * libjpeg natively supports M/8, where M is 1..16.
 	 */
@@ -1676,7 +1725,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		cinfo.scale_num		= (8 * (bitmap->height / frame->height));
 	}
 
-	cinfo.dct_method	= /*JDCT_HW;*/JDCT_IFAST;
+	cinfo.dct_method	= (J_DCT_METHOD)method;
 
 	(void) jpeg_start_decompress(&cinfo);
 
@@ -1685,7 +1734,8 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	while (cinfo.output_scanline < cinfo.output_height) {
 		row += jpeg_read_scanlines(&cinfo, &bitmap->buffer[row], cinfo.output_height);
 	}
-#endif
+
+	}
 	(void) jpeg_finish_decompress(&cinfo);
 
 	jpeg_destroy_decompress(&cinfo);
@@ -1830,6 +1880,16 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
+	/* for HW IDCT viewfinder */
+	/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
+	 * HW IDCT QVGA->QVGA rendering
+	 */
+	if(pSurf && pSurf->format == kPixelFormatYUV420 && pSurf->width == QVGA.width)
+	{
+		//SetScaler(QVGA.width, QVGA.height, false);
+		SetScaler(pSurf->width, pSurf->height, false);
+	}
+
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
@@ -1965,8 +2025,8 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder 
 			bmp.buffer[i] = &bmp.data[i*row_stride];
 		}
 
-		ret = RenderFrame(&frame, NULL, &bmp);
-		
+		ret = RenderFrame(&frame, NULL, &bmp, JPEG_SLOW);
+
 		if(color_order == kDisplayRgb)
 		{
 			for(i = 0; i < bmp.height; ++i)
@@ -2323,13 +2383,11 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
-#if IDCT
 	if(kNoErr != InitIDCTInt())
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: idct init failed\n");
 		return false;
 	}
-#endif
 
 	return true;
 }
@@ -2337,12 +2395,10 @@ Boolean	CCameraModule::InitCameraInt()
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::DeinitCameraInt()
 {
-#if IDCT
 	if(kNoErr != DeinitIDCTInt())
 	{
 		return false;
 	}
-#endif
 
 	if(kNoErr != DeinitMicInt())
 	{

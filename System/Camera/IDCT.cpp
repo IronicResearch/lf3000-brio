@@ -24,6 +24,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 tErrType CCameraModule::InitIDCTInt()
 {
 	tErrType	kErr = kUnspecifiedErr;
+#ifndef EMULATION
 	U8 			*reg8;
 
 	do
@@ -55,13 +56,16 @@ tErrType CCameraModule::InitIDCTInt()
 
 		kErr = kNoErr;
 	} while(0);
-
+#else
+	kErr = kNoErr;
+#endif
 	return kErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CCameraModule::DeinitIDCTInt()
 {
+#ifndef EMULATION
 	if(idctCtx_.reg != MAP_FAILED)
 	{
 		munmap(idctCtx_.reg, REG_IDCT_SIZE);
@@ -73,7 +77,7 @@ tErrType CCameraModule::DeinitIDCTInt()
 		close(idctCtx_.fd);
 		idctCtx_.fd = -1;
 	}
-
+#endif
 	return kNoErr;
 }
 

@@ -50,8 +50,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Constants
 //==============================================================================
-#define IDCT 0
-
 const CString			kCameraModuleName		= "Camera";
 const tVersion			kCameraModuleVersion	= 2;
 const tEventPriority	kCameraEventPriority	= 0;
@@ -85,6 +83,15 @@ const U64	MIN_FREE	= 1*1024*1024;		/* NOTE: UBIFS is internally padded,
 //==============================================================================
 // Typedefs
 //==============================================================================
+
+// How to render JPEGs
+typedef enum {
+	JPEG_SLOW	= JDCT_ISLOW,		/* sw IDCT & jpeg_read_scanlines() - best for photos */
+	JPEG_FAST	= JDCT_IFAST,		/* sw IDCT & jpeg_read_scanlines() */
+	JPEG_FLOAT	= JDCT_FLOAT,		/* sw IDCT & jpeg_read_scanlines() */
+	JPEG_HW1	= JDCT_HW,			/* hw IDCT & jpeg_read_scanlines() */
+	JPEG_HW2						/* hw IDCT & jpeg_read_coefficients() - best for viewfinder */
+} JPEG_METHOD;
 
 // Image capture format.  Uncompressed formats are possible - these would be equivalent to
 // DisplayTypes:tPixelFormat.  Since JPEG is compressed, it's not a pixel format in the
@@ -297,7 +304,7 @@ private:
 	tVidCapHndl	StartVideoCapture();
 	Boolean		PollFrame(const tVidCapHndl hndl);
 	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
-	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image);
+	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image, const JPEG_METHOD method);
 	Boolean		ReturnFrame(const tVidCapHndl hndl, const tFrameInfo *frame);
 	Boolean		GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
@@ -321,6 +328,9 @@ private:
 	tErrType	DeinitIDCTInt();
 	tErrType	StartIDCT(S16 *ptr);
 	tErrType	RetrieveIDCT(S16 *ptr);
+	/* inline function */
+	void DecompressAndPaint(struct jpeg_decompress_struct *cinfo, tVideoSurf *surf);
+
 };
 
 LF_END_BRIO_NAMESPACE()

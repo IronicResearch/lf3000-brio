@@ -91,6 +91,8 @@ void* CameraTaskMain(void* arg)
 	int					ibuf = 0;
 	bool				bDoubleBuffered = false;
 
+	JPEG_METHOD			method = JPEG_FAST;
+
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
 	cam 	= pCtx->module;
@@ -125,6 +127,13 @@ void* CameraTaskMain(void* arg)
 		{
 		case kPixelFormatYUV420:
 			image.format	= kBitmapFormatYCbCr888;
+			/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
+			 * HW IDCT QVGA->QVGA rendering
+			 */
+			if(pCtx->fmt.fmt.pix.width == pCtx->surf->width)
+			{
+				method		= JPEG_HW2;
+			}
 			break;
 		case kPixelFormatRGB888:
 			image.format	= kBitmapFormatRGB888;
@@ -207,7 +216,7 @@ void* CameraTaskMain(void* arg)
 
 		if(bScreen && !pCtx->bVPaused)
 		{
-			bRet = pCtx->module->RenderFrame(&frame, pSurf, &image);
+			bRet = pCtx->module->RenderFrame(&frame, pSurf, &image, method);
 			if(bRet)
 			{
 				if (bDoubleBuffered) {
