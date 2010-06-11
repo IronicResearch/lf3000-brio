@@ -15,7 +15,7 @@
 #include <AVIWrapper.h>
 
 //----------------------------------------------------------------------------
-avi_t* AVI_open_output_file(char * filename)
+avi_t* AVI_open_output_file(char * filename, bool audio)
 {
 	// Create AVI compatible context
 	avi_t* avi = new(avi_t);
@@ -47,9 +47,12 @@ avi_t* AVI_open_output_file(char * filename)
 		return NULL;
 	
 	// Create audio stream
-	avi->pAudioStrm = av_new_stream(avi->pFormatCtx, avi->iAudioStream = 1);
-	if (avi->pAudioStrm == NULL)
-		return NULL;
+	if(avi->bAudioPresent = audio)
+	{
+		avi->pAudioStrm = av_new_stream(avi->pFormatCtx, avi->iAudioStream = 1);
+		if (avi->pAudioStrm == NULL)
+			return NULL;
+	}
 
 	// Init AVI file, video & audio config pending
 	av_set_parameters(avi->pFormatCtx, NULL);
@@ -141,7 +144,7 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *co
 
 	// Write initial AVI header with nominal audio & video settings
 	AVI->bVideoConfig = true;
-	if (AVI->bVideoConfig && AVI->bAudioConfig)
+	if (AVI->bVideoConfig && (AVI->bAudioConfig || !AVI->bAudioPresent))
 		write_header(AVI, false);
 	return;
 }
@@ -151,7 +154,7 @@ void AVI_set_audio(avi_t *AVI, int channels, long rate, int bits, int format, lo
 {
 	// Set audio codec and context (PCM)
 	AVI->pAudioCodec = avcodec_find_encoder(CODEC_ID_PCM_S16LE);
-	if (AVI->pAudioCodec == NULL)
+	if (AVI->pAudioCodec == NULL || !AVI->bAudioPresent)
 		return;
 
 	AVCodecContext *c 	= AVI->pAudioStrm->codec;
@@ -239,11 +242,13 @@ int  AVI_close(avi_t *AVI)
 	fixup_header(AVI);
 	
 	// Close codecs
-	avcodec_close(AVI->pAudioCodecCtx);
+	if(AVI->bAudioPresent)
+		avcodec_close(AVI->pAudioCodecCtx);
 	avcodec_close(AVI->pVideoCodecCtx);
 	
 	// Release resources
-	av_free(AVI->pAudioStrm);
+	if(AVI->bAudioPresent)
+		av_free(AVI->pAudioStrm);
 	av_free(AVI->pVideoStrm);
 	av_free(AVI->pFormatCtx);
 	delete AVI;

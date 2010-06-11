@@ -108,11 +108,12 @@ void* CameraTaskMain(void* arg)
 		audio_width	= cam->micCtx_.sbits;
 		audio_fmt	= cam->XlateAudioFormatAVI(cam->micCtx_.format);
 
-		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()));
+		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
 
 		// fps will be reset upon completion
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, "MJPG");
-		AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
+		if(pCtx->bAudio)
+			AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
 	}
 
 	// set up render-to-screen

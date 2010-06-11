@@ -26277,3 +26277,18 @@ By jeno (jeno@leapfrog.com) on 6/11/10 10:43 AM
 6,204 ms. (Cumulative: 9,241,915 ms)
 
 ----------------
+Revision 7,607 from svn://localhost/TRUNK/:
+Revision 7,608 from svn://localhost/TRUNK/:
+Revision 7,609 from svn://localhost/TRUNK/:
+Revision 7,610 from svn://localhost/TRUNK/:
+
+Camera module:  muted AVIs are slightly malformed, e.g., Ubuntu's thumbnailer
+(totem-video-thumbnailer) fails to render an icon, and can't provide a
+properties page because the AVI header refers to an audio track that is not
+present.
+
+By jeno (jeno@leapfrog.com) on 6/11/10 1:15 PM
+3 changed, 0 added, 0 deleted.
+6,133 ms. (Cumulative: 9,248,142 ms)
+
+----------------
