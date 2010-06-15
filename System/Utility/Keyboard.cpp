@@ -37,7 +37,7 @@ char *GetKeyboardName(void)
 {
 	struct dirent *dp;
 	DIR *dir;
-	int fd;
+	int fd, ret;
 	char name[32];
 
 	if(scanned)
@@ -59,13 +59,12 @@ char *GetKeyboardName(void)
 				continue;
 			}
 
-			if(ioctl(fd, EVIOCGNAME(32), name) < 0) {
-				close(fd);
+			ret = ioctl(fd, EVIOCGNAME(32), name) < 0;
+			close(fd);
+			if(ret)
 				continue;
-			}
 
 			if(!strcmp(name, KEYBOARD_NAME)) { // found
-				close(fd);
 				closedir(dir);
 				scanned = true;
 				return dev;
