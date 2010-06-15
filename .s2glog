@@ -26292,3 +26292,24 @@ By jeno (jeno@leapfrog.com) on 6/11/10 1:15 PM
 6,133 ms. (Cumulative: 9,248,142 ms)
 
 ----------------
+Revision 7,611 from svn://localhost/TRUNK/:
+Revision 7,612 from svn://localhost/TRUNK/:
+Revision 7,613 from svn://localhost/TRUNK/:
+Revision 7,614 from svn://localhost/TRUNK/:
+Revision 7,615 from svn://localhost/TRUNK/:
+Revision 7,616 from svn://localhost/TRUNK/:
+
+Keyboard: close file handles for keyboards that don't match
+
+When looking for a particular keyboard, make sure that we close the file handle
+in the case that the keyboard name doesn't match (or can't be retrived) and we
+therefore continue looking.
+
+ttpro 2627
+
+
+By ayurovsky (ayurovsky@leapfrog.com) on 6/15/10 10:49 AM
+1 changed, 0 added, 0 deleted.
+6,000 ms. (Cumulative: 9,254,252 ms)
+
+----------------
