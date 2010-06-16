@@ -26313,3 +26313,14 @@ By ayurovsky (ayurovsky@leapfrog.com) on 6/15/10 10:49 AM
 6,000 ms. (Cumulative: 9,254,252 ms)
 
 ----------------
+Revision 7,617 from svn://localhost/TRUNK/:
+Revision 7,618 from svn://localhost/TRUNK/:
+Revision 7,619 from svn://localhost/TRUNK/:
+
+CameraMPI: Modify default camera frame rate request from 15 to 20 FPS to boost AVI recording FPS. (TTP #2556)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/10 11:23 AM
+2 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 9,260,503 ms)
+
+----------------
