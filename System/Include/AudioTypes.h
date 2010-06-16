@@ -90,6 +90,13 @@ enum {
 #define kAudioOptionsNone 	0x0  ///< No options specified
 typedef U32 tAudioOptionsFlags; 
 
+/// Option used for StopAudio to decide if a done message is sent
+enum tStopAudioOption
+{
+	kStopAudioOptionsNoDoneMsg,
+	kStopAudioOptionsDoneMsg
+};
+
 #define kAudioRepeat_Infinite 	0x40000000  ///< Repeat forever.  Use for the payload parameter.
 
 /// Prototype for function to get next chunk of stereo audio stream data

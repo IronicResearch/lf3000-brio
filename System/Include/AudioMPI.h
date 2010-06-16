@@ -294,7 +294,21 @@ public:
 	/// \param noDoneMessage (not used)
 	///
 	/// This function has no effect if id is invalid.
-	void 		StopAudio(	tAudioID id, Boolean noDoneMessage ); 
+	void 		StopAudio(	tAudioID id, Boolean noDoneMessage );
+	
+	/// Stop a player's audio stream.
+	///
+	/// After calling this function, the tAudioID is invalid.  An event may or
+	/// may not be posted depending on the details below.
+	///
+	/// \param id The tAudioID of the player to stop.
+	///
+	/// \param stopOption If set to kStopAudioOptionsDoneMsg, will post a done message to event manager.
+	///						If you started an audio with a specific listener, and you stop with this flag,
+	///						make sure you don't delete the listener until you recieve the done message.
+	///
+	/// This function has no effect if id is invalid.
+	void 		StopAudio(	tAudioID id, tStopAudioOption stopOption ); 
 
 	/// Stop all player's audio stream.
 	///

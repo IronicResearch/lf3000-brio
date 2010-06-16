@@ -45,6 +45,7 @@ class CAudioMixer : private IEventListener
 
 	tAudioID AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt );
 	void RemovePlayer( tAudioID id, Boolean noDoneMessage );
+	void RemovePlayer( tAudioID id, tStopAudioOption stopOption );
 	void RemoveAllPlayer(void);
  
 	void PausePlayer( tAudioID id );
@@ -111,6 +112,7 @@ class CAudioMixer : private IEventListener
 	// hold the mixer lock.
 	CStream* FindStreamInternal( tAudioID id );
 	void RemovePlayerInternal( tAudioID id, Boolean noDoneMessage );
+	void RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption );
 
 #define kAudioMixer_MaxOutChannels		2
 

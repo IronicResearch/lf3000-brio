@@ -927,6 +927,45 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 	}
 }
 
+void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption )
+{
+	CStream *pStream;
+	CAudioPlayer *pPlayer;
+	pStream = FindStreamInternal(id);
+	if (pStream && pStream->GetPlayer()) {
+		//Q: perhaps we should pass noDoneMessage?  A: Actually, this will break
+		//the app manager and perhaps other apps.  Because this flag has been
+		//ignored for so long, people have not consistently set it.
+		//Unfortunately, it's a bit late to fix.
+		pPlayer = pStream->GetPlayer();
+		if(stopOption == kStopAudioOptionsDoneMsg)
+		{
+			const IEventListener *listener = pPlayer->GetEventListener();
+			if (pPlayer->GetID() == curMidiAudioId_)
+			{
+				tAudioMsgMidiCompleted	msg;
+				msg.midiPlayerID = curMidiId_; //pPlayer->GetID();
+				msg.payload = pPlayer->GetPayload();
+				msg.count = 1;
+				CAudioEventMessage event(msg);
+				pEventMPI_->PostEvent(event, 128, listener);
+			}
+			else
+			{
+				tAudioMsgAudioCompleted msg;
+				msg.audioID = pPlayer->GetID();
+				msg.payload = pPlayer->GetPayload();
+				msg.count = 1;
+				CAudioEventMessage event(msg);
+				pEventMPI_->PostEvent(event, 128, listener);
+			}
+		}
+		if(pPlayer)
+			delete pPlayer;
+		pStream->Release(true);
+	}
+}
+
 // ==============================================================================
 // RemovePlayer:
 // ==============================================================================
@@ -935,6 +974,14 @@ void CAudioMixer::RemovePlayer( tAudioID id, Boolean noDoneMessage )
 
 	MIXER_LOCK;
 	RemovePlayerInternal(id, noDoneMessage);
+	MIXER_UNLOCK; 
+}
+
+void CAudioMixer::RemovePlayer( tAudioID id, tStopAudioOption stopOption )
+{
+
+	MIXER_LOCK;
+	RemovePlayerInternal(id, stopOption);
 	MIXER_UNLOCK; 
 }
 
