@@ -26333,3 +26333,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/10 12:11 PM
 6,078 ms. (Cumulative: 9,266,659 ms)
 
 ----------------
+Revision 7,621 from svn://localhost/TRUNK/:
+
+CameraMPI: Wait for first video frame input before saving audio data. (TTP #2507) 
+Use difference between first and last video time stamps for calculating FPS in video-only AVIs.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/10 1:13 PM
+1 changed, 0 added, 0 deleted.
+6,057 ms. (Cumulative: 9,272,795 ms)
+
+----------------

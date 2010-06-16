@@ -92,6 +92,9 @@ void* CameraTaskMain(void* arg)
 	bool				bDoubleBuffered = false;
 
 	JPEG_METHOD			method = JPEG_FAST;
+	
+	bool				bFirst = false;
+	struct timeval		tv0, tvn;
 
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
@@ -190,7 +193,7 @@ void* CameraTaskMain(void* arg)
 		}
 
 		bRet = false;
-		if(bFile && pCtx->bAudio && !pCtx->bPaused)
+		if(bFile && pCtx->bAudio && !pCtx->bPaused && bFirst)
 		{
 			bRet = pCtx->module->WriteAudio(avi);
 		}
@@ -237,6 +240,10 @@ void* CameraTaskMain(void* arg)
 		if(bFile && !pCtx->bPaused && bRet)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
+			if (!bFirst) {
+				bFirst = true;
+				tv0 = pCtx->buf.timestamp;
+			}
 		}
 
 		bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
@@ -323,6 +330,16 @@ void* CameraTaskMain(void* arg)
 		float fps = (float)keyframe / ((float)end / 1000);
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
+		else {
+			// Calculate difference in first and last video timestamps
+			tvn = pCtx->buf.timestamp;
+			if (tvn.tv_usec < tv0.tv_usec) {
+				tvn.tv_usec += 1000000;
+				tvn.tv_sec--;
+			}
+			U32 usec = 1000000 * (tvn.tv_sec - tv0.tv_sec) + (tvn.tv_usec - tv0.tv_usec);
+			fps = 1000000 * (float)keyframe / (float)usec;
+		}
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
 		AVI_close(avi);
 	}
