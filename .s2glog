@@ -26343,3 +26343,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/10 1:13 PM
 6,057 ms. (Cumulative: 9,272,795 ms)
 
 ----------------
+Revision 7,622 from svn://localhost/TRUNK/:
+
+TTPro 2479.  New StopAudio function, this one can post audio done messages.  New enum added to support new function.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/16/10 1:53 PM
+7 changed, 0 added, 0 deleted.
+6,094 ms. (Cumulative: 9,278,967 ms)
+
+----------------
