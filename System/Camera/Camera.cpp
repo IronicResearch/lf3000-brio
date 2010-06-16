@@ -1799,7 +1799,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 	CPath fpath = path;
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};  // "fps" fields misnamed
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 20};  // "fps" fields misnamed
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 	struct statvfs buf;
 	U64 length;
@@ -2351,7 +2351,7 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::InitCameraInt()
 {
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 20};
 
 	if(!InitCameraHWInt(&camCtx_))
 	{

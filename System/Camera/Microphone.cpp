@@ -31,7 +31,7 @@ static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format
 // 10 FPS nominal: 100000 usec
 // 15 FPS nominal:  66666 usec
 // 20 FPS nominal:  50000 usec
-static const unsigned int MIC_PERIOD	= 66666;	// usec
+static const unsigned int MIC_PERIOD	= 50000;	// usec
 
 static const char *cap_name = "plughw:1,0";
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
