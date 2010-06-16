@@ -26324,3 +26324,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/16/10 11:23 AM
 6,157 ms. (Cumulative: 9,260,503 ms)
 
 ----------------
+Revision 7,620 from svn://localhost/TRUNK/:
+
+CameraMPI: Save timestamp indexes to AVI, plus bitrate calculation for ~10K/frame JPEGs.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/16/10 12:11 PM
+1 changed, 0 added, 0 deleted.
+6,078 ms. (Cumulative: 9,266,659 ms)
+
+----------------
