@@ -127,7 +127,7 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *co
 	AVCodecContext *c 	= AVI->pVideoStrm->codec;
 	c->codec_id 		= CODEC_ID_MJPEG;
 	c->codec_type 		= CODEC_TYPE_VIDEO;
-	c->bit_rate 		= 400000; // suggested?
+	c->bit_rate 		= (int)fps * 10 * 1024 * 8; //400000; // suggested?
 	c->width 			= width;
 	c->height 			= height;
 	c->time_base.den 	= (int)fps;
@@ -195,6 +195,7 @@ int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 	pkt.stream_index 	= AVI->iVideoStream;
 	pkt.data 			= (uint8_t*)data;
 	pkt.size 			= bytes;
+	pkt.pts				= keyframe; // time_base units
 
 	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
 	
