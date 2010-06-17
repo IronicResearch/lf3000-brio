@@ -26368,3 +26368,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/10 1:04 PM
 6,548 ms. (Cumulative: 9,285,687 ms)
 
 ----------------
+Revision 7,631 from svn://localhost/TRUNK/:
+
+CameraMPI: Calculate audio callback period time from nominal FPS rate. Needed to adapt to different Pixart cameras for tracking audio data vs video frames. (TTP 2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/10 1:49 PM
+2 changed, 0 added, 0 deleted.
+6,406 ms. (Cumulative: 9,292,171 ms)
+
+----------------

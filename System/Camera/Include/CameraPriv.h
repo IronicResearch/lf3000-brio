@@ -209,6 +209,7 @@ struct tMicrophoneContext {
 
 	tMutex					dlock;
 
+	unsigned int			period_time;	// period time in usec for callbacks
 	snd_pcm_uframes_t		period_size;
 
 	unsigned int			bytesRead;		// bytes read per callback

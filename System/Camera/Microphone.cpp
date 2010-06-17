@@ -132,6 +132,7 @@ tErrType CCameraModule::InitMicInt()
 	micCtx_.pcm_handle	= NULL;
 	micCtx_.fd[0]		= -1;
 	micCtx_.fd[1]		= -1;
+	micCtx_.period_time	= MIC_PERIOD;
 
 	snd_pcm_hw_params_alloca(&micCtx_.hwparams);
 	snd_pcm_sw_params_alloca(&micCtx_.swparams);
@@ -247,6 +248,14 @@ tErrType	CCameraModule::DeinitMicInt()
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::StartAudio()
 {
+	// Update pcm params for current fps rate / period time
+	if (camCtx_.fps > 0.1)
+		micCtx_.period_time = 1000000 / (int)camCtx_.fps;
+	else 
+		micCtx_.period_time = MIC_PERIOD;
+	set_hw_params(&micCtx_);
+	set_sw_params(&micCtx_);
+	
 	int err = snd_pcm_prepare(micCtx_.pcm_handle);
 
 	if(err == 0)
@@ -704,8 +713,8 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 		pCtx->sbits = err;
 
 		// Query period size after setting (requesting?) period time (per ALSA example)
-		unsigned int period_time = MIC_PERIOD; // usec
-        if ((err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir)) < 0)
+		unsigned int period_time = pCtx->period_time;
+		if ((err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir)) < 0)
         {
         	pCtx->period_size = 0;
         	continue;
