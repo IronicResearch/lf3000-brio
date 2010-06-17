@@ -136,6 +136,8 @@ tErrType CCameraModule::InitMicInt()
 	snd_pcm_hw_params_alloca(&micCtx_.hwparams);
 	snd_pcm_sw_params_alloca(&micCtx_.swparams);
 
+	snd_pcm_status_alloca(&micCtx_.status);
+	
 	do
 	{
 		/*
@@ -256,6 +258,10 @@ Boolean	CCameraModule::StartAudio()
 	micCtx_.bytesWritten 	= 0;
 	micCtx_.counter 		= 0;
 
+	// Query timestamp for pcm start event
+	snd_pcm_status(micCtx_.pcm_handle, micCtx_.status);
+	snd_pcm_status_get_trigger_tstamp(micCtx_.status, &micCtx_.tstamp);
+	
 	return (err == 0) ? true : false;
 }
 
@@ -459,6 +465,10 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			continue;
 		}
 
+		// Query timestamp for pcm update event
+		snd_pcm_status(handle, pCtx->status);
+		snd_pcm_status_get_tstamp(pCtx->status, &pCtx->tstamp);
+		
 		size = pCtx->period_size;
 		while (size > 0) {
 			frames = size;
@@ -843,6 +853,12 @@ static int set_sw_params(struct tMicrophoneContext *pCtx)
 		 * snd_pcm_sw_params_set_period_event() is not needed either
 		 */
 
+		
+		// Enable timestamp mode
+		err = snd_pcm_sw_params_set_tstamp_mode(handle, swparams, SND_PCM_TSTAMP_ENABLE);
+		if (err < 0)
+			continue;
+		
 		err = snd_pcm_sw_params(handle, swparams);
 	} while (0);
 

@@ -214,6 +214,9 @@ struct tMicrophoneContext {
 	unsigned int			bytesRead;		// bytes read per callback
 	unsigned int			bytesWritten;	// bytes written total
 	unsigned int			counter;		// block counter
+	
+	snd_pcm_status_t* 		status;
+	snd_timestamp_t 		tstamp;
 };
 
 struct tIDCTContext {
