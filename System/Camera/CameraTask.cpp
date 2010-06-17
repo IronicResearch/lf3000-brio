@@ -240,10 +240,13 @@ void* CameraTaskMain(void* arg)
 		if(bFile && !pCtx->bPaused && bRet)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
+			if (keyframe < cam->micCtx_.counter)
+				AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 			if (!bFirst) {
 				bFirst = true;
 				tv0 = pCtx->buf.timestamp;
 			}
+			tvn = pCtx->buf.timestamp;
 		}
 
 		bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);

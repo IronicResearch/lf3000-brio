@@ -26377,3 +26377,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/10 1:49 PM
 6,406 ms. (Cumulative: 9,292,171 ms)
 
 ----------------
+Revision 7,632 from svn://localhost/TRUNK/:
+
+CameraMPI: Duplicate video frame saved to AVI if video frame count lags audio block count. Used to maintain audio / video sync when tracking video frames vs audio blocks. (TTP 2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/10 1:54 PM
+1 changed, 0 added, 0 deleted.
+6,547 ms. (Cumulative: 9,298,797 ms)
+
+----------------
