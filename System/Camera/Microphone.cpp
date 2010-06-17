@@ -864,7 +864,7 @@ static int set_sw_params(struct tMicrophoneContext *pCtx)
 
 		
 		// Enable timestamp mode
-		err = snd_pcm_sw_params_set_tstamp_mode(handle, swparams, SND_PCM_TSTAMP_ENABLE);
+		err = snd_pcm_sw_params_set_tstamp_mode(handle, swparams, SND_PCM_TSTAMP_MMAP);
 		if (err < 0)
 			continue;
 		

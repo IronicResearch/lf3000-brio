@@ -26386,3 +26386,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/17/10 1:54 PM
 6,547 ms. (Cumulative: 9,298,797 ms)
 
 ----------------
+Revision 7,633 from svn://localhost/TRUNK/:
+Revision 7,634 from svn://localhost/TRUNK/:
+
+ALSA: SND_PCM_TSTAMP_ENABLE is new name for SND_PCM_TSTAMP_MMAP.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/17/10 2:56 PM
+1 changed, 0 added, 0 deleted.
+6,466 ms. (Cumulative: 9,305,357 ms)
+
+----------------
