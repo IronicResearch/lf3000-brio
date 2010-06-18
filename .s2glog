@@ -26410,3 +26410,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 6/18/10 10:45 AM
 6,563 ms. (Cumulative: 9,312,030 ms)
 
 ----------------
+Revision 7,640 from svn://localhost/TRUNK/:
+Revision 7,641 from svn://localhost/TRUNK/:
+Revision 7,642 from svn://localhost/TRUNK/:
+Revision 7,643 from svn://localhost/TRUNK/:
+
+CameraMPI: Video frame duplication only conditional when audio active.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/18/10 3:27 PM
+1 changed, 0 added, 0 deleted.
+6,303 ms. (Cumulative: 9,318,442 ms)
+
+----------------

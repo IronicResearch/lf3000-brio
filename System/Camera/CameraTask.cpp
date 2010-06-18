@@ -240,7 +240,7 @@ void* CameraTaskMain(void* arg)
 		if(bFile && !pCtx->bPaused && bRet)
 		{
 			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
-			if (keyframe < cam->micCtx_.counter)
+			if (pCtx->bAudio && keyframe < cam->micCtx_.counter)
 				AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 			if (!bFirst) {
 				bFirst = true;
