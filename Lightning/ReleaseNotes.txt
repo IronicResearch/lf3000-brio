@@ -3,8 +3,117 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.1.16.7517 (June 2, 2010)
+Brio v1.1.26.7xxx 
 ===========================================
+
+===========================================
+Brio v1.1.25.7xxx 
+===========================================
+
+===========================================
+Brio v1.1.20.7587 (June 6, 2010)
+===========================================
+
+-- CameraMPI: Query period size after setting (requesting?) period time 
+(per ALSA example). TODO: 
+
+-- Separate unit test binaries to allow for more targeted unit testing.
+
+-- testframerates: Record videos with different audio and viewfinder settings to allow for 
+performance comparison.
+
+-- CameraMPI: Period time interval determines callback rate for grabbing 
+input data. 15 FPS rate seems to have best throughput for our typical 
+audio+video AVI recording sessions.
+
+-- Theora: don't fail if patch already applied
+
+-- Reinstate Theora source missing from Brio svn..
+
+-- theora: rework setup script, give option for IDCT support
+
+-- TTPro L3B 2555:  Make CameraMPI hotplug-aware.  The implementation now 
+registers an internal listener which responds appropriately to hotplug events.  
+Active recordings are terminated upon camera removal,
+and calling applications are notified via their registered event listener.
+
+Note: The newly-added utility functions "EnumFolders" and "FindDevice" were 
+copied from LightningCore.  They should be removed from LightningCore 
+once this checkin has propagated to the SDK.
+
+-- Fixed a bug that prevented separated unit test binaries from compiling 
+properly.
+
+-- Increased camera framerate test capture times and added 2 "interactive" 
+unit tests for hotplug events.
+
+-- CameraMPI: Calculate effective FPS rate based on audio samples duration 
+when present, then Save FPS rate as fractional values in AVI header 
+fixup. (TTP 2507)
+
+-- Corrected DisplayMPI SetAlpha() doxygen comments about RGB vs ARGB 
+formats. 
+
+-- Camera: Resolve race conditions present in hotplug handling (L3B TTPro 
+2555).  This is accomplished with a new event type, kUSBDevicePriorityStateChange, 
+which should only be used internally by Brio within device modules, and
+never by applications.
+
+Also, break camera unit tests into separate tests for:
+-Camera
+-Microphone
+-Frame rates
+-Hotplug
+
+-- CameraMPI: Correct framerate request to Video4Linux, default at 15 FPS 
+now. Some internal "fps" vars were misnamed and really meant to 
+represent inverse-fps values, ie, time per frame. Apparently this was 
+not significant until Pixart camera widget FW reinstated support for 
+multiple framerate selections.
+
+-- Re-order USB event enums to preserve backwards compatibility. New enum 
+added in svn -r7502 should have been appended after previously defined 
+enums.
+
+-- VideoMPI: Correct video playback frametime propagated from FPS rational 
+values calculated in respective Theora or AVI players. Otherwise 
+inverse FPS calculations were re-introducing FPS truncation errors, 
+seen as slightly longer frametime intervals during AVI playback. 
+
+-- Camera unit tests: workaround for L3B TTPro 2580
+
+-- CameraMPI: Add YUV video layer HW scaler support. Effective for 
+surfaces created at 320x240 fullscreen, but rendered at other sizes, 
+like 160x120 quarter-size. Quarter-size rendering during capture 
+recording sessions result in higher throughput / FPS rates. (TTP #2569)
+
+-- Brio: don't use "LF1000 USB" keyboard, expect unotify to tell us about 
+both vbus and USB devices
+
+-- TTPro 2550.  Added new optional argument to GetFrame, color_order.  
+This will optionally swizzle the red and blue bytes, making it more 
+useful for people manually putting up frames to a display handle.
+
+WARNING:  This change breaks backward compatiblity.
+
+-- CameraMPI: Change Video4Linux protocol to use triple buffering in order 
+to prevent input corruption. (TTP 2508) Misc other mmap tweaks per 
+Video4Linux docs may not be significant.
+
+-- CameraMPI: Add conditional thread sleeps to yield timeslice when 
+neither audio nor video input data ready. Improves CPU usage with 
+little impact on effective FPS rates, especially when triple buffering 
+active.  
+
+-- Relax mmap flags to run as non-root user.
+
+-- Change control string to const to satisfy emulation compiler.
+
+-- Brio: revert USB Gadget handling improvements until things are fixed
+
+-- Per Dave, removing O_NONBLOCK option from file open for saving still 
+pictures as this was failing due to timing.  The change fixes the 
+saving pictures which was not working in the first 1.1.21 interim build.
 
 ===========================================
 Brio v1.1.15.7407 (May 20, 2010)
