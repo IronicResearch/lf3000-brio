@@ -26422,3 +26422,29 @@ By Dave Milici (dmilici@leapfrog.com) on 6/18/10 3:27 PM
 6,303 ms. (Cumulative: 9,318,442 ms)
 
 ----------------
+Revision 7,644 from svn://localhost/TRUNK/:
+Revision 7,645 from svn://localhost/TRUNK/:
+Revision 7,646 from svn://localhost/TRUNK/:
+Revision 7,647 from svn://localhost/TRUNK/:
+Revision 7,648 from svn://localhost/TRUNK/:
+Revision 7,649 from svn://localhost/TRUNK/:
+Revision 7,650 from svn://localhost/TRUNK/:
+Revision 7,651 from svn://localhost/TRUNK/:
+Revision 7,652 from svn://localhost/TRUNK/:
+Revision 7,653 from svn://localhost/TRUNK/:
+Revision 7,654 from svn://localhost/TRUNK/:
+Revision 7,655 from svn://localhost/TRUNK/:
+Revision 7,656 from svn://localhost/TRUNK/:
+Revision 7,657 from svn://localhost/TRUNK/:
+Revision 7,658 from svn://localhost/TRUNK/:
+Revision 7,659 from svn://localhost/TRUNK/:
+
+Camera module: fix for occasional crashes when recording muted videos.
+buf->timestamp is zeroed during the camera thread, and is not guaranteed to be
+valid during thread exit.
+
+By jeno (jeno@leapfrog.com) on 6/29/10 3:42 PM
+1 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 9,324,646 ms)
+
+----------------

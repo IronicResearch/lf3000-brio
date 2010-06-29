@@ -333,9 +333,9 @@ void* CameraTaskMain(void* arg)
 		float fps = (float)keyframe / ((float)end / 1000);
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
-		else {
+		else if (keyframe > 1) {
 			// Calculate difference in first and last video timestamps
-			tvn = pCtx->buf.timestamp;
+
 			if (tvn.tv_usec < tv0.tv_usec) {
 				tvn.tv_usec += 1000000;
 				tvn.tv_sec--;
