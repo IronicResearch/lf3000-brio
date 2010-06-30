@@ -1743,7 +1743,8 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	// draw to screen
 	if(surf != NULL)
 	{
-		SetScaler(surf->width, surf->height, false);
+		if(surf->format == kPixelFormatYUV420)
+			SetScaler(surf->width, surf->height, false);
 		bRet = DrawFrame(surf, bitmap);
 	}
 
