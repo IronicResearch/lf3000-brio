@@ -26448,3 +26448,18 @@ By jeno (jeno@leapfrog.com) on 6/29/10 3:42 PM
 6,016 ms. (Cumulative: 9,324,646 ms)
 
 ----------------
+Revision 7,660 from svn://localhost/TRUNK/:
+Revision 7,661 from svn://localhost/TRUNK/:
+Revision 7,662 from svn://localhost/TRUNK/:
+Revision 7,663 from svn://localhost/TRUNK/:
+Revision 7,664 from svn://localhost/TRUNK/:
+Revision 7,665 from svn://localhost/TRUNK/:
+
+Camera module: set scaler only when dealing with the YUV video layer.  (MFG test
+app uses RGB rendering, and this was causing a crash).
+
+By jeno (jeno@leapfrog.com) on 6/30/10 2:02 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 9,330,710 ms)
+
+----------------
