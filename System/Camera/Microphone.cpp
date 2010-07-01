@@ -246,26 +246,33 @@ tErrType	CCameraModule::DeinitMicInt()
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::StartAudio()
+Boolean	CCameraModule::StartAudio(Boolean reset)
 {
 	// Update pcm params for current fps rate / period time
-	if (camCtx_.fps > 0.1)
-		micCtx_.period_time = 1000000 / (int)camCtx_.fps;
-	else 
-		micCtx_.period_time = MIC_PERIOD;
-	set_hw_params(&micCtx_);
-	set_sw_params(&micCtx_);
-	
+	if(reset == true)
+	{
+		if (camCtx_.fps > 0.1)
+			micCtx_.period_time = 1000000 / (int)camCtx_.fps;
+		else
+			micCtx_.period_time = MIC_PERIOD;
+
+		set_hw_params(&micCtx_);
+		set_sw_params(&micCtx_);
+	}
+
 	int err = snd_pcm_prepare(micCtx_.pcm_handle);
 
 	if(err == 0)
 	{
 		err = snd_pcm_start(micCtx_.pcm_handle);
 	}
-	
-	micCtx_.bytesRead 		= 0;
-	micCtx_.bytesWritten 	= 0;
-	micCtx_.counter 		= 0;
+
+	if(reset == true)
+	{
+		micCtx_.bytesRead 		= 0;
+		micCtx_.bytesWritten 	= 0;
+		micCtx_.counter 		= 0;
+	}
 
 	// Query timestamp for pcm start event
 	snd_pcm_status(micCtx_.pcm_handle, micCtx_.status);
@@ -601,7 +608,7 @@ Boolean CCameraModule::ResumeAudioCapture(const tAudCapHndl hndl)
 		return false;
 	}
 
-	bRet = StartAudio();
+	bRet = StartAudio(false);
 
 	if(bRet == true)
 	{

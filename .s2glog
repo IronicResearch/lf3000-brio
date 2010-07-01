@@ -26463,3 +26463,22 @@ By jeno (jeno@leapfrog.com) on 6/30/10 2:02 PM
 5,954 ms. (Cumulative: 9,330,710 ms)
 
 ----------------
+Revision 7,666 from svn://localhost/TRUNK/:
+Revision 7,667 from svn://localhost/TRUNK/:
+Revision 7,668 from svn://localhost/TRUNK/:
+Revision 7,669 from svn://localhost/TRUNK/:
+
+L3B TTPro 2642: ALSA crashes when attempting to call snd_pcm_hw_params() on a
+stream that we have paused, regardless of what is reported by snd_pcm_state().
+
+This checkin is more of a workaround than a fix, because the above behavior is
+not well understood.
+
+Also, make sure recording videos pause/unpause audio appropriately, and
+non-recording viewfinders don't stream audio at all.
+
+By jeno (jeno@leapfrog.com) on 7/1/10 10:44 AM
+4 changed, 0 added, 0 deleted.
+6,179 ms. (Cumulative: 9,336,983 ms)
+
+----------------
