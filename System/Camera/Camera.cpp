@@ -2067,6 +2067,8 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	newmode.width	= frame->width;
 	newmode.height	= frame->height;
+	newmode.fps_numerator	= 1;
+	newmode.fps_denominator	= 5;
 
 	// don't let the viewfinder run while we muck with the camera settings
 	THREAD_LOCK;

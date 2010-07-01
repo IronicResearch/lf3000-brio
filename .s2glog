@@ -26482,3 +26482,17 @@ By jeno (jeno@leapfrog.com) on 7/1/10 10:44 AM
 6,179 ms. (Cumulative: 9,336,983 ms)
 
 ----------------
+Revision 7,670 from svn://localhost/TRUNK/:
+Revision 7,671 from svn://localhost/TRUNK/:
+Revision 7,672 from svn://localhost/TRUNK/:
+Revision 7,673 from svn://localhost/TRUNK/:
+Revision 7,674 from svn://localhost/TRUNK/:
+
+L3B TTPro 2643: Reduce frame rate during still image capture to attempt to
+improve JPEG quality.
+
+By jeno (jeno@leapfrog.com) on 7/1/10 3:32 PM
+1 changed, 0 added, 0 deleted.
+6,125 ms. (Cumulative: 9,343,218 ms)
+
+----------------
