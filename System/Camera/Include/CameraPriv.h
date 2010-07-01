@@ -319,7 +319,7 @@ private:
 	tErrType	DeinitMicInt();
 	int			XlateAudioFormatAVI(snd_pcm_format_t fmt);
 	int			XlateAudioFormatSF(snd_pcm_format_t fmt);
-	Boolean		StartAudio();
+	Boolean		StartAudio(Boolean reset = true);
 	Boolean		WriteAudio(avi_t *avi);
 	Boolean		WriteAudio(SNDFILE *wav);
 	Boolean		StopAudio();

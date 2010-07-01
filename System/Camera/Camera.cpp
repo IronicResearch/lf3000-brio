@@ -1845,7 +1845,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	}
 
 	camCtx_.path	= fpath;
-	camCtx_.bAudio	= bAudio;
+	camCtx_.bAudio	= bAudio && (fpath.length() > 0);
 
 	camCtx_.reqLength = maxLength;
 	camCtx_.pListener = pListener;
@@ -2302,6 +2302,10 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 
 	dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
 												  "Couldn't lock mutex.\n");
+	if(camCtx_.bAudio)
+	{
+		StopAudio();
+	}
 
 	camCtx_.bPaused = true;
 	camCtx_.bVPaused = display;
@@ -2325,6 +2329,11 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 
 	dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
 												  "Couldn't lock mutex.\n");
+
+	if(camCtx_.bAudio)
+	{
+		StartAudio(false);
+	}
 
 	camCtx_.bPaused = false;
 	camCtx_.bVPaused = false;

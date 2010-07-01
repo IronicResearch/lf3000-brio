@@ -75,9 +75,6 @@ void* MicTaskMain(void* arg)
 	// Paused state set by StartAudioCapture() API now
 	// pCtx->bPaused = false;
 
-	bRunning = true;
-	cam->dbg_.DebugOut( kDbgLvlImportant, "MicrophoneTask Started...\n" );
-
 	timeout = false;
 	timer = cam->kernel_.CreateTimer(TimerCallback, props, NULL);
 	props.timeout.it_value.tv_sec = pCtx->maxLength;
@@ -88,6 +85,9 @@ void* MicTaskMain(void* arg)
 
 	if (!pCtx->bPaused)
 		cam->StartAudio();
+
+	bRunning = true;
+	cam->dbg_.DebugOut( kDbgLvlImportant, "MicrophoneTask Started...\n" );
 
 	while(bRunning)
 	{
