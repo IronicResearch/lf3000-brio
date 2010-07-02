@@ -26496,3 +26496,18 @@ By jeno (jeno@leapfrog.com) on 7/1/10 3:32 PM
 6,125 ms. (Cumulative: 9,343,218 ms)
 
 ----------------
+Revision 7,675 from svn://localhost/TRUNK/:
+Revision 7,676 from svn://localhost/TRUNK/:
+Revision 7,677 from svn://localhost/TRUNK/:
+
+L3B TTPro 2589: Do not count paused time against recording quotas, either
+requested time-out or disk-space usage.
+
+Also, use either recorded audio size or v4l2 frame timestamps for IEventListener
+elapsed time accounting, rather than KernelMPI::GetElapsedTimeAsMSecs()
+
+By jeno (jeno@leapfrog.com) on 7/2/10 12:08 PM
+5 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 9,349,797 ms)
+
+----------------
