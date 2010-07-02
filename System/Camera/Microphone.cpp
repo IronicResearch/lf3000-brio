@@ -401,6 +401,7 @@ Boolean	CCameraModule::WriteAudio(SNDFILE *wav)
 		{
 			wrote = len;
 			wrote = sf_write_raw(wav, micCtx_.poll_buf, wrote);
+			micCtx_.bytesWritten += wrote;
 		}
 		ret = true;
 	}

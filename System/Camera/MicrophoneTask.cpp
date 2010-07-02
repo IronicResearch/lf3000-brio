@@ -52,15 +52,16 @@ void* MicTaskMain(void* arg)
 {
 	struct SF_INFO		sf_info;
 	SNDFILE*			sndfile;
-	U32					start, end;
+	U32					elapsed = 0;
 
 	cam					=	static_cast<CCameraModule*>(arg);
 	tMicrophoneContext	*pCtx 	= &cam->micCtx_;
 
-	Boolean				bRet;
+	Boolean				bRet, bWasPaused = false;
 
 	tTimerProperties	props	= {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
 	tTimerHndl 			timer 	= kInvalidTimerHndl;
+	saveTimerSettings	oldTimer;
 
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
@@ -81,8 +82,6 @@ void* MicTaskMain(void* arg)
 	props.timeout.it_value.tv_nsec = 0;
 	cam->kernel_.StartTimer(timer, props);
 
-	start = cam->kernel_.GetElapsedTimeAsMSecs();
-
 	if (!pCtx->bPaused)
 		cam->StartAudio();
 
@@ -91,6 +90,20 @@ void* MicTaskMain(void* arg)
 
 	while(bRunning)
 	{
+		if(pCtx->bPaused && !bWasPaused)
+		{
+			cam->kernel_.PauseTimer(timer, oldTimer);
+			bWasPaused = true;
+
+			continue;
+		}
+
+		if(bWasPaused && !pCtx->bPaused)
+		{
+			cam->kernel_.ResumeTimer(timer, oldTimer);
+			bWasPaused = false;
+		}
+
 		if(!pCtx->bPaused)
 		{
 			bRet = cam->WriteAudio(sndfile);
@@ -101,19 +114,11 @@ void* MicTaskMain(void* arg)
 
 	cam->kernel_.DestroyTimer(timer);
 
-	end = cam->kernel_.GetElapsedTimeAsMSecs();
-	if(end > start)
-	{
-		end -= start;
-	}
-	else
-	{
-		end += (kU32Max - start);
-	}
-
 	cam->StopAudio();
 
 	sf_close(sndfile);
+
+	elapsed = pCtx->bytesWritten / (pCtx->rate * pCtx->channels * sizeof(short));
 
 	// Post done message to event listener
 	if(pCtx->pListener)
@@ -123,33 +128,33 @@ void* MicTaskMain(void* arg)
 		if(!cam->valid)								// camera hot-unplugged
 		{
 			tCameraRemovedMsg		data;
-			data.vhndl				= pCtx->hndl;
+			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed;
 			msg = new CCameraEventMessage(data);
 		}
 		else if(!timeout)							// manually stopped by StopVideoCapture()
 		{
 			tCaptureStoppedMsg		data;
-			data.vhndl				= pCtx->hndl;
+			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed;
 			msg = new CCameraEventMessage(data);
 		}
 		else if(pCtx->reqLength && pCtx->reqLength <= pCtx->maxLength)	// normal timeout
 		{
 			tCaptureTimeoutMsg		data;
-			data.vhndl				= pCtx->hndl;
+			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed;
 			msg = new CCameraEventMessage(data);
 		}
 		else										// file system capacity timeout
 		{
 			tCaptureQuotaHitMsg		data;
-			data.vhndl				= pCtx->hndl;
+			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed;
 			msg = new CCameraEventMessage(data);
 		}
 

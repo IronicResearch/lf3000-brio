@@ -69,7 +69,7 @@ void* CameraTaskMain(void* arg)
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
-	U32					start, end;
+	U32					elapsed = 0;
 
 	unsigned int		audio_rate	= 0;
 	unsigned int		audio_chans	= 0;
@@ -80,10 +80,11 @@ void* CameraTaskMain(void* arg)
 	tFrameInfo			frame;
 	tBitmapInfo			image	= {kBitmapFormatError, 0, 0, 0, NULL, 0 };
 
-	Boolean				bRet, bFile = false, bScreen = false;
+	Boolean				bRet, bFile = false, bScreen = false, bWasPaused = false;
 
 	tTimerProperties	props	= {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
 	tTimerHndl 			timer 	= kInvalidTimerHndl;
+	saveTimerSettings	oldTimer;
 
 	tVideoSurf*			pSurf = pCtx->surf;
 	tVideoSurf			aSurf[2];
@@ -94,7 +95,7 @@ void* CameraTaskMain(void* arg)
 	JPEG_METHOD			method = JPEG_FAST;
 	
 	bool				bFirst = false;
-	struct timeval		tv0, tvn;
+	struct timeval		tv0, tvn, tvt = {0, 0};
 
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
@@ -165,11 +166,6 @@ void* CameraTaskMain(void* arg)
 		}
 	}
 
-	bRunning = true;
-	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
-
-	start = kernel.GetElapsedTimeAsMSecs();
-
 	timeout = false;
 	timer = kernel.CreateTimer(TimerCallback, props, NULL);
 	props.timeout.it_value.tv_sec = pCtx->maxLength;
@@ -181,6 +177,9 @@ void* CameraTaskMain(void* arg)
 		pCtx->module->StartAudio();
 	}
 
+	bRunning = true;
+	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
+
 	// Hack to reduce audio streaming interference with video streaming
 	bSpeakerState = audiomgr.GetSpeakerEqualizer();
 	audiomgr.SetSpeakerEqualizer(false);
@@ -190,6 +189,28 @@ void* CameraTaskMain(void* arg)
 		if(0 != kernel.TryLockMutex(pCtx->mThread))
 		{
 			continue;
+		}
+
+		if(pCtx->bPaused && !bWasPaused)
+		{
+			kernel.PauseTimer(timer, oldTimer);
+			bWasPaused = true;
+
+			if(bFirst)
+			{
+				// Calculate difference in first and last video timestamps
+				if (tvn.tv_usec < tv0.tv_usec) {
+					tvn.tv_usec += 1000000;
+					tvn.tv_sec--;
+				}
+				tvt.tv_sec	+= (tvn.tv_sec - tv0.tv_sec);
+				tvt.tv_usec += (tvn.tv_usec - tv0.tv_usec);
+				if(tvt.tv_usec > 1000000)
+				{
+					tvt.tv_usec -= 1000000;
+					tvt.tv_sec++;
+				}
+			}
 		}
 
 		bRet = false;
@@ -237,16 +258,27 @@ void* CameraTaskMain(void* arg)
 		/*
 		 * Write the AVI frame only if it rendered correctly.
 		 */
-		if(bFile && !pCtx->bPaused && bRet)
+		if(!pCtx->bPaused)
 		{
-			AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
-			if (pCtx->bAudio && keyframe < cam->micCtx_.counter)
+			if(bFile && bRet)
+			{
 				AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
+				if (pCtx->bAudio && keyframe < cam->micCtx_.counter)
+					AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
+			}
 			if (!bFirst) {
 				bFirst = true;
 				tv0 = pCtx->buf.timestamp;
 			}
 			tvn = pCtx->buf.timestamp;
+
+			if(bWasPaused)
+			{
+				bWasPaused = false;
+				kernel.ResumeTimer(timer, oldTimer);
+
+				tv0 = tvn;
+			}
 		}
 
 		bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
@@ -262,15 +294,22 @@ void* CameraTaskMain(void* arg)
 
 	kernel.DestroyTimer(timer);
 
-	end = kernel.GetElapsedTimeAsMSecs();
-	if(end > start)
+	if(bFirst && !bWasPaused)
 	{
-		end -= start;
+		// Calculate difference in first and last video timestamps
+		if (tvn.tv_usec < tv0.tv_usec) {
+			tvn.tv_usec += 1000000;
+			tvn.tv_sec--;
+		}
+		tvt.tv_sec	+= (tvn.tv_sec - tv0.tv_sec);
+		tvt.tv_usec += (tvn.tv_usec - tv0.tv_usec);
+		if(tvt.tv_usec > 1000000)
+		{
+			tvt.tv_usec -= 1000000;
+			tvt.tv_sec++;
+		}
 	}
-	else
-	{
-		end += (kU32Max - start);
-	}
+	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
 
 	// Restore speaker equalizer state prior to video streaming
 	audiomgr.SetSpeakerEqualizer(bSpeakerState);
@@ -285,7 +324,7 @@ void* CameraTaskMain(void* arg)
 			tCameraRemovedMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed / 1000000;
 			msg = new CCameraEventMessage(data);
 		}
 		else if(!timeout)							// manually stopped by StopVideoCapture()
@@ -293,7 +332,7 @@ void* CameraTaskMain(void* arg)
 			tCaptureStoppedMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed / 1000000;
 			msg = new CCameraEventMessage(data);
 		}
 		else if(pCtx->reqLength && pCtx->reqLength <= pCtx->maxLength)	// normal timeout
@@ -301,7 +340,7 @@ void* CameraTaskMain(void* arg)
 			tCaptureTimeoutMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed / 1000000;
 			msg = new CCameraEventMessage(data);
 		}
 		else										// file system capacity timeout
@@ -309,7 +348,7 @@ void* CameraTaskMain(void* arg)
 			tCaptureQuotaHitMsg		data;
 			data.vhndl				= pCtx->hndl;
 			data.saved				= true;
-			data.length 			= end;
+			data.length 			= elapsed / 1000000;
 			msg = new CCameraEventMessage(data);
 		}
 
@@ -330,19 +369,10 @@ void* CameraTaskMain(void* arg)
 
 	if(bFile)
 	{
-		float fps = (float)keyframe / ((float)end / 1000);
+		float fps = (float)keyframe / ((float)elapsed / 1000000);
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
-		else if (keyframe > 1) {
-			// Calculate difference in first and last video timestamps
 
-			if (tvn.tv_usec < tv0.tv_usec) {
-				tvn.tv_usec += 1000000;
-				tvn.tv_sec--;
-			}
-			U32 usec = 1000000 * (tvn.tv_sec - tv0.tv_sec) + (tvn.tv_usec - tv0.tv_usec);
-			fps = 1000000 * (float)keyframe / (float)usec;
-		}
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
 		AVI_close(avi);
 	}

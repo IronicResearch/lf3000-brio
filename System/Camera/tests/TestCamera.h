@@ -67,14 +67,34 @@ private:
 	{
 	private:
 		tEventType	reason;
+		U32			length;
 	public:
 		CameraListener():
 			IEventListener(LocalCameraEvents, ArrayCount(LocalCameraEvents))
 			{reason = kUndefinedEventType;}
 
-		tEventStatus Notify(const IEventMessage& msg)
+		tEventStatus Notify(const IEventMessage& Imsg)
 		{
-			reason = msg.GetEventType();
+			const CCameraEventMessage& msg = dynamic_cast<const CCameraEventMessage&>(Imsg);
+
+			reason = Imsg.GetEventType();
+
+			if(reason == kCaptureTimeOutEvent)
+			{
+				length = msg.data.timeOut.length;
+			}
+			if(reason == kCaptureQuotaHitEvent)
+			{
+				length = msg.data.quotaHit.length;
+			}
+			if(reason == kCaptureStoppedEvent)
+			{
+				length = msg.data.stopped.length;
+			}
+			if(reason == kCameraRemovedEvent)
+			{
+				length = msg.data.removed.length;
+			}
 
 			return kEventStatusOK;
 		}
@@ -82,11 +102,17 @@ private:
 		tEventStatus Reset()
 		{
 			reason = kUndefinedEventType;
+			length = 0;
 		}
 
 		tEventType GetReason()
 		{
 			return reason;
+		}
+
+		U32 GetLength()
+		{
+			return length;
 		}
 	};
 
