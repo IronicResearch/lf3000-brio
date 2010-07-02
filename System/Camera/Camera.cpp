@@ -1800,7 +1800,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 	CPath fpath = path;
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 20};  // "fps" fields misnamed
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 5};  // "fps" fields misnamed
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 	struct statvfs buf;
 	U64 length;
@@ -2067,8 +2067,8 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	newmode.width	= frame->width;
 	newmode.height	= frame->height;
-	newmode.fps_numerator	= 1;
-	newmode.fps_denominator	= 5;
+//	newmode.fps_numerator	= 1;
+//	newmode.fps_denominator	= 5;
 
 	// don't let the viewfinder run while we muck with the camera settings
 	THREAD_LOCK;
@@ -2363,7 +2363,7 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::InitCameraInt()
 {
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 20};
+	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 5};
 
 	if(!InitCameraHWInt(&camCtx_))
 	{

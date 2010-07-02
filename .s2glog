@@ -26511,3 +26511,13 @@ By jeno (jeno@leapfrog.com) on 7/2/10 12:08 PM
 6,485 ms. (Cumulative: 9,349,797 ms)
 
 ----------------
+Revision 7,678 from svn://localhost/TRUNK/:
+
+Setting camera frame rate to 5 fps globally for reduced framerate:improved image
+quality correlation verification
+
+By jeno (jeno@leapfrog.com) on 7/2/10 12:23 PM
+1 changed, 0 added, 0 deleted.
+6,500 ms. (Cumulative: 9,356,391 ms)
+
+----------------
