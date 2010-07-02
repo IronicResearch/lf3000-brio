@@ -398,6 +398,11 @@ Boolean	CCameraModule::IsValid() const
 // Camera-specific Implementation
 //============================================================================
 
+Boolean		CCameraModule::IsCameraPresent()
+{
+	return valid;
+}
+
 //----------------------------------------------------------------------------
 tErrType CCameraModule::SetCameraVideoPath(const CPath &path)
 {

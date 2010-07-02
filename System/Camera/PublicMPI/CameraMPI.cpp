@@ -116,6 +116,13 @@ const CURI* CCameraMPI::GetModuleOrigin() const
 
 //============================================================================
 
+Boolean CCameraMPI::IsCameraPresent()
+{
+	if(!pModule_)
+		return false;
+	return pModule_->IsCameraPresent();
+}
+
 //----------------------------------------------------------------------------
 tErrType CCameraMPI::SetCameraVideoPath(const CPath& path)
 {

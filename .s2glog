@@ -26521,3 +26521,12 @@ By jeno (jeno@leapfrog.com) on 7/2/10 12:23 PM
 6,500 ms. (Cumulative: 9,356,391 ms)
 
 ----------------
+Revision 7,679 from svn://localhost/TRUNK/:
+
+TTPro 2641.  Impelemted IsCameraPresent.  Does the same thing that IsValid does.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/2/10 2:45 PM
+3 changed, 0 added, 0 deleted.
+6,687 ms. (Cumulative: 9,363,156 ms)
+
+----------------
