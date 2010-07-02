@@ -253,6 +253,7 @@ public:
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
+	VTABLE_EXPORT Boolean		IsCameraPresent();
 	VTABLE_EXPORT tErrType		SetCameraVideoPath(const CPath& path);
 	VTABLE_EXPORT CPath*		GetCameraVideoPath();
 	VTABLE_EXPORT tErrType		SetCameraStillPath(const CPath& path);
