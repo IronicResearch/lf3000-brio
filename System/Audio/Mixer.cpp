@@ -955,8 +955,6 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption
 				CAudioEventMessage event(msg);
 				pEventMPI_->PostEvent(event, 128, listener);
 			}
-			CKernelMPI kernel_mpi;
-			kernel_mpi.TaskSleep(10);
 		}
 		if(pPlayer)
 			delete pPlayer;
