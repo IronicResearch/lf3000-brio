@@ -933,10 +933,6 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption
 	CAudioPlayer *pPlayer;
 	pStream = FindStreamInternal(id);
 	if (pStream && pStream->GetPlayer()) {
-		//Q: perhaps we should pass noDoneMessage?  A: Actually, this will break
-		//the app manager and perhaps other apps.  Because this flag has been
-		//ignored for so long, people have not consistently set it.
-		//Unfortunately, it's a bit late to fix.
 		pPlayer = pStream->GetPlayer();
 		if(stopOption == kStopAudioOptionsDoneMsg)
 		{
@@ -959,6 +955,8 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption
 				CAudioEventMessage event(msg);
 				pEventMPI_->PostEvent(event, 128, listener);
 			}
+			CKernelMPI kernel_mpi;
+			kernel_mpi.TaskSleep(10);
 		}
 		if(pPlayer)
 			delete pPlayer;

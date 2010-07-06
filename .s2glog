@@ -26530,3 +26530,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/2/10 2:45 PM
 6,687 ms. (Cumulative: 9,363,156 ms)
 
 ----------------
+Revision 7,680 from svn://localhost/TRUNK/:
+
+TTPro 2479.  Added TaskSleep to StopAudio with kStopAudioOptionsDoneMsg.  This helps ensure that the DoneMessage will be delivered by the time StopAudio finishes.  This way developers who StopAudio with callbacks don't have to worry about having to sleep and wait till the message gets back.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/6/10 3:59 PM
+1 changed, 0 added, 0 deleted.
+6,469 ms. (Cumulative: 9,369,719 ms)
+
+----------------
