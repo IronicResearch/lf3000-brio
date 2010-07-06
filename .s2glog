@@ -26539,3 +26539,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/6/10 3:59 PM
 6,469 ms. (Cumulative: 9,369,719 ms)
 
 ----------------
+Revision 7,681 from svn://localhost/TRUNK/:
+
+TTPro 2479.  Moved the StopAudio's sleep outside of all mutex locks.  This avoids unneeded resource locking.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/6/10 4:32 PM
+2 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 9,376,376 ms)
+
+----------------

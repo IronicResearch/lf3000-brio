@@ -360,7 +360,11 @@ void CAudioMPI::StopAudio( tAudioID id, Boolean noDoneMessage )
 void CAudioMPI::StopAudio(	tAudioID id, tStopAudioOption stopOption )
 {
 	if ( pModule_ )
+	{
 		pModule_->StopAudio( id, stopOption );
+		CKernelMPI kernel_mpi;
+		kernel_mpi.TaskSleep(10);
+	}
 }
 // ==============================================================================
 // StopAllAudio
