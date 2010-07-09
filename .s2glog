@@ -26548,3 +26548,20 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/6/10 4:32 PM
 6,563 ms. (Cumulative: 9,376,376 ms)
 
 ----------------
+Revision 7,682 from svn://localhost/TRUNK/:
+Revision 7,683 from svn://localhost/TRUNK/:
+Revision 7,684 from svn://localhost/TRUNK/:
+Revision 7,685 from svn://localhost/TRUNK/:
+Revision 7,686 from svn://localhost/TRUNK/:
+Revision 7,687 from svn://localhost/TRUNK/:
+Revision 7,688 from svn://localhost/TRUNK/:
+Revision 7,689 from svn://localhost/TRUNK/:
+
+L3B TTPro 2669: Instead of scaling 9-bit IDCT output to 8-bit colors, use a
+simple clamp.  This prevents the resulting colors from looking washed-out.
+
+By jeno (jeno@leapfrog.com) on 7/9/10 12:05 PM
+2 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 9,383,001 ms)
+
+----------------

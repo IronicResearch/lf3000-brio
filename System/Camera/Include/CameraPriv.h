@@ -329,6 +329,7 @@ private:
 	friend tErrType InitMicTask(CCameraModule* module);
 	friend tErrType DeInitMicTask(CCameraModule* module);
 
+	void		InitLut();
 	tErrType	InitIDCTInt();
 	tErrType	DeinitIDCTInt();
 	tErrType	StartIDCT(S16 *ptr);
