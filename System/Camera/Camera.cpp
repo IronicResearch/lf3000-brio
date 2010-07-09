@@ -120,6 +120,11 @@ namespace
 	CPath				spath = "";
 	tMutex				dlock;
 
+	S8					nLUT[1025];	/* To convert 9-bit HW IDCT output to 8-bit color values.
+									 * Should only be [512], but the IDCT sometimes erroneously
+									 * produces 256 (0x0100) or 768 (0x0300)
+									 */
+	S8					*NormLUT;	/* Offset table indicies by 256 */
 	// Camera MPI global vars
 	tCameraContext*		gpCamCtx = NULL;
 #if USE_PROFILE
@@ -361,6 +366,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	event_.PostEvent(usb_msg, 0, listener_);
 
 	/* local listener handles hardware initialization as appropriate */
+	InitLut();
 }
 
 //----------------------------------------------------------------------------
@@ -1408,28 +1414,31 @@ __attribute__((always_inline)) static inline void NormalizeAndPaint(U8 *buf, JCO
 	{
 		for(i = j = 0; i < DCTSIZE; i++, j+= 8)
 		{
-			tmp[j] = (ptr[j] / 2) + 128;
-			tmp[j+1] = (ptr[j+1] / 2) + 128;
-			tmp[j+2] = (ptr[j+2] / 2) + 128;
-			tmp[j+3] = (ptr[j+3] / 2) + 128;
-			tmp[j+4] = (ptr[j+4] / 2) + 128;
-			tmp[j+5] = (ptr[j+5] / 2) + 128;
-			tmp[j+6] = (ptr[j+6] / 2) + 128;
-			tmp[j+7] = (ptr[j+7] / 2) + 128;
+			/* this lookup table implements range-clamping and level-shift:
+			 * 	tmp[j] = CLAMP(ptr[j] + 128, 0, UCHAR_MAX);
+			 */
+			tmp[j+0] = NormLUT[ptr[j+0]];
+			tmp[j+1] = NormLUT[ptr[j+1]];
+			tmp[j+2] = NormLUT[ptr[j+2]];
+			tmp[j+3] = NormLUT[ptr[j+3]];
+			tmp[j+4] = NormLUT[ptr[j+4]];
+			tmp[j+5] = NormLUT[ptr[j+5]];
+			tmp[j+6] = NormLUT[ptr[j+6]];
+			tmp[j+7] = NormLUT[ptr[j+7]];
 		}
 	}
 	else
 	{
 		for(i = j = 0; i < DCTSIZE; i+=2, j+=16)
 		{
-			tmp[j] = (ptr[j] / 2) + 128;
-			tmp[j+1] = (ptr[j+1] / 2) + 128;
-			tmp[j+2] = (ptr[j+2] / 2) + 128;
-			tmp[j+3] = (ptr[j+3] / 2) + 128;
-			tmp[j+4] = (ptr[j+4] / 2) + 128;
-			tmp[j+5] = (ptr[j+5] / 2) + 128;
-			tmp[j+6] = (ptr[j+6] / 2) + 128;
-			tmp[j+7] = (ptr[j+7] / 2) + 128;
+			tmp[j+0] = NormLUT[ptr[j+0]];
+			tmp[j+1] = NormLUT[ptr[j+1]];
+			tmp[j+2] = NormLUT[ptr[j+2]];
+			tmp[j+3] = NormLUT[ptr[j+3]];
+			tmp[j+4] = NormLUT[ptr[j+4]];
+			tmp[j+5] = NormLUT[ptr[j+5]];
+			tmp[j+6] = NormLUT[ptr[j+6]];
+			tmp[j+7] = NormLUT[ptr[j+7]];
 		}
 	}
 
@@ -2407,6 +2416,38 @@ Boolean	CCameraModule::InitCameraInt()
 	}
 
 	return true;
+}
+
+//----------------------------------------------------------------------------
+void CCameraModule::InitLut(void)
+{
+	int i;
+
+	NormLUT = &nLUT[256];	/* we want to use indicies -256 to 768 */
+
+	/* IDCT 9-bit output: -256 ... 255 becomes 8-bit color 0 ... 255 */
+	/* Dividing the whole range by 2 and shifting up by 128 results in
+	 * washed-out color.  Instead, use a simple clamp.
+	 */
+	for(i = -256; i < -128; i++)
+	{
+		NormLUT[i]	= CHAR_MIN;
+	}
+	for(i = -128; i < 128; i++)
+	{
+		NormLUT[i]	= i + 128;
+	}
+	for(i = 128; i < 255; i++)
+	{
+		NormLUT[i]	= UCHAR_MAX;
+	}
+
+	/* Undocumented IDCT errata: +256 (0x0100) and +768 (0x0300) occasionally
+	 * produced in 9-bit mode.  These values are out of range, and presumably
+	 * have the value -256 (0x100) which failed to be sign-extended.
+	 */
+	NormLUT[256] = CHAR_MIN;
+	NormLUT[768] = CHAR_MIN;
 }
 
 //----------------------------------------------------------------------------
