@@ -26565,3 +26565,18 @@ By jeno (jeno@leapfrog.com) on 7/9/10 12:05 PM
 6,485 ms. (Cumulative: 9,383,001 ms)
 
 ----------------
+Revision 7,690 from svn://localhost/TRUNK/:
+Revision 7,691 from svn://localhost/TRUNK/:
+
+TTPro 2646.  Moved StopVideo's disabling of Codec to before attempt to lock Mutex.  This prevents StopVideo from sleeping for long periods of time waiting for the video to get back into synch.
+
+
+Technical Details
+
+When StopVideo is called, StopVideo attempts to lock the video's Mutex, but if it's already locked, it will sleep for 10 milliseconds and try again.  When the trailer is out of sync, the Mutex is constantly being locked and unlocked (for every frame being rendered).  Everytime StopVideo is trying to lock the Mutex, it's already locked.  This keeps happening till the video catches up (which may or may not happen before the movie ends), or by some miracle coincidence of timing StopVideo wakes up right in between the rendering of two frames.  The rendering does check to see if the Codec is ready before locking the Mutex.  StopVideo set the Codec to false before trying to lock the Mutex, the Video rendering will no longer lock the Mutex which lets StopVideo lock the Mutex in a more timely fashion.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/9/10 3:43 PM
+1 changed, 0 added, 0 deleted.
+6,000 ms. (Cumulative: 9,389,095 ms)
+
+----------------
