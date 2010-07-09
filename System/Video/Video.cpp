@@ -371,15 +371,15 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 
 	if (!pVidCtx || pVidCtx == gpVidCtx)
 		return false;
-	
+
+	// Avoid subsequent locks while stopping
+	pVidCtx->bCodecReady = false;
+
 #if USE_MUTEX
 	do { 
 		kernel_.TaskSleep(10);
 	} while (kernel_.TryLockMutex(gVidMutex) == EBUSY);
 #endif
-
-	// Avoid subsequent locks while stopping
-	pVidCtx->bCodecReady = false;
 
 	// Kill video task, if running
 	if (pVidCtx->hVideoThread != kNull)
