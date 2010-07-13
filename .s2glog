@@ -26580,3 +26580,31 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/9/10 3:43 PM
 6,000 ms. (Cumulative: 9,389,095 ms)
 
 ----------------
+Revision 7,692 from svn://localhost/TRUNK/:
+Revision 7,693 from svn://localhost/TRUNK/:
+Revision 7,694 from svn://localhost/TRUNK/:
+Revision 7,695 from svn://localhost/TRUNK/:
+Revision 7,696 from svn://localhost/TRUNK/:
+Revision 7,697 from svn://localhost/TRUNK/:
+Revision 7,698 from svn://localhost/TRUNK/:
+Revision 7,699 from svn://localhost/TRUNK/:
+Revision 7,700 from svn://localhost/TRUNK/:
+Revision 7,701 from svn://localhost/TRUNK/:
+Revision 7,702 from svn://localhost/TRUNK/:
+Revision 7,703 from svn://localhost/TRUNK/:
+Revision 7,704 from svn://localhost/TRUNK/:
+Revision 7,705 from svn://localhost/TRUNK/:
+Revision 7,706 from svn://localhost/TRUNK/:
+Revision 7,707 from svn://localhost/TRUNK/:
+Revision 7,708 from svn://localhost/TRUNK/:
+Revision 7,709 from svn://localhost/TRUNK/:
+Revision 7,710 from svn://localhost/TRUNK/:
+Revision 7,711 from svn://localhost/TRUNK/:
+
+CameraMPI: Default back to 15 FPS for video streaming modes, switch to 5 FPS for still frame grabbing mode.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/12/10 6:35 PM
+1 changed, 0 added, 0 deleted.
+6,155 ms. (Cumulative: 9,395,438 ms)
+
+----------------
