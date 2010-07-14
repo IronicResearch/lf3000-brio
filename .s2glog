@@ -26608,3 +26608,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/12/10 6:35 PM
 6,155 ms. (Cumulative: 9,395,438 ms)
 
 ----------------
+Revision 7,712 from svn://localhost/TRUNK/:
+Revision 7,713 from svn://localhost/TRUNK/:
+Revision 7,714 from svn://localhost/TRUNK/:
+Revision 7,715 from svn://localhost/TRUNK/:
+Revision 7,716 from svn://localhost/TRUNK/:
+Revision 7,717 from svn://localhost/TRUNK/:
+Revision 7,718 from svn://localhost/TRUNK/:
+
+VideoMPI: Use fractional FPS time base info for calculating more accurate cummulative frame times during video rendering loop. 
+
+By Dave Milici (dmilici@leapfrog.com) on 7/13/10 6:08 PM
+4 changed, 0 added, 0 deleted.
+6,189 ms. (Cumulative: 9,401,752 ms)
+
+----------------
