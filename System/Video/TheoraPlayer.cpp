@@ -504,6 +504,9 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 	pVidCtx->info.height = ti.height;
 	pVidCtx->info.fps = ti.fps_numerator / ti.fps_denominator;
 	pVidCtx->uFrameTime = 1000 * ti.fps_denominator / ti.fps_numerator;
+	pVidCtx->uFrameTimeNum = 1000 * ti.fps_denominator;
+	pVidCtx->uFrameTimeDen = ti.fps_numerator;
+	pVidCtx->bFrameTimeFract = (pVidCtx->uFrameTimeNum % pVidCtx->uFrameTimeDen) != 0;
 		
 	// Loop thru Theora header comments for any tags of interest
 	pVidCtx->bCentered = false;

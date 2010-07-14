@@ -51,6 +51,9 @@ struct tVideoContext {
 	Boolean				bPaused;
 	Boolean				bPlaying;
 	U32					uFrameTime;
+	U32					uFrameTimeNum;
+	U32					uFrameTimeDen;
+	Boolean				bFrameTimeFract;
 	tMutex*				pMutex;
 	tTaskHndl			hVideoThread;
 	Boolean				bSeeked;

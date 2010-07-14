@@ -150,6 +150,8 @@ void* VideoTaskMain( void* arg )
 		if (!bAudio)
 			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
 		marktime += lapsetime;
+
+		// Main video rendering loop
 		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, false))
 		{	
 			vidmgr.PutVideoFrame(pctx->hVideo, pSurf);
@@ -162,6 +164,8 @@ void* VideoTaskMain( void* arg )
 			else
 				dispmgr.Invalidate(0, NULL);
 			pctx->bUpdateVideoDisplay = false;
+
+			// Elapsed Timestamp loop
 			while (bRunning) {
 				static U32 lasttime = 0xFFFFFFFF;
 				static U32 counter = 0;
@@ -210,11 +214,15 @@ void* VideoTaskMain( void* arg )
 			else
 			{
 				// Next target time is relative to current frame time stamp
-				marktime = vtm.time + basetime + lapsetime;
+				if (pctx->bFrameTimeFract)
+					marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
+				else
+					marktime = vtm.time + basetime + lapsetime;
 			}
-			
 			if (bAudio)
 				vtm.time = nexttime;
+			
+			// Paused video state loop
 			if (pctx->bPaused)
 			{
 				if (pctx->hAudio != kNoAudioID)

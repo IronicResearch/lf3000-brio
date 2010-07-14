@@ -196,7 +196,10 @@ Boolean	CAVIPlayer::InitVideo(tVideoHndl hVideo)
 	pVidCtx->info.height 	= pCodecCtx->height;
 	pVidCtx->info.fps 		= pCodecCtx->time_base.den / pCodecCtx->time_base.num;
 	pVidCtx->uFrameTime 	= 1000 * pCodecCtx->time_base.num / pCodecCtx->time_base.den;
- 
+	pVidCtx->uFrameTimeNum	= 1000 * pCodecCtx->time_base.num;
+	pVidCtx->uFrameTimeDen	= pCodecCtx->time_base.den;
+	pVidCtx->bFrameTimeFract = (pVidCtx->uFrameTimeNum % pVidCtx->uFrameTimeDen) != 0;
+	
 	pVidCtx->bCodecReady 	= true;
 	return true;
 }
