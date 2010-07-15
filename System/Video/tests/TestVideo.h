@@ -430,6 +430,58 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testVideoAVISeek()
+	{
+		PRINT_TEST_NAME();
+		
+		tVideoHndl	video;
+		tVideoSurf	surf;
+		tVideoInfo	info;
+		tVideoTime	time;
+		tDisplayHandle disp;
+		
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatRGB888 );
+		
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		video = pVideoMPI_->StartVideo("UncompressedRGB.avi");
+		TS_ASSERT( video != kInvalidVideoHndl );
+
+		pVideoMPI_->GetVideoInfo(video, &info);
+		TS_ASSERT( info.fps != 0 );
+
+		for (int i = 0; i < 10; i++)
+		{
+			time.frame = i * info.fps;
+			pVideoMPI_->SeekVideoFrame(video, &time);
+			pVideoMPI_->PutVideoFrame(video, &surf);
+			pDisplayMPI_->Invalidate(0, NULL);
+		}
+		for (int i = 10; i >= 0; i--)
+		{
+			time.frame = i * info.fps;
+			pVideoMPI_->SeekVideoFrame(video, &time);
+			pVideoMPI_->PutVideoFrame(video, &surf);
+			pDisplayMPI_->Invalidate(0, NULL);
+		}
+		
+		pVideoMPI_->StopVideo(video);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		delete pDisplayMPI_;
+	}
+
+	//------------------------------------------------------------------------
 	void testVideoAudio()
 	{
 		PRINT_TEST_NAME();
