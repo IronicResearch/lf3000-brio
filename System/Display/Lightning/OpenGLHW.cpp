@@ -206,7 +206,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 	dc = *pdc;
 	dc.pitch = pdc->pitch = 4096;
 	dc.layer = pdc->layer = gDevLayer;
-	dc.isAllocated = pdc->isAllocated = false;
+	dc.isAllocated = pdc->isAllocated = false;	// hack for RegisterLayer()
 	dc.basephys    = pdc->basephys = gMem2Phys;
 	dc.baselinear  = pdc->baselinear = (U32)gpMem2d;
 	
@@ -260,6 +260,8 @@ void CDisplayModule::DeinitOpenGL()
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: enter\n");
 
 	// Delete handle returned by CreateHandle() 
+	tDisplayContext* pdc = reinterpret_cast<tDisplayContext*>(hdc);
+	pdc->isAllocated = true;	// undo hack for RegisterLayer()
 	DestroyHandle(hdc, false);
 #ifdef UNIFIED
 	if (hdcmem1.pBuffer)

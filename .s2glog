@@ -26636,3 +26636,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/14/10 5:07 PM
 6,016 ms. (Cumulative: 9,407,877 ms)
 
 ----------------
+Revision 7,724 from svn://localhost/TRUNK/:
+
+DisplayMPI: Undo the internal display context hack to make an OGL context compatible with DisplayMPI Register (svn -r6980). This makes the memory allocations tally up properly again. (TTP #2468)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/14/10 6:20 PM
+1 changed, 0 added, 0 deleted.
+5,987 ms. (Cumulative: 9,413,958 ms)
+
+----------------
