@@ -26623,3 +26623,16 @@ By Dave Milici (dmilici@leapfrog.com) on 7/13/10 6:08 PM
 6,189 ms. (Cumulative: 9,401,752 ms)
 
 ----------------
+Revision 7,719 from svn://localhost/TRUNK/:
+Revision 7,720 from svn://localhost/TRUNK/:
+Revision 7,721 from svn://localhost/TRUNK/:
+Revision 7,722 from svn://localhost/TRUNK/:
+Revision 7,723 from svn://localhost/TRUNK/:
+
+CameraMPI: Correct seek functionality for AVIPlayer SeekVideoFrame().
+
+By Dave Milici (dmilici@leapfrog.com) on 7/14/10 5:07 PM
+2 changed, 0 added, 0 deleted.
+6,016 ms. (Cumulative: 9,407,877 ms)
+
+----------------
