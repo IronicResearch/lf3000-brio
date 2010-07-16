@@ -1369,7 +1369,18 @@ typedef struct my_error_mgr
 
 static void silence_warning(j_common_ptr cinfo, int msg_level)
 {
+	char msgbuf[JMSG_LENGTH_MAX];
 
+	// Warnings with msg_level == -1 are considered severe.
+	// Warnings of "extraneous bytes" can be ignored (JWRN_EXTRANEOUS_DATA).
+	// Other severe warnings like "premature end of data" (JWRN_HIT_MARKER)
+	// produce corrupt or incomplete images and should be treated as errors.
+	if (msg_level < 0) {
+		(*cinfo->err->format_message) (cinfo, msgbuf);
+		if (strstr(msgbuf, "extraneous") == NULL) {
+			(*cinfo->err->error_exit) (cinfo);
+		}
+	}	
 }
 
 static void my_error_exit (j_common_ptr cinfo)
