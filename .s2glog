@@ -26645,3 +26645,15 @@ By Dave Milici (dmilici@leapfrog.com) on 7/14/10 6:20 PM
 5,987 ms. (Cumulative: 9,413,958 ms)
 
 ----------------
+Revision 7,725 from svn://localhost/TRUNK/:
+Revision 7,726 from svn://localhost/TRUNK/:
+Revision 7,727 from svn://localhost/TRUNK/:
+Revision 7,728 from svn://localhost/TRUNK/:
+
+CameraMPI: Treat severe warnings other than "extranous bytes" as errors, since they produce corrupt images which should be discarded. (TTP #2570)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/15/10 7:27 PM
+1 changed, 0 added, 0 deleted.
+6,214 ms. (Cumulative: 9,420,266 ms)
+
+----------------
