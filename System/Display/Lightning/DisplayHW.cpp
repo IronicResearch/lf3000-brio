@@ -426,7 +426,6 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	U32 hwFormat;
 	tDisplayContext *GraphicsContext = new struct tDisplayContext;
 	U32 bpp;
-	U32 blend = 0;
 	U32 aligned = 0;
 
 	memset(GraphicsContext, 0, sizeof(tDisplayContext));
@@ -481,6 +480,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->bpp = bpp;
 	GraphicsContext->depth = 8*bpp;
 	GraphicsContext->format = hwFormat;
+	GraphicsContext->isBlended = false;
+	GraphicsContext->alphaLevel = (100*ALPHA_STEP)/100;;
 
 	// Offscreen context does not affect hardware settings
 	if (GraphicsContext->isAllocated)
@@ -501,7 +502,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 
 	// apply to device
 	int layer = GraphicsContext->layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
-	ioctl(layer, MLC_IOCTBLEND, blend);
+	ioctl(layer, MLC_IOCTBLEND, GraphicsContext->isBlended);
+	ioctl(layer, MLC_IOCTALPHA, GraphicsContext->alphaLevel);
 	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
 	ioctl(layer, MLC_IOCTHSTRIDE, bpp);
 	ioctl(layer, MLC_IOCTVSTRIDE, GraphicsContext->pitch);
@@ -554,6 +556,17 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		U32 addr = pdcVisible_->basephys + pdcVisible_->offset;
 		if (pdcVisible_->isPlanar) 
 			addr = LIN2XY(addr);
+		if(pdcVisible_->isOverlay && !pdcVisible_->isAllocated) {
+			int order = (pdcVisible_->isUnderlay) ? 2 : 0;
+			int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
+			dbg_.DebugOut(kDbgLvlCritical, "DisplayModule::Update: order=%d, prior=%d\n", order, (unsigned int)prior);
+			if (order != prior) {
+				ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
+				ioctl(gDevMlc, MLC_IOCTTOPDIRTY, 0);
+			}
+		}
+		ioctl(pdcVisible_->layer, MLC_IOCTBLEND, pdcVisible_->isBlended);
+		ioctl(pdcVisible_->layer, MLC_IOCTALPHA, pdcVisible_->alphaLevel);
 		ioctl(pdcVisible_->layer, MLC_IOCTADDRESS, addr);
 		ioctl(pdcVisible_->layer, MLC_IOCTLAYEREN, (void *)1);
 		SetDirtyBit(pdcVisible_->layer);
@@ -838,6 +851,9 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 	if (level > 100) 
 		level = 100;
 	level = (level*ALPHA_STEP)/100;
+	
+	context->isBlended = enable;
+	context->alphaLevel = level;
 	
 	r = ioctl(layer, MLC_IOCTALPHA, level);
 	r = ioctl(layer, MLC_IOCTBLEND, enable);

@@ -69,6 +69,8 @@ struct tDisplayContext {
 #endif
 	tRect	rect;		// active rect from Register()
 	void*	pdc;		// next dc in list
+	bool	isBlended;
+	U8		alphaLevel;
 };
 
 struct tBuffer {
@@ -443,6 +445,8 @@ public:
 
 	VTABLE_EXPORT tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible);
 	VTABLE_EXPORT tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);
+	
+	VTABLE_EXPORT tPixelFormat		GetAvailableFormat();
 	
 private:
 	void				InitModule( );

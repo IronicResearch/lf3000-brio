@@ -364,6 +364,12 @@ public:
 	///
 	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
 	tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);
+	
+	/// Returns a PixelFormat of an available layer
+	///
+	///  \returns		PixelFormat of an available layer (kPixelFormatYUV420 or kPixelFormatARGB8888).
+	///					kPixelFormatError returned if no layers are free.
+	tPixelFormat		GetAvailableFormat();
 
 private:
 	class CDisplayModule*	pModule_;
