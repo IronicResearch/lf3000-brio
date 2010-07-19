@@ -3,12 +3,112 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.1.26.7xxx 
+Brio v1.1.31.7740 (July 19, 2010)
 ===========================================
 
 ===========================================
-Brio v1.1.25.7xxx 
+Brio v1.1.25.7676 (July 2, 2010)
 ===========================================
+
+-- Camera module: L3B TTPro 2556.  This change bypasses some of libjpeg 
+and uses the LF1000's IDCT block for JPEG decoding.  Cursory unit tests 
+show that it provides about a 5 fps improvement, from ~15 to ~20 fps 
+when using a YUV viewfinder and capturing audio.  Disabled for now 
+because it does not yet support scaling or RGB conversion.
+
+-- L3B TTPro 2527: Set minimum free space to maintain to 1 MB.  UBIFS is
+internally padded, so applications are not responsible for maintaining
+free space, and Brio's restriction simply serves as a safeguard.
+
+Also, enforce recording quota in microphone MPI.
+
+-- Revert non-blocking flag since it breaks still snapshot modes.
+
+-- L3B TTPro 2527: Correction to svn 7578.  Normal timeout/quota timeout 
+are now reported correctly.
+
+-- Added script to make tarball of ThirdParty open source files
+
+-- Removed SConscript from tarball
+
+-- TTPro 2550.  Updated GetFrame comment to be more Doxygen friendly.
+
+-- Changing Emulation button, power, and usb task thread to use 
+non-blocking polling model.
+
+This thread now properly ends even without a keypreass, so emulation 
+AppManager now properly exits from idle timeout.  Restoring auto-repeat 
+on the keyboard.
+
+-- L3B TTPro 2556: Improve frame rate by using HW IDCT for JPEG decoding.
+This checkin activates svn 7574 for non-scaled viewfinders.  Also, add
+a frame rate unit test for scaled-viewfinder measurement.
+
+This rendering pipeline:
+Camera QVGA->libjpeg QQVGA->HW scaler QVGA->viewfinder
+
+has better performance that this one:
+Camera QVGA->HW IDCT QVGA->viewfinder
+
+so it is used for recording.  First attempts at this pipeline:
+Camera QVGA->HW IDCT QQVGA->HW scaler QVGA->viewfinder
+
+yielded a slight performance increase, but the drop in quality was 
+severe.
+
+-- Camera module:  muted AVIs are slightly malformed, e.g., Ubuntu's 
+thumbnailer (totem-video-thumbnailer) fails to render an icon, and can't provide a
+properties page because the AVI header refers to an audio track that is 
+not present.
+
+-- Keyboard: close file handles for keyboards that don't match
+
+When looking for a particular keyboard, make sure that we close the 
+file handle in the case that the keyboard name doesn't match (or can't be retrived) 
+and we therefore continue looking.  ttpro 2627
+
+-- CameraMPI: Modify default camera frame rate request from 15 to 20 FPS 
+to boost AVI recording FPS. (TTP #2556)
+
+-- CameraMPI: Save timestamp indexes to AVI, plus bitrate calculation for 
+~10K/frame JPEGs.
+
+-- CameraMPI: Wait for first video frame input before saving audio data. 
+(TTP #2507) Use difference between first and last video time stamps for calculating 
+FPS in video-only AVIs.
+
+-- TTPro 2479.  New StopAudio function, this one can post audio done 
+messages.  New enum added to support new function.
+
+-- CameraMPI: Enable timestamp support for tracking audio input updates. 
+(TTP 2507)
+
+-- CameraMPI: Calculate audio callback period time from nominal FPS rate. 
+Needed to adapt to different Pixart cameras for tracking audio data vs 
+video frames. (TTP 2507)
+
+-- CameraMPI: Duplicate video frame saved to AVI if video frame count lags 
+audio block count. Used to maintain audio / video sync when tracking 
+video frames vs audio blocks. (TTP 2507)
+
+-- ALSA: SND_PCM_TSTAMP_ENABLE is new name for SND_PCM_TSTAMP_MMAP.
+
+-- CameraMPI: Video frame duplication only conditional when audio active.
+
+-- Merged -c7659: Camera module: fix for occasional crashes when recording 
+muted videos. buf->timestamp is zeroed during the camera thread, and is 
+not guaranteed to be valid during thread exit.
+
+-- Merged -c7665: Camera module: set scaler only when dealing with the YUV 
+video layer. (MFG test app uses RGB rendering, and this was causing a 
+crash).
+
+-- Merged -c7669: L3B TTPro 2642: ALSA crashes when attempting to call 
+snd_pcm_hw_params() on a stream that we have paused, regardless of what 
+is reported by snd_pcm_state(). This checkin is more of a workaround 
+than a fix, because the above behavior is not well understood. Also, 
+make sure recording videos pause/unpause audio appropriately, and 
+non-recording viewfinders don't stream audio at all.
 
 ===========================================
 Brio v1.1.20.7587 (June 6, 2010)
