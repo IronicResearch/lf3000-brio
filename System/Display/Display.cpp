@@ -366,6 +366,42 @@ tErrType CDisplayModule::Invalidate(tDisplayScreen screen, tRect *pDirtyRect)
 	return rc;
 }
 
+//----------------------------------------------------------------------------
+tPixelFormat	CDisplayModule::GetAvailableFormat()
+{
+	bool yuv_used = false;
+	bool rgb_used = false;
+	kernel_.LockMutex(gListMutex);
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		switch((*it)->colorDepthFormat)
+		{
+			case kPixelFormatRGB4444:
+			case kPixelFormatRGB565:
+			case kPixelFormatARGB8888:
+			case kPixelFormatRGB888:
+				rgb_used = true;
+				break;
+			case kPixelFormatYUV420:
+			case kPixelFormatYUYV422:
+				yuv_used = true;
+				break;
+		}
+		if(rgb_used && yuv_used)
+			break;
+	}
+	kernel_.UnlockMutex(gListMutex);
+	
+	if(!yuv_used)
+		return kPixelFormatYUV420;
+	
+	if(!rgb_used)
+		return kPixelFormatARGB8888;
+	
+	return kPixelFormatError;
+}
+
 LF_END_BRIO_NAMESPACE()
 
 //============================================================================

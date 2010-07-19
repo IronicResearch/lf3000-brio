@@ -26678,3 +26678,26 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/19/10 10:04 AM
 6,408 ms. (Cumulative: 9,426,814 ms)
 
 ----------------
+Revision 7,741 from svn://localhost/TRUNK/:
+Revision 7,742 from svn://localhost/TRUNK/:
+Revision 7,743 from svn://localhost/TRUNK/:
+Revision 7,744 from svn://localhost/TRUNK/:
+Revision 7,745 from svn://localhost/TRUNK/:
+Revision 7,746 from svn://localhost/TRUNK/:
+Revision 7,747 from svn://localhost/TRUNK/:
+Revision 7,748 from svn://localhost/TRUNK/:
+Revision 7,749 from svn://localhost/TRUNK/:
+Revision 7,750 from svn://localhost/TRUNK/:
+Revision 7,751 from svn://localhost/TRUNK/:
+Revision 7,752 from svn://localhost/TRUNK/:
+Revision 7,753 from svn://localhost/TRUNK/:
+
+TTPro 2654 & 2687 (in conjunction with LightningCore Changes).  Added in new function to DisplayMPI, GetAvailableFormat.  This function returns YUV if that layer is free, or RGBA if that layer is free, or returns Error if neither are free.  This is to support new VolumeBars.
+
+Now storing isBlended and alphaLevel on a per display handle basis.  Now restoring isBlended and alphaLevel flags when a layer is reactivated.  Now restoring video layer priority (when not an offscreen context).
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/19/10 4:55 PM
+5 changed, 0 added, 0 deleted.
+6,505 ms. (Cumulative: 9,433,475 ms)
+
+----------------

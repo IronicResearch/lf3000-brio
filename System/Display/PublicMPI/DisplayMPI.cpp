@@ -337,6 +337,13 @@ tErrType CDisplayMPI::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16
 }
 
 //----------------------------------------------------------------------------
+tPixelFormat CDisplayMPI::GetAvailableFormat()
+{
+	if(!pModule_)
+		return kPixelFormatError;
+	return pModule_->GetAvailableFormat();
+}
+//----------------------------------------------------------------------------
 void CDisplayMPI::InitOpenGL(void* pCtx)
 {
 	if (!pModule_)
