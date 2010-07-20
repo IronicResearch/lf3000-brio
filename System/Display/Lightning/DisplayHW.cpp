@@ -559,7 +559,6 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		if(pdcVisible_->isOverlay && !pdcVisible_->isAllocated) {
 			int order = (pdcVisible_->isUnderlay) ? 2 : 0;
 			int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
-			dbg_.DebugOut(kDbgLvlCritical, "DisplayModule::Update: order=%d, prior=%d\n", order, (unsigned int)prior);
 			if (order != prior) {
 				ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
 				ioctl(gDevMlc, MLC_IOCTTOPDIRTY, 0);
