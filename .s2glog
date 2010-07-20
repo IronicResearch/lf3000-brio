@@ -26727,3 +26727,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/20/10 11:38 AM
 6,469 ms. (Cumulative: 9,446,601 ms)
 
 ----------------
+Revision 7,764 from svn://localhost/TRUNK/:
+
+Change to VideoModule, now when playing videos, will only change scaler settings if the layer is YUV420 or YUYV.  This prevents a problem with garbage graphics when playing a 3D only title, pressing Pause, adjusting the Volume, and inserting the Camera Widget.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/20/10 1:42 PM
+1 changed, 0 added, 0 deleted.
+6,571 ms. (Cumulative: 9,453,250 ms)
+
+----------------
