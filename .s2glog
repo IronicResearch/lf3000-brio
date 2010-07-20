@@ -26717,3 +26717,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/20/10 10:46 AM
 6,407 ms. (Cumulative: 9,440,038 ms)
 
 ----------------
+Revision 7,762 from svn://localhost/TRUNK/:
+Revision 7,763 from svn://localhost/TRUNK/:
+
+CameraMPI: Change video frame duplication logic to be effective immediately whenever video frame count lags behind audio block count to maintain sync in video+audio recordings. (TTP #2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/20/10 11:38 AM
+1 changed, 0 added, 0 deleted.
+6,469 ms. (Cumulative: 9,446,601 ms)
+
+----------------
