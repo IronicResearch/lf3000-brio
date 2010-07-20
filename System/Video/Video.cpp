@@ -238,7 +238,8 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	
 #ifndef EMULATION
 	// Set HW video scaler for video source width and height
-	SetScaler(pVidCtx->info.width, pVidCtx->info.height, pVidCtx->bCentered);
+	if(pSurf->format == kPixelFormatYUV420 || pSurf->format == kPixelFormatYUYV422)
+		SetScaler(pVidCtx->info.width, pVidCtx->info.height, pVidCtx->bCentered);
 #endif
 
 	// Determine if audio track is available and at what path?
