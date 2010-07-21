@@ -26736,3 +26736,26 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/20/10 1:42 PM
 6,571 ms. (Cumulative: 9,453,250 ms)
 
 ----------------
+Revision 7,765 from svn://localhost/TRUNK/:
+Revision 7,766 from svn://localhost/TRUNK/:
+Revision 7,767 from svn://localhost/TRUNK/:
+Revision 7,768 from svn://localhost/TRUNK/:
+Revision 7,769 from svn://localhost/TRUNK/:
+Revision 7,770 from svn://localhost/TRUNK/:
+Revision 7,771 from svn://localhost/TRUNK/:
+Revision 7,772 from svn://localhost/TRUNK/:
+Revision 7,773 from svn://localhost/TRUNK/:
+Revision 7,774 from svn://localhost/TRUNK/:
+Revision 7,775 from svn://localhost/TRUNK/:
+Revision 7,776 from svn://localhost/TRUNK/:
+Revision 7,777 from svn://localhost/TRUNK/:
+Revision 7,778 from svn://localhost/TRUNK/:
+Revision 7,779 from svn://localhost/TRUNK/:
+
+CameraMPI: Create separate thread just for video frame rendering to offload impact on FPS rate and video+audio sync (TTP 2507). Conditionally compiled by local USE_RENDER_THREAD define. Attempt to defer rendering, saving, and requeuing V4L buffer in separate thread was problematic, so only rendering is done separately at present.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/21/10 11:26 AM
+2 changed, 0 added, 0 deleted.
+6,360 ms. (Cumulative: 9,459,813 ms)
+
+----------------
