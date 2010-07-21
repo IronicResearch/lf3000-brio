@@ -23,6 +23,7 @@
 #include <EventMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
+#include <queue>
 
 /*
  * This is a workaround for the old (broken) headers installed on lightning-release
@@ -176,6 +177,14 @@ struct tCameraContext {
 	IEventListener				*pListener;
 
 	Boolean						bAudio;			// capture audio option
+	
+	std::queue<tFrameInfo*>		qframes;		// queue for CameraTaskRender() thread
+	tFrameInfo					*frame;
+	tBitmapInfo					*image;
+	JPEG_METHOD					method;
+	tVideoSurf					*paSurf;
+	tDisplayHandle				*paHndl;
+	bool						bDoubleBuffered;
 };
 
 struct tCaptureContext {
@@ -298,6 +307,7 @@ private:
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 	friend void* CameraTaskMain(void* arg);
+	friend void* CameraTaskRender(void* arg);
 	friend Boolean EnumCameraCallback(const CPath& path, void* pctx);
 
 	// Implementation-specific functionality

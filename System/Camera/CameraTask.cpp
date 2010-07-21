@@ -22,6 +22,8 @@
 
 #include <AVIWrapper.h>
 
+#define USE_RENDER_THREAD	1	// for separate rendering thread
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //============================================================================
@@ -31,6 +33,7 @@ namespace
 {
 	//------------------------------------------------------------------------
 	tTaskHndl				hCameraThread	= kNull;
+	tTaskHndl				hRenderThread	= kNull;
 	volatile bool			bRunning		= false;
 	volatile bool			bStopping		= false;
 	volatile bool			bInited			= false;
@@ -56,6 +59,48 @@ static void TimerCallback(tTimerHndl arg)
 {
 	timeout = true;
 	cam->StopVideoCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
+void* CameraTaskRender(void* arg)
+{
+	CKernelMPI			kernel;
+	CDisplayMPI			display;
+	tCameraContext*		pCtx = static_cast<tCameraContext*>(arg);
+	tFrameInfo*			pFrame = pCtx->frame;
+	tVideoSurf*			pSurf = pCtx->surf;
+	Boolean				bRet = false;
+	int					ibuf = 0;
+	
+	while (bRunning)
+	{
+		if (!pCtx->qframes.empty() && !pCtx->bVPaused)
+		{
+			kernel.LockMutex(pCtx->mThread);
+
+			// Remove next frame to render from queue
+			pFrame = pCtx->qframes.front();
+			bRet = pCtx->module->RenderFrame(pFrame, pSurf, pCtx->image, pCtx->method);
+			if (bRet)
+			{
+				if (pCtx->bDoubleBuffered) {
+					// Update double buffered YUV video contexts
+					display.SwapBuffers(pCtx->paHndl[ibuf], false);
+					ibuf ^= 1;
+					pSurf = &pCtx->paSurf[ibuf];
+				}
+				else
+					display.Invalidate(0);
+			}
+			// FIXME: Calling ReturnFrame() here fails frequently.
+			// bRet = pCtx->module->ReturnFrame(pCtx->hndl, pFrame);
+			
+			kernel.UnlockMutex(pCtx->mThread);
+		}
+		kernel.TaskSleep(10);
+	}
+	
+	return kNull;
 }
 
 //----------------------------------------------------------------------------
@@ -164,6 +209,14 @@ void* CameraTaskMain(void* arg)
 			aHndl[1] = display.CreateHandle(aSurf[1].height, aSurf[1].width, aSurf[1].format, aSurf[1].buffer);
 			bDoubleBuffered = true;
 		}
+
+		// Cache pointers for use in CameraTaskRender() thread
+		pCtx->frame = &frame;
+		pCtx->image = &image;
+		pCtx->method = method;
+		pCtx->paSurf = &aSurf[0];
+		pCtx->paHndl = &aHndl[0];
+		pCtx->bDoubleBuffered = bDoubleBuffered;
 	}
 
 	timeout = false;
@@ -241,6 +294,10 @@ void* CameraTaskMain(void* arg)
 
 		if(bScreen && !pCtx->bVPaused)
 		{
+#if USE_RENDER_THREAD
+			// Add frame to be rendered into CameraTaskRender() queue
+			pCtx->qframes.push(&frame);
+#else
 			bRet = pCtx->module->RenderFrame(&frame, pSurf, &image, method);
 			if(bRet)
 			{
@@ -253,6 +310,7 @@ void* CameraTaskMain(void* arg)
 				else
 					display.Invalidate(0);
 			}
+#endif
 		}
 
 		/*
@@ -415,6 +473,14 @@ tErrType InitCameraTask(tCameraContext* pCtx)
 	while (!bRunning)
 		kernel.TaskSleep(1);
 
+#if USE_RENDER_THREAD
+	// Create additional thread just for rendering
+	prop.TaskMainFcn			= (void* (*)(void*))CameraTaskRender;
+	r = kernel.CreateTask( hndl, prop, NULL );
+	dbg.Assert( kNoErr == r, "InitCameraTask: Failed to create CameraTaskRender!\n" );
+	hRenderThread = hndl;
+#endif
+	
 	bInited = true;
 	return r;
 }
@@ -436,6 +502,11 @@ tErrType DeInitCameraTask(tCameraContext* pCtx)
 	while (!bStopping)
 		kernel.TaskSleep(10);
 
+#if USE_RENDER_THREAD
+	kernel.JoinTask(hRenderThread, retval);
+	hRenderThread = kNull;
+#endif
+	
 	if (!bStopping)
 		kernel.CancelTask(hCameraThread);
 	kernel.JoinTask(hCameraThread, retval);
