@@ -26787,3 +26787,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/21/10 6:48 PM
 5,922 ms. (Cumulative: 9,465,938 ms)
 
 ----------------
+Revision 7,800 from svn://localhost/TRUNK/:
+Revision 7,801 from svn://localhost/TRUNK/:
+
+VideoMPI: Revert back to using audio timestamps for (disabled in svn -r7310) now that AVIs record audio tracks with matching video lengths. (TTP 2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/22/10 4:54 PM
+1 changed, 0 added, 0 deleted.
+6,109 ms. (Cumulative: 9,472,126 ms)
+
+----------------
