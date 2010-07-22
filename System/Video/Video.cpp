@@ -20,6 +20,7 @@
 #include <KernelMPI.h>
 #include <errno.h>
 #include <string.h>
+#include <list>
 
 //#define _GNU_SOURCE
 //#define _LARGEFILE_SOURCE
@@ -77,7 +78,7 @@ namespace
 {
 	//------------------------------------------------------------------------
 	// Video MPI global vars
-	tVideoContext*		gpVidCtx = NULL;
+//	tVideoContext*		gpVidCtx = NULL;
 	CPath				gpath = "";
 	CPath				gfilepath = "";
 //	FILE*				gfile = NULL;
@@ -85,6 +86,7 @@ namespace
 //	Boolean				gbCodecReady = false;
 //	Boolean				gbCentered = false;
 	tVideoHndl			ghVideoHndl = kInvalidVideoHndl;
+	std::list<tVideoHndl>	ghVideoList;	// list of video handles
 }
 
 //============================================================================
@@ -318,7 +320,9 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 		fclose(file);
 		return kInvalidVideoHndl;
 	}
-	
+
+	// Track video handle	
+	ghVideoList.push_back(hVideo);
 	return ghVideoHndl = hVideo;
 }	
 	
@@ -370,7 +374,16 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 {
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
 
-	if (!pVidCtx || pVidCtx == gpVidCtx)
+	if (!pVidCtx)
+		return false;
+	
+	// Active video handle?
+	std::list<tVideoHndl>::iterator it;
+	for (it = ghVideoList.begin(); it != ghVideoList.end(); it++)
+		if (*it == hVideo)
+			break;
+	// If not in list, it's been freed already
+	if (it == ghVideoList.end())
 		return false;
 
 	// Avoid subsequent locks while stopping
@@ -411,10 +424,12 @@ Boolean CVideoModule::StopVideo(tVideoHndl hVideo)
 	// Free video context created for task thread, if any
 	if (pVidCtx) 
 	{
-		gpVidCtx = pVidCtx;
 		kernel_.Free(pVidCtx);
 		pVidCtx = NULL;
 	}
+
+	// Remove from active video handle list
+	ghVideoList.erase(it);
 	
 	ghVideoHndl = kInvalidVideoHndl;
 	
