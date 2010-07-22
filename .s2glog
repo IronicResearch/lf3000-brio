@@ -26759,3 +26759,31 @@ By Dave Milici (dmilici@leapfrog.com) on 7/21/10 11:26 AM
 6,360 ms. (Cumulative: 9,459,813 ms)
 
 ----------------
+Revision 7,780 from svn://localhost/TRUNK/:
+Revision 7,781 from svn://localhost/TRUNK/:
+Revision 7,782 from svn://localhost/TRUNK/:
+Revision 7,783 from svn://localhost/TRUNK/:
+Revision 7,784 from svn://localhost/TRUNK/:
+Revision 7,785 from svn://localhost/TRUNK/:
+Revision 7,786 from svn://localhost/TRUNK/:
+Revision 7,787 from svn://localhost/TRUNK/:
+Revision 7,788 from svn://localhost/TRUNK/:
+Revision 7,789 from svn://localhost/TRUNK/:
+Revision 7,790 from svn://localhost/TRUNK/:
+Revision 7,791 from svn://localhost/TRUNK/:
+Revision 7,792 from svn://localhost/TRUNK/:
+Revision 7,793 from svn://localhost/TRUNK/:
+Revision 7,794 from svn://localhost/TRUNK/:
+Revision 7,795 from svn://localhost/TRUNK/:
+Revision 7,796 from svn://localhost/TRUNK/:
+Revision 7,797 from svn://localhost/TRUNK/:
+Revision 7,798 from svn://localhost/TRUNK/:
+Revision 7,799 from svn://localhost/TRUNK/:
+
+VideoMPI: Replace global var tracking stale video handle with list of active video handles. The previous stale video handle hack was too easily fooled after multiple calls to StopVideo(). (TTP 2657, 2568) 
+
+By Dave Milici (dmilici@leapfrog.com) on 7/21/10 6:48 PM
+1 changed, 0 added, 0 deleted.
+5,922 ms. (Cumulative: 9,465,938 ms)
+
+----------------
