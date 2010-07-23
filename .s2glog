@@ -26806,3 +26806,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/22/10 5:45 PM
 5,982 ms. (Cumulative: 9,478,187 ms)
 
 ----------------
+Revision 7,803 from svn://localhost/TRUNK/:
+Revision 7,804 from svn://localhost/TRUNK/:
+
+CameraMPI: Use atomic file API for saving JPG files. (TTP #2692)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/23/10 11:05 AM
+1 changed, 0 added, 0 deleted.
+6,172 ms. (Cumulative: 9,484,453 ms)
+
+----------------
