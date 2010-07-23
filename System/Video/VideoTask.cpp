@@ -152,7 +152,7 @@ void* VideoTaskMain( void* arg )
 		marktime += lapsetime;
 
 		// Main video rendering loop
-		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, false))
+		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, bAudio))
 		{	
 			vidmgr.PutVideoFrame(pctx->hVideo, pSurf);
 			if (bDoubleBuffered) {

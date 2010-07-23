@@ -425,7 +425,7 @@ Boolean CAVIPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
 	if (pCodecCtx) {
 		pTime->frame 	= pCodecCtx->frame_number - 1;	// not 0-based
-		pTime->time		= pTime->frame * pVidCtx->uFrameTime;
+		pTime->time		= pTime->frame * pVidCtx->uFrameTimeNum / pVidCtx->uFrameTimeDen; //pVidCtx->uFrameTime;
 		return true;
 	}
 	return false;
@@ -434,6 +434,14 @@ Boolean CAVIPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 //----------------------------------------------------------------------------
 Boolean CAVIPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
+	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
+	if (bDrop) {
+		pCtx->frame = pCtx->time * pVidCtx->uFrameTimeDen / pVidCtx->uFrameTimeNum;
+		if (SeekVideoFrame(hVideo, pCtx, true, false)) {
+			GetVideoTime(hVideo, pCtx);
+			return true;
+		}
+	}
 	if (GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame)) {
 		GetVideoTime(hVideo, pCtx);
 		return true;
@@ -449,12 +457,11 @@ Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 		int flags = (bExact) ? AVSEEK_FLAG_ANY : 0; //AVSEEK_FLAG_FRAME;
 		if (pCtx->frame < pCodecCtx->frame_number - 1)
 			flags |= AVSEEK_FLAG_BACKWARD;
-		int64_t timestamp = pCtx->frame; //* pVidCtx->uFrameTime;
+		int64_t timestamp = pCtx->frame + 1; //* pVidCtx->uFrameTime;
 		av_seek_frame(pFormatCtx, iVideoStream, timestamp, flags);
 		if(bUpdateVideoDisplay)
 			pVidCtx->bUpdateVideoDisplay = true;
-		GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
-		return true;
+		return GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
 	}
 	return false;
 }

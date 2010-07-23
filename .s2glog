@@ -26797,3 +26797,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/22/10 4:54 PM
 6,109 ms. (Cumulative: 9,472,126 ms)
 
 ----------------
+Revision 7,802 from svn://localhost/TRUNK/:
+
+VideoMPI: Reinstate drop-frame option for audio timestamp sync during video playback, with drop-frame support added to AVI player. Maintains audio+video sync during AVI playback on the device. (TTP 2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/22/10 5:45 PM
+2 changed, 0 added, 0 deleted.
+5,982 ms. (Cumulative: 9,478,187 ms)
+
+----------------
