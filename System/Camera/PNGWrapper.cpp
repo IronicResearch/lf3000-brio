@@ -13,6 +13,7 @@
 //==============================================================================
 
 #include <png.h>
+#include <AtomicFile.h>
 
 static jmp_buf	_jmpbuf;
 
@@ -37,20 +38,20 @@ bool PNG_save(const char* file, int width, int height, int pitch, char* data)
 	png_bytep 	bp = (png_bytep)data;
 	
 	// Create PNG file for writing
-	fp = fopen(file, "wb");
+	fp = fopenAtomic(file, "wb");
 	if (!fp)
 		return false;
 
 	// Init PNG contexts for writing
 	pp = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!pp) {
-		fclose(fp);
+		fcloseAtomic(fp);
 		return false;
 	}
 	
 	pi = png_create_info_struct(pp);
 	if (!pi) {
-		fclose(fp);
+		fcloseAtomic(fp);
 		return false;
 	}
 	
@@ -77,7 +78,7 @@ bool PNG_save(const char* file, int width, int height, int pitch, char* data)
 	
 	png_destroy_write_struct(&pp, NULL);
 	
-	fclose(fp);
+	fcloseAtomic(fp);
 	
 	return true;
 }
