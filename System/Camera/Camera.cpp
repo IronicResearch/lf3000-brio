@@ -20,6 +20,7 @@
 #include <DisplayMPI.h>
 #include <Utility.h>
 #include <USBDeviceMPI.h>
+#include <AtomicFile.h>
 #include <errno.h>
 #include <string.h>
 
@@ -2231,14 +2232,14 @@ Boolean	CCameraModule::SaveFrame(const CPath &path, const tFrameInfo *frame)
 	CPath		filepath = (path.at(0) == '/') ? path : spath + path;
 	const char*	filename = filepath.c_str();
 
-	FILE *f = fopen(filename, "wb");
+	FILE *f = fopenAtomic(filename, "wb");
 	if(f != NULL)
 	{
 		if(frame->size == fwrite(frame->data, sizeof(U8), frame->size, f))
 		{
 			bRet = true;
 		}
-		fclose(f);
+		fcloseAtomic(f);
 	}
 
 	return bRet;
