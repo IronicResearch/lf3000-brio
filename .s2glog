@@ -26837,3 +26837,18 @@ By Dave Milici (dmilici@leapfrog.com) on 7/23/10 11:25 AM
 6,111 ms. (Cumulative: 9,496,736 ms)
 
 ----------------
+Revision 7,810 from svn://localhost/TRUNK/:
+Revision 7,811 from svn://localhost/TRUNK/:
+Revision 7,812 from svn://localhost/TRUNK/:
+Revision 7,813 from svn://localhost/TRUNK/:
+Revision 7,814 from svn://localhost/TRUNK/:
+Revision 7,815 from svn://localhost/TRUNK/:
+
+Newer GCC requires printf to be prototyped with #include <stdin.h>
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 7/23/10 4:08 PM
+1 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 9,503,065 ms)
+
+----------------

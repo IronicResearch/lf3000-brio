@@ -9,6 +9,8 @@
 //
 //==============================================================================
 
+#include <stdio.h>
+
 // System includes
 #include <CoreTypes.h>
 #include <SystemTypes.h>
