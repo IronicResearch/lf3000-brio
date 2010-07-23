@@ -45,13 +45,13 @@ bool PNG_save(const char* file, int width, int height, int pitch, char* data)
 	// Init PNG contexts for writing
 	pp = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 	if (!pp) {
-		fcloseAtomic(fp);
+		fabortAtomic(fp);
 		return false;
 	}
 	
 	pi = png_create_info_struct(pp);
 	if (!pi) {
-		fcloseAtomic(fp);
+		fabortAtomic(fp);
 		return false;
 	}
 	
