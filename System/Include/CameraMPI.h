@@ -55,6 +55,23 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// Camera controls, such as contrast, brightness, etc., can be obtained with the
 /// GetCameraControls() method.
 ///
+///	<B>WARNING:</B> The Audio and Video recording APIs are not power-fail safe.  This means that
+///	the application is responsible for cleaning up any incomplete recordings.  A recording
+///	is considered complete if it is stopped by any of the following means:
+///	<ul>
+///	<li>Synchronously, by the application via StopAudioCapture() / StopVideoCapture()</li>
+///	<li>Asyncrhonously, by the Camera MPI</li>
+///	<ul>
+///		<li>If the timeout specified in StartAudioCapture() / StartVideoCapture() elapses</li>
+///		<li>If the file system usage quota is hit (disk full)</li>
+///		<li>If the camera is physically disconnected</li>
+///	</ul>
+///	</ul>
+///	As long as the application registers an IEventListener when invoking StartAudioCapture() /
+///	StartVideoCapture(), it will be notified of any recording termination (tCaptureStoppedMsg,
+///	tCaptureTimeoutMsg, tCaptureQuotaHitMsg, tCameraRemovedMsg).
+/// Using an IEventListener, with potential assistance from AtomicFile (fopenAtomic()), it is possible for
+///	the application to maintain consistent recordings.
 
 //==============================================================================
 class CCameraMPI : public ICoreMPI {
@@ -149,6 +166,10 @@ public:
 	/// \param	pListener	Pointer to Event listener for callbacks from the
 	/// video capture subsystem.  Callbacks will occur when recording is asynchronously
 	/// stopped if the file system is full or the maximum record length has been reached.
+	///	<B>WARNING:</B> Although this parameter is allowed to be NULL, it is <B>STRONGLY</B>
+	///	suggested to always supply a valid listener.  Tracking the signaled CCameraEventMessage
+	/// is required to ensure consistent recordings.  A recording that has been started
+	///	but never stopped (synchronously or asynchronously) is invalid and <B>MUST</B> be deleted.
 	///
 	/// \param	path	AVI save file name relative to SetCameraVideoPath(),
 	/// or full absolute path name if a leading slash is present.  Blank
@@ -271,6 +292,10 @@ public:
 	/// \param	pListener	Pointer to Event listener for callbacks from the
 	/// audio capture subsystem.  Callbacks will be issued when recording is
 	/// stopped asynchronously because the file system is full.
+	///	<B>WARNING:</B> Although this parameter is allowed to be NULL, it is <B>STRONGLY</B>
+	///	suggested to always supply a valid listener.  Tracking the signaled CCameraEventMessage
+	/// is required to ensure consistent recordings.  A recording that has been started
+	///	but never stopped (synchronously or asynchronously) is invalid and <B>MUST</B> be deleted.
 	///
 	/// \param	maxLength	Maximum length in seconds to record.  A value of 0
 	/// means unlimited recording.

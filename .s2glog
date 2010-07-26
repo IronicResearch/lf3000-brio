@@ -26852,3 +26852,17 @@ By Rob Dowling (rdowling@leapfrog.com) on 7/23/10 4:08 PM
 6,204 ms. (Cumulative: 9,503,065 ms)
 
 ----------------
+Revision 7,816 from svn://localhost/TRUNK/:
+Revision 7,817 from svn://localhost/TRUNK/:
+Revision 7,818 from svn://localhost/TRUNK/:
+Revision 7,819 from svn://localhost/TRUNK/:
+Revision 7,820 from svn://localhost/TRUNK/:
+
+L3B TTPro 2693: Camera MPI: Add warnings to doxygen documentation about
+maintaining consistent recordings.  Comments only; no functional changes.
+
+By jeno (jeno@leapfrog.com) on 7/26/10 11:52 AM
+1 changed, 0 added, 0 deleted.
+5,981 ms. (Cumulative: 9,509,155 ms)
+
+----------------
