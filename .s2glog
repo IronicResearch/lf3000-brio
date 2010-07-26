@@ -26866,3 +26866,14 @@ By jeno (jeno@leapfrog.com) on 7/26/10 11:52 AM
 5,981 ms. (Cumulative: 9,509,155 ms)
 
 ----------------
+Revision 7,821 from svn://localhost/TRUNK/:
+Revision 7,822 from svn://localhost/TRUNK/:
+Revision 7,823 from svn://localhost/TRUNK/:
+
+TTPro 2666.  Brio no longer enables the YUV immediately if it needs to change the layer of the YUV layer.  This prevents it from becoming visible till it's filled.  YUV is already enabled on the first frame.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/26/10 4:38 PM
+1 changed, 0 added, 0 deleted.
+6,001 ms. (Cumulative: 9,515,249 ms)
+
+----------------
