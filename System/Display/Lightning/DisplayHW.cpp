@@ -696,7 +696,6 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		int order = (context->isUnderlay) ? 2 : 0;
 		int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
 		if (order != prior) {
-			ioctl(layer, MLC_IOCTLAYEREN, 1);
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
 			ioctl(gDevMlc, MLC_IOCTTOPDIRTY, 0);
 		}
