@@ -481,7 +481,8 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	GraphicsContext->depth = 8*bpp;
 	GraphicsContext->format = hwFormat;
 	GraphicsContext->isBlended = false;
-	GraphicsContext->alphaLevel = (100*ALPHA_STEP)/100;;
+	GraphicsContext->alphaLevel = (100*ALPHA_STEP)/100;
+	GraphicsContext->flippedContext = NULL;
 
 	// Offscreen context does not affect hardware settings
 	if (GraphicsContext->isAllocated)
@@ -530,33 +531,44 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		// FIXME: onscreen display context is not necessarily ARGB8888 format
 		if (pdcVisible_ == NULL)
 			return kDisplayDisplayNotInListErr;
+		tDisplayContext *context = pdcVisible_;
+		if(context->flippedContext)
+			context = context->flippedContext;
 		switch (dc->colorDepthFormat) 
 		{
-		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatRGB565: 	RGB565ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatRGB888: 	RGB2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB4444: 	RGB4444ARGB(dc, context, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB565: 	RGB565ARGB(dc, context, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatRGB888: 	RGB2ARGB(dc, context, sx, sy, dx, dy, width, height); break;
 		default:
 		case kPixelFormatARGB8888: 	
-			switch (pdcVisible_->colorDepthFormat)
+			switch (context->colorDepthFormat)
 			{
-			case kPixelFormatRGB4444: 	ARGB2RGB4444(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
-			case kPixelFormatRGB565: 	ARGB2RGB565(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
-			case kPixelFormatRGB888: 	ARGB2RGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatRGB4444: 	ARGB2RGB4444(dc, context, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatRGB565: 	ARGB2RGB565(dc, context, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatRGB888: 	ARGB2RGB(dc, context, sx, sy, dx, dy, width, height); break;
 			default:
-			case kPixelFormatARGB8888:	ARGB2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
-			case kPixelFormatYUV420: 	RGB2YUV(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatARGB8888:	ARGB2ARGB(dc, context, sx, sy, dx, dy, width, height); break;
+			case kPixelFormatYUV420: 	RGB2YUV(dc, context, sx, sy, dx, dy, width, height); break;
 			}
 			break;
-		case kPixelFormatYUV420: 	YUV2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
-		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, pdcVisible_, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatYUV420: 	YUV2ARGB(dc, context, sx, sy, dx, dy, width, height); break;
+		case kPixelFormatYUYV422: 	YUYV2ARGB(dc, context, sx, sy, dx, dy, width, height); break;
 		}
 	}
 	// Make sure primary display context is enabled
 	if (!bPrimaryLayerEnabled) {
-		U32 addr = pdcVisible_->basephys + pdcVisible_->offset;
+		tDisplayContext *context = pdcVisible_;
+		if(context->flippedContext)
+			context = context->flippedContext;
+		U32 addr = context->basephys +context->offset;
+		
 		if (pdcVisible_->isPlanar) 
+		{
 			addr = LIN2XY(addr);
-		if(pdcVisible_->isOverlay && !pdcVisible_->isAllocated) {
+			ioctl(context->layer, MLC_IOCTADDRESSCB, addr + context->pitch/2);
+			ioctl(context->layer, MLC_IOCTADDRESSCR, addr + context->pitch/2 + context->pitch*(context->height/2));
+		}
+		if(pdcVisible_->isOverlay) {
 			int order = (pdcVisible_->isUnderlay) ? 2 : 0;
 			int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
 			if (order != prior) {
@@ -582,10 +594,10 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int 	layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
 
+	if (pdcVisible_ && context == pdcVisible_->flippedContext)
+		pdcVisible_->flippedContext = NULL;
 	if (context == pdcVisible_)
 		pdcVisible_ = NULL;
-	if (context == pdcFlipped_)
-		pdcFlipped_ = NULL;
 	
 	// Offscreen contexts do not affect screen
 	if (context->isAllocated)
@@ -765,7 +777,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 			physaddr = gPlanarBase + offset;
 			layer = gDevOverlay;
 			// Update invalidated regions before page flip
-			pdcVisible_ = context;
+			pdcVisible_->flippedContext = context;
 			Invalidate(0, NULL);
 		}
 		else 
@@ -780,8 +792,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	}
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
-	pdcVisible_ = context;
-	pdcFlipped_ = context;
+	pdcVisible_->flippedContext = context;
 	bPrimaryLayerEnabled = true;
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::SwapBuffers: virtaddr=%08X, physaddr=%08X\n", (unsigned int)context->pBuffer, (unsigned int)physaddr);
@@ -817,7 +828,11 @@ tDisplayHandle CDisplayModule::GetCurrentDisplayHandle()
 //----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
-	return ((struct tDisplayContext *)hndl)->pBuffer;
+	struct tDisplayContext *context = (tDisplayContext *)hndl;
+	if(context->flippedContext)
+		return context->flippedContext->pBuffer;
+	else
+		return context->pBuffer;
 }
 
 //----------------------------------------------------------------------------

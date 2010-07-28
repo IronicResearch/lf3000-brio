@@ -26893,3 +26893,15 @@ By jeno (jeno@leapfrog.com) on 7/28/10 3:08 PM
 6,033 ms. (Cumulative: 9,521,423 ms)
 
 ----------------
+Revision 7,832 from svn://localhost/TRUNK/:
+Revision 7,833 from svn://localhost/TRUNK/:
+Revision 7,834 from svn://localhost/TRUNK/:
+Revision 7,835 from svn://localhost/TRUNK/:
+
+TTPro 2661.  Brio was only able to remember 1 bufferswap.  So pushing a buffer swap (Accessory movie) on top of another buffer swap (Tutorial) caused Brio to forget the old buffer swap.  Overhauled how Brio handles SwapBuffer.  Eliminated the single global FlippedContext, added to all display handles a FlippedContext.  SwapBuffer no longer repoints pdcVisible to the new context, instead it points pdcVisible's flippedContext to the new context.  Modified code elsewhere to check for FlippedContext, and use that instead.  This includes Updating offscreen contexts, and GetBuffer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/28/10 4:35 PM
+3 changed, 0 added, 0 deleted.
+6,081 ms. (Cumulative: 9,527,598 ms)
+
+----------------

@@ -71,6 +71,7 @@ struct tDisplayContext {
 	void*	pdc;		// next dc in list
 	bool	isBlended;
 	U8		alphaLevel;
+	tDisplayContext *flippedContext;
 };
 
 struct tBuffer {
@@ -461,7 +462,6 @@ private:
 	CKernelMPI			kernel_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
-	tDisplayContext*	pdcFlipped_;
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
 
