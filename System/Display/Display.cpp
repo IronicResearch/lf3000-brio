@@ -76,7 +76,6 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 	pdcPrimary_ = NULL;
 #endif
 	pdcVisible_ = NULL;
-	pdcFlipped_ = NULL;
 }
 
 //----------------------------------------------------------------------------
@@ -308,12 +307,6 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 		pdcPrimary_ = NULL;
 	}
 
-	// pdcVisible_ needs to account for page-flipping previously active
-	if (pdcFlipped_) {
-		pdcVisible_ = pdcFlipped_;
-		return kNoErr;
-	}
-	
 	// pdcVisible_ must always refer to top layer in list
 	kernel_.LockMutex(gListMutex);
 	pdcVisible_ = NULL;
