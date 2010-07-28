@@ -762,6 +762,19 @@ static Boolean InitCameraFormatInt(tCameraContext *pCamCtx)
 }
 
 //----------------------------------------------------------------------------
+static Boolean SetControlInt(int fd, v4l2_control *ctrl)
+{
+	Boolean bRet = true;
+
+	if(0 != ioctl(fd, VIDIOC_S_CTRL, ctrl))
+	{
+		bRet = false;
+	}
+
+	return bRet;
+}
+
+//----------------------------------------------------------------------------
 static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 {
 	tControlInfo	*control = NULL;
@@ -769,9 +782,27 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 	Boolean			bRet = true;
 	v4l2_queryctrl	query;
 	v4l2_control	ctrl;
+	v4l2_control	overrides[] = {
+			{V4L2_CID_BRIGHTNESS,				130},
+			{V4L2_CID_CONTRAST,					0},
+			{V4L2_CID_SATURATION,				165},
+			{V4L2_CID_HUE,						0},
+			{V4L2_CID_GAMMA,					50},
+#if defined V4L2_CID_POWER_LINE_FREQUENCY
+			{V4L2_CID_POWER_LINE_FREQUENCY, 	2},
+			{V4L2_CID_SHARPNESS,				6},
+			{V4L2_CID_BACKLIGHT_COMPENSATION,	0},
+#endif /* V4L2_CID_POWER_LINE_FREQUENCY */
+	};
 
 	memset(&query, 0, sizeof (v4l2_queryctrl));
 	memset(&ctrl, 0, sizeof(v4l2_control));
+
+	/* override defaults - see L3B TTPro 2697 for value origins */
+	for(idx = 0; idx < sizeof(overrides) / sizeof(overrides[0]); idx++)
+	{
+		SetControlInt(pCamCtx->fd, &overrides[idx]);
+	}
 
 	for(query.id = V4L2_CID_BASE; query.id < V4L2_CID_LASTP1; query.id++)
 	{
@@ -1136,8 +1167,6 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	Boolean			bRet = true;
 	tCameraControls::iterator	it;
 
-	CAMERA_LOCK;
-
 	switch(control->type)
 	{
 	case kControlTypeBrightness:
@@ -1178,10 +1207,9 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 
 	ctrl.value = value;
 
-	if(0 != ioctl(camCtx_.fd, VIDIOC_S_CTRL, &ctrl))
-	{
-		bRet = false;
-	}
+	CAMERA_LOCK;
+
+	bRet = SetControlInt(camCtx_.fd, &ctrl);
 
 	/* save updated value */
 	for(it = camCtx_.controls->begin(); it < camCtx_.controls->end(); it++)
