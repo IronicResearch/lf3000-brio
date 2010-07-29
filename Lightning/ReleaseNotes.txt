@@ -3,8 +3,105 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.1.31.7740 (July 19, 2010)
+Brio v1.1.30.7814 (July 22, 2010)
 ===========================================
+
+-- CameraMPI: Video frame duplication only conditional when audio active.
+
+-- Camera module: fix for occasional crashes when recording muted videos.
+buf->timestamp is zeroed during the camera thread, and is not 
+guaranteed to be
+valid during thread exit.
+
+-- Camera module: set scaler only when dealing with the YUV video layer.  
+(MFG test app uses RGB rendering, and this was causing a crash).
+
+-- L3B TTPro 2642: ALSA crashes when attempting to call 
+snd_pcm_hw_params() on a stream that we have paused, regardless of what is reported by 
+snd_pcm_state().
+
+This checkin is more of a workaround than a fix, because the above behavior is
+not well understood.
+
+Also, make sure recording videos pause/unpause audio appropriately, and
+
+-- L3B TTPro 2643: Reduce frame rate during still image capture to attempt to
+improve JPEG quality.
+
+-- L3B TTPro 2589: Do not count paused time against recording quotas, 
+either requested time-out or disk-space usage.
+
+Also, use either recorded audio size or v4l2 frame timestamps for IEventListener
+elapsed time accounting, rather than KernelMPI::GetElapsedTimeAsMSecs()
+
+-- Setting camera frame rate to 5 fps globally for reduced framerate:improved image
+quality correlation verification (updated below)
+
+-- TTPro 2641.  Impelemted IsCameraPresent.  Does the same thing that 
+IsValid does.
+
+-- TTPro 2479.  Added TaskSleep to StopAudio with 
+kStopAudioOptionsDoneMsg.  This helps ensure that the DoneMessage will 
+be delivered by the time StopAudio finishes.  This way developers who 
+StopAudio with callbacks don't have to worry about having to sleep and 
+wait till the message gets back.
+
+-- TTPro 2479.  Moved the StopAudio's sleep outside of all mutex locks.  
+This avoids unneeded resource locking.
+
+-- L3B TTPro 2669: Instead of scaling 9-bit IDCT output to 8-bit colors, use a
+simple clamp.  This prevents the resulting colors from looking washed-out.
+
+-- TTPro 2646.  Moved StopVideo's disabling of Codec to before attempt to 
+lock Mutex.  This prevents StopVideo from sleeping for long periods of 
+time waiting for the video to get back into synch.
+
+Technical Details
+
+When StopVideo is called, StopVideo attempts to lock the video's Mutex, 
+but if it's already locked, it will sleep for 10 milliseconds and try 
+again.  When the trailer is out of sync, the Mutex is constantly being 
+locked and unlocked (for every frame being rendered).  Everytime 
+StopVideo is trying to lock the Mutex, it's already locked.  This keeps 
+happening till the video catches up (which may or may not happen before 
+the movie ends), or by some miracle coincidence of timing StopVideo 
+wakes up right in between the rendering of two frames.  The rendering 
+does check to see if the Codec is ready before locking the Mutex.  
+StopVideo set the Codec to false before trying to lock the Mutex, the 
+Video rendering will no longer lock the Mutex which lets StopVideo lock 
+the Mutex in a more timely fashion.
+
+-- CameraMPI: Default back to 15 FPS for video streaming modes, switch to 
+5 FPS for still frame grabbing mode.
+
+-- VideoMPI: Use fractional FPS time base info for calculating more 
+accurate cummulative frame times during video rendering loop. 
+
+-- CameraMPI: Correct seek functionality for AVIPlayer SeekVideoFrame().
+
+-- DisplayMPI: Undo the internal display context hack to make an OGL 
+context compatible with DisplayMPI Register (svn -r6980). This makes 
+the memory allocations tally up properly again. (TTP #2468)
+
+-- CameraMPI: Treat severe warnings other than "extranous bytes" as 
+errors, since they produce corrupt images which should be discarded. 
+(TTP #2570)
+
+-- Merged -c7753: TTPro 2654 & 2687 (in conjunction with LightningCore 
+Changes). Added in new function to DisplayMPI, GetAvailableFormat. This 
+function returns YUV if that layer is free, or RGBA if that layer is 
+free, or returns Error if neither are free. This is to support new 
+VolumeBars. Now storing isBlended and alphaLevel on a per display 
+handle basis. Now restoring isBlended and alphaLevel flags when a layer 
+is reactivated. Now restoring video layer priority (when not an 
+offscreen context).
+
+-- Merged -c7761: Removing an unneeded debuging print statement.
+
+-- Merged -c7764: Change to VideoModule, now when playing videos, will 
+only change scaler settings if the layer is YUV420 or YUYV. This 
+prevents a problem with garbage graphics when playing a 3D only title, 
+pressing Pause, adjusting the Volume, and inserting the Camera Widget.
 
 ===========================================
 Brio v1.1.25.7676 (July 2, 2010)
