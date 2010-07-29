@@ -134,11 +134,10 @@ tErrType CCameraModule::InitMicInt()
 	micCtx_.fd[1]		= -1;
 	micCtx_.period_time	= MIC_PERIOD;
 
-	snd_pcm_hw_params_alloca(&micCtx_.hwparams);
-	snd_pcm_sw_params_alloca(&micCtx_.swparams);
+	snd_pcm_hw_params_malloc(&micCtx_.hwparams);
+	snd_pcm_sw_params_malloc(&micCtx_.swparams);
+	snd_pcm_status_malloc(&micCtx_.status);
 
-	snd_pcm_status_alloca(&micCtx_.status);
-	
 	do
 	{
 		/*
@@ -237,6 +236,10 @@ tErrType	CCameraModule::DeinitMicInt()
 		close(micCtx_.fd[1]);
 	micCtx_.fd[0]		= -1;
 	micCtx_.fd[1]		= -1;
+
+	snd_pcm_status_free(micCtx_.status);
+	snd_pcm_sw_params_free(micCtx_.swparams);
+	snd_pcm_hw_params_free(micCtx_.hwparams);
 
 	if (micCtx_.pcm_handle)
 		snd_pcm_close(micCtx_.pcm_handle);

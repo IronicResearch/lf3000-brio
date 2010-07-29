@@ -26931,3 +26931,20 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/29/10 1:00 PM
 6,368 ms. (Cumulative: 9,540,419 ms)
 
 ----------------
+Revision 7,845 from svn://localhost/TRUNK/:
+Revision 7,846 from svn://localhost/TRUNK/:
+Revision 7,847 from svn://localhost/TRUNK/:
+Revision 7,848 from svn://localhost/TRUNK/:
+Revision 7,849 from svn://localhost/TRUNK/:
+Revision 7,850 from svn://localhost/TRUNK/:
+Revision 7,851 from svn://localhost/TRUNK/:
+
+L3B TTPro 2700: *_alloca() function returns are valid only within/beneath the
+enclosing stack frame.  Since swparams, hwparams, and status are accessed
+elsewhere, malloc them instead.
+
+By jeno (jeno@leapfrog.com) on 7/29/10 4:14 PM
+1 changed, 0 added, 0 deleted.
+6,532 ms. (Cumulative: 9,547,092 ms)
+
+----------------
