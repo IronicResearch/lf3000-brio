@@ -26918,3 +26918,16 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/29/10 10:53 AM
 6,251 ms. (Cumulative: 9,533,942 ms)
 
 ----------------
+Revision 7,840 from svn://localhost/TRUNK/:
+Revision 7,841 from svn://localhost/TRUNK/:
+Revision 7,842 from svn://localhost/TRUNK/:
+Revision 7,843 from svn://localhost/TRUNK/:
+Revision 7,844 from svn://localhost/TRUNK/:
+
+TTPro 2661.  Small fix to SwapBuffer.  Fixed context address calculation when using offscreen FlippedContext.  This problem showed up as garbage graphics in XMV if you press Home, Pause, then Unpaused.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/29/10 1:00 PM
+1 changed, 0 added, 0 deleted.
+6,368 ms. (Cumulative: 9,540,419 ms)
+
+----------------
