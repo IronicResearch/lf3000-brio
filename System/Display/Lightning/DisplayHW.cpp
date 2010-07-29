@@ -565,6 +565,8 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 		if (pdcVisible_->isPlanar) 
 		{
 			addr = LIN2XY(addr);
+			if(context->basephys == 0)
+				addr = gPlanarBase + (U32)context->pBuffer - (U32)gPlanarBuffer;
 			ioctl(context->layer, MLC_IOCTADDRESSCB, addr + context->pitch/2);
 			ioctl(context->layer, MLC_IOCTADDRESSCR, addr + context->pitch/2 + context->pitch*(context->height/2));
 		}
