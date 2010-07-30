@@ -26962,3 +26962,32 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/30/10 1:24 PM
 6,407 ms. (Cumulative: 9,553,639 ms)
 
 ----------------
+Revision 7,858 from svn://localhost/TRUNK/:
+Revision 7,859 from svn://localhost/TRUNK/:
+Revision 7,860 from svn://localhost/TRUNK/:
+Revision 7,861 from svn://localhost/TRUNK/:
+Revision 7,862 from svn://localhost/TRUNK/:
+Revision 7,863 from svn://localhost/TRUNK/:
+Revision 7,864 from svn://localhost/TRUNK/:
+Revision 7,865 from svn://localhost/TRUNK/:
+Revision 7,866 from svn://localhost/TRUNK/:
+
+Multi-issue camera checkin:
+1.) To support LinuxDist -r7861 and -7862 (roll UVC driver from 2.6.31 to
+2.6.34-patched)
+    a.) Semantics of VIDIOC_STREAMOFF has changed (order of VIDIOC_STREAMOFF
+        and VIDIOC_REQBUFS flipped)
+    b.) WHITEBALANCE control now exposed, but fails to be set, so it is
+        disabled
+
+2.) Disable separate render thread in CameraTask because it had race conditions
+resulting in invalid JPEGs.
+
+3.) Remove soft-clipper hack in CameraTask because it is no longer needed
+(solved by LinuxDist -r7861)
+
+By jeno (jeno@leapfrog.com) on 7/30/10 4:16 PM
+2 changed, 0 added, 0 deleted.
+6,719 ms. (Cumulative: 9,560,499 ms)
+
+----------------

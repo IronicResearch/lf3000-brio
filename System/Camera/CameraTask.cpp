@@ -22,7 +22,7 @@
 
 #include <AVIWrapper.h>
 
-#define USE_RENDER_THREAD	1	// for separate rendering thread
+#define USE_RENDER_THREAD	0	// for separate rendering thread
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -110,7 +110,6 @@ void* CameraTaskMain(void* arg)
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
 	CAudioMPI			audiomgr;
-	Boolean				bSpeakerState = true;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
@@ -232,10 +231,6 @@ void* CameraTaskMain(void* arg)
 
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
-
-	// Hack to reduce audio streaming interference with video streaming
-	bSpeakerState = audiomgr.GetSpeakerEqualizer();
-	audiomgr.SetSpeakerEqualizer(false);
 
 	while(bRunning)
 	{
@@ -369,9 +364,6 @@ void* CameraTaskMain(void* arg)
 		}
 	}
 	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
-
-	// Restore speaker equalizer state prior to video streaming
-	audiomgr.SetSpeakerEqualizer(bSpeakerState);
 
 	// Post done message to event listener
 	if(pCtx->pListener)
