@@ -824,17 +824,16 @@ Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
 //----------------------------------------------------------------------------
 tDisplayHandle CDisplayModule::GetCurrentDisplayHandle()
 {
-	return reinterpret_cast<tDisplayHandle>(pdcVisible_);
+	if(pdcVisible_ && pdcVisible_->flippedContext)
+		return pdcVisible_->flippedContext;
+	else
+		return pdcVisible_;
 }
 
 //----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
-	struct tDisplayContext *context = (tDisplayContext *)hndl;
-	if(context->flippedContext)
-		return context->flippedContext->pBuffer;
-	else
-		return context->pBuffer;
+	return ((struct tDisplayContext *)hndl)->pBuffer;
 }
 
 //----------------------------------------------------------------------------
