@@ -26991,3 +26991,15 @@ By jeno (jeno@leapfrog.com) on 7/30/10 4:16 PM
 6,719 ms. (Cumulative: 9,560,499 ms)
 
 ----------------
+Revision 7,867 from svn://localhost/TRUNK/:
+Revision 7,868 from svn://localhost/TRUNK/:
+Revision 7,869 from svn://localhost/TRUNK/:
+Revision 7,870 from svn://localhost/TRUNK/:
+
+TTPro 2706.  When seeking is done, now updating nexttime and marktime.  This allows for proper operation of DropFrames.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/30/10 4:38 PM
+1 changed, 0 added, 0 deleted.
+6,418 ms. (Cumulative: 9,567,058 ms)
+
+----------------

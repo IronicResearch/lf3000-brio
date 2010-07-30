@@ -203,9 +203,14 @@ void* VideoTaskMain( void* arg )
 			{
 				pctx->bSeeked = false;
 				vidmgr.GetVideoTime(pctx->hVideo, &vtm);
-				if(pctx->hAudio != kNoAudioID)
+				if(bAudio)
+				{
 					audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
-				if (!bAudio) {
+					nexttime = vtm.time;
+					marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
+				}
+				else
+				{
 					nexttime = kernel.GetElapsedTimeAsMSecs();
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
@@ -250,8 +255,12 @@ void* VideoTaskMain( void* arg )
 				{
 					pctx->bSeeked = false;
 					vidmgr.GetVideoTime(pctx->hVideo, &vtm);
-					if(pctx->hAudio != kNoAudioID)
+					if(bAudio)
+					{
 						audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
+						nexttime = vtm.time;
+						marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
+					}
 				}
 				
 				if (bAudio)
