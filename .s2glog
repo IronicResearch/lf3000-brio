@@ -26948,3 +26948,17 @@ By jeno (jeno@leapfrog.com) on 7/29/10 4:14 PM
 6,532 ms. (Cumulative: 9,547,092 ms)
 
 ----------------
+Revision 7,852 from svn://localhost/TRUNK/:
+Revision 7,853 from svn://localhost/TRUNK/:
+Revision 7,854 from svn://localhost/TRUNK/:
+Revision 7,855 from svn://localhost/TRUNK/:
+Revision 7,856 from svn://localhost/TRUNK/:
+Revision 7,857 from svn://localhost/TRUNK/:
+
+Changed GetBuffer back to returning buffer of the handle in question instead of FlippedContext if it exists.  To solve the hijacking problem, GetCurrentHandle now returns to FlippedContext if it exists.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/30/10 1:24 PM
+1 changed, 0 added, 0 deleted.
+6,407 ms. (Cumulative: 9,553,639 ms)
+
+----------------
