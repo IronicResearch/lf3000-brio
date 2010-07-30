@@ -814,7 +814,11 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 
 		ctrl.id = query.id;
 
-		ioctl(pCamCtx->fd, VIDIOC_G_CTRL, &ctrl);
+		if((ret = ioctl(pCamCtx->fd, VIDIOC_G_CTRL, &ctrl)) < 0)
+		{
+			bRet = false;
+			break;
+		}
 
 		control				= new tControlInfo;
 		control->max		= query.maximum;
@@ -853,9 +857,16 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 		case V4L2_CID_BACKLIGHT_COMPENSATION:
 			control->type = kControlTypeBacklightComp;
 			break;
+#if 0	/* 2.6.34 UVC exports this, but it fails to VIDIOC_S_CTRL */
+		case V4L2_CID_WHITE_BALANCE_TEMPERATURE:
+			control->type = kControlTypeWhiteBalance;
+			break;
+#endif
 #endif /* V4L2_CID_POWER_LINE_FREQUENCY */
 		default:
 			control->type = kControlTypeError;
+			delete control;
+			continue;
 		}
 
 		pCamCtx->controls->push_back(control);
@@ -2137,6 +2148,19 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	 *
 	 * TODO: optimize same-resolution case
 	 */
+#if 0 /* VIDIOC_STREAMOFF fails with -EBUSY if no buffers are queued in UVC 2.6.34 */
+	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+		goto bail_out;
+
+	}
+#endif
+	if(!StopVideoCaptureInt(camCtx_.fd))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
+		goto bail_out;
+    }
 
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
@@ -2144,12 +2168,6 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto bail_out;
 
 	}
-
-	if(!StopVideoCaptureInt(camCtx_.fd))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
-		goto bail_out;
-    }
 
 	if(!SetCameraMode(&newmode))
 	{
@@ -2194,18 +2212,24 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to requeue frame to %s\n", camCtx_.file);
 		goto frame_out;
 	}
+#if 0 /* VIDIOC_STREAMOFF fails with -EBUSY if no buffers are queued in UVC 2.6.34 */
+	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+		goto frame_out;
+	}
+#endif
+	if(!StopVideoCaptureInt(camCtx_.fd))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
+		goto frame_out;
+    }
 
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
 		goto frame_out;
 	}
-
-	if(!StopVideoCaptureInt(camCtx_.fd))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
-		goto frame_out;
-    }
 
 	if(!SetCameraMode(&oldmode))
 	{
