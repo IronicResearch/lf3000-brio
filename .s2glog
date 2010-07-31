@@ -27015,3 +27015,12 @@ By Dave Milici (dmilici@leapfrog.com) on 7/30/10 5:54 PM
 5,969 ms. (Cumulative: 9,573,121 ms)
 
 ----------------
+Revision 7,875 from svn://localhost/TRUNK/:
+
+Theora: Update libtheora.so codec with ARM-optimized version for faster performance (TTP 2482). Built from LinuxDist-Emerald/packages/theorarm.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/10 6:03 PM
+2 changed, 1 added, 1 deleted.
+6,126 ms. (Cumulative: 9,579,325 ms)
+
+----------------
