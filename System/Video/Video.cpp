@@ -299,12 +299,14 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 	pVidCtx->pFileVideo = file;
 	pVidCtx->pPathVideo = new CPath(filepath);
 
-	if (filepath.rfind(".ogg") != std::string::npos) {
+	if (filepath.rfind(".ogg") != std::string::npos 
+			|| filepath.rfind(".OGG") != std::string::npos) {
 		// Create Theora video player object
 		CTheoraPlayer* 	pPlayer = new CTheoraPlayer();
 		pVidCtx->pPlayer = pPlayer;
 	}
-	else if (filepath.rfind(".avi") != std::string::npos) {
+	else if (filepath.rfind(".avi") != std::string::npos
+			|| filepath.rfind(".AVI") != std::string::npos) {
 		// Create AVI video player object
 		CAVIPlayer* 	pPlayer = new CAVIPlayer();
 		pVidCtx->pPlayer = pPlayer;
