@@ -27003,3 +27003,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/30/10 4:38 PM
 6,418 ms. (Cumulative: 9,567,058 ms)
 
 ----------------
+Revision 7,871 from svn://localhost/TRUNK/:
+Revision 7,872 from svn://localhost/TRUNK/:
+Revision 7,873 from svn://localhost/TRUNK/:
+Revision 7,874 from svn://localhost/TRUNK/:
+
+VideoMPI: Case-insensitive checks for .OGG and .AVI file extensions. (TTP 2707)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/30/10 5:54 PM
+1 changed, 0 added, 0 deleted.
+5,969 ms. (Cumulative: 9,573,121 ms)
+
+----------------
