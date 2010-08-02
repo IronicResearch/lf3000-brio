@@ -731,7 +731,7 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 			theora_decode_packetin(&td,&op);
 			PROFILE_END("theora_decode_packetin");
 			frame = theora_granule_frame(&td,td.granulepos);
-			if (!bDrop || frame >= pTime->frame)
+			if (!bDrop || pVidCtx->bSeeked || frame >= pTime->frame)
 			{
 				// Note theora_granule_time() returns only seconds
 				pTime->frame = frame;
