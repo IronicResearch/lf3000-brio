@@ -27024,3 +27024,21 @@ By Dave Milici (dmilici@leapfrog.com) on 7/30/10 6:03 PM
 6,126 ms. (Cumulative: 9,579,325 ms)
 
 ----------------
+Revision 7,876 from svn://localhost/TRUNK/:
+Revision 7,877 from svn://localhost/TRUNK/:
+Revision 7,878 from svn://localhost/TRUNK/:
+Revision 7,879 from svn://localhost/TRUNK/:
+Revision 7,880 from svn://localhost/TRUNK/:
+Revision 7,881 from svn://localhost/TRUNK/:
+Revision 7,882 from svn://localhost/TRUNK/:
+Revision 7,883 from svn://localhost/TRUNK/:
+
+Added check to see if video was seeked, before dropping frames.  Previously, if you rewind wile in the middle of a SyncFrame, it would immediately drop frames until it was back where it was before the rewind.
+
+This happens in rewind because it's a "live" seek.  The scrub bar pauses the video, and seeks while paused.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/2/10 3:17 PM
+1 changed, 0 added, 0 deleted.
+5,954 ms. (Cumulative: 9,585,404 ms)
+
+----------------
