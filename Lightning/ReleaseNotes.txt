@@ -3,6 +3,104 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
+Brio v1.1.36.7891 (August 3, 2010)
+===========================================
+
+===========================================
+Brio v1.1.35.7889 (August 2, 2010)
+===========================================
+
+-- CameraMPI: Change video frame duplication logic to be effective 
+immediately whenever video frame count lags behind audio block count to 
+maintain sync in video+audio recordings. (TTP #2507)
+
+-- CameraMPI: Create separate thread just for video frame rendering to 
+offload impact on FPS rate and video+audio sync (TTP 2507). 
+Conditionally compiled by local USE_RENDER_THREAD define. Attempt to 
+defer rendering, saving, and requeuing V4L buffer in separate thread 
+was problematic, so only rendering is done separately at present.
+
+-- VideoMPI: Replace global var tracking stale video handle with list of 
+active video handles. The previous stale video handle hack was too 
+easily fooled after multiple calls to StopVideo(). (TTP 2657, 2568) 
+
+-- VideoMPI: Revert back to using audio timestamps for (disabled in svn 
+-r7310) now that AVIs record audio tracks with matching video lengths. 
+(TTP 2507)
+
+-- VideoMPI: Reinstate drop-frame option for audio timestamp sync during 
+video playback, with drop-frame support added to AVI player. Maintains 
+audio+video sync during AVI playback on the device. (TTP 2507)
+
+-- CameraMPI: Use atomic file API for saving JPG files. (TTP #2692)
+
+-- CameraMPI: Use atomic file API for saving PNG files. (TTP #2692)
+
+-- CameraMPI: Use atomic file API for saving PNG files with cleanup for 
+error cases. (TTP #2692)
+
+-- Newer GCC requires printf to be prototyped with #include <stdin.h>
+
+-- L3B TTPro 2693: Camera MPI: Add warnings to doxygen documentation about
+maintaining consistent recordings.  Comments only; no functional 
+changes.
+
+-- TTPro 2666.  Brio no longer enables the YUV immediately if it needs to 
+change the layer of the YUV layer.  This prevents it from becoming 
+visible till it's filled.  YUV is already enabled on the first frame.
+
+-- L3B TTPro 2697: Apply overrides to camera control defaults.
+
+-- TTPro 2661.  Brio was only able to remember 1 bufferswap.  So pushing a 
+buffer swap (Accessory movie) on top of another buffer swap (Tutorial) 
+caused Brio to forget the old buffer swap.  Overhauled how Brio handles 
+SwapBuffer.  Eliminated the single global FlippedContext, added to all 
+display handles a FlippedContext.  SwapBuffer no longer repoints 
+pdcVisible to the new context, instead it points pdcVisible's 
+flippedContext to the new context.  Modified code elsewhere to check 
+for FlippedContext, and use that instead.  This includes Updating 
+offscreen contexts, and GetBuffer.
+
+-- Merged -c7844: TTPro 2661. Small fix to SwapBuffer. Fixed context 
+address calculation when using offscreen FlippedContext. This problem 
+showed up as garbage graphics in XMV if you press Home, Pause, then 
+Unpaused
+
+-- Merged -c7851: L3B TTPro 2700: *_alloca() function returns are valid 
+only within/beneath the enclosing stack frame. Since swparams, 
+hwparams, and status are accessed elsewhere, malloc them instead.
+
+-- Merged -c7857: Changed GetBuffer back to returning buffer of the handle 
+in question instead of FlippedContext if it exists. To solve the 
+hijacking problem, GetCurrentHandle now returns to FlippedContext if it 
+exists.
+
+-- Merged -c7866:  Multi-issue camera checkin: 1.) To support LinuxDist 
+-r7861 and -7862 (roll UVC driver from 2.6.31 to 2.6.34-patched) a.) 
+Semantics of VIDIOC_STREAMOFF has changed (order of VIDIOC_STREAMOFF 
+and VIDIOC_REQBUFS flipped) b.) WHITEBALANCE control now exposed, but 
+fails to be set, so it is disabled 2.) Disable separate render thread 
+in CameraTask because it had race conditions resulting in invalid 
+JPEGs. 3.) Remove soft-clipper hack in CameraTask because it is no 
+longer needed (solved by LinuxDist -r7861)
+
+-- Merged -c7680:  TTPro 2706. When seeking is done, now updating nexttime 
+and marktime. This allows for proper operation of DropFrames.
+
+-- Merged -c7874:  VideoMPI: Case-insensitive checks for .OGG and .AVI 
+file extensions. (TTP 2707)
+
+-- Merged -c7875: Theora: Update libtheora.so codec with ARM-optimized 
+version for faster performance (TTP 2482). Built from 
+LinuxDist-Emerald/package s/theorarm.
+
+-- Merged -c7883:  Added check to see if video was seeked, before dropping 
+frames. Previously, if you rewind wile in the middle of a SyncFrame, it 
+would immediately drop frames until it was back where it was before the 
+rewind. This happens in rewind because it's a "live" seek. The scrub 
+bar pauses the video, and seeks while paused.
+
+===========================================
 Brio v1.1.30.7814 (July 22, 2010)
 ===========================================
 
