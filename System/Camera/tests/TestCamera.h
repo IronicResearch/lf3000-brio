@@ -572,6 +572,9 @@ public:
 				bRet = pCameraMPI_->SetCameraControl( *it, backup_value );
 				TS_ASSERT_EQUALS( bRet, true );
 			}
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
 		}
 
 		pDisplayMPI_->UnRegister(disp, 0);

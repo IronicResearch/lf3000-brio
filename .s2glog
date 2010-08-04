@@ -27058,3 +27058,23 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/3/10 9:57 AM
 6,040 ms. (Cumulative: 9,591,569 ms)
 
 ----------------
+Revision 7,891 from svn://localhost/TRUNK/:
+Revision 7,892 from svn://localhost/TRUNK/:
+Revision 7,893 from svn://localhost/TRUNK/:
+Revision 7,894 from svn://localhost/TRUNK/:
+Revision 7,895 from svn://localhost/TRUNK/:
+Revision 7,896 from svn://localhost/TRUNK/:
+Revision 7,897 from svn://localhost/TRUNK/:
+Revision 7,898 from svn://localhost/TRUNK/:
+Revision 7,899 from svn://localhost/TRUNK/:
+Revision 7,900 from svn://localhost/TRUNK/:
+Revision 7,901 from svn://localhost/TRUNK/:
+Revision 7,902 from svn://localhost/TRUNK/:
+
+L3B TTPro 2714: Camera unit test: Stop video stream before letting camera module go out of scope.
+
+By jeno (jeno@leapfrog.com) on 8/4/10 1:17 PM
+1 changed, 0 added, 0 deleted.
+6,097 ms. (Cumulative: 9,597,807 ms)
+
+----------------
