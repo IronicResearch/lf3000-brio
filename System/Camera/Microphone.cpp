@@ -191,6 +191,24 @@ tErrType CCameraModule::InitMicInt()
 
 	if(err < 0)
 	{
+		if(micCtx_.status)
+		{
+			snd_pcm_status_free(micCtx_.status);
+			micCtx_.status = NULL;
+		}
+
+		if(micCtx_.swparams)
+		{
+			snd_pcm_sw_params_free(micCtx_.swparams);
+			micCtx_.swparams = NULL;
+		}
+
+		if(micCtx_.hwparams)
+		{
+			snd_pcm_hw_params_free(micCtx_.hwparams);
+			micCtx_.hwparams = NULL;
+		}
+
 		if(micCtx_.poll_buf)
 		{
 			kernel_.Free(micCtx_.poll_buf);
@@ -237,9 +255,18 @@ tErrType	CCameraModule::DeinitMicInt()
 	micCtx_.fd[0]		= -1;
 	micCtx_.fd[1]		= -1;
 
-	snd_pcm_status_free(micCtx_.status);
-	snd_pcm_sw_params_free(micCtx_.swparams);
-	snd_pcm_hw_params_free(micCtx_.hwparams);
+	if(micCtx_.status)
+		snd_pcm_status_free(micCtx_.status);
+
+	if(micCtx_.swparams)
+		snd_pcm_sw_params_free(micCtx_.swparams);
+
+	if(micCtx_.hwparams)
+		snd_pcm_hw_params_free(micCtx_.hwparams);
+
+	micCtx_.status = NULL;
+	micCtx_.swparams = NULL;
+	micCtx_.hwparams = NULL;
 
 	if (micCtx_.pcm_handle)
 		snd_pcm_close(micCtx_.pcm_handle);

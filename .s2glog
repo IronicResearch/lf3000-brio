@@ -27102,3 +27102,14 @@ By jeno (jeno@leapfrog.com) on 8/5/10 12:29 PM
 6,173 ms. (Cumulative: 9,604,152 ms)
 
 ----------------
+Revision 7,914 from svn://localhost/TRUNK/:
+Revision 7,915 from svn://localhost/TRUNK/:
+
+Camera module: random pointers are freed (e.g., micCtx_.status) if module is
+destroyed when camera is absent.  (Additional fix for L3B TTPro 2700)
+
+By jeno (jeno@leapfrog.com) on 8/5/10 1:53 PM
+2 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 9,610,387 ms)
+
+----------------

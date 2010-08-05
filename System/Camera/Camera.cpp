@@ -335,6 +335,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	micCtx_.pcm_handle		= NULL;
 	micCtx_.fd[0]			= -1;
 	micCtx_.fd[1]			= -1;
+	micCtx_.status			= NULL;
+	micCtx_.swparams		= NULL;
+	micCtx_.hwparams		= NULL;
 
 	idctCtx_.file			= gIDCTFile;
 	idctCtx_.fd				= -1;
