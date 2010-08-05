@@ -64,7 +64,7 @@ const U64	MIN_FREE	= 1*1024*1024;		/* NOTE: UBIFS is internally padded,
 											 * so this isn't strictly needed */
 
 #define IS_STREAMING_HANDLE(x) \
-	((x) & kStreamingActive)
+	(((x) & kStreamingActive) && (camCtx_.hndl == x))
 
 #define IS_THREAD_HANDLE(x) \
 	((x) & kStreamingThread)
