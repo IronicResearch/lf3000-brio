@@ -806,10 +806,16 @@ public:
 			TS_ASSERT_EQUALS( bRet, false );
 			
 			pKernelMPI_->TaskSleep(5000);
-			
+
+			capture = pCameraMPI_->StartVideoCapture(&surf);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
 			bRet = pCameraMPI_->SnapFrame(capture, "test.png");
 			TS_ASSERT_EQUALS( bRet, true );
-			
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+
 			pKernelMPI_->TaskSleep(1000);
 			TS_ASSERT(! stat("/LF/Bulk/Data/Local/All/test.png", &file_status) );
 		}
