@@ -27113,3 +27113,16 @@ By jeno (jeno@leapfrog.com) on 8/5/10 1:53 PM
 6,141 ms. (Cumulative: 9,610,387 ms)
 
 ----------------
+Revision 7,916 from svn://localhost/TRUNK/:
+Revision 7,917 from svn://localhost/TRUNK/:
+Revision 7,918 from svn://localhost/TRUNK/:
+Revision 7,919 from svn://localhost/TRUNK/:
+Revision 7,920 from svn://localhost/TRUNK/:
+
+TTPro 2712.  Fixed up Vorbis Codec.  Now error checks the page it tried to read in.  Previously, it would assume page was read fine, and when it wasn't able to pull a packet from the page, it would try to read the previous page.  This would get stuck in an infinite loop if you seeked to the first page, and that was not an audio page.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/5/10 5:56 PM
+2 changed, 0 added, 0 deleted.
+6,251 ms. (Cumulative: 9,616,748 ms)
+
+----------------

@@ -1442,29 +1442,30 @@ int ov_pcm_seek_page(OggVorbis_File *vf,ogg_int64_t pos){
     {
       ogg_page og;
       ogg_packet op;
-      
+      int pagein_result;
       /* seek */
       result=_seek_helper(vf,best);
       vf->pcm_offset=-1;
       if(result) goto seek_error;
-      result=_get_next_page(vf,&og,-1);
-      if(result<0) goto seek_error;
-      
-      if(link!=vf->current_link){
-	/* Different link; dump entire decode machine */
-	_decode_clear(vf);  
-	
-	vf->current_link=link;
-	vf->current_serialno=vf->serialnos[link];
-	vf->ready_state=STREAMSET;
-	
-      }else{
-	vorbis_synthesis_restart(&vf->vd);
-      }
-
-      ogg_stream_reset_serialno(&vf->os,vf->current_serialno);
-      ogg_stream_pagein(&vf->os,&og);
-
+      do{
+        result=_get_next_page(vf,&og,-1);
+        if(result<0) goto seek_error;
+        
+        if(link!=vf->current_link){
+          /* Different link; dump entire decode machine */
+          _decode_clear(vf);  
+          
+          vf->current_link=link;
+          vf->current_serialno=vf->serialnos[link];
+          vf->ready_state=STREAMSET;
+          
+        }else{
+          vorbis_synthesis_restart(&vf->vd);
+        }
+        
+        ogg_stream_reset_serialno(&vf->os,vf->current_serialno);
+        pagein_result = ogg_stream_pagein(&vf->os,&og);
+      }while(pagein_result == -1);
       /* pull out all but last packet; the one with granulepos */
       while(1){
 	result=ogg_stream_packetpeek(&vf->os,&op);
