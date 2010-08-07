@@ -287,7 +287,8 @@ void* CameraTaskMain(void* arg)
 			continue;
 		}
 
-		if(bScreen && !pCtx->bVPaused)
+		if(bScreen && !pCtx->bVPaused
+				&& (!pCtx->bAudio || keyframe+1 >= cam->micCtx_.counter))
 		{
 #if USE_RENDER_THREAD
 			// Add frame to be rendered into CameraTaskRender() queue

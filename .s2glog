@@ -27126,3 +27126,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/5/10 5:56 PM
 6,251 ms. (Cumulative: 9,616,748 ms)
 
 ----------------
+Revision 7,921 from svn://localhost/TRUNK/:
+Revision 7,922 from svn://localhost/TRUNK/:
+
+CameraMPI: Apply drop-frame logic as condition for viewfinder rendering during video+audio recording session. (TTP 2507)
+
+By Dave Milici (dmilici@leapfrog.com) on 8/6/10 5:51 PM
+1 changed, 0 added, 0 deleted.
+6,422 ms. (Cumulative: 9,623,280 ms)
+
+----------------
