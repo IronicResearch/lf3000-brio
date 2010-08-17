@@ -65,7 +65,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
 const char*	gIDCTFile	= "/dev/idct";
-const U32	NUM_BUFS	= 3;
+const U32	NUM_BUFS	= 8;
 const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 
 //==============================================================================
@@ -1829,12 +1829,14 @@ out:
 
 static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
 {
-	memset(&pCtx->buf, 0, sizeof(struct v4l2_buffer));
-	pCtx->buf.type  	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	pCtx->buf.memory	= V4L2_MEMORY_MMAP;
-	pCtx->buf.index		= index;
+	struct v4l2_buffer	buf;
+	
+	memset(&buf, 0, sizeof(struct v4l2_buffer));
+	buf.type  	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	buf.memory	= V4L2_MEMORY_MMAP;
+	buf.index	= index;
 
-	if(ioctl(pCtx->fd, VIDIOC_QBUF, &pCtx->buf) < 0)
+	if(ioctl(pCtx->fd, VIDIOC_QBUF, &buf) < 0)
 	{
 		return false;
     }

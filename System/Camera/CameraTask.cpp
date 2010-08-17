@@ -67,7 +67,8 @@ void* CameraTaskRender(void* arg)
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
 	tCameraContext*		pCtx = static_cast<tCameraContext*>(arg);
-	tFrameInfo*			pFrame = pCtx->frame;
+	tFrameInfo			frame;
+	tFrameInfo*			pFrame = &frame;
 	tVideoSurf*			pSurf = pCtx->surf;
 	Boolean				bRet = false;
 	int					ibuf = 0;
@@ -79,7 +80,11 @@ void* CameraTaskRender(void* arg)
 			kernel.LockMutex(pCtx->mThread);
 
 			// Remove next frame to render from queue
-			pFrame = pCtx->qframes.front();
+			*pFrame = pCtx->qframes.front();
+			pCtx->qframes.pop();
+			
+			kernel.UnlockMutex(pCtx->mThread);
+			
 			bRet = pCtx->module->RenderFrame(pFrame, pSurf, pCtx->image, pCtx->method);
 			if (bRet)
 			{
@@ -92,10 +97,9 @@ void* CameraTaskRender(void* arg)
 				else
 					display.Invalidate(0);
 			}
-			// FIXME: Calling ReturnFrame() here fails frequently.
-			// bRet = pCtx->module->ReturnFrame(pCtx->hndl, pFrame);
-			
-			kernel.UnlockMutex(pCtx->mThread);
+
+			// Done with queued frame and associated V4L buffer 
+			bRet = pCtx->module->ReturnFrame(pCtx->hndl, pFrame);
 		}
 		kernel.TaskSleep(10);
 	}
@@ -140,6 +144,8 @@ void* CameraTaskMain(void* arg)
 	
 	bool				bFirst = false;
 	struct timeval		tv0, tvn, tvt = {0, 0};
+
+	bool				bQueued = false;
 
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
@@ -292,7 +298,8 @@ void* CameraTaskMain(void* arg)
 		{
 #if USE_RENDER_THREAD
 			// Add frame to be rendered into CameraTaskRender() queue
-			pCtx->qframes.push(&frame);
+			pCtx->qframes.push(frame);
+			bQueued = true;
 #else
 			bRet = pCtx->module->RenderFrame(&frame, pSurf, &image, method);
 			if(bRet)
@@ -336,7 +343,9 @@ void* CameraTaskMain(void* arg)
 			}
 		}
 
-		bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
+		if (!bQueued)
+			bRet = pCtx->module->ReturnFrame(pCtx->hndl, &frame);
+		bQueued = false;
 
 		dbg.Assert((kNoErr == kernel.UnlockMutex(pCtx->mThread)),\
 											  "Couldn't unlock mutex.\n");
