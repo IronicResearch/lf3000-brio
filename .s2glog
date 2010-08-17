@@ -27136,3 +27136,35 @@ By Dave Milici (dmilici@leapfrog.com) on 8/6/10 5:51 PM
 6,422 ms. (Cumulative: 9,623,280 ms)
 
 ----------------
+Revision 7,923 from svn://localhost/TRUNK/:
+Revision 7,924 from svn://localhost/TRUNK/:
+Revision 7,925 from svn://localhost/TRUNK/:
+Revision 7,926 from svn://localhost/TRUNK/:
+Revision 7,927 from svn://localhost/TRUNK/:
+Revision 7,928 from svn://localhost/TRUNK/:
+Revision 7,929 from svn://localhost/TRUNK/:
+Revision 7,930 from svn://localhost/TRUNK/:
+Revision 7,931 from svn://localhost/TRUNK/:
+Revision 7,932 from svn://localhost/TRUNK/:
+Revision 7,933 from svn://localhost/TRUNK/:
+Revision 7,934 from svn://localhost/TRUNK/:
+Revision 7,935 from svn://localhost/TRUNK/:
+Revision 7,936 from svn://localhost/TRUNK/:
+Revision 7,937 from svn://localhost/TRUNK/:
+Revision 7,938 from svn://localhost/TRUNK/:
+Revision 7,939 from svn://localhost/TRUNK/:
+Revision 7,940 from svn://localhost/TRUNK/:
+Revision 7,941 from svn://localhost/TRUNK/:
+Revision 7,942 from svn://localhost/TRUNK/:
+Revision 7,943 from svn://localhost/TRUNK/:
+Revision 7,944 from svn://localhost/TRUNK/:
+Revision 7,945 from svn://localhost/TRUNK/:
+Revision 7,946 from svn://localhost/TRUNK/:
+
+CameraMPI: (TTP 2507) Mods to use local copies of frame buffer info in separate rendering thread. Interim checkin leaves rendering thread option disabled due to lockups on thread termination.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/17/10 3:50 PM
+3 changed, 0 added, 0 deleted.
+6,651 ms. (Cumulative: 9,630,181 ms)
+
+----------------

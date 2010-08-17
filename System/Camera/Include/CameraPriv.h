@@ -178,7 +178,7 @@ struct tCameraContext {
 
 	Boolean						bAudio;			// capture audio option
 	
-	std::queue<tFrameInfo*>		qframes;		// queue for CameraTaskRender() thread
+	std::queue<tFrameInfo>		qframes;		// queue for CameraTaskRender() thread
 	tFrameInfo					*frame;
 	tBitmapInfo					*image;
 	JPEG_METHOD					method;
