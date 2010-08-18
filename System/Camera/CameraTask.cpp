@@ -78,14 +78,9 @@ void* CameraTaskRender(void* arg)
 	{
 		if (!pCtx->qframes.empty() && !pCtx->bVPaused)
 		{
-			if (kernel.TryLockMutex(pCtx->mThread))
-				continue;
-			
 			// Remove next frame to render from queue
 			*pFrame = pCtx->qframes.front();
 			pCtx->qframes.pop();
-			
-			kernel.UnlockMutex(pCtx->mThread);
 			
 			bRendering = true;
 			bRet = pCtx->module->RenderFrame(pFrame, pSurf, pCtx->image, pCtx->method);
@@ -102,13 +97,11 @@ void* CameraTaskRender(void* arg)
 			}
 			bRendering = false;
 			
-			if (kernel.TryLockMutex(pCtx->mThread))
-				continue;
+			if (!bRunning)
+				break;
 			
 			// Done with queued frame and associated V4L buffer 
 			bRet = pCtx->module->ReturnFrame(pCtx->hndl, pFrame);
-			
-			kernel.UnlockMutex(pCtx->mThread);
 		}
 		kernel.TaskSleep(10);
 	}
