@@ -27179,3 +27179,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/17/10 6:32 PM
 6,484 ms. (Cumulative: 9,636,775 ms)
 
 ----------------
+Revision 7,950 from svn://localhost/TRUNK/:
+
+CameraMPI: (TTP 2507) Remove locks in render thread for performance reasons.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/17/10 6:40 PM
+1 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 9,643,432 ms)
+
+----------------
