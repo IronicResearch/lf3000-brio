@@ -741,7 +741,10 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		if (CMemPlayer::GetNumPlayers() < CMemPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
+			//Newing player could take long, unlock the mutex
+			MIXER_UNLOCK;
 			pPlayer = new CMemPlayer( pInfo, newID );
+			MIXER_LOCK;
 		}
 		else
 		{
@@ -757,10 +760,13 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
+			//Newing player could take long, unlock the mutex
+			MIXER_UNLOCK;
 			if (!strcmp(sExt, "avi"))
 				pPlayer = new CAVIPlayer( pInfo, newID );
 			else
 				pPlayer = new CRawPlayer( pInfo, newID );
+			MIXER_LOCK;
 		}
 		else
 		{
@@ -772,7 +778,10 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 			{
 				RemovePlayerInternal(ch->GetPlayer()->GetID(), false);
 				newID = GetNextAudioID();
+				//Newing player could take long, unlock the mutex
+				MIXER_UNLOCK;
 				pPlayer = new CRawPlayer( pInfo, newID );
+				MIXER_LOCK;
 			} else {
 				pDebugMPI_->DebugOut(kDbgLvlImportant,
 									 "%s: Max number of raw players exceeded.\n",
@@ -786,7 +795,10 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		if(CVorbisPlayer::GetNumPlayers() < CVorbisPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
+			//Newing player could take long, unlock the mutex
+			MIXER_UNLOCK;
 			pPlayer = new CVorbisPlayer( pInfo, newID );
+			MIXER_LOCK;
 		}
 		else
 		{
@@ -798,7 +810,10 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 			{
 				RemovePlayerInternal(ch->GetPlayer()->GetID(), false);
 				newID = GetNextAudioID();
+				//Newing player could take long, unlock the mutex
+				MIXER_UNLOCK;
 				pPlayer = new CVorbisPlayer( pInfo, newID );
+				MIXER_LOCK;
 			} else {
 				pDebugMPI_->DebugOut(kDbgLvlImportant,
 									 "%s: Max number of vorbis players exceeded.\n",
@@ -855,6 +870,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	tAudioID id = kNoAudioID;
 	CAudioPlayer *pPlayer = NULL;
 	CStream *pStream;
+	CKernelMPI kernel_mpi;
 	
 	MIXER_LOCK;
 	pStream = FindFreeStream( pInfo->priority );
@@ -868,12 +884,8 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	if (pStream->GetPlayer())
 		RemovePlayerInternal(pStream->GetPlayer()->GetID(), false);
 
-	// Turns out, CreatePlayer is very slow (at least for ogg)
-	// and does not need the mixer lock, so we release it.
-	MIXER_UNLOCK;
 	pPlayer = CreatePlayer(pInfo, sExt);
-	MIXER_LOCK;
-
+	
 	if (pPlayer)
 	{
 		id = pPlayer->GetID();
@@ -921,8 +933,10 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 		//ignored for so long, people have not consistently set it.
 		//Unfortunately, it's a bit late to fix.
 		pPlayer = pStream->GetPlayer();
-		if(pPlayer)
+		if(pPlayer) {
+			pDebugMPI_->DebugOut(kDbgLvlImportant, "CAudioMixer::RemovePlayerInternal %p\n", pPlayer);
 			delete pPlayer;
+		}
 		pStream->Release(true);
 	}
 }

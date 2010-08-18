@@ -27188,3 +27188,15 @@ By Dave Milici (dmilici@leapfrog.com) on 8/17/10 6:40 PM
 6,563 ms. (Cumulative: 9,643,432 ms)
 
 ----------------
+Revision 7,951 from svn://localhost/TRUNK/:
+Revision 7,952 from svn://localhost/TRUNK/:
+Revision 7,953 from svn://localhost/TRUNK/:
+Revision 7,954 from svn://localhost/TRUNK/:
+
+TTPro 1969.  Changed Brio Mixer's Lock/Unlock strategy during AddPlayer.  Now instead of unlocking it for the entire duration of CreatePlayer, CreatePlayer now unlocks for the duration of newing all new players.  This prevents deletion of a player while it is in the middle of rendering, while still keeping the audio lag down.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/18/10 11:58 AM
+1 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 9,650,042 ms)
+
+----------------
