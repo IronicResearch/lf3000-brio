@@ -22,7 +22,7 @@
 
 #include <AVIWrapper.h>
 
-#define USE_RENDER_THREAD	0	// for separate rendering thread
+#define USE_RENDER_THREAD	1	// for separate rendering thread
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -40,6 +40,7 @@ namespace
 	tVidCapHndl				hndl			= kInvalidVidCapHndl;
 	class CCameraModule*	cam				= NULL;
 	volatile bool			timeout			= false;
+	volatile bool			bRendering		= false;
 }
 
 //============================================================================
@@ -77,14 +78,16 @@ void* CameraTaskRender(void* arg)
 	{
 		if (!pCtx->qframes.empty() && !pCtx->bVPaused)
 		{
-			kernel.LockMutex(pCtx->mThread);
-
+			if (kernel.TryLockMutex(pCtx->mThread))
+				continue;
+			
 			// Remove next frame to render from queue
 			*pFrame = pCtx->qframes.front();
 			pCtx->qframes.pop();
 			
 			kernel.UnlockMutex(pCtx->mThread);
 			
+			bRendering = true;
 			bRet = pCtx->module->RenderFrame(pFrame, pSurf, pCtx->image, pCtx->method);
 			if (bRet)
 			{
@@ -97,9 +100,15 @@ void* CameraTaskRender(void* arg)
 				else
 					display.Invalidate(0);
 			}
-
+			bRendering = false;
+			
+			if (kernel.TryLockMutex(pCtx->mThread))
+				continue;
+			
 			// Done with queued frame and associated V4L buffer 
 			bRet = pCtx->module->ReturnFrame(pCtx->hndl, pFrame);
+			
+			kernel.UnlockMutex(pCtx->mThread);
 		}
 		kernel.TaskSleep(10);
 	}
@@ -417,6 +426,9 @@ void* CameraTaskMain(void* arg)
 		delete msg;
 	}
 
+	while (bRendering)
+		kernel.TaskSleep(10);
+	
 	if(image.data)
 	{
 		kernel.Free(image.data);
