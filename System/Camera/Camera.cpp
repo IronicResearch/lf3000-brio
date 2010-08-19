@@ -65,7 +65,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
 const char*	gIDCTFile	= "/dev/idct";
-const U32	NUM_BUFS	= 8;
+const U32	NUM_BUFS	= 3;
 const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 
 //==============================================================================

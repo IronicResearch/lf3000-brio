@@ -27200,3 +27200,24 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/18/10 11:58 AM
 6,485 ms. (Cumulative: 9,650,042 ms)
 
 ----------------
+Revision 7,955 from svn://localhost/TRUNK/:
+Revision 7,956 from svn://localhost/TRUNK/:
+Revision 7,957 from svn://localhost/TRUNK/:
+Revision 7,958 from svn://localhost/TRUNK/:
+Revision 7,959 from svn://localhost/TRUNK/:
+Revision 7,960 from svn://localhost/TRUNK/:
+Revision 7,961 from svn://localhost/TRUNK/:
+Revision 7,962 from svn://localhost/TRUNK/:
+Revision 7,963 from svn://localhost/TRUNK/:
+Revision 7,964 from svn://localhost/TRUNK/:
+Revision 7,965 from svn://localhost/TRUNK/:
+Revision 7,966 from svn://localhost/TRUNK/:
+Revision 7,967 from svn://localhost/TRUNK/:
+
+CameraMPI: Revert number of V4L buffers back to 3 for minimum latency.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/18/10 5:09 PM
+1 changed, 0 added, 0 deleted.
+6,168 ms. (Cumulative: 9,656,382 ms)
+
+----------------
