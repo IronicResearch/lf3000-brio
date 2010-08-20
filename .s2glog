@@ -27221,3 +27221,26 @@ By Dave Milici (dmilici@leapfrog.com) on 8/18/10 5:09 PM
 6,168 ms. (Cumulative: 9,656,382 ms)
 
 ----------------
+Revision 7,968 from svn://localhost/TRUNK/:
+Revision 7,969 from svn://localhost/TRUNK/:
+Revision 7,970 from svn://localhost/TRUNK/:
+Revision 7,971 from svn://localhost/TRUNK/:
+Revision 7,972 from svn://localhost/TRUNK/:
+Revision 7,973 from svn://localhost/TRUNK/:
+Revision 7,974 from svn://localhost/TRUNK/:
+Revision 7,975 from svn://localhost/TRUNK/:
+Revision 7,976 from svn://localhost/TRUNK/:
+Revision 7,977 from svn://localhost/TRUNK/:
+Revision 7,978 from svn://localhost/TRUNK/:
+Revision 7,979 from svn://localhost/TRUNK/:
+Revision 7,980 from svn://localhost/TRUNK/:
+Revision 7,981 from svn://localhost/TRUNK/:
+Revision 7,982 from svn://localhost/TRUNK/:
+
+CameraMPI: Bump number of V4L buffers up to 4 as spare cushion for rendering thread.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/19/10 6:10 PM
+1 changed, 0 added, 0 deleted.
+6,203 ms. (Cumulative: 9,662,757 ms)
+
+----------------
