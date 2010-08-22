@@ -1655,6 +1655,8 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	int								row_stride;
 	Boolean							bRet = true, bAlloc = false;
 
+	CAMERA_LOCK;
+	
 	// TODO: don't allocate this on every render
 	if(bitmap == NULL)
 	{
@@ -1824,6 +1826,8 @@ out:
 		delete bitmap;
 	}
 
+	CAMERA_UNLOCK;
+	
 	return bRet;
 }
 
