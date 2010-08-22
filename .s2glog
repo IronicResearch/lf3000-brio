@@ -27244,3 +27244,33 @@ By Dave Milici (dmilici@leapfrog.com) on 8/19/10 6:10 PM
 6,203 ms. (Cumulative: 9,662,757 ms)
 
 ----------------
+Revision 7,983 from svn://localhost/TRUNK/:
+Revision 7,984 from svn://localhost/TRUNK/:
+Revision 7,985 from svn://localhost/TRUNK/:
+Revision 7,986 from svn://localhost/TRUNK/:
+Revision 7,987 from svn://localhost/TRUNK/:
+Revision 7,988 from svn://localhost/TRUNK/:
+Revision 7,989 from svn://localhost/TRUNK/:
+Revision 7,990 from svn://localhost/TRUNK/:
+Revision 7,991 from svn://localhost/TRUNK/:
+Revision 7,992 from svn://localhost/TRUNK/:
+Revision 7,993 from svn://localhost/TRUNK/:
+Revision 7,994 from svn://localhost/TRUNK/:
+Revision 7,995 from svn://localhost/TRUNK/:
+Revision 7,996 from svn://localhost/TRUNK/:
+Revision 7,997 from svn://localhost/TRUNK/:
+Revision 7,998 from svn://localhost/TRUNK/:
+Revision 7,999 from svn://localhost/TRUNK/:
+Revision 8,000 from svn://localhost/TRUNK/:
+Revision 8,001 from svn://localhost/TRUNK/:
+Revision 8,002 from svn://localhost/TRUNK/:
+Revision 8,003 from svn://localhost/TRUNK/:
+Revision 8,004 from svn://localhost/TRUNK/:
+
+CameraMPI: Added internal camera lock inside RenderFrame() to serialize calls between GrabFrame() and camera render thread, so as to avoid contention crashes during still-frame modes.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/22/10 10:05 AM
+1 changed, 0 added, 0 deleted.
+6,128 ms. (Cumulative: 9,669,104 ms)
+
+----------------
