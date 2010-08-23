@@ -27274,3 +27274,34 @@ By Dave Milici (dmilici@leapfrog.com) on 8/22/10 10:05 AM
 6,128 ms. (Cumulative: 9,669,104 ms)
 
 ----------------
+Revision 8,005 from svn://localhost/TRUNK/:
+Revision 8,006 from svn://localhost/TRUNK/:
+Revision 8,007 from svn://localhost/TRUNK/:
+Revision 8,008 from svn://localhost/TRUNK/:
+Revision 8,009 from svn://localhost/TRUNK/:
+Revision 8,010 from svn://localhost/TRUNK/:
+Revision 8,011 from svn://localhost/TRUNK/:
+Revision 8,012 from svn://localhost/TRUNK/:
+Revision 8,013 from svn://localhost/TRUNK/:
+Revision 8,014 from svn://localhost/TRUNK/:
+Revision 8,015 from svn://localhost/TRUNK/:
+Revision 8,016 from svn://localhost/TRUNK/:
+Revision 8,017 from svn://localhost/TRUNK/:
+Revision 8,018 from svn://localhost/TRUNK/:
+Revision 8,019 from svn://localhost/TRUNK/:
+Revision 8,020 from svn://localhost/TRUNK/:
+Revision 8,021 from svn://localhost/TRUNK/:
+Revision 8,022 from svn://localhost/TRUNK/:
+Revision 8,023 from svn://localhost/TRUNK/:
+Revision 8,024 from svn://localhost/TRUNK/:
+Revision 8,025 from svn://localhost/TRUNK/:
+Revision 8,026 from svn://localhost/TRUNK/:
+Revision 8,027 from svn://localhost/TRUNK/:
+
+CameraMPI: Additional mutex for separate rendering thread for proper synchronization with StopVideoCapture() and GrabFrame(). Avoids problems entering/exiting still-frame modes without affecting viewfinder mode performance.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/23/10 12:40 PM
+3 changed, 0 added, 0 deleted.
+6,079 ms. (Cumulative: 9,675,402 ms)
+
+----------------

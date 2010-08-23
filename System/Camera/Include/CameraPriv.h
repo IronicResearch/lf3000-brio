@@ -170,6 +170,7 @@ struct tCameraContext {
 	Boolean						bPaused;
 	Boolean						bVPaused;
 	tMutex						mThread;
+	tMutex						mThread2;
 	U32							reqLength;		// length in seconds requested by app
 	U32							maxLength;		// length in seconds available on FS
 
