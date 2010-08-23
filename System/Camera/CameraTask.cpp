@@ -78,6 +78,10 @@ void* CameraTaskRender(void* arg)
 	{
 		if (!pCtx->qframes.empty() && !pCtx->bVPaused)
 		{
+			// Sync rendering thread with StopVideoCapture() and GrabFrame()
+			if (kernel.TryLockMutex(pCtx->mThread2))
+				continue;
+			
 			// Remove next frame to render from queue
 			*pFrame = pCtx->qframes.front();
 			pCtx->qframes.pop();
@@ -97,11 +101,10 @@ void* CameraTaskRender(void* arg)
 			}
 			bRendering = false;
 			
-			if (!bRunning)
-				break;
-			
 			// Done with queued frame and associated V4L buffer 
 			bRet = pCtx->module->ReturnFrame(pCtx->hndl, pFrame);
+
+			kernel.UnlockMutex(pCtx->mThread2);
 		}
 		kernel.TaskSleep(10);
 	}

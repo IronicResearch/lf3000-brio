@@ -86,9 +86,13 @@ const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 										"Couldn't unlock mutex.\n");
 
 #define THREAD_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
-									  "Couldn't lock mutex.\n")
+									  "Couldn't lock mutex.\n");\
+					dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread2)),\
+									  "Couldn't lock mutex.\n");
 
-#define THREAD_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
+#define THREAD_UNLOCK dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread2)),\
+										"Couldn't unlock mutex.\n");\
+					  dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
 										"Couldn't unlock mutex.\n");
 
 //============================================================================
@@ -355,6 +359,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	err = kernel_.InitMutex( camCtx_.mThread, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
+	err = kernel_.InitMutex( camCtx_.mThread2, attr );
+	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
+
 	/* hotplug subsystem calls this handler upon device insertion/removal */
 	listener_ = new CameraListener(this);
 	event_.RegisterEventListener(listener_);
@@ -387,6 +394,7 @@ CCameraModule::~CCameraModule()
 	DeinitCameraInt();
 	CAMERA_UNLOCK;
 
+	kernel_.DeInitMutex(camCtx_.mThread2);
 	kernel_.DeInitMutex(camCtx_.mThread);
 	kernel_.DeInitMutex(mutex_);
 	kernel_.DeInitMutex(dlock);
@@ -2389,8 +2397,8 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 		return false;
 	}
 
-	dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
-												  "Couldn't lock mutex.\n");
+	THREAD_LOCK;
+	
 	if(camCtx_.bAudio)
 	{
 		StopAudio();
@@ -2399,9 +2407,8 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 	camCtx_.bPaused = true;
 	camCtx_.bVPaused = display;
 
-	dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
-												  "Couldn't unlock mutex.\n");
-
+	THREAD_UNLOCK;
+	
 	return bRet;
 }
 
@@ -2416,9 +2423,8 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 		return false;
 	}
 
-	dbg_.Assert((kNoErr == kernel_.LockMutex(camCtx_.mThread)),\
-												  "Couldn't lock mutex.\n");
-
+	THREAD_LOCK;
+	
 	if(camCtx_.bAudio)
 	{
 		StartAudio(false);
@@ -2427,9 +2433,8 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 	camCtx_.bPaused = false;
 	camCtx_.bVPaused = false;
 
-	dbg_.Assert((kNoErr == kernel_.UnlockMutex(camCtx_.mThread)),\
-												  "Couldn't unlock mutex.\n");
-
+	THREAD_UNLOCK;
+	
 	return bRet;
 }
 
