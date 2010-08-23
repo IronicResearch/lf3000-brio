@@ -3,8 +3,54 @@ Lightning C++ Development Kit Release Notes
 ===========================================
 
 ===========================================
-Brio v1.1.36.7891 (August 3, 2010)
+Brio v1.1.40.8020 (August 23, 2010)
 ===========================================
+
+-- Merged -c7902: L3B TTPro 2714: Camera unit test: Stop video stream 
+before letting camera module go out of scope.
+
+-- Merged -c7915: Camera module: random pointers are freed (e.g., 
+micCtx_.status) if module is destroyed when camera is absent.  
+(Additional fix for L3B TTPro 2700)
+
+-- Merged -c7920: TTPro 2712.  Fixed up Vorbis Codec.  Now error checks 
+the page it tried to read in.  Previously, it would assume page was read fine, 
+and when it wasn't able to pull a packet from the page, it would try to read the
+previous page.  This would get stuck in an infinite loop if you seeked
+to the first page, and that was not an audio page.
+
+-- Merged these changes TTP 2507:
+
+-r7922: CameraMPI: Apply drop-frame logic as condition for viewfinder 
+rendering during video+audio recording session. (TTP 2507)
+
+-r7946: CameraMPI: (TTP 2507) Mods to use local copies of frame buffer 
+info in separate rendering thread. Interim checkin leaves rendering thread
+option disabled due to lockups on thread termination.
+
+-r7949: CameraMPI: (TTP 2507) Mods to use TryLockMutex to avoid mutex 
+deadlock
+case in StopVideoCapture().
+
+-r7950: CameraMPI: (TTP 2507) Remove locks in render thread for 
+performance
+reasons.
+
+-- Merged for TTPRO 2507:
+-r7967: CameraMPI: Revert number of V4L buffers back to 3 for minimum 
+latency.
+-r7982: CameraMPI: Bump number of V4L buffers up to 4 as spare cushion 
+for
+rendering thread.
+-r8004: CameraMPI: Added internal camera lock inside RenderFrame() to 
+serialize calls between GrabFrame() and camera render thread, so as to avoid
+contention crashes during still-frame modes.
+
+-- Merged -c7954: TTPro 1969.  Changed Brio Mixer's Lock/Unlock strategy 
+during AddPlayer.  Now instead of unlocking it for the entire duration of
+CreatePlayer, CreatePlayer now unlocks for the duration of newing all
+new players.  This prevents deletion of a player while it is in the
+middle of rendering, while still keeping the audio lag down.
 
 ===========================================
 Brio v1.1.35.7889 (August 2, 2010)
