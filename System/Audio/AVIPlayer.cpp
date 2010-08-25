@@ -126,6 +126,7 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	CAudioPlayer( pInfo, id  )
 {
 	// Init player-specific vars
+	id_ = kNoAudioID;
 	pFormatCtx = NULL;
 	pCodecCtx = NULL;
 	pCodec = NULL;
@@ -184,6 +185,7 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	samplingFrequency_	= pCodecCtx->sample_rate;
 	channels_			= pCodecCtx->channels;	 
 	totalBytesRead_ 	= 0;
+	id_					= id;
 }
 
 // =============================================================================
@@ -192,15 +194,18 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 CAVIPlayer::~CAVIPlayer()
 {
     // Free the audio buffer
-	delete[] pFrame;
+	if (pFrame)
+		delete[] pFrame;
     pFrame = NULL;
 
     // Close the codec
-    avcodec_close(pCodecCtx);
+    if (pCodecCtx)
+    	avcodec_close(pCodecCtx);
     pCodecCtx = NULL;
 
     // Close the audio file
-    av_close_input_file(pFormatCtx);
+    if (pFormatCtx)
+    	av_close_input_file(pFormatCtx);
     pFormatCtx = NULL;
     
     // Cleanup base vars (no base destructor)

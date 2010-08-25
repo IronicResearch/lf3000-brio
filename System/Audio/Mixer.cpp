@@ -821,6 +821,12 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 			}
 		}
 	}
+
+	// Check for failed player creation
+	if (pPlayer && pPlayer->GetID() == kNoAudioID) {
+		delete pPlayer;
+		pPlayer = NULL;
+	}
 	
 	return (pPlayer);
 }

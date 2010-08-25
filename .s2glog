@@ -27315,3 +27315,33 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 8/23/10 12:49 PM
 6,395 ms. (Cumulative: 9,681,875 ms)
 
 ----------------
+Revision 8,029 from svn://localhost/TRUNK/:
+Revision 8,030 from svn://localhost/TRUNK/:
+Revision 8,031 from svn://localhost/TRUNK/:
+Revision 8,032 from svn://localhost/TRUNK/:
+Revision 8,033 from svn://localhost/TRUNK/:
+Revision 8,034 from svn://localhost/TRUNK/:
+Revision 8,035 from svn://localhost/TRUNK/:
+Revision 8,036 from svn://localhost/TRUNK/:
+Revision 8,037 from svn://localhost/TRUNK/:
+Revision 8,038 from svn://localhost/TRUNK/:
+Revision 8,039 from svn://localhost/TRUNK/:
+Revision 8,040 from svn://localhost/TRUNK/:
+Revision 8,041 from svn://localhost/TRUNK/:
+Revision 8,042 from svn://localhost/TRUNK/:
+Revision 8,043 from svn://localhost/TRUNK/:
+Revision 8,044 from svn://localhost/TRUNK/:
+Revision 8,045 from svn://localhost/TRUNK/:
+Revision 8,046 from svn://localhost/TRUNK/:
+Revision 8,047 from svn://localhost/TRUNK/:
+Revision 8,048 from svn://localhost/TRUNK/:
+Revision 8,049 from svn://localhost/TRUNK/:
+Revision 8,050 from svn://localhost/TRUNK/:
+
+AudioMPI: (TTP #2735) Modify AVI player to propagate failure on creation as invalid audio ID. Allows AVIs without audio tracks to be played with same VideoMPI method as AVIs with audio.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/25/10 12:39 PM
+2 changed, 0 added, 0 deleted.
+6,412 ms. (Cumulative: 9,688,552 ms)
+
+----------------
