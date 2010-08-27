@@ -274,7 +274,7 @@ void* CameraTaskMain(void* arg)
 		}
 
 		bRet = false;
-		if(bFile && pCtx->bAudio && !pCtx->bPaused && bFirst)
+		if(bFile && pCtx->bAudio && !pCtx->bPaused)
 		{
 			bRet = pCtx->module->WriteAudio(avi);
 		}

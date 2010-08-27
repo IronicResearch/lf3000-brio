@@ -27382,3 +27382,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/27/10 8:27 AM
 6,566 ms. (Cumulative: 9,695,415 ms)
 
 ----------------
+Revision 8,080 from svn://localhost/TRUNK/:
+Revision 8,081 from svn://localhost/TRUNK/:
+
+CameraMPI: Revert logic check to wait before first video is captured before saving audio. This was originally done in response to audio blocks tending to show up earlier than video frames. However it looks like better audio sync is produced when shooting rapidly edited movie clips when all the audio data captured is saved to AVI stream.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/27/10 8:40 AM
+1 changed, 0 added, 0 deleted.
+6,641 ms. (Cumulative: 9,702,150 ms)
+
+----------------
