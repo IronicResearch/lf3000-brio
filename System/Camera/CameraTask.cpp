@@ -151,6 +151,7 @@ void* CameraTaskMain(void* arg)
 	struct timeval		tv0, tvn, tvt = {0, 0};
 
 	bool				bQueued = false;
+	int					viewframe = 0;
 
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
@@ -299,7 +300,7 @@ void* CameraTaskMain(void* arg)
 		}
 
 		if(bScreen && !pCtx->bVPaused
-				&& (!pCtx->bAudio || keyframe+1 >= cam->micCtx_.counter))
+				&& (!pCtx->bAudio || ++viewframe % 2))
 		{
 #if USE_RENDER_THREAD
 			// Add frame to be rendered into CameraTaskRender() queue

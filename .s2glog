@@ -27345,3 +27345,40 @@ By Dave Milici (dmilici@leapfrog.com) on 8/25/10 12:39 PM
 6,412 ms. (Cumulative: 9,688,552 ms)
 
 ----------------
+Revision 8,051 from svn://localhost/TRUNK/:
+Revision 8,052 from svn://localhost/TRUNK/:
+Revision 8,053 from svn://localhost/TRUNK/:
+Revision 8,054 from svn://localhost/TRUNK/:
+Revision 8,055 from svn://localhost/TRUNK/:
+Revision 8,056 from svn://localhost/TRUNK/:
+Revision 8,057 from svn://localhost/TRUNK/:
+Revision 8,058 from svn://localhost/TRUNK/:
+Revision 8,059 from svn://localhost/TRUNK/:
+Revision 8,060 from svn://localhost/TRUNK/:
+Revision 8,061 from svn://localhost/TRUNK/:
+Revision 8,062 from svn://localhost/TRUNK/:
+Revision 8,063 from svn://localhost/TRUNK/:
+Revision 8,064 from svn://localhost/TRUNK/:
+Revision 8,065 from svn://localhost/TRUNK/:
+Revision 8,066 from svn://localhost/TRUNK/:
+Revision 8,067 from svn://localhost/TRUNK/:
+Revision 8,068 from svn://localhost/TRUNK/:
+Revision 8,069 from svn://localhost/TRUNK/:
+Revision 8,070 from svn://localhost/TRUNK/:
+Revision 8,071 from svn://localhost/TRUNK/:
+Revision 8,072 from svn://localhost/TRUNK/:
+Revision 8,073 from svn://localhost/TRUNK/:
+Revision 8,074 from svn://localhost/TRUNK/:
+Revision 8,075 from svn://localhost/TRUNK/:
+Revision 8,076 from svn://localhost/TRUNK/:
+Revision 8,077 from svn://localhost/TRUNK/:
+Revision 8,078 from svn://localhost/TRUNK/:
+Revision 8,079 from svn://localhost/TRUNK/:
+
+CameraMPI: Change viewfinder rendering logic during recording sessions to render every other frame instead of dropping frames at lag times. Effectively halves viewfinder FPS rate from video input rate for smoother animation when saving AVIs instead of displaying intermittant freeze frames.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/27/10 8:27 AM
+1 changed, 0 added, 0 deleted.
+6,566 ms. (Cumulative: 9,695,415 ms)
+
+----------------
