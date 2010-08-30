@@ -161,7 +161,9 @@ public:
 	/// \param	pSurf	Pointer to video surface descriptor for rendering.
 	/// NULL parameter means don't render the capture.  pSurf should reference
 	/// a tDisplayHandle created with CDisplayMPI::CreateHandle() using
-	/// kPixelFormatYUV420.
+	/// kPixelFormatYUV420. If the passed in surface width and height are different
+	/// from the created surface dimensions, the YUV layer's HW scaler will 
+	/// scale up (or down) the pSurf parameter's size to the surface size.
 	///
 	/// \param	pListener	Pointer to Event listener for callbacks from the
 	/// video capture subsystem.  Callbacks will occur when recording is asynchronously

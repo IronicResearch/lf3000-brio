@@ -27416,3 +27416,17 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/10 12:17 PM
 6,551 ms. (Cumulative: 9,708,874 ms)
 
 ----------------
+Revision 8,096 from svn://localhost/TRUNK/:
+Revision 8,097 from svn://localhost/TRUNK/:
+Revision 8,098 from svn://localhost/TRUNK/:
+Revision 8,099 from svn://localhost/TRUNK/:
+Revision 8,100 from svn://localhost/TRUNK/:
+Revision 8,101 from svn://localhost/TRUNK/:
+
+CameraMPI: Appended Doxygen comment to StartVideoCapture() about surface size and YUV HW scaler.
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/10 3:09 PM
+1 changed, 0 added, 0 deleted.
+6,441 ms. (Cumulative: 9,715,471 ms)
+
+----------------
