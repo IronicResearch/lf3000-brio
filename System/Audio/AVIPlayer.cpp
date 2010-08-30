@@ -355,9 +355,9 @@ void CAVIPlayer::RewindFile()
 // =============================================================================
 U32 CAVIPlayer::GetAudioTime_mSec( void ) 
 {
-	U32 totalFramesRead = totalBytesRead_ / (sizeof(S16) * channels_);
-	U32 milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
-	return (milliSeconds);
+	U64 totalFramesRead = totalBytesRead_ / (sizeof(S16) * channels_);
+	U64 milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
+	return (U32)(milliSeconds);
 }
 
 // =============================================================================

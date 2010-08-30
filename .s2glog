@@ -27392,3 +27392,27 @@ By Dave Milici (dmilici@leapfrog.com) on 8/27/10 8:40 AM
 6,641 ms. (Cumulative: 9,702,150 ms)
 
 ----------------
+Revision 8,082 from svn://localhost/TRUNK/:
+Revision 8,083 from svn://localhost/TRUNK/:
+Revision 8,084 from svn://localhost/TRUNK/:
+Revision 8,085 from svn://localhost/TRUNK/:
+Revision 8,086 from svn://localhost/TRUNK/:
+Revision 8,087 from svn://localhost/TRUNK/:
+Revision 8,088 from svn://localhost/TRUNK/:
+Revision 8,089 from svn://localhost/TRUNK/:
+Revision 8,090 from svn://localhost/TRUNK/:
+Revision 8,091 from svn://localhost/TRUNK/:
+Revision 8,092 from svn://localhost/TRUNK/:
+Revision 8,093 from svn://localhost/TRUNK/:
+Revision 8,094 from svn://localhost/TRUNK/:
+Revision 8,095 from svn://localhost/TRUNK/:
+
+AudioMPI: (TTP #2745) Extend intermediary timestamp calculation to 
+64-bit to avoid 32-bit wrap-around on multi-megabyte AVI streams.  
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/10 12:17 PM
+1 changed, 0 added, 0 deleted.
+6,551 ms. (Cumulative: 9,708,874 ms)
+
+----------------
