@@ -45,6 +45,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define USE_DIRECT_CALLBACK	0
 #endif
 
+// Enables ALSA for callback vs OSS
+#define USE_ALSA_CALLBACK	1
+
 // Enables callback to Brio, vs. sine output
 #define USE_REAL_CALLBACK	1
 
@@ -74,6 +77,7 @@ paTestData;
 static PaStream* gPaStream = NULL;
 static BrioAudioRenderCallback* gAudioRenderCallback = NULL;
 static void* gCallbackUserData = NULL;
+static bool bAlsaEnabled = false;
 
 // Debug output
 static U32 gCallbackCount = 0;			
@@ -147,6 +151,13 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 	gAudioRenderCallback = callback;
 	gCallbackUserData = pUserData;
 
+#if USE_ALSA_CALLBACK
+	if (kNoErr == InitAudioOutputAlsa(callback, pUserData)) {
+		bAlsaEnabled = true;
+		return kNoErr;
+	}
+#endif
+	
 	// Open audio driver
 	fddsp = open("/dev/dsp", O_WRONLY);
 	if (fddsp < 0)
@@ -197,6 +208,10 @@ int InitAudioOutput( BrioAudioRenderCallback* callback, void* pUserData )
 // ==============================================================================
 int StartAudioOutput( void )
 {
+#if USE_ALSA_CALLBACK
+	if (bAlsaEnabled)
+		return StartAudioOutputAlsa();
+#endif
 	// Enable rendering callbacks for output
 	bRendering = true;
 	return 0;
@@ -207,6 +222,10 @@ int StartAudioOutput( void )
 // ==============================================================================
 int StopAudioOutput( void )
 {
+#if USE_ALSA_CALLBACK
+	if (bAlsaEnabled)
+		return StopAudioOutputAlsa();
+#endif
 	// Disable rendering callbacks for output
 	bRendering = false;
 	return 0;
@@ -217,6 +236,10 @@ int StopAudioOutput( void )
 //==============================================================================
 int DeInitAudioOutput( void )
 {
+#if USE_ALSA_CALLBACK
+	if (bAlsaEnabled)
+		return DeInitAudioOutputAlsa();
+#endif
 	// Kill callback thread
 	void* retval;
 	bRunning = false;

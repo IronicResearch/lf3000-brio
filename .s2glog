@@ -27430,3 +27430,58 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/10 3:09 PM
 6,441 ms. (Cumulative: 9,715,471 ms)
 
 ----------------
+Revision 8,102 from svn://localhost/TRUNK/:
+Revision 8,103 from svn://localhost/TRUNK/:
+Revision 8,104 from svn://localhost/TRUNK/:
+Revision 8,105 from svn://localhost/TRUNK/:
+Revision 8,106 from svn://localhost/TRUNK/:
+Revision 8,107 from svn://localhost/TRUNK/:
+Revision 8,108 from svn://localhost/TRUNK/:
+Revision 8,109 from svn://localhost/TRUNK/:
+Revision 8,110 from svn://localhost/TRUNK/:
+Revision 8,111 from svn://localhost/TRUNK/:
+Revision 8,112 from svn://localhost/TRUNK/:
+Revision 8,113 from svn://localhost/TRUNK/:
+Revision 8,114 from svn://localhost/TRUNK/:
+Revision 8,115 from svn://localhost/TRUNK/:
+Revision 8,116 from svn://localhost/TRUNK/:
+Revision 8,117 from svn://localhost/TRUNK/:
+Revision 8,118 from svn://localhost/TRUNK/:
+Revision 8,119 from svn://localhost/TRUNK/:
+Revision 8,120 from svn://localhost/TRUNK/:
+Revision 8,121 from svn://localhost/TRUNK/:
+Revision 8,122 from svn://localhost/TRUNK/:
+Revision 8,123 from svn://localhost/TRUNK/:
+Revision 8,124 from svn://localhost/TRUNK/:
+Revision 8,125 from svn://localhost/TRUNK/:
+Revision 8,126 from svn://localhost/TRUNK/:
+Revision 8,127 from svn://localhost/TRUNK/:
+Revision 8,128 from svn://localhost/TRUNK/:
+Revision 8,129 from svn://localhost/TRUNK/:
+Revision 8,130 from svn://localhost/TRUNK/:
+Revision 8,131 from svn://localhost/TRUNK/:
+Revision 8,132 from svn://localhost/TRUNK/:
+Revision 8,133 from svn://localhost/TRUNK/:
+Revision 8,134 from svn://localhost/TRUNK/:
+Revision 8,135 from svn://localhost/TRUNK/:
+Revision 8,136 from svn://localhost/TRUNK/:
+Revision 8,137 from svn://localhost/TRUNK/:
+Revision 8,138 from svn://localhost/TRUNK/:
+Revision 8,139 from svn://localhost/TRUNK/:
+Revision 8,140 from svn://localhost/TRUNK/:
+Revision 8,141 from svn://localhost/TRUNK/:
+Revision 8,142 from svn://localhost/TRUNK/:
+Revision 8,143 from svn://localhost/TRUNK/:
+Revision 8,144 from svn://localhost/TRUNK/:
+Revision 8,145 from svn://localhost/TRUNK/:
+Revision 8,146 from svn://localhost/TRUNK/:
+Revision 8,147 from svn://localhost/TRUNK/:
+Revision 8,148 from svn://localhost/TRUNK/:
+
+AudioMPI: Added native ALSA support for audio output. If ALSA output fails to initialize, falls back to OSS audio output. Conditionally compiled into AudioOutput.cpp via USE_ALSA_CALLBACK define. When OSS support is completely removed, AlsaOutput.cpp can replace AudioOutput.cpp functions directly. 
+
+By Dave Milici (dmilici@leapfrog.com) on 9/1/10 3:28 PM
+3 changed, 1 added, 0 deleted.
+6,235 ms. (Cumulative: 9,722,081 ms)
+
+----------------
