@@ -32,6 +32,11 @@ int DeInitAudioOutput( void );
 int StartAudioOutput( void );
 int StopAudioOutput( void );
 
+int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData );
+int DeInitAudioOutputAlsa( void );
+int StartAudioOutputAlsa( void );
+int StopAudioOutputAlsa( void );
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
