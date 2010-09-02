@@ -27485,3 +27485,25 @@ By Dave Milici (dmilici@leapfrog.com) on 9/1/10 3:28 PM
 6,235 ms. (Cumulative: 9,722,081 ms)
 
 ----------------
+Revision 8,149 from svn://localhost/TRUNK/:
+Revision 8,150 from svn://localhost/TRUNK/:
+Revision 8,151 from svn://localhost/TRUNK/:
+Revision 8,152 from svn://localhost/TRUNK/:
+Revision 8,153 from svn://localhost/TRUNK/:
+Revision 8,154 from svn://localhost/TRUNK/:
+Revision 8,155 from svn://localhost/TRUNK/:
+Revision 8,156 from svn://localhost/TRUNK/:
+Revision 8,157 from svn://localhost/TRUNK/:
+Revision 8,158 from svn://localhost/TRUNK/:
+Revision 8,159 from svn://localhost/TRUNK/:
+Revision 8,160 from svn://localhost/TRUNK/:
+Revision 8,161 from svn://localhost/TRUNK/:
+Revision 8,162 from svn://localhost/TRUNK/:
+
+AudioMPI: Modify ALSA output to use direct write method instead of async callback method. The async method had problems with signal interruptions in caller thread. The direct write method is called from separate Brio mixer thread, like OSS case.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/2/10 11:27 AM
+1 changed, 0 added, 0 deleted.
+6,032 ms. (Cumulative: 9,728,269 ms)
+
+----------------
