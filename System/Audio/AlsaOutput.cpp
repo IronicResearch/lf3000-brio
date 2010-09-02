@@ -16,6 +16,7 @@
 #include <CoreTypes.h>
 #include <AudioConfig.h>
 #include <AudioOutput.h>
+#include <KernelMPI.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -45,6 +46,7 @@ static snd_pcm_sframes_t 	period_size;
 
 static BrioAudioRenderCallback* 	gAudioRenderCallback = NULL;	// Brio callback function
 static void* 						gCallbackUserData = NULL;		// Brio callback data
+extern CKernelMPI*					pKernelMPI_;
 
 //==============================================================================
 // Local functions
@@ -314,6 +316,61 @@ static void async_direct_start(snd_pcm_t *handle)
 	}
 }
 
+//----------------------------------------------------------------------------
+static int direct_write_loop(snd_pcm_t *handle, signed short* samples)
+{
+	signed short *ptr;
+	int err, cptr;
+	
+	{
+		ptr = samples;
+		cptr = period_size;
+		while (cptr > 0) {
+			err = snd_pcm_mmap_writei(handle, ptr, cptr);
+			if (err == -EAGAIN)
+				continue;
+			if (err < 0) {
+				if (xrun_recovery(handle, err) < 0) {
+					printf("Write error: %s\n", snd_strerror(err));
+				}
+			}
+			ptr += err * channels;
+			cptr -= err;
+		}
+	}
+}
+
+//==============================================================================
+// Callback thread	
+//==============================================================================
+static volatile bool 		bRunning = true;
+static volatile bool 		bRendering = false;
+static tTaskHndl 			hndlThread = 0;
+static S16*					pOutputBuffer = NULL;
+//----------------------------------------------------------------------------
+static void* CallbackThread(void* pCtx)
+{
+	int r = 0;
+	
+	while (bRunning)
+	{
+		if (bRendering)
+		{
+			// Brio render callback 
+			do { 
+				r = gAudioRenderCallback(pOutputBuffer, kAudioFramesPerBuffer, pCtx);
+				if (r != kNoErr)
+					pKernelMPI_->TaskSleep(10);
+			}
+			while (r != kNoErr);
+	
+			// Output Brio render buffer to ALSA
+			direct_write_loop(handle, pOutputBuffer);
+		}
+		pKernelMPI_->TaskSleep(10);
+	}
+}
+ 
 //==============================================================================
 // InitAudioOutput	
 //==============================================================================
@@ -342,11 +399,22 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData )
 		printf("Setting of swparams failed: %s\n", snd_strerror(err));
 		return err;
 	}
-	if ((err = snd_async_add_pcm_handler(&ahandler, handle, async_direct_callback, pUserData)) < 0) {
-		printf("Unable to register async handler\n");
+
+	// Create output buffer for Brio mixer 
+	pOutputBuffer = (S16*)pKernelMPI_->Malloc(kAudioOutBufSizeInBytes);
+	if (!pOutputBuffer)
+		return -1;
+
+	// Create callback thread for Brio mixer
+	tTaskProperties props;
+	props.TaskMainFcn = &CallbackThread;
+	props.taskMainArgCount = 1;
+	props.pTaskMainArgValues = pUserData;
+	bRunning = true;
+	err = pKernelMPI_->CreateTask(hndlThread, props, NULL);
+	if (err != kNoErr)
 		return err;
-	}
-	
+
 	return kNoErr;
 }
 
@@ -355,7 +423,7 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData )
 // ==============================================================================
 int StartAudioOutputAlsa( void )
 {
-	async_direct_start(handle);
+	bRendering = true;
 	return snd_pcm_start(handle);
 }
 
@@ -364,6 +432,8 @@ int StartAudioOutputAlsa( void )
 // ==============================================================================
 int StopAudioOutputAlsa( void )
 {
+	bRendering = false;
+	pKernelMPI_->TaskSleep(10);
 	return snd_pcm_drop(handle);
 }
 
@@ -372,6 +442,15 @@ int StopAudioOutputAlsa( void )
 //==============================================================================
 int DeInitAudioOutputAlsa( void )
 {
+	// Kill callback thread
+	void* retval;
+	bRunning = false;
+	pKernelMPI_->JoinTask(hndlThread, retval);
+
+	// Release resources
+	pKernelMPI_->Free(pOutputBuffer);
+	pOutputBuffer = NULL;
+	
 	return snd_pcm_close(handle);
 }
 
