@@ -27532,3 +27532,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/3/10 10:53 AM
 6,095 ms. (Cumulative: 9,740,614 ms)
 
 ----------------
+Revision 8,172 from svn://localhost/TRUNK/:
+Revision 8,173 from svn://localhost/TRUNK/:
+Revision 8,174 from svn://localhost/TRUNK/:
+Revision 8,175 from svn://localhost/TRUNK/:
+
+AudioMPI: Mods to compile ALSA support on emulation.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/3/10 3:05 PM
+1 changed, 0 added, 0 deleted.
+6,011 ms. (Cumulative: 9,746,734 ms)
+
+----------------

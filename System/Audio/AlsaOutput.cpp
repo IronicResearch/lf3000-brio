@@ -32,7 +32,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 
-static char 				*device = "plughw:0,0";         // playback device 
+static const char 			*device = "plughw:0,0";         // playback device 
 static snd_pcm_t 			*handle = NULL;					// playback handle
 static snd_pcm_access_t 	access = SND_PCM_ACCESS_MMAP_INTERLEAVED;	
 static snd_pcm_format_t 	format = SND_PCM_FORMAT_S16;    // sample format 
@@ -164,6 +164,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams)
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set avail min for playback: %s\n", snd_strerror(err));
 		return err;
 	}
+#if SND_LIB_MAJOR == 1 && SND_LIB_MINOR == 0 && SND_LIB_SUBMINOR >= 20
 	// enable period events when requested 
 	if (period_event) {
 		err = snd_pcm_sw_params_set_period_event(handle, swparams, 1);
@@ -172,6 +173,7 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams)
 			return err;
 		}
 	}
+#endif
 	// write the parameters to the playback device 
 	err = snd_pcm_sw_params(handle, swparams);
 	if (err < 0) {
