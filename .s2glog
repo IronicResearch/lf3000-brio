@@ -27507,3 +27507,19 @@ By Dave Milici (dmilici@leapfrog.com) on 9/2/10 11:27 AM
 6,032 ms. (Cumulative: 9,728,269 ms)
 
 ----------------
+Revision 8,163 from svn://localhost/TRUNK/:
+Revision 8,164 from svn://localhost/TRUNK/:
+Revision 8,165 from svn://localhost/TRUNK/:
+Revision 8,166 from svn://localhost/TRUNK/:
+Revision 8,167 from svn://localhost/TRUNK/:
+Revision 8,168 from svn://localhost/TRUNK/:
+Revision 8,169 from svn://localhost/TRUNK/:
+Revision 8,170 from svn://localhost/TRUNK/:
+
+AudioMPI: Error handling control flow inadvertantly omitted from port of write_direct_loop.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/3/10 10:44 AM
+1 changed, 0 added, 0 deleted.
+6,047 ms. (Cumulative: 9,734,441 ms)
+
+----------------

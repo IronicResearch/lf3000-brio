@@ -189,7 +189,7 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
 		return 0;
 	} else if (err == -ESTRPIPE) {
 		while ((err = snd_pcm_resume(handle)) == -EAGAIN)
-			sleep(1);       // wait until the suspend flag is released 
+			pKernelMPI_->TaskSleep(10);       // wait until the suspend flag is released 
 		if (err < 0) {
 			err = snd_pcm_prepare(handle);
 			if (err < 0)
@@ -332,7 +332,9 @@ static int direct_write_loop(snd_pcm_t *handle, signed short* samples)
 			if (err < 0) {
 				if (xrun_recovery(handle, err) < 0) {
 					printf("Write error: %s\n", snd_strerror(err));
+					return err;
 				}
+				break;
 			}
 			ptr += err * channels;
 			cptr -= err;
