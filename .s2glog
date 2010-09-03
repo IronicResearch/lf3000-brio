@@ -27523,3 +27523,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/3/10 10:44 AM
 6,047 ms. (Cumulative: 9,734,441 ms)
 
 ----------------
+Revision 8,171 from svn://localhost/TRUNK/:
+
+AudioMPI: Use DebugMPI for logging ALSA error messages instead of printf.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/3/10 10:53 AM
+1 changed, 0 added, 0 deleted.
+6,095 ms. (Cumulative: 9,740,614 ms)
+
+----------------

@@ -17,6 +17,7 @@
 #include <AudioConfig.h>
 #include <AudioOutput.h>
 #include <KernelMPI.h>
+#include <DebugMPI.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -47,6 +48,7 @@ static snd_pcm_sframes_t 	period_size;
 static BrioAudioRenderCallback* 	gAudioRenderCallback = NULL;	// Brio callback function
 static void* 						gCallbackUserData = NULL;		// Brio callback data
 extern CKernelMPI*					pKernelMPI_;
+extern CDebugMPI*					pDebugMPI_;
 
 //==============================================================================
 // Local functions
@@ -64,74 +66,74 @@ static int set_hwparams(snd_pcm_t *handle,
 	// choose all parameters 
 	err = snd_pcm_hw_params_any(handle, params);
 	if (err < 0) {
-		printf("Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Broken configuration for playback: no configurations available: %s\n", snd_strerror(err));
 		return err;
 	}
 	// set hardware resampling 
 	err = snd_pcm_hw_params_set_rate_resample(handle, params, resample);
 	if (err < 0) {
-		printf("Resampling setup failed for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Resampling setup failed for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	// set the interleaved read/write format 
 	err = snd_pcm_hw_params_set_access(handle, params, access);
 	if (err < 0) {
-		printf("Access type not available for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Access type not available for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	// set the sample format 
 	err = snd_pcm_hw_params_set_format(handle, params, format);
 	if (err < 0) {
-		printf("Sample format not available for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Sample format not available for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	// set the count of channels 
 	err = snd_pcm_hw_params_set_channels(handle, params, channels);
 	if (err < 0) {
-		printf("Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Channels count (%i) not available for playbacks: %s\n", channels, snd_strerror(err));
 		return err;
 	}
 	// set the stream rate 
 	rrate = rate;
 	err = snd_pcm_hw_params_set_rate_near(handle, params, &rrate, 0);
 	if (err < 0) {
-		printf("Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Rate %iHz not available for playback: %s\n", rate, snd_strerror(err));
 		return err;
 	}
 	if (rrate != rate) {
-		printf("Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Rate doesn't match (requested %iHz, get %iHz)\n", rate, err);
 		return -EINVAL;
 	}
 	// set the buffer time 
 	err = snd_pcm_hw_params_set_buffer_time_near(handle, params, &buffer_time, &dir);
 	if (err < 0) {
-		printf("Unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror(err));
 		return err;
 	}
 	err = snd_pcm_hw_params_get_buffer_size(params, &size);
 	if (err < 0) {
-		printf("Unable to get buffer size for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to get buffer size for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	buffer_size = size;
-	printf("%s: buffer time=%d, size=%d\n", __FUNCTION__, buffer_time, (int)buffer_size);
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: buffer time=%d, size=%d\n", __FUNCTION__, buffer_time, (int)buffer_size);
 	// set the period time 
 	err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir);
 	if (err < 0) {
-		printf("Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
 		return err;
 	}
 	err = snd_pcm_hw_params_get_period_size(params, &size, &dir);
 	if (err < 0) {
-		printf("Unable to get period size for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to get period size for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	period_size = size;
-	printf("%s: period time=%d, size=%d\n", __FUNCTION__, period_time, (int)period_size);
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: period time=%d, size=%d\n", __FUNCTION__, period_time, (int)period_size);
 	// write the parameters to device 
 	err = snd_pcm_hw_params(handle, params);
 	if (err < 0) {
-		printf("Unable to set hw params for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set hw params for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	return 0;
@@ -145,35 +147,35 @@ static int set_swparams(snd_pcm_t *handle, snd_pcm_sw_params_t *swparams)
 	// get the current swparams 
 	err = snd_pcm_sw_params_current(handle, swparams);
 	if (err < 0) {
-		printf("Unable to determine current swparams for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to determine current swparams for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	// start the transfer when the buffer is almost full: 
 	// (buffer_size / avail_min) * avail_min 
 	err = snd_pcm_sw_params_set_start_threshold(handle, swparams, (buffer_size / period_size) * period_size);
 	if (err < 0) {
-		printf("Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set start threshold mode for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	// allow the transfer when at least period_size samples can be processed 
 	// or disable this mechanism when period event is enabled (aka interrupt like style processing) 
 	err = snd_pcm_sw_params_set_avail_min(handle, swparams, period_event ? buffer_size : period_size);
 	if (err < 0) {
-		printf("Unable to set avail min for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set avail min for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	// enable period events when requested 
 	if (period_event) {
 		err = snd_pcm_sw_params_set_period_event(handle, swparams, 1);
 		if (err < 0) {
-			printf("Unable to set period event: %s\n", snd_strerror(err));
+			pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set period event: %s\n", snd_strerror(err));
 			return err;
 		}
 	}
 	// write the parameters to the playback device 
 	err = snd_pcm_sw_params(handle, swparams);
 	if (err < 0) {
-		printf("Unable to set sw params for playback: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set sw params for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	return 0;
@@ -185,7 +187,7 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
 	if (err == -EPIPE) {    // under-run 
 		err = snd_pcm_prepare(handle);
 		if (err < 0)
-			 printf("Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
+			 pDebugMPI_->DebugOut(kDbgLvlImportant, "Can't recovery from underrun, prepare failed: %s\n", snd_strerror(err));
 		return 0;
 	} else if (err == -ESTRPIPE) {
 		while ((err = snd_pcm_resume(handle)) == -EAGAIN)
@@ -193,7 +195,7 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
 		if (err < 0) {
 			err = snd_pcm_prepare(handle);
 			if (err < 0)
-				printf("Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
+				pDebugMPI_->DebugOut(kDbgLvlImportant, "Can't recovery from suspend, prepare failed: %s\n", snd_strerror(err));
 		}
 		return 0;
 	}
@@ -216,14 +218,14 @@ static void async_direct_callback(snd_async_handler_t *ahandler)
 		if (state == SND_PCM_STATE_XRUN) {
 			err = xrun_recovery(handle, -EPIPE);
 			if (err < 0) {
-				printf("XRUN recovery failed: %s\n", snd_strerror(err));
+				pDebugMPI_->DebugOut(kDbgLvlImportant, "XRUN recovery failed: %s\n", snd_strerror(err));
 				break; //exit(EXIT_FAILURE);
 			}
 			first = 1;
 		} else if (state == SND_PCM_STATE_SUSPENDED) {
 			err = xrun_recovery(handle, -ESTRPIPE);
 			if (err < 0) {
-				printf("SUSPEND recovery failed: %s\n", snd_strerror(err));
+				pDebugMPI_->DebugOut(kDbgLvlImportant, "SUSPEND recovery failed: %s\n", snd_strerror(err));
 				break; //exit(EXIT_FAILURE);
 			}
 		}
@@ -231,7 +233,7 @@ static void async_direct_callback(snd_async_handler_t *ahandler)
 		if (avail < 0) {
 			err = xrun_recovery(handle, avail);
 			if (err < 0) {
-				printf("avail update failed: %s\n", snd_strerror(err));
+				pDebugMPI_->DebugOut(kDbgLvlImportant, "avail update failed: %s\n", snd_strerror(err));
 				break; //exit(EXIT_FAILURE);
 			}
 			first = 1;
@@ -242,7 +244,7 @@ static void async_direct_callback(snd_async_handler_t *ahandler)
 				first = 0;
 				err = snd_pcm_start(handle);
 				if (err < 0) {
-					printf("Start error: %s\n", snd_strerror(err));
+					pDebugMPI_->DebugOut(kDbgLvlImportant, "Start error: %s\n", snd_strerror(err));
 					break; //exit(EXIT_FAILURE);
 				}
 			} else {
@@ -256,20 +258,19 @@ static void async_direct_callback(snd_async_handler_t *ahandler)
 			err = snd_pcm_mmap_begin(handle, &my_areas, &offset, &frames);
 			if (err < 0) {
 				if ((err = xrun_recovery(handle, err)) < 0) {
-					printf("MMAP begin avail error: %s\n", snd_strerror(err));
+					pDebugMPI_->DebugOut(kDbgLvlImportant, "MMAP begin avail error: %s\n", snd_strerror(err));
 					break; //exit(EXIT_FAILURE);
 				}
 				first = 1;
 			}
 			// Callback to Brio mixer
 			short* pmem = (short*)my_areas->addr + (my_areas->first + offset) * 2; // stereo frames
-			//printf("%s: addr=%p, first=%d, offset=%d, pmem=%p, frames=%d\n", __FUNCTION__, my_areas->addr, my_areas->first, (int)offset, pmem, (int)frames);
 			gAudioRenderCallback(pmem, frames, gCallbackUserData);
 			
 			commitres = snd_pcm_mmap_commit(handle, offset, frames);
 			if (commitres < 0 || (snd_pcm_uframes_t)commitres != frames) {
 				if ((err = xrun_recovery(handle, commitres >= 0 ? -EPIPE : commitres)) < 0) {
-					printf("MMAP commit error: %s\n", snd_strerror(err));
+					pDebugMPI_->DebugOut(kDbgLvlImportant, "MMAP commit error: %s\n", snd_strerror(err));
 					break; //exit(EXIT_FAILURE);
 				}
 				first = 1;
@@ -296,7 +297,7 @@ static void async_direct_start(snd_pcm_t *handle)
 			err = snd_pcm_mmap_begin(handle, &my_areas, &offset, &frames);
 			if (err < 0) {
 				if ((err = xrun_recovery(handle, err)) < 0) {
-					printf("MMAP begin avail error: %s\n", snd_strerror(err));
+					pDebugMPI_->DebugOut(kDbgLvlImportant, "MMAP begin avail error: %s\n", snd_strerror(err));
 					break; //exit(EXIT_FAILURE);
 				}
 			}
@@ -307,7 +308,7 @@ static void async_direct_start(snd_pcm_t *handle)
 			commitres = snd_pcm_mmap_commit(handle, offset, frames);
 			if (commitres < 0 || (snd_pcm_uframes_t)commitres != frames) {
 				if ((err = xrun_recovery(handle, commitres >= 0 ? -EPIPE : commitres)) < 0) {
-					printf("MMAP commit error: %s\n", snd_strerror(err));
+					pDebugMPI_->DebugOut(kDbgLvlImportant, "MMAP commit error: %s\n", snd_strerror(err));
 					break; //exit(EXIT_FAILURE);
 				}
 			}
@@ -331,7 +332,7 @@ static int direct_write_loop(snd_pcm_t *handle, signed short* samples)
 				continue;
 			if (err < 0) {
 				if (xrun_recovery(handle, err) < 0) {
-					printf("Write error: %s\n", snd_strerror(err));
+					pDebugMPI_->DebugOut(kDbgLvlImportant, "Write error: %s\n", snd_strerror(err));
 					return err;
 				}
 				break;
@@ -390,15 +391,15 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData )
 	gCallbackUserData = pUserData;
 	
 	if ((err = snd_pcm_open(&handle, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-		printf("Playback open error: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Playback open error: %s\n", snd_strerror(err));
 		return err;
 	}
 	if ((err = set_hwparams(handle, hwparams, access)) < 0) {
-		printf("Setting of hwparams failed: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Setting of hwparams failed: %s\n", snd_strerror(err));
 		return err;
 	}
 	if ((err = set_swparams(handle, swparams)) < 0) {
-		printf("Setting of swparams failed: %s\n", snd_strerror(err));
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Setting of swparams failed: %s\n", snd_strerror(err));
 		return err;
 	}
 
