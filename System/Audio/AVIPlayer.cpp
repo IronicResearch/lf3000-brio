@@ -132,6 +132,9 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	pCodec = NULL;
 	pFrame = NULL;
     iAudioStream = -1;
+    bytesRead = 0;
+    bytesCached = 0;
+    pCachedData = NULL;
 	
     // Register all formats and codecs
     av_register_all();
@@ -245,9 +248,9 @@ Boolean CAVIPlayer::IsAVIPlayer(CAudioPlayer *pPlayer)
 // ==============================================================================
 U32 CAVIPlayer::ReadBytesFromFile( void *d, U32 bytesToRead)
 {
-	static U32 bytesRead = 0;
-	static U32 bytesCached = 0;
-	static U8* pCachedData = NULL;
+//	static U32 bytesRead = 0;
+//	static U32 bytesCached = 0;
+//	static U8* pCachedData = NULL;
 	
 	// Account for audio frame buffer caching more data than requested
 	if (bytesCached > 0) {
