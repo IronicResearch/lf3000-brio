@@ -58,6 +58,11 @@ private:
 	AVCodec*			pCodec;				// audio codec
 	int16_t*			pFrame;				// audio frame buffer
     int					iAudioStream;		// index of audio stream
+
+    // ReadBytesFromFile
+	U32 bytesRead;
+	U32 bytesCached;
+	U8* pCachedData;
 };
 
 LF_END_BRIO_NAMESPACE()

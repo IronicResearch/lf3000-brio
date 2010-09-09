@@ -27544,3 +27544,57 @@ By Dave Milici (dmilici@leapfrog.com) on 9/3/10 3:05 PM
 6,011 ms. (Cumulative: 9,746,734 ms)
 
 ----------------
+Revision 8,176 from svn://localhost/TRUNK/:
+Revision 8,177 from svn://localhost/TRUNK/:
+Revision 8,178 from svn://localhost/TRUNK/:
+Revision 8,179 from svn://localhost/TRUNK/:
+Revision 8,180 from svn://localhost/TRUNK/:
+Revision 8,181 from svn://localhost/TRUNK/:
+Revision 8,182 from svn://localhost/TRUNK/:
+Revision 8,183 from svn://localhost/TRUNK/:
+Revision 8,184 from svn://localhost/TRUNK/:
+Revision 8,185 from svn://localhost/TRUNK/:
+Revision 8,186 from svn://localhost/TRUNK/:
+Revision 8,187 from svn://localhost/TRUNK/:
+Revision 8,188 from svn://localhost/TRUNK/:
+Revision 8,189 from svn://localhost/TRUNK/:
+Revision 8,190 from svn://localhost/TRUNK/:
+Revision 8,191 from svn://localhost/TRUNK/:
+Revision 8,192 from svn://localhost/TRUNK/:
+Revision 8,193 from svn://localhost/TRUNK/:
+Revision 8,194 from svn://localhost/TRUNK/:
+Revision 8,195 from svn://localhost/TRUNK/:
+Revision 8,196 from svn://localhost/TRUNK/:
+Revision 8,197 from svn://localhost/TRUNK/:
+Revision 8,198 from svn://localhost/TRUNK/:
+Revision 8,199 from svn://localhost/TRUNK/:
+Revision 8,200 from svn://localhost/TRUNK/:
+Revision 8,201 from svn://localhost/TRUNK/:
+Revision 8,202 from svn://localhost/TRUNK/:
+Revision 8,203 from svn://localhost/TRUNK/:
+Revision 8,204 from svn://localhost/TRUNK/:
+Revision 8,205 from svn://localhost/TRUNK/:
+Revision 8,206 from svn://localhost/TRUNK/:
+Revision 8,207 from svn://localhost/TRUNK/:
+Revision 8,208 from svn://localhost/TRUNK/:
+Revision 8,209 from svn://localhost/TRUNK/:
+Revision 8,210 from svn://localhost/TRUNK/:
+Revision 8,211 from svn://localhost/TRUNK/:
+Revision 8,212 from svn://localhost/TRUNK/:
+Revision 8,213 from svn://localhost/TRUNK/:
+Revision 8,214 from svn://localhost/TRUNK/:
+Revision 8,215 from svn://localhost/TRUNK/:
+Revision 8,216 from svn://localhost/TRUNK/:
+Revision 8,217 from svn://localhost/TRUNK/:
+Revision 8,218 from svn://localhost/TRUNK/:
+Revision 8,219 from svn://localhost/TRUNK/:
+Revision 8,220 from svn://localhost/TRUNK/:
+Revision 8,221 from svn://localhost/TRUNK/:
+
+AudioMPI: (CAM TTP #1232) Relocate static vars used for caching in ReadBytesFromFile() as member vars to avoid reusing stale data between object instances. 
+
+By Dave Milici (dmilici@leapfrog.com) on 9/9/10 12:46 PM
+2 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 9,753,251 ms)
+
+----------------
