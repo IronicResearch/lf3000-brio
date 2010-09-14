@@ -27598,3 +27598,85 @@ By Dave Milici (dmilici@leapfrog.com) on 9/9/10 12:46 PM
 6,126 ms. (Cumulative: 9,753,251 ms)
 
 ----------------
+Revision 8,222 from svn://localhost/TRUNK/:
+Revision 8,223 from svn://localhost/TRUNK/:
+Revision 8,224 from svn://localhost/TRUNK/:
+Revision 8,225 from svn://localhost/TRUNK/:
+Revision 8,226 from svn://localhost/TRUNK/:
+Revision 8,227 from svn://localhost/TRUNK/:
+Revision 8,228 from svn://localhost/TRUNK/:
+Revision 8,229 from svn://localhost/TRUNK/:
+Revision 8,230 from svn://localhost/TRUNK/:
+Revision 8,231 from svn://localhost/TRUNK/:
+Revision 8,232 from svn://localhost/TRUNK/:
+Revision 8,233 from svn://localhost/TRUNK/:
+Revision 8,234 from svn://localhost/TRUNK/:
+Revision 8,235 from svn://localhost/TRUNK/:
+Revision 8,236 from svn://localhost/TRUNK/:
+Revision 8,237 from svn://localhost/TRUNK/:
+Revision 8,238 from svn://localhost/TRUNK/:
+Revision 8,239 from svn://localhost/TRUNK/:
+Revision 8,240 from svn://localhost/TRUNK/:
+Revision 8,241 from svn://localhost/TRUNK/:
+Revision 8,242 from svn://localhost/TRUNK/:
+Revision 8,243 from svn://localhost/TRUNK/:
+Revision 8,244 from svn://localhost/TRUNK/:
+Revision 8,245 from svn://localhost/TRUNK/:
+Revision 8,246 from svn://localhost/TRUNK/:
+Revision 8,247 from svn://localhost/TRUNK/:
+Revision 8,248 from svn://localhost/TRUNK/:
+Revision 8,249 from svn://localhost/TRUNK/:
+Revision 8,250 from svn://localhost/TRUNK/:
+Revision 8,251 from svn://localhost/TRUNK/:
+Revision 8,252 from svn://localhost/TRUNK/:
+Revision 8,253 from svn://localhost/TRUNK/:
+Revision 8,254 from svn://localhost/TRUNK/:
+Revision 8,255 from svn://localhost/TRUNK/:
+Revision 8,256 from svn://localhost/TRUNK/:
+Revision 8,257 from svn://localhost/TRUNK/:
+Revision 8,258 from svn://localhost/TRUNK/:
+Revision 8,259 from svn://localhost/TRUNK/:
+Revision 8,260 from svn://localhost/TRUNK/:
+Revision 8,261 from svn://localhost/TRUNK/:
+Revision 8,262 from svn://localhost/TRUNK/:
+Revision 8,263 from svn://localhost/TRUNK/:
+Revision 8,264 from svn://localhost/TRUNK/:
+Revision 8,265 from svn://localhost/TRUNK/:
+Revision 8,266 from svn://localhost/TRUNK/:
+Revision 8,267 from svn://localhost/TRUNK/:
+Revision 8,268 from svn://localhost/TRUNK/:
+Revision 8,269 from svn://localhost/TRUNK/:
+Revision 8,270 from svn://localhost/TRUNK/:
+Revision 8,271 from svn://localhost/TRUNK/:
+Revision 8,272 from svn://localhost/TRUNK/:
+Revision 8,273 from svn://localhost/TRUNK/:
+Revision 8,274 from svn://localhost/TRUNK/:
+Revision 8,275 from svn://localhost/TRUNK/:
+Revision 8,276 from svn://localhost/TRUNK/:
+Revision 8,277 from svn://localhost/TRUNK/:
+Revision 8,278 from svn://localhost/TRUNK/:
+Revision 8,279 from svn://localhost/TRUNK/:
+Revision 8,280 from svn://localhost/TRUNK/:
+Revision 8,281 from svn://localhost/TRUNK/:
+Revision 8,282 from svn://localhost/TRUNK/:
+Revision 8,283 from svn://localhost/TRUNK/:
+Revision 8,284 from svn://localhost/TRUNK/:
+Revision 8,285 from svn://localhost/TRUNK/:
+Revision 8,286 from svn://localhost/TRUNK/:
+Revision 8,287 from svn://localhost/TRUNK/:
+Revision 8,288 from svn://localhost/TRUNK/:
+Revision 8,289 from svn://localhost/TRUNK/:
+Revision 8,290 from svn://localhost/TRUNK/:
+Revision 8,291 from svn://localhost/TRUNK/:
+Revision 8,292 from svn://localhost/TRUNK/:
+Revision 8,293 from svn://localhost/TRUNK/:
+Revision 8,294 from svn://localhost/TRUNK/:
+Revision 8,295 from svn://localhost/TRUNK/:
+
+DisplayMPI: Additional qualification to pdcVisible->flippedContext assignment (added in svn -r7835) which checks if the page-flipped display context belongs at topmost Z order or not. The previous check worked for single page-flipped contexts, but becomes invalid when multiple page-flipped contexts are active, as in CAM app TTP #2760.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/14/10 2:07 PM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 9,759,940 ms)
+
+----------------
