@@ -769,6 +769,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	int		layer = context->layer;
 	int		r;
 	U32 	physaddr = context->basephys + context->offset;
+	int 	prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
 
 	// Support for replicated YUV video context in planar memory block
 	if (context->basephys == 0) {
@@ -779,7 +780,8 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 			physaddr = gPlanarBase + offset;
 			layer = gDevOverlay;
 			// Update invalidated regions before page flip
-			pdcVisible_->flippedContext = context;
+			if (prior == 0)
+				pdcVisible_->flippedContext = context;
 			Invalidate(0, NULL);
 		}
 		else 
@@ -794,7 +796,9 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	}
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
-	pdcVisible_->flippedContext = context;
+	if ((context->colorDepthFormat == kPixelFormatYUV420 && prior == 0)
+		|| (context->colorDepthFormat != kPixelFormatYUV420 && prior == 2))
+		pdcVisible_->flippedContext = context;
 	bPrimaryLayerEnabled = true;
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::SwapBuffers: virtaddr=%08X, physaddr=%08X\n", (unsigned int)context->pBuffer, (unsigned int)physaddr);
