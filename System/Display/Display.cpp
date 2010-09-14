@@ -63,6 +63,7 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 
 	isOpenGLEnabled_ = false;
 	isLayerSwapped_ = false;
+	isYUVLayerSwapped_ = false;
 
 	InitModule(); // delegate to platform or emulation initializer
 	gDisplayList.clear();

@@ -27680,3 +27680,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/14/10 2:07 PM
 6,111 ms. (Cumulative: 9,759,940 ms)
 
 ----------------
+Revision 8,296 from svn://localhost/TRUNK/:
+Revision 8,297 from svn://localhost/TRUNK/:
+
+DisplayMPI: Same logic conditionally qualifying pdcVisible->flippedContext using YUV layer order state var.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/14/10 2:30 PM
+3 changed, 0 added, 0 deleted.
+6,185 ms. (Cumulative: 9,766,218 ms)
+
+----------------

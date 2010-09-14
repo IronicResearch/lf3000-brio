@@ -577,6 +577,7 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 				ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
 				ioctl(gDevMlc, MLC_IOCTTOPDIRTY, 0);
 			}
+			isYUVLayerSwapped_ = (order != 0);
 		}
 		ioctl(pdcVisible_->layer, MLC_IOCTBLEND, pdcVisible_->isBlended);
 		ioctl(pdcVisible_->layer, MLC_IOCTALPHA, pdcVisible_->alphaLevel);
@@ -713,6 +714,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
 			ioctl(gDevMlc, MLC_IOCTTOPDIRTY, 0);
 		}
+		isYUVLayerSwapped_ = (order != 0);
 		
 		// Defer enabling video layer until 1st Invalidate() call
 		bPrimaryLayerEnabled = false;
@@ -769,7 +771,6 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	int		layer = context->layer;
 	int		r;
 	U32 	physaddr = context->basephys + context->offset;
-	int 	prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
 
 	// Support for replicated YUV video context in planar memory block
 	if (context->basephys == 0) {
@@ -780,7 +781,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 			physaddr = gPlanarBase + offset;
 			layer = gDevOverlay;
 			// Update invalidated regions before page flip
-			if (prior == 0)
+			if (!isYUVLayerSwapped_)
 				pdcVisible_->flippedContext = context;
 			Invalidate(0, NULL);
 		}
@@ -796,8 +797,8 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	}
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
-	if ((context->colorDepthFormat == kPixelFormatYUV420 && prior == 0)
-		|| (context->colorDepthFormat != kPixelFormatYUV420 && prior == 2))
+	if ((context->colorDepthFormat == kPixelFormatYUV420 && !isYUVLayerSwapped_)
+		|| (context->colorDepthFormat != kPixelFormatYUV420 && isYUVLayerSwapped_))
 		pdcVisible_->flippedContext = context;
 	bPrimaryLayerEnabled = true;
 	
