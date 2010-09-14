@@ -464,6 +464,7 @@ private:
 	tDisplayContext*	pdcVisible_;
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
+	bool				isYUVLayerSwapped_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();
