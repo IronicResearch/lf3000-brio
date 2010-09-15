@@ -106,7 +106,7 @@ namespace
 	//----------------------------------------------------------------------------
 	// find and open an input device by name
 	//----------------------------------------------------------------------------
-	int open_input_device(char *input_name)
+	int open_input_device(const char *input_name)
 	{
 		struct dirent *dp;
 		char dev[20];

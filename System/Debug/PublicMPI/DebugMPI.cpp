@@ -15,8 +15,8 @@
 // std includes
 
 //#include <stdlib.h>
-//#include <stdio.h>
-//#include <stdarg.h>		// for vprintfs
+#include <stdio.h>
+#include <stdarg.h>		// for vprintfs
 //#include <assert.h>
 #include <sys/time.h>	// for gettimeofday()
 #include <syslog.h>
