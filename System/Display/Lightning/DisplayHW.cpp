@@ -798,7 +798,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 	SetDirtyBit(layer);
 	if ((context->colorDepthFormat == kPixelFormatYUV420 && !isYUVLayerSwapped_)
-		|| (context->colorDepthFormat != kPixelFormatYUV420 && isYUVLayerSwapped_))
+		|| (context->colorDepthFormat != kPixelFormatYUV420 /* && isYUVLayerSwapped_ */))
 		pdcVisible_->flippedContext = context;
 	bPrimaryLayerEnabled = true;
 	
