@@ -27729,3 +27729,50 @@ By dlazzari (dlazzari@leapfrog.com) on 9/15/10 1:36 PM
 6,119 ms. (Cumulative: 9,778,825 ms)
 
 ----------------
+Revision 8,321 from svn://localhost/TRUNK/:
+Revision 8,322 from svn://localhost/TRUNK/:
+Revision 8,323 from svn://localhost/TRUNK/:
+Revision 8,324 from svn://localhost/TRUNK/:
+Revision 8,325 from svn://localhost/TRUNK/:
+Revision 8,326 from svn://localhost/TRUNK/:
+Revision 8,327 from svn://localhost/TRUNK/:
+Revision 8,328 from svn://localhost/TRUNK/:
+Revision 8,329 from svn://localhost/TRUNK/:
+Revision 8,330 from svn://localhost/TRUNK/:
+Revision 8,331 from svn://localhost/TRUNK/:
+Revision 8,332 from svn://localhost/TRUNK/:
+Revision 8,333 from svn://localhost/TRUNK/:
+Revision 8,334 from svn://localhost/TRUNK/:
+Revision 8,335 from svn://localhost/TRUNK/:
+Revision 8,336 from svn://localhost/TRUNK/:
+Revision 8,337 from svn://localhost/TRUNK/:
+Revision 8,338 from svn://localhost/TRUNK/:
+Revision 8,339 from svn://localhost/TRUNK/:
+Revision 8,340 from svn://localhost/TRUNK/:
+Revision 8,341 from svn://localhost/TRUNK/:
+Revision 8,342 from svn://localhost/TRUNK/:
+Revision 8,343 from svn://localhost/TRUNK/:
+Revision 8,344 from svn://localhost/TRUNK/:
+Revision 8,345 from svn://localhost/TRUNK/:
+Revision 8,346 from svn://localhost/TRUNK/:
+Revision 8,347 from svn://localhost/TRUNK/:
+Revision 8,348 from svn://localhost/TRUNK/:
+Revision 8,349 from svn://localhost/TRUNK/:
+Revision 8,350 from svn://localhost/TRUNK/:
+Revision 8,351 from svn://localhost/TRUNK/:
+Revision 8,352 from svn://localhost/TRUNK/:
+Revision 8,353 from svn://localhost/TRUNK/:
+Revision 8,354 from svn://localhost/TRUNK/:
+Revision 8,355 from svn://localhost/TRUNK/:
+Revision 8,356 from svn://localhost/TRUNK/:
+Revision 8,357 from svn://localhost/TRUNK/:
+Revision 8,358 from svn://localhost/TRUNK/:
+Revision 8,359 from svn://localhost/TRUNK/:
+
+DisplayMPI: Relax flipped context conditional for RGB-only cases, like unit tests.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/17/10 4:04 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 9,785,326 ms)
+
+----------------
