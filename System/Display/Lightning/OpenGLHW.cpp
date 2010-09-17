@@ -72,7 +72,7 @@ namespace
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::InitOpenGL(void* pCtx)
+void CDisplayLF1000::InitOpenGL(void* pCtx)
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "InitOpenGLHW: enter\n");
 
@@ -198,7 +198,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 #endif
 
 	// Query HW to setup display context descriptors
-	const tDisplayScreenStats* pScreen = GetScreenStats(0);
+	const tDisplayScreenStats* pScreen = pModule_->GetScreenStats(0);
 	screen = *pScreen;
 
 	tDisplayHandle hndl = CreateHandle(screen.height, screen.width, kPixelFormatRGB565, reinterpret_cast<U8*>(gpMem2d));
@@ -251,7 +251,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::DeinitOpenGL()
+void CDisplayLF1000::DeinitOpenGL()
 {
 	// Early out if already disabled from extra eglTerminate() call
 	if (gDevLayer < 0)
@@ -284,7 +284,7 @@ void CDisplayModule::DeinitOpenGL()
 	dbg_.DebugOut(kDbgLvlVerbose, "DeInitOpenGLHW: exit\n");
 }
 //----------------------------------------------------------------------------
-void CDisplayModule::EnableOpenGL(void* pCtx)
+void CDisplayLF1000::EnableOpenGL(void* pCtx)
 {
 	// Dereference OpenGL context for MagicEyes FSAA enable
 	tOpenGLContext* pOglCtx = (tOpenGLContext*)pCtx;
@@ -343,7 +343,7 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::UpdateOpenGL()
+void CDisplayLF1000::UpdateOpenGL()
 {
 #ifndef LF1000	// only used on ME2530 (LF1000 uses SetDisplayAddress) 
 	// 3D layer needs to sync to OGL calls
@@ -352,7 +352,7 @@ void CDisplayModule::UpdateOpenGL()
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::DisableOpenGL()
+void CDisplayLF1000::DisableOpenGL()
 {
 	// Early out if already disabled from extra eglTerminate() call
 	if (gDevLayer < 0)
@@ -389,7 +389,7 @@ void CDisplayModule::DisableOpenGL()
 #ifdef LF1000
 //----------------------------------------------------------------------------
 // (added for LF1000)
-void CDisplayModule::WaitForDisplayAddressPatched(void)
+void CDisplayLF1000::WaitForDisplayAddressPatched(void)
 {
 	// This is called in conjunction with SwapBuffers() display updates.
 	// It is called prior to SetDisplayAddress() callback to make sure dirty
@@ -409,7 +409,7 @@ void CDisplayModule::WaitForDisplayAddressPatched(void)
 
 //----------------------------------------------------------------------------
 // (added for LF1000)
-void CDisplayModule::SetOpenGLDisplayAddress(
+void CDisplayLF1000::SetOpenGLDisplayAddress(
 		const unsigned int DisplayBufferPhysicalAddress)
 {
 	// BUGFIX/dm: DisplayBufferPhysicalAddress must be loaded into MLC address register

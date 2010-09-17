@@ -61,9 +61,9 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
 
-	isOpenGLEnabled_ = false;
-	isLayerSwapped_ = false;
-	isYUVLayerSwapped_ = false;
+//	isOpenGLEnabled_ = false;
+//	isLayerSwapped_ = false;
+//	isYUVLayerSwapped_ = false;
 
 	InitModule(); // delegate to platform or emulation initializer
 	gDisplayList.clear();

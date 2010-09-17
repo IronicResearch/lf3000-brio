@@ -449,22 +449,24 @@ public:
 	
 	VTABLE_EXPORT tPixelFormat		GetAvailableFormat();
 	
-private:
+//private:
+//protected:
+public:
 	void				InitModule( );
 	void				DeInitModule( );
 	U32					GetScreenSize( );
 	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
 	tErrType 			UnRegisterLayer(tDisplayHandle hndl);
-	void				SetDirtyBit(int layer);
+//	void				SetDirtyBit(int layer); // FIXME
 	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
-	bool				isOpenGLEnabled_;
-	bool				isLayerSwapped_;
-	bool				isYUVLayerSwapped_;
+//	bool				isOpenGLEnabled_;
+//	bool				isLayerSwapped_;
+//	bool				isYUVLayerSwapped_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();
@@ -474,9 +476,71 @@ private:
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 
 #ifndef EMULATION	
+//	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
+//	bool				DeAllocBuffer(tDisplayContext* pdc);
+#endif
+};
+
+//==============================================================================
+class CDisplayLF1000 /* : CDisplayDriver */ {
+public:
+	void				InitModule( );
+	void				DeInitModule( );
+
+	U32					GetScreenSize( );
+	enum tPixelFormat	GetPixelFormat(void);
+	
+	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
+	tErrType 			UnRegisterLayer(tDisplayHandle hndl);
+	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
+
+	tDisplayHandle		CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, U8 *pBuffer);
+	tErrType			DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer);
+
+	tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync);
+	Boolean				IsBufferSwapped(tDisplayHandle hndl);
+	
+	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible);
+	tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);
+	
+	tErrType 			SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable);
+	U8 					GetAlpha(tDisplayHandle hndl) const;
+	
+	tErrType			SetBacklight(tDisplayScreen screen, S8 backlight);
+	S8					GetBacklight(tDisplayScreen screen);
+
+	void    			InitOpenGL(void* pCtx);
+	void    			DeinitOpenGL();
+	void    			EnableOpenGL(void* pCtx);
+	void    			DisableOpenGL();
+	void    			UpdateOpenGL();
+	void				WaitForDisplayAddressPatched(void);
+	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
+
+private:
+	void				SetDirtyBit(int layer);
+	
 	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
 	bool				DeAllocBuffer(tDisplayContext* pdc);
-#endif
+	
+public:
+	CDebugMPI			dbg_;
+	CKernelMPI			kernel_;
+//	tDisplayContext*	pdcPrimary_;
+	tDisplayContext*	pdcVisible_;
+	bool				isOpenGLEnabled_;
+	bool				isLayerSwapped_;
+	bool				isYUVLayerSwapped_;
+	
+public:
+	CDisplayModule*		pModule_;
+
+public:	
+	CDisplayLF1000(CDisplayModule* pModule) :
+		pModule_(pModule),
+		dbg_(kGroupDisplay), isOpenGLEnabled_(false),
+		isLayerSwapped_(false), isYUVLayerSwapped_(false) {};
+	~CDisplayLF1000() {};
 };
 
 

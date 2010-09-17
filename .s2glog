@@ -27776,3 +27776,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/17/10 4:04 PM
 6,141 ms. (Cumulative: 9,785,326 ms)
 
 ----------------
+Revision 8,360 from svn://localhost/TRUNK/:
+Revision 8,361 from svn://localhost/TRUNK/:
+Revision 8,362 from svn://localhost/TRUNK/:
+Revision 8,363 from svn://localhost/TRUNK/:
+
+DisplayMPI: Refactored HW-specific CDisplayModule functions into separate CDisplayDriver object for distinguishing between LF1000-specific driver calls and future Linux framebuffer driver calls. Initial pass renames original LF1000 functions into CDisplayLF1000 object for unchanged functionality. Some minor cleanup pending, though note ugly sharing of pdcVisible_ member var between CDisplayModule and CDisplayLF1000.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/17/10 4:46 PM
+4 changed, 1 added, 0 deleted.
+6,658 ms. (Cumulative: 9,792,093 ms)
+
+----------------
