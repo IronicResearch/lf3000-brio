@@ -97,7 +97,7 @@ namespace
 	}
 	
 	//----------------------------------------------------------------------------
-	bool CDisplayModule::AllocBuffer(tDisplayContext* pdc, U32 aligned)
+	bool CDisplayLF1000::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	{
 		U32 bufsize = (aligned) ? aligned : pdc->pitch * pdc->height;
 #define UNIFIED
@@ -170,7 +170,7 @@ namespace
 	}
 	
 	//----------------------------------------------------------------------------
-	bool CDisplayModule::DeAllocBuffer(tDisplayContext* pdc)
+	bool CDisplayLF1000::DeAllocBuffer(tDisplayContext* pdc)
 	{
 #ifndef UNIFIED		
 		if (!pdc->isOverlay)
@@ -227,7 +227,7 @@ namespace
 // CDisplayModule: Implementation of hardware-specific functions
 //============================================================================
 //----------------------------------------------------------------------------
-void CDisplayModule::InitModule()
+void CDisplayLF1000::InitModule()
 {
 	// Initialize display manager for hardware target
 	int 			baseAddr, fb_size;
@@ -361,7 +361,7 @@ void CDisplayModule::InitModule()
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::DeInitModule()
+void CDisplayLF1000::DeInitModule()
 {
 	dbg_.DebugOut(kDbgLvlVerbose, "DisplayModule::DeInitModuleHW: enter\n");
 
@@ -382,7 +382,7 @@ void CDisplayModule::DeInitModule()
 }
 
 //----------------------------------------------------------------------------
-U32 CDisplayModule::GetScreenSize(void)
+U32 CDisplayLF1000::GetScreenSize(void)
 {
 	union mlc_cmd c;
 	int r;
@@ -398,7 +398,7 @@ U32 CDisplayModule::GetScreenSize(void)
 
 //----------------------------------------------------------------------------
 // Returns pixel format of primary RGB layer
-enum tPixelFormat CDisplayModule::GetPixelFormat(void)
+enum tPixelFormat CDisplayLF1000::GetPixelFormat(void)
 {
 	int format = ioctl(gDevLayer, MLC_IOCQFORMAT, 0);
 	dbg_.Assert(format >= 0, "DisplayModule::GetPixelFormat: ioctl failed");
@@ -420,7 +420,7 @@ enum tPixelFormat CDisplayModule::GetPixelFormat(void)
 //----------------------------------------------------------------------------
 // pBuffer == NULL indicates onscreen context.
 // pBuffer != NULL indicates offscreen context.
-tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width, 
+tDisplayHandle CDisplayLF1000::CreateHandle(U16 height, U16 width, 
 										tPixelFormat colorDepth, U8 *pBuffer)
 {
 	U32 hwFormat;
@@ -522,7 +522,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int dy, int width, int height)
+tErrType CDisplayLF1000::Update(tDisplayContext *dc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	// Copy offscreen context to primary display context
 	if (dc->isAllocated)
@@ -592,7 +592,7 @@ tErrType CDisplayModule::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 
 //----------------------------------------------------------------------------
 // Hide onscreen display context from being visible.
-tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
+tErrType CDisplayLF1000::UnRegisterLayer(tDisplayHandle hndl)
 {
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int 	layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
@@ -615,13 +615,13 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 
 //----------------------------------------------------------------------------
 // There is no buffer to destroy, so destroyBuffer is ignored.
-tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, 
+tErrType CDisplayLF1000::DestroyHandle(tDisplayHandle hndl, 
 									   Boolean destroyBuffer)
 {
 	(void )destroyBuffer;	/* Prevent unused variable warnings. */ 
 	if (hndl == NULL)
 		return kNoErr;
-	UnRegister(hndl, 0);
+	pModule_->UnRegister(hndl, 0);
 	// Release mappings to framebuffer memory
 	struct 	tDisplayContext *context = (struct tDisplayContext *)hndl;
 	if (!context->isAllocated) {
@@ -633,7 +633,7 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl,
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
+tErrType CDisplayLF1000::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	union mlc_cmd c;
 	struct tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
@@ -726,7 +726,7 @@ tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
+tErrType CDisplayLF1000::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
 	int	layer = dc->layer;
@@ -742,7 +742,7 @@ tErrType CDisplayModule::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U1
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible)
+tErrType CDisplayLF1000::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible)
 {
 	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
 	x = dc->rect.left;
@@ -753,7 +753,7 @@ tErrType CDisplayModule::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, 
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::SetDirtyBit(int layer)
+void CDisplayLF1000::SetDirtyBit(int layer)
 {
 	ioctl(layer, MLC_IOCTDIRTY, 0);
 }
@@ -765,7 +765,7 @@ inline int GetDirtyBit(int layer)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
+tErrType CDisplayLF1000::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 {
 	tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
 	int		layer = context->layer;
@@ -783,7 +783,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 			// Update invalidated regions before page flip
 			if (!isYUVLayerSwapped_)
 				pdcVisible_->flippedContext = context;
-			Invalidate(0, NULL);
+			pModule_->Invalidate(0, NULL);
 		}
 		else 
 			return kDisplayDisplayNotInListErr;
@@ -817,7 +817,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 }
 
 //----------------------------------------------------------------------------
-Boolean CDisplayModule::IsBufferSwapped(tDisplayHandle hndl)
+Boolean CDisplayLF1000::IsBufferSwapped(tDisplayHandle hndl)
 {
 	tDisplayContext *context = reinterpret_cast<tDisplayContext*>(hndl);
 
@@ -860,7 +860,7 @@ U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, 
+tErrType CDisplayLF1000::SetAlpha(tDisplayHandle hndl, U8 level, 
 		Boolean enable)
 {
 	int r;
@@ -881,7 +881,7 @@ tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level,
 }
 
 //----------------------------------------------------------------------------
-U8 CDisplayModule::GetAlpha(tDisplayHandle hndl) const
+U8 CDisplayLF1000::GetAlpha(tDisplayHandle hndl) const
 {
 	struct tDisplayContext *context = (struct tDisplayContext *)hndl;
 	int layer = context->layer; // (context->isOverlay) ? gDevOverlay : gDevLayer;
@@ -918,7 +918,7 @@ tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
+tErrType CDisplayLF1000::SetBacklight(tDisplayScreen screen, S8 backlight)
 {	
 	(void )screen;	/* Prevent unused variable warnings. */
 	int 			r;
@@ -942,7 +942,7 @@ S8	CDisplayModule::GetContrast(tDisplayScreen screen)
 }
 
 //----------------------------------------------------------------------------
-S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
+S8	CDisplayLF1000::GetBacklight(tDisplayScreen screen)
 {
 	(void )screen;	/* Prevent unused variable warnings. */
 	unsigned long	p = 0;
