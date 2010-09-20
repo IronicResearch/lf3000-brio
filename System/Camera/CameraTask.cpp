@@ -381,6 +381,16 @@ void* CameraTaskMain(void* arg)
 	}
 	elapsed = 1000000 * (tvt.tv_sec) + (tvt.tv_usec);
 
+	if(bFile)
+	{
+		float fps = (float)keyframe / ((float)elapsed / 1000000);
+		if (pCtx->bAudio)
+			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
+
+		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
+		AVI_close(avi);
+	}
+
 	// Post done message to event listener
 	if(pCtx->pListener)
 	{
@@ -435,16 +445,6 @@ void* CameraTaskMain(void* arg)
 	{
 		kernel.Free(image.buffer);
 		image.buffer = NULL;
-	}
-
-	if(bFile)
-	{
-		float fps = (float)keyframe / ((float)elapsed / 1000000);
-		if (pCtx->bAudio)
-			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
-
-		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
-		AVI_close(avi);
 	}
 
 	if (bDoubleBuffered)
