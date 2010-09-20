@@ -27788,3 +27788,14 @@ By Dave Milici (dmilici@leapfrog.com) on 9/17/10 4:46 PM
 6,658 ms. (Cumulative: 9,792,093 ms)
 
 ----------------
+Revision 8,364 from svn://localhost/TRUNK/:
+Revision 8,365 from svn://localhost/TRUNK/:
+Revision 8,366 from svn://localhost/TRUNK/:
+
+CameraMPI: (TTP #2772) Close AVI before posting capture event instead of after, in order to allow event listener to handle any post-processing of AVI file.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/10 4:49 PM
+1 changed, 0 added, 0 deleted.
+6,392 ms. (Cumulative: 9,798,594 ms)
+
+----------------
