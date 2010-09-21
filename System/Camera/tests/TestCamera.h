@@ -392,6 +392,7 @@ public:
 			pKernelMPI_->TaskSleep(2500);
 			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureTimeOutEvent );
 
+			bRet = pCameraMPI_->StopVideoCapture(capture);
 			listener.Reset();
 
 			//Unlimited recording

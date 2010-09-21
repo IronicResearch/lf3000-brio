@@ -27808,3 +27808,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/10 5:11 PM
 6,556 ms. (Cumulative: 9,805,228 ms)
 
 ----------------
+Revision 8,368 from svn://localhost/TRUNK/:
+
+CameraMPI: Fix unit test for svn -r8367: Callers of StartVideoCapture() must call StopVideoCapture().
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/10 5:16 PM
+1 changed, 0 added, 0 deleted.
+6,391 ms. (Cumulative: 9,811,713 ms)
+
+----------------
