@@ -329,10 +329,14 @@ void* CameraTaskMain(void* arg)
 		{
 			if(bFile && bRet)
 			{
+				int r = 0;
 				// Duplicate video frame(s) if video frame count lags behind audio block count
 				do {
-					AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
-				} while (pCtx->bAudio && keyframe < cam->micCtx_.counter);
+					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
+				} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
+				// Breakout on next loop iteration if AVI write error
+				if (r < 0)
+					bRunning = false;
 			}
 			if (!bFirst) {
 				bFirst = true;

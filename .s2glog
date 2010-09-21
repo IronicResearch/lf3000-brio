@@ -27817,3 +27817,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/10 5:16 PM
 6,391 ms. (Cumulative: 9,811,713 ms)
 
 ----------------
+Revision 8,369 from svn://localhost/TRUNK/:
+Revision 8,370 from svn://localhost/TRUNK/:
+Revision 8,371 from svn://localhost/TRUNK/:
+Revision 8,372 from svn://localhost/TRUNK/:
+
+CameraMPI: (CAM TTP #1445) Propagate AVI write errors back to caller in order to allow the camera capture thread to terminate itself prior to timeout.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/21/10 10:31 AM
+2 changed, 0 added, 0 deleted.
+6,688 ms. (Cumulative: 9,818,526 ms)
+
+----------------
