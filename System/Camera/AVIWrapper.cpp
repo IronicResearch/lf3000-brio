@@ -199,7 +199,7 @@ int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 
 	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
 	
-	return 0;
+	return r;
 }
 
 //----------------------------------------------------------------------------
@@ -223,7 +223,7 @@ int  AVI_write_audio(avi_t *AVI, char *data, long bytes)
 	
 	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
 	
-	return 0;
+	return r;
 }
 
 //----------------------------------------------------------------------------
