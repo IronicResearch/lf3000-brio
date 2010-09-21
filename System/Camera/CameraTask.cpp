@@ -58,8 +58,8 @@ namespace
 //----------------------------------------------------------------------------
 static void TimerCallback(tTimerHndl arg)
 {
+	// Let camera capture thread terminate itself
 	timeout = true;
-	cam->StopVideoCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
@@ -74,7 +74,7 @@ void* CameraTaskRender(void* arg)
 	Boolean				bRet = false;
 	int					ibuf = 0;
 	
-	while (bRunning)
+	while (bRunning && !timeout)
 	{
 		if (!pCtx->qframes.empty() && !pCtx->bVPaused)
 		{
@@ -244,7 +244,7 @@ void* CameraTaskMain(void* arg)
 	bRunning = true;
 	dbg.DebugOut( kDbgLvlImportant, "CameraTask Started...\n" );
 
-	while(bRunning)
+	while(bRunning && !timeout)
 	{
 		if(0 != kernel.TryLockMutex(pCtx->mThread))
 		{

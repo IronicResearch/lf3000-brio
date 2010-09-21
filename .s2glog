@@ -27799,3 +27799,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/20/10 4:49 PM
 6,392 ms. (Cumulative: 9,798,594 ms)
 
 ----------------
+Revision 8,367 from svn://localhost/TRUNK/:
+
+CameraMPI: (CAM TTP #1445) Let camera capture thread self-terminate on timeout, to avoid unsafe calls in timeout handler which could potentially deadlock thread.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/20/10 5:11 PM
+1 changed, 0 added, 0 deleted.
+6,556 ms. (Cumulative: 9,805,228 ms)
+
+----------------
