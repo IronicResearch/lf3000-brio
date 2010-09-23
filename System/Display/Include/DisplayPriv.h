@@ -449,24 +449,18 @@ public:
 	
 	VTABLE_EXPORT tPixelFormat		GetAvailableFormat();
 	
-//private:
-//protected:
-public:
+private:
 	void				InitModule( );
 	void				DeInitModule( );
 	U32					GetScreenSize( );
 	enum tPixelFormat	GetPixelFormat(void);
 	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
 	tErrType 			UnRegisterLayer(tDisplayHandle hndl);
-//	void				SetDirtyBit(int layer); // FIXME
 	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
-//	bool				isOpenGLEnabled_;
-//	bool				isLayerSwapped_;
-//	bool				isYUVLayerSwapped_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();
@@ -475,10 +469,6 @@ public:
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 
-#ifndef EMULATION	
-//	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
-//	bool				DeAllocBuffer(tDisplayContext* pdc);
-#endif
 };
 
 //==============================================================================
@@ -523,21 +513,21 @@ private:
 	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
 	bool				DeAllocBuffer(tDisplayContext* pdc);
 	
-public:
+private:
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
-//	tDisplayContext*	pdcPrimary_;
-	tDisplayContext*	pdcVisible_;
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
 	bool				isYUVLayerSwapped_;
 	
 public:
 	CDisplayModule*		pModule_;
+	tDisplayContext*	pdcVisible_;  // FIXME: shared with CDisplayModule
 
 public:	
 	CDisplayLF1000(CDisplayModule* pModule) :
 		pModule_(pModule),
+		pdcVisible_(NULL),
 		dbg_(kGroupDisplay), isOpenGLEnabled_(false),
 		isLayerSwapped_(false), isYUVLayerSwapped_(false) {};
 	~CDisplayLF1000() {};

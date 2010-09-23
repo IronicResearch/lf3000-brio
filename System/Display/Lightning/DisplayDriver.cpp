@@ -86,12 +86,6 @@ tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 }
 
 //----------------------------------------------------------------------------
-/*void CDisplayModule::SetDirtyBit(int layer)
-{
-	return pDriver->SetDirtyBit(layer); // FIXME
-}
-*/
-//----------------------------------------------------------------------------
 tErrType CDisplayModule::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height)
 {
 	pDriver->pdcVisible_ = pdcVisible_;
