@@ -14,6 +14,9 @@
 
 #include <AVIWrapper.h>
 
+#include <fcntl.h>
+#include <errno.h>
+
 //----------------------------------------------------------------------------
 avi_t* AVI_open_output_file(char * filename, bool audio)
 {
@@ -41,6 +44,14 @@ avi_t* AVI_open_output_file(char * filename, bool audio)
     if (url_fopen(&avi->pFormatCtx->pb, avi->pFormatCtx->filename, URL_WRONLY) < 0)
     	return NULL;
 
+    // Get internal file descriptor
+    URLContext* pctx = url_fileno(avi->pFormatCtx->pb);
+    int fd = (int)pctx->priv_data;
+    
+    // Change file writes to non-blocking mode
+    int flags = fcntl(fd, F_GETFL);
+    fcntl(fd, F_SETFL, O_NONBLOCK | flags);
+    
 	// Create video stream
 	avi->pVideoStrm = av_new_stream(avi->pFormatCtx, avi->iVideoStream = 0);
 	if (avi->pVideoStrm == NULL)
@@ -199,6 +210,9 @@ int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 
 	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
 	
+	if (r < 0)
+		printf("%s: r=%d, errno=%d: %s\n", __FUNCTION__, r, errno, strerror(errno));
+
 	return r;
 }
 
@@ -223,6 +237,9 @@ int  AVI_write_audio(avi_t *AVI, char *data, long bytes)
 	
 	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
 	
+	if (r < 0)
+		printf("%s: r=%d, errno=%d: %s\n", __FUNCTION__, r, errno, strerror(errno));
+
 	return r;
 }
 
