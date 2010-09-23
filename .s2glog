@@ -27829,3 +27829,30 @@ By Dave Milici (dmilici@leapfrog.com) on 9/21/10 10:31 AM
 6,688 ms. (Cumulative: 9,818,526 ms)
 
 ----------------
+Revision 8,373 from svn://localhost/TRUNK/:
+Revision 8,374 from svn://localhost/TRUNK/:
+Revision 8,375 from svn://localhost/TRUNK/:
+Revision 8,376 from svn://localhost/TRUNK/:
+Revision 8,377 from svn://localhost/TRUNK/:
+Revision 8,378 from svn://localhost/TRUNK/:
+Revision 8,379 from svn://localhost/TRUNK/:
+Revision 8,380 from svn://localhost/TRUNK/:
+Revision 8,381 from svn://localhost/TRUNK/:
+Revision 8,382 from svn://localhost/TRUNK/:
+Revision 8,383 from svn://localhost/TRUNK/:
+Revision 8,384 from svn://localhost/TRUNK/:
+Revision 8,385 from svn://localhost/TRUNK/:
+Revision 8,386 from svn://localhost/TRUNK/:
+Revision 8,387 from svn://localhost/TRUNK/:
+Revision 8,388 from svn://localhost/TRUNK/:
+Revision 8,389 from svn://localhost/TRUNK/:
+Revision 8,390 from svn://localhost/TRUNK/:
+Revision 8,391 from svn://localhost/TRUNK/:
+
+CameraMPI: (CAM TTP #1445) Change AVI file writes to non-blocking mode, in order to early out of writes which would otherwise block. This change appears to have no effect on the existing UBIFS volume behavior, but works as expected with kernel using the latest UBIFS driver (attached to TTP #2779).
+
+By Dave Milici (dmilici@leapfrog.com) on 9/23/10 10:51 AM
+1 changed, 0 added, 0 deleted.
+6,404 ms. (Cumulative: 9,825,149 ms)
+
+----------------
