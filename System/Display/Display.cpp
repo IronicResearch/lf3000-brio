@@ -396,6 +396,42 @@ tPixelFormat	CDisplayModule::GetAvailableFormat()
 	return kPixelFormatError;
 }
 
+//----------------------------------------------------------------------------
+U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->pBuffer;
+}
+
+//----------------------------------------------------------------------------
+tPixelFormat CDisplayModule::GetPixelFormat(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->colorDepthFormat;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->pitch;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->depth;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->height;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->width;
+}
+
 LF_END_BRIO_NAMESPACE()
 
 //============================================================================
