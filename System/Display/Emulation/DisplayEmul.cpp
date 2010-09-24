@@ -346,48 +346,6 @@ U8 CDisplayModule::GetAlpha(tDisplayHandle hndl) const
 }
 
 //----------------------------------------------------------------------------
-tPixelFormat CDisplayModule::GetPixelFormat(tDisplayHandle hndl) const
-{
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	return dc->colorDepthFormat;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
-{
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	return dc->pitch;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
-{
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	return dc->depth;
-}
-
-//----------------------------------------------------------------------------
-U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
-{
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	return dc->pBuffer;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
-{
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	return dc->height;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
-{
-	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
-	return dc->width;
-}
-
-//----------------------------------------------------------------------------
 U32 CDisplayModule::GetScreenSize()
 {
 	// Compatible packed format with embedded target 
