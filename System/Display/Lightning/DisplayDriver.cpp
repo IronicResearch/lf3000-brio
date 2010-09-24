@@ -72,6 +72,51 @@ tErrType CDisplayModule::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffe
 }
 
 //----------------------------------------------------------------------------
+tDisplayHandle CDisplayModule::GetCurrentDisplayHandle()
+{
+	if (pdcVisible_ && pdcVisible_->flippedContext)
+		return pdcVisible_->flippedContext;
+	else
+		return pdcVisible_;
+}
+
+//----------------------------------------------------------------------------
+U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->pBuffer;
+}
+
+//----------------------------------------------------------------------------
+tPixelFormat CDisplayModule::GetPixelFormat(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->colorDepthFormat;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->pitch;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->depth;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->height;
+}
+
+//----------------------------------------------------------------------------
+U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
+{
+	return ((struct tDisplayContext *)hndl)->width;
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	pDriver->pdcVisible_ = pdcVisible_;
@@ -139,6 +184,36 @@ tErrType CDisplayModule::SetBacklight(tDisplayScreen screen, S8 backlight)
 S8	CDisplayModule::GetBacklight(tDisplayScreen screen)
 {
 	return pDriver->GetBacklight(screen);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
+{
+	(void)screen;
+	(void)brightness;
+	return kNoImplErr; // not implemented
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
+{
+	(void)screen;
+	(void)contrast;
+	return kNoImplErr; // not implemented
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
+{
+	(void)screen;
+	return 0; // not implemented
+}
+
+//----------------------------------------------------------------------------
+S8	CDisplayModule::GetContrast(tDisplayScreen screen)
+{
+	(void)screen;
+	return 0; // not implemented
 }
 
 //----------------------------------------------------------------------------
