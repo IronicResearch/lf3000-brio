@@ -27920,3 +27920,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/24/10 11:20 AM
 6,120 ms. (Cumulative: 9,844,012 ms)
 
 ----------------
+Revision 8,432 from svn://localhost/TRUNK/:
+
+DisplayMPI: Export one last function out of driver module to isolate LF1000-specific code.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/24/10 11:35 AM
+3 changed, 0 added, 0 deleted.
+6,165 ms. (Cumulative: 9,850,263 ms)
+
+----------------
