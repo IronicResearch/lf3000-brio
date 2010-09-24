@@ -535,6 +535,58 @@ public:
 	~CDisplayLF1000() {};
 };
 
+class CDisplayFB /* : CDisplayDriver */ {
+public:
+	void				InitModule( );
+	void				DeInitModule( );
+
+	U32					GetScreenSize( );
+	enum tPixelFormat	GetPixelFormat(void);
+	
+	tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos);
+	tErrType 			UnRegisterLayer(tDisplayHandle hndl);
+	tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height);
+
+	tDisplayHandle		CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, U8 *pBuffer);
+	tErrType			DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer);
+
+	tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync);
+	Boolean				IsBufferSwapped(tDisplayHandle hndl);
+	
+	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible);
+	tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);
+	
+	tErrType 			SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable);
+	U8 					GetAlpha(tDisplayHandle hndl) const;
+	
+	tErrType			SetBacklight(tDisplayScreen screen, S8 backlight);
+	S8					GetBacklight(tDisplayScreen screen);
+
+	void    			InitOpenGL(void* pCtx);
+	void    			DeinitOpenGL();
+	void    			EnableOpenGL(void* pCtx);
+	void    			DisableOpenGL();
+	void    			UpdateOpenGL();
+	void				WaitForDisplayAddressPatched(void);
+	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
+
+	U32					GetDisplayMem(tDisplayMem memtype);
+	
+private:
+	CDebugMPI			dbg_;
+	CKernelMPI			kernel_;
+	
+public:
+	CDisplayModule*		pModule_;
+	tDisplayContext*	pdcVisible_;  // FIXME: shared with CDisplayModule
+
+public:	
+	CDisplayFB(CDisplayModule* pModule) :
+		pModule_(pModule),
+		pdcVisible_(NULL),
+		dbg_(kGroupDisplay) {};
+	~CDisplayFB() {};
+};
 
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_DISPLAYPRIV_H

@@ -27929,3 +27929,15 @@ By Dave Milici (dmilici@leapfrog.com) on 9/24/10 11:35 AM
 6,165 ms. (Cumulative: 9,850,263 ms)
 
 ----------------
+Revision 8,433 from svn://localhost/TRUNK/:
+Revision 8,434 from svn://localhost/TRUNK/:
+Revision 8,435 from svn://localhost/TRUNK/:
+Revision 8,436 from svn://localhost/TRUNK/:
+
+DisplayMPI: Added stubbed object for framebuffer driver.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/24/10 3:11 PM
+1 changed, 1 added, 0 deleted.
+6,045 ms. (Cumulative: 9,856,416 ms)
+
+----------------
