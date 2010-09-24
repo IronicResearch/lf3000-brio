@@ -827,39 +827,6 @@ Boolean CDisplayLF1000::IsBufferSwapped(tDisplayHandle hndl)
 }
 
 //----------------------------------------------------------------------------
-tDisplayHandle CDisplayModule::GetCurrentDisplayHandle()
-{
-	if(pdcVisible_ && pdcVisible_->flippedContext)
-		return pdcVisible_->flippedContext;
-	else
-		return pdcVisible_;
-}
-
-//----------------------------------------------------------------------------
-U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
-{
-	return ((struct tDisplayContext *)hndl)->pBuffer;
-}
-
-//----------------------------------------------------------------------------
-tPixelFormat CDisplayModule::GetPixelFormat(tDisplayHandle hndl) const
-{
-	return ((struct tDisplayContext *)hndl)->colorDepthFormat;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetPitch(tDisplayHandle hndl) const
-{
-	return ((struct tDisplayContext *)hndl)->pitch;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetDepth(tDisplayHandle hndl) const
-{
-	return ((struct tDisplayContext *)hndl)->depth;
-}
-
-//----------------------------------------------------------------------------
 tErrType CDisplayLF1000::SetAlpha(tDisplayHandle hndl, U8 level, 
 		Boolean enable)
 {
@@ -890,34 +857,6 @@ U8 CDisplayLF1000::GetAlpha(tDisplayHandle hndl) const
 }
 
 //----------------------------------------------------------------------------
-U16 CDisplayModule::GetHeight(tDisplayHandle hndl) const
-{
-	return ((struct tDisplayContext *)hndl)->height;
-}
-
-//----------------------------------------------------------------------------
-U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
-{
-	return ((struct tDisplayContext *)hndl)->width;
-}
-
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::SetBrightness(tDisplayScreen screen, S8 brightness)
-{
-	(void )screen;	/* Prevent unused variable warnings. */
-	(void)brightness;
-	return kNoImplErr; // not implemented
-}
-
-//----------------------------------------------------------------------------
-tErrType CDisplayModule::SetContrast(tDisplayScreen screen, S8 contrast)
-{
-	(void )screen;	/* Prevent unused variable warnings. */
-	(void)contrast;
-	return kNoImplErr; // not implemented
-}
-
-//----------------------------------------------------------------------------
 tErrType CDisplayLF1000::SetBacklight(tDisplayScreen screen, S8 backlight)
 {	
 	(void )screen;	/* Prevent unused variable warnings. */
@@ -925,20 +864,6 @@ tErrType CDisplayLF1000::SetBacklight(tDisplayScreen screen, S8 backlight)
 
 	r = ioctl(gDevDpc, DPC_IOCTBACKLIGHTVIRT, backlight);
 	return (r < 0) ? kDisplayInvalidScreenErr : kNoErr;
-}
-
-//----------------------------------------------------------------------------
-S8	CDisplayModule::GetBrightness(tDisplayScreen screen)
-{
-	(void )screen;	/* Prevent unused variable warnings. */
-	return 0; // not implemented
-}
-
-//----------------------------------------------------------------------------
-S8	CDisplayModule::GetContrast(tDisplayScreen screen)
-{
-	(void )screen;	/* Prevent unused variable warnings. */
-	return 0; // not implemented
 }
 
 //----------------------------------------------------------------------------
