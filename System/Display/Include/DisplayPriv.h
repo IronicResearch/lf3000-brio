@@ -507,6 +507,8 @@ public:
 	void				WaitForDisplayAddressPatched(void);
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 
+	U32					GetDisplayMem(tDisplayMem memtype);
+	
 private:
 	void				SetDirtyBit(int layer);
 	

@@ -70,7 +70,7 @@ namespace
 }
 
 	//----------------------------------------------------------------------------
-	U32	CDisplayModule::GetDisplayMem(tDisplayMem memtype)
+	U32	CDisplayLF1000::GetDisplayMem(tDisplayMem memtype)
 	{
 		U32 mem = 0;
 		std::list<tBuffer>::iterator it;
@@ -224,7 +224,7 @@ namespace
 	}
 
 //============================================================================
-// CDisplayModule: Implementation of hardware-specific functions
+// CDisplayLF1000: Implementation of hardware-specific functions
 //============================================================================
 //----------------------------------------------------------------------------
 void CDisplayLF1000::InitModule()

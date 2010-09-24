@@ -223,6 +223,12 @@ void CDisplayModule::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhy
 }
 
 //----------------------------------------------------------------------------
+U32	CDisplayModule::GetDisplayMem(tDisplayMem memtype)
+{
+	return pDriver->GetDisplayMem(memtype);
+}
+
+//----------------------------------------------------------------------------
 
 LF_END_BRIO_NAMESPACE()
 // EOF
