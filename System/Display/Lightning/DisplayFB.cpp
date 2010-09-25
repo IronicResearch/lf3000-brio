@@ -16,10 +16,20 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <linux/fb.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 namespace 
 {
+	const char*					FBDEV = "/dev/fb0";
+	int 						fbdev = -1;
+	struct fb_fix_screeninfo 	finfo;
+	struct fb_var_screeninfo 	vinfo;
+	U8*							fbmem = 0;
 }
 
 //============================================================================
@@ -28,35 +38,85 @@ namespace
 //----------------------------------------------------------------------------
 void CDisplayFB::InitModule()
 {
+	int r;
+	
+	// Open framebuffer device
+	fbdev = open(FBDEV, O_RDWR | O_SYNC);
+	dbg_.Assert(fbdev >= 0, "%s: Error opening %s\n", __FUNCTION__, FBDEV);
+	
+	// Query framebuffer info
+	r = ioctl(fbdev, FBIOGET_FSCREENINFO, &finfo);
+	dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV);
+	
+	r = ioctl(fbdev, FBIOGET_VSCREENINFO, &vinfo);
+	dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV);
+	dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %d x %d\n", __FUNCTION__, vinfo.xres, vinfo.yres);
+
+	// Map framebuffer into userspace
+	fbmem = (U8*)mmap(0, finfo.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev, 0);
+	dbg_.Assert(fbmem != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV);
+	dbg_.DebugOut(kDbgLvlImportant, "%s: Mapped %08lx to %p, size %u\n", __FUNCTION__, finfo.smem_start, fbmem, finfo.smem_len);
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DeInitModule()
 {
+	// Release framebuffer mapping and device
+	munmap(fbmem, finfo.smem_len);
+	
+	close(fbdev);
 }
 
 //----------------------------------------------------------------------------
 U32	CDisplayFB::GetScreenSize()
 {
-	return 0;
+	return (vinfo.yres << 16) | (vinfo.xres);
 }
 
 //----------------------------------------------------------------------------
 tPixelFormat CDisplayFB::GetPixelFormat(void)
 {
-	return kPixelFormatError;
+	return kPixelFormatARGB8888;
 }
 
 //----------------------------------------------------------------------------
 tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, U8 *pBuffer)
 {
-	return kInvalidHndl;
+	tDisplayContext* ctx = new tDisplayContext;
+
+	int depth;
+	switch (colorDepth) 
+	{
+		case kPixelFormatRGB4444:	depth = 16; break;
+		case kPixelFormatRGB565:	depth = 16; break;
+		case kPixelFormatRGB888:	depth = 24; break; 	
+		default:
+		case kPixelFormatARGB8888: 	depth = 32; break;
+		case kPixelFormatYUV420:	depth = 8 ; break;
+		case kPixelFormatYUYV422:	depth = 16; break;
+	}		
+	
+	memset(ctx, 0, sizeof(tDisplayContext));
+	ctx->width				= width;
+	ctx->height				= height;
+	ctx->colorDepthFormat 	= colorDepth;
+	ctx->depth				= depth;
+	ctx->bpp				= depth/8;
+	ctx->pitch				= width * ctx->bpp; // FIXME
+	ctx->isAllocated		= (pBuffer != NULL);
+	ctx->pBuffer			= (pBuffer != NULL) ? pBuffer : fbmem;
+	
+	return (tDisplayHandle)ctx;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	delete ctx;
+	
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
