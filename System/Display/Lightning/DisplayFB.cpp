@@ -26,10 +26,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace 
 {
 	const char*					FBDEV = "/dev/fb0";
+	const char*					FBYUV = "/dev/fb2";
 	int 						fbdev = -1;
 	struct fb_fix_screeninfo 	finfo;
 	struct fb_var_screeninfo 	vinfo;
 	U8*							fbmem = 0;
+	int 						index = 0; // FIXME -- just for testing
 }
 
 //============================================================================
@@ -61,6 +63,10 @@ void CDisplayFB::InitModule()
 //----------------------------------------------------------------------------
 void CDisplayFB::DeInitModule()
 {
+	// FIXME: Framebuffer driver remembers page offset???
+	vinfo.yoffset = 0;
+	ioctl(fbdev, FBIOPUT_VSCREENINFO, &vinfo);
+	
 	// Release framebuffer mapping and device
 	munmap(fbmem, finfo.smem_len);
 	
@@ -95,6 +101,15 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		case kPixelFormatYUV420:	depth = 8 ; break;
 		case kPixelFormatYUYV422:	depth = 16; break;
 	}		
+
+	// FIXME: Framebuffer driver doesn't look at pixel format???
+	vinfo.bits_per_pixel = depth;
+	int r = ioctl(fbdev, FBIOPUT_VSCREENINFO, &vinfo);
+	r = ioctl(fbdev, FBIOGET_VSCREENINFO, &vinfo);
+	r = ioctl(fbdev, FBIOGET_FSCREENINFO, &finfo);
+	
+	int offset = index * vinfo.yres * finfo.line_length;
+	index++;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -102,9 +117,10 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->colorDepthFormat 	= colorDepth;
 	ctx->depth				= depth;
 	ctx->bpp				= depth/8;
-	ctx->pitch				= width * ctx->bpp; // FIXME
+	ctx->pitch				= finfo.line_length;
 	ctx->isAllocated		= (pBuffer != NULL);
-	ctx->pBuffer			= (pBuffer != NULL) ? pBuffer : fbmem;
+	ctx->pBuffer			= (pBuffer != NULL) ? pBuffer : fbmem + offset;
+	ctx->offset 			= offset;
 	
 	return (tDisplayHandle)ctx;
 }
@@ -115,6 +131,7 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
 	delete ctx;
+	index--;
 	
 	return kNoErr;
 }
@@ -122,13 +139,26 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	ctx->rect.left		= xPos;
+	ctx->rect.top		= yPos;
+	ctx->rect.right		= xPos + ctx->width;
+	ctx->rect.bottom 	= yPos + ctx->height;
+	
+	int r = ioctl(fbdev, FBIOBLANK, 0);
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	int r = ioctl(fbdev, FBIOBLANK, 1);
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
@@ -140,13 +170,20 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	vinfo.yoffset = ctx->offset / finfo.line_length; 
+	int r = ioctl(fbdev, FBIOPAN_DISPLAY, &vinfo);
+
+	pdcVisible_->flippedContext = ctx;
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
 Boolean	CDisplayFB::IsBufferSwapped(tDisplayHandle hndl)
 {
-	return false;
+	return true; // FIXME
 }
 
 //----------------------------------------------------------------------------
