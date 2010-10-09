@@ -23,6 +23,10 @@
 #include <sys/mman.h>
 #include <linux/fb.h>
 
+#ifndef FBIO_WAITFORVSYNC
+#define FBIO_WAITFORVSYNC	 _IOW('F', 0x20, __u32)
+#endif
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define RGBFB					0	// index of RGB framebuffer
@@ -52,6 +56,7 @@ namespace
 	void*						preg3d = NULL;
 	void*						pmem1d = NULL;
 	void*						pmem2d = NULL;
+	tDisplayHandle				hogl = NULL;
 }
 
 //============================================================================
@@ -74,7 +79,7 @@ void CDisplayFB::InitModule()
 		
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
 		dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV[n]);
-		dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %d x %d\n", __FUNCTION__, vinfo[n].xres, vinfo[n].yres);
+		dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %d x %d, pitch = %d\n", __FUNCTION__, vinfo[n].xres, vinfo[n].yres, finfo[n].line_length);
 	
 		// Reset page flip offsets
 		vinfo[n].xoffset = vinfo[n].yoffset = 0;
@@ -133,6 +138,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (n == RGBFB)
 	{
 		vinfo[n].bits_per_pixel = depth;
+		if (colorDepth == kPixelFormatRGB565)
+			vinfo[n].nonstd |= (1<<23);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
@@ -277,7 +284,8 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Dereference OpenGL context for MagicEyes OEM memory size config
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
-
+	int 							n = RGBFB;
+	
 	// Open driver for 3D engine registers
 	fdreg3d = open(DEV3D, O_RDWR | O_SYNC);
 	dbg_.Assert(fdreg3d >= 0, "%s: Opening %s failed\n", __FUNCTION__, DEV3D);
@@ -291,14 +299,15 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	dbg_.Assert(fdmem >= 0, "%s: Opening %s failed\n", __FUNCTION__, DEVMEM);
 	
 	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-	mem1phys = finfo[0].smem_start;
+	finfo[n].smem_start &= ~0x20000000;
+	mem1phys = finfo[n].smem_start;
 	mem1size = k1Meg;
-	pmem1d = mmap(0, mem1size, PROT_READ | PROT_WRITE, MAP_SHARED, fdmem, mem1phys);
+	pmem1d = mmap((void*)mem1phys, mem1size, PROT_READ | PROT_WRITE, MAP_SHARED, fdmem, mem1phys);
 	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem1phys, pmem1d, mem1size);
 
 	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
-	mem2phys = ALIGN(finfo[0].smem_start, k4Meg);
-	mem2size = k4Meg;
+	mem2phys = ALIGN(finfo[n].smem_start + mem1size, k4Meg);
+	mem2size = finfo[n].smem_len - ALIGN((mem2phys - mem1phys), k1Meg);
 	pmem2d = mmap((void*)mem2phys, mem2size, PROT_READ | PROT_WRITE, MAP_SHARED, fdmem, mem2phys);
 	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem2phys, pmem2d, mem2size);
 
@@ -310,11 +319,23 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_VirtualAddress	= (unsigned int)pmem2d;
 	pMemInfo->Memory2D_PhysicalAddress	= mem2phys;
 	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
+
+	// Create DisplayMPI context for OpenGL framebuffer
+	hogl = CreateHandle(240, 320, kPixelFormatRGB565, (U8*)pmem2d);
+
+	// Pass back essential display context info for OpenGL bindings
+	pOglCtx->width = 320;
+	pOglCtx->height = 240;
+	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
+	pOglCtx->eglWindow = &vinfo[n];	 // non-NULL ptr
+	pOglCtx->hndlDisplay = hogl;
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DeinitOpenGL()
 {
+	DestroyHandle(hogl, false);
+	
 	// Release framebuffer mappings and drivers used by OpenGL
 	munmap(pmem2d, mem2size);
 	munmap(pmem1d, mem1size);
@@ -346,6 +367,11 @@ void CDisplayFB::UpdateOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::WaitForDisplayAddressPatched(void)
 {
+	int n = RGBFB;
+	int r = 0; 
+	do {
+		r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
+	} while (r != 0);
 }
 
 //----------------------------------------------------------------------------
@@ -353,6 +379,7 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 {
 	unsigned int offset = DisplayBufferPhysicalAddress - mem1phys;
 	int n = RGBFB;
+	offset &= ~0x20000000;
 	vinfo[n].yoffset = offset / finfo[n].line_length;
 	vinfo[n].xoffset = offset % finfo[n].line_length;
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
