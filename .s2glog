@@ -28067,3 +28067,87 @@ By Dave Milici (dmilici@leapfrog.com) on 10/4/10 5:25 PM
 6,125 ms. (Cumulative: 9,881,927 ms)
 
 ----------------
+Revision 8,531 from svn://localhost/TRUNK/:
+Revision 8,532 from svn://localhost/TRUNK/:
+Revision 8,533 from svn://localhost/TRUNK/:
+Revision 8,534 from svn://localhost/TRUNK/:
+Revision 8,535 from svn://localhost/TRUNK/:
+Revision 8,536 from svn://localhost/TRUNK/:
+Revision 8,537 from svn://localhost/TRUNK/:
+Revision 8,538 from svn://localhost/TRUNK/:
+Revision 8,539 from svn://localhost/TRUNK/:
+Revision 8,540 from svn://localhost/TRUNK/:
+Revision 8,541 from svn://localhost/TRUNK/:
+Revision 8,542 from svn://localhost/TRUNK/:
+Revision 8,543 from svn://localhost/TRUNK/:
+Revision 8,544 from svn://localhost/TRUNK/:
+Revision 8,545 from svn://localhost/TRUNK/:
+Revision 8,546 from svn://localhost/TRUNK/:
+Revision 8,547 from svn://localhost/TRUNK/:
+Revision 8,548 from svn://localhost/TRUNK/:
+Revision 8,549 from svn://localhost/TRUNK/:
+Revision 8,550 from svn://localhost/TRUNK/:
+Revision 8,551 from svn://localhost/TRUNK/:
+Revision 8,552 from svn://localhost/TRUNK/:
+Revision 8,553 from svn://localhost/TRUNK/:
+Revision 8,554 from svn://localhost/TRUNK/:
+Revision 8,555 from svn://localhost/TRUNK/:
+Revision 8,556 from svn://localhost/TRUNK/:
+Revision 8,557 from svn://localhost/TRUNK/:
+Revision 8,558 from svn://localhost/TRUNK/:
+Revision 8,559 from svn://localhost/TRUNK/:
+Revision 8,560 from svn://localhost/TRUNK/:
+Revision 8,561 from svn://localhost/TRUNK/:
+Revision 8,562 from svn://localhost/TRUNK/:
+Revision 8,563 from svn://localhost/TRUNK/:
+Revision 8,564 from svn://localhost/TRUNK/:
+Revision 8,565 from svn://localhost/TRUNK/:
+Revision 8,566 from svn://localhost/TRUNK/:
+Revision 8,567 from svn://localhost/TRUNK/:
+Revision 8,568 from svn://localhost/TRUNK/:
+Revision 8,569 from svn://localhost/TRUNK/:
+Revision 8,570 from svn://localhost/TRUNK/:
+Revision 8,571 from svn://localhost/TRUNK/:
+Revision 8,572 from svn://localhost/TRUNK/:
+Revision 8,573 from svn://localhost/TRUNK/:
+Revision 8,574 from svn://localhost/TRUNK/:
+Revision 8,575 from svn://localhost/TRUNK/:
+Revision 8,576 from svn://localhost/TRUNK/:
+Revision 8,577 from svn://localhost/TRUNK/:
+Revision 8,578 from svn://localhost/TRUNK/:
+Revision 8,579 from svn://localhost/TRUNK/:
+Revision 8,580 from svn://localhost/TRUNK/:
+Revision 8,581 from svn://localhost/TRUNK/:
+Revision 8,582 from svn://localhost/TRUNK/:
+Revision 8,583 from svn://localhost/TRUNK/:
+Revision 8,584 from svn://localhost/TRUNK/:
+Revision 8,585 from svn://localhost/TRUNK/:
+Revision 8,586 from svn://localhost/TRUNK/:
+Revision 8,587 from svn://localhost/TRUNK/:
+Revision 8,588 from svn://localhost/TRUNK/:
+Revision 8,589 from svn://localhost/TRUNK/:
+Revision 8,590 from svn://localhost/TRUNK/:
+Revision 8,591 from svn://localhost/TRUNK/:
+Revision 8,592 from svn://localhost/TRUNK/:
+Revision 8,593 from svn://localhost/TRUNK/:
+Revision 8,594 from svn://localhost/TRUNK/:
+Revision 8,595 from svn://localhost/TRUNK/:
+Revision 8,596 from svn://localhost/TRUNK/:
+Revision 8,597 from svn://localhost/TRUNK/:
+Revision 8,598 from svn://localhost/TRUNK/:
+Revision 8,599 from svn://localhost/TRUNK/:
+Revision 8,600 from svn://localhost/TRUNK/:
+Revision 8,601 from svn://localhost/TRUNK/:
+Revision 8,602 from svn://localhost/TRUNK/:
+Revision 8,603 from svn://localhost/TRUNK/:
+Revision 8,604 from svn://localhost/TRUNK/:
+Revision 8,605 from svn://localhost/TRUNK/:
+Revision 8,606 from svn://localhost/TRUNK/:
+
+DisplayMPI: Interim code for framebuffer driver. (Not active by default.) Support OGL contexts via framebuffer driver 'nonstd' option for 4K block addressing mode.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/8/10 5:00 PM
+1 changed, 0 added, 0 deleted.
+6,403 ms. (Cumulative: 9,888,908 ms)
+
+----------------
