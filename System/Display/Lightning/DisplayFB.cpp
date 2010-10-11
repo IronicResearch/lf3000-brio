@@ -134,12 +134,41 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
 
-	// FIXME: Framebuffer driver doesn't look at pixel format???
+	// Select pixel format masks for RGB context
 	if (n == RGBFB)
 	{
 		vinfo[n].bits_per_pixel = depth;
-		if (colorDepth == kPixelFormatRGB565)
+		switch (colorDepth)
+		{
+			case kPixelFormatRGB4444:
+				vinfo[n].blue.length = vinfo[n].green.length = 
+				vinfo[n].red.length = vinfo[n].transp.length = 4;
+				vinfo[n].transp.offset = 12;
+				break;
+			case kPixelFormatRGB565:
+				vinfo[n].blue.length = vinfo[n].red.length = 5;
+				vinfo[n].green.length = 6;
+				vinfo[n].transp.offset = vinfo[n].transp.length = 0;
+				break;
+			case kPixelFormatRGB888:
+				vinfo[n].blue.length = vinfo[n].green.length = 
+				vinfo[n].red.length = 8;
+				vinfo[n].transp.offset = vinfo[n].transp.length = 0;
+				break;
+			case kPixelFormatARGB8888:
+				vinfo[n].blue.length = vinfo[n].green.length = 
+				vinfo[n].red.length = vinfo[n].transp.length = 8;
+				vinfo[n].transp.offset = 24;
+				break;
+		}
+		vinfo[n].blue.offset  = 0;
+		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
+		vinfo[n].red.offset   = vinfo[n].green.offset + vinfo[n].green.length;
+		// Block addressing mode needed for OGL framebuffer context?
+		if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
 			vinfo[n].nonstd |= (1<<23);
+		else
+			vinfo[n].nonstd &= ~(1<<23);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
@@ -162,10 +191,6 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->isOverlay			= (n == YUVFB);
 	ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
 
-	// FIXME: YUV planar pitch is reported incorrectly
-	if (ctx->isPlanar)
-		ctx->pitch = 4096;
-	
 	return (tDisplayHandle)ctx;
 }
 
@@ -225,6 +250,16 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
 	pdcVisible_->flippedContext = ctx;
+
+	// Wait for VSync option via layer dirty bit?
+	if (waitVSync) 
+	{
+		do {
+			r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
+			if (r == 1)
+				kernel_.TaskSleep(1);
+		} while (r != 0);
+	}
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -234,12 +269,10 @@ Boolean	CDisplayFB::IsBufferSwapped(tDisplayHandle hndl)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
-	// FIXME: VBLANK info not implemented?
-	struct fb_vblank vblank;
 	int n = ctx->layer;
-	int r = ioctl(fbdev[n], FBIOGET_VBLANK, &vblank);
+	int r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
 	
-	return true; // FIXME
+	return (r == 0);
 }
 
 //----------------------------------------------------------------------------
@@ -321,13 +354,13 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
 
 	// Create DisplayMPI context for OpenGL framebuffer
-	hogl = CreateHandle(240, 320, kPixelFormatRGB565, (U8*)pmem2d);
+	hogl = CreateHandle(vinfo[n].yres, vinfo[n].xres, kPixelFormatRGB565, (U8*)pmem2d);
 
 	// Pass back essential display context info for OpenGL bindings
-	pOglCtx->width = 320;
-	pOglCtx->height = 240;
+	pOglCtx->width 		= vinfo[n].xres;
+	pOglCtx->height 	= vinfo[n].yres;
 	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
-	pOglCtx->eglWindow = &vinfo[n];	 // non-NULL ptr
+	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
 	pOglCtx->hndlDisplay = hogl;
 }
 
@@ -371,6 +404,8 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 	int r = 0; 
 	do {
 		r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
+		if (r == 1)
+			kernel_.TaskSleep(1);
 	} while (r != 0);
 }
 
