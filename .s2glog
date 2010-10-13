@@ -28162,3 +28162,21 @@ By Dave Milici (dmilici@leapfrog.com) on 10/11/10 2:15 PM
 6,152 ms. (Cumulative: 9,895,170 ms)
 
 ----------------
+Revision 8,610 from svn://localhost/TRUNK/:
+Revision 8,611 from svn://localhost/TRUNK/:
+Revision 8,612 from svn://localhost/TRUNK/:
+Revision 8,613 from svn://localhost/TRUNK/:
+Revision 8,614 from svn://localhost/TRUNK/:
+Revision 8,615 from svn://localhost/TRUNK/:
+Revision 8,616 from svn://localhost/TRUNK/:
+Revision 8,617 from svn://localhost/TRUNK/:
+Revision 8,618 from svn://localhost/TRUNK/:
+Revision 8,619 from svn://localhost/TRUNK/:
+
+DisplayMPI: Interim code for framebuffer driver. (Not active by default.) Use LF1000 extension ioctls for setting layer XY position, Z order, and alpha blending.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/13/10 12:59 PM
+1 changed, 0 added, 0 deleted.
+6,354 ms. (Cumulative: 9,901,680 ms)
+
+----------------

@@ -22,10 +22,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <linux/fb.h>
-
-#ifndef FBIO_WAITFORVSYNC
-#define FBIO_WAITFORVSYNC	 _IOW('F', 0x20, __u32)
-#endif
+#include <linux/lf1000/lf1000fb.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -55,7 +52,7 @@ namespace
 	unsigned int				mem2size;
 	void*						preg3d = NULL;
 	void*						pmem1d = NULL;
-	void*						pmem2d = NULL;
+	void*						pmem2d = MAP_FAILED;
 	tDisplayHandle				hogl = NULL;
 }
 
@@ -135,7 +132,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}		
 
 	// Select pixel format masks for RGB context
-	if (n == RGBFB)
+	if (n == RGBFB && (pBuffer == NULL || pBuffer == pmem2d))
 	{
 		vinfo[n].bits_per_pixel = depth;
 		switch (colorDepth)
@@ -175,7 +172,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}
 	
 	int offset = index * vinfo[n].yres * finfo[n].line_length;
-	index++;
+	if (pBuffer == NULL)
+		index++;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -199,8 +197,9 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
+	if (!ctx->isAllocated)
+		index--;
 	delete ctx;
-	index--;
 	
 	return kNoErr;
 }
@@ -215,8 +214,29 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.right		= xPos + ctx->width;
 	ctx->rect.bottom 	= yPos + ctx->height;
 	
+	// Offscreen contexts do not affect screen
+	if (ctx->isAllocated)
+		return kNoErr;
+	
+	struct lf1000fb_position_cmd cmd;
+	cmd.left  = xPos;
+	cmd.top   = yPos;
+	cmd.apply = 1;
+	
 	int n = ctx->layer;
-	int r = ioctl(fbdev[n], FBIOBLANK, 0);
+	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
+
+	// Adjust Z-order for YUV layer?
+	if (n == YUVFB) 
+	{
+		int z = (ctx->isUnderlay) ? 2 : 0;
+		vinfo[n].nonstd &= ~(3<<24);
+		vinfo[n].nonstd |=  (z<<24);
+		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+	}
+	
+	if (r == 0)
+		r = ioctl(fbdev[n], FBIOBLANK, 0);
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -226,6 +246,10 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
+	// Offscreen contexts do not affect screen
+	if (ctx->isAllocated)
+		return kNoErr;
+	
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], FBIOBLANK, 1);
 	
@@ -235,7 +259,63 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height)
 {
-	return kNoImplErr;
+	if (pdcVisible_ == NULL)
+		return kDisplayDisplayNotInListErr;
+
+	tDisplayContext *dcdst = pdcVisible_;
+	if (dcdst->flippedContext)
+		dcdst = dcdst->flippedContext;
+	
+	// Copy offscreen context to primary display context
+	if (dc->isAllocated)
+	{
+		switch (dc->colorDepthFormat) 
+		{
+		case kPixelFormatRGB4444: 	
+			RGB4444ARGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+			break;
+		case kPixelFormatRGB565: 	
+			RGB565ARGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+			break;
+		case kPixelFormatRGB888: 	
+			RGB2ARGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+			break;
+		default:
+		case kPixelFormatARGB8888: 	
+			switch (dcdst->colorDepthFormat)
+			{
+			case kPixelFormatRGB4444: 	
+				ARGB2RGB4444(dc, dcdst, sx, sy, dx, dy, width, height); 
+				break;
+			case kPixelFormatRGB565: 	
+				ARGB2RGB565(dc, dcdst, sx, sy, dx, dy, width, height); 
+				break;
+			case kPixelFormatRGB888: 	
+				ARGB2RGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+				break;
+			default:
+			case kPixelFormatARGB8888:	
+				ARGB2ARGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+				break;
+			case kPixelFormatYUV420: 	
+				RGB2YUV(dc, dcdst, sx, sy, dx, dy, width, height); 
+				break;
+			}
+			break;
+		case kPixelFormatYUV420: 	
+			YUV2ARGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+			break;
+		case kPixelFormatYUYV422: 	
+			YUYV2ARGB(dc, dcdst, sx, sy, dx, dy, width, height); 
+			break;
+		}
+	}
+
+	// Make sure primary display context is enabled
+	int n = dcdst->layer;
+	int r = ioctl(fbdev[n], FBIOBLANK, 0);
+
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
@@ -278,25 +358,65 @@ Boolean	CDisplayFB::IsBufferSwapped(tDisplayHandle hndl)
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	struct lf1000fb_position_cmd cmd;
+	cmd.left = ctx->rect.left = ctx->x = x;
+	cmd.top  = ctx->rect.top  = ctx->y = y;
+	cmd.apply = 1;
+	ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
+	ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
+	
+	int n = ctx->layer;
+	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
+
+	if (r == 0)
+		r = ioctl(fbdev[n], FBIOBLANK, !visible);
+
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	struct lf1000fb_position_cmd cmd;
+	int n = ctx->layer;
+	int r = ioctl(fbdev[n], LF1000FB_IOCGPOSTION, &cmd);
+	
+	x = ctx->rect.left = cmd.left;
+	y = ctx->rect.top  = cmd.top;
+	width  = ctx->rect.right - ctx->rect.left;
+	height = ctx->rect.bottom = ctx->rect.top;
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	struct lf1000fb_blend_cmd cmd;
+	cmd.alpha = level;
+	cmd.enable = enable;
+	int n = ctx->layer;
+	int r = ioctl(fbdev[n], LF1000FB_IOCSALPHA, &cmd);
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
 U8 	CDisplayFB::GetAlpha(tDisplayHandle hndl) const
 {
-	return 0;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	struct lf1000fb_blend_cmd cmd;
+	int n = ctx->layer;
+	int r = ioctl(fbdev[n], LF1000FB_IOCGALPHA, &cmd);
+	
+	return (r == 0) ? cmd.alpha : 0;
 }
 
 //----------------------------------------------------------------------------
