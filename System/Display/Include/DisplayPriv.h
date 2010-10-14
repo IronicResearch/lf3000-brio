@@ -571,6 +571,8 @@ public:
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 
 	U32					GetDisplayMem(tDisplayMem memtype);
+	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
+	bool				DeAllocBuffer(tDisplayContext* pdc);
 	
 private:
 	CDebugMPI			dbg_;

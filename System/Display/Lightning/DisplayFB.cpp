@@ -17,6 +17,7 @@
 #include <DisplayPriv.h>
 #include <BrioOpenGLConfig.h>
 #include <GLES/libogl.h>
+#include <list>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -40,7 +41,6 @@ namespace
 	struct fb_fix_screeninfo 	finfo[NUMFB];
 	struct fb_var_screeninfo 	vinfo[NUMFB];
 	U8*							fbmem[NUMFB] = {NULL, NULL, NULL};
-	int 						index = 0; // FIXME -- just for testing
 	
 	const char*					DEV3D = "/dev/ga3d";
 	const char*					DEVMEM = "/dev/mem";
@@ -54,6 +54,12 @@ namespace
 	void*						pmem1d = NULL;
 	void*						pmem2d = MAP_FAILED;
 	tDisplayHandle				hogl = NULL;
+	
+	std::list<tBuffer>			gBufListUsed;			// list of allocated buffers
+	std::list<tBuffer>			gBufListFree;			// list of freed buffers
+	U32							gMarkBufStart = 0;		// framebuffer start marker
+	U32							gMarkBufEnd = 0;		// framebuffer end marker
+	tMutex 						gListMutex = PTHREAD_MUTEX_INITIALIZER;	// list mutex
 }
 
 //============================================================================
@@ -87,6 +93,12 @@ void CDisplayFB::InitModule()
 		dbg_.Assert(fbmem[n] != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV[n]);
 		dbg_.DebugOut(kDbgLvlImportant, "%s: Mapped %08lx to %p, size %u\n", __FUNCTION__, finfo[n].smem_start, fbmem[n], finfo[n].smem_len);
 	}
+	
+	// Setup framebuffer allocator lists and markers
+	gBufListUsed.clear();
+	gBufListFree.clear();
+	gMarkBufStart = 0;
+	gMarkBufEnd   = finfo[RGBFB].smem_len; 
 }
 
 //----------------------------------------------------------------------------
@@ -171,9 +183,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
 	}
 	
-	int offset = index * vinfo[n].yres * finfo[n].line_length;
-	if (pBuffer == NULL)
-		index++;
+	int offset = 0; //vinfo[n].yres * finfo[n].line_length;
+	int aligned = 0; //(n == YUVFB) ? k1Meg : 0;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -189,6 +200,13 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->isOverlay			= (n == YUVFB);
 	ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
 
+	if (pBuffer == NULL && !AllocBuffer(ctx, aligned))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
+		delete ctx;
+		return kInvalidDisplayHandle;
+	}
+	
 	return (tDisplayHandle)ctx;
 }
 
@@ -198,7 +216,7 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
 	if (!ctx->isAllocated)
-		index--;
+		DeAllocBuffer(ctx);
 	delete ctx;
 	
 	return kNoErr;
@@ -543,6 +561,142 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 //----------------------------------------------------------------------------
 U32	CDisplayFB::GetDisplayMem(tDisplayMem memtype)
 {
+	U32 mem = 0;
+	std::list<tBuffer>::iterator it;
+
+	switch (memtype) {
+	case kDisplayMemTotal:
+		return finfo[RGBFB].smem_len;
+	case kDisplayMemFree:
+		return gMarkBufEnd - gMarkBufStart;
+	case kDisplayMemUsed:
+		for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++)
+			mem += (*it).length;
+		return mem;
+	case kDisplayMemAligned:
+		for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++)
+			mem += (*it).aligned;
+		return mem;
+	case kDisplayMemFragmented:
+		for (it = gBufListFree.begin(); it != gBufListFree.end(); it++)
+			mem += (*it).length;
+		return mem;
+	}
+	return 0;
+}
+
+//----------------------------------------------------------------------------
+bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
+{
+	U32 bufsize = (aligned) ? aligned : pdc->pitch * pdc->height;
+	tBuffer buf;
+	std::list<tBuffer>::iterator it;
+	
+	kernel_.LockMutex(gListMutex);
+	
+	// All display contexts now reference common base address
+	pdc->basephys 	= finfo[RGBFB].smem_start;
+	pdc->baselinear = finfo[YUVFB].smem_start;
+	pdc->pBuffer 	= (pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
+
+	// Look on for available buffer on free list first
+	for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
+		buf = *it;
+		// Move from free list to allocated list if we find one that fits
+		if (buf.length == bufsize) {
+			gBufListFree.erase(it);
+			pdc->offset = buf.offset;
+			pdc->pBuffer += pdc->offset;
+			gBufListUsed.push_back(buf);
+			dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: recycle offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+			kernel_.UnlockMutex(gListMutex);
+			return true;
+		}
+	}
+
+	// Allocate another buffer from the heap
+	if (aligned) {
+		// Allocate aligned buffer from end of heap (OGL, YUV)
+		if (gMarkBufEnd - bufsize < gMarkBufStart) {	
+			kernel_.UnlockMutex(gListMutex);
+			return false;
+		}
+		pdc->offset = gMarkBufEnd - bufsize;
+		pdc->pBuffer += pdc->offset;
+		gMarkBufEnd -= bufsize;
+	}
+	else {
+		// Allocate unaligned buffer at top of heap if there's room
+		if (gMarkBufStart + bufsize > gMarkBufEnd) {	
+			kernel_.UnlockMutex(gListMutex);
+			return false;
+		}
+		pdc->offset = gMarkBufStart;
+		pdc->pBuffer += pdc->offset;
+		pdc->isPrimary = (pdc->offset == 0) ? true : false;
+		gMarkBufStart += bufsize;
+	}
+
+	// Add buffer to allocated list
+	buf.length = bufsize;
+	buf.offset = pdc->offset;
+	buf.aligned = aligned;
+	gBufListUsed.push_back(buf);
+	dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: new buf offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+
+	kernel_.UnlockMutex(gListMutex);
+	return true;
+}
+
+//----------------------------------------------------------------------------
+bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
+{
+	tBuffer buf;
+	std::list<tBuffer>::iterator it;
+	
+	kernel_.LockMutex(gListMutex);
+	U32 markStart = gMarkBufStart;
+	U32 markEnd   = gMarkBufEnd;
+	
+	// Find allocated buffer for this display context
+	for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
+		buf = *it;
+		if (pdc->offset == buf.offset) {
+			dbg_.DebugOut(kDbgLvlVerbose, "DeAllocBuffer: remove offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+			gBufListUsed.erase(it);
+			break;
+		}
+	}
+
+	// Reduce heap if at top location, otherwise update free list
+	if (buf.aligned && buf.offset == gMarkBufEnd)
+		gMarkBufEnd += buf.length;
+	else if (buf.offset + buf.length == gMarkBufStart)
+		gMarkBufStart -= buf.length;
+	else
+		gBufListFree.push_back(buf);
+
+	// Compact free list buffers back to heap when possible
+	while (markStart != gMarkBufStart || markEnd != gMarkBufEnd) {
+		markStart = gMarkBufStart;
+		markEnd   = gMarkBufEnd;
+		for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
+			buf = *it;
+			if (buf.aligned && buf.offset == gMarkBufEnd) {
+				gMarkBufEnd += buf.length;
+				gBufListFree.erase(it);
+				break;
+			}
+			if (!buf.aligned && buf.offset + buf.length == gMarkBufStart) {
+				gMarkBufStart -= buf.length;
+				gBufListFree.erase(it);
+				break;
+			}
+		}
+	}
+
+	kernel_.UnlockMutex(gListMutex);
+	return true;
 }
 
 //----------------------------------------------------------------------------
