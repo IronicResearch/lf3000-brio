@@ -28180,3 +28180,39 @@ By Dave Milici (dmilici@leapfrog.com) on 10/13/10 12:59 PM
 6,354 ms. (Cumulative: 9,901,680 ms)
 
 ----------------
+Revision 8,620 from svn://localhost/TRUNK/:
+Revision 8,621 from svn://localhost/TRUNK/:
+Revision 8,622 from svn://localhost/TRUNK/:
+Revision 8,623 from svn://localhost/TRUNK/:
+Revision 8,624 from svn://localhost/TRUNK/:
+Revision 8,625 from svn://localhost/TRUNK/:
+Revision 8,626 from svn://localhost/TRUNK/:
+Revision 8,627 from svn://localhost/TRUNK/:
+Revision 8,628 from svn://localhost/TRUNK/:
+Revision 8,629 from svn://localhost/TRUNK/:
+Revision 8,630 from svn://localhost/TRUNK/:
+Revision 8,631 from svn://localhost/TRUNK/:
+Revision 8,632 from svn://localhost/TRUNK/:
+Revision 8,633 from svn://localhost/TRUNK/:
+Revision 8,634 from svn://localhost/TRUNK/:
+Revision 8,635 from svn://localhost/TRUNK/:
+Revision 8,636 from svn://localhost/TRUNK/:
+Revision 8,637 from svn://localhost/TRUNK/:
+Revision 8,638 from svn://localhost/TRUNK/:
+Revision 8,639 from svn://localhost/TRUNK/:
+Revision 8,640 from svn://localhost/TRUNK/:
+Revision 8,641 from svn://localhost/TRUNK/:
+Revision 8,642 from svn://localhost/TRUNK/:
+Revision 8,643 from svn://localhost/TRUNK/:
+Revision 8,644 from svn://localhost/TRUNK/:
+Revision 8,645 from svn://localhost/TRUNK/:
+Revision 8,646 from svn://localhost/TRUNK/:
+Revision 8,647 from svn://localhost/TRUNK/:
+
+DisplayMPI: Interim code for framebuffer driver. (Not active by default.) Ported framebuffer allocator from previous implementation.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/14/10 4:47 PM
+2 changed, 0 added, 0 deleted.
+6,516 ms. (Cumulative: 9,908,524 ms)
+
+----------------
