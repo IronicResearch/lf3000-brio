@@ -184,7 +184,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}
 	
 	int offset = 0; //vinfo[n].yres * finfo[n].line_length;
-	int aligned = 0; //(n == YUVFB) ? k1Meg : 0;
+	int aligned = (n == YUVFB) ? k1Meg : 0;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -200,11 +200,18 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->isOverlay			= (n == YUVFB);
 	ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
 
+	// Allocate framebuffer memory if onscreen context
 	if (pBuffer == NULL && !AllocBuffer(ctx, aligned))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
 		delete ctx;
 		return kInvalidDisplayHandle;
+	}
+	
+	// Fixup offscreen context info if cloned from onscreen context (VideoMPI)
+	if (pBuffer >= fbmem[n] && pBuffer <= fbmem[n] + finfo[n].smem_len)
+	{
+		ctx->offset = pBuffer - fbmem[n];
 	}
 	
 	return (tDisplayHandle)ctx;
@@ -330,6 +337,7 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	}
 
 	// Make sure primary display context is enabled
+	SwapBuffers(dcdst, false);
 	int n = dcdst->layer;
 	int r = ioctl(fbdev[n], FBIOBLANK, 0);
 
@@ -415,6 +423,9 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	if (ctx->isAllocated)
+		return kNoErr;
 	
 	struct lf1000fb_blend_cmd cmd;
 	cmd.alpha = level;
