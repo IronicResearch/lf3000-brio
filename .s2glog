@@ -28233,3 +28233,16 @@ By Dave Milici (dmilici@leapfrog.com) on 10/15/10 4:11 PM
 6,485 ms. (Cumulative: 9,915,165 ms)
 
 ----------------
+Revision 8,657 from svn://localhost/TRUNK/:
+Revision 8,658 from svn://localhost/TRUNK/:
+Revision 8,659 from svn://localhost/TRUNK/:
+Revision 8,660 from svn://localhost/TRUNK/:
+Revision 8,661 from svn://localhost/TRUNK/:
+
+DisplayMPI: Interim code for framebuffer driver. (Not active by default.) Compatibility fixes for setting window position and layer enable.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/18/10 3:28 PM
+1 changed, 0 added, 0 deleted.
+6,626 ms. (Cumulative: 9,921,916 ms)
+
+----------------

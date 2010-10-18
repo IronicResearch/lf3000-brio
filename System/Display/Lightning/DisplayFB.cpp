@@ -87,6 +87,7 @@ void CDisplayFB::InitModule()
 		// Reset page flip offsets
 		vinfo[n].xoffset = vinfo[n].yoffset = 0;
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+		r = ioctl(fbdev[n], FBIOBLANK, 1);
 		
 		// Map framebuffer into userspace
 		fbmem[n] = (U8*)mmap(0, finfo[n].smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev[n], 0);
@@ -242,10 +243,13 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Offscreen contexts do not affect screen
 	if (ctx->isAllocated)
 		return kNoErr;
-	
+
+	// Set XY onscreen position
 	struct lf1000fb_position_cmd cmd;
 	cmd.left  = xPos;
 	cmd.top   = yPos;
+	cmd.right = ctx->rect.right;
+	cmd.bottom = ctx->rect.bottom;
 	cmd.apply = 1;
 	
 	int n = ctx->layer;
@@ -259,9 +263,19 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		vinfo[n].nonstd |=  (z<<24);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 	}
-	
-	if (r == 0)
+
+	// Set framebuffer address offset
+	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
+	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
+	r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
+
+	// Defer layer visibility until Update() or SwapBuffers()?
+	if (n == RGBFB)
+	{
 		r = ioctl(fbdev[n], FBIOBLANK, 0);
+		if (r == 0)
+			ctx->isEnabled = true;
+	}
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -277,6 +291,8 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], FBIOBLANK, 1);
+	if (r == 0)
+		ctx->isEnabled = false;
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -337,9 +353,12 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	}
 
 	// Make sure primary display context is enabled
-	SwapBuffers(dcdst, false);
-	int n = dcdst->layer;
-	int r = ioctl(fbdev[n], FBIOBLANK, 0);
+	if (!dcdst->isEnabled) 
+	{
+		int n = dcdst->layer;
+		int r = ioctl(fbdev[n], FBIOBLANK, 0);
+		dcdst->isEnabled = (r == 0);
+	}
 
 	return kNoErr;
 }
@@ -355,6 +374,13 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
+	// Make sure swapped display context is enabled
+	if (!ctx->isEnabled)
+	{
+		r = ioctl(fbdev[n], FBIOBLANK, 0);
+		ctx->isEnabled = (r == 0);
+	}
+	
 	pdcVisible_->flippedContext = ctx;
 
 	// Wait for VSync option via layer dirty bit?
@@ -389,16 +415,23 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	struct lf1000fb_position_cmd cmd;
 	cmd.left = ctx->rect.left = ctx->x = x;
 	cmd.top  = ctx->rect.top  = ctx->y = y;
-	cmd.apply = 1;
-	ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
-	ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
+	cmd.right  = ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
+	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
+	cmd.apply  = 1;
+	
+	if (ctx->isAllocated)
+		return kNoErr;
 	
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
 
-	if (r == 0)
+	if (r == 0) 
+	{
 		r = ioctl(fbdev[n], FBIOBLANK, !visible);
-
+		if (r == 0)
+			ctx->isEnabled = visible;
+	}
+	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
@@ -413,8 +446,10 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 	
 	x = ctx->rect.left = cmd.left;
 	y = ctx->rect.top  = cmd.top;
+	ctx->rect.right    = cmd.right;
+	ctx->rect.bottom   = cmd.bottom;
 	width  = ctx->rect.right - ctx->rect.left;
-	height = ctx->rect.bottom = ctx->rect.top;
+	height = ctx->rect.bottom - ctx->rect.top;
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -428,7 +463,7 @@ tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 		return kNoErr;
 	
 	struct lf1000fb_blend_cmd cmd;
-	cmd.alpha = level;
+	cmd.alpha = level * ALPHA_STEP / 100;
 	cmd.enable = enable;
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCSALPHA, &cmd);
@@ -445,7 +480,7 @@ U8 	CDisplayFB::GetAlpha(tDisplayHandle hndl) const
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCGALPHA, &cmd);
 	
-	return (r == 0) ? cmd.alpha : 0;
+	return (r == 0) ? cmd.alpha * 100 / ALPHA_STEP : 0;
 }
 
 //----------------------------------------------------------------------------
