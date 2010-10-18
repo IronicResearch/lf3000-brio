@@ -72,6 +72,7 @@ struct tDisplayContext {
 	bool	isBlended;
 	U8		alphaLevel;
 	tDisplayContext *flippedContext;
+	bool	isEnabled;	// layer visibility enabled?
 };
 
 struct tBuffer {
