@@ -28255,3 +28255,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/18/10 3:29 PM
 6,609 ms. (Cumulative: 9,928,603 ms)
 
 ----------------
+Revision 8,663 from svn://localhost/TRUNK/:
+Revision 8,664 from svn://localhost/TRUNK/:
+
+DisplayMPI: Interim code for framebuffer driver. (Not active by default.) Compatibility fixes for onscreen context size for correct YUV color registration seen in UI volume bars.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/19/10 12:06 PM
+1 changed, 0 added, 0 deleted.
+6,453 ms. (Cumulative: 9,935,166 ms)
+
+----------------
