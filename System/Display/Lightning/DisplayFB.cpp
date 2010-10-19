@@ -145,7 +145,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}		
 
 	// Select pixel format masks for RGB context
-	if (n == RGBFB && (pBuffer == NULL || pBuffer == pmem2d))
+	if ((pBuffer == NULL || pBuffer == pmem2d))
 	{
 		vinfo[n].bits_per_pixel = depth;
 		switch (colorDepth)
@@ -179,6 +179,9 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 			vinfo[n].nonstd |= (1<<23);
 		else
 			vinfo[n].nonstd &= ~(1<<23);
+		// Change effective resolution for any onscreen context
+		vinfo[n].xres = width;
+		vinfo[n].yres = height;
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
@@ -235,8 +238,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
-	ctx->rect.left		= xPos;
-	ctx->rect.top		= yPos;
+	ctx->rect.left 		= ctx->x = xPos;
+	ctx->rect.top  		= ctx->y = yPos;
 	ctx->rect.right		= xPos + ctx->width;
 	ctx->rect.bottom 	= yPos + ctx->height;
 	
