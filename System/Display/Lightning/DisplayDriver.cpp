@@ -20,15 +20,25 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 namespace 
 {
-	static CDisplayLF1000*		pDriver = NULL;
+	static CDisplayDriver*		pDriver = NULL;
 }
 
 //============================================================================
 // CDisplayDriver:
 //============================================================================
 //----------------------------------------------------------------------------
-//CDisplayDriver::CDisplayDriver() {};
-//CDisplayDriver::~CDisplayDriver() {};
+CDisplayDriver::CDisplayDriver(CDisplayModule* pModule) :
+	pModule_(pModule),
+	pdcVisible_(NULL),
+	dbg_(kGroupDisplay) 
+{
+	dbg_.SetDebugLevel(kDisplayDebugLevel);
+}
+
+//----------------------------------------------------------------------------
+CDisplayDriver::~CDisplayDriver() 
+{
+}
 
 //============================================================================
 // CDisplayModule: Implementation of hardware-specific functions
