@@ -28304,3 +28304,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/20/10 2:48 PM
 6,238 ms. (Cumulative: 9,960,117 ms)
 
 ----------------
+Revision 8,672 from svn://localhost/TRUNK/:
+Revision 8,673 from svn://localhost/TRUNK/:
+
+DisplayFB: Revert enabling RGB layer on Register() calls for compatibility with apps which ignored Invalidate().
+
+By Dave Milici (dmilici@leapfrog.com) on 10/20/10 4:59 PM
+1 changed, 0 added, 0 deleted.
+6,079 ms. (Cumulative: 9,966,290 ms)
+
+----------------

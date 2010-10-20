@@ -273,7 +273,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
 	// Defer layer visibility until Update() or SwapBuffers()?
-#if 0	
+#if 1	
 	if (n == RGBFB)
 	{
 		r = ioctl(fbdev[n], FBIOBLANK, 0);
