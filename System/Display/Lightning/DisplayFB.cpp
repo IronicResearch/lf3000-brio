@@ -273,12 +273,14 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
 	// Defer layer visibility until Update() or SwapBuffers()?
+#if 0	
 	if (n == RGBFB)
 	{
 		r = ioctl(fbdev[n], FBIOBLANK, 0);
 		if (r == 0)
 			ctx->isEnabled = true;
 	}
+#endif
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -358,11 +360,20 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	// Make sure primary display context is enabled
 	if (!dcdst->isEnabled) 
 	{
+		RegisterLayer(dcdst, dcdst->x, dcdst->y);
 		int n = dcdst->layer;
 		int r = ioctl(fbdev[n], FBIOBLANK, 0);
 		dcdst->isEnabled = (r == 0);
 	}
-
+	// Ditto for any other onscreen display context
+	if (dc != dcdst && !dc->isAllocated && !dc->isEnabled)
+	{
+		RegisterLayer(dc, dc->x, dc->y);
+		int n = dc->layer;
+		int r = ioctl(fbdev[n], FBIOBLANK, 0);
+		dc->isEnabled = (r == 0);
+	}
+	
 	return kNoErr;
 }
 
@@ -422,9 +433,6 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
 	cmd.apply  = 1;
 	
-	if (ctx->isAllocated)
-		return kNoErr;
-	
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
 
@@ -462,9 +470,6 @@ tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
-	if (ctx->isAllocated)
-		return kNoErr;
-	
 	struct lf1000fb_blend_cmd cmd;
 	cmd.alpha = level * ALPHA_STEP / 100;
 	cmd.enable = enable;

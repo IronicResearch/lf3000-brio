@@ -28265,3 +28265,15 @@ By Dave Milici (dmilici@leapfrog.com) on 10/19/10 12:06 PM
 6,453 ms. (Cumulative: 9,935,166 ms)
 
 ----------------
+Revision 8,665 from svn://localhost/TRUNK/:
+Revision 8,666 from svn://localhost/TRUNK/:
+Revision 8,667 from svn://localhost/TRUNK/:
+Revision 8,668 from svn://localhost/TRUNK/:
+
+DisplayMPI: Interim code for framebuffer driver. (Not active by default.) Defer enabling onscreen context visbility until Update() calls. RegisterLayer() can be used for reloading context HW params. 
+
+By Dave Milici (dmilici@leapfrog.com) on 10/20/10 9:49 AM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 9,941,386 ms)
+
+----------------
