@@ -16,11 +16,21 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 
+#include <sys/stat.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 namespace 
 {
 	static CDisplayDriver*		pDriver = NULL;
+	
+	//------------------------------------------------------------------------
+	inline bool HaveFramebufferDriver(void)
+	{
+		struct stat st;
+
+		return stat("/sys/class/graphics", &st) == 0;
+	}
 }
 
 //============================================================================
@@ -46,7 +56,10 @@ CDisplayDriver::~CDisplayDriver()
 //----------------------------------------------------------------------------
 void CDisplayModule::InitModule()
 {
-	pDriver = new CDisplayLF1000(this);
+	if (HaveFramebufferDriver())
+		pDriver = new CDisplayFB(this);
+	else
+		pDriver = new CDisplayLF1000(this);
 	pDriver->InitModule();
 }
 
