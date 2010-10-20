@@ -473,7 +473,59 @@ private:
 };
 
 //==============================================================================
-class CDisplayLF1000 /* : CDisplayDriver */ {
+class CDisplayDriver {
+public:
+	CDisplayDriver(CDisplayModule* pModule);
+	virtual ~CDisplayDriver();
+	
+	virtual void				InitModule( ) = 0;
+	virtual void				DeInitModule( ) = 0;
+
+	virtual U32					GetScreenSize( ) = 0;
+	virtual enum tPixelFormat	GetPixelFormat(void) = 0;
+	
+	virtual tErrType 			RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos) = 0;
+	virtual tErrType 			UnRegisterLayer(tDisplayHandle hndl) = 0;
+	virtual tErrType			Update(tDisplayContext* dc, int sx, int sy, int dx, int dy, int width, int height) = 0;
+
+	virtual tDisplayHandle		CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, U8 *pBuffer) = 0;
+	virtual tErrType			DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer) = 0;
+
+	virtual tErrType			SwapBuffers(tDisplayHandle hndl, Boolean waitVSync) = 0;
+	virtual Boolean				IsBufferSwapped(tDisplayHandle hndl) = 0;
+	
+	virtual tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible) = 0;
+	virtual tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible) = 0;
+	
+	virtual tErrType 			SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable) = 0;
+	virtual U8 					GetAlpha(tDisplayHandle hndl) const = 0;
+	
+	virtual tErrType			SetBacklight(tDisplayScreen screen, S8 backlight) = 0;
+	virtual S8					GetBacklight(tDisplayScreen screen) = 0;
+
+	virtual void    			InitOpenGL(void* pCtx) = 0;
+	virtual void    			DeinitOpenGL() = 0;
+	virtual void    			EnableOpenGL(void* pCtx) = 0;
+	virtual void    			DisableOpenGL() = 0;
+	virtual void    			UpdateOpenGL() = 0;
+	virtual void				WaitForDisplayAddressPatched(void) = 0;
+	virtual void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress) = 0;
+
+	virtual U32					GetDisplayMem(tDisplayMem memtype) = 0;
+	virtual bool				AllocBuffer(tDisplayContext* pdc, U32 aligned) = 0;
+	virtual bool				DeAllocBuffer(tDisplayContext* pdc) = 0;
+	
+protected:
+	CDebugMPI			dbg_;
+	CKernelMPI			kernel_;
+	
+public:
+	CDisplayModule*		pModule_;
+	tDisplayContext*	pdcVisible_;  // FIXME: shared with CDisplayModule
+};
+
+//----------------------------------------------------------------------------
+class CDisplayLF1000 : public CDisplayDriver {
 public:
 	void				InitModule( );
 	void				DeInitModule( );
@@ -509,34 +561,28 @@ public:
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 
 	U32					GetDisplayMem(tDisplayMem memtype);
+	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
+	bool				DeAllocBuffer(tDisplayContext* pdc);
 	
 private:
 	void				SetDirtyBit(int layer);
 	
-	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
-	bool				DeAllocBuffer(tDisplayContext* pdc);
-	
 private:
-	CDebugMPI			dbg_;
-	CKernelMPI			kernel_;
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
 	bool				isYUVLayerSwapped_;
 	
-public:
-	CDisplayModule*		pModule_;
-	tDisplayContext*	pdcVisible_;  // FIXME: shared with CDisplayModule
-
 public:	
 	CDisplayLF1000(CDisplayModule* pModule) :
-		pModule_(pModule),
-		pdcVisible_(NULL),
-		dbg_(kGroupDisplay), isOpenGLEnabled_(false),
-		isLayerSwapped_(false), isYUVLayerSwapped_(false) {};
+		CDisplayDriver(pModule),
+		isOpenGLEnabled_(false), 
+		isLayerSwapped_(false), 
+		isYUVLayerSwapped_(false) {};
 	~CDisplayLF1000() {};
 };
 
-class CDisplayFB /* : CDisplayDriver */ {
+//----------------------------------------------------------------------------
+class CDisplayFB : public CDisplayDriver {
 public:
 	void				InitModule( );
 	void				DeInitModule( );
@@ -575,19 +621,9 @@ public:
 	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
 	bool				DeAllocBuffer(tDisplayContext* pdc);
 	
-private:
-	CDebugMPI			dbg_;
-	CKernelMPI			kernel_;
-	
-public:
-	CDisplayModule*		pModule_;
-	tDisplayContext*	pdcVisible_;  // FIXME: shared with CDisplayModule
-
 public:	
 	CDisplayFB(CDisplayModule* pModule) :
-		pModule_(pModule),
-		pdcVisible_(NULL),
-		dbg_(kGroupDisplay) {};
+		CDisplayDriver(pModule)	{};
 	~CDisplayFB() {};
 };
 

@@ -28286,3 +28286,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/20/10 9:51 AM
 6,081 ms. (Cumulative: 9,947,545 ms)
 
 ----------------
+Revision 8,670 from svn://localhost/TRUNK/:
+
+DisplayMPI: Proper DisplayDriver base class declaration for handling LF1000 vs FB driver objects at runtime.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/20/10 2:36 PM
+2 changed, 0 added, 0 deleted.
+6,163 ms. (Cumulative: 9,953,801 ms)
+
+----------------
