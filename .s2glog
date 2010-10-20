@@ -28295,3 +28295,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/20/10 2:36 PM
 6,163 ms. (Cumulative: 9,953,801 ms)
 
 ----------------
+Revision 8,671 from svn://localhost/TRUNK/:
+
+DisplayMPI: Auto-Detect and Select LF1000 vs FB driver objects at runtime.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/20/10 2:48 PM
+1 changed, 0 added, 0 deleted.
+6,238 ms. (Cumulative: 9,960,117 ms)
+
+----------------
