@@ -262,7 +262,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testBacklight( )
+	void XXXXtestBacklight( )
 	{
 		PRINT_TEST_NAME();
 		
@@ -763,6 +763,85 @@ public:
 		TS_ASSERT( handle2 == pDisplayMPI_->GetCurrentDisplayHandle() );
 		sleep(1);
 
+		pDisplayMPI_->UnRegister(handle2, 0);
+		pDisplayMPI_->DestroyHandle(handle2, false);
+		
+		pDisplayMPI_->UnRegister(handle1, 0);
+		pDisplayMPI_->DestroyHandle(handle1, false);
+	}
+
+	//------------------------------------------------------------------------
+	void testDisplayAlphaBlend( )
+	{
+		PRINT_TEST_NAME();
+		
+		tDisplayHandle 	handle1;
+		tDisplayHandle 	handle2;
+		tPixelFormat	format;
+		U8* 			buffer;
+		U16				height;
+		U16				pitch;
+		const U16		WIDTH = 320;
+		const U16		HEIGHT = 240;
+
+		handle1 = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( handle1 != kInvalidDisplayHandle );
+		buffer = pDisplayMPI_->GetBuffer(handle1);
+		TS_ASSERT( buffer != kNull );
+		pitch = pDisplayMPI_->GetPitch(handle1);
+		TS_ASSERT( pitch > WIDTH );
+		height = pDisplayMPI_->GetHeight(handle1);
+		TS_ASSERT( height == HEIGHT );
+		for (int i = 0; i < HEIGHT; i++) 
+		{
+			bool blu = (i < HEIGHT/2);
+			bool grn = (i < HEIGHT/4) || (i > HEIGHT/2 && i < 3*HEIGHT/4);
+			bool red = (i < HEIGHT/4) || (i > 3*HEIGHT/4);
+			for (int j = 0, m = i*WIDTH*4; j < WIDTH; j++, m+=4)
+			{
+				U8   val = j % 0xFF;
+				buffer[m+0] = (blu) ? val : 0;
+				buffer[m+1] = (grn) ? val : 0;
+				buffer[m+2] = (red) ? val : 0;
+				buffer[m+3] = val;
+			}
+		}
+
+		handle2 = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420, NULL);
+		TS_ASSERT( handle2 != kInvalidDisplayHandle );
+		buffer = pDisplayMPI_->GetBuffer(handle2);
+		TS_ASSERT( buffer != kNull );
+		pitch = pDisplayMPI_->GetPitch(handle2);
+		TS_ASSERT( pitch > WIDTH );
+		height = pDisplayMPI_->GetHeight(handle2);
+		TS_ASSERT( height == HEIGHT );
+		memset(buffer, 0xFF, pitch * height); // YUV magenta
+
+		pDisplayMPI_->Register(handle1, 0, 0, kDisplayOnTop);
+		pDisplayMPI_->Register(handle2, 0, 0, kDisplayOnBottom);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT( handle1 == pDisplayMPI_->GetCurrentDisplayHandle() );
+		TS_ASSERT( handle2 != pDisplayMPI_->GetCurrentDisplayHandle() );
+
+		// Enable ARGB per-pixel alpha blending over YUV background
+		pDisplayMPI_->SetAlpha(handle1, 100, true);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT_EQUALS( pDisplayMPI_->GetAlpha(handle1), 100 );
+		sleep(1);
+		pDisplayMPI_->SetAlpha(handle1, 0, false);
+
+		// Enable YUV layer alpha blending over ARGB background
+		pDisplayMPI_->UnRegister(handle2, 0);
+		pDisplayMPI_->Register(handle2, 0, 0, kDisplayOnTop);
+		pDisplayMPI_->Invalidate(0, NULL);
+		TS_ASSERT( handle2 == pDisplayMPI_->GetCurrentDisplayHandle() );
+		for (int i = 0; i < 100; i += 10)
+		{
+			pDisplayMPI_->SetAlpha(handle2, i, true);
+			sleep(1);
+		}
+		pDisplayMPI_->SetAlpha(handle2, 0, false);
+		
 		pDisplayMPI_->UnRegister(handle2, 0);
 		pDisplayMPI_->DestroyHandle(handle2, false);
 		

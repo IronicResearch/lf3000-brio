@@ -28277,3 +28277,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/20/10 9:49 AM
 6,126 ms. (Cumulative: 9,941,386 ms)
 
 ----------------
+Revision 8,669 from svn://localhost/TRUNK/:
+
+DisplayMPI unit test: Add alpha blending test. Disable backlight test which should be deprecated.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/20/10 9:51 AM
+1 changed, 0 added, 0 deleted.
+6,081 ms. (Cumulative: 9,947,545 ms)
+
+----------------
