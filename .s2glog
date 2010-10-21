@@ -28324,3 +28324,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/21/10 9:57 AM
 6,111 ms. (Cumulative: 9,972,494 ms)
 
 ----------------
+Revision 8,676 from svn://localhost/TRUNK/:
+
+DisplayFB: Use internal framebuffer memory allocations for OGL contexts for compatibility with existing apps.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/21/10 12:59 PM
+1 changed, 0 added, 0 deleted.
+6,143 ms. (Cumulative: 9,978,747 ms)
+
+----------------
