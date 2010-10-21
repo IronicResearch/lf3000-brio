@@ -28,6 +28,7 @@
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define RGBFB					0	// index of RGB framebuffer
+#define OGLFB					1	// index of OGL framebuffer
 #define YUVFB					2	// index of YUV framebuffer
 #define NUMFB					3	// number of framebuffer devices
 
@@ -143,7 +144,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
-
+	
+	// OGL framebuffer context?
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+		n = OGLFB;
+	
 	// Select pixel format masks for RGB context
 	if ((pBuffer == NULL || pBuffer == pmem2d))
 	{
@@ -509,7 +514,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Dereference OpenGL context for MagicEyes OEM memory size config
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
-	int 							n = RGBFB;
+	int 							n = OGLFB;
 	
 	// Open driver for 3D engine registers
 	fdreg3d = open(DEV3D, O_RDWR | O_SYNC);
@@ -573,14 +578,14 @@ void CDisplayFB::DeinitOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
-	int n = RGBFB;
+	int n = OGLFB;
 	int r = ioctl(fbdev[n], FBIOBLANK, 0);
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DisableOpenGL()
 {
-	int n = RGBFB;
+	int n = OGLFB;
 	int r = ioctl(fbdev[n], FBIOBLANK, 1);
 }
 
@@ -592,7 +597,7 @@ void CDisplayFB::UpdateOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::WaitForDisplayAddressPatched(void)
 {
-	int n = RGBFB;
+	int n = OGLFB;
 	int r = 0; 
 	do {
 		r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
@@ -605,7 +610,7 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
 	unsigned int offset = DisplayBufferPhysicalAddress - mem1phys;
-	int n = RGBFB;
+	int n = OGLFB;
 	offset &= ~0x20000000;
 	vinfo[n].yoffset = offset / finfo[n].line_length;
 	vinfo[n].xoffset = offset % finfo[n].line_length;

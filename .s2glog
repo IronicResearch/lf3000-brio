@@ -28314,3 +28314,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/20/10 4:59 PM
 6,079 ms. (Cumulative: 9,966,290 ms)
 
 ----------------
+Revision 8,674 from svn://localhost/TRUNK/:
+Revision 8,675 from svn://localhost/TRUNK/:
+
+DisplayFB: Select 2nd RGB layer as default for OGL contexts for compatibility with apps using RGB overlays.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/21/10 9:57 AM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 9,972,494 ms)
+
+----------------
