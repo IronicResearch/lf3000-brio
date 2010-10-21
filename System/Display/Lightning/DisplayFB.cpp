@@ -55,6 +55,8 @@ namespace
 	void*						pmem1d = NULL;
 	void*						pmem2d = MAP_FAILED;
 	tDisplayHandle				hogl = NULL;
+	tDisplayContext				dcmem1;		// memory block context for 1D heap
+	tDisplayContext				dcmem2;		// memory block context for 2D heap
 	
 	std::list<tBuffer>			gBufListUsed;			// list of allocated buffers
 	std::list<tBuffer>			gBufListFree;			// list of freed buffers
@@ -91,9 +93,9 @@ void CDisplayFB::InitModule()
 		r = ioctl(fbdev[n], FBIOBLANK, 1);
 		
 		// Map framebuffer into userspace
-		fbmem[n] = (U8*)mmap(0, finfo[n].smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev[n], 0);
+		fbmem[n] = (U8*)mmap((void*)finfo[n].smem_start, finfo[n].smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev[n], 0);
 		dbg_.Assert(fbmem[n] != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV[n]);
-		dbg_.DebugOut(kDbgLvlImportant, "%s: Mapped %08lx to %p, size %u\n", __FUNCTION__, finfo[n].smem_start, fbmem[n], finfo[n].smem_len);
+		dbg_.DebugOut(kDbgLvlImportant, "%s: Mapped %08lx to %p, size %08x\n", __FUNCTION__, finfo[n].smem_start, fbmem[n], finfo[n].smem_len);
 	}
 	
 	// Setup framebuffer allocator lists and markers
@@ -524,21 +526,42 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	preg3d = mmap(0, REG3D_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fdreg3d, REG3D_PHYS);
 	dbg_.DebugOut(kDbgLvlValuable, "%s: %016lX mapped to %p\n", __FUNCTION__, REG3D_PHYS, preg3d);
 
-	// Open driver for mapping framebuffer memory
-	fdmem = open(DEVMEM, O_RDWR | O_SYNC);
-	dbg_.Assert(fdmem >= 0, "%s: Opening %s failed\n", __FUNCTION__, DEVMEM);
-	
-	// Map memory block for 1D heap = command buffer, vertex buffers (not framebuffer)
-	finfo[n].smem_start &= ~0x20000000;
-	mem1phys = finfo[n].smem_start;
-	mem1size = k1Meg;
-	pmem1d = mmap((void*)mem1phys, mem1size, PROT_READ | PROT_WRITE, MAP_SHARED, fdmem, mem1phys);
-	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem1phys, pmem1d, mem1size);
+	// Get OpenGL context memory heap size requests
+	mem1size = pMemInfo->Memory1D_SizeInMbyte << 20;
+	mem2size = pMemInfo->Memory2D_SizeInMbyte << 20;
+	U32 align = ALIGN(mem2size, k4Meg);
+	U32 delta = align - mem2size;
 
-	// Map memory block for 2D heap = framebuffer, Zbuffer, textures
-	mem2phys = ALIGN(finfo[n].smem_start + mem1size, k4Meg);
-	mem2size = finfo[n].smem_len - ALIGN((mem2phys - mem1phys), k1Meg);
-	pmem2d = mmap((void*)mem2phys, mem2size, PROT_READ | PROT_WRITE, MAP_SHARED, fdmem, mem2phys);
+	// Allocate 4Meg aligned buffer for 2D heap
+	memset(&dcmem1, 0, sizeof(dcmem1));
+	memset(&dcmem2, 0, sizeof(dcmem2));
+	tDisplayContext* pdb = &dcmem2;
+	for (mem2size = align; mem2size >= k4Meg; mem2size -= k4Meg) {
+		if (AllocBuffer(pdb, mem2size)) {
+			mem2phys = pdb->basephys + pdb->offset;
+			pmem2d = pdb->pBuffer;
+			break;
+		}
+	}
+	// Check if 1Meg buffer can fit into 4Meg buffer alignment margin
+	if (delta >= mem1size) {
+		mem2size -= delta;
+		mem1size = delta;
+		mem1phys = mem2phys + mem2size;
+		pmem1d = pdb->pBuffer + mem2size;
+	}
+	else {
+		// Allocate 1Meg aligned buffer for 1D heap
+		pdb = &dcmem1;
+		for ( ; mem1size >= k1Meg; mem1size -= k1Meg) {
+			if (AllocBuffer(pdb, mem1size)) {
+				mem1phys = pdb->basephys + pdb->offset;
+				pmem1d = pdb->pBuffer;
+				break;
+			}
+		}
+	}
+	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem1phys, pmem1d, mem1size);
 	dbg_.DebugOut(kDbgLvlValuable, "%s: %08X mapped to %p, size = %08X\n", __FUNCTION__, mem2phys, pmem2d, mem2size);
 
 	// Copy the required mappings into the MagicEyes callback init struct
@@ -564,14 +587,15 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayFB::DeinitOpenGL()
 {
+	// Release framebuffer allocations used by OpenGL context
+	if (dcmem1.pBuffer)
+		DeAllocBuffer(&dcmem1);
+	DeAllocBuffer(&dcmem2);
 	DestroyHandle(hogl, false);
 	
 	// Release framebuffer mappings and drivers used by OpenGL
-	munmap(pmem2d, mem2size);
-	munmap(pmem1d, mem1size);
 	munmap(preg3d, REG3D_SIZE);
 	
-	close(fdmem);
 	close(fdreg3d);
 }
 
@@ -609,8 +633,8 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 //----------------------------------------------------------------------------
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
-	unsigned int offset = DisplayBufferPhysicalAddress - mem1phys;
 	int n = OGLFB;
+	unsigned int offset = DisplayBufferPhysicalAddress - finfo[n].smem_start;
 	offset &= ~0x20000000;
 	vinfo[n].yoffset = offset / finfo[n].line_length;
 	vinfo[n].xoffset = offset % finfo[n].line_length;
