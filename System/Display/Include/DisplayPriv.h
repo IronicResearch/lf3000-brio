@@ -450,6 +450,9 @@ public:
 	
 	VTABLE_EXPORT tPixelFormat		GetAvailableFormat();
 	
+	VTABLE_EXPORT tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
+	VTABLE_EXPORT tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
+	
 private:
 	void				InitModule( );
 	void				DeInitModule( );
@@ -515,6 +518,9 @@ public:
 	virtual bool				AllocBuffer(tDisplayContext* pdc, U32 aligned) = 0;
 	virtual bool				DeAllocBuffer(tDisplayContext* pdc) = 0;
 	
+	virtual tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered) = 0;
+	virtual tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered) = 0;
+	
 protected:
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
@@ -563,6 +569,9 @@ public:
 	U32					GetDisplayMem(tDisplayMem memtype);
 	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
 	bool				DeAllocBuffer(tDisplayContext* pdc);
+	
+	tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
+	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
 	
 private:
 	void				SetDirtyBit(int layer);
@@ -620,6 +629,9 @@ public:
 	U32					GetDisplayMem(tDisplayMem memtype);
 	bool				AllocBuffer(tDisplayContext* pdc, U32 aligned);
 	bool				DeAllocBuffer(tDisplayContext* pdc);
+	
+	tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
+	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
 	
 public:	
 	CDisplayFB(CDisplayModule* pModule) :

@@ -337,6 +337,26 @@ tErrType CDisplayMPI::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->SetVideoScaler(hndl, width, height, centered);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->SetVideoScaler(hndl, width, height, centered);
+}
+
+//----------------------------------------------------------------------------
 tPixelFormat CDisplayMPI::GetAvailableFormat()
 {
 	if(!pModule_)

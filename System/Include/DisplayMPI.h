@@ -371,6 +371,32 @@ public:
 	///					kPixelFormatError returned if no layers are free.
 	tPixelFormat		GetAvailableFormat();
 
+	/// Sets the source video scaler size for the selected YUV video context.
+	///
+	/// \param hndl		Display handle for YUV video context
+	/// \param width	Source video width
+	/// \param height	Source video height
+	/// \param centered	Source video centered instead of scaled to window size
+	///
+	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
+	///
+	/// LF1000: Sets the YUV HW video source:destination scaler for the video context.
+	/// By default, the source and destination width and height are set to the same values 
+	/// as the video context width and height for 1:1 scaling. The video source size may be
+	/// overidden to smaller values for scaling up to the destination window size, or
+	/// larger values for scaling down.
+	tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
+
+	/// Gets the source video scaler size for the selected YUV video context.
+	///
+	/// \param hndl		Display handle for YUV video context
+	/// \param width	Source video width
+	/// \param height	Source video height
+	/// \param centered	Source video centered instead of scaled to window size
+	///
+	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
+	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
+	
 private:
 	class CDisplayModule*	pModule_;
 };

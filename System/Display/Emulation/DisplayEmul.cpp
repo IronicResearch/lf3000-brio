@@ -254,6 +254,18 @@ tErrType CDisplayModule::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, 
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
+{
+	return kNoImplErr; 
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
+{
+	return kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::UnRegisterLayer(tDisplayHandle hndl)
 {
 	// Nothing to do on emulation target
