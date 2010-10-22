@@ -753,6 +753,62 @@ tErrType CDisplayLF1000::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, 
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayLF1000::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
+{
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	int	layer, r, dw, dh;
+	union mlc_cmd c;
+
+	// Open video layer device
+	layer = dc->layer;
+	if (layer != gDevOverlay)
+		return kInvalidParamErr;
+	
+	// Get position info when video context was created
+	r = ioctl(layer, MLC_IOCGPOSITION, &c);
+	dw = (r == 0) ? c.position.right - c.position.left + 0 : 320;
+	dh = (r == 0) ? c.position.bottom - c.position.top + 0 : 240;
+	
+	// Reposition with fullscreen centering instead of scaling
+	if (centered) 
+	{
+		dw = width;
+		dh = height;		
+		c.position.left = (320 - width) / 2;
+		c.position.right = c.position.left + width;
+		c.position.top = (240 - height) / 2;
+		c.position.bottom = c.position.top + height;
+		ioctl(layer, MLC_IOCSPOSITION, &c);
+	}
+	// Special case handling for 320x176 scaling (non-letterbox)
+	else if (176 == height && 320 == width) 
+	{
+		dw = 320;
+		dh = 240;
+		c.position.left = c.position.top = 0;
+		c.position.right = c.position.left + dw;
+		c.position.bottom = c.position.top + dh;
+		ioctl(layer, MLC_IOCSPOSITION, &c);
+	}
+
+	// Set video scaler for video source and screen destination
+	c.overlaysize.srcwidth = width;
+	c.overlaysize.srcheight = height;
+	c.overlaysize.dstwidth = dw; 
+	c.overlaysize.dstheight = dh; 
+	ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
+	ioctl(layer, MLC_IOCTDIRTY, 0);
+
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayLF1000::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
+{
+	return kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
 void CDisplayLF1000::SetDirtyBit(int layer)
 {
 	ioctl(layer, MLC_IOCTDIRTY, 0);

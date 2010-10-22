@@ -28333,3 +28333,16 @@ By Dave Milici (dmilici@leapfrog.com) on 10/21/10 12:59 PM
 6,143 ms. (Cumulative: 9,978,747 ms)
 
 ----------------
+Revision 8,677 from svn://localhost/TRUNK/:
+Revision 8,678 from svn://localhost/TRUNK/:
+Revision 8,679 from svn://localhost/TRUNK/:
+Revision 8,680 from svn://localhost/TRUNK/:
+Revision 8,681 from svn://localhost/TRUNK/:
+
+DisplayMPI: Add SetVideoScaler() and GetVideoScaler() functions to DisplayMPI.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/22/10 4:58 PM
+8 changed, 0 added, 0 deleted.
+6,315 ms. (Cumulative: 9,985,172 ms)
+
+----------------

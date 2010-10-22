@@ -150,6 +150,18 @@ tErrType CDisplayModule::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, 
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayModule::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
+{
+	return pDriver->SetVideoScaler(hndl, width, height, centered);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
+{
+	return pDriver->GetVideoScaler(hndl, width, height, centered);
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayModule::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
 	return pDriver->SetAlpha(hndl, level, enable);

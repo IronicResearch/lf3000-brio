@@ -471,6 +471,17 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
+//----------------------------------------------------------------------------
+tErrType CDisplayFB::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
+{
+	return kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayFB::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
+{
+	return kNoImplErr;
+}
 
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
