@@ -762,7 +762,7 @@ tErrType CDisplayLF1000::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 heig
 	// Open video layer device
 	layer = dc->layer;
 	if (layer != gDevOverlay)
-		return kInvalidParamErr;
+		layer = gDevOverlay; //return kInvalidParamErr;
 	
 	// Get position info when video context was created
 	r = ioctl(layer, MLC_IOCGPOSITION, &c);
