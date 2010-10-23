@@ -28346,3 +28346,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/22/10 4:58 PM
 6,315 ms. (Cumulative: 9,985,172 ms)
 
 ----------------
+Revision 8,682 from svn://localhost/TRUNK/:
+
+CameraMPI, VideoMPI: Use DisplayMPI SetVideoScaler() function instead of inline driver call.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/22/10 5:40 PM
+4 changed, 0 added, 0 deleted.
+6,438 ms. (Cumulative: 9,991,688 ms)
+
+----------------

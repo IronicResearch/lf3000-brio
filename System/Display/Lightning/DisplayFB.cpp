@@ -474,13 +474,30 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	struct lf1000fb_vidscale_cmd cmd;
+	cmd.sizex = width;
+	cmd.sizey = height;
+	cmd.apply = 1;
+	int n = YUVFB; //ctx->layer;
+	int r = ioctl(fbdev[n], LF1000FB_IOCSVIDSCALE, &cmd);
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayFB::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
 {
-	return kNoImplErr;
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	
+	struct lf1000fb_vidscale_cmd cmd;
+	int n = YUVFB; //ctx->layer;
+	int r = ioctl(fbdev[n], LF1000FB_IOCGVIDSCALE, &cmd);
+	width = cmd.sizex;
+	height = cmd.sizey;
+	
+	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
 //----------------------------------------------------------------------------

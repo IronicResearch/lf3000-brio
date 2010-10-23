@@ -167,52 +167,10 @@ inline void PROFILE_END(const char* msg)
 // Set video scaler (embedded only)
 static void SetScaler(int width, int height, bool centered)
 {
-#ifndef EMULATION
-	int	layer, r, dw, dh;
-	union mlc_cmd c;
-
-	// Open video layer device
-	layer = open("/dev/layer2", O_RDWR|O_SYNC);
-	if (layer < 0)
-		return;
-
-	// Get position info when video context was created
-	r = ioctl(layer, MLC_IOCGPOSITION, &c);
-	dw = (r == 0) ? c.position.right - c.position.left + 0 : 320;
-	dh = (r == 0) ? c.position.bottom - c.position.top + 0 : 240;
+	CDisplayMPI 	dispmgr;
+	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle();
 	
-	// Reposition with fullscreen centering instead of scaling
-	if (centered) 
-	{
-		dw = width;
-		dh = height;		
-		c.position.left = (320 - width) / 2;
-		c.position.right = c.position.left + width;
-		c.position.top = (240 - height) / 2;
-		c.position.bottom = c.position.top + height;
-		ioctl(layer, MLC_IOCSPOSITION, &c);
-	}
-	// Special case handling for 320x176 scaling (non-letterbox)
-	else if (176 == height && 320 == width) 
-	{
-		dw = 320;
-		dh = 240;
-		c.position.left = c.position.top = 0;
-		c.position.right = c.position.left + dw;
-		c.position.bottom = c.position.top + dh;
-		ioctl(layer, MLC_IOCSPOSITION, &c);
-	}
-
-	// Set video scaler for video source and screen destination
-	c.overlaysize.srcwidth = width;
-	c.overlaysize.srcheight = height;
-	c.overlaysize.dstwidth = dw; 
-	c.overlaysize.dstheight = dh; 
-	ioctl(layer, MLC_IOCSOVERLAYSIZE, &c);
-	ioctl(layer, MLC_IOCTDIRTY, 0);
-
-	close(layer);
-#endif
+	dispmgr.SetVideoScaler(hvideo, width, height, centered);
 }
 
 //----------------------------------------------------------------------------
