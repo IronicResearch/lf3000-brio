@@ -902,10 +902,15 @@ public:
 		pDisplayMPI_->Register(offscreen, 0, 0, kDisplayOnTop);
 		pDisplayMPI_->Invalidate(0, NULL);
 		sleep(1);
-		
-		pDisplayMPI_->SetVideoScaler(handle, WIDTH/2, HEIGHT/2, false);
-		pDisplayMPI_->Invalidate(0, NULL);
-		sleep(1);
+
+		for (U16 w = WIDTH, h = HEIGHT; w >= WIDTH/4; w *= 9, w /= 10, h *= 9, h /= 10) {
+			Boolean centered;
+			pDisplayMPI_->SetVideoScaler(handle, w, h, false);
+			pDisplayMPI_->Invalidate(0, NULL);
+			pDisplayMPI_->GetVideoScaler(handle, width, height, centered);
+			TS_ASSERT_EQUALS(w, width);
+			TS_ASSERT_EQUALS(h, height);			
+		}
 
 		pDisplayMPI_->UnRegister(offscreen, 0);
 		pDisplayMPI_->DestroyHandle(offscreen, false);

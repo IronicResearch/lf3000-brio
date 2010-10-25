@@ -805,7 +805,21 @@ tErrType CDisplayLF1000::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 heig
 //----------------------------------------------------------------------------
 tErrType CDisplayLF1000::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered)
 {
-	return kNoImplErr;
+	struct tDisplayContext* dc = (struct tDisplayContext*)hndl;
+	int	layer, r;
+	union mlc_cmd c;
+
+	// Open video layer device
+	layer = dc->layer;
+	if (layer != gDevOverlay)
+		layer = gDevOverlay; //return kInvalidParamErr;
+	
+	// Set video scaler for video source and screen destination
+	r = ioctl(layer, MLC_IOCGOVERLAYSIZE, &c);
+	width = c.overlaysize.srcwidth;
+	height = c.overlaysize.srcheight;
+	
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
