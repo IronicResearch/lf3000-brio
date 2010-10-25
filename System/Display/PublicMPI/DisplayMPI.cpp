@@ -353,7 +353,7 @@ tErrType CDisplayMPI::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& heigh
 		return kMPINotConnectedErr;
 	if (!hndl)
 		return kInvalidParamErr;
-	return pModule_->SetVideoScaler(hndl, width, height, centered);
+	return pModule_->GetVideoScaler(hndl, width, height, centered);
 }
 
 //----------------------------------------------------------------------------

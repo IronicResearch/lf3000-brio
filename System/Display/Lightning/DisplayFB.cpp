@@ -251,7 +251,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + ctx->height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated)
+	if (ctx->isAllocated && !ctx->offset)
 		return kNoErr;
 
 	// Set XY onscreen position
@@ -272,6 +272,12 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		vinfo[n].nonstd &= ~(3<<24);
 		vinfo[n].nonstd |=  (z<<24);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+		
+		struct lf1000fb_vidscale_cmd cmd;
+		cmd.sizex = ctx->width;
+		cmd.sizey = ctx->height;
+		cmd.apply = 1;
+		r = ioctl(fbdev[n], LF1000FB_IOCSVIDSCALE, &cmd);
 	}
 
 	// Set framebuffer address offset
@@ -280,14 +286,12 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
 	// Defer layer visibility until Update() or SwapBuffers()?
-#if 1	
 	if (n == RGBFB)
 	{
 		r = ioctl(fbdev[n], FBIOBLANK, 0);
 		if (r == 0)
 			ctx->isEnabled = true;
 	}
-#endif
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -630,6 +634,7 @@ void CDisplayFB::DeinitOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
+	RegisterLayer(hogl, 0, 0);
 	int n = OGLFB;
 	int r = ioctl(fbdev[n], FBIOBLANK, 0);
 }
