@@ -908,8 +908,9 @@ public:
 			pDisplayMPI_->SetVideoScaler(handle, w, h, false);
 			pDisplayMPI_->Invalidate(0, NULL);
 			pDisplayMPI_->GetVideoScaler(handle, width, height, centered);
-			TS_ASSERT_EQUALS(w, width);
-			TS_ASSERT_EQUALS(h, height);			
+			// FIXME: Account for rounding error loading video scaler
+			TS_ASSERT_DELTA(w, width, 1);
+			TS_ASSERT_DELTA(h, height, 1);			
 		}
 
 		pDisplayMPI_->UnRegister(offscreen, 0);

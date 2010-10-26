@@ -28364,3 +28364,20 @@ By Dave Milici (dmilici@leapfrog.com) on 10/25/10 1:00 PM
 6,547 ms. (Cumulative: 9,998,344 ms)
 
 ----------------
+Revision 8,684 from svn://localhost/TRUNK/:
+Revision 8,685 from svn://localhost/TRUNK/:
+Revision 8,686 from svn://localhost/TRUNK/:
+Revision 8,687 from svn://localhost/TRUNK/:
+Revision 8,688 from svn://localhost/TRUNK/:
+Revision 8,689 from svn://localhost/TRUNK/:
+Revision 8,690 from svn://localhost/TRUNK/:
+Revision 8,691 from svn://localhost/TRUNK/:
+Revision 8,692 from svn://localhost/TRUNK/:
+
+DisplayMPI test: (FIXME) Account for rounding error loading video scaler.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/26/10 11:16 AM
+1 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 10,004,970 ms)
+
+----------------
