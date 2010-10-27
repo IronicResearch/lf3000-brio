@@ -28381,3 +28381,29 @@ By Dave Milici (dmilici@leapfrog.com) on 10/26/10 11:16 AM
 6,485 ms. (Cumulative: 10,004,970 ms)
 
 ----------------
+Revision 8,693 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,454 ms. (Cumulative: 10,011,502 ms)
+
+----------------
+Revision 8,694 from svn://localhost/TRUNK/:
+Revision 8,695 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,618 ms. (Cumulative: 10,018,135 ms)
+
+----------------
+Revision 8,696 from svn://localhost/TRUNK/:
+Revision 8,697 from svn://localhost/TRUNK/:
+Revision 8,698 from svn://localhost/TRUNK/:
+Revision 8,699 from svn://localhost/TRUNK/:
+Revision 8,700 from svn://localhost/TRUNK/:
+
+Theorarm: ARM binary built from LinuxDist/packages/theorarm svn -r8699.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/27/10 10:21 AM
+1 changed, 0 added, 0 deleted.
+6,579 ms. (Cumulative: 10,024,761 ms)
+
+----------------
