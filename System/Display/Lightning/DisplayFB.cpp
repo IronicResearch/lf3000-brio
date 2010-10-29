@@ -228,13 +228,20 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->layer				= n;
 	ctx->isOverlay			= (n == YUVFB);
 	ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
+	ctx->rect.right			= width;
+	ctx->rect.bottom		= height;
 
 	// Allocate framebuffer memory if onscreen context
-	if (pBuffer == NULL && !AllocBuffer(ctx, aligned))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
-		delete ctx;
-		return kInvalidDisplayHandle;
+	if (pBuffer == NULL)
+	{	
+		if (!AllocBuffer(ctx, aligned))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
+			delete ctx;
+			return kInvalidDisplayHandle;
+		}
+		// Clear the onscreen display buffer
+		memset(ctx->pBuffer, 0, ctx->pitch * ctx->height);
 	}
 	
 	// Fixup offscreen context info if cloned from onscreen context (VideoMPI)
@@ -262,11 +269,13 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
-	
+
+	U16 width			= ctx->rect.right - ctx->rect.left;
+	U16 height			= ctx->rect.bottom - ctx->rect.top;
 	ctx->rect.left 		= ctx->x = xPos;
 	ctx->rect.top  		= ctx->y = yPos;
-	ctx->rect.right		= xPos + ctx->width;
-	ctx->rect.bottom 	= yPos + ctx->height;
+	ctx->rect.right		= xPos + width;
+	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
 	if (ctx->isAllocated && !ctx->offset)
@@ -303,6 +312,9 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
 	r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
+	// Set alpha blend state
+	SetAlpha(ctx, ctx->alphaLevel, ctx->isBlended);
+	
 	// Defer layer visibility until Update() or SwapBuffers()?
 	if (n == RGBFB)
 	{
@@ -527,6 +539,9 @@ tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
+	ctx->alphaLevel = level;
+	ctx->isBlended  = enable;
+	
 	struct lf1000fb_blend_cmd cmd;
 	cmd.alpha = level * ALPHA_STEP / 100;
 	cmd.enable = enable;
