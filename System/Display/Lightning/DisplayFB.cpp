@@ -63,6 +63,11 @@ namespace
 	U32							gMarkBufStart = 0;		// framebuffer start marker
 	U32							gMarkBufEnd = 0;		// framebuffer end marker
 	tMutex 						gListMutex = PTHREAD_MUTEX_INITIALIZER;	// list mutex
+
+	const char*					XRES = "/sys/devices/platform/lf1000-dpc/xres";
+	const char*					YRES = "/sys/devices/platform/lf1000-dpc/yres";
+	unsigned int				xres = 0;	// screen size X
+	unsigned int				yres = 0;	// screen size Y
 }
 
 //============================================================================
@@ -73,6 +78,19 @@ void CDisplayFB::InitModule()
 {
 	int r;
 
+	// Query screen size independently of display mode resolution
+	FILE* f = fopen(XRES, "r");
+	if (f) {
+		fscanf(f, "%u", &xres);
+		fclose(f);
+	}
+	f = fopen(YRES, "r");
+	if (f) {
+		fscanf(f, "%u", &yres);
+		fclose(f);
+	}
+	dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %u x %u\n", __FUNCTION__, xres, yres);
+	
 	for (int n = 0; n < NUMFB; n++)
 	{
 		// Open framebuffer device
@@ -120,7 +138,7 @@ void CDisplayFB::DeInitModule()
 //----------------------------------------------------------------------------
 U32	CDisplayFB::GetScreenSize()
 {
-	return (vinfo[RGBFB].yres << 16) | (vinfo[RGBFB].xres);
+	return (yres << 16) | (xres);
 }
 
 //----------------------------------------------------------------------------

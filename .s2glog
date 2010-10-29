@@ -28407,3 +28407,34 @@ By Dave Milici (dmilici@leapfrog.com) on 10/27/10 10:21 AM
 6,579 ms. (Cumulative: 10,024,761 ms)
 
 ----------------
+Revision 8,701 from svn://localhost/TRUNK/:
+Revision 8,702 from svn://localhost/TRUNK/:
+Revision 8,703 from svn://localhost/TRUNK/:
+Revision 8,704 from svn://localhost/TRUNK/:
+Revision 8,705 from svn://localhost/TRUNK/:
+Revision 8,706 from svn://localhost/TRUNK/:
+Revision 8,707 from svn://localhost/TRUNK/:
+Revision 8,708 from svn://localhost/TRUNK/:
+Revision 8,709 from svn://localhost/TRUNK/:
+Revision 8,710 from svn://localhost/TRUNK/:
+Revision 8,711 from svn://localhost/TRUNK/:
+Revision 8,712 from svn://localhost/TRUNK/:
+Revision 8,713 from svn://localhost/TRUNK/:
+Revision 8,714 from svn://localhost/TRUNK/:
+Revision 8,715 from svn://localhost/TRUNK/:
+Revision 8,716 from svn://localhost/TRUNK/:
+Revision 8,717 from svn://localhost/TRUNK/:
+Revision 8,718 from svn://localhost/TRUNK/:
+Revision 8,719 from svn://localhost/TRUNK/:
+Revision 8,720 from svn://localhost/TRUNK/:
+Revision 8,721 from svn://localhost/TRUNK/:
+Revision 8,722 from svn://localhost/TRUNK/:
+Revision 8,723 from svn://localhost/TRUNK/:
+
+DisplayFB: Use sysfs entries to query screen size independenly of display mode resolution.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/29/10 3:16 PM
+1 changed, 0 added, 0 deleted.
+6,172 ms. (Cumulative: 10,031,183 ms)
+
+----------------
