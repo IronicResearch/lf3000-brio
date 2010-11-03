@@ -18,11 +18,6 @@
 #include <VideoPriv.h>
 #include <DisplayPriv.h>
 
-//#define _GNU_SOURCE
-//#define _LARGEFILE_SOURCE
-//#define _LARGEFILE64_SOURCE
-#define _FILE_OFFSET_BITS 64
-
 #include <ogg/ogg.h>
 #include <theora/theora.h>
 

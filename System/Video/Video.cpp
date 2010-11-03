@@ -23,14 +23,6 @@
 #include <string.h>
 #include <list>
 
-//#define _GNU_SOURCE
-//#define _LARGEFILE_SOURCE
-//#define _LARGEFILE64_SOURCE
-#define _FILE_OFFSET_BITS 64
-
-//#include <ogg/ogg.h>
-//#include <theora/theora.h>
-
 #ifndef EMULATION
 #include <fcntl.h>
 #include <sys/ioctl.h>

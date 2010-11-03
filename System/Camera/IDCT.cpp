@@ -2,8 +2,6 @@
 #include <SystemErrors.h>
 #include <CameraPriv.h>
 
-#define _FILE_OFFSET_BITS	64	// for correct off_t type
-
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>

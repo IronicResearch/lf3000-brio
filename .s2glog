@@ -28451,3 +28451,17 @@ By Dave Milici (dmilici@leapfrog.com) on 10/29/10 4:19 PM
 6,141 ms. (Cumulative: 10,037,434 ms)
 
 ----------------
+Revision 8,729 from svn://localhost/TRUNK/:
+Revision 8,730 from svn://localhost/TRUNK/:
+Revision 8,731 from svn://localhost/TRUNK/:
+Revision 8,732 from svn://localhost/TRUNK/:
+Revision 8,733 from svn://localhost/TRUNK/:
+
+Brio build: Relocate _FILE_OFFSET_BITS=64 define into embedded compile settings for global usage.
+This define was needed for 64-bit off_t type used in mmap() calls, so that 32-bit addresses > 2Gig get passed to the kernel correctly, as needed by code accessing LF1000 HW registers.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/3/10 10:50 AM
+6 changed, 0 added, 0 deleted.
+6,228 ms. (Cumulative: 10,043,787 ms)
+
+----------------
