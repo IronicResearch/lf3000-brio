@@ -28465,3 +28465,42 @@ By Dave Milici (dmilici@leapfrog.com) on 11/3/10 10:50 AM
 6,228 ms. (Cumulative: 10,043,787 ms)
 
 ----------------
+Revision 8,734 from svn://localhost/TRUNK/:
+Revision 8,735 from svn://localhost/TRUNK/:
+Revision 8,736 from svn://localhost/TRUNK/:
+Revision 8,737 from svn://localhost/TRUNK/:
+Revision 8,738 from svn://localhost/TRUNK/:
+Revision 8,739 from svn://localhost/TRUNK/:
+Revision 8,740 from svn://localhost/TRUNK/:
+Revision 8,741 from svn://localhost/TRUNK/:
+Revision 8,742 from svn://localhost/TRUNK/:
+Revision 8,743 from svn://localhost/TRUNK/:
+Revision 8,744 from svn://localhost/TRUNK/:
+Revision 8,745 from svn://localhost/TRUNK/:
+Revision 8,746 from svn://localhost/TRUNK/:
+Revision 8,747 from svn://localhost/TRUNK/:
+Revision 8,748 from svn://localhost/TRUNK/:
+Revision 8,749 from svn://localhost/TRUNK/:
+Revision 8,750 from svn://localhost/TRUNK/:
+Revision 8,751 from svn://localhost/TRUNK/:
+Revision 8,752 from svn://localhost/TRUNK/:
+Revision 8,753 from svn://localhost/TRUNK/:
+Revision 8,754 from svn://localhost/TRUNK/:
+Revision 8,755 from svn://localhost/TRUNK/:
+Revision 8,756 from svn://localhost/TRUNK/:
+Revision 8,757 from svn://localhost/TRUNK/:
+Revision 8,758 from svn://localhost/TRUNK/:
+Revision 8,759 from svn://localhost/TRUNK/:
+Revision 8,760 from svn://localhost/TRUNK/:
+Revision 8,761 from svn://localhost/TRUNK/:
+Revision 8,762 from svn://localhost/TRUNK/:
+Revision 8,763 from svn://localhost/TRUNK/:
+Revision 8,764 from svn://localhost/TRUNK/:
+
+DisplayFB: Fix tracking of offscreen display contexts used for overlays on videos.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/5/10 4:55 PM
+1 changed, 0 added, 0 deleted.
+6,114 ms. (Cumulative: 10,050,229 ms)
+
+----------------

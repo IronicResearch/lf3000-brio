@@ -221,7 +221,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->colorDepthFormat 	= colorDepth;
 	ctx->depth				= depth;
 	ctx->bpp				= depth/8;
-	ctx->pitch				= finfo[n].line_length;
+	ctx->pitch				= (pBuffer != NULL) ? width * depth/8 : finfo[n].line_length;
 	ctx->isAllocated		= (pBuffer != NULL);
 	ctx->pBuffer			= (pBuffer != NULL) ? pBuffer : fbmem[n] + offset;
 	ctx->offset 			= offset;
@@ -248,7 +248,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (pBuffer >= fbmem[n] && pBuffer <= fbmem[n] + finfo[n].smem_len)
 	{
 		ctx->offset = pBuffer - fbmem[n];
+		ctx->pitch  = finfo[n].line_length;
+		ctx->isUnderlay	= (vinfo[n].nonstd & (3<<24));
 	}
+
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, width, height, ctx->pitch, ctx->pBuffer);
 	
 	return (tDisplayHandle)ctx;
 }
@@ -258,6 +262,8 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
+
 	if (!ctx->isAllocated)
 		DeAllocBuffer(ctx);
 	delete ctx;
@@ -331,8 +337,16 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
+	// Nullify flipped contexts tracked in SwapBuffers()
+	if (pdcVisible_) {
+		if (pdcVisible_->flippedContext == ctx)
+			pdcVisible_->flippedContext = NULL;
+		if (pdcVisible_ == ctx)
+			pdcVisible_ = NULL;
+	}
+
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated)
+	if (ctx->isAllocated && !ctx->offset)
 		return kNoErr;
 	
 	int n = ctx->layer;
@@ -354,7 +368,7 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 		dcdst = dcdst->flippedContext;
 	
 	// Copy offscreen context to primary display context
-	if (dc->isAllocated)
+	if (dc->isAllocated && !dc->offset)
 	{
 		switch (dc->colorDepthFormat) 
 		{
@@ -424,6 +438,12 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	int n = ctx->layer;
 	
+	// Update invalidated offscreen regions prior to page flip (VideoMPI)
+	if (!ctx->isUnderlay)
+		pdcVisible_->flippedContext = ctx;
+	if (ctx->isOverlay)
+		pModule_->Invalidate(0, NULL);
+
 	// Note pages are stacked vertically for RGB, horizontally for YUV
 	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
 	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
@@ -436,8 +456,6 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 		ctx->isEnabled = (r == 0);
 	}
 	
-	pdcVisible_->flippedContext = ctx;
-
 	// Wait for VSync option via layer dirty bit?
 	if (waitVSync) 
 	{
