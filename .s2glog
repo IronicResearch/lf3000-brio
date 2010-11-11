@@ -28504,3 +28504,51 @@ By Dave Milici (dmilici@leapfrog.com) on 11/5/10 4:55 PM
 6,114 ms. (Cumulative: 10,050,229 ms)
 
 ----------------
+Revision 8,765 from svn://localhost/TRUNK/:
+Revision 8,766 from svn://localhost/TRUNK/:
+Revision 8,767 from svn://localhost/TRUNK/:
+Revision 8,768 from svn://localhost/TRUNK/:
+Revision 8,769 from svn://localhost/TRUNK/:
+Revision 8,770 from svn://localhost/TRUNK/:
+Revision 8,771 from svn://localhost/TRUNK/:
+Revision 8,772 from svn://localhost/TRUNK/:
+Revision 8,773 from svn://localhost/TRUNK/:
+Revision 8,774 from svn://localhost/TRUNK/:
+Revision 8,775 from svn://localhost/TRUNK/:
+Revision 8,776 from svn://localhost/TRUNK/:
+Revision 8,777 from svn://localhost/TRUNK/:
+Revision 8,778 from svn://localhost/TRUNK/:
+Revision 8,779 from svn://localhost/TRUNK/:
+Revision 8,780 from svn://localhost/TRUNK/:
+Revision 8,781 from svn://localhost/TRUNK/:
+Revision 8,782 from svn://localhost/TRUNK/:
+Revision 8,783 from svn://localhost/TRUNK/:
+Revision 8,784 from svn://localhost/TRUNK/:
+Revision 8,785 from svn://localhost/TRUNK/:
+Revision 8,786 from svn://localhost/TRUNK/:
+Revision 8,787 from svn://localhost/TRUNK/:
+Revision 8,788 from svn://localhost/TRUNK/:
+Revision 8,789 from svn://localhost/TRUNK/:
+Revision 8,790 from svn://localhost/TRUNK/:
+Revision 8,791 from svn://localhost/TRUNK/:
+Revision 8,792 from svn://localhost/TRUNK/:
+Revision 8,793 from svn://localhost/TRUNK/:
+Revision 8,794 from svn://localhost/TRUNK/:
+Revision 8,795 from svn://localhost/TRUNK/:
+Revision 8,796 from svn://localhost/TRUNK/:
+Revision 8,797 from svn://localhost/TRUNK/:
+Revision 8,798 from svn://localhost/TRUNK/:
+Revision 8,799 from svn://localhost/TRUNK/:
+Revision 8,800 from svn://localhost/TRUNK/:
+Revision 8,801 from svn://localhost/TRUNK/:
+Revision 8,802 from svn://localhost/TRUNK/:
+Revision 8,803 from svn://localhost/TRUNK/:
+Revision 8,804 from svn://localhost/TRUNK/:
+
+Minor fixes to allow emulation builds on Ubuntu 10.04 (with gcc 4.4.3)
+
+By dlazzari (dlazzari@leapfrog.com) on 11/11/10 1:12 PM
+2 changed, 0 added, 0 deleted.
+6,220 ms. (Cumulative: 10,056,808 ms)
+
+----------------

@@ -140,7 +140,7 @@ OnFaceRequest( FTC_FaceID  faceId,
 		char   orig[4];
 		
 		// Support for separate kerning metrics files for Adobe Type 1 fonts
-		suffix = strrchr( font->filepathname, '.' );
+		suffix = const_cast<char*>(strrchr( font->filepathname, '.' ));
 		if ( suffix && ( strcasecmp( suffix, ".pfa" ) == 0 || strcasecmp( suffix, ".pfb" ) == 0 ) )
 	    {
 	        suffix++;

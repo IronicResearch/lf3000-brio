@@ -23,6 +23,8 @@
 
 #include <FlatProfiler.h>
 
+#include <stdio.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
