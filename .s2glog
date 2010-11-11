@@ -28552,3 +28552,12 @@ By dlazzari (dlazzari@leapfrog.com) on 11/11/10 1:12 PM
 6,220 ms. (Cumulative: 10,056,808 ms)
 
 ----------------
+Revision 8,805 from svn://localhost/TRUNK/:
+
+TTPro 2836.  Adding CartridgeEventQueue to Brio.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/11/10 1:23 PM
+0 changed, 2 added, 0 deleted.
+6,220 ms. (Cumulative: 10,063,106 ms)
+
+----------------
