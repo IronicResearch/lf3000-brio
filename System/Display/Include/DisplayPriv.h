@@ -73,6 +73,8 @@ struct tDisplayContext {
 	U8		alphaLevel;
 	tDisplayContext *flippedContext;
 	bool	isEnabled;	// layer visibility enabled?
+	U32		xscale;		// video scaler size
+	U32		yscale;
 };
 
 struct tBuffer {

@@ -28589,3 +28589,17 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/10 2:59 PM
 6,141 ms. (Cumulative: 10,081,843 ms)
 
 ----------------
+Revision 8,809 from svn://localhost/TRUNK/:
+Revision 8,810 from svn://localhost/TRUNK/:
+Revision 8,811 from svn://localhost/TRUNK/:
+Revision 8,812 from svn://localhost/TRUNK/:
+Revision 8,813 from svn://localhost/TRUNK/:
+Revision 8,814 from svn://localhost/TRUNK/:
+
+DisplayFB: Cache video scaler parameters for clean transitions when 320x240 videos are scaled up for 480x272 display.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/10 3:38 PM
+2 changed, 0 added, 0 deleted.
+6,220 ms. (Cumulative: 10,088,188 ms)
+
+----------------
