@@ -230,6 +230,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
+	ctx->xscale 			= width;
+	ctx->yscale 			= height;
 
 	// Allocate framebuffer memory if onscreen context
 	if (pBuffer == NULL)
@@ -307,8 +309,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		
 		struct lf1000fb_vidscale_cmd cmd;
-		cmd.sizex = ctx->width;
-		cmd.sizey = ctx->height;
+		cmd.sizex = ctx->xscale;
+		cmd.sizey = ctx->yscale;
 		cmd.apply = 1;
 		r = ioctl(fbdev[n], LF1000FB_IOCSVIDSCALE, &cmd);
 	}
@@ -527,6 +529,9 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 tErrType CDisplayFB::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	ctx->xscale = width;
+	ctx->yscale = height;
 	
 	struct lf1000fb_vidscale_cmd cmd;
 	cmd.sizex = width;
