@@ -28570,3 +28570,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/11/10 1:24 PM
 6,173 ms. (Cumulative: 10,069,357 ms)
 
 ----------------
+Revision 8,807 from svn://localhost/TRUNK/:
+
+Add ability to use tslib (selected at run time by /flags/tslib).
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 11/11/10 2:43 PM
+1 changed, 0 added, 0 deleted.
+6,159 ms. (Cumulative: 10,075,609 ms)
+
+----------------

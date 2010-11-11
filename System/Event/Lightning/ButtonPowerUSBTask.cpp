@@ -51,7 +51,8 @@
 #include <TouchTypes.h> 
 #include <errno.h>
 
-
+#include <dlfcn.h>
+#include <tslib.h>
 
 LF_BEGIN_BRIO_NAMESPACE() 
 
@@ -84,7 +85,7 @@ namespace
 	#define SYSFS_LUN1_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun1/enabled"
 	#define SYSFS_VBUS_PATH "/sys/devices/platform/lf1000-usbgadget/vbus"
 	#define SYSFS_WD_PATH 	"/sys/devices/platform/lf1000-usbgadget/watchdog_seconds"
-	#define FLAGS_VBUS_PATH "/flags/vbus"
+	#define FLAGS_TSLIB	"/flags/tslib"
 	
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kPowerEventPriority	= 0;
@@ -96,6 +97,7 @@ namespace
 	volatile bool 			g_threadRun2_ = true;
 	volatile bool 			g_threadRunning2_ = false;
 
+	bool use_tslib = false;
 
 	//============================================================================
 	// Local state and utility functions
@@ -106,11 +108,12 @@ namespace
 	//----------------------------------------------------------------------------
 	// find and open an input device by name
 	//----------------------------------------------------------------------------
-	int open_input_device(const char *input_name)
+
+	// Fill char dev[20] and return 0 or -1 for failure.
+	int find_input_device(const char *input_name, char *dev)
 	{
 		struct dirent *dp;
-		char dev[20];
-		char name[32];
+		char name[32+1];
 		DIR *dir;
 		int fd, i;
 
@@ -122,26 +125,28 @@ namespace
 			if (dp->d_name && !strncmp(dp->d_name, "event", 5)) {
 				sprintf(dev, "/dev/input/%s", dp->d_name);
 				fd = open(dev, O_RDONLY);
-				if (fd == -1)
+				if (fd < 0)
 					continue;
-		
-				if (ioctl(fd, EVIOCGNAME(32), name) < 0) {
-					close(fd);
+				int i=ioctl(fd, EVIOCGNAME(32), name);
+				close (fd);
+				if (i < 0)
 					continue;
-				}
-		
 				if (!strcmp(name, input_name)) {
 					closedir(dir);
-					return fd;
-				} else { /* not what we want, check another */
-					close(fd);
-					fd = -1;
+					return 0;
 				}
 			}
 		}
-		
 		closedir(dir);
 		return -1;
+	}
+
+	int open_input_device(const char *input_name)
+	{
+		char dev[20];
+		if (find_input_device (input_name, dev) < 0)
+			return -1;
+		return open(dev, O_RDONLY);
 	}
 	
 	//----------------------------------------------------------------------------
@@ -206,7 +211,6 @@ void* CEventModule::CartridgeTask( void* arg )
 	tCartridgeData data;
 	int ret;
 	
-
 	event_fd[0].fd = CreateListeningSocket(CART_SOCK);;
 	event_fd[0].events = POLLIN;
 	if(event_fd[0].fd < 0)	{
@@ -339,12 +343,91 @@ void* CEventModule::CartridgeTask( void* arg )
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open socket %s\n", USB_SOCK);
 	}
 	
+	// Determine if tslib is used or not
+
+	int (*ts_config)(struct tsdev *);
+	int (*ts_fd)(struct tsdev *);
+	struct tsdev *(*ts_open)(const char *dev_name, int nonblock);
+	int (*ts_read)(struct tsdev *, struct ts_sample *, int);
+
+	use_tslib = false;
+	struct stat st;
+	if(stat(FLAGS_TSLIB, &st) == 0) /* file exists */
+	{
+		// Hack: do dlopen ourselves so we can assert RTLD_GLOBAL flag, or plugins will
+		// not find symbols defined in tslib
+		void *handle;
+		handle = dlopen("/usr/lib/libts.so", RTLD_NOW | RTLD_GLOBAL);
+		if (!handle)
+		{
+			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't dlopen libts.so\n");
+		}
+		else
+		{
+			// Resolve the 4 symbols we want
+			ts_open = (struct tsdev *(*)(const char *, int))
+				dlsym(handle, "ts_open");
+			ts_config = (int (*)(struct tsdev *)) dlsym(handle, "ts_config");
+			ts_fd = (int (*)(struct tsdev *)) dlsym(handle, "ts_fd");
+			ts_read = (int (*)(struct tsdev *, struct ts_sample *, int)) dlsym(handle, "ts_read");
+			if (!ts_open || !ts_config || !ts_fd || !ts_read)
+			{
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't resolve symbols in tslib.so\n");
+			}
+			else
+			{
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Use tslib\n");				
+				use_tslib = true;
+			}
+		}
+	}
+	else
+	{
+		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Did not find /flags/tslib\n");
+	}
+
 	// init touchscreen driver
 	int touch_index = -1;
 	tTouchData touch_data;
-	
-	event_fd[last_fd].fd = open_input_device("LF1000 touchscreen interface");
-	event_fd[last_fd].events = POLLIN;
+	struct tsdev *tsl = NULL;
+
+	while (use_tslib) // Use while instead of "if" so I can "break"
+	{
+		// Find input event device and hand it to tslib
+		char dev[20];
+		if (find_input_device("LF1000 touchscreen interface", dev) < 0) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
+			perror ("Can't find touchscreen event device in /dev/input");
+			use_tslib = false;
+			break;
+		}
+		tsl = ts_open(dev, 1);
+		if (!tsl) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_open failed\n");
+			perror("ts_open");
+			use_tslib = false;
+			break;
+		}
+		if (ts_config(tsl)) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_config failed\n");
+			perror("ts_config");
+			use_tslib = false;
+			break;
+		}
+
+		// Success; get back fd for poll to know when to ts_read
+		event_fd[last_fd].fd = ts_fd (tsl);
+		event_fd[last_fd].events = POLLIN;
+
+		// Always break, since this is just an if in disguise.
+		break;
+	}
+	if (!use_tslib)
+	{
+		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on LF1000 touchscreen interface\n");
+		event_fd[last_fd].fd = open_input_device("LF1000 touchscreen interface");
+		event_fd[last_fd].events = POLLIN;
+	}
 	if(event_fd[last_fd].fd >= 0)
 	{
 		touch_index = last_fd++;
@@ -363,7 +446,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		// block on driver state changes only
 		// use timeout for cancellation point
 		ret = poll(event_fd, last_fd, 1000);
-        pthread_testcancel();
+		pthread_testcancel();
 		
 		if(ret >= 0) {
 			// button driver event?
@@ -503,33 +586,55 @@ void* CEventModule::CartridgeTask( void* arg )
 			
 			// Touch driver event ?
 			if(touch_index >= 0 && event_fd[touch_index].revents & POLLIN) {
-				size = read(event_fd[touch_index].fd, &ev, sizeof(ev));
-				switch(ev.type)
+				// Using tslib?
+				if (use_tslib)
 				{
-				case EV_SYN:
-					touch_data.time.seconds      = ev.time.tv_sec;
-					touch_data.time.microSeconds = ev.time.tv_usec;
+					// Use tslib; drain up to 64 events at once
+					struct ts_sample samp[64];
+					int i, ret = ts_read(tsl, samp, 64);
+					for (i=0; i<ret; i++)
 					{
+						touch_data.time.seconds      = samp[i].tv.tv_sec;
+						touch_data.time.microSeconds = samp[i].tv.tv_usec;
+						touch_data.touchX = samp[i].x;
+						touch_data.touchY = samp[i].y;
+						touch_data.touchState = samp[i].pressure > 0 ? 1 : 0;
+						// touch_data.touchP = samp[i].pressure;
 						CTouchMessage touch_msg(touch_data);
 						pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
 					}
-					break;
-					
-				case EV_KEY:
-					touch_data.touchState = ev.value;
-					break;
-					
-				case EV_ABS:
-					switch(ev.code)
+				}
+				else
+				{
+					// Use raw input event system
+					size = read(event_fd[touch_index].fd, &ev, sizeof(ev));
+					switch(ev.type)
 					{
-					case ABS_X:
-						touch_data.touchX = ev.value;
+					case EV_SYN:
+						touch_data.time.seconds      = ev.time.tv_sec;
+						touch_data.time.microSeconds = ev.time.tv_usec;
+						{
+							CTouchMessage touch_msg(touch_data);
+							pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
+						}
 						break;
-					case ABS_Y:
-						touch_data.touchY = ev.value;
+
+					case EV_KEY:
+						touch_data.touchState = ev.value;
+						break;
+
+					case EV_ABS:
+						switch(ev.code)
+						{
+						case ABS_X:
+							touch_data.touchX = ev.value;
+							break;
+						case ABS_Y:
+							touch_data.touchY = ev.value;
+							break;
+						}
 						break;
 					}
-					break;
 				}
 			}
 		}
