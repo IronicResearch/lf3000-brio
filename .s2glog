@@ -28580,3 +28580,12 @@ By Rob Dowling (rdowling@leapfrog.com) on 11/11/10 2:43 PM
 6,159 ms. (Cumulative: 10,075,609 ms)
 
 ----------------
+Revision 8,808 from svn://localhost/TRUNK/:
+
+DisplayFB: Correct aligned allocation size for YUV video contexts. Needed for video contexts larger than 320x240 for 480x272 display.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/10 2:59 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 10,081,843 ms)
+
+----------------

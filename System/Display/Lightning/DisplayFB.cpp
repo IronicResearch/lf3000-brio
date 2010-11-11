@@ -212,8 +212,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
 	}
 	
-	int offset = 0; //vinfo[n].yres * finfo[n].line_length;
-	int aligned = (n == YUVFB) ? k1Meg : 0;
+	int offset = 0;
+	int aligned = (n == YUVFB) ? ALIGN(height * finfo[n].line_length, k1Meg) : 0;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
