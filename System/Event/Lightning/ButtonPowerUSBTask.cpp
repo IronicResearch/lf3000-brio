@@ -232,19 +232,9 @@ void* CEventModule::CartridgeTask( void* arg )
 				do {
 					r = recv(fdsock, &app_msg, sizeof(app_message), 0);
 					if (r == sizeof(app_message)) {
-						if(app_msg.payload==CARTRIDGE_STATE_REMOVED) {
-							debug.DebugOut(kDbgLvlValuable, "CartridgeTask: CARTRIDGE_STATE_REMOVED message received from socket !!\n");
-							
-							data.cartridgeState = CARTRIDGE_STATE_REMOVED;
-							CCartridgeMessage cartridge_msg(data);
-							pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
-						} else if(app_msg.payload==CARTRIDGE_STATE_RESTART_APPMANAGER) {
-							debug.DebugOut(kDbgLvlValuable, "CartridgeTask: CARTRIDGE_STATE_RESTART_APPMANAGER message received from socket !!\n");
-							
-							data.cartridgeState = CARTRIDGE_STATE_RESTART_APPMANAGER;
-							CCartridgeMessage cartridge_msg(data);
-							pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
-						}
+						data.cartridgeState = (eCartridgeState_)app_msg.payload;
+						CCartridgeMessage cartridge_msg(data);
+						pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
 					}
 				}while (r > 0);
 				close(fdsock);

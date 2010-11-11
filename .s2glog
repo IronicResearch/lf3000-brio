@@ -28561,3 +28561,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/11/10 1:23 PM
 6,220 ms. (Cumulative: 10,063,106 ms)
 
 ----------------
+Revision 8,806 from svn://localhost/TRUNK/:
+
+TTPro 2836.  Brio now posts all Cartridge Events, not just 2 in particular.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/11/10 1:24 PM
+1 changed, 0 added, 0 deleted.
+6,173 ms. (Cumulative: 10,069,357 ms)
+
+----------------
