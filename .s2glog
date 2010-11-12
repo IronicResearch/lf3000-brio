@@ -28603,3 +28603,21 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/10 3:38 PM
 6,220 ms. (Cumulative: 10,088,188 ms)
 
 ----------------
+Revision 8,815 from svn://localhost/TRUNK/:
+Revision 8,816 from svn://localhost/TRUNK/:
+Revision 8,817 from svn://localhost/TRUNK/:
+Revision 8,818 from svn://localhost/TRUNK/:
+Revision 8,819 from svn://localhost/TRUNK/:
+Revision 8,820 from svn://localhost/TRUNK/:
+Revision 8,821 from svn://localhost/TRUNK/:
+Revision 8,822 from svn://localhost/TRUNK/:
+Revision 8,823 from svn://localhost/TRUNK/:
+
+Invert sense of /flags/tslib to /flags/notslib: default tslib unless file found
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 11/12/10 11:12 AM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 10,094,485 ms)
+
+----------------
