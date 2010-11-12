@@ -85,7 +85,7 @@ namespace
 	#define SYSFS_LUN1_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun1/enabled"
 	#define SYSFS_VBUS_PATH "/sys/devices/platform/lf1000-usbgadget/vbus"
 	#define SYSFS_WD_PATH 	"/sys/devices/platform/lf1000-usbgadget/watchdog_seconds"
-	#define FLAGS_TSLIB	"/flags/tslib"
+	#define FLAGS_NOTSLIB	"/flags/notslib"
 	
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kPowerEventPriority	= 0;
@@ -352,8 +352,14 @@ void* CEventModule::CartridgeTask( void* arg )
 
 	use_tslib = false;
 	struct stat st;
-	if(stat(FLAGS_TSLIB, &st) == 0) /* file exists */
+	if(stat(FLAGS_NOTSLIB, &st) == 0) /* file exists */
 	{
+		// NO TSLIB was picked
+		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Did not find " FLAGS_NOTSLIB "\n");
+	}
+	else
+	{
+		// YES TSLIB was picked
 		// Hack: do dlopen ourselves so we can assert RTLD_GLOBAL flag, or plugins will
 		// not find symbols defined in tslib
 		void *handle;
@@ -380,10 +386,6 @@ void* CEventModule::CartridgeTask( void* arg )
 				use_tslib = true;
 			}
 		}
-	}
-	else
-	{
-		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Did not find /flags/tslib\n");
 	}
 
 	// init touchscreen driver
