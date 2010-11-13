@@ -600,10 +600,29 @@ void* CEventModule::CartridgeTask( void* arg )
 						touch_data.time.microSeconds = samp[i].tv.tv_usec;
 						touch_data.touchX = samp[i].x;
 						touch_data.touchY = samp[i].y;
-						touch_data.touchState = samp[i].pressure > 0 ? 1 : 0;
 						// touch_data.touchP = samp[i].pressure;
+
+						// Note: We may wish to send 2 points if pressure==0 from tslib:
+						// One as the last point before pen up, and a 2nd with only
+						// the pen up information
+#if 1
+						// Don't do anything fancy... Just send it
+						touch_data.touchState = samp[i].pressure > 0 ? 1 : 0;
 						CTouchMessage touch_msg(touch_data);
 						pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
+#else
+						// Send any pen-up point twice, once still down...
+						touch_data.touchState = 1;
+						CTouchMessage touch_msg(touch_data);
+						pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
+						if (samp[i].pressure == 0)
+						{
+							// Send another with pen up
+							touch_data.touchState = 0;
+							CTouchMessage touch_msg(touch_data);
+							pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
+						}
+#endif
 					}
 				}
 				else
