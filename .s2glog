@@ -28645,3 +28645,25 @@ By dlazzari (dlazzari@leapfrog.com) on 11/12/10 1:29 PM
 6,556 ms. (Cumulative: 10,108,010 ms)
 
 ----------------
+Revision 8,830 from svn://localhost/TRUNK/:
+Revision 8,831 from svn://localhost/TRUNK/:
+Revision 8,832 from svn://localhost/TRUNK/:
+Revision 8,833 from svn://localhost/TRUNK/:
+Revision 8,834 from svn://localhost/TRUNK/:
+Revision 8,835 from svn://localhost/TRUNK/:
+Revision 8,836 from svn://localhost/TRUNK/:
+Revision 8,837 from svn://localhost/TRUNK/:
+
+Add a #if'd out option to send a pen-up point from tslib twice, once still
+down, once up.  Unlike the input event system, tslib sends the last point when
+the pen goes up with pressure=0, but with valid position data.  If you don't
+plot this point, you'll miss the last segment of your line.  It may or may not
+be an issue for Flash or Brio apps.
+
+
+
+By Rob Dowling (rdowling@leapfrog.com) on 11/12/10 4:31 PM
+1 changed, 0 added, 0 deleted.
+6,423 ms. (Cumulative: 10,114,573 ms)
+
+----------------
