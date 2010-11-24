@@ -68,6 +68,8 @@ namespace
 	const char*					YRES = "/sys/devices/platform/lf1000-dpc/yres";
 	unsigned int				xres = 0;	// screen size X
 	unsigned int				yres = 0;	// screen size Y
+	int							dxres = 0;	// screen delta X
+	int							dyres = 0;	// screen delta Y
 }
 
 //============================================================================
@@ -115,6 +117,10 @@ void CDisplayFB::InitModule()
 		dbg_.Assert(fbmem[n] != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV[n]);
 		dbg_.DebugOut(kDbgLvlImportant, "%s: Mapped %08lx to %p, size %08x\n", __FUNCTION__, finfo[n].smem_start, fbmem[n], finfo[n].smem_len);
 	}
+
+	// Calculate delta XY for screen size vs display resolution
+	dxres = (xres - vinfo[RGBFB].xres) / 2;
+	dyres = (yres - vinfo[RGBFB].yres) / 2;
 	
 	// Setup framebuffer allocator lists and markers
 	gBufListUsed.clear();
@@ -286,19 +292,12 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && !ctx->offset)
+	if (ctx->isAllocated)
 		return kNoErr;
 
 	// Set XY onscreen position
-	struct lf1000fb_position_cmd cmd;
-	cmd.left  = xPos;
-	cmd.top   = yPos;
-	cmd.right = ctx->rect.right;
-	cmd.bottom = ctx->rect.bottom;
-	cmd.apply = 1;
-	
 	int n = ctx->layer;
-	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
+	int r = SetWindowPosition(ctx, xPos, yPos, width, height, ctx->isEnabled);
 
 	// Adjust Z-order for YUV layer?
 	if (n == YUVFB) 
@@ -348,7 +347,7 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	}
 
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && !ctx->offset)
+	if (ctx->isAllocated)
 		return kNoErr;
 	
 	int n = ctx->layer;
@@ -488,12 +487,21 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
 	struct lf1000fb_position_cmd cmd;
-	cmd.left = ctx->rect.left = ctx->x = x;
-	cmd.top  = ctx->rect.top  = ctx->y = y;
+	cmd.left   = ctx->rect.left   = ctx->x = x;
+	cmd.top    = ctx->rect.top    = ctx->y = y;
 	cmd.right  = ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
 	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
 	cmd.apply  = 1;
-	
+
+	// Auto-center UI elements on larger screens by delta XY
+	if (ctx->width < xres && ctx->height < yres)
+	{
+		cmd.left	+= dxres;
+		cmd.right	+= dxres;
+		cmd.top		+= dyres;
+		cmd.bottom	+= dyres;
+	}
+
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
 
@@ -522,6 +530,7 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 	ctx->rect.bottom   = cmd.bottom;
 	width  = ctx->rect.right - ctx->rect.left;
 	height = ctx->rect.bottom - ctx->rect.top;
+	visible = ctx->isEnabled;
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
