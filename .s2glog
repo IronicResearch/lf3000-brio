@@ -28667,3 +28667,70 @@ By Rob Dowling (rdowling@leapfrog.com) on 11/12/10 4:31 PM
 6,423 ms. (Cumulative: 10,114,573 ms)
 
 ----------------
+Revision 8,838 from svn://localhost/TRUNK/:
+Revision 8,839 from svn://localhost/TRUNK/:
+Revision 8,840 from svn://localhost/TRUNK/:
+Revision 8,841 from svn://localhost/TRUNK/:
+Revision 8,842 from svn://localhost/TRUNK/:
+Revision 8,843 from svn://localhost/TRUNK/:
+Revision 8,844 from svn://localhost/TRUNK/:
+Revision 8,845 from svn://localhost/TRUNK/:
+Revision 8,846 from svn://localhost/TRUNK/:
+Revision 8,847 from svn://localhost/TRUNK/:
+Revision 8,848 from svn://localhost/TRUNK/:
+Revision 8,849 from svn://localhost/TRUNK/:
+Revision 8,850 from svn://localhost/TRUNK/:
+Revision 8,851 from svn://localhost/TRUNK/:
+Revision 8,852 from svn://localhost/TRUNK/:
+Revision 8,853 from svn://localhost/TRUNK/:
+Revision 8,854 from svn://localhost/TRUNK/:
+Revision 8,855 from svn://localhost/TRUNK/:
+Revision 8,856 from svn://localhost/TRUNK/:
+Revision 8,857 from svn://localhost/TRUNK/:
+Revision 8,858 from svn://localhost/TRUNK/:
+Revision 8,859 from svn://localhost/TRUNK/:
+Revision 8,860 from svn://localhost/TRUNK/:
+Revision 8,861 from svn://localhost/TRUNK/:
+Revision 8,862 from svn://localhost/TRUNK/:
+Revision 8,863 from svn://localhost/TRUNK/:
+Revision 8,864 from svn://localhost/TRUNK/:
+Revision 8,865 from svn://localhost/TRUNK/:
+Revision 8,866 from svn://localhost/TRUNK/:
+Revision 8,867 from svn://localhost/TRUNK/:
+Revision 8,868 from svn://localhost/TRUNK/:
+Revision 8,869 from svn://localhost/TRUNK/:
+Revision 8,870 from svn://localhost/TRUNK/:
+Revision 8,871 from svn://localhost/TRUNK/:
+Revision 8,872 from svn://localhost/TRUNK/:
+Revision 8,873 from svn://localhost/TRUNK/:
+Revision 8,874 from svn://localhost/TRUNK/:
+Revision 8,875 from svn://localhost/TRUNK/:
+Revision 8,876 from svn://localhost/TRUNK/:
+Revision 8,877 from svn://localhost/TRUNK/:
+Revision 8,878 from svn://localhost/TRUNK/:
+Revision 8,879 from svn://localhost/TRUNK/:
+Revision 8,880 from svn://localhost/TRUNK/:
+Revision 8,881 from svn://localhost/TRUNK/:
+Revision 8,882 from svn://localhost/TRUNK/:
+Revision 8,883 from svn://localhost/TRUNK/:
+Revision 8,884 from svn://localhost/TRUNK/:
+Revision 8,885 from svn://localhost/TRUNK/:
+Revision 8,886 from svn://localhost/TRUNK/:
+Revision 8,887 from svn://localhost/TRUNK/:
+Revision 8,888 from svn://localhost/TRUNK/:
+Revision 8,889 from svn://localhost/TRUNK/:
+Revision 8,890 from svn://localhost/TRUNK/:
+Revision 8,891 from svn://localhost/TRUNK/:
+Revision 8,892 from svn://localhost/TRUNK/:
+Revision 8,893 from svn://localhost/TRUNK/:
+Revision 8,894 from svn://localhost/TRUNK/:
+Revision 8,895 from svn://localhost/TRUNK/:
+
+DisplayFB: Add logic to auto-center onscreen display contexts smaller than fullscreen.
+Simplifies support of Emerald legacy UI elements on larger screen like volume bars, low-battery, Pause, USB, etc.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/23/10 5:27 PM
+1 changed, 0 added, 0 deleted.
+6,767 ms. (Cumulative: 10,121,855 ms)
+
+----------------
