@@ -28734,3 +28734,24 @@ By Dave Milici (dmilici@leapfrog.com) on 11/23/10 5:27 PM
 6,767 ms. (Cumulative: 10,121,855 ms)
 
 ----------------
+Revision 8,896 from svn://localhost/TRUNK/:
+Revision 8,897 from svn://localhost/TRUNK/:
+Revision 8,898 from svn://localhost/TRUNK/:
+Revision 8,899 from svn://localhost/TRUNK/:
+Revision 8,900 from svn://localhost/TRUNK/:
+Revision 8,901 from svn://localhost/TRUNK/:
+Revision 8,902 from svn://localhost/TRUNK/:
+Revision 8,903 from svn://localhost/TRUNK/:
+Revision 8,904 from svn://localhost/TRUNK/:
+Revision 8,905 from svn://localhost/TRUNK/:
+Revision 8,906 from svn://localhost/TRUNK/:
+Revision 8,907 from svn://localhost/TRUNK/:
+
+DisplayFB: Make sure display context is unregistered before being destroyed. Fixes Pause crash after 1st splash video
+due to stale display context tracking in pdcVisible_.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/1/10 12:11 PM
+1 changed, 0 added, 0 deleted.
+6,719 ms. (Cumulative: 10,128,761 ms)
+
+----------------

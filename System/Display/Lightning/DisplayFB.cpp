@@ -272,6 +272,8 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 	
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
 
+	pModule_->UnRegister(hndl, 0);
+
 	if (!ctx->isAllocated)
 		DeAllocBuffer(ctx);
 	delete ctx;
@@ -283,6 +285,8 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
 
 	U16 width			= ctx->rect.right - ctx->rect.left;
 	U16 height			= ctx->rect.bottom - ctx->rect.top;
@@ -337,6 +341,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
 
 	// Nullify flipped contexts tracked in SwapBuffers()
 	if (pdcVisible_) {
