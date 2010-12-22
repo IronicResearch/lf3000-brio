@@ -28876,3 +28876,35 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/17/10 10:55 AM
 6,067 ms. (Cumulative: 10,142,150 ms)
 
 ----------------
+Revision 9,011 from svn://localhost/TRUNK/:
+Revision 9,012 from svn://localhost/TRUNK/:
+Revision 9,013 from svn://localhost/TRUNK/:
+Revision 9,014 from svn://localhost/TRUNK/:
+Revision 9,015 from svn://localhost/TRUNK/:
+Revision 9,016 from svn://localhost/TRUNK/:
+Revision 9,017 from svn://localhost/TRUNK/:
+Revision 9,018 from svn://localhost/TRUNK/:
+Revision 9,019 from svn://localhost/TRUNK/:
+Revision 9,020 from svn://localhost/TRUNK/:
+Revision 9,021 from svn://localhost/TRUNK/:
+Revision 9,022 from svn://localhost/TRUNK/:
+Revision 9,023 from svn://localhost/TRUNK/:
+Revision 9,024 from svn://localhost/TRUNK/:
+Revision 9,025 from svn://localhost/TRUNK/:
+Revision 9,026 from svn://localhost/TRUNK/:
+Revision 9,027 from svn://localhost/TRUNK/:
+Revision 9,028 from svn://localhost/TRUNK/:
+Revision 9,029 from svn://localhost/TRUNK/:
+Revision 9,030 from svn://localhost/TRUNK/:
+Revision 9,031 from svn://localhost/TRUNK/:
+Revision 9,032 from svn://localhost/TRUNK/:
+Revision 9,033 from svn://localhost/TRUNK/:
+Revision 9,034 from svn://localhost/TRUNK/:
+
+Added stubbed-out Accelerometer MPI for draft proposal.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/21/10 5:53 PM
+1 changed, 5 added, 0 deleted.
+6,266 ms. (Cumulative: 10,148,650 ms)
+
+----------------
