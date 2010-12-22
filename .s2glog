@@ -28950,3 +28950,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/22/10 1:08 PM
 6,954 ms. (Cumulative: 10,174,686 ms)
 
 ----------------
+Revision 9,042 from svn://localhost/TRUNK/:
+
+EventMPI: Needed to link to AcceleromterMPI to resolve message type. Doh!
+
+By Dave Milici (dmilici@leapfrog.com) on 12/22/10 1:19 PM
+1 changed, 0 added, 0 deleted.
+6,673 ms. (Cumulative: 10,181,468 ms)
+
+----------------
