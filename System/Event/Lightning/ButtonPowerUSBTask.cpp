@@ -61,7 +61,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define MAX_CART_X_ICONS	3
 
 //Maximum number of input drivers to discover
-#define NUM_INPUTS	5
+#define NUM_INPUTS	6
 
 namespace
 {
