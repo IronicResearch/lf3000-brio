@@ -169,6 +169,7 @@ namespace
 			case KEY_X:			return kButtonBrightness;
 			case KEY_VOLUMEDOWN: return kButtonVolumeDown;
 			case KEY_VOLUMEUP:	return kButtonVolumeUp;
+			case KEY_ESC:		return kButtonEscape;
 		}
 		return 0;
 	}
