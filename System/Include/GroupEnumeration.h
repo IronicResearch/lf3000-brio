@@ -41,6 +41,8 @@ enum eGroupEnum {
 	kGroupCartridge,
 	// Brio v1.1
 	kGroupCamera,
+	// Brio v1.2
+	kGroupAccelerometer,
 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
 	// WARNING: Inserting values will break backwards compatability!!!
