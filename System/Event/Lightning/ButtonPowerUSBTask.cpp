@@ -49,6 +49,7 @@
 #include <USBDeviceTypes.h>
 #include <Utility.h>
 #include <TouchTypes.h> 
+#include <AccelerometerTypes.h>
 #include <errno.h>
 
 #include <dlfcn.h>
@@ -93,6 +94,7 @@ namespace
 	const tEventPriority	kUSBSocketEventPriority	= 128;
 	const tEventPriority	kTouchEventPriority	= 0;
 	const tEventPriority	kCartridgeEventPriority	= 0;	
+	const tEventPriority	kAccelerometerEventPriority	= 255;
 
 	volatile bool 			g_threadRun2_ = true;
 	volatile bool 			g_threadRunning2_ = false;
@@ -440,6 +442,21 @@ void* CEventModule::CartridgeTask( void* arg )
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 touchscreen interface\n");
 	}
 	
+	// Init accelerometer driver and data
+	int aclmtr_index = -1;
+	tAccelerometerData aclmtr_data = {0, 0, 0, {0, 0}};
+	
+	event_fd[last_fd].fd = open_input_device("LF1000 Accelerometer");
+	event_fd[last_fd].events = POLLIN;
+	if (event_fd[last_fd].fd >= 0)
+	{
+		aclmtr_index = last_fd++;
+	}
+	else
+	{
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Accelerometer\n");
+	}
+
 	struct input_event ev;
 	U32 button;
 	int ret;
@@ -657,6 +674,28 @@ void* CEventModule::CartridgeTask( void* arg )
 						}
 						break;
 					}
+				}
+			}
+
+			// Accelerometer driver event?
+			if (aclmtr_index >= 0 && event_fd[aclmtr_index].revents & POLLIN)
+			{
+				read(event_fd[aclmtr_index].fd, &ev, sizeof(ev));
+
+				switch (ev.type) {
+				case EV_ABS:
+					switch (ev.code) {
+					case ABS_X: aclmtr_data.accelX = ev.value; break;
+					case ABS_Y: aclmtr_data.accelY = ev.value; break;
+					case ABS_Z: aclmtr_data.accelZ = ev.value; break;
+					}
+					break;
+				case EV_SYN:
+					aclmtr_data.time.seconds       = ev.time.tv_sec;
+					aclmtr_data.time.microSeconds  = ev.time.tv_usec;
+					CAccelerometerMessage aclmtr_msg(aclmtr_data);
+					pThis->PostEvent(aclmtr_msg, kAccelerometerEventPriority, 0);
+					break;
 				}
 			}
 		}
