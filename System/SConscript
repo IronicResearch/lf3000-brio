@@ -29,6 +29,7 @@ SConscript('Power/SConscript', build_dir=MakeTempDirName('Power'), duplicate=0)
 SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0)
 SConscript('USBDevice/SConscript', build_dir=MakeTempDirName('USBDevice'), duplicate=0)
 SConscript('Utility/SConscript', build_dir=MakeTempDirName('Utility'), duplicate=0)
+SConscript('Accelerometer/SConscript', build_dir=MakeTempDirName('Accelerometer'), duplicate=0)
 if vars['is_emulation']:
 	SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0)
 

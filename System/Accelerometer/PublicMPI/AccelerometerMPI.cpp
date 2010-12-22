@@ -9,20 +9,24 @@
 //
 // Description:
 //		Implements the Module Public Interface (MPI) for the Brio 
-//		Accelerometer Manager module.
+//		Accelerometer module. Lightweight MPI has no underlying module lib.
 //
 //============================================================================
 
 #include <AccelerometerTypes.h>
 #include <AccelerometerMPI.h>
+#include <EventMPI.h>
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <sys/stat.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
-
-const CString	kMPIName = "AccelerometerMPI";
-
+const CString	kMPIName 					= "AccelerometerMPI";
+const CString	kAccelerometerModuleName	= "Accelerometer";
+const CURI		kModuleURI					= "/LF/System/Accelerometer";
+const tVersion	kAccelerometerModuleVersion	= 3;
 
 //============================================================================
 // CAccelerometerMessage
@@ -51,13 +55,11 @@ tAccelerometerData CAccelerometerMessage::GetAccelerometerData() const
 //----------------------------------------------------------------------------
 CAccelerometerMPI::CAccelerometerMPI() : pModule_(NULL)
 {
-//	pModule_ = new CAccelerometerModule();
 }
 
 //----------------------------------------------------------------------------
 CAccelerometerMPI::~CAccelerometerMPI()
 {
-//	delete pModule_;
 }
 
 //----------------------------------------------------------------------------
@@ -75,19 +77,19 @@ const CString* CAccelerometerMPI::GetMPIName() const
 //----------------------------------------------------------------------------
 tVersion CAccelerometerMPI::GetModuleVersion() const
 {
-//	return kAccelerometerModuleVersion;
+	return kAccelerometerModuleVersion;
 }
 
 //----------------------------------------------------------------------------
 const CString* CAccelerometerMPI::GetModuleName() const
 {
-//	return &kAccelerometerModuleName;
+	return &kAccelerometerModuleName;
 }
 
 //----------------------------------------------------------------------------
 const CURI* CAccelerometerMPI::GetModuleOrigin() const
 {
-//	return &kModuleURI;
+	return &kModuleURI;
 }
 
 
@@ -95,19 +97,23 @@ const CURI* CAccelerometerMPI::GetModuleOrigin() const
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::RegisterEventListener(const IEventListener *pListener)
 {
-	return kNoImplErr;
+	CEventMPI evtmgr;
+	return evtmgr.RegisterEventListener(pListener);
 }
 
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::UnregisterEventListener(const IEventListener *pListener)
 {
-	return kNoImplErr;
+	CEventMPI evtmgr;
+	return evtmgr.UnregisterEventListener(pListener);
 }
 
 //----------------------------------------------------------------------------
 Boolean	CAccelerometerMPI::IsAccelerometerPresent()
 {
-	return false;
+	struct stat stbuf;
+	int r = stat("/sys/devices/platform/lf1000-aclmtr", &stbuf);
+	return (r == 0) ? true : false;
 }
 
 //----------------------------------------------------------------------------
@@ -120,12 +126,25 @@ tAccelerometerData CAccelerometerMPI::GetAccelerometerData() const
 //----------------------------------------------------------------------------
 U32	CAccelerometerMPI::GetAccelerometerRate() const
 {
+	U32 rate = 0;
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/rate", "r");
+	if (fd != NULL) {
+		fscanf(fd, "%u\n", (unsigned int*)&rate);
+		fclose(fd);
+		return rate;
+	}
 	return 0;
 }
 
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::SetAccelerometerRate(U32 rate)
 {
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/rate", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", (unsigned int)rate);
+		fclose(fd);
+		return kNoErr;
+	}
 	return kNoImplErr;
 }
 

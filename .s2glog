@@ -28929,3 +28929,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/22/10 12:27 PM
 6,189 ms. (Cumulative: 10,161,216 ms)
 
 ----------------
+Revision 9,039 from svn://localhost/TRUNK/:
+Revision 9,040 from svn://localhost/TRUNK/:
+
+EventMPI: Added accelerometer events to list of polling input drivers.
+AccelerometerMPI: Added lightweight MPI implementation without underlying module lib.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/22/10 1:04 PM
+3 changed, 0 added, 0 deleted.
+6,314 ms. (Cumulative: 10,167,623 ms)
+
+----------------
