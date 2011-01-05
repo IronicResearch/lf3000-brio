@@ -20,6 +20,7 @@
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
