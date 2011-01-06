@@ -449,7 +449,8 @@ void* CEventModule::CartridgeTask( void* arg )
 	// Init accelerometer driver and data
 	int aclmtr_index = -1;
 	tAccelerometerData aclmtr_data = {0, 0, 0, {0, 0}};
-	
+
+#if 0 // FIXME: disable accelerometer events
 	event_fd[last_fd].fd = open_input_device("LF1000 Accelerometer");
 	event_fd[last_fd].events = POLLIN;
 	if (event_fd[last_fd].fd >= 0)
@@ -460,6 +461,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	{
 		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Accelerometer\n");
 	}
+#endif
 
 	struct input_event ev;
 	U32 button;
