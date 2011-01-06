@@ -28981,3 +28981,12 @@ By dlazzari (dlazzari@leapfrog.com) on 1/5/11 3:31 PM
 6,617 ms. (Cumulative: 10,194,804 ms)
 
 ----------------
+Revision 9,052 from svn://localhost/TRUNK/:
+
+EventMPI: TTP #2851: Allow input event thread to yield when loading tslib and dependent libs. Close tslib when done.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/5/11 6:01 PM
+1 changed, 0 added, 0 deleted.
+7,204 ms. (Cumulative: 10,202,086 ms)
+
+----------------
