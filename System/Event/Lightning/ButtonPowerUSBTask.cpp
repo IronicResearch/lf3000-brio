@@ -352,13 +352,14 @@ void* CEventModule::CartridgeTask( void* arg )
 	int (*ts_fd)(struct tsdev *);
 	struct tsdev *(*ts_open)(const char *dev_name, int nonblock);
 	int (*ts_read)(struct tsdev *, struct ts_sample *, int);
+	int (*ts_close)(struct tsdev *);
 
 	use_tslib = false;
 	struct stat st;
 	if(stat(FLAGS_NOTSLIB, &st) == 0) /* file exists */
 	{
 		// NO TSLIB was picked
-		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Did not find " FLAGS_NOTSLIB "\n");
+		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Found " FLAGS_NOTSLIB " -- tslib support disabled\n");
 	}
 	else
 	{
@@ -366,6 +367,8 @@ void* CEventModule::CartridgeTask( void* arg )
 		// Hack: do dlopen ourselves so we can assert RTLD_GLOBAL flag, or plugins will
 		// not find symbols defined in tslib
 		void *handle;
+		// yield timeslice to avoid tslib dependency delays
+		pThis->kernel_.TaskSleep(10);
 		handle = dlopen("/usr/lib/libts.so", RTLD_NOW | RTLD_GLOBAL);
 		if (!handle)
 		{
@@ -379,7 +382,8 @@ void* CEventModule::CartridgeTask( void* arg )
 			ts_config = (int (*)(struct tsdev *)) dlsym(handle, "ts_config");
 			ts_fd = (int (*)(struct tsdev *)) dlsym(handle, "ts_fd");
 			ts_read = (int (*)(struct tsdev *, struct ts_sample *, int)) dlsym(handle, "ts_read");
-			if (!ts_open || !ts_config || !ts_fd || !ts_read)
+			ts_close = (int (*)(struct tsdev *)) dlsym(handle, "ts_close");
+			if (!ts_open || !ts_config || !ts_fd || !ts_read || !ts_close)
 			{
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't resolve symbols in tslib.so\n");
 			}
@@ -700,6 +704,10 @@ void* CEventModule::CartridgeTask( void* arg )
 			}
 		}
 	}
+
+	// close tslib if in use
+	if (use_tslib)
+		ts_close(tsl);
 	
 	for(last_fd--; last_fd >=0; --last_fd)
 		close(event_fd[last_fd].fd);
