@@ -616,6 +616,24 @@ S8	CDisplayFB::GetBacklight(tDisplayScreen screen)
 }
 
 //----------------------------------------------------------------------------
+static inline bool Check3DEngine(U32* preg32, U32& cntl32, U32& stat32, U32& clok32)
+{
+	// Check 3D engine running status to avoid hanging in OGL init callback
+	cntl32 = preg32[0];
+	stat32 = preg32[0x0014>>2]; // idle status=05BF8E41
+	clok32 = preg32[0x1FC0>>2]; // disabled clock=00000000
+	if (clok32 != 0 || (stat32 & 0x00BF0000) != 0x00BF0000) {
+		FILE* fp = fopen("/tmp/3dlockup", "w");
+		if (fp) {
+			fprintf(fp, "status=%08X\n", (unsigned)stat32);
+			fclose(fp);
+		}
+		return false;
+	}
+	return true;
+}
+
+//----------------------------------------------------------------------------
 void CDisplayFB::InitOpenGL(void* pCtx)
 {
 	// Dereference OpenGL context for MagicEyes OEM memory size config
@@ -630,6 +648,12 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Map 3D engine register space
 	preg3d = mmap(0, REG3D_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fdreg3d, REG3D_PHYS);
 	dbg_.DebugOut(kDbgLvlValuable, "%s: %016lX mapped to %p\n", __FUNCTION__, REG3D_PHYS, preg3d);
+
+	// Check 3D engine running status to avoid hanging in OGL init callback
+	U32 cntl32, stat32, clok32;
+	Check3DEngine((U32*)preg3d, cntl32, stat32, clok32);
+	dbg_.Assert(clok32 == 0, "%s: Reg3D control=%08X, status=%08X, clock=%08X\n",
+			__FUNCTION__, (unsigned)cntl32, (unsigned)stat32, (unsigned)clok32);
 
 	// Get OpenGL context memory heap size requests
 	mem1size = pMemInfo->Memory1D_SizeInMbyte << 20;

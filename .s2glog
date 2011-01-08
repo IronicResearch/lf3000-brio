@@ -29023,3 +29023,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/7/11 5:32 PM
 6,233 ms. (Cumulative: 10,221,132 ms)
 
 ----------------
+Revision 9,061 from svn://localhost/TRUNK/:
+
+DisplayFB: Added check for 3D engine running status. (TTP CIP #14)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/11 6:11 PM
+1 changed, 0 added, 0 deleted.
+6,149 ms. (Cumulative: 10,227,360 ms)
+
+----------------
