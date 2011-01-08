@@ -296,7 +296,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && !ctx->offset)
+	if (ctx->isAllocated)
 		return kNoErr;
 
 	// Set XY onscreen position
@@ -353,7 +353,7 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	}
 
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && !ctx->offset)
+	if (ctx->isAllocated)
 		return kNoErr;
 	
 	int n = ctx->layer;
@@ -688,6 +688,11 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
 	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
 	pOglCtx->hndlDisplay = hogl;
+
+	// Reset initial HW context state
+	RegisterLayer(hogl, 0, 0);
+	SetAlpha(hogl, 0, false);
+	SetWindowPosition(hogl, 0, 0, pOglCtx->width, pOglCtx->height, false);
 }
 
 //----------------------------------------------------------------------------
@@ -708,7 +713,6 @@ void CDisplayFB::DeinitOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
-	RegisterLayer(hogl, 0, 0);
 	int n = OGLFB;
 	int r = ioctl(fbdev[n], FBIOBLANK, 0);
 }
