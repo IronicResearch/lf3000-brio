@@ -296,7 +296,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated)
+	if (ctx->isAllocated && !ctx->offset)
 		return kNoErr;
 
 	// Set XY onscreen position
@@ -353,7 +353,7 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	}
 
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated)
+	if (ctx->isAllocated && !ctx->offset)
 		return kNoErr;
 	
 	int n = ctx->layer;
@@ -498,6 +498,8 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	cmd.right  = ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
 	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
 	cmd.apply  = 1;
+
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
 
 	// Auto-center UI elements on larger screens by delta XY
 	if (ctx->width < xres && ctx->height < yres)
@@ -677,6 +679,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
 
 	// Create DisplayMPI context for OpenGL framebuffer
+	pmem2d = (U8*)pmem2d + 0x20000000;
 	hogl = CreateHandle(vinfo[n].yres, vinfo[n].xres, kPixelFormatRGB565, (U8*)pmem2d);
 
 	// Pass back essential display context info for OpenGL bindings

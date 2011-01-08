@@ -28999,3 +28999,17 @@ By Dave Milici (dmilici@leapfrog.com) on 1/5/11 6:17 PM
 6,328 ms. (Cumulative: 10,208,492 ms)
 
 ----------------
+Revision 9,054 from svn://localhost/TRUNK/:
+Revision 9,055 from svn://localhost/TRUNK/:
+Revision 9,056 from svn://localhost/TRUNK/:
+Revision 9,057 from svn://localhost/TRUNK/:
+Revision 9,058 from svn://localhost/TRUNK/:
+Revision 9,059 from svn://localhost/TRUNK/:
+
+DisplayFB: OGL display contexts were not being handled as HW contexts, so HW state like window position were not reset. (TTP CIP #7)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/7/11 4:52 PM
+1 changed, 0 added, 0 deleted.
+6,219 ms. (Cumulative: 10,214,821 ms)
+
+----------------
