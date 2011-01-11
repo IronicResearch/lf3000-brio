@@ -29052,3 +29052,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/11/11 2:56 PM
 6,187 ms. (Cumulative: 10,239,848 ms)
 
 ----------------
+Revision 9,065 from svn://localhost/TRUNK/:
+
+AccelerometerMPI: Enable/Disable accelerometer events via sysfs entry when listener is Registered/Unregistered.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/11/11 3:35 PM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 10,246,053 ms)
+
+----------------

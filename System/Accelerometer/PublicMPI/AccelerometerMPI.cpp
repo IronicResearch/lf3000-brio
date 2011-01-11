@@ -99,6 +99,8 @@ const CURI* CAccelerometerMPI::GetModuleOrigin() const
 tErrType CAccelerometerMPI::RegisterEventListener(const IEventListener *pListener)
 {
 	CEventMPI evtmgr;
+	if (GetAccelerometerMode() == kAccelerometerModeDisabled)
+		SetAccelerometerMode(kAccelerometerModeContinuous);
 	return evtmgr.RegisterEventListener(pListener);
 }
 
@@ -106,6 +108,7 @@ tErrType CAccelerometerMPI::RegisterEventListener(const IEventListener *pListene
 tErrType CAccelerometerMPI::UnregisterEventListener(const IEventListener *pListener)
 {
 	CEventMPI evtmgr;
+	SetAccelerometerMode(kAccelerometerModeDisabled);
 	return evtmgr.UnregisterEventListener(pListener);
 }
 
@@ -152,12 +155,36 @@ tErrType CAccelerometerMPI::SetAccelerometerRate(U32 rate)
 //----------------------------------------------------------------------------
 tAccelerometerMode CAccelerometerMPI::GetAccelerometerMode() const
 {
+	int enable = 0;
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "r");
+	if (fd != NULL) {
+		fscanf(fd, "%u\n", &enable);
+		fclose(fd);
+		return (enable) ? kAccelerometerModeContinuous : kAccelerometerModeDisabled;
+	}
 	return static_cast<tAccelerometerMode>(0);
 }
 
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 {
+	int enable = 0;
+	switch (mode) {
+	case kAccelerometerModeDisabled:
+		enable = 0;
+		break;
+	case kAccelerometerModeContinuous:
+	case kAccelerometerModeOneShot:
+	case kAccelerometerModeOrientation:
+		enable = 1;
+		break;
+	}
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", enable);
+		fclose(fd);
+		return kNoErr;
+	}
 	return kNoImplErr;
 }
 
