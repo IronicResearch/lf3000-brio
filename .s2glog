@@ -29043,3 +29043,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/11/11 10:57 AM
 6,144 ms. (Cumulative: 10,233,582 ms)
 
 ----------------
+Revision 9,064 from svn://localhost/TRUNK/:
+
+EventMPI: Reinstate accelerometer events which must now be enabled via sysfs entry.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/11/11 2:56 PM
+2 changed, 0 added, 0 deleted.
+6,187 ms. (Cumulative: 10,239,848 ms)
+
+----------------
