@@ -29061,3 +29061,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/11/11 3:35 PM
 6,126 ms. (Cumulative: 10,246,053 ms)
 
 ----------------
+Revision 9,066 from svn://localhost/TRUNK/:
+
+DisplayFB: (TTP CIP #6) Clamp 1D/2D heap sizes to MagicEyes OGL lib limits. Allows TS3 and B10 to run like GM.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/12/11 12:49 PM
+1 changed, 0 added, 0 deleted.
+6,222 ms. (Cumulative: 10,252,353 ms)
+
+----------------
