@@ -655,6 +655,12 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	dbg_.Assert(clok32 == 0, "%s: Reg3D control=%08X, status=%08X, clock=%08X\n",
 			__FUNCTION__, (unsigned)cntl32, (unsigned)stat32, (unsigned)clok32);
 
+	// Clamp requested 1D/2D heap sizes to MagicEyes OGL lib limits
+	if (pMemInfo->Memory2D_SizeInMbyte > 14)
+		pMemInfo->Memory2D_SizeInMbyte = 14;
+	if (pMemInfo->Memory1D_SizeInMbyte + pMemInfo->Memory2D_SizeInMbyte > 16)
+		pMemInfo->Memory1D_SizeInMbyte = 16 - pMemInfo->Memory2D_SizeInMbyte;
+
 	// Get OpenGL context memory heap size requests
 	mem1size = pMemInfo->Memory1D_SizeInMbyte << 20;
 	mem2size = pMemInfo->Memory2D_SizeInMbyte << 20;
