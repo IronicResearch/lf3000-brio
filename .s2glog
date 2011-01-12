@@ -29070,3 +29070,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/12/11 12:49 PM
 6,222 ms. (Cumulative: 10,252,353 ms)
 
 ----------------
+Revision 9,067 from svn://localhost/TRUNK/:
+
+Theora codec: Reverted Theora ARM lib back to svn -r7875 used in v1.1 GM FW.
+Does not show grey box artifacts on initial frames. (TTP CIP #2)  
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/12/11 3:28 PM
+1 changed, 0 added, 0 deleted.
+6,235 ms. (Cumulative: 10,258,666 ms)
+
+----------------
