@@ -5,6 +5,7 @@
 #include <string>	
 #include <fstream> 
 #include <fcntl.h>
+#include <sys/stat.h>
 
 using namespace std;
 LF_USING_BRIO_NAMESPACE()
