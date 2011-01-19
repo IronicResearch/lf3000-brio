@@ -301,8 +301,23 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
-	int r = SetWindowPosition(ctx, xPos, yPos, width, height, ctx->isEnabled);
-
+	struct lf1000fb_position_cmd cmd;
+	cmd.left   = ctx->rect.left   = ctx->x = xPos;
+	cmd.top    = ctx->rect.top    = ctx->y = yPos;
+	cmd.right  = ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
+	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
+	cmd.apply  = 1;
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
+	// Auto-center UI elements on larger screens by delta XY
+	if (ctx->width < xres && ctx->height < yres)
+	{
+		cmd.left	+= dxres;
+		cmd.right	+= dxres;
+		cmd.top		+= dyres;
+		cmd.bottom	+= dyres;
+	}
+	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
+	
 	// Adjust Z-order for YUV layer?
 	if (n == YUVFB) 
 	{
