@@ -29125,3 +29125,17 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/18/11 10:41 PM
 6,173 ms. (Cumulative: 10,283,559 ms)
 
 ----------------
+Revision 9,077 from svn://localhost/TRUNK/:
+Revision 9,078 from svn://localhost/TRUNK/:
+Revision 9,079 from svn://localhost/TRUNK/:
+
+CIP 144.  Inlining SetWindowPosition code into RegisterLayer (excluding the layer enable/disable).
+
+The problem is when there are 2 buffers that share the same layer.  Registering the second buffer causes SetWindowPosition to disable the layer.  This is because the second buffer is not enabled yet.  The layer was previously visible from the registration of the first layer.
+
+
+By Minh Saelock (msaelock@leapfrog.com) on 1/19/11 12:36 PM
+1 changed, 0 added, 0 deleted.
+6,194 ms. (Cumulative: 10,289,831 ms)
+
+----------------
