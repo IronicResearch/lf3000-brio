@@ -29139,3 +29139,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/19/11 12:36 PM
 6,194 ms. (Cumulative: 10,289,831 ms)
 
 ----------------
+Revision 9,080 from svn://localhost/TRUNK/:
+Revision 9,081 from svn://localhost/TRUNK/:
+
+EventMPI: (CIP TTP #159) Close tslib in case of config failure.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/27/11 11:04 AM
+1 changed, 0 added, 0 deleted.
+6,173 ms. (Cumulative: 10,296,097 ms)
+
+----------------

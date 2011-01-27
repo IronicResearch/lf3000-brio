@@ -420,6 +420,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		if (ts_config(tsl)) {
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_config failed\n");
 			perror("ts_config");
+			ts_close(tsl);
 			use_tslib = false;
 			break;
 		}
