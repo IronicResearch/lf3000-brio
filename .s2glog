@@ -29159,3 +29159,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 1/28/11 1:06 PM
 6,438 ms. (Cumulative: 10,302,629 ms)
 
 ----------------
+Revision 9,083 from svn://localhost/TRUNK/:
+Revision 9,084 from svn://localhost/TRUNK/:
+
+AccelerometerEventQueue object.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/11 6:51 PM
+0 changed, 1 added, 0 deleted.
+7,157 ms. (Cumulative: 10,309,879 ms)
+
+----------------
