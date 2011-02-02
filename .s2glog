@@ -29169,3 +29169,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/11 6:51 PM
 7,157 ms. (Cumulative: 10,309,879 ms)
 
 ----------------
+Revision 9,085 from svn://localhost/TRUNK/:
+
+Utility functions for platform identification.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/1/11 6:14 PM
+1 changed, 1 added, 0 deleted.
+9,161 ms. (Cumulative: 10,319,134 ms)
+
+----------------

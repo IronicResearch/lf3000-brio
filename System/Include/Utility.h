@@ -184,6 +184,27 @@ Boolean EnumFolder( const CPath& dirIn, tFuncEnumFolder f, tFileSelect type, voi
 //----------------------------------------------------------------------------
 U32 FindDevice(CPath path);
 
+//----------------------------------------------------------------------------
+// Returns the system platform ID
+//----------------------------------------------------------------------------
+U32 GetPlatformID();
+
+//----------------------------------------------------------------------------
+// Returns the system platform name
+//----------------------------------------------------------------------------
+CString GetPlatformName();
+
+//----------------------------------------------------------------------------
+// Returns the system state of the selected platform capability
+//----------------------------------------------------------------------------
+enum tPlatformCaps {
+	kCapsTouchscreen,
+	kCapsCamera,
+	kCapsAccelerometer,
+};
+
+bool HasPlatformCapability(tPlatformCaps caps);
+
 LF_END_BRIO_NAMESPACE()
 
 #endif // LF_BRIO_UTILITY_H
