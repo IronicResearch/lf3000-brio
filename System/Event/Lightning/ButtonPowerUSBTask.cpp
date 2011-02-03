@@ -693,6 +693,10 @@ void* CEventModule::CartridgeTask( void* arg )
 					case ABS_X: aclmtr_data.accelX = ev.value; break;
 					case ABS_Y: aclmtr_data.accelY = ev.value; break;
 					case ABS_Z: aclmtr_data.accelZ = ev.value; break;
+					case ABS_MISC: // orientation change
+						CAccelerometerMessage aclmtr_msg(ev.value);
+						pThis->PostEvent(aclmtr_msg, kAccelerometerEventPriority, 0);
+						break;
 					}
 					break;
 				case EV_SYN:

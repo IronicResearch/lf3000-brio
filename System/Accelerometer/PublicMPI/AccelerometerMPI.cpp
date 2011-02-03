@@ -29,6 +29,9 @@ const CString	kAccelerometerModuleName	= "Accelerometer";
 const CURI		kModuleURI					= "/LF/System/Accelerometer";
 const tVersion	kAccelerometerModuleVersion	= 3;
 
+static tAccelerometerData 	gCachedData 	= {0, 0, 0, {0, 0}};
+static S32					gCachedOrient	= 0;
+
 //============================================================================
 // CAccelerometerMessage
 //============================================================================
@@ -36,6 +39,14 @@ const tVersion	kAccelerometerModuleVersion	= 3;
 CAccelerometerMessage::CAccelerometerMessage( const tAccelerometerData& data )
 	: IEventMessage(kAccelerometerDataChanged), mData(data)
 {
+	gCachedData = data;
+}
+
+//------------------------------------------------------------------------------
+CAccelerometerMessage::CAccelerometerMessage( const S32& data )
+	: IEventMessage(kOrientationChanged), mOrient(data)
+{
+	gCachedOrient = data;
 }
 
 //------------------------------------------------------------------------------
@@ -48,6 +59,12 @@ U16	CAccelerometerMessage::GetSizeInBytes() const
 tAccelerometerData CAccelerometerMessage::GetAccelerometerData() const
 {
 	return mData;
+}
+
+//------------------------------------------------------------------------------
+S32 CAccelerometerMessage::GetOrientation() const
+{
+	return mOrient;
 }
 
 //============================================================================
@@ -123,8 +140,13 @@ Boolean	CAccelerometerMPI::IsAccelerometerPresent()
 //----------------------------------------------------------------------------
 tAccelerometerData CAccelerometerMPI::GetAccelerometerData() const
 {
-	const tAccelerometerData data = {0, 0, 0, {0, 0}};
-	return data;
+	return gCachedData;
+}
+
+//----------------------------------------------------------------------------
+S32 CAccelerometerMPI::GetOrientation() const
+{
+	return gCachedOrient;
 }
 
 //----------------------------------------------------------------------------

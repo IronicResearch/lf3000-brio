@@ -52,6 +52,9 @@ public:
 	/// Get accelerometer data
 	tAccelerometerData		GetAccelerometerData() const;
 
+	/// Get accelerometer orientation
+	S32						GetOrientation() const;
+
 	/// Get accelerometer sample rate (Hz)
 	U32						GetAccelerometerRate() const;
 
