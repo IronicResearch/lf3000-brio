@@ -75,10 +75,13 @@ struct tAccelerometerData {
 class CAccelerometerMessage : public IEventMessage {
 public:
 	CAccelerometerMessage( const tAccelerometerData& data );
+	CAccelerometerMessage( const S32& data );
 	virtual U16			GetSizeInBytes() const;
 	tAccelerometerData 	GetAccelerometerData() const;
+	S32					GetOrientation() const;
 private:
 	tAccelerometerData 	mData;
+	S32					mOrient;
 };
 
 LF_END_BRIO_NAMESPACE()	
