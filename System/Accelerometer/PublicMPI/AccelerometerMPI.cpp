@@ -178,32 +178,48 @@ tErrType CAccelerometerMPI::SetAccelerometerRate(U32 rate)
 tAccelerometerMode CAccelerometerMPI::GetAccelerometerMode() const
 {
 	int enable = 0;
+	int orient = 0;
 	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "r");
 	if (fd != NULL) {
 		fscanf(fd, "%u\n", &enable);
 		fclose(fd);
-		return (enable) ? kAccelerometerModeContinuous : kAccelerometerModeDisabled;
 	}
-	return static_cast<tAccelerometerMode>(0);
+	fd = fopen("/sys/devices/platform/lf1000-aclmtr/orient", "r");
+	if (fd != NULL) {
+		fscanf(fd, "%u\n", &orient);
+		fclose(fd);
+	}
+	if (enable && orient)
+		return kAccelerometerModeOrientation;
+	if (enable)
+		return kAccelerometerModeContinuous;
+	return kAccelerometerModeDisabled;
 }
 
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 {
 	int enable = 0;
+	int orient = 0;
 	switch (mode) {
 	case kAccelerometerModeDisabled:
 		enable = 0;
 		break;
+	case kAccelerometerModeOrientation:
+		orient = 1;
 	case kAccelerometerModeContinuous:
 	case kAccelerometerModeOneShot:
-	case kAccelerometerModeOrientation:
 		enable = 1;
 		break;
 	}
 	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", enable);
+		fclose(fd);
+	}
+	fd = fopen("/sys/devices/platform/lf1000-aclmtr/orient", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", orient);
 		fclose(fd);
 		return kNoErr;
 	}
