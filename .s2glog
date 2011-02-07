@@ -29209,3 +29209,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/3/11 5:36 PM
 6,518 ms. (Cumulative: 10,340,138 ms)
 
 ----------------
+Revision 9,092 from svn://localhost/TRUNK/:
+Revision 9,093 from svn://localhost/TRUNK/:
+Revision 9,094 from svn://localhost/TRUNK/:
+
+DisplayMPI: Added placeholder functions for viewport, orientation, and auto-rotation support on Madrid.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/7/11 3:38 PM
+5 changed, 0 added, 0 deleted.
+6,205 ms. (Cumulative: 10,346,436 ms)
+
+----------------

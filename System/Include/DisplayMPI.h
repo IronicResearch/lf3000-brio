@@ -396,7 +396,23 @@ public:
 	///
 	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
 	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
-	
+
+	/// Sets/Gets active display/touch viewport via enum
+	tErrType			SetViewport(tDisplayHandle hndl, tDisplayViewport viewport);
+	tDisplayViewport	GetViewport(tDisplayHandle hndl);
+
+	/// Sets/Gets active display/touch viewport via x,y position and w,h size
+	tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
+	tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height);
+
+	/// Sets/Gets effective display/touch viewport orientation (for Flash player use)
+	tErrType			SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient);
+	tDisplayOrientation	GetOrientation(tDisplayHandle hndl);
+
+	/// Sets/Gets effective auto-rotation control on orientation event changes (for Flash player use)
+	tErrType			SetAutoRotation(Boolean enable);
+	Boolean				GetAutoRotation();
+
 private:
 	class CDisplayModule*	pModule_;
 };

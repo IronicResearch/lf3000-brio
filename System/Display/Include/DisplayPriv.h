@@ -454,6 +454,15 @@ public:
 	
 	VTABLE_EXPORT tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
 	VTABLE_EXPORT tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
+
+	VTABLE_EXPORT tErrType			SetViewport(tDisplayHandle hndl, tDisplayViewport viewport);
+	VTABLE_EXPORT tDisplayViewport	GetViewport(tDisplayHandle hndl);
+	VTABLE_EXPORT tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
+	VTABLE_EXPORT tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height);
+	VTABLE_EXPORT tErrType			SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient);
+	VTABLE_EXPORT tDisplayOrientation	GetOrientation(tDisplayHandle hndl);
+	VTABLE_EXPORT tErrType			SetAutoRotation(Boolean enable);
+	VTABLE_EXPORT Boolean			GetAutoRotation();
 	
 private:
 	void				InitModule( );
