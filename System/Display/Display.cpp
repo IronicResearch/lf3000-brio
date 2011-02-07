@@ -432,6 +432,54 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 	return ((struct tDisplayContext *)hndl)->width;
 }
 
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, tDisplayViewport viewport)
+{
+	return kMPINotConnectedErr;
+}
+
+//----------------------------------------------------------------------------
+tDisplayViewport CDisplayModule::GetViewport(tDisplayHandle hndl)
+{
+	return static_cast<tDisplayViewport>(0);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height)
+{
+	return kMPINotConnectedErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height)
+{
+	return kMPINotConnectedErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient)
+{
+	return kMPINotConnectedErr;
+}
+
+//----------------------------------------------------------------------------
+tDisplayOrientation	CDisplayModule::GetOrientation(tDisplayHandle hndl)
+{
+	return static_cast<tDisplayOrientation>(0);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::SetAutoRotation(Boolean enable)
+{
+	return kMPINotConnectedErr;
+}
+
+//----------------------------------------------------------------------------
+Boolean CDisplayModule::GetAutoRotation()
+{
+	return false;
+}
+
 LF_END_BRIO_NAMESPACE()
 
 //============================================================================

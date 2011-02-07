@@ -109,6 +109,21 @@ enum tDisplayMem {
 	kDisplayMemFragmented,
 };
 
+/// tDisplayViewport enum types for SetViewport()/GetViewport()
+enum tDisplayViewport {
+	kViewportLegacy,						///< Legacy viewport (Emerald 320x240)
+	kViewportFullscreen,					///< Fullscreen viewport (Madrid 480x272)
+	kViewportScaledAspect,					///< Uniformly Scaled Aspect Ratio (360x272)
+};
+
+/// tDisplayOrientation enum types for SetOrientation()/GetOrientation()
+enum tDisplayOrientation {
+	kOrientationLandscape,					///< Landscape orientation (Emerald)
+	kOrientationPortrait,					///< Portrait orientation (Madrid rotated 90)
+	kOrientationLandscapeUpsideDown,		///< Landscape upside down (rotated 180)
+	kOrientationPortraitUpsideDown,			///< Portrait upside down (rotated 270 | -90)
+};
+
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_DISPLAYTYPES_H
 

@@ -425,7 +425,83 @@ U32	CDisplayMPI::GetDisplayMem(tDisplayMem memtype)
 {
 	if (!pModule_)
 		return 0;
-	pModule_->GetDisplayMem(memtype);
+	return pModule_->GetDisplayMem(memtype);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, tDisplayViewport viewport)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->SetViewport(hndl, viewport);
+}
+
+//----------------------------------------------------------------------------
+tDisplayViewport CDisplayMPI::GetViewport(tDisplayHandle hndl)
+{
+	if (!pModule_)
+		return static_cast<tDisplayViewport>(0);
+	if (!hndl)
+		return static_cast<tDisplayViewport>(0);
+	return pModule_->GetViewport(hndl);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->SetViewport(hndl, x, y, width, height);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->GetViewport(hndl, x, y, width, height);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	if (!hndl)
+		return kInvalidParamErr;
+	return pModule_->SetOrientation(hndl, orient);
+}
+
+//----------------------------------------------------------------------------
+tDisplayOrientation	CDisplayMPI::GetOrientation(tDisplayHandle hndl)
+{
+	if (!pModule_)
+		return static_cast<tDisplayOrientation>(0);
+	if (!hndl)
+		return static_cast<tDisplayOrientation>(0);
+	return pModule_->GetOrientation(hndl);
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetAutoRotation(Boolean enable)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetAutoRotation(enable);
+}
+
+//----------------------------------------------------------------------------
+Boolean CDisplayMPI::GetAutoRotation()
+{
+	if (!pModule_)
+		return false;
+	return pModule_->GetAutoRotation();
 }
 
 LF_END_BRIO_NAMESPACE()
