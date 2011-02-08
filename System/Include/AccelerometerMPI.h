@@ -40,10 +40,10 @@ public:
 	CAccelerometerMPI();
 	virtual ~CAccelerometerMPI();
 	
-	/// Register event listener (via EventMPI)
+	/// Register event listener (via EventMPI) and enable continuous sampling mode
 	tErrType 				RegisterEventListener(const IEventListener *pListener);
 
-	/// Unregister event listener (via EventMPI)
+	/// Unregister event listener (via EventMPI) and disable all sampling
 	tErrType 				UnregisterEventListener(const IEventListener *pListener);
 	
 	/// Returns true if an accelerometer device is present
@@ -64,7 +64,7 @@ public:
 	tErrType				SetAccelerometerRate(U32 rate);
 
 	/// Get accelerometer mode
-	/// Disabled, Continuous sampling, One-shot sampling
+	/// Disabled, Continuous sampling, One-shot sampling, Orientation changes
 	tAccelerometerMode		GetAccelerometerMode() const;
 
 	/// Set accelerometer mode
