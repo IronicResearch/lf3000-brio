@@ -188,6 +188,9 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 	attr_.leading = 0;
 	attr_.useKerning = false;
 	attr_.useUnderlining = false;
+	attr_.rotation = kFontLandscape;
+	matrix_.xx = 1 << 16;	matrix_.xy = 0;
+	matrix_.yx = 0;			matrix_.yy = 1 << 16;
 	curX_ = 0;
 	curY_ = 0;
 	
@@ -492,15 +495,23 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
 //----------------------------------------------------------------------------
 Boolean	CFontModule::SetFontAttr(tFontAttr attr)
 {
-	if (attr.version == 1)
-	{
-		attr_.version 	= 1;
+	switch(attr.version) {
+	case 3:
+		SetFontRotation(attr.rotation);
+	case 2:
+		attr_.horizJust	= attr.horizJust;
+		attr_.vertJust	= attr.vertJust;
+		attr_.spaceExtra = attr.spaceExtra;
+		attr_.leading = attr.leading;
+		attr_.useKerning = attr.useKerning;
+		attr_.useUnderlining = attr.useUnderlining;
+	case 1:
+		attr_.version 	= attr.version;
 		attr_.color 	= attr.color;
 		attr_.direction	= attr.direction;
 		attr_.antialias	= true;
-		return true;
+		break;
 	}
-	attr_ = attr;
 	return true;
 }
 
@@ -978,7 +989,7 @@ inline void AdvanceGlyphPosition(FT_Glyph glyph, int& x, int& y)
 	// FIXME/dm: Rounding should be applied to cummulative XY values
 
 	x += (( glyph->advance.x + 0x8000 ) >> 16);
-	y += (( glyph->advance.y + 0x8000 ) >> 16);
+	y -= (( glyph->advance.y + 0x8000 ) >> 16);
 }
 
 //----------------------------------------------------------------------------
@@ -1088,8 +1099,25 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	// Update XY cursor without drawing anything if newline detected
 	if (ch == '\n')
 	{
-		curX_ = 0;
-		curY_ += font->height + attr_.leading;
+		switch(attr_.rotation)
+		{
+		case kFontLandscape:
+			curX_ = 0;
+			curY_ += font->height + attr_.leading;
+			break;
+		case kFontPortrait:
+			curX_ -= font->height + attr_.leading;
+			curY_ = 0;
+			break;
+		case kFontLandscapeUpsideDown:
+			curX_ = pCtx->width - 1;
+			curY_ -= font->height + attr_.leading;
+			break;
+		case kFontPortraitUpsideDown:
+			curX_ += font->height + attr_.leading;
+			curY_ = pCtx->height - 1;;
+			break;
+		}
 		return true;
 	}
 	
@@ -1106,6 +1134,12 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	
 	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
 	{
+		if(attr_.rotation != kFontLandscape) {
+			FT_Glyph  glyph2;
+			error = FT_Glyph_Copy(glyph, &glyph2);
+			FT_Glyph_Transform( glyph2, &matrix_, NULL);
+			glyph = glyph2;
+		}
 		// Adjust font render mode as necessary
 		if (attr_.antialias)
 			render_mode = FT_RENDER_MODE_NORMAL;
@@ -1152,7 +1186,26 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		UnderlineBitmap(source, dy-du, dt);
 		dx = 0; // fills gaps -- affects positioning
 	}
-	
+	int x2, y2;
+	switch(attr_.rotation)
+	{
+	case kFontLandscape:
+		x2 = x + bitmap->left + dk;
+		y2 = y - bitmap->top + font->ascent;
+		break;
+	case kFontPortrait:
+		x2 = x + bitmap->left - font->ascent;
+		y2 = y - bitmap->top + dk;
+		break;
+	case kFontLandscapeUpsideDown:
+		x2 = x + bitmap->left - dk;
+		y2 = y - bitmap->top - font->ascent;
+		break;
+	case kFontPortraitUpsideDown:
+		x2 = x + bitmap->left + font->ascent;
+		y2 = y - bitmap->top - dk;
+		break;
+	}
 	// Draw mono bitmap into RGB context buffer with current color
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
 	{
@@ -1160,16 +1213,16 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		{
 			default:
 			case kPixelFormatARGB8888:
-				ConvertBitmapToRGB32(source, x+dx, y+dz-dy, pCtx); 
+				ConvertBitmapToRGB32(source, x2, y2, pCtx);
 				break;
 			case kPixelFormatRGB888:
-				ConvertBitmapToRGB24(source, x+dx, y+dz-dy, pCtx); 
+				ConvertBitmapToRGB24(source, x2, y2, pCtx);
 				break;
 			case kPixelFormatRGB4444:
-				ConvertBitmapToRGB4444(source, x+dx, y+dz-dy, pCtx); 
+				ConvertBitmapToRGB4444(source, x2, y2, pCtx);
 				break;
 			case kPixelFormatRGB565:
-				ConvertBitmapToRGB565(source, x+dx, y+dz-dy, pCtx); 
+				ConvertBitmapToRGB565(source, x2, y2, pCtx);
 				break;
 		}
 	}
@@ -1179,16 +1232,16 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		{
 			default:
 			case kPixelFormatARGB8888:
-				ConvertGraymapToRGB32(source, x+dx, y+dz-dy, pCtx);
+				ConvertGraymapToRGB32(source, x2, y2, pCtx);
 				break;
 			case kPixelFormatRGB888:
-				ConvertGraymapToRGB24(source, x+dx, y+dz-dy, pCtx);
+				ConvertGraymapToRGB24(source, x2, y2, pCtx);
 				break;
 			case kPixelFormatRGB4444:
-				ConvertGraymapToRGB4444(source, x+dx, y+dz-dy, pCtx);
+				ConvertGraymapToRGB4444(source, x2, y2, pCtx);
 				break;
 			case kPixelFormatRGB565:
-				ConvertGraymapToRGB565(source, x+dx, y+dz-dy, pCtx);
+				ConvertGraymapToRGB565(source, x2, y2, pCtx);
 				break;
 		}
 	}
@@ -1197,8 +1250,8 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 
 	// Update the current XY glyph cursor position
 	AdvanceGlyphPosition(glyph, curX_, curY_);
-    curX_ += attr_.spaceExtra;
-	curX_ += dk;
+	curX_ += ((attr_.spaceExtra + dk) * matrix_.xx) >> 16;
+	curY_ -= ((attr_.spaceExtra + dk) * matrix_.yx) >> 16;
 	
 	// Release expanded bitmap memory used for underlining
 	if (attr_.useUnderlining)
@@ -1247,6 +1300,31 @@ inline void UnpackUnicode(tWChar* charcode, CString* pStr, int* i)
 #endif
 }
 
+//----------------------------------------------------------------------------
+Boolean CFontModule::SetFontRotation(tFontRotation rotation)
+{
+	if(attr_.rotation != rotation) {
+		attr_.rotation = rotation;
+		switch(attr_.rotation) {
+		case kFontLandscape:
+			matrix_.xx = 1 << 16;	matrix_.xy = 0;
+			matrix_.yx = 0;			matrix_.yy = 1 << 16;
+			break;
+		case kFontPortrait:
+			matrix_.xx = 0;			matrix_.xy = 1 << 16;
+			matrix_.yx = -1 << 16;	matrix_.yy = 0;
+			break;
+		case kFontLandscapeUpsideDown:
+			matrix_.xx = -1 << 16;	matrix_.xy = 0;
+			matrix_.yx = 0;			matrix_.yy = -1 << 16;
+			break;
+		case kFontPortraitUpsideDown:
+			matrix_.xx = 0;			matrix_.xy = -1 << 16;
+			matrix_.yx = 1 << 16;	matrix_.yy = 0;
+			break;
+		}
+	}
+}
 //----------------------------------------------------------------------------
 Boolean CFontModule::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)
 {
@@ -1298,8 +1376,24 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 	
 	// If entire string fits, then draw as is
 	GetStringRect(&str, &rect);
-	if (x + rect.right - rect.left <= surf.width)
-		return DrawString(str, x, y, surf);
+	switch(attr_.rotation) {
+	case kFontLandscape:
+		if (x + rect.right - rect.left <= surf.width)
+			return DrawString(str, x, y, surf);
+		break;
+	case kFontPortrait:
+		if (y + rect.bottom - rect.top <= surf.height)
+			return DrawString(str, x, y, surf);
+		break;
+	case kFontLandscapeUpsideDown:
+		if (x - (rect.right - rect.left) >= 0)
+			return DrawString(str, x, y, surf);
+		break;
+	case kFontPortraitUpsideDown:
+		if (y - (rect.bottom - rect.top) >= 0)
+			return DrawString(str, x, y, surf);
+		break;
+	}
 	
 	// Parse string for space breaks to draw incrementally
 	n = len = str.length();
@@ -1314,10 +1408,32 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 			part = str.substr(p, n);
 			// Wrap XY pre-drawing
 			GetStringRect(&part, &rect);
-			if (x + rect.right - rect.left > surf.width) 
-			{
-				x = 0;
-				y += dy;
+			
+			switch(attr_.rotation) {
+			case kFontLandscape:
+				if (x + rect.right - rect.left > surf.width) {
+					x = 0;
+					y += dy;
+				}
+				break;
+			case kFontPortrait:
+				if (y + rect.bottom - rect.top > surf.height) {
+					x -= dy;
+					y = 0;
+				}
+				break;
+			case kFontLandscapeUpsideDown:
+				if (x - (rect.right - rect.left) < 0) {
+					x = surf.width - 1;
+					y -= dy;
+				}
+				break;
+			case kFontPortraitUpsideDown:
+				if (y - (rect.bottom - rect.top)< 0) {
+					x += dy;
+					y = surf.height - 1;
+				}
+				break;
 			}
 			// Include space for incremental drawing and string update
 			n = i+1-p;
@@ -1326,10 +1442,31 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 			n = len-p;
 			rc = DrawString(part, x, y, surf);
 			// Wrap XY post-drawing (in case of long words or overflow from spaces)
-			if (x > surf.width)
-			{
-				x = 0;
-				y += dy;
+			switch(attr_.rotation) {
+			case kFontLandscape:
+				if (x > surf.width) {
+					x = 0;
+					y += dy;
+				}
+				break;
+			case kFontPortrait:
+				if (y > surf.height) {
+					x -= dy;
+					y = 0;
+				}
+				break;
+			case kFontLandscapeUpsideDown:
+				if (x < 0) {
+					x = surf.width - 1;
+					y -= dy;
+				}
+				break;
+			case kFontPortraitUpsideDown:
+				if (y < 0) {
+					x += dy;
+					y = surf.height - 1;
+				}
+				break;
 			}
 		}
 	}		
@@ -1337,10 +1474,31 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 	// Draw the last part of the string, or entire string if no space breaks
 	part = str.substr(p, n);
 	GetStringRect(&part, &rect);
-	if (x + rect.right - rect.left > surf.width) 
-	{
-		x = 0;
-		y += dy;
+	switch(attr_.rotation) {
+	case kFontLandscape:
+		if (x + rect.right - rect.left > surf.width) {
+			x = 0;
+			y += dy;
+		}
+		break;
+	case kFontLandscapeUpsideDown:
+		if (x - (rect.right - rect.left) < 0) {
+			x = surf.width - 1;
+			y -= dy;
+		}
+		break;
+	case kFontPortrait:
+		if (y + rect.bottom - rect.top > surf.height) {
+			x -= dy;
+			y = 0;
+		}
+		break;
+	case kFontPortraitUpsideDown:
+		if (y - (rect.bottom - rect.top) < 0) {
+			x += dy;
+			y = surf.height - 1;
+		}
+		break;
 	}
 	rc = DrawString(part, x, y, surf);
 	
@@ -1408,19 +1566,31 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 			UnpackUnicode(&charcode, pStr, &i);
 		if (!GetGlyph(charcode, &glyph, &index))
 			continue;
+		if(attr_.rotation != kFontLandscape) {
+			FT_Glyph  glyph2;
+			if(FT_Glyph_Copy(glyph, &glyph2))
+				continue;
+			FT_Glyph_Transform( glyph2, &matrix_, NULL);
+			glyph = glyph2;
+		}
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
 		// Adjust for glyph spacing (spaces have no bounding box)
 //		bbox.xMax = std::max(glyph->advance.x >> 6, bbox.xMax);
 		bbox.xMax = 0;
 		// Adjust for glyph position
 		AdvanceGlyphPosition(glyph, dx, dy);
-		dx += attr_.spaceExtra;
+		dx += (attr_.spaceExtra * matrix_.xx) >> 16;
+		dy += (attr_.spaceExtra * matrix_.yx) >> 16;
 		// Adjust for kerning
 		if (attr_.useKerning && prev)
 		{
 			KernGlyphPosition(face, index, prev, dk);
-			bbox.xMin += dk;
-			bbox.xMax += dk;
+			int dkx = (dk * matrix_.xx) >> 16;
+			int dky = (dk * matrix_.yx) >> 16;
+			bbox.xMin += dkx;
+			bbox.xMax += dkx;
+			bbox.yMin += dky;
+			bbox.yMax += dky;
 		}
 		gbox.xMin = std::min(bbox.xMin+dx, gbox.xMin);
 		gbox.yMin = std::min(bbox.yMin+dy, gbox.yMin);
@@ -1437,9 +1607,9 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 
 	// Pass back bounding box min/max coords as rect param
 	pRect->left = gbox.xMin;
-	pRect->top  = gbox.yMax;
+	pRect->top  = gbox.yMin;
 	pRect->right = gbox.xMax;
-	pRect->bottom = gbox.yMin;
+	pRect->bottom = gbox.yMax;
 	return true;
 }
 
