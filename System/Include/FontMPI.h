@@ -139,6 +139,9 @@ public:
     ///
     ///	\param	underline	Font underling attribute only
     Boolean		SetFontUnderlining(Boolean underline);
+    ///
+    ///	\param	rotation	Font underling attribute only
+    Boolean		SetFontRotation(tFontRotation rotation);
     
     /// Gets the font's current drawing attributes
     ///
@@ -161,6 +164,9 @@ public:
     ///
     /// \return Returns the current font underlining attribute
     Boolean		GetFontUnderlining();
+    ///
+    /// \return Returns the current font rotation attribute
+    tFontRotation	GetFontRotation();
     
     /// Draws a text string at selected X,Y position in display surface context
     ///

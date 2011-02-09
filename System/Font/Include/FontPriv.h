@@ -38,7 +38,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Constants
 //==============================================================================
 const CString			kFontModuleName		= "Font";
-const tVersion			kFontModuleVersion	= 2;
+const tVersion			kFontModuleVersion	= 3;
 const tEventPriority	kFontEventPriority	= 0;
 const tDebugLevel		kFontDebugLevel		= kDbgLvlCritical;
 
@@ -112,7 +112,9 @@ public:
     VTABLE_EXPORT Boolean		GetFontKerning() { return attr_.useKerning; }
     VTABLE_EXPORT Boolean		SetFontUnderlining(Boolean underline) { attr_.useUnderlining = underline; return true; }
     VTABLE_EXPORT Boolean		GetFontUnderlining() { return attr_.useUnderlining; }
-    VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
+    VTABLE_EXPORT Boolean		SetFontRotation(tFontRotation rotation);
+	VTABLE_EXPORT tFontRotation	GetFontRotation() { return attr_.rotation; }
+	VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap);
 	VTABLE_EXPORT S32			GetX();
@@ -153,6 +155,8 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+	FT_Matrix			matrix_;		// auto calculated if using any rotation other than kFontCustomRotation
 };
 
 

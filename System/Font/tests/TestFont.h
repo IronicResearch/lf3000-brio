@@ -69,7 +69,7 @@ public:
 			pName = pFontMPI_->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "FontMPI" );
 			version = pFontMPI_->GetModuleVersion();
-			TS_ASSERT_EQUALS( version, 2 );
+			TS_ASSERT_EQUALS( version, 3 );
 			pName = pFontMPI_->GetModuleName();
 			TS_ASSERT_EQUALS( *pName, "Font" );
 			pURI = pFontMPI_->GetModuleOrigin();
@@ -1148,6 +1148,88 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, false);
 		delete pDisplayMPI_;
 
+	}
+
+	//------------------------------------------------------------------------
+	void testFontRotation() {
+		PRINT_TEST_NAME();
+
+		tFontHndl	font1;
+		tFontProp	prop1 = {1, 18, 0, 0};
+		tFontAttr	attr;
+		tFontSurf	surf;
+		tFontMetrics	mtrx;
+		tDisplayHandle 	disp;
+		CString			text1 = CString("This is the first sentence.");
+		CString			text2 = CString("  This is the second sentence should be right after the first.\nThis third sentence should be on a new line.");
+
+		pDisplayMPI_ = new CDisplayMPI;
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, 0, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = kPixelFormatARGB8888;
+		memset(surf.buffer, 0, surf.height * surf.pitch);
+
+		pFontMPI_->SetFontResourcePath(GetTestRsrcFolder());
+		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
+		TS_ASSERT( font1 != kInvalidFontHndl );
+
+		attr.version = 3;
+		attr.color = 0x000000FF; // blue
+		attr.direction = false;
+		attr.antialias = true;
+		attr.horizJust = 0;
+		attr.vertJust = 0;
+		attr.spaceExtra = 0;
+		attr.leading = 0;
+		attr.useKerning = false;
+		attr.useUnderlining = false;
+		attr.rotation = kFontLandscape;
+		pFontMPI_->SetFontAttr(attr);
+		S32 x = 0, y = 0;
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		pFontMPI_->DrawString(text1, x, y, surf, true);
+		pFontMPI_->DrawString(text2, x, y, surf, true);
+
+		attr.color = 0x00FF0000; // red
+		attr.rotation = kFontPortrait;
+		pFontMPI_->SetFontAttr(attr);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		x = 320;
+		y = 0;
+		pFontMPI_->DrawString(text1, x, y, surf, true);
+		pFontMPI_->DrawString(text2, x, y, surf, true);
+
+		attr.color = 0x0000FF00; // green
+		attr.rotation = kFontLandscapeUpsideDown;
+		pFontMPI_->SetFontAttr(attr);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		x = 320;
+		y = 240;
+		pFontMPI_->DrawString(text1, x, y, surf, true);
+		pFontMPI_->DrawString(text2, x, y, surf, true);
+
+		attr.color = 0x00FF00FF; // purple
+		attr.rotation = kFontPortraitUpsideDown;
+		pFontMPI_->SetFontAttr(attr);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		x = 0;
+		y = 240;
+		pFontMPI_->DrawString(text1, x, y, surf, true);
+		pFontMPI_->DrawString(text2, x, y, surf, true);
+
+		pDisplayMPI_->Invalidate(0, NULL);
+		sleep(1);
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, false);
+		pFontMPI_->UnloadFont(font1);
+		delete pDisplayMPI_;
 	}
 
 };

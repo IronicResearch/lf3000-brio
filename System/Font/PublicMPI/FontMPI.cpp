@@ -260,6 +260,21 @@ Boolean	CFontMPI::GetFontUnderlining()
 		return false;
 	return pModule_->GetFontUnderlining();
 }
+//----------------------------------------------------------------------------
+Boolean	CFontMPI::SetFontRotation(tFontRotation rotation)
+{
+	if (!pModule_)
+		return false;
+	return pModule_->SetFontRotation(rotation);
+}
+
+//----------------------------------------------------------------------------
+tFontRotation	CFontMPI::GetFontRotation()
+{
+	if (!pModule_)
+		return kFontLandscape;
+	return pModule_->GetFontRotation();
+}
 
 //----------------------------------------------------------------------------
 Boolean	CFontMPI::DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx)

@@ -29229,3 +29229,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/7/11 4:07 PM
 6,125 ms. (Cumulative: 10,352,640 ms)
 
 ----------------
+Revision 9,096 from svn://localhost/TRUNK/:
+
+Big new feature.  FontMPI now supports rotations.  Try it out by setting it in the FontAttributes.  When you DrawString, the x, y coordinates should be unrotated coordinates indicating the rotated text's top left corner.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/8/11 4:47 PM
+6 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 10,358,922 ms)
+
+----------------
