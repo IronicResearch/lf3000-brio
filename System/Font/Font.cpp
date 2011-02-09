@@ -518,14 +518,25 @@ Boolean	CFontModule::SetFontAttr(tFontAttr attr)
 //----------------------------------------------------------------------------
 Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 {
-	if (attr_.version == 1)
-	{
+	if (!pAttr)
+		return false;
+	switch (pAttr->version) {
+	case 3:
+		pAttr->rotation		= attr_.rotation;
+	case 2:
+		pAttr->horizJust	= attr_.horizJust;
+		pAttr->vertJust		= attr_.vertJust;
+		pAttr->spaceExtra 	= attr_.spaceExtra;
+		pAttr->leading 		= attr_.leading;
+		pAttr->useKerning 	= attr_.useKerning;
+		pAttr->useUnderlining = attr_.useUnderlining;
+	case 1:
+	default:
 		pAttr->version		= attr_.version;
 		pAttr->color		= attr_.color;
 		pAttr->direction	= attr_.direction;
 		return true;
 	}
-	*pAttr = attr_;
 	return true;
 }
 
