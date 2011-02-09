@@ -69,7 +69,7 @@ public:
 			pName = pFontMPI_->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "FontMPI" );
 			version = pFontMPI_->GetModuleVersion();
-			TS_ASSERT_EQUALS( version, 3 );
+			TS_ASSERT_EQUALS( version, 2 );
 			pName = pFontMPI_->GetModuleName();
 			TS_ASSERT_EQUALS( *pName, "Font" );
 			pURI = pFontMPI_->GetModuleOrigin();

@@ -38,7 +38,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Constants
 //==============================================================================
 const CString			kFontModuleName		= "Font";
-const tVersion			kFontModuleVersion	= 3;
+const tVersion			kFontModuleVersion	= 2;
 const tEventPriority	kFontEventPriority	= 0;
 const tDebugLevel		kFontDebugLevel		= kDbgLvlCritical;
 
