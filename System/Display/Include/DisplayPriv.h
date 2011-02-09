@@ -75,6 +75,12 @@ struct tDisplayContext {
 	bool	isEnabled;	// layer visibility enabled?
 	U32		xscale;		// video scaler size
 	U32		yscale;
+	tDisplayViewport 	viewport;	// selected viewport
+	tDisplayOrientation orient;		// selected orientation
+	S16		xvp;		// viewport x,y,w,h
+	S16		yvp;
+	U16		wvp;
+	U16		hvp;
 };
 
 struct tBuffer {
@@ -476,6 +482,7 @@ private:
 	CKernelMPI			kernel_;
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
+	Boolean				bAutoRotation_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();

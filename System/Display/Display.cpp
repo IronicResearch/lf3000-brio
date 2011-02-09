@@ -61,10 +61,6 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 {
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
 
-//	isOpenGLEnabled_ = false;
-//	isLayerSwapped_ = false;
-//	isYUVLayerSwapped_ = false;
-
 	InitModule(); // delegate to platform or emulation initializer
 	gDisplayList.clear();
 #ifdef EMULATION
@@ -77,6 +73,9 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 	pdcPrimary_ = NULL;
 #endif
 	pdcVisible_ = NULL;
+
+	// Auto-Rotation state for Flash player extensions
+	bAutoRotation_ = false;
 }
 
 //----------------------------------------------------------------------------
@@ -435,49 +434,62 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, tDisplayViewport viewport)
 {
-	return kMPINotConnectedErr;
+	((struct tDisplayContext *)hndl)->viewport = viewport;
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tDisplayViewport CDisplayModule::GetViewport(tDisplayHandle hndl)
 {
-	return static_cast<tDisplayViewport>(0);
+	return ((struct tDisplayContext *)hndl)->viewport;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height)
 {
-	return kMPINotConnectedErr;
+	tDisplayContext* pdc = static_cast<tDisplayContext*>(hndl);
+	pdc->xvp = x;
+	pdc->yvp = y;
+	pdc->wvp = width;
+	pdc->hvp = height;
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height)
 {
-	return kMPINotConnectedErr;
+	tDisplayContext* pdc = static_cast<tDisplayContext*>(hndl);
+	x = pdc->xvp;
+	y = pdc->yvp;
+	width = pdc->wvp;
+	height = pdc->hvp;
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient)
 {
-	return kMPINotConnectedErr;
+	((struct tDisplayContext *)hndl)->orient = orient;
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tDisplayOrientation	CDisplayModule::GetOrientation(tDisplayHandle hndl)
 {
-	return static_cast<tDisplayOrientation>(0);
+	return ((struct tDisplayContext *)hndl)->orient;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetAutoRotation(Boolean enable)
 {
-	return kMPINotConnectedErr;
+	bAutoRotation_ = enable;
+	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 Boolean CDisplayModule::GetAutoRotation()
 {
-	return false;
+	return bAutoRotation_;
 }
 
 LF_END_BRIO_NAMESPACE()
