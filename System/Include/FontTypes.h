@@ -65,8 +65,6 @@ struct tFontAttr {
 	S32		leading;		// extra per-line vertical spacing
 	Boolean	useKerning;		// glyph-paired horizontal adjustments
 	Boolean useUnderlining;
-	// version 3 attributes
-	tFontRotation rotation;
 };
 
 // Font surface

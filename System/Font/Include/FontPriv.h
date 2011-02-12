@@ -113,7 +113,7 @@ public:
     VTABLE_EXPORT Boolean		SetFontUnderlining(Boolean underline) { attr_.useUnderlining = underline; return true; }
     VTABLE_EXPORT Boolean		GetFontUnderlining() { return attr_.useUnderlining; }
     VTABLE_EXPORT Boolean		SetFontRotation(tFontRotation rotation);
-	VTABLE_EXPORT tFontRotation	GetFontRotation() { return attr_.rotation; }
+	VTABLE_EXPORT tFontRotation	GetFontRotation() { return rotation_; }
 	VTABLE_EXPORT Boolean     	DrawString(CString* pStr, S32 x, S32 y, tFontSurf* pCtx);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf);
     VTABLE_EXPORT Boolean     	DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, Boolean bWrap);
@@ -156,6 +156,7 @@ private:
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 
+	tFontRotation		rotation_;
 	FT_Matrix			matrix_;		// auto calculated if using any rotation other than kFontCustomRotation
 };
 
