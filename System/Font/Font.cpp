@@ -188,7 +188,6 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 	attr_.leading = 0;
 	attr_.useKerning = false;
 	attr_.useUnderlining = false;
-	attr_.rotation = kFontLandscape;
 	matrix_.xx = 1 << 16;	matrix_.xy = 0;
 	matrix_.yx = 0;			matrix_.yy = 1 << 16;
 	curX_ = 0;
@@ -496,8 +495,6 @@ Boolean CFontModule::SelectFont(tFontHndl hFont)
 Boolean	CFontModule::SetFontAttr(tFontAttr attr)
 {
 	switch(attr.version) {
-	case 3:
-		SetFontRotation(attr.rotation);
 	case 2:
 		attr_.horizJust	= attr.horizJust;
 		attr_.vertJust	= attr.vertJust;
@@ -521,8 +518,6 @@ Boolean	CFontModule::GetFontAttr(tFontAttr* pAttr)
 	if (!pAttr)
 		return false;
 	switch (pAttr->version) {
-	case 3:
-		pAttr->rotation		= attr_.rotation;
 	case 2:
 		pAttr->horizJust	= attr_.horizJust;
 		pAttr->vertJust		= attr_.vertJust;
@@ -1110,7 +1105,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	// Update XY cursor without drawing anything if newline detected
 	if (ch == '\n')
 	{
-		switch(attr_.rotation)
+		switch(rotation_)
 		{
 		case kFontLandscape:
 			curX_ = 0;
@@ -1145,7 +1140,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	
 	if ( glyph->format == FT_GLYPH_FORMAT_OUTLINE ) 
 	{
-		if(attr_.rotation != kFontLandscape) {
+		if(rotation_ != kFontLandscape) {
 			FT_Glyph  glyph2;
 			error = FT_Glyph_Copy(glyph, &glyph2);
 			FT_Glyph_Transform( glyph2, &matrix_, NULL);
@@ -1198,7 +1193,7 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		dx = 0; // fills gaps -- affects positioning
 	}
 	int x2, y2;
-	switch(attr_.rotation)
+	switch(rotation_)
 	{
 	case kFontLandscape:
 		x2 = x + bitmap->left + dk;
@@ -1314,9 +1309,9 @@ inline void UnpackUnicode(tWChar* charcode, CString* pStr, int* i)
 //----------------------------------------------------------------------------
 Boolean CFontModule::SetFontRotation(tFontRotation rotation)
 {
-	if(attr_.rotation != rotation) {
-		attr_.rotation = rotation;
-		switch(attr_.rotation) {
+	if(rotation_ != rotation) {
+		rotation_ = rotation;
+		switch(rotation_) {
 		case kFontLandscape:
 			matrix_.xx = 1 << 16;	matrix_.xy = 0;
 			matrix_.yx = 0;			matrix_.yy = 1 << 16;
@@ -1387,7 +1382,7 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 	
 	// If entire string fits, then draw as is
 	GetStringRect(&str, &rect);
-	switch(attr_.rotation) {
+	switch(rotation_) {
 	case kFontLandscape:
 		if (x + rect.right - rect.left <= surf.width)
 			return DrawString(str, x, y, surf);
@@ -1420,7 +1415,7 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 			// Wrap XY pre-drawing
 			GetStringRect(&part, &rect);
 			
-			switch(attr_.rotation) {
+			switch(rotation_) {
 			case kFontLandscape:
 				if (x + rect.right - rect.left > surf.width) {
 					x = 0;
@@ -1453,7 +1448,7 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 			n = len-p;
 			rc = DrawString(part, x, y, surf);
 			// Wrap XY post-drawing (in case of long words or overflow from spaces)
-			switch(attr_.rotation) {
+			switch(rotation_) {
 			case kFontLandscape:
 				if (x > surf.width) {
 					x = 0;
@@ -1485,7 +1480,7 @@ Boolean CFontModule::DrawString(CString& str, S32& x, S32& y, tFontSurf& surf, B
 	// Draw the last part of the string, or entire string if no space breaks
 	part = str.substr(p, n);
 	GetStringRect(&part, &rect);
-	switch(attr_.rotation) {
+	switch(rotation_) {
 	case kFontLandscape:
 		if (x + rect.right - rect.left > surf.width) {
 			x = 0;
@@ -1577,7 +1572,7 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 			UnpackUnicode(&charcode, pStr, &i);
 		if (!GetGlyph(charcode, &glyph, &index))
 			continue;
-		if(attr_.rotation != kFontLandscape) {
+		if(rotation_ != kFontLandscape) {
 			FT_Glyph  glyph2;
 			if(FT_Glyph_Copy(glyph, &glyph2))
 				continue;

@@ -1179,7 +1179,7 @@ public:
 		font1 = pFontMPI_->LoadFont("DidjPropBold.ttf", prop1);
 		TS_ASSERT( font1 != kInvalidFontHndl );
 
-		attr.version = 3;
+		attr.version = 2;
 		attr.color = 0x000000FF; // blue
 		attr.direction = false;
 		attr.antialias = true;
@@ -1189,35 +1189,35 @@ public:
 		attr.leading = 0;
 		attr.useKerning = false;
 		attr.useUnderlining = false;
-		attr.rotation = kFontLandscape;
 		pFontMPI_->SetFontAttr(attr);
+		pFontMPI_->SetFontRotation(kFontLandscape);
 		S32 x = 0, y = 0;
-		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), kFontLandscape );
 		pFontMPI_->DrawString(text1, x, y, surf, true);
 		pFontMPI_->DrawString(text2, x, y, surf, true);
 
 		attr.color = 0x00FF0000; // red
-		attr.rotation = kFontPortrait;
 		pFontMPI_->SetFontAttr(attr);
-		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		pFontMPI_->SetFontRotation(kFontPortrait);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), kFontPortrait );
 		x = 320;
 		y = 0;
 		pFontMPI_->DrawString(text1, x, y, surf, true);
 		pFontMPI_->DrawString(text2, x, y, surf, true);
 
 		attr.color = 0x0000FF00; // green
-		attr.rotation = kFontLandscapeUpsideDown;
 		pFontMPI_->SetFontAttr(attr);
-		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		pFontMPI_->SetFontRotation(kFontLandscapeUpsideDown);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), kFontLandscapeUpsideDown );
 		x = 320;
 		y = 240;
 		pFontMPI_->DrawString(text1, x, y, surf, true);
 		pFontMPI_->DrawString(text2, x, y, surf, true);
 
 		attr.color = 0x00FF00FF; // purple
-		attr.rotation = kFontPortraitUpsideDown;
 		pFontMPI_->SetFontAttr(attr);
-		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), attr.rotation );
+		pFontMPI_->SetFontRotation(kFontPortraitUpsideDown);
+		TS_ASSERT_EQUALS( pFontMPI_->GetFontRotation(), kFontPortraitUpsideDown );
 		x = 0;
 		y = 240;
 		pFontMPI_->DrawString(text1, x, y, surf, true);
