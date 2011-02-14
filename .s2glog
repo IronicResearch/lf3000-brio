@@ -29307,3 +29307,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/11/11 5:50 PM
 8,908 ms. (Cumulative: 10,408,351 ms)
 
 ----------------
+Revision 9,108 from svn://localhost/TRUNK/:
+
+Initial implementation of underline support during rotations.  Still some gaps in underline, fix later.  Also now initializing rotation_ field.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/14/11 2:28 PM
+2 changed, 0 added, 0 deleted.
+7,175 ms. (Cumulative: 10,415,667 ms)
+
+----------------
