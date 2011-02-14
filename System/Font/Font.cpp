@@ -188,6 +188,7 @@ CFontModule::CFontModule() : dbg_(kGroupFont)
 	attr_.leading = 0;
 	attr_.useKerning = false;
 	attr_.useUnderlining = false;
+	rotation_ = kFontLandscape;
 	matrix_.xx = 1 << 16;	matrix_.xy = 0;
 	matrix_.yx = 0;			matrix_.yy = 1 << 16;
 	curX_ = 0;
@@ -952,6 +953,17 @@ void CFontModule::ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, in
 	dest->pixel_mode = source->pixel_mode;
 
 	memset(d, 0, width * height);
+
+	switch(rotation_)
+	{
+	case kFontPortrait:
+		d += width - w;
+		break;
+	case kFontLandscapeUpsideDown:
+		d += (height - h) * width;
+		break;
+	}
+
 	for (int i = 0; i < h; i++)
 	{
 		memcpy(d, s, w);
@@ -971,18 +983,33 @@ void CFontModule::FreeBitmap(FT_Bitmap* dest)
 //----------------------------------------------------------------------------
 // Add underline bits to glyph bitmap
 //----------------------------------------------------------------------------
-inline void UnderlineBitmap(FT_Bitmap* source, int y, int dy)
+inline void CFontModule::UnderlineBitmap(FT_Bitmap* source, int y, int dy)
 {
 	int		w = source->width;
-	U8*		s = source->buffer + y * source->pitch;
+	U8*		s = source->buffer;
 	
 	if (source->pixel_mode == FT_PIXEL_MODE_MONO)
 		w = (w+7)/8;
 	
-	for (int h = y; h < y+dy && h < source->rows; h++)
-	{
-		memset(s, 0xFF, w);
-		s += source->pitch;
+	switch(rotation_) {
+	case kFontLandscape:
+	case kFontLandscapeUpsideDown:
+		s += y * source->pitch;
+		for (int h = y; h < y+dy && h < source->rows; h++)
+		{
+			memset(s, 0xFF, w);
+			s += source->pitch;
+		}
+		break;
+
+	case kFontPortrait:
+	case kFontPortraitUpsideDown:
+		s += y;
+		for (int h = 0; h < source->rows; h++)
+		{
+			memset(s, 0xFF, dy);
+			s += source->pitch;
+		}
 	}
 }
 
@@ -1183,33 +1210,75 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	{
 		int du = std::min(face->underline_position >> 6, 0);
 		int dt = std::max(face->underline_thickness >> 6, 1);
-		int dh = std::max(face->height >> 6, source->rows);
-		int dw = (( glyph->advance.x + 0x8000 ) >> 16) + attr_.spaceExtra;
-			dw = std::max(dw, source->rows);
+		int dh = source->rows;
+		int dw = source->width;
+		switch(rotation_)
+		{
+		case kFontLandscape:
+			dh = std::max(bitmap->top - du + dt, dh);
+			dw = std::max((( glyph->advance.x + 0x8000 ) >> 16) + attr_.spaceExtra, (long int)dw);
+			break;
+		case kFontPortrait:
+			dh = std::max((-( glyph->advance.y + 0x8000 ) >> 16) + attr_.spaceExtra, (long int)dh);
+			dw = std::max(source->width + bitmap->left - du + dt, dw);
+			break;
+		case kFontLandscapeUpsideDown:
+			dh = std::max(source->rows - bitmap->top - du + dt, dh);
+			dw = std::max((-( glyph->advance.x + 0x8000 ) >> 16) + attr_.spaceExtra, (long int)dw);
+			break;
+		case kFontPortraitUpsideDown:
+			dh = std::max((( glyph->advance.y + 0x8000 ) >> 16) + attr_.spaceExtra, (long int)dh);
+			dw = std::max(-bitmap->left - du + dt, dw);
+			break;
+		}
 		// Expand glyph bitmap width and height to fit underline bits
 		ExpandBitmap(source, &clone, dw, dh);
 		source = &clone;
-		UnderlineBitmap(source, dy-du, dt);
-		dx = 0; // fills gaps -- affects positioning
+		switch(rotation_)
+		{
+		case kFontLandscape:
+			UnderlineBitmap(source, dy-du, dt);
+			dx = 0; // fills gaps -- affects positioning
+			break;
+		case kFontPortrait:
+			if(dw == bitmap->bitmap.width) {
+				UnderlineBitmap(source, -bitmap->left + du - dt, dt);
+			} else {
+				UnderlineBitmap(source, 0, dt);
+				dx -= source->width - bitmap->bitmap.width;
+			}
+			break;
+		case kFontLandscapeUpsideDown:
+			if(dh == bitmap->bitmap.rows) {
+				UnderlineBitmap(source, bitmap->top - du - dt, dt);
+			} else {
+				UnderlineBitmap(source, 0, dt);
+				dy += source->rows - bitmap->bitmap.rows;
+			}
+			break;
+		case kFontPortraitUpsideDown:
+			UnderlineBitmap(source, -bitmap->left - du, dt);
+			break;
+		}
 	}
 	int x2, y2;
 	switch(rotation_)
 	{
 	case kFontLandscape:
-		x2 = x + bitmap->left + dk;
-		y2 = y - bitmap->top + font->ascent;
+		x2 = x + dx + dk;
+		y2 = y - dy + font->ascent;
 		break;
 	case kFontPortrait:
-		x2 = x + bitmap->left - font->ascent;
-		y2 = y - bitmap->top + dk;
+		x2 = x + dx - font->ascent;
+		y2 = y - dy + dk;
 		break;
 	case kFontLandscapeUpsideDown:
-		x2 = x + bitmap->left - dk;
-		y2 = y - bitmap->top - font->ascent;
+		x2 = x + dx - dk;
+		y2 = y - dy - font->ascent;
 		break;
 	case kFontPortraitUpsideDown:
-		x2 = x + bitmap->left + font->ascent;
-		y2 = y - bitmap->top - dk;
+		x2 = x + dx + font->ascent;
+		y2 = y - dy - dk;
 		break;
 	}
 	// Draw mono bitmap into RGB context buffer with current color

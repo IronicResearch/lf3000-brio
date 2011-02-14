@@ -147,6 +147,7 @@ private:
     void				ConvertGraymapToRGB565(FT_Bitmap* source, int x, int y, tFontSurf* pCtx);
 	tFontHndl			LoadFontInt(const CString* pName, tFontProp prop, void* pFileImage, int fileSize);
 	void 				ExpandBitmap(FT_Bitmap* source, FT_Bitmap* dest, int width, int height);
+	void				UnderlineBitmap(FT_Bitmap* source, int y, int dy);
 	void 				FreeBitmap(FT_Bitmap* dest);
 
 	// Limit object creation to the Module Manager interface functions
