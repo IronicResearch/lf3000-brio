@@ -171,6 +171,32 @@ static bool IsSpeakerOn( void )
 #endif	// EMULATION
 }
 
+//------------------------------------------------------------------------------
+// Returns codec legacy status (CirrusLogic) from procfs (embedded)
+//------------------------------------------------------------------------------
+static bool IsCodecLegacy( void )
+{
+	static int legacy = -1;
+	if (legacy != -1)
+		return (bool)legacy;
+
+	FILE* fd = fopen("/proc/asound/card0/id", "r");
+	if (fd) {
+		char idstr[20];
+		fscanf(fd, "%s\n", &idstr[0]);
+		fclose(fd);
+		if (strcmp(idstr, "DidjCS43L22") == 0)
+			legacy = true;
+		else
+			legacy = false;
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Found codec: %s, legacy=%d\n", idstr, legacy);
+		return (bool)legacy;
+	}
+	legacy = true;
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "No ALSA codec found, legacy=%d\n", legacy);
+	return (bool)legacy;
+}
+
 // ==============================================================================
 // CAudioMixer implementation
 // ==============================================================================
@@ -260,7 +286,7 @@ CAudioMixer::CAudioMixer( int inStreams ):
 			"%s.%d: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n",
 			__FUNCTION__, __LINE__, sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 		
-		d->useOutSoftClipper  = true;
+		d->useOutSoftClipper  = IsCodecLegacy();
 		
 		SetMasterVolume(100);
 		
@@ -1558,9 +1584,10 @@ void CAudioMixer::GetAudioState(tAudioState *d)
 void CAudioMixer::EnableSpeaker(Boolean x)
 {
 	// soft clipper on for speaker, off for headphones (TTP #1532)
-	audioState_.useOutSoftClipper = x;
+	// soft clipper always off for new TI codec (CIP TTP #219)
+	audioState_.useOutSoftClipper = (IsCodecLegacy()) ? x : false;
 	audioState_.speakerEnabled	  = x;
-	pDebugMPI_->DebugOut(kDbgLvlValuable, "%s: %d\n", __FUNCTION__, (int)x);
+	pDebugMPI_->DebugOut(kDbgLvlValuable, "%s: speaker=%d, soft-clipper=%d\n", __FUNCTION__, (int)x, (int)audioState_.useOutSoftClipper);
 }
 
 // ==============================================================================
