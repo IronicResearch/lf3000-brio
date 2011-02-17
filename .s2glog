@@ -29336,3 +29336,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/16/11 5:04 PM
 8,658 ms. (Cumulative: 10,432,748 ms)
 
 ----------------
+Revision 9,111 from svn://localhost/TRUNK/:
+
+EventMPI: Skip loading tslib on Emerald for now.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/16/11 5:16 PM
+1 changed, 0 added, 0 deleted.
+8,604 ms. (Cumulative: 10,441,477 ms)
+
+----------------

@@ -362,6 +362,11 @@ void* CEventModule::CartridgeTask( void* arg )
 		// NO TSLIB was picked
 		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Found " FLAGS_NOTSLIB " -- tslib support disabled\n");
 	}
+	else if (GetPlatformName() == "Emerald")
+	{
+		// NO TSLIB on Emerald
+		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Platform Emerald -- tslib support disabled\n");
+	}
 	else
 	{
 		// YES TSLIB was picked
