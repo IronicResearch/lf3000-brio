@@ -19,6 +19,7 @@
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <DisplayTypes.h>
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -31,6 +32,30 @@ const tVersion	kAccelerometerModuleVersion	= 3;
 
 static tAccelerometerData 	gCachedData 	= {0, 0, 0, {0, 0}};
 static S32					gCachedOrient	= 0;
+
+//============================================================================
+namespace
+{
+	inline int RawToOrient(int raw)
+	{
+		switch (raw)
+		{
+			case 6:
+			case 2:
+				return kOrientationLandscape;
+			case 4:
+			case 0:
+				return kOrientationPortrait;
+			case 7:
+			case 3:
+				return kOrientationLandscapeUpsideDown;
+			case 5:
+			case 1:
+				return kOrientationPortraitUpsideDown;
+		}
+		return 0;
+	}
+}
 
 //============================================================================
 // CAccelerometerMessage
@@ -46,7 +71,7 @@ CAccelerometerMessage::CAccelerometerMessage( const tAccelerometerData& data )
 CAccelerometerMessage::CAccelerometerMessage( const S32& data )
 	: IEventMessage(kOrientationChanged), mOrient(data)
 {
-	gCachedOrient = data;
+	gCachedOrient = mOrient = RawToOrient(data);
 }
 
 //------------------------------------------------------------------------------
