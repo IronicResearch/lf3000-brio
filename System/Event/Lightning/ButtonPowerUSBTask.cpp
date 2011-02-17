@@ -356,6 +356,7 @@ void* CEventModule::CartridgeTask( void* arg )
 
 	use_tslib = false;
 	struct stat st;
+	void *handle = NULL;
 	if(stat(FLAGS_NOTSLIB, &st) == 0) /* file exists */
 	{
 		// NO TSLIB was picked
@@ -366,10 +367,9 @@ void* CEventModule::CartridgeTask( void* arg )
 		// YES TSLIB was picked
 		// Hack: do dlopen ourselves so we can assert RTLD_GLOBAL flag, or plugins will
 		// not find symbols defined in tslib
-		void *handle;
 		// yield timeslice to avoid tslib dependency delays
 		pThis->kernel_.TaskSleep(10);
-		handle = dlopen("/usr/lib/libts.so", RTLD_NOW | RTLD_GLOBAL);
+		handle = dlopen("/usr/lib/libts.so", RTLD_LAZY | RTLD_GLOBAL);
 		if (!handle)
 		{
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't dlopen libts.so\n");
@@ -386,6 +386,7 @@ void* CEventModule::CartridgeTask( void* arg )
 			if (!ts_open || !ts_config || !ts_fd || !ts_read || !ts_close)
 			{
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't resolve symbols in tslib.so\n");
+				dlclose(handle);
 			}
 			else
 			{
@@ -407,6 +408,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		if (find_input_device("LF1000 touchscreen interface", dev) < 0) {
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
 			perror ("Can't find touchscreen event device in /dev/input");
+			dlclose(handle);
 			use_tslib = false;
 			break;
 		}
@@ -414,6 +416,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		if (!tsl) {
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_open failed\n");
 			perror("ts_open");
+			dlclose(handle);
 			use_tslib = false;
 			break;
 		}
@@ -421,6 +424,7 @@ void* CEventModule::CartridgeTask( void* arg )
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_config failed\n");
 			perror("ts_config");
 			ts_close(tsl);
+			dlclose(handle);
 			use_tslib = false;
 			break;
 		}
@@ -711,8 +715,10 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 
 	// close tslib if in use
-	if (use_tslib)
+	if (use_tslib) {
 		ts_close(tsl);
+		dlclose(handle);
+	}
 	
 	for(last_fd--; last_fd >=0; --last_fd)
 		close(event_fd[last_fd].fd);
