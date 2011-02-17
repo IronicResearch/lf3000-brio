@@ -29327,3 +29327,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/15/11 12:32 PM
 8,219 ms. (Cumulative: 10,423,980 ms)
 
 ----------------
+Revision 9,110 from svn://localhost/TRUNK/:
+
+EventMPI: Mods for tslib loading without full symbol resolution (lazy + global), plus unloading on plugin error.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/16/11 5:04 PM
+1 changed, 0 added, 0 deleted.
+8,658 ms. (Cumulative: 10,432,748 ms)
+
+----------------
