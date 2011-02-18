@@ -650,6 +650,9 @@ public:
 	
 	tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
 	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
+
+private:
+	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
 	
 public:	
 	CDisplayFB(CDisplayModule* pModule) :
