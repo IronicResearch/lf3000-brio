@@ -301,22 +301,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
-	struct lf1000fb_position_cmd cmd;
-	cmd.left   = ctx->rect.left   = ctx->x = xPos;
-	cmd.top    = ctx->rect.top    = ctx->y = yPos;
-	cmd.right  = ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
-	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
-	cmd.apply  = 1;
-	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
-	// Auto-center UI elements on larger screens by delta XY
-	if (ctx->width < xres && ctx->height < yres)
-	{
-		cmd.left	+= dxres;
-		cmd.right	+= dxres;
-		cmd.top		+= dyres;
-		cmd.bottom	+= dyres;
-	}
-	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
+	int r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
 	// Adjust Z-order for YUV layer?
 	if (n == YUVFB) 
@@ -503,7 +488,7 @@ Boolean	CDisplayFB::IsBufferSwapped(tDisplayHandle hndl)
 }
 
 //----------------------------------------------------------------------------
-tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
+tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
@@ -528,9 +513,21 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
 
-	if (r == 0) 
+	return (r == 0) ? kNoErr : kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
+{
+	tErrType r;
+
+	r = SetWindowPosition(hndl, x, y, width, height);
+
+	if (r == 0)
 	{
-		r = ioctl(fbdev[n], FBIOBLANK, !visible);
+		tDisplayContext* ctx = (tDisplayContext*)hndl;
+		int n = ctx->layer;
+		int r = ioctl(fbdev[n], FBIOBLANK, !visible);
 		if (r == 0)
 			ctx->isEnabled = visible;
 	}
