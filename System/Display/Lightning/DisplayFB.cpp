@@ -329,9 +329,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Defer layer visibility until Update() or SwapBuffers()?
 	if (n == RGBFB)
 	{
-		r = ioctl(fbdev[n], FBIOBLANK, 0);
-		if (r == 0)
-			ctx->isEnabled = true;
+		SetVisible(ctx, true);
 	}
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
@@ -356,10 +354,7 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	if (ctx->isAllocated)
 		return kNoErr;
 	
-	int n = ctx->layer;
-	int r = ioctl(fbdev[n], FBIOBLANK, 1);
-	if (r == 0)
-		ctx->isEnabled = false;
+	int r = SetVisible(ctx, false);
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -423,17 +418,13 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	if (!dcdst->isEnabled) 
 	{
 		RegisterLayer(dcdst, dcdst->x, dcdst->y);
-		int n = dcdst->layer;
-		int r = ioctl(fbdev[n], FBIOBLANK, 0);
-		dcdst->isEnabled = (r == 0);
+		SetVisible(dcdst, true);
 	}
 	// Ditto for any other onscreen display context
 	if (dc != dcdst && !dc->isAllocated && !dc->isEnabled)
 	{
 		RegisterLayer(dc, dc->x, dc->y);
-		int n = dc->layer;
-		int r = ioctl(fbdev[n], FBIOBLANK, 0);
-		dc->isEnabled = (r == 0);
+		SetVisible(dc, true);
 	}
 	
 	return kNoErr;
@@ -459,8 +450,7 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	// Make sure swapped display context is enabled
 	if (!ctx->isEnabled)
 	{
-		r = ioctl(fbdev[n], FBIOBLANK, 0);
-		ctx->isEnabled = (r == 0);
+		SetVisible(ctx, true);
 	}
 	
 	// Wait for VSync option via layer dirty bit?
@@ -517,6 +507,20 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayFB::SetVisible(tDisplayHandle hndl, Boolean visible)
+{
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	int n = ctx->layer;
+	int r = ioctl(fbdev[n], FBIOBLANK, !visible);
+
+	if (r == 0)
+		ctx->isEnabled = visible;
+
+	return (r == 0) ? kNoErr : kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
 tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, Boolean visible)
 {
 	tErrType r;
@@ -525,11 +529,7 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 
 	if (r == 0)
 	{
-		tDisplayContext* ctx = (tDisplayContext*)hndl;
-		int n = ctx->layer;
-		int r = ioctl(fbdev[n], FBIOBLANK, !visible);
-		if (r == 0)
-			ctx->isEnabled = visible;
+		r = SetVisible(hndl, visible);
 	}
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
@@ -755,15 +755,13 @@ void CDisplayFB::DeinitOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
-	int n = OGLFB;
-	int r = ioctl(fbdev[n], FBIOBLANK, 0);
+	SetVisible(hogl, true);
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DisableOpenGL()
 {
-	int n = OGLFB;
-	int r = ioctl(fbdev[n], FBIOBLANK, 1);
+	SetVisible(hogl, false);
 }
 
 //----------------------------------------------------------------------------

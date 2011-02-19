@@ -29383,3 +29383,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/18/11 3:25 PM
 6,155 ms. (Cumulative: 10,466,993 ms)
 
 ----------------
+Revision 9,118 from svn://localhost/TRUNK/:
+
+DisplayFB: Refactor SetVisible() into separate internal method to complement SetWindowPosition().
+
+By Dave Milici (dmilici@leapfrog.com) on 2/18/11 4:02 PM
+2 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 10,473,275 ms)
+
+----------------
