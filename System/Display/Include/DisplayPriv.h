@@ -653,6 +653,7 @@ public:
 
 private:
 	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
+	tErrType			SetVisible(tDisplayHandle hndl, Boolean visible);
 	
 public:	
 	CDisplayFB(CDisplayModule* pModule) :
