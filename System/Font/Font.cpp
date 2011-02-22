@@ -1325,9 +1325,21 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 
 	// Update the current XY glyph cursor position
 	AdvanceGlyphPosition(glyph, curX_, curY_);
-	curX_ += ((attr_.spaceExtra + dk) * matrix_.xx) >> 16;
-	curY_ -= ((attr_.spaceExtra + dk) * matrix_.yx) >> 16;
-	
+	switch(rotation_)
+	{
+	case kFontLandscape:
+		curX_ +=  attr_.spaceExtra + dk;
+		break;
+	case kFontPortrait:
+		curY_ += attr_.spaceExtra + dk;
+		break;
+	case kFontLandscapeUpsideDown:
+		curX_ -=  attr_.spaceExtra + dk;
+		break;
+	case kFontPortraitUpsideDown:
+		curY_ -= attr_.spaceExtra + dk;
+		break;
+	}
 	// Release expanded bitmap memory used for underlining
 	if (attr_.useUnderlining)
 		FreeBitmap(&clone);
@@ -1649,30 +1661,58 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 			glyph = glyph2;
 		}
 		FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
-		// Adjust for glyph spacing (spaces have no bounding box)
-//		bbox.xMax = std::max(glyph->advance.x >> 6, bbox.xMax);
-		bbox.xMax = 0;
-		// Adjust for glyph position
-		AdvanceGlyphPosition(glyph, dx, dy);
-		dx += (attr_.spaceExtra * matrix_.xx) >> 16;
-		dy += (attr_.spaceExtra * matrix_.yx) >> 16;
-		// Adjust for kerning
+
 		if (attr_.useKerning && prev)
-		{
 			KernGlyphPosition(face, index, prev, dk);
-			int dkx = (dk * matrix_.xx) >> 16;
-			int dky = (dk * matrix_.yx) >> 16;
-			bbox.xMin += dkx;
-			bbox.xMax += dkx;
-			bbox.yMin += dky;
-			bbox.yMax += dky;
+		switch(rotation_)
+		{
+		case kFontLandscape:
+			gbox.xMin = std::min(dx + bbox.xMin + dk, gbox.xMin);
+			gbox.yMin = std::min(dy - bbox.yMax + font->ascent, gbox.yMin);
+			gbox.xMax = std::max(dx + bbox.xMax + dk, gbox.xMax);
+			gbox.yMax = std::max(dy - bbox.yMin + font->ascent, gbox.yMax);
+			break;
+		case kFontPortrait:
+			gbox.xMin = std::min(dx + bbox.xMin - font->ascent, gbox.xMin);
+			gbox.yMin = std::min(dy - bbox.yMax + dk, gbox.yMin);
+			gbox.xMax = std::max(dx + bbox.xMax - font->ascent, gbox.xMax);
+			gbox.yMax = std::max(dy - bbox.yMin + dk, gbox.yMax);
+			break;
+		case kFontLandscapeUpsideDown:
+			gbox.xMin = std::min(dx + bbox.xMin - dk, gbox.xMin);
+			gbox.yMin = std::min(dy - bbox.yMax - font->ascent, gbox.yMin);
+			gbox.xMax = std::max(dx + bbox.xMax - dk, gbox.xMax);
+			gbox.yMax = std::max(dy - bbox.yMin - font->ascent, gbox.yMax);
+			break;
+		case kFontPortraitUpsideDown:
+			gbox.xMin = std::min(dx + bbox.xMin + font->ascent, gbox.xMin);
+			gbox.yMin = std::min(dy - bbox.yMax - dk, gbox.yMin);
+			gbox.xMax = std::max(dx + bbox.xMax + font->ascent, gbox.xMax);
+			gbox.yMax = std::max(dy - bbox.yMin - dk, gbox.yMax);
+			break;
 		}
-		gbox.xMin = std::min(bbox.xMin+dx, gbox.xMin);
-		gbox.yMin = std::min(bbox.yMin+dy, gbox.yMin);
-		gbox.xMax = std::max(bbox.xMax+dx, gbox.xMax);
-		gbox.yMax = std::max(bbox.yMax+dy, gbox.yMax);
+
+		AdvanceGlyphPosition(glyph, dx, dy);
+		switch(rotation_) {
+		case kFontLandscape:
+			dx += attr_.spaceExtra + dk;
+			break;
+		case kFontPortrait:
+			dy += attr_.spaceExtra + dk;
+			break;
+		case kFontLandscapeUpsideDown:
+			dx -= attr_.spaceExtra + dk;
+			break;
+		case kFontPortraitUpsideDown:
+			dy -= attr_.spaceExtra + dk;
+			break;
+		}
+
 		// Save previous glyph index if kerning
 		prev = index;
+
+		if(rotation_ != kFontLandscape)
+			FT_Done_Glyph(glyph);
 	}
 
 	// C char string only used for debug output now

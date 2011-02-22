@@ -29392,3 +29392,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/18/11 4:02 PM
 6,204 ms. (Cumulative: 10,473,275 ms)
 
 ----------------
+Revision 9,119 from svn://localhost/TRUNK/:
+
+Redid GetStringRect logic.  Now uses identical logic used to draw to calculate bounding rect.  This rect should be accurate.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/22/11 1:09 PM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 10,479,479 ms)
+
+----------------
