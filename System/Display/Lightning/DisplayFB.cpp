@@ -119,8 +119,8 @@ void CDisplayFB::InitModule()
 	}
 
 	// Calculate delta XY for screen size vs display resolution
-	dxres = (xres - vinfo[RGBFB].xres) / 2;
-	dyres = (yres - vinfo[RGBFB].yres) / 2;
+//	dxres = (xres - vinfo[RGBFB].xres) / 2;
+//	dyres = (yres - vinfo[RGBFB].yres) / 2;
 	
 	// Setup framebuffer allocator lists and markers
 	gBufListUsed.clear();
@@ -720,9 +720,15 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_PhysicalAddress	= mem2phys;
 	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
 
+	// Query viewport size to use
+	S16 x,y;
+	U16 w,h;
+	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), x, y, w, h);
+	printf("%s: x,y wxh = %d,%d, %dx%d\n", __FUNCTION__, x, y, w, h);
+
 	// Create DisplayMPI context for OpenGL framebuffer
 	pmem2d = (U8*)pmem2d + 0x20000000;
-	hogl = CreateHandle(vinfo[n].yres, vinfo[n].xres, kPixelFormatRGB565, (U8*)pmem2d);
+	hogl = CreateHandle(h, w, kPixelFormatRGB565, (U8*)pmem2d);
 
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vinfo[n].xres;
@@ -734,7 +740,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Reset initial HW context state
 	RegisterLayer(hogl, 0, 0);
 	SetAlpha(hogl, 0, false);
-	SetWindowPosition(hogl, 0, 0, pOglCtx->width, pOglCtx->height, false);
+	SetWindowPosition(hogl, x, y, pOglCtx->width, pOglCtx->height, false);
 }
 
 //----------------------------------------------------------------------------
