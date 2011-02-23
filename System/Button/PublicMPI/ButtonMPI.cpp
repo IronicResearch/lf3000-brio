@@ -26,6 +26,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kMPIName = "ButtonMPI";
 
+static tButtonData2 	gCachedButtonData 	= {0, 0, {0, 0}};
+static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
 
 //============================================================================
 // CButtonMessage
@@ -34,6 +36,7 @@ const CString	kMPIName = "ButtonMPI";
 CButtonMessage::CButtonMessage( const tButtonData2& data ) 
 	: IEventMessage(kButtonStateChanged), mData(data)
 {
+	gCachedButtonData = data;
 }
 
 //------------------------------------------------------------------------------
@@ -60,6 +63,7 @@ tButtonData2 CButtonMessage::GetButtonState2() const
 CTouchMessage::CTouchMessage( const tTouchData& data ) 
 	: IEventMessage(kTouchStateChanged), mData(data)
 {
+	gCachedTouchData = data;
 }
 
 //------------------------------------------------------------------------------
@@ -135,13 +139,20 @@ tErrType CButtonMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tButtonData CButtonMPI::GetButtonState() const
 {
-	return LeapFrog::Brio::GetButtonState();
+	tButtonData data = {gCachedButtonData.buttonState, gCachedButtonData.buttonTransition};
+	return data;
 }
 
 //----------------------------------------------------------------------------
 tButtonData2 CButtonMPI::GetButtonState2() const
 {
-	return LeapFrog::Brio::GetButtonState2();
+	return gCachedButtonData;
+}
+
+//----------------------------------------------------------------------------
+tTouchData CButtonMPI::GetTouchState() const
+{
+	return gCachedTouchData;
 }
 
 //----------------------------------------------------------------------------
