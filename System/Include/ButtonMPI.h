@@ -52,6 +52,9 @@ public:
 	tButtonData		GetButtonState() const;
 	tButtonData2	GetButtonState2() const;
 
+	/// Get touch state
+	tTouchData		GetTouchState() const;
+
 	/// Get touch sample rate (Hz)
 	U32				GetTouchRate() const;
 
