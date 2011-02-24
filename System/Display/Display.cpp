@@ -459,6 +459,8 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 tErrType CDisplayModule::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height)
 {
 	tDisplayContext* pdc = static_cast<tDisplayContext*>(hndl);
+	if (!pdc)
+		return kDisplayNullPtrErr;
 	x = pdc->xvp;
 	y = pdc->yvp;
 	width = pdc->wvp;
