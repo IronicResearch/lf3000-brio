@@ -123,8 +123,8 @@ void CDisplayFB::InitModule()
 	// Calculate delta XY for screen size vs display resolution
 	dxres = 0;
 	dyres = 0;
-	vxres = vinfo[RGBFB].xres;
-	vyres = vinfo[RGBFB].yres;
+	vxres = xres; //vinfo[RGBFB].xres;
+	vyres = yres; //vinfo[RGBFB].yres;
 	
 	// Setup framebuffer allocator lists and markers
 	gBufListUsed.clear();
@@ -148,6 +148,10 @@ void CDisplayFB::DeInitModule()
 //----------------------------------------------------------------------------
 U32	CDisplayFB::GetScreenSize()
 {
+	// Adjust effective screen size coordinates if viewport active
+	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
+	if ((vxres > 0 && vxres < xres) || (vyres > 0 && vyres < yres))
+		return (vyres << 16) | (vxres);
 	return (yres << 16) | (xres);
 }
 
@@ -177,6 +181,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	
 	// OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+		n = OGLFB;
+
+	// FIXME: RGB lower layer needed when viewport active
+	// FIXME: Switch RGB layer prior to isUnderlay setting
+	if (n == RGBFB && (dxres > 0 || dyres > 0))
 		n = OGLFB;
 	
 	// Select pixel format masks for RGB context
@@ -277,6 +286,13 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
 
 	pModule_->UnRegister(hndl, 0);
+
+	// Reset screen size deltas when viewport context destroyed
+	if (ctx->viewport || ctx->xvp || ctx->yvp || ctx->wvp < xres || ctx->hvp < yres) {
+		dxres = dyres = 0;
+		vxres = xres;
+		vyres = yres;
+	}
 
 	if (!ctx->isAllocated)
 		DeAllocBuffer(ctx);
