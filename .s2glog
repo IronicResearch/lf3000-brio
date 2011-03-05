@@ -29485,3 +29485,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/4/11 4:55 PM
 6,563 ms. (Cumulative: 10,523,673 ms)
 
 ----------------
+Revision 9,144 from svn://localhost/TRUNK/:
+Revision 9,145 from svn://localhost/TRUNK/:
+
+DisplayFB: Adjust effective screen size coordinates if viewport active.
+Flash RGB contexts need to use lower RGB layer when viewframe is active.
+FIXME: RGB layer display mode needs to set before Register() z-order is set.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/4/11 6:11 PM
+1 changed, 0 added, 0 deleted.
+6,599 ms. (Cumulative: 10,530,366 ms)
+
+----------------
