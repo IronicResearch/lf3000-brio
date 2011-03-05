@@ -1202,7 +1202,6 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 	// Account for kerning adjustment for preceding glyph
 	if (attr_.useKerning && !isFirst)
 		KernGlyphPosition(face, index, prevIndex, dk);
-	dx += dk;
 	prevIndex = index;
 	
 	// Add underline to glyph bitmap image
@@ -1667,24 +1666,28 @@ Boolean CFontModule::GetStringRect(CString* pStr, tRect* pRect)
 		switch(rotation_)
 		{
 		case kFontLandscape:
+			bbox.xMax = std::max((glyph->advance.x + 0x8000) >> 16, bbox.xMax);
 			gbox.xMin = std::min(dx + bbox.xMin + dk, gbox.xMin);
 			gbox.yMin = std::min(dy - bbox.yMax + font->ascent, gbox.yMin);
 			gbox.xMax = std::max(dx + bbox.xMax + dk, gbox.xMax);
 			gbox.yMax = std::max(dy - bbox.yMin + font->ascent, gbox.yMax);
 			break;
 		case kFontPortrait:
+			bbox.yMin = std::min((glyph->advance.y + 0x8000) >> 16, bbox.yMin);
 			gbox.xMin = std::min(dx + bbox.xMin - font->ascent, gbox.xMin);
 			gbox.yMin = std::min(dy - bbox.yMax + dk, gbox.yMin);
 			gbox.xMax = std::max(dx + bbox.xMax - font->ascent, gbox.xMax);
 			gbox.yMax = std::max(dy - bbox.yMin + dk, gbox.yMax);
 			break;
 		case kFontLandscapeUpsideDown:
+			bbox.xMin = std::min((glyph->advance.x + 0x8000) >> 16, bbox.xMin);
 			gbox.xMin = std::min(dx + bbox.xMin - dk, gbox.xMin);
 			gbox.yMin = std::min(dy - bbox.yMax - font->ascent, gbox.yMin);
 			gbox.xMax = std::max(dx + bbox.xMax - dk, gbox.xMax);
 			gbox.yMax = std::max(dy - bbox.yMin - font->ascent, gbox.yMax);
 			break;
 		case kFontPortraitUpsideDown:
+			bbox.yMax = std::max((glyph->advance.y + 0x8000) >> 16, bbox.yMax);
 			gbox.xMin = std::min(dx + bbox.xMin + font->ascent, gbox.xMin);
 			gbox.yMin = std::min(dy - bbox.yMax - dk, gbox.yMin);
 			gbox.xMax = std::max(dx + bbox.xMax + font->ascent, gbox.xMax);

@@ -29474,3 +29474,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/3/11 6:22 PM
 6,142 ms. (Cumulative: 10,517,017 ms)
 
 ----------------
+Revision 9,141 from svn://localhost/TRUNK/:
+Revision 9,142 from svn://localhost/TRUNK/:
+Revision 9,143 from svn://localhost/TRUNK/:
+
+CIP 239.  Adjusting GetStringRect to count the glyph advance and not just the bounding box.  Space has no bounding box, so GetStringRect for items with Space was incorrect.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/4/11 4:55 PM
+1 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 10,523,673 ms)
+
+----------------
