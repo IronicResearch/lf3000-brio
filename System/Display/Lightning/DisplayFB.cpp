@@ -112,7 +112,8 @@ void CDisplayFB::InitModule()
 		// Reset page flip offsets
 		vinfo[n].xoffset = vinfo[n].yoffset = 0;
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
-		r = ioctl(fbdev[n], FBIOBLANK, 1);
+		if(!n)
+			r = ioctl(fbdev[n], FBIOBLANK, 1);
 		
 		// Map framebuffer into userspace
 		fbmem[n] = (U8*)mmap((void*)finfo[n].smem_start, finfo[n].smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev[n], 0);

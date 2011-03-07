@@ -29497,3 +29497,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/4/11 6:11 PM
 6,599 ms. (Cumulative: 10,530,366 ms)
 
 ----------------
+Revision 9,146 from svn://localhost/TRUNK/:
+Revision 9,147 from svn://localhost/TRUNK/:
+
+Display Module no longer blanks the RGB layer when it initializes.  This should let us hold the png on screen when AppManager exits.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/7/11 2:06 PM
+1 changed, 0 added, 0 deleted.
+6,423 ms. (Cumulative: 10,536,883 ms)
+
+----------------
