@@ -52,7 +52,9 @@ enum tPowerState {
 	kPowerBattery    = 2,	/* battery powered		*/
 	kPowerLowBattery = 3,	/* low battery			*/
 	kPowerShutdown   = 4,	/* shutdown requested	*/
-	kPowerCritical   = 5	/* critical battery     */
+	kPowerCritical   = 5,	/* critical battery     */
+	kPowerRechargeable = 6,	/* battery rechargeable */
+	kPowerCharging   = 7	/* battery charging     */
 };
 
 struct tPowerData {

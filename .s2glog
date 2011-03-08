@@ -29536,3 +29536,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/8/11 12:31 PM
 6,311 ms. (Cumulative: 10,556,651 ms)
 
 ----------------
+Revision 9,151 from svn://localhost/TRUNK/:
+
+PowerMPI: Add 2 more enums to tPowerState for identifying rechargeable battery type and charging state.
+Corresponds to power monitor driver changes in LinuxDist svn -r1858 for same feature additions.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/8/11 3:10 PM
+2 changed, 0 added, 0 deleted.
+6,260 ms. (Cumulative: 10,562,989 ms)
+
+----------------

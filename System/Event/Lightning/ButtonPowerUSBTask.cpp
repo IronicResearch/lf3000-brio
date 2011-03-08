@@ -549,13 +549,21 @@ void* CEventModule::CartridgeTask( void* arg )
 				case KEY_EQUAL:
 					power_data.powerState = kPowerBattery;
 					break;
-				/* Battery */
+				/* External Power */
 				case KEY_UP:
 					power_data.powerState = kPowerExternal;
 					break;
-				/* External Power */
+				/* Shutdown request */
 				case KEY_POWER:
 					power_data.powerState = kPowerShutdown;
+					break;
+				/* Battery is Rechargeable */
+				case KEY_KPEQUAL:
+					power_data.powerState = kPowerRechargeable;
+					break;
+				/* Battery is Charging */
+				case KEY_PAGEUP:
+					power_data.powerState = kPowerCharging;
 					break;
 				}
 				// power state changed?
