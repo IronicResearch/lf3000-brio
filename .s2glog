@@ -29527,3 +29527,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/8/11 11:37 AM
 6,613 ms. (Cumulative: 10,550,246 ms)
 
 ----------------
+Revision 9,150 from svn://localhost/TRUNK/:
+
+DisplayMPI: Guard against empty viewport settings.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/8/11 12:31 PM
+1 changed, 0 added, 0 deleted.
+6,311 ms. (Cumulative: 10,556,651 ms)
+
+----------------
