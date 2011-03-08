@@ -29517,3 +29517,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/7/11 6:00 PM
 6,548 ms. (Cumulative: 10,543,524 ms)
 
 ----------------
+Revision 9,149 from svn://localhost/TRUNK/:
+
+DisplayMPI: Reverting change -r9147 for interim since garbage pixels can now appear.
+The preferred way to keep graphics onscreen is with persistent DisplayMPI object alive in AppManager during intro & shutdown videos.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/8/11 11:37 AM
+1 changed, 0 added, 0 deleted.
+6,613 ms. (Cumulative: 10,550,246 ms)
+
+----------------
