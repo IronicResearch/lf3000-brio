@@ -639,7 +639,7 @@ void* CEventModule::CartridgeTask( void* arg )
 						// the pen up information
 #if 1
 						// Don't do anything fancy... Just send it
-						touch_data.touchState = samp[i].pressure > 0 ? 1 : 0;
+						touch_data.touchState = samp[i].pressure;
 						CTouchMessage touch_msg(touch_data);
 						pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
 #else

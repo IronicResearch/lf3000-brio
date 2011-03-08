@@ -29507,3 +29507,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/7/11 2:06 PM
 6,423 ms. (Cumulative: 10,536,883 ms)
 
 ----------------
+Revision 9,148 from svn://localhost/TRUNK/:
+
+ButtonMPI: Add kTouchModePressure mode for pressure values in tTouchData.touchState field.
+Default modes will clamp touchState values to 0..1 range for legacy compatibility.  
+
+By Dave Milici (dmilici@leapfrog.com) on 3/7/11 6:00 PM
+3 changed, 0 added, 0 deleted.
+6,548 ms. (Cumulative: 10,543,524 ms)
+
+----------------

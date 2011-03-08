@@ -28,6 +28,7 @@ const CString	kMPIName = "ButtonMPI";
 
 static tButtonData2 	gCachedButtonData 	= {0, 0, {0, 0}};
 static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
+static bool				gIsPressureMode		= false;
 
 //============================================================================
 // CButtonMessage
@@ -63,7 +64,9 @@ tButtonData2 CButtonMessage::GetButtonState2() const
 CTouchMessage::CTouchMessage( const tTouchData& data ) 
 	: IEventMessage(kTouchStateChanged), mData(data)
 {
-	gCachedTouchData = data;
+	if (!gIsPressureMode)
+		mData.touchState = (data.touchState) ? 1 : 0;
+	gCachedTouchData = mData;
 }
 
 //------------------------------------------------------------------------------
@@ -193,6 +196,8 @@ tTouchMode CButtonMPI::GetTouchMode() const
 	U32 a = GetTouchParam(kTouchParamSampleRate);
 	U32 b = GetTouchParam(kTouchParamDebounceDown);
 	U32 c = GetTouchParam(kTouchParamDebounceUp);
+	if (gIsPressureMode)
+		return kTouchModePressure;
 	if (a == kTouchTableDrawing[kTouchParamSampleRate]
 		&& b == kTouchTableDrawing[kTouchParamDebounceDown]
 		&& c == kTouchTableDrawing[kTouchParamDebounceUp])
@@ -208,12 +213,15 @@ tTouchMode CButtonMPI::GetTouchMode() const
 tErrType CButtonMPI::SetTouchMode(tTouchMode mode)
 {
 	tErrType r = kNoErr; // 0
+	gIsPressureMode = false;
 	switch (mode) {
 	case kTouchModeDrawing:
 		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDrawing[kTouchParamSampleRate]);
 		r |= SetTouchParam(kTouchParamDebounceDown, kTouchTableDrawing[kTouchParamDebounceDown]);
 		r |= SetTouchParam(kTouchParamDebounceUp, 	kTouchTableDrawing[kTouchParamDebounceUp]);
 		break;
+	case kTouchModePressure:
+		gIsPressureMode = true;
 	case kTouchModeDefault:
 	default:
 		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDefault[kTouchParamSampleRate]);
