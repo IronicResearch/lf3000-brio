@@ -52,7 +52,8 @@ const U32	kTouchRateDefault	= 100;	///< default touch rate (Hz)
 enum tTouchMode {
 	kTouchModeDefault,					///< default touch mode
 	kTouchModeDrawing,					///< drawing touch mode
-	kTouchModeCustom					///< custom touch mode
+	kTouchModeCustom,					///< custom touch mode
+	kTouchModePressure					///< pressure touch mode
 };
 
 /// Enumerated type for SetTouchParam()/GetTouchParam()
@@ -81,7 +82,7 @@ const U32	kTouchTableDrawing[] = {
 //==============================================================================
 //------------------------------------------------------------------------------
 struct tTouchData {
-	U16 touchState;// Boolean really: 0=no touch, 1=touch
+	U16 touchState;// 0=no touch, 1=touch (legacy); or = touch pressure (kTouchModePressure)
 	S16 touchX, touchY;// Position in screen coords
 	struct timeVal {
 		S32 seconds;
