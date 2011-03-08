@@ -54,6 +54,10 @@ enum tPowerState GetCurrentPowerState(void)
 			return kPowerLowBattery;
 			case 4:
 			return kPowerCritical;
+			case 5:
+			return kPowerRechargeable;
+			case 6:
+			return kPowerCharging;
 		}
 		return kPowerNull;
 }
