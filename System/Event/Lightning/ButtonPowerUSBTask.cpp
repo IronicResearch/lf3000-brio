@@ -535,6 +535,9 @@ void* CEventModule::CartridgeTask( void* arg )
 			// power driver event ?
 			if(power_index >= 0 && event_fd[power_index].revents & POLLIN) {
 				size = read(event_fd[power_index].fd, &ev, sizeof(ev));
+				// power events mimic key events, so ignore paired "release" states
+				if (ev.value == 0)
+					continue;
 				switch(ev.code)
 				{	/* map Linux Keys to Brio Messages */
 				/* Critical Low Battery */
