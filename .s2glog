@@ -29559,3 +29559,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/8/11 3:51 PM
 6,125 ms. (Cumulative: 10,569,208 ms)
 
 ----------------
+Revision 9,153 from svn://localhost/TRUNK/:
+
+EventMPI: Power events mimic key events, so ignore paired "release" states.
+Avoids posting duplicate power events for all enumerated power states.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/9/11 12:23 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 10,575,428 ms)
+
+----------------
