@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <boost/scoped_array.hpp>
 #include <string.h>
+#include <DebugMPI.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -32,6 +33,8 @@ namespace
 	CPath	gBaseResourceSearchPath;
 	CPath	gCartResourceSearchPath;
 	U32		gWindow = 0;
+	U32		gLcdFrameBufferWidth = 320;
+	U32		gLcdFrameBufferHeight = 240;
 }
 
 
@@ -138,7 +141,20 @@ U32 EmulationConfig::GetLcdDisplayWindow( ) const
 {
 	return gWindow;
 }
-
+//----------------------------------------------------------------------
+void EmulationConfig::GetLcdFrameBufferSize( U16& width, U16& height ) const
+{
+	width = gLcdFrameBufferWidth;
+	height = gLcdFrameBufferHeight;
+}
+//----------------------------------------------------------------------
+void EmulationConfig::SetLcdFrameBufferSize( U16 width, U16 height )
+{
+	CDebugMPI debug_mpi(kGroupHardware);
+	debug_mpi.DebugOut(kDbgLvlCritical, "EmulationConfig::SetLcdFrameBufferSize width=%d, height=%d\n", width, height);
+	gLcdFrameBufferWidth = width;
+	gLcdFrameBufferHeight = height;
+}
 LF_END_BRIO_NAMESPACE()
 
 // eof
