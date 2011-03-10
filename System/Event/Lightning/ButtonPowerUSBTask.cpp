@@ -696,6 +696,9 @@ void* CEventModule::CartridgeTask( void* arg )
 						case ABS_Y:
 							touch_data.touchY = ev.value;
 							break;
+						case ABS_PRESSURE:
+							touch_data.touchState = ev.value;
+							break;
 						}
 						break;
 					}
