@@ -27,8 +27,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace 
 {	
 	// X11 variables
-	const int 			WINDOW_WIDTH = 320;
-	const int 			WINDOW_HEIGHT= 240;
 	Window				x11Window;
 	Display*			x11Display;
 	long				x11Screen;
@@ -74,8 +72,11 @@ void CDisplayModule::InitModule()
 	// Specify event mask via XSelectInput(), not window attributes
 	ui32Mask = CWBackPixel | CWColormap;
 	
+	U16 width, height;
+	EmulationConfig::Instance().GetLcdFrameBufferSize(width, height);
 	// Creates the X11 window
-    x11Window = XCreateWindow( x11Display, RootWindow(x11Display, x11Screen), 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT,
+	dbg_.DebugOut(kDbgLvlCritical, "CDisplayModule::InitModule width=%d, height=%d\n", width, height);
+    x11Window = XCreateWindow( x11Display, RootWindow(x11Display, x11Screen), 0, 0, width, height,
 								 0, CopyFromParent, InputOutput, CopyFromParent, ui32Mask, &sWA);
 	XMapWindow(x11Display, x11Window);
 	XFlush(x11Display);
@@ -361,7 +362,9 @@ U8 CDisplayModule::GetAlpha(tDisplayHandle hndl) const
 U32 CDisplayModule::GetScreenSize()
 {
 	// Compatible packed format with embedded target 
-	return (U32)((WINDOW_HEIGHT<<16)|(WINDOW_WIDTH));
+	U16 width, height;
+	EmulationConfig::Instance().GetLcdFrameBufferSize(width, height);
+	return (U32)((height<<16)|(width));
 }
 
 //----------------------------------------------------------------------------

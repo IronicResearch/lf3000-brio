@@ -29598,3 +29598,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/10/11 10:49 AM
 6,087 ms. (Cumulative: 10,593,969 ms)
 
 ----------------
+Revision 9,162 from svn://localhost/TRUNK/:
+Revision 9,163 from svn://localhost/TRUNK/:
+
+Implemented Get/SetLcdFrameBufferSize for Emulation Support.  DisplayEmul uses this to initialize the window size.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/10/11 1:10 PM
+2 changed, 0 added, 0 deleted.
+6,238 ms. (Cumulative: 10,600,286 ms)
+
+----------------
