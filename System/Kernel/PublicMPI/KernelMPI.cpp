@@ -763,31 +763,41 @@ void CKernelMPI::UnloadModule( tHndl module ) const
 //------------------------------------------------------------------------------
 tMemoryPoolHndl CKernelMPI::CreateMemPool( U32 size )
 {
-	return kNull;
+ 	if (!pModule_)
+ 		return kNull;
+ 	return pModule_->CreateMemPool(size);
 }
 
 //------------------------------------------------------------------------------
 void CKernelMPI::DestroyMemPool( tMemoryPoolHndl pool )
 {
-	return;
+ 	if (!pModule_)
+ 		return;
+ 	return pModule_->DestroyMemPool(pool);
 }
 
 //------------------------------------------------------------------------------
 tPtr CKernelMPI::MemPoolMalloc( tMemoryPoolHndl pool, U32 size )
 {
-	return kNull;
+ 	if (!pModule_)
+ 		return kNull;
+ 	return pModule_->MemPoolMalloc(pool, size);
 }
 
 //------------------------------------------------------------------------------
 tPtr CKernelMPI::MemPoolRealloc( tMemoryPoolHndl pool, tPtr pmem, U32 size )
 {
-	return kNull;
+ 	if (!pModule_)
+ 		return kNull;
+ 	return pModule_->MemPoolRealloc(pool, pmem, size);
 }
 
 //------------------------------------------------------------------------------
 void CKernelMPI::MemPoolFree( tMemoryPoolHndl pool, tPtr pmem )
 {
-	return;
+ 	if (!pModule_)
+ 		return;
+ 	return pModule_->MemPoolFree(pool, pmem);
 }
 
 

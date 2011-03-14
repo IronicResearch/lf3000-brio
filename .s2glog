@@ -29659,3 +29659,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/14/11 2:20 PM
 6,157 ms. (Cumulative: 10,631,590 ms)
 
 ----------------
+Revision 9,175 from svn://localhost/TRUNK/:
+
+KernelMPI: Added memory pool implementation based on dlmalloc code. (public domain)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/14/11 4:03 PM
+2 changed, 2 added, 0 deleted.
+6,470 ms. (Cumulative: 10,638,153 ms)
+
+----------------

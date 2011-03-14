@@ -326,6 +326,24 @@ public:
     // to either PTHREAD_PROCESS_SHARED or PTHREAD_PROCESS_PRIVATE
     VTABLE_EXPORT tErrType SetCondAttrPShared( tCondAttr* pAttr, int shared );
 
+	//==============================================================================
+	// Memory Pool Allocation functions
+	//==============================================================================
+	// Create memory pool of size bytes and returns a pointer to the memory pool
+    VTABLE_EXPORT tMemoryPoolHndl	CreateMemPool( U32 size );
+
+	// Destroys memory pool and releases all associated memory for that pool
+    VTABLE_EXPORT void	DestroyMemPool( tMemoryPoolHndl pool );
+
+	// Allocates size bytes from pool and returns a pointer to the allocated memory
+    VTABLE_EXPORT tPtr	MemPoolMalloc( tMemoryPoolHndl pool, U32 size );
+
+	// Re-Allocates size bytes from pool and returns a pointer to the allocated memory
+    VTABLE_EXPORT tPtr	MemPoolRealloc( tMemoryPoolHndl pool, tPtr pmem, U32 size );
+
+	// Frees the memory pointed to by pAllocatedMemory allocated from pool
+    VTABLE_EXPORT void	MemPoolFree( tMemoryPoolHndl pool, tPtr pmem );
+
 private:
 	// Limit object creation to the Module Manager interface functions
 	LeapFrog::Brio::CDebugMPI mDebugMPI;
