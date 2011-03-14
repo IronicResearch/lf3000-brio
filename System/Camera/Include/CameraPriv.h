@@ -334,6 +334,7 @@ private:
 	Boolean		StartAudio(Boolean reset = true);
 	Boolean		WriteAudio(avi_t *avi);
 	Boolean		WriteAudio(SNDFILE *wav);
+	Boolean		FlushAudio();
 	Boolean		StopAudio();
 
 	friend void* MicTaskMain(void* arg);
