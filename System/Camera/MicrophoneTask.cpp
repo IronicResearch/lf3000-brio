@@ -58,6 +58,7 @@ void* MicTaskMain(void* arg)
 	tMicrophoneContext	*pCtx 	= &cam->micCtx_;
 
 	Boolean				bRet, bWasPaused = false;
+	Boolean				bTriggered = false;
 
 	tTimerProperties	props	= {TIMER_RELATIVE_SET, {0, 0, 0, 0}};
 	tTimerHndl 			timer 	= kInvalidTimerHndl;
@@ -115,6 +116,16 @@ void* MicTaskMain(void* arg)
 
 			if (!bRet)
 				cam->kernel_.TaskSleep(10);
+
+			if (!sndfile && pCtx->pListener && bRet != bTriggered)
+			{
+				tAudioTriggeredMsg		data;
+				data.ahndl				= pCtx->hndl;
+				data.threshold			= bTriggered = bRet;
+				data.timestamp 			= cam->kernel_.GetElapsedTimeAsMSecs();
+				CCameraEventMessage msg = CCameraEventMessage(data);
+				cam->event_.PostEvent(msg, 0, pCtx->pListener);
+			}
 		}
 	}
 
