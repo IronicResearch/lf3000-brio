@@ -29650,3 +29650,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/14/11 12:39 PM
 6,138 ms. (Cumulative: 10,625,355 ms)
 
 ----------------
+Revision 9,174 from svn://localhost/TRUNK/:
+
+KernelMPI: Added stubs for memory pool allocation functions.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/14/11 2:20 PM
+2 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 10,631,590 ms)
+
+----------------

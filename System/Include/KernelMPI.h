@@ -280,7 +280,37 @@ public:
     tHndl	LoadModule( const CPath& dir ) const;
     void*	RetrieveSymbolFromModule( tHndl obj, const CString& symbol ) const;
     void	UnloadModule( tHndl obj ) const;
- 
+
+	//==============================================================================
+	/// Memory Pool Allocation functions
+	//==============================================================================
+	/// Create memory pool of size bytes and returns a pointer to the memory pool
+    /// \param 	size 	initial size of memory pool in bytes
+    /// \return			memory pool handle
+    tMemoryPoolHndl		CreateMemPool( U32 size );
+
+	/// Destroys memory pool and releases all associated memory for that pool
+    /// \param	pool	memory pool handle
+	void		DestroyMemPool( tMemoryPoolHndl pool );
+
+	/// Allocates size bytes from pool and returns a pointer to the allocated memory
+    /// \param	pool	memory pool handle
+    /// \param 	size 	size of allocation in bytes
+    /// \return			pointer to memory allocated within pool
+	tPtr		MemPoolMalloc( tMemoryPoolHndl pool, U32 size );
+
+	/// Re-Allocates size bytes from pool and returns a pointer to the allocated memory
+    /// \param	pool	memory pool handle
+	/// \param	pmem	pointer to memory returned by MemPoolMalloc()
+    /// \param 	size 	size of allocation in bytes
+    /// \return			pointer to memory allocated within pool
+	tPtr		MemPoolRealloc( tMemoryPoolHndl pool, tPtr pmem, U32 size );
+
+	/// Frees the memory pointed to by pAllocatedMemory allocated from pool
+    /// \param	pool	memory pool handle
+	/// \param	pmem	pointer to memory returned by MemPoolMalloc() or MemPoolRealloc()
+	void		MemPoolFree( tMemoryPoolHndl pool, tPtr pmem );
+
 private:
 	class CKernelModule *pModule_;
 };
