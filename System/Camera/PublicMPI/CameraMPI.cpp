@@ -53,6 +53,12 @@ CCameraEventMessage::CCameraEventMessage( const tCameraRemovedMsg& data )
 	this->data.removed = data;
 }
 
+CCameraEventMessage::CCameraEventMessage( const tAudioTriggeredMsg& data )
+	: IEventMessage(kAudioTriggeredEvent)
+{
+	this->data.triggered = data;
+}
+
 //------------------------------------------------------------------------------
 U16	CCameraEventMessage::GetSizeInBytes() const
 {
