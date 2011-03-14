@@ -51,7 +51,7 @@ static void TimerCallback(tTimerHndl arg)
 void* MicTaskMain(void* arg)
 {
 	struct SF_INFO		sf_info;
-	SNDFILE*			sndfile;
+	SNDFILE*			sndfile = NULL;
 	U32					elapsed = 0;
 
 	cam					=	static_cast<CCameraModule*>(arg);
@@ -71,7 +71,9 @@ void* MicTaskMain(void* arg)
 	sf_info.channels	= pCtx->channels;
 	sf_info.format		= SF_FORMAT_WAV | cam->XlateAudioFormatSF(pCtx->format);
 
-	sndfile = sf_open(const_cast<char*>(pCtx->path.c_str()), SFM_WRITE, &sf_info);
+	// Writing to WAV file is conditional on valid path string
+	if (pCtx->path.length())
+		sndfile = sf_open(const_cast<char*>(pCtx->path.c_str()), SFM_WRITE, &sf_info);
 
 	// Paused state set by StartAudioCapture() API now
 	// pCtx->bPaused = false;
@@ -106,7 +108,11 @@ void* MicTaskMain(void* arg)
 
 		if(!pCtx->bPaused)
 		{
-			bRet = cam->WriteAudio(sndfile);
+			if (sndfile)
+				bRet = cam->WriteAudio(sndfile);
+			else
+				bRet = cam->FlushAudio();
+
 			if (!bRet)
 				cam->kernel_.TaskSleep(10);
 		}
@@ -116,7 +122,8 @@ void* MicTaskMain(void* arg)
 
 	cam->StopAudio();
 
-	sf_close(sndfile);
+	if (sndfile)
+		sf_close(sndfile);
 
 	elapsed = pCtx->bytesWritten / (pCtx->rate * pCtx->channels * sizeof(short));
 

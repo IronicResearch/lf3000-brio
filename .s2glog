@@ -29608,3 +29608,25 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/10/11 1:10 PM
 6,238 ms. (Cumulative: 10,600,286 ms)
 
 ----------------
+Revision 9,164 from svn://localhost/TRUNK/:
+Revision 9,165 from svn://localhost/TRUNK/:
+Revision 9,166 from svn://localhost/TRUNK/:
+Revision 9,167 from svn://localhost/TRUNK/:
+Revision 9,168 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,110 ms. (Cumulative: 10,606,505 ms)
+
+----------------
+Revision 9,169 from svn://localhost/TRUNK/:
+Revision 9,170 from svn://localhost/TRUNK/:
+Revision 9,171 from svn://localhost/TRUNK/:
+
+CameraMPI: Modify Microphone capture module to handle saving to WAV file conditional on non-empty string.
+This non-file capture case allows microphone input streaming mode which can be used for clipping detection. 
+
+By Dave Milici (dmilici@leapfrog.com) on 3/14/11 11:37 AM
+3 changed, 0 added, 0 deleted.
+6,227 ms. (Cumulative: 10,612,747 ms)
+
+----------------

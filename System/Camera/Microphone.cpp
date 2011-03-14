@@ -439,6 +439,44 @@ Boolean	CCameraModule::WriteAudio(SNDFILE *wav)
 	return ret;
 }
 
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::FlushAudio()
+{
+	Boolean ret = false; // not clipped
+	int err;
+	fd_set rfds;
+	struct timeval tv = {0,0};	/* immediate timeout */
+
+	ssize_t len;
+	sf_count_t wrote;
+
+	FD_ZERO(&rfds);
+	FD_SET(micCtx_.fd[0], &rfds);
+
+	err = select(micCtx_.fd[0]+1, &rfds, NULL, NULL, &tv);
+
+	// Only interested in scanning buffer, not writing it
+	if (err > 0)
+	{
+		len = read(micCtx_.fd[0], micCtx_.poll_buf, DRAIN_SIZE);
+		if (len > 0)
+		{
+			// Scan input buffer for clipped samples
+			unsigned short samp = 0;
+			unsigned short* pbuf = micCtx_.poll_buf;
+			for (int i = 0; i < len; i+=2, pbuf++) {
+				samp = *pbuf;
+				if (samp == 0x8000) {
+					ret = true; // clipped
+					break;
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
 static int xrun_recovery(snd_pcm_t *handle, int err)
 {
 	if (err == -EPIPE) {    /* under-run */
@@ -567,30 +605,39 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 	micCtx_.pListener = pListener;
 	micCtx_.bPaused   = paused;
 
-	if(path.at(0) == '/')
+	// Saving to WAV file is optional
+	if (path.length())
 	{
-		micCtx_.path	= path;
+		if(path.at(0) == '/')
+		{
+			micCtx_.path	= path;
+		}
+		else
+		{
+			micCtx_.path	= apath + path;
+		}
+
+		/* statvfs path must exist, so use the parent directory */
+		err = statvfs(micCtx_.path.substr(0, micCtx_.path.rfind('/')).c_str(), &buf);
+
+		length =  buf.f_bsize * buf.f_bavail;
+
+		if((err < 0) || (length < MIN_FREE))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: not enough disk space, %lld required, %lld available\n", MIN_FREE, length);
+			DATA_UNLOCK;
+			return hndl;
+		}
+
+		length /= AUD_BITRATE;	/* How many seconds can we afford? */
+
+		micCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
 	}
 	else
 	{
-		micCtx_.path	= apath + path;
+		micCtx_.path = "";
+		micCtx_.maxLength = maxLength;
 	}
-
-	/* statvfs path must exist, so use the parent directory */
-	err = statvfs(micCtx_.path.substr(0, micCtx_.path.rfind('/')).c_str(), &buf);
-
-	length =  buf.f_bsize * buf.f_bavail;
-
-	if((err < 0) || (length < MIN_FREE))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: not enough disk space, %lld required, %lld available\n", MIN_FREE, length);
-		DATA_UNLOCK;
-		return hndl;
-	}
-
-	length /= AUD_BITRATE;	/* How many seconds can we afford? */
-
-	micCtx_.maxLength = ((maxLength == 0) ? length : MIN(length, maxLength));
 
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	micCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
