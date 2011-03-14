@@ -44,13 +44,15 @@ struct tUSBDeviceData {
 };
 
 // Bit definitions for USBDeviceState
-const U32 kUSBDeviceConnected	= (1 << 0);
-const U32 kUSBDeviceEnabled		= (1 << 1);
-const U32 kUSBDeviceTransfer	= (1 << 2);
-const U32 kUSBDeviceError		= (1 << 3);
-const U32 kUSBDeviceReset		= (1 << 4);
-const U32 kUSBDeviceRTC			= (1 << 5);
-const U32 kUSBDeviceHotPlug		= (1 << 6);
+// NOTE: overloaded with DFTP socket messages and USB host port hot-plug events
+const U32 kUSBDeviceConnected	= (1 << 0);	// USB device connection (VBUS)
+const U32 kUSBDeviceEnabled		= (1 << 1);	// USB device enabled
+const U32 kUSBDeviceTransfer	= (1 << 2);	// DFTP transfer message
+const U32 kUSBDeviceError		= (1 << 3);	// DFTP error message
+const U32 kUSBDeviceReset		= (1 << 4);	// DFTP reboot message
+const U32 kUSBDeviceRTC			= (1 << 5);	// DFTP clock set message
+const U32 kUSBDeviceHotPlug		= (1 << 6);	// USB host port hot-plug event
+const U32 kUSBDeviceDCON		= (1 << 7);	// DFTP disconnect message
 
 
 // Bit definitions for USBDeviceDriver and USBDeviceSupports
