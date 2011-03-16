@@ -48,7 +48,9 @@ CString GetPlatformName()
 		case 2:						// Emerald EP/PP no supercap
 		case 0xA: return "Emerald";	// Emerald CIP Samsung SDRAM
 		case 0xB: 					// Madrid FF
-		case 0xC: return "Madrid";	// Madrid POP TV out
+		case 0xC: 					// Madrid POP TV out
+		case 0xD:					// Madrid LFP100
+			return "Madrid";
 	}
 	return "Unknown";
 }
