@@ -29668,3 +29668,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/14/11 4:03 PM
 6,470 ms. (Cumulative: 10,638,153 ms)
 
 ----------------
+Revision 9,176 from svn://localhost/TRUNK/:
+
+Fix up color issue when playing videos of odd sizes.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/15/11 5:32 PM
+2 changed, 0 added, 0 deleted.
+6,500 ms. (Cumulative: 10,644,747 ms)
+
+----------------
