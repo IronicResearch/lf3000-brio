@@ -29711,3 +29711,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/16/11 6:25 PM
 6,375 ms. (Cumulative: 10,670,786 ms)
 
 ----------------
+Revision 9,181 from svn://localhost/TRUNK/:
+
+Modify ModuleMPI to load local libModule.so patch before searching module paths.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/16/11 7:13 PM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 10,676,975 ms)
+
+----------------
