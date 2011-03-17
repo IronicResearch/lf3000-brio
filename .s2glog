@@ -29687,3 +29687,27 @@ By Dave Milici (dmilici@leapfrog.com) on 3/16/11 10:13 AM
 6,444 ms. (Cumulative: 10,651,269 ms)
 
 ----------------
+Revision 9,178 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,454 ms. (Cumulative: 10,657,817 ms)
+
+----------------
+Revision 9,179 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,594 ms. (Cumulative: 10,664,411 ms)
+
+----------------
+Revision 9,180 from svn://localhost/TRUNK/:
+
+Modify Brio module manager to return connection error instead of asserting out if module cannot be found.
+MPI interface objects already handle validating module functions, so this allows more flexibility for cases
+where an MPI patch lib (libCameraMPI.so) would not be expected to load its module on older Base (libCamera.so).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/16/11 6:25 PM
+1 changed, 0 added, 0 deleted.
+6,375 ms. (Cumulative: 10,670,786 ms)
+
+----------------

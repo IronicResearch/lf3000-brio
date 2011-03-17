@@ -242,14 +242,14 @@ namespace
 			if( pFound == NULL )
 			{
 				kernel_.Printf("BOOTFAIL: Failed to find match for module: %s\n", name.c_str());
-				kernel_.PowerDown();
+				return kMPINotConnectedErr; //kernel_.PowerDown();
 			}
 			
 			tHndl hModule = kernel_.LoadModule(pFound->sopath);				//*3
 			if( hModule == kInvalidHndl )
 			{
 				kernel_.Printf("BOOTFAIL: Failed to load found module at sopath: %s\n", pFound->sopath.c_str());
-				kernel_.PowerDown();
+				return kMPINotConnectedErr; //kernel_.PowerDown();
 			}
 			
 		    ObjPtrToFunPtrConverter fp;										//*4
