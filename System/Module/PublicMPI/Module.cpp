@@ -63,6 +63,10 @@ namespace
 		CBootSafeKernelMPI	kernel;
 		if( gg_pModuleHandle != kInvalidHndl )
 			return kNoErr;
+		// Attempt to load libModule.so in local search path
+		gg_pModuleHandle = kernel.LoadModule("libModule.so");
+		if( gg_pModuleHandle != kInvalidHndl )
+			return kNoErr;
 		CPath path = GetModuleLibraryLocation();
 		path = path + "libModule.so";
 		gg_pModuleHandle = kernel.LoadModule(path);
