@@ -29732,3 +29732,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/17/11 8:17 AM
 6,146 ms. (Cumulative: 10,683,215 ms)
 
 ----------------
+Revision 9,186 from svn://localhost/TRUNK/:
+Revision 9,187 from svn://localhost/TRUNK/:
+
+Brio 169.  Adding Get/SetDpadOrientation to ButtonMPI.  Uses Utility to store orientation.  Modified ButtonPowerUSBTask to swizzle dpad directions properly for current platform/orientation.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/18/11 2:31 PM
+5 changed, 0 added, 0 deleted.
+6,209 ms. (Cumulative: 10,689,502 ms)
+
+----------------

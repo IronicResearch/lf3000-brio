@@ -205,6 +205,9 @@ enum tPlatformCaps {
 
 bool HasPlatformCapability(tPlatformCaps caps);
 
+tDpadOrientation	GetDpadOrientationState();
+tErrType			SetDpadOrientationState(tDpadOrientation dpad_orientation);
+
 LF_END_BRIO_NAMESPACE()
 
 #endif // LF_BRIO_UTILITY_H
