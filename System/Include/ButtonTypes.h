@@ -77,7 +77,12 @@ const U32 kButtonVolumeDown		= (1 << 14);
 const U32 kButtonVolumeUp		= (1 << 15);
 const U32 kButtonEscape			= (1 << 16);
 
-
+enum tDpadOrientation {
+	kDpadPortrait,
+	kDpadLandscape,
+	kDpadPortraitUpsideDown,
+	kDpadLandscapeUpsideDown
+};
 //------------------------------------------------------------------------------
 class CButtonMessage : public IEventMessage {
 public:

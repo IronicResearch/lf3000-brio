@@ -76,6 +76,9 @@ public:
 	/// Set touch parameter value (enum tTouchParam)
 	tErrType		SetTouchParam(tTouchParam param, U32 value);
 	
+	tDpadOrientation	GetDpadOrientation();
+	tErrType			SetDpadOrientation(tDpadOrientation dpad_orientation);
+
 private:
 	class CButtonModule*	pModule_;
 };
