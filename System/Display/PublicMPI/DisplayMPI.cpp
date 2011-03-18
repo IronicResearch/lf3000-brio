@@ -433,8 +433,6 @@ tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, tDisplayViewport viewport
 {
 	if (!pModule_)
 		return kMPINotConnectedErr;
-	if (!hndl)
-		return kInvalidParamErr;
 	return pModule_->SetViewport(hndl, viewport);
 }
 
@@ -442,8 +440,6 @@ tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, tDisplayViewport viewport
 tDisplayViewport CDisplayMPI::GetViewport(tDisplayHandle hndl)
 {
 	if (!pModule_)
-		return static_cast<tDisplayViewport>(0);
-	if (!hndl)
 		return static_cast<tDisplayViewport>(0);
 	return pModule_->GetViewport(hndl);
 }
@@ -453,8 +449,6 @@ tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, 
 {
 	if (!pModule_)
 		return kMPINotConnectedErr;
-	if (!hndl)
-		return kInvalidParamErr;
 	return pModule_->SetViewport(hndl, x, y, width, height);
 }
 
@@ -463,8 +457,6 @@ tErrType CDisplayMPI::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& widt
 {
 	if (!pModule_)
 		return kMPINotConnectedErr;
-	if (!hndl)
-		return kInvalidParamErr;
 	return pModule_->GetViewport(hndl, x, y, width, height);
 }
 
@@ -473,8 +465,6 @@ tErrType CDisplayMPI::SetOrientation(tDisplayHandle hndl, tDisplayOrientation or
 {
 	if (!pModule_)
 		return kMPINotConnectedErr;
-	if (!hndl)
-		return kInvalidParamErr;
 	return pModule_->SetOrientation(hndl, orient);
 }
 
@@ -482,8 +472,6 @@ tErrType CDisplayMPI::SetOrientation(tDisplayHandle hndl, tDisplayOrientation or
 tDisplayOrientation	CDisplayMPI::GetOrientation(tDisplayHandle hndl)
 {
 	if (!pModule_)
-		return static_cast<tDisplayOrientation>(0);
-	if (!hndl)
 		return static_cast<tDisplayOrientation>(0);
 	return pModule_->GetOrientation(hndl);
 }

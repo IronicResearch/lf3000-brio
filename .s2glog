@@ -29742,3 +29742,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/18/11 2:31 PM
 6,209 ms. (Cumulative: 10,689,502 ms)
 
 ----------------
+Revision 9,188 from svn://localhost/TRUNK/:
+
+DisplayMPI: Use global member vars for handling viewport and orientation state instead of context-specific vars for persistency.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/18/11 2:51 PM
+3 changed, 0 added, 0 deleted.
+6,266 ms. (Cumulative: 10,695,862 ms)
+
+----------------
