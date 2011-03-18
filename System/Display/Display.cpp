@@ -62,11 +62,16 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
 
 	InitModule(); // delegate to platform or emulation initializer
+
+	U32 screensize = GetScreenSize();
+	U16 screenwidth = screensize & 0xFFFF;
+	U16 screenheight = screensize >> 16;
+
 	gDisplayList.clear();
 #ifdef EMULATION
 	// We usually need an X pixmap primary surface for any context
 	pdcPrimary_ = reinterpret_cast<tDisplayContext*>
-	(CreateHandle(240, 320, kPixelFormatARGB8888, NULL));
+		(CreateHandle(screenheight, screenwidth, kPixelFormatARGB8888, NULL));
 #else
 	// We only need a primary surface context for offscreen contexts
 	// so we defer creating it on demand to conserve framebuffer mappings 
@@ -76,6 +81,12 @@ CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
 
 	// Auto-Rotation state for Flash player extensions
 	bAutoRotation_ = false;
+	mViewport_ 	= kViewportLegacy;
+	mOrient_ 	= kOrientationLandscape;
+	xvp_		= 0;
+	yvp_		= 0;
+	wvp_		= screenwidth;
+	hvp_		= screenheight;
 }
 
 //----------------------------------------------------------------------------
@@ -434,53 +445,53 @@ U16 CDisplayModule::GetWidth(tDisplayHandle hndl) const
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, tDisplayViewport viewport)
 {
-	((struct tDisplayContext *)hndl)->viewport = viewport;
+	(void)hndl;
+	mViewport_ = viewport;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tDisplayViewport CDisplayModule::GetViewport(tDisplayHandle hndl)
 {
-	return ((struct tDisplayContext *)hndl)->viewport;
+	(void)hndl;
+	return mViewport_;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height)
 {
-	tDisplayContext* pdc = static_cast<tDisplayContext*>(hndl);
-	pdc->xvp = x;
-	pdc->yvp = y;
-	pdc->wvp = width;
-	pdc->hvp = height;
+	(void)hndl;
+	xvp_ = x;
+	yvp_ = y;
+	wvp_ = width;
+	hvp_ = height;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height)
 {
-	tDisplayContext* pdc = static_cast<tDisplayContext*>(hndl);
-	if (!pdc)
-		return kDisplayNullPtrErr;
-	if (!pdc->wvp || !pdc->hvp)
-		return kDisplayNullPtrErr;
-	x = pdc->xvp;
-	y = pdc->yvp;
-	width = pdc->wvp;
-	height = pdc->hvp;
+	(void)hndl;
+	x = xvp_;
+	y = yvp_;
+	width  = wvp_;
+	height = hvp_;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient)
 {
-	((struct tDisplayContext *)hndl)->orient = orient;
+	(void)hndl;
+	mOrient_ = orient;
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 tDisplayOrientation	CDisplayModule::GetOrientation(tDisplayHandle hndl)
 {
-	return ((struct tDisplayContext *)hndl)->orient;
+	(void)hndl;
+	return mOrient_;
 }
 
 //----------------------------------------------------------------------------

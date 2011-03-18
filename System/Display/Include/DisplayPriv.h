@@ -483,6 +483,12 @@ private:
 	tDisplayContext*	pdcPrimary_;
 	tDisplayContext*	pdcVisible_;
 	Boolean				bAutoRotation_;
+	tDisplayViewport 	mViewport_;	// selected viewport
+	tDisplayOrientation mOrient_;	// selected orientation
+	S16					xvp_;		// viewport x,y,w,h
+	S16					yvp_;
+	U16					wvp_;
+	U16					hvp_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();
