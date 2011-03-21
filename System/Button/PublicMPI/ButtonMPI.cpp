@@ -283,6 +283,16 @@ tErrType CButtonMPI::SetTouchParam(tTouchParam param, U32 value)
 	}
 	return kNoImplErr;
 }
-
+//----------------------------------------------------------------------------
+tDpadOrientation CButtonMPI::GetDpadOrientation()
+{
+	return GetDpadOrientationState();
+}
+//----------------------------------------------------------------------------
+tErrType CButtonMPI::SetDpadOrientation(tDpadOrientation dpad_orientation)
+{
+	SetDpadOrientationState(dpad_orientation);
+	return kNoErr;
+}
 LF_END_BRIO_NAMESPACE()
 // EOF
