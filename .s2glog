@@ -29751,3 +29751,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/18/11 2:51 PM
 6,266 ms. (Cumulative: 10,695,862 ms)
 
 ----------------
+Revision 9,189 from svn://localhost/TRUNK/:
+Revision 9,190 from svn://localhost/TRUNK/:
+
+Forgot to commit ButtonMPI implementation for Get/SetDpadOrientation.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/21/11 1:14 PM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 10,702,067 ms)
+
+----------------
