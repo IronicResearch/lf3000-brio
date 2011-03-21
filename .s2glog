@@ -29761,3 +29761,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/21/11 1:14 PM
 6,111 ms. (Cumulative: 10,702,067 ms)
 
 ----------------
+Revision 9,191 from svn://localhost/TRUNK/:
+
+Brio 178.  Adding new event, EventListenerRegistration events.  Apps can now be informed when an EventListener is registered or unregistered.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/21/11 1:54 PM
+2 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 10,708,270 ms)
+
+----------------
