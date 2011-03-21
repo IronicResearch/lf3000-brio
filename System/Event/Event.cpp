@@ -73,6 +73,8 @@ namespace
 	const U32 kEventDispatchMessageSize = sizeof(CEventDispatchMessage);
 	
 	const char*	g_msgQueueName = "/eventDispatchQueue";
+
+	const tEventPriority	kEventListenerEventPriority	= 0;
 }	
 
 //============================================================================
@@ -252,6 +254,10 @@ public:
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener)
 	{
+		struct tEventListenerData event_listener_data = {pListener};
+		CEventListenerMessage event_listener_msg(kEventListenerRegistered, event_listener_data);
+		PostEvent(event_listener_msg, kEventListenerEventPriority, 0);
+
 		if( numListeners_ >= listSize_ )
 		{
 			listSize_ += kGrowBySize;
@@ -286,6 +292,9 @@ public:
 					for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
 						*ptr = *(ptr + 1);
 					--numListeners_;
+					struct tEventListenerData event_listener_data = {pListener};
+					CEventListenerMessage event_listener_msg(kEventListenerUnregistered, event_listener_data);
+					PostEvent(event_listener_msg, kEventListenerEventPriority, 0);
 					debug_.DebugOut(kDbgLvlValuable, "%s: removed listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 					return kNoErr;
 				}
@@ -449,6 +458,23 @@ CEventListenerImpl* CEventModule::GenerateEventListenerImpl(
 						const tEventType* pTypes, U32 count) const
 {
 	return new CEventListenerImpl(pTypes, count);
+}
+
+
+CEventListenerMessage::CEventListenerMessage( U32 event_type, const struct tEventListenerData& data )
+	: IEventMessage(event_type), mData(data)
+{
+	mData = data;
+}
+
+U16 CEventListenerMessage::GetSizeInBytes() const
+{
+	return sizeof(CEventListenerMessage);
+}
+
+tEventListenerData CEventListenerMessage::GetEventListenerData() const
+{
+	return mData;
 }
 
 LF_END_BRIO_NAMESPACE()
