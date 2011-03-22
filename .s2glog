@@ -29770,3 +29770,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/21/11 1:54 PM
 6,110 ms. (Cumulative: 10,708,270 ms)
 
 ----------------
+Revision 9,192 from svn://localhost/TRUNK/:
+
+CameraMPI: Modifications to microphone trigger event appropriate to Content's use case.
+(1) Use percentage of samples clipped to distinguish sustained high-energy input from tapping noise.
+(2) Use 1-second time duration window to distinguish transitions from clipped to no-clipped events.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/21/11 5:01 PM
+2 changed, 0 added, 0 deleted.
+6,217 ms. (Cumulative: 10,714,565 ms)
+
+----------------

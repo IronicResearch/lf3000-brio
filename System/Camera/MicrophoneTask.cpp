@@ -84,6 +84,7 @@ void* MicTaskMain(void* arg)
 	props.timeout.it_value.tv_sec = pCtx->maxLength;
 	props.timeout.it_value.tv_nsec = 0;
 	cam->kernel_.StartTimer(timer, props);
+	elapsed = cam->kernel_.GetElapsedTimeAsMSecs();
 
 	if (!pCtx->bPaused)
 		cam->StartAudio();
@@ -117,7 +118,7 @@ void* MicTaskMain(void* arg)
 			if (!bRet)
 				cam->kernel_.TaskSleep(10);
 
-			if (!sndfile && pCtx->pListener && bRet != bTriggered)
+			if (!sndfile && pCtx->pListener && bRet != bTriggered && cam->kernel_.GetElapsedTimeAsMSecs() > elapsed)
 			{
 				tAudioTriggeredMsg		data;
 				data.ahndl				= pCtx->hndl;
@@ -125,6 +126,7 @@ void* MicTaskMain(void* arg)
 				data.timestamp 			= cam->kernel_.GetElapsedTimeAsMSecs();
 				CCameraEventMessage msg = CCameraEventMessage(data);
 				cam->event_.PostEvent(msg, 0, pCtx->pListener);
+				elapsed 				= data.timestamp + 1000;
 			}
 		}
 	}
