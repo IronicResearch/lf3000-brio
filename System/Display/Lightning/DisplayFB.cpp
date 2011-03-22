@@ -163,34 +163,12 @@ tPixelFormat CDisplayFB::GetPixelFormat(void)
 }
 
 //----------------------------------------------------------------------------
-tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, U8 *pBuffer)
+tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPixelFormat colorDepth, bool isBlockAddr)
 {
-	tDisplayContext* ctx = new tDisplayContext;
+	int r = kNoErr;
 
-	int depth;
-	int n, r;
-	switch (colorDepth) 
-	{
-		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
-		default:
-		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
-		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
-		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
-	}		
-	
-	// OGL framebuffer context?
-	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
-		n = OGLFB;
-
-	// FIXME: RGB lower layer needed when viewport active
-	// FIXME: Switch RGB layer prior to isUnderlay setting
-	if (n == RGBFB && (dxres > 0 || dyres > 0))
-		n = OGLFB;
-	
 	// Select pixel format masks for RGB context
-	if ((pBuffer == NULL || pBuffer == pmem2d))
+	if (n == RGBFB || n == OGLFB)
 	{
 		vinfo[n].bits_per_pixel = depth;
 		switch (colorDepth)
@@ -220,7 +198,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
 		vinfo[n].red.offset   = vinfo[n].green.offset + vinfo[n].green.length;
 		// Block addressing mode needed for OGL framebuffer context?
-		if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+		if (isBlockAddr)
 			vinfo[n].nonstd |= (1<<23);
 		else
 			vinfo[n].nonstd &= ~(1<<23);
@@ -230,6 +208,44 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
+	}
+
+	return (r == 0) ? kNoErr : kNoImplErr;
+}
+
+//----------------------------------------------------------------------------
+tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colorDepth, U8 *pBuffer)
+{
+	tDisplayContext* ctx = new tDisplayContext;
+
+	int depth;
+	int n, r;
+	switch (colorDepth) 
+	{
+		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
+		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
+		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
+		default:
+		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
+		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
+		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
+	}		
+	
+	// OGL framebuffer context?
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+		n = OGLFB;
+
+	// FIXME: RGB lower layer needed when viewport active
+	// FIXME: Switch RGB layer prior to isUnderlay setting
+	if (n == RGBFB && (dxres > 0 || dyres > 0))
+		n = OGLFB;
+	
+	// Select pixel format masks for RGB context
+	if ((pBuffer == NULL || pBuffer == pmem2d))
+	{
+		// Block addressing mode needed for OGL framebuffer context?
+		bool isOGL = (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d);
+		r = SetPixelFormat(n, width, height, depth, colorDepth, isOGL);
 	}
 	
 	int offset = 0;
@@ -317,7 +333,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated)
+	if (ctx->isAllocated && hndl != hogl)
 		return kNoErr;
 
 	// Set XY onscreen position
@@ -338,6 +354,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		cmd.apply = 1;
 		r = ioctl(fbdev[n], LF1000FB_IOCSVIDSCALE, &cmd);
 	}
+	else
+		r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
 
 	// Set framebuffer address offset
 	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
@@ -377,6 +395,14 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	
 	int r = SetVisible(ctx, false);
 	
+	// Re-enable OpenGL context which is not registered
+	if (hogl != NULL && ctx->layer == OGLFB)
+	{
+		tDisplayContext *dcogl = (tDisplayContext*)hogl;
+		RegisterLayer(hogl, dcogl->x, dcogl->y);
+		SetVisible(hogl, true);
+	}
+
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
 
@@ -446,6 +472,13 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	{
 		RegisterLayer(dc, dc->x, dc->y);
 		SetVisible(dc, true);
+	}
+	// Ditto for OpenGL context which is not registered
+	if (hogl != NULL && !fbviz[OGLFB])
+	{
+		tDisplayContext *dcogl = (tDisplayContext*)hogl;
+		RegisterLayer(hogl, dcogl->x, dcogl->y);
+		SetVisible(hogl, true);
 	}
 	
 	return kNoErr;
@@ -769,6 +802,7 @@ void CDisplayFB::DeinitOpenGL()
 		DeAllocBuffer(&dcmem1);
 	DeAllocBuffer(&dcmem2);
 	DestroyHandle(hogl, false);
+	hogl = NULL;
 	
 	// Release framebuffer mappings and drivers used by OpenGL
 	munmap(preg3d, REG3D_SIZE);
