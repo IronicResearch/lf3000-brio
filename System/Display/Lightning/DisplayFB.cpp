@@ -168,7 +168,6 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 	int r = kNoErr;
 
 	// Select pixel format masks for RGB context
-	if (n == RGBFB || n == OGLFB)
 	{
 		vinfo[n].bits_per_pixel = depth;
 		switch (colorDepth)
