@@ -29781,3 +29781,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/21/11 5:01 PM
 6,217 ms. (Cumulative: 10,714,565 ms)
 
 ----------------
+Revision 9,193 from svn://localhost/TRUNK/:
+
+DisplayFB: Track physical layer visibility state in addition to display context enabled state.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/21/11 6:49 PM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 10,720,800 ms)
+
+----------------

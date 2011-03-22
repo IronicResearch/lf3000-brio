@@ -42,7 +42,8 @@ namespace
 	struct fb_fix_screeninfo 	finfo[NUMFB];
 	struct fb_var_screeninfo 	vinfo[NUMFB];
 	U8*							fbmem[NUMFB] = {NULL, NULL, NULL};
-	
+	bool						fbviz[NUMFB] = {false, false, false};
+
 	const char*					DEV3D = "/dev/ga3d";
 	const char*					DEVMEM = "/dev/mem";
 	int							fdreg3d = -1;
@@ -435,13 +436,13 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	}
 
 	// Make sure primary display context is enabled
-	if (!dcdst->isEnabled) 
+	if (!dcdst->isEnabled || !fbviz[dcdst->layer])
 	{
 		RegisterLayer(dcdst, dcdst->x, dcdst->y);
 		SetVisible(dcdst, true);
 	}
 	// Ditto for any other onscreen display context
-	if (dc != dcdst && !dc->isAllocated && !dc->isEnabled)
+	if (dc != dcdst && !dc->isAllocated && (!dc->isEnabled || !fbviz[dc->layer]))
 	{
 		RegisterLayer(dc, dc->x, dc->y);
 		SetVisible(dc, true);
@@ -535,7 +536,7 @@ tErrType CDisplayFB::SetVisible(tDisplayHandle hndl, Boolean visible)
 	int r = ioctl(fbdev[n], FBIOBLANK, !visible);
 
 	if (r == 0)
-		ctx->isEnabled = visible;
+		ctx->isEnabled = fbviz[n] = visible;
 
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
