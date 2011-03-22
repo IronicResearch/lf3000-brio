@@ -462,15 +462,18 @@ Boolean	CCameraModule::FlushAudio()
 		if (len > 0)
 		{
 			// Scan input buffer for clipped samples
+			int count = 0;
 			unsigned short samp = 0;
 			unsigned short* pbuf = micCtx_.poll_buf;
 			for (int i = 0; i < len; i+=2, pbuf++) {
 				samp = *pbuf;
 				if (samp == 0x8000) {
-					ret = true; // clipped
-					break;
+					count++;
 				}
 			}
+			// Clipping detected in percentage of sample buffer?
+			if (count > len/8)
+				ret = true;
 		}
 	}
 
