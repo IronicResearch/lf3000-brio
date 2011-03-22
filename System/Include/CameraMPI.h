@@ -351,6 +351,17 @@ public:
 	/// \return true if successful.
 	Boolean		StopAudioCapture(const tAudCapHndl hndl);
 
+	/// SetMicrophoneParam() sets microphone parameter for audio capture session.
+	/// \param	param	Microphone paramater type
+	/// \param	value	Microphone parameter value
+	/// \return			True if parameter is valid, False otherwise.
+	Boolean		SetMicrophoneParam(enum tMicrophoneParam param, S32 value);
+
+	/// GetMicrophoneParam() gets microphone parameter for audio capture session.
+	/// \param	param	Microphone paramater type
+	/// \return			Microphone parameter value
+	S32			GetMicrophoneParam(enum tMicrophoneParam param);
+
 private:
 	class CCameraModule*	pModule_;
 	U32					id_;

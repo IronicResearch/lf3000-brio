@@ -299,5 +299,21 @@ Boolean CCameraMPI::StopAudioCapture(const tAudCapHndl hndl)
 	return pModule_->StopAudioCapture(hndl);
 }
 
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::SetMicrophoneParam(enum tMicrophoneParam param, S32 value)
+{
+	if (!pModule_)
+		return false;
+	return false;
+}
+
+//----------------------------------------------------------------------------
+S32	CCameraMPI::GetMicrophoneParam(enum tMicrophoneParam param)
+{
+	if (!pModule_)
+		return 0;
+	return 0;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
