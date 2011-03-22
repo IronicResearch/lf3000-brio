@@ -29808,3 +29808,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/22/11 12:11 PM
 6,307 ms. (Cumulative: 10,733,542 ms)
 
 ----------------
+Revision 9,196 from svn://localhost/TRUNK/:
+
+CameraMPI: Added SetMicrophoneParam() function stubs for adjusting microphone capture event parameters.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/22/11 1:09 PM
+3 changed, 0 added, 0 deleted.
+6,361 ms. (Cumulative: 10,739,986 ms)
+
+----------------

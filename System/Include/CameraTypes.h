@@ -63,6 +63,13 @@ struct tControlInfo {
 
 typedef std::vector<tControlInfo*> tCameraControls;
 
+enum tMicrophoneParam {
+	kMicrophoneThreshold,
+	kMicrophoneDuration,
+	kMicrophoneClipCount,
+	kMicrophoneRateAdjust,
+};
+
 //==============================================================================
 // Camera events and messages
 //==============================================================================
