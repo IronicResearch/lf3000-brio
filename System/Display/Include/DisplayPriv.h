@@ -660,7 +660,8 @@ public:
 private:
 	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
 	tErrType			SetVisible(tDisplayHandle hndl, Boolean visible);
-	
+	tErrType 			SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPixelFormat colorDepth, bool isBlockAddr);
+
 public:	
 	CDisplayFB(CDisplayModule* pModule) :
 		CDisplayDriver(pModule)	{};
