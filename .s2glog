@@ -29799,3 +29799,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/21/11 7:33 PM
 6,262 ms. (Cumulative: 10,727,140 ms)
 
 ----------------
+Revision 9,195 from svn://localhost/TRUNK/:
+
+DisplayFB: Remove SetPixelFormat() conditional since YUV contexts need to call PUT_VINFO ioctl (fixes volume bars).
+
+By Dave Milici (dmilici@leapfrog.com) on 3/22/11 12:11 PM
+1 changed, 0 added, 0 deleted.
+6,307 ms. (Cumulative: 10,733,542 ms)
+
+----------------
