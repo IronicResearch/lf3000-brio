@@ -126,7 +126,7 @@ void* MicTaskMain(void* arg)
 				data.timestamp 			= cam->kernel_.GetElapsedTimeAsMSecs();
 				CCameraEventMessage msg = CCameraEventMessage(data);
 				cam->event_.PostEvent(msg, 0, pCtx->pListener);
-				elapsed 				= data.timestamp + 1000;
+				elapsed 				= data.timestamp + pCtx->duration;
 			}
 		}
 	}

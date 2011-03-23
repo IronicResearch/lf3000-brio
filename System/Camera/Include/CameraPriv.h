@@ -228,6 +228,11 @@ struct tMicrophoneContext {
 	
 	snd_pcm_status_t* 		status;
 	snd_timestamp_t 		tstamp;
+
+	S32						threshold;		// threshold for trigger event
+	S32						duration;		// duration for trigger event
+	S32						clipCount;		// clip count for trigger event
+	S32						rateAdjust;		// sample rate adjustment
 };
 
 struct tIDCTContext {
@@ -288,6 +293,10 @@ public:
 	VTABLE_EXPORT Boolean		ResumeAudioCapture(const tAudCapHndl hndl);
 	VTABLE_EXPORT Boolean		IsAudioCapturePaused(const tAudCapHndl hndl);
 	VTABLE_EXPORT Boolean		StopAudioCapture(const tAudCapHndl hndl);
+
+	VTABLE_EXPORT Boolean		SetMicrophoneParam(enum tMicrophoneParam param, S32 value);
+	VTABLE_EXPORT S32			GetMicrophoneParam(enum tMicrophoneParam param);
+
 private:
 	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
 	CameraListener		*listener_;

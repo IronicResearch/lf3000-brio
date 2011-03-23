@@ -235,6 +235,12 @@ tErrType CCameraModule::InitMicInt()
 		}
 	}
 
+	// Init microphone event parameters
+	micCtx_.threshold	= kS16Max;
+	micCtx_.duration	= 1000;
+	micCtx_.clipCount	= 25;
+	micCtx_.rateAdjust	= 0;
+
 	kErr = kNoErr;
 	return kErr;
 }
@@ -273,6 +279,44 @@ tErrType	CCameraModule::DeinitMicInt()
 	micCtx_.pcm_handle = NULL;
 
     return kErr;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::SetMicrophoneParam(enum tMicrophoneParam param, S32 value)
+{
+	switch (param)
+	{
+	case kMicrophoneThreshold:
+		micCtx_.threshold = value;
+		return true;
+	case kMicrophoneDuration:
+		micCtx_.duration = value;
+		return true;
+	case kMicrophoneClipCount:
+		micCtx_.clipCount = value;
+		return true;
+	case kMicrophoneRateAdjust:
+		micCtx_.rateAdjust = value;
+		return true;
+	}
+	return false;
+}
+
+//----------------------------------------------------------------------------
+S32	CCameraModule::GetMicrophoneParam(enum tMicrophoneParam param)
+{
+	switch (param)
+	{
+	case kMicrophoneThreshold:
+		return micCtx_.threshold;
+	case kMicrophoneDuration:
+		return micCtx_.duration;
+	case kMicrophoneClipCount:
+		return micCtx_.clipCount;
+	case kMicrophoneRateAdjust:
+		return micCtx_.rateAdjust;
+	}
+	return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -463,16 +507,17 @@ Boolean	CCameraModule::FlushAudio()
 		{
 			// Scan input buffer for clipped samples
 			int count = 0;
-			unsigned short samp = 0;
-			unsigned short* pbuf = micCtx_.poll_buf;
+			int countPercent = micCtx_.clipCount * len / 200;
+			signed short samp = 0;
+			signed short* pbuf = (signed short*)micCtx_.poll_buf;
 			for (int i = 0; i < len; i+=2, pbuf++) {
 				samp = *pbuf;
-				if (samp == 0x8000) {
+				if (samp >= micCtx_.threshold || samp <= -micCtx_.threshold) {
 					count++;
 				}
 			}
 			// Clipping detected in percentage of sample buffer?
-			if (count > len/8)
+			if (count > countPercent)
 				ret = true;
 		}
 	}

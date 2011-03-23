@@ -304,7 +304,7 @@ Boolean	CCameraMPI::SetMicrophoneParam(enum tMicrophoneParam param, S32 value)
 {
 	if (!pModule_)
 		return false;
-	return false;
+	return pModule_->SetMicrophoneParam(param, value);
 }
 
 //----------------------------------------------------------------------------
@@ -312,7 +312,7 @@ S32	CCameraMPI::GetMicrophoneParam(enum tMicrophoneParam param)
 {
 	if (!pModule_)
 		return 0;
-	return 0;
+	return pModule_->GetMicrophoneParam(param);
 }
 
 LF_END_BRIO_NAMESPACE()
