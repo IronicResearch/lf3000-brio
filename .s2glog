@@ -29826,3 +29826,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/22/11 2:40 PM
 6,319 ms. (Cumulative: 10,746,392 ms)
 
 ----------------
+Revision 9,198 from svn://localhost/TRUNK/:
+
+CameraMPI: Implement support for settable microphone parameters.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/22/11 5:52 PM
+4 changed, 0 added, 0 deleted.
+6,580 ms. (Cumulative: 10,753,063 ms)
+
+----------------
