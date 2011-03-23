@@ -134,6 +134,12 @@ tErrType CCameraModule::InitMicInt()
 	micCtx_.fd[1]		= -1;
 	micCtx_.period_time	= MIC_PERIOD;
 
+	// Init microphone event parameters
+	micCtx_.threshold	= kS16Max;
+	micCtx_.duration	= 1000;
+	micCtx_.clipCount	= 25;
+	micCtx_.rateAdjust	= 100;
+
 	snd_pcm_hw_params_malloc(&micCtx_.hwparams);
 	snd_pcm_sw_params_malloc(&micCtx_.swparams);
 	snd_pcm_status_malloc(&micCtx_.status);
@@ -234,12 +240,6 @@ tErrType CCameraModule::InitMicInt()
 			micCtx_.fd[1] = -1;
 		}
 	}
-
-	// Init microphone event parameters
-	micCtx_.threshold	= kS16Max;
-	micCtx_.duration	= 1000;
-	micCtx_.clipCount	= 25;
-	micCtx_.rateAdjust	= 0;
 
 	kErr = kNoErr;
 	return kErr;
@@ -812,7 +812,10 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 		/* sample rate conversion */
 		err = 0;
 		pCtx->rate = MIC_RATE;
-		if((err = snd_pcm_hw_params_set_rate_near(handle, params, &pCtx->rate, &err)) < 0)
+		unsigned int rate = pCtx->rate;
+		if (pCtx->rateAdjust)
+			rate = pCtx->rate * pCtx->rateAdjust / 100;
+		if((err = snd_pcm_hw_params_set_rate_near(handle, params, &rate, &err)) < 0)
 		{
 			pCtx->rate = 0;
 			continue;
