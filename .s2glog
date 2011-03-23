@@ -29835,3 +29835,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/22/11 5:52 PM
 6,580 ms. (Cumulative: 10,753,063 ms)
 
 ----------------
+Revision 9,199 from svn://localhost/TRUNK/:
+
+CameraMPI: Implement support for microphone sample rate adjustment. 
+
+By Dave Milici (dmilici@leapfrog.com) on 3/23/11 9:57 AM
+1 changed, 0 added, 0 deleted.
+6,828 ms. (Cumulative: 10,760,016 ms)
+
+----------------
