@@ -304,7 +304,7 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 	pModule_->UnRegister(hndl, 0);
 
 	// Reset screen size deltas when viewport context destroyed
-	if (ctx->viewport || ctx->xvp || ctx->yvp || ctx->wvp < xres || ctx->hvp < yres) {
+	if (ctx->viewport) {
 		dxres = dyres = 0;
 		vxres = xres;
 		vyres = yres;

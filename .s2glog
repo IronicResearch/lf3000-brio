@@ -29864,3 +29864,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/25/11 4:26 PM
 6,081 ms. (Cumulative: 10,772,504 ms)
 
 ----------------
+Revision 9,204 from svn://localhost/TRUNK/:
+Revision 9,205 from svn://localhost/TRUNK/:
+
+DisplayFB: Remove check for extra viewport params which are no longer used. Fixes viewframe repositioning unexpectedly.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/25/11 4:40 PM
+1 changed, 0 added, 0 deleted.
+6,053 ms. (Cumulative: 10,778,635 ms)
+
+----------------
