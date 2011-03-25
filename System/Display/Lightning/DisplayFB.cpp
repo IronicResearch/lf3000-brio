@@ -472,14 +472,7 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 		RegisterLayer(dc, dc->x, dc->y);
 		SetVisible(dc, true);
 	}
-	// Ditto for OpenGL context which is not registered
-	if (hogl != NULL && !fbviz[OGLFB])
-	{
-		tDisplayContext *dcogl = (tDisplayContext*)hogl;
-		RegisterLayer(hogl, dcogl->x, dcogl->y);
-		SetVisible(hogl, true);
-	}
-	
+
 	return kNoErr;
 }
 
