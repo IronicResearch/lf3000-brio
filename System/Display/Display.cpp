@@ -57,7 +57,11 @@ const CURI* CDisplayModule::GetModuleOrigin() const
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay)
+CDisplayModule::CDisplayModule() : dbg_(kGroupDisplay),
+	pdcPrimary_(NULL), pdcVisible_(NULL),
+	bAutoRotation_(false), 
+	mViewport_(kViewportLegacy), mOrient_(kOrientationLandscape),
+	xvp_(0), yvp_(0), wvp_(0), hvp_(0)
 {
 	dbg_.SetDebugLevel(kDisplayDebugLevel);
 
