@@ -29874,3 +29874,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/25/11 4:40 PM
 6,053 ms. (Cumulative: 10,778,635 ms)
 
 ----------------
+Revision 9,206 from svn://localhost/TRUNK/:
+
+DisplayModule: Init all member vars before calls to avoid bogus 
+GetScreenSize() data.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/26/11 10:39 AM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 10,784,855 ms)
+
+----------------
