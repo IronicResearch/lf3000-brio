@@ -460,23 +460,6 @@ CEventListenerImpl* CEventModule::GenerateEventListenerImpl(
 	return new CEventListenerImpl(pTypes, count);
 }
 
-
-CEventListenerMessage::CEventListenerMessage( U32 event_type, const struct tEventListenerData& data )
-	: IEventMessage(event_type), mData(data)
-{
-	mData = data;
-}
-
-U16 CEventListenerMessage::GetSizeInBytes() const
-{
-	return sizeof(CEventListenerMessage);
-}
-
-tEventListenerData CEventListenerMessage::GetEventListenerData() const
-{
-	return mData;
-}
-
 LF_END_BRIO_NAMESPACE()
 
 
