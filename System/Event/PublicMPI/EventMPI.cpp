@@ -111,5 +111,21 @@ tErrType CEventMPI::PostEvent(const IEventMessage &msg,
 }
 
 
+CEventListenerMessage::CEventListenerMessage( U32 event_type, const struct tEventListenerData& data )
+	: IEventMessage(event_type), mData(data)
+{
+	mData = data;
+}
+
+U16 CEventListenerMessage::GetSizeInBytes() const
+{
+	return sizeof(CEventListenerMessage);
+}
+
+tEventListenerData CEventListenerMessage::GetEventListenerData() const
+{
+	return mData;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
