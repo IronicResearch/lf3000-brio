@@ -239,6 +239,10 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (n == RGBFB && (dxres > 0 || dyres > 0))
 		n = OGLFB;
 	
+	// Block addressing mode needed for OGL framebuffer context?
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
+
 	int line_length = width * depth/8;
 	if(n == YUVFB)
 		line_length = 4096;
