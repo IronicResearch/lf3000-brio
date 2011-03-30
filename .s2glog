@@ -29920,3 +29920,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/30/11 10:42 AM
 6,144 ms. (Cumulative: 10,803,746 ms)
 
 ----------------
+Revision 9,216 from svn://localhost/TRUNK/:
+
+AudioMPI: Try opening dmix plugin first, else fallback to opening audio device directly.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/30/11 10:53 AM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 10,809,950 ms)
+
+----------------

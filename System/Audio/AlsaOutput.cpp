@@ -32,7 +32,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 
-static const char 			*device = "plugdmix";		    // playback device
+static const char 			*device = "plughw:0,0";		    // playback device
+static const char 			*plugin = "plugdmix";		    // playback dmix plugin
 static snd_pcm_t 			*handle = NULL;					// playback handle
 static snd_pcm_access_t 	access = SND_PCM_ACCESS_MMAP_INTERLEAVED;	
 static snd_pcm_format_t 	format = SND_PCM_FORMAT_S16;    // sample format 
@@ -392,9 +393,14 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData )
 	gAudioRenderCallback = callback;
 	gCallbackUserData = pUserData;
 	
-	if ((err = snd_pcm_open(&handle, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
-		pDebugMPI_->DebugOut(kDbgLvlImportant, "Playback open error: %s\n", snd_strerror(err));
-		return err;
+	// Try opening dmix plugin first
+	if ((err = snd_pcm_open(&handle, plugin, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Playback open error: (%s) %s\n", plugin, snd_strerror(err));
+		// Else fallback to opening audio device directly
+		if ((err = snd_pcm_open(&handle, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+			pDebugMPI_->DebugOut(kDbgLvlImportant, "Playback open error: (%s) %s\n", device, snd_strerror(err));
+			return err;
+		}
 	}
 	if ((err = set_hwparams(handle, hwparams, access)) < 0) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Setting of hwparams failed: %s\n", snd_strerror(err));
