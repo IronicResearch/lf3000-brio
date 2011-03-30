@@ -243,9 +243,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
 
+	// Pitch depends on width for normal RGB modes, otherwise
+	// finfo[n].line_length may get updated after SetPixelFormat().
 	int line_length = width * depth/8;
-	if(n == YUVFB)
-		line_length = 4096;
+	if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
+		line_length = finfo[n].line_length;
 	int offset = 0;
 	int aligned = (n == YUVFB) ? ALIGN(height * line_length, k1Meg) : 0;
 	
@@ -261,11 +263,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->offset 			= offset;
 	ctx->layer				= n;
 	ctx->isOverlay			= (n == YUVFB);
-	if(colorDepth == kPixelFormatYUV420)
-		ctx->isPlanar = true;
-	else
-		ctx->isPlanar = false;
-	//ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
+	ctx->isPlanar			= (n == YUVFB); // (finfo[n].type == FB_TYPE_PLANES);
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
 	ctx->xscale 			= width;

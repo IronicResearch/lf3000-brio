@@ -29939,3 +29939,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/30/11 12:21 PM
 6,110 ms. (Cumulative: 10,816,138 ms)
 
 ----------------
+Revision 9,218 from svn://localhost/TRUNK/:
+
+DisplayFB: Added comment about finfo.line_length dependency on changing pixel format.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/30/11 1:23 PM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 10,822,326 ms)
+
+----------------
