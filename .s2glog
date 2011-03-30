@@ -29899,3 +29899,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/29/11 4:34 PM
 6,325 ms. (Cumulative: 10,791,289 ms)
 
 ----------------
+Revision 9,213 from svn://localhost/TRUNK/:
+
+CreateHandle no longer sets pixel format, this will now be done in RegisterLayer.  This prevents graphical glitches when the format of the layer changes.  All other displays, this is done on RegisterLayer instead.  This prevents garbage on the screen from appearing after the CreateHandle but before RegisterLayer.  Also moved the re-enabling of the OpenGL layer from the DestroyHandle to SetOpenGLDisplayAddress (page flip).  Note that since SetOpenGLDisplayAddress registers the layer, OpenGL handles don't need to set the pixel format on CreateHandle either.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/29/11 5:13 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 10,797,508 ms)
+
+----------------

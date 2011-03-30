@@ -239,16 +239,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (n == RGBFB && (dxres > 0 || dyres > 0))
 		n = OGLFB;
 	
-	// Select pixel format masks for RGB context
-	if ((pBuffer == NULL || pBuffer == pmem2d))
-	{
-		// Block addressing mode needed for OGL framebuffer context?
-		bool isOGL = (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d);
-		r = SetPixelFormat(n, width, height, depth, colorDepth, isOGL);
-	}
-	
+	int line_length = width * depth/8;
+	if(n == YUVFB)
+		line_length = 4096;
 	int offset = 0;
-	int aligned = (n == YUVFB) ? ALIGN(height * finfo[n].line_length, k1Meg) : 0;
+	int aligned = (n == YUVFB) ? ALIGN(height * line_length, k1Meg) : 0;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -256,13 +251,17 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->colorDepthFormat 	= colorDepth;
 	ctx->depth				= depth;
 	ctx->bpp				= depth/8;
-	ctx->pitch				= (pBuffer != NULL) ? width * depth/8 : finfo[n].line_length;
+	ctx->pitch				= (pBuffer != NULL) ? width * depth/8 : line_length;
 	ctx->isAllocated		= (pBuffer != NULL);
 	ctx->pBuffer			= (pBuffer != NULL) ? pBuffer : fbmem[n] + offset;
 	ctx->offset 			= offset;
 	ctx->layer				= n;
 	ctx->isOverlay			= (n == YUVFB);
-	ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
+	if(colorDepth == kPixelFormatYUV420)
+		ctx->isPlanar = true;
+	else
+		ctx->isPlanar = false;
+	//ctx->isPlanar			= (finfo[n].type == FB_TYPE_PLANES);
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
 	ctx->xscale 			= width;
@@ -337,7 +336,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
-	int r = SetWindowPosition(ctx, xPos, yPos, width, height);
+	int r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
+	r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
 	// Adjust Z-order for YUV layer?
 	if (n == YUVFB) 
@@ -353,9 +353,6 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		cmd.apply = 1;
 		r = ioctl(fbdev[n], LF1000FB_IOCSVIDSCALE, &cmd);
 	}
-	else
-		r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
-
 	// Set framebuffer address offset
 	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
 	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
@@ -394,13 +391,6 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 	
 	int r = SetVisible(ctx, false);
 	
-	// Re-enable OpenGL context which is not registered
-	if (hogl != NULL && ctx->layer == OGLFB)
-	{
-		tDisplayContext *dcogl = (tDisplayContext*)hogl;
-		RegisterLayer(hogl, dcogl->x, dcogl->y);
-		SetVisible(hogl, true);
-	}
 
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -834,6 +824,13 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 //----------------------------------------------------------------------------
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
+	// Re-enable OpenGL context which is not registered
+	if (hogl != NULL && !fbviz[OGLFB])
+	{
+		tDisplayContext *dcogl = (tDisplayContext*)hogl;
+		RegisterLayer(hogl, dcogl->x, dcogl->y);
+		SetVisible(hogl, true);
+	}
 	int n = OGLFB;
 	unsigned int offset = DisplayBufferPhysicalAddress - finfo[n].smem_start;
 	offset &= ~0x20000000;
