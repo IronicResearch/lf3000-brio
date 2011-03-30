@@ -29930,3 +29930,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/30/11 10:53 AM
 6,126 ms. (Cumulative: 10,809,950 ms)
 
 ----------------
+Revision 9,217 from svn://localhost/TRUNK/:
+
+DisplayFB: Fix for svn -r9213: OGL display mode *must* be set to block addressing mode when created.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/30/11 12:21 PM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 10,816,138 ms)
+
+----------------
