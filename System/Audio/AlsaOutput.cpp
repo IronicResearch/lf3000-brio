@@ -32,7 +32,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Global variables
 //==============================================================================
 
-static const char 			*device = "plughw:0,0";         // playback device 
+static const char 			*device = "plugdmix";		    // playback device
 static snd_pcm_t 			*handle = NULL;					// playback handle
 static snd_pcm_access_t 	access = SND_PCM_ACCESS_MMAP_INTERLEAVED;	
 static snd_pcm_format_t 	format = SND_PCM_FORMAT_S16;    // sample format 
