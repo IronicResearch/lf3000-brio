@@ -91,7 +91,7 @@ namespace
 static void SetScaler(int width, int height, bool centered)
 {
 	CDisplayMPI 	dispmgr;
-	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle();
+	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420);
 	
 	dispmgr.SetVideoScaler(hvideo, width, height, centered);
 }

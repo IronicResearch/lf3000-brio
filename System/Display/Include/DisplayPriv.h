@@ -470,6 +470,8 @@ public:
 	VTABLE_EXPORT tErrType			SetAutoRotation(Boolean enable);
 	VTABLE_EXPORT Boolean			GetAutoRotation();
 	
+	VTABLE_EXPORT tDisplayHandle	GetCurrentDisplayHandle(tPixelFormat pixelformat);
+
 private:
 	void				InitModule( );
 	void				DeInitModule( );
