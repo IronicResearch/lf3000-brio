@@ -411,6 +411,23 @@ tPixelFormat	CDisplayModule::GetAvailableFormat()
 }
 
 //----------------------------------------------------------------------------
+tDisplayHandle CDisplayModule::GetCurrentDisplayHandle(tPixelFormat pixelformat)
+{
+	tDisplayContext* pdc = NULL;
+
+	kernel_.LockMutex(gListMutex);
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		if ((*it)->colorDepthFormat == pixelformat)
+			pdc = *it;
+	}
+	kernel_.UnlockMutex(gListMutex);
+
+	return pdc;
+}
+
+//----------------------------------------------------------------------------
 U8* CDisplayModule::GetBuffer(tDisplayHandle hndl) const
 {
 	return ((struct tDisplayContext *)hndl)->pBuffer;

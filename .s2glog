@@ -29965,3 +29965,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/30/11 5:04 PM
 6,114 ms. (Cumulative: 10,834,643 ms)
 
 ----------------
+Revision 9,221 from svn://localhost/TRUNK/:
+
+DisplayMPI: Add GetCurrentDisplayHandle() function for specific pixel format.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/30/11 6:57 PM
+6 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 10,841,221 ms)
+
+----------------

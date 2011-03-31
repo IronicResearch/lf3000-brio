@@ -275,6 +275,14 @@ tDisplayHandle CDisplayMPI::GetCurrentDisplayHandle()
 }
 
 //----------------------------------------------------------------------------
+tDisplayHandle CDisplayMPI::GetCurrentDisplayHandle(tPixelFormat pixelformat)
+{
+	if(!pModule_)
+		return kInvalidDisplayHandle;
+	return pModule_->GetCurrentDisplayHandle(pixelformat);
+}
+
+//----------------------------------------------------------------------------
 tPixelFormat CDisplayMPI::GetPixelFormat(tDisplayHandle hndl) const
 {
 	if(!pModule_ || !hndl)

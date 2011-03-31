@@ -413,6 +413,9 @@ public:
 	tErrType			SetAutoRotation(Boolean enable);
 	Boolean				GetAutoRotation();
 
+	/// Returns the handle for the active display context matching the pixelformat
+	tDisplayHandle		GetCurrentDisplayHandle(tPixelFormat pixelformat);
+
 private:
 	class CDisplayModule*	pModule_;
 };
