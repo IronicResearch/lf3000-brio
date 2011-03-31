@@ -29948,3 +29948,20 @@ By Dave Milici (dmilici@leapfrog.com) on 3/30/11 1:23 PM
 6,110 ms. (Cumulative: 10,822,326 ms)
 
 ----------------
+Revision 9,219 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,110 ms. (Cumulative: 10,828,514 ms)
+
+----------------
+Revision 9,220 from svn://localhost/TRUNK/:
+
+DisplayFB: Track video scaler values as global vars in case invalid YUV handle passed to SetVideoScaler().
+FIXME: Need to add pixelformat-specific version of GetDisplayHandle() since this is problematic for YUV video
+contexts which get registered with bottom z-order.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/30/11 5:04 PM
+1 changed, 0 added, 0 deleted.
+6,114 ms. (Cumulative: 10,834,643 ms)
+
+----------------

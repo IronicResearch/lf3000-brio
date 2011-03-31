@@ -73,6 +73,8 @@ namespace
 	S16							dyres = 0;	// screen delta Y
 	U16							vxres = 0;	// viewport size X
 	U16							vyres = 0;	// viewport size Y
+	unsigned int				xscale = 0;	// video scaler X
+	unsigned int				yscale = 0; // video scaler Y
 }
 
 //============================================================================
@@ -350,8 +352,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		
 		struct lf1000fb_vidscale_cmd cmd;
-		cmd.sizex = ctx->xscale;
-		cmd.sizey = ctx->yscale;
+		cmd.sizex = (xscale) ? xscale : ctx->xscale;
+		cmd.sizey = (yscale) ? yscale : ctx->yscale;
 		cmd.apply = 1;
 		r = ioctl(fbdev[n], LF1000FB_IOCSVIDSCALE, &cmd);
 	}
@@ -597,8 +599,17 @@ tErrType CDisplayFB::SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, 
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
-	ctx->xscale = width;
-	ctx->yscale = height;
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d)\n", __FUNCTION__, ctx, width, height, ctx->layer);
+
+	if (ctx->layer == YUVFB) {
+		ctx->xscale = width;
+		ctx->yscale = height;
+		xscale = yscale = 0;
+	}
+	else {
+		xscale = width;
+		yscale = height;
+	}
 	
 	struct lf1000fb_vidscale_cmd cmd;
 	cmd.sizex = width;
