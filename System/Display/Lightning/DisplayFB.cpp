@@ -80,6 +80,16 @@ namespace
 //============================================================================
 // CDisplayFB: Implementation of hardware-specific functions
 //============================================================================
+CDisplayFB::CDisplayFB(CDisplayModule* pModule) :
+	CDisplayDriver(pModule)
+{
+}
+
+//----------------------------------------------------------------------------
+CDisplayFB::~CDisplayFB()
+{
+}
+
 //----------------------------------------------------------------------------
 void CDisplayFB::InitModule()
 {

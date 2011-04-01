@@ -224,6 +224,19 @@ namespace
 //============================================================================
 // CDisplayLF1000: Implementation of hardware-specific functions
 //============================================================================
+CDisplayLF1000::CDisplayLF1000(CDisplayModule* pModule) :
+	CDisplayDriver(pModule),
+	isOpenGLEnabled_(false),
+	isLayerSwapped_(false),
+	isYUVLayerSwapped_(false)
+{
+}
+
+//----------------------------------------------------------------------------
+CDisplayLF1000::~CDisplayLF1000()
+{
+}
+
 //----------------------------------------------------------------------------
 void CDisplayLF1000::InitModule()
 {
