@@ -559,6 +559,9 @@ public:
 //----------------------------------------------------------------------------
 class CDisplayLF1000 : public CDisplayDriver {
 public:
+	CDisplayLF1000(CDisplayModule* pModule);
+	~CDisplayLF1000();
+
 	void				InitModule( );
 	void				DeInitModule( );
 
@@ -606,19 +609,14 @@ private:
 	bool				isOpenGLEnabled_;
 	bool				isLayerSwapped_;
 	bool				isYUVLayerSwapped_;
-	
-public:	
-	CDisplayLF1000(CDisplayModule* pModule) :
-		CDisplayDriver(pModule),
-		isOpenGLEnabled_(false), 
-		isLayerSwapped_(false), 
-		isYUVLayerSwapped_(false) {};
-	~CDisplayLF1000() {};
 };
 
 //----------------------------------------------------------------------------
 class CDisplayFB : public CDisplayDriver {
 public:
+	CDisplayFB(CDisplayModule* pModule);
+	~CDisplayFB();
+
 	void				InitModule( );
 	void				DeInitModule( );
 
@@ -663,11 +661,6 @@ private:
 	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
 	tErrType			SetVisible(tDisplayHandle hndl, Boolean visible);
 	tErrType 			SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPixelFormat colorDepth, bool isBlockAddr);
-
-public:	
-	CDisplayFB(CDisplayModule* pModule) :
-		CDisplayDriver(pModule)	{};
-	~CDisplayFB() {};
 };
 
 LF_END_BRIO_NAMESPACE()	

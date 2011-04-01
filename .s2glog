@@ -29986,3 +29986,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/31/11 1:13 PM
 6,469 ms. (Cumulative: 10,847,831 ms)
 
 ----------------
+Revision 9,226 from svn://localhost/TRUNK/:
+Revision 9,227 from svn://localhost/TRUNK/:
+
+DisplayModule: Relocate DisplayFB and DisplayLF1000 constructors to be symmetrical with other class implementations.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/1/11 11:17 AM
+3 changed, 0 added, 0 deleted.
+6,642 ms. (Cumulative: 10,854,551 ms)
+
+----------------
