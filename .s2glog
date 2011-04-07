@@ -30021,3 +30021,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/6/11 5:45 PM
 6,655 ms. (Cumulative: 10,868,087 ms)
 
 ----------------
+Revision 9,233 from svn://localhost/TRUNK/:
+
+CameraModule: Relocate calls to SetVideoScaler() only on API entry points, instead of every RenderFrame() pass.
+Discovered excessive SetVideoScaler() calls while profiling DisplayMPI during camera capture sessions.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/7/11 11:47 AM
+1 changed, 0 added, 0 deleted.
+6,457 ms. (Cumulative: 10,874,638 ms)
+
+----------------
