@@ -123,8 +123,8 @@ void CDisplayFB::InitModule()
 		dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %d x %d, pitch = %d\n", __FUNCTION__, vinfo[n].xres, vinfo[n].yres, finfo[n].line_length);
 	
 		// Reset page flip offsets
-		vinfo[n].xoffset = vinfo[n].yoffset = 0;
-		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+		//vinfo[n].xoffset = vinfo[n].yoffset = 0;
+		//r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOBLANK, 1);
 		
 		// Map framebuffer into userspace
