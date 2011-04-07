@@ -30009,3 +30009,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/6/11 5:12 PM
 6,663 ms. (Cumulative: 10,861,323 ms)
 
 ----------------
+Revision 9,232 from svn://localhost/TRUNK/:
+
+Merged -r9230: DisplayFB: Modified MadridOptimize branch to skip blanking framebuffer layers
+on startup, and to not clear framebuffer memory. Keeps video players onscreen
+during startup and shutdown videos.
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 4/6/11 5:45 PM
+1 changed, 0 added, 0 deleted.
+6,655 ms. (Cumulative: 10,868,087 ms)
+
+----------------
