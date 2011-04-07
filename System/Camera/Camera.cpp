@@ -1358,6 +1358,9 @@ Boolean	CCameraModule::RenderFrame(const CPath &path, tVideoSurf *pSurf)
 		goto out;
 	}
 
+	if (pSurf && pSurf->format == kPixelFormatYUV420)
+		SetScaler(pSurf->width, pSurf->height, false);
+
 	ret = RenderFrame(&frame, pSurf, NULL, JPEG_SLOW);
 
 out:
@@ -1779,8 +1782,6 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	// draw to screen
 	if(surf != NULL)
 	{
-		if(surf->format == kPixelFormatYUV420)
-			SetScaler(surf->width, surf->height, false);
 		bRet = DrawFrame(surf, bitmap);
 	}
 
@@ -1925,7 +1926,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
 	 * HW IDCT QVGA->QVGA rendering
 	 */
-	if(pSurf && pSurf->format == kPixelFormatYUV420 && pSurf->width == QVGA.width)
+	if(pSurf && pSurf->format == kPixelFormatYUV420)
 	{
 		//SetScaler(QVGA.width, QVGA.height, false);
 		SetScaler(pSurf->width, pSurf->height, false);
