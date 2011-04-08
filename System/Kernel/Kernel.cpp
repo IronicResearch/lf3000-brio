@@ -495,7 +495,13 @@ tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
     	
     	errno = 0;
     	mq_unlink(props.nameQueue);
-    	ASSERT_POSIX_CALL( errno );
+    	if(!errno)
+    	{
+    		mDebugMPI.DebugOut(kDbgLvlCritical , "***** POSIX function fails with error # (%d) Error string (%s) File (%s), Line (%d)\n", \
+    			 (int)errno, strerror(errno), __FILE__, __LINE__); \
+    		fflush(stdout); \
+    	}
+    	//ASSERT_POSIX_CALL( errno );
     }
     return kNoErr;
 }
