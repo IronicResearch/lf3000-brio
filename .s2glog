@@ -30050,3 +30050,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/7/11 5:50 PM
 6,141 ms. (Cumulative: 10,887,107 ms)
 
 ----------------
+Revision 9,236 from svn://localhost/TRUNK/:
+
+DisplayFB: Re-enable optimize changes except clearing display context buffers.
+Fixes fractured-flicker effect in XMV movie player. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/7/11 6:18 PM
+1 changed, 0 added, 0 deleted.
+6,033 ms. (Cumulative: 10,893,234 ms)
+
+----------------
