@@ -30040,3 +30040,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/7/11 5:46 PM
 6,172 ms. (Cumulative: 10,880,888 ms)
 
 ----------------
+Revision 9,235 from svn://localhost/TRUNK/:
+
+DisplayFB: Conditional for re-enabling OGL context in SwapBuffers callback only if enabled.
+This fixes the camera app tutorial blanking out, though question still pending to developer.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/7/11 5:50 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 10,887,107 ms)
+
+----------------
