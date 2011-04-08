@@ -359,9 +359,11 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 	bRunning = false;
 	while (!bStopping && --count)
 		kernel.TaskSleep(10);
-	if (!bStopping)
+	// FIXME: pthread_join should always work
+	if (!bStopping) {
 		kernel.CancelTask(hVideoThread);
-	kernel.JoinTask(hVideoThread, retval);
+		kernel.JoinTask(hVideoThread, retval);
+	}
 	pCtx->hVideoThread = hVideoThread = kNull;
 	
 	return kNoErr;
