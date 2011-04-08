@@ -851,8 +851,10 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 	if (hogl != NULL && !fbviz[OGLFB])
 	{
 		tDisplayContext *dcogl = (tDisplayContext*)hogl;
-		RegisterLayer(hogl, dcogl->x, dcogl->y);
-		SetVisible(hogl, true);
+		if (dcogl->isEnabled) {
+			RegisterLayer(hogl, dcogl->x, dcogl->y);
+			SetVisible(hogl, true);
+		}
 	}
 	int n = OGLFB;
 	unsigned int offset = DisplayBufferPhysicalAddress - finfo[n].smem_start;
