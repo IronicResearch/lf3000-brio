@@ -30084,3 +30084,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/8/11 1:38 PM
 6,063 ms. (Cumulative: 10,911,581 ms)
 
 ----------------
+Revision 9,242 from svn://localhost/TRUNK/:
+Revision 9,243 from svn://localhost/TRUNK/:
+
+VideoModule: Defer to video thread state vars for exiting thread instead of pthread_join.
+FIXME: pthread_join should always work for exiting thread.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/8/11 3:27 PM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 10,917,832 ms)
+
+----------------
