@@ -30122,3 +30122,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/8/11 7:05 PM
 6,141 ms. (Cumulative: 10,936,293 ms)
 
 ----------------
+Revision 9,247 from svn://localhost/TRUNK/:
+
+AudioModule: Allow task sleep before joining audio mixer callback thread termination.
+Seen while debugging video thread join problem (svn -r9246), though not resolution by itself.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/8/11 7:10 PM
+1 changed, 0 added, 0 deleted.
+6,125 ms. (Cumulative: 10,942,512 ms)
+
+----------------
