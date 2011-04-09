@@ -375,6 +375,7 @@ static void* CallbackThread(void* pCtx)
 		}
 		pKernelMPI_->TaskSleep(10);
 	}
+	return pCtx;
 }
  
 //==============================================================================
@@ -456,6 +457,7 @@ int DeInitAudioOutputAlsa( void )
 	// Kill callback thread
 	void* retval;
 	bRunning = false;
+	pKernelMPI_->TaskSleep(10);
 	pKernelMPI_->JoinTask(hndlThread, retval);
 
 	// Release resources
