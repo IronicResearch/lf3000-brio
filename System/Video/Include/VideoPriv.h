@@ -19,6 +19,8 @@
 #include <EventTypes.h>
 #include <VideoTypes.h>
 #include <DebugMPI.h>
+#include <EventMPI.h>
+#include <AudioMPI.h>
 #include <KernelMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
@@ -64,6 +66,9 @@ struct tVideoContext {
 	tVideoInfo			info;
 	CVideoPlayer*		pPlayer;
 	Boolean				bUpdateVideoDisplay;
+	class CVideoModule*	pModule;
+	CEventMPI*			pEventMPI;
+	CAudioMPI*			pAudioMPI;
 };
 
 //==============================================================================

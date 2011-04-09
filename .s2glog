@@ -30104,3 +30104,21 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/8/11 5:18 PM
 6,110 ms. (Cumulative: 10,924,020 ms)
 
 ----------------
+Revision 9,245 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,054 ms. (Cumulative: 10,930,152 ms)
+
+----------------
+Revision 9,246 from svn://localhost/TRUNK/:
+
+VideoModule: Video thread refactored to use some externally created MPI objects, particularly AudioMPI.
+Tracking down cases where pthread_join could hang on video thread exits were tied to audio playback objects
+instantiated inside the video thread.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/8/11 7:05 PM
+3 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 10,936,293 ms)
+
+----------------
