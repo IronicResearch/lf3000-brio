@@ -95,12 +95,12 @@ inline U32 GetMSecs(void)
 void* VideoTaskMain( void* arg )
 {
 	CDebugMPI	dbg(kGroupVideo);
-	CVideoMPI	vidmgr;
-	CAudioMPI	audmgr;
 	CKernelMPI	kernel;
 	CDisplayMPI dispmgr;
-	CEventMPI	evntmgr;
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
+	CVideoModule*	vidmgr = pctx->pModule;
+	CEventMPI*		evntmgr = pctx->pEventMPI;
+	CAudioMPI*		audmgr = pctx->pAudioMPI;
 	tVideoTime		vtm,vtm0 = {0, 0};
 	U32				basetime,marktime,nexttime,lapsetime = pctx->uFrameTime;
 	U32				flags = (pctx->pListener) ? kAudioOptionsDoneMsgAfterComplete : 0;
@@ -116,12 +116,12 @@ void* VideoTaskMain( void* arg )
 	
 	// Sync video thread startup with InitVideoTask()
 	bRunning = pctx->bPlaying = true;
-	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...\n" );
+	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...(%p)\n", pctx );
 
 	// Register our local listener to handle audio time events
 	if (bListener) {
 		pVideoListener = new VideoListener(pctx);
-		evntmgr.RegisterEventListener(pVideoListener);
+		evntmgr->RegisterEventListener(pVideoListener);
 		flags |= kAudioOptionsTimeEvent | kAudioOptionsDoneMsgAfterComplete;
 		payload = lapsetime;
 		pListener = pVideoListener;
@@ -139,12 +139,12 @@ void* VideoTaskMain( void* arg )
 	while (bRunning)
 	{
 		// Pre-render the 1st video frame prior to audio startup
-		vidmgr.GetVideoFrame(pctx->hVideo, &vtm);
-		vidmgr.PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
+		vidmgr->GetVideoFrame(pctx->hVideo, &vtm);
+		vidmgr->PutVideoFrame(pctx->hVideo, pctx->pSurfVideo);
 		dispmgr.Invalidate(0, NULL);
 		// Start audio playback and sync each video frame to audio time stamp
 		if (pctx->pPathAudio != NULL)
-			pctx->hAudio = audmgr.StartAudio(*pctx->pPathAudio, 100, 1, 0, pListener, payload, flags);
+			pctx->hAudio = audmgr->StartAudio(*pctx->pPathAudio, 100, 1, 0, pListener, payload, flags);
 		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync
 		vtm.time = basetime = marktime = nexttime = gAudioTime = 0;
 		if (!bAudio)
@@ -152,9 +152,9 @@ void* VideoTaskMain( void* arg )
 		marktime += lapsetime;
 
 		// Main video rendering loop
-		while (bRunning && vidmgr.SyncVideoFrame(pctx->hVideo, &vtm, bAudio))
+		while (bRunning && vidmgr->SyncVideoFrame(pctx->hVideo, &vtm, bAudio))
 		{	
-			vidmgr.PutVideoFrame(pctx->hVideo, pSurf);
+			vidmgr->PutVideoFrame(pctx->hVideo, pSurf);
 			if (bDoubleBuffered) {
 				// Update double buffered YUV video contexts
 				dispmgr.SwapBuffers(aHndl[ibuf], false);
@@ -173,7 +173,7 @@ void* VideoTaskMain( void* arg )
 				if (pVideoListener)
 					nexttime = gAudioTime;
 				else if (bAudio)
-					nexttime = audmgr.GetAudioTime(pctx->hAudio);
+					nexttime = audmgr->GetAudioTime(pctx->hAudio);
 				else
 					nexttime = kernel.GetElapsedTimeAsMSecs();
 				if (nexttime >= marktime)
@@ -202,10 +202,10 @@ void* VideoTaskMain( void* arg )
 			if(pctx->bSeeked)
 			{
 				pctx->bSeeked = false;
-				vidmgr.GetVideoTime(pctx->hVideo, &vtm);
+				vidmgr->GetVideoTime(pctx->hVideo, &vtm);
 				if(bAudio)
 				{
-					audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
+					audmgr->SeekAudioTime( pctx->hAudio, vtm.time);
 					nexttime = vtm.time;
 					marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
 				}
@@ -231,13 +231,13 @@ void* VideoTaskMain( void* arg )
 			if (pctx->bPaused)
 			{
 				if (pctx->hAudio != kNoAudioID)
-					audmgr.PauseAudio(pctx->hAudio);
+					audmgr->PauseAudio(pctx->hAudio);
 				while (bRunning && pctx->bPaused)
 				{
 					kernel.TaskSleep(1);
 					if(pctx->bUpdateVideoDisplay)
 					{
-						vidmgr.PutVideoFrame(pctx->hVideo, pSurf);
+						vidmgr->PutVideoFrame(pctx->hVideo, pSurf);
 						if (bDoubleBuffered) {
 							// Update double buffered YUV video contexts
 							dispmgr.SwapBuffers(aHndl[ibuf], true);
@@ -254,10 +254,10 @@ void* VideoTaskMain( void* arg )
 				if(pctx->bSeeked)
 				{
 					pctx->bSeeked = false;
-					vidmgr.GetVideoTime(pctx->hVideo, &vtm);
+					vidmgr->GetVideoTime(pctx->hVideo, &vtm);
 					if(bAudio)
 					{
-						audmgr.SeekAudioTime( pctx->hAudio, vtm.time);
+						audmgr->SeekAudioTime( pctx->hAudio, vtm.time);
 						nexttime = vtm.time;
 						marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
 					}
@@ -267,7 +267,7 @@ void* VideoTaskMain( void* arg )
 					vtm.time = nexttime;
 				
 				if (pctx->hAudio != kNoAudioID)
-					audmgr.ResumeAudio(pctx->hAudio);
+					audmgr->ResumeAudio(pctx->hAudio);
 				
 				if (!bAudio) {
 					nexttime = kernel.GetElapsedTimeAsMSecs();
@@ -277,10 +277,10 @@ void* VideoTaskMain( void* arg )
 			}
 		}
 		if (pctx->hAudio != kNoAudioID)
-			audmgr.StopAudio(pctx->hAudio, false);
+			audmgr->StopAudio(pctx->hAudio, false);
 		// Reloop from 1st video frame if selected, or exit thread
 		if (bRunning && pctx->bLooped)
-			pctx->bPlaying = vidmgr.SeekVideoFrame(pctx->hVideo, &vtm0);
+			pctx->bPlaying = vidmgr->SeekVideoFrame(pctx->hVideo, &vtm0, true, false);
 		else
 			pctx->bPlaying = false;
 		if (!bRunning)
@@ -296,12 +296,12 @@ void* VideoTaskMain( void* arg )
 		data.isDone = true;
 		data.timeStamp = vtm;
 		CVideoEventMessage msg(data);
-		evntmgr.PostEvent(msg, 0, pctx->pListener);
+		evntmgr->PostEvent(msg, 0, pctx->pListener);
 	}
 
 	// Unregister our local listener
 	if (pVideoListener) {
-		evntmgr.UnregisterEventListener(pVideoListener);
+		evntmgr->UnregisterEventListener(pVideoListener);
 		delete pVideoListener;
 		pVideoListener = NULL;
 	}
@@ -314,8 +314,8 @@ void* VideoTaskMain( void* arg )
 	
 	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
 	bStopping = true;
-	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...\n" );
-	return kNull;
+	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...(%p)\n", pctx );
+	return pctx;
 }
 
 //----------------------------------------------------------------------------
@@ -329,6 +329,9 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 
 	// Set thread state prior to task creation
 	bRunning = bStopping = false;
+
+	pCtx->pEventMPI = new CEventMPI();
+	pCtx->pAudioMPI = new CAudioMPI();
 	
 	// Setup task properties
 	prop.TaskMainFcn = (void* (*)(void*))VideoTaskMain;
@@ -348,8 +351,9 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 //----------------------------------------------------------------------------
 tErrType DeInitVideoTask( tVideoContext* pCtx )
 {
+	CDebugMPI	dbg(kGroupVideo);
 	CKernelMPI	kernel;
-	void* 		retval;
+	void* 		retval = NULL;
 	int			count = 10;
 
 	if (hVideoThread == kNull)
@@ -359,11 +363,12 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 	bRunning = false;
 	while (!bStopping && --count)
 		kernel.TaskSleep(10);
-	// FIXME: pthread_join should always work
-	if (!bStopping) {
+	if (!bStopping)
 		kernel.CancelTask(hVideoThread);
-		kernel.JoinTask(hVideoThread, retval);
-	}
+	kernel.JoinTask(hVideoThread, retval);
+	dbg.DebugOut(kDbgLvlImportant, "%s: count=%d, retval=%p\n", __FUNCTION__, count, retval);
+	delete pCtx->pAudioMPI;
+	delete pCtx->pEventMPI;
 	pCtx->hVideoThread = hVideoThread = kNull;
 	
 	return kNoErr;
