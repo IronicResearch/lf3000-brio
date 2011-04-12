@@ -214,7 +214,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		sa.sa_handler = BOGLSignalHandler;
 		sa.sa_flags = SA_RESTART;
 		sigfillset(&sa.sa_mask);
-		sigaction(SIGTERM, &sa, NULL);
+		//sigaction(SIGTERM, &sa, NULL); // FIXME
+		signal(SIGTERM, BOGLSignalHandler);
 		isHandled = true;
 	}
 #endif
