@@ -30161,3 +30161,24 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/11 10:12 AM
 6,475 ms. (Cumulative: 10,961,570 ms)
 
 ----------------
+Revision 9,255 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,471 ms. (Cumulative: 10,968,134 ms)
+
+----------------
+Revision 9,256 from svn://localhost/TRUNK/:
+
+No changes to commit.
+6,470 ms. (Cumulative: 10,974,604 ms)
+
+----------------
+Revision 9,257 from svn://localhost/TRUNK/:
+
+BrioOpenGLConfig: Use signal() instead of sigaction() for catching OGL context termination. (Madrid TTP #401)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/11 10:39 AM
+1 changed, 0 added, 0 deleted.
+6,438 ms. (Cumulative: 10,981,042 ms)
+
+----------------
