@@ -352,6 +352,8 @@ private:
 	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
 						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+
+	static void *TimerTask(void *user_data);
 };
 
 LF_END_BRIO_NAMESPACE()	

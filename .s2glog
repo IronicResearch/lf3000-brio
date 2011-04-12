@@ -30182,3 +30182,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/11 10:39 AM
 6,438 ms. (Cumulative: 10,981,042 ms)
 
 ----------------
+Revision 9,258 from svn://localhost/TRUNK/:
+
+Converting Brio KernelMPI timers to deliver callbacks in a thread instead of as an interrupt.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/12/11 3:28 PM
+2 changed, 0 added, 0 deleted.
+6,504 ms. (Cumulative: 10,987,640 ms)
+
+----------------
