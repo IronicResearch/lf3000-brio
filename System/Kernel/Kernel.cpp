@@ -84,8 +84,8 @@ namespace
 	class ListData
 	{
 		public:
-			ListData(U32 ptr, U32 hndl, U32 pdata, int signo, struct sigaction sigact)
-			: ptr_(ptr), hndl_(hndl), pdata_(pdata), signo_(signo), sigact_(sigact)
+			ListData(U32 ptr, U32 hndl, U32 pdata, int signo)
+			: ptr_(ptr), hndl_(hndl), pdata_(pdata), signo_(signo)
 			{}
 
 			~ListData() 
@@ -109,18 +109,13 @@ namespace
 		{
 			return signo_;
 		}
-		struct sigaction* getSigact()
-		{
-			return &sigact_;
-		}
 
 	private:
 		U32 ptr_;
 		U32 hndl_;
 		U32 pdata_;
 		int signo_;
-		struct sigaction sigact_;
-	};
+		};
 
 	struct equal_id : public binary_function<ListData*, int, bool>
 	{
@@ -131,7 +126,9 @@ namespace
 	};
 
 	static list<ListData *> listMemory;
-
+	tTaskHndl timer_task_handle = 0;
+	volatile bool timer_task_run = false;
+	sigset_t timer_signal_set;
 //@}
 }
 	
@@ -152,10 +149,31 @@ inline timer_t AsPosixTimerHandle(tTimerHndl hndlIn)
 //==============================================================================
 CKernelModule::CKernelModule() : mDebugMPI(kGroupKernel)
 {
+	sigset_t signal_set;
+	sigemptyset(&signal_set);
+	for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
+		sigaddset(&signal_set, i);
+	pthread_sigmask( SIG_BLOCK, &signal_set, NULL );
+	sigemptyset(&timer_signal_set);
+}
+
+void KillTimer(tTimerHndl tHndl)
+{
 }
 
 CKernelModule::~CKernelModule()
 {
+	if(timer_task_handle)
+	{
+		timer_task_run = false;
+		//send fake timer?
+		tTimerHndl kill_timer;
+		tTimerProperties killer_timer_prop = {TIMER_RELATIVE_SET, {{0, 0}, {1, 0}}};
+		kill_timer = CreateTimer(KillTimer, killer_timer_prop, (const char *)0 );
+		StartTimer(kill_timer, killer_timer_prop);
+		void* retval = NULL;
+		JoinTask(timer_task_handle, retval);
+	}
 }
 
 //============================================================================
@@ -495,7 +513,7 @@ tErrType CKernelModule::CloseMessageQueue(tMessageQueueHndl hndl,
     	
     	errno = 0;
     	mq_unlink(props.nameQueue);
-    	if(!errno)
+    	if(errno)
     	{
     		mDebugMPI.DebugOut(kDbgLvlCritical , "***** POSIX function fails with error # (%d) Error string (%s) File (%s), Line (%d)\n", \
     			 (int)errno, strerror(errno), __FILE__, __LINE__); \
@@ -818,7 +836,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 								const char* /*pDebugName*/ )
 {
 	tErrType err = kNoErr;
-    int signum = SIGRTMAX;     
+	int signum = SIGRTMAX + 1;
 
 //	clockid_t clockid;     Now, it is used CLOCK_REALTIME
 						// There are the following possible values:
@@ -852,27 +870,19 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
-	// Find unused SIGRT handler
-	for (int i = SIGRTMIN; i <= SIGRTMAX; i++) {
-    	struct sigaction sa;
-		memset(&sa, 0, sizeof(sa));
-		sigaction(i, NULL, &sa);
-		if (sa.sa_handler == NULL && sa.sa_sigaction == NULL) {
+	for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
+	{
+		if(!sigismember(&timer_signal_set, i))
+		{
 			signum = i;
 			break;
 		}
 	}
-	
-    // Initialize the sigaction structure for handler 
-   	// Setup signal to repond to handler
-   	struct sigaction act;
-    struct sigaction oldact;
-    memset(&act, 0, sizeof(act));
-   	sigemptyset( &act.sa_mask );
-   	act.sa_flags = SA_SIGINFO; 
-   	act.sa_sigaction = sig_handler;
-   	sigaction( signum, &act, &oldact ); 
-   	
+	if(signum > SIGRTMAX)
+		return kInvalidTimerHndl;
+
+	sigaddset(&timer_signal_set, signum);
+
 	// Set up timer
     struct sigevent se;
     memset(&se, 0, sizeof(se));
@@ -901,7 +911,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
  	ptrData->pfn = callback;
 	ptrData->argFunc = hndl;
 	
-	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl, (U32)ptrData, signum, oldact);
+	ListData *ptrList = new ListData((U32 )callback, (U32 )hndl, (U32)ptrData, signum);
 
 	err = pthread_mutex_lock( &timers_mutex);
 	ASSERT_POSIX_CALL( err );
@@ -910,8 +920,19 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 
 	pthread_mutex_unlock( &timers_mutex);
 	mDebugMPI.DebugOut(kDbgLvlValuable, "CreateTimer tTimerHndl=0x%x callback=0x%x SIGRT%d\n",
-		           (unsigned int )hndl, (unsigned int )callback, signum);
+		           (unsigned int )hndl, (unsigned int )callback, signum);;
 	
+	if(!timer_task_handle)
+	{
+		tTaskProperties properties;
+		properties.TaskMainFcn = TimerTask;
+		properties.taskMainArgCount = 1;
+		properties.pTaskMainArgValues = this;
+		timer_task_run = true;
+		tErrType err = CreateTask(timer_task_handle, properties, NULL);
+		mDebugMPI.Assert( kNoErr == err, "CKernelModule::CKernelModule Unable to create timer task.\n");
+	}
+
     return hndl;
 }
 
@@ -931,7 +952,7 @@ tErrType CKernelModule::DestroyTimer( tTimerHndl hndl )
 
 	err = pthread_mutex_lock(&timers_mutex);
 	ASSERT_POSIX_CALL( err );
-	sigaction((*p)->getSigno(), (*p)->getSigact(), NULL);
+	sigdelset(&timer_signal_set, (*p)->getSigno());
 	delete *p;
     listMemory.erase( p );
 	err = pthread_mutex_unlock(&timers_mutex);
@@ -1405,6 +1426,39 @@ tErrType CKernelModule::SetCondAttrPShared( tCondAttr* pAttr, int shared )
     return kNoErr;
 }
 
+//------------------------------------------------------------------------
+void *CKernelModule::TimerTask(void *user_data)
+{
+	sigset_t signal_set;
+	int signo;
+
+	while(timer_task_run)
+	{
+		sigemptyset( &signal_set );
+		for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
+			sigaddset(&signal_set, i);
+		sigwait(&signal_set, &signo);
+		tErrType err = pthread_mutex_lock( &timers_mutex);
+		//ASSERT_POSIX_CALL( err );
+
+		callbackData *ta = NULL;
+		list<ListData*>::iterator p;
+		for (p = listMemory.begin(); p != listMemory.end(); p++) {
+			if ((*p)->getSigno() == signo) {
+				ta = (callbackData *)(*p)->getData();
+				break;
+			}
+		}
+
+		if (ta && ta->pfn)
+		{
+			((ta->pfn))((tTimerHndl )ta->argFunc);
+		}
+
+		pthread_mutex_unlock( &timers_mutex);
+		//ASSERT_POSIX_CALL( err );
+	}
+}
 LF_END_BRIO_NAMESPACE()
 
 
