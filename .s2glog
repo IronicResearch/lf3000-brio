@@ -30191,3 +30191,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/12/11 3:28 PM
 6,504 ms. (Cumulative: 10,987,640 ms)
 
 ----------------
+Revision 9,259 from svn://localhost/TRUNK/:
+
+Rebuilt FreeType x86 emulation libs from v2.4.4 source on Ubuntu8.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/11 4:11 PM
+1 changed, 0 added, 0 deleted.
+7,016 ms. (Cumulative: 10,994,766 ms)
+
+----------------
