@@ -65,7 +65,7 @@ enum tTouchParam {
 
 // Table of tTouchParam parameters for Default touch mode
 const U32	kTouchTableDefault[] = {
-	100,								// sample rate (Hz)
+	50,								// sample rate (Hz)
 	4,									// debounce stylus down (samples)
 	1									// debounce stylus up (samples)
 };

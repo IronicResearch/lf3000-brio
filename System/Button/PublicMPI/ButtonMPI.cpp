@@ -177,7 +177,7 @@ U32	CButtonMPI::GetTouchRate() const
 //----------------------------------------------------------------------------
 tErrType CButtonMPI::SetTouchRate(U32 rate)
 {
-#if 0 // disabled per TTP 2419
+#if 1 // Re-Enabled for Madrid.  This is to fix TTPro 527.  // disabled per TTP 2419
 	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);
