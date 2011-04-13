@@ -118,7 +118,6 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
-	CAudioMPI			audiomgr;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
