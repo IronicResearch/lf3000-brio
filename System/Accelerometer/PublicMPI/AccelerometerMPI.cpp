@@ -16,6 +16,7 @@
 #include <AccelerometerTypes.h>
 #include <AccelerometerMPI.h>
 #include <EventMPI.h>
+#include <DebugMPI.h>
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
@@ -157,8 +158,10 @@ tErrType CAccelerometerMPI::UnregisterEventListener(const IEventListener *pListe
 //----------------------------------------------------------------------------
 Boolean	CAccelerometerMPI::IsAccelerometerPresent()
 {
+	CDebugMPI dbg(kGroupAccelerometer);
 	struct stat stbuf;
 	int r = stat("/sys/devices/platform/lf1000-aclmtr", &stbuf);
+	dbg.DebugOut(kDbgLvlImportant, "IsAccelerometerPresent: %d\n", (r == 0));
 	return (r == 0) ? true : false;
 }
 

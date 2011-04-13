@@ -30237,3 +30237,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/11 7:08 PM
 6,094 ms. (Cumulative: 11,019,690 ms)
 
 ----------------
+Revision 9,264 from svn://localhost/TRUNK/:
+
+AccelerometerMPI: Add trace message for IsAccelerometerPresent(), per Madrid SDK meeting.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/11 7:13 PM
+1 changed, 0 added, 0 deleted.
+6,086 ms. (Cumulative: 11,025,854 ms)
+
+----------------
