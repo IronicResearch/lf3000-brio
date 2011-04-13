@@ -30228,3 +30228,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/11 7:00 PM
 6,157 ms. (Cumulative: 11,013,518 ms)
 
 ----------------
+Revision 9,263 from svn://localhost/TRUNK/:
+
+CameraModule: Remove unused AudioMPI object to avoid pthread_join.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/11 7:08 PM
+1 changed, 0 added, 0 deleted.
+6,094 ms. (Cumulative: 11,019,690 ms)
+
+----------------
