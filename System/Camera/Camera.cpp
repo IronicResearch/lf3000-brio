@@ -51,6 +51,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/lf1000/mlc_ioctl.h>
+#include <linux/lf1000/gpio_ioctl.h>
 #endif
 
 // PNG wrapper function for saving file
@@ -174,6 +175,26 @@ static void SetScaler(int width, int height, bool centered)
 }
 
 //----------------------------------------------------------------------------
+static bool SetUSBHost(bool enable)
+{
+#if 0 // #ifndef EMULATION
+	// Set USB host enable via GPIO
+	int fd = open("/dev/gpio", O_RDWR | O_SYNC);
+	if (fd > -1) {
+		int r;
+		union gpio_cmd c;
+		c.outvalue.port  = 2;
+		c.outvalue.pin 	 = 0;
+		c.outvalue.value = (enable) ? 0 : 1;
+		r = ioctl(fd, GPIO_IOCSOUTVAL, &c);
+		close(fd);
+		return (r == 0) ? true : false;
+	}
+#endif
+	return false;
+}
+
+//----------------------------------------------------------------------------
 
 //============================================================================
 // Local event listener
@@ -256,6 +277,7 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 				else
 				{
 					/* camera absent upon initialization*/
+					SetUSBHost(true);
 				}
 
 			}
@@ -275,6 +297,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	tUSBDeviceData		usb_data;
 
 	dbg_.SetDebugLevel(kCameraDebugLevel);
+
+	// Enable USB host port
+	SetUSBHost(true);
 
 	sysfs.clear();
 	camCtx_.file 			= gCamFile;
@@ -362,6 +387,8 @@ CCameraModule::~CCameraModule()
 	delete camCtx_.controls;
 	delete camCtx_.modes;
 
+	// Disable USB host port
+	SetUSBHost(false);
 }
 
 //----------------------------------------------------------------------------
@@ -374,8 +401,9 @@ Boolean	CCameraModule::IsValid() const
 // Camera-specific Implementation
 //============================================================================
 
-Boolean		CCameraModule::IsCameraPresent()
+Boolean	CCameraModule::IsCameraPresent()
 {
+	dbg_.DebugOut(kDbgLvlImportant, "CameraModule::IsCameraPresent: %d\n", valid);
 	return valid;
 }
 
