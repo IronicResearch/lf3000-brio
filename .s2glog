@@ -30246,3 +30246,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/11 7:13 PM
 6,086 ms. (Cumulative: 11,025,854 ms)
 
 ----------------
+Revision 9,265 from svn://localhost/TRUNK/:
+
+Fix for Brio-Base Bug # 527.  Re-enabled SetTouchRate function.  The Default TouchRate is now set to 50 Hz to reduce UI lag when dragging.
+
+By bgrissom (bgrissom@leapfrog.com) on 4/13/11 2:13 PM
+2 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 11,032,136 ms)
+
+----------------
