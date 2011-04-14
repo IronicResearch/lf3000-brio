@@ -351,6 +351,7 @@ static int direct_write_loop(snd_pcm_t *handle, signed short* samples)
 //==============================================================================
 static volatile bool 		bRunning = true;
 static volatile bool 		bRendering = false;
+static volatile bool		bStopping = false;
 static tTaskHndl 			hndlThread = 0;
 static S16*					pOutputBuffer = NULL;
 //----------------------------------------------------------------------------
@@ -358,6 +359,8 @@ static void* CallbackThread(void* pCtx)
 {
 	int r = 0;
 	
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: starting audio thread %p\n", __FUNCTION__, pCtx);
+
 	while (bRunning)
 	{
 		if (bRendering)
@@ -375,6 +378,9 @@ static void* CallbackThread(void* pCtx)
 		}
 		pKernelMPI_->TaskSleep(10);
 	}
+
+	bStopping = true;
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: stopping audio thread %p\n", __FUNCTION__, pCtx);
 	return pCtx;
 }
  
@@ -455,10 +461,15 @@ int StopAudioOutputAlsa( void )
 int DeInitAudioOutputAlsa( void )
 {
 	// Kill callback thread
-	void* retval;
+	void* retval = NULL;
+	int count = 10;
+
 	bRunning = false;
-	pKernelMPI_->TaskSleep(10);
-	pKernelMPI_->JoinTask(hndlThread, retval);
+	while (!bStopping && --count)
+		pKernelMPI_->TaskSleep(10);
+	if (bStopping)
+		pKernelMPI_->JoinTask(hndlThread, retval);
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: count=%d, retval=%p\n", __FUNCTION__, count, retval);
 
 	// Release resources
 	pKernelMPI_->Free(pOutputBuffer);
