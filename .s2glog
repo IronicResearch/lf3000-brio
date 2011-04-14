@@ -30255,3 +30255,13 @@ By bgrissom (bgrissom@leapfrog.com) on 4/13/11 2:13 PM
 6,204 ms. (Cumulative: 11,032,136 ms)
 
 ----------------
+Revision 9,266 from svn://localhost/TRUNK/:
+
+AudioModule: Added thread state var to detect stopping as alternative to pthread_join. (Madrid TTP #540)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/13/11 5:03 PM
+1 changed, 0 added, 0 deleted.
+6,101 ms. (Cumulative: 11,038,330 ms)
+
+----------------
