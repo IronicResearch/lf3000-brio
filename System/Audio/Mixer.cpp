@@ -211,7 +211,7 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	samplingFrequency_ = kAudioSampleRate;
 
 	pDebugMPI_ = new CDebugMPI( kGroupAudio );
-	pDebugMPI_->SetDebugLevel( kDbgLvlVerbose);
+	pDebugMPI_->SetDebugLevel( kAudioDebugLevel );
 	
 	pEventMPI_ = new CEventMPI();
 
@@ -966,7 +966,7 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 		//Unfortunately, it's a bit late to fix.
 		pPlayer = pStream->GetPlayer();
 		if(pPlayer) {
-			pDebugMPI_->DebugOut(kDbgLvlImportant, "CAudioMixer::RemovePlayerInternal %p\n", pPlayer);
+			pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioMixer::RemovePlayerInternal %p\n", pPlayer);
 			delete pPlayer;
 		}
 		pStream->Release(true);
