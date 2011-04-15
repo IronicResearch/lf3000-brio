@@ -30284,3 +30284,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/14/11 5:05 PM
 6,097 ms. (Cumulative: 11,050,693 ms)
 
 ----------------
+Revision 9,270 from svn://localhost/TRUNK/:
+
+Set kTouchRateDefault = 50 to match Brio svn -r9265 change.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/14/11 5:47 PM
+1 changed, 0 added, 0 deleted.
+6,139 ms. (Cumulative: 11,056,910 ms)
+
+----------------
