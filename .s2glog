@@ -30293,3 +30293,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/14/11 5:47 PM
 6,139 ms. (Cumulative: 11,056,910 ms)
 
 ----------------
+Revision 9,271 from svn://localhost/TRUNK/:
+Revision 9,272 from svn://localhost/TRUNK/:
+
+KernelModule: Added annotations for thread-based timer rework in Brio svn -r9258.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/14/11 6:54 PM
+1 changed, 0 added, 0 deleted.
+6,114 ms. (Cumulative: 11,063,117 ms)
+
+----------------

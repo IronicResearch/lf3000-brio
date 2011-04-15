@@ -149,6 +149,7 @@ inline timer_t AsPosixTimerHandle(tTimerHndl hndlIn)
 //==============================================================================
 CKernelModule::CKernelModule() : mDebugMPI(kGroupKernel)
 {
+	// Init timer signal set exclusively for our timer thread
 	sigset_t signal_set;
 	sigemptyset(&signal_set);
 	for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
@@ -163,6 +164,7 @@ void KillTimer(tTimerHndl tHndl)
 
 CKernelModule::~CKernelModule()
 {
+	// Terminate timer thread, if exists, by setting one last timeout
 	if(timer_task_handle)
 	{
 		timer_task_run = false;
@@ -870,6 +872,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
              			//			void  *sigev_notify_attributes;	/* Thread function attributes */
          				//		};
 
+	// Find unused timer signal
 	for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
 	{
 		if(!sigismember(&timer_signal_set, i))
@@ -922,6 +925,7 @@ tTimerHndl 	CKernelModule::CreateTimer( pfnTimerCallback callback,
 	mDebugMPI.DebugOut(kDbgLvlValuable, "CreateTimer tTimerHndl=0x%x callback=0x%x SIGRT%d\n",
 		           (unsigned int )hndl, (unsigned int )callback, signum);;
 	
+	// Create timer thread, if not already exists
 	if(!timer_task_handle)
 	{
 		tTaskProperties properties;
@@ -1431,16 +1435,22 @@ void *CKernelModule::TimerTask(void *user_data)
 {
 	sigset_t signal_set;
 	int signo;
+	CKernelModule* pModule = (CKernelModule*)user_data;
+
+	// Init timer signal set for this thread
+	sigemptyset( &signal_set );
+	for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
+		sigaddset(&signal_set, i);
 
 	while(timer_task_run)
 	{
-		sigemptyset( &signal_set );
-		for (int i = SIGRTMIN; i <= SIGRTMAX; i++)
-			sigaddset(&signal_set, i);
+		// Wait in blocked state until timer signal
 		sigwait(&signal_set, &signo);
+
 		tErrType err = pthread_mutex_lock( &timers_mutex);
 		//ASSERT_POSIX_CALL( err );
 
+		// Find callback function associated with this timer signal
 		callbackData *ta = NULL;
 		list<ListData*>::iterator p;
 		for (p = listMemory.begin(); p != listMemory.end(); p++) {
@@ -1452,6 +1462,8 @@ void *CKernelModule::TimerTask(void *user_data)
 
 		if (ta && ta->pfn)
 		{
+			pModule->mDebugMPI.DebugOut(kDbgLvlValuable, "TimerTask: tTimerHndl=%08X callback=%p SIGRT%d\n",
+				           (unsigned int)ta->argFunc, ta->pfn, signo);
 			((ta->pfn))((tTimerHndl )ta->argFunc);
 		}
 
