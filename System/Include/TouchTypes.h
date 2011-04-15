@@ -46,7 +46,7 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupTouch), TOUCH_ERRORS)
 //==============================================================================
 const U32	kTouchRateMin		= 1;	///< minimum touch rate (Hz)
 const U32	kTouchRateMax		= 100;	///< maximum touch rate (Hz)
-const U32	kTouchRateDefault	= 100;	///< default touch rate (Hz)
+const U32	kTouchRateDefault	= 50;	///< default touch rate (Hz)
 
 /// Enumerated type for SetTouchMode()/GetTouchMode()
 enum tTouchMode {
