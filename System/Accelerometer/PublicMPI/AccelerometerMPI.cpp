@@ -33,6 +33,7 @@ const tVersion	kAccelerometerModuleVersion	= 3;
 
 static tAccelerometerData 	gCachedData 	= {0, 0, 0, {0, 0}};
 static S32					gCachedOrient	= 0;
+static bool					gbOneShot		= false;
 
 //============================================================================
 namespace
@@ -66,6 +67,13 @@ CAccelerometerMessage::CAccelerometerMessage( const tAccelerometerData& data )
 	: IEventMessage(kAccelerometerDataChanged), mData(data)
 {
 	gCachedData = data;
+	if (gbOneShot) {
+		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
+		if (fd != NULL) {
+			fprintf(fd, "%u\n", 0);
+			fclose(fd);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -217,6 +225,8 @@ tAccelerometerMode CAccelerometerMPI::GetAccelerometerMode() const
 		fscanf(fd, "%u\n", &orient);
 		fclose(fd);
 	}
+	if (gbOneShot)
+		return kAccelerometerModeOneShot;
 	if (enable && orient)
 		return kAccelerometerModeOrientation;
 	if (enable)
@@ -236,8 +246,12 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	case kAccelerometerModeOrientation:
 		orient = 1;
 	case kAccelerometerModeContinuous:
+		enable = 1;
+		gbOneShot = false;
+		break;
 	case kAccelerometerModeOneShot:
 		enable = 1;
+		gbOneShot = true;
 		break;
 	}
 	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
