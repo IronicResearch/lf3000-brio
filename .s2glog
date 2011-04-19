@@ -30324,3 +30324,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/19/11 12:08 PM
 6,204 ms. (Cumulative: 11,075,699 ms)
 
 ----------------
+Revision 9,276 from svn://localhost/TRUNK/:
+
+Reset Touch param defaults to ignore stylus up/down values, per Rob. Addendum to Madrid TTP #527.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/19/11 4:50 PM
+1 changed, 0 added, 0 deleted.
+6,197 ms. (Cumulative: 11,081,975 ms)
+
+----------------
