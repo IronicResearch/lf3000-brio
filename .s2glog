@@ -30315,3 +30315,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/19/11 11:03 AM
 6,190 ms. (Cumulative: 11,069,401 ms)
 
 ----------------
+Revision 9,275 from svn://localhost/TRUNK/:
+
+AccelerometerMPI: Added support for oneshot data mode. (Madrid TTP #560)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/19/11 12:08 PM
+2 changed, 0 added, 0 deleted.
+6,204 ms. (Cumulative: 11,075,699 ms)
+
+----------------
