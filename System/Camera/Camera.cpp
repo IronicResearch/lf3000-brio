@@ -177,7 +177,10 @@ static void SetScaler(int width, int height, bool centered)
 //----------------------------------------------------------------------------
 static bool SetUSBHost(bool enable)
 {
-#if 0 // #ifndef EMULATION
+#ifndef EMULATION
+	// USB host power option on Madrid only
+	if (GetPlatformName() != "Madrid")
+		return false;
 	// Set USB host enable via GPIO
 	int fd = open("/dev/gpio", O_RDWR | O_SYNC);
 	if (fd > -1) {
@@ -361,6 +364,12 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 
 	/* local listener handles hardware initialization as appropriate */
 	InitLut();
+
+	// Wait for USB host power to enable drivers on Madrid
+	if (GetPlatformName() == "Madrid") {
+		while (!valid)
+			kernel_.TaskSleep(10);
+	}
 }
 
 //----------------------------------------------------------------------------
