@@ -30344,3 +30344,14 @@ By bgrissom (bgrissom@leapfrog.com) on 4/20/11 10:05 AM
 6,567 ms. (Cumulative: 11,088,620 ms)
 
 ----------------
+Revision 9,278 from svn://localhost/TRUNK/:
+
+FreeType: Revert FreeType libs prior to svn -r9253.
+Compatibility fixes for Madrid TTP #519, 639, 641, 658.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/20/11 11:32 AM
+4 changed, 2 added, 2 deleted.
+6,813 ms. (Cumulative: 11,095,527 ms)
+
+----------------
