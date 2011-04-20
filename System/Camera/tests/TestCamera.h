@@ -17,6 +17,9 @@
 //For strcmp
 #include <string.h>
 
+#include "Utility.h"
+
+
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
@@ -145,6 +148,9 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 
+		tPlatformCaps test = kCapsCamera;
+		TS_ASSERT(HasPlatformCapability(test));
+
 		if ( pCameraMPI_->IsValid() ) {
 			pName = pCameraMPI_->GetMPIName();
 			TS_ASSERT_EQUALS( *pName, "CameraMPI" );
@@ -155,6 +161,7 @@ public:
 			pURI = pCameraMPI_->GetModuleOrigin();
 			TS_ASSERT_EQUALS( *pURI, "/LF/System/Camera" );
 		}
+
 	}
 
 	//------------------------------------------------------------------------
