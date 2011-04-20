@@ -12,6 +12,9 @@
 //For memcpy
 #include <string.h>
 
+#include "Utility.h"
+
+
 LF_USING_BRIO_NAMESPACE()
 
 const S32 kBadAccelerometerState = 0xBAADF00D;
@@ -96,6 +99,9 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 		
+		tPlatformCaps test = kCapsAccelerometer;
+		TS_ASSERT(HasPlatformCapability(test));
+
 		pName = aclmtr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "AccelerometerMPI" );
 		version = aclmtr_->GetModuleVersion();

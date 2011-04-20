@@ -30355,3 +30355,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/20/11 11:32 AM
 6,813 ms. (Cumulative: 11,095,527 ms)
 
 ----------------
+Revision 9,279 from svn://localhost/TRUNK/:
+
+Updated these unit tests to tests GetPlatformCapcity() (Brio-Base Bug # 597).  
+QA needs these to verify that the function is working.
+
+By bgrissom (bgrissom@leapfrog.com) on 4/20/11 3:22 PM
+3 changed, 0 added, 0 deleted.
+6,781 ms. (Cumulative: 11,102,386 ms)
+
+----------------

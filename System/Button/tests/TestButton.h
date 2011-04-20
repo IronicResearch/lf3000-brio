@@ -12,6 +12,9 @@
 //For memcpy
 #include <string.h>
 
+#include "Utility.h"
+
+
 LF_USING_BRIO_NAMESPACE()
 
 const U32 kBadButtonState = 0xBAADF00D;
@@ -87,6 +90,9 @@ public:
 		const CString*	pName;
 		const CURI*		pURI;
 		
+		tPlatformCaps test = kCapsTouchscreen;
+		TS_ASSERT(HasPlatformCapability(test));
+
 		pName = btnmgr_->GetMPIName();
 		TS_ASSERT_EQUALS( *pName, "ButtonMPI" );
 		version = btnmgr_->GetModuleVersion();
