@@ -75,8 +75,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH = 480;
+		const U16		HEIGHT = 272;
 
 		const tDisplayScreenStats* pstats = pDisplayMPI_->GetScreenStats(0);
 		TS_ASSERT( pstats != NULL );
