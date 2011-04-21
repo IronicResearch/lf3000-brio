@@ -790,7 +790,7 @@ void* CEventModule::CartridgeTask( void* arg )
 							pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
 
 							// Load tslib on demand?
-							if (stat(FLAGS_NOTSLIB, &st) != 0) {
+							if (touch_msg.GetTouchMode() == kTouchModeDrawing) {
 								use_tslib = LoadTSLib(pThis, &handle, &tsl);
 								if (tsl != NULL)
 									event_fd[touch_index].fd = ts_fd(tsl);

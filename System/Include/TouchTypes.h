@@ -96,6 +96,7 @@ public:
 	CTouchMessage( const tTouchData& data );
 	virtual U16	GetSizeInBytes() const;
 	tTouchData GetTouchState() const;
+	tTouchMode GetTouchMode() const;
 private:
 	tTouchData	mData;
 };

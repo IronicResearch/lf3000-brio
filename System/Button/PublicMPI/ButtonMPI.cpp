@@ -28,6 +28,7 @@ const CString	kMPIName = "ButtonMPI";
 
 static tButtonData2 	gCachedButtonData 	= {0, 0, {0, 0}};
 static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
+static tTouchMode		gCachedTouchMode	= kTouchModeDefault;
 static bool				gIsPressureMode		= false;
 
 //============================================================================
@@ -80,6 +81,13 @@ tTouchData CTouchMessage::GetTouchState() const
 {
 	return mData;
 }
+
+//------------------------------------------------------------------------------
+tTouchMode CTouchMessage::GetTouchMode() const
+{
+	return gCachedTouchMode;
+}
+
 //============================================================================
 // CButtonMPI
 //============================================================================
@@ -214,6 +222,7 @@ tErrType CButtonMPI::SetTouchMode(tTouchMode mode)
 {
 	tErrType r = kNoErr; // 0
 	gIsPressureMode = false;
+	gCachedTouchMode = mode;
 	switch (mode) {
 	case kTouchModeDrawing:
 		r = SetTouchParam(kTouchParamSampleRate, 	kTouchTableDrawing[kTouchParamSampleRate]);
