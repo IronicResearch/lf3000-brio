@@ -133,12 +133,17 @@ const tDisplayScreenStats* CDisplayModule::GetScreenStats(tDisplayScreen /*scree
 	if(format == kPixelFormatError)
 	dbg_.DebugOut(kDbgLvlCritical, "unknown PixelFormat returned\n");
 
-	static const tDisplayScreenStats kLightningStats = {
+	static tDisplayScreenStats kLightningStats = {
 		(size>>16),
 		(size & 0xFFFF),
 		format,
 		(size & 0xFFFF) * 4,
 		"LCD"};
+	kLightningStats.height = size>>16;
+	kLightningStats.width = size & 0xFFFF;
+	kLightningStats.tPixelFormat = format;
+	kLightningStats.pitch = (size & 0xFFFF) * 4;
+	kLightningStats.description = "LCD";
 	return &kLightningStats;
 }
 
