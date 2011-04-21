@@ -30387,3 +30387,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/21/11 3:01 PM
 6,660 ms. (Cumulative: 11,115,844 ms)
 
 ----------------
+Revision 9,284 from svn://localhost/TRUNK/:
+
+EventModule: Load tslib on demand, instead of immediately on event thread startup. (Madrid TTP #429)
+Part 2 of 2 change loads tslib when kTouchModeDrawing is detected via TouchEventMessage object.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/11 3:28 PM
+3 changed, 0 added, 0 deleted.
+6,500 ms. (Cumulative: 11,122,500 ms)
+
+----------------
