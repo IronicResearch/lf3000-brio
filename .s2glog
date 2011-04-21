@@ -30375,3 +30375,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/21/11 7:39 AM
 6,547 ms. (Cumulative: 11,109,090 ms)
 
 ----------------
+Revision 9,282 from svn://localhost/TRUNK/:
+Revision 9,283 from svn://localhost/TRUNK/:
+
+EventModule: Load tslib on demand, instead of immediately on event thread startup. (Madrid TTP #429)
+Reorganizes tslib loading code into subroutine so loading can be deferred until later time.
+Part 1 of 2 change simply continues to poll for removal of /flags/notslib for testing.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/11 3:01 PM
+1 changed, 0 added, 0 deleted.
+6,660 ms. (Cumulative: 11,115,844 ms)
+
+----------------

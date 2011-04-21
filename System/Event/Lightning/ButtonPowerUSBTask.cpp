@@ -101,6 +101,12 @@ namespace
 
 	bool use_tslib = false;
 
+	int (*ts_config)(struct tsdev *);
+	int (*ts_fd)(struct tsdev *);
+	struct tsdev *(*ts_open)(const char *dev_name, int nonblock);
+	int (*ts_read)(struct tsdev *, struct ts_sample *, int);
+	int (*ts_close)(struct tsdev *);
+
 	//============================================================================
 	// Local state and utility functions
 	//============================================================================
@@ -276,6 +282,84 @@ namespace
 		power.Shutdown();
 		exit(kKernelExitShutdown);
 	}
+
+	//----------------------------------------------------------------------------
+	// Support for tslib touchscreen filter loading on demand
+	//----------------------------------------------------------------------------
+	bool LoadTSLib(CEventModule* pThis, void** phandle, struct tsdev** ptsl)
+	{
+		void *handle = NULL;
+		struct tsdev* tsl = NULL;
+
+		handle = dlopen("/usr/lib/libts.so", RTLD_NOW | RTLD_GLOBAL);
+		if (!handle)
+		{
+			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't dlopen libts.so\n");
+		}
+		else
+		{
+			// Resolve the 4 symbols we want
+			ts_open = (struct tsdev *(*)(const char *, int))
+				dlsym(handle, "ts_open");
+			ts_config = (int (*)(struct tsdev *)) dlsym(handle, "ts_config");
+			ts_fd = (int (*)(struct tsdev *)) dlsym(handle, "ts_fd");
+			ts_read = (int (*)(struct tsdev *, struct ts_sample *, int)) dlsym(handle, "ts_read");
+			ts_close = (int (*)(struct tsdev *)) dlsym(handle, "ts_close");
+			if (!ts_open || !ts_config || !ts_fd || !ts_read || !ts_close)
+			{
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't resolve symbols in tslib.so\n");
+				dlclose(handle);
+			}
+			else
+			{
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Use tslib\n");
+				use_tslib = true;
+			}
+		}
+
+		while (use_tslib) // Use while instead of "if" so I can "break"
+		{
+			// Find input event device and hand it to tslib
+			char dev[20];
+			if (find_input_device("LF1000 touchscreen interface", dev) < 0) {
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
+				perror ("Can't find touchscreen event device in /dev/input");
+				dlclose(handle);
+				use_tslib = false;
+				break;
+			}
+			tsl = ts_open(dev, 1);
+			if (!tsl) {
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_open failed\n");
+				perror("ts_open");
+				dlclose(handle);
+				use_tslib = false;
+				break;
+			}
+			if (ts_config(tsl)) {
+				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_config failed\n");
+				perror("ts_config");
+				ts_close(tsl);
+				dlclose(handle);
+				use_tslib = false;
+				tsl = NULL;
+				break;
+			}
+
+			// Success; get back fd for poll to know when to ts_read
+			//event_fd[last_fd].fd = ts_fd (tsl);
+			//event_fd[last_fd].events = POLLIN;
+
+			// Always break, since this is just an if in disguise.
+			break;
+		}
+
+		pThis->debug_.DebugOut(kDbgLvlValuable, "%s: use_tslib=%d, handle=%p, tsl=%p, fd=%d\n", __FUNCTION__, use_tslib, handle, tsl, (tsl) ? ts_fd(tsl) : 0);
+
+		*phandle = handle;
+		*ptsl = tsl;
+		return use_tslib;
+	}
 }
 
 #define CART_SOCK        "/tmp/cart_events_socket"
@@ -434,15 +518,10 @@ void* CEventModule::CartridgeTask( void* arg )
 	
 	// Determine if tslib is used or not
 
-	int (*ts_config)(struct tsdev *);
-	int (*ts_fd)(struct tsdev *);
-	struct tsdev *(*ts_open)(const char *dev_name, int nonblock);
-	int (*ts_read)(struct tsdev *, struct ts_sample *, int);
-	int (*ts_close)(struct tsdev *);
-
 	use_tslib = false;
 	struct stat st;
 	void *handle = NULL;
+	struct tsdev *tsl = NULL;
 	if(stat(FLAGS_NOTSLIB, &st) == 0) /* file exists */
 	{
 		// NO TSLIB was picked
@@ -456,76 +535,19 @@ void* CEventModule::CartridgeTask( void* arg )
 	else
 	{
 		// YES TSLIB was picked
-		// Hack: do dlopen ourselves so we can assert RTLD_GLOBAL flag, or plugins will
-		// not find symbols defined in tslib
-		// yield timeslice to avoid tslib dependency delays
 		pThis->kernel_.TaskSleep(10);
-		handle = dlopen("/usr/lib/libts.so", RTLD_LAZY | RTLD_GLOBAL);
-		if (!handle)
-		{
-			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't dlopen libts.so\n");
-		}
-		else
-		{
-			// Resolve the 4 symbols we want
-			ts_open = (struct tsdev *(*)(const char *, int))
-				dlsym(handle, "ts_open");
-			ts_config = (int (*)(struct tsdev *)) dlsym(handle, "ts_config");
-			ts_fd = (int (*)(struct tsdev *)) dlsym(handle, "ts_fd");
-			ts_read = (int (*)(struct tsdev *, struct ts_sample *, int)) dlsym(handle, "ts_read");
-			ts_close = (int (*)(struct tsdev *)) dlsym(handle, "ts_close");
-			if (!ts_open || !ts_config || !ts_fd || !ts_read || !ts_close)
-			{
-				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't resolve symbols in tslib.so\n");
-				dlclose(handle);
-			}
-			else
-			{
-				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Use tslib\n");				
-				use_tslib = true;
-			}
-		}
+		use_tslib = LoadTSLib(pThis, &handle, &tsl);
 	}
 
 	// init touchscreen driver
 	int touch_index = -1;
 	tTouchData touch_data;
-	struct tsdev *tsl = NULL;
 
-	while (use_tslib) // Use while instead of "if" so I can "break"
+	if (use_tslib)
 	{
-		// Find input event device and hand it to tslib
-		char dev[20];
-		if (find_input_device("LF1000 touchscreen interface", dev) < 0) {
-			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
-			perror ("Can't find touchscreen event device in /dev/input");
-			dlclose(handle);
-			use_tslib = false;
-			break;
-		}
-		tsl = ts_open(dev, 1);
-		if (!tsl) {
-			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_open failed\n");
-			perror("ts_open");
-			dlclose(handle);
-			use_tslib = false;
-			break;
-		}
-		if (ts_config(tsl)) {
-			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_config failed\n");
-			perror("ts_config");
-			ts_close(tsl);
-			dlclose(handle);
-			use_tslib = false;
-			break;
-		}
-
 		// Success; get back fd for poll to know when to ts_read
 		event_fd[last_fd].fd = ts_fd (tsl);
 		event_fd[last_fd].events = POLLIN;
-
-		// Always break, since this is just an if in disguise.
-		break;
 	}
 	if (!use_tslib)
 	{
@@ -766,6 +788,13 @@ void* CEventModule::CartridgeTask( void* arg )
 						{
 							CTouchMessage touch_msg(touch_data);
 							pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
+
+							// Load tslib on demand?
+							if (stat(FLAGS_NOTSLIB, &st) != 0) {
+								use_tslib = LoadTSLib(pThis, &handle, &tsl);
+								if (tsl != NULL)
+									event_fd[touch_index].fd = ts_fd(tsl);
+							}
 						}
 						break;
 
