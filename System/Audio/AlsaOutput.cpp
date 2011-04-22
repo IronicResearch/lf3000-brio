@@ -39,8 +39,8 @@ static snd_pcm_access_t 	access = SND_PCM_ACCESS_MMAP_INTERLEAVED;
 static snd_pcm_format_t 	format = SND_PCM_FORMAT_S16;    // sample format 
 static unsigned int 		rate = 32000;                   // stream rate 
 static unsigned int 		channels = 2;                   // count of channels 
-static unsigned int 		buffer_time = 128000;           // ring buffer length in us 
-static unsigned int 		period_time = 32000;            // period time in us 
+static unsigned int 		buffer_time = 256000;           // ring buffer length in us
+static unsigned int 		period_time = 64000;            // period time in us
 static int 					resample = 1;                   // enable alsa-lib resampling 
 static int 					period_event = 0;               // produce poll event after each period 
 static snd_pcm_sframes_t 	buffer_size;
