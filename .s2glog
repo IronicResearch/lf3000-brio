@@ -30416,3 +30416,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/21/11 6:46 PM
 6,126 ms. (Cumulative: 11,134,986 ms)
 
 ----------------
+Revision 9,287 from svn://localhost/TRUNK/:
+
+AudioModule: Change audio buffer size to 8K bytes (2K samples). 
+Improves performance on UI picker and PetPad (Madrid TTP #252, 255)
+Audio buffer size must be changed as set with Flash SoundObject and ALSA conf.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/11 7:01 PM
+2 changed, 0 added, 0 deleted.
+6,192 ms. (Cumulative: 11,141,303 ms)
+
+----------------
