@@ -63,6 +63,11 @@ LF_BEGIN_BRIO_NAMESPACE()
 //Maximum number of input drivers to discover
 #define NUM_INPUTS	6
 
+extern tButtonData2 gButtonData;
+extern tMutex gButtonDataMutex;
+extern tDpadOrientation gDpadOrientation;
+
+
 namespace
 {
 	//============================================================================
@@ -164,7 +169,7 @@ namespace
 	{
 		switch(code) {
 			case KEY_UP:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadLandscape: return kButtonUp;
 					case kDpadPortrait: return kButtonLeft;
 					case kDpadLandscapeUpsideDown: return kButtonDown;
@@ -172,7 +177,7 @@ namespace
 				}
 				break;
 			case KEY_DOWN:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadLandscape: return kButtonDown;
 					case kDpadPortrait: return kButtonRight;
 					case kDpadLandscapeUpsideDown: return kButtonUp;
@@ -180,7 +185,7 @@ namespace
 				}
 				break;
 			case KEY_RIGHT:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadLandscape: return kButtonRight;
 					case kDpadPortrait: return kButtonUp;
 					case kDpadLandscapeUpsideDown: return kButtonLeft;
@@ -188,7 +193,7 @@ namespace
 				}
 				break;
 			case KEY_LEFT:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadLandscape: return kButtonLeft;
 					case kDpadPortrait: return kButtonDown;
 					case kDpadLandscapeUpsideDown: return kButtonRight;
@@ -213,7 +218,7 @@ namespace
 	{
 		switch(code) {
 			case KEY_UP:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadPortrait: return kButtonUp;
 					case kDpadLandscape: return kButtonRight;
 					case kDpadPortraitUpsideDown: return kButtonDown;
@@ -221,7 +226,7 @@ namespace
 				}
 				break;
 			case KEY_DOWN:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadPortrait: return kButtonDown;
 					case kDpadLandscape: return kButtonLeft;
 					case kDpadPortraitUpsideDown: return kButtonUp;
@@ -229,7 +234,7 @@ namespace
 				}
 				break;
 			case KEY_RIGHT:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadPortrait: return kButtonRight;
 					case kDpadLandscape: return kButtonDown;
 					case kDpadPortraitUpsideDown: return kButtonLeft;
@@ -237,7 +242,7 @@ namespace
 				}
 				break;
 			case KEY_LEFT:
-				switch(GetDpadOrientationState()){
+				switch(gDpadOrientation){
 					case kDpadPortrait: return kButtonLeft;
 					case kDpadLandscape: return kButtonUp;
 					case kDpadPortraitUpsideDown: return kButtonRight;
@@ -432,20 +437,26 @@ void* CEventModule::CartridgeTask( void* arg )
 	int size;
 
 	int button_index = -1;
-	tButtonData2 button_data;
+
+	CKernelMPI kernel_mpi;
 
 	// init button driver and state
 	U32 (*LinuxKeyToBrio)(U16 code) = 0;
 	CString platform_name = GetPlatformName();
 	if(platform_name == "Madrid") {
-		SetDpadOrientationState(kDpadPortrait);
+		gDpadOrientation = kDpadPortrait;
 		LinuxKeyToBrio = LinuxKeyToBrioMadrid;
 	} else {
-		SetDpadOrientationState(kDpadLandscape);
+		gDpadOrientation = kDpadLandscape;
 		LinuxKeyToBrio = LinuxKeyToBrioEmerald;
 	}
-	button_data.buttonState = 0;
-	button_data.buttonTransition = 0;
+
+	const tMutexAttr	attr = {0};
+	kernel_mpi.InitMutex( gButtonDataMutex, attr );
+	kernel_mpi.LockMutex(gButtonDataMutex);
+	gButtonData.buttonState = 0;
+	gButtonData.buttonTransition = 0;
+	kernel_mpi.UnlockMutex(gButtonDataMutex);
 	event_fd[last_fd].fd = open_input_device("LF1000 Keyboard");
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
@@ -459,15 +470,16 @@ void* CEventModule::CartridgeTask( void* arg )
 				"CEventModule::ButtonPowerUSBTask: reading switch state failed");
 		// get and report the current headphone state as a transition
 		if(sw & (1<<SW_HEADPHONE_INSERT)) {
-			button_data.buttonState |= kHeadphoneJackDetect;
-			button_data.buttonTransition |= kHeadphoneJackDetect;
+			kernel_mpi.LockMutex(gButtonDataMutex);
+			gButtonData.buttonState |= kHeadphoneJackDetect;
+			gButtonData.buttonTransition |= kHeadphoneJackDetect;
+			kernel_mpi.UnlockMutex(gButtonDataMutex);
 		}
 	}
 	else
 	{
 		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
 	}
-	SetButtonState(button_data);
 	
 	int power_index = -1;
 	struct tPowerData	power_data;
@@ -593,7 +605,8 @@ void* CEventModule::CartridgeTask( void* arg )
 		if(ret >= 0) {
 			// button driver event?
 			if(button_index >= 0 && event_fd[button_index].revents & POLLIN) {
-				button_data.buttonTransition = 0;
+				kernel_mpi.LockMutex(gButtonDataMutex);
+				gButtonData.buttonTransition = 0;
 				size = read(event_fd[button_index].fd, &ev, sizeof(ev));
 				for(int i = 0; i < size; i++) {
 					if(ev.type == EV_KEY) { // this is a key press
@@ -603,7 +616,7 @@ void* CEventModule::CartridgeTask( void* arg )
 							continue;
 						}
 						//repeat of known-pressed button
-						if(ev.value == 2 && (button_data.buttonState & button))
+						if(ev.value == 2 && (gButtonData.buttonState & button))
 							continue;
 					}
 					else if(ev.type == EV_SW) { // this is a switch change
@@ -621,23 +634,23 @@ void* CEventModule::CartridgeTask( void* arg )
 						continue;
 					}
 
-					if(ev.value > 0 && (!(button_data.buttonState & button))) {
-						button_data.buttonTransition |= button;
-						button_data.buttonState |= button;
+					if(ev.value > 0 && (!(gButtonData.buttonState & button))) {
+						gButtonData.buttonTransition |= button;
+						gButtonData.buttonState |= button;
 					}
-					else if(ev.value == 0 && (button_data.buttonState & button)) {
-						button_data.buttonTransition |= button;
-						button_data.buttonState &= ~button;
+					else if(ev.value == 0 && (gButtonData.buttonState & button)) {
+						gButtonData.buttonTransition |= button;
+						gButtonData.buttonState &= ~button;
 					}
 				}
 
-				if(button_data.buttonTransition != 0) {
-					button_data.time.seconds      = ev.time.tv_sec;
-					button_data.time.microSeconds = ev.time.tv_usec;
-					SetButtonState(button_data);
-					CButtonMessage button_msg(button_data);
+				if(gButtonData.buttonTransition != 0) {
+					gButtonData.time.seconds      = ev.time.tv_sec;
+					gButtonData.time.microSeconds = ev.time.tv_usec;
+					CButtonMessage button_msg(gButtonData);
 					pThis->PostEvent(button_msg, kButtonEventPriority, 0);
 				}
+				kernel_mpi.UnlockMutex(gButtonDataMutex);
 			}
 			
 			// power driver event ?
@@ -847,6 +860,7 @@ void* CEventModule::CartridgeTask( void* arg )
 			}
 		}
 	}
+	kernel_mpi.DeInitMutex( gButtonDataMutex );
 
 	// close tslib if in use
 	if (use_tslib) {
