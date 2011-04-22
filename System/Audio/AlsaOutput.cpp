@@ -376,7 +376,8 @@ static void* CallbackThread(void* pCtx)
 			// Output Brio render buffer to ALSA
 			direct_write_loop(handle, pOutputBuffer);
 		}
-		pKernelMPI_->TaskSleep(10);
+		else
+			pKernelMPI_->TaskSleep(10);
 	}
 
 	bStopping = true;

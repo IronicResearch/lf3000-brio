@@ -30406,3 +30406,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/21/11 4:07 PM
 6,094 ms. (Cumulative: 11,128,735 ms)
 
 ----------------
+Revision 9,286 from svn://localhost/TRUNK/:
+
+AudioModule: Throttle audio callback thread without periodic sleeps. Blocking internally on ALSA snd_pcm_mmap_writei().
+Not as much help to UI picker performance as switching from 4K to 8K buffers.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/21/11 6:46 PM
+1 changed, 0 added, 0 deleted.
+6,126 ms. (Cumulative: 11,134,986 ms)
+
+----------------
