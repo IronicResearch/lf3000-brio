@@ -30445,3 +30445,12 @@ By dlazzari (dlazzari@leapfrog.com) on 4/25/11 4:06 PM
 6,235 ms. (Cumulative: 11,154,069 ms)
 
 ----------------
+Revision 9,290 from svn://localhost/TRUNK/:
+
+Give the tester a longer time period to rotate the device and prompt them that that's what is needed at that point in the test. Partially fixes TTPro Brio - Base #740
+
+By dlazzari (dlazzari@leapfrog.com) on 4/25/11 4:21 PM
+1 changed, 0 added, 0 deleted.
+6,236 ms. (Cumulative: 11,160,399 ms)
+
+----------------
