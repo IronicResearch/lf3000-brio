@@ -194,7 +194,8 @@ public:
 
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->RegisterEventListener(&handler_) );
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerMode(kAccelerometerModeOrientation) );
-		sleep(1);
+		printf("Please rotate device\n");
+		sleep(3);
 		TS_ASSERT_DIFFERS( handler_.orient_, kBadAccelerometerState );
 		TS_ASSERT_EQUALS( handler_.orient_, aclmtr_->GetOrientation() );
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->UnregisterEventListener(&handler_) );
@@ -207,13 +208,14 @@ public:
 
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->RegisterEventListener(&handler_) );
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerMode(kAccelerometerModeOneShot) );
-		sleep(1);
+		printf("Please rotate device\n");
+		sleep(3);
 		TS_ASSERT_EQUALS( handler_.type_, kAccelerometerDataChanged );
 		TS_ASSERT_DIFFERS( handler_.data_.accelX, kBadAccelerometerState );
 		TS_ASSERT_DIFFERS( handler_.data_.accelY, kBadAccelerometerState );
 		TS_ASSERT_DIFFERS( handler_.data_.accelZ, kBadAccelerometerState );
 		tAccelerometerData data = handler_.data_;
-		sleep(1);
+		sleep(3);
 		TS_ASSERT_EQUALS( handler_.data_.accelX, data.accelX );
 		TS_ASSERT_EQUALS( handler_.data_.accelY, data.accelY );
 		TS_ASSERT_EQUALS( handler_.data_.accelZ, data.accelZ );
