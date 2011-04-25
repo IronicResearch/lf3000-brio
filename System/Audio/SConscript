@@ -49,6 +49,6 @@ Depends(mympi, mymodule)
 #~ if not vars['is_publish']:
 if vars['is_emulation']:
 	myenv.Append(RPATH   = [myenv.Dir('#ThirdParty/Portaudio/Libs/x86').abspath, myenv.Dir('#ThirdParty/Theora/Libs/x86').abspath])
-RunMyTests(module_name, [], mpilibs + ['EventMPI', 'Utility'], myenv, vars)
+RunMyTests(module_name, [], mpilibs + ['EventMPI', 'Utility', 'ButtonMPI'], myenv, vars)
 
 Return('mymodule', 'mympi')
