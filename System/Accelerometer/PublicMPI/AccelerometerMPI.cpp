@@ -242,6 +242,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	switch (mode) {
 	case kAccelerometerModeDisabled:
 		enable = 0;
+		gbOneShot = false;
 		break;
 	case kAccelerometerModeOrientation:
 		orient = 1;
