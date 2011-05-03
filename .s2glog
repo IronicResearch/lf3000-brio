@@ -30473,3 +30473,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 4/28/11 8:52 AM
 6,127 ms. (Cumulative: 11,172,823 ms)
 
 ----------------
+Revision 9,294 from svn://localhost/TRUNK/:
+Revision 9,295 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Modify microphone callback to more closely resemble ALSA async_direct_callback example.
+Fixed overun cases by adding callback guard to prevent re-entrancy on multiple calls. (Madrid TTP #941) 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/2/11 7:38 PM
+1 changed, 0 added, 0 deleted.
+6,123 ms. (Cumulative: 11,179,040 ms)
+
+----------------

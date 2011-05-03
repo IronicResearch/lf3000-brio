@@ -551,6 +551,12 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
 //----------------------------------------------------------------------------
 static void RecordCallback(snd_async_handler_t *ahandler)
 {
+	static bool called = false; // callback guard
+	if (called)
+		return;
+	called = true;
+
+	// async_direct_callback example
 	snd_pcm_t *handle = snd_async_handler_get_pcm(ahandler);
 	struct tMicrophoneContext *pCtx = static_cast<struct tMicrophoneContext *>(snd_async_handler_get_callback_private(ahandler));
 	const snd_pcm_channel_area_t *my_area;
@@ -569,27 +575,35 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 		if (state == SND_PCM_STATE_XRUN) {
 			err = xrun_recovery(handle, -EPIPE);
 			if(err < 0) {
+				printf("XRUN recovery failed: %s\n", snd_strerror(err));
 				break;
 			}
 			first = 1;
 		} else if (state == SND_PCM_STATE_SUSPENDED) {
 			err = xrun_recovery(handle, -ESTRPIPE);
 			if(err < 0) {
+				printf("SUSPEND recovery failed: %s\n", snd_strerror(err));
 				break;
 			}
 		}
 
 		avail = snd_pcm_avail_update(handle);
-		if (avail < 0)
+		if (avail < 0) {
+			err = xrun_recovery(handle, avail);
+			if (err < 0) {
+				printf("avail update failed: %s\n", snd_strerror(err));
+				break;
+			}
+			first = 1;
 			continue;
+		}
 
 		if (avail < pCtx->period_size) {
 			if (first) {
 				first = 0;
 				err = snd_pcm_start(handle);
 				if (err < 0) {
-					/* FIXME */
-					//printf("Start error: %s\n", snd_strerror(err));
+					printf("snd_pcm_start error: %s\n", snd_strerror(err));
 					break;
 				}
 			} else {
@@ -631,6 +645,8 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			size -= frames;
 		}
 	}
+
+	called = false;
 }
 
 //----------------------------------------------------------------------------
