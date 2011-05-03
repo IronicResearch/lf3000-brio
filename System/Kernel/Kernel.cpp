@@ -1460,15 +1460,15 @@ void *CKernelModule::TimerTask(void *user_data)
 			}
 		}
 
+		err = pthread_mutex_unlock( &timers_mutex);
+		//ASSERT_POSIX_CALL( err );
+
 		if (ta && ta->pfn)
 		{
 			pModule->mDebugMPI.DebugOut(kDbgLvlValuable, "TimerTask: tTimerHndl=%08X callback=%p SIGRT%d\n",
 				           (unsigned int)ta->argFunc, ta->pfn, signo);
 			((ta->pfn))((tTimerHndl )ta->argFunc);
 		}
-
-		pthread_mutex_unlock( &timers_mutex);
-		//ASSERT_POSIX_CALL( err );
 	}
 }
 LF_END_BRIO_NAMESPACE()

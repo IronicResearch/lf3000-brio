@@ -30484,3 +30484,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/2/11 7:38 PM
 6,123 ms. (Cumulative: 11,179,040 ms)
 
 ----------------
+Revision 9,296 from svn://localhost/TRUNK/:
+
+KernelModule: Unlock timer list before callback function, so the timer can be destroyed.
+Fixes lockup seen during timer event callback in microphone unit test. (Madrid TTP #990)	
+
+By Dave Milici (dmilici@leapfrog.com) on 5/3/11 2:15 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 11,185,259 ms)
+
+----------------
