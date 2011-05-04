@@ -30494,3 +30494,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/3/11 2:15 PM
 6,141 ms. (Cumulative: 11,185,259 ms)
 
 ----------------
+Revision 9,297 from svn://localhost/TRUNK/:
+Revision 9,298 from svn://localhost/TRUNK/:
+
+First change for Brio - Base #1028, restoring frlog messages on a case by case basis.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/4/11 4:35 PM
+1 changed, 0 added, 0 deleted.
+6,457 ms. (Cumulative: 11,191,810 ms)
+
+----------------
