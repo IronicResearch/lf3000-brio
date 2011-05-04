@@ -711,7 +711,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				if(ev.type == EV_SW && ev.code == SW_LID)
 				{
 					vbus = !!ev.value;
-					pThis->debug_.DebugOut(kDbgLvlValuable, "%s: vbus=%d\n", __FUNCTION__, vbus);
+					pThis->debug_.DebugOut(kDbgLvlCritical, "%s: vbus=%d\n", __FUNCTION__, vbus);
 					if((vbus == 1)) {
 						usb_data.USBDeviceState |= kUSBDeviceConnected;
 						CUSBDeviceMessage usb_msg(usb_data);
