@@ -30514,3 +30514,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/4/11 7:34 PM
 6,469 ms. (Cumulative: 11,198,373 ms)
 
 ----------------
+Revision 9,301 from svn://localhost/TRUNK/:
+Revision 9,302 from svn://localhost/TRUNK/:
+
+CameraModule: Add debug messages to track USB host port enable/disable and driver loading/unloading events.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/5/11 5:59 PM
+1 changed, 0 added, 0 deleted.
+6,594 ms. (Cumulative: 11,205,061 ms)
+
+----------------
