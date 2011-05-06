@@ -191,6 +191,8 @@ static bool SetUSBHost(bool enable)
 		c.outvalue.value = (enable) ? 0 : 1;
 		r = ioctl(fd, GPIO_IOCSOUTVAL, &c);
 		close(fd);
+		CDebugMPI dbg(kGroupCamera);
+		dbg.DebugOut(kDbgLvlImportant, "%s: enable=%d, success=%d\n", __FUNCTION__, enable, (r == 0));
 		return (r == 0) ? true : false;
 	}
 #endif
@@ -257,6 +259,8 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 			if(!pMod->sysfs.empty())
 			{
 				/* camera present or added */
+				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera detected %s\n", pMod->sysfs.c_str());
+
 				pMod->kernel_.LockMutex(pMod->mutex_);
 				pMod->valid = pMod->InitCameraInt();
 				pMod->kernel_.UnlockMutex(pMod->mutex_);
@@ -266,6 +270,7 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 				if(pMod->valid)
 				{
 					/* camera removed */
+					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera removed %d\n", pMod->valid);
 
 					/* set this to inform capture threads */
 					pMod->valid = false;
@@ -280,6 +285,8 @@ tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
 				else
 				{
 					/* camera absent upon initialization*/
+					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera missing %d\n", pMod->valid);
+
 					SetUSBHost(true);
 				}
 
@@ -2489,6 +2496,7 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
+	dbg_.DebugOut(kDbgLvlImportant, "CameraModule::InitCameraInt: completed OK\n");
 	return true;
 }
 
@@ -2557,6 +2565,7 @@ Boolean	CCameraModule::DeinitCameraInt()
 		return false;
 	}
 
+	dbg_.DebugOut(kDbgLvlImportant, "CameraModule::DeinitCameraInt: completed OK\n");
 	return true;
 }
 //----------------------------------------------------------------------------
