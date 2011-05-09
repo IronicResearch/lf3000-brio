@@ -40,6 +40,9 @@ tMemoryPoolHndl CKernelModule::CreateMemPool( U32 size )
 //------------------------------------------------------------------------------
 void CKernelModule::DestroyMemPool( tMemoryPoolHndl pool )
 {
+#ifdef DEBUG
+	mDebugMPI.DebugOut(kDbgLvlImportant, "%s: pool=%p, bytes=%d, max=%d\n", __FUNCTION__, (void*)pool, mspace_footprint((mspace)pool), mspace_max_footprint((mspace)pool));
+#endif
 	destroy_mspace((mspace)pool);
 }
 
