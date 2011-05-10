@@ -30533,3 +30533,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/9/11 10:50 AM
 6,669 ms. (Cumulative: 11,211,824 ms)
 
 ----------------
+Revision 9,304 from svn://localhost/TRUNK/:
+
+Brio 1055.  Video Layer is now blanked when initializing the display if the splash movie has already played.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/10/11 3:08 PM
+1 changed, 0 added, 0 deleted.
+6,797 ms. (Cumulative: 11,218,715 ms)
+
+----------------
