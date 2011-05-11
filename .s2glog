@@ -30542,3 +30542,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/10/11 3:08 PM
 6,797 ms. (Cumulative: 11,218,715 ms)
 
 ----------------
+Revision 9,305 from svn://localhost/TRUNK/:
+
+First fix for 1054.  Modified DisplayFB to not blink the YUV layer if we're returning from an LEX title that exited successfully.  This is the loading image can display properly.  AppManager will blink it out later.
+
+
+By bgrissom (bgrissom@leapfrog.com) on 5/11/11 2:35 PM
+1 changed, 0 added, 0 deleted.
+6,297 ms. (Cumulative: 11,225,106 ms)
+
+----------------
