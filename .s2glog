@@ -30562,3 +30562,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/13/11 12:20 AM
 6,050 ms. (Cumulative: 11,231,250 ms)
 
 ----------------
+Revision 9,308 from svn://localhost/TRUNK/:
+Revision 9,309 from svn://localhost/TRUNK/:
+
+No longer powering down when Shutdown is called.  app script is already doing that, so it's redundant.  Besides this gives games that don't shut down quickly a chance to play the shutdown movie still.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/14/11 12:36 PM
+1 changed, 0 added, 0 deleted.
+6,096 ms. (Cumulative: 11,237,440 ms)
+
+----------------

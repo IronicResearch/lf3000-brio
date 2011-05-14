@@ -125,7 +125,7 @@ int CPowerMPI::Shutdown() const
 	CDebugMPI debug(kGroupPower);
 	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Shutdown poweroff\n");
 	// system("sudo /sbin/poweroff &");
-	execl("/usr/bin/sudo", "sudo", "/sbin/poweroff", NULL);
+	//execl("/usr/bin/sudo", "sudo", "/sbin/poweroff", NULL);
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
