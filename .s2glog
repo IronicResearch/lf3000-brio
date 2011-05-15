@@ -30572,3 +30572,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/14/11 12:36 PM
 6,096 ms. (Cumulative: 11,237,440 ms)
 
 ----------------
+Revision 9,310 from svn://localhost/TRUNK/:
+
+CameraModule: Allow 5 sec timeout on USB event notification to enable camera. (Madrid TTP #1185)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/14/11 6:13 PM
+1 changed, 0 added, 0 deleted.
+6,119 ms. (Cumulative: 11,243,637 ms)
+
+----------------
