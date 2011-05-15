@@ -374,7 +374,8 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 
 	// Wait for USB host power to enable drivers on Madrid
 	if (GetPlatformName() == "Madrid") {
-		while (!valid)
+		int counter = 500;
+		while (!valid && --counter > 0)
 			kernel_.TaskSleep(10);
 	}
 }
