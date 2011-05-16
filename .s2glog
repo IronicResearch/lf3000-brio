@@ -30581,3 +30581,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/14/11 6:13 PM
 6,119 ms. (Cumulative: 11,243,637 ms)
 
 ----------------
+Revision 9,311 from svn://localhost/TRUNK/:
+
+TTPro Brio 1158.  When registering a hardware layer that is already visible, set it to be invisible at the start.  This prevents a movie layer from displaying when it's blank (green screen)  because someone else enabled the layer beforehand (volumebars).
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/16/11 2:55 PM
+1 changed, 0 added, 0 deleted.
+6,111 ms. (Cumulative: 11,249,826 ms)
+
+----------------
