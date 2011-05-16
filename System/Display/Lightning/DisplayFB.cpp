@@ -359,6 +359,10 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
+	if (fbviz[n])
+	{
+		SetVisible(ctx, false);
+	}
 	int r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
 	r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
