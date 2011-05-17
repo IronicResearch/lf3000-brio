@@ -30618,3 +30618,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/11 11:16 AM
 6,095 ms. (Cumulative: 11,268,375 ms)
 
 ----------------
+Revision 9,315 from svn://localhost/TRUNK/:
+
+AccelerometerMPI: Query sysfs entries for raw x,y,z data and phi orientation on enable. (TTP #1223)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/17/11 3:56 PM
+1 changed, 0 added, 0 deleted.
+6,169 ms. (Cumulative: 11,274,637 ms)
+
+----------------

@@ -255,6 +255,28 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 		gbOneShot = true;
 		break;
 	}
+	// Get initial x,y,z and orientation data if enable
+	if (enable) {
+		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/raw_xyz", "r");
+		if (fd != NULL) {
+			int x = 0, y = 0, z = 0;
+			fscanf(fd, "%d %d %d\n", &x, &y, &z);
+			fclose(fd);
+			gCachedData.accelX = x;
+			gCachedData.accelY = y;
+			gCachedData.accelZ = z;
+		}
+	}
+	if (orient) {
+		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/raw_phi", "r");
+		if (fd != NULL) {
+			int phi = 0;
+			fscanf(fd, "%d\n", &phi);
+			fclose(fd);
+			gCachedOrient = RawToOrient(phi);
+		}
+	}
+	// Set enable and orient state
 	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", enable);
