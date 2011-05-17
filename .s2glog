@@ -30590,3 +30590,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/16/11 2:55 PM
 6,111 ms. (Cumulative: 11,249,826 ms)
 
 ----------------
+Revision 9,312 from svn://localhost/TRUNK/:
+
+VideoModule: Update audio seek status with video seek. 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/16/11 8:34 PM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 11,256,014 ms)
+
+----------------
