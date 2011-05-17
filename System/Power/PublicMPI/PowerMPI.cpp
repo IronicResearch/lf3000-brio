@@ -126,6 +126,12 @@ int CPowerMPI::Shutdown() const
 	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Shutdown poweroff\n");
 	// system("sudo /sbin/poweroff &");
 	//execl("/usr/bin/sudo", "sudo", "/sbin/poweroff", NULL);
+	int fd = CreateReportSocket("/tmp/video_events_socket");
+	if (fd > 0) {
+		struct app_message msg = {1, 4};
+		send(fd, &msg, sizeof(msg), 0);
+		close(fd);
+	}
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);

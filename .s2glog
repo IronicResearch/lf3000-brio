@@ -30608,3 +30608,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/17/11 11:05 AM
 6,110 ms. (Cumulative: 11,262,202 ms)
 
 ----------------
+Revision 9,314 from svn://localhost/TRUNK/:
+
+PowerMPI: Signal shutdown video from 10 sec timeout. 
+Addendum to TTP #1202 for excessively long atomic update cycles, like B10 intro TTP #1146.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/17/11 11:16 AM
+1 changed, 0 added, 0 deleted.
+6,095 ms. (Cumulative: 11,268,375 ms)
+
+----------------
