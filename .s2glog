@@ -30599,3 +30599,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/16/11 8:34 PM
 6,110 ms. (Cumulative: 11,256,014 ms)
 
 ----------------
+Revision 9,313 from svn://localhost/TRUNK/:
+
+TTPro Brio 1208.  Updating ViewPort variables during CreateHandle.  Prevents issues with launching a GameViewFramed Tutorial from a non-GameViewFramed Game.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/17/11 11:05 AM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 11,262,202 ms)
+
+----------------
