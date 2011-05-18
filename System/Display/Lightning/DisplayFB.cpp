@@ -128,7 +128,7 @@ void CDisplayFB::InitModule()
 		if(n == YUVFB)
 		{	
 			FILE *splash_file = fopen("/tmp/splash", "r");
-			FILE *exit_check = fopen("/tmp/lex_exit", "r");
+			FILE *exit_check = fopen("/tmp/trans_anim", "r");
 			if(splash_file && exit_check == NULL)
 			{
 				r = ioctl(fbdev[n], FBIOBLANK, 1);
