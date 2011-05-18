@@ -30628,3 +30628,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/11 3:56 PM
 6,169 ms. (Cumulative: 11,274,637 ms)
 
 ----------------
+Revision 9,316 from svn://localhost/TRUNK/:
+
+TTPRO 1054 Fix: Renamed "/tmp/lex_exit" to "/tmp/trans_anim".  This is to reduce confusion as to regards to what this flag does.
+
+By bgrissom (bgrissom@leapfrog.com) on 5/17/11 5:07 PM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 11,280,888 ms)
+
+----------------
