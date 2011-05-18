@@ -38,6 +38,14 @@ static int		gTimeoutMSec = 5000;
 CPowerMessage::CPowerMessage( const tPowerData& data ) 
 	: IEventMessage(kPowerStateChanged), mData(data)
 {
+	if (mData.powerState == kPowerShutdown) {
+		int fd = CreateReportSocket("/tmp/video_events_socket");
+		if (fd > 0) {
+			struct app_message msg = {1, 4};
+			send(fd, &msg, sizeof(msg), 0);
+			close(fd);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
