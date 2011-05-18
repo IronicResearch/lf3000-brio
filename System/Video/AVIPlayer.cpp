@@ -460,9 +460,12 @@ Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 		if (pCtx->frame < pCodecCtx->frame_number - 1)
 			flags |= AVSEEK_FLAG_BACKWARD;
 		int64_t timestamp = pCtx->frame + 1; //* pVidCtx->uFrameTime;
-		av_seek_frame(pFormatCtx, iVideoStream, timestamp, flags);
+		int r = av_seek_frame(pFormatCtx, iVideoStream, timestamp, flags);
+		if (r < 0)
+			return false;
+		pCodecCtx->frame_number = timestamp;
 		pVidCtx->bSeeked = true;
-		if(bUpdateVideoDisplay)
+		if (bUpdateVideoDisplay)
 			pVidCtx->bUpdateVideoDisplay = true;
 		return GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame);
 	}
