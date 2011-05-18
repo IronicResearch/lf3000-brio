@@ -351,6 +351,7 @@ void CAVIPlayer::RewindFile()
 
 	bIsDone_ = false;
 	totalBytesRead_ = 0;
+	bytesCached = 0;
 }
 
 // =============================================================================
@@ -369,10 +370,15 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 {
 	int flags = AVSEEK_FLAG_ANY;
-	if (timeMilliSeconds < GetAudioTime_mSec())
+	int64_t timestamp = timeMilliSeconds / 16;
+	if (timestamp < pCodecCtx->frame_number)
 		flags |= AVSEEK_FLAG_BACKWARD;
-	int64_t timestamp = timeMilliSeconds;
-	av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
+	int r = av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
+	if (r < 0)
+		return false;
+	pCodecCtx->frame_number = timestamp;
+	totalBytesRead_ = timestamp * 128;
+	bytesCached = 0;
 	return true;
 }
 

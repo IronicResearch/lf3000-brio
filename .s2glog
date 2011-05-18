@@ -30646,3 +30646,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/11 6:35 PM
 6,235 ms. (Cumulative: 11,287,201 ms)
 
 ----------------
+Revision 9,318 from svn://localhost/TRUNK/:
+
+AudioModule: AVI player needed to update internal bookkeeping for after successful seeks. (TTP #1073)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/17/11 8:30 PM
+1 changed, 0 added, 0 deleted.
+6,048 ms. (Cumulative: 11,293,342 ms)
+
+----------------
