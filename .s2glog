@@ -30664,3 +30664,16 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/11 9:47 AM
 6,078 ms. (Cumulative: 11,299,498 ms)
 
 ----------------
+Revision 9,320 from svn://localhost/TRUNK/:
+
+PowerMPI: Signal shutdown video from powerdown event message itself. 
+Addendum to TTP #1202 for excessively long atomic update cycles, like B10 intro TTP #1146.
+This has effect of most immediate response, but if AppManager game is already playing a video, 
+there could be noticeable flicker while the videos are contending to update the display (B10).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/11 12:25 PM
+1 changed, 0 added, 0 deleted.
+6,121 ms. (Cumulative: 11,305,713 ms)
+
+----------------
