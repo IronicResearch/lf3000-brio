@@ -30655,3 +30655,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/11 8:30 PM
 6,048 ms. (Cumulative: 11,293,342 ms)
 
 ----------------
+Revision 9,319 from svn://localhost/TRUNK/:
+
+AudioModule: AVI player frame = 4 samples. (TTP #1073)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/11 9:47 AM
+1 changed, 0 added, 0 deleted.
+6,078 ms. (Cumulative: 11,299,498 ms)
+
+----------------
