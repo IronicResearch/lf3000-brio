@@ -63,6 +63,7 @@ private:
 	U32 bytesRead;
 	U32 bytesCached;
 	U8* pCachedData;
+	U64 totalFramesRead;
 };
 
 LF_END_BRIO_NAMESPACE()

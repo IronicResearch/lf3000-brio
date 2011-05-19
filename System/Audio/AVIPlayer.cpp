@@ -188,6 +188,7 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 	samplingFrequency_	= pCodecCtx->sample_rate;
 	channels_			= pCodecCtx->channels;	 
 	totalBytesRead_ 	= 0;
+	totalFramesRead		= 0;
 	id_					= id;
 }
 
@@ -311,6 +312,7 @@ U32 CAVIPlayer::Render( S16 *pOut, U32 numStereoFrames)
 		
 	framesRead		= bytesReadThisRender / (sizeof(S16) * channels_);
 	framesToProcess = framesRead;
+	totalFramesRead	+= framesRead;
 	
 	// Track elapsed playback intervals for time events
 	if (bIsTimeEvent_) {
@@ -351,6 +353,7 @@ void CAVIPlayer::RewindFile()
 
 	bIsDone_ = false;
 	totalBytesRead_ = 0;
+	totalFramesRead = 0;
 	bytesCached = 0;
 }
 
@@ -359,7 +362,6 @@ void CAVIPlayer::RewindFile()
 // =============================================================================
 U32 CAVIPlayer::GetAudioTime_mSec( void ) 
 {
-	U64 totalFramesRead = totalBytesRead_ / (sizeof(S16) * channels_);
 	U64 milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
 	return (U32)(milliSeconds);
 }
@@ -370,14 +372,13 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 {
 	int flags = AVSEEK_FLAG_ANY;
-	int64_t timestamp = timeMilliSeconds / 4; // 1 frame = 4 samples
-	if (timestamp < pCodecCtx->frame_number)
+	int64_t timestamp = timeMilliSeconds * samplingFrequency_ / 1000;
+	if (timestamp < pFormatCtx->streams[iAudioStream]->cur_dts)
 		flags |= AVSEEK_FLAG_BACKWARD;
 	int r = av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
 	if (r < 0)
 		return false;
-	pCodecCtx->frame_number = timestamp;
-	totalBytesRead_ = timestamp * 128;
+	totalFramesRead = timestamp;
 	bytesCached = 0;
 	return true;
 }
