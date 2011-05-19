@@ -30677,3 +30677,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/11 12:25 PM
 6,121 ms. (Cumulative: 11,305,713 ms)
 
 ----------------
+Revision 9,321 from svn://localhost/TRUNK/:
+Revision 9,322 from svn://localhost/TRUNK/:
+
+AudioModule: Track played samples to support seeking since AVI audio stream uses them for timestamps. TTP 1073.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/19/11 12:10 PM
+2 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 11,311,948 ms)
+
+----------------
