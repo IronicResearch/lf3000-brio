@@ -205,6 +205,17 @@ public:
 		while ( !g_threadRunning_ ) {
 			kernel_.TaskSleep(10);
 		}
+
+		// Skip user event threads if daemon process
+		char buf[256] = "\0";
+	    if (readlink("/proc/self/exe", buf, sizeof(buf)) != -1)
+		{
+	    	if (strcasestr(buf, "Daemon") != NULL)
+	    	{
+	    		debug_.DebugOut(kDbgLvlImportant, "CEventManagerImpl::ctor: No user events for daemon process %s\n", buf);
+	    		return;
+	    	}
+		}
 		
 		// Create additional Button/Power/USB driver polling thread
 		properties.TaskMainFcn = CEventModule::ButtonPowerUSBTask;
