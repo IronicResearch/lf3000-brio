@@ -30717,3 +30717,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/23/11 5:50 PM
 6,557 ms. (Cumulative: 11,331,897 ms)
 
 ----------------
+Revision 9,328 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Changed microphone trigger event to deferred async callback to avoid impacting stream. (TTP #970)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/23/11 5:57 PM
+1 changed, 0 added, 0 deleted.
+6,641 ms. (Cumulative: 11,338,616 ms)
+
+----------------
