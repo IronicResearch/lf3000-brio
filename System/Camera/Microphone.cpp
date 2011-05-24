@@ -613,10 +613,10 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 		}
 
 		// Query timestamp for pcm update event
-		snd_pcm_status(handle, pCtx->status);
-		snd_pcm_status_get_tstamp(pCtx->status, &pCtx->tstamp);
+		//snd_pcm_status(handle, pCtx->status);
+		//snd_pcm_status_get_tstamp(pCtx->status, &pCtx->tstamp);
 		
-		size = pCtx->period_size;
+		size = avail; //pCtx->period_size;
 		while (size > 0) {
 			frames = size;
 			err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);

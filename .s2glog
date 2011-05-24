@@ -30706,3 +30706,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/19/11 5:50 PM
 6,673 ms. (Cumulative: 11,325,246 ms)
 
 ----------------
+Revision 9,325 from svn://localhost/TRUNK/:
+Revision 9,326 from svn://localhost/TRUNK/:
+Revision 9,327 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Grab remaining available capture data without timestamps to breakout of callback loop. (TTP #990, 1298)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/23/11 5:50 PM
+1 changed, 0 added, 0 deleted.
+6,557 ms. (Cumulative: 11,331,897 ms)
+
+----------------
