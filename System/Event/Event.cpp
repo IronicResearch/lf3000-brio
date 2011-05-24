@@ -174,6 +174,17 @@ public:
 #endif
 		debug_.DebugOut(kDbgLvlVerbose, "CEventManagerImpl::ctor: Initializing Event Manager\n");
 		
+		// Skip user event threads if daemon process
+		char buf[256] = "\0";
+	    if (readlink("/proc/self/exe", buf, sizeof(buf)) != -1)
+		{
+	    	if (strcasestr(buf, "Daemon") != NULL)
+	    	{
+	    		debug_.DebugOut(kDbgLvlImportant, "CEventManagerImpl::ctor: No user events for daemon process %s\n", buf);
+	    		return;
+	    	}
+		}
+
 		tMessageQueuePropertiesPosix props = 							//*1
 		{
 		    0,                          	// msgProperties.blockingPolicy;  
@@ -206,17 +217,6 @@ public:
 			kernel_.TaskSleep(10);
 		}
 
-		// Skip user event threads if daemon process
-		char buf[256] = "\0";
-	    if (readlink("/proc/self/exe", buf, sizeof(buf)) != -1)
-		{
-	    	if (strcasestr(buf, "Daemon") != NULL)
-	    	{
-	    		debug_.DebugOut(kDbgLvlImportant, "CEventManagerImpl::ctor: No user events for daemon process %s\n", buf);
-	    		return;
-	    	}
-		}
-		
 		// Create additional Button/Power/USB driver polling thread
 		properties.TaskMainFcn = CEventModule::ButtonPowerUSBTask;
 		properties.pTaskMainArgValues = pEventModule_;
@@ -255,7 +255,8 @@ public:
 		debug_.DebugOut(kDbgLvlValuable, "%s: Terminating message thread\n", __FUNCTION__);
 		while (g_threadRunning_ && --counter > 0)
 			kernel_.TaskSleep(10);
-		kernel_.JoinTask(g_hThread_, retval);
+		if (g_hThread_ != kInvalidTaskHndl)
+			kernel_.JoinTask(g_hThread_, retval);
 		debug_.DebugOut(kDbgLvlValuable, "%s: counter=%d, retval=%p\n", __FUNCTION__, counter, retval);
 
 		if (ppListeners_)
