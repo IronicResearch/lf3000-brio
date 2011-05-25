@@ -233,6 +233,8 @@ struct tMicrophoneContext {
 	S32						duration;		// duration for trigger event
 	S32						clipCount;		// clip count for trigger event
 	S32						rateAdjust;		// sample rate adjustment
+
+	CDebugMPI				*dbg;
 };
 
 struct tIDCTContext {

@@ -186,6 +186,7 @@ tErrType CCameraModule::InitMicInt()
 			continue;
 		}
 
+		micCtx_.dbg = &dbg_;
 		if((err = snd_async_add_pcm_handler(&micCtx_.ahandler, micCtx_.pcm_handle, RecordCallback, &micCtx_)) < 0)
 		{
 			continue;
@@ -527,10 +528,12 @@ Boolean	CCameraModule::FlushAudio()
 
 static int xrun_recovery(snd_pcm_t *handle, int err)
 {
+	CDebugMPI	dbg(kGroupCamera);
+
 	if (err == -EPIPE) {    /* under-run */
 		err = snd_pcm_prepare(handle);
 		if (err < 0)
-			printf("Can't recover from xrun, prepare failed: %s\n",
+			dbg.DebugOut(kDbgLvlCritical, "Can't recover from xrun, prepare failed: %s\n",
 					snd_strerror(err));
 		return 0;
 	} else if (err == -ESTRPIPE) {
@@ -539,7 +542,7 @@ static int xrun_recovery(snd_pcm_t *handle, int err)
 		if (err < 0) {
 			err = snd_pcm_prepare(handle);
 			if (err < 0)
-				printf("Can't recover from suspend, prepare failed: %s\n",
+				dbg.DebugOut(kDbgLvlCritical, "Can't recover from suspend, prepare failed: %s\n",
 						snd_strerror(err));
 		}
 		return 0;
@@ -575,14 +578,14 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 		if (state == SND_PCM_STATE_XRUN) {
 			err = xrun_recovery(handle, -EPIPE);
 			if(err < 0) {
-				printf("XRUN recovery failed: %s\n", snd_strerror(err));
+				pCtx->dbg->DebugOut(kDbgLvlCritical, "XRUN recovery failed: %s\n", snd_strerror(err));
 				break;
 			}
 			first = 1;
 		} else if (state == SND_PCM_STATE_SUSPENDED) {
 			err = xrun_recovery(handle, -ESTRPIPE);
 			if(err < 0) {
-				printf("SUSPEND recovery failed: %s\n", snd_strerror(err));
+				pCtx->dbg->DebugOut(kDbgLvlCritical, "SUSPEND recovery failed: %s\n", snd_strerror(err));
 				break;
 			}
 		}
@@ -591,7 +594,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 		if (avail < 0) {
 			err = xrun_recovery(handle, avail);
 			if (err < 0) {
-				printf("avail update failed: %s\n", snd_strerror(err));
+				pCtx->dbg->DebugOut(kDbgLvlCritical, "avail update failed: %s\n", snd_strerror(err));
 				break;
 			}
 			first = 1;
@@ -603,7 +606,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 				first = 0;
 				err = snd_pcm_start(handle);
 				if (err < 0) {
-					printf("snd_pcm_start error: %s\n", snd_strerror(err));
+					pCtx->dbg->DebugOut(kDbgLvlCritical, "snd_pcm_start error: %s\n", snd_strerror(err));
 					break;
 				}
 			} else {
@@ -622,7 +625,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);
 			if (err < 0) {
 				if ((err = xrun_recovery(handle, err)) < 0) {
-					printf("mmap begin avail error: %s\n", snd_strerror(err));
+					pCtx->dbg->DebugOut(kDbgLvlCritical, "mmap begin avail error: %s\n", snd_strerror(err));
 					break;
 				}
 				first = 1;
@@ -634,7 +637,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 
 			res = write(pCtx->fd[1], samples, frames * 2);
 			if (res != frames *2) {
-				printf("write pipe failed: %d\n", res);
+				pCtx->dbg->DebugOut(kDbgLvlCritical, "write pipe failed: %d\n", res);
 				res = frames * 2;
 			}
 
@@ -642,7 +645,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			if (commitres < 0 || (snd_pcm_uframes_t)commitres != res/2) {
 				if ((err = xrun_recovery(handle,
 								commitres >= 0 ? -EPIPE : commitres)) < 0) {
-					printf("mmap commit error: %s\n", snd_strerror(err));
+					pCtx->dbg->DebugOut(kDbgLvlCritical, "mmap commit error: %s\n", snd_strerror(err));
 					break;
 				}
 				first = 1;
