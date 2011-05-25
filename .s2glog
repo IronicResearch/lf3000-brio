@@ -30782,3 +30782,15 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/25/11 12:51 AM
 6,094 ms. (Cumulative: 11,376,894 ms)
 
 ----------------
+Revision 9,336 from svn://localhost/TRUNK/:
+Revision 9,337 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Breakout of capture loop on pipe write error, to allow retry on subsequent callback.
+The pipe unavailable error can still occur without sync daemon running, so minimize spinning inside callback.
+(TTP 1339)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/25/11 11:00 AM
+1 changed, 0 added, 0 deleted.
+6,172 ms. (Cumulative: 11,383,160 ms)
+
+----------------

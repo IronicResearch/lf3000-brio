@@ -572,8 +572,9 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 	int first = 0;
 
 	ssize_t res;
+	bool piping = true;
 
-	while (1) {
+	while (piping) {
 		state = snd_pcm_state(handle);
 		if (state == SND_PCM_STATE_XRUN) {
 			err = xrun_recovery(handle, -EPIPE);
@@ -639,6 +640,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			if (res < 0) {
 				pCtx->dbg->DebugOut(kDbgLvlCritical, "write pipe failed: %d, errno %d: %s\n", res, errno, strerror(errno));
 				res = 0;
+				piping = false;
 			}
 
 			commitres = snd_pcm_mmap_commit(handle, offset, res/2);
