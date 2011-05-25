@@ -30762,3 +30762,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/24/11 5:55 PM
 6,161 ms. (Cumulative: 11,364,518 ms)
 
 ----------------
+Revision 9,333 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Handle cases when write pipe is temporarily unavailable, and update actual samples written.
+Recovery mode for microphone stream which avoids impacting video stream or AVI writer. (TTP 1339)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/24/11 7:08 PM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 11,370,706 ms)
+
+----------------

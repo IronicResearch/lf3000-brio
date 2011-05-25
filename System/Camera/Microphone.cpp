@@ -636,9 +636,9 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 			samples += offset * step;
 
 			res = write(pCtx->fd[1], samples, frames * 2);
-			if (res != frames *2) {
-				pCtx->dbg->DebugOut(kDbgLvlCritical, "write pipe failed: %d\n", res);
-				res = frames * 2;
+			if (res < 0) {
+				pCtx->dbg->DebugOut(kDbgLvlCritical, "write pipe failed: %d, errno %d: %s\n", res, errno, strerror(errno));
+				res = 0;
 			}
 
 			commitres = snd_pcm_mmap_commit(handle, offset, res/2);
