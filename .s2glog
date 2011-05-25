@@ -30744,3 +30744,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/24/11 1:34 PM
 6,489 ms. (Cumulative: 11,352,013 ms)
 
 ----------------
+Revision 9,331 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Breakout of capture sample transfer loop on error, otherwise unsafe to continue. (TTP 1298, 990)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/24/11 5:25 PM
+1 changed, 0 added, 0 deleted.
+6,172 ms. (Cumulative: 11,358,279 ms)
+
+----------------

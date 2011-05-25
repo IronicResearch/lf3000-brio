@@ -626,12 +626,17 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 					break;
 				}
 				first = 1;
+				break;
 			}
 			samples	= (((unsigned char *)my_area->addr) + (my_area->first / 8));
 			step	= my_area->step / 8;
 			samples += offset * step;
 
 			res = write(pCtx->fd[1], samples, frames * 2);
+			if (res != frames *2) {
+				printf("write pipe failed: %d\n", res);
+				res = frames * 2;
+			}
 
 			commitres = snd_pcm_mmap_commit(handle, offset, res/2);
 			if (commitres < 0 || (snd_pcm_uframes_t)commitres != res/2) {
@@ -641,6 +646,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 					break;
 				}
 				first = 1;
+				break;
 			}
 			size -= frames;
 		}
