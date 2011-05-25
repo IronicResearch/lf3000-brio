@@ -30753,3 +30753,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/24/11 5:25 PM
 6,172 ms. (Cumulative: 11,358,279 ms)
 
 ----------------
+Revision 9,332 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Redirect error messages via DebugMPI for logging. 
+
+By Dave Milici (dmilici@leapfrog.com) on 5/24/11 5:55 PM
+2 changed, 0 added, 0 deleted.
+6,161 ms. (Cumulative: 11,364,518 ms)
+
+----------------
