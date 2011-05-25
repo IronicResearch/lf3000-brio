@@ -361,7 +361,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
-	if (fbviz[n])
+	if (n == YUVFB && fbviz[n])
 	{
 		SetVisible(ctx, false);
 	}
