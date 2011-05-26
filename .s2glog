@@ -30813,3 +30813,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 5/26/11 2:49 PM
 6,227 ms. (Cumulative: 11,395,747 ms)
 
 ----------------
+Revision 9,341 from svn://localhost/TRUNK/:
+
+ModuleMPI: Explicit check for local libModule.so patch lib file so we don't see loader warning by default anymore.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/26/11 4:37 PM
+2 changed, 0 added, 0 deleted.
+6,235 ms. (Cumulative: 11,402,076 ms)
+
+----------------

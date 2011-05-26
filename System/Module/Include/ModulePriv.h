@@ -22,6 +22,16 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 #ifndef EMULATION
 
+	inline CPath GetLocalLibrary(CPath libname)
+	{
+		CPath libpath = getenv("LD_LIBRARY_PATH");
+		CPath modpath = libpath.substr(0, libpath.find(":")) + "/" + libname;
+		struct stat s;
+		if (0 == stat(modpath.c_str(), &s))
+			return modpath;
+		return "";
+	}
+
 	inline CPath GetModuleLibraryLocation()
 	{
 		CPath libpath = getenv("LD_LIBRARY_PATH");
