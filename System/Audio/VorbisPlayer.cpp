@@ -157,9 +157,13 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 	
 	// Open Ogg-compressed file
 	int ov_ret = ov_open_callbacks( dataSource_, &vorbisFile_, NULL, 0, oggCallbacks_ );
-	pDebugMPI_->AssertNoErr( ov_ret, 
+	if (ov_ret != 0) {
+		pDebugMPI_->DebugOut( kDbgLvlImportant,
 							 "VorbisPlayer::ctor: Is Ogg file? '%s', ov_ret=%d\n",
 							 pInfo->path->c_str(), ov_ret);
+		id_ = kNoAudioID;
+		return;
+	}
 #else	
 	// Open file
 	fileH_ = fopen( pInfo->path->c_str(), "r" );
@@ -169,9 +173,13 @@ CVorbisPlayer::CVorbisPlayer( tAudioStartAudioInfo* pInfo, tAudioID id	) :
 
 	// Open Ogg-compressed file
 	int ov_ret = ov_open( fileH_, &vorbisFile_, NULL, 0 );
-	pDebugMPI_->AssertNoErr( ov_ret, 
+	if (ov_ret != 0) {
+		pDebugMPI_->DebugOut( kDbgLvlImportant,
 							 "VorbisPlayer::ctor: Is Ogg file? '%s'\n",
 							 pInfo->path->c_str());
+		id_ = kNoAudioID;
+		return;
+	}
 #endif
 	
 	TimeStampOff(1);
