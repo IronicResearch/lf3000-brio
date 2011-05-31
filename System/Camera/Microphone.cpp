@@ -653,6 +653,8 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 				first = 1;
 				break;
 			}
+			if (!piping)
+				break;
 			size -= frames;
 		}
 	}
