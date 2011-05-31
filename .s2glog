@@ -30831,3 +30831,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/26/11 5:16 PM
 6,122 ms. (Cumulative: 11,408,292 ms)
 
 ----------------
+Revision 9,343 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Breakout of inner capture loop on write pipe error. (TTP 1298) Note ALSA expects snd_pcm_mmap_commit() to be called after every snd_pcm_mmap_begin() even if no samples were read. Otherwise we would break as soon as write pipe error occurs.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/31/11 10:03 AM
+1 changed, 0 added, 0 deleted.
+6,080 ms. (Cumulative: 11,414,451 ms)
+
+----------------
