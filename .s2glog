@@ -30862,3 +30862,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/31/11 5:30 PM
 6,178 ms. (Cumulative: 11,427,005 ms)
 
 ----------------
+Revision 9,350 from svn://localhost/TRUNK/:
+
+Back out DPad Rotation in emulation. It was put in to fix an issue that turned out to be a problem with the way the test app was handling DPad input.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/1/11 11:50 AM
+1 changed, 0 added, 0 deleted.
+6,205 ms. (Cumulative: 11,433,288 ms)
+
+----------------
