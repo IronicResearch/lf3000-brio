@@ -33,8 +33,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 #define BIT(c, x)   ( c[x/8]&(1<<(x%8)) )
 
-extern tDpadOrientation gDpadOrientation;
-
 
 //============================================================================
 // Local state and utility functions
@@ -58,42 +56,14 @@ namespace
 	{
 		switch( keysym )
 		{
-			case XK_Up:
-			case XK_KP_Up:
-				switch(gDpadOrientation){
-					case kDpadLandscape: return kButtonUp;
-					case kDpadPortrait: return kButtonLeft;
-					case kDpadLandscapeUpsideDown: return kButtonDown;
-					case kDpadPortraitUpsideDown: return kButtonRight;
-				}
-				break;
-			case XK_Down:
-			case XK_KP_Down:
-				switch(gDpadOrientation){
-					case kDpadLandscape: return kButtonDown;
-					case kDpadPortrait: return kButtonRight;
-					case kDpadLandscapeUpsideDown: return kButtonUp;
-					case kDpadPortraitUpsideDown: return kButtonLeft;
-				}
-				break;
-			case XK_Right:
-			case XK_KP_Right:
-				switch(gDpadOrientation){
-					case kDpadLandscape: return kButtonRight;
-					case kDpadPortrait: return kButtonUp;
-					case kDpadLandscapeUpsideDown: return kButtonLeft;
-					case kDpadPortraitUpsideDown: return kButtonDown;
-				}
-				break;
-			case XK_Left:
-			case XK_KP_Left:
-				switch(gDpadOrientation){
-					case kDpadLandscape: return kButtonLeft;
-					case kDpadPortrait: return kButtonDown;
-					case kDpadLandscapeUpsideDown: return kButtonRight;
-					case kDpadPortraitUpsideDown: return kButtonUp;
-				}
-				break;
+			case XK_Left:			return kButtonLeft;
+			case XK_KP_Left:		return kButtonLeft;
+			case XK_Right:			return kButtonRight;
+			case XK_KP_Right:		return kButtonRight;
+			case XK_Up:				return kButtonUp;
+			case XK_KP_Up:			return kButtonUp;
+			case XK_Down:			return kButtonDown;
+			case XK_KP_Down:		return kButtonDown;
 			
 			case XK_a:				return kButtonA;
 			case XK_KP_0:			return kButtonA;
