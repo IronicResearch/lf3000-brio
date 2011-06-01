@@ -30853,3 +30853,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/31/11 5:07 PM
 6,173 ms. (Cumulative: 11,420,749 ms)
 
 ----------------
+Revision 9,349 from svn://localhost/TRUNK/:
+
+Fix button repeat staying off when emulator is closed using window close icon or ESC key.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/31/11 5:30 PM
+1 changed, 0 added, 0 deleted.
+6,178 ms. (Cumulative: 11,427,005 ms)
+
+----------------

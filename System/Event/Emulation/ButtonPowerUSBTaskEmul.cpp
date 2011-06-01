@@ -184,6 +184,7 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 						CPowerMessage power_msg(power_data);
 						pThis->PostEvent(power_msg, kPowerEventPriority, 0);
 						g_threadRun2_ = false;
+						XAutoRepeatOn(gXDisplay);
 					}
 					U32 mask = KeySymToButton(keysym);
 					data.buttonTransition = mask;
@@ -217,6 +218,7 @@ void* CEventModule::ButtonPowerUSBTask(void* arg)
 					CPowerMessage power_msg(power_data);
 					pThis->PostEvent(power_msg, kPowerEventPriority, 0);
 					g_threadRun2_ = false;
+					XAutoRepeatOn(gXDisplay);
 				}
 				break;
 				
