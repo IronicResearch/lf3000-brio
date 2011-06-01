@@ -30840,3 +30840,16 @@ By Dave Milici (dmilici@leapfrog.com) on 5/31/11 10:03 AM
 6,080 ms. (Cumulative: 11,414,451 ms)
 
 ----------------
+Revision 9,344 from svn://localhost/TRUNK/:
+Revision 9,345 from svn://localhost/TRUNK/:
+Revision 9,346 from svn://localhost/TRUNK/:
+Revision 9,347 from svn://localhost/TRUNK/:
+Revision 9,348 from svn://localhost/TRUNK/:
+
+Apply DPAD rotations to emulation.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/31/11 5:07 PM
+1 changed, 0 added, 0 deleted.
+6,173 ms. (Cumulative: 11,420,749 ms)
+
+----------------
