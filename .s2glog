@@ -30883,3 +30883,29 @@ By Dave Milici (dmilici@leapfrog.com) on 6/1/11 6:28 PM
 6,250 ms. (Cumulative: 11,439,632 ms)
 
 ----------------
+Revision 9,355 from svn://localhost/TRUNK/:
+Revision 9,356 from svn://localhost/TRUNK/:
+Revision 9,357 from svn://localhost/TRUNK/:
+Revision 9,358 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Modified capture code to directly access ALSA mmapped buffers instead of intermediary pipe. (TTP 1391)
+
+The original capture code used an asynchronous callback function from ALSA to fill a pipe which would then be emptied
+when actually saving captured data to AVI or WAV files. Although this method was based one of ALSA's example methods, the
+callback function is called in a signal interrupt context which created potential problems if errors needed to be handled.
+The most common error turned out to be the pipe becoming full if the camera thread was busy handling video capture data
+or viewfinder rendering, and thus unable to empty the pipe for saving audio data to AVI file.
+
+By directly accessing ALSA mmapped capture buffers when saving audio stream to AVI or WAV files, we avoid the asynchronous
+callback scheme altogether, and also avoid the overhead for copying the captured data into and out of the pipe. The whole
+point of using ALSA's mmapped shared buffer access method is to avoid copying data, so this is a more efficient method of 
+audio data capture from the microphone device.
+
+The original code using the async callback pipe method may be conditionally compiled via #define USE_ASYNC_PIPE option
+if necessary to revert. It is currently #undef'ed for testing as post-GM feature. 
+
+By Dave Milici (dmilici@leapfrog.com) on 6/2/11 11:11 AM
+1 changed, 0 added, 0 deleted.
+6,113 ms. (Cumulative: 11,445,854 ms)
+
+----------------

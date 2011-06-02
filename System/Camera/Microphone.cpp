@@ -23,6 +23,8 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+#undef USE_ASYNC_PIPE								// for asynchronous callback pipe (obsolete)
+
 static const unsigned int MIC_RATE		= 16000;	/* desired sampling rate */
 static const unsigned int MIC_CHANS		= 1;		/* desired channels */
 static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format */
@@ -72,6 +74,9 @@ static void RecordCallback(snd_async_handler_t *ahandler);
 
 static int set_hw_params(struct tMicrophoneContext *pCtx);
 static int set_sw_params(struct tMicrophoneContext *pCtx);
+
+static int direct_read_begin(struct tMicrophoneContext *pCtx, char** pbuffer, int* poffset);
+static int direct_read_end(struct tMicrophoneContext *pCtx, char* pbuffer, int offset, int len);
 
 //==============================================================================
 // Defines
@@ -146,6 +151,7 @@ tErrType CCameraModule::InitMicInt()
 
 	do
 	{
+#ifdef USE_ASYNC_PIPE
 		/*
 		 * Pipe capacity is 64k.  This is a 2 second buffer @ 16-bit, mono 16 KHz.
 		 */
@@ -163,7 +169,7 @@ tErrType CCameraModule::InitMicInt()
 		{
 			continue;
 		}
-
+#endif
 		/*
 		 * If the pipe fills up, the mic audio will overrun and data will be lost.
 		 * A polling loop periodically drains the pipe to prevent this from happening.
@@ -187,10 +193,12 @@ tErrType CCameraModule::InitMicInt()
 		}
 
 		micCtx_.dbg = &dbg_;
+#ifdef USE_ASYNC_PIPE
 		if((err = snd_async_add_pcm_handler(&micCtx_.ahandler, micCtx_.pcm_handle, RecordCallback, &micCtx_)) < 0)
 		{
 			continue;
 		}
+#endif
 
 		err = snd_pcm_prepare(micCtx_.pcm_handle);
 
@@ -359,7 +367,7 @@ Boolean	CCameraModule::StartAudio(Boolean reset)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::StopAudio()
 {
-	Boolean bRet = false;;
+	Boolean bRet = false;
 	int err, bytes;
 	ssize_t len;
 	fd_set rfds;
@@ -367,6 +375,9 @@ Boolean	CCameraModule::StopAudio()
 
 	err = snd_pcm_drop(micCtx_.pcm_handle);
 
+	bRet = (err == 0) ? true : false;
+
+#ifdef USE_ASYNC_PIPE
 	/* purge pipe */
 	FD_ZERO(&rfds);
 	FD_SET(micCtx_.fd[0], &rfds);
@@ -394,6 +405,7 @@ Boolean	CCameraModule::StopAudio()
 			} while(bytes);
 		}
 	}
+#endif
 
 	return bRet;
 }
@@ -401,6 +413,7 @@ Boolean	CCameraModule::StopAudio()
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::WriteAudio(avi_t *avi)
 {
+#ifdef USE_ASYNC_PIPE
 	Boolean ret = false;
 	int err;
 	fd_set rfds;
@@ -431,24 +444,34 @@ Boolean	CCameraModule::WriteAudio(avi_t *avi)
 			micCtx_.counter++;
 			if (len != micCtx_.block_size)
 				micCtx_.counter = micCtx_.bytesWritten / micCtx_.block_size;
-//		while(len == DRAIN_SIZE)
-//		{
-//			len = read(micCtx_.fd[0], micCtx_.poll_buf, DRAIN_SIZE);
-//			if(len > 0)
-//			{
-//				AVI_append_audio(avi, buf, len);
-//			}
-//		}
 		}
 		ret = true;
 	}
 
 	return ret;
+#else
+	int len;
+	int offset;
+	char* addr;
+
+	// Write captured samples to AVI file directly from mmapped buffer
+	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
+		AVI_write_audio(avi, addr, len);
+		direct_read_end(&micCtx_, addr, offset, len);
+		micCtx_.bytesWritten += len;
+		micCtx_.counter++;
+		if (len != micCtx_.block_size)
+			micCtx_.counter = micCtx_.bytesWritten / micCtx_.block_size;
+		return true;
+	}
+	return false;
+#endif
 }
 
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::WriteAudio(SNDFILE *wav)
 {
+#ifdef USE_ASYNC_PIPE
 	Boolean ret = false;
 	int err;
 	fd_set rfds;
@@ -483,6 +506,20 @@ Boolean	CCameraModule::WriteAudio(SNDFILE *wav)
 	}
 
 	return ret;
+#else
+	int len;
+	int offset;
+	char* addr;
+
+	// Write captured samples to WAV file directly from mmapped buffer
+	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
+		sf_write_raw(wav, addr, len);
+		direct_read_end(&micCtx_, addr, offset, len);
+		micCtx_.bytesWritten += len;
+		return true;
+	}
+	return false;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -493,9 +530,9 @@ Boolean	CCameraModule::FlushAudio()
 	fd_set rfds;
 	struct timeval tv = {0,0};	/* immediate timeout */
 
-	ssize_t len;
-	sf_count_t wrote;
+	ssize_t len = 0;
 
+#ifdef USE_ASYNC_PIPE
 	FD_ZERO(&rfds);
 	FD_SET(micCtx_.fd[0], &rfds);
 
@@ -505,6 +542,17 @@ Boolean	CCameraModule::FlushAudio()
 	if (err > 0)
 	{
 		len = read(micCtx_.fd[0], micCtx_.poll_buf, DRAIN_SIZE);
+	}
+#else
+		int offset;
+		char* addr;
+
+		// Copy captured samples directly from mmapped buffer
+		if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
+			memcpy(micCtx_.poll_buf, addr, len);
+			direct_read_end(&micCtx_, addr, offset, len);
+		}
+#endif
 		if (len > 0)
 		{
 			// Scan input buffer for clipped samples
@@ -522,7 +570,6 @@ Boolean	CCameraModule::FlushAudio()
 			if (count > countPercent)
 				ret = true;
 		}
-	}
 
 	return ret;
 }
@@ -662,6 +709,54 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 	}
 
 	called = false;
+}
+
+//----------------------------------------------------------------------------
+static int direct_read_begin(struct tMicrophoneContext *pCtx, char** pbuffer, int* poffset)
+{
+	snd_pcm_t *handle = pCtx->pcm_handle;
+	const snd_pcm_channel_area_t *my_area;
+	snd_pcm_uframes_t offset, frames;
+	snd_pcm_sframes_t avail;
+	int err, bytes;
+
+	// Query captured samples available
+	avail = snd_pcm_avail_update(handle);
+	if (avail < 0) {
+		err = xrun_recovery(handle, avail);
+		return 0;
+	}
+	if (avail < pCtx->period_size)
+		return 0;
+
+	// Return mmapped region to captured samples
+	frames = avail;
+	err = snd_pcm_mmap_begin(handle, &my_area, &offset, &frames);
+	if (err < 0) {
+		err = xrun_recovery(handle, err);
+		return 0;
+	}
+
+	*pbuffer = (((char *)my_area->addr) + (my_area->first / 8) + offset * (my_area->step / 8));
+	*poffset = offset;
+	bytes = frames * 2;
+	pCtx->bytesRead += bytes;
+	return bytes;
+}
+
+//----------------------------------------------------------------------------
+static int direct_read_end(struct tMicrophoneContext *pCtx, char* pbuffer, int offset, int len)
+{
+	snd_pcm_t *handle = pCtx->pcm_handle;
+	int err;
+
+	// Release mmapped region to captured samples
+	err = snd_pcm_mmap_commit(handle, offset, len/2);
+	if (err < 0) {
+		err = xrun_recovery(handle, err);
+		return err;
+	}
+	return err;
 }
 
 //----------------------------------------------------------------------------
