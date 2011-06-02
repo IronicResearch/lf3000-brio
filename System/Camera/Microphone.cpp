@@ -427,9 +427,10 @@ Boolean	CCameraModule::WriteAudio(avi_t *avi)
 		if(len > 0)
 		{
 			AVI_write_audio(avi, reinterpret_cast<char*>(micCtx_.poll_buf), len);
-			micCtx_.bytesRead = len;
 			micCtx_.bytesWritten += len;
 			micCtx_.counter++;
+			if (len != micCtx_.block_size)
+				micCtx_.counter = micCtx_.bytesWritten / micCtx_.block_size;
 //		while(len == DRAIN_SIZE)
 //		{
 //			len = read(micCtx_.fd[0], micCtx_.poll_buf, DRAIN_SIZE);
@@ -642,6 +643,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 				res = 0;
 				piping = false;
 			}
+			pCtx->bytesRead += res;
 
 			commitres = snd_pcm_mmap_commit(handle, offset, res/2);
 			if (commitres < 0 || (snd_pcm_uframes_t)commitres != res/2) {
@@ -890,6 +892,7 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
         	pCtx->period_size = 0;
         	continue;
         }
+		pCtx->block_size = pCtx->period_size * pCtx->channels * sizeof(short);
 		
 		/* commit changes */
 		if((err = snd_pcm_hw_params(handle, params)) < 0)

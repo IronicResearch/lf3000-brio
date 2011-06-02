@@ -30871,3 +30871,15 @@ By dlazzari (dlazzari@leapfrog.com) on 6/1/11 11:50 AM
 6,205 ms. (Cumulative: 11,433,288 ms)
 
 ----------------
+Revision 9,351 from svn://localhost/TRUNK/:
+Revision 9,352 from svn://localhost/TRUNK/:
+Revision 9,353 from svn://localhost/TRUNK/:
+Revision 9,354 from svn://localhost/TRUNK/:
+
+MicrophoneModule: Modify tracking of captured audio blocks, prior to comparing piped vs direct capture methods. (TTP 1391)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/1/11 6:28 PM
+2 changed, 0 added, 0 deleted.
+6,250 ms. (Cumulative: 11,439,632 ms)
+
+----------------

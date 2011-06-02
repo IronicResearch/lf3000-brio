@@ -225,6 +225,7 @@ struct tMicrophoneContext {
 	unsigned int			bytesRead;		// bytes read per callback
 	unsigned int			bytesWritten;	// bytes written total
 	unsigned int			counter;		// block counter
+	unsigned int			block_size;		// block size in bytes = period_size * 2
 	
 	snd_pcm_status_t* 		status;
 	snd_timestamp_t 		tstamp;
