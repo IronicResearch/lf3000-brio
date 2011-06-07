@@ -99,9 +99,10 @@ CDisplayModule::~CDisplayModule()
 #ifdef EMULATION	// Skip removing display contexts for cleaner appearance on exits (TTP #2010)
 	tDisplayContext* pdc = NULL;
 	std::list<tDisplayContext*>::iterator it;
-	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); )
 	{
 		pdc = *it;
+		it = gDisplayList.erase(it);
 		DestroyHandle(pdc, true);
 	}
 	if (pdcPrimary_)
