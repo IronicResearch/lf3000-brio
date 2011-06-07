@@ -30909,3 +30909,17 @@ By Dave Milici (dmilici@leapfrog.com) on 6/2/11 11:11 AM
 6,113 ms. (Cumulative: 11,445,854 ms)
 
 ----------------
+Revision 9,359 from svn://localhost/TRUNK/:
+Revision 9,360 from svn://localhost/TRUNK/:
+Revision 9,361 from svn://localhost/TRUNK/:
+Revision 9,362 from svn://localhost/TRUNK/:
+Revision 9,363 from svn://localhost/TRUNK/:
+Revision 9,364 from svn://localhost/TRUNK/:
+
+Clean up DisplayModule destructor to prevent segfaults when emulator is closing down.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/7/11 4:35 PM
+1 changed, 0 added, 0 deleted.
+6,532 ms. (Cumulative: 11,452,511 ms)
+
+----------------
