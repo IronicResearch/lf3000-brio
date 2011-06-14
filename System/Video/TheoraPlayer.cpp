@@ -488,13 +488,13 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 	// Start decoder stream
 	theora_decode_init(&td,&ti);
 
-	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: %dx%d, %d:%d aspect, %d:%d fps\n",
+	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: %dx%d, %d:%d aspect, %d:%d fps\n",
 		ti.width, ti.height, ti.aspect_numerator, ti.aspect_denominator, ti.fps_numerator, ti.fps_denominator);
-	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: output %dx%d at %d,%d\n",
+	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: output %dx%d at %d,%d\n",
 		ti.frame_width, ti.frame_height, ti.offset_x, ti.offset_y);
 	dbg_.Assert(ti.fps_numerator != 0, "VideoModule::StartVideo: bad fps numerator\n");
 	dbg_.Assert(ti.fps_denominator != 0, "VideoModule::StartVideo: bad fps denominator\n");
-	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: %d frames/sec, %d msec/frame\n",
+	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: %d frames/sec, %d msec/frame\n",
 		ti.fps_numerator / ti.fps_denominator, 1000 * ti.fps_denominator / ti.fps_numerator);
 
 	pVidCtx->info.width = ti.width;
@@ -510,11 +510,11 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 	if (tc.comments)
 	{
 		char** pstr = tc.user_comments;
-		dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: vendor: %s\n", tc.vendor);
-		dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: comments: %d (tags)\n", tc.comments);
+		dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: vendor: %s\n", tc.vendor);
+		dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: comments: %d (tags)\n", tc.comments);
 		for (int i = 0; i < tc.comments && pstr != NULL; i++, pstr++)
 		{
-			dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::StartVideo: tag %d: %s\n", i, *pstr);
+			dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: tag %d: %s\n", i, *pstr);
 			if (strncmp(*pstr, "LOCATION", 8) == 0)
 			{
 				char buf[40];
