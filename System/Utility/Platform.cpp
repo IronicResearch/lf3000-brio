@@ -68,7 +68,7 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsCamera:
 		return (0 == stat("/sys/devices/platform/lf1000-ohci/usb1", &stbuf));
 	case kCapsAccelerometer:
-		return (0 == stat("/sys/devices/platform/lf1000-aclmtr", &stbuf));
+		return (0 == stat("/sys/devices/platform/lf1000-aclmtr/enable", &stbuf));
 	}
 	return false;
 }

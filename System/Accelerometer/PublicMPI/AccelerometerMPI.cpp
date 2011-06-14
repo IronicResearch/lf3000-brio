@@ -168,7 +168,7 @@ Boolean	CAccelerometerMPI::IsAccelerometerPresent()
 {
 	CDebugMPI dbg(kGroupAccelerometer);
 	struct stat stbuf;
-	int r = stat("/sys/devices/platform/lf1000-aclmtr", &stbuf);
+	int r = stat("/sys/devices/platform/lf1000-aclmtr/enable", &stbuf);
 	dbg.DebugOut(kDbgLvlImportant, "IsAccelerometerPresent: %d\n", (r == 0));
 	return (r == 0) ? true : false;
 }
