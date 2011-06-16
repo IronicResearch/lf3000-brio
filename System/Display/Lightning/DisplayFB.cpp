@@ -19,6 +19,7 @@
 #include <GLES/libogl.h>
 #include <list>
 
+#include <stdio.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>

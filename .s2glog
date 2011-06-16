@@ -30957,3 +30957,13 @@ By Scott Esters (sesters@leapfrog.com) on 6/14/11 3:24 PM
 6,578 ms. (Cumulative: 11,472,590 ms)
 
 ----------------
+Revision 9,373 from svn://localhost/TRUNK/:
+Revision 9,374 from svn://localhost/TRUNK/:
+
+DisplayModule: Add explicit stdio.h header includes to build with CodeSourcery gcc 4.5 ARM cross-compiler.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/15/11 5:30 PM
+2 changed, 0 added, 0 deleted.
+6,657 ms. (Cumulative: 11,479,325 ms)
+
+----------------
