@@ -30967,3 +30967,16 @@ By Dave Milici (dmilici@leapfrog.com) on 6/15/11 5:30 PM
 6,657 ms. (Cumulative: 11,479,325 ms)
 
 ----------------
+Revision 9,375 from svn://localhost/TRUNK/:
+Revision 9,376 from svn://localhost/TRUNK/:
+Revision 9,377 from svn://localhost/TRUNK/:
+Revision 9,378 from svn://localhost/TRUNK/:
+
+AtomicFileIO: Delete atomic_info structs when no longer used, per valgrind. (TTP 1490)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/21/11 1:35 PM
+1 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 11,485,951 ms)
+
+----------------
