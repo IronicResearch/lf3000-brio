@@ -178,6 +178,7 @@ int fabortAtomic (FILE *fp)
 
 	// Remove from list
 	atomicList.remove (atomicOpen);
+	delete atomicOpen;
 	
 	ATOMIC_ERR1 ("fabortAtomic(0x%08x) returning 0\n", (unsigned) fp);
 	return 0;
@@ -218,6 +219,7 @@ int fabortAllAtomic ()
 		q = p;
 		q++;
 		atomicList.erase (p);
+		delete atomicOpen;
 	}
 	ATOMIC_ERR1 ("fabortAllAtomic: aborted %d files\n", i);
 	show_atomics ();
@@ -421,6 +423,7 @@ int fcloseAtomic(FILE *fp)
 	free (atomicOpen->workName);
 	// Remove from list
 	atomicList.remove (atomicOpen);
+	delete atomicOpen;
 
 	ATOMIC_ERR1 ("fcloseAtomic returning %d\n", res);
 	return res;
