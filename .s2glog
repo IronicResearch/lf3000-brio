@@ -31010,3 +31010,12 @@ By dlazzari (dlazzari@leapfrog.com) on 6/30/11 10:49 AM
 6,282 ms. (Cumulative: 11,498,537 ms)
 
 ----------------
+Revision 9,392 from svn://localhost/TRUNK/:
+
+Cache values after enabling the accelerometer driver in SetAccelerometerMode(). This fixes TTPro 1223 if apps call SetAccelerometerMode() before calling GetOrientation(). Added a unit test that verifies the fix.
+
+By dlazzari (dlazzari@leapfrog.com) on 6/30/11 11:54 AM
+2 changed, 0 added, 0 deleted.
+6,268 ms. (Cumulative: 11,504,899 ms)
+
+----------------

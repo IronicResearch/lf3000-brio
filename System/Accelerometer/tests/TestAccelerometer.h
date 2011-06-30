@@ -7,6 +7,7 @@
 #include <EventListener.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <DisplayTypes.h>
 #include <UnitTestUtils.h>
 
 //For memcpy
@@ -77,6 +78,7 @@ public:
 	//------------------------------------------------------------------------
 	void tearDown( )
 	{
+		aclmtr_->SetAccelerometerMode( kAccelerometerModeDisabled );
 		delete aclmtr_;
 		sleep(1);
 	}
@@ -243,4 +245,21 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerBias( bxoffset, byoffset, bzoffset ) );
 		
 	}
+	
+	//------------------------------------------------------------------------
+	void testGetOrientationNoListener( )
+	{
+		PRINT_TEST_NAME();
+		
+		printf("Rotate device to Portrait mode (D-Pad at the bottom)\n");
+		sleep(3);
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerMode( kAccelerometerModeOrientation ) );
+		TS_ASSERT_EQUALS( kOrientationPortrait, aclmtr_->GetOrientation() );
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerMode( kAccelerometerModeDisabled ) );
+		
+		printf("Rotate device to Landscape mode (D-Pad on the left)\n");
+		sleep(3);
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerMode( kAccelerometerModeOrientation ) );
+		TS_ASSERT_EQUALS( kOrientationLandscape, aclmtr_->GetOrientation() );
+	}	
 };

@@ -239,6 +239,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 {
 	int enable = 0;
 	int orient = 0;
+	bool success = true;
 	switch (mode) {
 	case kAccelerometerModeDisabled:
 		enable = 0;
@@ -255,6 +256,28 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 		gbOneShot = true;
 		break;
 	}
+	
+	// Set enable and orient state
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", enable);
+		fclose(fd);
+	}
+	else
+		success = false;
+	
+	fd = fopen("/sys/devices/platform/lf1000-aclmtr/orient", "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u\n", orient);
+		fclose(fd);
+	}
+	else
+		success = false;
+	
+	//Wait till driver updates data (at least one tick)
+	U32 rate = GetAccelerometerRate();
+	usleep( 1000000 / rate );
+	
 	// Get initial x,y,z and orientation data if enable
 	if (enable) {
 		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/raw_xyz", "r");
@@ -276,18 +299,8 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 			gCachedOrient = RawToOrient(phi);
 		}
 	}
-	// Set enable and orient state
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
-	if (fd != NULL) {
-		fprintf(fd, "%u\n", enable);
-		fclose(fd);
-	}
-	fd = fopen("/sys/devices/platform/lf1000-aclmtr/orient", "w");
-	if (fd != NULL) {
-		fprintf(fd, "%u\n", orient);
-		fclose(fd);
+	if( success )
 		return kNoErr;
-	}
 	return kNoImplErr;
 }
 
