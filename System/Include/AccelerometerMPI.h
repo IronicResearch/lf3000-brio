@@ -53,6 +53,9 @@ public:
 	tAccelerometerData		GetAccelerometerData() const;
 
 	/// Get accelerometer orientation
+	/// Returns the current orientation of the device's screen as a tDisplayOrientation
+	/// type value. SetAccelerometerMode must have been previously called with
+	/// kAccelerometerModeOrientation to guarantee accuracy of this function.
 	S32						GetOrientation() const;
 
 	/// Get accelerometer sample rate (Hz)
@@ -69,6 +72,14 @@ public:
 
 	/// Set accelerometer mode
 	tErrType				SetAccelerometerMode(tAccelerometerMode mode);
+	
+	/// Get the driver bias
+	/// that is subtracted from each sample in the driver for calibration purposes
+	tErrType				GetAccelerometerBias(S32& xoffset, S32& yoffset, S32& zoffset);
+	
+	/// Set the bias
+	/// that is subtracted from each sample in the driver for calibration purposes
+	tErrType				SetAccelerometerBias(S32 xoffset, S32 yoffset, S32 zoffset);
 	
 private:
 	class CAccelerometerModule*	pModule_;
