@@ -291,5 +291,29 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	return kNoImplErr;
 }
 
+tErrType CAccelerometerMPI::GetAccelerometerBias(S32& xoffset, S32& yoffset, S32& zoffset)
+{
+	//Read values directly from sysfs entry
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/bias", "r");
+	if( fd != NULL ) {
+		fscanf(fd, "%d %d %d", (int*)&xoffset, (int*)&yoffset, (int*)&zoffset);
+		fclose(fd);
+		return kNoErr;
+	}
+	return kNoImplErr;
+}
+
+tErrType CAccelerometerMPI::SetAccelerometerBias(S32 xoffset, S32 yoffset, S32 zoffset)
+{
+	//Write values directly to sysfs entry
+	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/bias", "w");
+	if( fd != NULL ) {
+		fprintf(fd, "%d %d %d", (int)xoffset, (int)yoffset, (int)zoffset);
+		fclose(fd);
+		return kNoErr;
+	}
+	return kNoImplErr;
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF

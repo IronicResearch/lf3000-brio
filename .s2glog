@@ -30995,3 +30995,18 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 6/26/11 10:13 PM
 6,070 ms. (Cumulative: 11,492,146 ms)
 
 ----------------
+Revision 9,386 from svn://localhost/TRUNK/:
+Revision 9,387 from svn://localhost/TRUNK/:
+Revision 9,388 from svn://localhost/TRUNK/:
+Revision 9,389 from svn://localhost/TRUNK/:
+Revision 9,390 from svn://localhost/TRUNK/:
+Revision 9,391 from svn://localhost/TRUNK/:
+
+Add MPI functions to access underlying Accelerometer driver bias that serves as a calibration. Also add a unit test for it. Fixes TTPro #1496.
+
+
+By dlazzari (dlazzari@leapfrog.com) on 6/30/11 10:49 AM
+3 changed, 0 added, 0 deleted.
+6,282 ms. (Cumulative: 11,498,537 ms)
+
+----------------

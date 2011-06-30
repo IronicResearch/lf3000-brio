@@ -221,4 +221,26 @@ public:
 		TS_ASSERT_EQUALS( handler_.data_.accelZ, data.accelZ );
 		TS_ASSERT_EQUALS( kNoErr, aclmtr_->UnregisterEventListener(&handler_) );
 	}
+	
+	//------------------------------------------------------------------------
+	void testGetSetBias( )
+	{
+		PRINT_TEST_NAME();
+		
+		S32 bxoffset, byoffset, bzoffset;
+		S32 xoffset = 0, yoffset = 0, zoffset = 0;
+		//Backup old values
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->GetAccelerometerBias( bxoffset, byoffset, bzoffset ) );
+		
+		//Set and check new values
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerBias( 30, -30, 30 ) );
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->GetAccelerometerBias( xoffset, yoffset, zoffset ) );
+		TS_ASSERT_EQUALS( 30, xoffset );
+		TS_ASSERT_EQUALS( -30, yoffset );
+		TS_ASSERT_EQUALS( 30, zoffset );
+		
+		//Restore old values
+		TS_ASSERT_EQUALS( kNoErr, aclmtr_->SetAccelerometerBias( bxoffset, byoffset, bzoffset ) );
+		
+	}
 };
