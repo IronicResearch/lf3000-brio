@@ -325,6 +325,7 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	{
 		ATOMIC_ERR1 ("fopenAtomic(%s): strdup failed us!\n", path);
 		free (atomicOpen->realName);
+		delete atomicOpen;
 		return NULL;
 	}
 	atomicOpen->workName = (char *)malloc (1+strlen(path)+strlen(ATOMIC_EXT));
@@ -334,6 +335,9 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	if (strlen (atomicOpen->workName) == 0)
 	{
 		ATOMIC_ERR1 ("fopenAtomic(%s): mktemp failed us!\n", path);
+		free (atomicOpen->workName);
+		free (atomicOpen->realName);
+		delete atomicOpen;
 		return NULL;
 	}
 
@@ -377,6 +381,7 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	free (atomicOpen->realName);
 	free (atomicOpen->workName);
 	atomicOpen->realName = atomicOpen->workName = NULL;
+	delete atomicOpen;
 	return NULL;
 }
 
