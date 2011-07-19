@@ -436,9 +436,18 @@ void* CameraTaskMain(void* arg)
 		delete msg;
 	}
 
+#if USE_RENDER_THREAD
 	while (bRendering)
 		kernel.TaskSleep(10);
 	
+	while (!pCtx->qframes.empty())
+	{
+		frame = pCtx->qframes.front();
+		//pCtx->module->ReturnFrame(pCtx->hndl, &frame);
+		pCtx->qframes.pop();
+	}
+#endif
+
 	if(image.data)
 	{
 		kernel.Free(image.data);

@@ -31073,3 +31073,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/18/11 3:55 PM
 6,129 ms. (Cumulative: 11,536,178 ms)
 
 ----------------
+Revision 9,407 from svn://localhost/TRUNK/:
+
+CameraModule: Make sure rendering frame queue is empty when exiting camera threads.
+Otherwise stale frame data might get accessed on subsequent camera thread instances. 
+(Madrid TTP 1684)
+
+By Dave Milici (dmilici@leapfrog.com) on 7/18/11 7:34 PM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 11,542,413 ms)
+
+----------------
