@@ -76,21 +76,21 @@ if vars['is_export'] or vars['is_publish']:
 		else:
 			core_name = 'libogl.a'
 		lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
-		env.Install(lib_dir, lib)
+		##env.Install(lib_dir, lib)
 		# Need ustring libs for SDK apps linking platform libs
 		libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], '*.so'))
-		env.Install(vars['mpi_deploy_dir'], libs)
+		##env.Install(vars['mpi_deploy_dir'], libs)
 		# Need FreeType headers (above) and libs for FlashLite fontconfig compilation
 		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so'))
-		env.Install(vars['mpi_deploy_dir'], libs)
+		##env.Install(vars['mpi_deploy_dir'], libs)
 		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(vars['mpi_deploy_dir'], libs)
+		##env.Install(vars['mpi_deploy_dir'], libs)
 
 #-----------------------------------------------------------------------------
 # Export shared libs to embedded target
 # Only specific versioned runtime libs copied to avoid duplication on target
 #-----------------------------------------------------------------------------
-if not vars['is_emulation']:
+if 0 and vars['is_emulation']:
 	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libustring.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libiconv.so.2'))

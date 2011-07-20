@@ -1,4 +1,4 @@
-prefix=/media/Didj/Didj/Base/Brio/lib
+prefix=/home/dmilici/rootfs-vtk//usr/local
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

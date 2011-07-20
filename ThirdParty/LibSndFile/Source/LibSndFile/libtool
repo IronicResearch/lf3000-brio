@@ -44,7 +44,7 @@ available_tags=" CXX"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host sesters-t60:
+# Libtool was configured on host dmilici-desktop:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -97,13 +97,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/opt/RidgeRun/arm-eabi-uclibc/arm-linux-uclibcgnueabi/bin/ld"
+LD="/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/arm-none-linux-gnueabi/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/opt/RidgeRun/arm-eabi-uclibc/bin/arm-linux-nm -B"
+NM="/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin//arm-linux-nm -B"
 
 # A symbol stripping program
 STRIP="arm-linux-strip"
@@ -325,10 +325,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /usr/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/"
+sys_lib_search_path_spec=" /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/../../../../arm-none-linux-gnueabi/lib/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/../../../../arm-none-linux-gnueabi/lib/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/lib/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/lib/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/mesa /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/alsa-lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7223,7 +7223,7 @@ disable_libs=static
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host sesters-t60:
+# Libtool was configured on host dmilici-desktop:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -7276,13 +7276,13 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/opt/RidgeRun/arm-eabi-uclibc/arm-linux-uclibcgnueabi/bin/ld"
+LD="/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/arm-none-linux-gnueabi/bin/ld"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
 
 # A BSD-compatible nm program.
-NM="/opt/RidgeRun/arm-eabi-uclibc/bin/arm-linux-nm -B"
+NM="/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin//arm-linux-nm -B"
 
 # A symbol stripping program
 STRIP="arm-linux-strip"
@@ -7405,11 +7405,11 @@ striplib="arm-linux-strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/crti.o /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/crtbeginS.o"
+predep_objects="/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib/crti.o /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/crtendS.o /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/crtn.o"
+postdep_objects="/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/crtendS.o /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7421,7 +7421,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1 -L/opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib"
+compiler_lib_search_path="-L/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1 -L/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc -L/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/../../../../arm-none-linux-gnueabi/lib -L/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/lib -L/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib"
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7501,10 +7501,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=no
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec=" /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /usr/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/arm-linux-uclibcgnueabi/4.1.1/ /opt/RidgeRun/arm-eabi-uclibc/lib/gcc/arm-linux-uclibcgnueabi/4.1.1/../../../../arm-linux-uclibcgnueabi/lib/"
+sys_lib_search_path_spec=" /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/../../../../arm-none-linux-gnueabi/lib/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../lib/gcc/arm-none-linux-gnueabi/4.5.1/../../../../arm-none-linux-gnueabi/lib/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/lib/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/lib/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib/arm-none-linux-gnueabi/4.5.1/ /home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/../arm-none-linux-gnueabi/libc/usr/lib/"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/local/lib "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/lib/mesa /lib/i486-linux-gnu /usr/lib/i486-linux-gnu /usr/lib/alsa-lib /usr/local/lib "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
