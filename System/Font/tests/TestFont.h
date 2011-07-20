@@ -13,6 +13,10 @@
 
 LF_USING_BRIO_NAMESPACE()
 
+#ifndef gunichar
+#define gunichar	tUniChar
+#endif
+
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;
 
 //----------------------------------------------------------------------------

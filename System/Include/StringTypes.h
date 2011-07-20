@@ -18,9 +18,20 @@
 //
 //============================================================================== 
 
-//#ifdef EMULATION //FIXME/BSK
+#ifdef EMULATION //FIXME/BSK
 	#include <glibmm/ustring.h>
-//#endif
+#else
+	#include <string>
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <limits.h>
+#ifndef MIN
+	#define MIN(x,y)	((x < y) ? x : y)
+#endif
+#ifndef MAX
+	#define MAX(x,y)	((x > y) ? x : y)
+#endif
+#endif
 
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
@@ -192,9 +203,15 @@ typedef U32			tUTF32Char;
 
 typedef tUTF16Char	tUniChar;		
 
+#ifdef EMULATION
 typedef Glib::ustring	CString;
 typedef Glib::ustring	CPath;
 typedef Glib::ustring	CURI;
+#else
+typedef std::string		CString;
+typedef std::string		CPath;
+typedef std::string		CURI;
+#endif
 	
 typedef const CString*	ConstPtrCString;
 typedef const CURI*		ConstPtrCURI;
