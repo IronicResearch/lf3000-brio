@@ -55,7 +55,7 @@ AR = arm-linux-ar
 AUTOCONF = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Ogg/missing --run autoconf
 AUTOHEADER = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Ogg/missing --run autoheader
 AUTOMAKE = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/Theora/Source/Ogg/missing --run automake-1.9
-AWK = mawk
+AWK = gawk
 CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -O20 -ffast-math -fsigned-char -g -O2
@@ -152,7 +152,7 @@ localstatedir = ${prefix}/var
 mandir = ${prefix}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
-prefix = /home/dmilici/nfsroot/usr/local
+prefix = /home/dmilici/rootfs-vtk//usr/local
 program_transform_name = s,x,x,
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com

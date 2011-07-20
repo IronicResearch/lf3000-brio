@@ -67,7 +67,7 @@ am__DEPENDENCIES_1 =
 libsndfile_la_DEPENDENCIES = \
 	$(am__DEPENDENCIES_1)
 am__objects_1 = sndfile.lo common.lo file_io.lo command.lo \
-	float32.lo double64.lo ima_adpcm.lo \
+	pcm.lo float32.lo double64.lo ima_adpcm.lo \
 	interleave.lo \
 	strings.lo dither.lo broadcast.lo
 am__objects_2 = \
@@ -122,18 +122,18 @@ ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/sesters/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run aclocal-1.9
+ACLOCAL = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run aclocal-1.9
 ALSA_LIBS = 
 AMDEP_FALSE = #
 AMDEP_TRUE = 
-AMTAR = ${SHELL} /home/sesters/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run tar
+AMTAR = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run tar
 AR = arm-linux-ar
-AUTOCONF = ${SHELL} /home/sesters/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run autoconf
+AUTOCONF = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run autoconf
 
 #======================================================================
 # Disable autoheader.
 AUTOHEADER = echo
-AUTOMAKE = ${SHELL} /home/sesters/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run automake-1.9
+AUTOMAKE = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run automake-1.9
 AWK = gawk
 CC = arm-linux-gcc
 CCDEPMODE = depmode=gcc3
@@ -174,7 +174,7 @@ LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIBTOOL_DEPS = ./ltmain.sh
 LN_S = ln -s
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/sesters/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/dmilici/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/missing --run makeinfo
 OBJEXT = o
 OS_SPECIFIC_CFLAGS = 
 OS_SPECIFIC_LINKS = 
@@ -228,10 +228,10 @@ host_cpu = arm
 host_os = linux-gnu
 host_vendor = unknown
 htmldir = ${docdir}
-htmldocdir = /media/Didj/Didj/Base/Brio/lib/share/doc/libsndfile1-dev/html
+htmldocdir = /home/dmilici/rootfs-vtk//usr/local/share/doc/libsndfile1-dev/html
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = /home/sesters/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/install-sh
+install_sh = /home/dmilici/workspace/Brio2/ThirdParty/LibSndFile/Source/LibSndFile/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -240,7 +240,7 @@ mandir = ${datarootdir}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /media/Didj/Didj/Base/Brio/lib
+prefix = /home/dmilici/rootfs-vtk//usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin

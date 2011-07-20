@@ -45,7 +45,7 @@
 #define HAVE_VISIBILITY 1
 
 /* Define to the value of ${prefix}, as a string. */
-#define INSTALLPREFIX "/usr/local"
+#define INSTALLPREFIX "/home/dmilici/rootfs-vtk//usr/local"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""

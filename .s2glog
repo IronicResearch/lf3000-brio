@@ -31113,3 +31113,21 @@ By Dave Milici (dmilici@leapfrog.com) on 7/19/11 6:12 PM
 120,506 ms. (Cumulative: 11,685,225 ms)
 
 ----------------
+Revision 9,413 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updated Brio ThirdParty libs rebuilt with glibc toolchain in Nexell LF2000 BSP.
+
+Note that ustring libs are incomplete, and linking Brio with 3rd-party libs
+is expected to be targeted in rootfs image at $ROOTFS_PATH/usr/lib and 
+$ROOTFS_PATH/usr/local/lib. This checkin is merely saving LF2000 development
+build snapshot for reference.
+
+http://emma.leapfrog.com/display/BRIO/LF2000+%28NXP3200%29+Brio+Support
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/20/11 1:51 PM
+72 changed, 18 added, 0 deleted.
+9,706 ms. (Cumulative: 11,695,009 ms)
+
+----------------

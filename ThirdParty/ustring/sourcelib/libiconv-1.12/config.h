@@ -2,19 +2,19 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Define to the number of bits in type 'ptrdiff_t'. */
-#define BITSIZEOF_PTRDIFF_T 32
+/* #undef BITSIZEOF_PTRDIFF_T */
 
 /* Define to the number of bits in type 'sig_atomic_t'. */
-#define BITSIZEOF_SIG_ATOMIC_T 32
+/* #undef BITSIZEOF_SIG_ATOMIC_T */
 
 /* Define to the number of bits in type 'size_t'. */
-#define BITSIZEOF_SIZE_T 32
+/* #undef BITSIZEOF_SIZE_T */
 
 /* Define to the number of bits in type 'wchar_t'. */
-#define BITSIZEOF_WCHAR_T 32
+/* #undef BITSIZEOF_WCHAR_T */
 
 /* Define to the number of bits in type 'wint_t'. */
-#define BITSIZEOF_WINT_T 32
+/* #undef BITSIZEOF_WINT_T */
 
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
@@ -32,7 +32,7 @@
 
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
-/* #undef ENABLE_NLS */
+#define ENABLE_NLS 1
 
 /* Define to 1 if the package shall run at any location in the filesystem. */
 /* #undef ENABLE_RELOCATABLE */
@@ -45,7 +45,7 @@
 #define HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the `canonicalize_file_name' function. */
-/* #undef HAVE_CANONICALIZE_FILE_NAME */
+#define HAVE_CANONICALIZE_FILE_NAME 1
 
 /* Define to 1 if you have the MacOS X function CFLocaleCopyCurrent in the
    CoreFoundation framework. */
@@ -57,11 +57,11 @@
 
 /* Define if the GNU dcgettext() function is already present or preinstalled.
    */
-/* #undef HAVE_DCGETTEXT */
+#define HAVE_DCGETTEXT 1
 
 /* Define to 1 if you have the declaration of `canonicalize_file_name', and to
    0 if you don't. */
-#define HAVE_DECL_CANONICALIZE_FILE_NAME 0
+#define HAVE_DECL_CANONICALIZE_FILE_NAME 1
 
 /* Define to 1 if you have the declaration of `clearerr_unlocked', and to 0 if
    you don't. */
@@ -136,10 +136,10 @@
 #define HAVE_GETC_UNLOCKED 1
 
 /* Define if the GNU gettext() function is already present or preinstalled. */
-/* #undef HAVE_GETTEXT */
+#define HAVE_GETTEXT 1
 
 /* Define if you have the iconv() function and it works. */
-/* #undef HAVE_ICONV */
+#define HAVE_ICONV 1
 
 /* Define if your compiler supports the #include_next directive. */
 #define HAVE_INCLUDE_NEXT 1
@@ -187,7 +187,7 @@
 #define HAVE_SETLOCALE 1
 
 /* Define to 1 if 'sig_atomic_t' is a signed integer type. */
-#define HAVE_SIGNED_SIG_ATOMIC_T 1
+/* #undef HAVE_SIGNED_SIG_ATOMIC_T */
 
 /* Define to 1 if 'wchar_t' is a signed integer type. */
 /* #undef HAVE_SIGNED_WCHAR_T */
@@ -205,7 +205,7 @@
 #define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the `strerror_r' function. */
-/* #undef HAVE_STRERROR_R */
+#define HAVE_STRERROR_R 1
 
 /* Define to 1 if you have the <strings.h> header file. */
 #define HAVE_STRINGS_H 1
@@ -214,7 +214,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have the <sys/bitypes.h> header file. */
-#define HAVE_SYS_BITYPES_H 1
+/* #undef HAVE_SYS_BITYPES_H */
 
 /* Define to 1 if you have the <sys/inttypes.h> header file. */
 /* #undef HAVE_SYS_INTTYPES_H */
@@ -257,10 +257,10 @@
 /* #undef HAVE__NSGETEXECUTABLEPATH */
 
 /* Define as const if the declaration of iconv() needs const. */
-/* #undef ICONV_CONST */
+#define ICONV_CONST 
 
 /* Define to the value of ${prefix}, as a string. */
-#define INSTALLPREFIX "/usr/local"
+#define INSTALLPREFIX "/home/dmilici/rootfs-vtk//usr/local"
 
 /* If malloc(0) is != NULL, define this to 1. Otherwise define this to 0. */
 #define MALLOC_0_IS_NONNULL 0
@@ -288,18 +288,18 @@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'ptrdiff_t'. */
-#define PTRDIFF_T_SUFFIX 
+/* #undef PTRDIFF_T_SUFFIX */
 
 /* Define this to 1 if strerror is broken. */
 /* #undef REPLACE_STRERROR */
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'sig_atomic_t'. */
-#define SIG_ATOMIC_T_SUFFIX 
+/* #undef SIG_ATOMIC_T_SUFFIX */
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'size_t'. */
-#define SIZE_T_SUFFIX u
+/* #undef SIZE_T_SUFFIX */
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -325,11 +325,11 @@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'wchar_t'. */
-#define WCHAR_T_SUFFIX u
+/* #undef WCHAR_T_SUFFIX */
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'wint_t'. */
-#define WINT_T_SUFFIX u
+/* #undef WINT_T_SUFFIX */
 
 /* Define if the machine's byte ordering is little endian. */
 #define WORDS_LITTLEENDIAN 1
@@ -375,7 +375,7 @@
 /* #undef mbstate_t */
 
 /* Define to a replacement function name for realpath(). */
-#define realpath rpl_realpath
+/* #undef realpath */
 
 /* Define to the equivalent of the C99 'restrict' keyword, or to
    nothing if this is not supported.  Do not define if restrict is
