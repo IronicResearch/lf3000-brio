@@ -31104,3 +31104,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 7/19/11 4:57 PM
 6,132 ms. (Cumulative: 11,554,874 ms)
 
 ----------------
+Revision 9,412 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Create Brio_LF2000 branch from TRUNK for LF2000 glibc development.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/19/11 6:12 PM
+1 changed, 0 added, 0 deleted.
+120,506 ms. (Cumulative: 11,685,225 ms)
+
+----------------
