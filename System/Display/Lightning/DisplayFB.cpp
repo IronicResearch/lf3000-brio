@@ -68,8 +68,8 @@ namespace
 
 	const char*					XRES = "/sys/devices/platform/lf1000-dpc/xres";
 	const char*					YRES = "/sys/devices/platform/lf1000-dpc/yres";
-	unsigned int				xres = 0;	// screen size X
-	unsigned int				yres = 0;	// screen size Y
+	unsigned int				xres = 320; //0;	// screen size X
+	unsigned int				yres = 240; //0;	// screen size Y
 	S16							dxres = 0;	// screen delta X
 	S16							dyres = 0;	// screen delta Y
 	U16							vxres = 0;	// viewport size X
@@ -113,14 +113,14 @@ void CDisplayFB::InitModule()
 	{
 		// Open framebuffer device
 		fbdev[n] = open(FBDEV[n], O_RDWR | O_SYNC);
-		dbg_.Assert(fbdev[n] >= 0, "%s: Error opening %s\n", __FUNCTION__, FBDEV[n]);
+		//dbg_.Assert(fbdev[n] >= 0, "%s: Error opening %s\n", __FUNCTION__, FBDEV[n]);
 		
 		// Query framebuffer info
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
-		dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV[n]);
+		//dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV[n]);
 		
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
-		dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV[n]);
+		//dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV[n]);
 		dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %d x %d, pitch = %d\n", __FUNCTION__, vinfo[n].xres, vinfo[n].yres, finfo[n].line_length);
 	
 		// Reset page flip offsets
@@ -139,21 +139,21 @@ void CDisplayFB::InitModule()
 		
 		// Map framebuffer into userspace
 		fbmem[n] = (U8*)mmap((void*)finfo[n].smem_start, finfo[n].smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev[n], 0);
-		dbg_.Assert(fbmem[n] != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV[n]);
+		//dbg_.Assert(fbmem[n] != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV[n]);
 		dbg_.DebugOut(kDbgLvlImportant, "%s: Mapped %08lx to %p, size %08x\n", __FUNCTION__, finfo[n].smem_start, fbmem[n], finfo[n].smem_len);
 	}
 
 	// Calculate delta XY for screen size vs display resolution
 	dxres = 0;
 	dyres = 0;
-	vxres = xres; //vinfo[RGBFB].xres;
-	vyres = yres; //vinfo[RGBFB].yres;
+	vxres = (xres) ? xres : vinfo[RGBFB].xres;
+	vyres = (yres) ? yres : vinfo[RGBFB].yres;
 	
 	// Setup framebuffer allocator lists and markers
 	gBufListUsed.clear();
 	gBufListFree.clear();
 	gMarkBufStart = 0;
-	gMarkBufEnd   = finfo[RGBFB].smem_len; 
+	gMarkBufEnd   = finfo[YUVFB].smem_len;
 }
 
 //----------------------------------------------------------------------------
@@ -266,11 +266,13 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	// Block addressing mode needed for OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
+	else
+		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 
 	// Pitch depends on width for normal RGB modes, otherwise
 	// finfo[n].line_length may get updated after SetPixelFormat().
 	int line_length = width * depth/8;
-	if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
+	//if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
 		line_length = finfo[n].line_length;
 	int offset = 0;
 	int aligned = (n == YUVFB) ? ALIGN(height * line_length, k1Meg) : 0;

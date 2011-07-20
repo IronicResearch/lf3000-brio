@@ -254,7 +254,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 	if vars['is_emulation']:
 		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread']
 	else:
-		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
+		platformlibs += ['dl', 'pthread', 'rt'] ##, 'ustring', 'iconv', 'intl', 'sigc-2.0']
 	fulllibs = plibs + [ptarget + 'MPI']
 	if vars['is_emulation']:
 		fulllibs += ['Emulation']
@@ -264,7 +264,7 @@ def RunMyTests(ptarget, psources, plibs, penv, vars):
 		hwogllibs = vars['variant'] == 'LF1000' and ['ogl_lf1000'] or ['ogl']
 		fulllibs += vars['is_emulation'] and ['gles_cl'] or hwogllibs
 		libpaths = [vars['mod_deploy_dir'], vars['lib_deploy_dir'], 
-					os.path.join(root_dir, 'ThirdParty/ustring/libs', vars['cpu_subdir']),
+					##os.path.join(root_dir, 'ThirdParty/ustring/libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/MagicEyes/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/FreeType/Libs', vars['cpu_subdir']),
 					os.path.join(root_dir, 'ThirdParty/LibSndFile/Libs', vars['cpu_subdir']),

@@ -482,7 +482,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testVideoAudio()
+	void XXXXtestVideoAudio()
 	{
 		PRINT_TEST_NAME();
 		

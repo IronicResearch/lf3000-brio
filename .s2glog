@@ -31131,3 +31131,19 @@ By Dave Milici (dmilici@leapfrog.com) on 7/20/11 1:51 PM
 9,706 ms. (Cumulative: 11,695,009 ms)
 
 ----------------
+Revision 9,414 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Brio LF2000 development snapshot built with glibc toolchain for LF2000.
+
+Note glib::ustring support is incomplete, so std::string support used instead.
+Subsequent builds should link Brio with 3rd-party libs in rootfs image.
+
+http://emma.leapfrog.com/display/BRIO/LF2000+%28NXP3200%29+Brio+Support
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/20/11 2:11 PM
+12 changed, 0 added, 0 deleted.
+6,035 ms. (Cumulative: 11,701,262 ms)
+
+----------------

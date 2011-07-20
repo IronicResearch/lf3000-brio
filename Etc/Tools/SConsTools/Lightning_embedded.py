@@ -22,7 +22,7 @@ def PlatformMods(env):
 	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64'])
 	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=arm926ej-s')
-	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
+	##env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
 	root = os.path.normpath(os.path.join(__file__, '../../../../ThirdParty/ustring'))
 	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
 	env.Append(CPPPATH = [root])
@@ -32,6 +32,8 @@ def PlatformMods(env):
 		rootfs = os.path.normpath(os.path.join(__file__, '../../../../../../nfsroot'))
 	if not rootfs.startswith('/media'):
 		env.Append(CPPPATH = [os.path.join(rootfs, 'usr', 'include')])
+		env.Append(LIBPATH = [os.path.join(rootfs, 'usr', 'local', 'lib')])
+		env.Append(RPATH   = [os.path.join(rootfs, 'usr', 'local', 'lib')])
 		rootfs = os.path.join(rootfs, 'LF')
 	env.Append(LIBPATH = [os.path.join(rootfs, 'Base', 'Brio', 'lib')])
 

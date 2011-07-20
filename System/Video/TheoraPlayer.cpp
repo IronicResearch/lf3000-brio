@@ -587,7 +587,7 @@ Boolean CTheoraPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 	{
 		// Pack into separate YUV planar surface regions
 		U8*		du = surf->buffer + surf->pitch/2; // U,V in double-width buffer
-		U8*		dv = surf->buffer + surf->pitch/2 + surf->pitch * (ti.height/2);
+		U8*		dv = surf->buffer + surf->pitch/2 + surf->pitch * (surf->height/2);
 		for (i = 0; i < yuv.y_height; i++) 
 		{
 			memcpy(d, s, yuv.y_width);

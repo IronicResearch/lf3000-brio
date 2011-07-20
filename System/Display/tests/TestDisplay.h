@@ -124,7 +124,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testOpenGLContext( )
+	void XXXXtestOpenGLContext( )
 	{
 		PRINT_TEST_NAME();
 		
@@ -576,7 +576,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testDisplayAllocations( )
+	void XXXXtestDisplayAllocations( )
 	{
 		PRINT_TEST_NAME();
 		
