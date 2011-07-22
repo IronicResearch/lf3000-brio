@@ -31147,3 +31147,15 @@ By Dave Milici (dmilici@leapfrog.com) on 7/20/11 2:11 PM
 6,035 ms. (Cumulative: 11,701,262 ms)
 
 ----------------
+Revision 9,415 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,416 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,417 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,418 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified atomic file tests with cleanup for valgrind memory leak test on LF2000 devboard.
+
+By Dave Milici (dmilici@leapfrog.com) on 7/22/11 10:32 AM
+3 changed, 0 added, 0 deleted.
+5,052 ms. (Cumulative: 11,706,502 ms)
+
+----------------
