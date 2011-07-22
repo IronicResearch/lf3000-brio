@@ -32,7 +32,7 @@ int main (int c, char **v)
 	int res;
 	FILE *f;
 	int x;
-	while (1)
+	//while (1)
 	{
 		// Atomic
 		f = fopen (FILE1, "r");

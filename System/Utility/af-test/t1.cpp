@@ -34,6 +34,7 @@ void fail (const char *fmt, ...)
 	vfprintf (stdout, fmt, ap);
 	va_end (ap);
 	perror ("why:");
+	fabortAllAtomic();
 	exit (1);
 }
 
