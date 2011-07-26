@@ -20,7 +20,7 @@ parent = __import__('SCons.Tool.g++', globals(), locals(), [''])
 # FIXME/dm: Should not have to use explicit path to arm-linux-g++ compiler
 #compiler = '/opt/RidgeRun/arm-eabi-uclibc/bin/arm-linux-g++'
 #compiler = '/opt/angstrom/arm/bin/arm-linux-g++'
-compiler = '/home/dmilici/workspace/nxp3200_bsp/tools/arm-2010.09/bin/arm-linux-g++'
+compiler = ' /opt/nexell/devel/nxp3200/tools/arm-2010.09/bin/arm-linux-g++'
 
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object

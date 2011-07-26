@@ -31159,3 +31159,16 @@ By Dave Milici (dmilici@leapfrog.com) on 7/22/11 10:32 AM
 5,052 ms. (Cumulative: 11,706,502 ms)
 
 ----------------
+Revision 9,419 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,420 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,421 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,422 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify AudioMPI to link with floating-point vorbis codec instead of fixed-point codec.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/25/11 6:24 PM
+4 changed, 9 added, 0 deleted.
+5,239 ms. (Cumulative: 11,711,866 ms)
+
+----------------
