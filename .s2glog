@@ -31198,3 +31198,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/28/11 12:11 PM
 5,532 ms. (Cumulative: 11,723,557 ms)
 
 ----------------
+Revision 9,428 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Export Nexell OGLES headers and libs for LF2000 SDK to avoid ambiguity.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/28/11 1:22 PM
+1 changed, 0 added, 0 deleted.
+4,907 ms. (Cumulative: 11,728,792 ms)
+
+----------------
