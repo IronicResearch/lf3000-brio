@@ -69,14 +69,17 @@ if vars['is_export'] or vars['is_publish']:
 	else:
 		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
 		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
-		headers = os.path.join('MagicEyes', 'Include')
-		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
-		if vars['variant'] == 'LF1000':
-			core_name = 'libopengles_lite.so'
+		if vars['variant'] == 'LF2000':
+			headers = os.path.join('Nexell', 'Include')
 		else:
-			core_name = 'libogl.a'
-		lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
-		##env.Install(lib_dir, lib)
+			headers = os.path.join('MagicEyes', 'Include')
+		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
+		if vars['variant'] == 'LF2000':
+			lib = glob.glob(os.path.join('Nexell', 'Libs', vars['cpu_subdir'], '*.so'))
+		elif vars['variant'] == 'LF1000':
+			core_name = 'libopengles_lite.so'
+			lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
+		env.Install(lib_dir, lib)
 		# Need ustring libs for SDK apps linking platform libs
 		libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], '*.so'))
 		##env.Install(vars['mpi_deploy_dir'], libs)
@@ -90,7 +93,7 @@ if vars['is_export'] or vars['is_publish']:
 # Export shared libs to embedded target
 # Only specific versioned runtime libs copied to avoid duplication on target
 #-----------------------------------------------------------------------------
-if 0 and vars['is_emulation']:
+if 0:
 	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libustring.so'))
 	env.Install(vars['lib_deploy_dir'], libs)
 	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libiconv.so.2'))
