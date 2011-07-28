@@ -12,7 +12,6 @@
 //
 //==============================================================================
 
-#include <GLES/egl.h>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <BrioOpenGLConfig.h>
@@ -21,7 +20,9 @@
 #include <DisplayPriv.h>
 
 #ifndef  EMULATION
+#ifdef   LF1000
 #include "GLES/libogl.h"
+#endif
 #include <signal.h>
 #endif
 
@@ -66,7 +67,7 @@ namespace
 		{
 			CDebugMPI	dbg(kGroupDisplay);
 			dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() context active on exit\n");
-			eglTerminate(ctx.eglDisplay);
+			eglTerminate(eglGetDisplay(ctx.eglDisplay));
 		}
 	}
 	
@@ -77,7 +78,7 @@ namespace
 		{
 			CDebugMPI	dbg(kGroupDisplay);
 			dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() context active on signal %d\n", signum);
-			eglTerminate(ctx.eglDisplay);
+			eglTerminate(eglGetDisplay(ctx.eglDisplay));
 		}
 		_exit(128 + signum);
 	}
@@ -99,6 +100,7 @@ namespace
 	}
 
 #ifndef EMULATION
+#ifndef LF2000
 	// TODO/dm: Pass back essential callback info to MagicEyes GLES lib
 	// TODO/dm: All these callbacks should be moved into libDisplay.so module
 	//			but MagicEyes libogl.a links against them *and* EGL funcs.
@@ -192,6 +194,7 @@ namespace
 		dispmgr->WaitForDisplayAddressPatched();
 	}
 #endif // LF1000
+#endif // !LF2000
 #endif // !EMULATION
 }
 
@@ -223,11 +226,12 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {
 		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() detected previous OGL context active\n");
-		eglTerminate(ctx.eglDisplay);
+		eglTerminate(eglGetDisplay(ctx.eglDisplay));
 		dbg.DebugOut(kDbgLvlVerbose, "eglTerminate()\n");
 	}
 	
 #ifndef EMULATION
+#ifdef 	LF1000
 	// Init OpenGL hardware callback struct
 	meminfo.Memory1D_SizeInMbyte = size1D;
 	meminfo.Memory2D_SizeInMbyte = size2D;
@@ -237,6 +241,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
 	ctx.eglDisplay = &display;
 	ctx.eglWindow = &hwnd; // something non-NULL 
+#endif
 #else
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output

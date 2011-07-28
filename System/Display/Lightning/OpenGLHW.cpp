@@ -12,6 +12,8 @@
 //
 //==============================================================================
 
+#ifdef LF1000
+
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <DisplayHW.h>
@@ -432,4 +434,7 @@ void CDisplayLF1000::SetOpenGLDisplayAddress(
 #endif
 
 LF_END_BRIO_NAMESPACE()
+
+#endif // LF1000
+
 // EOF

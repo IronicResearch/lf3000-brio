@@ -16,7 +16,9 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 #include <BrioOpenGLConfig.h>
+#ifdef LF1000
 #include <GLES/libogl.h>
+#endif
 #include <list>
 
 #include <stdio.h>
@@ -725,6 +727,7 @@ static inline bool Check3DEngine(U32* preg32, U32& cntl32, U32& stat32, U32& clo
 //----------------------------------------------------------------------------
 void CDisplayFB::InitOpenGL(void* pCtx)
 {
+#ifdef LF1000
 	// Dereference OpenGL context for MagicEyes OEM memory size config
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
@@ -815,11 +818,13 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	RegisterLayer(hogl, 0, 0);
 	SetAlpha(hogl, 0, false);
 	SetWindowPosition(hogl, 0, 0, pOglCtx->width, pOglCtx->height);
+#endif // LF1000
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DeinitOpenGL()
 {
+#ifdef LF1000
 	// Release framebuffer allocations used by OpenGL context
 	if (dcmem1.pBuffer)
 		DeAllocBuffer(&dcmem1);
@@ -831,18 +836,23 @@ void CDisplayFB::DeinitOpenGL()
 	munmap(preg3d, REG3D_SIZE);
 	
 	close(fdreg3d);
+#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
+#ifdef LF1000
 	SetVisible(hogl, true);
+#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::DisableOpenGL()
 {
+#ifdef LF1000
 	SetVisible(hogl, false);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -853,6 +863,7 @@ void CDisplayFB::UpdateOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::WaitForDisplayAddressPatched(void)
 {
+#ifdef LF1000
 	int n = OGLFB;
 	int r = 0; 
 	do {
@@ -860,11 +871,13 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 		if (r == 1)
 			kernel_.TaskSleep(1);
 	} while (r != 0);
+#endif
 }
 
 //----------------------------------------------------------------------------
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
+#ifdef LF1000
 	// Re-enable OpenGL context which is not registered
 	if (hogl != NULL && !fbviz[OGLFB])
 	{
@@ -880,6 +893,7 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 	vinfo[n].yoffset = offset / finfo[n].line_length;
 	vinfo[n].xoffset = offset % finfo[n].line_length;
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
+#endif
 }
 
 //----------------------------------------------------------------------------

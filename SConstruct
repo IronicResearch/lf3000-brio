@@ -63,8 +63,8 @@ import Etc.Tools.SConsTools.DeviceTools.telnetrpc
 opts = Options('CmdLine.py')
 opts.Add('platform', 'Set platform to use', 'Lightning')
 opts.Add(BoolOption('monolithic', 'Set "monolithic=t" to link EXEs against .a files rather than .so files', 0))
-opts.Add(EnumOption('platform_variant', 'Use in the place of "platform" to specify a bring-up board\n   ', 'Lightning_LF2530BLUE', 
-						allowed_values=('Lightning_LF2530RED', 'Lightning_LF2530BLUE', 'Lightning_LF1000')))
+opts.Add(EnumOption('platform_variant', 'Use in the place of "platform" to specify a bring-up board\n   ', 'Lightning_LF2000', 
+						allowed_values=('Lightning_LF2530RED', 'Lightning_LF2530BLUE', 'Lightning_LF1000', 'Lightning_LF2000')))
 opts.Add(BoolOption('runtests', 'Default is to run unit tests, set "runtests=f" to disable', 1))
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
 opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemulation" export headers, libs & build scripts\n    for external app linkage\n    "checkheaders" uncovers inclusion dependencies\n   ',
@@ -73,7 +73,7 @@ opts.Add(EnumOption('type', '"publish" creates an RC\n    "xembedded" and "xemul
 
 is_monolithic		= ARGUMENTS.get('monolithic', 0)
 platform			= ARGUMENTS.get('platform', '')
-platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF1000')
+platform_variant	= ARGUMENTS.get('platform_variant', 'Lightning_LF2000')
 source_setup		= ARGUMENTS.get('setup', '')
 runtests			= ARGUMENTS.get('runtests', 1)
 buildtests			= ARGUMENTS.get('buildtests', 1)
@@ -259,6 +259,8 @@ for target in targets:
 	env.Prepend(LIBPATH = [mpi_deploy_dir, priv_mpi_deploy_dir])
 	if variant != '':
 		env.Append(CPPDEFINES = [variant])
+	if variant == 'LF2000' and not is_emulation:
+		env.Append(CPPDEFINES = ['KHRONOS', 'linux'])
 	if is_monolithic:
 		env.Append(CPPDEFINES = 'LF_MONOLITHIC_DEBUG')
 

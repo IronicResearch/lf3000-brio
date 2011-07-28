@@ -58,8 +58,10 @@ void CDisplayModule::InitModule()
 {
 	if (HaveFramebufferDriver())
 		pDriver = new CDisplayFB(this);
+#ifdef LF1000
 	else
 		pDriver = new CDisplayLF1000(this);
+#endif
 	pDriver->InitModule();
 }
 
