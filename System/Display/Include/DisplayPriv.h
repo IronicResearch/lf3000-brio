@@ -441,10 +441,10 @@ public:
 	VTABLE_EXPORT tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
 	VTABLE_EXPORT S8			GetBrightness(tDisplayScreen screen);
 	VTABLE_EXPORT S8			GetContrast(tDisplayScreen screen);
-#ifdef LF1000
+
 	VTABLE_EXPORT void			WaitForDisplayAddressPatched(void);
 	VTABLE_EXPORT void			SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
-#endif
+
 	VTABLE_EXPORT tErrType		SetBacklight(tDisplayScreen screen, S8 backlight);
 	VTABLE_EXPORT S8			GetBacklight(tDisplayScreen screen);
 
@@ -557,6 +557,7 @@ public:
 };
 
 //----------------------------------------------------------------------------
+#ifdef LF1000
 class CDisplayLF1000 : public CDisplayDriver {
 public:
 	CDisplayLF1000(CDisplayModule* pModule);
@@ -610,6 +611,7 @@ private:
 	bool				isLayerSwapped_;
 	bool				isYUVLayerSwapped_;
 };
+#endif // LF1000
 
 //----------------------------------------------------------------------------
 class CDisplayFB : public CDisplayDriver {

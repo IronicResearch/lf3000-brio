@@ -287,13 +287,11 @@ public:
 	/// Updates OpenGL hardware 3D engine rendering output to display surface layer
 	void				UpdateOpenGL();
 
-#ifdef LF1000
 	// (LF1000)
 	void				WaitForDisplayAddressPatched(void);
 
 	// (LF1000)
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
-#endif
 
 	// Brightness and contrast controls
 	//=================================

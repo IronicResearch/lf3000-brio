@@ -12,6 +12,8 @@
 //
 //==============================================================================
 
+#ifdef LF1000
+
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
@@ -959,4 +961,7 @@ S8	CDisplayLF1000::GetBacklight(tDisplayScreen screen)
 }
 
 LF_END_BRIO_NAMESPACE()
+
+#endif // LF1000
+
 // EOF

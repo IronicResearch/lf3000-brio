@@ -11,7 +11,7 @@ mpi_name	= module_name + 'MPI'
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
 emulibs		= vars['is_emulation'] and ['X11'] or []
-hwlibs		= vars['variant'] == 'LF1000' and ['opengles_lite'] or ['ogl']
+hwlibs		= vars['variant'] == 'LF2000' and ['EGL', 'GLESv1_CM', 'vr5'] or ['opengles_lite']
 ogllibs		= vars['is_emulation'] and ['gles_cl'] or hwlibs
 modsrcs		= FindModuleSources(Dir('.'), vars)
 mpisrcs		= FindMPISources(Dir('.'), vars)
@@ -27,6 +27,9 @@ if vars['is_emulation']:
 							'#ThirdParty/PowerVR/Include/LinuxPC',
 							'/usr/X11R6/include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
+elif vars['variant'] == 'LF2000':
+	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
+	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + vars['cpu_subdir']])
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
@@ -40,6 +43,7 @@ Depends(mympi, mymodule)
 #-----------------------------------------------------------------------------
 if vars['is_emulation']:
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
+
 RunMyTests(module_name, [], mpilibs + ['DebugMPI', 'EventMPI'], myenv, vars)
 
 Return('mymodule', 'mympi')

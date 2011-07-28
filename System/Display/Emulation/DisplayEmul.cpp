@@ -143,7 +143,6 @@ void CDisplayModule::DisableOpenGL()
 	// Nothing to do on emulation target
 }
 
-#ifdef LF1000	// Defined independently of EMULATION
 //----------------------------------------------------------------------------
 void CDisplayModule::WaitForDisplayAddressPatched()
 {
@@ -155,7 +154,6 @@ void CDisplayModule::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhy
 {
 	// Nothing to do on emulation target
 }
-#endif
 
 //----------------------------------------------------------------------------
 tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,

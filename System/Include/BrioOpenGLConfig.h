@@ -19,8 +19,13 @@
 #include <X11/Xutil.h>
 #endif
 
+#ifdef KHRONOS
+#include <EGL/egl.h>
+#include <GLES/gl.h>
+#else
 #include <GLES/egl.h>
 #include <GLES/gl.h>
+#endif
 
 #include <SystemTypes.h>
 #include <DisplayMPI.h>
@@ -37,7 +42,7 @@ const U32	kHeap2DMeg = 14;// 2D heap size in Megs for color/depth buffers, textu
 struct tOpenGLContext
 {
 	void*				pOEM;			// ptr to OEM-specific HW struct
-	NativeDisplayType	eglDisplay;		// X display or HW context
+	NativeDisplayType	eglDisplay;		// X display or HW context -- FIXME: NativeDisplayType != EGLDisplay type
 	NativeWindowType	eglWindow;		// X window or HW context
 	U16					width;
 	U16					height;

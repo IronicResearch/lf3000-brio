@@ -411,7 +411,6 @@ void CDisplayMPI::DisableOpenGL()
 	pModule_->DisableOpenGL();
 }
 
-#ifdef LF1000
 //----------------------------------------------------------------------------
 void CDisplayMPI::WaitForDisplayAddressPatched()
 {
@@ -426,7 +425,6 @@ void CDisplayMPI::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysic
 		return;
 	pModule_->SetOpenGLDisplayAddress(DisplayBufferPhysicalAddress);
 }
-#endif
 
 //----------------------------------------------------------------------------
 U32	CDisplayMPI::GetDisplayMem(tDisplayMem memtype)

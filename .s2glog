@@ -31184,3 +31184,17 @@ By Dave Milici (dmilici@leapfrog.com) on 7/26/11 3:36 PM
 5,720 ms. (Cumulative: 11,717,915 ms)
 
 ----------------
+Revision 9,426 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,427 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Scons Build with LF2000 platform variant defined instead of LF1000.
+Needed to link Nexell OGLES libs using Khronos API with KHRONOS defined.
+Needed to reorganize some conditional compilations LF2000 vs LF1000 in DisplayMPI.
+ 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/28/11 12:11 PM
+13 changed, 15 added, 0 deleted.
+5,532 ms. (Cumulative: 11,723,557 ms)
+
+----------------
