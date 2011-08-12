@@ -296,7 +296,7 @@ namespace
 		void *handle = NULL;
 		struct tsdev* tsl = NULL;
 
-		handle = dlopen("/usr/lib/libts.so", RTLD_NOW | RTLD_GLOBAL);
+		handle = dlopen("libts.so", RTLD_NOW | RTLD_GLOBAL);
 		if (!handle)
 		{
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't dlopen libts.so\n");
@@ -326,7 +326,7 @@ namespace
 		{
 			// Find input event device and hand it to tslib
 			char dev[20];
-			if (find_input_device("LF1000 touchscreen interface", dev) < 0) {
+			if (find_input_device("Nexell Touchscreen", dev) < 0) {
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
 				perror ("Can't find touchscreen event device in /dev/input");
 				dlclose(handle);
@@ -547,7 +547,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	else
 	{
 		// YES TSLIB was picked
-		pThis->kernel_.TaskSleep(10);
+		pThis->kernel_.TaskSleep(100);
 		use_tslib = LoadTSLib(pThis, &handle, &tsl);
 	}
 
@@ -564,7 +564,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	if (!use_tslib)
 	{
 		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on LF1000 touchscreen interface\n");
-		event_fd[last_fd].fd = open_input_device("LF1000 touchscreen interface");
+		event_fd[last_fd].fd = open_input_device("Nexell Touchscreen");
 		event_fd[last_fd].events = POLLIN;
 	}
 	if(event_fd[last_fd].fd >= 0)
