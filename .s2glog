@@ -31208,3 +31208,31 @@ By Dave Milici (dmilici@leapfrog.com) on 7/28/11 1:22 PM
 4,907 ms. (Cumulative: 11,728,792 ms)
 
 ----------------
+Revision 9,429 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,430 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,431 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,432 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,433 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,434 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,435 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,436 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,437 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,438 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,439 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,440 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,441 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,442 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,443 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,444 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,445 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,446 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+EventMPI: Load touchscreen driver by Nexell device name "Nexell Touchscreen".
+Load tslib with unqualified path name to be located at runtime (/usr/local/tslib/lib).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/12/11 1:12 PM
+1 changed, 0 added, 0 deleted.
+4,797 ms. (Cumulative: 11,733,792 ms)
+
+----------------
