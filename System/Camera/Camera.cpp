@@ -211,6 +211,13 @@ Boolean EnumCameraCallback(const CPath& path, void* pctx)
 	CCameraModule* pObj	= (CCameraModule*)pctx;
 	U32 id				= FindDevice(path);
 
+	// FIXME: Generalize camera device enumeration
+	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
+
+	if (id == USB_WEB_CAM_ID) {
+		pObj->sysfs = path;
+		return false; // stop
+	}
 	if (id == USB_CAM_ID) {
 		pObj->sysfs = path;
 		return false; // stop
@@ -1766,7 +1773,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bRet = false;
 		;
 	}
-#ifndef EMULATION
+#if 0 //#ifndef EMULATION
 	/*
 	 * Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then paint
 	 * video layer directly.  This has about 5 fps better performance than the
@@ -2491,11 +2498,13 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
+#if 0
 	if(kNoErr != InitIDCTInt())
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: idct init failed\n");
 		return false;
 	}
+#endif
 
 	dbg_.DebugOut(kDbgLvlImportant, "CameraModule::InitCameraInt: completed OK\n");
 	return true;
@@ -2536,10 +2545,12 @@ void CCameraModule::InitLut(void)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::DeinitCameraInt()
 {
+#if 0
 	if(kNoErr != DeinitIDCTInt())
 	{
 		return false;
 	}
+#endif
 
 	if(kNoErr != DeinitMicInt())
 	{
