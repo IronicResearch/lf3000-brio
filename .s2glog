@@ -31270,3 +31270,14 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/11 4:49 PM
 5,063 ms. (Cumulative: 11,739,293 ms)
 
 ----------------
+Revision 9,471 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Recompiled JPEG libs with CodeSourcery glibc toolchain.
+CameraMPI: Add Logitech webcam USB ID. Disable LF1000 IDCT driver.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/11 4:59 PM
+3 changed, 0 added, 0 deleted.
+5,185 ms. (Cumulative: 11,744,571 ms)
+
+----------------

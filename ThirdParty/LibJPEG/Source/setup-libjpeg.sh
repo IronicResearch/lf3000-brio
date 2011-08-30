@@ -37,10 +37,10 @@ make clean
 make
 cp -a .libs/*.so* ../../Libs/arm
 cp -a .libs/*.so* $ROOTFS_PATH/usr/local/lib
-./configure --prefix=~/emuroot/LF/Base/Brio/lib --enable-shared=yes
-make clean
-make
-cp -a .libs/*.so* ../../Libs/x86
+#./configure --prefix=~/emuroot/LF/Base/Brio/lib --enable-shared=yes
+#make clean
+#make
+#cp -a .libs/*.so* ../../Libs/x86
 popd
 
 popd
