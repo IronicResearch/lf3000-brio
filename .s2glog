@@ -31236,3 +31236,37 @@ By Dave Milici (dmilici@leapfrog.com) on 8/12/11 1:12 PM
 4,797 ms. (Cumulative: 11,733,792 ms)
 
 ----------------
+Revision 9,447 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,448 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,449 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,450 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,451 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,452 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,453 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,454 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,455 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,456 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,457 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,458 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,459 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,460 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,461 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,462 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,463 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,464 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,465 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,466 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,467 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,468 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,469 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,470 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Compiled ustring libs with CodeSourcery glibc toolchain.
+Needed to disable SIGC_TYPEDEF_REDEFINE #define which was removed from later libsigc++ 2.2 releases.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/11 4:49 PM
+3 changed, 0 added, 0 deleted.
+5,063 ms. (Cumulative: 11,739,293 ms)
+
+----------------
