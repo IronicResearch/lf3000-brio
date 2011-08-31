@@ -31281,3 +31281,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/11 4:59 PM
 5,185 ms. (Cumulative: 11,744,571 ms)
 
 ----------------
+Revision 9,472 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Rebuilt OGLES & OVG libs from Nexell Aug25 drop.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/30/11 5:42 PM
+6 changed, 0 added, 0 deleted.
+5,110 ms. (Cumulative: 11,749,962 ms)
+
+----------------
