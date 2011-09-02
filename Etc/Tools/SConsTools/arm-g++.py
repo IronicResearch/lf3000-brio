@@ -7,6 +7,7 @@
 #-----------------------------------------------------------------------------
 import os.path
 import re
+import string
 
 import SCons.Defaults
 import SCons.Tool
@@ -22,6 +23,24 @@ parent = __import__('SCons.Tool.g++', globals(), locals(), [''])
 #compiler = '/opt/angstrom/arm/bin/arm-linux-g++'
 #compiler = '/opt/nexell/devel/nxp3200/tools/arm-2010.09/bin/arm-linux-g++'
 compiler = '/opt/angstrom-core/sysroots/i686-angstromsdk-linux/usr/bin/armv7a-vfp-angstrom-linux-uclibceabi/arm-angstrom-linux-uclibceabi-g++'
+
+#-----------------------------------------------------------------------------
+# Find file in search path
+#-----------------------------------------------------------------------------
+def search_file(filename, search_path):
+	paths = string.split(search_path, os.pathsep)
+	for path in paths:
+		if os.path.exists(os.path.join(path, filename)):
+			return os.path.abspath(os.path.join(path, filename))
+	return None
+
+# Query environment for 'CXX' or 'CROSS_COMPILE' settings
+if os.getenv('CXX') != None:
+	compiler = search_file(os.getenv('CXX'), os.getenv('PATH'))
+elif os.getenv('CROSS_COMPILE') != None:
+	ccpath = os.getenv('CROSS_COMPILE') + 'g++'
+	compiler = search_file(ccpath, os.getenv('PATH'))
+print compiler
 
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object
