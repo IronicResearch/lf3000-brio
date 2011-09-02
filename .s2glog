@@ -31291,3 +31291,21 @@ By Dave Milici (dmilici@leapfrog.com) on 8/30/11 5:42 PM
 5,110 ms. (Cumulative: 11,749,962 ms)
 
 ----------------
+Revision 9,473 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,474 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,475 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Minimal mods for Brio_LF2000 scons to build with angstrom uclibc toolchain
+with gcc 4.5.4 cross-compiler and uclibc rootfs image for 'lucy'.
+
+Needed only 2 fixups for include headers in 'lucy' rootfs image:
+$ROOTFS_PATH/usr/include/alsa
+$ROOTFS_PATH/usr/include/linux/lf1000
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/2/11 12:54 PM
+2 changed, 0 added, 0 deleted.
+4,798 ms. (Cumulative: 11,754,853 ms)
+
+----------------
