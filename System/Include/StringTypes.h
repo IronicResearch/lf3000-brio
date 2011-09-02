@@ -24,6 +24,7 @@
 	#include <string>
 	#include <stdio.h>
 	#include <stdlib.h>
+	#include <stdarg.h>
 	#include <limits.h>
 #ifndef MIN
 	#define MIN(x,y)	((x < y) ? x : y)
