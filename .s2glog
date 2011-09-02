@@ -31309,3 +31309,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/2/11 12:54 PM
 4,798 ms. (Cumulative: 11,754,853 ms)
 
 ----------------
+Revision 9,476 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify scons ARM script to locate cross compiler based on CXX or CROSS_COMPILE environment settings.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/2/11 2:18 PM
+1 changed, 0 added, 0 deleted.
+4,938 ms. (Cumulative: 11,760,072 ms)
+
+----------------
