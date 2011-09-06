@@ -31319,3 +31319,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/2/11 2:18 PM
 4,938 ms. (Cumulative: 11,760,072 ms)
 
 ----------------
+Revision 9,477 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,478 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify scons ARM script to search for arm-linux-g++ as general fallback.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/6/11 1:41 PM
+1 changed, 0 added, 0 deleted.
+4,844 ms. (Cumulative: 11,765,025 ms)
+
+----------------
