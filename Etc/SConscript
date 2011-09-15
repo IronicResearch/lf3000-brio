@@ -3,40 +3,42 @@
 #-----------------------------------------------------------------------------
 import os.path
 import glob
-Import('*')
+Import('env')
 
 #-----------------------------------------------------------------------------
-# Populate the "Publish" folder for a public release
+# Populate the export folder with tools
 # FIXME/dm: Better way for handling symlinks, like Python 'symlink()'?
 #-----------------------------------------------------------------------------
-if vars['is_export']:
-	platform = vars['platform']
-	dest_dir = os.path.join(vars['export_root'], 'Tools')
-	sources =  glob.glob('Tools/SConsTools/*.py')
-	env.Install(dest_dir, sources)
-	env.Install(dest_dir, 'Tools/oggenc')
-	env.Install(dest_dir, 'Tools/oggenc-aotuvb5')
-	env.Install(dest_dir, 'Tools/ffmpeg')
-	env.Install(dest_dir, 'Tools/libavcodec.so.0d')
-	env.Install(dest_dir, 'Tools/libavformat.so.0d')
-	env.Install(dest_dir, 'Tools/libavutil.so.0d')
-	env.Install(dest_dir, 'Tools/liba52-0.7.4.so')
-	env.Install(dest_dir, 'Tools/libdc1394_control.so.13')
-	env.Install(dest_dir, 'Tools/libgsm.so.1')
-	env.Install(dest_dir, 'Tools/libraw1394.so.8')
-	env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
-	env.Install(dest_dir, 'Tools/libFLAC.so.7')
-	env.Install(dest_dir, 'Tools/sf2brio')
-	env.Install( os.path.join(dest_dir, 'DeviceTools'), glob.glob('Tools/SConsTools/DeviceTools/*.py') )
 
-	#-----------------------------------------------------------------------------
-	# Populate the "Publish" folder with Doxygen output (publish builds only)
-	#-----------------------------------------------------------------------------
-	#if vars['is_publish']:
-	#	dest_dir = os.path.join(vars['export_root'], 'Docs')
-	#	src_file = os.path.join(Dir('#').abspath, 'Brio2.doxyfile')
-	#	env.Clean('Docs', os.path.join('Docs', 'html'))
-	#	env.Command(os.path.join('Docs', 'html'), src_file, "doxygen " + src_file)
-	#	env.Clean(dest_dir, os.path.join(dest_dir, 'html'))
-	#	env.Install(dest_dir, os.path.join('Docs', 'html'))
-		
+if env['tools_deploy_dir']:
+	dest_dir = Dir(env['tools_deploy_dir'])
+	sources =  glob.glob('Tools/SConsTools/*.py')
+	targets = env.Install(dest_dir, sources)
+	targets += env.Install(dest_dir, 'Tools/oggenc')
+	targets += env.Install(dest_dir, 'Tools/oggenc-aotuvb5')
+	targets += env.Install(dest_dir, 'Tools/ffmpeg')
+	targets += env.Install(dest_dir, 'Tools/libavcodec.so.0d')
+	targets += env.Install(dest_dir, 'Tools/libavformat.so.0d')
+	targets += env.Install(dest_dir, 'Tools/libavutil.so.0d')
+	targets += env.Install(dest_dir, 'Tools/liba52-0.7.4.so')
+	targets += env.Install(dest_dir, 'Tools/libdc1394_control.so.13')
+	targets += env.Install(dest_dir, 'Tools/libgsm.so.1')
+	targets += env.Install(dest_dir, 'Tools/libraw1394.so.8')
+	targets += env.Install(dest_dir, 'Tools/libOggFLAC.so.3')
+	targets += env.Install(dest_dir, 'Tools/libFLAC.so.7')
+	targets += env.Install(dest_dir, 'Tools/sf2brio')
+	targets += env.Install(dest_dir.Dir('DeviceTools'), glob.glob('Tools/SConsTools/DeviceTools/*.py') )
+
+	Return('targets')
+
+#-----------------------------------------------------------------------------
+# Populate the "Publish" folder with Doxygen output (publish builds only)
+#-----------------------------------------------------------------------------
+#if vars['is_publish']:
+#	dest_dir = os.path.join(vars['export_root'], 'Docs')
+#	src_file = os.path.join(Dir('#').abspath, 'Brio2.doxyfile')
+#	env.Clean('Docs', os.path.join('Docs', 'html'))
+#	env.Command(os.path.join('Docs', 'html'), src_file, "doxygen " + src_file)
+#	env.Clean(dest_dir, os.path.join(dest_dir, 'html'))
+#	env.Install(dest_dir, os.path.join('Docs', 'html'))
+	

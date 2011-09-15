@@ -31329,3 +31329,19 @@ By Dave Milici (dmilici@leapfrog.com) on 9/6/11 1:41 PM
 4,844 ms. (Cumulative: 11,765,025 ms)
 
 ----------------
+Revision 9,479 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,480 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,481 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,482 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,483 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,484 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,485 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,486 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge OE scons patch into LF2000 branch. Tried not to stomp on LF2000 specific scons changes. Seems to build well with the angstrom-core compiler.
+
+By dlazzari (dlazzari@leapfrog.com) on 9/15/11 1:44 PM
+26 changed, 6 added, 0 deleted.
+5,715 ms. (Cumulative: 11,770,881 ms)
+
+----------------
