@@ -20,13 +20,15 @@ def PlatformMods(env):
 	common.SetPlatformLibraryPaths(env)
 	gcc_defs 			= env.Split('')
 	env.Append(CPPDEFINES = gcc_defs)
-	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64'])
-	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=arm926ej-s')
-	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
+	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64', 'KHRONOS', 'linux'])
+	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=cortex-a8')
+	##env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
 
 	#TODO: Fixup this relative path
 	root = os.path.normpath(os.path.join(__file__, '../../../../ThirdParty/ustring'))
 	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
+	env.Append(LIBPATH = [os.path.join(root, 'usr', 'local', 'lib')])
+	env.Append(RPATH = [os.path.join(root, 'usr', 'local', 'lib')])
 	env.Append(CPPPATH = [root])
 
 	env.Append(CPPPATH = [ env['staging_dir'].Dir('usr').Dir('include') ] )

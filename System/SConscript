@@ -2,43 +2,47 @@
 # Brio/System Repository
 #-----------------------------------------------------------------------------
 import os.path
-import glob
-Import('*')
+Import('env')
 
 #-----------------------------------------------------------------------------
 # Create the folder name for a module's intermediate files
 #-----------------------------------------------------------------------------
 def MakeTempDirName(module):
-	return os.path.join(vars['intermediate_build_dir'], module)
- 
+	#~ return os.path.join(vars['intermediate_build_dir'], module)
+	if env['intermediate_dir']:
+		return env['intermediate_dir'].Dir(module).abspath
+	else:
+		return Dir('Temp').Dir(module).abspath
+
+targets = []
 
 #-----------------------------------------------------------------------------
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
-SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0)
-SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0)
-SConscript('Cartridge/SConscript', build_dir=MakeTempDirName('Cartridge'), duplicate=0)
-SConscript('Camera/SConscript', build_dir=MakeTempDirName('Camera'), duplicate=0)
-SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0)
-SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0)
-SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0)
-SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0)
-SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0)
-SConscript('Module/SConscript', build_dir=MakeTempDirName('Module'), duplicate=0)
-SConscript('Power/SConscript', build_dir=MakeTempDirName('Power'), duplicate=0)
-SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0)
-SConscript('USBDevice/SConscript', build_dir=MakeTempDirName('USBDevice'), duplicate=0)
-SConscript('Utility/SConscript', build_dir=MakeTempDirName('Utility'), duplicate=0)
-SConscript('Accelerometer/SConscript', build_dir=MakeTempDirName('Accelerometer'), duplicate=0)
-if vars['is_emulation']:
-	SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0)
+targets.extend(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
+targets.extend(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
+targets.extend(SConscript('Cartridge/SConscript', build_dir=MakeTempDirName('Cartridge'), duplicate=0))
+targets.extend(SConscript('Camera/SConscript', build_dir=MakeTempDirName('Camera'), duplicate=0))
+targets.extend(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
+targets.extend(SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0))
+targets.extend(SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0))
+targets.extend(SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0))
+targets.extend(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
+targets.extend(SConscript('Module/SConscript', variant_dir=MakeTempDirName('Module'), duplicate=0))
+targets.extend(SConscript('Power/SConscript', build_dir=MakeTempDirName('Power'), duplicate=0))
+targets.extend(SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0))
+targets.extend(SConscript('USBDevice/SConscript', build_dir=MakeTempDirName('USBDevice'), duplicate=0))
+targets.extend(SConscript('Utility/SConscript', build_dir=MakeTempDirName('Utility'), duplicate=0))
+targets.extend(SConscript('Accelerometer/SConscript', build_dir=MakeTempDirName('Accelerometer'), duplicate=0))
+if env['cpu'] == 'x86':
+	targets.extend(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))
 
 
 #-----------------------------------------------------------------------------
 # Populate the "XBuild" or "Publish" folder
 #-----------------------------------------------------------------------------
-if vars['is_export']:
-	headers = glob.glob(os.path.join('Include', '*.h'))
-	env.Install(vars['hdr_deploy_dir'], headers)
+if env['hdr_deploy_dir']:
+	targets += env.Install(env['hdr_deploy_dir'].Dir('LF'), Glob(os.path.join('Include', '*.h')) )
 	
-	dest_dir = os.path.join(vars['export_root'], 'Tools')
+
+Return('targets')

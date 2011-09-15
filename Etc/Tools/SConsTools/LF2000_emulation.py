@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# Setup the Lightning gcc tool chain
+# Setup the Lightning emulation gcc tool chain
 #-----------------------------------------------------------------------------
 import os.path
 import re
@@ -7,8 +7,9 @@ import re
 import SCons.Defaults
 import SCons.Tool
 import SCons.Util
+import SCons.Node
 
-common = __import__(__name__.replace('embedded', 'common'), globals(), locals(), [''])
+common = __import__(__name__.replace('emulation', 'common'), globals(), locals(), [''])
 
 #-----------------------------------------------------------------------------
 # This is the primary function in which to modify global settings for the
@@ -18,38 +19,37 @@ def PlatformMods(env):
 	common.SetPlatformFlags(env)
 	common.SetPlatformIncludePaths(env)
 	common.SetPlatformLibraryPaths(env)
+	
 	gcc_defs 			= env.Split('')
-	env.Append(CPPDEFINES = gcc_defs)
-	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64'])
-	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=arm926ej-s')
-	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
+	emulation_defs		= env.Split('EMULATION')
+	env.Append(CPPDEFINES = gcc_defs + emulation_defs)
+#	env.Append(CCFLAGS = '-g -Wextra')
+	env.Append(CCFLAGS = '-g' )
+	env.Append(LINKFLAGS = '-g')
+	env.Append(CPPPATH = [	'/usr/include/glib-2.0', 
+						  	'/usr/include/glibmm-2.4',
+						  	'/usr/lib/glib-2.0/include', 
+						  	'/usr/lib/glibmm-2.4/include',
+						  ])
+	env.Append(LIBPATH = ['#boost/lib'])
 
-	#TODO: Fixup this relative path
-	root = os.path.normpath(os.path.join(__file__, '../../../../ThirdParty/ustring'))
-	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
-	env.Append(CPPPATH = [root])
-
-	env.Append(CPPPATH = [ env['staging_dir'].Dir('usr').Dir('include') ] )
-
-	extinc = os.getenv('EXTRA_LINUX_HEADER_DIR')
-	if extinc != None:
-		env.Append(CPPPATH = [extinc])	
-
+	
 #-----------------------------------------------------------------------------
 # Inherit properties from the following tools
 #-----------------------------------------------------------------------------
-parent = __import__('arm-g++', globals(), locals(), [''])
+parent = __import__('SCons.Tool.g++', globals(), locals(), [''])
 
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object
 #-----------------------------------------------------------------------------
 def generate(env):
-	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
-	parent.generate(env)
+	"""NOTE: We can default to the standard Linux g++ toolchain here, and only
+	override specific compiler and linker flags."""
 	PlatformMods(env)
 
+
 #-----------------------------------------------------------------------------
-# Report the presence of a tool(s)
+# Report the presence of the tool(s)
 #-----------------------------------------------------------------------------
 def exists(env):
 	return parent.exists(env)

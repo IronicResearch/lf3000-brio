@@ -3,131 +3,125 @@
 #-----------------------------------------------------------------------------
 import os.path
 import glob
-Import('*')
+from Etc.Tools.SConsTools.Priv import CopyTree
+Import('env')
 
-copyenv = DefaultEnvironment()
-
+targets = []
 
 #-----------------------------------------------------------------------------
 # FIXME/tp: When we hide the ustring class behind our own implementation,
 # the export glib stuff can go away.
 #-----------------------------------------------------------------------------
 def ExportHeaders(dest_dir, src_dir, file_extension):
-
+	
 	root_len = len(src_dir) + 1
-		
 	def callback(arg, directory, files):
+		global targets
 		base = os.path.basename(directory)
 		if base == '.svn':
-			del files[:]
+			del files[:]	#Do not walk any further down .svn directory tree
 		else:
 			for file in files:
 				if os.path.splitext(file)[1] == file_extension:
 					full = os.path.join(directory, file)
 					subdir = os.path.dirname(full[root_len:])
-					copyenv.Install(os.path.join(dest_dir, subdir), full)
-						
+					targets += env.Install(os.path.join(dest_dir, subdir), full)
+
 	os.path.walk(src_dir, callback, None)
-	Default(dest_dir)
 
 
 #-----------------------------------------------------------------------------
-# Populate the "XBuild" or "Publish" folders
+# Populate the "SDK" folders
 #-----------------------------------------------------------------------------
-if vars['is_export'] or vars['is_publish']:
 
-	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'boost'), 
-					Dir('boost/boost').abspath, '.hpp')				
-	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'ustring'), 
+if env['hdr_deploy_dir']:
+	ExportHeaders(env['hdr_deploy_dir'].Dir('boost').abspath,
+					Dir('boost').Dir('boost').abspath, '.hpp')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('ustring').abspath,
 					Dir('ustring').abspath, '.h')
-	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty', 'freetype'), 
-					Dir('FreeType/Include').abspath, '.h')
-	ExportHeaders(os.path.join(vars['hdr_deploy_dir'], 'ThirdParty'), 
-					Dir('LibJPEG/Include').abspath, '.h')
-					
-	if vars['is_emulation']:
-		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
-		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
-		headers = os.path.join('PowerVR', 'Include')
-		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
-		libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so*'))
-		env.Install(lib_dir, libs)
-		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'ThirdParty')
-		libs = glob.glob(os.path.join('LibSndFile', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(lib_dir, libs)
-		libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(lib_dir, libs)
-		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(lib_dir, libs)
-		libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
-		env.Install(lib_dir, libs)
-#		Flash includes its own libjpeg and fails to link with this one		
-		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(lib_dir, libs)
-		libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], '*.so*'))
-		env.Install(lib_dir, libs)
+	ExportHeaders(env['hdr_deploy_dir'].Dir('freetype').abspath,
+					Dir('FreeType').Dir('Include').abspath, '.h')
+
+#Install OpenGL headers
+	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir('x86').Dir('GLES').abspath
+	ExportHeaders( dest_dir, Dir('PowerVR').Dir('Include').Dir('GLES').abspath, '.h' )
+	#This header is copied in with the others as of the new SDK (DRLJ 11/11/2010)
+	targets += env.Install(dest_dir, Dir('PowerVR').Dir('Include').Dir('LinuxPC').Dir('GLES').File('egltypes.h'))
+	
+	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir(env['cpu']).abspath
+	if env['platform'] == 'Lightning':
+		ExportHeaders( dest_dir, Dir('MagicEyes').Dir('Include').abspath, '.h' )
+	elif env['platform'] == 'LF2000':
+		targets += CopyTree.CopyTree(env, Dir('Nexell').Dir('Include').abspath, dest_dir)
+	
+#Install Libraries
+if env['install_dir']:
+	#In the SDK, we want to use the ThirdParty subdirectory, in deployment, everything goes together in lib
+	if env['is_sdk']:
+		opengl_lib_dir = env['install_dir'].Dir('ThirdParty')
 	else:
-		inc_dir = os.path.join(vars['hdr_deploy_dir'], 'OpenGL', vars['target_subdir'])
-		lib_dir = os.path.join(vars['mpi_deploy_dir'], '..', 'OpenGL')
-		if vars['variant'] == 'LF2000':
-			headers = os.path.join('Nexell', 'Include')
-		else:
-			headers = os.path.join('MagicEyes', 'Include')
-		Command(inc_dir, headers, Copy("$TARGET", "$SOURCE"))
-		if vars['variant'] == 'LF2000':
-			lib = glob.glob(os.path.join('Nexell', 'Libs', vars['cpu_subdir'], '*.so'))
-		elif vars['variant'] == 'LF1000':
-			core_name = 'libopengles_lite.so'
-			lib = os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], core_name)
-		env.Install(lib_dir, lib)
-		# Need ustring libs for SDK apps linking platform libs
-		libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], '*.so'))
-		##env.Install(vars['mpi_deploy_dir'], libs)
-		# Need FreeType headers (above) and libs for FlashLite fontconfig compilation
-		libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], '*.so'))
-		##env.Install(vars['mpi_deploy_dir'], libs)
-		libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], '*.so*'))
-		##env.Install(vars['mpi_deploy_dir'], libs)
+		opengl_lib_dir = env['install_dir'].Dir('lib')
+	
+	if env['cpu'] == 'x86':
+		libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so*'))
+	elif env['platform'] == 'Lightning':
+		libs = glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], '*.so*'))
+	elif env['platform'] == 'LF2000':
+		libs = glob.glob(os.path.join('Nexell', 'Libs', env['cpu'], '*.so'))
+	targets += env.Install(opengl_lib_dir, libs)
+	
+	#In the SDK, Third Party libs get their own directory, in deployment, everything goes together in lib
+	if env['is_sdk']:
+		lib_install_dir = env['install_dir'].Dir('ThirdParty')
+	else:
+		lib_install_dir = env['install_dir'].Dir('lib')
+	
+	#These libs should not be installed in the device root, it gets a subset defined below
+	if env['is_sdk'] or env['cpu'] == 'x86':
+		libs = glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('Portaudio', 'Libs', env['cpu'], 'libportaudio.so'))
+		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so*'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], '*.so*'))
+		targets += env.Install(lib_install_dir, libs)
+
+	#These third party libs go in the SDK embedded MPI directory
+	if env['is_sdk'] and not env['cpu'] == 'x86':
+		lib_install_dir = env['install_dir'].Dir('ThirdParty')
+		libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so'))
+		targets += env.Install(lib_install_dir, libs)
 
 #-----------------------------------------------------------------------------
 # Export shared libs to embedded target
 # Only specific versioned runtime libs copied to avoid duplication on target
 #-----------------------------------------------------------------------------
-if 0:
-	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libustring.so'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libiconv.so.2'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libintl.so.8'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('ustring', 'libs', vars['cpu_subdir'], 'libsigc-2.0.so.0'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('FreeType', 'Libs', vars['cpu_subdir'], 'libfreetype.so.6'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('LibSndFile', 'Libs', vars['cpu_subdir'], 'libsndfile.so.1'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], 'libogg.so.0'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], 'libtheora.so.0'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Theora', 'Libs', vars['cpu_subdir'], 'libvorbisidec.so.1'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('MagicEyes', 'Libs', vars['cpu_subdir'], 'libopengles_lite.so'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('Portaudio', 'Libs', vars['cpu_subdir'], 'libportaudio.so'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('LibJPEG', 'Libs', vars['cpu_subdir'], 'libjpeg.so.8'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavcodec.so.52'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavdevice.so.52'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavformat.so.52'))
-	env.Install(vars['lib_deploy_dir'], libs)
-	libs = glob.glob(os.path.join('LibAVFormat', 'Libs', vars['cpu_subdir'], 'libavutil.so.49'))
-	env.Install(vars['lib_deploy_dir'], libs)
+if not env['cpu']=='x86' and not env['is_sdk']:
+	lib_deploy_dir = env['install_dir'].Dir('lib')
+	
+	libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libustring.so'))
+	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libiconv.so.2'))
+	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libintl.so.8'))
+	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libsigc-2.0.so.0'))
+	libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], 'libfreetype.so.6'))
+	libs += glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], 'libsndfile.so.1'))
+	libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libogg.so.0'))
+	libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libtheora.so.0'))
+	libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libvorbisidec.so.1'))
+	libs += glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], 'libopengles_lite.so'))
+	libs += glob.glob(os.path.join('Portaudio', 'Libs', env['cpu'], 'libportaudio.so'))
+	libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], 'libjpeg.so.8'))
+	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavcodec.so.52'))
+	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavdevice.so.52'))
+	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
+	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
+	
+	targets += env.Install(lib_deploy_dir, libs)
 
 #-----------------------------------------------------------------------------
 # Export support modules to embedded or emulation target
 #-----------------------------------------------------------------------------
-	
+
+Return('targets')

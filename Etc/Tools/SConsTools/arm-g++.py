@@ -31,15 +31,6 @@ def search_file(filename, search_path):
 			return os.path.abspath(os.path.join(path, filename))
 	return None
 
-# Query environment for 'CXX' or 'CROSS_COMPILE' settings
-if os.getenv('CXX') != None:
-	compiler = search_file(os.getenv('CXX'), os.getenv('PATH'))
-elif os.getenv('CROSS_COMPILE') != None:
-	ccpath = os.getenv('CROSS_COMPILE') + 'g++'
-	compiler = search_file(ccpath, os.getenv('PATH'))
-else:
-	compiler = search_file('arm-linux-g++', os.getenv('PATH'))
-
 #-----------------------------------------------------------------------------
 # Add the tool(s) to the construction environment object
 #-----------------------------------------------------------------------------
@@ -47,6 +38,20 @@ def generate(env):
 	"""Add Builders and construction variables for arm-g++ to an Environment.
 	The first three lines are boilerplate to inherit from the default g++ implementation.
 	"""
+	
+	# Query environment for 'CXX' or 'CROSS_COMPILE' settings
+	if os.getenv('CXX') != None:
+		compiler = search_file(os.getenv('CXX'), os.getenv('PATH'))
+	elif os.getenv('CROSS_COMPILE') != None:
+		ccpath = os.getenv('CROSS_COMPILE') + 'g++'
+		compiler = search_file(ccpath, os.getenv('PATH'))
+	else:
+		compiler = search_file('arm-linux-g++', os.getenv('PATH'))
+	
+	if not 'host' in env or not env['host']:
+		env['host'] = 'arm-linux'
+	#compiler = env['host']+'-g++'
+	
 	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
 	parent.generate(env)
 	env['AS']	= compiler
@@ -73,4 +78,5 @@ def generate(env):
 # Report the presence of the tool
 #-----------------------------------------------------------------------------
 def exists(env):
+	compiler = env['host']+'-g++'
 	return env.Detect(compiler)

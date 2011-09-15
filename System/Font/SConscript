@@ -2,7 +2,9 @@
 # Brio/System/Font
 #-----------------------------------------------------------------------------
 from Etc.Tools.SConsTools.Priv.LfUtils import *
-Import('*')
+import os
+
+Import('env')
 
 module_name	= 'Font'
 mpi_name	= module_name + 'MPI'
@@ -10,42 +12,46 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
-modsrcs		= FindModuleSources(Dir('.'), vars)
-mpisrcs		= FindMPISources(Dir('.'), vars)
+modsrcs		= Glob('*.cpp')
+mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['DebugMPI', 'KernelMPI', 'freetype']
 mpilibs		= ['ModuleMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
-myenv		= env.Copy()
+myenv		= env.Clone()
 myenv.Append(CPPPATH = ['#ThirdParty/FreeType/Include',
 						'#ThirdParty/FreeType/Include/freetype'])
 
-myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/' + vars['cpu_subdir']])
+myenv.Append(LIBPATH = ['#ThirdParty/FreeType/Libs/' + env['cpu']])
 						
-mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule, vars)
-mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
+myenv.Append(CPPPATH=['Include'])
+mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
+mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 Depends(mympi, mymodule)
+
+targets = mympi or []
 
 #-----------------------------------------------------------------------------
 # Modify the build environment and build and run the unit tests
 #-----------------------------------------------------------------------------
-hwlibs		= vars['variant'] == 'LF2000' and ['EGL', 'GLESv1_CM', 'vr5'] or ['opengles_lite']
-ogllibs		= vars['is_emulation'] and ['gles_cl'] or hwlibs
-if vars['is_emulation']:
+hwlibs		= env['platform'] == 'LF2000' and ['EGL', 'GLESv1_CM', 'vr5'] or ['opengles_lite']
+ogllibs		= env['cpu'] == 'x86' and ['gles_cl'] or hwlibs
+if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'#ThirdParty/PowerVR/Include/LinuxPC'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/FreeType/Libs/x86').abspath)
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
-elif vars['variant'] == 'LF2000':
+elif env['platform'] == 'LF2000':
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + vars['cpu_subdir']])
+	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
+	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + env['cpu']])
 
-RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI', 'EventMPI'], myenv, vars)
+if env['buildtests']:
+	targets.append(RunMyTests(module_name, [], mpilibs + ogllibs + ['DisplayMPI', 'EventMPI'], myenv))
 
-Return('mymodule', 'mympi')
+Return('targets')

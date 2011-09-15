@@ -18,7 +18,7 @@ mpilibs		= ['DisplayMPI'] + ogllibs
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
-myenv		= env.Copy()
+myenv		= env.Clone()
 
 if vars['is_emulation']:
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
@@ -28,8 +28,8 @@ if vars['is_emulation']:
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)
 else:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu_subdir']])
-	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/MagicEyes/Libs' + vars['cpu_subdir']).abspath)
+	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + vars['cpu']])
+	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/MagicEyes/Libs' + vars['cpu']).abspath)
 
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI, vars)
 
