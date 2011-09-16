@@ -26,7 +26,6 @@
 #ifndef EMULATION
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <linux/lf1000/mlc_ioctl.h>
 #endif
 
 //#define ENABLE_PROFILING

@@ -50,8 +50,11 @@
 #ifndef EMULATION
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#include <linux/lf1000/mlc_ioctl.h>
+
+#ifndef LF2000
 #include <linux/lf1000/gpio_ioctl.h>
+#endif //LF2000
+
 #endif
 
 // PNG wrapper function for saving file
@@ -177,7 +180,7 @@ static void SetScaler(int width, int height, bool centered)
 //----------------------------------------------------------------------------
 static bool SetUSBHost(bool enable)
 {
-#ifndef EMULATION
+#if !defined(EMULATION) && !defined(LF2000)
 	// USB host power option on Madrid only
 	if (GetPlatformName() != "Madrid")
 		return false;

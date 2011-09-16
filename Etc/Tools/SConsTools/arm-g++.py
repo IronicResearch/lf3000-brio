@@ -41,7 +41,7 @@ def generate(env):
 	
 	# Query environment for 'CXX' or 'CROSS_COMPILE' settings
 	if os.getenv('CXX') != None:
-		compiler = search_file(os.getenv('CXX'), os.getenv('PATH'))
+		compiler = os.getenv('CXX')
 	elif os.getenv('CROSS_COMPILE') != None:
 		ccpath = os.getenv('CROSS_COMPILE') + 'g++'
 		compiler = search_file(ccpath, os.getenv('PATH'))
