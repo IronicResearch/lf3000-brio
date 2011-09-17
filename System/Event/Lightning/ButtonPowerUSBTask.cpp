@@ -144,7 +144,7 @@ namespace
 				close (fd);
 				if (i < 0)
 					continue;
-				if (!strcmp(name, input_name)) {
+				if (strstr(name, input_name)) {
 					closedir(dir);
 					return 0;
 				}
@@ -326,7 +326,7 @@ namespace
 		{
 			// Find input event device and hand it to tslib
 			char dev[20];
-			if (find_input_device("Nexell Touchscreen", dev) < 0) {
+			if (find_input_device("touchscreen", dev) < 0) {
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
 				perror ("Can't find touchscreen event device in /dev/input");
 				dlclose(handle);
@@ -457,7 +457,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	gButtonData.buttonState = 0;
 	gButtonData.buttonTransition = 0;
 	kernel_mpi.UnlockMutex(gButtonDataMutex);
-	event_fd[last_fd].fd = open_input_device("LF1000 Keyboard");
+	event_fd[last_fd].fd = open_input_device("gpio-keys");
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
 	{
@@ -504,7 +504,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	// init USB driver and state
 	usb_data = GetCurrentUSBDeviceState();
 	vbus = usb_data.USBDeviceState;
-	event_fd[last_fd].fd = open_input_device("LF1000 USB");
+	event_fd[last_fd].fd = open_input_device("USB");
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
 	{
@@ -564,7 +564,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	if (!use_tslib)
 	{
 		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on LF1000 touchscreen interface\n");
-		event_fd[last_fd].fd = open_input_device("Nexell Touchscreen");
+		event_fd[last_fd].fd = open_input_device("touchscreen");
 		event_fd[last_fd].events = POLLIN;
 	}
 	if(event_fd[last_fd].fd >= 0)
@@ -580,7 +580,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	int aclmtr_index = -1;
 	tAccelerometerData aclmtr_data = {0, 0, 0, {0, 0}};
 
-	event_fd[last_fd].fd = open_input_device("LF1000 Accelerometer");
+	event_fd[last_fd].fd = open_input_device("Accelerometer");
 	event_fd[last_fd].events = POLLIN;
 	if (event_fd[last_fd].fd >= 0)
 	{

@@ -75,8 +75,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 480;
-		const U16		HEIGHT = 272;
+		const U16		WIDTH = 320;	// FIXME
+		const U16		HEIGHT = 240;	// FIXME
 
 		const tDisplayScreenStats* pstats = pDisplayMPI_->GetScreenStats(0);
 		TS_ASSERT( pstats != NULL );
@@ -124,7 +124,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestOpenGLContext( )
+	void testOpenGLContext( )
 	{
 		PRINT_TEST_NAME();
 		
@@ -190,7 +190,7 @@ public:
 
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
-		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
+		pDisplayMPI_->Register(handle, 0, 0, 0, 0);// Emerald TV out
 
 		buffer = pDisplayMPI_->GetBuffer(handle);
 		TS_ASSERT( buffer != kNull );
@@ -210,7 +210,7 @@ public:
 				buffer[m+1] = val;
 				buffer[m+2] = val;
 				buffer[m+3] = 0xFF;
-			}
+			}// Emerald TV out
 		}
 		pDisplayMPI_->Invalidate(0, NULL);
 
@@ -247,7 +247,7 @@ public:
 			pDisplayMPI_->SetContrast(0, contrast);
 			usleep(1000);
 			TS_ASSERT( contrast == pDisplayMPI_->GetContrast(0) );
-			usleep(1000);
+			usleep(1000);// Emerald TV out
 		}
 		for (; contrast <= 0; contrast+=CONTRAST_INC)
 		{
@@ -295,7 +295,7 @@ public:
 		PRINT_TEST_NAME();
 		
 		tDisplayHandle 	handle;
-		tPixelFormat	format;
+		tPixelFormat	format;// Emerald TV out
 		U8* 			buffer;
 		U16				width;
 		U16				height;
@@ -324,7 +324,7 @@ public:
 
 		for (int i = 0; i < height; i++) 
 		{
-			bool blu = (i < HEIGHT/2);
+			bool blu = (i < HEIGHT/2);// Emerald TV out
 			bool grn = (i < HEIGHT/4) || (i > HEIGHT/2 && i < 3*HEIGHT/4);
 			bool red = (i < HEIGHT/4) || (i > 3*HEIGHT/4);
 			for (int j = 0, m = i*pitch; j < width; j++, m+=3)
@@ -348,7 +348,7 @@ public:
 	{
 		PRINT_TEST_NAME();
 		
-		tDisplayHandle 	handle;
+		tDisplayHandle 	handle;// Emerald TV out
 		tPixelFormat	format;
 		U8* 			buffer;
 		U16				width;
@@ -373,7 +373,7 @@ public:
 		TS_ASSERT( pitch == 2 * WIDTH );
 		depth = pDisplayMPI_->GetDepth(handle);
 		TS_ASSERT( depth == 16 );
-		height = pDisplayMPI_->GetHeight(handle);
+		height = pDisplayMPI_->GetHeight(handle);// Emerald TV out
 		TS_ASSERT( height == HEIGHT );
 
 		for (int i = 0; i < height; i++) 
@@ -393,7 +393,7 @@ public:
 			}
 		}
 		pDisplayMPI_->Invalidate(0, NULL);
-
+		// Emerald TV out
 		sleep(1);
 
 		pDisplayMPI_->UnRegister(handle, 0);
@@ -425,7 +425,7 @@ public:
 		format = pDisplayMPI_->GetPixelFormat(handle);
 		TS_ASSERT( format == kPixelFormatRGB565 );
 		width = pDisplayMPI_->GetWidth(handle);
-		TS_ASSERT( width == WIDTH );
+		TS_ASSERT( width == WIDTH );// Emerald TV out
 		pitch = pDisplayMPI_->GetPitch(handle);
 		TS_ASSERT( pitch == 2 * WIDTH );
 		depth = pDisplayMPI_->GetDepth(handle);
@@ -454,7 +454,7 @@ public:
 
 		pDisplayMPI_->UnRegister(handle, 0);
 		pDisplayMPI_->DestroyHandle(handle, false);
-	}
+	}// Emerald TV out
 	
 	//------------------------------------------------------------------------
 	void testDisplaySwapBuffers( )
@@ -502,7 +502,7 @@ public:
 			TS_ASSERT( handle[i%2] == pDisplayMPI_->GetCurrentDisplayHandle() );
 			bc = pDisplayMPI_->IsBufferSwapped(handle[i%2]);
 			TS_ASSERT( bc == true );
-		}
+		}// Emerald TV out
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -559,7 +559,7 @@ public:
 				width = pDisplayMPI_->GetWidth(handle[i]);
 				TS_ASSERT( width == WIDTH );
 				pitch = pDisplayMPI_->GetPitch(handle[i]);
-				TS_ASSERT( pitch == (DEPTHS[j]/8) * WIDTH )
+				TS_ASSERT( pitch == (DEPTHS[j]/8) * WIDTH )// Emerald TV out
 				depth = pDisplayMPI_->GetDepth(handle[i]);
 				TS_ASSERT( depth == DEPTHS[j] );
 				height = pDisplayMPI_->GetHeight(handle[i]);
@@ -673,7 +673,7 @@ public:
 		height = pDisplayMPI_->GetHeight(handle);
 		TS_ASSERT( height == HEIGHT );
 
-		memset(buffer, 0xFF, pitch * height); // 0 = dim green, 255 = bright magenta
+		memset(buffer, 0xFF, pitch * height); // 0 = dim green, 255 = bright magenta// Emerald TV out
 		pDisplayMPI_->Invalidate(0, NULL);
 		sleep(1);
 
@@ -701,7 +701,7 @@ public:
 
 		pDisplayMPI_->UnRegister(offscreen, 0);
 		pDisplayMPI_->DestroyHandle(offscreen, false);
-		delete[] membuffer;
+		delete[] membuffer;// Emerald TV out
 
 		pDisplayMPI_->UnRegister(handle, 0);
 		pDisplayMPI_->DestroyHandle(handle, false);
@@ -725,7 +725,7 @@ public:
 		TS_ASSERT( handle1 != kInvalidDisplayHandle );
 		buffer = pDisplayMPI_->GetBuffer(handle1);
 		TS_ASSERT( buffer != kNull );
-		pitch = pDisplayMPI_->GetPitch(handle1);
+		pitch = pDisplayMPI_->GetPitch(handle1);// Emerald TV out
 		TS_ASSERT( pitch > WIDTH );
 		height = pDisplayMPI_->GetHeight(handle1);
 		TS_ASSERT( height == HEIGHT );
@@ -774,7 +774,7 @@ public:
 	//------------------------------------------------------------------------
 	void testDisplayAlphaBlend( )
 	{
-		PRINT_TEST_NAME();
+		PRINT_TEST_NAME();// Emerald TV out
 		
 		tDisplayHandle 	handle1;
 		tDisplayHandle 	handle2;
@@ -798,7 +798,7 @@ public:
 			bool blu = (i < HEIGHT/2);
 			bool grn = (i < HEIGHT/4) || (i > HEIGHT/2 && i < 3*HEIGHT/4);
 			bool red = (i < HEIGHT/4) || (i > 3*HEIGHT/4);
-			for (int j = 0, m = i*WIDTH*4; j < WIDTH; j++, m+=4)
+			for (int j = 0, m = i*WIDTH*4; j < WIDTH; j++, m+=4)// Emerald TV out
 			{
 				U8   val = j % 0xFF;
 				buffer[m+0] = (blu) ? val : 0;

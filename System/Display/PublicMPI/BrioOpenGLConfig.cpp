@@ -53,10 +53,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//--------------------------------------------------------------------------
-	tOpenGLContext		ctx;
+	tOpenGLContext		ctx = {NULL, 0, 0, 0, 0, 0, 0};
 	CDisplayMPI*		dispmgr = 0;
-	NativeDisplayType	display;
-	NativeWindowType	hwnd;
+	NativeDisplayType	display = 0;	// FIXME typedef change
+	NativeWindowType	hwnd = 0;
 	bool				isEnabled = false;
 	bool				isHandled = false;
 	
@@ -238,10 +238,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	ctx.pOEM = &meminfo;
 	// FIXME/dm: How is LF1000 OGL lib configured for FSAA option?
 	ctx.bFSAA = false;
-	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
-	ctx.eglDisplay = &display;
-	ctx.eglWindow = &hwnd; // something non-NULL 
 #endif
+	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
+	ctx.eglDisplay = display; // FIXME typedef
+	ctx.eglWindow = &hwnd; // something non-NULL 
 #else
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
