@@ -31354,3 +31354,12 @@ By dlazzari (dlazzari@leapfrog.com) on 9/16/11 11:55 AM
 5,236 ms. (Cumulative: 11,776,258 ms)
 
 ----------------
+Revision 9,488 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix the OpenGL embedded headers being installed into the wrong directory in the SDK.
+
+By dlazzari (dlazzari@leapfrog.com) on 9/16/11 5:00 PM
+1 changed, 0 added, 0 deleted.
+4,956 ms. (Cumulative: 11,781,323 ms)
+
+----------------
