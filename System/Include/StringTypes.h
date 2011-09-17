@@ -18,7 +18,7 @@
 //
 //============================================================================== 
 
-#ifdef EMULATION //FIXME/BSK
+#if defined(EMULATION) || defined(USTRING)
 	#include <glibmm/ustring.h>
 #else
 	#include <string>
@@ -204,7 +204,7 @@ typedef U32			tUTF32Char;
 
 typedef tUTF16Char	tUniChar;		
 
-#ifdef EMULATION
+#if defined(EMULATION) || defined(USTRING)
 typedef Glib::ustring	CString;
 typedef Glib::ustring	CPath;
 typedef Glib::ustring	CURI;

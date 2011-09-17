@@ -24,6 +24,8 @@ U32 GetPlatformID()
 {
 	int 	id = 0;
 	FILE* 	fd = fopen( "/sys/devices/platform/lf1000-gpio/board_id", "r" );
+	if (!fd)
+			fd = fopen( "/flags/board_id", "r" );
 	if (fd)
 	{
 		fscanf(fd, "%x", &id);
@@ -40,13 +42,15 @@ CString GetPlatformName()
 	switch (GetPlatformID())
 	{
 		case 0: 					// LF1000 devboard
-		case 3:	return "Didj"; 		// Didj FF
+		case 3:						// Didj FF
+			return "Didj";
 		case 5: 					// Didj-TS, Acorn FF
 		case 6:
 		case 7: 					// Emerald FF
 		case 1:						// Emerald POP TV out
 		case 2:						// Emerald EP/PP no supercap
-		case 0xA: return "Emerald";	// Emerald CIP Samsung SDRAM
+		case 0xA: 					// Emerald CIP Samsung SDRAM
+			return "Emerald";
 		case 0xB: 					// Madrid FF
 		case 0xC: 					// Madrid POP TV out
 		case 0xD:					// Madrid LFP100
