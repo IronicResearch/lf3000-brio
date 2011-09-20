@@ -31386,3 +31386,12 @@ By dlazzari (dlazzari@leapfrog.com) on 9/20/11 2:49 PM
 9,157 ms. (Cumulative: 11,795,530 ms)
 
 ----------------
+Revision 9,495 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix bad pathing in SDK builds.
+
+By dlazzari (dlazzari@leapfrog.com) on 9/20/11 3:41 PM
+1 changed, 0 added, 0 deleted.
+4,797 ms. (Cumulative: 11,800,452 ms)
+
+----------------
