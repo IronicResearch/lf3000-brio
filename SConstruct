@@ -139,7 +139,7 @@ environments['sdk_headers']['is_sdk'] = True
 #XBuild embedded environment(Installs arm libraries into XBuild dir)
 environments['sdk_embedded'] = environments['embedded'].Clone()
 environments['sdk_embedded']['base_dir'] = master_env['sdk_root']
-environments['sdk_embedded']['install_dir'] = environments['sdk_embedded']['base_dir'].Dir('Libs').Dir(environments['sdk_embedded']['cpu'])
+environments['sdk_embedded']['install_dir'] = environments['sdk_embedded']['base_dir'].Dir('Libs').Dir(environments['sdk_embedded']['cpu_bare'])
 environments['sdk_embedded']['build_dir'] = None
 environments['sdk_embedded']['is_sdk'] = True
 
