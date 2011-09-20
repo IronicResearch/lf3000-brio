@@ -39,12 +39,12 @@ if env['cpu'] == 'x86':
 							'#ThirdParty/PowerVR/Include/LinuxPC',
 							'/usr/X11R6/include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
-elif env['platform'] == 'LF2000':
+elif env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs' + env['cpu']])
-else:
+	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu_bare']])
+elif env['platform'] == 'Lightning' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + env['cpu']])
+	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + env['cpu_bare']])
 						
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)

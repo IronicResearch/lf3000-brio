@@ -20,6 +20,7 @@ opts.Add(BoolVariable('buildtests', 'Builds unit tests but does not run them', F
 
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
 opts.Add('host', 'The architecture that will run the embedded binaries', 'arm-linux')
+opts.Add('libc', 'The c runtime library to use for exporting and linking libraries', 'uclibc')
 
 opts.Add('staging_dir', 'Root where we find linux standard libs and headers, usually nfsroot', '')
 opts.Add('embedded_root', 'Where to place Brio arm libraries',  '')
@@ -94,6 +95,7 @@ master_env['install_dir'] = None
 master_env['hdr_deploy_dir'] = None
 master_env['tools_deploy_dir'] = None
 master_env['cpu'] = ''
+master_env['cpu_bare'] = ''
 master_env['is_sdk'] = False
 
 if master_env['monolithic']:
@@ -113,7 +115,8 @@ environments['embedded'].Tool(environments['embedded']['platform']+'_embedded')
 environments['embedded']['intermediate_dir'] = Dir('#System').Dir('Temp').Dir(environments['embedded']['platform'])
 environments['embedded']['build_dir'] = Dir('#Build').Dir(environments['embedded']['platform'])
 environments['embedded']['install_dir'] = master_env['embedded_root']
-environments['embedded']['cpu'] = 'arm'
+environments['embedded']['cpu'] = 'arm-' + environments['embedded']['libc']
+environments['embedded']['cpu_bare'] = 'arm'
 environments['embedded'].Prepend(LIBPATH = [environments['embedded']['build_dir'].Dir('MPI')])
 #TODO: This should point at staging and all required libs should be populated by their respective builds
 environments['embedded'].Append(LIBPATH = [environments['embedded']['embedded_root'].Dir('lib') ] )

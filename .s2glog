@@ -31373,3 +31373,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/16/11 5:06 PM
 4,816 ms. (Cumulative: 11,786,232 ms)
 
 ----------------
+Revision 9,490 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,491 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,492 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,493 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,494 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Allow for selecting what set of libc based ThirdParty libs are installed and linked against. (The cpu_bare environment variable seems like a bad idea, and I'll try to clean it up later)
+
+By dlazzari (dlazzari@leapfrog.com) on 9/20/11 2:49 PM
+4 changed, 44 added, 71 deleted.
+9,157 ms. (Cumulative: 11,795,530 ms)
+
+----------------
