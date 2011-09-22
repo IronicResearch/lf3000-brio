@@ -31395,3 +31395,12 @@ By dlazzari (dlazzari@leapfrog.com) on 9/20/11 3:41 PM
 4,797 ms. (Cumulative: 11,800,452 ms)
 
 ----------------
+Revision 9,496 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add libvorbis to Audio module linking as vorbisfile currently is linked staticly and relies on symbols from libvorbis.
+
+By dlazzari (dlazzari@leapfrog.com) on 9/21/11 6:27 PM
+1 changed, 0 added, 0 deleted.
+4,850 ms. (Cumulative: 11,805,380 ms)
+
+----------------
