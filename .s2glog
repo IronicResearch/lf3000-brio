@@ -31404,3 +31404,12 @@ By dlazzari (dlazzari@leapfrog.com) on 9/21/11 6:27 PM
 4,850 ms. (Cumulative: 11,805,380 ms)
 
 ----------------
+Revision 9,497 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add symlinks so that platform specific code gets included. We may need to reconsider using LF2000 as the platform instead of the platform_variant if we want to get rid of these.
+
+By dlazzari (dlazzari@leapfrog.com) on 9/22/11 2:53 PM
+0 changed, 6 added, 0 deleted.
+4,988 ms. (Cumulative: 11,810,446 ms)
+
+----------------
