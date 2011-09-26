@@ -4,6 +4,7 @@ CC = $(CROSS_COMPILE)gcc
 AR = $(CROSS_COMPILE)ar
 LD = $(CROSS_COMPILE)ld
 INSTALL_PREFIX ?= /home/lfu/nfsroot/
+TARGET_LIBC ?= uclibc
 
 CPPFLAGS = -I./ -I./include-priv -fpic 
 
@@ -23,7 +24,7 @@ LIB = libustring.so
 all: $(LIB)
 
 $(LIB):$(OBJS)
-	$(CC) -shared -Wl,-soname,$@,-export-dynamic -o $@ $^ libs/arm/libcharset.a
+	$(CC) -shared -Wl,-soname,$@,-export-dynamic -o $@ $^ libs/arm-$(TARGET_LIBC)/libcharset.a
 
 hello:hello.cc $(LIB)
 	$(CXX) $(CPPFLAGS) -L./libs -o $@ $< -lustring -liconv -lintl

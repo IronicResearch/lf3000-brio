@@ -31413,3 +31413,12 @@ By dlazzari (dlazzari@leapfrog.com) on 9/22/11 2:53 PM
 4,988 ms. (Cumulative: 11,810,446 ms)
 
 ----------------
+Revision 9,498 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update ustring makefile to link to correct libcharset.a
+
+By dlazzari (dlazzari@leapfrog.com) on 9/26/11 11:20 AM
+1 changed, 0 added, 0 deleted.
+4,954 ms. (Cumulative: 11,815,525 ms)
+
+----------------
