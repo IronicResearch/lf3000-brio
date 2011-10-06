@@ -31434,3 +31434,14 @@ By dlazzari (dlazzari@leapfrog.com) on 10/3/11 3:43 PM
 5,798 ms. (Cumulative: 11,821,432 ms)
 
 ----------------
+Revision 9,503 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,504 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,505 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Skip DisplayMPI triple-buffer test for now, since framebuffers are only double-height for OGL.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/6/11 2:40 PM
+1 changed, 0 added, 0 deleted.
+4,891 ms. (Cumulative: 11,826,432 ms)
+
+----------------
