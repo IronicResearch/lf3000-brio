@@ -530,7 +530,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void testDisplayTripleBuffers( )
+	void XXXXtestDisplayTripleBuffers( )
 	{
 		PRINT_TEST_NAME();
 		
