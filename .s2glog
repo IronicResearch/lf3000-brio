@@ -31445,3 +31445,28 @@ By Dave Milici (dmilici@leapfrog.com) on 10/6/11 2:40 PM
 4,891 ms. (Cumulative: 11,826,432 ms)
 
 ----------------
+Revision 9,506 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+4,798 ms. (Cumulative: 11,831,308 ms)
+
+----------------
+Revision 9,507 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,508 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+4,704 ms. (Cumulative: 11,836,027 ms)
+
+----------------
+Revision 9,509 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+First cut at adding LF2000 VIP camera support to Brio:
+-Split Camera module into USB and VIP subclasses
+-Not included: misc tweaks to build scripts and other minor fixups to allow
+ building
+
+By jeno (jeno@leapfrog.com) on 10/12/11 11:10 AM
+4 changed, 3 added, 1 deleted.
+4,973 ms. (Cumulative: 11,841,000 ms)
+
+----------------

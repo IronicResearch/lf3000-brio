@@ -75,8 +75,6 @@ const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 //==============================================================================
 // Defines
 //==============================================================================
-#define USB_DEV_ROOT				"/sys/class/usb_device/"
-
 #define CAMERA_LOCK dbg_.Assert((kNoErr == kernel_.LockMutex(mutex_)),\
 									  "Couldn't lock mutex.\n")
 
@@ -102,18 +100,6 @@ const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
-//----------------------------------------------------------------------------
-tVersion CCameraModule::GetModuleVersion() const
-{
-	return kCameraModuleVersion;
-}
-
-//----------------------------------------------------------------------------
-const CString* CCameraModule::GetModuleName() const
-{
-	return &kCameraModuleName;
-}
-
 //----------------------------------------------------------------------------
 const CURI* CCameraModule::GetModuleOrigin() const
 {
@@ -173,139 +159,10 @@ static void SetScaler(int width, int height, bool centered)
 {
 	CDisplayMPI 	dispmgr;
 	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420);
-	
+
 	dispmgr.SetVideoScaler(hvideo, width, height, centered);
 }
 
-//----------------------------------------------------------------------------
-static bool SetUSBHost(bool enable)
-{
-#if !defined(EMULATION) && !defined(LF2000)
-	// USB host power option on Madrid only
-	if (GetPlatformName() != "Madrid")
-		return false;
-	// Set USB host enable via GPIO
-	int fd = open("/dev/gpio", O_RDWR | O_SYNC);
-	if (fd > -1) {
-		int r;
-		union gpio_cmd c;
-		c.outvalue.port  = 2;
-		c.outvalue.pin 	 = 0;
-		c.outvalue.value = (enable) ? 0 : 1;
-		r = ioctl(fd, GPIO_IOCSOUTVAL, &c);
-		close(fd);
-		CDebugMPI dbg(kGroupCamera);
-		dbg.DebugOut(kDbgLvlImportant, "%s: enable=%d, success=%d\n", __FUNCTION__, enable, (r == 0));
-		return (r == 0) ? true : false;
-	}
-#endif
-	return false;
-}
-
-//----------------------------------------------------------------------------
-
-//============================================================================
-// Local event listener
-//============================================================================
-const tEventType LocalCameraEvents[] = {kAllUSBDeviceEvents};
-
-Boolean EnumCameraCallback(const CPath& path, void* pctx)
-{
-	CCameraModule* pObj	= (CCameraModule*)pctx;
-	U32 id				= FindDevice(path);
-
-	// FIXME: Generalize camera device enumeration
-	#define USB_WEB_CAM_ID	0x046d08d7	// Logitech
-
-	if (id == USB_WEB_CAM_ID) {
-		pObj->sysfs = path;
-		return false; // stop
-	}
-	if (id == USB_CAM_ID) {
-		pObj->sysfs = path;
-		return false; // stop
-	}
-	return true; // continue
-}
-
-CCameraModule::CameraListener::CameraListener(CCameraModule* mod):
-			IEventListener(LocalCameraEvents, ArrayCount(LocalCameraEvents)),
-			pMod(mod), running(false)
-			{}
-
-CCameraModule::CameraListener::~CameraListener()
-{
-	/*
-	 * There is a potential race here if a CameraModule object is deleted just
-	 * as the Notify() method is invoked by the either the EventDispatch thread or
-	 * ButtonPowerUSB thread.  The proper fix would be to delay destruction until
-	 * these threads have join()ed, but that is not possible, because:
-	 *  a.) those threads are join()ed only when there are no outstanding clients
-	 *  b.) this listener object itself counts as an outstanding client
-	 *
-	 *  This hack seems to make the race unlikely.
-	 */
-	while(running)
-		pMod->kernel_.TaskSleep(1);
-}
-
-tEventStatus CCameraModule::CameraListener::Notify(const IEventMessage& msg)
-{
-	running = true;
-
-	tEventType event_type = msg.GetEventType();
-	if(event_type == kUSBDevicePriorityStateChange)
-	{
-		const CUSBDeviceMessage& usbmsg = dynamic_cast<const CUSBDeviceMessage&>(msg);
-		tUSBDeviceData usbData = usbmsg.GetUSBDeviceState();
-
-		/* a device was inserted or removed */
-		if(usbData.USBDeviceState & kUSBDeviceHotPlug)
-		{
-			/* enumerate sysfs to see if camera entry exists */
-			pMod->sysfs.clear();
-			EnumFolder(USB_DEV_ROOT, EnumCameraCallback, kFoldersOnly, pMod);
-
-			if(!pMod->sysfs.empty())
-			{
-				/* camera present or added */
-				pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera detected %s\n", pMod->sysfs.c_str());
-
-				pMod->kernel_.LockMutex(pMod->mutex_);
-				pMod->valid = pMod->InitCameraInt();
-				pMod->kernel_.UnlockMutex(pMod->mutex_);
-			}
-			else
-			{
-				if(pMod->valid)
-				{
-					/* camera removed */
-					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera removed %d\n", pMod->valid);
-
-					/* set this to inform capture threads */
-					pMod->valid = false;
-					pMod->StopVideoCapture(pMod->camCtx_.hndl);
-					pMod->StopAudioCapture(pMod->micCtx_.hndl);
-
-					/* must uninitialize camera HW to allow 'modprobe -r' */
-					pMod->kernel_.LockMutex(pMod->mutex_);
-					pMod->DeinitCameraInt();
-					pMod->kernel_.UnlockMutex(pMod->mutex_);
-				}
-				else
-				{
-					/* camera absent upon initialization*/
-					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera missing %d\n", pMod->valid);
-
-					SetUSBHost(true);
-				}
-
-			}
-		}
-	}
-	running = false;
-	return kEventStatusOK;
-}
 
 //============================================================================
 // Ctor & dtor
@@ -314,14 +171,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 {
 	tErrType			err = kNoErr;
 	const tMutexAttr	attr = {0};
-	tUSBDeviceData		usb_data;
 
 	dbg_.SetDebugLevel(kCameraDebugLevel);
 
-	// Enable USB host port
-	SetUSBHost(true);
-
-	sysfs.clear();
 	camCtx_.file 			= gCamFile;
 	camCtx_.numBufs 		= 0;
 	camCtx_.bufs 			= NULL;
@@ -365,37 +217,12 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	err = kernel_.InitMutex( camCtx_.mThread2, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
-	/* hotplug subsystem calls this handler upon device insertion/removal */
-	listener_ = new CameraListener(this);
-	event_.RegisterEventListener(listener_);
-
-	/* spoof a hotplug event to force enumerate sysfs and see if camera is present */
-	usb_data = GetCurrentUSBDeviceState();
-	usb_data.USBDeviceState &= kUSBDeviceConnected;
-	usb_data.USBDeviceState |= kUSBDeviceHotPlug;
-
-	CUSBDeviceMessage usb_msg(usb_data, kUSBDevicePriorityStateChange);
-	/* Event is synchronous and handled in-thread */
-	valid = false;
-	event_.PostEvent(usb_msg, 0, listener_);
-
-	/* local listener handles hardware initialization as appropriate */
 	InitLut();
-
-	// Wait for USB host power to enable drivers on Madrid
-	if (GetPlatformName() == "Madrid") {
-		int counter = 500;
-		while (!valid && --counter > 0)
-			kernel_.TaskSleep(10);
-	}
 }
 
 //----------------------------------------------------------------------------
 CCameraModule::~CCameraModule()
 {
-	event_.UnregisterEventListener(listener_);
-	delete listener_;
-
 	StopVideoCapture(camCtx_.hndl);
 	StopAudioCapture(micCtx_.hndl);
 
@@ -413,9 +240,6 @@ CCameraModule::~CCameraModule()
 
 	delete camCtx_.controls;
 	delete camCtx_.modes;
-
-	// Disable USB host port
-	SetUSBHost(false);
 }
 
 //----------------------------------------------------------------------------
@@ -1154,6 +978,9 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 	case kCaptureFormatMJPEG:
 		fmt.fmt.pix.pixelformat	= V4L2_PIX_FMT_MJPEG;
 		break;
+	case kCaptureFormatRAWYUYV:
+		fmt.fmt.pix.pixelformat	= V4L2_PIX_FMT_YUYV;
+		break;
 	}
 
     if(ioctl(camCtx_.fd, VIDIOC_S_FMT, &fmt) < 0)
@@ -1447,7 +1274,7 @@ static void silence_warning(j_common_ptr cinfo, int msg_level)
 		if (strstr(msgbuf, "extraneous") == NULL) {
 			(*cinfo->err->error_exit) (cinfo);
 		}
-	}	
+	}
 }
 
 static void my_error_exit (j_common_ptr cinfo)
@@ -1680,7 +1507,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	Boolean							bRet = true, bAlloc = false;
 
 	CAMERA_LOCK;
-	
+
 	// TODO: don't allocate this on every render
 	if(bitmap == NULL)
 	{
@@ -1849,14 +1676,14 @@ out:
 	}
 
 	CAMERA_UNLOCK;
-	
+
 	return bRet;
 }
 
 static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
 {
 	struct v4l2_buffer	buf;
-	
+
 	memset(&buf, 0, sizeof(struct v4l2_buffer));
 	buf.type  	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	buf.memory	= V4L2_MEMORY_MMAP;
@@ -2075,7 +1902,7 @@ Boolean	CCameraModule::SnapFrameRGB(const tVidCapHndl hndl, const CPath &path)
 		CPath filepath = (path.at(0) == '/') ? path : spath + path;
 		PNG_save(filepath.c_str(), 640, 480, 640*3, (char*)rgbbuf);
 	}
-	
+
 	delete[] rgbbuf;
 	return ret;
 }
@@ -2086,9 +1913,9 @@ Boolean	CCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatMJPEG, 640, 480, 0, NULL, 0};
 
-	if (path.rfind(".png") != std::string::npos) 
+	if (path.rfind(".png") != std::string::npos)
 		return SnapFrameRGB(hndl, path);
-	
+
 	ret = GrabFrame(hndl, &frame);
 	if(!ret)
 	{
@@ -2343,7 +2170,7 @@ Boolean	CCameraModule::OpenFrame(const CPath &path, tFrameInfo *frame)
 
 	frame->size = 0;
 	frame->data = NULL;
-	
+
 	if(0 != stat(filename, &buf))
 	{
 		return bRet;
@@ -2412,7 +2239,7 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 	}
 
 	THREAD_LOCK;
-	
+
 	if(camCtx_.bAudio)
 	{
 		StopAudio();
@@ -2422,7 +2249,7 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 	camCtx_.bVPaused = display;
 
 	THREAD_UNLOCK;
-	
+
 	return bRet;
 }
 
@@ -2438,7 +2265,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 	}
 
 	THREAD_LOCK;
-	
+
 	if(camCtx_.bAudio)
 	{
 		StartAudio(false);
@@ -2448,7 +2275,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 	camCtx_.bVPaused = false;
 
 	THREAD_UNLOCK;
-	
+
 	return bRet;
 }
 
@@ -2467,10 +2294,8 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::InitCameraInt()
+Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode)
 {
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
-
 	if(!InitCameraHWInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: hardware initialization failed for %s\n", camCtx_.file);
@@ -2483,7 +2308,7 @@ Boolean	CCameraModule::InitCameraInt()
 		return false;
 	}
 
-	if(!SetCameraMode(&QVGA))
+	if(!SetCameraMode(mode))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: failed to set resolution %s\n", camCtx_.file);
 		return false;
@@ -2586,37 +2411,5 @@ Boolean	CCameraModule::DeinitCameraInt()
 //----------------------------------------------------------------------------
 
 LF_END_BRIO_NAMESPACE()
-
-
-//============================================================================
-// Instance management interface for the Module Manager
-//============================================================================
-#ifndef LF_MONOLITHIC_DEBUG
-LF_USING_BRIO_NAMESPACE()
-
-static CCameraModule*	sinst = NULL;
-
-extern "C"
-{
-	//------------------------------------------------------------------------
-	ICoreModule* CreateInstance(tVersion version)
-	{
-		(void )version;	/* Prevent unused variable warnings. */
-		if( sinst == NULL )
-			sinst = new CCameraModule;
-		return sinst;
-	}
-
-	//------------------------------------------------------------------------
-	void DestroyInstance(ICoreModule* ptr)
-	{
-		(void )ptr;	/* Prevent unused variable warnings. */
-	//		assert(ptr == sinst);
-		delete sinst;
-		sinst = NULL;
-	}
-}
-#endif	// LF_MONOLITHIC_DEBUG
-
 
 // EOF
