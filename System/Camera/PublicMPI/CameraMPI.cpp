@@ -22,6 +22,16 @@
 #include <SystemEvents.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
+namespace
+{
+	//------------------------------------------------------------------------
+	inline bool HaveLF2000VIPDriver(void)
+	{
+		struct stat st;
+
+		return stat("/sys/devices/platform/vip.0/driver", &st) == 0;
+	}
+}
 
 const CString	kMPIName = "CameraMPI";
 
@@ -72,7 +82,12 @@ U16	CCameraEventMessage::GetSizeInBytes() const
 CCameraMPI::CCameraMPI() : pModule_(NULL)
 {
 	ICoreModule*	pModule;
-	Module::Connect(pModule, kCameraModuleName, kCameraModuleVersion);
+
+	if(HaveLF2000VIPDriver())
+		Module::Connect(pModule, kVIPCameraModuleName, kVIPCameraModuleVersion);
+	else
+		Module::Connect(pModule, kUSBCameraModuleName, kUSBCameraModuleVersion);
+
 	pModule_ = reinterpret_cast<CCameraModule*>(pModule);
 }
 

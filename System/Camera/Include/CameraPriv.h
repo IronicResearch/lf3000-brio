@@ -51,8 +51,10 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Constants
 //==============================================================================
-const CString			kCameraModuleName		= "Camera";
-const tVersion			kCameraModuleVersion	= 2;
+const CString			kUSBCameraModuleName	= "CameraUSB";
+const tVersion			kUSBCameraModuleVersion	= 2;
+const CString			kVIPCameraModuleName	= "CameraVIP";
+const tVersion			kVIPCameraModuleVersion	= 2;
 const tEventPriority	kCameraEventPriority	= 0;
 const tDebugLevel		kCameraDebugLevel		= kDbgLvlImportant;
 
@@ -178,7 +180,7 @@ struct tCameraContext {
 	IEventListener				*pListener;
 
 	Boolean						bAudio;			// capture audio option
-	
+
 	std::queue<tFrameInfo>		qframes;		// queue for CameraTaskRender() thread
 	tFrameInfo					*frame;
 	tBitmapInfo					*image;
@@ -226,7 +228,7 @@ struct tMicrophoneContext {
 	unsigned int			bytesWritten;	// bytes written total
 	unsigned int			counter;		// block counter
 	unsigned int			block_size;		// block size in bytes = period_size * 2
-	
+
 	snd_pcm_status_t* 		status;
 	snd_timestamp_t 		tstamp;
 
@@ -253,21 +255,11 @@ tErrType DeInitCameraTask(tCameraContext* pCtx);
 
 //==============================================================================
 class CCameraModule : public ICoreModule {
-	// internal listener for hotplug events
-	class CameraListener : public IEventListener
-	{
-		CCameraModule*	pMod;
-		Boolean			running;
-	public:
-		CameraListener(CCameraModule* ctx);
-		~CameraListener();
-		tEventStatus Notify(const IEventMessage& msg);
-	};
 public:
 	// ICoreModule functionality
 	virtual Boolean			IsValid() const;
-	virtual tVersion		GetModuleVersion() const;
-	virtual const CString*	GetModuleName() const;
+	virtual tVersion		GetModuleVersion() const	=0;
+	virtual const CString*	GetModuleName() const		=0;
 	virtual const CURI*		GetModuleOrigin() const;
 
 	// class-specific functionality
@@ -301,8 +293,6 @@ public:
 	VTABLE_EXPORT S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
 private:
-	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
-	CameraListener		*listener_;
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
 	CEventMPI			event_;
@@ -313,18 +303,13 @@ private:
 	Boolean				valid;
 	tMutex				mutex_;
 
-	// Limit object creation to the Module Manager interface functions
 	CCameraModule();
 	virtual ~CCameraModule();
-	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
-						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
-	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 	friend void* CameraTaskMain(void* arg);
 	friend void* CameraTaskRender(void* arg);
-	friend Boolean EnumCameraCallback(const CPath& path, void* pctx);
 
 	// Implementation-specific functionality
-	Boolean		InitCameraInt();
+	Boolean		InitCameraInt(const tCaptureMode* mode);
 	Boolean		DeinitCameraInt();
 	Boolean		GetCameraModes(tCaptureModes &modes);
 	Boolean		SetCameraMode(const tCaptureMode* mode);
@@ -361,6 +346,55 @@ private:
 	/* inline function */
 	void DecompressAndPaint(struct jpeg_decompress_struct *cinfo, tVideoSurf *surf);
 
+	friend class CUSBCameraModule;
+	friend class CVIPCameraModule;
+};
+
+//==============================================================================
+// USB-specific functionality
+class CUSBCameraModule : public CCameraModule {
+	// internal listener for hotplug events
+	class CameraListener : public IEventListener
+	{
+		CUSBCameraModule*	pMod;
+		Boolean			running;
+	public:
+		CameraListener(CUSBCameraModule* ctx);
+		~CameraListener();
+		tEventStatus Notify(const IEventMessage& msg);
+	};
+public:
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;
+
+private:
+	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
+	CameraListener		*listener_;
+	friend Boolean EnumCameraCallback(const CPath& path, void* pctx);
+
+	// Limit object creation to the Module Manager interface functions
+	CUSBCameraModule();
+	virtual ~CUSBCameraModule();
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
+};
+
+//==============================================================================
+// LF2000 VIP-specific functionality
+class CVIPCameraModule : public CCameraModule {
+public:
+	virtual tVersion		GetModuleVersion() const;
+	virtual const CString*	GetModuleName() const;
+
+private:
+private:
+	// Limit object creation to the Module Manager interface functions
+	CVIPCameraModule();
+	virtual ~CVIPCameraModule();
+	friend LF_ADD_BRIO_NAMESPACE(ICoreModule*)
+						::CreateInstance(LF_ADD_BRIO_NAMESPACE(tVersion));
+	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 };
 
 LF_END_BRIO_NAMESPACE()
