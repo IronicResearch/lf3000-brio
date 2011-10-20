@@ -31470,3 +31470,20 @@ By jeno (jeno@leapfrog.com) on 10/12/11 11:10 AM
 4,973 ms. (Cumulative: 11,841,000 ms)
 
 ----------------
+Revision 9,510 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,511 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,512 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,513 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,514 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,515 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,516 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing CPPFLAGS to append (+=) rather than set (=) addtional Header paths. 
+
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 10/19/11 5:42 PM
+1 changed, 0 added, 0 deleted.
+4,970 ms. (Cumulative: 11,846,110 ms)
+
+----------------
