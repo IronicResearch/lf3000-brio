@@ -7,6 +7,7 @@
 #include <KernelMPI.h>
 #include <UnitTestUtils.h>
 #include <BrioOpenGLConfig.h>
+#include <Utility.h>
 
 //For memset
 #include <string.h>
@@ -75,8 +76,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;	// FIXME
-		const U16		HEIGHT = 240;	// FIXME
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		const tDisplayScreenStats* pstats = pDisplayMPI_->GetScreenStats(0);
 		TS_ASSERT( pstats != NULL );
@@ -178,8 +179,8 @@ public:
 		U16				pitch;
 		S8				brightness;
 		S8				contrast;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 		// TODO: fix min/max bounds logic
 		const S8		BRIGHT_INC = 4;
 		const S8		BRIGHT_MIN = -128+BRIGHT_INC; //-128; //underflow
@@ -267,8 +268,8 @@ public:
 		PRINT_TEST_NAME();
 		
 		tDisplayHandle 	handle;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
 		pDisplayMPI_->Register(handle, 0, 0, 0, 0);
 
@@ -301,8 +302,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatRGB888, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
@@ -355,8 +356,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatRGB4444, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
@@ -412,8 +413,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatRGB565, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
@@ -468,8 +469,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		for (int i = 0; i < 2; i++)
 		{
@@ -541,8 +542,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 		const U16		DEPTHS[4] = {16, 16, 24, 32};
 		const tPixelFormat	FORMATS[4] = {kPixelFormatRGB4444, kPixelFormatRGB565, kPixelFormatRGB888, kPixelFormatARGB8888};
 		
@@ -652,8 +653,8 @@ public:
 		U16				height;
 		U16				pitch;
 		U16				depth;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );
@@ -782,8 +783,8 @@ public:
 		U8* 			buffer;
 		U16				height;
 		U16				pitch;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		handle1 = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatARGB8888, NULL);
 		TS_ASSERT( handle1 != kInvalidDisplayHandle );
@@ -862,8 +863,8 @@ public:
 		U16				width;
 		U16				height;
 		U16				pitch;
-		const U16		WIDTH = 320;
-		const U16		HEIGHT = 240;
+		const U16		WIDTH  = (GetPlatformName() == "Madrid") ? 480 : 320;	// FIXME
+		const U16		HEIGHT = (GetPlatformName() == "Madrid") ? 272 : 240;	// FIXME
 
 		handle = pDisplayMPI_->CreateHandle(HEIGHT, WIDTH, kPixelFormatYUV420, NULL);
 		TS_ASSERT( handle != kInvalidDisplayHandle );

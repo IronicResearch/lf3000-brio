@@ -70,8 +70,8 @@ namespace
 
 	const char*					XRES = "/sys/devices/platform/lf1000-dpc/xres";
 	const char*					YRES = "/sys/devices/platform/lf1000-dpc/yres";
-	unsigned int				xres = 320; //0;	// screen size X
-	unsigned int				yres = 240; //0;	// screen size Y
+	unsigned int				xres = 0;	// screen size X
+	unsigned int				yres = 0;	// screen size Y
 	S16							dxres = 0;	// screen delta X
 	S16							dyres = 0;	// screen delta Y
 	U16							vxres = 0;	// viewport size X
@@ -108,6 +108,12 @@ void CDisplayFB::InitModule()
 	if (f) {
 		fscanf(f, "%u", &yres);
 		fclose(f);
+	}
+	f = fopen("/sys/class/graphics/fb0/virtual_size", "r");
+	if (f) {
+		fscanf(f, "%u,%u", &xres, &yres);
+		fclose(f);
+		yres /= 2;
 	}
 	dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %u x %u\n", __FUNCTION__, xres, yres);
 	
