@@ -19,6 +19,7 @@
 #include <EmulationConfig.h>
 #include <DebugMPI.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
