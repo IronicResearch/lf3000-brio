@@ -31511,3 +31511,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/21/11 1:44 PM
 4,875 ms. (Cumulative: 11,856,235 ms)
 
 ----------------
+Revision 9,524 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add platform query to DisplayMPI unit tests for expected screen size. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/21/11 3:03 PM
+3 changed, 0 added, 0 deleted.
+4,579 ms. (Cumulative: 11,860,908 ms)
+
+----------------
