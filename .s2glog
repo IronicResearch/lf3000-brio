@@ -31487,3 +31487,16 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 10/19/11 5:42 PM
 4,970 ms. (Cumulative: 11,846,110 ms)
 
 ----------------
+Revision 9,517 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,518 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,519 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,520 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,521 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ustring: Append our CPPFLAGS to command line or environment overrides.
+
+By dlazzari (dlazzari@leapfrog.com) on 10/20/11 6:30 PM
+1 changed, 0 added, 0 deleted.
+5,047 ms. (Cumulative: 11,851,266 ms)
+
+----------------
