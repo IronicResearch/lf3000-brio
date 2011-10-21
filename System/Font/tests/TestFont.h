@@ -13,7 +13,7 @@
 
 LF_USING_BRIO_NAMESPACE()
 
-#ifndef gunichar
+#ifndef USTRING
 #define gunichar	tUTF32Char
 #endif
 
