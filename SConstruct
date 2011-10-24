@@ -188,7 +188,10 @@ Alias('embedded', master_env.MetaInf(metaInfPath, templatePath) )
 #--------------------------------------------------------
 
 Alias('sdk_embedded', 'sdk_headers')
+Alias('sdk_embedded', 'sdk_tools')
+
 Alias('sdk_emulation', 'sdk_headers')
+Alias('sdk_emulation', 'sdk_tools')
 
 Alias('sdk_embedded', 'embedded')
 Alias('sdk_emulation', 'emulation')
