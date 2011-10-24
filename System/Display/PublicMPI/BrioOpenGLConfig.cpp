@@ -212,12 +212,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
 	if (!isHandled) {
-		struct sigaction sa;
 		atexit(BOGLExitHandler);
-		sa.sa_handler = BOGLSignalHandler;
-		sa.sa_flags = SA_RESTART;
-		sigfillset(&sa.sa_mask);
-		//sigaction(SIGTERM, &sa, NULL); // FIXME
 		signal(SIGTERM, BOGLSignalHandler);
 		isHandled = true;
 	}
@@ -242,6 +237,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
 	ctx.eglDisplay = display; // FIXME typedef
 	ctx.eglWindow = &hwnd; // something non-NULL 
+#ifdef 	LF2000
+	disp_.InitOpenGL(&ctx);
+#endif
 #else
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
@@ -361,6 +359,12 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	eglSwapBuffers(eglDisplay, eglSurface);
 	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
 
+#ifdef LF2000
+	// Enable display context layer visibility after initial buffer swap
+	disp_.EnableOpenGL(&ctx);
+	isEnabled = true;
+#endif
+
 	// Store handle for use in Display MPI functions
 	hndlDisplay = ctx.hndlDisplay;
 	dbg.DebugOut(kDbgLvlVerbose, "display handle = %p\n", hndlDisplay);
@@ -369,8 +373,11 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 //----------------------------------------------------------------------
 BrioOpenGLConfig::~BrioOpenGLConfig()
 {
+#ifdef LF2000
 	// Disable 3D layer before disabling accelerator
-//	disp_.DisableOpenGL();
+	disp_.DisableOpenGL();
+	isEnabled = false;
+#endif
 	
 	/*
 		Step 9 - Terminate OpenGL ES and destroy the window (if present).
@@ -390,8 +397,10 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		Again, this is platform specific and delegated to a separate function.
 	*/
 
+#ifdef LF2000
 	// Exit OpenGL hardware
-//	disp_.DeinitOpenGL(); 
+	disp_.DeinitOpenGL();
+#endif
 	
 	if(dispmgr)
 	{
