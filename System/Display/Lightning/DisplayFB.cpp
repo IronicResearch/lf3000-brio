@@ -733,11 +733,11 @@ static inline bool Check3DEngine(U32* preg32, U32& cntl32, U32& stat32, U32& clo
 //----------------------------------------------------------------------------
 void CDisplayFB::InitOpenGL(void* pCtx)
 {
-#ifdef LF1000
 	// Dereference OpenGL context for MagicEyes OEM memory size config
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
-	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
 	int 							n = OGLFB;
+#ifdef LF1000
+	___OAL_MEMORY_INFORMATION__* 	pMemInfo = (___OAL_MEMORY_INFORMATION__*)pOglCtx->pOEM;
 	
 	// Open driver for 3D engine registers
 	fdreg3d = open(DEV3D, O_RDWR | O_SYNC);
@@ -805,18 +805,23 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pMemInfo->Memory2D_VirtualAddress	= (unsigned int)pmem2d;
 	pMemInfo->Memory2D_PhysicalAddress	= mem2phys;
 	pMemInfo->Memory2D_SizeInMbyte		= mem2size >> 20;
+#endif // LF1000
 
 	// Query viewport size to use
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
 
 	// Create DisplayMPI context for OpenGL framebuffer
+#ifdef LF1000
 	pmem2d = (U8*)pmem2d + 0x20000000;
 	hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
+#else
+	hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, NULL);
+#endif
 
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vinfo[n].xres;
 	pOglCtx->height 	= vinfo[n].yres;
-	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
+//	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
 	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
 	pOglCtx->hndlDisplay = hogl;
 
@@ -824,7 +829,6 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	RegisterLayer(hogl, 0, 0);
 	SetAlpha(hogl, 0, false);
 	SetWindowPosition(hogl, 0, 0, pOglCtx->width, pOglCtx->height);
-#endif // LF1000
 }
 
 //----------------------------------------------------------------------------
@@ -835,9 +839,12 @@ void CDisplayFB::DeinitOpenGL()
 	if (dcmem1.pBuffer)
 		DeAllocBuffer(&dcmem1);
 	DeAllocBuffer(&dcmem2);
+#endif
+	// Release DisplayMPI context
 	DestroyHandle(hogl, false);
 	hogl = NULL;
 	
+#ifdef LF1000
 	// Release framebuffer mappings and drivers used by OpenGL
 	munmap(preg3d, REG3D_SIZE);
 	
@@ -848,7 +855,7 @@ void CDisplayFB::DeinitOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
-#ifdef LF1000
+#if defined(LF1000) || defined(LF2000)
 	SetVisible(hogl, true);
 #endif
 }
@@ -856,7 +863,7 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayFB::DisableOpenGL()
 {
-#ifdef LF1000
+#if defined(LF1000) || defined(LF2000)
 	SetVisible(hogl, false);
 #endif
 }

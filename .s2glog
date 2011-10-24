@@ -31521,3 +31521,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/21/11 3:03 PM
 4,579 ms. (Cumulative: 11,860,908 ms)
 
 ----------------
+Revision 9,525 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Connect OpenGL context to DisplayMPI context to control enabling/disabling layer visibility.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/11 11:07 AM
+2 changed, 0 added, 0 deleted.
+4,579 ms. (Cumulative: 11,865,580 ms)
+
+----------------
