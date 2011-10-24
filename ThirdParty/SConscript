@@ -68,11 +68,11 @@ if env['install_dir']:
 		opengl_lib_dir = env['install_dir'].Dir('lib')
 	
 	if env['cpu'] == 'x86':
-		libs = glob.glob(os.path.join('PowerVR', 'Libs', '*.so*'))
+		libs = Glob(os.path.join('PowerVR', 'Libs', '*.so*'))
 	elif env['platform'] == 'Lightning':
-		libs = glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], '*.so*'))
+		libs = Glob(os.path.join('MagicEyes', 'Libs', env['cpu_bare'], '*.so*'))
 	elif env['platform'] == 'LF2000':
-		libs = glob.glob(os.path.join('Nexell', 'Libs', env['cpu'], '*.so'))
+		libs = Glob(os.path.join('Nexell', 'Libs', env['cpu_bare'], '*.so'))
 	targets += env.Install(opengl_lib_dir, libs)
 	
 	#In the SDK, Third Party libs get their own directory, in deployment, everything goes together in lib
