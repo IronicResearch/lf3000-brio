@@ -31531,3 +31531,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/24/11 11:07 AM
 4,579 ms. (Cumulative: 11,865,580 ms)
 
 ----------------
+Revision 9,526 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Build tools when building partial sdk targets
+
+By dlazzari (dlazzari@leapfrog.com) on 10/24/11 12:00 PM
+1 changed, 0 added, 0 deleted.
+4,536 ms. (Cumulative: 11,870,210 ms)
+
+----------------
