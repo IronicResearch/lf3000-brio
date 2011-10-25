@@ -31549,3 +31549,13 @@ By dlazzari (dlazzari@leapfrog.com) on 10/24/11 2:06 PM
 4,504 ms. (Cumulative: 11,874,792 ms)
 
 ----------------
+Revision 9,528 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Per Dan, backing out -r9527 (prior change) to fix build problem
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 10/25/11 11:36 AM
+1 changed, 0 added, 0 deleted.
+4,549 ms. (Cumulative: 11,879,419 ms)
+
+----------------
