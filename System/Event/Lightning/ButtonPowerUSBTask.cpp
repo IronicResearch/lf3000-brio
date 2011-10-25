@@ -326,7 +326,7 @@ namespace
 		{
 			// Find input event device and hand it to tslib
 			char dev[20];
-			if (find_input_device("touchscreen", dev) < 0) {
+			if (find_input_device("touchscreen interface", dev) < 0) {
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
 				perror ("Can't find touchscreen event device in /dev/input");
 				dlclose(handle);
@@ -539,11 +539,6 @@ void* CEventModule::CartridgeTask( void* arg )
 		// NO TSLIB was picked
 		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Found " FLAGS_NOTSLIB " -- tslib support disabled\n");
 	}
-	else if (GetPlatformName() == "Emerald")
-	{
-		// NO TSLIB on Emerald
-		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: Platform Emerald -- tslib support disabled\n");
-	}
 	else
 	{
 		// YES TSLIB was picked
@@ -564,7 +559,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	if (!use_tslib)
 	{
 		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on LF1000 touchscreen interface\n");
-		event_fd[last_fd].fd = open_input_device("touchscreen");
+		event_fd[last_fd].fd = open_input_device("touchscreen interface");
 		event_fd[last_fd].events = POLLIN;
 	}
 	if(event_fd[last_fd].fd >= 0)

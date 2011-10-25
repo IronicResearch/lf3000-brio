@@ -31559,3 +31559,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 10/25/11 11:36 AM
 4,549 ms. (Cumulative: 11,879,419 ms)
 
 ----------------
+Revision 9,529 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Identify correct touchscreen input driver name.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/25/11 1:39 PM
+1 changed, 0 added, 0 deleted.
+4,531 ms. (Cumulative: 11,884,013 ms)
+
+----------------
