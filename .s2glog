@@ -31569,3 +31569,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/25/11 1:39 PM
 4,531 ms. (Cumulative: 11,884,013 ms)
 
 ----------------
+Revision 9,530 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add support for YUYV422 packed video format selection.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/26/11 3:43 PM
+1 changed, 0 added, 0 deleted.
+4,911 ms. (Cumulative: 11,889,002 ms)
+
+----------------
