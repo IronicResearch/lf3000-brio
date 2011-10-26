@@ -222,6 +222,14 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 				vinfo[n].red.length = vinfo[n].transp.length = 8;
 				vinfo[n].transp.offset = 24;
 				break;
+			case kPixelFormatYUV420:
+				vinfo[n].nonstd &= ~(LF1000_NONSTD_FORMAT_MASK << LF1000_NONSTD_FORMAT);
+				vinfo[n].nonstd |= (LAYER_FORMAT_YUV420 << LF1000_NONSTD_FORMAT);
+				break;
+			case kPixelFormatYUYV422:
+				vinfo[n].nonstd &= ~(LF1000_NONSTD_FORMAT_MASK << LF1000_NONSTD_FORMAT);
+				vinfo[n].nonstd |= (LAYER_FORMAT_YUV422 << LF1000_NONSTD_FORMAT);
+				break;
 		}
 		vinfo[n].blue.offset  = 0;
 		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
