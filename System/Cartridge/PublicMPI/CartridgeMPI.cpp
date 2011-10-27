@@ -117,7 +117,7 @@ tCartridgeData CCartridgeMPI::GetCartridgeState() const
 
 //----------------------------------------------------------------------------
 // The Emerald OTP cart ID is 3 verus Didj OTP ID 7
-#define CART_TYPE_INFO  "/sys/devices/platform/lf1000-nand/cart_hotswap"	
+#define CART_TYPE_INFO  "/sys/devices/platform/lf2000-nand/cart_hotswap"
 enum eCartridgeType_ CCartridgeMPI::GetCartridgeType() const
 {
 	FILE *fp;
