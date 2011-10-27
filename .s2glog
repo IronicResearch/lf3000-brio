@@ -31579,3 +31579,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/26/11 3:43 PM
 4,911 ms. (Cumulative: 11,889,002 ms)
 
 ----------------
+Revision 9,531 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify accelerometer, touchscreen, power interfaces to query LF2000 sysfs paths.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/27/11 11:45 AM
+5 changed, 0 added, 0 deleted.
+4,922 ms. (Cumulative: 11,894,018 ms)
+
+----------------

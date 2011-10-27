@@ -68,7 +68,7 @@ CAccelerometerMessage::CAccelerometerMessage( const tAccelerometerData& data )
 {
 	gCachedData = data;
 	if (gbOneShot) {
-		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
+		FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/enable", "w");
 		if (fd != NULL) {
 			fprintf(fd, "%u\n", 0);
 			fclose(fd);
@@ -168,7 +168,7 @@ Boolean	CAccelerometerMPI::IsAccelerometerPresent()
 {
 	CDebugMPI dbg(kGroupAccelerometer);
 	struct stat stbuf;
-	int r = stat("/sys/devices/platform/lf1000-aclmtr/enable", &stbuf);
+	int r = stat("/sys/devices/platform/lf2000-aclmtr/enable", &stbuf);
 	dbg.DebugOut(kDbgLvlImportant, "IsAccelerometerPresent: %d\n", (r == 0));
 	return (r == 0) ? true : false;
 }
@@ -189,7 +189,7 @@ S32 CAccelerometerMPI::GetOrientation() const
 U32	CAccelerometerMPI::GetAccelerometerRate() const
 {
 	U32 rate = 0;
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/rate", "r");
+	FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/rate", "r");
 	if (fd != NULL) {
 		fscanf(fd, "%u\n", (unsigned int*)&rate);
 		fclose(fd);
@@ -201,7 +201,7 @@ U32	CAccelerometerMPI::GetAccelerometerRate() const
 //----------------------------------------------------------------------------
 tErrType CAccelerometerMPI::SetAccelerometerRate(U32 rate)
 {
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/rate", "w");
+	FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/rate", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);
 		fclose(fd);
@@ -215,12 +215,12 @@ tAccelerometerMode CAccelerometerMPI::GetAccelerometerMode() const
 {
 	int enable = 0;
 	int orient = 0;
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "r");
+	FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/enable", "r");
 	if (fd != NULL) {
 		fscanf(fd, "%u\n", &enable);
 		fclose(fd);
 	}
-	fd = fopen("/sys/devices/platform/lf1000-aclmtr/orient", "r");
+	fd = fopen("/sys/devices/platform/lf2000-aclmtr/orient", "r");
 	if (fd != NULL) {
 		fscanf(fd, "%u\n", &orient);
 		fclose(fd);
@@ -258,7 +258,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	}
 	
 	// Set enable and orient state
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/enable", "w");
+	FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/enable", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", enable);
 		fclose(fd);
@@ -266,7 +266,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	else
 		success = false;
 	
-	fd = fopen("/sys/devices/platform/lf1000-aclmtr/orient", "w");
+	fd = fopen("/sys/devices/platform/lf2000-aclmtr/orient", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", orient);
 		fclose(fd);
@@ -280,7 +280,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	
 	// Get initial x,y,z and orientation data if enable
 	if (enable) {
-		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/raw_xyz", "r");
+		FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/raw_xyz", "r");
 		if (fd != NULL) {
 			int x = 0, y = 0, z = 0;
 			fscanf(fd, "%d %d %d\n", &x, &y, &z);
@@ -291,7 +291,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 		}
 	}
 	if (orient) {
-		FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/raw_phi", "r");
+		FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/raw_phi", "r");
 		if (fd != NULL) {
 			int phi = 0;
 			fscanf(fd, "%d\n", &phi);
@@ -307,7 +307,7 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 tErrType CAccelerometerMPI::GetAccelerometerBias(S32& xoffset, S32& yoffset, S32& zoffset)
 {
 	//Read values directly from sysfs entry
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/bias", "r");
+	FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/bias", "r");
 	if( fd != NULL ) {
 		fscanf(fd, "%d %d %d", (int*)&xoffset, (int*)&yoffset, (int*)&zoffset);
 		fclose(fd);
@@ -319,7 +319,7 @@ tErrType CAccelerometerMPI::GetAccelerometerBias(S32& xoffset, S32& yoffset, S32
 tErrType CAccelerometerMPI::SetAccelerometerBias(S32 xoffset, S32 yoffset, S32 zoffset)
 {
 	//Write values directly to sysfs entry
-	FILE* fd = fopen("/sys/devices/platform/lf1000-aclmtr/bias", "w");
+	FILE* fd = fopen("/sys/devices/platform/lf2000-aclmtr/bias", "w");
 	if( fd != NULL ) {
 		fprintf(fd, "%d %d %d", (int)xoffset, (int)yoffset, (int)zoffset);
 		fclose(fd);

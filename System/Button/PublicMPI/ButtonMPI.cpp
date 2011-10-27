@@ -171,7 +171,7 @@ U32	CButtonMPI::GetTouchRate() const
 {
 #ifndef EMULATION
 	U32 	rate = 0;
-	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz", "r");
+	FILE*	fd = fopen("/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz", "r");
 	if (fd != NULL) {
 		fscanf(fd, "%u\n", (unsigned int*)&rate);
 		fclose(fd);
@@ -186,7 +186,7 @@ U32	CButtonMPI::GetTouchRate() const
 tErrType CButtonMPI::SetTouchRate(U32 rate)
 {
 #if 1 // Re-Enabled for Madrid.  This is to fix TTPro 527.  // disabled per TTP 2419
-	FILE*	fd = fopen("/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz", "w");
+	FILE*	fd = fopen("/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz", "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);
 		fclose(fd);
@@ -248,13 +248,13 @@ U32	CButtonMPI::GetTouchParam(tTouchParam param) const
 	CPath sysfspath;
 	switch (param) {
 	case kTouchParamSampleRate:
-		sysfspath = "/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz";
+		sysfspath = "/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz";
 		break;
 	case kTouchParamDebounceDown:
-		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_down";
+		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_down";
 		break;
 	case kTouchParamDebounceUp:
-		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_up";
+		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_up";
 		break;
 	default:
 		return 0;
@@ -273,13 +273,13 @@ tErrType CButtonMPI::SetTouchParam(tTouchParam param, U32 value)
 	CPath sysfspath;
 	switch (param) {
 	case kTouchParamSampleRate:
-		sysfspath = "/sys/devices/platform/lf1000-touchscreen/sample_rate_in_hz";
+		sysfspath = "/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz";
 		break;
 	case kTouchParamDebounceDown:
-		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_down";
+		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_down";
 		break;
 	case kTouchParamDebounceUp:
-		sysfspath = "/sys/devices/platform/lf1000-touchscreen/debounce_in_samples_up";
+		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_up";
 		break;
 	default:
 		return kNoImplErr;

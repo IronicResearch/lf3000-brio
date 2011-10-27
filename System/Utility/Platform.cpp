@@ -68,12 +68,12 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	switch (caps)
 	{
 	case kCapsTouchscreen:
-		return (0 == stat("/sys/devices/platform/lf1000-touchscreen", &stbuf));
+		return (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
 	case kCapsCamera:
-		return ((0 == stat("/sys/devices/platform/lf1000-ohci/usb1", &stbuf)) ||
+		return ((0 == stat("/sys/devices/platform/nx-ohci.0/usb1", &stbuf)) ||
 				(0 == stat("/sys/devices/platform/vip.0", &stbuf)) );
 	case kCapsAccelerometer:
-		return (0 == stat("/sys/devices/platform/lf1000-aclmtr/enable", &stbuf));
+		return (0 == stat("/sys/devices/platform/lf2000-aclmtr/enable", &stbuf));
 	}
 	return false;
 }
