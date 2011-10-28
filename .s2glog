@@ -31589,3 +31589,15 @@ By Dave Milici (dmilici@leapfrog.com) on 10/27/11 11:45 AM
 4,922 ms. (Cumulative: 11,894,018 ms)
 
 ----------------
+Revision 9,532 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,533 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally handle tick delay only if acclerometer rate is valid.
+Otherwise caught by divide-by-zero exception if no accelerometer present.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/27/11 5:00 PM
+1 changed, 0 added, 0 deleted.
+4,875 ms. (Cumulative: 11,899,018 ms)
+
+----------------
