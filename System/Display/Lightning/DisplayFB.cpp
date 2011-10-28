@@ -161,7 +161,7 @@ void CDisplayFB::InitModule()
 	gBufListUsed.clear();
 	gBufListFree.clear();
 	gMarkBufStart = 0;
-	gMarkBufEnd   = finfo[YUVFB].smem_len;
+	gMarkBufEnd   = finfo[RGBFB].smem_len + finfo[OGLFB].smem_len + finfo[YUVFB].smem_len;
 }
 
 //----------------------------------------------------------------------------
@@ -980,7 +980,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 			kernel_.UnlockMutex(gListMutex);
 			return false;
 		}
-		pdc->offset = gMarkBufEnd - bufsize;
+		pdc->offset = gMarkBufEnd - bufsize - finfo[RGBFB].smem_len - finfo[OGLFB].smem_len;
 		pdc->pBuffer += pdc->offset;
 		gMarkBufEnd -= bufsize;
 	}
