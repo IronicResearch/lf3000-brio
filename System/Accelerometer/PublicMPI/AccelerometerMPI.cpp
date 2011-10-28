@@ -276,7 +276,8 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	
 	//Wait till driver updates data (at least one tick)
 	U32 rate = GetAccelerometerRate();
-	usleep( 1000000 / rate );
+	if (rate)
+		usleep( 1000000 / rate );
 	
 	// Get initial x,y,z and orientation data if enable
 	if (enable) {
