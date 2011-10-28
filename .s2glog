@@ -31601,3 +31601,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/27/11 5:00 PM
 4,875 ms. (Cumulative: 11,899,018 ms)
 
 ----------------
+Revision 9,534 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixup Brio memory allocator bookeeping to account for separate framebuffer allocations.
+Otherwise some video context requests would fail prematurely.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/27/11 6:37 PM
+1 changed, 0 added, 0 deleted.
+4,935 ms. (Cumulative: 11,904,047 ms)
+
+----------------
