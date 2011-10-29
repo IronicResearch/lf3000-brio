@@ -234,6 +234,11 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 		vinfo[n].blue.offset  = 0;
 		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
 		vinfo[n].red.offset   = vinfo[n].green.offset + vinfo[n].green.length;
+		// Swizzle RGB for OGL
+		if (isBlockAddr) {
+			vinfo[n].blue.offset  = vinfo[n].red.offset;
+			vinfo[n].red.offset   = 0;
+		}
 		// Block addressing mode needed for OGL framebuffer context?
 		if (isBlockAddr)
 			vinfo[n].nonstd |= (1<<23);
@@ -276,8 +281,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
 	// FIXME: RGB lower layer needed when viewport active
 	// FIXME: Switch RGB layer prior to isUnderlay setting
-	if (n == RGBFB && (dxres > 0 || dyres > 0))
-		n = OGLFB;
+//	if (n == RGBFB && (dxres > 0 || dyres > 0))
+//		n = OGLFB;
 	
 	// Block addressing mode needed for OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
@@ -824,13 +829,14 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
 #else
 	hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, NULL);
+	SetPixelFormat(n, vxres, vyres, 32, kPixelFormatARGB8888, true); 	// swizzle RGB
 #endif
 
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vinfo[n].xres;
 	pOglCtx->height 	= vinfo[n].yres;
 //	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
-	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
+//	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
 	pOglCtx->hndlDisplay = hogl;
 
 	// Reset initial HW context state
