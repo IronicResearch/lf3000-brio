@@ -26,6 +26,12 @@
 #include <signal.h>
 #endif
 
+// LF2000
+typedef struct {
+	int	width;
+	int height;
+} WindowType;
+
 #ifdef  EMULATION
 //============================================================================
 // Stub function to allow emulation builds to link
@@ -56,7 +62,8 @@ namespace
 	tOpenGLContext		ctx = {NULL, 0, 0, 0, 0, 0, 0};
 	CDisplayMPI*		dispmgr = 0;
 	NativeDisplayType	display = 0;	// FIXME typedef change
-	NativeWindowType	hwnd = 0;
+//	NativeWindowType	hwnd = 0;
+	WindowType			hwnd;			// FIXME LF2000 type
 	bool				isEnabled = false;
 	bool				isHandled = false;
 	
@@ -239,6 +246,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	ctx.eglWindow = &hwnd; // something non-NULL 
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
+	hwnd.width = ctx.width;
+	hwnd.height = ctx.height;
 #endif
 #else
 	/*
