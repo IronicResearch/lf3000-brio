@@ -31624,3 +31624,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/28/11 6:57 PM
 4,797 ms. (Cumulative: 11,908,938 ms)
 
 ----------------
+Revision 9,536 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify OGL context to default to display ID 1 for lower RGB layer.
+DisplayMPI can be modified to select OGL display for either RGB layer.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/31/11 1:02 PM
+2 changed, 0 added, 0 deleted.
+5,110 ms. (Cumulative: 11,914,142 ms)
+
+----------------

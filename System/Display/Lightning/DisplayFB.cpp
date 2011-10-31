@@ -281,8 +281,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
 	// FIXME: RGB lower layer needed when viewport active
 	// FIXME: Switch RGB layer prior to isUnderlay setting
-//	if (n == RGBFB && (dxres > 0 || dyres > 0))
-//		n = OGLFB;
+	if (n == RGBFB && (dxres > 0 || dyres > 0))
+		n = OGLFB;
 	
 	// Block addressing mode needed for OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
