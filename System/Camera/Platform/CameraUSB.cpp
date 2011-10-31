@@ -164,8 +164,10 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 //============================================================================
 CUSBCameraModule::CUSBCameraModule()
 {
+	tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};
 	tUSBDeviceData		usb_data;
 
+	camCtx_.mode = QVGA;
 	sysfs.clear();
 
 	// Enable USB host port

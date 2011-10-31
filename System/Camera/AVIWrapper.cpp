@@ -12,6 +12,7 @@
 //
 //==============================================================================
 
+#include <CameraPriv.h>
 #include <AVIWrapper.h>
 
 #include <fcntl.h>
@@ -68,7 +69,9 @@ avi_t* AVI_open_output_file(char * filename, bool audio)
 	// Init AVI file, video & audio config pending
 	av_set_parameters(avi->pFormatCtx, NULL);
 	avi->bVideoConfig = avi->bAudioConfig = false;
-	
+	avi->pEncoderBuf = NULL;
+	avi->iEncoderLength = 0;
+
 	return avi;
 }
 
@@ -86,8 +89,10 @@ void fixup_header(avi_t *avi)
 	
 	uint32_t scale = avi->pVideoCodecCtx->time_base.num;
 	uint32_t rate = avi->pVideoCodecCtx->time_base.den;
-	uint32_t time = 1000000 * avi->pVideoCodecCtx->time_base.num / avi->pVideoCodecCtx->time_base.den;
-	
+	uint32_t time = avi->pVideoCodecCtx->time_base.den ?
+			1000000 * avi->pVideoCodecCtx->time_base.num / avi->pVideoCodecCtx->time_base.den
+			: 0;
+
 	FILE* fp = fopen(avi->pFormatCtx->filename, "r+");
 	fseek(fp, 0, SEEK_END);
 	long eof = ftell(fp);
@@ -121,7 +126,7 @@ void write_header(avi_t *avi, bool rewrite)
 }
 
 //----------------------------------------------------------------------------
-void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *compressor)
+void AVI_set_video(avi_t *AVI, int width, int height, double fps, const __u32 camfmt)
 {
 	// Rewrite AVI header with actual FPS rate if previously set
 	if (AVI->bVideoConfig && AVI->bAudioConfig) {
@@ -144,7 +149,21 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *co
 	c->time_base.den 	= (int)fps;
 	c->time_base.num 	= 1;
 	c->gop_size 		= 1; // intraframe
-	c->pix_fmt 			= PIX_FMT_YUVJ422P;
+
+	// FIXME: incoming images have clamped color space, codec requires full gamut
+	// use libavfilter to adjust colorspace, instead of spoofing it here?
+	switch(camfmt) {
+	case V4L2_PIX_FMT_YUYV:
+		c->pix_fmt 		= PIX_FMT_YUYV422;
+		break;
+	case V4L2_PIX_FMT_YUV420:
+		c->pix_fmt 		= PIX_FMT_YUVJ420P;
+		break;
+	case V4L2_PIX_FMT_YUV422P:
+		c->pix_fmt		= PIX_FMT_YUVJ422P;
+		break;
+	}
+
 	// some formats want stream headers to be separate
 	if (AVI->pFormatCtx->oformat->flags & AVFMT_GLOBALHEADER)
 		c->flags |= CODEC_FLAG_GLOBAL_HEADER;
@@ -152,6 +171,41 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *co
 	int r = avcodec_open(AVI->pVideoCodecCtx = c, AVI->pVideoCodec);
 	if (r < 0)
 		return;
+
+	// Encoding will be required
+	if(camfmt != V4L2_PIX_FMT_MJPEG) {
+		AVI->pVideoFrame = avcodec_alloc_frame();
+		if(AVI->pVideoFrame == NULL)
+			return;
+
+		// FIXME proper size estimate
+		AVI->iEncoderLength = c->width * c->height * 3;
+		AVI->pEncoderBuf = (uint8_t*)av_malloc(AVI->iEncoderLength);
+		if(AVI->pEncoderBuf == NULL)
+			return;
+
+		// FIXME magic numbers
+		switch(camfmt) {
+		case V4L2_PIX_FMT_YUYV:
+			AVI->pVideoFrame->linesize[0] = c->width;
+
+			break;
+		case V4L2_PIX_FMT_YUV420:
+			AVI->pVideoFrame->linesize[0] = 4096;
+			AVI->pVideoFrame->linesize[1] = 4096;
+			AVI->pVideoFrame->linesize[2] = 4096;
+
+			break;
+		case V4L2_PIX_FMT_YUV422P:
+			AVI->pVideoFrame->linesize[0] = 4096;
+			AVI->pVideoFrame->linesize[1] = 4096;
+			AVI->pVideoFrame->linesize[2] = 4096;
+
+			break;
+		}
+	}
+	else
+		AVI->pVideoFrame = NULL;
 
 	// Write initial AVI header with nominal audio & video settings
 	AVI->bVideoConfig = true;
@@ -190,23 +244,52 @@ void AVI_set_audio(avi_t *AVI, int channels, long rate, int bits, int format, lo
 int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 {
 	AVPacket pkt;
-	av_init_packet(&pkt);
-	
-	// Supplied frame is already in JPEG format
-	//	AVStream *st		= AVI->pVideoStrm;
-	//	AVCodecContext *c 	= AVI->pVideoStrm->codec;
-	
-	//	pkt.size = avcodec_encode_video(c, video_outbuf, video_outbuf_size, picture);
-	//	if (c->coded_frame->pts != AV_NOPTS_VALUE)
-	//		pkt.pts = av_rescale_q(c->coded_frame->pts, c->time_base, st->time_base);
-	//	if (c->coded_frame->key_frame)
-	//		pkt.flags |= PKT_FLAG_KEY;
+	int out_size;
 
-	pkt.flags 			|= PKT_FLAG_KEY;
+	av_init_packet(&pkt);
+
+	// Encode frame
+	if(AVI->pVideoFrame)
+	{
+		AVStream *st		= AVI->pVideoStrm;
+		AVCodecContext *c 	= AVI->pVideoStrm->codec;
+		AVFrame *pict		= AVI->pVideoFrame;
+
+		// FIXME ???, magic numbers
+		switch(c->pix_fmt) {
+		case PIX_FMT_YUYV422:
+			pict->data[0] = (uint8_t *)data;
+			break;
+		case PIX_FMT_YUVJ420P:
+			pict->data[0] = (uint8_t *)data;
+			pict->data[1] = pict->data[0] + 4096/2;
+			pict->data[2] = pict->data[1] + 4096 + c->height/2;
+			break;
+		case PIX_FMT_YUVJ422P:
+			pict->data[0] = (uint8_t *)data;
+			pict->data[1] = pict->data[0] + 4096/2;
+			pict->data[2] = pict->data[1] + 4096/4;
+			break;
+		}
+
+		pkt.size = avcodec_encode_video(c, AVI->pEncoderBuf, AVI->iEncoderLength, pict);
+
+		if (c->coded_frame->pts != AV_NOPTS_VALUE)
+			pkt.pts = av_rescale_q(c->coded_frame->pts, c->time_base, st->time_base);
+		if (c->coded_frame->key_frame)
+			pkt.flags |= PKT_FLAG_KEY;
+
+		pkt.data = AVI->pEncoderBuf;
+	}
+	else
+	{
+		pkt.flags 			|= PKT_FLAG_KEY;
+		pkt.data 			= (uint8_t*)data;
+		pkt.size 			= bytes;
+		pkt.pts				= keyframe; // time_base units
+	}
+
 	pkt.stream_index 	= AVI->iVideoStream;
-	pkt.data 			= (uint8_t*)data;
-	pkt.size 			= bytes;
-	pkt.pts				= keyframe; // time_base units
 
 	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
 	
@@ -267,6 +350,10 @@ int  AVI_close(avi_t *AVI)
 	// Release resources
 	if(AVI->bAudioPresent)
 		av_free(AVI->pAudioStrm);
+	if(AVI->pVideoFrame)
+		av_free(AVI->pVideoFrame);
+	if(AVI->pEncoderBuf)
+		av_free(AVI->pEncoderBuf);
 	av_free(AVI->pVideoStrm);
 	av_free(AVI->pFormatCtx);
 	delete AVI;

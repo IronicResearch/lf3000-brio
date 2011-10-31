@@ -103,6 +103,7 @@ enum tCaptureFormat {
 	kCaptureFormatError = 0,
 	kCaptureFormatMJPEG,
 	kCaptureFormatRAWYUYV,
+	kCaptureFormatYUV420,
 };
 
 // Three components: image format, image resolution, and video frame rate, determine
@@ -386,6 +387,10 @@ class CVIPCameraModule : public CCameraModule {
 public:
 	virtual tVersion		GetModuleVersion() const;
 	virtual const CString*	GetModuleName() const;
+
+	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
+													IEventListener * pListener, const U32 maxLength, const Boolean audio);
+	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 
 private:
 private:

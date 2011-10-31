@@ -50,6 +50,8 @@ typedef struct
 	AVCodec*			pAudioCodec;		// audio codec
 	AVFrame*			pVideoFrame;		// video frame buffer
 	int16_t*			pAudioFrame;		// audio frame buffer
+	uint8_t*			pEncoderBuf;		// encoder frame buffer
+	int					iEncoderLength;		// length of encoder buffer
     int					iVideoStream;		// index of video stream
     int					iAudioStream;		// index of audio stream
     bool				bVideoConfig;		// video config set?
@@ -62,7 +64,7 @@ typedef struct
 // Functions for compatibility with avilib
 //==============================================================================
 avi_t* AVI_open_output_file(char * filename, bool audio);
-void AVI_set_video(avi_t *AVI, int width, int height, double fps, const char *compressor);
+void AVI_set_video(avi_t *AVI, int width, int height, double fps, const __u32 camfmt);
 void AVI_set_audio(avi_t *AVI, int channels, long rate, int bits, int format, long mp3rate);
 int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe);
 int  AVI_write_audio(avi_t *AVI, char *data, long bytes);
