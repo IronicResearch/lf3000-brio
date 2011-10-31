@@ -152,6 +152,8 @@ void* CameraTaskMain(void* arg)
 	bool				bQueued = false;
 	int					viewframe = 0;
 
+	U32					fourcc;
+
 	// these are needed to stop the recording asynchronously
 	// globals are not ideal, but the timer callback doesn't take a custom parameter
 	cam 	= pCtx->module;
@@ -169,8 +171,20 @@ void* CameraTaskMain(void* arg)
 
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
 
+		switch(pCtx->mode.pixelformat)
+		{
+		case kCaptureFormatMJPEG:
+			fourcc = V4L2_PIX_FMT_MJPEG;
+			break;
+		case kCaptureFormatRAWYUYV:
+			fourcc = V4L2_PIX_FMT_YUYV;
+			break;
+		case kCaptureFormatYUV420:
+			fourcc = V4L2_PIX_FMT_YUV420;
+			break;
+		}
 		// fps will be reset upon completion
-		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, "MJPG");
+		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, fourcc);
 		if(pCtx->bAudio)
 			AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
 	}
@@ -390,7 +404,7 @@ void* CameraTaskMain(void* arg)
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
 
-		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, "MJPG");
+		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, V4L2_PIX_FMT_MJPEG);
 		AVI_close(avi);
 	}
 
@@ -487,6 +501,8 @@ tErrType InitCameraTask(tCameraContext* pCtx)
 	prop.TaskMainFcn			= (void* (*)(void*))CameraTaskMain;
 	prop.taskMainArgCount		= 1;
 	prop.pTaskMainArgValues		= pCtx;
+	// FIXME: magic number.  Encoding will fail with stack overflow with default stack size
+	prop.stackSize				= 4194304;
 
 	r = kernel.CreateTask( hndl, prop, NULL );
 	dbg.Assert( kNoErr == r, "InitCameraTask: Failed to create CameraTask!\n" );
@@ -497,11 +513,14 @@ tErrType InitCameraTask(tCameraContext* pCtx)
 		kernel.TaskSleep(1);
 
 #if USE_RENDER_THREAD
-	// Create additional thread just for rendering
-	prop.TaskMainFcn			= (void* (*)(void*))CameraTaskRender;
-	r = kernel.CreateTask( hndl, prop, NULL );
-	dbg.Assert( kNoErr == r, "InitCameraTask: Failed to create CameraTaskRender!\n" );
-	hRenderThread = hndl;
+	if(pCtx->surf)
+	{
+		// Create additional thread just for rendering
+		prop.TaskMainFcn			= (void* (*)(void*))CameraTaskRender;
+		r = kernel.CreateTask( hndl, prop, NULL );
+		dbg.Assert( kNoErr == r, "InitCameraTask: Failed to create CameraTaskRender!\n" );
+		hRenderThread = hndl;
+	}
 #endif
 	
 	bInited = true;
@@ -526,8 +545,11 @@ tErrType DeInitCameraTask(tCameraContext* pCtx)
 		kernel.TaskSleep(10);
 
 #if USE_RENDER_THREAD
-	kernel.JoinTask(hRenderThread, retval);
-	hRenderThread = kNull;
+	if(hRenderThread != kNull)
+	{
+		kernel.JoinTask(hRenderThread, retval);
+		hRenderThread = kNull;
+	}
 #endif
 	
 	if (!bStopping)

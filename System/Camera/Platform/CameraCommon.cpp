@@ -740,6 +740,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		return false;
 	}
 
+	pCamCtx->numBufs = rb.count;
 	pCamCtx->bufs = new void*[pCamCtx->numBufs];
 	memset(pCamCtx->bufs, 0, pCamCtx->numBufs * sizeof(void*));
 
@@ -980,6 +981,9 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 		break;
 	case kCaptureFormatRAWYUYV:
 		fmt.fmt.pix.pixelformat	= V4L2_PIX_FMT_YUYV;
+		break;
+	case kCaptureFormatYUV420:
+		fmt.fmt.pix.pixelformat	= V4L2_PIX_FMT_YUV420;
 		break;
 	}
 
@@ -1723,7 +1727,6 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
 	CPath fpath = path;
-	struct tCaptureMode QVGA = {kCaptureFormatMJPEG, 320, 240, 1, 15};  // "fps" fields misnamed
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 	struct statvfs buf;
 	U64 length;
@@ -1782,7 +1785,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	if(!SetCameraMode(&QVGA))
+	if(!SetCameraMode(&camCtx_.mode))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: mode setting failed for %s\n", camCtx_.file);
 		CAMERA_UNLOCK;

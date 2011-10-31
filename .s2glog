@@ -31645,3 +31645,19 @@ By Dave Milici (dmilici@leapfrog.com) on 10/31/11 2:07 PM
 5,031 ms. (Cumulative: 11,919,267 ms)
 
 ----------------
+Revision 9,538 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Further LF2000 Camera support:
+-viewfinder via direct-to-framebuffer overlay
+-MJPEG capture encoding using libav
+-FIXME:
+ -compressed frames have incomplete/incorrect chrominance
+ -colorspace in libav
+ -stack size in camera thread
+ -setting default modes
+
+By jeno (jeno@leapfrog.com) on 10/31/11 4:39 PM
+8 changed, 0 added, 0 deleted.
+4,766 ms. (Cumulative: 11,924,127 ms)
+
+----------------
