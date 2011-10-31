@@ -61,7 +61,7 @@ namespace
 	//--------------------------------------------------------------------------
 	tOpenGLContext		ctx = {NULL, 0, 0, 0, 0, 0, 0};
 	CDisplayMPI*		dispmgr = 0;
-	NativeDisplayType	display = 1; // 0;	// FIXME typedef change
+	NativeDisplayType	display = 0;	// FIXME typedef change
 //	NativeWindowType	hwnd = 0;
 	WindowType			hwnd;			// FIXME LF2000 type
 	bool				isEnabled = false;
