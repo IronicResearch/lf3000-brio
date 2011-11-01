@@ -31661,3 +31661,13 @@ By jeno (jeno@leapfrog.com) on 10/31/11 4:39 PM
 4,766 ms. (Cumulative: 11,924,127 ms)
 
 ----------------
+Revision 9,539 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Unit tests for VIP hardware.
+
+
+By jeno (jeno@leapfrog.com) on 10/31/11 5:21 PM
+0 changed, 1 added, 0 deleted.
+4,531 ms. (Cumulative: 11,928,752 ms)
+
+----------------
