@@ -31671,3 +31671,13 @@ By jeno (jeno@leapfrog.com) on 10/31/11 5:21 PM
 4,531 ms. (Cumulative: 11,928,752 ms)
 
 ----------------
+Revision 9,540 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,541 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Proper chrominance offset
+
+By jeno (jeno@leapfrog.com) on 11/1/11 1:50 PM
+1 changed, 0 added, 0 deleted.
+4,498 ms. (Cumulative: 11,933,344 ms)
+
+----------------

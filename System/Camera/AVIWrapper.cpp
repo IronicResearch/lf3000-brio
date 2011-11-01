@@ -263,7 +263,7 @@ int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 		case PIX_FMT_YUVJ420P:
 			pict->data[0] = (uint8_t *)data;
 			pict->data[1] = pict->data[0] + 4096/2;
-			pict->data[2] = pict->data[1] + 4096 + c->height/2;
+			pict->data[2] = pict->data[1] + 4096 * c->height/2;
 			break;
 		case PIX_FMT_YUVJ422P:
 			pict->data[0] = (uint8_t *)data;
