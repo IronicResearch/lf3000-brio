@@ -31681,3 +31681,14 @@ By jeno (jeno@leapfrog.com) on 11/1/11 1:50 PM
 4,498 ms. (Cumulative: 11,933,344 ms)
 
 ----------------
+Revision 9,542 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,543 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify OGL context to use lower RGB layer, whether fullscreen or viewport.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/1/11 7:06 PM
+1 changed, 0 added, 0 deleted.
+4,563 ms. (Cumulative: 11,938,001 ms)
+
+----------------
