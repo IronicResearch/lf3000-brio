@@ -274,7 +274,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}		
 	
 	// OGL framebuffer context?
-	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
+		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
 		n = OGLFB;
 
 	// Update dxres && dyres in case someone called SetViewPort without calling GetScreenStats
@@ -285,7 +286,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		n = OGLFB;
 	
 	// Block addressing mode needed for OGL framebuffer context?
-	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d)
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
+		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
 	else
 		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
@@ -828,7 +830,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pmem2d = (U8*)pmem2d + 0x20000000;
 	hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
 #else
-	hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, NULL);
+	hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, fbmem[n]);
 	SetPixelFormat(n, vxres, vyres, 32, kPixelFormatARGB8888, true); 	// swizzle RGB
 #endif
 
