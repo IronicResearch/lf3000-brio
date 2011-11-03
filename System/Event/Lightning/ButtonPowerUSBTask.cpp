@@ -287,16 +287,25 @@ namespace
 		power.Shutdown();
 		exit(kKernelExitShutdown);
 	}
+}
 
 	//----------------------------------------------------------------------------
 	// Support for tslib touchscreen filter loading on demand
 	//----------------------------------------------------------------------------
-	bool LoadTSLib(CEventModule* pThis, void** phandle, struct tsdev** ptsl)
+	bool LoadTSLib(CEventModule* pThis, tHndl* phandle, struct tsdev** ptsl)
 	{
-		void *handle = NULL;
-		struct tsdev* tsl = NULL;
+		static tHndl handle = 0;
+		static struct tsdev* tsl = NULL;
+		
+		CKernelMPI kernel;
 
-		handle = dlopen("libts.so", RTLD_NOW | RTLD_GLOBAL);
+		if (use_tslib && handle && tsl) {
+			*phandle = handle;
+			*ptsl = tsl;
+			return use_tslib;
+		}
+
+		handle = kernel.LoadModule("libts.so", RTLD_NOW | RTLD_GLOBAL);
 		if (!handle)
 		{
 			pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't dlopen libts.so\n");
@@ -305,15 +314,15 @@ namespace
 		{
 			// Resolve the 4 symbols we want
 			ts_open = (struct tsdev *(*)(const char *, int))
-				dlsym(handle, "ts_open");
-			ts_config = (int (*)(struct tsdev *)) dlsym(handle, "ts_config");
-			ts_fd = (int (*)(struct tsdev *)) dlsym(handle, "ts_fd");
-			ts_read = (int (*)(struct tsdev *, struct ts_sample *, int)) dlsym(handle, "ts_read");
-			ts_close = (int (*)(struct tsdev *)) dlsym(handle, "ts_close");
+				kernel.RetrieveSymbolFromModule(handle, "ts_open");
+			ts_config = (int (*)(struct tsdev *)) kernel.RetrieveSymbolFromModule(handle, "ts_config");
+			ts_fd = (int (*)(struct tsdev *)) kernel.RetrieveSymbolFromModule(handle, "ts_fd");
+			ts_read = (int (*)(struct tsdev *, struct ts_sample *, int)) kernel.RetrieveSymbolFromModule(handle, "ts_read");
+			ts_close = (int (*)(struct tsdev *)) kernel.RetrieveSymbolFromModule(handle, "ts_close");
 			if (!ts_open || !ts_config || !ts_fd || !ts_read || !ts_close)
 			{
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: can't resolve symbols in tslib.so\n");
-				dlclose(handle);
+				kernel.UnloadModule(handle);
 			}
 			else
 			{
@@ -329,7 +338,7 @@ namespace
 			if (find_input_device("touchscreen interface", dev) < 0) {
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
 				perror ("Can't find touchscreen event device in /dev/input");
-				dlclose(handle);
+				kernel.UnloadModule(handle);
 				use_tslib = false;
 				break;
 			}
@@ -337,7 +346,7 @@ namespace
 			if (!tsl) {
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_open failed\n");
 				perror("ts_open");
-				dlclose(handle);
+				kernel.UnloadModule(handle);
 				use_tslib = false;
 				break;
 			}
@@ -345,7 +354,7 @@ namespace
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: ts_config failed\n");
 				perror("ts_config");
 				ts_close(tsl);
-				dlclose(handle);
+				kernel.UnloadModule(handle);
 				use_tslib = false;
 				tsl = NULL;
 				break;
@@ -359,13 +368,12 @@ namespace
 			break;
 		}
 
-		pThis->debug_.DebugOut(kDbgLvlValuable, "%s: use_tslib=%d, handle=%p, tsl=%p, fd=%d\n", __FUNCTION__, use_tslib, handle, tsl, (tsl) ? ts_fd(tsl) : 0);
+		pThis->debug_.DebugOut(kDbgLvlValuable, "%s: use_tslib=%d, handle=%p, tsl=%p, fd=%d\n", __FUNCTION__, use_tslib, (void*)handle, tsl, (tsl) ? ts_fd(tsl) : 0);
 
 		*phandle = handle;
 		*ptsl = tsl;
 		return use_tslib;
 	}
-}
 
 #define CART_SOCK        "/tmp/cart_events_socket"
 //============================================================================
@@ -532,7 +540,7 @@ void* CEventModule::CartridgeTask( void* arg )
 
 	use_tslib = false;
 	struct stat st;
-	void *handle = NULL;
+	tHndl handle;
 	struct tsdev *tsl = NULL;
 	if(stat(FLAGS_NOTSLIB, &st) == 0) /* file exists */
 	{
@@ -860,7 +868,8 @@ void* CEventModule::CartridgeTask( void* arg )
 	// close tslib if in use
 	if (use_tslib) {
 		ts_close(tsl);
-		dlclose(handle);
+		CKernelMPI kernel;
+		kernel.UnloadModule(handle);
 	}
 	
 	for(last_fd--; last_fd >=0; --last_fd)

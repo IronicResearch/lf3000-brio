@@ -596,7 +596,7 @@ public:
 	void testPauseResumeCallback( )
 	{
 		tAudioID 		id;
-		tAudioPayload	payload = 32; // msec
+		tAudioPayload	payload = 64; // msec (min 8K buffer)
 		PRINT_TEST_NAME();
 
 		numTimeEvents = 0;
@@ -610,10 +610,11 @@ public:
 
 		// No event callbacks should occur while players are paused
 		pAudioMPI_->PauseAllAudio();
+		pKernelMPI_->TaskSleep(100);
 		numTimeEvents = 0;
 		for (int i = 0; i < 5; i++) {
 			pKernelMPI_->TaskSleep(100);
-			TS_ASSERT( numTimeEvents == 0 );
+			TS_ASSERT_EQUALS( numTimeEvents , 0 );
 		}
 		
 		pAudioMPI_->ResumeAllAudio();
@@ -775,7 +776,7 @@ public:
 		// Launch 3 players
 		for( i=0; i<myAudioMaxVorbisStreams; i++)
 		{
-			id = pAudioMPI_->StartAudio("one-second.ogg", kVolume, priority--,
+			id = pAudioMPI_->StartAudio("Vivaldi-3sec.ogg", kVolume, priority--,
 										kPan, NULL, kPayload, kFlags);
 			TS_ASSERT(id != kNoAudioID);
 			pKernelMPI_->TaskSleep(100);
@@ -888,7 +889,7 @@ public:
 
 		// Launch max players
 		for (i=0; i < myAudioMaxRawStreams; i++) {
-			id = pAudioMPI_->StartAudio("two-second.wav", kVolume, priority--,
+			id = pAudioMPI_->StartAudio("Vivaldi-3sec.wav", kVolume, priority--,
 									kPan, NULL, kPayload, kFlags);
 			TS_ASSERT(id != kNoAudioID);
 			pKernelMPI_->TaskSleep(50);

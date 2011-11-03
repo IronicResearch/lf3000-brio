@@ -533,6 +533,8 @@ void CAudioMixer::HandlePlayerEvent( CAudioPlayer *pPlayer, tEventType type )
 				pEventMPI_->PostEvent(event, 128, listener);
 			}
 		}
+		if (pPlayer->IsSeeked())
+			return;
 #if 0	// FIXME/dm: Player destruction at this point breaks Nicktoons functionality with GM Brio 3011
 		// Defer player destruction.
 		CMixerMessage event(pPlayer, kAudioCompletedEvent);
@@ -702,7 +704,7 @@ CStream *CAudioMixer::FindKillableStream(ConditionFunction *cond,
 			pStream = &pStreams_[i];
 			CAudioPlayer *pPlayer = pStream->GetPlayer();
 			// 1st candidate for killable stream is dead player
-			if (pPlayer && pPlayer->IsDone())
+			if (pPlayer && pPlayer->IsDone() && !pPlayer->IsSeeked())
 				return pStream;
 			if(pPlayer)
 				// Only add non-null players that meet the condition, if there
@@ -1234,7 +1236,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 				{
 					//If we're freeing the stream, pad the output and send the
 					//done message
-					memset(pStreamBuf_ + zeroOffset, 0, zeroSamples*sizeof(S16));
+					if (zeroSamples)
+						memset(pStreamBuf_ + zeroOffset, 0, zeroSamples*sizeof(S16));
 					HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
 #if 0 				// FIXME/dm: Stream cannot be released because player is not destroyed above
 					pStream->Release(true);

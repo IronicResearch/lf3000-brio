@@ -206,7 +206,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	kernel_.UnlockMutex(gListMutex);
 
 	// Default Z order is on top
-	dc->isUnderlay = false;
+	dc->initialZOrder = kDisplayOnTop;
 
 	// Register HW or emulation layer
 	RegisterLayer(hndl, xPos, yPos);
@@ -264,7 +264,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	kernel_.UnlockMutex(gListMutex);
 
 	// Default Z order is on top
-	dc->isUnderlay = (kDisplayOnBottom == initialZOrder);
+	dc->initialZOrder = initialZOrder;
 
 	// Register HW or emulation layer
 	RegisterLayer(hndl, xPos, yPos);

@@ -24,6 +24,7 @@
 #include <EventMPI.h>
 #include <EventPriv.h>
 #include <string.h>
+#include <sys/stat.h>
 
 LF_BEGIN_BRIO_NAMESPACE() 
 
@@ -217,6 +218,16 @@ public:
 			kernel_.TaskSleep(10);
 		}
 
+#ifndef EMULATION
+		// Load tslib pre-emptively during module creation to serialize plugin loading
+		struct stat stbf;
+		if (stat("/flags/notslib", &stbf) != 0) {
+			tHndl handle;
+			struct tsdev* tsl = NULL;
+			LoadTSLib(pEventModule_, &handle, &tsl);
+		}
+#endif
+
 		// Create additional Button/Power/USB driver polling thread
 		properties.TaskMainFcn = CEventModule::ButtonPowerUSBTask;
 		properties.pTaskMainArgValues = pEventModule_;
@@ -264,12 +275,25 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void AddListener(const IEventListener* pListener)
+	void AddListener(const IEventListener* pListener, tEventRegistrationFlags flags)
 	{
-		struct tEventListenerData event_listener_data = {pListener};
-		CEventListenerMessage event_listener_msg(kEventListenerRegistered, event_listener_data);
-		PostEvent(event_listener_msg, kEventListenerEventPriority, 0);
-
+#ifdef DEBUG
+		// Detect duplicate listeners, and re-register at end of list
+		if (ppListeners_)
+		{
+			const IEventListener** ptr = ppListeners_;
+			for (int i = 0; i < numListeners_; i++, ptr++)
+			{
+				if (pListener == *ptr)
+				{
+					debug_.DebugOut(kDbgLvlCritical, "%s: duplicate listener %p at index %d\n", __FUNCTION__, pListener, i);
+					//RemoveListener(pListener);
+					break;
+				}
+			}
+		}
+#endif
+		pListener->pimpl_->eventRegistrationFlags = flags;
 		if( numListeners_ >= listSize_ )
 		{
 			listSize_ += kGrowBySize;
@@ -283,8 +307,23 @@ public:
 			ppListeners_ = temp;
 
 		}
-		const IEventListener** next = ppListeners_ + numListeners_;
-		*next = pListener;
+		if(numListeners_)
+		{
+			const IEventListener** last = ppListeners_ + numListeners_ - 1;
+			if((*last)->pimpl_->eventRegistrationFlags & kEventRegistrationStayLastBitMask)
+			{
+				const IEventListener** next = ppListeners_ + numListeners_;
+				*next = *last;
+				*last = pListener;
+			} else {
+				const IEventListener** next = ppListeners_ + numListeners_;
+				*next = pListener;
+			}
+		} else {
+			const IEventListener** next = ppListeners_ + numListeners_;
+			*next = pListener;
+		}
+
 		++numListeners_;
 		debug_.DebugOut(kDbgLvlValuable, "%s: added listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 	}
@@ -304,10 +343,6 @@ public:
 					for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
 						*ptr = *(ptr + 1);
 					--numListeners_;
-					struct tEventListenerData event_listener_data = {pListener};
-					CEventListenerMessage event_listener_msg(kEventListenerUnregistered, event_listener_data);
-					PostEvent(event_listener_msg, kEventListenerEventPriority, 0);
-					debug_.DebugOut(kDbgLvlValuable, "%s: removed listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 					return kNoErr;
 				}
 			}
@@ -436,9 +471,9 @@ Boolean	CEventModule::IsValid() const
 //============================================================================
 //----------------------------------------------------------------------------
 tErrType CEventModule::RegisterEventListener(const IEventListener *pListener,
-											tEventRegistrationFlags /*flags*/)
+											tEventRegistrationFlags flags)
 {
-	pinst->AddListener(pListener);
+	pinst->AddListener(pListener, flags);
 	return kNoErr;
 }
 

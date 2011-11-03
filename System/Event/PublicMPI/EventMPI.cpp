@@ -86,6 +86,8 @@ tErrType CEventMPI::RegisterEventListener(const IEventListener *pListener,
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if(!pListener)
+		return kInvalidParamErr;
 	return pModule_->RegisterEventListener(pListener, flags);
 }
 
@@ -94,6 +96,8 @@ tErrType CEventMPI::UnregisterEventListener(const IEventListener *pListener)
 {
 	if(!pModule_)
 		return kMPINotConnectedErr;
+	if(!pListener)
+		return kInvalidParamErr;
 	return pModule_->UnregisterEventListener(pListener);
 }
 

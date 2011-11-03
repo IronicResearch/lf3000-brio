@@ -240,7 +240,7 @@ Boolean CMemPlayer::SeekAudioTime(U32 timeMilliSeconds)
 	
 	totalBytesRead_ = target_frame * sizeof(S16) * channels_;
 	pReadData_ = (U8 *)pAudioData_ + totalBytesRead_;
-	//bSeeked = true;
+	bSeeked = true;
 	return true;
 }
 

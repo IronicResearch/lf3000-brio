@@ -59,9 +59,9 @@ struct tDisplayContext {
 	U32		baselinear;	// base linear address
 	bool	isPrimary;	// primary visible surface?
 	bool 	isAllocated;// allocated by caller?
-	bool 	isOverlay;	// video overlay layer?
+	bool 	isVideo;	// video overlay layer?
 	bool 	isPlanar;	// video overlay planar?
-	bool	isUnderlay;	// layer is on bottom instead of top?
+	tDisplayZOrder	initialZOrder;
 	int		layer;		// layer device handle
 #ifdef EMULATION
 	Pixmap	pixmap;		// X offscreen pixmap

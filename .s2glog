@@ -31692,3 +31692,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/1/11 7:06 PM
 4,563 ms. (Cumulative: 11,938,001 ms)
 
 ----------------
+Revision 9,544 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge from Brio TRUNK phase 3, svn -r9411:9491.
+Patch is pending for DisplayFB to retain interim layer visibility.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/2/11 7:10 PM
+33 changed, 10 added, 3 deleted.
+6,829 ms. (Cumulative: 11,944,923 ms)
+
+----------------

@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 if env['cpu'] == 'x86':
 	emulibs		=  ['X11']
-	ogllibs		=  ['gles_cl']
+	ogllibs		=  ['EGL', 'GLES_CM']
 	modsrcs		=  Glob('*.cpp') + Glob( os.path.join('Emulation', '*.cpp') )
 elif env['platform'] == 'LF2000':
 	emulibs		= []
@@ -36,7 +36,6 @@ myenv		= env.Clone()
 myenv.Append(CPPPATH=['Include'])
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
-							'#ThirdParty/PowerVR/Include/LinuxPC',
 							'/usr/X11R6/include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 elif env['platform'] == 'LF2000' and env['cpu_bare']:

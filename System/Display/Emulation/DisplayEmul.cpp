@@ -184,7 +184,7 @@ tDisplayHandle CDisplayModule::CreateHandle(U16 height, U16 width,
 	dc->x = 0;
 	dc->y = 0;
 	dc->isAllocated = (pBuffer != NULL);
-	dc->isOverlay = (colorDepth == kPixelFormatYUYV422);	
+	dc->isVideo = (colorDepth == kPixelFormatYUYV422);
 	dc->isPlanar = (colorDepth == kPixelFormatYUV420);	
 	dc->rect.left = dc->rect.top = 0;
 	dc->rect.right = width;
@@ -280,7 +280,7 @@ tErrType CDisplayModule::Update(tDisplayContext* dc, int sx, int sy, int dx, int
 	// Repack YUV format pixmap into ARGB format for X window
 	if (dc->isPlanar)
 		YUV2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
-	else if (dc->isOverlay)
+	else if (dc->isVideo)
 		YUYV2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);
 	else if (dc->colorDepthFormat == kPixelFormatRGB888)
 		RGB2ARGB(dc, pdcDest, sx, sy, dx, dy, width, height);

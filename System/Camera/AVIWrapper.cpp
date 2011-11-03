@@ -291,7 +291,7 @@ int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 
 	pkt.stream_index 	= AVI->iVideoStream;
 
-	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
+	int r = av_write_frame(AVI->pFormatCtx, &pkt);
 	
 	if (r < 0)
 		printf("%s: r=%d, errno=%d: %s\n", __FUNCTION__, r, errno, strerror(errno));
@@ -318,7 +318,7 @@ int  AVI_write_audio(avi_t *AVI, char *data, long bytes)
 	pkt.data			= (uint8_t*)data;
 	pkt.size			= bytes;
 	
-	int r = av_interleaved_write_frame(AVI->pFormatCtx, &pkt);
+	int r = av_write_frame(AVI->pFormatCtx, &pkt);
 	
 	if (r < 0)
 		printf("%s: r=%d, errno=%d: %s\n", __FUNCTION__, r, errno, strerror(errno));

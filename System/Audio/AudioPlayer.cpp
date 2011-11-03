@@ -77,6 +77,9 @@ CAudioPlayer::CAudioPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  )
 	bIsTimeElapsed_	= false;
 	timeDelta_		= 0;
 	timeLapsed_		= 0;
+
+	// Init seek state which affects conditional for done state
+	bSeeked 		= false;
 }
 
 //==============================================================================

@@ -449,7 +449,7 @@ tDisplayHandle CDisplayLF1000::CreateHandle(U16 height, U16 width,
 	GraphicsContext->offset = 0;
 	GraphicsContext->isPrimary = false;
 	GraphicsContext->isAllocated = (pBuffer != NULL);
-	GraphicsContext->isOverlay = false;
+	GraphicsContext->isVideo = false;
 	GraphicsContext->isPlanar = false;
 
 	switch(colorDepth) {
@@ -479,14 +479,14 @@ tDisplayHandle CDisplayLF1000::CreateHandle(U16 height, U16 width,
 		width = 4096; // for YUV planar format pitch
 		aligned = ALIGN(4096 * height, k1Meg);
 		hwFormat = kLayerPixelFormatYUV420;
-		GraphicsContext->isOverlay = true;
+		GraphicsContext->isVideo = true;
 		GraphicsContext->isPlanar = true;
 		break;
 
 		case kPixelFormatYUYV422:
 		bpp = 2;
 		hwFormat = kLayerPixelFormatYUYV422;
-		GraphicsContext->isOverlay = true;
+		GraphicsContext->isVideo = true;
 		break;
 	}
 	GraphicsContext->pitch = bpp*width;
@@ -515,7 +515,7 @@ tDisplayHandle CDisplayLF1000::CreateHandle(U16 height, U16 width,
 	}
 
 	// apply to device
-	int layer = GraphicsContext->layer = (GraphicsContext->isOverlay) ? gDevOverlay : gDevLayer;
+	int layer = GraphicsContext->layer = (GraphicsContext->isVideo) ? gDevOverlay : gDevLayer;
 	ioctl(layer, MLC_IOCTBLEND, GraphicsContext->isBlended);
 	ioctl(layer, MLC_IOCTALPHA, GraphicsContext->alphaLevel);
 	ioctl(layer, MLC_IOCTFORMAT, hwFormat);
@@ -583,8 +583,20 @@ tErrType CDisplayLF1000::Update(tDisplayContext *dc, int sx, int sy, int dx, int
 			ioctl(context->layer, MLC_IOCTADDRESSCB, addr + context->pitch/2);
 			ioctl(context->layer, MLC_IOCTADDRESSCR, addr + context->pitch/2 + context->pitch*(context->height/2));
 		}
-		if(pdcVisible_->isOverlay) {
-			int order = (pdcVisible_->isUnderlay) ? 2 : 0;
+		if(pdcVisible_->isVideo) {
+			int order;
+			switch(context->initialZOrder)
+			{
+			case kDisplayOnTop:
+				order = 1;
+				break;
+			case kDisplayOnBottom:
+				order = 2;
+				break;
+			case kDisplayOnOverlay:
+				order = 0;
+				break;
+			}
 			int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
 			if (order != prior) {
 				ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
@@ -666,7 +678,7 @@ tErrType CDisplayLF1000::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	c.position.bottom = yPos + context->height;
 
 	// Change RGB layer assignments if supposed to be on bottom
-	if (context->isUnderlay && !context->isOverlay) {
+	if (context->initialZOrder == kDisplayOnBottom && !context->isVideo) {
 		// Disable 3D layer if already active
 		bool bOpenGLSwap = isOpenGLEnabled_;
 		if (bOpenGLSwap) {
@@ -693,7 +705,7 @@ tErrType CDisplayLF1000::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ioctl(layer, MLC_IOCSPOSITION, &c);
 	
 	// Defer enabling video layer until 1st Invalidate() call
-	if (!context->isOverlay) {
+	if (!context->isVideo) {
 		ioctl(layer, MLC_IOCTADDRESS, context->basephys + context->offset);
 		ioctl(layer, MLC_IOCTLAYEREN, (void *)1);
 		SetDirtyBit(layer);
@@ -702,7 +714,7 @@ tErrType CDisplayLF1000::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	}
 	
 	// Setup scaler registers too for video overlay
-	if (context->isOverlay)
+	if (context->isVideo)
 	{
 		// Reset scaler output for display context destination
 		// Video MPI will handle special scaler cases (TTP #2073)
@@ -721,7 +733,19 @@ tErrType CDisplayLF1000::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 			ioctl(layer, MLC_IOCTADDRESSCR, LIN2XY(addr + context->pitch/2 + context->pitch*(context->height/2)));
 		}
 		// Select video layer order
-		int order = (context->isUnderlay) ? 2 : 0;
+		int order;
+		switch(context->initialZOrder)
+		{
+		case kDisplayOnTop:
+			order = 1;
+			break;
+		case kDisplayOnBottom:
+			order = 2;
+			break;
+		case kDisplayOnOverlay:
+			order = 0;
+			break;
+		}
 		int prior = ioctl(gDevMlc, MLC_IOCQPRIORITY, 0);
 		if (order != prior) {
 			ioctl(gDevMlc, MLC_IOCTPRIORITY, order);
@@ -874,7 +898,7 @@ tErrType CDisplayLF1000::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	
 	// Load display address register for selected display context
 	r = ioctl(layer, MLC_IOCTADDRESS, physaddr);
-	if (context->isOverlay) {
+	if (context->isVideo) {
 		ioctl(layer, MLC_IOCTADDRESSCB, physaddr + context->pitch/2);
 		ioctl(layer, MLC_IOCTADDRESSCR, physaddr + context->pitch/2 + context->pitch*(context->height/2));
 	}

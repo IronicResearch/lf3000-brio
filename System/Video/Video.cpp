@@ -114,6 +114,13 @@ CVideoModule::CVideoModule() : dbg_(kGroupVideo)
 CVideoModule::~CVideoModule()
 {
 	FlatProfilerDone();
+
+	if (ghVideoHndl != kInvalidVideoHndl)
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::~VideoModule: video %p open\n", (void*)ghVideoHndl);
+		StopVideo(ghVideoHndl);
+	}
+
 #if USE_MUTEX
 	kernel_.DeInitMutex(gVidMutex);
 #endif

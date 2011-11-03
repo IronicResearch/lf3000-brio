@@ -43,6 +43,7 @@ const tEventType kAllEvenListenerEvents = AllEvents(kGroupEvent);
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupEvent), EVENT_ERRORS)
 
+#define kEventRegistrationStayLastBitMask 0x1
 
 //==============================================================================	   
 // Event Manager types 

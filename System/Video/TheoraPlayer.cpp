@@ -57,6 +57,32 @@ inline void PROFILE_END(const char* msg)
 }
 
 //----------------------------------------------------------------------------
+inline void slow_memcpy(U8* dst, U8* src, int width)
+{
+	for (int i = 0; i < width; i++)
+	{
+		*dst++ = *src++;
+	}
+}
+
+//----------------------------------------------------------------------------
+inline void align_memcpy(U8* dst, U8* src, int width)
+{
+	int aligned = width & ~(63);
+	int remainder = width - aligned;
+	memcpy(dst, src, aligned);
+	if (remainder)
+		slow_memcpy(dst+aligned, src+aligned, remainder);
+}
+
+//----------------------------------------------------------------------------
+inline void fast_memcpy(U8* dst, U8* src, int width)
+{
+	int aligned = (width+63) & ~(63);
+	memcpy(dst, src, aligned);
+}
+
+//----------------------------------------------------------------------------
 // Grab some more compressed bitstream and sync it for page extraction
 static int buffer_data(FILE *file, ogg_sync_state *oy)
 {
@@ -590,13 +616,13 @@ Boolean CTheoraPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 		U8*		dv = surf->buffer + surf->pitch/2 + surf->pitch * (surf->height/2);
 		for (i = 0; i < yuv.y_height; i++) 
 		{
-			memcpy(d, s, yuv.y_width);
+			fast_memcpy(d, s, yuv.y_width);
 			s += yuv.y_stride;
 			d += surf->pitch;
 			if (i % 2) 
 			{
-				memcpy(du, u, yuv.uv_width);
-				memcpy(dv, v, yuv.uv_width);
+				fast_memcpy(du, u, yuv.uv_width);
+				fast_memcpy(dv, v, yuv.uv_width);
 				u += yuv.uv_stride;
 				v += yuv.uv_stride;
 				du += surf->pitch;

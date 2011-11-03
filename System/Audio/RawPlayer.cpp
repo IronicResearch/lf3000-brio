@@ -304,7 +304,7 @@ Boolean CRawPlayer::SeekAudioTime(U32 timeMilliSeconds)
 	if (inFile_)
 		sf_seek(inFile_, totalBytesRead_, SEEK_SET);
 	
-	//bSeeked = true;
+	bSeeked = true;
 	return true;
 }
 
