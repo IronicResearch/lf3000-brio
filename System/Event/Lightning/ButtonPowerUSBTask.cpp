@@ -486,7 +486,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Keyboard\n");
+		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: cannot open: Keyboard\n");
 	}
 	
 	int power_index = -1;
@@ -520,7 +520,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 USB\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: USB\n");
 	}
 	
 	// init USB socket
@@ -566,7 +566,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	if (!use_tslib)
 	{
-		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on LF1000 touchscreen interface\n");
+		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on touchscreen interface\n");
 		event_fd[last_fd].fd = open_input_device("touchscreen interface");
 		event_fd[last_fd].events = POLLIN;
 	}
@@ -576,7 +576,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 touchscreen interface\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: touchscreen interface\n");
 	}
 	
 	// Init accelerometer driver and data
@@ -591,7 +591,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open LF1000 Accelerometer\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: Accelerometer\n");
 	}
 
 	struct input_event ev;
