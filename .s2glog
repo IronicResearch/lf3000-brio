@@ -31713,3 +31713,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/2/11 7:24 PM
 4,860 ms. (Cumulative: 11,949,939 ms)
 
 ----------------
+Revision 9,546 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP patch conditionals to allow emulation build.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/2/11 7:26 PM
+1 changed, 0 added, 0 deleted.
+4,782 ms. (Cumulative: 11,954,799 ms)
+
+----------------

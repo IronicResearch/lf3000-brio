@@ -2,8 +2,10 @@
 
 #include <CameraPriv.h>
 
+#ifndef EMULATION
 #include <sys/ioctl.h>
 #include <linux/lf2000/lf2000vip.h>
+#endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -41,6 +43,7 @@ CVIPCameraModule::~CVIPCameraModule()
 //----------------------------------------------------------------------------
 static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 {
+#ifndef EMULATION
 	struct v4l2_framebuffer v4l2;
 
 	switch(pSurf->format)
@@ -69,16 +72,17 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 	{
 		return false;
 	}
-
+#endif
 	return true;
 }
 
 //----------------------------------------------------------------------------
 static Boolean EnableOverlay(int fd, int enable)
 {
+#ifndef EMULATION
 	if(ioctl(fd, VIDIOC_OVERLAY, &enable) < 0)
 			return false;
-
+#endif
 	return true;
 }
 
