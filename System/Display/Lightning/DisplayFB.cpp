@@ -263,12 +263,12 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	int n, r;
 	switch (colorDepth) 
 	{
-		// Default to lower RGB layer
-		case kPixelFormatRGB4444:	depth = 16; n = OGLFB; break;
-		case kPixelFormatRGB565:	depth = 16; n = OGLFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break; 	
+		// Default to lower RGB layer -- FIXME
+		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
+		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
+		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
 		default:
-		case kPixelFormatARGB8888: 	depth = 32; n = OGLFB; break;
+		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
@@ -341,8 +341,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		switch((vinfo[n].nonstd & (3<<24)) >> 24)
 		{
 		case 0:
-			ctx->initialZOrder = kDisplayOnOverlay;
-			break;
+//			ctx->initialZOrder = kDisplayOnOverlay;
+//			break;
 		case 1:
 			ctx->initialZOrder = kDisplayOnTop;
 			break;
@@ -401,6 +401,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Set XY onscreen position
 	int n = ctx->layer;
 
+#if 0 // FIXME
 	// Change to upper RGB layer for explicit overlay registration
 	if (n == OGLFB && ctx->initialZOrder== kDisplayOnOverlay)
 		n = ctx->layer = RGBFB;
@@ -408,6 +409,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
 	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
 		n = ctx->layer = RGBFB;
+#endif
 
 	// Disable *any* layer's pixel format or resolution change
 	if (fbviz[n] && (ctx->width != vinfo[n].xres || ctx->height != vinfo[n].yres || ctx->depth != vinfo[n].bits_per_pixel))
@@ -424,7 +426,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		switch(ctx->initialZOrder)
 		{
 		case kDisplayOnTop:
-			z = 1;
+			z = 0; //1;
 			break;
 		case kDisplayOnBottom:
 			z = 2;

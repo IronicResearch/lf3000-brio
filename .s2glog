@@ -31703,3 +31703,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/2/11 7:10 PM
 6,829 ms. (Cumulative: 11,944,923 ms)
 
 ----------------
+Revision 9,545 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+DisplayFB patch to retain previous layering visibility for interim.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/2/11 7:24 PM
+1 changed, 0 added, 0 deleted.
+4,860 ms. (Cumulative: 11,949,939 ms)
+
+----------------
