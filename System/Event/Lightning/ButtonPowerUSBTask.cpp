@@ -87,12 +87,22 @@ namespace
 	#define APP_MSG_GET_POWER       2
 	#define APP_MSG_SET_POWER       3
 	
-	#define SYSFS_LUN0_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun0/enabled"
-	#define SYSFS_LUN1_PATH "/sys/devices/platform/lf1000-usbgadget/gadget/gadget-lun1/enabled"
-	#define SYSFS_VBUS_PATH "/sys/devices/platform/lf1000-usbgadget/vbus"
-	#define SYSFS_WD_PATH 	"/sys/devices/platform/lf1000-usbgadget/watchdog_seconds"
 	#define FLAGS_NOTSLIB	"/flags/notslib"
-	
+
+#if defined(LF1000)
+	#define INPUT_KEYBOARD		"LF1000 Keyboard"
+	#define INPUT_TOUCHSCREEN	"LF1000 touchscreen interface"
+	#define	INPUT_POWER			"Power Button"
+	#define INPUT_USB			"LF1000 USB"
+	#define INPUT_ACLMTR		"LF1000 Accelerometer"
+#else
+	#define INPUT_KEYBOARD		"gpio-keys"
+	#define INPUT_TOUCHSCREEN	"touchscreen interface"
+	#define	INPUT_POWER			"Power Button"
+	#define INPUT_USB			"USB"
+	#define INPUT_ACLMTR		"Accelerometer"
+#endif
+
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kPowerEventPriority	= 0;
 	const tEventPriority	kUSBDeviceEventPriority	= 0;
@@ -465,7 +475,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	gButtonData.buttonState = 0;
 	gButtonData.buttonTransition = 0;
 	kernel_mpi.UnlockMutex(gButtonDataMutex);
-	event_fd[last_fd].fd = open_input_device("gpio-keys");
+	event_fd[last_fd].fd = open_input_device(INPUT_KEYBOARD);
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
 	{
@@ -486,7 +496,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: cannot open: Keyboard\n");
+		pThis->debug_.DebugOut(kDbgLvlCritical, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_KEYBOARD);
 	}
 	
 	int power_index = -1;
@@ -494,7 +504,7 @@ void* CEventModule::CartridgeTask( void* arg )
 
 	// init power driver and state
 	power_data.powerState = GetCurrentPowerState();
-	event_fd[last_fd].fd = open_input_device("Power Button");
+	event_fd[last_fd].fd = open_input_device(INPUT_POWER);
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
 	{
@@ -502,7 +512,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open Power Button\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_POWER);
 	}
 	
 	int usb_index = -1;
@@ -512,7 +522,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	// init USB driver and state
 	usb_data = GetCurrentUSBDeviceState();
 	vbus = usb_data.USBDeviceState;
-	event_fd[last_fd].fd = open_input_device("USB");
+	event_fd[last_fd].fd = open_input_device(INPUT_USB);
 	event_fd[last_fd].events = POLLIN;
 	if(event_fd[last_fd].fd >= 0)
 	{
@@ -520,7 +530,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: USB\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_USB);
 	}
 	
 	// init USB socket
@@ -567,7 +577,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	if (!use_tslib)
 	{
 		pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Falling back on touchscreen interface\n");
-		event_fd[last_fd].fd = open_input_device("touchscreen interface");
+		event_fd[last_fd].fd = open_input_device(INPUT_TOUCHSCREEN);
 		event_fd[last_fd].events = POLLIN;
 	}
 	if(event_fd[last_fd].fd >= 0)
@@ -576,14 +586,14 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: touchscreen interface\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_TOUCHSCREEN);
 	}
 	
 	// Init accelerometer driver and data
 	int aclmtr_index = -1;
 	tAccelerometerData aclmtr_data = {0, 0, 0, {0, 0}};
 
-	event_fd[last_fd].fd = open_input_device("Accelerometer");
+	event_fd[last_fd].fd = open_input_device(INPUT_ACLMTR);
 	event_fd[last_fd].events = POLLIN;
 	if (event_fd[last_fd].fd >= 0)
 	{
@@ -591,7 +601,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 	else
 	{
-		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: Accelerometer\n");
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CEventModule::ButtonPowerUSBTask: cannot open: %s\n", INPUT_ACLMTR);
 	}
 
 	struct input_event ev;
