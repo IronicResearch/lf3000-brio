@@ -46,6 +46,7 @@ namespace
 	struct fb_var_screeninfo 	vinfo[NUMFB];
 	U8*							fbmem[NUMFB] = {NULL, NULL, NULL};
 	bool						fbviz[NUMFB] = {false, false, false};
+	bool						fblnd[NUMFB] = {false, false, false};
 
 	const char*					DEV3D = "/dev/ga3d";
 	const char*					DEVMEM = "/dev/mem";
@@ -97,6 +98,7 @@ CDisplayFB::~CDisplayFB()
 void CDisplayFB::InitModule()
 {
 	int r;
+	struct stat stbuf;
 
 	// Query screen size independently of display mode resolution
 	FILE* f = fopen(XRES, "r");
@@ -131,20 +133,17 @@ void CDisplayFB::InitModule()
 		//dbg_.Assert(r == 0, "%s: Error querying %s\n", __FUNCTION__, FBDEV[n]);
 		dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %d x %d, pitch = %d\n", __FUNCTION__, vinfo[n].xres, vinfo[n].yres, finfo[n].line_length);
 	
-		// Reset page flip offsets
-		//vinfo[n].xoffset = vinfo[n].yoffset = 0;
-		//r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
-		if(n == YUVFB)
-		{	
-			FILE *splash_file = fopen("/tmp/splash", "r");
-			FILE *exit_check = fopen("/tmp/trans_anim", "r");
-			if(splash_file && exit_check == NULL)
-			{
+		// Conditionally blank layers after initial launch and not playing transition video
+		if (stat("/tmp/splash", &stbuf) == 0)
+		{
+			if ((n == YUVFB && stat("/tmp/trans_anim", &stbuf) != 0))
 				r = ioctl(fbdev[n], FBIOBLANK, 1);
-				fclose(splash_file);
-			}
 		}
-		
+		else if (stat("/flags/main_app", &stbuf) == 0)
+		{
+			r = ioctl(fbdev[n], FBIOBLANK, 1);
+		}
+
 		// Map framebuffer into userspace
 		fbmem[n] = (U8*)mmap((void*)finfo[n].smem_start, finfo[n].smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fbdev[n], 0);
 		//dbg_.Assert(fbmem[n] != MAP_FAILED, "%s: Error mapping %s\n", __FUNCTION__, FBDEV[n]);
@@ -264,11 +263,12 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	int n, r;
 	switch (colorDepth) 
 	{
-		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
+		// Default to lower RGB layer
+		case kPixelFormatRGB4444:	depth = 16; n = OGLFB; break;
+		case kPixelFormatRGB565:	depth = 16; n = OGLFB; break;
+		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break; 	
 		default:
-		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
+		case kPixelFormatARGB8888: 	depth = 32; n = OGLFB; break;
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
@@ -311,8 +311,9 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->pBuffer			= (pBuffer != NULL) ? pBuffer : fbmem[n] + offset;
 	ctx->offset 			= offset;
 	ctx->layer				= n;
-	ctx->isOverlay			= (n == YUVFB);
+	ctx->isVideo			= (n == YUVFB);
 	ctx->isPlanar			= (n == YUVFB); // (finfo[n].type == FB_TYPE_PLANES);
+	ctx->initialZOrder		= kDisplayOnBottom; // default
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
 	ctx->xscale 			= width;
@@ -336,7 +337,19 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	{
 		ctx->offset = pBuffer - fbmem[n];
 		ctx->pitch  = finfo[n].line_length;
-		ctx->isUnderlay	= (vinfo[n].nonstd & (3<<24));
+		if (n == YUVFB)
+		switch((vinfo[n].nonstd & (3<<24)) >> 24)
+		{
+		case 0:
+			ctx->initialZOrder = kDisplayOnOverlay;
+			break;
+		case 1:
+			ctx->initialZOrder = kDisplayOnTop;
+			break;
+		case 2:
+			ctx->initialZOrder = kDisplayOnBottom;
+			break;
+		}
 	}
 
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, width, height, ctx->pitch, ctx->pBuffer);
@@ -387,7 +400,17 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
-	if (n == YUVFB && fbviz[n])
+
+	// Change to upper RGB layer for explicit overlay registration
+	if (n == OGLFB && ctx->initialZOrder== kDisplayOnOverlay)
+		n = ctx->layer = RGBFB;
+
+	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
+	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
+		n = ctx->layer = RGBFB;
+
+	// Disable *any* layer's pixel format or resolution change
+	if (fbviz[n] && (ctx->width != vinfo[n].xres || ctx->height != vinfo[n].yres || ctx->depth != vinfo[n].bits_per_pixel))
 	{
 		SetVisible(ctx, false);
 	}
@@ -397,7 +420,19 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Adjust Z-order for YUV layer?
 	if (n == YUVFB) 
 	{
-		int z = (ctx->isUnderlay) ? 2 : 0;
+		int z;
+		switch(ctx->initialZOrder)
+		{
+		case kDisplayOnTop:
+			z = 1;
+			break;
+		case kDisplayOnBottom:
+			z = 2;
+			break;
+		case kDisplayOnOverlay:
+			z = 0;
+			break;
+		}
 		vinfo[n].nonstd &= ~(3<<24);
 		vinfo[n].nonstd |=  (z<<24);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
@@ -528,9 +563,9 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	int n = ctx->layer;
 	
 	// Update invalidated offscreen regions prior to page flip (VideoMPI)
-	if (!ctx->isUnderlay)
+	if (ctx->initialZOrder != kDisplayOnBottom)
 		pdcVisible_->flippedContext = ctx;
-	if (ctx->isOverlay)
+	if (ctx->isVideo)
 		pModule_->Invalidate(0, NULL);
 
 	// Note pages are stacked vertically for RGB, horizontally for YUV
@@ -699,6 +734,7 @@ tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 	cmd.enable = enable;
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], LF1000FB_IOCSALPHA, &cmd);
+	fblnd[n] = (r == 0) ? enable : false;
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -877,6 +913,8 @@ void CDisplayFB::DeinitOpenGL()
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
 #if defined(LF1000) || defined(LF2000)
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	RegisterLayer(hogl, dcogl->x, dcogl->y);
 	SetVisible(hogl, true);
 #endif
 }
@@ -912,10 +950,10 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
 #ifdef LF1000
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
 	// Re-enable OpenGL context which is not registered
 	if (hogl != NULL && !fbviz[OGLFB])
 	{
-		tDisplayContext *dcogl = (tDisplayContext*)hogl;
 		if (dcogl->isEnabled) {
 			RegisterLayer(hogl, dcogl->x, dcogl->y);
 			SetVisible(hogl, true);
@@ -924,6 +962,7 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 	int n = OGLFB;
 	unsigned int offset = DisplayBufferPhysicalAddress - finfo[n].smem_start;
 	offset &= ~0x20000000;
+	dcogl->offset = offset;
 	vinfo[n].yoffset = offset / finfo[n].line_length;
 	vinfo[n].xoffset = offset % finfo[n].line_length;
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);

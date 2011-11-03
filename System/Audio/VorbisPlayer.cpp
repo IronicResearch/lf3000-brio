@@ -287,7 +287,7 @@ Boolean CVorbisPlayer::SeekAudioTime(U32 timeMilliSeconds)
 #else
 	int error = ov_time_seek(&vorbisFile_, timeMilliSeconds);
 #endif
-	//bSeeked = true;
+	bSeeked = true;
 	return error == 0;
 }
 

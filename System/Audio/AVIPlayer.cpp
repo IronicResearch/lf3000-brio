@@ -372,14 +372,13 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 {
 	int flags = AVSEEK_FLAG_ANY;
-	int64_t timestamp = timeMilliSeconds * samplingFrequency_ / 1000;
-	if (timestamp < pFormatCtx->streams[iAudioStream]->cur_dts)
-		flags |= AVSEEK_FLAG_BACKWARD;
+	int64_t timestamp = (int64_t)timeMilliSeconds * samplingFrequency_ / 1000;
 	int r = av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
 	if (r < 0)
 		return false;
 	totalFramesRead = timestamp;
 	bytesCached = 0;
+	bSeeked = true;
 	return true;
 }
 

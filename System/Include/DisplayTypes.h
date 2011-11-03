@@ -80,7 +80,8 @@ enum tPixelFormat {
 enum tDisplayZOrder {
 	kInvalidZOrder = 0,
 	kDisplayOnTop,
-	kDisplayOnBottom
+	kDisplayOnBottom,
+	kDisplayOnOverlay
 };
 
 struct tDisplayScreenStats {

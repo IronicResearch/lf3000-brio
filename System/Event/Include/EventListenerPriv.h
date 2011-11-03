@@ -39,6 +39,7 @@ public:
 
 // TODO: why can't this be a private member of a friend class and compile?	
 	CEventModule*					pEvent_;
+	tEventRegistrationFlags			eventRegistrationFlags;
 
 private:
 	const IEventListener*			pNextListener_;

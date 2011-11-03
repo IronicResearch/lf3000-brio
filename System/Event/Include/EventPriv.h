@@ -20,6 +20,10 @@
 #include "EventMPI.h"	// for tEventRegistrationFlags
 #include <KernelMPI.h>
 
+#ifndef EMULATION
+#include <tslib.h>
+#endif
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 
@@ -28,6 +32,7 @@ const CString	kEventModuleName	= "Event";
 const tVersion	kEventModuleVersion	= 2;
 
 // Function prototypes
+extern bool LoadTSLib(CEventModule* pThis, tHndl* phandle, struct tsdev** ptsl);
 
 //==============================================================================
 class CEventModule : public ICoreModule {

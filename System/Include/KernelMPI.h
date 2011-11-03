@@ -278,6 +278,7 @@ public:
 	/// Code Module Functions
 	///==============================================================================
     tHndl	LoadModule( const CPath& dir ) const;
+    tHndl	LoadModule( const CPath& dir, const int flags ) const;
     void*	RetrieveSymbolFromModule( tHndl obj, const CString& symbol ) const;
     void	UnloadModule( tHndl obj ) const;
 

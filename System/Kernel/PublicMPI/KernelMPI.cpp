@@ -155,9 +155,11 @@ namespace
 	}
 	
 	//------------------------------------------------------------------------------
-	tHndl LoadModule_Impl( const CPath& dir )
+	static pthread_mutex_t gLoadModuleMutex = PTHREAD_MUTEX_INITIALIZER;
+	tHndl LoadModule_Impl( const CPath& dir, int flags = RTLD_LAZY)
 	{
-		void* pLib = dlopen(dir.c_str(), RTLD_LAZY);
+		pthread_mutex_lock(&gLoadModuleMutex);
+		void* pLib = dlopen(dir.c_str(), flags);
 		if (pLib == NULL)
 		{
 			CBootSafeKernelMPI safeKernel;
@@ -165,6 +167,7 @@ namespace
 			safeKernel.Logging("Emerald Base", kDbgLvlCritical, "Unable to open module '%s', %s\n",
 					dir.c_str(), err);
 		}
+		pthread_mutex_unlock(&gLoadModuleMutex);
 		return reinterpret_cast<tHndl>(pLib);
 	}
 	
@@ -746,6 +749,12 @@ Boolean CKernelMPI::IsDirectory( const CPath& dir ) const
 tHndl CKernelMPI::LoadModule( const CPath& dir ) const
 {
 	return LoadModule_Impl(dir);
+}
+
+//------------------------------------------------------------------------------
+tHndl CKernelMPI::LoadModule( const CPath& dir, const int flags) const
+{
+	return LoadModule_Impl(dir, flags);
 }
 
 //------------------------------------------------------------------------------

@@ -93,6 +93,8 @@ class CAudioPlayer {
 	inline Boolean			IsTimeEvent()	{ return bIsTimeEvent_; }
 	inline Boolean			IsTimeElapsed()	{ return bIsTimeElapsed_; }
 	
+	inline Boolean			IsSeeked()		{ return bSeeked; }
+
 protected:
 	S16				*pReadBuf_;
 
