@@ -31723,3 +31723,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/2/11 7:26 PM
 4,782 ms. (Cumulative: 11,954,799 ms)
 
 ----------------
+Revision 9,547 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove "LF1000" text from input driver log errors.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/3/11 10:35 AM
+1 changed, 0 added, 0 deleted.
+4,857 ms. (Cumulative: 11,959,750 ms)
+
+----------------
