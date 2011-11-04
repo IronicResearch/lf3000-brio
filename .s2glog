@@ -31776,3 +31776,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/4/11 2:47 PM
 4,813 ms. (Cumulative: 11,979,742 ms)
 
 ----------------
+Revision 9,556 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove LF2000 symlink to allow separate folder. (Part 1 of 2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/4/11 4:20 PM
+0 changed, 0 added, 1 deleted.
+4,957 ms. (Cumulative: 11,984,793 ms)
+
+----------------
