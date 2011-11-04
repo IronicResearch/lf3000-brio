@@ -47,6 +47,7 @@ namespace
 	U8*							fbmem[NUMFB] = {NULL, NULL, NULL};
 	bool						fbviz[NUMFB] = {false, false, false};
 	bool						fblnd[NUMFB] = {false, false, false};
+	int							fboff[NUMFB] = {0, 0, 0};
 
 	const char*					DEV3D = "/dev/ga3d";
 	const char*					DEVMEM = "/dev/mem";
@@ -1008,10 +1009,16 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	kernel_.LockMutex(gListMutex);
 	
 	// All display contexts now reference common base address
-	pdc->basephys 	= finfo[RGBFB].smem_start;
-	pdc->baselinear = finfo[YUVFB].smem_start;
-	pdc->pBuffer 	= (pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
+	pdc->basephys 	= finfo[pdc->layer].smem_start; //finfo[RGBFB].smem_start;
+	pdc->baselinear = finfo[pdc->layer].smem_start; //finfo[YUVFB].smem_start;
+	pdc->pBuffer 	= fbmem[pdc->layer]; //(pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
 
+	pdc->offset		= fboff[pdc->layer];
+	pdc->pBuffer	+= pdc->offset;
+	fboff[pdc->layer] += bufsize;
+	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
+
+#if 0
 	// Look on for available buffer on free list first
 	for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
 		buf = *it;
@@ -1056,6 +1063,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	buf.aligned = aligned;
 	gBufListUsed.push_back(buf);
 	dbg_.DebugOut(kDbgLvlVerbose, "AllocBuffer: new buf offset %08X, length %08X\n", (unsigned)buf.offset, (unsigned)buf.length);
+#endif
 
 	kernel_.UnlockMutex(gListMutex);
 	return true;
@@ -1070,7 +1078,8 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 	kernel_.LockMutex(gListMutex);
 	U32 markStart = gMarkBufStart;
 	U32 markEnd   = gMarkBufEnd;
-	
+
+#if 0
 	// Find allocated buffer for this display context
 	for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
 		buf = *it;
@@ -1107,6 +1116,7 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 			}
 		}
 	}
+#endif
 
 	kernel_.UnlockMutex(gListMutex);
 	return true;
