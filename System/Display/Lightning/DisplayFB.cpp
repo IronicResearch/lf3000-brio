@@ -342,8 +342,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		switch((vinfo[n].nonstd & (3<<24)) >> 24)
 		{
 		case 0:
-//			ctx->initialZOrder = kDisplayOnOverlay;
-//			break;
+			ctx->initialZOrder = kDisplayOnOverlay;
+			break;
 		case 1:
 			ctx->initialZOrder = kDisplayOnTop;
 			break;
@@ -427,7 +427,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		switch(ctx->initialZOrder)
 		{
 		case kDisplayOnTop:
-			z = 0; //1;
+			z = 1;
 			break;
 		case kDisplayOnBottom:
 			z = 2;
@@ -457,7 +457,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Defer layer visibility until Update() or SwapBuffers()?
 	if (n == RGBFB)
 	{
-		SetVisible(ctx, true);
+//		SetVisible(ctx, true);
 	}
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
@@ -1015,7 +1015,8 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 
 	pdc->offset		= fboff[pdc->layer];
 	pdc->pBuffer	+= pdc->offset;
-	fboff[pdc->layer] += bufsize;
+	if (pdc->layer != RGBFB)
+		fboff[pdc->layer] += bufsize;
 	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
 
 #if 0
