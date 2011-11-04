@@ -31757,3 +31757,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/4/11 9:46 AM
 5,082 ms. (Cumulative: 11,969,944 ms)
 
 ----------------
+Revision 9,554 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix for Billy's viewfinder panic
+
+By jeno (jeno@leapfrog.com) on 11/4/11 10:08 AM
+1 changed, 0 added, 0 deleted.
+4,813 ms. (Cumulative: 11,974,851 ms)
+
+----------------
