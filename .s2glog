@@ -31806,3 +31806,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/11 2:39 PM
 4,832 ms. (Cumulative: 11,994,750 ms)
 
 ----------------
+Revision 9,559 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert DisplayFB functionality to default to upper RGB layer framebuffer.
+Note LF2000/DisplayFB.cpp source is currently not compiled for LF2000 target.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/7/11 6:56 PM
+3 changed, 0 added, 0 deleted.
+5,236 ms. (Cumulative: 12,000,064 ms)
+
+----------------

@@ -454,11 +454,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Set alpha blend state
 	SetAlpha(ctx, ctx->alphaLevel, ctx->isBlended);
 	
-	// Defer layer visibility until Update() or SwapBuffers()?
-	if (n == RGBFB)
-	{
-//		SetVisible(ctx, true);
-	}
+	// Defer layer visibility until Update() or SwapBuffers()
 	
 	return (r == 0) ? kNoErr : kNoImplErr;
 }
@@ -1007,19 +1003,26 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	std::list<tBuffer>::iterator it;
 	
 	kernel_.LockMutex(gListMutex);
-	
+
+#ifdef LF1000
 	// All display contexts now reference common base address
-	pdc->basephys 	= finfo[pdc->layer].smem_start; //finfo[RGBFB].smem_start;
-	pdc->baselinear = finfo[pdc->layer].smem_start; //finfo[YUVFB].smem_start;
-	pdc->pBuffer 	= fbmem[pdc->layer]; //(pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
+	pdc->basephys 	= finfo[RGBFB].smem_start;
+	pdc->baselinear = finfo[YUVFB].smem_start;
+	pdc->pBuffer 	= (pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
+#else
+	// Framebuffers reference separate base addresses
+	pdc->basephys 	= finfo[pdc->layer].smem_start;
+	pdc->baselinear = finfo[pdc->layer].smem_start;
+	pdc->pBuffer 	= fbmem[pdc->layer];
 
 	pdc->offset		= fboff[pdc->layer];
 	pdc->pBuffer	+= pdc->offset;
 	if (pdc->layer != RGBFB)
 		fboff[pdc->layer] += bufsize;
 	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
+#endif
 
-#if 0
+#ifdef LF1000
 	// Look on for available buffer on free list first
 	for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
 		buf = *it;
@@ -1080,7 +1083,7 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 	U32 markStart = gMarkBufStart;
 	U32 markEnd   = gMarkBufEnd;
 
-#if 0
+#ifdef LF1000
 	// Find allocated buffer for this display context
 	for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
 		buf = *it;
