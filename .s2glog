@@ -31817,3 +31817,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/11 6:56 PM
 5,236 ms. (Cumulative: 12,000,064 ms)
 
 ----------------
+Revision 9,560 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+PowerMPI: Add system commands for reboot, poweroff. No effect on LF2000 kernel yet.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/7/11 6:58 PM
+2 changed, 0 added, 0 deleted.
+5,047 ms. (Cumulative: 12,005,205 ms)
+
+----------------

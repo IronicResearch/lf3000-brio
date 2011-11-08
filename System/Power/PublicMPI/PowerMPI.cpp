@@ -23,6 +23,8 @@
 #include <DebugMPI.h>
 
 #include <sys/socket.h>
+#include <unistd.h>
+#include <sys/reboot.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -140,6 +142,7 @@ int CPowerMPI::Shutdown() const
 		send(fd, &msg, sizeof(msg), 0);
 		close(fd);
 	}
+	reboot(RB_POWER_OFF);
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
@@ -166,7 +169,8 @@ int CPowerMPI::Reset() const
 	CDebugMPI debug(kGroupPower);
 	debug.DebugOut(kDbgLvlCritical, "PowerMPI::Reset reboot\n");
 	// system("sudo /sbin/reboot -f");
-	execl("/usr/bin/sudo", "sudo", "/sbin/reboot", "-f", NULL);
+	// execl("/usr/bin/sudo", "sudo", "/sbin/reboot", "-f", NULL);
+	reboot(RB_AUTOBOOT);
 #endif
 	// Embedded version should never get here
 	_exit(kKernelExitShutdown);
