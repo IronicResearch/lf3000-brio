@@ -31827,3 +31827,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/11 6:58 PM
 5,047 ms. (Cumulative: 12,005,205 ms)
 
 ----------------
+Revision 9,561 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix a bug where DisplayMPI built for LF2000 was pulling from wrong platform directory.
+
+By dlazzari (dlazzari@leapfrog.com) on 11/8/11 10:52 AM
+1 changed, 0 added, 0 deleted.
+4,891 ms. (Cumulative: 12,010,190 ms)
+
+----------------
