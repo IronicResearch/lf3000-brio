@@ -259,8 +259,23 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 	
 	if (kDisplayOnBottom == initialZOrder)
 		gDisplayList.push_front(dc);
-	else
+	else if (kDisplayOnOverlay == initialZOrder)
 		gDisplayList.push_back(dc);
+	else
+	{
+		for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+		{
+			pdc = *it;
+			if (pdc->initialZOrder == kDisplayOnOverlay)
+			{
+				gDisplayList.insert(it, dc);
+				break;
+			}
+			pdc = NULL;
+		}
+		if (pdc == NULL)
+			gDisplayList.push_front(dc);
+	}
 	kernel_.UnlockMutex(gListMutex);
 
 	// Default Z order is on top

@@ -264,19 +264,28 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	int n, r;
 	switch (colorDepth) 
 	{
-		// Default to lower RGB layer	
-		case kPixelFormatRGB4444:	depth = 16; n = OGLFB; break;
-		case kPixelFormatRGB565:	depth = 16; n = OGLFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break;
+		// Default to lower RGB layer -- FIXME
+		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
+		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
+		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
 		default:
-		case kPixelFormatARGB8888: 	depth = 32; n = OGLFB; break;
+		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
 	
+	// OGL framebuffer context?
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
+		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
+		n = OGLFB;
+
 	// Update dxres && dyres in case someone called SetViewPort without calling GetScreenStats
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
-
+	// FIXME: RGB lower layer needed when viewport active
+	// FIXME: Switch RGB layer prior to isUnderlay setting
+	if (n == RGBFB && (dxres > 0 || dyres > 0))
+		n = OGLFB;
+	
 	// Block addressing mode needed for OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
 		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
@@ -393,6 +402,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Set XY onscreen position
 	int n = ctx->layer;
 
+#if 0 // FIXME
 	// Change to upper RGB layer for explicit overlay registration
 	if (n == OGLFB && ctx->initialZOrder== kDisplayOnOverlay)
 		n = ctx->layer = RGBFB;
@@ -400,6 +410,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
 	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
 		n = ctx->layer = RGBFB;
+#endif
 
 	// Disable *any* layer's pixel format or resolution change
 	if (fbviz[n] && (ctx->width != vinfo[n].xres || ctx->height != vinfo[n].yres || ctx->depth != vinfo[n].bits_per_pixel))
@@ -992,11 +1003,24 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	std::list<tBuffer>::iterator it;
 	
 	kernel_.LockMutex(gListMutex);
-	
+
+#ifdef LF1000
 	// All display contexts now reference common base address
 	pdc->basephys 	= finfo[RGBFB].smem_start;
 	pdc->baselinear = finfo[YUVFB].smem_start;
 	pdc->pBuffer 	= (pdc->isPlanar) ? fbmem[YUVFB] : fbmem[RGBFB];
+#else
+	// Framebuffers reference separate base addresses
+	pdc->basephys 	= finfo[pdc->layer].smem_start;
+	pdc->baselinear = finfo[pdc->layer].smem_start;
+	pdc->pBuffer 	= fbmem[pdc->layer];
+
+	pdc->offset		= fboff[pdc->layer];
+	pdc->pBuffer	+= pdc->offset;
+	if (pdc->layer != RGBFB)
+		fboff[pdc->layer] += bufsize;
+	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
+#endif
 
 #ifdef LF1000
 	// Look on for available buffer on free list first
