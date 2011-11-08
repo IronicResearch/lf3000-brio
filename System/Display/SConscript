@@ -19,7 +19,7 @@ if env['cpu'] == 'x86':
 elif env['platform'] == 'LF2000':
 	emulibs		= []
 	ogllibs		= ['EGL', 'GLESv1_CM', 'vr5']
-	modsrcs		= Glob('*.cpp') + Glob( os.path.join('Lightning', '*.cpp') )
+	modsrcs		= Glob('*.cpp') + Glob( os.path.join(env['platform'], '*.cpp') )
 else:
 	emulibs		= []
 	ogllibs		= ['opengles_lite']
