@@ -121,4 +121,17 @@ public:
 		TS_ASSERT_EQUALS( handler_.data_.powerState, kBadPowerState );
 	}
 
+	//------------------------------------------------------------------------
+	void testReset( )
+	{
+		PRINT_TEST_NAME();
+		pwrmgr_->Reset();
+	}
+
+	//------------------------------------------------------------------------
+	void testPoweroff( )
+	{
+		PRINT_TEST_NAME();
+		pwrmgr_->Shutdown();
+	}
 };
