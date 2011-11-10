@@ -43,6 +43,7 @@ enum eGroupEnum {
 	kGroupCamera,
 	// Brio v1.2
 	kGroupAccelerometer,
+	kGroupMicrophone,
 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
 	// WARNING: Inserting values will break backwards compatability!!!

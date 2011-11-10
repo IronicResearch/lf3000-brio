@@ -31836,3 +31836,26 @@ By dlazzari (dlazzari@leapfrog.com) on 11/8/11 10:52 AM
 4,891 ms. (Cumulative: 12,010,190 ms)
 
 ----------------
+Revision 9,562 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,563 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,564 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,565 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,566 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,567 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,568 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merged -r9507:
+Created MicrophoneMPI.  This is the microphone logic extracted from the CameraMPI and turned into its own MPI.  It provides access to the microphone independent of the camera mpi.
+
+Note: CameraMPI is not yet updated to use this for accessing the microphone instead of its microphone functionality.
+
+Also updated microphone unit tests to test microphone via this MPI rather than the Camera.  Removed TestMicrophone.h from System/Camera and copied to System/Microphone.
+
+Merged -r9515: remove python generated files checked in by mistake
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 11/9/11 4:11 PM
+1 changed, 10 added, 1 deleted.
+4,766 ms. (Cumulative: 12,015,081 ms)
+
+----------------
