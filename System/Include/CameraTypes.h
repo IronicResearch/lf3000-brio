@@ -32,7 +32,7 @@ typedef tHndl 		tVidCapHndl;
 typedef tHndl 		tAudCapHndl;
 
 const tVidCapHndl	kInvalidVidCapHndl = static_cast<tVidCapHndl>(0);
-const tVidCapHndl	kInvalidAudCapHndl = static_cast<tAudCapHndl>(0);
+//const tVidCapHndl	kInvalidAudCapHndl = static_cast<tAudCapHndl>(0);
 
 
 enum tControlType {
@@ -62,14 +62,14 @@ struct tControlInfo {
 };
 
 typedef std::vector<tControlInfo*> tCameraControls;
-
+/*
 enum tMicrophoneParam {
 	kMicrophoneThreshold,
 	kMicrophoneDuration,
 	kMicrophoneClipCount,
 	kMicrophoneRateAdjust,
 };
-
+*/
 //==============================================================================
 // Camera events and messages
 //==============================================================================

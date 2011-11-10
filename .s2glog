@@ -31859,3 +31859,18 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/9/11 4:11 PM
 4,766 ms. (Cumulative: 12,015,081 ms)
 
 ----------------
+Revision 9,569 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merged -r9510,9511,9512:
+-- All MicrophoneMPI event types are now unique from camera's.  Microphone Events have a kMicrophone prefix, while Camera events keep their original prefixes.  So for example: kCaptureTimeOutEvent (camera) becomes kMicrophoneCaptureTimeOutEvent (microphone).  Also made Camera Module to include MicrophoneMPI header.  This is to make way for CameraMPI relying on MicrophoneMPI for audio functionality.
+
+-- Restored TestMicrophone that was originally in Camera's Brio Unit Tests.  This has been renamed to TestCameraMicrophone however to distinguish between whether audio is being recorded via the CameraMPI or the MicrophoneMPI directly.
+
+-- Modifed Scons to reflect that Camera needs MicrophoneMPI.
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 11/9/11 4:14 PM
+7 changed, 1 added, 0 deleted.
+4,923 ms. (Cumulative: 12,020,097 ms)
+
+----------------

@@ -21,6 +21,7 @@
 #include <DebugMPI.h>
 #include <KernelMPI.h>
 #include <EventMPI.h>
+#include <MicrophoneMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
 #include <queue>

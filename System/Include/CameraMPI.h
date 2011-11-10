@@ -17,6 +17,7 @@
 #include <SystemTypes.h>
 #include <CameraTypes.h>
 #include <VideoTypes.h>
+#include <MicrophoneTypes.h>
 #include <CoreMPI.h>
 #include <EventListener.h>
 

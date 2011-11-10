@@ -1,9 +1,9 @@
-// TestMicrophoneMPI.h
+// TestCameraMPI.h
 
 #include <cxxtest/TestSuite.h>
 #include <SystemErrors.h>
 #include <StringTypes.h>
-#include <MicrophoneMPI.h>
+#include <CameraMPI.h>
 #include <DisplayMPI.h>
 #include <KernelMPI.h>
 #include <EventMPI.h>
@@ -20,17 +20,17 @@
 LF_USING_BRIO_NAMESPACE()
 
 const tDebugSignature kMyApp = kTestSuiteDebugSig;
-const tEventType LocalCameraEvents[] = {kAllMicrophoneEvents};
+const tEventType LocalCameraEvents[] = {kAllCameraEvents};
 
 const char* capture_path = "/LF/Bulk/Data/Local/All/";
 
 //============================================================================
-// TestMicrophoneMPI functions
+// TestCameraMPI functions
 //============================================================================
-class TestMicrophone : public CxxTest::TestSuite, TestSuiteBase
+class TestCameraMicrophone : public CxxTest::TestSuite, TestSuiteBase
 {
 private:
-	CMicrophoneMPI*		pMicrophoneMPI_;
+	CCameraMPI*		pCameraMPI_;
 	CKernelMPI*		pKernelMPI_;
 	tEventType		reason;
 
@@ -49,23 +49,23 @@ private:
 
 		tEventStatus Notify(const IEventMessage& Imsg)
 		{
-			const CMicrophoneEventMessage& msg = dynamic_cast<const CMicrophoneEventMessage&>(Imsg);
+			const CCameraEventMessage& msg = dynamic_cast<const CCameraEventMessage&>(Imsg);
 
 			reason = Imsg.GetEventType();
 
-			if(reason == kMicrophoneCaptureTimeOutEvent)
+			if(reason == kCaptureTimeOutEvent)
 			{
 				length = msg.data.timeOut.length;
 			}
-			if(reason == kMicrophoneCaptureQuotaHitEvent)
+			if(reason == kCaptureQuotaHitEvent)
 			{
 				length = msg.data.quotaHit.length;
 			}
-			if(reason == kMicrophoneCaptureStoppedEvent)
+			if(reason == kCaptureStoppedEvent)
 			{
 				length = msg.data.stopped.length;
 			}
-			if(reason == kMicrophoneRemovedEvent)
+			if(reason == kCameraRemovedEvent)
 			{
 				length = msg.data.removed.length;
 			}
@@ -94,41 +94,40 @@ public:
 	//------------------------------------------------------------------------
 	void setUp( )
 	{
-		pMicrophoneMPI_ = new CMicrophoneMPI;
+		pCameraMPI_ = new CCameraMPI;
 	}
 
 	//------------------------------------------------------------------------
 	void tearDown( )
 	{
-		delete pMicrophoneMPI_;
+		delete pCameraMPI_;
 	}
 
 	//------------------------------------------------------------------------
 	void testWasCreated( )
 	{
 		PRINT_TEST_NAME();
-		TS_ASSERT( pMicrophoneMPI_ != NULL );
-		TS_ASSERT( pMicrophoneMPI_->IsValid() == true );
+		TS_ASSERT( pCameraMPI_ != NULL );
+		TS_ASSERT( pCameraMPI_->IsValid() == true );
 	}
 
 	//------------------------------------------------------------------------
 	void testCoreMPI( )
 	{
 		PRINT_TEST_NAME();
-
 		tVersion		version;
 		const CString*	pName;
 		const CURI*		pURI;
 
-		if ( pMicrophoneMPI_->IsValid() ) {
-			pName = pMicrophoneMPI_->GetMPIName();
-			TS_ASSERT_EQUALS( *pName, "MicrophoneMPI" );
-			version = pMicrophoneMPI_->GetModuleVersion();
+		if ( pCameraMPI_->IsValid() ) {
+			pName = pCameraMPI_->GetMPIName();
+			TS_ASSERT_EQUALS( *pName, "CameraMPI" );
+			version = pCameraMPI_->GetModuleVersion();
 			TS_ASSERT_EQUALS( version, 2 );
-			pName = pMicrophoneMPI_->GetModuleName();
-			TS_ASSERT_EQUALS( *pName, "Microphone" );
-			pURI = pMicrophoneMPI_->GetModuleOrigin();
-			TS_ASSERT_EQUALS( *pURI, "/LF/System/Microphone" );
+			pName = pCameraMPI_->GetModuleName();
+			TS_ASSERT_EQUALS( *pName, "Camera" );
+			pURI = pCameraMPI_->GetModuleOrigin();
+			TS_ASSERT_EQUALS( *pURI, "/LF/System/Camera" );
 		}
 	}
 
@@ -143,17 +142,17 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 
-		if ( pMicrophoneMPI_->IsValid() )
+		if ( pCameraMPI_->IsValid() )
 		{
-			err = pMicrophoneMPI_->SetAudioPath(capture_path);
+			err = pCameraMPI_->SetCameraAudioPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pMicrophoneMPI_->StartAudioCapture("test.wav", NULL);
+			capture = pCameraMPI_->StartAudioCapture("test.wav", NULL);
 			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
 
 			pKernelMPI_->TaskSleep(5000);
 
-			bRet = pMicrophoneMPI_->StopAudioCapture(capture);
+			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 		}
 		else
@@ -175,30 +174,30 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 
-		if ( pMicrophoneMPI_->IsValid() )
+		if ( pCameraMPI_->IsValid() )
 		{
-			err = pMicrophoneMPI_->SetAudioPath(capture_path);
+			err = pCameraMPI_->SetCameraAudioPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pMicrophoneMPI_->StartAudioCapture("testEvent.wav", &listener, 3);
+			capture = pCameraMPI_->StartAudioCapture("testEvent.wav", &listener, 3);
 			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
 
 			pKernelMPI_->TaskSleep(7000);
-			TS_ASSERT_EQUALS( listener.GetReason(), kMicrophoneCaptureTimeOutEvent );
+			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureTimeOutEvent );
 
 			listener.Reset();
 
-			bRet = pMicrophoneMPI_->StopAudioCapture(capture);
+			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, false );
 
-			capture = pMicrophoneMPI_->StartAudioCapture("testEvent2.wav", &listener, 3);
+			capture = pCameraMPI_->StartAudioCapture("testEvent2.wav", &listener, 3);
 			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
 
 			pKernelMPI_->TaskSleep(1000);
 
-			bRet = pMicrophoneMPI_->StopAudioCapture(capture);
+			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
-			TS_ASSERT_EQUALS( listener.GetReason(), kMicrophoneCaptureStoppedEvent );
+			TS_ASSERT_EQUALS( listener.GetReason(), kCaptureStoppedEvent );
 		}
 		else
 			TS_FAIL("MPI was deemed invalid");
@@ -219,55 +218,55 @@ public:
 
 		pKernelMPI_ = new CKernelMPI;
 
-		if ( pMicrophoneMPI_->IsValid() )
+		if ( pCameraMPI_->IsValid() )
 		{
-			err = pMicrophoneMPI_->SetAudioPath(capture_path);
+			err = pCameraMPI_->SetCameraAudioPath(capture_path);
 			TS_ASSERT_EQUALS( err, kNoErr );
 
-			capture = pMicrophoneMPI_->StartAudioCapture("testPause.wav", NULL);
+			capture = pCameraMPI_->StartAudioCapture("testPause.wav", NULL);
 			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
 
 			pKernelMPI_->TaskSleep(2000);
 
-			bRet = pMicrophoneMPI_->IsAudioCapturePaused(capture);
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
 			TS_ASSERT_EQUALS( bRet, false );
 
-			bRet = pMicrophoneMPI_->PauseAudioCapture(capture);
+			bRet = pCameraMPI_->PauseAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			bRet = pMicrophoneMPI_->IsAudioCapturePaused(capture);
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
 			pKernelMPI_->TaskSleep(2000);
 
-			bRet = pMicrophoneMPI_->ResumeAudioCapture(capture);
+			bRet = pCameraMPI_->ResumeAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			bRet = pMicrophoneMPI_->IsAudioCapturePaused(capture);
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
 			TS_ASSERT_EQUALS( bRet, false );
 
 			pKernelMPI_->TaskSleep(2000);
 
-			bRet = pMicrophoneMPI_->StopAudioCapture(capture);
+			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			capture = pMicrophoneMPI_->StartAudioCapture("testPause2.wav", NULL, 0, true);
+			capture = pCameraMPI_->StartAudioCapture("testPause2.wav", NULL, 0, true);
 			TS_ASSERT_DIFFERS( capture, kInvalidAudCapHndl );
 
 			pKernelMPI_->TaskSleep(2000);
 
-			bRet = pMicrophoneMPI_->IsAudioCapturePaused(capture);
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			bRet = pMicrophoneMPI_->ResumeAudioCapture(capture);
+			bRet = pCameraMPI_->ResumeAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
-			bRet = pMicrophoneMPI_->IsAudioCapturePaused(capture);
+			bRet = pCameraMPI_->IsAudioCapturePaused(capture);
 			TS_ASSERT_EQUALS( bRet, false );
 
 			pKernelMPI_->TaskSleep(2000);
 
-			bRet = pMicrophoneMPI_->StopAudioCapture(capture);
+			bRet = pCameraMPI_->StopAudioCapture(capture);
 			TS_ASSERT_EQUALS( bRet, true );
 
 		}
