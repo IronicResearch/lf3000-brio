@@ -345,7 +345,7 @@ private:
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
-/*
+#if 0
 	tErrType	InitMicInt();
 	tErrType	DeinitMicInt();
 	int			XlateAudioFormatAVI(snd_pcm_format_t fmt);
@@ -359,7 +359,7 @@ private:
 	friend void* MicTaskMain(void* arg);
 	friend tErrType InitMicTask(CCameraModule* module);
 	friend tErrType DeInitMicTask(CCameraModule* module);
-*/
+#endif
 	void		InitLut();
 	tErrType	InitIDCTInt();
 	tErrType	DeinitIDCTInt();
