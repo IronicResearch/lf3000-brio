@@ -1878,7 +1878,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
     }
 
-	/* This all is no longer necessary, for CameraTask now handles Stopping the Audio Capture.
+#if 0 // This all is no longer necessary, for CameraTask now handles Stopping the Audio Capture.
 	if(camCtx_.path.length() && camCtx_.bAudio)
 	{
 		if(!StopAudio())
@@ -1888,7 +1888,8 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 			THREAD_UNLOCK;
 			return false;
 		}
-	}*/
+	}
+#endif
 
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
