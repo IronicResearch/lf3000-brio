@@ -19,9 +19,9 @@ usbmodsrcs	= ['Platform/CameraUSB.cpp']
 vipmodsrcs	= ['Platform/CameraVIP.cpp']
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['Utility', 'AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI',
- 					 'DebugMPI', 'USBDeviceMPI', 'jpeg', 'asound', 'sndfile',
- 					 'avformat', 'avcodec', 'avutil', 'png', 'z']
-mpilibs		= ['ModuleMPI']
+					 'DebugMPI', 'MicrophoneMPI', 'USBDeviceMPI', 'jpeg', 'asound', 'sndfile',
+					 'avformat', 'avcodec', 'avutil', 'png', 'z']
+mpilibs		= ['ModuleMPI', 'MicrophoneMPI']
 
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module

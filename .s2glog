@@ -31874,3 +31874,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/9/11 4:14 PM
 4,923 ms. (Cumulative: 12,020,097 ms)
 
 ----------------
+Revision 9,570 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merged in Brio trunk -r9491:9562 changes with MicrophoneMPI, ImageIO.
+Includes integration with CameraMPI using MicrophoneMPI needing manual resolve.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/10/11 9:56 AM
+16 changed, 5 added, 1 deleted.
+5,626 ms. (Cumulative: 12,025,816 ms)
+
+----------------

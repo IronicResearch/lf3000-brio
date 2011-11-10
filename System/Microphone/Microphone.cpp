@@ -620,6 +620,11 @@ Boolean	CMicrophoneModule::SetMicrophoneParam(enum tMicrophoneParam param, S32 v
 	case kMicrophoneRateAdjust:
 		micCtx_.rateAdjust = value;
 		return true;
+	case kMicrophoneRate:
+		micCtx_.rate = value;
+		return true;
+	case kMicrophoneBlockSize:
+		micCtx_.block_size = value;
 	}
 	return false;
 }
@@ -637,8 +642,18 @@ S32	CMicrophoneModule::GetMicrophoneParam(enum tMicrophoneParam param)
 		return micCtx_.clipCount;
 	case kMicrophoneRateAdjust:
 		return micCtx_.rateAdjust;
+	case kMicrophoneRate:
+		return micCtx_.rate;
+	case kMicrophoneBlockSize:
+		return micCtx_.block_size;
 	}
 	return 0;
+}
+
+//----------------------------------------------------------------------------
+unsigned int	CMicrophoneModule::CameraWriteAudio(void* avi)
+{
+	return WriteAudio((avi_t*) avi);
 }
 
 //----------------------------------------------------------------------------
@@ -724,10 +739,10 @@ Boolean	CMicrophoneModule::StopAudio()
 }
 
 //----------------------------------------------------------------------------
-Boolean	CMicrophoneModule::WriteAudio(avi_t *avi)
+unsigned int	CMicrophoneModule::WriteAudio(avi_t *avi)
 {
 #ifdef USE_ASYNC_PIPE
-	Boolean ret = false;
+	unsigned int ret = 0;
 	int err;
 	fd_set rfds;
 	struct timeval tv = {0,0};	/* immediate timeout */
@@ -741,11 +756,11 @@ Boolean	CMicrophoneModule::WriteAudio(avi_t *avi)
 
 	if(err < 0)
 	{
-		ret = false;
+		ret = 0;
 	}
 	else if(err == 0)	/* no data */
 	{
-		ret = true;
+		ret = 0;
 	}
 	else
 	{
@@ -758,7 +773,7 @@ Boolean	CMicrophoneModule::WriteAudio(avi_t *avi)
 			if (len != micCtx_.block_size)
 				micCtx_.counter = micCtx_.bytesWritten / micCtx_.block_size;
 		}
-		ret = true;
+		ret = micCtx_.bytesWritten;
 	}
 
 	return ret;
@@ -775,9 +790,9 @@ Boolean	CMicrophoneModule::WriteAudio(avi_t *avi)
 		micCtx_.counter++;
 		if (len != micCtx_.block_size)
 			micCtx_.counter = micCtx_.bytesWritten / micCtx_.block_size;
-		return true;
+		return micCtx_.bytesWritten;
 	}
-	return false;
+	return 0;
 #endif
 }
 
@@ -1039,8 +1054,9 @@ static int direct_read_begin(struct tMicrophoneContext *pCtx, char** pbuffer, in
 		err = xrun_recovery(handle, avail);
 		return 0;
 	}
-	if (avail < pCtx->period_size)
+	if (avail < pCtx->period_size) {
 		return 0;
+	}
 
 	// Return mmapped region to captured samples
 	frames = avail;

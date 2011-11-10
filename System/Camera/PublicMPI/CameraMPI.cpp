@@ -233,6 +233,13 @@ Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder col
 		return kInvalidVidCapHndl;
 	return pModule_->GetFrame(hndl, pixels, color_order);
 }
+//----------------------------------------------------------------------------
+Boolean	CCameraMPI::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
+{
+	if (!pModule_)
+		return kInvalidVidCapHndl;
+	return pModule_->GetFrame(hndl, pSurf, color_order);
+}
 
 //----------------------------------------------------------------------------
 Boolean	CCameraMPI::RenderFrame(const CPath &path, tVideoSurf *pSurf)

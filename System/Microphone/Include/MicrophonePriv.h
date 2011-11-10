@@ -164,6 +164,7 @@ public:
 
 	VTABLE_EXPORT Boolean		SetMicrophoneParam(enum tMicrophoneParam param, S32 value);
 	VTABLE_EXPORT S32			GetMicrophoneParam(enum tMicrophoneParam param);
+	VTABLE_EXPORT unsigned int	CameraWriteAudio(void* avi);
 
 private:
 	CPath				sysfs;		// e.g., "/sys/class/usb_device/usbdev1.2/"
@@ -194,7 +195,7 @@ private:
 	int			XlateAudioFormatAVI(snd_pcm_format_t fmt);
 	int			XlateAudioFormatSF(snd_pcm_format_t fmt);
 	Boolean		StartAudio(Boolean reset = true);
-	Boolean		WriteAudio(avi_t *avi);
+	unsigned int WriteAudio(avi_t *avi);
 	Boolean		WriteAudio(SNDFILE *wav);
 	Boolean		FlushAudio();
 	Boolean		StopAudio();

@@ -1,22 +1,16 @@
 #-----------------------------------------------------------------------------
-# Brio/System/Accelerometer
+# Brio/System/ImageIO
 #-----------------------------------------------------------------------------
 from Etc.Tools.SConsTools.Priv.LfUtils import *
-import os
-
 Import('env')
 
-module_name	= 'Accelerometer'
-mpi_name	= module_name + 'MPI'
+mpi_name = 'ImageIO'
 
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
-emulibs		= env['cpu'] == 'x86' and ['X11'] or []
-modsrcs		= Glob('*.cpp')
-mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp')) + modsrcs
-modlibs		= ['DebugMPI', 'EventMPI', 'KernelMPI'] + emulibs
-mpilibs		= ['Utility']
+mpisrcs		= Glob('*.cpp')
+mpilibs		= []
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
@@ -25,10 +19,10 @@ myenv		= env.Clone()
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 
 targets = mympi or []
+
 #-----------------------------------------------------------------------------
 # Modify the build environment and build and run the unit tests
 #-----------------------------------------------------------------------------
-if env['buildtests']:
-	targets.append(RunMyTests(module_name, [], mpilibs + ['EventMPI', 'ButtonMPI'], myenv))
+#RunMyTests(module_name, [], mpilibs, myenv, vars)
 
 Return('targets')

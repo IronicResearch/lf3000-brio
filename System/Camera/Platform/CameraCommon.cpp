@@ -217,14 +217,19 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 	err = kernel_.InitMutex( camCtx_.mThread2, attr );
 	dbg_.Assert((kNoErr == err), "CCameraModule::ctor: Couldn't init mutex.\n");
 
+	//Initialize micListener to NULL.  This is used by Audio functions to translate mic events to camera events.
+	micListener_ = NULL;
+
 	InitLut();
 }
 
 //----------------------------------------------------------------------------
 CCameraModule::~CCameraModule()
 {
+	delete micListener_;
+
 	StopVideoCapture(camCtx_.hndl);
-	StopAudioCapture(micCtx_.hndl);
+//	StopAudioCapture(micCtx_.hndl);
 
 	valid = false;
 	CAMERA_LOCK;
@@ -1873,6 +1878,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return false;
     }
 
+	/* This all is no longer necessary, for CameraTask now handles Stopping the Audio Capture.
 	if(camCtx_.path.length() && camCtx_.bAudio)
 	{
 		if(!StopAudio())
@@ -1882,7 +1888,7 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 			THREAD_UNLOCK;
 			return false;
 		}
-	}
+	}*/
 
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
@@ -1974,6 +1980,49 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder 
 
 	return ret;
 }
+
+//----------------------------------------------------------------------------
+Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
+{
+	
+	int i, row_stride;
+	Boolean ret;
+	tFrameInfo frame	= {kCaptureFormatMJPEG, pSurf->width, pSurf->height, 0, NULL, 0};
+	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, 921600, NULL};
+
+	ret = GrabFrame(hndl, &frame);
+	if(ret)
+	{
+		bmp.buffer = static_cast<U8**>(kernel_.Malloc(bmp.height * sizeof(U8*)));
+
+		row_stride = bmp.width * bmp.depth;
+		for(i = 0; i < bmp.height; i++)
+		{
+			bmp.buffer[i] = &bmp.data[i*row_stride];
+		}
+		
+		ret = RenderFrame(&frame, NULL, &bmp, JPEG_SLOW);
+		
+		if(color_order == kDisplayRgb)
+		{
+			for(i = 0; i < bmp.height; ++i)
+			{
+				int i_stride = i * row_stride;
+				for(int j = 0; j < bmp.width * 3; j += 3)
+				{
+					U8 temp = pSurf->buffer[i_stride + j];
+					pSurf->buffer[i_stride + j] = pSurf->buffer[i_stride + j + 2];
+					pSurf->buffer[i_stride + j + 2] = temp;
+				}
+			}
+		}
+		
+		kernel_.Free(frame.data);	/* alloced by GrabFrame */
+		kernel_.Free(bmp.buffer);
+	}
+	return ret;
+}
+
 
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
@@ -2245,7 +2294,7 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 
 	if(camCtx_.bAudio)
 	{
-		StopAudio();
+		microphone_.PauseAudioCapture(micCtx_.hndl);
 	}
 
 	camCtx_.bPaused = true;
@@ -2271,7 +2320,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 
 	if(camCtx_.bAudio)
 	{
-		StartAudio(false);
+		microphone_.ResumeAudioCapture(micCtx_.hndl);
 	}
 
 	camCtx_.bPaused = false;
@@ -2323,11 +2372,13 @@ Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode)
 		return false;
 	}
 
+#if 0
 	if(kNoErr != InitMicInt())
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: microphone init failed\n");
 		return false;
 	}
+#endif
 
 #if 0
 	if(kNoErr != InitIDCTInt())
@@ -2383,10 +2434,12 @@ Boolean	CCameraModule::DeinitCameraInt()
 	}
 #endif
 
+#if 0
 	if(kNoErr != DeinitMicInt())
 	{
 		return false;
 	}
+#endif
 
 	if(!DeinitCameraBufferInt(&camCtx_))
 	{

@@ -23,6 +23,8 @@
 #include <AVIWrapper.h>
 
 #define USE_RENDER_THREAD	1	// for separate rendering thread
+#define MIC_CHANS 			1
+#define MIC_WIDTH			16
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -118,6 +120,7 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
+	CMicrophoneMPI		microphone;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
@@ -164,10 +167,12 @@ void* CameraTaskMain(void* arg)
 	{
 		bFile	= true;
 
-		audio_rate	= cam->micCtx_.rate;
-		audio_chans	= cam->micCtx_.channels;
-		audio_width	= cam->micCtx_.sbits;
-		audio_fmt	= cam->XlateAudioFormatAVI(cam->micCtx_.format);
+		audio_rate	= microphone.GetMicrophoneParam(kMicrophoneRate);	//cam->micCtx_.rate;
+		audio_chans	= MIC_CHANS;		//cam->micCtx_.channels;
+		audio_width	= MIC_WIDTH;		//cam->micCtx_.sbits;
+		audio_fmt	= WAVE_FORMAT_PCM;
+
+		//printf("audio_rate=%d   audio_chans=%d   audio_width=%d   audio_fmt=%d\n",audio_rate,audio_chans,audio_width,audio_fmt);
 
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
 
@@ -251,7 +256,7 @@ void* CameraTaskMain(void* arg)
 
 	if(bFile && pCtx->bAudio)
 	{
-		pCtx->module->StartAudio();
+		cam->micCtx_.hndl = microphone.StartAudioCapture("",pCtx->pListener);
 	}
 
 	bRunning = true;
@@ -289,7 +294,13 @@ void* CameraTaskMain(void* arg)
 		bRet = false;
 		if(bFile && pCtx->bAudio && !pCtx->bPaused)
 		{
-			bRet = pCtx->module->WriteAudio(avi);
+			unsigned int retValue = microphone.CameraWriteAudio(avi);
+			bRet = (retValue != 0);
+			if(bRet) {
+				cam->micCtx_.bytesWritten = retValue;
+				cam->micCtx_.counter = cam->micCtx_.bytesWritten / microphone.GetMicrophoneParam(kMicrophoneBlockSize);
+			}
+			//printf("bytesWritten = %d    counter=%d    bRet=%s\n",cam->micCtx_.bytesWritten,cam->micCtx_.counter,((bRet) ? "true" : "false"));
 		}
 
 		if(!pCtx->module->PollFrame(pCtx->hndl))
@@ -347,8 +358,12 @@ void* CameraTaskMain(void* arg)
 				//do {
 					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 				//} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
+///*-------------------------------------------------------------
+// * TODO: FIX ME.  Now that we're using the MicrophoneMPI for audio calls, cam's micCtx isn't necessarily working right.  Need to revisit.
+// * With this commented out, we'll use nominal fps instead, but need to revisit in the future.
 				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
 					keyframe = cam->micCtx_.counter;
+// *-------------------------------------------------------------*/
 				// Breakout on next loop iteration if AVI write error
 				if (r < 0)
 					bRunning = false;
@@ -378,7 +393,7 @@ void* CameraTaskMain(void* arg)
 
 	if (bFile && pCtx->bAudio)
 	{
-		pCtx->module->StopAudio();
+		microphone.StopAudioCapture(cam->micCtx_.hndl);
 	}
 
 	kernel.DestroyTimer(timer);
@@ -403,8 +418,13 @@ void* CameraTaskMain(void* arg)
 	if(bFile)
 	{
 		float fps = (float)keyframe / ((float)elapsed / 1000000);
+
+///*-------------------------------------------------------------
+// * TODO: FIX ME.  Now that we're using the MicrophoneMPI for audio calls, cam's micCtx isn't necessarily working right.  Need to revisit.
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
+		//printf("fps=%f\n",fps);
+//*-------------------------------------------------------------*/
 
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, V4L2_PIX_FMT_MJPEG);
 		AVI_close(avi);

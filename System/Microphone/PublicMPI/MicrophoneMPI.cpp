@@ -200,5 +200,13 @@ S32	CMicrophoneMPI::GetMicrophoneParam(enum tMicrophoneParam param)
 	return pModule_->GetMicrophoneParam(param);
 }
 
+//----------------------------------------------------------------------------
+unsigned int CMicrophoneMPI::CameraWriteAudio(void* avi)
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->CameraWriteAudio(avi);
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
