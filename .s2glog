@@ -31895,3 +31895,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/10/11 10:07 AM
 4,948 ms. (Cumulative: 12,030,889 ms)
 
 ----------------
+Revision 9,572 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge back Microphone.cpp -r9514 for CameraMPI compatibility.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/10/11 10:44 AM
+0 changed, 1 added, 0 deleted.
+4,876 ms. (Cumulative: 12,035,874 ms)
+
+----------------
