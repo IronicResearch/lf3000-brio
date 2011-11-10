@@ -230,6 +230,8 @@ public:
 	/// \return true on success.
 	Boolean		GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order = kOpenGlRgb);
 
+	Boolean     GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder order = kOpenGlRgb);
+
 	/// RenderFrame() render an image saved with SnapFrame() to the host device's display.
 	///
 	/// \param	path	JPEG save file name relative to SetCameraStillPath(),

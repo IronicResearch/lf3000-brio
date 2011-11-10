@@ -39,8 +39,7 @@ targets = mympi or []
 hwlibs		= env['platform'] == 'LF2000' and ['EGL', 'GLESv1_CM', 'vr5'] or ['opengles_lite']
 ogllibs		= env['cpu'] == 'x86' and ['gles_cl'] or hwlibs
 if env['cpu'] == 'x86':
-	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
-							'#ThirdParty/PowerVR/Include/LinuxPC'])
+	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/FreeType/Libs/x86').abspath)
 	myenv.Append(RPATH   = myenv.Dir('#ThirdParty/PowerVR/Libs').abspath)

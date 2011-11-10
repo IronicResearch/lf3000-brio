@@ -22,6 +22,7 @@
 #include <KernelMPI.h>
 #include <EventMPI.h>
 #include <MicrophoneMPI.h>
+#include <MicrophoneTypes.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
 #include <queue>
@@ -257,6 +258,22 @@ tErrType DeInitCameraTask(tCameraContext* pCtx);
 
 //==============================================================================
 class CCameraModule : public ICoreModule {
+
+	// Internal listener for converting mic events to cam events.
+	class MicrophoneListener : public IEventListener
+	{
+		private:
+			tEventType	reason;
+			IEventListener *destListener;
+			CEventMPI *pEvent;
+
+		public:
+			MicrophoneListener(IEventListener *dest, CEventMPI *event);
+			tEventStatus Notify(const IEventMessage& Imsg);
+			tEventStatus Reset();
+		};
+
+
 public:
 	// ICoreModule functionality
 	virtual Boolean			IsValid() const;
@@ -278,6 +295,7 @@ public:
 													IEventListener * pListener, const U32 maxLength, const Boolean audio);
 	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath& path);
 	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, U8* pixels, tColorOrder color_order);
+	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order);
 	VTABLE_EXPORT Boolean		RenderFrame(const CPath &path, tVideoSurf *pSurf);
 	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl, const Boolean display);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
@@ -295,9 +313,11 @@ public:
 	VTABLE_EXPORT S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
 private:
+	MicrophoneListener	*micListener_;
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
 	CEventMPI			event_;
+	CMicrophoneMPI		microphone_;
 	tCameraContext		camCtx_;
 	tMicrophoneContext	micCtx_;
 	tIDCTContext		idctCtx_;
@@ -325,7 +345,7 @@ private:
 	Boolean		SaveFrame(const CPath &path, const tFrameInfo *frame);
 	Boolean		OpenFrame(const CPath &path, tFrameInfo *frame);
 	Boolean		SnapFrameRGB(const tVidCapHndl hndl, const CPath &path);
-
+/*
 	tErrType	InitMicInt();
 	tErrType	DeinitMicInt();
 	int			XlateAudioFormatAVI(snd_pcm_format_t fmt);
@@ -339,7 +359,7 @@ private:
 	friend void* MicTaskMain(void* arg);
 	friend tErrType InitMicTask(CCameraModule* module);
 	friend tErrType DeInitMicTask(CCameraModule* module);
-
+*/
 	void		InitLut();
 	tErrType	InitIDCTInt();
 	tErrType	DeinitIDCTInt();
