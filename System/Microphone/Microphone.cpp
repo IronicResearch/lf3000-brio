@@ -875,6 +875,10 @@ Boolean	CMicrophoneModule::FlushAudio()
 		int offset;
 		char* addr;
 
+		// Do not flush audio if no threshold or clip count
+		if (micCtx_.threshold == 0 || micCtx_.clipCount == 0)
+			return false;
+
 		// Copy captured samples directly from mmapped buffer
 		if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
 			memcpy(micCtx_.poll_buf, addr, len);

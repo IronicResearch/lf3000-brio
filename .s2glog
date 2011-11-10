@@ -31905,3 +31905,17 @@ By Dave Milici (dmilici@leapfrog.com) on 11/10/11 10:44 AM
 4,876 ms. (Cumulative: 12,035,874 ms)
 
 ----------------
+Revision 9,573 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Resolve outstanding FIXMEs with MicrophoneMPI and CameraMPI.
+(1) Prevent MicrophoneMPI from flushing audio when threshold params zeroed
+by CameraMPI during AVI recording.
+(2) Tally cummulative bytes written by MicrophoneMPI audio stream for use 
+in AVI keyframe and FPS adjustments.  
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/10/11 11:43 AM
+3 changed, 0 added, 0 deleted.
+4,984 ms. (Cumulative: 12,040,936 ms)
+
+----------------
