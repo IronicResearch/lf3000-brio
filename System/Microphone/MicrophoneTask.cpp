@@ -120,7 +120,7 @@ void* MicTaskMain(void* arg)
 
 			if (!sndfile && pCtx->pListener && bRet != bTriggered && cam->kernel_.GetElapsedTimeAsMSecs() > elapsed)
 			{
-				tAudioTriggeredMsg		data;
+				tMicrophoneAudioTriggeredMsg		data;
 				data.ahndl				= pCtx->hndl;
 				data.threshold			= bTriggered = bRet;
 				data.timestamp 			= cam->kernel_.GetElapsedTimeAsMSecs();
@@ -155,7 +155,7 @@ void* MicTaskMain(void* arg)
 		}
 		else if(!timeout)							// manually stopped by StopVideoCapture()
 		{
-			tCaptureStoppedMsg		data;
+			tMicrophoneCaptureStoppedMsg		data;
 			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
 			data.length 			= elapsed;
@@ -163,7 +163,7 @@ void* MicTaskMain(void* arg)
 		}
 		else if(pCtx->reqLength && pCtx->reqLength <= pCtx->maxLength)	// normal timeout
 		{
-			tCaptureTimeoutMsg		data;
+			tMicrophoneCaptureTimeoutMsg		data;
 			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
 			data.length 			= elapsed;
@@ -171,7 +171,7 @@ void* MicTaskMain(void* arg)
 		}
 		else										// file system capacity timeout
 		{
-			tCaptureQuotaHitMsg		data;
+			tMicrophoneCaptureQuotaHitMsg		data;
 			data.ahndl				= pCtx->hndl;
 			data.saved				= true;
 			data.length 			= elapsed;

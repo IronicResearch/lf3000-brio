@@ -42,31 +42,31 @@ enum tMicrophoneParam {
 // Camera events and messages
 //==============================================================================
 #define MICROPHONE_EVENTS					\
-	(kCaptureTimeOutEvent)				\
-	(kCaptureQuotaHitEvent)				\
-	(kCaptureStoppedEvent)				\
+	(kMicrophoneCaptureTimeOutEvent)				\
+	(kMicrophoneCaptureQuotaHitEvent)				\
+	(kMicrophoneCaptureStoppedEvent)				\
 	(kMicrophoneRemovedEvent)				\
-	(kAudioTriggeredEvent)
+	(kMicrophoneAudioTriggeredEvent)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupMicrophone), MICROPHONE_EVENTS)
 
-const tEventType 	kAllCameraEvents = AllEvents(kGroupMicrophone);
+const tEventType 	kAllMicrophoneEvents = AllEvents(kGroupMicrophone);
 
 //------------------------------------------------------------------------------
 //Use for both Video and Audio captures
-struct tCaptureTimeoutMsg {
+struct tMicrophoneCaptureTimeoutMsg {
 	tAudCapHndl		ahndl;
 	Boolean		saved;		// was the recording saved properly?
 	U32			length;		// actual length of recording
 };
 
-struct tCaptureQuotaHitMsg {
+struct tMicrophoneCaptureQuotaHitMsg {
 	tAudCapHndl		ahndl;
 	Boolean		saved;
 	U32			length;
 };
 
-struct tCaptureStoppedMsg {
+struct tMicrophoneCaptureStoppedMsg {
 	tAudCapHndl		ahndl;
 	Boolean		saved;
 	U32			length;
@@ -78,31 +78,31 @@ struct tMicrophoneRemovedMsg {
 	U32			length;
 };
 
-struct tAudioTriggeredMsg {
+struct tMicrophoneAudioTriggeredMsg {
 	tAudCapHndl	ahndl;
 	Boolean		threshold;
 	U32			timestamp;
 };
 
-union tCaptureMsg {
-	tCaptureTimeoutMsg		timeOut;
-	tCaptureQuotaHitMsg		quotaHit;
-	tCaptureStoppedMsg		stopped;
+union tMicrophoneCaptureMsg {
+	tMicrophoneCaptureTimeoutMsg		timeOut;
+	tMicrophoneCaptureQuotaHitMsg		quotaHit;
+	tMicrophoneCaptureStoppedMsg		stopped;
 	tMicrophoneRemovedMsg		removed;
-	tAudioTriggeredMsg		triggered;
+	tMicrophoneAudioTriggeredMsg		triggered;
 };
 
 //------------------------------------------------------------------------------
 class CMicrophoneEventMessage : public IEventMessage {
 public:
-	CMicrophoneEventMessage( const tCaptureTimeoutMsg& data );
-	CMicrophoneEventMessage( const tCaptureQuotaHitMsg& data );
-	CMicrophoneEventMessage( const tCaptureStoppedMsg& data );
+	CMicrophoneEventMessage( const tMicrophoneCaptureTimeoutMsg& data );
+	CMicrophoneEventMessage( const tMicrophoneCaptureQuotaHitMsg& data );
+	CMicrophoneEventMessage( const tMicrophoneCaptureStoppedMsg& data );
 	CMicrophoneEventMessage( const tMicrophoneRemovedMsg& data );
-	CMicrophoneEventMessage( const tAudioTriggeredMsg& data );
+	CMicrophoneEventMessage( const tMicrophoneAudioTriggeredMsg& data );
 	virtual U16	GetSizeInBytes() const;
 
-	tCaptureMsg	data;
+	tMicrophoneCaptureMsg	data;
 };
 
 LF_END_BRIO_NAMESPACE()

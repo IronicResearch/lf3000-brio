@@ -28,20 +28,20 @@ const CString	kMPIName = "MicrophoneMPI";
 // CMicrophoneEventMessage
 //============================================================================
 //------------------------------------------------------------------------------
-CMicrophoneEventMessage::CMicrophoneEventMessage( const tCaptureTimeoutMsg& data )
-	: IEventMessage(kCaptureTimeOutEvent)
+CMicrophoneEventMessage::CMicrophoneEventMessage( const tMicrophoneCaptureTimeoutMsg& data )
+	: IEventMessage(kMicrophoneCaptureTimeOutEvent)
 {
 	this->data.timeOut = data;
 }
 
-CMicrophoneEventMessage::CMicrophoneEventMessage( const tCaptureQuotaHitMsg& data )
-	: IEventMessage(kCaptureQuotaHitEvent)
+CMicrophoneEventMessage::CMicrophoneEventMessage( const tMicrophoneCaptureQuotaHitMsg& data )
+	: IEventMessage(kMicrophoneCaptureQuotaHitEvent)
 {
 	this->data.quotaHit = data;
 }
 
-CMicrophoneEventMessage::CMicrophoneEventMessage( const tCaptureStoppedMsg& data )
-	: IEventMessage(kCaptureStoppedEvent)
+CMicrophoneEventMessage::CMicrophoneEventMessage( const tMicrophoneCaptureStoppedMsg& data )
+	: IEventMessage(kMicrophoneCaptureStoppedEvent)
 {
 	this->data.stopped = data;
 }
@@ -52,8 +52,8 @@ CMicrophoneEventMessage::CMicrophoneEventMessage( const tMicrophoneRemovedMsg& d
 	this->data.removed = data;
 }
 
-CMicrophoneEventMessage::CMicrophoneEventMessage( const tAudioTriggeredMsg& data )
-	: IEventMessage(kAudioTriggeredEvent)
+CMicrophoneEventMessage::CMicrophoneEventMessage( const tMicrophoneAudioTriggeredMsg& data )
+	: IEventMessage(kMicrophoneAudioTriggeredEvent)
 {
 	this->data.triggered = data;
 }
