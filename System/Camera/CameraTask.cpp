@@ -256,7 +256,11 @@ void* CameraTaskMain(void* arg)
 
 	if(bFile && pCtx->bAudio)
 	{
+		// Zero threshold params to prevent flushing audio from AVI recording
+		microphone.SetMicrophoneParam(kMicrophoneThreshold, 0);
+		microphone.SetMicrophoneParam(kMicrophoneClipCount, 0);
 		cam->micCtx_.hndl = microphone.StartAudioCapture("",pCtx->pListener);
+		cam->micCtx_.bytesWritten = 0;
 	}
 
 	bRunning = true;
@@ -297,7 +301,7 @@ void* CameraTaskMain(void* arg)
 			unsigned int retValue = microphone.CameraWriteAudio(avi);
 			bRet = (retValue != 0);
 			if(bRet) {
-				cam->micCtx_.bytesWritten = retValue;
+				cam->micCtx_.bytesWritten += retValue;	// cummulative bytes written
 				cam->micCtx_.counter = cam->micCtx_.bytesWritten / microphone.GetMicrophoneParam(kMicrophoneBlockSize);
 			}
 			//printf("bytesWritten = %d    counter=%d    bRet=%s\n",cam->micCtx_.bytesWritten,cam->micCtx_.counter,((bRet) ? "true" : "false"));
@@ -358,12 +362,9 @@ void* CameraTaskMain(void* arg)
 				//do {
 					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 				//} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
-///*-------------------------------------------------------------
-// * TODO: FIX ME.  Now that we're using the MicrophoneMPI for audio calls, cam's micCtx isn't necessarily working right.  Need to revisit.
-// * With this commented out, we'll use nominal fps instead, but need to revisit in the future.
+				// Audio block counter is based on cummulative bytes written
 				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
 					keyframe = cam->micCtx_.counter;
-// *-------------------------------------------------------------*/
 				// Breakout on next loop iteration if AVI write error
 				if (r < 0)
 					bRunning = false;
@@ -419,12 +420,10 @@ void* CameraTaskMain(void* arg)
 	{
 		float fps = (float)keyframe / ((float)elapsed / 1000000);
 
-///*-------------------------------------------------------------
-// * TODO: FIX ME.  Now that we're using the MicrophoneMPI for audio calls, cam's micCtx isn't necessarily working right.  Need to revisit.
+		// Actual FPS rate is based on cummulative audio bytes written
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
 		//printf("fps=%f\n",fps);
-//*-------------------------------------------------------------*/
 
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, V4L2_PIX_FMT_MJPEG);
 		AVI_close(avi);

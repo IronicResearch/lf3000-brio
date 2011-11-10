@@ -113,11 +113,7 @@ void* MicTaskMain(void* arg)
 			if (sndfile)
 				bRet = cam->WriteAudio(sndfile);
 			else
-				bRet = 0;	/*bRet = cam->FlushAudio();*/		/* TODO: FIX ME!  This was originally placed for microphone blowing detection, however now that CameraMPI
-																 * uses the MicrophoneMPI to manage audio, we need the audio to NOT be flushed, otherwise video recording with
-																 * sound will be very messed up.  Need to come up wit ha way to identify when this case is happening (possibly use
-																 * filename check on ".avi" extension?)
-																 */
+				bRet = cam->FlushAudio();	// Does not actually flush audio if threshold zeroed by CameraMPI
 
 			if (!bRet)
 				cam->kernel_.TaskSleep(10);
