@@ -36,6 +36,8 @@ enum tMicrophoneParam {
 	kMicrophoneDuration,
 	kMicrophoneClipCount,
 	kMicrophoneRateAdjust,
+	kMicrophoneRate,
+	kMicrophoneBlockSize,
 };
 
 //==============================================================================
