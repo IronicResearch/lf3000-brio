@@ -163,6 +163,9 @@ public:
 	/// \return			Microphone parameter value
 	S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
+	/// CameraWriteAudio() is a special function that DEVELOPERS SHOULD NOT USE.  Used by CameraMPI to write audio to avi stream.
+	unsigned int 	CameraWriteAudio(void* avi);
+
 private:
 	class CMicrophoneModule*	pModule_;
 	U32					id_;
