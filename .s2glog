@@ -31928,3 +31928,15 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/11 9:47 AM
 5,110 ms. (Cumulative: 12,046,156 ms)
 
 ----------------
+Revision 9,575 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enumerate microphone device as non-USB type too.
+Account for unavailable audio stream for AVI recordings,
+as ALSA capture device is not enumerated as expected.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/11 11:50 AM
+3 changed, 0 added, 0 deleted.
+5,141 ms. (Cumulative: 12,051,375 ms)
+
+----------------

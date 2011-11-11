@@ -70,7 +70,7 @@ void* MicTaskMain(void* arg)
 
 	sf_info.samplerate	= pCtx->rate;
 	sf_info.channels	= pCtx->channels;
-	sf_info.format		= SF_FORMAT_WAV | cam->XlateAudioFormatSF(pCtx->format);
+	sf_info.format		= SF_FORMAT_WAV; // | cam->XlateAudioFormatSF(pCtx->format);
 
 	// Writing to WAV file is conditional on valid path string
 	if (pCtx->path.length())
@@ -87,7 +87,7 @@ void* MicTaskMain(void* arg)
 	elapsed = cam->kernel_.GetElapsedTimeAsMSecs();
 
 	if (!pCtx->bPaused)
-		cam->StartAudio();
+		cam->StartAudio(true);
 
 	bRunning = true;
 	cam->dbg_.DebugOut( kDbgLvlImportant, "MicrophoneTask Started...\n" );
