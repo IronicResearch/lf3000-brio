@@ -70,7 +70,7 @@ void* MicTaskMain(void* arg)
 
 	sf_info.samplerate	= pCtx->rate;
 	sf_info.channels	= pCtx->channels;
-	sf_info.format		= SF_FORMAT_WAV; // | cam->XlateAudioFormatSF(pCtx->format);
+	sf_info.format		= SF_FORMAT_WAV | cam->XlateAudioFormatSF(pCtx->format);
 
 	// Writing to WAV file is conditional on valid path string
 	if (pCtx->path.length())

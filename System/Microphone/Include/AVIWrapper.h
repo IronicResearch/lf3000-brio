@@ -50,6 +50,8 @@ typedef struct
 	AVCodec*			pAudioCodec;		// audio codec
 	AVFrame*			pVideoFrame;		// video frame buffer
 	int16_t*			pAudioFrame;		// audio frame buffer
+	uint8_t*			pEncoderBuf;		// encoder frame buffer
+	int					iEncoderLength;		// length of encoder buffer
     int					iVideoStream;		// index of video stream
     int					iAudioStream;		// index of audio stream
     bool				bVideoConfig;		// video config set?

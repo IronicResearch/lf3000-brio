@@ -31940,3 +31940,17 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/11 11:50 AM
 5,141 ms. (Cumulative: 12,051,375 ms)
 
 ----------------
+Revision 9,576 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,577 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+ALSA identifies LFP100 as same HW device for playback/capture.
+FIXME: Need to account for separate HW capture device like USB audio.
+FIXME: Need to localize AVI references to CameraModule, not Microphone.
+FIXME: No GPIO USB host port on LF2000.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/11 1:30 PM
+3 changed, 0 added, 0 deleted.
+4,971 ms. (Cumulative: 12,056,440 ms)
+
+----------------
