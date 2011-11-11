@@ -49,7 +49,7 @@ static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format
 // 10 FPS nominal: 100000 usec
 // 15 FPS nominal:  66666 usec
 // 20 FPS nominal:  50000 usec
-static const unsigned int MIC_PERIOD	= 50000;	// usec
+static const unsigned int MIC_PERIOD	= 66666;	// usec
 
 static const char *cap_name = "plughw:1,0";
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
@@ -341,6 +341,9 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 	valid = false;
 	event_.PostEvent(usb_msg, 0, listener_);
 
+	// Not necessarily USB audio anymore (E2K, M2K)
+	valid = InitMicrophoneInt();
+
 	// Wait for USB host power to enable drivers on Madrid
 	if (GetPlatformName() == "Madrid") {
 		int counter = 500;
@@ -457,6 +460,8 @@ tErrType CMicrophoneModule::InitMicInt()
 	micCtx_.duration	= 1000;
 	micCtx_.clipCount	= 25;
 	micCtx_.rateAdjust	= 100;
+	micCtx_.rate 		= MIC_RATE;
+	micCtx_.block_size 	= MIC_RATE * MIC_CHANS * sizeof(short) * 1000000ULL / MIC_PERIOD;
 
 	snd_pcm_hw_params_malloc(&micCtx_.hwparams);
 	snd_pcm_sw_params_malloc(&micCtx_.swparams);
@@ -492,16 +497,19 @@ tErrType CMicrophoneModule::InitMicInt()
 
 		if ((err = snd_pcm_open(&micCtx_.pcm_handle, cap_name, SND_PCM_STREAM_CAPTURE, 0)) < 0)
 		{
+			dbg_.DebugOut(kDbgLvlCritical, "%s: snd_pcm_open failed = %d\n", __FUNCTION__, err);
 			continue;
 		}
 
 		if((err = set_hw_params(&micCtx_)) < 0)
 		{
+			dbg_.DebugOut(kDbgLvlCritical, "%s: snd_hw_params failed = %d\n", __FUNCTION__, err);
 			continue;
 		}
 
 		if((err = set_sw_params(&micCtx_)) < 0)
 		{
+			dbg_.DebugOut(kDbgLvlCritical, "%s: snd_sw_params failed = %d\n", __FUNCTION__, err);
 			continue;
 		}
 
@@ -562,8 +570,8 @@ tErrType CMicrophoneModule::InitMicInt()
 			micCtx_.fd[1] = -1;
 		}
 	}
-
-	kErr = kNoErr;
+	else
+		kErr = kNoErr;
 	return kErr;
 }
 
@@ -625,6 +633,7 @@ Boolean	CMicrophoneModule::SetMicrophoneParam(enum tMicrophoneParam param, S32 v
 		return true;
 	case kMicrophoneBlockSize:
 		micCtx_.block_size = value;
+		return true;
 	}
 	return false;
 }
