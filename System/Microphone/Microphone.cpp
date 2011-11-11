@@ -17,7 +17,7 @@
 #include <DisplayMPI.h>
 #include <Utility.h>
 
-#ifndef EMULATION
+#if !defined(EMULATION) && !defined(LF2000)
 #include <linux/lf1000/gpio_ioctl.h>
 #endif
 
@@ -51,7 +51,7 @@ static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format
 // 20 FPS nominal:  50000 usec
 static const unsigned int MIC_PERIOD	= 66666;	// usec
 
-static const char *cap_name = "plughw:1,0";
+static const char *cap_name = "plughw:0,0";	// FIXME: capture/playback on same HW device = LFP100
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
  * automatic conversion.  Opening plughw:1,0 uses the alsa plug plugin to open hw:1,0
  * as a slave device, but allows rate/channel/format conversion.
@@ -174,7 +174,7 @@ inline void PROFILE_END(const char* msg)
 //----------------------------------------------------------------------------
 static bool SetUSBHost(bool enable)
 {
-#ifndef EMULATION
+#if !defined(EMULATION) && !defined(LF2000)
 	// USB host power option on Madrid only
 	if (GetPlatformName() != "Madrid")
 		return false;
