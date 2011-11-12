@@ -1020,6 +1020,26 @@ Boolean CCameraModule::SetCameraMode(const tCaptureMode* mode)
 }
 
 //----------------------------------------------------------------------------
+tErrType CCameraModule::EnumFormats(tCaptureModes& pModeList)
+{
+	// TODO: Return filtered list of supported modes
+	GetCameraModes(pModeList);
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tErrType CCameraModule::SetCurrentFormat(tCaptureMode* pMode)
+{
+	return (SetCameraMode(pMode)) ? kNoErr : kInvalidParamErr;
+}
+
+//----------------------------------------------------------------------------
+tCaptureMode* CCameraModule::GetCurrentFormat()
+{
+	return &camCtx_.mode;
+}
+
+//----------------------------------------------------------------------------
 Boolean	CCameraModule::GetCameraControls(tCameraControls &controls)
 {
 	CAMERA_LOCK;

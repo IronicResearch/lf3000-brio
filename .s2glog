@@ -31954,3 +31954,17 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/11 1:30 PM
 4,971 ms. (Cumulative: 12,056,440 ms)
 
 ----------------
+Revision 9,578 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,579 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,580 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added CameraMPI functions for enumerating and selecting capture formats.
+Takes advantage of existing internal functions enumerating V4L modes,
+so only piece missing is filtering the supported mode list.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/11/11 7:02 PM
+5 changed, 0 added, 0 deleted.
+4,835 ms. (Cumulative: 12,061,368 ms)
+
+----------------

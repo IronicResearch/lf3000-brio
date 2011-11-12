@@ -337,5 +337,29 @@ S32	CCameraMPI::GetMicrophoneParam(enum tMicrophoneParam param)
 	return pModule_->GetMicrophoneParam(param);
 }
 
+//----------------------------------------------------------------------------
+tErrType CCameraMPI::EnumFormats(tCaptureModes& pModeList)
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->EnumFormats(pModeList);
+}
+
+//----------------------------------------------------------------------------
+tErrType CCameraMPI::SetCurrentFormat(tCaptureMode* pMode)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetCurrentFormat(pMode);
+}
+
+//----------------------------------------------------------------------------
+tCaptureMode* CCameraMPI::GetCurrentFormat()
+{
+	if (!pModule_)
+		return kNull;
+	return pModule_->GetCurrentFormat();
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
