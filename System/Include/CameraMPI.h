@@ -365,6 +365,10 @@ public:
 	/// \return			Microphone parameter value
 	S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
+	tErrType		EnumFormats(tCaptureModes& pModeList);
+	tErrType		SetCurrentFormat(tCaptureMode* pMode);
+	tCaptureMode*	GetCurrentFormat();
+
 private:
 	class CCameraModule*	pModule_;
 	U32					id_;

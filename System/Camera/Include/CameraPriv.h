@@ -98,28 +98,6 @@ typedef enum {
 	JPEG_HW2						/* hw IDCT & jpeg_read_coefficients() - best for viewfinder */
 } JPEG_METHOD;
 
-// Image capture format.  Uncompressed formats are possible - these would be equivalent to
-// DisplayTypes:tPixelFormat.  Since JPEG is compressed, it's not a pixel format in the
-// proper sense
-enum tCaptureFormat {
-	kCaptureFormatError = 0,
-	kCaptureFormatMJPEG,
-	kCaptureFormatRAWYUYV,
-	kCaptureFormatYUV420,
-};
-
-// Three components: image format, image resolution, and video frame rate, determine
-// the camera's capture mode
-struct tCaptureMode {
-	tCaptureFormat	pixelformat;
-	U16				width;
-	U16				height;
-	U32				fps_numerator;
-	U32				fps_denominator;
-};
-
-typedef std::vector<tCaptureMode *> tCaptureModes;
-
 // Frame info
 struct tFrameInfo {
 	tCaptureFormat	pixelformat;
@@ -311,6 +289,10 @@ public:
 
 	VTABLE_EXPORT Boolean		SetMicrophoneParam(enum tMicrophoneParam param, S32 value);
 	VTABLE_EXPORT S32			GetMicrophoneParam(enum tMicrophoneParam param);
+
+	VTABLE_EXPORT tErrType		EnumFormats(tCaptureModes& pModeList);
+	VTABLE_EXPORT tErrType		SetCurrentFormat(tCaptureMode* pMode);
+	VTABLE_EXPORT tCaptureMode*	GetCurrentFormat();
 
 private:
 	MicrophoneListener	*micListener_;

@@ -62,14 +62,29 @@ struct tControlInfo {
 };
 
 typedef std::vector<tControlInfo*> tCameraControls;
-/*
-enum tMicrophoneParam {
-	kMicrophoneThreshold,
-	kMicrophoneDuration,
-	kMicrophoneClipCount,
-	kMicrophoneRateAdjust,
+
+// Image capture format.  Uncompressed formats are possible - these would be equivalent to
+// DisplayTypes:tPixelFormat.  Since JPEG is compressed, it's not a pixel format in the
+// proper sense
+enum tCaptureFormat {
+	kCaptureFormatError = 0,
+	kCaptureFormatMJPEG,
+	kCaptureFormatRAWYUYV,
+	kCaptureFormatYUV420,
 };
-*/
+
+// Three components: image format, image resolution, and video frame rate, determine
+// the camera's capture mode
+struct tCaptureMode {
+	tCaptureFormat	pixelformat;
+	U16				width;
+	U16				height;
+	U32				fps_numerator;
+	U32				fps_denominator;
+};
+
+typedef std::vector<tCaptureMode *> tCaptureModes;
+
 //==============================================================================
 // Camera events and messages
 //==============================================================================
