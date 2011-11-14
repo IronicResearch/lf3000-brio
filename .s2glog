@@ -31968,3 +31968,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/11/11 7:02 PM
 4,835 ms. (Cumulative: 12,061,368 ms)
 
 ----------------
+Revision 9,581 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added doxygen comments to new CameraMPI functions.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/11 9:52 AM
+1 changed, 0 added, 0 deleted.
+4,563 ms. (Cumulative: 12,066,025 ms)
+
+----------------
