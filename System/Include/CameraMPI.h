@@ -230,6 +230,12 @@ public:
 	/// \return true on success.
 	Boolean		GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order = kOpenGlRgb);
 
+	/// \brief	Alternative GetFrame() method using general tVideoSurf parameter.
+	/// \param	hndl	Video capture handle returned by StartVideoCapture().
+	/// \param	*pSurf	Surface descriptor passed in by caller specifying width, height, format,
+	///					and buffer pointer to fill in the frame of captured data.
+	/// \param	order	Color order type for OpenGL RGB vs Display RGB.
+	/// \return			Returns true on success, false if not supported.
 	Boolean     GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder order = kOpenGlRgb);
 
 	/// RenderFrame() render an image saved with SnapFrame() to the host device's display.
@@ -365,8 +371,19 @@ public:
 	/// \return			Microphone parameter value
 	S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
+	/// \brief	EnumFormats() enumerates supported capture formats.
+	/// \param	pModeList	List of tCaptureMode* entries to be populated with
+	///						supported formats.
+	/// \return	Returns kNoErr on success, otherwise error code.
 	tErrType		EnumFormats(tCaptureModes& pModeList);
+
+	/// \brief	SetCurrentFormat() selects capture format.
+	/// \param	pMode	Selected mode entry from list returned by EnumFormats().
+	/// \return	Returns kNoErr on success, or kInvalidParamErr if unknown mode.
 	tErrType		SetCurrentFormat(tCaptureMode* pMode);
+
+	/// \brief	GetCurrentFormat() returns currently selected capture format.
+	/// \return	Returns currently selected mode entry.
 	tCaptureMode*	GetCurrentFormat();
 
 private:
