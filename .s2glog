@@ -31978,3 +31978,23 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/11 9:52 AM
 4,563 ms. (Cumulative: 12,066,025 ms)
 
 ----------------
+Revision 9,582 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,583 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,584 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,585 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,586 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,587 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,588 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,589 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,590 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,591 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,592 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merged -r9591: Fix up PNG_Load so that GalleryWidget works.
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 11/15/11 12:10 PM
+1 changed, 0 added, 0 deleted.
+4,610 ms. (Cumulative: 12,070,791 ms)
+
+----------------
