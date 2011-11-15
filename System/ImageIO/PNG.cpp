@@ -109,7 +109,7 @@ bool PNG_Save(CPath& path, tVideoSurf& surf)
 //----------------------------------------------------------------------------
 bool PNG_Load(CPath& path, tVideoSurf& surf)
 {
-	FILE*		fp = NULL;
+	//FILE*		fp = NULL;
 	png_structp	pp = NULL;
 	png_infop	pi = NULL;
 	
