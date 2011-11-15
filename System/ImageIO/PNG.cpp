@@ -21,28 +21,35 @@
 
 static jmp_buf	_jmpbuf;
 
+//TODO: Creating a static file-pointer to pass around the pointer to the file we open.
+//We should be using pp->io_ptr, however for some reason this is becoming corrupted and
+//becoming null.  This work-around will allow us to keep the file-pointer intact for now.
+//In the future we'll need to revisit why this isn't working....
+static FILE* fp;
+
+
 //----------------------------------------------------------------------------
 static void _png_write(png_structp pp, png_bytep data, png_size_t length)
 {
-	fwrite(data, 1, length, (FILE*)pp->io_ptr);
+	fwrite(data, 1, length, fp);//(FILE*)pp->io_ptr);
 }
 
 //----------------------------------------------------------------------------
 static void _png_read(png_structp pp, png_bytep data, png_size_t length)
 {
-	fread(data, 1, length, (FILE*)pp->io_ptr);
+	fread(data, 1, length, fp);//(FILE*)pp->io_ptr);
 }
 
 //----------------------------------------------------------------------------
 static void _png_flush(png_structp pp)
 {
-	fflush((FILE*)pp->io_ptr);
+	fflush(fp);//(FILE*)pp->io_ptr);
 }
 
 //----------------------------------------------------------------------------
 bool PNG_Save(CPath& path, tVideoSurf& surf)
 {
-	FILE*		fp = NULL;
+	//FILE*		fp = NULL;
 	png_structp	pp = NULL;
 	png_infop	pi = NULL;
 	png_bytep 	bp = (png_bytep)surf.buffer;
