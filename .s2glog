@@ -32009,3 +32009,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/15/11 1:19 PM
 4,612 ms. (Cumulative: 12,075,512 ms)
 
 ----------------
+Revision 9,595 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add the LF1000 Brio meta.inf to LF2000 builds. Should fix missing Brio version.
+
+By dlazzari (dlazzari@leapfrog.com) on 11/17/11 11:45 AM
+1 changed, 0 added, 0 deleted.
+4,563 ms. (Cumulative: 12,080,168 ms)
+
+----------------
