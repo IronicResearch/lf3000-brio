@@ -155,7 +155,7 @@ inline void PROFILE_END(const char* msg)
 
 //----------------------------------------------------------------------------
 // Set video scaler (embedded only)
-static void SetScaler(int width, int height, bool centered)
+void CCameraModule::SetScaler(int width, int height, bool centered)
 {
 	CDisplayMPI 	dispmgr;
 	tDisplayHandle 	hvideo = dispmgr.GetCurrentDisplayHandle(kPixelFormatYUV420);
