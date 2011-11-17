@@ -349,6 +349,7 @@ private:
 	tErrType	RetrieveIDCT(S16 *ptr);
 	/* inline function */
 	void DecompressAndPaint(struct jpeg_decompress_struct *cinfo, tVideoSurf *surf);
+	void SetScaler(int width, int height, bool centered);
 
 	friend class CUSBCameraModule;
 	friend class CVIPCameraModule;

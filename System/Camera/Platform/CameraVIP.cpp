@@ -104,6 +104,9 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 		if(!EnableOverlay(camCtx_.fd, 1))
 			return hndl;
 
+		if (pSurf->format == kPixelFormatYUV420 || pSurf->format == kPixelFormatYUYV422)
+			CCameraModule::SetScaler(pSurf->width, pSurf->height, false);
+
 		hndl = kStreamingActive;
 	}
 

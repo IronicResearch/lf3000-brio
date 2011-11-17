@@ -32018,3 +32018,13 @@ By dlazzari (dlazzari@leapfrog.com) on 11/17/11 11:45 AM
 4,563 ms. (Cumulative: 12,080,168 ms)
 
 ----------------
+Revision 9,596 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Camera: Enable video scaler for VIP viewfinder mode, for Madrid camera app using quarter-size viewfinder.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/17/11 11:55 AM
+3 changed, 0 added, 0 deleted.
+4,768 ms. (Cumulative: 12,085,030 ms)
+
+----------------
