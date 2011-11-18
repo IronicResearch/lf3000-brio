@@ -10,12 +10,19 @@ mpi_name = 'ImageIO'
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
 mpisrcs		= Glob('*.cpp')
-mpilibs		= []
-						
+mpilibs		= ['png','z', 'jpeg' ]
+					
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
+
+myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
+
+myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
+myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
+	
+
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 
 targets = mympi or []
