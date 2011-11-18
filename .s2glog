@@ -32028,3 +32028,16 @@ By Dave Milici (dmilici@leapfrog.com) on 11/17/11 11:55 AM
 4,768 ms. (Cumulative: 12,085,030 ms)
 
 ----------------
+Revision 9,597 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,598 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,599 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,600 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+VIP:
+-Reconfigure sensor before starting overlay
+
+By jeno (jeno@leapfrog.com) on 11/18/11 11:23 AM
+1 changed, 0 added, 0 deleted.
+4,783 ms. (Cumulative: 12,089,922 ms)
+
+----------------
