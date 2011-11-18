@@ -32041,3 +32041,15 @@ By jeno (jeno@leapfrog.com) on 11/18/11 11:23 AM
 4,783 ms. (Cumulative: 12,089,922 ms)
 
 ----------------
+Revision 9,601 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,602 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,603 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merged -r9601:imageIO now supports loading and saving of jpegs as well. NOTE: it supports only RGB format at the moment. ( fixme : error handling and support for YUV) 
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 11/18/11 2:00 PM
+3 changed, 0 added, 0 deleted.
+4,953 ms. (Cumulative: 12,094,969 ms)
+
+----------------
