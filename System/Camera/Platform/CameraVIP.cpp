@@ -29,7 +29,7 @@ const CString* CVIPCameraModule::GetModuleName() const
 //============================================================================
 CVIPCameraModule::CVIPCameraModule()
 {
-	tCaptureMode SVGA = {kCaptureFormatYUV420, 1024, 768, 1, 15};
+	tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
 
 	camCtx_.mode = SVGA;
 	valid = InitCameraInt(&camCtx_.mode);
@@ -91,13 +91,15 @@ static Boolean EnableOverlay(int fd, int enable)
 tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
-	struct tCaptureMode mode = {kCaptureFormatYUV420, 400, 300, 1, 15};
+	struct tCaptureMode qSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 
 	if(pSurf)
 	{
-		/* Spawn hardware viewfinder */
+		if(!(SetCameraMode(&qSVGA)))
+				return hndl;
 
+		/* Spawn hardware viewfinder */
 		if(!SetOverlay(camCtx_.fd, pSurf))
 			return hndl;
 
@@ -113,7 +115,7 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	if(path.length())
 	{
 		/* Spawn capture thread w/out viewfinder */
-		camCtx_.mode = mode;
+		camCtx_.mode = qSVGA;
 		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 	}
 
