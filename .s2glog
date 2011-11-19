@@ -32053,3 +32053,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/18/11 2:00 PM
 4,953 ms. (Cumulative: 12,094,969 ms)
 
 ----------------
+Revision 9,604 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,605 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correct registration order when no overlays.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/19/11 1:23 PM
+1 changed, 0 added, 0 deleted.
+4,875 ms. (Cumulative: 12,099,938 ms)
+
+----------------
