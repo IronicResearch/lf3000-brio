@@ -274,7 +274,7 @@ tErrType CDisplayModule::Register(tDisplayHandle hndl, S16 xPos, S16 yPos,
 			pdc = NULL;
 		}
 		if (pdc == NULL)
-			gDisplayList.push_front(dc);
+			gDisplayList.push_back(dc);
 	}
 	kernel_.UnlockMutex(gListMutex);
 
