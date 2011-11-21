@@ -61,6 +61,7 @@ namespace
 	void*						pmem1d = NULL;
 	void*						pmem2d = MAP_FAILED;
 	tDisplayHandle				hogl = NULL;
+	tDisplayHandle				hdcogl[2] = {NULL, NULL};
 	tDisplayContext				dcmem1;		// memory block context for 1D heap
 	tDisplayContext				dcmem2;		// memory block context for 2D heap
 	
@@ -164,6 +165,10 @@ void CDisplayFB::InitModule()
 	gBufListFree.clear();
 	gMarkBufStart = 0;
 	gMarkBufEnd   = finfo[RGBFB].smem_len + finfo[OGLFB].smem_len + finfo[YUVFB].smem_len;
+
+	// Pre-allocate OGL display contexts compatible with Nexell EGL framebuffer usage
+	hdcogl[0] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
+	hdcogl[1] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
 }
 
 //----------------------------------------------------------------------------
@@ -206,12 +211,14 @@ int GetZOrder(tDisplayContext* ctx)
 	else if (n == OGLFB && ctx->initialZOrder == kDisplayOnOverlay)
 		z = 0;
 
+#if 0
 	if (n != YUVFB && (z != n || z != NONSTD_TO_POS(vinfo[n].nonstd)))
 	{
 		vinfo[n].nonstd &= ~(3<<LF1000_NONSTD_PRIORITY);
 		vinfo[n].nonstd |=  (z<<LF1000_NONSTD_PRIORITY);
-//		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 	}
+#endif
 	
 	return z;
 }
@@ -289,11 +296,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	switch (colorDepth) 
 	{
 		// Default to lower RGB layer -- FIXME
-		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
+		case kPixelFormatRGB4444:	depth = 16; n = OGLFB; break;
+		case kPixelFormatRGB565:	depth = 16; n = OGLFB; break;
+		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break; 	
 		default:
-		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
+		case kPixelFormatARGB8888: 	depth = 32; n = OGLFB; break;
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
@@ -428,11 +435,11 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	int z = n;
 	int r = 0;
 
-#if 0 // FIXME
 	// Change to upper RGB layer for explicit overlay registration
 	if (n == OGLFB && ctx->initialZOrder== kDisplayOnOverlay)
 		n = ctx->layer = RGBFB;
 
+#if 0 // FIXME
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
 	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
 		n = ctx->layer = RGBFB;
@@ -1052,9 +1059,9 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 
 	pdc->offset		= fboff[pdc->layer];
 	pdc->pBuffer	+= pdc->offset;
-//	if (pdc->layer != RGBFB)
+	if (pdc->layer != RGBFB)
 		fboff[pdc->layer] += bufsize;
-//	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
+	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
 #endif
 
 #if 1 //def LF1000

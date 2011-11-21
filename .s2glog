@@ -32074,3 +32074,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/21/11 9:11 AM
 4,813 ms. (Cumulative: 12,104,829 ms)
 
 ----------------
+Revision 9,607 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified DisplayFB to use shared framebuffer memory for upper and lower RGB layers.
+OGL display contexts must be pre-allocated for compatibility with Nexell EGL usage.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/21/11 11:51 AM
+1 changed, 0 added, 0 deleted.
+4,954 ms. (Cumulative: 12,109,877 ms)
+
+----------------
