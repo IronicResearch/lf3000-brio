@@ -112,12 +112,14 @@ void CDisplayFB::InitModule()
 		fscanf(f, "%u", &yres);
 		fclose(f);
 	}
+#if 0
 	f = fopen("/sys/class/graphics/fb0/virtual_size", "r");
 	if (f) {
 		fscanf(f, "%u,%u", &xres, &yres);
 		fclose(f);
 		yres /= 2;
 	}
+#endif
 	dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %u x %u\n", __FUNCTION__, xres, yres);
 	
 	for (int n = 0; n < NUMFB; n++)
@@ -154,8 +156,8 @@ void CDisplayFB::InitModule()
 	// Calculate delta XY for screen size vs display resolution
 	dxres = 0;
 	dyres = 0;
-	vxres = (xres) ? xres : vinfo[RGBFB].xres;
-	vyres = (yres) ? yres : vinfo[RGBFB].yres;
+	xres = vxres = (xres) ? xres : vinfo[RGBFB].xres;
+	yres = vyres = (yres) ? yres : vinfo[RGBFB].yres;
 	
 	// Setup framebuffer allocator lists and markers
 	gBufListUsed.clear();
@@ -190,6 +192,28 @@ U32	CDisplayFB::GetScreenSize()
 tPixelFormat CDisplayFB::GetPixelFormat(void)
 {
 	return kPixelFormatARGB8888;
+}
+
+//----------------------------------------------------------------------------
+int GetZOrder(tDisplayContext* ctx)
+{
+	int n = ctx->layer;
+	int z = n;
+	int r = 0;
+
+	if (n == RGBFB && ctx->initialZOrder != kDisplayOnOverlay)
+		z = 1;
+	else if (n == OGLFB && ctx->initialZOrder == kDisplayOnOverlay)
+		z = 0;
+
+	if (n != YUVFB && (z != n || z != NONSTD_TO_POS(vinfo[n].nonstd)))
+	{
+		vinfo[n].nonstd &= ~(3<<LF1000_NONSTD_PRIORITY);
+		vinfo[n].nonstd |=  (z<<LF1000_NONSTD_PRIORITY);
+//		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+	}
+	
+	return z;
 }
 
 //----------------------------------------------------------------------------
@@ -241,9 +265,9 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 		}
 		// Block addressing mode needed for OGL framebuffer context?
 		if (isBlockAddr)
-			vinfo[n].nonstd |= (1<<23);
+			vinfo[n].nonstd |=  (1<<LF1000_NONSTD_PLANAR);
 		else
-			vinfo[n].nonstd &= ~(1<<23);
+			vinfo[n].nonstd &= ~(1<<LF1000_NONSTD_PLANAR);
 		// Change effective resolution for any onscreen context
 		vinfo[n].xres = width;
 		vinfo[n].yres = height;
@@ -339,7 +363,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		ctx->offset = pBuffer - fbmem[n];
 		ctx->pitch  = finfo[n].line_length;
 		if (n == YUVFB)
-		switch((vinfo[n].nonstd & (3<<24)) >> 24)
+		switch(NONSTD_TO_POS(vinfo[n].nonstd))
 		{
 		case 0:
 			ctx->initialZOrder = kDisplayOnOverlay;
@@ -401,6 +425,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 	// Set XY onscreen position
 	int n = ctx->layer;
+	int z = n;
+	int r = 0;
 
 #if 0 // FIXME
 	// Change to upper RGB layer for explicit overlay registration
@@ -410,6 +436,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
 	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
 		n = ctx->layer = RGBFB;
+#else
+	z = GetZOrder(ctx);
 #endif
 
 	// Disable *any* layer's pixel format or resolution change
@@ -417,7 +445,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	{
 		SetVisible(ctx, false);
 	}
-	int r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
+	r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
 	r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
 	// Adjust Z-order for YUV layer?
@@ -436,8 +464,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 			z = 0;
 			break;
 		}
-		vinfo[n].nonstd &= ~(3<<24);
-		vinfo[n].nonstd |=  (z<<24);
+		vinfo[n].nonstd &= ~(3<<LF1000_NONSTD_PRIORITY);
+		vinfo[n].nonstd |=  (z<<LF1000_NONSTD_PRIORITY);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		
 		struct lf1000fb_vidscale_cmd cmd;
@@ -570,6 +598,7 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	// Note pages are stacked vertically for RGB, horizontally for YUV
 	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
 	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
 	// Make sure swapped display context is enabled
@@ -597,6 +626,7 @@ Boolean	CDisplayFB::IsBufferSwapped(tDisplayHandle hndl)
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 	
 	int n = ctx->layer;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], FBIO_WAITFORVSYNC, 0);
 	
 	return (r == 0);
@@ -626,6 +656,7 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	}
 
 	int n = ctx->layer;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], LF1000FB_IOCSPOSTION, &cmd);
 
 	return (r == 0) ? kNoErr : kNoImplErr;
@@ -637,6 +668,7 @@ tErrType CDisplayFB::SetVisible(tDisplayHandle hndl, Boolean visible)
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
 	int n = ctx->layer;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], FBIOBLANK, !visible);
 
 	if (r == 0)
@@ -667,6 +699,7 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 	
 	struct lf1000fb_position_cmd cmd;
 	int n = ctx->layer;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], LF1000FB_IOCGPOSTION, &cmd);
 	
 	x = ctx->rect.left = cmd.left;
@@ -732,6 +765,7 @@ tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 	cmd.alpha = level * ALPHA_STEP / 100;
 	cmd.enable = enable;
 	int n = ctx->layer;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], LF1000FB_IOCSALPHA, &cmd);
 	fblnd[n] = (r == 0) ? enable : false;
 	
@@ -745,6 +779,7 @@ U8 	CDisplayFB::GetAlpha(tDisplayHandle hndl) const
 
 	struct lf1000fb_blend_cmd cmd;
 	int n = ctx->layer;
+	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], LF1000FB_IOCGALPHA, &cmd);
 	
 	return (r == 0) ? cmd.alpha * 100 / ALPHA_STEP : 0;
@@ -1004,7 +1039,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	
 	kernel_.LockMutex(gListMutex);
 
-#ifdef LF1000
+#if 1 //def LF1000
 	// All display contexts now reference common base address
 	pdc->basephys 	= finfo[RGBFB].smem_start;
 	pdc->baselinear = finfo[YUVFB].smem_start;
@@ -1017,12 +1052,12 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 
 	pdc->offset		= fboff[pdc->layer];
 	pdc->pBuffer	+= pdc->offset;
-	if (pdc->layer != RGBFB)
+//	if (pdc->layer != RGBFB)
 		fboff[pdc->layer] += bufsize;
-	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
+//	fboff[pdc->layer] %= finfo[pdc->layer].smem_len;
 #endif
 
-#ifdef LF1000
+#if 1 //def LF1000
 	// Look on for available buffer on free list first
 	for (it = gBufListFree.begin(); it != gBufListFree.end(); it++) {
 		buf = *it;
@@ -1047,7 +1082,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 		}
 		pdc->offset = gMarkBufEnd - bufsize - finfo[RGBFB].smem_len - finfo[OGLFB].smem_len;
 		pdc->pBuffer += pdc->offset;
-		gMarkBufEnd -= bufsize;
+//		gMarkBufEnd -= bufsize;
 	}
 	else {
 		// Allocate unaligned buffer at top of heap if there's room
@@ -1083,7 +1118,7 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 	U32 markStart = gMarkBufStart;
 	U32 markEnd   = gMarkBufEnd;
 
-#ifdef LF1000
+#if 1 //def LF1000
 	// Find allocated buffer for this display context
 	for (it = gBufListUsed.begin(); it != gBufListUsed.end(); it++) {
 		buf = *it;

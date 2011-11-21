@@ -32064,3 +32064,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/19/11 1:23 PM
 4,875 ms. (Cumulative: 12,099,938 ms)
 
 ----------------
+Revision 9,606 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify DisplayFB interface to use Z-order priority setting to switch upper vs lower RGB layers.
+Part 1 of 2 checkin, as this is mostly working except for subsequent Flash display contexts. 
+
+By Dave Milici (dmilici@leapfrog.com) on 11/21/11 9:11 AM
+1 changed, 0 added, 0 deleted.
+4,813 ms. (Cumulative: 12,104,829 ms)
+
+----------------
