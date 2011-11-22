@@ -408,8 +408,8 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		n = ctx->layer = RGBFB;
 
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
-	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
-		n = ctx->layer = RGBFB;
+	//if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
+	//	n = ctx->layer = RGBFB;
 #endif
 
 	// Disable *any* layer's pixel format or resolution change
