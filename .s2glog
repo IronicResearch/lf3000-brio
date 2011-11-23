@@ -32095,3 +32095,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 11/22/11 1:03 PM
 5,048 ms. (Cumulative: 12,115,018 ms)
 
 ----------------
+Revision 9,610 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+EventMPI: Discard stray messages if posted immediately (prior process?) to avoid segfaults.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/23/11 11:50 AM
+1 changed, 0 added, 0 deleted.
+5,078 ms. (Cumulative: 12,120,205 ms)
+
+----------------
