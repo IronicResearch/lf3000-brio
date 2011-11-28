@@ -18,6 +18,7 @@
 #include <CoreModule.h>
 #include <SystemErrors.h>
 #include <BootSafeKernelMPI.h>
+#include <stdio.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -198,6 +199,13 @@ namespace
 				kernel_.PowerDown();
 			}
 
+			// Scan module list for any replacement patch libs in local path
+			for (int ii = mFoundModulesList.size() - 1; ii >= 0; --ii)
+			{
+				CPath patch = GetLocalLibrary("lib" + mFoundModulesList[ii].name + ".so");
+				if (patch.length() > 0)
+					mFoundModulesList[ii].sopath = patch;
+			}
 			return kNoErr;
 		}
 
