@@ -32105,3 +32105,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/23/11 11:50 AM
 5,078 ms. (Cumulative: 12,120,205 ms)
 
 ----------------
+Revision 9,611 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,612 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,613 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified Module loader for 2nd pass to scan for replacement patch libs in local path.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/28/11 10:13 AM
+1 changed, 0 added, 0 deleted.
+4,660 ms. (Cumulative: 12,124,959 ms)
+
+----------------
