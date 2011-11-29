@@ -32116,3 +32116,17 @@ By Dave Milici (dmilici@leapfrog.com) on 11/28/11 10:13 AM
 4,660 ms. (Cumulative: 12,124,959 ms)
 
 ----------------
+Revision 9,614 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,615 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+SnapFrame implementation for VIP for saving SVGA (800x600) JPEGs
+
+-driver restrictions (videobuf) mean the device must be close/re-opened to change format (this conflicts with current UVC-focussed code)
+-uses libav insteadof libjpeg (revisit?)
+-UXGA (1600x1200) snapshot fails at the driver level due to insufficient memory
+
+By jeno (jeno@leapfrog.com) on 11/28/11 4:29 PM
+3 changed, 0 added, 0 deleted.
+4,672 ms. (Cumulative: 12,129,709 ms)
+
+----------------

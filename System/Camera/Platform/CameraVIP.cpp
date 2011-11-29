@@ -88,6 +88,81 @@ static Boolean EnableOverlay(int fd, int enable)
 }
 
 //----------------------------------------------------------------------------
+Boolean CVIPCameraModule::CompressFrame(tFrameInfo *frame, int stride)
+{
+	Boolean			ret = false;
+	int				out_size = frame->width * frame->height * 3;
+	uint8_t			*frame_outbuf	= NULL;
+
+	AVCodec			*pCodec	= NULL;
+	AVCodecContext	*pCtx	= NULL;
+	AVFrame			*pFrame	= NULL;
+
+	avcodec_register_all();
+
+	pCodec = avcodec_find_encoder(CODEC_ID_MJPEG);
+	if(pCodec == NULL)
+		goto out;
+
+	pCtx = avcodec_alloc_context();
+	if(pCtx == NULL)
+		goto out;
+
+	pCtx->pix_fmt			= PIX_FMT_YUVJ420P;
+	pCtx->width				= frame->width;
+	pCtx->height			= frame->height;
+	pCtx->codec_id			= CODEC_ID_MJPEG;
+	pCtx->codec_type 		= CODEC_TYPE_VIDEO;
+	pCtx->bit_rate 			= 400000;
+	pCtx->time_base.den 	= 1;
+	pCtx->time_base.num 	= 1;
+	pCtx->gop_size 			= 1;
+
+	if(avcodec_open(pCtx, pCodec) < 0)
+		goto out_context;
+
+	pFrame = avcodec_alloc_frame();
+	if(pFrame == NULL)
+		goto out_frame;
+
+	frame_outbuf = (uint8_t*)av_malloc(out_size);
+	if(frame_outbuf == NULL)
+		goto out_outbuf;
+
+	pFrame->data[0] = (uint8_t *)frame->data;
+	pFrame->data[1] = pFrame->data[0] + stride/2;
+	pFrame->data[2] = pFrame->data[1] + stride * pCtx->height/2;
+
+	pFrame->linesize[0] = stride;
+	pFrame->linesize[1] = stride;
+	pFrame->linesize[2] = stride;
+
+	out_size = avcodec_encode_video(pCtx, frame_outbuf, out_size, pFrame);
+	if(out_size <= 0)
+		goto out_copy;
+		
+	memcpy(frame->data, frame_outbuf, out_size);
+	frame->size	= out_size;
+
+	ret = true;
+
+out_copy:
+	av_free(frame_outbuf);
+
+out_outbuf:
+	av_free(pFrame);
+
+out_frame:
+	avcodec_close(pCtx);
+
+out_context:
+	av_free(pCtx);
+
+out:
+	return ret;
+}
+
+//----------------------------------------------------------------------------
 tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
@@ -105,6 +180,8 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 
 		if(!EnableOverlay(camCtx_.fd, 1))
 			return hndl;
+
+		overlaySurf = *pSurf;
 
 		if (pSurf->format == kPixelFormatYUV420 || pSurf->format == kPixelFormatYUYV422)
 			CCameraModule::SetScaler(pSurf->width, pSurf->height, false);
@@ -130,12 +207,87 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 	if(hndl & kStreamingActive)
 	{
 		ret = EnableOverlay(camCtx_.fd, 0);
+		overlaySurf.buffer	= NULL;
+		overlaySurf.format	= kPixelFormatError;
+		overlaySurf.height	= 0;
+		overlaySurf.width	= 0;
+		overlaySurf.pitch	= 0;
 	}
 
 	if(IS_THREAD_HANDLE(hndl))
 	{
 		return CCameraModule::StopVideoCapture(hndl);
 	}
+
+	return ret;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
+{
+	Boolean				ret;
+	tVidCapHndl			origHndl, tmpHndl;
+	tFrameInfo			frame	= {kCaptureFormatYUV420, 800, 600, 0, NULL, 0};
+	struct tCaptureMode	UXGA	= {kCaptureFormatYUV420, 800, 600, 1, 10};
+	struct tCaptureMode	oldMode	= camCtx_.mode;
+	tVideoSurf			oldSurf;
+
+#if 0
+	if (path.rfind(".png") != std::string::npos)
+		return SnapFrameRGB(hndl, path);
+#endif
+
+	/*
+	 * FIXME:
+	 * The videobuf helper used in the VIP driver refuses to be reconfigured
+	 * once buffers have been queued (i.e., STREAMOFF, S_FMT, STREAMON).
+	 * Therefore, we must "start over" when taking a snapshot. 
+	 */
+	origHndl = hndl;
+
+	/* Stop viewfinder */
+	if(hndl & kStreamingActive)
+		EnableOverlay(camCtx_.fd, 0);
+
+	/* Close camera fd */
+	ret = CCameraModule::DeinitCameraInt();
+	if(!ret)
+		return ret;
+
+	/* Re-open camera */
+	ret = CCameraModule::InitCameraInt(&UXGA);
+	if(!ret)
+		return ret;
+
+	ret = GrabFrame(hndl, &frame);
+
+	/* Restore old mode */
+	ret = CCameraModule::DeinitCameraInt();
+	if(!ret)
+		goto out;
+
+	ret = CCameraModule::InitCameraInt(&oldMode);
+	if(!ret)
+		goto out;
+
+	if(hndl & kStreamingActive)
+	{
+		SetOverlay(camCtx_.fd, &overlaySurf);
+		EnableOverlay(camCtx_.fd, 1);
+	}
+
+	if(!ret)
+		goto out;
+
+	/* Compress frame */
+	ret = CompressFrame(&frame, 4096);
+	if(!ret)
+		goto out;
+
+	ret = SaveFrame(path, &frame);
+
+out:
+	kernel_.Free(frame.data);
 
 	return ret;
 }

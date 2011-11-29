@@ -349,6 +349,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
         }
 	}
 
+#if 0 // FIXME: VIP	
 	memset(&rb, 0, sizeof(struct v4l2_requestbuffers));
 
 	rb.count  = 0;
@@ -359,6 +360,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 	{
 		return false;
 	}
+#endif
 
 	delete[] pCamCtx->bufs;
 	pCamCtx->bufs = NULL;
@@ -1155,32 +1157,6 @@ Boolean CCameraModule::SetBuffers(const U32 numBuffers)
 out:
 	CAMERA_UNLOCK;
 	return bRet;
-}
-
-//----------------------------------------------------------------------------
-tVidCapHndl	CCameraModule::StartVideoCapture()
-{
-	tVidCapHndl	hndl = kInvalidVidCapHndl;
-
- 	CAMERA_LOCK;
-
-	if(camCtx_.hndl != kInvalidVidCapHndl)
-	{
-		goto out;
-	}
-
-	if(!InitCameraStartInt(&camCtx_))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: streaming failed for %s\n", camCtx_.file);
-		goto out;
-	}
-
-	// TODO: multiple handles?
-	hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
-
-out:
-	CAMERA_UNLOCK;
-	return hndl;
 }
 
 //----------------------------------------------------------------------------
@@ -2054,9 +2030,13 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	tFrameInfo		frm;
 	Boolean			bPause, vPause;
 
-	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	//FIXME: Bypass for VIP
+	if(camCtx_.hCameraThread != kNull)
 	{
-		return false;
+		if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+		{
+			return false;
+		}
 	}
 
 	oldmode = newmode = camCtx_.mode;
@@ -2079,25 +2059,30 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	 *
 	 * TODO: optimize same-resolution case
 	 */
+	// Bypass for VIP
+	if(camCtx_.hCameraThread != kNull)
+	{
 #if 0 /* VIDIOC_STREAMOFF fails with -EBUSY if no buffers are queued in UVC 2.6.34 */
-	if(!DeinitCameraBufferInt(&camCtx_))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
-		goto bail_out;
+		if(!DeinitCameraBufferInt(&camCtx_))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+			goto bail_out;
 
-	}
+		}
 #endif
-	if(!StopVideoCaptureInt(camCtx_.fd))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
-		goto bail_out;
-    }
 
-	if(!DeinitCameraBufferInt(&camCtx_))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
-		goto bail_out;
+		if(!StopVideoCaptureInt(camCtx_.fd))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to halt streaming from %s\n", camCtx_.file);
+			goto bail_out;
+		}
 
+		if(!DeinitCameraBufferInt(&camCtx_))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "ACameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+			goto bail_out;
+
+		}
 	}
 
 	if(!SetCameraMode(&newmode))
@@ -2162,24 +2147,28 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto frame_out;
 	}
 
-	if(!SetCameraMode(&oldmode))
+	// Bypass for VIP
+	if(camCtx_.hCameraThread != kNull)
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
-		goto frame_out;
-	}
+		if(!SetCameraMode(&oldmode))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
+			goto frame_out;
+		}
 
-	camCtx_.numBufs = oldbufs;
+		camCtx_.numBufs = oldbufs;
 
-	if(!InitCameraBufferInt(&camCtx_))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to restore buffers for %s\n", camCtx_.file);
-		goto frame_out;
-	}
+		if(!InitCameraBufferInt(&camCtx_))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to restore buffers for %s\n", camCtx_.file);
+			goto frame_out;
+		}
 
-	if(!InitCameraStartInt(&camCtx_))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: streaming failed for %s\n", camCtx_.file);
-		goto frame_out;
+		if(!InitCameraStartInt(&camCtx_))
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: streaming failed for %s\n", camCtx_.file);
+			goto frame_out;
+		}
 	}
 
 	camCtx_.bPaused = bPause;
