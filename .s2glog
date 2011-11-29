@@ -32130,3 +32130,14 @@ By jeno (jeno@leapfrog.com) on 11/28/11 4:29 PM
 4,672 ms. (Cumulative: 12,129,709 ms)
 
 ----------------
+Revision 9,616 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified Camera module to init mode list missing from VIP V4L driver, and ignore 640x480 grab mode.
+Note these changes had to be resolved with svn -r9615 from Justin, working on similar SnapFrame support.
+The VIP V4L driver seems less flexible switching video stream modes compared to the UVC V4L driver.
+
+By Dave Milici (dmilici@leapfrog.com) on 11/28/11 7:41 PM
+4 changed, 0 added, 0 deleted.
+4,891 ms. (Cumulative: 12,134,678 ms)
+
+----------------
