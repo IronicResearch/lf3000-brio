@@ -30,9 +30,17 @@ const CString* CVIPCameraModule::GetModuleName() const
 CVIPCameraModule::CVIPCameraModule()
 {
 	tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
+	tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
 
 	camCtx_.mode = SVGA;
 	valid = InitCameraInt(&camCtx_.mode);
+
+	// FIXME: mode list supposed to be returned via V4L
+	if (camCtx_.modes->empty())
+	{
+		camCtx_.modes->push_back(new tCaptureMode(QSVGA));
+		camCtx_.modes->push_back(new tCaptureMode(SVGA));
+	}
 }
 
 //----------------------------------------------------------------------------
@@ -195,7 +203,12 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 		camCtx_.mode = qSVGA;
 		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 	}
-
+	else if (hndl == kInvalidVidCapHndl)
+	{
+		// Start video stream without viewfinder or recorder thread
+		camCtx_.mode = qSVGA;
+//		hndl = CCameraModule::StartVideoCapture();
+	}
 	return hndl;
 }
 

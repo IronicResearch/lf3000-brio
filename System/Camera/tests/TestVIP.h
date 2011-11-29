@@ -234,6 +234,41 @@ public:
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
 	}
+
+	//------------------------------------------------------------------------
+	void testEnumFormats()
+	{
+		PRINT_TEST_NAME();
+
+		tErrType					err;
+		tCaptureMode*				mode;
+		tCaptureModes				list;
+		tCaptureModes::iterator		it;
+
+		err = pCameraMPI_->EnumFormats(list);
+		TS_ASSERT_EQUALS(err, kNoErr);
+
+		for (it = list.begin(); it != list.end(); it++)
+		{
+			mode = *it;
+			printf("size=%dx%d, fps=%d:%d, format=%d\n", mode->width, mode->height, (unsigned)mode->fps_numerator, (unsigned)mode->fps_denominator, (int)mode->pixelformat);
+		}
+
+		mode = pCameraMPI_->GetCurrentFormat();
+		TS_ASSERT(mode != kNull);
+		if (mode)
+			printf("size=%dx%d, fps=%d:%d, format=%d\n", mode->width, mode->height, (unsigned)mode->fps_numerator, (unsigned)mode->fps_denominator, (int)mode->pixelformat);
+	}
+	
+	//------------------------------------------------------------------------
+	void testSnapFrame()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl hndl = pCameraMPI_->StartVideoCapture(NULL);
+		pCameraMPI_->SnapFrame(hndl, "snap.jpg");
+		pCameraMPI_->StopVideoCapture(hndl);
+	}
 };
 
 // EOF

@@ -226,10 +226,9 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera)
 //----------------------------------------------------------------------------
 CCameraModule::~CCameraModule()
 {
-	delete micListener_;
-
 	StopVideoCapture(camCtx_.hndl);
 //	StopAudioCapture(micCtx_.hndl);
+	delete micListener_;
 
 	valid = false;
 	CAMERA_LOCK;
@@ -2030,10 +2029,9 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	tFrameInfo		frm;
 	Boolean			bPause, vPause;
 
-	//FIXME: Bypass for VIP
 	if(camCtx_.hCameraThread != kNull)
 	{
-		if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+		if(!IS_STREAMING_HANDLE(hndl) && !IS_THREAD_HANDLE(hndl))
 		{
 			return false;
 		}
@@ -2041,8 +2039,8 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	oldmode = newmode = camCtx_.mode;
 
-	newmode.width	= frame->width;
-	newmode.height	= frame->height;
+//	newmode.width	= frame->width;
+//	newmode.height	= frame->height;
 	newmode.fps_numerator	= 1;
 	newmode.fps_denominator	= 5;
 
@@ -2295,7 +2293,7 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	Boolean	bRet	= true;
 
-	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl) && !IS_THREAD_HANDLE(hndl))
 	{
 		return false;
 	}
@@ -2321,7 +2319,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	Boolean	bRet	= true;
 
-	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl) && !IS_THREAD_HANDLE(hndl))
 	{
 		return false;
 	}
@@ -2347,7 +2345,7 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 	int 	type 	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	Boolean	bRet	= true;
 
-	if(!IS_STREAMING_HANDLE(hndl) || !IS_THREAD_HANDLE(hndl))
+	if(!IS_STREAMING_HANDLE(hndl) && !IS_THREAD_HANDLE(hndl))
 	{
 		return false;
 	}
