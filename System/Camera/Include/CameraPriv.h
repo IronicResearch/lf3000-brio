@@ -318,7 +318,6 @@ private:
 	Boolean		GetCameraModes(tCaptureModes &modes);
 	Boolean		SetCameraMode(const tCaptureMode* mode);
 	Boolean		SetBuffers(const U32 numBuffers);
-	tVidCapHndl	StartVideoCapture();
 	Boolean		PollFrame(const tVidCapHndl hndl);
 	Boolean		GetFrame(const tVidCapHndl hndl, tFrameInfo *frame);
 	Boolean		RenderFrame(tFrameInfo *frame, tVideoSurf *pSurf, tBitmapInfo *image, const JPEG_METHOD method);
@@ -395,9 +394,12 @@ public:
 	VTABLE_EXPORT tVidCapHndl	StartVideoCapture(const CPath& path, tVideoSurf* pSurf,\
 													IEventListener * pListener, const U32 maxLength, const Boolean audio);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath &path);
 
 private:
-private:
+	tVideoSurf	overlaySurf;
+	Boolean		CompressFrame(tFrameInfo *frame, int stride);
+
 	// Limit object creation to the Module Manager interface functions
 	CVIPCameraModule();
 	virtual ~CVIPCameraModule();
