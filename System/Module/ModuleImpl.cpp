@@ -199,6 +199,7 @@ namespace
 				kernel_.PowerDown();
 			}
 
+#ifndef EMULATION
 			// Scan module list for any replacement patch libs in local path
 			for (int ii = mFoundModulesList.size() - 1; ii >= 0; --ii)
 			{
@@ -206,6 +207,7 @@ namespace
 				if (patch.length() > 0)
 					mFoundModulesList[ii].sopath = patch;
 			}
+#endif
 			return kNoErr;
 		}
 
