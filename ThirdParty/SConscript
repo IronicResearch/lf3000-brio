@@ -43,8 +43,8 @@ if env['hdr_deploy_dir']:
 					Dir('FreeType').Dir('Include').abspath, '.h')
 
 #Install OpenGL headers
-	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir('x86').Dir('GLES').abspath
-	ExportHeaders( dest_dir, Dir('PowerVR').Dir('Include').Dir('GLES').abspath, '.h' )
+	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir('x86').abspath
+	ExportHeaders( dest_dir, Dir('PowerVR').Dir('Include').abspath, '.h' )
 	
 	#Normally, cpu is not set in the sdk_headers target (not sure why this worked in oe-classic)
 	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL')
