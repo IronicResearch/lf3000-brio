@@ -104,6 +104,10 @@ if master_env['monolithic']:
 if master_env['platform'] == 'Lightning':
 	master_env.Append(CPPDEFINES = ['LF1000'])
 
+#Allow CPPFLAGS to bleed through. This allows for native builds in oe-core	
+if 'CPPFLAGS' in os.environ:
+	master_env.Append(CPPFLAGS = os.environ['CPPFLAGS'].split())
+
 #--------------------------------------------------------
 # Setup our build environments
 #--------------------------------------------------------
