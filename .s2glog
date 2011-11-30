@@ -32163,3 +32163,12 @@ By dlazzari (dlazzari@leapfrog.com) on 11/30/11 1:48 PM
 4,611 ms. (Cumulative: 12,144,024 ms)
 
 ----------------
+Revision 9,623 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Export all PowerVR headers when creating SDK
+
+By dlazzari (dlazzari@leapfrog.com) on 11/30/11 2:21 PM
+1 changed, 0 added, 0 deleted.
+4,610 ms. (Cumulative: 12,148,712 ms)
+
+----------------
