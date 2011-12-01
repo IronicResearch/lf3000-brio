@@ -10,14 +10,9 @@ Import('env')
 #-----------------------------------------------------------------------------
 targets = []
 
-if env['samples']:
-	samples = ['Simple', 'BrioCube', 'Button', 'Display', 'BrioVideo', 'Power', 'USBDemo', 'SysAppDemo', 'PlayAudio', 'DatasetLoader', 'PageFlipDemo']
-	dest_dir = Dir(env['base_dir']).Dir('Samples')
-	for s in samples:
-		targets += CopyTree(env, os.path.join('Samples', s), dest_dir.Dir(s).abspath )
-	targets += env.Install(env['base_dir'], 'readme.txt')
-	targets += env.Install(env['base_dir'], 'ReleaseNotes.txt')
-	targets += env.Install(env['base_dir'], 'TargetSetup.txt')
+targets += env.Install(env['base_dir'], 'readme.txt')
+targets += env.Install(env['base_dir'], 'ReleaseNotes.txt')
+targets += env.Install(env['base_dir'], 'TargetSetup.txt')
 
 Return("targets")
 	
