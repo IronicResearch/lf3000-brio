@@ -166,6 +166,7 @@ environments['sdk_tools']['is_sdk'] = True
 env = environments['sdk_headers']
 Export('env')
 publish_samples = SConscript( os.path.join(master_env['platform'], 'SConscript'), duplicate=False)
+publish_samples += SConscript( os.path.join('Samples', 'SConscript'), duplicate=False)
 Alias('sdk_headers', publish_samples)
 
 #--------------------------------------------------------
