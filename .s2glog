@@ -32181,3 +32181,18 @@ By dlazzari (dlazzari@leapfrog.com) on 12/1/11 3:46 PM
 47,689 ms. (Cumulative: 12,196,479 ms)
 
 ----------------
+Revision 9,625 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+5,141 ms. (Cumulative: 12,201,714 ms)
+
+----------------
+Revision 9,626 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed samples for sure this time (even tested in the correct branch...)
+
+By dlazzari (dlazzari@leapfrog.com) on 12/1/11 4:05 PM
+1 changed, 0 added, 0 deleted.
+5,375 ms. (Cumulative: 12,207,105 ms)
+
+----------------
