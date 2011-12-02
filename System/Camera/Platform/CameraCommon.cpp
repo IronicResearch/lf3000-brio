@@ -2039,8 +2039,8 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	oldmode = newmode = camCtx_.mode;
 
-//	newmode.width	= frame->width;
-//	newmode.height	= frame->height;
+	newmode.width	= frame->width;
+	newmode.height	= frame->height;
 	newmode.fps_numerator	= 1;
 	newmode.fps_denominator	= 5;
 
@@ -2102,6 +2102,17 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: streaming failed for %s\n", camCtx_.file);
 		goto bail_out;
+	}
+
+	// HACK: Get and discard some frames from video stream first
+	for (int i = 0; i < 5; i++)
+	{
+		bRet = GetFrameInt(&camCtx_, 0);
+		if (!bRet)
+			dbg_.DebugOut(kDbgLvlCritical, "%s: GetFrameInt() failed try %d\n", __FUNCTION__, i);
+		bRet = ReturnFrameInt(&camCtx_, camCtx_.buf.index);
+		if (!bRet)
+			dbg_.DebugOut(kDbgLvlCritical, "%s: ReturnFrameInt() failed try %d\n", __FUNCTION__, i);
 	}
 
 	// acquire the snapshot
