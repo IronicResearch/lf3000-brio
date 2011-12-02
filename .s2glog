@@ -32222,3 +32222,14 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/2/11 11:47 AM
 5,313 ms. (Cumulative: 12,217,887 ms)
 
 ----------------
+Revision 9,633 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,634 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,635 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule: GrabFrame() modified to get and discard some frames from video stream before capturing stable one.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/2/11 1:23 PM
+2 changed, 0 added, 0 deleted.
+5,435 ms. (Cumulative: 12,223,447 ms)
+
+----------------

@@ -203,12 +203,7 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 		camCtx_.mode = qSVGA;
 		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 	}
-	else if (hndl == kInvalidVidCapHndl)
-	{
-		// Start video stream without viewfinder or recorder thread
-		camCtx_.mode = qSVGA;
-//		hndl = CCameraModule::StartVideoCapture();
-	}
+
 	return hndl;
 }
 
@@ -300,7 +295,8 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	ret = SaveFrame(path, &frame);
 
 out:
-	kernel_.Free(frame.data);
+	if (frame.data)
+		kernel_.Free(frame.data);
 
 	return ret;
 }
