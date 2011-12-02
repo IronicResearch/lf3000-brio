@@ -32208,3 +32208,17 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/2/11 10:58 AM
 5,282 ms. (Cumulative: 12,212,481 ms)
 
 ----------------
+Revision 9,630 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,631 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,632 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+merged -r9627, 9631:
+-- added targa support for saving images to imageio. ( load function is stubbed )
+-- including stdio.h explicitly in TARGA.cpp
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 12/2/11 11:47 AM
+1 changed, 1 added, 0 deleted.
+5,313 ms. (Cumulative: 12,217,887 ms)
+
+----------------
