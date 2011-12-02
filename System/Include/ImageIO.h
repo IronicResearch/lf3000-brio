@@ -27,6 +27,9 @@ bool PNG_Save(CPath& path, tVideoSurf& surf);
 bool JPEG_Load(CPath& path, tVideoSurf& surf);
 bool JPEG_Save(CPath& path, tVideoSurf& surf);
 
+bool TARGA_Load(CPath& path, tVideoSurf& surf);
+bool TARGA_Save(CPath& path, tVideoSurf& surf);
+
 class CImageIO
 {
 public:
