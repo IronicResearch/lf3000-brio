@@ -2039,8 +2039,9 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	oldmode = newmode = camCtx_.mode;
 
-	newmode.width	= frame->width;
-	newmode.height	= frame->height;
+// FIXME: 640x480 unstable on VIP
+//	newmode.width	= frame->width;
+//	newmode.height	= frame->height;
 	newmode.fps_numerator	= 1;
 	newmode.fps_denominator	= 5;
 
