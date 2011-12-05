@@ -1,6 +1,7 @@
 #include <SystemTypes.h>
 
 #include <CameraPriv.h>
+#include <DisplayPriv.h>
 
 #ifndef EMULATION
 #include <sys/ioctl.h>
@@ -295,6 +296,66 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	ret = SaveFrame(path, &frame);
 
 out:
+	if (frame.data)
+		kernel_.Free(frame.data);
+
+	return ret;
+}
+
+//----------------------------------------------------------------------------
+Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order)
+{
+	tVideoSurf 	surf = {640, 480, 640*3, pixels, kPixelFormatRGB888};
+
+	return CVIPCameraModule::GetFrame(hndl, &surf, color_order);
+}
+
+//----------------------------------------------------------------------------
+Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
+{
+	Boolean ret;
+	tFrameInfo frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
+	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, pSurf->pitch * pSurf->height, NULL};
+
+	ret = CCameraModule::GrabFrame(hndl, &frame);
+
+	if (ret)
+	{
+		int			i,j,k,m;
+		int			pitch = frame.size / frame.height; // 4096;
+		U8* 		sy = (U8*)frame.data;
+		U8*			su = sy + pitch/2;
+		U8*			sv = su + pitch * frame.height/2;
+		U8*			dy = pSurf->buffer;
+		if (pSurf->format == kPixelFormatRGB888)
+		{
+			// Convert YUV to RGB format surface
+			for (i = 0; i < frame.height; i++)
+			{
+				for (j = k = m = 0; k < frame.width; j++, k+=2, m+=6)
+				{
+					U8 y0 = sy[k];
+					U8 y1 = sy[k+1];
+					U8 u0 = su[j];
+					U8 v0 = sv[j];
+					dy[m+0] = B(y0,u0,v0);
+					dy[m+1] = G(y0,u0,v0);
+					dy[m+2] = R(y0,u0,v0);
+					dy[m+3] = B(y1,u0,v0);
+					dy[m+4] = G(y1,u0,v0);
+					dy[m+5] = R(y1,u0,v0);
+				}
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					su += pitch;
+					sv += pitch;
+				}
+			}
+		}
+	}
+
 	if (frame.data)
 		kernel_.Free(frame.data);
 

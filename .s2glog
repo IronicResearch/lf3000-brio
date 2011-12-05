@@ -32242,3 +32242,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/2/11 4:09 PM
 5,298 ms. (Cumulative: 12,228,838 ms)
 
 ----------------
+Revision 9,637 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Add LF2000-specific GetFrame() methods for handling uncompressed (non-JPEG) video streams.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/11 12:01 PM
+3 changed, 0 added, 0 deleted.
+5,104 ms. (Cumulative: 12,234,020 ms)
+
+----------------
