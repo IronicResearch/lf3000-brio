@@ -29,6 +29,7 @@ mpilibs		= ['ModuleMPI', 'MicrophoneMPI']
 myenv		= env.Clone()
 
 myenv.Append(CPPDEFINES = '__STDC_CONSTANT_MACROS')
+myenv.Append(CPPPATH = ['#System/Display/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])

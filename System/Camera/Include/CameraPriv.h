@@ -395,6 +395,8 @@ public:
 													IEventListener * pListener, const U32 maxLength, const Boolean audio);
 	VTABLE_EXPORT Boolean		StopVideoCapture(const tVidCapHndl hndl);
 	VTABLE_EXPORT Boolean		SnapFrame(const tVidCapHndl hndl, const CPath &path);
+	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, U8* pixels, tColorOrder color_order);
+	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order);
 
 private:
 	tVideoSurf	overlaySurf;
