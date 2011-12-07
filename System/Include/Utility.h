@@ -201,6 +201,11 @@ enum tPlatformCaps {
 	kCapsTouchscreen,
 	kCapsCamera,
 	kCapsAccelerometer,
+	kCapsMicrophone,
+	kCapsScreenLEX,
+	kCapsScreenLPAD,
+	kCapsLF1000,
+	kCapsLF2000,
 };
 
 bool HasPlatformCapability(tPlatformCaps caps);

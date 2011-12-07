@@ -13,6 +13,7 @@
 //============================================================================
 #include <stdio.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "Utility.h"
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -39,6 +40,18 @@ U32 GetPlatformID()
 //----------------------------------------------------------------------------
 CString GetPlatformName()
 {
+	FILE* 	fd = fopen( "/sys/devices/system/board/platform_family", "r" );
+	if (fd)
+	{
+		char buf[10];
+		fscanf(fd, "%s", buf);
+		fclose(fd);
+		if (strncmp(buf, "LEX", 3) == 0)
+			return "Emerald";
+		if (strncmp(buf, "LPAD", 4) == 0)
+			return "Madrid";
+	}
+
 	switch (GetPlatformID())
 	{
 		case 0: 					// LF1000 devboard
@@ -67,6 +80,7 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	struct stat stbuf;
 	switch (caps)
 	{
+	case kCapsLF2000:
 	case kCapsTouchscreen:
 		return (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
 	case kCapsCamera:
@@ -74,6 +88,12 @@ bool HasPlatformCapability(tPlatformCaps caps)
 				(0 == stat("/sys/devices/platform/vip.0", &stbuf)) );
 	case kCapsAccelerometer:
 		return (0 == stat("/sys/devices/platform/lf2000-aclmtr/enable", &stbuf));
+	case kCapsMicrophone:
+		return (0 == stat("/sys/class/sound/pcmC0D0c", &stbuf));
+	case kCapsScreenLEX:
+		return ("Emerald" == GetPlatformName());
+	case kCapsScreenLPAD:
+		return ("Madrid" == GetPlatformName());
 	}
 	return false;
 }
