@@ -32251,3 +32251,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/5/11 12:01 PM
 5,104 ms. (Cumulative: 12,234,020 ms)
 
 ----------------
+Revision 9,638 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule: Enabled 640x480 and 320x240 modes supported by VIP driver.
+Disabled SetCameraMode() call inside VIP::StartVideoCapture() as unsafe.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/6/11 5:37 PM
+2 changed, 0 added, 0 deleted.
+5,206 ms. (Cumulative: 12,239,304 ms)
+
+----------------
