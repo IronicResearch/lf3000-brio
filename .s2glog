@@ -32280,3 +32280,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/7/11 12:32 PM
 5,297 ms. (Cumulative: 12,250,117 ms)
 
 ----------------
+Revision 9,641 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additional Platform capabilities enums, per TTP 1996.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/7/11 12:34 PM
+2 changed, 0 added, 0 deleted.
+5,263 ms. (Cumulative: 12,255,474 ms)
+
+----------------
