@@ -36,9 +36,9 @@ U32 GetPlatformID()
 }
 
 //----------------------------------------------------------------------------
-// Returns the system platform name
+// Returns the system platform family
 //----------------------------------------------------------------------------
-CString GetPlatformName()
+CString GetPlatformFamily()
 {
 	FILE* 	fd = fopen( "/sys/devices/system/board/platform_family", "r" );
 	if (fd)
@@ -46,11 +46,21 @@ CString GetPlatformName()
 		char buf[10];
 		fscanf(fd, "%s", buf);
 		fclose(fd);
-		if (strncmp(buf, "LEX", 3) == 0)
-			return "Emerald";
-		if (strncmp(buf, "LPAD", 4) == 0)
-			return "Madrid";
+		return CString(buf);
 	}
+	return "Unknown";
+}
+
+//----------------------------------------------------------------------------
+// Returns the system platform name
+//----------------------------------------------------------------------------
+CString GetPlatformName()
+{
+	CString platform = GetPlatformFamily();
+	if (platform == "LEX")
+		return "Emerald";
+	if (platform == "LPAD")
+		return "Madrid";
 
 	switch (GetPlatformID())
 	{
@@ -91,9 +101,9 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsMicrophone:
 		return (0 == stat("/sys/class/sound/pcmC0D0c", &stbuf));
 	case kCapsScreenLEX:
-		return ("Emerald" == GetPlatformName());
+		return ("LEX" == GetPlatformFamily());
 	case kCapsScreenLPAD:
-		return ("Madrid" == GetPlatformName());
+		return ("LPAD" == GetPlatformFamily());
 	}
 	return false;
 }
