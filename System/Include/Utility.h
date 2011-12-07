@@ -193,6 +193,7 @@ U32 GetPlatformID();
 // Returns the system platform name
 //----------------------------------------------------------------------------
 CString GetPlatformName();
+CString GetPlatformFamily();
 
 //----------------------------------------------------------------------------
 // Returns the system state of the selected platform capability

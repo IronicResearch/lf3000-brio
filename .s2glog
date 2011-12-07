@@ -32290,3 +32290,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/7/11 12:34 PM
 5,263 ms. (Cumulative: 12,255,474 ms)
 
 ----------------
+Revision 9,642 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Export GetPlatformFamily() function since it is already so useful and forward-thinking.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/7/11 12:46 PM
+2 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 12,260,881 ms)
+
+----------------
