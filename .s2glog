@@ -32270,3 +32270,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/6/11 6:19 PM
 5,328 ms. (Cumulative: 12,244,710 ms)
 
 ----------------
+Revision 9,640 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP::GetFrame: Alternately use pitch to detect RGB888 format, as called by widget.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/7/11 12:32 PM
+1 changed, 0 added, 0 deleted.
+5,297 ms. (Cumulative: 12,250,117 ms)
+
+----------------

@@ -338,7 +338,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		U8*			su = sy + pitch/2;
 		U8*			sv = su + pitch * frame.height/2;
 		U8*			dy = pSurf->buffer;
-		if (pSurf->format == kPixelFormatRGB888 || pSurf->format == kPixelFormatARGB8888)
+		if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
 		{
 			// Convert YUV to RGB format surface
 			for (i = 0; i < height; i++)
