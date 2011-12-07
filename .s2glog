@@ -32261,3 +32261,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/6/11 5:37 PM
 5,206 ms. (Cumulative: 12,239,304 ms)
 
 ----------------
+Revision 9,639 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP::GetFrame support updated for ARGB surfaces, used by Camera widget.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/6/11 6:19 PM
+1 changed, 0 added, 0 deleted.
+5,328 ms. (Cumulative: 12,244,710 ms)
+
+----------------
