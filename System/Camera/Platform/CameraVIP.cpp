@@ -329,28 +329,61 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	if (ret)
 	{
 		int			i,j,k,m;
-		int			pitch = frame.size / frame.height; // 4096;
+		int			r = (color_order == kDisplayRgb) ? 2 : 0;
+		int			b = (color_order == kDisplayRgb) ? 0 : 2;
+		int			pitch = frame.size / frame.height;
+		int			width = MIN(frame.width, pSurf->width);
+		int			height = MIN(frame.height, pSurf->height);
 		U8* 		sy = (U8*)frame.data;
 		U8*			su = sy + pitch/2;
 		U8*			sv = su + pitch * frame.height/2;
 		U8*			dy = pSurf->buffer;
-		if (pSurf->format == kPixelFormatRGB888)
+		if (pSurf->format == kPixelFormatRGB888 || pSurf->format == kPixelFormatARGB8888)
 		{
 			// Convert YUV to RGB format surface
-			for (i = 0; i < frame.height; i++)
+			for (i = 0; i < height; i++)
 			{
-				for (j = k = m = 0; k < frame.width; j++, k+=2, m+=6)
+				for (j = k = m = 0; k < width; j++, k+=2, m+=6)
 				{
 					U8 y0 = sy[k];
 					U8 y1 = sy[k+1];
 					U8 u0 = su[j];
 					U8 v0 = sv[j];
-					dy[m+0] = B(y0,u0,v0);
+					dy[m+b] = B(y0,u0,v0);
 					dy[m+1] = G(y0,u0,v0);
-					dy[m+2] = R(y0,u0,v0);
-					dy[m+3] = B(y1,u0,v0);
-					dy[m+4] = G(y1,u0,v0);
-					dy[m+5] = R(y1,u0,v0);
+					dy[m+r] = R(y0,u0,v0);
+					dy[m+3+b] = B(y1,u0,v0);
+					dy[m+4]   = G(y1,u0,v0);
+					dy[m+3+r] = R(y1,u0,v0);
+				}
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					su += pitch;
+					sv += pitch;
+				}
+			}
+		}
+		else if (pSurf->format == kPixelFormatARGB8888)
+		{
+			// Convert YUV to ARGB format surface
+			for (i = 0; i < height; i++)
+			{
+				for (j = k = m = 0; k < width; j++, k+=2, m+=8)
+				{
+					U8 y0 = sy[k];
+					U8 y1 = sy[k+1];
+					U8 u0 = su[j];
+					U8 v0 = sv[j];
+					dy[m+b] = B(y0,u0,v0);
+					dy[m+1] = G(y0,u0,v0);
+					dy[m+r] = R(y0,u0,v0);
+					dy[m+3] = 0xFF;
+					dy[m+4+b] = B(y1,u0,v0);
+					dy[m+5]   = G(y1,u0,v0);
+					dy[m+4+r] = R(y1,u0,v0);
+					dy[m+7] = 0xFF;
 				}
 				sy += pitch;
 				dy += pSurf->pitch;
