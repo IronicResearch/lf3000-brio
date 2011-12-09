@@ -32300,3 +32300,24 @@ By Dave Milici (dmilici@leapfrog.com) on 12/7/11 12:46 PM
 5,313 ms. (Cumulative: 12,260,881 ms)
 
 ----------------
+Revision 9,643 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,644 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,645 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,646 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,647 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,648 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,649 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,650 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,651 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,652 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,653 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,654 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,655 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Maintain constant 640x480 format for interim stability.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/8/11 5:38 PM
+1 changed, 0 added, 0 deleted.
+5,376 ms. (Cumulative: 12,266,460 ms)
+
+----------------
