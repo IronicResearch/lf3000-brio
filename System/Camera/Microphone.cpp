@@ -89,31 +89,36 @@ tEventStatus CCameraModule::MicrophoneListener::Reset() {
 	reason = kUndefinedEventType;
 }
 
+#define VALID_MICMPI(x)		if (!x) x = new CMicrophoneMPI();
 //============================================================================
 // Microphone Specific Functions:
 //============================================================================
 tErrType CCameraModule::SetCameraAudioPath(const CPath &path)
 {
-	microphone_.SetAudioPath(path);
+	VALID_MICMPI(microphone_);
+	microphone_->SetAudioPath(path);
 	return kNoErr;
 }
 
 //----------------------------------------------------------------------------
 CPath* CCameraModule::GetCameraAudioPath()
 {
-	return microphone_.GetAudioPath();
+	VALID_MICMPI(microphone_);
+	return microphone_->GetAudioPath();
 }
 
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::SetMicrophoneParam(enum tMicrophoneParam param, S32 value)
 {
-	return microphone_.SetMicrophoneParam(param,value);
+	VALID_MICMPI(microphone_);
+	return microphone_->SetMicrophoneParam(param,value);
 }
 
 //----------------------------------------------------------------------------
 S32	CCameraModule::GetMicrophoneParam(enum tMicrophoneParam param)
 {
-	return microphone_.GetMicrophoneParam(param);
+	VALID_MICMPI(microphone_);
+	return microphone_->GetMicrophoneParam(param);
 }
 
 //----------------------------------------------------------------------------
@@ -121,14 +126,17 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 {
 	tAudCapHndl hndl = kInvalidAudCapHndl;
 
+	if (!microphone_)
+		microphone_ = new CMicrophoneMPI();
+
 	if(pListener == NULL) {
-		hndl = microphone_.StartAudioCapture(path, NULL, maxLength, paused);
+		hndl = microphone_->StartAudioCapture(path, NULL, maxLength, paused);
 	}
 	else {
 		if(micListener_ != NULL)
 			delete micListener_;
 		micListener_ = new MicrophoneListener(pListener,&event_);
-		hndl = microphone_.StartAudioCapture(path, micListener_, maxLength, paused);
+		hndl = microphone_->StartAudioCapture(path, micListener_, maxLength, paused);
 	}
 	return hndl;
 }
@@ -136,25 +144,29 @@ tAudCapHndl CCameraModule::StartAudioCapture(const CPath& path, IEventListener *
 //----------------------------------------------------------------------------
 Boolean CCameraModule::PauseAudioCapture(const tAudCapHndl hndl)
 {
-	return microphone_.PauseAudioCapture(hndl);
+	VALID_MICMPI(microphone_);
+	return microphone_->PauseAudioCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
 Boolean CCameraModule::ResumeAudioCapture(const tAudCapHndl hndl)
 {
-	return microphone_.ResumeAudioCapture(hndl);
+	VALID_MICMPI(microphone_);
+	return microphone_->ResumeAudioCapture(hndl);
 }
 
 //----------------------------------------------------------------------------
 Boolean CCameraModule::IsAudioCapturePaused(const tAudCapHndl hndl)
 {
-	return microphone_.IsAudioCapturePaused(hndl);
+	VALID_MICMPI(microphone_);
+	return microphone_->IsAudioCapturePaused(hndl);
 }
 
 //----------------------------------------------------------------------------
 Boolean CCameraModule::StopAudioCapture(const tAudCapHndl hndl)
 {
-	return microphone_.StopAudioCapture(hndl);
+	VALID_MICMPI(microphone_);
+	return microphone_->StopAudioCapture(hndl);
 }
 
 LF_END_BRIO_NAMESPACE()

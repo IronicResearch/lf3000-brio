@@ -167,7 +167,8 @@ void CCameraModule::SetScaler(int width, int height, bool centered)
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CCameraModule::CCameraModule() : dbg_(kGroupCamera)
+CCameraModule::CCameraModule() : dbg_(kGroupCamera),
+	valid(false), micListener_(0), microphone_(0)
 {
 	tErrType			err = kNoErr;
 	const tMutexAttr	attr = {0};
@@ -229,6 +230,7 @@ CCameraModule::~CCameraModule()
 	StopVideoCapture(camCtx_.hndl);
 //	StopAudioCapture(micCtx_.hndl);
 	delete micListener_;
+	delete microphone_;
 
 	valid = false;
 	CAMERA_LOCK;
@@ -2313,7 +2315,7 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 
 	if(camCtx_.bAudio)
 	{
-		microphone_.PauseAudioCapture(micCtx_.hndl);
+		microphone_->PauseAudioCapture(micCtx_.hndl);
 	}
 
 	camCtx_.bPaused = true;
@@ -2339,7 +2341,7 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 
 	if(camCtx_.bAudio)
 	{
-		microphone_.ResumeAudioCapture(micCtx_.hndl);
+		microphone_->ResumeAudioCapture(micCtx_.hndl);
 	}
 
 	camCtx_.bPaused = false;

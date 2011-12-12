@@ -299,7 +299,7 @@ private:
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
 	CEventMPI			event_;
-	CMicrophoneMPI		microphone_;
+	CMicrophoneMPI		*microphone_;
 	tCameraContext		camCtx_;
 	tMicrophoneContext	micCtx_;
 	tIDCTContext		idctCtx_;
