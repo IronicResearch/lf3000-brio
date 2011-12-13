@@ -182,14 +182,33 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	struct tCaptureMode qSVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 
-	if(pSurf)
+	if (IS_STREAMING_HANDLE(camCtx_.hndl))
 	{
-//		CCameraModule::StopVideoCapture(camCtx_.hndl);
+		if (!EnableOverlay(camCtx_.fd, 0))
+			return hndl;
+	}
 
-//		if(!(SetCameraMode(&qSVGA)))
-//				return hndl;
-//		camCtx_.mode = qSVGA; // FIXME
+	// FIXME: re-init required always
+	if (true || camCtx_.mode.width != qSVGA.width || camCtx_.mode.height != qSVGA.height)
+	{
+		/* Close camera fd */
+		if (!CCameraModule::DeinitCameraInt())
+			return hndl;
 
+		/* Re-open camera */
+		if (!CCameraModule::InitCameraInt(&qSVGA))
+			return hndl;
+	}
+
+	if(path.length())
+	{
+		/* Spawn capture thread w/out viewfinder */
+		camCtx_.mode = qSVGA;
+		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
+	}
+
+	if (pSurf)
+	{
 		/* Spawn hardware viewfinder */
 		if(!SetOverlay(camCtx_.fd, pSurf))
 			return hndl;
@@ -199,17 +218,8 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 
 		overlaySurf = *pSurf;
 
-		if (pSurf->format == kPixelFormatYUV420 || pSurf->format == kPixelFormatYUYV422)
-			CCameraModule::SetScaler(pSurf->width, pSurf->height, false);
-
-		hndl = kStreamingActive;
-	}
-
-	if(path.length())
-	{
-		/* Spawn capture thread w/out viewfinder */
-//		camCtx_.mode = qSVGA;
-		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
+		if (hndl == kInvalidVidCapHndl)
+			hndl = kStreamingActive;
 	}
 
 	return hndl;

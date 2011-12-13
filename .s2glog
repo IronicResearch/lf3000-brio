@@ -32330,3 +32330,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/12/11 9:59 AM
 5,534 ms. (Cumulative: 12,272,103 ms)
 
 ----------------
+Revision 9,657 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Re-ordered capture video steps for viewfinder and AVI thread. Always re-init on new video streams.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/13/11 11:49 AM
+1 changed, 0 added, 0 deleted.
+4,953 ms. (Cumulative: 12,277,150 ms)
+
+----------------
