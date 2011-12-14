@@ -32350,3 +32350,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 12/13/11 6:53 PM
 5,001 ms. (Cumulative: 12,282,245 ms)
 
 ----------------
+Revision 9,660 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Force V4L re-init per GetFrame() call, like SnapFrame(). 
+
+By Dave Milici (dmilici@leapfrog.com) on 12/14/11 12:31 PM
+1 changed, 0 added, 0 deleted.
+4,942 ms. (Cumulative: 12,287,280 ms)
+
+----------------
