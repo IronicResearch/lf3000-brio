@@ -114,14 +114,14 @@ public:
 	void testVideoResources()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
-		
+
 		CPath dir = GetTestRsrcFolder();
 		pVideoMPI_->SetVideoResourcePath(dir);
  		CPath* path = pVideoMPI_->GetVideoResourcePath();
  		TS_ASSERT( *path == dir );
-		
+
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
 		TS_ASSERT_EQUALS( video, pVideoMPI_->GetCurrentVideoHandle() );
@@ -134,13 +134,13 @@ public:
 	void testVideoDisplay()
 	{
 		PRINT_TEST_NAME();
-		
+
 #if defined(EMULATION) || !defined(LF1000) // YUYV422 not supported on LF1000
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUYV422, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -151,7 +151,7 @@ public:
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -166,13 +166,13 @@ public:
 			r = pVideoMPI_->PutVideoFrame(video, &surf);
 			TS_ASSERT( r == true );
 			pDisplayMPI_->Invalidate(0, NULL);
-			
+
 			r = pVideoMPI_->GetVideoTime(video, &vt);
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.frame == i );
 			TS_ASSERT( vt.time >= 0 );
 		}
-		
+
 		pVideoMPI_->StopVideo(video);
 		sleep(1);
 
@@ -181,16 +181,16 @@ public:
 		delete pDisplayMPI_;
 #endif
 	}
-	
+
 	//------------------------------------------------------------------------
 	void testVideoDisplayRGB()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatARGB8888, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -202,7 +202,7 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatARGB8888 );
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -217,13 +217,13 @@ public:
 			r = pVideoMPI_->PutVideoFrame(video, &surf);
 			TS_ASSERT( r == true );
 			pDisplayMPI_->Invalidate(0, NULL);
-			
+
 			r = pVideoMPI_->GetVideoTime(video, &vt);
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.frame == i );
 			TS_ASSERT( vt.time >= 0 );
 		}
-		
+
 		pVideoMPI_->StopVideo(video);
 		sleep(1);
 
@@ -236,11 +236,11 @@ public:
 	void testVideoDisplayYUV()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -252,7 +252,7 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatYUV420 );
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -267,7 +267,7 @@ public:
 			r = pVideoMPI_->PutVideoFrame(video, &surf);
 			TS_ASSERT( r == true );
 			pDisplayMPI_->Invalidate(0, NULL);
-			
+
 			r = pVideoMPI_->GetVideoTime(video, &vt);
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.frame == i );
@@ -286,11 +286,11 @@ public:
 	void testVideoAVI()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -302,7 +302,7 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatYUV420 );
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("testYUV.avi");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -317,7 +317,7 @@ public:
 			r = pVideoMPI_->PutVideoFrame(video, &surf);
 			TS_ASSERT( r == true );
 			pDisplayMPI_->Invalidate(0, NULL);
-			
+
 			r = pVideoMPI_->GetVideoTime(video, &vt);
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.frame == i );
@@ -336,11 +336,11 @@ public:
 	void testVideoAVIRGB()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -352,7 +352,7 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatRGB888 );
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("testRGB.avi");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -367,7 +367,7 @@ public:
 			r = pVideoMPI_->PutVideoFrame(video, &surf);
 			TS_ASSERT( r == true );
 			pDisplayMPI_->Invalidate(0, NULL);
-			
+
 			r = pVideoMPI_->GetVideoTime(video, &vt);
 			TS_ASSERT( r == true );
 			TS_ASSERT( vt.frame == i );
@@ -386,11 +386,11 @@ public:
 	void testVideoAVIPlay()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -402,7 +402,7 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatRGB888 );
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("UncompressedRGB.avi", &surf);
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -421,7 +421,7 @@ public:
 			kernel->TaskSleep(500);
 		}
 		delete kernel;
-		
+
 		pVideoMPI_->StopVideo(video);
 
 		pDisplayMPI_->UnRegister(disp, 0);
@@ -433,13 +433,13 @@ public:
 	void testVideoAVISeek()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tVideoInfo	info;
 		tVideoTime	time;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatRGB888, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -451,7 +451,7 @@ public:
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
 		TS_ASSERT( surf.format == kPixelFormatRGB888 );
-		
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("UncompressedRGB.avi");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -473,7 +473,7 @@ public:
 			pVideoMPI_->PutVideoFrame(video, &surf);
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
-		
+
 		pVideoMPI_->StopVideo(video);
 
 		pDisplayMPI_->UnRegister(disp, 0);
@@ -485,7 +485,7 @@ public:
 	void XXXXtestVideoAudio()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -500,7 +500,7 @@ public:
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
-				
+
 		CKernelMPI*	kernel = new CKernelMPI();
 		CEventMPI*  evtmgr = new CEventMPI();
 		VideoListener  videoListener;
@@ -514,7 +514,7 @@ public:
 		{
 			Boolean 	r;
 			tVideoTime	vt;
-			
+
 			kernel->TaskSleep(30);
 
 			r = pVideoMPI_->GetVideoTime(video, &vt);
@@ -528,12 +528,12 @@ public:
 		pVideoMPI_->ResumeVideo(video);
 		TS_ASSERT( false == pVideoMPI_->IsVideoPaused(video) );
 		kernel->TaskSleep(1000);
-		
+
 		for (int i = 0; i < 100; i++)
 		{
 			Boolean 	r;
 			tVideoTime	vt;
-			
+
 			kernel->TaskSleep(30);
 
 			r = pVideoMPI_->GetVideoTime(video, &vt);
@@ -554,7 +554,7 @@ public:
 	void testVideoState()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tDisplayHandle disp;
@@ -569,15 +569,15 @@ public:
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
-	
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("Theora10Vorbis0_mono16kHz.ogg", "Theora10Vorbis0_mono16kHz.ogg", &surf, false, NULL);
 		TS_ASSERT( video != kInvalidVideoHndl );
 		TS_ASSERT( true == pVideoMPI_->IsVideoPlaying(video) );
 
-		pVideoMPI_->StopVideo(video);	
+		pVideoMPI_->StopVideo(video);
 		TS_ASSERT( false == pVideoMPI_->IsVideoPlaying(video) );
-	
+
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		delete pDisplayMPI_;
@@ -587,13 +587,13 @@ public:
 	void testVideoSeek()
 	{
 		PRINT_TEST_NAME();
-		
+
 		tVideoHndl	video;
 		tVideoSurf	surf;
 		tVideoInfo	info;
 		tVideoTime	time;
 		tDisplayHandle disp;
-		
+
 		pDisplayMPI_ = new CDisplayMPI;
 		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
@@ -604,7 +604,7 @@ public:
 		surf.height = pDisplayMPI_->GetHeight(disp);
 		surf.buffer = pDisplayMPI_->GetBuffer(disp);
 		surf.format = pDisplayMPI_->GetPixelFormat(disp);
-	
+
 		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
 		video = pVideoMPI_->StartVideo("7sec.ogg");
 		TS_ASSERT( video != kInvalidVideoHndl );
@@ -640,12 +640,30 @@ public:
 			pVideoMPI_->PutVideoFrame(video, &surf);
 			pDisplayMPI_->Invalidate(0, NULL);
 		}
-		
-		pVideoMPI_->StopVideo(video);	
-	
+
+		pVideoMPI_->StopVideo(video);
+
 		pDisplayMPI_->UnRegister(disp, 0);
 		pDisplayMPI_->DestroyHandle(disp, false);
 		delete pDisplayMPI_;
+	}
+
+
+	//------------------------------------------------------------------------
+	void testVideoLength()
+	{
+		PRINT_TEST_NAME();
+
+		pVideoMPI_->SetVideoResourcePath(GetTestRsrcFolder());
+		S64 length = pVideoMPI_->GetVideoLength("7sec.ogg", 300);
+		float lengthSec = (float) length/1000;
+		printf("est. length of 7 sec. video (.ogg) = %f\n", lengthSec);
+		TS_ASSERT( lengthSec < 8 && lengthSec > 6);
+
+		length = pVideoMPI_->GetVideoLength("testYUV.avi", 300);
+		lengthSec = (float) length/1000;
+		printf("est. length of 5 sec. video (.avi) = %f\n", lengthSec);
+		TS_ASSERT( lengthSec < 6 && lengthSec > 4);
 	}
 };
 

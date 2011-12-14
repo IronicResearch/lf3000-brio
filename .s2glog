@@ -32339,3 +32339,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/13/11 11:49 AM
 4,953 ms. (Cumulative: 12,277,150 ms)
 
 ----------------
+Revision 9,658 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,659 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge -r9658:  Implemented Brio-Base Bug # 2056. VideoMPI now has a new function: GetVideoLength(). Provided a file-name and a maximum length, this function will calculate the est. length of a video (either .ogg or .avi). This value is returned in milliseconds. This done via traversing a BST and looking for the best value to reflect the length. The logic to do this was extracted from the GalleryWidget's VideoPlayer. Updated Unit Tests to also test this new feature.
+
+
+By Gill Stanfield (gstanfield@leapfrog.com) on 12/13/11 6:53 PM
+5 changed, 1 added, 0 deleted.
+5,001 ms. (Cumulative: 12,282,245 ms)
+
+----------------

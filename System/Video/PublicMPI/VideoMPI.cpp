@@ -270,5 +270,13 @@ tVideoHndl 	CVideoMPI::GetCurrentVideoHandle(void)
 	return pModule_->GetCurrentVideoHandle();
 }
 
+//----------------------------------------------------------------------------
+S64 	CVideoMPI::GetVideoLength(const CPath& path, int maxLength)
+{
+	if (!pModule_)
+		return kInvalidVideoHndl;
+	return pModule_->GetVideoLength(path,maxLength);
+}
+
 LF_END_BRIO_NAMESPACE()
 // EOF
