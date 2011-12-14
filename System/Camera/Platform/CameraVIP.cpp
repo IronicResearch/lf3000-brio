@@ -333,6 +333,22 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
 	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, pSurf->pitch * pSurf->height, NULL};
+	struct tCaptureMode	oldMode	= camCtx_.mode;
+	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
+
+	/* Stop viewfinder */
+	if (hndl & kStreamingActive)
+		EnableOverlay(camCtx_.fd, 0);
+
+	/* Close camera fd */
+	ret = CCameraModule::DeinitCameraInt();
+	if (!ret)
+		return ret;
+
+	/* Re-open camera */
+	ret = CCameraModule::InitCameraInt(&newMode);
+	if (!ret)
+		return ret;
 
 	ret = CCameraModule::GrabFrame(hndl, &frame);
 
@@ -408,6 +424,23 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	if (frame.data)
 		kernel_.Free(frame.data);
+
+	/* Close camera fd */
+	ret = CCameraModule::DeinitCameraInt();
+	if (!ret)
+		return ret;
+
+	/* Re-open camera */
+	ret = CCameraModule::InitCameraInt(&oldMode);
+	if (!ret)
+		return ret;
+
+	if (hndl & kStreamingActive)
+	{
+		SetOverlay(camCtx_.fd, &overlaySurf);
+		EnableOverlay(camCtx_.fd, 1);
+		camCtx_.hndl = hndl;
+	}
 
 	return ret;
 }
