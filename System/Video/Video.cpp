@@ -34,6 +34,7 @@
 #include <VideoPlayer.h>
 #include <TheoraPlayer.h>
 #include <AVIPlayer.h>
+#include <SearchTree.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
@@ -565,6 +566,47 @@ Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 	kernel_.UnlockMutex(gVidMutex);
 #endif
 	return state;
+}
+
+//----------------------------------------------------------------------------
+S64 CVideoModule::GetVideoLength(const CPath& path, int maxLength)
+{
+	tVideoHndl hVideo = StartVideo(path);
+	if(hVideo == kInvalidVideoHndl)
+		return -1;
+
+	//Populate our search tree with all seconds possible from 0 to maxLength.
+	NumNode *root = NULL;
+	for(int i=0; i < maxLength; i++)
+		InsertValue(&root,i);
+	BalanceTree(root);	//Balance the tree, so that we can find the length as quickly as possible.
+
+	//Get our video info, so that we can get the fps.
+	tVideoInfo info;
+	GetVideoInfo(hVideo,&info);
+	tVideoTime time;
+	S64 prevTime = 0;
+	time.time = 0;
+
+	//Cycle through our tree to find the length of our video.
+	NumNode *node = root;
+	while(node != NULL) {
+		int i = node->num;	//i is our 'time'.
+		time.frame = i*info.fps;	//The number of frames at i is i*fps.
+		SeekVideoFrame(hVideo,&time,true,false);	//Seek to that frame and get the time returned.
+		GetVideoTime(hVideo,&time);
+		printf("  [%d] time= %lld\n",i,time.time);
+		if(time.time < 0)	//If the time is < 0, then that means this time is too large.  Go to a smaller time and try that.
+			node = node->left;
+		else if(time.time == prevTime)	//If this time is == to the last time, then time may be too large.  Check anyone smaller than this node.
+			node = node->left;			//If there's nothing smaller, then we've reached our maxTime.
+		else
+			node = node->right;	//Otherwise, try a bigger node to see if there's a more valid time.
+		prevTime = time.time;
+	}
+	StopVideo(hVideo);
+	DeleteTree(root);	//Remove the tree.
+	return prevTime;
 }
 
 //----------------------------------------------------------------------------

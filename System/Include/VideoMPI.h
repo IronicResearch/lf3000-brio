@@ -240,6 +240,16 @@ public:
 	/// \return	Handle to video returned by StartVideo() if active
 	tVideoHndl 	GetCurrentVideoHandle(void);
 
+	/// Get length of video
+	///
+	/// \param	path		Video file name relative to SetVideoResourcePath(),
+	/// or full absolute path name if leading slash. Ogg, AVI extensions supported.
+	///
+	/// \param	maxLength	Maximum length (in seconds) of video file.
+	///
+	/// \return	The length of the video in milliseconds.  If hVideo is invalid, then it returns -1.
+	S64 		GetVideoLength(const CPath& path, int maxLength);
+
 private:
 	class CVideoModule*	pModule_;
 	U32					id_;
