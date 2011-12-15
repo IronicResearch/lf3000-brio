@@ -32359,3 +32359,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/14/11 12:31 PM
 4,942 ms. (Cumulative: 12,287,280 ms)
 
 ----------------
+Revision 9,661 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,662 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Reset capture handle when stopping viewfinder, before restarting for AVI recording.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/14/11 7:30 PM
+1 changed, 0 added, 0 deleted.
+4,954 ms. (Cumulative: 12,292,328 ms)
+
+----------------
