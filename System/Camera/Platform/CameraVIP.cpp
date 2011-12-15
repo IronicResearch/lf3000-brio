@@ -245,6 +245,8 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return CCameraModule::StopVideoCapture(hndl);
 	}
 
+	camCtx_.hndl = kInvalidVidCapHndl;
+
 	return ret;
 }
 
