@@ -92,6 +92,8 @@ void fixup_header(avi_t *avi)
 	uint32_t time = avi->pVideoCodecCtx->time_base.den ?
 			1000000 * avi->pVideoCodecCtx->time_base.num / avi->pVideoCodecCtx->time_base.den
 			: 0;
+	if (!scale || !rate || !time)
+		return;
 
 	FILE* fp = fopen(avi->pFormatCtx->filename, "r+");
 	fseek(fp, 0, SEEK_END);

@@ -32369,3 +32369,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/14/11 7:30 PM
 4,954 ms. (Cumulative: 12,292,328 ms)
 
 ----------------
+Revision 9,663 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,664 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule: Skip AVI FPS fixup step if frame rate or time base are unknown. Avoids bogus AVI header warnings.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/11 11:28 AM
+1 changed, 0 added, 0 deleted.
+4,938 ms. (Cumulative: 12,297,359 ms)
+
+----------------
