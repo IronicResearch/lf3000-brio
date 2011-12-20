@@ -368,9 +368,11 @@ void* CameraTaskMain(void* arg)
 				//do {
 					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 				//} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
+#if 0
 				// Audio block counter is based on cummulative bytes written
 				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
 					keyframe = cam->micCtx_.counter;
+#endif
 				// Breakout on next loop iteration if AVI write error
 				if (r < 0)
 					bRunning = false;
@@ -426,10 +428,12 @@ void* CameraTaskMain(void* arg)
 	{
 		float fps = (float)keyframe / ((float)elapsed / 1000000);
 
+#if 0
 		// Actual FPS rate is based on cummulative audio bytes written
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
 		//printf("fps=%f\n",fps);
+#endif
 
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, V4L2_PIX_FMT_MJPEG);
 		AVI_close(avi);
