@@ -56,11 +56,14 @@ CString GetPlatformFamily()
 //----------------------------------------------------------------------------
 CString GetPlatformName()
 {
-	CString platform = GetPlatformFamily();
-	if (platform == "LEX")
-		return "Emerald";
-	if (platform == "LPAD")
-		return "Madrid";
+	FILE* 	fd = fopen( "/sys/devices/system/board/platform", "r" );
+	if (fd)
+	{
+		char buf[10];
+		fscanf(fd, "%s", buf);
+		fclose(fd);
+		return CString(buf);
+	}
 
 	switch (GetPlatformID())
 	{

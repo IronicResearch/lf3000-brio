@@ -32391,3 +32391,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/11 6:14 PM
 5,125 ms. (Cumulative: 12,302,578 ms)
 
 ----------------
+Revision 9,666 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+GetPlatformName() now returns actual platform name, instead of spoofing "Emerald" for L2K and "Madrid" for M2K.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/20/11 10:53 AM
+1 changed, 0 added, 0 deleted.
+4,907 ms. (Cumulative: 12,307,579 ms)
+
+----------------
