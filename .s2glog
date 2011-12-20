@@ -32418,3 +32418,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/20/11 11:11 AM
 4,881 ms. (Cumulative: 12,317,538 ms)
 
 ----------------
+Revision 9,669 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix OpenGL library exports when building SDK.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/20/11 2:30 PM
+1 changed, 0 added, 0 deleted.
+5,038 ms. (Cumulative: 12,322,654 ms)
+
+----------------
