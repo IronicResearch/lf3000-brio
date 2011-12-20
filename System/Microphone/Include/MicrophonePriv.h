@@ -39,7 +39,6 @@
 #endif
 
 #include <alsa/asoundlib.h>
-#include <AVIWrapper.h>
 #include <sndfile.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -76,6 +75,16 @@ const U64	MIN_FREE	= 1*1024*1024;		/* NOTE: UBIFS is internally padded,
 
 #define FRAME_HANDLE(x) \
 	((x) | kStreamingFrame)
+
+#ifndef WAVE_FORMAT_PCM
+#define WAVE_FORMAT_UNKNOWN             (0x0000)
+#define WAVE_FORMAT_PCM                 (0x0001)
+#define WAVE_FORMAT_ADPCM               (0x0002)
+#define WAVE_FORMAT_ALAW                (0x0006)
+#define WAVE_FORMAT_MULAW               (0x0007)
+#define WAVE_FORMAT_DVI_ADPCM           (0x0011)
+#define WAVE_FORMAT_GSM610              (0x0031)
+#endif
 
 //==============================================================================
 // Typedefs
@@ -195,7 +204,7 @@ private:
 	int			XlateAudioFormatAVI(snd_pcm_format_t fmt);
 	int			XlateAudioFormatSF(snd_pcm_format_t fmt);
 	Boolean		StartAudio(Boolean reset = true);
-	unsigned int WriteAudio(avi_t *avi);
+	unsigned int WriteAudio(void *avi);
 	Boolean		WriteAudio(SNDFILE *wav);
 	Boolean		FlushAudio();
 	Boolean		StopAudio();

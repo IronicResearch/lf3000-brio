@@ -261,6 +261,8 @@ void* CameraTaskMain(void* arg)
 		microphone.SetMicrophoneParam(kMicrophoneClipCount, 0);
 		cam->micCtx_.hndl = microphone.StartAudioCapture("",pCtx->pListener);
 		cam->micCtx_.bytesWritten = 0;
+		cam->micCtx_.counter = 0;
+		cam->micCtx_.block_size = microphone.GetMicrophoneParam(kMicrophoneBlockSize);
 		pCtx->bAudio = cam->micCtx_.hndl != kInvalidAudCapHndl;
 	}
 
@@ -299,11 +301,14 @@ void* CameraTaskMain(void* arg)
 		bRet = false;
 		if(bFile && pCtx->bAudio && !pCtx->bPaused)
 		{
-			unsigned int retValue = microphone.CameraWriteAudio(avi);
-			bRet = (retValue != 0);
+			char* buf = NULL;
+			void* ptr = &buf;
+			unsigned int retValue = microphone.CameraWriteAudio(ptr);
+			bRet = (retValue != 0 && buf != NULL);
 			if(bRet) {
-				cam->micCtx_.bytesWritten = retValue;	// cummulative bytes written already
-				cam->micCtx_.counter = cam->micCtx_.bytesWritten / microphone.GetMicrophoneParam(kMicrophoneBlockSize);
+				AVI_write_audio(avi, buf, retValue);
+				cam->micCtx_.bytesWritten += retValue;	// cummulative bytes written
+				cam->micCtx_.counter = cam->micCtx_.bytesWritten / cam->micCtx_.block_size;
 			}
 			//printf("bytesWritten = %d    counter=%d    bRet=%s\n",cam->micCtx_.bytesWritten,cam->micCtx_.counter,((bRet) ? "true" : "false"));
 		}

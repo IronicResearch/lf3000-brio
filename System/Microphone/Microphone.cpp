@@ -662,7 +662,7 @@ S32	CMicrophoneModule::GetMicrophoneParam(enum tMicrophoneParam param)
 //----------------------------------------------------------------------------
 unsigned int	CMicrophoneModule::CameraWriteAudio(void* avi)
 {
-	return WriteAudio((avi_t*) avi);
+	return WriteAudio(avi);
 }
 
 //----------------------------------------------------------------------------
@@ -748,7 +748,7 @@ Boolean	CMicrophoneModule::StopAudio()
 }
 
 //----------------------------------------------------------------------------
-unsigned int	CMicrophoneModule::WriteAudio(avi_t *avi)
+unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 {
 #ifdef USE_ASYNC_PIPE
 	unsigned int ret = 0;
@@ -793,13 +793,13 @@ unsigned int	CMicrophoneModule::WriteAudio(avi_t *avi)
 
 	// Write captured samples to AVI file directly from mmapped buffer
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
-		AVI_write_audio(avi, addr, len);
+		char** ptr = (char**)avi;
+		*ptr = (char*)micCtx_.poll_buf;
+		memcpy(micCtx_.poll_buf, addr, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		micCtx_.counter++;
-		if (len != micCtx_.block_size)
-			micCtx_.counter = micCtx_.bytesWritten / micCtx_.block_size;
-		return micCtx_.bytesWritten;
+		return (unsigned int)len;
 	}
 	return 0;
 #endif

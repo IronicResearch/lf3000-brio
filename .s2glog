@@ -32380,3 +32380,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/11 11:28 AM
 4,938 ms. (Cumulative: 12,297,359 ms)
 
 ----------------
+Revision 9,665 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relocate responsibility for saving AVI audio in Camera capture thread instead of MicrophoneMPI.
+Uses common AVI context for audio and video tracks instead of delegating audio to separate module.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/11 6:14 PM
+4 changed, 0 added, 2 deleted.
+5,125 ms. (Cumulative: 12,302,578 ms)
+
+----------------
