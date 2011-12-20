@@ -14,8 +14,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['Utility', 'AudioMPI', 'DisplayMPI', 'EventMPI', 'KernelMPI',
-					 'DebugMPI', 'USBDeviceMPI', 'asound', 'sndfile',
-					 'avformat', 'avcodec', 'avutil', 'png', 'z']
+					 'DebugMPI', 'USBDeviceMPI', 'asound', 'sndfile']
 mpilibs		= ['ModuleMPI']
 
 #-----------------------------------------------------------------------------
