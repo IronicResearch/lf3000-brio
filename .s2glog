@@ -32409,3 +32409,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/20/11 11:04 AM
 4,907 ms. (Cumulative: 12,312,564 ms)
 
 ----------------
+Revision 9,668 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable camera AVI thread FPS adjustment on audio block counter, since audio always assumes 15 FPS rate.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/20/11 11:11 AM
+1 changed, 0 added, 0 deleted.
+4,881 ms. (Cumulative: 12,317,538 ms)
+
+----------------
