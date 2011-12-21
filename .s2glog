@@ -32427,3 +32427,12 @@ By dlazzari (dlazzari@leapfrog.com) on 12/20/11 2:30 PM
 5,038 ms. (Cumulative: 12,322,654 ms)
 
 ----------------
+Revision 9,670 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+OpenGL libraries are glibc based, so specify as such to prevent problems linking in uclibc environment.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/20/11 6:08 PM
+1 changed, 0 added, 10 deleted.
+5,808 ms. (Cumulative: 12,328,540 ms)
+
+----------------
