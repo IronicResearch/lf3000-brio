@@ -32455,3 +32455,12 @@ By dlazzari (dlazzari@leapfrog.com) on 12/20/11 6:16 PM
 5,220 ms. (Cumulative: 12,339,422 ms)
 
 ----------------
+Revision 9,673 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add forgotten cproject file for previous eclipse fix.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/20/11 6:25 PM
+0 changed, 1 added, 0 deleted.
+5,344 ms. (Cumulative: 12,344,844 ms)
+
+----------------
