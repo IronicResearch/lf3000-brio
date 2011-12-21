@@ -2315,7 +2315,8 @@ Boolean	CCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean d
 
 	if(camCtx_.bAudio)
 	{
-		microphone_->PauseAudioCapture(micCtx_.hndl);
+		if (microphone_)
+			microphone_->PauseAudioCapture(micCtx_.hndl);
 	}
 
 	camCtx_.bPaused = true;
@@ -2341,7 +2342,8 @@ Boolean	CCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 
 	if(camCtx_.bAudio)
 	{
-		microphone_->ResumeAudioCapture(micCtx_.hndl);
+		if (microphone_)
+			microphone_->ResumeAudioCapture(micCtx_.hndl);
 	}
 
 	camCtx_.bPaused = false;
