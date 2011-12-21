@@ -331,10 +331,10 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	atomicOpen->workName = (char *)malloc (1+strlen(path)+strlen(ATOMIC_EXT));
 	strcpy (atomicOpen->workName, path);
 	strcat (atomicOpen->workName, ATOMIC_EXT);
-	mktemp (atomicOpen->workName);
+	mkstemp (atomicOpen->workName);
 	if (strlen (atomicOpen->workName) == 0)
 	{
-		ATOMIC_ERR1 ("fopenAtomic(%s): mktemp failed us!\n", path);
+		ATOMIC_ERR1 ("fopenAtomic(%s): mkstemp failed us!\n", path);
 		free (atomicOpen->workName);
 		free (atomicOpen->realName);
 		delete atomicOpen;
