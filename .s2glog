@@ -32446,3 +32446,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/20/11 6:12 PM
 5,459 ms. (Cumulative: 12,334,108 ms)
 
 ----------------
+Revision 9,672 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update Brio eclipse project to have real build configurations. The embedded targets use the angstrom-core LF2000 compiler.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/20/11 6:16 PM
+1 changed, 0 added, 0 deleted.
+5,220 ms. (Cumulative: 12,339,422 ms)
+
+----------------
