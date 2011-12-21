@@ -32436,3 +32436,13 @@ By dlazzari (dlazzari@leapfrog.com) on 12/20/11 6:08 PM
 5,808 ms. (Cumulative: 12,328,540 ms)
 
 ----------------
+Revision 9,671 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Checkin of Nexell OGLES libs for uclibc runtime, per nxp3200 svn -r639.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/20/11 6:12 PM
+0 changed, 10 added, 0 deleted.
+5,459 ms. (Cumulative: 12,334,108 ms)
+
+----------------
