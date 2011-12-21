@@ -32484,3 +32484,24 @@ By Dave Milici (dmilici@leapfrog.com) on 12/20/11 6:57 PM
 5,329 ms. (Cumulative: 12,355,684 ms)
 
 ----------------
+Revision 9,676 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+4,972 ms. (Cumulative: 12,360,734 ms)
+
+----------------
+Revision 9,677 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+No changes to commit.
+5,079 ms. (Cumulative: 12,365,813 ms)
+
+----------------
+Revision 9,678 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add environment variable overrides to eclipse project.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/20/11 7:49 PM
+0 changed, 1 added, 0 deleted.
+4,938 ms. (Cumulative: 12,370,751 ms)
+
+----------------
