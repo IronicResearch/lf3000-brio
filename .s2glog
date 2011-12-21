@@ -32505,3 +32505,13 @@ By dlazzari (dlazzari@leapfrog.com) on 12/20/11 7:49 PM
 4,938 ms. (Cumulative: 12,370,751 ms)
 
 ----------------
+Revision 9,679 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Sanity check MicrophoneMPI instance, per Billy.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/21/11 12:35 PM
+1 changed, 0 added, 0 deleted.
+5,033 ms. (Cumulative: 12,375,862 ms)
+
+----------------
