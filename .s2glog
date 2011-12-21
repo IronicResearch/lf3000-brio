@@ -32464,3 +32464,13 @@ By dlazzari (dlazzari@leapfrog.com) on 12/20/11 6:25 PM
 5,344 ms. (Cumulative: 12,344,844 ms)
 
 ----------------
+Revision 9,674 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove mktemp export hack used by LF1000 RidgeRun & Angstrom hybrid runtime. Eliminates linker warning.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/20/11 6:31 PM
+0 changed, 0 added, 1 deleted.
+5,324 ms. (Cumulative: 12,350,262 ms)
+
+----------------
