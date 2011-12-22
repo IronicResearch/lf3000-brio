@@ -190,8 +190,10 @@ void* CameraTaskMain(void* arg)
 		}
 		// fps will be reset upon completion
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, fourcc);
-		if(pCtx->bAudio)
+		if(pCtx->bAudio) {
+			cam->microphone_ 	= &microphone;
 			AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
+		}
 	}
 
 	// set up render-to-screen
@@ -403,6 +405,7 @@ void* CameraTaskMain(void* arg)
 	if (bFile && pCtx->bAudio)
 	{
 		microphone.StopAudioCapture(cam->micCtx_.hndl);
+		cam->microphone_ = NULL;
 	}
 
 	kernel.DestroyTimer(timer);
