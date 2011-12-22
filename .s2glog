@@ -32515,3 +32515,14 @@ By Dave Milici (dmilici@leapfrog.com) on 12/21/11 12:35 PM
 5,033 ms. (Cumulative: 12,375,862 ms)
 
 ----------------
+Revision 9,680 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,681 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge Brio TRUNK svn -r9680 for local MicrophoneMPI instance linkage inside CameraTask.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/21/11 4:46 PM
+1 changed, 0 added, 0 deleted.
+4,934 ms. (Cumulative: 12,380,874 ms)
+
+----------------
