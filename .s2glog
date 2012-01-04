@@ -32526,3 +32526,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/21/11 4:46 PM
 4,934 ms. (Cumulative: 12,380,874 ms)
 
 ----------------
+Revision 9,682 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Only install frozen Nexell OGL libraries into SDK. The runtime should use fresh built ones from the source in the nxp3200 repo.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/3/12 4:17 PM
+1 changed, 0 added, 0 deleted.
+5,000 ms. (Cumulative: 12,385,952 ms)
+
+----------------
