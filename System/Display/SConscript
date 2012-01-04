@@ -40,7 +40,7 @@ if env['cpu'] == 'x86':
 	myenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
 elif env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
-	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu_bare']])
+	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
 elif env['platform'] == 'Lightning' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + env['cpu_bare']])
