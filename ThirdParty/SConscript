@@ -73,7 +73,7 @@ if env['install_dir']:
 		#Only deploy Nexell OpenGL libraries to SDK, never to an embedded setup
 		if env['is_sdk']:
 			libs = glob.glob(os.path.join('Nexell', 'Libs', env['cpu'], '*.so'))
-		else
+		else:
 			libs = []
 	targets += env.Install(opengl_lib_dir, libs)
 	
