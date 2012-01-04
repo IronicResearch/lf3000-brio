@@ -27,6 +27,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 const CString	kMPIName = "CartridgeMPI";
 
+static tCartridgeData	gCachedCartData = { CARTRIDGE_STATE_NONE };
+
 //============================================================================
 // CCartridgeMessage
 //============================================================================
@@ -34,6 +36,8 @@ const CString	kMPIName = "CartridgeMPI";
 CCartridgeMessage::CCartridgeMessage( const tCartridgeData& data ) 
 	: IEventMessage(kCartridgeStateChanged), mData(data)
 {
+	gCachedCartData = data;
+	SetCartridgeState(data);	// FIXME: LeapFrogPlugin.so extension dependency
 }
 
 //------------------------------------------------------------------------------
@@ -55,6 +59,7 @@ tCartridgeData CCartridgeMessage::GetCartridgeState() const
 //----------------------------------------------------------------------------
 CCartridgeMPI::CCartridgeMPI() : pModule_(NULL)
 {
+	gCachedCartData = GetCartridgeState();
 }
 
 //----------------------------------------------------------------------------
@@ -111,7 +116,7 @@ tErrType CCartridgeMPI::UnregisterEventListener(const IEventListener *pListener)
 //----------------------------------------------------------------------------
 tCartridgeData CCartridgeMPI::GetCartridgeState() const
 {
-	return LeapFrog::Brio::GetCartridgeState();
+	return gCachedCartData;
 }
 
 
