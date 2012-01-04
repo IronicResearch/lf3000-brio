@@ -32563,3 +32563,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/4/12 11:50 AM
 4,923 ms. (Cumulative: 12,400,977 ms)
 
 ----------------
+Revision 9,686 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP overide of Pause/Resume methods to control VIP viewfinder overlay visibility. 
+
+By Dave Milici (dmilici@leapfrog.com) on 1/4/12 2:01 PM
+2 changed, 0 added, 0 deleted.
+4,938 ms. (Cumulative: 12,406,008 ms)
+
+----------------
