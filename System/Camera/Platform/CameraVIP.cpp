@@ -251,6 +251,22 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
+Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
+{
+	if (hndl & kStreamingActive)
+		 EnableOverlay(camCtx_.fd, 0);
+	return CCameraModule::PauseVideoCapture(hndl, display);
+}
+
+//----------------------------------------------------------------------------
+Boolean CVIPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
+{
+	if (hndl & kStreamingActive)
+		 EnableOverlay(camCtx_.fd, 1);
+	return CCameraModule::ResumeVideoCapture(hndl);
+}
+
+//----------------------------------------------------------------------------
 Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
 	Boolean				ret;
