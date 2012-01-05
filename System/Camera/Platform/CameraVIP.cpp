@@ -46,6 +46,13 @@ CVIPCameraModule::CVIPCameraModule()
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
 	}
+
+	overlaySurf.buffer	= NULL;
+	overlaySurf.format	= kPixelFormatError;
+	overlaySurf.height	= 0;
+	overlaySurf.width	= 0;
+	overlaySurf.pitch	= 0;
+	overlayEnabled 		= false;
 }
 
 //----------------------------------------------------------------------------
@@ -91,11 +98,12 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 }
 
 //----------------------------------------------------------------------------
-static Boolean EnableOverlay(int fd, int enable)
+Boolean CVIPCameraModule::EnableOverlay(int fd, int enable)
 {
 #ifndef EMULATION
 	if(ioctl(fd, VIDIOC_OVERLAY, &enable) < 0)
 			return false;
+	overlayEnabled = enable;
 #endif
 	return true;
 }
@@ -254,7 +262,7 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
 	if (hndl & kStreamingActive)
-		 EnableOverlay(camCtx_.fd, 0);
+		 EnableOverlay(camCtx_.fd, display ? 0 : 1);
 	return CCameraModule::PauseVideoCapture(hndl, display);
 }
 
@@ -262,7 +270,7 @@ Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolea
 Boolean CVIPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
 	if (hndl & kStreamingActive)
-		 EnableOverlay(camCtx_.fd, 1);
+		 EnableOverlay(camCtx_.fd, (overlaySurf.buffer != NULL) ? 1 : 0);
 	return CCameraModule::ResumeVideoCapture(hndl);
 }
 
@@ -275,6 +283,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	struct tCaptureMode	UXGA	= {kCaptureFormatYUV420, 640, 480, 1, 10};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	tVideoSurf			oldSurf;
+	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
 
 #if 0
 	if (path.rfind(".png") != std::string::npos)
@@ -317,7 +326,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	if(hndl & kStreamingActive)
 	{
 		SetOverlay(camCtx_.fd, &overlaySurf);
-		EnableOverlay(camCtx_.fd, 1);
+		EnableOverlay(camCtx_.fd, visible);
 	}
 
 	if(!ret)
@@ -353,6 +362,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, pSurf->pitch * pSurf->height, NULL};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
+	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
 
 	/* Stop viewfinder */
 	if (hndl & kStreamingActive)
@@ -456,7 +466,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	if (hndl & kStreamingActive)
 	{
 		SetOverlay(camCtx_.fd, &overlaySurf);
-		EnableOverlay(camCtx_.fd, 1);
+		EnableOverlay(camCtx_.fd, visible);
 		camCtx_.hndl = hndl;
 	}
 
