@@ -402,7 +402,9 @@ public:
 
 private:
 	tVideoSurf	overlaySurf;
+	Boolean		overlayEnabled;
 	Boolean		CompressFrame(tFrameInfo *frame, int stride);
+	Boolean 	EnableOverlay(int fd, int enable);
 
 	// Limit object creation to the Module Manager interface functions
 	CVIPCameraModule();

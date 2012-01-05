@@ -32572,3 +32572,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/4/12 2:01 PM
 4,938 ms. (Cumulative: 12,406,008 ms)
 
 ----------------
+Revision 9,687 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP mods to track viewfinder overlay visibility across pause/resume states.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/4/12 5:39 PM
+2 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 12,411,103 ms)
+
+----------------
