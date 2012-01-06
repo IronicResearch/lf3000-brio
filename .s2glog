@@ -32581,3 +32581,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/4/12 5:39 PM
 5,016 ms. (Cumulative: 12,411,103 ms)
 
 ----------------
+Revision 9,688 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Consolidate building Camera VIP & USB modules without separate libCamera.so dependency.
+Separate lib was unnecessary, although it does not seem to abate any CameraMPI anomalies.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/6/12 2:23 PM
+1 changed, 0 added, 0 deleted.
+4,929 ms. (Cumulative: 12,416,125 ms)
+
+----------------
