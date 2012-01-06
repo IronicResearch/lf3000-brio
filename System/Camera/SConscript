@@ -41,11 +41,9 @@ myenv.Append(LIBPATH = ['#ThirdParty/LibAVFormat/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = [env['staging_dir'].Dir('usr').Dir('lib')])
 
 myenv.Append(CPPPATH=['Include'])
-mymodule	= MakeMyModule(myenv, common_name, modsrcs, modlibs, kBuildMPI)
-usbmodule	= MakeMyModule(myenv, usb_module_name, usbmodsrcs, modlibs + [common_name], kBuildModule)
-vipmodule	= MakeMyModule(myenv, vip_module_name, vipmodsrcs, modlibs + [common_name], kBuildModule)
+usbmodule	= MakeMyModule(myenv, usb_module_name, modsrcs + usbmodsrcs, modlibs, kBuildModule)
+vipmodule	= MakeMyModule(myenv, vip_module_name, modsrcs + vipmodsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
-Depends([usbmodule, vipmodule], mymodule)
 Depends(mympi, [usbmodule, vipmodule])
 
 targets = mympi or []
