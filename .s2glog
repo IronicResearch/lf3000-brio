@@ -32591,3 +32591,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/6/12 2:23 PM
 4,929 ms. (Cumulative: 12,416,125 ms)
 
 ----------------
+Revision 9,689 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,690 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove old hack that is no longer necessary for building native in oe-core.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/9/12 5:38 PM
+1 changed, 0 added, 0 deleted.
+4,971 ms. (Cumulative: 12,421,189 ms)
+
+----------------
