@@ -66,6 +66,7 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 #ifndef EMULATION
 	struct v4l2_framebuffer v4l2;
 
+	memset(&v4l2, 0, sizeof(v4l2));
 	switch(pSurf->format)
 	{
 	case kPixelFormatYUV420:
@@ -76,6 +77,8 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 		v4l2.fmt.pixelformat = V4L2_PIX_FMT_YUYV;
 		v4l2.fmt.priv = PIPE_TO_FMT_PRIV(VIP_OUTPUT_PIPE_CLIPPER);
 		break;
+	default:
+		return false;
 	}
 
 	v4l2.base = pSurf->buffer;

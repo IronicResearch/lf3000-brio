@@ -32601,3 +32601,15 @@ By dlazzari (dlazzari@leapfrog.com) on 1/9/12 5:38 PM
 4,971 ms. (Cumulative: 12,421,189 ms)
 
 ----------------
+Revision 9,691 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP minor mod to explicitly zero V4L format fields prior to setting.
+No effect, as V4L driver only looks at set fields.
+Note changing YUV420 format to use clipper instead of decimator had no effect either,
+which might not be relavant until Justin modified V4L driver.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/9/12 7:33 PM
+1 changed, 0 added, 0 deleted.
+4,906 ms. (Cumulative: 12,426,174 ms)
+
+----------------
