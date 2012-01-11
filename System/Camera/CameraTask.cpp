@@ -22,7 +22,7 @@
 
 #include <AVIWrapper.h>
 
-#define USE_RENDER_THREAD	1	// for separate rendering thread
+#define USE_RENDER_THREAD	0	// for separate rendering thread
 #define MIC_CHANS 			1
 #define MIC_WIDTH			16
 

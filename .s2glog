@@ -32613,3 +32613,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/9/12 7:33 PM
 4,906 ms. (Cumulative: 12,426,174 ms)
 
 ----------------
+Revision 9,692 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP added locking for VIP object's entry point methods.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/11/12 10:11 AM
+2 changed, 0 added, 0 deleted.
+5,469 ms. (Cumulative: 12,431,737 ms)
+
+----------------
