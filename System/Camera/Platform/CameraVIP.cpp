@@ -10,6 +10,9 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+#define CAMERA_LOCK 	kernel_.LockMutex(mutex_)
+#define CAMERA_UNLOCK	kernel_.UnlockMutex(mutex_)
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -193,10 +196,12 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	struct tCaptureMode qSVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 
+	CAMERA_LOCK;
+
 	if (IS_STREAMING_HANDLE(camCtx_.hndl))
 	{
 		if (!EnableOverlay(camCtx_.fd, 0))
-			return hndl;
+			goto out;
 	}
 
 	// FIXME: re-init required always
@@ -204,34 +209,41 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	{
 		/* Close camera fd */
 		if (!CCameraModule::DeinitCameraInt())
-			return hndl;
+			goto out;
 
 		/* Re-open camera */
 		if (!CCameraModule::InitCameraInt(&qSVGA))
-			return hndl;
+			goto out;
 	}
 
 	if(path.length())
 	{
+		CAMERA_UNLOCK;
+
 		/* Spawn capture thread w/out viewfinder */
 		camCtx_.mode = qSVGA;
 		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
+
+		CAMERA_LOCK;
 	}
 
 	if (pSurf)
 	{
 		/* Spawn hardware viewfinder */
 		if(!SetOverlay(camCtx_.fd, pSurf))
-			return hndl;
+			goto out;
 
 		if(!EnableOverlay(camCtx_.fd, 1))
-			return hndl;
+			goto out;
 
 		overlaySurf = *pSurf;
 
 		if (hndl == kInvalidVidCapHndl)
 			hndl = kStreamingActive;
 	}
+
+out:
+	CAMERA_UNLOCK;
 
 	return hndl;
 }
@@ -240,6 +252,8 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 {
 	Boolean ret = true;
+
+	CAMERA_LOCK;
 
 	if(hndl & kStreamingActive)
 	{
@@ -250,6 +264,8 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		overlaySurf.width	= 0;
 		overlaySurf.pitch	= 0;
 	}
+
+	CAMERA_UNLOCK;
 
 	if(IS_THREAD_HANDLE(hndl))
 	{
@@ -264,16 +280,20 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
+	CAMERA_LOCK;
 	if (hndl & kStreamingActive)
 		 EnableOverlay(camCtx_.fd, display ? 0 : 1);
+	CAMERA_UNLOCK;
 	return CCameraModule::PauseVideoCapture(hndl, display);
 }
 
 //----------------------------------------------------------------------------
 Boolean CVIPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
+	CAMERA_LOCK;
 	if (hndl & kStreamingActive)
 		 EnableOverlay(camCtx_.fd, (overlaySurf.buffer != NULL) ? 1 : 0);
+	CAMERA_UNLOCK;
 	return CCameraModule::ResumeVideoCapture(hndl);
 }
 
@@ -293,6 +313,8 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 		return SnapFrameRGB(hndl, path);
 #endif
 
+	CAMERA_LOCK;
+
 	/*
 	 * FIXME:
 	 * The videobuf helper used in the VIP driver refuses to be reconfigured
@@ -308,14 +330,18 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	/* Close camera fd */
 	ret = CCameraModule::DeinitCameraInt();
 	if(!ret)
-		return ret;
+		goto out;
 
 	/* Re-open camera */
 	ret = CCameraModule::InitCameraInt(&UXGA);
 	if(!ret)
-		return ret;
+		goto out;
+
+	CAMERA_UNLOCK;
 
 	ret = GrabFrame(hndl, &frame);
+
+	CAMERA_LOCK;
 
 	/* Restore old mode */
 	ret = CCameraModule::DeinitCameraInt();
@@ -346,6 +372,8 @@ out:
 	if (frame.data)
 		kernel_.Free(frame.data);
 
+	CAMERA_UNLOCK;
+
 	return ret;
 }
 
@@ -367,6 +395,8 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
 
+	CAMERA_LOCK;
+
 	/* Stop viewfinder */
 	if (hndl & kStreamingActive)
 		EnableOverlay(camCtx_.fd, 0);
@@ -374,14 +404,18 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	/* Close camera fd */
 	ret = CCameraModule::DeinitCameraInt();
 	if (!ret)
-		return ret;
+		goto out;
 
 	/* Re-open camera */
 	ret = CCameraModule::InitCameraInt(&newMode);
 	if (!ret)
-		return ret;
+		goto out;
+
+	CAMERA_UNLOCK;
 
 	ret = CCameraModule::GrabFrame(hndl, &frame);
+
+	CAMERA_LOCK;
 
 	if (ret)
 	{
@@ -459,12 +493,12 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	/* Close camera fd */
 	ret = CCameraModule::DeinitCameraInt();
 	if (!ret)
-		return ret;
+		goto out;
 
 	/* Re-open camera */
 	ret = CCameraModule::InitCameraInt(&oldMode);
 	if (!ret)
-		return ret;
+		goto out;
 
 	if (hndl & kStreamingActive)
 	{
@@ -472,6 +506,9 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		EnableOverlay(camCtx_.fd, visible);
 		camCtx_.hndl = hndl;
 	}
+
+out:
+	CAMERA_UNLOCK;
 
 	return ret;
 }
