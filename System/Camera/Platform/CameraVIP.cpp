@@ -13,6 +13,11 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define CAMERA_LOCK 	kernel_.LockMutex(mutex_)
 #define CAMERA_UNLOCK	kernel_.UnlockMutex(mutex_)
 
+tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 30};
+tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
+tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
+tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
+
 //============================================================================
 // CCameraModule: Informational functions
 //============================================================================
@@ -28,19 +33,9 @@ const CString* CVIPCameraModule::GetModuleName() const
 	return &kVIPCameraModuleName;
 }
 
-//============================================================================
-// Ctor & dtor
-//============================================================================
-CVIPCameraModule::CVIPCameraModule()
+//----------------------------------------------------------------------------
+tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 {
-	tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 30};
-	tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
-	tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
-	tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
-
-	camCtx_.mode = QVGA;
-	valid = InitCameraInt(&camCtx_.mode);
-
 	// FIXME: mode list supposed to be returned via V4L
 	if (camCtx_.modes->empty())
 	{
@@ -48,6 +43,23 @@ CVIPCameraModule::CVIPCameraModule()
 		camCtx_.modes->push_back(new tCaptureMode(SVGA));
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
+	}
+
+	return CCameraModule::EnumFormats(pModeList);
+}
+
+//============================================================================
+// Ctor & dtor
+//============================================================================
+CVIPCameraModule::CVIPCameraModule()
+{
+	camCtx_.mode = QVGA;
+	valid = InitCameraInt(&camCtx_.mode);
+
+	// FIXME: mode list supposed to be returned via V4L
+	if (camCtx_.modes->empty())
+	{
+		EnumFormats(*camCtx_.modes);
 	}
 
 	overlaySurf.buffer	= NULL;
