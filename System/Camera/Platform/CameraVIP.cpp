@@ -38,7 +38,7 @@ CVIPCameraModule::CVIPCameraModule()
 	tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
 	tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
 
-	camCtx_.mode = VGA;
+	camCtx_.mode = QVGA;
 	valid = InitCameraInt(&camCtx_.mode);
 
 	// FIXME: mode list supposed to be returned via V4L
@@ -205,7 +205,7 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	}
 
 	// FIXME: re-init required always
-	if (true || camCtx_.mode.width != qSVGA.width || camCtx_.mode.height != qSVGA.height)
+	if (camCtx_.mode.width != qSVGA.width || camCtx_.mode.height != qSVGA.height)
 	{
 		/* Close camera fd */
 		if (!CCameraModule::DeinitCameraInt())
@@ -302,7 +302,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
 	Boolean				ret;
 	tVidCapHndl			origHndl, tmpHndl;
-	tFrameInfo			frame	= {kCaptureFormatYUV420, 640, 480, 0, NULL, 0};
+	tFrameInfo			frame	= {kCaptureFormatYUV420, 320, 240, 0, NULL, 0};
 	struct tCaptureMode	UXGA	= {kCaptureFormatYUV420, 640, 480, 1, 10};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	tVideoSurf			oldSurf;
@@ -323,6 +323,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	 */
 	origHndl = hndl;
 
+#if 0
 	/* Stop viewfinder */
 	if(hndl & kStreamingActive)
 		EnableOverlay(camCtx_.fd, 0);
@@ -336,6 +337,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	ret = CCameraModule::InitCameraInt(&UXGA);
 	if(!ret)
 		goto out;
+#endif
 
 	CAMERA_UNLOCK;
 
@@ -343,6 +345,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 
 	CAMERA_LOCK;
 
+#if 0
 	/* Restore old mode */
 	ret = CCameraModule::DeinitCameraInt();
 	if(!ret)
@@ -351,6 +354,8 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	ret = CCameraModule::InitCameraInt(&oldMode);
 	if(!ret)
 		goto out;
+
+#endif
 
 	if(hndl & kStreamingActive)
 	{
@@ -389,7 +394,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
 	Boolean ret;
-	tFrameInfo frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
+	tFrameInfo frame	= {kCaptureFormatYUV420, 320, 240, 0, NULL, 0};
 	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, pSurf->pitch * pSurf->height, NULL};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
@@ -397,6 +402,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	CAMERA_LOCK;
 
+#if 0
 	/* Stop viewfinder */
 	if (hndl & kStreamingActive)
 		EnableOverlay(camCtx_.fd, 0);
@@ -410,6 +416,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	ret = CCameraModule::InitCameraInt(&newMode);
 	if (!ret)
 		goto out;
+#endif
 
 	CAMERA_UNLOCK;
 
@@ -490,6 +497,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	if (frame.data)
 		kernel_.Free(frame.data);
 
+#if 0
 	/* Close camera fd */
 	ret = CCameraModule::DeinitCameraInt();
 	if (!ret)
@@ -499,6 +507,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	ret = CCameraModule::InitCameraInt(&oldMode);
 	if (!ret)
 		goto out;
+#endif
 
 	if (hndl & kStreamingActive)
 	{
