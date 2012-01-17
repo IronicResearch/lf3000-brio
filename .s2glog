@@ -32622,3 +32622,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/11/12 10:11 AM
 5,469 ms. (Cumulative: 12,431,737 ms)
 
 ----------------
+Revision 9,693 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP hack to force only 320x240 mode to avoid mode switching crashes. (TTP 2263)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/12 12:03 PM
+1 changed, 0 added, 0 deleted.
+5,172 ms. (Cumulative: 12,437,003 ms)
+
+----------------
