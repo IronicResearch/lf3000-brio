@@ -399,6 +399,7 @@ public:
 	VTABLE_EXPORT Boolean		GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order);
 	VTABLE_EXPORT Boolean		PauseVideoCapture(const tVidCapHndl hndl, const Boolean display);
 	VTABLE_EXPORT Boolean		ResumeVideoCapture(const tVidCapHndl hndl);
+	VTABLE_EXPORT tErrType		EnumFormats(tCaptureModes& pModeList);
 
 private:
 	tVideoSurf	overlaySurf;

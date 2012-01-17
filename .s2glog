@@ -32631,3 +32631,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/12 12:03 PM
 5,172 ms. (Cumulative: 12,437,003 ms)
 
 ----------------
+Revision 9,694 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP overide for EnumFormats() to insure valid mode list per V4L instance. (TTP 2255)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/17/12 3:01 PM
+2 changed, 0 added, 0 deleted.
+5,250 ms. (Cumulative: 12,442,347 ms)
+
+----------------
