@@ -88,6 +88,49 @@ bool JPEG_Save(CPath& path, tVideoSurf& surf)
 	return true;
 }
 
+// Load is now split into 2 parts, getinfo and load,
+// getinfo populates surf object passed by caller function, with height width pitch and format
+// by just reading header
+// caller can then create buffer and call load
+// if buffer was created by caller, load fill in image data in that buffer else it will create buffer and then fill image data.
+
+bool JPEG_GetInfo(CPath& path, tVideoSurf& surf)
+{
+	struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+
+	JSAMPROW row_pointer[1];
+
+	FILE *infile = fopen( path.c_str(), "rb" );
+	unsigned long location = 0;
+	int i = 0;
+
+	if ( !infile )
+	{
+		printf("Error opening jpeg file %s\n!", path.c_str() );
+		return -1;
+	}
+
+
+	cinfo.err = jpeg_std_error( &jerr );
+
+	jpeg_create_decompress( &cinfo );
+
+	jpeg_stdio_src( &cinfo, infile );
+
+	jpeg_read_header( &cinfo, TRUE );
+
+	surf.width = cinfo.image_width;
+	surf.height = cinfo.image_height;
+	surf.pitch = cinfo.image_width * 3;//cinfo.input_components;
+	surf.format = kPixelFormatRGB888;
+
+	fclose( infile );
+	/* yup, we succeeded! */
+	return true;
+}
+
+
 //----------------------------------------------------------------------------
 bool JPEG_Load(CPath& path, tVideoSurf& surf)
 {
@@ -116,14 +159,13 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 
 	jpeg_read_header( &cinfo, TRUE );
 
-	/* Start decompression jpeg here */
-	jpeg_start_decompress( &cinfo );
-
 	surf.width = cinfo.image_width;
 	surf.height = cinfo.image_height;
 	surf.pitch = cinfo.image_width * 3;//cinfo.input_components;
 	surf.format = kPixelFormatRGB888;
 
+	/* Start decompression jpeg here */
+	jpeg_start_decompress( &cinfo );
 
 	//raw_image = (unsigned char*)malloc( cinfo.output_width*cinfo.output_height*cinfo.num_components );
 	/* now actually read the jpeg into the raw buffer */
@@ -132,8 +174,14 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 
 	//U8* raw_image = surf.buffer;
 	/* allocate memory to hold the uncompressed image */
+
 	// Allocate buffer here? -- Must be released by caller!
-	surf.buffer = new U8[ (surf.pitch * surf.height) ];
+	//[MD] if caller has already created a buffer, use that else make new one.
+
+	if(surf.buffer == NULL)
+		surf.buffer = new U8[ (surf.pitch * surf.height) ];
+
+
 	row_pointer[0] = (unsigned char *)malloc( cinfo.output_width*cinfo.num_components );
 
 	while( cinfo.output_scanline < cinfo.image_height )

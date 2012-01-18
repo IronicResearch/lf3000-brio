@@ -32640,3 +32640,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/17/12 3:01 PM
 5,250 ms. (Cumulative: 12,442,347 ms)
 
 ----------------
+Revision 9,695 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Load is now split into 2 function calls, GetInfo and Load, getInfo will just read header of file in question and populate surface object's width, height, pitch and format parameters. calling app is then required to create (and destroy after using ) buffer to hold image data based on above info. and call load. Load will then check if buffer was created or not. If it was created, then image data is loaded there. If it was null, then image io will create buffer for you and load image data. note: in both cases, its caller's responsibility to delete buffer properly.
+this fixes #2093.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 1/18/12 1:33 PM
+5 changed, 0 added, 0 deleted.
+5,511 ms. (Cumulative: 12,447,952 ms)
+
+----------------
