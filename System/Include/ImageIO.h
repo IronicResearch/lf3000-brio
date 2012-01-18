@@ -23,20 +23,25 @@ using namespace LeapFrog::Brio;
 
 bool PNG_Load(CPath& path, tVideoSurf& surf);
 bool PNG_Save(CPath& path, tVideoSurf& surf);
+bool PNG_GetInfo(CPath& path, tVideoSurf& surf);
 
 bool JPEG_Load(CPath& path, tVideoSurf& surf);
 bool JPEG_Save(CPath& path, tVideoSurf& surf);
+bool JPEG_GetInfo(CPath& path, tVideoSurf& surf);
 
 bool TARGA_Load(CPath& path, tVideoSurf& surf);
 bool TARGA_Save(CPath& path, tVideoSurf& surf);
+bool TARGA_GetInfo(CPath& path, tVideoSurf& surf);
 
 class CImageIO
 {
 public:
 	CImageIO();
 	~CImageIO();
+
 	bool Load(CPath& path, tVideoSurf& surf);
 	bool Save(CPath& path, tVideoSurf& surf);
+	bool GetInfo(CPath& path, tVideoSurf& surf);
 };
 
 #endif // IMAGEIO_H

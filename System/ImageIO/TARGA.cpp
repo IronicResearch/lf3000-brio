@@ -155,6 +155,18 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 
 }
 
+// Load is now split into 2 parts, getinfo and load,
+// getinfo populates surf object passed by caller function, with height width pitch and format
+// by just reading header
+// caller can then create buffer and call load
+// if buffer was created by caller, load fill in image data in that buffer else it will create buffer and then fill image data.
+
+bool TARGA_GetInfo(CPath& path, tVideoSurf& surf)
+{
+
+}
+
+
 bool TARGA_Load(CPath& path, tVideoSurf& surf)
 {
 	return true;
