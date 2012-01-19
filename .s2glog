@@ -32662,3 +32662,12 @@ By bgrissom (bgrissom@leapfrog.com) on 1/18/12 6:31 PM
 5,317 ms. (Cumulative: 12,453,378 ms)
 
 ----------------
+Revision 9,700 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Commented out NULL buffer check in JPEG.cpp. Fixes a crash when choosing a user photo in the gallery. More discussion needs to take place about buffer strategy.
+
+By David Wise (dwise@leapfrog.com) on 1/18/12 7:14 PM
+1 changed, 0 added, 0 deleted.
+5,453 ms. (Cumulative: 12,458,925 ms)
+
+----------------

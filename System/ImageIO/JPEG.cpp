@@ -159,6 +159,7 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 
 	jpeg_read_header( &cinfo, TRUE );
 
+
 	surf.width = cinfo.image_width;
 	surf.height = cinfo.image_height;
 	surf.pitch = cinfo.image_width * 3;//cinfo.input_components;
@@ -178,11 +179,13 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 	// Allocate buffer here? -- Must be released by caller!
 	//[MD] if caller has already created a buffer, use that else make new one.
 
-	if(surf.buffer == NULL)
+	//TODO: Discuss best way to manage buffers especially given the new get info feature.
+	//if(surf.buffer == NULL)
 		surf.buffer = new U8[ (surf.pitch * surf.height) ];
 
 
 	row_pointer[0] = (unsigned char *)malloc( cinfo.output_width*cinfo.num_components );
+
 
 	while( cinfo.output_scanline < cinfo.image_height )
 	{
@@ -190,6 +193,8 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 		for( i=0; i<cinfo.image_width*cinfo.num_components;i++)
 			surf.buffer[location++] = row_pointer[0][i];
 	}
+
+
 	/* wrap up decompression, destroy objects, free pointers and close open files */
 	jpeg_finish_decompress( &cinfo );
 	jpeg_destroy_decompress( &cinfo );
