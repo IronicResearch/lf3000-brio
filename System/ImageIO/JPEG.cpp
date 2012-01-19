@@ -180,7 +180,7 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 	//[MD] if caller has already created a buffer, use that else make new one.
 
 	//TODO: Discuss best way to manage buffers especially given the new get info feature.
-	//if(surf.buffer == NULL)
+	if(surf.buffer == NULL)
 		surf.buffer = new U8[ (surf.pitch * surf.height) ];
 
 
