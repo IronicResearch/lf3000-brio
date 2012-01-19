@@ -32671,3 +32671,13 @@ By David Wise (dwise@leapfrog.com) on 1/18/12 7:14 PM
 5,453 ms. (Cumulative: 12,458,925 ms)
 
 ----------------
+Revision 9,701 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+adding if buffer==NULL, then create buffer part again ( commented out in last rev )
+Caller function needs to initialize buffer either with NULL or valid memory pointer for this to work.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 1/19/12 1:54 PM
+1 changed, 0 added, 0 deleted.
+5,298 ms. (Cumulative: 12,464,301 ms)
+
+----------------
