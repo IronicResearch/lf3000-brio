@@ -32650,3 +32650,15 @@ By mdeshpande (mdeshpande@leapfrog.com) on 1/18/12 1:33 PM
 5,511 ms. (Cumulative: 12,447,952 ms)
 
 ----------------
+Revision 9,696 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,697 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,698 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,699 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add include for stat in CameraMPI.  This was causing some compilers to not compile Brio correctly.
+
+By bgrissom (bgrissom@leapfrog.com) on 1/18/12 6:31 PM
+1 changed, 0 added, 0 deleted.
+5,317 ms. (Cumulative: 12,453,378 ms)
+
+----------------
