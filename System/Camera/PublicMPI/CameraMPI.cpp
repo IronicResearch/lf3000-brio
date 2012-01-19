@@ -20,6 +20,7 @@
 #include <Module.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+#include <sys/stat.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
 namespace
