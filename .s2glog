@@ -32681,3 +32681,12 @@ By mdeshpande (mdeshpande@leapfrog.com) on 1/19/12 1:54 PM
 5,298 ms. (Cumulative: 12,464,301 ms)
 
 ----------------
+Revision 9,702 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Move find_input_device and open_input_device to the Brio utility library so that GetCurrentUSBDeviceState can use them to query the USB state using an ioctl instead of a sysfs entry, which this commit also does.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/20/12 7:15 PM
+3 changed, 1 added, 0 deleted.
+5,001 ms. (Cumulative: 12,469,395 ms)
+
+----------------

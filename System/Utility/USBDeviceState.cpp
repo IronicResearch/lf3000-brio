@@ -13,6 +13,7 @@
 //============================================================================
 #include <stdio.h>
 #include <sys/sysinfo.h>
+#include <linux/input.h>
 #include <USBDeviceTypes.h>
 
 #include "Utility.h"
@@ -30,9 +31,11 @@ void SetCachedUSBDeviceState(tUSBDeviceData state)
 //----------------------------------------------------------------------------
 // Returns the system's USB state
 //----------------------------------------------------------------------------
+extern int open_input_device(const char *input_name);
 tUSBDeviceData GetCurrentUSBDeviceState(void)
 {
 		FILE *usb_device_fd;
+		int usb_input_fd;
 		int ret;
 		U32 usbState;
 		tUSBDeviceData data;
@@ -48,6 +51,16 @@ tUSBDeviceData GetCurrentUSBDeviceState(void)
 			ret = fscanf(usb_device_fd, "%ld\n", &usbState);
 			fclose(usb_device_fd);
 		}
+		else
+		{
+			usb_input_fd = open_input_device("USB");
+			if(usb_input_fd >= 0)
+			{
+				ioctl(usb_input_fd, EVIOCGSW(sizeof(int)), &usbState);
+				close(usb_input_fd);
+			}
+		}
+		
 		data.USBDeviceState = (usbState != 0) ? kUSBDeviceConnected : 0;
 		data.USBDeviceState |= (gUSBState.USBDeviceState & ~kUSBDeviceConnected);
 		return data;

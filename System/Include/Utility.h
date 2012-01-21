@@ -151,6 +151,12 @@ tCartridgeData		GetCartridgeState(void);
 void SetCartridgeState(tCartridgeData cartridge_data);
 
 //----------------------------------------------------------------------------
+// Find device input event nodes
+//----------------------------------------------------------------------------
+int find_input_device(const char *input_name, char *dev);
+int open_input_device(const char *input_name);
+
+//----------------------------------------------------------------------------
 // Prints uptime to console in uniform manner
 //----------------------------------------------------------------------------
 void PrintUptime(const char *tag);
