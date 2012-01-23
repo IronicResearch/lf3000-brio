@@ -32701,3 +32701,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/23/12 11:07 AM
 4,906 ms. (Cumulative: 12,474,395 ms)
 
 ----------------
+Revision 9,705 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraMPI and MicrophoneMPI doxygen comments marked up for Firmware 3.x or later (SDK release).
+
+By Dave Milici (dmilici@leapfrog.com) on 1/23/12 3:35 PM
+2 changed, 0 added, 0 deleted.
+5,005 ms. (Cumulative: 12,479,494 ms)
+
+----------------

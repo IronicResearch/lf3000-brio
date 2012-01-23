@@ -73,6 +73,19 @@ LF_BEGIN_BRIO_NAMESPACE()
 ///	tCaptureTimeoutMsg, tCaptureQuotaHitMsg, tCameraRemovedMsg).
 /// Using an IEventListener, with potential assistance from AtomicFile (fopenAtomic()), it is possible for
 ///	the application to maintain consistent recordings.
+///
+/// <B>For use with Firmware 3.x or later only.</B>
+///
+/// Additional CameraMPI methods added for Firmware 3.x or later:
+/// <ul>
+/// 	<li>EnumFormats() for enumerating supported capture formats.</li>
+/// 	<li>GetCurrentFormat() for querying current capture format.</li>
+/// 	<li>SetCurrentFormat() for selecting current capture format.</li>
+/// 	<li>GetFrame(const tVidCapHndl, tVideoSurf*, tColorOrder) overloaded with general surface descriptor.</li>
+/// </ul>
+///
+/// For audio-only capture functionality, use separate \ref CMicrophoneMPI class.
+///
 
 //==============================================================================
 class CCameraMPI : public ICoreMPI {
@@ -230,6 +243,7 @@ public:
 	/// \return true on success.
 	Boolean		GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrder color_order = kOpenGlRgb);
 
+	/// <B>For use with Firmware 3.x or later only.</B>
 	/// \brief	Alternative GetFrame() method using general tVideoSurf parameter.
 	/// \param	hndl	Video capture handle returned by StartVideoCapture().
 	/// \param	*pSurf	Surface descriptor passed in by caller specifying width, height, format,
@@ -371,17 +385,20 @@ public:
 	/// \return			Microphone parameter value
 	S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
+	/// <B>For use with Firmware 3.x or later only.</B>
 	/// \brief	EnumFormats() enumerates supported capture formats.
 	/// \param	pModeList	List of tCaptureMode* entries to be populated with
 	///						supported formats.
 	/// \return	Returns kNoErr on success, otherwise error code.
 	tErrType		EnumFormats(tCaptureModes& pModeList);
 
+	/// <B>For use with Firmware 3.x or later only.</B>
 	/// \brief	SetCurrentFormat() selects capture format.
 	/// \param	pMode	Selected mode entry from list returned by EnumFormats().
 	/// \return	Returns kNoErr on success, or kInvalidParamErr if unknown mode.
 	tErrType		SetCurrentFormat(tCaptureMode* pMode);
 
+	/// <B>For use with Firmware 3.x or later only.</B>
 	/// \brief	GetCurrentFormat() returns currently selected capture format.
 	/// \return	Returns currently selected mode entry.
 	tCaptureMode*	GetCurrentFormat();
