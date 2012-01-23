@@ -22,13 +22,15 @@
 LF_BEGIN_BRIO_NAMESPACE()
 /// \class CMicrophoneMPI
 ///
+/// <B>For use with Firmware 3.x or later only.</B>
+///
 /// Originally a component of the Camera MPI, the Brio Microphone MPI is the interface for microphone access.
 ///	It consists of utility functions for manipulating the microphone hardware and primary functions for acquiring
 /// audio from the microphone.  Audio is captured in the WAV format containing raw PCM audio.
 ///
 /// Audio produced by the camera is a PCM-encoded 16-bit mono channel sampled at 16000 Hz and stored
 /// in a WAV container.
-
+///
 /// The Microphone MPI functions are provided as a counterpart to the Audio MPI.  The StartAudioCapture() MPI
 /// method starts a separate task thread to capture audio automatically, performing all the low-level frame-based tasks internally.
 /// StartVideoCapture(), despite its name, does not necessarily preserve a video stream
