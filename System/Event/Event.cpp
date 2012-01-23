@@ -278,7 +278,6 @@ public:
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener, tEventRegistrationFlags flags)
 	{
-#ifdef DEBUG
 		// Detect duplicate listeners, and re-register at end of list
 		if (ppListeners_)
 		{
@@ -288,12 +287,12 @@ public:
 				if (pListener == *ptr)
 				{
 					debug_.DebugOut(kDbgLvlCritical, "%s: duplicate listener %p at index %d\n", __FUNCTION__, pListener, i);
-					//RemoveListener(pListener);
+					RemoveListener(pListener);
 					break;
 				}
 			}
 		}
-#endif
+
 		pListener->pimpl_->eventRegistrationFlags = flags;
 		if( numListeners_ >= listSize_ )
 		{
@@ -326,7 +325,7 @@ public:
 		}
 
 		++numListeners_;
-		debug_.DebugOut(kDbgLvlValuable, "%s: added listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
+		debug_.DebugOut(kDbgLvlValuable, "%s: added listener %p, total number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 	}
 	//------------------------------------------------------------------------
 	tErrType RemoveListener(const IEventListener* pListener)
@@ -344,12 +343,13 @@ public:
 					for( U32 jj = ii; jj < numListeners_; ++jj, ++ptr )
 						*ptr = *(ptr + 1);
 					--numListeners_;
+					debug_.DebugOut(kDbgLvlValuable, "%s: removed listener %p, total number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 					return kNoErr;
 				}
 			}
 		}
 		
-		debug_.DebugOut(kDbgLvlValuable, "%s: could not remove listener %p, number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
+		debug_.DebugOut(kDbgLvlValuable, "%s: could not find listener %p, total number %d\n", __FUNCTION__, pListener, (unsigned)numListeners_);
 		return kEventListenerNotRegisteredErr;
 	}
 	//------------------------------------------------------------------------
