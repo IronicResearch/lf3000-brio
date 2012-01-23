@@ -32710,3 +32710,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/23/12 3:35 PM
 5,005 ms. (Cumulative: 12,479,494 ms)
 
 ----------------
+Revision 9,706 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reinstate CameraVIP multiple capture modes (pre svn -r9693) for SDK reference.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/23/12 3:51 PM
+1 changed, 0 added, 0 deleted.
+4,969 ms. (Cumulative: 12,484,557 ms)
+
+----------------
