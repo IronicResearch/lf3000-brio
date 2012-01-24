@@ -217,7 +217,7 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 	}
 
 	// FIXME: re-init required always
-	if (camCtx_.mode.width != qSVGA.width || camCtx_.mode.height != qSVGA.height)
+	if (true || camCtx_.mode.width != qSVGA.width || camCtx_.mode.height != qSVGA.height)
 	{
 		/* Close camera fd */
 		if (!CCameraModule::DeinitCameraInt())
@@ -425,7 +425,16 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	CAMERA_UNLOCK;
 
+#if 0
 	ret = CCameraModule::GrabFrame(hndl, &frame);
+#else
+	ret = 0; //CCameraModule::GrabFrame(hndl, &frame);
+	if (overlaySurf.buffer) {
+		frame.data = overlaySurf.buffer;
+		frame.size = overlaySurf.pitch * frame.height;
+		ret = 1;
+	}
+#endif
 
 	CAMERA_LOCK;
 
@@ -499,7 +508,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		}
 	}
 
-	if (frame.data)
+	if (frame.data && frame.data != overlaySurf.buffer)
 		kernel_.Free(frame.data);
 
 	/* Close camera fd */
