@@ -32719,3 +32719,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/23/12 3:51 PM
 4,969 ms. (Cumulative: 12,484,557 ms)
 
 ----------------
+Revision 9,707 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,708 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,709 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP GetFrame() interim workaround to use viewfinder buffer instead of 2nd V4L stream for snapshots. (TTP 2310)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/24/12 3:26 PM
+1 changed, 0 added, 0 deleted.
+4,985 ms. (Cumulative: 12,489,636 ms)
+
+----------------
