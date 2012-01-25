@@ -32739,3 +32739,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/12 11:02 AM
 4,938 ms. (Cumulative: 12,494,652 ms)
 
 ----------------
+Revision 9,711 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Fix crash exit case where V4L buffer mappings no longer exist.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/12 11:48 AM
+1 changed, 0 added, 0 deleted.
+5,141 ms. (Cumulative: 12,499,871 ms)
+
+----------------
