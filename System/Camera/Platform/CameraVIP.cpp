@@ -314,8 +314,8 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
 	Boolean				ret;
 	tVidCapHndl			origHndl, tmpHndl;
-	tFrameInfo			frame	= {kCaptureFormatYUV420, 640, 480, 0, NULL, 0};
-	struct tCaptureMode	UXGA	= {kCaptureFormatYUV420, 640, 480, 1, 10};
+	tFrameInfo			frame	= {kCaptureFormatYUV420, 320, 240, 0, NULL, 0};
+	struct tCaptureMode	UXGA	= {kCaptureFormatYUV420, 320, 240, 1, 10};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	tVideoSurf			oldSurf;
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
@@ -401,7 +401,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
 	Boolean ret;
-	tFrameInfo frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
+	tFrameInfo frame	= {kCaptureFormatYUV420, 320, 240, 0, NULL, 0};
 	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, pSurf->pitch * pSurf->height, NULL};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};

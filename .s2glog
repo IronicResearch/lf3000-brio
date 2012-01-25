@@ -32730,3 +32730,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/24/12 3:26 PM
 4,985 ms. (Cumulative: 12,489,636 ms)
 
 ----------------
+Revision 9,710 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP 320x240 mode for SnapFrame() / GetFrame() test match. (TTP 2236)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/12 11:02 AM
+1 changed, 0 added, 0 deleted.
+4,938 ms. (Cumulative: 12,494,652 ms)
+
+----------------
