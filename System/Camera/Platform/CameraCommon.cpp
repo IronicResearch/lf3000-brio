@@ -344,6 +344,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
 		}
 
+		printf("%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 		if(munmap(pCamCtx->bufs[i], pCamCtx->buf.length) < 0)
 		{
 			return false;
@@ -762,6 +763,8 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(cam, VIDIOC_QUERYBUF, &pCamCtx->buf) < 0)
 		{
+        	for (int j = 0; j < i; j++)
+        		munmap(pCamCtx->bufs[j], pCamCtx->buf.length);
 			delete[] pCamCtx->bufs;
 			pCamCtx->bufs = NULL;
 			return false;
@@ -770,11 +773,13 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
-        	// TODO: munmap()
+        	for (int j = 0; j < i; j++)
+        		munmap(pCamCtx->bufs[j], pCamCtx->buf.length);
 			delete[] pCamCtx->bufs;
 			pCamCtx->bufs = NULL;
 			return false;
         }
+		printf("%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 	}
 
 	for(i = 0; i < pCamCtx->numBufs; i++)
@@ -787,6 +792,8 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(pCamCtx->fd, VIDIOC_QBUF, &pCamCtx->buf) < 0)
 		{
+        	for (int j = 0; j < pCamCtx->numBufs; j++)
+        		munmap(pCamCtx->bufs[j], pCamCtx->buf.length);
 			delete[] pCamCtx->bufs;
 			pCamCtx->bufs = NULL;
 			return false;

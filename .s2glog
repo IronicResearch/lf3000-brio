@@ -32748,3 +32748,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/12 11:48 AM
 5,141 ms. (Cumulative: 12,499,871 ms)
 
 ----------------
+Revision 9,712 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP V4L buffer mmap tracking.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/12 3:04 PM
+1 changed, 0 added, 0 deleted.
+4,923 ms. (Cumulative: 12,504,888 ms)
+
+----------------
