@@ -326,7 +326,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 	struct v4l2_requestbuffers rb;
 	int i, ret;
 
-	if(pCamCtx->numBufs == 0)
+	if(pCamCtx->numBufs == 0 || pCamCtx->bufs == NULL)
 	{
 		return true;
 	}
