@@ -351,7 +351,18 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 
 	CAMERA_UNLOCK;
 
+#if 0
 	ret = GrabFrame(hndl, &frame);
+#else
+	ret = 0; //CCameraModule::GrabFrame(hndl, &frame);
+	if (overlaySurf.buffer) {
+		frame.width = overlaySurf.width;
+		frame.height = overlaySurf.height;
+		frame.data = overlaySurf.buffer;
+		frame.size = overlaySurf.pitch * frame.height;
+		ret = 1;
+	}
+#endif
 
 	CAMERA_LOCK;
 
@@ -381,7 +392,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	ret = SaveFrame(path, &frame);
 
 out:
-	if (frame.data)
+	if (frame.data && frame.data != overlaySurf.buffer)
 		kernel_.Free(frame.data);
 
 	CAMERA_UNLOCK;
