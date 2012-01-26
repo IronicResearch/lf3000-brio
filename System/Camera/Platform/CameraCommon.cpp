@@ -188,6 +188,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	camCtx_.controls		= new tCameraControls;
 
 	camCtx_.module			= this;
+	camCtx_.dbg				= &dbg_;
 
 	micCtx_.hndl			= kInvalidAudCapHndl;
 	micCtx_.hMicThread		= kNull;
@@ -324,9 +325,9 @@ CPath* CCameraModule::GetCameraStillPath()
 static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 {
 	struct v4l2_requestbuffers rb;
-	int i, ret;
+	int i, ret = true;
 
-	if(pCamCtx->numBufs == 0 || pCamCtx->bufs == NULL)
+	if(pCamCtx->numBufs == 0)
 	{
 		return true;
 	}
@@ -341,13 +342,16 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(pCamCtx->fd, VIDIOC_QUERYBUF, &pCamCtx->buf) < 0)
 		{
-			return false;
+			ret = false;
 		}
 
-		printf("%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
+		if (pCamCtx->bufs == NULL)
+			continue;
+
+		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 		if(munmap(pCamCtx->bufs[i], pCamCtx->buf.length) < 0)
 		{
-			return false;
+			ret = false;
         }
 	}
 
@@ -360,7 +364,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 
 	if(ioctl(pCamCtx->fd, VIDIOC_REQBUFS, &rb) < 0)
 	{
-		return false;
+		ret = false;
 	}
 #endif
 
@@ -369,7 +373,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 
 	pCamCtx->numBufs = 0;
 
-	return true;
+	return ret;
 }
 
 //----------------------------------------------------------------------------
@@ -763,23 +767,17 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(cam, VIDIOC_QUERYBUF, &pCamCtx->buf) < 0)
 		{
-        	for (int j = 0; j < i; j++)
-        		munmap(pCamCtx->bufs[j], pCamCtx->buf.length);
-			delete[] pCamCtx->bufs;
-			pCamCtx->bufs = NULL;
+			DeinitCameraBufferInt(pCamCtx);
 			return false;
 		}
 
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
-        	for (int j = 0; j < i; j++)
-        		munmap(pCamCtx->bufs[j], pCamCtx->buf.length);
-			delete[] pCamCtx->bufs;
-			pCamCtx->bufs = NULL;
+			DeinitCameraBufferInt(pCamCtx);
 			return false;
         }
-		printf("%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
+		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 	}
 
 	for(i = 0; i < pCamCtx->numBufs; i++)
@@ -792,10 +790,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		if(ioctl(pCamCtx->fd, VIDIOC_QBUF, &pCamCtx->buf) < 0)
 		{
-        	for (int j = 0; j < pCamCtx->numBufs; j++)
-        		munmap(pCamCtx->bufs[j], pCamCtx->buf.length);
-			delete[] pCamCtx->bufs;
-			pCamCtx->bufs = NULL;
+			DeinitCameraBufferInt(pCamCtx);
 			return false;
         }
 	}

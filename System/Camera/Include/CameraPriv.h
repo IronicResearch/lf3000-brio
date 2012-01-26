@@ -169,6 +169,8 @@ struct tCameraContext {
 	tVideoSurf					*paSurf;
 	tDisplayHandle				*paHndl;
 	bool						bDoubleBuffered;
+
+	CDebugMPI					*dbg;
 };
 
 struct tCaptureContext {
