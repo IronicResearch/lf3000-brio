@@ -32757,3 +32757,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/12 3:04 PM
 4,923 ms. (Cumulative: 12,504,888 ms)
 
 ----------------
+Revision 9,713 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP V4L buffer mmap tracking with systematic release delegated to DeinitCameraBufferInt().
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/12 4:18 PM
+2 changed, 0 added, 0 deleted.
+5,068 ms. (Cumulative: 12,510,050 ms)
+
+----------------
