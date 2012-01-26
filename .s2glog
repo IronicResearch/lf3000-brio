@@ -32766,3 +32766,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/12 4:18 PM
 5,068 ms. (Cumulative: 12,510,050 ms)
 
 ----------------
+Revision 9,714 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP viewfinder workaround for SnapFrame(). (TTP 2236)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/12 6:53 PM
+1 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 12,515,472 ms)
+
+----------------
