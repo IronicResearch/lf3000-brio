@@ -32775,3 +32775,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/12 6:53 PM
 5,313 ms. (Cumulative: 12,515,472 ms)
 
 ----------------
+Revision 9,715 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP modified to use V4L user-ptr protocol with video framebuffer memory.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/27/12 2:09 PM
+3 changed, 0 added, 0 deleted.
+5,438 ms. (Cumulative: 12,521,020 ms)
+
+----------------

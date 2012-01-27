@@ -55,6 +55,7 @@
 #include <linux/lf1000/gpio_ioctl.h>
 #endif //LF2000
 
+#include <linux/fb.h>
 #endif
 
 // PNG wrapper function for saving file
@@ -125,6 +126,8 @@ namespace
 #if USE_PROFILE
 	// Profile vars
 #endif
+	struct fb_fix_screeninfo 	fi;
+	struct fb_var_screeninfo 	vi;
 }
 
 //============================================================================
@@ -223,6 +226,11 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	micListener_ = NULL;
 
 	InitLut();
+
+	int fd = open("/dev/fb2", O_RDWR | O_SYNC);
+	ioctl(fd, FBIOGET_FSCREENINFO, &fi);
+	ioctl(fd, FBIOGET_VSCREENINFO, &vi);
+	vi.reserved[0] = (unsigned int)mmap((void*)fi.smem_start, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 }
 
 //----------------------------------------------------------------------------
@@ -338,7 +346,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 
 		pCamCtx->buf.index	= i;
 		pCamCtx->buf.type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		pCamCtx->buf.memory	= V4L2_MEMORY_MMAP;
+		pCamCtx->buf.memory	= V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
 
 		if(ioctl(pCamCtx->fd, VIDIOC_QUERYBUF, &pCamCtx->buf) < 0)
 		{
@@ -348,11 +356,13 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		if (pCamCtx->bufs == NULL)
 			continue;
 
+#if 0
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 		if(munmap(pCamCtx->bufs[i], pCamCtx->buf.length) < 0)
 		{
 			ret = false;
         }
+#endif
 	}
 
 #if 0 // FIXME: VIP	
@@ -746,7 +756,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 	rb.count  = pCamCtx->numBufs;
 	rb.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	rb.memory = V4L2_MEMORY_MMAP;
+	rb.memory = V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
 
 	if(ioctl(cam, VIDIOC_REQBUFS, &rb) < 0)
 	{
@@ -763,7 +773,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		pCamCtx->buf.index	= i;
 		pCamCtx->buf.type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		pCamCtx->buf.memory	= V4L2_MEMORY_MMAP;
+		pCamCtx->buf.memory	= V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
 
 		if(ioctl(cam, VIDIOC_QUERYBUF, &pCamCtx->buf) < 0)
 		{
@@ -771,6 +781,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
 		}
 
+#if 0
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
@@ -778,6 +789,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
         }
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
+#endif
 	}
 
 	for(i = 0; i < pCamCtx->numBufs; i++)
@@ -786,13 +798,17 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 
 		pCamCtx->buf.index  = i;
 		pCamCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		pCamCtx->buf.memory = V4L2_MEMORY_MMAP;
+		pCamCtx->buf.memory = V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
+		pCamCtx->buf.m.userptr = vi.reserved[0]; //(unsigned long)pCamCtx->surf->buffer + i * 1024;
+		pCamCtx->buf.length	   = fi.smem_len; //pCamCtx->surf->pitch * pCamCtx->surf->height;
 
 		if(ioctl(pCamCtx->fd, VIDIOC_QBUF, &pCamCtx->buf) < 0)
 		{
 			DeinitCameraBufferInt(pCamCtx);
 			return false;
         }
+		pCamCtx->bufs[i]    = (void*)pCamCtx->buf.m.userptr;
+		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 	}
 
 	return true;
@@ -1179,7 +1195,7 @@ Boolean	CCameraModule::PollFrame(const tVidCapHndl hndl)
 		memset(&camCtx_.buf, 0, sizeof(struct v4l2_buffer));
 		camCtx_.buf.index  = i;
 		camCtx_.buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-		camCtx_.buf.memory = V4L2_MEMORY_MMAP;
+		camCtx_.buf.memory = V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
 		if(ioctl(camCtx_.fd, VIDIOC_QUERYBUF, &camCtx_.buf) < 0)
 		{
 			continue;
@@ -1199,7 +1215,7 @@ static Boolean GetFrameInt(tCameraContext *pCtx, int index)
 {
 	memset(&pCtx->buf, 0, sizeof(struct v4l2_buffer));
 	pCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	pCtx->buf.memory = V4L2_MEMORY_MMAP;
+	pCtx->buf.memory = V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
 	pCtx->buf.index  = index;
 	if( ioctl(pCtx->fd, VIDIOC_DQBUF, &pCtx->buf) < 0)
 	{
@@ -1694,8 +1710,10 @@ static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
 
 	memset(&buf, 0, sizeof(struct v4l2_buffer));
 	buf.type  	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	buf.memory	= V4L2_MEMORY_MMAP;
+	buf.memory	= V4L2_MEMORY_USERPTR; //V4L2_MEMORY_MMAP;
 	buf.index	= index;
+	buf.m.userptr = (unsigned long)pCtx->bufs[index];
+	buf.length    = fi.smem_len;
 
 	if(ioctl(pCtx->fd, VIDIOC_QBUF, &buf) < 0)
 	{
