@@ -234,7 +234,7 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 
 		/* Spawn capture thread w/out viewfinder */
 		camCtx_.mode = qSVGA;
-		hndl = CCameraModule::StartVideoCapture(path, pSurf, pListener, maxLength, bAudio);
+		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 
 		CAMERA_LOCK;
 	}
@@ -351,18 +351,7 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 
 	CAMERA_UNLOCK;
 
-#if 1
 	ret = GrabFrame(hndl, &frame);
-#else
-	ret = 0; //CCameraModule::GrabFrame(hndl, &frame);
-	if (overlaySurf.buffer) {
-		frame.width = overlaySurf.width;
-		frame.height = overlaySurf.height;
-		frame.data = overlaySurf.buffer;
-		frame.size = overlaySurf.pitch * frame.height;
-		ret = 1;
-	}
-#endif
 
 	CAMERA_LOCK;
 
@@ -436,16 +425,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	CAMERA_UNLOCK;
 
-#if 1
 	ret = CCameraModule::GrabFrame(hndl, &frame);
-#else
-	ret = 0; //CCameraModule::GrabFrame(hndl, &frame);
-	if (overlaySurf.buffer) {
-		frame.data = overlaySurf.buffer;
-		frame.size = overlaySurf.pitch * frame.height;
-		ret = 1;
-	}
-#endif
 
 	CAMERA_LOCK;
 
