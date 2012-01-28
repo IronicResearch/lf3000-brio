@@ -73,7 +73,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
 const char*	gIDCTFile	= "/dev/idct";
-const U32	NUM_BUFS	= 4;
+const char* kYUVFile	= "/dev/fb2";
+const U32	NUM_BUFS	= 2;
 const U32	VID_BITRATE	= 275*1024;			/* ~240 KB/s video, 31.25 KB/s audio */
 
 //==============================================================================
@@ -813,8 +814,8 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		pCamCtx->buf.memory = V4L2_MEMORY_XXXX;
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
-		pCamCtx->buf.m.userptr = vi.reserved[0]; //(unsigned long)pCamCtx->surf->buffer + i * 1024;
-		pCamCtx->buf.length	   = fi.smem_len; //pCamCtx->surf->pitch * pCamCtx->surf->height;
+		pCamCtx->buf.m.userptr = vi.reserved[0] + 1024 + i * 512;
+		pCamCtx->buf.length	   = fi.smem_len;
 		pCamCtx->bufs[i]       = (void*)pCamCtx->buf.m.userptr;
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 #endif
