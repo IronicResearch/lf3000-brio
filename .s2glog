@@ -32793,3 +32793,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/27/12 5:05 PM
 5,459 ms. (Cumulative: 12,526,572 ms)
 
 ----------------
+Revision 9,717 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP multiple capture sizes reinstated, including 640x480 SnapFrame().
+
+By Dave Milici (dmilici@leapfrog.com) on 1/27/12 6:18 PM
+1 changed, 0 added, 0 deleted.
+5,126 ms. (Cumulative: 12,531,788 ms)
+
+----------------
