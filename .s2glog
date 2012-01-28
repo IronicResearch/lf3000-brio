@@ -32784,3 +32784,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/27/12 2:09 PM
 5,438 ms. (Cumulative: 12,521,020 ms)
 
 ----------------
+Revision 9,716 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP cleanup with V4L2_MEMORY_XXXX conditionals for V4L user-ptr protocol.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/27/12 5:05 PM
+3 changed, 0 added, 0 deleted.
+5,459 ms. (Cumulative: 12,526,572 ms)
+
+----------------

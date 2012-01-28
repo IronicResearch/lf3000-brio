@@ -197,7 +197,7 @@ void* CameraTaskMain(void* arg)
 	}
 
 	// set up render-to-screen
-	if(false && pCtx->surf)
+	if(pCtx->surf)
 	{
 		bScreen			= true;
 
