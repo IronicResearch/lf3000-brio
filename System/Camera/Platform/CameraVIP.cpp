@@ -40,7 +40,7 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 	if (camCtx_.modes->empty())
 	{
 		camCtx_.modes->push_back(new tCaptureMode(QSVGA));
-		camCtx_.modes->push_back(new tCaptureMode(SVGA));
+//		camCtx_.modes->push_back(new tCaptureMode(SVGA));
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
 	}
