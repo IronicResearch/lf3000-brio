@@ -32850,3 +32850,12 @@ By mdeshpande (mdeshpande@leapfrog.com) on 2/1/12 2:31 PM
 5,016 ms. (Cumulative: 12,557,723 ms)
 
 ----------------
+Revision 9,724 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+backing out my last change since atomic opens are not behaving properly in this context.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 2/1/12 2:54 PM
+3 changed, 0 added, 0 deleted.
+5,047 ms. (Cumulative: 12,562,848 ms)
+
+----------------
