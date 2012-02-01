@@ -8,6 +8,9 @@
 #include <linux/lf2000/lf2000vip.h>
 #endif
 
+// PNG wrapper function for saving file
+bool PNG_save(const char* file, int width, int height, int pitch, char* data);
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define CAMERA_LOCK 	kernel_.LockMutex(mutex_)
@@ -15,8 +18,9 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 30};
 tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
-tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 30};
+tCaptureMode SVGA = {kCaptureFormatRAWYUYV, 800, 600, 1, 10};
 tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
+tCaptureMode UXGA  = {kCaptureFormatRAWYUYV, 1600, 1200, 1, 10};
 
 //============================================================================
 // CCameraModule: Informational functions
@@ -40,7 +44,7 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 	if (camCtx_.modes->empty())
 	{
 		camCtx_.modes->push_back(new tCaptureMode(QSVGA));
-//		camCtx_.modes->push_back(new tCaptureMode(SVGA));
+		camCtx_.modes->push_back(new tCaptureMode(SVGA));
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
 	}
@@ -312,64 +316,35 @@ Boolean CVIPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 {
-	Boolean				ret;
-	tVidCapHndl			origHndl, tmpHndl;
+	Boolean				ret		= false;
 	tFrameInfo			frame	= {kCaptureFormatYUV420, 640, 480, 0, NULL, 0};
-	struct tCaptureMode	UXGA	= {kCaptureFormatYUV420, 640, 480, 1, 10};
-	struct tCaptureMode	oldMode	= camCtx_.mode;
-	tVideoSurf			oldSurf;
-	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
+	tVideoSurf			surf	= {frame.width, frame.height, 4096, NULL, kPixelFormatYUV420};
 
-#if 0
+	// Grab video frame as RGB format for saving as PNG
 	if (path.rfind(".png") != std::string::npos)
-		return SnapFrameRGB(hndl, path);
-#endif
-
-	CAMERA_LOCK;
-
-	/*
-	 * FIXME:
-	 * The videobuf helper used in the VIP driver refuses to be reconfigured
-	 * once buffers have been queued (i.e., STREAMOFF, S_FMT, STREAMON).
-	 * Therefore, we must "start over" when taking a snapshot. 
-	 */
-	origHndl = hndl;
-
-	/* Stop viewfinder */
-	if(hndl & kStreamingActive)
-		EnableOverlay(camCtx_.fd, 0);
-
-	/* Close camera fd */
-	ret = CCameraModule::DeinitCameraInt();
-	if(!ret)
-		goto out;
-
-	/* Re-open camera */
-	ret = CCameraModule::InitCameraInt(&UXGA);
-	if(!ret)
-		goto out;
-
-	CAMERA_UNLOCK;
-
-	ret = GrabFrame(hndl, &frame);
-
-	CAMERA_LOCK;
-
-	/* Restore old mode */
-	ret = CCameraModule::DeinitCameraInt();
-	if(!ret)
-		goto out;
-
-	ret = CCameraModule::InitCameraInt(&oldMode);
-	if(!ret)
-		goto out;
-
-	if(hndl & kStreamingActive)
 	{
-		SetOverlay(camCtx_.fd, &overlaySurf);
-		EnableOverlay(camCtx_.fd, visible);
+		frame.size = frame.width * frame.height * 3;
+		frame.data = kernel_.Malloc(frame.size);
+
+		surf.buffer = (U8*)frame.data;
+		surf.format = kPixelFormatRGB888;
+		surf.pitch  = frame.width * 3;
+		ret = CVIPCameraModule::GetFrame(hndl, &surf, kDisplayRgb);
+		if (!ret)
+			goto out;
+
+		ret = PNG_save(path.c_str(), surf.width, surf.height, surf.pitch, (char*)surf.buffer);
+		goto out;
 	}
 
+	// Grab video frame as YUV format for saving as JPEG
+	frame.size = 4096 * frame.height;
+	frame.data = kernel_.Malloc(frame.size);
+
+	surf.buffer = (U8*)frame.data;
+	surf.format = kPixelFormatYUV420;
+	surf.pitch  = 4096;
+	ret = CVIPCameraModule::GetFrame(hndl, &surf, kDisplayRgb);
 	if(!ret)
 		goto out;
 
@@ -381,10 +356,8 @@ Boolean	CVIPCameraModule::SnapFrame(const tVidCapHndl hndl, const CPath &path)
 	ret = SaveFrame(path, &frame);
 
 out:
-	if (frame.data && frame.data != overlaySurf.buffer)
+	if (frame.data)
 		kernel_.Free(frame.data);
-
-	CAMERA_UNLOCK;
 
 	return ret;
 }
@@ -402,10 +375,15 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 {
 	Boolean ret;
 	tFrameInfo frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
-	tBitmapInfo bmp 	= {kBitmapFormatRGB888, pSurf->width, pSurf->height, 3, pSurf->buffer, pSurf->pitch * pSurf->height, NULL};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
+
+	// Switch to YUYV packed format for high-res capture modes
+	if (pSurf->width > VGA.width || pSurf->height > VGA.height)
+	{
+		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
+	}
 
 	CAMERA_LOCK;
 
@@ -441,7 +419,59 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		U8*			su = sy + pitch/2;
 		U8*			sv = su + pitch * frame.height/2;
 		U8*			dy = pSurf->buffer;
-		if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
+		U8*			du = dy + pSurf->pitch/2;
+		U8*			dv = du + pSurf->pitch * pSurf->height/2;
+		if (frame.pixelformat == kCaptureFormatRAWYUYV)
+		{
+			pitch = frame.width * 2;
+			if (pSurf->format == kPixelFormatRGB888)
+			{
+				// Convert YUYV to RGB format surface
+				for (i = 0; i < height; i++)
+				{
+					for (j = k = m = 0; j < width; j+=2, k+=4, m+=6)
+					{
+						U8 y0 = sy[k+0];
+						U8 v0 = sy[k+1];
+						U8 y1 = sy[k+2];
+						U8 u0 = sy[k+3];
+						dy[m+0] = B(y0,u0,v0);
+						dy[m+1] = G(y0,u0,v0);
+						dy[m+2] = R(y0,u0,v0);
+						dy[m+3] = B(y1,u0,v0);
+						dy[m+4] = G(y1,u0,v0);
+						dy[m+5] = R(y1,u0,v0);
+					}
+					sy += pitch;
+					dy += pSurf->pitch;
+				}
+			}
+			else if (pSurf->format == kPixelFormatARGB8888)
+			{
+				// Convert YUYV to ARGB format surface
+				for (i = 0; i < height; i++)
+				{
+					for (j = k = m = 0; j < width; j+=2, k+=4, m+=8)
+					{
+						U8 y0 = sy[k+0];
+						U8 u0 = sy[k+1];
+						U8 y1 = sy[k+2];
+						U8 v0 = sy[k+3];
+						dy[m+0] = B(y0,u0,v0);
+						dy[m+1] = G(y0,u0,v0);
+						dy[m+2] = R(y0,u0,v0);
+						dy[m+3] = 0xFF;
+						dy[m+4] = B(y1,u0,v0);
+						dy[m+5] = G(y1,u0,v0);
+						dy[m+6] = R(y1,u0,v0);
+						dy[m+7] = 0xFF;
+					}
+					sy += pitch;
+					dy += pSurf->pitch;
+				}
+			}
+		}
+		else if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
 		{
 			// Convert YUV to RGB format surface
 			for (i = 0; i < height; i++)
@@ -497,9 +527,27 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 				}
 			}
 		}
+		else if (pSurf->format == kPixelFormatYUV420)
+		{
+			for (i = 0; i < height; i++)
+			{
+				memcpy(dy, sy, width);
+				sy += pitch;
+				dy += pSurf->pitch;
+				if (i % 2)
+				{
+					memcpy(du, su, width/2);
+					memcpy(dv, sv, width/2);
+					su += pitch;
+					sv += pitch;
+					du += pSurf->pitch;
+					dv += pSurf->pitch;
+				}
+			}
+		}
 	}
 
-	if (frame.data && frame.data != overlaySurf.buffer)
+	if (frame.data)
 		kernel_.Free(frame.data);
 
 	/* Close camera fd */
