@@ -118,6 +118,17 @@ namespace
 						return &mFoundModulesList[ii];
 				}
 			}
+#ifndef EMULATION
+			// Search for any replacement patch libs in local path
+			{
+				CPath patch = GetLocalLibrary("lib" + name + ".so");
+				if (patch.length() > 0)
+				{
+					AddValidModule(patch);
+					return &mFoundModulesList.back();
+				}
+			}
+#endif
 			return NULL;
 		}
 

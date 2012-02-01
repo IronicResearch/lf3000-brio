@@ -32820,3 +32820,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/30/12 9:57 AM
 5,219 ms. (Cumulative: 12,542,414 ms)
 
 ----------------
+Revision 9,720 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,721 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+LF1000 svn -r9720: Modify Brio module manager for late-loading patch libs not present in default Module path. (TTP 2355)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/1/12 11:30 AM
+1 changed, 0 added, 0 deleted.
+5,072 ms. (Cumulative: 12,547,586 ms)
+
+----------------
