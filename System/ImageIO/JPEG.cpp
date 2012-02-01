@@ -54,7 +54,7 @@ bool JPEG_Save(CPath& path, tVideoSurf& surf)
 	/* this is a pointer to one row of image data */
 	JSAMPROW row_pointer[1];
 
-	FILE *outfile = fopenAtomic( path.c_str(), "wb" );
+	FILE *outfile = fopen( path.c_str(), "wb" );
 
 	if ( !outfile )
 	{
@@ -84,7 +84,7 @@ bool JPEG_Save(CPath& path, tVideoSurf& surf)
 	/* similar to read file, clean up after we're done compressing */
 	jpeg_finish_compress( &cinfo );
 	jpeg_destroy_compress( &cinfo );
-	fcloseAtomic( outfile );
+	fclose( outfile );
 	/* success code is 1! */
 	return true;
 }
@@ -102,7 +102,7 @@ bool JPEG_GetInfo(CPath& path, tVideoSurf& surf)
 
 	JSAMPROW row_pointer[1];
 
-	FILE *infile = fopenAtomic( path.c_str(), "rb" );
+	FILE *infile = fopen( path.c_str(), "rb" );
 	unsigned long location = 0;
 	int i = 0;
 
@@ -126,7 +126,7 @@ bool JPEG_GetInfo(CPath& path, tVideoSurf& surf)
 	surf.pitch = cinfo.image_width * 3;//cinfo.input_components;
 	surf.format = kPixelFormatRGB888;
 
-	fcloseAtomic( infile );
+	fclose( infile );
 	/* yup, we succeeded! */
 	return true;
 }
@@ -141,7 +141,7 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 
 	JSAMPROW row_pointer[1];
 
-	FILE *infile = fopenAtomic( path.c_str(), "rb" );
+	FILE *infile = fopen( path.c_str(), "rb" );
 	unsigned long location = 0;
 	int i = 0;
 
@@ -201,7 +201,7 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 	jpeg_destroy_decompress( &cinfo );
 	free( row_pointer[0] );
 
-	fcloseAtomic( infile );
+	fclose( infile );
 	/* yup, we succeeded! */
 	return true;
 }

@@ -68,7 +68,7 @@ bool PNG_Save(CPath& path, tVideoSurf& surf)
 	}
 
 	// Create PNG file for writing
-	fp = fopenAtomic(path.c_str(), "wb");
+	fp = fopen(path.c_str(), "wb");
 	if (!fp)
 		return false;
 
@@ -109,7 +109,7 @@ bool PNG_Save(CPath& path, tVideoSurf& surf)
 	
 	png_destroy_write_struct(&pp, NULL);
 	
-	fcloseAtomic(fp);
+	fclose(fp);
 	return true;
 }
 
@@ -133,7 +133,7 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 	png_infop	pi = NULL;
 	
 	// Open PNG file for reading
-	fp = fopenAtomic(path.c_str(), "rb");
+	fp = fopen(path.c_str(), "rb");
 	if (!fp)
 		return false;
 
@@ -200,7 +200,7 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 	
 	png_destroy_read_struct(&pp, &pi, NULL);
 	
-	fcloseAtomic(fp);
+	fclose(fp);
 	
 	return true;
 }
