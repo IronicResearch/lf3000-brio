@@ -133,7 +133,7 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 	png_infop	pi = NULL;
 	
 	// Open PNG file for reading
-	fp = fopen(path.c_str(), "rb");
+	fp = fopenAtomic(path.c_str(), "rb");
 	if (!fp)
 		return false;
 
@@ -200,7 +200,7 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 	
 	png_destroy_read_struct(&pp, &pi, NULL);
 	
-	fclose(fp);
+	fcloseAtomic(fp);
 	
 	return true;
 }

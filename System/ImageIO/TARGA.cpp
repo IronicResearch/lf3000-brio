@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <AtomicFile.h>
 
 static FILE* tga;
 #define TGA_TRUECOLOR_32      (4)
@@ -62,7 +63,7 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 
 	    }
 
-	    tga = fopen( path.c_str(), "wb" );
+	    tga = fopenAtomic( path.c_str(), "wb" );
 
 	    if( tga == NULL ) {
 	        //TargaError = TGA_ERR_OPEN_FAILS;
@@ -149,7 +150,7 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 
 	    }
 
-	    fclose( tga );
+	    fcloseAtomic( tga );
 
 	    return true ;
 
