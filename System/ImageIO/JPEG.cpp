@@ -54,7 +54,7 @@ bool JPEG_Save(CPath& path, tVideoSurf& surf)
 	/* this is a pointer to one row of image data */
 	JSAMPROW row_pointer[1];
 
-	FILE *outfile = fopen( path.c_str(), "wb" );
+	FILE *outfile = fopenAtomic( path.c_str(), "wb" );
 
 	if ( !outfile )
 	{
@@ -84,7 +84,7 @@ bool JPEG_Save(CPath& path, tVideoSurf& surf)
 	/* similar to read file, clean up after we're done compressing */
 	jpeg_finish_compress( &cinfo );
 	jpeg_destroy_compress( &cinfo );
-	fclose( outfile );
+	fcloseAtomic( outfile );
 	/* success code is 1! */
 	return true;
 }

@@ -68,7 +68,7 @@ bool PNG_Save(CPath& path, tVideoSurf& surf)
 	}
 
 	// Create PNG file for writing
-	fp = fopen(path.c_str(), "wb");
+	fp = fopenAtomic(path.c_str(), "wb");
 	if (!fp)
 		return false;
 
@@ -109,7 +109,7 @@ bool PNG_Save(CPath& path, tVideoSurf& surf)
 	
 	png_destroy_write_struct(&pp, NULL);
 	
-	fclose(fp);
+	fcloseAtomic(fp);
 	return true;
 }
 
