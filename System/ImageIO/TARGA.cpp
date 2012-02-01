@@ -63,7 +63,7 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 
 	    }
 
-	    tga = fopen( path.c_str(), "wb" );
+	    tga = fopenAtomic( path.c_str(), "wb" );
 
 	    if( tga == NULL ) {
 	        //TargaError = TGA_ERR_OPEN_FAILS;
@@ -150,7 +150,7 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 
 	    }
 
-	    fclose( tga );
+	    fcloseAtomic( tga );
 
 	    return true ;
 
