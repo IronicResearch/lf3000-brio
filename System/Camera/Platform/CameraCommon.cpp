@@ -56,6 +56,7 @@
 #endif //LF2000
 
 #include <linux/fb.h>
+#include <vmem.h>
 #endif
 
 // PNG wrapper function for saving file
@@ -133,8 +134,10 @@ namespace
 #ifndef EMULATION
 	struct fb_fix_screeninfo 	fi;
 	struct fb_var_screeninfo 	vi;
-#endif
 	int							fd = -1;
+	int							fdvmem = -1;
+	VM_IMEMORY 					vm;
+#endif
 }
 
 //============================================================================
@@ -182,6 +185,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 {
 	tErrType			err = kNoErr;
 	const tMutexAttr	attr = {0};
+	int					r = 0;
 
 	dbg_.SetDebugLevel(kCameraDebugLevel);
 
@@ -234,15 +238,37 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 
 	InitLut();
 
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
-	fd = open("/dev/fb2", O_RDWR | O_SYNC);
-	dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/fb2 failed\n");
-#ifndef EMULATION
-	ioctl(fd, FBIOGET_FSCREENINFO, &fi);
-	ioctl(fd, FBIOGET_VSCREENINFO, &vi);
-	vi.reserved[0] = (unsigned int)mmap((void*)fi.smem_start, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/fb2 failed\n");
-#endif //!EMULATION
+#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
+	fdvmem = open("/dev/vmem", O_RDWR);
+	if (fdvmem > 0)
+	{
+		// Request vmem driver 4Meg memory block for video capture use
+		memset(&vm, 0, sizeof(vm));
+		vm.Flags = VMEM_BLOCK_BUFFER;
+		vm.MemWidth = 4096;
+		vm.MemHeight = 256+512; //1024;
+		r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
+		dbg_.Assert((r == 0), "CCameraModule::ctor: IOCTL_VMEM_ALLOC failed\n");
+		fd = open("/dev/mem", O_RDWR | O_SYNC);
+		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/mem failed\n");
+		fi.smem_len = vm.MemWidth * vm.MemHeight;
+		vi.reserved[0] = (unsigned int)mmap((void*)0, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, vm.Address);
+		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/mem failed\n");
+		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, vm.Address, vi.reserved[0], fi.smem_len);
+	}
+	else
+	{
+		// Fallback to YUV video framebuffer memory for video capture
+		fd = open("/dev/fb2", O_RDWR | O_SYNC);
+		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/fb2 failed\n");
+		r = ioctl(fd, FBIOGET_FSCREENINFO, &fi);
+		dbg_.Assert((r == 0), "CCameraModule::ctor: FBIOGET_FSCREENINFO failed\n");
+		r = ioctl(fd, FBIOGET_VSCREENINFO, &vi);
+		dbg_.Assert((r == 0), "CCameraModule::ctor: FBIOGET_VSCREENINFO failed\n");
+		vi.reserved[0] = (unsigned int)mmap((void*)fi.smem_start, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/fb2 failed\n");
+		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, (unsigned int)fi.smem_start, vi.reserved[0], fi.smem_len);
+	}
 #endif
 }
 
@@ -262,6 +288,10 @@ CCameraModule::~CCameraModule()
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
 	munmap((void*)vi.reserved[0], fi.smem_len);
 	close(fd);
+	if (fdvmem > 0) {
+		ioctl(fdvmem, IOCTL_VMEM_FREE, &vm);
+		close(fdvmem);
+	}
 #endif
 
 	kernel_.DeInitMutex(camCtx_.mThread2);

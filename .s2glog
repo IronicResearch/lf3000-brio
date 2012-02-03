@@ -32887,3 +32887,15 @@ By dlazzari (dlazzari@leapfrog.com) on 2/2/12 10:51 AM
 5,041 ms. (Cumulative: 12,578,062 ms)
 
 ----------------
+Revision 9,728 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP modified to request 4Meg vmem block for high-res capture modes. (TTP 2412)
+Fallback to YUV video framebuffer memory if vmem driver unavailable (Linux 3.0.4, 3.0.5).
+
+Using 3Meg allocation for now which supports 1280x960 mode, since 4Meg fails.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/12 7:48 PM
+2 changed, 3 added, 0 deleted.
+5,125 ms. (Cumulative: 12,583,265 ms)
+
+----------------

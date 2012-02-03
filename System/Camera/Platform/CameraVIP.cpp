@@ -20,6 +20,9 @@ tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 30};
 tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
 tCaptureMode SVGA = {kCaptureFormatRAWYUYV, 800, 600, 1, 10};
 tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
+tCaptureMode WXGA  = {kCaptureFormatRAWYUYV, 1280, 800, 1, 10};
+tCaptureMode SXGA  = {kCaptureFormatRAWYUYV, 1280, 960, 1, 10};
+tCaptureMode HD16  = {kCaptureFormatRAWYUYV, 1600, 900, 1, 10};
 tCaptureMode UXGA  = {kCaptureFormatRAWYUYV, 1600, 1200, 1, 10};
 
 //============================================================================
@@ -47,6 +50,10 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 		camCtx_.modes->push_back(new tCaptureMode(SVGA));
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
+		camCtx_.modes->push_back(new tCaptureMode(WXGA));
+		camCtx_.modes->push_back(new tCaptureMode(SXGA));
+//		camCtx_.modes->push_back(new tCaptureMode(HD16));
+//		camCtx_.modes->push_back(new tCaptureMode(UXGA));
 	}
 
 	return CCameraModule::EnumFormats(pModeList);
