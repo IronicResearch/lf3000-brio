@@ -32919,3 +32919,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 2/3/12 7:22 PM
 5,294 ms. (Cumulative: 12,593,747 ms)
 
 ----------------
+Revision 9,733 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,734 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+4MB vmem buffer allocation for high-res capture modes 1600x900, 1600x1200. (TTP 2414)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/3/12 8:48 PM
+2 changed, 0 added, 0 deleted.
+5,888 ms. (Cumulative: 12,599,729 ms)
+
+----------------

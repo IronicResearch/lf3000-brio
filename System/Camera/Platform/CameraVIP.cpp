@@ -52,8 +52,8 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
 		camCtx_.modes->push_back(new tCaptureMode(WXGA));
 		camCtx_.modes->push_back(new tCaptureMode(SXGA));
-//		camCtx_.modes->push_back(new tCaptureMode(HD16));
-//		camCtx_.modes->push_back(new tCaptureMode(UXGA));
+		camCtx_.modes->push_back(new tCaptureMode(HD16));
+		camCtx_.modes->push_back(new tCaptureMode(UXGA));
 	}
 
 	return CCameraModule::EnumFormats(pModeList);

@@ -244,9 +244,11 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	{
 		// Request vmem driver 4Meg memory block for video capture use
 		memset(&vm, 0, sizeof(vm));
-		vm.Flags = VMEM_BLOCK_BUFFER;
+		vm.Flags = VMEM_LINEAR_BUFFER; //VMEM_BLOCK_BUFFER;
 		vm.MemWidth = 4096;
-		vm.MemHeight = 256+512; //1024;
+		vm.MemHeight = 1024;
+		vm.HorAlign  = 64;
+		vm.VerAlign  = 1;
 		r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
 		dbg_.Assert((r == 0), "CCameraModule::ctor: IOCTL_VMEM_ALLOC failed\n");
 		fd = open("/dev/mem", O_RDWR | O_SYNC);
@@ -404,7 +406,8 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		if (pCamCtx->bufs == NULL)
 			continue;
 
-#if !(V4L2_MEMORY_XXXX == V4L2_MEMORY_MMAP)
+#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
+#else
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 		if(munmap(pCamCtx->bufs[i], pCamCtx->buf.length) < 0)
 		{
@@ -829,7 +832,8 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
 		}
 
-#if !(V4L2_MEMORY_XXXX == V4L2_MEMORY_MMAP)
+#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
+#else
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
@@ -848,8 +852,8 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		pCamCtx->buf.memory = V4L2_MEMORY_XXXX;
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-		pCamCtx->buf.m.userptr = vi.reserved[0] + 1024 + i * 512;
-		pCamCtx->buf.length	   = fi.smem_len;
+		pCamCtx->buf.m.userptr = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? vi.reserved[0] : vi.reserved[0] + 1024 + i * 512;
+		pCamCtx->buf.length	   = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCamCtx->mode.width * pCamCtx->mode.height : 4096 * pCamCtx->mode.height;
 		pCamCtx->bufs[i]       = (void*)pCamCtx->buf.m.userptr;
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 #endif
@@ -1763,7 +1767,7 @@ static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
 	buf.index	= index;
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
 	buf.m.userptr = (unsigned long)pCtx->bufs[index];
-	buf.length    = fi.smem_len;
+	buf.length    = (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCtx->mode.width * pCtx->mode.height : 4096 * pCtx->mode.height;
 #endif
 
 	if(ioctl(pCtx->fd, VIDIOC_QBUF, &buf) < 0)
