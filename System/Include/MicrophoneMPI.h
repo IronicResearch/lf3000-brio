@@ -165,7 +165,8 @@ public:
 	/// \return			Microphone parameter value
 	S32			GetMicrophoneParam(enum tMicrophoneParam param);
 
-	/// CameraWriteAudio() is a special function that DEVELOPERS SHOULD NOT USE.  Used by CameraMPI to write audio to avi stream.
+	// Internal Brio use only. Not for use by developers.
+	// Used by CameraMPI to write audio to avi stream.
 	unsigned int 	CameraWriteAudio(void* avi);
 
 private:
