@@ -272,25 +272,32 @@ public:
 	// OpenGL context interface (internal Brio use only)
 	//=========================
 
-	/// Initializes the display manager for OpenGL rendering contexts
+	// Internal Brio use only. Not for use by developers.
+	// Initializes the display manager for OpenGL rendering contexts
 	void				InitOpenGL(void* pCtx);
 	
-	/// Shutdown display manager OpenGL context setup by InitIOpenGL()
+	// Internal Brio use only. Not for use by developers.
+	// Shutdown display manager OpenGL context setup by InitIOpenGL()
 	void				DeinitOpenGL();
 	
-	/// Enables OpenGL hardware 3D engine rendering output to display surface layer
+	// Internal Brio use only. Not for use by developers.
+	// Enables OpenGL hardware 3D engine rendering output to display surface layer
 	void				EnableOpenGL(void* pCtx);
 	
-	/// Disables OpenGL hardware 3D engine rendering output to display surface layer
+	// Internal Brio use only. Not for use by developers.
+	// Disables OpenGL hardware 3D engine rendering output to display surface layer
 	void				DisableOpenGL();
 
-	/// Updates OpenGL hardware 3D engine rendering output to display surface layer
+	// Internal Brio use only. Not for use by developers.
+	// Updates OpenGL hardware 3D engine rendering output to display surface layer
 	void				UpdateOpenGL();
 
 	// (LF1000)
+	// Internal Brio use only. Not for use by developers.
 	void				WaitForDisplayAddressPatched(void);
 
 	// (LF1000)
+	// Internal Brio use only. Not for use by developers.
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 
 	// Brightness and contrast controls
@@ -395,19 +402,23 @@ public:
 	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
 	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
 
-	/// Sets/Gets active display/touch viewport via enum
+	// Internal Brio use only. Not for use by developers.
+	// Sets/Gets active display/touch viewport via enum
 	tErrType			SetViewport(tDisplayHandle hndl, tDisplayViewport viewport);
 	tDisplayViewport	GetViewport(tDisplayHandle hndl);
 
-	/// Sets/Gets active display/touch viewport via x,y position and w,h size
+	// Internal Brio use only. Not for use by developers.
+	// Sets/Gets active display/touch viewport via x,y position and w,h size
 	tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
 	tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height);
 
-	/// Sets/Gets effective display/touch viewport orientation (for Flash player use)
+	// Internal Brio use only. Not for use by developers.
+	// Sets/Gets effective display/touch viewport orientation (for Flash player use)
 	tErrType			SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient);
 	tDisplayOrientation	GetOrientation(tDisplayHandle hndl);
 
-	/// Sets/Gets effective auto-rotation control on orientation event changes (for Flash player use)
+	// Internal Brio use only. Not for use by developers.
+	// Sets/Gets effective auto-rotation control on orientation event changes (for Flash player use)
 	tErrType			SetAutoRotation(Boolean enable);
 	Boolean				GetAutoRotation();
 
