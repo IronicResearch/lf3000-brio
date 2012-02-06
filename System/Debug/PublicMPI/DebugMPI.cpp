@@ -296,8 +296,7 @@ void CDebugMPI::VDebugOut( tDebugLevel level, const char * formatString,
 }
 // va_list mangling has been changed in g++ 4.4
 // Add ABI <= g++-4.3 compatibility hack
-#if defined __ARM_EABI__ && defined __GNUC__ && (__GNUC__ > 4 || __GNUC__ == 4 
-&& __GNUC_MINOR__ >= 4)
+#if defined __ARM_EABI__ && defined __GNUC__ && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
 __asm__(".symver _ZNK8LeapFrog4Brio9CDebugMPI9VDebugOutENS0_11tDebugLevelEPKcSt9__va_list, _ZNK8LeapFrog4Brio9CDebugMPI9VDebugOutENS0_11tDebugLevelEPKcPv@@");
 #endif
 
@@ -365,8 +364,7 @@ void CDebugMPI::VDebugOutLiteral( tDebugLevel level, const char * formatString,
 }
 // va_list mangling has been changed in g++ 4.4
 // Add ABI <= g++-4.3 compatibility hack
-#if defined __ARM_EABI__ && defined __GNUC__ && (__GNUC__ > 4 || __GNUC__ == 4 
-&& __GNUC_MINOR__ >= 4)
+#if defined __ARM_EABI__ && defined __GNUC__ && (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4)
 __asm__(".symver _ZNK8LeapFrog4Brio9CDebugMPI16VDebugOutLiteralENS0_11tDebugLevelEPKcSt9__va_list, _ZNK8LeapFrog4Brio9CDebugMPI16VDebugOutLiteralENS0_11tDebugLevelEPKcPv@@");
 #endif
 

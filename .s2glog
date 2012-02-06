@@ -32947,3 +32947,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/6/12 3:16 PM
 5,449 ms. (Cumulative: 12,610,678 ms)
 
 ----------------
+Revision 9,737 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix new line characters that snuck in (will need to be merged into TRUNK).
+
+By dlazzari (dlazzari@leapfrog.com) on 2/6/12 3:44 PM
+1 changed, 0 added, 0 deleted.
+5,453 ms. (Cumulative: 12,616,225 ms)
+
+----------------
