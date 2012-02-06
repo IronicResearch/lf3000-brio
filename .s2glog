@@ -32938,3 +32938,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/6/12 1:56 PM
 5,344 ms. (Cumulative: 12,605,151 ms)
 
 ----------------
+Revision 9,736 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP DisplayMPI.Invalidate() call to make sure viewfinder is visible, for compatibility with capture thread. (TTP 2311)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/6/12 3:16 PM
+1 changed, 0 added, 0 deleted.
+5,449 ms. (Cumulative: 12,610,678 ms)
+
+----------------
