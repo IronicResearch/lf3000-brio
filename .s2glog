@@ -32929,3 +32929,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/3/12 8:48 PM
 5,888 ms. (Cumulative: 12,599,729 ms)
 
 ----------------
+Revision 9,735 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge -r9733 from TRUNK. Aliases va_list symbols to their old mangling for VDebugOut and VDebugOutLiteral.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/6/12 1:56 PM
+1 changed, 0 added, 0 deleted.
+5,344 ms. (Cumulative: 12,605,151 ms)
+
+----------------
