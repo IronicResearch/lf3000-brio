@@ -2,6 +2,7 @@
 
 #include <CameraPriv.h>
 #include <DisplayPriv.h>
+#include <DisplayMPI.h>
 
 #ifndef EMULATION
 #include <sys/ioctl.h>
@@ -263,6 +264,9 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 
 		if (hndl == kInvalidVidCapHndl)
 			hndl = kStreamingActive;
+
+		CDisplayMPI display;
+		display.Invalidate(0);
 	}
 
 out:
