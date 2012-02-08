@@ -32984,3 +32984,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/12 1:59 PM
 4,985 ms. (Cumulative: 12,631,836 ms)
 
 ----------------
+Revision 9,742 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP option to filter supported mode list per /flags/high-res setting (1600x1200, 1600x900, 1280x960, 1280x800, 800x600).
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/12 2:25 PM
+1 changed, 0 added, 0 deleted.
+4,926 ms. (Cumulative: 12,636,840 ms)
+
+----------------
