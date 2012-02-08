@@ -44,6 +44,16 @@ const CString* CVIPCameraModule::GetModuleName() const
 //----------------------------------------------------------------------------
 tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 {
+	// Filter supported mode list per high-res flag
+	int xmax = 1600;
+	int ymax = 1200;
+	FILE* fp = fopen("/flags/high-res", "r");
+	if (fp)
+	{
+		fscanf(fp, "%dx%d", &xmax, &ymax);
+		fclose(fp);
+	}
+
 	// FIXME: mode list supposed to be returned via V4L
 	if (camCtx_.modes->empty())
 	{
@@ -51,10 +61,14 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 		camCtx_.modes->push_back(new tCaptureMode(SVGA));
 		camCtx_.modes->push_back(new tCaptureMode(QVGA));
 		camCtx_.modes->push_back(new tCaptureMode(VGA));
-		camCtx_.modes->push_back(new tCaptureMode(WXGA));
-		camCtx_.modes->push_back(new tCaptureMode(SXGA));
-		camCtx_.modes->push_back(new tCaptureMode(HD16));
-		camCtx_.modes->push_back(new tCaptureMode(UXGA));
+		if (xmax >= WXGA.width && ymax >= WXGA.height)
+			camCtx_.modes->push_back(new tCaptureMode(WXGA));
+		if (xmax >= SXGA.width && ymax >= SXGA.height)
+			camCtx_.modes->push_back(new tCaptureMode(SXGA));
+		if (xmax >= HD16.width && ymax >= HD16.height)
+			camCtx_.modes->push_back(new tCaptureMode(HD16));
+		if (xmax >= UXGA.width && ymax >= UXGA.height)
+			camCtx_.modes->push_back(new tCaptureMode(UXGA));
 	}
 
 	return CCameraModule::EnumFormats(pModeList);
