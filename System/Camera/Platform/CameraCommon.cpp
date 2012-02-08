@@ -248,8 +248,15 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 		vm.MemWidth = 4096;
 		vm.MemHeight = 1024;
 		vm.HorAlign  = 64;
-		vm.VerAlign  = 1;
-		r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
+		vm.VerAlign  = 32;
+		do {
+			r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
+			if (r != 0)
+				vm.MemHeight -= 256;
+		} while (r != 0 && vm.MemHeight > 256);
+	}
+	if (fdvmem > 0 && r == 0)
+	{
 		dbg_.Assert((r == 0), "CCameraModule::ctor: IOCTL_VMEM_ALLOC failed\n");
 		fd = open("/dev/mem", O_RDWR | O_SYNC);
 		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/mem failed\n");
