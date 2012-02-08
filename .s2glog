@@ -32993,3 +32993,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/12 2:25 PM
 4,926 ms. (Cumulative: 12,636,840 ms)
 
 ----------------
+Revision 9,743 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge Brio TRUNK -c9729 for Microphone event forwarding fix.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/12 3:26 PM
+1 changed, 0 added, 0 deleted.
+4,975 ms. (Cumulative: 12,641,909 ms)
+
+----------------

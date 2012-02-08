@@ -42,7 +42,7 @@ CCameraModule::MicrophoneListener::MicrophoneListener(IEventListener *dest, CEve
 tEventStatus CCameraModule::MicrophoneListener::Notify(const IEventMessage& Imsg) {
 	const CMicrophoneEventMessage &msg = dynamic_cast<const CMicrophoneEventMessage&>(Imsg);
 
-	CCameraEventMessage *msgCam;
+	CCameraEventMessage *msgCam = NULL;
 
 	reason = Imsg.GetEventType();
 	if(reason == kMicrophoneCaptureTimeOutEvent)
@@ -53,7 +53,7 @@ tEventStatus CCameraModule::MicrophoneListener::Notify(const IEventMessage& Imsg
 		data.length = msg.data.timeOut.length;
 		msgCam = new CCameraEventMessage(data);
 	}
-	if(reason == kMicrophoneCaptureQuotaHitEvent)
+	else if(reason == kMicrophoneCaptureQuotaHitEvent)
 	{
 		tCaptureQuotaHitMsg data;
 		data.ahndl = msg.data.quotaHit.ahndl;
@@ -61,24 +61,33 @@ tEventStatus CCameraModule::MicrophoneListener::Notify(const IEventMessage& Imsg
 		data.length = msg.data.quotaHit.length;
 		msgCam = new CCameraEventMessage(data);
 	}
-	if(reason == kMicrophoneCaptureStoppedEvent)
+	else if(reason == kMicrophoneCaptureStoppedEvent)
 	{
 		tCaptureStoppedMsg data;
-		data.ahndl = msg.data.quotaHit.ahndl;
-		data.saved = msg.data.quotaHit.saved;
-		data.length = msg.data.quotaHit.length;
+		data.ahndl = msg.data.stopped.ahndl;
+		data.saved = msg.data.stopped.saved;
+		data.length = msg.data.stopped.length;
 		msgCam = new CCameraEventMessage(data);
 	}
-	if(reason == kMicrophoneRemovedEvent)
+	else if(reason == kMicrophoneRemovedEvent)
 	{
 		tCameraRemovedMsg data;
-		data.ahndl = msg.data.quotaHit.ahndl;
-		data.saved = msg.data.quotaHit.saved;
-		data.length = msg.data.quotaHit.length;
+		data.ahndl = msg.data.removed.ahndl;
+		data.saved = msg.data.removed.saved;
+		data.length = msg.data.removed.length;
+		msgCam = new CCameraEventMessage(data);
+	}
+	else if(reason == kMicrophoneAudioTriggeredEvent)
+	{
+		tAudioTriggeredMsg data;
+		data.ahndl = msg.data.triggered.ahndl;
+		data.threshold = msg.data.triggered.threshold;
+		data.timestamp = msg.data.triggered.timestamp;
 		msgCam = new CCameraEventMessage(data);
 	}
 
-	pEvent->PostEvent(*msgCam, 0, destListener);
+	if (destListener && msgCam)
+		pEvent->PostEvent(*msgCam, 0, destListener);
 	delete msgCam;
 
 	return kEventStatusOK;
