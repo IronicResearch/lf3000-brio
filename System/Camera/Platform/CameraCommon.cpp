@@ -244,7 +244,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	{
 		// Request vmem driver 4Meg memory block for video capture use
 		memset(&vm, 0, sizeof(vm));
-		vm.Flags = VMEM_BLOCK_BUFFER;
+		vm.Flags = VMEM_LINEAR_BUFFER; //VMEM_BLOCK_BUFFER;
 		vm.MemWidth = 4096;
 		vm.MemHeight = 1024;
 		vm.HorAlign  = 64;
@@ -264,8 +264,6 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 		vi.reserved[0] = (unsigned int)mmap((void*)0, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, vm.Address);
 		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/mem failed\n");
 		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, vm.Address, vi.reserved[0], fi.smem_len);
-		munmap((void*)vi.reserved[0], fi.smem_len);
-		ioctl(fdvmem, IOCTL_VMEM_FREE, &vm);
 	}
 	else
 	{
@@ -300,7 +298,7 @@ CCameraModule::~CCameraModule()
 	munmap((void*)vi.reserved[0], fi.smem_len);
 	close(fd);
 	if (fdvmem > 0) {
-//		ioctl(fdvmem, IOCTL_VMEM_FREE, &vm);
+		ioctl(fdvmem, IOCTL_VMEM_FREE, &vm);
 		close(fdvmem);
 	}
 #endif
@@ -416,18 +414,6 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 			continue;
 
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-		if (fdvmem > 0 && i == 0)
-		{
-			pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%08x\n", __FUNCTION__, i, pCamCtx->buf.flags, vi.reserved[i]);
-			if (munmap((void*)vi.reserved[i], pCamCtx->buf.length) < 0)
-			{
-				ret = false;
-	        }
-			if (ioctl(fdvmem, IOCTL_VMEM_FREE, &vm) < 0)
-			{
-				ret = false;
-	        }
-		}
 #else
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 		if(munmap(pCamCtx->bufs[i], pCamCtx->buf.length) < 0)
@@ -854,27 +840,6 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		}
 
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-		if (fdvmem > 0 && i == 0)
-		{
-			vm.Flags     = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? VMEM_BLOCK_BUFFER : VMEM_LINEAR_BUFFER;
-			vm.MemWidth  = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCamCtx->mode.width : 4096;
-			vm.MemHeight = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? pCamCtx->mode.height : (pCamCtx->mode.height + 0xFF) & ~0xFF ;
-			if (ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm) < 0)
-	        {
-				pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s IOCTL_VMEM_ALLOC failed %dx%d\n", __FUNCTION__, vm.MemWidth, vm.MemHeight);
-				DeinitCameraBufferInt(pCamCtx);
-				return false;
-	        }
-			pCamCtx->buf.length = vm.MemWidth * vm.MemHeight;
-			vi.reserved[i] = (unsigned int)mmap((void*)0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, vm.Address);
-	        if (vi.reserved[i] == (unsigned int)MAP_FAILED)
-	        {
-	        	pCamCtx->dbg->DebugOut(kDbgLvlCritical, "%s vmem mmap failed for %08x, %08x\n", __FUNCTION__, vm.Address, pCamCtx->buf.length);
-				DeinitCameraBufferInt(pCamCtx);
-				return false;
-	        }
-			pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%08x\n", __FUNCTION__, i, pCamCtx->buf.flags, vi.reserved[i]);
-		}
 #else
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
@@ -898,7 +863,6 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->buf.length	   = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCamCtx->mode.width * pCamCtx->mode.height : 4096 * pCamCtx->mode.height;
 		pCamCtx->bufs[i]       = (void*)pCamCtx->buf.m.userptr;
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
-		memset((void*)pCamCtx->buf.m.userptr, 0x80, pCamCtx->buf.length);
 #endif
 		if(ioctl(pCamCtx->fd, VIDIOC_QBUF, &pCamCtx->buf) < 0)
 		{
