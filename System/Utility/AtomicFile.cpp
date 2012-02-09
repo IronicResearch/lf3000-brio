@@ -331,8 +331,9 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	atomicOpen->workName = (char *)malloc (1+strlen(path)+strlen(ATOMIC_EXT));
 	strcpy (atomicOpen->workName, path);
 	strcat (atomicOpen->workName, ATOMIC_EXT);
-	mkstemp (atomicOpen->workName);
-	if (strlen (atomicOpen->workName) == 0)
+	int fd = mkstemp(atomicOpen->workName);		//mkstemp will actually create file and return fd.
+	close(fd);									//Need to close fd returned to avoid fds being leaked by app.
+	if (strlen (atomicOpen->workName) == 0 || fd == -1)
 	{
 		ATOMIC_ERR1 ("fopenAtomic(%s): mkstemp failed us!\n", path);
 		free (atomicOpen->workName);
