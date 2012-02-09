@@ -15,6 +15,7 @@
 #include <png.h>
 #include <ImageIO.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #include <string.h>
 #include <stdlib.h>
 #include <AtomicFile.h>
@@ -44,6 +45,24 @@ static void _png_read(png_structp pp, png_bytep data, png_size_t length)
 static void _png_flush(png_structp pp)
 {
 	fflush(fp);//(FILE*)pp->io_ptr);
+}
+
+//----------------------------------------------------------------------------
+bool PNG_checkFile(FILE* infile, const CPath& path) {
+	if ( !infile ) {
+		printf("Error opening jpeg file %s\n!", path.c_str());
+		return false;
+	}
+
+	//Check to make sure that the file passed in isn't empty.
+	struct stat filestat;
+	stat(path.c_str(),&filestat);
+	if(filestat.st_size <= 0) {
+		printf("Error got empty file %s!\n",path.c_str());
+		return false;
+	}
+	return true;
+
 }
 
 //----------------------------------------------------------------------------
@@ -134,7 +153,7 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 	
 	// Open PNG file for reading
 	fp = fopen(path.c_str(), "rb");
-	if (!fp)
+	if(!PNG_checkFile(fp,path))
 		return false;
 
 	// Init PNG contexts for reading
