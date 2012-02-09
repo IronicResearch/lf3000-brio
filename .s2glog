@@ -33002,3 +33002,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/12 3:26 PM
 4,975 ms. (Cumulative: 12,641,909 ms)
 
 ----------------
+Revision 9,744 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+JPEG and PNG loading for ImageIO now checks to make sure that the file being loaded isn't corrupted/empty.  This is needed in order for Widgets and other apps to respond correctly to ImageIO getting a bad image.
+
+By bgrissom (bgrissom@leapfrog.com) on 2/8/12 4:24 PM
+2 changed, 0 added, 0 deleted.
+5,001 ms. (Cumulative: 12,646,988 ms)
+
+----------------

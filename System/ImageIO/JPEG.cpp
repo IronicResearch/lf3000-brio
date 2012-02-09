@@ -12,6 +12,7 @@
 //
 //==============================================================================
 #include <stdio.h>
+#include <sys/stat.h>
 #include <jpeglib.h>
 #include <stdlib.h>
 #include <ImageIO.h>
@@ -39,6 +40,23 @@ static void _jpeg_flush(png_structp pp)
 }
 */
 //----------------------------------------------------------------------------
+bool JPEG_checkFile(FILE* infile, const CPath& path) {
+	if ( !infile ) {
+		printf("Error opening jpeg file %s\n!", path.c_str());
+		return false;
+	}
+
+	//Check to make sure that the file passed in isn't empty.
+	struct stat filestat;
+	stat(path.c_str(),&filestat);
+	if(filestat.st_size <= 0) {
+		printf("Error got empty file %s!\n",path.c_str());
+		return false;
+	}
+	return true;
+
+}
+
 bool JPEG_Save(CPath& path, tVideoSurf& surf)
 {
 	int width = surf.width;
@@ -106,11 +124,8 @@ bool JPEG_GetInfo(CPath& path, tVideoSurf& surf)
 	unsigned long location = 0;
 	int i = 0;
 
-	if ( !infile )
-	{
-		printf("Error opening jpeg file %s\n!", path.c_str() );
-		return -1;
-	}
+	if(!JPEG_checkFile(infile,path))
+		return false;
 
 
 	cinfo.err = jpeg_std_error( &jerr );
@@ -145,12 +160,8 @@ bool JPEG_Load(CPath& path, tVideoSurf& surf)
 	unsigned long location = 0;
 	int i = 0;
 
-	if ( !infile )
-	{
-		printf("Error opening jpeg file %s\n!", path.c_str() );
-		return -1;
-	}
-
+	if(!JPEG_checkFile(infile,path))
+		return false;
 
 	cinfo.err = jpeg_std_error( &jerr );
 
