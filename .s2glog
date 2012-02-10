@@ -33029,3 +33029,12 @@ By bgrissom (bgrissom@leapfrog.com) on 2/9/12 10:28 AM
 4,954 ms. (Cumulative: 12,657,020 ms)
 
 ----------------
+Revision 9,747 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: Remove workaround forcing AVI capture modes only to 320x240.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/10/12 12:32 PM
+1 changed, 0 added, 0 deleted.
+5,063 ms. (Cumulative: 12,662,177 ms)
+
+----------------

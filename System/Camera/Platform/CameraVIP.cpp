@@ -231,7 +231,6 @@ out:
 tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSurf,
 		IEventListener * pListener, const U32 maxLength, Boolean bAudio)
 {
-	struct tCaptureMode qSVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
 	tVidCapHndl hndl = kInvalidVidCapHndl;
 
 	CAMERA_LOCK;
@@ -242,24 +241,11 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 			goto out;
 	}
 
-	// FIXME: re-init required always
-	if (true || camCtx_.mode.width != qSVGA.width || camCtx_.mode.height != qSVGA.height)
-	{
-		/* Close camera fd */
-		if (!CCameraModule::DeinitCameraInt())
-			goto out;
-
-		/* Re-open camera */
-		if (!CCameraModule::InitCameraInt(&qSVGA))
-			goto out;
-	}
-
 	if(path.length())
 	{
 		CAMERA_UNLOCK;
 
 		/* Spawn capture thread w/out viewfinder */
-		camCtx_.mode = qSVGA;
 		hndl = CCameraModule::StartVideoCapture(path, NULL, pListener, maxLength, bAudio);
 
 		CAMERA_LOCK;
