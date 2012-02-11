@@ -919,7 +919,8 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
 #else
 	pOglCtx->eglDisplay = n;				// display index
-	pOglCtx->eglWindow  = &vinfo[n].xres;	// ptr to xres, yres
+	//Minh Saelock - eglWindow is already pointing to a valid struct on LF2000
+	//pOglCtx->eglWindow  = &vinfo[n].xres;	// ptr to xres, yres
 #endif
 	pOglCtx->hndlDisplay = hogl;
 
