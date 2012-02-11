@@ -30,6 +30,8 @@
 typedef struct {
 	int	width;
 	int height;
+	int x;
+	int y;
 } WindowType;
 
 #ifdef  EMULATION
@@ -248,6 +250,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	disp_.InitOpenGL(&ctx);
 	hwnd.width = ctx.width;
 	hwnd.height = ctx.height;
+	hwnd.x = 0;
+	hwnd.y = 0;
 #endif
 #else
 	/*
