@@ -57,7 +57,7 @@ bool JPEG_checkFile(FILE* infile, const CPath& path) {
 
 }
 
-bool JPEG_Save(CPath& path, tVideoSurf& surf)
+bool JPEG_Save(CPath& path, tVideoSurf& surf, int imageQuality)
 {
 	int width = surf.width;
 	int height = surf.height;
@@ -91,6 +91,9 @@ bool JPEG_Save(CPath& path, tVideoSurf& surf)
 	cinfo.in_color_space = JCS_RGB;
 	/* default compression parameters, we shouldn't be worried about these */
 	jpeg_set_defaults( &cinfo );
+
+	jpeg_set_quality(&cinfo, imageQuality, true);
+
 	/* Now do the compression .. */
 	jpeg_start_compress( &cinfo, TRUE );
 	/* like reading a file, this time write one row at a time */
