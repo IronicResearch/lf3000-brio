@@ -69,7 +69,7 @@ bool CImageIO::GetInfo(CPath& path, tVideoSurf& surf)
 }
 
 //----------------------------------------------------------------------------
-bool CImageIO::Save(CPath& path, tVideoSurf& surf)
+bool CImageIO::Save(CPath& path, tVideoSurf& surf, int imageQuality)
 {
 	if (path.rfind(".png") != std::string::npos)
 	{
@@ -79,7 +79,7 @@ bool CImageIO::Save(CPath& path, tVideoSurf& surf)
 	}else if (path.rfind(".jpg") != std::string::npos)
 	{
 		printf(" In ImageIO : now saving as jpg ");
-		return JPEG_Save(path, surf);
+		return JPEG_Save(path, surf, imageQuality);
 
 	}else if (path.rfind(".tga") != std::string::npos)
 	{

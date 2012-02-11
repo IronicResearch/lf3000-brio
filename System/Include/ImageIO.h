@@ -26,7 +26,7 @@ bool PNG_Save(CPath& path, tVideoSurf& surf);
 bool PNG_GetInfo(CPath& path, tVideoSurf& surf);
 
 bool JPEG_Load(CPath& path, tVideoSurf& surf);
-bool JPEG_Save(CPath& path, tVideoSurf& surf);
+bool JPEG_Save(CPath& path, tVideoSurf& surf, int imageQuality = 75);
 bool JPEG_GetInfo(CPath& path, tVideoSurf& surf);
 
 bool TARGA_Load(CPath& path, tVideoSurf& surf);
@@ -40,7 +40,7 @@ public:
 	~CImageIO();
 
 	bool Load(CPath& path, tVideoSurf& surf);
-	bool Save(CPath& path, tVideoSurf& surf);
+	bool Save(CPath& path, tVideoSurf& surfn, int imageQuality = 75);
 	bool GetInfo(CPath& path, tVideoSurf& surf);
 };
 

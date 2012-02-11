@@ -33038,3 +33038,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/10/12 12:32 PM
 5,063 ms. (Cumulative: 12,662,177 ms)
 
 ----------------
+Revision 9,748 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added optional parameter "int imageQuality" when saving JPEG image.
+this is ignored when saving PNG or TGA image.
+using jpeglib's jpeg_set_quality() to set image quality when decompressing.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 2/10/12 4:35 PM
+3 changed, 0 added, 0 deleted.
+5,063 ms. (Cumulative: 12,667,318 ms)
+
+----------------
