@@ -33058,3 +33058,16 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/10/12 6:56 PM
 4,949 ms. (Cumulative: 12,672,345 ms)
 
 ----------------
+Revision 9,750 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additional capabilities enums for GetPlatformCapability() API to support buttons, wifi, 2nd camera. (TTP 1196)
+Button capabilties uses specially defined high-value enums for bitwise masking kButton* types. For example: 
+    bool = GetPlatformCapability(kCapsButtonMask(kButtonPause));
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/13/12 10:17 AM
+2 changed, 0 added, 0 deleted.
+4,954 ms. (Cumulative: 12,677,392 ms)
+
+----------------

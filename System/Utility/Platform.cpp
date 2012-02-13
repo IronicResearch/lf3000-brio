@@ -14,7 +14,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <string.h>
-#include "Utility.h"
+#include <Utility.h>
+#include <ButtonTypes.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -106,6 +107,32 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsScreenLEX:
 		return ("LEX" == GetPlatformFamily());
 	case kCapsScreenLPAD:
+		return ("LPAD" == GetPlatformFamily());
+	case kCapsWifi:
+		return false;
+	case kCapsCameraFront:
+		return (0 == stat("/sys/devices/platform/vip.1", &stbuf));
+	case kCapsButtonMask(kButtonUp):
+	case kCapsButtonMask(kButtonDown):
+	case kCapsButtonMask(kButtonRight):
+	case kCapsButtonMask(kButtonLeft):
+		return true;
+	case kCapsButtonMask(kButtonA):
+	case kCapsButtonMask(kButtonB):
+	case kCapsButtonMask(kButtonLeftShoulder):
+	case kCapsButtonMask(kButtonRightShoulder):
+	case kCapsButtonMask(kButtonMenu):
+	case kCapsButtonMask(kButtonHint):
+	case kCapsButtonMask(kButtonPause):
+		return ("LEX" == GetPlatformFamily());
+	case kCapsButtonMask(kButtonBrightness):
+		return ("Emerald" == GetPlatformName());
+	case kCapsButtonMask(kHeadphoneJackDetect):
+	case kCapsButtonMask(kCartridgeDetect):
+	case kCapsButtonMask(kButtonVolumeDown):
+	case kCapsButtonMask(kButtonVolumeUp):
+		return true;
+	case kCapsButtonMask(kButtonEscape):
 		return ("LPAD" == GetPlatformFamily());
 	}
 	return false;
