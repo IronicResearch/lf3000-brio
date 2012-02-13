@@ -213,7 +213,14 @@ enum tPlatformCaps {
 	kCapsScreenLPAD,
 	kCapsLF1000,
 	kCapsLF2000,
+	kCapsWifi,
+	kCapsCameraFront,
+	kCapsReserved1 = 0x10000000,
+	kCapsReserved2 = 0x20000000,
+	kCapsButtonSet = 0x40000000
 };
+
+#define kCapsButtonMask(x)		((enum tPlatformCaps)((U32)kCapsButtonSet | x))
 
 bool HasPlatformCapability(tPlatformCaps caps);
 
