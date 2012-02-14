@@ -67,7 +67,28 @@ bool CImageIO::GetInfo(CPath& path, tVideoSurf& surf)
 
 	return false;
 }
+//----------------------------------------------------------------------------
+bool CImageIO::Save(CPath& path, tVideoSurf& surf)
+{
+	if (path.rfind(".png") != std::string::npos)
+	{
+		printf(" In ImageIO : now saving as png ");
+		return PNG_Save(path, surf);
 
+	}else if (path.rfind(".jpg") != std::string::npos)
+	{
+		printf(" In ImageIO : now saving as jpg ");
+		return JPEG_Save(path, surf);
+
+	}else if (path.rfind(".tga") != std::string::npos)
+	{
+		printf(" In ImageIO : now saving as tga ");
+		return TARGA_Save(path, surf);
+
+	}
+
+	return false;
+}
 //----------------------------------------------------------------------------
 bool CImageIO::Save(CPath& path, tVideoSurf& surf, int imageQuality)
 {

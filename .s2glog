@@ -33071,3 +33071,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/13/12 10:17 AM
 4,954 ms. (Cumulative: 12,677,392 ms)
 
 ----------------
+Revision 9,751 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+image quality and image format are not optional parameters now. instead added overloaded functions which are used internally. this was needed for external apps to work as is.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 2/13/12 7:29 PM
+3 changed, 0 added, 0 deleted.
+5,344 ms. (Cumulative: 12,682,830 ms)
+
+----------------
