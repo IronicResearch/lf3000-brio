@@ -972,6 +972,17 @@ void CDisplayFB::DisableOpenGL()
 //----------------------------------------------------------------------------
 void CDisplayFB::UpdateOpenGL()
 {
+#ifdef LF2000
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	// Re-enable OpenGL context which is not registered
+	if (hogl != NULL && !fbviz[OGLFB])
+	{
+		if (dcogl->isEnabled) {
+			RegisterLayer(hogl, dcogl->x, dcogl->y);
+			SetVisible(hogl, true);
+		}
+	}
+#endif
 }
 
 //----------------------------------------------------------------------------
