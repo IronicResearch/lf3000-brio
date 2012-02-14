@@ -23,6 +23,9 @@
 #ifdef   LF1000
 #include "GLES/libogl.h"
 #endif
+#ifdef   LF2000
+#include <vr5_swap_buffer_callback.h>
+#endif
 #include <signal.h>
 #endif
 
@@ -152,7 +155,8 @@ namespace
 		dispmgr->DeinitOpenGL();
 		isEnabled = false;
 	}
-
+#endif // LF1000
+#endif // !LF2000
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SwapBufferCallback( void ) 
 	{
@@ -172,7 +176,8 @@ namespace
 		dispmgr->UpdateOpenGL();
 #endif
 	}
-
+#ifndef LF2000
+#ifdef LF1000
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SetWindow( void* /*pNativeWindow*/ ) { }
 	
@@ -376,6 +381,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// Enable display context layer visibility after initial buffer swap
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
+	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
 #endif
 
 	// Store handle for use in Display MPI functions
@@ -388,6 +394,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 {
 #ifdef LF2000
 	// Disable 3D layer before disabling accelerator
+	__vr5_set_swap_buffer_callback(0);
 	disp_.DisableOpenGL();
 	isEnabled = false;
 #endif

@@ -33080,3 +33080,12 @@ By mdeshpande (mdeshpande@leapfrog.com) on 2/13/12 7:29 PM
 5,344 ms. (Cumulative: 12,682,830 ms)
 
 ----------------
+Revision 9,752 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTpro Brio 2467.  Now using new SwapBufferCallback.  This is used to re-enable the layer, move it back to position, and re-alpha blend it.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/14/12 12:32 PM
+2 changed, 1 added, 0 deleted.
+5,391 ms. (Cumulative: 12,688,315 ms)
+
+----------------
