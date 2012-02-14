@@ -33089,3 +33089,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/14/12 12:32 PM
 5,391 ms. (Cumulative: 12,688,315 ms)
 
 ----------------
+Revision 9,753 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP modified to mmap reserved physical memory block directly instead of vmem driver.
+Attempts to avoid capture freezes seen in TTP 2533 which can still happen.
+Avoids capture artifacts seen in AVIs (TTP 2415), and supports 1280x capture modes (TTP 2559).
+
+By Dave Milici (dmilici@leapfrog.com) on 2/14/12 12:38 PM
+1 changed, 0 added, 0 deleted.
+5,220 ms. (Cumulative: 12,693,628 ms)
+
+----------------
