@@ -45,8 +45,8 @@ const CString* CVIPCameraModule::GetModuleName() const
 tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 {
 	// Filter supported mode list per high-res flag
-	int xmax = 1600;
-	int ymax = 1200;
+	int xmax = SVGA.width;
+	int ymax = SVGA.height;
 	FILE* fp = fopen("/flags/high-res", "r");
 	if (fp)
 	{

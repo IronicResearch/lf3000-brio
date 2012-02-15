@@ -239,8 +239,8 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	InitLut();
 
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-//	fdvmem = open("/dev/vmem", O_RDWR);
-//	if (fdvmem > 0)
+	fdvmem = open("/dev/vmem", O_RDWR);
+	if (fdvmem > 0)
 	{
 		// Request vmem driver 4Meg memory block for video capture use
 		memset(&vm, 0, sizeof(vm));
@@ -249,12 +249,12 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 		vm.MemHeight = 2048; //1024;
 		vm.HorAlign  = 64;
 		vm.VerAlign  = 32;
-//		do {
-//			r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
-//			if (r != 0)
-//				vm.MemHeight -= 256;
-//		} while (r != 0 && vm.MemHeight > 256);
-		vm.Address = 0x87800000 | 0x20000000; // FIXME
+		do {
+			r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
+			if (r != 0)
+				vm.MemHeight -= 256;
+		} while (r != 0 && vm.MemHeight > 256);
+//		vm.Address = 0x87800000 | 0x20000000; // FIXME
 	}
 	if (vm.Address || fdvmem > 0 && r == 0)
 	{
@@ -262,7 +262,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 		fd = open("/dev/mem", O_RDWR | O_SYNC);
 		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/mem failed\n");
 		fi.smem_len = vm.MemWidth * vm.MemHeight;
-		vi.reserved[0] = (unsigned int)mmap((void*)0, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, vm.Address);
+		vi.reserved[0] = (unsigned int)mmap((void*)0, fi.smem_len, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_POPULATE, fd, vm.Address);
 		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/mem failed\n");
 		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, vm.Address, vi.reserved[0], fi.smem_len);
 	}

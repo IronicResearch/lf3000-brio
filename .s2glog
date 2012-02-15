@@ -33109,3 +33109,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/14/12 1:14 PM
 5,628 ms. (Cumulative: 12,699,349 ms)
 
 ----------------
+Revision 9,755 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert CameraVIP usage of memory block via vmem driver for stability. Default high-res mode = 800x600.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/14/12 4:27 PM
+2 changed, 0 added, 0 deleted.
+5,328 ms. (Cumulative: 12,704,771 ms)
+
+----------------
