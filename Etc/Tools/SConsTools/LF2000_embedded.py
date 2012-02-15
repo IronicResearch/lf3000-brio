@@ -26,9 +26,9 @@ def PlatformMods(env):
 
 	#TODO: Fixup this relative path
 	root = os.path.normpath(os.path.join(__file__, '../../../../ThirdParty/ustring'))
-	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
-	env.Append(LIBPATH = [os.path.join(root, 'usr', 'local', 'lib')])
-	env.Append(RPATH = [os.path.join(root, 'usr', 'local', 'lib')])
+#	env.Append(LIBPATH = [os.path.join(root, 'libs', 'arm')])
+#	env.Append(LIBPATH = [os.path.join(root, 'usr', 'local', 'lib')])
+#	env.Append(RPATH = [os.path.join(root, 'usr', 'local', 'lib')])
 	env.Append(CPPPATH = [root])
 
 	env.Append(CPPPATH = [ env['staging_dir'].Dir('usr').Dir('include') ] )

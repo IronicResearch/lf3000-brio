@@ -147,6 +147,12 @@ def RunMyTests(ptarget, psources, plibs, penv):
 		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread']
 	else:
 		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
+		testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/' + penv['cpu']])
+
+		if penv['platform'] == 'LF2000':
+			# FIXME: SCons 1.2.0 bug: leading hash not parsed
+			testenv.Append(RPATH = ['ThirdParty/Nexell/Libs/' + penv['cpu']])
+
 	fulllibs = plibs + [ptarget + 'MPI']
 	if penv['cpu'] == 'x86':
 		fulllibs += ['Emulation']
