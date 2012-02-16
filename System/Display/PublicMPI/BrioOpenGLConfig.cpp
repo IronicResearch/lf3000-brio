@@ -381,7 +381,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	// Enable display context layer visibility after initial buffer swap
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
+#ifndef EMULATION
 	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
+#endif
 #endif
 
 	// Store handle for use in Display MPI functions
@@ -394,7 +396,9 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 {
 #ifdef LF2000
 	// Disable 3D layer before disabling accelerator
+#ifndef EMULATION
 	__vr5_set_swap_buffer_callback(0);
+#endif
 	disp_.DisableOpenGL();
 	isEnabled = false;
 #endif
