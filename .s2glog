@@ -33156,3 +33156,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/21/12 1:37 PM
 5,065 ms. (Cumulative: 12,725,952 ms)
 
 ----------------
+Revision 9,760 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Microphone: Changed period time to integral number for sample rate converter plugin. (TTP 2432)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/22/12 5:54 PM
+1 changed, 0 added, 0 deleted.
+4,956 ms. (Cumulative: 12,731,001 ms)
+
+----------------
