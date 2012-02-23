@@ -2189,17 +2189,6 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto bail_out;
 	}
 
-	// HACK: Get and discard some frames from video stream first
-	for (int i = 0; i < 5; i++)
-	{
-		bRet = GetFrameInt(&camCtx_, 0);
-		if (!bRet)
-			dbg_.DebugOut(kDbgLvlCritical, "%s: GetFrameInt() failed try %d\n", __FUNCTION__, i);
-		bRet = ReturnFrameInt(&camCtx_, camCtx_.buf.index);
-		if (!bRet)
-			dbg_.DebugOut(kDbgLvlCritical, "%s: ReturnFrameInt() failed try %d\n", __FUNCTION__, i);
-	}
-
 	// acquire the snapshot
 	if( !GetFrameInt(&camCtx_, 0))
 	{

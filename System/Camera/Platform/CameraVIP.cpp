@@ -128,8 +128,7 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 	v4l2.fmt.width = pSurf->width;
 	v4l2.fmt.height = pSurf->height;
 
-	// FIXME: re-enable double buffering when it's safe to pan in IRQ context
-	//v4l2.fmt.priv |= DOUBLE_BUF_TO_FMT_PRIV(VIP_OVERLAY_DOUBLE_BUF);
+	v4l2.fmt.priv |= DOUBLE_BUF_TO_FMT_PRIV(VIP_OVERLAY_DOUBLE_BUF);
 	// FIXME: video layer device minor number
 	v4l2.fmt.priv |= FB_TO_FMT_PRIV(2);
 

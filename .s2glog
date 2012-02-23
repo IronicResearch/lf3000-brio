@@ -33175,3 +33175,16 @@ By jeno (jeno@leapfrog.com) on 2/23/12 2:08 PM
 5,016 ms. (Cumulative: 12,736,095 ms)
 
 ----------------
+Revision 9,762 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro 2064, 2558
+
+-Allow double-buffering of VIP overlay.  This should help with tearing
+-Bad frames are now discarded at the driver level.
+
+
+By jeno (jeno@leapfrog.com) on 2/23/12 3:45 PM
+2 changed, 0 added, 0 deleted.
+5,001 ms. (Cumulative: 12,741,190 ms)
+
+----------------
