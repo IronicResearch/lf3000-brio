@@ -1841,7 +1841,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 
 		if((err < 0) || (length < MIN_FREE))
 		{
-			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: not enough disk space, %lld required, %lld available\n", MIN_FREE, length);
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: not enough disk space, %llu required, %llu available\n", MIN_FREE, length);
 			CAMERA_UNLOCK;
 			return hndl;
 		}
