@@ -64,7 +64,7 @@ const tVidCapHndl		kStreamingActive		= 0x80000000;
 const tVidCapHndl		kStreamingThread		= 0x40000000;
 const tVidCapHndl		kStreamingFrame			= 0x20000000;	// frame-by-frame, i.e., no thread
 
-const U64	MIN_FREE	= 1*1024*1024;		/* NOTE: UBIFS is internally padded,
+const U64	MIN_FREE	= 0x100000ULL;		/* 1MB. NOTE: UBIFS is internally padded,
 											 * so this isn't strictly needed */
 
 #define IS_STREAMING_HANDLE(x) \

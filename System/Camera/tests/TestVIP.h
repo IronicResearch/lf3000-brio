@@ -100,6 +100,11 @@ public:
 	void setUp( )
 	{
 		pCameraMPI_ = new CCameraMPI;
+
+		CPath path = capture_path;
+
+		pCameraMPI_->SetCameraVideoPath(path + "Videos/");
+		pCameraMPI_->SetCameraStillPath(path + "Photos/");
 	}
 
 	//------------------------------------------------------------------------
@@ -156,7 +161,7 @@ public:
 		pDisplayMPI_ = new CDisplayMPI;
 		pVideoMPI_ = new CVideoMPI;
 
-		disp = pDisplayMPI_->CreateHandle(300, 400, kPixelFormatYUV420, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
@@ -204,7 +209,7 @@ public:
 		pDisplayMPI_ = new CDisplayMPI;
 		pVideoMPI_ = new CVideoMPI;
 
-		disp = pDisplayMPI_->CreateHandle(300, 400, kPixelFormatYUV420, NULL);
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
 		TS_ASSERT( disp != kInvalidDisplayHandle );
 		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
 
@@ -217,7 +222,7 @@ public:
 
 		if ( pCameraMPI_->IsValid() )
 		{
-			capture = pCameraMPI_->StartVideoCapture(NULL/*&surf*/, NULL, "VIP.avi", 0, false);
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "test_Capture.avi", 0, true);
 			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
 
 			pKernelMPI_->TaskSleep(5000);
@@ -232,6 +237,108 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, true);
 		delete pVideoMPI_;
 		delete pDisplayMPI_;
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testCaptureMuted()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		// For displaying captured data
+		tVideoSurf				surf;
+		tDisplayHandle			disp;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+		pVideoMPI_ = new CVideoMPI;
+
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420, NULL);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			capture = pCameraMPI_->StartVideoCapture(&surf, NULL, "test_CaptureMuted.avi", 0, false);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pVideoMPI_;
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testCaptureNoVF()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		pKernelMPI_ = new CKernelMPI;
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			capture = pCameraMPI_->StartVideoCapture(NULL, NULL, "test_CaptureNoVF.avi", 0, true);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
+	void testCaptureNoVFMuted()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		pKernelMPI_ = new CKernelMPI;
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			capture = pCameraMPI_->StartVideoCapture(NULL, NULL, "test_CaptureNoVFMuted.avi", 0, false);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
 		delete pKernelMPI_;
 	}
 
