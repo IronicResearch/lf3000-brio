@@ -860,7 +860,7 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		pCamCtx->buf.memory = V4L2_MEMORY_XXXX;
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-		pCamCtx->buf.m.userptr = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? vi.reserved[0] : vi.reserved[0]; // + 1024 + i * 512;
+		pCamCtx->buf.m.userptr = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? vi.reserved[0] : vi.reserved[0] + i * pCamCtx->mode.width;
 		pCamCtx->buf.length	   = fi.smem_len; //(pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCamCtx->mode.width * pCamCtx->mode.height : 4096 * ((pCamCtx->mode.height + 0xFF) & ~0xFF);
 		pCamCtx->bufs[i]       = (void*)pCamCtx->buf.m.userptr;
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
