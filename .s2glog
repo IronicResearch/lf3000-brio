@@ -33215,3 +33215,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/23/12 6:59 PM
 4,937 ms. (Cumulative: 12,756,316 ms)
 
 ----------------
+Revision 9,766 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Request period buffer size instead of duration for 16KHz audio capture. (TTP 2432)
+
+By Dave Milici (dmilici@leapfrog.com) on 2/23/12 7:15 PM
+1 changed, 0 added, 0 deleted.
+5,219 ms. (Cumulative: 12,761,629 ms)
+
+----------------

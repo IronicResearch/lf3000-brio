@@ -41,7 +41,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CURI	kModuleURI	= "/LF/System/Microphone";
 const char*	gCamFile	= "/dev/video0";
 
-static const unsigned int MIC_RATE		= 32000;	/* desired sampling rate */
+static const unsigned int MIC_RATE		= 16000;	/* desired sampling rate */
 static const unsigned int MIC_CHANS		= 1;		/* desired channels */
 static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format */
 
@@ -1317,7 +1317,7 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 		pCtx->sbits = err;
 
 		// Query period size after setting (requesting?) period time (per ALSA example)
-		snd_pcm_uframes_t period_size = 2048;
+		snd_pcm_uframes_t period_size = 1024;
 		if ((err = snd_pcm_hw_params_set_period_size_near(handle, params, &period_size, &dir)) < 0)
         {
         	pCtx->period_size = 0;
