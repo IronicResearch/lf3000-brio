@@ -41,7 +41,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CURI	kModuleURI	= "/LF/System/Microphone";
 const char*	gCamFile	= "/dev/video0";
 
-static const unsigned int MIC_RATE		= 16000;	/* desired sampling rate */
+static const unsigned int MIC_RATE		= 32000;	/* desired sampling rate */
 static const unsigned int MIC_CHANS		= 1;		/* desired channels */
 static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format */
 
