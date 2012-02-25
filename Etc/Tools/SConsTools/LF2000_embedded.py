@@ -21,7 +21,7 @@ def PlatformMods(env):
 	gcc_defs 			= env.Split('')
 	env.Append(CPPDEFINES = gcc_defs)
 	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64', 'KHRONOS', 'linux', 'USTRING'])
-	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=cortex-a8')
+	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=cortex-a9')
 	##env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
 
 	#TODO: Fixup this relative path
