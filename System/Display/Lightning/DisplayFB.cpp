@@ -137,7 +137,7 @@ void CDisplayFB::InitModule()
 		// Conditionally blank layers after initial launch and not playing transition video
 		if (stat("/tmp/splash", &stbuf) == 0)
 		{
-			if ((n == YUVFB && stat("/tmp/trans_anim", &stbuf) != 0))
+			if (n == YUVFB && ((stat("/tmp/trans_anim", &stbuf) != 0) || (stat("/tmp/vdaemon_play", &stbuf) != 0)))
 				r = ioctl(fbdev[n], FBIOBLANK, 1);
 		}
 		else if (stat("/flags/main_app", &stbuf) == 0)

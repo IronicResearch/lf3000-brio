@@ -33244,3 +33244,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/25/12 10:16 AM
 5,299 ms. (Cumulative: 12,772,413 ms)
 
 ----------------
+Revision 9,769 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updated the check for "/tmp/trans_anim" flag to also check for "/tmp/vdaemon_play".
+
+By bgrissom (bgrissom@leapfrog.com) on 2/25/12 11:27 AM
+2 changed, 0 added, 0 deleted.
+5,260 ms. (Cumulative: 12,777,766 ms)
+
+----------------
