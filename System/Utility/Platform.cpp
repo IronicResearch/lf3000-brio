@@ -27,6 +27,8 @@ U32 GetPlatformID()
 	int 	id = 0;
 	FILE* 	fd = fopen( "/sys/devices/platform/lf1000-gpio/board_id", "r" );
 	if (!fd)
+			fd = fopen( "/sys/devices/system/board/system_rev", "r" );
+	if (!fd)
 			fd = fopen( "/flags/board_id", "r" );
 	if (fd)
 	{
@@ -95,11 +97,11 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	switch (caps)
 	{
 	case kCapsLF2000:
+		return (0 == stat("/sys/devices/platform/lf2000-alive", &stbuf));
 	case kCapsTouchscreen:
 		return (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
 	case kCapsCamera:
-		return ((0 == stat("/sys/devices/platform/nx-ohci.0/usb1", &stbuf)) ||
-				(0 == stat("/sys/devices/platform/vip.0", &stbuf)) );
+		return (0 == stat("/sys/class/video4linux/video0", &stbuf));
 	case kCapsAccelerometer:
 		return (0 == stat("/sys/devices/platform/lf2000-aclmtr/enable", &stbuf));
 	case kCapsMicrophone:
@@ -111,7 +113,7 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsWifi:
 		return false;
 	case kCapsCameraFront:
-		return (0 == stat("/sys/devices/platform/vip.1", &stbuf));
+		return (0 == stat("/sys/class/video4linux/video1", &stbuf));
 	case kCapsButtonMask(kButtonUp):
 	case kCapsButtonMask(kButtonDown):
 	case kCapsButtonMask(kButtonRight):
