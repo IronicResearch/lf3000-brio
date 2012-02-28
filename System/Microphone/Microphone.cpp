@@ -795,7 +795,10 @@ unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
 		char** ptr = (char**)avi;
 		*ptr = (char*)micCtx_.poll_buf;
-		memcpy(micCtx_.poll_buf, addr, len);
+		S16* psrc = (S16*)addr;
+		S16* pdst = (S16*)micCtx_.poll_buf;
+		for (int i = 0; i < len; i+=2)
+			*pdst++ = *psrc++ << 2;
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		micCtx_.counter++;
@@ -850,7 +853,11 @@ Boolean	CMicrophoneModule::WriteAudio(SNDFILE *wav)
 
 	// Write captured samples to WAV file directly from mmapped buffer
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
-		sf_write_raw(wav, addr, len);
+		S16* psrc = (S16*)addr;
+		S16* pdst = (S16*)micCtx_.poll_buf;
+		for (int i = 0; i < len; i+=2)
+			*pdst++ = *psrc++ << 2;
+		sf_write_raw(wav, micCtx_.poll_buf, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		return true;
