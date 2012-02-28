@@ -33273,3 +33273,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/27/12 6:08 PM
 5,350 ms. (Cumulative: 12,788,725 ms)
 
 ----------------
+Revision 9,774 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Microphone: Parameterize mic boost shift as /flags/mic-boost option.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/27/12 7:32 PM
+1 changed, 0 added, 0 deleted.
+5,302 ms. (Cumulative: 12,794,120 ms)
+
+----------------
