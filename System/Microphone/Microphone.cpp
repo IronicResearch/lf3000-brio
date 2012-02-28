@@ -51,6 +51,8 @@ static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format
 // 20 FPS nominal:  50000 usec
 static const unsigned int MIC_PERIOD	= 50000;	// usec
 
+static       unsigned int MIC_BOOST		= 4;		// bit shift for SW boost
+
 static const char *cap_name = "plughw:0,0";	// FIXME: capture/playback on same HW device = LFP100
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
  * automatic conversion.  Opening plughw:1,0 uses the alsa plug plugin to open hw:1,0
@@ -300,6 +302,13 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 	tErrType			err = kNoErr;
 	const tMutexAttr	attr = {0};
 	tUSBDeviceData		usb_data;
+	FILE*				fp;
+
+	fp = fopen("/flags/mic-boost", "r");
+	if (fp) {
+		fscanf(fp, "%u", &MIC_BOOST);
+		fclose(fp);
+	}
 
 	dbg_.SetDebugLevel(kMicrophoneDebugLevel);
 
@@ -798,7 +807,7 @@ unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 		S16* psrc = (S16*)addr;
 		S16* pdst = (S16*)micCtx_.poll_buf;
 		for (int i = 0; i < len; i+=2)
-			*pdst++ = *psrc++ << 2;
+			*pdst++ = *psrc++ << MIC_BOOST;
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		micCtx_.counter++;
@@ -856,7 +865,7 @@ Boolean	CMicrophoneModule::WriteAudio(SNDFILE *wav)
 		S16* psrc = (S16*)addr;
 		S16* pdst = (S16*)micCtx_.poll_buf;
 		for (int i = 0; i < len; i+=2)
-			*pdst++ = *psrc++ << 2;
+			*pdst++ = *psrc++ << MIC_BOOST;
 		sf_write_raw(wav, micCtx_.poll_buf, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
