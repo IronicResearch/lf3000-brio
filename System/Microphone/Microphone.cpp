@@ -152,6 +152,23 @@ namespace
 //============================================================================
 
 //----------------------------------------------------------------------------
+inline void SHIFT_XFER(S16* pdst, S16* psrc, int len)
+{
+	register S32 test32;
+	for (int i = 0; i < len; i+=2)
+	{
+		test32 = (S32)*psrc << MIC_BOOST;
+		*pdst = (S16)test32;
+		if (test32 < kS16Min)
+			*pdst = kS16Min;
+		else if (test32 > kS16Max)
+			*pdst = kS16Max;
+		pdst++;
+		psrc++;
+	}
+}
+
+//----------------------------------------------------------------------------
 inline void PROFILE_BEGIN(void)
 {
 #if USE_PROFILE
@@ -804,10 +821,7 @@ unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
 		char** ptr = (char**)avi;
 		*ptr = (char*)micCtx_.poll_buf;
-		S16* psrc = (S16*)addr;
-		S16* pdst = (S16*)micCtx_.poll_buf;
-		for (int i = 0; i < len; i+=2)
-			*pdst++ = *psrc++ << MIC_BOOST;
+		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		micCtx_.counter++;
@@ -862,10 +876,7 @@ Boolean	CMicrophoneModule::WriteAudio(SNDFILE *wav)
 
 	// Write captured samples to WAV file directly from mmapped buffer
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
-		S16* psrc = (S16*)addr;
-		S16* pdst = (S16*)micCtx_.poll_buf;
-		for (int i = 0; i < len; i+=2)
-			*pdst++ = *psrc++ << MIC_BOOST;
+		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
 		sf_write_raw(wav, micCtx_.poll_buf, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
@@ -906,7 +917,7 @@ Boolean	CMicrophoneModule::FlushAudio()
 
 		// Copy captured samples directly from mmapped buffer
 		if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
-			memcpy(micCtx_.poll_buf, addr, len);
+			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
 			direct_read_end(&micCtx_, addr, offset, len);
 		}
 #endif
