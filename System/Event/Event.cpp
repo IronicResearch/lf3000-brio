@@ -278,6 +278,9 @@ public:
 	//------------------------------------------------------------------------
 	void AddListener(const IEventListener* pListener, tEventRegistrationFlags flags)
 	{
+		// TTPro Brio 2454.  SpongeBob and Tutorial are both registering and unregistering KeyboardManager.
+		// KeyboardManager needs to be in the list twice to work properly.
+#if 0
 		// Detect duplicate listeners, and re-register at end of list
 		if (ppListeners_)
 		{
@@ -292,7 +295,7 @@ public:
 				}
 			}
 		}
-
+#endif
 		pListener->pimpl_->eventRegistrationFlags = flags;
 		if( numListeners_ >= listSize_ )
 		{

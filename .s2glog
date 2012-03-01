@@ -33301,3 +33301,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/29/12 11:31 AM
 4,949 ms. (Cumulative: 12,804,163 ms)
 
 ----------------
+Revision 9,777 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTpro Brio 2454.  Disabling duplicate EventListener check, Brio now allows you to register listeners mutliple times again.  This allows SpongeBob Fists of Foam to return from Tutorials properly.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/29/12 6:32 PM
+1 changed, 0 added, 0 deleted.
+5,579 ms. (Cumulative: 12,809,820 ms)
+
+----------------
