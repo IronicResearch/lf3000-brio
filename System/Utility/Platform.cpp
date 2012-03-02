@@ -51,6 +51,12 @@ CString GetPlatformFamily()
 		fclose(fd);
 		return CString(buf);
 	}
+
+	CString platform = GetPlatformName();
+	if (platform == "Emerald")
+		return "LEX";
+	if (platform == "Madrid")
+		return "LPAD";
 	return "Unknown";
 }
 
@@ -96,16 +102,26 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	struct stat stbuf;
 	switch (caps)
 	{
+	case kCapsLF1000:
+		return (0 == stat("/sys/devices/platform/lf1000-alvgpio", &stbuf));
 	case kCapsLF2000:
 		return (0 == stat("/sys/devices/platform/lf2000-alive", &stbuf));
 	case kCapsTouchscreen:
-		return (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
+		return (0 == stat("/sys/devices/platform/lf1000-touchscreen", &stbuf)) ||
+		       (0 == stat("/sys/devices/platform/lf2000-touchscreen", &stbuf));
 	case kCapsCamera:
+		if ("Madrid" == GetPlatformName())
+			return (0 == stat("/sys/devices/platform/lf1000-ohci/usb1", &stbuf));
 		return (0 == stat("/sys/class/video4linux/video0", &stbuf));
 	case kCapsAccelerometer:
-		return (0 == stat("/sys/devices/platform/lf2000-aclmtr/enable", &stbuf));
+		return (0 == stat("/sys/devices/platform/lf1000-aclmtr/enable", &stbuf)) ||
+		       (0 == stat("/sys/devices/platform/lf2000-aclmtr/enable", &stbuf));
 	case kCapsMicrophone:
-		return (0 == stat("/sys/class/sound/pcmC0D0c", &stbuf));
+		if ("Madrid" == GetPlatformName())
+			return (0 == stat("/sys/devices/platform/lf1000-ohci/usb1", &stbuf));
+		if ("Emerald" == GetPlatformName())
+			return (0 == stat("/sys/class/sound/pcmC1D0c", &stbuf));
+		return (0 == stat("/sys/class/sound/pcmC0D0c", &stbuf));		
 	case kCapsScreenLEX:
 		return ("LEX" == GetPlatformFamily());
 	case kCapsScreenLPAD:
