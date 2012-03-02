@@ -33328,3 +33328,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/1/12 7:10 PM
 5,177 ms. (Cumulative: 12,820,106 ms)
 
 ----------------
+Revision 9,780 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 2750.  Changed Brio to discard all event in message queue on startup instead of ignoring messages that occur before startup.  This prevents setting the clock back from disabling the posting of certain types of events.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/2/12 3:30 PM
+1 changed, 0 added, 0 deleted.
+4,938 ms. (Cumulative: 12,825,137 ms)
+
+----------------

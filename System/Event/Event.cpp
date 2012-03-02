@@ -134,7 +134,9 @@ private:
 		pThis->debug_.DebugOut(kDbgLvlVerbose, "EventDispatchTask() Message queue created %d\n", 
 						static_cast<int>(g_hMsgQueueBG_));
 		CEventDispatchMessage	msg;										//*2
-		U32 start = pThis->kernel_.GetElapsedTimeAsMSecs() + 10;
+		do {
+			err = pThis->kernel_.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 1);
+		} while (err != kConnectionTimedOutErr);
 
 		g_threadRunning_ = true;
 		while (g_threadRun_)
@@ -142,7 +144,7 @@ private:
 			// use timeout for cancellation point
 			err = pThis->kernel_.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 100);
 	        pthread_testcancel();
-			if ( err != kConnectionTimedOutErr && g_threadRun_ && pThis->kernel_.GetElapsedTimeAsMSecs() > start) {
+			if ( err != kConnectionTimedOutErr && g_threadRun_ ) {
 		    	pThis->debug_.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
 				pThis->kernel_.Free((void *)msg.pMsg);
