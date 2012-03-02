@@ -33319,3 +33319,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/1/12 6:36 PM
 4,923 ms. (Cumulative: 12,814,836 ms)
 
 ----------------
+Revision 9,779 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Tweak LF1000/LF2000 platform conditionals for building camera modules for LF1000 target (scons platform=Lightning).
+
+By Dave Milici (dmilici@leapfrog.com) on 3/1/12 7:10 PM
+2 changed, 0 added, 0 deleted.
+5,177 ms. (Cumulative: 12,820,106 ms)
+
+----------------

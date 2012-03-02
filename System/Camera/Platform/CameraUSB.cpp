@@ -4,6 +4,12 @@
 
 #include <CameraPriv.h>
 
+#if !defined(EMULATION) && defined(LF1000)
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/lf1000/gpio_ioctl.h>
+#endif
+
 LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 // Defines
@@ -29,7 +35,7 @@ const CString* CUSBCameraModule::GetModuleName() const
 //----------------------------------------------------------------------------
 static bool SetUSBHost(bool enable)
 {
-#if !defined(EMULATION) && !defined(LF2000)
+#if !defined(EMULATION) && defined(LF1000)
 	// USB host power option on Madrid only
 	if (GetPlatformName() != "Madrid")
 		return false;
