@@ -4,7 +4,7 @@
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
 
-#ifndef EMULATION
+#if !defined(EMULATION) && defined(LF2000)
 #include <sys/ioctl.h>
 #include <linux/lf2000/lf2000vip.h>
 #endif
@@ -104,7 +104,7 @@ CVIPCameraModule::~CVIPCameraModule()
 //----------------------------------------------------------------------------
 static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 {
-#ifndef EMULATION
+#if !defined(EMULATION) && defined(LF2000)
 	struct v4l2_framebuffer v4l2;
 
 	memset(&v4l2, 0, sizeof(v4l2));
@@ -143,7 +143,7 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 //----------------------------------------------------------------------------
 Boolean CVIPCameraModule::EnableOverlay(int fd, int enable)
 {
-#ifndef EMULATION
+#if !defined(EMULATION) && defined(LF2000)
 	if(ioctl(fd, VIDIOC_OVERLAY, &enable) < 0)
 			return false;
 	overlayEnabled = enable;
