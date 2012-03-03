@@ -33337,3 +33337,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/2/12 3:30 PM
 4,938 ms. (Cumulative: 12,825,137 ms)
 
 ----------------
+Revision 9,781 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP: ResumeVideoCapture needed to reload surface info when re-enabling overlay. (TTP 2770)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/2/12 5:17 PM
+1 changed, 0 added, 0 deleted.
+5,001 ms. (Cumulative: 12,830,216 ms)
+
+----------------
