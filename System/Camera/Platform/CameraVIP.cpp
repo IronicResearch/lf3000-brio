@@ -307,8 +307,8 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
 	CAMERA_LOCK;
-	if (hndl & kStreamingActive)
-		 EnableOverlay(camCtx_.fd, display ? 0 : 1);
+	if ((hndl & kStreamingActive) && display)
+		 EnableOverlay(camCtx_.fd, 0);
 	CAMERA_UNLOCK;
 	return CCameraModule::PauseVideoCapture(hndl, display);
 }
@@ -317,8 +317,10 @@ Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolea
 Boolean CVIPCameraModule::ResumeVideoCapture(const tVidCapHndl hndl)
 {
 	CAMERA_LOCK;
-	if (hndl & kStreamingActive)
-		 EnableOverlay(camCtx_.fd, (overlaySurf.buffer != NULL) ? 1 : 0);
+	if ((hndl & kStreamingActive) && overlaySurf.buffer != NULL) {
+		SetOverlay(camCtx_.fd, &overlaySurf);
+		EnableOverlay(camCtx_.fd, 1);
+	}
 	CAMERA_UNLOCK;
 	return CCameraModule::ResumeVideoCapture(hndl);
 }
