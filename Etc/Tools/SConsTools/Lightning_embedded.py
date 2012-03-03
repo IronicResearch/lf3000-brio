@@ -20,7 +20,7 @@ def PlatformMods(env):
 	common.SetPlatformLibraryPaths(env)
 	gcc_defs 			= env.Split('')
 	env.Append(CPPDEFINES = gcc_defs)
-	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64'])
+	env.Append(CPPDEFINES = ['_FILE_OFFSET_BITS=64','USTRING'])
 	env.Append(CCFLAGS = '-O3 -fno-strict-aliasing -mcpu=arm926ej-s')
 	env.Append(LIBS = ['libustring','libiconv','libintl','libsigc-2.0'])
 

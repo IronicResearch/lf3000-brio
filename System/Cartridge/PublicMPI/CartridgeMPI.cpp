@@ -29,6 +29,15 @@ const CString	kMPIName = "CartridgeMPI";
 
 static tCartridgeData	gCachedCartData = { CARTRIDGE_STATE_NONE };
 
+const CString	SYSFS_NAND_LF1000		= "/sys/devices/platform/lf1000-nand/";
+const CString	SYSFS_NAND_LF2000		= "/sys/devices/platform/lf2000-nand/";
+static CString	SYSFS_NAND_ROOT			= SYSFS_NAND_LF2000;
+
+inline const char* SYSFS_NAND_PATH(const char* path)
+{
+	return CString(SYSFS_NAND_ROOT + path).c_str();
+}
+
 //============================================================================
 // CCartridgeMessage
 //============================================================================
@@ -59,6 +68,9 @@ tCartridgeData CCartridgeMessage::GetCartridgeState() const
 //----------------------------------------------------------------------------
 CCartridgeMPI::CCartridgeMPI() : pModule_(NULL)
 {
+#ifdef LF1000
+	SYSFS_NAND_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_NAND_LF1000 : SYSFS_NAND_LF2000;
+#endif
 	gCachedCartData = GetCartridgeState();
 }
 
@@ -122,7 +134,7 @@ tCartridgeData CCartridgeMPI::GetCartridgeState() const
 
 //----------------------------------------------------------------------------
 // The Emerald OTP cart ID is 3 verus Didj OTP ID 7
-#define CART_TYPE_INFO  "/sys/devices/platform/lf2000-nand/cart_hotswap"
+#define CART_TYPE_INFO		SYSFS_NAND_PATH("cart_hotswap")
 enum eCartridgeType_ CCartridgeMPI::GetCartridgeType() const
 {
 	FILE *fp;

@@ -31,6 +31,15 @@ static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
 static tTouchMode		gCachedTouchMode	= kTouchModeDefault;
 static bool				gIsPressureMode		= false;
 
+const CString	SYSFS_TOUCHSCREEN_LF1000	= "/sys/devices/platform/lf1000-touchscreen/";
+const CString	SYSFS_TOUCHSCREEN_LF2000	= "/sys/devices/platform/lf2000-touchscreen/";
+static CString	SYSFS_TOUCHSCREEN_ROOT		= SYSFS_TOUCHSCREEN_LF2000;
+
+inline const char* SYSFS_TOUCHSCREEN_PATH(const char* path)
+{
+	return CString(SYSFS_TOUCHSCREEN_ROOT + path).c_str();
+}
+
 //============================================================================
 // CButtonMessage
 //============================================================================
@@ -94,6 +103,9 @@ tTouchMode CTouchMessage::GetTouchMode() const
 //----------------------------------------------------------------------------
 CButtonMPI::CButtonMPI() : pModule_(NULL)
 {
+#ifdef LF1000
+	SYSFS_TOUCHSCREEN_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_TOUCHSCREEN_LF1000 : SYSFS_TOUCHSCREEN_LF2000;
+#endif
 	pModule_ = new CButtonModule();
 }
 
@@ -171,7 +183,7 @@ U32	CButtonMPI::GetTouchRate() const
 {
 #ifndef EMULATION
 	U32 	rate = 0;
-	FILE*	fd = fopen("/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz", "r");
+	FILE*	fd = fopen(SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz"), "r");
 	if (fd != NULL) {
 		fscanf(fd, "%u\n", (unsigned int*)&rate);
 		fclose(fd);
@@ -186,7 +198,7 @@ U32	CButtonMPI::GetTouchRate() const
 tErrType CButtonMPI::SetTouchRate(U32 rate)
 {
 #if 1 // Re-Enabled for Madrid.  This is to fix TTPro 527.  // disabled per TTP 2419
-	FILE*	fd = fopen("/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz", "w");
+	FILE*	fd = fopen(SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz"), "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);
 		fclose(fd);
@@ -248,13 +260,13 @@ U32	CButtonMPI::GetTouchParam(tTouchParam param) const
 	CPath sysfspath;
 	switch (param) {
 	case kTouchParamSampleRate:
-		sysfspath = "/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz";
+		sysfspath = SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz");
 		break;
 	case kTouchParamDebounceDown:
-		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_down";
+		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_down");
 		break;
 	case kTouchParamDebounceUp:
-		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_up";
+		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_up");
 		break;
 	default:
 		return 0;
@@ -273,13 +285,13 @@ tErrType CButtonMPI::SetTouchParam(tTouchParam param, U32 value)
 	CPath sysfspath;
 	switch (param) {
 	case kTouchParamSampleRate:
-		sysfspath = "/sys/devices/platform/lf2000-touchscreen/sample_rate_in_hz";
+		sysfspath = SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz");
 		break;
 	case kTouchParamDebounceDown:
-		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_down";
+		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_down");
 		break;
 	case kTouchParamDebounceUp:
-		sysfspath = "/sys/devices/platform/lf2000-touchscreen/debounce_in_samples_up";
+		sysfspath = SYSFS_TOUCHSCREEN_PATH("debounce_in_samples_up");
 		break;
 	default:
 		return kNoImplErr;
