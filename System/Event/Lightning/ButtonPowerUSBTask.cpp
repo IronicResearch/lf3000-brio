@@ -90,18 +90,13 @@ namespace
 	#define FLAGS_NOTSLIB	"/flags/notslib"
 
 #if defined(LF1000)
-	#define INPUT_KEYBOARD		"LF1000 Keyboard"
-	#define INPUT_TOUCHSCREEN	"LF1000 touchscreen interface"
-	#define	INPUT_POWER			"Power Button"
-	#define INPUT_USB			"LF1000 USB"
-	#define INPUT_ACLMTR		"LF1000 Accelerometer"
-#else
+	#define INPUT_KEYBOARD_LF1000	"LF1000 Keyboard"
+#endif
 	#define INPUT_KEYBOARD		"gpio-keys"
 	#define INPUT_TOUCHSCREEN	"touchscreen interface"
 	#define	INPUT_POWER			"Power Button"
 	#define INPUT_USB			"USB"
 	#define INPUT_ACLMTR		"Accelerometer"
-#endif
 
 	const tEventPriority	kButtonEventPriority	= 0;
 	const tEventPriority	kPowerEventPriority	= 0;
@@ -299,7 +294,7 @@ namespace
 		{
 			// Find input event device and hand it to tslib
 			char dev[20];
-			if (find_input_device("touchscreen interface", dev) < 0) {
+			if (find_input_device(INPUT_TOUCHSCREEN, dev) < 0) {
 				pThis->debug_.DebugOut(kDbgLvlCritical, "ButtonPowerUSBTask: tslib: Can't find touchscreen event device in /dev/input\n");
 				perror ("Can't find touchscreen event device in /dev/input");
 				kernel.UnloadModule(handle);
@@ -431,6 +426,10 @@ void* CEventModule::CartridgeTask( void* arg )
 	kernel_mpi.UnlockMutex(gButtonDataMutex);
 	event_fd[last_fd].fd = open_input_device(INPUT_KEYBOARD);
 	event_fd[last_fd].events = POLLIN;
+#ifdef LF1000
+	if (event_fd[last_fd].fd < 0)
+		event_fd[last_fd].fd = open_input_device(INPUT_KEYBOARD_LF1000);
+#endif
 	if(event_fd[last_fd].fd >= 0)
 	{
 		button_index = last_fd++;

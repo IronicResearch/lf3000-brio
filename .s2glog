@@ -33366,3 +33366,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/12 2:19 PM
 5,156 ms. (Cumulative: 12,840,535 ms)
 
 ----------------
+Revision 9,784 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Support input devices for both LF1000 and LF2000 if compiled for LF1000 patch lib set.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/12 2:54 PM
+1 changed, 0 added, 0 deleted.
+4,922 ms. (Cumulative: 12,845,551 ms)
+
+----------------
