@@ -113,14 +113,11 @@ void CDisplayFB::InitModule()
 		fscanf(f, "%u", &yres);
 		fclose(f);
 	}
-#if 0
-	f = fopen("/sys/class/graphics/fb0/virtual_size", "r");
+	f = fopen("/sys/devices/system/board/lcd_size", "r");
 	if (f) {
-		fscanf(f, "%u,%u", &xres, &yres);
+		fscanf(f, "%ux%u", &xres, &yres);
 		fclose(f);
-		yres /= 2;
 	}
-#endif
 	dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %u x %u\n", __FUNCTION__, xres, yres);
 	
 	for (int n = 0; n < NUMFB; n++)
