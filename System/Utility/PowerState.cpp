@@ -29,6 +29,8 @@ enum tPowerState GetCurrentPowerState(void)
 		unsigned int status;
 
 		power_fd = fopen("/sys/devices/platform/lf2000-power/shutdown", "r");
+		if (power_fd == NULL)
+			power_fd = fopen("/sys/devices/platform/lf1000-power/shutdown", "r");
 		if (power_fd != NULL) {
 			ret = fscanf(power_fd, "%d\n", &status);
 			fclose(power_fd);
@@ -37,6 +39,8 @@ enum tPowerState GetCurrentPowerState(void)
 		}
 		
 		power_fd = fopen("/sys/devices/platform/lf2000-power/status", "r");
+		if (power_fd == NULL)
+			power_fd = fopen("/sys/devices/platform/lf1000-power/status", "r");
 		if(power_fd == NULL)
 			return kPowerNull;
 
