@@ -2568,12 +2568,16 @@ tErrType CCameraModule::SetCurrentCamera(tCameraDevice_t device)
 	switch (device)
 	{
 	case kCameraDefault:
+		DeinitCameraInt();
 		camCtx_.file = "/dev/video0";
 		device_ = device;
+		InitCameraInt(&camCtx_.mode);
 		break;
 	case kCameraFront:
+		DeinitCameraInt();
 		camCtx_.file = "/dev/video1";
 		device_ = device;
+		InitCameraInt(&camCtx_.mode);
 		break;
 	default:
 		return kInvalidParamErr;
