@@ -33405,3 +33405,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/12 5:56 PM
 5,375 ms. (Cumulative: 12,861,994 ms)
 
 ----------------
+Revision 9,788 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correct tCameraDevice type name, per Brio. (TTP 2534) 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/12 6:03 PM
+6 changed, 0 added, 0 deleted.
+5,485 ms. (Cumulative: 12,867,573 ms)
+
+----------------

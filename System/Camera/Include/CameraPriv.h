@@ -296,8 +296,8 @@ public:
 	VTABLE_EXPORT tErrType		SetCurrentFormat(tCaptureMode* pMode);
 	VTABLE_EXPORT tCaptureMode*	GetCurrentFormat();
 
-	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice_t device);
-	VTABLE_EXPORT tCameraDevice_t GetCurrentCamera();
+	VTABLE_EXPORT tErrType 		SetCurrentCamera(tCameraDevice device);
+	VTABLE_EXPORT tCameraDevice GetCurrentCamera();
 
 private:
 	MicrophoneListener	*micListener_;
@@ -311,7 +311,7 @@ private:
 
 	Boolean				valid;
 	tMutex				mutex_;
-	tCameraDevice_t		device_;
+	tCameraDevice		device_;
 
 	CCameraModule();
 	virtual ~CCameraModule();

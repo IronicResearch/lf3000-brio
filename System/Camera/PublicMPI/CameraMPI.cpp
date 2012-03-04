@@ -363,7 +363,7 @@ tCaptureMode* CCameraMPI::GetCurrentFormat()
 }
 
 //----------------------------------------------------------------------------
-tErrType CCameraMPI::SetCurrentCamera(tCameraDevice_t device)
+tErrType CCameraMPI::SetCurrentCamera(tCameraDevice device)
 {
 	if (!pModule_)
 		return kMPINotConnectedErr;
@@ -371,7 +371,7 @@ tErrType CCameraMPI::SetCurrentCamera(tCameraDevice_t device)
 }
 
 //----------------------------------------------------------------------------
-tCameraDevice_t CCameraMPI::GetCurrentCamera()
+tCameraDevice CCameraMPI::GetCurrentCamera()
 {
 	if (!pModule_)
 		return kCameraNone;
