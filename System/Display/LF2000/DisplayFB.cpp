@@ -480,7 +480,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	}
 	// Set framebuffer address offset
 	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
-	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
+	vinfo[n].xoffset = (ctx->offset % finfo[n].line_length) * 8 / vinfo[n].bits_per_pixel;
 	r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
 	// Set alpha blend state
@@ -601,7 +601,7 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 
 	// Note pages are stacked vertically for RGB, horizontally for YUV
 	vinfo[n].yoffset = ctx->offset / finfo[n].line_length;
-	vinfo[n].xoffset = ctx->offset % finfo[n].line_length;
+	vinfo[n].xoffset = (ctx->offset % finfo[n].line_length) * 8 / vinfo[n].bits_per_pixel;
 	int z = GetZOrder(ctx);
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 
@@ -1014,7 +1014,7 @@ void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysica
 	offset &= ~0x20000000;
 	dcogl->offset = offset;
 	vinfo[n].yoffset = offset / finfo[n].line_length;
-	vinfo[n].xoffset = offset % finfo[n].line_length;
+	vinfo[n].xoffset = (offset % finfo[n].line_length)  * 8 / vinfo[n].bits_per_pixel;;
 	int r = ioctl(fbdev[n], FBIOPAN_DISPLAY, &vinfo[n]);
 #endif
 }

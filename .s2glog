@@ -33386,3 +33386,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/12 4:04 PM
 5,516 ms. (Cumulative: 12,851,161 ms)
 
 ----------------
+Revision 9,786 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 2766 & 2550.  Fixing up Brio's xoffset panning.  It is now a pixel offset instead of a byte offset.  This should fix up bad panning caused by strange FrameBuffer sizes (i.e. 250x250).
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/3/12 5:20 PM
+1 changed, 0 added, 0 deleted.
+5,239 ms. (Cumulative: 12,856,509 ms)
+
+----------------
