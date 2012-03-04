@@ -407,12 +407,12 @@ public:
 	/// \brief	SetCurrentCamera() selects camera device.
 	/// \param	device	Selected camera, front-facing or default.
 	/// \return	Returns kNoErr on success, or kInvalidParamErr if not supported.
-	tErrType		SetCurrentCamera(tCameraDevice_t device);
+	tErrType		SetCurrentCamera(tCameraDevice device);
 
 	/// <B>For use with Firmware 3.x or later only.</B>
 	/// \brief	GetCurrentCamera() returns currently selected camera.
 	/// \return	Returns currently selected mode entry.
-	tCameraDevice_t	GetCurrentCamera();
+	tCameraDevice	GetCurrentCamera();
 
 private:
 	class CCameraModule*	pModule_;

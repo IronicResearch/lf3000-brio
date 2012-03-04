@@ -86,7 +86,7 @@ struct tCaptureMode {
 typedef std::vector<tCaptureMode *> tCaptureModes;
 
 /// Camera device type passed to \ref SetCurrentCamera() or returned from \ref GetCurrentCamera().
-enum tCameraDevice_t {
+enum tCameraDevice {
 	kCameraNone,
 	kCameraDefault,
 	kCameraFront,

@@ -2563,7 +2563,7 @@ Boolean	CCameraModule::DeinitCameraInt()
 }
 
 //----------------------------------------------------------------------------
-tErrType CCameraModule::SetCurrentCamera(tCameraDevice_t device)
+tErrType CCameraModule::SetCurrentCamera(tCameraDevice device)
 {
 	switch (device)
 	{
@@ -2586,7 +2586,7 @@ tErrType CCameraModule::SetCurrentCamera(tCameraDevice_t device)
 }
 
 //----------------------------------------------------------------------------
-tCameraDevice_t CCameraModule::GetCurrentCamera()
+tCameraDevice CCameraModule::GetCurrentCamera()
 {
 	return device_;
 }

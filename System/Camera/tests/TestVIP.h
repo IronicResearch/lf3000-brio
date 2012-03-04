@@ -204,7 +204,7 @@ public:
 		// For displaying captured data
 		tVideoSurf				surf;
 		tDisplayHandle			disp;
-		tCameraDevice_t			camera;
+		tCameraDevice			camera;
 
 		pKernelMPI_ = new CKernelMPI;
 		pDisplayMPI_ = new CDisplayMPI;
