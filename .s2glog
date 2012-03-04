@@ -33376,3 +33376,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/12 2:54 PM
 4,922 ms. (Cumulative: 12,845,551 ms)
 
 ----------------
+Revision 9,785 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraMPI: Add SetCurrentCamera/GetCurrentCamera APIs for selecting V4L device 0 or 1. (TTP 2534)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/12 4:04 PM
+5 changed, 0 added, 0 deleted.
+5,516 ms. (Cumulative: 12,851,161 ms)
+
+----------------

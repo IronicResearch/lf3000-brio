@@ -362,5 +362,22 @@ tCaptureMode* CCameraMPI::GetCurrentFormat()
 	return pModule_->GetCurrentFormat();
 }
 
+//----------------------------------------------------------------------------
+tErrType CCameraMPI::SetCurrentCamera(tCameraDevice_t device)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetCurrentCamera(device);
+}
+
+//----------------------------------------------------------------------------
+tCameraDevice_t CCameraMPI::GetCurrentCamera()
+{
+	if (!pModule_)
+		return kCameraNone;
+	return pModule_->GetCurrentCamera();
+}
+
+//----------------------------------------------------------------------------
 LF_END_BRIO_NAMESPACE()
 // EOF
