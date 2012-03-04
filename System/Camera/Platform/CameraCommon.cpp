@@ -73,6 +73,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Camera";
 const char*	gCamFile	= "/dev/video0";
+const char*	gAltFile	= "/dev/video1";
 const char*	gIDCTFile	= "/dev/idct";
 const char* kYUVFile	= "/dev/fb2";
 const U32	NUM_BUFS	= 3;
@@ -188,6 +189,8 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	int					r = 0;
 
 	dbg_.SetDebugLevel(kCameraDebugLevel);
+
+	device_					= kCameraDefault;
 
 	camCtx_.file 			= gCamFile;
 	camCtx_.numBufs 		= 0;
@@ -2558,6 +2561,32 @@ Boolean	CCameraModule::DeinitCameraInt()
 	dbg_.DebugOut(kDbgLvlImportant, "CameraModule::DeinitCameraInt: completed OK\n");
 	return true;
 }
+
+//----------------------------------------------------------------------------
+tErrType CCameraModule::SetCurrentCamera(tCameraDevice_t device)
+{
+	switch (device)
+	{
+	case kCameraDefault:
+		camCtx_.file = "/dev/video0";
+		device_ = device;
+		break;
+	case kCameraFront:
+		camCtx_.file = "/dev/video1";
+		device_ = device;
+		break;
+	default:
+		return kInvalidParamErr;
+	}
+	return kNoErr;
+}
+
+//----------------------------------------------------------------------------
+tCameraDevice_t CCameraModule::GetCurrentCamera()
+{
+	return device_;
+}
+
 //----------------------------------------------------------------------------
 
 LF_END_BRIO_NAMESPACE()
