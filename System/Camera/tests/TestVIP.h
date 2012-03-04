@@ -193,6 +193,62 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testCameraSelect()
+	{
+		PRINT_TEST_NAME();
+
+		tVidCapHndl					capture;
+		Boolean						bRet;
+		tErrType					err;
+
+		// For displaying captured data
+		tVideoSurf				surf;
+		tDisplayHandle			disp;
+		tCameraDevice_t			camera;
+
+		pKernelMPI_ = new CKernelMPI;
+		pDisplayMPI_ = new CDisplayMPI;
+
+		disp = pDisplayMPI_->CreateHandle(240, 320, kPixelFormatYUV420);
+		TS_ASSERT( disp != kInvalidDisplayHandle );
+		pDisplayMPI_->Register(disp, 0, 0, kDisplayOnTop, 0);
+
+		surf.width = pDisplayMPI_->GetWidth(disp);
+		surf.pitch = pDisplayMPI_->GetPitch(disp);
+		surf.height = pDisplayMPI_->GetHeight(disp);
+		surf.buffer = pDisplayMPI_->GetBuffer(disp);
+		surf.format = pDisplayMPI_->GetPixelFormat(disp);
+		TS_ASSERT( surf.format == kPixelFormatYUV420 );
+
+		if ( pCameraMPI_->IsValid() )
+		{
+			camera = pCameraMPI_->GetCurrentCamera();
+			TS_ASSERT_EQUALS( camera, kCameraDefault );
+
+			err = pCameraMPI_->SetCurrentCamera(kCameraFront);
+			TS_ASSERT_EQUALS( err, kNoErr );
+
+			camera = pCameraMPI_->GetCurrentCamera();
+			TS_ASSERT_EQUALS( camera, kCameraFront );
+
+			capture = pCameraMPI_->StartVideoCapture(&surf);
+			TS_ASSERT_DIFFERS( capture, kInvalidVidCapHndl );
+
+			pKernelMPI_->TaskSleep(5000);
+
+			bRet = pCameraMPI_->StopVideoCapture(capture);
+			TS_ASSERT_EQUALS( bRet, true );
+		}
+		else
+			TS_FAIL("MPI was deemed invalid");
+
+		pDisplayMPI_->UnRegister(disp, 0);
+		pDisplayMPI_->DestroyHandle(disp, true);
+		delete pDisplayMPI_;
+		delete pKernelMPI_;
+	}
+
+	//------------------------------------------------------------------------
 	void testCapture()
 	{
 		PRINT_TEST_NAME();
@@ -376,6 +432,7 @@ public:
 		pCameraMPI_->SnapFrame(hndl, "snap.jpg");
 		pCameraMPI_->StopVideoCapture(hndl);
 	}
+
 };
 
 // EOF

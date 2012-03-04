@@ -33395,3 +33395,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/3/12 5:20 PM
 5,239 ms. (Cumulative: 12,856,509 ms)
 
 ----------------
+Revision 9,787 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraMPI unit test for camera selection and corresponding V4L driver. (TTP 2534)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/3/12 5:56 PM
+2 changed, 0 added, 0 deleted.
+5,375 ms. (Cumulative: 12,861,994 ms)
+
+----------------
