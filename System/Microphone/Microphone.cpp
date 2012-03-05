@@ -51,7 +51,7 @@ static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format
 // 20 FPS nominal:  50000 usec
 static const unsigned int MIC_PERIOD	= 50000;	// usec
 
-static       unsigned int MIC_BOOST		= 1;		// bit shift for SW boost
+static       unsigned int MIC_BOOST		= 2;		// bit shift for SW boost
 
 static const char *cap_name = "plughw:0,0";	// FIXME: capture/playback on same HW device = LFP100
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no

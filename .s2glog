@@ -33415,3 +33415,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/3/12 6:03 PM
 5,485 ms. (Cumulative: 12,867,573 ms)
 
 ----------------
+Revision 9,789 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Microphone: change default SW mic boost from +3db to +6db, per Brian Walker eval.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/5/12 12:40 PM
+1 changed, 0 added, 0 deleted.
+5,316 ms. (Cumulative: 12,872,982 ms)
+
+----------------
