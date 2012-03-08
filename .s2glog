@@ -33433,3 +33433,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/5/12 12:43 PM
 5,594 ms. (Cumulative: 12,878,670 ms)
 
 ----------------
+Revision 9,791 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reinstate discarding initial preroll frames in snapshot modes.
+Mimics Gill's skip_frame tests without penalizing viewfinder or videos.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/7/12 6:56 PM
+1 changed, 0 added, 0 deleted.
+5,141 ms. (Cumulative: 12,883,889 ms)
+
+----------------
