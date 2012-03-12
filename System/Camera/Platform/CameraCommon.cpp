@@ -2192,7 +2192,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	}
 
 	// HACK: Get and discard some frames from video stream first
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		bRet = GetFrameInt(&camCtx_, 0);
 		if (!bRet)

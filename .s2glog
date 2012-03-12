@@ -33454,3 +33454,13 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/9/12 10:09 AM
 5,016 ms. (Cumulative: 12,888,984 ms)
 
 ----------------
+Revision 9,793 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reduce number of discard frames to 3 based existing camera exposure settings. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/12 10:48 AM
+1 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 12,894,078 ms)
+
+----------------
