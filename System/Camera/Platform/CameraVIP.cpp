@@ -482,6 +482,41 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 					dy += pSurf->pitch;
 				}
 			}
+			else if (pSurf->format == kPixelFormatYUV420)
+			{
+				// Convert YUYV to YUV
+				for (i = 0; i < height; i++)
+				{
+					for (j = k = m = 0; j < width; j+=2, k++, m+=4)
+					{
+						U8 y = sy[m+0];
+						U8 u = sy[m+1];
+						U8 z = sy[m+2];
+						U8 v = sy[m+3];
+						dy[j+0] = y;
+						dy[j+1] = z;
+						du[k] = u;
+						dv[k] = v;
+					}
+					sy += pitch;
+					dy += pSurf->pitch;
+					if (i % 2)
+					{
+						du += pSurf->pitch;
+						dv += pSurf->pitch;
+					}
+				}
+			}
+			else if (pSurf->format == kPixelFormatYUYV422)
+			{
+				// Copy YUYV to YUYV
+				for (i = 0; i < height; i++)
+				{
+					memcpy(dy, sy, 2 * width);
+					sy += pitch;
+					dy += pSurf->pitch;
+				}
+			}
 		}
 		else if (pSurf->format == kPixelFormatRGB888 || pSurf->pitch == 3 * pSurf->width)
 		{

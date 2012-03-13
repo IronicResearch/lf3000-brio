@@ -33483,3 +33483,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/12 11:27 AM
 5,066 ms. (Cumulative: 12,904,394 ms)
 
 ----------------
+Revision 9,797 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add GetFrame() support for returning YUV surface from repacking YUYV captured image.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/12 12:45 PM
+1 changed, 0 added, 0 deleted.
+5,142 ms. (Cumulative: 12,909,614 ms)
+
+----------------
