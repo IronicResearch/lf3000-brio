@@ -130,6 +130,7 @@ void* CameraTaskMain(void* arg)
 	unsigned int		audio_chans	= 0;
 	int					audio_width = 0;
 	int					audio_fmt;
+	unsigned int		audio_bps = 0;
 
 	tCameraContext		*pCtx 	= static_cast<tCameraContext*>(arg);
 	tFrameInfo			frame;
@@ -171,6 +172,7 @@ void* CameraTaskMain(void* arg)
 		audio_chans	= MIC_CHANS;		//cam->micCtx_.channels;
 		audio_width	= MIC_WIDTH;		//cam->micCtx_.sbits;
 		audio_fmt	= WAVE_FORMAT_PCM;
+		audio_bps   = audio_rate * audio_chans * sizeof(short); // bytes per sec
 
 		//printf("audio_rate=%d   audio_chans=%d   audio_width=%d   audio_fmt=%d\n",audio_rate,audio_chans,audio_width,audio_fmt);
 
@@ -310,7 +312,7 @@ void* CameraTaskMain(void* arg)
 			if(bRet) {
 				AVI_write_audio(avi, buf, retValue);
 				cam->micCtx_.bytesWritten += retValue;	// cummulative bytes written
-				cam->micCtx_.counter = cam->micCtx_.bytesWritten / cam->micCtx_.block_size;
+				cam->micCtx_.counter = cam->micCtx_.bytesWritten * (unsigned int)pCtx->fps / audio_bps;
 			}
 			//printf("bytesWritten = %d    counter=%d    bRet=%s\n",cam->micCtx_.bytesWritten,cam->micCtx_.counter,((bRet) ? "true" : "false"));
 		}
@@ -370,11 +372,11 @@ void* CameraTaskMain(void* arg)
 				//do {
 					r = AVI_write_frame(avi, static_cast<char*>(frame.data), frame.size, keyframe++);
 				//} while (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter);
-#if 0
+
 				// Audio block counter is based on cummulative bytes written
 				if (r >= 0 && pCtx->bAudio && keyframe < cam->micCtx_.counter)
 					keyframe = cam->micCtx_.counter;
-#endif
+
 				// Breakout on next loop iteration if AVI write error
 				if (r < 0)
 					bRunning = false;
@@ -431,12 +433,10 @@ void* CameraTaskMain(void* arg)
 	{
 		float fps = (float)keyframe / ((float)elapsed / 1000000);
 
-#if 0
 		// Actual FPS rate is based on cummulative audio bytes written
 		if (pCtx->bAudio)
 			fps = (float)keyframe * ((float)(audio_rate * audio_chans * sizeof(short)) / (float)cam->micCtx_.bytesWritten);
 		//printf("fps=%f\n",fps);
-#endif
 
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, fps, V4L2_PIX_FMT_MJPEG);
 		AVI_close(avi);
