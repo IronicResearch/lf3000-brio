@@ -191,37 +191,75 @@ Boolean EnumFolder( const CPath& dirIn, tFuncEnumFolder f, tFileSelect type, voi
 U32 FindDevice(CPath path);
 
 //----------------------------------------------------------------------------
-// Returns the system platform ID
+/// <B>For use with Firmware 2.x or later only.</B>
+/// \brief Returns the system platform ID
+/// \return ID number for platform variants.
+/// Use \ref GetPlatformName() or \ref GetPlatformFamily() instead.
 //----------------------------------------------------------------------------
 U32 GetPlatformID();
 
 //----------------------------------------------------------------------------
-// Returns the system platform name
+/// <B>For use with Firmware 2.x or later only.</B>
+/// \brief Returns the system platform name by string.
+/// \return String with platform name ("Emerald", "Madrid", "LUCY", "VALENCIA").
 //----------------------------------------------------------------------------
 CString GetPlatformName();
+
+//----------------------------------------------------------------------------
+/// <B>For use with Firmware 3.x or later only.</B>
+/// \brief Returns the system platform family by string.
+/// \return String with platform family ("LEX", "LPAD").
+//----------------------------------------------------------------------------
 CString GetPlatformFamily();
 
 //----------------------------------------------------------------------------
-// Returns the system state of the selected platform capability
+/// \brief Enumerated type for \ref HasPlatformCapability().
 //----------------------------------------------------------------------------
 enum tPlatformCaps {
-	kCapsTouchscreen,
-	kCapsCamera,
-	kCapsAccelerometer,
-	kCapsMicrophone,
-	kCapsScreenLEX,
-	kCapsScreenLPAD,
-	kCapsLF1000,
-	kCapsLF2000,
-	kCapsWifi,
-	kCapsCameraFront,
+	kCapsTouchscreen,				///< Has Touchscreen device?
+	kCapsCamera,					///< Has Camera device?
+	kCapsAccelerometer,				///< Has Accelerometer device?
+	kCapsMicrophone,				///< Has Microphone device?
+	kCapsScreenLEX,					///< Has LEX screen?
+	kCapsScreenLPAD,				///< Has LPAD screen?
+	kCapsLF1000,					///< Has LF1000 CPU?
+	kCapsLF2000,					///< Has LF2000 CPU?
+	kCapsWifi,						///< Has WiFi device?
+	kCapsCameraFront,				///< Has Front-Facing Camera device?
 	kCapsReserved1 = 0x10000000,
 	kCapsReserved2 = 0x20000000,
-	kCapsButtonSet = 0x40000000
+	kCapsButtonSet = 0x40000000,	///< Has Button in kCapsButtonMask() set?
+	kCapsButtonUp				= 0x40000001,
+	kCapsButtonDown				= 0x40000002,
+	kCapsButtonRight			= 0x40000004,
+	kCapsButtonLeft				= 0x40000008,
+	kCapsButtonA				= 0x40000010,
+	kCapsButtonB				= 0x40000020,
+	kCapsButtonLeftShoulder		= 0x40000040,
+	kCapsButtonRightShoulder	= 0x40000080,
+	kCapsButtonMenu				= 0x40000100,
+	kCapsButtonHint				= 0x40000200,
+	kCapsButtonPause			= 0x40000400,
+	kCapsButtonBrightness		= 0x40000800,
+	kCapsHeadphoneJackDetect  	= 0x40001000,
+	kCapsCartridgeDetect      	= 0x40002000,
+	kCapsButtonVolumeDown		= 0x40004000,
+	kCapsButtonVolumeUp			= 0x40008000,
+	kCapsButtonEscape			= 0x40010000,
 };
 
+//----------------------------------------------------------------------------
+/// \brief Macro for Button capability using kButton* type mask.
+/// For example, \ref HasPlatformCapability(kCapsButtonMask(kButtonPause)).
+//----------------------------------------------------------------------------
 #define kCapsButtonMask(x)		((enum tPlatformCaps)((U32)kCapsButtonSet | x))
 
+//----------------------------------------------------------------------------
+/// <B>For use with Firmware 2.x or later only.</B>
+/// \brief Returns the supported platform capability.
+/// \param Enumerated platform capability type.
+/// \return True if capability supported on platform, or False otherwise.
+//----------------------------------------------------------------------------
 bool HasPlatformCapability(tPlatformCaps caps);
 
 tDpadOrientation	GetDpadOrientationState();
