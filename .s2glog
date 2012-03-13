@@ -33492,3 +33492,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/12 12:45 PM
 5,142 ms. (Cumulative: 12,909,614 ms)
 
 ----------------
+Revision 9,798 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-enable audio frame counter for maintaining sync with video frame counter. (TTP 2793)
+Calculated directly from cummulative audio bytes written without relying on ALSA block size.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/12 4:25 PM
+1 changed, 0 added, 0 deleted.
+5,331 ms. (Cumulative: 12,915,039 ms)
+
+----------------
