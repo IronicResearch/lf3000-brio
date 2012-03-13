@@ -296,7 +296,8 @@ public:
 	/// This function has no effect if id is invalid.
 	void 		StopAudio(	tAudioID id, Boolean noDoneMessage );
 	
-	/// Stop a player's audio stream.
+	/// <B>For use with Firmware 1.1.x or later only.</B>
+	/// Stop a player's audio stream with optional done event message.
 	///
 	/// After calling this function, the tAudioID is invalid.  An event may or
 	/// may not be posted depending on the details below.
