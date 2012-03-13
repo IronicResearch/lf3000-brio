@@ -33474,3 +33474,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/12 10:11 AM
 5,063 ms. (Cumulative: 12,899,234 ms)
 
 ----------------
+Revision 9,796 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Doxygen comments added to GetPlatform*() and HasPlatformCapability() functions. (TTP 2645)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/12 11:27 AM
+1 changed, 0 added, 0 deleted.
+5,066 ms. (Cumulative: 12,904,394 ms)
+
+----------------
