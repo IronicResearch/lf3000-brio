@@ -33464,3 +33464,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/12 10:48 AM
 5,016 ms. (Cumulative: 12,894,078 ms)
 
 ----------------
+Revision 9,794 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,795 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Doxygen comments for additional StopAudio() method marked for FW 1.1.x use or later. (TTP 2765)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/13/12 10:11 AM
+1 changed, 0 added, 0 deleted.
+5,063 ms. (Cumulative: 12,899,234 ms)
+
+----------------
