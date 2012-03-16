@@ -258,6 +258,12 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 				vinfo[n].nonstd &= ~(LF1000_NONSTD_FORMAT_MASK << LF1000_NONSTD_FORMAT);
 				vinfo[n].nonstd |= (LAYER_FORMAT_YUV422 << LF1000_NONSTD_FORMAT);
 				break;
+			case kPixelFormatXRGB8888:
+				vinfo[n].blue.length = vinfo[n].green.length =
+				vinfo[n].red.length = 8;
+				vinfo[n].transp.length = 0;
+				vinfo[n].transp.offset = 24;
+				break;
 		}
 		vinfo[n].blue.offset  = 0;
 		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
@@ -295,7 +301,8 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		// Default to lower RGB layer -- FIXME
 		case kPixelFormatRGB4444:	depth = 16; n = OGLFB; break;
 		case kPixelFormatRGB565:	depth = 16; n = OGLFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break; 	
+		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break;
+		case kPixelFormatXRGB8888:	depth = 32; n = OGLFB; break;
 		default:
 		case kPixelFormatARGB8888: 	depth = 32; n = OGLFB; break;
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
@@ -764,6 +771,13 @@ tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 
 	ctx->alphaLevel = level;
 	ctx->isBlended  = enable;
+	
+	if(hndl == hogl && level != 100 && enable && ctx->colorDepthFormat == kPixelFormatARGB8888)
+	{
+		ctx->colorDepthFormat = kPixelFormatXRGB8888;
+		SetPixelFormat(ctx->layer, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
+		SetWindowPosition(hndl, ctx->x, ctx->y,  ctx->rect.right -  ctx->rect.left,   ctx->rect.bottom - ctx->rect.top);
+	}
 	
 	struct lf1000fb_blend_cmd cmd;
 	cmd.alpha = level * ALPHA_STEP / 100;

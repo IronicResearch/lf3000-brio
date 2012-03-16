@@ -33502,3 +33502,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/13/12 4:25 PM
 5,331 ms. (Cumulative: 12,915,039 ms)
 
 ----------------
+Revision 9,799 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding support for XRGB.  When using SetAlpha on OpenGL ARGB with a value other than 100, will switch format to XRGB.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/16/12 1:57 PM
+2 changed, 0 added, 0 deleted.
+5,282 ms. (Cumulative: 12,920,414 ms)
+
+----------------
