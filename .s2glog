@@ -33511,3 +33511,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/16/12 1:57 PM
 5,282 ms. (Cumulative: 12,920,414 ms)
 
 ----------------
+Revision 9,800 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change major build version in meta.inf to be auto filled in by scons. The version can be set on the command line using 'build_version=' and will default to 9.9.9 if no number is given (to make it easy to see when a hand build brio is on the device). Partial fix for TTPro Brio - Base #2814 and #2816.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/16/12 3:53 PM
+3 changed, 0 added, 0 deleted.
+5,406 ms. (Cumulative: 12,925,914 ms)
+
+----------------
