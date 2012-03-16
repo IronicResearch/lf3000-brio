@@ -74,7 +74,8 @@ enum tPixelFormat {
 	kPixelFormatARGB8888,
 	kPixelFormatRGB888,
 	kPixelFormatYUV420,
-	kPixelFormatYUYV422
+	kPixelFormatYUYV422,
+	kPixelFormatXRGB8888
 };
 
 enum tDisplayZOrder {
