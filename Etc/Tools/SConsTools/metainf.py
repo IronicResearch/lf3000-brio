@@ -23,7 +23,7 @@ def generate(env):
 		f_template = open(source[0].abspath, 'r')
 		s = f_template.read()
 		s_template = string.Template(s)
-		dct = {'SVN_REVISION':env['version']}
+		dct = {'SVN_REVISION':env['version'], 'BUILD_VERSION':env['build_version']}
 		f_meta = open(target[0].abspath, 'w')
 		s_sub = s_template.substitute(dct)
 		f_meta.write(s_sub)

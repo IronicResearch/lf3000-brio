@@ -21,6 +21,7 @@ opts.Add(BoolVariable('buildtests', 'Builds unit tests but does not run them', F
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
 opts.Add('host', 'The architecture that will run the embedded binaries', 'arm-linux')
 opts.Add('libc', 'The c runtime library to use for exporting and linking libraries', 'uclibc')
+opts.Add('build_version', 'The 3 number build version to use along with the svn revision', '9.9.9')
 
 opts.Add('staging_dir', 'Root where we find linux standard libs and headers, usually nfsroot', '')
 opts.Add('embedded_root', 'Where to place Brio arm libraries',  '')
