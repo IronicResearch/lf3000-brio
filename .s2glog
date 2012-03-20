@@ -33530,3 +33530,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/20/12 12:22 PM
 5,344 ms. (Cumulative: 12,931,337 ms)
 
 ----------------
+Revision 9,802 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change Brio so that it no longer sets red byte low for 8888 OpenGL.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/20/12 2:13 PM
+1 changed, 0 added, 0 deleted.
+5,373 ms. (Cumulative: 12,936,819 ms)
+
+----------------
