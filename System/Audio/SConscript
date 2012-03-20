@@ -16,7 +16,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI', 
-				'pthread', 'vorbisfile', 'vorbis', 'ogg', 'sndfile',
+				'pthread', 'vorbisidec', 'ogg', 'sndfile',
 				'Utility', 'avcodec', 'avformat', 'avutil', 'asound']
 if env['cpu'] == 'x86':
 	modlibs += ['portaudio']
@@ -29,7 +29,7 @@ mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 
-myenv.Append(CPPDEFINES = ['USE_VORBIS'])
+#myenv.Append(CPPDEFINES = ['USE_VORBIS'])
 myenv.Append(CPPPATH = ['#ThirdParty/Portaudio/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/Theora/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
