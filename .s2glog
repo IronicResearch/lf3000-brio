@@ -33549,3 +33549,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/20/12 7:23 PM
 5,531 ms. (Cumulative: 12,942,444 ms)
 
 ----------------
+Revision 9,804 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+GrabFrame() still needs to discard frames for outdoor exposures.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/21/12 12:21 PM
+1 changed, 0 added, 0 deleted.
+4,985 ms. (Cumulative: 12,947,523 ms)
+
+----------------

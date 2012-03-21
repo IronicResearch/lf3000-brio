@@ -2207,7 +2207,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto bail_out;
 	}
 
-#if 0
+#if 1
 	// HACK: Get and discard some frames from video stream first
 	for (int i = 0; i < 3; i++)
 	{
