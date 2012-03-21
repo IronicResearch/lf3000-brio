@@ -413,6 +413,11 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 			ret = false;
 		}
 
+		if(pCamCtx->buf.flags & V4L2_BUF_FLAG_DONE)
+		{
+			ioctl(pCamCtx->fd, VIDIOC_DQBUF, &pCamCtx->buf);
+		}
+
 		if (pCamCtx->bufs == NULL)
 			continue;
 
@@ -1114,7 +1119,12 @@ tErrType CCameraModule::EnumFormats(tCaptureModes& pModeList)
 //----------------------------------------------------------------------------
 tErrType CCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 {
-	return (SetCameraMode(pMode)) ? kNoErr : kInvalidParamErr;
+	DeinitCameraInt();
+	if (pMode->width > 640 || pMode->height > 480)
+		pMode->pixelformat = kCaptureFormatRAWYUYV;
+	else
+		pMode->pixelformat = kCaptureFormatYUV420;
+	return (InitCameraInt(pMode)) ? kNoErr : kInvalidParamErr;
 }
 
 //----------------------------------------------------------------------------
@@ -2170,6 +2180,12 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		}
 	}
 
+	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
+		goto bail_out;
+	}
+
 	if(!SetCameraMode(&newmode))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
@@ -2191,6 +2207,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto bail_out;
 	}
 
+#if 0
 	// HACK: Get and discard some frames from video stream first
 	for (int i = 0; i < 3; i++)
 	{
@@ -2201,6 +2218,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		if (!bRet)
 			dbg_.DebugOut(kDbgLvlCritical, "%s: ReturnFrameInt() failed try %d\n", __FUNCTION__, i);
 	}
+#endif
 
 	// acquire the snapshot
 	if( !GetFrameInt(&camCtx_, 0))

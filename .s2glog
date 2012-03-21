@@ -33539,3 +33539,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/20/12 2:13 PM
 5,373 ms. (Cumulative: 12,936,819 ms)
 
 ----------------
+Revision 9,803 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP::GetFrame() uses camera mode settings for captured image on viewfinder startup.
+Does not try to re-init V4L instance unless GrabFrame() error (V4L format reset bug?).
+
+By Dave Milici (dmilici@leapfrog.com) on 3/20/12 7:23 PM
+2 changed, 0 added, 0 deleted.
+5,531 ms. (Cumulative: 12,942,444 ms)
+
+----------------
