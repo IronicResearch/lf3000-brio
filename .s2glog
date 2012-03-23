@@ -33576,3 +33576,12 @@ By Gill Stanfield (gstanfield@leapfrog.com) on 3/23/12 12:29 AM
 5,016 ms. (Cumulative: 12,957,711 ms)
 
 ----------------
+Revision 9,807 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Use the auto versioning that LF2000 is already using.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/23/12 10:51 AM
+1 changed, 0 added, 0 deleted.
+4,985 ms. (Cumulative: 12,962,774 ms)
+
+----------------
