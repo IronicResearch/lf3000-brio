@@ -269,10 +269,10 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
 		vinfo[n].red.offset   = vinfo[n].green.offset + vinfo[n].green.length;
 		// Swizzle RGB for OGL
-		/*if (isBlockAddr) {
+		if (isBlockAddr) {
 			vinfo[n].blue.offset  = vinfo[n].red.offset;
 			vinfo[n].red.offset   = 0;
-		}*/
+		}
 		// Block addressing mode needed for OGL framebuffer context?
 		if (isBlockAddr)
 			vinfo[n].nonstd |=  (1<<LF1000_NONSTD_PLANAR);
