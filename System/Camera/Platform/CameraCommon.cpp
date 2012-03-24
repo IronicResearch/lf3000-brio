@@ -1889,7 +1889,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	camCtx_.numBufs = NUM_BUFS;
+	camCtx_.numBufs = (camCtx_.mode.pixelformat == kCaptureFormatRAWYUYV) ? 1 : NUM_BUFS;
 	if(!InitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);
@@ -1969,6 +1969,13 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		THREAD_UNLOCK;
 		return false;
     }
+
+	if(!DeinitCameraBufferInt(&camCtx_))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: buffer unmapping failed for %s\n", camCtx_.file);
+		CAMERA_UNLOCK;
+		return hndl;
+	}
 
 #if 0 // This all is no longer necessary, for CameraTask now handles Stopping the Audio Capture.
 	if(camCtx_.path.length() && camCtx_.bAudio)

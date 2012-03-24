@@ -33585,3 +33585,13 @@ By dlazzari (dlazzari@leapfrog.com) on 3/23/12 10:51 AM
 4,985 ms. (Cumulative: 12,962,774 ms)
 
 ----------------
+Revision 9,808 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP StartVideoCapture() starts capture thread even for snapshot viewfinder cases.
+The capture thread periodically grabs frames already available for saving via GetFrame().
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/12 11:26 AM
+2 changed, 0 added, 0 deleted.
+5,091 ms. (Cumulative: 12,967,959 ms)
+
+----------------

@@ -240,7 +240,7 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 			goto out;
 	}
 
-	if(path.length())
+	if(path.length() || path.empty())
 	{
 		CAMERA_UNLOCK;
 
@@ -401,7 +401,10 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	if (hndl & kStreamingActive)
 		EnableOverlay(camCtx_.fd, 0);
 
-	ret = CCameraModule::GrabFrame(hndl, &frame);
+	if (IS_THREAD_HANDLE(hndl))
+		ret = CCameraModule::GetFrame(hndl, &frame);
+	else
+		ret = CCameraModule::GrabFrame(hndl, &frame);
 
 	if (ret == false)
 	{
@@ -421,8 +424,6 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 		ret = CCameraModule::GrabFrame(hndl, &frame);
 	}
-
-	CAMERA_LOCK;
 
 	if (ret)
 	{
@@ -599,8 +600,13 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		}
 	}
 
+	if (IS_THREAD_HANDLE(hndl))
+		CCameraModule::ReturnFrame(hndl, &frame);
+	else
 	if (frame.data)
 		kernel_.Free(frame.data);
+
+	CAMERA_LOCK;
 
 #if 0
 	/* Close camera fd */
