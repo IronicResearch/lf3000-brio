@@ -282,6 +282,7 @@ int  AVI_write_frame(avi_t *AVI, char *data, long bytes, int keyframe)
 			pkt.flags |= PKT_FLAG_KEY;
 
 		pkt.data = AVI->pEncoderBuf;
+		pkt.pts  = keyframe; // adjusted timestamp for dropped frames
 	}
 	else
 	{

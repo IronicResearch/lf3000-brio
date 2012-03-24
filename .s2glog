@@ -33595,3 +33595,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/12 11:26 AM
 5,091 ms. (Cumulative: 12,967,959 ms)
 
 ----------------
+Revision 9,809 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule: AVI writer saves adjusted keyframe timestamps instead of cummulative timestamps. (TTP 2793)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/12 2:08 PM
+1 changed, 0 added, 0 deleted.
+4,924 ms. (Cumulative: 12,972,977 ms)
+
+----------------
