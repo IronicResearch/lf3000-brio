@@ -33604,3 +33604,16 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/12 2:08 PM
 4,924 ms. (Cumulative: 12,972,977 ms)
 
 ----------------
+Revision 9,810 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Re-locate step to pause viewfinder so frozen viewfinder frame matches captured image frame.
+
+Everyone thinks this looks great, however it is changing viewfinder behavior for CameraMPI::GetFrame().
+It would be more politically-correct to have the caller handling PauseVideoCapture() before GetFrame(), 
+however the paused viewfinder frame is 1 frame off from the captured image frame in that case.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/24/12 5:14 PM
+1 changed, 0 added, 0 deleted.
+4,988 ms. (Cumulative: 12,978,044 ms)
+
+----------------
