@@ -1917,6 +1917,11 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
+	if (fpath.empty())
+	{
+		hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
+	}
+	else
 	if(kNoErr == InitCameraTask(&camCtx_))
 	{
 		hndl = camCtx_.hndl;
@@ -2187,16 +2192,12 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		}
 	}
 
-	if(!DeinitCameraBufferInt(&camCtx_))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to free buffers for %s\n", camCtx_.file);
-		goto bail_out;
-	}
-
+	if (newmode.width != oldmode.width || newmode.height != oldmode.height)
 	if(!SetCameraMode(&newmode))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GrabFrame: failed to set resolution %s\n", camCtx_.file);
-		goto bail_out;
+		if (newmode.width != oldmode.width || newmode.height != oldmode.height)
+			goto bail_out;
 	}
 
 	// just one buffer needed for the snapshot

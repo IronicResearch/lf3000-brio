@@ -390,6 +390,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
+	Boolean				sameSize = newMode.width == oldMode.width && newMode.height == oldMode.height;
 
 	// Switch to YUYV packed format for high-res capture modes
 	if (pSurf->width > VGA.width || pSurf->height > VGA.height)
@@ -397,7 +398,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}
 
-	if (IS_THREAD_HANDLE(hndl))
+	if (IS_FRAME_HANDLE(hndl) && sameSize)
 		ret = CCameraModule::GetFrame(hndl, &frame);
 	else
 		ret = CCameraModule::GrabFrame(hndl, &frame);
@@ -408,6 +409,8 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	if (ret == false)
 	{
+		sameSize = false;
+
 		CAMERA_LOCK;
 
 		/* Close camera fd */
@@ -600,7 +603,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		}
 	}
 
-	if (IS_THREAD_HANDLE(hndl))
+	if (IS_FRAME_HANDLE(hndl) && sameSize)
 		CCameraModule::ReturnFrame(hndl, &frame);
 	else
 	if (frame.data)
