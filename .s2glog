@@ -33617,3 +33617,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/24/12 5:14 PM
 4,988 ms. (Cumulative: 12,978,044 ms)
 
 ----------------
+Revision 9,811 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP::GetFrame logic modified to handle changing camera modes, like for SnapFrame() VGA support.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/27/12 3:45 PM
+2 changed, 0 added, 0 deleted.
+5,063 ms. (Cumulative: 12,983,201 ms)
+
+----------------
