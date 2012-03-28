@@ -917,8 +917,11 @@ Boolean	CMicrophoneModule::FlushAudio()
 
 		// Copy captured samples directly from mmapped buffer
 		if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
+			unsigned int boost = MIC_BOOST;
+			MIC_BOOST = 1;
 			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
 			direct_read_end(&micCtx_, addr, offset, len);
+			MIC_BOOST = boost;
 		}
 #endif
 		if (len > 0)
