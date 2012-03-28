@@ -33626,3 +33626,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/27/12 3:45 PM
 5,063 ms. (Cumulative: 12,983,201 ms)
 
 ----------------
+Revision 9,812 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Microphone: Adjust SW mic boost to +3db just for microphone threshold sampling. (TTP 3013) 
+SW mic boost remains at +6db default for recording sessions, while compensating +3db for full range trigger events.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/27/12 5:33 PM
+1 changed, 0 added, 0 deleted.
+5,079 ms. (Cumulative: 12,988,374 ms)
+
+----------------
