@@ -33646,3 +33646,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/28/12 1:23 PM
 4,926 ms. (Cumulative: 12,993,394 ms)
 
 ----------------
+Revision 9,814 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert GetFrame behavior allowing camera thread to periodically grab and discard frames.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/28/12 4:33 PM
+2 changed, 0 added, 0 deleted.
+5,422 ms. (Cumulative: 12,998,910 ms)
+
+----------------
