@@ -398,7 +398,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}
 
-	if (IS_FRAME_HANDLE(hndl) && sameSize)
+	if (IS_THREAD_HANDLE(hndl) && sameSize)
 		ret = CCameraModule::GetFrame(hndl, &frame);
 	else
 		ret = CCameraModule::GrabFrame(hndl, &frame);
@@ -603,7 +603,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		}
 	}
 
-	if (IS_FRAME_HANDLE(hndl) && sameSize)
+	if (IS_THREAD_HANDLE(hndl) && sameSize)
 		CCameraModule::ReturnFrame(hndl, &frame);
 	else
 	if (frame.data)
