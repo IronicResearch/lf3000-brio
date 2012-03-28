@@ -33637,3 +33637,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/27/12 5:33 PM
 5,079 ms. (Cumulative: 12,988,374 ms)
 
 ----------------
+Revision 9,813 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+BrioOpenGLConfig now asks for Stencil buffer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/28/12 1:23 PM
+1 changed, 0 added, 0 deleted.
+4,926 ms. (Cumulative: 12,993,394 ms)
+
+----------------
