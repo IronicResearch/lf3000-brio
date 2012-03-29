@@ -33666,3 +33666,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/28/12 6:52 PM
 5,489 ms. (Cumulative: 13,004,491 ms)
 
 ----------------
+Revision 9,816 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraModule: Only queue 1 buffer for all modes if non-AVI capture session.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/29/12 10:08 AM
+1 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 13,009,898 ms)
+
+----------------
