@@ -33656,3 +33656,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/28/12 4:33 PM
 5,422 ms. (Cumulative: 12,998,910 ms)
 
 ----------------
+Revision 9,815 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Without camera thread grabbing and discarding frames, GetFrame() will have to decide to discard previously queued stale frame.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/28/12 6:52 PM
+2 changed, 0 added, 0 deleted.
+5,489 ms. (Cumulative: 13,004,491 ms)
+
+----------------
