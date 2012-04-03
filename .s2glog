@@ -33685,3 +33685,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/3/12 12:16 PM
 5,313 ms. (Cumulative: 13,015,304 ms)
 
 ----------------
+Revision 9,818 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Oops, comitted wrong DisplayFB previously.  LF1000 now still swizzles red low, LF2000 does not.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/3/12 3:48 PM
+2 changed, 0 added, 0 deleted.
+5,423 ms. (Cumulative: 13,020,837 ms)
+
+----------------
