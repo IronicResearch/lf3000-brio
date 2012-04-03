@@ -33676,3 +33676,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/29/12 10:08 AM
 5,313 ms. (Cumulative: 13,009,898 ms)
 
 ----------------
+Revision 9,817 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Brio no longer swizzles red byte low for OpenGL (for use with new Nexell fix with Blue Byte Low).
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/3/12 12:16 PM
+1 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 13,015,304 ms)
+
+----------------
