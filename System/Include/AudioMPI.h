@@ -589,6 +589,7 @@ public:
 	/// details on what the possible return values are.
 	tPriorityPolicy GetPriorityPolicy(void);
 
+	/// <B>For use with Firmware 1.1.x or later only.</B>
 	/// Pause all active audio player streams.
 	///
 	/// Note: Affects all active audio players without knowing their IDs,
@@ -596,6 +597,7 @@ public:
 	/// to play (unlike \ref PauseAudioSystem) per mixer stream limits. 
 	void 		PauseAllAudio(void);
 
+	/// <B>For use with Firmware 1.1.x or later only.</B>
 	/// Resume all paused audio player streams.
 	void 		ResumeAllAudio(void);
 
