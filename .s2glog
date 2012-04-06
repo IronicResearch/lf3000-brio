@@ -33694,3 +33694,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/3/12 3:48 PM
 5,423 ms. (Cumulative: 13,020,837 ms)
 
 ----------------
+Revision 9,819 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,820 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Undo viewfinder pause hack inside GetFrame() now that Lucy & Valencia camera widgets are pausing viewfinder beforehand.
+The viewfinder resume step is now skipped entirely to avoid resetting overlay buffers if viewfinder was already paused.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/6/12 1:01 PM
+1 changed, 0 added, 0 deleted.
+5,344 ms. (Cumulative: 13,026,290 ms)
+
+----------------
