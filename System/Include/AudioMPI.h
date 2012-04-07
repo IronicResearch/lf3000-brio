@@ -31,6 +31,17 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// listener if one has been supplied.  Subsequently, the player is destroyed
 /// and the channel that it was using becomes free for another player.
 ///
+/// The audio mixer always outputs single stereo stream at 32KHz sample rate.
+/// Supported player sample rates are 32KHz, 16KHz, or 8KHz, stereo or mono.
+/// The current AudioMPI implementation supports the following codec and file types:
+/// <ul>
+/// <li> Ogg Vorbis (audio files with .ogg extensions) </li>
+/// <li> WAV ADPCM (audio files with .wav extensions) </li>
+/// <li> Uncompressed PCM (audio files with .wav, .avi, or raw .brio headers) </li>
+/// </ul>
+/// The maximum number of concurrent player streams and mixer channels supported
+/// are 5 Ogg Vorbis plus 16 PCM/ADPCM. Playback performance subject to CPU loading.
+///
 /// Players are represented internally by a \ref tAudioID.  The \ref tAudioID is
 /// returned when the player is created with a call to \ref StartAudio.
 /// Whenever the user wishes to operate on a particular player's stream, he will
@@ -39,12 +50,19 @@ LF_BEGIN_BRIO_NAMESPACE()
 /// provided for these events, that listener should assume that the tAudioID is
 /// not valid in its Notify function.
 ///
+/// Reasons that audio players may not get created and return kNoAudioID are:
+/// <ul>
+/// <li> (1) The audio file path is not valid. </li>
+/// <li> (2) Too many players of given codec type are already playing. </li>
+/// <li> (3) Too many players of higher priority are already playing. </li>
+/// </ul>
+///
 /// Calling the various MPI functions with an invalid tAudioID will either
 /// result in no action or an error.
 ///
 /// The user can start a player with a given priority.  If no channel is
 /// available, and a lower priority player is playing, that player will be
-/// terminated in order to free up a channel.
+/// terminated in order to free up a channel. (See \ref PriorityPolicies)
 ///
 /// MIDI functions are no longer implemented.
 ///
@@ -346,7 +364,7 @@ public:
 	/// Moves audio stream to designated time in milliseconds
 	///
 	/// \param id tAudioID of the player to seek with
-	//. \param timeMilliSeconds number of milliseconds into audio to seek to
+	/// \param timeMilliSeconds number of milliseconds into audio to seek to
 	/// \returns whether seeking was successful
 	Boolean SeekAudioTime(tAudioID id, U32 timeMilliSeconds);
 	
