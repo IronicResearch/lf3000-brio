@@ -33725,3 +33725,15 @@ By Dave Milici (dmilici@leapfrog.com) on 4/6/12 6:33 PM
 4,938 ms. (Cumulative: 13,036,777 ms)
 
 ----------------
+Revision 9,823 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,824 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 2968.  Changing the way Brio reserves memory for OpenGL.
+
+Technical Details - Previously it was creating dummy display handles.  When VideoDaemon was lauched, the construction of these dummy handles would change the stride and width of the fb1 to be full screen. 
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/12/12 2:04 PM
+1 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 13,041,886 ms)
+
+----------------

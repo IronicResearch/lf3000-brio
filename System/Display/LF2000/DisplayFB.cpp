@@ -61,7 +61,7 @@ namespace
 	void*						pmem1d = NULL;
 	void*						pmem2d = MAP_FAILED;
 	tDisplayHandle				hogl = NULL;
-	tDisplayHandle				hdcogl[2] = {NULL, NULL};
+	//tDisplayHandle				hdcogl[2] = {NULL, NULL};
 	tDisplayContext				dcmem1;		// memory block context for 1D heap
 	tDisplayContext				dcmem2;		// memory block context for 2D heap
 	
@@ -160,12 +160,12 @@ void CDisplayFB::InitModule()
 	// Setup framebuffer allocator lists and markers
 	gBufListUsed.clear();
 	gBufListFree.clear();
-	gMarkBufStart = 0;
+	gMarkBufStart = xres * yres * 2 * 4;//2 screens worth and 4 bytes per pixel.  Reserving for EGL.
 	gMarkBufEnd   = finfo[RGBFB].smem_len + finfo[OGLFB].smem_len + finfo[YUVFB].smem_len;
 
 	// Pre-allocate OGL display contexts compatible with Nexell EGL framebuffer usage
-	hdcogl[0] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
-	hdcogl[1] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
+	//hdcogl[0] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
+	//hdcogl[1] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
 }
 
 //----------------------------------------------------------------------------
