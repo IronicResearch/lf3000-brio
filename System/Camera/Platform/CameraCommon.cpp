@@ -807,9 +807,11 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 		case V4L2_CID_VFLIP:
 			control->type = kControlTypeVerticalFlip;
 			break;
+#if defined(V4L2_CID_ROTATE)
 		case V4L2_CID_ROTATE:
 			control->type = kControlTypeRotate;
 			break;
+#endif
 		default:
 			control->type = kControlTypeError;
 			delete control;
@@ -1202,9 +1204,11 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 	case kControlTypeVerticalFlip:
 		ctrl.id = V4L2_CID_VFLIP;
 		break;
+#if defined(V4L2_CID_ROTATE)
 	case kControlTypeRotate:
 		ctrl.id = V4L2_CID_ROTATE;
 		break;
+#endif
 	default:
 		bRet = false;
 	}
