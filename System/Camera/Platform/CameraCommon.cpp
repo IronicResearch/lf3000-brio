@@ -800,6 +800,16 @@ static Boolean InitCameraControlsInt(tCameraContext *pCamCtx)
 			break;
 #endif
 #endif /* V4L2_CID_POWER_LINE_FREQUENCY */
+
+		case V4L2_CID_HFLIP:
+			control->type = kControlTypeHorizontalFlip;
+			break;
+		case V4L2_CID_VFLIP:
+			control->type = kControlTypeVerticalFlip;
+			break;
+		case V4L2_CID_ROTATE:
+			control->type = kControlTypeRotate;
+			break;
 		default:
 			control->type = kControlTypeError;
 			delete control;
@@ -1185,9 +1195,18 @@ Boolean	CCameraModule::SetCameraControl(const tControlInfo* control, const S32 v
 		ctrl.id = V4L2_CID_BACKLIGHT_COMPENSATION;
 		break;
 #endif /* V4L2_CID_POWER_LINE_FREQUENCY */
+
+	case kControlTypeHorizontalFlip:
+		ctrl.id = V4L2_CID_HFLIP;
+		break;
+	case kControlTypeVerticalFlip:
+		ctrl.id = V4L2_CID_VFLIP;
+		break;
+	case kControlTypeRotate:
+		ctrl.id = V4L2_CID_ROTATE;
+		break;
 	default:
 		bRet = false;
-		;
 	}
 
 	ctrl.value = value;
