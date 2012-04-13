@@ -45,6 +45,9 @@ enum tControlType {
 	kControlPowerLineFreq,
 	kControlTypeSharpness,
 	kControlTypeBacklightComp,
+	kControlTypeHorizontalFlip,
+	kControlTypeVerticalFlip,
+	kControlTypeRotate,
 };
 
 enum tColorOrder {

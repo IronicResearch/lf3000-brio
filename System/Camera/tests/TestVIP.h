@@ -424,12 +424,127 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void testSnapFrame()
+	void XXXXtestSnapFrame()
 	{
 		PRINT_TEST_NAME();
 
 		tVidCapHndl hndl = pCameraMPI_->StartVideoCapture(NULL);
 		pCameraMPI_->SnapFrame(hndl, "snap.jpg");
+		pCameraMPI_->StopVideoCapture(hndl);
+	}
+
+	//------------------------------------------------------------------------
+	void XXXXtestGetFrame()
+	{
+		PRINT_TEST_NAME();
+
+		tErrType					err;
+		tCaptureMode*				mode, entry;
+		tCaptureModes				list, modes;
+		tCaptureModes::iterator		it;
+		tVidCapHndl 				hndl;
+		tVideoSurf					surf;
+		Boolean						ret;
+
+		err = pCameraMPI_->EnumFormats(list);
+		TS_ASSERT_EQUALS(err, kNoErr);
+
+		for (it = list.begin(); it != list.end(); it++)
+		{
+			mode = *it;
+			entry = *mode;
+			modes.push_back(new tCaptureMode(entry));
+		}
+
+		for (it = modes.begin(); it != modes.end(); it++)
+		{
+			mode = *it;
+
+			err = pCameraMPI_->SetCurrentFormat(mode);
+			TS_ASSERT_EQUALS(err, kNoErr);
+
+			hndl = pCameraMPI_->StartVideoCapture(NULL);
+			TS_ASSERT_DIFFERS(hndl, kInvalidVidCapHndl);
+
+			surf.width 	= mode->width;
+			surf.height = mode->height;
+			surf.pitch 	= 3 * mode->width;
+			surf.format = kPixelFormatRGB888;
+			surf.buffer = new U8[surf.pitch * surf.height];
+
+			ret = pCameraMPI_->GetFrame(hndl, &surf);
+			TS_ASSERT_EQUALS(ret, true);
+
+			delete[] surf.buffer;
+
+			pCameraMPI_->StopVideoCapture(hndl);
+		}
+	}
+
+	//------------------------------------------------------------------------
+	void testFlipFrame()
+	{
+		PRINT_TEST_NAME();
+
+		Boolean						ret;
+		tCaptureMode*				mode;
+		tVidCapHndl 				hndl;
+		tVideoSurf					surf;
+		tControlInfo				ctrl;
+
+		hndl = pCameraMPI_->StartVideoCapture(NULL);
+		TS_ASSERT_DIFFERS(hndl, kInvalidVidCapHndl);
+
+		mode = pCameraMPI_->GetCurrentFormat();
+		TS_ASSERT(mode != kNull);
+
+		surf.width 	= mode->width;
+		surf.height = mode->height;
+		surf.pitch 	= 3 * mode->width;
+		surf.format = kPixelFormatRGB888;
+		surf.buffer = new U8[surf.pitch * surf.height];
+
+		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ctrl.type = kControlTypeHorizontalFlip;
+		ret = pCameraMPI_->SetCameraControl(&ctrl, 1);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ctrl.type = kControlTypeVerticalFlip;
+		ret = pCameraMPI_->SetCameraControl(&ctrl, 1);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ctrl.type = kControlTypeRotate;
+		ret = pCameraMPI_->SetCameraControl(&ctrl, 90);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ctrl.type = kControlTypeRotate;
+		ret = pCameraMPI_->SetCameraControl(&ctrl, 0);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ctrl.type = kControlTypeVerticalFlip;
+		ret = pCameraMPI_->SetCameraControl(&ctrl, 0);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ctrl.type = kControlTypeHorizontalFlip;
+		ret = pCameraMPI_->SetCameraControl(&ctrl, 0);
+		TS_ASSERT_EQUALS(ret, true);
+
+		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		TS_ASSERT_EQUALS(ret, true);
+
+		delete[] surf.buffer;
+
 		pCameraMPI_->StopVideoCapture(hndl);
 	}
 
