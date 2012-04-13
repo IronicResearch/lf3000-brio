@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "Utility.h"
+#include <ImageIO.h>
 
 
 LF_USING_BRIO_NAMESPACE()
@@ -434,7 +435,7 @@ public:
 	}
 
 	//------------------------------------------------------------------------
-	void XXXXtestGetFrame()
+	void testGetFrame()
 	{
 		PRINT_TEST_NAME();
 
@@ -445,6 +446,9 @@ public:
 		tVidCapHndl 				hndl;
 		tVideoSurf					surf;
 		Boolean						ret;
+		CImageIO					image;
+		CPath						path, root = pCameraMPI_->GetCameraStillPath()->c_str();
+		char						label[20];
 
 		err = pCameraMPI_->EnumFormats(list);
 		TS_ASSERT_EQUALS(err, kNoErr);
@@ -459,6 +463,7 @@ public:
 		for (it = modes.begin(); it != modes.end(); it++)
 		{
 			mode = *it;
+			sprintf(label, "%dx%d", mode->width, mode->height);
 
 			err = pCameraMPI_->SetCurrentFormat(mode);
 			TS_ASSERT_EQUALS(err, kNoErr);
@@ -475,9 +480,14 @@ public:
 			ret = pCameraMPI_->GetFrame(hndl, &surf);
 			TS_ASSERT_EQUALS(ret, true);
 
+			path = root + "GetFrame" + label + ".png";
+			ret = image.Save(path, surf);
+			TS_ASSERT_EQUALS(ret, true);
+
 			delete[] surf.buffer;
 
 			pCameraMPI_->StopVideoCapture(hndl);
+			break;
 		}
 	}
 
@@ -489,8 +499,10 @@ public:
 		Boolean						ret;
 		tCaptureMode*				mode;
 		tVidCapHndl 				hndl;
-		tVideoSurf					surf;
+		tVideoSurf					surf, surf90;
 		tControlInfo				ctrl;
+		CImageIO					image;
+		CPath						path, root = pCameraMPI_->GetCameraStillPath()->c_str();
 
 		hndl = pCameraMPI_->StartVideoCapture(NULL);
 		TS_ASSERT_DIFFERS(hndl, kInvalidVidCapHndl);
@@ -514,6 +526,10 @@ public:
 		ret = pCameraMPI_->GetFrame(hndl, &surf);
 		TS_ASSERT_EQUALS(ret, true);
 
+		path = root + "FlippedHorizontal.png";
+		ret = image.Save(path, surf);
+		TS_ASSERT_EQUALS(ret, true);
+
 		ctrl.type = kControlTypeVerticalFlip;
 		ret = pCameraMPI_->SetCameraControl(&ctrl, 1);
 		TS_ASSERT_EQUALS(ret, true);
@@ -521,11 +537,22 @@ public:
 		ret = pCameraMPI_->GetFrame(hndl, &surf);
 		TS_ASSERT_EQUALS(ret, true);
 
+		path = root + "FlippedVertical.png";
+		ret = image.Save(path, surf);
+		TS_ASSERT_EQUALS(ret, true);
+
 		ctrl.type = kControlTypeRotate;
 		ret = pCameraMPI_->SetCameraControl(&ctrl, 90);
 		TS_ASSERT_EQUALS(ret, true);
 
-		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		surf90 = surf;
+		surf90.width = surf.height;
+		surf90.pitch = 3 * surf90.width;
+		ret = pCameraMPI_->GetFrame(hndl, &surf90);
+		TS_ASSERT_EQUALS(ret, true);
+
+		path = root + "FlippedRotate.png";
+		ret = image.Save(path, surf90);
 		TS_ASSERT_EQUALS(ret, true);
 
 		ctrl.type = kControlTypeRotate;
@@ -541,6 +568,10 @@ public:
 		TS_ASSERT_EQUALS(ret, true);
 
 		ret = pCameraMPI_->GetFrame(hndl, &surf);
+		TS_ASSERT_EQUALS(ret, true);
+
+		path = root + "FlippedNormal.png";
+		ret = image.Save(path, surf);
 		TS_ASSERT_EQUALS(ret, true);
 
 		delete[] surf.buffer;
