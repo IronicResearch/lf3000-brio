@@ -245,11 +245,11 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 	fdvmem = open("/dev/vmem", O_RDWR);
 	if (fdvmem > 0)
 	{
-		// Request vmem driver 4Meg memory block for video capture use
+		// Request vmem driver 8Meg memory block for video capture use
 		memset(&vm, 0, sizeof(vm));
 		vm.Flags = VMEM_BLOCK_BUFFER;
-		vm.MemWidth = 4096;
-		vm.MemHeight = 1024;
+		vm.MemWidth  = 4096;
+		vm.MemHeight = 2048;
 		vm.HorAlign  = 64;
 		vm.VerAlign  = 32;
 		do {
@@ -1132,10 +1132,6 @@ tErrType CCameraModule::EnumFormats(tCaptureModes& pModeList)
 tErrType CCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 {
 	DeinitCameraInt();
-	if (pMode->width > 640 || pMode->height > 480)
-		pMode->pixelformat = kCaptureFormatRAWYUYV;
-	else
-		pMode->pixelformat = kCaptureFormatYUV420;
 	return (InitCameraInt(pMode)) ? kNoErr : kInvalidParamErr;
 }
 
@@ -1912,7 +1908,7 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	camCtx_.numBufs = (camCtx_.mode.pixelformat == kCaptureFormatRAWYUYV || path.empty()) ? 1 : NUM_BUFS;
+	camCtx_.numBufs = (camCtx_.mode.pixelformat == kCaptureFormatRAWYUYV || NUM_BUFS * camCtx_.mode.width > 2048 || path.empty()) ? 1 : NUM_BUFS;
 	if(!InitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);

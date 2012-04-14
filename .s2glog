@@ -33767,3 +33767,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/13/12 1:11 PM
 5,016 ms. (Cumulative: 13,057,278 ms)
 
 ----------------
+Revision 9,828 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify CameraMPI to use 8MB memory to support flip & rotate in high-res YUV planar formats.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/13/12 5:13 PM
+2 changed, 0 added, 0 deleted.
+5,148 ms. (Cumulative: 13,062,504 ms)
+
+----------------
