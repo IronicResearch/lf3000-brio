@@ -19,12 +19,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 tCaptureMode VGA  = {kCaptureFormatYUV420, 640, 480, 1, 30};
 tCaptureMode QVGA = {kCaptureFormatYUV420, 320, 240, 1, 30};
-tCaptureMode SVGA = {kCaptureFormatRAWYUYV, 800, 600, 1, 10};
+tCaptureMode SVGA = {kCaptureFormatYUV420, 800, 600, 1, 10};
 tCaptureMode QSVGA = {kCaptureFormatYUV420, 400, 300, 1, 30};
-tCaptureMode WXGA  = {kCaptureFormatRAWYUYV, 1280, 800, 1, 10};
-tCaptureMode SXGA  = {kCaptureFormatRAWYUYV, 1280, 960, 1, 10};
-tCaptureMode HD16  = {kCaptureFormatRAWYUYV, 1600, 900, 1, 10};
-tCaptureMode UXGA  = {kCaptureFormatRAWYUYV, 1600, 1200, 1, 10};
+tCaptureMode WXGA  = {kCaptureFormatYUV420, 1280, 800, 1, 10};
+tCaptureMode SXGA  = {kCaptureFormatYUV420, 1280, 960, 1, 10};
+tCaptureMode HD16  = {kCaptureFormatYUV420, 1600, 900, 1, 10};
+tCaptureMode UXGA  = {kCaptureFormatYUV420, 1600, 1200, 1, 10};
 
 //============================================================================
 // CCameraModule: Informational functions
@@ -392,11 +392,13 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
 	Boolean				sameSize = newMode.width == oldMode.width && newMode.height == oldMode.height;
 
+#if 0
 	// Switch to YUYV packed format for high-res capture modes
 	if (pSurf->width > VGA.width || pSurf->height > VGA.height)
 	{
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}
+#endif
 
 	/* Stop viewfinder */
 	if (hndl & kStreamingActive)
