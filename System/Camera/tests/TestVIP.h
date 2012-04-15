@@ -487,7 +487,7 @@ public:
 			delete[] surf.buffer;
 
 			pCameraMPI_->StopVideoCapture(hndl);
-			break;
+//			break;
 		}
 	}
 
@@ -548,6 +548,7 @@ public:
 		surf90 = surf;
 		surf90.width = surf.height;
 		surf90.pitch = 3 * surf90.width;
+		surf90.height = surf.width;
 		ret = pCameraMPI_->GetFrame(hndl, &surf90);
 		TS_ASSERT_EQUALS(ret, true);
 

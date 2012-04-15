@@ -386,7 +386,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, U8 *pixels, tColorOrd
 Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tColorOrder color_order)
 {
 	Boolean ret;
-	tFrameInfo frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
+	tFrameInfo 			frame	= {kCaptureFormatYUV420, pSurf->width, pSurf->height, 0, NULL, 0};
 	struct tCaptureMode	oldMode	= camCtx_.mode;
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
@@ -399,6 +399,13 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}
 #endif
+
+	// Switch to custom square size format for rotated image capture
+	if (pSurf->width < pSurf->height)
+	{
+		sameSize = false;
+		newMode.width = frame.width = pSurf->height;
+	}
 
 	/* Stop viewfinder */
 	if (hndl & kStreamingActive)
