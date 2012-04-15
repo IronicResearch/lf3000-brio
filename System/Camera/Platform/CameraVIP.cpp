@@ -438,6 +438,13 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 		CAMERA_UNLOCK;
 
+		if (pSurf->width < pSurf->height)
+		{
+			tControlInfo ctl;
+			ctl.type = kControlTypeRotate;
+			SetCameraControl(&ctl, 90);
+		}
+
 		ret = CCameraModule::GrabFrame(hndl, &frame);
 	}
 
