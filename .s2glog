@@ -33787,3 +33787,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/14/12 5:18 PM
 5,171 ms. (Cumulative: 13,067,753 ms)
 
 ----------------
+Revision 9,830 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Recache rotate state on new custom rotation mode.
+
+By Dave Milici (dmilici@leapfrog.com) on 4/14/12 5:50 PM
+1 changed, 0 added, 0 deleted.
+5,299 ms. (Cumulative: 13,073,145 ms)
+
+----------------
