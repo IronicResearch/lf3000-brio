@@ -79,8 +79,10 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 //============================================================================
 CVIPCameraModule::CVIPCameraModule()
 {
+	tCameraControls::iterator	it;
+
 	camCtx_.mode = QVGA;
-	valid = InitCameraInt(&camCtx_.mode);
+	valid = InitCameraInt(&camCtx_.mode, false);
 
 	// FIXME: mode list supposed to be returned via V4L
 	if (camCtx_.modes->empty())
@@ -94,11 +96,36 @@ CVIPCameraModule::CVIPCameraModule()
 	overlaySurf.width	= 0;
 	overlaySurf.pitch	= 0;
 	overlayEnabled 		= false;
+
+	// Cache copy of V4L controls to track across CameraMPI mode resets
+	controlsCached 		= new tCameraControls;
+	for ( it = camCtx_.controls->begin() ; it < camCtx_.controls->end(); it++ )
+	{
+		tControlInfo* ctrl = *it;
+		controlsCached->push_back(new tControlInfo(*ctrl));
+	}
 }
 
 //----------------------------------------------------------------------------
 CVIPCameraModule::~CVIPCameraModule()
 {
+	tCameraControls::iterator	it;
+
+	// Reset VIP flip/rotate controls when CameraMPI instance done
+	for ( it = controlsCached->begin() ; it < controlsCached->end(); it++ )
+	{
+		tControlInfo* ctrl = *it;
+		switch (ctrl->type) {
+		case kControlTypeHorizontalFlip:
+		case kControlTypeVerticalFlip:
+		case kControlTypeRotate:
+			SetCameraControl(ctrl, 0);
+			break;
+		}
+		delete ctrl;
+	}
+
+	delete controlsCached;
 }
 
 //----------------------------------------------------------------------------
@@ -391,6 +418,13 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
 	Boolean				sameSize = newMode.width == oldMode.width && newMode.height == oldMode.height;
+	tCameraControls::iterator	it, sit;
+
+	// Update cached control state for this CameraMPI instance
+	for ( it = controlsCached->begin(), sit = camCtx_.controls->begin() ; sit < camCtx_.controls->end(); it++, sit++ )
+	{
+		(*it)->current = (*sit)->current;
+	}
 
 #if 0
 	// Switch to YUYV packed format for high-res capture modes
@@ -427,22 +461,22 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		CAMERA_LOCK;
 
 		/* Close camera fd */
-		ret = CCameraModule::DeinitCameraInt();
+		ret = CCameraModule::DeinitCameraInt(true);
 		if (!ret)
 			goto out;
 	
 		/* Re-open camera */
-		ret = CCameraModule::InitCameraInt(&newMode);
+		ret = CCameraModule::InitCameraInt(&newMode, true);
 		if (!ret)
 			goto out;
 
 		CAMERA_UNLOCK;
 
-		if (pSurf->width < pSurf->height)
+		// Update VIP control state for new V4L instance
+		for ( it = controlsCached->begin() ; it < controlsCached->end(); it++ )
 		{
-			tControlInfo ctl;
-			ctl.type = kControlTypeRotate;
-			SetCameraControl(&ctl, 90);
+			tControlInfo* ctrl = *it;
+			SetCameraControl(ctrl, ctrl->current);
 		}
 
 		ret = CCameraModule::GrabFrame(hndl, &frame);
@@ -631,17 +665,6 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	CAMERA_LOCK;
 
-#if 0
-	/* Close camera fd */
-	ret = CCameraModule::DeinitCameraInt();
-	if (!ret)
-		goto out;
-
-	/* Re-open camera */
-	ret = CCameraModule::InitCameraInt(&oldMode);
-	if (!ret)
-		goto out;
-#endif
 
 	if ((hndl & kStreamingActive) && visible)
 	{

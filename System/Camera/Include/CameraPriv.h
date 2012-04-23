@@ -319,8 +319,8 @@ private:
 	friend void* CameraTaskRender(void* arg);
 
 	// Implementation-specific functionality
-	Boolean		InitCameraInt(const tCaptureMode* mode);
-	Boolean		DeinitCameraInt();
+	Boolean		InitCameraInt(const tCaptureMode* mode, bool reinit = false);
+	Boolean		DeinitCameraInt(bool reinit = false);
 	Boolean		GetCameraModes(tCaptureModes &modes);
 	Boolean		SetCameraMode(const tCaptureMode* mode);
 	Boolean		SetBuffers(const U32 numBuffers);
@@ -410,6 +410,7 @@ public:
 private:
 	tVideoSurf	overlaySurf;
 	Boolean		overlayEnabled;
+	tCameraControls	*controlsCached;
 	Boolean		CompressFrame(tFrameInfo *frame, int stride);
 	Boolean 	EnableOverlay(int fd, int enable);
 
