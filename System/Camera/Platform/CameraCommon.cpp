@@ -294,7 +294,7 @@ CCameraModule::~CCameraModule()
 
 	valid = false;
 	CAMERA_LOCK;
-	DeinitCameraInt();
+	DeinitCameraInt(false);
 	CAMERA_UNLOCK;
 
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
@@ -1132,8 +1132,8 @@ tErrType CCameraModule::EnumFormats(tCaptureModes& pModeList)
 //----------------------------------------------------------------------------
 tErrType CCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 {
-	DeinitCameraInt();
-	return (InitCameraInt(pMode)) ? kNoErr : kInvalidParamErr;
+	DeinitCameraInt(true);
+	return (InitCameraInt(pMode, true)) ? kNoErr : kInvalidParamErr;
 }
 
 //----------------------------------------------------------------------------
@@ -2500,7 +2500,7 @@ Boolean	CCameraModule::IsVideoCapturePaused(const tVidCapHndl hndl)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode)
+Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 {
 	if(!InitCameraHWInt(&camCtx_))
 	{
@@ -2508,21 +2508,23 @@ Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode)
 		return false;
 	}
 
+	if(!reinit)
 	if(!InitCameraFormatInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: format probing failed for %s\n", camCtx_.file);
 		return false;
 	}
 
-	if(!SetCameraMode(mode))
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: failed to set resolution %s\n", camCtx_.file);
-		return false;
-	}
-
+	if(!reinit)
 	if(!InitCameraControlsInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: controls probing failed for %s\n", camCtx_.file);
+		return false;
+	}
+
+	if(!SetCameraMode(mode))
+	{
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: failed to set resolution %s\n", camCtx_.file);
 		return false;
 	}
 
@@ -2579,7 +2581,7 @@ void CCameraModule::InitLut(void)
 }
 
 //----------------------------------------------------------------------------
-Boolean	CCameraModule::DeinitCameraInt()
+Boolean	CCameraModule::DeinitCameraInt(bool reinit)
 {
 #if 0
 	if(kNoErr != DeinitIDCTInt())
@@ -2600,11 +2602,13 @@ Boolean	CCameraModule::DeinitCameraInt()
 		return false;
 	}
 
+	if(!reinit)
 	if(!DeinitCameraControlsInt(&camCtx_))
 	{
 		return false;
 	}
 
+	if(!reinit)
 	if(!DeinitCameraFormatInt(&camCtx_))
 	{
 		return false;
@@ -2625,16 +2629,16 @@ tErrType CCameraModule::SetCurrentCamera(tCameraDevice device)
 	switch (device)
 	{
 	case kCameraDefault:
-		DeinitCameraInt();
+		DeinitCameraInt(true);
 		camCtx_.file = "/dev/video0";
 		device_ = device;
-		InitCameraInt(&camCtx_.mode);
+		InitCameraInt(&camCtx_.mode, true);
 		break;
 	case kCameraFront:
-		DeinitCameraInt();
+		DeinitCameraInt(true);
 		camCtx_.file = "/dev/video1";
 		device_ = device;
-		InitCameraInt(&camCtx_.mode);
+		InitCameraInt(&camCtx_.mode, true);
 		break;
 	default:
 		return kInvalidParamErr;
