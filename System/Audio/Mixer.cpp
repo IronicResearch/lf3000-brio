@@ -783,14 +783,15 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 	else if (!strcmp(sExt, "raw")  || !strcmp( sExt, "RAW")	||
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") || 
-		!strcmp(sExt, "avi"))
+		!strcmp(sExt, "avi")  || !strcmp( sExt, "AVI") ||
+		!strcmp(sExt, "mp3")  || !strcmp( sExt, "MP3") )
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
 			//Newing player could take long, unlock the mutex
 			MIXER_UNLOCK;
-			if (!strcmp(sExt, "avi"))
+			if (!strcasecmp(sExt, "avi") || !strcasecmp(sExt, "mp3"))
 				pPlayer = new CAVIPlayer( pInfo, newID );
 			else
 				pPlayer = new CRawPlayer( pInfo, newID );
