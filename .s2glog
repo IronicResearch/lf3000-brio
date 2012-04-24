@@ -33824,3 +33824,17 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/12 1:52 PM
 5,345 ms. (Cumulative: 13,089,538 ms)
 
 ----------------
+Revision 9,834 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+AudioMPI support for MP3 files with .mp3 extension. (TTP 3277)
+MP3 player instances can only be created when MP3-enabled codec libs are present (libavcodec.so).
+These codec libs will be deployed separately as download patch lib set with MP3 player app.
+With default codec libs deployed, StartAudio() will return error when not finding MP3 codec match.
+Note extra stack space was needed for libavcodec.so MP3 decoding thread (2x needed, 4x added).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/24/12 11:35 AM
+2 changed, 0 added, 0 deleted.
+5,266 ms. (Cumulative: 13,094,897 ms)
+
+----------------

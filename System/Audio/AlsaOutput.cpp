@@ -429,6 +429,7 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData )
 	props.TaskMainFcn = &CallbackThread;
 	props.taskMainArgCount = 1;
 	props.pTaskMainArgValues = pUserData;
+	props.stackSize = 4 * PTHREAD_STACK_MIN; // 64 * 1024;
 	bRunning = true;
 	err = pKernelMPI_->CreateTask(hndlThread, props, NULL);
 	if (err != kNoErr)
