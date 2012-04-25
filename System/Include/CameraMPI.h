@@ -411,7 +411,7 @@ public:
 
 	/// <B>For use with Firmware 3.x or later only.</B>
 	/// \brief	GetCurrentCamera() returns currently selected camera.
-	/// \return	Returns currently selected mode entry.
+	/// \return	Returns currently selected camera, or kCameraNone if not present.
 	tCameraDevice	GetCurrentCamera();
 
 private:
