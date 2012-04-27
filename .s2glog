@@ -33847,3 +33847,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/24/12 6:12 PM
 5,324 ms. (Cumulative: 13,100,315 ms)
 
 ----------------
+Revision 9,836 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTpro Brio 3382.  Brio no longer turns off Accelerometer when the last AccelerometerMPI is destroyed.  This was causing LLC problems.
+
+Technical Details - LLC was not keeping a persistant AccelerometerMPI, instead it would create a temp one, calle SetAccelerometerMode to turn it on.  When AccelerometerMPI was destroyed, it would turn the Accelerometer off, and thus LLC would not get Accelerometer events.  This risks leaving the Acceleromter on if a game forgets to explicitly turn it off.  This should be ok, since the MainPicker uses the Accelerometer, as long as it turns it off before launching a game.  I did fix this in FlashLite31 Extensions LF2000 640.  MainPicker should now turn off Accelerometer properly.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/27/12 12:33 PM
+1 changed, 0 added, 0 deleted.
+5,423 ms. (Cumulative: 13,105,847 ms)
+
+----------------

@@ -39,7 +39,7 @@ static CString	SYSFS_ACLMTR_ROOT			= SYSFS_ACLMTR_LF2000;
 static tAccelerometerData 	gCachedData 	= {0, 0, 0, {0, 0}};
 static S32					gCachedOrient	= 0;
 static bool					gbOneShot		= false;
-static int					gRefCnt			= 0;
+//static int					gRefCnt			= 0;
 
 //============================================================================
 namespace
@@ -121,15 +121,15 @@ CAccelerometerMPI::CAccelerometerMPI() : pModule_(NULL)
 #ifdef LF1000
 	SYSFS_ACLMTR_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_ACLMTR_LF1000 : SYSFS_ACLMTR_LF2000;
 #endif
-	gRefCnt++;
+	//gRefCnt++;
 }
 
 //----------------------------------------------------------------------------
 CAccelerometerMPI::~CAccelerometerMPI()
 {
-	gRefCnt--;
-	if (gRefCnt == 0)
-		SetAccelerometerMode(kAccelerometerModeDisabled);
+	//gRefCnt--;
+	//if (gRefCnt == 0)
+	//	SetAccelerometerMode(kAccelerometerModeDisabled);
 }
 
 //----------------------------------------------------------------------------
