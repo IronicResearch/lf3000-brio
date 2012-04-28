@@ -33877,3 +33877,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/27/12 7:06 PM
 5,016 ms. (Cumulative: 13,116,080 ms)
 
 ----------------
+Revision 9,839 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correct YUV format V plane addressing per source video height, like LF1000. (TTP 3412)
+Reverts svn -r9414 for testing videos on LF2000 reference framebuffer driver. 
+
+By Dave Milici (dmilici@leapfrog.com) on 4/28/12 10:23 AM
+2 changed, 0 added, 0 deleted.
+5,094 ms. (Cumulative: 13,121,268 ms)
+
+----------------

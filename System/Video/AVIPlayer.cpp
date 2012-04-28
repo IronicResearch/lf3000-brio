@@ -255,7 +255,7 @@ Boolean CAVIPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 			// Pack into separate YUV planar surface regions
 			if (surf->format == kPixelFormatYUV420)
 			{
-				//dv = du + surf->pitch * (pCodecCtx->height/2);
+				dv = du + surf->pitch * (pCodecCtx->height/2);
 				for (i = 0; i < pCodecCtx->height; i++) 
 				{
 					memcpy(dy, sy, pCodecCtx->width);
