@@ -71,7 +71,7 @@ CCartridgeMPI::CCartridgeMPI() : pModule_(NULL)
 #ifdef LF1000
 	SYSFS_NAND_ROOT = (HasPlatformCapability(kCapsLF1000)) ? SYSFS_NAND_LF1000 : SYSFS_NAND_LF2000;
 #endif
-	gCachedCartData = GetCartridgeState();
+	gCachedCartData = LeapFrog::Brio::GetCartridgeState();
 }
 
 //----------------------------------------------------------------------------
