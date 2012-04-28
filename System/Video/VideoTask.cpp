@@ -113,6 +113,7 @@ void* VideoTaskMain( void* arg )
 	tDisplayHandle	aHndl[2];
 	int				ibuf = 0;
 	bool			bDoubleBuffered = false;
+	U32				zerotime = kernel.GetElapsedTimeAsMSecs();
 	
 	// Sync video thread startup with InitVideoTask()
 	bRunning = pctx->bPlaying = true;
@@ -147,8 +148,7 @@ void* VideoTaskMain( void* arg )
 			pctx->hAudio = audmgr->StartAudio(*pctx->pPathAudio, 100, 1, 0, pListener, payload, flags);
 		bAudio = (pctx->hAudio != kNoAudioID) ? true : false; // for drop-frame sync
 		vtm.time = basetime = marktime = nexttime = gAudioTime = 0;
-		if (!bAudio)
-			basetime = marktime = nexttime = kernel.GetElapsedTimeAsMSecs();
+		zerotime = kernel.GetElapsedTimeAsMSecs();
 		marktime += lapsetime;
 
 		// Main video rendering loop
@@ -172,10 +172,10 @@ void* VideoTaskMain( void* arg )
 				pthread_testcancel();
 				if (pVideoListener)
 					nexttime = gAudioTime;
-				else if (bAudio)
+				else if (bAudio && counter < lapsetime)
 					nexttime = audmgr->GetAudioTime(pctx->hAudio);
 				else
-					nexttime = kernel.GetElapsedTimeAsMSecs();
+					nexttime = kernel.GetElapsedTimeAsMSecs() - zerotime;
 				if (nexttime >= marktime)
 					break;
 				if(pctx->bSeeked)
@@ -186,12 +186,11 @@ void* VideoTaskMain( void* arg )
 						counter++;
 					else
 						counter = 0;
-					if (counter > lapsetime)
-						break;
 					lasttime = nexttime;
 				}
 				else if (abs(nexttime - marktime) > 60000) {
-					nexttime = kernel.GetElapsedTimeAsMSecs();
+					zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
+					nexttime = vtm.time;
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
 				}
@@ -208,10 +207,12 @@ void* VideoTaskMain( void* arg )
 					audmgr->SeekAudioTime( pctx->hAudio, vtm.time);
 					nexttime = vtm.time;
 					marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
+					zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
 				}
 				else
 				{
-					nexttime = kernel.GetElapsedTimeAsMSecs();
+					zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
+					nexttime = vtm.time;
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
 				}
@@ -260,6 +261,7 @@ void* VideoTaskMain( void* arg )
 						audmgr->SeekAudioTime( pctx->hAudio, vtm.time);
 						nexttime = vtm.time;
 						marktime = (vtm.frame + 1) * pctx->uFrameTimeNum / pctx->uFrameTimeDen + basetime;
+						zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
 					}
 				}
 				
@@ -270,7 +272,8 @@ void* VideoTaskMain( void* arg )
 					audmgr->ResumeAudio(pctx->hAudio);
 				
 				if (!bAudio) {
-					nexttime = kernel.GetElapsedTimeAsMSecs();
+					zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
+					nexttime = vtm.time;
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
 				}
