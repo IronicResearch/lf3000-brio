@@ -33887,3 +33887,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/28/12 10:23 AM
 5,094 ms. (Cumulative: 13,121,268 ms)
 
 ----------------
+Revision 9,840 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+adding support for "GetInfo" for pngs and tgas and loading tgas.
+[ tga offset is not working yet ]
+
+By mdeshpande (mdeshpande@leapfrog.com) on 4/28/12 3:26 PM
+2 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 13,126,378 ms)
+
+----------------

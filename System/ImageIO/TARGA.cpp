@@ -28,131 +28,131 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 	U8* dat    = surf.buffer;
 	U8 format = TGA_TRUECOLOR_24;
 
-		U32 i, j;
+	U32 i, j;
 
-	    U32 size = width * height;
+	U32 size = width * height;
 
-	    float red, green, blue, alpha;
+	float red, green, blue, alpha;
 
-	    char id[] = "written with libtarga";
-	    U8 idlen = 21;
-	    U8 zeroes[5] = { 0, 0, 0, 0, 0 };
-	    U32 pixbuf;
-	    U8 one = 1;
-	    U8 cmap_type = 0;
-	    U8 img_type  = 2;  // 2 - uncompressed truecolor  10 - RLE truecolor
-	    U16 xorigin  = 0;
-	    U16 yorigin  = 0;
-	    U8  pixdepth = format * 8;  // bpp
-	    U8 img_desc;
+	char id[] = "written with libtarga";
+	U8 idlen = 21;
+	U8 zeroes[5] = { 0, 0, 0, 0, 0 };
+	U32 pixbuf;
+	U8 one = 1;
+	U8 cmap_type = 0;
+	U8 img_type  = 2;  // 2 - uncompressed truecolor  10 - RLE truecolor
+	U16 xorigin  = 0;
+	U16 yorigin  = 0;
+	U8  pixdepth = format * 8;  // bpp
+	U8 img_desc;
 
-	    switch( format ) {
+	switch( format ) {
 
-	    case TGA_TRUECOLOR_24:
-	        img_desc = 0;
-	        break;
+	case TGA_TRUECOLOR_24:
+		img_desc = 0;
+		break;
 
-	    case TGA_TRUECOLOR_32:
-	        img_desc = 8;
-	        break;
+	case TGA_TRUECOLOR_32:
+		img_desc = 8;
+		break;
 
-	    default:
-	        //TargaError = TGA_ERR_BAD_FORMAT;
-	        return( 0 );
-	        break;
+	default:
+		//TargaError = TGA_ERR_BAD_FORMAT;
+		return( 0 );
+		break;
 
-	    }
+	}
 
-	    tga = fopenAtomic( path.c_str(), "wb" );
+	tga = fopenAtomic( path.c_str(), "wb" );
 
-	    if( tga == NULL ) {
-	        //TargaError = TGA_ERR_OPEN_FAILS;
-	        return( 0 );
-	    }
+	if( tga == NULL ) {
+		//TargaError = TGA_ERR_OPEN_FAILS;
+		return( 0 );
+	}
 
-	    // write id length
-	    fwrite( &idlen, 1, 1, tga );
+	// write id length
+	fwrite( &idlen, 1, 1, tga );
 
-	    // write colormap type
-	    fwrite( &cmap_type, 1, 1, tga );
+	// write colormap type
+	fwrite( &cmap_type, 1, 1, tga );
 
-	    // write image type
-	    fwrite( &img_type, 1, 1, tga );
+	// write image type
+	fwrite( &img_type, 1, 1, tga );
 
-	    // write cmap spec.
-	    fwrite( &zeroes, 5, 1, tga );
+	// write cmap spec.
+	fwrite( &zeroes, 5, 1, tga );
 
-	    // write image spec.
-	    fwrite( &xorigin, 2, 1, tga );
-	    fwrite( &yorigin, 2, 1, tga );
-	    fwrite( &width, 2, 1, tga );
-	    fwrite( &height, 2, 1, tga );
-	    fwrite( &pixdepth, 1, 1, tga );
-	    fwrite( &img_desc, 1, 1, tga );
+	// write image spec.
+	fwrite( &xorigin, 2, 1, tga );
+	fwrite( &yorigin, 2, 1, tga );
+	fwrite( &width, 2, 1, tga );
+	fwrite( &height, 2, 1, tga );
+	fwrite( &pixdepth, 1, 1, tga );
+	fwrite( &img_desc, 1, 1, tga );
 
-	    // write image id.
-	    fwrite( &id, idlen, 1, tga );
+	// write image id.
+	fwrite( &id, idlen, 1, tga );
 
-	    // color correction -- data is in RGB, need BGR.
-	    for( i = 0; i < size; i++ ) {
+	// color correction -- data is in RGB, need BGR.
+	for( i = 0; i < size; i++ ) {
 
-	        pixbuf = 0;
-	        for( j = 0; j < format; j++ ) {
-	            pixbuf += dat[i*format+j] << (8 * j);
-	        }
+		pixbuf = 0;
+		for( j = 0; j < format; j++ ) {
+			pixbuf += dat[i*format+j] << (8 * j);
+		}
 
-	        switch( format ) {
+		switch( format ) {
 
-	        case TGA_TRUECOLOR_24:
+		case TGA_TRUECOLOR_24:
 
-	            pixbuf = ((pixbuf & 0xFF) << 16) +
-	                     (pixbuf & 0xFF00) +
-	                     ((pixbuf & 0xFF0000) >> 16);
+			pixbuf = ((pixbuf & 0xFF) << 16) +
+					 (pixbuf & 0xFF00) +
+					 ((pixbuf & 0xFF0000) >> 16);
 
-	            pixbuf = htotl( pixbuf );
+			pixbuf = htotl( pixbuf );
 
-	            fwrite( &pixbuf, 3, 1, tga );
+			fwrite( &pixbuf, 3, 1, tga );
 
-	            break;
+			break;
 
-	        case TGA_TRUECOLOR_32:
+		case TGA_TRUECOLOR_32:
 
-	            /* need to un-premultiply alpha.. */
+			/* need to un-premultiply alpha.. */
 
-	            red     = (pixbuf & 0xFF) / 255.0f;
-	            green   = ((pixbuf & 0xFF00) >> 8) / 255.0f;
-	            blue    = ((pixbuf & 0xFF0000) >> 16) / 255.0f;
-	            alpha   = ((pixbuf & 0xFF000000) >> 24) / 255.0f;
+			red     = (pixbuf & 0xFF) / 255.0f;
+			green   = ((pixbuf & 0xFF00) >> 8) / 255.0f;
+			blue    = ((pixbuf & 0xFF0000) >> 16) / 255.0f;
+			alpha   = ((pixbuf & 0xFF000000) >> 24) / 255.0f;
 
-	            if( alpha > 0.0001 ) {
-	                red /= alpha;
-	                green /= alpha;
-	                blue /= alpha;
-	            }
+			if( alpha > 0.0001 ) {
+				red /= alpha;
+				green /= alpha;
+				blue /= alpha;
+			}
 
-	            /* clamp to 1.0f */
+			/* clamp to 1.0f */
 
-	            red = red > 1.0f ? 255.0f : red * 255.0f;
-	            green = green > 1.0f ? 255.0f : green * 255.0f;
-	            blue = blue > 1.0f ? 255.0f : blue * 255.0f;
-	            alpha = alpha > 1.0f ? 255.0f : alpha * 255.0f;
+			red = red > 1.0f ? 255.0f : red * 255.0f;
+			green = green > 1.0f ? 255.0f : green * 255.0f;
+			blue = blue > 1.0f ? 255.0f : blue * 255.0f;
+			alpha = alpha > 1.0f ? 255.0f : alpha * 255.0f;
 
-	            pixbuf = (U8)blue + (((U8)green) << 8) +
-	                (((U8)red) << 16) + (((U8)alpha) << 24);
+			pixbuf = (U8)blue + (((U8)green) << 8) +
+				(((U8)red) << 16) + (((U8)alpha) << 24);
 
-	            pixbuf = htotl( pixbuf );
+			pixbuf = htotl( pixbuf );
 
-	            fwrite( &pixbuf, 4, 1, tga );
+			fwrite( &pixbuf, 4, 1, tga );
 
-	            break;
+			break;
 
-	        }
+		}
 
-	    }
+	}
 
-	    fcloseAtomic( tga );
+	fcloseAtomic( tga );
 
-	    return true ;
+	return true ;
 
 }
 
@@ -164,13 +164,118 @@ bool TARGA_Save(CPath& path, tVideoSurf& surf)
 
 bool TARGA_GetInfo(CPath& path, tVideoSurf& surf)
 {
+	FILE *file;
+	unsigned char type[4];
+	unsigned char info[6];
 
+	file = fopen(path.c_str(), "rb");
+
+	if (!file)
+	return false;
+
+	fread (&type, sizeof (char), 3, file);
+	fseek (file, 12, SEEK_SET);
+	fread (&info, sizeof (char), 6, file);
+
+	//image type either 2 (color) or 3 (greyscale)
+	//if (type[1] != 0 || (type[2] != 2 && type[2] != 3))
+	//{
+	//	fclose(file);
+	//	return false;
+	//}
+	surf.width = info[0] + info[1] * 256;
+	surf.height = info[2] + info[3] * 256;
+
+	int byteCount = info[4] / 8;
+	switch(byteCount)
+	{
+	case 3:
+		surf.format = kPixelFormatRGB888;
+		surf.pitch = surf.width * 3;
+		break;
+	case 4:
+		surf.format = kPixelFormatARGB8888;
+		surf.pitch = surf.width * 4;
+		break;
+	}
+	if (byteCount != 3 && byteCount != 4) {
+		fclose(file);
+		return false;
+	}
+	//close file
+	fclose(file);
+
+	return true;
 }
 
 
 bool TARGA_Load(CPath& path, tVideoSurf& surf)
 {
+	FILE *file;
+	unsigned char type[4];//0 = id length, 1 = color map type, 2=image type
+	unsigned char info[6];
+
+	unsigned char scanLineOffset[4];
+
+	printf("\n #### 1 ####");
+	file = fopen(path.c_str(), "rb");
+
+	if (!file)
+	return false;
+	printf("\n #### 2 ####");
+	fread (&type, sizeof (char), 3, file);
+	fseek (file, 12, SEEK_SET);
+	fread (&info, sizeof (char), 6, file);
+	fseek (file, 36, SEEK_SET);
+	fread (&scanLineOffset, sizeof (char), 4, file);
+	printf("\n #### 3 ####");
+
+	//image type either 2 (color) or 3 (greyscale)
+	if (type[2] != 2 && type[2] != 3)
+	{
+		fclose(file);
+		return false;
+	}
+
+
+	surf.width = info[0] + info[1] * 256;
+	surf.height = info[2] + info[3] * 256;
+
+	int byteCount = info[4] / 8;
+	printf("\n #### 4 ####");
+	switch(byteCount)
+	{
+	case 3:
+		surf.format = kPixelFormatRGB888;
+		surf.pitch = surf.width * 3;
+		break;
+	case 4:
+		surf.format = kPixelFormatARGB8888;
+		surf.pitch = surf.width * 4;
+		break;
+	}
+
+	if (byteCount != 3 && byteCount != 4) {
+		fclose(file);
+		return false;
+	}
+	printf("\n #### 5 ####");
+	long imageSize = surf.width * surf.height * byteCount;
+	// Allocate buffer here? -- Must be released by caller!
+	//[MD] if caller has already created a buffer, use that else make new one.
+
+	//TODO: Discuss best way to manage buffers especially given the new get info feature.
+	if(surf.buffer == NULL)
+		surf.buffer = new U8[ imageSize ];
+	printf("\n #### 6 ####");
+	//read in image data
+	fread((U8*)surf.buffer, sizeof(U8), imageSize, file);
+	printf("\n #### 7 ####");
+	//close file
+	fclose(file);
+
 	return true;
+
 }
 
 

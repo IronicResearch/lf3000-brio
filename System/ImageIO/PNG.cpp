@@ -140,17 +140,9 @@ bool PNG_Save(CPath& path, tVideoSurf& surf)
 
 bool PNG_GetInfo(CPath& path, tVideoSurf& surf)
 {
-
-}
-
-
-//----------------------------------------------------------------------------
-bool PNG_Load(CPath& path, tVideoSurf& surf)
-{
-	//FILE*		fp = NULL;
 	png_structp	pp = NULL;
 	png_infop	pi = NULL;
-	
+
 	// Open PNG file for reading
 	fp = fopen(path.c_str(), "rb");
 	if(!PNG_checkFile(fp,path))
@@ -162,17 +154,16 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 		fclose(fp);
 		return false;
 	}
-	
+
 	pi = png_create_info_struct(pp);
 	if (!pi) {
 		png_destroy_read_struct(&pp, NULL, NULL);
 		fclose(fp);
 		return false;
 	}
-	
 	// Arcane PNG longjmp handling (despite no error callbacks?)
-	setjmp(_jmpbuf); 
-	
+	setjmp(_jmpbuf);
+
 	// Set read callbacks
 	png_set_read_fn(pp, fp, _png_read);
 
@@ -181,9 +172,9 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 
 	png_uint_32 width, height;
 	int depth, color, interlace;
-	png_get_IHDR(pp, pi, &width, &height, &depth, &color, 
+	png_get_IHDR(pp, pi, &width, &height, &depth, &color,
 			&interlace, NULL, NULL);
-	
+
 	// Dimension surface to hold image
 	surf.width	= width;
 	surf.height = height;
@@ -202,8 +193,78 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 		return false;
 	}
 
-	// Allocate buffer here? -- Must be released by caller!
-	surf.buffer = new U8[ (surf.pitch * surf.height) ];
+	// Finalize PNG file for closing
+	//png_read_end(pp, pi);
+	png_destroy_read_struct(&pp, &pi, NULL);
+	fclose(fp);
+	return true;
+
+}
+
+
+//----------------------------------------------------------------------------
+bool PNG_Load(CPath& path, tVideoSurf& surf)
+{
+	//FILE*		fp = NULL;
+	png_structp	pp = NULL;
+	png_infop	pi = NULL;
+
+	// Open PNG file for reading
+	fp = fopen(path.c_str(), "rb");
+	if(!PNG_checkFile(fp,path))
+		return false;
+
+	// Init PNG contexts for reading
+	pp = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!pp) {
+		fclose(fp);
+		return false;
+	}
+
+	pi = png_create_info_struct(pp);
+	if (!pi) {
+		png_destroy_read_struct(&pp, NULL, NULL);
+		fclose(fp);
+		return false;
+	}
+
+	// Arcane PNG longjmp handling (despite no error callbacks?)
+	setjmp(_jmpbuf); 
+	
+	// Set read callbacks
+	png_set_read_fn(pp, fp, _png_read);
+
+	// Read PNG info header
+	png_read_info(pp, pi);
+
+	png_uint_32 width, height;
+	int depth, color, interlace;
+	png_get_IHDR(pp, pi, &width, &height, &depth, &color, 
+			&interlace, NULL, NULL);
+
+	// Dimension surface to hold image
+	surf.width	= width;
+	surf.height = height;
+	switch (color) {
+	case PNG_COLOR_TYPE_RGB:
+		surf.pitch  = 3 * width;
+		surf.format	= kPixelFormatRGB888;
+		break;
+	case PNG_COLOR_TYPE_RGB_ALPHA:
+		surf.pitch  = 4 * width;
+		surf.format	= kPixelFormatARGB8888;
+		break;
+	default:
+		png_destroy_read_struct(&pp, &pi, NULL);
+		fclose(fp);
+		return false;
+	}
+
+	//[MD] if caller has already created a buffer, use that else make new one.
+
+	//TODO: Discuss best way to manage buffers especially given the new get info feature.
+	if(surf.buffer == NULL)
+		surf.buffer = new U8[ (surf.pitch * surf.height) ];
 	
 	// Read PNG image data per scanline
 	png_bytep 	bp = (png_bytep)surf.buffer;
