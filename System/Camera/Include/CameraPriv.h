@@ -171,6 +171,7 @@ struct tCameraContext {
 	bool						bDoubleBuffered;
 
 	CDebugMPI					*dbg;
+	CKernelMPI					*kernel;
 };
 
 struct tCaptureContext {

@@ -206,6 +206,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 
 	camCtx_.module			= this;
 	camCtx_.dbg				= &dbg_;
+	camCtx_.kernel			= &kernel_;
 
 	micCtx_.hndl			= kInvalidAudCapHndl;
 	micCtx_.hMicThread		= kNull;
@@ -498,7 +499,7 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 	int cam;
 	struct v4l2_capability *cap =  &pCamCtx->cap;
 
-	if((cam = open(pCamCtx->file, O_RDWR)) == -1)
+	if((cam = open(pCamCtx->file, O_RDWR | O_NONBLOCK)) == -1)
 	{
 		return false;
 	}
@@ -1306,13 +1307,19 @@ Boolean	CCameraModule::PollFrame(const tVidCapHndl hndl)
 
 static Boolean GetFrameInt(tCameraContext *pCtx, int index)
 {
+	int timeout = 50; // x10 msec
+
 	memset(&pCtx->buf, 0, sizeof(struct v4l2_buffer));
 	pCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	pCtx->buf.memory = V4L2_MEMORY_XXXX;
 	pCtx->buf.index  = index;
-	if( ioctl(pCtx->fd, VIDIOC_DQBUF, &pCtx->buf) < 0)
+	while( ioctl(pCtx->fd, VIDIOC_DQBUF, &pCtx->buf) < 0)
 	{
-		return false;
+		if (errno != EAGAIN)
+			return false;
+		pCtx->kernel->TaskSleep(10);
+		if (--timeout == 0)
+			return false;
     }
 
 	return true;
