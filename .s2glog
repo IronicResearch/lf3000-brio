@@ -33897,3 +33897,12 @@ By mdeshpande (mdeshpande@leapfrog.com) on 4/28/12 3:26 PM
 5,016 ms. (Cumulative: 13,126,378 ms)
 
 ----------------
+Revision 9,841 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change GetFrame() call to non-blocking retry mode so V4L ioctl cannot hang. (TTP 3375, 3422)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/28/12 5:43 PM
+2 changed, 0 added, 0 deleted.
+5,013 ms. (Cumulative: 13,131,485 ms)
+
+----------------
