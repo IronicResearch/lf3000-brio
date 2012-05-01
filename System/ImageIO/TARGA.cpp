@@ -177,12 +177,6 @@ bool TARGA_GetInfo(CPath& path, tVideoSurf& surf)
 	fseek (file, 12, SEEK_SET);
 	fread (&info, sizeof (char), 6, file);
 
-	//image type either 2 (color) or 3 (greyscale)
-	//if (type[1] != 0 || (type[2] != 2 && type[2] != 3))
-	//{
-	//	fclose(file);
-	//	return false;
-	//}
 	surf.width = info[0] + info[1] * 256;
 	surf.height = info[2] + info[3] * 256;
 
@@ -212,37 +206,19 @@ bool TARGA_GetInfo(CPath& path, tVideoSurf& surf)
 bool TARGA_Load(CPath& path, tVideoSurf& surf)
 {
 	FILE *file;
-	unsigned char type[4];//0 = id length, 1 = color map type, 2=image type
-	unsigned char info[6];
+	unsigned char headerInfo[18];//0 = id length, 1 = color map type, 2=image type
 
-	unsigned char scanLineOffset[4];
-
-	printf("\n #### 1 ####");
 	file = fopen(path.c_str(), "rb");
-
 	if (!file)
-	return false;
-	printf("\n #### 2 ####");
-	fread (&type, sizeof (char), 3, file);
-	fseek (file, 12, SEEK_SET);
-	fread (&info, sizeof (char), 6, file);
-	fseek (file, 36, SEEK_SET);
-	fread (&scanLineOffset, sizeof (char), 4, file);
-	printf("\n #### 3 ####");
-
-	//image type either 2 (color) or 3 (greyscale)
-	if (type[2] != 2 && type[2] != 3)
-	{
-		fclose(file);
 		return false;
-	}
 
+	fread (&headerInfo, sizeof (char), 18, file);
 
-	surf.width = info[0] + info[1] * 256;
-	surf.height = info[2] + info[3] * 256;
+	surf.width = headerInfo[12]+ headerInfo[13] * 256;
+	surf.height = headerInfo[14] + headerInfo[15] * 256;
 
-	int byteCount = info[4] / 8;
-	printf("\n #### 4 ####");
+	int byteCount = headerInfo[16] / 8;
+
 	switch(byteCount)
 	{
 	case 3:
@@ -259,7 +235,7 @@ bool TARGA_Load(CPath& path, tVideoSurf& surf)
 		fclose(file);
 		return false;
 	}
-	printf("\n #### 5 ####");
+
 	long imageSize = surf.width * surf.height * byteCount;
 	// Allocate buffer here? -- Must be released by caller!
 	//[MD] if caller has already created a buffer, use that else make new one.
@@ -267,10 +243,15 @@ bool TARGA_Load(CPath& path, tVideoSurf& surf)
 	//TODO: Discuss best way to manage buffers especially given the new get info feature.
 	if(surf.buffer == NULL)
 		surf.buffer = new U8[ imageSize ];
-	printf("\n #### 6 ####");
+
 	//read in image data
-	fread((U8*)surf.buffer, sizeof(U8), imageSize, file);
-	printf("\n #### 7 ####");
+	int imageDataOffset = headerInfo[0] + headerInfo[1] + 18;
+	int a = fseek (file, imageDataOffset, SEEK_SET);
+
+	size_t result = fread((U8*)surf.buffer, sizeof(U8), imageSize, file);
+
+	if(result != imageSize) printf("\n Error reading file");
+
 	//close file
 	fclose(file);
 

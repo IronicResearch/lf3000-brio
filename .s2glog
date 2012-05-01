@@ -33906,3 +33906,17 @@ By Dave Milici (dmilici@leapfrog.com) on 4/28/12 5:43 PM
 5,013 ms. (Cumulative: 13,131,485 ms)
 
 ----------------
+Revision 9,842 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,843 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,844 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,845 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,846 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+cleaned up targa loading a little bit and made sure all files from LPAD story studio are loaded/ rendered properly.
+[ code supports only simple 24 bit rgb or 32 bit rgba tga files ]
+
+By mdeshpande (mdeshpande@leapfrog.com) on 5/1/12 12:37 PM
+1 changed, 0 added, 0 deleted.
+5,032 ms. (Cumulative: 13,136,642 ms)
+
+----------------
