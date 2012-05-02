@@ -325,7 +325,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
 		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
-	else
+	else if (pBuffer == NULL)
 		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 
 	// Pitch depends on width for normal RGB modes, otherwise
