@@ -33920,3 +33920,15 @@ By mdeshpande (mdeshpande@leapfrog.com) on 5/1/12 12:37 PM
 5,032 ms. (Cumulative: 13,136,642 ms)
 
 ----------------
+Revision 9,847 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,848 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+DisplayFB: Offscreen display contexts for video double-buffering are not supposed to change display mode settings.
+This was inadvertantly resetting the display mode with default scaling during XMV movie replay commands. (TTP 3242)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/2/12 12:36 PM
+1 changed, 0 added, 0 deleted.
+5,031 ms. (Cumulative: 13,141,767 ms)
+
+----------------
