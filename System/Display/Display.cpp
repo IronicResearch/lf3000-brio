@@ -507,6 +507,15 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 	yvp_ = y;
 	wvp_ = width;
 	hvp_ = height;
+	GetScreenSize();
+	kernel_.LockMutex(gListMutex);
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		if((*it)->initialZOrder != kDisplayOnOverlay)
+			SetWindowPosition((*it), (*it)->x, (*it)->y, (*it)->width, (*it)->height, (*it)->isEnabled);
+	}
+	kernel_.UnlockMutex(gListMutex);
 	return kNoErr;
 }
 
