@@ -33950,3 +33950,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/4/12 11:36 AM
 4,986 ms. (Cumulative: 13,151,910 ms)
 
 ----------------
+Revision 9,851 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+CameraVIP discards stale frame during Pause() instead of GetFrame() for min latency. (TTP 3424)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/4/12 4:38 PM
+1 changed, 0 added, 0 deleted.
+5,316 ms. (Cumulative: 13,157,319 ms)
+
+----------------
