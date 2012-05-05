@@ -33979,3 +33979,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/5/12 12:44 PM
 5,225 ms. (Cumulative: 13,168,107 ms)
 
 ----------------
+Revision 9,854 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Explicit conditional to either requeue V4L buffer returned by ::GetFrame() or release buffer returned by ::GrabFrame(). 
+Avoids ambiguity as to whether the returned buffer data pointer is meant to be freed by caller. (TTP 3456)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/5/12 2:35 PM
+1 changed, 0 added, 0 deleted.
+5,329 ms. (Cumulative: 13,173,529 ms)
+
+----------------
