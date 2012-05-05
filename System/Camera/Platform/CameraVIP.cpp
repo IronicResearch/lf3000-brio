@@ -424,6 +424,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	struct tCaptureMode	newMode = {kCaptureFormatYUV420, pSurf->width, pSurf->height, 1, 10};
 	Boolean				visible = (overlaySurf.buffer != NULL && overlayEnabled) ? 1 : 0;
 	Boolean				sameSize = newMode.width == oldMode.width && newMode.height == oldMode.height;
+	Boolean				requeue = false;
 	tCameraControls::iterator	it, sit;
 
 	// Update cached control state for this CameraMPI instance
@@ -456,6 +457,10 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		if (CCameraModule::GetFrame(hndl, &frame))
 			CCameraModule::ReturnFrame(hndl, &frame);
 		ret = CCameraModule::GetFrame(hndl, &frame);
+		if (ret)
+			requeue = true;
+		else
+			frame.data = NULL;
 	}
 	else
 		ret = CCameraModule::GrabFrame(hndl, &frame);
@@ -663,7 +668,7 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		}
 	}
 
-	if (IS_FRAME_HANDLE(hndl) && sameSize)
+	if (requeue)
 		CCameraModule::ReturnFrame(hndl, &frame);
 	else
 	if (frame.data)
