@@ -456,8 +456,6 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	{
 		SetVisible(ctx, false);
 	}
-	r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
-	r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
 	// Adjust Z-order for YUV layer?
 	if (n == YUVFB) 
@@ -477,8 +475,12 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		}
 		vinfo[n].nonstd &= ~(3<<LF1000_NONSTD_PRIORITY);
 		vinfo[n].nonstd |=  (z<<LF1000_NONSTD_PRIORITY);
-		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
-		
+		//r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
+	}
+	r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
+	r = SetWindowPosition(ctx, xPos, yPos, width, height);
+	if (n == YUVFB) 
+	{
 		struct lf1000fb_vidscale_cmd cmd;
 		cmd.sizex = (xscale) ? xscale : ctx->xscale;
 		cmd.sizey = (yscale) ? yscale : ctx->yscale;
