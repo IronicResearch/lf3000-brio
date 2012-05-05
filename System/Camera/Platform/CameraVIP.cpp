@@ -453,6 +453,8 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 
 	if (IS_FRAME_HANDLE(hndl) && sameSize)
 	{
+		if (CCameraModule::GetFrame(hndl, &frame))
+			CCameraModule::ReturnFrame(hndl, &frame);
 		ret = CCameraModule::GetFrame(hndl, &frame);
 	}
 	else
