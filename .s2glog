@@ -33970,3 +33970,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/4/12 6:39 PM
 5,391 ms. (Cumulative: 13,162,789 ms)
 
 ----------------
+Revision 9,853 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reinstate stale frame discard in GetFrame(), per Madhura TTP 3424.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/5/12 12:44 PM
+1 changed, 0 added, 0 deleted.
+5,225 ms. (Cumulative: 13,168,107 ms)
+
+----------------
