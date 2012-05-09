@@ -333,12 +333,6 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 //----------------------------------------------------------------------------
 Boolean CVIPCameraModule::PauseVideoCapture(const tVidCapHndl hndl, const Boolean display)
 {
-	if (IS_FRAME_HANDLE(hndl))
-	{
-		tFrameInfo frame;
-		if (CCameraModule::GetFrame(hndl, &frame))
-			CCameraModule::ReturnFrame(hndl, &frame);
-	}
 	CAMERA_LOCK;
 	if ((hndl & kStreamingActive) && display)
 		 EnableOverlay(camCtx_.fd, 0);
