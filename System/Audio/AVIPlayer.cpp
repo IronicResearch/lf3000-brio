@@ -85,7 +85,7 @@ int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
                 continue; // ffplay.c
 
             // Audio frame buffer may contain more bytes than requested
-          	return bytesTotal;
+          	return frameSize; // decompressed bytes
         }
 
         // Read the next packet, skipping all packets that aren't for this stream
@@ -116,7 +116,7 @@ loop_exit:
     if (packet.data != NULL)
         av_free_packet(&packet);
 
-    return (bytesDecoded >= 0) ? bytesDecoded : 0;
+    return (frameSize > 0) ? frameSize : 0;
 }
 
 //==============================================================================
