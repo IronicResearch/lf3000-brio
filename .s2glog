@@ -34002,3 +34002,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/8/12 6:17 PM
 5,266 ms. (Cumulative: 13,178,904 ms)
 
 ----------------
+Revision 9,858 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Use parameterized values for ALSA config to simplify switching between 32KHz and 44KHz output. (TTP 3361)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/8/12 6:19 PM
+1 changed, 0 added, 0 deleted.
+5,393 ms. (Cumulative: 13,184,407 ms)
+
+----------------
