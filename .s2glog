@@ -33989,3 +33989,16 @@ By Dave Milici (dmilici@leapfrog.com) on 5/5/12 2:35 PM
 5,329 ms. (Cumulative: 13,173,529 ms)
 
 ----------------
+Revision 9,855 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,856 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,857 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+AVIPlayer::GetFrame() returns decompressed audio bytes on completed frames, not decoded packet bytes.
+No difference for AVI raw PCM audio, but fixes MP3 playback with libavcodec.so patch libs. (TTP 3277, 3361)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/8/12 6:17 PM
+1 changed, 0 added, 0 deleted.
+5,266 ms. (Cumulative: 13,178,904 ms)
+
+----------------
