@@ -34021,3 +34021,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/9/12 3:23 PM
 5,377 ms. (Cumulative: 13,189,877 ms)
 
 ----------------
+Revision 9,860 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Setting ViewPort now also updates the position of OpenGL.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/10/12 12:31 PM
+2 changed, 0 added, 0 deleted.
+4,985 ms. (Cumulative: 13,194,940 ms)
+
+----------------

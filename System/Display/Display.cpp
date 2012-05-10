@@ -27,6 +27,7 @@ const CURI kModuleURI = "/LF/System/Display";
 //============================================================================
 // Globals
 //============================================================================
+extern tDisplayHandle		hogl;
 namespace
 {
 	std::list<tDisplayContext*>	gDisplayList;	// list of display contexts
@@ -516,6 +517,9 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 			SetWindowPosition((*it), (*it)->x, (*it)->y, (*it)->width, (*it)->height, (*it)->isEnabled);
 	}
 	kernel_.UnlockMutex(gListMutex);
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
+		SetWindowPosition(dcogl, dcogl->x, dcogl->y, dcogl->width, dcogl->height, dcogl->isEnabled);
 	return kNoErr;
 }
 
