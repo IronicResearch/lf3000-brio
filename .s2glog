@@ -34030,3 +34030,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/10/12 12:31 PM
 4,985 ms. (Cumulative: 13,194,940 ms)
 
 ----------------
+Revision 9,861 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+partial fix for # 3539 and # 3538.
+Added support to detect if  red and blue color bytes need swapping and swap them when appropriate. 
+this fixes an issue where mask/ overlay in widget tester was drwan with red and blue swapped.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 5/10/12 2:04 PM
+1 changed, 0 added, 0 deleted.
+5,018 ms. (Cumulative: 13,200,036 ms)
+
+----------------
