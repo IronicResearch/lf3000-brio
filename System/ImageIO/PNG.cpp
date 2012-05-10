@@ -245,14 +245,22 @@ bool PNG_Load(CPath& path, tVideoSurf& surf)
 	// Dimension surface to hold image
 	surf.width	= width;
 	surf.height = height;
+
+	//Unpalette
+	if (color == PNG_COLOR_TYPE_PALETTE)
+		png_set_palette_to_rgb(pp);
+
+	//Reverse RGB if needed
 	switch (color) {
 	case PNG_COLOR_TYPE_RGB:
 		surf.pitch  = 3 * width;
 		surf.format	= kPixelFormatRGB888;
+		png_set_bgr(pp);
 		break;
 	case PNG_COLOR_TYPE_RGB_ALPHA:
 		surf.pitch  = 4 * width;
 		surf.format	= kPixelFormatARGB8888;
+		png_set_bgr(pp);
 		break;
 	default:
 		png_destroy_read_struct(&pp, &pi, NULL);
