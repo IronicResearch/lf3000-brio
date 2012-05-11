@@ -34041,3 +34041,13 @@ By mdeshpande (mdeshpande@leapfrog.com) on 5/10/12 2:04 PM
 5,018 ms. (Cumulative: 13,200,036 ms)
 
 ----------------
+Revision 9,862 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,863 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+another partial fix for # 3538 and # 3539 ( modified support for 32 bit tga files, if they were encoded upside down.  code now detects the origin in tga file and reads in buffer accordingly ) tga files used by widgettester now show up right, and not upside down. This applies for both masks and overlays.
+
+By mdeshpande (mdeshpande@leapfrog.com) on 5/10/12 5:15 PM
+1 changed, 0 added, 0 deleted.
+4,954 ms. (Cumulative: 13,205,068 ms)
+
+----------------

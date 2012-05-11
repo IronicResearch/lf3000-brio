@@ -1,158 +1,65 @@
 #include <ImageIO.h>
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <AtomicFile.h>
 
 static FILE* tga;
-#define TGA_TRUECOLOR_32      (4)
-#define TGA_TRUECOLOR_24      (3)
 
-static U32 htotl( U32 val ) {
-
-#ifdef WORDS_BIGENDIAN
-    return( ((val & 0x000000FF) << 24) +
-            ((val & 0x0000FF00) << 8)  +
-            ((val & 0x00FF0000) >> 8)  +
-            ((val & 0xFF000000) >> 24) );
-#else
-    return( val );
-#endif
-
-}
 //----------------------------------------------------------------------------
 bool TARGA_Save(CPath& path, tVideoSurf& surf)
 {
-	int width  = surf.width;
-	int height = surf.height;
-	U8* dat    = surf.buffer;
-	U8 format = TGA_TRUECOLOR_24;
+	FILE	*fp;
 
-	U32 i, j;
+	int byteCount;
 
-	U32 size = width * height;
-
-	float red, green, blue, alpha;
-
-	char id[] = "written with libtarga";
-	U8 idlen = 21;
-	U8 zeroes[5] = { 0, 0, 0, 0, 0 };
-	U32 pixbuf;
-	U8 one = 1;
-	U8 cmap_type = 0;
-	U8 img_type  = 2;  // 2 - uncompressed truecolor  10 - RLE truecolor
-	U16 xorigin  = 0;
-	U16 yorigin  = 0;
-	U8  pixdepth = format * 8;  // bpp
-	U8 img_desc;
-
-	switch( format ) {
-
-	case TGA_TRUECOLOR_24:
-		img_desc = 0;
-		break;
-
-	case TGA_TRUECOLOR_32:
-		img_desc = 8;
-		break;
-
-	default:
-		//TargaError = TGA_ERR_BAD_FORMAT;
-		return( 0 );
-		break;
-
+	if(surf.format == kPixelFormatRGB888)
+	{
+		printf("\n ##### 3 #####\n");
+		byteCount = 3;
+	}else if(surf.format == kPixelFormatARGB8888)
+	{
+		printf("\n ##### 4 #####\n");
+		byteCount = 4;
+	}else{
+		printf("\n Can not save a TGA file if its not 24 bit or 32 bit true color.");
+		return false;
 	}
 
-	tga = fopenAtomic( path.c_str(), "wb" );
+	fp = fopenAtomic(path.c_str(), "wb");
 
-	if( tga == NULL ) {
-		//TargaError = TGA_ERR_OPEN_FAILS;
-		return( 0 );
+	if( !fp )
+		return false;
+
+	fputc( 0, fp );							// identification field length
+	fputc( 0, fp );							// no color map
+	fputc( 2, fp );							// picture type = uncompressed RGB
+	fputc( 0, fp ); fputc( 0, fp );			// 1st color index in the map
+	fputc( 0, fp ); fputc( 0, fp );			// nb colors in the map
+	fputc( 0, fp );							// nb bits/color in the map
+	fputc( 0, fp ); fputc( 0, fp );			// x-coordinate of the origin
+	fputc( 0, fp ); fputc( 0, fp );			// y-coordinate of the origin
+
+	fputc( surf.width & 255, fp );
+	fputc( surf.width>>8, fp );					// picture width
+
+	fputc( surf.height & 255, fp );
+	fputc( surf.height>>8, fp );					// picture height
+
+	fputc( byteCount*8, fp );						// nb bits per pixel
+	fputc(0, fp );							// FLAG		0  32
+
+	U8	temp;
+	for( int i=0; i < surf.width * surf.height * byteCount; i+= byteCount )
+	{
+		temp = surf.buffer[i];
+		surf.buffer[i]   = surf.buffer[i+2];
+		surf.buffer[i+2] = temp;
 	}
+	fwrite( surf.buffer, sizeof(U8), surf.width * surf.height * byteCount, fp );	// write graphic data
 
-	// write id length
-	fwrite( &idlen, 1, 1, tga );
+	fcloseAtomic(fp);
 
-	// write colormap type
-	fwrite( &cmap_type, 1, 1, tga );
-
-	// write image type
-	fwrite( &img_type, 1, 1, tga );
-
-	// write cmap spec.
-	fwrite( &zeroes, 5, 1, tga );
-
-	// write image spec.
-	fwrite( &xorigin, 2, 1, tga );
-	fwrite( &yorigin, 2, 1, tga );
-	fwrite( &width, 2, 1, tga );
-	fwrite( &height, 2, 1, tga );
-	fwrite( &pixdepth, 1, 1, tga );
-	fwrite( &img_desc, 1, 1, tga );
-
-	// write image id.
-	fwrite( &id, idlen, 1, tga );
-
-	// color correction -- data is in RGB, need BGR.
-	for( i = 0; i < size; i++ ) {
-
-		pixbuf = 0;
-		for( j = 0; j < format; j++ ) {
-			pixbuf += dat[i*format+j] << (8 * j);
-		}
-
-		switch( format ) {
-
-		case TGA_TRUECOLOR_24:
-
-			pixbuf = ((pixbuf & 0xFF) << 16) +
-					 (pixbuf & 0xFF00) +
-					 ((pixbuf & 0xFF0000) >> 16);
-
-			pixbuf = htotl( pixbuf );
-
-			fwrite( &pixbuf, 3, 1, tga );
-
-			break;
-
-		case TGA_TRUECOLOR_32:
-
-			/* need to un-premultiply alpha.. */
-
-			red     = (pixbuf & 0xFF) / 255.0f;
-			green   = ((pixbuf & 0xFF00) >> 8) / 255.0f;
-			blue    = ((pixbuf & 0xFF0000) >> 16) / 255.0f;
-			alpha   = ((pixbuf & 0xFF000000) >> 24) / 255.0f;
-
-			if( alpha > 0.0001 ) {
-				red /= alpha;
-				green /= alpha;
-				blue /= alpha;
-			}
-
-			/* clamp to 1.0f */
-
-			red = red > 1.0f ? 255.0f : red * 255.0f;
-			green = green > 1.0f ? 255.0f : green * 255.0f;
-			blue = blue > 1.0f ? 255.0f : blue * 255.0f;
-			alpha = alpha > 1.0f ? 255.0f : alpha * 255.0f;
-
-			pixbuf = (U8)blue + (((U8)green) << 8) +
-				(((U8)red) << 16) + (((U8)alpha) << 24);
-
-			pixbuf = htotl( pixbuf );
-
-			fwrite( &pixbuf, 4, 1, tga );
-
-			break;
-
-		}
-
-	}
-
-	fcloseAtomic( tga );
-
-	return true ;
+	return true;
 
 }
 
@@ -206,6 +113,7 @@ bool TARGA_GetInfo(CPath& path, tVideoSurf& surf)
 bool TARGA_Load(CPath& path, tVideoSurf& surf)
 {
 	FILE *file;
+	bool up = false;
 	unsigned char headerInfo[18];//0 = id length, 1 = color map type, 2=image type
 
 	file = fopen(path.c_str(), "rb");
@@ -236,6 +144,11 @@ bool TARGA_Load(CPath& path, tVideoSurf& surf)
 		return false;
 	}
 
+	//decide how tga was encoded ( topleft / bottom right etc.. )
+	if(headerInfo[17] & 32)
+		up = true;
+
+
 	long imageSize = surf.width * surf.height * byteCount;
 	// Allocate buffer here? -- Must be released by caller!
 	//[MD] if caller has already created a buffer, use that else make new one.
@@ -248,7 +161,22 @@ bool TARGA_Load(CPath& path, tVideoSurf& surf)
 	int imageDataOffset = headerInfo[0] + headerInfo[1] + 18;
 	int a = fseek (file, imageDataOffset, SEEK_SET);
 
-	size_t result = fread((U8*)surf.buffer, sizeof(U8), imageSize, file);
+	//based on origin, read file
+	size_t result;
+	if(!up) // the pic is upside down
+	{
+		int	offset = (surf.height -1)* surf.width * byteCount;
+
+		for( int y=0; y<surf.height; y++ )
+		{
+			result = fread( (U8*)surf.buffer+offset, sizeof(U8), surf.width*byteCount, file );
+			offset -= surf.width*byteCount;
+		}
+
+	}else{ // the picture is not reversed
+
+		result = fread((U8*)surf.buffer, sizeof(U8), imageSize, file);
+	}
 
 	if(result != imageSize) printf("\n Error reading file");
 
