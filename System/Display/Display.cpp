@@ -514,12 +514,12 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		if((*it)->initialZOrder != kDisplayOnOverlay)
-			SetWindowPosition((*it), (*it)->x, (*it)->y, (*it)->width, (*it)->height, (*it)->isEnabled);
+			RegisterLayer(*it, (*it)->x, (*it)->y);
 	}
 	kernel_.UnlockMutex(gListMutex);
 	tDisplayContext *dcogl = (tDisplayContext*)hogl;
 	if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
-		SetWindowPosition(dcogl, dcogl->x, dcogl->y, dcogl->width, dcogl->height, dcogl->isEnabled);
+		RegisterLayer(dcogl, dcogl->x, dcogl->y);
 	return kNoErr;
 }
 
