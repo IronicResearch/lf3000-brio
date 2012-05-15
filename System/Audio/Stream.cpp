@@ -20,6 +20,8 @@
 
 #include <RawPlayer.h>
 #include <VorbisPlayer.h>
+#include <AudioOutput.h>
+#include <Mixer.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -51,6 +53,9 @@ CStream::CStream()
 		pRingBuf_[i] = new S16[kAudioOutBufSizeInWords];
 	nRenderIdx_ = nStreamIdx_ = nDoneIdx_ = 0;
 #endif
+
+	// Internal Brio mixer stream by default
+	bExternalStream_ = false;
 }	// ---- end CStream ----
 
 // ==============================================================================
@@ -119,6 +124,10 @@ tErrType CStream::Release( Boolean noPlayerDoneMsg )
 	if (!pPlayer_)
 		return (kNoErr);
 
+	// Remove external ALSA dmix stream
+	if (bExternalStream_)
+		RemoveAudioOutputAlsa(pPlayer_);
+
 	pPlayer_ = kNull;
 	isDone_ = false;
 
@@ -130,13 +139,17 @@ tErrType CStream::Release( Boolean noPlayerDoneMsg )
 // ==============================================================================
 tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 {
-
 	// Convert interface parameters to DSP level data and reset channel
 	pPlayer_	= pPlayer;
 
 	// Check sample rate of player to fit Brio mixer params
 	U32 rate = pPlayer->GetSampleRate();
-	if (rate > kAudioSampleRate) {
+	// Add external ALSA dmix stream for 44KHz support
+	if (rate == 44100) {
+		if (AddAudioOutputAlsa(&CAudioMixer::WrapperToCallPlayer, pPlayer, rate) == kNoErr)
+			bExternalStream_ = true;
+	}
+	else if (rate > kAudioSampleRate) {
 		rate = kAudioSampleRate;
 	}
 	else if (rate > kAudioSampleRate_Div2 && rate < kAudioSampleRate) {
@@ -205,6 +218,18 @@ U32 CStream::Render(S16 *pOut, int framesToRender )
 	int framesRendered	= 0;
 
 	ClearShorts(pOut, samplesToRender);
+
+	// Don't render to Brio mixer stream if external stream
+	if (bExternalStream_)
+	{
+		if (pPlayer_)
+		{
+			isDone_ = pPlayer_->IsDone();
+			if (!isDone_)
+				framesRendered = framesToRender;
+		}
+		return framesRendered;
+	}
 
 	// Call player to render a stereo buffer
 	if (pPlayer_)

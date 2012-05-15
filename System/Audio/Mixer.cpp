@@ -110,6 +110,7 @@ CDebugMPI *pDebugMPI_ = NULL;
 CEventMPI  *pEventMPI_ = NULL;
 CKernelMPI *pKernelMPI_ = NULL;
 tMutex mixerMutex_ = {0}; // real init via KernelMPI.InitMutex()
+CAudioMixer *pMixer_ = NULL;
 
 //------------------------------------------------------------------------------
 // Helper thread to re-try enabling PortAudio output
@@ -225,6 +226,8 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	tErrType err = pKernelMPI_->InitMutex( mixerMutex_, attr );
 	pDebugMPI_->Assert((kNoErr == err), "%s: Couldn't init mutex.\n", __FUNCTION__);
 	
+	pMixer_ = this;
+
 	// Allocate audio streams
 	pStreams_ = new CStream[ numInStreams_ ];
 	pDebugMPI_->Assert((pStreams_ != kNull),
@@ -1384,6 +1387,36 @@ int CAudioMixer::WrapperToCallRender( S16 *pOut,
 	MIXER_UNLOCK;
 	
 	return error;
+}
+
+int CAudioMixer::WrapperToCallPlayer( S16 *pOut,
+									  unsigned long numStereoFrames,
+									  void *pToObject  )
+{
+	int frames = 0;
+	CAudioPlayer* pPlayer = (CAudioPlayer*)pToObject;
+
+	MIXER_LOCK;
+
+	if (pPlayer->IsPaused())
+	{
+		ClearShorts(pOut, numStereoFrames*kAudioMixer_MaxOutChannels);
+		frames = numStereoFrames;
+	}
+	else
+	{
+		frames = pPlayer->Render( pOut, numStereoFrames );
+		if (pPlayer->IsDone()) {
+			if (pMixer_->HandlePlayerLooping(pPlayer))
+				pMixer_->HandlePlayerEvent(pPlayer, kAudioCompletedEvent);
+			else
+				pMixer_->HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
+		}
+	}
+
+	MIXER_UNLOCK;
+
+	return frames;
 }
 
 // ==============================================================================
