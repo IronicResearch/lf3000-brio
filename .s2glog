@@ -34081,3 +34081,15 @@ By Dave Milici (dmilici@leapfrog.com) on 5/15/12 12:53 PM
 4,984 ms. (Cumulative: 13,220,334 ms)
 
 ----------------
+Revision 9,869 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify AudioMPI mixer to add external stream via ALSA dmix plugin for 44KHz players. (TTP 3361)
+The 44KHz player is rendered and output to external stream as separate step in render thread.
+Internal Brio mixer stream monitors the player stream state as if it were really rendering.
+Note Mixer object tracks frames as separate channel entities from Player object stereo frames.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/15/12 1:04 PM
+6 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 13,225,444 ms)
+
+----------------

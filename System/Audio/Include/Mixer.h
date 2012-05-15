@@ -67,6 +67,7 @@ class CAudioMixer : private IEventListener
 	int Render( S16 *pOut, U32 frameCount );
 	
 	static int WrapperToCallRender( S16 *pOut, U32 frameCount, void *pObject );
+	static int WrapperToCallPlayer( S16 *pOut, U32 frameCount, void *pObject );
 
 	static void* RenderThread(void* pCtx);
 

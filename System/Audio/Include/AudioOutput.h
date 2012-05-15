@@ -36,6 +36,8 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData );
 int DeInitAudioOutputAlsa( void );
 int StartAudioOutputAlsa( void );
 int StopAudioOutputAlsa( void );
+int AddAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData, int rate );
+int RemoveAudioOutputAlsa( void* pUserData );
 
 #ifdef __cplusplus
 }

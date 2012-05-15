@@ -106,6 +106,8 @@ class CStream {
 	U32				nFrames_[kNumRingBufs]; 	// matching array of frames rendered
 	int				nDoneIdx_;					// buffer index when done rendering
 #endif
+
+	Boolean			bExternalStream_;			// uses external ALSA dmix stream
 };
 
 LF_END_BRIO_NAMESPACE()

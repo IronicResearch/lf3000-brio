@@ -354,6 +354,10 @@ static volatile bool 		bRendering = false;
 static volatile bool		bStopping = false;
 static tTaskHndl 			hndlThread = 0;
 static S16*					pOutputBuffer = NULL;
+static S16*					pRenderBuffer = NULL;
+static BrioAudioRenderCallback* pRenderCallback = NULL;
+static void* 				pPlayer = NULL;
+static snd_pcm_t* 			handle2 = NULL;
 //----------------------------------------------------------------------------
 static void* CallbackThread(void* pCtx)
 {
@@ -375,6 +379,16 @@ static void* CallbackThread(void* pCtx)
 	
 			// Output Brio render buffer to ALSA
 			direct_write_loop(handle, pOutputBuffer, period_size, channels);
+
+			// Brio render callback for additional player to separate ALSA output stream
+			if (pPlayer && pRenderCallback && pRenderBuffer)
+			{
+				r = pRenderCallback(pRenderBuffer, channels * kAudioFramesPerBuffer, pPlayer);
+
+				if (r > 0)
+					direct_write_loop(handle2, pRenderBuffer, r, channels);
+			}
+
 		}
 		else
 			pKernelMPI_->TaskSleep(10);
@@ -478,6 +492,66 @@ int DeInitAudioOutputAlsa( void )
 	pOutputBuffer = NULL;
 	
 	return snd_pcm_close(handle);
+}
+
+//==============================================================================
+// AddAudioOutput
+//==============================================================================
+int AddAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData, int rate )
+{
+	int err;
+
+	// Open additional ALSA stream via dmix plugin
+	if ((err = snd_pcm_open(&handle2, plugin, SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Playback dmix plugin open error: (%s) %s\n", plugin, snd_strerror(err));
+		return err;
+	}
+	if ((err = snd_pcm_set_params(handle2, format, access, channels, rate, resample, buffer_time)) < 0) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Setting of dmix params failed for rate=%d: %s\n", rate, snd_strerror(err));
+		return err;
+	}
+	if ((err = snd_pcm_start(handle2)) < 0) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Start dmix stream error: (%s) %s\n", plugin, snd_strerror(err));
+		return err;
+	}
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "Added dmix stream for rate=%d: (%s) %s\n", rate, plugin, snd_strerror(err));
+
+	// Create render buffer for additional player
+	pRenderBuffer = (S16*)pKernelMPI_->Malloc(kAudioOutBufSizeInBytes * 2);
+	if (!pRenderBuffer)
+		return kMemoryAllocationErr;
+
+	// Add player to render callback thread
+	pRenderCallback = callback;
+	pPlayer = pUserData;
+
+	return kNoErr;
+}
+
+//==============================================================================
+// RemoveAudioOutput
+//==============================================================================
+int RemoveAudioOutputAlsa( void* pUserData )
+{
+	if (pUserData != pPlayer)
+		return kInvalidParamErr;
+
+	// Close additional ALSA stream
+	bRendering = false;
+	pKernelMPI_->TaskSleep(10);
+	snd_pcm_drop(handle2);
+	snd_pcm_close(handle2);
+	handle2 = NULL;
+
+	// Release render buffer for additional player
+	if (pRenderBuffer)
+		pKernelMPI_->Free(pRenderBuffer);
+	pRenderBuffer = NULL;
+	pRenderCallback = NULL;
+	pPlayer = NULL;
+
+	bRendering = true;
+	return kNoErr;
 }
 
 LF_END_BRIO_NAMESPACE()
