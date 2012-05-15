@@ -127,6 +127,7 @@ tErrType CStream::Release( Boolean noPlayerDoneMsg )
 	// Remove external ALSA dmix stream
 	if (bExternalStream_)
 		RemoveAudioOutputAlsa(pPlayer_);
+	bExternalStream_ = false;
 
 	pPlayer_ = kNull;
 	isDone_ = false;
