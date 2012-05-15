@@ -1251,8 +1251,8 @@ int CAudioMixer::Render( S16 *pOut, U32 numFrames )
 					//stream buffer by rendering again
 					if(zeroSamples)
 					{
-						// FIXME: remainder at pStreamBuf_[framesRendered]
-						pStream->Render(pStreamBuf_ + framesRendered, framesToRender - framesRendered);
+						// BUGFIX: remainder at pStreamBuf_[framesRendered*channels]
+						pStream->Render(pStreamBuf_ + zeroOffset, framesToRender - framesRendered);
 					}
 					HandlePlayerEvent(pPlayer, kAudioLoopEndEvent);
 				}
