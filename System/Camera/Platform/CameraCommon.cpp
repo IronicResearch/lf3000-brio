@@ -1337,7 +1337,7 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 
 	if( !GetFrameInt(&camCtx_, camCtx_.buf.index))
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s\n", camCtx_.file);
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s, %d\n", camCtx_.file, errno);
 		CAMERA_UNLOCK;
 		return false;
     }
