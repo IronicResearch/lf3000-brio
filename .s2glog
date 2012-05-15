@@ -34102,3 +34102,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/15/12 1:32 PM
 4,987 ms. (Cumulative: 13,230,509 ms)
 
 ----------------
+Revision 9,871 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+New Nexell libs, now with OpenGL ES 2.0 and OpenVG support.  Placed here so that it will show up in the SDK.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/15/12 4:05 PM
+6 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 13,235,900 ms)
+
+----------------
