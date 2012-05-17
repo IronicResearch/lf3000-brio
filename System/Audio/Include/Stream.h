@@ -39,7 +39,7 @@ class CStream {
 	CStream();
 	~CStream();
 
-	tErrType	InitWithPlayer( CAudioPlayer* pPlayer );
+	tErrType	InitWithPlayer( CAudioPlayer* pPlayer, Boolean external );
 	tErrType	Release( Boolean noPlayerDoneMsg );
 
 	// Ask stream to get data from player and return it to caller's mix buffer.

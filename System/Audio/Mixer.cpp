@@ -908,7 +908,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	tAudioID id = kNoAudioID;
 	CAudioPlayer *pPlayer = NULL;
 	CStream *pStream;
-	CKernelMPI kernel_mpi;
+	Boolean external = false;
 	
 	MIXER_LOCK;
 	pStream = FindFreeStream( pInfo->priority );
@@ -936,10 +936,13 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	} 
 
-	pStream->InitWithPlayer( pPlayer );
+	// External stream handling if 44KHz MP3 player
+	external = (pPlayer->GetSampleRate() == 44100 && sExt && strcasecmp(sExt, "mp3") == 0);
+
+	pStream->InitWithPlayer( pPlayer, external );
 
 	// Warn if player sample rate was clamped to fit Brio mixer stream
-	if (pStream->GetSamplingFrequency() != pPlayer->GetSampleRate()) {
+	if (pStream->GetSamplingFrequency() != pPlayer->GetSampleRate() && !external) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant,
 				"%s: player %d sample rate clamped from %d to %d\n",
 				__FUNCTION__, (int)id, (int)pPlayer->GetSampleRate(), (int)pStream->GetSamplingFrequency());
