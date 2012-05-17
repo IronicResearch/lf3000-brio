@@ -34161,3 +34161,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/12 3:07 PM
 5,386 ms. (Cumulative: 13,263,277 ms)
 
 ----------------
+Revision 9,877 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+A new GetVideoTime that should be fast, requires a video handle.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/17/12 4:00 PM
+10 changed, 0 added, 0 deleted.
+5,719 ms. (Cumulative: 13,269,090 ms)
+
+----------------

@@ -250,6 +250,8 @@ public:
 	/// \return	The length of the video in milliseconds.  If hVideo is invalid, then it returns -1.
 	S64 		GetVideoLength(const CPath& path, int maxLength);
 
+	S64 		GetVideoLength(tVideoHndl hVideo);
+
 private:
 	class CVideoModule*	pModule_;
 	U32					id_;

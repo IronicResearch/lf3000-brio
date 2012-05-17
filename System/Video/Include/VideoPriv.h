@@ -107,6 +107,7 @@ public:
 	VTABLE_EXPORT Boolean 		IsVideoLooped(tVideoHndl hVideo);
 	VTABLE_EXPORT tVideoHndl	GetCurrentVideoHandle();
 	VTABLE_EXPORT S64 		GetVideoLength(const CPath& path, int maxLength);
+	VTABLE_EXPORT S64 		GetVideoLength(tVideoHndl hVideo);
 
 private:
 	CDebugMPI			dbg_;

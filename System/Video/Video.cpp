@@ -609,6 +609,22 @@ S64 CVideoModule::GetVideoLength(const CPath& path, int maxLength)
 	return prevTime;
 }
 
+S64 CVideoModule::GetVideoLength(tVideoHndl hVideo)
+{
+	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
+
+#if USE_MUTEX
+	kernel_.LockMutex(gVidMutex);
+#endif
+
+	S64 length = pVidCtx->pPlayer->GetVideoLength(hVideo);
+
+#if USE_MUTEX
+	kernel_.UnlockMutex(gVidMutex);
+#endif
+	return length;
+}
+
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoLooped(tVideoHndl hVideo)
 {
