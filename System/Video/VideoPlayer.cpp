@@ -82,6 +82,10 @@ Boolean CVideoPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolea
 	return false;
 }
 
+S64 CVideoPlayer::GetVideoLength(tVideoHndl hVideo)
+{
+	return 0;
+}
 LF_END_BRIO_NAMESPACE()	
 
 // EOF

@@ -41,6 +41,7 @@ public:
 	virtual Boolean 		GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime);
 	virtual Boolean 		SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop);
 	virtual Boolean 		SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay);
+	virtual S64 			GetVideoLength(tVideoHndl hVideo);
 
 protected:
 	CDebugMPI			dbg_;

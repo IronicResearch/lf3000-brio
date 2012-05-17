@@ -881,6 +881,28 @@ Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 	return found;
 }
 
+S64 CTheoraPlayer::GetVideoLength(tVideoHndl hVideo)
+{
+	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
+
+	if (!pVidCtx->bCodecReady)
+		return false;
+
+	FILE* file = pVidCtx->pFileVideo;
+	fseek(file, 0, SEEK_END);
+
+	long int right_pos = ftell(file);
+	long int left_pos = 0;
+
+	ogg_int64_t target_framepos = 4 * 60 * 60 * 1000 * ti.fps_numerator / ti.fps_denominator;
+	target_framepos = BinarySeekFrame(file, target_framepos, left_pos, right_pos);
+	int theora_keyframe_shift = theora_granule_shift(&ti);
+	target_framepos = target_framepos >> theora_keyframe_shift | (theora_keyframe_shift & ((1 <<theora_keyframe_shift) - 1));
+	target_framepos = target_framepos * ti.fps_denominator / ti.fps_numerator;
+
+	return target_framepos;
+}
+
 LF_END_BRIO_NAMESPACE()	
 
 // EOF

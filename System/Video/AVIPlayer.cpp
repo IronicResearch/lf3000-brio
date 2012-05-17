@@ -472,6 +472,12 @@ Boolean CAVIPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 	return false;
 }
 
+S64 CAVIPlayer::GetVideoLength(tVideoHndl hVideo)
+{
+	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
+
+	return pFormatCtx->duration * 1000 / AV_TIME_BASE;
+}
 LF_END_BRIO_NAMESPACE()	
 
 // EOF
