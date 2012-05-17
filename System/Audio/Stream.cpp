@@ -138,7 +138,7 @@ tErrType CStream::Release( Boolean noPlayerDoneMsg )
 // ==============================================================================
 // InitWithPlayer
 // ==============================================================================
-tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
+tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer, Boolean external )
 {
 	// Convert interface parameters to DSP level data and reset channel
 	pPlayer_	= pPlayer;
@@ -146,7 +146,7 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 	// Check sample rate of player to fit Brio mixer params
 	U32 rate = pPlayer->GetSampleRate();
 	// Add external ALSA dmix stream for 44KHz support
-	if (rate == 44100) {
+	if (rate == 44100 && external) {
 		if (AddAudioOutputAlsa(&CAudioMixer::WrapperToCallPlayer, pPlayer, rate) == kNoErr)
 			bExternalStream_ = true;
 		rate = kAudioSampleRate;
