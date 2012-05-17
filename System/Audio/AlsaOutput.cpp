@@ -358,6 +358,7 @@ static S16*					pRenderBuffer = NULL;
 static BrioAudioRenderCallback* pRenderCallback = NULL;
 static void* 				pPlayer = NULL;
 static snd_pcm_t* 			handle2 = NULL;
+static unsigned int			ratedmix = kAudioSampleRate;
 //----------------------------------------------------------------------------
 static void* CallbackThread(void* pCtx)
 {
@@ -383,7 +384,7 @@ static void* CallbackThread(void* pCtx)
 			// Brio render callback for additional player to separate ALSA output stream
 			if (pPlayer && pRenderCallback && pRenderBuffer)
 			{
-				r = pRenderCallback(pRenderBuffer, kAudioFramesPerBuffer * 44 / 32, pPlayer);
+				r = pRenderCallback(pRenderBuffer, kAudioFramesPerBuffer * ratedmix / kAudioSampleRate, pPlayer);
 
 				if (r > 0)
 					direct_write_loop(handle2, pRenderBuffer, r, channels);
@@ -517,7 +518,8 @@ int AddAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData, int 
 	pDebugMPI_->DebugOut(kDbgLvlImportant, "Added dmix stream for rate=%d: (%s) %s\n", rate, plugin, snd_strerror(err));
 
 	// Create render buffer for additional player
-	pRenderBuffer = (S16*)pKernelMPI_->Malloc(kAudioOutBufSizeInBytes * 44 / 32);
+	ratedmix = rate;
+	pRenderBuffer = (S16*)pKernelMPI_->Malloc(kAudioOutBufSizeInBytes * ratedmix / kAudioSampleRate);
 	if (!pRenderBuffer)
 		return kMemoryAllocationErr;
 

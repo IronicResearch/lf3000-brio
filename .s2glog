@@ -34132,3 +34132,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/17/12 10:01 AM
 5,331 ms. (Cumulative: 13,246,841 ms)
 
 ----------------
+Revision 9,874 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Render external player stream proportionally to Brio mixer rate. (2 of 2)
+
+By Dave Milici (dmilici@leapfrog.com) on 5/17/12 10:10 AM
+1 changed, 0 added, 0 deleted.
+5,316 ms. (Cumulative: 13,252,266 ms)
+
+----------------
