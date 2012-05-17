@@ -542,6 +542,7 @@ int RemoveAudioOutputAlsa( void* pUserData )
 	snd_pcm_drop(handle2);
 	snd_pcm_close(handle2);
 	handle2 = NULL;
+	pDebugMPI_->DebugOut(kDbgLvlImportant, "Removed dmix stream for player %p\n", pPlayer);
 
 	// Release render buffer for additional player
 	if (pRenderBuffer)

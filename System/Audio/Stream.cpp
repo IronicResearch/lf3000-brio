@@ -149,6 +149,7 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer )
 	if (rate == 44100) {
 		if (AddAudioOutputAlsa(&CAudioMixer::WrapperToCallPlayer, pPlayer, rate) == kNoErr)
 			bExternalStream_ = true;
+		rate = kAudioSampleRate;
 	}
 	else if (rate > kAudioSampleRate) {
 		rate = kAudioSampleRate;
