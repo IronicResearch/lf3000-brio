@@ -34111,3 +34111,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/15/12 4:05 PM
 5,313 ms. (Cumulative: 13,235,900 ms)
 
 ----------------
+Revision 9,872 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added AudioMPI unit test for 44KHz player. 
+Stream still needs to clamp sample rate to prevent buffer overflows stomping state vars.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/16/12 5:02 PM
+3 changed, 1 added, 0 deleted.
+5,422 ms. (Cumulative: 13,241,416 ms)
+
+----------------

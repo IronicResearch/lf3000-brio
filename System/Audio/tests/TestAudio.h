@@ -1034,4 +1034,38 @@ public:
 		fclose(fp);
 	}
 
+    //------------------------------------------------------------------------
+    void testPlayback44KHz()
+	{
+		tAudioID 				id;
+
+		PRINT_TEST_NAME();
+
+		TS_ASSERT( pAudioMPI_ != NULL );
+		TS_ASSERT( pKernelMPI_ != NULL );
+
+		// 500Hz sine in 16KHz OGG
+		id = pAudioMPI_->StartAudio("Sine_500Hz.ogg", kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while (pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+		pAudioMPI_->StopAudio(id, false);
+		pKernelMPI_->TaskSleep(500);
+
+		// 500Hz sine in 44KHz WAV
+		id = pAudioMPI_->StartAudio("TestTone_500Hz.wav", kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while (pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+		pAudioMPI_->StopAudio(id, false);
+		pKernelMPI_->TaskSleep(500);
+
+		// 500Hz sine in 16KHz OGG
+		id = pAudioMPI_->StartAudio("Sine_500Hz.ogg", kPayload, kFlags);
+		TS_ASSERT(id != kNoAudioID);
+		while (pAudioMPI_->IsAudioPlaying(id))
+			pKernelMPI_->TaskSleep(100);
+		pAudioMPI_->StopAudio(id, false);
+	}
+
 };
