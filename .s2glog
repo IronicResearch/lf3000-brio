@@ -34170,3 +34170,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/17/12 4:00 PM
 5,719 ms. (Cumulative: 13,269,090 ms)
 
 ----------------
+Revision 9,878 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+New BrioOpenGL2Config.  Using this creates OpenGL ES 2 context for you, works similar to BrioOpenGLConfig.
+
+By Minh Saelock (msaelock@leapfrog.com) on 5/17/12 4:02 PM
+1 changed, 1 added, 0 deleted.
+5,328 ms. (Cumulative: 13,274,512 ms)
+
+----------------
