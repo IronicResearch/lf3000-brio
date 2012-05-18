@@ -289,8 +289,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
-	
+
+#ifndef LF1000
 	eglBindAPI(EGL_OPENGL_ES_API);
+#endif
 
 	// NOTE: 3D layer can only be enabled after MagicEyes lib 
 	// sets up 3D accelerator, but this cannot happen
@@ -431,6 +433,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	}
 }
 
+#ifndef LF1000
 BrioOpenGL2Config::BrioOpenGL2Config()
 	:
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
@@ -457,22 +460,14 @@ BrioOpenGL2Config::BrioOpenGL2Config()
 	}
 
 #ifndef EMULATION
-#ifdef 	LF1000
-	// Init OpenGL hardware callback struct
-	meminfo.Memory1D_SizeInMbyte = size1D;
-	meminfo.Memory2D_SizeInMbyte = size2D;
-	ctx.pOEM = &meminfo;
-	// FIXME/dm: How is LF1000 OGL lib configured for FSAA option?
-	ctx.bFSAA = false;
-#endif
 	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
 	ctx.eglDisplay = display; // FIXME typedef
 	ctx.eglWindow = &hwnd; // something non-NULL
-#ifdef 	LF2000
+
 	disp_.InitOpenGL(&ctx);
 	hwnd.width = ctx.width;
 	hwnd.height = ctx.height;
-#endif
+
 #else
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
@@ -595,13 +590,11 @@ BrioOpenGL2Config::BrioOpenGL2Config()
 	eglSwapBuffers(eglDisplay, eglSurface);
 	AbortIfEGLError("eglSwapBuffers (BOGL ctor)");
 
-#ifdef LF2000
 	// Enable display context layer visibility after initial buffer swap
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
 #ifndef EMULATION
 	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
-#endif
 #endif
 
 	// Store handle for use in Display MPI functions
@@ -612,14 +605,12 @@ BrioOpenGL2Config::BrioOpenGL2Config()
 //----------------------------------------------------------------------
 BrioOpenGL2Config::~BrioOpenGL2Config()
 {
-#ifdef LF2000
 	// Disable 3D layer before disabling accelerator
 #ifndef EMULATION
 	__vr5_set_swap_buffer_callback(0);
 #endif
 	disp_.DisableOpenGL();
 	isEnabled = false;
-#endif
 
 	/*
 		Step 9 - Terminate OpenGL ES and destroy the window (if present).
@@ -639,10 +630,8 @@ BrioOpenGL2Config::~BrioOpenGL2Config()
 		Again, this is platform specific and delegated to a separate function.
 	*/
 
-#ifdef LF2000
 	// Exit OpenGL hardware
 	disp_.DeinitOpenGL();
-#endif
 
 	if(dispmgr)
 	{
@@ -650,6 +639,8 @@ BrioOpenGL2Config::~BrioOpenGL2Config()
 		dispmgr = 0;
 	}
 }
+#endif
+
 LF_END_BRIO_NAMESPACE()
 
 // eof
