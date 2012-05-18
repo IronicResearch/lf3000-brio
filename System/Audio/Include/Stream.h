@@ -108,6 +108,7 @@ class CStream {
 #endif
 
 	Boolean			bExternalStream_;			// uses external ALSA dmix stream
+	S16*			pDownMixBuf_;				// down-mix buffer for sample rate conversion
 };
 
 LF_END_BRIO_NAMESPACE()
