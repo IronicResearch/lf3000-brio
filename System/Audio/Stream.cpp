@@ -56,6 +56,7 @@ CStream::CStream()
 
 	// Internal Brio mixer stream by default
 	bExternalStream_ = false;
+	pDownMixBuf_ = NULL;
 }	// ---- end CStream ----
 
 // ==============================================================================
@@ -129,6 +130,11 @@ tErrType CStream::Release( Boolean noPlayerDoneMsg )
 		RemoveAudioOutputAlsa(pPlayer_);
 	bExternalStream_ = false;
 
+	// Release down-mix buffer, if any
+	if (pDownMixBuf_)
+		delete[] pDownMixBuf_;
+	pDownMixBuf_ = NULL;
+
 	pPlayer_ = kNull;
 	isDone_ = false;
 
@@ -152,12 +158,15 @@ tErrType CStream::InitWithPlayer( CAudioPlayer* pPlayer, Boolean external )
 		rate = kAudioSampleRate;
 	}
 	else if (rate > kAudioSampleRate) {
+		pDownMixBuf_ = new S16[kAudioSamplesPerStereoBuffer * rate / kAudioSampleRate];
 		rate = kAudioSampleRate;
 	}
 	else if (rate > kAudioSampleRate_Div2 && rate < kAudioSampleRate) {
+		pDownMixBuf_ = new S16[kAudioSamplesPerStereoBuffer * rate / kAudioSampleRate_Div2];
 		rate = kAudioSampleRate_Div2;
 	}
 	else if (rate < kAudioSampleRate_Div2) {
+		pDownMixBuf_ = new S16[kAudioSamplesPerStereoBuffer * rate / kAudioSampleRate_Div4];
 		rate = kAudioSampleRate_Div4;
 	}
 	SetSamplingFrequency(rate);
@@ -233,8 +242,29 @@ U32 CStream::Render(S16 *pOut, int framesToRender )
 		return framesRendered;
 	}
 
+	// Render stream at nominal sample rate and down-sample via 11:8 decimation transfer
+	if (pPlayer_ && pDownMixBuf_ && pPlayer_->GetSampleRate() != GetSamplingFrequency())
+	{
+		framesRendered	= pPlayer_->Render( pDownMixBuf_, framesToRender * 11 / 8 );
+		S32* pOut32 = (S32*)pOut;
+		S32* pIn32  = (S32*)pDownMixBuf_;
+		for (int i = 0, n = 0; i < framesRendered; i += 11, n += 8)
+		{
+			pOut32[n+0] = pIn32[i+0];
+			pOut32[n+1] = pIn32[i+1];
+			pOut32[n+2] = pIn32[i+2];
+			pOut32[n+3] = pIn32[i+4];
+			pOut32[n+4] = pIn32[i+5];
+			pOut32[n+5] = pIn32[i+7];
+			pOut32[n+6] = pIn32[i+8];
+			pOut32[n+7] = pIn32[i+9];
+		}
+		framesRendered  = framesRendered * 8 / 11;
+		samplesRendered = framesRendered*2;
+		isDone_ = pPlayer_->IsDone();
+	}
 	// Call player to render a stereo buffer
-	if (pPlayer_)
+	else if (pPlayer_)
 	{
 		framesRendered	= pPlayer_->Render( pOut, framesToRender );
 		samplesRendered = framesRendered*2;
