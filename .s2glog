@@ -34179,3 +34179,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 5/17/12 4:02 PM
 5,328 ms. (Cumulative: 13,274,512 ms)
 
 ----------------
+Revision 9,879 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix defines so that LF1000 can build BrioOpenGLConfig out of LF2000 branch.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/17/12 6:09 PM
+1 changed, 0 added, 0 deleted.
+4,942 ms. (Cumulative: 13,279,548 ms)
+
+----------------
