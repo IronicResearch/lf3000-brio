@@ -34198,3 +34198,14 @@ By Dave Milici (dmilici@leapfrog.com) on 5/18/12 2:59 PM
 5,063 ms. (Cumulative: 13,284,689 ms)
 
 ----------------
+Revision 9,881 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added ARM binaries for MP3-enabled codecs as patch lib set, compiled from libav 0.5.7 source for LF2000/uclibc.
+Intended to be deployed as patch lib set only, (ie, bundled with MP3 music player app download package).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/18/12 5:12 PM
+0 changed, 8 added, 0 deleted.
+5,311 ms. (Cumulative: 13,290,078 ms)
+
+----------------
