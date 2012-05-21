@@ -148,6 +148,7 @@ def RunMyTests(ptarget, psources, plibs, penv):
 	else:
 		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
 		testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/' + penv['cpu']])
+		testenv.Append(RPATH = [ os.path.join( penv['staging_dir'].abspath, 'usr', 'lib' ) ])
 
 		if penv['platform'] == 'LF2000':
 			# FIXME: SCons 1.2.0 bug: leading hash not parsed

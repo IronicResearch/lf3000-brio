@@ -34218,3 +34218,12 @@ By dlazzari (dlazzari@leapfrog.com) on 5/21/12 2:47 PM
 4,985 ms. (Cumulative: 13,295,157 ms)
 
 ----------------
+Revision 9,883 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add nfsroot/usr/lib to RPATH when building tests so that they can compile with old angstrom toolchain.
+
+By dlazzari (dlazzari@leapfrog.com) on 5/21/12 3:16 PM
+1 changed, 0 added, 0 deleted.
+5,086 ms. (Cumulative: 13,300,321 ms)
+
+----------------
