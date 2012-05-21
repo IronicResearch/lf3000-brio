@@ -15,7 +15,6 @@
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <BrioOpenGLConfig.h>
-#include <BrioOpenGL2Config.h>
 #include <DebugMPI.h>
 #include <EmulationConfig.h>
 #include <DisplayPriv.h>
@@ -434,7 +433,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 }
 
 #ifndef LF1000
-BrioOpenGL2Config::BrioOpenGL2Config()
+BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	:
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
@@ -529,7 +528,6 @@ BrioOpenGL2Config::BrioOpenGL2Config()
 	    EGL_DEPTH_SIZE,     16,
 	    EGL_STENCIL_SIZE,   8,
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
-	    EGL_RENDERABLE_TYPE,	EGL_OPENGL_ES2_BIT,
 	    EGL_NONE,           EGL_NONE
 	};
 
@@ -565,7 +563,7 @@ BrioOpenGL2Config::BrioOpenGL2Config()
 		(or shared contexts)
 	*/
 	dbg.DebugOut(kDbgLvlVerbose, "eglCreateContext()\n");
-	EGLint ai32ContextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+	EGLint ai32ContextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, brioOpenGLVersion, EGL_NONE };
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, ai32ContextAttribs);
 	AbortIfEGLError("eglCreateContext");
 
@@ -600,44 +598,6 @@ BrioOpenGL2Config::BrioOpenGL2Config()
 	// Store handle for use in Display MPI functions
 	hndlDisplay = ctx.hndlDisplay;
 	dbg.DebugOut(kDbgLvlVerbose, "display handle = %p\n", hndlDisplay);
-}
-
-//----------------------------------------------------------------------
-BrioOpenGL2Config::~BrioOpenGL2Config()
-{
-	// Disable 3D layer before disabling accelerator
-#ifndef EMULATION
-	__vr5_set_swap_buffer_callback(0);
-#endif
-	disp_.DisableOpenGL();
-	isEnabled = false;
-
-	/*
-		Step 9 - Terminate OpenGL ES and destroy the window (if present).
-		eglTerminate takes care of destroying any context or surface created
-		with this display, so we don't need to call eglDestroySurface or
-		eglDestroyContext here.
-	*/
-	eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) ;
-	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
-	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
-	eglTerminate(eglDisplay);
-	eglContext = NULL;
-	eglSurface = NULL;
-
-	/*
-		Step 10 - Destroy the eglWindow.
-		Again, this is platform specific and delegated to a separate function.
-	*/
-
-	// Exit OpenGL hardware
-	disp_.DeinitOpenGL();
-
-	if(dispmgr)
-	{
-		delete dispmgr;
-		dispmgr = 0;
-	}
 }
 #endif
 
