@@ -50,6 +50,12 @@ struct tOpenGLContext
 	tDisplayHandle		hndlDisplay;	// display handle for OpenGL
 };
 
+enum tBrioOpenGLVersion
+{
+	kBrioOpenGL11 = 1,
+	kBrioOpenGL20 = 2
+};
+
 //==============================================================================
 // BrioOpenGLConfig
 //==============================================================================
@@ -57,6 +63,7 @@ class BrioOpenGLConfig
 {
 public:
 	BrioOpenGLConfig(U32 size1D = kHeap1DMeg, U32 size2D = kHeap2DMeg);
+	BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion);
 	~BrioOpenGLConfig();
 
 	// EGL variables
