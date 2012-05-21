@@ -38,6 +38,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define	REG3D_PHYS				0xC001A000UL	// 3D engine register block
 #define REG3D_SIZE				0x00002000
 
+tDisplayHandle				hogl = NULL;
 namespace 
 {
 	const char*					FBDEV[NUMFB] = {"/dev/fb0", "/dev/fb1", "/dev/fb2"};
@@ -60,7 +61,6 @@ namespace
 	void*						preg3d = NULL;
 	void*						pmem1d = NULL;
 	void*						pmem2d = MAP_FAILED;
-	tDisplayHandle				hogl = NULL;
 	tDisplayContext				dcmem1;		// memory block context for 1D heap
 	tDisplayContext				dcmem2;		// memory block context for 2D heap
 	
