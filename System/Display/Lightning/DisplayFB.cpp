@@ -112,12 +112,6 @@ void CDisplayFB::InitModule()
 		fscanf(f, "%u", &yres);
 		fclose(f);
 	}
-	f = fopen("/sys/class/graphics/fb0/virtual_size", "r");
-	if (f) {
-		fscanf(f, "%u,%u", &xres, &yres);
-		fclose(f);
-		yres /= 2;
-	}
 	dbg_.DebugOut(kDbgLvlImportant, "%s: Screen = %u x %u\n", __FUNCTION__, xres, yres);
 	
 	for (int n = 0; n < NUMFB; n++)
@@ -161,7 +155,7 @@ void CDisplayFB::InitModule()
 	gBufListUsed.clear();
 	gBufListFree.clear();
 	gMarkBufStart = 0;
-	gMarkBufEnd   = finfo[RGBFB].smem_len + finfo[OGLFB].smem_len + finfo[YUVFB].smem_len;
+	gMarkBufEnd   = finfo[RGBFB].smem_len; 
 }
 
 //----------------------------------------------------------------------------
@@ -234,11 +228,6 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 		vinfo[n].blue.offset  = 0;
 		vinfo[n].green.offset = vinfo[n].blue.offset + vinfo[n].blue.length;
 		vinfo[n].red.offset   = vinfo[n].green.offset + vinfo[n].green.length;
-		// Swizzle RGB for OGL
-		if (isBlockAddr) {
-			vinfo[n].blue.offset  = vinfo[n].red.offset;
-			vinfo[n].red.offset   = 0;
-		}
 		// Block addressing mode needed for OGL framebuffer context?
 		if (isBlockAddr)
 			vinfo[n].nonstd |= (1<<23);
@@ -1045,7 +1034,7 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 			kernel_.UnlockMutex(gListMutex);
 			return false;
 		}
-		pdc->offset = gMarkBufEnd - bufsize - finfo[RGBFB].smem_len - finfo[OGLFB].smem_len;
+		pdc->offset = gMarkBufEnd - bufsize;
 		pdc->pBuffer += pdc->offset;
 		gMarkBufEnd -= bufsize;
 	}
