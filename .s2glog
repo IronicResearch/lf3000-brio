@@ -34254,3 +34254,13 @@ By dlazzari (dlazzari@leapfrog.com) on 5/21/12 5:10 PM
 5,266 ms. (Cumulative: 13,315,916 ms)
 
 ----------------
+Revision 9,887 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge RGB layer policy changes from LF1000 which post-date LF2000 branch version.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/21/12 5:56 PM
+1 changed, 0 added, 0 deleted.
+5,672 ms. (Cumulative: 13,321,667 ms)
+
+----------------

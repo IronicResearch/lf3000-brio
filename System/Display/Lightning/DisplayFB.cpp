@@ -253,33 +253,24 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	int n, r;
 	switch (colorDepth) 
 	{
-		// Default to lower RGB layer -- FIXME
-		case kPixelFormatRGB4444:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB565:	depth = 16; n = RGBFB; break;
-		case kPixelFormatRGB888:	depth = 24; n = RGBFB; break; 	
+		// Default to lower RGB layer	
+		case kPixelFormatRGB4444:	depth = 16; n = OGLFB; break;
+		case kPixelFormatRGB565:	depth = 16; n = OGLFB; break;
+		case kPixelFormatRGB888:	depth = 24; n = OGLFB; break;
 		default:
-		case kPixelFormatARGB8888: 	depth = 32; n = RGBFB; break;
+		case kPixelFormatARGB8888: 	depth = 32; n = OGLFB; break;
 		case kPixelFormatYUV420:	depth = 8 ; n = YUVFB; break;
 		case kPixelFormatYUYV422:	depth = 16; n = YUVFB; break;
 	}		
 	
-	// OGL framebuffer context?
-	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
-		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
-		n = OGLFB;
-
 	// Update dxres && dyres in case someone called SetViewPort without calling GetScreenStats
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
-	// FIXME: RGB lower layer needed when viewport active
-	// FIXME: Switch RGB layer prior to isUnderlay setting
-	if (n == RGBFB && (dxres > 0 || dyres > 0))
-		n = OGLFB;
-	
+
 	// Block addressing mode needed for OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
 		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
 		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
-	else
+	else if (pBuffer == NULL)
 		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 
 	// Pitch depends on width for normal RGB modes, otherwise
@@ -328,7 +319,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		ctx->offset = pBuffer - fbmem[n];
 		ctx->pitch  = finfo[n].line_length;
 		if (n == YUVFB)
-		switch((vinfo[n].nonstd & (3<<24)) >> 24)
+		switch(NONSTD_TO_POS(vinfo[n].nonstd))
 		{
 		case 0:
 			ctx->initialZOrder = kDisplayOnOverlay;
@@ -391,11 +382,11 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	// Set XY onscreen position
 	int n = ctx->layer;
 
-#if 0 // FIXME
 	// Change to upper RGB layer for explicit overlay registration
 	if (n == OGLFB && ctx->initialZOrder== kDisplayOnOverlay)
 		n = ctx->layer = RGBFB;
 
+#if 0 // FIXME
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
 	//if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
 	//	n = ctx->layer = RGBFB;
