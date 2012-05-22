@@ -41,6 +41,8 @@ if env['hdr_deploy_dir']:
 					Dir('ustring').abspath, '.h')
 	ExportHeaders(env['hdr_deploy_dir'].Dir('freetype').abspath,
 					Dir('FreeType').Dir('Include').abspath, '.h')
+	ExportHeaders(env['hdr_deploy_dir'].abspath,
+					Dir('LibJPEG').Dir('Include').abspath, '.h')
 
 #Install OpenGL headers
 	dest_dir = env['hdr_deploy_dir'].Dir('OpenGL').Dir('x86').abspath
