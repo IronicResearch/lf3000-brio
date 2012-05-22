@@ -53,7 +53,11 @@ static const unsigned int MIC_PERIOD	= 50000;	// usec
 
 static       unsigned int MIC_BOOST		= 2;		// bit shift for SW boost
 
+#ifdef LF1000
+static const char *cap_name = "plughw:1,0";	// FIXME: capture/playback on separate HW devices
+#else
 static const char *cap_name = "plughw:0,0";	// FIXME: capture/playback on same HW device = LFP100
+#endif
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
  * automatic conversion.  Opening plughw:1,0 uses the alsa plug plugin to open hw:1,0
  * as a slave device, but allows rate/channel/format conversion.
@@ -367,15 +371,17 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 	valid = false;
 	event_.PostEvent(usb_msg, 0, listener_);
 
+#ifdef LF2000
 	// Not necessarily USB audio anymore (E2K, M2K)
 	valid = InitMicrophoneInt();
-
+#else
 	// Wait for USB host power to enable drivers on Madrid
 	if (GetPlatformName() == "Madrid") {
 		int counter = 500;
 		while (!valid && --counter > 0)
 			kernel_.TaskSleep(10);
 	}
+#endif
 }
 
 //----------------------------------------------------------------------------
