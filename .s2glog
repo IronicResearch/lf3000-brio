@@ -34285,3 +34285,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/22/12 7:22 PM
 5,337 ms. (Cumulative: 13,332,504 ms)
 
 ----------------
+Revision 9,890 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally compile IDCT support for LF1000 to yield faster USB camera viewfinder.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/23/12 1:03 PM
+2 changed, 0 added, 0 deleted.
+5,330 ms. (Cumulative: 13,337,943 ms)
+
+----------------

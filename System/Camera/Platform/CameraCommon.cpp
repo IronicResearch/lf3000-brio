@@ -1733,7 +1733,7 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 		bRet = false;
 		;
 	}
-#if 0 //#ifndef EMULATION
+#ifdef LF1000 //#ifndef EMULATION
 	/*
 	 * Decode JPEG using jpeg_read_coefficients() and LF1000 IDCT, then paint
 	 * video layer directly.  This has about 5 fps better performance than the
@@ -2552,7 +2552,7 @@ Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 	}
 #endif
 
-#if 0
+#ifdef LF1000
 	if(kNoErr != InitIDCTInt())
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: idct init failed\n");
@@ -2599,7 +2599,7 @@ void CCameraModule::InitLut(void)
 //----------------------------------------------------------------------------
 Boolean	CCameraModule::DeinitCameraInt(bool reinit)
 {
-#if 0
+#ifdef LF1000
 	if(kNoErr != DeinitIDCTInt())
 	{
 		return false;
