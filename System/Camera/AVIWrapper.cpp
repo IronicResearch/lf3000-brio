@@ -69,6 +69,7 @@ avi_t* AVI_open_output_file(char * filename, bool audio)
 	// Init AVI file, video & audio config pending
 	av_set_parameters(avi->pFormatCtx, NULL);
 	avi->bVideoConfig = avi->bAudioConfig = false;
+	avi->pVideoFrame = NULL;
 	avi->pEncoderBuf = NULL;
 	avi->iEncoderLength = 0;
 
@@ -151,7 +152,8 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const __u32 ca
 	c->time_base.den 	= (int)fps;
 	c->time_base.num 	= 1;
 	c->gop_size 		= 1; // intraframe
-
+	c->pix_fmt 			= PIX_FMT_YUVJ422P;
+	
 	// FIXME: incoming images have clamped color space, codec requires full gamut
 	// use libavfilter to adjust colorspace, instead of spoofing it here?
 	switch(camfmt) {
