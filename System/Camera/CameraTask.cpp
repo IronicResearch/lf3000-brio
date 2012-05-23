@@ -210,6 +210,7 @@ void* CameraTaskMain(void* arg)
 		{
 		case kPixelFormatYUV420:
 			image.format	= kBitmapFormatYCbCr888;
+#if 0 // FIXME: IDCT support
 			/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
 			 * HW IDCT QVGA->QVGA rendering
 			 */
@@ -217,6 +218,7 @@ void* CameraTaskMain(void* arg)
 			{
 				method		= JPEG_HW2;
 			}
+#endif
 			break;
 		case kPixelFormatRGB888:
 			image.format	= kBitmapFormatRGB888;

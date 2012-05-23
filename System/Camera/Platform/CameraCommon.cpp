@@ -65,7 +65,12 @@ bool PNG_save(const char* file, int width, int height, int pitch, char* data);
 #define USE_PROFILE			0
 
 // V4L2_MEMORY_XXXX must be either V4L2_MEMORY_MMAP or V4L2_MEMORY_USERPTR
+#ifdef  LF2000
 #define V4L2_MEMORY_XXXX	V4L2_MEMORY_USERPTR
+#else
+#define V4L2_MEMORY_XXXX	V4L2_MEMORY_MMAP
+#define EMULATION			1
+#endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
@@ -432,7 +437,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 #endif
 	}
 
-#if 0 // FIXME: VIP	
+#ifdef LF1000 // FIXME: VIP	
 	memset(&rb, 0, sizeof(struct v4l2_requestbuffers));
 
 	rb.count  = 0;
@@ -1630,8 +1635,9 @@ Boolean CCameraModule::RenderFrame(tFrameInfo *frame, tVideoSurf *surf, tBitmapI
 	int								row_stride;
 	Boolean							bRet = true, bAlloc = false;
 
-	CAMERA_LOCK;
-
+	if (JPEG_SLOW == method)
+		CAMERA_LOCK;
+	
 	// TODO: don't allocate this on every render
 	if(bitmap == NULL)
 	{
@@ -1799,8 +1805,9 @@ out:
 		delete bitmap;
 	}
 
-	CAMERA_UNLOCK;
-
+	if (JPEG_SLOW == method)
+		CAMERA_UNLOCK;
+	
 	return bRet;
 }
 
@@ -1944,11 +1951,13 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
+#ifdef LF2000
 	if (fpath.empty())
 	{
 		hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
 	}
 	else
+#endif
 	if(kNoErr == InitCameraTask(&camCtx_))
 	{
 		hndl = camCtx_.hndl;
@@ -2242,7 +2251,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto bail_out;
 	}
 
-#if 1
+#ifdef LF2000
 	// HACK: Get and discard some frames from video stream first
 	for (int i = 0; i < 3; i++)
 	{
