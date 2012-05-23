@@ -294,7 +294,7 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 CCameraModule::~CCameraModule()
 {
 	StopVideoCapture(camCtx_.hndl);
-//	StopAudioCapture(micCtx_.hndl);
+
 	delete micListener_;
 	delete microphone_;
 
@@ -2018,18 +2018,6 @@ Boolean	CCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 		return hndl;
 	}
 
-#if 0 // This all is no longer necessary, for CameraTask now handles Stopping the Audio Capture.
-	if(camCtx_.path.length() && camCtx_.bAudio)
-	{
-		if(!StopAudio())
-		{
-			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StopVideoCapture: failed to halt audio streaming\n");
-			CAMERA_UNLOCK;
-			THREAD_UNLOCK;
-			return false;
-		}
-	}
-#endif
 
 	camCtx_.hndl 	= kInvalidVidCapHndl;
 
@@ -2601,13 +2589,6 @@ Boolean	CCameraModule::DeinitCameraInt(bool reinit)
 {
 #ifdef LF1000
 	if(kNoErr != DeinitIDCTInt())
-	{
-		return false;
-	}
-#endif
-
-#if 0
-	if(kNoErr != DeinitMicInt())
 	{
 		return false;
 	}

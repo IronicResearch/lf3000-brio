@@ -34294,3 +34294,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/23/12 1:03 PM
 5,330 ms. (Cumulative: 13,337,943 ms)
 
 ----------------
+Revision 9,891 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,892 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Removed Camera module dead code left behind by MicrophoneMPI migration.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/23/12 3:31 PM
+1 changed, 0 added, 0 deleted.
+5,675 ms. (Cumulative: 13,343,712 ms)
+
+----------------
