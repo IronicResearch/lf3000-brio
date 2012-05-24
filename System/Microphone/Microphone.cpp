@@ -156,12 +156,17 @@ namespace
 //============================================================================
 
 //----------------------------------------------------------------------------
-inline void SHIFT_XFER(S16* pdst, S16* psrc, int len)
+inline void SHIFT_XFER(S16* pdst, S16* psrc, int len, int shift)
 {
 	register S32 test32;
+	if (shift == 0)
+	{
+		memcpy(pdst, psrc, len);
+		return;
+	}
 	for (int i = 0; i < len; i+=2)
 	{
-		test32 = (S32)*psrc << MIC_BOOST;
+		test32 = (S32)*psrc << shift;
 		*pdst = (S16)test32;
 		if (test32 < kS16Min)
 			*pdst = kS16Min;
@@ -324,6 +329,10 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 	const tMutexAttr	attr = {0};
 	tUSBDeviceData		usb_data;
 	FILE*				fp;
+
+#ifdef LF1000
+	MIC_BOOST = (HasPlatformCapability(kCapsLF1000)) ? 0 : MIC_BOOST;
+#endif
 
 	fp = fopen("/flags/mic-boost", "r");
 	if (fp) {
@@ -827,7 +836,7 @@ unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
 		char** ptr = (char**)avi;
 		*ptr = (char*)micCtx_.poll_buf;
-		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
+		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		micCtx_.counter++;
@@ -882,7 +891,7 @@ Boolean	CMicrophoneModule::WriteAudio(SNDFILE *wav)
 
 	// Write captured samples to WAV file directly from mmapped buffer
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
-		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
+		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
 		sf_write_raw(wav, micCtx_.poll_buf, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
@@ -923,11 +932,8 @@ Boolean	CMicrophoneModule::FlushAudio()
 
 		// Copy captured samples directly from mmapped buffer
 		if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
-			unsigned int boost = MIC_BOOST;
-			MIC_BOOST = 1;
-			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len);
+			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST ? 1 : 0);
 			direct_read_end(&micCtx_, addr, offset, len);
-			MIC_BOOST = boost;
 		}
 #endif
 		if (len > 0)
