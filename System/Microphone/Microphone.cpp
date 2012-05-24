@@ -17,7 +17,7 @@
 #include <DisplayMPI.h>
 #include <Utility.h>
 
-#if !defined(EMULATION) && !defined(LF2000)
+#if !defined(EMULATION) && defined(LF1000)
 #include <linux/lf1000/gpio_ioctl.h>
 #endif
 
@@ -39,7 +39,6 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Constants
 //============================================================================
 const CURI	kModuleURI	= "/LF/System/Microphone";
-const char*	gCamFile	= "/dev/video0";
 
 static const unsigned int MIC_RATE		= 16000;	/* desired sampling rate */
 static const unsigned int MIC_CHANS		= 1;		/* desired channels */
@@ -53,11 +52,9 @@ static const unsigned int MIC_PERIOD	= 50000;	// usec
 
 static       unsigned int MIC_BOOST		= 2;		// bit shift for SW boost
 
-#ifdef LF1000
-static const char *cap_name = "plughw:1,0";	// FIXME: capture/playback on separate HW devices
-#else
-static const char *cap_name = "plughw:0,0";	// FIXME: capture/playback on same HW device = LFP100
-#endif
+static const char *MIC_LF1000 = "plughw:1,0";	// capture/playback on separate HW devices
+static const char *MIC_LF2000 = "plughw:0,0";	// capture/playback on same HW device = LFP100
+static const char *cap_name = MIC_LF2000;
 /* Opening hw:1,0 would provide raw access to the microphone hardware and therefore no
  * automatic conversion.  Opening plughw:1,0 uses the alsa plug plugin to open hw:1,0
  * as a slave device, but allows rate/channel/format conversion.
@@ -202,7 +199,7 @@ inline void PROFILE_END(const char* msg)
 //----------------------------------------------------------------------------
 static bool SetUSBHost(bool enable)
 {
-#if !defined(EMULATION) && !defined(LF2000)
+#if !defined(EMULATION) && defined(LF1000)
 	// USB host power option on Madrid only
 	if (GetPlatformName() != "Madrid")
 		return false;
@@ -323,7 +320,7 @@ tEventStatus CMicrophoneModule::MicrophoneListener::Notify(const IEventMessage& 
 //============================================================================
 // Ctor & dtor
 //============================================================================
-CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
+CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupMicrophone), valid(false)
 {
 	tErrType			err = kNoErr;
 	const tMutexAttr	attr = {0};
@@ -332,6 +329,7 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 
 #ifdef LF1000
 	MIC_BOOST = (HasPlatformCapability(kCapsLF1000)) ? 0 : MIC_BOOST;
+	cap_name  = (HasPlatformCapability(kCapsLF1000)) ? MIC_LF1000 : MIC_LF2000;
 #endif
 
 	fp = fopen("/flags/mic-boost", "r");
@@ -370,6 +368,7 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 	listener_ = new MicrophoneListener(this);
 	event_.RegisterEventListener(listener_);
 
+#ifdef LF1000
 	/* spoof a hotplug event to force enumerate sysfs and see if camera is present */
 	usb_data = GetCurrentUSBDeviceState();
 	usb_data.USBDeviceState &= kUSBDeviceConnected;
@@ -380,10 +379,6 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 	valid = false;
 	event_.PostEvent(usb_msg, 0, listener_);
 
-#ifdef LF2000
-	// Not necessarily USB audio anymore (E2K, M2K)
-	valid = InitMicrophoneInt();
-#else
 	// Wait for USB host power to enable drivers on Madrid
 	if (GetPlatformName() == "Madrid") {
 		int counter = 500;
@@ -391,6 +386,9 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupCamera)
 			kernel_.TaskSleep(10);
 	}
 #endif
+	// Not necessarily USB audio anymore (E2K, M2K)
+	if (!valid)
+		valid = InitMicrophoneInt();
 }
 
 //----------------------------------------------------------------------------
@@ -538,7 +536,7 @@ tErrType CMicrophoneModule::InitMicInt()
 
 		if ((err = snd_pcm_open(&micCtx_.pcm_handle, cap_name, SND_PCM_STREAM_CAPTURE, 0)) < 0)
 		{
-			dbg_.DebugOut(kDbgLvlCritical, "%s: snd_pcm_open failed = %d\n", __FUNCTION__, err);
+			dbg_.DebugOut(kDbgLvlCritical, "%s: snd_pcm_open %s failed = %d\n", __FUNCTION__, cap_name, err);
 			continue;
 		}
 
