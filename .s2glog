@@ -34304,3 +34304,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/23/12 3:31 PM
 5,675 ms. (Cumulative: 13,343,712 ms)
 
 ----------------
+Revision 9,893 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified Microphone module to handle/ignore SW mic boost as LF1000 runtime conditional.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/23/12 6:07 PM
+1 changed, 0 added, 0 deleted.
+5,391 ms. (Cumulative: 13,349,197 ms)
+
+----------------
