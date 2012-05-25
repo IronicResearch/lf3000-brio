@@ -60,6 +60,8 @@ bool PNG_save(const char* file, int width, int height, int pitch, char* data)
 	
 	// Set write callbacks
 	png_set_write_fn(pp, fp, _png_write, _png_flush);
+	if (pp->io_ptr != fp)
+		pp->io_ptr = fp;
 
 	// Write PNG info header
 	png_set_IHDR(pp, pi, width, height, 8, PNG_COLOR_TYPE_RGB,

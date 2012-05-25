@@ -425,12 +425,13 @@ public:
 	}
 	
 	//------------------------------------------------------------------------
-	void XXXXtestSnapFrame()
+	void testSnapFrame()
 	{
 		PRINT_TEST_NAME();
 
 		tVidCapHndl hndl = pCameraMPI_->StartVideoCapture(NULL);
-		pCameraMPI_->SnapFrame(hndl, "snap.jpg");
+		pCameraMPI_->SnapFrame(hndl, "SnapFrame.jpg");
+		pCameraMPI_->SnapFrame(hndl, "SnapFrame.png");
 		pCameraMPI_->StopVideoCapture(hndl);
 	}
 

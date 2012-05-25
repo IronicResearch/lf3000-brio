@@ -34336,3 +34336,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/24/12 7:20 PM
 5,111 ms. (Cumulative: 13,359,480 ms)
 
 ----------------
+Revision 9,896 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,897 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed CameraMPI SnapFrame() internal PNG support for any version lib.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/25/12 11:44 AM
+2 changed, 0 added, 0 deleted.
+5,048 ms. (Cumulative: 13,364,622 ms)
+
+----------------
