@@ -295,13 +295,13 @@ CCameraModule::~CCameraModule()
 {
 	StopVideoCapture(camCtx_.hndl);
 
-	delete micListener_;
-	delete microphone_;
-
 	valid = false;
 	CAMERA_LOCK;
 	DeinitCameraInt(false);
 	CAMERA_UNLOCK;
+
+	delete micListener_;
+	delete microphone_;
 
 #if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
 	munmap((void*)vi.reserved[0], fi.smem_len);

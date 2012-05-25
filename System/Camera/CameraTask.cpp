@@ -120,7 +120,6 @@ void* CameraTaskMain(void* arg)
 	CDebugMPI			dbg(kGroupCamera);
 	CKernelMPI			kernel;
 	CDisplayMPI			display;
-	CMicrophoneMPI		microphone;
 
 	avi_t				*avi		= NULL;
 	int					keyframe	= 0;
@@ -168,14 +167,6 @@ void* CameraTaskMain(void* arg)
 	{
 		bFile	= true;
 
-		audio_rate	= microphone.GetMicrophoneParam(kMicrophoneRate);	//cam->micCtx_.rate;
-		audio_chans	= MIC_CHANS;		//cam->micCtx_.channels;
-		audio_width	= MIC_WIDTH;		//cam->micCtx_.sbits;
-		audio_fmt	= WAVE_FORMAT_PCM;
-		audio_bps   = audio_rate * audio_chans * sizeof(short); // bytes per sec
-
-		//printf("audio_rate=%d   audio_chans=%d   audio_width=%d   audio_fmt=%d\n",audio_rate,audio_chans,audio_width,audio_fmt);
-
 		avi	= AVI_open_output_file(const_cast<char*>(pCtx->path.c_str()), pCtx->bAudio);
 
 		switch(pCtx->mode.pixelformat)
@@ -193,7 +184,13 @@ void* CameraTaskMain(void* arg)
 		// fps will be reset upon completion
 		AVI_set_video(avi, pCtx->fmt.fmt.pix.width, pCtx->fmt.fmt.pix.height, pCtx->fps, fourcc);
 		if(pCtx->bAudio) {
-			cam->microphone_ 	= &microphone;
+			if (!cam->microphone_)
+				cam->microphone_ = new CMicrophoneMPI();
+			audio_rate	= cam->microphone_->GetMicrophoneParam(kMicrophoneRate);	//cam->micCtx_.rate;
+			audio_chans	= MIC_CHANS;		//cam->micCtx_.channels;
+			audio_width	= MIC_WIDTH;		//cam->micCtx_.sbits;
+			audio_fmt	= WAVE_FORMAT_PCM;
+			audio_bps   = audio_rate * audio_chans * sizeof(short); // bytes per sec
 			AVI_set_audio(avi, audio_chans, audio_rate, audio_width, audio_fmt, audio_rate * audio_width / 1000);
 		}
 	}
@@ -263,12 +260,12 @@ void* CameraTaskMain(void* arg)
 	if(bFile && pCtx->bAudio)
 	{
 		// Zero threshold params to prevent flushing audio from AVI recording
-		microphone.SetMicrophoneParam(kMicrophoneThreshold, 0);
-		microphone.SetMicrophoneParam(kMicrophoneClipCount, 0);
-		cam->micCtx_.hndl = microphone.StartAudioCapture("",pCtx->pListener);
+		cam->microphone_->SetMicrophoneParam(kMicrophoneThreshold, 0);
+		cam->microphone_->SetMicrophoneParam(kMicrophoneClipCount, 0);
+		cam->micCtx_.hndl = cam->microphone_->StartAudioCapture("",pCtx->pListener);
 		cam->micCtx_.bytesWritten = 0;
 		cam->micCtx_.counter = 0;
-		cam->micCtx_.block_size = microphone.GetMicrophoneParam(kMicrophoneBlockSize);
+		cam->micCtx_.block_size = cam->microphone_->GetMicrophoneParam(kMicrophoneBlockSize);
 		pCtx->bAudio = cam->micCtx_.hndl != kInvalidAudCapHndl;
 	}
 
@@ -309,14 +306,13 @@ void* CameraTaskMain(void* arg)
 		{
 			char* buf = NULL;
 			void* ptr = &buf;
-			unsigned int retValue = microphone.CameraWriteAudio(ptr);
+			unsigned int retValue = cam->microphone_->CameraWriteAudio(ptr);
 			bRet = (retValue != 0 && buf != NULL);
 			if(bRet) {
 				AVI_write_audio(avi, buf, retValue);
 				cam->micCtx_.bytesWritten += retValue;	// cummulative bytes written
 				cam->micCtx_.counter = cam->micCtx_.bytesWritten * (unsigned int)pCtx->fps / audio_bps;
 			}
-			//printf("bytesWritten = %d    counter=%d    bRet=%s\n",cam->micCtx_.bytesWritten,cam->micCtx_.counter,((bRet) ? "true" : "false"));
 		}
 
 		if(!pCtx->module->PollFrame(pCtx->hndl))
@@ -408,8 +404,7 @@ void* CameraTaskMain(void* arg)
 
 	if (bFile && pCtx->bAudio)
 	{
-		microphone.StopAudioCapture(cam->micCtx_.hndl);
-		cam->microphone_ = NULL;
+		cam->microphone_->StopAudioCapture(cam->micCtx_.hndl);
 	}
 
 	kernel.DestroyTimer(timer);
