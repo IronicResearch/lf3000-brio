@@ -357,15 +357,18 @@ tErrType DeInitVideoTask( tVideoContext* pCtx )
 	CDebugMPI	dbg(kGroupVideo);
 	CKernelMPI	kernel;
 	void* 		retval = NULL;
-	int			count = 10;
+	int			count = 50;
 
 	if (hVideoThread == kNull)
 		return kNoErr;
 
 	// Stop running task, if it hasn't already stopped itself
 	bRunning = false;
-	while (!bStopping && --count)
+	while (!bStopping && --count) {
+		kernel.UnlockMutex(*pCtx->pMutex);
 		kernel.TaskSleep(10);
+		kernel.LockMutex(*pCtx->pMutex);
+	}
 	if (!bStopping)
 		kernel.CancelTask(hVideoThread);
 	kernel.JoinTask(hVideoThread, retval);
