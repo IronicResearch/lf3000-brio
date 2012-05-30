@@ -50,11 +50,6 @@
 #ifndef EMULATION
 #include <fcntl.h>
 #include <sys/ioctl.h>
-
-#ifndef LF2000
-#include <linux/lf1000/gpio_ioctl.h>
-#endif //LF2000
-
 #include <linux/fb.h>
 #include <vmem.h>
 #endif
@@ -63,14 +58,6 @@
 bool PNG_save(const char* file, int width, int height, int pitch, char* data);
 
 #define USE_PROFILE			0
-
-// V4L2_MEMORY_XXXX must be either V4L2_MEMORY_MMAP or V4L2_MEMORY_USERPTR
-#ifdef  LF2000
-#define V4L2_MEMORY_XXXX	V4L2_MEMORY_USERPTR
-#else
-#define V4L2_MEMORY_XXXX	V4L2_MEMORY_MMAP
-#define EMULATION			1
-#endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 //============================================================================
@@ -144,6 +131,8 @@ namespace
 	int							fdvmem = -1;
 	VM_IMEMORY 					vm;
 #endif
+	// V4L2_MEMORY_XXXX must be either V4L2_MEMORY_MMAP or V4L2_MEMORY_USERPTR
+	enum v4l2_memory			V4L2_MEMORY_XXXX = V4L2_MEMORY_USERPTR;
 }
 
 //============================================================================
@@ -247,7 +236,11 @@ CCameraModule::CCameraModule() : dbg_(kGroupCamera),
 
 	InitLut();
 
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
+#ifdef LF1000
+	V4L2_MEMORY_XXXX = (HasPlatformCapability(kCapsLF1000)) ? V4L2_MEMORY_MMAP : V4L2_MEMORY_USERPTR;
+#endif
+
+#ifdef LF2000
 	fdvmem = open("/dev/vmem", O_RDWR);
 	if (fdvmem > 0)
 	{
@@ -303,7 +296,7 @@ CCameraModule::~CCameraModule()
 	delete micListener_;
 	delete microphone_;
 
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
+#ifdef LF2000
 	munmap((void*)vi.reserved[0], fi.smem_len);
 	close(fd);
 	if (fdvmem > 0) {
@@ -427,14 +420,14 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		if (pCamCtx->bufs == NULL)
 			continue;
 
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-#else
+		if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+			continue;
+
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
 		if(munmap(pCamCtx->bufs[i], pCamCtx->buf.length) < 0)
 		{
 			ret = false;
         }
-#endif
 	}
 
 #ifdef LF1000 // FIXME: VIP	
@@ -444,7 +437,8 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 	rb.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	rb.memory = V4L2_MEMORY_XXXX;
 
-	if(ioctl(pCamCtx->fd, VIDIOC_REQBUFS, &rb) < 0)
+	if(V4L2_MEMORY_XXXX != V4L2_MEMORY_USERPTR)
+		if(ioctl(pCamCtx->fd, VIDIOC_REQBUFS, &rb) < 0)
 	{
 		ret = false;
 	}
@@ -865,8 +859,9 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
 		}
 
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-#else
+		if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+			continue;
+
 		pCamCtx->bufs[i] = mmap(0, pCamCtx->buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, cam, pCamCtx->buf.m.offset);
         if(pCamCtx->bufs[i] == MAP_FAILED)
         {
@@ -874,7 +869,6 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 			return false;
         }
 		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
-#endif
 	}
 
 	for(i = 0; i < pCamCtx->numBufs; i++)
@@ -884,13 +878,15 @@ static Boolean InitCameraBufferInt(tCameraContext *pCamCtx)
 		pCamCtx->buf.index  = i;
 		pCamCtx->buf.type   = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		pCamCtx->buf.memory = V4L2_MEMORY_XXXX;
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-		pCamCtx->buf.m.userptr = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? vi.reserved[0] : vi.reserved[0] + i * pCamCtx->mode.width;
-		pCamCtx->buf.length	   = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCamCtx->mode.width * pCamCtx->mode.width : 4096 * ((pCamCtx->mode.width + 0xFF) & ~0xFF);
-		pCamCtx->buf.length	   = MIN(pCamCtx->buf.length, fi.smem_len);
-		pCamCtx->bufs[i]       = (void*)pCamCtx->buf.m.userptr;
-		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
-#endif
+		if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+		{
+			pCamCtx->buf.m.userptr = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? vi.reserved[0] : vi.reserved[0] + i * pCamCtx->mode.width;
+			pCamCtx->buf.length	   = (pCamCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCamCtx->mode.width * pCamCtx->mode.width : 4096 * ((pCamCtx->mode.width + 0xFF) & ~0xFF);
+			pCamCtx->buf.length	   = MIN(pCamCtx->buf.length, fi.smem_len);
+			pCamCtx->bufs[i]       = (void*)pCamCtx->buf.m.userptr;
+			pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: i=%d, flags=%08x, mapping=%p\n", __FUNCTION__, i, pCamCtx->buf.flags, pCamCtx->bufs[i]);
+		}
+
 		if(ioctl(pCamCtx->fd, VIDIOC_QBUF, &pCamCtx->buf) < 0)
 		{
 			DeinitCameraBufferInt(pCamCtx);
@@ -1819,10 +1815,11 @@ static Boolean ReturnFrameInt(tCameraContext *pCtx, const U32 index)
 	buf.type  	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	buf.memory	= V4L2_MEMORY_XXXX;
 	buf.index	= index;
-#if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR) && !EMULATION
-	buf.m.userptr = (unsigned long)pCtx->bufs[index];
-	buf.length    = (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCtx->mode.width * pCtx->mode.width : 4096 * ((pCtx->mode.width + 0xFF) & ~0xFF);
-#endif
+	if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+	{
+		buf.m.userptr = (unsigned long)pCtx->bufs[index];
+		buf.length    = (pCtx->mode.pixelformat == kCaptureFormatRAWYUYV) ? 2 * pCtx->mode.width * pCtx->mode.width : 4096 * ((pCtx->mode.width + 0xFF) & ~0xFF);
+	}
 
 	if(ioctl(pCtx->fd, VIDIOC_QBUF, &buf) < 0)
 	{
@@ -2532,16 +2529,9 @@ Boolean	CCameraModule::InitCameraInt(const tCaptureMode* mode, bool reinit)
 		return false;
 	}
 
-#if 0
-	if(kNoErr != InitMicInt())
-	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: microphone init failed\n");
-		return false;
-	}
-#endif
-
 #ifdef LF1000
-	if(kNoErr != InitIDCTInt())
+	if(V4L2_MEMORY_XXXX != V4L2_MEMORY_USERPTR)
+		if(kNoErr != InitIDCTInt())
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::InitCameraInt: idct init failed\n");
 		return false;
