@@ -34377,3 +34377,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/30/12 2:47 PM
 5,376 ms. (Cumulative: 13,380,235 ms)
 
 ----------------
+Revision 9,903 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additional commenting out of leftover debug statements that are redundant and don't need to be written to console.
+
+By bgrissom (bgrissom@leapfrog.com) on 5/30/12 4:05 PM
+1 changed, 0 added, 0 deleted.
+5,297 ms. (Cumulative: 13,385,641 ms)
+
+----------------
