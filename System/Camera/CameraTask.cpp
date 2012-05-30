@@ -211,7 +211,8 @@ void* CameraTaskMain(void* arg)
 			/* TODO: libjpeg QVGA->QQVGA rendering + HW scaler is faster than
 			 * HW IDCT QVGA->QVGA rendering
 			 */
-			if(pCtx->fmt.fmt.pix.width == pCtx->surf->width)
+			if(cam->idctCtx_.fd > -1)
+				if(pCtx->fmt.fmt.pix.width == pCtx->surf->width)
 			{
 				method		= JPEG_HW2;
 			}

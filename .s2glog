@@ -34356,3 +34356,15 @@ By Dave Milici (dmilici@leapfrog.com) on 5/29/12 11:38 AM
 4,940 ms. (Cumulative: 13,369,640 ms)
 
 ----------------
+Revision 9,899 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,900 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,901 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified common Camera module to use runtime var for V4L2 memory type instead of compiler define.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 5/30/12 1:08 PM
+2 changed, 0 added, 0 deleted.
+5,016 ms. (Cumulative: 13,374,765 ms)
+
+----------------
