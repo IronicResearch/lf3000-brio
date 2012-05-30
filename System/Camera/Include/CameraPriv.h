@@ -42,6 +42,7 @@
 #endif
 
 #include <linux/videodev2.h>
+#include <linux/fb.h>
 #include <jpeglib.h>
 
 #include <alsa/asoundlib.h>
@@ -172,6 +173,9 @@ struct tCameraContext {
 
 	CDebugMPI					*dbg;
 	CKernelMPI					*kernel;
+
+	struct fb_fix_screeninfo 	*fi;
+	struct fb_var_screeninfo 	*vi;
 };
 
 struct tCaptureContext {

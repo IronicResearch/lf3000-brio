@@ -33,6 +33,7 @@ myenv.Append(CPPPATH = ['#System/Display/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibSndFile/Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
+myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
 myenv.Append(LIBPATH = ['#ThirdParty/LibSndFile/Libs/' + env['cpu']])
