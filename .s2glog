@@ -34368,3 +34368,12 @@ By Dave Milici (dmilici@leapfrog.com) on 5/30/12 1:08 PM
 5,016 ms. (Cumulative: 13,374,765 ms)
 
 ----------------
+Revision 9,902 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relocate LF2000-specific code out of common Camera module into VIP module.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/30/12 2:47 PM
+4 changed, 3 added, 3 deleted.
+5,376 ms. (Cumulative: 13,380,235 ms)
+
+----------------

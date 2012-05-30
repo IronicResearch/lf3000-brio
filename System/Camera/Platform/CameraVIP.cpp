@@ -5,8 +5,12 @@
 #include <DisplayMPI.h>
 
 #if !defined(EMULATION) && defined(LF2000)
+#include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <linux/fb.h>
 #include <linux/lf2000/lf2000vip.h>
+#include <vmem.h>
 #endif
 
 // PNG wrapper function for saving file
@@ -25,6 +29,17 @@ tCaptureMode WXGA  = {kCaptureFormatYUV420, 1280, 800, 1, 10};
 tCaptureMode SXGA  = {kCaptureFormatYUV420, 1280, 960, 1, 10};
 tCaptureMode HD16  = {kCaptureFormatYUV420, 1600, 900, 1, 10};
 tCaptureMode UXGA  = {kCaptureFormatYUV420, 1600, 1200, 1, 10};
+
+namespace
+{
+#if !defined(EMULATION) && defined(LF2000)
+	struct fb_fix_screeninfo 	fi;
+	struct fb_var_screeninfo 	vi;
+	int							fd = -1;
+	int							fdvmem = -1;
+	VM_IMEMORY 					vm;
+#endif
+}
 
 //============================================================================
 // CCameraModule: Informational functions
@@ -80,6 +95,52 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 CVIPCameraModule::CVIPCameraModule()
 {
 	tCameraControls::iterator	it;
+	int r;
+
+#if !defined(EMULATION) && defined(LF2000)
+	// Map memory for use by VIP driver
+	fdvmem = open("/dev/vmem", O_RDWR);
+	if (fdvmem > 0)
+	{
+		// Request vmem driver 8Meg memory block for video capture use
+		memset(&vm, 0, sizeof(vm));
+		vm.Flags = VMEM_BLOCK_BUFFER;
+		vm.MemWidth  = 4096;
+		vm.MemHeight = 2048;
+		vm.HorAlign  = 64;
+		vm.VerAlign  = 32;
+		do {
+			r = ioctl(fdvmem, IOCTL_VMEM_ALLOC, &vm);
+			if (r != 0)
+				vm.MemHeight -= 256;
+		} while (r != 0 && vm.MemHeight > 256);
+	}
+	if (fdvmem > 0 && r == 0)
+	{
+		dbg_.Assert((r == 0), "CCameraModule::ctor: IOCTL_VMEM_ALLOC failed\n");
+		fd = open("/dev/mem", O_RDWR | O_SYNC);
+		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/mem failed\n");
+		fi.smem_len = vm.MemWidth * vm.MemHeight;
+		vi.reserved[0] = (unsigned int)mmap((void*)0, fi.smem_len, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_POPULATE, fd, vm.Address);
+		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/mem failed\n");
+		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, vm.Address, vi.reserved[0], fi.smem_len);
+	}
+	else
+	{
+		// Fallback to YUV video framebuffer memory for video capture
+		fd = open("/dev/fb2", O_RDWR | O_SYNC);
+		dbg_.Assert((fd > 0), "CCameraModule::ctor: open /dev/fb2 failed\n");
+		r = ioctl(fd, FBIOGET_FSCREENINFO, &fi);
+		dbg_.Assert((r == 0), "CCameraModule::ctor: FBIOGET_FSCREENINFO failed\n");
+		r = ioctl(fd, FBIOGET_VSCREENINFO, &vi);
+		dbg_.Assert((r == 0), "CCameraModule::ctor: FBIOGET_VSCREENINFO failed\n");
+		vi.reserved[0] = (unsigned int)mmap((void*)fi.smem_start, fi.smem_len, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		dbg_.Assert((vi.reserved[0] != (unsigned int)MAP_FAILED), "CCameraModule::ctor: mmap /dev/fb2 failed\n");
+		dbg_.DebugOut(kDbgLvlImportant, "%s: mmap %08x: %08x, len %08x\n", __FUNCTION__, (unsigned int)fi.smem_start, vi.reserved[0], fi.smem_len);
+	}
+	camCtx_.fi = &fi;
+	camCtx_.vi = &vi;
+#endif
 
 	camCtx_.mode = QVGA;
 	valid = InitCameraInt(&camCtx_.mode, false);
@@ -126,6 +187,16 @@ CVIPCameraModule::~CVIPCameraModule()
 	}
 
 	delete controlsCached;
+
+#if !defined(EMULATION) && defined(LF2000)
+	// Release memory used by VIP driver
+	munmap((void*)vi.reserved[0], fi.smem_len);
+	close(fd);
+	if (fdvmem > 0) {
+		ioctl(fdvmem, IOCTL_VMEM_FREE, &vm);
+		close(fdvmem);
+	}
+#endif
 }
 
 //----------------------------------------------------------------------------
