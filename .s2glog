@@ -34386,3 +34386,14 @@ By bgrissom (bgrissom@leapfrog.com) on 5/30/12 4:05 PM
 5,297 ms. (Cumulative: 13,385,641 ms)
 
 ----------------
+Revision 9,904 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified Camera modules to support VIP via LF1000 runtime binary.
+Note LF1000 build will need to reference LF2000 VIP header.
+Note VIP module could conceivably remain LF2000-only binary.
+
+By Dave Milici (dmilici@leapfrog.com) on 5/31/12 12:17 PM
+2 changed, 0 added, 0 deleted.
+5,297 ms. (Cumulative: 13,391,032 ms)
+
+----------------

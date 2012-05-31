@@ -4,7 +4,7 @@
 #include <DisplayPriv.h>
 #include <DisplayMPI.h>
 
-#if !defined(EMULATION) && defined(LF2000)
+#if !defined(EMULATION) //&& defined(LF2000)
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -32,7 +32,7 @@ tCaptureMode UXGA  = {kCaptureFormatYUV420, 1600, 1200, 1, 10};
 
 namespace
 {
-#if !defined(EMULATION) && defined(LF2000)
+#if !defined(EMULATION) //&& defined(LF2000)
 	struct fb_fix_screeninfo 	fi;
 	struct fb_var_screeninfo 	vi;
 	int							fd = -1;
@@ -97,7 +97,7 @@ CVIPCameraModule::CVIPCameraModule()
 	tCameraControls::iterator	it;
 	int r;
 
-#if !defined(EMULATION) && defined(LF2000)
+#if !defined(EMULATION) //&& defined(LF2000)
 	// Map memory for use by VIP driver
 	fdvmem = open("/dev/vmem", O_RDWR);
 	if (fdvmem > 0)
@@ -172,6 +172,9 @@ CVIPCameraModule::~CVIPCameraModule()
 {
 	tCameraControls::iterator	it;
 
+	// Stop all streaming (before base destructor called)
+	StopVideoCapture(camCtx_.hndl);
+
 	// Reset VIP flip/rotate controls when CameraMPI instance done
 	for ( it = controlsCached->begin() ; it < controlsCached->end(); it++ )
 	{
@@ -188,7 +191,7 @@ CVIPCameraModule::~CVIPCameraModule()
 
 	delete controlsCached;
 
-#if !defined(EMULATION) && defined(LF2000)
+#if !defined(EMULATION) //&& defined(LF2000)
 	// Release memory used by VIP driver
 	munmap((void*)vi.reserved[0], fi.smem_len);
 	close(fd);
@@ -202,7 +205,7 @@ CVIPCameraModule::~CVIPCameraModule()
 //----------------------------------------------------------------------------
 static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 {
-#if !defined(EMULATION) && defined(LF2000)
+#if !defined(EMULATION) //&& defined(LF2000)
 	struct v4l2_framebuffer v4l2;
 
 	memset(&v4l2, 0, sizeof(v4l2));
@@ -241,7 +244,7 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 //----------------------------------------------------------------------------
 Boolean CVIPCameraModule::EnableOverlay(int fd, int enable)
 {
-#if !defined(EMULATION) && defined(LF2000)
+#if !defined(EMULATION) //&& defined(LF2000)
 	if(ioctl(fd, VIDIOC_OVERLAY, &enable) < 0)
 			return false;
 	overlayEnabled = enable;
@@ -391,7 +394,7 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	CAMERA_UNLOCK;
 
-	if(IS_THREAD_HANDLE(hndl))
+	if(IS_THREAD_HANDLE(hndl) || IS_FRAME_HANDLE(hndl))
 	{
 		return CCameraModule::StopVideoCapture(hndl);
 	}

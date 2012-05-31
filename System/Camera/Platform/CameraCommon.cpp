@@ -1891,13 +1891,11 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 	//hndl must be set before thread starts.  It is used in thread initialization.
 	camCtx_.hndl = STREAMING_HANDLE(THREAD_HANDLE(1));
 
-#ifdef LF2000
-	if (fpath.empty())
+	if (fpath.empty() && V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
 	{
 		hndl = camCtx_.hndl = STREAMING_HANDLE(FRAME_HANDLE(1));
 	}
 	else
-#endif
 	if(kNoErr == InitCameraTask(&camCtx_))
 	{
 		hndl = camCtx_.hndl;
@@ -2179,9 +2177,9 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		goto bail_out;
 	}
 
-#ifdef LF2000
 	// HACK: Get and discard some frames from video stream first
-	for (int i = 0; i < 3; i++)
+	if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+		for (int i = 0; i < 3; i++)
 	{
 		bRet = GetFrameInt(&camCtx_, 0);
 		if (!bRet)
@@ -2190,7 +2188,6 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 		if (!bRet)
 			dbg_.DebugOut(kDbgLvlCritical, "%s: ReturnFrameInt() failed try %d\n", __FUNCTION__, i);
 	}
-#endif
 
 	// acquire the snapshot
 	if( !GetFrameInt(&camCtx_, 0))
