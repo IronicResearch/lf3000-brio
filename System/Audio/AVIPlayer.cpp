@@ -362,7 +362,12 @@ void CAVIPlayer::RewindFile()
 // =============================================================================
 U32 CAVIPlayer::GetAudioTime_mSec( void ) 
 {
-	U64 milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
+	U64 milliSeconds; // = (1000 * totalFramesRead) / samplingFrequency_;
+	AVStream* pStream = pFormatCtx->streams[iAudioStream];
+	if (pStream->time_base.num && pStream->time_base.den)
+		milliSeconds = 1000 * pStream->cur_dts * pStream->time_base.num / pStream->time_base.den;
+	else
+		milliSeconds = (1000 * totalFramesRead) / samplingFrequency_;
 	return (U32)(milliSeconds);
 }
 
@@ -372,7 +377,12 @@ U32 CAVIPlayer::GetAudioTime_mSec( void )
 Boolean CAVIPlayer::SeekAudioTime(U32 timeMilliSeconds)
 {
 	int flags = AVSEEK_FLAG_ANY;
-	int64_t timestamp = (int64_t)timeMilliSeconds * samplingFrequency_ / 1000;
+	int64_t timestamp; // = (int64_t)timeMilliSeconds * samplingFrequency_ / 1000;
+	AVStream* pStream = pFormatCtx->streams[iAudioStream];
+	if (pStream->time_base.num && pStream->time_base.den)
+		timestamp = (int64_t)timeMilliSeconds * pStream->time_base.den / (pStream->time_base.num * 1000);
+	else
+		timestamp = (int64_t)timeMilliSeconds * samplingFrequency_ / 1000;
 	int r = av_seek_frame(pFormatCtx, iAudioStream, timestamp, flags);
 	if (r < 0)
 		return false;
