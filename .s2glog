@@ -34397,3 +34397,13 @@ By Dave Milici (dmilici@leapfrog.com) on 5/31/12 12:17 PM
 5,297 ms. (Cumulative: 13,391,032 ms)
 
 ----------------
+Revision 9,905 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cached local copy of LF2000 VIP header for building with LF1000 compiler environment.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/1/12 10:50 AM
+0 changed, 1 added, 0 deleted.
+5,470 ms. (Cumulative: 13,396,596 ms)
+
+----------------
