@@ -34407,3 +34407,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/1/12 10:50 AM
 5,470 ms. (Cumulative: 13,396,596 ms)
 
 ----------------
+Revision 9,906 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified AVIPlayer Seek() and GetTime() functions to use time base units when available.
+MP3 playback uses different time base factor than linear PCM sample rate. (TTP 3638)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/1/12 4:53 PM
+1 changed, 0 added, 0 deleted.
+5,250 ms. (Cumulative: 13,401,940 ms)
+
+----------------
