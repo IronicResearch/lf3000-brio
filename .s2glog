@@ -34417,3 +34417,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/1/12 4:53 PM
 5,250 ms. (Cumulative: 13,401,940 ms)
 
 ----------------
+Revision 9,907 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Allow any 44KHz player to request external dmix stream. (TTP 3646)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/4/12 2:02 PM
+1 changed, 0 added, 0 deleted.
+5,329 ms. (Cumulative: 13,407,363 ms)
+
+----------------

@@ -937,7 +937,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 	} 
 
 	// External stream handling if 44KHz MP3 player
-	external = (pPlayer->GetSampleRate() == 44100 && sExt && strcasecmp(sExt, "mp3") == 0);
+	external = (pPlayer->GetSampleRate() == 44100); // && sExt && strcasecmp(sExt, "mp3") == 0);
 
 	pStream->InitWithPlayer( pPlayer, external );
 
