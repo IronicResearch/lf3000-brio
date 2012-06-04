@@ -359,6 +359,7 @@ static BrioAudioRenderCallback* pRenderCallback = NULL;
 static void* 				pPlayer = NULL;
 static snd_pcm_t* 			handle2 = NULL;
 static unsigned int			ratedmix = kAudioSampleRate;
+static tMutex				mutexExternal = PTHREAD_MUTEX_INITIALIZER;
 //----------------------------------------------------------------------------
 static void* CallbackThread(void* pCtx)
 {
@@ -382,6 +383,7 @@ static void* CallbackThread(void* pCtx)
 			direct_write_loop(handle, pOutputBuffer, period_size, channels);
 
 			// Brio render callback for additional player to separate ALSA output stream
+			pKernelMPI_->LockMutex(mutexExternal);
 			if (pPlayer && pRenderCallback && pRenderBuffer)
 			{
 				r = pRenderCallback(pRenderBuffer, kAudioFramesPerBuffer * ratedmix / kAudioSampleRate, pPlayer);
@@ -389,7 +391,7 @@ static void* CallbackThread(void* pCtx)
 				if (r > 0)
 					direct_write_loop(handle2, pRenderBuffer, r, channels);
 			}
-
+			pKernelMPI_->UnlockMutex(mutexExternal);
 		}
 		else
 			pKernelMPI_->TaskSleep(10);
@@ -524,8 +526,10 @@ int AddAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData, int 
 		return kMemoryAllocationErr;
 
 	// Add player to render callback thread
+	pKernelMPI_->LockMutex(mutexExternal);
 	pRenderCallback = callback;
 	pPlayer = pUserData;
+	pKernelMPI_->UnlockMutex(mutexExternal);
 
 	return kNoErr;
 }
@@ -539,8 +543,7 @@ int RemoveAudioOutputAlsa( void* pUserData )
 		return kInvalidParamErr;
 
 	// Close additional ALSA stream
-	bRendering = false;
-	pKernelMPI_->TaskSleep(10);
+	pKernelMPI_->LockMutex(mutexExternal);
 	snd_pcm_drop(handle2);
 	snd_pcm_close(handle2);
 	handle2 = NULL;
@@ -553,7 +556,7 @@ int RemoveAudioOutputAlsa( void* pUserData )
 	pRenderCallback = NULL;
 	pPlayer = NULL;
 
-	bRendering = true;
+	pKernelMPI_->UnlockMutex(mutexExternal);
 	return kNoErr;
 }
 
