@@ -34435,3 +34435,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/4/12 2:11 PM
 5,517 ms. (Cumulative: 13,412,973 ms)
 
 ----------------
+Revision 9,909 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updated DisplayMPI doxygen comments for pixel formats with alpha blending support.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/4/12 4:44 PM
+2 changed, 0 added, 0 deleted.
+5,156 ms. (Cumulative: 13,418,207 ms)
+
+----------------

@@ -69,13 +69,13 @@ struct tRect {
 
 enum tPixelFormat {
 	kPixelFormatError = 0,
-	kPixelFormatRGB4444,
-	kPixelFormatRGB565,
-	kPixelFormatARGB8888,
-	kPixelFormatRGB888,
-	kPixelFormatYUV420,
-	kPixelFormatYUYV422,
-	kPixelFormatXRGB8888
+	kPixelFormatRGB4444,	///< 16bpp ARGB 4:4:4:4 format with alpha
+	kPixelFormatRGB565, 	///< 16bpp  RGB   5:6:5 format without alpha
+	kPixelFormatARGB8888,	///< 32bpp ARGB 8:8:8:8 format with alpha
+	kPixelFormatRGB888, 	///< 24bpp  RGB   8:8:8 format without alpha
+	kPixelFormatYUV420, 	///<  8bpp  YUV   4:2:0 planar video format
+	kPixelFormatYUYV422,	///< 16bpp YUYV   4:2:2 packed video format
+	kPixelFormatXRGB8888	///< 32bpp xRGB 8:8:8:8 format without alpha
 };
 
 enum tDisplayZOrder {
