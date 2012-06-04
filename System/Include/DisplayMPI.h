@@ -259,6 +259,10 @@ public:
 	/// LF1000: Global alpha value effective for RGB, YUV pixel formats only, not ARGB.
 	/// Per-pixel alpha values effective instead when enabled for ARGB display contexts.
 	/// Has no effect on emulation.
+	///
+	/// LF2000: Global alpha value effective for XRGB alternative to per-pixel ARGB.
+	/// OpenGL display context will switch from ARGB8888 to XRGB8888 when global alpha
+	/// value is less than 100, for alpha blend compatibility with LF1000 RGB565 context.
 	tErrType			SetAlpha(tDisplayHandle hndl, U8 level, 
 								Boolean enable=true);
 
