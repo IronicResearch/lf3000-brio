@@ -34462,3 +34462,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/6/12 6:43 PM
 4,954 ms. (Cumulative: 13,428,456 ms)
 
 ----------------
+Revision 9,912 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,913 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Ifdefing the stencil buffer request.  On LF1000, requesting it cause a failure.  On LF2000, using Don't Care or not requesting results in no stencil buffer.  The Sillies uses the stencil buffer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/7/12 4:51 PM
+1 changed, 0 added, 0 deleted.
+4,958 ms. (Cumulative: 13,433,512 ms)
+
+----------------
