@@ -218,6 +218,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 {
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
+	dbg.DebugOut(kDbgLvlCritical, "%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
 	if(!dispmgr)
 		dispmgr = new CDisplayMPI();
 
@@ -315,7 +316,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	    EGL_BLUE_SIZE,      8,
 	    EGL_ALPHA_SIZE,     EGL_DONT_CARE,
 	    EGL_DEPTH_SIZE,     16,
-	    EGL_STENCIL_SIZE,   8,
+	    EGL_STENCIL_SIZE,   EGL_DONT_CARE,
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
 	    EGL_NONE,           EGL_NONE
 	};
@@ -330,7 +331,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	int iConfigs;
 	dbg.DebugOut(kDbgLvlVerbose, "eglChooseConfig()\n");
 	success = eglChooseConfig(eglDisplay, pi32ConfigAttribs, &eglConfig, 1, &iConfigs);
-	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed\n");
+	dbg.Assert(success && iConfigs == 1, "eglChooseConfig() failed %d\n", iConfigs);
 
 	/*
 		Step 5 - Create a surface to draw to.
