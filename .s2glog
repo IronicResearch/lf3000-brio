@@ -34453,3 +34453,12 @@ By mdeshpande (mdeshpande@leapfrog.com) on 6/5/12 10:23 AM
 5,114 ms. (Cumulative: 13,423,415 ms)
 
 ----------------
+Revision 9,911 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing BrioOpenGLConfig to not require stencil buffer.  LF1000 does not have stencil buffer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/6/12 6:43 PM
+1 changed, 0 added, 0 deleted.
+4,954 ms. (Cumulative: 13,428,456 ms)
+
+----------------
