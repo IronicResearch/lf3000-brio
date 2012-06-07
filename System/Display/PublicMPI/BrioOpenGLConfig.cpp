@@ -316,7 +316,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	    EGL_BLUE_SIZE,      8,
 	    EGL_ALPHA_SIZE,     EGL_DONT_CARE,
 	    EGL_DEPTH_SIZE,     16,
-	    EGL_STENCIL_SIZE,   EGL_DONT_CARE,
+		#ifdef LF2000
+	    EGL_STENCIL_SIZE,   8,
+		#endif
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
 	    EGL_NONE,           EGL_NONE
 	};
