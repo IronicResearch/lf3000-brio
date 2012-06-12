@@ -61,19 +61,34 @@ enum tBrioOpenGLVersion
 //==============================================================================
 class BrioOpenGLConfig
 {
+	/// \class BrioOpenGLConfig
+	///
+	/// Class for binding an OpenGL ES context with Brio DisplayMPI context.
+	/// Class members export EGL context variables for calling EGL functions
+	/// like eglSwapBuffers(), plus DisplayMPI display context handle for
+	/// calling DisplayMPI functions like SetWindowPosition() and SetAlpha().
+	///
+	/// LF1000: The OpenGL ES rendering context is RGB565 format only.
+	/// Separate 1D and 2D heaps are allocated from framebuffer memory
+	/// for supporting vertex buffers and textures.
+	///
+	/// LF2000: The OpenGL ES rendering context is ARGB8888 format.
+	/// Memory for vertex buffers and textures are allocated on demand.
 public:
+	/// LF1000: Constructor for specifying 1D and 2D heap sizes.
 	BrioOpenGLConfig(U32 size1D = kHeap1DMeg, U32 size2D = kHeap2DMeg);
+	/// LF2000: Constructor for selecting OpenGL ES 1.1 or 2.0 context.
 	BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion);
 	~BrioOpenGLConfig();
 
 	// EGL variables
-	EGLDisplay			eglDisplay;
-	EGLConfig			eglConfig;
-	EGLSurface			eglSurface;
-	EGLContext			eglContext;
+	EGLDisplay			eglDisplay;		///< EGL display returned by eglGetDisplay()
+	EGLConfig			eglConfig;		///< EGL config returned by eglChooseConfig()
+	EGLSurface			eglSurface;		///< EGL surface returned by eglCreateWindowSurface()
+	EGLContext			eglContext;		///< EGL context returned by eglCreateContext()
 	
 	// Display MPI handle
-	tDisplayHandle		hndlDisplay;
+	tDisplayHandle		hndlDisplay;	///< DisplayMPI context bound to EGL context
 
 private:
 	CDisplayMPI			disp_;	
