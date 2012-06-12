@@ -155,6 +155,10 @@ def RunMyTests(ptarget, psources, plibs, penv):
 			testenv.Append(RPATH = ['ThirdParty/Nexell/Libs/' + penv['cpu']])
 
 	fulllibs = plibs + [ptarget + 'MPI']
+	if ptarget == 'Utility':
+		fulllibs = plibs + [ptarget]
+	else:
+		fulllibs = plibs + [ptarget + 'MPI']
 	if penv['cpu'] == 'x86':
 		fulllibs += ['Emulation']
 		testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
