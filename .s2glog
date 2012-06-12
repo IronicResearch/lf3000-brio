@@ -34492,3 +34492,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/11/12 5:36 PM
 4,948 ms. (Cumulative: 13,443,586 ms)
 
 ----------------
+Revision 9,917 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Merge Brio TRUNK -r9769:9771 for Utility lib GetPlatform* unit tests.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/11/12 6:04 PM
+2 changed, 1 added, 0 deleted.
+5,128 ms. (Cumulative: 13,448,801 ms)
+
+----------------
