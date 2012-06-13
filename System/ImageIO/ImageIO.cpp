@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 
-using namespace LeapFrog::Brio;
+LF_BEGIN_BRIO_NAMESPACE()
 
 //----------------------------------------------------------------------------
 CImageIO::CImageIO()
@@ -113,4 +113,5 @@ bool CImageIO::Save(CPath& path, tVideoSurf& surf, int imageQuality)
 }
 
 //----------------------------------------------------------------------------
+LF_END_BRIO_NAMESPACE()
 // EOF
