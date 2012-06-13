@@ -34512,3 +34512,12 @@ By Dave Milici (dmilici@leapfrog.com) on 6/13/12 10:23 AM
 5,064 ms. (Cumulative: 13,453,972 ms)
 
 ----------------
+Revision 9,920 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed ImageIO doxygen comments and relocated private function prototypes out of public header. (SDK)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/13/12 11:58 AM
+3 changed, 1 added, 0 deleted.
+5,080 ms. (Cumulative: 13,459,146 ms)
+
+----------------

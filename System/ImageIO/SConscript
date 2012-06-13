@@ -17,6 +17,7 @@ mpilibs		= ['png','z', 'jpeg' ]
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 
+myenv.Append(CPPPATH = ['Include'])
 myenv.Append(CPPPATH = ['#ThirdParty/LibJPEG/Include'])
 
 myenv.Append(LIBPATH = ['#ThirdParty/LibJPEG/Libs/' + env['cpu']])
