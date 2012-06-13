@@ -154,11 +154,11 @@ def RunMyTests(ptarget, psources, plibs, penv):
 			# FIXME: SCons 1.2.0 bug: leading hash not parsed
 			testenv.Append(RPATH = ['ThirdParty/Nexell/Libs/' + penv['cpu']])
 
-	fulllibs = plibs + [ptarget + 'MPI']
-	if ptarget == 'Utility':
-		fulllibs = plibs + [ptarget]
-	else:
+	# MPI library test?
+	if os.path.exists(os.path.join(penv['build_dir'].Dir('MPI').abspath, 'lib' + ptarget + 'MPI.so')):
 		fulllibs = plibs + [ptarget + 'MPI']
+	else:
+		fulllibs = plibs + [ptarget]
 	if penv['cpu'] == 'x86':
 		fulllibs += ['Emulation']
 		testenv.Append(LIBPATH = ['#ThirdParty/PowerVR/Libs'])
