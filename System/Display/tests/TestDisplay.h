@@ -168,6 +168,43 @@ public:
 	}
 
 	//------------------------------------------------------------------------
+	void testOpenGLContextVersion( )
+	{
+		PRINT_TEST_NAME();
+
+		BrioOpenGLConfig*	oglctx = new BrioOpenGLConfig(kBrioOpenGL11);
+
+		TS_ASSERT( oglctx != NULL );
+		TS_ASSERT( oglctx->eglContext );
+		TS_ASSERT( oglctx->eglDisplay );
+		TS_ASSERT( oglctx->eglSurface );
+
+		const GLubyte *versions_string = glGetString(GL_VERSION);
+		const GLubyte *vendor_string = glGetString(GL_VENDOR);
+		const GLubyte *renderer_string = glGetString(GL_RENDERER);
+		const GLubyte *extension_string = glGetString(GL_EXTENSIONS);
+		printf("version=%s, vendor=%s, renderer=%s, extensions=%s\n", versions_string, vendor_string, renderer_string, extension_string);
+
+
+		delete oglctx;
+
+		oglctx = new BrioOpenGLConfig(kBrioOpenGL20);
+
+		TS_ASSERT( oglctx != NULL );
+		TS_ASSERT( oglctx->eglContext );
+		TS_ASSERT( oglctx->eglDisplay );
+		TS_ASSERT( oglctx->eglSurface );
+
+		versions_string = glGetString(GL_VERSION);
+		vendor_string = glGetString(GL_VENDOR);
+		renderer_string = glGetString(GL_RENDERER);
+		extension_string = glGetString(GL_EXTENSIONS);
+		printf("version=%s, vendor=%s, renderer=%s, extensions=%s\n", versions_string, vendor_string, renderer_string, extension_string);
+
+		delete oglctx;
+	}
+
+	//------------------------------------------------------------------------
 	void XXXXtestBrightnessContrast( ) // Brightness/Contrast support No longer implemented
 	{
 		PRINT_TEST_NAME();
