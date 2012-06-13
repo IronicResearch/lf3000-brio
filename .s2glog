@@ -34501,3 +34501,14 @@ By Dave Milici (dmilici@leapfrog.com) on 6/11/12 6:04 PM
 5,128 ms. (Cumulative: 13,448,801 ms)
 
 ----------------
+Revision 9,918 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,919 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Declare public CImageIO class in Brio namespace, and export private unnamed class for legacy compatibility.
+SDK Apps and CGalleryIO linked with Brio CImageIO class do not contend with original LightningJSON class. (TTP 3747)
+
+By Dave Milici (dmilici@leapfrog.com) on 6/13/12 10:23 AM
+2 changed, 1 added, 0 deleted.
+5,064 ms. (Cumulative: 13,453,972 ms)
+
+----------------

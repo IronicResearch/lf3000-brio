@@ -40,6 +40,7 @@ bool TARGA_Load(CPath& path, tVideoSurf& surf);
 bool TARGA_Save(CPath& path, tVideoSurf& surf);
 bool TARGA_GetInfo(CPath& path, tVideoSurf& surf);
 
+LF_BEGIN_BRIO_NAMESPACE()
 class CImageIO
 {
 public:
@@ -73,5 +74,6 @@ public:
 	/// \retun true on success
 	bool GetInfo(CPath& path, tVideoSurf& surf);
 };
+LF_END_BRIO_NAMESPACE()
 
 #endif // IMAGEIO_H
