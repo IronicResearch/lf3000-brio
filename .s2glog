@@ -34530,3 +34530,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/13/12 1:05 PM
 5,031 ms. (Cumulative: 13,464,271 ms)
 
 ----------------
+Revision 9,922 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Generalize unit test script handling for non-MPI cases like Utility, ImageIO libs.
+
+By Dave Milici (dmilici@leapfrog.com) on 6/13/12 1:49 PM
+1 changed, 0 added, 0 deleted.
+5,360 ms. (Cumulative: 13,469,724 ms)
+
+----------------
