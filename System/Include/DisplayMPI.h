@@ -273,6 +273,7 @@ public:
 	/// \return			Returns the global alpha value set via SetAlpha().
 	U8                  GetAlpha(tDisplayHandle hndl) const;
 
+	/// \cond INTERNAL
 	// OpenGL context interface (internal Brio use only)
 	//=========================
 
@@ -303,7 +304,9 @@ public:
 	// (LF1000)
 	// Internal Brio use only. Not for use by developers.
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
+	/// \endcond
 
+	/// \cond DEPRECATED
 	// Brightness and contrast controls
 	//=================================
 
@@ -317,7 +320,7 @@ public:
 	/// \return			Returns kNoImplErr
 	tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
 	
-	/// Sets the backlight of the display output screen (-128..127 range setting)
+	/// \deprecated		Backlight support No longer implemented
 	///
 	/// \param screen 	The selected output screen
 	///
@@ -336,12 +339,13 @@ public:
 	/// \return			Returns 0
 	S8					GetContrast(tDisplayScreen screen);
 	
-	/// Gets the backlight setting of the display output screen
+	/// \deprecated 	Backlight support No longer implemented
 	///
 	/// \param screen 	The selected output screen
 	///
 	/// \return			Returns the backlight value set via SetBacklight().
 	S8					GetBacklight(tDisplayScreen screen);
+	/// \endcond
 
 	/// Gets available display memory allocation info.
 	///
@@ -357,6 +361,7 @@ public:
 	/// \param y		Window position Y
 	/// \param width	Window width relative to X
 	/// \param height	Window height relative to Y
+	/// \param visible	Visibility of the layer associated with the onscreen context
 	///
 	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
 	///
@@ -370,6 +375,7 @@ public:
 	/// \param y		Window position Y 
 	/// \param width	Window width relative to X
 	/// \param height	Window height relative to Y
+	/// \param visible	Visibility of the layer associated with the onscreen context
 	///
 	/// \return			Returns kNoErr on success, or kInvalidParamErr for invalid handle.
 	tErrType			GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, Boolean& visible);

@@ -34539,3 +34539,14 @@ By Dave Milici (dmilici@leapfrog.com) on 6/13/12 1:49 PM
 5,360 ms. (Cumulative: 13,469,724 ms)
 
 ----------------
+Revision 9,923 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,924 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix various doxygen typos and warnings, and tag unimplemented or internal functions as hidden.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 6/15/12 9:55 AM
+11 changed, 0 added, 0 deleted.
+5,500 ms. (Cumulative: 13,475,334 ms)
+
+----------------

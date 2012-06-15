@@ -92,10 +92,12 @@ public:
 	// Class-specific functionality
 	//********************************    
 
+	/// \cond INTERNAL
 	//NOTE: These functions should not be here AT ALL.  They are going away.  Do
 	//not use.
 	void GAS( void *d ) ;   // LF Internal function.  Not for release
 	void SAS( void *d ) ;   // LF Internal function.  Not for release
+	/// \endcond
 	
 	/// The constructor for the CAudioMPI
 	///
@@ -512,7 +514,8 @@ public:
 	///
 	/// \param pListener pointer to the new default listener
 	void			SetDefaultAudioEventListener( IEventListener *pListener );
-	
+
+	/// \cond UNIMPLEMENTED
 	//********************************
 	// Audio FX functionality
 	//********************************
@@ -531,8 +534,10 @@ public:
 	///
 	/// \return this function will return kNoImplErr
 	tErrType ChangeAudioEffectsProcessor( tAudioID id, CAudioEffectsProcessor *pChain ); 
+	/// \endcond
 
 
+	/// \cond DEPRECATED
 	//********************************
 	// MIDI functionality
 	//********************************	 
@@ -592,6 +597,8 @@ public:
 	
 	/// \deprecated MIDI functions are no longer implemented.
 	void 		StopMidiFile( tMidiPlayerID id, Boolean noDoneMessage );
+	/// \endcond
+
 	
 	/// Set the current priority policy
 	///
