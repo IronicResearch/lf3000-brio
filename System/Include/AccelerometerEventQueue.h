@@ -24,7 +24,7 @@
 #include <vector>
 LF_BEGIN_BRIO_NAMESPACE()
 
-/// \class AccelerometerEventQueue
+/// \class CAccelerometerEventQueue
 ///
 /// Helper class for polling accelerometer events.
 ///

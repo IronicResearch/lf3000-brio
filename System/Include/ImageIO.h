@@ -35,10 +35,11 @@ public:
 	CImageIO();
 	~CImageIO();
 
-	/// gets basic info ( height,width, pitch and format about the image in question
+	/// \brief Loads image data from file specified by full path based on extension
 	/// \param path full path to image file
 	/// \param surf surface object to hold image information
-	///			If apps allocate memory to hold imagedata based on info they got with getInfo,
+	///			If apps allocate memory to hold image data based on info they got with GetInfo(),
+	///			and pass that in as non-NULL surface.buffer pointer,
 	///			then CimageIO will not create new buffer to hold image data.
 	///			If they pass in NULL for tVideoSurf surface.buffer,
 	///			then CImageIO will create new buffer.
@@ -46,17 +47,17 @@ public:
 	/// \return true on success
 	bool Load(CPath& path, tVideoSurf& surf);
 
-	/// saves raw image data to file specified by full path based on extension
+	/// \brief Saves raw image data to file specified by full path based on extension
 	/// \param path fullpath including extension to store the file
 	/// \param surf video surface object which holds raw image data and its info
 	/// \return true on success.
 
-	bool Save(CPath& path, tVideoSurf& surfn);
+	bool Save(CPath& path, tVideoSurf& surf);
 
 
-	bool Save(CPath& path, tVideoSurf& surfn, int imageQuality);
+	bool Save(CPath& path, tVideoSurf& surf, int imageQuality);
 
-	/// gets basic info ( height,width, pitch and format about the image in question
+	/// \brief Gets basic info (height, width, pitch and format) about the image in question
 	/// \param path full path to image file
 	/// \param surf surface object to hold image information
 	/// \return true on success

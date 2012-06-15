@@ -17,7 +17,7 @@
 #include <SystemTypes.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
-
+/// \cond UNIMPLEMENTED
 // Audio effect mode
 enum {
 	kAudioEffectPassThroughMode,		// By-pass the effect
@@ -39,6 +39,7 @@ public:
 	// Each derived class will probably provide a function Configure()
 	// to configure the parameters for the effect, but it is not a requirement.
 };
+/// \endcond
 
 LF_END_BRIO_NAMESPACE()
 #endif /*LF_BRIO_AUDIO_EFFECT_H*/

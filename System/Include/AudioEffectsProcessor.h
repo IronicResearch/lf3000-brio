@@ -18,6 +18,7 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+/// \cond UNIMPLEMENTED
 class CAudioEffectsProcessor {
 public:
  	CAudioEffectsProcessor();
@@ -43,6 +44,7 @@ public:
 private:
 	class CAudioEffectsProcessorImpl	*mpImpl;
 };
+/// \endcond
 
 LF_END_BRIO_NAMESPACE()
 #endif		// LF_BRIO_AUDIO_EFFECTS_PROCESSOR_H

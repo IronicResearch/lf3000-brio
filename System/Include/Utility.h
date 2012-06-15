@@ -257,7 +257,7 @@ enum tPlatformCaps {
 //----------------------------------------------------------------------------
 /// <B>For use with Firmware 2.x or later only.</B>
 /// \brief Returns the supported platform capability.
-/// \param Enumerated platform capability type.
+/// \param caps Enumerated platform capability type.
 /// \return True if capability supported on platform, or False otherwise.
 //----------------------------------------------------------------------------
 bool HasPlatformCapability(tPlatformCaps caps);

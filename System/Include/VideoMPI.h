@@ -183,10 +183,18 @@ public:
 	///
 	/// \param	pTime	Pointer to video time stamp struct for frame seeking.  Only the frame is used, the time is ignored.
 	///
+	/// \return	Returns true on success.
+	Boolean 	SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pTime);
+
+	/// Seek to the video frame at selected time stamp
+	///
+	/// \param	hVideo	Handle to video returned by StartVideo()
+	///
+	/// \param	pTime	Pointer to video time stamp struct for frame seeking.  Only the frame is used, the time is ignored.
+	///
 	/// \param bUpdateVideoDisplay	If true, the display will be updated with the new video position.
 	///
 	/// \return	Returns true on success.
-	Boolean 	SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pTime);
 	Boolean 	SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pTime, Boolean bUpdateVideoDisplay);
 	
 	/// Seek to the nearest video keyframeframe before or at selected time stamp
