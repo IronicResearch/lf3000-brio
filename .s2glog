@@ -34550,3 +34550,13 @@ By Dave Milici (dmilici@leapfrog.com) on 6/15/12 9:55 AM
 5,500 ms. (Cumulative: 13,475,334 ms)
 
 ----------------
+Revision 9,925 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding GLESv2 to build of DisplayMPI.  Now the app doesn't have to link directly to use GLES2 functions.
+
+
+By Minh Saelock (msaelock@leapfrog.com) on 6/27/12 11:56 AM
+1 changed, 0 added, 0 deleted.
+5,453 ms. (Cumulative: 13,480,881 ms)
+
+----------------
