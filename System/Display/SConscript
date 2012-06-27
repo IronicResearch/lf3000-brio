@@ -18,7 +18,7 @@ if env['cpu'] == 'x86':
 	modsrcs		=  Glob('*.cpp') + Glob( os.path.join('Emulation', '*.cpp') )
 elif env['platform'] == 'LF2000':
 	emulibs		= []
-	ogllibs		= ['EGL', 'GLESv1_CM', 'vr5']
+	ogllibs		= ['EGL', 'GLESv1_CM', 'vr5', 'GLESv2']
 	modsrcs		= Glob('*.cpp') + Glob( os.path.join(env['platform'], '*.cpp') )
 else:
 	emulibs		= []
