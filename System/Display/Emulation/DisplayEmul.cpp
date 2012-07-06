@@ -24,6 +24,7 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+tDisplayHandle				hogl = NULL;
 namespace 
 {	
 	// X11 variables
