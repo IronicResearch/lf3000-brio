@@ -34560,3 +34560,17 @@ By Minh Saelock (msaelock@leapfrog.com) on 6/27/12 11:56 AM
 5,453 ms. (Cumulative: 13,480,881 ms)
 
 ----------------
+Revision 9,926 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,927 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,928 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,929 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,930 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,931 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add missing hogl variable to emulation Display module.
+
+By dlazzari (dlazzari@leapfrog.com) on 7/6/12 12:38 PM
+1 changed, 0 added, 0 deleted.
+5,423 ms. (Cumulative: 13,486,429 ms)
+
+----------------
