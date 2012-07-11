@@ -242,6 +242,7 @@ U32 CStream::Render(S16 *pOut, int framesToRender )
 		return framesRendered;
 	}
 
+#if 0
 	// Render stream at nominal sample rate and down-sample via 11:8 decimation transfer
 	if (pPlayer_ && pDownMixBuf_ && pPlayer_->GetSampleRate() != GetSamplingFrequency())
 	{
@@ -263,8 +264,10 @@ U32 CStream::Render(S16 *pOut, int framesToRender )
 		samplesRendered = framesRendered*2;
 		isDone_ = pPlayer_->IsDone();
 	}
+	else
+#endif
 	// Call player to render a stereo buffer
-	else if (pPlayer_)
+	if (pPlayer_)
 	{
 		framesRendered	= pPlayer_->Render( pOut, framesToRender );
 		samplesRendered = framesRendered*2;
