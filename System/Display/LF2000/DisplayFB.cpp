@@ -661,10 +661,13 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
 
 	// Auto-center UI elements on larger screens by delta XY
-	if (ctx->width < xres && ctx->height < yres)
+	if (ctx->width < xres)
 	{
 		cmd.left	+= dxres;
 		cmd.right	+= dxres;
+	}
+	if(ctx->height < yres)
+	{
 		cmd.top		+= dyres;
 		cmd.bottom	+= dyres;
 	}
