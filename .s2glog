@@ -34588,3 +34588,14 @@ By Dave Milici (dmilici@leapfrog.com) on 7/10/12 6:25 PM
 5,469 ms. (Cumulative: 13,492,023 ms)
 
 ----------------
+Revision 9,937 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,938 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,939 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changing DisplayMPI's SetWindowPosition so that auto-centering of ViewPort is done seperately for width and height.  Previously, if a title had either axis at full size, Brio would not apply the viewport offset to the other direction.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/13/12 4:47 PM
+1 changed, 0 added, 0 deleted.
+5,703 ms. (Cumulative: 13,497,866 ms)
+
+----------------
