@@ -34608,3 +34608,12 @@ By dlazzari (dlazzari@leapfrog.com) on 7/13/12 5:17 PM
 5,487 ms. (Cumulative: 13,503,467 ms)
 
 ----------------
+Revision 9,941 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Last commit missed the magic number by 1.
+
+By dlazzari (dlazzari@leapfrog.com) on 7/13/12 5:28 PM
+1 changed, 0 added, 0 deleted.
+5,158 ms. (Cumulative: 13,508,719 ms)
+
+----------------

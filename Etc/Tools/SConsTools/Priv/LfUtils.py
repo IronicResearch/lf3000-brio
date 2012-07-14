@@ -32,7 +32,7 @@ def GetRepositoryVersion(platform, branch):
 		rev = info.read()
 		begin = rev.find('Last Changed Rev:')
 		end = rev.find('\n', begin)
-		rev = rev[begin+17:end]
+		rev = rev[begin+18:end]
 		revision = rev
 			
 	print '*** Using repository revision "' + revision + '" as build number ***'
