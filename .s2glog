@@ -34617,3 +34617,15 @@ By dlazzari (dlazzari@leapfrog.com) on 7/13/12 5:28 PM
 5,158 ms. (Cumulative: 13,508,719 ms)
 
 ----------------
+Revision 9,942 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,943 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,944 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally compile 44KHz stream support, disabled by default for title compatibility. (TTP 3824, 3821)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/13/12 6:16 PM
+1 changed, 0 added, 0 deleted.
+5,074 ms. (Cumulative: 13,513,904 ms)
+
+----------------

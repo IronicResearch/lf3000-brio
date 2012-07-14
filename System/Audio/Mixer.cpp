@@ -936,9 +936,11 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 		goto error;
 	} 
 
+#ifdef USE_44KHZ
 	// External stream handling if 44KHz MP3 player
 	external = (pPlayer->GetSampleRate() == 44100) && sExt
 			&& (!strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "ogg"));
+#endif
 
 	pStream->InitWithPlayer( pPlayer, external );
 
