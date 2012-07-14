@@ -30,9 +30,9 @@ def GetRepositoryVersion(platform, branch):
 		command = 'svn info ' + os.path.join(repo, branch)
 		info = os.popen(command)
 		rev = info.read()
-		begin = rev.find('Revision:')
+		begin = rev.find('Last Changed Rev:')
 		end = rev.find('\n', begin)
-		rev = rev[begin+10:end]
+		rev = rev[begin+17:end]
 		revision = rev
 			
 	print '*** Using repository revision "' + revision + '" as build number ***'
