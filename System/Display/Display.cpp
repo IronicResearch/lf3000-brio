@@ -508,6 +508,32 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 	yvp_ = y;
 	wvp_ = width;
 	hvp_ = height;
+	ow_ = width;
+	oh_ = height;
+	GetScreenSize();
+	kernel_.LockMutex(gListMutex);
+	std::list<tDisplayContext*>::iterator it;
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		if((*it)->initialZOrder != kDisplayOnOverlay)
+			RegisterLayer(*it, (*it)->x, (*it)->y);
+	}
+	kernel_.UnlockMutex(gListMutex);
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
+		RegisterLayer(dcogl, dcogl->x, dcogl->y);
+	return kNoErr;
+}
+
+tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, U16 owidth, U16 oheight)
+{
+	(void)hndl;
+	xvp_ = x;
+	yvp_ = y;
+	wvp_ = width;
+	hvp_ = height;
+	ow_ = owidth;
+	oh_ = oheight;
 	GetScreenSize();
 	kernel_.LockMutex(gListMutex);
 	std::list<tDisplayContext*>::iterator it;
@@ -534,6 +560,18 @@ tErrType CDisplayModule::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& w
 	return kNoErr;
 }
 
+//----------------------------------------------------------------------------
+tErrType CDisplayModule::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, U16& owidth, U16& oheight)
+{
+	(void)hndl;
+	x = xvp_;
+	y = yvp_;
+	width  = wvp_;
+	height = hvp_;
+	owidth = ow_;
+	oheight = oh_;
+	return kNoErr;
+}
 //----------------------------------------------------------------------------
 tErrType CDisplayModule::SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient)
 {

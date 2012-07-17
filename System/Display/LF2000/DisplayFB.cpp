@@ -80,6 +80,8 @@ namespace
 	S16							dyres = 0;	// screen delta Y
 	U16							vxres = 0;	// viewport size X
 	U16							vyres = 0;	// viewport size Y
+	U16							oxres = 0;
+	U16							oyres = 0;
 	unsigned int				xscale = 0;	// video scaler X
 	unsigned int				yscale = 0; // video scaler Y
 }
@@ -185,9 +187,9 @@ void CDisplayFB::DeInitModule()
 U32	CDisplayFB::GetScreenSize()
 {
 	// Adjust effective screen size coordinates if viewport active
-	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
-	if ((vxres > 0 && vxres < xres) || (vyres > 0 && vyres < yres))
-		return (vyres << 16) | (vxres);
+	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres, oxres, oyres);
+	if ((oxres > 0 && oxres < xres) || (oyres > 0 && oyres < yres))
+		return (oyres << 16) | (oxres);
 	return (yres << 16) | (xres);
 }
 
@@ -316,7 +318,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		n = OGLFB;
 
 	// Update dxres && dyres in case someone called SetViewPort without calling GetScreenStats
-	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
+	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres, oxres, oyres);
 	// FIXME: RGB lower layer needed when viewport active
 	// FIXME: Switch RGB layer prior to isUnderlay setting
 	if (n == RGBFB && (dxres > 0 || dyres > 0))
@@ -917,7 +919,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 #endif // LF1000
 
 	// Query viewport size to use
-	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
+	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres, oxres, oyres);
 
 	// Create DisplayMPI context for OpenGL framebuffer
 #ifdef LF1000
@@ -933,6 +935,8 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vinfo[n].xres;
 	pOglCtx->height 	= vinfo[n].yres;
+	pOglCtx->owidth		= oxres;
+	pOglCtx->oheight	= oyres;
 #ifdef LF1000
 	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
 	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr

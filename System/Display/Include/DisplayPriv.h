@@ -464,7 +464,9 @@ public:
 	VTABLE_EXPORT tErrType			SetViewport(tDisplayHandle hndl, tDisplayViewport viewport);
 	VTABLE_EXPORT tDisplayViewport	GetViewport(tDisplayHandle hndl);
 	VTABLE_EXPORT tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
+	VTABLE_EXPORT tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, U16 owidth, U16 oheight);
 	VTABLE_EXPORT tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height);
+	VTABLE_EXPORT tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, U16& owidth, U16& oheight);
 	VTABLE_EXPORT tErrType			SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient);
 	VTABLE_EXPORT tDisplayOrientation	GetOrientation(tDisplayHandle hndl);
 	VTABLE_EXPORT tErrType			SetAutoRotation(Boolean enable);
@@ -491,6 +493,8 @@ private:
 	S16					yvp_;
 	U16					wvp_;
 	U16					hvp_;
+	U16					ow_;
+	U16					oh_;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();

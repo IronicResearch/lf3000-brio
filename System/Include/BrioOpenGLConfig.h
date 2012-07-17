@@ -48,6 +48,8 @@ struct tOpenGLContext
 	U16					height;
 	Boolean				bFSAA;			// fullscreen anti-aliasing feature (LF1000 only)
 	tDisplayHandle		hndlDisplay;	// display handle for OpenGL
+	U16					owidth;
+	U16					oheight;
 };
 
 enum tBrioOpenGLVersion
