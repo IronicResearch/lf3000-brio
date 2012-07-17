@@ -34629,3 +34629,20 @@ By Dave Milici (dmilici@leapfrog.com) on 7/13/12 6:16 PM
 5,074 ms. (Cumulative: 13,513,904 ms)
 
 ----------------
+Revision 9,945 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,946 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,947 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,948 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,949 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+7 inch display support update 2 of 3.  Brio updated to have new GetViewport and SetViewPort functions.  These take return and set OriginalWidth and OriginalHeight for scaling displays.  OriginalWidth and OriginalHeight are now passed into the window handle for OpenGL initialization.
+
+GetScreenSize and GetScreenStats now returns the OriginalWidth and OriginalHeight instead of the real width and real height.
+
+Also fixed up some string printing to accurately indicate versions strings being printed.
+
+By Minh Saelock (msaelock@leapfrog.com) on 7/16/12 6:33 PM
+7 changed, 0 added, 0 deleted.
+5,346 ms. (Cumulative: 13,519,375 ms)
+
+----------------

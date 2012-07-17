@@ -252,8 +252,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	ctx.eglWindow = &hwnd; // something non-NULL 
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
-	hwnd.width = ctx.width;
-	hwnd.height = ctx.height;
+	hwnd.width = ctx.owidth;
+	hwnd.height = ctx.oheight;
 #endif
 #else
 	/*
@@ -286,9 +286,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
 	dbg.Assert(success, "eglInitialize() failed\n");
 	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize(): success = %d, version = %d.%d\n", success, iMajorVersion, iMinorVersion);
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
+	dbg.DebugOut(kDbgLvlVerbose, "EGL vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "EGL version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "EGL extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
 
 #ifndef LF1000
 	eglBindAPI(EGL_OPENGL_ES_API);
@@ -357,6 +357,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "eglCreateContext()\n");
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, NULL);
 	AbortIfEGLError("eglCreateContext");
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
 	/*
 		Step 7 - Bind the context to the current thread and use our 
@@ -467,8 +471,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	ctx.eglWindow = &hwnd; // something non-NULL
 
 	disp_.InitOpenGL(&ctx);
-	hwnd.width = ctx.width;
-	hwnd.height = ctx.height;
+	hwnd.width = ctx.owidth;
+	hwnd.height = ctx.oheight;
 
 #else
 	/*
@@ -501,9 +505,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	bool success = eglInitialize(eglDisplay, &iMajorVersion, &iMinorVersion);
 	dbg.Assert(success, "eglInitialize() failed\n");
 	dbg.DebugOut(kDbgLvlVerbose, "eglInitialize(): success = %d, version = %d.%d\n", success, iMajorVersion, iMinorVersion);
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
+	dbg.DebugOut(kDbgLvlVerbose, "EGL vendor = %s\n", eglQueryString(eglDisplay, EGL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "EGL version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "EGL extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
 
 	eglBindAPI(EGL_OPENGL_ES_API);
 	// NOTE: 3D layer can only be enabled after MagicEyes lib
@@ -569,6 +573,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	EGLint ai32ContextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, brioOpenGLVersion, EGL_NONE };
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, ai32ContextAttribs);
 	AbortIfEGLError("eglCreateContext");
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
 	/*
 		Step 7 - Bind the context to the current thread and use our

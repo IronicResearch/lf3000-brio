@@ -420,7 +420,9 @@ public:
 	// Internal Brio use only. Not for use by developers.
 	// Sets/Gets active display/touch viewport via x,y position and w,h size
 	tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
+	tErrType			SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, U16 owidth, U16 oheight);
 	tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height);
+	tErrType			GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, U16& owidth, U16& oheight);
 
 	// Internal Brio use only. Not for use by developers.
 	// Sets/Gets effective display/touch viewport orientation (for Flash player use)

@@ -459,6 +459,13 @@ tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, 
 }
 
 //----------------------------------------------------------------------------
+tErrType CDisplayMPI::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height, U16 owidth, U16 oheight)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->SetViewport(hndl, x, y, width, height, owidth, oheight);
+}
+//----------------------------------------------------------------------------
 tErrType CDisplayMPI::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height)
 {
 	if (!pModule_)
@@ -466,6 +473,13 @@ tErrType CDisplayMPI::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& widt
 	return pModule_->GetViewport(hndl, x, y, width, height);
 }
 
+//----------------------------------------------------------------------------
+tErrType CDisplayMPI::GetViewport(tDisplayHandle hndl, S16& x, S16& y, U16& width, U16& height, U16& owidth, U16& oheight)
+{
+	if (!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetViewport(hndl, x, y, width, height, owidth, oheight);
+}
 //----------------------------------------------------------------------------
 tErrType CDisplayMPI::SetOrientation(tDisplayHandle hndl, tDisplayOrientation orient)
 {
