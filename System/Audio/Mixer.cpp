@@ -87,6 +87,8 @@
 #define kMixer_SoftClipper_PreGainDB   3 
 #define kMixer_SoftClipper_PostGainDB  0
 
+int kAudioFramesPerBuffer = 1024; // formerly constant
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -198,6 +200,37 @@ static bool IsCodecLegacy( void )
 	return (bool)legacy;
 }
 
+//------------------------------------------------------------------------------
+// Returns ALSA buffer size configured on system at runtime (embedded)
+//------------------------------------------------------------------------------
+int GetAudioBufferSize(void)
+{
+	FILE* fp;
+	char buf[256];
+	int size = 0;
+	int r;
+
+	fp = fopen("/etc/asound.conf", "r");
+	if (!fp)
+		return 0;
+
+	while (!feof(fp)) {
+		r = fscanf(fp, "%s", &buf[0]);
+		if (r != 1)
+			continue;
+		r = strcmp(buf, "period_size");
+		if (r != 0)
+			continue;
+		r = fscanf(fp, "%d", &size);
+		if (r == 1)
+			pDebugMPI_->DebugOut(kDbgLvlImportant, "Found ALSA period_size=%d\n", size);
+		break;
+	}
+	fclose(fp);
+
+	return size;
+}
+
 // ==============================================================================
 // CAudioMixer implementation
 // ==============================================================================
@@ -228,6 +261,16 @@ CAudioMixer::CAudioMixer( int inStreams ):
 	
 	pMixer_ = this;
 
+	// Query audio system buffer size
+	int size = GetAudioBufferSize();
+	if (size > 0 && size != kAudioFramesPerBuffer) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: Change audio buffer size from %d to %d frames\n",
+				__FUNCTION__, kAudioFramesPerBuffer, size);
+		kAudioFramesPerBuffer = size;
+	}
+
+	pStreamBuf_ = new S16[kAudioOutBufSizeInWords];
+
 	// Allocate audio streams
 	pStreams_ = new CStream[ numInStreams_ ];
 	pDebugMPI_->Assert((pStreams_ != kNull),
@@ -241,6 +284,7 @@ CAudioMixer::CAudioMixer( int inStreams ):
 
 	for (i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
+		pMixBinBufs_[i] = new S16[kAudioMixer_MixBinBufferLength_Words];
 		mixBinFilled_[i] = false;
 	}
 
@@ -266,6 +310,7 @@ CAudioMixer::CAudioMixer( int inStreams ):
 
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
+		pTmpBufs_[i] = new S16[kAudioMixer_TempBufferWords];
 		ClearShorts(pTmpBufs_[i], kAudioMixer_TempBufferWords);
 		pTmpBufOffsets_[i] = &pTmpBufs_[i][kSRC_Filter_MaxDelayElements];  
 	}
@@ -404,13 +449,17 @@ CAudioMixer::~CAudioMixer()
 	
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
+		delete[] pTmpBufOffsets_[i];
 		pTmpBufOffsets_[i] = NULL;
 	}
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
 	{
+		delete[] pMixBinBufs_[i];
 	}
 	
+	delete[] pStreamBuf_;
+
 	MIXER_UNLOCK; 
 	pKernelMPI_->DeInitMutex( mixerMutex_ );
 

@@ -127,7 +127,7 @@ class CAudioMixer : private IEventListener
 	// Stream parameters
 	U8			numInStreams_; // for now, all input in stereo (including replicated mono)
 	CStream*	pStreams_;			// Array of streams
-	S16			pStreamBuf_[kAudioOutBufSizeInWords];	
+	S16*		pStreamBuf_; // [kAudioOutBufSizeInWords];
 
 // Mix Bin Parameters
 #define kAudioMixer_MixBinCount			3	// At present, for sampling rates :	 fs, fs/2, fs/4 
@@ -137,7 +137,7 @@ class CAudioMixer : private IEventListener
 #define kAudioMixer_MixBin_Index_Fs kAudioMixer_MixBin_Index_FsDiv1
 #define kAudioMixer_MixBinBufferLength_Words  \
 	(kAudioOutBufSizeInWords + kSRC_Filter_MaxDelayElements)
-	S16 pMixBinBufs_[kAudioMixer_MixBinCount][kAudioMixer_MixBinBufferLength_Words];
+	S16* pMixBinBufs_[kAudioMixer_MixBinCount]; // [kAudioMixer_MixBinBufferLength_Words];
 	long mixBinFilled_[kAudioMixer_MixBinCount];
 	long fsRack_[kAudioMixer_MixBinCount];
 
@@ -163,7 +163,7 @@ class CAudioMixer : private IEventListener
 #define kAudioMixer_MaxTempBuffers	7
 #define kAudioMixer_TempBufferWords \
 	(kAudioMixer_MaxOutChannels*kAudioMixer_MixBinBufferLength_Words)
-	S16 pTmpBufs_[kAudioMixer_MaxTempBuffers][kAudioMixer_TempBufferWords];
+	S16* pTmpBufs_[kAudioMixer_MaxTempBuffers]; // [kAudioMixer_TempBufferWords];
 	S16* pTmpBufOffsets_[kAudioMixer_MaxTempBuffers]; 
 
 	Boolean isPaused_;

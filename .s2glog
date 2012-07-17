@@ -34646,3 +34646,16 @@ By Minh Saelock (msaelock@leapfrog.com) on 7/16/12 6:33 PM
 5,346 ms. (Cumulative: 13,519,375 ms)
 
 ----------------
+Revision 9,950 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Query ALSA config for setting audio buffer size. (TTP 3829)
+Changes constant to runtime var for allocating buffer sizes.
+Internal mixer buffers changed from static to dynamic alloc.  
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/17/12 1:15 PM
+4 changed, 0 added, 0 deleted.
+5,223 ms. (Cumulative: 13,524,692 ms)
+
+----------------

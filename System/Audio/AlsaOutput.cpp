@@ -106,6 +106,8 @@ static int set_hwparams(snd_pcm_t *handle,
 		return -EINVAL;
 	}
 	// set the buffer time 
+	period_time = 1000000 * kAudioFramesPerBuffer / kAudioSampleRate; // period time in us
+	buffer_time = 4 * period_time;  // ring buffer length in us
 	err = snd_pcm_hw_params_set_buffer_time_near(handle, params, &buffer_time, &dir);
 	if (err < 0) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror(err));
