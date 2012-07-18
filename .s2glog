@@ -34659,3 +34659,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/17/12 1:15 PM
 5,223 ms. (Cumulative: 13,524,692 ms)
 
 ----------------
+Revision 9,951 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+External stream callback needs to check mixer pause state for PauseAllAudio(). (TTP 3828)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/18/12 10:57 AM
+1 changed, 0 added, 0 deleted.
+5,135 ms. (Cumulative: 13,529,921 ms)
+
+----------------

@@ -1453,7 +1453,7 @@ int CAudioMixer::WrapperToCallPlayer( S16 *pOut,
 
 	MIXER_LOCK;
 
-	if (pPlayer->IsPaused())
+	if (pPlayer->IsPaused() || pMixer_->IsPaused())
 	{
 		ClearShorts(pOut, numStereoFrames*kAudioMixer_MaxOutChannels);
 		frames = numStereoFrames;
