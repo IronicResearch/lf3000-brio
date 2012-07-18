@@ -34669,3 +34669,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/18/12 10:57 AM
 5,135 ms. (Cumulative: 13,529,921 ms)
 
 ----------------
+Revision 9,952 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Submit libAudio.so binary enabled for 44KHz support with MP3 patch libs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/18/12 11:02 AM
+1 changed, 1 added, 0 deleted.
+5,173 ms. (Cumulative: 13,535,188 ms)
+
+----------------
