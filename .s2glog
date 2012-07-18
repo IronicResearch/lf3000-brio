@@ -34679,3 +34679,13 @@ By Dave Milici (dmilici@leapfrog.com) on 7/18/12 11:02 AM
 5,173 ms. (Cumulative: 13,535,188 ms)
 
 ----------------
+Revision 9,953 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable 44KHz compilation option by default.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 7/18/12 11:04 AM
+1 changed, 0 added, 0 deleted.
+5,502 ms. (Cumulative: 13,540,784 ms)
+
+----------------
