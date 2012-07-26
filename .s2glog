@@ -34689,3 +34689,14 @@ By Dave Milici (dmilici@leapfrog.com) on 7/18/12 11:04 AM
 5,502 ms. (Cumulative: 13,540,784 ms)
 
 ----------------
+Revision 9,954 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 9,955 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Hardcoding 4.3.1. into version string.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 7/26/12 1:50 PM
+1 changed, 0 added, 0 deleted.
+5,360 ms. (Cumulative: 13,546,237 ms)
+
+----------------
