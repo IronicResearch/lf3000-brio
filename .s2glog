@@ -34700,3 +34700,13 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 7/26/12 1:50 PM
 5,360 ms. (Cumulative: 13,546,237 ms)
 
 ----------------
+Revision 9,956 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Hardcode meta.inf version to 4.3.1.
+
+
+By Carlo Castaneda (ccastaneda@leapfrog.com) on 7/31/12 12:58 PM
+1 changed, 0 added, 0 deleted.
+5,331 ms. (Cumulative: 13,551,677 ms)
+
+----------------
