@@ -725,7 +725,8 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 {
 	Boolean		ready = false;
 	ogg_packet  op;
-	ogg_int64_t frame;
+	ogg_int64_t granulepos = td.granulepos;
+	ogg_int64_t frame = theora_granule_frame(&td,td.granulepos);
 	ogg_int64_t ftime = 0;
 	tVideoTime*	pTime = pCtx;
 	int			bytes;
@@ -740,6 +741,10 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 		pTime->frame = pTime->time * ti.fps_numerator / (ti.fps_denominator * 1000);
 
 	// Modally loop until next frame found or end of file
+	int theora_keyframe_shift = theora_granule_shift(&ti);
+	ogg_int64_t first_frame_granulepos = 1 << theora_keyframe_shift;
+	ogg_int64_t offset_mask = first_frame_granulepos - 1;
+	bool frame_dropped = false;
 	while (!ready)
 	{
 		FILE* file = pVidCtx->pFileVideo;
@@ -749,13 +754,25 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 				(!bDrop || theora_packet_iskeyframe(&op) && 
 					theora_granule_frame(&td,op.granulepos) >= pTime->frame) */ )
 		{
+			if(op.granulepos >= 0) {
+				granulepos = op.granulepos;
+				frame = (granulepos >> theora_keyframe_shift) + (granulepos & offset_mask) - 1;
+			} else {
+				granulepos++;
+				frame++;
+			}
+
 			// Only decode if at selected time frame or no dropped frames
-			PROFILE_BEGIN();
-			theora_decode_packetin(&td,&op);
-			PROFILE_END("theora_decode_packetin");
-			frame = theora_granule_frame(&td,td.granulepos);
-			if (!bDrop || pVidCtx->bSeeked || frame >= pTime->frame)
+			if (!bDrop || pVidCtx->bSeeked || theora_packet_iskeyframe(&op) ||
+					frame >= pTime->frame)
 			{
+				if(frame_dropped)
+					theora_control(&td, TH_DECCTL_SET_GRANPOS, &granulepos, sizeof(granulepos));
+				PROFILE_BEGIN();
+				theora_decode_packetin(&td,&op);
+				PROFILE_END("theora_decode_packetin");
+				frame = theora_granule_frame(&td,td.granulepos);
+
 				// Note theora_granule_time() returns only seconds
 				pTime->frame = frame;
 				pTime->time  = frame * 1000 * ti.fps_denominator / ti.fps_numerator;
@@ -770,6 +787,7 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 			{
 				dbg_.DebugOut(kDbgLvlImportant, "VideoModule::GetVideoFrame: Dropped frame %ld, time %ld (msec)\n", 
 					static_cast<long>(frame), static_cast<long>(pTime->time));
+				frame_dropped = true;
 			}
 		}
 		else

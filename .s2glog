@@ -34710,3 +34710,12 @@ By Carlo Castaneda (ccastaneda@leapfrog.com) on 7/31/12 12:58 PM
 5,331 ms. (Cumulative: 13,551,677 ms)
 
 ----------------
+Revision 9,957 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+New Frame dropping algorithm for TheoraPlayer.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/2/12 1:50 PM
+1 changed, 0 added, 0 deleted.
+5,346 ms. (Cumulative: 13,557,117 ms)
+
+----------------
