@@ -17,7 +17,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef LF1000
 LF_BEGIN_BRIO_NAMESPACE()
+#endif
 
 //----------------------------------------------------------------------------
 CImageIO::CImageIO()
@@ -114,5 +116,7 @@ bool CImageIO::Save(CPath& path, tVideoSurf& surf, int imageQuality)
 }
 
 //----------------------------------------------------------------------------
+#ifdef LF1000
 LF_END_BRIO_NAMESPACE()
+#endif
 // EOF
