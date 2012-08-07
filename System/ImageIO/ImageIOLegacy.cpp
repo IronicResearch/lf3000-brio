@@ -12,6 +12,7 @@
 //
 //==============================================================================
 
+#ifdef LF1000
 #include <ImageIO.h>
 
 using namespace LeapFrog::Brio;
@@ -58,6 +59,7 @@ bool ::CImageIO::Save(CPath& path, tVideoSurf& surf, int imageQuality)
 {
 	return LeapFrog::Brio::CImageIO::Save(path, surf, imageQuality);
 }
+#endif
 
 //----------------------------------------------------------------------------
 // EOF

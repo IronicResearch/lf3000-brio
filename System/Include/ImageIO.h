@@ -28,7 +28,9 @@
 
 using namespace LeapFrog::Brio;
 
+#ifdef LF1000
 LF_BEGIN_BRIO_NAMESPACE()
+#endif
 class CImageIO
 {
 public:
@@ -63,6 +65,8 @@ public:
 	/// \return true on success
 	bool GetInfo(CPath& path, tVideoSurf& surf);
 };
+#ifdef LF1000
 LF_END_BRIO_NAMESPACE()
+#endif
 
 #endif // IMAGEIO_H
