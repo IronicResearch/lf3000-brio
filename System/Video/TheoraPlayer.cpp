@@ -21,6 +21,7 @@
 #include <ogg/ogg.h>
 #include <theora/theora.h>
 
+#undef ENABLE_PROFILING
 #include <FlatProfiler.h>
 
 #include <stdio.h>
@@ -47,13 +48,19 @@ namespace
 //==============================================================================
 
 //----------------------------------------------------------------------------
-inline void PROFILE_BEGIN(void)
+inline void PROFILE_BEGIN(int tag)
 {
+#ifdef ENABLE_PROFILING
+	TimeStampOn(tag);
+#endif
 }
 
 //----------------------------------------------------------------------------
-inline void PROFILE_END(const char* msg)
+inline void PROFILE_END(int tag, const char* msg)
 {
+#ifdef ENABLE_PROFILING
+	TimeStampOff(tag);
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -403,11 +410,17 @@ ogg_int64_t CTheoraPlayer::BinarySeekFrame( FILE* file, ogg_int64_t target_frame
 //----------------------------------------------------------------------------
 CTheoraPlayer::CTheoraPlayer()
 {
+#ifdef ENABLE_PROFILING
+	FlatProfilerInit(4, 1000);
+#endif
 }
 
 //----------------------------------------------------------------------------
 CTheoraPlayer::~CTheoraPlayer()
 {
+#ifdef ENABLE_PROFILING
+	FlatProfilerDone();
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -600,9 +613,9 @@ Boolean CTheoraPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 
 	// Output decoded Theora packet to YUV surface
 	yuv_buffer 	yuv;
-	PROFILE_BEGIN();
+	PROFILE_BEGIN(0);
 	theora_decode_YUVout(&td,&yuv);
-	PROFILE_END("theora_decode_YUVout");
+	PROFILE_END(0,"theora_decode_YUVout");
 
 	// Pack into YUV or RGB format surface
 	tVideoSurf*	surf = pCtx;
@@ -770,9 +783,9 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 			{
 				if(frame_dropped)
 					theora_control(&td, TH_DECCTL_SET_GRANPOS, &granulepos, sizeof(granulepos));
-				PROFILE_BEGIN();
+				PROFILE_BEGIN(1);
 				theora_decode_packetin(&td,&op);
-				PROFILE_END("theora_decode_packetin");
+				PROFILE_END(1,"theora_decode_packetin");
 				frame = theora_granule_frame(&td,td.granulepos);
 
 				// Note theora_granule_time() returns only seconds
@@ -837,7 +850,7 @@ Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 	
 	ogg_int64_t target_framepos = pCtx->frame + 1;
 	dbg_.DebugOut(kDbgLvlVerbose, "VideoModule::SeekVideoFrame looking for target_framepos=%llx\n", target_framepos);
-	TimeStampOn(0);
+	PROFILE_BEGIN(2);
 	ogg_int64_t target_granulepos = BinarySeekFrame(file, target_framepos, left_pos, right_pos);
 	
 	int theora_keyframe_shift = theora_granule_shift(&ti);
@@ -854,13 +867,13 @@ Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 	{
 		found = true;
 	}
-	TimeStampOff(0);
+	PROFILE_END(2,"BinarySeekFrame");
 	
 	frame = theora_granule_frame(&td,td.granulepos);
 	
 	if(bExact)
 	{
-		TimeStampOn(1);
+		PROFILE_BEGIN(3);
 		//We have the KeyFrame before target frame, decode till we reach the target frame
 		while(frame < pCtx->frame)
 		{
@@ -888,7 +901,7 @@ Boolean CTheoraPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 					queue_page(&to,&og);
 			}
 		}
-		TimeStampOff(1);
+		PROFILE_END(3,"SeekFromKeyFrame");
 	}
 	
 	if (pVidCtx)
