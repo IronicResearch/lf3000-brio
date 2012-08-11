@@ -514,6 +514,8 @@ Boolean	CTheoraPlayer::InitVideo(tVideoHndl hVideo)
 	// Start decoder stream
 	theora_decode_init(&td,&ti);
 
+	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: %s\n", pVidCtx->pPathVideo->c_str());
+	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: codec ver %d.%d.%d\n", ti.version_major, ti.version_minor, ti.version_subminor);
 	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: %dx%d, %d:%d aspect, %d:%d fps\n",
 		ti.width, ti.height, ti.aspect_numerator, ti.aspect_denominator, ti.fps_numerator, ti.fps_denominator);
 	dbg_.DebugOut(kDbgLvlNoteable, "VideoModule::StartVideo: output %dx%d at %d,%d\n",
