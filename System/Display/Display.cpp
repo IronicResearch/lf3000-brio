@@ -319,7 +319,10 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	tDisplayContext* pdc = NULL;
 
 	// Remove display context from linked list
-	kernel_.LockMutex(gListMutex);
+	if(deinitingOpenGL)
+		kernel_.TryLockMutex(gListMutex);
+	else
+		kernel_.LockMutex(gListMutex);
 	std::list<tDisplayContext*>::iterator it;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
@@ -345,7 +348,10 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 	}
 
 	// pdcVisible_ must always refer to top layer in list
-	kernel_.LockMutex(gListMutex);
+	if(deinitingOpenGL)
+		kernel_.TryLockMutex(gListMutex);
+	else
+		kernel_.LockMutex(gListMutex);
 	pdcVisible_ = NULL;
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
