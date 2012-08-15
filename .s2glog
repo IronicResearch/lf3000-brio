@@ -34758,3 +34758,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/14/12 5:51 PM
 5,079 ms. (Cumulative: 13,578,792 ms)
 
 ----------------
+Revision 9,962 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3912 & 3914 (maybe more).  Changed DisplayMPI SwapBuffers to only assign pdcVisible's flippedContext if it's on the same layer as the one being swapped to.  This should prevent SwapBuffers from changing the Overlay's flippedContext to a display context that will later be destroyed.  Preventing a dangling pointer that can cause problems later.
+
+WARNING: This may cause issues if a 2D double buffering app is interupted by a 2D Highjacking app.  Since Pause, LowBattery, and PowerDown have been switched from Highjacking to Overlay, I don't think there's any 2D Highjacking apps anymore.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/14/12 6:10 PM
+1 changed, 0 added, 0 deleted.
+5,048 ms. (Cumulative: 13,583,949 ms)
+
+----------------

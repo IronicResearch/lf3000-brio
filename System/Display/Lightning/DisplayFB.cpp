@@ -542,7 +542,7 @@ tErrType CDisplayFB::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	int n = ctx->layer;
 	
 	// Update invalidated offscreen regions prior to page flip (VideoMPI)
-	if (ctx->initialZOrder != kDisplayOnBottom)
+	if (ctx->initialZOrder != kDisplayOnBottom && n == pdcVisible_->layer)
 		pdcVisible_->flippedContext = ctx;
 	if (ctx->isVideo)
 		pModule_->Invalidate(0, NULL);
