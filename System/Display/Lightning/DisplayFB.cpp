@@ -191,6 +191,8 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 {
 	int r = kNoErr;
 
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: layer=%d: %dx%dx%d, format=%d, block=%d\n", __FUNCTION__, n, width, height, depth, (int)colorDepth, isBlockAddr);
+
 	// Select pixel format masks for RGB context
 	{
 		vinfo[n].bits_per_pixel = depth;
@@ -366,7 +368,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
-	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p (%d)\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer, ctx->layer);
 
 	U16 width			= ctx->rect.right - ctx->rect.left;
 	U16 height			= ctx->rect.bottom - ctx->rect.top;
@@ -444,7 +446,7 @@ tErrType CDisplayFB::UnRegisterLayer(tDisplayHandle hndl)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
 
-	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer);
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p (%d)\n", __FUNCTION__, ctx, ctx->width, ctx->height, ctx->pitch, ctx->pBuffer, ctx->layer);
 
 	// Nullify flipped contexts tracked in SwapBuffers()
 	if (pdcVisible_) {
@@ -594,7 +596,7 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
 	cmd.apply  = 1;
 
-	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d (%d)\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom, ctx->layer);
 
 	// Auto-center UI elements on larger screens by delta XY
 	if (ctx->width < xres && ctx->height < yres)
@@ -615,6 +617,8 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 tErrType CDisplayFB::SetVisible(tDisplayHandle hndl, Boolean visible)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: visible=%d (%d)\n", __FUNCTION__, ctx, visible, ctx->layer);
 
 	int n = ctx->layer;
 	int r = ioctl(fbdev[n], FBIOBLANK, !visible);
@@ -704,6 +708,8 @@ tErrType CDisplayFB::GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height
 tErrType CDisplayFB::SetAlpha(tDisplayHandle hndl, U8 level, Boolean enable)
 {
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
+
+	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: alpha=%d, enable=%d (%d)\n", __FUNCTION__, ctx, level, enable, ctx->layer);
 
 	ctx->alphaLevel = level;
 	ctx->isBlended  = enable;
