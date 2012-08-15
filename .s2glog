@@ -34749,3 +34749,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/10/12 6:38 PM
 5,266 ms. (Cumulative: 13,573,620 ms)
 
 ----------------
+Revision 9,961 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Preventing DeadLock if crashing while the DisplayList Mutex is locked.  This can occur if you press Volume while exiting a 2D buffer swapping app (i.e. Gallery Widget).  This does not actually fix the crash, but it prevents a hang caused by the crash.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/14/12 5:51 PM
+3 changed, 0 added, 0 deleted.
+5,079 ms. (Cumulative: 13,578,792 ms)
+
+----------------

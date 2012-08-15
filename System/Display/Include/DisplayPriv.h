@@ -495,6 +495,7 @@ private:
 	U16					hvp_;
 	U16					ow_;
 	U16					oh_;
+	bool				deinitingOpenGL;
 
 	// Limit object creation to the Module Manager interface functions
 	CDisplayModule();

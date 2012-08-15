@@ -63,6 +63,7 @@ void CDisplayModule::InitModule()
 		pDriver = new CDisplayLF1000(this);
 #endif
 	pDriver->InitModule();
+	deinitingOpenGL = false;
 }
 
 //----------------------------------------------------------------------------
@@ -226,7 +227,9 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayModule::DeinitOpenGL()
 {
-	return pDriver->DeinitOpenGL();
+	deinitingOpenGL = true;
+	pDriver->DeinitOpenGL();
+	deinitingOpenGL = false;
 }
 
 //----------------------------------------------------------------------------
