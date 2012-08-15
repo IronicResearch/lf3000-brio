@@ -34769,3 +34769,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/14/12 6:10 PM
 5,048 ms. (Cumulative: 13,583,949 ms)
 
 ----------------
+Revision 9,963 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added debug tracers to more DisplayMPI internal routines, and changed default from verbose.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/15/12 12:06 PM
+2 changed, 0 added, 0 deleted.
+5,126 ms. (Cumulative: 13,589,168 ms)
+
+----------------
