@@ -218,7 +218,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 {
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
-	dbg.DebugOut(kDbgLvlCritical, "%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
 	if(!dispmgr)
 		dispmgr = new CDisplayMPI();
 
