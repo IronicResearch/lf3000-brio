@@ -34789,3 +34789,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/21/12 4:33 PM
 5,112 ms. (Cumulative: 13,594,374 ms)
 
 ----------------
+Revision 9,966 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3938.  Modified CreateHandle to not change PixelFormat, it's already done in RegisterLayer.  The only reason for changing the PixelFormat during Createhandle is to have an accurate pitch.  The pitch is now calculated seperately from the layer settings, so it doesn't matter that the layer's PixelFormat doesn't match until the RegisterLayer call.  SetPixelFormat now also sets the layer invisible if it is changed in any way, this as appose to the older logic in RegisterLayer that did so if the size or depth of the buffer changed.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/22/12 11:38 AM
+1 changed, 0 added, 0 deleted.
+5,094 ms. (Cumulative: 13,599,562 ms)
+
+----------------
