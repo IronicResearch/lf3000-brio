@@ -195,6 +195,7 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 
 	// Select pixel format masks for RGB context
 	{
+		struct fb_var_screeninfo old_vinfo = vinfo[n];
 		vinfo[n].bits_per_pixel = depth;
 		switch (colorDepth)
 		{
@@ -238,6 +239,8 @@ tErrType CDisplayFB::SetPixelFormat(int n, U16 width, U16 height, U16 depth, tPi
 		// Change effective resolution for any onscreen context
 		vinfo[n].xres = width;
 		vinfo[n].yres = height;
+		if(memcmp(&old_vinfo, &vinfo[n], sizeof(struct fb_var_screeninfo)) != 0)
+			ioctl(fbdev[n], FBIOBLANK, true);
 		r = ioctl(fbdev[n], FBIOPUT_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_VSCREENINFO, &vinfo[n]);
 		r = ioctl(fbdev[n], FBIOGET_FSCREENINFO, &finfo[n]);
@@ -269,17 +272,17 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
 
 	// Block addressing mode needed for OGL framebuffer context?
-	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
-		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
-		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
-	else if (pBuffer == NULL)
-		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
+	//if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
+	//	colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
+	//	r = SetPixelFormat(n, width, height, depth, colorDepth, true);
+	//else if (pBuffer == NULL)
+	//	r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 
 	// Pitch depends on width for normal RGB modes, otherwise
 	// finfo[n].line_length may get updated after SetPixelFormat().
 	int line_length = width * depth/8;
-	//if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
-		line_length = finfo[n].line_length;
+	if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
+		line_length = 4096;
 	int offset = 0;
 	int aligned = (n == YUVFB) ? ALIGN(height * line_length, k1Meg) : 0;
 	
@@ -394,11 +397,6 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	//	n = ctx->layer = RGBFB;
 #endif
 
-	// Disable *any* layer's pixel format or resolution change
-	if (fbviz[n] && (ctx->width != vinfo[n].xres || ctx->height != vinfo[n].yres || ctx->depth != vinfo[n].bits_per_pixel))
-	{
-		SetVisible(ctx, false);
-	}
 	int r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
 	r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
