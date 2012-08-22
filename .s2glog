@@ -34798,3 +34798,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/22/12 11:38 AM
 5,094 ms. (Cumulative: 13,599,562 ms)
 
 ----------------
+Revision 9,967 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Reinstate conditional for stacking RGB context on top of existing OGL context for LF1000 compatibility.
+This allows LEX apps to display all 3 contexts concurrently like on GM FW. (TTP 3897, 3909, 3920)
+However the extra RGB context will contend with AppManager's overlay, so only one will be visible at time.
+ 
+
+By Dave Milici (dmilici@leapfrog.com) on 8/22/12 11:58 AM
+1 changed, 0 added, 0 deleted.
+5,126 ms. (Cumulative: 13,604,766 ms)
+
+----------------
