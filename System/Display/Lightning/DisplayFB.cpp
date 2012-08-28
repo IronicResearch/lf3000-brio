@@ -27,6 +27,7 @@
 #include <sys/mman.h>
 #include <linux/fb.h>
 #include <linux/lf1000/lf1000fb.h>
+#include <Utility.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -393,7 +394,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 #if 1 // FIXME
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
-	if (n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
+	if (GetPlatformName() == "Emerald" && n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
 		n = ctx->layer = RGBFB;
 #endif
 

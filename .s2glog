@@ -34831,3 +34831,12 @@ By Dave Milici (dmilici@leapfrog.com) on 8/28/12 12:03 PM
 5,113 ms. (Cumulative: 13,615,178 ms)
 
 ----------------
+Revision 9,970 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3963 & 3968.  Changed the code for layer promotion to only occur on Emerald and not Madrid.  This reverts the Widget behavior back to what we had in 2.4.3, while letting Emerald's Camera App still work (why the layer promotion was put back).
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/28/12 4:42 PM
+1 changed, 0 added, 0 deleted.
+5,160 ms. (Cumulative: 13,620,431 ms)
+
+----------------
