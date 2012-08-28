@@ -34810,3 +34810,13 @@ By Dave Milici (dmilici@leapfrog.com) on 8/22/12 11:58 AM
 5,126 ms. (Cumulative: 13,604,766 ms)
 
 ----------------
+Revision 9,968 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed assignment typo in CAudioModule::SetDefaultPriority(). (TTP 3852)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/28/12 11:23 AM
+1 changed, 0 added, 0 deleted.
+5,111 ms. (Cumulative: 13,609,971 ms)
+
+----------------
