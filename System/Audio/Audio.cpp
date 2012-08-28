@@ -835,7 +835,7 @@ tAudioPriority CAudioModule::GetDefaultAudioPriority(U32 mpiID)
 void CAudioModule::SetDefaultAudioPriority( U32 mpiID, tAudioPriority priority ) 
 {
 	MPIInstanceState& mpiState = RetrieveMPIState( mpiID );
-	mpiState.pan = priority;
+	mpiState.priority = priority;
 }
 
 // ==============================================================================
