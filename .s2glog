@@ -34820,3 +34820,14 @@ By Dave Milici (dmilici@leapfrog.com) on 8/28/12 11:23 AM
 5,111 ms. (Cumulative: 13,609,971 ms)
 
 ----------------
+Revision 9,969 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added doxygen group for exposing Platform functions in index. (TTP 2645)
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 8/28/12 12:03 PM
+1 changed, 0 added, 0 deleted.
+5,113 ms. (Cumulative: 13,615,178 ms)
+
+----------------
