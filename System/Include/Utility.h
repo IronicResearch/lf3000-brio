@@ -190,6 +190,16 @@ Boolean EnumFolder( const CPath& dirIn, tFuncEnumFolder f, tFileSelect type, voi
 //----------------------------------------------------------------------------
 U32 FindDevice(CPath path);
 
+/// \defgroup PlatformGroup "Platform Identification and Capabilities"
+/// \{
+///
+/// Functions used for Platform Identification and Capabilities
+///
+/// \code
+/// 	if (HasPlatformCapability(kCapsCamera))
+/// 		pCameraMPI = new CCameraMPI();
+/// \endcode
+
 //----------------------------------------------------------------------------
 /// <B>For use with Firmware 2.x or later only.</B>
 /// \brief Returns the system platform ID
@@ -261,6 +271,8 @@ enum tPlatformCaps {
 /// \return True if capability supported on platform, or False otherwise.
 //----------------------------------------------------------------------------
 bool HasPlatformCapability(tPlatformCaps caps);
+
+/// \} end of PlatformGroup
 
 tDpadOrientation	GetDpadOrientationState();
 tErrType			SetDpadOrientationState(tDpadOrientation dpad_orientation);
