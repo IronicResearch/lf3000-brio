@@ -34849,3 +34849,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/29/12 12:40 PM
 5,141 ms. (Cumulative: 13,625,666 ms)
 
 ----------------
+Revision 9,972 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3958.  Reverting Theora frame dropping code to old behavior for LF1000.  Now still decodes the frames it "drops", it just doesn't show it.  This makes occasional frame drops less noticable, but videos that drop lots of frames (i.e. 30 fps LiveAction) will have very low fps (about 1 frame per 4 seconds).  We don't actually use such videos.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/29/12 2:45 PM
+1 changed, 0 added, 0 deleted.
+5,288 ms. (Cumulative: 13,631,048 ms)
+
+----------------
