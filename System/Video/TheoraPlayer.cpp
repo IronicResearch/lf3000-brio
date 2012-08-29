@@ -803,6 +803,11 @@ Boolean CTheoraPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boole
 				dbg_.DebugOut(kDbgLvlImportant, "VideoModule::GetVideoFrame: Dropped frame %ld, time %ld (msec)\n", 
 					static_cast<long>(frame), static_cast<long>(pTime->time));
 				frame_dropped = true;
+				#ifdef LF1000
+				PROFILE_BEGIN(1);
+				theora_decode_packetin(&td,&op);
+				PROFILE_END(1,"theora_decode_packetin");
+				#endif
 			}
 		}
 		else
