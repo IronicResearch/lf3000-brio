@@ -273,11 +273,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	pModule_->GetViewport(pModule_->GetCurrentDisplayHandle(), dxres, dyres, vxres, vyres);
 
 	// Block addressing mode needed for OGL framebuffer context?
-	//if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
-	//	colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
-	//	r = SetPixelFormat(n, width, height, depth, colorDepth, true);
-	//else if (pBuffer == NULL)
-	//	r = SetPixelFormat(n, width, height, depth, colorDepth, false);
+	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
+		colorDepth == kPixelFormatARGB8888 && pBuffer == fbmem[OGLFB])
+		r = SetPixelFormat(n, width, height, depth, colorDepth, true);
+	else if (pBuffer == NULL)
+		r = SetPixelFormat(n, width, height, depth, colorDepth, false);
 
 	// Pitch depends on width for normal RGB modes, otherwise
 	// finfo[n].line_length may get updated after SetPixelFormat().

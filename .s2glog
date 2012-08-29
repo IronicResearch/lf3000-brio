@@ -34840,3 +34840,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/28/12 4:42 PM
 5,160 ms. (Cumulative: 13,620,431 ms)
 
 ----------------
+Revision 9,971 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3965.  Back to calling SetPixelFormat during CreateHandle.  This fixes up the lineup problem.  The setting of the layer to be invisible when anything has changed is still there, so you shouldn't see garbage pixels when transitioning (i.e. TTPro Brio 3938).
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/29/12 12:40 PM
+1 changed, 0 added, 0 deleted.
+5,141 ms. (Cumulative: 13,625,666 ms)
+
+----------------
