@@ -33,31 +33,6 @@ const CString* CUSBCameraModule::GetModuleName() const
 
 
 //----------------------------------------------------------------------------
-static bool SetUSBHost(bool enable)
-{
-#if !defined(EMULATION) && defined(LF1000)
-	// USB host power option on Madrid only
-	if (GetPlatformName() != "Madrid")
-		return false;
-	// Set USB host enable via GPIO
-	int fd = open("/dev/gpio", O_RDWR | O_SYNC);
-	if (fd > -1) {
-		int r;
-		union gpio_cmd c;
-		c.outvalue.port  = 2;
-		c.outvalue.pin 	 = 0;
-		c.outvalue.value = (enable) ? 0 : 1;
-		r = ioctl(fd, GPIO_IOCSOUTVAL, &c);
-		close(fd);
-		CDebugMPI dbg(kGroupCamera);
-		dbg.DebugOut(kDbgLvlImportant, "%s: enable=%d, success=%d\n", __FUNCTION__, enable, (r == 0));
-		return (r == 0) ? true : false;
-	}
-#endif
-	return false;
-}
-
-//----------------------------------------------------------------------------
 
 //============================================================================
 // Local event listener
@@ -153,8 +128,7 @@ tEventStatus CUSBCameraModule::CameraListener::Notify(const IEventMessage& msg)
 				{
 					/* camera absent upon initialization*/
 					pMod->dbg_.DebugOut(kDbgLvlImportant, "CameraModule::CameraListener::Notify: USB camera missing %d\n", pMod->valid);
-
-					SetUSBHost(true);
+					pMod->usbHost_ = CUsbHost::Instance();
 				}
 
 			}
@@ -177,7 +151,7 @@ CUSBCameraModule::CUSBCameraModule()
 	sysfs.clear();
 
 	// Enable USB host port
-	SetUSBHost(true);
+	usbHost_ = CUsbHost::Instance();
 
 	/* hotplug subsystem calls this handler upon device insertion/removal */
 	listener_ = new CameraListener(this);
@@ -210,7 +184,7 @@ CUSBCameraModule::~CUSBCameraModule()
 	delete listener_;
 
 	// Disable USB host port
-	SetUSBHost(false);
+	usbHost_.reset();
 }
 
 LF_END_BRIO_NAMESPACE()
