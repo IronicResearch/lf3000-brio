@@ -34858,3 +34858,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/29/12 2:45 PM
 5,288 ms. (Cumulative: 13,631,048 ms)
 
 ----------------
+Revision 9,973 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3976.  Back to not calling SetPixelFormat during CreateHandle.  No more garbage pixels when taking a picture or removing camera.  This includes a new fix for TTPro Brio 3965.  Olivia is still fixed, but now the way OpenGL gets the screen resolution was modified to no longer depend of SetPixelFormat being called during CreateHandle.
+
+By Minh Saelock (msaelock@leapfrog.com) on 8/31/12 12:20 PM
+1 changed, 0 added, 0 deleted.
+5,407 ms. (Cumulative: 13,636,548 ms)
+
+----------------
