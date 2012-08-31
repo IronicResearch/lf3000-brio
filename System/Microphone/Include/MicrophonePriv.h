@@ -22,6 +22,7 @@
 #include <EventMPI.h>
 #include <EventListener.h>
 #include <KernelTypes.h>
+#include <UsbHost.h>
 #include <queue>
 
 /*
@@ -185,6 +186,7 @@ private:
 
 	Boolean				valid;
 	tMutex				mutex_;
+	boost::shared_ptr<CUsbHost> usbHost_;
 
 	// Limit object creation to the Module Manager interface functions
 	CMicrophoneModule();
