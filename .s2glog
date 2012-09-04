@@ -34876,3 +34876,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 8/31/12 3:45 PM
 5,625 ms. (Cumulative: 13,642,267 ms)
 
 ----------------
+Revision 9,975 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixing up SDK build by protecting gpio calls with ifdef.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/4/12 11:07 AM
+1 changed, 0 added, 0 deleted.
+5,284 ms. (Cumulative: 13,647,661 ms)
+
+----------------

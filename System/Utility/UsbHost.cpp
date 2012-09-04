@@ -33,6 +33,7 @@ CUsbHost::CUsbHost()
 	if (GetPlatformName() != "Madrid")
 		return;
 	// Set USB host enable via GPIO
+	#if !defined(EMULATION) && defined(LF1000)
 	int fd = open("/dev/gpio", O_RDWR | O_SYNC);
 	if (fd > -1) {
 		int r;
@@ -43,6 +44,7 @@ CUsbHost::CUsbHost()
 		r = ioctl(fd, GPIO_IOCSOUTVAL, &c);
 		close(fd);
 	}
+	#endif
 }
 
 CUsbHost::~CUsbHost()
@@ -51,6 +53,7 @@ CUsbHost::~CUsbHost()
 	if (GetPlatformName() != "Madrid")
 		return;
 	// Set USB host enable via GPIO
+	#if !defined(EMULATION) && defined(LF1000)
 	int fd = open("/dev/gpio", O_RDWR | O_SYNC);
 	if (fd > -1) {
 		int r;
@@ -61,6 +64,7 @@ CUsbHost::~CUsbHost()
 		r = ioctl(fd, GPIO_IOCSOUTVAL, &c);
 		close(fd);
 	}
+	#endif
 }
 
 LF_END_BRIO_NAMESPACE()
