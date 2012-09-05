@@ -34885,3 +34885,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/4/12 11:07 AM
 5,284 ms. (Cumulative: 13,647,661 ms)
 
 ----------------
+Revision 9,976 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relax alignment of YUV allocation to nearest 4K x 64 block if 1MB alignment block won't fit.
+Allows UltraEBooks to play videos on YUV context when OGL context maxed out. (TTP 3920, 3972)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/4/12 7:34 PM
+1 changed, 0 added, 0 deleted.
+5,376 ms. (Cumulative: 13,653,115 ms)
+
+----------------
