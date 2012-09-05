@@ -309,6 +309,13 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	// Allocate framebuffer memory if onscreen context
 	if (pBuffer == NULL)
 	{	
+		// 1MB alignment preferred for YUV to fit with OGL blocks
+		if (aligned && GetDisplayMem(kDisplayMemFree) < aligned)
+		{
+			// Will settle for 4K x 32 alignment as fallback
+			aligned = ALIGN(height * line_length, 64);
+
+		}
 		if (!AllocBuffer(ctx, aligned))
 		{
 			dbg_.DebugOut(kDbgLvlCritical, "%s: No framebuffer allocation available\n", __FUNCTION__);
