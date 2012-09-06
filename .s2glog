@@ -34909,3 +34909,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/6/12 12:43 PM
 5,531 ms. (Cumulative: 13,658,740 ms)
 
 ----------------
+Revision 9,978 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally link platform libs for ustring vs glib based on 'deploylibs' option.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/6/12 1:13 PM
+1 changed, 0 added, 0 deleted.
+5,485 ms. (Cumulative: 13,664,335 ms)
+
+----------------

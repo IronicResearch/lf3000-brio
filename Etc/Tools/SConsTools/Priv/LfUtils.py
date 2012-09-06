@@ -146,8 +146,12 @@ def RunMyTests(ptarget, psources, plibs, penv):
 	if penv['cpu'] == 'x86':
 		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread']
 	else:
-		platformlibs += ['dl', 'ustring', 'iconv', 'intl', 'sigc-2.0', 'pthread', 'rt']
-		testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/' + penv['cpu']])
+		platformlibs += ['dl', 'pthread', 'rt']
+		if penv['deploylibs']:
+			platformlibs += ['ustring', 'iconv', 'intl', 'sigc-2.0']
+			testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/' + penv['cpu']])
+		else:
+			platformlibs += ['glib']
 		testenv.Append(RPATH = [ os.path.join( penv['staging_dir'].abspath, 'usr', 'lib' ) ])
 
 		if penv['platform'] == 'LF2000':
