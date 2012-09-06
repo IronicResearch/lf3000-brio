@@ -151,7 +151,7 @@ def RunMyTests(ptarget, psources, plibs, penv):
 			platformlibs += ['ustring', 'iconv', 'intl', 'sigc-2.0']
 			testenv.Append(LIBPATH = ['#ThirdParty/ustring/libs/' + penv['cpu']])
 		else:
-			platformlibs += ['glib']
+			platformlibs += ['glib-2.0', 'gobject-2.0'] # FIXME: += ['glibmm-2.0']
 		testenv.Append(RPATH = [ os.path.join( penv['staging_dir'].abspath, 'usr', 'lib' ) ])
 
 		if penv['platform'] == 'LF2000':
