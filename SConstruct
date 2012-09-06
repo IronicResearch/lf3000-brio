@@ -17,6 +17,7 @@ opts.Add(BoolVariable('debug', 'Builds libraries and unit tests with symbols', F
 opts.Add(BoolVariable('samples', 'Include samples if building an SDK target', True))
 opts.Add(BoolVariable('runtests', 'Builds and runs unit tests (implies buildtests)', False))
 opts.Add(BoolVariable('buildtests', 'Builds unit tests but does not run them', False))
+opts.Add(BoolVariable('deploylibs', 'Deploys 3rd-party libs from Brio repository', True))
 
 opts.Add('setup', 'Set to "TRUNK" or branch name to setup source tree for a platform', '')
 opts.Add('host', 'The architecture that will run the embedded binaries', 'arm-linux')
