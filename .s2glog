@@ -34896,3 +34896,16 @@ By Dave Milici (dmilici@leapfrog.com) on 9/4/12 7:34 PM
 5,376 ms. (Cumulative: 13,653,115 ms)
 
 ----------------
+Revision 9,977 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add scons option 'deploylibs' for deploying 3rd-party libs into /LF/Base/Brio/lib.
+
+Defaults 'deploylibs=true' for compatibility with older platforms missing rootfs libs.
+Overide 'deploylibs=false' for newer platforms with complete rootfs libs (Rio).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/6/12 12:43 PM
+2 changed, 0 added, 0 deleted.
+5,531 ms. (Cumulative: 13,658,740 ms)
+
+----------------
