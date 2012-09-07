@@ -270,9 +270,10 @@ void* VideoTaskMain( void* arg )
 				
 				if (pctx->hAudio != kNoAudioID)
 					audmgr->ResumeAudio(pctx->hAudio);
-				
+
+				// Reset relative elapsed time in any case
+				zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
 				if (!bAudio) {
-					zerotime = kernel.GetElapsedTimeAsMSecs() - vtm.time;
 					nexttime = vtm.time;
 					basetime = nexttime - vtm.time;
 					marktime = nexttime + lapsetime;
