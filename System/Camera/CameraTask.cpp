@@ -19,6 +19,7 @@
 #include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <CameraPriv.h>
+#include <Utility.h>
 
 #include <AVIWrapper.h>
 
@@ -534,7 +535,8 @@ tErrType InitCameraTask(tCameraContext* pCtx)
 	prop.taskMainArgCount		= 1;
 	prop.pTaskMainArgValues		= pCtx;
 	// FIXME: magic number.  Encoding will fail with stack overflow with default stack size
-	prop.stackSize				= 4194304;
+	if (HasPlatformCapability(kCapsLF2000))
+		prop.stackSize			= 4194304;
 
 	r = kernel.CreateTask( hndl, prop, NULL );
 	dbg.Assert( kNoErr == r, "InitCameraTask: Failed to create CameraTask!\n" );
