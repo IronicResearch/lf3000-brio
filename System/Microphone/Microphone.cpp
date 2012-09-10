@@ -48,7 +48,7 @@ static const snd_pcm_format_t MIC_FMT	= SND_PCM_FORMAT_S16_LE;	/* desired format
 // 10 FPS nominal: 100000 usec
 // 15 FPS nominal:  66666 usec
 // 20 FPS nominal:  50000 usec
-static const unsigned int MIC_PERIOD	= 50000;	// usec
+static const unsigned int MIC_PERIOD	= 66666;	// usec
 
 static       unsigned int MIC_BOOST		= 2;		// bit shift for SW boost
 
@@ -808,6 +808,8 @@ unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
 		char** ptr = (char**)avi;
 		*ptr = (char*)micCtx_.poll_buf;
+		if (len > DRAIN_SIZE)
+			len = DRAIN_SIZE;
 		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
@@ -863,6 +865,8 @@ Boolean	CMicrophoneModule::WriteAudio(SNDFILE *wav)
 
 	// Write captured samples to WAV file directly from mmapped buffer
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
+		if (len > DRAIN_SIZE)
+			len = DRAIN_SIZE;
 		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
 		sf_write_raw(wav, micCtx_.poll_buf, len);
 		direct_read_end(&micCtx_, addr, offset, len);
@@ -904,6 +908,8 @@ Boolean	CMicrophoneModule::FlushAudio()
 
 		// Copy captured samples directly from mmapped buffer
 		if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
+			if (len > DRAIN_SIZE)
+				len = DRAIN_SIZE;
 			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST ? 1 : 0);
 			direct_read_end(&micCtx_, addr, offset, len);
 		}
@@ -1331,12 +1337,24 @@ static int set_hw_params(struct tMicrophoneContext *pCtx)
 		pCtx->sbits = err;
 
 		// Query period size after setting (requesting?) period time (per ALSA example)
-		snd_pcm_uframes_t period_size = 1024;
-		if ((err = snd_pcm_hw_params_set_period_size_near(handle, params, &period_size, &dir)) < 0)
-        {
-        	pCtx->period_size = 0;
-        	continue;
-        }
+		if (cap_name == MIC_LF1000)
+		{
+			unsigned int period_time = pCtx->period_time;
+			if ((err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir)) < 0)
+	        {
+	        	pCtx->period_time = 0;
+	        	continue;
+	        }
+		}
+		else
+		{
+			snd_pcm_uframes_t period_size = 1024;
+			if ((err = snd_pcm_hw_params_set_period_size_near(handle, params, &period_size, &dir)) < 0)
+			{
+				pCtx->period_size = 0;
+				continue;
+			}
+		}
         
 		if ((err = snd_pcm_hw_params_get_period_size(params, &pCtx->period_size, &dir)) < 0)
         {

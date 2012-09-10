@@ -34948,3 +34948,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/12 12:47 PM
 5,048 ms. (Cumulative: 13,679,930 ms)
 
 ----------------
+Revision 9,982 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally request period size used for 15FPS USB camera capture on LF1000.
+Transfers needed to be range-checked to prevent buffer overflows. (TTP 4002 2:2)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/12 12:52 PM
+1 changed, 0 added, 0 deleted.
+5,110 ms. (Cumulative: 13,685,133 ms)
+
+----------------
