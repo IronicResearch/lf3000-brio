@@ -34938,3 +34938,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/7/12 2:28 PM
 5,109 ms. (Cumulative: 13,674,788 ms)
 
 ----------------
+Revision 9,981 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally request larger 4M stack size for MJPEG encoding during capture thread.
+Default stack size used on LF1000 sufficient for pre-encoded JPEG frames. (TTP 4002 1:2)
+
+By Dave Milici (dmilici@leapfrog.com) on 9/10/12 12:47 PM
+1 changed, 0 added, 0 deleted.
+5,048 ms. (Cumulative: 13,679,930 ms)
+
+----------------
