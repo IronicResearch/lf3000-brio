@@ -157,7 +157,11 @@ public:
 			version = pCameraMPI_->GetModuleVersion();
 			TS_ASSERT_EQUALS( version, 2 );
 			pName = pCameraMPI_->GetModuleName();
-			TS_ASSERT_EQUALS( *pName, "Camera" );
+#ifdef LF2000
+			TS_ASSERT_EQUALS( *pName, "CameraVIP" );
+#else
+			TS_ASSERT_EQUALS( *pName, "CameraUSB" );
+#endif
 			pURI = pCameraMPI_->GetModuleOrigin();
 			TS_ASSERT_EQUALS( *pURI, "/LF/System/Camera" );
 		}

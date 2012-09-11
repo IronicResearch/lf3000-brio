@@ -196,6 +196,7 @@ public:
 	//------------------------------------------------------------------------
 	void testCameraSelect()
 	{
+#ifdef LF2000
 		PRINT_TEST_NAME();
 
 		tVidCapHndl					capture;
@@ -247,6 +248,7 @@ public:
 		pDisplayMPI_->DestroyHandle(disp, true);
 		delete pDisplayMPI_;
 		delete pKernelMPI_;
+#endif
 	}
 
 	//------------------------------------------------------------------------
@@ -495,6 +497,7 @@ public:
 	//------------------------------------------------------------------------
 	void testFlipFrame()
 	{
+#ifdef LF2000
 		PRINT_TEST_NAME();
 
 		Boolean						ret;
@@ -579,6 +582,7 @@ public:
 		delete[] surf.buffer;
 
 		pCameraMPI_->StopVideoCapture(hndl);
+#endif
 	}
 
 };

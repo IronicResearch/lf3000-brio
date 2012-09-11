@@ -34967,3 +34967,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/10/12 6:46 PM
 5,063 ms. (Cumulative: 13,690,274 ms)
 
 ----------------
+Revision 9,984 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally compile LF2000 unit test features not supported on LF1000.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/11/12 10:12 AM
+3 changed, 0 added, 0 deleted.
+5,182 ms. (Cumulative: 13,695,550 ms)
+
+----------------
