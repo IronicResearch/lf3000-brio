@@ -170,6 +170,7 @@ public:
 	//------------------------------------------------------------------------
 	void testOpenGLContextVersion( )
 	{
+#ifdef LF2000
 		PRINT_TEST_NAME();
 
 		BrioOpenGLConfig*	oglctx = new BrioOpenGLConfig(kBrioOpenGL11);
@@ -202,6 +203,7 @@ public:
 		printf("version=%s, vendor=%s, renderer=%s, extensions=%s\n", versions_string, vendor_string, renderer_string, extension_string);
 
 		delete oglctx;
+#endif
 	}
 
 	//------------------------------------------------------------------------
