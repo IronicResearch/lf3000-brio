@@ -1077,6 +1077,15 @@ tErrType CCameraModule::EnumFormats(tCaptureModes& pModeList)
 //----------------------------------------------------------------------------
 tErrType CCameraModule::SetCurrentFormat(tCaptureMode* pMode)
 {
+#ifdef LF1000
+	// Clamp mode to 15 FPS for LF1000 USB camera
+	if (pMode->fps_denominator > 15)
+		pMode->fps_denominator = 15;
+	// No re-init needed for LF1000 V4L USB driver
+	if (V4L2_MEMORY_XXXX != V4L2_MEMORY_USERPTR)
+		return SetCameraMode(pMode) ? kNoErr : kInvalidParamErr;
+#endif
+	// Re-init needed for LF2000 V4L VIP driver
 	DeinitCameraInt(true);
 	return (InitCameraInt(pMode, true)) ? kNoErr : kInvalidParamErr;
 }
