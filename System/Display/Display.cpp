@@ -333,6 +333,15 @@ tErrType CDisplayModule::UnRegister(tDisplayHandle hndl, tDisplayScreen screen)
 			break;
 		}
 	}
+	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
+	{
+		pdc = *it;
+		if(pdc->flippedContext == dc)
+		{
+			pdc->flippedContext = NULL;
+		}
+	}
+	dc->flippedContext = NULL;
 	kernel_.UnlockMutex(gListMutex);
 	// display handle was never registered in list
 	if (pdc == NULL)
