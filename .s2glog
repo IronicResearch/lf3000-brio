@@ -34976,3 +34976,14 @@ By Dave Milici (dmilici@leapfrog.com) on 9/11/12 10:12 AM
 5,182 ms. (Cumulative: 13,695,550 ms)
 
 ----------------
+Revision 9,985 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4020.  Fixed handling of flippedContext.  When a context is UnRegistered, it's removed from all current handle's flippedContext as well.  This prevents dangling displayHandles from getting left behind.  When a context is UnRegistered, we also assigned it's flippedContext to NULL>  This prevents a later UnRegister of the flippedContext and then a Register of this handle from having a dangling displayHandle.
+
+This should fix up problems with spamming Pause during apps that use SwapBuffers.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/13/12 1:25 PM
+1 changed, 0 added, 0 deleted.
+5,126 ms. (Cumulative: 13,700,770 ms)
+
+----------------
