@@ -34987,3 +34987,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/13/12 1:25 PM
 5,126 ms. (Cumulative: 13,700,770 ms)
 
 ----------------
+Revision 9,986 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4029.  2 of 2.  Modified SwapBuffers to check for existance of pdcVisible_ before derefencing.  There was a problem where if the Video started back up while the main thread was in the middle of removing a handle, pdcVisible_ could be NULL, which would cause a crash when dereferenced.  While the setting of pdcVisible_ is protected by a mutex, dereferencing it here is not.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/14/12 1:22 PM
+1 changed, 0 added, 0 deleted.
+5,111 ms. (Cumulative: 13,705,975 ms)
+
+----------------
