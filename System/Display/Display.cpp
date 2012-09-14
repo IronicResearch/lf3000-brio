@@ -457,7 +457,11 @@ tDisplayHandle CDisplayModule::GetCurrentDisplayHandle(tPixelFormat pixelformat)
 	for (it = gDisplayList.begin(); it != gDisplayList.end(); it++)
 	{
 		if ((*it)->colorDepthFormat == pixelformat)
+		{
 			pdc = *it;
+			if(pdc->flippedContext)
+				pdc = pdc->flippedContext;
+		}
 	}
 	kernel_.UnlockMutex(gListMutex);
 
