@@ -331,7 +331,7 @@ CAudioMixer::CAudioMixer( int inStreams ):
 		tAudioState *d = &audioState_;
 		memset(d, 0, sizeof(tAudioState));
 		pDebugMPI_->Assert((sizeof(tAudioState) < kAUDIO_MAX_MSG_SIZE),
-			"%s.%d: sizeof(tAudioState)=%d kAUDIO_MAX_MSG_SIZE=%ld\n",
+			"%s.%d: sizeof(tAudioState)=%zd kAUDIO_MAX_MSG_SIZE=%ld\n",
 			__FUNCTION__, __LINE__, sizeof(tAudioState), kAUDIO_MAX_MSG_SIZE);
 		
 		d->useOutSoftClipper  = IsCodecLegacy();

@@ -113,7 +113,7 @@ CRawPlayer::CRawPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
 		// Ignored by reading up to EOF in ReadBytesFromFile().
 		
 		pDebugMPI_->Assert( (sizeof(tAudioHeader) == bH->offsetToData),
-							"%s.%d: offsetToData=%ld, but should be %d.  "
+							"%s.%d: offsetToData=%ld, but should be %zd.  "
 							"Is this Brio Raw Audio file ? '%s'\n",
 							__FUNCTION__, __LINE__,
 							bH->offsetToData , sizeof(tAudioHeader),
