@@ -1047,7 +1047,7 @@ static void RecordCallback(snd_async_handler_t *ahandler)
 
 			res = write(pCtx->fd[1], samples, frames * 2);
 			if (res < 0) {
-				pCtx->dbg->DebugOut(kDbgLvlCritical, "write pipe failed: %d, errno %d: %s\n", res, errno, strerror(errno));
+				pCtx->dbg->DebugOut(kDbgLvlCritical, "write pipe failed: %zd, errno %d: %s\n", res, errno, strerror(errno));
 				res = 0;
 				piping = false;
 			}

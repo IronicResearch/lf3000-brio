@@ -134,13 +134,13 @@ static int fabortGuts (struct atomic_info *atomicOpen)
 	FILE *fp = atomicOpen->file;
 	if (!fp)
 	{
-		ATOMIC_ERR1 ("fabortGuts: fp is null for %x!\n", (int) atomicOpen);
+		ATOMIC_ERR1 ("fabortGuts: fp is null for %p!\n", atomicOpen);
 		return -1;
 	}
 
 	if (fclose (fp))
 	{
-		ATOMIC_ERR1 ("fabortGuts: fclose failed for fp=0x%08x!\n", (int) fp);
+		ATOMIC_ERR1 ("fabortGuts: fclose failed for fp=0x%p!\n", fp);
 		return -1;
 	}
 	if (atomicOpen->workName)
@@ -169,7 +169,7 @@ int fabortAtomic (FILE *fp)
 	struct atomic_info *atomicOpen = find_by_fp (fp);
 	if (!atomicOpen)
 	{
-		ATOMIC_ERR1 ("fabortAtomic(0x%08x), this FILE not open in atomic mode!\n", (int) fp);
+		ATOMIC_ERR1 ("fabortAtomic(0x%p), this FILE not open in atomic mode!\n", fp);
 		return -1;
 	}
 	int res = fabortGuts (atomicOpen);
@@ -180,7 +180,7 @@ int fabortAtomic (FILE *fp)
 	atomicList.remove (atomicOpen);
 	delete atomicOpen;
 	
-	ATOMIC_ERR1 ("fabortAtomic(0x%08x) returning 0\n", (unsigned) fp);
+	ATOMIC_ERR1 ("fabortAtomic(0x%p) returning 0\n", fp);
 	return 0;
 }
 
@@ -200,7 +200,7 @@ int fabortAllAtomic ()
 	{
 		struct atomic_info *atomicOpen = *p;
 		ATOMIC_ERR2 ("fabortAllAtomic: aborting i=%d realName=%s\n", i++, (*p)->realName ? (*p)->realName : "NULL");
-		ATOMIC_ERR2 ("fabortAllAtomic:          workName=%s fp=0x%08x\n", (*p)->workName ? (*p)->workName : "NULL", (int) (*p)->file);
+		ATOMIC_ERR2 ("fabortAllAtomic:          workName=%s fp=0x%p\n", (*p)->workName ? (*p)->workName : "NULL", (*p)->file);
 		if (!atomicOpen)
 		{
 			ATOMIC_ERR ("fabortAllAtomic: impossible condition: NULL entry in atomicList\n");
@@ -374,7 +374,7 @@ FILE *fopenAtomic(const char *path, const char *mode)
 	atomicList.push_back (atomicOpen);
 
 	// Success
-	ATOMIC_ERR2 ("fopenAtomic(%s) returning 0x%08x\n", path, (unsigned) atomicOpen->file);
+	ATOMIC_ERR2 ("fopenAtomic(%s) returning 0x%p\n", path, atomicOpen->file);
 	return atomicOpen->file;
 
 	// Failure; clean up
@@ -398,7 +398,7 @@ int fcloseAtomic(FILE *fp)
 	struct atomic_info *atomicOpen = find_by_fp (fp);
 	if (!atomicOpen)
 	{
-		ATOMIC_ERR1 ("fcloseAtomic(0x%08x), this FILE not open in atomic mode!\n", (int) fp);
+		ATOMIC_ERR1 ("fcloseAtomic(0x%p), this FILE not open in atomic mode!\n", fp);
 		return -1;
 	}
 	// Do atomic dance
