@@ -289,9 +289,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "EGL version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "EGL extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
 
-#ifndef LF1000
+	#ifndef LF1000
 	eglBindAPI(EGL_OPENGL_ES_API);
-#endif
+	#endif
 
 	// NOTE: 3D layer can only be enabled after MagicEyes lib 
 	// sets up 3D accelerator, but this cannot happen
@@ -438,11 +438,15 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	}
 }
 
-#ifndef LF1000
 BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	:
 	eglDisplay(0), eglConfig(0), eglSurface(0), eglContext(0)
 {
+#ifdef LF1000
+	if(brioOpenGLVersion != kBrioOpenGL11)
+		return;
+#endif
+
 	CDebugMPI				dbg(kGroupDisplay);
 	dbg.SetDebugLevel(kDisplayDebugLevel);
 	if(!dispmgr)
@@ -465,14 +469,22 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	}
 
 #ifndef EMULATION
+#ifdef 	LF1000
+	// Init OpenGL hardware callback struct
+	meminfo.Memory1D_SizeInMbyte = kHeap1DMeg;
+	meminfo.Memory2D_SizeInMbyte = kHeap2DMeg;
+	ctx.pOEM = &meminfo;
+	// FIXME/dm: How is LF1000 OGL lib configured for FSAA option?
+	ctx.bFSAA = false;
+#endif
 	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
 	ctx.eglDisplay = display; // FIXME typedef
 	ctx.eglWindow = &hwnd; // something non-NULL
-
+#ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
 	hwnd.width = ctx.owidth;
 	hwnd.height = ctx.oheight;
-
+#endif
 #else
 	/*
 		Step 0 - Create a NativeWindowType that we can use it for OpenGL ES output
@@ -508,7 +520,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "EGL version = %s\n", eglQueryString(eglDisplay, EGL_VERSION));
 	dbg.DebugOut(kDbgLvlVerbose, "EGL extensions = %s\n", eglQueryString(eglDisplay, EGL_EXTENSIONS));
 
+	#ifndef LF1000
 	eglBindAPI(EGL_OPENGL_ES_API);
+	#endif
 	// NOTE: 3D layer can only be enabled after MagicEyes lib
 	// sets up 3D accelerator, but this cannot happen
 	// until GLESOAL_Initalize() callback gets mappings.
@@ -530,12 +544,15 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	    EGL_RED_SIZE,       8,
 	    EGL_GREEN_SIZE,     8,
 	    EGL_BLUE_SIZE,      8,
-	    EGL_ALPHA_SIZE,     8,
+	    EGL_ALPHA_SIZE,     EGL_DONT_CARE,
 	    EGL_DEPTH_SIZE,     16,
+		#ifdef LF2000
 	    EGL_STENCIL_SIZE,   8,
+		#endif
 	    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
 	    EGL_NONE,           EGL_NONE
 	};
+
 
 	/*
 		Step 4 - Find a config that matches all requirements.
@@ -569,7 +586,11 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 		(or shared contexts)
 	*/
 	dbg.DebugOut(kDbgLvlVerbose, "eglCreateContext()\n");
+	#ifdef LF1000
+	EGLint ai32ContextAttribs[] = { EGL_NONE };
+	#else
 	EGLint ai32ContextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, brioOpenGLVersion, EGL_NONE };
+	#endif
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, ai32ContextAttribs);
 	AbortIfEGLError("eglCreateContext");
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
@@ -601,15 +622,14 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	// Enable display context layer visibility after initial buffer swap
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
-#ifndef EMULATION
+	#ifdef LF2000
 	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
-#endif
+	#endif
 
 	// Store handle for use in Display MPI functions
 	hndlDisplay = ctx.hndlDisplay;
 	dbg.DebugOut(kDbgLvlVerbose, "display handle = %p\n", hndlDisplay);
 }
-#endif
 
 LF_END_BRIO_NAMESPACE()
 

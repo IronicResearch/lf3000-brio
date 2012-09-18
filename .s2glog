@@ -35014,3 +35014,12 @@ By dlazzari (dlazzari@leapfrog.com) on 9/17/12 3:20 PM
 5,266 ms. (Cumulative: 13,716,619 ms)
 
 ----------------
+Revision 9,989 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 3813.  Modified new BrioOpenGLConfig constructor to build in LF1000.  Works properly with default 2 MB 1D and 14 MB 2D when using kBrioOpenGL11.  Returns immediately when using kBrioOpenGL20, you can check if eglDisplay, eglConfig, eglSurface, or eglContext is NULL for error condition.  If there's an error, you should delete and create a new BrioOpenGLConfig.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/18/12 1:49 PM
+1 changed, 0 added, 0 deleted.
+5,767 ms. (Cumulative: 13,722,480 ms)
+
+----------------
