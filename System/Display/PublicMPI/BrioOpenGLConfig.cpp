@@ -622,10 +622,11 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	// Enable display context layer visibility after initial buffer swap
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
+#ifndef EMULATION
 	#ifdef LF2000
 	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
 	#endif
-
+#endif
 	// Store handle for use in Display MPI functions
 	hndlDisplay = ctx.hndlDisplay;
 	dbg.DebugOut(kDbgLvlVerbose, "display handle = %p\n", hndlDisplay);
