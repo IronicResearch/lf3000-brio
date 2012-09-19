@@ -35032,3 +35032,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/18/12 2:27 PM
 5,604 ms. (Cumulative: 13,728,178 ms)
 
 ----------------
+Revision 9,991 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Enable USE_DIRECT_CALLBACK for ALSA support on emulation.
+OSS support is outdated, probably since VMWare emulation. (TTP 3975)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/18/12 6:58 PM
+1 changed, 0 added, 0 deleted.
+5,250 ms. (Cumulative: 13,733,522 ms)
+
+----------------
