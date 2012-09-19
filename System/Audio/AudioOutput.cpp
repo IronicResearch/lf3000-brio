@@ -43,7 +43,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 #ifndef EMULATION
 #define USE_DIRECT_CALLBACK	1
 #else
-#define USE_DIRECT_CALLBACK	0
+#define USE_DIRECT_CALLBACK	1
 #endif
 
 // Enables ALSA for callback vs OSS
