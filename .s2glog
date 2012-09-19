@@ -35081,3 +35081,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/12 1:21 PM
 6,948 ms. (Cumulative: 13,762,428 ms)
 
 ----------------
+Revision 9,996 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Default 44KHz support off. Only used with MP3 patch lib set.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/12 1:29 PM
+1 changed, 0 added, 0 deleted.
+6,578 ms. (Cumulative: 13,769,116 ms)
+
+----------------
