@@ -810,7 +810,10 @@ unsigned int	CMicrophoneModule::WriteAudio(void *avi)
 		*ptr = (char*)micCtx_.poll_buf;
 		if (len > DRAIN_SIZE)
 			len = DRAIN_SIZE;
-		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
+		if (MIC_BOOST)
+			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
+		else
+			*ptr = addr;
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		micCtx_.counter++;
@@ -867,8 +870,9 @@ Boolean	CMicrophoneModule::WriteAudio(SNDFILE *wav)
 	if ((len = direct_read_begin(&micCtx_, &addr, &offset)) > 0) {
 		if (len > DRAIN_SIZE)
 			len = DRAIN_SIZE;
-		SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
-		sf_write_raw(wav, micCtx_.poll_buf, len);
+		if (MIC_BOOST)
+			SHIFT_XFER((S16*)micCtx_.poll_buf, (S16*)addr, len, MIC_BOOST);
+		sf_write_raw(wav, (MIC_BOOST) ? (S16*)micCtx_.poll_buf : (S16*)addr, len);
 		direct_read_end(&micCtx_, addr, offset, len);
 		micCtx_.bytesWritten += len;
 		return true;

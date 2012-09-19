@@ -34,7 +34,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString			kVideoModuleName	= "Video";
 const tVersion			kVideoModuleVersion	= 2;
 const tEventPriority	kVideoEventPriority	= 0;
-const tDebugLevel		kVideoDebugLevel	= kDbgLvlImportant;
+const tDebugLevel		kVideoDebugLevel	= kDbgLvlVerbose;
 
 //==============================================================================
 // Typedefs
