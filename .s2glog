@@ -35071,3 +35071,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/18/12 7:21 PM
 7,064 ms. (Cumulative: 13,755,387 ms)
 
 ----------------
+Revision 9,995 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Recompiled MP3 codec patch libs for LF1000. (TTP 4034)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/19/12 1:21 PM
+10 changed, 4 added, 0 deleted.
+6,948 ms. (Cumulative: 13,762,428 ms)
+
+----------------
