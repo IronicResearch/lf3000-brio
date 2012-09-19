@@ -35062,3 +35062,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/18/12 7:16 PM
 8,641 ms. (Cumulative: 13,748,198 ms)
 
 ----------------
+Revision 9,994 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defer glGetString() calls after eglMakeCurrent() to avoid x86 GLES emulation crashes.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/18/12 7:21 PM
+1 changed, 0 added, 0 deleted.
+7,064 ms. (Cumulative: 13,755,387 ms)
+
+----------------
