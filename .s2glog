@@ -35053,3 +35053,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/18/12 7:12 PM
 5,816 ms. (Cumulative: 13,739,417 ms)
 
 ----------------
+Revision 9,993 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert svn -r9992.
+
+By Dave Milici (dmilici@leapfrog.com) on 9/18/12 7:16 PM
+7 changed, 0 added, 0 deleted.
+8,641 ms. (Cumulative: 13,748,198 ms)
+
+----------------

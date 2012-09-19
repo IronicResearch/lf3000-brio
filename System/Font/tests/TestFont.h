@@ -14,7 +14,7 @@
 LF_USING_BRIO_NAMESPACE()
 
 #ifndef USTRING
-//#define gunichar	tUTF32Char
+#define gunichar	tUTF32Char
 #endif
 
 const tDebugSignature kMyApp = kFirstCartridge1DebugSig;

@@ -21,7 +21,7 @@
 #include <ogg/ogg.h>
 #include <theora/theora.h>
 
-#define ENABLE_PROFILING
+#undef ENABLE_PROFILING
 #include <FlatProfiler.h>
 
 #include <stdio.h>
