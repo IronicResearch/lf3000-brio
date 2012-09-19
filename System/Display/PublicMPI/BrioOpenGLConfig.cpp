@@ -356,6 +356,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "eglCreateContext()\n");
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, NULL);
 	AbortIfEGLError("eglCreateContext");
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
 	/*
 		Step 7 - Bind the context to the current thread and use our 
@@ -370,10 +374,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
@@ -593,6 +593,10 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	#endif
 	eglContext = eglCreateContext(eglDisplay, eglConfig, NULL, ai32ContextAttribs);
 	AbortIfEGLError("eglCreateContext");
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
+	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
 	/*
 		Step 7 - Bind the context to the current thread and use our
@@ -607,10 +611,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "eglMakeCurrent()\n");
 	eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 	AbortIfEGLError("eglMakeCurrent");
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES vendor = %s\n", glGetString(GL_VENDOR));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES version = %s\n", glGetString(GL_VERSION));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
-	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
