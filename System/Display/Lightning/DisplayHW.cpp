@@ -682,7 +682,7 @@ tErrType CDisplayLF1000::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 		// Disable 3D layer if already active
 		bool bOpenGLSwap = isOpenGLEnabled_;
 		if (bOpenGLSwap) {
-			DisableOpenGL();
+			DisableOpenGL(NULL);
 		}
 		// Swap 3D and 2D layer framebuffer addresses via reloading address registers
 		isLayerSwapped_ = true;

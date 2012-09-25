@@ -78,6 +78,7 @@ master_env['emulation_root'] = Dir(master_env['emulation_root']).Dir(default_sub
 
 #Get svn repo numbering
 master_env['version'] = Etc.Tools.SConsTools.Priv.LfUtils.GetRepositoryVersion(master_env['platform'], master_env['setup'])
+#master_env['version'] = '9.9.99999'
 
 #Fix up SDK path and samples flag based on legacy targets or not
 if not master_env['sdk_root']:

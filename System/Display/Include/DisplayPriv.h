@@ -81,6 +81,7 @@ struct tDisplayContext {
 	S16		yvp;
 	U16		wvp;
 	U16		hvp;
+	bool	isOpenGL;
 };
 
 struct tBuffer {
@@ -432,10 +433,10 @@ public:
 														Boolean enable=true);
 	VTABLE_EXPORT U8 				GetAlpha(tDisplayHandle hndl) const;
 	VTABLE_EXPORT void    			InitOpenGL(void* pCtx);
-	VTABLE_EXPORT void    			DeinitOpenGL();
+	VTABLE_EXPORT void    			DeinitOpenGL(void* pCtx);
 	VTABLE_EXPORT void    			EnableOpenGL(void* pCtx);
-	VTABLE_EXPORT void    			DisableOpenGL();
-	VTABLE_EXPORT void    			UpdateOpenGL();
+	VTABLE_EXPORT void    			DisableOpenGL(void* pCtx);
+	VTABLE_EXPORT void    			UpdateOpenGL(void* pCtx);
 	
 	VTABLE_EXPORT tErrType			SetBrightness(tDisplayScreen screen, S8 brightness);
 	VTABLE_EXPORT tErrType			SetContrast(tDisplayScreen screen, S8 contrast);
@@ -538,10 +539,10 @@ public:
 	virtual S8					GetBacklight(tDisplayScreen screen) = 0;
 
 	virtual void    			InitOpenGL(void* pCtx) = 0;
-	virtual void    			DeinitOpenGL() = 0;
+	virtual void    			DeinitOpenGL(void* pCtx) = 0;
 	virtual void    			EnableOpenGL(void* pCtx) = 0;
-	virtual void    			DisableOpenGL() = 0;
-	virtual void    			UpdateOpenGL() = 0;
+	virtual void    			DisableOpenGL(void* pCtx) = 0;
+	virtual void    			UpdateOpenGL(void* pCtx) = 0;
 	virtual void				WaitForDisplayAddressPatched(void) = 0;
 	virtual void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress) = 0;
 
@@ -594,10 +595,10 @@ public:
 	S8					GetBacklight(tDisplayScreen screen);
 
 	void    			InitOpenGL(void* pCtx);
-	void    			DeinitOpenGL();
+	void    			DeinitOpenGL(void* pCtx);
 	void    			EnableOpenGL(void* pCtx);
-	void    			DisableOpenGL();
-	void    			UpdateOpenGL();
+	void    			DisableOpenGL(void* pCtx);
+	void    			UpdateOpenGL(void* pCtx);
 	void				WaitForDisplayAddressPatched(void);
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 
@@ -650,10 +651,10 @@ public:
 	S8					GetBacklight(tDisplayScreen screen);
 
 	void    			InitOpenGL(void* pCtx);
-	void    			DeinitOpenGL();
+	void    			DeinitOpenGL(void* pCtx);
 	void    			EnableOpenGL(void* pCtx);
-	void    			DisableOpenGL();
-	void    			UpdateOpenGL();
+	void    			DisableOpenGL(void* pCtx);
+	void    			UpdateOpenGL(void* pCtx);
 	void				WaitForDisplayAddressPatched(void);
 	void				SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress);
 

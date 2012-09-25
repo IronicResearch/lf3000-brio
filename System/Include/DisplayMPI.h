@@ -284,6 +284,7 @@ public:
 	// Internal Brio use only. Not for use by developers.
 	// Shutdown display manager OpenGL context setup by InitIOpenGL()
 	void				DeinitOpenGL();
+	void				DeinitOpenGL(void* pCtx);
 	
 	// Internal Brio use only. Not for use by developers.
 	// Enables OpenGL hardware 3D engine rendering output to display surface layer
@@ -292,10 +293,12 @@ public:
 	// Internal Brio use only. Not for use by developers.
 	// Disables OpenGL hardware 3D engine rendering output to display surface layer
 	void				DisableOpenGL();
+	void				DisableOpenGL(void* pCtx);
 
 	// Internal Brio use only. Not for use by developers.
 	// Updates OpenGL hardware 3D engine rendering output to display surface layer
 	void				UpdateOpenGL();
+	void				UpdateOpenGL(void* pCtx);
 
 	// (LF1000)
 	// Internal Brio use only. Not for use by developers.

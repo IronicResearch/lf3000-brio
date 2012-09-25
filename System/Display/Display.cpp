@@ -27,7 +27,7 @@ const CURI kModuleURI = "/LF/System/Display";
 //============================================================================
 // Globals
 //============================================================================
-extern tDisplayHandle		hogl;
+extern std::vector<tDisplayHandle>		hogls;
 namespace
 {
 	std::list<tDisplayContext*>	gDisplayList;	// list of display contexts
@@ -538,9 +538,12 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 			RegisterLayer(*it, (*it)->x, (*it)->y);
 	}
 	kernel_.UnlockMutex(gListMutex);
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
-	if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
-		RegisterLayer(dcogl, dcogl->x, dcogl->y);
+	if(!hogls.empty())
+	{
+		tDisplayContext *dcogl = (tDisplayContext*)hogls.back();
+		if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
+			RegisterLayer(dcogl, dcogl->x, dcogl->y);
+	}
 	return kNoErr;
 }
 
@@ -562,9 +565,12 @@ tErrType CDisplayModule::SetViewport(tDisplayHandle hndl, S16 x, S16 y, U16 widt
 			RegisterLayer(*it, (*it)->x, (*it)->y);
 	}
 	kernel_.UnlockMutex(gListMutex);
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
-	if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
-		RegisterLayer(dcogl, dcogl->x, dcogl->y);
+	if(!hogls.empty())
+	{
+		tDisplayContext *dcogl = (tDisplayContext*)hogls.back();
+		if(dcogl && dcogl->initialZOrder != kDisplayOnOverlay)
+			RegisterLayer(dcogl, dcogl->x, dcogl->y);
+	}
 	return kNoErr;
 }
 
