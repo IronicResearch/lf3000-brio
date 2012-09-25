@@ -384,6 +384,7 @@ static Boolean DeinitCameraBufferInt(tCameraContext *pCamCtx)
 		if(ioctl(pCamCtx->fd, VIDIOC_REQBUFS, &rb) < 0)
 	{
 		ret = false;
+		pCamCtx->dbg->DebugOut(kDbgLvlImportant, "%s: VIDIOC_REQBUFS failed, errno=%d\n", __FUNCTION__, errno);
 	}
 #endif
 
@@ -441,7 +442,7 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 	int cam;
 	struct v4l2_capability *cap =  &pCamCtx->cap;
 
-	if((cam = open(pCamCtx->file, O_RDWR | O_NONBLOCK)) == -1)
+	if((cam = open(pCamCtx->file, O_RDWR /* | O_NONBLOCK */)) == -1)
 	{
 		return false;
 	}
@@ -2201,7 +2202,7 @@ Boolean	CCameraModule::GrabFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	// acquire the snapshot
 	if( !GetFrameInt(&camCtx_, 0))
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s\n", camCtx_.file);
+		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::GetFrame: failed to capture frame from %s, errno=%d\n", camCtx_.file, errno);
 		goto bail_out;
     }
 
