@@ -35111,3 +35111,12 @@ By Dave Milici (dmilici@leapfrog.com) on 9/25/12 11:46 AM
 5,344 ms. (Cumulative: 13,779,898 ms)
 
 ----------------
+Revision 9,999 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update to Brio to support multiple OpenGL contexts.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/25/12 3:26 PM
+15 changed, 0 added, 0 deleted.
+6,891 ms. (Cumulative: 13,786,883 ms)
+
+----------------

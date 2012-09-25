@@ -384,7 +384,15 @@ void CDisplayMPI::DeinitOpenGL()
 {
 	if (!pModule_)
 		return;
-	pModule_->DeinitOpenGL();
+	pModule_->DeinitOpenGL(NULL);
+}
+
+//----------------------------------------------------------------------------
+void CDisplayMPI::DeinitOpenGL(void* pCtx)
+{
+	if (!pModule_)
+		return;
+	pModule_->DeinitOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------
@@ -400,7 +408,15 @@ void CDisplayMPI::UpdateOpenGL()
 {
 	if (!pModule_)
 		return;
-	pModule_->UpdateOpenGL();
+	pModule_->UpdateOpenGL(NULL);
+}
+
+//----------------------------------------------------------------------------
+void CDisplayMPI::UpdateOpenGL(void* pCtx)
+{
+	if (!pModule_)
+		return;
+	pModule_->UpdateOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------
@@ -408,7 +424,15 @@ void CDisplayMPI::DisableOpenGL()
 {
 	if (!pModule_)
 		return;
-	pModule_->DisableOpenGL();
+	pModule_->DisableOpenGL(NULL);
+}
+
+//----------------------------------------------------------------------------
+void CDisplayMPI::DisableOpenGL(void* pCtx)
+{
+	if (!pModule_)
+		return;
+	pModule_->DisableOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------

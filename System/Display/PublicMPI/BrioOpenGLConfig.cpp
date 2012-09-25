@@ -11,7 +11,7 @@
 //		Configure emulation for the environment
 //
 //==============================================================================
-
+#include <map>
 #include <SystemTypes.h>
 #include <SystemErrors.h>
 #include <BrioOpenGLConfig.h>
@@ -22,9 +22,6 @@
 #ifndef  EMULATION
 #ifdef   LF1000
 #include "GLES/libogl.h"
-#endif
-#ifdef   LF2000
-#include <vr5_swap_buffer_callback.h>
 #endif
 #include <signal.h>
 #endif
@@ -62,13 +59,13 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//--------------------------------------------------------------------------
-	tOpenGLContext		ctx = {NULL, 0, 0, 0, 0, 0, 0};
+	std::map<void *, tOpenGLContext>					surface_context_map;
 	CDisplayMPI*		dispmgr = 0;
+	int					dispmgrcount = 0;
 	NativeDisplayType	display = 0;	// FIXME typedef change
-//	NativeWindowType	hwnd = 0;
-	WindowType			hwnd;			// FIXME LF2000 type
 	bool				isEnabled = false;
 	bool				isHandled = false;
+	bool				swapBufferSet = false;
 	
 	//--------------------------------------------------------------------------
 	void BOGLExitHandler(void)
@@ -77,7 +74,7 @@ namespace
 		{
 			CDebugMPI	dbg(kGroupDisplay);
 			dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() context active on exit\n");
-			eglTerminate(eglGetDisplay(ctx.eglDisplay));
+			eglTerminate(eglGetCurrentDisplay());
 		}
 	}
 	
@@ -88,7 +85,7 @@ namespace
 		{
 			CDebugMPI	dbg(kGroupDisplay);
 			dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() context active on signal %d\n", signum);
-			eglTerminate(eglGetDisplay(ctx.eglDisplay));
+			eglTerminate(eglGetCurrentDisplay());
 		}
 		_exit(128 + signum);
 	}
@@ -124,6 +121,7 @@ namespace
 #endif
 	{
 		CDebugMPI	dbg(kGroupDisplay);
+		tOpenGLContext &ctx = surface_context_map.begin()->second;
 #ifdef LF1000
 		// OGL needs 2 layers for fullscreen anti-aliasing option
 		ctx.bFSAA = FSAAEnb;
@@ -158,6 +156,24 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_SwapBufferCallback( void ) 
 	{
+#ifdef DEBUG
+		CDebugMPI	dbg(kGroupDisplay);
+		dbg.DebugOut(kDbgLvlVerbose, "GLESOAL_SwapBufferCallback\n");
+#endif
+
+		// Enable 3D layer on 1st update
+		if (!isEnabled)
+		{
+			dispmgr->EnableOpenGL(&surface_context_map.begin()->second);
+			isEnabled = true;
+		}
+#ifndef LF1000
+		// 3D layer needs to sync to OGL calls (LF2530 only)
+		dispmgr->UpdateOpenGL(&surface_context_map.begin()->second);
+#endif
+	}
+	extern "C" void GLESOAL_SwapBufferCallback2( EGLDisplay dpy, EGLSurface surface )
+	{
 #ifdef DEBUG		
 		CDebugMPI	dbg(kGroupDisplay);
 		dbg.DebugOut(kDbgLvlVerbose, "GLESOAL_SwapBufferCallback\n");
@@ -166,12 +182,12 @@ namespace
 		// Enable 3D layer on 1st update
 		if (!isEnabled) 
 		{
-			dispmgr->EnableOpenGL(&ctx);
+			dispmgr->EnableOpenGL(&surface_context_map[surface]);
 			isEnabled = true;
 		}
 #ifndef LF1000
 		// 3D layer needs to sync to OGL calls (LF2530 only)
-		dispmgr->UpdateOpenGL();
+		dispmgr->UpdateOpenGL(&surface_context_map[surface]);
 #endif
 	}
 #ifndef LF2000
@@ -182,6 +198,7 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight )
 	{
+		tOpenGLContext &ctx = surface_context_map.begin()->second;
 	    *pWidth  = ctx.width;
 	    *pHeight = ctx.height;
 	}
@@ -211,6 +228,42 @@ namespace
 }
 
 //==============================================================================
+void SetSwapBufferCallback()
+{
+	CPath egl_path = "libEGL.so";
+	CKernelMPI kernel_mpi;
+	tHndl lf2000_egl_handle = kernel_mpi.LoadModule(egl_path);
+	if(lf2000_egl_handle)
+	{
+		typedef void (*SwapBufferCallback2)(EGLDisplay dpy, EGLSurface surface);
+		typedef void (*SwapBufferCallback2Setter)(SwapBufferCallback2 callback);
+		union ObjPtrToFunPtrConverter2 {
+			void* voidptr;
+			SwapBufferCallback2Setter pfnSwapBufferCallback2Setter;
+		} fp2;
+		CString fname = "__vr5_set_swap_buffer_callback2";
+		fp2.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
+		SwapBufferCallback2Setter swap_buffer_callback2_setter = fp2.pfnSwapBufferCallback2Setter;
+		if(swap_buffer_callback2_setter)
+		{
+			swap_buffer_callback2_setter(GLESOAL_SwapBufferCallback2);
+		} else {
+			typedef void (*SwapBufferCallback)( void );
+			typedef void (*SwapBufferCallbackSetter)(SwapBufferCallback callback);
+			union ObjPtrToFunPtrConverter {
+				void* voidptr;
+				SwapBufferCallbackSetter pfnSwapBufferCallbackSetter;
+			} fp;
+			fname = "__vr5_set_swap_buffer_callback";
+			fp.voidptr = kernel_mpi.RetrieveSymbolFromModule(lf2000_egl_handle, fname);
+			SwapBufferCallbackSetter swap_buffer_callback_setter = fp.pfnSwapBufferCallbackSetter;
+			if(swap_buffer_callback_setter)
+				swap_buffer_callback_setter(GLESOAL_SwapBufferCallback);
+		}
+		kernel_mpi.UnloadModule(lf2000_egl_handle);
+	}
+	swapBufferSet = true;
+}
 //----------------------------------------------------------------------
 BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	: 
@@ -220,6 +273,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.SetDebugLevel(kDisplayDebugLevel);
 	if(!dispmgr)
 		dispmgr = new CDisplayMPI();
+	dispmgrcount++;
 
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
@@ -228,17 +282,15 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		signal(SIGTERM, BOGLSignalHandler);
 		isHandled = true;
 	}
-#endif
-	
+	tOpenGLContext ctx;
+#ifdef 	LF1000
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {
 		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() detected previous OGL context active\n");
 		eglTerminate(eglGetDisplay(ctx.eglDisplay));
 		dbg.DebugOut(kDbgLvlVerbose, "eglTerminate()\n");
 	}
-	
-#ifndef EMULATION
-#ifdef 	LF1000
+
 	// Init OpenGL hardware callback struct
 	meminfo.Memory1D_SizeInMbyte = size1D;
 	meminfo.Memory2D_SizeInMbyte = size2D;
@@ -248,11 +300,12 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 #endif
 	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
 	ctx.eglDisplay = display; // FIXME typedef
-	ctx.eglWindow = &hwnd; // something non-NULL 
+	WindowType *hwnd = new WindowType;
+	ctx.eglWindow = hwnd; // something non-NULL
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
-	hwnd.width = ctx.owidth;
-	hwnd.height = ctx.oheight;
+	hwnd->width = ctx.owidth;
+	hwnd->height = ctx.oheight;
 #endif
 #else
 	/*
@@ -375,6 +428,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
+	surface_context_map[eglSurface] = ctx;
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -387,7 +441,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
 #ifndef EMULATION
-	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
+	if(!swapBufferSet)
+		SetSwapBufferCallback();
 #endif
 #endif
 
@@ -401,10 +456,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 {
 #ifdef LF2000
 	// Disable 3D layer before disabling accelerator
-#ifndef EMULATION
-	__vr5_set_swap_buffer_callback(0);
-#endif
-	disp_.DisableOpenGL();
+	disp_.DisableOpenGL(&surface_context_map[eglSurface]);
 	isEnabled = false;
 #endif
 	
@@ -414,6 +466,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		with this display, so we don't need to call eglDestroySurface or
 		eglDestroyContext here.
 	*/
+	tOpenGLContext &ctx = surface_context_map[eglSurface];
 	eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) ;
 	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
 	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
@@ -425,13 +478,14 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		Step 10 - Destroy the eglWindow.
 		Again, this is platform specific and delegated to a separate function.
 	*/
-
+	delete (WindowType*)ctx.eglWindow;
 #ifdef LF2000
 	// Exit OpenGL hardware
-	disp_.DeinitOpenGL();
+	disp_.DeinitOpenGL(&ctx);
 #endif
+	surface_context_map.erase(eglSurface);
 	
-	if(dispmgr)
+	if(--dispmgrcount == 0 && dispmgr)
 	{
 		delete dispmgr;
 		dispmgr = 0;
@@ -451,6 +505,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.SetDebugLevel(kDisplayDebugLevel);
 	if(!dispmgr)
 		dispmgr = new CDisplayMPI();
+	dispmgrcount++;
 
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
@@ -461,6 +516,9 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	}
 #endif
 
+	tOpenGLContext ctx;
+#ifndef EMULATION
+#ifdef 	LF1000
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {
 		dbg.DebugOut(kDbgLvlCritical, "BrioOpenGLConfig() detected previous OGL context active\n");
@@ -468,8 +526,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 		dbg.DebugOut(kDbgLvlVerbose, "eglTerminate()\n");
 	}
 
-#ifndef EMULATION
-#ifdef 	LF1000
 	// Init OpenGL hardware callback struct
 	meminfo.Memory1D_SizeInMbyte = kHeap1DMeg;
 	meminfo.Memory2D_SizeInMbyte = kHeap2DMeg;
@@ -479,11 +535,12 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 #endif
 	// Too soon to call InitOpenGL on LF1000, though we still need EGL params
 	ctx.eglDisplay = display; // FIXME typedef
-	ctx.eglWindow = &hwnd; // something non-NULL
+	WindowType *hwnd = new WindowType;
+	ctx.eglWindow = hwnd; // something non-NULL
 #ifdef 	LF2000
 	disp_.InitOpenGL(&ctx);
-	hwnd.width = ctx.owidth;
-	hwnd.height = ctx.oheight;
+	hwnd->width = ctx.owidth;
+	hwnd->height = ctx.oheight;
 #endif
 #else
 	/*
@@ -612,6 +669,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
+	surface_context_map[eglSurface] = ctx;
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -623,9 +681,8 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	disp_.EnableOpenGL(&ctx);
 	isEnabled = true;
 #ifndef EMULATION
-	#ifdef LF2000
-	__vr5_set_swap_buffer_callback(GLESOAL_SwapBufferCallback);
-	#endif
+	if(!swapBufferSet)
+		SetSwapBufferCallback();
 #endif
 	// Store handle for use in Display MPI functions
 	hndlDisplay = ctx.hndlDisplay;

@@ -121,7 +121,7 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 }
       
 //----------------------------------------------------------------------------
-void CDisplayModule::DeinitOpenGL()
+void CDisplayModule::DeinitOpenGL(void* pCtx)
 {
 	// Nothing to do on emulation target
 }
@@ -133,13 +133,13 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 }
       
 //----------------------------------------------------------------------------
-void CDisplayModule::UpdateOpenGL()
+void CDisplayModule::UpdateOpenGL(void* pCtx)
 {
 	// Nothing to do on emulation target
 }
       
 //----------------------------------------------------------------------------
-void CDisplayModule::DisableOpenGL()
+void CDisplayModule::DisableOpenGL(void* pCtx)
 {
 	// Nothing to do on emulation target
 }

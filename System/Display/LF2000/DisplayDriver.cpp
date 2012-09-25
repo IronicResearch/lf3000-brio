@@ -224,9 +224,9 @@ void CDisplayModule::InitOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::DeinitOpenGL()
+void CDisplayModule::DeinitOpenGL(void* pCtx)
 {
-	return pDriver->DeinitOpenGL();
+	return pDriver->DeinitOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------
@@ -236,15 +236,15 @@ void CDisplayModule::EnableOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::DisableOpenGL()
+void CDisplayModule::DisableOpenGL(void* pCtx)
 {
-	return pDriver->DisableOpenGL();
+	return pDriver->DisableOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------
-void CDisplayModule::UpdateOpenGL()
+void CDisplayModule::UpdateOpenGL(void* pCtx)
 {
-	return pDriver->UpdateOpenGL();
+	return pDriver->UpdateOpenGL(pCtx);
 }
 
 //----------------------------------------------------------------------------

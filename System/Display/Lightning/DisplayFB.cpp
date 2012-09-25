@@ -880,7 +880,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayFB::DeinitOpenGL()
+void CDisplayFB::DeinitOpenGL(void* pCtx)
 {
 #ifdef LF1000
 	// Release framebuffer allocations used by OpenGL context
@@ -911,7 +911,7 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayFB::DisableOpenGL()
+void CDisplayFB::DisableOpenGL(void* pCtx)
 {
 #if defined(LF1000) || defined(LF2000)
 	SetVisible(hogl, false);
@@ -919,7 +919,7 @@ void CDisplayFB::DisableOpenGL()
 }
 
 //----------------------------------------------------------------------------
-void CDisplayFB::UpdateOpenGL()
+void CDisplayFB::UpdateOpenGL(void* pCtx)
 {
 }
 

@@ -252,7 +252,7 @@ void CDisplayLF1000::InitOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayLF1000::DeinitOpenGL()
+void CDisplayLF1000::DeinitOpenGL(void* pCtx)
 {
 	// Early out if already disabled from extra eglTerminate() call
 	if (gDevLayer < 0)
@@ -344,7 +344,7 @@ void CDisplayLF1000::EnableOpenGL(void* pCtx)
 }
 
 //----------------------------------------------------------------------------
-void CDisplayLF1000::UpdateOpenGL()
+void CDisplayLF1000::UpdateOpenGL(void* pCtx)
 {
 #ifndef LF1000	// only used on ME2530 (LF1000 uses SetDisplayAddress) 
 	// 3D layer needs to sync to OGL calls
@@ -353,7 +353,7 @@ void CDisplayLF1000::UpdateOpenGL()
 }
 
 //----------------------------------------------------------------------------
-void CDisplayLF1000::DisableOpenGL()
+void CDisplayLF1000::DisableOpenGL(void* pCtx)
 {
 	// Early out if already disabled from extra eglTerminate() call
 	if (gDevLayer < 0)
