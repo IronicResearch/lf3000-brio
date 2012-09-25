@@ -442,7 +442,11 @@ static Boolean InitCameraHWInt(tCameraContext *pCamCtx)
 	int cam;
 	struct v4l2_capability *cap =  &pCamCtx->cap;
 
-	if((cam = open(pCamCtx->file, O_RDWR /* | O_NONBLOCK */)) == -1)
+	int flags = O_RDWR;
+	if (V4L2_MEMORY_XXXX == V4L2_MEMORY_USERPTR)
+		flags |= O_NONBLOCK;
+
+	if((cam = open(pCamCtx->file, O_RDWR | flags)) == -1)
 	{
 		return false;
 	}

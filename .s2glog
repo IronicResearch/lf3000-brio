@@ -35101,3 +35101,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/25/12 11:41 AM
 5,281 ms. (Cumulative: 13,774,476 ms)
 
 ----------------
+Revision 9,998 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally disable non-blocking mode for LF1000 USB V4L driver. (TTP 4035)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/25/12 11:46 AM
+1 changed, 0 added, 0 deleted.
+5,344 ms. (Cumulative: 13,779,898 ms)
+
+----------------
