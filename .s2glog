@@ -35091,3 +35091,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/19/12 1:29 PM
 6,578 ms. (Cumulative: 13,769,116 ms)
 
 ----------------
+Revision 9,997 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Disable V4L driver non-blocking mode for LF1000 compatibility. (TTP 4035) 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/25/12 11:41 AM
+1 changed, 0 added, 0 deleted.
+5,281 ms. (Cumulative: 13,774,476 ms)
+
+----------------
