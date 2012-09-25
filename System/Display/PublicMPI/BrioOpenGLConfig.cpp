@@ -275,6 +275,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		dispmgr = new CDisplayMPI();
 	dispmgrcount++;
 
+	tOpenGLContext ctx;
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
 	if (!isHandled) {
@@ -282,7 +283,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		signal(SIGTERM, BOGLSignalHandler);
 		isHandled = true;
 	}
-	tOpenGLContext ctx;
 #ifdef 	LF1000
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {
@@ -507,6 +507,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 		dispmgr = new CDisplayMPI();
 	dispmgrcount++;
 
+	tOpenGLContext ctx;
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
 	if (!isHandled) {
@@ -514,10 +515,6 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 		signal(SIGTERM, BOGLSignalHandler);
 		isHandled = true;
 	}
-#endif
-
-	tOpenGLContext ctx;
-#ifndef EMULATION
 #ifdef 	LF1000
 	// Make sure only one OGL context is active at a time
 	if (isEnabled) {

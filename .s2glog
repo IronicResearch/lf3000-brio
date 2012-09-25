@@ -35120,3 +35120,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/25/12 3:26 PM
 6,891 ms. (Cumulative: 13,786,883 ms)
 
 ----------------
+Revision 10,000 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix up emulation build.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/25/12 3:56 PM
+1 changed, 0 added, 0 deleted.
+5,579 ms. (Cumulative: 13,792,587 ms)
+
+----------------
