@@ -35129,3 +35129,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/25/12 3:56 PM
 5,579 ms. (Cumulative: 13,792,587 ms)
 
 ----------------
+Revision 10,001 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixing up LF1000 to work with new global variables.  Runs again.
+
+By Minh Saelock (msaelock@leapfrog.com) on 9/26/12 10:46 AM
+3 changed, 0 added, 0 deleted.
+5,510 ms. (Cumulative: 13,798,206 ms)
+
+----------------

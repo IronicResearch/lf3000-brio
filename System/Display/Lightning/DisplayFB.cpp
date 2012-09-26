@@ -19,6 +19,7 @@
 #ifdef LF1000
 #include <GLES/libogl.h>
 #endif
+#include <algorithm>
 #include <list>
 
 #include <stdio.h>
@@ -39,7 +40,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 #define	REG3D_PHYS				0xC001A000UL	// 3D engine register block
 #define REG3D_SIZE				0x00002000
 
-tDisplayHandle				hogl = NULL;
+//tDisplayHandle				hogl = NULL;
+std::vector<tDisplayHandle> hogls;
 namespace 
 {
 	const char*					FBDEV[NUMFB] = {"/dev/fb0", "/dev/fb1", "/dev/fb2"};
@@ -305,6 +307,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->rect.bottom		= height;
 	ctx->xscale 			= width;
 	ctx->yscale 			= height;
+	ctx->isOpenGL			= false;
 
 	// Allocate framebuffer memory if onscreen context
 	if (pBuffer == NULL)
@@ -389,7 +392,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && hndl != hogl)
+	if (ctx->isAllocated && !ctx->isOpenGL)
 		return kNoErr;
 
 	// Set XY onscreen position
@@ -401,11 +404,11 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 
 #if 1 // FIXME
 	// Change to upper RGB layer if lower RGB layer is in use for OGL and no viewport active
-	if (GetPlatformName() == "Emerald" && n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && hogl != NULL && hndl != hogl && !(vxres < xres || vyres < yres))
+	if (GetPlatformName() == "Emerald" && n == OGLFB && fbviz[OGLFB] && ctx->initialZOrder == kDisplayOnTop && !hogls.empty() != NULL && hndl != hogls.back() && !(vxres < xres || vyres < yres))
 		n = ctx->layer = RGBFB;
 #endif
 
-	int r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, hndl == hogl);
+	int r = SetPixelFormat(n, ctx->width, ctx->height, ctx->depth, ctx->colorDepthFormat, ctx->isOpenGL);
 	r = SetWindowPosition(ctx, xPos, yPos, width, height);
 	
 	// Adjust Z-order for YUV layer?
@@ -855,9 +858,15 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Create DisplayMPI context for OpenGL framebuffer
 #ifdef LF1000
 	pmem2d = (U8*)pmem2d + 0x20000000;
-	hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
+	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatRGB565, (U8*)pmem2d);
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	dcogl->isOpenGL = true;
+	hogls.push_back(hogl);
 #else
-	hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, fbmem[n]);
+	tDisplayHandle hogl = CreateHandle(vyres, vxres, kPixelFormatARGB8888, fbmem[n]);
+	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	dcogl->isOpenGL = true;
+	hogls.push_back(hogl);
 	SetPixelFormat(n, vxres, vyres, 32, kPixelFormatARGB8888, true); 	// swizzle RGB
 #endif
 
@@ -882,6 +891,7 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 //----------------------------------------------------------------------------
 void CDisplayFB::DeinitOpenGL(void* pCtx)
 {
+	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
 #ifdef LF1000
 	// Release framebuffer allocations used by OpenGL context
 	if (dcmem1.pBuffer)
@@ -889,8 +899,16 @@ void CDisplayFB::DeinitOpenGL(void* pCtx)
 	DeAllocBuffer(&dcmem2);
 #endif
 	// Release DisplayMPI context
-	DestroyHandle(hogl, false);
-	hogl = NULL;
+	if(!pOglCtx)
+	{
+		DestroyHandle(hogls.back(), false);
+		hogls.pop_back();
+	} else {
+		std::vector<tDisplayHandle>::iterator deleter = find(hogls.begin(), hogls.end(), pOglCtx->hndlDisplay);
+		if(deleter != hogls.end())
+			hogls.erase(deleter);
+		DestroyHandle(pOglCtx->hndlDisplay, false);
+	}
 	
 #ifdef LF1000
 	// Release framebuffer mappings and drivers used by OpenGL
@@ -904,9 +922,17 @@ void CDisplayFB::DeinitOpenGL(void* pCtx)
 void CDisplayFB::EnableOpenGL(void* pCtx)
 {
 #if defined(LF1000) || defined(LF2000)
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
-	RegisterLayer(hogl, dcogl->x, dcogl->y);
-	SetVisible(hogl, true);
+	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
+	if(!pOglCtx)
+	{
+		tDisplayContext *dcogl = (tDisplayContext*)hogls.back();
+		RegisterLayer(dcogl, dcogl->x, dcogl->y);
+		SetVisible(dcogl, true);
+	} else {
+		tDisplayContext *dcogl = (tDisplayContext*)pOglCtx->hndlDisplay;
+		RegisterLayer(pOglCtx->hndlDisplay, dcogl->x, dcogl->y);
+		SetVisible(pOglCtx->hndlDisplay, true);
+	}
 #endif
 }
 
@@ -914,7 +940,11 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 void CDisplayFB::DisableOpenGL(void* pCtx)
 {
 #if defined(LF1000) || defined(LF2000)
-	SetVisible(hogl, false);
+	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
+	if(!pOglCtx)
+		SetVisible(hogls.back(), false);
+	else
+		SetVisible(pOglCtx->hndlDisplay, false);
 #endif
 }
 
@@ -941,13 +971,13 @@ void CDisplayFB::WaitForDisplayAddressPatched(void)
 void CDisplayFB::SetOpenGLDisplayAddress(const unsigned int DisplayBufferPhysicalAddress)
 {
 #ifdef LF1000
-	tDisplayContext *dcogl = (tDisplayContext*)hogl;
+	tDisplayContext *dcogl = (tDisplayContext*)hogls.back();
 	// Re-enable OpenGL context which is not registered
-	if (hogl != NULL && !fbviz[OGLFB])
+	if (!hogls.empty() && !fbviz[OGLFB])
 	{
 		if (dcogl->isEnabled) {
-			RegisterLayer(hogl, dcogl->x, dcogl->y);
-			SetVisible(hogl, true);
+			RegisterLayer(dcogl, dcogl->x, dcogl->y);
+			SetVisible(dcogl, true);
 		}
 	}
 	int n = OGLFB;
