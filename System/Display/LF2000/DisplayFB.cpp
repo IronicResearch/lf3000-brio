@@ -437,7 +437,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && ctx->isOpenGL)
+	if (ctx->isAllocated && !ctx->isOpenGL)
 		return kNoErr;
 
 	// Set XY onscreen position

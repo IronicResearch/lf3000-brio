@@ -59,7 +59,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 namespace
 {
 	//--------------------------------------------------------------------------
-	std::map<void *, tOpenGLContext>					surface_context_map;
+	std::map<BrioOpenGLConfig *, tOpenGLContext>		brioopenglconfig_context_map;
+	std::map<void *, tOpenGLContext*>					surface_context_map;
 	CDisplayMPI*		dispmgr = 0;
 	int					dispmgrcount = 0;
 	NativeDisplayType	display = 0;	// FIXME typedef change
@@ -121,7 +122,7 @@ namespace
 #endif
 	{
 		CDebugMPI	dbg(kGroupDisplay);
-		tOpenGLContext &ctx = surface_context_map.begin()->second;
+		tOpenGLContext &ctx = brioopenglconfig_context_map.begin()->second;
 #ifdef LF1000
 		// OGL needs 2 layers for fullscreen anti-aliasing option
 		ctx.bFSAA = FSAAEnb;
@@ -164,12 +165,12 @@ namespace
 		// Enable 3D layer on 1st update
 		if (!isEnabled)
 		{
-			dispmgr->EnableOpenGL(&surface_context_map.begin()->second);
+			dispmgr->EnableOpenGL(surface_context_map.begin()->second);
 			isEnabled = true;
 		}
 #ifndef LF1000
 		// 3D layer needs to sync to OGL calls (LF2530 only)
-		dispmgr->UpdateOpenGL(&surface_context_map.begin()->second);
+		dispmgr->UpdateOpenGL(surface_context_map.begin()->second);
 #endif
 	}
 	extern "C" void GLESOAL_SwapBufferCallback2( EGLDisplay dpy, EGLSurface surface )
@@ -182,12 +183,12 @@ namespace
 		// Enable 3D layer on 1st update
 		if (!isEnabled) 
 		{
-			dispmgr->EnableOpenGL(&surface_context_map[surface]);
+			dispmgr->EnableOpenGL(surface_context_map[surface]);
 			isEnabled = true;
 		}
 #ifndef LF1000
 		// 3D layer needs to sync to OGL calls (LF2530 only)
-		dispmgr->UpdateOpenGL(&surface_context_map[surface]);
+		dispmgr->UpdateOpenGL(surface_context_map[surface]);
 #endif
 	}
 #ifndef LF2000
@@ -198,7 +199,7 @@ namespace
 	//--------------------------------------------------------------------------
 	extern "C" void GLESOAL_GetWindowSize( int* pWidth, int* pHeight )
 	{
-		tOpenGLContext &ctx = surface_context_map.begin()->second;
+		tOpenGLContext &ctx = brioopenglconfig_context_map.begin()->second;
 	    *pWidth  = ctx.width;
 	    *pHeight = ctx.height;
 	}
@@ -275,7 +276,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 		dispmgr = new CDisplayMPI();
 	dispmgrcount++;
 
-	tOpenGLContext ctx;
+	tOpenGLContext &ctx = brioopenglconfig_context_map[this];
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
 	if (!isHandled) {
@@ -428,7 +429,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(U32 size1D, U32 size2D)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
-	surface_context_map[eglSurface] = ctx;
+	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -456,7 +457,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 {
 #ifdef LF2000
 	// Disable 3D layer before disabling accelerator
-	disp_.DisableOpenGL(&surface_context_map[eglSurface]);
+	disp_.DisableOpenGL(&brioopenglconfig_context_map[this]);
 	isEnabled = false;
 #endif
 	
@@ -466,7 +467,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 		with this display, so we don't need to call eglDestroySurface or
 		eglDestroyContext here.
 	*/
-	tOpenGLContext &ctx = surface_context_map[eglSurface];
+	tOpenGLContext &ctx = brioopenglconfig_context_map[this];
 	eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT) ;
 	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
 	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
@@ -484,6 +485,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	disp_.DeinitOpenGL(&ctx);
 #endif
 	surface_context_map.erase(eglSurface);
+	brioopenglconfig_context_map.erase(this);
 	
 	if(--dispmgrcount == 0 && dispmgr)
 	{
@@ -507,7 +509,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 		dispmgr = new CDisplayMPI();
 	dispmgrcount++;
 
-	tOpenGLContext ctx;
+	tOpenGLContext &ctx = brioopenglconfig_context_map[this];
 #ifndef  EMULATION
 	// Setup exit handlers to disable OGL context
 	if (!isHandled) {
@@ -666,7 +668,7 @@ BrioOpenGLConfig::BrioOpenGLConfig(enum tBrioOpenGLVersion brioOpenGLVersion)
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES extensions = %s\n", glGetString(GL_EXTENSIONS));
 	dbg.DebugOut(kDbgLvlVerbose, "OpenGL ES renderer = %s\n", glGetString(GL_RENDERER));
 
-	surface_context_map[eglSurface] = ctx;
+	surface_context_map[eglSurface] = &brioopenglconfig_context_map[this];
 	// Clear garbage pixels from previous OpenGL context (embedded target)
 	glClearColorx(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
