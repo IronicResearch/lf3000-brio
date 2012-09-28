@@ -35147,3 +35147,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 9/26/12 10:59 AM
 5,643 ms. (Cumulative: 13,803,958 ms)
 
 ----------------
+Revision 10,003 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix to init additional viewport vars for GetScreenStats() support.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 9/28/12 3:53 PM
+1 changed, 0 added, 0 deleted.
+5,438 ms. (Cumulative: 13,809,490 ms)
+
+----------------
