@@ -34,6 +34,7 @@ mpilibs		= ['ModuleMPI', 'KernelMPI'] + ogllibs + emulibs
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 myenv.Append(CPPPATH=['Include'])
+myenv.Append(LIBPATH=[ os.path.join('#', 'ThirdParty', 'ustring', 'libs', myenv['cpu']) ] )
 if env['cpu'] == 'x86':
 	myenv.Append(CPPPATH = ['#ThirdParty/PowerVR/Include',
 							'/usr/X11R6/include'])
