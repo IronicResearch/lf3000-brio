@@ -35188,3 +35188,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/12 11:06 AM
 5,071 ms. (Cumulative: 13,826,131 ms)
 
 ----------------
+Revision 10,007 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add ustring libpath to find ustring libraries on machines without nfsroot.
+
+By dlazzari (dlazzari@leapfrog.com) on 10/5/12 11:21 AM
+4 changed, 0 added, 0 deleted.
+5,146 ms. (Cumulative: 13,831,371 ms)
+
+----------------

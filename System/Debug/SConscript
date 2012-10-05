@@ -23,6 +23,7 @@ mpilibs		= ['ModuleMPI', 'KernelMPI'] + emulibs
 #-----------------------------------------------------------------------------
 myenv		= env.Clone()
 myenv.Append(CPPPATH=['Include'])
+myenv.Append(LIBPATH=[ os.path.join('#', 'ThirdParty', 'ustring', 'libs', myenv['cpu']) ] )
 mymodule	= MakeMyModule(myenv, module_name, modsrcs, modlibs, kBuildModule)
 mympi		= MakeMyModule(myenv, mpi_name, mpisrcs, mpilibs, kBuildMPI)
 Depends(mympi, mymodule)
