@@ -12,10 +12,11 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
+emulibs		= env['cpu'] == 'x86' and [''] or ['ustring', 'iconv', 'intl', 'sigc-2.0']
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['']
-mpilibs		= ['ModuleMPI', 'KernelMPI']
+mpilibs		= ['ModuleMPI', 'KernelMPI'] + emulibs
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
