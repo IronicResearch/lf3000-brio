@@ -35157,3 +35157,13 @@ By Dave Milici (dmilici@leapfrog.com) on 9/28/12 3:53 PM
 5,438 ms. (Cumulative: 13,809,490 ms)
 
 ----------------
+Revision 10,004 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Explicitly link ustring libs for loading DisplayMPI with ModuleMPI.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/12 10:44 AM
+4 changed, 0 added, 0 deleted.
+5,673 ms. (Cumulative: 13,815,257 ms)
+
+----------------

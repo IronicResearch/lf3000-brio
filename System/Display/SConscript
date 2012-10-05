@@ -17,8 +17,8 @@ if env['cpu'] == 'x86':
 	ogllibs		=  ['EGL', 'GLES_CM']
 	modsrcs		=  Glob('*.cpp') + Glob( os.path.join('Emulation', '*.cpp') )
 elif env['platform'] == 'LF2000':
-	emulibs		= []
-	ogllibs		= ['EGL', 'GLESv1_CM', 'vr5', 'GLESv2']
+	emulibs		= ['ustring', 'iconv', 'intl', 'sigc-2.0']
+	ogllibs		= ['EGL', 'GLESv1_CM', 'GLESv2']
 	modsrcs		= Glob('*.cpp') + Glob( os.path.join(env['platform'], '*.cpp') )
 else:
 	emulibs		= []
@@ -27,7 +27,7 @@ else:
 
 mpisrcs		= Glob( os.path.join('PublicMPI', '*.cpp') )
 modlibs		= ['DebugMPI', 'KernelMPI'] + emulibs
-mpilibs		= ['ModuleMPI'] + ogllibs					
+mpilibs		= ['ModuleMPI', 'KernelMPI'] + ogllibs + emulibs					
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module

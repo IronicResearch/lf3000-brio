@@ -13,7 +13,7 @@ mpi_name	= module_name + 'MPI'
 #-----------------------------------------------------------------------------
 # Setup module source files and libraries
 #-----------------------------------------------------------------------------
-emulib		= env['cpu'] == 'x86' and ['Emulation'] or []
+emulib		= env['cpu'] == 'x86' and ['Emulation'] or ['ustring', 'iconv', 'intl', 'sigc-2.0']
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= emulib
