@@ -35177,3 +35177,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/12 10:59 AM
 5,616 ms. (Cumulative: 13,820,967 ms)
 
 ----------------
+Revision 10,006 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally deploy codec libs on 'deploylibs' option, not needed for Rio rootfs.
+Continue to deploy ustring libs until glibmm replaced on rootfs. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/12 11:06 AM
+1 changed, 0 added, 0 deleted.
+5,071 ms. (Cumulative: 13,826,131 ms)
+
+----------------

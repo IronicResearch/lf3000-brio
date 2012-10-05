@@ -109,23 +109,25 @@ if env['install_dir']:
 # 3rd-party lib deployments were meant to supplement older platforms' rootfs.
 # 3rd-party libs should already be deployed in newer platforms' rootfs.
 #-----------------------------------------------------------------------------
-if not env['cpu']=='x86' and not env['is_sdk'] and env['deploylibs']:
+if not env['cpu']=='x86' and not env['is_sdk']:
 	lib_deploy_dir = env['install_dir'].Dir('lib')
 	
 	libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libustring.so'))
 	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libiconv.so.2'))
 	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libintl.so.8'))
 	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libsigc-2.0.so.0'))
-	libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], 'libfreetype.so.6'))
-	libs += glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], 'libsndfile.so.1'))
-	libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libogg.so.0'))
-	libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libtheora.so.0'))
-	libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libvorbisidec.so.1'))
-	libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], 'libjpeg.so.8'))
-	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavcodec.so.52'))
-	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavdevice.so.52'))
-	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
-	libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
+	
+	if env['deploylibs']:
+		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], 'libfreetype.so.6'))
+		libs += glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], 'libsndfile.so.1'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libogg.so.0'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libtheora.so.0'))
+		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libvorbisidec.so.1'))
+		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], 'libjpeg.so.8'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavcodec.so.52'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavdevice.so.52'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavformat.so.52'))
+		libs += glob.glob(os.path.join('LibAVFormat', 'Libs', env['cpu'], 'libavutil.so.49'))
 
 	if env['platform']=='Lightning':
 		libs += glob.glob(os.path.join('MagicEyes', 'Libs', env['cpu'], 'libopengles_lite.so'))
