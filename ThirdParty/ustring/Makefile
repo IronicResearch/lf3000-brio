@@ -17,14 +17,14 @@ OBJS = glibmm/ustring.o glib/gutf8.o glibmm/convert.o \
 	glib/gfileutils.o glib/glist.o glib/gqsort.o glibmm/wrap_init.o \
 	glib/giochannel.o glib/gmarkup.o glib/gshell.o glib/gspawn.o
 
-#FIXME/BSK
-#LIB = libs/libustring.so
 LIB = libustring.so
+
+LIBS = -liconv -lintl -lsigc-2.0 -Llibs/arm-$(TARGET_LIBC)
 
 all: $(LIB)
 
 $(LIB):$(OBJS)
-	$(CC) -shared -Wl,-soname,$@,-export-dynamic -o $@ $^ libs/arm-$(TARGET_LIBC)/libcharset.a
+	$(CC) -shared -Wl,-soname,$@,-export-dynamic -o $@ $^ libs/arm-$(TARGET_LIBC)/libcharset.a $(LIBS)
 
 hello:hello.cc $(LIB)
 	$(CXX) $(CPPFLAGS) -L./libs -o $@ $< -lustring -liconv -lintl

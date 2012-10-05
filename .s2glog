@@ -35167,3 +35167,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/5/12 10:44 AM
 5,673 ms. (Cumulative: 13,815,257 ms)
 
 ----------------
+Revision 10,005 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Explicitly link ustring lib dependencies on iconv, intl, sigc.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/5/12 10:59 AM
+2 changed, 0 added, 0 deleted.
+5,616 ms. (Cumulative: 13,820,967 ms)
+
+----------------
