@@ -35197,3 +35197,12 @@ By dlazzari (dlazzari@leapfrog.com) on 10/5/12 11:21 AM
 5,146 ms. (Cumulative: 13,831,371 ms)
 
 ----------------
+Revision 10,008 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update OpenGL libraries to nxp3200_bsp -r1620 to fix lib dependencies in ELF metadata.
+
+By dlazzari (dlazzari@leapfrog.com) on 10/5/12 1:59 PM
+6 changed, 0 added, 0 deleted.
+5,547 ms. (Cumulative: 13,837,012 ms)
+
+----------------
