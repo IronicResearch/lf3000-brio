@@ -35206,3 +35206,12 @@ By dlazzari (dlazzari@leapfrog.com) on 10/5/12 1:59 PM
 5,547 ms. (Cumulative: 13,837,012 ms)
 
 ----------------
+Revision 10,009 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+New lookup table based YUV to RGB conversion.  Slightly faster in large pictures, slightly slower in small pictures.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/5/12 5:00 PM
+2 changed, 0 added, 0 deleted.
+5,095 ms. (Cumulative: 13,842,185 ms)
+
+----------------
