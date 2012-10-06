@@ -239,13 +239,18 @@ inline void ARGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy
 
 //----------------------------------------------------------------------------
 // YUV to RGB color conversion: <http://en.wikipedia.org/wiki/YUV>
+extern S32 CY[256];
+extern S32 ERV[256];
+extern S16 DGU[256];
+extern S16 EGV[256];
+extern S32 DBU[256];
 inline 	U8 clip(S16 X)			{ return (X < 0) ? 0 : (X > 255) ? 255 : static_cast<U8>(X); }
 inline	S16 C(U8 Y)  			{ return (Y - 16); }
 inline 	S16 D(U8 U)  			{ return (U - 128); }
 inline 	S16 E(U8 V)  			{ return (V - 128); }
-inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y)              + 409 * E(V) + 128) >> 8); }
-inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8); }
-inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( 298 * C(Y) + 516 * D(U)              + 128) >> 8); }
+inline 	U8 R(U8 Y,U8 U,U8 V)	{ return clip(( CY[Y]          + ERV[V] + 128) >> 8); }
+inline 	U8 G(U8 Y,U8 U,U8 V)	{ return clip(( CY[Y] - DGU[U] - EGV[V] + 128) >> 8); }
+inline 	U8 B(U8 Y,U8 U,U8 V)	{ return clip(( CY[Y] + DBU[U]          + 128) >> 8); }
 
 // RGB to YUV color conversion:  <http://en.wikipedia.org/wiki/YUV>
 inline	U8 scale(S16 x)			{ return static_cast<U8>((x + 128) >> 8); }
