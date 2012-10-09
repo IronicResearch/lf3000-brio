@@ -54,12 +54,12 @@ LF_BEGIN_BRIO_NAMESPACE()
 #else
 #define PRINTF(...)
 #endif
+std::map<BrioOpenGLConfig *, tOpenGLContext>		brioopenglconfig_context_map;
 
 //==============================================================================
 namespace
 {
 	//--------------------------------------------------------------------------
-	std::map<BrioOpenGLConfig *, tOpenGLContext>		brioopenglconfig_context_map;
 	std::map<void *, tOpenGLContext*>					surface_context_map;
 	CDisplayMPI*		dispmgr = 0;
 	int					dispmgrcount = 0;
@@ -472,6 +472,7 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	if(eglContext) eglDestroyContext(eglDisplay, eglContext);
 	if(eglSurface) eglDestroySurface(eglDisplay, eglSurface);
 	eglTerminate(eglDisplay);
+	surface_context_map.erase(eglSurface);
 	eglContext = NULL;
 	eglSurface = NULL;
 	
@@ -484,7 +485,6 @@ BrioOpenGLConfig::~BrioOpenGLConfig()
 	// Exit OpenGL hardware
 	disp_.DeinitOpenGL(&ctx);
 #endif
-	surface_context_map.erase(eglSurface);
 	brioopenglconfig_context_map.erase(this);
 	
 	if(--dispmgrcount == 0 && dispmgr)
