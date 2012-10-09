@@ -21,6 +21,7 @@
 #endif
 #include <algorithm>
 #include <list>
+#include <map>
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -41,6 +42,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 
 //tDisplayHandle		hogl = NULL;
 std::vector<tDisplayHandle> hogls;
+extern std::map<BrioOpenGLConfig *, tOpenGLContext>		brioopenglconfig_context_map;
 namespace 
 {
 	const char*					FBDEV[NUMFB] = {"/dev/fb0", "/dev/fb1", "/dev/fb2"};
@@ -998,6 +1000,18 @@ void CDisplayFB::EnableOpenGL(void* pCtx)
 {
 #if defined(LF1000) || defined(LF2000)
 	tOpenGLContext* 				pOglCtx = (tOpenGLContext*)pCtx;
+	if(pOglCtx)
+	{
+		std::map<BrioOpenGLConfig *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
+		for(;opengl_context_finder != brioopenglconfig_context_map.end(); ++opengl_context_finder)
+		{
+			if(pOglCtx == &opengl_context_finder->second)
+				break;
+		}
+		if(opengl_context_finder == brioopenglconfig_context_map.end())
+			pOglCtx = NULL;
+	}
+
 	if(!pOglCtx)
 	{	
 		tDisplayContext *dcogl = (tDisplayContext*)hogls.back();

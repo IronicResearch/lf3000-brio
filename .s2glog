@@ -35215,3 +35215,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/5/12 5:00 PM
 5,095 ms. (Cumulative: 13,842,185 ms)
 
 ----------------
+Revision 10,010 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixed a small problem with Multi OpenGL support that caused CameraApp to crash.  Now checking if pointer passed in is from the map of tOpenGLContexts that we created.  Also fixed removal from surface_context map.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/9/12 3:04 PM
+2 changed, 0 added, 0 deleted.
+5,141 ms. (Cumulative: 13,847,404 ms)
+
+----------------
