@@ -35224,3 +35224,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/9/12 3:04 PM
 5,141 ms. (Cumulative: 13,847,404 ms)
 
 ----------------
+Revision 10,011 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fixing OpenGL owidth and oheight setting if there's no viewport.  Fixes possible flickering problem.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/11/12 12:34 PM
+1 changed, 0 added, 0 deleted.
+5,110 ms. (Cumulative: 13,852,592 ms)
+
+----------------
