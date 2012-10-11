@@ -946,8 +946,8 @@ void CDisplayFB::InitOpenGL(void* pCtx)
 	// Pass back essential display context info for OpenGL bindings
 	pOglCtx->width 		= vinfo[n].xres;
 	pOglCtx->height 	= vinfo[n].yres;
-	pOglCtx->owidth		= oxres;
-	pOglCtx->oheight	= oyres;
+	pOglCtx->owidth = oxres ? oxres : pOglCtx->width;
+	pOglCtx->oheight = oyres ? oyres : pOglCtx->height;
 #ifdef LF1000
 	pOglCtx->eglDisplay = &finfo[n]; // non-NULL ptr
 	pOglCtx->eglWindow 	= &vinfo[n]; // non-NULL ptr
