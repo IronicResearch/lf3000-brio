@@ -21,7 +21,7 @@ modlibs		= ['KernelMPI', 'DebugMPI', 'EventMPI',
 if env['cpu'] == 'x86':
 	modlibs += ['portaudio']
 	
-mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI']
+mpilibs		= ['ModuleMPI', 'KernelMPI', 'DebugMPI', 'EventMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module

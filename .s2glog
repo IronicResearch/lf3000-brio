@@ -35243,3 +35243,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/17/12 1:47 PM
 5,126 ms. (Cumulative: 13,857,811 ms)
 
 ----------------
+Revision 10,013 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Resolve AudioMPI dependency on EventMPI lib for IEventListener.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/17/12 1:49 PM
+1 changed, 0 added, 0 deleted.
+5,206 ms. (Cumulative: 13,863,111 ms)
+
+----------------
