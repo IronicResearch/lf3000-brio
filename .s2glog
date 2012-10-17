@@ -35253,3 +35253,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/17/12 1:49 PM
 5,206 ms. (Cumulative: 13,863,111 ms)
 
 ----------------
+Revision 10,014 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert svn -r10013 since it exposed more EventMPI dependencies.
+
+By Dave Milici (dmilici@leapfrog.com) on 10/17/12 3:32 PM
+1 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 13,868,502 ms)
+
+----------------
