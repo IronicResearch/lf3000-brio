@@ -35233,3 +35233,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/11/12 12:34 PM
 5,110 ms. (Cumulative: 13,852,592 ms)
 
 ----------------
+Revision 10,012 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Resolve Kernel module dependency on DebugMPI lib.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/17/12 1:47 PM
+2 changed, 0 added, 0 deleted.
+5,126 ms. (Cumulative: 13,857,811 ms)
+
+----------------

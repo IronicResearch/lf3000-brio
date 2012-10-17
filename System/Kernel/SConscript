@@ -14,7 +14,7 @@ mpi_name	= module_name + 'MPI'
 emulibs		= env['cpu'] == 'x86' and [''] or ['ustring', 'iconv', 'intl', 'sigc-2.0']
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
-modlibs		= ['pthread', 'rt']
+modlibs		= ['DebugMPI', 'dl', 'pthread', 'rt']
 mpilibs		= ['ModuleMPI'] + emulibs
 						
 #-----------------------------------------------------------------------------
