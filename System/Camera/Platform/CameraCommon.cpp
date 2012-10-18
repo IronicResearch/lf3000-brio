@@ -1305,6 +1305,7 @@ Boolean	CCameraModule::GetFrame(const tVidCapHndl hndl, tFrameInfo *frame)
 	frame->size		= camCtx_.buf.bytesused;
 	frame->width	= camCtx_.fmt.fmt.pix.width;
 	frame->height	= camCtx_.fmt.fmt.pix.height;
+	frame->timestamp= camCtx_.buf.timestamp;
 
 	CAMERA_UNLOCK;
 	return true;

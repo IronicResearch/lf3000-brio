@@ -213,7 +213,7 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 	{
 	case kPixelFormatYUV420:
 		v4l2.fmt.pixelformat = V4L2_PIX_FMT_YUV420;
-		v4l2.fmt.priv = PIPE_TO_FMT_PRIV(VIP_OUTPUT_PIPE_DECIMATOR);
+		v4l2.fmt.priv = PIPE_TO_FMT_PRIV(VIP_OUTPUT_PIPE_DECIMATOR) | DOUBLE_BUF_TO_FMT_PRIV(VIP_OVERLAY_DOUBLE_BUF);
 		break;
 	case kPixelFormatYUYV422:
 		v4l2.fmt.pixelformat = V4L2_PIX_FMT_YUYV;
@@ -229,7 +229,6 @@ static Boolean SetOverlay(int fd, tVideoSurf* pSurf)
 	v4l2.fmt.width = pSurf->width;
 	v4l2.fmt.height = pSurf->height;
 
-	v4l2.fmt.priv |= DOUBLE_BUF_TO_FMT_PRIV(VIP_OVERLAY_DOUBLE_BUF);
 	// FIXME: video layer device minor number
 	v4l2.fmt.priv |= FB_TO_FMT_PRIV(2);
 
@@ -501,13 +500,11 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		(*it)->current = (*sit)->current;
 	}
 
-#if 0
 	// Switch to YUYV packed format for high-res capture modes
-	if (pSurf->width > VGA.width || pSurf->height > VGA.height)
+	if (pSurf->format == kPixelFormatYUYV422)
 	{
 		newMode.pixelformat = frame.pixelformat = kCaptureFormatRAWYUYV;
 	}
-#endif
 
 	// Switch to custom square size format for rotated image capture
 	if (pSurf->width < pSurf->height)
@@ -517,18 +514,34 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 	}
 
 	/* Stop viewfinder */
-	if (hndl & kStreamingActive)
+	if ((hndl & kStreamingActive) && visible)
 		EnableOverlay(camCtx_.fd, 0);
 
-	if (IS_FRAME_HANDLE(hndl) && sameSize)
+	if (oldMode.pixelformat == frame.pixelformat && sameSize)
 	{
-		if (CCameraModule::GetFrame(hndl, &frame))
-			CCameraModule::ReturnFrame(hndl, &frame);
 		ret = CCameraModule::GetFrame(hndl, &frame);
 		if (ret)
-			requeue = true;
-		else
-			frame.data = NULL;
+		{
+			struct timeval now;
+			gettimeofday(&now, NULL);
+			if(frame.timestamp.tv_usec > now.tv_usec)
+			{
+				now.tv_sec -= 1;
+				now.tv_usec += 1000000;
+			}
+			//210000 usec arrived at by test mashing Camera App Picture taking button
+			if( now.tv_usec - frame.timestamp.tv_usec > 210000)
+			{	
+				CCameraModule::ReturnFrame(hndl, &frame);
+				ret = CCameraModule::GetFrame(hndl, &frame);
+				if (ret)
+					requeue = true;
+				else
+					frame.data = NULL;
+			} else {
+				requeue = true;
+			}
+		}
 	}
 	else
 		ret = CCameraModule::GrabFrame(hndl, &frame);
