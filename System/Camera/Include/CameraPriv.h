@@ -108,6 +108,7 @@ struct tFrameInfo {
 	U32				index;
 	void *			data;
 	U32				size;
+	struct timeval	timestamp;
 };
 
 enum tBitmapFormat {

@@ -35262,3 +35262,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/17/12 3:32 PM
 5,313 ms. (Cumulative: 13,868,502 ms)
 
 ----------------
+Revision 10,015 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Changed Camera discard logic to be timestamp based.  Also changed GetFrame's disable overlay condition to match re-enable condition.  Also changed Capture format to be YUV422 if the requested buffer is YUV422.
+
+All these changes were done to allow for using GetFrame for the purpose of a VideoTexture.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/18/12 3:31 PM
+3 changed, 0 added, 0 deleted.
+5,516 ms. (Cumulative: 13,874,096 ms)
+
+----------------
