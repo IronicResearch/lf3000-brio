@@ -35273,3 +35273,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/18/12 3:31 PM
 5,516 ms. (Cumulative: 13,874,096 ms)
 
 ----------------
+Revision 10,016 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change up number of buffers logic for camera capture.  Now uses 3 buffers for AVI, otherwise uses 2 buffers if it will fit, and falling to 1 buffer otherwise.
+
+This helps things like VideoForTexture pumping  to get good speed and low letency widh double buffering.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/22/12 12:04 PM
+1 changed, 0 added, 0 deleted.
+5,438 ms. (Cumulative: 13,879,628 ms)
+
+----------------
