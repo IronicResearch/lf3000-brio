@@ -1878,7 +1878,15 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 		return hndl;
 	}
 
-	camCtx_.numBufs = (camCtx_.mode.pixelformat == kCaptureFormatRAWYUYV || NUM_BUFS * camCtx_.mode.width > 2048 || path.empty()) ? 1 : NUM_BUFS;
+	//3 buffers needed for avi recording
+	//2 buffers prefered if it fits
+	if(!path.empty())
+		camCtx_.numBufs = 3;
+	else if(2 * camCtx_.mode.width <= 2048)
+		camCtx_.numBufs = 2;
+	else
+		camCtx_.numBufs = 1;
+
 	if(!InitCameraBufferInt(&camCtx_))
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartVideoCapture: buffer mapping failed for %s\n", camCtx_.file);
