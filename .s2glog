@@ -35293,3 +35293,13 @@ By dlazzari (dlazzari@leapfrog.com) on 10/23/12 5:26 PM
 5,362 ms. (Cumulative: 13,885,099 ms)
 
 ----------------
+Revision 10,018 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updated libav headers and libs to match Rio rootfs libav 7.x API. (1:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/12 11:07 AM
+26 changed, 13 added, 8 deleted.
+10,279 ms. (Cumulative: 13,895,472 ms)
+
+----------------

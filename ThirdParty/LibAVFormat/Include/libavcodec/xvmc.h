@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2003 Ivan Kalvachev
  *
- * This file is part of FFmpeg.
+ * This file is part of Libav.
  *
- * FFmpeg is free software; you can redistribute it and/or
+ * Libav is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
- * FFmpeg is distributed in the hope that it will be useful,
+ * Libav is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with FFmpeg; if not, write to the Free Software
+ * License along with Libav; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
@@ -25,11 +25,6 @@
 
 #include "avcodec.h"
 
-#if LIBAVCODEC_VERSION_MAJOR < 53
-#define AV_XVMC_STATE_DISPLAY_PENDING          1  /**  the surface should be shown, the video driver manipulates this */
-#define AV_XVMC_STATE_PREDICTION               2  /**  the surface is needed for prediction, the codec manipulates this */
-#define AV_XVMC_STATE_OSD_SOURCE               4  /**  the surface is needed for subpicture rendering */
-#endif
 #define AV_XVMC_ID                    0x1DC711C0  /**< special value to ensure that regular pixel routines haven't corrupted the struct
                                                        the number is 1337 speak for the letters IDCT MCo (motion compensation) */
 
@@ -71,7 +66,7 @@ struct xvmc_pix_fmt {
     */
     int             allocated_data_blocks;
 
-    /** Indicates that the hardware would interpret data_blocks as IDCT
+    /** Indicate that the hardware would interpret data_blocks as IDCT
         coefficients and perform IDCT on them.
         - application - set during initialization
         - libavcodec  - unchanged
@@ -141,9 +136,9 @@ struct xvmc_pix_fmt {
 
     /** Number of the the next free data block; one data block consists of
         64 short values in the data_blocks array.
-        All blocks before this one are already claimed by filling their number
-        into the corresponding blocks description structure field,
-        that are hold in mv_blocks array.
+        All blocks before this one have already been claimed by placing their
+        position into the corresponding block description structure field,
+        that are part of the mv_blocks array.
         - application - zeroes it on get_buffer().
                         A successful ff_draw_horiz_band() may zero it together
                         with start_mb_blocks_num.
@@ -151,22 +146,6 @@ struct xvmc_pix_fmt {
                         of coded blocks it contains.
     */
     int             next_free_data_block_num;
-
-/** extensions may be placed here */
-#if LIBAVCODEC_VERSION_MAJOR < 53
-//@{
-    /** State flags used to work around limitations in the MPlayer video system.
-        0   - Surface is not used.
-        1   - Surface is still held in application to be displayed or is
-              still visible.
-        2   - Surface is still held in libavcodec buffer for prediction.
-    */
-    int             state;
-
-    /** pointer to the surface where the subpicture is rendered */
-    void*           p_osd_target_surface_render;
-//}@
-#endif
 };
 
 #endif /* AVCODEC_XVMC_H */
