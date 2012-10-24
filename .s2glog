@@ -35313,3 +35313,12 @@ By Dave Milici (dmilici@leapfrog.com) on 10/24/12 11:09 AM
 5,938 ms. (Cumulative: 13,901,520 ms)
 
 ----------------
+Revision 10,020 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updated missing libav headers for libav 7.x API. (1:2)
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/12 3:48 PM
+0 changed, 25 added, 0 deleted.
+6,252 ms. (Cumulative: 13,907,881 ms)
+
+----------------
