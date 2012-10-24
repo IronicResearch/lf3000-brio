@@ -35284,3 +35284,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/22/12 12:04 PM
 5,438 ms. (Cumulative: 13,879,628 ms)
 
 ----------------
+Revision 10,017 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add DebugMPI as dependency of DisplayMPI since BrioOpenGLConfig uses it.
+
+By dlazzari (dlazzari@leapfrog.com) on 10/23/12 5:26 PM
+1 changed, 0 added, 0 deleted.
+5,362 ms. (Cumulative: 13,885,099 ms)
+
+----------------
