@@ -276,13 +276,13 @@ Boolean CVIPCameraModule::CompressFrame(tFrameInfo *frame, int stride)
 	pCtx->width				= frame->width;
 	pCtx->height			= frame->height;
 	pCtx->codec_id			= CODEC_ID_MJPEG;
-	pCtx->codec_type 		= CODEC_TYPE_VIDEO;
+	pCtx->codec_type 		= AVMEDIA_TYPE_VIDEO;
 	pCtx->bit_rate 			= 400000;
 	pCtx->time_base.den 	= 1;
 	pCtx->time_base.num 	= 1;
 	pCtx->gop_size 			= 1;
 
-	if(avcodec_open(pCtx, pCodec) < 0)
+	if(avcodec_open2(pCtx, pCodec, NULL) < 0)
 		goto out_context;
 
 	pFrame = avcodec_alloc_frame();

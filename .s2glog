@@ -35303,3 +35303,13 @@ By Dave Milici (dmilici@leapfrog.com) on 10/24/12 11:07 AM
 10,279 ms. (Cumulative: 13,895,472 ms)
 
 ----------------
+Revision 10,019 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Updated VideoMPI, AudioMPI, CameraMPI to use libav 7.x API. (2:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/24/12 11:09 AM
+9 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 13,901,520 ms)
+
+----------------

@@ -69,8 +69,8 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
         while (bytesRemaining > 0)
         {
             // Decode the next chunk of data
-            bytesDecoded = avcodec_decode_video(pCodecCtx, pFrame,
-                &frameFinished, pRawData, bytesRemaining);
+            bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame,
+            		&frameFinished, &packet);
 
             // Was there an error?
             if (bytesDecoded < 0)
@@ -107,8 +107,7 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
 loop_exit:
 
     // Decode the rest of the last frame
-    bytesDecoded = avcodec_decode_video(pCodecCtx, pFrame, &frameFinished, 
-        pRawData, bytesRemaining);
+    bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 
     // Free last packet
     if (packet.data != NULL)
@@ -142,26 +141,27 @@ Boolean	CAVIPlayer::InitVideo(tVideoHndl hVideo)
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
 	FILE*			file = pVidCtx->pFileVideo;
 	CPath*			path = pVidCtx->pPathVideo;
+	AVDictionary*	pOpts = NULL;
 	
     // Register all formats and codecs
     av_register_all();
 
     // Open video file
-    if (av_open_input_file(&pFormatCtx, path->c_str(), NULL, 0, NULL) != 0)
+    if (avformat_open_input(&pFormatCtx, path->c_str(), NULL, NULL) != 0)
         return false; // Couldn't open file
 
     // Retrieve stream information
-    if (av_find_stream_info(pFormatCtx) < 0)
+    if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
         return false; // Couldn't find stream information
 
     // Dump information about file onto standard error
-    dump_format(pFormatCtx, 0, path->c_str(), 0);
+    av_dump_format(pFormatCtx, 0, path->c_str(), 0);
 
     // Find the first video stream
     iVideoStream = -1;
     for (int i=0; i < pFormatCtx->nb_streams; i++) {
         pCodecCtx = pFormatCtx->streams[i]->codec;
-        if(pCodecCtx->codec_type == CODEC_TYPE_VIDEO)
+        if(pCodecCtx->codec_type == AVMEDIA_TYPE_VIDEO)
         {
             iVideoStream = i;
             break;
@@ -185,7 +185,7 @@ Boolean	CAVIPlayer::InitVideo(tVideoHndl hVideo)
         pCodecCtx->flags |= CODEC_FLAG_TRUNCATED;
 
     // Open codec
-    if (avcodec_open(pCodecCtx, pCodec) < 0)
+    if (avcodec_open2(pCodecCtx, pCodec, &pOpts) < 0)
         return false; // Could not open codec
 
     // Allocate video frame
