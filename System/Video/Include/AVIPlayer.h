@@ -17,6 +17,14 @@
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
 
+#ifndef UINT64_C
+# if __WORDSIZE == 64
+# define UINT64_C(c) c ## UL
+# else
+# define UINT64_C(c) c ## ULL
+# endif
+#endif
+
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>

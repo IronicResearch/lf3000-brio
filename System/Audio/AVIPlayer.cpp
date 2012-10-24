@@ -66,9 +66,12 @@ int GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
         while (bytesRemaining > 0)
         {
             // Decode the next chunk of data
+        	AVPacket packet2 = packet;
+        	packet2.size = bytesRemaining;
+        	packet2.data = pRawData;
         	frameSize = size; 
-            bytesDecoded = avcodec_decode_audio2(pCodecCtx, pFrame,
-                &frameSize, pRawData, bytesRemaining);
+            bytesDecoded = avcodec_decode_audio3(pCodecCtx, pFrame,
+                &frameSize, &packet2);
 
             // Was there an error?
             if (bytesDecoded <= 0)
@@ -109,8 +112,8 @@ loop_exit:
 
     // Decode the rest of the last frame
 	frameSize = size;
-    bytesDecoded = avcodec_decode_audio2(pCodecCtx, pFrame, &frameSize, 
-        pRawData, bytesRemaining);
+    bytesDecoded = avcodec_decode_audio3(pCodecCtx, pFrame, &frameSize,
+    		&packet);
 
     // Free last packet
     if (packet.data != NULL)
@@ -135,26 +138,29 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
     bytesRead = 0;
     bytesCached = 0;
     pCachedData = NULL;
+
+    // Options in/out
+    AVDictionary* pOpts = NULL;
 	
     // Register all formats and codecs
     av_register_all();
 
     // Open audio file
-    if (av_open_input_file(&pFormatCtx, pInfo->path->c_str(), NULL, 0, NULL) != 0)
+    if (avformat_open_input(&pFormatCtx, pInfo->path->c_str(), NULL, NULL) != 0)
         return; // Couldn't open file
 
     // Retrieve stream information
-    if (av_find_stream_info(pFormatCtx) < 0)
+    if (avformat_find_stream_info(pFormatCtx, NULL) < 0)
         return; // Couldn't find stream information
 
     // Dump information about file onto standard error
-    dump_format(pFormatCtx, 0, pInfo->path->c_str(), 0);
+    av_dump_format(pFormatCtx, 0, pInfo->path->c_str(), 0);
 
     // Find the first audio stream
     iAudioStream = -1;
     for (int i=0; i < pFormatCtx->nb_streams; i++) {
         pCodecCtx = pFormatCtx->streams[i]->codec;
-        if (pCodecCtx->codec_type == CODEC_TYPE_AUDIO)
+        if (pCodecCtx->codec_type == AVMEDIA_TYPE_AUDIO)
         {
             iAudioStream = i;
             break;
@@ -178,7 +184,7 @@ CAVIPlayer::CAVIPlayer( tAudioStartAudioInfo* pInfo, tAudioID id  ) :
         pCodecCtx->flags |= CODEC_FLAG_TRUNCATED;
 
     // Open codec
-    if (avcodec_open(pCodecCtx, pCodec) < 0)
+    if (avcodec_open2(pCodecCtx, pCodec, &pOpts) < 0)
         return; // Could not open codec
 
     // Allocate audio frame (size specific)

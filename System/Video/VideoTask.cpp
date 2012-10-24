@@ -341,6 +341,7 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	prop.TaskMainFcn = (void* (*)(void*))VideoTaskMain;
 	prop.taskMainArgCount = 1;
 	prop.pTaskMainArgValues = pCtx;
+	prop.stackSize = 4 * PTHREAD_STACK_MIN; // 64 * 1024;
 	r = kernel.CreateTask( hndl, prop, NULL );
 	dbg.Assert( kNoErr == r, "InitVideoTask: Failed to create VideoTask!\n" );
 
