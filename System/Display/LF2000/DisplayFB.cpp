@@ -327,6 +327,22 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	// FIXME: Switch RGB layer prior to isUnderlay setting
 	if (n == RGBFB && (dxres > 0 || dyres > 0))
 		n = OGLFB;
+
+	bool scaling_2d = false;
+	//For scaling up tutorials and other 2D content
+	//Check to make sure pBuffer is NULL (some things like OpenGL pass in a address, but it already does it's own scale
+	//Don't want to do this for the VideoBuffer, as the VideoScaler can take care of that.
+	//Make sure scaling is active (original xres doesn't match currente xres, etc)
+	//Is the requested buffer the original size?
+	//This check must be done before SetPixelFormat is called
+	if(!pBuffer && (colorDepth == kPixelFormatARGB8888 || colorDepth == kPixelFormatRGB888) &&
+			oxres != vxres && oyres != vyres &&
+			width == oxres && height == oyres)
+	{
+		pBuffer = new U8[width * height * 4];
+		scaling_2d = true;
+		dbg_.DebugOut(kDbgLvlImportant, "%s: 2D buffer offscreen upscale created\n", __FUNCTION__);
+	}
 	
 	// Block addressing mode needed for OGL framebuffer context?
 	if (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d ||
@@ -359,8 +375,9 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->initialZOrder		= kDisplayOnBottom; // default
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
-	ctx->xscale 			= width;
-	ctx->yscale 			= height;
+	//Using xscale and yscale to store the true width and hieght being scaled to
+	ctx->xscale 			= scaling_2d ? vxres : width;
+	ctx->yscale 			= scaling_2d ? vyres : height;
 	ctx->isOpenGL			= false;
 
 	// Allocate framebuffer memory if onscreen context
@@ -419,6 +436,22 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 
 	if (!ctx->isAllocated)
 		DeAllocBuffer(ctx);
+
+	//Check to see if we allocated the memory
+	//2D buffer, where the scale doesn't match
+	if((ctx->colorDepthFormat == kPixelFormatARGB8888 || ctx->colorDepthFormat == kPixelFormatRGB888) &&
+			ctx->xscale != ctx->width && ctx->yscale != ctx->height)
+	{
+		dbg_.DebugOut(kDbgLvlImportant, "%s: 2D buffer offscreen upscale destroyed\n", __FUNCTION__);
+		//Clear out the buffer, update primary buffer
+		if(ctx->colorDepthFormat == kPixelFormatARGB8888)
+			memset(ctx->pBuffer, 0, ctx->width * ctx->height * 4);
+		else
+			memset(ctx->pBuffer, 0, ctx->width * ctx->height * 3);
+		Update(ctx, 0, 0, ctx->x, ctx->y, ctx->width, ctx->height);
+		delete[] ctx->pBuffer;
+	}
+	
 	delete ctx;
 	
 	return kNoErr;
