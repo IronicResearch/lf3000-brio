@@ -28,11 +28,8 @@ const CURI kModuleURI = "/LF/System/Display";
 // Globals
 //============================================================================
 extern std::vector<tDisplayHandle>		hogls;
-namespace
-{
-	std::list<tDisplayContext*>	gDisplayList;	// list of display contexts
-	tMutex gListMutex = PTHREAD_MUTEX_INITIALIZER; // list mutex
-}
+std::list<tDisplayContext*>	gDisplayList;	// list of display contexts
+tMutex gListMutex = PTHREAD_MUTEX_INITIALIZER; // list mutex
 
 //============================================================================
 // CDisplayModule: Informational functions

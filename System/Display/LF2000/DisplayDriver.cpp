@@ -16,9 +16,14 @@
 #include <SystemErrors.h>
 #include <DisplayPriv.h>
 
+#include <list>
+#include <algorithm>
 #include <sys/stat.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
+
+extern std::list<tDisplayContext*>	gDisplayList;
+extern tMutex gListMutex;
 
 namespace 
 {
@@ -130,7 +135,25 @@ tErrType CDisplayModule::Update(tDisplayContext* dc, int sx, int sy, int dx, int
 tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 {
 	pDriver->pdcVisible_ = pdcVisible_;
-	return pDriver->SwapBuffers(hndl, waitVSync);
+
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	if (ctx->isAllocated && !ctx->offset)
+	{
+		tErrType error = kNoImplErr;
+		kernel_.LockMutex(gListMutex);
+		std::list<tDisplayContext*>::iterator it = find(gDisplayList.begin(), gDisplayList.end(), hndl);
+		if(it != gDisplayList.end())
+		{
+			gDisplayList.erase(it);
+			gDisplayList.push_back(ctx);
+			error = kNoErr;
+		}
+		kernel_.UnlockMutex(gListMutex);
+		Invalidate(0, NULL);
+		return error;
+	} else {
+		return pDriver->SwapBuffers(hndl, waitVSync);
+	}
 }
 
 //----------------------------------------------------------------------------

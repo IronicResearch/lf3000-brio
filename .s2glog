@@ -35322,3 +35322,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/24/12 3:48 PM
 6,252 ms. (Cumulative: 13,907,881 ms)
 
 ----------------
+Revision 10,021 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+New 2D buffer scaling code.  Now when you try to create a 2D display handle that is of the original width & height, it's created offscreen instead.  When it's copied to the real on screen buffer, it's scaled up to full screen.  Had to make a change to SwapBuffers, in case it's called on a now offscreen context.  Doing so now moves the offscreen context to the end of the display list.
+
+Currently using a nearest neighbor scale, will look into doing bi-linear filtering (perhaps using OpenGL).
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/24/12 5:27 PM
+4 changed, 0 added, 0 deleted.
+5,845 ms. (Cumulative: 13,913,819 ms)
+
+----------------
