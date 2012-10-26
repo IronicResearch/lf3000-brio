@@ -233,6 +233,7 @@ void AVI_set_audio(avi_t *AVI, int channels, long rate, int bits, int format, lo
 	c->bit_rate 		= mp3rate; //64000;	// suggested?
 	c->sample_rate 		= rate;
 	c->channels 		= channels;
+	c->sample_fmt		= AV_SAMPLE_FMT_S16;
 
 	int r = avcodec_open2(AVI->pAudioCodecCtx = c, AVI->pAudioCodec, NULL);
 	if (r < 0)

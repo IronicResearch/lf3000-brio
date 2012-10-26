@@ -35333,3 +35333,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/24/12 5:27 PM
 5,845 ms. (Cumulative: 13,913,819 ms)
 
 ----------------
+Revision 10,022 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Missing libav 7.x audio format field needed to fix AVIs with audio track.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/25/12 5:26 PM
+1 changed, 0 added, 0 deleted.
+5,938 ms. (Cumulative: 13,919,866 ms)
+
+----------------
