@@ -30,6 +30,8 @@
 
 LF_BEGIN_BRIO_NAMESPACE()
 
+class BrioOpenGLConfig;
+
 
 
 //==============================================================================
@@ -82,6 +84,9 @@ struct tDisplayContext {
 	U16		wvp;
 	U16		hvp;
 	bool	isOpenGL;
+	BrioOpenGLConfig *openGLScaler;
+	U32		openGLSourceTexture;
+	U8		*openGLDestinationBuffer;
 };
 
 struct tBuffer {
@@ -229,24 +234,12 @@ inline void ARGB2ARGB(tDisplayContext* sdc, tDisplayContext* ddc, int sx, int sy
 	// Copy 32bpp ARGB8888 format surface into 32bpp ARGB format surface
 	U8*			s = sdc->pBuffer + sy * sdc->pitch + sx * 4;
 	U8*			d = ddc->pBuffer + dy * ddc->pitch + dx * 4;
-	if(sdc->xscale != sdc->width && sdc->yscale != sdc->height)
+
+	for (int i = 0; i < height; i++)
 	{
-		U32 scaled_height = height * sdc->yscale / sdc->height;
-		U32 scaled_width = width * sdc->xscale / sdc->width;
-		for(int i = 0; i < scaled_height - 1; ++i)
-		{
-			for(int j = 0; j < scaled_width - 1; ++j)
-			{
-				memcpy(&d[i*ddc->pitch + j*4], &s[i*sdc->height/sdc->yscale*sdc->pitch + j*sdc->width/sdc->xscale*4], 4);
-			}
-		}
-	} else {
-		for (int i = 0; i < height; i++)
-		{
-			memcpy(d, s, 4 * width);
-			s += sdc->pitch;
-			d += ddc->pitch;
-		}
+		memcpy(d, s, 4 * width);
+		s += sdc->pitch;
+		d += ddc->pitch;
 	}
 }
 

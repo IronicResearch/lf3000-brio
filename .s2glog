@@ -35343,3 +35343,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/25/12 5:26 PM
 5,938 ms. (Cumulative: 13,919,866 ms)
 
 ----------------
+Revision 10,023 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro 4058.  Now using OpenGL to scale up 2D buffers.  The pBuffer is the source texture and is updated, then drawn to the screen, then we swap to the just drawn image.
+
+The Red and Blue channels are swapped because glTexSubImage2D stipulates that the order of red and blue are swapped from what Brio uses.
+
+By Minh Saelock (msaelock@leapfrog.com) on 10/30/12 1:08 PM
+2 changed, 0 added, 0 deleted.
+5,502 ms. (Cumulative: 13,925,447 ms)
+
+----------------
