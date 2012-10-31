@@ -35354,3 +35354,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 10/30/12 1:08 PM
 5,502 ms. (Cumulative: 13,925,447 ms)
 
 ----------------
+Revision 10,024 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Event message queue named per process ID to isolate locally buffered msgs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 10/30/12 8:09 PM
+1 changed, 0 added, 0 deleted.
+5,510 ms. (Cumulative: 13,931,050 ms)
+
+----------------
