@@ -127,7 +127,7 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsScreenLPAD:
 		return ("LPAD" == GetPlatformFamily());
 	case kCapsWifi:
-		return false;
+		return (0 == stat("/sys/class/net/wlan0", &stbuf));
 	case kCapsCameraFront:
 		return (0 == stat("/sys/class/video4linux/video1", &stbuf));
 	case kCapsButtonMask(kButtonUp):
@@ -151,7 +151,8 @@ bool HasPlatformCapability(tPlatformCaps caps)
 	case kCapsButtonMask(kButtonVolumeUp):
 		return true;
 	case kCapsButtonMask(kButtonEscape):
-		return ("LPAD" == GetPlatformFamily());
+		return ("LPAD" == GetPlatformFamily() ||
+				"RIO" == GetPlatformFamily());
 	}
 	return false;
 }
