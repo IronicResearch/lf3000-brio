@@ -25,6 +25,7 @@
 #include <EventPriv.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 LF_BEGIN_BRIO_NAMESPACE() 
 
@@ -73,7 +74,8 @@ namespace
 	};
 	const U32 kEventDispatchMessageSize = sizeof(CEventDispatchMessage);
 	
-	const char*	g_msgQueueName = "/eventDispatchQueue";
+	char g_msgQueueNameStr[256] = "/eventDispatchQueue";
+	const char*	g_msgQueueName  = &g_msgQueueNameStr[0];
 
 	const tEventPriority	kEventListenerEventPriority	= 0;
 }	
@@ -188,6 +190,7 @@ public:
 	    		return;
 	    	}
 		}
+		sprintf(g_msgQueueNameStr, "%s%d", g_msgQueueName, getpid());
 
 		tMessageQueuePropertiesPosix props = 							//*1
 		{
