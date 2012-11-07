@@ -35374,3 +35374,14 @@ By Dave Milici (dmilici@leapfrog.com) on 10/31/12 12:35 PM
 5,563 ms. (Cumulative: 13,936,707 ms)
 
 ----------------
+Revision 10,026 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Conditionally disable deployment of precompiled ustring libs.
+Libs no longer needed on Rio rootfs with glibmm libs present.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/7/12 3:07 PM
+1 changed, 0 added, 0 deleted.
+5,469 ms. (Cumulative: 13,942,269 ms)
+
+----------------
