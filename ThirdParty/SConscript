@@ -112,12 +112,11 @@ if env['install_dir']:
 if not env['cpu']=='x86' and not env['is_sdk']:
 	lib_deploy_dir = env['install_dir'].Dir('lib')
 	
-	libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libustring.so'))
-	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libiconv.so.2'))
-	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libintl.so.8'))
-	libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libsigc-2.0.so.0'))
-	
 	if env['deploylibs']:
+		libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libustring.so'))
+		libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libiconv.so.2'))
+		libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libintl.so.8'))
+		libs += glob.glob(os.path.join('ustring', 'libs', env['cpu'], 'libsigc-2.0.so.0'))
 		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], 'libfreetype.so.6'))
 		libs += glob.glob(os.path.join('LibSndFile', 'Libs', env['cpu'], 'libsndfile.so.1'))
 		libs += glob.glob(os.path.join('Theora', 'Libs', env['cpu'], 'libogg.so.0'))
