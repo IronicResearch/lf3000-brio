@@ -35385,3 +35385,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/7/12 3:07 PM
 5,469 ms. (Cumulative: 13,942,269 ms)
 
 ----------------
+Revision 10,027 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,028 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Rio should now have a properly orientated DPad.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/8/12 12:30 PM
+1 changed, 0 added, 0 deleted.
+5,094 ms. (Cumulative: 13,947,457 ms)
+
+----------------
