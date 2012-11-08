@@ -410,7 +410,7 @@ void* CEventModule::CartridgeTask( void* arg )
 	// init button driver and state
 	U32 (*LinuxKeyToBrio)(U16 code) = 0;
 	CString platform_name = GetPlatformFamily();
-	if(platform_name == "LPAD") {
+	if(platform_name == "LPAD" || platform_name == "RIO") {
 		gDpadOrientation = kDpadPortrait;
 		LinuxKeyToBrio = LinuxKeyToBrioMadrid;
 	} else {
