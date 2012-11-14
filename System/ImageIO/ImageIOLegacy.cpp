@@ -12,7 +12,10 @@
 //
 //==============================================================================
 
-#ifdef LF1000
+#ifdef BRIO_IMAGEIO
+#ifndef LF1000
+#define LF1000
+#endif
 #include <ImageIO.h>
 
 using namespace LeapFrog::Brio;
