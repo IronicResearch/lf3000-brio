@@ -35415,3 +35415,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/12 1:10 PM
 5,376 ms. (Cumulative: 13,958,115 ms)
 
 ----------------
+Revision 10,032 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Force Brio namespace in ImageIO class for both LF1000 & LF2000 binaries.
+The LF1000 conditional in ImageIO.h header remains intact for SDK use
+in order to support the nameless class in GM LF2000 binaries. (TTP 3857)
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/12 2:07 PM
+3 changed, 0 added, 0 deleted.
+5,275 ms. (Cumulative: 13,963,515 ms)
+
+----------------
