@@ -35395,3 +35395,14 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/8/12 12:30 PM
 5,094 ms. (Cumulative: 13,947,457 ms)
 
 ----------------
+Revision 10,029 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,030 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add NativeWindow field for pointer to DisplayMPI context, though not yet dereferened in EGL.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/12 12:30 PM
+1 changed, 0 added, 0 deleted.
+5,094 ms. (Cumulative: 13,952,645 ms)
+
+----------------
