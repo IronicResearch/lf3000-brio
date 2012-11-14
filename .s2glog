@@ -35406,3 +35406,12 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/12 12:30 PM
 5,094 ms. (Cumulative: 13,952,645 ms)
 
 ----------------
+Revision 10,031 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix DebugMPI unit test linking, since relocating KernelMPI dependency (svn -r10012).
+
+By Dave Milici (dmilici@leapfrog.com) on 11/14/12 1:10 PM
+1 changed, 0 added, 0 deleted.
+5,376 ms. (Cumulative: 13,958,115 ms)
+
+----------------
