@@ -379,9 +379,9 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		egl_client_buffer.width           = width;
 		egl_client_buffer.height          = height;
 		if(colorDepth == kPixelFormatARGB8888)
-			egl_client_buffer.format          = 0xC012;
+			egl_client_buffer.format          = EGL_NEXELL_BGRA;
 		else
-			egl_client_buffer.format          = 0xC013;
+			egl_client_buffer.format          = EGL_NEXELL_BGR;
 		egl_client_buffer.stride          = width;
 		egl_client_buffer.bsize           = 0;
 

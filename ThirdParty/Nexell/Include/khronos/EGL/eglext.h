@@ -122,10 +122,14 @@ typedef EGLBoolean (EGLAPIENTRYP PFNEGLDESTROYIMAGEKHRPROC) (EGLDisplay dpy, EGL
 
 #ifndef EGL_NEXELL_image_native_buffer
 #define EGL_NEXELL_image_native_buffer 1
+#define EGL_NEXELL_RGB565				0xC010
+#define EGL_NEXELL_YUYV					0xC011
+#define EGL_NEXELL_BGRA					0xC012
+#define EGL_NEXELL_BGR					0xC013
 typedef struct {
 	unsigned int width           ;
 	unsigned int height          ;
-	unsigned int format          ; // 0xC010: RGB656  0xC011: Y0UY1V  0XC12: ABGR8888  0XC13: BGR888
+	unsigned int format          ;
 	unsigned int stride          ;
 	unsigned int bsize           ;
 	void*        virtual_address ;

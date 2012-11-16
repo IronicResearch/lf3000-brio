@@ -35446,3 +35446,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/15/12 4:19 PM
 5,594 ms. (Cumulative: 13,975,015 ms)
 
 ----------------
+Revision 10,037 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cleaning up Brio.  Replacing magic numbers with #define for eglImage formats.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/15/12 5:46 PM
+2 changed, 0 added, 0 deleted.
+5,699 ms. (Cumulative: 13,980,808 ms)
+
+----------------
