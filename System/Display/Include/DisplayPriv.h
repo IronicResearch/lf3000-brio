@@ -86,7 +86,8 @@ struct tDisplayContext {
 	bool	isOpenGL;
 	BrioOpenGLConfig *openGLScaler;
 	U32		openGLSourceTexture;
-	U8		*openGLDestinationBuffer;
+	void	*eGLSourceImage;
+	U32		eGLSourceTexture;
 };
 
 struct tBuffer {

@@ -42,6 +42,7 @@ if env['cpu'] == 'x86':
 elif env['platform'] == 'LF2000' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/Nexell/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/Nexell/Libs/' + env['cpu']])
+	myenv.Append(CPPDEFINES = ['EGL_EGLEXT_PROTOTYPES', 'GL_GLEXT_PROTOTYPES'])
 elif env['platform'] == 'Lightning' and env['cpu_bare']:
 	myenv.Append(CPPPATH = ['#ThirdParty/MagicEyes/Include'])
 	myenv.Append(LIBPATH = ['#ThirdParty/MagicEyes/Libs/' + env['cpu_bare']])

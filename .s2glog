@@ -35426,3 +35426,14 @@ By Dave Milici (dmilici@leapfrog.com) on 11/14/12 2:07 PM
 5,275 ms. (Cumulative: 13,963,515 ms)
 
 ----------------
+Revision 10,033 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,034 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,035 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4058.  Brio now uses eglImage to create a BGR or ABGR image for use as a texture during 2D buffer scaling.
+
+By Minh Saelock (msaelock@leapfrog.com) on 11/15/12 4:15 PM
+4 changed, 0 added, 0 deleted.
+5,688 ms. (Cumulative: 13,969,312 ms)
+
+----------------
