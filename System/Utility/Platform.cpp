@@ -130,6 +130,8 @@ bool HasPlatformCapability(tPlatformCaps caps)
 		return (0 == stat("/sys/class/net/wlan0", &stbuf));
 	case kCapsCameraFront:
 		return (0 == stat("/sys/class/video4linux/video1", &stbuf));
+	case kCapsMultiTouch:
+		return ("RIO" == GetPlatformFamily()); // FIXME: query input device?
 	case kCapsButtonMask(kButtonUp):
 	case kCapsButtonMask(kButtonDown):
 	case kCapsButtonMask(kButtonRight):
