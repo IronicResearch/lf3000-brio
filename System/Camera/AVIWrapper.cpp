@@ -169,6 +169,10 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const __u32 ca
 		break;
 	}
 
+	// FIXME: proper bitrate estimate, not necessarily proportional to QVGA
+	c->bit_rate 		*= width;
+	c->bit_rate 		/= 320;
+
 	// some formats want stream headers to be separate
 	if (AVI->pFormatCtx->oformat->flags & AVFMT_GLOBALHEADER)
 		c->flags |= CODEC_FLAG_GLOBAL_HEADER;
@@ -192,7 +196,7 @@ void AVI_set_video(avi_t *AVI, int width, int height, double fps, const __u32 ca
 		// FIXME magic numbers
 		switch(camfmt) {
 		case V4L2_PIX_FMT_YUYV:
-			AVI->pVideoFrame->linesize[0] = c->width;
+			AVI->pVideoFrame->linesize[0] = c->width * 2; // 16bpp
 
 			break;
 		case V4L2_PIX_FMT_YUV420:

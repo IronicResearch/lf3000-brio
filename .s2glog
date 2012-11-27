@@ -35455,3 +35455,21 @@ By Minh Saelock (msaelock@leapfrog.com) on 11/15/12 5:46 PM
 5,699 ms. (Cumulative: 13,980,808 ms)
 
 ----------------
+Revision 10,038 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,039 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,040 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,041 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,042 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adjust AVI video bitrate estimate proportional to QVGA size.
+Otherwise low bitrates compressed VGA size AVIs too chunky.
+
+FIXME: Find more appropriate bitrate estimate calculation.
+
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/26/12 7:19 PM
+1 changed, 0 added, 0 deleted.
+5,531 ms. (Cumulative: 13,986,480 ms)
+
+----------------
