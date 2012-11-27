@@ -35473,3 +35473,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/26/12 7:19 PM
 5,531 ms. (Cumulative: 13,986,480 ms)
 
 ----------------
+Revision 10,043 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add kCapsMultiTouch enum to platform capabilites.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/27/12 3:05 PM
+3 changed, 0 added, 0 deleted.
+5,563 ms. (Cumulative: 13,992,137 ms)
+
+----------------

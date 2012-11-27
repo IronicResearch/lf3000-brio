@@ -47,6 +47,7 @@ public:
 		printf("kCapsLF2000:       %d\n", HasPlatformCapability(kCapsLF2000));
 		printf("kCapsWifi:         %d\n", HasPlatformCapability(kCapsWifi));
 		printf("kCapsCameraFront:  %d\n", HasPlatformCapability(kCapsCameraFront));
+		printf("kCapsMultiTouch:   %d\n", HasPlatformCapability(kCapsMultiTouch));
 		printf("\n");
 		printf("kCapsButtonMask:\n");
 		printf("kButtonUp:         %d\n", HasPlatformCapability(kCapsButtonMask(kButtonUp)));
