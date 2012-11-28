@@ -35483,3 +35483,13 @@ By Dave Milici (dmilici@leapfrog.com) on 11/27/12 3:05 PM
 5,563 ms. (Cumulative: 13,992,137 ms)
 
 ----------------
+Revision 10,044 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added placeholder support for multi-touch event records (non-accessible, 1:2).
+
+
+By Dave Milici (dmilici@leapfrog.com) on 11/27/12 5:09 PM
+2 changed, 0 added, 0 deleted.
+5,854 ms. (Cumulative: 13,998,085 ms)
+
+----------------

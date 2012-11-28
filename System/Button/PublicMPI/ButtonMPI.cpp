@@ -80,6 +80,15 @@ CTouchMessage::CTouchMessage( const tTouchData& data )
 }
 
 //------------------------------------------------------------------------------
+CTouchMessage::CTouchMessage( const tMultiTouchData& data )
+	: IEventMessage(kTouchEventMultiTouch), mData(data.td)
+{
+	if (!gIsPressureMode)
+		mData.touchState = (data.td.touchState) ? 1 : 0;
+	gCachedTouchData = mData;
+}
+
+//------------------------------------------------------------------------------
 U16	CTouchMessage::GetSizeInBytes() const
 {
 	return sizeof(CTouchMessage);
