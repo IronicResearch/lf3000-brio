@@ -25,7 +25,8 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Touch events
 //==============================================================================
 #define TOUCH_EVENTS					\
-	(kTouchStateChanged)
+	(kTouchStateChanged)				\
+	(kTouchEventMultiTouch)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_TYPE_VALUE, FirstEvent(kGroupTouch), TOUCH_EVENTS)
 
@@ -53,7 +54,8 @@ enum tTouchMode {
 	kTouchModeDefault,					///< default touch mode
 	kTouchModeDrawing,					///< drawing touch mode
 	kTouchModeCustom,					///< custom touch mode
-	kTouchModePressure					///< pressure touch mode
+	kTouchModePressure,					///< pressure touch mode
+	kTouchModeMultiTouch 				///< multi-touch event mode
 };
 
 /// Enumerated type for SetTouchParam()/GetTouchParam()
@@ -90,10 +92,25 @@ struct tTouchData {
 	} time;
 };
 
+struct tMultiTouchData {
+       tTouchData td;	///< single-touch compatible record
+       S8  id;       	///< tracking ID slot 1..2
+       U16 minWidth; 	///< major-axis touch contact diameter
+       U16 maxWidth; 	///< major-axis touch max width diameter (TBD Neonode)
+       U16 pressure; 	///< touch pressure (TBD Neonode)
+};
+
+/// Union of all possible Touch message types
+union tTouchMsgData {
+	tTouchData      td; ///< kTouchStateChanged message
+	tMultiTouchData	mtd;///< kTouchEventMultiTouch message
+};
+
 //------------------------------------------------------------------------------
 class CTouchMessage : public IEventMessage {
 public:
 	CTouchMessage( const tTouchData& data );
+	CTouchMessage( const tMultiTouchData& data );
 	virtual U16	GetSizeInBytes() const;
 	tTouchData GetTouchState() const;
 	tTouchMode GetTouchMode() const;
