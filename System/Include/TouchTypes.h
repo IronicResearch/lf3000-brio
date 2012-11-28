@@ -114,8 +114,9 @@ public:
 	virtual U16	GetSizeInBytes() const;
 	tTouchData GetTouchState() const;
 	tTouchMode GetTouchMode() const;
+	tMultiTouchData GetMultiTouchState() const;
 private:
-	tTouchData	mData;
+	tTouchMsgData	mData;
 };
 
 

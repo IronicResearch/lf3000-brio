@@ -72,20 +72,22 @@ tButtonData2 CButtonMessage::GetButtonState2() const
 //============================================================================
 //------------------------------------------------------------------------------
 CTouchMessage::CTouchMessage( const tTouchData& data ) 
-	: IEventMessage(kTouchStateChanged), mData(data)
+	: IEventMessage(kTouchStateChanged)
 {
+	mData.td = data;
 	if (!gIsPressureMode)
-		mData.touchState = (data.touchState) ? 1 : 0;
-	gCachedTouchData = mData;
+		mData.td.touchState = (data.touchState) ? 1 : 0;
+	gCachedTouchData = mData.td;
 }
 
 //------------------------------------------------------------------------------
 CTouchMessage::CTouchMessage( const tMultiTouchData& data )
-	: IEventMessage(kTouchEventMultiTouch), mData(data.td)
+	: IEventMessage(kTouchEventMultiTouch)
 {
+	mData.mtd = data;
 	if (!gIsPressureMode)
-		mData.touchState = (data.td.touchState) ? 1 : 0;
-	gCachedTouchData = mData;
+		mData.mtd.td.touchState = (data.td.touchState) ? 1 : 0;
+	gCachedTouchData = mData.td;
 }
 
 //------------------------------------------------------------------------------
@@ -97,7 +99,13 @@ U16	CTouchMessage::GetSizeInBytes() const
 //------------------------------------------------------------------------------
 tTouchData CTouchMessage::GetTouchState() const
 {
-	return mData;
+	return mData.td;
+}
+
+//------------------------------------------------------------------------------
+tMultiTouchData CTouchMessage::GetMultiTouchState() const
+{
+	return mData.mtd;
 }
 
 //------------------------------------------------------------------------------
