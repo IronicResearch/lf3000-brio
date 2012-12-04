@@ -333,69 +333,11 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		n = OGLFB;
 
 	bool scaling_2d = false;
-	BrioOpenGLConfig *opengl_scaler = 0;
-	GLuint opengl_source_texture = 0;
-	EGLImageKHR egl_source_image = 0;
-	GLuint egl_source_texture = 0;
-	//For scaling up tutorials and other 2D content
-	//Check to make sure pBuffer is NULL (some things like OpenGL pass in a address, but it already does it's own scale
-	//Don't want to do this for the VideoBuffer, as the VideoScaler can take care of that.
-	//Make sure scaling is active (original xres doesn't match currente xres, etc)
-	//Is the requested buffer the original size?
-	//This check must be done before SetPixelFormat is called
 	if(!pBuffer && (colorDepth == kPixelFormatARGB8888 || colorDepth == kPixelFormatRGB888) &&
 			oxres != vxres && oyres != vyres &&
 			width == oxres && height == oyres)
 	{
-		if(colorDepth == kPixelFormatARGB8888)
-			pBuffer = new U8[width * height * 4];
-		else
-			pBuffer = new U8[width * height * 3];
 		scaling_2d = true;
-		dbg_.DebugOut(kDbgLvlImportant, "%s: 2D buffer offscreen upscale created, scaling from %dx%d to %dx%d\n", __FUNCTION__, width, height, vxres, vyres);
-
-		U16 old_oxres = oxres;
-		U16 old_oyres = oyres;
-		opengl_scaler = new BrioOpenGLConfig();
-		glGenTextures(1, &opengl_source_texture);
-		glBindTexture(GL_TEXTURE_2D, opengl_source_texture);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		if(colorDepth == kPixelFormatARGB8888)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pBuffer);
-		else
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pBuffer);
-
-		GLint texture_virtual_address;
-		GLint texture_physical_address;
-		glGetTexParameteriv(GL_TEXTURE_2D, GL_BUFFER_SIZE, &texture_virtual_address);//Get virtual address
-		glGetTexParameteriv(GL_TEXTURE_2D, GL_BUFFER_USAGE, &texture_physical_address);//Get physical address
-		delete[] pBuffer;
-		pBuffer = (U8 *)texture_virtual_address;
-		nexell_clientbuffer_t egl_client_buffer;
-		EGLint egl_image_attribute[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE };
-		egl_client_buffer.width           = width;
-		egl_client_buffer.height          = height;
-		if(colorDepth == kPixelFormatARGB8888)
-			egl_client_buffer.format          = EGL_NEXELL_BGRA;
-		else
-			egl_client_buffer.format          = EGL_NEXELL_BGR;
-		egl_client_buffer.stride          = width;
-		egl_client_buffer.bsize           = 0;
-
-		egl_client_buffer.virtual_address = (void*)texture_virtual_address;
-		egl_client_buffer.physical_address= (void*)texture_physical_address;
-		egl_source_image = eglCreateImageKHR(opengl_scaler->eglDisplay, opengl_scaler->eglContext, EGL_NATIVE_BUFFER_NEXELL, (EGLClientBuffer)&egl_client_buffer, egl_image_attribute );
-
-		glGenTextures(1, &egl_source_texture);
-		glBindTexture(GL_TEXTURE_2D, egl_source_texture);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glEGLImageTargetTexture2DOES ( GL_TEXTURE_2D, egl_source_image); // bind an EGLImage(egl_image) to current binded texture
 	}
 	
 	// Block addressing mode needed for OGL framebuffer context?
@@ -429,14 +371,12 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->initialZOrder		= kDisplayOnBottom; // default
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
-	//Using xscale and yscale to store the true width and hieght being scaled to
-	ctx->xscale 			= scaling_2d ? vxres : width;
-	ctx->yscale 			= scaling_2d ? vyres : height;
+	ctx->xscale 			= width;
+	ctx->yscale 			= height;
 	ctx->isOpenGL			= false;
-	ctx->openGLScaler		= opengl_scaler;
-	ctx->openGLSourceTexture= opengl_source_texture;
-	ctx->eGLSourceImage		= egl_source_image;
-	ctx->eGLSourceTexture	= egl_source_texture;
+	ctx->openGLScaler		= 0;
+	ctx->eGLSourceImage		= 0;
+	ctx->eGLSourceTexture	= 0;
 
 	// Allocate framebuffer memory if onscreen context
 	if (pBuffer == NULL)
@@ -449,6 +389,44 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 		}
 		// Clear the onscreen display buffer
 		memset(ctx->pBuffer, 0, ctx->pitch * ctx->height);
+
+		//For scaling up tutorials and other 2D content
+		//Check to make sure pBuffer is NULL (some things like OpenGL pass in a address, but it already does it's own scale
+		//Don't want to do this for the VideoBuffer, as the VideoScaler can take care of that.
+		//Make sure scaling is active (original xres doesn't match currente xres, etc)
+		//Is the requested buffer the original size?
+		//This check must be done before SetPixelFormat is called
+		if((colorDepth == kPixelFormatARGB8888 || colorDepth == kPixelFormatRGB888) &&
+				oxres != vxres && oyres != vyres &&
+				width == oxres && height == oyres)
+		{
+			dbg_.DebugOut(kDbgLvlImportant, "%s: 2D buffer offscreen upscale created, scaling from %dx%d to %dx%d\n", __FUNCTION__, width, height, vxres, vyres);
+
+			ctx->openGLScaler = new BrioOpenGLConfig();
+
+			nexell_clientbuffer_t egl_client_buffer;
+			EGLint egl_image_attribute[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE };
+			egl_client_buffer.width           = width;
+			egl_client_buffer.height          = height;
+			if(colorDepth == kPixelFormatARGB8888)
+				egl_client_buffer.format          = EGL_NEXELL_BGRA;
+			else
+				egl_client_buffer.format          = EGL_NEXELL_BGR;
+			egl_client_buffer.stride          = width;
+			egl_client_buffer.bsize           = 0;
+
+			egl_client_buffer.virtual_address = (void*)ctx->pBuffer;
+			egl_client_buffer.physical_address= (void*)ctx->pBuffer;
+			ctx->eGLSourceImage = eglCreateImageKHR(ctx->openGLScaler->eglDisplay, ctx->openGLScaler->eglContext, EGL_NATIVE_BUFFER_NEXELL, (EGLClientBuffer)&egl_client_buffer, egl_image_attribute );
+
+			glGenTextures(1, (GLuint*)&ctx->eGLSourceTexture);
+			glBindTexture(GL_TEXTURE_2D, (GLuint)ctx->eGLSourceTexture);
+			glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glEGLImageTargetTexture2DOES ( GL_TEXTURE_2D, ctx->eGLSourceImage); // bind an EGLImage(egl_image) to current binded texture
+		}
 	}
 	
 	// Fixup offscreen context info if cloned from onscreen context (VideoMPI)
@@ -472,7 +450,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}
 
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, width, height, ctx->pitch, ctx->pBuffer);
-	
+	printf("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
 	return (tDisplayHandle)ctx;
 }
 
@@ -497,28 +475,12 @@ tErrType CDisplayFB::DestroyHandle(tDisplayHandle hndl, Boolean destroyBuffer)
 
 	//Check to see if we allocated the memory
 	//2D buffer, where the scale doesn't match
-	if((ctx->colorDepthFormat == kPixelFormatARGB8888 || ctx->colorDepthFormat == kPixelFormatRGB888) &&
-			ctx->xscale != ctx->width && ctx->yscale != ctx->height)
+	if(ctx->openGLScaler)
 	{
 		dbg_.DebugOut(kDbgLvlImportant, "%s: 2D buffer offscreen upscale destroyed\n", __FUNCTION__);
-		//Clear out the buffer, update primary buffer
-		if (pdcVisible_)
-		{
-			tDisplayContext *dcdst = pdcVisible_;
-			if (dcdst->flippedContext)
-				dcdst = dcdst->flippedContext;
-			U8* d = dcdst->pBuffer + ctx->y * dcdst->pitch + ctx->x * dcdst->bpp;
-			for (int i = 0; i < ctx->yscale; i++)
-			{
-				memset(d, 0, dcdst->bpp * ctx->xscale);
-				d += dcdst->pitch;
-			}
-		}
 
 		glDeleteTextures(1, (GLuint*)&ctx->eGLSourceTexture);
 		eglDestroyImageKHR(ctx->openGLScaler->eglDisplay, ctx->eGLSourceImage);
-		glDeleteTextures(1, (GLuint*)&ctx->openGLSourceTexture);
-		delete[] ctx->pBuffer;
 		delete ctx->openGLScaler;
 
 		std::map<BrioOpenGLConfig *, tOpenGLContext>::iterator opengl_context_finder = brioopenglconfig_context_map.begin();
@@ -551,7 +513,7 @@ tErrType CDisplayFB::RegisterLayer(tDisplayHandle hndl, S16 xPos, S16 yPos)
 	ctx->rect.bottom 	= yPos + height;
 	
 	// Offscreen contexts do not affect screen
-	if (ctx->isAllocated && !ctx->isOpenGL)
+	if (ctx->openGLScaler || (ctx->isAllocated && !ctx->isOpenGL))
 		return kNoErr;
 
 	// Set XY onscreen position
@@ -655,8 +617,24 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 	if (dcdst->flippedContext)
 		dcdst = dcdst->flippedContext;
 	
+	if(dc->openGLScaler)
+	{
+		eglMakeCurrent(dc->openGLScaler->eglDisplay, dc->openGLScaler->eglSurface, dc->openGLScaler->eglSurface, dc->openGLScaler->eglContext);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, dc->eGLSourceTexture);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glLoadIdentity();
+		S8 vertices[] = {-1,1, -1,-1, 1,1, 1,-1};
+		S8 texcoords[] = {0,0, 0,1, 1,0, 1, 1};
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(2, GL_BYTE, 0, vertices);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_BYTE, 0, texcoords);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		eglSwapBuffers(dc->openGLScaler->eglDisplay, dc->openGLScaler->eglSurface);
+	}
 	// Copy offscreen context to primary display context
-	if (dc->isAllocated && !dc->offset)
+	else if (dc->isAllocated && !dc->offset)
 	{
 		switch (dc->colorDepthFormat) 
 		{
@@ -684,24 +662,7 @@ tErrType CDisplayFB::Update(tDisplayContext* dc, int sx, int sy, int dx, int dy,
 				break;
 			default:
 			case kPixelFormatARGB8888:	
-				if(dc->xscale != dc->width && dc->yscale != dc->height)
-				{
-					eglMakeCurrent(dc->openGLScaler->eglDisplay, dc->openGLScaler->eglSurface, dc->openGLScaler->eglSurface, dc->openGLScaler->eglContext);
-					glEnable(GL_TEXTURE_2D);
-					glBindTexture(GL_TEXTURE_2D, dc->eGLSourceTexture);
-					glClear(GL_COLOR_BUFFER_BIT);
-					glLoadIdentity();
-					S8 vertices[] = {-1,1, -1,-1, 1,1, 1,-1};
-					S8 texcoords[] = {0,0, 0,1, 1,0, 1, 1};
-					glEnableClientState(GL_VERTEX_ARRAY);
-					glVertexPointer(2, GL_BYTE, 0, vertices);
-					glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-					glTexCoordPointer(2, GL_BYTE, 0, texcoords);
-					glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-					eglSwapBuffers(dc->openGLScaler->eglDisplay, dc->openGLScaler->eglSurface);
-				} else {
 					ARGB2ARGB(dc, dcdst, sx, sy, dx, dy, width, height);
-				}
 				break;
 			case kPixelFormatYUV420: 	
 				RGB2YUV(dc, dcdst, sx, sy, dx, dy, width, height); 
