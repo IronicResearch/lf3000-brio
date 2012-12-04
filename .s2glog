@@ -35519,3 +35519,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/3/12 5:48 PM
 5,548 ms. (Cumulative: 14,010,196 ms)
 
 ----------------
+Revision 10,049 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Query input device for initial accelerometer data, instead of raw data via sysfs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/3/12 7:06 PM
+1 changed, 0 added, 0 deleted.
+5,426 ms. (Cumulative: 14,015,747 ms)
+
+----------------

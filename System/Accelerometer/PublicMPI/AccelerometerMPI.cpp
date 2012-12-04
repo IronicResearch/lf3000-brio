@@ -24,6 +24,7 @@
 #include <Utility.h>
 #include <sys/stat.h>
 #include <stdio.h>
+#include <linux/input.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -298,23 +299,18 @@ tErrType CAccelerometerMPI::SetAccelerometerMode(tAccelerometerMode mode)
 	
 	// Get initial x,y,z and orientation data if enable
 	if (enable) {
-		FILE* fd = fopen(SYSFS_ACLMTR_PATH("raw_xyz"), "r");
-		if (fd != NULL) {
-			int x = 0, y = 0, z = 0;
-			fscanf(fd, "%d %d %d\n", &x, &y, &z);
-			fclose(fd);
-			gCachedData.accelX = x;
-			gCachedData.accelY = y;
-			gCachedData.accelZ = z;
-		}
-	}
-	if (orient) {
-		FILE* fd = fopen(SYSFS_ACLMTR_PATH("raw_phi"), "r");
-		if (fd != NULL) {
-			int phi = 0;
-			fscanf(fd, "%d\n", &phi);
-			fclose(fd);
-			gCachedOrient = RawToOrient(phi);
+		int id = open_input_device("Accelerometer");
+		if (id > 0)  {
+			struct input_absinfo ai[4];
+			ioctl(id, EVIOCGABS(ABS_X), &ai[0]);
+			ioctl(id, EVIOCGABS(ABS_Y), &ai[1]);
+			ioctl(id, EVIOCGABS(ABS_Z), &ai[2]);
+			ioctl(id, EVIOCGABS(ABS_MISC), &ai[3]);
+			close(id);
+			gCachedData.accelX = ai[0].value;
+			gCachedData.accelY = ai[1].value;
+			gCachedData.accelZ = ai[2].value;
+			gCachedOrient = RawToOrient(ai[3].value);
 		}
 	}
 	if( success )
