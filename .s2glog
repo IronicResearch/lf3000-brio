@@ -35504,3 +35504,18 @@ By Dave Milici (dmilici@leapfrog.com) on 11/27/12 6:42 PM
 6,297 ms. (Cumulative: 14,004,507 ms)
 
 ----------------
+Revision 10,046 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,047 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,048 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified the way 2D buffer scale color swizzle works.  Now uses DisplayHandle memory directly as the texture instead of making a dummy texture.  Tutorials and other scaled 2D content shouldn't crash if they don't have ogl_8888to8888 set now.
+
+The auto decimation of 8888 textures to 4444 caused seg faults when BlitBuffer tried to draw to the bottom half of the dummy texture.
+
+Now that the memory is allocated like a normal DisplayHandle, changing some of the logic that assumed that Scaled 2D content was modified to be an offline buffer.  I might not have caught all the places.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/3/12 5:48 PM
+2 changed, 0 added, 0 deleted.
+5,548 ms. (Cumulative: 14,010,196 ms)
+
+----------------
