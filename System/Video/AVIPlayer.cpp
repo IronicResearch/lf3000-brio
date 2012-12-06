@@ -59,6 +59,7 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
     if (bFirstTime)
     {
         bFirstTime = false;
+        av_init_packet(&packet);
         packet.data = NULL;
     }
 
@@ -69,8 +70,11 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
         while (bytesRemaining > 0)
         {
             // Decode the next chunk of data
+            AVPacket packet2 = packet;
+            packet2.size = bytesRemaining;
+            packet2.data = pRawData;
             bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame,
-            		&frameFinished, &packet);
+            		&frameFinished, &packet2);
 
             // Was there an error?
             if (bytesDecoded < 0)
@@ -436,9 +440,15 @@ Boolean CAVIPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 Boolean CAVIPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
 	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
-	if (bDrop) {
+
+	// FIXME: MPEG seeking flaky
+	// Seeking to closest keyframe is needed, similar to Theora drop-frame logic.
+	// MPEG codecs have trickier timestamp problem keeping PTS in order with DTS.
+	// http://www.hackerfactor.com/blog/index.php?/archives/307-Picture-Go-Back.html
+
+	if (bDrop && pCodecCtx->codec_id == CODEC_ID_MJPEG) {
 		pCtx->frame = pCtx->time * pVidCtx->uFrameTimeDen / pVidCtx->uFrameTimeNum;
-		if (SeekVideoFrame(hVideo, pCtx, true, false)) {
+		if (SeekVideoFrame(hVideo, pCtx, false, false)) {
 			pVidCtx->bSeeked = false;
 			GetVideoTime(hVideo, pCtx);
 			return true;
