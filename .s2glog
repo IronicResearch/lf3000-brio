@@ -35541,3 +35541,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/5/12 4:18 PM
 5,110 ms. (Cumulative: 14,020,950 ms)
 
 ----------------
+Revision 10,053 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+MPEG seeking is too flaky to be used for drop-frame sync logic. (FIXME)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/6/12 10:00 AM
+1 changed, 0 added, 0 deleted.
+5,313 ms. (Cumulative: 14,026,357 ms)
+
+----------------
