@@ -265,7 +265,9 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 		pVidCtx->pPlayer = pPlayer;
 	}
 	else if (filepath.rfind(".avi") != std::string::npos
-			|| filepath.rfind(".AVI") != std::string::npos) {
+			|| filepath.rfind(".AVI") != std::string::npos
+			|| filepath.rfind(".mp4") != std::string::npos
+			|| filepath.rfind(".MP4") != std::string::npos) {
 		// Create AVI video player object
 		CAVIPlayer* 	pPlayer = new CAVIPlayer();
 		pVidCtx->pPlayer = pPlayer;

@@ -836,14 +836,15 @@ CAudioPlayer *CAudioMixer::CreatePlayer(tAudioStartAudioInfo *pInfo,
 		!strcmp(sExt, "brio") || !strcmp( sExt, "BRIO") ||
 		!strcmp(sExt, "wav")  || !strcmp( sExt, "WAV") || 
 		!strcmp(sExt, "avi")  || !strcmp( sExt, "AVI") ||
-		!strcmp(sExt, "mp3")  || !strcmp( sExt, "MP3") )
+		!strcmp(sExt, "mp3")  || !strcmp( sExt, "MP3") ||
+		!strcmp(sExt, "mp4")  || !strcmp( sExt, "MP4") )
 	{
 		if(CRawPlayer::GetNumPlayers() < CRawPlayer::GetMaxPlayers())
 		{
 			newID = GetNextAudioID();
 			//Newing player could take long, unlock the mutex
 			MIXER_UNLOCK;
-			if (!strcasecmp(sExt, "avi") || !strcasecmp(sExt, "mp3"))
+			if (!strcasecmp(sExt, "avi") || !strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "mp4"))
 				pPlayer = new CAVIPlayer( pInfo, newID );
 			else
 				pPlayer = new CRawPlayer( pInfo, newID );
@@ -988,7 +989,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 #ifdef USE_44KHZ
 	// External stream handling if 44KHz MP3 player
 	external = (pPlayer->GetSampleRate() == 44100) && sExt
-			&& (!strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "ogg"));
+			&& (!strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "ogg") || !strcasecmp(sExt, "mp4"));
 #endif
 
 	pStream->InitWithPlayer( pPlayer, external );
