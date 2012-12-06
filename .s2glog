@@ -35529,3 +35529,15 @@ By Dave Milici (dmilici@leapfrog.com) on 12/3/12 7:06 PM
 5,426 ms. (Cumulative: 14,015,747 ms)
 
 ----------------
+Revision 10,050 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,051 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,052 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add MP4 file extensions to AudioMPI/VideoMPI players.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/5/12 4:18 PM
+2 changed, 0 added, 0 deleted.
+5,110 ms. (Cumulative: 14,020,950 ms)
+
+----------------
