@@ -35551,3 +35551,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/6/12 10:00 AM
 5,313 ms. (Cumulative: 14,026,357 ms)
 
 ----------------
+Revision 10,054 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Scale video window destination if viewport scaling active. (1:2 translation ignored)
+
+By Dave Milici (dmilici@leapfrog.com) on 12/7/12 2:52 PM
+1 changed, 0 added, 0 deleted.
+5,139 ms. (Cumulative: 14,031,590 ms)
+
+----------------
