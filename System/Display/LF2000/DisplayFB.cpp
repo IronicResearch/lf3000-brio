@@ -427,6 +427,13 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 			glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glEGLImageTargetTexture2DOES ( GL_TEXTURE_2D, ctx->eGLSourceImage); // bind an EGLImage(egl_image) to current binded texture
 		}
+
+		// Scale video window destination if viewport scaling active
+		if (ctx->isVideo && oxres != vxres && oyres != vyres)
+		{
+			ctx->rect.right		+= (vxres - oxres);
+			ctx->rect.bottom	+= (vyres - oyres);
+		}
 	}
 	
 	// Fixup offscreen context info if cloned from onscreen context (VideoMPI)
@@ -450,7 +457,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	}
 
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %dx%d (%d) @ %p\n", __FUNCTION__, ctx, width, height, ctx->pitch, ctx->pBuffer);
-	printf("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
+
 	return (tDisplayHandle)ctx;
 }
 
@@ -751,8 +758,8 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	struct lf1000fb_position_cmd cmd;
 	cmd.left   = ctx->rect.left   = ctx->x = x;
 	cmd.top    = ctx->rect.top    = ctx->y = y;
-	cmd.right  = ctx->rect.right  = ctx->rect.left + std::min(ctx->width, width);
-	cmd.bottom = ctx->rect.bottom = ctx->rect.top + std::min(ctx->height, height);
+	cmd.right  = ctx->rect.right  = ctx->rect.left + (ctx->isVideo) ? width  : std::min(ctx->width, width);
+	cmd.bottom = ctx->rect.bottom = ctx->rect.top  + (ctx->isVideo) ? height : std::min(ctx->height, height);
 	cmd.apply  = 1;
 
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
