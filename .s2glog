@@ -35579,3 +35579,15 @@ By Dave Milici (dmilici@leapfrog.com) on 12/11/12 6:45 PM
 5,172 ms. (Cumulative: 14,042,153 ms)
 
 ----------------
+Revision 10,057 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,058 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,059 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix for video scaling if viewport is never set.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/12/12 2:06 PM
+1 changed, 0 added, 0 deleted.
+5,125 ms. (Cumulative: 14,047,388 ms)
+
+----------------
