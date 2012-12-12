@@ -758,7 +758,7 @@ tErrType CDisplayFB::SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 wi
 	dbg_.DebugOut(kDbgLvlVerbose, "%s: %p: %d,%d .. %d,%d\n", __FUNCTION__, ctx, ctx->x, ctx->y, ctx->rect.right, ctx->rect.bottom);
 
 	// Scale video window destination if viewport scaling active
-	if (ctx->isVideo && oxres != vxres && oyres != vyres)
+	if (ctx->isVideo && oxres && oyres && oxres != vxres && oyres != vyres)
 	{
 		int dx = x * vxres / oxres;
 		int dy = y * vyres / oyres;
@@ -831,7 +831,7 @@ tErrType CDisplayFB::GetWindowPosition(tDisplayHandle hndl, S16& x, S16& y, U16&
 	int r = ioctl(fbdev[n], LF1000FB_IOCGPOSTION, &cmd);
 	
 	// Inverse Scale video window destination if viewport scaling active
-	if (ctx->isVideo && oxres != vxres && oyres != vyres)
+	if (ctx->isVideo && oxres && oyres && oxres != vxres && oyres != vyres)
 	{
 		int dw = (cmd.right - cmd.left) * oxres / vxres;
 		int dh = (cmd.bottom - cmd.top) * oyres / vyres;
