@@ -268,6 +268,11 @@ CAudioMixer::CAudioMixer( int inStreams ):
 				__FUNCTION__, kAudioFramesPerBuffer, size);
 		kAudioFramesPerBuffer = size;
 	}
+	size = kAudioFramesPerBuffer;
+	if (InitAudioOutputAlsa(NULL, NULL) == kNoErr) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: Change audio buffer size from %d to %d frames per ALSA\n",
+				__FUNCTION__, size, kAudioFramesPerBuffer);
+	}
 
 	pStreamBuf_ = new S16[kAudioOutBufSizeInWords];
 

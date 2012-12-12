@@ -35569,3 +35569,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/7/12 3:51 PM
 5,219 ms. (Cumulative: 14,036,903 ms)
 
 ----------------
+Revision 10,056 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Query ALSA dmix plugin for effective audio buffer size at runtime. (2:3)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/11/12 6:45 PM
+2 changed, 0 added, 0 deleted.
+5,172 ms. (Cumulative: 14,042,153 ms)
+
+----------------
