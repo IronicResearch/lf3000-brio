@@ -39,7 +39,7 @@ static snd_pcm_access_t 	access = SND_PCM_ACCESS_MMAP_INTERLEAVED;
 static snd_pcm_format_t 	format = SND_PCM_FORMAT_S16;    // sample format 
 static unsigned int 		rate = kAudioSampleRate;        // stream rate
 static unsigned int 		channels = kAudioNumOutputChannels; // count of channels
-static unsigned int 		period_time = 1000000 * kAudioFramesPerBuffer / kAudioSampleRate; // period time in us
+static unsigned int 		period_time = (unsigned int)(1000000ULL * kAudioFramesPerBuffer / kAudioSampleRate); // period time in us
 static unsigned int 		buffer_time = 4 * period_time;  // ring buffer length in us
 static int 					resample = 1;                   // enable alsa-lib resampling 
 static int 					period_event = 0;               // produce poll event after each period 
@@ -106,11 +106,16 @@ static int set_hwparams(snd_pcm_t *handle,
 		return -EINVAL;
 	}
 	// set the buffer time 
-	period_time = 1000000 * kAudioFramesPerBuffer / kAudioSampleRate; // period time in us
+	period_time = (unsigned int)(1000000ULL * kAudioFramesPerBuffer / kAudioSampleRate); // period time in us
 	buffer_time = 4 * period_time;  // ring buffer length in us
 	err = snd_pcm_hw_params_set_buffer_time_near(handle, params, &buffer_time, &dir);
 	if (err < 0) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set buffer time %i for playback: %s\n", buffer_time, snd_strerror(err));
+		return err;
+	}
+	err = snd_pcm_hw_params_get_buffer_time(params, &buffer_time, &dir);
+	if (err < 0) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to get buffer time for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	err = snd_pcm_hw_params_get_buffer_size(params, &size);
@@ -124,6 +129,11 @@ static int set_hwparams(snd_pcm_t *handle,
 	err = snd_pcm_hw_params_set_period_time_near(handle, params, &period_time, &dir);
 	if (err < 0) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to set period time %i for playback: %s\n", period_time, snd_strerror(err));
+		return err;
+	}
+	err = snd_pcm_hw_params_get_period_time(params, &period_time, &dir);
+	if (err < 0) {
+		pDebugMPI_->DebugOut(kDbgLvlImportant, "Unable to get period time for playback: %s\n", snd_strerror(err));
 		return err;
 	}
 	err = snd_pcm_hw_params_get_period_size(params, &size, &dir);
@@ -436,6 +446,13 @@ int InitAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData )
 	if ((err = set_swparams(handle, swparams)) < 0) {
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "Setting of swparams failed: %s\n", snd_strerror(err));
 		return err;
+	}
+
+	// Pre-flight ALSA test for determining Brio audio buffer size
+	if (callback == NULL) {
+		kAudioFramesPerBuffer = period_size;
+		snd_pcm_close(handle);
+		return kNoErr;
 	}
 
 	// Create output buffer for Brio mixer 
