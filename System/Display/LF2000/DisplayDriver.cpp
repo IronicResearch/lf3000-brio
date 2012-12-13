@@ -137,7 +137,7 @@ tErrType CDisplayModule::SwapBuffers(tDisplayHandle hndl, Boolean waitVSync)
 	pDriver->pdcVisible_ = pdcVisible_;
 
 	tDisplayContext* ctx = (tDisplayContext*)hndl;
-	if (ctx->isAllocated && !ctx->offset)
+	if (ctx->openGLScaler || (ctx->isAllocated && !ctx->offset))
 	{
 		tErrType error = kNoImplErr;
 		kernel_.LockMutex(gListMutex);
