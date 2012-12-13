@@ -35591,3 +35591,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/12/12 2:06 PM
 5,125 ms. (Cumulative: 14,047,388 ms)
 
 ----------------
+Revision 10,060 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,061 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4114.  Modified SwapBuffer to treat OpenGLScaler like an offline context, this prevents wacky rendering that started appearing when OpenGLScaler went from having a proxy texture to using a the DisplayHandle memory as the texture.
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/12/12 4:53 PM
+1 changed, 0 added, 0 deleted.
+5,109 ms. (Cumulative: 14,052,607 ms)
+
+----------------
