@@ -440,6 +440,9 @@ public:
 	/// Returns the handle for the active display context matching the pixelformat
 	tDisplayHandle		GetCurrentDisplayHandle(tPixelFormat pixelformat);
 
+	EGLClientBuffer		CreateEglClientBuffer(tDisplayHandle hndl);
+	void				DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer);
+
 private:
 	class CDisplayModule*	pModule_;
 };

@@ -17,6 +17,9 @@
 #include <StringTypes.h>
 #include <SystemErrors.h>
 #include <SystemEvents.h>
+
+typedef void * EGLClientBuffer;
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================	   

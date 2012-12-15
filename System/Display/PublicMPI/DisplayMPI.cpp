@@ -540,6 +540,19 @@ Boolean CDisplayMPI::GetAutoRotation()
 		return false;
 	return pModule_->GetAutoRotation();
 }
-
+//----------------------------------------------------------------------------
+EGLClientBuffer CDisplayMPI::CreateEglClientBuffer(tDisplayHandle hndl)
+{
+	if (!pModule_)
+		return 0;
+	return pModule_->CreateEglClientBuffer(hndl);
+}
+//----------------------------------------------------------------------------
+void CDisplayMPI::DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer)
+{
+	if (!pModule_)
+		return;
+	return pModule_->DestroyEglClientBuffer(egl_client_buffer);
+}
 LF_END_BRIO_NAMESPACE()
 // EOF
