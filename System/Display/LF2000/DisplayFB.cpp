@@ -353,7 +353,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	//if (n == YUVFB || (colorDepth == kPixelFormatRGB565 && pBuffer == pmem2d))
 		line_length = finfo[n].line_length;
 	int offset = 0;
-	int aligned = (n == YUVFB) ? ALIGN(height * line_length, k1Meg) : 0;
+	int aligned = (n == YUVFB && colorDepth == kPixelFormatYUV420) ? ALIGN(height * line_length, k1Meg) : 0;
 	
 	memset(ctx, 0, sizeof(tDisplayContext));
 	ctx->width				= width;
@@ -367,7 +367,7 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 	ctx->offset 			= offset;
 	ctx->layer				= n;
 	ctx->isVideo			= (n == YUVFB);
-	ctx->isPlanar			= (n == YUVFB); // (finfo[n].type == FB_TYPE_PLANES);
+	ctx->isPlanar			= (n == YUVFB && colorDepth == kPixelFormatYUV420); // (finfo[n].type == FB_TYPE_PLANES);
 	ctx->initialZOrder		= kDisplayOnBottom; // default
 	ctx->rect.right			= width;
 	ctx->rect.bottom		= height;
@@ -1377,6 +1377,45 @@ bool CDisplayFB::DeAllocBuffer(tDisplayContext* pdc)
 	return true;
 }
 
+
+//----------------------------------------------------------------------------
+EGLClientBuffer CDisplayFB::CreateEglClientBuffer(tDisplayHandle hndl)
+{
+	tDisplayContext* ctx = (tDisplayContext*)hndl;
+	nexell_clientbuffer_t *nexell_clientbuffer = new nexell_clientbuffer_t();
+	nexell_clientbuffer->width = ctx->width;
+	nexell_clientbuffer->height = ctx->height;
+	nexell_clientbuffer->virtual_address = ctx->pBuffer;
+	nexell_clientbuffer->physical_address = ctx->pBuffer;
+	switch(ctx->colorDepthFormat)
+	{
+	case kPixelFormatARGB8888:
+		nexell_clientbuffer->format          = EGL_NEXELL_BGRA;
+		nexell_clientbuffer->stride          = nexell_clientbuffer->width;
+		nexell_clientbuffer->bsize           = 0;
+		break;
+	case kPixelFormatRGB888:
+		nexell_clientbuffer->format          = EGL_NEXELL_BGR;
+		nexell_clientbuffer->stride          = nexell_clientbuffer->width;
+		nexell_clientbuffer->bsize           = 0;
+		break;
+	case kPixelFormatYUYV422:
+		nexell_clientbuffer->format          = EGL_NEXELL_YUYV;
+		nexell_clientbuffer->stride          = nexell_clientbuffer->width;
+		nexell_clientbuffer->bsize           = 0;
+		break;
+	default:
+		delete nexell_clientbuffer;
+		nexell_clientbuffer = 0;
+	}
+	return nexell_clientbuffer;
+}
+//----------------------------------------------------------------------------
+void CDisplayFB::DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer)
+{
+	nexell_clientbuffer_t *nexell_clientbuffer = (nexell_clientbuffer_t *)egl_client_buffer;
+	delete nexell_clientbuffer;
+}
 //----------------------------------------------------------------------------
 
 LF_END_BRIO_NAMESPACE()

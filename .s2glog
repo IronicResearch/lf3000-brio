@@ -35601,3 +35601,17 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/12/12 4:53 PM
 5,109 ms. (Cumulative: 14,052,607 ms)
 
 ----------------
+Revision 10,062 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,063 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding CreateEglClientBuffer and DestroyEglClientBuffer to DisplayMPI.  These allow you to use an already created DisplayHandle as an OpenGLTexture via ELGImage.
+
+Currently supporting ARGB8888, RGB888, and YUYV422.
+
+Side effect is YUYV422 DisplayHandles (being linear) are now allocated from the bottom of the heap instead of at the top (block).
+
+By Minh Saelock (msaelock@leapfrog.com) on 12/14/12 6:44 PM
+6 changed, 0 added, 0 deleted.
+5,485 ms. (Cumulative: 14,058,186 ms)
+
+----------------

@@ -290,5 +290,16 @@ U32	CDisplayModule::GetDisplayMem(tDisplayMem memtype)
 
 //----------------------------------------------------------------------------
 
+EGLClientBuffer CDisplayModule::CreateEglClientBuffer(tDisplayHandle hndl)
+{
+	return pDriver->CreateEglClientBuffer(hndl);
+}
+//----------------------------------------------------------------------------
+void CDisplayModule::DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer)
+{
+	return pDriver->DestroyEglClientBuffer(egl_client_buffer);
+}
+//----------------------------------------------------------------------------
+
 LF_END_BRIO_NAMESPACE()
 // EOF

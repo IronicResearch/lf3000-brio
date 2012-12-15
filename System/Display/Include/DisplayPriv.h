@@ -486,6 +486,9 @@ public:
 	
 	VTABLE_EXPORT tDisplayHandle	GetCurrentDisplayHandle(tPixelFormat pixelformat);
 
+	VTABLE_EXPORT EGLClientBuffer	CreateEglClientBuffer(tDisplayHandle hndl);
+	VTABLE_EXPORT void				DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer);
+
 private:
 	void				InitModule( );
 	void				DeInitModule( );
@@ -563,7 +566,10 @@ public:
 	
 	virtual tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered) = 0;
 	virtual tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered) = 0;
-	
+
+	virtual EGLClientBuffer		CreateEglClientBuffer(tDisplayHandle hndl) = 0;
+	virtual void				DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer) = 0;
+
 protected:
 	CDebugMPI			dbg_;
 	CKernelMPI			kernel_;
@@ -675,6 +681,9 @@ public:
 	
 	tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
 	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
+
+	EGLClientBuffer		CreateEglClientBuffer(tDisplayHandle hndl);
+	void				DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer);
 
 private:
 	tErrType			SetWindowPosition(tDisplayHandle hndl, S16 x, S16 y, U16 width, U16 height);
