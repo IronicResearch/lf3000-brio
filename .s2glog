@@ -35624,3 +35624,12 @@ By Dave Milici (dmilici@leapfrog.com) on 12/17/12 9:58 AM
 5,455 ms. (Cumulative: 14,063,750 ms)
 
 ----------------
+Revision 10,065 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Remove invalid PowerMessage methods which are redundant with PowerMPI.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/17/12 10:04 AM
+1 changed, 0 added, 0 deleted.
+5,408 ms. (Cumulative: 14,069,236 ms)
+
+----------------

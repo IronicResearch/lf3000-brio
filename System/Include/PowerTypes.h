@@ -70,24 +70,7 @@ public:
 	// Get current power state which is the same as the last message passing
 	// through the event manager
 	enum tPowerState GetPowerState() const;
-	
-	// Complete system shutdown.  This is the application's response to the kPowerShutdown
-	// message.  The application calls Shutdown() to indicate data has been saved and
-	// system shutdown can proceed immediately, overriding the shutdown watchdog timer.
-	// Negative number indicates error.
-	int		Shutdown() const;
-	
-	// get shutdown time in milliseconds.  This sets the watchdog timer.  Negative number
-	// indicates error.
-	int		GetShutdownTimeMS() const;
-	
-	// set shutdown time in milliseconds.  Returns actual watchdog time in milliseconds.
-	// Negative number indicates error.
-	int		SetShutdownTimeMS(int) const;
-	
-	// Reset system
-	int		Reset() const;
-	
+
 private:
 	tPowerData mData;
 };
