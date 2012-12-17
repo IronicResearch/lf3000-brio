@@ -35615,3 +35615,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 12/14/12 6:44 PM
 5,485 ms. (Cumulative: 14,058,186 ms)
 
 ----------------
+Revision 10,064 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify MultiTouch event record fields per Rio Content meeting.
+
+By Dave Milici (dmilici@leapfrog.com) on 12/17/12 9:58 AM
+1 changed, 0 added, 0 deleted.
+5,455 ms. (Cumulative: 14,063,750 ms)
+
+----------------

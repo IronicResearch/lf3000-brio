@@ -84,9 +84,11 @@ const U32	kTouchTableDrawing[] = {
 //==============================================================================
 //------------------------------------------------------------------------------
 struct tTouchData {
-	U16 touchState;// 0=no touch, 1=touch (legacy); or = touch pressure (kTouchModePressure)
-	S16 touchX, touchY;// Position in screen coords
-	struct timeVal {
+	U16 touchState; 	///< 0=no touch, 1=touch (default)
+						///< 0..touch pressure (kTouchModePressure)
+						///< 0, 1=touch, 2=move (kTouchModeMultiTouch)
+	S16 touchX, touchY;	///< Position in screen coords
+	struct timeVal {	///< timestamp per input event system
 		S32 seconds;
 		S32 microSeconds;
 	} time;
@@ -95,9 +97,8 @@ struct tTouchData {
 struct tMultiTouchData {
        tTouchData td;	///< single-touch compatible record
        S8  id;       	///< tracking ID slot 1..2
-       U16 minWidth; 	///< major-axis touch contact diameter
-       U16 maxWidth; 	///< major-axis touch max width diameter (TBD Neonode)
-       U16 pressure; 	///< touch pressure (TBD Neonode)
+       U16 touchWidth; 	///< touch contact width
+       U16 touchHeight;	///< touch contact height
 };
 
 /// Union of all possible Touch message types
