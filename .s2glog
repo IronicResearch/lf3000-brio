@@ -35633,3 +35633,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/17/12 10:04 AM
 5,408 ms. (Cumulative: 14,069,236 ms)
 
 ----------------
+Revision 10,066 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,067 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+First working draft of new Brio WirelessMPI. Currently it uses wpa_supplicant to connect to ad-hoc networks instead of ConnMan because ConnMan does not support ad-hoc networks. This also does not filter hosts to only be explorers or only through wireless. Only golden path works in a lot of areas right now so testing and stabilization will be required.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/17/12 8:13 PM
+3 changed, 48 added, 0 deleted.
+6,895 ms. (Cumulative: 14,076,225 ms)
+
+----------------

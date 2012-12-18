@@ -44,6 +44,8 @@ enum eGroupEnum {
 	// Brio v1.2
 	kGroupAccelerometer,
 	kGroupMicrophone,
+	// Brio v4.4
+	kGroupWireless,
 
 	// WARNING: After GM, values can only be APPENDED to this enumeration!!!
 	// WARNING: Inserting values will break backwards compatability!!!

@@ -185,6 +185,7 @@ LF_USING_BRIO_NAMESPACE()
 #include <Power/Include/PowerPriv.h>
 #include <USBDevice/Include/USBDevicePriv.h>
 #include <Video/Include/VideoPriv.h>
+#include <Wireless/Include/WirelessPriv.h>
 #include <map>
 #include <vector>
 
@@ -219,6 +220,8 @@ extern "C" ICoreModule* CreateInstance(tVersion)
 		g_map[kUSBDeviceModuleName]	= new CUSBDeviceModule;
 	else if (g_requestedName == kVideoModuleName)
 		g_map[kVideoModuleName]		= new CVideoModule;
+	else if (g_requestedName == kWirelessModuleName)
+		g_map[kWirelessModuleName]	= new CWirelessModule;
 
 	return NULL;		
 }
