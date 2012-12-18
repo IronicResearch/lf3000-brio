@@ -35643,3 +35643,12 @@ By dlazzari (dlazzari@leapfrog.com) on 12/17/12 8:13 PM
 6,895 ms. (Cumulative: 14,076,225 ms)
 
 ----------------
+Revision 10,068 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add missing x86 libraries for libdbus-c++.
+
+By dlazzari (dlazzari@leapfrog.com) on 12/18/12 10:39 AM
+0 changed, 3 added, 0 deleted.
+6,266 ms. (Cumulative: 14,082,616 ms)
+
+----------------
