@@ -300,7 +300,7 @@ void* VideoTaskMain( void* arg )
 		data.isDone = true;
 		data.timeStamp = vtm;
 		CVideoEventMessage msg(data);
-		evntmgr->PostEvent(msg, 0, pctx->pListener);
+		evntmgr->PostEvent(msg, kVideoEventPriority, pctx->pListener);
 	}
 
 	// Unregister our local listener

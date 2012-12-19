@@ -35661,3 +35661,15 @@ By dlazzari (dlazzari@leapfrog.com) on 12/18/12 6:39 PM
 6,109 ms. (Cumulative: 14,088,819 ms)
 
 ----------------
+Revision 10,070 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,071 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,072 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+VideoMPI completion events should be asynchronous priority, like AudioMPI.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 12/19/12 3:56 PM
+2 changed, 0 added, 0 deleted.
+5,501 ms. (Cumulative: 14,094,445 ms)
+
+----------------
