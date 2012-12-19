@@ -35652,3 +35652,12 @@ By dlazzari (dlazzari@leapfrog.com) on 12/18/12 10:39 AM
 6,266 ms. (Cumulative: 14,082,616 ms)
 
 ----------------
+Revision 10,069 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change tRemotePlayer to a class and add a destructor for CRemotePlayerMessage. This seems to fix an unresolved symbol at run time for CRemotePlayerMessage vtable, but leaves a new one related to its constructor. Still, progress!
+
+By dlazzari (dlazzari@leapfrog.com) on 12/18/12 6:39 PM
+3 changed, 0 added, 0 deleted.
+6,109 ms. (Cumulative: 14,088,819 ms)
+
+----------------

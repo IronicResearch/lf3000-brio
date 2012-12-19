@@ -15,7 +15,7 @@ mpi_name	= module_name + 'MPI'
 modsrcs		= Glob('*.cpp')
 mpisrcs		= Glob(os.path.join('PublicMPI', '*.cpp'))
 modlibs		= ['DebugMPI', 'KernelMPI', 'dbus-c++-1', 'EventMPI']
-mpilibs		= ['ModuleMPI']
+mpilibs		= ['ModuleMPI', 'KernelMPI']
 						
 #-----------------------------------------------------------------------------
 # Modify the build environment and build the module
