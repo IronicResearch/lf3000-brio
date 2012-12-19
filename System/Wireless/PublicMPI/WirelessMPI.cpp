@@ -160,6 +160,10 @@ CRemotePlayerMessage::CRemotePlayerMessage( const tRemotePlayer& player, Boolean
 {
 }
 
+CRemotePlayerMessage::~CRemotePlayerMessage()
+{
+}
+
 U16 CRemotePlayerMessage::GetSizeInBytes() const
 {
 	return sizeof(CRemotePlayerMessage);

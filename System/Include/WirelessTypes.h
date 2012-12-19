@@ -52,7 +52,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupWireless), WIRELESS_ERRORS
 //==============================================================================
 //------------------------------------------------------------------------------
 
-struct tRemotePlayer {
+class tRemotePlayer {
+public:
 	CString		hostname;
 	in_addr 	address;
 	tRemotePlayer(CString host, in_addr addr) :
@@ -79,6 +80,7 @@ typedef std::vector<tRemotePlayer> PlayerList;
 class CRemotePlayerMessage : public IEventMessage {
 public:
 	CRemotePlayerMessage( const tRemotePlayer& player, Boolean added );
+	~CRemotePlayerMessage();
 	virtual U16	GetSizeInBytes() const;
 	Boolean		PlayerAdded() const;
 	Boolean		PlayerRemoved() const;
