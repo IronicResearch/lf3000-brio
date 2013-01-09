@@ -35683,3 +35683,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/8/13 4:07 PM
 5,459 ms. (Cumulative: 14,099,998 ms)
 
 ----------------
+Revision 10,074 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Maintain cart socket event listener in parent process. (TTP 4108) 
+2:2 Propagate cart messages to child processes via IPC.
+
+By Dave Milici (dmilici@leapfrog.com) on 1/8/13 7:54 PM
+1 changed, 0 added, 0 deleted.
+5,500 ms. (Cumulative: 14,105,592 ms)
+
+----------------
