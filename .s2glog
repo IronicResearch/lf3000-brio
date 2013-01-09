@@ -35673,3 +35673,13 @@ By Dave Milici (dmilici@leapfrog.com) on 12/19/12 3:56 PM
 5,501 ms. (Cumulative: 14,094,445 ms)
 
 ----------------
+Revision 10,073 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Maintain cart socket event listener in parent process. (TTP 4108) 
+(1:2 workaround for single socket name.)
+
+By Dave Milici (dmilici@leapfrog.com) on 1/8/13 4:07 PM
+1 changed, 0 added, 0 deleted.
+5,459 ms. (Cumulative: 14,099,998 ms)
+
+----------------

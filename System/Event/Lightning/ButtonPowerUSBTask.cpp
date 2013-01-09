@@ -346,6 +346,13 @@ void* CEventModule::CartridgeTask( void* arg )
 	struct pollfd	event_fd[2];
 	tCartridgeData data;
 	int ret;
+	struct stat stbuf;
+
+	// FIXME: CreateListeningSocket() pre-emptively removes old socket
+	if (stat(CART_SOCK, &stbuf) == 0) {
+		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: socket listener exists at %s\n", CART_SOCK);
+		return (void *)-1;
+	}
 	
 	event_fd[0].fd = CreateListeningSocket(CART_SOCK);;
 	event_fd[0].events = POLLIN;
@@ -384,6 +391,7 @@ void* CEventModule::CartridgeTask( void* arg )
 				
 
 	close(event_fd[0].fd);
+	remove(CART_SOCK);
 	
 	return 0;
 }
