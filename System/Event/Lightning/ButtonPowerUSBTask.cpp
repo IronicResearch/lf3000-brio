@@ -347,11 +347,47 @@ void* CEventModule::CartridgeTask( void* arg )
 	tCartridgeData data;
 	int ret;
 	struct stat stbuf;
+	tMessageQueueHndl queue = kInvalidMessageQueueHndl;
+	tErrType err = kNoErr;
+
+	tMessageQueuePropertiesPosix props = {
+	    0,                          	// msgProperties.blockingPolicy;
+	    "/CartEventsIPC",			 	// msgProperties.nameQueue
+	    B_S_IRWXU,                    	// msgProperties.mode
+	    B_O_WRONLY|B_O_CREAT|B_O_TRUNC, // msgProperties.oflag
+	    0,                          	// msgProperties.priority
+	    0,                          	// msgProperties.mq_flags
+	    8,                          	// msgProperties.mq_maxmsg
+	    sizeof(CMessage),				// msgProperties.mq_msgsize
+	    0                           	// msgProperties.mq_curmsgs
+	};
 
 	// FIXME: CreateListeningSocket() pre-emptively removes old socket
 	if (stat(CART_SOCK, &stbuf) == 0) {
 		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: socket listener exists at %s\n", CART_SOCK);
-		return (void *)-1;
+
+		// Open inbound message queue for receiving cart messages from parent process
+		props.mode = B_S_IRUSR;
+		props.oflag = B_O_RDONLY;
+		err = pThis->kernel_.OpenMessageQueue(queue, props, NULL);
+		pThis->debug_.AssertNoErr(err, "CartridgeTask: inbound message queue failed\n");
+		if (err != kNoErr)
+			return (void *)-1;
+
+		while (pThis->bThreadRun_)
+		{
+			CMessage ipc_msg;
+			ipc_msg.SetMessageSize(sizeof(ipc_msg));
+			err = pThis->kernel_.ReceiveMessageOrWait(queue, &ipc_msg, sizeof(ipc_msg), 500);
+			if (err != kConnectionTimedOutErr) {
+				data.cartridgeState = (eCartridgeState_)ipc_msg.GetMessageReserved();
+				CCartridgeMessage cart_msg(data);
+				pThis->PostEvent(cart_msg, kCartridgeEventPriority, 0);
+			}
+		}
+
+		pThis->kernel_.CloseMessageQueue(queue, props);
+		return (void *)0;
 	}
 	
 	event_fd[0].fd = CreateListeningSocket(CART_SOCK);;
@@ -360,6 +396,10 @@ void* CEventModule::CartridgeTask( void* arg )
 		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: Fatal Error, cannot Create socket at %s !!\n", CART_SOCK);
 		return (void *)-1;
 	}
+
+	// Create outbound message queue for propagating cart messages to any child processes
+	err = pThis->kernel_.OpenMessageQueue(queue, props, NULL);
+	pThis->debug_.AssertNoErr(err, "CartridgeTask: outbound message queue failed\n");
 	
 	while (pThis->bThreadRun_)
 	{
@@ -382,6 +422,13 @@ void* CEventModule::CartridgeTask( void* arg )
 						data.cartridgeState = (eCartridgeState_)app_msg.payload;
 						CCartridgeMessage cartridge_msg(data);
 						pThis->PostEvent(cartridge_msg, kCartridgeEventPriority, 0);
+
+						// Post cart message to child processes
+						CMessage ipc_msg;
+						ipc_msg.SetMessageSize(sizeof(ipc_msg));
+						ipc_msg.SetMessagePriority(0);
+						ipc_msg.SetMessageReserved((U8)app_msg.payload);
+						pThis->kernel_.SendMessage(queue, ipc_msg);
 					}
 				}while (r > 0);
 				close(fdsock);
@@ -392,6 +439,7 @@ void* CEventModule::CartridgeTask( void* arg )
 
 	close(event_fd[0].fd);
 	remove(CART_SOCK);
+	pThis->kernel_.CloseMessageQueue(queue, props);
 	
 	return 0;
 }
