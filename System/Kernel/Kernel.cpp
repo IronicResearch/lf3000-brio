@@ -469,8 +469,8 @@ tErrType CKernelModule::OpenMessageQueue(tMessageQueueHndl& hndl,
     // Pre existing queue is not a fatal error...
     if (errno == EEXIST)
     	return EEXIST;
-    else
-    	ASSERT_POSIX_CALL(errno);
+    else if (errno)
+    	return AsBrioErr(errno); //ASSERT_POSIX_CALL(errno);
     
     hndl = (retMq_open == -1) ? kInvalidMessageQueueHndl : retMq_open;
     

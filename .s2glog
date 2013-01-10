@@ -35693,3 +35693,17 @@ By Dave Milici (dmilici@leapfrog.com) on 1/8/13 7:54 PM
 5,500 ms. (Cumulative: 14,105,592 ms)
 
 ----------------
+Revision 10,075 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,076 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,077 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relax asserts on opening message queues which might not exist.
+If there's no receiver message queue while cart event socket exists,
+then that EventMPI process becomes the next cart event message server. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/9/13 5:51 PM
+2 changed, 0 added, 0 deleted.
+5,547 ms. (Cumulative: 14,111,249 ms)
+
+----------------
