@@ -370,9 +370,10 @@ void* CEventModule::CartridgeTask( void* arg )
 		props.mode = B_S_IRUSR;
 		props.oflag = B_O_RDONLY;
 		err = pThis->kernel_.OpenMessageQueue(queue, props, NULL);
-		pThis->debug_.AssertNoErr(err, "CartridgeTask: inbound message queue failed\n");
-		if (err != kNoErr)
-			return (void *)-1;
+		if (err != kNoErr) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: inbound message queue failed\n");
+			goto server;
+		}
 
 		while (pThis->bThreadRun_)
 		{
@@ -390,6 +391,7 @@ void* CEventModule::CartridgeTask( void* arg )
 		return (void *)0;
 	}
 	
+server:
 	event_fd[0].fd = CreateListeningSocket(CART_SOCK);;
 	event_fd[0].events = POLLIN;
 	if(event_fd[0].fd < 0)	{
@@ -398,8 +400,11 @@ void* CEventModule::CartridgeTask( void* arg )
 	}
 
 	// Create outbound message queue for propagating cart messages to any child processes
+	props.mode = B_S_IRWXU;
+	props.oflag = B_O_WRONLY|B_O_CREAT|B_O_TRUNC;
 	err = pThis->kernel_.OpenMessageQueue(queue, props, NULL);
-	pThis->debug_.AssertNoErr(err, "CartridgeTask: outbound message queue failed\n");
+	if (err != kNoErr)
+		pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: outbound message queue failed\n");
 	
 	while (pThis->bThreadRun_)
 	{
@@ -428,7 +433,8 @@ void* CEventModule::CartridgeTask( void* arg )
 						ipc_msg.SetMessageSize(sizeof(ipc_msg));
 						ipc_msg.SetMessagePriority(0);
 						ipc_msg.SetMessageReserved((U8)app_msg.payload);
-						pThis->kernel_.SendMessage(queue, ipc_msg);
+						if (queue != kInvalidMessageQueueHndl)
+							pThis->kernel_.SendMessageOrWait(queue, ipc_msg, 500);
 					}
 				}while (r > 0);
 				close(fdsock);
