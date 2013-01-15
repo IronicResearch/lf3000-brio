@@ -524,13 +524,12 @@ Boolean	CVIPCameraModule::GetFrame(const tVidCapHndl hndl, tVideoSurf *pSurf, tC
 		{
 			struct timeval now;
 			gettimeofday(&now, NULL);
-			if(frame.timestamp.tv_usec > now.tv_usec)
-			{
-				now.tv_sec -= 1;
-				now.tv_usec += 1000000;
-			}
+			#define SEC_USECS   1000000ULL
+			#define DELTA_USECS  210000ULL
+			U64 now64 = now.tv_sec * SEC_USECS + now.tv_usec;
+			U64 frame64 = frame.timestamp.tv_sec * SEC_USECS + frame.timestamp.tv_usec;
 			//210000 usec arrived at by test mashing Camera App Picture taking button
-			if( now.tv_usec - frame.timestamp.tv_usec > 210000)
+			if (now64 > frame64 + DELTA_USECS)
 			{	
 				CCameraModule::ReturnFrame(hndl, &frame);
 				ret = CCameraModule::GetFrame(hndl, &frame);
