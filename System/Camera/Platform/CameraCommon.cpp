@@ -1880,7 +1880,9 @@ tVidCapHndl CCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* pSur
 
 	//3 buffers needed for avi recording
 	//2 buffers prefered if it fits
-	if(!path.empty())
+	if(path.empty())
+		camCtx_.numBufs = 1;
+	else if(3 * camCtx_.mode.width <= 2048)
 		camCtx_.numBufs = 3;
 	else if(2 * camCtx_.mode.width <= 2048)
 		camCtx_.numBufs = 2;
