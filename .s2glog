@@ -35717,3 +35717,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/15/13 2:33 PM
 5,578 ms. (Cumulative: 14,116,937 ms)
 
 ----------------
+Revision 10,080 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify CameraMPI.GetFrame() discard timestamp logic to use comparable usecs. (TTP 4128 1:2) 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/13 3:38 PM
+1 changed, 0 added, 0 deleted.
+5,782 ms. (Cumulative: 14,122,813 ms)
+
+----------------
