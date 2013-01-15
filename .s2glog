@@ -35727,3 +35727,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/13 3:38 PM
 5,782 ms. (Cumulative: 14,122,813 ms)
 
 ----------------
+Revision 10,081 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Need single buffer for CameraMPI.GetFrame() stale frame discard logic. (TTP 4128 2:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/15/13 3:56 PM
+1 changed, 0 added, 0 deleted.
+5,875 ms. (Cumulative: 14,128,797 ms)
+
+----------------
