@@ -42,7 +42,8 @@ const tEventType kAllWirelessEvents = AllEvents(kGroupWireless);
 //==============================================================================
 #define WIRELESS_ERRORS				\
 	(kNoWirelessErr)			\
-	(kJoinFailedErr)
+	(kJoinFailedErr)			\
+	(kNoAddressErr)
 
 BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupWireless), WIRELESS_ERRORS)
 

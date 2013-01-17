@@ -35737,3 +35737,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/15/13 3:56 PM
 5,875 ms. (Cumulative: 14,128,797 ms)
 
 ----------------
+Revision 10,082 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,083 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,084 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add a function GetLocalWirelessAddress() for getting the IP address of localhost for the wireless network interface.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/17/13 11:20 AM
+5 changed, 0 added, 0 deleted.
+5,898 ms. (Cumulative: 14,134,805 ms)
+
+----------------

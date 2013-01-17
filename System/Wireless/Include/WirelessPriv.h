@@ -68,6 +68,9 @@ public:
 	/// Get the current mode of the wireless card. Returns kWirelessNone if state is not connecting
 	/// or connected.
 	VTABLE_EXPORT tWirelessMode	GetMode();
+	
+	/// Get the IP address of the wireless network interface on the localhost.
+	VTABLE_EXPORT tErrType	GetLocalWirelessAddress(in_addr& address);
 						
 private:
 	// Limit object creation to the Module Manager interface functions
