@@ -152,6 +152,13 @@ tWirelessMode CWirelessMPI::GetMode()
 	return pModule_->GetMode();
 }
 
+tErrType CWirelessMPI::GetLocalWirelessAddress(in_addr& address)
+{
+	if(!pModule_)
+		return kMPINotConnectedErr;
+	return pModule_->GetLocalWirelessAddress(address);
+}
+
 //============================================================================
 //----------------------------------------------------------------------------
 

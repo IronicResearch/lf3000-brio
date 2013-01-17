@@ -33,10 +33,13 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <ifaddrs.h>
 
 using namespace fi::w1;
 
 LF_BEGIN_BRIO_NAMESPACE()
+
+#define ADAPTER_NAME "wlan0"
 
 const CURI	kModuleURI	= "/LF/System/Wireless";
 
@@ -359,6 +362,35 @@ tWirelessMode CWirelessModule::GetMode()
 		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
 	}
 	return kWirelessNone;
+}
+
+tErrType CWirelessModule::GetLocalWirelessAddress(in_addr& address)
+{
+	ifaddrs** address_list;
+	ifaddrs* current_address;
+	int ret = getifaddrs(address_list);
+	if(ret)
+	{
+		debug_.DebugOut(kDbgLvlImportant, "Failed to get network adapter list: %s\n", strerror(errno));
+		return kUnspecifiedErr;
+	}
+	current_address = *address_list;
+	while( current_address != NULL )
+	{
+		if( strcmp(current_address->ifa_name, ADAPTER_NAME) == 0 )
+		{
+			if(current_address->ifa_addr->sa_family != AF_INET)
+			{
+				debug_.DebugOut(kDbgLvlImportant, ADAPTER_NAME " does not have an IP address assigned.\n");
+				freeifaddrs(*address_list);
+				return kNoAddressErr;
+			}
+			sockaddr_in* ipv4_addr = (sockaddr_in*)current_address->ifa_addr;
+			address = ipv4_addr->sin_addr;
+			break;
+		}
+	}
+	return kNoErr;
 }
 
 void*	CWirelessModule::DBusDispatcherTask( void* arg )
