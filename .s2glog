@@ -35757,3 +35757,15 @@ By Minh Saelock (msaelock@leapfrog.com) on 1/17/13 5:09 PM
 5,188 ms. (Cumulative: 14,140,087 ms)
 
 ----------------
+Revision 10,086 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,087 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,088 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added stub class for GStreamerPlayer to Video module.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/18/13 1:42 PM
+0 changed, 2 added, 0 deleted.
+5,188 ms. (Cumulative: 14,145,384 ms)
+
+----------------
