@@ -35748,3 +35748,12 @@ By dlazzari (dlazzari@leapfrog.com) on 1/17/13 11:20 AM
 5,898 ms. (Cumulative: 14,134,805 ms)
 
 ----------------
+Revision 10,085 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix a memory leak in FontModule's DrawGlyph when drawing rotated glyphs.
+
+By Minh Saelock (msaelock@leapfrog.com) on 1/17/13 5:09 PM
+1 changed, 0 added, 0 deleted.
+5,188 ms. (Cumulative: 14,140,087 ms)
+
+----------------
