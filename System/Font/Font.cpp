@@ -1177,8 +1177,8 @@ Boolean CFontModule::DrawGlyph(tWChar ch, int x, int y, tFontSurf* pCtx, bool is
 		if (attr_.antialias)
 			render_mode = FT_RENDER_MODE_NORMAL;
 			
-		// Render the glyph to a bitmap, don't destroy original 
-		error = FT_Glyph_To_Bitmap( &glyph, render_mode, NULL, false );
+		// Render the glyph to a bitmap, destroy original if copied by Glyph_Transform
+		error = FT_Glyph_To_Bitmap( &glyph, render_mode, NULL, rotation_ != kFontLandscape );
 		if ( error )
 			return false;
 	}
