@@ -870,6 +870,7 @@ server:
 							if (ev.value >= 0 && ev.value <= 1)
 								touch_slot = ev.value;
 							mtd[touch_slot].td = touch_data;
+							mtd[touch_slot].id = touch_slot;
 							break;
 						case ABS_MT_WIDTH_MAJOR:
 							mtd[touch_slot].touchWidth = ev.value;

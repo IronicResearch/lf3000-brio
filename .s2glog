@@ -35790,3 +35790,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/13 1:33 PM
 5,263 ms. (Cumulative: 14,156,238 ms)
 
 ----------------
+Revision 10,091 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add unit test for multi-touch events.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/13 3:33 PM
+2 changed, 0 added, 0 deleted.
+5,252 ms. (Cumulative: 14,161,584 ms)
+
+----------------

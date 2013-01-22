@@ -23,7 +23,7 @@ const U32 kBadButtonState = 0xBAADF00D;
 //============================================================================
 // MyEventListener
 //============================================================================
-const tEventType kMyHandledTypes[] = { kAllButtonEvents };
+const tEventType kMyHandledTypes[] = { kAllButtonEvents, kAllTouchEvents };
 					
 //----------------------------------------------------------------------------
 class MyBtnEventListener : public IEventListener
@@ -34,15 +34,37 @@ public:
 	virtual tEventStatus Notify( const IEventMessage &msg )
 	{
 		U16 size		= msg.GetSizeInBytes();
-		TS_ASSERT_EQUALS( size, sizeof(CButtonMessage) );
 		type_ = msg.GetEventType();
-		const CButtonMessage& btnmsg = reinterpret_cast<const CButtonMessage&>(msg);
-		tButtonData state = btnmsg.GetButtonState();
-		memcpy(&data_, &state, sizeof(data_));
-		return kEventStatusOKConsumed;
+		if (type_ == kButtonStateChanged)
+		{
+			TS_ASSERT_EQUALS( size, sizeof(CButtonMessage) );
+			const CButtonMessage& btnmsg = reinterpret_cast<const CButtonMessage&>(msg);
+			tButtonData state = btnmsg.GetButtonState();
+			memcpy(&data_, &state, sizeof(data_));
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kTouchStateChanged)
+		{
+			TS_ASSERT_EQUALS( size, sizeof(CTouchMessage) );
+			const CTouchMessage& tmsg = reinterpret_cast<const CTouchMessage&>(msg);
+			td_ = tmsg.GetTouchState();
+			printf("%d, %d, %d\n", td_.touchState, td_.touchX, td_.touchY);
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kTouchEventMultiTouch)
+		{
+			TS_ASSERT_EQUALS( size, sizeof(CTouchMessage) );
+			const CTouchMessage& tmsg = reinterpret_cast<const CTouchMessage&>(msg);
+			mtd_ = tmsg.GetMultiTouchState();
+			printf("%d: %d, %d, %d, %d, %d\n", mtd_.id, mtd_.td.touchState, mtd_.td.touchX, mtd_.td.touchY, mtd_.touchWidth, mtd_.touchHeight);
+			return kEventStatusOKConsumed;
+		}
+		return kEventStatusOK;
 	}
 	tEventType	type_;
 	tButtonData	data_;
+	tTouchData  td_;
+	tMultiTouchData mtd_;
 };
 
 
@@ -171,6 +193,25 @@ public:
 		TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchMode(mode) );
 		mode = btnmgr_->GetTouchMode();
 		TS_ASSERT_EQUALS( kTouchModeDefault, mode );
+#endif
+	}
+
+	//------------------------------------------------------------------------
+	void testTouchEvents( )
+	{
+		PRINT_TEST_NAME();
+
+#ifndef EMULATION
+		tTouchMode mode;
+		mode = btnmgr_->GetTouchMode();
+		TS_ASSERT_EQUALS( kTouchModeDefault, mode );
+		if (HasPlatformCapability(kCapsMultiTouch))
+			TS_ASSERT_EQUALS( kNoErr, btnmgr_->SetTouchMode(kTouchModeMultiTouch) );
+		boost::scoped_ptr<CEventMPI> eventmgr(new CEventMPI());
+		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
+		printf("**** start pressing touchscreen *****\n");
+		for (int i = 0; i < 30; i++)
+			sleep(1);
 #endif
 	}
 };
