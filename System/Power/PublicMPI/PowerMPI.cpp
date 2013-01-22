@@ -177,6 +177,19 @@ int CPowerMPI::Reset() const
 	return kKernelExitError;
 }
 
+//----------------------------------------------------------------------------
+S32	CPowerMPI::GetPowerParam(tPowerParam param)
+{
+	return 0;
+}
+
+//----------------------------------------------------------------------------
+Boolean CPowerMPI::SetPowerParam(tPowerParam param, S32 value)
+{
+	return false;
+}
+
+//----------------------------------------------------------------------------
 LF_END_BRIO_NAMESPACE()
 
 // EOF
