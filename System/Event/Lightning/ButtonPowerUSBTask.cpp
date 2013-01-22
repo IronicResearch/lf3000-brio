@@ -581,7 +581,10 @@ server:
 
 	// init touchscreen driver
 	int touch_index = -1;
+	int touch_slot = 0;
 	tTouchData touch_data;
+	tMultiTouchData mtd[2];
+	memset(&mtd, 0, sizeof(mtd));
 
 	if (use_tslib)
 	{
@@ -828,7 +831,15 @@ server:
 						touch_data.time.microSeconds = ev.time.tv_usec;
 						{
 							CTouchMessage touch_msg(touch_data);
-							pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
+
+							// Multi-touch events requested?
+							if (touch_msg.GetTouchMode() == kTouchModeMultiTouch) {
+								mtd[touch_slot].td = touch_data;
+								CTouchMessage mt_msg(mtd[touch_slot]);
+								pThis->PostEvent(mt_msg, kTouchEventPriority, 0);
+							}
+							else
+								pThis->PostEvent(touch_msg, kTouchEventPriority, 0);
 
 							// Load tslib on demand?
 							if (touch_msg.GetTouchMode() == kTouchModeDrawing) {
@@ -854,6 +865,17 @@ server:
 							break;
 						case ABS_PRESSURE:
 							touch_data.touchState = ev.value;
+							break;
+						case ABS_MT_SLOT:
+							if (ev.value >= 0 && ev.value <= 1)
+								touch_slot = ev.value;
+							mtd[touch_slot].td = touch_data;
+							break;
+						case ABS_MT_WIDTH_MAJOR:
+							mtd[touch_slot].touchWidth = ev.value;
+							break;
+						case ABS_MT_TOUCH_MAJOR:
+							mtd[touch_slot].touchHeight = ev.value;
 							break;
 						}
 						break;

@@ -230,6 +230,9 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 //----------------------------------------------------------------------------
 tTouchMode CButtonMPI::GetTouchMode() const
 {
+	if (HasPlatformCapability(kCapsMultiTouch))
+		return gCachedTouchMode;
+	// Emerald Legacy support
 	U32 a = GetTouchParam(kTouchParamSampleRate);
 	U32 b = GetTouchParam(kTouchParamDebounceDown);
 	U32 c = GetTouchParam(kTouchParamDebounceUp);
