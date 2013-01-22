@@ -35769,3 +35769,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/18/13 1:42 PM
 5,188 ms. (Cumulative: 14,145,384 ms)
 
 ----------------
+Revision 10,089 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added stub functions for PowerMPI GetPowerParam(), SetPowerParam() in advance of battery guage support.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/13 10:49 AM
+3 changed, 0 added, 0 deleted.
+5,404 ms. (Cumulative: 14,150,882 ms)
+
+----------------

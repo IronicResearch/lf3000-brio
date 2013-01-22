@@ -62,6 +62,17 @@ public:
 	/// Reset system
 	int		Reset() const;
 	
+	/// GetPowerParam() gets power parameter, possibly read-only.
+	/// \param	param Enumerated power parameter type
+	/// \return	Returns power parameter value
+	S32		GetPowerParam(tPowerParam param);
+
+	/// SetPowerParam() sets power parameter (unless read-only).
+	/// \param	param Enumerated power parameter type
+	/// \param	value Power parameter value
+	/// \return	Returns true if successful, false otherwise.
+	Boolean SetPowerParam(tPowerParam param, S32 value);
+
 private:
 	class CPowerModule*		pModule_;
 };

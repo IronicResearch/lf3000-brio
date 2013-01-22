@@ -75,6 +75,17 @@ private:
 	tPowerData mData;
 };
 
+//------------------------------------------------------------------------------
+// Enumerated power parameter types for GetPowerParam()
+enum tPowerParam {
+	kPowerParamBatteryMV,
+	kPowerParamBatteryGuage,
+	kPowerParamMaxBatteryMV,
+	kPowerParamNormalBatteryMV,
+	kPowerParamLowBatteryMV,
+	kPowerParamCriticalBatteryMV,
+};
+
 LF_END_BRIO_NAMESPACE()	
 #endif // LF_BRIO_POWERTYPES_H
 
