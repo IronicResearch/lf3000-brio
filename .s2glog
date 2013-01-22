@@ -35779,3 +35779,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/13 10:49 AM
 5,404 ms. (Cumulative: 14,150,882 ms)
 
 ----------------
+Revision 10,090 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Initial pass at collecting multi-touch event records for 1 of 2 slots.
+Multi-touch messages are posted only when multi-touch mode is selected.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/13 1:33 PM
+2 changed, 0 added, 0 deleted.
+5,263 ms. (Cumulative: 14,156,238 ms)
+
+----------------
