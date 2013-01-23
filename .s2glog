@@ -35800,3 +35800,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/13 3:33 PM
 5,252 ms. (Cumulative: 14,161,584 ms)
 
 ----------------
+Revision 10,092 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Relocate tslib pre-load step into platform-specific initializer.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/22/13 4:23 PM
+4 changed, 0 added, 0 deleted.
+5,381 ms. (Cumulative: 14,167,059 ms)
+
+----------------
