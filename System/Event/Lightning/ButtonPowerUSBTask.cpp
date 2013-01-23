@@ -924,7 +924,31 @@ server:
 		close(event_fd[last_fd].fd);
 	g_threadRunning2_ = false;
 }
-	
+
+//----------------------------------------------------------------------------
+
+//============================================================================
+// Platform-specific initializer
+//============================================================================
+
+void CEventModule::InitModule(void)
+{
+	// Load tslib pre-emptively during module creation to serialize plugin loading
+	struct stat stbf;
+	if (stat("/flags/notslib", &stbf) != 0) {
+		tHndl handle;
+		struct tsdev* tsl = NULL;
+		LoadTSLib(this, &handle, &tsl);
+	}
+}
+
+//----------------------------------------------------------------------------
+void CEventModule::DeInitModule(void)
+{
+
+}
+
+//----------------------------------------------------------------------------
 LF_END_BRIO_NAMESPACE()
 
 // EOF

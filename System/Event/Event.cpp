@@ -224,15 +224,8 @@ public:
 			kernel_.TaskSleep(10);
 		}
 
-#ifndef EMULATION
-		// Load tslib pre-emptively during module creation to serialize plugin loading
-		struct stat stbf;
-		if (stat("/flags/notslib", &stbf) != 0) {
-			tHndl handle;
-			struct tsdev* tsl = NULL;
-			LoadTSLib(pEventModule_, &handle, &tsl);
-		}
-#endif
+		// delegate to platform or emulation initializer
+		pEventModule_->InitModule();
 
 		// Create additional Button/Power/USB driver polling thread
 		properties.TaskMainFcn = CEventModule::ButtonPowerUSBTask;
@@ -267,6 +260,8 @@ public:
 			debug_.DebugOut(kDbgLvlValuable, "%s: Terminating button thread\n", __FUNCTION__);
 			kernel_.JoinTask(g_hBPUThread_, retval);
 		}
+		pEventModule_->DeInitModule();
+
 		// Terminate thread normally and dispose of listener list afterwards
 		g_threadRun_ = false;
 		debug_.DebugOut(kDbgLvlValuable, "%s: Terminating message thread\n", __FUNCTION__);

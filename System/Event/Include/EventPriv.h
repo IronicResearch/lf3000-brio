@@ -69,6 +69,8 @@ private:
 public:
 	static void* 		ButtonPowerUSBTask( void* arg );
 	static void* 		CartridgeTask( void* arg );
+	void				InitModule();
+	void				DeInitModule();
 	CDebugMPI			debug_;
 	CKernelMPI			kernel_;
 	bool				bThreadRun_;
