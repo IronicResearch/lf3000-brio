@@ -35810,3 +35810,15 @@ By Dave Milici (dmilici@leapfrog.com) on 1/22/13 4:23 PM
 5,381 ms. (Cumulative: 14,167,059 ms)
 
 ----------------
+Revision 10,093 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,094 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,095 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added sysfs queries to PowerMPI.GetPowerParam() calls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/23/13 12:00 PM
+1 changed, 0 added, 0 deleted.
+5,203 ms. (Cumulative: 14,172,372 ms)
+
+----------------
