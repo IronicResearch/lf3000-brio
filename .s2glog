@@ -35831,3 +35831,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/24/13 10:51 AM
 5,190 ms. (Cumulative: 14,177,656 ms)
 
 ----------------
+Revision 10,097 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added copy of Nexell external driver ioctls.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/25/13 12:53 PM
+0 changed, 1 added, 0 deleted.
+5,157 ms. (Cumulative: 14,182,891 ms)
+
+----------------
