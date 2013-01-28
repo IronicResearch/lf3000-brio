@@ -35841,3 +35841,13 @@ By Dave Milici (dmilici@leapfrog.com) on 1/25/13 12:53 PM
 5,157 ms. (Cumulative: 14,182,891 ms)
 
 ----------------
+Revision 10,098 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Use libav codec for Ogg Theora as alternative to legacy codec. (TTP 4218)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/28/13 1:11 PM
+1 changed, 0 added, 0 deleted.
+5,235 ms. (Cumulative: 14,188,204 ms)
+
+----------------
