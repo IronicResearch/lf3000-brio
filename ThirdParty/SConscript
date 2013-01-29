@@ -103,6 +103,7 @@ if env['install_dir']:
 		libs = glob.glob(os.path.join('ustring', 'libs', env['cpu'], '*.so'))
 		libs += glob.glob(os.path.join('FreeType', 'Libs', env['cpu'], '*.so'))
 		libs += glob.glob(os.path.join('LibJPEG', 'Libs', env['cpu'], '*.so'))
+		libs += glob.glob(os.path.join('boost', 'Libs', env['cpu'], '*.so*'))
 		targets += env.Install(lib_install_dir, libs)
 
 #-----------------------------------------------------------------------------
