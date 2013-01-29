@@ -19,26 +19,26 @@ targets = []
 #-----------------------------------------------------------------------------
 # Invoke individual module builders
 #-----------------------------------------------------------------------------
-targets.extend(SConscript('Audio/SConscript', build_dir=MakeTempDirName('Audio'), duplicate=0))
-targets.extend(SConscript('Button/SConscript', build_dir=MakeTempDirName('Button'), duplicate=0))
-targets.extend(SConscript('Cartridge/SConscript', build_dir=MakeTempDirName('Cartridge'), duplicate=0))
-targets.extend(SConscript('Camera/SConscript', build_dir=MakeTempDirName('Camera'), duplicate=0))
-targets.extend(SConscript('Debug/SConscript', build_dir=MakeTempDirName('Debug'), duplicate=0))
-targets.extend(SConscript('Display/SConscript', build_dir=MakeTempDirName('Display'), duplicate=0))
-targets.extend(SConscript('Event/SConscript', build_dir=MakeTempDirName('Event'), duplicate=0))
-targets.extend(SConscript('Font/SConscript', build_dir=MakeTempDirName('Font'), duplicate=0))
-targets.extend(SConscript('ImageIO/SConscript', build_dir=MakeTempDirName('ImageIO'), duplicate=0))
-targets.extend(SConscript('Kernel/SConscript', build_dir=MakeTempDirName('Kernel'), duplicate=0))
-targets.extend(SConscript('Microphone/SConscript', build_dir=MakeTempDirName('Microphone'), duplicate=0))
+targets.extend(SConscript('Audio/SConscript', variant_dir=MakeTempDirName('Audio'), duplicate=0))
+targets.extend(SConscript('Button/SConscript', variant_dir=MakeTempDirName('Button'), duplicate=0))
+targets.extend(SConscript('Cartridge/SConscript', variant_dir=MakeTempDirName('Cartridge'), duplicate=0))
+targets.extend(SConscript('Camera/SConscript', variant_dir=MakeTempDirName('Camera'), duplicate=0))
+targets.extend(SConscript('Debug/SConscript', variant_dir=MakeTempDirName('Debug'), duplicate=0))
+targets.extend(SConscript('Display/SConscript', variant_dir=MakeTempDirName('Display'), duplicate=0))
+targets.extend(SConscript('Event/SConscript', variant_dir=MakeTempDirName('Event'), duplicate=0))
+targets.extend(SConscript('Font/SConscript', variant_dir=MakeTempDirName('Font'), duplicate=0))
+targets.extend(SConscript('ImageIO/SConscript', variant_dir=MakeTempDirName('ImageIO'), duplicate=0))
+targets.extend(SConscript('Kernel/SConscript', variant_dir=MakeTempDirName('Kernel'), duplicate=0))
+targets.extend(SConscript('Microphone/SConscript', variant_dir=MakeTempDirName('Microphone'), duplicate=0))
 targets.extend(SConscript('Module/SConscript', variant_dir=MakeTempDirName('Module'), duplicate=0))
-targets.extend(SConscript('Power/SConscript', build_dir=MakeTempDirName('Power'), duplicate=0))
-targets.extend(SConscript('Video/SConscript', build_dir=MakeTempDirName('Video'), duplicate=0))
-targets.extend(SConscript('USBDevice/SConscript', build_dir=MakeTempDirName('USBDevice'), duplicate=0))
-targets.extend(SConscript('Utility/SConscript', build_dir=MakeTempDirName('Utility'), duplicate=0))
-targets.extend(SConscript('Accelerometer/SConscript', build_dir=MakeTempDirName('Accelerometer'), duplicate=0))
+targets.extend(SConscript('Power/SConscript', variant_dir=MakeTempDirName('Power'), duplicate=0))
+targets.extend(SConscript('Video/SConscript', variant_dir=MakeTempDirName('Video'), duplicate=0))
+targets.extend(SConscript('USBDevice/SConscript', variant_dir=MakeTempDirName('USBDevice'), duplicate=0))
+targets.extend(SConscript('Utility/SConscript', variant_dir=MakeTempDirName('Utility'), duplicate=0))
+targets.extend(SConscript('Accelerometer/SConscript', variant_dir=MakeTempDirName('Accelerometer'), duplicate=0))
 targets.extend(SConscript('Wireless/SConscript', variant_dir=MakeTempDirName('Wireless'), duplicate=0))
 if env['cpu'] == 'x86':
-	targets.extend(SConscript('Emulation/SConscript', build_dir=MakeTempDirName('Emulation'), duplicate=0))
+	targets.extend(SConscript('Emulation/SConscript', variant_dir=MakeTempDirName('Emulation'), duplicate=0))
 
 
 #-----------------------------------------------------------------------------
