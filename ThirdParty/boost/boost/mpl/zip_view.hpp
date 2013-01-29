@@ -2,7 +2,7 @@
 #ifndef BOOST_MPL_ZIP_VIEW_HPP_INCLUDED
 #define BOOST_MPL_ZIP_VIEW_HPP_INCLUDED
 
-// Copyright Aleksey Gurtovoy 2000-2002
+// Copyright Aleksey Gurtovoy 2000-2010
 // Copyright David Abrahams 2000-2002
 //
 // Distributed under the Boost Software License, Version 1.0.
@@ -11,9 +11,9 @@
 //
 // See http://www.boost.org/libs/mpl for documentation.
 
-// $Source: /cvsroot/boost/boost/boost/mpl/zip_view.hpp,v $
-// $Date: 2004/09/02 15:40:42 $
-// $Revision: 1.3 $
+// $Id: zip_view.hpp 61591 2010-04-26 21:31:09Z agurtovoy $
+// $Date: 2010-04-26 17:31:09 -0400 (Mon, 26 Apr 2010) $
+// $Revision: 61591 $
 
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/begin_end.hpp>
@@ -37,7 +37,7 @@ struct zip_iterator
     typedef zip_iterator<
           typename transform1<
                 IteratorSeq
-              , next<_1>
+              , mpl::next<_1>
             >::type
         > next;
 };
@@ -48,11 +48,12 @@ template<
 struct zip_view
 {
  private:
-    typedef typename transform1< Sequences, begin<_1> >::type first_ones_;
-    typedef typename transform1< Sequences, end<_1> >::type last_ones_;
+    typedef typename transform1< Sequences, mpl::begin<_1> >::type first_ones_;
+    typedef typename transform1< Sequences, mpl::end<_1> >::type last_ones_;
     
  public:
     typedef nested_begin_end_tag tag;
+    typedef zip_view type;
     typedef zip_iterator<first_ones_> begin;
     typedef zip_iterator<last_ones_> end;
 };

@@ -35851,3 +35851,12 @@ By Dave Milici (dmilici@leapfrog.com) on 1/28/13 1:11 PM
 5,235 ms. (Cumulative: 14,188,204 ms)
 
 ----------------
+Revision 10,099 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Upgrade boost to 1.49.0
+
+By dlazzari (dlazzari@leapfrog.com) on 1/28/13 7:53 PM
+900 changed, 940 added, 137 deleted.
+50,573 ms. (Cumulative: 14,238,871 ms)
+
+----------------
