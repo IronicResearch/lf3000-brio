@@ -35860,3 +35860,12 @@ By dlazzari (dlazzari@leapfrog.com) on 1/28/13 7:53 PM
 50,573 ms. (Cumulative: 14,238,871 ms)
 
 ----------------
+Revision 10,100 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change build_dir to variant_dir in System SConscript to silence deprecation warnings from SCons.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/28/13 7:58 PM
+1 changed, 0 added, 0 deleted.
+6,376 ms. (Cumulative: 14,245,793 ms)
+
+----------------
