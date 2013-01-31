@@ -34,6 +34,7 @@
 #include <VideoPlayer.h>
 #include <TheoraPlayer.h>
 #include <AVIPlayer.h>
+#include <GStreamerPlayer.h>
 #include <SearchTree.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
@@ -220,6 +221,10 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	pVidCtx->bSeeked	= false;
 	pVidCtx->pModule 	= this;
 
+	// GStreamer player creates its own playback thread
+	if (dynamic_cast<CGStreamerPlayer*>(pVidCtx->pPlayer))
+		goto ExitPt;
+		
 	InitVideoTask(pVidCtx);	
 
 ExitPt:
@@ -261,7 +266,11 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 	if (filepath.rfind(".ogg") != std::string::npos 
 			|| filepath.rfind(".OGG") != std::string::npos) {
 		// Create Theora video player object
+#if USE_GSTREAMER
+		CGStreamerPlayer* pPlayer = new CGStreamerPlayer();
+#else
 		CAVIPlayer* 	pPlayer = new CAVIPlayer();
+#endif
 		pVidCtx->pPlayer = pPlayer;
 	}
 	else if (filepath.rfind(".avi") != std::string::npos

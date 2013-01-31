@@ -1,5 +1,5 @@
-#ifndef LF_BRIO_AVIPLAYER_H
-#define LF_BRIO_AVIPLAYER_H
+#ifndef LF_BRIO_GSTPLAYER_H
+#define LF_BRIO_GSTPLAYER_H
 //==============================================================================
 // $Source: $
 //
@@ -16,6 +16,19 @@
 #include <SystemTypes.h>
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
+
+#include <glib.h>
+#include <glib/gmacros.h>
+#include <glib/gtypes.h>
+#undef  G_GNUC_NULL_TERMINATED
+#define G_GNUC_NULL_TERMINATED
+#undef  G_GNUC_MALLOC
+#define G_GNUC_MALLOC
+#undef  G_GNUC_WARN_UNUSED_RESULT
+#define G_GNUC_WARN_UNUSED_RESULT
+typedef const gchar *   (*GTranslateFunc) (const gchar *str, gpointer data);
+#include <glib/goption.h>
+#include <gst/gst.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -43,9 +56,14 @@ public:
 	S64 			GetVideoLength(tVideoHndl hVideo);
 	
 private:
+    GstElement 		*m_videoBin;
+    GstElement 		*m_videoBalance;
+    GstElement 		*m_colorspace;
+    GstElement 		*m_videoplug;
+    GstElement 		*m_videoSink;
 };
 
 LF_END_BRIO_NAMESPACE()	
-#endif // LF_BRIO_AVIPLAYER_H
+#endif // LF_BRIO_GSTPLAYER_H
 
 // EOF

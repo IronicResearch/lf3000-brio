@@ -35899,3 +35899,15 @@ By Dave Milici (dmilici@leapfrog.com) on 1/31/13 11:11 AM
 6,165 ms. (Cumulative: 14,332,214 ms)
 
 ----------------
+Revision 10,106 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Initial checkin for GStreamer player, disabled by default.
+Audio pipeline working. Video pipeline not connected yet.
+Depends on gstreamer & glib libs in angstrom sysroot to link.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/31/13 3:44 PM
+4 changed, 0 added, 0 deleted.
+6,136 ms. (Cumulative: 14,338,438 ms)
+
+----------------
