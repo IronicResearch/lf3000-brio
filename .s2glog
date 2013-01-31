@@ -35887,3 +35887,15 @@ By dlazzari (dlazzari@leapfrog.com) on 1/29/13 11:19 AM
 6,249 ms. (Cumulative: 14,325,946 ms)
 
 ----------------
+Revision 10,103 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,104 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,105 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add profiling macros to libav codec decode routines, disabled by default.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/31/13 11:11 AM
+1 changed, 0 added, 0 deleted.
+6,165 ms. (Cumulative: 14,332,214 ms)
+
+----------------
