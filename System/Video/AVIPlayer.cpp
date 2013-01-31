@@ -24,6 +24,9 @@ extern "C" {
 #include <libavutil/avutil.h>
 }
 
+#undef ENABLE_PROFILING
+#include <FlatProfiler.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -39,6 +42,21 @@ LF_BEGIN_BRIO_NAMESPACE()
 //==============================================================================
 namespace
 {
+	//----------------------------------------------------------------------------
+	inline void PROFILE_BEGIN(int tag)
+	{
+	#ifdef ENABLE_PROFILING
+		TimeStampOn(tag);
+	#endif
+	}
+
+	//----------------------------------------------------------------------------
+	inline void PROFILE_END(int tag, const char* msg)
+	{
+	#ifdef ENABLE_PROFILING
+		TimeStampOff(tag);
+	#endif
+	}
 }
 
 //==============================================================================
@@ -73,8 +91,10 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
             AVPacket packet2 = packet;
             packet2.size = bytesRemaining;
             packet2.data = pRawData;
+            PROFILE_BEGIN(1);
             bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame,
             		&frameFinished, &packet2);
+            PROFILE_END(1,"avcodec_decode_video2");
 
             // Was there an error?
             if (bytesDecoded < 0)
@@ -111,7 +131,9 @@ bool GetNextFrame(AVFormatContext *pFormatCtx, AVCodecContext *pCodecCtx,
 loop_exit:
 
     // Decode the rest of the last frame
+    PROFILE_BEGIN(1);
     bytesDecoded = avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
+    PROFILE_END(1,"avcodec_decode_video2");
 
     // Free last packet
     if (packet.data != NULL)
@@ -132,11 +154,17 @@ CAVIPlayer::CAVIPlayer()
 	pCodec = NULL;
     pFrame = NULL;
     iVideoStream = -1;
+#ifdef ENABLE_PROFILING
+	FlatProfilerInit(4, 1000);
+#endif
 }
 
 //----------------------------------------------------------------------------
 CAVIPlayer::~CAVIPlayer()
 {
+#ifdef ENABLE_PROFILING
+	FlatProfilerDone();
+#endif
 }
 
 //----------------------------------------------------------------------------
