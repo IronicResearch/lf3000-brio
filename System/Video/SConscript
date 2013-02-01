@@ -30,6 +30,8 @@ myenv.Append(LIBPATH = ['#ThirdParty/Theora/Libs/' + env['cpu']])
 nfsroot		= os.getenv('OECORE_TARGET_SYSROOT')
 if nfsroot == None:
 	nfsroot = env['staging_dir'].abspath
+if env['cpu'] == 'x86':
+	nfsroot = '/'
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'glib-2.0')])
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'gstreamer-0.10')])
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'libxml2')])
