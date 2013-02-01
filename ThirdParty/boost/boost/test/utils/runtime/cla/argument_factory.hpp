@@ -1,13 +1,13 @@
-//  (C) Copyright Gennadiy Rozental 2005-2008.
+//  (C) Copyright Gennadiy Rozental 2005.
 //  Use, modification, and distribution are subject to the 
 //  Boost Software License, Version 1.0. (See accompanying file 
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
+//  File        : $RCSfile: argument_factory.hpp,v $
 //
-//  Version     : $Revision: 57992 $
+//  Version     : $Revision: 1.1 $
 //
 //  Description : generic typed_argument_factory implementation
 // ***************************************************************************
@@ -135,42 +135,42 @@ typed_argument_factory<T>::produce_using( parameter& p, argv_traverser& tr )
             throw;
     }
 
-    argument_ptr actual_arg = p.actual_argument();
+    argument_ptr arg = p.actual_argument();
 
     BOOST_RT_CLA_VALIDATE_INPUT( !!value || p.p_optional_value, tr, 
         BOOST_RT_PARAM_LITERAL( "Argument value missing for parameter " ) << p.id_2_report() );
 
-    BOOST_RT_CLA_VALIDATE_INPUT( !actual_arg || p.p_multiplicable, tr, 
+    BOOST_RT_CLA_VALIDATE_INPUT( !arg || p.p_multiplicable, tr, 
         BOOST_RT_PARAM_LITERAL( "Unexpected repetition of the parameter " ) << p.id_2_report() );
 
     if( !!value && !!m_value_handler )
         m_value_handler( p, *value );
 
     if( !p.p_multiplicable )
-        actual_arg.reset( p.p_optional_value && (rtti::type_id<T>() != rtti::type_id<bool>())
-            ? static_cast<argument*>(new typed_argument<boost::optional<T> >( p, value ))
-            : static_cast<argument*>(new typed_argument<T>( p, *value )) );
+        arg.reset( p.p_optional_value 
+            ? (argument*)new typed_argument<boost::optional<T> >( p, value )
+            : (argument*)new typed_argument<T>( p, *value ) );
     else {
         typedef std::list<boost::optional<T> > optional_list;
 
-        if( !actual_arg )
-            actual_arg.reset( p.p_optional_value 
-                ? static_cast<argument*>(new typed_argument<optional_list>( p ))
-                : static_cast<argument*>(new typed_argument<std::list<T> >( p )) );
+        if( !arg )
+            arg.reset( p.p_optional_value 
+                ? (argument*)new typed_argument<optional_list>( p )
+                : (argument*)new typed_argument<std::list<T> >( p ) );
 
         if( p.p_optional_value ) {
-            optional_list& values = arg_value<optional_list>( *actual_arg );
+            optional_list& values = arg_value<optional_list>( *arg );
 
             values.push_back( value );
         }
         else {
-            std::list<T>& values = arg_value<std::list<T> >( *actual_arg );
+            std::list<T>& values = arg_value<std::list<T> >( *arg );
             
             values.push_back( *value );
         }
     }
 
-    return actual_arg;
+    return arg;
 }
 
 //____________________________________________________________________________//
@@ -179,23 +179,23 @@ template<typename T>
 inline argument_ptr 
 typed_argument_factory<T>::produce_using( parameter& p, parser const& pa )
 {
-    argument_ptr actual_arg;
+    argument_ptr arg;
 
     if( !m_value_generator )
-        return actual_arg;
+        return arg;
 
     boost::optional<T> value;
     m_value_generator( pa, value );
 
     if( !value )
-        return actual_arg;
+        return arg;
 
     if( !!m_value_handler )
         m_value_handler( p, *value );
 
-    actual_arg.reset( new typed_argument<T>( p, *value ) );
+    arg.reset( new typed_argument<T>( p, *value ) );
 
-    return actual_arg;
+    return arg;
 }
 
 //____________________________________________________________________________//
@@ -204,7 +204,7 @@ template<typename T>
 inline void
 typed_argument_factory<T>::argument_usage_info( format_stream& fs )
 {
-    rt_cla_detail::argument_value_usage( fs, 0, reinterpret_cast<T*>(0) );
+    rt_cla_detail::argument_value_usage( fs, 0, (T*)0 );
 }
 
 //____________________________________________________________________________//
@@ -214,5 +214,14 @@ typed_argument_factory<T>::argument_usage_info( format_stream& fs )
 } // namespace BOOST_RT_PARAM_NAMESPACE
 
 } // namespace cla
+
+// ************************************************************************** //
+//   Revision History:
+//
+//   $Log: argument_factory.hpp,v $
+//   Revision 1.1  2005/04/12 06:42:42  rogeeff
+//   Runtime.Param library initial commit
+//
+// ************************************************************************** //
 
 #endif // BOOST_RT_CLA_ARGUMENT_FACTORY_HPP_062604GER

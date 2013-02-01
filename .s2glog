@@ -35954,3 +35954,14 @@ By dlazzari (dlazzari@leapfrog.com) on 1/31/13 7:40 PM
 84,538 ms. (Cumulative: 14,441,735 ms)
 
 ----------------
+Revision 10,112 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert "Upgrade boost to 1.49.0"
+
+This reverts commit a7adc08920f07109e8cfa37d9460d64c3c76ea50.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/31/13 7:41 PM
+900 changed, 137 added, 940 deleted.
+60,114 ms. (Cumulative: 14,501,927 ms)
+
+----------------
