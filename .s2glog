@@ -35943,3 +35943,14 @@ By dlazzari (dlazzari@leapfrog.com) on 1/31/13 7:38 PM
 6,241 ms. (Cumulative: 14,357,103 ms)
 
 ----------------
+Revision 10,111 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert "Add boost_system library needed for asio and move boost headers to conform to the layout the other ThirdParty directories use. Also change some hard coded paths to use os.path.join()"
+
+This reverts commit bd9d5020834d77cddbb0aa04b4d87234d0180a77.
+
+By dlazzari (dlazzari@leapfrog.com) on 1/31/13 7:40 PM
+3 changed, 2,655 added, 2,656 deleted.
+84,538 ms. (Cumulative: 14,441,735 ms)
+
+----------------
