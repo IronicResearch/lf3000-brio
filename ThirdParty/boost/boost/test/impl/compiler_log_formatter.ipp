@@ -1,13 +1,13 @@
-//  (C) Copyright Gennadiy Rozental 2005-2008.
+//  (C) Copyright Gennadiy Rozental 2005.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
+//  File        : $RCSfile: compiler_log_formatter.ipp,v $
 //
-//  Version     : $Revision: 57992 $
+//  Version     : $Revision: 1.4 $
 //
 //  Description : implements compiler like Log formatter
 // ***************************************************************************
@@ -20,7 +20,6 @@
 #include <boost/test/unit_test_suite_impl.hpp>
 #include <boost/test/framework.hpp>
 #include <boost/test/utils/basic_cstring/io.hpp>
-#include <boost/test/utils/lazy_ostream.hpp>
 
 // Boost
 #include <boost/version.hpp>
@@ -42,20 +41,6 @@ namespace output {
 // **************            compiler_log_formatter            ************** //
 // ************************************************************************** //
 
-namespace {
-
-const_string
-test_phase_identifier()
-{
-    return framework::is_initialized() 
-            ? const_string( framework::current_test_case().p_name.get() )
-            : BOOST_TEST_L( "Test setup" );
-}
-
-} // local namespace
-
-//____________________________________________________________________________//
-
 void
 compiler_log_formatter::log_start( std::ostream& output, counter_t test_cases_amount )
 {
@@ -67,9 +52,9 @@ compiler_log_formatter::log_start( std::ostream& output, counter_t test_cases_am
 //____________________________________________________________________________//
 
 void
-compiler_log_formatter::log_finish( std::ostream& ostr )
+compiler_log_formatter::log_finish( std::ostream& )
 {
-    ostr.flush();
+    // do nothing
 }
 
 //____________________________________________________________________________//
@@ -122,14 +107,16 @@ compiler_log_formatter::test_unit_skipped( std::ostream& output, test_unit const
 //____________________________________________________________________________//
 
 void
-compiler_log_formatter::log_exception( std::ostream& output, log_checkpoint_data const& checkpoint_data, execution_exception const& ex )
+compiler_log_formatter::log_exception( std::ostream& output, log_checkpoint_data const& checkpoint_data, const_string explanation )
 {
-    execution_exception::location const& loc = ex.where();
-    print_prefix( output, loc.m_file_name, loc.m_line_num );
+    print_prefix( output, BOOST_TEST_L( "unknown location" ), 0 );
+    output << "fatal error in \"" << framework::current_test_case().p_name << "\": ";
 
-    output << "fatal error in \"" << (loc.m_function.is_empty() ? test_phase_identifier() : loc.m_function ) << "\": ";
+    if( !explanation.is_empty() )
+        output << explanation;
+    else
+        output << "uncaught exception, system error or abort requested";
 
-    output << ex.what();
 
     if( !checkpoint_data.m_file_name.is_empty() ) {
         output << '\n';
@@ -156,15 +143,15 @@ compiler_log_formatter::log_entry_start( std::ostream& output, log_entry_data co
             break;
         case BOOST_UTL_ET_WARNING:
             print_prefix( output, entry_data.m_file_name, entry_data.m_line_num );
-            output << "warning in \"" << test_phase_identifier() << "\": ";
+            output << "warning in \"" << framework::current_test_case().p_name << "\": ";
             break;
         case BOOST_UTL_ET_ERROR:
             print_prefix( output, entry_data.m_file_name, entry_data.m_line_num );
-            output << "error in \"" << test_phase_identifier() << "\": ";
+            output << "error in \"" << framework::current_test_case().p_name << "\": ";
             break;
         case BOOST_UTL_ET_FATAL_ERROR:
             print_prefix( output, entry_data.m_file_name, entry_data.m_line_num );
-            output << "fatal error in \"" << test_phase_identifier() << "\": ";
+            output << "fatal error in \"" << framework::current_test_case().p_name << "\": ";
             break;
     }
 }
@@ -173,14 +160,6 @@ compiler_log_formatter::log_entry_start( std::ostream& output, log_entry_data co
 
 void
 compiler_log_formatter::log_entry_value( std::ostream& output, const_string value )
-{
-    output << value;
-}
-
-//____________________________________________________________________________//
-
-void
-compiler_log_formatter::log_entry_value( std::ostream& output, lazy_ostream const& value )
 {
     output << value;
 }
@@ -198,18 +177,12 @@ compiler_log_formatter::log_entry_finish( std::ostream& output )
 void
 compiler_log_formatter::print_prefix( std::ostream& output, const_string file, std::size_t line )
 {
-#ifdef __APPLE_CC__
-    // Xcode-compatible logging format, idea by Richard Dingwall at 
-    // <http://richarddingwall.name/2008/06/01/using-the-boost-unit-test-framework-with-xcode-3/>. 
-    output << file << ':' << line << ": ";
-#else
     output << file << '(' << line << "): ";
-#endif
 }
 
 //____________________________________________________________________________//
 
-} // namespace output
+} // namespace ouptut
 
 } // namespace unit_test
 
@@ -218,5 +191,24 @@ compiler_log_formatter::print_prefix( std::ostream& output, const_string file, s
 //____________________________________________________________________________//
 
 #include <boost/test/detail/enable_warnings.hpp>
+
+// ***************************************************************************
+//  Revision History :
+//
+//  $Log: compiler_log_formatter.ipp,v $
+//  Revision 1.4  2005/12/14 05:26:32  rogeeff
+//  report aborted test units
+//
+//  Revision 1.3  2005/02/21 10:09:26  rogeeff
+//  exception logging changes so that it produce a string recognizable by compiler as an error
+//
+//  Revision 1.2  2005/02/20 08:27:06  rogeeff
+//  This a major update for Boost.Test framework. See release docs for complete list of fixes/updates
+//
+//  Revision 1.1  2005/02/01 08:59:38  rogeeff
+//  supplied_log_formatters split
+//  change formatters interface to simplify result interface
+//
+// ***************************************************************************
 
 #endif // BOOST_TEST_COMPILER_LOG_FORMATTER_IPP_020105GER

@@ -1,13 +1,13 @@
-//  (C) Copyright Gennadiy Rozental 2005-2008.
+//  (C) Copyright Gennadiy Rozental 2005.
 //  Use, modification, and distribution are subject to the
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
+//  File        : $RCSfile: config_file_iterator.cpp,v $
 //
-//  Version     : $Revision: 54633 $
+//  Version     : $Revision: 1.1 $
 //
 //  Description : flexible configuration file iterator implementation
 // ***************************************************************************
@@ -18,10 +18,7 @@
 #include <boost/test/utils/runtime/file/config_file_iterator.hpp>
 #include <boost/test/utils/runtime/validation.hpp>
 
-#ifndef UNDER_CE
 #include <boost/test/utils/runtime/env/environment.hpp>
-#endif
-
 
 // Boost
 #include <boost/utility.hpp>
@@ -158,7 +155,7 @@ include_level::include_level( cstring file_name, cstring path_separators, includ
         }
     }
 
-    BOOST_RT_PARAM_VALIDATE_LOGIC( m_stream.is_open(), BOOST_RT_PARAM_LITERAL( "can't open file " ) << file_name );
+    BOOST_RT_PARAM_VALIDATE_LOGIC( m_stream.is_open(), BOOST_RT_PARAM_LITERAL( "couldn't open file " ) << file_name );
 }
 
 //____________________________________________________________________________//
@@ -355,9 +352,7 @@ config_file_iterator::Impl::get_macro_value( cstring macro_name, bool ignore_mis
     if( it == m_symbols_table.end() ) {
         boost::optional<cstring> macro_value; // !! variable actually may have different type
 
-        #ifndef UNDER_CE
         env::get( macro_name, macro_value );
-        #endif
 
         BOOST_RT_PARAM_VALIDATE_LOGIC( macro_value || ignore_missing || !m_detect_missing_macro, 
             BOOST_RT_PARAM_LITERAL( "Unknown macro \"" ) << macro_name << BOOST_RT_PARAM_LITERAL( "\"" ) );
@@ -682,4 +677,11 @@ config_file_iterator::set_parameter( rtti::id_t id, std::size_t value )
 
 } // namespace boost
 
-// EOF
+// ************************************************************************** //
+//   Revision History:
+//
+//   $Log: config_file_iterator.cpp,v $
+//   Revision 1.1  2005/04/12 06:42:44  rogeeff
+//   Runtime.Param library initial commit
+//
+// ************************************************************************** //
