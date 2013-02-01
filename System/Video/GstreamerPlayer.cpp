@@ -21,6 +21,7 @@
 #include <gst/gst.h>
 #include <gst/video/gstvideosink.h>
 #include <gst/video/video.h>
+#include <string.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -43,6 +44,8 @@ public:
     gint            height;
     gint            bpp;
     gint            depth;
+    gint			pitch;
+    guchar*			buffer;
 };
 
 template <VideoFormat FMT>
@@ -113,8 +116,25 @@ GstFlowReturn VideoSink<FMT>::render(GstBaseSink* sink, GstBuffer* buf)
     if (buf != 0)
     {
         VideoSink<FMT> *self = G_TYPE_CHECK_INSTANCE_CAST(sink, VideoSinkClass<FMT>::get_type(), VideoSink<FMT>);
-        // memcpy(frame.data(), buf->data, buf->size);
-        printf("render: data=%p, size=%d\n", buf->data, buf->size);
+        guchar* psrc = buf->data;
+        guchar* pdst = self->buffer;
+        for (int y = 0; y < self->height; y++) {
+        	memcpy(pdst, psrc, self->width);
+        	psrc += self->width;
+        	pdst += self->pitch;
+        }
+        pdst = self->buffer + self->pitch/2;
+        for (int u = 0; u < self->height/2; u++) {
+        	memcpy(pdst, psrc, self->width/2);
+        	psrc += self->width/2;
+        	pdst += self->pitch;
+        }
+        pdst = self->buffer + self->pitch/2 + self->pitch*self->height/2;
+        for (int v = 0; v < self->height/2; v++) {
+        	memcpy(pdst, psrc, self->width/2);
+        	psrc += self->width/2;
+        	pdst += self->pitch;
+        }
     }
     else
         rc = GST_FLOW_ERROR;
@@ -182,6 +202,8 @@ void VideoSink<FMT>::instance_init(GTypeInstance *instance, gpointer g_class)
     self->height = 0;
     self->bpp = 0;
     self->depth = 0;
+    self->pitch = 0;
+    self->buffer = NULL;
 }
 
 // VideoSinkClass
@@ -247,6 +269,13 @@ GType get_type_RGB()
 // Local Implementation for callback handling
 //==============================================================================
 
+/* playbin2 plugin flags */
+typedef enum {
+  GST_PLAY_FLAG_VIDEO         = (1 << 0), /* We want video output */
+  GST_PLAY_FLAG_AUDIO         = (1 << 1), /* We want audio output */
+  GST_PLAY_FLAG_TEXT          = (1 << 2)  /* We want subtitle output */
+} GstPlayFlags;
+
 //----------------------------------------------------------------------------
 static gboolean bus_call(GstBus *bus,
           GstMessage *msg,
@@ -290,11 +319,13 @@ static void on_pad_added(GstElement *element,
 	GstElement *decoder = (GstElement *) data;
 
 	// We can now link this pad with the vorbis-decoder sink pad
-	g_print("Dynamic pad created, linking demuxer/decoder\n");
+	g_print("Dynamic pad created, linking demuxer %s to decoder %s\n",
+			GST_ELEMENT_NAME(element), GST_PAD_NAME(pad));
 
 	sinkpad = gst_element_get_static_pad(decoder, "sink");
 
-	gst_pad_link(pad, sinkpad);
+	if (!gst_pad_is_linked(sinkpad))
+		gst_pad_link(pad, sinkpad);
 
 	gst_object_unref(sinkpad);
 }
@@ -328,6 +359,10 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
         gst_object_ref(GST_OBJECT(m_videoSink)); // Take ownership
         gst_object_sink(GST_OBJECT(m_videoSink));
         VideoSinkBase*  sink = reinterpret_cast<VideoSinkBase*>(m_videoSink);
+        sink->width  = surf->width;
+        sink->height = surf->height;
+        sink->pitch  = surf->pitch;
+        sink->buffer = surf->buffer;
     }
 
     // Create video pipeline
@@ -341,55 +376,72 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // Colorspace ensures that the output of the stream matches the input format accepted by our video sink
     m_colorspace = gst_element_factory_make("ffmpegcolorspace", NULL);
 
-    // Video scale is used to prepare the correct aspect ratio and scale.
-    GstElement *videoScale = gst_element_factory_make("videoscale", NULL);
-
     // We need a queue to support the tee from parent node
     GstElement *queue = gst_element_factory_make("queue", NULL);
-    gst_bin_add_many(GST_BIN(m_videoBin), queue, m_colorspace, m_videoplug, videoScale, m_videoSink,(const char*)NULL);
-    gst_element_link_many(queue, m_colorspace, videoScale, m_videoplug, m_videoSink, (const char*)NULL);
 
+    // Link video pipeline elements as single bin element
+    gst_bin_add_many(GST_BIN(m_videoBin), queue, m_colorspace, m_videoplug, m_videoSink, (const char*)NULL);
+    gst_element_link_many(queue, m_colorspace, m_videoplug, m_videoSink, (const char*)NULL);
+
+    // Expose sink pad on video bin element
     GstPad *videopad = gst_element_get_pad(queue, "sink");
     gst_element_add_pad(m_videoBin, gst_ghost_pad_new("sink", videopad));
     gst_object_unref(videopad);
 
     // Create audio pipeline (per gstreamer example)
-    GstElement *pipeline, *source, *demuxer, *decoder, *conv, *sink;
+    GstElement *conv, *sink;
     GstBus *bus;
     guint bus_watch_id;
     GMainLoop *loop = g_main_loop_new(NULL, FALSE);
 
-    // Create gstreamer elements
-    pipeline = gst_pipeline_new("gstreamer-player");
-    source   = gst_element_factory_make("filesrc",       "file-source");
-    demuxer  = gst_element_factory_make("oggdemux",      "ogg-demuxer");
-    decoder  = gst_element_factory_make("vorbisdec",     "vorbis-decoder");
+    // Create gstreamer playbin pipeline to auto-construct demuxer/decoders
+    pipeline = gst_element_factory_make("playbin2", "gstreamer-player");
+
+    // Set playbin for audio & video streams only
+    gint flags = 0;
+    g_object_get(pipeline, "flags", &flags, NULL);
+    flags |= GST_PLAY_FLAG_VIDEO | GST_PLAY_FLAG_AUDIO;
+    flags &= ~GST_PLAY_FLAG_TEXT;
+    g_object_set(pipeline, "flags", flags, NULL);
+
     conv     = gst_element_factory_make("audioconvert",  "converter");
     sink     = gst_element_factory_make("autoaudiosink", "audio-output");
 
-    if (!pipeline || !source || !demuxer || !decoder || !conv || !sink) {
-        g_printerr("One element could not be created. Exiting.\n");
-        return false; //-1;
-    }
-
     // we set the input filename to the source element
-    g_object_set(G_OBJECT(source), "location", path->c_str(), NULL);
+    CURI uri = CURI("file://") + CURI(*path);
+    g_object_set(G_OBJECT(pipeline), "uri", uri.c_str(), NULL);
 
     // we add a message handler
     bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
     bus_watch_id = gst_bus_add_watch(bus, bus_call, loop);
     gst_object_unref(bus);
 
+    // Create audio bin element for audio output pipeline
+    m_audioBin = gst_bin_new(NULL);
+    gst_object_ref(GST_OBJECT(m_audioBin)); // Take ownership
+    gst_object_sink(GST_OBJECT(m_audioBin));
+
+    GstElement* audioplug = gst_element_factory_make("identity", NULL);
+
     // we add all elements into the pipeline
     // file-source | ogg-demuxer | vorbis-decoder | converter | alsa-output
-    gst_bin_add_many(GST_BIN(pipeline),
-                     source, demuxer, decoder, conv, sink, NULL);
+    gst_bin_add_many(GST_BIN(m_audioBin),
+                     audioplug, conv, sink, NULL);
 
     // we link the elements together
     // file-source -> ogg-demuxer ~> vorbis-decoder -> converter -> alsa-output
-    gst_element_link(source, demuxer);
-    gst_element_link_many(decoder, conv, sink, NULL);
-    g_signal_connect(demuxer, "pad-added", G_CALLBACK(on_pad_added), decoder);
+    gst_element_link_many(audioplug, conv, sink, NULL);
+
+    // Expose sink pad on audio bin element
+    GstPad *audiopad = gst_element_get_pad(audioplug, "sink");
+    gst_element_add_pad(m_audioBin, gst_ghost_pad_new("sink", audiopad));
+    gst_object_unref(audiopad);
+
+    // Connect audio pipeline bin as playbin sink
+    g_object_set(G_OBJECT(pipeline), "audio-sink", m_audioBin, (const char*)NULL);
+
+    // Connect video pipeline bin as playbin sink
+    g_object_set(G_OBJECT(pipeline), "video-sink", m_videoBin, (const char*)NULL);
 
     // Set the pipeline to "playing" state
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
@@ -400,8 +452,10 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 {
-	gst_element_set_state(m_videoBin, GST_STATE_NULL);
+	gst_element_set_state(pipeline, GST_STATE_NULL);
+	gst_object_unref(GST_OBJECT(pipeline));
 	gst_object_unref(GST_OBJECT(m_videoBin));
+	gst_object_unref(GST_OBJECT(m_audioBin));
 	return true;
 }
 

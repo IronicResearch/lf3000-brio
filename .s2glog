@@ -35965,3 +35965,16 @@ By dlazzari (dlazzari@leapfrog.com) on 1/31/13 7:41 PM
 60,114 ms. (Cumulative: 14,501,927 ms)
 
 ----------------
+Revision 10,113 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,114 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,115 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+GStreamer player modified to connect audio and video pipelines via 'playbin' element.
+GStreamer video pipeline now rendering to YUV surface.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/1/13 1:28 PM
+4 changed, 0 added, 0 deleted.
+5,845 ms. (Cumulative: 14,507,881 ms)
+
+----------------

@@ -61,6 +61,9 @@ private:
     GstElement 		*m_colorspace;
     GstElement 		*m_videoplug;
     GstElement 		*m_videoSink;
+    GstElement  	*m_audioBin;
+    GstElement  	*m_audioplug;
+    GstElement  	*pipeline;
 };
 
 LF_END_BRIO_NAMESPACE()	

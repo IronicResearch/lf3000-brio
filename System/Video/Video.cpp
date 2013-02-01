@@ -191,7 +191,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 
 
 	// Start Theora codec for selected video file
-	hVideo = StartVideoInt(path);
+	hVideo = StartVideoInt(path, pSurf);
 	if (hVideo == kInvalidVideoHndl)
 		goto ExitPt;
 
@@ -237,11 +237,11 @@ ExitPt:
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(const CPath& path)
 {
-	return StartVideoInt(path);
+	return StartVideoInt(path, NULL);
 }
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
+tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	Boolean		b;
@@ -262,6 +262,7 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path)
 	hVideo = reinterpret_cast<tVideoHndl>(pVidCtx);
 	pVidCtx->pFileVideo = file;
 	pVidCtx->pPathVideo = new CPath(filepath);
+	pVidCtx->pSurfVideo = pSurf;
 
 	if (filepath.rfind(".ogg") != std::string::npos 
 			|| filepath.rfind(".OGG") != std::string::npos) {
