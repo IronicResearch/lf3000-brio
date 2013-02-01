@@ -35921,3 +35921,14 @@ By Dave Milici (dmilici@leapfrog.com) on 1/31/13 5:58 PM
 6,006 ms. (Cumulative: 14,344,533 ms)
 
 ----------------
+Revision 10,108 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,109 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Redirect sysroot path to host root for x86 emulation libs.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 1/31/13 6:23 PM
+1 changed, 0 added, 0 deleted.
+6,143 ms. (Cumulative: 14,350,776 ms)
+
+----------------
