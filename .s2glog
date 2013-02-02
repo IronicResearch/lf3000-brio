@@ -36015,3 +36015,14 @@ By dlazzari (dlazzari@leapfrog.com) on 2/2/13 2:16 PM
 77,263 ms. (Cumulative: 14,609,838 ms)
 
 ----------------
+Revision 10,120 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+GStreamer player uses simplified video thread for monitoring stream messages.
+Provides compatible playback behavior for high-level & low-level StartVideo() methods.
+Note registration of video sink objects remains persistent during unit test re-inits.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/13 3:11 PM
+4 changed, 0 added, 0 deleted.
+6,344 ms. (Cumulative: 14,616,276 ms)
+
+----------------
