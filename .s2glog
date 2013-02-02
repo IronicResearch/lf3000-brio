@@ -35988,3 +35988,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/1/13 7:16 PM
 5,860 ms. (Cumulative: 14,513,851 ms)
 
 ----------------
+Revision 10,117 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+GStreamer video stream info query needs to wait for pipeline to be in running state.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/13 11:55 AM
+1 changed, 0 added, 0 deleted.
+6,173 ms. (Cumulative: 14,520,117 ms)
+
+----------------
