@@ -30,9 +30,9 @@ def SetPlatformFlags(env):
 	env.Append(CPPDEFINES = ['LIGHTNING', 'LF_USE_CPP_NAMESPACES', 'SET_DEBUG_LEVEL_DISABLE'])
 
 def SetPlatformIncludePaths(env):
-	env.Append(CPPPATH = ['#System/Include', 
-						'#System/IncludePriv',
-                        '#ThirdParty/boost'])
+	env.Append(CPPPATH = [os.path.join('#', 'System', 'Include'),
+			      os.path.join('#', 'System', 'IncludePriv'),
+                              os.path.join('#', 'ThirdParty', 'boost', 'Include') ] )
 
 def SetPlatformLibraryPaths(env):
 	env.Append(LIBPATH = '')
