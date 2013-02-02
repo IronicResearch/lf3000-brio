@@ -448,11 +448,19 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // Set the pipeline to "playing" state
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
 
+    // Wait for pipeline to change state before querying video stream info
+	do {
+		GstMessage* msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_STATE_CHANGED);
+		if (GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
+			GstState old_state, new_state, pending_state;
+			gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
+			if (new_state == GST_STATE_PLAYING)
+				break;
+		}
+	} while (true);
+
     // Cache video info
     GetVideoInfo(hVideo, &pVidCtx->info);
-    pVidCtx->info.width = 480; // FIXME
-    pVidCtx->info.height = 272;
-    pVidCtx->info.fps = 30;
 
     return true;
 }
@@ -488,6 +496,8 @@ Boolean CGStreamerPlayer::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 {
 	GstPad *pad = gst_element_get_static_pad(m_videoBin, "sink");
 	GstCaps *caps = gst_pad_get_negotiated_caps(pad);
+	if (!caps)
+		caps = gst_pad_get_caps_reffed(pad);
 	if (caps) {
 		GstStructure *data = gst_caps_get_structure(caps, 0);
 		gint x, y;
