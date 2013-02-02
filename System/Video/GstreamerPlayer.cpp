@@ -29,7 +29,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 // Local Implementation for VideoSink derived classes
 //==============================================================================
 
-static GstVideoSinkClass*   parentClass;
+static GstVideoSinkClass*   parentClass = NULL;
 
 enum VideoFormat {
     VideoFormat_YUV,
@@ -302,7 +302,15 @@ static gboolean bus_call(GstBus *bus,
 
 		g_main_loop_quit(loop);
 		break;
-	}
+		}
+
+	case GST_MESSAGE_STATE_CHANGED: {
+		GstState old_state, new_state, pending_state;
+		gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
+		g_print("State change: %d to %d, pending %d\n", old_state, new_state, pending_state);
+		break;
+		}
+
 	default:
 		break;
 	}
@@ -359,10 +367,12 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
         gst_object_ref(GST_OBJECT(m_videoSink)); // Take ownership
         gst_object_sink(GST_OBJECT(m_videoSink));
         VideoSinkBase*  sink = reinterpret_cast<VideoSinkBase*>(m_videoSink);
-        sink->width  = surf->width;
-        sink->height = surf->height;
-        sink->pitch  = surf->pitch;
-        sink->buffer = surf->buffer;
+        if (surf) {
+			sink->width  = surf->width;
+			sink->height = surf->height;
+			sink->pitch  = surf->pitch;
+			sink->buffer = surf->buffer;
+        }
     }
 
     // Create video pipeline
@@ -393,7 +403,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     GstElement *conv, *sink;
     GstBus *bus;
     guint bus_watch_id;
-    GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+    loop = g_main_loop_new(NULL, FALSE);
 
     // Create gstreamer playbin pipeline to auto-construct demuxer/decoders
     pipeline = gst_element_factory_make("playbin2", "gstreamer-player");
@@ -445,6 +455,12 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // Connect video pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "video-sink", m_videoBin, (const char*)NULL);
 
+    if (!surf) {
+        // Set the pipeline to "paused" state
+        gst_element_set_state(pipeline, GST_STATE_PAUSED);
+        return true;
+    }
+
     // Set the pipeline to "playing" state
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
 
@@ -472,6 +488,7 @@ Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 	gst_object_unref(GST_OBJECT(pipeline));
 	gst_object_unref(GST_OBJECT(m_videoBin));
 //	gst_object_unref(GST_OBJECT(m_audioBin));
+	gst_object_unref(GST_OBJECT(m_videoSink));
 	return true;
 }
 

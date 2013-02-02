@@ -64,6 +64,8 @@ private:
     GstElement  	*m_audioBin;
     GstElement  	*m_audioplug;
     GstElement  	*pipeline;
+public:
+    GMainLoop 		*loop;
 };
 
 LF_END_BRIO_NAMESPACE()	

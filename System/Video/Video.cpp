@@ -221,10 +221,6 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 	pVidCtx->bSeeked	= false;
 	pVidCtx->pModule 	= this;
 
-	// GStreamer player creates its own playback thread
-	if (dynamic_cast<CGStreamerPlayer*>(pVidCtx->pPlayer))
-		goto ExitPt;
-		
 	InitVideoTask(pVidCtx);	
 
 ExitPt:

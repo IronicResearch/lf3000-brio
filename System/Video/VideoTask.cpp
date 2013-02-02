@@ -19,6 +19,7 @@
 #include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <VideoPriv.h>
+#include <GStreamerPlayer.h>
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -323,6 +324,33 @@ void* VideoTaskMain( void* arg )
 }
 
 //----------------------------------------------------------------------------
+void* VideoTaskMainGStreamer( void* arg )
+{
+	CDebugMPI		dbg(kGroupVideo);
+	CDisplayMPI 	dispmgr;
+	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
+	CVideoModule*	vidmgr = pctx->pModule;
+	CGStreamerPlayer* player = dynamic_cast<CGStreamerPlayer*>(pctx->pPlayer);
+
+	// Sync video thread startup with InitVideoTask()
+	bRunning = pctx->bPlaying = true;
+	dbg.DebugOut( kDbgLvlImportant, "VideoTask Started...(%p)\n", pctx );
+	dispmgr.Invalidate(0, NULL);
+
+	while (bRunning)
+	{
+		// GStreamer message loop
+		g_main_loop_run(player->loop);
+		bRunning = pctx->bPlaying = false;
+	}
+
+	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
+	bStopping = true;
+	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...(%p)\n", pctx );
+	return pctx;
+}
+
+//----------------------------------------------------------------------------
 tErrType InitVideoTask( tVideoContext* pCtx )
 {
 	CDebugMPI	dbg(kGroupVideo);
@@ -338,7 +366,9 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	pCtx->pAudioMPI = new CAudioMPI();
 	
 	// Setup task properties
-	prop.TaskMainFcn = (void* (*)(void*))VideoTaskMain;
+	prop.TaskMainFcn = VideoTaskMain;
+	if (dynamic_cast<CGStreamerPlayer*>(pCtx->pPlayer))
+		prop.TaskMainFcn = VideoTaskMainGStreamer;
 	prop.taskMainArgCount = 1;
 	prop.pTaskMainArgValues = pCtx;
 	prop.stackSize = 4 * PTHREAD_STACK_MIN; // 64 * 1024;
