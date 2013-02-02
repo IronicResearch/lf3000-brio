@@ -37,6 +37,8 @@ def ExportHeaders(dest_dir, src_dir, file_extension):
 if env['hdr_deploy_dir']:
 	ExportHeaders(env['hdr_deploy_dir'].Dir('boost').abspath,
 					Dir('boost').Dir('boost').abspath, '.hpp')
+	ExportHeaders(env['hdr_deploy_dir'].Dir('boost').abspath,
+					Dir('boost').Dir('boost').abspath, '.ipp')
 	ExportHeaders(env['hdr_deploy_dir'].Dir('ustring').abspath,
 					Dir('ustring').abspath, '.h')
 	ExportHeaders(env['hdr_deploy_dir'].Dir('freetype').abspath,

@@ -35997,3 +35997,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/2/13 11:55 AM
 6,173 ms. (Cumulative: 14,520,117 ms)
 
 ----------------
+Revision 10,118 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Backport asio and dependencies from boost 1.49.0 to whatever boost we have now. I have not verified that the new libraries work as intended, only that this doesn't seem to break Lightning2D as the full upgrade did.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/2/13 2:14 PM
+2 changed, 538 added, 0 deleted.
+12,255 ms. (Cumulative: 14,532,465 ms)
+
+----------------

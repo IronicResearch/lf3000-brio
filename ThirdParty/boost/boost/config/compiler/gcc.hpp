@@ -100,6 +100,7 @@
 // gcc post 3.4, so any failures are gcc regressions...
 //#     warning "Unknown compiler version - please run the configure tests and report the results"
 #  endif
+#  define BOOST_SYMBOL_VISIBLE __attribute__((visibility("default")))
 #endif
 
 
