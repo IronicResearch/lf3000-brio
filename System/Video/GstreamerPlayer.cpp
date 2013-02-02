@@ -389,6 +389,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     gst_object_unref(videopad);
 
     // Create audio pipeline (per gstreamer example)
+    // http://docs.gstreamer.com/display/GstSDK/Playback+tutorial+7%3A+Custom+playbin2+sinks
     GstElement *conv, *sink;
     GstBus *bus;
     guint bus_watch_id;
@@ -404,9 +405,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     flags &= ~GST_PLAY_FLAG_TEXT;
     g_object_set(pipeline, "flags", flags, NULL);
 
-    conv     = gst_element_factory_make("audioconvert",  "converter");
-    sink     = gst_element_factory_make("autoaudiosink", "audio-output");
-
     // we set the input filename to the source element
     CURI uri = CURI("file://") + CURI(*path);
     g_object_set(G_OBJECT(pipeline), "uri", uri.c_str(), NULL);
@@ -416,12 +414,15 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     bus_watch_id = gst_bus_add_watch(bus, bus_call, loop);
     gst_object_unref(bus);
 
+#if 0
     // Create audio bin element for audio output pipeline
     m_audioBin = gst_bin_new(NULL);
     gst_object_ref(GST_OBJECT(m_audioBin)); // Take ownership
     gst_object_sink(GST_OBJECT(m_audioBin));
 
     GstElement* audioplug = gst_element_factory_make("identity", NULL);
+    conv     = gst_element_factory_make("audioconvert",  "converter");
+    sink     = gst_element_factory_make("autoaudiosink", "audio-output");
 
     // we add all elements into the pipeline
     // file-source | ogg-demuxer | vorbis-decoder | converter | alsa-output
@@ -439,6 +440,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Connect audio pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "audio-sink", m_audioBin, (const char*)NULL);
+#endif
 
     // Connect video pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "video-sink", m_videoBin, (const char*)NULL);
@@ -446,7 +448,13 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // Set the pipeline to "playing" state
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
 
-	return true;
+    // Cache video info
+    GetVideoInfo(hVideo, &pVidCtx->info);
+    pVidCtx->info.width = 480; // FIXME
+    pVidCtx->info.height = 272;
+    pVidCtx->info.fps = 30;
+
+    return true;
 }
 
 //----------------------------------------------------------------------------
@@ -455,50 +463,93 @@ Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 	gst_element_set_state(pipeline, GST_STATE_NULL);
 	gst_object_unref(GST_OBJECT(pipeline));
 	gst_object_unref(GST_OBJECT(m_videoBin));
-	gst_object_unref(GST_OBJECT(m_audioBin));
+//	gst_object_unref(GST_OBJECT(m_audioBin));
 	return true;
 }
 
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 {
-	return false;
+    gst_element_set_state(pipeline, GST_STATE_PAUSED);
+    gst_element_send_event(m_videoBin,
+    		gst_event_new_step(GST_FORMAT_BUFFERS, 1, 1.0, TRUE, FALSE));
+	return true;
 }
 
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::PutVideoFrame(tVideoHndl hVideo, tVideoSurf* pCtx)
 {
+	// handled in VideoSink.render()
 	return false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::GetVideoInfo(tVideoHndl hVideo, tVideoInfo* pInfo)
 {
+	GstPad *pad = gst_element_get_static_pad(m_videoBin, "sink");
+	GstCaps *caps = gst_pad_get_negotiated_caps(pad);
+	if (caps) {
+		GstStructure *data = gst_caps_get_structure(caps, 0);
+		gint x, y;
+		if (gst_structure_get_int(data, "width", &x))
+			pInfo->width = x;
+		if (gst_structure_get_int(data, "height", &y))
+			pInfo->height = y;
+		if (gst_structure_get_fraction(data, "framerate", &x, &y))
+			pInfo->fps = x / y;
+		gst_caps_unref(caps);
+		gst_object_unref(pad);
+		return true;
+	}
 	return false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::GetVideoTime(tVideoHndl hVideo, tVideoTime* pTime)
 {
-	return false;
+	Boolean ret = false;
+	gint64 position;
+	GstFormat format = GST_FORMAT_TIME;
+	if (ret = gst_element_query_position(pipeline, &format, &position))
+		pTime->time = GST_TIME_AS_MSECONDS(position);
+	format = GST_FORMAT_DEFAULT;
+	if (ret = gst_element_query_position(pipeline, &format, &position))
+		pTime->frame = position;
+	return ret;
 }
 
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bDrop)
 {
+	gint64 position = pCtx->frame;
+	GstFormat format = GST_FORMAT_DEFAULT;
+	GstSeekFlags flags = GST_SEEK_FLAG_FLUSH | (bDrop) ? GST_SEEK_FLAG_SKIP : GST_SEEK_FLAG_ACCURATE;
+	if (gst_element_seek_simple(pipeline, format, flags, position))
+		return true;
 	return false;
 }
 
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::SeekVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean bExact, Boolean bUpdateVideoDisplay)
 {
+	gint64 position = pCtx->frame;
+	GstFormat format = GST_FORMAT_DEFAULT;
+	GstSeekFlags flags = GST_SEEK_FLAG_FLUSH | (bExact) ? GST_SEEK_FLAG_ACCURATE : GST_SEEK_FLAG_KEY_UNIT;
+	if (gst_element_seek_simple(pipeline, format, flags, position))
+		return true;
 	return false;
 }
 
+//----------------------------------------------------------------------------
 S64 CGStreamerPlayer::GetVideoLength(tVideoHndl hVideo)
 {
+	gint64 duration;
+	GstFormat format = GST_FORMAT_TIME;
+	if (gst_element_query_duration(pipeline, &format, &duration))
+		return GST_TIME_AS_MSECONDS(duration);
 	return 0;
 }
+
 LF_END_BRIO_NAMESPACE()	
 
 // EOF

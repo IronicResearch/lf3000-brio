@@ -35978,3 +35978,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/1/13 1:28 PM
 5,845 ms. (Cumulative: 14,507,881 ms)
 
 ----------------
+Revision 10,116 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+GStreamer player support functions for seeking, time queries added.
+Video info params not queryable yet (API funky).
+
+By Dave Milici (dmilici@leapfrog.com) on 2/1/13 7:16 PM
+1 changed, 0 added, 0 deleted.
+5,860 ms. (Cumulative: 14,513,851 ms)
+
+----------------
