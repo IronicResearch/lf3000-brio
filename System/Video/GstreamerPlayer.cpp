@@ -401,9 +401,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // Create audio pipeline (per gstreamer example)
     // http://docs.gstreamer.com/display/GstSDK/Playback+tutorial+7%3A+Custom+playbin2+sinks
     GstElement *conv, *sink;
-    GstBus *bus;
-    guint bus_watch_id;
-    loop = g_main_loop_new(NULL, FALSE);
 
     // Create gstreamer playbin pipeline to auto-construct demuxer/decoders
     pipeline = gst_element_factory_make("playbin2", "gstreamer-player");
@@ -421,8 +418,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // we add a message handler
     bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
-    bus_watch_id = gst_bus_add_watch(bus, bus_call, loop);
-    gst_object_unref(bus);
 
 #if 0
     // Create audio bin element for audio output pipeline
@@ -489,6 +484,7 @@ Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 	gst_object_unref(GST_OBJECT(m_videoBin));
 //	gst_object_unref(GST_OBJECT(m_audioBin));
 	gst_object_unref(GST_OBJECT(m_videoSink));
+    gst_object_unref(bus);
 	return true;
 }
 

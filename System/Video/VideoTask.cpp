@@ -327,10 +327,13 @@ void* VideoTaskMain( void* arg )
 void* VideoTaskMainGStreamer( void* arg )
 {
 	CDebugMPI		dbg(kGroupVideo);
+	CKernelMPI		kernel;
 	CDisplayMPI 	dispmgr;
 	tVideoContext*	pctx = static_cast<tVideoContext*>(arg);
 	CVideoModule*	vidmgr = pctx->pModule;
 	CGStreamerPlayer* player = dynamic_cast<CGStreamerPlayer*>(pctx->pPlayer);
+	GstMessage* 	msg;
+	tVideoTime		vtm0 = {0, 0};
 
 	// Sync video thread startup with InitVideoTask()
 	bRunning = pctx->bPlaying = true;
@@ -340,8 +343,53 @@ void* VideoTaskMainGStreamer( void* arg )
 	while (bRunning)
 	{
 		// GStreamer message loop
-		g_main_loop_run(player->loop);
-		bRunning = pctx->bPlaying = false;
+		msg = gst_bus_timed_pop_filtered(player->bus, GST_SECOND, GST_MESSAGE_ANY);
+		if (msg) {
+			switch (GST_MESSAGE_TYPE(msg)) {
+			case GST_MESSAGE_ERROR: {
+				gchar  *debug;
+				GError *error;
+				gst_message_parse_error(msg, &error, &debug);
+				dbg.DebugOut( kDbgLvlImportant, "Error: %s\n", error->message );
+				g_free(debug);
+				g_error_free(error);
+				pctx->bPlaying = false;
+				break;
+				}
+			case GST_MESSAGE_EOS:
+				dbg.DebugOut( kDbgLvlImportant, "End of stream\n" );
+				pctx->bPlaying = false;
+				break;
+			case GST_MESSAGE_STATE_CHANGED:
+				if (GST_MESSAGE_SRC(msg) == GST_OBJECT(player->pipeline)) {
+					GstState old_state, new_state, pending_state;
+					gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
+					dbg.DebugOut( kDbgLvlImportant, "State changed %d to %d\n", old_state, new_state );
+					if (new_state == GST_STATE_NULL)
+						pctx->bPlaying = false;
+				}
+				break;
+			}
+			gst_message_unref(msg);
+		}
+
+		// VideoMPI Paused state?
+		if (pctx->bPaused) {
+			gst_element_set_state(player->pipeline, GST_STATE_PAUSED);
+			while (pctx->bPaused)
+				kernel.TaskSleep(10);
+			gst_element_set_state(player->pipeline, GST_STATE_PLAYING);
+		}
+
+		// VideoMPI Playing state?
+		if (pctx->bPlaying)
+			continue;
+
+		// Reloop from 1st video frame if selected, or exit thread
+		if (bRunning && pctx->bLooped)
+			bRunning = pctx->bPlaying = vidmgr->SeekVideoFrame(pctx->hVideo, &vtm0, true, false);
+		else
+			bRunning = pctx->bPlaying = false;
 	}
 
 	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
