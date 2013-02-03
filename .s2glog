@@ -36026,3 +36026,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/2/13 3:11 PM
 6,344 ms. (Cumulative: 14,616,276 ms)
 
 ----------------
+Revision 10,121 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Use locally pumped gstreamer message thread instead of modal glib loop.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/2/13 4:14 PM
+3 changed, 0 added, 0 deleted.
+6,173 ms. (Cumulative: 14,622,527 ms)
+
+----------------
