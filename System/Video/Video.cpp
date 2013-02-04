@@ -260,21 +260,27 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
 	pVidCtx->pPathVideo = new CPath(filepath);
 	pVidCtx->pSurfVideo = pSurf;
 
-	if (filepath.rfind(".ogg") != std::string::npos 
-			|| filepath.rfind(".OGG") != std::string::npos) {
-		// Create Theora video player object
 #if USE_GSTREAMER
+	// GStreamer player preferable for long videos
+	#define LONG_VIDEO  (1024 << 10)
+	struct stat stbf;
+	if (pSurf && stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO) {
 		CGStreamerPlayer* pPlayer = new CGStreamerPlayer();
-#else
-		CAVIPlayer* 	pPlayer = new CAVIPlayer();
-#endif
 		pVidCtx->pPlayer = pPlayer;
+		b = InitVideoInt(hVideo);
+		if (!b) {
+			dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: GStreamer failed for %s\n", filename);
+			DeInitVideoInt(hVideo);
+			delete pPlayer;
+			pVidCtx->pPlayer = NULL;
+		}
+		else
+			goto Success;
 	}
-	else if (filepath.rfind(".avi") != std::string::npos
-			|| filepath.rfind(".AVI") != std::string::npos
-			|| filepath.rfind(".mp4") != std::string::npos
-			|| filepath.rfind(".MP4") != std::string::npos) {
-		// Create AVI video player object
+#endif
+
+	// Create AVI video player object
+	if (!pVidCtx->pPlayer) {
 		CAVIPlayer* 	pPlayer = new CAVIPlayer();
 		pVidCtx->pPlayer = pPlayer;
 	}
@@ -290,6 +296,7 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
 		return kInvalidVideoHndl;
 	}
 
+Success:
 	// Track video handle	
 	ghVideoList.push_back(hVideo);
 	return ghVideoHndl = hVideo;

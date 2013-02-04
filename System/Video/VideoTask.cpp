@@ -343,7 +343,7 @@ void* VideoTaskMainGStreamer( void* arg )
 	while (bRunning)
 	{
 		// GStreamer message loop
-		msg = gst_bus_timed_pop_filtered(player->bus, GST_SECOND, GST_MESSAGE_ANY);
+		msg = gst_bus_timed_pop_filtered(player->bus, 100 * GST_MSECOND, GST_MESSAGE_ANY);
 		if (msg) {
 			switch (GST_MESSAGE_TYPE(msg)) {
 			case GST_MESSAGE_ERROR: {
@@ -365,8 +365,6 @@ void* VideoTaskMainGStreamer( void* arg )
 					GstState old_state, new_state, pending_state;
 					gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
 					dbg.DebugOut( kDbgLvlImportant, "State changed %d to %d\n", old_state, new_state );
-					if (new_state == GST_STATE_NULL)
-						pctx->bPlaying = false;
 				}
 				break;
 			}

@@ -36,6 +36,7 @@ myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'glib-2.0')])
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'gstreamer-0.10')])
 myenv.Append(CPPPATH = [os.path.join(nfsroot, 'usr', 'include', 'libxml2')])
 myenv.Append(LIBPATH = [os.path.join(nfsroot, 'usr', 'lib')])
+myenv.Append(CPPDEFINES = ['USE_GSTREAMER=1'])
 myenv.Append(CPPDEFINES = ['HAVE_CONFIG_H', 'G_THREADS_MANDATORY', 'G_DISABLE_CAST_CHECKS', 'G_DISABLE_ASSERT'])
 
 myenv.Append(CPPPATH = ['#ThirdParty/LibAVFormat/Include'])
