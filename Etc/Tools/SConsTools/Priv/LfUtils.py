@@ -54,7 +54,7 @@ def MakeMyModule(penv, ptarget, psources, plibs, ptype):
 		
 		#Setup mapfile name, it will go into the Temp/"Platform" directory
 		mapfile = bldenv['intermediate_dir'].File('lib' + ptarget + '.map')
-		bldenv.Append(LINKFLAGS = ' -Wl,-Map=' + mapfile.abspath)
+		bldenv.Append(LINKFLAGS = ['-Wl,-Map=' + mapfile.abspath])
 		
 		if bldenv['debug']:
 			bldenv.Append(CCFLAGS = '-g -O0')
@@ -144,7 +144,7 @@ def RunMyTests(ptarget, psources, plibs, penv):
 	
 	platformlibs = ['DebugMPI']
 	if penv['cpu'] == 'x86':
-		platformlibs += ['glibmm-2.4', 'glib-2.0', 'pthread']
+		platformlibs += ['pthread']
 	else:
 		platformlibs += ['dl', 'pthread', 'rt']
 		if penv['deploylibs']:

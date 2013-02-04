@@ -39,7 +39,6 @@ toolpath2 = os.path.join(toolpath1, 'Priv')
 global_tools = ['cxxtest', 'runtest', 'metainf']
 
 master_env = Environment(variables = opts, toolpath = [toolpath1, toolpath2], tools = global_tools)
-master_env.PrependENVPath( 'PATH', os.environ['PATH'] )
 master_env.Tool('default')
 
 Help(opts.GenerateHelpText(master_env))
@@ -121,6 +120,7 @@ environments['embedded']['install_dir'] = master_env['embedded_root']
 environments['embedded']['cpu'] = 'arm-' + environments['embedded']['libc']
 environments['embedded']['cpu_bare'] = 'arm'
 environments['embedded'].Prepend(LIBPATH = [environments['embedded']['build_dir'].Dir('MPI')])
+environments['embedded'].PrependENVPath( 'PATH', os.environ['PATH'] )
 #TODO: This should point at staging and all required libs should be populated by their respective builds
 environments['embedded'].Append(LIBPATH = [environments['embedded']['embedded_root'].Dir('lib') ] )
 
