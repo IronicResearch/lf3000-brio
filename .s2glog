@@ -36035,3 +36035,15 @@ By Dave Milici (dmilici@leapfrog.com) on 2/2/13 4:14 PM
 6,173 ms. (Cumulative: 14,622,527 ms)
 
 ----------------
+Revision 10,122 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Allow timeouts when querying gstreamer ready state on init.
+Since short videos take longer for gstreamer to startup than play,
+use conditional policy to select gstreamer for long videos > 1MB.
+Otherwise fallback to libavcodec players for default playback.
+
+By Dave Milici (dmilici@leapfrog.com) on 2/4/13 10:44 AM
+4 changed, 0 added, 0 deleted.
+6,221 ms. (Cumulative: 14,628,842 ms)
+
+----------------

@@ -374,6 +374,10 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 			sink->buffer = surf->buffer;
         }
     }
+    else {
+    	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: video sink failed\n");
+    	return false;
+    }
 
     // Create video pipeline
     m_videoBin = gst_bin_new(NULL);
@@ -388,6 +392,11 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // We need a queue to support the tee from parent node
     GstElement *queue = gst_element_factory_make("queue", NULL);
+
+    if (!m_videoBin || !m_videoplug || !m_colorspace || !queue) {
+    	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: video pipeline elements missing\n");
+    	return false;
+    }
 
     // Link video pipeline elements as single bin element
     gst_bin_add_many(GST_BIN(m_videoBin), queue, m_colorspace, m_videoplug, m_videoSink, (const char*)NULL);
@@ -419,7 +428,6 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // we add a message handler
     bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
 
-#if 0
     // Create audio bin element for audio output pipeline
     m_audioBin = gst_bin_new(NULL);
     gst_object_ref(GST_OBJECT(m_audioBin)); // Take ownership
@@ -428,6 +436,11 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     GstElement* audioplug = gst_element_factory_make("identity", NULL);
     conv     = gst_element_factory_make("audioconvert",  "converter");
     sink     = gst_element_factory_make("autoaudiosink", "audio-output");
+
+    if (!m_audioBin || !audioplug || !conv || !sink) {
+    	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: audio pipeline elements missing\n");
+    	return false;
+    }
 
     // we add all elements into the pipeline
     // file-source | ogg-demuxer | vorbis-decoder | converter | alsa-output
@@ -445,30 +458,31 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Connect audio pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "audio-sink", m_audioBin, (const char*)NULL);
-#endif
 
     // Connect video pipeline bin as playbin sink
     g_object_set(G_OBJECT(pipeline), "video-sink", m_videoBin, (const char*)NULL);
-
-    if (!surf) {
-        // Set the pipeline to "paused" state
-        gst_element_set_state(pipeline, GST_STATE_PAUSED);
-        return true;
-    }
 
     // Set the pipeline to "playing" state
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
 
     // Wait for pipeline to change state before querying video stream info
-	do {
-		GstMessage* msg = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, GST_MESSAGE_STATE_CHANGED);
-		if (GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
-			GstState old_state, new_state, pending_state;
+	GstState old_state, new_state, pending_state;
+	for (int i = 0; i < 10; ) {
+		GstMessage* msg = gst_bus_timed_pop_filtered(bus, 100 * GST_MSECOND, GST_MESSAGE_STATE_CHANGED);
+		if (msg && GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
 			gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
 			if (new_state == GST_STATE_PLAYING)
 				break;
 		}
-	} while (true);
+		if (msg == NULL)
+			i++;
+	}
+
+	// GStreamer pipeline should be ready
+	if (new_state != GST_STATE_PLAYING) {
+    	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: pipeline not ready\n");
+    	return false;
+	}
 
     // Cache video info
     GetVideoInfo(hVideo, &pVidCtx->info);
@@ -482,7 +496,7 @@ Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 	gst_element_set_state(pipeline, GST_STATE_NULL);
 	gst_object_unref(GST_OBJECT(pipeline));
 	gst_object_unref(GST_OBJECT(m_videoBin));
-//	gst_object_unref(GST_OBJECT(m_audioBin));
+	gst_object_unref(GST_OBJECT(m_audioBin));
 	gst_object_unref(GST_OBJECT(m_videoSink));
     gst_object_unref(bus);
 	return true;
@@ -491,7 +505,6 @@ Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CGStreamerPlayer::GetVideoFrame(tVideoHndl hVideo, void* pCtx)
 {
-    gst_element_set_state(pipeline, GST_STATE_PAUSED);
     gst_element_send_event(m_videoBin,
     		gst_event_new_step(GST_FORMAT_BUFFERS, 1, 1.0, TRUE, FALSE));
 	return true;
