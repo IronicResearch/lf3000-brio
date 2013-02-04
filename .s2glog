@@ -36047,3 +36047,12 @@ By Dave Milici (dmilici@leapfrog.com) on 2/4/13 10:44 AM
 6,221 ms. (Cumulative: 14,628,842 ms)
 
 ----------------
+Revision 10,123 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change emulation to use pkg-config for include and link paths for glib-2.0 and glibmm-2.4. This allows it to build on Ubuntu 12.04 without path hacks.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/4/13 2:14 PM
+4 changed, 0 added, 0 deleted.
+6,282 ms. (Cumulative: 14,635,218 ms)
+
+----------------
