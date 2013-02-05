@@ -172,7 +172,7 @@ void CDisplayFB::InitModule()
 	gBufListUsed.clear();
 	gBufListFree.clear();
 	gMarkBufStart = xres * yres * 2 * 4;//2 screens worth and 4 bytes per pixel.  Reserving for EGL.
-	gMarkBufEnd   = finfo[RGBFB].smem_len + finfo[OGLFB].smem_len + finfo[YUVFB].smem_len;
+	gMarkBufEnd   = finfo[RGBFB].smem_len + finfo[YUVFB].smem_len;
 
 	// Pre-allocate OGL display contexts compatible with Nexell EGL framebuffer usage
 	//hdcogl[0] = CreateHandle(yres, xres, kPixelFormatARGB8888, NULL);
@@ -388,7 +388,9 @@ tDisplayHandle CDisplayFB::CreateHandle(U16 height, U16 width, tPixelFormat colo
 			return kInvalidDisplayHandle;
 		}
 		// Clear the onscreen display buffer
+		printf("%s:%s:%d ctx->pBuffer=%p, ctx->pitch=%d, ctx->height=%d\n", __FILE__, __FUNCTION__, __LINE__, ctx->pBuffer, (int)ctx->pitch, (int)ctx->height);
 		memset(ctx->pBuffer, 0, ctx->pitch * ctx->height);
+		printf("%s:%s:%d\n", __FILE__, __FUNCTION__, __LINE__);
 
 		//For scaling up tutorials and other 2D content
 		//Check to make sure pBuffer is NULL (some things like OpenGL pass in a address, but it already does it's own scale
@@ -1292,17 +1294,21 @@ bool CDisplayFB::AllocBuffer(tDisplayContext* pdc, U32 aligned)
 	// Allocate another buffer from the heap
 	if (aligned) {
 		// Allocate aligned buffer from end of heap (OGL, YUV)
-		if (gMarkBufEnd - bufsize < gMarkBufStart) {	
+		if (gMarkBufEnd - bufsize < gMarkBufStart) {
 			kernel_.UnlockMutex(gListMutex);
 			return false;
 		}
-		pdc->offset = gMarkBufEnd - bufsize - finfo[RGBFB].smem_len - finfo[OGLFB].smem_len;
+		pdc->offset = gMarkBufEnd - bufsize - finfo[RGBFB].smem_len;
 		pdc->pBuffer += pdc->offset;
 //		gMarkBufEnd -= bufsize;
 	}
 	else {
 		// Allocate unaligned buffer at top of heap if there's room
 		if (gMarkBufStart + bufsize > gMarkBufEnd) {	
+			kernel_.UnlockMutex(gListMutex);
+			return false;
+		}
+		if(gMarkBufStart + bufsize > finfo[RGBFB].smem_len)  {
 			kernel_.UnlockMutex(gListMutex);
 			return false;
 		}

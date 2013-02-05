@@ -36056,3 +36056,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/4/13 2:14 PM
 6,282 ms. (Cumulative: 14,635,218 ms)
 
 ----------------
+Revision 10,124 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+More accurate tracking of RGB buffer memory.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/5/13 1:15 PM
+1 changed, 0 added, 0 deleted.
+6,268 ms. (Cumulative: 14,641,580 ms)
+
+----------------
