@@ -82,7 +82,7 @@ typedef U32 tU32NumSpace;
 #define kU32LastNumSpaceTag			kU32NumSpaceTagBMask
 #define kWildcardNumSpaceTag		kU32NumSpaceTagBMask
 
-#define MakeU32NumSpace(domain, group, tag) ((tU32NumSpace)(			\
+#define MakeU32NumSpace(domain, group, tag) ((LeapFrog::Brio::tU32NumSpace)(			\
 				((domain & kU32NumSpaceDomainBMask) << kU32NumSpaceDomainBShift) |	\
 				((group & kU32NumSpaceGroupBMask) << kU32NumSpaceGroupBShift) |		\
 				((tag & kU32NumSpaceTagBMask) << kU32NumSpaceTagBShift)				\
@@ -109,7 +109,7 @@ typedef U16 tU16NumSpace;
 #define kU16NumSpaceGroupBMask		(0x1F)
 #define kU16NumSpaceTagBMask		(0x1F)
 
-#define MakeU16NumSpace(domain, group, tag) ((tU16NumSpace)(			\
+#define MakeU16NumSpace(domain, group, tag) ((LeapFrog::Brio::tU16NumSpace)(			\
 				((domain & kU16NumSpaceDomainBMask) << kU16NumSpaceDomainBShift) |	\
 				((group & kU16NumSpaceGroupBMask) << kU16NumSpaceGroupBShift) |		\
 				((tag & kU16NumSpaceTagBMask) << kU16NumSpaceTagBShift)				\
@@ -152,7 +152,7 @@ enum {
 	kDataFmtSizeBMask 			= 0x03FF
 };
 
-#define MakeDataFmtVersion(fmtSimpleVersion, fmtSize) 	((tDataFmtVersion) \
+#define MakeDataFmtVersion(fmtSimpleVersion, fmtSize) 	((LeapFrog::Brio::tDataFmtVersion) \
 					((U16)((fmtSimpleVersion & kDataFmtSimpleVersionBMask) << kDataFmtSimpleVersionBShift) | 	\
 					((U16)((fmtSize & kDataFmtSizeBMask) << kDataFmtSizeBShift))
 
@@ -213,9 +213,9 @@ typedef tU32NumSpace 	tObjTypeID;
 
 typedef tU32NumSpace 	tEventType;
 
-#define MakeEventType(domain, group, tag) ((tEventType)MakeU32NumSpace(domain, group, tag))
+#define MakeEventType(domain, group, tag) ((LeapFrog::Brio::tEventType)MakeU32NumSpace(domain, group, tag))
 
-#define kUndefinedEventType	((tEventType)0)
+#define kUndefinedEventType	((LeapFrog::Brio::tEventType)0)
 
 //----------------------------------------------------------------------------
 // Type:
@@ -239,9 +239,9 @@ typedef tU32NumSpace 	tEventType;
 
 typedef tU32NumSpace	tErrType;
 
-#define MakeErrType(domain, group, tag) ((tErrType)MakeU32NumSpace(domain, group, tag))
+#define MakeErrType(domain, group, tag) ((LeapFrog::Brio::tErrType)MakeU32NumSpace(domain, group, tag))
 
-#define kNoErr			static_cast<tErrType>(0)
+#define kNoErr			static_cast<LeapFrog::Brio::tErrType>(0)
 
 
 LF_END_BRIO_NAMESPACE()	
