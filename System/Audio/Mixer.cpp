@@ -454,8 +454,8 @@ CAudioMixer::~CAudioMixer()
 	
 	for (i = 0; i < kAudioMixer_MaxTempBuffers; i++)
 	{
-		delete[] pTmpBufOffsets_[i];
-		pTmpBufOffsets_[i] = NULL;
+		delete[] pTmpBufs_[i];
+		pTmpBufs_[i] = NULL;
 	}
 	
 	for (long i = 0; i < kAudioMixer_MixBinCount; i++)
