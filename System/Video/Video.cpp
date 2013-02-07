@@ -260,11 +260,19 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
 	pVidCtx->pPathVideo = new CPath(filepath);
 	pVidCtx->pSurfVideo = pSurf;
 
+	char flags[256] = "gstreamer";
+	FILE* fp = fopen("/flags/video", "r");
+	if (fp) {
+		fscanf(fp, "%s", &flags[0]);
+		fclose(fp);
+		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: /flags/video = %s\n", flags);
+	}
+
 #if USE_GSTREAMER
 	// GStreamer player preferable for long videos
 	#define LONG_VIDEO  (1024 << 10)
 	struct stat stbf;
-	if (pSurf && stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO) {
+	if (pSurf && stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO && strcmp(flags, "gstreamer") == 0) {
 		CGStreamerPlayer* pPlayer = new CGStreamerPlayer();
 		pVidCtx->pPlayer = pPlayer;
 		b = InitVideoInt(hVideo);
@@ -278,6 +286,12 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
 			goto Success;
 	}
 #endif
+
+	// Create Theora video player
+	if (!pVidCtx->pPlayer && strcmp(flags, "theora") == 0 && filepath.rfind(".ogg") != std::string::npos) {
+		CTheoraPlayer*  pPlayer = new CTheoraPlayer();
+		pVidCtx->pPlayer = pPlayer;
+	}
 
 	// Create AVI video player object
 	if (!pVidCtx->pPlayer) {

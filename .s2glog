@@ -36084,3 +36084,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/6/13 4:23 PM
 6,095 ms. (Cumulative: 14,653,988 ms)
 
 ----------------
+Revision 10,127 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add /flags/video option to select video player type for evaluation.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/6/13 4:31 PM
+1 changed, 0 added, 0 deleted.
+6,283 ms. (Cumulative: 14,660,365 ms)
+
+----------------
