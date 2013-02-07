@@ -36074,3 +36074,13 @@ By dlazzari (dlazzari@leapfrog.com) on 2/6/13 2:13 PM
 6,125 ms. (Cumulative: 14,647,799 ms)
 
 ----------------
+Revision 10,126 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Correct Ginst'ed buffer pointer to free in mixer destructor.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/6/13 4:23 PM
+1 changed, 0 added, 0 deleted.
+6,095 ms. (Cumulative: 14,653,988 ms)
+
+----------------
