@@ -390,6 +390,17 @@ void* VideoTaskMainGStreamer( void* arg )
 			bRunning = pctx->bPlaying = false;
 	}
 
+	// Post done message to event listener
+	if (pctx->pListener)
+	{
+		tVideoMsgData	data;
+		data.hVideo = pctx->hVideo;
+		data.isDone = true;
+		vidmgr->GetVideoTime(data.hVideo, &data.timeStamp);
+		CVideoEventMessage msg(data);
+		pctx->pEventMPI->PostEvent(msg, kVideoEventPriority, pctx->pListener);
+	}
+
 	// Sync video thread shutdown with DeInitVideoTask(), unless we exit ourself normally
 	bStopping = true;
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...(%p)\n", pctx );
