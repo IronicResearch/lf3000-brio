@@ -36114,3 +36114,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/9/13 12:42 PM
 6,188 ms. (Cumulative: 14,672,959 ms)
 
 ----------------
+Revision 10,130 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defensively handle creating/destroying gstreamer objects per player instance.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/9/13 3:04 PM
+1 changed, 0 added, 0 deleted.
+6,361 ms. (Cumulative: 14,679,398 ms)
+
+----------------
