@@ -36094,3 +36094,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/6/13 4:31 PM
 6,283 ms. (Cumulative: 14,660,365 ms)
 
 ----------------
+Revision 10,128 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additional conditional for gstreamer player source with matching audio and video paths. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/8/13 5:38 PM
+2 changed, 0 added, 0 deleted.
+6,220 ms. (Cumulative: 14,666,678 ms)
+
+----------------

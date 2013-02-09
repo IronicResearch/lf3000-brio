@@ -121,7 +121,7 @@ private:
 	friend void			::DestroyInstance(LF_ADD_BRIO_NAMESPACE(ICoreModule*));
 	
 	// Implementation-specific functionality
-    tVideoHndl			StartVideoInt(const CPath& path, tVideoSurf* pSurf);
+    tVideoHndl			StartVideoInt(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf);
     Boolean				InitVideoInt(tVideoHndl hVideo);
     void				DeInitVideoInt(tVideoHndl hVideo);
 };

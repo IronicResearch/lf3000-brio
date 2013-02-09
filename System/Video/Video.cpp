@@ -191,7 +191,7 @@ tVideoHndl CVideoModule::StartVideo(const CPath& path, const CPath& pathAudio, t
 
 
 	// Start Theora codec for selected video file
-	hVideo = StartVideoInt(path, pSurf);
+	hVideo = StartVideoInt(path, pathAudio, pSurf);
 	if (hVideo == kInvalidVideoHndl)
 		goto ExitPt;
 
@@ -233,11 +233,12 @@ ExitPt:
 //----------------------------------------------------------------------------
 tVideoHndl CVideoModule::StartVideo(const CPath& path)
 {
-	return StartVideoInt(path, NULL);
+	CPath pathAudio = "";
+	return StartVideoInt(path, pathAudio, NULL);
 }
 
 //----------------------------------------------------------------------------
-tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
+tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio, tVideoSurf* pSurf)
 {
 	tVideoHndl	hVideo = kInvalidVideoHndl;
 	Boolean		b;
@@ -272,7 +273,7 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, tVideoSurf* pSurf)
 	// GStreamer player preferable for long videos
 	#define LONG_VIDEO  (1024 << 10)
 	struct stat stbf;
-	if (pSurf && stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO && strcmp(flags, "gstreamer") == 0) {
+	if (pSurf && path == pathAudio && stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO && strcmp(flags, "gstreamer") == 0) {
 		CGStreamerPlayer* pPlayer = new CGStreamerPlayer();
 		pVidCtx->pPlayer = pPlayer;
 		b = InitVideoInt(hVideo);
