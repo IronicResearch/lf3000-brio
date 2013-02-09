@@ -344,6 +344,7 @@ static void on_pad_added(GstElement *element,
 
 //----------------------------------------------------------------------------
 CGStreamerPlayer::CGStreamerPlayer()
+	: m_videoSink(NULL), m_videoBin(NULL), m_audioBin(NULL), pipeline(NULL), bus(NULL)
 {
 	gst_init(NULL, NULL);
 }
@@ -381,6 +382,10 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Create video pipeline
     m_videoBin = gst_bin_new(NULL);
+    if (!m_videoBin) {
+    	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: video bin failed\n");
+    	return false;
+    }
     gst_object_ref(GST_OBJECT(m_videoBin)); // Take ownership
     gst_object_sink(GST_OBJECT(m_videoBin));
 
@@ -430,6 +435,10 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Create audio bin element for audio output pipeline
     m_audioBin = gst_bin_new(NULL);
+    if (!m_audioBin) {
+    	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: audio bin failed\n");
+    	return false;
+    }
     gst_object_ref(GST_OBJECT(m_audioBin)); // Take ownership
     gst_object_sink(GST_OBJECT(m_audioBin));
 
@@ -493,12 +502,27 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 {
-	gst_element_set_state(pipeline, GST_STATE_NULL);
-	gst_object_unref(GST_OBJECT(pipeline));
-	gst_object_unref(GST_OBJECT(m_videoBin));
-	gst_object_unref(GST_OBJECT(m_audioBin));
-	gst_object_unref(GST_OBJECT(m_videoSink));
-    gst_object_unref(bus);
+	if (pipeline) {
+		gst_element_set_state(pipeline, GST_STATE_NULL);
+		gst_object_unref(GST_OBJECT(pipeline));
+		pipeline = NULL;
+	}
+	if (m_videoBin) {
+		gst_object_unref(GST_OBJECT(m_videoBin));
+		m_videoBin = NULL;
+	}
+	if (m_audioBin) {
+		gst_object_unref(GST_OBJECT(m_audioBin));
+		m_audioBin = NULL;
+	}
+	if (m_videoSink) {
+		gst_object_unref(GST_OBJECT(m_videoSink));
+		m_videoSink = NULL;
+	}
+	if (bus) {
+		gst_object_unref(bus);
+		bus = NULL;
+	}
 	return true;
 }
 
