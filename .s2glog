@@ -36104,3 +36104,13 @@ By Dave Milici (dmilici@leapfrog.com) on 2/8/13 5:38 PM
 6,220 ms. (Cumulative: 14,666,678 ms)
 
 ----------------
+Revision 10,129 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Post video done event message if listener passed to gstreamer player.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/9/13 12:42 PM
+1 changed, 0 added, 0 deleted.
+6,188 ms. (Cumulative: 14,672,959 ms)
+
+----------------
