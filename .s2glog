@@ -36133,3 +36133,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/9/13 6:02 PM
 6,251 ms. (Cumulative: 14,685,727 ms)
 
 ----------------
+Revision 10,132 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Last checking just got the symlink, so now the actual lib.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/9/13 6:10 PM
+0 changed, 1 added, 0 deleted.
+6,173 ms. (Cumulative: 14,692,009 ms)
+
+----------------
