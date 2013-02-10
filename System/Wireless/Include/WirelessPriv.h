@@ -39,7 +39,7 @@ public:
 	virtual const CString*		GetModuleName() const;	
 	virtual const CURI*		GetModuleOrigin() const;
 	
-	/// Turn on/off Wireless networking adapter.
+	/// Turn on/off Wireless networking adapter (in wpa_supplicant)
 	VTABLE_EXPORT tErrType	SetWirelessPower(Boolean power);
 	
 	/// Get the on/off state of Wireless networking adapter. Returns false if no
@@ -84,6 +84,11 @@ private:
 	DBus::Path GetWirelessTechnology();
 	DBus::Path GetWPAInterface();
 	DBus::Path GetWPANetwork();
+	
+	//ConnMan specific stuff
+	Boolean SetConnManWirelessPower(Boolean power);
+	Boolean GetConnManWirelessPower();
+	
 
 public:
 	static void*	DBusDispatcherTask( void* arg );
@@ -98,6 +103,10 @@ private:
 	DBus::Connection*	mConnection_;
 	org::freedesktop::Avahi::Server* mServer_;
 	org::freedesktop::Avahi::ServiceBrowser* mBrowser_;
+	
+	//Cache and state
+	Boolean			bSavedConnManState_;
+	
 
 };
 

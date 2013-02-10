@@ -90,11 +90,18 @@ CWirelessModule::CWirelessModule() :
 	//TODO: This is to help ensure the dispatch thread is up and running before
 	//      we try and operate on it. Really though, we need a better way to synchronize
 	sleep(1);
+	
+	//Turn off Wireless via ConnMan. This puts us in a known state and should hopefully
+	//keep ConnMan's muddy paws off the network card!
+	bSavedConnManState_ = GetConnManWirelessPower();
+	SetConnManWirelessPower(false);
 }
 
 //----------------------------------------------------------------------------
 CWirelessModule::~CWirelessModule()
 {
+	//Restore ConnMan to it's former state
+	SetConnManWirelessPower(bSavedConnManState_);
 	mDispatcher_->leave();
 	pthread_join(mDispatchTask_, NULL);
 	delete mConnection_;
@@ -165,54 +172,44 @@ DBus::Path CWirelessModule::GetWPANetwork()
 	
 tErrType CWirelessModule::SetWirelessPower(Boolean power)
 {
-	DBus::Path tech_path = GetWirelessTechnology();
-		
-	//Make sure we found a wifi tech
-	if( tech_path == "" )
-	{
-		debug_.DebugOut( kDbgLvlImportant, "Failed to find a WiFi technology in ConnMan.\n" );
-		return kNoWirelessErr;
-	}
-	
 	try
 	{
-		net::connman::Technology tech(*mConnection_, tech_path);
-		DBus::Variant powered;
-		powered.writer().append_bool(power);
-		tech.SetProperty("Powered", powered);
+		fi::w1::WpaSupplicant wpa_supplicant(*mConnection_);
+		if(power)
+		{
+			std::map< std::string, ::DBus::Variant > if_props;
+			
+			DBus::Variant ifname;
+			ifname.writer().append_string("wlan0");
+			if_props["Ifname"] = ifname;
+			
+			DBus::Variant conf_file;
+			conf_file.writer().append_string("/etc/wpa_supplicant.conf");
+			if_props["ConfigFile"] = conf_file;
+			
+			wpa_supplicant.CreateInterface(if_props);
+		}
+		else
+		{
+			DBus::Path interface = GetWPAInterface();
+			wpa_supplicant.RemoveInterface(interface);
+		}
 	}
 	catch(DBus::Error& err)
 	{
-		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
-		return kUnspecifiedErr;
+		if( !( strcmp( err.name(), "fi.w1.wpa_supplicant1.InterfaceExists") == 0 ) &&
+		    !( strcmp( err.name(), "fi.w1.wpa_supplicant1.InterfaceUnknown") == 0 ) )
+		{
+			debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
+		}
+		    
 	}
 	return kNoErr;
 }
 
 Boolean CWirelessModule::GetWirelessPower()
 {
-	DBus::Path tech_path = GetWirelessTechnology();
-	bool ret = false;
-	
-	//Make sure we found a wifi tech
-	if( tech_path == "" )
-	{
-		debug_.DebugOut( kDbgLvlImportant, "Failed to find a WiFi technology in ConnMan.\n" );
-		return false;
-	}
-	
-	try
-	{
-		net::connman::Technology tech(*mConnection_, tech_path);
-		DBus::Variant powered = tech.GetProperties()["Powered"];
-		ret = powered.reader().get_bool();
-	}
-	catch(DBus::Error& err)
-	{
-		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
-		ret = false;
-	}
-	return ret;
+	return (GetWPAInterface() != "");
 }
 	
 tErrType CWirelessModule::JoinAdhocNetwork( CString ssid, Boolean encrypted, CString password )
@@ -369,7 +366,7 @@ tErrType CWirelessModule::GetLocalWirelessAddress(in_addr& address)
 	ifaddrs** address_list;
 	ifaddrs* current_address;
 	int ret = getifaddrs(address_list);
-	if(ret)
+	if(ret || (address_list == NULL))
 	{
 		debug_.DebugOut(kDbgLvlImportant, "Failed to get network adapter list: %s\n", strerror(errno));
 		return kUnspecifiedErr;
@@ -391,6 +388,58 @@ tErrType CWirelessModule::GetLocalWirelessAddress(in_addr& address)
 		}
 	}
 	return kNoErr;
+}
+
+Boolean CWirelessModule::SetConnManWirelessPower(Boolean power)
+{
+	DBus::Path tech_path = GetWirelessTechnology();
+		
+	//Make sure we found a wifi tech
+	if( tech_path == "" )
+	{
+		debug_.DebugOut( kDbgLvlImportant, "Failed to find a WiFi technology in ConnMan.\n" );
+		return kNoWirelessErr;
+	}
+	
+	try
+	{
+		net::connman::Technology tech(*mConnection_, tech_path);
+		DBus::Variant powered;
+		powered.writer().append_bool(power);
+		tech.SetProperty("Powered", powered);
+	}
+	catch(DBus::Error& err)
+	{
+		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
+		return kUnspecifiedErr;
+	}
+	return kNoErr;
+}
+
+Boolean CWirelessModule::GetConnManWirelessPower()
+{
+	DBus::Path tech_path = GetWirelessTechnology();
+	bool ret = false;
+	
+	//Make sure we found a wifi tech
+	if( tech_path == "" )
+	{
+		debug_.DebugOut( kDbgLvlImportant, "Failed to find a WiFi technology in ConnMan.\n" );
+		return false;
+	}
+	
+	try
+	{
+		net::connman::Technology tech(*mConnection_, tech_path);
+		DBus::Variant powered = tech.GetProperties()["Powered"];
+		ret = powered.reader().get_bool();
+	}
+	catch(DBus::Error& err)
+	{
+		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
+		ret = false;
+	}
+	return ret;
 }
 
 void*	CWirelessModule::DBusDispatcherTask( void* arg )

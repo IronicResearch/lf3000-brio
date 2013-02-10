@@ -36142,3 +36142,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/9/13 6:10 PM
 6,173 ms. (Cumulative: 14,692,009 ms)
 
 ----------------
+Revision 10,133 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Tighten up WirelessMPI by turning off wifi through connman during instantiation, then doing all calls through wpa_supplicant. Restore connman power setting during destruction.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/9/13 8:09 PM
+2 changed, 0 added, 0 deleted.
+6,360 ms. (Cumulative: 14,698,478 ms)
+
+----------------
