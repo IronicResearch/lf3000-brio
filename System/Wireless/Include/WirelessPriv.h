@@ -89,6 +89,9 @@ private:
 	Boolean SetConnManWirelessPower(Boolean power);
 	Boolean GetConnManWirelessPower();
 	
+	//Start and stop Avahi Auto IP daemon
+	Boolean ToggleAvahiAutoIP(Boolean on);
+	
 
 public:
 	static void*	DBusDispatcherTask( void* arg );
@@ -106,7 +109,6 @@ private:
 	
 	//Cache and state
 	Boolean			bSavedConnManState_;
-	
 
 };
 

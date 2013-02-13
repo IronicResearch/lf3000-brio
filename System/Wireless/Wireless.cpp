@@ -34,12 +34,15 @@
 #include <unistd.h>
 #include <string.h>
 #include <ifaddrs.h>
+#include <signal.h>
+#include <stdio.h>
 
 using namespace fi::w1;
 
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define ADAPTER_NAME "wlan0"
+#define AVAHI_ADAPTER_NAME "wlan0:avahi"
 
 const CURI	kModuleURI	= "/LF/System/Wireless";
 
@@ -264,6 +267,9 @@ tErrType CWirelessModule::JoinAdhocNetwork( CString ssid, Boolean encrypted, CSt
 			interface.Disconnect();
 		DBus::Path new_network = interface.AddNetwork(network_props);
 		interface.SelectNetwork( new_network );
+		if( !ToggleAvahiAutoIP(true) )
+			return kJoinFailedErr;
+		
 	}
 	catch(DBus::Error& err)
 	{
@@ -280,6 +286,8 @@ tErrType CWirelessModule::LeaveAdhocNetwork()
 	DBus::Path interface_path = GetWPAInterface();
 	if(interface_path == "")
 		return kNoErr;
+	
+	ToggleAvahiAutoIP(false);
 	
 	try
 	{
@@ -363,31 +371,36 @@ tWirelessMode CWirelessModule::GetMode()
 
 tErrType CWirelessModule::GetLocalWirelessAddress(in_addr& address)
 {
-	ifaddrs** address_list;
+	ifaddrs* address_list;
 	ifaddrs* current_address;
-	int ret = getifaddrs(address_list);
-	if(ret || (address_list == NULL))
+	tErrType ret = kNoAddressErr;
+	
+	if( getifaddrs(&address_list) )
 	{
 		debug_.DebugOut(kDbgLvlImportant, "Failed to get network adapter list: %s\n", strerror(errno));
 		return kUnspecifiedErr;
 	}
-	current_address = *address_list;
-	while( current_address != NULL )
+	
+	for( current_address = address_list; current_address != NULL; current_address = current_address->ifa_next )
 	{
-		if( strcmp(current_address->ifa_name, ADAPTER_NAME) == 0 )
+		if( strcmp(current_address->ifa_name, ADAPTER_NAME) == 0 ||
+		    strcmp(current_address->ifa_name, AVAHI_ADAPTER_NAME) == 0)
 		{
 			if(current_address->ifa_addr->sa_family != AF_INET)
 			{
-				debug_.DebugOut(kDbgLvlImportant, ADAPTER_NAME " does not have an IP address assigned.\n");
-				freeifaddrs(*address_list);
-				return kNoAddressErr;
+				debug_.DebugOut(kDbgLvlImportant, "%s does not have an IP address assigned.\n", current_address->ifa_name);
 			}
-			sockaddr_in* ipv4_addr = (sockaddr_in*)current_address->ifa_addr;
-			address = ipv4_addr->sin_addr;
-			break;
+			else
+			{
+				sockaddr_in* ipv4_addr = (sockaddr_in*)current_address->ifa_addr;
+				address = ipv4_addr->sin_addr;
+				ret = kNoErr;
+				break;
+			}
 		}
 	}
-	return kNoErr;
+	freeifaddrs(address_list);
+	return ret;
 }
 
 Boolean CWirelessModule::SetConnManWirelessPower(Boolean power)
@@ -440,6 +453,33 @@ Boolean CWirelessModule::GetConnManWirelessPower()
 		ret = false;
 	}
 	return ret;
+}
+
+Boolean CWirelessModule::ToggleAvahiAutoIP(Boolean on)
+{
+	const char* daemon_arg;
+	if(on)
+		daemon_arg = "-D";
+	else
+		daemon_arg = "-k";
+	
+	//We need to vfork a process to become avahi-autoipd
+	pid_t fork_pid;
+	if( (fork_pid = vfork()) < 0 )
+	{
+		debug_.DebugOut(kDbgLvlImportant, "Failed to fork for avahi-autoipd: %s\n", strerror(errno));
+		return false;
+	}
+	else if( fork_pid == 0 )
+	{
+		if( execl( "/usr/sbin/avahi-autoipd", "avahi-autoipd", daemon_arg, "wlan0", NULL ) < 0 )
+		{
+			//Dangerous! We failed to exec after vfork. print debug?
+			perror("avahi-autoipd exec failed");
+			_exit(0);
+		}
+	}
+	return true;
 }
 
 void*	CWirelessModule::DBusDispatcherTask( void* arg )
