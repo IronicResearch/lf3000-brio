@@ -36161,3 +36161,14 @@ By Dave Milici (dmilici@leapfrog.com) on 2/12/13 5:24 PM
 6,219 ms. (Cumulative: 14,704,822 ms)
 
 ----------------
+Revision 10,135 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,136 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,137 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Automatically start avahi-autoipd when joining an ad-hoc network and stop it when leaving the network. This still leaves a zombie process for the moment and can be problematic if the game crashes while joined, but it allows Brio games to communicate with each other.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/13/13 12:23 PM
+2 changed, 0 added, 0 deleted.
+6,357 ms. (Cumulative: 14,711,289 ms)
+
+----------------
