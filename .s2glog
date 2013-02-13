@@ -36151,3 +36151,13 @@ By dlazzari (dlazzari@leapfrog.com) on 2/9/13 8:09 PM
 6,360 ms. (Cumulative: 14,698,478 ms)
 
 ----------------
+Revision 10,134 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Revert drop-frame seeking method for MJPEG codec, prior to MPEG change svn -r10053.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 2/12/13 5:24 PM
+1 changed, 0 added, 0 deleted.
+6,219 ms. (Cumulative: 14,704,822 ms)
+
+----------------

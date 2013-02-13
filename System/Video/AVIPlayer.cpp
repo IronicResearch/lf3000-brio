@@ -476,7 +476,7 @@ Boolean CAVIPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 
 	if (bDrop && pCodecCtx->codec_id == CODEC_ID_MJPEG) {
 		pCtx->frame = pCtx->time * pVidCtx->uFrameTimeDen / pVidCtx->uFrameTimeNum;
-		if (SeekVideoFrame(hVideo, pCtx, false, false)) {
+		if (SeekVideoFrame(hVideo, pCtx, true, false)) {
 			pVidCtx->bSeeked = false;
 			GetVideoTime(hVideo, pCtx);
 			return true;
