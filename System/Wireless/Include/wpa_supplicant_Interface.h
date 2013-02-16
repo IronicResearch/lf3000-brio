@@ -445,8 +445,11 @@ class Interface :
 		virtual void NetworkSelected(const ::DBus::Path& path)
 		{}
 		
-		virtual void PropertiesChanged(const std::map< std::string, ::DBus::Variant >& properties)
-		{}
+		//The implementation of the below has been moved to Wireless.cpp
+		virtual void PropertiesChanged(const std::map< std::string, ::DBus::Variant >& properties);
+	
+	private:
+		LeapFrog::Brio::CEventMPI mEvent;
 };
 
 } } } 

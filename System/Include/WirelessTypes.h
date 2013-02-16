@@ -93,13 +93,11 @@ private:
 
 class CWirelessStateMessage : public IEventMessage {
 public:
-	CWirelessStateMessage( tWirelessState state, tWirelessMode mode );
+	CWirelessStateMessage( tWirelessState state );
 	virtual U16	GetSizeInBytes() const;
 	tWirelessState	GetState() const;
-	tWirelessMode	GetMode() const;
 private:
 	tWirelessState	mState;
-	tWirelessMode	mMode;
 };
 
 LF_END_BRIO_NAMESPACE()	

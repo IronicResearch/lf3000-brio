@@ -39,10 +39,13 @@
 
 using namespace fi::w1;
 
+LeapFrog::Brio::tWirelessState TranslateStateStr(LeapFrog::Brio::CString state);
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 #define ADAPTER_NAME "wlan0"
 #define AVAHI_ADAPTER_NAME "wlan0:avahi"
+#define kWirelessStateEventPriority	0
 
 const CURI	kModuleURI	= "/LF/System/Wireless";
 
@@ -331,16 +334,7 @@ tWirelessState CWirelessModule::GetState()
 	{
 		fi::w1::wpa_supplicant1::Interface interface(*mConnection_, interface_path);
 		CString state = interface.State();
-		if( state == "disconnected" ||
-		    state == "inactive" ||
-		    state == "scanning" )
-			return kWirelessDisconnected;
-		
-		if( state == "associated" ||
-		    state == "completed" )
-		    	return kWirelessConnected;
-		
-		return kWirelessConnecting;
+		return TranslateStateStr(state);
 	}
 	catch(DBus::Error& err)
 	{
@@ -494,6 +488,32 @@ void*	CWirelessModule::DBusDispatcherTask( void* arg )
 }
 
 LF_END_BRIO_NAMESPACE()
+
+void wpa_supplicant1::Interface::PropertiesChanged(const std::map< std::string, ::DBus::Variant >& properties)
+{
+	if( properties.count("State") )
+	{
+		LeapFrog::Brio::CString state = properties.at("State").reader().get_string();
+		LeapFrog::Brio::tWirelessState new_state = TranslateStateStr(state);
+		
+		LeapFrog::Brio::CWirelessStateMessage msg(new_state);
+		mEvent.PostEvent(msg, kWirelessStateEventPriority);
+	}
+}
+
+LeapFrog::Brio::tWirelessState TranslateStateStr(LeapFrog::Brio::CString state)
+{
+	if( state == "disconnected" ||
+	    state == "inactive" ||
+	    state == "scanning" )
+		return LeapFrog::Brio::kWirelessDisconnected;
+	
+	else if( state == "associated" ||
+	         state == "completed" )
+		return LeapFrog::Brio::kWirelessConnected;
+		
+	return LeapFrog::Brio::kWirelessConnecting;
+}
 
 //============================================================================
 // Instance management interface for the Module Manager
