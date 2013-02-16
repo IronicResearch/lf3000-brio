@@ -36181,3 +36181,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/15/13 4:03 PM
 6,239 ms. (Cumulative: 14,717,606 ms)
 
 ----------------
+Revision 10,139 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Implement Brio event messages for wireless state change. Also remove including mode in state messages as there is no signal for them and trying to query it from dbus could cause uneccessary delay. If developers find that information useful, they can query the CWirelessMPI when they receive the state change message.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/16/13 11:38 AM
+4 changed, 0 added, 0 deleted.
+6,406 ms. (Cumulative: 14,724,106 ms)
+
+----------------

@@ -194,8 +194,8 @@ tRemotePlayer CRemotePlayerMessage::GetPlayer() const
 //============================================================================
 //----------------------------------------------------------------------------
 
-CWirelessStateMessage::CWirelessStateMessage( tWirelessState state, tWirelessMode mode ) :
-	mState(state), mMode(mode), IEventMessage(kWirelessStateChanged)
+CWirelessStateMessage::CWirelessStateMessage( tWirelessState state ) :
+	mState(state), IEventMessage(kWirelessStateChanged)
 {
 }
 
@@ -207,11 +207,6 @@ U16 CWirelessStateMessage::GetSizeInBytes() const
 tWirelessState CWirelessStateMessage::GetState() const
 {
 	return mState;
-}
-
-tWirelessMode CWirelessStateMessage::GetMode() const
-{
-	return mMode;
 }
 
 LF_END_BRIO_NAMESPACE()
