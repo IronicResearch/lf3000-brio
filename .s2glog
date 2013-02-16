@@ -36172,3 +36172,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/13/13 12:23 PM
 6,357 ms. (Cumulative: 14,711,289 ms)
 
 ----------------
+Revision 10,138 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Set ad-hoc frequency to channel 6 and reduce dbus timeout in case wpa_supplicant doesn't reply.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/15/13 4:03 PM
+1 changed, 0 added, 0 deleted.
+6,239 ms. (Cumulative: 14,717,606 ms)
+
+----------------

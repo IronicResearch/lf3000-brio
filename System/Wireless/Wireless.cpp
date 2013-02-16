@@ -79,7 +79,7 @@ CWirelessModule::CWirelessModule() :
 	mDispatcher_ = new DBus::BusDispatcher();
 	DBus::default_dispatcher = mDispatcher_;
 	mConnection_ = new DBus::Connection(DBus::Connection::SystemBus());
-	mConnection_->set_timeout(30000);
+	mConnection_->set_timeout(2000);
 	
 	mServer_ = new org::freedesktop::Avahi::Server(*mConnection_);
 	DBus::Path service_browser_path = mServer_->ServiceBrowserNew( -1, 0, "_workstation._tcp", "local", 0 );
@@ -231,6 +231,10 @@ tErrType CWirelessModule::JoinAdhocNetwork( CString ssid, Boolean encrypted, CSt
 	DBus::Variant mode;
 	mode.writer().append_int32(1);
 	network_props["mode"] = mode;
+	
+	DBus::Variant freq;
+	freq.writer().append_int32(2437);
+	network_props["frequency"] = freq;
 	
 	DBus::Variant key_mgmt;
 	
