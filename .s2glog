@@ -36190,3 +36190,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/16/13 11:38 AM
 6,406 ms. (Cumulative: 14,724,106 ms)
 
 ----------------
+Revision 10,140 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+If an avahi hostname looks like the localhost hostname, don't bother resolving it. This also prevents it from generating player changed messages or showing up in GetPossiblePlayers(). Fixes TTPro Brio - Base #4365.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/16/13 5:47 PM
+1 changed, 0 added, 0 deleted.
+6,157 ms. (Cumulative: 14,730,357 ms)
+
+----------------

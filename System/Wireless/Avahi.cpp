@@ -6,6 +6,7 @@
 #include <WirelessTypes.h>
 
 #include <arpa/inet.h>
+#include <string.h>
 
 namespace org {
 namespace freedesktop {
@@ -56,6 +57,18 @@ void ServiceBrowser::ItemNew(const int32_t& interface,
 		             const uint32_t& flags)
 {
 	mDebug.DebugOut(LeapFrog::Brio::kDbgLvlValuable, "Found new host: %s\n", name.c_str());
+	
+	char hostname[HOST_NAME_MAX];
+	//If we can get a hostname, make sure it doesn't look like ours
+	if( !gethostname(hostname, HOST_NAME_MAX) )
+	{
+		//If it looks to be the same host, don't bother resolving it
+		if( strncmp( name.c_str(), hostname, strlen(hostname) ) == 0 )
+		{
+			mDebug.DebugOut(LeapFrog::Brio::kDbgLvlValuable, "Host was localhost, skipping\n");
+			return;
+		}
+	}
 
 	Service* service = new Service;
 	service->interface = interface;
