@@ -166,7 +166,17 @@ void* ServiceBrowser::ResolveServiceThread(void* browser_arg)
 					                txt_out,
 					                flags_out);
 				
-				browser->mDebug.DebugOut(LeapFrog::Brio::kDbgLvlValuable, "Resolved %s to %s\n", service->name.c_str(), address_out.c_str());
+				browser->mDebug.DebugOut(LeapFrog::Brio::kDbgLvlValuable,
+				                         "Resolved %s to %s\n",
+				                         service->name.c_str(),
+				                         address_out.c_str());
+				
+				//If the name ends with a closing square bracket, it is most
+				//likely a mac address, so strip it off.
+				int name_len = service->name.size();
+				if( service->name[name_len - 1] == ']' )
+					service->name = service->name.substr(0, name_len - 20);
+				
 				//Parse address into in_addr
 				struct in_addr addr;
 				int ret = inet_pton( AF_INET, address_out.c_str(), &(addr.s_addr) );
