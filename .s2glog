@@ -36208,3 +36208,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/19/13 11:33 AM
 6,174 ms. (Cumulative: 14,736,624 ms)
 
 ----------------
+Revision 10,142 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add doxygen comments for Wireless events.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/19/13 11:33 AM
+1 changed, 0 added, 0 deleted.
+6,146 ms. (Cumulative: 14,742,863 ms)
+
+----------------

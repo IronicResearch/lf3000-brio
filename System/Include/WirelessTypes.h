@@ -79,6 +79,13 @@ typedef std::vector<tRemotePlayer> PlayerList;
 
 //------------------------------------------------------------------------------
 class CRemotePlayerMessage : public IEventMessage {
+	/// \class CRemotePlayerMessage
+	/// 
+	/// This event message is posted when avahi detects a new LeapFrog device
+	/// on the same network and subnet, or when avahi detects that a LeapFrog
+	/// device has left the network. Because avahi allows for a very long
+	/// timeout before reporting a device it has lost communication with as
+	/// being removed from the network, the removed event may be unreliable.
 public:
 	CRemotePlayerMessage( const tRemotePlayer& player, Boolean added );
 	~CRemotePlayerMessage();
@@ -92,6 +99,10 @@ private:
 };
 
 class CWirelessStateMessage : public IEventMessage {
+	/// \class CWirelessStateMessage
+	/// 
+	/// This event message is posted when the wireless network adapter changes
+	/// states.
 public:
 	CWirelessStateMessage( tWirelessState state );
 	virtual U16	GetSizeInBytes() const;
