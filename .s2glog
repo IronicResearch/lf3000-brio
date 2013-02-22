@@ -36217,3 +36217,15 @@ By dlazzari (dlazzari@leapfrog.com) on 2/19/13 11:33 AM
 6,146 ms. (Cumulative: 14,742,863 ms)
 
 ----------------
+Revision 10,143 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,144 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,145 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,146 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Protecting DisplayMPI's CreateEglClientBuffer and DestroyEglClientBuffer with #ifdef LF2000.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/22/13 3:18 PM
+1 changed, 0 added, 0 deleted.
+6,191 ms. (Cumulative: 14,749,179 ms)
+
+----------------
