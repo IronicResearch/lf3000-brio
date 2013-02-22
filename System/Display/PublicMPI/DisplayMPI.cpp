@@ -545,14 +545,22 @@ EGLClientBuffer CDisplayMPI::CreateEglClientBuffer(tDisplayHandle hndl)
 {
 	if (!pModule_)
 		return 0;
+#ifdef LF2000
 	return pModule_->CreateEglClientBuffer(hndl);
+#else
+	return 0;
+#endif
 }
 //----------------------------------------------------------------------------
 void CDisplayMPI::DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer)
 {
 	if (!pModule_)
 		return;
+#ifdef LF2000
 	return pModule_->DestroyEglClientBuffer(egl_client_buffer);
+#else
+	return;
+#endif
 }
 LF_END_BRIO_NAMESPACE()
 // EOF
