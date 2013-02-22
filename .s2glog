@@ -36229,3 +36229,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/22/13 3:18 PM
 6,191 ms. (Cumulative: 14,749,179 ms)
 
 ----------------
+Revision 10,147 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Adding null versions of CreateEglClientBuffer and DestroyEglClientBuffer to LF1000 DisplayDriver.
+
+By Minh Saelock (msaelock@leapfrog.com) on 2/22/13 3:29 PM
+1 changed, 0 added, 0 deleted.
+6,281 ms. (Cumulative: 14,755,538 ms)
+
+----------------
