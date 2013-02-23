@@ -626,6 +626,9 @@ public:
 	tErrType 			SetVideoScaler(tDisplayHandle hndl, U16 width, U16 height, Boolean centered);
 	tErrType 			GetVideoScaler(tDisplayHandle hndl, U16& width, U16& height, Boolean& centered);
 	
+	EGLClientBuffer			CreateEglClientBuffer(tDisplayHandle hndl);
+	void				DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer);
+	
 private:
 	void				SetDirtyBit(int layer);
 	

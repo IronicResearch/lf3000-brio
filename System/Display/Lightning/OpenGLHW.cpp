@@ -433,6 +433,17 @@ void CDisplayLF1000::SetOpenGLDisplayAddress(
 }
 #endif
 
+EGLClientBuffer CDisplayLF1000::CreateEglClientBuffer(tDisplayHandle hndl)
+{
+	return 0;
+}
+//----------------------------------------------------------------------------
+void CDisplayLF1000::DestroyEglClientBuffer(EGLClientBuffer egl_client_buffer)
+{
+	return;
+}
+//----------------------------------------------------------------------------
+
 LF_END_BRIO_NAMESPACE()
 
 #endif // LF1000

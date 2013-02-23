@@ -36238,3 +36238,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 2/22/13 3:29 PM
 6,281 ms. (Cumulative: 14,755,538 ms)
 
 ----------------
+Revision 10,148 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add dummy implementations of CreateEglClientBuffer and DestroyEglClientBuffer to CDisplayLF1000 to satisfy compiler complaints about pure virtual functions.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/22/13 4:06 PM
+3 changed, 0 added, 0 deleted.
+6,298 ms. (Cumulative: 14,761,930 ms)
+
+----------------
