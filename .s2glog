@@ -36247,3 +36247,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/22/13 4:06 PM
 6,298 ms. (Cumulative: 14,761,930 ms)
 
 ----------------
+Revision 10,149 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add more defines for conditional gstreamer use.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/22/13 4:06 PM
+3 changed, 0 added, 0 deleted.
+6,235 ms. (Cumulative: 14,768,258 ms)
+
+----------------
