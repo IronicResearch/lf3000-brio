@@ -34,7 +34,11 @@
 #include <VideoPlayer.h>
 #include <TheoraPlayer.h>
 #include <AVIPlayer.h>
+
+#if USE_GSTREAMER
 #include <GStreamerPlayer.h>
+#endif
+
 #include <SearchTree.h>
 
 LF_BEGIN_BRIO_NAMESPACE()

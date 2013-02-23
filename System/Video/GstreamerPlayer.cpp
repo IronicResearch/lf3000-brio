@@ -12,6 +12,8 @@
 //
 //==============================================================================
 
+#if USE_GSTREAMER
+
 #include <SystemTypes.h>
 #include <VideoTypes.h>
 #include <VideoPlayer.h>
@@ -610,6 +612,9 @@ S64 CGStreamerPlayer::GetVideoLength(tVideoHndl hVideo)
 	return 0;
 }
 
+
 LF_END_BRIO_NAMESPACE()	
+
+#endif //USE_GSTREAMER
 
 // EOF

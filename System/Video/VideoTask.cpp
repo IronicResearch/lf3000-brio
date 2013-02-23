@@ -19,7 +19,10 @@
 #include <DisplayMPI.h>
 #include <EventMPI.h>
 #include <VideoPriv.h>
+
+#if USE_GSTREAMER
 #include <GStreamerPlayer.h>
+#endif
 
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -324,6 +327,7 @@ void* VideoTaskMain( void* arg )
 }
 
 //----------------------------------------------------------------------------
+#if USE_GSTREAMER
 void* VideoTaskMainGStreamer( void* arg )
 {
 	CDebugMPI		dbg(kGroupVideo);
@@ -406,6 +410,7 @@ void* VideoTaskMainGStreamer( void* arg )
 	dbg.DebugOut( kDbgLvlImportant, "VideoTask Stopping...(%p)\n", pctx );
 	return pctx;
 }
+#endif //USE_GSTREAMER
 
 //----------------------------------------------------------------------------
 tErrType InitVideoTask( tVideoContext* pCtx )
@@ -424,8 +429,10 @@ tErrType InitVideoTask( tVideoContext* pCtx )
 	
 	// Setup task properties
 	prop.TaskMainFcn = VideoTaskMain;
+#if USE_GSTREAMER
 	if (dynamic_cast<CGStreamerPlayer*>(pCtx->pPlayer))
 		prop.TaskMainFcn = VideoTaskMainGStreamer;
+#endif
 	prop.taskMainArgCount = 1;
 	prop.pTaskMainArgValues = pCtx;
 	prop.stackSize = 4 * PTHREAD_STACK_MIN; // 64 * 1024;
