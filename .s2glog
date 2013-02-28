@@ -36267,3 +36267,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/27/13 9:25 PM
 8,861 ms. (Cumulative: 14,777,229 ms)
 
 ----------------
+Revision 10,153 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add a line to topological sort to make use of a function parameter to avoid nasty (and extremely confusing) compiler warning about unused variable.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/27/13 9:27 PM
+1 changed, 0 added, 0 deleted.
+6,313 ms. (Cumulative: 14,783,635 ms)
+
+----------------
