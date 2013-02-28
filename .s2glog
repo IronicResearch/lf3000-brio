@@ -36256,3 +36256,14 @@ By dlazzari (dlazzari@leapfrog.com) on 2/22/13 4:06 PM
 6,235 ms. (Cumulative: 14,768,258 ms)
 
 ----------------
+Revision 10,150 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,151 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,152 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add boost graph library and dependent pending and optional libraries all from boost 1.34.1. Also patch boost mpl library with slightly modified patch from https://svn.boost.org/trac/boost/changeset/48960 which allows it to compile under gcc 4.4 and later. Guaranteed to compile cleanly and needed for package-manager dependency tree solving. Could affect Brio apps but shouldn't. DynaBUG would make a good test to ensure this is ok.
+
+By dlazzari (dlazzari@leapfrog.com) on 2/27/13 9:25 PM
+8 changed, 127 added, 0 deleted.
+8,861 ms. (Cumulative: 14,777,229 ms)
+
+----------------
