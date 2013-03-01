@@ -1154,13 +1154,18 @@ tAudCapHndl CMicrophoneModule::StartAudioCapture(const CPath& path, IEventListen
 		}
 
 		/* statvfs path must exist, so use the parent directory */
-		err = statvfs(micCtx_.path.substr(0, micCtx_.path.rfind('/')).c_str(), &buf);
-
-		length =  buf.f_bsize * buf.f_bavail;
-
-		if((err < 0) || (length < MIN_FREE))
+		CString parent_directory = micCtx_.path.substr(0, micCtx_.path.rfind('/'));
+		err = statvfs(parent_directory.c_str(), &buf);
+		if(err < 0)
 		{
-			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: not enough disk space, %lld required, %lld available\n", MIN_FREE, length);
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: directory does not exist %s\n", parent_directory.c_str());
+			DATA_UNLOCK;
+			return hndl;
+		}
+		length =  buf.f_bsize * buf.f_bavail;
+		if(length < MIN_FREE)
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: not enough disk space, %llu required, %llu available\n", MIN_FREE, length);
 			DATA_UNLOCK;
 			return hndl;
 		}
