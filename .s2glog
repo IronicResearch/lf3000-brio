@@ -36276,3 +36276,12 @@ By dlazzari (dlazzari@leapfrog.com) on 2/27/13 9:27 PM
 6,313 ms. (Cumulative: 14,783,635 ms)
 
 ----------------
+Revision 10,154 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4088.  Updated CMicrophoneMPI::StartAudioCapture.  Now if the directory does not exist, you get an error "directoyr does not exist".
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/1/13 3:55 PM
+1 changed, 0 added, 0 deleted.
+6,273 ms. (Cumulative: 14,790,002 ms)
+
+----------------
