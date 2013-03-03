@@ -254,7 +254,7 @@ tErrType CWirelessModule::JoinAdhocNetwork( CString ssid, Boolean encrypted, CSt
 		network_props["pairwise"] = pairwise;
 		
 		DBus::Variant group;
-		group.writer().append_string("TKIP");
+		group.writer().append_string("CCMP");
 		network_props["group"] = group;
 		
 		DBus::Variant psk;
@@ -386,7 +386,7 @@ tErrType CWirelessModule::GetLocalWirelessAddress(in_addr& address)
 		{
 			if(current_address->ifa_addr->sa_family != AF_INET)
 			{
-				debug_.DebugOut(kDbgLvlImportant, "%s does not have an IP address assigned.\n", current_address->ifa_name);
+				continue;
 			}
 			else
 			{
@@ -398,6 +398,8 @@ tErrType CWirelessModule::GetLocalWirelessAddress(in_addr& address)
 		}
 	}
 	freeifaddrs(address_list);
+	if(ret == kNoAddressErr)
+		debug_.DebugOut(kDbgLvlImportant, "No Wireless IP address assigned.\n");
 	return ret;
 }
 
