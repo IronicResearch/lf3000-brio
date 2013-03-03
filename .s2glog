@@ -36285,3 +36285,12 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/1/13 3:55 PM
 6,273 ms. (Cumulative: 14,790,002 ms)
 
 ----------------
+Revision 10,155 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change ad-hoc networks to use CCMP group encryption instead of TKIP. This seems to fix TTPro Brio - Base #4502.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/2/13 4:22 PM
+1 changed, 0 added, 0 deleted.
+6,266 ms. (Cumulative: 14,796,362 ms)
+
+----------------
