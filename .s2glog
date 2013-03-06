@@ -36294,3 +36294,14 @@ By dlazzari (dlazzari@leapfrog.com) on 3/2/13 4:22 PM
 6,266 ms. (Cumulative: 14,796,362 ms)
 
 ----------------
+Revision 10,156 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4294.  Unlocking MixerMutex temporarily when adding a new external (44kHz) player.  This prevents a deadlock from the external thread rendering.  I tested this on BVE, PXR, EPR, LLG1, UMI, LMOT, CA2, SPG, and LGEO with success.
+
+Technical Details - Mixer::AddPlayer locks mixerMutex, and calls Stream::InitWithPlayer which, if the audio is external, calls AddAudioOutputAlsa which locks mutexExternal.  Meanwhile, the external rendering calls CallBackThread which locks mutexExternal, and then calls WrapperToCallPlayer which locks mixerMutex.  With the right timing it was possible to deadlock with both threads locking their first mutex and waiting to lock their second mutex.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/5/13 5:32 PM
+1 changed, 0 added, 0 deleted.
+6,141 ms. (Cumulative: 14,802,596 ms)
+
+----------------
