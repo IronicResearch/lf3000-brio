@@ -997,7 +997,11 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 			&& (!strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "ogg") || !strcasecmp(sExt, "mp4"));
 #endif
 
+	if(external)
+		MIXER_UNLOCK;
 	pStream->InitWithPlayer( pPlayer, external );
+	if(external)
+		MIXER_LOCK;
 
 	// Warn if player sample rate was clamped to fit Brio mixer stream
 	if (pStream->GetSamplingFrequency() != pPlayer->GetSampleRate() && !external) {
