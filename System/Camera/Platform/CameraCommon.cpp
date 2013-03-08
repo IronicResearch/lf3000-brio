@@ -110,17 +110,12 @@ const CURI* CCameraModule::GetModuleOrigin() const
 //============================================================================
 namespace
 {
-	CPath				vpath = "";
-	CPath				spath = "";
-	tMutex				dlock;
-
 	S8					nLUT[1025];	/* To convert 9-bit HW IDCT output to 8-bit color values.
 									 * Should only be [512], but the IDCT sometimes erroneously
 									 * produces 256 (0x0100) or 768 (0x0300)
 									 */
 	S8					*NormLUT;	/* Offset table indicies by 256 */
 	// Camera MPI global vars
-	tCameraContext*		gpCamCtx = NULL;
 #if USE_PROFILE
 	// Profile vars
 #endif
@@ -2578,6 +2573,10 @@ Boolean	CCameraModule::DeinitCameraInt(bool reinit)
 //----------------------------------------------------------------------------
 tErrType CCameraModule::SetCurrentCamera(tCameraDevice device)
 {
+	// Current device already set
+	if (device_ == device)
+		return kNoErr;
+
 	switch (device)
 	{
 	case kCameraDefault:

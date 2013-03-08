@@ -50,6 +50,9 @@
 #include <AVIWrapper.h>
 #include <sndfile.h>
 
+#include <linux/fb.h>
+#include <vmem.h>
+
 LF_BEGIN_BRIO_NAMESPACE()
 
 //==============================================================================
@@ -321,6 +324,10 @@ private:
 	tCameraDevice		device_;
 	boost::shared_ptr<CUsbHost> usbHost_;
 
+	CPath				vpath;
+	CPath				spath;
+	tMutex				dlock;
+
 	CCameraModule();
 	virtual ~CCameraModule();
 	friend void* CameraTaskMain(void* arg);
@@ -419,6 +426,15 @@ private:
 	tVideoSurf	overlaySurf;
 	Boolean		overlayEnabled;
 	tCameraControls	*controlsCached;
+
+	struct fb_fix_screeninfo 	fi;
+	struct fb_var_screeninfo 	vi;
+	int							fd;
+	int							fdvmem;
+	VM_IMEMORY 					vm;
+
+	void		AllocVMem(tCameraContext& camCtx);
+	void		FreeVMem();
 	Boolean		CompressFrame(tFrameInfo *frame, int stride);
 	Boolean 	EnableOverlay(int fd, int enable);
 

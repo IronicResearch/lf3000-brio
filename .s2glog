@@ -36305,3 +36305,18 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/5/13 5:32 PM
 6,141 ms. (Cumulative: 14,802,596 ms)
 
 ----------------
+Revision 10,157 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,158 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,159 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defer allocating video memory until camera capture session starts. (TTP 4527)
+
+Allows 2nd CameraMPI instance in another process to take snapshots or record video
+while caller for Camera/Video widget had already created its own CameraMPI instance.
+Required migrating some global vars as instance vars per-process.
+
+By Dave Milici (dmilici@leapfrog.com) on 3/8/13 11:17 AM
+3 changed, 0 added, 0 deleted.
+6,348 ms. (Cumulative: 14,809,038 ms)
+
+----------------
