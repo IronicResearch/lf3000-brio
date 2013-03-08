@@ -32,13 +32,6 @@ tCaptureMode UXGA  = {kCaptureFormatYUV420, 1600, 1200, 1, 10};
 
 namespace
 {
-#if !defined(EMULATION) //&& defined(LF2000)
-	struct fb_fix_screeninfo 	fi;
-	struct fb_var_screeninfo 	vi;
-	int							fd = -1;
-	int							fdvmem = -1;
-	VM_IMEMORY 					vm;
-#endif
 }
 
 //============================================================================
@@ -89,15 +82,16 @@ tErrType CVIPCameraModule::EnumFormats(tCaptureModes& pModeList)
 	return CCameraModule::EnumFormats(pModeList);
 }
 
-//============================================================================
-// Ctor & dtor
-//============================================================================
-CVIPCameraModule::CVIPCameraModule()
+//----------------------------------------------------------------------------
+void CVIPCameraModule::AllocVMem(tCameraContext& camCtx_)
 {
-	tCameraControls::iterator	it;
+#if !defined(EMULATION)
 	int r;
 
-#if !defined(EMULATION) //&& defined(LF2000)
+	dbg_.DebugOut(kDbgLvlImportant, "%s: pid=%d, fdvmem=%d\n", __FUNCTION__, getpid(), fdvmem);
+	if (fdvmem > 0 || fd > 0)
+		return;
+
 	// Map memory for use by VIP driver
 	fdvmem = open("/dev/vmem", O_RDWR);
 	if (fdvmem > 0)
@@ -141,6 +135,16 @@ CVIPCameraModule::CVIPCameraModule()
 	camCtx_.fi = &fi;
 	camCtx_.vi = &vi;
 #endif
+}
+
+//============================================================================
+// Ctor & dtor
+//============================================================================
+CVIPCameraModule::CVIPCameraModule()
+{
+	tCameraControls::iterator	it;
+
+	dbg_.DebugOut(kDbgLvlImportant, "%s: pid=%d\n", __FUNCTION__, getpid());
 
 	camCtx_.mode = QVGA;
 	valid = InitCameraInt(&camCtx_.mode, false);
@@ -165,6 +169,15 @@ CVIPCameraModule::CVIPCameraModule()
 		tControlInfo* ctrl = *it;
 		controlsCached->push_back(new tControlInfo(*ctrl));
 	}
+
+	// Init fb vars
+	fd = fdvmem = -1;
+	memset(&fi, 0, sizeof(fi));
+	memset(&vi, 0, sizeof(vi));
+	memset(&vm, 0, sizeof(vm));
+	
+	// Release camera device for this process instance
+	DeinitCameraInt();
 }
 
 //----------------------------------------------------------------------------
@@ -190,8 +203,16 @@ CVIPCameraModule::~CVIPCameraModule()
 	}
 
 	delete controlsCached;
+}
 
-#if !defined(EMULATION) //&& defined(LF2000)
+//----------------------------------------------------------------------------
+void CVIPCameraModule::FreeVMem()
+{
+#if !defined(EMULATION)
+	dbg_.DebugOut(kDbgLvlImportant, "%s: pid=%d, fdvmem=%d\n", __FUNCTION__, getpid(), fdvmem);
+	if (fdvmem == -1 && fd == -1)
+		return;
+
 	// Release memory used by VIP driver
 	munmap((void*)vi.reserved[0], fi.smem_len);
 	close(fd);
@@ -199,6 +220,7 @@ CVIPCameraModule::~CVIPCameraModule()
 		ioctl(fdvmem, IOCTL_VMEM_FREE, &vm);
 		close(fdvmem);
 	}
+	fd = fdvmem = -1;
 #endif
 }
 
@@ -340,6 +362,9 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 			goto out;
 	}
 
+	// Allocate video memory
+	AllocVMem(camCtx_);
+
 	if(path.length() || path.empty())
 	{
 		CAMERA_UNLOCK;
@@ -395,10 +420,13 @@ Boolean CVIPCameraModule::StopVideoCapture(const tVidCapHndl hndl)
 
 	if(IS_THREAD_HANDLE(hndl) || IS_FRAME_HANDLE(hndl))
 	{
-		return CCameraModule::StopVideoCapture(hndl);
+		ret = CCameraModule::StopVideoCapture(hndl);
 	}
 
 	camCtx_.hndl = kInvalidVidCapHndl;
+
+	// Free video memory
+	FreeVMem();
 
 	return ret;
 }
