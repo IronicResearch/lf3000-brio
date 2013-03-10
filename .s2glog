@@ -36329,3 +36329,14 @@ By dlazzari (dlazzari@leapfrog.com) on 3/8/13 5:58 PM
 6,601 ms. (Cumulative: 14,815,732 ms)
 
 ----------------
+Revision 10,161 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Return error code back to caller instead of asserting out. (TTP 4510)
+Event message queue handler is only interested in non-error cases.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/9/13 5:01 PM
+2 changed, 0 added, 0 deleted.
+6,313 ms. (Cumulative: 14,822,138 ms)
+
+----------------

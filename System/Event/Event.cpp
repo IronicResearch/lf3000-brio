@@ -146,7 +146,7 @@ private:
 			// use timeout for cancellation point
 			err = pThis->kernel_.ReceiveMessageOrWait(g_hMsgQueueBG_, &msg, kEventDispatchMessageSize, 100);
 	        pthread_testcancel();
-			if ( err != kConnectionTimedOutErr && g_threadRun_ ) {
+			if ( err == kNoErr && g_threadRun_ ) {
 		    	pThis->debug_.AssertNoErr(err, "EventDispatchTask(): Receive message!\n" );
 		    	pThis->PostEventImpl(*(msg.pMsg), msg.pResponse);
 				pThis->kernel_.Free((void *)msg.pMsg);

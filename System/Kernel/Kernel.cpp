@@ -748,6 +748,8 @@ tErrType CKernelModule::ReceiveMessageOrWait( tMessageQueueHndl hndl,
    if ( errno == ETIMEDOUT )
 	   return AsBrioErr( ETIMEDOUT );
    
+    if (errno)
+        return AsBrioErr(errno);
 	ASSERT_POSIX_CALL( errno );
     assert(msg_prio == msg_ptr->GetMessagePriority());
 
