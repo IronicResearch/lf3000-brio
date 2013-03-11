@@ -1027,21 +1027,7 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 // ==============================================================================
 void CAudioMixer::RemovePlayerInternal( tAudioID id, Boolean noDoneMessage )
 {
-	CStream *pStream;
-	CAudioPlayer *pPlayer;
-	pStream = FindStreamInternal(id);
-	if (pStream && pStream->GetPlayer()) {
-		//Q: perhaps we should pass noDoneMessage?  A: Actually, this will break
-		//the app manager and perhaps other apps.  Because this flag has been
-		//ignored for so long, people have not consistently set it.
-		//Unfortunately, it's a bit late to fix.
-		pPlayer = pStream->GetPlayer();
-		if(pPlayer) {
-			pDebugMPI_->DebugOut(kDbgLvlVerbose, "CAudioMixer::RemovePlayerInternal %p\n", pPlayer);
-			delete pPlayer;
-		}
-		pStream->Release(true);
-	}
+	RemovePlayerInternal(id, kStopAudioOptionsNoDoneMsg);
 }
 
 void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption )
@@ -1075,7 +1061,12 @@ void CAudioMixer::RemovePlayerInternal( tAudioID id, tStopAudioOption stopOption
 		}
 		if(pPlayer)
 			delete pPlayer;
+		bool is_external = pStream->isExternal();
+		if(is_external)
+			MIXER_UNLOCK;
 		pStream->Release(true);
+		if(is_external)
+			MIXER_LOCK;
 	}
 }
 
