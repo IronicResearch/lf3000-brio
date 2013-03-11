@@ -540,12 +540,14 @@ int AddAudioOutputAlsa( BrioAudioRenderCallback* callback, void* pUserData, int 
 
 	// Create render buffer for additional player
 	ratedmix = rate;
+	pKernelMPI_->LockMutex(mutexExternal);
 	pRenderBuffer = (S16*)pKernelMPI_->Malloc(kAudioOutBufSizeInBytes * ratedmix / kAudioSampleRate);
-	if (!pRenderBuffer)
+	if (!pRenderBuffer) {
+		pKernelMPI_->UnlockMutex(mutexExternal);
 		return kMemoryAllocationErr;
+	}
 
 	// Add player to render callback thread
-	pKernelMPI_->LockMutex(mutexExternal);
 	pRenderCallback = callback;
 	pPlayer = pUserData;
 	pKernelMPI_->UnlockMutex(mutexExternal);

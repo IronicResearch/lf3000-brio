@@ -36340,3 +36340,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/9/13 5:01 PM
 6,313 ms. (Cumulative: 14,822,138 ms)
 
 ----------------
+Revision 10,162 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+TTPro Brio 4294.  More Mutex deadlock fixes.  Now unlocking MixerMutex when releasing an external stream.  If a 44.1 kHz audio is removed (i.e. too many streams, removed because of priorities) while a 44.1 kHz audio was playing it was still possible to deadlock.
+
+I added a IsExternal function to Stream to support this.  I also simplified the older RemovePlayerInternal to call the newer one.
+
+By Minh Saelock (msaelock@leapfrog.com) on 3/11/13 1:09 PM
+3 changed, 0 added, 0 deleted.
+6,251 ms. (Cumulative: 14,828,483 ms)
+
+----------------
