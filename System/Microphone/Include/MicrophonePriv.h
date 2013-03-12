@@ -188,6 +188,9 @@ private:
 	tMutex				mutex_;
 	boost::shared_ptr<CUsbHost> usbHost_;
 
+	CPath				apath;
+	tMutex				dlock;
+
 	// Limit object creation to the Module Manager interface functions
 	CMicrophoneModule();
 	virtual ~CMicrophoneModule();

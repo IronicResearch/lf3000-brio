@@ -140,9 +140,6 @@ const CURI* CMicrophoneModule::GetModuleOrigin() const
 //============================================================================
 namespace
 {
-	CPath				apath = "";
-	tMutex				dlock;
-
 #if USE_PROFILE
 	// Profile vars
 #endif
@@ -329,6 +326,14 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupMicrophone), valid(false)
 	micCtx_.swparams		= NULL;
 	micCtx_.hwparams		= NULL;
 
+	// Init microphone event parameters
+	micCtx_.threshold	= kS16Max;
+	micCtx_.duration	= 1000;
+	micCtx_.clipCount	= 25;
+	micCtx_.rateAdjust	= 100;
+	micCtx_.rate 		= MIC_RATE;
+	micCtx_.block_size 	= MIC_RATE * MIC_CHANS * sizeof(short) * MIC_PERIOD / 1000000ULL;
+
 	err = kernel_.InitMutex( micCtx_.dlock, attr );
 	dbg_.Assert((kNoErr == err), "CMicrophoneModule::ctor: Couldn't init mic mutex.\n");
 
@@ -363,6 +368,10 @@ CMicrophoneModule::CMicrophoneModule() : dbg_(kGroupMicrophone), valid(false)
 	// Not necessarily USB audio anymore (E2K, M2K)
 	if (!valid)
 		valid = InitMicrophoneInt();
+
+	// Release microphone device until capture session
+	if (valid)
+		DeinitMicrophoneInt();
 }
 
 //----------------------------------------------------------------------------
@@ -408,11 +417,11 @@ Boolean	CMicrophoneModule::InitMicrophoneInt()
 {
 	if(kNoErr != InitMicInt())
 	{
-		dbg_.DebugOut(kDbgLvlCritical, "MicrophoneModule::InitMicrophoneInt: microphone init failed\n");
+		dbg_.DebugOut(kDbgLvlCritical, "MicrophoneModule::InitMicrophoneInt: microphone init failed (pid=%d)\n", getpid());
 		return false;
 	}
 
-	dbg_.DebugOut(kDbgLvlImportant, "MicrophoneModule::InitMicrophoneInt: completed OK\n");
+	dbg_.DebugOut(kDbgLvlImportant, "MicrophoneModule::InitMicrophoneInt: completed OK (pid=%d)\n", getpid());
 	return true;
 }
 
@@ -424,7 +433,7 @@ Boolean	CMicrophoneModule::DeinitMicrophoneInt()
 	{
 		return false;
 	}
-	dbg_.DebugOut(kDbgLvlImportant, "MicrophoneModule::DeinitMicrophoneInt: completed OK\n");
+	dbg_.DebugOut(kDbgLvlImportant, "MicrophoneModule::DeinitMicrophoneInt: completed OK (pid=%d)\n", getpid());
 	return true;
 }
 
@@ -467,14 +476,6 @@ tErrType CMicrophoneModule::InitMicInt()
 	micCtx_.fd[0]		= -1;
 	micCtx_.fd[1]		= -1;
 	micCtx_.period_time	= MIC_PERIOD;
-
-	// Init microphone event parameters
-	micCtx_.threshold	= kS16Max;
-	micCtx_.duration	= 1000;
-	micCtx_.clipCount	= 25;
-	micCtx_.rateAdjust	= 100;
-	micCtx_.rate 		= MIC_RATE;
-	micCtx_.block_size 	= MIC_RATE * MIC_CHANS * sizeof(short) * MIC_PERIOD / 1000000ULL;
 
 	snd_pcm_hw_params_malloc(&micCtx_.hwparams);
 	snd_pcm_sw_params_malloc(&micCtx_.swparams);
@@ -1131,6 +1132,16 @@ tAudCapHndl CMicrophoneModule::StartAudioCapture(const CPath& path, IEventListen
 
 	DATA_LOCK;
 
+	if (micCtx_.pcm_handle == NULL)
+	{
+		if (!InitMicrophoneInt())
+		{
+			dbg_.DebugOut(kDbgLvlCritical, "MicrophoneModule::StartAudioCapture: init failed\n");
+			DATA_UNLOCK;
+			return hndl;
+		}
+	}
+
 	if(micCtx_.hndl != kInvalidAudCapHndl || !valid)
 	{
 		DATA_UNLOCK;
@@ -1158,14 +1169,14 @@ tAudCapHndl CMicrophoneModule::StartAudioCapture(const CPath& path, IEventListen
 		err = statvfs(parent_directory.c_str(), &buf);
 		if(err < 0)
 		{
-			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: directory does not exist %s\n", parent_directory.c_str());
+			dbg_.DebugOut(kDbgLvlCritical, "MicrophoneModule::StartAudioCapture: directory does not exist %s\n", parent_directory.c_str());
 			DATA_UNLOCK;
 			return hndl;
 		}
 		length =  buf.f_bsize * buf.f_bavail;
 		if(length < MIN_FREE)
 		{
-			dbg_.DebugOut(kDbgLvlCritical, "CameraModule::StartAudioCapture: not enough disk space, %llu required, %llu available\n", MIN_FREE, length);
+			dbg_.DebugOut(kDbgLvlCritical, "MicrophoneModule::StartAudioCapture: not enough disk space, %llu required, %llu available\n", MIN_FREE, length);
 			DATA_UNLOCK;
 			return hndl;
 		}
@@ -1271,6 +1282,8 @@ Boolean CMicrophoneModule::StopAudioCapture(const tAudCapHndl hndl)
 	}
 
 	micCtx_.hndl = kInvalidAudCapHndl;
+
+	DeinitMicrophoneInt();
 
 	DATA_UNLOCK;
 
