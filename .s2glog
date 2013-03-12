@@ -36361,3 +36361,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/11/13 7:51 PM
 6,563 ms. (Cumulative: 14,835,155 ms)
 
 ----------------
+Revision 10,164 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cart event socket listener thread modified to re-acquire socket on errors or hangups. (TTP 4328)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/11/13 8:22 PM
+1 changed, 0 added, 0 deleted.
+6,286 ms. (Cumulative: 14,841,535 ms)
+
+----------------
