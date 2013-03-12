@@ -380,7 +380,7 @@ void* CEventModule::CartridgeTask( void* arg )
 			CMessage ipc_msg;
 			ipc_msg.SetMessageSize(sizeof(ipc_msg));
 			err = pThis->kernel_.ReceiveMessageOrWait(queue, &ipc_msg, sizeof(ipc_msg), 500);
-			if (err != kConnectionTimedOutErr) {
+			if (err == kNoErr) {
 				data.cartridgeState = (eCartridgeState_)ipc_msg.GetMessageReserved();
 				CCartridgeMessage cart_msg(data);
 				pThis->PostEvent(cart_msg, kCartridgeEventPriority, 0);
@@ -411,8 +411,14 @@ server:
 		// block on driver state changes, or timeout after 1 sec
 		// use timeout for cancellation point
  		ret = poll(event_fd, 1, 1000);
-        pthread_testcancel();
-		if((ret >= 0)  && (event_fd[0].revents & POLLIN)) {
+ 		pthread_testcancel();
+		if((ret > 0) && (event_fd[0].revents & (POLLERR | POLLHUP | POLLNVAL))) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: socket error at %s\n", CART_SOCK);
+			close(event_fd[0].fd);
+			event_fd[0].fd = CreateListeningSocket(CART_SOCK);
+			continue;
+		}
+		if((ret > 0) && (event_fd[0].revents & POLLIN)) {
 			struct sockaddr_un addr;
 			socklen_t size;
 			int fdsock;
