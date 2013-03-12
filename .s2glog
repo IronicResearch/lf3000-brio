@@ -36351,3 +36351,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 3/11/13 1:09 PM
 6,251 ms. (Cumulative: 14,828,483 ms)
 
 ----------------
+Revision 10,163 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defer acquiring microphone device until audio capture session starts.
+Allows 2nd MicrophoneMPI instance to record audio separate from caller's instance. (TTP 4530)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/11/13 7:51 PM
+2 changed, 0 added, 0 deleted.
+6,563 ms. (Cumulative: 14,835,155 ms)
+
+----------------
