@@ -36370,3 +36370,13 @@ By Dave Milici (dmilici@leapfrog.com) on 3/11/13 8:22 PM
 6,286 ms. (Cumulative: 14,841,535 ms)
 
 ----------------
+Revision 10,165 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Change default video playback method back to Theora codec, per Content request.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/12/13 6:18 PM
+1 changed, 0 added, 0 deleted.
+6,195 ms. (Cumulative: 14,847,839 ms)
+
+----------------
