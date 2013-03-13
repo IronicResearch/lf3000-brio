@@ -265,7 +265,7 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 	pVidCtx->pPathVideo = new CPath(filepath);
 	pVidCtx->pSurfVideo = pSurf;
 
-	char flags[256] = "gstreamer";
+	char flags[256] = "theora";
 	FILE* fp = fopen("/flags/video", "r");
 	if (fp) {
 		fscanf(fp, "%s", &flags[0]);
