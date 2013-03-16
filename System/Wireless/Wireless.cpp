@@ -106,6 +106,10 @@ CWirelessModule::CWirelessModule() :
 //----------------------------------------------------------------------------
 CWirelessModule::~CWirelessModule()
 {
+        //Clean up in case the app doesn't
+        LeaveAdhocNetwork();
+        SetWirelessPower(false);
+        
 	//Restore ConnMan to it's former state
 	SetConnManWirelessPower(bSavedConnManState_);
 	mDispatcher_->leave();

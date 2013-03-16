@@ -36380,3 +36380,15 @@ By Dave Milici (dmilici@leapfrog.com) on 3/12/13 6:18 PM
 6,195 ms. (Cumulative: 14,847,839 ms)
 
 ----------------
+Revision 10,166 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,167 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,168 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,169 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Wireless: Do extra clean up in the CWirelessModule destructor in case the app didn't clean up like they should have. Fixes TTPro Brio - Base #4500.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/16/13 2:55 PM
+1 changed, 0 added, 0 deleted.
+6,251 ms. (Cumulative: 14,854,199 ms)
+
+----------------
