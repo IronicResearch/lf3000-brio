@@ -362,6 +362,10 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 			goto out;
 	}
 
+	// Re-init V4L device, as needed per instance
+	if (camCtx_.fd == -1)
+		InitCameraInt(&camCtx_.mode, true);
+
 	// Allocate video memory
 	AllocVMem(camCtx_);
 
