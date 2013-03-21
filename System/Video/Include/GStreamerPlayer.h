@@ -57,12 +57,15 @@ public:
 	
 private:
     GstElement 		*m_videoBin;
-    GstElement 		*m_videoBalance;
+    GstElement 		*m_queue;
     GstElement 		*m_colorspace;
     GstElement 		*m_videoplug;
     GstElement 		*m_videoSink;
     GstElement  	*m_audioBin;
     GstElement  	*m_audioplug;
+    GstElement		*m_audioconv;
+    GstElement		*m_audiosink;
+
 public:
     GstElement  	*pipeline;
     GstBus 			*bus;

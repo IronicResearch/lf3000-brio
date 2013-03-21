@@ -36420,3 +36420,14 @@ By Dave Milici (dmilici@leapfrog.com) on 3/21/13 12:43 PM
 6,219 ms. (Cumulative: 14,866,809 ms)
 
 ----------------
+Revision 10,174 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cleanup gstreamer pipeline elements for subsequent player instances.
+Extend gstreamer pipeline startup timeout to 4 secs for testing buggy videos.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/21/13 12:50 PM
+2 changed, 0 added, 0 deleted.
+6,329 ms. (Cumulative: 14,873,216 ms)
+
+----------------
