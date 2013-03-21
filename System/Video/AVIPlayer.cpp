@@ -482,6 +482,14 @@ Boolean CAVIPlayer::SyncVideoFrame(tVideoHndl hVideo, tVideoTime* pCtx, Boolean 
 			return true;
 		}
 	}
+	else if (bDrop && pCodecCtx->codec_id == CODEC_ID_THEORA) {
+		pCtx->frame = pCtx->time * pVidCtx->uFrameTimeDen / pVidCtx->uFrameTimeNum;
+		if (SeekVideoFrame(hVideo, pCtx, false, false)) {
+			pVidCtx->bSeeked = false;
+			GetVideoTime(hVideo, pCtx);
+			return true;
+		}
+	}
 	if (GetNextFrame(pFormatCtx, pCodecCtx, iVideoStream, pFrame)) {
 		GetVideoTime(hVideo, pCtx);
 		return true;
