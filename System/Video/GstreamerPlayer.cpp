@@ -366,7 +366,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 	tVideoSurf*		surf = pVidCtx->pSurfVideo;
 
     // Create custom video sink for YUV rendering
-    if ((m_videoSink = GST_ELEMENT(g_object_new(get_type_YUV(), NULL)))) {
+    if (get_type_YUV() && (m_videoSink = GST_ELEMENT(g_object_new(get_type_YUV(), NULL)))) {
         gst_object_ref(GST_OBJECT(m_videoSink)); // Take ownership
         gst_object_sink(GST_OBJECT(m_videoSink));
         VideoSinkBase*  sink = reinterpret_cast<VideoSinkBase*>(m_videoSink);
@@ -383,7 +383,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     }
 
     // Create video pipeline
-    m_videoBin = gst_bin_new(NULL);
+    m_videoBin = gst_bin_new("video-bin");
     if (!m_videoBin) {
     	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: video bin failed\n");
     	return false;
@@ -398,26 +398,24 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     m_colorspace = gst_element_factory_make("ffmpegcolorspace", NULL);
 
     // We need a queue to support the tee from parent node
-    GstElement *queue = gst_element_factory_make("queue", NULL);
+    m_queue = gst_element_factory_make("queue", NULL);
 
-    if (!m_videoBin || !m_videoplug || !m_colorspace || !queue) {
+    if (!m_videoBin || !m_videoplug || !m_colorspace || !m_queue) {
     	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: video pipeline elements missing\n");
     	return false;
     }
 
     // Link video pipeline elements as single bin element
-    gst_bin_add_many(GST_BIN(m_videoBin), queue, m_colorspace, m_videoplug, m_videoSink, (const char*)NULL);
-    gst_element_link_many(queue, m_colorspace, m_videoplug, m_videoSink, (const char*)NULL);
+    gst_bin_add_many(GST_BIN(m_videoBin), m_queue, m_colorspace, m_videoplug, m_videoSink, NULL);
+    gst_element_link_many(m_queue, m_colorspace, m_videoplug, m_videoSink, NULL);
 
     // Expose sink pad on video bin element
-    GstPad *videopad = gst_element_get_pad(queue, "sink");
+    GstPad *videopad = gst_element_get_pad(m_queue, "sink");
     gst_element_add_pad(m_videoBin, gst_ghost_pad_new("sink", videopad));
     gst_object_unref(videopad);
 
     // Create audio pipeline (per gstreamer example)
     // http://docs.gstreamer.com/display/GstSDK/Playback+tutorial+7%3A+Custom+playbin2+sinks
-    GstElement *conv, *sink;
-
     // Create gstreamer playbin pipeline to auto-construct demuxer/decoders
     pipeline = gst_element_factory_make("playbin2", "gstreamer-player");
 
@@ -436,7 +434,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
 
     // Create audio bin element for audio output pipeline
-    m_audioBin = gst_bin_new(NULL);
+    m_audioBin = gst_bin_new("audio-bin");
     if (!m_audioBin) {
     	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: audio bin failed\n");
     	return false;
@@ -444,11 +442,11 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     gst_object_ref(GST_OBJECT(m_audioBin)); // Take ownership
     gst_object_sink(GST_OBJECT(m_audioBin));
 
-    GstElement* audioplug = gst_element_factory_make("identity", NULL);
-    conv     = gst_element_factory_make("audioconvert",  "converter");
-    sink     = gst_element_factory_make("autoaudiosink", "audio-output");
+    m_audioplug = gst_element_factory_make("identity", NULL);
+    m_audioconv = gst_element_factory_make("audioconvert",  "converter");
+    m_audiosink = gst_element_factory_make("autoaudiosink", "audio-output");
 
-    if (!m_audioBin || !audioplug || !conv || !sink) {
+    if (!m_audioBin || !m_audioplug || !m_audioconv || !m_audiosink) {
     	dbg_.DebugOut(kDbgLvlCritical, "GStreamerPlayer::InitVideo: audio pipeline elements missing\n");
     	return false;
     }
@@ -456,14 +454,14 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     // we add all elements into the pipeline
     // file-source | ogg-demuxer | vorbis-decoder | converter | alsa-output
     gst_bin_add_many(GST_BIN(m_audioBin),
-                     audioplug, conv, sink, NULL);
+                     m_audioplug, m_audioconv, m_audiosink, NULL);
 
     // we link the elements together
     // file-source -> ogg-demuxer ~> vorbis-decoder -> converter -> alsa-output
-    gst_element_link_many(audioplug, conv, sink, NULL);
+    gst_element_link_many(m_audioplug, m_audioconv, m_audiosink, NULL);
 
     // Expose sink pad on audio bin element
-    GstPad *audiopad = gst_element_get_pad(audioplug, "sink");
+    GstPad *audiopad = gst_element_get_pad(m_audioplug, "sink");
     gst_element_add_pad(m_audioBin, gst_ghost_pad_new("sink", audiopad));
     gst_object_unref(audiopad);
 
@@ -478,7 +476,7 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
 
     // Wait for pipeline to change state before querying video stream info
 	GstState old_state, new_state, pending_state;
-	for (int i = 0; i < 10; ) {
+	for (int i = 0; i < 40; ) {
 		GstMessage* msg = gst_bus_timed_pop_filtered(bus, 100 * GST_MSECOND, GST_MESSAGE_STATE_CHANGED);
 		if (msg && GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
 			gst_message_parse_state_changed (msg, &old_state, &new_state, &pending_state);
@@ -510,10 +508,14 @@ Boolean	CGStreamerPlayer::DeInitVideo(tVideoHndl hVideo)
 		pipeline = NULL;
 	}
 	if (m_videoBin) {
+	    gst_element_unlink_many(m_queue, m_colorspace, m_videoplug, m_videoSink, NULL);
+	    gst_bin_remove_many(GST_BIN(m_videoBin), m_queue, m_colorspace, m_videoplug, m_videoSink, NULL);
 		gst_object_unref(GST_OBJECT(m_videoBin));
 		m_videoBin = NULL;
 	}
 	if (m_audioBin) {
+	    gst_element_unlink_many(m_audioplug, m_audioconv, m_audiosink, NULL);
+	    gst_bin_remove_many(GST_BIN(m_audioBin), m_audioplug, m_audioconv, m_audiosink, NULL);
 		gst_object_unref(GST_OBJECT(m_audioBin));
 		m_audioBin = NULL;
 	}
