@@ -36431,3 +36431,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/21/13 12:50 PM
 6,329 ms. (Cumulative: 14,873,216 ms)
 
 ----------------
+Revision 10,175 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add additional doxygen comments to CWirlessMPI constructor and destructor to clarify that creating a CWirlessMPI object causes the wireless network adapter to be disconnected from any wirless access point and does not guarantee the power state of the adapter. When the last CWirelessMPI object is destroyed, the wireless adapter is placed back into the state it was in when the first CWirelessMPI object was instantiated. Fixes TTPro Brio - Base #4366.
+
+By dlazzari (dlazzari@leapfrog.com) on 3/23/13 12:52 PM
+1 changed, 0 added, 0 deleted.
+6,125 ms. (Cumulative: 14,879,435 ms)
+
+----------------

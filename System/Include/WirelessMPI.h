@@ -38,8 +38,15 @@ public:
 	virtual const CString*	GetModuleName() const;	
 	virtual const CURI*		GetModuleOrigin() const;
 
-	// class-specific functionality
+	/// Creates a new CWirelessMPI object instance. If this is the first such instance,
+	/// the wireless networking card will be disconnected from any wireless access point
+	/// it is currently connected to. After instantiation, the wireless power state is not
+	/// guaranteed to be in any specific state.
 	CWirelessMPI();
+	
+	/// When the last CWirelessMPI object is destroyed, the wireless networking card will
+	/// be placed back into the state it was in when the first CWirelessMPI object was
+	/// instantiated.
 	virtual ~CWirelessMPI();
 
 	/// Register event listener for CWirelessStateMessage and CRemotePlayerMessage
