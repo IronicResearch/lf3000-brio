@@ -205,6 +205,15 @@ U32	CButtonMPI::GetTouchRate() const
 		fscanf(fd, "%u\n", (unsigned int*)&rate);
 		fclose(fd);
 	}
+	else {
+		fd = fopen(SYSFS_TOUCHSCREEN_PATH("scanning_frequency"), "r");
+		if (fd != NULL) {
+			unsigned int x, y, z;
+			fscanf(fd, "Idle: %u Finger: %u Stylus: %u\n", &x, &y, &z);
+			fclose(fd);
+			rate = z;
+		}
+	}
 	return rate;
 #else
 	return 0;	// not implemented
@@ -218,6 +227,12 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 	FILE*	fd = fopen(SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz"), "w");
 	if (fd != NULL) {
 		fprintf(fd, "%u\n", (unsigned int)rate);
+		fclose(fd);
+		return kNoErr;
+	}
+	fd = fopen(SYSFS_TOUCHSCREEN_PATH("scanning_frequency"), "w");
+	if (fd != NULL) {
+		fprintf(fd, "%u %u %u\n", (unsigned int)rate, (unsigned int)rate, (unsigned int)rate);
 		fclose(fd);
 		return kNoErr;
 	}
