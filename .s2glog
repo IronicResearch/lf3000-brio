@@ -36440,3 +36440,16 @@ By dlazzari (dlazzari@leapfrog.com) on 3/23/13 12:52 PM
 6,125 ms. (Cumulative: 14,879,435 ms)
 
 ----------------
+Revision 10,176 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,177 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,178 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added SetTouchRate support for Neonode sysfs entry.
+Tested with MDL TSSampleRate setting for Rio Art Studio. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 3/28/13 5:24 PM
+1 changed, 0 added, 0 deleted.
+6,257 ms. (Cumulative: 14,885,786 ms)
+
+----------------
