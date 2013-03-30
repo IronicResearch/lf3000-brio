@@ -36453,3 +36453,12 @@ By Dave Milici (dmilici@leapfrog.com) on 3/28/13 5:24 PM
 6,257 ms. (Cumulative: 14,885,786 ms)
 
 ----------------
+Revision 10,179 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Recompiled OGL libs, per nxp3200/API svn -r2119. (SDK link precedence???)
+
+By Dave Milici (dmilici@leapfrog.com) on 3/29/13 6:16 PM
+6 changed, 0 added, 0 deleted.
+6,548 ms. (Cumulative: 14,892,428 ms)
+
+----------------
