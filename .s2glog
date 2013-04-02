@@ -36462,3 +36462,15 @@ By Dave Milici (dmilici@leapfrog.com) on 3/29/13 6:16 PM
 6,548 ms. (Cumulative: 14,892,428 ms)
 
 ----------------
+Revision 10,180 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,181 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,182 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+VideoMPI.IsVideoPlaying() conditionally qualifies video handle as current, not stale.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/2/13 1:11 PM
+1 changed, 0 added, 0 deleted.
+6,222 ms. (Cumulative: 14,898,759 ms)
+
+----------------

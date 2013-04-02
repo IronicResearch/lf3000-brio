@@ -571,7 +571,7 @@ Boolean CVideoModule::ResumeVideo(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 {
-	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
+	tVideoContext* 	pVidCtx = (hVideo == ghVideoHndl) ? reinterpret_cast<tVideoContext*>(hVideo) : NULL;
 
 #if USE_MUTEX
 	kernel_.LockMutex(gVidMutex);
@@ -588,7 +588,7 @@ Boolean CVideoModule::IsVideoPaused(tVideoHndl hVideo)
 //----------------------------------------------------------------------------
 Boolean CVideoModule::IsVideoPlaying(tVideoHndl hVideo)
 {
-	tVideoContext* 	pVidCtx = reinterpret_cast<tVideoContext*>(hVideo);
+	tVideoContext* 	pVidCtx = (hVideo == ghVideoHndl) ? reinterpret_cast<tVideoContext*>(hVideo) : NULL;
 
 #if USE_MUTEX
 	kernel_.LockMutex(gVidMutex);
