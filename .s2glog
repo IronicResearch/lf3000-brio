@@ -36474,3 +36474,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/2/13 1:11 PM
 6,222 ms. (Cumulative: 14,898,759 ms)
 
 ----------------
+Revision 10,183 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Update OpenGL libraries with ones built from nxp3200_bsp TRUNK -r2141
+
+By dlazzari (dlazzari@leapfrog.com) on 4/2/13 2:12 PM
+6 changed, 0 added, 0 deleted.
+6,941 ms. (Cumulative: 14,905,794 ms)
+
+----------------
