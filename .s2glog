@@ -36483,3 +36483,13 @@ By dlazzari (dlazzari@leapfrog.com) on 4/2/13 2:12 PM
 6,941 ms. (Cumulative: 14,905,794 ms)
 
 ----------------
+Revision 10,184 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Defer enabling camera viewfinder overlay to VIP driver 1st good frame. (TTP 4434 2:2)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/2/13 6:22 PM
+1 changed, 0 added, 0 deleted.
+6,172 ms. (Cumulative: 14,912,060 ms)
+
+----------------

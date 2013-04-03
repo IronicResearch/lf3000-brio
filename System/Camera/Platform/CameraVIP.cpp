@@ -392,9 +392,6 @@ tVidCapHndl CVIPCameraModule::StartVideoCapture(const CPath& path, tVideoSurf* p
 
 		if (hndl == kInvalidVidCapHndl)
 			hndl = kStreamingActive;
-
-		CDisplayMPI display;
-		display.Invalidate(0);
 	}
 
 out:
