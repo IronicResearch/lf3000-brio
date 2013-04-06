@@ -36493,3 +36493,15 @@ By Dave Milici (dmilici@leapfrog.com) on 4/2/13 6:22 PM
 6,172 ms. (Cumulative: 14,912,060 ms)
 
 ----------------
+Revision 10,185 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,186 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,187 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Mark GetPlatform*() functions deprecated for external developers, and refer to HasPlatformCapability() instead. (TTP 4486)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/5/13 5:26 PM
+1 changed, 0 added, 0 deleted.
+6,310 ms. (Cumulative: 14,918,480 ms)
+
+----------------
