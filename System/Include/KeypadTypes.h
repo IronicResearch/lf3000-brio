@@ -46,8 +46,8 @@ BOOST_PP_SEQ_FOR_EACH_I(GEN_ERR_VALUE, FirstErr(kGroupKeypad), KEYPAD_ERRORS)
 //==============================================================================
 //------------------------------------------------------------------------------
 struct tKeypadData {
-	U32	keypadState;		///< 0=up, 1=down, 2=repeat
-	U32	keypadTransition;	///< 0=none, 1=transition
+	U32	keyState;   		///< 0=up, 1=down, 2=repeat
+	U32	keyCode;   			///< key code
 	struct timeVal {		///< timestamp per input event system
 		S32	seconds;
 		S32	microSeconds;

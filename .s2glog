@@ -36515,3 +36515,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/5/13 6:19 PM
 6,376 ms. (Cumulative: 14,924,934 ms)
 
 ----------------
+Revision 10,189 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modify Keypad data to contain individual key codes, unlike bitwise button states. (TTP 4693 followup)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/6/13 1:06 PM
+1 changed, 0 added, 0 deleted.
+6,395 ms. (Cumulative: 14,931,422 ms)
+
+----------------
