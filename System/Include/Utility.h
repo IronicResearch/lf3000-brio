@@ -204,7 +204,7 @@ U32 FindDevice(CPath path);
 /// <B>For use with Firmware 2.x or later only.</B>
 /// \brief Returns the system platform ID
 /// \return ID number for platform variants.
-/// Use \ref GetPlatformName() or \ref GetPlatformFamily() instead.
+/// \deprecated	Internal use only. Use \ref HasPlatformCapability() instead.
 //----------------------------------------------------------------------------
 U32 GetPlatformID();
 
@@ -212,6 +212,7 @@ U32 GetPlatformID();
 /// <B>For use with Firmware 2.x or later only.</B>
 /// \brief Returns the system platform name by string.
 /// \return String with platform name ("Emerald", "Madrid", "LUCY", "VALENCIA").
+/// \deprecated	Internal use only. Use \ref HasPlatformCapability() instead.
 //----------------------------------------------------------------------------
 CString GetPlatformName();
 
@@ -219,6 +220,7 @@ CString GetPlatformName();
 /// <B>For use with Firmware 3.x or later only.</B>
 /// \brief Returns the system platform family by string.
 /// \return String with platform family ("LEX", "LPAD").
+/// \deprecated	Internal use only. Use \ref HasPlatformCapability() instead.
 //----------------------------------------------------------------------------
 CString GetPlatformFamily();
 
