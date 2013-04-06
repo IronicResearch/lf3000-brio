@@ -36505,3 +36505,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/5/13 5:26 PM
 6,310 ms. (Cumulative: 14,918,480 ms)
 
 ----------------
+Revision 10,188 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Add Keypad event and message types, distinct from Button types, for use with virtual keypad widget. (TTP 4693)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/5/13 6:19 PM
+2 changed, 1 added, 0 deleted.
+6,376 ms. (Cumulative: 14,924,934 ms)
+
+----------------

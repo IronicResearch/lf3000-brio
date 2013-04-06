@@ -20,6 +20,7 @@
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <TouchTypes.h>
+#include <KeypadTypes.h>
 #include <Utility.h>
 LF_BEGIN_BRIO_NAMESPACE()
 
@@ -27,6 +28,7 @@ LF_BEGIN_BRIO_NAMESPACE()
 const CString	kMPIName = "ButtonMPI";
 
 static tButtonData2 	gCachedButtonData 	= {0, 0, {0, 0}};
+static tKeypadData	 	gCachedKeypadData 	= {0, 0, {0, 0}};
 static tTouchData		gCachedTouchData	= {0, 0, 0, {0, 0}};
 static tTouchMode		gCachedTouchMode	= kTouchModeDefault;
 static bool				gIsPressureMode		= false;
@@ -63,6 +65,28 @@ tButtonData CButtonMessage::GetButtonState() const
 	return data;
 }
 tButtonData2 CButtonMessage::GetButtonState2() const
+{
+	return mData;
+}
+
+//============================================================================
+// CKeypadMessage
+//============================================================================
+//------------------------------------------------------------------------------
+CKeypadMessage::CKeypadMessage( const tKeypadData& data )
+	: IEventMessage(kKeypadStateChanged), mData(data)
+{
+	gCachedKeypadData = data;
+}
+
+//------------------------------------------------------------------------------
+U16	CKeypadMessage::GetSizeInBytes() const
+{
+	return sizeof(CKeypadMessage);
+}
+
+//------------------------------------------------------------------------------
+tKeypadData CKeypadMessage::GetKeypadState() const
 {
 	return mData;
 }
