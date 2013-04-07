@@ -319,6 +319,8 @@ U32	CButtonMPI::GetTouchParam(tTouchParam param) const
 	CPath sysfspath;
 	switch (param) {
 	case kTouchParamSampleRate:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return GetTouchRate();
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz");
 		break;
 	case kTouchParamDebounceDown:
@@ -344,6 +346,8 @@ tErrType CButtonMPI::SetTouchParam(tTouchParam param, U32 value)
 	CPath sysfspath;
 	switch (param) {
 	case kTouchParamSampleRate:
+		if (HasPlatformCapability(kCapsMultiTouch))
+			return SetTouchRate(value);
 		sysfspath = SYSFS_TOUCHSCREEN_PATH("sample_rate_in_hz");
 		break;
 	case kTouchParamDebounceDown:
