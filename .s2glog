@@ -36525,3 +36525,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/6/13 1:06 PM
 6,395 ms. (Cumulative: 14,931,422 ms)
 
 ----------------
+Revision 10,190 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Link Rio Get/SetTouchRate with Get/SetTouchParam() instead of resistive touch params.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/6/13 5:29 PM
+1 changed, 0 added, 0 deleted.
+6,110 ms. (Cumulative: 14,937,610 ms)
+
+----------------
