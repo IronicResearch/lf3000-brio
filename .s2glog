@@ -36548,3 +36548,12 @@ By dlazzari (dlazzari@leapfrog.com) on 4/11/13 2:02 PM
 6,125 ms. (Cumulative: 14,943,844 ms)
 
 ----------------
+Revision 10,196 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+As per Sukhada's request, Brio changed to leave Idle frequency at 25 Hz and only modify Finger and Stylus rates.
+
+By Minh Saelock (msaelock@leapfrog.com) on 4/11/13 3:29 PM
+1 changed, 0 added, 0 deleted.
+6,168 ms. (Cumulative: 14,950,106 ms)
+
+----------------

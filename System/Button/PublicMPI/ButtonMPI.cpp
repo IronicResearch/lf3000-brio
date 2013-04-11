@@ -256,7 +256,7 @@ tErrType CButtonMPI::SetTouchRate(U32 rate)
 	}
 	fd = fopen(SYSFS_TOUCHSCREEN_PATH("scanning_frequency"), "w");
 	if (fd != NULL) {
-		fprintf(fd, "%u %u %u\n", (unsigned int)rate, (unsigned int)rate, (unsigned int)rate);
+		fprintf(fd, "%u %u %u\n", 25, (unsigned int)rate, (unsigned int)rate);
 		fclose(fd);
 		return kNoErr;
 	}
