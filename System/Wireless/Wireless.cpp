@@ -84,13 +84,6 @@ CWirelessModule::CWirelessModule() :
 	mConnection_ = new DBus::Connection(DBus::Connection::SystemBus());
 	mConnection_->set_timeout(2000);
 	
-	mServer_ = new org::freedesktop::Avahi::Server(*mConnection_);
-	DBus::Path service_browser_path = mServer_->ServiceBrowserNew( -1, 0, "_workstation._tcp", "local", 0 );
-	mBrowser_ = new org::freedesktop::Avahi::ServiceBrowser(*mConnection_, service_browser_path, mServer_);
-	mBrowser_->EnableSignals();
-	mBrowser_->Start();
-	
-	
 	pthread_create(&mDispatchTask_, NULL, DBusDispatcherTask, (void*)mDispatcher_);
 	
 	//TODO: This is to help ensure the dispatch thread is up and running before
@@ -101,6 +94,12 @@ CWirelessModule::CWirelessModule() :
 	//keep ConnMan's muddy paws off the network card!
 	bSavedConnManState_ = GetConnManWirelessPower();
 	SetConnManWirelessPower(false);
+	
+	mServer_ = new org::freedesktop::Avahi::Server(*mConnection_);
+	DBus::Path service_browser_path = mServer_->ServiceBrowserNew( -1, 0, "_workstation._tcp", "local", 0 );
+	mBrowser_ = new org::freedesktop::Avahi::ServiceBrowser(*mConnection_, service_browser_path, mServer_);
+	mBrowser_->EnableSignals();
+	mBrowser_->Start();
 }
 
 //----------------------------------------------------------------------------
@@ -112,10 +111,10 @@ CWirelessModule::~CWirelessModule()
         
 	//Restore ConnMan to it's former state
 	SetConnManWirelessPower(bSavedConnManState_);
+	mBrowser_->Free();
 	mDispatcher_->leave();
 	pthread_join(mDispatchTask_, NULL);
 	delete mConnection_;
-	mBrowser_->Free();
 	delete mBrowser_;
 	delete mServer_;
 }
@@ -202,7 +201,8 @@ tErrType CWirelessModule::SetWirelessPower(Boolean power)
 		else
 		{
 			DBus::Path interface = GetWPAInterface();
-			wpa_supplicant.RemoveInterface(interface);
+			if(interface != "")
+				wpa_supplicant.RemoveInterface(interface);
 		}
 	}
 	catch(DBus::Error& err)

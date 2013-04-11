@@ -36535,3 +36535,16 @@ By Dave Milici (dmilici@leapfrog.com) on 4/6/13 5:29 PM
 6,110 ms. (Cumulative: 14,937,610 ms)
 
 ----------------
+Revision 10,191 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,192 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,193 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,194 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,195 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Rearrange the order of some avahi tasks so that we don't try to do them before we could possibly have an ad-hoc network or after the dbus connection was torn down. Also fix a crash where the WPA Interface was used when it wasn't valid.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/11/13 2:02 PM
+1 changed, 0 added, 0 deleted.
+6,125 ms. (Cumulative: 14,943,844 ms)
+
+----------------
