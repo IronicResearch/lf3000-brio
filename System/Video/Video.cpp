@@ -248,10 +248,11 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 	Boolean		b;
 	CPath		filepath = (path.at(0) == '/') ? path : gpath + path;
 	const char*	filename = filepath.c_str();
+	CURI		fileuri  = (filepath.find("://") != std::string::npos) ? filepath : "";
 	
 	// Open Ogg file associated with resource
 	FILE* file = fopen(filename, "r");
-	if (file == NULL) 
+	if (file == NULL && fileuri.empty())
 	{
 		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: LoadRsrc failed for %s\n", filename);
 		return kInvalidVideoHndl;
@@ -277,7 +278,10 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 	// GStreamer player preferable for long videos
 	#define LONG_VIDEO  (1024 << 10)
 	struct stat stbf;
-	if (pSurf && path == pathAudio && stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO && strcmp(flags, "gstreamer") == 0) {
+	bool qualified1 = (stat(filename, &stbf) == 0 && stbf.st_size > LONG_VIDEO);
+	bool qualified2 = (strcmp(flags, "gstreamer") == 0);
+	bool qualified3 = (!fileuri.empty());
+	if (pSurf && path == pathAudio && (qualified1 && qualified2 || qualified3)) {
 		CGStreamerPlayer* pPlayer = new CGStreamerPlayer();
 		pVidCtx->pPlayer = pPlayer;
 		b = InitVideoInt(hVideo);
@@ -311,7 +315,8 @@ tVideoHndl CVideoModule::StartVideoInt(const CPath& path, const CPath& pathAudio
 		dbg_.DebugOut(kDbgLvlCritical, "VideoModule::StartVideo: InitVideoInt failed to init codec for %s\n", filename);
 		delete pVidCtx->pPlayer;
 		kernel_.Free(pVidCtx);
-		fclose(file);
+		if (file)
+			fclose(file);
 		return kInvalidVideoHndl;
 	}
 
