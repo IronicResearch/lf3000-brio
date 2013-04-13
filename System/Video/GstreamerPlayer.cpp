@@ -427,7 +427,9 @@ Boolean	CGStreamerPlayer::InitVideo(tVideoHndl hVideo)
     g_object_set(pipeline, "flags", flags, NULL);
 
     // we set the input filename to the source element
-    CURI uri = CURI("file://") + CURI(*path);
+    CURI uri = CURI(*path);
+    if (uri.find("://") == std::string::npos)
+    	uri = CURI("file://") + uri;
     g_object_set(G_OBJECT(pipeline), "uri", uri.c_str(), NULL);
 
     // we add a message handler

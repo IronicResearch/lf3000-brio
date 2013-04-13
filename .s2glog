@@ -36557,3 +36557,13 @@ By Minh Saelock (msaelock@leapfrog.com) on 4/11/13 3:29 PM
 6,168 ms. (Cumulative: 14,950,106 ms)
 
 ----------------
+Revision 10,197 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified VideoMPI.StartVideo() path logic to allow passing URL paths to GStreamer player.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/12/13 6:45 PM
+2 changed, 0 added, 0 deleted.
+6,485 ms. (Cumulative: 14,956,685 ms)
+
+----------------
