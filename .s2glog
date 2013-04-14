@@ -36567,3 +36567,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/12/13 6:45 PM
 6,485 ms. (Cumulative: 14,956,685 ms)
 
 ----------------
+Revision 10,198 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Modified AudioMPI.StartAudio() path logic to accept URLs for LibAV players.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/13/13 6:34 PM
+1 changed, 0 added, 0 deleted.
+6,407 ms. (Cumulative: 14,963,185 ms)
+
+----------------

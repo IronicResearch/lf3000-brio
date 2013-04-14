@@ -417,7 +417,7 @@ tAudioID CAudioModule::StartAudio( U32 mpiID,
 	MPIInstanceState& mpiState = RetrieveMPIState(mpiID);
 	CPath fullPath = (path.length() == 0) ? "" :
 		(path.at(0) == '/') ? path : mpiState.path + path;
-	if(stat(fullPath.c_str(), &fileStat) != 0)
+	if(stat(fullPath.c_str(), &fileStat) != 0 && fullPath.find("://") == std::string::npos)
 	{
 		pDebugMPI_->DebugOut(kDbgLvlImportant, "%s: file doesn't exist='%s\n",
 							 __FUNCTION__, fullPath.c_str());
