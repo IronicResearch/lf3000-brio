@@ -994,7 +994,9 @@ tAudioID CAudioMixer::AddPlayer( tAudioStartAudioInfo *pInfo, char *sExt )
 #ifdef USE_44KHZ
 	// External stream handling if 44KHz MP3 player
 	external = (pPlayer->GetSampleRate() == 44100) && sExt
-			&& (!strcasecmp(sExt, "mp3") || !strcasecmp(sExt, "ogg") || !strcasecmp(sExt, "mp4"));
+			&& (!strcasecmp(sExt, "mp3")
+				|| !strcasecmp(sExt, "mp4")
+				|| (!strcasecmp(sExt, "ogg") && pInfo->path->find("/LF/Bulk/Music") != std::string::npos));
 #endif
 
 	if(external)

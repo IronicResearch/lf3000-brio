@@ -36577,3 +36577,14 @@ By Dave Milici (dmilici@leapfrog.com) on 4/13/13 6:34 PM
 6,407 ms. (Cumulative: 14,963,185 ms)
 
 ----------------
+Revision 10,199 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Additionally qualify 44KHz OGG files for /LF/Bulk/Music player usage. (TTP 4583)
+For compatibility with titles which inadvertantly used 44KHz OGG sound effects.
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/16/13 12:58 PM
+1 changed, 0 added, 0 deleted.
+6,469 ms. (Cumulative: 14,969,748 ms)
+
+----------------
