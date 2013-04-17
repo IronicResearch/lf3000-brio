@@ -21,6 +21,9 @@
 #include <WirelessTypes.h>
 
 #include <dbus-c++/dbus.h>
+#include <wpa_supplicant.h>
+#include <wpa_supplicant_Interface.h>
+#include <wpa_supplicant_Network.h>
 #include <avahi-server.h>
 #include <avahi-servicebrowser.h>
 
@@ -82,8 +85,8 @@ private:
 	
 	//Internal utility functions
 	DBus::Path GetWirelessTechnology();
-	DBus::Path GetWPAInterface();
-	DBus::Path GetWPANetwork();
+	fi::w1::wpa_supplicant1::Interface* GetWPAInterface();
+	fi::w1::wpa_supplicant1::Network* GetWPANetwork();
 	
 	//ConnMan specific stuff
 	Boolean SetConnManWirelessPower(Boolean power);
@@ -100,12 +103,15 @@ public:
 	CEventMPI	eventmgr_;
 	
 private:
-	Boolean			bThreadRun_;
 	pthread_t		mDispatchTask_;
 	DBus::BusDispatcher*	mDispatcher_;
 	DBus::Connection*	mConnection_;
 	org::freedesktop::Avahi::Server* mServer_;
 	org::freedesktop::Avahi::ServiceBrowser* mBrowser_;
+	
+	fi::w1::WpaSupplicant*	pWPASupplicant_;
+	fi::w1::wpa_supplicant1::Interface*	pWPAInterfaceCache_;
+	fi::w1::wpa_supplicant1::Network*	pWPANetworkCache_;
 	
 	//Cache and state
 	Boolean			bSavedConnManState_;

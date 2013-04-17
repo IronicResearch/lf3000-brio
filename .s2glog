@@ -36588,3 +36588,12 @@ By Dave Milici (dmilici@leapfrog.com) on 4/16/13 12:58 PM
 6,469 ms. (Cumulative: 14,969,748 ms)
 
 ----------------
+Revision 10,200 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Cache wpa_supplicant DBus proxy objects instead of generating them every call. This should releive some of the stalled calls from TTPro Brio - Base #4160.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/16/13 8:41 PM
+2 changed, 0 added, 0 deleted.
+6,766 ms. (Cumulative: 14,976,624 ms)
+
+----------------
