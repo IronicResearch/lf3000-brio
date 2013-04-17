@@ -23,9 +23,6 @@
 #include <EventMPI.h>
 
 #include <WirelessPriv.h>
-#include <wpa_supplicant.h>
-#include <wpa_supplicant_Interface.h>
-#include <wpa_supplicant_Network.h>
 #include <connman-manager.h>
 #include <connman-tech.h>
 #include <avahi-server.h>
@@ -75,8 +72,7 @@ const CURI* CWirelessModule::GetModuleOrigin() const
 //============================================================================
 //----------------------------------------------------------------------------
 CWirelessModule::CWirelessModule() :
-	debug_(kGroupWireless),
-	bThreadRun_(true)
+	debug_(kGroupWireless)
 {
 	DBus::_init_threading();
 	mDispatcher_ = new DBus::BusDispatcher();
@@ -94,6 +90,10 @@ CWirelessModule::CWirelessModule() :
 	//keep ConnMan's muddy paws off the network card!
 	bSavedConnManState_ = GetConnManWirelessPower();
 	SetConnManWirelessPower(false);
+	
+	pWPASupplicant_ = new WpaSupplicant(*mConnection_);
+	pWPAInterfaceCache_ = NULL;
+	pWPANetworkCache_ = NULL;
 	
 	mServer_ = new org::freedesktop::Avahi::Server(*mConnection_);
 	DBus::Path service_browser_path = mServer_->ServiceBrowserNew( -1, 0, "_workstation._tcp", "local", 0 );
@@ -114,9 +114,17 @@ CWirelessModule::~CWirelessModule()
 	mBrowser_->Free();
 	mDispatcher_->leave();
 	pthread_join(mDispatchTask_, NULL);
-	delete mConnection_;
+	
+	if(pWPANetworkCache_)
+		delete pWPANetworkCache_;
+	
+	if(pWPAInterfaceCache_)
+		delete pWPAInterfaceCache_;
+	
+	delete pWPASupplicant_;
 	delete mBrowser_;
 	delete mServer_;
+	delete mConnection_;
 }
 
 //----------------------------------------------------------------------------
@@ -144,46 +152,54 @@ DBus::Path CWirelessModule::GetWirelessTechnology()
 	return "";
 }
 
-DBus::Path CWirelessModule::GetWPAInterface()
+wpa_supplicant1::Interface* CWirelessModule::GetWPAInterface()
 {
+	//If we have a cached one, trust it
+	if(pWPAInterfaceCache_)
+		return pWPAInterfaceCache_;
+	
 	try
 	{
-		fi::w1::WpaSupplicant wpa_supplicant(*mConnection_);
-		return wpa_supplicant.GetInterface("wlan0");
+		DBus::Path interface_path = pWPASupplicant_->GetInterface("wlan0");
+		pWPAInterfaceCache_ = new wpa_supplicant1::Interface(*mConnection_, interface_path);
+		return pWPAInterfaceCache_;
 	}
 	catch(DBus::Error& err)
 	{
 		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
 	}
-	return "";
+	return NULL;
 }
 
-DBus::Path CWirelessModule::GetWPANetwork()
+wpa_supplicant1::Network* CWirelessModule::GetWPANetwork()
 {
+	if(pWPANetworkCache_)
+		return pWPANetworkCache_;
+	
+	wpa_supplicant1::Interface* interface = GetWPAInterface();
+	if( !interface )
+		return NULL;
+	
 	try
 	{
-		DBus::Path interface_path = GetWPAInterface();
-		if( interface_path != "" )
-		{
-			fi::w1::wpa_supplicant1::Interface interface(*mConnection_, interface_path);
-			DBus::Path network = interface.CurrentNetwork();
-			if(network == "/")
-				return "";
-			return network;
-		}
+		DBus::Path network_path = interface->CurrentNetwork();
+		if(network_path == "/")
+			return NULL;
+		
+		pWPANetworkCache_ = new wpa_supplicant1::Network(*mConnection_, network_path);
+		return pWPANetworkCache_;
 	}
 	catch(DBus::Error& err)
 	{
 		debug_.DebugOut(kDbgLvlImportant, "DBus error: %s\n", err.what());
 	}
-	return "";
+	return NULL;
 }
 	
 tErrType CWirelessModule::SetWirelessPower(Boolean power)
 {
 	try
 	{
-		fi::w1::WpaSupplicant wpa_supplicant(*mConnection_);
 		if(power)
 		{
 			std::map< std::string, ::DBus::Variant > if_props;
@@ -196,13 +212,29 @@ tErrType CWirelessModule::SetWirelessPower(Boolean power)
 			conf_file.writer().append_string("/etc/wpa_supplicant.conf");
 			if_props["ConfigFile"] = conf_file;
 			
-			wpa_supplicant.CreateInterface(if_props);
+			pWPASupplicant_->CreateInterface(if_props);
 		}
 		else
 		{
-			DBus::Path interface = GetWPAInterface();
-			if(interface != "")
-				wpa_supplicant.RemoveInterface(interface);
+			wpa_supplicant1::Interface* interface = GetWPAInterface();
+			DBus::Path interface_path = interface->path();
+			if(interface)
+			{
+				//Invalidate caches
+				if( pWPANetworkCache_ )
+				{
+					delete pWPANetworkCache_;
+					pWPANetworkCache_ = NULL;
+				}
+				
+				if( pWPAInterfaceCache_ )
+				{
+					delete pWPAInterfaceCache_;
+					pWPAInterfaceCache_ = NULL;
+				}
+				
+				pWPASupplicant_->RemoveInterface(interface_path);
+			}
 		}
 	}
 	catch(DBus::Error& err)
@@ -219,14 +251,14 @@ tErrType CWirelessModule::SetWirelessPower(Boolean power)
 
 Boolean CWirelessModule::GetWirelessPower()
 {
-	return (GetWPAInterface() != "");
+	return ( GetWPAInterface() != NULL );
 }
 	
 tErrType CWirelessModule::JoinAdhocNetwork( CString ssid, Boolean encrypted, CString password )
 {
 	//Try and get the interface path first
-	DBus::Path interface_path = GetWPAInterface();
-	if(interface_path == "")
+	wpa_supplicant1::Interface* interface = GetWPAInterface();
+	if( !interface )
 		return kNoWirelessErr;
 
 	std::map< std::string, ::DBus::Variant > network_props;
@@ -273,11 +305,10 @@ tErrType CWirelessModule::JoinAdhocNetwork( CString ssid, Boolean encrypted, CSt
 	
 	try
 	{
-		fi::w1::wpa_supplicant1::Interface interface(*mConnection_, interface_path);
-		if(interface.CurrentNetwork() != "/")
-			interface.Disconnect();
-		DBus::Path new_network = interface.AddNetwork(network_props);
-		interface.SelectNetwork( new_network );
+		if(interface->CurrentNetwork() != "/")
+			interface->Disconnect();
+		DBus::Path new_network = interface->AddNetwork(network_props);
+		interface->SelectNetwork( new_network );
 		if( !ToggleAvahiAutoIP(true) )
 			return kJoinFailedErr;
 		
@@ -294,18 +325,27 @@ tErrType CWirelessModule::LeaveAdhocNetwork()
 {
 	//Try to get the interface path
 	//If it doesn't exist, wifi is powered down, so we don't need to do anything
-	DBus::Path interface_path = GetWPAInterface();
-	if(interface_path == "")
+	wpa_supplicant1::Interface* interface = GetWPAInterface();
+	if( !interface )
 		return kNoErr;
 	
 	ToggleAvahiAutoIP(false);
 	
 	try
 	{
-		//Just disconnect from whatever network right now until ConnMan knows about AdHoc
-		fi::w1::wpa_supplicant1::Interface interface(*mConnection_, interface_path);
-		if(interface.CurrentNetwork() != "/")
-			interface.Disconnect();
+		//Disconnect from the network
+		if(interface->CurrentNetwork() != "/")
+		{
+			//Invalidate cached network
+			if( pWPANetworkCache_ )
+			{
+				delete pWPANetworkCache_;
+				pWPANetworkCache_ = NULL;
+			}
+			
+			//Actually disconnect
+			interface->Disconnect();
+		}
 		return kNoErr;
 	}
 	catch(DBus::Error& err)
@@ -330,14 +370,13 @@ tErrType CWirelessModule::GetPossiblePlayers(PlayerList& players)
 	
 tWirelessState CWirelessModule::GetState()
 {
-	DBus::Path interface_path = GetWPAInterface();
-	if(interface_path == "")
+	wpa_supplicant1::Interface* interface = GetWPAInterface();
+	if( !interface )
 		return kWirelessOff;
 	
 	try
 	{
-		fi::w1::wpa_supplicant1::Interface interface(*mConnection_, interface_path);
-		CString state = interface.State();
+		CString state = interface->State();
 		return TranslateStateStr(state);
 	}
 	catch(DBus::Error& err)
@@ -349,14 +388,13 @@ tWirelessState CWirelessModule::GetState()
 
 tWirelessMode CWirelessModule::GetMode()
 {
-	DBus::Path network_path = GetWPANetwork();
-	if(network_path == "")
+	wpa_supplicant1::Network* network = GetWPANetwork();
+	if( !network )
 		return kWirelessNone;
 	
 	try
 	{
-		fi::w1::wpa_supplicant1::Network network(*mConnection_, network_path);
-		const std::map< std::string, ::DBus::Variant > props = network.Properties();
+		const std::map< std::string, ::DBus::Variant > props = network->Properties();
 		const DBus::Variant mode_variant = props.find("mode")->second;
 		CString mode = mode_variant.reader().get_string();
 		if(mode == "1")
