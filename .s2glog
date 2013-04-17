@@ -36597,3 +36597,14 @@ By dlazzari (dlazzari@leapfrog.com) on 4/16/13 8:41 PM
 6,766 ms. (Cumulative: 14,976,624 ms)
 
 ----------------
+Revision 10,201 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,202 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,203 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Fix crash when calling SetWirelessPower(false) when wireless is already powered off.
+
+By dlazzari (dlazzari@leapfrog.com) on 4/17/13 10:14 AM
+1 changed, 0 added, 0 deleted.
+6,651 ms. (Cumulative: 14,983,384 ms)
+
+----------------
