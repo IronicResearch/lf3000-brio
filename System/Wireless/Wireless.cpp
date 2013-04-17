@@ -217,9 +217,10 @@ tErrType CWirelessModule::SetWirelessPower(Boolean power)
 		else
 		{
 			wpa_supplicant1::Interface* interface = GetWPAInterface();
-			DBus::Path interface_path = interface->path();
 			if(interface)
 			{
+				DBus::Path interface_path = interface->path();
+				
 				//Invalidate caches
 				if( pWPANetworkCache_ )
 				{
