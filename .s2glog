@@ -36608,3 +36608,13 @@ By dlazzari (dlazzari@leapfrog.com) on 4/17/13 10:14 AM
 6,651 ms. (Cumulative: 14,983,384 ms)
 
 ----------------
+Revision 10,204 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,205 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Added unit test for new CKeypadMessage() type by emulating virtual keypad events from text string. (TTP 4693 followup)
+
+By Dave Milici (dmilici@leapfrog.com) on 4/20/13 11:56 AM
+1 changed, 0 added, 0 deleted.
+6,639 ms. (Cumulative: 14,990,133 ms)
+
+----------------

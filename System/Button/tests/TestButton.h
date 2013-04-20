@@ -8,9 +8,13 @@
 #include <SystemErrors.h>
 #include <SystemEvents.h>
 #include <UnitTestUtils.h>
+#include <KeypadTypes.h>
 
 //For memcpy
 #include <string.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #include "Utility.h"
 
@@ -23,7 +27,7 @@ const U32 kBadButtonState = 0xBAADF00D;
 //============================================================================
 // MyEventListener
 //============================================================================
-const tEventType kMyHandledTypes[] = { kAllButtonEvents, kAllTouchEvents };
+const tEventType kMyHandledTypes[] = { kAllButtonEvents, kAllTouchEvents, kAllKeypadEvents };
 					
 //----------------------------------------------------------------------------
 class MyBtnEventListener : public IEventListener
@@ -57,6 +61,15 @@ public:
 			const CTouchMessage& tmsg = reinterpret_cast<const CTouchMessage&>(msg);
 			mtd_ = tmsg.GetMultiTouchState();
 			printf("%d: %d, %d, %d, %d, %d\n", mtd_.id, mtd_.td.touchState, mtd_.td.touchX, mtd_.td.touchY, mtd_.touchWidth, mtd_.touchHeight);
+			return kEventStatusOKConsumed;
+		}
+		if (type_ == kKeypadStateChanged)
+		{
+			TS_ASSERT_EQUALS( size, sizeof(CKeypadMessage) );
+			const CKeypadMessage& kmsg = reinterpret_cast<const CKeypadMessage&>(msg);
+			tKeypadData kd = kmsg.GetKeypadState();
+			tWChar key = (tWChar)kd.keyCode;
+			printf("%02x: %c (@%d.%d)\n", (int)kd.keyCode, (char)key, (int)kd.time.seconds, (int)kd.time.microSeconds);
 			return kEventStatusOKConsumed;
 		}
 		return kEventStatusOK;
@@ -213,5 +226,29 @@ public:
 		for (int i = 0; i < 30; i++)
 			sleep(1);
 #endif
+	}
+
+	//------------------------------------------------------------------------
+	void testVirtualKeypadEvents( )
+	{
+		PRINT_TEST_NAME();
+
+		CString keyseq = "The Quick Brown Fox Jumped over the Lazy Dog.\n";
+		boost::scoped_ptr<CEventMPI> eventmgr(new CEventMPI());
+		TS_ASSERT_EQUALS( kNoErr, eventmgr->RegisterEventListener(&handler_) );
+
+		for (int i = 0; i < keyseq.length(); i++)
+		{
+			tKeypadData keyrec;
+			keyrec.keyCode = keyseq.at(i);
+			keyrec.keyState = 1;
+			struct timeval tv;
+			gettimeofday(&tv, NULL);
+			keyrec.time.seconds = tv.tv_sec;
+			keyrec.time.microSeconds = tv.tv_usec;
+			CKeypadMessage keymsg(keyrec);
+			eventmgr->PostEvent(keymsg, 255, &handler_);
+			usleep(random() % 100000);
+		}
 	}
 };
