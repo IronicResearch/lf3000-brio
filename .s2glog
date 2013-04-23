@@ -36632,3 +36632,13 @@ By Dave Milici (dmilici@leapfrog.com) on 4/23/13 12:15 PM
 6,199 ms. (Cumulative: 14,996,441 ms)
 
 ----------------
+Revision 10,210 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+KernelMPI.CloseMessageQueue() is supposed to remove queue for writers, not readers. (TTP 5213)
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/23/13 2:40 PM
+1 changed, 0 added, 0 deleted.
+6,250 ms. (Cumulative: 15,002,785 ms)
+
+----------------
