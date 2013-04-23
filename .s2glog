@@ -36618,3 +36618,17 @@ By Dave Milici (dmilici@leapfrog.com) on 4/20/13 11:56 AM
 6,639 ms. (Cumulative: 14,990,133 ms)
 
 ----------------
+Revision 10,206 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,207 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,208 from svn://localhost/BRANCHES/Brio_LF2000/:
+Revision 10,209 from svn://localhost/BRANCHES/Brio_LF2000/:
+
+Test if existing cart socket is still active to determine whether it should be re-created. (TTP 5139)
+Extra logging added for tracking active or dead sockets. 
+
+
+By Dave Milici (dmilici@leapfrog.com) on 4/23/13 12:15 PM
+1 changed, 0 added, 0 deleted.
+6,199 ms. (Cumulative: 14,996,441 ms)
+
+----------------

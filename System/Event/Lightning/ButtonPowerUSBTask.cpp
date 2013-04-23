@@ -366,6 +366,15 @@ void* CEventModule::CartridgeTask( void* arg )
 	if (stat(CART_SOCK, &stbuf) == 0) {
 		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: socket listener exists at %s\n", CART_SOCK);
 
+		// Test if socket is still active
+		event_fd[1].fd = CreateReportSocket(CART_SOCK);
+		if (event_fd[1].fd < 0) {
+			pThis->debug_.DebugOut(kDbgLvlCritical, "CartridgeTask: dead socket at %s, error %d: %s\n", CART_SOCK, errno, strerror(errno));
+			goto server;
+		}
+		pThis->debug_.DebugOut(kDbgLvlImportant, "CartridgeTask: active socket at %s = %d\n", CART_SOCK, event_fd[1].fd);
+		close(event_fd[1].fd);
+
 		// Open inbound message queue for receiving cart messages from parent process
 		props.mode = B_S_IRUSR;
 		props.oflag = B_O_RDONLY;
@@ -398,6 +407,7 @@ server:
 		debug.DebugOut(kDbgLvlCritical, "CartridgeTask: Fatal Error, cannot Create socket at %s !!\n", CART_SOCK);
 		return (void *)-1;
 	}
+	debug.DebugOut(kDbgLvlImportant, "CartridgeTask: created cart socket %s = %d\n", CART_SOCK, event_fd[0].fd);
 
 	// Create outbound message queue for propagating cart messages to any child processes
 	props.mode = B_S_IRWXU;
